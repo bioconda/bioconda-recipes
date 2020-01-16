@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="BSgenome.Alyrata.JGI.v1_1.0.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Alyrata.JGI.v1_1.0.0.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/BSgenome.Alyrata.JGI.v1_1.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Alyrata.JGI.v1_1.0.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.alyrata.jgi.v1/bioconductor-bsgenome.alyrata.jgi.v1_1.0.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.alyrata.jgi.v1/bioconductor-bsgenome.alyrata.jgi.v1_1.0.0_src_all.tar.gz"

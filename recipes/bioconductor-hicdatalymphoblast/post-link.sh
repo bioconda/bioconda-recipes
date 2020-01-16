@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="HiCDataLymphoblast_1.20.0.tar.gz"
+FN="HiCDataLymphoblast_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/HiCDataLymphoblast_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/HiCDataLymphoblast_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hicdatalymphoblast/bioconductor-hicdatalymphoblast_1.20.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hicdatalymphoblast/bioconductor-hicdatalymphoblast_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/HiCDataLymphoblast_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/HiCDataLymphoblast_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hicdatalymphoblast/bioconductor-hicdatalymphoblast_1.22.0_src_all.tar.gz"
 )
-MD5="6b12b6d3851d638acdab1a15a9225b92"
+MD5="4d7c639ebaccfac6ee8e5edf53e06526"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
