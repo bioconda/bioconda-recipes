@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="mta10probeset.db_8.7.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/mta10probeset.db_8.7.0.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/mta10probeset.db_8.7.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mta10probeset.db_8.7.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mta10probeset.db/bioconductor-mta10probeset.db_8.7.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mta10probeset.db/bioconductor-mta10probeset.db_8.7.0_src_all.tar.gz"

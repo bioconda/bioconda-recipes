@@ -20,9 +20,22 @@ variables:
     run:
       name: Setup bioconda-utils
       command: .circleci/setup.sh
+  setup_macos_sdk: &setup_macos_sdk
+    run:
+      name: Run run_conda_forge_build_setup
+      command: |
+        # download SDK and setup sysroot on macOS
+        #  primarily, run_conda_forge_build_setup does the following:
+        #   - download/setup SDK:
+        #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L21-L26
+        #   - add activation script to set MACOSX_DEPLOYMENT_TARGET and CONDA_BUILD_SYSROOT:
+        #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L60-L63
+        conda activate base
+        # use "CONFIG=" to avoid writing ./.ci_support/${CONFIG}.yaml which we don't need/use.
+        CONFIG= OSX_FORCE_SDK_DOWNLOAD=1 run_conda_forge_build_setup
   macos: &macos
     macos:
-      xcode: "8.3.3"
+      xcode: 9.4.1
     environment:
       LC_ALL: en_US.UTF-8
       LANG: en_US.UTF-8
@@ -145,6 +158,7 @@ jobs:
       - *restore_cache
       - *setup
       - *save_cache
+      - *setup_macos_sdk
       - run:
           name: Building and testing
           command: |
@@ -181,6 +195,7 @@ jobs:
       - *restore_cache
       - *setup
       - *save_cache
+      - *setup_macos_sdk
       # build only current commit (since we use squashed merging, this is safe)
       - run:
           name: Building, testing and uploading
@@ -216,6 +231,7 @@ jobs:
       - *restore_cache
       - *setup
       - *save_cache
+      - *setup_macos_sdk
       - run:
           name: Building, testing and uploading of all unpublished recipes
           command: |
@@ -300,21 +316,21 @@ workflows:
             branches:
               only:
                 - master
-  # workflow for bulk-updates
-  bioconda-upload-bulk-linux:
-    jobs:
-      - bulk-linux:
-          filters:
-            branches:
-              only:
-                - bulk
-  bioconda-upload-bulk-macos:
-    jobs:
-      - bulk-macos:
-          filters:
-            branches:
-              only:
-                - bulk
+  ## workflow for bulk-updates
+  #bioconda-upload-bulk-linux:
+  #  jobs:
+  #    - bulk-linux:
+  #        filters:
+  #          branches:
+  #            only:
+  #              - bulk
+  #bioconda-upload-bulk-macos:
+  #  jobs:
+  #    - bulk-macos:
+  #        filters:
+  #          branches:
+  #            only:
+  #              - bulk
   # nightly workflow to capture missed recipes
   bioconda-nightly-upload-linux:
      triggers:

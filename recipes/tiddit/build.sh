@@ -2,19 +2,24 @@
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
 mkdir -p $PREFIX/bin
-mkdir -p $PREFIX/bin/bin
+mkdir -p $PREFIX/lib
 echo $PREFIX
 
-cp -r * $outdir/
-cd $outdir
 mkdir build
 cd build
 cmake ..
 make
+cp ../bin/TIDDIT $PREFIX/bin
+cp -r ../lib/bamtools $PREFIX/lib  # Yes, this vendors bamtools :(
+cd ../src
+python -m pip install . --ignore-installed --no-deps -vv
+cd ../build
+make DESTDIR=${PREFIX} install
 cd ..
-cd src
-python setup.py build_ext --inplace
 
-ln -s $outdir/TIDDIT.py $PREFIX/bin/tiddit
+# Clean up bamtools
+rm -rf $PREFIX/usr
 
-chmod 0755 ${PREFIX}/bin/tiddit
+mv TIDDIT.py ${PREFIX}/bin
+ln -s ${PREFIX}/bin/TIDDIT.py $PREFIX/bin/tiddit 
+chmod a+x ${PREFIX}/bin/*
