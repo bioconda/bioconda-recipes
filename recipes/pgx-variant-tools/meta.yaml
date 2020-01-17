@@ -1,0 +1,43 @@
+{% set name = "pgx-variant-tools" %}
+{% set version = "0.0.2" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 24c4fd0a5478dadcd4a837a9823c329d153035dbba994b141f129b2e629b2a2d
+
+build:
+  number: 0
+  entry_points:
+    - vcf2sequence = variant_tools.cli:vcf2sequence
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  noarch: python
+
+requirements:
+  host:
+    - python >=3.5
+    - pip
+  run:
+    - python >=3.5
+    - numpy ==1.13.1
+    - biopython ==1.69
+    - edlib ==1.1.2.post2
+    - pyinterval ==1.2.0
+    - requests
+    - click
+    - cyvcf2
+
+test:
+  imports:
+    - variant_tools
+  commands:
+    - vcf2sequence --help
+
+about:
+  home: https://github.com/LUMC/pgx-variant-tools
+  license: MIT License
+  license_family: MIT
+  summary: This library contains various methods and utilities for the calling and manipulation of normalized variants.
