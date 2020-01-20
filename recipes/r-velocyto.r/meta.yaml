@@ -2,9 +2,6 @@
 {% set version = '0.6' %}
 {% set sha256 = '3821e86a254bcce844024f7a7e98236f9801f4503143bac5d6c5a4781a438adc' %}
 
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
-
 package:
   name: r-{{ name|lower }}
   version: {{ version }}
@@ -21,13 +18,9 @@ build:
 
 requirements:
   build:
-    - {{ compiler('c') }}              # [not win]
-    - {{ compiler('m2w64_c') }}        # [win]
-    - {{ compiler('cxx') }}            # [not win]
-    - {{ compiler('m2w64_cxx') }}      # [win]
-    - {{posix}}filesystem        # [win]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
     - {{posix}}git
-    - {{posix}}zip               # [win]
 
   host:
     - boost
@@ -46,7 +39,6 @@ requirements:
   run:
     - boost
     - r-base
-    - {{native}}gcc-libs         # [win]
     - r-mass
     - r-matrix
     - r-rcpp >=0.12.13
@@ -60,8 +52,7 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('velocyto.R')"           # [not win]
-    - "\"%R%\" -e \"library('velocyto.R')\""  # [win]
+    - $R -e "library('velocyto.R')"
 
 about:
   home: https://github.com/velocyto-team/velocyto.R
