@@ -2,7 +2,9 @@
 set -x -e
 
 cd src
-$CC --version
+${CC} -print-search-dirs
+unset COMPILER_PATH
+${CC} -print-search-dirs
 make CC=$CC
 
 
