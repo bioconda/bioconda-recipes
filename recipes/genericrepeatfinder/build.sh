@@ -2,7 +2,7 @@
 set -x -e
 
 cd src
-gcc --version
+$CC --version
 make CC=$CC
 
 
