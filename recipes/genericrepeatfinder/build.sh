@@ -1,6 +1,8 @@
 #!/bin/sh
 set -x -e
 
+export C_INCLUDE_PATH=${PREFIX}/include
+
 cd src
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
