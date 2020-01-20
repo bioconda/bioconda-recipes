@@ -2,7 +2,7 @@
 set -x -e
 
 cd src
-make
+make CC=$GXX
 
 
 for name in bin/* ; do
