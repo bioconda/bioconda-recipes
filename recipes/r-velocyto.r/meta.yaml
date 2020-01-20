@@ -1,0 +1,75 @@
+{% set version = '0.6' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-velocyto.r
+  version: {{ version|replace("-", "_") }}
+
+source:
+  git_url: https://github.com/velocyto-team/velocyto.R
+  git_tag: {{ version }}
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('m2w64_c') }}        # [win]
+    - {{ compiler('cxx') }}            # [not win]
+    - {{ compiler('m2w64_cxx') }}      # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}git
+    - {{posix}}zip               # [win]
+
+  host:
+    - boost
+    - r-base
+    - r-mass
+    - r-matrix
+    - r-rcpp >=0.12.13
+    - r-rcpparmadillo
+    - r-abind
+    - r-cluster
+    - r-hdf5r
+    - r-igraph
+    - r-mgcv
+    - bioconductor-pcamethods
+
+  run:
+    - boost
+    - r-base
+    - {{native}}gcc-libs         # [win]
+    - r-mass
+    - r-matrix
+    - r-rcpp >=0.12.13
+    - r-rcpparmadillo
+    - r-abind
+    - r-cluster
+    - r-hdf5r
+    - r-igraph
+    - r-mgcv
+    - bioconductor-pcamethods
+
+test:
+  commands:
+    - $R -e "library('velocyto.R')"           # [not win]
+    - "\"%R%\" -e \"library('velocyto.R')\""  # [win]
+
+about:
+  home: https://github.com/velocyto-team/velocyto.R
+  license: GPL-3
+  summary: Provides basic routines for estimation of gene-specific transcriptional derivatives
+    and visualization of the resulting velocity patterns.
+  license_family: GPL3
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  recipe-maintainers:
+    - tdido
