@@ -2,7 +2,12 @@
 set -x -e
 
 cd src
-make CC=$GXX
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  make CC=clang++
+else
+  make CC=$GXX
+fi
 
 mkdir -p ${PREFIX}/bin
 cp grf-alignment/grf-alignment ${PREFIX}/bin/
