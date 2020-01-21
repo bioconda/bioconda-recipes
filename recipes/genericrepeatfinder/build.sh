@@ -11,12 +11,7 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 
 cd src
-
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  make CC=clang++ 
-else
-  make CC=$GXX
-fi
+make CC=$CXX
 
 mkdir -p ${PREFIX}/bin
 cp grf-alignment/grf-alignment ${PREFIX}/bin/
