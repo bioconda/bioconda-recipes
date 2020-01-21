@@ -1,32 +1,35 @@
+{% set version = "1.0.1" %}
+
 package:
   name: ntjoin
-  version: '1.0.1'
+  version: {{ version }}
 
 source:
   url: https://github.com/bcgsc/ntJoin/archive/v{{ version }}.tar.gz
   sha256: 0f0b3557a6e238bb49cc23815775d73e2c0f3e26609df24d8a8a8028226a9e62
 
 build:
-  noarch: python
-  number: 1
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  skip: True  # [py2k]
 
 requirements:
-  host:
-    - python 3
+  build:
     - {{ compiler('cxx') }}
     - automake
+  host:
+    - python
   run:
     - python-igraph
     - pybedtools
     - pymannkendall
-    - bedtools v2.21.0+
+    - bedtools >=2.21.0
     - samtools
-    - python 3
+    - python
 
 test:
   commands:
     - ntJoin --help
-
 
 about:
   home: http://www.bcgsc.ca/platform/bioinfo/software/ntjoin
