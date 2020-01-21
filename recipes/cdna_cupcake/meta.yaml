@@ -1,4 +1,4 @@
-{% set version = "8.7.3" %}
+{% set version = "9.1.1" %}
 
 package:
   name: cdna_cupcake
@@ -6,13 +6,11 @@ package:
 
 source:
   url: https://github.com/Magdoll/cDNA_Cupcake/archive/v{{ version }}.tar.gz
-  sha256: 04563e02b12b99dcadd82e56b5eb3a31db3394f9a4796dc56d1935a7ccc3423d
-  patches:
-    - patch
+  sha256: 15b0a2c4ee0e4c46c950541dea68f3230d3aadfdf0a4478800c2646e1165a104
 
 build:
   number: 0
-  skip: True  # [py3k]
+  skip: True  # [py < 37]
 
 requirements:
   build:
@@ -20,15 +18,18 @@ requirements:
   host:
     - python
     - pip
-    - biopython
+    - numpy
+    - cython
   run:
     - python
     - biopython
-    - bx-python
+    - bx-python >=0.7.3
     - bcbiogff
     - r-base
     - graphviz
     - scikit-learn
+    - pysam
+    - {{ pin_compatible('numpy') }}
 
 test:
   commands:
@@ -40,7 +41,6 @@ test:
     - revcomp.py -h
     - fa2fq.py -h
     - fq2fa.py -h
-    - sort_fasta_by_len.py -h
     - get_seqs_from_list.py -h
     - err_correct_w_genome.py -h
     - sam_to_bam.py -h 2>&1 | grep "Only accepts"
