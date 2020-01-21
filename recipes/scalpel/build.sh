@@ -22,11 +22,13 @@ sed -i "s/bamtools samtools bcftools//g" Makefile
 chmod 0755 FindVariants.pl
 chmod 0755 FindSomatic.pl
 
-make INCLUDES="-I$PREFIX/include/bamtools -L $PREFIX/lib" Microassembler
-make INCLUDES="-I$PREFIX/include/bamtools -L $PREFIX/lib"
+ls -lh $BUILD_PREFIX/include/bamtools
+make INCLUDES="-I$BUILD_PREFIX/include/bamtools -L $BUILD_PREFIX/lib" Microassembler
+make INCLUDES="-I$BUILD_PREFIX/include/bamtools -L $BUILD_PREFIX/lib"
 
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
 cp -r * $outdir
+mkdir -p $PREFIX/bin
 ln -s $outdir/scalpel-discovery $PREFIX/bin
 ln -s $outdir/scalpel-export $PREFIX/bin
