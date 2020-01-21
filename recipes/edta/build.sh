@@ -8,5 +8,5 @@ mkdir -p ${EDTA_DIR}
 cp -r * ${EDTA_DIR}
 
 for name in ${EDTA_PROGRAMS} ; do
-  ln -s ${PREFIX}/bin/$name ${PREFIX}/share/$name
+  ln -s ${PREFIX}/bin/$name ${EDTA_DIR}/$name
 done
