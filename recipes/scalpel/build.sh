@@ -18,6 +18,9 @@ sed -i 's:$Bin:$RealBin:g' Utils.pm
 sed -i "s:system(\$cmd):system(\"/bin/bash -c '\$cmd'\"):g" Utils.pm
 # Avoid building samtools bcftools
 sed -i "s/bamtools samtools bcftools//g" Makefile
+# Use g++ in container
+sed -i.bak "s#g++#${CXX}#" Microassembler/Makefile
+sed -i.bak "s#g++#${CXX}#" Makefile
 
 chmod 0755 FindVariants.pl
 chmod 0755 FindSomatic.pl
