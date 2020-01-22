@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="MeSH.Pfa.3D7.eg.db_1.12.0.tar.gz"
+FN="MeSH.Pfa.3D7.eg.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MeSH.Pfa.3D7.eg.db_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MeSH.Pfa.3D7.eg.db_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mesh.pfa.3d7.eg.db/bioconductor-mesh.pfa.3d7.eg.db_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MeSH.Pfa.3D7.eg.db_1.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MeSH.Pfa.3D7.eg.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.pfa.3d7.eg.db/bioconductor-mesh.pfa.3d7.eg.db_1.13.0_src_all.tar.gz"
 )
-MD5="d961776f4f0327b3225501536f72c5c1"
+MD5="f533a8a766561697c265d7e3fc1b0989"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

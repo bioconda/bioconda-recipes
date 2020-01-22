@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="rta10transcriptcluster.db_8.7.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/rta10transcriptcluster.db_8.7.0.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/rta10transcriptcluster.db_8.7.0.tar.gz"
   "https://bioarchive.galaxyproject.org/rta10transcriptcluster.db_8.7.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rta10transcriptcluster.db/bioconductor-rta10transcriptcluster.db_8.7.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rta10transcriptcluster.db/bioconductor-rta10transcriptcluster.db_8.7.0_src_all.tar.gz"

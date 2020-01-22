@@ -1,32 +1,43 @@
 #!/bin/bash
 # This script downloads the panel data that mykrobe uses for its predictions
 
+function check_shasum() {
+    local tarball="$1"
+    local sha256="$2"
+
+    if [[ -x "$(command -v sha256sum)" ]]; then
+        if [[ $(sha256sum "$tarball" | cut -f1 -d " ") == "$sha256" ]]; then
+            return 1
+        fi
+    elif [[ -x "$(command -v shasum)" ]]; then
+        if [[ $(shasum -a 256 "$tarball" | cut -f1 -d " ") == "$sha256" ]]; then
+            return 1
+        fi
+    else
+        echo "ERROR: Could not find programs shasum or sha256sum in your PATH" 2>&1
+        exit 1
+    fi
+    return 0
+}
+
 cd "$PREFIX" || exit 1
 TARBALL="mykrobe-data.tar.gz"
-URLS=(
-    "https://bit.ly/2H9HKTU"
-)
+URL="https://bit.ly/2H9HKTU"
 SHA256="14b4e111d8b17a43dd30e3a55416bab79794ed56c44acc6238e1fd10addd0a03"
-SUCCESS=0
 
-for URL in "${URLS[@]}"; do
-    wget -O - "${URL}" > "$TARBALL"
-    [[ $? == 0 ]] || continue
+wget -O "$TARBALL" "$URL"
 
-    if [[ $(shasum -a 256 $TARBALL | cut -f1 -d " ") == "$SHA256" ]]; then
-        SUCCESS=1
-        break
-    fi
+check_shasum "$TARBALL" "$SHA256"
+SUCCESS="$?"
 
-done
 
-if [[ $SUCCESS != 1 ]]; then
-    echo "ERROR: post-link.sh was unable to download any of the following URLs with the shasum $SHA256:" >> "${PREFIX}/.messages.txt" 2>&1
-    printf '%s\n' "${URLS[@]}" >> "${PREFIX}/.messages.txt" 2>&1
+if [[ "$SUCCESS" -ne 1 ]]; then
+    echo "ERROR: post-link.sh was unable to download the following URL with the shasum $SHA256:" >> "${PREFIX}/.messages.txt" 2>&1
+    printf '%s\n' "${URL}" >> "${PREFIX}/.messages.txt" 2>&1
     exit 1
 fi
 
 tar -vxzf "$TARBALL"
-mv $PREFIX/mykrobe-data $PREFIX/share 
-cp -sr $PREFIX/share/mykrobe-data/* $PREFIX/lib/*/site-packages/mykrobe/data
+mv "${PREFIX}/mykrobe-data" "${PREFIX}/share"
+cp -sr "$PREFIX"/share/mykrobe-data/* "$PREFIX"/lib/*/site-packages/mykrobe/data
 rm "$TARBALL"

@@ -1,4 +1,3 @@
 #!/bin/bash
-
-mkdir -p $PREFIX/bin
+set -e
 cp -r * $PREFIX
