@@ -14,7 +14,9 @@ ls -lah .
 # ls -lah /usr/lib64/libstdc*
 # strings /usr/lib64/libstdc* | grep GLIBC
 
-METEOR_NODE_PATH=$(meteor node -e 'console.log(process.execPath)')
+# METEOR_NODE_PATH=$(meteor node -e 'console.log(process.execPath)')
+METEOR_PATH=$(realpath .meteor/packages/meteor-tool/1.9.0)
+METEOR_NODE_PATH=$(find $METEOR_PATH -name node | grep dev_bundle/bin)
 NODE_PATH=$(which node)
 
 echo $METEOR_NODE_PATH
