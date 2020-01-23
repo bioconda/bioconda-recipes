@@ -10,9 +10,13 @@ sed -i.bak "26,33d" CMakeLists.txt
 
 # Fix location of libz.a
 sed -i.bak "s#ZLIB_LIBRARIES \${CMAKE_BINARY_DIR}#ZLIB_LIBRARIES $PREFIX#" CMakeLists.txt
-cat CMakeLists.txt
+
+# Some boost libraries need -lrt
+sed -i.bak "82i \
+                        rt\n" CMakeLists.txt
 
 mkdir -p build
+cat CMakeLists.txt
 cd build
 export BOOST_ROOT=$PREFIX
 export HTSLIB_INCLUDE_DIR=$PREFIX/include
