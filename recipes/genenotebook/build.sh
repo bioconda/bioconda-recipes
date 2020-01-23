@@ -23,7 +23,10 @@ echo $METEOR_NODE_PATH
 echo $NODE_PATH
 
 mv $METEOR_NODE_PATH $METEOR_NODE_PATH.bak
-cp $NODE_PATH $METEOR_NODE_PATH
+ln -s $NODE_PATH $METEOR_NODE_PATH
+
+ls -lah /root/.meteor/packages/meteor-tool/.1.9.0.1mtsmz6.qnno++os.linux.x86_64+web.browser+web.browser.legacy+web.cordova/mt-os.linux.x86_64/dev_bundle/bin/
+
 meteor node -v
 
 METEOR_ALLOW_SUPERUSER=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 npm run bundle
