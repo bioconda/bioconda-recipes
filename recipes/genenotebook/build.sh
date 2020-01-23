@@ -15,8 +15,10 @@ ls -lah .
 # strings /usr/lib64/libstdc* | grep GLIBC
 
 METEOR_PATH=$(readlink -f /root/.meteor/packages/meteor-tool/1.9.0)
+
 METEOR_NODE_PATH=$(find $METEOR_PATH -name node | grep dev_bundle/bin)
 NODE_PATH=$(which node)
+
 
 #find $METEOR_PATH -name node -type f | xargs -n 1 -P 1 -I % sh -c \
 #    "echo %; mv % %.bak; ln -s $NODE_PATH %"
@@ -26,6 +28,17 @@ echo $NODE_PATH
 
 mv $METEOR_NODE_PATH $METEOR_NODE_PATH.bak
 ln -s $NODE_PATH $METEOR_NODE_PATH
+
+METEOR_NPM_PATH=$(find $METEOR_PATH -name npm | grep dev_bundle/bin)
+NPM_PATH=$(which npm)
+
+echo $METEOR_NPM_PATH
+echo $NPM_PATH
+
+mv $METEOR_NPM_PATH $METEOR_NPM_PATH.bak
+ln -s $NPM_PATH $METEOR_NPM_PATH
+
+sudo meteor npm install -g node-gyp
 
 node /root/.meteor/packages/meteor-tool/.1.9.0.1mtsmz6.qnno++os.linux.x86_64+web.browser+web.browser.legacy+web.cordova/mt-os.linux.x86_64/dev_bundle/lib/node_modules/fibers/build
 
