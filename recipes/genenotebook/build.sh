@@ -38,7 +38,7 @@ echo $NPM_PATH
 mv $METEOR_NPM_PATH $METEOR_NPM_PATH.bak
 ln -s $NPM_PATH $METEOR_NPM_PATH
 
-sudo meteor npm install -g node-gyp
+meteor npm install -g node-gyp
 
 node /root/.meteor/packages/meteor-tool/.1.9.0.1mtsmz6.qnno++os.linux.x86_64+web.browser+web.browser.legacy+web.cordova/mt-os.linux.x86_64/dev_bundle/lib/node_modules/fibers/build
 
