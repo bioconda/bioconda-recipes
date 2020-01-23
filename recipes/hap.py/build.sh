@@ -8,6 +8,10 @@ sed -i.bak -e '/^configure_files.*samtools/s/^/#/' CMakeLists.txt
 # Do not build "external dependencies". This is wrong to begin with and compilers and such are skipped anyway
 sed -i.bak "26,33d" CMakeLists.txt
 
+# Fix location of libz.a
+sed -i.bak "s#ZLIB_LIBRARIES \${CMAKE_BINARY_DIR}#ZLIB_LIBRARIES $PREFIX#" CMakeLists.txt
+cat CMakeLists.txt
+
 mkdir -p build
 cd build
 export BOOST_ROOT=$PREFIX
