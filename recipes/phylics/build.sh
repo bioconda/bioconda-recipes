@@ -2,7 +2,7 @@
 
 # The build system fetches our .tar.gz from github and puts us
 # in its "root" directory
-#WD=$(pwd)
+WD=$(pwd)
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/src
 cp phylics/local/src/*.py $PREFIX/src
@@ -12,8 +12,11 @@ for p in $PREFIX/src/*py; do
 	ln -s $p $PREFIX/bin/$NOEXT;
 done
 
-# tell Marilisa to call ginkgo as ginkgo.sh direclty, remove bins from git repo
-cd phylics/local/src/ginkgo/genomes/scripts && make
-cd phylics/local/src/ginkgo/scripts && make
+cd phylics/local/src/ginkgo/genomes/scripts && make 2> /dev/null || echo "build 1"
+cd $WD
+cd phylics/local/src/ginkgo/scripts && make 2> /dev/null || echo "build 2"
+cd $WD
 cp phylics/local/src/ginkgo/cli/ginkgo.sh $PREFIX/bin/
-cp -r phylics/local/src/ginkgo/* $PREFIX/
+cp -r phylics/local/src/ginkgo/scripts $PREFIX/
+cp -r phylics/local/src/ginkgo/cli $PREFIX/
+cp -r phylics/local/src/ginkgo/genomes $PREFIX/
