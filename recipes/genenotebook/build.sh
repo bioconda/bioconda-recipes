@@ -10,11 +10,15 @@ pwd
 ls -lah .
 
 npm install --unsafe-perm
+ls -lah .
 # ls -lah /usr/lib64/libstdc*
 # strings /usr/lib64/libstdc* | grep GLIBC
 
 METEOR_NODE_PATH=$(meteor node -e 'console.log(process.execPath)')
 NODE_PATH=$(which node)
+
+echo ${METEOR_NODE_PATH}
+echo ${NODE_PATH}
 
 mv ${METEOR_NODE_PATH} ${METEOR_NODE_PATH}.bak
 cp ${NODE_PATH} ${METEOR_NODE_PATH}
