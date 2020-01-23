@@ -8,6 +8,7 @@ sed -i.bak -e '/^configure_files.*samtools/s/^/#/' CMakeLists.txt
 sed -i.bak 's/make -j4 -C samtools/#make -j4 -C samtools/' external/make_dependencies.sh
 mkdir -p build
 cd build
+export BOOST_ROOT=$PREFIX
 cmake ../ -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_INSTALL_PREFIX=$PREFIX -DBOOST_ROOT=${PREFIX}
 make
 rm -f lib/libhts*so
