@@ -17,11 +17,11 @@ ls -lah .
 METEOR_NODE_PATH=$(meteor node -e 'console.log(process.execPath)')
 NODE_PATH=$(which node)
 
-echo ${METEOR_NODE_PATH}
-echo ${NODE_PATH}
+echo $METEOR_NODE_PATH
+echo $NODE_PATH
 
-mv ${METEOR_NODE_PATH} ${METEOR_NODE_PATH}.bak
-cp ${NODE_PATH} ${METEOR_NODE_PATH}
+mv $METEOR_NODE_PATH $METEOR_NODE_PATH.bak
+cp $NODE_PATH $METEOR_NODE_PATH
 meteor node -v
 
 METEOR_ALLOW_SUPERUSER=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 npm run bundle
