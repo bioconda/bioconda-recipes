@@ -32,7 +32,7 @@ ln -s $NPM_PATH $METEOR_NPM_PATH
 
 pushd /root/.meteor/packages/meteor-tool/.1.9.0.1mtsmz6.qnno++os.linux.x86_64+web.browser+web.browser.legacy+web.cordova/mt-os.linux.x86_64/dev_bundle/lib/node_modules/fibers/
 ls -lah 
-npm install
+npm install --unsafe-perm
 popd
 
 # yum install gcc-c++
