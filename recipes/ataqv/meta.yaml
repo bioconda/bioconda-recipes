@@ -1,0 +1,47 @@
+{% set name = "ataqv" %}
+{% set version = "1.1.1" %}
+{% set sha256  = "e1c6d70e4ec1bde87a9a53142e151a9039466e6a218ea8a5198b189ea5f78140" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  url: https://github.com/ParkerLab/ataqv/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - boost
+    - htslib
+    - ncurses
+    - zlib
+    - coreutils  # required for 'realpath' call in Makefile
+    - python
+  run:
+    - boost
+    - htslib
+    - ncurses
+    - zlib
+    - coreutils
+    - python
+
+test:
+  commands:
+    - ataqv --version 2>&1 | grep "{{ version }}"
+    - ataqv --help 2>&1 | grep "metrics"
+    - mkarv --help 2>&1 | grep "DESCRIPTION"
+    - srvarv --help 2>&1 | grep "instance"
+
+about:
+  home: https://parkerlab.github.io/ataqv/
+  license: GPL3
+  license_file: LICENSE
+  summary: ataqv is a toolkit for measuring and comparing ATAC-seq results. It was written to help understand how well ATAC-seq assays have worked, and to make it easier to spot differences that might be caused by library prep or sequencing.
+  dev_url: https://github.com/ParkerLab/ataqv
+  doc_url: https://github.com/ParkerLab/ataqv/blob/master/README.rst

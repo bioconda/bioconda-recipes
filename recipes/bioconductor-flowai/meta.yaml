@@ -1,24 +1,26 @@
-{% set version = "1.10.1" %}
+{% set version = "1.16.0" %}
 {% set name = "flowAI" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 7cfd063a85442eac9ebfc5a1aa5b8b8ee7687a36c42e59f519f884d5dec54e1d
+  md5: 92fc2ee98a86bfa53a1acedd53523bd3
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: testthat, shiny
 requirements:
   host:
-    - 'bioconductor-flowcore >=1.46.2,<1.48.0'
+    - 'bioconductor-flowcore >=1.52.0,<1.53.0'
     - r-base
     - r-changepoint
     - r-ggplot2
@@ -29,7 +31,7 @@ requirements:
     - r-rmarkdown
     - r-scales
   run:
-    - 'bioconductor-flowcore >=1.46.2,<1.48.0'
+    - 'bioconductor-flowcore >=1.52.0,<1.53.0'
     - r-base
     - r-changepoint
     - r-ggplot2
@@ -43,10 +45,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'The package is able to perform an automatic or interactive quality control on FCS data acquired using flow cytometry instruments. By evaluating three different properties: 1) flow rate, 2) signal acquisition, 3) dynamic range, the quality control enables the detection and removal of anomalies.'
+  summary: 'Automatic and interactive quality control for flow cytometry data'
+  description: 'The package is able to perform an automatic or interactive quality control on FCS data acquired using flow cytometry instruments. By evaluating three different properties: 1) flow rate, 2) signal acquisition, 3) dynamic range, the quality control enables the detection and removal of anomalies.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:flowai
     - doi:10.1093/bioinformatics/btw191
+  parent_recipe:
+    name: bioconductor-flowai
+    path: recipes/bioconductor-flowai
+    version: 1.10.1
+

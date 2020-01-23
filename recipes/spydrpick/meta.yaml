@@ -1,0 +1,44 @@
+{% set name = "SpydrPick" %}
+{% set version = "1.1.1" %}
+
+package:
+  name: {{ name|lower}}
+  version: {{ version }}
+
+source:
+  url: https://github.com/santeripuranen/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: 6a22b73c13c64058442d790976f265a57a63545350e93d8e2609ee2295cffed3
+  patches:
+    - 0001-CMakeLists-for-Clang-5.patch
+    - 0002-Use-no-apple-in-Cmakelists.patch
+    - 0003-Change-AVX-to-SSE3.patch
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - python <3
+  host:
+    - cmake
+    - pthread-stubs
+    - tbb
+    - tbb-devel
+  run:
+    - pthread-stubs
+    - tbb
+
+test:
+  commands:
+    - SpydrPick --version
+
+about:
+   home: https://github.com/santeripuranen/SpydrPick
+   license: GNU Affero General Public License
+   license_file: LICENSE
+   summary: Mutual information based detection of pairs of genomic loci co-evolving under a shared selective pressure
+
+extra:
+   identifiers:
+     - doi:10.1101/523407

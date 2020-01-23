@@ -1,0 +1,52 @@
+{% set version = "1.4.0" %}
+{% set name = "RegParallel" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: f80f298a415cb84042be27c7d0a8693a
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: RUnit, BiocGenerics, knitr, DESeq2, airway, magrittr, Biobase, GEOquery, biomaRt, survminer
+requirements:
+  host:
+    - r-arm
+    - r-base
+    - r-data.table
+    - r-doparallel
+    - r-foreach
+    - r-iterators
+    - r-mass
+    - r-stringr
+    - r-survival
+  run:
+    - r-arm
+    - r-base
+    - r-data.table
+    - r-doparallel
+    - r-foreach
+    - r-iterators
+    - r-mass
+    - r-stringr
+    - r-survival
+    - curl
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Standard regression functions in R enabled for parallel processing over large data-frames'
+  description: 'In many analyses, a large amount of variables have to be tested independently against the trait/endpoint of interest, and also adjusted for covariates and confounding factors at the same time. The major bottleneck in these is the amount of time that it takes to complete these analyses. With RegParallel, a large number of tests can be performed simultaneously. On a 12-core system, 144 variables can be tested simultaneously, with 1000s of variables processed in a matter of seconds via ''nested'' parallel processing. Works for logistic regression, linear regression, conditional logistic regression, Cox proportional hazards and survival models, Bayesian logistic regression, and negative binomial regression.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

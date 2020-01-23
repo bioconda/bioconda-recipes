@@ -3,8 +3,8 @@
 sed -i.bak "s@\$(BAMTOOLS_PATH)lib@$PREFIX/lib@" bamdump_src/Makefile
 sed -i.bak "s@\$(BAMTOOLS_PATH)include@$PREFIX/include/bamtools@" bamdump_src/Makefile
 sed -i.bak "s@INCLUDES = @INCLUDES = -I$PREFIX/include @" cage_src/Makefile
-sed -i.bak "s@LFLAGS = @LFLAGS = -L$PREFIX/lib @" cage_src/Makefile
-make
+sed -i.bak "s@LFLAGS = @LFLAGS = -L$PREFIX/lib -lpthread @" cage_src/Makefile
+make CC=${CXX}
 
 mkdir -p $PREFIX/bin
 cp bin/cage $PREFIX/bin

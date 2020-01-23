@@ -1,28 +1,32 @@
-{% set version = "2.18.0" %}
+{% set version = "2.21.1" %}
 {% set name = "Rchemcpp" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: f47733f4a375f15e60dfbd1f6bd04a835c66a80d6308a5dbcde7a4266e018139
+  md5: 7baa3710ac856f7b70b580e127f0aa0e
+  patches:
+    - patch
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: apcluster, kernlab
+# SystemRequirements: GNU make
 requirements:
   host:
-    - 'bioconductor-chemminer >=3.32.1,<3.34.0'
+    - 'bioconductor-chemminer >=3.36.0,<3.37.0'
     - r-base
     - 'r-rcpp >=0.11.1'
   run:
-    - 'bioconductor-chemminer >=3.32.1,<3.34.0'
+    - 'bioconductor-chemminer >=3.36.0,<3.37.0'
     - r-base
     - 'r-rcpp >=0.11.1'
   build:
@@ -33,9 +37,14 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2.1)'
   summary: 'The Rchemcpp package implements the marginalized graph kernel and extensions, Tanimoto kernels, graph kernels, pharmacophore and 3D kernels suggested for measuring the similarity of molecules.'
 extra:
   identifiers:
     - biotools:rchemcpp
+  parent_recipe:
+    name: bioconductor-rchemcpp
+    path: recipes/bioconductor-rchemcpp
+    version: 2.18.0
+

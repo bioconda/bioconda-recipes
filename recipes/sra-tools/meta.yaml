@@ -1,6 +1,6 @@
-{% set version = "2.9.1-1" %}
-{% set bioconda_version = "2.9.1_1" %}
-{% set ngs_version = "2.9.1" %}
+{% set version = "2.10.1" %}
+{% set bioconda_version = "2.10.1" %}
+{% set ngs_version = "2.10.1" %}
 
 package:
   name: sra-tools
@@ -8,13 +8,13 @@ package:
 
 source:
   - url: https://github.com/ncbi/sra-tools/archive/{{version}}.tar.gz
-    sha256: 561dea9bb00f76a6f9a65cb20d6794379353d02a9e33b0db4f10eb38a42465db
+    sha256: 6c522f1014831c0ff1429f56fe50408c917f193f83469831d227bb084299f9e3
     folder: sra-tools
   - url: https://github.com/ncbi/ncbi-vdb/archive/{{version}}.tar.gz
-    sha256: c1ee7443599d2cedab13eb44af0a2d29a4c3e8bf0130c2a6b34a9aa7016287e4
+    sha256: b55e28a264602613fe36fa82f4e38fc36631b361fd08d4b442afdba258fb1f6c
     folder: ncbi-vdb
   - url: https://github.com/ncbi/ngs/archive/{{ngs_version}}.tar.gz
-    sha256: c24c93bd70ed198a44c6b9dba0d6704edc90f228f832f2fef21fa5342303fc50
+    sha256: c1fde07b7b7fb9f0ab63adc3791146c36821a533def054df214c28b676e70309
     folder: ngs
 
 build:
@@ -22,14 +22,26 @@ build:
 
 requirements:
   build:
-    - '{{ compiler("c") }}'
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
     - ncbi-ngs-sdk
+    - libxml2
+    - hdf5
     - perl
+  run:
+    - perl
+    - ncbi-ngs-sdk
+    - libxml2
+    - hdf5
+    - perl-xml-libxml
+    - perl-uri
 
 test:
   commands:
     # "Frequently Used Tools"
+    - sratools help
+    # Ensure the old executable names still work
     - fastq-dump --help > /dev/null
     - prefetch --help > /dev/null
     - sam-dump --help > /dev/null
@@ -42,7 +54,9 @@ test:
 about:
   home: https://github.com/ncbi/sra-tools
   license: Public Domain
-  summary: The SRA Toolkit and SDK from NCBI is a collection of tools and libraries
+  summary: SRA Toolkit and SDK from NCBI
+  description:  |
+    The SRA Toolkit and SDK from NCBI is a collection of tools and libraries
     for using data in the INSDC Sequence Read Archives.
 
 extra:

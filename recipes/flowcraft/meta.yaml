@@ -1,8 +1,8 @@
 {% set name = "flowcraft" %}
-{% set version = "1.3.1" %}
+{% set version = "1.4.1" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "b0dd1e65600e807abb1c0219fdad13ae47cf35ee6dfc3eb4d22cffa2aff936b6" %}
+{% set hash_value = "72613803632a73c60beb6b399c9aa9eb40cfa201df59879a3e50a2bddc65b04e" %}
 
 package:
   name: '{{ name|lower }}'
@@ -13,35 +13,30 @@ source:
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-  number: 1
-  skip: True # [py27]
+  number: 2
+  noarch: python
   entry_points:
     - flowcraft = flowcraft.flowcraft:main
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - pympler
-    - python-dateutil
-    - argparse
-    - jinja2
-    - requests
+  host:
+    - python >=3
+    - pip
   run:
-    - python
+    - python >=3
     - pympler
     - python-dateutil
-    - argparse
     - jinja2
     - requests
-    - nextflow >=0.27
+    - nextflow >=0.28
 
 test:
   imports:
     - flowcraft
     - flowcraft.generator
     - flowcraft.generator.components
+    - flowcraft.generator.recipes
     - flowcraft.templates
     - flowcraft.templates.flowcraft_utils
   commands:
@@ -58,4 +53,5 @@ about:
 
 extra:
   recipe-maintainers:
-      - odiogosilva
+    - odiogosilva
+    - cimendes

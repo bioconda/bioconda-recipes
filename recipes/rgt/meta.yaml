@@ -1,0 +1,86 @@
+{% set name = "RGT" %}
+{% set version = "0.12.3" %}
+{% set sha256 = "a0b7e526b6902f98c50e0f2a025c34ceb7429d5314804df487535f7be7f6f07a" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/CostaLab/reg-gen/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - data.patch
+
+build:
+  number: 0
+  skip: True  # [py3k]
+  entry_points:
+    - rgt-motifanalysis = rgt.motifanalysis.Main:main
+    - rgt-hint = rgt.HINT.Main:main
+    - rgt-THOR = rgt.THOR.THOR:main
+    - rgt-filterVCF = rgt.filterVCF.filterVCF:main
+    - rgt-viz = rgt.viz.Main:main
+    - rgt-TDF = rgt.tdf.Main:main
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - cython
+    - pip
+    - python
+    - zlib
+  run:
+    - configparser  # [py2k]
+    - biopython >=1.64
+    - scipy >=1.0.0
+    - numpy
+    - fisher >=0.1.5
+    - hmmlearn >=0.2
+    - htseq
+    - matplotlib >=1.1.0
+    - matplotlib-venn
+    - mpmath
+    - natsort
+    - pybigwig
+    - ucsc-wigtobigwig
+    - ucsc-bigwigmerge
+    - ucsc-bedtobigbed
+    - ucsc-bigbedtobed
+    - ucsc-bedgraphtobigwig
+    - pysam >=0.12.0
+    - python
+    - pyvcf
+    - pandas
+    - pyx
+    - scikit-learn >=0.19.0,<0.20.0
+    - moods
+    - zlib
+    - logomaker
+
+test:
+  imports:
+    - rgt
+    - rgt.HINT
+    - rgt.THOR
+    - rgt.filterVCF
+    - rgt.motifanalysis
+    - rgt.tdf
+    - rgt.viz
+  commands:
+    - rgt-motifanalysis --help 2>&1 > /dev/null
+    - rgt-hint --help 2>&1 > /dev/null
+    - rgt-THOR --help 2>&1 > /dev/null
+    - rgt-filterVCF --help 2>&1 > /dev/null
+    - rgt-viz --help 2>&1 > /dev/null
+    - rgt-TDF | grep "rgt-TDF" > /dev/null
+
+about:
+  home: http://www.regulatory-genomics.org
+  license: GPL
+  license_family: GPL
+  license_file: LICENSE
+  summary: Toolkit to perform regulatory genomics data analysis
+  doc_url: http://www.regulatory-genomics.org/rgt/tutorial/
+  dev_url: https://github.com/CostaLab/reg-gen

@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="BSgenome.Hsapiens.UCSC.hg38_1.4.1.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.7/data/annotation/src/contrib/BSgenome.Hsapiens.UCSC.hg38_1.4.1.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/BSgenome.Hsapiens.UCSC.hg38_1.4.1.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Hsapiens.UCSC.hg38_1.4.1.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.hsapiens.ucsc.hg38/bioconductor-bsgenome.hsapiens.ucsc.hg38_1.4.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.hsapiens.ucsc.hg38/bioconductor-bsgenome.hsapiens.ucsc.hg38_1.4.1_src_all.tar.gz"
@@ -17,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

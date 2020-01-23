@@ -1,0 +1,49 @@
+{% set variant = "openblas" %}
+
+package:
+  name: finestructure
+  version: '2.1.3'
+
+source:
+  url: https://people.maths.bris.ac.uk/~madjl/finestructure/fs-2.1.3.tar.gz
+  sha256: f771ee6795b2ce6a5032412b3f856598c3c37308f722ddfcb62174baaf7779f2
+  patches:
+    - noSwitch.patch
+
+build:
+  number: 0
+  skip: true # [win]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - patch
+  host:
+    - gsl
+    - zlib
+    - perl
+    # Force openblas here to ensure that we use GSL from conda-forge
+    # Following the conventions from the scipy feedstock. See below in 'run' also.
+    - blas 1.1 {{ variant }}  # [unix]
+    - openblas  # [unix]
+  run:
+    - gsl
+    - zlib
+    - perl
+    - blas 1.1 {{ variant }}  # [unix]
+    - openblas  # [unix]
+
+about:
+  home: https://people.maths.bris.ac.uk/~madjl/finestructure/finestructure.html
+  license: OTHER
+  license_file: LICENSE-FS
+  summary: 'fineSTRUCTURE is a fast and powerful algorithm for identifying population structure using dense sequencing data.'
+
+test:
+  commands:
+    - fs --help >> /dev/null
+
+extra:
+  identifiers:
+    - biotools:fineSTRUCTURE
+    - doi:10.1371/journal.pgen.1002453
