@@ -35,6 +35,13 @@ ls -lah
 npm install --unsafe-perm
 popd
 
+PATHWATCHER_NODE_PATH=$(find $METEOR_PATH -name node | grep patchwatcher)
+
+mv $PATHWATCHER_NODE_PATH $PATHWATCHER_NODE_PATH.bak
+ln -s $NODE_PATH $PATHWATCHER_NODE_PATH
+
+#/root/.meteor/packages/meteor-tool/.1.9.0.1mtsmz6.qnno++os.linux.x86_64+web.browser+web.browser.legacy+web.cordova/mt-os.linux.x86_64/dev_bundle/lib/node_modules/pathwatcher/build/Release/pathwatcher.node
+
 # yum install gcc-c++
 # yum groupinstall 'Development Tools'
 
