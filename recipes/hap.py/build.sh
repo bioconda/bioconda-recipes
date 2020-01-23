@@ -11,6 +11,7 @@ sed -i.bak "26,33d" CMakeLists.txt
 mkdir -p build
 cd build
 export BOOST_ROOT=$PREFIX
+export HTSLIB_ROOT=$PREFIX
 cmake ../ -DCMAKE_C_COMPILER=$CC \
           -DCMAKE_CXX_COMPILER=$CXX \
           -DCMAKE_INSTALL_PREFIX=$PREFIX \
