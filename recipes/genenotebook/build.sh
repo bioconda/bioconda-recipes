@@ -2,6 +2,8 @@
 
 set -exo pipefail
 
+sudo apt-get install libstdc++6 || sudo yum install libstdc++6
+
 outdir=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 mkdir -p $outdir $PREFIX/bin
 pwd
