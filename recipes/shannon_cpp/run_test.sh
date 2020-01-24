@@ -31,16 +31,23 @@ min_output_fasta_len=80
 
 mkdir -p "./sample_output/single_output"
 mkdir -p "./sample_output/paired_output"
+mkdir -p "./sample_output/mixed_output"
 single_output_dir='./sample_output/single_output'
 paired_output_dir='./sample_output/paired_output'
+mixed_output_dir='./sample_output/mixed_output'
 single_reconstruct_fasta_path="${single_output_dir}/reconstructed_seq.fasta"
-paired_reconstruct_fasta_path="${single_output_dir}/reconstructed_seq.fasta"
+paired_reconstruct_fasta_path="${paired_output_dir}/reconstructed_seq.fasta"
+mixed_reconstruct_fasta_path="${mixed_output_dir}/reconstructed_seq.fasta"
 
 shannon_cpp shannon -l $single_length -s $single_read_path -o $single_output_dir -t $num_threads -g $sampling -m $max_memory -u $sort_threads -e $min_output_fasta_len --random_seed $random_seed >/dev/null
 
 is_file_emtpy $single_reconstruct_fasta_path
 
 shannon_cpp shannon -i $paired_1_length $paired_2_length -p $paired_read_1_path $paired_read_2_path -o $paired_output_dir -t $num_threads -g $sampling -m $max_memory -u $sort_threads -e $min_output_fasta_len --random_seed $random_seed >/dev/null
+
+is_file_emtpy $paired_reconstruct_fasta_path
+
+shannon_cpp shannon -l $single_length -s $single_read_path -i $paired_1_length $paired_2_length -p $paired_read_1_path $paired_read_2_path -o $mixed_output_dir -t $num_threads -g $sampling -m $max_memory -u $sort_threads -e $min_output_fasta_len --random_seed $random_seed >/dev/null
 
 is_file_emtpy $paired_reconstruct_fasta_path
 
