@@ -2,6 +2,7 @@
 
 mkdir -p  "$PREFIX/bin"
 
+ls -l
 cmake .
 make
 
