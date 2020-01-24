@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="FlowSorted.CordBlood.450k_1.12.0.tar.gz"
+FN="FlowSorted.CordBlood.450k_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/FlowSorted.CordBlood.450k_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/FlowSorted.CordBlood.450k_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-flowsorted.cordblood.450k/bioconductor-flowsorted.cordblood.450k_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/FlowSorted.CordBlood.450k_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/FlowSorted.CordBlood.450k_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-flowsorted.cordblood.450k/bioconductor-flowsorted.cordblood.450k_1.14.0_src_all.tar.gz"
 )
-MD5="35c1420b23f1016c0953af3f67a48e07"
+MD5="a8f157b729590c74fada9b1b99262823"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
