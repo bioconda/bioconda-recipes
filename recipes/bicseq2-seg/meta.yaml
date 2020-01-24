@@ -1,0 +1,47 @@
+{% set name = "BICseq2-seg" %}
+{% set version = "0.7.2" %}
+{% set sha256 = "88dafe9c2b3d224eaadf661f6dc602bf211486b7cab4baa1f3d10b9a332cc71f" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: http://compbio.med.harvard.edu/BIC-seq/NBICseq-seg_v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - makefile.patch
+    - paths.patch
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  run:
+    - r-base
+    - perl
+
+test:
+  commands:
+    - bootstrap 2>&1 | grep "bootstrap" > /dev/null
+    - combineFile 2>&1 | grep "combineFile" > /dev/null
+    - countRead -h
+    - EstLambdaFct 2>&1 | grep "EstLambdaFct" > /dev/null
+    - genotype 2>&1 | grep "genotype" > /dev/null
+    - MBICseq -h
+    - BICseqMulSample.pl 2>&1 | grep "BICseqMulSample.pl" > /dev/null
+    - BICseqOneSample.pl 2>&1 | grep "BICseqOneSample.pl" > /dev/null
+    - BICseqTwoSample.pl 2>&1 | grep "BICseqTwoSample.pl" > /dev/null
+    - genotype.pl 2>&1 | grep "genotype.pl" > /dev/null
+    - NBICseq-seg.pl 2>&1 | grep "NBICseq-seg.pl" > /dev/null
+
+about:
+  home: http://compbio.med.harvard.edu/BIC-seq/
+  license: Custom
+  summary: "BICseq2-seg is for detecting CNVs based on the normalized data given by BICseq2-norm."
+
+extra:
+  identifiers:
+    - doi:10.1093/nar/gkw491

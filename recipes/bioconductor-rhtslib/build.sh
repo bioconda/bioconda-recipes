@@ -8,5 +8,4 @@ CXX=$CXX
 CXX98=$CXX
 CXX11=$CXX
 CXX14=$CXX" > ~/.R/Makevars
-export C_INCLUDE_PATH="${PREFIX}/include"
 $R CMD INSTALL --build .

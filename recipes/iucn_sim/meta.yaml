@@ -1,0 +1,44 @@
+{% set name = "iucn_sim" %}
+{% set version = "1.6" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/tobiashofmann88/iucn_extinction_simulator/archive/{{ version }}.tar.gz
+  sha256: 113a00c1eaa0434ef4ad21004623bc4727fe3f2f34899637d65de661a122bef0
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  entry_points:
+    - iucn_sim = iucn_sim.__main__:main
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+    - r-base
+  run:
+    - python >=3.6
+    - pandas
+    - numpy
+    - scipy
+    - matplotlib
+    - r-base
+    - r-rredlist
+
+test:
+  imports:
+    - iucn_sim
+  commands:
+    - iucn_sim --version
+
+about:
+  home: https://github.com/tobiashofmann88/iucn_extinction_simulator
+  license: MIT
+  license_file: LICENSE
+  summary: 'Estimate extinction probabilities and dates for a given set of species, based on IUCN threat assessments'
+  

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="rheumaticConditionWOLLBOLD_1.20.0.tar.gz"
+FN="rheumaticConditionWOLLBOLD_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/rheumaticConditionWOLLBOLD_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/rheumaticConditionWOLLBOLD_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rheumaticconditionwollbold/bioconductor-rheumaticconditionwollbold_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/rheumaticConditionWOLLBOLD_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/rheumaticConditionWOLLBOLD_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rheumaticconditionwollbold/bioconductor-rheumaticconditionwollbold_1.24.0_src_all.tar.gz"
 )
-MD5="8e65dd2904480c3e37fa19cec75c15c9"
+MD5="51bd701242cb39c56ed2505f14f716e9"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

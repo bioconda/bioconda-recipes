@@ -1,13 +1,14 @@
-{% set version = "0.5.3" %}
+{% set version = "0.5.6" %}
 
 package:
   name: cgat-apps
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/d7/05/6518cd6bf64bc0d15f474ea707979b8a47d502b2ee7c043d3a5e33f602c9/cgat-0.5.3.tar.gz
-  sha256: 2ea78bcee73c0aa2427466efe4dab3d6b035089bb42cc735480dafe5ceb2f191
+  url: https://pypi.io/packages/source/c/cgat/cgat-{{ version }}.tar.gz
+  sha256: e728f51696f9d23bea1553b3f11474b024e13902bf6ecd13a14481966b166ae1
 
+  
 build:
   skip: True # [not py3k]
   number: 0
@@ -21,9 +22,9 @@ requirements:
 
   host:
     - python
-    - cython 0.27.*
+    - cython
     - numpy
-    - pysam
+    - pysam<=0.15.2
     - setuptools
     - coreutils
     - libpng
@@ -32,31 +33,29 @@ requirements:
   run:
     - python
     - cgatcore
-    - alignlib-lite 
-    - biopython 
-    - cython 
-    - future 
-    - matplotlib 
-    - numpy 
-    - pandas 
-    - pybedtools 
-    - pybigwig 
-    - pysam 
-    - python-lzo 
-    - pyyaml 
+    - alignlib-lite
+    - biopython
+    - future
+    - matplotlib
+    - {{ pin_compatible('numpy') }}
+    - pandas
+    - pybedtools
+    - pybigwig
+    - pysam<=0.15.2
+    - python-lzo
+    - pyyaml
+    - quicksect
     - scipy
-    - setuptools
     - six 
+    - sortedcontainers
     # Misc dependencies
     - bedtools
     - ucsc-bedgraphtobigwig
     - ucsc-bedtobigbed
     - ucsc-wigtobigwig
-    - coreutils 
-    - grep 
-    - libpng 
-    - zlib
-    - quicksect
+    - coreutils
+    - grep
+    - libpng
 
 test:
 
@@ -67,6 +66,8 @@ test:
     - cgat --help
     - cgat --help Conversion
     - cgat gtf2table -h
+    - find ${PREFIX} -iname "*bamtools.cpython-*-x86_64-linux-gnu.so*" -exec ldd {} \;
+    - cgat bam2bed -h
 
 about:
   home: https://www.cgat.org/downloads/public/cgat/documentation

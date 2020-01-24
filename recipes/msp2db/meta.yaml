@@ -1,0 +1,45 @@
+{% set name = "msp2db" %}
+{% set version = "0.0.9" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 43ede3ff591cd7a16d98d0bf76cec9d064ec7ea5cd98208bbe45ca99142c1a26
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - msp2db = msp2db.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - python
+    - pubchempy
+    - six
+
+test:
+  imports:
+    - msp2db
+    - tests
+  commands:
+    - msp2db --help
+
+about:
+  home: https://github.com/computational-metabolomics/msp2db
+  license: GNU General Public v3 (GPLv3)
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Python package to create an SQLite database from a collection of MSP mass spectromertry spectra files. Currently works with MSP files formated as MassBank records or as MoNA records. The resulting SQLite database can be used for spectral matching with msPurity Bioconductor R package, 
+
+extra:
+  recipe-maintainers:
+    - RJMW
+    - tomnl

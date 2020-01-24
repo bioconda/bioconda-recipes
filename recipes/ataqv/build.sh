@@ -15,3 +15,7 @@ mkdir -p $PREFIX/bin
 cp ./build/ataqv $PREFIX/bin/
 cp ./src/scripts/mkarv $PREFIX/bin/
 cp ./src/scripts/srvarv $PREFIX/bin/
+
+## COPY WEB DIRECTORY REQUIRED BY MKARV
+mkdir -p $PREFIX/web
+cp -r ./src/web/* $PREFIX/web/
