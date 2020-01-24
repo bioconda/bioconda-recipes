@@ -25,11 +25,6 @@ done
 
 make MAXK=31
 
-mkdir -p $PREFIX/bin
-install -p bin/mccortex31 $PREFIX/bin/
-
 cd ../
 
 "$PYTHON" -m pip install . --no-deps -vv
-
-rm -rf "$MCCORTEX_DIR"
