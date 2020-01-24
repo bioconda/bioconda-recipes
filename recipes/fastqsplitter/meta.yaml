@@ -1,0 +1,48 @@
+{% set name = "fastqsplitter" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 14cfb45eabe00de29886dbf2ad8dedd1b9990cb82ee194b5c41291533f3b879d
+
+build:
+  skip: True  # [py27]
+  number: 0
+  entry_points:
+    - fastqsplitter=fastqsplitter:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  build:
+    - "{{ compiler('c') }}"
+  host:
+    - pip
+    - setuptools
+    - cython
+    - python
+    - xopen >=0.8.1
+  run:
+    - pigz  # Pigz is required for optimal speed. 
+    - python
+    - xopen >=0.8.1  # Version 0.8.1 includes important optimizations for reading gzipped files.
+
+test:
+  imports:
+    - fastqsplitter
+  commands:
+    - fastqsplitter --help
+
+about:
+  home: https://github.com/LUMC/fastqsplitter
+  license: MIT
+  license_family: MIT
+  summary: Splits FASTQ files evenly.
+  doc_url: https://fastqsplitter.readthedocs.io
+
+extra:
+  recipe-maintainers:
+    - rhpvorderman

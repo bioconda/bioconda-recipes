@@ -1,0 +1,51 @@
+{% set package = "ucsc-twobittofa" %}
+{% set program = "twoBitToFa" %}
+{% set version = "357" %}
+{% set sha256 = "0cec445f47c319e407d2cf866fb2f6ec0c9b72a2b10a0f75142ebc01ca4aca87" %}
+
+package:
+  name: "{{ package }}"
+  version: "{{ version }}"
+
+source:
+  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{{ version }}.src.tgz"                      # [linux]
+  sha256: "{{ sha256 }}"                                                    # [linux]
+  patches:                                                                                   # [linux]
+    - "include.patch"                                                                        # [linux]
+  url: "http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/{{ program }}"                    # [osx]
+
+build:
+  number: 3
+  # the latest rebuild was fixing a openssl issue, which is just needed for linux
+  skip: true  # [osx]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - libpng            # [linux]
+    - libuuid           # [linux]
+    - mysql-connector-c # [linux]
+    - openssl           # [linux]
+    - zlib              # [linux]
+  run:
+    - libpng            # [linux]
+    - libuuid           # [linux]
+    - mysql-connector-c # [linux]
+    - openssl           # [linux]
+    - zlib              # [linux]
+
+test:
+  commands:
+    # just check for existence, because the individual packages have no unified behavior
+    - which {{ program }}
+
+about:
+  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
+  license: "varies; see http://genome.ucsc.edu/license"
+  summary: "Convert all or part of .2bit file to fasta"
+
+extra:
+  skip-lints:
+    - missing_hash
+    - should_not_be_noarch_source

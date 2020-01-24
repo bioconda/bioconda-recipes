@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="serumStimulation_1.18.0.tar.gz"
+FN="serumStimulation_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/serumStimulation_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/serumStimulation_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-serumstimulation/bioconductor-serumstimulation_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/serumStimulation_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/serumStimulation_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-serumstimulation/bioconductor-serumstimulation_1.22.0_src_all.tar.gz"
 )
-MD5="702b8e053465a52491f19961654f3dc0"
+MD5="ed3a1013bd1e4b7cde641bc62ed9c508"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

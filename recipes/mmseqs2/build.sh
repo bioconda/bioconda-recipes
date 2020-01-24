@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export CC=gcc
-export CXX=g++
 
 mkdir build
 cd build

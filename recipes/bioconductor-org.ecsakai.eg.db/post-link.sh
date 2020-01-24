@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="org.EcSakai.eg.db_3.7.0.tar.gz"
+FN="org.EcSakai.eg.db_3.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/org.EcSakai.eg.db_3.7.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/org.EcSakai.eg.db_3.7.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-org.ecsakai.eg.db/bioconductor-org.ecsakai.eg.db_3.7.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/org.EcSakai.eg.db_3.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/org.EcSakai.eg.db_3.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-org.ecsakai.eg.db/bioconductor-org.ecsakai.eg.db_3.10.0_src_all.tar.gz"
 )
-MD5="c03bf25879cee8d40a3362d8bb4a7ced"
+MD5="f2e9e151117cd991c5850346bb3bd08d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
