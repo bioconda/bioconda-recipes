@@ -35,7 +35,7 @@ ls -lah
 npm install --unsafe-perm
 popd
 
-PATHWATCHER_NODE_PATH=$(find $METEOR_PATH -name "*node" | grep patchwatcher)
+PATHWATCHER_NODE_PATH=$(find $METEOR_PATH -name "*node" | grep pathwatcher)
 
 mv $PATHWATCHER_NODE_PATH $PATHWATCHER_NODE_PATH.bak
 ln -s $NODE_PATH $PATHWATCHER_NODE_PATH
