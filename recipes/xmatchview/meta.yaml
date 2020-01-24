@@ -1,68 +1,36 @@
 {% set name = "xmatchview" %}
-{% set version = "1.1.1" %}
-{% set sha256hash = "987ee64c9287c89bf4eba1c4f2438bf7a49ae70fab34c0282e724710d56d75cc" %}
+{% set version = "1.2.0" %}
+{% set sha256hash = "17723ba8d6162c2b57f9c63f1f93fcc878963eb00097a12a575c8b3b3c9ef1bf" %}
 
 package:
-    name: xmatchview
-    version: {{ version }}
+  name: xmatchview
+  version: {{ version }}
 
 source:
   url: https://github.com/bcgsc/xmatchview/archive/v{{ version }}.tar.gz
   sha256: {{ sha256hash }}
 
 build:
-    noarch: python
-    number: 0
-    script: python setup.py install --single-version-externally-managed --record=record.txt
+  noarch: generic
+  number: 0
 
 requirements:
-    build:
-        - python 2.7
-        - PIL
-
-    run:
-        - python 2.7
-        - PIL
+  run:
+    - python <3
+    - pip
+    - pillow
+    - minimap2
 
 test:
-    imports:
-       - PIL
-
-    commands:
-      - >
-        xmatchview.py
-        -x ${PREFIX}/lib/python2.7/site-packages/xmatchview/test/FTL1_ss.fa_vs_FTL1_pa.fa.rep
-        -s ${PREFIX}/lib/python2.7/site-packages/xmatchview/test/FTL1_pa.fa
-        -q ${PREFIX}/lib/python2.7/site-packages/xmatchview/test/FTL1_ss.fa
-        -a 200
-        -m 10
-        -b 10
-        -r 1
-        -c 1
-        -f png
-        -y ${PREFIX}/lib/python2.7/site-packages/xmatchview/test/FTL1_ss.txt
-        -e ${PREFIX}/lib/python2.7/site-packages/xmatchview/test/FTL1_pa.txt
-        # &&
-        # xmatchview-conifer.py
-        # -x ${PREFIX}/lib/python2.7/site-packages/xmatchview/test/FTL1_ss.fa_vs_FTL1_pa.fa.rep
-        # -s ${PREFIX}/lib/python2.7/site-packages/xmatchview/test/FTL1_pa.fa -q FTL1_ss.fa
-        # -q ${PREFIX}/lib/python2.7/site-packages/xmatchview/test/FTL1_ss.fa
-        # -a 200
-        # -m 10
-        # -b 10
-        # -r 2
-        # -l FTL1
-        # -c 1
-        # -f png
-        # -y ${PREFIX}/lib/python2.7/site-packages/xmatchview/test/FTL1_ss.txt
-        # -e ${PREFIX}/lib/python2.7/site-packages/xmatchview/test/FTL1_pa.txt
+  commands:
+    - xmatchview.py 2>&1 | grep {{ version }}
 
 about:
-    summary: Genome sequence alignment visualization
-    home: http://www.bcgsc.ca/platform/bioinfo/software/xmatchview
-    license: GNU General Public License v3.0
-    license_file: LICENSE
-    doc_url: https://github.com/bcgsc/xmatchview
+  summary: Genome sequence alignment visualization
+  home: http://www.bcgsc.ca/platform/bioinfo/software/xmatchview
+  license: GNU General Public License v3.0
+  license_file: LICENSE
+  doc_url: https://github.com/bcgsc/xmatchview
 
 extra:
   recipe-maintainers:

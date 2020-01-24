@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="mAPKLData_1.14.0.tar.gz"
+FN="mAPKLData_1.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/mAPKLData_1.14.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/mAPKLData_1.14.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mapkldata/bioconductor-mapkldata_1.14.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/mAPKLData_1.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/mAPKLData_1.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mapkldata/bioconductor-mapkldata_1.18.0_src_all.tar.gz"
 )
-MD5="6d044355ab9473e4e724918a054df95c"
+MD5="6243052f66e7b288f9fee04ecd54eca8"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

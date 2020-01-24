@@ -104,20 +104,41 @@ BEGIN
 ## ============
 ## Tandem Repeat Finder program.
 ##
-  $TRF_PRGM = $ENV{'TRF_DIR'};
-
+  $TRF_DIR = $ENV{'TRF_DIR'};
+  $TRF_PRGM = "$TRF_DIR/trf";
 ##
 ## NSEG Location
 ## =============
 ## Location of the NCBI nseg program
-  $NSEG_PRGM = $ENV{'NSEG_DIR'};
-
+  $NSEG_DIR = $ENV{'NSEG_DIR'};
+  $NSEG_PRGM = "$NSEG_DIR/nseg";
 ##
 ## RepeatScout Location
 ## ====================
 ## Alkes Price RepeatScout DeNovo Repeat Finder
 ##
   $RSCOUT_DIR = $ENV{'RSCOUT_DIR'};
+
+  ##
+  ## Refiner Location
+  ## ====================
+  ##
+  $REFINER_DIR = $ENV{'REFINER_DIR'};
+  $REFINER_PRGM = "$REFINER_DIR/Refiner";
+
+  ##
+  ## Refiner Location
+  ## ====================
+  ##
+  $TRFMASK_DIR = $ENV{'TRFMASK_DIR'};
+  $TRFMASK_PRGM = "$TRFMASK_DIR/TRFMask";
+
+  ##
+  ## Refiner Location
+  ## ====================
+  ##
+  $REPEATCLASSIFIER_DIR =  $ENV{'REPEATCLASSIFIER_DIR'};
+  $REPEATCLASSIFIER_PRGM = "$REPEATCLASSIFIER_DIR/RepeatClassifier";
 
 ##
 ## Turns on debugging in all RepeatModeler modules/scripts

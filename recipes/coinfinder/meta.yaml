@@ -1,0 +1,72 @@
+{% set name = "coinfinder" %}
+{% set version = "1.0.2" %}
+{% set sha256 = "00e4b27591bc3bca0045fa530c0a8d1916527cf0511389c35702cad9a0f05e24" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/fwhelan/{{ name }}/archive/{{ version }}.tar.gz"
+  sha256: "{{ sha256 }}"
+
+build:
+  number: 0
+  rpaths:
+          - lib/R/lib/
+          - lib/
+
+  skip: True  # [py2k or osx]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
+    - boost-cpp
+    - openmp
+    - python
+  run:
+    - openmp
+    - python
+    #Depends
+    - r-base
+    #Imports
+    - r-caper
+    - r-phytools
+    - r-getopt
+    - r-igraph
+    - r-dplyr
+    - r-cowplot
+    - r-data.table
+    - r-ggraph
+    - r-future
+    - r-flock
+    #Bioconductor
+    - r-ape
+    - 'r-ggplot2 >=3.0.0'
+    - r-magrittr
+    - r-purrr
+    - r-rlang
+    - r-rvcheck
+    - r-tidyr
+    - 'r-tidytree >=0.2.6'
+    - bioconductor-ggtree
+
+test:
+  commands:
+    - coinfinder -h 2>&1 | grep Max
+    - Rscript -e "library(ggtree)"
+
+about:
+  home: "https://github.com/fwhelan/{{ name }}"
+  license: "GPLv3"
+  license_family: "GPL"
+  license_file: "license.txt"
+  summary: "A tool for the identification of coincident (associating and dissociating) genes in pangenomes."
+  doc_url: "https://github.com/fwhelan/{{ name }}"
+  dev_url: "https://github.com/fwhelan/{{ name }}"
+
+extra:
+  identifiers:
+    - https://doi.org/10.1101/859371
