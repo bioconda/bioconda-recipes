@@ -12,9 +12,9 @@ for p in $PREFIX/src/*py; do
 	ln -s $p $PREFIX/bin/$NOEXT;
 done
 
-cd phylics/local/src/ginkgo/genomes/scripts && make 2> /dev/null || echo "build 1"
+cd phylics/local/src/ginkgo/genomes/scripts && make 2> /dev/null
 cd $WD
-cd phylics/local/src/ginkgo/scripts && make 2> /dev/null || echo "build 2"
+cd phylics/local/src/ginkgo/ && make 2> /dev/null
 cd $WD
 cp phylics/local/src/ginkgo/cli/ginkgo.sh $PREFIX/bin/
 cp -r phylics/local/src/ginkgo/scripts $PREFIX/
