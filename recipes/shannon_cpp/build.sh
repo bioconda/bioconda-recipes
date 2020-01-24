@@ -2,7 +2,8 @@
 
 mkdir -p  "$PREFIX/bin"
 
-ls -l
+cd shannon-*
+
 cmake .
 make
 
