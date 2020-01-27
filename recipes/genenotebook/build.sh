@@ -15,7 +15,7 @@ cat scripts/generate-dev-bundle.sh | sed 3,4d | sed 3s/.*/set\ \-eox/ | sed 95,1
 #./scripts/build-node-for-dev-bundle.sh
 #./scripts/generate-dev-bundle.sh
 
-sed -i.bak -e 2s/.*/set\ \-eox/ -e 98,111d meteor
+sed -i.bak -e "2s/.*/set\ \-eox/" -e "137s/.*/exec\ node\ \\\/"  -e "98,111d" meteor
 
 #./meteor --get-ready
 ./meteor --version
