@@ -15,7 +15,6 @@ perl ${EDTA_DIR}/\${NAME} \$@
 END
 
 chmod a+x ${PREFIX}/bin/EDTA.pl
-ln -s $PREFIX/share/EDTA/
 for name in ${EDTA_OTHER_PROGRAMS} ; do
   ln -s ${PREFIX}/share/EDTA/$name ${PREFIX}/bin/$name)
 done
