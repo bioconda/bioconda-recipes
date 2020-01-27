@@ -1,5 +1,5 @@
 #!/bin/bash
-
+sed -i '1 i\#!/usr/bin/env python' src/*.py
 cp src/*.py ${PREFIX}/bin/
 
 # Making use of older models possible
