@@ -1,24 +1,22 @@
 {% set name = "OpenMS" %}
-{% set version = "2.5.0" %}
+{% set version = "2.4.0" %}
 package:
   name: {{ name|lower  }}
   version: {{ version  }}
 
 source:
-  url: https://abibuilder.informatik.uni-tuebingen.de/archive/openms/OpenMSInstaller/RC/2.5.0/OpenMS-2.5.0-src-conda_test.tar.gz
-  md5: 9d8d50c0d9d41e993a602607436840ae
+  url: https://github.com/OpenMS/OpenMS/releases/download/Release{{ version }}/OpenMS-{{ version }}-pyopenmsfixes.tar.gz
+  md5: 79445708ac44bdbae5ef95322e4b39b2
   patches:
+    - c17.patch
+    - compilerflags.patch
     - library.patch
     - setup.py.patch
     - apple-fixup-pyoms.patch
 
 build:
-  number: 1
+  number: 3
 
-extra:
-  container:
-    extended-base: True
-    
 requirements:
   build:
     - {{ compiler('cxx') }}
@@ -31,6 +29,7 @@ requirements:
     - zlib
     - libtool
     - xerces-c
+    - gsl
     - boost
     - eigen
     - glpk
@@ -43,7 +42,7 @@ requirements:
     # pyopenms
     - python
     - cython
-    - autowrap
+    - autowrap ==0.18.1
     - numpy
     - pip
     - nose
@@ -65,6 +64,7 @@ outputs:
           - zlib
           - libtool
           - xerces-c
+          - gsl
           - boost
           - eigen
           - glpk
@@ -78,6 +78,7 @@ outputs:
           - zlib
           - libtool
           - xerces-c
+          - gsl
           - boost
           - eigen
           - glpk
@@ -92,6 +93,7 @@ outputs:
           - zlib
           - libtool
           - xerces-c
+          - gsl
           - boost
           - eigen
           - glpk
@@ -126,13 +128,13 @@ outputs:
         - {{ pin_subpackage('libopenms', exact=True) }}
         - python
         - cython
-        - autowrap
+        - autowrap ==0.18.1
         - numpy
         - pip
         - nose
       run:
         - {{ pin_subpackage('libopenms', exact=True) }}
-        - python
+        - python {{ python }}
         - numpy
     test:
       commands:

@@ -17,7 +17,11 @@ cd contrib-build
 cmake -DBUILD_TYPE=WILDMAGIC ../contrib
 cd ..
 
-#sed -i.bak "s/CMAKE_INSTALL_NAME_DIR/FOO/g" CMakeLists.txt
+# Use C++17 rather than C++11 to hopefully better match boost
+sed -i.bak "s/11/17/g" CMakeLists.txt
+sed -i.bak "s/CMAKE_MACOSX_RPATH FALSE/CMAKE_MACOSX_RPATH TRUE/g" CMakeLists.txt
+sed -i.bak "s/CMAKE_INSTALL_NAME_DIR/FOO/g" CMakeLists.txt
+
 
 mkdir build
 cd build
