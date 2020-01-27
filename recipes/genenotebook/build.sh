@@ -10,8 +10,11 @@ ls -lah .
 git clone https://github.com/meteor/meteor
 pushd meteor
 git checkout 39cc07472f8f1dc820b29b8c5a30813051d62700 #V1.9.0 commit
-cat scripts/generate-dev-bundle.sh | sed 3,4d | sed 3s/.*/set\ \-eox/ | sed 95,102d | sed 89d | sed 85d | sed 51,52d | sed 50s/.*/mkdir\ -p\ bin\ lib\\/node_modules/ > scripts/gen_dev_bundle.sh && PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }' sh scripts/gen_dev_bundle.sh
-# ./scripts/generate-dev-bundle.sh
+#cat scripts/generate-dev-bundle.sh | sed 3,4d | sed 3s/.*/set\ \-eox/ | sed 95,102d | sed 89d | sed 85d | sed 51,52d | sed 50s/.*/mkdir\ -p\ bin\ lib\\/node_modules/ > scripts/gen_dev_bundle.sh && PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }' sh scripts/gen_dev_bundle.sh
+
+./scripts/build-node-for-dev-bundle.sh
+./scripts/generate-dev-bundle.sh
+./meteor --get-ready
 ./meteor --version
 export PATH=$(pwd):$PATH
 popd
