@@ -17,11 +17,30 @@ for p in $PREFIX/src/*py; do
 	ln -s $p $PREFIX/bin/$NOEXT;
 done
 
-cd phylics/local/src/ginkgo/genomes/scripts && make CC=$CC 2> /dev/null
-cd $WD
-cd phylics/local/src/ginkgo/ && make CC=$CC 2> /dev/null
-cd $WD
+
 cp phylics/local/src/ginkgo/cli/ginkgo.sh $PREFIX/bin/
+cp phylics/local/src/ginkgo/Makefile $PREFIX/
 cp -r phylics/local/src/ginkgo/scripts $PREFIX/
 cp -r phylics/local/src/ginkgo/cli $PREFIX/
 cp -r phylics/local/src/ginkgo/genomes $PREFIX/
+
+#compile ginkgo
+cd $PREFIX
+make 2> /dev/null
+
+cd $PREFIX/genomes/scripts
+make 2> /dev/null
+
+
+cd phylics/local/src/ginkgo/genomes/scripts && make 2> /dev/null
+cd $WD
+
+cd phylics/local/src/ginkgo/ && make 2> /dev/null
+cd $WD
+
+
+
+#cp phylics/local/src/ginkgo/cli/ginkgo.sh $PREFIX/bin/
+#cp  phylics/local/src/ginkgo/scripts $PREFIX
+#cp -r phylics/local/src/ginkgo/cli $PREFIX
+#cp  phylics/local/src/ginkgo/genomes $PREFIX
