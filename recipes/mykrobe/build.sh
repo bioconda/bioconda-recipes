@@ -27,6 +27,4 @@ make MAXK=31
 
 cd ../ || exit 1
 
-mv "$MCCORTEX_DIR"/bin/mccortex31 src/mykrobe/cortex/
-
-"$PYTHON" -m pip install . --no-deps -vv
+python setup.py install --single-version-externally-managed --record=record.txt
