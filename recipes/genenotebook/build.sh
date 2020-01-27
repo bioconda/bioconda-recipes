@@ -14,6 +14,9 @@ git checkout 39cc07472f8f1dc820b29b8c5a30813051d62700 #V1.9.0 commit
 
 ./scripts/build-node-for-dev-bundle.sh
 ./scripts/generate-dev-bundle.sh
+
+sed -i.bak 2s/.*/set\ \-eox/ meteor
+
 ./meteor --get-ready
 ./meteor --version
 export PATH=$(pwd):$PATH
