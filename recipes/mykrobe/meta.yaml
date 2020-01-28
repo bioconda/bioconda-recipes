@@ -9,7 +9,7 @@ source:
   sha256: 29370ae5e0fdbbaa10a593df2768a9b0a4886dec9d2b2510e85f57bb38c8cf47
 
 build:
-  number: 0
+  number: 1
   skip: True  # [py2k]
   entry_points:
     - mykrobe = mykrobe.cli:main
@@ -25,7 +25,7 @@ requirements:
     - wget
     - numpy
     - cython
-    - mongoengine
+    - mongoengine >=0.18.0
     - pyvcf
     - biopython
     - requests
@@ -35,8 +35,7 @@ requirements:
     - wget
     - zlib
     - numpy
-    # mongoenine pin can be dropped in newer release of mykrobe
-    - mongoengine <=0.18.0
+    - mongoengine >=0.18.0
     - pyvcf
     - biopython
 
@@ -54,7 +53,10 @@ test:
     - mykrobe predict --help
     - mykrobe variants --help
     - mykrobe genotype --help
-    - 'mccortex31 2>&1 | head -n2 | grep "^usage: "'
+    - test -x $PREFIX/lib/python*/site-packages/mykrobe/cortex/mccortex31
+    - $PREFIX/lib/python*/site-packages/mykrobe/cortex/mccortex31 uniqkmers -k 7 1
+    - find $PREFIX/lib/python*/site-packages/mykrobe/data -print
+    - test -f $PREFIX/lib/python*/site-packages/mykrobe/data/panels/tb-species-170421.fasta.gz
 
 about:
   home: https://github.com/Mykrobe-tools/mykrobe
