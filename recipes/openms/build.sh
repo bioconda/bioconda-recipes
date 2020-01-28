@@ -41,17 +41,16 @@ cmake .. \
   -DCMAKE_INSTALL_RPATH=${RPATH} \
   -DCMAKE_INSTALL_NAME_DIR="@rpath" \
   -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
-  -DCMAKE_BUILD_WITH_INSTALL_NAME=ON \
+  -DCMAKE_BUILD_WITH_INSTALL_NAME_DIR=ON \
   -DHAS_XSERVER=OFF \
   -DENABLE_TUTORIALS=OFF \
   -DWITH_GUI=OFF \
   -DBOOST_USE_STATIC=OFF \
   -DBoost_NO_BOOST_CMAKE=ON \
   -DBoost_ARCHITECTURE="-x64" \
-  -DBUILD_EXAMPLES=OFF \
-  -DPYOPENMS=ON
+  -DBUILD_EXAMPLES=OFF
 
-make -j${CPU_COUNT} OpenMS TOPP UTILS pyopenms
+make -j${CPU_COUNT} OpenMS TOPP UTILS
 # The subpackages will do that (unfortunately "make install" installs everything right away)
 # Another option would be to install somewhere into the build dir (to use the existent install commands)
 # and then copy the relevant parts to the prefix. See CMAKE_INSTALL_PREFIX.
