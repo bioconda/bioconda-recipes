@@ -14,7 +14,7 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 # General info
 LTR_FINDER_DIR=${PREFIX}/share/LTR_Finder
 PERL_PRG="genome_plot.pl"
-PERL_OTHER_PRG="check_result.pl down_tRNA.pl filter_rt.pl genome_plot.pl genome_plot2.pl genome_plot_svg.pl"
+PERL_OTHER_PRG="check_result.pl down_tRNA.pl filter_rt.pl genome_plot2.pl genome_plot_svg.pl"
 C_PRG="ltr_finder"
 C_OTHER_PRG="psearch"
 
@@ -24,7 +24,7 @@ mkdir -p ${LTR_FINDER_DIR}
 cp -r * ${LTR_FINDER_DIR}
 
 cd source
-make CC=$CXX
+make CC=$CC CXX=$CXX
 
 #set C scripts
 cat <<END >>${PREFIX}/bin/${C_PRG}
