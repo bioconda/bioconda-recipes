@@ -1,4 +1,6 @@
 #!/bin/bash
+mkdir -p ${PREFIX}/bin
+
 sed -i '1 i\#!/usr/bin/env python' src/*.py
 cp src/*.py ${PREFIX}/bin/
 
