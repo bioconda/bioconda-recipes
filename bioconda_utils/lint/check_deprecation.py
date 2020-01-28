@@ -56,3 +56,22 @@ class deprecated_numpy_spec(LintCheck):
         self.recipe.replace('numpy x.x', 'numpy',
                             within=('requirements', 'outputs'))
         return True
+
+
+class uses_matplotlib(LintCheck):
+    """The recipe uses ``matplotlib``, but ``matplotlib-base`` is recommended
+
+    The ``matplotlib`` dependency should be replaced with ``matplotlib-base``
+    unless the package explicitly needs the PyQt interactive plotting backend.
+
+    """
+    severity = WARNING
+
+    def check_deps(self, deps):
+        if 'matplotlib' in deps:
+            self.message(data=True)
+
+    def fix(self, _message, _data):
+        self.recipe.replace('matplotlib', 'matplotlib-base',
+                            within=('requirements', 'outputs'))
+        return True

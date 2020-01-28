@@ -437,6 +437,13 @@ no longer work and need to be changed.
    ``conda_build_config.yaml`` way of automatic pinning. You can
    now just write ``numpy`` (without any special string appended).
 
+.. lint-check:: uses_matplotlib
+
+   The ``matplotlib`` package has been split into ``matplotlib``
+   and ``matplotlib-base``. The only difference is that
+   ``matplotlib`` contains an additional dependency on ``pyqt``,
+   which pulls in many other dependencies. In most cases, using
+   ``matplotlib-base`` is sufficient.
 
 Build helpers
 ~~~~~~~~~~~~~
