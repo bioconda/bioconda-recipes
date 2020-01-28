@@ -34,8 +34,8 @@ ${LTR_FINDER_DIR}/\${NAME} \$@
 END
 
 chmod a+x ${PREFIX}/bin/${C_PRG}
-for name in ${PERL_OTHER_PRG} ; do
-  ln -s ${PREFIX}/bin/${C_OTHER_PRG} ${PREFIX}/bin/$(basename $name)
+for name in ${C_OTHER_PRG} ; do
+  ln -s ${PREFIX}/bin/${C_PRG} ${PREFIX}/bin/$(basename $name)
 done
 
 # set perl scripts
