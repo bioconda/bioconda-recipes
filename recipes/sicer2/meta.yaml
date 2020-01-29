@@ -1,37 +1,43 @@
 {% set name = "SICER2" %}
 {% set version = "1.0.1" %}
+{% set pypi_hash = "5d/ea/4da9fde475d3a4b236f0c359f275c369333799d3519de9ce0b0fbaf5714c" %}
 {% set github = "https://github.com/zanglab/SICER2" %}
-
-# Recommended: pip install SICER2
-# SICER2 currently has no command to return version (e.g. '--version')?
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "{{ github }}/archive/v{{ version }}.tar.gz"
-  sha256: 6167d59bcbfdc793902a5f1e25acc0095f7c2e9f9d58d3cb42b6c800efe4269c
+  url: "https://files.pythonhosted.org/packages/{{ pypi_hash }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: b85dcac7c0711a89b699620e424734c58523d0bd42e49f4f5b7aeb822ec4d1dc
 
 build:
-  noarch: generic
   number: 0
+  skip: True  # [py27]
+  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
 
 requirements:
+  host:
+    - numpy
+    - pip
+    - python >=3
+    - scipy
   run:
     - numpy
     - python >=3
     - scipy
 
-# Consider improving this step by running unit tests:
-# https://github.com/zanglab/SICER2/tree/master/test
 test:
-  commands:
-    - sicer --help
+  imports:
+    - SICER2
 
 about:
-  home: "{{ github }}"
+  home: "https://pypi.org/project/SICER2/"
   dev_url: "{{ github }}"
   license: MIT
   license_family: MIT
   summary: "Redesigned and improved ChIP-seq broad peak calling tool SICER."
+
+extra:
+  recipe-maintainers:
+    - mjsteinbaugh
