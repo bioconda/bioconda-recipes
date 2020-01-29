@@ -40,7 +40,3 @@ cd $WD
 
 
 
-#cp phylics/local/src/ginkgo/cli/ginkgo.sh $PREFIX/bin/
-#cp  phylics/local/src/ginkgo/scripts $PREFIX
-#cp -r phylics/local/src/ginkgo/cli $PREFIX
-#cp  phylics/local/src/ginkgo/genomes $PREFIX
