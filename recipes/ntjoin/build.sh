@@ -5,13 +5,13 @@ cd src
 make
 cd ..
 
-mkdir -p ${PREFIX}/bin/ntJoin_exec
-mkdir -p ${PREFIX}/bin/ntJoin_exec/bin
-mkdir -p ${PREFIX}/bin/ntJoin_exec/src
+mkdir -p ${PREFIX}/bin/
+mkdir -p ${PREFIX}/ntJoin_exec/bin
+mkdir -p ${PREFIX}/ntJoin_exec/src
 
-cp ntJoin ${PREFIX}/bin/ntJoin_exec
-cp src/indexlr ${PREFIX}/bin/ntJoin_exec/src/indexlr
-cp bin/*py ${PREFIX}/bin/ntJoin_exec/bin
+cp ntJoin ${PREFIX}/ntJoin_exec
+cp src/indexlr ${PREFIX}/ntJoin_exec/src/indexlr
+cp bin/*py ${PREFIX}/ntJoin_exec/bin
 
 echo "#!/bin/bash" > ${PREFIX}/bin/ntJoin
-echo "${PREFIX}/bin/ntJoin_exec/ntJoin \$@" >> ${PREFIX}/bin/ntJoin
+echo "make -f $(command -v ${PREFIX}/ntJoin_exec/ntJoin) \$@" >> ${PREFIX}/bin/ntJoin
