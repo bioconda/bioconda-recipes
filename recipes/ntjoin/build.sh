@@ -6,12 +6,12 @@ make
 cd ..
 
 mkdir -p ${PREFIX}/bin/
-mkdir -p ${PREFIX}/ntJoin_exec/bin
-mkdir -p ${PREFIX}/ntJoin_exec/src
+mkdir -p ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin
+mkdir -p ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/src
 
-cp ntJoin ${PREFIX}/ntJoin_exec
-cp src/indexlr ${PREFIX}/ntJoin_exec/src/indexlr
-cp bin/*py ${PREFIX}/ntJoin_exec/bin
+cp ntJoin ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+cp src/indexlr ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/src/indexlr
+cp bin/*py ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin
 
 echo "#!/bin/bash" > ${PREFIX}/bin/ntJoin
-echo "make -f $(command -v ${PREFIX}/ntJoin_exec/ntJoin) \$@" >> ${PREFIX}/bin/ntJoin
+echo "make -f $(command -v ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/ntJoin) \$@" >> ${PREFIX}/bin/ntJoin
