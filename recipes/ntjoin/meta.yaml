@@ -5,21 +5,22 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/bcgsc/ntJoin/archive/v{{ version }}.tar.gz
-  sha256: 0f0b3557a6e238bb49cc23815775d73e2c0f3e26609df24d8a8a8028226a9e62
+  url: https://github.com/bcgsc/ntJoin/releases/download/v{{ version }}/ntJoin-{{ version }}.tar.gz 
+  sha256: 6fbb61308e0a2ac8a883ba1023126ff5529d6589f9e4fb79094931196e2c9c73 
 
 build:
   number: 0
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
   skip: True  # [py2k]
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - automake
+    - llvm-openmp # [osx]
   host:
     - python
     - pip
+    - zlib
+    - llvm-openmp # [osx]
   run:
     - python-igraph
     - pybedtools
@@ -27,10 +28,12 @@ requirements:
     - bedtools >=2.21.0
     - samtools
     - python
+    - zlib
+    - llvm-openmp # [osx]
 
 test:
   commands:
-    - ntjoin_assemble.py --help
+    - ntJoin help 
 
 about:
   home: http://www.bcgsc.ca/platform/bioinfo/software/ntjoin
