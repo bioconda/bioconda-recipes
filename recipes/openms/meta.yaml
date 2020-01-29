@@ -55,22 +55,8 @@ outputs:
     version: {{ version }}
     script: package_libopenms.sh
     requirements:
-        build:
-          - {{ compiler('cxx') }}
-        host:
-          - llvm-openmp # [osx]
-          - zlib
-          - libtool
-          - xerces-c
-          - boost
-          - eigen
-          - glpk
-          - hdf5
-          - bzip2
-          - qt >=5.5
-          - libsvm
-          - coinmp
-          - sqlite
+        # build requirements should be loaded from the meta package already.
+        # this subpackage only copies the built libs and share
         run:
           - llvm-openmp # [osx]
           - zlib
@@ -106,6 +92,7 @@ outputs:
     version: {{ version }}
     script: package_openms-tools.sh
     requirements:
+      # TODO not sure if build reqs are needed
       build:
         - {{ compiler('cxx') }}
       host:
@@ -125,6 +112,7 @@ outputs:
         - cmake
       host:
         - {{ pin_subpackage('libopenms', exact=True) }}
+        - seqan-library ==1.4.2  # for successful CMake configuration unfortunately we need seqan again (although it's header only)
         - python {{ python }}
         - cython
         - autowrap
