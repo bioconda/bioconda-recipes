@@ -56,8 +56,15 @@ outputs:
     script: package_libopenms.sh
     requirements:
         # build requirements should be loaded from the meta package already.
-        # this subpackage only copies the built libs and share
-        run:
+        # But since the other packages depend on its run_exports
+        # We want to make sure that the versions of the dependencies used are the same as above
+        build:
+          - {{ compiler('cxx') }}
+          - cmake
+          - autoconf
+          - automake
+        host:
+          # openms-general
           - llvm-openmp # [osx]
           - zlib
           - libtool
@@ -69,6 +76,7 @@ outputs:
           - bzip2
           - qt >=5.5
           - libsvm
+          - seqan-library ==1.4.2
           - coinmp
           - sqlite
     build:
