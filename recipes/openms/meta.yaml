@@ -104,8 +104,22 @@ outputs:
         - {{ compiler('cxx') }}
       host:
         - {{ pin_subpackage('libopenms', exact=True) }}
+      # conda apparently does not pick up the run_exports from the above libopenms build dependency
+      # it complains about missing coinmp. Well.. put everything again.
       run:
         - {{ pin_subpackage('libopenms', exact=True) }}
+        - {{ pin_compatible('llvm-openmp', max_pin='x.x') }} # [osx]
+        - {{ pin_compatible('zlib', max_pin='x.x') }}
+        - {{ pin_compatible('xerces-c', max_pin='x.x') }}
+        - {{ pin_compatible('boost', max_pin='x.x') }}
+        - {{ pin_compatible('eigen', max_pin='x.x') }}
+        - {{ pin_compatible('glpk', max_pin='x.x') }}
+        - {{ pin_compatible('hdf5', max_pin='x.x') }}
+        - {{ pin_compatible('bzip2', max_pin='x.x') }}
+        - {{ pin_compatible('qt', max_pin='x.x') }}
+        - {{ pin_compatible('libsvm', max_pin='x.x') }}
+        - {{ pin_compatible('coinmp', max_pin='x.x') }}
+        - {{ pin_compatible('sqlite', max_pin='x.x') }}
     test:
       commands:
         - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/FileMerger --help  
@@ -114,7 +128,7 @@ outputs:
     version: {{ version }}
     script: install_pyopenms.sh
     # problem with pyopenms is: We could in theory skip CMake configuration
-    # and save a lot of dependencies BUT then env.py
+    # and save a lot of build dependencies BUT then env.py
     # does not contain the right paths anymore, since the build folder is copied for each
     # subpackage.
     requirements:
@@ -145,6 +159,18 @@ outputs:
         - nose
       run:
         - {{ pin_subpackage('libopenms', exact=True) }}
+        - {{ pin_compatible('llvm-openmp', max_pin='x.x') }} # [osx]
+        - {{ pin_compatible('zlib', max_pin='x.x') }}
+        - {{ pin_compatible('xerces-c', max_pin='x.x') }}
+        - {{ pin_compatible('boost', max_pin='x.x') }}
+        - {{ pin_compatible('eigen', max_pin='x.x') }}
+        - {{ pin_compatible('glpk', max_pin='x.x') }}
+        - {{ pin_compatible('hdf5', max_pin='x.x') }}
+        - {{ pin_compatible('bzip2', max_pin='x.x') }}
+        - {{ pin_compatible('qt', max_pin='x.x') }}
+        - {{ pin_compatible('libsvm', max_pin='x.x') }}
+        - {{ pin_compatible('coinmp', max_pin='x.x') }}
+        - {{ pin_compatible('sqlite', max_pin='x.x') }}
         - python {{ python }}
         - numpy
     test:
