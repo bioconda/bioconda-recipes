@@ -113,13 +113,30 @@ outputs:
   - name: pyopenms
     version: {{ version }}
     script: install_pyopenms.sh
+    # problem with pyopenms is: We could in theory skip CMake configuration
+    # and save a lot of dependencies BUT then env.py
+    # does not contain the right paths anymore, since the build folder is copied for each
+    # subpackage.
     requirements:
       build:
         - {{ compiler('cxx') }}
         - cmake
       host:
         - {{ pin_subpackage('libopenms', exact=True) }}
-        - seqan-library ==1.4.2  # for successful CMake configuration unfortunately we need seqan again (although it's header only)
+        - llvm-openmp # [osx]
+        - zlib
+        - libtool
+        - xerces-c
+        - boost
+        - eigen
+        - glpk
+        - hdf5
+        - bzip2
+        - qt >=5.5
+        - libsvm
+        - seqan-library ==1.4.2
+        - coinmp
+        - sqlite
         - python {{ python }}
         - cython
         - autowrap
