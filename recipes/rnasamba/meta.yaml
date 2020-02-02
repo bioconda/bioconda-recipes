@@ -1,5 +1,5 @@
 {% set name = "rnasamba" %}
-{% set version = "0.1.0" %}
+{% set version = "0.2.4" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,43 +7,46 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 94c5d3060f95e95e9ef57f8636f630e97445c12d07e41508effa504857fb8e8b
+  sha256: b8efaa6c44eb4bc8f51b5ce20c6369c7ebec5a32102f7e818aa9af273abd77bf
 
 build:
   number: 0
-  noarch: python
+  skip: True  # [py27]
   entry_points:
-    - rnasamba-classify=rnasamba.cli:classify_cli
-    - rnasamba-train=rnasamba.cli:train_cli
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+    - rnasamba=rnasamba.cli:cli
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
     - biopython
-    - keras >=2.1.0
-#    - numpy (allow tensorflow to pick version, avoid pinning)
+    - keras >=2.1.0,<2.3.0
+    - numpy <1.17
     - pip
-    - python >3
+    - setuptools-rust
+    - python
     - tensorflow >=1.5.0,<2.0
   run:
     - biopython
-    - keras >=2.1.0
-#    - numpy
-    - python >3
+    - keras >=2.1.0,<2.3.0
+    - numpy <1.17
+    - python
     - tensorflow >=1.5.0,<2.0
 
 # Tests fail due to tensorflow needing GLIBC 2.16 missing in container
-#test:
-#  commands:
-#    - rnasamba-classify --help
-#    - rnasamba-train --help
+test:
+  commands:
+    - rnasamba --help
+    - rnasamba classify --help
+    - rnasamba train --help
 
 about:
-  home: https://github.com/apcamargo/RNAsamba
-  license: GNU General Public (GPL)
-  license_family: LGPL
+  home: http://apcamargo.github.io/RNAsamba/
+  license: GPL-3
+  license_family: GPL
+  license_file: LICENSE
   summary: A tool for computing the coding potential of RNA transcript sequences using deep learning.
 
-extra:
-  skip-lints:
-    - missing_tests  # conda-forge::tensorflow needs GLIBC 2.16
+#extra:
+#  skip-lints:
+#    - missing_tests  # conda-forge::tensorflow needs GLIBC 2.16
