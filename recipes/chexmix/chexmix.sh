@@ -50,6 +50,6 @@ if [ "$jvm_mem_opts" == "" ]; then
     jvm_mem_opts="$default_jvm_mem_opts"
 fi
 
-eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/chexmix_v0.4.jar" $pass_args
+eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/chexmix_v0.45.jar" $pass_args
 
 exit

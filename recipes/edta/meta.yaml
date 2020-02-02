@@ -1,0 +1,56 @@
+{% set name = "EDTA" %}
+{% set version = "1.7.8" %}
+{% set sha256 = "5c4ffb0e8a7db79968d786103a170d6ad315430dbec8a568deeafbf1530df2ad" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/oushujun/EDTA/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: generic
+
+requirements:
+  run:
+    - perl
+    - cd-hit
+    - repeatmodeler
+    - muscle
+    - mdust
+    - blast
+    - openjdk
+    - perl-text-soundex
+    - multiprocess
+    - regex
+    - tensorflow >=1.14.0
+    - keras >=2.2.4
+    - scikit-learn >=0.19.0
+    - biopython
+    - pandas
+    - glob2
+    - python >=3.6
+    - tesorter
+    - genericrepeatfinder
+    - genometools-genometools
+    - ltr_retriever
+    - ltr_finder
+
+test:
+  commands:
+    - EDTA.pl -h > /dev/null
+    - EDTA.pl --check_dependencies > /dev/null
+    - EDTA_processI.pl -h 2>&1 | grep -i "Perform EDTA"
+    - EDTA_raw.pl -h 2>&1 | grep -i "Obtain raw"
+    - lib-test.pl -h 2>&1 | grep -i "To test"
+
+about:
+  home: https://github.com/oushujun/EDTA
+  license: GPLv3
+  license_family: GPL
+  license_file: LICENSE
+  summary: Extensive de-novo TE Annotator
+  dev_url: https://github.com/oushujun/EDTA
