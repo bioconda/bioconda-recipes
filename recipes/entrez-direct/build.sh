@@ -9,8 +9,10 @@ go get -u golang.org/x/text/runes
 go get -u golang.org/x/text/transform
 go get -u golang.org/x/text/unicode/norm
 
+ls -l
 go build -o xtract xtract.go common.go
 go build -o rchive rchive.go common.go
+ls -l
 
 mv * "$PREFIX/bin/"
 mkdir -p "$PREFIX/home"
