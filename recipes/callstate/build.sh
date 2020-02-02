@@ -1,6 +1,6 @@
 #!/bin/sh
 # Compile nim
-pushd nim_source
+pushd nimsrc
 if [[ $OSTYPE == "darwin"* ]]; then
   bash build.sh --os darwin --cpu x86_64
 else
@@ -15,7 +15,7 @@ bin/nim c  koch
 ./koch tools
 popd
 
-export PATH=$SRC_DIR/nim_source/bin:$PATH
+export PATH=$SRC_DIR/nimsrc/bin:$PATH
 
 nimble install -y --verbose
 mkdir -p $PREFIX/bin
