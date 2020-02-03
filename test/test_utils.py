@@ -34,7 +34,7 @@ TEST_LABEL = 'bioconda-utils-test'
 # docker, once without). On OSX, only the non-docker runs.
 
 # Docker ref for build container
-DOCKER_BASE_IMAGE = "bioconda/bioconda-utils-build-env:latest"
+DOCKER_BASE_IMAGE = "bioconda/bioconda-utils-test-env:latest"
 
 SKIP_DOCKER_TESTS = sys.platform.startswith('darwin')
 SKIP_NOT_OSX = not sys.platform.startswith('darwin')
@@ -303,25 +303,46 @@ def test_get_deps():
     assert list(utils.get_deps(r.recipe_dirs['three'], build=False)) == ['two']
 
 
-def test_conda_as_dep(config_fixture):
+@pytest.mark.long_running_1
+@pytest.mark.parametrize('mulled_test', PARAMS, ids=IDS)
+def test_conda_as_dep(config_fixture, mulled_test):
+    docker_builder = None
+    if mulled_test:
+        docker_builder = docker_utils.RecipeBuilder(
+            use_host_conda_bld=True,
+            docker_base_image=DOCKER_BASE_IMAGE,
+        )
     r = Recipes(
         """
         one:
           meta.yaml: |
             package:
-              name: one
+              name: bioconda_utils_test_conda_as_dep
               version: 0.1
             requirements:
+              host:
+                - conda
               run:
                 - conda
+            test:
+              commands:
+                - test -e "${PREFIX}/bin/conda"
         """, from_string=True)
     r.write_recipes()
-    build_result = build.build_recipes(r.basedir, config_fixture,
-                                       r.recipe_dirnames,
-                                       testonly=False,
-                                       force=False,
-                                       mulled_test=True)
+    build_result = build.build_recipes(
+        r.basedir, config_fixture,
+        r.recipe_dirnames,
+        testonly=False,
+        force=False,
+        docker_builder=docker_builder,
+        mulled_test=mulled_test,
+    )
     assert build_result
+
+    for k, v in r.recipe_dirs.items():
+        for i in utils.built_package_paths(v):
+            assert os.path.exists(i)
+            ensure_missing(i)
 
 # TODO replace the filter tests with tests for utils.get_package_paths()
 # def test_filter_recipes_no_skipping():
@@ -581,7 +602,7 @@ def test_sandboxed():
 
 def test_env_sandboxing():
     r = Recipes(
-        """
+        r"""
         one:
           meta.yaml: |
             package:
@@ -596,7 +617,7 @@ def test_env_sandboxing():
                 echo "\$GITHUB_TOKEN has leaked into the build environment!"
                 exit 1
             fi
-    """, from_string=True)
+        """, from_string=True)
     r.write_recipes()
     pkg_paths = utils.built_package_paths(r.recipe_dirs['one'])
 
@@ -748,6 +769,11 @@ def test_build_container_no_default_gcc(tmpdir):
         mulled_test=False,
     )
     assert build_result.success
+
+    for k, v in r.recipe_dirs.items():
+        for i in utils.built_package_paths(v):
+            assert os.path.exists(i)
+            ensure_missing(i)
 
 
 # FIXME: This test fails erraticaly. Both in built_package_paths

@@ -359,7 +359,7 @@ class RecipeBuilder(object):
         except sp.CalledProcessError:
             logger.error('DOCKER FAILED: Error checking docker version.')
             raise
-        p = re.compile("\d+\.\d+\.\d+")  # three groups of at least on digit separated by dots
+        p = re.compile(r"\d+\.\d+\.\d+")  # three groups of at least on digit separated by dots
         version_string = re.search(p, s).group(0)
         if LooseVersion(version_string) >= LooseVersion("1.13.0"):
             cmd = [
