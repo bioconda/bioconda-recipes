@@ -63,7 +63,7 @@ BEGIN {
                                                     ],
                              'param_type' => 'directory',
                              'required' => 0,
-                             'value' => '/usr/local/abblast'
+                             'value' => $ENV{'ABBLAST_DIR'}
                            },
           'CDHIT_DIR' => {
                            'command_line_override' => 'cdhit_dir',
@@ -74,7 +74,7 @@ BEGIN {
                                                   ],
                            'param_type' => 'directory',
                            'required' => 0,
-                           'value' => '/home/rhubley/src/cd-hit-v4.8.1-2019-0228'
+                           'value' => $ENV{'CDHIT_DIR'}
                          },
           'GENOMETOOLS_DIR' => {
                                  'command_line_override' => 'genometools_dir',
@@ -85,7 +85,7 @@ BEGIN {
                                                         ],
                                  'param_type' => 'directory',
                                  'required' => 0,
-                                 'value' => '/home/rhubley/src/genometools-1.5.9/bin'
+                                 'value' => $ENV{'GENOMETOOLS_DIR'}
                                },
           'LTR_RETRIEVER_DIR' => {
                                    'command_line_override' => 'ltr_retriever_dir',
@@ -96,7 +96,7 @@ BEGIN {
                                                           ],
                                    'param_type' => 'directory',
                                    'required' => 0,
-                                   'value' => '/home/rhubley/src/LTR_retriever-2.6'
+                                   'value' => $ENV{'LTR_RETRIEVER_DIR'}
                                  },
           'MAFFT_DIR' => {
                            'command_line_override' => 'mafft_dir',
@@ -107,7 +107,7 @@ BEGIN {
                                                   ],
                            'param_type' => 'directory',
                            'required' => 0,
-                           'value' => '/usr/local/mafft/bin'
+                           'value' => $ENV{'MAFFT_DIR'}
                          },
           'NINJA_DIR' => {
                            'command_line_override' => 'ninja_dir',
@@ -118,7 +118,7 @@ BEGIN {
                                                   ],
                            'param_type' => 'directory',
                            'required' => 0,
-                           'value' => '/home/rhubley/projects/NINJA/NINJA'
+                           'value' => $ENV{'NINJA_DIR'}
                          },
           'RECON_DIR' => {
                            'command_line_override' => 'recon_dir',
@@ -130,7 +130,7 @@ BEGIN {
                                                   ],
                            'param_type' => 'directory',
                            'required' => 1,
-                           'value' => '/usr/local/RECON'
+                           'value' => $ENV{'RECON_DIR'}
                          },
           'REPEATMASKER_DIR' => {
                                   'command_line_override' => 'repeatmasker_dir',
@@ -141,7 +141,7 @@ BEGIN {
                                                          ],
                                   'param_type' => 'directory',
                                   'required' => 1,
-                                  'value' => '/usr/local/RepeatMasker'
+                                  'value' => $ENV{'REPEATMASKER_DIR'}
                                 },
           'RMBLAST_DIR' => {
                              'command_line_override' => 'rmblast_dir',
@@ -157,7 +157,7 @@ BEGIN {
                                                     ],
                              'param_type' => 'directory',
                              'required' => 1,
-                             'value' => '/usr/local/rmblast/bin'
+                             'value' => $ENV{'RMBLAST_DIR'}
                            },
           'RSCOUT_DIR' => {
                             'command_line_override' => 'rscout_dir',
@@ -169,7 +169,7 @@ BEGIN {
                                                    ],
                             'param_type' => 'directory',
                             'required' => 1,
-                            'value' => '/usr/local/RepeatScout-1.0.6'
+                            'value' => $ENV{'RSCOUT_DIR'}
                           },
           'TRF_PRGM' => {
                           'command_line_override' => 'trf_prgm',
@@ -177,7 +177,7 @@ BEGIN {
                           'environment_override' => 'TRF_PRGM',
                           'param_type' => 'program',
                           'required' => 1,
-                          'value' => '/usr/local/bin/trf409.linux64'
+                          'value' => $ENV{'TRF_PRGM'}
                         }
         };
 
