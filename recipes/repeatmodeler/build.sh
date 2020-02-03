@@ -10,17 +10,17 @@ mkdir -p ${RM_DIR}
 cp -r * ${RM_DIR}
 
 # Hack J. Dainat - fix path to access the tools through the wrapper in the bin
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  sed -i '' 's/REPEATMODELER_DIR\/Refiner/REFINER_PRGM/'  ${RM_DIR}/RepeatModeler
-  sed -i '' 's/REPEATMODELER_DIR\/TRFMask/TRFMASK_PRGM/' ${RM_DIR}/RepeatModeler
-  sed -i '' 's/REPEATMODELER_DIR\/RepeatClassifier/REPEATCLASSIFIER_PRGM/' ${RM_DIR}/RepeatModeler
-  sed -i '' 's/REPEATMODELER_DIR\/TRFMask/TRFMASK_PRGM/' ${RM_DIR}/RepeatClassifier
-else
-  sed -i 's/REPEATMODELER_DIR\/Refiner/REFINER_PRGM/' ${RM_DIR}/RepeatModeler
-  sed -i 's/REPEATMODELER_DIR\/TRFMask/TRFMASK_PRGM/' ${RM_DIR}/RepeatModeler
-  sed -i 's/REPEATMODELER_DIR\/RepeatClassifier/REPEATCLASSIFIER_PRGM/' ${RM_DIR}/RepeatModeler
-  sed -i 's/REPEATMODELER_DIR\/TRFMask/TRFMASK_PRGM/' ${RM_DIR}/RepeatClassifier
-fi
+#if [[ "$OSTYPE" == "darwin"* ]]; then
+#  sed -i '' 's/REPEATMODELER_DIR\/Refiner/REFINER_PRGM/'  ${RM_DIR}/RepeatModeler
+#  sed -i '' 's/REPEATMODELER_DIR\/TRFMask/TRFMASK_PRGM/' ${RM_DIR}/RepeatModeler
+#  sed -i '' 's/REPEATMODELER_DIR\/RepeatClassifier/REPEATCLASSIFIER_PRGM/' ${RM_DIR}/RepeatModeler
+#  sed -i '' 's/REPEATMODELER_DIR\/TRFMask/TRFMASK_PRGM/' ${RM_DIR}/RepeatClassifier
+#else
+#  sed -i 's/REPEATMODELER_DIR\/Refiner/REFINER_PRGM/' ${RM_DIR}/RepeatModeler
+#  sed -i 's/REPEATMODELER_DIR\/TRFMask/TRFMASK_PRGM/' ${RM_DIR}/RepeatModeler
+#  sed -i 's/REPEATMODELER_DIR\/RepeatClassifier/REPEATCLASSIFIER_PRGM/' ${RM_DIR}/RepeatModeler
+#  sed -i 's/REPEATMODELER_DIR\/TRFMask/TRFMASK_PRGM/' ${RM_DIR}/RepeatClassifier
+#fi
 # END HACK
 
 # Copy edited config file for auto configuration
@@ -29,17 +29,20 @@ cp ${RECIPE_DIR}/RepModelConfig.pm ${RM_DIR}/RepModelConfig.pm
 # Set env variables for config parameters needed in RepModelConfig.pm
 cat <<END >>${PREFIX}/bin/RepeatModeler
 #!/bin/bash
+
 REPEATMODELER_DIR=${PREFIX}/share/RepeatModeler
 REPEATMASKER_DIR=${PREFIX}/share/RepeatMasker
-REFINER_DIR=${PREFIX}/bin
-TRFMASK_DIR=${PREFIX}/bin
-REPEATCLASSIFIER_DIR=${PREFIX}/bin
-TRF_DIR=${PREFIX}/bin
-RMBLAST_DIR=${PREFIX}/bin
+ABBLAST_DIR=${PREFIX}/bin
+CDHIT_DIR=${PREFIX}/bin
+GENOMETOOLS_DIR=${PREFIX}/bin
+LTR_RETRIEVER_DIR=${PREFIX}/bin
+MAFFT_DIR=${PREFIX}/bin
+NINJA_DIR=${PREFIX}/bin
 RECON_DIR=${PREFIX}/bin
+RMBLAST_DIR=${PREFIX}/bin
 RSCOUT_DIR=${PREFIX}/bin
-NSEG_DIR=${PREFIX}/bin
-export REPEATMODELER_DIR REPEATMASKER_DIR REFINER_DIR TRFMASK_DIR REPEATCLASSIFIER_DIR TRF_DIR RMBLAST_DIR RECON_DIR RSCOUT_DIR NSEG_DIR
+TRF_PRGM=${PREFIX}/bin
+export REPEATMODELER_DIR REPEATMASKER_DIR ABBLAST_DIR TRFMASK_DIR CDHIT_DIR GENOMETOOLS_DIR LTR_RETRIEVER_DIR MAFFT_DIR NINJA_DIR RECON_DIR RMBLAST_DIR RSCOUT_DIR TRF_PRGM
 NAME=\$(basename \$0)
 perl ${RM_DIR}/\${NAME} \$@
 END
