@@ -2,7 +2,7 @@
 set -x -e
 
 cd src/
-make
-make install
+make CC=$CC
+make install CC=$CC
 cd ..
 cp bin/* ${PREFIX}/bin
