@@ -13,5 +13,7 @@ cd ..
 
 mkdir $PREFIX/testdata
 cp $SRC_DIR/src/converters/data/converters/sqt2pin/target.sqt $PREFIX/testdata/target.sqt
+cp $SRC_DIR/src/converters/data/converters/msgf2pin/target.mzid $PREFIX/testdata/target.mzid
+cp $SRC_DIR/src/converters/data/converters/tandem2pin/target.t.xml $PREFIX/testdata/target.t.xml
 cp $SRC_DIR/data/percolator/tab/percolatorTab $PREFIX/testdata/percolatorTab
 
