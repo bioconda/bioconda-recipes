@@ -10,17 +10,15 @@ mkdir -p ${RM_DIR}
 cp -r * ${RM_DIR}
 
 # Hack J. Dainat - fix path to access the tools through the wrapper in the bin
-#if [[ "$OSTYPE" == "darwin"* ]]; then
-#  sed -i '' 's/REPEATMODELER_DIR\/Refiner/REFINER_PRGM/'  ${RM_DIR}/RepeatModeler
-#  sed -i '' 's/REPEATMODELER_DIR\/TRFMask/TRFMASK_PRGM/' ${RM_DIR}/RepeatModeler
-#  sed -i '' 's/REPEATMODELER_DIR\/RepeatClassifier/REPEATCLASSIFIER_PRGM/' ${RM_DIR}/RepeatModeler
-#  sed -i '' 's/REPEATMODELER_DIR\/TRFMask/TRFMASK_PRGM/' ${RM_DIR}/RepeatClassifier
-#else
-#  sed -i 's/REPEATMODELER_DIR\/Refiner/REFINER_PRGM/' ${RM_DIR}/RepeatModeler
-#  sed -i 's/REPEATMODELER_DIR\/TRFMask/TRFMASK_PRGM/' ${RM_DIR}/RepeatModeler
-#  sed -i 's/REPEATMODELER_DIR\/RepeatClassifier/REPEATCLASSIFIER_PRGM/' ${RM_DIR}/RepeatModeler
-#  sed -i 's/REPEATMODELER_DIR\/TRFMask/TRFMASK_PRGM/' ${RM_DIR}/RepeatClassifier
-#fi
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  sed -i '' 's/$FindBin::RealBin\/Refiner/Refiner/'  ${RM_DIR}/RepeatModeler
+  sed -i '' 's/$FindBin::RealBin\/TRFMask/TRFMask/' ${RM_DIR}/RepeatModeler
+  sed -i '' 's/$FindBin::RealBin\/RepeatClassifier/RepeatClassifier/' ${RM_DIR}/RepeatModeler
+else
+  sed -i 's/$FindBin::RealBin\/Refiner/Refiner/' ${RM_DIR}/RepeatModeler
+  sed -i 's/$FindBin::RealBin\/TRFMask/TRFMask/' ${RM_DIR}/RepeatModeler
+  sed -i 's/$FindBin::RealBin\/RepeatClassifier/RepeatClassifier/' ${RM_DIR}/RepeatModeler
+fi
 # END HACK
 
 # Copy edited config file for auto configuration
@@ -41,7 +39,7 @@ NINJA_DIR=${PREFIX}/bin
 RECON_DIR=${PREFIX}/bin
 RMBLAST_DIR=${PREFIX}/bin
 RSCOUT_DIR=${PREFIX}/bin
-TRF_PRGM=${PREFIX}/bin
+TRF_PRGM=${PREFIX}/bin/trf
 export REPEATMODELER_DIR REPEATMASKER_DIR ABBLAST_DIR TRFMASK_DIR CDHIT_DIR GENOMETOOLS_DIR LTR_RETRIEVER_DIR MAFFT_DIR NINJA_DIR RECON_DIR RMBLAST_DIR RSCOUT_DIR TRF_PRGM
 NAME=\$(basename \$0)
 perl ${RM_DIR}/\${NAME} \$@
