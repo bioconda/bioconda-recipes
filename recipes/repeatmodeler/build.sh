@@ -2,22 +2,23 @@
 set -x -e
 
 RM_DIR=${PREFIX}/share/RepeatModeler
-RM_OTHER_PROGRAMS="BuildDatabase Refiner RepeatClassifier TRFMask util/Linup util/viewMSA.pl"
+RM_OTHER_PROGRAMS="BuildDatabase Refiner RepeatClassifier TRFMask LTRPipeline util/dfamConsensusTool.pl util/renameIds.pl util/Linup util/viewMSA.pl"
 RM_PROGRAMS="RepeatModeler $RM_OTHER_PROGRAMS"
 
 mkdir -p ${PREFIX}/bin
 mkdir -p ${RM_DIR}
 cp -r * ${RM_DIR}
 
-# Hack J. Dainat - fix path to access the tools through the wrapper in the bin
+# Hack J. Dainat - fix path to access the tools through the wrapper in the bin otherwise fails
 if [[ "$OSTYPE" == "darwin"* ]]; then
   sed -i '' 's/$FindBin::RealBin\/Refiner/Refiner/'  ${RM_DIR}/RepeatModeler
   sed -i '' 's/$FindBin::RealBin\/TRFMask/TRFMask/' ${RM_DIR}/RepeatModeler
   sed -i '' 's/$FindBin::RealBin\/RepeatClassifier/RepeatClassifier/' ${RM_DIR}/RepeatModeler
+  sed -i '' 's/$FindBin::RealBin\/LTRPipeline/LTRPipeline/' ${RM_DIR}/RepeatModeler
 else
   sed -i 's/$FindBin::RealBin\/Refiner/Refiner/' ${RM_DIR}/RepeatModeler
   sed -i 's/$FindBin::RealBin\/TRFMask/TRFMask/' ${RM_DIR}/RepeatModeler
-  sed -i 's/$FindBin::RealBin\/RepeatClassifier/RepeatClassifier/' ${RM_DIR}/RepeatModeler
+  sed -i 's/$FindBin::RealBin\/LTRPipeline/LTRPipeline/' ${RM_DIR}/RepeatModeler
 fi
 # END HACK
 
