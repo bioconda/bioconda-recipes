@@ -1,0 +1,91 @@
+{% set name = 'LIGER' %}
+{% set version = '0.4.2.900' %}
+{% set hash = '813d0dc064c9bedbdb4581e31a1ce2b6f6617985846610c69859918aeb74d126' %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+
+package:
+  name: r-{{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/MacoskoLab/liger/archive/v0.4.2.9000.tar.gz
+  sha256: {{ hash }}
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}            # [not win]
+    - {{ compiler('m2w64_cxx') }}      # [win]
+    - {{ compiler('gfortran') }}
+    - git
+
+  host:
+    - r-base
+    - r-fnn
+    - r-hmisc
+    - r-matrix
+    - r-rann.l1
+    - r-rcpp >=0.12.10
+    - r-rcpparmadillo
+    - r-rtsne
+    - r-cowplot
+    - r-dosnow
+    - r-dplyr
+    - r-foreach
+    - r-ggplot2
+    - r-ggrepel
+    - r-ica
+    - r-irlba
+    - r-mclust
+    - r-patchwork
+    - r-plyr
+    - r-riverplot
+    - r-snow
+
+  run:
+    - r-base
+    - {{native}}gcc-libs         # [win]
+    - r-fnn
+    - r-hmisc
+    - r-matrix
+    - r-rann.l1
+    - r-rcpp >=0.12.10
+    - r-rcpparmadillo
+    - r-rtsne
+    - r-cowplot
+    - r-dosnow
+    - r-dplyr
+    - r-foreach
+    - r-ggplot2
+    - r-ggrepel
+    - r-ica
+    - r-irlba
+    - r-mclust
+    - r-patchwork
+    - r-plyr
+    - r-riverplot
+    - r-snow
+
+test:
+  commands:
+    - $R -e "library('liger')"           # [not win]
+    - "\"%R%\" -e \"library('liger')\""  # [win]
+
+about:
+  home: https://github.com/MacoskoLab/liger
+  license: GPL-3
+  summary: |
+    Uses an extension of nonnegative matrix factorization to identify shared and
+    dataset-specific factors
+  license_family: GPL3
+
+extra:
+  recipe-maintainers:
+    - raivivek
