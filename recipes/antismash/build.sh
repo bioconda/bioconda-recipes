@@ -2,4 +2,4 @@
 
 echo "include antismash/generic_modules/genefinding/train_crypto" >> MANIFEST.in
 
-$PYTHON setup.py install
+$PYTHON -m pip install . --ignore-installed --no-deps -vv

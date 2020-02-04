@@ -1,38 +1,36 @@
 {% set name = "pysradb" %}
-{% set version = "0.9.6" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "4412dfd5df8222963c59f85f12f40127011cbed7b00b2d53b76779bfec581fac" %}
+{% set version = "0.10.1" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: b10f31844ba0bfd82923a0721df2297d0e46538340d10c2cda9ebb8c7b4764d7
 
 build:
   number: 0
   noarch: python
   entry_points:
     - pysradb=pysradb.cli:parse_args
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
   host:
-    - python >3
-    - setuptools
-    - pandas >=0.23.4
-    - requests >=2.22.0
-    - tqdm >=4.28
-    - xmltodict >=0.12.0
+    - python >=3
+    - pip
+    - pandas 0.25.3
+    - requests 2.22.0
+    - tqdm 4.41.1
+    - xmltodict 0.12.0
+    - sra-tools
   run:
-    - python >3
-    - pandas >=0.23.4
-    - requests >=2.22.0
-    - tqdm >=4.28
-    - xmltodict >=0.12.0
+    - python >=3
+    - pandas 0.25.3
+    - requests 2.22.0
+    - tqdm 4.41.1
+    - xmltodict 0.12.0
     - sra-tools
 
 test:
@@ -45,6 +43,7 @@ test:
 about:
   home: https://github.com/saketkc/pysradb
   license: BSD License
+  license_file: LICENSE
   license_family: BSD
   summary: 'Python package for interacting with SRAdb and downloading datasets from SRA'
   description: 'Python package for interacting with SRAdb and downloading datasets from SRA'
@@ -53,3 +52,6 @@ about:
 extra:
   recipe-maintainers:
     - saketkc
+  identifiers:
+    - biotools:pysradb
+    - doi:10.12688/f1000research.18676.1

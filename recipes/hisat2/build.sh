@@ -5,18 +5,29 @@ mkdir -p $PREFIX/bin
 if [ $PY3K -eq 1 ]
 then
     2to3 --write \
-	hisat2_extract_exons.py \
-	hisat2_extract_snps_haplotypes_UCSC.py \
-	hisat2_extract_splice_sites.py \
-	hisat2-build hisat2-inspect \
-	hisat2_simulate_reads.py \
-	hisat2_extract_snps_haplotypes_VCF.py \
-	hisatgenotype_build_genome.py \
-	hisatgenotype_extract_reads.py \
-	hisatgenotype_extract_vars.py \
-	hisatgenotype_hla_cyp.py \
-	hisatgenotype_locus.py \
-	hisatgenotype.py
+        extract_exons.py \
+        extract_splice_sites.py \
+        hisat2_extract_exons.py \
+        hisat2_extract_snps_haplotypes_UCSC.py \
+        hisat2_extract_snps_haplotypes_VCF.py \
+        hisat2_extract_splice_sites.py \
+        hisat2_simulate_reads.py \
+        hisatgenotype_build_genome.py \
+        hisatgenotype_extract_reads.py \
+        hisatgenotype_extract_vars.py \
+        hisatgenotype_hla_cyp.py \
+        hisatgenotype_locus.py \
+        hisatgenotype_modules/hisatgenotype_assembly_graph.py \
+        hisatgenotype_modules/hisatgenotype_convert_codis.py \
+        hisatgenotype_modules/hisatgenotype_extract_codis_data.py \
+        hisatgenotype_modules/hisatgenotype_extract_cyp_data.py \
+        hisatgenotype_modules/hisatgenotype_gene_typing.py \
+        hisatgenotype_modules/hisatgenotype_typing_common.py \
+        hisatgenotype_scripts/compare_HLA_Omixon.py \
+        hisatgenotype_scripts/extract_Omixon_HLA.py \
+        hisatgenotype_scripts/hisatgenotype_HLA_genotyping_PGs.py \
+        hisatgenotype_scripts/hisatgenotype_locus_samples.py \
+        hisatgenotype.py
 fi
 
 for i in \
@@ -59,4 +70,3 @@ do
 done
 
 cp -r example $PREFIX/bin
-
