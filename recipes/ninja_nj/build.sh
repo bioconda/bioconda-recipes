@@ -13,5 +13,6 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 mkdir -p ${PREFIX}/bin
 
 cd NINJA/
+LDFLAGS += -lrt
 make all CXX=$CXX CC=$CC
 cp Ninja ${PREFIX}/bin
