@@ -8,5 +8,5 @@ cmake --build build
 mkdir -p $PREFIX/bin
 mv bin/* $PREFIX/bin
 PYVER=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version_info[1]))'`
-mkdir -p $PREFIX/lib/python-$PYVER/site-packages
-mv lib/* $PREFIX/lib/python-$PYVER/site-packages
+mkdir -p $PREFIX/lib/python$PYVER/site-packages
+mv lib/* $PREFIX/lib/python$PYVER/site-packages
