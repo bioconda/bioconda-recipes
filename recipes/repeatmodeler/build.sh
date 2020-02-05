@@ -9,7 +9,7 @@ mkdir -p ${PREFIX}/bin
 mkdir -p ${RM_DIR}
 cp -r * ${RM_DIR}
 
-# Hack J. Dainat - fix path to access the tools through the wrapper in the bin otherwise fails
+# Hack J. Dainat - fix path to access the tools through the wrapper in the bin otherwise fails 
 if [[ "$OSTYPE" == "darwin"* ]]; then
   sed -i '' 's/$FindBin::RealBin\/Refiner/Refiner/'  ${RM_DIR}/RepeatModeler
   sed -i '' 's/$FindBin::RealBin\/TRFMask/TRFMask/' ${RM_DIR}/RepeatModeler
