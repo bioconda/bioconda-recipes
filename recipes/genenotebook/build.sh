@@ -7,9 +7,8 @@ mkdir -p $outdir $PREFIX/bin
 pwd
 ls -lah .
 
-clang --version || echo 'clang not found'
-gcc --version || echo 'gcc not found'
-g++ --version || echo g++ not found''
+CC --version || echo 'cc not found'
+GCC --version || echo 'gcc not found'
 
 git clone https://github.com/meteor/meteor
 
