@@ -69,7 +69,8 @@ git clone --branch v0.4.2 https://github.com/santeripuranen/apegrunt.git externa
 export CMAKE_MODULE_PATH=${RECIPE_DIR}
 mkdir build && pushd build
 cmake -DTBB_ROOT=${PREFIX} -DBoost_INCLUDE_DIR=${BOOST_BUILT}/include -DBoost_LIBRARY_DIR=${BOOST_BUILT}/lib ..
-make VERBOSE=1
+# make only target SpydrPick
+make VERBOSE=1 SpydrPick
 install -d ${PREFIX}/bin
 install bin/SpydrPick ${PREFIX}/bin
 popd
