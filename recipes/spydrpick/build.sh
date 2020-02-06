@@ -4,7 +4,7 @@
 # see
 # https://github.com/conda-forge/boost-cpp-feedstock/blob/master/recipe/build.sh
 # https://github.com/boostorg/program_options/blob/develop/.travis.yml
-git clone --depth 1 --single-branch --branch boost-1.69.0 https://github.com/boostorg/boost.git boost
+git clone --depth 1 --single-branch --branch boost-1.72.0 https://github.com/boostorg/boost.git boost
 pushd boost
 rmdir libs/program_options libs/filesystem libs/iostreams libs/system libs/timer libs/chrono
 git clone --depth 50 https://github.com/boostorg/program_options.git libs/program_options
@@ -59,11 +59,11 @@ popd
 
 # set up other dependencies
 rmdir externals/apegrunt
-git clone https://github.com/santeripuranen/apegrunt.git externals/apegrunt
-pushd externals/apegrunt
-git checkout 889986582ab6be9e1edfc307e7cfc25a705cfa2b
-git apply ${RECIPE_DIR}/0001-use-no-apple-in-apegrunt.patch ${RECIPE_DIR}/0002-AVX-to-SSE3-in-apegrunt.patch
-popd
+git clone --branch v0.4.2 https://github.com/santeripuranen/apegrunt.git externals/apegrunt
+#pushd externals/apegrunt
+#git checkout 889986582ab6be9e1edfc307e7cfc25a705cfa2b
+#git apply ${RECIPE_DIR}/0001-use-no-apple-in-apegrunt.patch ${RECIPE_DIR}/0002-AVX-to-SSE3-in-apegrunt.patch
+#popd
 
 # build spydrpick
 export CMAKE_MODULE_PATH=${RECIPE_DIR}
