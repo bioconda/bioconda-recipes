@@ -17,7 +17,6 @@ mkdir -p ${target}
 cp -r databases ${target}
 cp -r files ${target}
 chmod +x ${target}/databases/VIBRANT_setup.py
-chmod +x ${target}/databases/VIBRANT_test_setup.py
 
 # set VIBRANT DB PATH variable on env activation
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
