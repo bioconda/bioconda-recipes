@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="yeast2.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/yeast2.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/yeast2.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/yeast2.db_3.2.3.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-yeast2.db/bioconductor-yeast2.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-yeast2.db/bioconductor-yeast2.db_3.2.3_src_all.tar.gz"

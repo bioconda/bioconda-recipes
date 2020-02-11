@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="diffloopdata_1.12.0.tar.gz"
+FN="diffloopdata_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/diffloopdata_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/diffloopdata_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-diffloopdata/bioconductor-diffloopdata_1.12.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-diffloopdata/bioconductor-diffloopdata_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/diffloopdata_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/diffloopdata_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-diffloopdata/bioconductor-diffloopdata_1.14.0_src_all.tar.gz"
 )
-MD5="eb6194f78579441878992b842aa3cbea"
+MD5="59a7c86719dca9d64291b501fb4211f2"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

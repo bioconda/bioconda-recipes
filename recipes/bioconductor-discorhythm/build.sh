@@ -8,4 +8,5 @@ CXX=$CXX
 CXX98=$CXX
 CXX11=$CXX
 CXX14=$CXX" > ~/.R/Makevars
+ls -l $PREFIX/lib/R/library/magick/libs/
 $R CMD INSTALL --build .
