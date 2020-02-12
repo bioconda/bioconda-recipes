@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="brainImageRdata_1.0.0.tar.gz"
+FN="brainImageRdata_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/brainImageRdata_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/brainImageRdata_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-brainimagerdata/bioconductor-brainimagerdata_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/brainImageRdata_1.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/brainImageRdata_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-brainimagerdata/bioconductor-brainimagerdata_1.4.0_src_all.tar.gz"
 )
-MD5="87e676b7cde0a2abb781670ade0e68d9"
+MD5="040c3afdb8dc9ddae3cc78bac3f19463"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

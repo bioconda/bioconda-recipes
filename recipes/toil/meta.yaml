@@ -1,75 +1,75 @@
-{% set version="3.14.0" %}
+{% set version="3.23.1" %}
 package:
   name: toil
   version: {{ version }}
 
 source:
   url: https://pypi.io/packages/source/t/toil/toil-{{ version }}.tar.gz
-  #url: https://github.com/BD2KGenomics/toil/archive/226abc7.tar.gz
-  md5: 5c44aec8d5f12ae123fb77ef0f3a021f
+  sha256: 35c3cc2e68bf22ee8a82b5a3392642a70799675326e0401c50d173953e166f08
 
 build:
-  number: 2
-  skip: True # [not py27]
+  number: 0
+  noarch: python
+  entry_points:
+    - toil = toil.utils.toilMain:main
+    - _toil_worker = toil.worker:main
+    - cwltoil = toil.cwl.cwltoil:main [cwl]
+    - toil-cwl-runner = toil.cwl.cwltoil:main [cwl]
+    - toil-wdl-runner = toil.wdl.toilwdl:main
+    - _toil_mesos_executor = toil.batchSystems.mesos.executor:main [mesos]
 
 requirements:
   host:
     - python
-    - setuptools
-    - six
-    - future
-    - bd2k-python-lib ==1.14a1.dev37
-    - dill ==0.2.5
-    - psutil
-    - cgcloud-lib
-    - boto >=2.38.0
-    - futures # [py27]
-    - azure
-    - cwltool ==1.0.20180130110340
-    - gcs-oauth2-boto-plugin ==1.9
-    - pynacl ==1.1.2
-    - docker-py >=2.5.1
-    - galaxy-lib >=17.9.3
-    - requests >=2.18.4
-    # schema-salad pinned deps
-    - cachecontrol >=0.11.7,<0.12
-    - mistune >=0.7.3,<0.8
-    - rdflib >=4.2.2
-    - rdflib-jsonld >=0.3.0
-    - ruamel.yaml >=0.12.4,<0.15
-    - typing >=3.5.3,<3.6
-
+    - pip
   run:
     - python
-    - six
+    - dill >=0.2.7.1
+    - six >=1.10.0
     - future
-    - bd2k-python-lib ==1.14a1.dev37
-    - dill
-    - psutil
-    - cgcloud-lib
-    - boto >=2.38.0
-    - futures # [py27]
-    - azure
-    - cwltool ==1.0.20180130110340
-    - gcs-oauth2-boto-plugin ==1.9
-    - pynacl ==1.1.2
+    - requests 2
     - docker-py >=2.5.1
-    - galaxy-lib >=17.9.3
-    - requests >=2.18.4
-    # schema-salad pinned deps
-    - cachecontrol >=0.11.7,<0.12
-    - mistune >=0.7.3,<0.8
-    - rdflib >=4.2.2
-    - rdflib-jsonld >=0.3.0
-    - ruamel.yaml >=0.12.4,<0.15
-    - typing >=3.5.3,<3.6
+    - python-dateutil
+    - psutil >=3.0.1,<6
+    - subprocess32 <=3.5.2  # [py27]
+    - addict <=2.2.0
+    - sphinx >=1.7.5
+    - pathlib2 >=2.3.2
+    #mesos pymesos isn't available
+    #aws reqs
+    - boto >=2.48.0
+    - boto3 >=1.7.50,<2.0
+    - futures >=3.1.1  # [py27]
+    - pycryptodome >=3.5.1
+    #azure reqs secretstorage<3 isn't available
+    #encryption reqs
+    - pynacl 1.1.2
+    #google reqs gcs-oauth2-boto-plugin 1.14 hasn't been added to conda-forge yet
+    #cwl_reqs
+    - cwltool >=1.0.20190815141648
+    - schema-salad >=4.5.20190815125611,<5
+    - galaxy-lib >=18.9.2
+    #htcondor_reqs htcondor isn't available
 
 test:
+  imports:
+    - toil
+    - toil.batchSystems
+    - toil.cwl
+    - toil.jobStores
+    - toil.jobStores.aws
+    - toil.lib
+    - toil.lib.encryption
+    - toil.provisioners
+    - toil.provisioners.aws
+    - toil.test
+    - toil.utils
+    - toil.wdl
   commands:
-    # Bug in Toil --help in 3.14.0 release, missing __doc__
-    # - toil --help
-    - toil --version
+    - toil --help
     - cwltoil --help
+    - toil-cwl-runner --help
+    - toil-wdl-runner --help
 
 about:
   home: https://github.com/BD2KGenomics/toil

@@ -1,4 +1,4 @@
-{% set version = '2.2.2' %}
+{% set version = '2.2.4' %}
 {% set posix = 'm2-' if win else '' %}
 {% set native = 'm2w64-' if win else '' %}
 
@@ -10,25 +10,19 @@ source:
   url:
     - {{ cran_mirror }}/src/contrib/tcR_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/tcR/tcR_{{ version }}.tar.gz
-  sha256: 807eed83ab579b62302bc33896f1717ccbef11019e1c8501fb486e7f0fa18464
+  sha256: c2ee25d507ccffc68243f7a8ccd7e485d68afdce608bb1677a95dd6f3033e29d
 
 build:
-  merge_build_host: True  # [win]
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('c') }}        # [not win]
-    - {{ compiler('cxx') }}      # [not win]
-    - {{native}}toolchain        # [win]
-    - {{posix}}filesystem        # [win]
-    - {{posix}}make
-    - {{posix}}sed               # [win]
-    - {{posix}}coreutils         # [win]
-    - {{posix}}zip               # [win]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
     - r-base
     - r-rcpp >=0.11.1
@@ -43,7 +37,6 @@ requirements:
     - r-stringdist >=0.7.3
   run:
     - r-base
-    - {{native}}gcc-libs         # [win]
     - r-rcpp >=0.11.1
     - r-data.table >=1.9.0
     - r-dplyr >=0.4.0
@@ -57,8 +50,7 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('tcR')"           # [not win]
-    - "\"%R%\" -e \"library('tcR')\""  # [win]
+    - $R -e "library('tcR')"
 
 about:
   home: http://imminfo.github.io/tcr/
@@ -70,25 +62,3 @@ about:
 extra:
   recipe-maintainers:
     - conda-forge/r
-
-# Package: tcR
-# Type: Package
-# Title: Advanced Data Analysis of Immune Receptor Repertoires
-# Version: 2.2.2
-# Date: 2018-07-31
-# Author: Vadim Nazarov
-# Maintainer: Vadim Nazarov <vdm.nazarov@gmail.com>
-# Description: Platform for the advanced analysis of T cell receptor and Immunoglobulin repertoires data and visualisation of the analysis results.
-# License: Apache License 2.0
-# Depends: R (>= 2.15.1), ggplot2 (>= 1.0.0), dplyr (>= 0.4.0), gridExtra (>= 0.9.0), reshape2 (>= 1.2.0), igraph (>= 0.7.1)
-# Imports: utils (>= 3.1.0), Rcpp (>= 0.11.1), grid (>= 3.0.0), data.table (>= 1.9.0), gtable (>= 0.1.2), stringdist (>= 0.7.3), scales (>= 0.3.0)
-# Suggests: knitr (>= 1.8), roxygen2 (>= 3.0.0), rmarkdown (>= 1.0)
-# LinkingTo: Rcpp
-# URL: http://imminfo.github.io/tcr/
-# BugReports: https://github.com/imminfo/tcr/issues
-# VignetteBuilder: knitr
-# RoxygenNote: 6.0.1
-# NeedsCompilation: yes
-# Packaged: 2018-07-31 18:44:55 UTC; vdn
-# Repository: CRAN
-# Date/Publication: 2018-08-01 15:20:08 UTC

@@ -1,0 +1,131 @@
+{% set version = "2020.01.04" %}
+
+package:
+  name: rsat-core
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True  # [py2k]
+
+source:
+  url: http://pedagogix-tagc.univ-mrs.fr/download_rsat/rsat-core_{{ version }}.tar.gz
+  sha256: e87db7f381276b67632d9c7e7c8ff40457fc826073409bef14c46a91dc6d037a
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - make
+  host:
+    - r-base
+    - python
+    - perl
+  run:
+    ## Python dependencies
+    - python
+    - numpy
+    - scipy
+    - matplotlib
+    - httplib2
+    - pygraphviz
+    - snakemake
+    - pyyaml
+
+    ## R dependencies
+    - r-base
+    - r-gplots
+    - r-jpeg
+    - r-png
+    - r-devtools
+    - r-ggplot2
+    - r-dynamictreecut
+    - r-reshape2
+    - r-dendextend
+    - r-gridextra
+    - r-egg
+    - r-flux
+    - r-zoo
+    - r-rcolorbrewer
+    - bioconductor-ctc
+    - r-amap
+    - bioconductor-qvalue
+
+    ##  PERL dependencies
+    - perl
+    - perl-bioperl
+    - perl-bio-das
+    - perl-yaml
+    - perl-cgi
+    - perl-statistics-distributions
+    - perl-math-cdf
+    - perl-algorithm-cluster
+    - perl-file-spec
+    - perl-posix
+    - perl-data-dumper
+    - perl-digest-md5-file
+    - perl-io-all
+    - perl-object-insideout
+    - perl-class-std-fast
+    - perl-gd
+    - perl-dbi
+    - perl-dbd-mysql
+    - perl-db-file
+    - perl-lwp-simple
+    - perl-json
+    - perl-soap-lite
+    - perl-xml-libxml
+    - perl-xml-dom
+    - perl-xml-parser
+    - perl-log-log4perl
+    - perl-number-format
+    - perl-ole-storage_lite
+    - perl-spreadsheet-writeexcel
+    - perl-readonly
+    - perl-rest-client
+    - perl-http-tiny
+    - perl-lockfile-simple
+#    - perl-postscript-simple  ## TO DO: PACKAGE Perl::Postscript::Simple
+    - perl-util-properties
+    - perl-ensembl-api
+    - perl-ensembl-genomes
+#    - perl-sender-simple ## TO DO : PACKAGE Perl::Sender::Simple
+
+    ## Stand-alone tools
+    - seqlogo
+    - weblogo
+    - bedtools
+    - d3
+    - blast
+    - ghostscript
+    - gnuplot
+    - vmatch
+
+    ## For the web server only?
+    - perl-email-simple
+
+test:
+  commands:
+    - "rsat --help"   ## test the RSAT command
+    - "rsat oligo-analysis -h" ## Test a subcommand running a Perl script
+    - "rsat random-seq -l 100 -n 2" ## Test a perl script
+    - "rsat random-seq -l 100 -n 2 | rsat purge-sequence" ## Check the vmatch dependency of purge-sequence
+    - "rsat random-motif -l 10" ## Test a subcommand running a python script
+    - "rsat feature-map -h" ## check the GD dependency for feature-map
+    ## Check that the compiled executable are running (compiled C program, in the bin folder)
+    - "rsat info-gibbs -h"
+    - "rsat count-words -h"
+    - "rsat matrix-scan-quick -h"
+
+about:
+  home: http://rsat.eu/
+  summary: Detection of regulatory signals in non-coding sequences.
+  license: AGPL-3
+  license_file: LICENSE.txt
+
+extra:
+  identifiers:
+    - biotools:rsat
+    - doi:10.1093/nar/gky317
+

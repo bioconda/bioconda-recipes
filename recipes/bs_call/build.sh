@@ -16,9 +16,9 @@ sed -i.bak '
 ./configure
 if [[ "$OSTYPE" == "darwin"* ]]; then
   #forced disabling of openmp for macos
-  make HAVE_OPENMP=0 all
+  make HAVE_OPENMP=0 all CC=$CC
 else
-  make all
+  make all CC=$CC
 fi
 mkdir -p $PREFIX/bin
 cp bin/bs_call $PREFIX/bin

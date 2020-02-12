@@ -1,0 +1,44 @@
+{% set version = "0.3.2" %}
+{% set name = "coverm" %}
+{% set sha256 = "95a82eeb5d39a67d92844c0a66e1d57aa589368b83a2c394fe0d7e53bb369400" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True  # [osx]
+
+source:
+  url: https://github.com/wwood/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - rust >=1.19
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - clangdev  #  one of the rust submodules explicitly requires clang. As it's statically compiled that will hopefully work
+    - pkg-config
+  host:
+    - zlib
+    - gsl
+    - openblas
+  run:
+    - zlib
+    - gsl
+    - starcode
+    - openblas
+    - bwa >=0.7.17
+    - samtools >=1.9
+    - minimap2
+
+test:
+  commands:
+    - {{ name }} --version | grep '{{ version }}'
+
+about:
+  home: https://github.com/wwood/CoverM
+  license: GPL3
+  summary: CoverM aims to be a configurable, easy to use and fast DNA read coverage and relative abundance calculator focused on metagenomics applications

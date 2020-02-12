@@ -1,0 +1,44 @@
+{% set version = "1.0.0" %}
+{% set name = "ncGTW" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: b2877541ca5cc088ab48053a8e924cff
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: BiocStyle, knitr, testthat, rmarkdown
+requirements:
+  host:
+    - 'bioconductor-biocparallel >=1.20.0,<1.21.0'
+    - 'bioconductor-xcms >=3.8.0,<3.9.0'
+    - r-base
+    - r-rcpp
+  run:
+    - 'bioconductor-biocparallel >=1.20.0,<1.21.0'
+    - 'bioconductor-xcms >=3.8.0,<3.9.0'
+    - r-base
+    - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'Alignment of LC-MS Profiles by Neighbor-wise Compound-specific Graphical Time Warping with Misalignment Detection'
+  description: 'The purpose of ncGTW is to help XCMS for LC-MS data alignment. Currently, ncGTW can detect the misaligned feature groups by XCMS, and the user can choose to realign these feature groups by ncGTW or not.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
