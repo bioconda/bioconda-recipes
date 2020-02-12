@@ -12,16 +12,17 @@ cp ${RECIPE_DIR}/download-db.sh ${PREFIX}/bin
 chmod +x ${PREFIX}/bin/download-db.sh
 
 # create folder for database download
-target=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}
-mkdir -p ${target}
-cp -r databases ${target}
-cp -r files ${target}
-chmod +x ${target}/databases/VIBRANT_setup.py
+export VIBRANT_DATA_PATH=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}
+mkdir -p ${VIBRANT_DATA_PATH}
+cp -r databases ${VIBRANT_DATA_PATH}
+cp -r files ${VIBRANT_DATA_PATH}
+chmod +x ${VIBRANT_DATA_PATH}/databases/VIBRANT_setup.py
+
 
 # set VIBRANT DB PATH variable on env activation
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
 cat <<EOF >> ${PREFIX}/etc/conda/activate.d/vibrant.sh
-export VIBRANT_DATA_PATH=${target}
+export VIBRANT_DATA_PATH=${VIBRANT_DATA_PATH}
 EOF
 
 cat <<EOF >> ${PREFIX}/etc/conda/deactivate.d/vibrant.sh
