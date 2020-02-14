@@ -1,21 +1,33 @@
+
+{% set version = '1.1' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: riboseqc
-  version: 1.0.0
+  version: {{ version|replace("-", "_") }}
 
 source:
-  git_url: https://github.com/ohlerlab/RiboseQC.git
-  git_rev: v1.1
-  sha256: 03743d56235d6f028bef5065909724eb509cb6bb3991070a83e16f2d6e81c158
-  git_depth: 1 # (Defaults to -1/not shallow)
+  url: https://github.com/ohlerlab/RiboseQC/releases/download/v{{ version }}/RiboseQC_{{ version }}.tar.gz
+  sha256: 305576b240657acc84e102a0b5f9fcd7d5bcbcd7e1a9d43a372462fbb100e3e2
+
 
 build:
   noarch: generic
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
   number: 0
+
+  # This is required to make R link correctly on Linux.
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
+  build:
+    - {{posix}}zip               # [win]
+
   host:
     - r-base
     - bioconductor-genomicfiles
@@ -70,10 +82,23 @@ requirements:
     - r-multitaper
     - r-xnomial
 
+
 test:
   commands:
-    - '$R -e "library(''RiboseQC'')"'
+    # You can put additional test commands to be run here.
+    - $R -e "library('RiboseQC')"           # [not win]
+    - "\"%R%\" -e \"library('RiboseQC')\""  # [win]
 
 about:
   home: https://github.com/ohlerlab/RiboseQC
-  summary: 'RiboseQC is a quality checking pipeline for Ribo-seq data'
+  license:  GPL-3
+  summary: "Read length specific QC of Ribo-seq data"
+  description: "A powerful analysis tool for the analysis of Ribo-seq data, 
+    which is able to provide read-length specific analysis of both
+    cytoplasmic and organellar ribosome, and provides interactive 
+    visualization of results in a dynamic html report"
+  license_family: GPL3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+ 
+
+  
