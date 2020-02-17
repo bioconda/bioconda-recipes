@@ -1,2 +1,4 @@
-cp ${RECIPE_DIR}/paleomix/main.py $PREFIX/bin/.
-cp -r ${RECIPE_DIR}/paleomix $PREFIX/lib/python2.7/site-packages/paleomix
+#!/bin/bash
+
+cp paleomix/main.py $PREFIX/bin/
+cp -r paleomix $PREFIX/lib/python2.7/site-packages/paleomix
