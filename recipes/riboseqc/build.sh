@@ -6,6 +6,6 @@ if [[ $target_platform =~ linux.* ]] || [[ $target_platform == win-32 ]] || [[ $
   grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
   $R CMD INSTALL --build .
 else
-  mkdir -p $PREFIX/lib/R/library/here
-  mv * $PREFIX/lib/R/library/here
+  mkdir -p $PREFIX/lib/R/library/riboseqc
+  mv * $PREFIX/lib/R/library/riboseqc
 fi
