@@ -11,7 +11,7 @@ export CXXFLAGS="-I$PREFIX/include"
 export CPPFLAGS="-I${PREFIX}/include"
 export LC_ALL=C
 
-sed -i '4d' Makefile
+sed -i'.bak' '4d' Makefile
 
 make
 
