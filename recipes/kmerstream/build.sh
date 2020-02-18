@@ -14,7 +14,7 @@ export LC_ALL=C
 sed -i'.bak' '4d' Makefile
 
 make
-
+mkdir -p $PREFIX/bin
 cp KmerStream $PREFIX/bin
 cp KmerStreamEstimate.py $PREFIX/bin
 cp KmerStreamJoin $PREFIX/bin
