@@ -8,6 +8,8 @@ meson \
   --libdir lib \
   --prefix "${PREFIX}" \
   -Dtests=false \
+  --wrap-mode=forcefallback \
+  --default-library=static \
   build .
 
 # build
