@@ -1,8 +1,7 @@
 #!/bin/bash
 set -xeuo pipefail
 
-# This script is heavily based on the build script for BLAST. See comments
-# there.
+# This script uses ideas from the build script for BLAST. See comments there.
 
 SHARE_DIR=$PREFIX/share/igblast
 
@@ -22,7 +21,11 @@ if [[ $(uname) == Linux ]]; then
     export AR="$AR rcs"
 
     cd c++
-    # igblastn needs VDB, otherwise build will be skipped
+
+    # IgBLAST is based on the BLAST source code and building it produces
+    # a similar set of shared libraries if --with-dll is used. To avoid
+    # conflicts when installing IgBLAST and BLAST simultaneously,
+    # we link IgBLAST statically.
     ./configure.orig \
         --with-static-exe \
         --with-mt \
@@ -42,10 +45,7 @@ if [[ $(uname) == Linux ]]; then
         --without-gnutls \
         --without-gcrypt \
         --with-build-root=ReleaseMT \
-        --prefix=$PREFIX \
-#         --with-sqlite3=$PREFIX \
-#         --with-hard-runpath \
-#         --with-runpath=$LIB_INSTALL_DIR \
+        --prefix=$PREFIX
     make -j2
     # Move one up so it looks like the binary release
     mv ReleaseMT/bin .
@@ -68,4 +68,4 @@ for name in igblastn igblastp; do
 done
 
 # To Do
-# - possibly makeblastdb conflicts with the one from BLAST
+# - makeblastdb conflicts with the one from BLAST
