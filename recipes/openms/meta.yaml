@@ -43,9 +43,10 @@ requirements:
     - coinmp
     - sqlite
   run:
-    - {{ pin_subpackage('libopenms', exact=True) }}
-    - {{ pin_subpackage('openms-tools', exact=True) }}
-    - {{ pin_subpackage('pyopenms', exact=True) }}
+    # Note: you probably cannot use pin_subpackage in the meta-package
+    - libopenms
+    - openms-tools
+    - pyopenms
     
 test:
   commands:
@@ -106,8 +107,8 @@ outputs:
         - {{ compiler('cxx') }}
       host:
         - {{ pin_subpackage('libopenms', exact=True) }}
-      # conda apparently does not pick up the run_exports from the above libopenms build dependency
-      # it complains about missing coinmp. Well.. put everything again.
+      # conda apparently does not support run_exports in subpackages yet. https://github.com/conda/conda-build/issues/3478
+      # so specify everything again
       run:
         - {{ pin_subpackage('libopenms', exact=True) }}
         - {{ pin_compatible('llvm-openmp', max_pin='x.x') }} # [osx]
