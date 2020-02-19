@@ -24,7 +24,7 @@ if [[ $(uname) == Linux ]]; then
     cd c++
     # igblastn needs VDB, otherwise build will be skipped
     ./configure.orig \
-        --with-dll \
+        --with-static-exe \
         --with-mt \
         --with-openmp \
         --without-autodep \
