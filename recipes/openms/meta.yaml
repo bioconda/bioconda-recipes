@@ -42,13 +42,11 @@ requirements:
     - seqan-library ==1.4.2
     - coinmp
     - sqlite
-  run:
-    - {{ pin_subpackage('libopenms', exact=True) }}
-    - {{ pin_subpackage('openms-tools', exact=True) }}
-    - {{ pin_subpackage('pyopenms', exact=True) }}
-  #  - libopenms
-  #  - openms-tools
-  #  - pyopenms
+
+    # Unfortunately we can't include a dependency on the subpackages here
+    # (probably bc of the jinja function in the compiler; but we need it
+    # since this meta build prepares all the other builds and saves time)
+    # Instead, we create an openms-full package later.
     
 test:
   commands:
@@ -183,11 +181,17 @@ outputs:
         - python -c "import pyopenms; print(pyopenms.__version__)"
         # We cant use the PYTHON variable since it does not exist on the biocontainer?!
 
+  - name: openms-full
+    version: {{ version }}
+    requirements:
+      run:
+      - {{ pin_subpackage('libopenms', exact=True) }}
+      - {{ pin_subpackage('openms-tools', exact=True) }}
+      - {{ pin_subpackage('pyopenms', exact=True) }}
+
   - name: openms-thirdparty
     version: {{ version }}
     requirements:
-      build:
-        - {{ compiler('cxx') }}
       run:
         - comet-ms ==2016013 
         - crux-toolkit ==3.2 
@@ -201,6 +205,8 @@ outputs:
         - tpp ==5.0.0 
         - xtandem ==15.12.15.2 
         - gnuplot
+
+
 
 about:
   home: https://github.com/OpenMS/OpenMS
