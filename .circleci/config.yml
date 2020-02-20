@@ -77,7 +77,12 @@ variables:
           cd /tmp/artifacts/images
           docker image ls --format='{{.Repository}}:{{.Tag}}' | \
             { grep biocontainers || true ; } | \
-            xargs -n1 -P4 bash -c 'test -n "${1+x}" && docker save "${1}" | gzip -c > "${1##*/}.tar.gz"' --
+            xargs -n1 -P4 bash -c '
+              test -n "${1+x}" || exit 0
+              echo "Start compressing docker image ${1} ..."
+              docker save "${1}" | gzip -c > "${1##*/}.tar.gz"
+              echo "Finished compressing docker image ${1} ."
+              ' --
         fi
         ) || true
 
