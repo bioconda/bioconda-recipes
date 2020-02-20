@@ -84,18 +84,18 @@ outputs:
           - sqlite
     build:
       run_exports:
-          - {{ pin_compatible('llvm-openmp', exact=True) }} # [osx]
-          - {{ pin_compatible('zlib', exact=True) }}
-          - {{ pin_compatible('xerces-c', exact=True) }}
-          - {{ pin_compatible('boost-cpp', exact=True) }}
-          - {{ pin_compatible('eigen', exact=True) }}
-          - {{ pin_compatible('glpk', exact=True) }}
-          - {{ pin_compatible('hdf5', exact=True) }}
-          - {{ pin_compatible('bzip2', exact=True) }}
-          - {{ pin_compatible('qt', exact=True) }}
-          - {{ pin_compatible('libsvm', exact=True) }}
-          - {{ pin_compatible('coinmp', exact=True) }}
-          - {{ pin_compatible('sqlite', exact=True) }}
+          - {{ pin_compatible('llvm-openmp', max_pin='x.x') }} # [osx]
+          - {{ pin_compatible('zlib', max_pin='x.x') }}
+          - {{ pin_compatible('xerces-c', max_pin='x.x') }}
+          - {{ pin_compatible('boost-cpp', max_pin='x.x') }}
+          - {{ pin_compatible('eigen', max_pin='x.x') }}
+          - {{ pin_compatible('glpk', max_pin='x.x') }}
+          - {{ pin_compatible('hdf5', max_pin='x.x') }}
+          - {{ pin_compatible('bzip2', max_pin='x.x') }}
+          - {{ pin_compatible('qt', max_pin='x.x') }}
+          - {{ pin_compatible('libsvm', max_pin='x.x') }}
+          - {{ pin_compatible('coinmp', max_pin='x.x') }}
+          - {{ pin_compatible('sqlite', max_pin='x.x') }}
           - libopenms {{ version }}
 
   - name: openms-tools
@@ -108,21 +108,37 @@ outputs:
       host:
         - {{ pin_subpackage('libopenms', exact=True) }}
       # conda apparently does not support run_exports in subpackages yet. https://github.com/conda/conda-build/issues/3478
-      # so specify everything again
+      # so specify everything again, such that EXACTLY the same versions are used! Current problem is boost.
+      # In the meta build it uses e.g. 1.72 but the tests for the tools suddenly choose 1.70
+      # I could not get the "resolved_packages" jinja function to gather dependencies from other subpackages.
+        - llvm-openmp # [osx]
+        - zlib
+        - libtool
+        - xerces-c
+        - boost-cpp
+        - eigen
+        - glpk
+        - hdf5
+        - bzip2
+        - qt >=5.5
+        - libsvm
+        - seqan-library ==1.4.2
+        - coinmp
+        - sqlite
       run:
         - {{ pin_subpackage('libopenms', exact=True) }}
-        - {{ pin_compatible('llvm-openmp', exact=True) }} # [osx]
-        - {{ pin_compatible('zlib', exact=True) }}
-        - {{ pin_compatible('xerces-c', exact=True) }}
-        - {{ pin_compatible('boost-cpp', exact=True) }}
-        - {{ pin_compatible('eigen', exact=True) }}
-        - {{ pin_compatible('glpk', exact=True) }}
-        - {{ pin_compatible('hdf5', exact=True) }}
-        - {{ pin_compatible('bzip2', exact=True) }}
-        - {{ pin_compatible('qt', exact=True) }}
-        - {{ pin_compatible('libsvm', exact=True) }}
-        - {{ pin_compatible('coinmp', exact=True) }}
-        - {{ pin_compatible('sqlite', exact=True) }}
+        - {{ pin_compatible('llvm-openmp', max_pin='x.x') }} # [osx]
+        - {{ pin_compatible('zlib', max_pin='x.x') }}
+        - {{ pin_compatible('xerces-c', max_pin='x.x') }}
+        - {{ pin_compatible('boost-cpp', max_pin='x.x') }}
+        - {{ pin_compatible('eigen', max_pin='x.x') }}
+        - {{ pin_compatible('glpk', max_pin='x.x') }}
+        - {{ pin_compatible('hdf5', max_pin='x.x') }}
+        - {{ pin_compatible('bzip2', max_pin='x.x') }}
+        - {{ pin_compatible('qt', max_pin='x.x') }}
+        - {{ pin_compatible('libsvm', max_pin='x.x') }}
+        - {{ pin_compatible('coinmp', max_pin='x.x') }}
+        - {{ pin_compatible('sqlite', max_pin='x.x') }}
     test:
       commands:
         - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/FileMerger --help  
