@@ -11,24 +11,23 @@ MCL_DIR="${PREFIX}/bin/mcl"
 BLASTP_DIR="${PREFIX}/bin/blastp"
 MAKEBLASTDB_DIR="${PREFIX}/bin/makeblastdb"
 #export MCL_DIR BLASTP_DIR MAKEBLASTDB_DIR
+
+#original path for mcl, blastp and makrblastdb
 MCL_P="/usr/bin/mcl"
 BLASTP_P="/usr/bin/blastp"
 MAKEBLASTDB_P="/usr/bin/makeblastdb"
 
+#revise the absolute path for three programs within "Gcluster/Gcluster.pl"
 sed -i -e "s~${MCL_P}~${MCL_DIR}~g" ${RM_DIR}/Gcluster.pl
 sed -i -e "s~${BLASTP_P}~${BLASTP_DIR}~g" ${RM_DIR}/Gcluster.pl
 sed -i -e "s~$MAKEBLASTDB_P~${MAKEBLASTDB_DIR}~g" ${RM_DIR}/Gcluster.pl
 
+#revise the absolute path for three programs within "Gcluster/interested_gene_generation.pl"
 sed -i -e "s~${BLASTP_P}~${BLASTP_DIR}~g" ${RM_DIR}/interested_gene_generation.pl
 sed -i -e "s~$MAKEBLASTDB_P~${MAKEBLASTDB_DIR}~g" ${RM_DIR}/interested_gene_generation.pl
 
-
-
-
-
-# Copy edited config file for auto configuration
-cp -r ${RM_DIR}/test_data ${RECIPE_DIR}/test_data
-
+#Copy test data for test
+# cp -r ${RM_DIR}/test_data ${RECIPE_DIR}/test_data
 
 # Set a executable file for Gcluster.pl
 cat <<END >>${PREFIX}/bin/Gcluster
@@ -42,8 +41,6 @@ cat <<END >>${PREFIX}/bin/interested_gene_generation
 #!/bin/bash
 perl ${RM_DIR}/interested_gene_generation.pl \$@
 END
-
-
 
 chmod a+x ${PREFIX}/bin/Gcluster
 chmod a+x ${PREFIX}/bin/interested_gene_generation
