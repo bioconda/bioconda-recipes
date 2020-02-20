@@ -74,7 +74,8 @@ variables:
         if command -V docker >/dev/null; then
           mkdir -p /tmp/artifacts/images
           cd /tmp/artifacts/images
-          docker image ls --filter=reference='*biocontainers/*' --format='{{.Repository}}:{{.Tag}}' | \
+          docker image ls --format='{{.Repository}}:{{.Tag}}' | \
+            { grep biocontainers || true ; } | \
             xargs -n1 -P4 bash -c 'test -n "${1+x}" && docker save "${1}" | gzip -c > "${1##*/}.tar.gz"' --
         fi
         true
