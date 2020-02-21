@@ -1,6 +1,6 @@
 {% set name = "snippy" %}
-{% set version = "4.4.5" %}
-{% set sha256 = "22425b1b734621d3b353073d882bda9996e9bd17ff630233ebd5114abfe11fca" %}
+{% set version = "4.5.0" %}
+{% set sha256 = "4a4909c3345a42eea6b3c413280e7820eb4bc8e17e648e9fe3d7c7695aee0d6f" %}
 {% set user = "tseemann" %}
 
 package:
@@ -12,19 +12,16 @@ source:
   sha256: '{{ sha256 }}'
 
 build:
-  number: 1
+  number: 0
   noarch: generic
 
 requirements:
-  run:
-    - perl >=5.26
+  host:
+    - perl
     - perl-bioperl >=1.7.2
-    - perl-time-piece
     - bwa >=0.7.17
-    # version comparison bug in 4.4.5, drop the maximum version pins
-    # when new version is released
-    - samtools >=1.9,<1.10
-    - bcftools >=1.9,<1.10
+    - samtools >=1.10
+    - bcftools >=1.10
     - bedtools >=2.28.0
     - parallel >=20170422
     - freebayes >=1.3.1
@@ -32,16 +29,34 @@ requirements:
     - snpeff >=4.3
     - vt >=0.5772
     - snp-sites >=2.4
-    - emboss >=6.0
+    - any2fasta >=0.4
     - samclip >=0.2
-    - seqtk >=1.2
-    - minimap2 >=2.10
+    - seqtk >=1.3
+    - minimap2 >=2.17
+    - openjdk =8  
+  run:
+    - perl
+    - perl-bioperl >=1.7.2
+    - bwa >=0.7.17
+    - samtools >=1.10
+    - bcftools >=1.10
+    - bedtools >=2.28.0
+    - parallel >=20170422
+    - freebayes >=1.3.1
+    - vcflib >=1.0.0_rc3
+    - snpeff >=4.3
+    - vt >=0.5772
+    - snp-sites >=2.4
+    - any2fasta >=0.4
+    - samclip >=0.2
+    - seqtk >=1.3
+    - minimap2 >=2.17
     - openjdk =8
 
 test:
   commands:
-    - snippy --version
-    - snippy-core --version
+    - snippy --version | grep '{{ version }}'
+    - snippy-core --version | grep '{{ version }}'
     - snippy --check
     - snippy-core --check
     - snippy-multi --help
