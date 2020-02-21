@@ -1,7 +1,7 @@
 {% set name = "OpenMS" %}
 {% set version = "2.5.0" %}
 package:
-  name: {{ name|lower  }}
+  name: {{ name|lower  }}-meta
   version: {{ version  }}
 
 source:
@@ -98,7 +98,7 @@ outputs:
           - {{ pin_compatible('sqlite', max_pin='x.x') }}
           - libopenms {{ version }}
 
-  - name: openms-tools
+  - name: openms
     version: {{ version }}
     script: package_openms-tools.sh
     requirements:
@@ -197,18 +197,11 @@ outputs:
         - python -c "import pyopenms; print(pyopenms.__version__)"
         # We cant use the PYTHON variable since it does not exist on the biocontainer?!
 
-  - name: openms-full
-    version: {{ version }}
-    requirements:
-      run:
-      - {{ pin_subpackage('libopenms', exact=True) }}
-      - {{ pin_subpackage('openms-tools', exact=True) }}
-      - {{ pin_subpackage('pyopenms', exact=True) }}
-
   - name: openms-thirdparty
     version: {{ version }}
     requirements:
       run:
+        - {{ pin_subpackage('openms', exact=True) }}
         - comet-ms ==2016013 
         - crux-toolkit ==3.2 
         - fido ==1.0 
