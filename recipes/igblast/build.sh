@@ -63,7 +63,10 @@ chmod +x $PREFIX/bin/edit_imgt_file.pl
 
 # Install wrappers
 for name in igblastn igblastp; do
-  sed "s/igblastn/$name/g" $RECIPE_DIR/igblastn.sh > $PREFIX/bin/$name
+  cat >"${PREFIX}/bin/${name}" <<EOF
+#!/bin/sh
+IGDATA="\${IGDATA-"${PREFIX}/share/igblast"}" exec "${PREFIX}/share/igblast/bin/${name}" "\${@}"
+EOF
   chmod +x $PREFIX/bin/$name
 done
 
