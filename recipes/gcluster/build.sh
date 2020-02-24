@@ -35,7 +35,6 @@ cat <<END >>${PREFIX}/bin/Gcluster.pl
 perl ${RM_DIR}/Gcluster.pl \$@
 END
 
-
 # Set a executable file for interested_gene_generation.pl
 cat <<END >>${PREFIX}/bin/interested_gene_generation.pl
 #!/bin/bash
