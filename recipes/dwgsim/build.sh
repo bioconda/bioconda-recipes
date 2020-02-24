@@ -9,7 +9,7 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 sed -i.bak 's/CFLAGS =/CFLAGS +=/' Makefile
 
-make CC=$CC LIBCURSES=-lncurses
+make CC=$CC LIBCURSES=-lncurses CFLAGS=$CFLAGS LDFLAGS=$LDFLAGS
 
 mkdir -p $PREFIX/bin
 
