@@ -2,7 +2,7 @@
 mkdir -p $PREFIX/bin
 export GOPATH="$SRC_DIR/"
 
-#rm go.mod
+rm go.mod
 
 go get github.com/pierrec/lz4 && cd $GOPATH/src/github.com/pierrec/lz4 && git fetch && git checkout v3.0.1
 cd $SRC_DIR
