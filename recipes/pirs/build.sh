@@ -1,10 +1,14 @@
 #!/bin/bash
 
-export CC=${PREFIX}/bin/gcc
-export CXX=${PREFIX}/bin/g++
-export INCLUDE_PATH="${PREFIX}/include"
+export CPP_INCLUDE_PATH="${PREFIX}/include"
+export CXX_INCLUDE_PATH="${PREFIX}/include"
+export CPLUS_INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
+
+# Inject compilers and hack in the library path
+sed -i.bak "s#g++#${CXX} -L${PREFIX}/lib#g" src/pirs/gccMakefile
+sed -i.bak "s#g++#${CXX} -L${PREFIX}/lib#g" src/stator/gcContCvgBias/Makefile
 
 make
 

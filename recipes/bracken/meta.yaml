@@ -1,5 +1,5 @@
-{% set version = "2.2" %}
-{% set sha256 = "307495060d3575c3a90c87cf82074d4a63d20cf4062658f161951c60a66fd319" %}
+{% set version = "2.5" %}
+{% set sha256 = "75b02b2f3a863d919adba067ef94f796580604a7e34cfc52cac304037c14b51b" %}
 
 package:
   name: bracken
@@ -8,20 +8,23 @@ package:
 source:
   url: https://github.com/jenniferlu717/Bracken/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - osx.patch  # [osx]
+    - py3.patch
 
 build:
-  skip: True  # [osx or not py27]
-  number: 1
+  number: 2
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
   host:
     - python
   run:
     - python
-    - kraken
     - kraken2
+    - llvm-openmp  # [osx]
 
 test:
   commands:
@@ -43,3 +46,5 @@ extra:
   identifiers:
     - biotools:Bracken
     - doi:10.7717/peerj-cs.104
+  skip-lints:
+    - should_not_be_noarch_source

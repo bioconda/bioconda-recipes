@@ -1,0 +1,34 @@
+#!/bin/sh
+# simple script to execute java with the appropriate options to run Mauve
+# Change JAVA_CMD to the location of your java binary if necessary
+# Change the values of the -Xms and -Xmx parameters if you are getting
+# out of memory errors
+#
+# (c) 2003 Aaron Darling
+
+JAVA_CMD=java
+JAVA_ARGS="-Xms200M -Xmx500M"
+
+# this section taken from GPL BEAST code
+## resolve links - $0 may be a link to application
+PRG="$0"
+
+# need this for relative symlinks
+while [ -h "$PRG" ] ; do
+    ls=`ls -ld "$PRG"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+PRG="$link"
+    else
+PRG="`dirname "$PRG"`/$link"
+    fi
+done
+
+# make it fully qualified
+saveddir=`pwd`
+MAUVE0=`dirname "$PRG"`
+MAUVE=`cd "$MAUVE0" && pwd`
+cd "$saveddir"
+#end BEAST section
+
+$JAVA_CMD $JAVA_ARGS -Djava.awt.headless=true -DmauveDir=$MAUVE/ -cp $MAUVE/Mauve.jar org.gel.mauve.contigs.ContigOrderer "$@"

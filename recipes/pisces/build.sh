@@ -13,7 +13,7 @@ chmod 0755 "${PREFIX}/bin/pisces"
 
 # Get recalibration; can use multiple source downloads
 # when move to conda-build 3
-VERSION=5.2.7.47
+VERSION=5.2.10.49
 wget --no-check-certificate https://github.com/Illumina/Pisces/releases/download/v$VERSION/VariantQualityRecalibration_$VERSION.tar.gz
 tar -xzvpf VariantQualityRecalibration*.tar.gz
 rm VariantQualityRecalibration*.tar.gz

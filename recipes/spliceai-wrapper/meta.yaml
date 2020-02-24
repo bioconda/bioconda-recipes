@@ -1,0 +1,43 @@
+{% set version = "0.1.0" %}
+{% set sha256 = "a4ecae140bab2d2b01e89974522d5e5c627052463afa6b6e6de11449ed3f5548" %}
+
+package:
+  name: spliceai-wrapper
+  version: '{{version}}'
+
+source:
+  url: https://github.com/bihealth/spliceai-wrapper/archive/v{{version}}.tar.gz
+  sha256: '{{sha256}}'
+
+build:
+  script: python -m pip install --no-deps --ignore-installed .
+  noarch: python
+  number: 0
+
+requirements:
+  host:
+    - python >=3
+    - pip
+  run:
+    - xdg
+    - pysam
+    - logzero
+    - tqdm
+    - ncls
+    # External tools / non-Python packages
+    - spliceai
+    - bcftools
+
+test:
+  imports:
+    - spliceai_wrapper
+  run:
+    - splicai-wrapper --help
+    - splicai-wrapper prepare --help
+    - splicai-wrapper annotate --help
+
+about:
+  home: https://github.com/bihealth/spliceai-wrapper
+  license: MIT
+  license_family: MIT
+  summary: A caching wrapper for Illumina SpliceAI.

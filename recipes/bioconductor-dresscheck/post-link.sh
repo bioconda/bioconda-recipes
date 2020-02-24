@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="dressCheck_0.20.0.tar.gz"
+FN="dressCheck_0.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/dressCheck_0.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/dressCheck_0.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-dresscheck/bioconductor-dresscheck_0.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/dressCheck_0.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/dressCheck_0.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-dresscheck/bioconductor-dresscheck_0.24.0_src_all.tar.gz"
 )
-MD5="dad61d2a1cfae86bc1f1b9f132291ae6"
+MD5="b8cd180330ebf04fe8f911bb09b99201"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

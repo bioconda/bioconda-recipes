@@ -1,0 +1,82 @@
+{% set version = '1.0.1' %}
+
+package:
+  name: r-bisquerna
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/BisqueRNA_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/BisqueRNA/BisqueRNA_{{ version }}.tar.gz
+  sha256: b99ae73e5de4904fbf3bd2ebb5139b2d8f75de2a5044ba30cf2533b703a47749
+build:
+  number: 0
+  noarch: generic
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: Seurat, plyr, knitr, rmarkdown, testthat
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+    - bioconductor-biobase
+    - r-lsei
+
+  run:
+    - r-base
+    - bioconductor-biobase
+    - r-lsei
+
+test:
+  commands:
+    - $R -e "library('BisqueRNA')"
+
+about:
+  home: https://www.biorxiv.org/content/10.1101/669911v1
+  license: GPL-3
+  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
+  summary: Provides tools to accurately estimate cell type abundances from heterogeneous bulk expression.
+  description: A reference-based method utilizes single-cell information to generate
+    a signature matrix and transformation of bulk expression for accurate regression
+    based estimates. A marker-based method utilizes known cell-specific marker genes
+    to measure relative abundances across samples. For more details, see Jew and Alvarez
+    et al (2019) <doi:10.1101/669911>.
+  license_family: GPL3
+
+extra:
+  recipe-maintainers:
+    - brandonjew
+
+# The original CRAN metadata for this package was:
+
+# Package: BisqueRNA
+# Title: Decomposition of Bulk Expression with Single-Cell Sequencing
+# Version: 1.0
+# Authors@R: c( person(given = 'Brandon', family = 'Jew', email = 'brandon.jew@ucla.edu', role = c('aut', 'cre')), person(given = 'Marcus', family = 'Alvarez', role = 'aut') )
+# Description: Provides tools to accurately estimate cell type abundances  from heterogeneous bulk expression. A reference-based method utilizes single-cell information to generate a signature matrix and transformation of bulk expression for accurate regression based estimates. A marker-based method utilizes known cell-specific marker genes to measure relative abundances across samples. For more details, see Jew and Alvarez et al (2019) <doi:10.1101/669911>.
+# Depends: R (>= 3.5.0)
+# License: GPL-3
+# Encoding: UTF-8
+# LazyData: true
+# RoxygenNote: 6.1.1
+# Imports: Biobase, lsei, methods, stats
+# Suggests: Seurat, plyr, knitr, rmarkdown, testthat
+# URL: https://www.biorxiv.org/content/10.1101/669911v1
+# BugReports: https://github.com/cozygene/bisque/issues
+# VignetteBuilder: knitr
+# NeedsCompilation: no
+# Packaged: 2019-06-18 17:27:50 UTC; bjew
+# Author: Brandon Jew [aut, cre], Marcus Alvarez [aut]
+# Maintainer: Brandon Jew <brandon.jew@ucla.edu>
+# Repository: CRAN
+# Date/Publication: 2019-06-19 09:30:09 UTC
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml

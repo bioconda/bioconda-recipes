@@ -106,7 +106,15 @@ use_docker = "true"
 if args.no_docker:
     use_docker = "false"
 
-env = {'WORKSPACE': args.bootstrap, 'BOOTSTRAP': "true", 'USE_DOCKER': use_docker, 'PATH': os.environ['PATH']}
+env = {
+    'WORKSPACE': args.bootstrap, 
+    'BOOTSTRAP': "true", 
+    'USE_DOCKER': use_docker, 
+    'PATH': os.environ.get('PATH', ""),
+    'HTTPS_PROXY': os.environ.get('HTTPS_PROXY', ""),
+    'https_proxy': os.environ.get('https_proxy', "")
+}
+
 sp.check_call(['.circleci/setup.sh'], env=env)
 _write_custom_activate(args.bootstrap)
 

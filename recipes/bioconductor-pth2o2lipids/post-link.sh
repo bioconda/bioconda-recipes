@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="PtH2O2lipids_1.8.0.tar.gz"
+FN="PtH2O2lipids_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/PtH2O2lipids_1.8.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/PtH2O2lipids_1.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pth2o2lipids/bioconductor-pth2o2lipids_1.8.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/PtH2O2lipids_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/PtH2O2lipids_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pth2o2lipids/bioconductor-pth2o2lipids_1.12.0_src_all.tar.gz"
 )
-MD5="4e581e8fef911bd546261ddc9c4f7cb7"
+MD5="5886bb0b8b6f352dd91eca1be18d1163"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
