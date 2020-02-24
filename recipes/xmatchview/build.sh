@@ -1,5 +1,5 @@
 #!/bin/bash
-cd v1.2
+cd v$PKG_VERSION
 mkdir -p ${PREFIX}/bin
 mv *.py ${PREFIX}/bin/
 mv *.sh ${PREFIX}/bin/

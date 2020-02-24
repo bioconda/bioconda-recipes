@@ -9,3 +9,6 @@ EOF
 
 
 busco -i ex.fasta -o out -l proteobacteria_odb10 -m geno
+
+
+busco -i test_data/bacteria/genome.fna -c 4 -m geno -f --out test_bacteria
