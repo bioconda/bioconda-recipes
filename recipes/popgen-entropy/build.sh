@@ -1,8 +1,9 @@
 #!/bin/sh
 
 aclocal
-autoconf
+autoheader
 automake --add-missing --foreign
+autoconf
 
 ./configure --prefix=$HOME/entropy
 
