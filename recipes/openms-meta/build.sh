@@ -17,11 +17,7 @@ cd contrib-build
 cmake -DBUILD_TYPE=WILDMAGIC ../contrib
 cd ..
 
-# Use C++17 rather than C++11 to hopefully better match boost
-sed -i.bak "s/11/17/g" CMakeLists.txt
-sed -i.bak "s/CMAKE_MACOSX_RPATH FALSE/CMAKE_MACOSX_RPATH TRUE/g" CMakeLists.txt
-sed -i.bak "s/CMAKE_INSTALL_NAME_DIR/FOO/g" CMakeLists.txt
-
+#sed -i.bak "s/CMAKE_INSTALL_NAME_DIR/FOO/g" CMakeLists.txt
 
 mkdir build
 cd build
@@ -43,17 +39,18 @@ cmake .. \
   -DCMAKE_PREFIX_PATH=${PREFIX} \
   -DCMAKE_INSTALL_PREFIX=${PREFIX} \
   -DCMAKE_INSTALL_RPATH=${RPATH} \
+  -DCMAKE_INSTALL_NAME_DIR="@rpath" \
   -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+  -DCMAKE_BUILD_WITH_INSTALL_NAME_DIR=ON \
   -DHAS_XSERVER=OFF \
   -DENABLE_TUTORIALS=OFF \
   -DWITH_GUI=OFF \
   -DBOOST_USE_STATIC=OFF \
   -DBoost_NO_BOOST_CMAKE=ON \
   -DBoost_ARCHITECTURE="-x64" \
-  -DBUILD_EXAMPLES=OFF \
-  -DPYOPENMS=ON
+  -DBUILD_EXAMPLES=OFF
 
-make -j${CPU_COUNT} OpenMS TOPP UTILS pyopenms
+make -j${CPU_COUNT} OpenMS TOPP UTILS
 # The subpackages will do that (unfortunately "make install" installs everything right away)
 # Another option would be to install somewhere into the build dir (to use the existent install commands)
 # and then copy the relevant parts to the prefix. See CMAKE_INSTALL_PREFIX.
