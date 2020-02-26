@@ -28,6 +28,7 @@ make
 popd
 
 pushd sra-tools
+sed -i.bak 's/ rs libutf8proc.a utf8proc.o/ libutf8proc.a utf8proc.o/g' tools/driver-tool/utf8proc/Makefile
 ./configure \
     --prefix=$PREFIX \
     --build-prefix=$NCBI_OUTDIR \
