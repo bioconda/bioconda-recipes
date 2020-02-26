@@ -1,4 +1,3 @@
-monocle_version=0.1.2
 export TAR=$(which tar)
 export R_GZIPCMD=$(which gzip)
 export R_BZIPCMD=$(which bzip2)
