@@ -1,7 +1,7 @@
 #!/bin/sh
 
 export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib -lhdf5_cpp -lhdf5"
+export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
 aclocal
