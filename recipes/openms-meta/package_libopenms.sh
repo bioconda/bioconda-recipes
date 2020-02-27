@@ -8,8 +8,11 @@ cp $RECIPE_DIR/deactivate.sh $PREFIX/etc/conda/deactivate.d/libopenms.sh
 
 mkdir -p $PREFIX/lib
 cp -R build/lib/* $PREFIX/lib/
-mkdir -p $PREFIX/share
-cp -R share/* $PREFIX/share/
+# Copy share, excluding examples
+mkdir -p $PREFIX/share/OpenMS
+shopt -s extglob
+cp -R share/!(OpenMS) $PREFIX/share/
+cp -R share/OpenMS/!(examples) $PREFIX/share/OpenMS
 mkdir -p $PREFIX/include
 cp -R build/src/openms/include/* $PREFIX/include/
 cp -R build/src/openswathalgo/include/* $PREFIX/include/
