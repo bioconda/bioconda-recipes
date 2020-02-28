@@ -1,8 +1,3 @@
-export TAR=$(which tar)
-export R_GZIPCMD=$(which gzip)
-export R_BZIPCMD=$(which bzip2)
-export LANG=en_US.UTF-8
-
 mkdir -p $PREFIX/bin
 cp exec/monocle3 $PREFIX/bin
 $R CMD INSTALL --build .
