@@ -2,7 +2,6 @@
 
 export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib -lhdf5"
-export CPATH=${PREFIX}/include
 
 autoreconf -i
 
