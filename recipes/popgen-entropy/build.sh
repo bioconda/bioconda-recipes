@@ -5,7 +5,7 @@
 
 autoreconf -i
 
-./configure --prefix=$HOME/entropy
+./configure 
 
 make 
 make install
