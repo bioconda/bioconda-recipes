@@ -12,8 +12,8 @@ if [ "$(uname)" == "Darwin" ]; then
     # https://github.com/rust-lang/cargo/issues/1851#issuecomment-288791836
     # printf 'Host *\n  UseKeychain yes\n  AddKeysToAgent yes\n  IdentityFile ~/.ssh/id_rsa\n' >> "${HOME}/.ssh/config"
     # ssh-add -K "${HOME}/.ssh/id_rsa"
-
-    printf "[net]\ngit-fetch-with-cli = true\n" >> ~/.cargo/config
+    mkdir -p "${HOME}/.cargo"
+    printf "[net]\ngit-fetch-with-cli = true\n" >> "${HOME}/.cargo/config"
 fi
 
 cargo install -v --locked --root "$PREFIX" --path .
