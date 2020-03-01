@@ -38,7 +38,7 @@ popd
     --build-prefix=$NCBI_OUTDIR \
     --with-ngs-sdk-prefix=$PREFIX \
     --debug
-
+make
 make install
 popd
 
