@@ -12,12 +12,19 @@ fi
 
 export PATH=$BUILD_PREFIX/bin:$PATH
 
+ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-gcc $BUILD_PREFIX/bin/gcc
+ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-c++ $BUILD_PREFIX/bin/g++
+ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-cc $BUILD_PREFIX/bin/cc
+ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-c++ $BUILD_PREFIX/bin/c++
+ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-ar $BUILD_PREFIX/bin/ar
+ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-ld $BUILD_PREFIX/bin/ld
+
 pushd ncbi-vdb
 ./configure \
     --prefix=$PREFIX \
     --build-prefix=$NCBI_OUTDIR \
     --with-ngs-sdk-prefix=$PREFIX \
-    CXX=$CXX
+    LDFLAGS=$LDFLAGS
 make -j${CPU_COUNT}
 popd
 
@@ -32,7 +39,7 @@ popd
     --build-prefix=$NCBI_OUTDIR \
     --with-ngs-sdk-prefix=$PREFIX \
     --with-ncbi-vdb-build=$NCBI_OUTDIR \
-    CXX=$CXX
+    LDFLAGS=$LDFLAGS
 make -j${CPU_COUNT}
 make install
 popd
