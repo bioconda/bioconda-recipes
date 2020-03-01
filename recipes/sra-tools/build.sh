@@ -16,7 +16,8 @@ pushd ncbi-vdb
 ./configure \
     --prefix=$PREFIX \
     --build-prefix=$NCBI_OUTDIR \
-    --with-ngs-sdk-prefix=$PREFIX
+    --with-ngs-sdk-prefix=$PREFIX \
+    CXX=$CXX
 make -j${CPU_COUNT}
 popd
 
@@ -29,7 +30,9 @@ popd
 ./configure \
     --prefix=$PREFIX \
     --build-prefix=$NCBI_OUTDIR \
-    --with-ngs-sdk-prefix=$PREFIX
+    --with-ngs-sdk-prefix=$PREFIX \
+    --with-ncbi-vdb-build=$NCBI_OUTDIR \
+    CXX=$CXX
 make -j${CPU_COUNT}
 make install
 popd
