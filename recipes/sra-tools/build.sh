@@ -28,12 +28,17 @@ make
 popd
 
 pushd sra-tools
+
+pushd tools/driver-tool/utf8proc
+make
+popd
+
 ./configure \
     --prefix=$PREFIX \
     --build-prefix=$NCBI_OUTDIR \
     --with-ngs-sdk-prefix=$PREFIX \
     --debug
-make AR=ar
+
 make install
 popd
 
