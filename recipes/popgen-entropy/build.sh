@@ -1,7 +1,7 @@
 #!/bin/sh
 
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+#export CFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib -lgsl"
 
 autoreconf -i
 
