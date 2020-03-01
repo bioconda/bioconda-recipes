@@ -10,8 +10,10 @@ if [ "$(uname)" == "Darwin" ]; then
     # git config --global --unset url.ssh://git@github.com/.insteadOf
 
     # https://github.com/rust-lang/cargo/issues/1851#issuecomment-288791836
-    printf 'Host *\n  UseKeychain yes\n  AddKeysToAgent yes\n  IdentityFile ~/.ssh/id_rsa\n' >> "${HOME}/.ssh/config"
-    ssh-add -K "${HOME}/.ssh/id_rsa"
+    # printf 'Host *\n  UseKeychain yes\n  AddKeysToAgent yes\n  IdentityFile ~/.ssh/id_rsa\n' >> "${HOME}/.ssh/config"
+    # ssh-add -K "${HOME}/.ssh/id_rsa"
+
+    printf "[net]\nit-fetch-with-cli = true\n" >> ~/.cargo/config
 fi
 
 cargo install -v --locked --root "$PREFIX" --path .
