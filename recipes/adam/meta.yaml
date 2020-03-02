@@ -1,29 +1,43 @@
 {% set version="0.30.0" %}
+{% set python_version = "0.30.0" %}
+{% set python_name = "bdgenomics.adam" %}
 
 package:
   name: adam
   version: {{ version }}
 
+
 source:
-  url: https://search.maven.org/remotecontent?filepath=org/bdgenomics/adam/adam-distribution-spark2_2.11/{{ version }}/adam-distribution-spark2_2.11-{{ version }}-bin.tar.gz
-  sha256: 2a2bad76ee89beeea2162265c0144a2749d66645a4db80b20b761e01a822f861
-  patches:
-    - adam-shell.patch
-    - adam-submit.patch
+  - url: https://search.maven.org/remotecontent?filepath=org/bdgenomics/adam/adam-distribution-spark2_2.11/{{ version }}/adam-distribution-spark2_2.11-{{ version }}-bin.tar.gz
+    sha256: 2a2bad76ee89beeea2162265c0144a2749d66645a4db80b20b761e01a822f861
+    folder: distribution
+  - url: https://pypi.io/packages/source/{{ python_name[0] }}/{{ python_name }}/{{ python_name }}-{{ python_version }}.tar.gz
+    sha256: 28592c297bf3dd5e086a21aa18fec34945a4d9c7804bdb8da583e4218467a190
+    folder: python_adam
+  - url: https://files.pythonhosted.org/packages/93/76/2141892871a2a9147e1fbd5ae759831c257d8cc1e181db0e34d69a895928/{{ python_name }}-{{ python_version }}-py3.8.egg
+    sha256: 17139a96bc0f231e45405dd9b1220c46ddd86eab674fbf10a70a6eb02c655572
+    folder: python_egg
 
 build:
-  number: 0
-  noarch: generic
+  number: 1
+  noarch: python
 
 requirements:
+  host:
+    - pip
+    - psutil
+    - python >3
   run:
     - openjdk >=8,<9
     - pyspark
+    - psutil
+    - python >3
 
 test:
   commands:
     - adam-submit --help
     - adam-submit transform --help
+    - SPARK_HOME=$(python -c "import site,os; print(os.path.join(site.getsitepackages()[0], \"pyspark\"))" ) ADAM_HOME=$PREFIX pyadam --help
 
 about:
   home: https://github.com/bigdatagenomics/adam
