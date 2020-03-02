@@ -7,6 +7,7 @@ export CPATH=${PREFIX}/include
 NCBI_OUTDIR=$SRC_DIR/ncbi-outdir
 
 if [[ $OSTYPE == darwin* ]]; then
+     export CFLAGS="${CFLAGS} -i sysroot ${CONDA_BUILD_SYSROOT}"
      export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
 fi
 
@@ -18,6 +19,7 @@ ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-cc $BUILD_PREFIX/bin/cc
 ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-c++ $BUILD_PREFIX/bin/c++
 ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-ar $BUILD_PREFIX/bin/ar
 ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-ld $BUILD_PREFIX/bin/ld
+
 
 pushd ncbi-vdb
 ./configure \
