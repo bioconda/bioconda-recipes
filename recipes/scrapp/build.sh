@@ -9,6 +9,10 @@ export CXX_INCLUDE_PATH=${PREFIX}/include
 
 ./setup.py
 
-mkdir -p $PREFIX/bin
+mkdir -p ${PREFIX}/bin
+mkdir -p ${PREFIX}/bin/deps
 
-ln -s ./scrapp.py $PREFIX/bin/scrapp.py
+cp scrapp.py ${PREFIX}/bin/
+cp -r deps/ParGenes ${PREFIX}/bin/deps/
+cp -r deps/mptp ${PREFIX}/bin/deps/
+cp -r scripts ${PREFIX}/bin/
