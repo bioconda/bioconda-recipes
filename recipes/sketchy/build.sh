@@ -18,4 +18,4 @@ fi
 
 cargo install -v --locked --root "$PREFIX" --path .
 
-"$PYTHON" setup.py install --single-version-externally-managed --record=record.txt
+python setup.py install --single-version-externally-managed --record=record.txt
