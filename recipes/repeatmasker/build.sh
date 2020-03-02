@@ -15,13 +15,11 @@ done
 cp ${RECIPE_DIR}/RepeatMaskerConfig.pm ${RM_DIR}/RepeatMaskerConfig.pm
 # pvanheus - disabled this because the library included with RepeatMasker is too old to be usable
 # users will have to provide their own library and point to it using the REPEATMASKER_LIB_DIR environment variable
-
-
 #${RM_DIR}/util/buildRMLibFromEMBL.pl ${RM_DIR}/Libraries/RepeatMaskerLib.embl > ${RM_DIR}/Libraries/RepeatMasker.lib 2>/dev/null
 #makeblastdb -dbtype nucl -in ${RM_DIR}/Libraries/RepeatMasker.lib
-#makeblastdb -dbtype prot -in ${RM_DIR}/Libraries/RepeatPeps.lib
 
-
+# important for RepeatModeler Package to keep this command
+makeblastdb -dbtype prot -in ${RM_DIR}/Libraries/RepeatPeps.lib
 
 cat <<END >>${PREFIX}/bin/RepeatMasker
 #!/bin/bash

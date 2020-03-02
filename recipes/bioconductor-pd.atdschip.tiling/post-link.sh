@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="pd.atdschip.tiling_0.22.0.tar.gz"
+FN="pd.atdschip.tiling_0.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/pd.atdschip.tiling_0.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/pd.atdschip.tiling_0.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.atdschip.tiling/bioconductor-pd.atdschip.tiling_0.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/pd.atdschip.tiling_0.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/pd.atdschip.tiling_0.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.atdschip.tiling/bioconductor-pd.atdschip.tiling_0.24.0_src_all.tar.gz"
 )
-MD5="00f43b23dba09ecca0ff49cf28c013e9"
+MD5="890db09a4a1ae081f0314e3f86ed31fe"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

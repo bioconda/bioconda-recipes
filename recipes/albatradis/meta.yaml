@@ -1,43 +1,27 @@
-{% set version="1.0.0" %}
-{% set revision="ee860d8a0c7ed01d648e24671b0c406058879d79" %}
+{% set version="1.0.3" %}
 
 package:
   name: albatradis
   version: {{ version }}
 
 source:
-  git_url: https://github.com/quadram-institute-bioscience/albatradis.git
-  git_rev: {{ revision }}
-  md5: unused
+  url: https://github.com/quadram-institute-bioscience/albatradis/archive/v{{ version }}.tar.gz
+  sha256: 86cc20bf3e3b30fc6f0b970f1f1de81de8d5e1802d18b6f62e6c27836c426cf7
 
 build:
-  number: 3
-  skip: True # [osx]
+  number: 0
+  skip: True  # [py2k]
   script: python -m pip install --ignore-installed .
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
-    - python >3
+    - python
     - cython
     - pip
-    - biopython >=1.68
-    - pyfastaq >=3.12.0
-    - scipy
-    - numpy
-    - dendropy
-    - seaborn
-    - pandas
-    - graphviz
-    - python-graphviz
-    - perl-app-cpanminus
-    - perl-parallel-forkmanager
-    - perl-pathtools
-    - perl-scalar-util-numeric
-    - perl-moose
-    - biotradis
-    
   run:
-    - python >3
+    - python
     - cython
     - biopython >=1.68
     - pyfastaq >=3.12.0
@@ -48,12 +32,7 @@ requirements:
     - pandas
     - graphviz
     - python-graphviz
-    - perl-app-cpanminus
-    - perl-parallel-forkmanager
-    - perl-pathtools
-    - perl-scalar-util-numeric
-    - perl-moose
-    - biotradis=1.4.1.dev
+    - biotradis >=1.4.5=1
 
 test:
   commands:
@@ -63,12 +42,15 @@ test:
 
 about:
   home: https://github.com/quadram-institute-bioscience/albatradis
-  license: 'GPLv3'
+  license: 'GNU General Public License v3 (GPLv3)'
+  license_family: GPL3
+  license_file: LICENSE
   summary: 'Comparative TraDIS analysis'
 
 extra:
   skip-lints:
-    - uses_git_url
+    # Uses pyximport
+    - cython_must_be_in_host
   recipe-maintainers:
     - sbastkowski
     - thanhleviet

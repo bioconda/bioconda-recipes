@@ -1,51 +1,42 @@
-{% set version = "0.5.5" %}
+        {% set version = "0.7.1" %}
 
 package:
   name: genomepy
   version: {{ version }}
 
 source:
-  url: https://github.com/simonvh/genomepy/releases/download/{{ version }}/genomepy-{{ version }}.tar.gz
-  sha256: a1928d74dbc715d69e4095aae428d1f0da5ad7b8bd69e60dd791110f30996fd6
+  url: https://github.com/vanheeringen-lab/genomepy/releases/download/{{ version }}/genomepy-{{ version }}.tar.gz
+  sha256: 41a6f297fc45efcd0542d1781f1259cc9f03c41e7facbb9854d86f3014a4d04b
 
 build:
   number: 0
-
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  
 requirements:
   host:
-    - python
-    - setuptools
-    - pytest
-    - click
-    - pyfaidx >=0.5.1
-    - norns >=0.1.4
-    - xmltodict
-    - bucketcache >=0.12.1
-    - requests
-    - ucsc-bedtogenepred
-    - ucsc-gtftogenepred
-    - ucsc-genepredtobed
-    - ucsc-genepredtogtf
-
+    - python >3
+    - pip
   run:
-    - python
-    - pytest
+    - python >3
     - click
     - pyfaidx >=0.5.1
-    - norns >=0.1.4
+    - norns >=0.1.5
     - xmltodict
     - bucketcache >=0.12.1
     - requests
+    - biopython >=1.73
+    - psutil
+    - appdirs
     - ucsc-bedtogenepred
     - ucsc-gtftogenepred
     - ucsc-genepredtobed
     - ucsc-genepredtogtf
+    - ucsc-gff3togenepred
 
 test:
-  # Python imports
   imports:
     - genomepy
-
   commands:
     - genomepy -h
 
@@ -56,7 +47,8 @@ extra:
     extended-base: true  # [py3k]
 
 about:
-  home: https://github.com/simonvh/genomepy
+  home: https://github.com/vanheeringen-lab/genomepy
   license: MIT License
+  license_file: LICENSE
   summary: 'Download genomes the easy way.'
   license_family: MIT

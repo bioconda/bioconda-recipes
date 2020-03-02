@@ -8,18 +8,20 @@ package:
 source:
   url: https://github.com/asmmhossain/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: 19c4a54131163b3650ec49aea65ed24822abe9d415c111030d8698442b19eca3
+  patches:
+    - pipelign.patch
 
 build:
-  skip: true # [py27]
-  number: 1
-  script: "python setup.py install --single-version-externally-managed --record=record.txt"
+  number: 2
+  noarch: python
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
-  build:
-    - python
-    - setuptools
+  host:
+    - python >=3
+    - pip
   run:
-    - python
+    - python >=3
     - biopython
     - ete3
     - joblib
@@ -29,11 +31,13 @@ requirements:
     - cd-hit
     - parallel
 
+test:
+  commands:
+    - pipelign --help
+
 about:
   home: https://github.com/asmmhossain/pipelign/
   license: MIT
   summary: A pipeline for automated multiple sequence alignment, particularly of viral sequences.
 
-test:
-  commands:
-    - pipelign --help
+

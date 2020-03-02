@@ -2,7 +2,6 @@
 mkdir -p $PREFIX/bin
 
 cp upload_run.py $PREFIX/bin/irida-uploader
-cp global_settings.py $PREFIX/bin
 cp -r config $PREFIX/bin
 cp -r core $PREFIX/bin
 cp -r api $PREFIX/bin

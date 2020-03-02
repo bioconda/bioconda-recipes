@@ -1,38 +1,38 @@
-{% set version='1.4.4' %}
+{% set version='1.8.1' %}
 package:
   name: targqc
   version: {{ version }}
 
 source:
-  url: https://pypi.python.org/packages/e0/98/f95a514128e3ee1bfc60a4a9544df9a0497b691383bfebf991973e35c414/TargQC-1.4.4.tar.gz
-  md5: 75b056abdf2e2cf9860eaa8758ab236a
+  url: https://github.com/vladsaveliev/TargQC/archive/{{ version }}.tar.gz
+  sha256: 751588fb301d9ca48e7c6267c955908a9b88dbc477f8957f0ec697c1023f230a
 
 build:
-  number: 1
-  skip: True  # [not py27]
+  number: 0
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
-    - python
+    - python >=3.6
     - pip
     - setuptools
     - numpy
-
-  run:
-    - python
-    - qualimap
-    - sambamba
-    - bwa
-    - bedtools
     - cython
-    - setuptools >=18.5
+  run:
+    - python >=3.6
+    - qualimap
+    - sambamba >=0.7.0
+    - bwa
+    - bedtools >=2.25
     - pip
-    - numpy
+    - {{ pin_compatible('numpy') }}
     - tempita
     - pandas
     - pybedtools
     - joblib
-    - ipython >=4.0.0,<5.0.0
+    - ipython
     - ipyparallel
     - ipython-cluster-helper
     - gffutils
@@ -41,13 +41,15 @@ requirements:
     - pysam
     - beautifulsoup4
     - lxml
+    - natsort
+    - click
+    - six
 
 test:
   # Python imports
   imports:
     - targqc
     - ensembl
-    - bed_annotation
 
   commands:
     - targqc --version
@@ -57,7 +59,4 @@ about:
   license: GNU General Public License v3 (GPLv3)
   summary: 'Target capture coverage QC'
   license_family: GPL3
-
-extra:
-  skip-lints:
-    - uses_setuptools
+  license_file: LICENSE.txt

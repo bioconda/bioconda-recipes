@@ -1,6 +1,5 @@
 {% set name = "comet-ms" %}
-{% set version = "2018014" %}
-{% set sha256_src_bin_bundle = "20788c36d8a41bb133cd11b1f245477134ff648779fdb37d69092e637b1aad39" %}
+{% set version = "2019014" %}
 
 package:
   name: {{ name }}
@@ -8,14 +7,18 @@ package:
 
 source:
   url: https://sourceforge.net/projects/{{ name }}/files/comet_{{ version }}.zip
-  sha256: {{ sha256_src_bin_bundle }}
+  sha256: 6000cab0fd270ab214700ff6ec3be27993e5878c1b96ece202b46a7aa4371a37
 
 build:
   number: 0
+  # OSX on circleci uses a case-insensitive file system, which breaks compilation due to file name clashes
+  skip: True  # [osx]
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - unzip
 
 test:
   commands:
