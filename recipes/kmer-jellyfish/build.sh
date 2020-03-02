@@ -2,7 +2,7 @@
 
 autoreconf -fi
 ./configure --prefix=$PREFIX
-make
+make -j4
 make install
 
 cd swig/python
