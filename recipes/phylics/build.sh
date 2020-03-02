@@ -18,20 +18,8 @@ for p in $PREFIX/src/*py; do
 done
 
 
-cp phylics/local/src/ginkgo/cli/ginkgo.sh $PREFIX/bin/
-cp phylics/local/src/ginkgo/Makefile $PREFIX/
-cp -r phylics/local/src/ginkgo/scripts $PREFIX/
-cp -r phylics/local/src/ginkgo/cli $PREFIX/
-cp -r phylics/local/src/ginkgo/genomes $PREFIX/
 
 #compile ginkgo
-cd $PREFIX
-make 2> /dev/null
-
-cd $PREFIX/genomes/scripts
-make 2> /dev/null
-
-
 cd phylics/local/src/ginkgo/genomes/scripts && make 2> /dev/null
 cd $WD
 
@@ -39,4 +27,8 @@ cd phylics/local/src/ginkgo/ && make 2> /dev/null
 cd $WD
 
 
+cp phylics/local/src/ginkgo/cli/ginkgo.sh $PREFIX/bin/
+cp -r phylics/local/src/ginkgo/scripts $PREFIX/
+cp -r phylics/local/src/ginkgo/cli $PREFIX/
+cp -r phylics/local/src/ginkgo/genomes $PREFIX/
 
