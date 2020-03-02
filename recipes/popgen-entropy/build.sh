@@ -5,7 +5,7 @@ export LDFLAGS+="-L{$PREFIX}/lib $LDFLAGS -lgsl"
 
 autoreconf -i
 
-./configure 
+./configure --enable-libgsl
 
 make 
 make install
