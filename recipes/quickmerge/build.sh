@@ -4,7 +4,7 @@ mkdir -p $PREFIX/bin/
 
 cd merger
 make clean
-make
+make CC=$CXX CFLAGS="$CXXFLAGS"
 
 cp quickmerge ../merge_wrapper.py $PREFIX/bin/
 
