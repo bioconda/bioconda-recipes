@@ -1,0 +1,43 @@
+{% set name = "ChromA" %}
+{% set version = "2.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/marianogabitto/{{ name }}/archive/v{{ version }}.tar.gz"
+  sha256: "1350f7227b6cf1b0d428649237d6e429b4feb1981a90743856a1844a53df4821"
+
+build:
+  number: 0
+  skip: True  # [py2k]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - pip
+    - python
+  run:
+    - python
+    - matplotlib-base >=3.0.2
+    - psutil
+    - pysam >=0.15.2
+    - ray >=0.6.3
+    - scipy >=1.2.0
+    - seaborn >=0.9.0
+    - setproctitle >=1.1.10
+    - numpy >=1.15.4
+
+test:
+  imports:
+    - chroma
+
+about:
+  home: "https://github.com/marianogabitto/ChromA"
+  license: "GPL2"
+  license_family: "GPL"
+  license_file: "LICENSE.txt"
+  summary: "Chromatin Accessibility Annotation Tool"
