@@ -6,5 +6,6 @@ make -j4
 make install
 
 cd swig/python
-python3 setup.py install
+python3 setup.py build
+python3 setup.py install --prefix=$PREFIX
 
