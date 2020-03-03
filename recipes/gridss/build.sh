@@ -43,4 +43,3 @@ ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/CollectMapqMetrics
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/CollectStructuralVariantReadMetrics
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/CollectTagMetrics
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/ReportThresholdCoverage
-chmod 0755 "${PREFIX}/bin/*"
