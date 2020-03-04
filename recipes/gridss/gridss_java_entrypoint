@@ -20,6 +20,19 @@ namespace="gridss"
 if [[ "$entrypoint" =~ "Collect" ]] || [[ "$entrypoint" =~ "ReportThresholdCoverage" ]] ; then
 	namespace="gridss.analysis"
 fi
-# TODO: what's the 'correct' bioconda way of controlling JVM memory usage?
-java -cp $DIR/gridss.jar $namespace.$entrypoint $DIR/gridss.jar "$@"
+# GRIDSS relies on htsjdk multi-thread I/O for performance
+# we need to add these to all entry points except IndexedExtractFullReads
+# which should not perform async read since the read-ahead results get
+# discard on every index seek
+jvm_args="
+		-Dsamjdk.use_async_io_write_samtools=true \
+		-Dsamjdk.use_async_io_write_tribble=true \
+		-Dsamjdk.buffer_size=4194304"
+if [[ "$entrypoint" =~ "IndexedExtractFullReads" ]] ; then
+	jvm_args="$jvm_args -Dsamjdk.use_async_io_read_samtools=false"
+else
+	jvm_args="$jvm_args -Dsamjdk.use_async_io_read_samtools=true"
+fi
+
+java $jvm_args -cp $DIR/gridss.jar $namespace.$entrypoint "$@"
 
