@@ -15,9 +15,13 @@ cp $RECIPE_DIR/gridss $TGT/gridss
 cp $RECIPE_DIR/gridss_r_script $TGT/gridss_r_script
 cp $RECIPE_DIR/gridss_java_entrypoint $TGT/gridss_java_entrypoint
 
+# gridss wraps gridss.sh to specify the location of the gridss jar
 ln -s $TGT/gridss $PREFIX/bin
+# R scripts all have a --scriptdir argument.
+# gridss_r_script is a wrapper that sets this to correct location
 ln -s $TGT/gridss_r_script $PREFIX/bin/gridss_somatic_filter
 ln -s $TGT/gridss_r_script $PREFIX/bin/gridss_annotate_insertions_repeatmaster
+# gridss_java_entrypoint is a java wrapper
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AllocateEvidence
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AnnotateInexactHomology
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AnnotateInexactHomologyBedpe
