@@ -10,7 +10,7 @@ mkdir -p $PREFIX/bin
 
 # Linker options aren't passed to minimap2
 pushd minimap2
-make CFLAGS="$CFLAGS" LIBS="-L$PREFIX/lib -lm -lz -pthread"
+make CFLAGS="$CFLAGS" LIBS="-L$PREFIX/lib -lm -lz -pthread" libminimap2.a
 popd
 
 make HDF5=noinstall EIGEN=noinstall HTS=noinstall CXXFLAGS="-Iminimap2 -g -O3" LDFLAGS="$LDFLAGS"
