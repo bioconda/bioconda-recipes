@@ -1,6 +1,5 @@
 #!/bin/bash
 export CFLAGS="-Iminimap2 -I$PREFIX/include -std=c99"
-export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
 export HTS_LIB=${PREFIX}/lib/libhts.a
@@ -10,7 +9,7 @@ export FAST5_INCLUDE=-I${PREFIX}/include/fast5
 mkdir -p $PREFIX/bin
 
 ls -l minimap2
-make HDF5=noinstall EIGEN=noinstall HTS=noinstall CXXFLAGS="-Iminimap2 -g -O3"
+make HDF5=noinstall EIGEN=noinstall HTS=noinstall CXXFLAGS="-Iminimap2 -g -O3" LDFLAGS="$LDFLAGS"
 cp nanopolish $PREFIX/bin
 cp scripts/nanopolish_makerange.py $PREFIX/bin
 cp scripts/nanopolish_merge.py $PREFIX/bin
