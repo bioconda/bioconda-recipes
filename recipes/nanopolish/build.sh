@@ -8,7 +8,11 @@ export FAST5_INCLUDE=-I${PREFIX}/include/fast5
 
 mkdir -p $PREFIX/bin
 
-ls -l minimap2
+# Linker options aren't passed to minimap2
+pushd minimap2
+make CFLAGS="$CFLAGS" LIBS="-L$PREFIX/lib -lm -lz -lpthread"
+popd
+
 make HDF5=noinstall EIGEN=noinstall HTS=noinstall CXXFLAGS="-Iminimap2 -g -O3" LDFLAGS="$LDFLAGS"
 cp nanopolish $PREFIX/bin
 cp scripts/nanopolish_makerange.py $PREFIX/bin
