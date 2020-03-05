@@ -1,4 +1,4 @@
-{% set version = "1.0.2" %}
+{% set version = "1.0.3" %}
 {% set sha = " 75d1b15f57df6bc6c18e39ec030fdf4e089ef31bfaf126eb30b1be0f5ba2b02f " %}
                
 package:
@@ -12,12 +12,19 @@ source:
 build:
   number: 0
   skip: True # [osx]
+  rpaths:
+    - lib/R/lib/
+    - lib/
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+  host:
+    - r-base
+    - bioconductor-dnacopy
   run:  
+    - r-base
     - python >=3.6
     - sctools
     - numpy
@@ -39,11 +46,18 @@ requirements:
     - python-irodsclient
     - statsmodels ==0.9.0
     - wheel ==0.33.6
-
+    - bioconductor-dnacopy
+    - bioconductor-ctc
+    - r-inline
+    - r-gplots
+    - r-scales
+    - r-plyr
+    - r-ggplot2
+    - r-gridextra
 test:
   commands:
     - phylics --help
-
+    - $R -e "library('DNAcopy')"
 extra:
   skip-lints:
     - should_be_noarch_generic
