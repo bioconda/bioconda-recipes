@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="MafDb.1Kgenomes.phase1.GRCh38_3.7.0.tar.gz"
+FN="MafDb.1Kgenomes.phase1.GRCh38_3.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MafDb.1Kgenomes.phase1.GRCh38_3.7.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MafDb.1Kgenomes.phase1.GRCh38_3.7.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mafdb.1kgenomes.phase1.grch38/bioconductor-mafdb.1kgenomes.phase1.grch38_3.7.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mafdb.1kgenomes.phase1.grch38/bioconductor-mafdb.1kgenomes.phase1.grch38_3.7.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MafDb.1Kgenomes.phase1.GRCh38_3.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MafDb.1Kgenomes.phase1.GRCh38_3.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mafdb.1kgenomes.phase1.grch38/bioconductor-mafdb.1kgenomes.phase1.grch38_3.10.0_src_all.tar.gz"
 )
-MD5="793705d2a4a4a80a770b436c0df52add"
+MD5="a20471906a41678ce710879e92d2a9dc"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

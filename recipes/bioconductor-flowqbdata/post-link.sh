@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="flowQBData_1.10.0.tar.gz"
+FN="flowQBData_1.9.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/flowQBData_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/flowQBData_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-flowqbdata/bioconductor-flowqbdata_1.10.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-flowqbdata/bioconductor-flowqbdata_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/flowQBData_1.9.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/flowQBData_1.9.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-flowqbdata/bioconductor-flowqbdata_1.9.0_src_all.tar.gz"
 )
-MD5="e5d94c8fb66f811c34a7a92ef607f20d"
+MD5="54a6ae2ea9e910bf63c37b264b4b47d8"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

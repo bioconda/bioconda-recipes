@@ -7,9 +7,26 @@ export CXX_INCLUDE_PATH="${PREFIX}/include"
 export CPLUS_INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 
-find -name Makefile | xargs -I {} sed -i.bak 's/-lcurses/-lncurses -ltinfo/g' {}
+pushd ref-eval
+#touch boost/finished
+pushd sam
+make CC=$CC CFLAGS="$CFLAGS -L$PREFIX/lib" LIBCURSES="-lncurses" LIBPATH="$LDFLAGS"
+popd
+sed -i.bak "44d" Makefile
+make CXX=$CXX \
+     CXXFLAGS="$CXXFLAGS"
+#     BOOSTINC="-I$PREFIX/include" \
+#     BOOSTLIB="$PREFIX/lib/libboost_program_options.a $PREFIX/lib/libboost_random.a" \
+#     TEST_LIB="$PREFIX/lib/libboost_unit_test_framework.a"
+popd
 
-make
+pushd rsem-eval
+make CC=$CXX CFLAGS="$CXXFLAGS"
+popd
+
+#find -name Makefile | xargs -I {} sed -i.bak 's/-lcurses/-lncurses -ltinfo/g' {}
+
+#make
 
 mkdir -p $PREFIX/bin
 

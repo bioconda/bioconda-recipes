@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="MeSH.AOR.db_1.12.0.tar.gz"
+FN="MeSH.AOR.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MeSH.AOR.db_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MeSH.AOR.db_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mesh.aor.db/bioconductor-mesh.aor.db_1.12.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mesh.aor.db/bioconductor-mesh.aor.db_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MeSH.AOR.db_1.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MeSH.AOR.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.aor.db/bioconductor-mesh.aor.db_1.13.0_src_all.tar.gz"
 )
-MD5="ed748fe3fab893d25073a2ce14a8820f"
+MD5="61cdba24897c4af14963d065526669de"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
