@@ -7,12 +7,17 @@ export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
 
+# build
 ./setup.py
 
-mkdir -p ${PREFIX}/bin
-mkdir -p ${PREFIX}/bin/deps
+dest=${PREFIX}/bin
+mkdir -p ${dest}
 
-cp scrapp.py ${PREFIX}/bin/
-cp -r deps/ParGenes ${PREFIX}/bin/deps/
-cp -r deps/mptp ${PREFIX}/bin/deps/
-cp -r scripts ${PREFIX}/bin/
+# copy over all relevant files for the package
+for file in scrapp.py raxml-ng modeltest-ng astral.jar mptp mpi-scheduler; do
+  find . -type f -name ${file} -print -exec cp --parents '{}' ${dest} \;
+done
+
+for patt in ".*/pargenes/.*\.py" "\./scripts/.*\.py" "\./bin/.*" ".*\.so" ".*\.a"; do
+  find . -type f -regextype posix-egrep -regex "${patt}" -print -exec cp --parents '{}' ${dest} \;
+done
