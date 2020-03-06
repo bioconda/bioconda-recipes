@@ -31,10 +31,10 @@ echo "Downloading VIBRANT databases to ${VIBRANT_DATA_PATH}..."
 
 # use Python script to download and test data
 cd ${VIBRANT_DATA_PATH}/databases
-python VIBRANT_setup.py
+python3 VIBRANT_setup.py
 
-echo "Testing VIBRANT databases..."
-python VIBRANT_test_setup.py
+#echo "Testing VIBRANT databases..."
+#python VIBRANT_test_setup.py
 
 echo "VIBRANT databases are downloaded successfully."
 
