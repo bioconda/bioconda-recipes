@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sed -i  's/make -C libgab/make -C libgab CC=$(CC)/' Makefile
+sed -i  's/make -C libgab/make -C libgab CXX=$(CC)/' Makefile
 
 ## Following https://bioconda.github.io/contributor/troubleshooting.html#g-or-gcc-not-found
 make CC=$CXX
