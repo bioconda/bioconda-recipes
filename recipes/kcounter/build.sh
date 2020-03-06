@@ -14,4 +14,4 @@ export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="$CC"
 
 maturin build --interpreter python --release
 
-$PYTHON -m pip install target/wheels/. --no-deps --ignore-installed -vv
+$PYTHON -m pip install target/wheels/*.whl --no-deps --ignore-installed -vv
