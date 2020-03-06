@@ -1,6 +1,8 @@
 #!/bin/bash
 
-make
+sed -i  's/make -C libgab/make -C libgab CC=$(CC)/' Makefile
+
+make CC=$CXX
 
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
