@@ -4,6 +4,13 @@ mkdir -p ${PREFIX}/bin
 
 make CC=${CC} CPP=${CXX}
 
+if [ $PY3K -eq 1 ]
+then	
+    2to3 --write *.py \	
+        hisatgenotype_modules/*.py \	
+        hisatgenotype_scripts/*.py
+fi
+
 # copy binaries and python scripts
 for i in \
     hisat2 \
