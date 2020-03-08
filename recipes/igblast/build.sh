@@ -13,10 +13,7 @@ mkdir -p $PREFIX/bin
 mkdir -p $SHARE_DIR/bin
 
 if [[ $(uname) == Linux ]]; then
-    export CFLAGS="$CFLAGS -O2"
-    export CXXFLAGS="$CXXFLAGS -O2"
-    export CPPFLAGS="$CPPFLAGS -I$PREFIX/include -I$PREFIX/include/ncbi-vdb"
-    export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+    export CPPFLAGS="$CPPFLAGS -I$PREFIX/include/ncbi-vdb"
     export CC_FOR_BUILD=$CC
     export AR="$AR rcs"
 
