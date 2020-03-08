@@ -4,7 +4,7 @@ target=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}
 rm -f c/*.so
 pushd c
 make all
-mkdir ${target}/db/lib
+mkdir -p ${target}/db/lib
 cp librgt.so ${target}/db/lib
 popd
 $PYTHON -m pip install --no-deps --ignore-installed --no-cache-dir -vvv .
