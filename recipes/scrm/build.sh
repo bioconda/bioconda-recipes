@@ -1,4 +1,4 @@
 #!/bin/bash
 
 ./bootstrap
-make install
+make install PREFIX=$PREFIX
