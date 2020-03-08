@@ -1,0 +1,52 @@
+{% set name = "getorganelle" %}
+{% set version = "1.6.4" %}
+
+
+package:
+  name: {{name}}
+  version: {{version}}
+
+
+source:
+  git_url: https://github.com/Kinggerm/{{name}}.git
+  git_rev: {{version}}
+
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed -vv ./ "
+  noarch: python
+
+
+requirements:
+
+  host:
+    - python
+    - pip
+
+  run:
+    - perl
+    - pigz
+    - spades >=3.9
+    - bowtie2 >=2.3
+    - blast >=2.3
+    - numpy >=1.14
+    - scipy
+    - sympy >=1.2  # [py3k]
+    - sympy ==1.2  # [py2k]
+
+test:
+  imports:
+    - GetOrganelleLib
+
+  commands:
+    - get_organelle_from_reads.py -h
+    - get_organelle_from_assembly.py -h
+    - slim_fastg.py -h
+
+
+about:
+  home: http://github.com/Kinggerm/GetOrganelle
+  license: GPL3
+  license_file: ../LICENSE
+  summary: Get organelle genomes from genome skimming data
