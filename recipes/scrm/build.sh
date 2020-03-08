@@ -1,5 +1,4 @@
 #!/bin/bash
 
-ls -l
-./boostrap
+./bootstrap
 make install
