@@ -1,4 +1,4 @@
 #!/bin/bash
 
-./configure --prefix=$PREFIX
+./boostrap
 make install
