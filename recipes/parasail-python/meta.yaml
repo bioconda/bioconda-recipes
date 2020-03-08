@@ -1,5 +1,6 @@
 {% set name = "parasail-python" %}
-{% set version = "1.1.12" %}
+{% set version = "1.2" %}
+{% set sha256 = "1ecb5f78e10edc84fccee0bf6279c5eb2624890f769a53d998ca56ad3b41aec6" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,29 +8,31 @@ package:
 
 source:
   url: https://github.com/jeffdaily/parasail-python/archive/v{{ version }}.tar.gz
-  md5: 109fc497924030eebda60bde33f0976b
+  sha256: "{{ sha256 }}"
+  patches:
+    - darwin-libtool-name.patch
 
 build:
-  number: 2
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 requirements:
-  host:
-    - python
   build:
-    - python
-    - numpy
-    - pip
-    - setuptools
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
     - m4
     - autoconf
     - automake
     - libtool
-    - zlib
-  run:
-    - numpy
+  host:
     - python
+    - pip
     - zlib
+    - wheel
+  run:
+    - python
+    - numpy
+    - wheel
 
 test:
   imports:

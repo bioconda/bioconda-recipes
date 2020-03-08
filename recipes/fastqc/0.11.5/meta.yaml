@@ -1,0 +1,41 @@
+{% set name = "fastqc" %}
+{% set version = "0.11.5" %}
+{% set sha256hash = "dd7a5ad80ceed2588cf6d6ffe35e0f161c0d9977ed08355f5e4d9473282cbd66" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: http://www.bioinformatics.babraham.ac.uk/projects/{{ name }}/{{ name }}_v{{ version }}.zip
+  sha256: {{ sha256hash }}
+  patches:
+    - java_xms.patch
+
+build:
+  noarch: generic
+  detect_binary_files_with_prefix: true
+  number: 4
+
+requirements:
+  run:
+    # Enforce a version requirement on openjdk to ensure
+    # it comes from the conda-forge channel and not default.
+    # Many yaks were shaved to bring us this information.
+    # Version number reference: https://github.com/conda/conda/issues/6948#issuecomment-369360906
+    - openjdk >=8.0.144
+    - perl
+
+test:
+  commands:
+    - fastqc -h 
+    - fastqc --version
+
+about:
+  home: 'http://www.bioinformatics.babraham.ac.uk/projects/fastqc/'
+  license: GPL >=3
+  summary: 'A quality control tool for high throughput sequence data.'
+
+extra:
+  identifiers:
+    - biotools:fastqc
