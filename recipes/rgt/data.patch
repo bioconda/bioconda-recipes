@@ -1,5 +1,32 @@
+diff --git a/data/setupBinaries.py b/data/setupBinaries.py
+index 60e5a4d3..bb114e12 100644
+--- a/data/setupBinaries.py
++++ b/data/setupBinaries.py
+@@ -1,3 +1,4 @@
++#!/usr/bin/env python
+ ###################################################################################################
+ # Setup Binaries Script
+ #   This script will fetch the necessary binaries for all tools. Be aware that it will consider
+@@ -6,7 +7,7 @@
+ 
+ # Import
+ from optparse import OptionParser
+-from os import system, path, mkdir
++from os import system, path, mkdir, getenv
+ from sys import platform
+ 
+ # Optional Input
+@@ -21,7 +22,7 @@ options, arguments = parser.parse_args()
+ ###################################################################################################
+ 
+ # Current rgt data path
+-curr_dir = path.dirname(path.realpath(__file__))
++curr_dir = path.dirname(getenv("RGTDATA"))
+ 
+ # Platform
+ supported_platforms = ["linux", "linux2", "darwin"]
 diff --git a/data/setupGenomicData.py b/data/setupGenomicData.py
-index cdc128d1..16dc1e23 100644
+index e6cc2cc4..90eeeb8e 100644
 --- a/data/setupGenomicData.py
 +++ b/data/setupGenomicData.py
 @@ -1,3 +1,4 @@
@@ -7,16 +34,16 @@ index cdc128d1..16dc1e23 100644
  ###################################################################################################
  # Setup Genomic Data Script
  #   This script will fetch the necessary genomic data for all tools. Be aware that it will download
-@@ -9,7 +10,7 @@
- from __future__ import print_function
+@@ -8,7 +9,7 @@
+ # Import
  import gzip
- from optparse import OptionParser
+ import argparse
 -from os import system, path, remove, mkdir
 +from os import system, path, remove, mkdir, getenv
  from sys import platform
  import re
  
-@@ -82,7 +83,7 @@ if options.all:
+@@ -85,7 +86,7 @@ if args.all:
  ###################################################################################################
  
  # Current rgt data path
@@ -26,7 +53,7 @@ index cdc128d1..16dc1e23 100644
  # Platform
  supported_platforms = ["linux", "linux2", "darwin"]
 diff --git a/data/setupLogoData.py b/data/setupLogoData.py
-index 1d6dcb7f..5ccdfab4 100644
+index a91e6339..d3f7ec99 100644
 --- a/data/setupLogoData.py
 +++ b/data/setupLogoData.py
 @@ -1,3 +1,4 @@
@@ -34,16 +61,16 @@ index 1d6dcb7f..5ccdfab4 100644
  ###################################################################################################
  # Setup Logo Data Script
  #   This script will create all motif logos. Be aware that this is a time consuming procedure
-@@ -10,7 +11,7 @@
- from __future__ import print_function
+@@ -8,7 +9,7 @@
  
+ # Import
  import argparse
 -from os import path, mkdir, listdir, walk
 +from os import path, mkdir, listdir, walk, getenv
  from sys import platform, exit
  
  from Bio import motifs
-@@ -34,7 +35,7 @@ if not args.all and not args.folders:
+@@ -32,7 +33,7 @@ if not args.all and not args.folders:
  ###################################################################################################
  
  # Current rgt data path
@@ -53,10 +80,10 @@ index 1d6dcb7f..5ccdfab4 100644
  # Platform
  supported_platforms = ["linux", "linux2", "darwin"]
 diff --git a/setup.py b/setup.py
-index 1212bd19..64191333 100644
+index dcd0dfeb..d9c33757 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -225,168 +225,6 @@ current_install_requires = common_deps
+@@ -217,168 +217,6 @@ current_install_requires = common_deps
  for tool_option in options.param_rgt_tool:
      current_install_requires += tools_dictionary[tool_option][2]
  
@@ -203,7 +230,7 @@ index 1212bd19..64191333 100644
 -    "fig": ["rgt_logo.gif", "style.css", "default_motif_logo.png", "jquery-1.11.1.js", "jquery.tablesorter.min.js",
 -            "tdf_logo.png", "viz_logo.png"],
 -}
--for copy_folder in copy_files_dictionary.keys():
+-for copy_folder in list(copy_files_dictionary.keys()):
 -    copy_dest_path = path.join(rgt_data_location, copy_folder)
 -    if not path.exists(copy_dest_path): makedirs(copy_dest_path)
 -    for copy_file in copy_files_dictionary[copy_folder]:
@@ -225,23 +252,3 @@ index 1212bd19..64191333 100644
  ###################################################################################################
  # Setup Function
  ###################################################################################################
-@@ -452,19 +290,3 @@ setup(name="RGT",
-       url="http://www.regulatory-genomics.org",
-       download_url="https://github.com/CostaLab/reg-gen/archive/{0}.zip".format(current_version),
-       platforms=supported_platforms)
--
--###################################################################################################
--# Termination
--###################################################################################################
--
--# Modifying Permissions when Running Superuser/Admin
--# $SUDO_USER exists only if you are sudo, and returns the original user name
--current_user = getenv("SUDO_USER")
--default_file_permission = 0o644
--default_path_permission = 0o755
--
--if current_user:
--    current_user_uid = getpwnam(current_user).pw_uid
--    current_user_gid = getpwnam(current_user).pw_gid
--    recursive_chown_chmod(rgt_data_location, current_user_uid, current_user_gid, default_file_permission,
--                          default_path_permission)
