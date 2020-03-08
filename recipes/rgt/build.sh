@@ -1,5 +1,8 @@
 #!/bin/bash
 rm -f c/*.so
+pushd c
+make all
+popd
 $PYTHON -m pip install --no-deps --ignore-installed --no-cache-dir -vvv .
 
 
