@@ -1,7 +1,11 @@
 #!/bin/bash
+target=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}
+
 rm -f c/*.so
 pushd c
 make all
+mkdir ${target}/db/lib
+cp librgt.so ${target}/db/lib
 popd
 $PYTHON -m pip install --no-deps --ignore-installed --no-cache-dir -vvv .
 
@@ -18,7 +22,6 @@ cp data/setupLogoData.py ${PREFIX}/bin
 
 
 # create folder for database download
-target=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}
 mkdir -p ${target}/db/
 
 
@@ -29,12 +32,6 @@ cp ${RECIPE_DIR}/data.config ${target}/db/data.config.user
 
 # copy libraries, need to be in db folder
 cp -r data/lib ${target}/db/
-if [ `uname` == Darwin ]; then
-    ln -s ${target}/db/lib/librgt_mac.so ${target}/db/lib/librgt.so
-else
-    ln -s ${target}/db/lib/librgt_linux.so ${target}/db/lib/librgt.so
-fi
-
 
 # copy script to download database
 chmod +x ${RECIPE_DIR}/download-db.sh
