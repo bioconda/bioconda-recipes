@@ -1,6 +1,6 @@
-{% set version = "1.32.0" %}
+{% set version = "1.34.0" %}
 {% set name = "mcaGUI" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,23 +10,16 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 1b55ca169ec63abfd1a4ca454cbbd8a7
+  md5: 733855b4a6eff2535b3c18e211256b6c
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   noarch: generic
 requirements:
-  build:
-    - {{ cdt('mesa-libgl-devel') }}  # [linux]
-    - {{ cdt('mesa-dri-drivers') }}  # [linux]
-    - {{ cdt('libselinux') }}  # [linux]
-    - {{ cdt('libxdamage') }}  # [linux]
-    - {{ cdt('libxxf86vm') }}  # [linux]
-    - xorg-libxfixes  # [linux]
   host:
-    - 'bioconductor-otubase >=1.34.0,<1.35.0'
+    - 'bioconductor-otubase >=1.36.0,<1.37.0'
     - r-base
     - r-bpca
     - r-foreign
@@ -37,7 +30,7 @@ requirements:
     - r-proto
     - r-vegan
   run:
-    - 'bioconductor-otubase >=1.34.0,<1.35.0'
+    - 'bioconductor-otubase >=1.36.0,<1.37.0'
     - r-base
     - r-bpca
     - r-foreign
@@ -47,13 +40,22 @@ requirements:
     - r-mass
     - r-proto
     - r-vegan
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
 test:
   commands:
-    - 'LD_LIBRARY_PATH=${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64 $R -e "library(''{{ name }}'')"'
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'Microbial community analysis GUI for R using gWidgets.'
+  summary: 'Microbial Community Analysis GUI'
+  description: 'Microbial community analysis GUI for R using gWidgets.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   container:
     extended-base: true

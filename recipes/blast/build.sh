@@ -63,10 +63,10 @@ export AR="${AR} rcs"
     --without-vdb \
     --with-z=$PREFIX \
     --with-bz2=$PREFIX \
-    --with-z=$PREFIX \
     --without-krb5 \
     --without-openssl \
     --without-gnutls \
+    --without-sse42 \
     --without-gcrypt
 
 apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe"

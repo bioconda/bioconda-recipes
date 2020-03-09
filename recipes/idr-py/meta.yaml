@@ -1,8 +1,8 @@
 {% set name = "idr-py" %}
-{% set version = "0.3.0" %}
+{% set version = "0.4.0.dev3" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "5488217bc5c84440722511a8f695d6cfa1034899edf1bba8a0ec12d2cdef0c16" %}
+{% set hash_value = "88e05f47c054c44c03fff6c8f78d0f313f206cb28bc6348f27c6b1ef36a8d395" %}
 
 package:
   name: '{{ name|lower }}'
@@ -13,29 +13,34 @@ source:
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-  number: 1
-  script: python -m pip install --no-deps --ignore-installed .
-  skip: True  # [not py27]
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 requirements:
   host:
-    - python
+    - python >=3
     - pip
-    - setuptools
   run:
-    - python
-    - python-omero <5.5
+    - python >=3
+    - python-omero
     - ipython
     - ipywidgets
-    - matplotlib
+    - matplotlib-base
     - pandas
     - requests
     - seaborn
 
 test:
-  commands:
-    - env MPLBACKEND=Agg python -c "import idr"
-    - env MPLBACKEND=Agg python -c "import idr.tests"
+  imports:
+    - idr
+    - idr.tests
+    - idr.attributes
+    - idr.connections
+    - idr.externalDBs
+    - idr.images
+    - idr.visualizations
+    - idr.widgets
 
 about:
   home: https://github.com/IDR/idr-py
@@ -48,8 +53,8 @@ about:
     \nThis section assumes that an OMERO.web is already installed.\n\n\nInstall the app using `pip <https://pip.pypa.io/en/stable/>`_:\n\n::\n\n    $ pip install -U idr-py\n\n\nLicense\n-------\n\nThis\
     \ project, similar to many Open Microscopy Environment (OME) projects, is licensed under the terms of the GNU General Public License (GPL) v2 or later.\n\nCopyright\n---------\n\n2017, The Open Microscopy\
     \ Environment"
-  doc_url: ''
-  dev_url: ''
+  doc_url: 'https://idr.openmicroscopy.org/about/api.html'
+  dev_url: 'https://github.com/IDR/idr-py'
 
 extra:
   recipe-maintainers: ''

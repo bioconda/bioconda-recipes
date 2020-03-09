@@ -8,7 +8,7 @@ mkdir -p $PREFIX/share/sepp/sepp
 # ... and holds correct path names
 mv -v sepp-package/sepp/default.main.config $PREFIX/share/sepp/sepp/main.config
 
-python setup.py install 
+$PYTHON -m pip install . --ignore-installed --no-deps -vv
 
 # copy bundled binaries, but hmmer which should be provided by conda, into $PREFIX/bin/
 mkdir -p $PREFIX/bin/

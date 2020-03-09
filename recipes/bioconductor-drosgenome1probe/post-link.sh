@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="drosgenome1probe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/drosgenome1probe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/drosgenome1probe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/drosgenome1probe_2.18.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-drosgenome1probe/bioconductor-drosgenome1probe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-drosgenome1probe/bioconductor-drosgenome1probe_2.18.0_src_all.tar.gz"

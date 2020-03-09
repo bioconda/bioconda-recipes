@@ -1,29 +1,29 @@
---- auxprogs/bam2wig/Makefile.old	2019-03-28 00:15:21.797235983 -0500
-+++ auxprogs/bam2wig/Makefile	2019-03-28 00:18:04.488231631 -0500
+--- auxprogs/bam2wig/Makefile.orig	2019-09-13 08:32:52.000000000 -0400
++++ auxprogs/bam2wig/Makefile	2019-09-24 09:28:00.000000000 -0400
 @@ -7,7 +7,7 @@
  #
  
  ifndef TOOLDIR
 -	TOOLDIR=$(HOME)/tools
 +	TOOLDIR=${PREFIX}/include
- # replace with your own parent directory of samtools, htslib, bcftools, tabix
+ # replace with your own parent directory of samtools, htslib, bcftools
  # if TOOLDIR is not specified as environment variable
  endif
-@@ -19,14 +19,13 @@
- HTSLIB=$(TOOLDIR)/htslib/
- BCFTOOLS=$(TOOLDIR)/bcftools/
- TABIX=$(TOOLDIR)/tabix/
--INCLUDES=-I$(SAMTOOLS) -I. -I$(HTSLIB) -I$(BCFTOOLS) -I$(TABIX)
+@@ -18,14 +18,13 @@
+ SAMTOOLS=$(TOOLDIR)/samtools
+ HTSLIB=$(TOOLDIR)/htslib
+ BCFTOOLS=$(TOOLDIR)/bcftools
+-INCLUDES=-I$(SAMTOOLS) -I. -I$(HTSLIB) -I$(BCFTOOLS)
 +INCLUDES=-I$(SAMTOOLS) -I. -I${PREFIX}/include/bam -I${PREFIX}/include
  VPATH=$(SAMTOOLS)
 -LIBS=$(SAMTOOLS)/libbam.a $(HTSLIB)/libhts.a -lcurses -lm -lz -lpthread -lcurl -lssl -lcrypto
-+LIBS=${PREFIX}/lib/libbam.a ${PREFIX}/lib/libhts.a ${PREFIX}/lib/libncurses.a -lm ${PREFIX}/lib/libz.a -lpthread ${PREFIX}/lib/libcurl.a ${PREFIX}/lib/libssl.a ${PREFIX}/lib/libcrypto.a ${PREFIX}/lib/libbz2.a ${PREFIX}/lib/liblzma.a
++LIBS=${PREFIX}/lib/libbam.a ${PREFIX}/lib/libhts.a ${PREFIX}/lib/libncurses.a -lm ${PREFIX}/lib/libz.a -lpthread ${PREFIX}/lib/libcurl.a ${PREFIX}/lib/libbz2.a ${PREFIX}/lib/liblzma.a
  CFLAGS=-Wall -O2 $(INCLUDES)
 -CC=gcc
  
  $(PROGRAM) : bam2wig.o
 -	$(CC) $(CFLAGS) $^ -o $@ $(LIBS) -lbz2 -llzma
 +	$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
+ 	mkdir -p ../../bin
  	cp bam2wig ../../bin/bam2wig
  
- bam2wig.o : bam2wig.c

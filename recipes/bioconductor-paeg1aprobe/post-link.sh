@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="paeg1aprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/paeg1aprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/paeg1aprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/paeg1aprobe_2.18.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-paeg1aprobe/bioconductor-paeg1aprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-paeg1aprobe/bioconductor-paeg1aprobe_2.18.0_src_all.tar.gz"
