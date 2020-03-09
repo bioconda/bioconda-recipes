@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="pd.nugo.mm1a520177_3.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.nugo.mm1a520177_3.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/pd.nugo.mm1a520177_3.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.nugo.mm1a520177_3.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.nugo.mm1a520177/bioconductor-pd.nugo.mm1a520177_3.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.nugo.mm1a520177/bioconductor-pd.nugo.mm1a520177_3.4.0_src_all.tar.gz"

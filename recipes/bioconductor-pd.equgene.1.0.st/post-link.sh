@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="pd.equgene.1.0.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.equgene.1.0.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/pd.equgene.1.0.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.equgene.1.0.st_3.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.equgene.1.0.st/bioconductor-pd.equgene.1.0.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.equgene.1.0.st/bioconductor-pd.equgene.1.0.st_3.12.0_src_all.tar.gz"
