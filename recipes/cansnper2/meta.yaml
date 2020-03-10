@@ -1,0 +1,48 @@
+{% set name = "cansnper2" %}
+{% set version = "2.0.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/FOI-Bioinformatics/CanSNPer2/archive/v{{ version }}.tar.gz
+  sha256: 7f8213e8651b1afc52ac91144c2b9b9cc61232da939460650aeafeaada2527de
+
+build:
+  number: 0
+    - CanSNPer2=CanSNPer2.CanSNPerTree:main
+    - CanSNPer2=CanSNPer2.CanSNPerTree:main
+    - CanSNPer2-download=CanSNPer2.DownloadGenomes:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  noarch: python
+
+requirements:
+  host:
+    - pip
+    - python >3
+    - flextaxd >=0.2.0
+    - ete3
+
+  run:
+    - python >3
+    - flextaxd >=0.2.0
+    - ete3
+    - progressivemauve #[not osx]
+
+test:
+  commands:
+    - CanSNPer2 --help
+    - CanSNPer2-database --help
+    - CanSNPer2-download --help
+
+about:
+  home: https://github.com/FOI-Bioinformatics/CanSNPer2
+  license: GPLv3
+  license_family: GPL3
+  license_file: LICENSE
+  summary: A toolkit for SNP-typing bacterial genomes.
+
+extra:
+  recipe-maintainers:
+    - druvus
