@@ -1,3 +1,3 @@
 mkdir -p $PREFIX/bin/
-make CC=$CXX
+make
 cp bin/* $PREFIX/bin/
