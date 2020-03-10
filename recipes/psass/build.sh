@@ -1,7 +1,3 @@
-echo $(gcc --help)
-echo $(which gcc)
-echo $(gcc --version)
-
 mkdir -p $PREFIX/bin/
-make
+make CXX=$CXX CC=$CC
 cp bin/* $PREFIX/bin/
