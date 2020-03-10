@@ -18,6 +18,6 @@ for file in scrapp.py raxml-ng modeltest-ng astral.jar mptp mpi-scheduler; do
   find . -type f -name ${file} -print -exec cp --parents '{}' ${dest} \;
 done
 
-for patt in ".*/pargenes/.*\.py" "\./scripts/.*\.py" "\./bin/.*" ".*\.so" ".*\.a"; do
+for patt in ".*/pargenes/.*\.py" "\./scripts/.*\.py" "\./bin/.*" ".*\.so"; do
   find . -type f -regextype posix-egrep -regex "${patt}" -print -exec cp --parents '{}' ${dest} \;
 done
