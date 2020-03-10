@@ -7,16 +7,21 @@
 # Program Parameters
 #
 import os
+import requests
 import subprocess
 import sys
 import shutil
+import time
+import zipfile
 from os import access
 from os import getenv
 from os import X_OK
+from tqdm import tqdm
 
 jar_file = 'MPA-3.3.jar'
+data_dump_url = "https://zenodo.org/api/files/cd550e2e-151b-4650-9369-feb30f88f525/mpa_ressources_incl_swissprot_03-2020.zip"
 
-default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
+default_jvm_mem_opts = ['-Xms2g', '-Xmx4g']
 
 # !!! End of parameter section. No user-serviceable code below this line !!!
 
@@ -150,6 +155,65 @@ class SqlServerWrapper:
         printerr("Done!")
 
 
+def download_file(url):
+    file_name = url.split('/')[-1]
+    file_name_part = file_name + ".prt"
+    with requests.get(url, stream=True) as response:
+        response.raise_for_status()
+        file_size_mbyte = int(float(response.headers['Content-Length']) / 1024 / 1024)
+
+        printerr(f"Downloading: {file_name}, size: {file_size_mbyte} MB")
+        pbar = tqdm(total=file_size_mbyte, position=0, leave=True, unit="MB")
+        with open(file_name_part, 'wb') as handle:
+            for chunk in response.iter_content():
+                if chunk:  # filter out keep-alive new chunks
+                    handle.write(chunk)
+                    chunk_size_mb = len(chunk) / 1024 / 1024
+                    pbar.update(chunk_size_mb)
+    os.rename(file_name_part, file_name)
+    return os.path.abspath(file_name)
+
+
+def extract_and_overwrite(zip_file, target_dir):
+    printerr("Extracting to:", target_dir)
+    with zipfile.ZipFile(zip_file, "r") as zip_handle:
+        zip_handle.extractall(path=target_dir)
+
+
+def load_preprocessed_data(cfg, url):
+    fasta_subdir = cfg["path.fasta"][1:] if cfg["path.fasta"].startswith("/") else cfg["path.fasta"]
+    fasta_dir = os.path.join(cfg["base_path"], fasta_subdir)
+    zip_file = download_file(url)
+
+    extract_and_overwrite(zip_file=zip_file, target_dir=fasta_dir)
+    os.remove(zip_file)
+    sql_dump = os.path.join(fasta_dir, "metaprot_swissprot_mar2020.sql")
+    cmd = f"mysql -u root --database='mpa_server' < {sql_dump}"
+    with SqlServerWrapper(cfg["sqlDataDir"]):
+        time.sleep(3.)
+        printerr("loading sql dump:", sql_dump)
+        printerr(f"MySQL command: {cmd}")
+        exit_code = subprocess.call(cmd, shell=True)
+    if not exit_code == 0:
+        printerr("Loading of sql dump was not successful, exiting")
+        sys.exit(1)
+    os.remove(sql_dump)
+
+
+def prompt_user_for_data_download():
+    while True:
+        user_input = input("Download preprocessed FASTA Database (~1 GB)? [Y/n] ").lower()
+        if user_input not in ["", "y", "n"]:
+            print("Valid options are: y, n")
+        else:
+            if user_input in ["", "y"]:
+                wants_db = True
+            else:
+                wants_db = False
+            break
+    return wants_db
+
+
 def main():
     java = java_executable()
     """
@@ -174,24 +238,13 @@ def main():
     config_file = os.path.join(jar_dir, "config_LINUX.properties")
     cfg = read_config(config_file)
     if is_first_run(cfg):
-        while True:
-            user_input = input("Download preprocessed FASTA Database (~1.2Gb)? [Y/n]").lower()
-            if user_input not in ["", "y", "n"]:
-                print("Valid options are: y, n")
-            else:
-                if user_input in ["", "y"]:
-                    wants_db = True
-                else:
-                    wants_db = False
-                break
-        if wants_db:
-            printerr("dummydownload")
-            # download_db_dump()
-            # load_db_dump()
+        # wants_db = prompt_user_for_data_download()
+        # if wants_db:
+        #     load_preprocessed_data(cfg, url=data_dump_url)
         set_cfg_values({"first_run": False}, config_file)
 
     with SqlServerWrapper(cfg["sqlDataDir"]):
-        java_exit_code = subprocess.call(java_args)
+        java_exit_code = subprocess.call(java_args, cwd=jar_dir)
 
     sys.exit(java_exit_code)
 

@@ -12,15 +12,20 @@ ln -s $outdir/mpa-server $PREFIX/bin
 sql_data_dir=$outdir/mysql
 mkdir -p $sql_data_dir
 mysqld --initialize-insecure --datadir $sql_data_dir
+
 # start mysqld
 nohup mysqld --datadir $sql_data_dir &
 sql_daemon_pid=$!
+sleep 3
+
 mysql -u root --execute="create database mpa_server;"
-mysql -u root --database="mpa_server" < $outdir/mpa_zip/init/MPA_Init_Database.sql
+mysql -u root --database="mpa_server" < $outdir/init/mysql_minimal_incl_taxonomy.sql
+
 # stop mysqld
 kill -TERM $sql_daemon_pid
 
-cat <<EOF > config_LINUX.properties
+# write config file
+cat <<EOF > $outdir/config_LINUX.properties
 # mpa-server configuration
 apptitle=MetaProteomeAnalyzer
 
@@ -28,7 +33,7 @@ default_qvalue_accepted=0.05
 default_fdr=0.05
 
 # sql
-sqlDataDir=/home/hennings/Projects/bioconda-recipes/recipes/mpa-server/mysql
+sqlDataDir=$sql_data_dir
 srvAddress=localhost
 dbAddress=localhost
 dbName=mpa_server
@@ -38,11 +43,11 @@ app.port=9000
 xampp_path=
 
 # paths
-base_path=/home/hennings/Projects/bioconda-recipes/recipes/mpa-server/mpa_zip
+base_path=$outdir
 
 # all paths are relative to base_path
 path.transfer=/data/transfer/
-path.blastdb=UP_SwissProt_Nov2016.fasta
+path.blastdb=uniprot_sp_March_2020.fasta
 
 # fasta files
 path.fasta=/data/fasta/
