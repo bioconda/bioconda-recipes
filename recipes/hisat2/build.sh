@@ -1,7 +1,11 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
+mkdir -p ${PREFIX}/bin
 
+make CC=${CC} CPP=${CXX}
+
+
+# convert Python 2.7 scripts to 3
 if [ $PY3K -eq 1 ]
 then
     2to3 --write \
@@ -18,10 +22,6 @@ then
         hisatgenotype_hla_cyp.py \
         hisatgenotype_locus.py \
         hisatgenotype_modules/hisatgenotype_assembly_graph.py \
-        hisatgenotype_modules/hisatgenotype_convert_codis.py \
-        hisatgenotype_modules/hisatgenotype_extract_codis_data.py \
-        hisatgenotype_modules/hisatgenotype_extract_cyp_data.py \
-        hisatgenotype_modules/hisatgenotype_gene_typing.py \
         hisatgenotype_modules/hisatgenotype_typing_common.py \
         hisatgenotype_scripts/compare_HLA_Omixon.py \
         hisatgenotype_scripts/extract_Omixon_HLA.py \
@@ -30,6 +30,7 @@ then
         hisatgenotype.py
 fi
 
+# copy binaries and python scripts
 for i in \
     hisat2 \
     hisat2-align-l \
@@ -52,21 +53,14 @@ for i in \
     hisatgenotype_locus.py \
     hisatgenotype.py;
 do
-    echo $i
-    cp $i $PREFIX/bin
-    chmod +x $PREFIX/bin/$i
+    cp ${i} ${PREFIX}/bin
+    chmod +x ${PREFIX}/bin/${i}
 done
 
+# modules needed in PYTHONPATH
 for i in \
     hisatgenotype_modules/hisatgenotype_assembly_graph.py \
-    hisatgenotype_modules/hisatgenotype_convert_codis.py \
-    hisatgenotype_modules/hisatgenotype_extract_codis_data.py \
-    hisatgenotype_modules/hisatgenotype_extract_cyp_data.py \
-    hisatgenotype_modules/hisatgenotype_gene_typing.py \
     hisatgenotype_modules/hisatgenotype_typing_common.py ;
 do
-   echo $i
-   cp $i $PREFIX/lib/python${PY_VER}/site-packages
+   cp ${i} ${PREFIX}/lib/python${PY_VER}/site-packages
 done
-
-cp -r example $PREFIX/bin
