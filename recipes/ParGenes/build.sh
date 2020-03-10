@@ -21,3 +21,8 @@ done
 for patt in ".*/pargenes/.*\.py" ".*\.so"; do
   find . -type f -regextype posix-egrep -regex "${patt}" -print -exec cp --parents '{}' ${dest} \;
 done
+
+cd ${dest}
+ln -s pargenes/pargenes.py pargenes.py
+
+echo -e "#!/usr/bin/env python\n$(cat pargenes/pargenes.py)" > pargenes/pargenes.py
