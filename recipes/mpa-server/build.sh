@@ -14,7 +14,7 @@ mkdir -p $sql_data_dir
 mysqld --initialize-insecure --datadir $sql_data_dir
 
 # start mysqld
-nohup mysqld --datadir $sql_data_dir &
+nohup mysqld --user=$USER --datadir $sql_data_dir &
 sql_daemon_pid=$!
 sleep 3
 
