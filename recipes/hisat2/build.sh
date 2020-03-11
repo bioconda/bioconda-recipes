@@ -15,7 +15,7 @@ then
         hisat2_extract_snps_haplotypes_UCSC.py \
         hisat2_extract_snps_haplotypes_VCF.py \
         hisat2_extract_splice_sites.py \
-	hisat2_read_statistics.py \
+        hisat2_read_statistics.py \
         hisat2_simulate_reads.py \
         hisatgenotype_build_genome.py \
         hisatgenotype_extract_reads.py \
@@ -28,7 +28,7 @@ then
         hisatgenotype_scripts/extract_Omixon_HLA.py \
         hisatgenotype_scripts/hisatgenotype_HLA_genotyping_PGs.py \
         hisatgenotype_scripts/hisatgenotype_locus_samples.py \
-	hisatgenotype_scripts/compare_HLA.py \
+        hisatgenotype_scripts/compare_HLA.py \
         hisatgenotype_scripts/hisatgenotype_convert_codis.py \
         hisatgenotype_scripts/hisatgenotype_extract_codis_data.py \
         hisatgenotype_scripts/hisatgenotype_extract_cyp_data.py \
