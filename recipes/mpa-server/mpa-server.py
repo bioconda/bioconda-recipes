@@ -121,7 +121,7 @@ def set_cfg_values(dict_of_vals_to_change, config_file):
                 else:
                     key, value = split_vals
                     if key in dict_of_vals_to_change:
-                        l = l.replace(value, str(dict_of_vals_to_change[key]))
+                        l = f"{key}={dict_of_vals_to_change[key]}\n"
                         del dict_of_vals_to_change[key]
             out_lines.append(l)
     if dict_of_vals_to_change:
@@ -238,6 +238,14 @@ def main():
     config_file = os.path.join(jar_dir, "config_LINUX.properties")
     cfg = read_config(config_file)
     if is_first_run(cfg):
+        mpa_data_base_path = cfg["base_path"]
+        if not os.path.isabs(mpa_data_base_path):
+            set_cfg_values({"base_path": os.path.join(os.path.abspath(jar_dir), mpa_data_base_path)}, config_file)
+            cfg = read_config(config_file)
+        sql_data_path = cfg["sqlDataDir"]
+        if not os.path.isabs(sql_data_path):
+            set_cfg_values({"sqlDataDir": os.path.join(os.path.abspath(jar_dir), sql_data_path)}, config_file)
+            cfg = read_config(config_file)
         # wants_db = prompt_user_for_data_download()
         # if wants_db:
         #     load_preprocessed_data(cfg, url=data_dump_url)

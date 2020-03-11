@@ -12,7 +12,8 @@ cp "$RECIPE_DIR"/mpa-server.py "$outdir"/mpa-server
 ln -s "$outdir"/mpa-server "$PREFIX"/bin
 
 # mysql
-sql_data_dir=$outdir/mysql
+sql_subdir=mysql
+sql_data_dir=$outdir/$sql_subdir
 mkdir -p "$sql_data_dir"
 mysqld --initialize-insecure --datadir $sql_data_dir
 
@@ -36,7 +37,7 @@ default_qvalue_accepted=0.05
 default_fdr=0.05
 
 # sql
-sqlDataDir=$sql_data_dir
+sqlDataDir=$sql_subdir
 srvAddress=localhost
 dbAddress=localhost
 dbName=mpa_server
@@ -46,7 +47,7 @@ app.port=9000
 xampp_path=
 
 # paths
-base_path=$outdir
+base_path=
 
 # all paths are relative to base_path
 path.transfer=/data/transfer/
