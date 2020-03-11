@@ -183,16 +183,7 @@ def load_preprocessed_data(cfg, url):
     extract_and_overwrite(zip_file=zip_file, target_dir=fasta_dir)
     os.remove(zip_file)
     sql_dump = os.path.join(fasta_dir, "metaprot_swissprot_mar2020.sql")
-    cmd = f"mysql -u root --database='mpa_server' < {sql_dump}"
-    with SqlServerWrapper(cfg["sqlDataDir"]):
-        time.sleep(3.)
-        printerr("loading sql dump:", sql_dump)
-        printerr(f"MySQL command: {cmd}")
-        exit_code = subprocess.call(cmd, shell=True)
-    if not exit_code == 0:
-        printerr("Loading of sql dump was not successful, exiting")
-        sys.exit(1)
-    os.remove(sql_dump)
+    return sql_dump
 
 
 def prompt_user_for_data_download():
@@ -231,15 +222,39 @@ def main():
     if is_first_run(cfg):
         mpa_data_base_path = cfg["base_path"]
         if not os.path.isabs(mpa_data_base_path):
-            set_cfg_values({"base_path": os.path.join(os.path.abspath(jar_dir), mpa_data_base_path)}, config_file)
+            mpa_data_base_path = os.path.join(os.path.abspath(jar_dir), mpa_data_base_path)
+            set_cfg_values({"base_path": mpa_data_base_path}, config_file)
             cfg = read_config(config_file)
         sql_data_path = cfg["sqlDataDir"]
         if not os.path.isabs(sql_data_path):
-            set_cfg_values({"sqlDataDir": os.path.join(os.path.abspath(jar_dir), sql_data_path)}, config_file)
+            sql_data_path = os.path.join(os.path.abspath(jar_dir), sql_data_path)
+            set_cfg_values({"sqlDataDir": sql_data_path}, config_file)
             cfg = read_config(config_file)
+
+        # initialize sql db
+        # init sql data dir
+        subprocess.call(["mysqld", "--initialize-insecure", "--datadir", sql_data_path])
+
         # wants_db = prompt_user_for_data_download()
-        # if wants_db:
-        #     load_preprocessed_data(cfg, url=data_dump_url)
+        wants_db = False    # False, since data_dump_url is not live yet
+        if wants_db:
+            sql_dump = load_preprocessed_data(cfg, url=data_dump_url)
+        else:
+            sql_dump = os.path.join(mpa_data_base_path, "init/mysql_minimal_incl_taxonomy.sql")
+        with SqlServerWrapper(cfg["sqlDataDir"]):
+            time.sleep(3.)
+            cmd = "mysql -u root --execute='create database mpa_server;'"
+            printerr(f"Creating database: {cmd}")
+            subprocess.call(cmd, shell=True)
+            cmd = f"mysql -u root --database='mpa_server' < {sql_dump}"
+            printerr("loading sql dump:", sql_dump)
+            printerr(f"MySQL command: {cmd}")
+            exit_code = subprocess.call(cmd, shell=True)
+        if not exit_code == 0:
+            printerr("Loading of sql dump was not successful, exiting")
+            sys.exit(1)
+        os.remove(sql_dump)
+
         set_cfg_values({"first_run": False}, config_file)
 
     with SqlServerWrapper(cfg["sqlDataDir"]):

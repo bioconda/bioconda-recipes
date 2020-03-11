@@ -12,18 +12,6 @@ ln -s "$outdir"/mpa-server "$PREFIX"/bin
 sql_subdir=mysql
 sql_data_dir=$outdir/$sql_subdir
 mkdir -p "$sql_data_dir"
-mysqld --initialize-insecure --datadir $sql_data_dir
-
-# start mysqld
-nohup mysqld --user="${USER:-root}" --datadir "$sql_data_dir" &
-sql_daemon_pid=$!
-sleep 3
-
-mysql -u root --execute="create database mpa_server;"
-mysql -u root --database="mpa_server" < "$outdir"/init/mysql_minimal_incl_taxonomy.sql
-
-# stop mysqld
-kill -TERM $sql_daemon_pid
 
 # write config file
 cat <<EOF > "$outdir"/config_LINUX.properties
