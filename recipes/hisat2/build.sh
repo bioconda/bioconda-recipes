@@ -15,6 +15,7 @@ then
         hisat2_extract_snps_haplotypes_UCSC.py \
         hisat2_extract_snps_haplotypes_VCF.py \
         hisat2_extract_splice_sites.py \
+	hisat2_read_statistics.py \
         hisat2_simulate_reads.py \
         hisatgenotype_build_genome.py \
         hisatgenotype_extract_reads.py \
@@ -27,6 +28,10 @@ then
         hisatgenotype_scripts/extract_Omixon_HLA.py \
         hisatgenotype_scripts/hisatgenotype_HLA_genotyping_PGs.py \
         hisatgenotype_scripts/hisatgenotype_locus_samples.py \
+	hisatgenotype_scripts/compare_HLA.py \
+        hisatgenotype_scripts/hisatgenotype_convert_codis.py \
+        hisatgenotype_scripts/hisatgenotype_extract_codis_data.py \
+        hisatgenotype_scripts/hisatgenotype_extract_cyp_data.py \
         hisatgenotype.py
 fi
 
@@ -41,20 +46,10 @@ for i in \
     hisat2-inspect \
     hisat2-inspect-l \
     hisat2-inspect-s \
-    hisat2_extract_exons.py \
-    hisat2_extract_snps_haplotypes_UCSC.py \
-    hisat2_extract_snps_haplotypes_VCF.py \
-    hisat2_extract_splice_sites.py \
-    hisat2_simulate_reads.py \
-    hisatgenotype_build_genome.py \
-    hisatgenotype_extract_reads.py \
-    hisatgenotype_extract_vars.py \
-    hisatgenotype_hla_cyp.py \
-    hisatgenotype_locus.py \
-    hisatgenotype.py;
+    *.py \
+    hisatgenotype_scripts/*.*;
 do
     cp ${i} ${PREFIX}/bin
-    chmod +x ${PREFIX}/bin/${i}
 done
 
 # modules needed in PYTHONPATH
@@ -64,3 +59,6 @@ for i in \
 do
    cp ${i} ${PREFIX}/lib/python${PY_VER}/site-packages
 done
+
+# set permissions
+chmod +x ${PREFIX}/bin/*
