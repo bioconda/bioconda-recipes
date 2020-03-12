@@ -10,18 +10,19 @@ import os
 import requests
 import subprocess
 import sys
-import shutil
 import time
 import zipfile
 from os import access
 from os import getenv
 from os import X_OK
+from pathlib import Path
 from tqdm import tqdm
 
 jar_file = 'MPA-3.3.jar'
 data_dump_url = "https://zenodo.org/api/files/cd550e2e-151b-4650-9369-feb30f88f525/mpa_ressources_incl_swissprot_03-2020.zip"
 
 default_jvm_mem_opts = ['-Xms2g', '-Xmx4g']
+
 
 # !!! End of parameter section. No user-serviceable code below this line !!!
 
@@ -200,6 +201,80 @@ def prompt_user_for_data_download():
     return wants_db
 
 
+def get_abs_sql_data_path(cfg):
+    mpa_data_base_path = cfg["base_path"]
+    sql_data_rel_path = cfg["sqlDataDir"]
+    sql_data_path = os.path.join(mpa_data_base_path, sql_data_rel_path)
+    return sql_data_path
+
+
+def create_empty_dirs(cfg, jar_dir):
+    dir_cfg_keys = ["path.transfer",
+                    "path.fasta",
+                    "path.xtandem.output",
+                    "path.omssa.output"]
+
+    data_base_path = get_data_base_path(cfg, jar_dir)
+    dirs = []
+    for k in dir_cfg_keys:
+        dir_string = cfg[k]
+        subdir = dir_string[1:] if dir_string.startswith("/") else dir_string
+        abs_dir = os.path.join(data_base_path, subdir)
+        dirs.append(abs_dir)
+        if k == "path.fasta":
+            dirs.append(os.path.join(abs_dir, "Pep"))
+
+    if not all(map(os.path.isdir, dirs)):
+        printerr("Creating empty directories:")
+    for d in dirs:
+        if not os.path.isdir(d):
+            printerr(f"\t{d}")
+            Path(d).mkdir(parents=True)
+
+
+def init_sql_db(cfg):
+    mpa_data_base_path = cfg["base_path"]
+    sql_data_path = get_abs_sql_data_path(cfg)
+    # initialize sql db
+    # init sql data dir
+    subprocess.call(["mysqld", "--initialize-insecure", "--datadir", sql_data_path])
+    # wants_db = prompt_user_for_data_download()
+    wants_db = False  # False, since data_dump_url is not live yet
+    if wants_db:
+        sql_dump = load_preprocessed_data(cfg, url=data_dump_url)
+    else:
+        sql_dump = os.path.join(mpa_data_base_path, "init/mysql_minimal_incl_taxonomy.sql")
+    with SqlServerWrapper(sql_data_path):
+        time.sleep(3.)
+        cmd = "mysql -u root --execute='create database mpa_server;'"
+        printerr(f"Creating database: {cmd}")
+        subprocess.call(cmd, shell=True)
+        cmd = f"mysql -u root --database='mpa_server' < {sql_dump}"
+        printerr("loading sql dump:", sql_dump)
+        printerr(f"MySQL command: {cmd}")
+        exit_code = subprocess.call(cmd, shell=True)
+    if not exit_code == 0:
+        printerr("Loading of sql dump was not successful, exiting")
+        sys.exit(1)
+    os.remove(sql_dump)
+
+
+def get_data_base_path(cfg, jar_dir):
+    mpa_data_base_path = cfg["base_path"]
+    if not os.path.isabs(mpa_data_base_path):
+        mpa_data_base_path = os.path.join(os.path.abspath(jar_dir), mpa_data_base_path)
+    return mpa_data_base_path
+
+
+def make_data_base_path_in_cfg_absolute(cfg, config_file, jar_dir):
+    abs_data_path = get_data_base_path(cfg, jar_dir)
+    cfg_data_path = cfg["base_path"]
+    if abs_data_path != cfg_data_path:
+        set_cfg_values({"base_path": abs_data_path}, config_file)
+        cfg = read_config(config_file)
+    return cfg
+
+
 def main():
     java = java_executable()
     """
@@ -220,44 +295,15 @@ def main():
     config_file = os.path.join(jar_dir, "config_LINUX.properties")
     cfg = read_config(config_file)
     if is_first_run(cfg):
-        mpa_data_base_path = cfg["base_path"]
-        if not os.path.isabs(mpa_data_base_path):
-            mpa_data_base_path = os.path.join(os.path.abspath(jar_dir), mpa_data_base_path)
-            set_cfg_values({"base_path": mpa_data_base_path}, config_file)
-            cfg = read_config(config_file)
-        sql_data_path = cfg["sqlDataDir"]
-        if not os.path.isabs(sql_data_path):
-            sql_data_path = os.path.join(os.path.abspath(jar_dir), sql_data_path)
-            set_cfg_values({"sqlDataDir": sql_data_path}, config_file)
-            cfg = read_config(config_file)
-
-        # initialize sql db
-        # init sql data dir
-        subprocess.call(["mysqld", "--initialize-insecure", "--datadir", sql_data_path])
-
-        # wants_db = prompt_user_for_data_download()
-        wants_db = False    # False, since data_dump_url is not live yet
-        if wants_db:
-            sql_dump = load_preprocessed_data(cfg, url=data_dump_url)
-        else:
-            sql_dump = os.path.join(mpa_data_base_path, "init/mysql_minimal_incl_taxonomy.sql")
-        with SqlServerWrapper(cfg["sqlDataDir"]):
-            time.sleep(3.)
-            cmd = "mysql -u root --execute='create database mpa_server;'"
-            printerr(f"Creating database: {cmd}")
-            subprocess.call(cmd, shell=True)
-            cmd = f"mysql -u root --database='mpa_server' < {sql_dump}"
-            printerr("loading sql dump:", sql_dump)
-            printerr(f"MySQL command: {cmd}")
-            exit_code = subprocess.call(cmd, shell=True)
-        if not exit_code == 0:
-            printerr("Loading of sql dump was not successful, exiting")
-            sys.exit(1)
-        os.remove(sql_dump)
+        cfg = make_data_base_path_in_cfg_absolute(cfg, config_file, jar_dir)
+        create_empty_dirs(cfg, jar_dir)
+        init_sql_db(cfg)
 
         set_cfg_values({"first_run": False}, config_file)
 
-    with SqlServerWrapper(cfg["sqlDataDir"]):
+    sql_data_abs_path = get_abs_sql_data_path(cfg)
+
+    with SqlServerWrapper(sql_data_abs_path):
         java_exit_code = subprocess.call(java_args, cwd=jar_dir)
 
     sys.exit(java_exit_code)

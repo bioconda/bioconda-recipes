@@ -10,8 +10,6 @@ ln -s "$outdir"/mpa-server "$PREFIX"/bin
 
 # mysql
 sql_subdir=mysql
-sql_data_dir=$outdir/$sql_subdir
-mkdir -p "$sql_data_dir"
 
 # write config file
 cat <<EOF > "$outdir"/config_LINUX.properties
@@ -20,6 +18,11 @@ apptitle=MetaProteomeAnalyzer
 
 default_qvalue_accepted=0.05
 default_fdr=0.05
+
+# all paths are relative to base_path
+base_path=
+path.transfer=/data/transfer/
+path.blastdb=uniprot_sp_March_2020.fasta
 
 # sql
 sqlDataDir=$sql_subdir
@@ -30,13 +33,6 @@ dbUsername=root
 dbPass=
 app.port=9000
 xampp_path=
-
-# paths
-base_path=
-
-# all paths are relative to base_path
-path.transfer=/data/transfer/
-path.blastdb=uniprot_sp_March_2020.fasta
 
 # fasta files
 path.fasta=/data/fasta/
