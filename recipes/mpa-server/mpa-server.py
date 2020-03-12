@@ -164,7 +164,7 @@ def download_file(url):
             for chunk in response.iter_content(chunk_size=1024*1024):    # 1 MB chunk size
                 if chunk:  # filter out keep-alive new chunks
                     handle.write(chunk)
-                    chunk_size_mb = len(chunk) / 1024 / 1024
+                    chunk_size_mb = round(len(chunk) / 1024 / 1024, 2)
                     pbar.update(chunk_size_mb)
     os.rename(file_name_part, file_name)
     return os.path.abspath(file_name)
