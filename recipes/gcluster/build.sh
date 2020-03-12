@@ -50,4 +50,3 @@ END
 chmod a+x ${PREFIX}/bin/Gcluster.pl
 chmod a+x ${PREFIX}/bin/interested_gene_generation.pl
 chmod a+x ${PREFIX}/bin/test.pl
-
