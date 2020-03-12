@@ -6,6 +6,19 @@ export CPATH=${PREFIX}/include
 mkdir build
 cd build
 
-cmake -D CMAKE_INSTALL_PREFIX:PATH=$PREFIX -DIQTREE_FLAGS=omp ..
+echo "which cmake"
+which cmake
+
+if [ `uname` == Darwin ]; then
+    cmake \
+        -D CMAKE_INSTALL_PREFIX:PATH=$PREFIX \
+        -DIQTREE_FLAGS=omp \
+        -DCMAKE_C_COMPILER=clang \
+        -DCMAKE_CXX_COMPILER=clang++ \
+        ..
+else
+    cmake -D CMAKE_INSTALL_PREFIX:PATH=$PREFIX -DIQTREE_FLAGS=omp ..
+fi
+
 make -j${CPU_COUNT}
 make install
