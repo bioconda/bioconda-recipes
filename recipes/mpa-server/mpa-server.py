@@ -159,13 +159,13 @@ def download_file(url):
         file_size_mbyte = int(float(response.headers['Content-Length']) / 1024 / 1024)
 
         printerr(f"Downloading: {file_name}, size: {file_size_mbyte} MB")
-        pbar = tqdm(total=file_size_mbyte, position=0, leave=True, unit="MB")
         with open(file_name_part, 'wb') as handle:
-            for chunk in response.iter_content(chunk_size=1024*1024):    # 1 MB chunk size
-                if chunk:  # filter out keep-alive new chunks
-                    handle.write(chunk)
-                    chunk_size_mb = round(len(chunk) / 1024 / 1024, 2)
-                    pbar.update(chunk_size_mb)
+            with tqdm(total=file_size_mbyte, position=0, leave=True, unit="MB") as pbar:
+                for chunk in response.iter_content(chunk_size=1024*1024):    # 1 MB chunk size
+                    if chunk:  # filter out keep-alive new chunks
+                        handle.write(chunk)
+                        chunk_size_mb = round(len(chunk) / 1024 / 1024, 2)
+                        pbar.update(chunk_size_mb)
     os.rename(file_name_part, file_name)
     return os.path.abspath(file_name)
 
