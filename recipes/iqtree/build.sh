@@ -10,7 +10,7 @@ echo "which cmake"
 which cmake
 
 if [ `uname` == Darwin ]; then
-    cmake \
+    cmake -v \
         -D CMAKE_INSTALL_PREFIX:PATH=$PREFIX \
         -DIQTREE_FLAGS=omp \
         -DCMAKE_C_COMPILER=clang \
