@@ -6,9 +6,6 @@ export CPATH=${PREFIX}/include
 mkdir build
 cd build
 
-echo "which cmake"
-which cmake
-
 if [ `uname` == Darwin ]; then
     cmake -v \
         -D CMAKE_INSTALL_PREFIX:PATH=$PREFIX \
