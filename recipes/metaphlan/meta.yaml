@@ -6,24 +6,26 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/biobakery/MetaPhlAn/archive/{{version}}.tar.gz
-  sha256: 5993b5da1bab94fc7860dbd0cb6dcfce55513e286039b7a24341d882dcf51d6a
+  git_url: https://github.com/biobakery/MetaPhlAn.git
+  git_rev: 32b32d5e8618acf88901a536428405dbb4f3be0b
 
 build:
-  number: 0
   noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
 
 requirements:
   host:
     - python >=3
-    - setuptools
+    - pip
+    - cython
+    - numpy
   run:
     - python >=3
     - bowtie2 >=2.0.0
     - dendropy
     - numpy
     - biom-format
-    - matplotlib 
+    - matplotlib-base
     - msgpack-python
     - biopython
     - pandas
@@ -37,8 +39,8 @@ requirements:
 
 test:
   commands:
-    - metaphlan.py -v
-    - strainphlan.py -h
+    - metaphlan -v
+    - strainphlan -h
     - extract_markers.py -h
     - merge_metaphlan_tables.py -h
     - read_fastx.py -h
