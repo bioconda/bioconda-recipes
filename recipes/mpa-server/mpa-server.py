@@ -19,7 +19,7 @@ from pathlib import Path
 from tqdm import tqdm
 
 jar_file = 'MPA-3.3.jar'
-data_dump_url = "https://zenodo.org/api/files/cd550e2e-151b-4650-9369-feb30f88f525/mpa_ressources_incl_swissprot_03-2020.zip"
+data_dump_url = "https://zenodo.org/record/3702957/files/mpa_ressources_incl_swissprot_03-2020.zip"
 
 default_jvm_mem_opts = ['-Xms2g', '-Xmx4g']
 
@@ -159,13 +159,13 @@ def download_file(url):
         file_size_mbyte = int(float(response.headers['Content-Length']) / 1024 / 1024)
 
         printerr(f"Downloading: {file_name}, size: {file_size_mbyte} MB")
-        pbar = tqdm(total=file_size_mbyte, position=0, leave=True, unit="MB")
         with open(file_name_part, 'wb') as handle:
-            for chunk in response.iter_content():
-                if chunk:  # filter out keep-alive new chunks
-                    handle.write(chunk)
-                    chunk_size_mb = len(chunk) / 1024 / 1024
-                    pbar.update(chunk_size_mb)
+            with tqdm(total=file_size_mbyte, position=0, leave=True, unit="MB") as pbar:
+                for chunk in response.iter_content(chunk_size=1024*1024):    # 1 MB chunk size
+                    if chunk:  # filter out keep-alive new chunks
+                        handle.write(chunk)
+                        chunk_size_mb = round(len(chunk) / 1024 / 1024, 2)
+                        pbar.update(chunk_size_mb)
     os.rename(file_name_part, file_name)
     return os.path.abspath(file_name)
 
@@ -189,7 +189,10 @@ def load_preprocessed_data(cfg, url):
 
 def prompt_user_for_data_download():
     while True:
-        user_input = input("Download preprocessed FASTA Database (~1 GB)? [Y/n] ").lower()
+        user_input = input(
+            f"Download preprocessed FASTA Database (size: ~1 GB)?\n"
+            f"\tfile: {data_dump_url.split('/')[-1]}\n"
+            f"\t[Y/n] ").lower()
         if user_input not in ["", "y", "n"]:
             print("Valid options are: y, n")
         else:
@@ -238,8 +241,7 @@ def init_sql_db(cfg):
     # initialize sql db
     # init sql data dir
     subprocess.call(["mysqld", "--initialize-insecure", "--datadir", sql_data_path])
-    # wants_db = prompt_user_for_data_download()
-    wants_db = False  # False, since data_dump_url is not live yet
+    wants_db = prompt_user_for_data_download()
     if wants_db:
         sql_dump = load_preprocessed_data(cfg, url=data_dump_url)
     else:
