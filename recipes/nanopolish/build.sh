@@ -1,5 +1,5 @@
 #!/bin/bash
-export CFLAGS="-Iminimap2 -I$PREFIX/include -std=c99"
+export CFLAGS="-I$PREFIX/include -std=c99"
 export CPATH=${PREFIX}/include
 
 export HTS_LIB=${PREFIX}/lib/libhts.a
@@ -8,12 +8,7 @@ export FAST5_INCLUDE=-I${PREFIX}/include/fast5
 
 mkdir -p $PREFIX/bin
 
-# Linker options aren't passed to minimap2
-pushd minimap2
-make CFLAGS="$CFLAGS" LIBS="-L$PREFIX/lib -lm -lz -pthread" libminimap2.a
-popd
-
-make HDF5=noinstall EIGEN=noinstall HTS=noinstall MINIMAP2=noinstall CXXFLAGS="-g -O3" CPPFLAGS='-g -O3' LDFLAGS="$LDFLAGS -pthread -fopenmp"
+make HDF5=noinstall EIGEN=noinstall HTS=noinstall MINIMAP2=noinstall
 cp nanopolish $PREFIX/bin
 cp scripts/nanopolish_makerange.py $PREFIX/bin
 cp scripts/nanopolish_merge.py $PREFIX/bin
