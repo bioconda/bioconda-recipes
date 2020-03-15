@@ -8,7 +8,7 @@ export FAST5_INCLUDE=-I${PREFIX}/include/fast5
 
 mkdir -p $PREFIX/bin
 
-make HDF5=noinstall EIGEN=noinstall HTS=noinstall MINIMAP2=noinstall
+make HDF5=noinstall EIGEN=noinstall HTS=noinstall
 cp nanopolish $PREFIX/bin
 cp scripts/nanopolish_makerange.py $PREFIX/bin
 cp scripts/nanopolish_merge.py $PREFIX/bin
