@@ -12,4 +12,6 @@ make HDF5=noinstall EIGEN=noinstall HTS=noinstall LDFLAGS="$LDFLAGS -pthread -fo
 cp nanopolish $PREFIX/bin
 cp scripts/nanopolish_makerange.py $PREFIX/bin
 cp scripts/nanopolish_merge.py $PREFIX/bin
+./nanopolish
+
 # cp scripts/consensus-preprocess.pl $PREFIX/bin # Skipping this pre-processing step at the moment.
