@@ -88,8 +88,10 @@ make SHARED_LIB_SUFFIX=$SHARED_LIB_SUFFIX tarfile_quick \
 echo "====== FINISHED BUILD ========"
 
 
+echo -n Unpacking the new binary archive ...
 mkdir -p install/lib/arb
 tar -C install/lib/arb -xzf arb.tgz
+echo done
 
 
 # Manually relocate libraries and binaries
@@ -128,13 +130,19 @@ case `uname` in
     Linux)
 	ARB_BINS=`find install -type f -perm -a=x | \
 	    xargs file | grep ELF | cut -d : -f 1 | grep -v ' '`
+	echo "Found these binaries: $ARB_BINS"
+	set -x
+	file install/bin/arb_ntree || true
+	patchelf --set-rpath \$ORIGIN/../lib install/bin/arb_ntree || true
+	ldd install/bin/arb_ntree || true
 	echo "Patching rpath into binaries:"
 	for bin in $ARB_BINS; do
 	    if test -e "$bin"; then
 		echo -n "$bin ..."
-		patchelf --set-rpath \$ORIGIN/../lib "$bin"
+		patchelf --set-rpath \$ORIGIN/../lib "$bin" || true
 	    fi
 	done
+	set +x
 	;;
 esac
 
