@@ -4,7 +4,7 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
 if [ "$(uname)" == Darwin ]; then
-    export MACOSX_DEPLOYMENT_TARGET=10.7
+    export MACOSX_DEPLOYMENT_TARGET=10.9
     export CMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY
     export CMAKE_C_COMPILER="clang"
     export CMAKE_CXX_COMPILER="clang++"
