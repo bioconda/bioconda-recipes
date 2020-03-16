@@ -3,7 +3,7 @@
 rm blobtools
 mv lib blobtools
 
-sed -i.bak 's/ lib./ blobtools./g' blobtools/*py
+sed -i.bak 's/ lib\./ blobtools./g' blobtools/*py
 rm blobtools/*py.bak
 
 $PYTHON -m pip install . --ignore-installed --no-deps -vv
