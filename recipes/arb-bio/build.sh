@@ -29,7 +29,7 @@ if [ -n "$wrong_prefix" ]; then
     echo "  $good_prefix"
     grep -rlI "$wrong_prefix" $(perl -e 'print "@INC"') | \
 	sort -u |\
-	xargs sed -ibak "s|$wrong_prefix|$good_prefix|g"
+	xargs sed -ibak "s|$wrong_prefix|$good_prefix|g" || true
     if perl -V | grep "$wrong_prefix"; then
 	echo "Failed to fix paths - expect breakage below"
     else
