@@ -7,7 +7,7 @@ mkdir -p $PREFIX/bin
 cd $SRC_DIR
 if [ "$(uname)" == "Darwin" ]; then
     echo "Installing FaQCs for OSX."
-    make cc=$GCC CC=$GXX LIBS="-L${PREFIX}/lib -lm -lz" OPENMP=""
+    make cc=$CC$ CC=$CLANGXX LIBS="-L${PREFIX}/lib -lm -lz" OPENMP=""
     cp FaQCs $PREFIX/bin
 else 
     echo "Installing FaQCs for UNIX/Linux."
