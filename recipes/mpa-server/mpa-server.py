@@ -80,6 +80,20 @@ def jvm_opts(argv):
     return (mem_opts, prop_opts, pass_args)
 
 
+def get_cfg_file(jar_dir):
+    config_file_basename = "config_LINUX.properties"
+    config_files = [
+        os.path.join(jar_dir, config_file_basename),
+        os.path.join(getenv("HOME"), ".config", "mpa-server", config_file_basename)
+    ]
+    for f in config_files:
+        if os.path.isfile(f):
+            return f
+    printerr("Error: Config file not found in any of the following locations:\n"
+             "\t" + "\n\t".join(config_files))
+    sys.exit(1)
+
+
 def read_config(config_file):
     cfg = {}
     with open(config_file, "r") as f:
@@ -294,7 +308,8 @@ def main():
 
     java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
 
-    config_file = os.path.join(jar_dir, "config_LINUX.properties")
+    config_file = get_cfg_file(jar_dir)
+    printerr(f"mpa-server config file: {config_file}")
     cfg = read_config(config_file)
     if is_first_run(cfg):
         cfg = make_data_base_path_in_cfg_absolute(cfg, config_file, jar_dir)
