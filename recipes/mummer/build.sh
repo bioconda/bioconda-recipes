@@ -12,7 +12,7 @@ cp -R $SRC_DIR/* $MUMMER_HOME
 
 cd $MUMMER_HOME
 
-make CC=$CC CXX=$CXX
+make CC=$CC CXX=$CXX CPPFLAGS="-O3 -DSIXTYFOURBITS"
 
 binaries="\
 combineMUMs \
