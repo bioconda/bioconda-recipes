@@ -1,6 +1,12 @@
 #!/bin/bash
 set -euxo pipefail
 
+mkdir $PREFIX/bin
+cp bin/* $PREFIX/bin
+exit 0
+
+# What's below is needed to build from source, which doesn't currently work on OSX in blast 2.10.0 -Devon
+
 cd $SRC_DIR/c++/
 
 export CFLAGS="$CFLAGS -O2"
