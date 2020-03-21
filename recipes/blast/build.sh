@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euxo pipefail
 
-mkdir $PREFIX/bin
+mkdir -p $PREFIX/bin
 cp bin/* $PREFIX/bin
 exit 0
 
