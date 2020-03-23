@@ -1,6 +1,7 @@
 #!/bin/bash
 
 mkdir -p $PREFIX/bin
+sed -i.bak 's|\bgcc\b|\${CC}|g' Makefile # use platform-specific compiler
 make
 
 binaries="\
