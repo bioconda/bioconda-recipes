@@ -13,7 +13,9 @@ binaries="\
  LAshow  \
  LAdump  \
  LAcheck  \
- LAindex
+ LAa2b  \
+ LAb2a  \
+ dumpLA
 "
 
 for i in $binaries; do cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
