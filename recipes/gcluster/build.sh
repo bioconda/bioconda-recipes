@@ -30,17 +30,23 @@ sed -i -e "s~$MAKEBLASTDB_P~${MAKEBLASTDB_DIR}~g" ${RM_DIR}/interested_gene_gene
 # cp -r ${RM_DIR}/test_data ${RECIPE_DIR}/test_data
 
 # Set a executable file for Gcluster.pl
-cat <<END >>${PREFIX}/bin/Gcluster
+cat <<END >>${PREFIX}/bin/Gcluster.pl
 #!/bin/bash
 perl ${RM_DIR}/Gcluster.pl \$@
 END
 
-
 # Set a executable file for interested_gene_generation.pl
-cat <<END >>${PREFIX}/bin/interested_gene_generation
+cat <<END >>${PREFIX}/bin/interested_gene_generation.pl
 #!/bin/bash
 perl ${RM_DIR}/interested_gene_generation.pl \$@
 END
 
-chmod a+x ${PREFIX}/bin/Gcluster
-chmod a+x ${PREFIX}/bin/interested_gene_generation
+# Set a executable file for test.pl
+cat <<END >>${PREFIX}/bin/test.pl
+#!/bin/bash
+perl ${RM_DIR}/test.pl
+END
+
+chmod a+x ${PREFIX}/bin/Gcluster.pl
+chmod a+x ${PREFIX}/bin/interested_gene_generation.pl
+chmod a+x ${PREFIX}/bin/test.pl
