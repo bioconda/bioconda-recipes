@@ -13,7 +13,15 @@ source:
 build:
   number: 0
   skip: True  # [py2k or win]
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  script:
+    # CUDA 10.1 moves some headers to `/usr/include`
+    # So add that location last in the header search paths
+    - export CFLAGS="${CFLAGS} -I/usr/include"  # [linux64]
+    - export CPPFLAGS="${CPPFLAGS} -I/usr/include"  # [linux64]
+    - export CXXFLAGS="${CXXFLAGS} -I/usr/include"  # [linux64]
+    - "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  missing_dso_whitelist:
+    - "*/libcuda.*"
   entry_points:
     - poppunk_sketch = pp_sketch.__main__:main
 
@@ -21,12 +29,9 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler("cuda") }}  # [linux64]
     - cmake
   host:
-    - conda  # [linux]
-    - nvcc_linux-64   # [linux]
-    - cudatoolkit   # [linux]
-    - cudatoolkit-dev   # [linux]
     - python
     - pip
     - pybind11
