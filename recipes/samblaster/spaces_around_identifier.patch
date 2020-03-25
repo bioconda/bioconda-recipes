@@ -1,0 +1,96 @@
+diff -u -ur samblaster-v.0.1.25.orig/samblaster.cpp samblaster-v.0.1.25/samblaster.cpp
+--- samblaster-v.0.1.25.orig/samblaster.cpp	2020-03-17 02:01:42.000000000 +0100
++++ samblaster-v.0.1.25/samblaster.cpp	2020-03-18 14:57:24.199719994 +0100
+@@ -1115,7 +1115,7 @@
+ #ifdef DEBUG
+         // This debug output allows the discovery of all members of a duplicate group including the read not marked as a duplicate.
+         // This could otherwise not be figured out from the output sam file.
+-        fprintf(stderr, "%"PRIu64"\t%s\t%6d\t%s\t%"PRIu64"\t%s\n", idCount, second->fields[QNAME], second->flag, insert ? "First" : "Dup", sig, second->fields[RNAME]);
++        fprintf(stderr, "%" PRIu64 "\t%s\t%6d\t%s\t%" PRIu64 "\t%s\n", idCount, second->fields[QNAME], second->flag, insert ? "First" : "Dup", sig, second->fields[RNAME]);
+ #endif
+ 
+         // Check if the insertion actually happened.
+@@ -1429,30 +1429,30 @@
+     if (!state->quiet)
+     {
+         if (state->discordantFile != NULL)
+-            fprintf(stderr, "samblaster: Output  %10"PRIu64" discordant read pairs to %s\n", discCount/2, state->discordantFileName);
++            fprintf(stderr, "samblaster: Output  %10" PRIu64 " discordant read pairs to %s\n", discCount/2, state->discordantFileName);
+         if (state->splitterFile != NULL)
+-            fprintf(stderr, "samblaster: Output  %10"PRIu64" split reads to %s\n", splitCount, state->splitterFileName);
++            fprintf(stderr, "samblaster: Output  %10" PRIu64 " split reads to %s\n", splitCount, state->splitterFileName);
+         if (state->unmappedClippedFile != NULL)
+-            fprintf(stderr, "samblaster: Output  %10"PRIu64" unmapped/clipped reads to %s\n", unmapClipCount, state->unmappedClippedFileName);
++            fprintf(stderr, "samblaster: Output  %10" PRIu64 " unmapped/clipped reads to %s\n", unmapClipCount, state->unmappedClippedFileName);
+     }
+ 
+     // Now the stats that might indicate a problem that therefore deserve reporting even if quiet set.
+     if (readTooLongCount > 0)
+     {
+-        fprintf(stderr, "samblaster: Found   %10"PRIu64" of %10"PRIu64" (%5.3f) total read ids longer than the --maxReadLength(%d)\n."
++        fprintf(stderr, "samblaster: Found   %10" PRIu64 " of %10" PRIu64 " (%5.3f) total read ids longer than the --maxReadLength(%d)\n."
+                         "samblaster: The longest of which is %d bases long.\n",
+                 readTooLongCount, idCount, ((double)100)*readTooLongCount/idCount, state->maxReadLength, readTooLongMax);
+         fprintf(stderr, "samblaster: Consider rerunning samblaster with a larger --maxReadLength.\n");
+     }
+     if (state->ignoreUnmated)
+     {
+-        fprintf(stderr, "samblaster: Found   %10"PRIu64" of %10"PRIu64" (%5.3f%%) total read ids are marked paired yet are unmated.\n",
++        fprintf(stderr, "samblaster: Found   %10" PRIu64 " of %10" PRIu64 " (%5.3f%%) total read ids are marked paired yet are unmated.\n",
+                 unmatedCount, idCount, ((double)100)*unmatedCount/idCount);
+         if (unmatedCount > 0) fprintf(stderr, "samblaster: Please double check that input file is read-id (QNAME) grouped.\n");
+     }
+     if (noPrimaryIdCount > 0)
+     {
+-        fprintf(stderr, "samblaster: Found   %10"PRIu64" of %10"PRIu64" (%5.3f%%) total read ids with no primary alignment.\n",
++        fprintf(stderr, "samblaster: Found   %10" PRIu64 " of %10" PRIu64 " (%5.3f%%) total read ids with no primary alignment.\n",
+                 noPrimaryIdCount, idCount, ((double)100)*noPrimaryIdCount/idCount);
+         if (unmatedCount > 0) fprintf(stderr, "samblaster: Please double check that input file is read-id (QNAME) grouped.\n");
+     }
+@@ -1485,32 +1485,32 @@
+         // These first two can't produce any dups.
+         if (bothUnmappedIdCount > 0)
+         {
+-            fprintf(stderr, "samblaster: %*.*s   %10"PRIu64"       %7.3f     %10"PRIu64"         %7.3f           %7.3f        %7.3f\n",
++            fprintf(stderr, "samblaster: %*.*s   %10" PRIu64 "       %7.3f     %10" PRIu64 "         %7.3f           %7.3f        %7.3f\n",
+                     typeLength, typeLength, "Both Unmapped                                   ",
+                     bothUnmappedIdCount, ((double)100)*bothUnmappedIdCount/idCount, (UINT64)0, (double)0, (double)0, (double)0);
+         }
+         if (unmappedOrphanIdCount > 0)
+         {
+-            fprintf(stderr, "samblaster: %*.*s   %10"PRIu64"       %7.3f     %10"PRIu64"         %7.3f           %7.3f        %7.3f\n",
++            fprintf(stderr, "samblaster: %*.*s   %10" PRIu64 "       %7.3f     %10" PRIu64 "         %7.3f           %7.3f        %7.3f\n",
+                     typeLength, typeLength, "Unmapped Orphan/Singleton                       ",
+                     unmappedOrphanIdCount, ((double)100)*unmappedOrphanIdCount/idCount, (UINT64)0, (double)0, (double)0, (double)0);
+         }
+         // All orphanDups are, of course, from mapped orphans.
+         if (mappedOrphanIdCount > 0)
+         {
+-            fprintf(stderr, "samblaster: %*.*s   %10"PRIu64"       %7.3f     %10"PRIu64"         %7.3f           %7.3f        %7.3f\n",
++            fprintf(stderr, "samblaster: %*.*s   %10" PRIu64 "       %7.3f     %10" PRIu64 "         %7.3f           %7.3f        %7.3f\n",
+                     typeLength, typeLength, orphanString,
+                     mappedOrphanIdCount, ((double)100)*mappedOrphanIdCount/idCount, orphanDupCount,
+                     ((double)100)*orphanDupCount/mappedOrphanIdCount, ((double)100)*orphanDupCount/dupCount, ((double)100)*orphanDupCount/idCount);
+         }
+         if (bothMappedIdCount > 0)
+         {
+-            fprintf(stderr, "samblaster: %*.*s   %10"PRIu64"       %7.3f     %10"PRIu64"         %7.3f           %7.3f        %7.3f\n",
++            fprintf(stderr, "samblaster: %*.*s   %10" PRIu64 "       %7.3f     %10" PRIu64 "         %7.3f           %7.3f        %7.3f\n",
+                     typeLength, typeLength, "Both Mapped                                     ",
+                     bothMappedIdCount, ((double)100)*bothMappedIdCount/idCount, bothMappedDupCount, ((double)100)*bothMappedDupCount/bothMappedIdCount,
+                     ((double)100)*bothMappedDupCount/dupCount, ((double)100)*bothMappedDupCount/idCount);
+         }
+-        fprintf(stderr, "samblaster: %*.*s   %10"PRIu64"       %7.3f     %10"PRIu64"         %7.3f           %7.3f        %7.3f\n",
++        fprintf(stderr, "samblaster: %*.*s   %10" PRIu64 "       %7.3f     %10" PRIu64 "         %7.3f           %7.3f        %7.3f\n",
+                 typeLength, typeLength, "Total                                           ",
+                 idCount, ((double)100)*idCount/idCount, dupCount,
+                 ((double)100)*dupCount/idCount, (double)100, ((double)100)*dupCount/idCount);
+@@ -1518,7 +1518,7 @@
+     }
+     // Output the main conclusion even if we output the table.
+     // It includes the fact of whether or not the dups were marked or removed, and the timing info.
+-    fprintf(stderr, "samblaster: %s %10"PRIu64" of %10"PRIu64" (%5.3f%%) total read ids as duplicates",
++    fprintf(stderr, "samblaster: %s %10" PRIu64 " of %10" PRIu64 " (%5.3f%%) total read ids as duplicates",
+              (state->removeDups ? "Removed" : "Marked "), dupCount, idCount, ((double)100)*dupCount/idCount);
+     if ((TIMING == 0) || state->quiet)
+     {

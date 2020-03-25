@@ -1,0 +1,59 @@
+{% set name = "cesm" %}
+{% set version = "2.1.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+    url: https://github.com/ESCOMP/cesm/archive/release-cesm{{ version }}.tar.gz
+    sha256: 6adae8b9cc74afdf002582fcb66a53942dcfcac94601fe5d1356d355851eb479
+
+build:
+    skip: True  # [win or osx]
+    number: 0
+
+requirements:
+    build:
+        - {{ compiler('c') }}
+        - cmake
+    host:
+        - python >=3
+        - mpich
+        - hdf5
+        - netcdf-fortran
+        - svn
+    run:
+        - tcsh
+        - python >=3
+        - {{ compiler('c') }}
+        - {{ compiler('fortran') }}
+        - netcdf-fortran
+        - mpich
+        - libxml2
+        - perl-xml-libxml
+        - libiconv
+        - make
+        - cmake
+        - mkl
+
+test:
+    commands:
+        - create_newcase --help
+        - create_clone --help
+        - query_testlists --help
+        - query_config --help
+
+about:
+    home: https://github.com/ESCOMP/cesm
+    license: BSD 3-Clause
+    license_family: BSD
+    license_file: LICENSE.txt
+    summary: The Community Earth System Model (CESM) is a coupled climate model for simulating Earth’s climate system
+    doc_url: http://www.cesm.ucar.edu/
+
+extra:
+  recipe-maintainers:
+    - bgruening
+  skip-lints:
+    - compilers_must_be_in_build

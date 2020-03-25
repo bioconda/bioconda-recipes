@@ -1,0 +1,62 @@
+{% set name = "emmtyper" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "bd34ebe10f2596781f69a1d6101ce87b447ff033ff3443e5aa8d390247fa4841"
+
+build:
+  number: 0
+  noarch: generic
+  entry_points:
+    - emmtyper=emmtyper.bin.run_emmtyper:main
+    - emmtyper-db=emmtyper.utilities.make_db:emmtyper_db
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - click
+    - numpy >=1.15.0
+    - pip
+    - python >=3
+    - python-dateutil
+    - scipy >=1.1.0
+    - blast >=2.6.0
+    - ispcr
+  run:
+    - click
+    - numpy >=1.15.0
+    - python >=3
+    - python-dateutil
+    - scipy >=1.1.0
+    - blast >=2.6.0
+    - ispcr
+
+test:
+  imports:
+    - emmtyper
+    - emmtyper.bin
+    - emmtyper.objects
+    - emmtyper.utilities
+  commands:
+    - emmtyper --help
+    - emmtyper-db --help
+  requires:
+    - nose
+
+about:
+  home: "https://github.com/MDUPHL/emmtyper"
+  license: "GNU General Public v3 (GPLv3)"
+  license_family: "GPL3"
+  license_file: ""
+  summary: "Streptococcus pyogenes in silico EMM typer"
+  doc_url: ""
+  dev_url: ""
+
+extra:
+  recipe-maintainers:
+    - andersgs

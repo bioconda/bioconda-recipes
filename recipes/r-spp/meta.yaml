@@ -1,53 +1,61 @@
+{% set version = '1.16.0' %}
+
 package:
   name: r-spp
-  version: "1.15.2"
+  version: {{ version|replace("-", "_") }}
 
 source:
-  url: https://github.com/hms-dbmi/spp/archive/1.15.2.tar.gz
-  sha256: bf0d6f42d9461aeb7a20b1ddb12b57bc42d11732ca6f69ec3eb2157364cefd5b
-  patches: # [osx]
-    - Makevars.patch  # [osx]
+  url:
+    - {{ cran_mirror }}/src/contrib/spp_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/spp/spp_{{ version }}.tar.gz
+  sha256: 3c890f3c414183167f9643b556621dcdc14ce6a1b54a04d618c74070fdebfd23
 
 build:
   number: 1
-  skip: True  # [osx]
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-
+    - autoconf
+    - pkg-config
+    - make
   host:
     - r-base
+    - r-bh >=1.66
     - r-rcpp
-    - boost
-    - r-catools
     - bioconductor-rsamtools
-    - zlib
-    - bzip2
-
+    - r-catools
   run:
     - r-base
+    - r-bh >=1.66
     - r-rcpp
-    - boost
-    - r-catools
     - bioconductor-rsamtools
-    - zlib
-    - bzip2
+    - r-catools
 
 test:
   commands:
-    - $R -e "library(spp)"
-    - $R -e "library(spp); read.bam.tags(system.file(\"extdata\", \"ex1.bam\", package=\"Rsamtools\"))"
+
+    - $R -e "library('spp')"           # [not win]
+    - "\"%R%\" -e \"library('spp')\""  # [win]
 
 about:
-  license: GPL
-  summary: 'ChIP-seq peak caller'
-  home: http://compbio.med.harvard.edu/Supplements/ChIP-seq
-
+  home: https://CRAN.R-project.org/package=spp
+  license: GPL-2
+  summary: Analysis of ChIP-seq and other functional sequencing data [Kharchenko PV (2008) <DOI:10.1038/nbt.1508>].
+  license_family: GPL2
 extra:
   identifiers:
     - biotools:spp
     - doi:10.1038/nbt.1508
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

@@ -1,0 +1,41 @@
+{% set version = "3.6.1" %}
+{% set sha256 = "195f158691fe85bacc90b9cf848f203aeba1c56332516261da3774fee3f7ddbf" %}
+
+package:
+  name: gem3-mapper
+  version: {{ version }}
+
+source:
+  url: https://github.com/smarco/gem3-mapper/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 7
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - bzip2
+    - zlib
+  run:
+    - bzip2
+    - zlib
+
+test:
+  commands:
+    - gem-mapper 2>&1 | grep 'index|-I <index_file.gem>'
+    - gem-indexer -h 2>&1 | grep 'input|-i <input_file> (Multi-FASTA)'
+    - gem-retriever -h 2>&1 | grep 'index|-I <index_file.gem> (GEM archive)'
+    - echo -e ">seq\nATATTAG\n" > test.fa && gem-indexer -i test.fa -o test.gem
+
+about:
+  home: https://github.com/smarco/gem3-mapper
+  license: GPL-3.0
+  license_file: LICENSE
+  summary: The GEM read mapper (v3).
+
+extra:
+  identifiers:
+    - doi:10.1038/nmeth.2221
+    - biotools:GEM_Mapper

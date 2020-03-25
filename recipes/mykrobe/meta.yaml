@@ -1,40 +1,66 @@
+{% set version = "0.8.1" %}
+
 package:
   name: mykrobe
-  version: "0.5.6"
+  version: {{ version }}
 
 source:
-  url: https://github.com/iqbal-lab/Mykrobe-predictor/archive/933301d9f1e673a2a282255426a885ef72e67c07.tar.gz
-  sha256: adcf75a8e873192047921947ef6c367fadee9dff09637f0acad7a4c9c4bcf53e
+  url: https://github.com/Mykrobe-tools/mykrobe/archive/v{{ version }}.tar.gz
+  sha256: dce772ab56ba13efe65c34e5c70628637329fbaba2c298836053309268639846
 
 build:
-  # dependency mykatlas currently not built for osx
-  skip: True  # [osx]
-  number: 1
+  number: 0
+  skip: True  # [py2k]
   entry_points:
-    - mykrobe = mykrobe.mykrobe_predictor:main
+    - mykrobe = mykrobe.cli:main
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
     - python
-    - setuptools
-
-
+    - pip
+    - zlib
+    - wget
+    - numpy
+    - cython
+    - mongoengine >=0.18.0
+    - pyvcf
+    - biopython
+    - requests
   run:
     - python
-    - mykatlas
-    - ga4ghmongo
-    - mongoengine
-    - future
-test:
-  # Python imports
-  imports:
-    - mykrobe
-  commands:
-    - mykrobe --help
+    - mongodb >3.0
+    - wget
+    - zlib
+    - numpy
+    - mongoengine >=0.18.0
+    - pyvcf
+    - biopython
 
+test:
+  imports:
+    - numpy
+    - mongoengine
+    - vcf
+    - Bio
+    - mykrobe
+
+  commands:
+    - mykrobe --version
+    - mykrobe --help
+    - mykrobe predict --help
+    - mykrobe variants --help
+    - mykrobe genotype --help
+    - test -x $PREFIX/lib/python*/site-packages/mykrobe/cortex/mccortex31
+    - $PREFIX/lib/python*/site-packages/mykrobe/cortex/mccortex31 uniqkmers -k 7 1
+    - find $PREFIX/lib/python*/site-packages/mykrobe/data -print
+    - test -f $PREFIX/lib/python*/site-packages/mykrobe/data/panels/tb-species-170421.fasta.gz
 
 about:
-  home: https://github.com/iqbal-lab/Mykrobe-predictor
-  license: Custom non-commercial license
+  home: https://github.com/Mykrobe-tools/mykrobe
+  license: MIT
   license_file: LICENSE
-  summary: 'Rapid antibiotic-resistance predictions from genome sequence data for Staphylococcus aureus and Mycobacterium tuberculosis.'
+  summary: 'Antibiotic resistance prediction in minutes'
+  description: 'Rapid antibiotic-resistance predictions from genome sequence data for Staphylococcus aureus and Mycobacterium tuberculosis.'

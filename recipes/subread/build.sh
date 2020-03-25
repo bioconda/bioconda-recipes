@@ -9,7 +9,9 @@ if [ `uname` = "Darwin" ];
 then
   MAKEFILE=Makefile.MacOS
 fi
-make -f $MAKEFILE
+export C_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
+make -f $MAKEFILE CC_EXEC="$CC -L$PREFIX/lib"
 cd ..
 cp bin/utilities/* $PREFIX/bin
 rm -r bin/utilities

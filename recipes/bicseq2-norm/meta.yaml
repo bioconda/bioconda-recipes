@@ -1,0 +1,44 @@
+{% set name = "BICseq2-norm" %}
+{% set version = "0.2.4" %}
+{% set sha256 = "64871e27980fc0a9fb5d5f9c29428be70cba8cb9ca5b1fe9028f6d03115addc3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+  
+source:
+  url: http://compbio.med.harvard.edu/BIC-seq/NBICseq-norm_v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - makefile.patch
+    - paths.patch
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  run:
+    - r-base
+    - perl
+
+test:
+  commands:
+    - BRS -h
+    - combineFile 2>&1 | grep "combineFile" > /dev/null
+    - filterCNV 2>&1 | grep "filterCNV" > /dev/null
+    - PrepPois -h
+    - PrepPoisGAM -h
+    - purityEM -h
+    - random_split 2>&1 | grep "random_split" > /dev/null
+    - NBICseq-norm.pl 2>&1 | grep "NBICseq-norm.pl" > /dev/null
+
+about:
+  home: http://compbio.med.harvard.edu/BIC-seq/
+  license: Custom
+  summary: "BICseq2-norm is for normalizing potential biases in the sequencing data."
+
+extra:
+  identifiers:
+    - doi:10.1093/nar/gkw491

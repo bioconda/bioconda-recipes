@@ -1,56 +1,44 @@
-{% set version = "1.4.1" %}
+{% set name = "genomedata" %}
+{% set version = "1.4.4" %}
+{% set sha256 = "06fb344902a1a759a7e894a21484ef2d6e604406ec6b0d127251a0a1081b4862" %}
 
 package:
-  name: genomedata
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/g/genomedata/genomedata-{{ version }}.tar.gz
-  sha256: 28f35c3c65c60242dd62362b8e64dcc4e52a44694080e08e0126545d0ffa5d60
-
-
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  
 build:
-  preserve_egg_dir: True
-  skip: True # [not py27]
-  entry_points:
-    - genomedata-info=genomedata._info:main
-    - genomedata-query=genomedata._query:main
-    - genomedata-histogram=genomedata._histogram:main
-    - genomedata-load=genomedata.load_genomedata:main
-    - genomedata-load-seq=genomedata._load_seq:main
-    - genomedata-load-assembly=genomedata._load_seq:main
-    - genomedata-open-data=genomedata._open_data:main
-    - genomedata-hardmask=genomedata._hardmask:main
-    - genomedata-close-data=genomedata._close_data:main
-    - genomedata-report=genomedata._report:main
-    - genomedata-erase-data=genomedata._erase_data:main
-  number: 2
+  number: 4
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - python
-    - setuptools
-    - forked-path
-    - pytables >=3.4.3
-    - textinput
+    - six
     - hgtools
-
+    - hdf5
+    - zlib
   run:
     - python
-    - forked-path
+    - six
+    - hdf5
     - pytables >=3.4.3
+    - path.py
     - textinput
-    - hgtools
     - bedtools
     - ucsc-bigwigtobedgraph
 
 test:
-  imports:
-    - genomedata
-
-  commands:
+    # Copied to PATH in build.sh
+    # source_files:
+    # - test/*.py
+    # - test/data/*
+    commands:
+    # Smoke test commands
     - genomedata-info --help
     - genomedata-query --help
     - genomedata-histogram --help
@@ -62,6 +50,9 @@ test:
     - genomedata-close-data --help
     - genomedata-report --help
     - genomedata-erase-data --help
+    - genomedata-load-data --help
+    # Test functionality
+    - run_genomedata_tests.py
 
 about:
   home: http://genomedata.hoffmanlab.org/

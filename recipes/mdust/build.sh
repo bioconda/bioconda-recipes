@@ -1,3 +1,5 @@
 #!/bin/bash
 
-make && cp mdust $PREFIX/bin
+make CC=$CC LINKER=$CC SEARCHDIRS="-I."
+mkdir -p $PREFIX/bin
+cp mdust $PREFIX/bin

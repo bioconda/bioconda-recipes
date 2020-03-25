@@ -1,0 +1,38 @@
+{% set name = "PAML" %}
+{% set version = "4.9" %}
+{% set sha256 = "92009a3138bdddf1c99f4756ded74c33618214450ad5ada497870e210ea141a1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://depot.galaxyproject.org/software/{{ name|lower }}/{{ name|lower }}_{{ version }}_src_all.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 5
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+
+test:
+  commands:
+    # The following cannot be tested because they require
+    # input files which, if not provided, prompt and wait:
+    # baseml, basemlg, codeml, infinitesites, mcmctree,
+    # pamp, yn00
+    - chi2 1 .1
+    - evolver 1 | grep EVOLVER
+    - codeml /dev/null 2>&1 | grep paml
+
+about:
+  home: 'http://abacus.gene.ucl.ac.uk/software/paml.html'
+  summary: 'A package of programs for phylogenetic analyses of DNA or protein sequences using maximum likelihood.'
+  license: GNU General Public License v3 (GPLv3)
+
+extra:
+  identifiers:
+    - biotools:paml
+    - doi:10.1093/bioinformatics/13.5.555

@@ -1,0 +1,54 @@
+{% set version = "1.4.0" %}
+{% set name = "BDMMAcorrect" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 261ab5dac83358b318f39d42d88c80d8
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: knitr, rmarkdown, BiocGenerics
+requirements:
+  host:
+    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
+    - r-ape
+    - r-base
+    - r-ellipse
+    - r-ggplot2
+    - 'r-rcpp >=0.12.12'
+    - r-rcpparmadillo
+    - r-rcppeigen
+    - r-vegan
+  run:
+    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
+    - r-ape
+    - r-base
+    - r-ellipse
+    - r-ggplot2
+    - 'r-rcpp >=0.12.12'
+    - r-rcpparmadillo
+    - r-rcppeigen
+    - r-vegan
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'Meta-analysis for the metagenomic read counts data from different cohorts'
+  description: 'Metagenomic sequencing techniques enable quantitative analyses of the microbiome. However, combining the microbial data from these experiments is challenging due to the variations between experiments. The existing methods for correcting batch effects do not consider the interactions between variables—microbial taxa in microbial studies—and the overdispersion of the microbiome data. Therefore, they are not applicable to microbiome data. We develop a new method, Bayesian Dirichlet-multinomial regression meta-analysis (BDMMA), to simultaneously model the batch effects and detect the microbial taxa associated with phenotypes. BDMMA automatically models the dependence among microbial taxa and is robust to the high dimensionality of the microbiome and their association sparsity.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

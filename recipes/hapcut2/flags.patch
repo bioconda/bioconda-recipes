@@ -1,0 +1,54 @@
+--- HapCUT2-1.2/Makefile	2019-11-06 05:37:31.000000000 +0100
++++ HapCUT2-1.2-patched/Makefile	2019-11-08 12:22:22.018412324 +0100
+@@ -20,40 +20,40 @@
+ 
+ #temporarily removed -O2 flag after -I$(HTSLIB)
+ $(B)/extractHAIRS: $(B)/bamread.o $(B)/hashtable.o $(B)/readvariant.o $(B)/readfasta.o $(B)/hapfragments.o $(H)/extracthairs.c $(H)/parsebamread.c $(H)/realignbamread.c $(H)/nw.c $(H)/realign_pairHMM.c $(H)/estimate_hmm_params.c | $(B)
+-	$(CC) -I$(HTSLIB) -g $(B)/bamread.o $(B)/hapfragments.o $(B)/hashtable.o $(B)/readfasta.o $(B)/readvariant.o -o $(B)/extractHAIRS $(H)/extracthairs.c -L$(HTSLIB) -pthread -lhts -lm -lz
++	$(CC) $(CFLAGS) $(LDFLAGS) -I$(HTSLIB) -g $(B)/bamread.o $(B)/hapfragments.o $(B)/hashtable.o $(B)/readfasta.o $(B)/readvariant.o -o $(B)/extractHAIRS $(H)/extracthairs.c -L$(HTSLIB) -pthread -lhts -lm -lz
+ #temporarily removed -O2 flag after -I$(HTSLIB)
+ 
+ $(B)/hapfragments.o: $(H)/hapfragments.c $(H)/hapfragments.h $(H)/readvariant.h | $(B)
+-	$(CC) -c $(H)/hapfragments.c -o $(B)/hapfragments.o
++	$(CC) $(CFLAGS) -c $(H)/hapfragments.c -o $(B)/hapfragments.o
+ 
+ $(B)/readvariant.o: $(H)/readvariant.c $(H)/readvariant.h $(H)/hashtable.h $(H)/hashtable.c | $(B)
+-	$(CC) -c -I$(HTSLIB) $(H)/readvariant.c -o $(B)/readvariant.o
++	$(CC) $(CFLAGS) -c -I$(HTSLIB) $(H)/readvariant.c -o $(B)/readvariant.o
+ 
+ $(B)/bamread.o: $(H)/bamread.h $(H)/bamread.c $(H)/readfasta.h $(H)/readfasta.c | $(B)
+-	$(CC) -I$(HTSLIB) -c $(H)/bamread.c -lhts -o $(B)/bamread.o
++	$(CC) $(CFLAGS) -I$(HTSLIB) -c $(H)/bamread.c -lhts -o $(B)/bamread.o
+ 
+ $(B)/hashtable.o: $(H)/hashtable.h $(H)/hashtable.c | $(B)
+-	$(CC) -c $(H)/hashtable.c -o $(B)/hashtable.o
++	$(CC) $(CFLAGS) -c $(H)/hashtable.c -o $(B)/hashtable.o
+ 
+ $(B)/readfasta.o: $(H)/readfasta.c $(H)/readfasta.h | $(B)
+-	$(CC) -I$(HTSLIB) -c $(H)/readfasta.c -o $(B)/readfasta.o
++	$(CC) $(CFLAGS) -I$(HTSLIB) -c $(H)/readfasta.c -o $(B)/readfasta.o
+ 
+ # BUILD HAPCUT2
+ 
+ $(B)/HAPCUT2: $(B)/fragmatrix.o $(B)/readinputfiles.o $(B)/pointerheap.o $(B)/common.o $(X)/hapcut2.c $(X)/find_maxcut.c $(X)/post_processing.c| $(B)
+-	$(CC) $(B)/common.o $(B)/fragmatrix.o $(B)/readinputfiles.o $(B)/pointerheap.o -o $(B)/HAPCUT2 -lm $(X)/hapcut2.c -L$(HTSLIB) -lhts
++	$(CC) $(CFLAGS) $(LDFLAGS) $(B)/common.o $(B)/fragmatrix.o $(B)/readinputfiles.o $(B)/pointerheap.o -o $(B)/HAPCUT2 -lm $(X)/hapcut2.c -L$(HTSLIB) -lhts
+ 
+ $(B)/common.o: $(X)/common.h $(X)/common.c | $(B)
+-	$(CC) -c $(X)/common.c -o $(B)/common.o
++	$(CC) $(CFLAGS) -c $(X)/common.c -o $(B)/common.o
+ 
+ $(B)/fragmatrix.o: $(X)/fragmatrix.h $(X)/fragmatrix.c $(X)/common.h $(X)/printhaplotypes.c  | $(B)
+-	$(CC) -c $(X)/fragmatrix.c -o $(B)/fragmatrix.o
++	$(CC) $(CFLAGS) -c $(X)/fragmatrix.c -o $(B)/fragmatrix.o
+ 
+ $(B)/readinputfiles.o: $(X)/readinputfiles.h $(X)/readinputfiles.c $(X)/common.h $(X)/fragmatrix.h | $(B)
+-	$(CC) -c $(X)/readinputfiles.c -o $(B)/readinputfiles.o
++	$(CC) $(CFLAGS) -c $(X)/readinputfiles.c -o $(B)/readinputfiles.o
+ 
+ $(B)/pointerheap.o: $(X)/pointerheap.h $(X)/pointerheap.c $(X)/common.h | $(B)
+-	$(CC) -c $(X)/pointerheap.c -o $(B)/pointerheap.o
++	$(CC) $(CFLAGS) -c $(X)/pointerheap.c -o $(B)/pointerheap.o
+ 
+ # create build directory
+ $(B):

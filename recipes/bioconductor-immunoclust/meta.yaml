@@ -1,0 +1,42 @@
+{% set version = "1.18.0" %}
+{% set name = "immunoClust" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 803aadbf5e8c8aa765c9e116f6b293a0
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: BiocStyle, utils
+requirements:
+  host:
+    - 'bioconductor-flowcore >=1.52.0,<1.53.0'
+    - r-base
+    - r-lattice
+  run:
+    - 'bioconductor-flowcore >=1.52.0,<1.53.0'
+    - r-base
+    - r-lattice
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'immunoClust - Automated Pipeline for Population Detection in Flow Cytometry'
+  description: 'Model based clustering and meta-clustering of Flow Cytometry Data'
+

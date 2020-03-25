@@ -1,0 +1,40 @@
+{% set version = '0.3.0' %}
+
+package:
+  name: r-nbpseq
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/NBPSeq_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/NBPSeq/NBPSeq_{{ version }}.tar.gz
+  sha256: 7e251fa017d91ffa7b0c5e740859db4aa4f9bc3b46632983e03c4da161a79e50
+
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - r-base
+    - bioconductor-qvalue
+  run:
+    - r-base
+    - bioconductor-qvalue
+
+test:
+  commands:
+    - $R -e "library('NBPSeq')"
+
+about:
+  home: https://CRAN.R-project.org/package=NBPSeq
+  license: GPL-2
+  summary: Negative Binomial (NB) models for two-group comparisons and regression inferences
+    from RNA-Sequencing Data.
+  license_family: GPL2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
