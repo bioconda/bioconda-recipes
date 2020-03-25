@@ -1,0 +1,73 @@
+--- Makefile	2020-01-23 10:08:11.000000000 -0600
++++ Makefile.new	2020-01-28 13:12:29.541082364 -0600
+@@ -26,18 +26,18 @@
+ 
+ inchworm_target:
+ 	@echo Using $(TRINITY_COMPILER) compiler for Inchworm and Chrysalis
+-	cd Inchworm && $(MAKE)
++	cd Inchworm && $(MAKE) CC=$(CC) CXX=$(CXX) CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)"
+ 
+ chrysalis_target:
+-	cd Chrysalis && $(MAKE)
++	cd Chrysalis && $(MAKE) CC=$(CC) CXX=$(CXX) CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)"
+ 
+ 
+ trinity_essentials:
+-	cd trinity-plugins && $(MAKE) trinity_essentials
++	cd trinity-plugins && $(MAKE) trinity_essentials CC=$(CC) CXX=$(CXX) CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)"
+ 
+ 
+ plugins:
+-	cd trinity-plugins && $(MAKE) plugins
++	cd trinity-plugins && $(MAKE) plugins CC=$(CC) CXX=$(CXX) CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)"
+ 	sh ./util/support_scripts/plugin_install_tests.sh
+ 
+ test:
+--- trinity-plugins/Makefile	2020-01-23 10:08:12.000000000 -0600
++++ trinity-plugins/Makefile.new	2020-01-28 13:12:51.035149275 -0600
+@@ -16,13 +16,13 @@
+ 
+ 
+ seqtk_target:
+-	cd seqtk-trinity && $(MAKE) CXX=$(CXX) CC=$(CC)
++	cd seqtk-trinity && $(MAKE) CXX=$(CXX) CC=$(CC) CFLAGS="$(CFLAGS)"
+ 	mv seqtk-trinity/seqtk-trinity ./BIN/.
+ 
+ parafly_target:
+ 	tar -zxvf ${PARAFLY_CODE}.tar.gz && \
+-	cd ${PARAFLY_CODE} && sh ./configure --prefix=`pwd` CXX=$(CXX) CC=$(CC) CFLAGS="-fopenmp" CXXFLAGS="-fopenmp" && $(MAKE) install && \
+-	cp bin/ParaFly ../BIN/
++        cd ${PARAFLY_CODE} && $(MAKE) install prefix=`pwd` INSTALL="install -c" MKDIR_P="mkdir -p" mkdir_p="mkdir -p" CXX=$(CXX) CC=$(CC) CFLAGS="$(CFLAGS) -fopenmp" CXXFLAGS="$(CXXFLAGS) -fopenmp" && \
++ 	cp bin/ParaFly ../BIN/
+ 
+ 
+ ##################################
+@@ -34,7 +34,7 @@
+ 
+ 
+ slclust_target:
+-	cd slclust && $(MAKE) CXX=$(CXX) CC=$(CC) install
++	cd slclust && $(MAKE) CXX=$(CXX) CC=$(CC) CFLAGS="$(CFLAGS)" CXXFLAGS="$(CXXFLAGS)" install
+ 
+ collectl_target:
+ 	cd COLLECTL && tar xvf ${COLLECTL_CODE}.src.tar.gz && ln -sf ${COLLECTL_CODE} collectl
+--- trinity-plugins/slclust/Makefile	2020-01-23 10:08:12.000000000 -0600
++++ trinity-plugins/slclust/Makefile.new	2020-01-28 13:13:16.379228169 -0600
+@@ -5,6 +5,6 @@
+ all install depend clean:
+ 	X=`pwd`; \
+ 	for i in $(SUBS); \
+-	do echo '<<<' $$i '>>>'; cd $$X/$$i; $(MAKE) $@; done
++	do echo '<<<' $$i '>>>'; cd $$X/$$i; $(MAKE) CC=$(CC) CXX=$(CXX) CFLAGS="$(CFLAGS)" CXXFLAGS="$(CXXFLAGS) -I../include -L$(PREFIX)/lib" $@; done
+ 
+ # DO NOT DELETE
+--- Inchworm/Makefile	2020-01-23 10:08:27.000000000 -0600
++++ Inchworm/Makefile.new	2020-01-28 13:13:46.526322013 -0600
+@@ -1,6 +1,6 @@
+ all:
+ 	mkdir -p build
+-	cd build && cmake -DCMAKE_INSTALL_PREFIX="" ../ && make DESTDIR=../ install
++	cd build && cmake -DCMAKE_INSTALL_PREFIX="" -DCMAKE_CXX_FLAGS="$(CXXFLAGS)" ../ && make DESTDIR=../ install
+ 
+ clean:
+ 	@echo cleaning
