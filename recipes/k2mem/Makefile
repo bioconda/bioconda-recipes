@@ -1,0 +1,4 @@
+CXX = g++
+CXXFLAGS = -fopenmp -Wall -std=c++11 -O3
+CXXFLAGS += -DLINEAR_PROBING
+make CXX = $CXX
