@@ -16,12 +16,12 @@ package. The Python 3 version is recommended.
 
 On MacOS, run::
 
-   wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
+   curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
    sh Miniconda3-latest-MacOSX-x86_64.sh
 
 On Linux, run::
 
-   wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+   curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
    sh Miniconda3-latest-Linux-x86_64.sh
 
 Follow the instructions in the installer. If you encounter problems,
