@@ -9,8 +9,9 @@ cp -r unit-tests ${SHARE_DIR}
 
 # Build the binary
 cd source
-make clean
-make CC=$CXX CFLAGS="$CXXFLAGS"
+pwd
+ls
+make CXX=${CXX}
 
 # Move built binary across to the shared bin and symlink it
 mkdir -p ${SHARE_DIR}/bin/
