@@ -9,12 +9,10 @@ package:
 source:
   url: https://github.com/wtsi-hpag/{{ name }}/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - tox-conda.patch
 
 build:
   number: 0
-  script: "tox -vvv && {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
   skip: True # [osx]
 
 requirements:
@@ -30,9 +28,6 @@ requirements:
     - pcre>=8.44
     - ninja>=1.10.0
     - pkgconfig>=1.3.1
-    - pytest>=5.3.5
-    - tox>=3.12.1
-    - tox-conda>=0.2.1
   host:
     - numpy>=1.18.1
     - pip>=20.0.2
@@ -50,8 +45,13 @@ requirements:
     - biopython>=1.76
 
 test:
+  source_files:
+    - test_{{ name|lower }}.py
+  requires:
+    - pytest>=5.3.5
   commands:
     - {{ name }} --help
+    - pytest
   imports:
     - {{ name }}
 
