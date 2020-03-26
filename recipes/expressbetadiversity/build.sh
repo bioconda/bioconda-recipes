@@ -9,7 +9,9 @@ cp -r unit-tests ${SHARE_DIR}
 
 # Build the binary
 cd source
-make CC=$GXX CXX=$GXX
+ln -s ${CC} $BUILD_PREFIX/bin/gcc
+ln -s ${CXX} $BUILD_PREFIX/bin/g++
+make
 
 # Move built binary across to the shared bin and symlink it
 mkdir -p ${SHARE_DIR}/bin/
