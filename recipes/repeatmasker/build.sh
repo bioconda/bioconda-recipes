@@ -1,7 +1,9 @@
 #!/bin/bash
 
 RM_DIR=${PREFIX}/share/RepeatMasker
-RM_OTHER_PROGRAMS="DateRepeats DupMasker ProcessRepeats RepeatProteinMask util/queryRepeatDatabase.pl util/queryTaxonomyDatabase.pl util/rmOutToGFF3.pl util/calcDivergenceFromAlign.pl util/createRepeatLandscape.pl util/dupliconToSVG.pl util/getRepeatMaskerBatch.pl util/rmOut2Fasta.pl util/trfMask util/rmToUCSCTables.pl util/buildSummary.pl"
+RM_OTHER_PROGRAMS="DateRepeats DupMasker ProcessRepeats RepeatProteinMask"
+RM_UTILS=""
+for i in ${RM_DIR}/util/*; do name=$(basename $i); RM_UTILS="$RM_UTILS $name";done;
 RM_PROGRAMS="RepeatMasker $RM_OTHER_PROGRAMS"
 
 mkdir -p ${PREFIX}/bin
@@ -13,12 +15,20 @@ for name in ${RM_PROGRAMS} ; do
 done
 
 cp ${RECIPE_DIR}/RepeatMaskerConfig.pm ${RM_DIR}/RepeatMaskerConfig.pm
-# pvanheus - disabled this because the library included with RepeatMasker is too old to be usable
-# users will have to provide their own library and point to it using the REPEATMASKER_LIB_DIR environment variable
-#${RM_DIR}/util/buildRMLibFromEMBL.pl ${RM_DIR}/Libraries/RepeatMaskerLib.embl > ${RM_DIR}/Libraries/RepeatMasker.lib 2>/dev/null
-#makeblastdb -dbtype nucl -in ${RM_DIR}/Libraries/RepeatMasker.lib
 
-# important for RepeatModeler Package to keep this command
+# ---- libraries ----
+# users can provide their own library and point to it using the REPEATMASKER_LIB_DIR environment variable
+# below we include default ones:
+
+# Include default database (a small but growing "open" databases of Transposable Element seed alignments, profile Hidden Markov Models and consensus sequences.)
+wget -c https://www.dfam.org/releases/Dfam_3.1/families/Dfam.embl.gz
+gunzip Dfam.embl.gz
+${RM_DIR}/util/buildRMLibFromEMBL.pl Dfam.embl > RepeatMasker.lib
+mv RepeatMasker.lib ${RM_DIR}/Libraries/
+makeblastdb -dbtype nucl -in ${RM_DIR}/Libraries/RepeatMasker.lib
+
+# Include default Transposable element protein database provided in the repo
+# important for RepeatModeler Package to keep this command.
 makeblastdb -dbtype prot -in ${RM_DIR}/Libraries/RepeatPeps.lib
 
 cat <<END >>${PREFIX}/bin/RepeatMasker
