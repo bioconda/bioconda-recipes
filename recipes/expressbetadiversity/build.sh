@@ -9,8 +9,8 @@ cp -r unit-tests ${SHARE_DIR}
 
 # Build the binary
 cd source
-pwd
-ls
+g++ -v
+which g++
 make CXX=${CXX}
 
 # Move built binary across to the shared bin and symlink it
