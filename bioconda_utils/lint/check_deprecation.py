@@ -65,8 +65,6 @@ class uses_matplotlib(LintCheck):
     unless the package explicitly needs the PyQt interactive plotting backend.
 
     """
-    severity = WARNING
-
     def check_deps(self, deps):
         if 'matplotlib' in deps:
             self.message(data=True)
