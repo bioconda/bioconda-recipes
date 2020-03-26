@@ -19,12 +19,13 @@ cd ../bin
 chmod +x ExpressBetaDiversity
 cp ExpressBetaDiversity ${SHARE_DIR}/bin/
 
-# Create the binary
+# Create the binary, this is required as unit tests are called relative to the
+# binary location (../unit-tests).
 mkdir -p ${PREFIX}/bin/
 cat <<EOF >${PREFIX}/bin/ExpressBetaDiversity
 #!/bin/bash
 cd ${SHARE_DIR}/bin/
-./ExpressBetaDiversity "\$@"
+exec ./ExpressBetaDiversity "\$@"
 EOF
 chmod +x ${PREFIX}/bin/ExpressBetaDiversity
 
