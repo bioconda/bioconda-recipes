@@ -1,11 +1,12 @@
 #!/bin/bash
 
-perl ./configure -trf_prgm ${PREFIX}/bin/trf  -rmblast_dir ${PREFIX}/bin/ -hmmer_dir ${PREFIX}/bin -abblast_dir ${PREFIX}/bin -crossmatch_dir ${PREFIX}/bin
-
 RM_DIR=${PREFIX}/share/RepeatMasker
 mkdir -p ${PREFIX}/bin
 mkdir -p ${RM_DIR}
 cp -r * ${RM_DIR}
+
+# configure
+perl ./configure -lib_dir ${RM_DIR}/RepeatMasker/Libraries -trf_prgm ${PREFIX}/bin/trf  -rmblast_dir ${PREFIX}/bin/ -hmmer_dir ${PREFIX}/bin -abblast_dir ${PREFIX}/bin -crossmatch_dir ${PREFIX}/bin
 
 
 # ----- add tools within the bin ------
