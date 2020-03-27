@@ -16,7 +16,7 @@ target=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}
 mkdir -p ${target}/db/
 touch ${target}/db/.empty
 
-# set GTDBTK DB PATH variable on env activation
+# set GTDBTk DB PATH variable on env activation
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
 cat <<EOF >> ${PREFIX}/etc/conda/activate.d/gtdbtk.sh
 export GTDBTK_DB_PATH=${target}/db/
