@@ -6,7 +6,7 @@ mkdir -p ${RM_DIR}
 cp -r * ${RM_DIR}
 
 # configure
-perl ./configure -lib_dir ${RM_DIR}/RepeatMasker/Libraries -trf_prgm ${PREFIX}/bin/trf  -rmblast_dir ${PREFIX}/bin/ -hmmer_dir ${PREFIX}/bin -abblast_dir ${PREFIX}/bin -crossmatch_dir ${PREFIX}/bin
+perl ./configure -libdir ${RM_DIR}/Libraries -trf_prgm ${PREFIX}/bin/trf  -rmblast_dir ${PREFIX}/bin/ -hmmer_dir ${PREFIX}/bin -abblast_dir ${PREFIX}/bin -crossmatch_dir ${PREFIX}/bin
 
 
 # ----- add tools within the bin ------
