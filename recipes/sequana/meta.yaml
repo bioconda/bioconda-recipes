@@ -1,19 +1,21 @@
 {% set name = "sequana" %}
-{% set version = "0.7.1" %}
-{% set sha = "891e9a27fd992a9713de2e3afac9b4c8042d492703be65e1ae2b0ab098e275d6" %}
+{% set version = "0.8.1" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set sha = "bd00660d1cb8886dd79b9460742fb62d29f39a4174094bc0399694834b2612cc" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
   sha256: {{ sha }}
 
 build:
   noarch: python
   preserve_egg_dir: True
-  number: 2
+  number: 0
   entry_points:
     - sequana_gui=sequana.gui.sequana_gui:main
     - sequanix=sequana.gui.sequana_gui:main
@@ -21,13 +23,20 @@ build:
     - fastq_count=sequana.scripts.fastq_count:main
     - sequana_fastq_head=sequana.scripts.fastq_head:main
     - sequana_fastq_count=sequana.scripts.fastq_count:main
-    - sequana=sequana.scripts.main:main
+    - sequana_fastq_summary=sequana.scripts.fastq_summary:main
+    - sequana_lane_merging=sequana.scripts.lane_merging:main
     - sequana_taxonomy=sequana.scripts.taxonomy:main
     - sequana_coverage=sequana.scripts.coverage:main
     - sequana_summary=sequana.scripts.summary:main
     - sequana_mapping=sequana.scripts.mapping:main
     - sequana_compressor=sequana.scripts.compressor:main
     - sequana_report=sequana.scripts.reports:main
+    - sequana_vcf_filter=sequana.scripts.vcf_filter:main
+    - sequana_bam_splitter=sequana.scripts.bam_splitter:main
+    - sequana_substractor=sequana.scripts.substractor:main
+    - sequana_start_pipeline=sequana.scripts.start_pipeline:main
+    - sequana_gtf_fixer=sequana.scripts.gtf_fixer:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
 
 
 requirements:
@@ -52,6 +61,7 @@ requirements:
     - fastqc ==0.11.5
     - freebayes
     - graphviz
+    - itolapi
     - khmer
     - kraken # [not osx]
     - krona
@@ -70,7 +80,6 @@ requirements:
     - samtools
     - snakemake ==4.0.0
     - snpeff
-    - spades
     - shustring
     - subread
     - xlrd
@@ -79,17 +88,42 @@ requirements:
 test:
   imports:
     - sequana
+    - sequana.gui
     - sequana.modules_report
+    - sequana.multiqc
     - sequana.pipelines
     - sequana.plots
+    - sequana.resources
+    - sequana.resources.busco
+    - sequana.resources.canvas
+    - sequana.resources.css
+    - sequana.resources.data
+    - sequana.resources.data.adapters
+    - sequana.resources.images
+    - sequana.resources.js
+    - sequana.resources.snpeff
+    - sequana.resources.templates
+    - sequana.resources.testing
+    - sequana.rules
+    - sequana.rules.Adapters
+    - sequana.rules.Assembly
+    - sequana.rules.Pacbio
+    - sequana.rules.SnpEff
+    - sequana.rules.Taxonomy
+    - sequana.rules.Utils
+    - sequana.rules.Variant_caller
+    - sequana.rules.codecs
+    - sequana.rules.deeptools
+    - sequana.rules.idr
+    - sequana.rules.sambamba
     - sequana.scripts
     - sequana.sphinxext
     - sequana.utils
+    - sequana.viz
   commands:
     - fastq_count --help 1>out 2>err
     - sequana_fastq_head --help
     - sequana_fastq_count --help
-    - sequana --help
     - sequana_taxonomy --help 1>out 2>err
     - sequana_coverage --help 1>out 2>err
   #  - sequanix
@@ -100,10 +134,6 @@ test:
 #    - MPLBACKEND=agg bioconvert --help
 #    - MPLBACKEND=agg bioconvert_init --help
 
-extra:
-  container:
-    # needs libGL.so.1
-    extended-base: true
 
 about:
   home: 'http://sequana.readthedocs.io/'
@@ -111,3 +141,9 @@ about:
   summary: 'A set of standalone application and snakemake pipelines dedicated to NGS (new generation sequencing) analysis'
   license_family: BSD
 
+extra:
+  container:
+    # needs libGL.so.1
+    extended-base: true
+  recipe-maintainers: 
+    - cokelaer
