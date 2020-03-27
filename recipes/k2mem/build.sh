@@ -5,11 +5,6 @@ export CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}:${PREFIX}/include
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 
-CXX = g++
-CXXFLAGS = -fopenmp -Wall -std=c++11 -O3
-CXXFLAGS += -DLINEAR_PROBING
-make CXX = $CXX
-
 mkdir -p "$PREFIX/libexec" "$PREFIX/bin"
 
 chmod u+x install_k2mem.sh
