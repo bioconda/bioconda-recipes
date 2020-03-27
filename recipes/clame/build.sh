@@ -1,12 +1,6 @@
 #!/bin/bash
-echo "SDSL compilation"
 export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
-
-git clone https://github.com/simongog/sdsl-lite.git
-cd sdsl-lite
-./install.sh
-cd ..
 
 echo "Binning compilation"
 cd binning
@@ -17,18 +11,18 @@ cd ..
 
 echo "genFm9 compilation"
 cd genFm9
-make CPP=${CXX}
+make CPP=${CXX} ILIB=$C_INCLUDE_PATH LLIB=$LIBRARY_PATH
 cp genFm9 $PREFIX/bin
 cd ..
 
 echo "mapping compilation"
 cd mapping
-make CPP=${CXX}
+make CPP=${CXX} ILIB=$C_INCLUDE_PATH LLIB=$LIBRARY_PATH
 cp mapping $PREFIX/bin
 cd ..
 
 echo "clame compilation"
-make CPP=${CXX}
+make CPP=${CXX} ILIB=$C_INCLUDE_PATH LLIB=$LIBRARY_PATH
 cp clame $PREFIX/bin
 
 echo "Installation successful"
