@@ -1,4 +1,5 @@
 #!/bin/sh
+make CC=$CC
 
 make
 mkdir -p $PREFIX/bin
