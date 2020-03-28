@@ -1,28 +1,27 @@
 #!/bin/bash
-export C_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
+echo $PREFIX
 
 echo "Binning compilation"
 cd binning
-make CPP=${CXX}
+make all CPP=${CXX}  ILIB="-I${BUILD_PREFIX}/include -L${BUILD_PREFIX}/lib"
 mkdir -p $PREFIX/bin
 cp binning $PREFIX/bin
 cd ..
 
 echo "genFm9 compilation"
 cd genFm9
-make CPP=${CXX} ILIB=$C_INCLUDE_PATH LLIB=$LIBRARY_PATH
+make all CPP=${CXX}  ILIB="-I${BUILD_PREFIX}/include -L${BUILD_PREFIX}/lib"
 cp genFm9 $PREFIX/bin
 cd ..
 
 echo "mapping compilation"
 cd mapping
-make CPP=${CXX} ILIB=$C_INCLUDE_PATH LLIB=$LIBRARY_PATH
+make all CPP=${CXX}  ILIB="-I${BUILD_PREFIX}/include -L${BUILD_PREFIX}/lib"
 cp mapping $PREFIX/bin
 cd ..
 
 echo "clame compilation"
-make CPP=${CXX} ILIB=$C_INCLUDE_PATH LLIB=$LIBRARY_PATH
+make all CPP=${CXX}  ILIB="-I${BUILD_PREFIX}/include -L${BUILD_PREFIX}/lib"
 cp clame $PREFIX/bin
 
 echo "Installation successful"
