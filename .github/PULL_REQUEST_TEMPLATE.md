@@ -9,7 +9,7 @@
 * [ ] AFAIK, this recipe **is directly relevant to the biological sciences**
       (otherwise, please submit to the more general purpose [conda-forge channel](https://conda-forge.org/docs/)).
 * [ ] This PR updates an existing recipe.
-* [ ] This PR does something else (explain below).
+* [ ] This PR does something else (explain above).
 
 > Everyone has access to the following BiocondaBot commands, which can be given in a comment:
 >
