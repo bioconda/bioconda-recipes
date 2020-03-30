@@ -24,7 +24,7 @@ rm -rf $TGT/models
 for ZIPBIN in make_examples call_variants postprocess_variants
 do
 	unzip -d $ZIPBIN $PREFIX/$BINARY_DIR/$ZIPBIN.zip
-	sed -i.bak "s|PYTHON_BINARY = '/usr/bin/python'|PYTHON_BINARY = sys.executable|" $ZIPBIN/__main__.py
+	sed -i.bak "s|PYTHON_BINARY = '/usr/bin/python3.6'|PYTHON_BINARY = sys.executable|" $ZIPBIN/__main__.py
 	rm -f $ZIPBIN/*.bak
 	cd $ZIPBIN
 	zip -r ../$ZIPBIN.zip *
