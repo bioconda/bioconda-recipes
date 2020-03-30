@@ -22,11 +22,12 @@ cp ExpressBetaDiversity ${SHARE_DIR}/bin/
 # Create the binary, this is required as unit tests are called relative to the
 # binary location (../unit-tests).
 mkdir -p ${PREFIX}/bin/
-cat <<EOF >${PREFIX}/bin/ExpressBetaDiversity
-#!/bin/bash
-cd ${SHARE_DIR}/bin/
-exec ./ExpressBetaDiversity "\$@"
-EOF
+ln -s $SHARE/bin/ExpressBetaDiversity $PREFIX/bin
+#cat <<EOF >${PREFIX}/bin/ExpressBetaDiversity
+##!/bin/bash
+#cd ${SHARE_DIR}/bin/
+#exec ./ExpressBetaDiversity "\$@"
+#EOF
 chmod +x ${PREFIX}/bin/ExpressBetaDiversity
 
 # Copy across python scripts
