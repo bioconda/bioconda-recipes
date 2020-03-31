@@ -4,7 +4,7 @@
 tar zxvf metabolisHMM_markers_v1.9.tgz
 
 # Install python libraries
-python3 -m pip install .
+python -m pip install . --no-deps -vv
 
 # Copy scripts to environment bin/
 chmod +x bin/*
