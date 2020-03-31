@@ -7,7 +7,7 @@ mkdir -p ${SHARE_DIR}
 # Copy across unit tests and python scripts
 cp -r unit-tests ${SHARE_DIR}
 
-# Build the binary
+# Build the binary, this is required as a work-around to g++ not being found
 cd source
 ln -s ${CC} $BUILD_PREFIX/bin/gcc
 ln -s ${CXX} $BUILD_PREFIX/bin/g++
@@ -19,15 +19,9 @@ cd ../bin
 chmod +x ExpressBetaDiversity
 cp ExpressBetaDiversity ${SHARE_DIR}/bin/
 
-# Create the binary, this is required as unit tests are called relative to the
-# binary location (../unit-tests).
+# Link the binary
 mkdir -p ${PREFIX}/bin/
-ln -s $SHARE/bin/ExpressBetaDiversity $PREFIX/bin
-#cat <<EOF >${PREFIX}/bin/ExpressBetaDiversity
-##!/bin/bash
-#cd ${SHARE_DIR}/bin/
-#exec ./ExpressBetaDiversity "\$@"
-#EOF
+ln -s ${SHARE_DIR}/bin/ExpressBetaDiversity ${PREFIX}/bin
 chmod +x ${PREFIX}/bin/ExpressBetaDiversity
 
 # Copy across python scripts
