@@ -16,9 +16,9 @@ Everyone has access to the following BiocondaBot commands, which can be given in
 
 |     |     |
 | --- | --- |
-| `@BiocondaBot please update` | Causes the BiocondaBot to merge the master branch into a PR. |
-| `@BiocondaBot please add label` | Adds the `please review & merge` label. |
-| `@BiocondaBot please fetch artifacts` | Posts links to packages and docker containers built by the CI system. You can use this to test packages locally before merging. |
+| `@BiocondaBot please update` | Merge the master branch into a PR. |
+| `@BiocondaBot please add label` | Add the `please review & merge` label. |
+| `@BiocondaBot please fetch artifacts` | Post links to packages and docker containers built by the CI system. <br />You can use this to test packages locally before merging. |
 
 Comments from non-members that include `@bioconda/<team>` will be automatically reposted to notify the addressed team.
 
@@ -26,6 +26,6 @@ For members of the Bioconda project, the following command is also available:
 
 |     |     |
 | --- | --- |
-| `@BiocondaBot please merge` | Uploads built packages/containers and merges a PR. Someone must approve a PR first! This has the benefit of not wasting CI build time required by manually merging PRs. |
+| `@BiocondaBot please merge` | Upload built packages/containers and merge a PR. <br />Someone must approve a PR first! <br />Unlike manual PR merges, this reduces CI time by reusing built artifacts. |
 
 </details>
