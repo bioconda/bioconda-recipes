@@ -1,4 +1,4 @@
-{% set version = "8.7.2" %}
+{% set version = "11.0.0" %}
 
 package:
   name: cdna_cupcake
@@ -6,11 +6,13 @@ package:
 
 source:
   url: https://github.com/Magdoll/cDNA_Cupcake/archive/v{{ version }}.tar.gz
-  sha256: b30977ea8129f70807f3c9ae490cbf4526f4a7f7c4a814a1ef42e8a2f57d0ca0
+  sha256: 51ffdd545682d1da3f8bb61da8951aacbd27aa9d26762354d2d9289ee633380f
+  patches:
+    - patch
 
 build:
   number: 0
-  skip: True  # [py <= 37]
+  skip: True  # [py < 37]
 
 requirements:
   build:
@@ -18,13 +20,18 @@ requirements:
   host:
     - python
     - pip
-    - biopython
+    - numpy
+    - cython
   run:
     - python
     - biopython
+    - bx-python >=0.7.3
+    - bcbiogff
     - r-base
     - graphviz
     - scikit-learn
+    - pysam
+    - {{ pin_compatible('numpy') }}
 
 test:
   commands:
@@ -36,15 +43,15 @@ test:
     - revcomp.py -h
     - fa2fq.py -h
     - fq2fa.py -h
-    - sort_fasta_by_len.py -h
     - get_seqs_from_list.py -h
     - err_correct_w_genome.py -h
-    - sam_to_bam.py -h
+    - sam_to_bam.py -h 2>&1 | grep "Only accepts"
     - sam_to_gff3.py -h
     - simulate.py -h
     - collapse_isoforms_by_sam.py -h
     - get_abundance_post_collapse.py -h
-    - filter_by_count.py -h
+    # Requires pbtools, which isn't listed ANYWHERE as a dependency or is availabe in conda-forge
+    #- filter_by_count.py -h
     - filter_away_subset.py -h
     - chain_samples.py -h
     - fusion_finder.py -h
