@@ -17,6 +17,14 @@ WGS_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wgs_standard`
 WES_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wes_standard`
 cd $SRC_DIR
 
+# TF slim is difficult because there is an existing tf-slim package in conda-forge
+# https://github.com/conda-forge/tf-slim-feedstock
+# which is different than the google one: https://github.com/google-research/tf-slim
+# This appears to be a temporary situation: https://github.com/google-research/tf-slim/issues/6
+# so temporarily install via pip in the build.sh to avoid conflicts
+# https://github.com/google/deepvariant/blob/4b937f03a1336d1dc6fd4c0eef727e1f83d2152a/run-prereq.sh#L109
+pip install --no-deps git+https://github.com/google-research/tf-slim.git
+
 # models installed in post-link script
 rm -rf $TGT/models
 
@@ -26,8 +34,9 @@ do
 	unzip -d $ZIPBIN $PREFIX/$BINARY_DIR/$ZIPBIN.zip
 	sed -i.bak "s|PYTHON_BINARY = '/usr/bin/python3.6'|PYTHON_BINARY = sys.executable|" $ZIPBIN/__main__.py
 	rm -f $ZIPBIN/*.bak
+	rm -f $ZIPBIN.zip
 	cd $ZIPBIN
-	zip -r ../$ZIPBIN.zip *
+	zip -q --symlinks -r ../$ZIPBIN.zip *
 	cd ..
 	mv $ZIPBIN.zip $PREFIX/$BINARY_DIR
 done
