@@ -20,7 +20,7 @@ Everyone has access to the following BiocondaBot commands, which can be given in
 | `@BiocondaBot please add label` | Add the `please review & merge` label. |
 | `@BiocondaBot please fetch artifacts` | Post links to CI-built packages/containers. <br />You can use this to test packages locally. |
 
-Comments from non-members that include `@bioconda/<team>` will be automatically reposted to notify the addressed team.
+Comments from non-members that include `@bioconda/<team>` will be automatically reposted to notify the addressed `<team>`.
 
 For members of the Bioconda project, the following command is also available:
 
