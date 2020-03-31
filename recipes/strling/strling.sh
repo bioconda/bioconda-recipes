@@ -1,0 +1,2 @@
+#bin/bash
+LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH $CONDA_PREFIX/share/strling $@
