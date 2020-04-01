@@ -14,18 +14,30 @@ Please read the [guidelines for Bioconda recipes](https://bioconda.github.io/con
 
 Everyone has access to the following BiocondaBot commands, which can be given in a comment:
 
-|     |     |
-| --- | --- |
-| `@BiocondaBot please update` | Merge the master branch into a PR. |
-| `@BiocondaBot please add label` | Add the `please review & merge` label. |
-| `@BiocondaBot please fetch artifacts` | Post links to CI-built packages/containers. <br />You can use this to test packages locally. |
+<table>
+  <tr>
+    <td><code>@BiocondaBot please update</code></td>
+    <td>Merge the master branch into a PR.</td>
+  </tr>
+  <tr>
+    <td><code>@BiocondaBot please add label</code></td>
+    <td>Add the `please review & merge` label.</td>
+  </tr>
+  <tr>
+    <td><code>@BiocondaBot please fetch artifacts</code></td>
+    <td>Post links to CI-built packages/containers. <br />You can use this to test packages locally.</td>
+  </tr>
+</table>
 
 Comments from non-members that include `@bioconda/<team>` will be automatically reposted to notify the addressed `<team>`.
 
 For members of the Bioconda project, the following command is also available:
 
-|     |     |
-| --- | --- |
-| `@BiocondaBot please merge` | Upload built packages/containers and merge a PR. <br />Someone must approve a PR first! <br />This reduces CI build time by reusing built artifacts. |
+<table>
+  <tr>
+    <td><code>@BiocondaBot please merge</code></td>
+    <td>Upload built packages/containers and merge a PR. <br />Someone must approve a PR first! <br />This reduces CI build time by reusing built artifacts.</td>
+  </tr>
+</table>
 
 </details>
