@@ -1,6 +1,5 @@
 {% set name = "coinfinder" %}
-{% set version = "1.0.1" %}
-{% set sha256 = "84a8c3d64ba66f11555d986b8c6630b3441f1842f2680fb9ba803be65baf3ac3" %}
+{% set version = "1.0.3" %}
 
 package:
   name: "{{ name }}"
@@ -8,15 +7,14 @@ package:
 
 source:
   url: "https://github.com/fwhelan/{{ name }}/archive/{{ version }}.tar.gz"
-  sha256: "{{ sha256 }}"
+  sha256: 522b3e4c73dc3a743de4990aac149d792479b007f5d3a83002e9540b7ee4e9e7
 
 build:
   number: 0
+  skip: True  # [py2k]
   rpaths:
-          - lib/R/lib/
-          - lib/
-
-  skip: True  # [py2k or osx]
+   - lib/R/lib/
+   - lib/
 
 requirements:
   build:
@@ -55,8 +53,7 @@ requirements:
 
 test:
   commands:
-    - coinfinder -h 2>&1 | grep Max
-    - Rscript -e "library(ggtree)"
+    - coinfinder -h || [[ "$?" == 1 ]]
 
 about:
   home: "https://github.com/fwhelan/{{ name }}"

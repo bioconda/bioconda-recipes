@@ -18,15 +18,20 @@ sed -i 's:$Bin:$RealBin:g' Utils.pm
 sed -i "s:system(\$cmd):system(\"/bin/bash -c '\$cmd'\"):g" Utils.pm
 # Avoid building samtools bcftools
 sed -i "s/bamtools samtools bcftools//g" Makefile
+# Use g++ in container
+sed -i.bak "s#g++#${CXX}#" Microassembler/Makefile
+sed -i.bak "s#g++#${CXX}#" Makefile
 
 chmod 0755 FindVariants.pl
 chmod 0755 FindSomatic.pl
 
-make INCLUDES="-I$PREFIX/include/bamtools -L $PREFIX/lib" Microassembler
-make INCLUDES="-I$PREFIX/include/bamtools -L $PREFIX/lib"
+ls -lh $BUILD_PREFIX/include/bamtools
+make INCLUDES="-I$BUILD_PREFIX/include/bamtools -L $BUILD_PREFIX/lib" Microassembler
+make INCLUDES="-I$BUILD_PREFIX/include/bamtools -L $BUILD_PREFIX/lib"
 
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
 cp -r * $outdir
+mkdir -p $PREFIX/bin
 ln -s $outdir/scalpel-discovery $PREFIX/bin
 ln -s $outdir/scalpel-export $PREFIX/bin
