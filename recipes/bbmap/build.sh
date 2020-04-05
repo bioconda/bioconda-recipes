@@ -13,4 +13,4 @@ chmod a+x *.sh
 cp -R * $BBMAP_HOME/
 
 find *.sh -type f -exec ln -s $BBMAP_HOME/{} $BINARY_HOME/{} \;
-find *.o -type f -exec rm -rf {} \;
+find . -type f -name *.o -exec rm -rf {} \;
