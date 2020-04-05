@@ -1,6 +1,6 @@
-{% set version = "1.2.0" %}
+{% set version = "1.4.0" %}
 {% set name = "compartmap" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,9 +10,9 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 3a5b9a72c01eaef3aafd6f7e8124e83c
+  md5: b109f4d18841366808899984a846fb82
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
@@ -20,26 +20,38 @@ build:
 # Suggests: covr, testthat, knitr
 requirements:
   host:
-    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
     - 'bioconductor-homo.sapiens >=1.3.0,<1.4.0'
-    - 'bioconductor-minfi >=1.30.0,<1.31.0'
-    - 'bioconductor-mixomics >=6.8.0,<6.9.0'
-    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-minfi >=1.32.0,<1.33.0'
+    - 'bioconductor-mixomics >=6.10.0,<6.11.0'
+    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
     - r-base
     - r-gtools
   run:
-    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
     - 'bioconductor-homo.sapiens >=1.3.0,<1.4.0'
-    - 'bioconductor-minfi >=1.30.0,<1.31.0'
-    - 'bioconductor-mixomics >=6.8.0,<6.9.0'
-    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-minfi >=1.32.0,<1.33.0'
+    - 'bioconductor-mixomics >=6.10.0,<6.11.0'
+    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
     - r-base
     - r-gtools
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL-3 + file LICENSE'
-  summary: 'Compartmap performs shrunken A/B compartment inference from ATAC-seq and methylation arrays.'
+  summary: 'A/B compartment inference from ATAC-seq and methylation array data'
+  description: 'Compartmap performs shrunken A/B compartment inference from ATAC-seq and methylation arrays.'
+  license_file: LICENSE
+extra:
+  container:
+    extended-base: true
 

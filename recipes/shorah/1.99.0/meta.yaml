@@ -1,0 +1,56 @@
+{% set name = "shorah" %}
+{% set version = "1.99.0" %}
+{% set sha256 = "a723ea9865cba22b62fa1b9ba98182c0bd3afb93c6c162c8418f68b8fd32f434" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/cbg-ethz/shorah/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.xz
+  sha256: {{ sha256 }}
+
+build:
+  skip: True  # [py27]
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - pkg-config
+  host:
+    - python
+    - htslib
+    - gsl
+    - boost-cpp
+    - zlib
+    - blas {{ blas }}
+  run:
+    - python
+    - htslib
+    - biopython
+    - numpy
+    - gsl
+    - zlib
+    - blas {{ blas }}
+    - setuptools
+
+test:
+  commands:
+  - shorah -h
+  - shorah shotgun -h
+  - shorah amplicon -h
+  - shorah snv -h
+  - b2w -h
+  - diri_sampler -h
+
+about:
+  summary: The Short Reads Assembly into Haplotypes (ShoRAH) program for inferring viral haplotypes from NGS data
+  home: https://github.com/cbg-ethz/{{ name }}
+  license: GPLv3
+  license_family: GPL3
+  license_file: LICENSE
+
+extra:
+  identifiers:
+  - biotools:shorah

@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="MafDb.TOPMed.freeze5.hg38_3.9.0.tar.gz"
+FN="MafDb.TOPMed.freeze5.hg38_3.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MafDb.TOPMed.freeze5.hg38_3.9.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MafDb.TOPMed.freeze5.hg38_3.9.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mafdb.topmed.freeze5.hg38/bioconductor-mafdb.topmed.freeze5.hg38_3.9.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mafdb.topmed.freeze5.hg38/bioconductor-mafdb.topmed.freeze5.hg38_3.9.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MafDb.TOPMed.freeze5.hg38_3.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MafDb.TOPMed.freeze5.hg38_3.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mafdb.topmed.freeze5.hg38/bioconductor-mafdb.topmed.freeze5.hg38_3.10.0_src_all.tar.gz"
 )
-MD5="b7522cfd7c3cd5266a0b7762ef5ba157"
+MD5="a3355623fde26b83dfd346a32829f073"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

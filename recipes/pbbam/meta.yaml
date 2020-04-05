@@ -1,14 +1,39 @@
 {% set name = "pbbam" %}
-{% set version = "1.0.6" %}
-{% set sha256 = "23c297f10b0cdfed056b93da90ca146ebd462216938138683c3c4c486719a6f4" %}
+{% set version = "1.0.7" %}
+{% set sha256 = "e4e9e9207486f757c538bbd75032f9d033500540c495ce48a8dacb6f2ca3b536" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/PacificBiosciences/{{ name }}/archive/{{ version }}.tar.gz
+  url: https://github.com/PacificBiosciences/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - meson >=0.48.1
+    - ninja
+    - pkg-config
+  host:
+    - boost-cpp
+    - zlib
+    - htslib
+    - pbcopper 1.4.0*
+  run:
+    - htslib
+
+test:
+  commands:
+    - bam2sam -h
+    - pbbamify -h
+    - pbindex -h
+    - pbindexdump -h
+    - pbmerge -h
 
 about:
   home: https://github.com/PacificBiosciences/pbbam
@@ -20,29 +45,3 @@ extra:
     - pb-dseifert
     - mhsieh
     - pezmaster31
-
-build:
-  number: 1
-
-requirements:
-  build:
-    - {{ compiler('cxx') }}
-    - meson >=0.48.1
-    - ninja
-    - pkg-config
-  host:
-    - boost
-    - zlib
-    - htslib
-    - pbcopper 1.3.0*
-  run:
-    - htslib
-    - pbcopper 1.3.0*
-
-test:
-  commands:
-    - bam2sam -h
-    - pbbamify -h
-    - pbindex -h
-    - pbindexdump -h
-    - pbmerge -h
