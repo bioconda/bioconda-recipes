@@ -1,0 +1,65 @@
+{% set name = "pp-sketchlib" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/johnlees/{{ name|lower }}.git
+  git_rev: v{{ version }}
+  sha256: 5d9cfacd3cbd37ff13f264ef4595cb0325d208e2
+
+build:
+  number: 0
+  skip: True  # [py2k or win]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  entry_points:
+    - poppunk_sketch = pp_sketch.__main__:main
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
+    - python
+    - pip
+    - pybind11
+    - zlib
+    - bzip2
+    - eigen
+    - hdf5
+    - intel-openmp  # [linux]
+    - mkl  # [linux]
+    - lapack  # [osx]
+    - openblas  # [osx]
+  run:
+    - python
+    - numpy
+    - zlib
+    - bzip2
+    - hdf5
+    - h5py
+    - intel-openmp  # [linux]
+    - mkl  #[linux]
+    - lapack  # [osx]
+    - openblas  # [osx]
+
+test:
+  imports:
+    - pp_sketch
+  commands:
+    - poppunk_sketch --version
+
+about:
+   home: https://github.com/johnlees/pp-sketchlib
+   license: Apache-2.0
+   license_family: APACHE
+   license_file: LICENSE
+   summary: Library of sketching functions used by PopPUNK
+
+
+extra:
+   skip-lints:
+     - uses_vcs_url # includes submodules

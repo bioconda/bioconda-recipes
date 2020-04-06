@@ -1,0 +1,11 @@
+#!/bin/bash
+declare -a CMAKE_PLATFORM_FLAGS
+if [[ ${HOST} =~ .*darwin.* ]]; then
+  CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
+fi
+
+mkdir build
+cd build
+cmake ${CMAKE_PLATFORM_FLAGS[@]} -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DHAVE_TESTS=0 -DHAVE_MPI=0 -DHAVE_SSE4_1=1 -DVERSION_OVERRIDE="${PKG_VERSION}" ..
+make -j${CPU_COUNT} ${VERBOSE_CM}
+make install
