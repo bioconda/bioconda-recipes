@@ -10,7 +10,7 @@ PATH="$PATH:$OUT/core_lib/wrapper/"
 mkdir -p "${OUT}"
 mkdir -p "${PREFIX}/bin"
 cp -R * "${OUT}/"
-tree "${OUT}"
+
 rm -r "${OUT}/jars/libs/modules/"
 
 # rename the sh scripts
