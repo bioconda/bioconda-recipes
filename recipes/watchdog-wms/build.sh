@@ -11,6 +11,8 @@ mkdir -p "${OUT}"
 mkdir -p "${PREFIX}/bin"
 cp -R * "${OUT}/"
 
+rm -r "${OUT}/jars/libs/modules/*"
+
 # rename the sh scripts
 mv "${OUT}/watchdog.sh" "${OUT}/watchdog-cmd.sh"
 mv "${OUT}/workflowDesigner.sh" "${OUT}/watchdog-gui.sh"
