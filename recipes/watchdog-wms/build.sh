@@ -20,3 +20,6 @@ ln -s "${OUT}/watchdog-cmd.sh" "${PREFIX}/bin/watchdog-cmd"
 ln -s "${OUT}/watchdog-gui.sh" "${PREFIX}/bin/watchdog-gui"
 chmod 0755 "${PREFIX}/bin/watchdog-cmd"
 chmod 0755 "${PREFIX}/bin/watchdog-gui"
+
+# create additional symbolic links for JAR files and helper scripts
+source "${OUT}/helper_scripts/watchdogLauncher.sh" "${PREFIX}/bin"
