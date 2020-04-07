@@ -10,8 +10,8 @@ PATH="$PATH:$OUT/core_lib/wrapper/"
 mkdir -p "${OUT}"
 mkdir -p "${PREFIX}/bin"
 cp -R * "${OUT}/"
-
-rm -r "${OUT}/jars/libs/modules/*"
+tree "${OUT}"
+rm -r "${OUT}/jars/libs/modules/"
 
 # rename the sh scripts
 mv "${OUT}/watchdog.sh" "${OUT}/watchdog-cmd.sh"
