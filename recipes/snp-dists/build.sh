@@ -6,7 +6,7 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 
-export CFLAGS="-I$PREFIX/include -Wall -Wextra -O3 -std=c99"
+export CFLAGS="-I$PREFIX/include -Wall -Wextra -Ofast -std=c99"
 export LDFLAGS="-L$PREFIX/lib"
 
 sed -i.bak "/^PREFIX.*$/d" Makefile

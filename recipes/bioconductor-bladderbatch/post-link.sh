@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="bladderbatch_1.22.0.tar.gz"
+FN="bladderbatch_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/bladderbatch_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/bladderbatch_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bladderbatch/bioconductor-bladderbatch_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/bladderbatch_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/bladderbatch_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bladderbatch/bioconductor-bladderbatch_1.24.0_src_all.tar.gz"
 )
-MD5="218fc2ffe79cb78448361adc8c9a3c2b"
+MD5="4e004667b9bd362279ce64c8b8459508"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

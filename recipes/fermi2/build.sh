@@ -2,9 +2,7 @@
 
 mkdir -p $PREFIX/bin
 
-export C_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-make
+make CC="$CC" CFLAGS="$CFLAGS" INCLUDES="-I$PREFIX/include" LIBS="-L${PREFIX}/lib -lm -lz -lpthread"
+
 mv fermi2  $PREFIX/bin
 mv fermi2.pl  $PREFIX/bin
-

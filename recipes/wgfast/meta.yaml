@@ -1,41 +1,55 @@
-{% set version="1.0.3" %}
-{% set sha256="43d7b0d593a484bec4a5ebbc77dcf8ffd645ee11fd79b778dcdd02b20dd576c1" %}
+{% set name = "wgfast" %}
+{% set version= "1.0.4" %}
+
 package:
-  name: 'wgfast'
-  version: {{ version }}
+  name: '{{ name | lower }}'
+  version: '{{ version }}'
 
 source:
   url: https://github.com/FofanovLab/wgfast/archive/{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  sha256: 9bc050563bcf835647b5621f5fb3b927d06a563f7c7a230db6f591ec7e8df0e4
 
 build:
   number: 0
-  skip: true  # [osx]
-  script: "{{ PYTHON }} -m pip install . -v"
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
   entry_points:
     - wgfast = wgfast.main:main
-    - wgfast_prep = wgfast.wgfast_prep:main
+    - wgfast_prep = wgfast.tools.wgfast_prep:main
+    - wgfastdb = wgfastdb.main:main
+    - wgfast_genbankqc = genbankqc.__main__:cli
 
 requirements:
-  build:
-    - python==3.6.0
   host:
-    - python==3.6.0
+    - python >=3
     - pip
   run:
-    - python==3.6.0
+    - python >=3
     - biopython
-    - dendropy # -c bioconda
-    - samtools # -c bioconda
-    - bwa==0.7.8
-    - bbmap # -c bioconda
-    - raxml # -c bioconda
-    - picard # bioconda
+    - pandas
+    - click
+    - dendropy 
+    - samtools 
+    - bwa
+    - bbmap
+    - raxml 
+    - picard 
+    - mash
+    - nasp 
+    - ncbitk 
+    - snakemake >=5 
+    - logbook
+    - qt
+    - pathos 
+    - ete3
+    - retrying
 
 test:
   commands:
     - wgfast --help
     - wgfast_prep --help
+    - wgfastdb --help
+    - wgfast_genbankqc --help
 
 about:
   home: https://github.com/jasonsahl/wgfast
@@ -43,5 +57,11 @@ about:
   license: 'GPL v3'
   license_file: LICENSE
   license_family: 'GPL'
-
-
+  
+extra:
+  recipe_maintainers: 
+    - tfursten
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: True

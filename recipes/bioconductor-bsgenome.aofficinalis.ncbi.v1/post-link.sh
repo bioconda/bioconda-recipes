@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="BSgenome.Aofficinalis.NCBI.V1_1.0.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Aofficinalis.NCBI.V1_1.0.0.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/BSgenome.Aofficinalis.NCBI.V1_1.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Aofficinalis.NCBI.V1_1.0.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.aofficinalis.ncbi.v1/bioconductor-bsgenome.aofficinalis.ncbi.v1_1.0.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.aofficinalis.ncbi.v1/bioconductor-bsgenome.aofficinalis.ncbi.v1_1.0.0_src_all.tar.gz"

@@ -1,13 +1,15 @@
 {% set name = "unitig-caller" %}
-{% set version = "0.2.0" %}
+{% set version = "1.0.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/johnlees/{{ name|lower }}/archive/v{{ version }}.tar.gz
-  sha256: 041223cb6c08eae317ea8e73d94521f0dcaedee374afc5e3b2ce639695937a4a
+  # git_url needed because the GitHub archive does not include submodules
+  git_url: https://github.com/johnlees/{{ name|lower }}.git
+  git_rev: v{{ version }}
+  sha256: unused
 
 build:
   number: 0
@@ -25,12 +27,17 @@ requirements:
     - python
     - pip
     - pybind11
+    - zlib
+    - bzip2
   run:
     - python
-    - mantis
+    - mantis >=0.2.0
     - squeakr >=0.6
 
 test:
+  imports:
+    - unitig_caller
+    - map_strings
   commands:
     - unitig-caller --version
 
@@ -40,3 +47,7 @@ about:
    license_family: APACHE
    license_file: LICENSE
    summary: Determines presence/absence of sequence elements in bacterial sequence data.
+
+extra:
+   skip-lints:
+     - uses_vcs_url

@@ -40,6 +40,11 @@ git clone https://github.com/TAMU-CPT/bookmarks-jbrowse.git plugins/bookmarks/
 echo "[ plugins.bookmarks ]" >> jbrowse.conf
 echo "location = ../plugin/bookmarks/" >> jbrowse.conf
 
+# Add MAFViewer plugin
+git clone https://github.com/cmdcolin/mafviewer.git plugins/MAFViewer
+echo "[ plugins.MAFViewer ]" >> jbrowse.conf
+echo "location = ../plugin/MAFViewer/" >> jbrowse.conf
+
 # Add NeatFeatures tracktypes
 echo "[ plugins.NeatCanvasFeatures ]" >> jbrowse.conf
 echo "location = ../plugin/NeatCanvasFeatures/" >> jbrowse.conf

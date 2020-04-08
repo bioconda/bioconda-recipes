@@ -1,5 +1,5 @@
-{% set version="1.0.3" %}
-{% set sha256="ad52e30a441ca9ce45f30e123662d876d7c240077a17a8899a8c65dcb982edf1" %}
+{% set version="1.0.6" %}
+{% set sha256="7fe3d20c76de44faa03e5540433d83b9cd6403b3d934cdf13d99cebcefefda1b" %}
 
 package:
   name: 'mtsv'
@@ -10,8 +10,8 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
-  skip: true  # [osx]
+  number: 1
+  skip: true  # [osx or not py36]
   entry_points:
     - mtsv = mtsv.main:main
     - mtsv_setup = mtsv.mtsv_prep.main:main
@@ -21,12 +21,10 @@ requirements:
   build:
     - {{ compiler('cxx')}}
   host:
-    - rust>=1.24.0
-    - python>=3.6.0,<3.7.0
+    - python
     - setuptools
-
   run:
-    - python>=3.6.0,<3.7.0
+    - python
     - snakemake>=4.1.0
     - pandas>=0.20.3
     - ete3
@@ -43,6 +41,7 @@ requirements:
     - bwa
     - samtools
     - gsl
+    - mtsv-tools
 
 test:
   imports:
@@ -51,13 +50,6 @@ test:
     - mtsv --help > /dev/null
     - mtsv_setup --help > /dev/null
     - mtsv_plugin --help > /dev/null
-    - mtsv-build --help > /dev/null
-    - mtsv-readprep --help > /dev/null
-    - mtsv-binner --help > /dev/null
-    - mtsv-signature --help > /dev/null
-    - mtsv-chunk --help > /dev/null
-    - mtsv-collapse --help > /dev/null
-    - mtsv-tree-build --help > /dev/null
 
 
 about:
@@ -69,3 +61,4 @@ about:
   
 extra:
   recipe_maintainers: tfursten
+  comment: python 3.7 is currently incompatible with sqlite=3.13, readline=6.2 and tk=8.5, so building for it is blocked.

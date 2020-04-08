@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="BSgenome.Btaurus.UCSC.bosTau8_1.4.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Btaurus.UCSC.bosTau8_1.4.2.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/BSgenome.Btaurus.UCSC.bosTau8_1.4.2.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Btaurus.UCSC.bosTau8_1.4.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.btaurus.ucsc.bostau8/bioconductor-bsgenome.btaurus.ucsc.bostau8_1.4.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.btaurus.ucsc.bostau8/bioconductor-bsgenome.btaurus.ucsc.bostau8_1.4.2_src_all.tar.gz"

@@ -46,6 +46,9 @@ fi
 mkdir perl-build
 find scripts -name "*.pl" | xargs -I {} mv {} perl-build
 cd perl-build
+# affects tests for Augustus 3.3:
+# https://github.com/Gaius-Augustus/Augustus/commit/7ca3ab
+sed -i'' -e '1s/perl -w/perl/' *.pl
 cp ${RECIPE_DIR}/Build.PL ./
 perl ./Build.PL
 perl ./Build manifest

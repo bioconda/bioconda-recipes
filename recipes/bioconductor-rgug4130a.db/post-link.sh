@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="rgug4130a.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/rgug4130a.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/rgug4130a.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/rgug4130a.db_3.2.3.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rgug4130a.db/bioconductor-rgug4130a.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rgug4130a.db/bioconductor-rgug4130a.db_3.2.3_src_all.tar.gz"

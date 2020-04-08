@@ -1,0 +1,39 @@
+{% set version = "2.0" %}
+{% set sha256 = "231bbd452ad95e5d3a5115370b664ac94ec91e8ebcc1e51c57b82b09e68e2396" %}
+
+package:
+  name: encode-blacklist
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/Boyle-Lab/Blacklist/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - Makefile.patch
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - bamtools
+  run:
+    - zlib
+    - bamtools
+
+test:
+  commands:
+    - Blacklist -h 2>&1 | grep "Unable to read mappability files!"
+
+about:
+  home: https://github.com/Boyle-Lab/Blacklist
+  license: GPL3
+  license_file: LICENSE
+  summary: 'The ENCODE Blacklist: Identification of Problematic Regions of the Genome'
+
+extra:
+  identifiers:
+    - doi:10.7717/10.1038/s41598-019-45839-z

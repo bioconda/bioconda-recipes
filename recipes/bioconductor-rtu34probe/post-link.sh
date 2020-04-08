@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="rtu34probe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/rtu34probe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/rtu34probe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/rtu34probe_2.18.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rtu34probe/bioconductor-rtu34probe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rtu34probe/bioconductor-rtu34probe_2.18.0_src_all.tar.gz"
