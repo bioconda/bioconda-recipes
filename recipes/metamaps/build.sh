@@ -10,6 +10,7 @@ make metamaps
 mkdir -p $PREFIX/bin
 cp -f metamaps $PREFIX/bin/
 
-outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-mkdir $outdir
-cp *pl $outdir
+# Copy dependencies to bin dir until there is a better solution
+cp *.pl *.R $PREFIX/bin/
+cp -r perlLib $PREFIX/bin/
+cp -r util $PREFIX/bin/
