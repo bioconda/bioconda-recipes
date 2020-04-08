@@ -9,3 +9,7 @@ make metamaps
 
 mkdir -p $PREFIX/bin
 cp -f metamaps $PREFIX/bin/
+
+outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+mkdir $outdir
+cp *pl $outdir
