@@ -11,7 +11,9 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 
 #compile
-conda install -p $PREFIX libgfortran=3.0 -y
+#conda install -p $PREFIX libgfortran=3.0 -y
+# backup to "gfortran" in conda GFORTRAN is not set
+GFORTRAN=${GFORTRAN:-gfortran}
 make CC=${CC} CXX=${CXX} CFLAGS="$CFLAGS $LDFLAGS" io.o pfscan pfsearch
 
 # copy tools in the bin
