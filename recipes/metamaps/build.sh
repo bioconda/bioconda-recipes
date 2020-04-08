@@ -4,7 +4,7 @@ export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
 ./bootstrap.sh
-./configure --with-boost=/path/to/boost --prefix=${PREFIX}
+./configure --with-boost=${PREFIX} --prefix=${PREFIX}
 make metamaps
 
 mkdir -p $PREFIX/bin
