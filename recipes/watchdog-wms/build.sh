@@ -11,8 +11,6 @@ mkdir -p "${OUT}"
 mkdir -p "${PREFIX}/bin"
 cp -R * "${OUT}/"
 
-rm -r "${OUT}/jars/libs/modules/"
-
 # rename the sh scripts
 mv "${OUT}/watchdog.sh" "${OUT}/watchdog-cmd.sh"
 mv "${OUT}/workflowDesigner.sh" "${OUT}/watchdog-gui.sh"
@@ -24,4 +22,4 @@ chmod 0755 "${PREFIX}/bin/watchdog-cmd"
 chmod 0755 "${PREFIX}/bin/watchdog-gui"
 
 # create additional symbolic links for JAR files and helper scripts
-source "${OUT}/helper_scripts/watchdogLauncher.sh" "${PREFIX}/bin"
+#source "${OUT}/helper_scripts/watchdogLauncher.sh" "${PREFIX}/bin"
