@@ -11,7 +11,7 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 
 #compile
-make CC=${CC} CFLAGS="$CFLAGS $LDFLAGS" io.o pfscan pfsearch
+make CC=${CC} CXX=${CXX} CFLAGS="$CFLAGS $LDFLAGS" io.o pfscan pfsearch
 
 # copy tools in the bin
 mkdir -p ${PREFIX}/bin
