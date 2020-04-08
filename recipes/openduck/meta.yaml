@@ -1,0 +1,46 @@
+{% set name = "duck" %}
+{% set version = "v0.1.1" %}
+
+package:
+  name: openduck
+  version: {{ version }}
+
+source:
+  url: https://github.com/galaxycomputationalchemistry/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: fcdc087f77f1cf165d375808b6303b93a673ffbffdd5e63f02e6d913e3d75cf2
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+  entry_points:
+    - get_wqb = scripts.get_wqb:main
+    - duck_chunk=scripts.duck_chunk:main
+    - duck_prepare_sys=scripts.duck_prepare_sys:main
+    - duck_smd_runs=scripts.duck_smd_runs:main
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - rdkit
+    - cudatoolkit
+
+test:
+  commands:
+    - duck_smd_runs -h
+    - duck_prepare_sys -h
+    - duck_chunk -h
+    - get_wqb -h
+
+about:
+  home: https://github.com/galaxycomputationalchemistry/duck
+  license: Apache 2.0
+  license_family: Apache
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - simonbray
