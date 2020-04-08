@@ -11,6 +11,8 @@ mkdir -p "${OUT}"
 mkdir -p "${PREFIX}/bin"
 cp -R * "${OUT}/"
 
+rm "${OUT}/core_lib/external/getopt_mac"
+
 # rename the sh scripts
 mv "${OUT}/watchdog.sh" "${OUT}/watchdog-cmd.sh"
 mv "${OUT}/workflowDesigner.sh" "${OUT}/watchdog-gui.sh"
