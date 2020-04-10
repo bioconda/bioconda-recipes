@@ -93,7 +93,6 @@ popd
 pushd ${SRC_DIR}/ghc_src
 
 touch mk/build.mk
-echo "HADDOCK_DOCS = NO" >> mk/build.mk
 echo "BuildFlavour = quick" >> mk/build.mk
 echo "libraries/integer-gmp_CONFIGURE_OPTS += --configure-option=--with-gmp-includes=$PREFIX/include" >> mk/build.mk
 echo "libraries/integer-gmp_CONFIGURE_OPTS += --configure-option=--with-gmp-libraries=$PREFIX/lib" >> mk/build.mk
@@ -107,6 +106,7 @@ set -e
 make
 make install
 ghc-pkg recache
+ghc --version
 popd
 
 #######################################################################################################
@@ -132,7 +132,7 @@ stack setup
 stack update
 make NGLess/Dependencies/Versions.hs
 make external-deps CC=$CC CXX=$GCC
-stack build --extra-include-dirs ${PREFIX}/include --extra-lib-dirs ${PREFIX}/lib --ghc-options " -optc-I${PREFIX}/include -optl-L${PREFIX}/lib " --local-bin-path ${PREFIX}/bin
+stack build --extra-include-dirs ${PREFIX}/include --extra-lib-dirs ${PREFIX}/lib --local-bin-path ${PREFIX}/bin
 
 make install WGET="wget --no-check-certificate" prefix=$PREFIX CC=$CC
 
