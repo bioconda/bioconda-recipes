@@ -1,5 +1,13 @@
 #!/bin/sh
 set -x -e
+export INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LD_LIBRARY_PATH="${PREFIX}/lib"
+export CFLAGS="-I$PREFIX/include"
+export CPATH=${PREFIX}/include
+export LDFLAGS="-L${PREFIX}/lib"
+export CPPFLAGS="-I${PREFIX}/include"
+
 
 # Coils Dir
 COILS_DIR=${PREFIX}/share/coils
