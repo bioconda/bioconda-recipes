@@ -2,4 +2,4 @@
 
 set -o errexit -o nounset
 
-export COILSDIR=${PREFIX}share/coils
+export COILSDIR=${PREFIX}/share/coils
