@@ -27,10 +27,12 @@ cp -r * ${COILS_DIR}
 
 # Add main tools
 cp ${NCOILS} ${PREFIX}/bin/ncoils
+chmod a+x ${PREFIX}/bin/ncoils
 
 # Add extra programs
 for PROGRAM in ${COILS_PROGRAMS} ; do
   cp ${PROGRAM} ${PREFIX}/bin
+	chmod a+x ${PREFIX}/bin/${PROGRAM}
 done
 
 # You then need to set an environment variable $COILSDIR to the coils folder
