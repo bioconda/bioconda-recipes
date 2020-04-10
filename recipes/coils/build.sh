@@ -35,10 +35,12 @@ done
 
 # You then need to set an environment variable $COILSDIR to the coils folder
 # These coils folder is installed as runtime deps, but the paths to it need to
-# to reflect the current environment's $PREFIX/bin dir.
-# export COILSDIR as ENV variable
-mkdir -p ${PREFIX}/etc/conda/activate.d/
-echo "COILSDIR=${COILS_DIR}" > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}.sh
+# to reflect the current environment's $PREFIX/bin dir.''
+mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
+cat <<EOF >> ${PREFIX}/etc/conda/activate.d/coils.sh
+export COILSDIR=${COILS_DIR}
+EOF
 
-mkdir -p ${PREFIX}/etc/conda/deactivate.d/
-echo "unset COILSDIR" > ${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}.sh
+cat <<EOF >> ${PREFIX}/etc/conda/deactivate.d/coils.sh
+unset COILSDIR
+EOF
