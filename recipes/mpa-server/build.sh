@@ -12,7 +12,7 @@ ln -s "$outdir"/mpa-server "$PREFIX"/bin
 sql_subdir=mysql
 
 # write config file
-cat <<EOF > "$outdir"/config_LINUX.properties
+cat <<EOF > "$outdir"/config_LINUX.properties.template
 # mpa-server configuration
 apptitle=MetaProteomeAnalyzer
 
