@@ -12,7 +12,8 @@ export CPPFLAGS="-I${PREFIX}/include"
 #PROGRAMS="gtop pfmake pfscan pfw ptoh htop pfscale pfsearch psa2msa 2ft 6ft ptof"
 #compile
 
-CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} ./configure
+#CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} ./configure
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH} CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} CXX=${CXX} ./configure
 
 make
 make check
