@@ -10,9 +10,11 @@ export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 
 #PROGRAMS="gtop pfmake pfscan pfw ptoh htop pfscale pfsearch psa2msa 2ft 6ft ptof"
-#compile
 
-#CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} ./configure
+#patch - shuffle conflicts with a function in the STL
+sed -i'' -e 's/shuffle/ShuffleFlag/g' FingerPrint.cc
+
+#compile
 LD_LIBRARY_PATH=${LD_LIBRARY_PATH} CPPFLAGS="${CPPFLAGS} -Wno-write-strings" LDFLAGS=${LDFLAGS} CXX=${CXX} ./configure
 
 make
