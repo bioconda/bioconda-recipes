@@ -14,9 +14,9 @@ export CPPFLAGS="-I${PREFIX}/include"
 
 CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} ./configure
 
-make CXX=${CXX}
-make CXX=${CXX} check
-make CXX=${CXX} install
+make
+make check
+make install
 
 #for debug
 ls -l
