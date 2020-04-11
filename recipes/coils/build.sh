@@ -12,7 +12,7 @@ export CPPFLAGS="-I${PREFIX}/include"
 # Coils Dir
 COILS_DIR=${PREFIX}/share/coils
 #list programs
-COILS_PROGRAMS="coils-svr.pl coils-wrap.pl"
+COILS_PROGRAMS="ncoils coils-svr.pl coils-wrap.pl"
 
 
 
@@ -20,10 +20,7 @@ COILS_PROGRAMS="coils-svr.pl coils-wrap.pl"
 # remove the precompilated one
 rm ncoils-linux
 #compile
-${CC} -O2 -I. -o ncoils-osf ncoils.c read_matrix.c -lm
-
-# get the name of the ncoils program build
-NCOILS=$(ls ncoils-*)
+${CC} -O2 -I. -o ncoils ncoils.c read_matrix.c -lm
 
 # info for debugging
 ls -l
