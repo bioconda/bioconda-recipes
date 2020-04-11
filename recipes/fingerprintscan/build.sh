@@ -13,7 +13,7 @@ export CPPFLAGS="-I${PREFIX}/include"
 #compile
 
 #CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} ./configure
-LD_LIBRARY_PATH=${LD_LIBRARY_PATH} CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} CXX=${CXX} ./configure
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH} CPPFLAGS="${CPPFLAGS} -Wno-write-strings" LDFLAGS=${LDFLAGS} CXX=${CXX} ./configure
 
 make
 make check
