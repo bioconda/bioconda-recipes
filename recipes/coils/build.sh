@@ -30,10 +30,6 @@ mkdir -p ${PREFIX}/bin
 mkdir -p ${COILS_DIR}
 cp -r * ${COILS_DIR}
 
-# Add main tools
-cp ${NCOILS} ${PREFIX}/bin/ncoils
-chmod a+x ${PREFIX}/bin/ncoils
-
 # Add extra programs
 for PROGRAM in ${COILS_PROGRAMS} ; do
   cp ${PROGRAM} ${PREFIX}/bin
