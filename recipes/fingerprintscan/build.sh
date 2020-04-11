@@ -9,7 +9,7 @@ export CPATH=${PREFIX}/include
 export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 
-#PROGRAMS="gtop pfmake pfscan pfw ptoh htop pfscale pfsearch psa2msa 2ft 6ft ptof"
+PROGRAMS="fingerPRINTScan"
 
 #patch - shuffle conflicts with a function in the STL
 sed -i'' -e 's/shuffle/ShuffleFlag/g' FingerPrint.cc
@@ -25,7 +25,8 @@ make install
 ls -l
 
 # copy tools in the bin
-#mkdir -p ${PREFIX}/bin
-#for PROGRAM in ${PFTOOLS_PROGRAMS} ; do
-#  cp ${PROGRAM} ${PREFIX}/bin
-#done
+mkdir -p ${PREFIX}/bin
+for PROGRAM in ${PFTOOLS_PROGRAMS} ; do
+  cp ${PROGRAM} ${PREFIX}/bin
+	chmod a+x ${PREFIX}/bin/${PROGRAM}
+done
