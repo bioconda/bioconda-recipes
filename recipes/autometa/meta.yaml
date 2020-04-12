@@ -1,0 +1,68 @@
+{% set name = "Autometa" %}
+{% set data = load_setup_py_data() %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ data.get('version') }}
+
+source:
+  url: https://github.com/KwanLab/Autometa/archive/2.0.0-alpha.tar.gz
+  sha256: 4f6a7fad3991126feb50e605d13adee9b62498f09f43c0a96d657c00a455a7b6
+
+
+build:
+  number: 0
+  noarch: python
+  script: python -m pip install . --ignore-installed --no-deps -vv
+
+requirements:
+  host:
+    - python {{ data.get('python_requires') }}
+    - pip
+    - setuptools
+  run:
+    - python {{ data.get('python_requires') }}
+    - biopython
+    - bedtools
+    - bowtie2
+    - diamond
+    - hmmer
+    - hdbscan
+    - openssl ==1.0.*
+    - ndcctools
+    - numpy >=1.18.*
+    - pandas >=1.*
+    - parallel
+    - prodigal
+    - requests
+    - scikit-learn
+    - scipy
+    - samtools
+    - tqdm
+    - umap-learn
+
+test:
+  imports:
+    - autometa
+  commands:
+    - autometa -h > /dev/null
+    - autometa-configure -h > /dev/null
+    - autometa-kmers -h > /dev/null
+    - autometa-coverage -h > /dev/null
+    - autometa-markers -h > /dev/null
+
+about:
+  home: {{ data.get('url') }}
+  license: AGPL
+  license_file: LICENSE.txt
+  description: |
+    An automated binning pipeline for metagenomes, in particular host-associated and highly complex ones.
+    Miller, I. J.; Rees, E. R.; Ross, J.; Miller, I.; Baxa, J.; Lopera, J.; Kerby, R. L.; Rey, F. E.; Kwan, J. C. Autometa: Automated extraction of microbial genomes from individual shotgun metagenomes. Nucleic Acids Research, 2019. DOI: https://doi.org/10.1093/nar/gkz148
+  summary: "Automated extraction of genomes from shotgun metagenomes"
+  doc_url: https://autometa.readthedocs.io/en/latest/
+  dev_url: {{ data.get('url') }}
+
+extra:
+  maintainers:
+   - Jason C. Kwan
+   - Evan R. Rees
