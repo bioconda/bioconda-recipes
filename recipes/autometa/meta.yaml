@@ -1,26 +1,27 @@
 {% set name = "Autometa" %}
-{% set sha256 = "4f6a7fad3991126feb50e605d13adee9b62498f09f43c0a96d657c00a455a7b6" %}
-{% set data = load_setup_py_data() %}
+{% set sha256 = "b9b82c15e6f4d76c49d3e80d38a901606e7fd8ba945f83657535d27bb3d8860b" %}
+{% set version = "2.0.0a0" %}
 
 package:
   name: {{ name|lower }}
-  version: {{ data.get('version') }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/KwanLab/Autometa/archive/2.0.0-alpha.tar.gz
+  url: https://github.com/KwanLab/Autometa/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   number: 0
   noarch: python
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 requirements:
   host:
-    - python {{ data.get('python_requires') }}
+    - python >=3.7
     - pip
     - setuptools
   run:
-    - python {{ data.get('python_requires') }}
+    - python >=3.7
     - biopython
     - bedtools
     - bowtie2
@@ -65,3 +66,5 @@ extra:
   maintainers:
    - Jason C. Kwan
    - Evan R. Rees
+  container:
+    extended-base: True
