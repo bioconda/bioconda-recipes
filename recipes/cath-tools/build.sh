@@ -13,8 +13,11 @@ export CPPFLAGS="-I${PREFIX}/include"
 CATH_PROGRAMS=""
 
 #compile
-cmake -DGSL_LIBRARIES=${PREFIX}/include/gsl -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$PREFIX -DBoost_DEBUG=ON -DCMAKE_CXX_FLAGS="-std=c++11" -DCMAKE_PREFIX_PATH="$PREFIX" ..
+cmake -DGSL_LIBRARIES=${PREFIX}/include/gsl -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$PREFIX -DBoost_DEBUG=ON -DCMAKE_CXX_FLAGS="-std=c++11" -DCMAKE_PREFIX_PATH="$PREFIX" .
+# for debugging
+ls -l
 
+make
 # for debugging
 ls -l
 
