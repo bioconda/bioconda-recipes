@@ -18,8 +18,9 @@ make check
 
 # copy tools in the bin
 mkdir -p ${PREFIX}/bin
-for PROGRAM in ${PFTOOLS_PROGRAMS} ; do
+for PROGRAM in ${PROGRAMS} ; do
   cp ${PROGRAM} ${PREFIX}/bin
 	chmod a+x ${PREFIX}/bin/${PROGRAM}
 done
 ls -l $PREFIX/bin
+ls -l
