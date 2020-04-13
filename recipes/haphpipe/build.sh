@@ -1,1 +1,1 @@
-pip install https://github.com/gwcbi/haphpipe/releases/tag/v1.0.0/download/haphpipe-1.0.0.tar.gz
+pip install https://github.com/gwcbi/haphpipe/archive/v1.0.0/haphpipe-1.0.0.tar.gz
