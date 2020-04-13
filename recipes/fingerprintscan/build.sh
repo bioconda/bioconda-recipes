@@ -22,5 +22,3 @@ for PROGRAM in ${PROGRAMS} ; do
   cp ${PROGRAM} ${PREFIX}/bin
 	chmod a+x ${PREFIX}/bin/${PROGRAM}
 done
-ls -l $PREFIX/bin
-ls -l
