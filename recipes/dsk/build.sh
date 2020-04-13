@@ -10,6 +10,8 @@ export C_INCLUDE_PATH=${PREFIX}/include
 mkdir build
 cd build
 cmake .. \
+      -DCMAKE_CXX_COMPILER=$CXX \
+      -DCMAKE_C_COMPILER=$CC \
       -DCMAKE_INSTALL_PREFIX=${PREFIX} \
       -DCMAKE_PREFIX_PATH=${PREFIX} \
       -DCPPUNIT_INCLUDE_DIR=${PREFIX}/include
