@@ -15,10 +15,10 @@ LD_LIBRARY_PATH=${LD_LIBRARY_PATH} CPPFLAGS="${CPPFLAGS} -Wno-write-strings" LDF
 
 make
 make check
-make install
+make install PREFIX=$PREFIX
 
 #for debug
-ls -l
+ls -l $PREFIX/bin
 
 # copy tools in the bin
 mkdir -p ${PREFIX}/bin
