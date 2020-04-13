@@ -18,7 +18,7 @@ make
 
 # copy tools in the bin
 mkdir -p ${PREFIX}/bin
-for PROGRAM in ${PFTOOLS_PROGRAMS} ; do
+for PROGRAM in ${CATH_PROGRAMS} ; do
   cp ${PROGRAM} ${PREFIX}/bin
 	chmod a+x ${PREFIX}/bin/${PROGRAM}
 done
