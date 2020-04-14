@@ -7,9 +7,6 @@ export CPPFLAGS="-I${PREFIX}/include"
 
 PROGRAMS="fingerPRINTScan"
 
-#patch - shuffle conflicts with a function in the STL
-sed -i'' -e 's/shuffle/ShuffleFlag/g' FingerPrint.cc
-
 #compile
 LD_LIBRARY_PATH=${LD_LIBRARY_PATH} CPPFLAGS="${CPPFLAGS} -Wno-write-strings" LDFLAGS=${LDFLAGS} CXX=${CXX} ./configure
 
