@@ -26,7 +26,7 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 # The rpsbproc command line utility is an addition to the standalone version of
 # Reverse Position-Specific BLAST (RPS-BLAST), also known as CD-Search (Conserved
 # Domain Search).
-wget https://ftp.ncbi.nih.gov/pub/mmdb/cdd/rpsbproc/RpsbProc-src.tar.gz
+curl https://ftp.ncbi.nih.gov/pub/mmdb/cdd/rpsbproc/RpsbProc-src.tar.gz
 tar -xzf RpsbProc-src.tar.gz
 mkdir -p src/app/RpsbProc
 cp -rf RpsbProc/src/* src/app/RpsbProc/
