@@ -27,8 +27,8 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 # Reverse Position-Specific BLAST (RPS-BLAST), also known as CD-Search (Conserved
 # Domain Search).
 curl -sL https://ftp.ncbi.nih.gov/pub/mmdb/cdd/rpsbproc/RpsbProc-src.tar.gz | tar -xz
-#mkdir -p src/app/RpsbProc
-#cp -rf RpsbProc/src/* src/app/RpsbProc/
+mkdir -p src/app/RpsbProc
+cp -rf RpsbProc/src/* src/app/RpsbProc/
 
 # with/without options:
 #
@@ -81,7 +81,7 @@ apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe"
 apps="$apps rpsblast.exe rpstblastn.exe makembindex.exe segmasker.exe"
 apps="$apps dustmasker.exe windowmasker.exe deltablast.exe makeblastdb.exe"
 apps="$apps blastdbcmd.exe blastdb_aliastool.exe convert2blastmask.exe"
-apps="$apps blastdbcheck.exe makeprofiledb.exe blast_formatter.exe"
+apps="$apps blastdbcheck.exe makeprofiledb.exe blast_formatter.exe rpsbproc.exe"
 cd ReleaseMT
 
 # The "datatool" binary needs the libs at build time, create
