@@ -21,5 +21,5 @@ echo "Finished Watchdog sleep test!"
 
 # macos test
 bash $OUT/modules/downloadCommunityModules.sh --auto
-bash $OUT/modules/gzip/gzip.sh -i x
+bash $OUT/modules/gzip/gzip.sh --version
 exit 0
