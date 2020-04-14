@@ -8,7 +8,6 @@ set -e
          
     echo "ls -l $PREFIX"
     ls -l $PREFIX
-    cat /proc/cpuinfo
     which amrfinder
     amrfinder -u
     amrfinder --plus -n test_dna.fa -p test_prot.fa -g test_prot.gff -O Escherichia > test_both.got
