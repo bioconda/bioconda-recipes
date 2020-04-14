@@ -18,4 +18,8 @@ sedinline "s#BASE_DIR#${OUT}/#" "${TEST_FILE}"
 # workflow test
 timeoutbash watchdog-cmd -mailWaitTime 0 -x "${TEST_FILE}" -p 8616 2>&1>/dev/null
 echo "Finished Watchdog sleep test!"
+
+# macos test
+bash $OUT/modules/downloadCommunityModules.sh --auto
+bash $OUT/modules/gzip/gzip.sh -i x
 exit 0
