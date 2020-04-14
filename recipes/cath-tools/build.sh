@@ -14,7 +14,7 @@ CATH_PROGRAMS="build-test cath-assign-domains cath-cluster cath-map-clusters cat
 
 #compile
 cmake -DGSL_LIBRARIES=${PREFIX}/include -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$PREFIX -DBoost_DEBUG=ON -DCMAKE_CXX_FLAGS="-std=c++11" -DCMAKE_PREFIX_PATH="$PREFIX" .
-make
+make -j${CPU_COUNT}
 
 # copy tools in the bin
 mkdir -p ${PREFIX}/bin
