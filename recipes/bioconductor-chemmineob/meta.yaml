@@ -1,0 +1,50 @@
+{% set version = "1.24.0" %}
+{% set name = "ChemmineOB" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 7df66062e96ac419d02fd866160c8848
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: ChemmineR, BiocStyle, knitr, knitcitations, knitrBootstrap, BiocManager
+# SystemRequirements: OpenBabel (>= 2.3.1) with headers (http://openbabel.org).
+requirements:
+  host:
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-zlibbioc >=1.32.0,<1.33.0'
+    - r-base
+    - r-bh
+    - 'r-rcpp >=0.11.0'
+    - 'openbabel >=2.3.1'
+  run:
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-zlibbioc >=1.32.0,<1.33.0'
+    - r-base
+    - r-bh
+    - 'r-rcpp >=0.11.0'
+    - 'openbabel >=2.3.1'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'file LICENSE'
+  summary: 'R interface to a subset of OpenBabel functionalities'
+  description: 'ChemmineOB provides an R interface to a subset of cheminformatics functionalities implemented by the OpelBabel C++ project. OpenBabel is an open source cheminformatics toolbox that includes utilities for structure format interconversions, descriptor calculations, compound similarity searching and more. ChemineOB aims to make a subset of these utilities available from within R. For non-developers, ChemineOB is primarily intended to be used from ChemmineR as an add-on package rather than used directly.'
+  license_file: LICENSE
+

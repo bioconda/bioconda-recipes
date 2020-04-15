@@ -1,0 +1,57 @@
+{% set name = "plasflow" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 352d5d7cd73672130e32f3f61c3f2ad95aa684d7aebf7668ab3f2594996c338b
+  - url: https://github.com/smaegol/PlasFlow/archive/v1.1.tar.gz
+    sha256: 40dc47812167a1ca60950d3d0c7db5bfffec9d72e66d1db20c92d3a2f2f44971
+    folder: PlasFlow
+  - url: https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.10.0rc0-cp35-cp35m-linux_x86_64.whl
+    sha256: 6f30b0300b8326a09791baa0c24e3f6cdb54418374aea4eebc8695dcfec0a7c9
+    folder: tensorflow
+
+
+build:
+  number: 0
+  skip: True
+  #If this really only works with python 3.5 then we can't support it
+  # [not py35 or osx]
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - biopython
+    - bioconductor-biostrings
+    - rpy2
+    - numpy
+    - pandas
+    - scikit-learn
+    - scipy
+    - tensorflow
+test:
+  imports:
+    - plasflow
+  commands:
+    - PlasFlow.py --help
+
+about:
+  home: https://github.com/smaegol/PlasFlow
+  license: GNU General Public v3 or later (GPLv3+)
+  license_family: GPL3
+  license_file: PlasFlow/LICENSE
+  summary: PlasFlow - predicting plasmid sequences in metagenomic data
+
+extra:
+  identifiers:
+    - doi:10.1093/nar/gkx1321
+  skip-lints:
+    - should_not_use_skip_python
+    - should_be_noarch_generic

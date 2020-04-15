@@ -1,25 +1,29 @@
-{% set version = "1.20.0" %}
+{% set version = "1.28.0" %}
 {% set name = "metagenomeSeq" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 81b6286e84f98681b9ab4218851c159413b106b57a964297ff9b19dae09ff245
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 2ab17044f7797fcb6e72780c23442735
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: annotate, BiocGenerics, biomformat, knitr, gss, testthat (>= 0.8), vegan, interactiveDisplay
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-limma
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-ihw >=1.14.0,<1.15.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
+    - 'bioconductor-wrench >=1.4.0,<1.5.0'
     - r-base
     - r-foreach
     - r-glmnet
@@ -28,8 +32,10 @@ requirements:
     - r-matrixstats
     - r-rcolorbrewer
   run:
-    - bioconductor-biobase
-    - bioconductor-limma
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-ihw >=1.14.0,<1.15.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
+    - 'bioconductor-wrench >=1.4.0,<1.5.0'
     - r-base
     - r-foreach
     - r-glmnet
@@ -41,6 +47,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'metagenomeSeq is designed to determine features (be it Operational Taxanomic Unit (OTU), species, etc.) that are differentially abundant between two or more groups of multiple samples. metagenomeSeq is designed to address the effects of both normalization and under-sampling of microbial communities on disease association detection and the testing of feature correlations.'
+  summary: 'Statistical analysis for sparse high-throughput sequencing'
+  description: 'metagenomeSeq is designed to determine features (be it Operational Taxanomic Unit (OTU), species, etc.) that are differentially abundant between two or more groups of multiple samples. metagenomeSeq is designed to address the effects of both normalization and under-sampling of microbial communities on disease association detection and the testing of feature correlations.'
+extra:
+  identifiers:
+    - biotools:metagenomeseq
+    - doi:10.1038/nmeth.2658
+  parent_recipe:
+    name: bioconductor-metagenomeseq
+    path: recipes/bioconductor-metagenomeseq
+    version: 1.22.0
+

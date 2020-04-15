@@ -1,32 +1,47 @@
-{% set version = "1.48.0" %}
+{% set version = "1.56.0" %}
 {% set name = "maanova" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 1818c4d535605cb5f4aba28ba0137569962e11f1c191e9113db0dc8abc9972ef
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 27ef0f4c3e815b9f6bf679b0a1dc3867
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: qvalue, snow
 requirements:
-  build:
-    - bioconductor-biobase
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
   run:
-    - bioconductor-biobase
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'Analysis of N-dye Micro Array experiment using mixed model effect. Containing analysis of variance, permutation and bootstrap, cluster and consensus tree.'
+  summary: 'Tools for analyzing Micro Array experiments'
+  description: 'Analysis of N-dye Micro Array experiment using mixed model effect. Containing analysis of variance, permutation and bootstrap, cluster and consensus tree.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:maanova
+    - doi:10.1007/0-387-21679-0_14
+  parent_recipe:
+    name: bioconductor-maanova
+    path: recipes/bioconductor-maanova
+    version: 1.50.0
+

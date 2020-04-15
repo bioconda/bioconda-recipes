@@ -1,49 +1,58 @@
-{% set version = "1.44.0" %}
+{% set version = "1.52.0" %}
 {% set name = "flowCore" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 46903d63fd36a8b0a7ab04ba5328811405613e94c78448b0d33f9ea52b99bc6a
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: d600cfa823f191c48f8a7162a9558d4b
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: Rgraphviz, flowViz, flowStats (>= 3.43.4), testthat, flowWorkspace, flowWorkspaceData, openCyto, knitr, ggcyto, gridExtra
+# SystemRequirements: GNU make, C++11
 requirements:
-  build:
-    - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.1.14'
-    - bioconductor-graph
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-cytolib >=1.8.0,<1.9.0'
     - r-base
-    - r-bh  # not included in original DESCRIPTION
-    - r-corpcor
+    - 'r-bh >=1.65.0.1'
     - r-matrixstats
     - r-rcpp
-    - r-rrcov
-
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
-    - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.1.14'
-    - bioconductor-graph
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-cytolib >=1.8.0,<1.9.0'
     - r-base
-    - r-bh  # not included in original DESCRIPTION
-    - r-corpcor
+    - 'r-bh >=1.65.0.1'
     - r-matrixstats
     - r-rcpp
-    - r-rrcov
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Provides S4 data structures and basic functions to deal with flow cytometry data.'
+  summary: 'flowCore: Basic structures for flow cytometry data'
+  description: 'Provides S4 data structures and basic functions to deal with flow cytometry data.'
+extra:
+  identifiers:
+    - biotools:flowcore
+    - doi:10.1186/1471-2105-10-106
+  parent_recipe:
+    name: bioconductor-flowcore
+    path: recipes/bioconductor-flowcore
+    version: 1.46.2
+

@@ -1,40 +1,53 @@
-{% set version = "3.46.0" %}
+{% set version = "3.54.0" %}
 {% set name = "vsn" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: d270edb3a08bb03e0164101f6e541c62d6e5b90c84966dde2b47e6f8e115c6a3
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 4aa21023b404468ae5246826f49c40ce
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: affydata, hgu95av2cdf, BiocStyle, knitr, dplyr, testthat
 requirements:
-  build:
-    - bioconductor-affy
-    - bioconductor-biobase
-    - bioconductor-limma
+  host:
+    - 'bioconductor-affy >=1.64.0,<1.65.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
     - r-base
     - r-ggplot2
     - r-lattice
   run:
-    - bioconductor-affy
-    - bioconductor-biobase
-    - bioconductor-limma
+    - 'bioconductor-affy >=1.64.0,<1.65.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
     - r-base
     - r-ggplot2
     - r-lattice
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'The package implements a method for normalising microarray intensities, and works for single- and multiple-color arrays. It can also be used for data from other technologies, as long as they have similar format. The method uses a robust variant of the maximum-likelihood estimator for an additive-multiplicative error model and affine calibration. The model incorporates data calibration step (a.k.a. normalization), a model for the dependence of the variance on the mean intensity and a variance stabilizing data transformation. Differences between transformed intensities are analogous to "normalized log-ratios". However, in contrast to the latter, their variance is independent of the mean, and they are usually more sensitive and specific in detecting differential transcription.'
+  summary: 'Variance stabilization and calibration for microarray data'
+  description: 'The package implements a method for normalising microarray intensities, and works for single- and multiple-color arrays. It can also be used for data from other technologies, as long as they have similar format. The method uses a robust variant of the maximum-likelihood estimator for an additive-multiplicative error model and affine calibration. The model incorporates data calibration step (a.k.a. normalization), a model for the dependence of the variance on the mean intensity and a variance stabilizing data transformation. Differences between transformed intensities are analogous to "normalized log-ratios". However, in contrast to the latter, their variance is independent of the mean, and they are usually more sensitive and specific in detecting differential transcription.'
+extra:
+  identifiers:
+    - biotools:vsn
+  parent_recipe:
+    name: bioconductor-vsn
+    path: recipes/bioconductor-vsn
+    version: 3.48.1
+

@@ -1,55 +1,70 @@
-{% set version = "0.7.4" %}
+{% set name = "bx-python" %}
+{% set version = "0.8.8" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "ad0808ab19c007e8beebadc31827e0d7560ac0e935f1100fb8cc93607400bb47" %}
 
 package:
-  name: bx-python
-  version: {{ version }}
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
 
 source:
-  url: https://github.com/bxlab/bx-python/archive/v{{ version }}.tar.gz
-  sha256: 1066d1e56d062d0661f23c19942eb757bd7ab7cb8bc7d89a72fdc3931c995cb4
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
 
 build:
   number: 0
-  skip: True # [not py27]
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir -vvv ."
 
 requirements:
   build:
-    - python
-    - setuptools
+    - {{ compiler('c') }}
+  host:
     - cython
-    - nose
-    - numpy x.x
-    - gcc
-
-  run:
+    - numpy
+    - pip
     - python
-    - numpy x.x
-    - libgcc
+    - python-lzo
+    - setuptools
+    - six
+    - zlib
+  run:
+    - numpy
+    - python
+    - python-lzo
+    - six
 
 test:
   imports:
-    - bx.align.sitemask
-    - bx.tabular
-    - bx.intervals
+    - bx
     - bx.align
-    - bx.bbi
-    - bx.bbi.bigwig_file
-    - bx.cookbook
+    - bx.align.sitemask
+    - bx.align.tools
     - bx.arrays
-    - bx.motif.io
-    - bx.seq
+    - bx.bbi
+    - bx.cookbook
+    - bx.intervals
     - bx.intervals.operations
-    - bx.pwm
+    - bx.intseq
     - bx.misc
     - bx.motif
-    - bx.phylo
+    - bx.motif.io
     - bx.motif.logo
+    - bx.phylo
+    - bx.pwm
+    - bx.seq
+    - bx.tabular
     - bx_extras
-    - bx.align.tools
-    - bx
-    - bx.intseq
+  requires:
+    - nose
 
 about:
   home: https://github.com/bxlab/bx-python
   license: MIT
-  summary: Toolkit to enable rapid implementation of genome scale analyses.
+  license_family: MIT
+  license_file: 'LICENSE'
+  summary: Tools for manipulating biological data, particularly multiple sequence alignments
+
+extra:
+  container:
+    extended-base: true

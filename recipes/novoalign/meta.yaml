@@ -1,29 +1,48 @@
-{% set version = "3.07.00" %}
+{% set version = "4.02.02" %}
+{% set novosort_version = "2.02.00" %}
+{% set novomethyl_version = "1.07" %}
+{% set novoindex_version = "4.2" %}
+{% set sha256 = "88972469858fe9e7ec45b1630817a70f300904e914813669266cadf9777d446c" %}
 
 package:
   name: novoalign
-  version: '{{ version }}'
+  version: {{ version }}
+
 source:
-  fn: novocraftV{{ version }}.tar.gz
-  url: http://www.novocraft.com/homebrew/novocraftV{{ version }}.Linux2.6.tar.gz # [linux]
-  md5: d0cd7d20cf6f10f1da8db1e875356aa3 # [linux]
-  url: http://www.novocraft.com/homebrew/novocraftV{{ version }}.MacOSX.tar.gz # [osx]
-  md5: 1a0f98015fe0bf7c8e135132063b312f # [osx]
+  - url: http://www.novocraft.com/bioconda/novocraftV{{ version }}.Linux3.10.0.tar.gz
+    sha256: {{ sha256 }}
 
 build:
   number: 0
-  skip: False
+  skip: True # [not linux]
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - curl  # curl is needed to access Novocraft's website during package install -- see post-link.sh
+    - zlib
   run:
+    - curl
+    - zlib
+
 test:
   commands:
-    - 'novoalign 2>&1 | grep ^Novoalign'
+    - novoalign --version 2>&1 | grep V{{ version }}
+    - novoutil --version 2>&1 | grep V{{ version }}
+    - novosort --version 2>&1 | grep V{{ novosort_version }}
+    - novomethyl --version 2>&1 | grep V{{ novomethyl_version }}
+    - novoindex --version 2>&1 | grep {{ novoindex_version }}
+    - novo2maq 2>&1 | grep in.novo
+
 about:
   home: http://www.novocraft.com/products/novoalign/
-  license: Commercial (requires license for multithreaded use)
+  license: Commercial (requires license for use)
+  license_file: '{{ environ["RECIPE_DIR"] }}/license.txt'
   summary: Powerful tool designed for mapping of short reads onto a reference genome from Illumina, Ion Torrent, and 454 NGS platforms
 
 extra:
-  notes: Novoalign runs in single-threaded mode by default unless a "novoalign.lic" license file is provided in the same directory as its binaries. The license file can be copied in to the conda environment via the "novoalign-license-register" command.
+  notes: Novoalign V4 will not run unless a "novoalign.lic" license file is provided in the same directory as its binaries. The license file can be copied in to the conda environment via the "novoalign-license-register" command.
+  identifiers:
+    - biotools:Novoalign

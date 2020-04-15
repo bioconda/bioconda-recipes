@@ -1,11 +1,12 @@
 #!/bin/bash
+
 set -eu -o pipefail
 
-outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-mkdir -p $outdir
+PACKAGE_HOME=$PREFIX/share/$PKG_NAME
 mkdir -p $PREFIX/bin
-cp -R dist/* $outdir/
-cp $RECIPE_DIR/pantools.py $outdir/pantools
-ls -l $outdir
-ln -s $outdir/pantools $PREFIX/bin
-chmod 0755 "${PREFIX}/bin/pantools"
+mkdir -p $PACKAGE_HOME
+
+cp -R dist/* $PACKAGE_HOME/
+cp $RECIPE_DIR/pantools.py $PACKAGE_HOME/pantools.py
+chmod +x $PACKAGE_HOME/pantools.py
+ln -s $PACKAGE_HOME/pantools.py $PREFIX/bin/pantools

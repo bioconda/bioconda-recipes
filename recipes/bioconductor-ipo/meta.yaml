@@ -1,38 +1,50 @@
-{% set version = "1.4.0" %}
+{% set version = "1.12.0" %}
 {% set name = "IPO" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: c2c05fb377651d127a1f1fc8e4dc6f2b3d6466dde888a9b19df39061c9feb870
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: e686cbd590a4447b50b81180c5a31625
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit, BiocGenerics, msdata, mtbls2, faahKO, knitr
 requirements:
-  build:
-    - bioconductor-biocparallel
-    - bioconductor-camera
-    - 'bioconductor-xcms >=1.50.0'
+  host:
+    - 'bioconductor-biocparallel >=1.20.0,<1.21.0'
+    - 'bioconductor-camera >=1.42.0,<1.43.0'
+    - 'bioconductor-xcms >=3.8.0,<3.9.0'
     - r-base
     - r-rsm
   run:
-    - bioconductor-biocparallel
-    - bioconductor-camera
-    - 'bioconductor-xcms >=1.50.0'
+    - 'bioconductor-biocparallel >=1.20.0,<1.21.0'
+    - 'bioconductor-camera >=1.42.0,<1.43.0'
+    - 'bioconductor-xcms >=3.8.0,<3.9.0'
     - r-base
     - r-rsm
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2) + file LICENSE'
-  summary: 'The outcome of XCMS data processing strongly depends on the parameter settings. IPO (`Isotopologue Parameter Optimization`) is a parameter optimization tool that is applicable for different kinds of samples and liquid chromatography coupled to high resolution mass spectrometry devices, fast and free of labeling steps. IPO uses natural, stable 13C isotopes to calculate a peak picking score. Retention time correction is optimized by minimizing the relative retention time differences within features and grouping parameters are optimized by maximizing the number of features showing exactly one peak from each injection of a pooled sample. The different parameter settings are achieved by design of experiment. The resulting scores are evaluated using response surface models.'
+  summary: 'Automated Optimization of XCMS Data Processing parameters'
+  description: 'The outcome of XCMS data processing strongly depends on the parameter settings. IPO (`Isotopologue Parameter Optimization`) is a parameter optimization tool that is applicable for different kinds of samples and liquid chromatography coupled to high resolution mass spectrometry devices, fast and free of labeling steps. IPO uses natural, stable 13C isotopes to calculate a peak picking score. Retention time correction is optimized by minimizing the relative retention time differences within features and grouping parameters are optimized by maximizing the number of features showing exactly one peak from each injection of a pooled sample. The different parameter settings are achieved by design of experiment. The resulting scores are evaluated using response surface models.'
+  license_file: LICENSE
+extra:
+  identifiers:
+    - biotools:ipo
+  parent_recipe:
+    name: bioconductor-ipo
+    path: recipes/bioconductor-ipo
+    version: 1.8.0
+

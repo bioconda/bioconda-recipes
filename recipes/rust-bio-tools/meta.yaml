@@ -1,27 +1,35 @@
-{% set version = "0.2.5" %}
+{% set version = "0.9.2" %}
 
 package:
   name: rust-bio-tools
   version: {{version}}
 
 build:
-  number: 0
-  # TODO wait for CB3 gcc, then try again.
-  skip: true  # [osx]
+  number: 1
 
 source:
-  fn: rust-bio-tools-{{version}}.tar.gz
-  url: https://github.com/rust-bio/rust-bio-tools/archive/{{version}}.tar.gz
-  sha256: 3c9faa723abd5df1d6fbc84f20b1b262be8ea61bf46c8cb6b71d724baabd1611
+  url: https://github.com/rust-bio/rust-bio-tools/archive/v{{ version }}.tar.gz
+  sha256: b16381d1053f958874a9ac41586ff198c5908c569ffcbd7518623a4a3ef023ac
 
 requirements:
   build:
-    - rust
-    - gcc <4.8.5
-    - zlib {{ CONDA_ZLIB }}*
+    - rust >=1.30
+    - clangdev
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - pkg-config
+  host:
+    - zlib
+    - clangdev
+    - gsl
+    - libopenblas
+    - openssl
   run:
-    - zlib {{ CONDA_ZLIB }}*
-    - libgcc
+    - zlib
+    - gsl
+    - starcode
+    - libopenblas
+    - openssl
 
 test:
   commands:
@@ -31,5 +39,5 @@ about:
   home: https://github.com/rust-bio/rust-bio-tools
   license: MIT
   summary: |
-    A growing collection of fast and secure command line utililities for dealing with NGS data
+    A growing collection of fast and secure command line utilities for dealing with NGS data
     implemented on top of Rust-Bio.

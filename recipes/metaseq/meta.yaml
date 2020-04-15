@@ -1,36 +1,26 @@
+{% set name = "metaseq" %}
+{% set version = "0.5.6" %}
+{% set sha256 = "8bb81b6d8e19f6a7227da188731717bde835662f48f6b07581e9605619db5e0d" %}
+
 package:
-  name: metaseq
-  version: "0.5.6"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  fn: metaseq-0.5.6.tar.gz
-  url: https://pypi.python.org/packages/source/m/metaseq/metaseq-0.5.6.tar.gz
-  md5: f29575db23019a5cd1003bfccb599847
-#  patches:
-   # List any patch files here
-   # - fix.patch
+  url: https://pypi.python.org/packages/source/m/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  # noarch_python: True
-  # preserve_egg_dir: True
-  # entry_points:
-    # Put any entry points (scripts to be generated automatically) here. The
-    # syntax is module:function.  For example
-    #
-    # - metaseq = metaseq:main
-    #
-    # Would create an entry point called metaseq that calls metaseq.main()
-
-
-  # If this is a new build for the same version, increment the build
-  # number. If you do not include this key, it defaults to 0.
-  number: 0
-  skip: True # [not py27]
+  number: 2
+  skip: True  # [py3k]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
 
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - python
-    - setuptools
+    - pip
     - scipy >=0.10.1
     - biopython
     - scikit-learn
@@ -44,14 +34,12 @@ requirements:
     - pyyaml >=3.10
     - pybedtools >=0.6.6
     - fisher
-
   run:
     - python
     - scipy >=0.10.1
     - biopython
     - scikit-learn
     - bx-python >=0.7.1
-    - cython
     - numpy >=1.8.0
     - matplotlib >=1.3.1
     - pandas >=0.13.1
@@ -62,27 +50,12 @@ requirements:
     - fisher
 
 test:
-  # Python imports
   imports:
     - metaseq
 
-  # commands:
-    # You can put test commands to be run here.  Use this to test that the
-    # entry points work.
-
-
-  # You can also put a file called run_test.py in the recipe that will be run
-  # at test time.
-
-  # requires:
-    # Put any additional test requirements here.  For example
-    # - nose
-
 about:
   home: http://github.com/daler/metaseq
-  license: MIT License
-  summary: 'Integrative analysis of high-thoughput sequencing data'
-
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  summary: 'Framework for integrated analysis and plotting of ChIP/RIP/RNA/*-seq data.'

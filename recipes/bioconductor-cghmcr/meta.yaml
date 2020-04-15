@@ -1,38 +1,50 @@
-{% set version = "1.36.0" %}
+{% set version = "1.44.0" %}
 {% set name = "cghMCR" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 9aa166fbb0f6b924be95e7f51a95e949fe0539ed613b3ac77ae02d2caa658681
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: e4c48ba4c17fe9cb6229565bca6ed321
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - 'bioconductor-biocgenerics >=0.1.6'
-    - bioconductor-cntools
-    - bioconductor-dnacopy
-    - bioconductor-limma
+  host:
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-cntools >=1.42.0,<1.43.0'
+    - 'bioconductor-dnacopy >=1.60.0,<1.61.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
     - r-base
   run:
-    - 'bioconductor-biocgenerics >=0.1.6'
-    - bioconductor-cntools
-    - bioconductor-dnacopy
-    - bioconductor-limma
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-cntools >=1.42.0,<1.43.0'
+    - 'bioconductor-dnacopy >=1.60.0,<1.61.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL
-  summary: 'This package provides functions to identify genomic regions of interests based on segmented copy number data from multiple samples.'
+  summary: 'Find chromosome regions showing common gains/losses'
+  description: 'This package provides functions to identify genomic regions of interests based on segmented copy number data from multiple samples.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+extra:
+  identifiers:
+    - biotools:cghmcr
+    - doi:10.1093/bioinformatics/btv298
+  parent_recipe:
+    name: bioconductor-cghmcr
+    path: recipes/bioconductor-cghmcr
+    version: 1.38.0
+

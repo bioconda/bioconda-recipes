@@ -1,34 +1,40 @@
-{% set version = "1.0.1" %}
+{% set version = "1.8.0" %}
 {% set name = "cytolib" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: f16c070427f352a9611da81629cfa54f87f19d4b3ce33ba2c654e3635c81d9fb
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 13205b79dd96542a3a36f9df61622a66
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr
+# SystemRequirements: GNU make, C++11
 requirements:
-  build:
+  host:
     - r-base
-    - r-bh  # not in DESCRIPTION
-    - bioconductor-rprotobuflib   # not in DESCRIPTION
   run:
     - r-base
-    - r-bh  # not in DESCRIPTION
-    - bioconductor-rprotobuflib   # not in DESCRIPTION
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'This package provides the core data structure and API to represent and interact with the gated cytometry data.'
+  summary: 'C++ infrastructure for representing and interacting with the gated cytometry'
+  description: 'This package provides the core data structure and API to represent and interact with the gated cytometry data.'
+extra:
+  parent_recipe:
+    name: bioconductor-cytolib
+    path: recipes/bioconductor-cytolib
+    version: 1.4.0
+

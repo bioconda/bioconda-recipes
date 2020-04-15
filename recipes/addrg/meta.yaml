@@ -1,31 +1,30 @@
 {% set version = "0.2.1" %}
+{% set sha256 = "8d8873d77afc456b4e69dabe3c5cc839ab4b4a12ed1d9f7fe8a7524001a235b2" %}
 
 package:
   name: addrg
   version: {{ version }}
 
 build:
-  number: 1
-  skip: False
+  number: 4
 
 source:
-  fn: addrg-{{ version }}.tar.gz
   url: https://github.com/holtgrewe/addrg/archive/v{{ version }}.tar.gz
-  md5: 'bc87406382100ded3e701cc410107ac5'
+  sha256: {{ sha256 }}
 
 requirements:
   build:
-  - gcc  # [not osx]
-  - llvm # [osx]
-  - htslib {{ CONDA_HTSLIB }}*
+    - {{ compiler('c') }}
+  host:
+    - htslib
   run:
-  - libgcc # [not osx]
-  - htslib {{ CONDA_HTSLIB }}*
+    - htslib
+
+test:
+  commands:
+    - '{ >&1 addrg || true; } | grep Usage'
 
 about:
   home: https://github.com/holtgrewe/addrg
   license: MIT
   summary: Add read group to BAM files
-test:
-  commands:
-  - '{ >&1 addrg || true; } | grep Usage'

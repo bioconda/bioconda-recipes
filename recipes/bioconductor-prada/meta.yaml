@@ -1,40 +1,55 @@
-{% set version = "1.54.0" %}
+{% set version = "1.62.0" %}
 {% set name = "prada" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 36e2b25c172eb24b4c5feccfe47760184035143f99d9cd438d79fd1a0281c8a5
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: f2ff5e23f63e8c4816b9e55b47f15a9c
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: cellHTS2, tcltk
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
     - r-base
     - r-mass
     - r-rcolorbrewer
     - r-rrcov
   run:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
     - r-base
     - r-mass
     - r-rcolorbrewer
     - r-rrcov
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL
-  summary: 'Tools for analysing and navigating data from high-throughput phenotyping experiments based on cellular assays and fluorescent detection (flow cytometry (FACS), high-content screening microscopy).'
+  summary: 'Data analysis for cell-based functional assays'
+  description: 'Tools for analysing and navigating data from high-throughput phenotyping experiments based on cellular assays and fluorescent detection (flow cytometry (FACS), high-content screening microscopy).'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+extra:
+  identifiers:
+    - biotools:prada
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-prada
+    path: recipes/bioconductor-prada
+    version: 1.56.0
+

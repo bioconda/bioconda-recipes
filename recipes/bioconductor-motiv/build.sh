@@ -1,13 +1,11 @@
 #!/bin/bash
-
-export CFLAGS="$(gsl-config --cflags)"
-export LDFLAGS="$(gsl-config --libs)"
-
-if [ `uname` == Darwin ] ; then
-  export LDFLAGS="-Wl,-rpath ${PREFIX}/lib $LDFLAGS"
-fi
-export LD_LIBRARY_PATH=$PREFIX/lib
-
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
+mkdir -p ~/.R
+echo -e "CC=$CC
+FC=$FC
+CXX=$CXX
+CXX98=$CXX
+CXX11=$CXX
+CXX14=$CXX" > ~/.R/Makevars
 $R CMD INSTALL --build .

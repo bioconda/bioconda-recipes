@@ -1,17 +1,27 @@
-#!/bin/bash
-mkdir build
-cd build
+#!/usr/bin/env bash
 
-if [ `uname` == Darwin ]; then
-    export CXXFLAGS="${CXXFLAGS} -std=c++0x -stdlib=libc++"
-fi
-cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DCMAKE_INSTALL_LIBDIR=$PREFIX/lib -DCMAKE_INSTALL_INCLUDEDIR=$PREFIX/include -DPacBioBAM_build_docs=OFF -DPacBioBAM_build_tests=OFF
-make 
-#ls lib 
-#ls bin
-#ls include
-#cp lib/* $PREFIX/lib
-cp bin/* $PREFIX/bin
-cp -r ../include/pbbam $PREFIX/include
-ls $PREFIX/lib
-ls $PREFIX/include
+export BOOST_ROOT="${PREFIX}"
+export PKG_CONFIG_LIBDIR="${PREFIX}"/lib/pkgconfig
+
+# required, in order to resolve otherwise undefined symbols
+# - liblzma.so.5
+# - libbz2.so.1.0
+# - libcrypto.so.1.0.0
+[[ $(uname) == Linux ]] && export LDFLAGS="${LDFLAGS} -Wl,-rpath-link,${PREFIX}/lib"
+
+# configure
+# '--wrap-mode nofallback' prevents meson from downloading
+# stuff from the internet or using subprojects.
+meson \
+  --default-library static \
+  --libdir lib \
+  --wrap-mode nofallback \
+  --prefix "${PREFIX}" \
+  -Dtests=false \
+  build .
+
+# build
+ninja -C build -v
+
+# install
+ninja -C build -v install

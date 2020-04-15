@@ -1,34 +1,39 @@
-{% set version = "1.0.3" %}
+{% set version = "1.0.4" %}
+{% set sha256 = "4abbd842f219ed1100a577b3a3628649993409ea799ae21bca4a7478182cd0f3" %}
 
 package:
-    name: slncky
-    version: {{ version }}
+  name: slncky
+  version: '{{version}}'
 
 source:
-  fn: slncky-{{ version }}.tar.gz # [unix]
-  url: https://github.com/slncky/slncky/archive/{{ version }}.tar.gz # [unix]
-  md5: b8a1b22acd355851d18a40fb06e7f510 # [unix]
+  url: https://github.com/slncky/slncky/archive/v{{version}}.tar.gz
+  sha256: '{{sha256}}'
 
 build:
-    skip: true  # [py3k]
-    number: 0
+  noarch: generic
+  number: 1
 
 requirements:
-    build:
-    run:
-        - python
-        - bedtools >=2.17.0,<=2.24.0
-        - ucsc-liftover
-        - lastz
+  run:
+    - python <3
+    - bedtools >=2.17.0,<=2.24.0
+    - ucsc-liftover
+    - lastz
+    - numpy
 
 test:
-    commands:
-        - slncky --help > /dev/null 2>&1
-        # The annotations directory needs to be downloaded by the user.
-        # It is too big to be downloaded automatically.
-        # - test -d $PREFIX/bin/annotations
+  commands:
+    - slncky --help > /dev/null 2>&1
+    - makeWebsite --help > /dev/null 2>&1
 
+# The annotations directory needs to be downloaded by the user.
+# It is too big to be downloaded automatically.
+# - test -d $PREFIX/bin/annotations
 about:
-    home: "https://github.com/slncky/slncky"
-    license: "MIT - https://github.com/slncky/slncky/blob/1.0.3/license.txt - Copyright (c) 2015 Jennifer Chen"
-    summary: "slncky is a tool for lncRNA discovery from RNA-Seq data. slncky filters a high-quality set of noncoding transcripts, discovers lncRNA orthologs, and characterizes conserved lncRNA evolution. slncky was developed as a collaboration between the Garber Lab at UMass Medical and the Regev Lab at the Broad Institute."
+  home: https://github.com/slncky/slncky
+  license: MIT
+  license_family: MIT
+  summary: slncky is a tool for lncRNA discovery from RNA-Seq data. slncky filters
+    a high-quality set of noncoding transcripts, discovers lncRNA orthologs, and characterizes
+    conserved lncRNA evolution. slncky was developed as a collaboration between the
+    Garber Lab at UMass Medical and the Regev Lab at the Broad Institute.

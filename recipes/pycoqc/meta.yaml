@@ -1,42 +1,59 @@
-{% set name = "pycoqc" %}
-{% set version = "1.0.alpha1" %}
-{% set hash = "d9b6a18dc80a9c6515651024ff5ecd2e" %}
+
+{% set name = "pycoQC" %}
+{% set version = "2.5.0.21" %}
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://github.com/EnrightLab/pycoQC/archive/v{{ version }}.tar.gz
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  md5: {{ hash }}
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "691ed3231718c14168b8ed9fcb79fc1dc258b28d88c9fed95e68da80c664980a"
 
 build:
-    number: 0
+  number: 0
+  entry_points:
+    - pycoQC=pycoQC.__main__:main_pycoQC
+    - Fast5_to_seq_summary=pycoQC.__main__:main_Fast5_to_seq_summary
+    - Barcode_split=pycoQC.__main__:main_Barcode_split
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  noarch: "python"
 
 requirements:
-    build:
-        - python
-        - setuptools
-        - numpy
-        - pandas 
-        - matplotlib 
-        - seaborn 
-        - notebook
-
-    run:
-        - python
-        - numpy
-        - pandas
-        - matplotlib
-        - seaborn
-        - notebook
+  build:
+    - python>=3.6
+    - pip>=19.2.1
+    - ripgrep>=11.0.1
+  run:
+    - python>=3.6
+    - numpy=1.17.1
+    - scipy=1.3.1
+    - pandas=0.25.1
+    - plotly=4.1.0
+    - jinja2=2.10.1
+    - h5py=2.9.0
+    - tqdm=4.35.0
+    - pysam=0.15.3
 
 test:
   imports:
-    - pycoQC
+    - pycoQC.pycoQC
+    - pycoQC.Fast5_to_seq_summary
+    - pycoQC.Barcode_split
+  commands:
+    - pycoQC --help
+    - Fast5_to_seq_summary --help
+    - Barcode_split --help
 
 about:
-  home: https://github.com/EnrightLab/pycoQC
-  license: GPL-3.0
-  summary: 'Python 3 package for Jupyter Notebook, computing metrics and generating plots from Oxford Nanopore Albacore report'
+  home: "https://github.com/a-slide/pycoQC"
+  license: "GNU General Public v3 (GPLv3)"
+  license_family: "GPL"
+  summary: "PycoQC computes metrics and generates interactive QC plots for Oxford Nanopore technologies sequencing data"
+  doc_url: "https://a-slide.github.io/pycoQC/"
+  dev_url: ""
+
+extra:
+  recipe-maintainers:
+    - a-slide
+

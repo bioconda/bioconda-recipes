@@ -1,37 +1,51 @@
+{% set name = "genometools" %}
+{% set version = "1.6.1" %}
+{% set sha256 = "528ca143a7f1d42af8614d60ea1e5518012913a23526d82e434f0dad2e2d863f" %}
+
+
 package:
-  name: genometools-genometools
-  version: 1.5.9
+  name: {{ name }}-{{ name }}
+  version: {{ version }}
 
 source:
-  fn: genometools-1.5.9.tar.gz
-  url: https://github.com/genometools/genometools/archive/v1.5.9.tar.gz
-  sha1: 733530dfe875cd058da0c3e1b6530b9e085517f4
+  url: https://github.com/{{ name }}/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
 
 requirements:
   build:
-    - gcc
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
     - python
-    - pango
-
+    - pango  # [not osx]
+    - cairo  # [not osx]
   run:
+    - python
     - gettext
-    - pango
+    - pango  # [not osx]
+    - cairo  # [not osx]
     - xorg-libxrender
     - xorg-libsm
     - xorg-libxext
-    - libgcc
 
 test:
   commands:
-    - gt -version > /dev/null
+    - gt -version
   imports:
     - gt
-    
+
 about:
   home: http://genometools.org/
   summary: GenomeTools genome analysis system.
   license: BSD
   license_file: LICENSE
+  doc_url: http://genometools.org/documentation.html
+  dev_url: https://github.com/genometools/genometools
+extra:
+  recipe-maintainers:
+    - notestaff
+  identifiers:
+    - doi:10.1109/TCBB.2013.68

@@ -1,25 +1,27 @@
-{% set version = '1.61' %}
+{% set version = '1.69' %}
 
 package:
   name: r-wgcna
   version: {{ version|replace("-", "_") }}
 
 source:
-  fn: WGCNA_{{ version }}.tar.gz
   url:
-    - https://cran.r-project.org/src/contrib/WGCNA_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/WGCNA/WGCNA_{{ version }}.tar.gz
-  sha256: d14080a9d900076f8bc9ecc50a35d8dba4ebc8281fcc437386260535c6142cef
+    - {{ cran_mirror }}/src/contrib/WGCNA_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/WGCNA/WGCNA_{{ version }}.tar.gz
+  sha256: 2ea152d45b2d4f0e40b4b9f7b5ea8a96e230f7744ece8be27bdba96cf39d5008
 
 build:
   number: 0
-
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
     - r-base
     - bioconductor-annotationdbi
     - bioconductor-go.db
@@ -34,9 +36,6 @@ requirements:
     - bioconductor-preprocesscore
     - r-robust
     - r-survival
-    - gcc  # [linux]
-    - llvm # [osx]
-
   run:
     - r-base
     - bioconductor-annotationdbi
@@ -52,18 +51,23 @@ requirements:
     - bioconductor-preprocesscore
     - r-robust
     - r-survival
-    - libgcc # [linux]
 
 test:
   commands:
-    - $R -e "library('WGCNA')"
+    - $R -e "library('WGCNA')"           # [not win]
+    - "\"%R%\" -e \"library('WGCNA')\""  # [win]
 
 about:
-  home: http://www.genetics.ucla.edu/labs/horvath/CoexpressionNetwork/Rpackages/WGCNA/
+  home: http://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/
   license: GPL (>= 2)
   summary: Functions necessary to perform Weighted Correlation Network Analysis on high-dimensional
-    data. Includes functions for rudimentary data cleaning, construction of correlation
-    networks, module identification, summarization, and relating of variables and modules
-    to sample traits. Also includes a number of utility functions for data manipulation
-    and visualization.
+    data as originally described in Horvath and Zhang (2005) <doi:10.2202/1544-6115.1128>
+    and Langfelder and Horvath (2008) <doi:10.1186/1471-2105-9-559>. Includes functions
+    for rudimentary data cleaning, construction of correlation networks, module identification,
+    summarization, and relating of variables and modules to sample traits. Also includes
+    a number of utility functions for data manipulation and visualization.
   license_family: GPL3
+extra:
+  identifiers:
+    - biotools:wgcna
+    - doi:10.1186/1471-2105-9-559

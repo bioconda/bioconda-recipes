@@ -1,0 +1,35 @@
+From: Michael R. Crusoe <michael.crusoe@gmail.com>
+Subject: Support discover of vendored dependency headers
+--- seqan3.orig/build_system/seqan3-config.cmake
++++ seqan3/build_system/seqan3-config.cmake
+@@ -158,6 +158,7 @@
+             endif ()
+         endforeach ()
+     endif ()
++
+ endif ()
+
+ # ----------------------------------------------------------------------------
+@@ -168,6 +169,22 @@
+     find_path (SEQAN3_INCLUDE_DIR "seqan3/version.hpp" HINTS ${SEQAN3_DEPENDENCY_INCLUDE_DIRS})
+ endif ()
+
++# ----------------------------------------------------------------------------
++# Find any headers that are vendored below our include directory, for example in a Debian Package
++# ----------------------------------------------------------------------------
++
++if (NOT SEQAN3_CLONE_DIR)
++    if (EXISTS "${SEQAN3_INCLUDE_DIR}/seqan3/submodules")
++        file (GLOB submodules ${SEQAN3_INCLUDE_DIR}/seqan3/submodules/*/include)
++        foreach (submodule ${submodules})
++            if (IS_DIRECTORY ${submodule})
++                seqan3_config_print ("  …adding submodule include:  ${submodule}")
++                set (SEQAN3_DEPENDENCY_INCLUDE_DIRS ${submodule} ${SEQAN3_DEPENDENCY_INCLUDE_DIRS})
++            endif ()
++        endforeach ()
++    endif ()
++endif ()
++
+ mark_as_advanced (SEQAN3_INCLUDE_DIR)
+
+ # find include directory

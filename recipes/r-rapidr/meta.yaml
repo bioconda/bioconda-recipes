@@ -1,0 +1,63 @@
+{% set version = '0.1.1' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-rapidr
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/RAPIDR_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/RAPIDR/RAPIDR_{{ version }}.tar.gz
+  sha256: 2d286bdf13f27a040f16f8c5aa740e25fbc4b0913e3cfa4b5956152d25e19691
+
+build:
+  noarch: generic
+  merge_build_host: True  # [win]
+  number: 4
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+  host:
+    - r-base
+    - bioconductor-biostrings
+    - bioconductor-genomicalignments
+    - bioconductor-genomicranges
+    - r-propcis
+    - bioconductor-rsamtools
+    - r-data.table
+  run:
+    - r-base
+    - bioconductor-biostrings
+    - bioconductor-genomicalignments
+    - bioconductor-genomicranges
+    - r-propcis
+    - bioconductor-rsamtools
+    - r-data.table
+
+test:
+  commands:
+    - $R -e "library('RAPIDR')"           # [not win]
+    - "\"%R%\" -e \"library('RAPIDR')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=RAPIDR
+  license: GPL-3
+  summary: Package to perform non-invasive fetal testing for aneuploidies using sequencing count
+    data from cell-free DNA
+  license_family: GPL3
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

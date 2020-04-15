@@ -1,40 +1,52 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "rTRMui" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: f58628f803bcd0d64863e03d19c65dea8f28e5be5b0e4232633be61d5532a963
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: ac0a078379924ed68672c6b5250a4954
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - bioconductor-motifdb
-    - bioconductor-org.hs.eg.db
-    - bioconductor-org.mm.eg.db
-    - bioconductor-rtrm
+  host:
+    - 'bioconductor-motifdb >=1.28.0,<1.29.0'
+    - 'bioconductor-org.hs.eg.db >=3.10.0,<3.11.0'
+    - 'bioconductor-org.mm.eg.db >=3.10.0,<3.11.0'
+    - 'bioconductor-rtrm >=1.24.0,<1.25.0'
     - r-base
     - 'r-shiny >=0.9'
   run:
-    - bioconductor-motifdb
-    - bioconductor-org.hs.eg.db
-    - bioconductor-org.mm.eg.db
-    - bioconductor-rtrm
+    - 'bioconductor-motifdb >=1.28.0,<1.29.0'
+    - 'bioconductor-org.hs.eg.db >=3.10.0,<3.11.0'
+    - 'bioconductor-org.mm.eg.db >=3.10.0,<3.11.0'
+    - 'bioconductor-rtrm >=1.24.0,<1.25.0'
     - r-base
     - 'r-shiny >=0.9'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'This package provides a web interface to compute transcriptional regulatory modules with rTRM.'
+  summary: 'A shiny user interface for rTRM'
+  description: 'This package provides a web interface to compute transcriptional regulatory modules with rTRM.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:rtrmui
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-rtrmui
+    path: recipes/bioconductor-rtrmui
+    version: 1.18.0
+

@@ -1,23 +1,25 @@
-{% set version = "1.12.0" %}
+{% set version = "2.8.0" %}
 {% set name = "MultiMed" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 4bb91c0e762d117112d35d55c7688781cde8238a7c8223cff34bdb45c68e88ac
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 766c6cbb686bafe486cd61fce4a8a072
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit, BiocGenerics
 requirements:
-  build:
+  host:
     - r-base
   run:
     - r-base
@@ -25,6 +27,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2) + file LICENSE'
-  summary: 'Implements permutation method with joint correction for testing multiple mediators'
+  summary: 'Testing multiple biological mediators simultaneously'
+  description: 'Implements methods for testing multiple mediators'
+  license_file: LICENSE
+extra:
+  identifiers:
+    - biotools:multimed
+    - doi:10.1093/bioinformatics/btt633
+  parent_recipe:
+    name: bioconductor-multimed
+    path: recipes/bioconductor-multimed
+    version: 2.2.0
+

@@ -1,36 +1,48 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "flowCL" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 2946890c0db5cef68a27a654082b0ee2dadb3e2998a5471a795594237d470f62
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 21eb32c74b3fb7fb84c94fa86cd09818
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit, BiocGenerics
 requirements:
-  build:
-    - bioconductor-graph
-    - bioconductor-rgraphviz
+  host:
+    - 'bioconductor-graph >=1.64.0,<1.65.0'
+    - 'bioconductor-rgraphviz >=2.30.0,<2.31.0'
     - r-base
     - r-sparql
   run:
-    - bioconductor-graph
-    - bioconductor-rgraphviz
+    - 'bioconductor-graph >=1.64.0,<1.65.0'
+    - 'bioconductor-rgraphviz >=2.30.0,<2.31.0'
     - r-base
     - r-sparql
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Semantic labelling of flow cytometric cell populations.'
+  summary: 'Semantic labelling of flow cytometric cell populations'
+  description: 'Semantic labelling of flow cytometric cell populations.'
+extra:
+  identifiers:
+    - biotools:flowcl
+    - doi:10.1093/bioinformatics/btu807
+  parent_recipe:
+    name: bioconductor-flowcl
+    path: recipes/bioconductor-flowcl
+    version: 1.18.1
+

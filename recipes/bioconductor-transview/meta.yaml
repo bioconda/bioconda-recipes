@@ -1,44 +1,60 @@
-{% set version = "1.22.0" %}
+{% set version = "1.30.0" %}
 {% set name = "TransView" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 06bf31f483f56642ae2935b8926a2433526f0b9a99b81a95eda5593845a0068c
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 5d58fa816383ef25dbb815636fd437dd
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: RUnit, pasillaBamSubset, BiocManager
+# SystemRequirements: GNU make
 requirements:
-  build:
-    - bioconductor-biocgenerics
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - 'bioconductor-rsamtools >=1.19.38'
-    - 'bioconductor-s4vectors >=0.9.25'
-    - bioconductor-zlibbioc
+  host:
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-rhtslib >=1.18.0,<1.19.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
+    - 'bioconductor-zlibbioc >=1.32.0,<1.33.0'
     - r-base
     - r-gplots
   run:
-    - bioconductor-biocgenerics
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - 'bioconductor-rsamtools >=1.19.38'
-    - 'bioconductor-s4vectors >=0.9.25'
-    - bioconductor-zlibbioc
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-rhtslib >=1.18.0,<1.19.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
+    - 'bioconductor-zlibbioc >=1.32.0,<1.33.0'
     - r-base
     - r-gplots
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'This package provides efficient tools to generate, access and display read densities of sequencing based data sets such as from RNA-Seq and ChIP-Seq.'
+  summary: 'Read density map construction and accession. Visualization of ChIPSeq and RNASeq data sets'
+  description: 'This package provides efficient tools to generate, access and display read densities of sequencing based data sets such as from RNA-Seq and ChIP-Seq.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:transview
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-transview
+    path: recipes/bioconductor-transview
+    version: 1.24.0
+

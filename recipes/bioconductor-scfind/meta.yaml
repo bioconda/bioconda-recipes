@@ -1,0 +1,52 @@
+{% set version = "1.8.0" %}
+{% set name = "scfind" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: a49088473985b6fbfb107cc84434a4f9
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: knitr, rmarkdown, testthat
+requirements:
+  host:
+    - 'bioconductor-singlecellexperiment >=1.8.0,<1.9.0'
+    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
+    - r-base
+    - r-bit
+    - r-dplyr
+    - r-hash
+    - 'r-rcpp >=0.12.12'
+    - r-reshape2
+  run:
+    - 'bioconductor-singlecellexperiment >=1.8.0,<1.9.0'
+    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
+    - r-base
+    - r-bit
+    - r-dplyr
+    - r-hash
+    - 'r-rcpp >=0.12.12'
+    - r-reshape2
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'A search tool for single cell RNA-seq data by gene lists'
+  description: 'Recently a very large collection of single-cell RNA-seq (scRNA-seq) datasets has been generated and publicly released. For the collection to be useful, the information must be organized in a way that supports queries that are relevant to researchers. `scfind` builds an index from scRNA-seq datasets which organizes the information in a suitable and compact manner so that the datasets can be very efficiently searched for either cells or cell types in which a given list of genes is expressed.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

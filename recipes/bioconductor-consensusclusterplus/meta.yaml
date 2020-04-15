@@ -1,36 +1,47 @@
-{% set version = "1.42.0" %}
+{% set version = "1.50.0" %}
 {% set name = "ConsensusClusterPlus" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: a102168b8deb9048cd1ff6f3fc71f3244dad9e96a8a8ddb6fcc7a0d4493e5cde
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: bd7746024bddc494684190c8bd031728
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - bioconductor-all
-    - bioconductor-biobase
+  host:
+    - 'bioconductor-all >=1.28.0,<1.29.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
     - r-cluster
   run:
-    - bioconductor-all
-    - bioconductor-biobase
+    - 'bioconductor-all >=1.28.0,<1.29.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
     - r-cluster
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL version 2'
-  summary: 'algorithm for determining cluster count and membership by stability evidence in unsupervised analysis'
+  summary: ConsensusClusterPlus
+  description: 'algorithm for determining cluster count and membership by stability evidence in unsupervised analysis'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+extra:
+  identifiers:
+    - biotools:consensusclusterplus
+  parent_recipe:
+    name: bioconductor-consensusclusterplus
+    path: recipes/bioconductor-consensusclusterplus
+    version: 1.44.0
+

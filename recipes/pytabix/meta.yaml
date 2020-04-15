@@ -1,25 +1,30 @@
+{% set version = "0.0.2" %}
+{% set sha256 = "7cdefa37f77e59c1ddea3c402e00cb352e5be2aa7fef41feb49ed930a86ace5f" %}
+
 package:
   name: pytabix
-  version: 0.0.2
+  version: {{ version }}
 
 build:
-  number: 3
-  skip: True # [osx]
+  number: 6
+  script: '{{ PYTHON }} -m pip install . --no-deps -vv'
 
 source:
-  fn: pytabix-e4a6f81.tar.gz
-  url: https://github.com/slowkow/pytabix/archive/e4a6f81.tar.gz
-  sha256: 0087bcde70dcccbc67e0a985741c887154319123707c9cdb3d515e39bcb7b41f
+  url: https://pypi.io/packages/source/p/pytabix/pytabix-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - pip
     - python
     - setuptools
-    - zlib {{CONDA_ZLIB}}*
-
+    - zlib
   run:
     - python
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
 
 test:
   imports:
@@ -28,4 +33,5 @@ test:
 about:
   home: https://github.com/slowkow/pytabix
   license: MIT
+  license_file: LICENSE
   summary: Fast random access to sorted files compressed with bgzip and indexed by tabix.

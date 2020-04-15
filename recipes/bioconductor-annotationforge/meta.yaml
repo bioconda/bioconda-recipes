@@ -1,37 +1,39 @@
-{% set version = "1.20.0" %}
+{% set version = "1.28.0" %}
 {% set name = "AnnotationForge" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 0197cea759e263fac618f263bf8682f6bdce1897b3bbbb0decdbe16d8ecb6b07
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 1f152e718ef96024db399ced8b7c02f1
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: biomaRt, httr, GenomeInfoDb (>= 1.17.1), Biostrings, affy, hgu95av2.db, human.db0, org.Hs.eg.db, Homo.sapiens, hom.Hs.inp.db, GO.db, BiocStyle, knitr, BiocManager
 requirements:
-  build:
-    - 'bioconductor-annotationdbi >=1.33.14'
-    - 'bioconductor-biobase >=1.17.0'
-    - 'bioconductor-biocgenerics >=0.15.10'
-    - bioconductor-s4vectors
+  host:
+    - 'bioconductor-annotationdbi >=1.48.0,<1.49.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
     - r-base
     - r-dbi
     - r-rcurl
     - r-rsqlite
     - r-xml
   run:
-    - 'bioconductor-annotationdbi >=1.33.14'
-    - 'bioconductor-biobase >=1.17.0'
-    - 'bioconductor-biocgenerics >=0.15.10'
-    - bioconductor-s4vectors
+    - 'bioconductor-annotationdbi >=1.48.0,<1.49.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
     - r-base
     - r-dbi
     - r-rcurl
@@ -41,6 +43,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Provides code for generating Annotation packages and their databases.  Packages produced are intended to be used with AnnotationDbi.'
+  summary: 'Tools for building SQLite-based annotation data packages'
+  description: 'Provides code for generating Annotation packages and their databases.  Packages produced are intended to be used with AnnotationDbi.'
+extra:
+  identifiers:
+    - biotools:annotationforge
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-annotationforge
+    path: recipes/bioconductor-annotationforge
+    version: 1.22.2
+

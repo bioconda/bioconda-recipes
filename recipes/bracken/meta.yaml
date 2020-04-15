@@ -1,36 +1,48 @@
-{% set name = "bracken" %}
-{% set version = "1.0.0" %}
-{% set md5 = "bd91805655269c5f3becb8f8028bab6d" %}
+{% set version = "2.6.0" %}
+{% set sha256 = "fb1837d6f32b8f8c87353b9dc8a23d3418c348b00824a7064eb58f9bab11ea68" %}
 
 package:
-  name: {{ name|lower }}
+  name: bracken
   version: {{ version }}
 
 source:
-  url: https://github.com/jenniferlu717/Bracken/archive/{{ version }}.tar.gz
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  md5: {{ md5 }}
+  url: https://github.com/jenniferlu717/Bracken/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - osx.patch  # [osx]
+    - py3.patch
 
 build:
-    number: 0
+  number: 0
 
 requirements:
-    build:
-    run:
-        - perl
-        - perl-list-moreutils
-        - perl-parallel-forkmanager
-        - python
-        - kraken
+  build:
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+  host:
+    - python
+  run:
+    - python
+    - kraken2
+    - llvm-openmp  # [osx]
 
 test:
   commands:
-    - count-kmer-abundances.pl --help
+    - bracken -h
+    - bracken-build -h
     - est_abundance.py -h
     - generate_kmer_distribution.py -h
+    - kreport2mpa.py -h
+    - kmer2read_distr --help
+    - combine_bracken_outputs.py -h
 
 about:
   home: https://github.com/jenniferlu717/Bracken
   license: GPL-3.0
   license_file: LICENSE
   summary: 'Bracken (Bayesian Reestimation of Abundance with KrakEN) is a highly accurate statistical method that computes the abundance of species in DNA sequences from a metagenomics sample.'
+
+extra:
+  identifiers:
+    - biotools:Bracken
+    - doi:10.7717/peerj-cs.104

@@ -1,33 +1,32 @@
 {% set name = "MrBayes" %}
-{% set version = "3.2.6" %}
-{% set sha256 = "f8fea43b5cb5e24a203a2bb233bfe9f6e7f77af48332f8df20085467cc61496d" %}
+{% set version = "3.2.7" %}
 
 package:
   name: {{ name | lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name | lower }}-{{ version }}.tar.gz
-  url: https://sourceforge.net/projects/{{ name | lower }}/files/{{ name | lower }}/{{ version }}/{{ name | lower }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  url: https://github.com/NBISweden/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 64da39c01f606d0413ce90a1dd3c1ce2cbdef4cbad99aee8a4b2391a2e8db244
 
 build:
   number: 0
 
 requirements:
   build:
-    - gcc   # [linux]
-    - llvm  # [osx]
-    - autoconf
-    - automake
-    - readline 6.*
+    - {{ compiler('c') }}
+    - make
+  host:
+    - readline
     - openmpi
     - beagle-lib
+    - ncurses
   run:
-    - libgcc   # [linux]
-    - readline 6.*
+    - readline
     - openmpi
     - beagle-lib
+    - ncurses
+
 test:
 # conda inspect rules broken in bioconda toolchain
 #  requirements:
@@ -35,17 +34,21 @@ test:
   commands:
 #    - conda inspect linkages -p $PREFIX $PKG_NAME  # [linux]
 #    - conda inspect objects -p $PREFIX $PKG_NAME  # [osx]
-    - echo Version | mb
-    - echo Version | mpirun -mca plm_rsh_agent true --allow-run-as-root mb-mpi 
+  - echo Version | mb
+  - echo Version | mpirun -mca plm_rsh_agent true --allow-run-as-root mb-mpi
 
 about:
   home: http://mrbayes.sourceforge.net
   license: GPLv3
   license_family: GPL
-  license_file: src/gpl.txt
+  license_file: COPYING
   summary: Bayesian Inference of Phylogeny
   description: |
     MrBayes is a program for Bayesian inference and model choice across a wide
     range of phylogenetic and evolutionary models. MrBayes uses Markov chain
     Monte Carlo (MCMC) methods to estimate the posterior distribution of model
     parameters.
+
+extra:
+  identifiers:
+    - biotools:mrbayes

@@ -1,38 +1,52 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "MethTargetedNGS" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: f006a78b2fc06117fd042264fcd5f52851d59ae8c7e640039c42d1770d2cad93
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 6d1dda2169d127787422c0b40a33ab80
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# SystemRequirements: HMMER3
 requirements:
-  build:
-    - bioconductor-biostrings
+  host:
+    - 'bioconductor-biostrings >=2.54.0,<2.55.0'
     - r-base
     - r-gplots
     - r-seqinr
     - r-stringr
+    - 'hmmer >=3'
   run:
-    - bioconductor-biostrings
+    - 'bioconductor-biostrings >=2.54.0,<2.55.0'
     - r-base
     - r-gplots
     - r-seqinr
     - r-stringr
+    - 'hmmer >=3'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Perform step by step methylation analysis of Next Generation Sequencing data.'
+  summary: 'Perform Methylation Analysis on Next Generation Sequencing Data'
+  description: 'Perform step by step methylation analysis of Next Generation Sequencing data.'
+extra:
+  identifiers:
+    - biotools:methtargetedngs
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-methtargetedngs
+    path: recipes/bioconductor-methtargetedngs
+    version: 1.12.0
+

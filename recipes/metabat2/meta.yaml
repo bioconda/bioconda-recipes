@@ -1,0 +1,43 @@
+{% set name = "metabat2" %}
+{% set version = "2.15" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://bitbucket.org/berkeleylab/metabat/get/v{{ version }}.tar.bz2
+  sha256: c6bf3a64bbb4e8a25cd10e115b9f277d768552d0b299ad3b81d7d95762c0bfe4
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - cmake
+    - autoconf
+  host:
+    - zlib
+    - htslib
+    - boost-cpp
+    - llvm-openmp  # [osx]
+  run:
+    - perl >=5
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - metabat2 -h
+    - metabat1 -h
+    - jgi_summarize_bam_contig_depths -h
+    - contigOverlaps -h
+
+about:
+  home: https://bitbucket.org/berkeleylab/metabat
+  license: BSD-3-Clause-LBNL
+  license_file: license.txt
+  summary: "Metagenome binning"
+
+

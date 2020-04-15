@@ -10,5 +10,4 @@ cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBUILD_SHARED_LIB=ON ..
 make && make install
 
 cd ${SRC_DIR}/python
-make lib/libscrappie.a
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt

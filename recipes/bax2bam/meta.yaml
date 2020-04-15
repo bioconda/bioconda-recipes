@@ -1,0 +1,46 @@
+{% set name = "bax2bam" %}
+{% set version = "0.0.9" %}
+{% set sha256 = "5c4ffa33c9bdfa231e77a919732cebf245f70f6d3bc50dde72e5a1f72cf0dffc" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PacificBiosciences/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+about:
+  home: https://github.com/PacificBiosciences/bax2bam
+  license: BSD-3-Clause-Clear
+  summary: bax2bam converts the legacy PacBio basecall format (bax.h5) into the BAM basecall format
+
+extra:
+  recipe-maintainers:
+    - pb-dseifert
+    - mhsieh
+
+build:
+  number: 7
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - meson >=0.48.1
+    - ninja
+    - pkg-config
+  host:
+    - boost
+    - hdf5
+    - zlib
+    - blasr_libcpp 5.3.3*
+    - pbbam 1.0.6*
+  run:
+    - hdf5
+    - zlib
+    - blasr_libcpp 5.3.3*
+    - pbbam 1.0.6*
+
+test:
+  commands:
+    - bax2bam -h

@@ -1,25 +1,27 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "subSeq" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 64d462fe68a6858a4aeae7b47c8884a0bd9a0310d17d92c965db5a4899e338fd
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: a12b662d9aa1715f6aa83c22fd62a688
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: limma, edgeR, DESeq2, DEXSeq (>= 1.9.7), testthat, knitr
 requirements:
-  build:
-    - bioconductor-biobase
-    - 'bioconductor-qvalue >=1.99'
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-qvalue >=2.18.0,<2.19.0'
     - r-base
     - r-data.table
     - r-digest
@@ -28,8 +30,8 @@ requirements:
     - r-magrittr
     - r-tidyr
   run:
-    - bioconductor-biobase
-    - 'bioconductor-qvalue >=1.99'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-qvalue >=2.18.0,<2.19.0'
     - r-base
     - r-data.table
     - r-digest
@@ -41,6 +43,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'MIT + file LICENSE'
-  summary: 'Subsampling of high throughput sequencing count data for use in experiment design and analysis.'
+  summary: 'Subsampling of high-throughput sequencing count data'
+  description: 'Subsampling of high throughput sequencing count data for use in experiment design and analysis.'
+  license_file: LICENSE
+extra:
+  identifiers:
+    - biotools:subseq
+    - doi:10.1093/bioinformatics/btu552
+  parent_recipe:
+    name: bioconductor-subseq
+    path: recipes/bioconductor-subseq
+    version: 1.10.0
+

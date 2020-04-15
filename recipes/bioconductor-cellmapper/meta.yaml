@@ -1,32 +1,43 @@
-{% set version = "1.4.0" %}
+{% set version = "1.12.0" %}
 {% set name = "CellMapper" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: ab0062c4c584d57be8089314ecaf33e8c15f635c32928c2e4ae3d1b30440ea9a
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 12e8cfde7c5019876336d683aa307fba
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: CellMapperData, Biobase, HumanAffyData, ALL, BiocStyle, ExperimentHub
 requirements:
-  build:
-    - bioconductor-s4vectors
+  host:
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
     - r-base
   run:
-    - bioconductor-s4vectors
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Infers cell type-specific expression based on co-expression similarity with known cell type marker genes. Can make accurate predictions using publicly available expression data, even when a cell type has not been isolated before.'
+  summary: 'Predict genes expressed selectively in specific cell types'
+  description: 'Infers cell type-specific expression based on co-expression similarity with known cell type marker genes. Can make accurate predictions using publicly available expression data, even when a cell type has not been isolated before.'
+extra:
+  identifiers:
+    - biotools:cellmapper
+  parent_recipe:
+    name: bioconductor-cellmapper
+    path: recipes/bioconductor-cellmapper
+    version: 1.6.0
+

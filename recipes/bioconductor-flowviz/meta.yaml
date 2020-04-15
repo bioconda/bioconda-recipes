@@ -1,25 +1,27 @@
-{% set version = "1.42.0" %}
+{% set version = "1.50.0" %}
 {% set name = "flowViz" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: d447e334e6a856bd8fc920918c6e31c42643e6e4ad2c3d46586fa716ad0679b9
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: ff8f498a72e1d6823ecf2a72e3cbc5f2
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: colorspace, flowStats, knitr, testthat
 requirements:
-  build:
-    - bioconductor-biobase
-    - 'bioconductor-flowcore >=1.41.9'
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-flowcore >=1.52.0,<1.53.0'
     - r-base
     - r-hexbin
     - r-idpmisc
@@ -29,8 +31,8 @@ requirements:
     - r-mass
     - r-rcolorbrewer
   run:
-    - bioconductor-biobase
-    - 'bioconductor-flowcore >=1.41.9'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-flowcore >=1.52.0,<1.53.0'
     - r-base
     - r-hexbin
     - r-idpmisc
@@ -43,6 +45,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Provides visualization tools for flow cytometry data.'
+  summary: 'Visualization for flow cytometry'
+  description: 'Provides visualization tools for flow cytometry data.'
+extra:
+  identifiers:
+    - biotools:flowviz
+    - doi:10.1093/bioinformatics/btn021
+  parent_recipe:
+    name: bioconductor-flowviz
+    path: recipes/bioconductor-flowviz
+    version: 1.44.0
+

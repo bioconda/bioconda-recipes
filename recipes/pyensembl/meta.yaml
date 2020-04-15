@@ -1,0 +1,50 @@
+{% set name = "PyEnsembl" %}
+{% set version = "1.8.5" %}
+{% set sha256 = "13dd05aba296e4acadb14de5a974e6f73834452851a36b9237917ae85b3e060f" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0]|lower }}/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: python -m pip install --no-deps --ignore-installed .
+  entry_points:
+    - pyensembl = pyensembl.shell:run
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python
+    - typechecks >=0.0.2
+    - numpy >=1.7
+    - pandas >=0.15
+    - datacache >=0.4.19
+    - memoized-property >=1.0.2
+    - six >=1.9.0
+    - gtfparse >=0.0.3
+    - serializable
+    - tinytimer
+    - pylint >=1.4.4
+    - python-dateutil >=2.5.0
+
+test:
+  imports:
+    - pyensembl
+  commands:
+    - pyensembl --help
+
+about:
+  home: https://github.com/openvax/pyensembl
+  license: Apache-2.0
+  summary: 'Python interface to ensembl reference genome metadata'
+  license_family: Apache
+  license_file: LICENSE

@@ -1,0 +1,56 @@
+{% set version="1.0.4" %}
+
+package:
+  name: albatradis
+  version: {{ version }}
+
+source:
+  url: https://github.com/quadram-institute-bioscience/albatradis/archive/v{{ version }}.tar.gz
+  sha256: b637ed73b810e610b9da8eb8a9f7289b2e1b53f297bd4071dac9b8995d097a39
+
+build:
+  number: 0
+  skip: True  # [py2k]
+  script: python -m pip install --ignore-installed .
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - cython
+    - pip
+  run:
+    - python
+    - cython
+    - biopython >=1.68
+    - pyfastaq >=3.12.0
+    - scipy
+    - numpy
+    - dendropy
+    - seaborn
+    - pandas
+    - graphviz
+    - python-graphviz
+    - biotradis >=1.4.5=1
+
+test:
+  commands:
+    - albatradis --version
+    - albatradis-presence_absence -h
+    - albatradis-artemis_project -h
+
+about:
+  home: https://github.com/quadram-institute-bioscience/albatradis
+  license: 'GNU General Public License v3 (GPLv3)'
+  license_family: GPL3
+  license_file: LICENSE
+  summary: 'Comparative TraDIS analysis'
+
+extra:
+  skip-lints:
+    # Uses pyximport
+    - cython_must_be_in_host
+  recipe-maintainers:
+    - sbastkowski
+    - thanhleviet

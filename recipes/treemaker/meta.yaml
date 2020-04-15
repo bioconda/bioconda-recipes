@@ -1,27 +1,28 @@
 {% set name = "treemaker" %}
-{% set version = "1.1" %}
+{% set version = "1.3" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "f26b28a8effd759b4e187f7e10213b1c48b84c4bcd849f6acf5c96ff5c18ee80" %}
+{% set hash_value = "30a2c2ca29e947bd80a84a9bb98e6bf1f108a7f85c6bbbbeb8d0b600da7b5034" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
+  noarch: python
   number: 0
   entry_points:
     - treemaker = treemaker:main
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
-  build:
+  host:
     - python
+    - pip
     - setuptools
   run:
     - python

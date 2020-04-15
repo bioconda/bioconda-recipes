@@ -1,28 +1,32 @@
-{% set version = "1.8.1" %}
+{% set version = "1.16.0" %}
 {% set name = "SWATH2stats" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 698ce8bca8dda57c5ea2d7522730073ae5539d56807fd253133ba02b567fa4c1
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: f105d060b3a088cb5ea67bae47e4b66d
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: testthat, knitr
 requirements:
-  build:
+  host:
+    - 'bioconductor-biomart >=2.42.0,<2.43.0'
     - r-base
     - r-data.table
     - r-ggplot2
     - r-reshape2
   run:
+    - 'bioconductor-biomart >=2.42.0,<2.43.0'
     - r-base
     - r-data.table
     - r-ggplot2
@@ -31,6 +35,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'This package is intended to transform SWATH data from the OpenSWATH software into a format readable by other statistics packages while performing filtering, annotation and FDR estimation.'
+  summary: 'Transform and Filter SWATH Data for Statistical Packages'
+  description: 'This package is intended to transform SWATH data from the OpenSWATH software into a format readable by other statistics packages while performing filtering, annotation and FDR estimation.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:swath2stats
+  parent_recipe:
+    name: bioconductor-swath2stats
+    path: recipes/bioconductor-swath2stats
+    version: 1.10.2
+

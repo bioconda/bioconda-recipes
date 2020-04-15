@@ -1,36 +1,36 @@
-package:
-  name: python-libsbml
-  version: "5.12.0"
+{% set version = "5.18.0" %}
+{% set sha256 = "900a8a41682c6fe69b162bce45e4221d7e23f30acb6c3d3516d1d931f353936a" %}
 
-source:
-  fn: python-libsbml_5.12.0.tar.gz
-  url: https://pypi.python.org/packages/source/p/python-libsbml/python-libsbml_5.12.0.tar.gz
-  md5: f05ed071b48702295a5ea44e52723247
-  patches:
-    - fix_path.patch
+package:
+  name: libsbml
+  version: {{ version }}
 
 build:
-  number: 1
-  skip: True # [osx]
+  number: 0
+  skip: True  # [osx]
+
+source:
+  url: https://sourceforge.net/projects/sbml/files/libsbml/{{ version }}/stable/libSBML-{{ version }}-core-src.tar.gz
+  sha256: {{ sha256 }}
 
 requirements:
   build:
-    - python
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
     - libxml2
-    - gcc
-    - bzip2
-    - libxml2
+    - zlib
   run:
-    - python
-    - libgcc
-    - bzip2
     - libxml2
+    - zlib
 
 test:
-  imports:
-    - libsbml
+  commands:
+    - test -f ${PREFIX}/lib/libsbml.so  # [linux]
 
 about:
-  home: http://sbml.org
+  home: http://sbml.org/Software/libSBML
   license: LGPL
-  summary: 'LibSBML Python API. LibSBML is a library for reading, writing and manipulating the Systems Biology Markup Language (SBML).'
+  license_file: 'LICENSE.txt'
+  summary: LibSBML is a free, open-source programming library to help you read, write, manipulate, translate, and validate SBML files and data streams.

@@ -7,28 +7,27 @@ package:
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 3
   skip: True # [ py3k ]
-  script: python setup.py install --single-version-externally-managed --record record.txt
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - cython
-    - zlib {{CONDA_ZLIB}}*
-    - gcc # [linux]
-    - llvm # [osx]
+    - pip
+    - zlib
     - python
     - setuptools
     - numpy
 
   run:
-    - zlib {{CONDA_ZLIB}}*
-    - libgcc # [linux]
+    - zlib
     - python
     - numpy
     - pysam

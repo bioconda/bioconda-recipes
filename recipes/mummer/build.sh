@@ -12,7 +12,7 @@ cp -R $SRC_DIR/* $MUMMER_HOME
 
 cd $MUMMER_HOME
 
-make
+make CC=$CC CXX=$CXX CPPFLAGS="-O3 -DSIXTYFOURBITS"
 
 binaries="\
 combineMUMs \
@@ -37,9 +37,18 @@ show-tiling \
 
 # patch defined(%hash) out
 # https://github.com/bioconda/bioconda-recipes/issues/1254
+
 perl -i -pe 's/defined \(%/\(%/' mummerplot
+
+#Fix escaping symbol @ included in the path to the library (mainly for conda virtual env with galaxy)
+for i in exact-tandems dnadiff mapview mummerplot nucmer promer run-mummer1 run-mummer3; do
+  perl -i -pe 's/(envs\/\_\_.*)(\K\@)/\\@/' $i
+done
 
 for i in $binaries; do 
   chmod +x $MUMMER_HOME/$i
   ln -s "$MUMMER_HOME/$i" "$BINARY_HOME/$i"
 done
+
+# clean up
+find $MUMMER_HOME -name *.o -exec rm -f {} \;

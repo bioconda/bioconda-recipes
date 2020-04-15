@@ -1,34 +1,35 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "genomation" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 8a850f3ff151f9bbd090a4f70659d05ce98c588c7cdd9cd40b31b8c01343adb5
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 67f92320f24a839fc870940775330607
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocGenerics, genomationData, knitr, RColorBrewer, rmarkdown
 requirements:
-  build:
-    - bioconductor-biostrings
-    - bioconductor-bsgenome
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicalignments
-    - 'bioconductor-genomicranges >=1.23.26'
-    - bioconductor-impute
-    - bioconductor-iranges
-    - 'bioconductor-rsamtools >=1.25.2'
-    - bioconductor-rtracklayer
-    - 'bioconductor-s4vectors >=0.9.25'
-    - bioconductor-seqpattern
+  host:
+    - 'bioconductor-biostrings >=2.54.0,<2.55.0'
+    - 'bioconductor-bsgenome >=1.54.0,<1.55.0'
+    - 'bioconductor-genomeinfodb >=1.22.0,<1.23.0'
+    - 'bioconductor-genomicalignments >=1.22.0,<1.23.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - 'bioconductor-impute >=1.60.0,<1.61.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-rsamtools >=2.2.0,<2.3.0'
+    - 'bioconductor-rtracklayer >=1.46.0,<1.47.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
+    - 'bioconductor-seqpattern >=1.18.0,<1.19.0'
     - r-base
     - r-data.table
     - r-ggplot2
@@ -36,24 +37,22 @@ requirements:
     - r-matrixstats
     - r-plotrix
     - r-plyr
-    - 'r-rcpp >=0.12.11'
+    - 'r-rcpp >=0.12.14'
     - r-readr
     - r-reshape2
     - r-runit
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
-    - bioconductor-biostrings
-    - bioconductor-bsgenome
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicalignments
-    - 'bioconductor-genomicranges >=1.23.26'
-    - bioconductor-impute
-    - bioconductor-iranges
-    - 'bioconductor-rsamtools >=1.25.2'
-    - bioconductor-rtracklayer
-    - 'bioconductor-s4vectors >=0.9.25'
-    - bioconductor-seqpattern
+    - 'bioconductor-biostrings >=2.54.0,<2.55.0'
+    - 'bioconductor-bsgenome >=1.54.0,<1.55.0'
+    - 'bioconductor-genomeinfodb >=1.22.0,<1.23.0'
+    - 'bioconductor-genomicalignments >=1.22.0,<1.23.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - 'bioconductor-impute >=1.60.0,<1.61.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-rsamtools >=2.2.0,<2.3.0'
+    - 'bioconductor-rtracklayer >=1.46.0,<1.47.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
+    - 'bioconductor-seqpattern >=1.18.0,<1.19.0'
     - r-base
     - r-data.table
     - r-ggplot2
@@ -61,14 +60,27 @@ requirements:
     - r-matrixstats
     - r-plotrix
     - r-plyr
-    - 'r-rcpp >=0.12.11'
+    - 'r-rcpp >=0.12.14'
     - r-readr
     - r-reshape2
     - r-runit
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'A package for summary and annotation of genomic intervals. Users can visualize and quantify genomic intervals over pre-defined functional regions, such as promoters, exons, introns, etc. The genomic intervals represent regions with a defined chromosome position, which may be associated with a score, such as aligned reads from HT-seq experiments, TF binding sites, methylation scores, etc. The package can use any tabular genomic feature data as long as it has minimal information on the locations of genomic intervals. In addition, It can use BAM or BigWig files as input.'
+  summary: 'Summary, annotation and visualization of genomic data'
+  description: 'A package for summary and annotation of genomic intervals. Users can visualize and quantify genomic intervals over pre-defined functional regions, such as promoters, exons, introns, etc. The genomic intervals represent regions with a defined chromosome position, which may be associated with a score, such as aligned reads from HT-seq experiments, TF binding sites, methylation scores, etc. The package can use any tabular genomic feature data as long as it has minimal information on the locations of genomic intervals. In addition, It can use BAM or BigWig files as input.'
+extra:
+  identifiers:
+    - biotools:genomation
+  parent_recipe:
+    name: bioconductor-genomation
+    path: recipes/bioconductor-genomation
+    version: 1.12.0
+

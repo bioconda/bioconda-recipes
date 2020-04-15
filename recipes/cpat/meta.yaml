@@ -1,31 +1,36 @@
+{% set name = "cpat" %}
+{% set version = "2.0.0" %}
+
 package:
-  name: cpat
-  version: 1.2.3
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 build:
-  number: 0
-  skip: True # [not py27] # because of bx-python
+  number: 2
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  skip: True  # [py2k]
 
 source:
-  fn: CPAT-1.2.3.tar.gz
-  url: http://sourceforge.net/projects/rna-cpat/files/CPAT-1.2.3.tar.gz
-  sha256: 1011624a175d814cc0b56ee044908c28355eed7b2030020a32638d2cee900c73
-  patches:
-    - setup.py.patch
+  # The official repository does not have releases, but this commit was annotated with CPAT 2.0.
+  # Use tag or pypi URL once this is resolved: https://github.com/liguowang/cpat/issues/3
+  url: https://github.com/liguowang/cpat/archive/9df2f43a0681bd206df9fda865371d1ea92e35eb.tar.gz
+  sha256: 557003d43a2a1048def570b34673fa3f8b98c62d0c016c92be63da203e89da81
 
 requirements:
   build:
-    - python
-    - setuptools
+    - {{ compiler('c') }}
+  host:
     - bx-python
-    - cython
-    - pysam
+    - pip
     - nose
-    - numpy
-
-  run:
     - python
+    - pysam
+    - numpy
+    - cython
+  run:
     - bx-python
+    - python
+    - numpy
     - pysam
     - r-base
 
@@ -36,6 +41,6 @@ test:
     - make_logitModel.py -h
 
 about:
-  home: http://dldcc-web.brc.bcm.edu/lilab/liguow/CGI/cpat/_build/html/index.html
-  license: GNU
+  home: http://rna-cpat.sourceforge.net/
+  license: GNU General Public v2 or later (GPLv2+)
   summary: Coding Potential Assessment Tool

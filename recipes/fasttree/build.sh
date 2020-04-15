@@ -1,11 +1,15 @@
 #!/bin/bash
 
-gcc -O3 -DUSE_DOUBLE -finline-functions -funroll-loops -Wall -o FastTree FastTree.c -lm
-gcc -DOPENMP -fopenmp -O3 -DUSE_DOUBLE -finline-functions -funroll-loops -Wall -o FastTreeMP FastTree.c -lm
-
 mkdir -p $PREFIX/bin
-chmod +x FastTree
-chmod +x FastTreeMP
 
+# build FastTree
+$CC $CFLAGS -O3 -DUSE_DOUBLE -finline-functions -funroll-loops -Wall -o FastTree $SRC_DIR/FastTree-2.1.10.c -lm
+chmod +x FastTree
 cp ./FastTree $PREFIX/bin/fasttree
-mv -v ./FastTree* $PREFIX/bin
+
+# Build FastTreeMP on Linux
+if [ "$(uname)" == "Linux" ]; then
+    $CC $CFLAGS -DOPENMP -fopenmp -O3 -DUSE_DOUBLE -finline-functions -funroll-loops -Wall -o FastTreeMP $SRC_DIR/FastTree-2.1.10.c -lm
+    chmod +x FastTreeMP
+    mv -v ./FastTree* $PREFIX/bin
+fi

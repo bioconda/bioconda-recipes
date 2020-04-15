@@ -1,0 +1,38 @@
+{% set name = "nim-falcon" %}
+{% set version = "1.1.0" %}
+{% set sha256 = "3ae15a7b8eef12677641a0c0319813aa309e5856414198cdb23386ab0e40ed49" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+extra:
+  recipe-maintainers:
+    - pb-cdunn
+  skip-lints:
+    - should_be_noarch_generic # We use "skip", so this is a flawed lint-check.
+
+source:
+  url: https://github.com/bio-nim/nim-falcon/releases/download/v{{ version }}/nim-falcon.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True  # [osx]
+
+requirements:
+  host:
+    - zlib
+    - htslib
+    - pcre
+
+test:
+  commands:
+    - falconc -h
+    - falconc rr-hctg-track2 -h
+    - falconc m4filt-contained -h
+
+about:
+  home: https://github.com/bio-nim/nim-falcon
+  license: MIT
+  summary: Nim-based executables used by Falcon assembly workflow

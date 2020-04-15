@@ -3,32 +3,19 @@ package:
   version: "0.6.3"
 
 source:
-  fn: illuminate-0.6.3.zip
   url: https://bitbucket.org/ilmn8/illuminate/get/e19b8afefead.zip
   md5: cfea74ea8b646884df2396eb7e6d6e9e
-#  patches:
-   # List any patch files here
-   # - fix.patch
 
 build:
-  # noarch_python: True
-  # preserve_egg_dir: True
+  number: 2
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
   entry_points:
-    # Put any entry points (scripts to be generated automatically) here. The
-    # syntax is module:function.  For example
-    #
-    # - illuminate = illuminate:main
-    #
-    # Would create an entry point called illuminate that calls illuminate.main()
-
     - illuminate = illuminate.__main__:collect_args
-
-  # If this is a new build for the same version, increment the build
-  # number. If you do not include this key, it defaults to 0.
-  # number: 1
 
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - python
     - setuptools
     - bitstring >=3.1.0
@@ -37,8 +24,7 @@ requirements:
     - pandas >=0.14
     - openpyxl ==1.8.6
     - xmltodict
-    - gcc
-
+    - pytz
   run:
     - python
     - bitstring >=3.1.0
@@ -47,25 +33,14 @@ requirements:
     - pandas >=0.14
     - openpyxl ==1.8.6
     - xmltodict
-    - libgcc
+    - pytz
 
 test:
-  # Python imports
   imports:
     - illuminate
 
   commands:
-    # You can put test commands to be run here.  Use this to test that the
-    # entry points work.
-
     - illuminate --help
-
-  # You can also put a file called run_test.py in the recipe that will be run
-  # at test time.
-
-  # requires:
-    # Put any additional test requirements here.  For example
-    # - nose
 
 about:
   home: https://bitbucket.org/invitae/illuminate
@@ -73,6 +48,6 @@ about:
   summary: 'Analytics toolkit for Illumina sequencer metrics.'
   license_family: MIT
 
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml
+extra:
+  identifiers:
+    - biotools:illuminate

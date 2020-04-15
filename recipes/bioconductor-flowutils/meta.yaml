@@ -1,34 +1,36 @@
-{% set version = "1.42.0" %}
+{% set version = "1.50.0" %}
 {% set name = "flowUtils" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 78c6bf00d9461a2687c3ca955f8c6fe7e3f091e4059db85582429cdbc1588a34
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: a5ab2502d5a429f024be663e3f387a2e
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: gatingMLData
 requirements:
-  build:
-    - bioconductor-biobase
-    - 'bioconductor-flowcore >=1.32.0'
-    - bioconductor-graph
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-flowcore >=1.52.0,<1.53.0'
+    - 'bioconductor-graph >=1.64.0,<1.65.0'
     - r-base
     - r-corpcor
     - r-runit
     - r-xml
   run:
-    - bioconductor-biobase
-    - 'bioconductor-flowcore >=1.32.0'
-    - bioconductor-graph
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-flowcore >=1.52.0,<1.53.0'
+    - 'bioconductor-graph >=1.64.0,<1.65.0'
     - r-base
     - r-corpcor
     - r-runit
@@ -37,6 +39,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Provides utilities for flow cytometry data.'
+  summary: 'Utilities for flow cytometry'
+  description: 'Provides utilities for flow cytometry data.'
+extra:
+  identifiers:
+    - biotools:flowutils
+    - doi:10.1186/1471-2105-10-145
+  parent_recipe:
+    name: bioconductor-flowutils
+    path: recipes/bioconductor-flowutils
+    version: 1.44.0
+

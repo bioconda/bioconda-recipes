@@ -1,0 +1,58 @@
+{% set version = "3.11.1" %}
+
+package:
+  name: spades
+  version: {{ version }}
+
+source:
+  - url: http://cab.spbu.ru/files/release{{ version }}/SPAdes-{{ version }}-Darwin.tar.gz  # [osx]
+    sha256: c7e1bb6065e836c466007a235ffad907fb5f2b634fd2fe86535ed233408aa317  # [osx]
+  - url: http://cab.spbu.ru/files/release{{ version }}/SPAdes-{{ version }}.tar.gz  # [linux]
+    sha256: 3ab85d86bf7d595bd8adf11c971f5d258bbbd2574b7c1703b16d6639a725b474  # [linux]
+
+build:
+  number: 4
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake >=2.8.12  # [linux]
+  host:
+    - zlib
+    - bzip2
+  run:
+    - python
+    - zlib
+    - bzip2
+
+test:
+  commands:
+    - spades.py --version
+    - rnaspades.py --version
+    - truspades.py --version
+    - dipspades.py --version
+    - metaspades.py --version
+    - plasmidspades.py --version
+    - spades.py --test && rm -rf spades_test
+
+about:
+  home: http://cab.spbu.ru/software/spades/
+  license: GPLv2
+  license_family: GPL
+  license_file:
+    - LICENSE  # [linux]
+    - share/spades/LICENSE  # [osx]
+  summary: |
+    SPAdes (St. Petersburg genome assembler) is intended for both standard isolates and single-cell MDA bacteria assemblies.
+  dev_url: https://github.com/ablab/spades
+  doc_url: http://cab.spbu.ru/files/release{{ version }}/manual.html
+
+extra:
+  recipe-maintainers:
+    - druvus
+    - notestaff
+  identifiers:
+    - biotools:Spades
+    - doi:10.1089/cmb.2012.0021
+  skip-lints:
+    - should_not_be_noarch_source

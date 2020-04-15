@@ -1,0 +1,45 @@
+{% set package = "ucsc-websync" %}
+{% set program = "webSync" %}
+{% set version = "377" %}
+{% set sha256 = "932f149c19641064a9cd3f2382cbb54b45a9292b8444792872d531346925d676" %}
+
+package:
+  name: "{{ package }}"
+  version: "{{ version }}"
+
+source:
+  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{{ version }}.src.tgz"
+  sha256: "{{ sha256 }}"
+  patches:
+    - "include.patch"
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - libpng
+    - libuuid
+    - mysql-connector-c
+    - openssl
+    - zlib
+
+  run:
+    - libpng
+    - libuuid
+    - mysql-connector-c
+    - openssl
+    - python
+    - zlib
+
+test:
+  commands:
+    - {{ program }} --help > /dev/null
+
+
+about:
+  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
+  license: "varies; see http://genome.ucsc.edu/license"
+  summary: "download from https server, using files.txt on their end to get the list of files"

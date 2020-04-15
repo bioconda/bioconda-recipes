@@ -1,16 +1,16 @@
-{% set version = "1.56.0" %}
+{% set version = "1.64.0" %}
 {% set name = "graph" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: c12a519e9984ca2e134a8bef75aac63be59a33691e2206d025e10b88ae944a95
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 31f92dbe60c8a6972cf4885ec71a98cd
   patches:
     - Makevars.patch
 build:
@@ -18,17 +18,31 @@ build:
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: SparseM (>= 0.36), XML, RBGL, RUnit, cluster
 requirements:
-  build:
-    - 'bioconductor-biocgenerics >=0.13.11'
+  host:
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
     - r-base
   run:
-    - 'bioconductor-biocgenerics >=0.13.11'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'A package that implements some simple graph handling capabilities.'
+  summary: 'graph: A package to handle graph data structures'
+  description: 'A package that implements some simple graph handling capabilities.'
+extra:
+  identifiers:
+    - biotools:graph
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-graph
+    path: recipes/bioconductor-graph
+    version: 1.58.2
+

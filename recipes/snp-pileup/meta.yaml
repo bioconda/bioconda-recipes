@@ -1,0 +1,33 @@
+{% set version = "0.5.14" %}
+{% set sha256 = "2f1a888215a11fd8e0868a79daad99c85a0a59929e6d9c42b765f6e3e433902c" %}
+
+package:
+  name: snp-pileup
+  version: '{{version}}'
+
+source:
+  url: https://github.com/mskcc/facets/archive/v{{version}}.tar.gz
+  sha256: '{{sha256}}'
+
+build:
+  number: 2
+  skip: True  # [osx]
+
+requirements:
+  build:
+      - {{ compiler('cxx') }}
+      - {{ compiler('c') }}
+  host:
+      - htslib
+  run:
+      - htslib
+
+test:
+  commands:
+    - snp-pileup --help > /dev/null 2>&1 || [[ $? == 1 ]]
+
+about:
+  home: https://github.com/mskcc/facets
+  license: MIT
+  summary: Compute SNP pileup at reference positions in one or more input bam files. Output is ready for the R package facets 
+  license_family: MIT
