@@ -62,7 +62,7 @@ echo "CXX= $CXX"
 # -krb5: disable kerberos (needed on OSX)
 
 ./configure \
-    --with-dll \
+	  --with-static \
     --with-mt \
     --with-openmp \
     --without-autodep \
