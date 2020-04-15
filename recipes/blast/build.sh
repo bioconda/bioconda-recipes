@@ -10,8 +10,6 @@ export CC_FOR_BUILD=$CC
 if test x"`uname`" = x"Linux"; then
     # only add things needed; not supported by OSX ld
     LDFLAGS="$LDFLAGS -Wl,-as-needed"
-		# Fixes building on Linux
-		export AR="${AR} rcs"
 fi
 
 if [ `uname` == Darwin ]; then
@@ -39,6 +37,8 @@ echo "CC_FOR_BUILD= $CC_FOR_BUILD"
 echo "CC= $CC"
 echo "CXX= $CXX"
 
+# Fixes building on Linux
+export AR="${AR} rcs"
 
 # with/without options:
 #
