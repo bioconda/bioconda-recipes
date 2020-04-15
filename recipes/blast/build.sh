@@ -4,7 +4,7 @@ set -euxo pipefail
 cd $SRC_DIR/c++/
 
 export CFLAGS="$CFLAGS -fpascal-strings -O2 -Wno-deprecated-register -fno-common "
-export CXXFLAGS="$CXXFLAGS -fpascal-strings -O2 -Wno-deprecated-register -fno-common "
+export CXXFLAGS="$CXXFLAGS -fpascal-strings -O2 -Wno-deprecated-register -fno-common -fpermissive"
 export CC_FOR_BUILD=$CC
 
 if test x"`uname`" = x"Linux"; then
@@ -15,7 +15,7 @@ if test x"`uname`" = x"Linux"; then
 fi
 
 if [ `uname` == Darwin ]; then
-    export LDFLAGS="${LDFLAGS} -Wl,-as-needed,-rpath -lz -lbz2 -flat_namespace -headerpad_max_install_names"
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath -lz -lbz2 -flat_namespace -headerpad_max_install_names"
 else
     export CPP_FOR_BUILD=$CPP
 fi
@@ -32,7 +32,7 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 
 # for degug
 echo "CFLAGS= $CFLAGS"
-echo "CXXFLAGS= $CXXFLAGS -fpermissive"
+echo "CXXFLAGS= $CXXFLAGS"
 echo "CPPFLAGS= $CPPFLAGS"
 echo "LDFLAGS= $LDFLAGS"
 echo "CC_FOR_BUILD= $CC_FOR_BUILD"
