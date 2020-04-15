@@ -5,8 +5,6 @@ cd $SRC_DIR/c++/
 
 export CFLAGS="$CFLAGS -O2"
 export CXXFLAGS="$CXXFLAGS -O2"
-export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CC_FOR_BUILD=$CC
 
 if test x"`uname`" = x"Linux"; then
@@ -17,7 +15,7 @@ if test x"`uname`" = x"Linux"; then
 fi
 
 if [ `uname` == Darwin ]; then
-    export LDFLAGS="${LDFLAGS} -Wl,-rpath,inconsistent-missing-override -lz -lbz2"
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath -lz -lbz2"
 else
     export CPP_FOR_BUILD=$CPP
 fi
@@ -28,9 +26,20 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 # The rpsbproc command line utility is an addition to the standalone version of
 # Reverse Position-Specific BLAST (RPS-BLAST), also known as CD-Search (Conserved
 # Domain Search).
-curl -sL https://ftp.ncbi.nih.gov/pub/mmdb/cdd/rpsbproc/RpsbProc-src.tar.gz | tar -xz
-mkdir -p src/app/RpsbProc
-cp -rf RpsbProc/src/* src/app/RpsbProc/
+#curl -sL https://ftp.ncbi.nih.gov/pub/mmdb/cdd/rpsbproc/RpsbProc-src.tar.gz | tar -xz
+#mkdir -p src/app/RpsbProc
+#cp -rf RpsbProc/src/* src/app/RpsbProc/
+
+# for degug
+echo $CFLAGS
+echo $CXXFLAGS
+echo $CPPFLAGS
+echo $LDFLAGS
+echo $CC_FOR_BUILD
+echo $CPP_FOR_BUILD
+echo $CC
+echo $CXX
+
 
 # with/without options:
 #
