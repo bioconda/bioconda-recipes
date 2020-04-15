@@ -3,10 +3,9 @@ set -euxo pipefail
 
 cd $SRC_DIR/c++/
 
-export CFLAGS=" -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe"
-export CXXFLAGS="$CXXFLAGS -O2"
+export CFLAGS="$CFLAGS -fpascal-strings -O2 -Wno-deprecated-register -fno-common "
+export CXXFLAGS="$CXXFLAGS -fpascal-strings -O2 -Wno-deprecated-register -fno-common "
 export CC_FOR_BUILD=$CC
-export LDFLAGS= " -Wl,-headerpad_max_install_names,-dead_strip_dylibs -lz -lbz2"
 
 if test x"`uname`" = x"Linux"; then
     # only add things needed; not supported by OSX ld
@@ -16,7 +15,7 @@ if test x"`uname`" = x"Linux"; then
 fi
 
 if [ `uname` == Darwin ]; then
-    export LDFLAGS="${LDFLAGS} -Wl -lz -lbz2"
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath -lz -lbz2 -flat_namespace -headerpad_max_install_names"
 else
     export CPP_FOR_BUILD=$CPP
 fi
@@ -72,6 +71,7 @@ echo "CXX= $CXX"
     --without-caution \
     --without-lzo \
     --with-hard-runpath \
+    --with-runpath=$LIB_INSTALL_DIR \
     --without-debug \
     --with-strip \
     --without-vdb \
