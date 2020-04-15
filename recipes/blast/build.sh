@@ -91,12 +91,12 @@ apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe"
 apps="$apps rpsblast.exe rpstblastn.exe makembindex.exe segmasker.exe"
 apps="$apps dustmasker.exe windowmasker.exe deltablast.exe makeblastdb.exe"
 apps="$apps blastdbcmd.exe blastdb_aliastool.exe convert2blastmask.exe"
-apps="$apps blastdbcheck.exe makeprofiledb.exe blast_formatter.exe rpsbproc.exe"
+apps="$apps blastdbcheck.exe makeprofiledb.exe blast_formatter.exe"
 cd ReleaseMT
 
 # The "datatool" binary needs the libs at build time, create
 # link from final install path to lib build dir:
-# ln -s $SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
+ln -s $SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
 
 cd build
 make -j${CPU_COUNT} -f Makefile.flat $apps
