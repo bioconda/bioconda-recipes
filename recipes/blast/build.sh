@@ -12,10 +12,12 @@ export CC_FOR_BUILD=$CC
 if test x"`uname`" = x"Linux"; then
     # only add things needed; not supported by OSX ld
     LDFLAGS="$LDFLAGS -Wl,-as-needed"
+		# Fixes building on Linux
+		export AR="${AR} rcs"
 fi
 
 if [ `uname` == Darwin ]; then
-    export LDFLAGS="${LDFLAGS} -Wl,-rpath -lz -lbz2"
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath,inconsistent-missing-override -lz -lbz2"
 else
     export CPP_FOR_BUILD=$CPP
 fi
@@ -50,9 +52,6 @@ cp -rf RpsbProc/src/* src/app/RpsbProc/
 # -openssl: disable openssl
 # -gcrypt: disable gcrypt (needed on OSX)
 # -krb5: disable kerberos (needed on OSX)
-
-# Fixes building on Linux
-export AR="${AR} rcs"
 
 ./configure \
     --with-dll \
