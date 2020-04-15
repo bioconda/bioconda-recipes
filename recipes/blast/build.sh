@@ -15,7 +15,7 @@ if test x"`uname`" = x"Linux"; then
 fi
 
 if [ `uname` == Darwin ]; then
-    export LDFLAGS="${LDFLAGS} -Wl,-rpath -lz -lbz2"
+    export LDFLAGS="${LDFLAGS} -Wl -lz -lbz2"
 else
     export CPP_FOR_BUILD=$CPP
 fi
@@ -71,7 +71,6 @@ echo "CXX= $CXX"
     --without-caution \
     --without-lzo \
     --with-hard-runpath \
-    --with-runpath=$LIB_INSTALL_DIR \
     --without-debug \
     --with-strip \
     --without-vdb \
