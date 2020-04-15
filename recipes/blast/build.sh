@@ -31,14 +31,13 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 #cp -rf RpsbProc/src/* src/app/RpsbProc/
 
 # for degug
-echo $CFLAGS
-echo $CXXFLAGS
-echo $CPPFLAGS
-echo $LDFLAGS
-echo $CC_FOR_BUILD
-echo $CPP_FOR_BUILD
-echo $CC
-echo $CXX
+echo "CFLAGS= $CFLAGS"
+echo "CXXFLAGS= $CXXFLAGS"
+echo "CPPFLAGS= $CPPFLAGS"
+echo "LDFLAGS= $LDFLAGS"
+echo "CC_FOR_BUILD= $CC_FOR_BUILD"
+echo "CC= $CC"
+echo "CXX= $CXX"
 
 
 # with/without options:
@@ -84,6 +83,10 @@ echo $CXX
     --without-sse42 \
     --without-gcrypt
 
+# for debugging
+cat config.log
+
+#list apps to build
 apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe"
 apps="$apps rpsblast.exe rpstblastn.exe makembindex.exe segmasker.exe"
 apps="$apps dustmasker.exe windowmasker.exe deltablast.exe makeblastdb.exe"
