@@ -1,17 +1,16 @@
 #!/bin/sh
 set -x -e
 
-export LD_LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="-L${PREFIX}/lib"
-export CPPFLAGS="-I${PREFIX}/include"
+PROGRAMS="sfld_preprocess sfld_postprocess sfld_preprocess.py"
 
-PROGRAMS="fingerPRINTScan"
+# Replace path in EASEL_DIR in Makefile with the 'easel' subdir of the hmmer distribution
+sed -i '' 's/EASEL_DIR=/EASEL_DIR=${PREFIX}\/saher\/easel/g'
+
+# for debug
+cat Makefile
 
 #compile
-LD_LIBRARY_PATH=${LD_LIBRARY_PATH} CPPFLAGS="${CPPFLAGS} -Wno-write-strings" LDFLAGS=${LDFLAGS} CXX=${CXX} ./configure
-
-make
-make check
+make CC=${CC}
 
 # copy tools in the bin
 mkdir -p ${PREFIX}/bin
