@@ -96,7 +96,7 @@ cd ReleaseMT
 
 # The "datatool" binary needs the libs at build time, create
 # link from final install path to lib build dir:
-ln -s $SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
+# ln -s $SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
 
 cd build
 make -j${CPU_COUNT} -f Makefile.flat $apps
