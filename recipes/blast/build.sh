@@ -3,9 +3,10 @@ set -euxo pipefail
 
 cd $SRC_DIR/c++/
 
-export CFLAGS="$CFLAGS -O2"
+export CFLAGS=" -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe"
 export CXXFLAGS="$CXXFLAGS -O2"
 export CC_FOR_BUILD=$CC
+export LDFLAGS= " -Wl,-headerpad_max_install_names,-dead_strip_dylibs -lz -lbz2"
 
 if test x"`uname`" = x"Linux"; then
     # only add things needed; not supported by OSX ld
