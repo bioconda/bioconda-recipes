@@ -26,6 +26,9 @@ run_self_test()
     Rscript run_tests.R
 }
 
+export SHINY_HOST=${SHINY_HOST-0.0.0.0}
+export SHINY_PORT=${SHINY_PORT-8080}
+
 run_server()
 {
     cd $PACKAGE_HOME
