@@ -51,7 +51,7 @@ cp -rf RpsbProc/src/* src/app/RpsbProc/
 # -gcrypt: disable gcrypt (needed on OSX)
 # -krb5: disable kerberos (needed on OSX)
 
-# Fixes building on Linux
+# Fixes building on unix (linux and osx)
 export AR="${AR} rcs"
 
 ./configure \
