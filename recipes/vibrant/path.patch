@@ -1,96 +1,96 @@
---- scripts/VIBRANT_annotation.py	2019-10-23 14:37:43.000000000 -0500
-+++ scripts/VIBRANT_annotation.py.new	2019-10-25 22:41:54.214285444 -0500
+diff --git a/VIBRANT_run.py b/VIBRANT_run.py
+index 76ca8b1..2d0d87e 100644
+--- a/VIBRANT_run.py
++++ b/VIBRANT_run.py
 @@ -1,4 +1,4 @@
 -#! /usr/bin/env python3
 +#!/opt/anaconda1anaconda2anaconda3/bin/python
- # Author: Kristopher Kieft, UW-Madison, 2019
+ # Author: Kristopher Kieft, UW-Madison
  
- # VIBRANT v1.0.1
---- scripts/VIBRANT_extract_nucleotide.py	2019-10-23 14:37:43.000000000 -0500
-+++ scripts/VIBRANT_extract_nucleotide.py.new	2019-10-25 22:42:10.666277719 -0500
+ # VIBRANT v1.2.1
+@@ -32,13 +32,13 @@ import math
+ import matplotlib.patches as mpatches
+ from matplotlib.lines import Line2D
+ 
+-vibrant_path = str(os.path.dirname(os.path.abspath(__file__)))
++vibrant_path = str(os.getenv("VIBRANT_DATA_PATH"))
+ working_path = str(os.getcwd())
+ 
+ starting_time = time.time()
+ start_time = str(datetime.datetime.now().time()).rsplit(".",1)[0]
+ 
+-vibrant = argparse.ArgumentParser(description='Usage: python3 VIBRANT_run.py -i <input_file> [options].\n VIBRANT identifies bacterial and archaeal viruses (phages) from assembled metagenomic scaffolds or whole genomes, including the excision of integrated proviruses. VIBRANT also performs curation of identified viral scaffolds, estimation of viral genome completeness and analysis of viral metabolic capabilities.')
++vibrant = argparse.ArgumentParser(description='Usage: VIBRANT_run.py -i <input_file> [options].\n VIBRANT identifies bacterial and archaeal viruses (phages) from assembled metagenomic scaffolds or whole genomes, including the excision of integrated proviruses. VIBRANT also performs curation of identified viral scaffolds, estimation of viral genome completeness and analysis of viral metabolic capabilities.')
+ vibrant.add_argument('--version', action='version', version='VIBRANT v1.2.1')
+ 
+ ####### Required
+@@ -197,9 +197,9 @@ try:
+ 	p_list = []
+ 	while n < len(parallels2):
+ 		if format == "nucl":
+-			execute = str(vibrant_path) + '/scripts/VIBRANT_extract_nucleotide.py ' + str(parallels2[n]) + " " + str(parallels2[n]).rsplit(".",1)[0] + ".fna " + str(args.i[0]) + " " + str(lim_low)
++			execute = 'VIBRANT_extract_nucleotide.py ' + str(parallels2[n]) + " " + str(parallels2[n]).rsplit(".",1)[0] + ".fna " + str(args.i[0]) + " " + str(lim_low)
+ 		elif format == "prot":
+-			execute = str(vibrant_path) + '/scripts/VIBRANT_extract_protein.py ' + str(parallels2[n]) + " " + str(parallels2[n]).rsplit(".",1)[0] + ".faa " + str(args.i[0])
++			execute = 'VIBRANT_extract_protein.py ' + str(parallels2[n]) + " " + str(parallels2[n]).rsplit(".",1)[0] + ".faa " + str(args.i[0])
+ 		p = subprocess.Popen(execute, shell=True)
+ 		p_list.append(p)
+ 		n += 1
+@@ -239,7 +239,7 @@ try:
+ 	n = 0
+ 	p_list = []
+ 	while n < len(listing2):
+-		execute = str(vibrant_path) + '/scripts/VIBRANT_annotation.py -x ' + str(out_folder) + ' -y ' + str(base) + ' -i ' + str(listing2[n]) + str(command)
++		execute = 'VIBRANT_annotation.py -x ' + str(out_folder) + ' -y ' + str(base) + ' -i ' + str(listing2[n]) + str(command)
+ 		p = subprocess.Popen(execute, shell=True)
+ 		p_list.append(p)
+ 		n += 1
+diff --git a/databases/VIBRANT_setup.py b/databases/VIBRANT_setup.py
+index 9c91200..ddc3bc0 100644
+--- a/databases/VIBRANT_setup.py
++++ b/databases/VIBRANT_setup.py
+@@ -1,4 +1,4 @@
+-#! /usr/bin/env python3
++#!/opt/anaconda1anaconda2anaconda3/bin/python3
+ # Author: Kristopher Kieft, UW-Madison
+ 
+ # VIBRANT v1.2.1
+@@ -16,7 +16,7 @@ import sys
+ from io import StringIO
+ import logging
+ 
+-vibrant = argparse.ArgumentParser(description='Usage: python3 VIBRANT_setup.py.')
++vibrant = argparse.ArgumentParser(description='Usage: VIBRANT_setup.py.')
+ vibrant.add_argument('--version', action='version', version='VIBRANT v1.2.1')
+ vibrant.add_argument('-test', action='store_true', help='use this setting if you only want to test downloads/dependencies [default=off]')
+ vibrant.add_argument('-force', action='store_true', help='use this setting if this script is exiting and telling you to install a package/program that you know is already installed [default=off]')
+diff --git a/scripts/VIBRANT_annotation.py b/scripts/VIBRANT_annotation.py
+index 13d4da7..1a2fc4b 100644
+--- a/scripts/VIBRANT_annotation.py
++++ b/scripts/VIBRANT_annotation.py
 @@ -1,4 +1,4 @@
 -#! /usr/bin/env python3
 +#!/opt/anaconda1anaconda2anaconda3/bin/python
- # Author: Kristopher Kieft, UW-Madison, 2019
+ # Author: Kristopher Kieft, UW-Madison
  
- # VIBRANT v1.0.1
---- scripts/VIBRANT_extract_protein.py	2019-10-23 14:37:43.000000000 -0500
-+++ scripts/VIBRANT_extract_protein.py.new	2019-10-25 22:42:25.330270825 -0500
+ # VIBRANT v1.2.1
+diff --git a/scripts/VIBRANT_extract_nucleotide.py b/scripts/VIBRANT_extract_nucleotide.py
+index 8eb41f3..d5ddccd 100644
+--- a/scripts/VIBRANT_extract_nucleotide.py
++++ b/scripts/VIBRANT_extract_nucleotide.py
 @@ -1,4 +1,4 @@
 -#! /usr/bin/env python3
 +#!/opt/anaconda1anaconda2anaconda3/bin/python
- # Author: Kristopher Kieft, UW-Madison, 2019
+ # Author: Kristopher Kieft, UW-Madison
  
- # VIBRANT v1.0.1
---- databases/VIBRANT_setup.py	2019-10-23 14:37:43.000000000 -0500
-+++ databases/VIBRANT_setup.py.new	2019-10-25 22:55:05.291087049 -0500
+ # VIBRANT v1.2.1
+diff --git a/scripts/VIBRANT_extract_protein.py b/scripts/VIBRANT_extract_protein.py
+index da4fefb..04cb9d2 100644
+--- a/scripts/VIBRANT_extract_protein.py
++++ b/scripts/VIBRANT_extract_protein.py
 @@ -1,4 +1,4 @@
 -#! /usr/bin/env python3
 +#!/opt/anaconda1anaconda2anaconda3/bin/python
- # Author: Kristopher Kieft, UW-Madison, 2019
+ # Author: Kristopher Kieft, UW-Madison
  
- # VIBRANT
---- databases/VIBRANT_test_setup.py	2019-10-23 14:37:43.000000000 -0500
-+++ databases/VIBRANT_test_setup.py.new	2019-10-26 01:38:19.371918907 -0500
-@@ -1,4 +1,4 @@
--#! /usr/bin/env python3
-+#!/opt/anaconda1anaconda2anaconda3/bin/python
- # Author: Kristopher Kieft, UW-Madison, 2019
- 
- # VIBRANT
---- VIBRANT_run.py	2019-10-23 14:37:43.000000000 -0500
-+++ VIBRANT_run.py.new	2019-10-26 12:49:34.017568299 -0500
-@@ -1,4 +1,4 @@
--#! /usr/bin/env python3
-+#!/anaconda/envs/vibb/bin/python
- # Author: Kristopher Kieft, UW-Madison, 2019
- 
- # VIBRANT v1.0.1
-@@ -46,16 +46,16 @@
- vibrant.add_argument('-o', type=str, nargs=1, default='4', help='number of ORFs per scaffold to limit input sequences [default=4, can increase but not decrease]')
- vibrant.add_argument('-virome', action='store_true', help='use this setting if dataset is known to be comprised mainly of viruses. More sensitive to viruses, less sensitive to false identifications [default=off]')
- vibrant.add_argument('-no_plot', action='store_true', help='suppress the generation of summary plots [default=off]')
--vibrant.add_argument('-k', type=str, nargs=1, default=str(vibrant_path) + '/databases/KEGG_profiles_prokaryotes.HMM', help='path to KEGG HMMs (if moved from default location)')
--vibrant.add_argument('-p', type=str, nargs=1, default=str(vibrant_path) + '/databases/Pfam-A_v32.HMM', help='path to Pfam HMMs (if moved from default location)')
--vibrant.add_argument('-v', type=str, nargs=1, default=str(vibrant_path) + '/databases/VOGDB94_phage.HMM', help='path to VOG HMMs (if moved from default location)')
--vibrant.add_argument('-e', type=str, nargs=1, default=str(vibrant_path) + '/databases/Pfam-A_plasmid_v32.HMM', help='path to plasmid HMMs (if moved from default location)')
--vibrant.add_argument('-a', type=str, nargs=1, default=str(vibrant_path) + '/databases/Pfam-A_phage_v32.HMM', help='path to viral-subset Pfam HMMs (if moved from default location)')
--vibrant.add_argument('-c', type=str, nargs=1, default=str(vibrant_path) + '/files/VIBRANT_categories.tsv', help='path to VIBRANT categories file (if moved from default location)')
--vibrant.add_argument('-n', type=str, nargs=1, default=str(vibrant_path) + '/files/VIBRANT_names.tsv', help='path to VIBRANT annotation to name file (if moved from default location)')
--vibrant.add_argument('-s', type=str, nargs=1, default=str(vibrant_path) + '/files/VIBRANT_KEGG_pathways_summary.tsv', help='path to VIBRANT summary of KEGG metabolism file (if moved from default location)')
--vibrant.add_argument('-m', type=str, nargs=1, default=str(vibrant_path) + '/files/VIBRANT_machine_model.sav', help='path to VIBRANT neural network machine learning model (if moved from default location)')
--vibrant.add_argument('-g', type=str, nargs=1, default=str(vibrant_path) + '/files/VIBRANT_AMGs.tsv', help='path to VIBRANT AMGs file (if moved from default location)')
-+vibrant.add_argument('-k', type=str, nargs=1, default=str(os.getenv("VIBRANT_DATA_PATH")) + '/databases/KEGG_profiles_prokaryotes.HMM', help='path to KEGG HMMs (if moved from default location)')
-+vibrant.add_argument('-p', type=str, nargs=1, default=str(os.getenv("VIBRANT_DATA_PATH")) + '/databases/Pfam-A_v32.HMM', help='path to Pfam HMMs (if moved from default location)')
-+vibrant.add_argument('-v', type=str, nargs=1, default=str(os.getenv("VIBRANT_DATA_PATH")) + '/databases/VOGDB94_phage.HMM', help='path to VOG HMMs (if moved from default location)')
-+vibrant.add_argument('-e', type=str, nargs=1, default=str(os.getenv("VIBRANT_DATA_PATH")) + '/databases/Pfam-A_plasmid_v32.HMM', help='path to plasmid HMMs (if moved from default location)')
-+vibrant.add_argument('-a', type=str, nargs=1, default=str(os.getenv("VIBRANT_DATA_PATH")) + '/databases/Pfam-A_phage_v32.HMM', help='path to viral-subset Pfam HMMs (if moved from default location)')
-+vibrant.add_argument('-c', type=str, nargs=1, default=str(os.getenv("VIBRANT_DATA_PATH")) + '/files/VIBRANT_categories.tsv', help='path to VIBRANT categories file (if moved from default location)')
-+vibrant.add_argument('-n', type=str, nargs=1, default=str(os.getenv("VIBRANT_DATA_PATH")) + '/files/VIBRANT_names.tsv', help='path to VIBRANT annotation to name file (if moved from default location)')
-+vibrant.add_argument('-s', type=str, nargs=1, default=str(os.getenv("VIBRANT_DATA_PATH")) + '/files/VIBRANT_KEGG_pathways_summary.tsv', help='path to VIBRANT summary of KEGG metabolism file (if moved from default location)')
-+vibrant.add_argument('-m', type=str, nargs=1, default=str(os.getenv("VIBRANT_DATA_PATH")) + '/files/VIBRANT_machine_model.sav', help='path to VIBRANT neural network machine learning model (if moved from default location)')
-+vibrant.add_argument('-g', type=str, nargs=1, default=str(os.getenv("VIBRANT_DATA_PATH")) + '/files/VIBRANT_AMGs.tsv', help='path to VIBRANT AMGs file (if moved from default location)')
- args = vibrant.parse_args()
- 
- if type(args.f) == str:
-@@ -193,9 +193,9 @@
- p_list = []
- while n < len(parallels2):
- 	if format == "nucl":
--		execute = str(vibrant_path) + '/scripts/VIBRANT_extract_nucleotide.py ' + str(parallels2[n]) + " " + str(parallels2[n]).rsplit(".",1)[0] + ".fna " + str(args.i[0]) + " " + str(lim_low)
-+		execute = str(vibrant_path) + '/VIBRANT_extract_nucleotide.py ' + str(parallels2[n]) + " " + str(parallels2[n]).rsplit(".",1)[0] + ".fna " + str(args.i[0]) + " " + str(lim_low)
- 	elif format == "prot":
--		execute = str(vibrant_path) + '/scripts/VIBRANT_extract_protein.py ' + str(parallels2[n]) + " " + str(parallels2[n]).rsplit(".",1)[0] + ".faa " + str(args.i[0])
-+		execute = str(vibrant_path) + '/VIBRANT_extract_protein.py ' + str(parallels2[n]) + " " + str(parallels2[n]).rsplit(".",1)[0] + ".faa " + str(args.i[0])
- 	p = subprocess.Popen(execute, shell=True)
- 	p_list.append(p)
- 	n += 1
-@@ -240,7 +240,7 @@
- n = 0
- p_list = []
- while n < len(listing2):
--    execute = str(vibrant_path) + '/scripts/VIBRANT_annotation.py -i ' + str(listing2[n]) + str(command)
-+    execute = str(vibrant_path) + '/VIBRANT_annotation.py -i ' + str(listing2[n]) + str(command)
-     p = subprocess.Popen(execute, shell=True)
-     p_list.append(p)
-     n += 1
+ # VIBRANT v1.2.1

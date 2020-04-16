@@ -1,0 +1,43 @@
+{% set version = "1.0.0" %}
+{% set name = "SCANVIS" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 4d14b1fa26912596b9f0a0a1292d1c75
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: knitr, rmarkdown
+requirements:
+  host:
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-rtracklayer >=1.46.0,<1.47.0'
+    - r-base
+    - r-plotrix
+    - r-rcurl
+  run:
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-rtracklayer >=1.46.0,<1.47.0'
+    - r-base
+    - r-plotrix
+    - r-rcurl
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'file LICENSE'
+  summary: 'SCANVIS - a tool for SCoring, ANnotating and VISualizing splice junctions'
+  description: 'SCANVIS is a set of annotation-dependent tools for analyzing splice junctions and their read support as predetermined by an alignment tool of choice (for example, STAR aligner). SCANVIS assesses each junction''s relative read support (RRS) by relating to the context of local split reads aligning to annotated transcripts. SCANVIS also annotates each splice junction by indicating whether the junction is supported by annotation or not, and if not, what type of junction it is (e.g. exon skipping, alternative 5'' or 3'' events, Novel Exons). Unannotated junctions are also futher annotated by indicating whether it induces a frame shift or not. SCANVIS includes a visualization function to generate static sashimi-style plots depicting relative read support and number of split reads using arc thickness and arc heights, making it easy for users to spot well-supported junctions. These plots also clearly delineate unannotated junctions from annotated ones using designated color schemes, and users can also highlight splice junctions of choice. Variants and/or a read profile are also incoroporated into the plot if the user supplies variants in bed format and/or the BAM file. One further feature of the visualization function is that users can submit multiple samples of a certain disease or cohort to generate a single plot - this occurs via a "merge" function wherein junction details over multiple samples are merged to generate a single sashimi plot, which is useful when contrasting cohorots (eg. disease vs control).'
+  license_file: LICENSE
+

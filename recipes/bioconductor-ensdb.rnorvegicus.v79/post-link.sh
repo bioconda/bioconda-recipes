@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="EnsDb.Rnorvegicus.v79_2.99.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/EnsDb.Rnorvegicus.v79_2.99.0.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/EnsDb.Rnorvegicus.v79_2.99.0.tar.gz"
   "https://bioarchive.galaxyproject.org/EnsDb.Rnorvegicus.v79_2.99.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ensdb.rnorvegicus.v79/bioconductor-ensdb.rnorvegicus.v79_2.99.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ensdb.rnorvegicus.v79/bioconductor-ensdb.rnorvegicus.v79_2.99.0_src_all.tar.gz"

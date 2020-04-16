@@ -3,6 +3,10 @@
 BINARY_HOME=$PREFIX/bin
 PACKAGE_HOME=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 
+mkdir -p $PREFIX/etc/conda/activate.d/ $PREFIX/etc/conda/deactivate.d/
+cp $RECIPE_DIR/activate.sh $PREFIX/etc/conda/activate.d/mango.sh
+cp $RECIPE_DIR/deactivate.sh $PREFIX/etc/conda/deactivate.d/mango.sh
+
 mkdir -p $BINARY_HOME
 mkdir -p $PACKAGE_HOME
 
@@ -27,7 +31,7 @@ $PYTHON -m pip install python/. --no-deps --ignore-installed -vv
 $PYTHON -m pip install python_pileup/. --no-deps --ignore-installed -vv
 # Enable widget
 jupyter nbextension enable --py widgetsnbextension
-jupyter nbextension install --py --symlink --user bdgenomics.mango.pileup
+jupyter nbextension install --overwrite --py --symlink --user bdgenomics.mango.pileup
 jupyter nbextension enable bdgenomics.mango.pileup --user --py
 
 mkdir -p $PREFIX/mango-assembly/target

@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="hpAnnot_1.0.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/hpAnnot_1.0.1.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/hpAnnot_1.0.1.tar.gz"
   "https://bioarchive.galaxyproject.org/hpAnnot_1.0.1.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hpannot/bioconductor-hpannot_1.0.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hpannot/bioconductor-hpannot_1.0.1_src_all.tar.gz"
