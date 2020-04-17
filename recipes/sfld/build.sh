@@ -7,11 +7,11 @@ PROGRAMS="sfld_preprocess sfld_postprocess sfld_preprocess.py"
 sed -i.bak 's|EASEL_DIR=|EASEL_DIR=../share/easel|g' Makefile
 
 
-cd  $PREFIX
+cd  $PREFIX/share
 ls -l
 
 
-cat Makefile
+#cat Makefile
 
 #compile
 #make CC=${CC}
