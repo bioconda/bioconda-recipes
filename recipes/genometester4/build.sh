@@ -2,7 +2,7 @@
 mkdir -p $PREFIX/bin
 cd src
 sed -i.bak 's/-lrt//' Makefile
-sed -i.bak 's/CXX  = gcc//' Makefile
+#sed -i.bak 's/CXX  = gcc//' Makefile
 
 
 make CXX=$CXX
