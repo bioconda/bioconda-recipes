@@ -2,7 +2,7 @@
 
 set -e -u -x
 
-CC=$CC ./configure --prefix=$PREFIX
+CC=$CXX ./configure --prefix=$PREFIX
 make -j4
 make install
 (cd "${SRC_DIR}/easel" && make install PREFIX=$PREFIX)
