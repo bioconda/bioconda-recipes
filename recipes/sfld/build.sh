@@ -8,6 +8,10 @@ sed -i.bak 's|EASEL_DIR=|EASEL_DIR=${PREFIX}/share/easel|g' Makefile
 
 # for debug
 cat Makefile
+ls -l ${PATH}
+ls -l ${RECIPE_DIR}
+ls -l ${SRC_DIR}
+ls -l ${PREFIX}
 ls -l ${PREFIX}/share
 ls -l ${PREFIX}/share/easel
 
