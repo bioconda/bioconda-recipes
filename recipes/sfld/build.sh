@@ -6,7 +6,7 @@ PROGRAMS="sfld_preprocess sfld_postprocess sfld_preprocess.py"
 # Replace path in EASEL_DIR in Makefile with the 'easel' subdir of the hmmer distribution
 sed -i.bak 's|EASEL_DIR=|EASEL_DIR=../share/easel|g' Makefile
 
-which hmmer
+which esl-alimap
 
 #cat Makefile
 
