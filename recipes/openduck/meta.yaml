@@ -1,0 +1,48 @@
+{% set name = "duck" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: openduck
+  version: {{ version }}
+
+source:
+  url: https://github.com/galaxycomputationalchemistry/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 0545b72c01139449e9b562084bae838f3394534936f01b796d172daff1d52532
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+  entry_points:
+    - get_wqb = scripts.get_wqb:main
+    - duck_chunk=scripts.duck_chunk:main
+    - duck_prepare_sys=scripts.duck_prepare_sys:main
+    - duck_smd_runs=scripts.duck_smd_runs:main
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - rdkit
+    - cudatoolkit
+    - networkx
+
+test:
+  commands:
+    - duck_smd_runs -h
+    - duck_prepare_sys -h
+    - duck_chunk -h
+    - get_wqb -h
+
+about:
+  home: https://github.com/galaxycomputationalchemistry/duck
+  license: Apache 2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary: Open source library for dynamic undocking (DUck)
+
+extra:
+  recipe-maintainers:
+    - simonbray
