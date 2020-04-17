@@ -11,14 +11,14 @@ cd  $PREFIX
 ls -l
 
 
-wait 5
+cat Makefile
 
 #compile
-make CC=${CC}
+#make CC=${CC}
 
 # copy tools in the bin
-mkdir -p ${PREFIX}/bin
-for PROGRAM in ${PROGRAMS} ; do
-  cp ${PROGRAM} ${PREFIX}/bin
-	chmod a+x ${PREFIX}/bin/${PROGRAM}
-done
+#mkdir -p ${PREFIX}/bin
+#for PROGRAM in ${PROGRAMS} ; do
+#  cp ${PROGRAM} ${PREFIX}/bin
+#	chmod a+x ${PREFIX}/bin/${PROGRAM}
+#done
