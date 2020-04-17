@@ -5,7 +5,7 @@ cd src
 sed -i.bak 's/CXX  = gcc//' Makefile
 
 make clean
-make CXX=$CXX
+make CXX=$CC
 make gmer_counter
 make gmer_caller
 
