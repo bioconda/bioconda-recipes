@@ -1,9 +1,7 @@
 #!/bin/sh
 mkdir -p $PREFIX/bin
-mkdir -p $PREFIX/lib/python3.6/site-packages/unicycler/
 
 cp pgcgap.pl $PREFIX/bin/pgcgap
-cp Functions/settings.py $PREFIX/lib/python3.*/site-packages/unicycler/
 
 cp Functions/Pan/plot_3Dpie.R $PREFIX/bin/
 cp Functions/Pan/fmplot.py $PREFIX/bin/
@@ -23,7 +21,6 @@ cp Functions/MASH/Plot_MashHeatmap.R $PREFIX/bin/
 cp Functions/Assemble/genome_LenFilter_stats.pl $PREFIX/bin/
 
 chmod a+x $PREFIX/bin/pgcgap
-chmod a+x $PREFIX/lib/python3.*/site-packages/unicycler/settings.py
 chmod a+x $PREFIX/bin/plot_3Dpie.R
 chmod a+x $PREFIX/bin/fmplot.py
 chmod a+x $PREFIX/bin/COG.pl
