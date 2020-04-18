@@ -1,17 +1,20 @@
 #!/bin/sh
 set -x -e
 
-
-
 PROGRAMS="sfld_preprocess sfld_postprocess sfld_preprocess.py"
 
-# Replace path in EASEL_DIR in Makefile with the 'easel' subdir of the hmmer distribution
-sed -i.bak 's|EASEL_DIR=|EASEL_DIR=${SRC_DIR}/hmmer-3.3/easel|g' Makefile
+#info=$( ld -v 2>&1 > /dev/null )
+#platform=$([[ $info =~ ld64-([0-9]*) ]] && echo ${BASH_REMATCH[1]})
 
-ls ${SRC_DIR}
+unset LDFLAGS
+unset CFLAGS
+
+
+# Replace path in EASEL_DIR in Makefile with the 'easel' subdir of the hmmer distribution
+sed -i.bak 's|EASEL_DIR=|EASEL_DIR=${CONDA_PREFIX}/share/easel|g' Makefile
 
 #compile
-make CC=${CC}
+CC=$CC make
 
 # copy tools in the bin
 mkdir -p ${PREFIX}/bin
