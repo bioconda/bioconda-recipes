@@ -1,5 +1,6 @@
 #!/bin/sh
 mkdir -p $PREFIX/bin
+mkdir -p $PREFIX/lib/python3.6/site-packages/unicycler/
 
 cp pgcgap.pl $PREFIX/bin/pgcgap
 cp Functions/settings.py $PREFIX/lib/python3.*/site-packages/unicycler/
