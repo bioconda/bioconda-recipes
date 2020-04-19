@@ -14,3 +14,6 @@ cp tools/make_ultrametric.py $PREFIX/bin/
 cp tools/primary_transcript.py $PREFIX/bin/
 
 chmod a+x $PREFIX/bin/orthofinder
+chmod a+x $PREFIX/bin/convert_orthofinder_tree_ids.py
+chmod a+x $PREFIX/bin/make_ultrametric.py
+chmod a+x $PREFIX/bin/primary_transcript.py
