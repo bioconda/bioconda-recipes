@@ -3,4 +3,4 @@
 mkdir -p ${PREFIX}/bin
 
 chmod 0755 *.py
-cp -r * ${PREFIX}/bin/
+cp *.py ${PREFIX}/bin/
