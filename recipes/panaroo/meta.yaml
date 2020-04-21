@@ -1,0 +1,68 @@
+{% set version = "1.2.0" %} # put in correct version here
+{% set name = "panaroo" %}
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+source:
+  url: https://github.com/gtonkinhill/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: 1249f0870976c948abc5a83a9ba2fc5361cb2c24e6213707e5ab6fa07e01842f
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  entry_points:
+    - panaroo = panaroo.__main__:main
+    - run_prokka = panaroo.run_prokka:main
+    - panaroo-qc = panaroo.generate_qc_plots:main
+    - panaroo-merge = panaroo.merge_graphs:main
+    - panaroo-plot-abundance = panaroo.generate_abundance_plots:main
+    - panaroo-spydrpick = panaroo.spydrpick:main
+    - panaroo-img = panaroo.estimate_img_params:main
+    - panaroo-fmg = panaroo.estimate_many_genes_params:main
+    - panaroo-msa = panaroo.post_run_alignment_gen:main
+requirements:
+  host:
+    - python >=3
+    - pip
+  run:
+    - python >=3
+    - networkx
+    - numba
+    - numpy 
+    - mkl
+    - scipy
+    - scikit-learn
+    - gffutils
+    - biopython
+    - joblib
+    - tqdm
+    - python-edlib
+    - matplotlib-base
+    - plotly
+    - dendropy
+    - intbitset
+    - mafft
+    - mash
+    - prokka
+    - cd-hit
+    # Work around cd-hit not always allowing multiple threads
+    - zlib
+    - openmp 
+    - llvm-openmp  # [osx]
+
+test:
+  imports:
+    - panaroo
+  commands:
+    - panaroo --help
+    - run_prokka --help
+    - panaroo-qc --help
+    - panaroo-plot-abundance --help
+    - panaroo-spydrpick --help
+    - panaroo-img --help
+    - panaroo-fmg --help
+about:
+  home: https://gtonkinhill.github.io/panaroo
+  license: MIT
+  license_file: LICENSE
+  summary: 'panaroo - an updated pipeline for pangenome investigation'

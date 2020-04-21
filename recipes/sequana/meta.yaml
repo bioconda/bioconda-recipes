@@ -1,6 +1,6 @@
 {% set name = "sequana" %}
-{% set version = "0.7.1" %}
-{% set sha = "891e9a27fd992a9713de2e3afac9b4c8042d492703be65e1ae2b0ab098e275d6" %}
+{% set version = "0.8.2" %}
+{% set sha = "11c51f29d0d696451896fc56e940e059d191b6f17616776e08eb5b1c5ac5dda5" %}
 
 package:
   name: {{ name }}
@@ -11,9 +11,8 @@ source:
   sha256: {{ sha }}
 
 build:
-  noarch: python
   preserve_egg_dir: True
-  number: 1
+  number: 0
   entry_points:
     - sequana_gui=sequana.gui.sequana_gui:main
     - sequanix=sequana.gui.sequana_gui:main
@@ -21,75 +20,112 @@ build:
     - fastq_count=sequana.scripts.fastq_count:main
     - sequana_fastq_head=sequana.scripts.fastq_head:main
     - sequana_fastq_count=sequana.scripts.fastq_count:main
-    - sequana=sequana.scripts.main:main
+    - sequana_fastq_summary=sequana.scripts.fastq_summary:main
+    - sequana_lane_merging=sequana.scripts.lane_merging:main
     - sequana_taxonomy=sequana.scripts.taxonomy:main
     - sequana_coverage=sequana.scripts.coverage:main
     - sequana_summary=sequana.scripts.summary:main
     - sequana_mapping=sequana.scripts.mapping:main
     - sequana_compressor=sequana.scripts.compressor:main
     - sequana_report=sequana.scripts.reports:main
-
+    - sequana_vcf_filter=sequana.scripts.vcf_filter:main
+    - sequana_bam_splitter=sequana.scripts.bam_splitter:main
+    - sequana_substractor=sequana.scripts.substractor:main
+    - sequana_start_pipeline=sequana.scripts.start_pipeline:main
+    - sequana_gtf_fixer=sequana.scripts.gtf_fixer:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
-    - python >=3
+    - python >=3.6,<=3.7.3
     - setuptools
+    - pip
+    - cython
   run:
-    - python >=3
-    - atropos ==1.1.16
+    # lxml is temporary for bioservices until new recipe is available
+    # krona/bowtie/kraken are for testing
+    # cutadapt removed for now (breaking the build for py3.8). 
+    # not required strictly speaking, only in the 
+    # quality_control pipeline, which is in its own repository since v0.8.0
+    # not true for atropos, which is still used in some modules
+    - python >=3.6,<=3.7.3
+    - atropos
     - bcftools
     - bedtools
     - bioservices >=1.5.1
-    - biokit >=0.4.3
-    - bleach
-    - bowtie
-    - bowtie2
-    - bwa
-    - colorlog
-    - cutadapt
+    #- bowtie2
+    - colorlog >=3.1.0
+    #- cutadapt
     - easydev >=0.9.36
-    - fastq-screen
     - fastqc ==0.11.5
     - freebayes
-    - graphviz
+    - graphviz >=2.42.3
+    - itolapi
     - khmer
-    - kraken # [not osx]
+    - kraken ==1.1 # [not osx]
     - krona
+    - lxml
     - mock
-    - multiqc ==1.0
+    - multiqc >=1.8
     - numexpr
-    - pandas
+    - packaging
+    - pandas >=0.22
     - pigz
     - psutil
-    - pyyaml
-    - pyvcf
-    - pysam
-    - ruamel.yaml 
-    - qtconsole
-    - sambamba
-    - samtools
-    - snakemake ==4.0.0
-    - snpeff
-    - spades
-    - shustring
-    - subread
-    - xlrd
+    - pykwalify >=1.6
+    - pyyaml >=5.3.1
+    - pyvcf >=0.6.8
+    - pysam >=0.15.3
+    - ruamel.yaml
+    - qtconsole >=4.7.2
+    - samtools >=1.10
+    - snakemake >=5.13.0
+    - scipy >=1.4.1
+    - xlrd >=1.2.0
+    - cython >=0.29.16 # this should be removed from run requirements as soon as sequana allows it
+    - xmltodict >=0.12.0
 
-#
 test:
   imports:
     - sequana
+    - sequana.gui
     - sequana.modules_report
+    - sequana.multiqc
     - sequana.pipelines
     - sequana.plots
+    - sequana.resources
+    - sequana.resources.busco
+    - sequana.resources.canvas
+    - sequana.resources.css
+    - sequana.resources.data
+    - sequana.resources.data.adapters
+    - sequana.resources.images
+    - sequana.resources.js
+    - sequana.resources.snpeff
+    - sequana.resources.templates
+    - sequana.resources.testing
+    - sequana.rules
+    - sequana.rules.Adapters
+    - sequana.rules.Assembly
+    - sequana.rules.Pacbio
+    - sequana.rules.SnpEff
+    - sequana.rules.Taxonomy
+    - sequana.rules.Utils
+    - sequana.rules.Variant_caller
+    - sequana.rules.codecs
+    - sequana.rules.deeptools
+    - sequana.rules.idr
+    - sequana.rules.sambamba
     - sequana.scripts
     - sequana.sphinxext
     - sequana.utils
+    - sequana.viz
   commands:
     - fastq_count --help 1>out 2>err
     - sequana_fastq_head --help
     - sequana_fastq_count --help
-    - sequana --help
     - sequana_taxonomy --help 1>out 2>err
     - sequana_coverage --help 1>out 2>err
   #  - sequanix
@@ -100,14 +136,17 @@ test:
 #    - MPLBACKEND=agg bioconvert --help
 #    - MPLBACKEND=agg bioconvert_init --help
 
-extra:
-  container:
-    # needs libGL.so.1
-    extended-base: true
-
 about:
   home: 'http://sequana.readthedocs.io/'
   license: "BSD 3-clause"
   summary: 'A set of standalone application and snakemake pipelines dedicated to NGS (new generation sequencing) analysis'
   license_family: BSD
 
+extra:
+  container:
+    # needs libGL.so.1
+    extended-base: true
+  recipe-maintainers: 
+    - cokelaer
+  skip-lints:
+    - cython_must_be_in_host

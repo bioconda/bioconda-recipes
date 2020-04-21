@@ -1,0 +1,39 @@
+{% set version = "1.0.0" %}
+{% set name = "MEB" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 014786691eabf7ab767d14c351c2c69c
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: knitr,rmarkdown
+requirements:
+  host:
+    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
+    - r-base
+    - r-e1071
+  run:
+    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
+    - r-base
+    - r-e1071
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'A Minimum Enclosing Ball (MEB) method to detect differential expression genes for RNA-seq data'
+  description: 'Identifying differential expression genes between the same or different species is an urgent demand for biological research. In most of cases, normalization is the first step to solve this problem, then by employing the hypothesis testing, we could detect statistically significant genes. With the development of machine learning, it gives us a new perspective on discrimination between differential expression (DE) and non-differential expression (non-DE) genes. Provided a set of training data, the procedure of distinguishing genes could be simplified as a classification problem. However, in reality, it is hard for us to get the information from both DE and non-DE genes. To solve this problem, we try to identify differential cases only in the domain of non-DE genes, and transform the problem to an outlier detection in machine learning. Given that non-DE genes have some similarities in features, we build a Minimum Enclosing Ball (MEB) to cover those non-DE genes in feature space, then those DE genes, which are enormously different from non-DE genes, being regarded as outliers and rejected outside the ball. Compared with existing methods, it is no need for the MEB method to normalize data in advance. Besides, the MEB method could be easily applied to the same or different species data and without changing too much.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+

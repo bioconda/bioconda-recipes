@@ -1,5 +1,5 @@
 {% set name = "pomoxis" %}
-{% set version = "0.2.5" %}
+{% set version = "0.3.2" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,28 +7,28 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 014894e06e107701593d2d470785f9ac940a6907a456cae1b2e65447f0bcf2e9
+  sha256: 9fda874f5b242881c75cb5eabe4a2580a09f7d278e21be4cf08c3658e3048ea3
 
 build:
-  number: 0
+  number: 1
   noarch: python
   entry_points:
-    - align_serve = pomoxis.align.common:main
-    - catalogue_errors = pomoxis.common.catalogue_errors:main
-    - common_errors_from_bam = pomoxis.common.common_errors_from_bam:main
-    - coverage_from_bam = pomoxis.common.coverage_from_bam:main
-    - fast_convert = pomoxis.common.util:fast_convert
-    - long_fastx = pomoxis.common.util:extract_long_reads
+    - catalogue_errors = pomoxis.catalogue_errors:main
+    - common_errors_from_bam = pomoxis.common_errors_from_bam:main
+    - assess_homopolymers = pomoxis.assess_homopolymers:main
+    - coverage_from_bam = pomoxis.coverage_from_bam:main
+    - coverage_from_fastx = pomoxis.util:coverage_from_fastx
+    - fast_convert = pomoxis.util:fast_convert
+    - long_fastx = pomoxis.util:extract_long_reads
     - pomoxis_path = pomoxis:show_prog_path
-    - qscores_from_summary = pomoxis.common.qscores_from_summary:main
-    - simulate_calls = pomoxis.common.simulate_calls:main
-    - split_fastx = pomoxis.common.util:split_fastx_cmdline
-    - stats_from_bam = pomoxis.common.stats_from_bam:main
-    - subsample_bam = pomoxis.common.subsample_bam:main
-    - summary_from_stats = pomoxis.common.summary_from_stats:main
-    - trim_alignments = pomoxis.common.trim_alignments:main
-    - ref_seqs_from_bam = pomoxis.common.ref_seqs_from_bam:main
-    - coverage_from_fastx = pomoxis.common.util:coverage_from_fastx
+    - qscores_from_summary = pomoxis.qscores_from_summary:main
+    - split_fastx = pomoxis.util:split_fastx_cmdline
+    - stats_from_bam = pomoxis.stats_from_bam:main
+    - subsample_bam = pomoxis.subsample_bam:main
+    - summary_from_stats = pomoxis.summary_from_stats:main
+    - trim_alignments = pomoxis.trim_alignments:main
+    - ref_seqs_from_bam = pomoxis.ref_seqs_from_bam:main
+    - find_indels = pomoxis.find_indels:main
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
 
 requirements:
@@ -37,52 +37,46 @@ requirements:
     - python >=3.4,<3.7
   run:
     - python >=3.4,<3.7
-    - aiozmq
     - biopython >=1.63
-    - cffi
     - fast5-research
     - intervaltree >=3
-    - mappy
-    - matplotlib
-    - msgpack-python
-    - numpy
-    - pandas
+    - mappy >=2.17
+    - matplotlib-base >=3.2.1
+    - numpy >=1.16.1
+    - pandas >=0.24.2
     - porechop
-    - pysam
-    - scrappie
-    - watchdog
+    - pysam >=0.15.2
     # above is reqs. of python code, additional binaries:
-    - minimap2
-    - miniasm
-    - racon
-    - samtools
-    - bcftools
-    - seqkit
+    - minimap2 >=2.17
+    - miniasm >=0.3_r179
+    - racon >=1.3.1
+    - samtools >=1.9
+    - bcftools >=1.9
+    - seqkit >=0.8.0
+    - bedtools >=2.29.0
 
 test:
   imports:
     - pomoxis
-    - pomoxis.align
-    - pomoxis.common
-    - pomoxis.provider
+    - pomoxis.bio
+    - pomoxis.util
   commands:
-    - align_serve --help
-    - catalogue_errors --help
-    - common_errors_from_bam --help
-    - coverage_from_bam --help
-    - fast_convert --help
-    - long_fastx --help
-    - qscores_from_summary --help
-    - simulate_calls --help
-    - stats_from_bam --help
-    - subsample_bam --help
-    - summary_from_stats --help
-    - trim_alignments --help
-    - ref_seqs_from_bam --help
-    - coverage_from_fastx --help
-    - mini_align -h
-    - mini_assemble -h
-    - assess_assembly -h
+    - catalogue_errors -h
+    - common_errors_from_bam -h
+    - assess_homopolymers -h
+    - coverage_from_bam -h
+    - coverage_from_fastx -h
+    - fast_convert -h
+    - long_fastx -h
+    - pomoxis_path -h
+    - qscores_from_summary -h
+    - split_fastx -h
+    - stats_from_bam -h
+    - subsample_bam -h
+    - summary_from_stats -h
+    - trim_alignments -h
+    - ref_seqs_from_bam -h
+    - find_indels -h
 
 about:
   home: https://github.com/nanoporetech/pomoxis

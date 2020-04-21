@@ -1,10 +1,12 @@
 #!/bin/bash
-mkdir -p ${PREFIX}/bin
+BACTOPIA="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
+mkdir -p ${PREFIX}/bin ${BACTOPIA}
 
 chmod 777 bactopia
-chmod 777 bin/setup-datasets.py
-chmod 777 bin/prepare-fofn.py
-
 mv bactopia ${PREFIX}/bin
-mv bin/setup-datasets.py ${PREFIX}/bin/setup-datasets
-mv bin/prepare-fofn.py ${PREFIX}/bin/prepare-fofn
+
+chmod 777 bin/helpers/*.py
+mv bin/helpers/*.py ${PREFIX}/bin
+
+# Move bactopia nextflow
+mv bin/ conda/ conf/ docs/ templates/ tools/ main.nf nextflow.config ${BACTOPIA}

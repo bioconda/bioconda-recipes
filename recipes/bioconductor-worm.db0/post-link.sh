@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="worm.db0_3.8.2.tar.gz"
+FN="worm.db0_3.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/worm.db0_3.8.2.tar.gz"
-  "https://bioarchive.galaxyproject.org/worm.db0_3.8.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-worm.db0/bioconductor-worm.db0_3.8.2_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-worm.db0/bioconductor-worm.db0_3.8.2_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/worm.db0_3.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/worm.db0_3.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-worm.db0/bioconductor-worm.db0_3.10.0_src_all.tar.gz"
 )
-MD5="5975ea35d6c925bf2bfd0cdeb9b16667"
+MD5="de869b25dd9965727b25e607b4f046b3"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

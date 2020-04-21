@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="lumiBarnes_1.24.0.tar.gz"
+FN="lumiBarnes_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/lumiBarnes_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/lumiBarnes_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-lumibarnes/bioconductor-lumibarnes_1.24.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-lumibarnes/bioconductor-lumibarnes_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/lumiBarnes_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/lumiBarnes_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-lumibarnes/bioconductor-lumibarnes_1.26.0_src_all.tar.gz"
 )
-MD5="b611fcdaf9f3f878f2122a2a67fe946a"
+MD5="06649c4ce300caf94bf0de266fed4321"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
