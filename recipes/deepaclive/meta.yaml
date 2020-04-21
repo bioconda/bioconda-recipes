@@ -1,0 +1,49 @@
+{% set name = "deepaclive" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: fb22649e205cdeb368328adc9612dec2405e01bc0b8c79e3e68a8886f49da9a6
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - deepac-live=deepaclive.command_line:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - python >=3, <3.7
+    - pip
+  run:
+    - biopython >=1.76
+    - deepac >=0.10.1
+    - paramiko >=2.7.1
+    - pysam >=0.15.4
+    - samtools >=1.9
+    - scikit-learn >=0.22.1
+    - tensorflow ==1.15
+
+test:
+  imports:
+    - deepaclive
+  commands:
+    - deepac-live --help
+
+about:
+  home: https://gitlab.com/dacs-hpi/deepac-live
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Detecting novel pathogens from NGS reads in real-time during a sequencing run.
+  doc_url: https://gitlab.com/JakubBartoszewicz/deepac-vir
+  dev_url: https://gitlab.com/JakubBartoszewicz/deepac-vir
+
+extra:
+  recipe-maintainers:
+    - JakubBartoszewicz
