@@ -1,6 +1,4 @@
 #!/bin/bash
 
-export PYTHONPATH=${PREFIX}/lib/python2.7/site-packages:${PYTHONPATH}
+mkdir -p ${PREFIX}/lib/python2.7/site-packages/
 cp -r $SRC_DIR/fragbuilder ${PREFIX}/lib/python2.7/site-packages/
-
-
