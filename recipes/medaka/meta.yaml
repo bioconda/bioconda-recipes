@@ -1,5 +1,5 @@
 {% set name = "medaka" %}
-{% set version = "0.11.0" %}
+{% set version = "0.12.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,10 +7,10 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 99578b2398b99f383be5b6ad0b967a4801bd12b99ee84ac251a8fa666278f00c
+  sha256: ee1b39980090285a87ff6b2e3b46e6ab0a495cfb81f8c46d7eb2106862c2ee1a
 
 build:
-  # keras is 2.7 or 3.6 only. We need py3: 3.6 is the only possibility
+  # the pinned version of h5py is python 3.6 only
   skip: True # [not py36]
   number: 0
   entry_points:
@@ -22,17 +22,14 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
-
   host:
     - cffi
     - pip
     - python
-    - htslib ==1.9
+    - htslib
     - bzip2
     - xz
     - zlib
-    - libdeflate
-
   run:
     - biopython
     - cffi
@@ -40,6 +37,9 @@ requirements:
     - intervaltree >=3.0.0
     - mappy
     - numpy ==1.16.1
+    # various reports on OSX that numpy cannot find openblas library with newer versions.
+    - libopenblas ==0.3.3  # [osx]
+    - nomkl  # [osx]
     - ont-fast5-api
     - parasail-python
     - pysam >=0.15.2
@@ -49,11 +49,10 @@ requirements:
     - samtools ==1.9
     - bcftools ==1.9
     - minimap2 ==2.17
-    - htslib ==1.9
+    - htslib
     - bzip2
     - xz
     - zlib
-    - libdeflate
 
 test:
   imports:

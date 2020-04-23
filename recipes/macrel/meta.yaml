@@ -1,0 +1,57 @@
+{% set name = "macrel" %}
+{% set version = "0.4.0" %}
+{% set sha256 = "77f3b323da919460f3d89bc3f524f1eae26b61a01e3a1d548300b797332f90cc" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+  
+source:
+ url: https://github.com/BigDataBiology/macrel/archive/v{{ version }}.tar.gz
+ sha256: {{ sha256 }}
+
+build:
+  number: 0
+  # ngless is unavailable on osx
+  skip: True # [osx]
+  entry_points:
+    - macrel= macrel.main:main
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python >=3
+    - pip
+  run:
+    - python >=3
+    - ngless
+    - megahit
+    - paladin
+    - pandas
+    - scikit-learn
+    - rpy2
+    - tzlocal
+    - r-base
+    - r-essentials
+    - r-peptides
+
+test:
+  imports:
+    - macrel
+  commands:
+    - macrel --version
+
+about:
+  home: https://github.com/BigDataBiology/macrel
+  license: GPLv3
+  summary: "A pipeline for AMP (antimicrobial peptide) prediction"
+  description: |
+    Used for the prediction of AMPs in (meta)genomes.
+  dev_url: https://github.com/BigDataBiology/macrel
+  
+extra:
+  recipe-maintainers:
+    - luispedro
+  identifiers:
+    - "doi:10.1101/2019.12.17.880385" # bioRxiv preprint

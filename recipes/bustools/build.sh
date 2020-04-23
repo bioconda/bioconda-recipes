@@ -1,7 +1,9 @@
 #!/bin/bash
+set -euo pipefail
 
-mkdir -p $PREFIX/bin
-mkdir -p build 
+export CPATH=$PREFIX/include
+
+mkdir build
 cd build 
 cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX ..
 make 
