@@ -56,6 +56,8 @@ echo "$LD_GOLD -L$PREFIX/lib \"\$@\"" >> ${LD}.gold
 chmod u+x ${LD}.gold
 export LD_GOLD=${LD}.gold
 
+install_ghc_linux () {
+
 #
 # Hack: ensure that the correct libpthread is used.
 # This fixes an issue specific to https://github.com/conda-forge/docker-images/tree/master/linux-anvil-comp7
@@ -108,6 +110,28 @@ make install
 ghc-pkg recache
 ghc --version
 popd
+}
+
+install_ghc_osx () {
+
+export GHC_PREFIX=${SRC_DIR}/ghc_pfx
+mkdir -p $GHC_PREFIX/bin
+export PATH=$PATH:${GHC_PREFIX}/bin
+
+pushd ${SRC_DIR}/ghc
+./configure --prefix=${GHC_PREFIX}
+make install
+ghc-pkg recache
+
+popd
+}
+
+if [ $(uname) == Darwin ]; then
+    install_ghc_osx
+else
+    install_ghc_linux
+fi
+
 
 #######################################################################################################
 # Build NGLess
