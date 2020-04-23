@@ -68,9 +68,5 @@ for PROGRAM in ${CATH_PROGRAMS} ; do
 	chmod a+x ${PREFIX}/bin/${PROGRAM}
 done
 
-# save cath-tools folder in share
-mkdir -p ${PREFIX}/share/cath-tools
-cp -r * ${PREFIX}/share/cath-tools
-
 #make everything executable in case in the bin
-chmod +x $PREFIX/bin/*
+chmod +x ${PREFIX}/bin/*
