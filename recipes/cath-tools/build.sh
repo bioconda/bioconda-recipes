@@ -29,7 +29,6 @@ CATH_PROGRAMS="build-test cath-assign-domains cath-cluster cath-map-clusters cat
 mkdir -p ${PREFIX}/bin
 for PROGRAM in ${CATH_PROGRAMS} ; do
 	cp ${PROGRAM} ${PREFIX}/bin
-	chmod a+x ${PREFIX}/bin/${PROGRAM}
 done
 
 #make everything executable in case in the bin
