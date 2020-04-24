@@ -113,27 +113,7 @@ make install
 ghc-pkg recache
 ghc --version
 popd
-}
 
-install_ghc_osx () {
-
-export GHC_PREFIX=${SRC_DIR}/ghc_pfx
-mkdir -p $GHC_PREFIX/bin
-export PATH=$PATH:${GHC_PREFIX}/bin
-
-pushd ${SRC_DIR}/ghc
-./configure --prefix=${GHC_PREFIX}
-make install
-ghc-pkg recache
-
-popd
-}
-
-if [ $(uname) == Darwin ]; then
-    install_ghc_osx
-else
-    install_ghc_linux
-fi
 
 
 #######################################################################################################
@@ -165,3 +145,61 @@ make install WGET="wget --no-check-certificate" prefix=$PREFIX CC=$CC
 
 rm -r .stack-work
 popd
+
+}
+
+install_ghc_osx () {
+
+#######################################################################################################
+# Build NGLess
+#######################################################################################################
+
+pushd ${SRC_DIR}/ngless
+
+export STACK_ROOT=${SRC_DIR}/stack_root
+mkdir -p $STACK_ROOT
+(
+    echo "extra-include-dirs:"
+    echo "- ${PREFIX}/include"
+    echo "extra-lib-dirs:"
+    echo "- ${PREFIX}/lib"
+    echo "ghc-options:"
+    echo "  \"\$everything\": -optc-I${PREFIX}/include -optl-L${PREFIX}/lib"
+    echo "apply-ghc-options: everything"
+) > "${STACK_ROOT}/config.yaml"
+
+stack setup
+stack update
+make NGLess/Dependencies/Versions.hs
+make external-deps CC=$CC CXX=$CXX
+stack build --extra-include-dirs ${PREFIX}/include --extra-lib-dirs ${PREFIX}/lib --local-bin-path ${PREFIX}/bin
+
+make install WGET="wget --no-check-certificate" prefix=$PREFIX CC=$CC
+
+rm -r .stack-work
+popd
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+if [ $(uname) == Darwin ]; then
+    install_ghc_osx
+else
+    install_ghc_linux
+fi
+
