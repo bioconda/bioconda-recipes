@@ -32,11 +32,14 @@ echo "$CC -I$PREFIX/include -L$PREFIX/lib -pthread -fPIC \"\$@\"" >> $CC-shim
 chmod u+x $CC-shim
 export CC=$CC-shim
 
+if [ $(uname) != Darwin ]; then
 echo "#!/bin/bash" > $GCC-shim
 echo "set -e -o pipefail -x " >> $GCC-shim
 echo "$GCC -I$PREFIX/include -L$PREFIX/lib -pthread -fPIC \"\$@\"" >> $GCC-shim
 chmod u+x $GCC-shim
 export GCC=$GCC-shim
+fi
+
 
 echo "#!/bin/bash" > $CXX-shim
 echo "set -e -o pipefail -x " >> $CXX-shim
@@ -155,7 +158,7 @@ mkdir -p $STACK_ROOT
 stack setup
 stack update
 make NGLess/Dependencies/Versions.hs
-make external-deps CC=$CC CXX=$GCC
+make external-deps CC=$CC CXX=$CXX
 stack build --extra-include-dirs ${PREFIX}/include --extra-lib-dirs ${PREFIX}/lib --local-bin-path ${PREFIX}/bin
 
 make install WGET="wget --no-check-certificate" prefix=$PREFIX CC=$CC
