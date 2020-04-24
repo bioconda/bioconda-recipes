@@ -1,26 +1,35 @@
-about:
-  home: http://repeatscout.bioprojects.org
-  license: 'GNU General Public License'
-  summary: 'De novo identification of repeat families in large genomes.'
-
-build:
-  number: 0
-  skip: True # [not linux]
+{% set version = "1.0.6" %}
 
 package:
-  name: repeatscout
-  version: '1.0.5'
+  name: "repeatscout"
+  version: "{{ version }}"
+
+source:
+  url: http://www.repeatmasker.org/RepeatScout-{{ version }}.tar.gz
+  sha256: 31a44cf648d78356aec585ee5d3baf936d01eaba43aed382d9ac2d764e55b716
+
+build:
+  number: 1
 
 requirements:
   build:
-      - gcc
+    - {{ compiler('c') }}
   run:
-      - libgcc
-
-source:
-  fn: RepeatScout-1.0.5.tar.gz
-  url: http://www.repeatmasker.org/RepeatScout-1.0.5.tar.gz
+    - trf
+    - nseg
+    - perl
+    - perl-file-temp
+    - perl-file-which
 
 test:
   commands:
     - RepeatScout 2>&1 | grep Version
+    - build_lmer_table 2>&1 | grep Version
+    - filter-stage-1.prl -h 2>&1 | grep -i repeatscout
+    - filter-stage-2.prl -h 2>&1 | grep -i repeatmasker
+    - compare-out-to-gff.prl -h 2>&1 | grep -i repeatmasker
+
+about:
+  home: http://repeatscout.bioprojects.org
+  license: GPL
+  summary: 'De novo identification of repeat families in large genomes.'

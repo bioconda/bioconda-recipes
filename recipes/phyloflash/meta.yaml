@@ -1,23 +1,20 @@
 {% set name = "phyloFlash" %}
-{% set version = "2.0-beta6" %}
-{% set sha256 = "137c90288b39fbfc1fee87fe606ab7ef10b673e0bccf1a0ff305b62e4291d68a" %}
+{% set version = "3.3b3" %}
+{% set sha256 = "db7f69165a7564c520c5aaaaecbd9f4c52491ecca8cbb2c1b6b24cb76c63be0e" %}
 
 package:
   name: {{ name|lower}}
   version: {{ version|replace('-','') }}
 
 source:
-  url: https://github.com/HRGV/{{ name }}/archive/v{{ version }}.tar.gz
-  fn: v{{ version }}.tar.gz
+  url: https://github.com/HRGV/{{ name }}/archive/pf{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - real_bin.patch
 
 build:
+  noarch: generic
   number: 0
 
 requirements:
-  build: []
   run:
     - perl >=5.13.2
     - bbmap
@@ -39,8 +36,8 @@ test:
   commands:
     - phyloFlash.pl -check_env || true
     - phyloFlash.pl -check_env 2>&1 | grep "Please provide a path using -dbhome"
-    - phyloFlash_makedb.pl --help
-    - phyloFlash_heatmap.R --help |tee | grep "Generates a heatmap plot"
+    - phyloFlash_makedb.pl --help | grep "download databases"
+    - phyloFlash_heatmap.R --help | tee | grep "Generates a heatmap plot"
 
 about:
   home: https://github.com/HRGV/phyloFlash

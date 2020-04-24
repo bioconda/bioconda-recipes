@@ -1,32 +1,44 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "MoPS" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 01e18291534115e6ba3609ab3956bb9f73be8b153e24b18c99564e906ae68a3c
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 6d3b59fd43f62596a50216dd4b13b571
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - bioconductor-biobase
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
   run:
-    - bioconductor-biobase
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'Identification and characterization of periodic fluctuations in time-series data.'
+  summary: 'MoPS - Model-based Periodicity Screening'
+  description: 'Identification and characterization of periodic fluctuations in time-series data.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:mops
+    - doi:10.1002/msb.134886
+  parent_recipe:
+    name: bioconductor-mops
+    path: recipes/bioconductor-mops
+    version: 1.14.0
+

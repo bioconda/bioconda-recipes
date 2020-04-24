@@ -1,52 +1,55 @@
-{% set version = "1.26.0" %}
+{% set version = "1.36.0" %}
 {% set name = "imageHTS" %}
-{% set bioc = "3.5" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
-
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 76c66b4d3057dd3252db971518d6875155548ee7271da289ecb999a34f7d7c7e
-
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 5aa24c3201bdbf26e8f7da764c49d6ca
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-
+  noarch: generic
+# Suggests: BiocStyle, MASS
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-cellhts2 >=2.10.0
-    - bioconductor-ebimage >=4.3.12
-    - bioconductor-vsn
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-cellhts2 >=2.50.0,<2.51.0'
+    - 'bioconductor-ebimage >=4.28.0,<4.29.0'
+    - 'bioconductor-vsn >=3.54.0,<3.55.0'
     - r-base
     - r-e1071
     - r-hwriter
   run:
-    - bioconductor-biobase
-    - bioconductor-cellhts2 >=2.10.0
-    - bioconductor-ebimage >=4.3.12
-    - bioconductor-vsn
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-cellhts2 >=2.50.0,<2.51.0'
+    - 'bioconductor-ebimage >=4.28.0,<4.29.0'
+    - 'bioconductor-vsn >=3.54.0,<3.55.0'
     - r-base
     - r-e1071
     - r-hwriter
-
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
-
 about:
-  home: https://bioconductor.org/packages/release/bioc/html/imageHTS.html
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL-2.1
-  summary: 'imageHTS is an R package dedicated to the analysis of high-throughput microscopy-based screens.
-    The package provides a modular and extensible framework to segment cells, extract quantitative cell
-    features, predict cell types and browse screen data through web interfaces. Designed to operate in
-    distributed environments, imageHTS provides a standardized access to remote data and facilitates the
-    dissemination of high-throughput microscopy-based datasets.'
+  summary: 'Analysis of high-throughput microscopy-based screens'
+  description: 'imageHTS is an R package dedicated to the analysis of high-throughput microscopy-based screens. The package provides a modular and extensible framework to segment cells, extract quantitative cell features, predict cell types and browse screen data through web interfaces. Designed to operate in distributed environments, imageHTS provides a standardized access to remote data and facilitates the dissemination of high-throughput microscopy-based datasets.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-2.1'
+extra:
+  identifiers:
+    - biotools:imagehts
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-imagehts
+    path: recipes/bioconductor-imagehts
+    version: 1.30.0
+

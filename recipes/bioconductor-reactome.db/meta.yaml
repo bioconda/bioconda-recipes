@@ -1,0 +1,42 @@
+{% set version = "1.70.0" %}
+{% set name = "reactome.db" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 9c1a3bf40551b1e9189ae8a3b22adc4a
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: RSQLite
+requirements:
+  host:
+    - 'bioconductor-annotationdbi >=1.48.0,<1.49.0'
+    - r-base
+  run:
+    - 'bioconductor-annotationdbi >=1.48.0,<1.49.0'
+    - r-base
+    - curl
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  license: 'CC BY 4.0'
+  summary: 'A set of annotation maps for reactome'
+  description: 'A set of annotation maps for reactome assembled using data from reactome'
+extra:
+  parent_recipe:
+    name: bioconductor-reactome.db
+    path: recipes/bioconductor-reactome.db
+    version: 1.64.0
+

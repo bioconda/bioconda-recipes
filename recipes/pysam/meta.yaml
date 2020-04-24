@@ -1,52 +1,46 @@
+{% set version = "0.15.4" %}
+
 package:
-    name: pysam
-    version: 0.13.0
+  name: pysam
+  version: '{{ version }}'
 
 source:
-    fn: v0.13.0.tar.gz
-    url: https://github.com/pysam-developers/pysam/archive/v0.13.0.tar.gz
-    md5: 2a7456eaf8b30f5a2668667b24aa89ce
-
+  url: https://github.com/pysam-developers/pysam/archive/v{{ version }}.tar.gz
+  sha256: 72f01e2249d2b552264f2d932f548d48e84f61e017504a7aa623aba51e656e75
 
 build:
-    number: 0
-    skip: False
-    binary_relocation: False # [linux]
-    string: "py{{CONDA_PY}}_htslib{{CONDA_HTSLIB}}_{{PKG_BUILDNUM}}"
-
-extra:
-  skip-lints:
-    - setup_py_install_args
-    - missing_hash
+  number: 0
+  binary_relocation: False # [linux]
 
 requirements:
-    build:
-        - gcc  # [linux]
-        - llvm # [osx]
-        - htslib {{CONDA_HTSLIB}}*
-        - samtools {{CONDA_HTSLIB}}*
-        - bcftools {{CONDA_HTSLIB}}*
-        - cython
-        - python
-        - setuptools
-        - zlib
-        - curl
-
-    run:
-        - libgcc # [linux]
-        - htslib {{CONDA_HTSLIB}}*
-        - samtools {{CONDA_HTSLIB}}*
-        - bcftools {{CONDA_HTSLIB}}*
-        - python
-        - zlib
-        - curl
+  build:
+    - {{ compiler('c') }}
+  host:
+    - cython
+    - python
+    - setuptools
+    - zlib
+    - xz
+    - bzip2
+    - libdeflate
+  run:
+    - python
+    - zlib
+    - xz
+    - bzip2
+    - libdeflate
+    - curl
 
 test:
-
-    imports:
-        - pysam
+  imports:
+    - pysam
 
 about:
-    home: https://github.com/pysam-developers/pysam
-    license: MIT
-    summary: "Pysam is a python module for reading and manipulating Samfiles. It is a lightweight wrapper of the samtools C-API. Pysam also includes an interface for tabix."
+  home: https://github.com/pysam-developers/pysam
+  license: MIT
+  summary: "Pysam is a python module for reading and manipulating Samfiles. It is a lightweight wrapper of the samtools C-API. Pysam also includes an interface for tabix."
+
+extra:
+  identifiers:
+    - biotools:pysam
+    - doi:10.1093/bioinformatics/btp352

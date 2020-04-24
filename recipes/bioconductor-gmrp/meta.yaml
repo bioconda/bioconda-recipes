@@ -1,0 +1,49 @@
+{% set version = "1.14.0" %}
+{% set name = "GMRP" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: b894f4d088c05901860ddee4e950374c
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: BiocStyle, BiocGenerics
+requirements:
+  host:
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - r-base
+    - r-diagram
+    - r-plotrix
+  run:
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - r-base
+    - r-diagram
+    - r-plotrix
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'GWAS-based Mendelian Randomization and Path Analyses'
+  description: 'Perform Mendelian randomization analysis of multiple SNPs to determine risk factors causing disease of study and to exclude confounding variabels and perform path analysis to construct path of risk factors to the disease.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:gmrp
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-gmrp
+    path: recipes/bioconductor-gmrp
+    version: 1.8.1
+

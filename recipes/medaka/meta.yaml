@@ -1,0 +1,77 @@
+{% set name = "medaka" %}
+{% set version = "0.12.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: ee1b39980090285a87ff6b2e3b46e6ab0a495cfb81f8c46d7eb2106862c2ee1a
+
+build:
+  # the pinned version of h5py is python 3.6 only
+  skip: True # [not py36]
+  number: 0
+  entry_points:
+    - medaka = medaka.medaka:main
+    - medaka_counts = medaka.medaka_counts:main
+    - medaka_data_path = medaka.common:print_data_path
+    - medaka_version_report = medaka:report_binaries
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - cffi
+    - pip
+    - python
+    - htslib
+    - bzip2
+    - xz
+    - zlib
+  run:
+    - biopython
+    - cffi
+    - h5py ==2.7.1
+    - intervaltree >=3.0.0
+    - mappy
+    - numpy ==1.16.1
+    # various reports on OSX that numpy cannot find openblas library with newer versions.
+    - libopenblas ==0.3.3  # [osx]
+    - nomkl  # [osx]
+    - ont-fast5-api
+    - parasail-python
+    - pysam >=0.15.2
+    - python
+    - tensorflow ==1.14.0
+    - whatshap ==0.18
+    - samtools ==1.9
+    - bcftools ==1.9
+    - minimap2 ==2.17
+    - htslib
+    - bzip2
+    - xz
+    - zlib
+
+test:
+  imports:
+    - medaka
+  commands:
+    - medaka --help
+    - medaka consensus --help
+    - medaka_data_path
+    - medaka_version_report
+
+about:
+  home: https://github.com/nanoporetech/medaka
+  license: Mozilla Public License 2.0
+  license_family: OTHER
+  license_file: LICENSE.md
+  summary: Neural network sequence error correction.
+  doc_url: https://nanoporetech.github.io/medaka/index.html
+  dev_url: https://github.com/nanoporetech/medaka
+
+extra:
+  recipe-maintainers:
+    - cjw85

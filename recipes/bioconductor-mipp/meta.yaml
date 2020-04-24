@@ -1,29 +1,30 @@
-{% set version = "1.50.0" %}
+{% set version = "1.58.0" %}
 {% set name = "MiPP" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 35ed9a26100431c2cb7b6d20ed814952d9e5cbe8a8908e0d55ba99824805b1cd
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 35d9411a6c0e374e5100453b5dcd250b
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - bioconductor-biobase
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
     - r-e1071
     - r-mass
   run:
-    - bioconductor-biobase
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
     - r-e1071
     - r-mass
@@ -31,6 +32,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'This package finds optimal sets of genes that seperate samples into two or more classes.'
+  summary: 'Misclassification Penalized Posterior Classification'
+  description: 'This package finds optimal sets of genes that seperate samples into two or more classes.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:mipp
+    - doi:10.1093/bioinformatics/bti1020
+  parent_recipe:
+    name: bioconductor-mipp
+    path: recipes/bioconductor-mipp
+    version: 1.52.0
+

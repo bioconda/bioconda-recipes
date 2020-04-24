@@ -1,4 +1,4 @@
-{% set version = "2.1.0" %}
+{% set version = "2.1.2" %}
 
 package:
   name: prosic
@@ -6,23 +6,28 @@ package:
 
 build:
   number: 0
-  string: "gsl{{CONDA_GSL}}_{{PKG_BUILDNUM}}"
 
 source:
-  url: https://github.com/PROSIC/prosic2/archive/v{{ version }}.tar.gz
-  fn: prosic-{{ version }}.tar.gz
-  sha256: 575994be1c6f26d4966eedd44a18a5459e90cad7023dd2d329fbe463cb209b96
-  
+  url: https://github.com/varlociraptor/prosic2/archive/v{{ version }}.tar.gz
+  sha256: c5490684d04bb4a9bb47de39c9d171f775f6d3ffa1c9337df7af9d8774d33974
 
 requirements:
   build:
-    - gcc 4.8.2*  # work around broken 4.8.5
-    - rust >=1.12
-    - gsl {{CONDA_GSL}}*
+    - {{ compiler('c') }}
+    - rust >=1.30
+    - pkg-config #[osx]
+    # needed, otherwise build errors with `./htslib/htslib/vcf.h:38:10: fatal error: 'assert.h' file not found`
+    - clangdev
+  host:
+    - gsl
+    - openblas
     - zlib
+    - bzip2
+    - xz
+    - clangdev
   run:
-    - gsl {{CONDA_GSL}}*
-    - libgcc
+    - gsl
+    - openblas
     - zlib
 
 test:

@@ -1,36 +1,48 @@
-{% set version = "1.36.0" %}
+{% set version = "1.44.0" %}
 {% set name = "qpcrNorm" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: e5e68fa9ae5e17a60f4b52b831080785d123ff41998f4d0f69293c72dfa3edd1
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 05066141b568f87e72cdeb78552af4e7
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - bioconductor-affy
-    - bioconductor-biobase
-    - bioconductor-limma
+  host:
+    - 'bioconductor-affy >=1.64.0,<1.65.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
     - r-base
   run:
-    - bioconductor-affy
-    - bioconductor-biobase
-    - bioconductor-limma
+    - 'bioconductor-affy >=1.64.0,<1.65.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'LGPL (>= 2)'
-  summary: 'The package contains functions to perform normalization of high-throughput qPCR data. Basic functions for processing raw Ct data plus functions to generate diagnostic plots are also available.'
+  summary: 'Data-driven normalization strategies for high-throughput qPCR data.'
+  description: 'The package contains functions to perform normalization of high-throughput qPCR data. Basic functions for processing raw Ct data plus functions to generate diagnostic plots are also available.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+extra:
+  identifiers:
+    - biotools:qpcrnorm
+    - doi:10.1186/1471-2105-10-110
+  parent_recipe:
+    name: bioconductor-qpcrnorm
+    path: recipes/bioconductor-qpcrnorm
+    version: 1.38.0
+

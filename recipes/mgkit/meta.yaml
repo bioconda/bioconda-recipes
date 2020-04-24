@@ -1,64 +1,56 @@
 {% set name = "mgkit" %}
-{% set version = "0.3.0" %}
+{% set version = "0.4.3" %}
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://pypi.python.org/packages/bd/2b/a227340be64f3ab18ee4e864b87803f1f613bb700f355bcefd6ea20d3680/mgkit-0.3.0.tar.gz
-  md5: 44632a22c6957d694e26418981e51e84
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 8b4276ffbe3a25bd296cbcba866610fccee1257cf16d69e8e6813dc49c0b4a89
 
 build:
-  skip: True # [not py27]
+  number: 0
+  skip: True  # [py27]
   entry_points:
-    - download_data = mgkit.workflow.download_data:main
-    - download_profiles = mgkit.workflow.download_profiles:main
     - filter-gff = mgkit.workflow.filter_gff:main
     - add-gff-info = mgkit.workflow.add_gff_info:main
     - get-gff-info = mgkit.workflow.extract_gff_info:main
     - hmmer2gff = mgkit.workflow.hmmer2gff:main
     - blast2gff = mgkit.workflow.blast2gff:main
     - snp_parser = mgkit.workflow.snp_parser:main
-    - translate_seq = mgkit.workflow.nuc2aa:main
-    - fastq_utils = mgkit.workflow.fastq_utils:main
-    - taxon_utils = mgkit.workflow.taxon_utils:main
+    - fastq-utils = mgkit.workflow.fastq_utils:main
     - taxon-utils = mgkit.workflow.taxon_utils:main
     - json2gff = mgkit.workflow.json2gff:main
     - fasta-utils = mgkit.workflow.fasta_utils:main
+    - sampling-utils = mgkit.workflow.sampling_utils:main
 
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - python
+    - cython
     - setuptools
-    - numpy >=1.9.2
-    - pysam >=0.8.2.1
-    - pandas >=0.16.2
-    - matplotlib >=1.5
-    - msgpack-python >=0.4.6
-    - scipy >=0.15.1
-    - semidbm >=0.5.1
-    - pymongo >=3.1.1
-    - r-base
-    - htseq >=0.6.0
-    - rpy2 >=2.8.5
-    - enum34
-
+    - pytest-runner
   run:
     - python
     - numpy >=1.9.2
-    - pysam >=0.8.2.1
-    - pandas >=0.16.2
-    - matplotlib >=1.5
-    - msgpack-python >=0.4.6
-    - scipy >=0.15.1
+    - pandas >=0.24
+    - htseq >=0.9.1
     - semidbm >=0.5.1
     - pymongo >=3.1.1
-    - r-base
-    - htseq >=0.6.0
-    - rpy2 >=2.8.5
-    - enum34
+    - pytables >=3.4.2
+    - pysam >=0.14
+    - scipy >=0.15.1
+    - msgpack-python >=0.4.6
+    - matplotlib-base >=2
+    - statsmodels >=0.8
+    - future
+    - networkx
+    - click
+    - requests
+    - tqdm
 
 test:
   imports:
@@ -72,26 +64,28 @@ test:
     - mgkit.snps
     - mgkit.utils
     - mgkit.workflow
-
   commands:
-    - download_data --help
-    - download_profiles --version
     - filter-gff --version
     - add-gff-info --version
     - get-gff-info --version
     - hmmer2gff --version
-    - blast2gff --version
     - snp_parser --version
-    - translate_seq --version
-    - fastq_utils --version
-    - taxon_utils --version
+    - blast2gff --version
+    - fastq-utils --version
     - taxon-utils --version
     - json2gff --version
     - fasta-utils --version
-
+    - sampling-utils --version
 
 about:
-  home: https://bitbucket.org/setsuna80/mgkit/
+  home: https://github.com/frubino/mgkit
+  summary: Metagenomics Framework
   license: GNU General Public License v2 or later (GPLv2+)
-  summary: 'Metagenomics Framework'
+  license_family: GPL2
 
+extra:
+  identifiers:
+    - biotools:mgkit
+    - doi:10.6084/m9.figshare.1588384
+  container:
+    extended-base: True

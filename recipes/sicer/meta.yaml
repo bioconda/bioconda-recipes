@@ -1,0 +1,38 @@
+{% set name = "SICER" %}
+{% set version = "1.1" %}
+{% set sha256 = "1749c1e382629376f1d9db12978b9733fd5d9b9a896a2d127194c42b600c84c9" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: http://home.gwu.edu/~wpeng/{{ name }}_V{{ version }}.tgz
+  sha256: {{ sha256 }}
+  patches:
+    - genome_additions_v1.patch
+
+build:
+  noarch: generic
+  number: 4
+
+requirements:
+  run:
+    - numpy
+    - python <3
+    - scipy
+test:
+  commands:
+    - SICER.sh $PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/SICER/ex test.bed
+        control.bed . hg38 1 200 150 0.74 600 .01
+    - SICER-rb.sh $PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/SICER/ex
+        test.bed . hg38 1 200 150 0.74 400 100
+about:
+  home: http://home.gwu.edu/~wpeng/Software.htm
+
+  # Though the code implies GPL ("See the GNU General Public License for more
+  # details" appears at the top of *.py files), based on conversation with the
+  # authors they say MIT
+  license: MIT
+  license_family: MIT
+  summary: 'A clustering approach for identification of enriched domains from histone modification ChIP-Seq data'

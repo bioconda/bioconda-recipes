@@ -1,40 +1,52 @@
-{% set version = "3.18.0" %}
+{% set version = "4.8.0" %}
 {% set name = "TEQC" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: f25a1d51a487c94390425c59a5337158be202a6e2f31c807178ec173cca4d866
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: db5d306de0cc2c6ca6f5730eb2f23558
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - 'bioconductor-biobase >=2.15.1'
-    - 'bioconductor-biocgenerics >=0.1.0'
-    - 'bioconductor-iranges >=1.13.5'
-    - bioconductor-rsamtools
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-rsamtools >=2.2.0,<2.3.0'
     - r-base
     - r-hwriter
   run:
-    - 'bioconductor-biobase >=2.15.1'
-    - 'bioconductor-biocgenerics >=0.1.0'
-    - 'bioconductor-iranges >=1.13.5'
-    - bioconductor-rsamtools
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-rsamtools >=2.2.0,<2.3.0'
     - r-base
     - r-hwriter
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'Target capture experiments combine hybridization-based (in solution or on microarrays) capture and enrichment of genomic regions of interest (e.g. the exome) with high throughput sequencing of the captured DNA fragments. This package provides functionalities for assessing and visualizing the quality of the target enrichment process, like specificity and sensitivity of the capture, per-target read coverage and so on.'
+  summary: 'Quality control for target capture experiments'
+  description: 'Target capture experiments combine hybridization-based (in solution or on microarrays) capture and enrichment of genomic regions of interest (e.g. the exome) with high throughput sequencing of the captured DNA fragments. This package provides functionalities for assessing and visualizing the quality of the target enrichment process, like specificity and sensitivity of the capture, per-target read coverage and so on.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:teqc
+    - doi:10.1093/bioinformatics/btr122
+  parent_recipe:
+    name: bioconductor-teqc
+    path: recipes/bioconductor-teqc
+    version: 4.2.0
+

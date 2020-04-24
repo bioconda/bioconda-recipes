@@ -1,28 +1,30 @@
-{% set version = "1.22.0" %}
+{% set version = "1.29.1" %}
 {% set name = "QUALIFIER" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 171b3941f32484a545ca6bbbc6f0cd82391286d1d9671551dbcd511bde58e9d2
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 6fd639300180d2f5cd470dff1bb8b1d0
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RSVGTipsDevice, knitr
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-flowcore
-    - bioconductor-flowviz
-    - bioconductor-flowworkspace
-    - bioconductor-ncdfflow
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-flowcore >=1.52.0,<1.53.0'
+    - 'bioconductor-flowviz >=1.50.0,<1.51.0'
+    - 'bioconductor-flowworkspace >=3.34.0,<3.35.0'
+    - 'bioconductor-ncdfflow >=2.32.0,<2.33.0'
     - r-base
     - r-data.table
     - r-hwriter
@@ -32,11 +34,11 @@ requirements:
     - r-reshape
     - r-xml
   run:
-    - bioconductor-biobase
-    - bioconductor-flowcore
-    - bioconductor-flowviz
-    - bioconductor-flowworkspace
-    - bioconductor-ncdfflow
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-flowcore >=1.52.0,<1.53.0'
+    - 'bioconductor-flowviz >=1.50.0,<1.51.0'
+    - 'bioconductor-flowworkspace >=3.34.0,<3.35.0'
+    - 'bioconductor-ncdfflow >=2.32.0,<2.33.0'
     - r-base
     - r-data.table
     - r-hwriter
@@ -49,6 +51,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Provides quality control and quality assessment tools for gated flow cytometry data.'
+  summary: 'Quality Control of Gated Flow Cytometry Experiments'
+  description: 'Provides quality control and quality assessment tools for gated flow cytometry data.'
+extra:
+  identifiers:
+    - biotools:qualifier
+    - doi:10.1186/1471-2105-13-252
+  parent_recipe:
+    name: bioconductor-qualifier
+    path: recipes/bioconductor-qualifier
+    version: 1.24.1
+

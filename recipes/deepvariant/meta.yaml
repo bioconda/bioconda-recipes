@@ -1,0 +1,83 @@
+{% set version = "0.10.0" %}
+{% set sha256 = "0ae6640eb9c0ed249abc50194cc734334a1de73e40594d2158b49886993f058b" %}
+# When updating, also need to update model reference in post-link.sh
+
+package:
+  name: deepvariant
+  version: '{{ version }}'
+
+# Things to work on:
+# - Uses pre-built binaries, building problematic due to clif dependency
+# - Need recent kernel with GLIBC > 2.23 due to pre-built htslib
+# - Build patches __main__.py in zip files to generalize python dependency
+# - Requires numpy 1.16, want to sync with CONDA_NPY
+# - Uses python wrappers that don't expose all underlying options
+# - Ships with pre-built model. Longer term will need way to fetch models on demand.
+
+source:
+  url: https://github.com/google/deepvariant/releases/download/v{{ version }}/deepvariant.zip
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 3
+  skip: true  # [osx or not py36]
+
+requirements:
+  host:
+    - python
+    - unzip
+    - zip
+    - zlib
+    - curl
+    # Needed for non-binary build
+    # - google-cloud-sdk
+    # - bazel
+  run:
+    - openjdk >=8,<9
+    - python 3.6.*
+    # TF slim is difficult because there is an existing tf-slim package in conda-forge
+    # https://github.com/conda-forge/tf-slim-feedstock
+    # which is different than the google one: https://github.com/google-research/tf-slim
+    # This appears to be a temporary situation: https://github.com/google-research/tf-slim/issues/6
+    # so temporarily install via pip in the build.sh to avoid conflicts
+    - absl-py
+    # - tf-slim
+    - google-cloud-sdk
+    - zlib
+    - boost
+    - htslib
+    - numpy
+    - curl
+    - tensorflow 2.0.*
+    - protobuf
+    - contextlib2
+    - enum34
+    - intervaltree
+    - mock
+    - numpy 1.16.*
+    - psutil
+    - requests
+    - scipy
+    - altair
+    - oauth2client
+    - six
+    - crcmod
+    - parallel
+
+test:
+  commands:
+    # Pre-built binaries need GLIBC 2.16 and 2.23 (htslib) so fail
+    # - dv_make_examples.py -h
+    # - dv_call_variants.py -h
+    # - dv_postprocess_variants.py -h
+
+about:
+  home: https://github.com/google/deepvariant
+  license: MIT
+  summary: DeepVariant is an analysis pipeline that uses a deep neural network to
+    call genetic variants from next-generation DNA sequencing data
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic
+    - missing_tests

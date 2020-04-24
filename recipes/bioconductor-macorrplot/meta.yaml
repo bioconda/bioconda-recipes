@@ -1,23 +1,24 @@
-{% set version = "1.48.0" %}
+{% set version = "1.56.0" %}
 {% set name = "maCorrPlot" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 39ecc1b42a08a4066844d980fdb3c247b4bb335650c31e76490795784f59c64b
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: d97fff2930e95bd68abbfb4569b19b37
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
+  host:
     - r-base
     - r-lattice
   run:
@@ -27,6 +28,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'Graphically displays correlation in microarray data that is due to insufficient normalization'
+  summary: 'Visualize artificial correlation in microarray data'
+  description: 'Graphically displays correlation in microarray data that is due to insufficient normalization'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:macorrplot
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-macorrplot
+    path: recipes/bioconductor-macorrplot
+    version: 1.50.0
+

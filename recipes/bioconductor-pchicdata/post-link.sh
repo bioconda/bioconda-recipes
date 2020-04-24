@@ -1,10 +1,11 @@
 #!/bin/bash
-FN="PCHiCdata_1.6.0.tar.gz"
+FN="PCHiCdata_1.14.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/experiment/src/contrib/PCHiCdata_1.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/PCHiCdata/PCHiCdata_1.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/PCHiCdata_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/PCHiCdata_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pchicdata/bioconductor-pchicdata_1.14.0_src_all.tar.gz"
 )
-    MD5="d8dcf967d070f86647b12580e51ed07a"
+MD5="d74406c88e904b558798711b663ea85c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -15,12 +16,12 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
   if [[ $(uname -s) == "Linux" ]]; then
-    if [[ $(md5sum -c <<<"$MD5  $TARBALL") ]]; then
+    if md5sum -c <<<"$MD5  $TARBALL"; then
       SUCCESS=1
       break
     fi
@@ -40,5 +41,6 @@ if [[ $SUCCESS != 1 ]]; then
 fi
 
 # Install and clean up
-R CMD INSTALL --build $TARBALL
+R CMD INSTALL --library=$PREFIX/lib/R/library $TARBALL
 rm $TARBALL
+rmdir $STAGING

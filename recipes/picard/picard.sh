@@ -2,10 +2,9 @@
 # Picard executable shell script
 set -eu -o pipefail
 
-set -o pipefail
 export LC_ALL=en_US.UTF-8
 
-# Find original directory of bash script, resovling symlinks
+# Find original directory of bash script, resolving symlinks
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -29,7 +28,7 @@ fi
 
 # extract memory and system property Java arguments from the list of provided arguments
 # http://java.dzone.com/articles/better-java-shell-script
-default_jvm_mem_opts="-Xms512m -Xmx1g"
+default_jvm_mem_opts="-Xms512m -Xmx2g"
 jvm_mem_opts=""
 jvm_prop_opts=""
 pass_args=""
@@ -45,12 +44,17 @@ for arg in "$@"; do
             jvm_mem_opts="$jvm_mem_opts $arg"
             ;;
          *)
-            pass_args="$pass_args $arg"
+            if [[ ${pass_args} == '' ]] #needed to avoid preceeding space on first arg e.g. ' MarkDuplicates'
+                then
+                    pass_args="$arg"
+            else
+                    pass_args="$pass_args \"$arg\"" #quotes later arguments to avoid problem with ()s in MarkDuplicates regex arg
+            fi
             ;;
     esac
 done
 
-if [ "$jvm_mem_opts" == "" ]; then
+if [ "$jvm_mem_opts" == "" ] && [ -z ${_JAVA_OPTIONS+x} ]; then
     jvm_mem_opts="$default_jvm_mem_opts"
 fi
 

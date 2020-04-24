@@ -1,44 +1,50 @@
+{% set name = "percolator" %}
+{% set version = "3.4" %}
+
 package:
-  name: percolator
-  version: '3.1'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: rel-3-01.tar.gz
-  url: https://github.com/percolator/percolator/archive/rel-3-01.tar.gz
-  md5: fcb37bc5fcd0149cc775c3e72ff3dc24
+  url: https://github.com/percolator/percolator/archive/rel-3-04.tar.gz
+  sha256: ee094039b60aa2e2e15ec8228da087328ca523fa73b89cd69721621eb219cf4d
 
 build:
-  number: 2
-  string: boost_1.62{{PKG_BUILDNUM}}
+  number: 1
   skip: True # [osx]
 
 requirements:
   build:
-    - cmake ==2.8.10.2
-    - gcc
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
     - zlib
-    - boost ==1.62 # Specify version to ensure install from conda-forge and get static libs
-    - tokyocabinet
+    - boost
     - sqlite
     - bzip2
-    - xerces-c ==3.1.2
+    - xerces-c
     - xsd
   run:
-    - libgcc
-    - zlib
-    - tokyocabinet
     - sqlite
-    - bzip2
-    - xerces-c ==3.1.2
+    - xerces-c
     - xsd
-
 
 test:
   commands:
-    - percolator --help 2>&1 > /dev/null | grep "Percolator version 3.01"
-    - msgf2pin --help
+    - sqt2pin -o testsqt.txt $PREFIX/testdata/target.sqt $PREFIX/testdata/target.sqt
+    - tandem2pin -o testtandem.txt $PREFIX/testdata/target.t.xml $PREFIX/testdata/target.t.xml
+    - msgf2pin -o testmzid.txt $PREFIX/testdata/target.mzid $PREFIX/testdata/target.mzid
+    - percolator -X test.xml $PREFIX/testdata/percolatorTab
 
 about:
   home: https://github.com/percolator/percolator
   license: Apache 2.0
+  license_file: license.txt
   summary: Semi-supervised learning for peptide identification from shotgun proteomics datasets
+
+extra:
+  container:
+    extended-base: true  # Add UTF-8 for percolator converters
+  identifiers:
+    - biotools:Percolator
+    - doi:10.1007/s13361-016-1460-7

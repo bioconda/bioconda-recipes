@@ -1,34 +1,46 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "AIMS" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 627fda89c217307c8c50a9c65f8e922c97ab0364be0c76044fe78454e9c175b0
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 506b9d20b05f7864b2e93919dfa2cd4f
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: breastCancerVDX, hgu133a.db, RUnit, BiocGenerics
 requirements:
-  build:
-    - bioconductor-biobase
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
     - r-e1071
   run:
-    - bioconductor-biobase
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
     - r-e1071
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'This package contains the AIMS implementation. It contains necessary functions to assign the five intrinsic molecular subtypes (Luminal A, Luminal B, Her2-enriched, Basal-like, Normal-like). Assignments could be done on individual samples as well as on dataset of gene expression data.'
+  summary: 'AIMS : Absolute Assignment of Breast Cancer Intrinsic Molecular Subtype'
+  description: 'This package contains the AIMS implementation. It contains necessary functions to assign the five intrinsic molecular subtypes (Luminal A, Luminal B, Her2-enriched, Basal-like, Normal-like). Assignments could be done on individual samples as well as on dataset of gene expression data.'
+extra:
+  identifiers:
+    - biotools:aims
+    - doi:10.1093/jnci/dju357
+  parent_recipe:
+    name: bioconductor-aims
+    path: recipes/bioconductor-aims
+    version: 1.12.0
+

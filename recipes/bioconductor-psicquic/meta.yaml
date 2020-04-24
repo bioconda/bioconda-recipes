@@ -1,34 +1,36 @@
-{% set version = "1.16.1" %}
+{% set version = "1.24.0" %}
 {% set name = "PSICQUIC" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: ec3ef36e6d60759dc9debe2d46a3b2c06d75a7cc8d61d5e8f83867ed8f904245
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: eb14a0471a3ed4af48cc9007fce72962
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: org.Hs.eg.db
 requirements:
-  build:
-    - bioconductor-biocgenerics
-    - bioconductor-biomart
-    - bioconductor-iranges
+  host:
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-biomart >=2.42.0,<2.43.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
     - r-base
     - r-httr
     - r-plyr
     - r-rcurl
   run:
-    - bioconductor-biocgenerics
-    - bioconductor-biomart
-    - bioconductor-iranges
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-biomart >=2.42.0,<2.43.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
     - r-base
     - r-httr
     - r-plyr
@@ -37,6 +39,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'Apache License 2.0'
-  summary: 'PSICQUIC is a project within the HUPO Proteomics Standard Initiative (HUPO-PSI).  It standardises programmatic access to molecular interaction databases.'
+  summary: 'Proteomics Standard Initiative Common QUery InterfaCe'
+  description: 'PSICQUIC is a project within the HUPO Proteomics Standard Initiative (HUPO-PSI).  It standardises programmatic access to molecular interaction databases.'
+extra:
+  identifiers:
+    - biotools:psicquic
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-psicquic
+    path: recipes/bioconductor-psicquic
+    version: 1.18.1
+

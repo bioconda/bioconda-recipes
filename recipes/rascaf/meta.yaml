@@ -6,31 +6,28 @@ package:
   version: {{ version }}
 
 build:
-  number: 0
-  script: "mkdir -p $PREFIX/bin; make; mv *.pl  $PREFIX/bin; mv rascaf $PREFIX/bin; mv rascaf-join $PREFIX/bin"
+  number: 2
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
   url: https://github.com/mourisl/Rascaf/archive/ed779e100853977307bbdc01c1644390d8556a7b.tar.gz
   md5: b05116262162712098b357871f1a79e4
 
 requirements:
   build:
-  - gcc  # [not osx]
-  - llvm  # [osx]
-  - zlib
-
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - zlib
   run:
-  - libgcc  # [not osx]
-  - zlib
+    - zlib
 
 test:
   commands:
-    - rascaf  2>&1 | grep "usage:" > /dev/null
-    - rascaf-join 2>&1 | grep "usage:" > /dev/null
+    - rascaf 2>&1 | grep usage > /dev/null
+    - rascaf-join 2>&1 | grep usage > /dev/null
 
 about:
   home: https://github.com/mourisl/Rascaf/commits/master
   summary: Scaffolding with RNA-seq read alignment
-  licence: GPL2
+  license: GPL2
 

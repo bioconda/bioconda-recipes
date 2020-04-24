@@ -1,38 +1,40 @@
-{% set version = "2.0" %}
+{% set name = "Mash" %}
+{% set version = "2.2.2" %}
+{% set sha256 = "e4c2d702fd0254f689256b2d8f7d3cc3a68db3ea45b60f0a662ce926a4f5fc22" %}
 
 package:
-  name: mash
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: mash-{{ version }}.tar.gz
-  url: https://github.com/marbl/Mash/archive/v{{ version }}.tar.gz
-  sha256: 7bea8cd3c266640bbd97f2e1c9d0168892915c1c14f7d03a9751bf7a3709dd01
+  url: https://github.com/marbl/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 0
-  string: gsl{{CONDA_GSL}}_{{PKG_BUILDNUM}}
+  number: 1
 
 requirements:
-  build: 
-    - gcc  # [not osx]
-    - llvm  # [osx]
+  build:
+    - {{ compiler('cxx') }}
     - autoconf
     - automake
-    - zlib {{CONDA_ZLIB}}*
+  host:
+    - zlib
     - capnproto
-    - gsl {{ CONDA_GSL }}*
-
+    - gsl
+    - libcblas
   run:
-    - libgcc  # [not osx]
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
     - capnproto
-    - gsl {{ CONDA_GSL }}*
+    - gsl
+    - libcblas
+
 test:
   commands:
     - mash -h
+    - mash --version | grep '{{ version }}'
 
 about:
-  home: https://github.com/marbl/Mash
-  license: "https://raw.githubusercontent.com/marbl/Mash/master/LICENSE.txt"
-  summary: "Fast sequence distance estimator that uses MinHash"
+  home: https://github.com/marbl/{{ name }}
+  license: https://github.com/marbl/{{ name }}/blob/master/LICENSE.txt 
+  summary: Fast sequence distance estimator that uses MinHash

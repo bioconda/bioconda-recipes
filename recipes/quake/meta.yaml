@@ -1,36 +1,46 @@
 {% set name = "quake" %}
 {% set version = "0.3.5" %}
+{% set sha256 = "8ded707213117463675553bb989c4c69c5d01b122945b1e265c79d7e4e34eebd" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
-about:
-  home: 'http://www.cbcb.umd.edu/software/quake/'
-  summary: "Quake is a package to correct substitution sequencing errors in experiments with deep coverage (e.g. >15X), specifically intended for Illumina sequencing reads"
-
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
   url: http://www.cbcb.umd.edu/software/quake/downloads/{{ name }}-{{ version }}.tar.gz
-  md5: f8e26c0c29d22fc0d49fcfb5dc8945d3
+  sha256: {{ sha256 }}
+  patches:
+    - namespace.patch
 
 build:
-  number: 0
+  number: 3
   skip: True # [py3k]
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
 
 requirements:
   build:
-    - gcc
-    - boost {{CONDA_BOOST}}*
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - boost
+    - openmp
+    - zlib
   run:
-    - libgcc
-    - boost {{CONDA_BOOST}}*
-    - jellyfish
+    - kmer-jellyfish
     - r-base
     - r-vgam
     - python
 
 test:
-    commands:
-        - quake.py --help
+  commands:
+    - quake.py --help
+
+about:
+  home: 'http://www.cbcb.umd.edu/software/quake/'
+  summary: "Quake is a package to correct substitution sequencing errors in experiments with deep coverage (e.g. >15X), specifically intended for Illumina sequencing reads"
+  license: Artistic-2.0
+  license_file: LICENSE
+
+extra:
+  identifiers:
+    - doi:10.1186/gb-2010-11-11-r116
+    - biotools:quake

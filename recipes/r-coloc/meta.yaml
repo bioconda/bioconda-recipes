@@ -1,43 +1,57 @@
-{% set version = '2.3-1' %}
+{% set version = '3.1' %}
 
 package:
   name: r-coloc
   version: {{ version|replace("-", "_") }}
 
 source:
-  fn: coloc_{{ version }}.tar.gz
   url:
-    - https://cran.r-project.org/src/contrib/coloc_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/coloc/coloc_{{ version }}.tar.gz
-  sha256: c0bc7850364091189f49d10a69b429d468b30a9a1b7b3456fc0bd4799d4a75c8
+    - {{ cran_mirror }}/src/contrib/coloc_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/coloc/coloc_{{ version }}.tar.gz
+  sha256: 882ae56514e93839bd2d9c630a6eb5dc0e146062a46ad1583e7687cfcb31418c
 
 build:
-  number: 0
-
+  noarch: generic
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
-  build:
+  host:
     - r-base
     - r-bma
-    - r-mass
-    - r-colorspace
-
+    - r-flashclust
+    - r-ggplot2
+    - r-reshape
+    - bioconductor-snpstats
+    - r-speedglm
   run:
     - r-base
     - r-bma
-    - r-mass
-    - r-colorspace
+    - r-flashclust
+    - r-ggplot2
+    - r-reshape
+    - bioconductor-snpstats
+    - r-speedglm
 
 test:
   commands:
-    - $R -e "library('coloc')"
+    - $R -e "library('coloc')"           # [not win]
+    - "\"%R%\" -e \"library('coloc')\""  # [win]
 
 about:
-  home: https://github.com/chr1swallace/coloc
+  home: https://CRAN.R-project.org/package=coloc
   license: GPL
-  summary: Performs the colocalisation tests described in Plagnol et al (2009), Wallace et al
-    (2013) and Giambartolomei et al (2013).
+  summary: Performs the colocalisation tests described in Plagnol et al (2009) <doi:10.1093/biostatistics/kxn039>,
+    Wallace et al (2013) <doi:10.1002/gepi.21765> and Giambartolomei et al (2013) <doi:10.1371/journal.pgen.1004383>.
   license_family: GPL
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

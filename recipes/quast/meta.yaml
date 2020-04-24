@@ -1,62 +1,66 @@
 {% set name = "quast" %}
-{% set version = "4.6.0" %}
-{% set hash = "6ad4ef33b5f11e1d2efd3e15a285d0c8" %}
+{% set version = "5.0.2" %}
+{% set hash = "2b31aac010f5c04d5367f1bf718516ae" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 1
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+  number: 2
 
 source:
-  fn: {{ name|lower }}-{{ version }}.tar.gz
   url: http://downloads.sourceforge.net/project/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz
   md5: {{ hash }}
+  patches:
+    - genemark-issue_disable-and-exclude-from-package.patch
+    - skip-glimmer-in-test.patch
+    - remove-explicit-dependencies-from-setup-py.patch
 
 requirements:
   build:
-    - gcc
-    - boost {{CONDA_BOOST}}*
+    - {{ compiler('c') }}    
+  host:    
     - perl
     - python
+    - setuptools
     - matplotlib
-    - openjdk
     - joblib
     - simplejson
-
+    - blast
+    - zlib
+    - glimmerHMM
+    - circos
   run:
-    - boost {{CONDA_BOOST}}*
     - perl
     - python
-    - libgcc
     - matplotlib
-    - openjdk
+    - openjdk >=8
     - joblib
     - simplejson
-    - barrnap
-    - bedtools
-    - busco
-    - bwa
-    #- genemark
-    #- genemark-es
-    - glimmer
-    - gnuplot
-    - krona
-    #- lap
-    - minimap2
-    - sambamba
+    - blast
+    - zlib
+    - glimmerHMM
+    - circos
 
 test:
+  source_files:
+    - test_data
   commands:
     - quast --version
-    - quast --test
     - metaquast --version
-    - metaquast --test
 
 about:
-  home: https://sourceforge.net/projects/{{ name|lower }}/
-  license: GPL2
+  home: http://{{ name|lower }}.sourceforge.net/
+  license: Custom
   license_file: LICENSE.txt
   summary: Quality Assessment Tool for Genome Assemblies
+
+extra:
+  container:
+    # ascii fallback fails without locale
+    extended-base: true
+  notes: |
+    - GeneMark gene prediction software is disabled due to licensing issues
+  identifiers:
+    - biotools:quast

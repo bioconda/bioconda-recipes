@@ -1,39 +1,41 @@
-{% set version = "1.14.0" %}
+{% set version = "1.24.0" %}
 {% set name = "bladderbatch" %}
-{% set bioc = "3.5" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
-
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: f68d9a7b57d20f88e97c306adc5f06a308d6d6890607736a4c2dfed6b7902ee9
-
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 4e004667b9bd362279ce64c8b8459508
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-
+  noarch: generic
 requirements:
-  build:
-    - bioconductor-biobase
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
   run:
-    - bioconductor-biobase
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
-    - wget
-
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
-
 about:
-  home: https://bioconductor.org/packages/release/data/experiment/html/bladderbatch.html
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'This package contains microarray gene expression data on 57 bladder samples
-    from 5 batches. The data are used as an illustrative example for the sva package.'
+  summary: 'Bladder gene expression data illustrating batch effects'
+  description: 'This package contains microarray gene expression data on 57 bladder samples from 5 batches. The data are used as an illustrative example for the sva package.'
+extra:
+  parent_recipe:
+    name: bioconductor-bladderbatch
+    path: recipes/bioconductor-bladderbatch
+    version: 1.18.0
+

@@ -1,36 +1,48 @@
-{% set version = "1.36.0" %}
+{% set version = "1.44.0" %}
 {% set name = "affyContam" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 68e72b5f5ff1eb8113a9eda1cf4cdcd19315604baf0a42bc10df182f427d529f
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: ca0f4ad7736706c395a7037768d85d1c
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: hgu95av2cdf
 requirements:
-  build:
-    - bioconductor-affy
-    - bioconductor-affydata
-    - bioconductor-biobase
+  host:
+    - 'bioconductor-affy >=1.64.0,<1.65.0'
+    - 'bioconductor-affydata >=1.34.0,<1.35.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
   run:
-    - bioconductor-affy
-    - bioconductor-affydata
-    - bioconductor-biobase
+    - 'bioconductor-affy >=1.64.0,<1.65.0'
+    - 'bioconductor-affydata >=1.34.0,<1.35.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'structured corruption of cel file data to demonstrate QA effectiveness'
+  summary: 'structured corruption of affymetrix cel file data'
+  description: 'structured corruption of cel file data to demonstrate QA effectiveness'
+extra:
+  identifiers:
+    - biotools:affycontam
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-affycontam
+    path: recipes/bioconductor-affycontam
+    version: 1.38.0
+

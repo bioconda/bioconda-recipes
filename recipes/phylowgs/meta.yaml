@@ -1,35 +1,45 @@
+{% set version = "20181105" %}
+{% set tag = "e44cfb265cba8bc8863989a541c75271fd9c24a5" %}
+
 package:
   name: phylowgs
-  version: '20150714'
-
+  version: {{ version }}
+  
 source:
-  fn: phylowgs-9a108f4.tar.gz
-  url: https://github.com/morrislab/phylowgs/archive/9a108f4.tar.gz
+  url: https://github.com/morrislab/phylowgs/archive/{{ tag }}.tar.gz
+  sha256: 762a76f53638be956d5178cce56ba59518d3ddaa6e3e386fbe9c4dafe5cafadf
 
 build:
-  number: 1
-  skip: true # [not py27 or osx]
+  number: 2
+  skip: true # [not py27]
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
     - python
     - setuptools
     - numpy
     - scipy
     - ete2
     - gsl
+    - openblas
 
   run:
     - python
-    - setuptools
     - numpy
     - scipy
     - ete2
+    - pyvcf
     - gsl
+    - openblas
 
-#test:
-#  commands:
-#    - evolve.py -h
+test:
+  commands:
+    - evolve.py -h 2>&1 | grep usage
+    - create_phylowgs_inputs.py -h
+    - write_results.py -h
 
 about:
   home: https://github.com/morrislab/phylowgs

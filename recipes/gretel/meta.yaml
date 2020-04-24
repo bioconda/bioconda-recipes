@@ -1,0 +1,43 @@
+{% set pkgname = "gretel" %}
+{% set version = "0.0.94" %}
+
+package:
+  name: {{ pkgname }}
+  version: {{ version }}
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+
+source:
+  url: https://github.com/SamStudio8/gretel/archive/v{{ version }}.tar.gz
+  sha256: 3a8b30d208fbf0c1d0902f6862455078baeb9cba09cc330f780ab4fd44dae95b
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - pysam
+    - numpy
+    - hanselx 0.0.92
+    - pyvcf
+
+test:
+  commands:
+    - {{ pkgname }} -h
+    - {{ pkgname }} --version | grep '{{ pkgname }} {{ version }}'
+  imports:
+    - {{ pkgname }}
+
+about:
+  home: https://github.com/SamStudio8/{{ pkgname }}
+  license: MIT
+  license_file: LICENSE
+  summary: 'An algorithm for recovering haplotypes from metagenomes'
+
+extra:
+  identifiers:
+    - doi:10.1101/223404

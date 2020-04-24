@@ -1,32 +1,28 @@
+{% set version = "1.1.5" %}
+{% set sha256 = "6cc607b4c6b45fcc4d95ad7051920aefe74ff33dcd2bc74a358c68d8543fffe3" %}
+
 package:
   name: xyalign
-  version: "1.0.0"
+  version: '{{version}}'
 
 source:
-  fn: xyalign-1.0.0.tar.gz
-  url: https://pypi.python.org/packages/ca/5f/3508044d4c18caa8773049162baa78dc994b69fc25a2b953a3224289cc71/XYalign-1.0.0.tar.gz
-  md5: b9315052f9a68ae73608aeeddac45c6d
+  url: https://pypi.io/packages/source/x/xyalign/XYalign-{{version}}.tar.gz
+  sha256: '{{sha256}}'
 
 build:
+  noarch: python
   number: 0
-  skip: True # [not py27]
   entry_points:
     - xyalign = xyalign.xyalign:main
-  script: python setup.py install  --single-version-externally-managed --record=record.txt
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
-  build:
-    - python
-    - setuptools
+  host:
+    - python <3
+    - pip
     - pytest-runner
-    - matplotlib
-    - numpy
-    - pandas
-    - pybedtools
-    - pysam
-    - scipy
   run:
-    - python
+    - python <3
     - matplotlib
     - numpy
     - pandas
@@ -46,11 +42,17 @@ test:
     - xyalign.test
   commands:
     - xyalign --help
+    - explore_thresholds --help
+    - plot_count_stats --help
+    - plot_window_differences --help
+    - compare_vcfs --help
   requires:
     - pytest
     - pytest-runner
 
 about:
   home: https://github.com/WilsonSayresLab/XYalign
-  license: GNU General Public License version 3
-  summary: Command line tools and python library to infer ploidy, correct for sex chromosome complement, and work with NGS data
+  license: GPL-3.0
+  license_family: GPL
+  summary: Command line tools and python library to infer ploidy, correct for sex
+    chromosome complement, and work with NGS data

@@ -1,37 +1,53 @@
-{% set name = "chewBBACA" %}
-{% set version = "1.0" %}
+{% set name='chewBBACA' %}
+{% set version='2.1.0' %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/B-UMMI/chewBBACA/archive/{{ version }}.tar.gz
-  sha256: c4a34c3ecd780cacfdabbb116cba36ced11cba36fefdf4ca9bea9ecd3c918d71
+  url: https://pypi.io/packages/source/c/{{ name|lower }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 354509d1a864d2d45e70d39335da0b663eb4094cebea37b392d06820ea13c7dd
 
 build:
-  skip: True  # [osx or py3k]
   number: 0
+  noarch: python
+  entry_points:
+    - chewBBACA.py = CHEWBBACA.chewBBACA:main
+    - chewie = CHEWBBACA.chewBBACA:main
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
-  build:
-    - python
-
+  host:
+    - python >=3
+    - pip
   run:
-    - python
-    - numpy 1.13.1
+    - python >=3
+    - numpy >=1.14.0
     - scipy >=0.13.3
-    - plotly 1.12.*
-    - biopython 1.70
-    - prodigal >=2.6.0
+    - biopython >=1.70
+    - pandas >=0.22.0
+    - plotly >=1.12.9
+    - sparqlwrapper >=1.8.0
     - blast >=2.5.0
+    - prodigal >=2.6.0
+    - clustalw >=2.1
+    - mafft
 
 test:
+  imports:
+    - CHEWBBACA
+    - CHEWBBACA.SchemaEvaluator
+    - CHEWBBACA.allelecall
+    - CHEWBBACA.createschema
+    - CHEWBBACA.utils
   commands:
-    - chewBBACA.py -h
+    - chewBBACA.py --help
+    - chewie --version
 
 about:
   home: https://github.com/B-UMMI/chewBBACA
   license: GPL-3.0
-  license_file: LICENSE
-  summary: Whole genome and core genome MultiLocus Sequence Typing.
+  summary: 'A complete suite for gene-by-gene schema creation and strain identification'
+  license_family: GPL3
+  description: 'chewBBACA is a comprehensive pipeline including a set of functions for the creation and validation of whole genome and core genome MultiLocus Sequence Typing (wg/cgMLST) schemas, providing an allele calling algorithm based on Blast Score Ratio that can be run in multiprocessor settings and a set of functions to visualize and validate allele variation in the loci.'

@@ -5,28 +5,22 @@ package:
   version: {{ version }}
 
 source:
-  fn: FsnViz-{{ version }}.tar.gz
   url: https://pypi.python.org/packages/81/75/e018e3420d1240964aea84425899af3b06799ccc54376acd865aa3f9a90b/FsnViz-{{ version }}.tar.gz
   md5: ac9d72772afe24f2ad07236b3ac11261
 
 build:
-  # FsnViz does not support Python 2
-  skip: True  # [py2k]
-  number: 0
+  noarch: python
+  number: 3
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
   entry_points:
     - fsnviz=fsnviz.cli:main
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - click >=6.6
-    - crimson >=0.3.0
-    - jinja2 ==2.9.5
-    - circos >=0.69.2
-
+  host:
+    - python >=3
+    - pip
   run:
-    - python
+    - python >=3
     - click >=6.6
     - crimson >=0.3.0
     - jinja2 ==2.9.5
@@ -34,7 +28,7 @@ requirements:
 
 test:
   commands:
-    - fsnviz --help
+    - export LC_ALL="en_US.UTF-8" fsnviz
 
 about:
   home: https://github.com/bow/fsnviz

@@ -1,42 +1,33 @@
-{% set name = "nucleoatac" %}
 {% set version = "0.3.4" %}
+{% set sha256 = "09e179030ab55969450d98b016856fb1f07628d5f538120ece958cfc00b72348" %}
 
 package:
-  name: {{ name|lower }}
+  name: nucleoatac
   version: {{ version }}
 
-about:
-  home: http://nucleoatac.readthedocs.io/en/latest/
-  license: MIT
-  summary: 'Python package for calling nucleosomes using ATAC-Seq data. Also includes general scripts for working with paired-end ATAC-Seq data (or potentially other paired-end data).'
-  license_family: MIT
-
 source:
-  fn: NucleoATAC-0.3.4.tar.gz
-  url: https://pypi.python.org/packages/98/23/9af6c490de166a03b84706224652ad9fea707d82a3f9d02221523e72c70f/NucleoATAC-0.3.4.tar.gz
-  md5: 668525f351241d71ce5263dba0464317
+  url: https://pypi.io/packages/source/n/nucleoatac/NucleoATAC-{{version}}.tar.gz
+  sha256: {{sha256}}
 
 build:
-  number: 0
-  skip: True # [not py27]
+  number: 3
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
   build:
-    - python
+    - {{ compiler('c') }}
+  host:
+    - python <3
+    - pip
     - cython >=0.22
-    - numpy >=1.9.1
-    - scipy
-    - matplotlib
-    - pysam >=0.8.1
-    - zlib
   run:
-    - python
-    - cython >=0.22
+    - python <3
     - numpy >=1.9.1
     - scipy
     - matplotlib
     - pysam >=0.8.1
     - zlib
+    - cython >=0.22
 
 test:
   commands:
@@ -44,3 +35,14 @@ test:
     - pyatac --help
   import:
     - pyatac.fragmentsizes
+
+about:
+  home: https://github.com/GreenleafLab/NucleoATAC
+  license: MIT
+  summary: 'Python package for calling nucleosomes using ATAC-Seq data. Also includes general scripts for working with paired-end ATAC-Seq data (or potentially other paired-end data).'
+  license_family: MIT
+  doc_url: http://nucleoatac.readthedocs.io/en/latest/
+
+extra:
+  identifiers:
+    - doi:10.1101/gr.192294.115

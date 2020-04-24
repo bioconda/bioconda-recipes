@@ -1,33 +1,42 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "QDNAseq.mm10" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 6c3356ba2be7fdcbfe0837613a52dc3e1601b953e2b1dec90f384e976cce5f9d
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 2f30c229fec7303fcbf888ab62a89143
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - bioconductor-qdnaseq
+  host:
+    - 'bioconductor-qdnaseq >=1.22.0,<1.23.0'
     - r-base
   run:
-    - bioconductor-qdnaseq
+    - 'bioconductor-qdnaseq >=1.22.0,<1.23.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
   license: GPL
-  summary: 'This package provides QDNAseq bin annotations for the mouse genome build mm10.'
+  summary: 'Bin annotation mm10'
+  description: 'This package provides QDNAseq bin annotations for the mouse genome build mm10.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  parent_recipe:
+    name: bioconductor-qdnaseq.mm10
+    path: recipes/bioconductor-qdnaseq.mm10
+    version: 1.10.0
+

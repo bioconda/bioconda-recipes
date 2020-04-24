@@ -1,34 +1,46 @@
-{% set version = "1.38.0" %}
+{% set version = "1.46.0" %}
 {% set name = "CGHbase" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 9562f906d128261bd2b2239799fa0c0b6654a2452c770b6232f7ad2635dbd63b
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: f9b81419cd3190e65b251c0ea6f27915
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - 'bioconductor-biobase >=2.5.5'
-    - bioconductor-marray
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-marray >=1.64.0,<1.65.0'
     - r-base
   run:
-    - 'bioconductor-biobase >=2.5.5'
-    - bioconductor-marray
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-marray >=1.64.0,<1.65.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL
-  summary: 'Contains functions and classes that are needed by arrayCGH packages.'
+  summary: 'CGHbase: Base functions and classes for arrayCGH data analysis.'
+  description: 'Contains functions and classes that are needed by arrayCGH packages.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:cghbase
+    - doi:10.1016/j.ejmg.2005.10.046
+  parent_recipe:
+    name: bioconductor-cghbase
+    path: recipes/bioconductor-cghbase
+    version: 1.40.0
+

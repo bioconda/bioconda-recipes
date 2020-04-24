@@ -1,32 +1,35 @@
-{% set name = "pypeflow" %}
-{% set version = "0.1.0" %}
+{% set version = "2.2.0" %}
+{% set sha256 = "295dcd0769a5fec57a0cbf6d15e49e2d1e540f48ef2f7f6cd4e110c7742b3ffe" %}
 
 package:
-  name: {{ name }}
-  version: {{ version }}
-
-about:
-  home: 'https://github.com/PacificBiosciences/pypeFLOW'
-  license: "BSD"
-  summary: "Light weight and reusable make / flow data process library written in Python"
+  name: pypeflow
+  version: '{{ version }}'
 
 source:
-  fn: v{{ version }}.tar.gz
-  url: https://github.com/PacificBiosciences/pypeFLOW/archive/v{{ version }}.tar.gz
-  md5: 2856278a331ec041fa8cb690412889fa
+  url: https://github.com/PacificBiosciences/pypeFLOW/archive/{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
 
 build:
   number: 0
-  skip: True # [py3k]
+  noarch: true
+  script: $PYTHON -m pip install --no-deps --ignore-installed --no-cache-dir -vvv .
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - rdfextras
+  host:
+    - python <3
   run:
-    - python
+    - python <3
+    - networkx >=1.7,<=1.11
+    - future >=0.16.0
 
 test:
   imports:
     - pypeflow
+    - pwatcher
+    - pwatcher.mains
+
+about:
+  home: https://github.com/PacificBiosciences/pypeFLOW
+  license: BSD-3-Clause-Clear
+  license_family: BSD
+  summary: Light weight and reusable make / flow data process library written in Python

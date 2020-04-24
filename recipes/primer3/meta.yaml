@@ -1,5 +1,5 @@
 {% set name = "primer3" %}
-{% set version = "2.3.7" %}
+{% set version = "2.5.0" %}
 
 package:
   name: {{ name|lower }}
@@ -9,28 +9,29 @@ build:
   number: 0
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: http://downloads.sourceforge.net/project/primer3/primer3/2.3.7/primer3-2.3.7.tar.gz
-  md5: c6b89067bf465e62b6b1fd830b5b4418
-  # makefile.patch is taken from the biobuilds channel
-  patches:
-    - makefile.patch
+  url: https://github.com/primer3-org/primer3/archive/v{{ version }}.tar.gz
+  sha256: 7581e2fa3228ef0ee1ffa427b2aa0a18fc635d561208327471daf59d1b804da0
 
 requirements:
   build:
-    - perl-threaded
-    - gcc   # [not osx]
-    - llvm  # [osx]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - perl
   run:
-    - perl-threaded
-    - libgcc    # [not osx]
+    - perl
 
 test:
   commands:
     - primer3_core --help 2>&1 | grep 'This is primer3'
 
 about:
-  home: http://primer3.sourceforge.net/
+  home: https://github.com/primer3-org/primer3
   license: GPLv2
-  license_file: COPYING.txt
+  license_file: LICENSE
   summary: 'Design PCR primers from DNA sequence. From mispriming libraries to sequence quality data to the generation of internal oligos, primer3 does it.'
+
+extra:
+  identifiers:
+    - biotools:primer3
+    - doi:10.1093/nar/gks596

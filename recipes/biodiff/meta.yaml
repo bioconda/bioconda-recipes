@@ -1,0 +1,41 @@
+{% set version = "0.2.2" %}
+
+package:
+  name: biodiff
+  version: {{ version }}
+
+source:
+  url: https://gitlab.com/LPCDRP/biodiff/repository/{{ version }}/archive.tar.gz
+  sha256: 30568afcacdc40581f8b1689f35aee45103aab0ec33dac07b38ab155b1833a5b
+  patches:
+    - osx.patch
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - autoconf
+    - automake
+    - pandoc
+    - {{ compiler('c') }}
+  run:
+    - perl
+
+test:
+  source_files:
+    - test/lambda-phage/*
+  commands:
+    - biodiff test/lambda-phage/reference.fasta test/lambda-phage/snps-indels.fasta
+
+about:
+  home: https://gitlab.com/LPCDRP/biodiff
+  license: GPLv3+
+  license_file: LICENSE
+  summary: 'exact comparison of biological sequences'
+  description: >
+    biodiff is a variant caller that determines the exact differences between two biological sequences.
+    It can operate on DNA and protein sequences, as long as they are in fasta format.
+    The sequences to be compared must have the same fasta header (up to the first whitespace).
+    If the reference and query each have only one sequence, however, the header need not match and the comparison will be done, but a warning will be emitted.
+    Output is in the Variant Call Format.

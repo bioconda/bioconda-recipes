@@ -1,35 +1,37 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "RefNet" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 6d8c4b113b8e4d48b76e64e980752a5b07891d1a9ec03d2257f784ea259058eb
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 793b4af973cc5999053335c9fcf53eb2
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit, BiocStyle, org.Hs.eg.db
 requirements:
-  build:
-    - bioconductor-annotationhub
-    - bioconductor-biocgenerics
-    - bioconductor-iranges
-    - bioconductor-psicquic
+  host:
+    - 'bioconductor-annotationhub >=2.18.0,<2.19.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-psicquic >=1.24.0,<1.25.0'
     - r-base
     - r-rcurl
     - r-shiny
   run:
-    - bioconductor-annotationhub
-    - bioconductor-biocgenerics
-    - bioconductor-iranges
-    - bioconductor-psicquic
+    - 'bioconductor-annotationhub >=2.18.0,<2.19.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-psicquic >=1.24.0,<1.25.0'
     - r-base
     - r-rcurl
     - r-shiny
@@ -37,6 +39,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Molecular interactions with metadata, some archived, some dynamically obtained'
+  summary: 'A queryable collection of molecular interactions, from many sources'
+  description: 'Obtain molecular interactions with metadata, some archived, some dynamically queried.'
+extra:
+  identifiers:
+    - biotools:refnet
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-refnet
+    path: recipes/bioconductor-refnet
+    version: 1.16.0
+

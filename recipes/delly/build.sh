@@ -1,7 +1,5 @@
 #!/bin/sh
 
-
-# build parallel version of delly (using openmp).
-make PARALLEL=1 all
+make all CXX=$CXX CXXFLAGS="-D__STDC_FORMAT_MACROS -I${PREFIX}/include -L${PREFIX}/lib"
 mkdir -p $PREFIX/bin
-cp src/delly src/dpe src/cov $PREFIX/bin
+cp src/delly $PREFIX/bin

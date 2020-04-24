@@ -1,38 +1,45 @@
 {% set name = "ppanini" %}
-{% set version = "0.6.4" %}
+{% set version = "0.7.4" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://pypi.python.org/packages/10/56/61250c8e6ba48f76c1270a337f9985808e41aa13c377fd76b818abc6b488/ppanini-0.6.4.tar.gz
-  md5: 8768da1bd4546fc78bf29c84e26491de
+  url: https://files.pythonhosted.org/packages/bc/05/4d1940cd87171c1b147fbb000151764960941da1957a55517deccd3e6581/ppanini-0.7.4.tar.gz
+  sha256: 7e18bd2456fa5d860d57f894f6b5d7659d7be10ccc37105bf8efa27972b75b31
 
 build:
-  skip: True # [not py27]
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
   entry_points:
     - ppanini = ppanini.ppanini:_main
-    - ppanini_abundance_table = ppanini.utils.preppanini:main
-    - ppanini_eval_roc = ppanini.utils.plot_roc:main
+    - ppanini_gene_caller = ppanini.tools.ppanini_gene_caller:main
     - ppanini_test = ppanini.tests.ppanini_test:main
+    - ppanini_scatterplot = ppanini.tools.ppanini_scatterplot:main
+    - ppanini_barplot = ppanini.tools.ppanini_barplot:main
+    - ppanini_rocplot = ppanini.tools.ppanini_rocplot:main
+    - ppanini_rev_uniref_mapper = ppanini.tools.attach_GO:rev_load_polymap
+    - ppanini_join_tables = ppanini.tools.ppanini_join_tables:main
+    - ppanini_rename_contigs = ppanini.tools.ppanini_rename_contigs:main
+    - ppanini_infer_gene = ppanini.tools.ppanini_infer_gene:main
+    - ppanini_cluster2genes = ppanini.tools.ppanini_cluster2genes:main
+    - ppanini_press = ppanini.tools.ppanini_press:main
+    - ppanini_fasta_select = ppanini.tools.ppanini_fasta_select:main'
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - numpy >=1.9.2
-    - scikit-learn  >=0.14.1
-    - matplotlib >=1.1.1
-    - biopython >=1.66
-
+  host:
+    - python <3
+    - pip
   run:
-    - python
+    - python <3
     - numpy >=1.9.2
-    - scikit-learn  >=0.14.1
-    - matplotlib >=1.1.1
+    - scipy >=0.13.0
+    - scikit-learn >=0.14.1
+    - matplotlib >=2.0.2
     - biopython >=1.66
+    - pandas >=0.18.1
 
 test:
   # Python imports
@@ -40,11 +47,10 @@ test:
     - ppanini
     - ppanini.tests
     - ppanini.tests.data
-    - ppanini.utils
-
+    - ppanini.utilities
   commands:
     - ppanini --help
-    - ppanini_abundance_table --help
+    - ppanini_gene_caller --help
 
 about:
   home: http://huttenhower.sph.harvard.edu/ppanini

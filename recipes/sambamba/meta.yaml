@@ -1,29 +1,38 @@
-{% set version='0.6.6' %}
+{% set version='0.7.1' %}
+
 package:
   name: sambamba
   version: {{ version }}
 
 source:
-  fn: sambamba_v{{ version }}.tar.bz2
-  url: https://github.com/lomereiter/sambamba/releases/download/v{{ version }}/sambamba_v{{ version }}_linux.tar.bz2 # [linux]
-  md5: 6fc3b70ac32441f3a9c6aa87743c8e3c # [linux]
-  url: https://github.com/lomereiter/sambamba/releases/download/v{{ version }}/sambamba_v{{ version }}_osx.tar.bz2 # [osx]
-  md5: 07d82a2102126565e6796658face7c71 # [osx]
+  url: https://github.com/biod/sambamba/archive/v{{ version }}.tar.gz
+  sha256: f03a415a3bc572e9ad3807936fde6eea1720e85611a8890c8bb91218c598bc38
 
 build:
-  number: 0
+  number: 2
 
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
+    - ldc >=1.17.0
+    - bzip2
+    - htslib
+    - zlib
+    - xz
+    - git  # needed for BioD
   run:
-    - samtools # required for mpileup
-    - bcftools # required for mpileup
+    - {{ pin_compatible('ldc', max_pin='x.x') }}
+    - bzip2
+    - zlib
+    - xz
 
 test:
   commands:
-    - sambamba view
+    - sambamba view --help
 
 about:
-  home: https://github.com/lomereiter/sambamba
+  home: https://github.com/biod/sambamba
   license: GPLv2
+  license_file: LICENSE
   summary: Tools for working with SAM/BAM data

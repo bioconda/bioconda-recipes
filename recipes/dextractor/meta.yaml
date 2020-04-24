@@ -1,33 +1,35 @@
 package:
   name: dextractor
-  version: "1.0p1"
+  version: "1.0p2"
 
 build:
-  number: 0
+  number: 1
+
 source:
-  fn: dextractor_V1.0p1.tar.gz
-  md5: f9a79c200783017a1b4c99deeaa5ba2c
-  url: https://github.com/thegenemyers/DEXTRACTOR/archive/e0e2374a50e680b788aadc494bb1d25e4c94f1a9.tar.gz
+  sha256: d5bfe730615d76b29d373b6505421db83f7f1075ef6be331c3ac030e40dcf343
+  url: https://github.com/thegenemyers/DEXTRACTOR/archive/2f51ccba9c56f5c11966d39cbec0711ed467e7a9.tar.gz
   patches:
     - dextractor.patch
 
 requirements:
   build:
-    - gcc   # [not osx]
-    - llvm  # [osx]
-    - hdf5 {{ CONDA_HDF5 }}*
+    - {{ compiler('c') }}
+  host:
+    - hdf5
+    - zlib
   run:
-    - libgcc   # [not osx]
-    - hdf5 {{ CONDA_HDF5 }}*
+    - hdf5
+    - zlib
 test:
-    commands:
-       - dextract 2>&1 | grep Usage > /dev/null
-       - dexta 2>&1 | grep Usage > /dev/null
-       - undexta 2>&1 | grep Usage > /dev/null
-       - dexqv 2>&1 | grep Usage > /dev/null
-       - undexqv 2>&1 | grep Usage > /dev/null
+  commands:
+    - dextract 2>&1 | grep Usage
+    - dexta 2>&1 | grep Usage
+    - undexta 2>&1 | grep Usage
+    - dexqv 2>&1 | grep Usage
+    - undexqv 2>&1 | grep Usage
+
 about:
   home: 'https://github.com/thegenemyers/DEXTRACTOR'
   license: Custom
-  license_file: README
+  license_file: LICENSE
   summary: "Bax File Decoder and Data Compressor"

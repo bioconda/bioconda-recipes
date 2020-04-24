@@ -15,5 +15,7 @@ make install
 
 popd
 
+export C_INCLUDE_PATH="squid-1.9g"
+export LIBRARY_PATH="squid-1.9g"
 make
-cp compalignp $PREFIX/bin
+mv compalignp $PREFIX/bin/

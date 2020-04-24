@@ -1,0 +1,45 @@
+{% set version = "1.2.1" %}
+{% set sha256 = "a6168b53d387bf06c696556d70da8760c5a3231dab546d506990c3d662c36397" %}
+
+
+
+package:
+  name: pneumocat
+  version: '{{version}}'
+
+source:
+  url: https://github.com/phe-bioinformatics/pneumocat/archive/v{{version}}.tar.gz
+  sha256: '{{sha256}}'
+build:
+  noarch: generic
+  number: 0
+
+requirements:
+  host:
+  run:
+    - bowtie2
+    - samtools >1.3
+    - pyyaml
+    - python <3
+    - numpy
+    - lxml
+    - pysam
+    - biopython
+
+test:
+  commands:
+    - PneumoCaT.py --help
+
+about:
+  home: https://github.com/phe-bioinformatics/pneumocat
+  license: GPL-3.0
+  license_family: GPL
+  summary: PneumoCaT (Pneumococcal Capsular Typing) uses a two-step step approach
+    to assign capsular type to S.pneumoniae genomic data (Illumina)
+
+description: |-
+  In the first step, reads from each readset are mapped to capsular locus sequences for all known capsular types (92 for S. pneumoniae plus 2 additional subtypes/molecular types).
+  This step is considered successful if the readset matches > 90% to 1 or more capsular locus sequences.
+  If it matches to a single capsular locus then PneumoCaT terminates here and reports this as the assigned capsular type.
+  If more than 1 loci are matched then the tool moves to the second step; a variant based approach that utilises the capsular type variant (CTV) database to distinguish serotypes within a serogroup/genogroup.
+  For more information you can refer to the publication.

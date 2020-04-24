@@ -1,39 +1,38 @@
----
+{% set version = "1.5.2" %}
+
 package:
   name: abyss
-  version: "1.5.2"
+  version: {{ version }}
 
 build:
-  skip: True # [osx]
-  number: 3
-  string: boost1.61_{{PKG_BUILDNUM}}
+  number: 6
 
 source:
-  fn: abyss-1.5.2.tar.gz
-  url: https://github.com/bcgsc/abyss/releases/download/1.5.2/abyss-1.5.2.tar.gz
+  url: https://github.com/bcgsc/abyss/releases/download/{{ version }}/abyss-{{ version }}.tar.gz
   md5: 10d6d72d1a915e618d41a5cbbcf2364c
+  patches:
+    - osx-std_string_length-no-export.patch  # can be removed for "abyss >2.0.2"
 
 requirements:
   build:
-    - gcc # [not osx]
-    - llvm # [osx]
-    - boost 1.61.0
-    - google-sparsehash
+    - {{ compiler('cxx') }}
+  host:
+    - boost
+    - sparsehash
     - sqlite
     - openmpi
 
   run:
     - bwa
-    - libgcc # [not osx]
     - sqlite
     - make
     - openmpi
 
 test:
   commands:
-    - ABYSS-P --version
-    - ABYSS --version
-    - abyss-pe help
+    - ABYSS-P --version | grep -q "{{ version }}"
+    - ABYSS --version | grep -q "{{ version }}"
+    - abyss-pe help | grep -q "Assemble reads into contigs and scaffolds"
 
 about:
   home: http://www.bcgsc.ca/platform/bioinfo/software/abyss
@@ -45,3 +44,6 @@ extra:
   container:
     # openmpi needs ssh/rsh
     extended-base: true
+  identifiers:
+    - biotools:abyss
+    - doi:10.1101/gr.089532.108

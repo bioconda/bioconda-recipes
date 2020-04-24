@@ -1,38 +1,32 @@
-{% set version="0.5.9" %}
+{% set version="0.6.4" %}
 package:
   name: ipython-cluster-helper
   version: {{ version }}
 
 source:
-  fn: ipython-cluster-helper-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/i/ipython-cluster-helper/ipython-cluster-helper-{{ version }}.tar.gz
-  md5: 234227ee9262c5dcb43134c5ef4de9c2
+  sha256: 322b32c7252498ffb48eae2f81617a501dc8a273d84ceeb8daebf6493ba7d5d0
 
 build:
+  noarch: python
   number: 0
-  skip: True # [not py27]
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
     - netifaces
 
   run:
     - python
-    - ipyparallel >=4.0,<5.0
+    - ipyparallel >=6.0.2
     - zeromq
     - pyzmq
     - netifaces
-    - libgcc
 
 test:
   imports:
-    # Failing on OSX for some reason, even though ZeroMQ present
-    # ImportError: dlopen(/anaconda/conda-bld/ipython-cluster-helper_1502206283587/_t_env/lib/python2.7/site-packages/zmq/backend/cython/constants.so, 2): Library not loaded: @rpath/libzmq.5.dylib
-    # Referenced from: /anaconda/conda-bld/ipython-cluster-helper_1502206283587/_t_env/lib/python2.7/site-packages/zmq/backend/cython/constants.so
-    # Reason: image not found
-    #- cluster_helper.cluster
+    - cluster_helper.cluster
 
 about:
   home: https://github.com/roryk/ipython-cluster-helper

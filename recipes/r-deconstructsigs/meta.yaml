@@ -1,0 +1,62 @@
+{% set version = '1.8.0.1' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-deconstructsigs
+  version: {{ version|replace("-", "_") }}
+
+source:
+  # Last release version is missing fixes for hg38, pull from GitHub
+  # https://github.com/raerose01/deconstructSigs/issues/27
+  url: https://github.com/raerose01/deconstructSigs/archive/ca3c2f9.tar.gz
+  #  - https://cran.r-project.org/src/contrib/deconstructSigs_{{ version }}.tar.gz
+  #  - https://cran.r-project.org/src/contrib/Archive/deconstructSigs/deconstructSigs_{{ version }}.tar.gz
+  sha256: 0e31aed3e4428e0026b33e663deee71d9bba81db56a1306e0a81666aa4a0e39d
+
+build:
+  noarch: generic
+  number: 2
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+  host:
+    - r-base
+    - bioconductor-bsgenome
+    - bioconductor-bsgenome.hsapiens.ucsc.hg19
+    - bioconductor-genomeinfodb
+    - r-reshape2
+  run:
+    - r-base
+    - bioconductor-bsgenome
+    - bioconductor-bsgenome.hsapiens.ucsc.hg19
+    - bioconductor-genomeinfodb
+    - r-reshape2
+
+test:
+  commands:
+
+    - $R -e "library('deconstructSigs')"           # [not win]
+    - "\"%R%\" -e \"library('deconstructSigs')\""  # [win]
+
+about:
+  home: https://github.com/raerose01/deconstructSigs
+  license: GPL (>= 2)
+  summary: Takes sample information in the form of the fraction of mutations in each of 96 trinucleotide
+    contexts and identifies the weighted combination of published signatures that, when
+    summed, most closely reconstructs the mutational profile.
+  license_family: GPL3
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

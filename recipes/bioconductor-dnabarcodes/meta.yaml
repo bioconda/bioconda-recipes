@@ -1,0 +1,51 @@
+{% set version = "1.16.0" %}
+{% set name = "DNABarcodes" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: be0faa8de0a29ff6687223243381c237
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: knitr, BiocStyle, rmarkdown
+requirements:
+  host:
+    - r-base
+    - r-bh
+    - r-matrix
+    - 'r-rcpp >=0.11.2'
+  run:
+    - r-base
+    - r-bh
+    - r-matrix
+    - 'r-rcpp >=0.11.2'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'A tool for creating and analysing DNA barcodes used in Next Generation Sequencing multiplexing experiments'
+  description: 'The package offers a function to create DNA barcode sets capable of correcting insertion, deletion, and substitution errors. Existing barcodes can be analysed regarding their minimal, maximal and average distances between barcodes. Finally, reads that start with a (possibly mutated) barcode can be demultiplexed, i.e., assigned to their original reference barcode.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+extra:
+  identifiers:
+    - biotools:dnabarcodes
+  parent_recipe:
+    name: bioconductor-dnabarcodes
+    path: recipes/bioconductor-dnabarcodes
+    version: 1.10.0
+

@@ -1,48 +1,62 @@
-{% set version = "2.22.0" %}
+{% set version = "2.30.0" %}
 {% set name = "PING" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 1a4c8d39fe34d0e34f4c6f9e42263ef493edae84d559c0aeb783982adea06bd3
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: a7cb8c54597d0602b4a5a84cd93d9cda
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: parallel, ShortRead, rtracklayer
 requirements:
-  build:
-    - bioconductor-biocgenerics
-    - bioconductor-bsgenome
-    - bioconductor-chipseq
-    - bioconductor-genomicranges
-    - bioconductor-gviz
-    - bioconductor-iranges
-    - bioconductor-pics
-    - bioconductor-s4vectors
+  host:
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-bsgenome >=1.54.0,<1.55.0'
+    - 'bioconductor-chipseq >=1.36.0,<1.37.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - 'bioconductor-gviz >=1.30.0,<1.31.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-pics >=2.30.0,<2.31.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
     - r-base
     - r-fda
   run:
-    - bioconductor-biocgenerics
-    - bioconductor-bsgenome
-    - bioconductor-chipseq
-    - bioconductor-genomicranges
-    - bioconductor-gviz
-    - bioconductor-iranges
-    - bioconductor-pics
-    - bioconductor-s4vectors
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-bsgenome >=1.54.0,<1.55.0'
+    - 'bioconductor-chipseq >=1.36.0,<1.37.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - 'bioconductor-gviz >=1.30.0,<1.31.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-pics >=2.30.0,<2.31.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
     - r-base
     - r-fda
+  build:
+    - {{ compiler('c') }}
+    - automake
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Probabilistic inference of ChIP-Seq using an empirical Bayes mixture model approach.'
+  summary: 'Probabilistic inference for Nucleosome Positioning with MNase-based or Sonicated Short-read Data'
+  description: 'Probabilistic inference of ChIP-Seq using an empirical Bayes mixture model approach.'
+extra:
+  identifiers:
+    - biotools:ping
+  parent_recipe:
+    name: bioconductor-ping
+    path: recipes/bioconductor-ping
+    version: 2.24.0
+

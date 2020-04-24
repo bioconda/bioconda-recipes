@@ -1,0 +1,57 @@
+{% set version = "2.26.0" %}
+{% set name = "ADaCGH2" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 1d96652e3c8df48d280d86e8133ef1e2
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: CGHregions, Cairo, limma
+requirements:
+  host:
+    - 'bioconductor-acgh >=1.64.0,<1.65.0'
+    - 'bioconductor-dnacopy >=1.60.0,<1.61.0'
+    - 'bioconductor-glad >=2.50.0,<2.51.0'
+    - 'bioconductor-snapcgh >=1.56.0,<1.57.0'
+    - 'bioconductor-tilingarray >=1.64.0,<1.65.0'
+    - r-base
+    - r-bit
+    - r-cluster
+    - r-ff
+    - r-ffbase
+    - r-waveslim
+  run:
+    - 'bioconductor-acgh >=1.64.0,<1.65.0'
+    - 'bioconductor-dnacopy >=1.60.0,<1.61.0'
+    - 'bioconductor-glad >=2.50.0,<2.51.0'
+    - 'bioconductor-snapcgh >=1.56.0,<1.57.0'
+    - 'bioconductor-tilingarray >=1.64.0,<1.65.0'
+    - r-base
+    - r-bit
+    - r-cluster
+    - r-ff
+    - r-ffbase
+    - r-waveslim
+  build:
+    - {{ compiler('c') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 3)'
+  summary: 'Analysis of big data from aCGH experiments using parallel computing and ff objects'
+  description: 'Analysis and plotting of array CGH data. Allows usage of Circular Binary Segementation, wavelet-based smoothing (both as in Liu et al., and HaarSeg as in Ben-Yaacov and Eldar), HMM, BioHMM, GLAD, CGHseg. Most computations are parallelized (either via forking or with clusters, including MPI and sockets clusters) and use ff for storing data.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

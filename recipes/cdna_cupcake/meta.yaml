@@ -1,0 +1,64 @@
+{% set version = "11.0.0" %}
+
+package:
+  name: cdna_cupcake
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/Magdoll/cDNA_Cupcake/archive/v{{ version }}.tar.gz
+  sha256: 51ffdd545682d1da3f8bb61da8951aacbd27aa9d26762354d2d9289ee633380f
+  patches:
+    - patch
+
+build:
+  number: 0
+  skip: True  # [py < 37]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - numpy
+    - cython
+  run:
+    - python
+    - biopython
+    - bx-python >=0.7.3
+    - bcbiogff
+    - r-base
+    - graphviz
+    - scikit-learn
+    - pysam
+    - {{ pin_compatible('numpy') }}
+
+test:
+  commands:
+    - parse_matchAnnot.py -h
+    - make_file_for_subsampling_from_collapsed.py -h
+    - subsample.py -h
+    - subsample_with_category.py -h
+    - get_seq_stats.py -h
+    - revcomp.py -h
+    - fa2fq.py -h
+    - fq2fa.py -h
+    - get_seqs_from_list.py -h
+    - err_correct_w_genome.py -h
+    - sam_to_bam.py -h 2>&1 | grep "Only accepts"
+    - sam_to_gff3.py -h
+    - simulate.py -h
+    - collapse_isoforms_by_sam.py -h
+    - get_abundance_post_collapse.py -h
+    # Requires pbtools, which isn't listed ANYWHERE as a dependency or is availabe in conda-forge
+    #- filter_by_count.py -h
+    - filter_away_subset.py -h
+    - chain_samples.py -h
+    - fusion_finder.py -h
+
+about:
+  home: https://github.com/Magdoll/cDNA_Cupcake
+  license: BSD-3-Clause-Clear
+  license_family: BSD
+  license_file: LICENSE.md
+  summary: cDNA_Cupcake is a miscellaneous collection of Python and R scripts used for analyzing sequencing data.

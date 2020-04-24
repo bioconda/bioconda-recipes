@@ -1,35 +1,35 @@
-{% set version = "2.12.0" %}
+{% set version = "2.20.0" %}
 {% set name = "casper" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: f5ec65097a0d3fe9c35fc11e4d0b3fe0f8fdf20dcc333da9bd68fa4725ecb887
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 64f042826657031d7767c37f47cf25a9
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
-    - bioconductor-ebarrays
-    - bioconductor-gaga
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicfeatures
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-limma
-    - bioconductor-rsamtools
-    - bioconductor-rtracklayer
-    - 'bioconductor-s4vectors >=0.9.25'
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-ebarrays >=2.50.0,<2.51.0'
+    - 'bioconductor-gaga >=2.32.0,<2.33.0'
+    - 'bioconductor-genomeinfodb >=1.22.0,<1.23.0'
+    - 'bioconductor-genomicfeatures >=1.38.0,<1.39.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
+    - 'bioconductor-rsamtools >=2.2.0,<2.3.0'
+    - 'bioconductor-rtracklayer >=1.46.0,<1.47.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
     - r-base
     - r-coda
     - r-gtools
@@ -38,18 +38,18 @@ requirements:
     - r-survival
     - r-vgam
   run:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
-    - bioconductor-ebarrays
-    - bioconductor-gaga
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicfeatures
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-limma
-    - bioconductor-rsamtools
-    - bioconductor-rtracklayer
-    - 'bioconductor-s4vectors >=0.9.25'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-ebarrays >=2.50.0,<2.51.0'
+    - 'bioconductor-gaga >=2.32.0,<2.33.0'
+    - 'bioconductor-genomeinfodb >=1.22.0,<1.23.0'
+    - 'bioconductor-genomicfeatures >=1.38.0,<1.39.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
+    - 'bioconductor-rsamtools >=2.2.0,<2.3.0'
+    - 'bioconductor-rtracklayer >=1.46.0,<1.47.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
     - r-base
     - r-coda
     - r-gtools
@@ -57,10 +57,24 @@ requirements:
     - r-sqldf
     - r-survival
     - r-vgam
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>=2)'
-  summary: 'Infer alternative splicing from paired-end RNA-seq data. The model is based on counting paths across exons, rather than pairwise exon connections, and estimates the fragment size and start distributions non-parametrically, which improves estimation precision.'
+  summary: 'Characterization of Alternative Splicing based on Paired-End Reads'
+  description: 'Infer alternative splicing from paired-end RNA-seq data. The model is based on counting paths across exons, rather than pairwise exon connections, and estimates the fragment size and start distributions non-parametrically, which improves estimation precision.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:casper
+  parent_recipe:
+    name: bioconductor-casper
+    path: recipes/bioconductor-casper
+    version: 2.14.0
+

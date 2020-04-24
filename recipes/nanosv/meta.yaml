@@ -1,35 +1,41 @@
-{% set name = "nanosv" %}
-{% set version = "0.0.1" %}
-{% set hash = "0bdedc9af34d356f0173bd85ffbcde1aa7b97fc8c644d4a2014e47b1290aa652" %}
+{% set version = "1.2.4" %}
 
 package:
-  name: {{ name|lower }}
+  name: nanosv
   version: {{ version }}
 
 source:
-  url: https://github.com/mroosmalen/nanosv/archive/57d1f824a64c113e11041ae33f56cd21c61b5fae.tar.gz
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  sha256: {{ hash }}
+  url: https://pypi.io/packages/source/n/nanosv/NanoSV-{{ version }}.tar.gz
+  sha256: af1b3671d862008b4631c6338fc7dbe3d6a11d4412c55eba4334f305a46a82f2
 
 build:
-    number: 0
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  entry_points:
+    - NanoSV=nanosv.NanoSV:main
 
 requirements:
-    build:
-        - gcc  # [not osx]
-        - llvm  # [osx]
-        - perl
-        - perl-module-build
-
-    run:
-        - libgcc # [not osx]
-        - perl
+  host:
+    - python >=3
+    - pip
+  run:
+    - python >=3
+    - pysam
+    - pyvcf
 
 test:
   commands:
-    - nanosv.pl -h 
+    - NanoSV --help
 
 about:
   home: https://github.com/mroosmalen/nanosv
-  license: MIT
-  summary: 'SV caller for nanopore data'
+  license: MIT License
+  license_family: MIT
+  summary: Structural variation detection tool for Oxford Nanopore data.
+
+extra:
+  recipe-maintainers:
+    - 'wdecoster'
+  identifiers:
+    - doi:10.1038/s41467-017-01343-4

@@ -1,34 +1,40 @@
 {% set version = "0.7.17" %}
+{% set sha256 = "980b9591b61c60042c4a39b9e31ccaad8d17ff179d44d347997825da3fdf47fd" %}
 
 package:
   name: bwa
   version: {{ version }}
 
-build:
-  number: 0
-
 source:
-  fn: v{{ version }}.tar.gz
   url: https://github.com/lh3/bwa/archive/v{{ version }}.tar.gz
-  sha256: 980b9591b61c60042c4a39b9e31ccaad8d17ff179d44d347997825da3fdf47fd
+  sha256: {{ sha256 }}
+  patches:
+    - Makefile.patch
+
+build:
+  number: 7
 
 requirements:
   build:
-    - gcc   # [not osx]
-    - llvm  # [osx]
-    - zlib {{CONDA_ZLIB}}*
+    - {{ compiler('c') }}
+  host:
+    - zlib
   run:
-    - zlib {{CONDA_ZLIB}}*
-    - libgcc  # [not osx]
+    - zlib
     - perl
 
 test:
   commands:
     - bwa 2>&1 | grep "index sequences in the"
     - which xa2multi.pl
-    - which qualfa2fq.pl 
+    - which qualfa2fq.pl
 
 about:
   home: https://github.com/lh3/bwa
   license: GPL3
+  license_file: COPYING
   summary: The BWA read mapper.
+
+extra:
+  identifiers:
+    - biotools:bwa

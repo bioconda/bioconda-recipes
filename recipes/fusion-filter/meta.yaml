@@ -1,0 +1,67 @@
+{% set name = "fusion-filter" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/FusionFilter/FusionFilter/archive/FusionFilterv{{ version }}.tar.gz
+  md5: c7c3030188ae56499d6222ece5dd682f
+
+build:
+  noarch: generic
+  number: 2
+
+requirements:
+  host:
+  run:
+    - python <3
+    - perl
+    - perl-perlio-gzip
+    - perl-uri
+    - perl-set-intervaltree
+    - perl-db-file
+    - perl-carp
+    - perl-json-xs
+    - samtools
+    - gmap >=2017.10.30
+    - star >=2.5.4a
+    - blast >=2.7.1
+
+test:
+  commands:
+    - blast_and_promiscuity_filter.pl -h 2>&1 | grep Required
+    - prep_genome_lib.pl -h 2>&1 | grep Required
+    - blast_filter.pl -h 2>&1 | grep Required
+    - blast_outfmt6_replace_trans_id_w_gene_symbol.pl -h 2>&1 | grep usage
+    - build_fusion_annot_db_index.pl -h 2>&1 | grep gene_spans
+    - build_prot_info_db.pl -h 2>&1 | grep gtf
+    - gencode_extract_relevant_gtf_exons.pl 2>&1 | grep usage
+    - gtf_file_to_feature_seqs.pl -h 2>&1 | grep usage
+    - gtf_to_gene_spans.pl 2>&1 | grep usage
+    - index_blast_pairs.pl -h 2>&1 | grep usage
+    - index_blast_pairs.remove_gene_pair.pl -h 2>&1 | grep usage
+    - index_blast_pairs.remove_overlapping_genes.pl 2>&1 | grep usage
+    - index_cdna_seqs.pl 2>&1 | grep usage
+    - index_pfam_domain_info.pl -h 2>&1 | grep pfam_domains
+    - just_blast_test.pl -h 2>&1 | grep Required
+    - promiscuity_filter.pl -h 2>&1 | grep Required
+    - remove_long_intron_readthru_transcripts.pl -h 2>&1 | grep usage
+    # The following command(s) need to be invoked from where they are located.
+    # FusionFilter progams run them from that location. These tests invoke them that way.
+    - "$PREFIX/bin/util/paralog_clustering_util/get_top_blast_pairs.pl 2>&1 | grep usage"
+    - "$PREFIX/bin/util/paralog_clustering_util/outfmt6_add_percent_match_length.group_segments.pl -h 2>&1 | grep usage"
+    - "$PREFIX/bin/util/paralog_clustering_util/outfmt6_add_percent_match_length.group_segments.to_Markov_Clustering.pl -h 2>&1 | grep outfmt6_grouped"
+    - "$PREFIX/bin/util/paralog_clustering_util/outfmt6_add_percent_match_length.pl -h 2>&1 | grep usage"
+
+about:
+  home: "https://github.com/FusionFilter/FusionFilter"
+  license: BSD-3-Clause
+  license_file: LICENSE
+  summary: "FusionFilter provides a common fusion-finding, filtering, and annotation framework for the Trinity Cancer Transcriptome Analysis Toolkit (CTAT)."
+  description: "FusionFilter provides a common fusion-finding, filtering, and annotation framework
+    used by the Trinity Cancer Transcriptome Analysis Toolkit (CTAT).
+    This system is leveraged for preparing a target genome and annotation set for fusion transcript identification,
+    fusion feature annotation, and integrates utilities for filtering likely false-positive fusions.
+    - https://github.com/FusionFilter/FusionFilter/wiki"

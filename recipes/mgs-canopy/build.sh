@@ -4,7 +4,7 @@ cd src/
 echo "> Compiling sources"
 for F in $(find . -name "*.cpp") ; do
 	FF=${F%.*}
-	g++ -o $FF.o -fopenmp -c -Wall -Wextra -O3 -march=native -I./ -I${PREFIX}/include -L${PREFIX}/lib $FF.cpp
+	g++ -o $FF.o -fopenmp -c -Wall -Wextra -O3 -march=x86-64 -I./ -I${PREFIX}/include -L${PREFIX}/lib $FF.cpp
 done;
 
 echo "> Building target: cc.bin"

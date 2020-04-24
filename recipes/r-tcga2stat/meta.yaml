@@ -1,0 +1,55 @@
+{% set version = '1.2' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-tcga2stat
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/TCGA2STAT_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/TCGA2STAT/TCGA2STAT_{{ version }}.tar.gz
+  sha256: 7b46ba685839a44923d764c9c6cdbdcf87b9754eb5487e246f9db56c01a44595
+
+build:
+  noarch: generic
+  merge_build_host: True  # [win]
+  number: 5
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+  host:
+    - r-base
+    - bioconductor-cntools
+    - r-xml
+  run:
+    - r-base
+    - bioconductor-cntools
+    - r-xml
+
+test:
+  commands:
+    - $R -e "library('TCGA2STAT')"           # [not win]
+    - "\"%R%\" -e \"library('TCGA2STAT')\""  # [win]
+
+about:
+  home: http://www.liuzlab.org/TCGA2STAT/
+  license: GPL-2
+  summary: Automatically downloads and processes TCGA genomics and clinical data into a format
+    convenient for statistical analyses in the R environment.
+  license_family: GPL2
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

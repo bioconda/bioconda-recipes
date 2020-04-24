@@ -1,38 +1,50 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "Rhtslib" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  patches:
-    - rpath.patch
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 5260b08d54b284aa50ae22bcb4c0ffe132a9cf98824d96063f1564b708b983b7
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 73c5cd67aa63c80b7af123a390a8f0c6
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocStyle, knitr
+# SystemRequirements: libbz2 & liblzma & libcurl (with header files), GNU make
 requirements:
-  build:
-    - bioconductor-zlibbioc
+  host:
+    - 'bioconductor-zlibbioc >=1.32.0,<1.33.0'
     - r-base
-    - autoconf
-    - gcc # [linux]
-    - llvm # [osx]
+    - bzip2
+    - xz
+    - libcurl
   run:
-    - bioconductor-zlibbioc
+    - 'bioconductor-zlibbioc >=1.32.0,<1.33.0'
     - r-base
-    - libgcc # [linux]
+    - bzip2
+    - xz
+    - libcurl
+  build:
+    - {{ compiler('c') }}
+    - automake
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'LGPL (>= 2)'
-  summary: 'This package provides version 1.1 of the ''HTSlib'' C library for high-throughput sequence analysis. The package is primarily useful to developers of other R packages who wish to make use of HTSlib. Motivation and instructions for use of this package are in the vignette, vignette(package="Rhtslib", "Rhtslib").'
+  summary: 'HTSlib high-throughput sequencing library as an R package'
+  description: 'This package provides version 1.7 of the ''HTSlib'' C library for high-throughput sequence analysis. The package is primarily useful to developers of other R packages who wish to make use of HTSlib. Motivation and instructions for use of this package are in the vignette, vignette(package="Rhtslib", "Rhtslib").'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+extra:
+  identifiers:
+    - biotools:rhtslib
+    - doi:10.1038/nmeth.3252

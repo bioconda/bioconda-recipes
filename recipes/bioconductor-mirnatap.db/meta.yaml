@@ -1,0 +1,48 @@
+{% set version = "0.99.10" %}
+{% set name = "miRNAtap.db" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 48010280b68d6f1ddbff3b374132ce0a
+build:
+  number: 6
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+requirements:
+  host:
+    - 'bioconductor-annotationdbi >=1.48.0,<1.49.0'
+    - 'bioconductor-mirnatap >=1.20.0,<1.21.0'
+    - r-base
+    - r-dbi
+    - r-rsqlite
+  run:
+    - 'bioconductor-annotationdbi >=1.48.0,<1.49.0'
+    - 'bioconductor-mirnatap >=1.20.0,<1.21.0'
+    - r-base
+    - r-dbi
+    - r-rsqlite
+    - curl
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'Data for miRNAtap'
+  description: 'This package holds the database for miRNAtap.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+extra:
+  parent_recipe:
+    name: bioconductor-mirnatap.db
+    path: recipes/bioconductor-mirnatap.db
+    version: 0.99.10
+

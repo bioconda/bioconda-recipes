@@ -1,0 +1,35 @@
+{% set version = "1.0" %}
+
+package:
+  name: bibliospec
+  version: {{ version }}
+
+source:
+  # Needs Git for recursive bamtools retrieval:
+  git_url: https://github.com/ProteoWizard/pwiz.git
+  git_rev: 3901730503509f61058e11a7ca530138beb0cdfb
+
+build:
+  number: 1
+  script: bash -c "./quickbuild.sh -j{{ CPU_COUNT }} address-model=64 runtime-link=shared pwiz_tools/BiblioSpec && cp build-linux-x86_64/gcc-release-x86_64/* $PREFIX/bin"
+  skip: True # [osx]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  run:
+
+
+about:
+  home: https://skyline.ms/project/home/software/BiblioSpec/begin.view?
+  license: Apache 2.0
+  summary: The BiblioSpec Spetral Library tool suite
+
+test:
+  commands:
+    - BlibSearch -h
+
+extra:
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

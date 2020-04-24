@@ -1,31 +1,43 @@
-# this recipe was derived from the montilab channel.
-about:
-  home: 'http://www.bioinformatics.babraham.ac.uk/projects/fastqc/'
-  license: GPL
-  summary: 'A quality control tool for high throughput sequence data.'
-
-build:
-  detect_binary_files_with_prefix: true
-  number: 3
-  skip: False
-
-requirements:
-  run:
-    - openjdk
-    - perl
+{% set name = "fastqc" %}
+{% set version = "0.11.9" %}
+{% set sha256hash = "15510a176ef798e40325b717cac556509fb218268cfdb9a35ea6776498321369" %}
 
 package:
-  name: fastqc
-  version: 0.11.5
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: fastqc_v0.11.5.zip
-  url: http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5.zip
-  sha256: dd7a5ad80ceed2588cf6d6ffe35e0f161c0d9977ed08355f5e4d9473282cbd66
+  url: http://www.bioinformatics.babraham.ac.uk/projects/{{ name }}/{{ name }}_v{{ version }}.zip
+  sha256: {{ sha256hash }}
   patches:
     - java_xms.patch
 
+build:
+  noarch: generic
+  detect_binary_files_with_prefix: true
+  number: 0 
+
+requirements:
+  run:
+    # Enforce a version requirement on openjdk to ensure
+    # it comes from the conda-forge channel and not default.
+    # Many yaks were shaved to bring us this information.
+    # Version number reference: https://github.com/conda/conda/issues/6948#issuecomment-369360906
+    - openjdk >=8.0.144
+    - perl
+    - fontconfig
+    - font-ttf-dejavu-sans-mono
+
 test:
   commands:
-    - fastqc -h >/dev/null
+    - fastqc -h 
     - fastqc --version
+
+about:
+  home: 'http://www.bioinformatics.babraham.ac.uk/projects/fastqc/'
+  license: GPL >=3
+  summary: 'A quality control tool for high throughput sequence data.'
+
+extra:
+  identifiers:
+    - biotools:fastqc

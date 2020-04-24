@@ -1,60 +1,57 @@
+{% set name = "segway" %}
+{% set version = "3.0" %}
+{% set sha256 = "d5767846dc03cc90f1a36619feb790f4ff0deb649b120d3a07c173bd18576aa0" %}
+
 package:
-  name: segway
-  version: "2.0.1"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: segway-2.0.1.tar.gz
-  url: https://pypi.python.org/packages/d6/d4/dc515cd0278ad3bdc3afe01587ee32d87823ce7837c6b96bed1c0106adaa/segway-2.0.1.tar.gz
-  md5: 31621f148ab578a1518e0cb445b70562
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  preserve_egg_dir: True
-  skip: True # [not py27]
-  entry_points:
-    - segway = segway.run:main
-    - segway-task = segway.task:main
-    - segway-layer = segway.layer:main
-    - segway-winner = segway.winner:main
+  noarch: python
+  number: 0
 
 requirements:
-  build:
+  host:
     - python
-    - setuptools
+    - six
+    - hgtools
     - genomedata
     - gmtk
-    - textinput
-    - optbuild
-    - optplus
-    - pytables >=3.0
-    - numpy
-    - forked-path
-    - hdf5
-    - hgtools
-    - colorbrewer
-    - drmaa >=0.4a3
-
   run:
     - python
+    - six
     - genomedata
-    - gmtk
+    - gmtk >=1.4.4=hd5b5912_5
+    - autolog
     - textinput
     - optbuild
     - optplus
-    - pytables >=3.0
-    - numpy
-    - forked-path
-    - hdf5
+    - path.py
     - colorbrewer
     - drmaa >=0.4a3
+    - ucsc-bedtobigbed
 
 test:
   imports:
-    - segway
+   - segway
 
   commands:
-    - segway --help
+  # Smoke test
+  - segway --help
 
 about:
   home: http://segway.hoffmanlab.org/
   license: GPL2
+  license_file: LICENSE
   summary: 'a tool for easy pattern discovery and identification in functional genomics data.'
+
+extra:
+  recipe-maintainers:
+    - ericr86
+  identifiers:
+    - doi:10.1093/bioinformatics/btx603
+    - biotools:segway

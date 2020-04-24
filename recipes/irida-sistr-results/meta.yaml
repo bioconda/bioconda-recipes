@@ -1,0 +1,50 @@
+{% set name = "irida-sistr-results" %}
+{% set version = "0.6.0" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "bcc2178518aee256ce05572ab184bb00de87290e8dfe31f2083e8f75cbe42ea1" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 1
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+
+requirements:
+  build:
+    - python >=3
+    - pip
+  run:
+    - python >=3
+    - rauth >=0.7.3
+    - urllib3 >=1.21.1
+    - xlsxwriter >=0.9.8
+    - appdirs >=1.4.3
+    - pandas >=0.23.0
+
+test:
+  imports:
+    - irida_sistr_results
+  commands:
+    - irida-sistr-results --help
+    - irida-sistr-results --version
+
+about:
+  home: https://github.com/phac-nml/irida-sistr-results
+  license: Apache Software License
+  license_family: APACHE
+  license_file: 'LICENSE'
+  summary: Exports SISTR results available through IRIDA into a single report.
+  description: |-
+    The IRIDA SISTR Results application enables the export of SISTR
+    results that were run through IRIDA (via the sistr-cmd application)
+    to a spreadsheet
+  author: Aaron Petkau
+  doc_url: 'https://github.com/phac-nml/irida-sistr-results'
+  dev_url: 'https://github.com/phac-nml/irida-sistr-results'

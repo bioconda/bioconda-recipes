@@ -1,48 +1,52 @@
-# build with: conda build --python 2.7 .
+{% set version = "1.1.15" %}
 
 package:
   name: secapr
-  version: '1.0.2'
+  version: {{ version }}
 
-about:
-  home: 'https://github.com/AntonelliLab/seqcap_processor'
-  license: MIT
-  summary: 'Process sequence-capture FASTQ files into alignments for phylogenetic analyses. Integrates allele phasing, producing haplotype alignments.'
 source:
-  url: https://github.com/AntonelliLab/seqcap_processor/archive/v1.0.2.tar.gz
-  sha256: ada58295f1d02ca2da0b57a49d74770afcb3ac3137c25c32ecf19bb44937dbfa
+  url: https://github.com/AntonelliLab/seqcap_processor/archive/v{{ version }}.tar.gz
+  sha256: "d7897719f1b4256ab7d46961340ef584dfe254714096dd9a21099df952634f21"
 
 build:
-  skip: True  # [not py27]
-  number: 0
-  script: $PYTHON setup.py install
+  noarch: python
+  number: 2
+  script: python -m pip install --no-deps --ignore-installed .
+  entry_points:
+    - secapr = secapr.__main__:main
 
 requirements:
-  build:
-    - python
-    - biopython
-    - pandas
+  host:
+    - python <3
+    - pip
   run:
-    - python
+    - python <3
     - biopython
     - emboss
-    - bcftools
-    - samtools
+    - bcftools ==1.8
+    - samtools 0.1.19
     - picard
-    - seqtk
-    - bwa
+    - seqtk >=1.0.82,<=1.2
+    - bwa >=0.7
     - lastz
-    - mafft
+    - mafft >=7.2
     - muscle
-    - cogent
-    - trimmomatic
-    - trinity
+    - trimmomatic ==0.33
     - abyss
+    - trinity <=2.3.2
     - fastqc
     - pandas
+    - numpy
+    - cogent
 
 test:
   imports:
     - secapr
   commands:
     - secapr --version
+
+about:
+  home: 'https://github.com/AntonelliLab/seqcap_processor'
+  license: MIT
+  license_file: LICENSE
+  summary: 'Process sequence-capture FASTQ files into alignments for phylogenetic analyses. Integrates allele phasing, producing haplotype alignments.'

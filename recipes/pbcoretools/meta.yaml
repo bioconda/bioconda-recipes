@@ -1,0 +1,49 @@
+{% set name = "pbcoretools" %}
+{% set version = "0.2.4" %}
+{% set sha256 = "b8f51e615b249e2b608367ee39817cec7a90f42e01c80088a4bbecd6b378b6bd" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PacificBiosciences/{{ name }}/releases/download/{{ version }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  skip: True # [not py27]
+  number: 4
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - setuptools
+    - cython
+    - numpy >=1.15
+    - pysam >=0.13
+    - pbcore >=1.6.5
+    - pbcommand >=1.1.1
+  run:
+    - python
+    - numpy >=1.15
+    - pysam >=0.13
+    - pbcore >=1.6.5
+    - pbcommand >=1.1.1
+
+test:
+  commands:
+    - bamSieve -h
+    - dataset -h
+    - pbvalidate -h
+
+about:
+  home: https://github.com/PacificBiosciences/pbbioconda
+  license: BSD-3-Clause-Clear
+  summary: CLI tools and add-ons for PacBio's core APIs
+
+extra:
+  recipe-maintainers:
+    - pb-dseifert
+    - mhsieh

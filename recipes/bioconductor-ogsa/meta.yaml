@@ -1,36 +1,48 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "OGSA" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: fabec47527ca0a479424a971637e7dd8c727cff24aa3cabd6cb9579f3c80ddc4
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 2fb12f9db88876ec0600d10a8c4ab516
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - bioconductor-biobase
-    - 'bioconductor-limma >=3.18.13'
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
     - r-base
     - 'r-gplots >=2.8.0'
   run:
-    - bioconductor-biobase
-    - 'bioconductor-limma >=3.18.13'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
     - r-base
     - 'r-gplots >=2.8.0'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (== 2)'
-  summary: 'OGSA provides a global estimate of pathway deregulation in cancer subtypes by integrating the estimates of significance for individual pathway members that have been identified by outlier analysis.'
+  summary: 'Outlier Gene Set Analysis'
+  description: 'OGSA provides a global estimate of pathway deregulation in cancer subtypes by integrating the estimates of significance for individual pathway members that have been identified by outlier analysis.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+extra:
+  identifiers:
+    - biotools:ogsa
+    - doi:10.1109/TCBB.2013.153
+  parent_recipe:
+    name: bioconductor-ogsa
+    path: recipes/bioconductor-ogsa
+    version: 1.10.0
+

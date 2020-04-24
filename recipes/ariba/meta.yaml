@@ -1,59 +1,53 @@
-{% set version = "2.10.1" %}
+{% set version = "2.14.4" %}
+{% set sha256 = "6fe01ce94fe041ca2739f72e75518798bcfe3c2d76b75d575d2e9740af7b6573" %}
 
 package:
   name: ariba
-  version: {{ version }}
+  version: '{{ version }}'
 
 source:
-  fn: ariba-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/a/ariba/ariba-{{ version }}.tar.gz
-  md5: 572b11f2fb6d12037141f4102d4a1f84
+  sha256: '{{ sha256 }}'
 
 build:
-  skip: True # [py27]
   number: 0
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
   build:
-    - python
-    - setuptools
-    - beautifulsoup4 >=4.1.0
-    - dendropy >=4.2.0
-    - matplotlib
-    - pyfastaq >=3.12.0
-    - pysam >=0.9.1
-    - pymummer >=0.10.2
-    - gcc
-    - zlib
-
+    - '{{ compiler("c") }}'
+    - '{{ compiler("cxx") }}'
+  host:
+    - python <3.7
+    - pip
   run:
-    - python
+    - python <3.7
     - beautifulsoup4 >=4.1.0
     - dendropy >=4.2.0
-    - matplotlib
+    - matplotlib >=3.1.0
+    - biopython
     - pyfastaq >=3.12.0
-    - pysam >=0.9.1
-    - pymummer >=0.10.2
+    - pysam >=0.15.3 # older versions have wrong openssl pinning
+    - pymummer <=0.10.3
     - bowtie2 >=2.3.1
     - cd-hit >=4.6.5
     - samtools >=1.2
     - bcftools >=1.2
     - mummer >=3.23
     - spades >=3.5.0
-    - libgcc
     - zlib
+    - wget
 
 test:
   imports:
     - ariba
     - ariba.tasks
 
-  requires:
-    - nose >=1.3
-
 about:
   home: https://github.com/sanger-pathogens/ariba
-  license: GNU General Public License v3 (GPLv3)
+  license: GNU General Public License v3 (GPL-3.0)
+  license_family: GPL
+  license_file: LICENSE
   summary: 'ARIBA: Antibiotic Resistance Identification By Assembly'
 
 extra:

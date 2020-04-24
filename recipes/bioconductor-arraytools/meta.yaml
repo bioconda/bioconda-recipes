@@ -1,38 +1,51 @@
-{% set version = "1.38.0" %}
+{% set version = "1.46.0" %}
 {% set name = "ArrayTools" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 6d52f88a07d8eb0b8471a2f32247e071a90a28fa6a34cc8da94574c0381ecd37
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 46c3caa4abab8812fb2c2d5b0b2729e8
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: simpleaffy, R2HTML, affydata, affyPLM, genefilter, annaffy, gcrma, hugene10sttranscriptcluster.db
 requirements:
-  build:
-    - 'bioconductor-affy >=1.23.4'
-    - 'bioconductor-biobase >=2.5.5'
-    - bioconductor-limma
+  host:
+    - 'bioconductor-affy >=1.64.0,<1.65.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
     - r-base
     - r-xtable
   run:
-    - 'bioconductor-affy >=1.23.4'
-    - 'bioconductor-biobase >=2.5.5'
-    - bioconductor-limma
+    - 'bioconductor-affy >=1.64.0,<1.65.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
     - r-base
     - r-xtable
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'LGPL (>= 2.0)'
-  summary: 'This package is designed to provide solutions for quality assessment and to detect differentially expressed genes for the Affymetrix GeneChips, including both 3'' -arrays and gene 1.0-ST arrays. The package generates comprehensive analysis reports in HTML format. Hyperlinks on the report page will lead to a series of QC plots, processed data, and differentially expressed gene lists. Differentially expressed genes are reported in tabular format with annotations hyperlinked to online biological databases.'
+  summary: 'geneChip Analysis Package'
+  description: 'This package is designed to provide solutions for quality assessment and to detect differentially expressed genes for the Affymetrix GeneChips, including both 3'' -arrays and gene 1.0-ST arrays. The package generates comprehensive analysis reports in HTML format. Hyperlinks on the report page will lead to a series of QC plots, processed data, and differentially expressed gene lists. Differentially expressed genes are reported in tabular format with annotations hyperlinked to online biological databases.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+extra:
+  identifiers:
+    - biotools:arraytools
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-arraytools
+    path: recipes/bioconductor-arraytools
+    version: 1.40.0
+

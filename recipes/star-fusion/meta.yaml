@@ -1,36 +1,46 @@
-{% set version = "1.1.0" %}
-{% set sha256 = "45d460b941c55bc17e7aa47238c4ec883bdbaec0cbcd47789b9bcc035dc84a09" %}
+{% set version = "1.8.1" %}
+{% set sha256 = "daef3238904c9aafe197559b09fd5fc37034b2e38ae993c403c5c557b9c5623e" %}
 
 package:
   name: star-fusion
   version: {{ version }}
 
 source:
-  fn: STAR-Fusion_v{{ version }}.FULL.tar.gz
-  url: https://github.com/STAR-Fusion/STAR-Fusion/releases/download/v{{ version }}/STAR-Fusion_v{{ version }}.tar.gz
+  url: https://github.com/STAR-Fusion/STAR-Fusion/releases/download/STAR-Fusion-v{{ version }}/STAR-Fusion-v{{ version }}.FULL.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 2
+  noarch: generic
 
 requirements:
   run:
-      - blast
-      - perl
-      - perl-set-intervaltree
-      - perl-db-file
-      - perl-uri
-      - star
-      - gmap
-      - bowtie
+    - blast
+    - bzip2
+    - htslib
+    - perl
+    - perl-set-intervaltree
+    - perl-carp
+    - perl-carp-assert ==0.21
+    - perl-db-file
+    - perl-io-gzip
+    - perl-json-xs
+    - perl-uri
+    - python ==3.7.4
+    - star ==2.7.2b
+    - gmap ==2019.09.12
+    - bbmap
+    - trinity ==2.8.5
+    - igv-reports ==0.9.4
+    - samtools <1.10
 
 test:
   commands:
-      - STAR-Fusion --help 2>&1 | grep Optional > /dev/null
-      - prep_genome_lib.pl -h 2>&1 | grep "STAR-Fusion" > /dev/null
-      - blast_and_promiscuity_filter.pl -h 2>&1 | grep Optional > /dev/null
+    - STAR-Fusion --help 2>&1 | grep Optional > /dev/null
+    - prep_genome_lib.pl -h 2>&1 | grep "STAR-Fusion" > /dev/null
+    - blast_and_promiscuity_filter.pl -h 2>&1 | grep Optional > /dev/null
 
 about:
   home: https://github.com/STAR-Fusion/STAR-Fusion
   license: BSD-3-Clause
-  summary: A fusion gene caller for STAR. The FusionFilter tools to create needed index data structures are not included.
+  summary: STAR-Fusion fusion variant caller.  All dependencies required to run FusionInspector and FusionAnnotator are included.

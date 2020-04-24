@@ -1,30 +1,48 @@
-{% set version = "1.4.0" %}
+{% set version = "1.12.0" %}
 {% set name = "AMOUNTAIN" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 39a43c3cc9dbe341b9bbda154403b25393ae35c1115c5df0b3baed85fa21f47d
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 48b11312302a0adaebb01d8b0699995f
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocStyle, qgraph, knitr, rmarkdown
+# SystemRequirements: gsl
 requirements:
-  build:
+  host:
     - r-base
+    - gsl
   run:
     - r-base
+    - gsl
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'A pure data-driven gene network, weighted gene co-expression network (WGCN) could be constructed only from expression profile. Different layers in such networks may represent different time points, multiple conditions or various species. AMOUNTAIN aims to search active modules in multi-layer WGCN using a continuous optimization approach.'
+  summary: 'Active modules for multilayer weighted gene co-expression networks: a continuous optimization approach'
+  description: 'A pure data-driven gene network, weighted gene co-expression network (WGCN) could be constructed only from expression profile. Different layers in such networks may represent different time points, multiple conditions or various species. AMOUNTAIN aims to search active modules in multi-layer WGCN using a continuous optimization approach.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:amountain
+    - doi:10.1101/056952
+  parent_recipe:
+    name: bioconductor-amountain
+    path: recipes/bioconductor-amountain
+    version: 1.6.0
+

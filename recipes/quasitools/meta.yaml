@@ -1,36 +1,49 @@
+{% set version = "0.7.0" %}
+
 package:
   name: quasitools
-  version: "0.1.0"
+  version: {{ version }}
 
 source:
-  fn: quasitools-0.1.0.tar.gz
-  url: https://github.com/phac-nml/quasitools/archive/v0.1.0.tar.gz
-  md5: 8d84ebe5c20e4b6a21b6ef902842617d
+  url: https://github.com/phac-nml/quasitools/archive/v{{ version }}.tar.gz
+  sha256: 29ef4c5fd05e18e39ef955736684d955ea78c4110c5e1ede9c555a874a2d3d0b
 
 build:
-  skip: true  # [py3k]
+  noarch: python
+  number: 0
+  entry_points:
+    - quasitools = quasitools.cli:cli
 
 requirements:
-  build:
+  host:
     - python
-    - scipy
-    - pysam
-    - click
-    - biopython
+    - setuptools
 
   run:
     - python
+    - numpy
     - scipy
-    - pysam
+    - samtools >=1.3
+    - pysam >=0.8.1
+    - pyaavf
     - click
     - biopython
+    - bowtie2
 
 test:
   commands:
     # click requires a unicode locale
-    - LANG=C.UTF-8 quasitools --help
+    - quasitools --help
+    - quasitools call --help
+    - quasitools hydra --help
 
 about:
   home: https://github.com/phac-nml/quasitools/
   license: Apache License, Version 2.0
   summary: Quasitools is a collection of tools for analysing Viral Quasispecies
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true

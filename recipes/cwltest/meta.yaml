@@ -1,40 +1,39 @@
+{% set version = "2.0.20200220223835" %}
+
 package:
   name: cwltest
-  version: '1.0.20170214185319'
+  version: {{ version }}
 
 source:
-  fn: cwltest-1.0.20170214185319.tar.gz
-  url: https://pypi.python.org/packages/07/b0/c7b2c65152471274e496d1b99635955ba3d51ff389cfca06ec11127412ee/cwltest-1.0.20170214185319.tar.gz
-  md5: 0f4cd403e1cc08a450437c4ab5c5218e
-
+  url: https://pypi.io/packages/source/c/cwltest/cwltest-{{ version }}.tar.gz
+  sha256: 3de507ea158d107d482c56aec108c09d728521b494c3d116ca68df263c1b3400
 
 build:
   number: 0
-  skip: True # [not py27]
+  noarch: python
+  entry_points:
+    - cwltest=cwltest:main
+    - mock-cwl-runner=cwltest.tests.mock_cwl_runner:main
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv 
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - schema-salad
-    - typing
-    - junit-xml
-    - futures
-
+  host:
+    - pip
+    - python >=3.5
   run:
-    - python
-    - schema-salad
-    - typing
-    - junit-xml
-    - futures
+    - junit-xml >=1.8
+    - python >=3.5
+    - schema-salad >=5.0.20200220195218
 
 test:
   imports:
     - cwltest
+    - cwltest.tests
   commands:
     - cwltest --help
+    - mock-cwl-runner --help
 
 about:
   home: https://github.com/common-workflow-language/cwltest
-  license: Apache License 2.0
-  summary: Framework for testing CWL tools and workflows
+  license: Apache-2.0
+  summary: Common workflow language testing framework

@@ -1,23 +1,25 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "pepXMLTab" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 80eacb29e93e02b9a333b8a9df936e77b61d301d7d64d556c430dc8adb7c4b18
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 1e99d76c2695d8e1f0cf04b3af21fb91
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit, BiocGenerics
 requirements:
-  build:
+  host:
     - r-base
     - 'r-xml >=3.98-1.1'
   run:
@@ -27,6 +29,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Parsing pepXML files based one XML package. The package tries to handle pepXML files generated from different softwares. The output will be a peptide-spectrum-matching tabular file. The package also provide function to filter the PSMs based on FDR.'
+  summary: 'Parsing pepXML files and filter based on peptide FDR.'
+  description: 'Parsing pepXML files based one XML package. The package tries to handle pepXML files generated from different softwares. The output will be a peptide-spectrum-matching tabular file. The package also provide function to filter the PSMs based on FDR.'
+extra:
+  identifiers:
+    - biotools:pepxmltab
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-pepxmltab
+    path: recipes/bioconductor-pepxmltab
+    version: 1.16.0
+

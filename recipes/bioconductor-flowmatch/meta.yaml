@@ -1,0 +1,51 @@
+{% set version = "1.22.0" %}
+{% set name = "flowMatch" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 2d636b43105e06cc9a16bea86168804a
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: healthyFlowData
+requirements:
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-flowcore >=1.52.0,<1.53.0'
+    - r-base
+    - 'r-rcpp >=0.11.0'
+  run:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-flowcore >=1.52.0,<1.53.0'
+    - r-base
+    - 'r-rcpp >=0.11.0'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'Matching and meta-clustering in flow cytometry'
+  description: 'Matching cell populations and building meta-clusters and templates from a collection of FC samples.'
+extra:
+  identifiers:
+    - biotools:flowmatch
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-flowmatch
+    path: recipes/bioconductor-flowmatch
+    version: 1.16.0
+

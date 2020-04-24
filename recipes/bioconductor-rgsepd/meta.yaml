@@ -1,41 +1,43 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "rgsepd" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 720bf53d3229d2761432f140c640c8dbb9357e019c406b20aa96f776186d2a64
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 2eb29fb723c976c03e1e73281d933bb4
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: boot, tools, BiocGenerics, knitr, xtable
 requirements:
-  build:
-    - bioconductor-annotationdbi
-    - bioconductor-biomart
-    - bioconductor-deseq2
-    - bioconductor-go.db
-    - 'bioconductor-goseq >=1.17'
-    - bioconductor-org.hs.eg.db
-    - bioconductor-summarizedexperiment
+  host:
+    - 'bioconductor-annotationdbi >=1.48.0,<1.49.0'
+    - 'bioconductor-biomart >=2.42.0,<2.43.0'
+    - 'bioconductor-deseq2 >=1.26.0,<1.27.0'
+    - 'bioconductor-go.db >=3.10.0,<3.11.0'
+    - 'bioconductor-goseq >=1.38.0,<1.39.0'
+    - 'bioconductor-org.hs.eg.db >=3.10.0,<3.11.0'
+    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
     - r-base
     - r-gplots
     - r-hash
   run:
-    - bioconductor-annotationdbi
-    - bioconductor-biomart
-    - bioconductor-deseq2
-    - bioconductor-go.db
-    - 'bioconductor-goseq >=1.17'
-    - bioconductor-org.hs.eg.db
-    - bioconductor-summarizedexperiment
+    - 'bioconductor-annotationdbi >=1.48.0,<1.49.0'
+    - 'bioconductor-biomart >=2.42.0,<2.43.0'
+    - 'bioconductor-deseq2 >=1.26.0,<1.27.0'
+    - 'bioconductor-go.db >=3.10.0,<3.11.0'
+    - 'bioconductor-goseq >=1.38.0,<1.39.0'
+    - 'bioconductor-org.hs.eg.db >=3.10.0,<3.11.0'
+    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
     - r-base
     - r-gplots
     - r-hash
@@ -43,6 +45,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'R/GSEPD is a bioinformatics package for R to help disambiguate transcriptome samples (a matrix of RNA-Seq counts at RefSeq IDs) by automating differential expression (with DESeq2), then gene set enrichment (with GOSeq), and finally a N-dimensional projection to quantify in which ways each sample is like either treatment group.'
+  summary: 'Gene Set Enrichment / Projection Displays'
+  description: 'R/GSEPD is a bioinformatics package for R to help disambiguate transcriptome samples (a matrix of RNA-Seq counts at transcript IDs) by automating differential expression (with DESeq2), then gene set enrichment (with GOSeq), and finally a N-dimensional projection to quantify in which ways each sample is like either treatment group.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:rgsepd
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-rgsepd
+    path: recipes/bioconductor-rgsepd
+    version: 1.12.0
+

@@ -1,34 +1,46 @@
-{% set version = "1.50.0" %}
+{% set version = "1.58.0" %}
 {% set name = "GeneMeta" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 42a7578c553b8b268c4a4a49385dca2f2f51fa94353ae48e0f1afae4b9f9c8b1
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 71fb0261fd33d97125f787bc5515de73
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RColorBrewer
 requirements:
-  build:
-    - 'bioconductor-biobase >=2.5.5'
-    - bioconductor-genefilter
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-genefilter >=1.68.0,<1.69.0'
     - r-base
   run:
-    - 'bioconductor-biobase >=2.5.5'
-    - bioconductor-genefilter
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-genefilter >=1.68.0,<1.69.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'A collection of meta-analysis tools for analysing high throughput experimental data'
+  summary: 'MetaAnalysis for High Throughput Experiments'
+  description: 'A collection of meta-analysis tools for analysing high throughput experimental data'
+extra:
+  identifiers:
+    - biotools:genemeta
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-genemeta
+    path: recipes/bioconductor-genemeta
+    version: 1.52.0
+

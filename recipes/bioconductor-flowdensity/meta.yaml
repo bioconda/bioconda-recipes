@@ -1,48 +1,61 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "flowDensity" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: f362235594a58651dc75e5f1c212c05a3861447b5b4abf1de5b61e4c6340c1b5
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 46f77650ff8dc0d9321185e8a2687125
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr
+# SystemRequirements: xml2, GNU make, C++11
 requirements:
-  build:
-    - bioconductor-flowcore
-    - 'bioconductor-flowworkspace >=3.21.5'
+  host:
+    - 'bioconductor-flowcore >=1.52.0,<1.53.0'
+    - 'bioconductor-flowviz >=1.50.0,<1.51.0'
+    - 'bioconductor-flowworkspace >=3.34.0,<3.35.0'
     - r-base
     - r-car
-    - r-geomap
     - r-gplots
-    - r-nloptr  # not in DESCRIPTION
     - r-rfoc
     - r-rgeos
     - r-sp
+    - libxml2
   run:
-    - bioconductor-flowcore
-    - 'bioconductor-flowworkspace >=3.21.5'
+    - 'bioconductor-flowcore >=1.52.0,<1.53.0'
+    - 'bioconductor-flowviz >=1.50.0,<1.51.0'
+    - 'bioconductor-flowworkspace >=3.34.0,<3.35.0'
     - r-base
     - r-car
-    - r-geomap
     - r-gplots
-    - r-nloptr  # not in DESCRIPTION
     - r-rfoc
     - r-rgeos
     - r-sp
+    - libxml2
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'This package provides tools for automated sequential gating analogous to the manual gating strategy based on the density of the data.'
+  summary: 'Sequential Flow Cytometry Data Gating'
+  description: 'This package provides tools for automated sequential gating analogous to the manual gating strategy based on the density of the data.'
+extra:
+  identifiers:
+    - biotools:flowdensity
+    - doi:10.1093/bioinformatics/btu677
+  parent_recipe:
+    name: bioconductor-flowdensity
+    path: recipes/bioconductor-flowdensity
+    version: 1.14.0
+

@@ -1,48 +1,51 @@
-{% set name = "unicycler" %}
-{% set version = "0.4.1" %}
+{% set version = "0.4.8" %}
+{% set sha256 = "e948871e4de9db5964c9ca6f8f877c3cbe6a46f62052dfab52ffe0f45bbbd203" %}
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: unicycler
+  version: '{{ version }}'
+
+source:
+  - url: https://github.com/rrwick/Unicycler/archive/v{{ version }}.tar.gz
+    sha256: '{{ sha256 }}'
+    patches:
+      - Makefile.patch  #[linux]
+      - misc.py.patch
 
 build:
   number: 0
-  skip: True
-
-source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://github.com/rrwick/Unicycler/archive/v{{ version }}.tar.gz
-  sha256: 00200ea13c2ce90ba7b55917060ffb2e425f59ba515423fa516ff3d6519af336
-  patches:
-    - Makefile.patch [linux]
-    - misc.py.patch
 
 requirements:
   build:
-  - python
-  - setuptools
-  - gcc >=4.9.4
-
+    - '{{ compiler("c") }}'
+    - '{{ compiler("cxx") }}'
+  host:
+    - python >=3.4,!=3.7
+    - pip
+    - zlib
   run:
-  - python
-  - libgcc
-  - spades >=3.6.2
-  - pilon
-  - openjdk
-  - bowtie2
-  - samtools >=1.0
-  - blast
-  - freebayes
+    - python >=3.4,!=3.7
+    - spades >=3.6.2
+    - pilon
+    - openjdk
+    - bowtie2
+    - samtools >=1.0
+    - blast
+    - freebayes
+    - racon
+    - miniasm
+    - zlib
 
 test:
   commands:
-    - unicycler -h
-    - unicycler_align -h
-    - unicycler_check -h
-    - unicycler_polish -h
+    - COLUMNS=80 unicycler -h
+    - COLUMNS=80 unicycler_align -h
+    - COLUMNS=80 unicycler_check -h
+    - COLUMNS=80 unicycler_polish -h
 
 about:
   home: https://github.com/rrwick/Unicycler
   license: GPL-3.0
+  license_family: GPL
   license_file: LICENSE
-  summary: 'Hybrid assembly pipeline for bacterial genomes'
+  summary: Hybrid assembly pipeline for bacterial genomes

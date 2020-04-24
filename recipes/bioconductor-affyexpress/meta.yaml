@@ -1,34 +1,47 @@
-{% set version = "1.44.0" %}
+{% set version = "1.52.0" %}
 {% set name = "AffyExpress" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: dcc52ea4ca32847ced2c85c9c400b84584d2481faf20d8d2532f319be07c9b5b
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: b5c2acf42fb5dc4a455ad331f66465f6
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: simpleaffy, R2HTML, affyPLM, hgu95av2cdf, hgu95av2, test3cdf, genefilter, estrogen, annaffy, gcrma
 requirements:
-  build:
-    - 'bioconductor-affy >=1.23.4'
-    - bioconductor-limma
+  host:
+    - 'bioconductor-affy >=1.64.0,<1.65.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
     - r-base
   run:
-    - 'bioconductor-affy >=1.23.4'
-    - bioconductor-limma
+    - 'bioconductor-affy >=1.64.0,<1.65.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL
-  summary: 'The purpose of this package is to provide a comprehensive and easy-to-use tool for quality assessment and to identify differentially expressed genes in the Affymetrix gene expression data.'
+  summary: 'Affymetrix Quality Assessment and Analysis Tool'
+  description: 'The purpose of this package is to provide a comprehensive and easy-to-use tool for quality assessment and to identify differentially expressed genes in the Affymetrix gene expression data.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+extra:
+  identifiers:
+    - biotools:affyexpress
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-affyexpress
+    path: recipes/bioconductor-affyexpress
+    version: 1.46.0
+

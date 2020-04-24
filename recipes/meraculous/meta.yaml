@@ -1,40 +1,54 @@
+{% set name = "meraculous" %}
+{% set version = "2.2.6" %}
+
 package:
-    name: meraculous
-    version: "2.2.4"
+  name: "{{ name|lower }}"
+  version: '{{ version | replace("-", ".") }}'
 
 source:
-    fn: Meraculous-v2.2.4.tar.gz    
-    url: https://sourceforge.net/projects/meraculous20/files/Meraculous-v2.2.4.tar.gz
-    md5: 349feb6cb178643a46e4b092c87bad3a
+  url: https://sourceforge.net/projects/meraculous20/files/Meraculous-v{{ version }}.tar.gz
+  sha256: c9cf84ed6a7a15544ccff603c740b1b777cbf5b9ebc891a0a69f2c8a3b24e908
 
 build:
-    skip: True  # [osx]
-    string: pl5.22_{{PKG_BUILDNUM}}
-    number: 1
+  skip: True  # [osx]
+  number: 0
 
 requirements:
-    build:
+  build:
     - cmake >=2.8
-    - gcc # [linux]
+    - {{ compiler('c') }}
+  host:
     - libgd >=2.0
-    - boost-cpp {{CONDA_BOOST}}*
-    - perl ==5.22.2.1
+    - boost-cpp
+    - perl
     - perl-log-log4perl >=1.31
     - gnuplot >=3.7
-    run:
-    - libgcc # [linux]
+  run:
     - libgd >=2.0
-    - boost-cpp {{CONDA_BOOST}}*
-    - perl ==5.22.2.1
+    - boost-cpp
+    - perl
     - perl-log-log4perl >=1.31
     - gnuplot >=3.7
 
 about:
-    home: https://jgi.doe.gov/data-and-tools/meraculous/
-    summary: Meraculous is a whole genome assembler for Next Generation Sequencing data, geared for large genomes. It's hybrid k-mer/read-based approach capitalizes on the high accuracy of Illumina sequence by eschewing an explicit error correction step which we argue to be redundant with the assembly process. Meraculous achieves high performance with large datasets by utilizing lightweight data structures and multi-threaded parallelization, allowing to assemble human-sized genomes on a high-cpu cluster in under a day. The process pipeline implements a highly transparent and portable model of job control and monitoring where different assembly stages can be executed and re-executed separately or in unison on a wide variety of architectures.
-    license: GPLv3
-    license_file: license.txt
+  home: https://jgi.doe.gov/data-and-tools/meraculous/
+  summary: >
+    Meraculous is a whole genome assembler for Next Generation Sequencing data, geared for large genomes.
+    It's hybrid k-mer/read-based approach capitalizes on the high accuracy of Illumina sequence by eschewing an
+    explicit error correction step which we argue to be redundant with the assembly process. Meraculous achieves
+    high performance with large datasets by utilizing lightweight data structures and multi-threaded
+    parallelization, allowing to assemble human-sized genomes on a high-cpu cluster in under a day. The process
+    pipeline implements a highly transparent and portable model of job control and monitoring where different
+    assembly stages can be executed and re-executed separately or in unison on a wide variety of architectures.
+  license: GPLv3
+  license_file: license.txt
 
 test:
-    commands:
+  commands:
     - run_meraculous.sh -h
+
+extra:
+  identifiers:
+    - doi:10.1371/journal.pone.0023501
+    # https://arxiv.org/abs/1703.09852
+    # https://arxiv.org/abs/1608.01031

@@ -1,38 +1,50 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "SimBindProfiles" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 02a93e3f96f80e7376577d7b32e2757340fb15d2a7eb2a710155cf42393a6d4a
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: fe112ecccee8cbd58eeef97995d24480
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-limma
-    - bioconductor-ringo
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
+    - 'bioconductor-ringo >=1.50.0,<1.51.0'
     - r-base
     - r-mclust
   run:
-    - bioconductor-biobase
-    - bioconductor-limma
-    - bioconductor-ringo
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
+    - 'bioconductor-ringo >=1.50.0,<1.51.0'
     - r-base
     - r-mclust
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'SimBindProfiles identifies common and unique binding regions in genome tiling array data. This package does not rely on peak calling, but directly compares binding profiles processed on the same array platform. It implements a simple threshold approach, thus allowing retrieval of commonly and differentially bound regions between datasets as well as events of compensation and increased binding.'
+  summary: 'Similar Binding Profiles'
+  description: 'SimBindProfiles identifies common and unique binding regions in genome tiling array data. This package does not rely on peak calling, but directly compares binding profiles processed on the same array platform. It implements a simple threshold approach, thus allowing retrieval of commonly and differentially bound regions between datasets as well as events of compensation and increased binding.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:simbindprofiles
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-simbindprofiles
+    path: recipes/bioconductor-simbindprofiles
+    version: 1.18.0
+

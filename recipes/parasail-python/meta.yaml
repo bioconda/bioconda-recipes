@@ -1,0 +1,46 @@
+{% set name = "parasail-python" %}
+{% set version = "1.2" %}
+{% set sha256 = "1ecb5f78e10edc84fccee0bf6279c5eb2624890f769a53d998ca56ad3b41aec6" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/jeffdaily/parasail-python/archive/v{{ version }}.tar.gz
+  sha256: "{{ sha256 }}"
+  patches:
+    - darwin-libtool-name.patch
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - m4
+    - autoconf
+    - automake
+    - libtool
+  host:
+    - python
+    - pip
+    - zlib
+    - wheel
+  run:
+    - python
+    - numpy
+    - wheel
+
+test:
+  imports:
+    - parasail
+
+about:
+  home: https://github.com/jeffdaily/parasail-python
+  license: BSD
+  license_family: BSD
+  summary: pairwise sequence alignment library
+

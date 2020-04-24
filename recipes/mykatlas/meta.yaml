@@ -1,0 +1,48 @@
+package:
+  name: mykatlas
+  version: "0.6.1"
+
+source:
+  url: https://pypi.python.org/packages/bf/33/946e43324bc24ba331a1bee06e609832bfbe7a4f07dde1846246fb5a68cf/mykatlas-0.6.1.tar.gz
+  md5: 87d59770ceeb5406a0146c3c51d93ea9
+  patches:
+    - mccortex-skip_make-copy_PREFIX.patch
+    - min_variant_conf.patch
+
+build:
+  # includes precompiled Linux binary `mccortex31`
+  skip: True  # [osx]
+  number: 2
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  entry_points:
+    - atlas = mykatlas.atlas_main:main
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - future
+    - biopython
+    - mongoengine
+    - pyvcf
+    - ga4ghmongo
+    - redis-py
+
+test:
+  imports:
+    - mykatlas
+  commands:
+    - atlas --help
+    - 'mccortex31 2>&1 | head -n2 | grep "^usage: "'
+
+about:
+  home: http://github.com/phelimb/atlas
+  license: MIT
+  summary: 'Assists in discoveries of antibiotic-resistance with mykrobe'
+  license_family: MIT
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic

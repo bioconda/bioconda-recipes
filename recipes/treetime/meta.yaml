@@ -1,39 +1,39 @@
+{% set version = "0.7.4" %}
+{% set sha256 = "fdc94543ab9ee56e6af231a333ae66a745fbb93a66230bade6389a3ccc0dbc11" %}
+
 package:
   name: treetime
-  version: "0.1"
-
-about:
-  home: 'https://github.com/neherlab/treetime'
-  summary: 'Maximum-Likelihood dating and ancestral inference for phylogenetic trees'
-  license: MIT
+  version: '{{ version }}'
 
 source:
-  # pin to a commit until tagged releases are available
-  fn: treetime-de93089.zip
-  url: https://github.com/neherlab/treetime/archive/de93089.zip
-  md5: 4e5daa8f28bcf579ddb39da3d055ed83
+  url: https://github.com/neherlab/treetime/archive/v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
 
 build:
+  noarch: python
   number: 0
+  script: python -m pip install --no-deps --ignore-installed .
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - numpy >=1.10.4
+    - scipy >=0.16.1
+    - biopython >=1.66
+    - pandas >=0.17.1
+    - matplotlib-base
 
 test:
   commands:
-    - ancestral_reconstruction.py -h
-    - timetree_inference.py -h
+    - treetime -h
+  imports:
+    - treetime
 
-requirements:
-  build:
-    - gcc   # [not osx]
-    - llvm  # [osx]
-    - numpy >=1.10.4
-    - scipy >=0.16.1
-    - biopython >=1.66
-    - pandas >=0.17.1
-
-  run:
-    - libgcc
-    - python <3
-    - numpy >=1.10.4
-    - scipy >=0.16.1
-    - biopython >=1.66
-    - pandas >=0.17.1
+about:
+  home: https://github.com/neherlab/treetime
+  license: MIT
+  license_family: MIT
+  summary: Maximum-Likelihood dating and ancestral inference for phylogenetic trees

@@ -1,46 +1,34 @@
+From 1fc01f24ac5eb73feb665d2a3a3460f86cdba50f Mon Sep 17 00:00:00 2001
 From: blankclemens <blankclemens@gmail.com>
 Date: Fri, 28 Oct 2016 14:56:39 +0200
-Subject: [PATCH] Add setup.py and run.py for packaging. Removed the need for a config file.
+Subject: Add setup.py and run.py for packaging. Removed the need for a config
+ file.
 
 ---
- src/kobas/scripts/run.py | 7 ++++++++++
- src/setup.py             | 20 +++++++++++++++++++
- src/kobas/config.py      | 4 ++--
- src/kobas/config.py      | 9 +++++++++
- 3 files changed, 38 insertions(+), 2 deletions(-)
+ setup.py                 | 20 ++++++++++++++++++++
+ src/kobas/config.py      | 13 +++++++++++--
+ src/kobas/scripts/run.py | 10 ++++++++++
+ 3 files changed, 41 insertions(+), 2 deletions(-)
+ create mode 100644 setup.py
  create mode 100755 src/kobas/scripts/run.py
- create mode 100644 src/setup.py
 
-diff --git src/kobas/scripts/run.py src/kobas/scripts/run.py
-new file mode 100755
-index 0000000..99ea45a
---- /dev/null
-+++ src/kobas/scripts/run.py
-@@ -0,0 +1,7 @@
-+#!/usr/bin/env python
-+
-+def identify():
-+    from kobas.scripts import identify
-+
-+def annotate():
-+    from kobas.scripts import annotate
-diff --git ./setup.py ./setup.py
+diff --git a/setup.py b/setup.py
 new file mode 100644
-index 0000000..39c8daa
+index 0000000..c950ff2
 --- /dev/null
-+++ ./setup.py
++++ b/setup.py
 @@ -0,0 +1,20 @@
 +from setuptools import setup, find_packages
 +setup(
 +    name="kobas",
-+    version='2.2.1',
++    version='3.0.3',
 +    description='KEGG Orthology Based Annotation System',
 +    long_description=open('README').read(),
 +    # Author details
 +    author='Chen Xie, Xizeng Mao, Xianing Zheng, Chen Ai, Lei Kong, Liping Wei',
 +    author_email='kobas@mail.c bi.pku.edu.cn',
 +    packages=find_packages("src"),
-+    package_dir = {'':'src'}, 
++    package_dir = {'':'src'},
 +    # basic stuff here
 +    entry_points={
 +        'console_scripts': [
@@ -50,29 +38,18 @@ index 0000000..39c8daa
 +        ],
 +    }
 +)
-diff --git src/kobas/config.py src/kobas/config.py
-index 6449d1a..a0768f8 100755
---- src/kobas/config.py
-+++ src/kobas/config.py
-@@ -23,8 +23,8 @@ def getrc():
+diff --git a/src/kobas/config.py b/src/kobas/config.py
+index 6449d1a..14475f7 100755
+--- a/src/kobas/config.py
++++ b/src/kobas/config.py
+@@ -23,8 +23,17 @@ def getrc():
      elif rcbg_filep:
          return rc.read(rcbg_file)
      else:
 -        print 'Error: configuration file does not exist.'
 -        sys.exit(1)
-+        print 'Error: configuration file does not exist. Please create the ' \
-+            'file or provide the options through command line parameters.'
- 
- class KOBASRC:
-     def read(self, rc_file):
-diff --git src/kobas/config.py src/kobas/config.py
-index a0768f8..f9c6fa1 100755
---- src/kobas/config.py
-+++ src/kobas/config.py
-@@ -26,6 +26,15 @@ def getrc():
-         print 'Error: configuration file does not exist. Please create or' \
-             'provide the options through the command line parameters.'
- 
++        print 'Warning: configuration file does not exist. Please create ' \
++            'the file or provide the options through command line parameters.'
 +        kobasrc = {}
 +        kobasrc['kobas_home'] = ''
 +        kobasrc['blast_home'] = ''
@@ -82,6 +59,25 @@ index a0768f8..f9c6fa1 100755
 +        kobasrc['blastdb'] = ''
 +        return kobasrc
 +
+ 
  class KOBASRC:
      def read(self, rc_file):
-         rc = {}
+diff --git a/src/kobas/scripts/run.py b/src/kobas/scripts/run.py
+new file mode 100755
+index 0000000..962db86
+--- /dev/null
++++ b/src/kobas/scripts/run.py
+@@ -0,0 +1,10 @@
++#!/usr/bin/env python
++
++def identify():
++    from kobas.scripts import identify
++
++def annotate():
++    from kobas.scripts import annotate
++
++def run_kobas():
++    from kobas.scripts import run_kobas
+-- 
+2.17.1
+

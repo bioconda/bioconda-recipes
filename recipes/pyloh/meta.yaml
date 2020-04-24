@@ -1,32 +1,39 @@
+{% set name = "pyloh" %}
+{% set version = "1.4.3" %}
+{% set hash = "30a97d37955546bad7e605899b068750e79f0a26583a3c8cb8ec8e4778dc5bc2" %}
+
 package:
-  name: pyloh
-  version: '1.4.1'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: pyloh-1.4.1.tar.gz
-  url: https://github.com/uci-cbcl/PyLOH/archive/1.4.1.tar.gz
+  url: https://github.com/uci-cbcl/PyLOH/archive/{{ version }}.tar.gz
+  sha256: {{ hash }}
 
 build:
-  number: 1
-  skip: True # [osx]
+  noarch: python
+  number: 2
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 requirements:
-  build:
-    - python
-    - setuptools
-
+  host:
+    - python <3
+    - pip
   run:
-    - python
-    - numpy
-    - scipy
-    - matplotlib
-    - pysam
+    - python <3
+    - numpy >=1.6.1
+    - scipy >=0.10
+    - matplotlib >=1.2
+    - pysam >=0.7
 
 test:
   imports:
     - pyloh
+    - pyloh.model
+    - pyloh.preprocess
+    - pyloh.postprocess
 
 about:
   home: https://github.com/uci-cbcl/PyLOH
-  license: GPL
+  license: GPLv2
   summary: Deconvolving tumor purity and ploidy by integrating copy number alterations and loss of heterozygosity

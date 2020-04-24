@@ -1,0 +1,45 @@
+{% set package = "ucsc-bedjointaboffset" %}
+{% set program = "bedJoinTabOffset" %}
+{% set version = "377" %}
+{% set sha256 = "932f149c19641064a9cd3f2382cbb54b45a9292b8444792872d531346925d676" %}
+
+package:
+  name: "{{ package }}"
+  version: "{{ version }}"
+
+source:
+  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{{ version }}.src.tgz"
+  sha256: "{{ sha256 }}"
+  patches:
+    - "include.patch"
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - libpng
+    - libuuid
+    - mysql-connector-c
+    - openssl
+    - zlib
+
+  run:
+    - libpng
+    - libuuid
+    - mysql-connector-c
+    - openssl
+    - python
+    - zlib
+
+test:
+  commands:
+    - {{ program }} --help > /dev/null
+
+
+about:
+  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
+  license: "varies; see http://genome.ucsc.edu/license"
+  summary: "given a bed file and tab file where each have a column with matching values: first get the value of column0, the offset and line length from inTabFile. Then go over the bed file, use the name field and append its offset and length to the bed file as two separate fields. Write the new bed file to outBed."

@@ -3,25 +3,23 @@ package:
   version: 0.2.0
 
 source:
-  fn: v0.2.0.tar.gz
   url: https://github.com/katholt/srst2/archive/v0.2.0.tar.gz
   sha256: 352c59bdf00039dfa5610a4b88049a0eb114d7c2a305d4924b6e605cc6d15123
   patches:
     - use_setuptools.patch
+    - srst_sample_name_v0.2.0.patch
 
 build:
-  number: 1
-  skip: True #[not py27]
+  noarch: python
+  number: 4
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - numpy >=1.7.1
-    - scipy >=0.12.0
-
+  host:
+    - python <3
+    - pip
   run:
-    - python
+    - python <3
     - numpy >=1.7.1
     - scipy >=0.12.0
     - bowtie2 <=2.2.9
@@ -29,8 +27,8 @@ requirements:
 
 test:
   commands:
-    - srst2 -h 2>&1 | grep 'SRST2 - Short Read Sequence Typer' > /dev/null
-    - getmlst.py -h 2>&1 | grep 'usage' > /dev/null
+    - srst2 -h 2>&1 | grep "SRST2 - Short Read Sequence Typer" > /dev/null
+    - getmlst.py -h 2>&1 | grep "usage" > /dev/null
 
 about:
   home: https://github.com/katholt/srst2

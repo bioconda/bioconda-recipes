@@ -5,35 +5,37 @@ package:
   version: {{ version }}
 
 build:
-  number: 1
+  number: 3
   skip: True # [osx]
 
 source:
   # Needs to do recursive Git clone to get sub modules
-  # [lint skip uses_git_url for recipes/variantbam]
   git_url: https://github.com/walaj/VariantBam.git
   git_rev: {{ revision }}
   md5: unused
-  #fn: variantbam-{{ version }}.tar.gz
   #url: https://github.com/walaj/VariantBam/archive/{{ version }}.tar.gz
 
 requirements:
   build:
-    - gcc # [not osx]
+    - {{ compiler('cxx') }}
+  host:
     - xz
     - bzip2
     - zlib
   run:
-    - libgcc # [not osx]
     - xz
     - bzip2
     - zlib
 
 test:
-    commands:
-      - 'variant --help 2>&1 | grep "Usage: variant"'
+  commands:
+    - 'variant --help 2>&1 | grep "Usage: variant"'
 
 about:
-    home: https://github.com/jwalabroad/VariantBam
-    license: GPLv3
-    summary: Filtering and profiling of next-generational sequencing data using region-specific rules
+  home: https://github.com/jwalabroad/VariantBam
+  license: GPLv3
+  summary: Filtering and profiling of next-generational sequencing data using region-specific rules
+
+extra:
+  skip-lints:
+    - uses_vcs_url

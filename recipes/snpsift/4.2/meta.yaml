@@ -1,25 +1,38 @@
+{% set snpeff_ver = "v4_2" %}
+# NOTE: if the version contains a trailing letter, use the <d>.<d>.1<l> format
+{% set version = "4.2" %}
+{% set  md5= "25ae5b062d57072de6cfb8677ca3625a" %}
+
+package:
+  name: snpsift
+  version: {{ version }}
+
+build:
+  noarch: generic
+  number: 4
+
+source:
+  url: https://downloads.sourceforge.net/project/snpeff/snpEff_{{ snpeff_ver }}_core.zip
+  md5: {{ md5 }}
+
+requirements:
+  run:
+    - openjdk
+    - python
+
+test:
+  commands:
+    - SnpSift 2>&1 > /dev/null | grep "SnpSift version 4.2"
+    - echo | SnpSift filter "(CHROM == '2')" >/dev/null 2>&1
+    - touch a.vcf && echo | SnpSift annotate a.vcf
+
 about:
   home: 'http://snpeff.sourceforge.net/SnpSift.html'
   license: "LGPLv3"
   summary: "Toolbox that allows you to filter and manipulate annotated files"
 
-package:
-  name: snpsift
-  version: '4.2'
-
-build:
-  number: 1
-  skip: False
-
-source:
-  fn: snpEff_v4_2_core.zip
-  md5: 25ae5b062d57072de6cfb8677ca3625a
-  url: http://downloads.sourceforge.net/project/snpeff/snpEff_v4_2_core.zip
-
-requirements:
-  run:
-      - java-jdk
-
-test:
-    commands:
-      - SnpSift 2>&1 > /dev/null | grep "SnpSift version 4.2"
+extra:
+  notes: 'Note that the package version is slightly different from upstream, this is to make sure conda will order the package versions correctly.'
+  identifiers:
+    - biotools:SnpSift
+    - doi:10.3389/fgene.2012.00035

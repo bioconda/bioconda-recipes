@@ -1,0 +1,63 @@
+{% set name = "dimspy" %}
+{% set version = "1.4.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 890900f653b3131fc12e71bc4ca587513b0e19d7b1fad3783ffce6b9e590dac1
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - dimspy = dimspy.__main__:main
+
+requirements:
+  host:
+    - python <3
+    - pip
+    - fastcluster ==1.1.23
+    - h5py ==2.7.0
+    - mono ==4.8.1.0
+    - numpy ==1.13.3
+    - plotly ==2.5.1
+    - pymzml ==0.7.10
+    - pythonnet ==2.4.0
+    - scipy ==1.1.0
+  run:
+    - python <3
+    - fastcluster ==1.1.23
+    - h5py ==2.7.0
+    - mono ==4.8.1.0
+    - numpy ==1.13.3
+    - plotly ==2.5.1
+    - pymzml ==0.7.10
+    - pythonnet ==2.4.0
+    - scipy ==1.1.0
+
+test:
+  imports:
+    - dimspy  # [not linux]
+    - dimspy.models  # [not linux]
+    - dimspy.portals  # [not linux]
+    - dimspy.process  # [not linux]
+  commands:
+    - export LD_LIBRARY_PATH=${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib/  # [linux]
+    - python -c 'import dimspy'  # [linux]
+    - python -c 'import dimspy.models'  # [linux]
+    - python -c 'import dimspy.portals'  # [linux]
+    - python -c 'import dimspy.process'  # [linux]
+    
+about:
+  home: https://github.com/computational-metabolomics/dimspy
+  license: GNU General Public v3 (GPLv3)
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Python package for data processing of direct-infusion mass spectrometry-based metabolomics and lipidomics data
+
+extra:
+  recipe-maintainers:
+    - RJMW

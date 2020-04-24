@@ -2,6 +2,8 @@
 
 mkdir -p $PREFIX/bin
 
+sed -i.bak "s|g++|$CXX|g" install.sh
+sed -i.bak "s|cpp |$CXX |g" install.sh
 ./install.sh
 
 mv install.sh install.sh.old

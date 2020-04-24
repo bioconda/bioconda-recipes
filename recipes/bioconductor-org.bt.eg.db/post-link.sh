@@ -1,10 +1,11 @@
 #!/bin/bash
-FN="org.Bt.eg.db_3.5.0.tar.gz"
+FN="org.Bt.eg.db_3.10.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/org.Bt.eg.db_3.5.0.tar.gz"
-  "https://depot.galaxyproject.org/software/org.Bt.eg.db/org.Bt.eg.db_3.5.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/org.Bt.eg.db_3.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/org.Bt.eg.db_3.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-org.bt.eg.db/bioconductor-org.bt.eg.db_3.10.0_src_all.tar.gz"
 )
-    MD5="ac5441ee014eeac07e97dccd79bcfcdc"
+MD5="a0fc3e894f562b32ba0cebb3277d0b01"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -15,12 +16,12 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
   if [[ $(uname -s) == "Linux" ]]; then
-    if [[ $(md5sum -c <<<"$MD5  $TARBALL") ]]; then
+    if md5sum -c <<<"$MD5  $TARBALL"; then
       SUCCESS=1
       break
     fi
@@ -40,5 +41,6 @@ if [[ $SUCCESS != 1 ]]; then
 fi
 
 # Install and clean up
-R CMD INSTALL --build $TARBALL
+R CMD INSTALL --library=$PREFIX/lib/R/library $TARBALL
 rm $TARBALL
+rmdir $STAGING

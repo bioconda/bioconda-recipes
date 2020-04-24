@@ -1,34 +1,47 @@
-{% set version = "1.50.0" %}
+{% set version = "1.58.0" %}
 {% set name = "sscore" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 08c026fd36801a55c4f2fb4ef9cd669256bd7aea2529c97dd810e86b964b7a47
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 0485c962d38cf9874533fb225bcaab96
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: affydata
 requirements:
-  build:
-    - bioconductor-affy
-    - bioconductor-affyio
+  host:
+    - 'bioconductor-affy >=1.64.0,<1.65.0'
+    - 'bioconductor-affyio >=1.56.0,<1.57.0'
     - r-base
   run:
-    - bioconductor-affy
-    - bioconductor-affyio
+    - 'bioconductor-affy >=1.64.0,<1.65.0'
+    - 'bioconductor-affyio >=1.56.0,<1.57.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'This package contains an implementation of the S-Score algorithm as described by Zhang et al (2002).'
+  summary: 'S-Score Algorithm for Affymetrix Oligonucleotide Microarrays'
+  description: 'This package contains an implementation of the S-Score algorithm as described by Zhang et al (2002).'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:sscore
+    - doi:10.1016/S1046-2023(03)00156-7
+  parent_recipe:
+    name: bioconductor-sscore
+    path: recipes/bioconductor-sscore
+    version: 1.52.0
+

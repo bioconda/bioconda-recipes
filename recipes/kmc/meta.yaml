@@ -1,39 +1,50 @@
-build:
-  number: 3
-  string: "noasmlib_{{PKG_BUILDNUM}}"  # this recipe builds kmc without the asmlib speedup
+{% set version = "3.1.2" %}
+{% set rc = "rc1" %}
+{% set printed_version = "3.1.1" %}
 
 package:
   name: kmc
-  version: "2.3.0"
+  version: {{ version }}{{ rc }}
+
 source:
-  fn: kmc-2.3.0.tar.gz
-  url: https://github.com/refresh-bio/KMC/archive/2.3.tar.gz
-  md5: 7854235469948b77e54f31a3b7d78f40
+  url: https://github.com/refresh-bio/KMC/archive/v{{ version }}{{ rc }}.tar.gz
+  sha256: a1958c4f3c6fd7c7ebb8b478c00fce1fd0f328c634042f723c5917a9d030a3fe
   patches:
-    - 0001-kmc-added-compilation-via-autotools.patch
+    - shared_library.patch
+
+build:
+  number: 0
+  skip: True  # [osx]
+
 requirements:
   build:
-    - gcc >=4.7    # C++11 features are required; with a C++14 compiler, additional binary kmc_tools will be built.
-    - libgcc
-    - libtool
-    - pkg-config
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
     - zlib
     - bzip2
-    - gnu-wget
   run:
-    - libgcc
     - zlib
     - bzip2
+
 test:
   commands:
-    - kmc 2>&1 | grep "K-Mer Counter" > /dev/null
-    - kmc_dump 2>&1 | grep "KMC dump ver." > /dev/null
-    - kmc_tools 2>&1 | grep "kmc_tools ver." > /dev/null
+    - (kmc 2>&1; true) | grep -q "K-Mer Counter (KMC) ver. {{ printed_version }}"
+    - (kmc_dump 2>&1; true) | grep -q "KMC dump ver. {{ printed_version }}"
+    - (kmc_tools 2>&1; true) | grep -q "kmc_tools ver. {{ printed_version }}"
+
 about:
-  home: http://sun.aei.polsl.pl/REFRESH/index.php?page=projects&project=kmc&subpage=about
-  license: GPLv2
-  summary: K-mer Counter is a utility designed for counting k-mers (sequences of consecutive k symbols) in a set of reads from genome sequencing projects.
+  home: http://sun.aei.polsl.pl/kmc/
+  license: GPL3
+  license_family: GPL3
+  license_file: '{{ environ["RECIPE_DIR"] }}/gpl-3.0.txt'
+  summary: Tools for efficient k-mer counting and filtering of reads based on k-mer content
+  description: |
+    K-mer Counter is a utility designed for counting k-mers (sequences
+    of consecutive k symbols) in a set of reads from genome sequencing
+    projects.
 
 extra:
-  note: this recipe omits the asmlib speedup due to licensing issues
-
+  identifiers:
+    - biotools:KMC
+    - doi:10.1093/bioinformatics/btx304

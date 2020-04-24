@@ -1,34 +1,44 @@
-{% set version = "2.22.0" %}
+{% set version = "2.30.0" %}
 {% set name = "NOISeq" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 9903c0f0ebc2485623ac03334d6ad043aa4b4b3447242ed3f5d1839a9c105e6a
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: c3222f5a6a1000f7443e7d9039140f34
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - 'bioconductor-biobase >=2.13.11'
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
     - 'r-matrix >=1.2'
   run:
-    - 'bioconductor-biobase >=2.13.11'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
     - 'r-matrix >=1.2'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Analysis of RNA-seq expression data or other similar kind of data. Exploratory plots to evualuate saturation, count distribution, expression per chromosome, type of detected features, features length, etc. Differential expression between two experimental conditions with no parametric assumptions.'
+  summary: 'Exploratory analysis and differential expression for RNA-seq data'
+  description: 'Analysis of RNA-seq expression data or other similar kind of data. Exploratory plots to evualuate saturation, count distribution, expression per chromosome, type of detected features, features length, etc. Differential expression between two experimental conditions with no parametric assumptions.'
+extra:
+  identifiers:
+    - biotools:noiseq
+  parent_recipe:
+    name: bioconductor-noiseq
+    path: recipes/bioconductor-noiseq
+    version: 2.24.0
+

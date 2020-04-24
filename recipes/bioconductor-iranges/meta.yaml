@@ -1,34 +1,47 @@
-{% set version = "2.12.0" %}
+{% set version = "2.20.0" %}
 {% set name = "IRanges" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: a51e7219a9adedcc3ec708db570dbe8ed1156b0bd2bc882fbf5577cad3fa0cef
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 48e75abb3234331a27fc89d94a6825cf
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: XVector, GenomicRanges, Rsamtools, GenomicAlignments, GenomicFeatures, BSgenome.Celegans.UCSC.ce2, pasillaBamSubset, RUnit, BiocStyle
 requirements:
-  build:
-    - 'bioconductor-biocgenerics >=0.23.3'
-    - 'bioconductor-s4vectors >=0.15.5'
+  host:
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
     - r-base
   run:
-    - 'bioconductor-biocgenerics >=0.23.3'
-    - 'bioconductor-s4vectors >=0.15.5'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Provides efficient low-level and highly reusable S4 classes for storing, manipulating and aggregating over annotated ranges of integers. Implements an algebra of range operations, including efficient algorithms for finding overlaps and nearest neighbors. Defines efficient list-like classes for storing, transforming and aggregating large grouped data, i.e., collections of atomic vectors and DataFrames.'
+  summary: 'Foundation of integer range manipulation in Bioconductor'
+  description: 'Provides efficient low-level and highly reusable S4 classes for storing, manipulating and aggregating over annotated ranges of integers. Implements an algebra of range operations, including efficient algorithms for finding overlaps and nearest neighbors. Defines efficient list-like classes for storing, transforming and aggregating large grouped data, i.e., collections of atomic vectors and DataFrames.'
+extra:
+  identifiers:
+    - biotools:iranges
+  parent_recipe:
+    name: bioconductor-iranges
+    path: recipes/bioconductor-iranges
+    version: 2.14.12
+

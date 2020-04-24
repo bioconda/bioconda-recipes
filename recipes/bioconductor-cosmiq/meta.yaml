@@ -1,0 +1,56 @@
+{% set version = "1.20.0" %}
+{% set name = "cosmiq" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: a6b8ed1a7d6abbfbdc74c9d3e94b281a
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: RUnit, BiocGenerics, BiocStyle
+requirements:
+  host:
+    - 'bioconductor-faahko >=1.26.0,<1.27.0'
+    - 'bioconductor-massspecwavelet >=1.52.0,<1.53.0'
+    - 'bioconductor-xcms >=3.8.0,<3.9.0'
+    - r-base
+    - r-pracma
+    - r-rcpp
+  run:
+    - 'bioconductor-faahko >=1.26.0,<1.27.0'
+    - 'bioconductor-massspecwavelet >=1.52.0,<1.53.0'
+    - 'bioconductor-xcms >=3.8.0,<3.9.0'
+    - r-base
+    - r-pracma
+    - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'cosmiq - COmbining Single Masses Into Quantities'
+  description: 'cosmiq is a tool for the preprocessing of liquid- or gas - chromatography mass spectrometry (LCMS/GCMS) data with a focus on metabolomics or lipidomics applications. To improve the detection of low abundant signals, cosmiq generates master maps of the mZ/RT space from all acquired runs before a peak detection algorithm is applied. The result is a more robust identification and quantification of low-intensity MS signals compared to conventional approaches where peak picking is performed in each LCMS/GCMS file separately. The cosmiq package builds on the xcmsSet object structure and can be therefore integrated well with the package xcms as an alternative preprocessing step.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:cosmiq
+    - doi:10.5167/uzh-107947
+  parent_recipe:
+    name: bioconductor-cosmiq
+    path: recipes/bioconductor-cosmiq
+    version: 1.16.0
+

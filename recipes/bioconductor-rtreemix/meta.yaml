@@ -1,36 +1,52 @@
-{% set version = "1.40.0" %}
+{% set version = "1.48.0" %}
 {% set name = "Rtreemix" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 45487d9276358e2a02e8719fd87ebcc85cb87c17d4b0f6a5cbfbcff703cdeec0
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 1a23d717d7592684d8686d1c14d465e4
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: Rgraphviz
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-graph
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-graph >=1.64.0,<1.65.0'
     - r-base
     - r-hmisc
   run:
-    - bioconductor-biobase
-    - bioconductor-graph
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-graph >=1.64.0,<1.65.0'
     - r-base
     - r-hmisc
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL
-  summary: 'Rtreemix is a package that offers an environment for estimating the mutagenetic trees mixture models from cross-sectional data and using them for various predictions. It includes functions for fitting the trees mixture models, likelihood computations, model comparisons, waiting time estimations, stability analysis, etc.'
+  summary: 'Rtreemix: Mutagenetic trees mixture models.'
+  description: 'Rtreemix is a package that offers an environment for estimating the mutagenetic trees mixture models from cross-sectional data and using them for various predictions. It includes functions for fitting the trees mixture models, likelihood computations, model comparisons, waiting time estimations, stability analysis, etc.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+extra:
+  identifiers:
+    - biotools:rtreemix
+    - doi:10.1093/bioinformatics/btn410
+  parent_recipe:
+    name: bioconductor-rtreemix
+    path: recipes/bioconductor-rtreemix
+    version: 1.42.0
+

@@ -1,68 +1,66 @@
-{% set name = "trinity" %}
-{% set version = "2.4.0" %}
+{% set name = "Trinity" %}
+{% set version = "2.9.1" %}
+{% set sha256 = "98d98bc21cd5dd32b408ed52586d01a15873b49b96de3264d42616bdcfc9d455" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
-build:
-  number: 5
-  skip: True  # [osx]
-
 source:
-  url: https://github.com/trinityrnaseq/trinityrnaseq/archive/Trinity-v{{ version }}.tar.gz
-  md5: 397cc93d75701ec681ea7af1a7837ed8
+  url: https://github.com/trinityrnaseq/trinityrnaseq/releases/download/v2.9.1/trinityrnaseq-v{{ version }}.FULL.tar.gz
+  sha256: {{ sha256 }}
   patches:
-    - makefile.clean.patch
-    - trinity-plugins.makefile.clean.patch
+    - makefile.patch
+
+build:
+  number: 1
+  skip: True  # [osx]
 
 requirements:
   build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - cmake
     - autoconf
-    - automake
-    - collectl
-    - fastool
-    - gcc
-    - jellyfish >=2.2.6
-    - openjdk
-    - parafly
-    - perl-app-cpanminus
-    - perl-module-build
-    - samtools >=1.3
-    - slclust
-    - trimmomatic >=0.36
+  host:
     - zlib
-
   run:
+    - zlib
+    - trimmomatic >=0.36
     - bowtie
     - bowtie2 >=2.3.0
-    - collectl
-    - fastool
-    - jellyfish >=2.2.6
-    - libgcc
-    - openjdk
-    - parafly
-    - perl-app-cpanminus
-    - perl-module-build
-    - samtools >=1.3
-    - slclust
-    - trimmomatic >=0.36
-    - zlib
+    - kmer-jellyfish >=2.2
+    - openjdk >=8
+    - perl
+    - python >=3.6
+    - samtools >=1.9
+    - salmon >=1.0
+    - numpy
 
 test:
-    commands:
-        - "Trinity --cite"
-        - "align_and_estimate_abundance.pl --help &> /dev/null || [[ \"$?\" == 255 ]]"
-        - "abundance_estimates_to_matrix.pl --help &> /dev/null || [[ \"$?\" == 255 ]]"
-        - "run_DE_analysis.pl -h &> /dev/null || [[ \"$?\" == 255 ]]"
-        - "analyze_diff_expr.pl -h &> /dev/null || [[ \"$?\" == 255 ]]"
-        - "PtR --help &> /dev/null || [[ \"$?\" == 255 ]]"
-        - "TrinityStats.pl 2>&1 | grep \"usage:\" "
-        - "define_clusters_by_cutting_tree.pl 2>&1 | grep \"define K clusters via k-means algorithm\" "
-        - "contig_ExN50_statistic.pl 2>&1 | grep \"usage:\" &> /dev/null"
-        - seqtk-trinity rename
+  commands:
+    - "Trinity --cite"
+    - "align_and_estimate_abundance.pl --help || [[ \"$?\" == 255 ]]"
+    - "abundance_estimates_to_matrix.pl --help || [[ \"$?\" == 255 ]]"
+    - "run_DE_analysis.pl -h || [[ \"$?\" == 255 ]]"
+    - "analyze_diff_expr.pl -h || [[ \"$?\" == 255 ]]"
+    - "PtR --help || [[ \"$?\" == 255 ]]"
+    - "TrinityStats.pl 2>&1 | grep \"usage:\""
+    - "define_clusters_by_cutting_tree.pl 2>&1 | grep \"define K clusters via k-means algorithm\""
+    - "Trinity_gene_splice_modeler.py --help"
 
 about:
   home: https://github.com/trinityrnaseq/trinityrnaseq/
-  license: 'BSD-3-Clause'
-  summary: 'Trinity RNA-Seq de novo transcriptome assembly'
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file:
+    - LICENSE
+    - LICENSE.txt
+  summary: "Trinity assembles transcript sequences from Illumina RNA-Seq data."
+  doc_url: https://github.com/trinityrnaseq/trinityrnaseq/wiki
+  dev_url: https://github.com/trinityrnaseq/trinityrnaseq/
+
+extra:
+  identifiers:
+    - biotools:trinity
+    - doi:10.1038/nbt.1883

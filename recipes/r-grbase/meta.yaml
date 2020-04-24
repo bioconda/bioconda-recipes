@@ -1,0 +1,71 @@
+{% set version = '1.8-3.4' %}
+
+package:
+  name: r-grbase
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/gRbase_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/gRbase/gRbase_{{ version }}.tar.gz
+  sha256: d35f94c2fb7cbd4ce3991570424dfe6723a849658da32e13df29f53b6ea2cc2c
+
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - r-base
+    - r-matrix
+    - bioconductor-rbgl
+    - r-rcpp >=0.11.1
+    - r-rcpparmadillo
+    - r-rcppeigen
+    - bioconductor-graph
+    - r-igraph
+    - r-magrittr
+  run:
+    - r-base
+    - r-matrix
+    - bioconductor-rbgl
+    - r-rcpp >=0.11.1
+    - r-rcpparmadillo
+    - r-rcppeigen
+    - bioconductor-graph
+    - r-igraph
+    - r-magrittr
+
+test:
+  commands:
+    - $R -e "library('gRbase')"           # [not win]
+    - "\"%R%\" -e \"library('gRbase')\""  # [win]
+
+about:
+  home: http://people.math.aau.dk/~sorenh/software/gR/
+  license: GPL (>= 2)
+  summary: 'The ''gRbase'' package provides general features which are used by other graphical
+    modelling packages, in particular by the packages ''gRain'', ''gRim'' and ''gRc''.
+    ''gRbase'' contains several data sets relevant for use in connection with graphical
+    models. Almost all data sets used in the book Graphical Models with R (2012) are
+    contained in ''gRbase''. ''gRbase'' implements several graph algorithms (based mainly
+    on representing graphs as adjacency matrices - either in the form of a standard
+    matrix or a sparse matrix). Some graph algorithms are: (i) maximum cardinality search
+    (for marked and unmarked graphs). (ii) moralize. (iii) triangulate. (iv) junction
+    tree. ''gRbase'' facilitates array operations, ''gRbase'' implements functions for
+    testing for conditional independence. ''gRbase'' illustrates how hierarchical log-linear
+    models may be implemented and describes concept of graphical meta data. These features,
+    however, are not maintained anymore and remains in ''gRbase'' only because there
+    exists a paper describing these facilities: A Common Platform for Graphical Models
+    in R: The ''gRbase'' Package, Journal of Statistical Software, Vol 14, No 17, 2005.
+    NOTICE Proper functionality of ''gRbase'' requires that the packages graph, ''Rgraphviz''
+    and ''RBGL'' are installed from ''bioconductor''; for installation instructions
+    please refer to the web page given below.'
+  license_family: GPL3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'

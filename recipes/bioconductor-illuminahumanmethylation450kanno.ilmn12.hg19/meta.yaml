@@ -1,33 +1,41 @@
 {% set version = "0.6.0" %}
 {% set name = "IlluminaHumanMethylation450kanno.ilmn12.hg19" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 249b8fd62add3c95b5047b597cff0868d26a98862a47cebd656edcd175a73b15
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 2f569646ca8adc49863224b1cd076a79
 build:
-  number: 1
+  number: 8
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - 'bioconductor-minfi >=1.19.15'
+  host:
+    - 'bioconductor-minfi >=1.32.0,<1.33.0'
     - r-base
   run:
-    - 'bioconductor-minfi >=1.19.15'
+    - 'bioconductor-minfi >=1.32.0,<1.33.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Manifests and annotation for Illumina''s 450k array data.'
+  summary: 'Annotation for Illumina''s 450k methylation arrays'
+  description: 'Manifests and annotation for Illumina''s 450k array data.'
+extra:
+  parent_recipe:
+    name: bioconductor-illuminahumanmethylation450kanno.ilmn12.hg19
+    path: recipes/bioconductor-illuminahumanmethylation450kanno.ilmn12.hg19
+    version: 0.6.0
+

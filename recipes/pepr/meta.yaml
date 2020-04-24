@@ -1,42 +1,26 @@
+{% set version = "1.1.24" %}
 package:
   name: pepr
-  version: "1.1.18"
+  version: {{ version }}
 
 source:
-  fn: PePr-1.1.18.tar.gz
-  url: https://pypi.python.org/packages/6b/1a/39f62045d220248e4c5bf7e718eb598ced97dff077b4cce9ea18515b4f45/PePr-1.1.18.tar.gz
-  md5: dcc72e55149c9bdb994d105c69c6e755
+  url: https://pypi.io/packages/source/p/pepr/PePr-{{ version }}.tar.gz
+  md5: 7780fed1e8e5aeef933d5df3f3392f0d
   patches:
-   # List any patch files here
     - setup.py.patch
-build:
-  # noarch_python: True
-  # preserve_egg_dir: True
-  entry_points:
-    # Put any entry points (scripts to be generated automatically) here. The
-    # syntax is module:function.  For example
-    #
-    # - pepr = pepr:main
-    #
-    # Would create an entry point called pepr that calls pepr.main()
 
+build:
+  noarch: python
+  entry_points:
     - PePr=PePr.PePr:argless_main
     - PePr-preprocess=PePr.PePr:pre_processing_module
     - PePr-postprocess=PePr.post_processing.post_process_PePr:post_processing_module
-
-  # If this is a new build for the same version, increment the build
-  # number. If you do not include this key, it defaults to 0.
-  # number: 1
+  number: 2
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
-    - numpy >=1.6.0
-    - scipy >=0.14.0
-    - pysam
-    - sharedmem
-
   run:
     - python
     - numpy >=1.6.0
@@ -45,7 +29,6 @@ requirements:
     - sharedmem
 
 test:
-  # Python imports
   imports:
     - PePr
     - PePr.post_processing
@@ -53,19 +36,9 @@ test:
 #    - PePr.utilities
 
   commands:
-    # You can put test commands to be run here.  Use this to test that the
-    # entry points work.
-
     - PePr --help
     - PePr-preprocess --help
     - PePr-postprocess --help
-
-  # You can also put a file called run_test.py in the recipe that will be run
-  # at test time.
-
-  # requires:
-    # Put any additional test requirements here.  For example
-    # - nose
 
 about:
   home: https://github.com/shawnzhangyx/PePr/
@@ -73,6 +46,4 @@ about:
   summary: 'Peak-calling and Prioritization pipeline for replicated ChIP-Seq data'
   license_family: GPL
 
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml
+

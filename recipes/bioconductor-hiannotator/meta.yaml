@@ -1,29 +1,28 @@
-{% set version = "1.11.1" %}
+{% set version = "1.20.0" %}
 {% set name = "hiAnnotator" %}
-{% set bioc = "3.5" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
-
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: fd3f91cea9300b0debd0fdc70b0a25a41e9d4500c706354d8f4c951ea33a5656
-
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 64b1b15ef8eaa2613773c6cf2ecdebfb
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-
+  noarch: generic
+# Suggests: knitr, doParallel, testthat, BiocGenerics
 requirements:
-  build:
-    - bioconductor-bsgenome
-    - bioconductor-genomicranges
-    - bioconductor-rtracklayer
+  host:
+    - 'bioconductor-bsgenome >=1.54.0,<1.55.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - 'bioconductor-rtracklayer >=1.46.0,<1.47.0'
     - r-base
     - r-dplyr
     - r-foreach
@@ -31,29 +30,30 @@ requirements:
     - r-iterators
     - r-scales
   run:
-    - bioconductor-bsgenome
-    - bioconductor-genomicranges
-    - bioconductor-rtracklayer
+    - 'bioconductor-bsgenome >=1.54.0,<1.55.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - 'bioconductor-rtracklayer >=1.46.0,<1.47.0'
     - r-base
     - r-dplyr
     - r-foreach
     - r-ggplot2
     - r-iterators
     - r-scales
-
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
-
 about:
-  home: https://bioconductor.org/packages/release/bioc/html/hiAnnotator.html
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'hiAnnotator contains set of functions which allow users to annotate a GRanges object
-    with custom set of annotations. The basic philosophy of this package is to take two GRanges
-    objects (query & subject) with common set of seqnames (i.e. chromosomes) and return associated
-    annotation per seqnames and rows from the query matching seqnames and rows from the subject
-    (i.e. genes or cpg islands). The package comes with three types of annotation functions which
-    calculates if a position from query is: within a feature, near a feature, or count features in
-    defined window sizes. Moreover, each function is equipped with parallel backend to utilize the
-    foreach package. In addition, the package is equipped with wrapper functions, which finds
-    appropriate columns needed to make a GRanges object from a common data frame.'
+  summary: 'Functions for annotating GRanges objects'
+  description: 'hiAnnotator contains set of functions which allow users to annotate a GRanges object with custom set of annotations. The basic philosophy of this package is to take two GRanges objects (query & subject) with common set of seqnames (i.e. chromosomes) and return associated annotation per seqnames and rows from the query matching seqnames and rows from the subject (i.e. genes or cpg islands). The package comes with three types of annotation functions which calculates if a position from query is: within a feature, near a feature, or count features in defined window sizes. Moreover, each function is equipped with parallel backend to utilize the foreach package. In addition, the package is equipped with wrapper functions, which finds appropriate columns needed to make a GRanges object from a common data frame.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:hiannotator
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-hiannotator
+    path: recipes/bioconductor-hiannotator
+    version: 1.14.0
+

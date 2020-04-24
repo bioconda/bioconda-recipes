@@ -1,32 +1,44 @@
+{% set version = "2.10" %}
+
 package:
   name: cutadapt
-  version: '1.14'
-
-about:
-  home: https://cutadapt.readthedocs.io/
-  license: MIT License
-  summary: 'trim adapters from high-throughput sequencing reads'
+  version: {{ version }}
 
 source:
-  fn: cutadapt-1.14.tar.gz
-  url: https://pypi.python.org/packages/16/e3/06b45eea35359833e7c6fac824b604f1551c2fc7ba0f2bd318d8dd883eb9/cutadapt-1.14.tar.gz
-  md5: 57403c3794aa940699df3032a5e9b208
+  url: https://files.pythonhosted.org/packages/4b/9d/3f98c2619206430ad11e485a2a2f6b3e37f792f11523fee372739abdc1cd/cutadapt-2.10.tar.gz
+  sha256: 936b88374b5b393a954852a0fe317a85b798dd4faf5ec52cf3ef4f3c062c242a
 
 build:
   number: 0
-  script: $PYTHON setup.py install
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  skip: True  # [py27]
 
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
+    - pip
     - python
-    - xopen >=0.1.1
+    - cython
+    - setuptools_scm
   run:
     - python
-    - xopen >=0.1.1
+    - xopen >=0.8.4
+    - dnaio >=0.4.2
+    - pigz
 
 test:
   imports:
     - cutadapt
-    - cutadapt.scripts
   commands:
     - cutadapt --version
+
+about:
+  home: https://cutadapt.readthedocs.io/
+  license: MIT
+  summary: Trim adapters from high-throughput sequencing reads
+
+extra:
+  identifiers:
+    - biotools:cutadapt
+    - doi:10.14806/ej.17.1.200

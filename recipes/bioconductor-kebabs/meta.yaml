@@ -1,0 +1,63 @@
+{% set version = "1.20.0" %}
+{% set name = "kebabs" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 8ead57beb3aebb2c7ec09988b4b63a12
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: SparseM, Biobase, BiocGenerics, knitr
+requirements:
+  host:
+    - 'bioconductor-biostrings >=2.54.0,<2.55.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
+    - 'bioconductor-xvector >=0.26.0,<0.27.0'
+    - r-apcluster
+    - r-base
+    - r-e1071
+    - r-kernlab
+    - r-liblinear
+    - r-matrix
+    - 'r-rcpp >=0.11.2'
+  run:
+    - 'bioconductor-biostrings >=2.54.0,<2.55.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
+    - 'bioconductor-xvector >=0.26.0,<0.27.0'
+    - r-apcluster
+    - r-base
+    - r-e1071
+    - r-kernlab
+    - r-liblinear
+    - r-matrix
+    - 'r-rcpp >=0.11.2'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2.1)'
+  summary: 'Kernel-Based Analysis Of Biological Sequences'
+  description: 'The package provides functionality for kernel-based analysis of DNA, RNA, and amino acid sequences via SVM-based methods. As core functionality, kebabs implements following sequence kernels: spectrum kernel, mismatch kernel, gappy pair kernel, and motif kernel. Apart from an efficient implementation of standard position-independent functionality, the kernels are extended in a novel way to take the position of patterns into account for the similarity measure. Because of the flexibility of the kernel formulation, other kernels like the weighted degree kernel or the shifted weighted degree kernel with constant weighting of positions are included as special cases. An annotation-specific variant of the kernels uses annotation information placed along the sequence together with the patterns in the sequence. The package allows for the generation of a kernel matrix or an explicit feature representation in dense or sparse format for all available kernels which can be used with methods implemented in other R packages. With focus on SVM-based methods, kebabs provides a framework which simplifies the usage of existing SVM implementations in kernlab, e1071, and LiblineaR. Binary and multi-class classification as well as regression tasks can be used in a unified way without having to deal with the different functions, parameters, and formats of the selected SVM. As support for choosing hyperparameters, the package provides cross validation - including grouped cross validation, grid search and model selection functions. For easier biological interpretation of the results, the package computes feature weights for all SVMs and prediction profiles which show the contribution of individual sequence positions to the prediction result and indicate the relevance of sequence sections for the learning result and the underlying biological functions.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  parent_recipe:
+    name: bioconductor-kebabs
+    path: recipes/bioconductor-kebabs
+    version: 1.14.0
+

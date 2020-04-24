@@ -1,23 +1,25 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "similaRpeak" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: ce8c0c3897fb3a1ab3a45c066d16d08f22cd005c25e6c0c5e4fa498101619590
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 026c11fcefc58cb763ecd5ccae6ef25d
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit, BiocGenerics, knitr, Rsamtools, GenomicAlignments, rtracklayer, rmarkdown, BiocStyle
 requirements:
-  build:
+  host:
     - r-base
     - 'r-r6 >=2.0'
   run:
@@ -27,6 +29,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'This package calculates metrics which assign a level of similarity between ChIP-Seq profiles.'
+  summary: 'Metrics to estimate a level of similarity between two ChIP-Seq profiles'
+  description: 'This package calculates metrics which assign a level of similarity between ChIP-Seq profiles.'
+extra:
+  identifiers:
+    - biotools:similarpeak
+    - doi:10.1371/journal.pcbi.1004751
+  parent_recipe:
+    name: bioconductor-similarpeak
+    path: recipes/bioconductor-similarpeak
+    version: 1.12.0
+

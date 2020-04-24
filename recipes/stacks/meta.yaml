@@ -1,44 +1,66 @@
+{% set version="2.52" %}
+{% set hash="3d2c3c4ad998838fda4ba097d4e12901273509fde51f56d4ff87cb1b6fe690b7" %}
 package:
   name: stacks
-  version: "1.47"
+  version: {{ version }}
 
 build:
   number: 0
-  skip: True # [osx]
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+  skip: True  # [osx]
 
 source:
-  fn: stacks-1.47.tar.gz
-  md5: 9fa972cd95d54ef120223d615e6cc332 
-  url: http://catchenlab.life.illinois.edu/stacks/source/stacks-1.47.tar.gz 
-
-  # A patch to allow using gcc < 4.9 for compilation
-  # Should be removed when a newer gcc will be available in conda
+  sha256: {{ hash }}
+  url: http://catchenlab.life.illinois.edu/stacks/source/stacks-{{ version }}.tar.gz
   patches:
-    - "gcc48.patch"
+    - at.patch
 
 requirements:
   build:
-    - gcc # [linux]
-    - zlib {{CONDA_ZLIB}}*
-    - sparsehash
-    - boost {{CONDA_BOOST}}*
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - openmp  # [linux]
   run:
     - perl
+    - perl-bioperl-core
+    - perl-file-spec
+    - perl-file-temp
+    - perl-posix
+    - python >=3
     - velvet
-    - libgcc # [linux]
-    - zlib {{CONDA_ZLIB}}*
-    - sparsehash
-    - boost {{CONDA_BOOST}}*
+    - samtools
+    - zlib
+    - openmp  # [linux]
 
 test:
   commands:
     - command -v cstacks
-    - command -v pstacks
+    - command -v gstacks
+    - command -v sstacks
+    - command -v ustacks
+    - command -v phasedstacks
+    - command -v populations
     - command -v process_radtags
+    - command -v process_shortreads
     - command -v clone_filter
+    - command -v kmer_filter
+    - command -v stacks-dist-extract
+    - command -v stacks-integrate-alignments
+    - command -v tsv2bam
+    - command -v convert_stacks.pl
+    - command -v count_fixed_catalog_snps.py
+    - command -v denovo_map.pl
+    - command -v extract_interpop_chars.pl
+    - command -v integrate_alignments.py
+    - command -v ref_map.pl
 
 about:
   home: http://catchenlab.life.illinois.edu/stacks/
   license: GPL
+  license_file: LICENSE
   summary: Stacks is a software pipeline for building loci from RAD-seq
+
+extra:
+  identifiers:
+    - biotools:Stacks
+    - doi:10.1111/mec.12354

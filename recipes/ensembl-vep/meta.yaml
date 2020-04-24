@@ -1,21 +1,19 @@
-{% set version="90.7" %}
+{% set version="99.2" %}
 
 package:
   name: ensembl-vep
   version: {{ version }}
 
 source:
-  fn: vep-{{ version }}.tar.gz
   url: https://github.com/Ensembl/ensembl-vep/archive/release/{{ version }}.tar.gz
-  md5: 360f5cbaf1bc0431515a1cdff2e83e57
+  sha256: 4488a5efe1047d489f1d1391d9e164cc159d0e9912e593b88140da279d0875cb
 
 build:
   number: 0
-  skip: True # [osx]
-  string: "htslib{{CONDA_HTSLIB}}_{{PKG_BUILDNUM}}"
-
+  noarch: generic
+  
 requirements:
-  build:
+  host:
     - curl
     - perl
     - perl-archive-zip
@@ -24,10 +22,9 @@ requirements:
     - perl-dbi
   run:
     - perl
-    - htslib {{CONDA_HTSLIB}}*
-    - perl-bioperl
-    - perl-bio-db-hts >=2.7
-    - perl-cgi
+    - htslib
+    - perl-bioperl >=1.7.2
+    - perl-bio-db-hts >=2.11
     - perl-dbi
     - perl-dbd-mysql
     - perl-io-compress
@@ -35,20 +32,22 @@ requirements:
     - perl-perlio-gzip
     - perl-sereal
     - perl-set-intervaltree
+    - perl-text-csv
     - unzip
 
 test:
   commands:
-     - vep --help
-     - vep_convert_cache --help
-     - vep_install --help
-     - haplo --help
-     - variant_recoder --help
+    - vep --help
+    - vep_convert_cache --help
+    - vep_install --help
+    - haplo --help
+    - variant_recoder --help
 
 about:
   home: http://www.ensembl.org/info/docs/tools/vep/index.html
   license: Apache 2.0
-  summary:  The VEP determines the effect of your variants (SNPs, insertions, deletions, CNVs or structural variants) on genes, transcripts, and protein sequence, as well as regulatory regions.
+  summary: Ensembl Variant Effect Predictor
+  description:  The VEP determines the effect of your variants (SNPs, insertions, deletions, CNVs or structural variants) on genes, transcripts, and protein sequence, as well as regulatory regions.
 
 extra:
   notes: |

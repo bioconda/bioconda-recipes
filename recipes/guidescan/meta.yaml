@@ -1,10 +1,13 @@
+{% set name="guidescan" %}
+{% set version="1.2" %}
+
 package:
-  name: guidescan
-  version: '1.0'
+  name: {{ name }}
+  version: '{{ version }}'
 
 source:
-  git_url: https://bitbucket.org/arp2012/guidescan_public.git
-  git_rev: ff0745d
+  url: https://bitbucket.org/arp2012/guidescan_public/get/v{{ version }}.tar.gz
+  sha256: 8b3707922bfd986d9d3c784953c3d47c26c0cc5726462a1e2a39bcd5627320bc
 
 build:
   number: 1
@@ -12,11 +15,10 @@ build:
 
 requirements:
   build:
-    - gcc   # [not osx]
-    - llvm  # [osx]
-
-    - python ==2.7.13
-    #- setuptools
+    - {{ compiler('c') }}
+  host:
+    - python
+    - setuptools
     - samtools ==1.3.1
     - coreutils
     - rename
@@ -24,18 +26,15 @@ requirements:
     - pysam ==0.8.3
     - pyfaidx ==0.4.7.1
     - bx-python ==0.7.3
-    - scikit-learn ==0.16.1
+    - scikit-learn >=0.16.1
     - numpy
     - psutil
     - xlwt
     - pandas
     - openblas
-
+    - python-dateutil >=2.5.0
   run:
-    - libgcc # [not osx]
-
-    - python ==2.7.13
-    #- setuptools
+    - python
     - samtools ==1.3.1
     - coreutils
     - rename
@@ -43,17 +42,18 @@ requirements:
     - pysam ==0.8.3
     - pyfaidx ==0.4.7.1
     - bx-python ==0.7.3
-    - scikit-learn ==0.16.1
+    - scikit-learn >=0.16.1
     - numpy
     - psutil
     - xlwt
     - pandas
     - openblas
+    - python-dateutil >=2.5.0
 
 test:
   imports:
     - guidescan
-  commands: 
+  commands:
     - "guidescan_processer -h"
     - "guidescan_bamdata -h"
     - "guidescan_guidequery -h"
@@ -64,3 +64,8 @@ about:
   home: https://bitbucket.org/arp2012/guidescan_public
   license: Unknown
   summary: Tools to create and interface genome-wide CRISPR guideRNA databases
+
+extra:
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

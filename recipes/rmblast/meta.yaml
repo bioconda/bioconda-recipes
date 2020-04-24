@@ -1,36 +1,77 @@
-package: 
-    name: rmblast
-    version: 2.2.28
+{% set name = "rmblast" %}
+{% set version = "2.9.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
 source:
-    fn:  ncbi-rmblastn-2.2.28-src.tar.gz # [linux]
-    url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/rmblast/2.2.28/ncbi-rmblastn-2.2.28-src.tar.gz # [linux]
-    md5: fb5f4e2e02ffcb1b17af2e9f206c5c22 # [linux]
-    fn: ncbi-rmblastn-2.2.28-universal-macosx.tar.gz # [osx]
-    url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/rmblast/2.2.28/ncbi-rmblastn-2.2.28-universal-macosx.tar.gz # [osx]
-    md5: 421c5ddf2c425800d934562c965e8706 # [osx]
+  url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz
+  sha256: a390cc2d7a09422759fc178db84de9def822cbe485916bbb2ec0d215dacdc257
+  #patches:
+    # patch taken from http://www.repeatmasker.org/isb-2.9.0+-rmblast-p2.patch.gz
+    #- isb-{{ version }}+-{{ name }}-p2.patch # Needs the -p1 option, applied in build.sh
 
 build:
-  number: 1
+  number: 0
 
 requirements:
   build:
-    - boost <=1.58 # [linux]
-    - gcc # [linux]
-    - bzip2 1.0.6 1 # [linux]
-    - zlib # [linux]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - bzip2
+    - zlib
+    - gnutls # [linux]
+    - openssl # [osx]
+    - nettle 3.3|3.3.*
+    - pcre
+    - time
   run:
-    - boost <=1.58 # [linux]
-    - libgcc # [linux]
-    - bzip2 1.0.6 1 # [linux]
-    - zlib # [linux]
-    - blast
+    - bzip2
+    - zlib
+    - gnutls # [linux]
+    - openssl # [osx]
+    - nettle 3.3|3.3.*
+    - pcre
+    - perl
+    - perl-list-moreutils
+    - perl-archive-tar
+    - perl-json
+    - entrez-direct
+    - curl
 
 test:
-    commands:
-        - rmblastn -help > /dev/null
-        - makeblastdb -help > /dev/null
+  commands:
+    - rmblastn -help > /dev/null
+    - makeblastdb -help > /dev/null
+    - blastn -help
+    - blastp -help
+    - makeblastdb -help
+    - blastdb_aliastool -version > /dev/null
+    - blastdbcheck -version > /dev/null
+    - blastdbcmd -version > /dev/null
+    - blastn -version > /dev/null
+    - blastp -version > /dev/null
+    - blastx -version > /dev/null
+    - convert2blastmask -version > /dev/null
+    - dustmasker -version > /dev/null
+    - makeblastdb -version > /dev/null
+    - makembindex -version > /dev/null
+    - psiblast -version > /dev/null
+    - rpsblast -version > /dev/null
+    - rpstblastn -version > /dev/null
+    - segmasker -version > /dev/null
+    - tblastn -version > /dev/null
+    - tblastx -version > /dev/null
+    - windowmasker -version > /dev/null
+    - update_blastdb.pl --version > /dev/null
+    - get_species_taxids.sh -h > /dev/null
+    # test that BLAST ignores LD_LIBRARY_PATH
+    - touch libstdc++.so.6; LD_LIBRARY_PATH=. makeblastdb -help && rm libstdc++.so.6
+    - update_blastdb.pl --help
 
 about:
-    home: http://www.repeatmasker.org/RMBlast.html
-    license: OSL-2.1
-    summary: RMBlast is a RepeatMasker compatible version of the standard NCBI BLAST suite.
+  home: http://www.repeatmasker.org/RMBlast.html
+  license: OSL-2.1
+  summary: RMBlast is a RepeatMasker compatible version of the standard NCBI BLAST+ suite.

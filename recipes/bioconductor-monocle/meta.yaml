@@ -1,28 +1,29 @@
-{% set version = "2.6.0" %}
+{% set version = "2.14.0" %}
 {% set name = "monocle" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 6344d6cd9d3a43ca81c5351f9283e3877d6f1cb4c3b31815362072f9a508505c
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: f3d411e989b56ecd931473137d5bdc1e
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: destiny, Hmisc, knitr, Seurat, scater, testthat
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
-    - bioconductor-biocviews
-    - 'bioconductor-hsmmsinglecell >=0.101.5'
-    - bioconductor-limma
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-biocviews >=1.54.0,<1.55.0'
+    - 'bioconductor-hsmmsinglecell >=1.6.0,<1.7.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
     - r-base
     - r-cluster
     - r-combinat
@@ -40,19 +41,21 @@ requirements:
     - r-plyr
     - r-proxy
     - r-qlcmatrix
+    - 'r-rann >=2.5'
+    - 'r-rcpp >=0.12.0'
     - r-reshape2
     - r-rtsne
     - r-slam
     - r-stringr
     - r-tibble
-    - 'r-vgam >=1.0-1'
+    - 'r-vgam >=1.0-6'
     - r-viridis
   run:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
-    - bioconductor-biocviews
-    - 'bioconductor-hsmmsinglecell >=0.101.5'
-    - bioconductor-limma
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-biocviews >=1.54.0,<1.55.0'
+    - 'bioconductor-hsmmsinglecell >=1.6.0,<1.7.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
     - r-base
     - r-cluster
     - r-combinat
@@ -70,17 +73,32 @@ requirements:
     - r-plyr
     - r-proxy
     - r-qlcmatrix
+    - 'r-rann >=2.5'
+    - 'r-rcpp >=0.12.0'
     - r-reshape2
     - r-rtsne
     - r-slam
     - r-stringr
     - r-tibble
-    - 'r-vgam >=1.0-1'
+    - 'r-vgam >=1.0-6'
     - r-viridis
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Monocle performs differential expression and time-series analysis for single-cell expression experiments. It orders individual cells according to progress through a biological process, without knowing ahead of time which genes define progress through that process. Monocle also performs differential expression analysis, clustering, visualization, and other useful tasks on single cell expression data.  It is designed to work with RNA-Seq and qPCR data, but could be used with other types as well.'
+  summary: 'Clustering, differential expression, and trajectory analysis for single- cell RNA-Seq'
+  description: 'Monocle performs differential expression and time-series analysis for single-cell expression experiments. It orders individual cells according to progress through a biological process, without knowing ahead of time which genes define progress through that process. Monocle also performs differential expression analysis, clustering, visualization, and other useful tasks on single cell expression data.  It is designed to work with RNA-Seq and qPCR data, but could be used with other types as well.'
+extra:
+  identifiers:
+    - biotools:monocle
+  parent_recipe:
+    name: bioconductor-monocle
+    path: recipes/bioconductor-monocle
+    version: 2.8.0
+

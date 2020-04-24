@@ -1,46 +1,59 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "roar" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 6e098e2f1e67a5728085a22ef4260acbdc7ea9a97f24ff9206f9d2cc074d0ae0
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 848d0082e13711f37afa043360f10618
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RNAseqData.HNRNPC.bam.chr14, testthat
 requirements:
-  build:
-    - bioconductor-biocgenerics
-    - bioconductor-genomeinfodb
-    - 'bioconductor-genomicalignments >=0.99.4'
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-rtracklayer
-    - bioconductor-s4vectors
-    - bioconductor-summarizedexperiment
+  host:
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-genomeinfodb >=1.22.0,<1.23.0'
+    - 'bioconductor-genomicalignments >=1.22.0,<1.23.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-rtracklayer >=1.46.0,<1.47.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
+    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
     - r-base
   run:
-    - bioconductor-biocgenerics
-    - bioconductor-genomeinfodb
-    - 'bioconductor-genomicalignments >=0.99.4'
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-rtracklayer
-    - bioconductor-s4vectors
-    - bioconductor-summarizedexperiment
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-genomeinfodb >=1.22.0,<1.23.0'
+    - 'bioconductor-genomicalignments >=1.22.0,<1.23.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-rtracklayer >=1.46.0,<1.47.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
+    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'Identify preferential usage of APA sites, comparing two biological conditions, starting from known alternative sites and alignments obtained from standard RNA-seq experiments.'
+  summary: 'Identify differential APA usage from RNA-seq alignments'
+  description: 'Identify preferential usage of APA sites, comparing two biological conditions, starting from known alternative sites and alignments obtained from standard RNA-seq experiments.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:roar
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-roar
+    path: recipes/bioconductor-roar
+    version: 1.16.0
+

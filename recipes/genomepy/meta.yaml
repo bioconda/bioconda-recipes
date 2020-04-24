@@ -1,56 +1,54 @@
+        {% set version = "0.7.2" %}
+
 package:
   name: genomepy
-  version: "0.4.0"
+  version: {{ version }}
 
 source:
-  fn: genomepy-0.4.0.tar.gz
-  url: https://github.com/simonvh/genomepy/releases/download/0.4.0/genomepy-0.4.0.tar.gz
-  md5: 8ff17afbf8a9f15477078b33857ed2de
+  url: https://github.com/vanheeringen-lab/genomepy/releases/download/{{ version }}/genomepy-{{ version }}.tar.gz
+  sha256: 9775ec2191e8f1a9552fc80e287d7186d11d6d2ddf315c68259b6a706004961d
 
 build:
   number: 0
-  # click needs to be patched in order to properly detect unicode in py3k
-  skip: true  # [py3k]
-
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  
 requirements:
-  build:
-    - python
-    - setuptools
-    - nose
-    - click
-    - pyfaidx
-    - norns >0.0.1
-    - xmltodict
-    - bucketcache
-    - msgpack-python
-    - requests
-    - ucsc-bedtogenepred
-    - ucsc-gtftogenepred
-    - ucsc-genepredtobed
-    - ucsc-genepredtogtf
-
+  host:
+    - python >3
+    - pip
   run:
-    - python
-    - nose
+    - python >3
     - click
-    - pyfaidx
-    - norns >0.0.1
+    - pyfaidx >=0.5.1
+    - norns >=0.1.5
     - xmltodict
-    - bucketcache
-    - msgpack-python
+    - bucketcache >=0.12.1
     - requests
+    - biopython >=1.73
+    - psutil
+    - appdirs
     - ucsc-bedtogenepred
     - ucsc-gtftogenepred
     - ucsc-genepredtobed
     - ucsc-genepredtogtf
+    - ucsc-gff3togenepred
 
 test:
-  # Python imports
   imports:
     - genomepy
+  commands:
+    - genomepy -h
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true  # [py3k]
 
 about:
-  home: https://github.com/simonvh/genomepy
+  home: https://github.com/vanheeringen-lab/genomepy
   license: MIT License
-  summary: 'Easy install of genomes.'
+  license_file: LICENSE
+  summary: 'Download genomes the easy way.'
   license_family: MIT

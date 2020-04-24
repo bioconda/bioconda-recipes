@@ -1,41 +1,54 @@
 {% set name = "busco" %}
-{% set version = "3.0.2" %}
-{% set sha256 = "cd0699545a126c7cc94604eef7c8dc50379b5d11becbad3a0f55d995a4c5e1c0" %}
+{% set version = "4.0.6" %}
+{% set sha256 = "1aad4ccd7c2151f90cd8ede1169d1ffb2484854be34b66594508a903783028dc" %}
+{% set repo = "busco" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  # Not available for osx because requires augustus
-  skip: True # [py27 or osx]
-  number: 4
+  number: 0
+  noarch: python
+
+
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://gitlab.com/ezlab/busco/repository/archive.tar.bz2?ref={{ version }}
+  url: https://gitlab.com/ezlab/{{ repo }}/-/archive/{{ version }}/busco-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 requirements:
-  build:
-    - python
-  run:
-    - python
-    - wget
-    - blast
-    - hmmer
-    - augustus >=3.2.3
+  host:
+    - python >=3.3
+    - pip
+    - findutils
+    - blast >=2.2,<2.4
+    - hmmer >=3.1b2 # sepp needs this version
+    - augustus 3.2.3
+    - biopython
+    - r-base
     - r-ggplot2 >=2.2.1
+    - prodigal
+    - sepp >=4.3.10
+  run:
+    - python >=3.3
+    - findutils
+    - blast >=2.2,<2.4
+    - hmmer >=3.1b2 # sepp needs this version
+    - augustus 3.2.3
+    - biopython
+    - r-base
+    - r-ggplot2 >=2.2.1
+    - prodigal
+    - sepp >=4.3.10
 
 test:
+  requires:
+    - wget
   commands:
-    - run_BUSCO.py -h
-    - run_busco -h
+    - busco -h
     - generate_plot.py -h
-    - generate_plot -h
 
-    # Message reported by busco when the config file exists but no input provided
-    - run_busco | grep "Please add it in the config file"
 
 about:
   home: http://busco.ezlab.org/
@@ -44,3 +57,12 @@ about:
            assembly, gene set, and transcriptome completeness based on
            evolutionarily informed expectations of gene content from
            near-universal single-copy orthologs selected from OrthoDB.
+
+extra:
+  identifiers:
+    - biotools:busco
+    - doi:10.1093/bioinformatics/btv351
+  recipe-maintainers:
+    - silask
+    - matsepp
+    - berkelem

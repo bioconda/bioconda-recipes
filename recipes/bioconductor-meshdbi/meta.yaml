@@ -1,38 +1,49 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "MeSHDbi" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: ddb114ad405bdf9002526d144c81b9054a8a3dd95681d0d614963302544d3982
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: f588d0ef59943bb98a3ba30fa07d2ad3
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit
 requirements:
-  build:
-    - 'bioconductor-annotationdbi >=1.31.19'
-    - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.15.10'
+  host:
+    - 'bioconductor-annotationdbi >=1.48.0,<1.49.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
     - r-base
     - r-rsqlite
   run:
-    - 'bioconductor-annotationdbi >=1.31.19'
-    - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.15.10'
+    - 'bioconductor-annotationdbi >=1.48.0,<1.49.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
     - r-base
     - r-rsqlite
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'The package is unified implementation of MeSH.db, MeSH.AOR.db, and MeSH.PCR.db and also is interface to construct Gene-MeSH package (MeSH.XXX.eg.db). loadMeSHDbiPkg import sqlite file and generate MeSH.XXX.eg.db.'
+  summary: 'DBI to construct MeSH-related package from sqlite file'
+  description: 'The package is unified implementation of MeSH.db, MeSH.AOR.db, and MeSH.PCR.db and also is interface to construct Gene-MeSH package (MeSH.XXX.eg.db). loadMeSHDbiPkg import sqlite file and generate MeSH.XXX.eg.db.'
+extra:
+  identifiers:
+    - biotools:meshdbi
+  parent_recipe:
+    name: bioconductor-meshdbi
+    path: recipes/bioconductor-meshdbi
+    version: 1.16.0
+

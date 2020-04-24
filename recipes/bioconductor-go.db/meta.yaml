@@ -1,33 +1,42 @@
-{% set version = "3.5.0" %}
+{% set version = "3.10.0" %}
 {% set name = "GO.db" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 656055d3e43f9b31c44ea895e831e0917092d5c899fad0e1c6070faa82ada109
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: cf5a09ce40972d42b010bd4725dee937
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: DBI
 requirements:
-  build:
-    - 'bioconductor-annotationdbi >=1.39.3'
+  host:
+    - 'bioconductor-annotationdbi >=1.48.0,<1.49.0'
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.39.3'
+    - 'bioconductor-annotationdbi >=1.48.0,<1.49.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'A set of annotation maps describing the entire Gene Ontology assembled using data from GO'
+  summary: 'A set of annotation maps describing the entire Gene Ontology'
+  description: 'A set of annotation maps describing the entire Gene Ontology assembled using data from GO'
+extra:
+  parent_recipe:
+    name: bioconductor-go.db
+    path: recipes/bioconductor-go.db
+    version: 3.6.0
+

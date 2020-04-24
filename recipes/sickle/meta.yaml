@@ -1,42 +1,23 @@
-build:
-  number: 0
-  skip: True # [osx]
+{% set version = "0.6.5" %}
+{% set sha256 = "c0841b4df5edea33d2da01e893b3feadb1a8eacd2ca4dab9248e6047455ba14a" %}
 
 package:
   name: sickle
-  version: "0.5"
+  version: '{{version}}'
 
 source:
-  fn: Sickle-0.5.tar.gz
-  url: https://pypi.python.org/packages/source/S/Sickle/Sickle-0.5.tar.gz
-  md5: 9c93e7f3e0db98ab1a18107dfa096082
-#  patches:
-   # List any patch files here
-   # - fix.patch
+  url: https://pypi.python.org/packages/source/S/Sickle/Sickle-{{version}}.tar.gz
+  sha256: '{{sha256}}'
 
-# build:
-  # noarch_python: True
-  # preserve_egg_dir: True
-  # entry_points:
-    # Put any entry points (scripts to be generated automatically) here. The
-    # syntax is module:function.  For example
-    #
-    # - sickle = sickle:main
-    #
-    # Would create an entry point called sickle that calls sickle.main()
-
-
-  # If this is a new build for the same version, increment the build
-  # number. If you do not include this key, it defaults to 0.
-  # number: 1
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 requirements:
-  build:
+  host:
     - python
-    - setuptools
-    - requests >=1.1.0
-    - lxml >=3.2.3
-
+    - pip
   run:
     - python
     - requests >=1.1.0
@@ -46,26 +27,12 @@ test:
   # Python imports
   imports:
     - sickle
-
-  # commands:
-    # You can put test commands to be run here.  Use this to test that the
-    # entry points work.
-
-
-  # You can also put a file called run_test.py in the recipe that will be run
-  # at test time.
-
   requires:
     - mock >=1.0.1
     - nose >=1.0
-    # Put any additional test requirements here.  For example
-    # - nose
 
 about:
   home: http://github.com/mloesch/sickle
   license: BSD License
-  summary: 'A lightweight OAI client library for Python'
-
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml
+  license_family: BSD
+  summary: A lightweight OAI client library for Python

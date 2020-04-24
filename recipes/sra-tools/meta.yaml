@@ -1,39 +1,47 @@
-{% set SRA_TOOLS_VERSION = "2.8.2" %}
-{% set SRA_TOOLS_SHA256 = "d04e5fd735c3987c3497369844e20c1ae38a88867c36154798f072f19a8792fa" %}
+{% set version = "2.10.3" %}
+{% set bioconda_version = "2.10.3" %}
+{% set ngs_version = "2.10.2" %}
 
 package:
   name: sra-tools
-  version: {{ SRA_TOOLS_VERSION }}
+  version: '{{ bioconda_version }}'
+
+source:
+  - url: https://github.com/ncbi/sra-tools/archive/{{version}}.tar.gz
+    sha256: 4a06c606b10964fa74e02ada9230da8d7374f88d4d1bfa4030c274b62a19633a
+    folder: sra-tools
+    patches:
+      - skip_config_interactive.diff
+  - url: https://github.com/ncbi/ncbi-vdb/archive/{{version}}.tar.gz
+    sha256: 85aded6e513ec2d2aac06d398063ca6293243acadc501d47c68d9689c782150d
+    folder: ncbi-vdb
+  - url: https://github.com/ncbi/ngs/archive/{{ngs_version}}.tar.gz
+    sha256: 613be73b31474b7e3d616ad3d7fea3a6a598a9b3695309a1b1e0bc4224248447
+    folder: ngs
 
 build:
   number: 0
-
-source:
-  fn: sra-tools-{{ SRA_TOOLS_VERSION }}.tar.gz
-  url: https://github.com/ncbi/sra-tools/archive/{{ SRA_TOOLS_VERSION }}-3.tar.gz
-  sha256: {{ SRA_TOOLS_SHA256 }}
-
-extra:
-  notes: "This package includes ncbi-vdb and ngs-sdk. After installation, you should run the configuration tool: ./vdb-config -i. This tool will setup your download/cache area for downloaded files and references."
+  skip: True  # [osx]
 
 requirements:
   build:
-    - gcc # [not osx]
-    - llvm # [osx]
-    - perl
-    - libiconv
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - ncbi-ngs-sdk
     - libxml2
+    - hdf5
+    - perl
   run:
-    #
+    - perl
+    - ncbi-ngs-sdk
+    - libxml2
+    - hdf5
+    - perl-xml-libxml
+    - perl-uri
 
-about:
-  home: https://github.com/ncbi/sra-tools
-  license: Public Domain
-  summary: The SRA Toolkit and SDK from NCBI is a collection of tools and
-           libraries for using data in the INSDC Sequence Read Archives.
 test:
   commands:
-    # "Frequently Used Tools"
     - fastq-dump --help > /dev/null
     - prefetch --help > /dev/null
     - sam-dump --help > /dev/null
@@ -41,3 +49,16 @@ test:
     - vdb-config --help > /dev/null
     - vdb-decrypt --help > /dev/null
     - fastq-dump -N 1 -X 1 SRR000001 && grep '@SRR000001.1' SRR000001.fastq
+    - fasterq-dump --help > /dev/null
+
+about:
+  home: https://github.com/ncbi/sra-tools
+  license: Public Domain
+  summary: SRA Toolkit and SDK from NCBI
+  description:  |
+    The SRA Toolkit and SDK from NCBI is a collection of tools and libraries
+    for using data in the INSDC Sequence Read Archives.
+
+extra:
+  notes: 'After installation, you should run the configuration tool: ./vdb-config
+    -i. This tool will setup your download/cache area for downloaded files and references.'

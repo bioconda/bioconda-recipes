@@ -3,26 +3,31 @@
 {% set md5 = "f35761bb32d00de556c143bcf33a1142" %}
 
 build:
-  number: 0
+  number: 3
+  skip: True  # [osx]
+  # This uses a gcc-specific header that won't exist with clang (ext/stdio_filebuf.h)
 
 package:
   name: {{ name }}
   version: {{ version }}
+
 source:
-  fn: Quorum-{{ version }}.tar.gz
   url: https://github.com/gmarcais/Quorum/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
   md5: {{ md5 }}
+
 requirements:
   build:
-    - gcc
-    - jellyfish >=2.0
+    - {{ compiler('cxx') }}
+  host:
+    - kmer-jellyfish 2.*
   run:
-    - libgcc # [linux]
-    - perl-threaded
-    - jellyfish >=2.0
+    - perl
+    - kmer-jellyfish 2.*
+
 test:
   commands:
     - quorum --version 2>&1 > /dev/null
+
 about:
   home: http://www.genome.umd.edu/quorum.html
   license: GPLv3

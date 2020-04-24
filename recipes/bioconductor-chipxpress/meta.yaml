@@ -1,0 +1,57 @@
+{% set version = "1.30.0" %}
+{% set name = "ChIPXpress" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 0e99079e935df9d6f66e4ade44828f43
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: mouse4302frmavecs, mouse4302.db, mouse4302cdf, RUnit, BiocGenerics
+requirements:
+  host:
+    - 'bioconductor-affy >=1.64.0,<1.65.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-chipxpressdata >=1.24.0,<1.25.0'
+    - 'bioconductor-frma >=1.38.0,<1.39.0'
+    - 'bioconductor-geoquery >=2.54.0,<2.55.0'
+    - r-base
+    - r-biganalytics
+    - r-bigmemory
+  run:
+    - 'bioconductor-affy >=1.64.0,<1.65.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-chipxpressdata >=1.24.0,<1.25.0'
+    - 'bioconductor-frma >=1.38.0,<1.39.0'
+    - 'bioconductor-geoquery >=2.54.0,<2.55.0'
+    - r-base
+    - r-biganalytics
+    - r-bigmemory
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL(>=2)
+  summary: 'ChIPXpress: enhanced transcription factor target gene identification from ChIP-seq and ChIP-chip data using publicly available gene expression profiles'
+  description: 'ChIPXpress takes as input predicted TF bound genes from ChIPx data and uses a corresponding database of gene expression profiles downloaded from NCBI GEO to rank the TF bound targets in order of which gene is most likely to be functional TF target.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:chipxpress
+    - doi:10.1186/1471-2105-14-188
+  parent_recipe:
+    name: bioconductor-chipxpress
+    path: recipes/bioconductor-chipxpress
+    version: 1.24.0
+

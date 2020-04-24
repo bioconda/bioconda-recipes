@@ -1,34 +1,43 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "RProtoBufLib" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 0fb88eaabd190fa5e56cca3434876fbab3faa66eb423267941e5c360ed40f86e
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 383768dc0eacc94a6600b265f13d2164
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# SystemRequirements: GNU make
 requirements:
-  build:
+  host:
     - r-base
-    - automake ==1.14 # needs alocal installed
-    - autoconf
-    - protobuf
-    - libtool
   run:
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: BSD_3_clause
-  summary: 'This package provides the headers and static library of Protocol buffers 2.6.0 for other R packages to compile and link against.'
+  summary: 'C++ headers and static libraries of Protocol buffers'
+  description: 'This package provides the headers and static library of Protocol buffers 2.6.0 for other R packages to compile and link against.'
+extra:
+  parent_recipe:
+    name: bioconductor-rprotobuflib
+    path: recipes/bioconductor-rprotobuflib
+    version: 1.2.0
+

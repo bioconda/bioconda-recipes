@@ -18,16 +18,10 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"; # get final path of this script
 
-# set install path of jalview
-JALVIEWDIR=$DIR; 
+# decide which jalview jar to launch - either 'j11' or 'j1.8'
+J_VERSION="j11"
 
-CLASSPATH=`echo $JALVIEWDIR/*.jar | sed -e 's/r /r:/g'`
+# if java 8 is installed we pick the j1.8 build
+if [[ $( conda list openjdk | egrep -e 'openjdk\W+8' ) ]]; then J_VERSION=j1.8; fi
 
-# total physical memory in mb
-
-MAXMEM=`python -c 'from psutil import virtual_memory;print ("-Xmx%iM" % (256 if (virtual_memory().total/(1024*1024)) < 1024 else ((virtual_memory().total/(1024*1024))-1024)))'`
-
-if [[ $( conda list openjdk | egrep -e 'openjdk:\W+9' ) ]]; then JAVA9MOD="--add-modules=java.se.ee"; fi;
-
-java $MAXMEM $JAVA9MOD -classpath $CLASSPATH jalview.bin.Jalview ${@}; 
-
+java -jar $DIR/jalview-all-${J_VERSION}.jar ${@};

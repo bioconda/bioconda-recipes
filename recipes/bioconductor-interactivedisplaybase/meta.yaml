@@ -1,34 +1,46 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "interactiveDisplayBase" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: e5966f2b6d2e5f2f21a130f71c1b1b605cdb88f746fd989fe435622c0b49cb07
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: c0c12ee30f198c1db5a24955efda2f5d
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr
 requirements:
-  build:
-    - bioconductor-biocgenerics
+  host:
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
     - r-base
     - r-shiny
   run:
-    - bioconductor-biocgenerics
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
     - r-base
     - r-shiny
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'The interactiveDisplayBase package contains the the basic methods needed to generate interactive Shiny based display methods for Bioconductor objects.'
+  summary: 'Base package for enabling powerful shiny web displays of Bioconductor objects'
+  description: 'The interactiveDisplayBase package contains the the basic methods needed to generate interactive Shiny based display methods for Bioconductor objects.'
+extra:
+  identifiers:
+    - biotools:interactivedisplaybase
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-interactivedisplaybase
+    path: recipes/bioconductor-interactivedisplaybase
+    version: 1.18.0
+

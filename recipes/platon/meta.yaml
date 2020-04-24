@@ -1,0 +1,57 @@
+{% set version = "1.2.1" %}
+{% set sha256 = "11abcda3ea48c6d6c22dece879ba605027048967d54883fb306ba0fe0d5b3f43" %}
+
+package:
+  name: platon
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/oschwengers/platon/archive/v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: python
+  number: 0
+  script: python -m pip install --no-deps --ignore-installed .
+  entry_points:
+    - platon = platon.platon:main
+
+requirements:
+  host:
+    - python >=3
+    - pip
+  run:
+    - python >=3
+    - biopython >=1.71
+    - prodigal >=2.6.1
+    - diamond =0.9.32
+    - blast >=2.7.1
+    - hmmer >=3.2.1
+    - infernal >=1.1.2
+    - mummer4 >=4.0.0beta2
+
+test:
+  import:
+    - Bio.SeqIO
+  commands:
+    - platon --help
+    - prodigal -h
+    - diamond help
+    - cmscan -h
+    - hmmsearch -h
+    - nucmer -V
+    - blastn -help
+
+about:
+  home: https://github.com/oschwengers/platon
+  license: GPLv3
+  license_family: GPL
+  license_file: LICENSE
+  summary: Plasmid contig classification and characterization for short read draft assemblies.
+  dev_url: https://github.com/oschwengers/platon
+
+extra:
+  identifiers:
+    - biotools:platon
+  recipe-maintainers:
+    - oschwengers

@@ -1,53 +1,61 @@
-{% set version = "1.20.0" %}
+{% set version = "1.28.0" %}
 {% set name = "chimera" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
-
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: a473b0db84efef737782dc07f784eef7acc62133fcac140c7ba2fb6d3dbfa07c
-
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 50d8ae69a11e019639e8d575100e89fa
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-
+# Suggests: BiocParallel, geneplotter
+# SystemRequirements: STAR, TopHat, bowtie and samtools are required for some functionalities
 requirements:
-  build:
-    - bioconductor-annotationdbi
-    - bioconductor-biobase
-    - bioconductor-bsgenome.hsapiens.ucsc.hg19
-    - bioconductor-genomicalignments
-    - 'bioconductor-genomicranges >=1.13.3'
-    - bioconductor-homo.sapiens
-    - 'bioconductor-rsamtools >=1.13.1'
-    - bioconductor-txdb.hsapiens.ucsc.hg19.knowngene
+  host:
+    - 'bioconductor-annotationdbi >=1.48.0,<1.49.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-bsgenome.hsapiens.ucsc.hg19 >=1.4.0,<1.5.0'
+    - 'bioconductor-genomicalignments >=1.22.0,<1.23.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - 'bioconductor-homo.sapiens >=1.3.0,<1.4.0'
+    - 'bioconductor-rsamtools >=2.2.0,<2.3.0'
+    - 'bioconductor-txdb.hsapiens.ucsc.hg19.knowngene >=3.2.0,<3.3.0'
     - r-base
+    - star
   run:
-    - bioconductor-annotationdbi
-    - bioconductor-biobase
-    - bioconductor-bsgenome.hsapiens.ucsc.hg19
-    - bioconductor-genomicalignments
-    - 'bioconductor-genomicranges >=1.13.3'
-    - bioconductor-homo.sapiens
-    - 'bioconductor-rsamtools >=1.13.1'
-    - bioconductor-txdb.hsapiens.ucsc.hg19.knowngene
+    - 'bioconductor-annotationdbi >=1.48.0,<1.49.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-bsgenome.hsapiens.ucsc.hg19 >=1.4.0,<1.5.0'
+    - 'bioconductor-genomicalignments >=1.22.0,<1.23.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - 'bioconductor-homo.sapiens >=1.3.0,<1.4.0'
+    - 'bioconductor-rsamtools >=2.2.0,<2.3.0'
+    - 'bioconductor-txdb.hsapiens.ucsc.hg19.knowngene >=3.2.0,<3.3.0'
     - r-base
-
+    - star
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
-
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'This package facilitates the characterisation of fusion products events. It allows to import
-    fusion data results from the following fusion finders:  chimeraScan, bellerophontes, deFuse, FusionFinder,
-    FusionHunter, mapSplice, tophat-fusion, FusionMap, STAR, Rsubread, fusionCatcher.'
+  summary: 'A package for secondary analysis of fusion products'
+  description: 'This package facilitates the characterisation of fusion products events. It allows to import fusion data results from the following fusion finders: chimeraScan, bellerophontes, deFuse, FusionFinder, FusionHunter, mapSplice, tophat-fusion, FusionMap, STAR, Rsubread, fusionCatcher.'
+extra:
+  parent_recipe:
+    name: bioconductor-chimera
+    path: recipes/bioconductor-chimera
+    version: 1.22.0
+

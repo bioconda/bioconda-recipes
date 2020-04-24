@@ -1,34 +1,41 @@
+{% set version = "1.7.3" %}
+
 package:
   name: kaiju
-  version: 1.5.0
+  version: {{ version }}
 
 source:
-    fn: v1.5.0.tar.gz
-    url: https://github.com/bioinformatics-centre/kaiju/archive/v1.5.0.tar.gz
-    md5: e8effb834a7d1e2863880c60d481ecf2
-
+  url: https://github.com/bioinformatics-centre/kaiju/archive/v{{ version }}.tar.gz
+  sha256: 174ab6b6841d3d9164ec06f76a219a391d461d271b4a00fe8cf9cd87e689b05e
 
 build:
-  number: 0  
+  number: 1
   no_link:
-    - bin/makeDB.sh
+    - bin/kaiju-makedb.sh
 
 requirements:
   build:
-    - gcc
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - zlib
   run:
-    - libgcc
     - perl
-    - gnu-wget >=1.16
+    - wget
+    - zlib
+    - python
 
 test:
   commands:
-    - kaiju 2>&1 | head -n 1 | grep -q '^Error:'; echo $?
-
-#Tool always outputs error code one so created a workaround
+    - kaiju 2>&1 | grep "Kaiju {{ version }}"
 
 about:
   home: http://kaiju.binf.ku.dk/
   license: GNU GPL v3
   summary: 'Fast and sensitive taxonomic classification for metagenomics'
   license_file: LICENSE
+
+extra:
+  identifiers:
+    - biotools:kaiju
+    - doi:10.1038/ncomms11257

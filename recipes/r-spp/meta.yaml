@@ -1,49 +1,61 @@
+{% set version = '1.16.0' %}
+
 package:
   name: r-spp
-  version: "1.14post"
+  version: {{ version|replace("-", "_") }}
 
 source:
-  fn: "1.14post.zip"
-  url: https://github.com/hms-dbmi/spp/archive/c6526d2bc8eeaaa889970cd2f8d30c998f3ea320.zip
-  sha256: 61f0d21f2c5127e570bf619445c89968009cfbd32b995984cf20788f986e666b 
-  patches: # [osx]
-    - Makevars.patch  # [osx]
+  url:
+    - {{ cran_mirror }}/src/contrib/spp_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/spp/spp_{{ version }}.tar.gz
+  sha256: 3c890f3c414183167f9643b556621dcdc14ce6a1b54a04d618c74070fdebfd23
 
 build:
-  number: 0
-  string: r_{{CONDA_R}}_boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
-
-  # This is required to make R link correctly on Linux.
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - autoconf
+    - pkg-config
+    - make
+  host:
     - r-base
-    - boost {{CONDA_BOOST}}*
-    - r-catools
+    - r-bh >=1.66
+    - r-rcpp
     - bioconductor-rsamtools
-    - gcc # [linux]
-    - llvm # [osx]
-    - zlib
-    - bzip2
-
+    - r-catools
   run:
     - r-base
-    - boost {{CONDA_BOOST}}*
-    - r-catools
+    - r-bh >=1.66
+    - r-rcpp
     - bioconductor-rsamtools
-    - libgcc # [linux]
-    - zlib
-    - bzip2
+    - r-catools
 
 test:
   commands:
-    - $R -e "library(spp)"
-    - $R -e "library(spp); read.bam.tags(system.file(\"extdata\", \"ex1.bam\", package=\"Rsamtools\"))"
+
+    - $R -e "library('spp')"           # [not win]
+    - "\"%R%\" -e \"library('spp')\""  # [win]
 
 about:
-  license: GPL
-  summary: 'ChIP-seq peak caller'
-  home: http://compbio.med.harvard.edu/Supplements/ChIP-seq
+  home: https://CRAN.R-project.org/package=spp
+  license: GPL-2
+  summary: Analysis of ChIP-seq and other functional sequencing data [Kharchenko PV (2008) <DOI:10.1038/nbt.1508>].
+  license_family: GPL2
+extra:
+  identifiers:
+    - biotools:spp
+    - doi:10.1038/nbt.1508
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

@@ -1,0 +1,61 @@
+{% set name = "vtools" %}
+{% set version = "1.1.0" %}
+{% set pipname = "v-tools" %}
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ pipname[0] }}/{{ pipname }}/{{ pipname }}-{{ version }}.tar.gz
+  sha256: f5298aa8f220e4e124dde84de8af183983888a6ae1d7c2c3a8e74940c86c2a3f
+  patches:
+    - patch
+
+build:
+  number: 0
+  entry_points:
+    - vtools-filter = vtools.cli:filter_cli
+    - vtools-stats = vtools.cli:stats_cli
+    - vtools-gcoverage = vtools.cli:gcoverage_cli
+    - vtools-evaluate = vtools.cli:evaluate_cli
+  script:  "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  skip: True  # [osx or py2k]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - cython
+    - numpy
+    - cyvcf2
+    - click
+    - tqdm
+  run:
+    - python
+    - numpy
+    - cyvcf2
+    - click
+    - tqdm
+
+test:
+  imports:
+    - vtools
+  commands:
+    - LC_ALL="en_US.UTF-8" vtools-filter --help
+    - LC_ALL="en_US.UTF-8" vtools-stats --help
+    - LC_ALL="en_US.UTF-8" vtools-gcoverage --help
+    - LC_ALL="en_US.UTF-8" vtools-evaluate --help
+
+about:
+  home: https://github.com/LUMC/vtools
+  license: MIT
+  license_family: MIT
+  summary: Various tools operating over VCF files. Uses cyvcf2 and cython under the hood for speed
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true

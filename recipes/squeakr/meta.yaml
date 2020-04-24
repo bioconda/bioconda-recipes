@@ -1,39 +1,43 @@
+{% set version = "0.6" %}
 {% set name = "squeakr" %}
-{% set version = "0.5" %}
-{% set md5 = "311dd917960e91e4fb7fee34970cd0b5" %}
 
 package:
-  name : {{ name|lower }}
-  version : {{ version }}
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url : https://github.com/splatlab/squeakr/archive/v{{ version }}.tar.gz
-  fn : {{ name|lower }}_{{ version }}.tar.gz
-  md5 : {{ md5 }}
+  url: https://github.com/splatlab/{{ name|lower }}/archive/V{{ version }}.tar.gz
+  sha256: 6738efd60a32362d98be311b949012a57787d0ee77679ac1016809267b6f29b2
 
 build:
-  number : 0
+  number: 0
+  skip: True #  [osx]
 
 requirements:
   build:
-    - gcc  # [not osx]
-    - llvm  # [osx]
-    - bzip2 
-    - zlib {{CONDA_ZLIB}}*
-    - boost  {{CONDA_BOOST}}*
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - bzip2
+    - zlib
+    - boost
+    - boost-cpp
     - openssl
+    - pthread-stubs
   run:
-    - libgcc # [not osx]
-    - bzip2 
-    - zlib {{CONDA_ZLIB}}*
-    - boost  {{CONDA_BOOST}}*
+    - bzip2
+    - zlib
+    - boost
+    - boost-cpp
     - openssl
+    - pthread-stubs
 
 test:
   commands:
-    - squeakr-count -h
+    - squeakr help -v
 
 about:
-  home : https://github.com/splatlab/squeakr
-  license : BSD
-  summary : 'An Exact and Approximate k-mmer Counting System'
+  home: https://github.com/splatlab/squeakr
+  license: BSD-3-Clause
+  license_family: BSD
+  summary: An Exact and Approximate k-mer Counting System

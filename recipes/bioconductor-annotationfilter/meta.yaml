@@ -1,34 +1,43 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "AnnotationFilter" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 9ae92879307a678a85d12e0cf8d988c506e6c0b0ac64e195a26dbbc08841ee13
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: f022485a9ad10534d92efb7c02dfdc23
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle, knitr, testthat, RSQLite, org.Hs.eg.db
 requirements:
-  build:
-    - bioconductor-genomicranges
+  host:
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
     - r-base
     - r-lazyeval
   run:
-    - bioconductor-genomicranges
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
     - r-base
     - r-lazyeval
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'This package provides class and other infrastructure to implement filters for manipulating Bioconductor annotation resources. The filters will be used by ensembldb, Organism.dplyr, and other packages.'
+  summary: 'Facilities for Filtering Bioconductor Annotation Resources'
+  description: 'This package provides class and other infrastructure to implement filters for manipulating Bioconductor annotation resources. The filters will be used by ensembldb, Organism.dplyr, and other packages.'
+extra:
+  parent_recipe:
+    name: bioconductor-annotationfilter
+    path: recipes/bioconductor-annotationfilter
+    version: 1.4.0
+

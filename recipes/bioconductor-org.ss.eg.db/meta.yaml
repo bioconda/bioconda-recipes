@@ -1,33 +1,42 @@
-{% set version = "3.5.0" %}
+{% set version = "3.10.0" %}
 {% set name = "org.Ss.eg.db" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: cc08bee98f13c47605755e7ab41f9cdaa840749c5e0931a2bbc22ad31ba93ff2
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 2b51ee253c2443267c0dd4ac276a8fa1
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: DBI, annotate, RUnit
 requirements:
-  build:
-    - 'bioconductor-annotationdbi >=1.39.3'
+  host:
+    - 'bioconductor-annotationdbi >=1.48.0,<1.49.0'
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.39.3'
+    - 'bioconductor-annotationdbi >=1.48.0,<1.49.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Genome wide annotation for Pig, primarily based on mapping using Entrez Gene identifiers.'
+  summary: 'Genome wide annotation for Pig'
+  description: 'Genome wide annotation for Pig, primarily based on mapping using Entrez Gene identifiers.'
+extra:
+  parent_recipe:
+    name: bioconductor-org.ss.eg.db
+    path: recipes/bioconductor-org.ss.eg.db
+    version: 3.6.0
+
