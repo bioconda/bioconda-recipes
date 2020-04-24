@@ -168,8 +168,7 @@ mkdir -p $STACK_ROOT
     echo "apply-ghc-options: everything"
 ) > "${STACK_ROOT}/config.yaml"
 
-stack setup
-stack update
+stack setup --verbose
 make NGLess/Dependencies/Versions.hs
 make external-deps CC=$CC CXX=$CXX
 stack build --extra-include-dirs ${PREFIX}/include --extra-lib-dirs ${PREFIX}/lib --local-bin-path ${PREFIX}/bin
@@ -178,22 +177,6 @@ make install WGET="wget --no-check-certificate" prefix=$PREFIX CC=$CC
 
 rm -r .stack-work
 popd
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
 
