@@ -14,39 +14,13 @@ export CXXFLAGS="-I${PREFIX}/include"
 CATH_PROGRAMS="build-test cath-assign-domains cath-cluster cath-map-clusters cath-refine-align cath-resolve-hits cath-score-align cath-ssap cath-superpose"
 
 #compile
-#-lboost_thread
 DCMAKE=""
-declare -a CMAKE_PLATFORM_FLAGS
 if [[ ${HOST} =~ .*darwin.* ]]; then
 	MACOSX_DEPLOYMENT_TARGET=10.9
 	DCMAKE+=" -DCMAKE_THREAD_LIBS_INIT=-lpthread -DCMAKE_HAVE_THREADS_LIBRARY=1"
-	DCMAKE+=" -DCMAKE_USE_PTHREADS_INIT=1 -DCMAKE_DL_LIBS=-ldl"
-	DCMAKE+="	-DCMAKE_MACOSX_RPATH=ON "
-	RPATH='@loader_path/../lib'
-	export DYLD_FALLBACK_LIBRARY_PATH="${PREFIX}/lib"
-	#export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:${PREFIX}/lib"
-	#DCMAKE=" -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
-  #export CXXFLAGS="${CXXFLAGS} -isysroot ${CONDA_BUILD_SYSROOT} -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
-	LDFLAGS+=" -lz -lm"
+	DCMAKE+=" -DCMAKE_USE_PTHREADS_INIT=1"
 	export CXXFLAGS="${CXXFLAGS} -fvisibility=hidden -fvisibility-inlines-hidden"
 fi
-
-#LDFLAGS+=' -Wl,-rpath,${RPATH}'
-LDFLAGS+=' -Wl,-rpath,./'
-
-# use, i.e. don't skip the full RPATH for the build tree
-DCMAKE+=" -DCMAKE_SKIP_BUILD_RPATH=FALSE"
-
-# when building, don't use the install RPATH already
-# (but later on when installing)
-DCMAKE+=" -DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
-
-# the RPATH to be used when installing
-#-DCMAKE_INSTALL_RPATH="" \
-
-# don't add the automatically determined parts of the RPATH
-# which point to directories outside the build tree to the install RPATH
-DCMAKE+=" -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=FALSE"
 
 cmake -DGSL_LIBRARIES=${PREFIX}/include \
 			-DCMAKE_BUILD_WITH_INSTALL_NAME_DIR=ON \
@@ -59,7 +33,7 @@ cmake -DGSL_LIBRARIES=${PREFIX}/include \
 			${DCMAKE} \
 			.
 
-make -j${CPU_COUNT}  #CXX=${CXX} CXXFLAGS="${CXXFLAGS}"
+make -j${CPU_COUNT}
 
 # copy tools in the bin
 mkdir -p ${PREFIX}/bin
