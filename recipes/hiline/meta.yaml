@@ -1,0 +1,66 @@
+{% set name = "HiLine" %}
+{% set version = "0.0.3" %}
+{% set sha256 = "a27e0426ffb08ca40991e44f1d7ac2e2256a4e94559e13ac6f713bc741de1f4d" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/wtsi-hpag/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  skip: True # [osx]
+
+requirements:
+  build:
+    - python>=3.8.2
+    - numpy>=1.18.1
+    - {{ compiler('cxx') }}
+    - clang>=9.0.1
+    - git
+    - cmake>=3.16.4
+    - boost>=1.72.0
+    - ragel>=6.10
+    - pcre>=8.44
+    - ninja>=1.10.0
+    - pkgconfig>=1.3.1
+  host:
+    - numpy>=1.18.1
+    - pip>=20.0.2
+    - python>=3.8.2
+    - setuptools>=46.0.0
+  run:
+    - python>=3.8.2
+    - bwa>=0.7.17
+    - samtools>=1.10
+    - click>=7.0
+    - pandas>=1.0.1
+    - numpy>=1.18.1
+    - seaborn>=0.10.0
+    - matplotlib-base>=3.2.0
+    - biopython>=1.76
+
+test:
+  commands:
+    - {{ name }} --help
+  imports:
+    - {{ name }}
+
+about:
+  home: https://github.com/wtsi-hpag/{{ name }}
+  license: MIT
+  license_file: LICENSE
+  license_family: MIT
+  summary: HiC alignment and classification pipeline.
+  description: >
+    This is a HiC short-read alignment pipeline. It will perform an alignment, or read in an external alignment,
+    perform optional duplicate-read marking, perform HiC read classification based on an in-slico restriction digest
+    of reference sequences and finally split the output alignments based on HiC read-type.
+    It can also optionally process and output HiC alignment statistics.
+    Under the hood, it uses bwa mem and samtools to perform and process alignments.
+    It also uses a custom C++ Python extension to perform the in-slico digest
+    (using the Hyperscan (https://github.com/intel/hyperscan) regex library) and subsequent HiC classification.  

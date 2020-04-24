@@ -33,9 +33,6 @@ echo "Downloading VIBRANT databases to ${VIBRANT_DATA_PATH}..."
 cd ${VIBRANT_DATA_PATH}/databases
 python VIBRANT_setup.py
 
-echo "Testing VIBRANT databases..."
-python VIBRANT_test_setup.py
-
-echo "VIBRANT databases are downloaded successfully."
+echo "VIBRANT databases are downloaded successfully. Please see log file for any error messages."
 
 exit 0

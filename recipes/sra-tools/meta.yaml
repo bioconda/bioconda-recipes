@@ -1,6 +1,6 @@
-{% set version = "2.10.1" %}
-{% set bioconda_version = "2.10.1" %}
-{% set ngs_version = "2.10.1" %}
+{% set version = "2.10.3" %}
+{% set bioconda_version = "2.10.3" %}
+{% set ngs_version = "2.10.2" %}
 
 package:
   name: sra-tools
@@ -8,17 +8,20 @@ package:
 
 source:
   - url: https://github.com/ncbi/sra-tools/archive/{{version}}.tar.gz
-    sha256: 6c522f1014831c0ff1429f56fe50408c917f193f83469831d227bb084299f9e3
+    sha256: 4a06c606b10964fa74e02ada9230da8d7374f88d4d1bfa4030c274b62a19633a
     folder: sra-tools
+    patches:
+      - skip_config_interactive.diff
   - url: https://github.com/ncbi/ncbi-vdb/archive/{{version}}.tar.gz
-    sha256: b55e28a264602613fe36fa82f4e38fc36631b361fd08d4b442afdba258fb1f6c
+    sha256: 85aded6e513ec2d2aac06d398063ca6293243acadc501d47c68d9689c782150d
     folder: ncbi-vdb
   - url: https://github.com/ncbi/ngs/archive/{{ngs_version}}.tar.gz
-    sha256: c1fde07b7b7fb9f0ab63adc3791146c36821a533def054df214c28b676e70309
+    sha256: 613be73b31474b7e3d616ad3d7fea3a6a598a9b3695309a1b1e0bc4224248447
     folder: ngs
 
 build:
   number: 0
+  skip: True  # [osx]
 
 requirements:
   build:
@@ -39,9 +42,6 @@ requirements:
 
 test:
   commands:
-    # "Frequently Used Tools"
-    - sratools help
-    # Ensure the old executable names still work
     - fastq-dump --help > /dev/null
     - prefetch --help > /dev/null
     - sam-dump --help > /dev/null
