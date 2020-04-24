@@ -1,6 +1,6 @@
 --- carthagene.in	2019-12-18 17:14:01.252099861 +0100
 +++ carthagene.in	2019-12-18 17:13:11.642618291 +0100
-@@ -3,6 +3,8 @@
+@@ -3,18 +3,23 @@
  TCLSH=`(which tclsh8.5 2> /dev/null) || (which tclsh 2> /dev/null)`
  WISH=`(which wish8.5 2> /dev/null) || (which wish 2> /dev/null)`
  
@@ -13,18 +13,40 @@
 +# Get the script directory
 +WD=`cd $(dirname $0)/..; pwd`	# /.. because this script is now in $PREFIX/bin
 +
-+echo "PREFIX is $PREFIX"
-+echo "WD is $WD"
-+echo "CMAKE_INSTALL_PREFIX is $CMAKE_INSTALL_PREFIX"
-+echo "anaconda1anaconda2anaconda is /opt/anaconda1anaconda2anaconda3/"
-+
  function check_install_dotfile() {
 -	test -e ~/.$1 || ( echo "Installing default ~/.$1" && cp ${CMAKE_INSTALL_PREFIX}/share/carthagene/sample_$1 ~/.$1 )
-+	test -e ~/.$1 || ( echo "Installing defaultxx ~/.$1" && cp $WD/../share/carthagene/sample_$1 ~/.$1 )
++	test -e ~/.$1 || ( echo "Installing default ~/.$1" && cp $PREFIX/share/carthagene/sample_$1 ~/.$1 )
  }
  
  if [ "x$1" != "x--local-install" ]; then
-@@ -97,9 +107,6 @@
+ 	while test "$1"; do
+ 		case "x$1" in
+-			"x-i")	CGARGS="${CMAKE_INSTALL_PREFIX}/share/carthagene/gui/CGW.tcl $CGARGS"
++			"x-i")	CGARGS="$PREFIX/share/carthagene/gui/CGW.tcl $CGARGS"
+ 				INTERP=$WISH
+ 				shift 1
+ 				;;
+@@ -27,13 +32,14 @@
+ 		esac
+ 	done
+ 
+-
+-	check_install_dotfile carthagenerc
+-	check_install_dotfile cgwopt
+-	check_install_dotfile cgwdefalgo
++  if [ -e ~/ ]; then
++		check_install_dotfile carthagenerc
++		check_install_dotfile cgwopt
++		check_install_dotfile cgwdefalgo
++	fi
+ 
+ 	#$CGFE ${CMAKE_INSTALL_PREFIX}/share/carthagene/CG $CGARGS
+-	$CGFE $INTERP ${CMAKE_INSTALL_PREFIX}/share/carthagene/cgsh/cgbootstrap.tcl $CGARGS
++	$CGFE $INTERP $PREFIX/share/carthagene/cgsh/cgbootstrap.tcl $CGARGS
+ 	exit $?
+ fi
+ 
+@@ -97,9 +103,6 @@
  	return $RET
  }
  
@@ -34,7 +56,7 @@
  # Only meant to be run once.
  
  LOCINSTFILE=.locally_installed
-@@ -139,22 +146,6 @@
+@@ -139,22 +142,6 @@
  sed -i "s,/usr/,$WD/,g" $WD/share/carthagene/cgsh/cgbootstrap.tcl
  sed -i "s,/usr/,$WD/,g" $WD/share/carthagene/gui/CGShellWidget.tcl
  
