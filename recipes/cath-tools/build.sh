@@ -23,7 +23,7 @@ cmake -DGSL_LIBRARIES=${PREFIX}/include \
 make -j${CPU_COUNT}
 
 #list programs
-CATH_PROGRAMS="build-test cath-assign-domains cath-cluster cath-map-clusters cath-refine-align cath-resolve-hits cath-score-align cath-ssap cath-superpose"
+CATH_PROGRAMS="cath-assign-domains cath-cluster cath-map-clusters cath-refine-align cath-resolve-hits cath-score-align cath-ssap cath-superpose"
 
 # copy tools in the bin
 mkdir -p ${PREFIX}/bin
@@ -33,3 +33,6 @@ done
 
 #make everything executable in case in the bin
 chmod +x ${PREFIX}/bin/*
+
+# unitest
+./build-test
