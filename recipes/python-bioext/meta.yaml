@@ -1,12 +1,13 @@
+{% set name = "BioExt" %}
 {% set version = "0.19.7" %}
 {% set sha256 = "30d7b0c675af0cc92790b77b28f3f034049d80d480df9a9c69ab590179e6326a" %}
 
 package:
-  name: python-bioext
+  name: python-{{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/veg/BioExt/archive/{{ version }}.tar.gz
+  url: https://github.com/veg/{{ name }}/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:               # [osx]
     - osx-freetype.patch # [osx]
@@ -18,9 +19,17 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
-    - python >=3
+    - python >3
+    - cython >=0.17
     - pip
+    - biopython >=1.58
+    - numpy >=1.6
+    - scipy >=0.15
+    - pysam
+    - joblib
+    - six
   run:
     - biopython >=1.58
     - numpy >=1.6
@@ -42,8 +51,6 @@ test:
     - BioExt.io.BamIO
     - BioExt.io.LazyAlignIO
     - BioExt.io.SamIO
-    - BioExt.joblib
-    - BioExt.joblib.test
     - BioExt.merge
     - BioExt.misc
     - BioExt.ndarray
