@@ -1,5 +1,5 @@
-{% set version = "0.9.0" %}
-{% set sha256 = "23a9d1b3208f915fa082d18e6a3ff30dd41b0bea631229d275617fb3d971c65f" %}
+{% set version = "0.10.0" %}
+{% set sha256 = "0ae6640eb9c0ed249abc50194cc734334a1de73e40594d2158b49886993f058b" %}
 # When updating, also need to update model reference in post-link.sh
 
 package:
@@ -10,7 +10,7 @@ package:
 # - Uses pre-built binaries, building problematic due to clif dependency
 # - Need recent kernel with GLIBC > 2.23 due to pre-built htslib
 # - Build patches __main__.py in zip files to generalize python dependency
-# - Requires numpy 1.14, want to sync with CONDA_NPY
+# - Requires numpy 1.16, want to sync with CONDA_NPY
 # - Uses python wrappers that don't expose all underlying options
 # - Ships with pre-built model. Longer term will need way to fetch models on demand.
 
@@ -19,8 +19,8 @@ source:
   sha256: '{{ sha256 }}'
 
 build:
-  number: 0
-  skip: true  # [osx or not py27]
+  number: 3
+  skip: true  # [osx or not py36]
 
 requirements:
   host:
@@ -34,23 +34,31 @@ requirements:
     # - bazel
   run:
     - openjdk >=8,<9
-    - python
+    - python 3.6.*
+    # TF slim is difficult because there is an existing tf-slim package in conda-forge
+    # https://github.com/conda-forge/tf-slim-feedstock
+    # which is different than the google one: https://github.com/google-research/tf-slim
+    # This appears to be a temporary situation: https://github.com/google-research/tf-slim/issues/6
+    # so temporarily install via pip in the build.sh to avoid conflicts
+    - absl-py
+    # - tf-slim
     - google-cloud-sdk
     - zlib
     - boost
     - htslib
     - numpy
     - curl
-    - tensorflow 1.12.*
+    - tensorflow 2.0.*
     - protobuf
     - contextlib2
     - enum34
     - intervaltree
     - mock
-    - numpy 1.14.*
+    - numpy 1.16.*
     - psutil
     - requests
     - scipy
+    - altair
     - oauth2client
     - six
     - crcmod
