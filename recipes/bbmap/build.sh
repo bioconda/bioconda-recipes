@@ -15,4 +15,4 @@ cp -R * $BBMAP_HOME/
 
 find *.sh -type f -exec ln -s $BBMAP_HOME/{} $BINARY_HOME/{} \;
 
-python -s "import sys; print('Platform is %s' % sys.platform)"
+python -c "import sys; print('Platform is %s' % sys.platform)"
