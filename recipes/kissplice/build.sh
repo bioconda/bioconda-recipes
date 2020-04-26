@@ -1,8 +1,7 @@
 #!/bin/bash
 
 mkdir -p ${PREFIX}/bin
-mkdir -p work/bcalm
-touch work/bcalm/README.md
+touch bcalm/README.md
 
 mkdir -p build
 cd build
