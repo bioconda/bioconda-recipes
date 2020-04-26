@@ -10,5 +10,5 @@ cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} ..
 
 # make commands
 make -j1
-make test
+#make test
 make install
