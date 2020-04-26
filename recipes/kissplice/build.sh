@@ -11,4 +11,6 @@ cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} ..
 # make commands
 make -j1
 #make test
+mkdir -p work/bcalm
+touch work/bcalm/README.md
 make install
