@@ -1,3 +1,3 @@
 #!/bin/sh
 
-make
+make CC=$CC
