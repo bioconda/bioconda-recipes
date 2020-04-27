@@ -1,3 +1,3 @@
 #!/bin/sh
 
-make CC=$CC
+make CC=$CC LIBDIR=$PREFIX/lib INCLUDE=$PREFIX/include
