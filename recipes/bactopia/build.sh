@@ -9,4 +9,4 @@ chmod 777 bin/helpers/*.py
 mv bin/helpers/*.py ${PREFIX}/bin
 
 # Move bactopia nextflow
-mv bin/ conda/ conf/ templates/ tools/ main.nf nextflow.config ${BACTOPIA}
+mv bin/ conda/ conf/ docs/ templates/ tools/ main.nf nextflow.config ${BACTOPIA}
