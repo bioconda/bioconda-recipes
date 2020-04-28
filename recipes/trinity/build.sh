@@ -1,10 +1,6 @@
 #!/bin/bash
 set -x -e
 
-# The Makefiles hardcode g++
-#sed -i.bak "s#g++#${CXX}#g" trinity-plugins/Makefile
-sed -i.bak "s#g++#${CXX}#g" bamsifter/Makefile
-
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
@@ -16,6 +12,13 @@ export CFLAGS="-I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
 
 BINARY_HOME=$PREFIX/bin
 TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION
+
+# The Makefiles hardcode g++
+#sed -i.bak "s#g++#${CXX}#g" trinity-plugins/Makefile
+echo "Patching G++"
+ls -lah
+ls -lah $TRINITY_HOME
+sed -i.bak "s#g++#${CXX}#g" $TRINITY_HOME/trinity-plugins/bamsifter/Makefile
 
 make plugins CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
 make CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
