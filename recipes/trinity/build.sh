@@ -19,7 +19,7 @@ sed -i.bak "s#g++#${CXX}#g" trinity-plugins/Makefile
 sed -i.bak "s#cd htslib && autoreconf && ./configure --prefix=`pwd`#cd htslib && autoreconf && ./configure --prefix=`pwd` CC=${CC} CXX=${CXX} CFLAGS=\"${CFLAGS}\" CXXFLAGS=\"${CXXFLAGS}\"#g" trinity-plugins/bamsifter/Makefile
 
 sed -i.bak "s#g++#${CXX}#g" trinity-plugins/bamsifter/Makefile
-sed -i.bak "s#-I../htslib -L../htslib#-I../htslib ${CFLAGS}#g" trinity-plugins/bamsifter/Makefile
+sed -i.bak "s#-I../htslib -L../htslib#-I../htslib -L../htslib ${CFLAGS}#g" trinity-plugins/bamsifter/Makefile
 
 make CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
 make plugins CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
