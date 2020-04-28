@@ -17,6 +17,7 @@ TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION
 sed -i.bak "s#gcc#${CC}#g" trinity-plugins/Makefile
 sed -i.bak "s#g++#${CXX}#g" trinity-plugins/Makefile
 sed -i.bak "s#g++#${CXX}#g" trinity-plugins/bamsifter/Makefile
+sed -i.bak "s#-I../htslib -L../htslib#${CFLAGS}#g" trinity-plugins/bamsifter/Makefile
 
 make CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
 make plugins CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
