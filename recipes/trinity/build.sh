@@ -14,10 +14,6 @@ BINARY_HOME=$PREFIX/bin
 TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION
 
 # The Makefiles hardcode g++
-#sed -i.bak "s#g++#${CXX}#g" trinity-plugins/Makefile
-echo "Patching G++"
-ls -lah
-ls -lah trinity-plugins
 sed -i.bak "s#g++#${CXX}#g" trinity-plugins/bamsifter/Makefile
 
 make plugins CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
