@@ -17,8 +17,8 @@ TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION
 #sed -i.bak "s#g++#${CXX}#g" trinity-plugins/Makefile
 echo "Patching G++"
 ls -lah
-ls -lah $TRINITY_HOME
-sed -i.bak "s#g++#${CXX}#g" $TRINITY_HOME/trinity-plugins/bamsifter/Makefile
+ls -lah trinity-plugins
+sed -i.bak "s#g++#${CXX}#g" trinity-plugins/bamsifter/Makefile
 
 make plugins CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
 make CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
