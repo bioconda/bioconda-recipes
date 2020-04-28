@@ -1,6 +1,9 @@
 #!/bin/bash
 set -x -e
 
+# The Makefiles hardcode g++
+sed -i.bak "s#g++#${CXX}#g" trinity-plugins/Makefile
+
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
