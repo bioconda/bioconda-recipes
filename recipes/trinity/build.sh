@@ -2,7 +2,8 @@
 set -x -e
 
 # The Makefiles hardcode g++
-sed -i.bak "s#g++#${CXX}#g" trinity-plugins/Makefile
+#sed -i.bak "s#g++#${CXX}#g" trinity-plugins/Makefile
+sed -i.bak "s#g++#${CXX}#g" bamsifter/Makefile
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
