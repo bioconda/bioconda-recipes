@@ -1,5 +1,5 @@
 {% set name = "nanovar" %}
-{% set version = "1.2.7" %}
+{% set version = "1.3.6" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,20 +7,22 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: dc848625207582f4bc5f47a44a690e81c3050a31eee0e2070f48f88895feeecf
+  sha256: 2f58efd9663e0e4f215c47b96777fd9c3dbae3083b5386bca069e10e06348d24
 
 build:
-  noarch: python
+  skip: True # [py2k or osx]
   number: 0
   script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
     - pip
-    - python >=3.6
+    - python
   run:
     - biopython >=1.74
-    - matplotlib >=2.2.3
+    - matplotlib-base >=2.2.3
     - natsort >=6.2.0
     - numpy >=1.17.3
     - progress >=1.4
@@ -31,6 +33,8 @@ requirements:
     - bedtools >=2.26.0
     - blast >=2.5.0
     - hs-blastn >=0.0.5
+    - minimap2 >=2.17
+    - samtools >=1.3
 
 test:
   imports:

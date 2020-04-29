@@ -1,49 +1,43 @@
-{% set name = "garnett-cli" %}
-{% set version = '0.0.2' %}
-{% set sha256 = "50a1b9258cc805066d24e96129a3b64520eee8dd4a04778c594bae63b2ad5518" %}
+{% set version = '0.0.5' %}
 
 package:
-  name: {{ name|lower }}
+  name: garnett-cli
   version: {{ version }}
 
 source: 
-  url: https://github.com/ebi-gene-expression-group/garnett-cli/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
-  patches:
-    - path.patch
+    url: https://github.com/ebi-gene-expression-group/garnett-cli/archive/{{ version }}.tar.gz
+    sha256: 578d92d8d244d62d1003aef4b9191e49ca04eabbb12a62e3a6d89b6e4b1649b5
 
 build:
   number: 0
   noarch: generic
 
-requirements:
-  host:
-    - r-base
-    - r-optparse
-    - r-workflowscriptscommon
-    - r-garnett
+requirements:  
   run:
-    - r-base
-    - r-optparse
-    - r-workflowscriptscommon
-    - r-garnett
+  - r-optparse
+  - r-workflowscriptscommon
+  - r-garnett=0.2.8
+  - monocle3-cli=0.0.7
+  - r-glmnet=2.0_18
+  - bioconductor-org.Hs.eg.db
+  - bioconductor-org.Mm.eg.db
 
 test:
   commands:
+    - transform_marker_file.R --help
+    - update_marker_file.R --help
     - garnett_check_markers.R --help
     - garnett_classify_cells.R --help 
     - garnett_get_feature_genes.R --help
     - garnett_train_classifier.R --help 
-    - get_package_data.R --help
-    - transform_marker_file.R --help
-    - update_marker_file.R --help
     - which garnett_cli_post_install_tests.sh
+
 
 about:
   home: https://github.com/ebi-gene-expression-group/garnett-cli
-  license: Apache-2.0
-  license_family: Apache
-  license_file: LICENSE
-  summary: Collection of wrapper scripts for the Garnett cell-type classification tool.
   dev_url: https://github.com/ebi-gene-expression-group/garnett-cli
-  doc_url: https://cole-trapnell-lab.github.io/garnett/docs/
+  license: Apache-2.0
+  summary: Collection of wrapper scripts for the Garnett scRNAseq cell type classification tool.
+
+  license_family: Apache
+  
