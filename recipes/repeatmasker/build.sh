@@ -1,7 +1,7 @@
 #!/bin/bash
 
 RM_DIR=${PREFIX}/share/RepeatMasker
-RM_OTHER_PROGRAMS="DateRepeats DupMasker ProcessRepeats RepeatProteinMask util/queryRepeatDatabase.pl util/queryTaxonomyDatabase.pl util/rmOutToGFF3.pl util/calcDivergenceFromAlign.pl util/createRepeatLandscape.pl util/dupliconToSVG.pl util/getRepeatMaskerBatch.pl util/rmOut2Fasta.pl util/trfMask util/rmToUCSCTables.pl util/buildSummary.pl"
+RM_OTHER_PROGRAMS="DateRepeats DupMasker ProcessRepeats RepeatProteinMask util/wublastToCrossmatch.pl util/buildRMLibFromEMBL.pl util/queryRepeatDatabase.pl util/queryTaxonomyDatabase.pl util/rmOutToGFF3.pl util/calcDivergenceFromAlign.pl util/createRepeatLandscape.pl util/dupliconToSVG.pl util/getRepeatMaskerBatch.pl util/rmOut2Fasta.pl util/trfMask util/rmToUCSCTables.pl util/buildSummary.pl"
 RM_PROGRAMS="RepeatMasker $RM_OTHER_PROGRAMS"
 
 mkdir -p ${PREFIX}/bin
