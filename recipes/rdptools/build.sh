@@ -1,11 +1,4 @@
 #!/bin/bash
-java -version
-ant -version
-
-grep "http://insecure.repo1.maven.org/maven2" AbundanceStats/ivysettings.xml 
-
-grep "rdpclassifiertraindata/data.tgz" classifier/build.xml 
-
 make
 
 TGT="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
