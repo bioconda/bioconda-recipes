@@ -1,5 +1,5 @@
 #!/bin/bash
 
 cd c/
-make
+make HTSLIB_INCDIR=$PREFIX/include HTSLIB_LIBDIR=$PREFIX/lib
 make install
