@@ -9,7 +9,7 @@ cd $TMPDIR
 pwd
 
 echo -n "[test start-asap installation]"
-start-asap --version
+start-asap --version | grep $PKG_VERSION
 
 echo -n "[test with empty files]"
 mkdir -p start-asap-input
