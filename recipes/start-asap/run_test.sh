@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 TMPDIR=$(mktemp -d)
 trap "rm -rf $TMPDIR" 0 INT QUIT ABRT PIPE TERM
@@ -9,7 +9,7 @@ cd $TMPDIR
 pwd
 
 echo -n "[test start-asap installation]"
-start-asap --version | grep $PKG_VERSION
+start-asap --version 2>&1 | grep $PKG_VERSION
 
 echo -n "[test with empty files]"
 mkdir -p start-asap-input
