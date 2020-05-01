@@ -3,27 +3,30 @@
 set -ex
 
 TMPDIR=$(mktemp -d)
+INPUT_DIR=start-asap-input-dir
+OUTPUT_DIR=start-asap-output-dir
 trap "rm -rf $TMPDIR" 0 INT QUIT ABRT PIPE TERM
 
 cd $TMPDIR
 pwd
 
-echo -n "[test start-asap installation]"
+echo "[test start-asap installation $PKG_VERSION]"
 start-asap --version 2>&1 | grep $PKG_VERSION
 
-echo -n "[test with empty files]"
-mkdir -p start-asap-input
-touch start-asap-input/sample1_R1.fq.gz
-touch start-asap-input/sample1_R2.fq.gz
-touch start-asap-input/sample2_R1.fq.gz
-touch start-asap-input/sample2_R2.fq.gz
-touch start-asap-input/sample3_R1.fq.gz
-touch start-asap-input/sample4_R2.fq.gz
-touch start-asap-input/control_R1.fq.gz
-touch start-asap-input/control_R2.fq.gz
-touch start-asap-input/e_coli.gbk
-find start-asap-input
-start-asap -i start-asap-input -o start-asap-test -r start-asap-input/e_coli.gbk -g Escherichia -s coli --verbose
+echo "[test with empty files]"
+mkdir -p "$INPUT_DIR"
+touch "$INPUT_DIR"/sample1_R1.fq.gz
+touch "$INPUT_DIR"/sample1_R2.fq.gz
+touch "$INPUT_DIR"/sample2_R1.fq.gz
+touch "$INPUT_DIR"/sample2_R2.fq.gz
+touch "$INPUT_DIR"/sample3_R1.fq.gz
+touch "$INPUT_DIR"/sample4_R2.fq.gz
+touch "$INPUT_DIR"/control_R1.fq.gz
+touch "$INPUT_DIR"/control_R2.fq.gz
+touch "$INPUT_DIR"/e_coli.gbk
+find "$INPUT_DIR"
+start-asap -i "$INPUT_DIR" -o "$OUTPUT_DIR" -r "$INPUT_DIR"/e_coli.gbk -g Escherichia -s coli --verbose
 
-find start-asap-test
-ls start-asap-input/config.xls
+# Produced config.xls
+file "$OUTPUT_DIR"/config.xls
+
