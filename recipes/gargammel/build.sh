@@ -2,10 +2,10 @@
 
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-
 export CPATH=${PREFIX}/include
 
-sed -i.bak  's/make -C libgab/make -C libgab CXX=$(CC)/' Makefile
+sed -i.bak 's/make -C libgab/make -C libgab CXX=$(CC)/' Makefile
+sed -i.bak 's/make -C src/make -C src CXX=$(CC)/' Makefile
 
 ## Following https://bioconda.github.io/contributor/troubleshooting.html#g-or-gcc-not-found
 make CC=$CXX
