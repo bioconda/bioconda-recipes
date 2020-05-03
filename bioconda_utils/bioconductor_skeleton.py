@@ -901,7 +901,7 @@ class BioCProjectPage(object):
         # Handle libblas and liblapack, which all compiled packages
         # are assumed to need
         additional_host_deps = []
-        if self.linkingto != [] or any(['c', 'cxx', 'fortran'] in self._cb3_build_reqs.keys()):
+        if self.linkingto != [] or len(set(['c', 'cxx', 'fortran']).intersection(self._cb3_build_reqs.keys())) > 0:
             additional_host_deps.append('libblas')
             additional_host_deps.append('liblapack')
 
