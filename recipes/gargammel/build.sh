@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+
 sed -i.bak  's/make -C libgab/make -C libgab CXX=$(CC)/' Makefile
 
 ## Following https://bioconda.github.io/contributor/troubleshooting.html#g-or-gcc-not-found
