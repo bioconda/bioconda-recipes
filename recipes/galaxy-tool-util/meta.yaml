@@ -1,0 +1,75 @@
+{% set version = "19.9.1" %}
+{% set sha256 = "21f86217b4faeb7771ba9983510ae86f9b32dd233ba175a69ee66bc3c6fa1af8" %}
+{% set galaxy_version = version.split(".")[:2]|join(".") %}
+
+package:
+  name: galaxy-tool-util
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/g/galaxy-tool-util/galaxy-tool-util-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - galaxy-tool-test=galaxy.tool_util.verify.script:main
+    - mulled-build=galaxy.tool_util.deps.mulled.mulled_build:main
+    - mulled-build-channel=galaxy.tool_util.deps.mulled.mulled_build_channel:main
+    - mulled-search=galaxy.tool_util.deps.mulled.mulled_search:main
+    - mulled-build-tool=galaxy.tool_util.deps.mulled.mulled_build_tool:main
+    - mulled-build-files=galaxy.tool_util.deps.mulled.mulled_build_files:main
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+
+requirements:
+  host:
+    - pip
+    - python
+    # Depend on galaxy-util during build time to avoid packaging galaxy/__init__.py .
+    - galaxy-util >={{ galaxy_version }}
+    # Depend on galaxy-containers due to shortcomings of bioconda-utils' build graph generation.
+    - galaxy-containers >={{ galaxy_version }}
+  run:
+    - galaxy-containers >={{ galaxy_version }}
+    - galaxy-util >={{ galaxy_version }}
+    - python
+    - six
+
+test:
+  imports:
+    - galaxy
+    - galaxy.tool_util
+    - galaxy.tool_util.cwl
+    - galaxy.tool_util.deps
+    - galaxy.tool_util.deps.container_resolvers
+    - galaxy.tool_util.deps.mulled
+    - galaxy.tool_util.deps.resolvers
+    - galaxy.tool_util.linters
+    - galaxy.tool_util.locations
+    - galaxy.tool_util.parser
+    - galaxy.tool_util.verify
+    - galaxy.tool_util.verify.asserts
+  commands:
+    - galaxy-tool-test --help
+    - mulled-build --help
+    - mulled-build-channel --help
+    - mulled-search --help
+    - mulled-build-tool --help
+    - mulled-build-files --help
+
+about:
+  home: https://galaxyproject.org
+  license: AFL-3.0
+  license_file: LICENSE
+  summary: Galaxy Tool and Tool Dependency Utilities
+  doc_url: https://docs.galaxyproject.org
+  dev_url: https://github.com/galaxyproject/galaxy
+
+extra:
+  identifiers:
+    - biotools:galaxy
+    - doi:10.1093/nar/gky379
+  recipe-maintainers:
+    - mbargull
+    - bgruening

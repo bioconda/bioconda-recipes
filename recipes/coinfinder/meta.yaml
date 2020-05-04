@@ -1,6 +1,5 @@
 {% set name = "coinfinder" %}
-{% set version = "1.0.0" %}
-{% set sha256 = "9805f6ef6cacbff634428da6a7358134cee3a8962862e1d70958a63408bfb51e" %}
+{% set version = "1.0.4" %}
 
 package:
   name: "{{ name }}"
@@ -8,11 +7,14 @@ package:
 
 source:
   url: "https://github.com/fwhelan/{{ name }}/archive/{{ version }}.tar.gz"
-  sha256: "{{ sha256 }}"
+  sha256: 785239606923f2d290c57b005c24cbe07704a6a03b5fffec36f1d696008ead39
 
 build:
-  number: 2
-  skip: True  # [py2k or osx]
+  number: 1
+  skip: True  # [py2k]
+  rpaths:
+   - lib/R/lib/
+   - lib/
 
 requirements:
   build:
@@ -36,12 +38,23 @@ requirements:
     - r-cowplot
     - r-data.table
     - r-ggraph
+    - r-future
+    - r-flock
     #Bioconductor
-    - bioconductor-ggtree
+    - r-ape
+    - 'r-ggplot2 >=3.0.0'
+    - r-magrittr
+    - r-purrr
+    - r-rlang
+    - r-rvcheck
+    - r-tidyr
+    - 'r-tidytree >=0.2.6'
+    - 'bioconductor-ggtree >=2.0.0,<2.1.0' # [linux]
+    - bioconductor-ggtree # [macos]
 
 test:
   commands:
-    - coinfinder -h 2>&1 | grep Max
+    - coinfinder -h || [[ "$?" == 1 ]]
 
 about:
   home: "https://github.com/fwhelan/{{ name }}"

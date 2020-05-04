@@ -1,0 +1,805 @@
+diff -Naur rxdock-master-b93747f3c7b1f60181774aa16cb6394bc88f59a1/bin/sdrmsd rxdock-master-b93747f3c7b1f60181774aa16cb6394bc88f59a1_new/bin/sdrmsd
+--- rxdock-master-b93747f3c7b1f60181774aa16cb6394bc88f59a1/bin/sdrmsd	2014-05-05 11:18:04.185045542 +0100
++++ rxdock-master-b93747f3c7b1f60181774aa16cb6394bc88f59a1_new/bin/sdrmsd	2017-03-06 18:27:17.340774359 +0000
+@@ -1,21 +1,28 @@
+ #! /usr/bin/env python
+-#
+-# Calculate SMART RMSD with or without molecular superposition (FIT or NOFIT) 
+-# Script distributed under GNU LGPL 3.0 along rDock software.
+-# 
+-# This algorithm takes into account molecular automorphism. That is, it identifies
+-# molecules which are the same but might have atom orders changed and still be able to 
+-# match the pairs and correctly calculate the RMSD.
+-#
+-# Author: Daniel Alvarez-Garcia
+-# Date: 08-11-2013
++"""
++Calculate SMART RMSD with or without molecular superposition (FIT or NOFIT).
++
++Script distributed under GNU LGPL 3.0 along rDock software.
++
++This algorithm takes into account molecular automorphism. That is, it identifies
++molecules which are the same but might have atom orders changed and still be able to
++match the pairs and correctly calculate the RMSD.
++
++Author: Daniel Alvarez-Garcia
++Date: 08-11-2013
++"""
++from __future__ import print_function
+ 
+ import math
+-import pybel
+-import numpy as npy
+ import optparse
++import os
++import sys
++
++import numpy as npy
++import openbabel.pybel as pybel
++
+ 
+-def superpose3D(ref, target, weights=None,refmask=None,targetmask=None,returnRotMat=False):
++def superpose3D(ref, target, weights=None, refmask=None, targetmask=None, returnRotMat=False):
+     """superpose3D performs 3d superposition using a weighted Kabsch algorithm : http://dx.doi.org/10.1107%2FS0567739476001873 & doi: 10.1529/biophysj.105.066654
+     definition : superpose3D(ref, target, weights,refmask,targetmask)
+     @parameter 1 :  ref - xyz coordinates of the reference structure (the ligand for instance)
+@@ -30,36 +37,32 @@
+     Note ref and target positions must have the same dimensions -> n*3 numpy arrays where n is the number of points (or atoms)
+     Returns a set of new coordinates, aligned to the target state as well as the rmsd
+     """
+-    if weights == None :
+-        weights=1.0
+-    if refmask == None :
+-        refmask=npy.ones(len(ref),"bool")
+-    if targetmask == None :
+-        targetmask=npy.ones(len(target),"bool")
+-    #first get the centroid of both states
+-    ref_centroid = npy.mean(ref[refmask]*weights,axis=0)
+-    #print ref_centroid
+-    refCenteredCoords=ref-ref_centroid
+-    #print refCenteredCoords
+-    target_centroid=npy.mean(target[targetmask]*weights,axis=0)
+-    targetCenteredCoords=target-target_centroid
+-    #print targetCenteredCoords
+-    #the following steps come from : http://www.pymolwiki.org/index.php/OptAlign#The_Code and http://en.wikipedia.org/wiki/Kabsch_algorithm
++    if weights is None:
++        weights = 1.0
++    if refmask is None:
++        refmask = npy.ones(len(ref), "bool")
++    if targetmask is None:
++        targetmask = npy.ones(len(target), "bool")
++    # first get the centroid of both states
++    ref_centroid = npy.mean(ref[refmask] * weights, axis=0)
++    refCenteredCoords = ref - ref_centroid
++    target_centroid = npy.mean(target[targetmask] * weights, axis=0)
++    targetCenteredCoords = target - target_centroid
++    # the following steps come from : http://www.pymolwiki.org/index.php/OptAlign#The_Code and http://en.wikipedia.org/wiki/Kabsch_algorithm
+     # Initial residual, see Kabsch.
+-    E0 = npy.sum( npy.sum(refCenteredCoords[refmask] * refCenteredCoords[refmask]*weights,axis=0),axis=0) + npy.sum( npy.sum(targetCenteredCoords[targetmask] * targetCenteredCoords[targetmask]*weights,axis=0),axis=0)
+-    reftmp=npy.copy(refCenteredCoords[refmask])
+-    targettmp=npy.copy(targetCenteredCoords[targetmask])
+-    #print refCenteredCoords[refmask]
+-    #single value decomposition of the dotProduct of both position vectors
++    E0 = npy.sum(npy.sum(refCenteredCoords[refmask] * refCenteredCoords[refmask] * weights, axis=0), axis=0) + npy.sum(npy.sum(targetCenteredCoords[targetmask] * targetCenteredCoords[targetmask] * weights, axis=0), axis=0)
++    reftmp = npy.copy(refCenteredCoords[refmask])
++    targettmp = npy.copy(targetCenteredCoords[targetmask])
++    # single value decomposition of the dotProduct of both position vectors
+     try:
+-        dotProd = npy.dot( npy.transpose(reftmp), targettmp* weights)
+-        V, S, Wt = npy.linalg.svd(dotProd )
++        dotProd = npy.dot(npy.transpose(reftmp), targettmp * weights)
++        V, S, Wt = npy.linalg.svd(dotProd)
+     except Exception:
+         try:
+-            dotProd = npy.dot( npy.transpose(reftmp), targettmp)
+-            V, S, Wt = npy.linalg.svd(dotProd )
++            dotProd = npy.dot(npy.transpose(reftmp), targettmp)
++            V, S, Wt = npy.linalg.svd(dotProd)
+         except Exception:
+-            print >> sys.stderr,"Couldn't perform the Single Value Decomposition, skipping alignment"
++            print("Couldn't perform the Single Value Decomposition, skipping alignment", file=sys.stderr)
+         return ref, 0
+     # we already have our solution, in the results from SVD.
+     # we just need to check for reflections and then produce
+@@ -68,129 +71,132 @@
+     reflect = float(str(float(npy.linalg.det(V) * npy.linalg.det(Wt))))
+     if reflect == -1.0:
+         S[-1] = -S[-1]
+-        V[:,-1] = -V[:,-1]
++        V[:, -1] = -V[:, -1]
+     rmsd = E0 - (2.0 * sum(S))
+-    rmsd = npy.sqrt(abs(rmsd / len(ref[refmask])))   #get the rmsd
+-    #U is simply V*Wt
+-    U = npy.dot(V, Wt)  #get the rotation matrix
++    rmsd = npy.sqrt(abs(rmsd / len(ref[refmask])))  # get the rmsd
++    # U is simply V*Wt
++    U = npy.dot(V, Wt)  # get the rotation matrix
+     # rotate and translate the molecule
+-    new_coords = npy.dot((refCenteredCoords), U)+ target_centroid  #translate & rotate
+-    #new_coords=(refCenteredCoords + target_centroid)
+-    #print U
+-    if returnRotMat : 
+-        return new_coords,rmsd, U
+-    return new_coords,rmsd
++    new_coords = npy.dot((refCenteredCoords), U) + target_centroid  # translate & rotate
++    if returnRotMat:
++        return new_coords, rmsd, U
++    return new_coords, rmsd
+ 
+ 
+ def squared_distance(coordsA, coordsB):
+     """Find the squared distance between two 3-tuples"""
+-    sqrdist = sum( (a-b)**2 for a, b in zip(coordsA, coordsB) )
++    sqrdist = sum((a-b)**2 for a, b in zip(coordsA, coordsB))
+     return sqrdist
+-    
++
++
+ def rmsd(allcoordsA, allcoordsB):
+     """Find the RMSD between two lists of 3-tuples"""
+     deviation = sum(squared_distance(atomA, atomB) for
+                     (atomA, atomB) in zip(allcoordsA, allcoordsB))
+     return math.sqrt(deviation / float(len(allcoordsA)))
+-    
++
++
+ def mapToCrystal(xtal, pose):
+-    """Some docking programs might alter the order of the atoms in the output (like Autodock Vina does...)
+-     this will mess up the rmsd calculation with OpenBabel"""
+-    query = pybel.ob.CompileMoleculeQuery(xtal.OBMol) 
+-    mapper=pybel.ob.OBIsomorphismMapper.GetInstance(query)
++    """
++    Some docking programs might alter the order of the atoms in the output (like Autodock Vina does...)
++    this will mess up the rmsd calculation with OpenBabel
++    """
++    query = pybel.ob.CompileMoleculeQuery(xtal.OBMol)
++    mapper = pybel.ob.OBIsomorphismMapper.GetInstance(query)
+     mappingpose = pybel.ob.vvpairUIntUInt()
+-    exit=mapper.MapUnique(pose.OBMol,mappingpose)
++    mapper.MapUnique(pose.OBMol, mappingpose)
+     return mappingpose[0]
+ 
++
+ def parseArguments():
+-	optparse.OptionParser.format_epilog = lambda self, formatter: self.epilog
+-	epilog = """Args:
+-	reference.sdf		SDF file with the reference molecule.
+-	input.sdf		SDF file with the molecules to be compared to reference.\n"""
+-	parser = optparse.OptionParser("usage: %prog [options] reference.sdf input.sdf", epilog=epilog)
+-	parser.add_option("-f", "--fit",dest="fit", action="store_true", default=False,
+-                  help="Superpose molecules before RMSD calculation")
+-	parser.add_option("--threshold","-t",dest="threshold", action="store", nargs=1, 
+-                  help="Discard poses with RMSD < THRESHOLD with respect previous poses which where not rejected based on same principle. A Population SDField will be added to output SD with the population number.", type=float)
+-	parser.add_option("-o","--out", dest="outfilename", metavar="FILE", default=False,
+-                  help="If declared, write an output SDF file with the input molecules with a new sdfield <RMSD>. If molecule was fitted, the fitted molecule coordinates will be saved.")
+-	(options, args) =  parser.parse_args()
+-	
+-	#Check we have two arguments
+-	if len(args) < 2:
+-		parser.error("Incorrect number of arguments. Use -h or --help options to print help.")
++    optparse.OptionParser.format_epilog = lambda self, formatter: self.epilog
++    epilog = """Args:
++    reference.sdf   SDF file with the reference molecule.
++    input.sdf       SDF file with the molecules to be compared to reference.\n"""
++    parser = optparse.OptionParser("usage: %prog [options] reference.sdf input.sdf", epilog=epilog)
++    parser.add_option("-f", "--fit", dest="fit", action="store_true", default=False,
++                      help="Superpose molecules before RMSD calculation")
++    parser.add_option("--threshold", "-t", dest="threshold", action="store", nargs=1,
++                      help="Discard poses with RMSD < THRESHOLD with respect previous poses which where not rejected based on same principle. A Population SDField will be added to output SD with the population number.", type=float)
++    parser.add_option("-o", "--out", dest="outfilename", metavar="FILE", default=False,
++                      help="If declared, write an output SDF file with the input molecules with a new sdfield <RMSD>. If molecule was fitted, the fitted molecule coordinates will be saved.")
++    (options, args) = parser.parse_args()
++
++    # Check we have two arguments
++    if len(args) < 2:
++        parser.error("Incorrect number of arguments. Use -h or --help options to print help.")
++
++    return options, args
+ 
+-	return options, args
+ 
+ def updateCoords(obmol, newcoords):
+-    "Update OBMol coordinates. newcoords is a numpy array"
+-    for i,atom in enumerate(obmol):
++    """Update OBMol coordinates. newcoords is a numpy array."""
++    for i, atom in enumerate(obmol):
+         atom.OBAtom.SetVector(*newcoords[i])
+ 
++
+ def getAutomorphRMSD(target, molec, fit=False):
+     """
+     Use Automorphism to reorder target coordinates to match ref coordinates atom order
+     for correct RMSD comparison. Only the lowest RMSD will be returned.
+-    
++
+     Returns:
+-      If fit=False: 	bestRMSD	(float)					RMSD of the best matching mapping.
+-      If fit=True:	(bestRMSD, molecCoordinates)	(float, npy.array)	RMSD of best match and its molecule fitted coordinates.	
++      If fit=False: bestRMSD                        (float)             RMSD of the best matching mapping.
++      If fit=True:  (bestRMSD, molecCoordinates)    (float, npy.array)  RMSD of best match and its molecule fitted coordinates.
+     """
+     mappings = pybel.ob.vvpairUIntUInt()
+-    bitvec = pybel.ob.OBBitVec()
++    pybel.ob.OBBitVec()
+     lookup = []
+     for i, atom in enumerate(target):
+         lookup.append(i)
+-    success = pybel.ob.FindAutomorphisms(target.OBMol, mappings)
++    pybel.ob.FindAutomorphisms(target.OBMol, mappings)
+     targetcoords = [atom.coords for atom in target]
+     mappose = npy.array(mapToCrystal(target, molec))
+-    mappose = mappose[npy.argsort(mappose[:,0])][:,1]
++    mappose = mappose[npy.argsort(mappose[:, 0])][:, 1]
+     posecoords = npy.array([atom.coords for atom in molec])[mappose]
+     resultrmsd = 999999999999
+     for mapping in mappings:
+-	automorph_coords = [None] * len(targetcoords)
+-	for x, y in mapping:
+-	    automorph_coords[lookup.index(x)] = targetcoords[lookup.index(y)]
+-	mapping_rmsd = rmsd(posecoords, automorph_coords)
+-	if mapping_rmsd < resultrmsd:
+-	    resultrmsd = mapping_rmsd
+-	    fitted_result = False
+-	if fit: 
+-	    fitted_pose, fitted_rmsd = superpose3D(npy.array(automorph_coords), npy.array(posecoords))
+-	    if fitted_rmsd < resultrmsd:
+-		resultrmsd = fitted_rmsd
+-		fitted_result = fitted_pose
+-    
++        automorph_coords = [None] * len(targetcoords)
++        for x, y in mapping:
++            automorph_coords[lookup.index(x)] = targetcoords[lookup.index(y)]
++        mapping_rmsd = rmsd(posecoords, automorph_coords)
++        if mapping_rmsd < resultrmsd:
++            resultrmsd = mapping_rmsd
++        if fit:
++            fitted_pose, fitted_rmsd = superpose3D(npy.array(automorph_coords), npy.array(posecoords))
++            if fitted_rmsd < resultrmsd:
++                resultrmsd = fitted_rmsd
++
+     if fit:
+-      return (resultrmsd, fitted_pose)
++        return (resultrmsd, fitted_pose)
+     else:
+-      return resultrmsd
++        return resultrmsd
++
+ 
+ def saveMolecWithRMSD(outsdf, molec, rmsd, population=False):
+-    newData = pybel.ob.OBPairData()	
++    newData = pybel.ob.OBPairData()
+     newData.SetAttribute("RMSD")
+-    newData.SetValue('%.3f'%rmsd)
+-    
++    newData.SetValue('%.3f' % rmsd)
++
+     if population:
+-	popData = pybel.ob.OBPairData()
+-	popData.SetAttribute("Population")
+-	popData.SetValue('%i'%population)
+-	molec.OBMol.CloneData(popData)
+-	
+-    molec.OBMol.CloneData(newData)           # Add new data
++        popData = pybel.ob.OBPairData()
++        popData.SetAttribute("Population")
++        popData.SetValue('%i' % population)
++        molec.OBMol.CloneData(popData)
++
++    molec.OBMol.CloneData(newData)  # Add new data
+     outsdf.write(molec)
+-    
++
++
+ if __name__ == "__main__":
+-    import sys, os
+-   
+-    (opts, args) = parseArguments() 
+-	
++    (opts, args) = parseArguments()
++
+     xtal = args[0]
+     poses = args[1]
+ 
+     if not os.path.exists(xtal) or not os.path.exists(poses):
+-	sys.exit("Input files not found. Please check the path given is correct.")
+-	
++        sys.exit("Input files not found. Please check the path given is correct.")
++
+     fit = opts.fit
+     outfname = opts.outfilename
+     threshold = opts.threshold
+@@ -200,73 +206,80 @@
+     crystal.removeh()
+     crystalnumatoms = len(crystal.atoms)
+ 
+-    #If outfname is defined, prepare an output SDF sink to write molecules
++    # If outfname is defined, prepare an output SDF sink to write molecules
+     if outfname:
+-	outsdf = pybel.Outputfile('sdf', outfname, overwrite=True)
++        outsdf = pybel.Outputfile('sdf', outfname, overwrite=True)
+ 
+     # Find the RMSD between the crystal pose and each docked pose
+     dockedposes = pybel.readfile("sdf", poses)
+-    if fit: print "POSE\tRMSD_FIT"
+-    else: print "POSE\tRMSD_NOFIT"
++    if fit:
++        print("POSE\tRMSD_FIT")
++    else:
++        print("POSE\tRMSD_NOFIT")
+     skipped = []
+-    moleclist = {}	# Save all poses with their dockid
+-    population = {}	# Poses to be written
++    moleclist = {}  # Save all poses with their dockid
++    population = {}  # Poses to be written
+     outlist = {}
+     for docki, dockedpose in enumerate(dockedposes):
+         dockedpose.removeh()
+-	natoms = len(dockedpose.atoms)
+-	if natoms != crystalnumatoms: 
+-		skipped.append(docki+1)
+-		continue
+-	if fit: 
+-	    resultrmsd, fitted_result = getAutomorphRMSD(crystal, dockedpose, fit=True)
+-	    updateCoords(dockedpose, fitted_result)
+-	else:
+-	    resultrmsd = getAutomorphRMSD(crystal, dockedpose, fit=False)
+-	
+-	if threshold:
+-	    # Calculate RMSD between all previous poses
+-	    # Discard if rmsd < FILTER threshold
+-	    if moleclist:
+-		match = None
+-		bestmatchrmsd = 999999
+-		for did,prevmol in moleclist.iteritems():
+-		    tmprmsd = getAutomorphRMSD(prevmol, dockedpose)
+-		    if tmprmsd < threshold:
+-			if tmprmsd < bestmatchrmsd:
+-			    bestmatchrmsd = tmprmsd
+-			    match = did
+-			
+-		if match != None:
+-		    # Do not write this one
+-		    # sum one up to the matching previous molecule id
+-		    print >> sys.stderr, "Pose %i matches pose %i with %.3f RMSD"%(docki+1, match+1, bestmatchrmsd)
+-		    population[match] += 1
+-		else:
+-		    # There's no match. Print info for this one and write to outsdf if needed
+-		    # Save this one!
+-		    if outfname: outlist[docki] = (dockedpose, resultrmsd)
+-		    print "%d\t%.2f"%((docki+1),resultrmsd)
+-		    moleclist[docki] = dockedpose
+-		    population[docki] = 1
+-	    else:
+-		# First molecule in list. Append for sure
+-		moleclist[docki] = dockedpose
+-		population[docki] = 1
+-		if outfname: outlist[docki] = (dockedpose, resultrmsd)
+-	else:
+-	    # Just write best rmsd found and the molecule to outsdf if demanded
+-	    if outfname: saveMolecWithRMSD(outsdf, dockedpose, resultrmsd)
+-	    print "%d\t%.2f"%((docki+1),resultrmsd)
++        natoms = len(dockedpose.atoms)
++        if natoms != crystalnumatoms:
++            skipped.append(docki+1)
++            continue
++        if fit:
++            resultrmsd, fitted_result = getAutomorphRMSD(crystal, dockedpose, fit=True)
++            updateCoords(dockedpose, fitted_result)
++        else:
++            resultrmsd = getAutomorphRMSD(crystal, dockedpose, fit=False)
++
++        if threshold:
++            # Calculate RMSD between all previous poses
++            # Discard if rmsd < FILTER threshold
++            if moleclist:
++                match = None
++                bestmatchrmsd = 999999
++                for did, prevmol in moleclist.items():
++                    tmprmsd = getAutomorphRMSD(prevmol, dockedpose)
++                    if tmprmsd < threshold:
++                        if tmprmsd < bestmatchrmsd:
++                            bestmatchrmsd = tmprmsd
++                            match = did
++
++                if match is not None:
++                    # Do not write this one
++                    # sum one up to the matching previous molecule id
++                    print("Pose %i matches pose %i with %.3f RMSD" % (docki+1, match+1, bestmatchrmsd), file=sys.stderr)
++                    population[match] += 1
++                else:
++                    # There's no match. Print info for this one and write to outsdf if needed
++                    # Save this one!
++                    if outfname:
++                        outlist[docki] = (dockedpose, resultrmsd)
++                    print("%d\t%.2f" % ((docki+1), resultrmsd))
++                    moleclist[docki] = dockedpose
++                    population[docki] = 1
++            else:
++                # First molecule in list. Append for sure
++                moleclist[docki] = dockedpose
++                population[docki] = 1
++                if outfname:
++                    outlist[docki] = (dockedpose, resultrmsd)
++        else:
++            # Just write best rmsd found and the molecule to outsdf if demanded
++            if outfname:
++                saveMolecWithRMSD(outsdf, dockedpose, resultrmsd)
++            print("%d\t%.2f" % ((docki+1), resultrmsd))
+ 
+     if outlist:
+-	# Threshold applied and outlist need to be written
+-	for docki in sorted(outlist.iterkeys()):
+-	    molrmsd = outlist[docki]
+-	    # Get number of matchs in thresholding operation
+-	    pop = population.get(docki)
+-	    if not pop: pop = 1
+-	    # Save molecule
+-	    saveMolecWithRMSD(outsdf, molrmsd[0], molrmsd[1], pop)
+-	    
+-    if skipped: print >> sys.stderr, "SKIPPED input molecules due to number of atom missmatch: %s"%skipped
++        # Threshold applied and outlist need to be written
++        for docki in sorted(outlist.keys()):
++            molrmsd = outlist[docki]
++            # Get number of matchs in thresholding operation
++            pop = population.get(docki)
++            if not pop:
++                pop = 1
++            # Save molecule
++            saveMolecWithRMSD(outsdf, molrmsd[0], molrmsd[1], pop)
++
++    if skipped:
++        print("SKIPPED input molecules due to number of atom missmatch: %s" % skipped, file=sys.stderr)
+diff -Naur rxdock-master-b93747f3c7b1f60181774aa16cb6394bc88f59a1/bin/sdtether rxdock-master-b93747f3c7b1f60181774aa16cb6394bc88f59a1_new/bin/sdtether
+--- rxdock-master-b93747f3c7b1f60181774aa16cb6394bc88f59a1/bin/sdtether	2014-05-05 11:18:04.184045542 +0100
++++ rxdock-master-b93747f3c7b1f60181774aa16cb6394bc88f59a1_new/bin/sdtether	2017-03-06 18:27:17.752784406 +0000
+@@ -1,25 +1,29 @@
+ #! /usr/bin/env python
+-#
+-# Substitute for rbtether of rDock. Will align input molecules to a reference fragment defined by a smarts string, 
+-# it will add a TETHERED ATOM property field to the output SDF that is correctly understood by rDock 
+-# rDock will restrain the matching atom positions to the reference molecule coordinates.
+-#
+-# Initially implemented with a conformational search algorithm to better match target coordinates.
+-# But had problems with OBabel FF generating non-sense conformers. So in this version the conformer search is commented out.
+-# Now if the input molecule do not have a good conformation, might not align well with the target. This effect will be 
+-# dimished or even vanish if the SMARTS string is defined for a rigid region (like a ring).
+-# I'm still trying to incorporate somehow this conformational search.
+-#
+-# Script distributed under GNU LGPL 3.0 along rDock software.
+-# 
+-# Author: Daniel Alvarez-Garcia
+-# Date: 08-11-2013
++"""
++Substitute for rbtether of rDock. Will align input molecules to a reference fragment defined by a smarts string,
++it will add a TETHERED ATOM property field to the output SDF that is correctly understood by rDock
++rDock will restrain the matching atom positions to the reference molecule coordinates.
++
++Initially implemented with a conformational search algorithm to better match target coordinates.
++But had problems with OBabel FF generating non-sense conformers. So in this version the conformer search is commented out.
++Now if the input molecule do not have a good conformation, might not align well with the target. This effect will be
++dimished or even vanish if the SMARTS string is defined for a rigid region (like a ring).
++I'm still trying to incorporate somehow this conformational search.
++
++Script distributed under GNU LGPL 3.0 along rDock software.
++
++Author: Daniel Alvarez-Garcia
++Date: 08-11-2013
++"""
++from __future__ import print_function
++
++import sys
+ 
+-import math
+-import pybel
+ import numpy as npy
++import openbabel.pybel as pybel
++
+ 
+-def superpose3D(ref, target, weights=None,refmask=None,targetmask=None,returnRotMat=False):
++def superpose3D(ref, target, weights=None, refmask=None, targetmask=None, returnRotMat=False):
+     """superpose3D performs 3d superposition using a weighted Kabsch algorithm : http://dx.doi.org/10.1107%2FS0567739476001873 & doi: 10.1529/biophysj.105.066654
+     definition : superpose3D(ref, target, weights,refmask,targetmask)
+     @parameter 1 :  ref - xyz coordinates of the reference structure (the ligand for instance)
+@@ -34,36 +38,32 @@
+     Note ref and target positions must have the same dimensions -> n*3 numpy arrays where n is the number of points (or atoms)
+     Returns a set of new coordinates, aligned to the target state as well as the rmsd
+     """
+-    if weights == None :
+-        weights=1.0
+-    if refmask == None :
+-        refmask=npy.ones(len(ref),"bool")
+-    if targetmask == None :
+-        targetmask=npy.ones(len(target),"bool")
+-    #first get the centroid of both states
+-    ref_centroid = npy.mean(ref[refmask]*weights,axis=0)
+-    #print ref_centroid
+-    refCenteredCoords=ref-ref_centroid
+-    #print refCenteredCoords
+-    target_centroid=npy.mean(target[targetmask]*weights,axis=0)
+-    targetCenteredCoords=target-target_centroid
+-    #print targetCenteredCoords
+-    #the following steps come from : http://www.pymolwiki.org/index.php/OptAlign#The_Code and http://en.wikipedia.org/wiki/Kabsch_algorithm
++    if weights is None:
++        weights = 1.0
++    if refmask is None:
++        refmask = npy.ones(len(ref), "bool")
++    if targetmask is None:
++        targetmask = npy.ones(len(target), "bool")
++    # first get the centroid of both states
++    ref_centroid = npy.mean(ref[refmask] * weights, axis=0)
++    refCenteredCoords = ref - ref_centroid
++    target_centroid = npy.mean(target[targetmask] * weights, axis=0)
++    targetCenteredCoords = target - target_centroid
++    # the following steps come from : http://www.pymolwiki.org/index.php/OptAlign#The_Code and http://en.wikipedia.org/wiki/Kabsch_algorithm
+     # Initial residual, see Kabsch.
+-    E0 = npy.sum( npy.sum(refCenteredCoords[refmask] * refCenteredCoords[refmask]*weights,axis=0),axis=0) + npy.sum( npy.sum(targetCenteredCoords[targetmask] * targetCenteredCoords[targetmask]*weights,axis=0),axis=0)
+-    reftmp=npy.copy(refCenteredCoords[refmask])
+-    targettmp=npy.copy(targetCenteredCoords[targetmask])
+-    #print refCenteredCoords[refmask]
+-    #single value decomposition of the dotProduct of both position vectors
++    E0 = npy.sum(npy.sum(refCenteredCoords[refmask] * refCenteredCoords[refmask] * weights, axis=0), axis=0) + npy.sum(npy.sum(targetCenteredCoords[targetmask] * targetCenteredCoords[targetmask] * weights, axis=0), axis=0)
++    reftmp = npy.copy(refCenteredCoords[refmask])
++    targettmp = npy.copy(targetCenteredCoords[targetmask])
++    # single value decomposition of the dotProduct of both position vectors
+     try:
+-        dotProd = npy.dot( npy.transpose(reftmp), targettmp* weights)
+-        V, S, Wt = npy.linalg.svd(dotProd )
++        dotProd = npy.dot(npy.transpose(reftmp), targettmp * weights)
++        V, S, Wt = npy.linalg.svd(dotProd)
+     except Exception:
+         try:
+-            dotProd = npy.dot( npy.transpose(reftmp), targettmp)
+-            V, S, Wt = npy.linalg.svd(dotProd )
++            dotProd = npy.dot(npy.transpose(reftmp), targettmp)
++            V, S, Wt = npy.linalg.svd(dotProd)
+         except Exception:
+-            print >> sys.stderr,"Couldn't perform the Single Value Decomposition, skipping alignment"
++            print("Couldn't perform the Single Value Decomposition, skipping alignment", file=sys.stderr)
+         return ref, 0
+     # we already have our solution, in the results from SVD.
+     # we just need to check for reflections and then produce
+@@ -72,66 +72,47 @@
+     reflect = float(str(float(npy.linalg.det(V) * npy.linalg.det(Wt))))
+     if reflect == -1.0:
+         S[-1] = -S[-1]
+-        V[:,-1] = -V[:,-1]
++        V[:, -1] = -V[:, -1]
+     rmsd = E0 - (2.0 * sum(S))
+-    rmsd = npy.sqrt(abs(rmsd / len(ref[refmask])))   #get the rmsd
+-    #U is simply V*Wt
+-    U = npy.dot(V, Wt)  #get the rotation matrix
++    rmsd = npy.sqrt(abs(rmsd / len(ref[refmask])))  # get the rmsd
++    # U is simply V*Wt
++    U = npy.dot(V, Wt)  # get the rotation matrix
+     # rotate and translate the molecule
+-    new_coords = npy.dot((refCenteredCoords), U)+ target_centroid  #translate & rotate
+-    #new_coords=(refCenteredCoords + target_centroid)
+-    #print U
+-    if returnRotMat : 
++    new_coords = npy.dot((refCenteredCoords), U) + target_centroid  # translate & rotate
++    if returnRotMat:
+         return U, ref_centroid, target_centroid, rmsd
+-    return new_coords,rmsd
++    return new_coords, rmsd
+ 
+ 
+-def squared_distance(coordsA, coordsB):
+-    """Find the squared distance between two 3-tuples"""
+-    sqrdist = sum( (a-b)**2 for a, b in zip(coordsA, coordsB) )
+-    return sqrdist
+-    
+-def rmsd(allcoordsA, allcoordsB):
+-    """Find the RMSD between two lists of 3-tuples"""
+-    deviation = sum(squared_distance(atomA, atomB) for
+-                    (atomA, atomB) in zip(allcoordsA, allcoordsB))
+-    return math.sqrt(deviation / float(len(allcoordsA)))
+-    
+-def mapToCrystal(xtal, pose):
+-    """Some docking programs might alter the order of the atoms in the output (like Autodock Vina does...)
+-     this will mess up the rmsd calculation with OpenBabel"""
+-    query = pybel.ob.CompileMoleculeQuery(xtal.OBMol) 
+-    mapper=pybel.ob.OBIsomorphismMapper.GetInstance(query)
+-    mappingpose = pybel.ob.vvpairUIntUInt()
+-    exit=mapper.MapUnique(pose.OBMol,mappingpose)
+-    return mappingpose[0]
+-
+ def takeCoords(obmol):
+-    """Take coordinates of an OBMol as a npy array"""
++    """Take coordinates of an OBMol as a npy array."""
+     return npy.array([atom.coords for atom in obmol])
+ 
++
+ def updateCoords(obmol, newcoords):
+-    "Update OBMol coordinates. newcoords is a numpy array"
+-    for i,atom in enumerate(obmol):
++    """Update OBMol coordinates. newcoords is a numpy array."""
++    for i, atom in enumerate(obmol):
+         atom.OBAtom.SetVector(*newcoords[i])
+ 
++
+ def prepareAtomString(idlist):
+     s = ""
+     n = len(idlist)
+     for i, id in enumerate(idlist):
+-        s += "%i"%id
+-        if (i+1) == n: s+="\n"
+-        elif (i+1)%35 == 0: s+=",\n"
+-        else: s+=","
++        s += "%i" % id
++        if (i+1) == n:
++            s += "\n"
++        elif (i+1) % 35 == 0:
++            s += ",\n"
++        else:
++            s += ","
+     return s
+ 
+ 
+ if __name__ == "__main__":
+-    import sys
+-    
+     if len(sys.argv) != 5:
+-        sys.exit("USAGE: %s reference.sdf input.sdf output.sdf 'SMARTS'"%sys.argv[0])
+-    
++        sys.exit("USAGE: %s reference.sdf input.sdf output.sdf 'SMARTS'" % sys.argv[0])
++
+     refsdf = sys.argv[1]
+     molsdf = sys.argv[2]
+     outsdf = sys.argv[3]
+@@ -144,10 +125,10 @@
+     numRefMatchs = len(refMatchIds)
+ 
+     if not numRefMatchs:
+-	sys.exit("No match found in the reference structure and the SMARTS string given. Please check it.")
++        sys.exit("No match found in the reference structure and the SMARTS string given. Please check it.")
+ 
+-    if numRefMatchs > 1: 
+-	print "More than one match in the reference molecule for the SMARTS string given. Will tether each input molecule all possible ways."
++    if numRefMatchs > 1:
++        print("More than one match in the reference molecule for the SMARTS string given. Will tether each input molecule all possible ways.")
+ 
+     refIndxPerMatch = [npy.array(rmi) - 1 for rmi in refMatchIds]
+ 
+@@ -159,105 +140,44 @@
+     out=pybel.Outputfile('sdf', outsdf, overwrite=True)
+     molSupp = pybel.readfile("sdf", molsdf)
+     ff = pybel.ob.OBForceField_FindForceField('MMFF94')
+-    for i,mol in enumerate(molSupp):
+-	print "## Molecule %i"%(i+1),
+-	mol.OBMol.DeleteNonPolarHydrogens()
+-   	molMatchAllIds = smarts.findall(mol)
+-	numMatchs = len(molMatchAllIds)
+-	
+-	if numMatchs == 0:
+-		print "No_Match",
+-		continue
+-	elif numMatchs ==1:
+-		print "Match", 
+-	elif numMatchs > 1: 
+-                print "Multiple_Match SMART Matches for this molecule (%d)"%numMatchs,
+-
+-	# If more than one match, write an output of the same molecule for each match
+-	# Start a default bestcoord and rmsd for later looping for each pose
+-	bestCoordPerMatch = [[0 for i in range(numMatchs)] for i in range(numRefMatchs)]
+-	bestRMSPerMatch = [[999 for i in range(numMatchs)] for i in range(numRefMatchs)]	
+-
+-        # Will do a randomrotorsearch to find conformer with the lower rmsd when superposing
+-        # At least 20 when possible
+-        #ff.Setup(mol.OBMol)
+-	#numats = mol.OBMol.NumAtoms()
+-	#numrot = mol.OBMol.NumRotors()
+-	#print "Atoms: %i, Rotors: %i"%(numats, numrot)
+-	#geomopt = 300
+-	#genconf = 100
+-	# increase iterations if bigger molecule or bigger number of rotatable bonds
+-	# for allowing better sampling
+-	#if numats > 40 and numrot > 5: 
+-	#	geomopt = 300
+-	#	genconf = 150
+-	#if numats > 55 and numrot > 7: 
+-	#	genconf = 100
+-	#	geomopt = 500
+-        #print "\tDoing conformational search with WeightedRotorSearch (%i, %i)..."%(genconf, geomopt),
+-	#ff.SteepestDescent(500, 1.0e-4)
+-        #ff.WeightedRotorSearch(genconf,geomopt)
+-	#ff.ConjugateGradients(500, 1.0e-6)
+-	#ff.GetConformers(mol.OBMol)
+-	#numconf = mol.OBMol.NumConformers()
+-	numconf = 1
+-	#print "%i conformers generated"%numconf
+-        if numconf > 1:
+-            # Doing conf search
+-            #for i in range(numconf):
+-            #    mol.OBMol.SetConformer(i)
+-            #    confCoords = takeCoords(mol)
+-	    # 	print 'coord:',confCoords[0,:]
+-            #    
+-            #    for imatch, molMatchIds in enumerate(molMatchAllIds):
+-            #        molMatchIndx = npy.array(molMatchIds) - 1
+-            #        confMatchCoords = npy.take(confCoords, molMatchIndx, axis=0)
+-            #        
+-            #        # Align: Get rotation matrix between the two sets of coords
+-            #        # Apply rotation to the whole target molecule
+-            #        rotMat, targetCentroid, refCentroid, rmsd = superpose3D(confMatchCoords, refMatchCoords, returnRotMat=True)
+-            #        if rmsd < bestRMSPerMatch[imatch]: 
+-            #            newcoords = npy.dot((confCoords - targetCentroid), rotMat) + refCentroid
+-            #            bestRMSPerMatch[imatch] = rmsd
+-            #            bestCoordPerMatch[imatch] = newcoords
+-	    #	#if bestrms < 0.01: break
+-       	    pass 
+-        else:
+-            molCoords = takeCoords(mol)
+-            for imatch, molMatchIds in enumerate(molMatchAllIds):
+-		    # loop in each matching way for the input molecule
+-                    molMatchIndx = npy.array(molMatchIds) - 1
+-                    molMatchCoords = npy.take(molCoords, molMatchIndx, axis=0)
+-                    
+-		    # Loop over the reference matches
+-                    # Align: Get rotation matrix between the two sets of coords
+-                    # Apply rotation to the whole target molecule
+-		    for ir, refMatchCoord in enumerate(refMatchCoords):
+-                    	rotMat, targetCentroid, refCentroid, rmsd = superpose3D(molMatchCoords, refMatchCoord, returnRotMat=True)
+-                    	if rmsd < bestRMSPerMatch[ir][imatch]:
+-                        	newcoords = npy.dot((molCoords - targetCentroid), rotMat) + refCentroid
+-                        	bestRMSPerMatch[ir][imatch] = rmsd
+-                        	bestCoordPerMatch[ir][imatch] = newcoords
+-            
++    for i, mol in enumerate(molSupp):
++        print("## Molecule %i" % (i+1), end=' ')
++        mol.OBMol.DeleteNonPolarHydrogens()
++        molMatchAllIds = smarts.findall(mol)
++        numMatchs = len(molMatchAllIds)
++
++        if numMatchs == 0:
++            print("No_Match", end=' ')
++            continue
++        elif numMatchs == 1:
++            print("Match", end=' ')
++        elif numMatchs > 1:
++            print("Multiple_Match SMART Matches for this molecule (%d)" % numMatchs, end=' ')
++
++        # If more than one match, write an output of the same molecule for each match
++        # Start a default bestcoord and rmsd for later looping for each pose
++        bestCoordPerMatch = [[0 for i in range(numMatchs)] for i in range(numRefMatchs)]
++        bestRMSPerMatch = [[999 for i in range(numMatchs)] for i in range(numRefMatchs)]
++
+         # Finally update molecule coordinates with the best matching coordinates found
+-	# change molecule coordinates, set TETHERED ATOMS property and save
+-	for imatch in range(numMatchs):
+-		for irefmatch in range(numRefMatchs):
+-			bestCoord = bestCoordPerMatch[irefmatch][imatch]
+-			bestRMS = bestRMSPerMatch[irefmatch][imatch]
+-        		print "\tBest RMSD reached (match %d, refmatch %d): %s"%(imatch, irefmatch, bestRMS)
+-			molMatchID = molMatchAllIds[imatch]
+-        		updateCoords(mol, bestCoord)
+-        		newData = pybel.ob.OBPairData()
+-        		newData.SetAttribute("TETHERED ATOMS")
+-        		newData.SetValue(prepareAtomString(molMatchID))
+-
+-			mol.OBMol.DeleteData("TETHERED ATOMS") # Remove Previous DATA
+-        		mol.OBMol.CloneData(newData)	       # Add new data
+-        		out.write(mol)
+-    
++        # change molecule coordinates, set TETHERED ATOMS property and save
++        for imatch in range(numMatchs):
++            for irefmatch in range(numRefMatchs):
++                bestCoord = bestCoordPerMatch[irefmatch][imatch]
++                bestRMS = bestRMSPerMatch[irefmatch][imatch]
++                print("\tBest RMSD reached (match %d, refmatch %d): %s" % (imatch, irefmatch, bestRMS))
++                molMatchID = molMatchAllIds[imatch]
++                updateCoords(mol, bestCoord)
++                newData = pybel.ob.OBPairData()
++                newData.SetAttribute("TETHERED ATOMS")
++                newData.SetValue(prepareAtomString(molMatchID))
++
++                mol.OBMol.DeleteData("TETHERED ATOMS")  # Remove Previous DATA
++                mol.OBMol.CloneData(newData)  # Add new data
++                out.write(mol)
++
+     out.close()
+-   
+-    print "DONE"
++
++    print("DONE")
+     sys.stdout.close()
+     sys.stderr.close()
