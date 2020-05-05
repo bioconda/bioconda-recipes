@@ -51,7 +51,7 @@ cmake .. \
   -DBoost_ARCHITECTURE="-x64" \
   -DBUILD_EXAMPLES=OFF
 
-make -j${CPU_COUNT} OpenMS TOPP UTILS
+make -j${CPU_COUNT} OpenMS TOPP UTILS SuperHirn
 # The subpackages will do that (unfortunately "make install" installs everything right away)
 # Another option would be to install somewhere into the build dir (to use the existent install commands)
 # and then copy the relevant parts to the prefix. See CMAKE_INSTALL_PREFIX.
