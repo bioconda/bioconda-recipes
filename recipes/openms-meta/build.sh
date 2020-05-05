@@ -34,6 +34,7 @@ LDFLAGS='-Wl,-rpath,${RPATH}'
 
 cmake .. \
   -DOPENMS_CONTRIB_LIBS='../../contrib-build' \
+  -DCMAKE_BUILD_TYPE="Release" \
   -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} \
   -DCMAKE_MACOSX_RPATH=ON \
   -DCMAKE_PREFIX_PATH=${PREFIX} \
