@@ -1,0 +1,45 @@
+{% set version = "1.1.5" %}
+
+package:
+  name: pangolin
+  version: {{ version }}
+
+source:
+  - url: https://github.com/hCoV-2019/pangolin/archive/v{{ version }}.tar.gz
+    sha256: cfb89fc9e69528f469cbbec40b10600dbd89e27f8e3a7749384b43b9070701ad
+    folder: pangolin
+  - url: https://github.com/hCoV-2019/lineages/archive/2020-04-27.tar.gz
+    sha256: 0a998177c5395386e4d18a215c37db7a9af03d55f110ed319c94810ff7f86522
+    folder: lineages
+
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install ./pangolin/. --no-deps -vv && {{ PYTHON }} -m pip install ./lineages/. --no-deps -vv
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python >=3.6
+    - pip
+    - biopython
+    - pandas
+    - iqtree =1.6.12
+    - mafft
+    - snakemake-minimal
+    - pytools
+    - dendropy >=4.4.0
+
+test:
+  commands:
+    - pangolin -h
+    - pangolin -lv
+
+about:
+  home: https://github.com/hCoV-2019/pangolin
+  license: GPL-3.0
+  license_file: pangolin/LICENSE.txt
+  summary: Phylogenetic Assignment of Named Global Outbreak LINeages
