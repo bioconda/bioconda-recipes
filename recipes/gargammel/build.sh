@@ -2,6 +2,7 @@
 
 export CPATH=${PREFIX}/include
 
+# Will be inbuilt to github repo in future
 sed -i.bak 's/make -C libgab/make -C libgab CXX=$(CC)/' Makefile
 sed -i.bak 's/make -C src/make -C src CXX=$(CC)/' Makefile
 sed -i.bak 's/CXXFLAGS =/CXXFLAGS +=/' src/Makefile
@@ -16,6 +17,8 @@ make CC=$CXX ${binaries}
 
 mkdir -p $PREFIX/bin
 cp ${binaries} ${PREFIX}/bin
+cp Makefile ms2chromosomes.py msprime_chromosomes.py ${PREFIX}/bin
+
 # Fix hard-coded paths to external tools
 sed \
   -e 's|$pathdir."/src/|"|' \
