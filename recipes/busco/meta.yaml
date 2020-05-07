@@ -1,44 +1,54 @@
 {% set name = "busco" %}
-{% set version = "3.0.2" %}
-{% set sha256 = "7cfc50b1a256cd697ec7e2b1c3b5af7118f50e2d809533df3d5d8dfca7560c46" %}
+{% set version = "4.0.6" %}
+{% set sha256 = "1aad4ccd7c2151f90cd8ede1169d1ffb2484854be34b66594508a903783028dc" %}
+{% set repo = "busco" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
+  number: 0
   noarch: python
-  number: 13
+
+
 
 source:
-  url: https://gitlab.com/ezlab/busco/-/archive/{{ version }}/busco-{{ version }}.tar.gz
+  url: https://gitlab.com/ezlab/{{ repo }}/-/archive/{{ version }}/busco-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 requirements:
   host:
-    - python >=3
+    - python >=3.3
     - pip
-  run:
-    - python >=3
     - findutils
     - blast >=2.2,<2.4
-    - hmmer
-    - augustus >=3.3.2
+    - hmmer >=3.1b2 # sepp needs this version
+    - augustus 3.2.3
+    - biopython
     - r-base
     - r-ggplot2 >=2.2.1
+    - prodigal
+    - sepp >=4.3.10
+  run:
+    - python >=3.3
+    - findutils
+    - blast >=2.2,<2.4
+    - hmmer >=3.1b2 # sepp needs this version
+    - augustus 3.2.3
+    - biopython
+    - r-base
+    - r-ggplot2 >=2.2.1
+    - prodigal
+    - sepp >=4.3.10
 
 test:
   requires:
     - wget
   commands:
-    - run_BUSCO.py -h
-    - run_busco -h
+    - busco -h
     - generate_plot.py -h
-    - generate_plot -h
-    - mkdir findtest ; cd findtest ; touch file ; find . -delete ; cd ..
 
-    # Message reported by busco when the config file exists but no input provided
-    - run_busco | grep "Please add it in the config file"
 
 about:
   home: http://busco.ezlab.org/
@@ -52,3 +62,7 @@ extra:
   identifiers:
     - biotools:busco
     - doi:10.1093/bioinformatics/btv351
+  recipe-maintainers:
+    - silask
+    - matsepp
+    - berkelem

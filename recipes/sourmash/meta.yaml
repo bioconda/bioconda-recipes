@@ -1,4 +1,4 @@
-{% set version = "2.2.0" %}
+{% set version = "3.3.0" %}
 
 package:
   name: sourmash
@@ -6,37 +6,36 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/sourmash/sourmash-{{ version }}.tar.gz
-  sha256: 2fd2bbcf53213a72d47cba986a4c06ba23d91482660564760d9b2fd271d6270a
-  patches:
-    - sourmash.patch
+  sha256: 2bdf64fdb306123fee0f2ba8e6b58caf2ff4a73a25cbe1fe563dd7de141c648f
 
 build:
   entry_points:
     - sourmash = sourmash.__main__:main
-  number: 1
-  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed -vv ."
+  number: 0
 
 requirements:
   build:
-    - '{{ compiler("c") }}'
-    - '{{ compiler("cxx") }}'
+    - {{ compiler('c') }}
+    - rust >=1.34.0
   host:
     - python
     - pip
     - setuptools >=38.6.0
-    - cython >=0.25.2
+    - milksnake
     - setuptools_scm
     - setuptools_scm_git_archive
+    - sccache
 
   run:
     - python
+    - enum34  # [py27]
     - screed >=0.9
-    - ijson <2.5
+    - cffi >=1.14
     - numpy
-    - matplotlib
+    - matplotlib-base
     - scipy
-    - khmer >=2.1
-    - yajl
+    - deprecation
+    - bam2fasta >=1.0.1
 
 test:
   imports:
@@ -49,10 +48,11 @@ test:
 about:
   home: https://github.com/dib-lab/sourmash
   summary: 'Compute and compare MinHash signatures for DNA data sets.'
-  license: BSD License
+  license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE
   dev_url: https://github.com/dib-lab/sourmash
+  doc_url: https://sourmash.readthedocs.io/
 
 extra:
   identifiers:
@@ -61,6 +61,7 @@ extra:
     - doi:10.12688/f1000research.19675.1
   recipe-maintainers:
     - luizirber
+    - ctb
   authors:
     - luizirber
     - ctb

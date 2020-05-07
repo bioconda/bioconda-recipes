@@ -1,0 +1,49 @@
+{% set name = "eukcc" %}
+{% set version = "0.1.4.6" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: dec5fdc897d6283ceee597314d31a57aa6298b0e40e7b135f78586d0e0fb6b68
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - eukcc = eukcc.__main__:main
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps"
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - configargparse
+    - ete3
+    - pyfaidx
+    - pygmes
+    - python >=3.6
+    - pyyaml
+    - hmmer >=3.2
+    - pplacer
+
+test:
+  imports:
+    - eukcc
+    - treelineage
+  commands:
+    - eukcc --help > /dev/null
+
+about:
+  home: "https://github.com/Finn-Lab/EukCC/"
+  license: "GNU General Public v3 (GPLv3)"
+  license_family: GPL3
+  summary: "Check eukaryotic genomes or MAGs for completeness and contamination"
+  doc_url: "https://eukcc.readthedocs.io/en/latest/"
+
+extra:
+  recipe-maintainers:
+    - openpaul

@@ -1,0 +1,46 @@
+{% set version = "1.2" %}
+
+package:
+  name: assemblytics
+  version: {{ version }}
+
+source:
+  url: https://github.com/MariaNattestad/Assemblytics/archive/v{{ version }}.tar.gz
+  sha256: 1aeb22ec26a2da7e76ba5777d8b5a446eb0b734e99eca9abd4d43cfc121ce845
+  patches:
+    - libexec.patch
+
+build:
+  noarch: generic
+  number: 0
+
+requirements:
+  run:
+    - python
+    - numpy
+    - r-base
+    - r-ggplot2
+    - r-plyr
+    - r-scales
+    - r-rcolorbrewer
+    - mummer
+
+test:
+  requires:
+    - wget
+    - unzip
+  commands:
+    - wget http://assemblytics.com/user_data/ecoli/Escherichia_coli_MHAP_assembly.Assemblytics_results.zip
+    - unzip Escherichia_coli_MHAP_assembly.Assemblytics_results.zip
+    - Assemblytics user_data/*/Escherichia_coli_MHAP_assembly.Assemblytics.unique_length_filtered_l10000.delta.gz sample 10000 50 10000
+    - rm -rf user_data sample* Escherichia_coli_MHAP_assembly.Assemblytics_results.zip
+
+about:
+  home: http://assemblytics.com/
+  license: MIT
+  license_file: LICENSE
+  summary: 'analyze a genome assembly by comparing it to a reference genome'
+  description: >
+    Assemblytics detects and analyzes variants from a de novo genome assembly aligned to a reference genome.
+    It incorporates a unique anchor filtering approach to increase robustness to repetitive elements and identifies six classes of variants based on their distinct alignment signatures.
+    Assemblytics can be applied both to comparing aberrant genomes, such as human cancers, to a reference, or to identify differences between related species.

@@ -19,4 +19,5 @@ do
 done
 
 perl -pi -e 'print "#!/opt/anaconda1anaconda2anaconda3/bin/Rscript\n" if $. == 1' $extdata/PureCN.R
+chmod a+x $extdata/PureCN.R
 ln -s $extdata/PureCN.R $PREFIX/bin/PureCN.R
