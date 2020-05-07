@@ -898,6 +898,13 @@ class BioCProjectPage(object):
 
         DEPENDENCIES = sorted(self.dependencies)
 
+        # Handle libblas and liblapack, which all compiled packages
+        # are assumed to need
+        additional_host_deps = []
+        if self.linkingto != [] or len(set(['c', 'cxx', 'fortran']).intersection(self._cb3_build_reqs.keys())) > 0:
+            additional_host_deps.append('libblas')
+            additional_host_deps.append('liblapack')
+
         additional_run_deps = []
         if self.is_data_package:
             additional_run_deps.append('curl')
