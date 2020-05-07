@@ -17,7 +17,7 @@ make CC=$CXX ${binaries}
 
 mkdir -p $PREFIX/bin
 cp ${binaries} ${PREFIX}/bin
-cp Makefile ms2chromosomes.py msprime_chromosomes.py ${PREFIX}/bin
+cp ms2chromosomes.py msprime_chromosomes.py ${PREFIX}/bin
 
 # Fix hard-coded paths to external tools
 sed \
