@@ -1,0 +1,44 @@
+{% set version = "1.0.0" %}
+{% set name = "rhdf5filters" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 2d0ad3d12cd3c1e308c107e72cc61d63
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: BiocStyle, knitr, rmarkdown, testthat (>= 2.1.0)
+# SystemRequirements: GNU make
+requirements:
+  host:
+    - 'bioconductor-rhdf5lib >=1.10.0,<1.11.0'
+    - r-base
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-rhdf5lib >=1.10.0,<1.11.0'
+    - r-base
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'BSD_2_clause + file LICENSE'
+  summary: 'HDF5 Compression Filters'
+  description: 'Provides a collection of compression filters for use with HDF5 datasets.'
+  license_file: LICENSE
+

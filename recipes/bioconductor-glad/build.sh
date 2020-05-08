@@ -8,5 +8,4 @@ CXX=$CXX
 CXX98=$CXX
 CXX11=$CXX
 CXX14=$CXX" > ~/.R/Makevars
-touch GLAD
-$R CMD INSTALL --build --configure-vars='GSL_LIBS="-L$PREFIX/lib -lgsl -lgslcblas -lm"' .
+$R CMD INSTALL --build .
