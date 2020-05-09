@@ -25,7 +25,6 @@ def getRepoData(ts):
 def printRootNodes(config_path, recipe_folder, onlyUploadedSince):
     config = utils.load_config(config_path)
     blacklist = utils.get_blacklist(config, recipe_folder)
-    print(blacklist)
     recipes = utils.get_recipes(recipe_folder)
 
     if onlyUploadedSince:
