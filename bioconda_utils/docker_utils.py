@@ -471,7 +471,10 @@ class RecipeBuilder(object):
             utils.run(cmd, mask=False)
 
 
-def purgeImage(target, img):
+def purgeImage(mulled_upload_target, img):
     image = "{}/{}".format(target, img)
-    cmd = ['docker', 'rmi', image]
+    pkg_name_and_version, pkg_build_string = img.rsplit("--", 1)
+    pkg_name, pkg_version = pkg_name_and_version.rsplit("-", 1)
+    pkg_container_image = f"quay.io/{mulled_upload_target}/{pkg_name}:{pkg_version}--{pkg_build_string}"
+    cmd = ['docker', 'rmi', pkg_container_image]
     o = utils.run(cmd, mask=False)
