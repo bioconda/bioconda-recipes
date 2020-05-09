@@ -357,8 +357,7 @@ def build_recipes(recipe_folder: str, config_path: str, recipes: List[str],
                 if mulled_upload_target:
                     for img in res.mulled_images:
                         upload.mulled_upload(img, mulled_upload_target)
-                        cmd = ['docker', 'rmi', img]
-                        utils.run(cmd, mask=False)
+                        docker_utils.purgeImage(mulled_upload_target, img)
 
         # remove traces of the build
         if not keep_old_work:

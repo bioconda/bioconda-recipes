@@ -469,3 +469,9 @@ class RecipeBuilder(object):
         if self.build_image and not self.keep_image:
             cmd = ['docker', 'rmi', self.docker_temp_image]
             utils.run(cmd, mask=False)
+
+
+def purgeImage(target, img):
+    image = "{}/{}".format(target, img)
+    cmd = ['docker', 'rmi', image]
+    o = utils.run(cmd, mask=False)
