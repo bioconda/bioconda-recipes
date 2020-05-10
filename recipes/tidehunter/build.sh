@@ -3,7 +3,6 @@
 mkdir -p $PREFIX/bin
 
 pushd abPOA
-make simd_check INCLUDE="-I$PREFIX/include" CFLAGS="$CFLAGS -L$PREFIX/lib"
 make libabpoa INCLUDE="-I$PREFIX/include" CFLAGS="$CFLAGS -L$PREFIX/lib"
 popd
 
