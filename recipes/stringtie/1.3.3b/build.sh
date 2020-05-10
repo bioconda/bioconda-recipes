@@ -5,7 +5,7 @@ export LIBRARY_PATH=${PREFIX}/lib
 
 wget http://ccb.jhu.edu/software/stringtie/dl/prepDE.py
 
-make release
+make release CC=$CXX LINKER=$CXX
 mkdir -p $PREFIX/bin
 mv stringtie $PREFIX/bin
 
