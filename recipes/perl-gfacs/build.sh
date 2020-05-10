@@ -14,6 +14,9 @@ chmod +x gFACs.pl
 cp -Rp format_scripts support_scripts task_scripts gFACs.pl ${GFACS_HOME}
 
 ln -s ${GFACS_HOME}/gFACs.pl ${PREFIX}/bin/gFACs.pl
+ln -s ${GFACS_HOME}/format_scripts ${PREFIX}/bin/format_scripts
+ln -s ${GFACS_HOME}/support_scripts ${PREFIX}/bin/support_scripts
+ln -s ${GFACS_HOME}/task_scripts ${PREFIX}/bin/task_scripts
 
 
 #helpful ENV variable
