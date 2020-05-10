@@ -22,13 +22,13 @@ def getRepoData(ts):
     return res
 
 
-def printRootNodes(config_path, recipe_folder, onlyUploadedSince):
+def printRootNodes(config_path, recipe_folder, sinceNDays, missing):
     config = utils.load_config(config_path)
     blacklist = utils.get_blacklist(config, recipe_folder)
     recipes = utils.get_recipes(recipe_folder)
 
-    if onlyUploadedSince:
-       timeStamp = datetime.timestamp(datetime.now() - timedelta(onlyUploadedSince))
+    if sinceNDays:
+       timeStamp = datetime.timestamp(datetime.now() - timedelta(sinceNDays))
        linux, noarch, osx = getRepoData(timeStamp)
        arch = linux.intersection(osx)
        ready = noarch.union(arch)
@@ -42,8 +42,11 @@ def printRootNodes(config_path, recipe_folder, onlyUploadedSince):
         if n[1] in blacklist:
             continue
 
-        if onlyUploadedSince:
+        if sinceNDays:
             if n[1] in ready:
+                if not missing:
+                    print("recipes/{}\t{}".format(n[1], n[0]))
+            elif missing:
                 print("recipes/{}\t{}".format(n[1], n[0]))
         else:
             print("recipes/{}\t{}".format(n[1], n[0]))
@@ -57,10 +60,11 @@ to spread the load more evenly over worker nodes. Note that the output is sorted
 so the root nodes with the most children are at the end.""")
     parser.add_argument("config_path", default="config.yml", help="Location of config.yml (default: %(default)s", nargs='?')
     parser.add_argument("recipe_folder", default="recipes", help="Location of the recipes folder (default: %(default)s)", nargs='?')
-    parser.add_argument("--onlyUploadedSince", type=int, help="If specified, only print root nodes with packages that have been uploaded to noarch or (linux64 & osx64) in the past N days, where N is the value given.")
+    parser.add_argument("--sinceNDays", metavar='n', type=int, help="If specified, only print root nodes with packages that have been uploaded to noarch or (linux64 & osx64) in the past N days, where N is the value given.")
+    parser.add_argument('--missing', action='store_true', help='Only print root nodes that are missing in at least one subdirectory')
     args = parser.parse_args()
 
-    printRootNodes(args.config_path, args.recipe_folder, args.onlyUploadedSince)
+    printRootNodes(args.config_path, args.recipe_folder, args.sinceNDays, args.missing)
 
 
 if __name__ == '__main__':
