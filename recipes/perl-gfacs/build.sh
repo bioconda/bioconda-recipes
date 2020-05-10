@@ -9,12 +9,12 @@ mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/etc/conda/activate.d
 mkdir -p ${PREFIX}/etc/conda/deactivate.d
 
+
+chmod +x gFACs.pl
 cp -Rp format_scripts support_scripts task_scripts gFACs.pl ${GFACS_HOME}
 
 ln -s ${GFACS_HOME}/gFACs.pl ${PREFIX}/bin/gFACs.pl
 
-chmod +x gFACs.pl
-ln -s gFACs.pl ${PREFIX}/bin/gFACs.pl
 
 #helpful ENV variable
 mkdir -p ${PREFIX}/etc/conda/activate.d/
