@@ -12,13 +12,6 @@ perl ./Build install --installdirs site
 
 cd ..
 
-
-
-mkdir -p $PREFIX/bin
-
-./waf configure --prefix=$PREFIX/bin
+./waf configure --prefix=$PREFIX
 ./waf build
 ./waf install
-
-
-
