@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # disable Makefile driven build of htslib.a
-sed -i.bak 's/.*build_ext.*//' setup.py
+sed -i.bak "s/'build_ext': HTSBuild//" setup.py
 
 # just link to htslib
 sed -i.bak 's/extra_objects.*//' build.py
