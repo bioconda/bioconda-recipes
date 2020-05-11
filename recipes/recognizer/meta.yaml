@@ -1,0 +1,50 @@
+{% set name = "recognizer" %}
+{% set version = "1.2.1" %}
+{% set sha256 = "581f2acdf98e799bef5dd05a2a99fbedb6546f1000fc5da747e46322c3462cd2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/iquasere/reCOGnizer/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 0
+  script: "mkdir -p $PREFIX/bin && cp recognizer.py $PREFIX/bin && cp -r Databases $PREFIX/bin"
+
+requirements:
+  run:
+    - python
+    - pandas
+    - blast
+    - lxml
+    - openpyxl
+    - krona
+
+test:
+  commands:
+    - "python $PREFIX/bin/recognizer.py -v"
+
+about:
+  home: https://github.com/iquasere/reCOGnizer
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: 'A tool for domain based annotation with the COG database'
+  description: |
+    reCOGnizer performs domain based annotation with RPS-BLAST, using
+    Hidden Markov Models (HMM) from COG database. It rebuilds COG database
+    for multithreaded annotation, organizes information regarding COG IDs
+    and respective categories, obtains EC numbers using resources from the
+    eggNOG database and organizes all this information into TSV and EXCEL
+    files for easy handling by users or pipelines. It also produces a Krona
+    plot representing the quantification of COG functions identified.
+  doc_url: https://github.com/iquasere/reCOGnizer/blob/master/README.md
+  dev_url: https://github.com/iquasere/reCOGnizer
+
+extra:
+  recipe-maintainers:
+    - iquasere
