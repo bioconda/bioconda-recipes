@@ -1,0 +1,73 @@
+{% set version = '1.6' %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-mkmisc
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/MKmisc_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/MKmisc/MKmisc_{{ version }}.tar.gz
+  sha256: 438c86e98d72e92ef81b5001687f92c7a77c6959d4858a0dcb95e0d75844a174
+
+build:
+  merge_build_host: True  # [win]
+  number: 0
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+  host:
+    - r-base
+    - r-rcolorbrewer
+    - r-ggplot2
+    - r-limma
+    - r-robustbase
+    - r-scales
+  run:
+    - r-base
+    - r-rcolorbrewer
+    - r-ggplot2
+    - r-limma
+    - r-robustbase
+    - r-scales
+
+test:
+  commands:
+    - $R -e "library('MKmisc')"           # [not win]
+    - "\"%R%\" -e \"library('MKmisc')\""  # [win]
+
+about:
+  home: http://www.stamats.de/
+  license: LGPL-3
+  summary: Contains several functions for statistical data analysis; e.g. for sample size and
+    power calculations, computation of confidence intervals and tests, and generation
+    of similarity matrices.
+  license_family: LGPL
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+
+# Package: MKmisc
+# Version: 1.6
+# Date: 2019-09-11
+# Title: Miscellaneous Functions from M. Kohl
+# Authors@R: person("Matthias", "Kohl", role = c("aut", "cre"), email = "Matthias.Kohl@stamats.de", comment = c(ORCID = "0000-0001-9514-8910"))
+# Author: Matthias Kohl [aut, cre] (<https://orcid.org/0000-0001-9514-8910>)
+# Maintainer: Matthias Kohl <Matthias.Kohl@stamats.de>
+# Depends: R(>= 3.5.0)
+# Imports: stats, utils, graphics, grDevices, RColorBrewer, robustbase, ggplot2, scales, limma
+# Suggests: gplots, Amelia, knitr, rmarkdown, exactRankTests, foreach, parallel, doParallel
+# VignetteBuilder: knitr
+# Description: Contains several functions for statistical data analysis; e.g. for sample size and power calculations, computation of confidence intervals and tests, and generation of similarity matrices.
+# License: LGPL-3
+# URL: http://www.stamats.de/
+# NeedsCompilation: no
+# Packaged: 2019-09-25 18:50:26 UTC; kohlm
+# Repository: CRAN
+# Date/Publication: 2019-09-25 19:10:02 UTC
