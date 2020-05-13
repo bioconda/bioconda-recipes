@@ -1,4 +1,7 @@
 #!/bin/sh
+cd source
+sed -i.bak 's,INC_DIR=,INC_DIR=-I$PREFIX/include ,g' Makefile
+cd ..
 mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release ../source
