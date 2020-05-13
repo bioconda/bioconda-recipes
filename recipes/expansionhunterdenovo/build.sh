@@ -14,5 +14,6 @@ export C_INCLUDE_PATH="${PREFIX}/include:${PREFIX}/lib"
 export CPATH="${PREFIX}/include:${PREFIX}/lib"
 export CFLAGS="-I${PREFIX}/include -I${PREFIX}/lib"
 export INCLUDE_PATH="${PREFIX}/include:${PREFIX}/lib"
+export LD_LIBRARY_PATH="${PREFIX}/lib"
 make
 cp ExpansionHunterDenovo $PREFIX/bin/ExpansionHunterDenovo
