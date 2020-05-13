@@ -13,7 +13,7 @@ def getRepoData(ts):
         js = r.json()['packages']
         s = set()
         for k, v in r.json()['packages'].items():
-            if not k.startswith('bioconductor-'):
+            if (not k.startswith('bioconductor-')) and (not k.startswith('r-')):
                 continue
             if 'timestamp' in v:
                 if float(v['timestamp'])/1000 >= ts:
@@ -35,7 +35,7 @@ def printRootNodes(config_path, recipe_folder, sinceNDays, missing):
        print("{} built in noarch and both archs combined: {} noarch, {} linux-64, {} osx-64".format(len(ready), len(noarch), len(linux), len(osx)))
 
     dag, name2recipes = graph.build(recipes, config=config_path, blacklist=blacklist)
-    root_nodes = sorted([(len(nx.algorithms.descendants(dag, k)), k) for k, v in dag.in_degree().items() if v == 0 and k.startswith('bioconductor')])
+    root_nodes = sorted([(len(nx.algorithms.descendants(dag, k)), k) for k, v in dag.in_degree().items() if v == 0 and (k.startswith('bioconductor') or k.startswith('r-'))])
     print("Package\tNumber of dependant packages")
     for n in root_nodes:
         # blacklisted packages also show up as root nodes with out degree 0
