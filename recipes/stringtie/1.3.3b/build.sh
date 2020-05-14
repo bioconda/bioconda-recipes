@@ -11,7 +11,7 @@ pushd samtools-0.1.18
 make CC=${CC} CFLAGS="${CFLAGS}" lib
 popd
 
-make release CC=$CXX LINKER=$CXX LFLAGS=${LDFLAGS}
+make release CC="$CXX" LINKER="$CXX" LFLAGS="${LDFLAGS}"
 mkdir -p $PREFIX/bin
 mv stringtie $PREFIX/bin
 
