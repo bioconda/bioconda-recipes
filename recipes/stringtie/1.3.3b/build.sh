@@ -2,6 +2,8 @@
 export C_INCLUDE_PATH=${PREFIX}/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
+export CFLAGS="$CFLAGS -I${C_INCLUDE_PATH}"
+export LDFLAGS="$LDFLAGS -L$LIBRARY_PATH"
 
 wget http://ccb.jhu.edu/software/stringtie/dl/prepDE.py
 
