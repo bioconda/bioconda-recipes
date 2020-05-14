@@ -5,6 +5,10 @@ export LIBRARY_PATH=${PREFIX}/lib
 
 wget http://ccb.jhu.edu/software/stringtie/dl/prepDE.py
 
+pushd samtools-0.1.18
+make CC=${CC} CFLAGS="${CFLAGS}" lib
+popd
+
 make release CC=$CXX LINKER=$CXX
 mkdir -p $PREFIX/bin
 mv stringtie $PREFIX/bin
