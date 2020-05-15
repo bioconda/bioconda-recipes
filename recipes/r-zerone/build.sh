@@ -1,5 +1,4 @@
 #!/bin/bash
-touch DESCRIPTION
 mkdir -p ~/.R
 echo -e "CC=$CC
 FC=$FC
