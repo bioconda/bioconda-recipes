@@ -1,5 +1,5 @@
 #!/bin/bash
-mv DESCRIPTION DESCRIPTION.old
+touch DESCRIPTION
 mkdir -p ~/.R
 echo -e "CC=$CC
 FC=$FC
