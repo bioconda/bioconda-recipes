@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="LRBase.Pab.eg.db_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/LRBase.Pab.eg.db_1.2.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/LRBase.Pab.eg.db_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/LRBase.Pab.eg.db_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-lrbase.pab.eg.db/bioconductor-lrbase.pab.eg.db_1.2.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-lrbase.pab.eg.db/bioconductor-lrbase.pab.eg.db_1.2.0_src_all.tar.gz"
 )
 MD5="3f0f570f878330635f07c920374553a7"
