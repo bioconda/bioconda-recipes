@@ -1,34 +1,41 @@
+{% set name = "MAmotif" %}
+{% set version = "1.1.0" %}
+
 package:
-  name: mamotif
-  version: 1.1.0
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://files.pythonhosted.org/packages/aa/54/33a9f8922d65a6f62f7b18f6198f784f06a79fbe5dca9fa25cac1959e351/MAmotif-1.1.0.tar.gz
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
   sha256: 0255ca6f999a865f47dbbf1d10c695cf54fcc30114b52e4d38c7af34f58359ed
 
 build:
-  noarch: python
   number: 0
+  noarch: python
   script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
-
+  entry_points:
+    - mamotif=mamotif.cli.main:main
+    
 requirements:
   host:
-    - python <3
+    - python >=3.6
     - pip
   run:
-    - python <3
-    - manorm >=1.1.4
-    - motifscan >=1.1.2
+    - python >=3.6
+    - numpy >=1.15
+    - scipy >=1.0
+    - manorm >=1.3.0
+    - motifscan >=1.2.1
 
 test:
   imports:
     - mamotif
-    - mamotif.lib
+    - mamotif.cli
   commands:
-    - mamotif --help > /dev/null
+    - mamotif --help
 
 about:
   home: https://github.com/shao-lab/MAmotif
   license: BSD License
   license_family: BSD
-  summary: An integrative toolkit for searching cell type-specific co-factors associated with differential binding.
+  summary: An integrative toolkit for detecting cell type-specific regulators
