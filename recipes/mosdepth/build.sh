@@ -16,6 +16,7 @@ bin/nim c  koch
 popd
 
 export PATH=$SRC_DIR/nim_source/bin:$PATH
+export LD_LIBRARY_PATH=$PREFIX/lib
 
 nimble install -y --verbose
 mkdir -p $PREFIX/bin
