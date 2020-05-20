@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="MeSH.Cbr.eg.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MeSH.Cbr.eg.db_1.13.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.Cbr.eg.db_1.13.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Cbr.eg.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.cbr.eg.db/bioconductor-mesh.cbr.eg.db_1.13.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.cbr.eg.db/bioconductor-mesh.cbr.eg.db_1.13.0_src_all.tar.gz"
 )
 MD5="86b385647f87fe01b55afe81a6b715b7"

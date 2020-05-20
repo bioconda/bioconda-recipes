@@ -1,5 +1,5 @@
 {% set name = "nanopolish" %}
-{% set version = "0.11.2" %}
+{% set version = "0.13.2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,37 +7,40 @@ package:
 
 build:
   number: 0
+  binary_relocation: False
 
 source:
-  url: https://github.com/jts/nanopolish/archive/v{{ version }}.tar.gz
-  sha256: b72f2bde060b0ef4fe46529d3408e8beb4490adc968a59a5c628f9d9a5dfa8e5
+  git_url: https://github.com/jts/nanopolish
+  git_rev: 'v{{ version }}'
+  sha256: be9ab70ff0753519323e4cd0e6be50b164c4239bd9c20ffa5207c2d6fc20d120
   patches:
     - nanopolish.patch
 
 requirements:
   build:
-    - {{ compiler('cxx') }}  # [linux64]
-    - gcc                    # [osx]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
-    - fast5 0.6.5
     - htslib
-    - hdf5
+    - hdf5 ==1.8.18
     - eigen
     - ncurses
     - bzip2
     - openmp
     - libcurl
+    - zlib
   run:
     - python
-    - hdf5
+    - hdf5 ==1.8.18
     - biopython
     - bwa
     - eigen
     - ncurses
     - libdeflate
     - openmp
-    - libgcc                # [osx]
+    - minimap2
     - libcurl
+    - zlib
 
 test:
   commands:
@@ -52,4 +55,4 @@ about:
 
 extra:
   skip-lints:
-    - should_use_compilers
+    - uses_vcs_url

@@ -1,0 +1,45 @@
+{% set name = "igphyml" %}
+{% set version = "1.1.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://bitbucket.org/kleinstein/{{ name }}/get/{{ version }}.tar.gz"
+  sha256: 1dcba4ae7933df6fd0ef14b66cd6d5c52608751c89ea41a5b66878dc2decabfe
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - autoconf
+    - automake
+    - llvm-openmp  # [osx]
+  host:
+    - llvm-openmp  # [osx]
+  run:
+    - llvm-openmp  # [osx]
+    - changeo >=0.4.6
+    - r-alakazam >=0.3.0
+
+test:
+  commands:
+    - igphyml --help
+    # Fail test if warning binary was not compiled with OpenMP, detecting warning in command stdout. Ugly! feel free to improve.
+    - IGPHYML_PATH=${PREFIX}/share/igphyml/motifs/ igphyml -i ${PREFIX}/share/igphyml/examples/example.fasta -m GY --run_id gy --threads 2 | [[ ! $( grep 'unless compiled with OMP!' ) ]]
+    # Test hotspot tables are available
+    - IGPHYML_PATH=${PREFIX}/share/igphyml/motifs/ igphyml -i ${PREFIX}/share/igphyml/examples/example.fasta -m HLP --root V4-59 --run_id hlp
+
+about:
+  home: "https://igphyml.readthedocs.io/en/latest/index.html"
+  license: "GNU GPL version 2"
+  license_family: "GPL2"
+  license_file: COPYING
+  summary: "IgPhyML is a program designed to build phylogenetic trees and test evolutionary hypotheses regarding B cell affinity maturation."
+
+extra:
+  recipe-maintainers:
+    - PertuyF
+

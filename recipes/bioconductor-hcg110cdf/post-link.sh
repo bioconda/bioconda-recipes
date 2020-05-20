@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="hcg110cdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/hcg110cdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/hcg110cdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hcg110cdf_2.18.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hcg110cdf/bioconductor-hcg110cdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hcg110cdf/bioconductor-hcg110cdf_2.18.0_src_all.tar.gz"
