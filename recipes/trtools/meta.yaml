@@ -1,0 +1,77 @@
+{% set name = "trtools" %}
+{% set version = "2.0.13" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 9c53a32fdc412cb4010696d426fe5bc6ce3b34ac26f36e6c66b7a46af095be51
+  # To get the checksum for a new version, download the .tar.gz file from pip and
+  # run `openssl sha256 <file name>.tar.gz`.
+  # You may need the openssl package, available on conda-forge:
+  #  `conda install openssl -c conda-forge``
+
+build: 
+  # don't support deprecated python versions
+  noarch: python
+  entry_points:
+    - dumpSTR=dumpSTR.dumpSTR:run
+    - mergeSTR=mergeSTR.mergeSTR:run
+    - statSTR=statSTR.statSTR:run
+    - compareSTR=compareSTR.compareSTR:run
+    - qcSTR=qcSTR.qcSTR:run
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+requirements:
+  host:
+    - python >=3.5
+    - pip >=20.1.1
+    - pybedtools
+  run:
+    - argparse
+    - matplotlib
+    - numpy
+    - pandas
+    - pybedtools
+    - pysam
+    - python >=3.5
+    - pyvcf
+    - scipy
+
+test:
+  imports:
+    - compareSTR
+    - dumpSTR
+    - mergeSTR
+    - qcSTR
+    - statSTR
+    - trtools
+    - trtools.utils
+  source_files:
+    - tests
+  requires:
+    - pytest
+  commands:
+    - pytest
+    - dumpSTR --help
+    - mergeSTR --help
+    - statSTR --help
+    - compareSTR --help
+    - qcSTR --help
+
+about:
+  home: http://github.com/gymreklab/TRTools
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  summary: Toolkit for genome-wide analysis of tandem repeats https://trtools.readthedocs.io/ 
+  doc_url: https://trtools.readthedocs.io/
+  dev_url: https://github.com/gymreklab/TRTools
+
+extra:
+  recipe-maintainers:
+    - LiterallyUniqueLogin
