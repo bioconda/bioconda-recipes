@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="htrat230pmprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/htrat230pmprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/htrat230pmprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/htrat230pmprobe_2.18.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-htrat230pmprobe/bioconductor-htrat230pmprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-htrat230pmprobe/bioconductor-htrat230pmprobe_2.18.0_src_all.tar.gz"

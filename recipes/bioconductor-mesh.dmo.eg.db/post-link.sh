@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="MeSH.Dmo.eg.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MeSH.Dmo.eg.db_1.13.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.Dmo.eg.db_1.13.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Dmo.eg.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.dmo.eg.db/bioconductor-mesh.dmo.eg.db_1.13.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.dmo.eg.db/bioconductor-mesh.dmo.eg.db_1.13.0_src_all.tar.gz"
 )
 MD5="cbaef6d21ceb44afd459017b069b8aa7"
