@@ -1,0 +1,53 @@
+{% set name = "hypro" %}
+{% set version = "0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source: 
+  url: https://github.com/hoelzer-lab/hypro/archive/v0.1.tar.gz
+  sha256: 55510113190bc3c1154e7a67f2046970dd34b4388e88e81936fa73737bc3879e
+  folder: hypro-0.1
+    
+build:
+    number: 1
+    script: $PYTHON hypro-0.1/setup.py install --single-version-externally-managed --record=record.txt
+    
+requirements:
+  build:
+    - git
+    - pip==19.3
+    - python==3.7.6
+    - setuptools
+    
+  host:
+    - python==3.7.6
+    - prokka>=1.14.6
+    
+  run:
+
+    - python==3.7.6
+    - mygene==3.1.0
+    - pandas==0.25.2
+    - mmseqs2==10.6d92c
+    - prokka>=1.14.6
+    
+test:
+  source_files:
+    - hypro-0.1/test/data/GCF_000471025.2_ASM47102v2_genomic.fna
+    - hypro-0.1/scripts/hypro.py
+    - hypro-0.1/scripts/mmseqs2.sh
+  commands:
+    - chmod 777 hypro-0.1/
+    - prokka --prefix testrun --outdir hypro-0.1/run/prokka hypro-0.1/test/data/GCF_000471025.2_ASM47102v2_genomic.fna
+    - ls -lh hypro-0.1/
+    - chmod 777 hypro-0.1/run/*
+    - chmod 777 hypro-0.1/run/
+    - mkdir -p hypro-0.1/run/hypro
+    - ls -lh hypro-0.1/
+    - hypro.py -i hypro-0.1/run/prokka/testrun.gff -o hypro-0.1/run/hypro -f mmseqs2.sh
+    
+about:
+  home: https://github.com/hoelzer-lab/hypro.git
+  license: GPL
