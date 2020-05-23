@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="MeSH.Dda.3937.eg.db_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MeSH.Dda.3937.eg.db_1.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.Dda.3937.eg.db_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Dda.3937.eg.db_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.dda.3937.eg.db/bioconductor-mesh.dda.3937.eg.db_1.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.dda.3937.eg.db/bioconductor-mesh.dda.3937.eg.db_1.12.0_src_all.tar.gz"

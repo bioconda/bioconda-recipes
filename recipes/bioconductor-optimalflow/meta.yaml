@@ -1,0 +1,70 @@
+{% set version = "1.0.0" %}
+{% set name = "optimalFlow" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 9d21533e95cd017dd4905ef768db8e06
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: knitr, BiocStyle, rmarkdown, magick
+requirements:
+  host:
+    - 'bioconductor-flowmeans >=1.48.0,<1.49.0'
+    - 'bioconductor-optimalflowdata >=1.0.0,<1.1.0'
+    - r-base
+    - r-dbscan
+    - r-doparallel
+    - r-dplyr
+    - r-ellipse
+    - r-foreach
+    - r-randomforest
+    - r-rfast
+    - r-rgl
+    - 'r-rlang >=0.4.0'
+    - r-robustbase
+    - r-transport
+  run:
+    - 'bioconductor-flowmeans >=1.48.0,<1.49.0'
+    - 'bioconductor-optimalflowdata >=1.0.0,<1.1.0'
+    - r-base
+    - r-dbscan
+    - r-doparallel
+    - r-dplyr
+    - r-ellipse
+    - r-foreach
+    - r-randomforest
+    - r-rfast
+    - r-rgl
+    - 'r-rlang >=0.4.0'
+    - r-robustbase
+    - r-transport
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
+test:
+  commands:
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: optimalFlow
+  description: 'Optimal-transport techniques applied to supervised flow cytometry gating.'
+extra:
+  container:
+    extended-base: true
+
