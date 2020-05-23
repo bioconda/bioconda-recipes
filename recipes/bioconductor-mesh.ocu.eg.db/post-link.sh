@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="MeSH.Ocu.eg.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MeSH.Ocu.eg.db_1.13.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.Ocu.eg.db_1.13.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Ocu.eg.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.ocu.eg.db/bioconductor-mesh.ocu.eg.db_1.13.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.ocu.eg.db/bioconductor-mesh.ocu.eg.db_1.13.0_src_all.tar.gz"
 )
 MD5="bbe7f6fb23deda0c51998ff2ca2043ee"
