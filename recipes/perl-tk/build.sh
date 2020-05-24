@@ -13,6 +13,9 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #--------------------------------------------------------------------------------
+printenv
+
+
 
 export CXXFLAGS="-I${PREFIX}/include $CXXFLAGS"
 export CPPFLAGS="-I${PREFIX}/include $CPPFLAGS"
@@ -46,3 +49,6 @@ make install
 # fixing permissions (presumably bug in conda-build)
 find ${PREFIX}/lib/perl5/x86_64-linux-thread-multi/auto/Tk/ -name "*.so" | xargs chmod -v u+w
 find ${PREFIX}/bin -type f | xargs chmod -v u+w
+
+mkdir -p ${PREFIX}/lib/site_perl/5.26.2/x86_64-linux-thread-multi/
+mv ${PREFIX}/lib/perl5/x86_64-linux-thread-multi/* ${PREFIX}/lib/site_perl/5.26.2/x86_64-linux-thread-multi/ 
