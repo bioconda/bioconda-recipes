@@ -3,6 +3,9 @@ set -euxo pipefail
 
 cd $SRC_DIR/c++/
 
+# Fix hash bang lines in perl files
+find . -name \*.pl -exec sed -i.bak '1 s|^.*$|#!/usr/bin/env perl\nuse warnings;|g' {} \;
+
 export CFLAGS="$CFLAGS -O2"
 export CXXFLAGS="$CXXFLAGS -O2"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
@@ -91,6 +94,5 @@ cp $SRC_DIR/c++/ReleaseMT/bin/* $PREFIX/bin/
 cp $SRC_DIR/c++/ReleaseMT/lib/* $LIB_INSTALL_DIR
 
 chmod +x $PREFIX/bin/*
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/update_blastdb.pl
 # Patches to enable this script to work better in bioconda
 sed -i.bak 's/mktemp.*/mktemp`/; s/exit 1/exit 0/; s/^export PATH=\/bin:\/usr\/bin:/\#export PATH=\/bin:\/usr\/bin:/g' $PREFIX/bin/get_species_taxids.sh
