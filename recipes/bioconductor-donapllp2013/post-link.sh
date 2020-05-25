@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="DonaPLLP2013_1.24.0.tar.gz"
+FN="DonaPLLP2013_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/DonaPLLP2013_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/DonaPLLP2013_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-donapllp2013/bioconductor-donapllp2013_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/DonaPLLP2013_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/DonaPLLP2013_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-donapllp2013/bioconductor-donapllp2013_1.26.0_src_all.tar.gz"
 )
-MD5="5db2018c596f3c59087c71708e5e1f2d"
+MD5="93278dc268d6152f97beff19c1e21cb3"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

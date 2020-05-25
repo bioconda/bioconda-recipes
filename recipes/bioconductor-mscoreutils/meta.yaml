@@ -1,0 +1,45 @@
+{% set version = "1.0.0" %}
+{% set name = "MsCoreUtils" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 512efefbeb57d646e8ecae31bb0a52b0
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: testthat, knitr, BiocStyle, rmarkdown, roxygen2, imputeLCMD, impute, norm, pcaMethods, vsn, preprocessCore
+requirements:
+  host:
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - r-base
+    - r-mass
+    - r-rcpp
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - r-base
+    - r-mass
+    - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'Core Utils for Mass Spectrometry Data'
+  description: 'MsCoreUtils defines low-level functions for mass spectrometry data and is independent of any high-level data structures. These functions include mass spectra processing functions (noise estimation, smoothing, binning), quantitative aggregation functions (median polish, robust summarisation, ...), missing data imputation, data normalisation (quantiles, vsn, ...) as well as misc helper functions, that are used across high-level data structure within the R for Mass Spectrometry packages.'
+
