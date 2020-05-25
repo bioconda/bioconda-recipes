@@ -11,14 +11,14 @@ cd $TMPDIR
 
 echo -n 'Creating Database... '
 makeblastdb \
-  -in testdatabase.fa -parse_seqids -dbtype nucl -out testdb | \
-   grep -q "added 3 sequences"
+  -in testdatabase.fa -parse_seqids -dbtype nucl -out testdb > makeblastdb.stdout
+test "$(grep -c "added 3 sequences" < makeblastdb.stdout)" -eq 1
 echo PASS
 echo -n 'Searching Database for Hits... '
 blastn \
   -query test.fa -db testdb -task blastn -dust no \
-  -outfmt "7 qseqid sseqid evalue bitscore" -max_target_seqs 6 | \
-  grep -q " 3 hits found"
+  -outfmt "7 qseqid sseqid evalue bitscore" -max_target_seqs 6 > blastn.stdout
+test "$(grep -c " 3 hits found" < blastn.stdout)" -eq 1
 echo PASS
 echo -n 'Search and Fetch An Entry From Database... '
 blastdbcmd -db testdb -entry gnl1 -out test_query.fa
