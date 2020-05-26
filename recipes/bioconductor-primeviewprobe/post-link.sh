@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="primeviewprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/primeviewprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/primeviewprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/primeviewprobe_2.18.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-primeviewprobe/bioconductor-primeviewprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-primeviewprobe/bioconductor-primeviewprobe_2.18.0_src_all.tar.gz"

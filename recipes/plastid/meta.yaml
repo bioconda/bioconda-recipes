@@ -6,21 +6,25 @@ package:
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
   url: https://files.pythonhosted.org/packages/source/p/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: 48c23e07d116417347c335861a8f65cad8921ed0a40a02a4472e1a83476b4450
-
+  patches:
+    - 0001-Simplify-get_short_name-regex.patch # Patch submitted upstream https://github.com/joshuagryphon/plastid/pull/30
 build:
-  number: 3
+  number: 6
+
+extra:
+  skip-lints:
+    - deprecated_numpy_spec  # Later numpy causes issue: https://github.com/joshuagryphon/plastid/issues/18, remove skip-lint when fix released
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - python
-    - setuptools
     - cython >=0.22.0
-    - numpy >=1.9.0,<1.12.0  # Later numpy causes issue: https://github.com/joshuagryphon/plastid/issues/18
+    - setuptools
+    - numpy >=1.9.0,<1.12.0  # Later numpy causes issue: https://github.com/joshuagryphon/plastid/issues/18, remove restriction when fix released
     - pysam >=0.8.4
     - termcolor
     - scipy >=0.15.1
@@ -31,9 +35,8 @@ requirements:
     - zlib
   run:
     - python
-    - cython >=0.22.0
-    - numpy >=1.9.0,<1.12.0  # Later numpy causes issue: https://github.com/joshuagryphon/plastid/issues/18
-    - pysam >=0.8.4
+    - {{ pin_compatible('numpy', max_pin='x.x') }} # Later numpy causes issue: https://github.com/joshuagryphon/plastid/issues/18, remove max_pin when fix released
+    - {{ pin_compatible('pysam', max_pin='x.x.x') }}
     - termcolor
     - scipy >=0.15.1
     - pandas >=0.17.0
@@ -60,6 +63,8 @@ test:
     - reformat_transcripts -h
     - findjuncs -h
     - slidejuncs -h
+    # Later numpy causes issue: https://github.com/joshuagryphon/plastid/issues/18, remove this test when fix released
+    - python -c "exec(\"import numpy\ncounts = numpy.array([1,2,3])\ncounts.reshape((len(counts)/3,3))\")"
 
 about:
   home: http://plastid.readthedocs.io/en/latest/

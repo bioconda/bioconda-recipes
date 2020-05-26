@@ -1,42 +1,49 @@
+{% set name = "motifscan" %}
+{% set version = "1.2.1" %}
+
 package:
-  name: motifscan
-  version: 1.1.2
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://files.pythonhosted.org/packages/12/fc/0974ba6cbffbbd9d6d4fd6e69f433d3a22c9936d2f85ff01f8d7e573bed9/motifscan-1.1.2.tar.gz
-  sha256: 7ba31fed062fc1d228ac9178383dc12711bf4f65d98ade383eccf23a4abe0099
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 304e28989e23e0c8547a3cdce7c49fd31cbe873f6b9614be2e911f1fa1712aba
 
 build:
   number: 0
-  skip: True  # [not py27]
-
+  entry_points:
+    - motifscan=motifscan.cli.main:main
+  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+  
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
     - python
-    - setuptools
-    - numpy
-    - pandas >=0.17.0
-    - scipy
-    - matplotlib
-
+    - pip
   run:
     - python
-    - numpy
-    - pandas >=0.17.0
-    - scipy
-    - matplotlib
+    - numpy >=1.15
+    - pysam >=0.15.0
+    - requests
+    - scipy >=1.0
+    - matplotlib-base >=3.0.0
+    - tqdm >=4.42.1
 
 test:
   imports:
     - motifscan
+    - motifscan.cli
+    - motifscan.genome
     - motifscan.io
-    - motifscan.lib
+    - motifscan.motif
+    - motifscan.region
   commands:
-    - motifscan --help > /dev/null
+    - motifscan --help
 
 about:
   home: https://github.com/shao-lab/MotifScan
   license: BSD License
   license_family: BSD
   license_file: LICENSE
-  summary: A motif discovery tool to search for candidate targets of given motifs.
+  summary: A package for motif discovery and motif enrichment analysis

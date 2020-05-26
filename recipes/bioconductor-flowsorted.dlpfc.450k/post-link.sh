@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="FlowSorted.DLPFC.450k_1.20.0.tar.gz"
+FN="FlowSorted.DLPFC.450k_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/FlowSorted.DLPFC.450k_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/FlowSorted.DLPFC.450k_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-flowsorted.dlpfc.450k/bioconductor-flowsorted.dlpfc.450k_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/FlowSorted.DLPFC.450k_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/FlowSorted.DLPFC.450k_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-flowsorted.dlpfc.450k/bioconductor-flowsorted.dlpfc.450k_1.24.0_src_all.tar.gz"
 )
-MD5="2079268ebe8b094cc960b96c9ab94876"
+MD5="13714b757af1dddfa260ff2575f1e65b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

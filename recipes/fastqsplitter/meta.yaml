@@ -1,5 +1,5 @@
 {% set name = "fastqsplitter" %}
-{% set version = "1.0.0" %}
+{% set version = "1.2.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,24 +7,28 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 5d96ce7dd975a0d9a7dee2031a938c26b41d950ee636712c8249f541d96f1c42
+  sha256: 14cfb45eabe00de29886dbf2ad8dedd1b9990cb82ee194b5c41291533f3b879d
 
 build:
-  noarch: python
+  skip: True  # [py27]
   number: 0
   entry_points:
     - fastqsplitter=fastqsplitter:main
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
+  build:
+    - "{{ compiler('c') }}"
   host:
     - pip
-    - python >=3.5
-    - xopen >=0.6.0
+    - setuptools
+    - cython
+    - python
+    - xopen >=0.8.1
   run:
     - pigz  # Pigz is required for optimal speed. 
-    - python >=3.5
-    - xopen >=0.6.0
+    - python
+    - xopen >=0.8.1  # Version 0.8.1 includes important optimizations for reading gzipped files.
 
 test:
   imports:

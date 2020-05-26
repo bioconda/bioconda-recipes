@@ -1,28 +1,23 @@
-{% set version="1.4.1.dev" %}
-{% set revision="89742364caf792f548f75c1ebb5cf09687ad98a9" %}
+{% set name="biotradis" %}
+{% set version="1.4.5" %}
 
 package:
-  name: biotradis
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  git_url: https://github.com/sanger-pathogens/Bio-Tradis.git
-  git_rev: {{ revision }}
-  md5: unused
+  url: https://github.com/sanger-pathogens/Bio-Tradis/archive/v{{ version }}.tar.gz
+  sha256: 8f8052f003b996cd032da11d3e53366c9df5993f1a9a063587058d740b533b8d
 
 build:
-  number: 4
-  noarch: True
+  number: 2
+  noarch: generic
 
 requirements:
-  build:
-    - perl-app-cpanminus
-    - perl-module-build
-    - perl-moose
-    - perl-local-lib
-  host:
-    - r-base >=3.5
   run:
+    - perl
+    - perl-bioperl >=1.7.2
+    - perl-text-csv
     - perl-app-cpanminus
     - perl-parallel-forkmanager
     - perl-pathtools
@@ -33,24 +28,32 @@ requirements:
     - smalt
     - samtools
     - bioconductor-edger
-    - r-base >=3.5
+    - r-base 3.6.0
     - r-getopt
     - r-mass
     - bwa
+    - tabix
 
 test:
   commands:
-    - which bacteria_tradis
-    - which check_tradis_tags
-    - which add_tradis_tags
+    - bacteria_tradis -h 2>&1 | grep tradis > /dev/null
+    - tradis_gene_insert_sites -h 2>&1 | grep tradis > /dev/null
+    - check_tradis_tags -h 2>&1 | grep tradis > /dev/null
+    - add_tradis_tags -h 2>&1 | grep tradis > /dev/null
+    - tradis_merge_plots -h 2>&1 | grep tradis > /dev/null
+    - tradis_gene_insert_sites -h 2>&1 | grep tradis > /dev/null
     - which tradis_comparison.R
 
 about:
   home: https://github.com/sanger-pathogens/Bio-Tradis
-  license: 'GPLv3'
+  license: 'GNU General Public License v3 (GPLv3)'
+  license_family: GPL3
+  license_file: software_license
   summary: 'A set of tools to analyse the output from TraDIS analyses'
 
 extra:
-  skip-lints:
-    - uses_git_url
+  recipe-maintainers:
+    - thanhleviet
+  doi:
+    - 10.1093/bioinformatics/btw022
 

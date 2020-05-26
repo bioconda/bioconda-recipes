@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="COHCAPanno_1.20.0.tar.gz"
+FN="COHCAPanno_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/COHCAPanno_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/COHCAPanno_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-cohcapanno/bioconductor-cohcapanno_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/COHCAPanno_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/COHCAPanno_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cohcapanno/bioconductor-cohcapanno_1.24.0_src_all.tar.gz"
 )
-MD5="7372e4f9927b5c9b1060be2105a3e3f4"
+MD5="6538a1e9a669dfd81581f9b9a3b8d6b8"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

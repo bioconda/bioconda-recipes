@@ -1,5 +1,5 @@
 {% set name = "MedPy" %}
-{% set version = "0.3.0" %}
+{% set version = "0.4.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,33 +7,33 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 299d1be28df0b9c35e856177ada7555746d5b94a0f7af34dc3c3dd3671252a6a
+  sha256: f8a94937dbb947ab069e767862dc6b86896b153c41ce8ed9369c7d79c0033a88
+  patches:
+    - graphcut_boost_lib.patch
 
 build:
-  number: 0
+  number: 1
+  skip: True  # [py2k]
   script:
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
     - export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include -I${PYTHON_INCLUDE_DIR}"
     - "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
-  skip: True  # [osx]
+    - cd $( find ${PREFIX}/lib/python*/site-packages/medpy/ -type d -name graphcut ) && find . -name maxflow.cython*.so -exec ln -sr {} maxflow.so \;
 
 requirements:
   build:
-    #- {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
-    - nibabel >=1.3.0
-    - numpy >=1.6.1
+    - boost
     - pip
-    - pydicom >=0.9.7
-    - python <3
-    - scipy >=0.9.0
-    #- boost
+    - python
   run:
-    - nibabel >=1.3.0
-    - numpy >=1.6.1
-    - pydicom >=0.9.7
-    - python <3
-    - itk
-    - scipy >=0.9.0
+    - boost
+    - numpy >=1.11.0
+    - python
+    - simpleitk  >=1.1.0
+    - scipy >=1.1.0
 
 test:
   imports:
@@ -41,11 +41,8 @@ test:
     - medpy.core
     - medpy.features
     - medpy.filter
-    #- medpy.graphcut
+    - medpy.graphcut
     - medpy.io
-    - medpy.itkvtk
-    - medpy.itkvtk.filter
-    - medpy.itkvtk.utilities
     - medpy.metric
     - medpy.utilities
 
@@ -53,4 +50,5 @@ about:
   home: https://github.com/loli/medpy
   license: GNU General Public (GPL)
   license_family: LGPL
+  license_file: LICENSE.txt
   summary: Medical image processing in Python

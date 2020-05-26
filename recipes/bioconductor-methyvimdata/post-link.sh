@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="methyvimData_1.6.0.tar.gz"
+FN="methyvimData_1.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/methyvimData_1.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/methyvimData_1.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-methyvimdata/bioconductor-methyvimdata_1.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/methyvimData_1.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/methyvimData_1.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-methyvimdata/bioconductor-methyvimdata_1.10.0_src_all.tar.gz"
 )
-MD5="a4c9dd38473186f1632b57e21a3ef671"
+MD5="afd31416500696391b474013e66b4cbc"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

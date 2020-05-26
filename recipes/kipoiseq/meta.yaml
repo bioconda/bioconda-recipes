@@ -1,75 +1,51 @@
 {% set name = "kipoiseq" %}
-{% set version = "0.2.4" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "43b841cfd7b7d72585ae74469d0c98d9346e39606062728e49a7172634750525" %}
+{% set version = "0.3.4" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
-
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: "218cbd8fc4476ed072aee46e7615c29ee497ef8d265a14a8f1c30baaaff49aa8"
 
 build:
   number: 0
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
   noarch: python
 
 requirements:
-  build:
+  host:
     - python
-    - setuptools
-    - kipoi >=0.5.5
-    - pybedtools
-    - pyfaidx
-    - genomelake
-    - numpy
-    - pandas
-    - tqdm
-    - gffutils
+    - pip
   run:
     - python
     - kipoi >=0.5.5
     - kipoi-conda
     - pybedtools
     - pyfaidx
-    - genomelake
+    - genomelake >=0.1.4
     - numpy
     - pandas
     - tqdm
     - gffutils
+    - pyranges
 
 test:
   imports:
     - kipoiseq
     - kipoiseq.dataloaders
     - kipoiseq.transforms
-  requires:
-    # - bumpversion
-    # - coveralls
-    # - cython
-    # - epc
-    # - jedi
-    # - keras
-    # - pybedtools
-    # - pytest >=3.3.1
-    # - pytest-cov
-    # - pytest-pep8
-    # - pytest-xdist
-    # - scikit-learn
-    # - tensorflow
-    # - wheel
-
+ 
 about:
   home: https://github.com/kipoi/kipoiseq
-  license: MIT license
+  license: MIT
   license_family: MIT
+  license_file: LICENSE
   summary: 'kipoiseq: sequence-based data-laoders for Kipoi'
   description: 'kipoiseq: sequence-based data-laoders for Kipoi'
-  doc_url: 'https://kipoi.org/kipoiseq/'
+  doc_url: https://kipoi.org/kipoiseq/
+  dev_url: https://github.com/kipoi/kipoiseq
 
 extra:
   recipe-maintainers:

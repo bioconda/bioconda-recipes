@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="brainImageRdata_1.2.0.tar.gz"
+FN="brainImageRdata_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/brainImageRdata_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/brainImageRdata_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-brainimagerdata/bioconductor-brainimagerdata_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/brainImageRdata_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/brainImageRdata_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-brainimagerdata/bioconductor-brainimagerdata_1.6.0_src_all.tar.gz"
 )
-MD5="54c39516d8efa96d6404737c09bddb94"
+MD5="5c52b35c8725600872724c07c18aadb1"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

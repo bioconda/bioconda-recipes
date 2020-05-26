@@ -19,6 +19,9 @@ cp $SP_DIR/biobb_md/gromacs/grompp.py $PREFIX/bin/grompp
 chmod u+x $SP_DIR/biobb_md/gromacs/make_ndx.py
 cp $SP_DIR/biobb_md/gromacs/make_ndx.py $PREFIX/bin/make_ndx
 
+chmod u+x $SP_DIR/biobb_md/gromacs/gmxselect.py
+cp $SP_DIR/biobb_md/gromacs/gmxselect.py $PREFIX/bin/gmxselect
+
 chmod u+x $SP_DIR/biobb_md/gromacs/mdrun.py
 cp $SP_DIR/biobb_md/gromacs/mdrun.py $PREFIX/bin/mdrun
 
