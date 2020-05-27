@@ -2,5 +2,5 @@
 
 mkdir -p  "$PREFIX/bin"
 
-cp parsnp $PREFIX/bin/
+cp template.ini parsnp Parsnp.py bin/ muscle/ $PREFIX/bin/ -r
 
