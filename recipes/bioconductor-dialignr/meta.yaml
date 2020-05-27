@@ -1,0 +1,65 @@
+{% set version = "1.0.5" %}
+{% set name = "DIAlignR" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 98e2da6de69d171914bec29af96ced7e
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: knitr, lattice, latticeExtra, rmarkdown, BiocStyle, testthat (>= 2.1.0)
+# SystemRequirements: C++11
+requirements:
+  host:
+    - 'bioconductor-mzr >=2.22.0,<2.23.0'
+    - r-base
+    - r-dbi
+    - r-dplyr
+    - r-ggplot2
+    - r-gridextra
+    - r-rcpp
+    - r-rlang
+    - r-rsqlite
+    - r-scales
+    - r-signal
+    - r-tidyr
+    - 'r-zoo >=1.8-3'
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-mzr >=2.22.0,<2.23.0'
+    - r-base
+    - r-dbi
+    - r-dplyr
+    - r-ggplot2
+    - r-gridextra
+    - r-rcpp
+    - r-rlang
+    - r-rsqlite
+    - r-scales
+    - r-signal
+    - r-tidyr
+    - 'r-zoo >=1.8-3'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Dynamic Programming Based Alignment of MS2 Chromatograms'
+  description: 'To obtain unbiased proteome coverage from a biological sample, mass-spectrometer is operated in Data Independent Acquisition (DIA) mode. Alignment of these DIA runs establishes consistency and less missing values in complete data-matrix. This package implements dynamic programming with affine gap penalty based approach for pair-wise alignment of analytes. A hybrid approach of global alignment (through MS2 features) and local alignment (with MS2 chromatograms) is implemented in this tool.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

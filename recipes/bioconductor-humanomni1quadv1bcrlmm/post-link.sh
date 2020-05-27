@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="humanomni1quadv1bCrlmm_1.0.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/humanomni1quadv1bCrlmm_1.0.3.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/humanomni1quadv1bCrlmm_1.0.3.tar.gz"
   "https://bioarchive.galaxyproject.org/humanomni1quadv1bCrlmm_1.0.3.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-humanomni1quadv1bcrlmm/bioconductor-humanomni1quadv1bcrlmm_1.0.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-humanomni1quadv1bcrlmm/bioconductor-humanomni1quadv1bcrlmm_1.0.3_src_all.tar.gz"
