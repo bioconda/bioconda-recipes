@@ -36,7 +36,7 @@ libdir=${exec_prefix}/lib
 
 Name: sourmash
 Description: Compute MinHash signatures for nucleotide (DNA/RNA) and protein sequences.
-Version: 0.4.0
+Version: 0.7.0
 Cflags: -I${includedir}
 Libs: -L${libdir} -lsourmash
 EOF
