@@ -12,7 +12,7 @@ ls -l $RECIPE_DIR
 ls -l $outdir
 ln -s $outdir/hops ${PREFIX}/bin
 ln -s $outdir/MaltExtract ${PREFIX}/bin
-mv $outdir/postprocessing.AMPS.r ${PREFIX}/bin/postprocessing.AMPS.r
+mv $outdir/postprocessing.AMPS.r ${PREFIX}/bin/
 chmod 0755 ${PREFIX}/bin/hops
 chmod 0755 ${PREFIX}/bin/MaltExtract
 chmod 0755 ${PREFIX}/bin/postprocessing.AMPS.r
