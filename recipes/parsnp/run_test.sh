@@ -7,5 +7,5 @@ tar -xvf mers49.tar.gz >/dev/null
 rm mers49/._*
 
 parsnp -V >/dev/null
-parsnp -g ./ref/EMC_2012.gbk -d ./mers49 -C 1000 -c -o test >/dev/null
+parsnp -g ./ref/EMC_2012.gbk -d ./mers49 -C 1000 -c --verbose -o test >/dev/null
 
