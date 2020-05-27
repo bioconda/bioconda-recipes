@@ -1,44 +1,52 @@
 {% set name = "plantcv" %}
-{% set version = "3.2.0" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "a2800a9749d66f6376a8e05939979ed185daf5aa63cbbaefef99c26da4ca0c1e" %}
+{% set version = "3.8.0" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: "4728e2ba78011cde4c7e2da2e45174bf71d9441fa58f772f25d4ad0dc9deecba"
 
 build:
   noarch: python
   number: 0
 
 requirements:
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}        # [linux]
+    - {{ cdt('libxdamage') }}        # [linux]
+    - {{ cdt('libxfixes') }}         # [linux]
+    - {{ cdt('libxxf86vm') }}        # [linux]
   host:
     - python
     - pip
   run:
     - python
+    - python-dateutil
+    - plotnine <=0.5.1
     - matplotlib >=1.5
     - numpy >=1.11
     - pandas
     - python-dateutil
-    - scipy
-    - scikit-image
-    - plotnine
-    - opencv ==3.4.4
+    - scipy <1.3
+    - scikit-image <0.15
+    - opencv <4
 
 test:
-  imports:
-    - plantcv
-    - plantcv.learn
-    - plantcv.plantcv
-    - plantcv.plantcv.roi
-    - plantcv.plantcv.threshold
-    - plantcv.plantcv.transform
+  commands:
+    - LD_LIBRARY_PATH="$BUILD_PREFIX/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" python -c "import plantcv"
+    - LD_LIBRARY_PATH="$BUILD_PREFIX/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" python -c "import plantcv.learn"
+    - LD_LIBRARY_PATH="$BUILD_PREFIX/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" python -c "import plantcv.parallel"
+    - LD_LIBRARY_PATH="$BUILD_PREFIX/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" python -c "import plantcv.plantcv"
+    - LD_LIBRARY_PATH="$BUILD_PREFIX/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" python -c "import plantcv.plantcv.morphology"
+    - LD_LIBRARY_PATH="$BUILD_PREFIX/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" python -c "import plantcv.plantcv.roi"
+    - LD_LIBRARY_PATH="$BUILD_PREFIX/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" python -c "import plantcv.plantcv.threshold"
+    - LD_LIBRARY_PATH="$BUILD_PREFIX/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" python -c "import plantcv.plantcv.transform"
+    - LD_LIBRARY_PATH="$BUILD_PREFIX/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" python -c "import plantcv.plantcv.visualize"
 
 about:
   home: https://plantcv.danforthcenter.org
@@ -53,7 +61,10 @@ about:
 extra:
   container:
     extended-base: true
-  recipe-maintainers: 'PlantCV team'
+  recipe-maintainers:
+    - nfahlgren
+    - maliagehan
+    - HaleySchuhl
   identifiers:
     - doi:10.1016/j.molp.2015.06.005
     - doi:10.1109/WNYIPW.2016.7904790

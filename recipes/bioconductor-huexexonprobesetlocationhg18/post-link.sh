@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="HuExExonProbesetLocationHg18_0.0.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/HuExExonProbesetLocationHg18_0.0.2.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/HuExExonProbesetLocationHg18_0.0.2.tar.gz"
   "https://bioarchive.galaxyproject.org/HuExExonProbesetLocationHg18_0.0.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-huexexonprobesetlocationhg18/bioconductor-huexexonprobesetlocationhg18_0.0.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-huexexonprobesetlocationhg18/bioconductor-huexexonprobesetlocationhg18_0.0.2_src_all.tar.gz"

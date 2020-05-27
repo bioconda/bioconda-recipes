@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="HIVcDNAvantWout03_1.24.0.tar.gz"
+FN="HIVcDNAvantWout03_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/HIVcDNAvantWout03_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/HIVcDNAvantWout03_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hivcdnavantwout03/bioconductor-hivcdnavantwout03_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/HIVcDNAvantWout03_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/HIVcDNAvantWout03_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hivcdnavantwout03/bioconductor-hivcdnavantwout03_1.28.0_src_all.tar.gz"
 )
-MD5="3978039dba5000fa5456c7fac8082002"
+MD5="4f1dff5daad44a41a7d502f047f68ec1"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

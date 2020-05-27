@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="mgu74b.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/mgu74b.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/mgu74b.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/mgu74b.db_3.2.3.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mgu74b.db/bioconductor-mgu74b.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mgu74b.db/bioconductor-mgu74b.db_3.2.3_src_all.tar.gz"

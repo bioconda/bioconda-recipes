@@ -1,0 +1,56 @@
+# Update from dwnload page, e.g. http://manual.gromacs.org/2019.1/download.html
+# For latest release, see
+# http://manual.gromacs.org/documentation/
+{% set name = "gromacs" %}
+{% set version = "2020.2" %}
+{% set md5sum = "71778e2e47bca8bbb74c9d7c5ad9e5c5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True  # [osx]
+
+source:
+  url: http://ftp.gromacs.org/pub/gromacs/gromacs-{{ version }}.tar.gz
+  md5: {{ md5sum }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - pocl
+  host:
+    - openmp # [linux]
+    - ocl-icd  # [linux]
+    - khronos-opencl-icd-loader  # [osx]
+    - libhwloc 2.*
+    - fftw
+    - python >3.5
+    - perl
+  run:
+    - ocl-icd # [linux]
+    - khronos-opencl-icd-loader  # [osx]
+    - ocl_icd_wrapper_apple # [osx]
+    - openmp # [linux]
+    - fftw
+    - libhwloc 2.*
+
+test:
+  commands:
+    - gmx -version
+
+about:
+  home: http://www.gromacs.org/
+  license: GNU Lesser General Public License (LGPL)
+  summary: GROMACS is a versatile package to perform molecular dynamics.
+
+extra:
+  identifiers:
+    - biotools:gromacs
+    - doi:10.5281/zenodo.2564764 # source release
+    - doi:10.5281/zenodo.2564761 # documentation release
+    - doi:10.1016/j.softx.2015.06.001 # journal article
+    - rrid:RRID:SCR_014565

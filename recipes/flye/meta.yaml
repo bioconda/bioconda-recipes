@@ -1,4 +1,4 @@
-{% set version = "2.4.2" %}
+{% set version = "2.7.1" %}
 
 package:
   name: flye
@@ -6,25 +6,33 @@ package:
 
 source:
   url: https://github.com/fenderglass/Flye/archive/{{ version }}.tar.gz
-  sha256: 5b74d4463b860c9e1614ef655ab6f6f3a5e84a7a4d33faf3b29c7696b542c51a
+  sha256: 0e826261c81537a7fa8fd37dc583edd75535eee0f30429d6bdb55f37b5722dbb
 
 build:
-  number: 0
-  skip: True # [not py27]
+  number: 1
 
 requirements:
   build:
+    - python
+    - setuptools
     - {{ compiler('cxx') }}
     - zlib
   host:
     - python
+    - setuptools
     - zlib
   run:
     - python
+    - setuptools
+
+extra:
+  skip-lints:
+    - uses_setuptools  #uses pkg_resources
 
 test:
   commands:
     - flye -h | grep Assembly
+    - python -c "import flye.tests.test_toy as t; t.main()"
 
 about:
   home: https://github.com/fenderglass/Flye/

@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="mu19ksubc.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/mu19ksubc.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/mu19ksubc.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/mu19ksubc.db_3.2.3.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mu19ksubc.db/bioconductor-mu19ksubc.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mu19ksubc.db/bioconductor-mu19ksubc.db_3.2.3_src_all.tar.gz"
