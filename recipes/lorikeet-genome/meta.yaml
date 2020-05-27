@@ -1,0 +1,50 @@
+{% set version = "0.3.2" %}
+{% set name = "lorikeet" %}
+{% set sha256 = "299f1159862fe291aafcf2416da5334cb46b54564358632958a4c90242457795" %}
+
+package:
+  name: lorikeet-genome
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True  # [osx]
+
+source:
+  url: https://github.com/rhysnewell/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - rust >=1.19
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - pkg-config
+  host:
+    - zlib
+    - gsl
+    - openblas
+    - openssl
+    - clangdev #  one of the rust submodules explicitly requires clang. As it's statically compiled that will hopefully work
+  run:
+    - snippy >=4.4.5
+    - svim
+    - zlib
+    - gsl
+    - starcode
+    - openblas
+    - bwa >=0.7.17
+    - minimap2
+    - fastani
+    - dashing
+
+test:
+  commands:
+    - {{ name }} --version | grep '{{ version }}'
+
+about:
+  home: https://github.com/rhysnewell/Lorikeet
+  license: GPL3
+  license_file: LICENSE
+  summary: Metagenomic Strain Resolver
+  description: Lorikeet aims to generate strain level genotypes from metagenomic communities using information from both long and short reads.
