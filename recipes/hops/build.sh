@@ -7,7 +7,7 @@ mkdir -p $outdir
 mkdir -p ${PREFIX}/bin
 cp -R * $outdir/
 mv $outdir/$PKG_NAME$PKG_VERSION/* $outdir
-rm $outdir/$PKG_NAME$PKG_VERSION/
+rmdir $outdir/$PKG_NAME$PKG_VERSION/
 cp $RECIPE_DIR/hops.py $outdir/hops
 cp $RECIPE_DIR/MaltExtract.py $outdir/MaltExtract
 ls -l $RECIPE_DIR
