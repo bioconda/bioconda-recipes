@@ -13,7 +13,7 @@ import subprocess
 from os import access, getenv, X_OK
 jar_file = 'hops0.34.jar'
 
-default_jvm_mem_opts = ['-Xms1g', '-Xmx2g']
+default_jvm_mem_opts = ['-Xms5g', '-Xmx10g']
 
 # !!! End of parameter section. No user-serviceable code below this line !!!
 
