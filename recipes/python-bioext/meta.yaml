@@ -1,42 +1,44 @@
-{% set version = "0.18.6" %}
+{% set name = "BioExt" %}
+{% set version = "0.19.7" %}
+{% set sha256 = "30d7b0c675af0cc92790b77b28f3f034049d80d480df9a9c69ab590179e6326a" %}
 
 package:
-  name: python-bioext
+  name: python-{{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/veg/BioExt/archive/{{ version }}.tar.gz
-  sha256: 5004de2a01f85db4e8bbfe04741eba1af6797deea850c097fea2874694603c31
-  patches:               # [osx]
+  url: https://github.com/veg/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - scipy-stats.patch
     - osx-freetype.patch # [osx]
 
 build:
-  number: 2
-  skip: True # [py27]
+  number: 0
+  skip: True # [py2k]
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
     - freetype
     - python
+    - cython >=0.28
     - setuptools
-    - biopython
-    - pysam <=0.13
-    - numpy >=1.14.0
+    - biopython >=1.58
+    - numpy >=1.14
     - scipy
-    - six
-    - python-consensuscore
-
+    - pysam
   run:
     - freetype
     - python
-    - biopython
-    - pysam <=0.13
-    - numpy >=1.14.0
+    - biopython >=1.58
+    - numpy >=1.14
     - scipy
+    - pysam
+    - joblib
     - six
-    - python-consensuscore
 
 test:
   imports:
@@ -51,19 +53,17 @@ test:
     - BioExt.io.BamIO
     - BioExt.io.LazyAlignIO
     - BioExt.io.SamIO
-    - BioExt.joblib
-    - BioExt.joblib.test
     - BioExt.merge
     - BioExt.misc
     - BioExt.ndarray
     - BioExt.optimize
     - BioExt.orflist
     - BioExt.phylo
-    - BioExt.quiver
     - BioExt.rateclass
     - BioExt.references
     - BioExt.scorematrices
     - BioExt.stats
+    - BioExt.tn93
     - BioExt.uds
     - BioExt.untranslate
 
@@ -72,15 +72,11 @@ test:
     - bam2msa 2>&1 | grep 'usage' > /dev/null
     - bealign 2>&1 | grep 'usage' > /dev/null
     - clipedge 2>&1 | grep 'usage' > /dev/null
-    - consensus 2>&1 | grep 'usage' > /dev/null
     - msa2bam 2>&1 | grep 'usage' > /dev/null
     - seqmerge 2>&1 | grep 'usage' > /dev/null
 
 about:
   home: https://github.com/veg/BioExt.git
   license: GPL-3
+  license_family: GPL3
   summary: 'A few handy bioinformatics tools not already in BioPython'
-
-extra:
-  skip-lints:
-    - should_not_be_noarch_source

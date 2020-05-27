@@ -1,33 +1,74 @@
 {% set name = "ngless" %}
-{% set version = "1.1.0" %}
-{% set sha256 = "9706b5538f44f1962f6cd891672b4ff90a5b30523e91613df169e06ef61a8278" %}
+{% set version = "1.1.1" %}
+{% set sha256 = "c83648cf6359edea6987b708ea08bd7f4731bd8a8ca3e7a0cfaea2a60fa4ae0c" %}
+
+{% set ghc_src_version = "8.6.5" %}
+{% set ghc_src_sha256 = "4d4aa1e96f4001b934ac6193ab09af5d6172f41f5a5d39d8e43393b9aafee361" %}
+{% set ghc_bootstrap_version = "8.4.2" %}
+{% set ghc_bootstrap_linux_sha256 = "28c31489ed9a83af4400685ec8bc72a6d43d08958d75b2dc35d29a894a5c9d93" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/ngless-toolkit/ngless/releases/download/v{{ version }}/NGLess-{{ version }}-static-Linux64
-  sha256: {{ sha256 }}
+  - url: https://github.com/ngless-toolkit/ngless/archive/v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+    folder: ngless
+  - url: https://downloads.haskell.org/~ghc/{{ ghc_bootstrap_version }}/ghc-{{ ghc_bootstrap_version }}-x86_64-centos67-linux.tar.xz  # [linux]
+    sha256: {{ ghc_bootstrap_linux_sha256 }}  # [linux]
+    folder: ghc_bootstrap
+
+  - url: https://downloads.haskell.org/~ghc/{{ ghc_src_version }}/ghc-{{ ghc_src_version }}-src.tar.xz
+    sha256: {{ ghc_src_sha256 }}
+    folder: ghc_src
+
 
 build:
   number: 0
-  skip: True  #  [osx]
+  skip: True # [osx]
+
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+    - perl
+    - coreutils
+    - binutils
+    - pkg-config
+    - automake
+    - autoconf
+    - libtool
+    - stack >=1.9.3
+  host:
+    - gmp
+    - xz
+    - zlib
+    - bzip2
+    - backports.lzma
+    - libiconv
+    - openssh
+    - wget
   run:
     - python
 
 test:
   commands:
     - ngless --version
-    - ngless --check-install --verbose
+    - ngless --check-install
 
 about:
   home: https://ngless.embl.de
   license: MIT
-  summary: A tool for metagenomics processing with a focus on metagenomics
+  summary: A tool for short-read processing with a focus on metagenomics
 
 extra:
-  skip-lints:
-    - should_be_noarch_generic
+  container:
+    # For GHC
+    extended-base: true
+  recipe-maintainers:
+    - luispedro
+  identifiers:
+    - "doi:10.1186/s40168-019-0684-8" # Publication
