@@ -5,8 +5,8 @@ outdir=${PREFIX}/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 echo $outdir
 mkdir -p $outdir
 mkdir -p ${PREFIX}/bin
-cp -R * $outdir/
-mv $outdir/$PKG_NAME$PKG_VERSION/* $outdir
+cp -R $PKG_NAME$PKG_VERSION/* $outdir/
+#mv $outdir/$PKG_NAME$PKG_VERSION/* $outdir
 rmdir $outdir/$PKG_NAME$PKG_VERSION/
 cp $RECIPE_DIR/hops.py $outdir/hops
 cp $RECIPE_DIR/MaltExtract.py $outdir/MaltExtract
