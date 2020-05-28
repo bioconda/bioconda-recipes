@@ -8,7 +8,7 @@ export ORIGIN=\$ORIGIN
 cd muscle
 ./autogen.sh
 ./configure --prefix=`pwd`
-make install -ji ${nproc}
+make install -j ${nproc}
 cd ..
 ./autogen.sh
 ./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib'
