@@ -2,10 +2,18 @@
 
 
 mkdir -p  "$PREFIX/bin"
->&2 cat *
->&2 echo $PWD
->&2 ls
-#./build_parsnp.sh
 
-#cp template.ini parsnp Parsnp.py bin/ muscle/ $PREFIX/bin/ -r
+export ORIGIN=\$ORIGIN
+
+cd muscle
+./autogen.sh
+./configure --prefix=`pwd`
+make install -ji ${nproc}
+cd ..
+./autogen.sh
+./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib'
+make LDADD=-lMUSCLE-3.7 -j ${nproc}
+make install
+
+cp template.ini parsnp Parsnp.py bin/ muscle/ $PREFIX/bin/ -r
 
