@@ -6,7 +6,7 @@ mkdir -p  "$PREFIX/bin"
 export ORIGIN=\$ORIGIN
 
 cd muscle
-autoreconf --install
+#autoreconf --install
 ./autogen.sh
 ./configure --prefix=`pwd`
 make install
