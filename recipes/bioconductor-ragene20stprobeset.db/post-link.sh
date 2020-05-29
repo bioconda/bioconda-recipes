@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="ragene20stprobeset.db_8.7.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/ragene20stprobeset.db_8.7.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/ragene20stprobeset.db_8.7.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ragene20stprobeset.db_8.7.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ragene20stprobeset.db/bioconductor-ragene20stprobeset.db_8.7.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ragene20stprobeset.db/bioconductor-ragene20stprobeset.db_8.7.0_src_all.tar.gz"

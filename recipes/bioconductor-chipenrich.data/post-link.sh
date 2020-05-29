@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="chipenrich.data_2.10.0.tar.gz"
+FN="chipenrich.data_2.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/chipenrich.data_2.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/chipenrich.data_2.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-chipenrich.data/bioconductor-chipenrich.data_2.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/chipenrich.data_2.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/chipenrich.data_2.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chipenrich.data/bioconductor-chipenrich.data_2.12.0_src_all.tar.gz"
 )
-MD5="96a4431db0205adeb6769fe4cfc983ad"
+MD5="17f44fbc3015468e8427ded5311c37c0"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
