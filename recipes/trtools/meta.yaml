@@ -1,5 +1,5 @@
 {% set name = "trtools" %}
-{% set version = "2.0.13" %}
+{% set version = "2.0.17" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 9c53a32fdc412cb4010696d426fe5bc6ce3b34ac26f36e6c66b7a46af095be51
+  sha256: b69e696331719222509ea462559ebb1a31d65c3d7706a6538858d82a87190bad
   # To get the checksum for a new version, download the .tar.gz file from pip and
   # run `openssl sha256 <file name>.tar.gz`.
   # You may need the openssl package, available on conda-forge:
@@ -17,11 +17,11 @@ build:
   # don't support deprecated python versions
   noarch: python
   entry_points:
-    - dumpSTR=dumpSTR.dumpSTR:run
-    - mergeSTR=mergeSTR.mergeSTR:run
-    - statSTR=statSTR.statSTR:run
-    - compareSTR=compareSTR.compareSTR:run
-    - qcSTR=qcSTR.qcSTR:run
+    - dumpSTR=trtools.dumpSTR:run
+    - mergeSTR=trtools.mergeSTR:run
+    - statSTR=trtools.statSTR:run
+    - compareSTR=trtools.compareSTR:run
+    - qcSTR=trtools.qcSTR:run
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
   # If this is a new build for the same version, increment the build number.
   number: 0
@@ -30,7 +30,6 @@ requirements:
   host:
     - python >=3.5
     - pip >=20.1.1
-    - pybedtools
   run:
     - argparse
     - matplotlib-base
@@ -44,19 +43,18 @@ requirements:
 
 test:
   imports:
-    - compareSTR
-    - dumpSTR
-    - mergeSTR
-    - qcSTR
-    - statSTR
     - trtools
+    - trtools.compareSTR
+    - trtools.dumpSTR
+    - trtools.mergeSTR
+    - trtools.qcSTR
+    - trtools.statSTR
     - trtools.utils
-  source_files:
-    - tests
   requires:
     - pytest
+    - git
   commands:
-    - pytest
+    - test_trtools.sh
     - dumpSTR --help
     - mergeSTR --help
     - statSTR --help
