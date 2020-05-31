@@ -1,4 +1,4 @@
-{% set version = "3.3.0" %}
+{% set version = "3.3.1" %}
 
 package:
   name: sourmash
@@ -6,35 +6,19 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/sourmash/sourmash-{{ version }}.tar.gz
-  sha256: 2bdf64fdb306123fee0f2ba8e6b58caf2ff4a73a25cbe1fe563dd7de141c648f
+  sha256: 8d3404f095a90ed3365c429104f3a9526ef3a3b4db8c9bd944f4b0cde8b59f28
 
 build:
-  entry_points:
-    - sourmash = sourmash.__main__:main
-  number: 1
+  number: 0
+  noarch: generic
 
 requirements:
-  build:
-    - {{ compiler('c') }}
-    - rust >=1.34.0
-  host:
-    - python
-    - pip
-    - setuptools >=38.6.0
-    - milksnake
-    - setuptools_scm
-    - setuptools_scm_git_archive
-    - sccache
-
   run:
     - python
-    - enum34  # [py27]
-    - screed >=0.9
-    - cffi >=1.14
+    - sourmash-minimal ={{ version }}
     - numpy
     - matplotlib-base
     - scipy
-    - deprecation
     - bam2fasta >=1.0.1
 
 test:
@@ -44,6 +28,7 @@ test:
   commands:
     - sourmash --help
     - sourmash info
+    - sourmash info 2>&1 | grep "{{ version }}"
 
 about:
   home: https://github.com/dib-lab/sourmash
