@@ -39,7 +39,7 @@ installed, and then run::
   git clone https://github.com/<USERNAME>/bioconda-recipes.git
 
 This will create a folder ``bioconda-recipes``. To be able to update
-this folder more easily with changes to made to our repository, add
+this folder more easily with changes made to our repository, add
 the main bioconda-recipes repo as an upstream remote::
 
     cd bioconda-recipes
