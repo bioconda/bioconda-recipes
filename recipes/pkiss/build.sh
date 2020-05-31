@@ -1,6 +1,7 @@
 #!/bin/sh
-which -a g++ || g++ --version || env
-make PREFIX=$PREFIX CC=$CXX -C Misc/Applications/pKiss all
-make -C Misc/Applications/pKiss install-program
-make -C Misc/Applications/lib install
+sed -i $PREFIX/share/gapc/config_linux-gnu.mf "s/^CXX = /#CXX = /"
+sed -i $PREFIX/share/gapc/config_linux-gnu.mf "s/^CC = /#CC = /"
+make PREFIX=$PREFIX CC=$CC -C Misc/Applications/pKiss all
+make CC=$CC -C Misc/Applications/pKiss install-program
+make CC=$CC -C Misc/Applications/lib install
 chmod +x $PREFIX/bin/*
