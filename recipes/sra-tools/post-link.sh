@@ -13,7 +13,7 @@
 if ! grep "/LIBS/GUID" ~/.ncbi/user-settings.mkfg &> /dev/null; then
     echo "No entry for '/LIBS/GUID' in ~/.ncbi/user-settings.mkfg; adding..."
     mkdir -p ~/.ncbi
-    printf '/LIBS/GUID = "%s"\n' `uuidgen` >> ~/.ncbi/user-settings.mkfg
+    printf '/LIBS/GUID = "%s"\n' `uuid` >> ~/.ncbi/user-settings.mkfg
 else
     echo "~/.ncbi/user-settings.mkfg has entry for '/LIBS/GUID'; continuing..."
 fi
