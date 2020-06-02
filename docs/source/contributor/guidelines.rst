@@ -590,7 +590,7 @@ cluttering the output in the CircleCI build environment.
 Link and unlink scripts (pre- and post- install hooks)
 ------------------------------------------------------
 It is possible to include `scripts
-<https://conda.io/docs/user-guide/tasks/build-packages/link-scripts.html>`_ that are
+<https://docs.conda.io/projects/conda-build/en/latest/resources/link-scripts.html#adding-pre-link-post-link-and-pre-unlink-scripts>`_ that are
 executed before or after installing a package, or before uninstalling
 a package. These scripts can be helpful for alerting the user that manual
 actions are required after adding or removing a package. For example,
