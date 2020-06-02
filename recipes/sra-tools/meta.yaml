@@ -11,8 +11,6 @@ source:
   - url: https://github.com/ncbi/sra-tools/archive/{{version}}.tar.gz
     sha256: b81e24c6025f180a8c5ee57052f3ce7f9e53117178c783dc07f740fc2c77d5f2
     folder: sra-tools
-    patches:
-      - skip_config_interactive.diff
   - url: https://github.com/ncbi/ncbi-vdb/archive/{{vdb_version}}.tar.gz
     sha256: ca8c87b7a852dca4cb44256bd05bc9353eac862a6158b2cfed75e81c7dbe3f22
     folder: ncbi-vdb
@@ -43,6 +41,8 @@ requirements:
 
 test:
   commands:
+    # create config file with /LIBS/GUID value so tests pass; new GUID value will be created in user's home dir upon installation via post-link.sh
+    - if ! grep "/LIBS/GUID" ~/.ncbi/user-settings.mkfg &> /dev/null; then mkdir -p ~/.ncbi && printf '/LIBS/GUID = "%s"\n' `uuidgen` > ~/.ncbi/user-settings.mkfg; fi
     - fastq-dump --help > /dev/null
     - prefetch --help > /dev/null
     - sam-dump --help > /dev/null
