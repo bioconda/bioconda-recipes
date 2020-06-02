@@ -7,4 +7,3 @@ done
 
 cp -v scripts/{*.pl,*.sh} $PREFIX/bin/
 cp -v alohomora_M_v0.33_linux.pl $PREFIX/bin/alohomora
-
