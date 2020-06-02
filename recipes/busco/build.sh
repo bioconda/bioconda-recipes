@@ -20,8 +20,6 @@ mkdir -p $SHARE
 mkdir -p "$PREFIX/config"
 busco_configurator.py "config/config.ini" "$PREFIX/config/config.ini"
 
-# This should not be necessary in v4.0.1
-
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
 cat <<EOF >> ${PREFIX}/etc/conda/activate.d/busco.sh
 export BUSCO_CONFIG_FILE=${PREFIX}/config/config.ini

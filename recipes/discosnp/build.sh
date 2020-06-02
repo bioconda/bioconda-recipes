@@ -21,7 +21,11 @@ sh INSTALL
 sed -i.bak 's|\$EDIR/bin|\$EDIR|' run_discoSnp++.sh
 sed -i.bak 's|scripts/|../scripts/|' run_discoSnp++.sh
 sed -i.bak 's|\$EDIR/bin|\$EDIR|' run_discoSnp++_ML.sh
-sed -i.bak 's|\$EDIR/bin|\$EDIR|' run_discoSnp++_storagefile.sh
+
+
+sed -i.bak 's|\$EDIR/../bin|\$EDIR|' discoSnpRAD/run_discoSnpRad.sh
+sed -i.bak 's|\$EDIR/clustering_scripts/|\$EDIR/../discoSnpRAD/clustering_scripts/|' discoSnpRAD/run_discoSnpRad.sh
+
 
 
 sed -i.bak 's|\$EDIR/../bin|\$EDIR|' discoSnpRAD/run_discoSnpRad.sh
@@ -29,7 +33,8 @@ sed -i.bak 's|\$EDIR/clustering_scripts/|../discoSnpRAD/clustering_scripts/|' di
 
 
 # copy binaries
-cp *.sh ${PREFIX}/bin
+cp run_discoSnp++.sh ${PREFIX}/bin
+cp run_discoSnp++_ML.sh ${PREFIX}/bin
 cp discoSnpRAD/run_discoSnpRad.sh ${PREFIX}/bin
 
 # apply permissions for pipeline

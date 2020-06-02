@@ -1,6 +1,6 @@
 {% set name = "r-fastbaps" %}
-{% set version = "1.0.1" %}
-{% set sha256 = "6faa9b1ecd72059c3bb941415ec0d5bfc52feadd94ba1a3ee206b3821f07dde8" %}
+{% set version = "1.0.3" %}
+{% set sha256 = "a62d810bd6ea4fbc43b3fca7eda264251a927b4c1019a1856542f915e0471ff1" %}
 
 package:
   name: {{ name }}
@@ -12,12 +12,14 @@ source:
 
 build:
   noarch: generic
-  number: 0
+  number: 1
   # This is required to make R link correctly on Linux.
   rpaths:
     - lib/R/lib/
     - lib/
-  script: "$R CMD INSTALL --build ."
+  script: 
+    - "$R CMD INSTALL --build ."
+    - cp inst/run_fastbaps $PREFIX/bin/run_fastbaps
 
 requirements:
   host:
@@ -35,6 +37,8 @@ requirements:
     - r-adegenet
     - r-doparallel
     - r-clusteval
+    - r-gplots
+    - r-optparse
   run:
     - r-base
     - r-rcpp
@@ -50,10 +54,13 @@ requirements:
     - r-adegenet
     - r-doparallel
     - r-clusteval
+    - r-gplots
+    - r-optparse
 
 test:
   commands:
     - $R -e "library('fastbaps')"
+    - run_fastbaps --help
 
 about:
   home: https://github.com/gtonkinhill/fastbaps
