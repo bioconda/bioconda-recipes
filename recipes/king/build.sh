@@ -7,5 +7,5 @@ export LIBRARY_PATH=${PREFIX}/lib
 #export CXXFLAGS="$CXXFLAGS "
 
 ${CXX} -I${CXX_INCLUDE_PATH} -L${LIBRARY_PATH} -lm -lz -O2 -fopenmp -o king *.cpp
-ls . 
-cp king $PREFIX/bin/king
+mkdir -p $PREFIX/bin
+cp ./king $PREFIX/bin/king
