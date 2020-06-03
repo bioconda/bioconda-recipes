@@ -4,7 +4,7 @@ mkdir -p  "$PREFIX/bin"
 
 cd muscle
 ./autogen.sh
-./configure --prefix=$PWD CXXFLAGS=’-fopenmp’
+./configure --prefix=$PWD
 make install
 
 cd ..
@@ -12,6 +12,7 @@ cd ..
 export ORIGIN=\$ORIGIN
 ./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib'
 make LDADD=-lMUSCLE-3.7 
+make install
 
-cp parsnp muscle template.ini Parsnp.py  $PREFIX/bin/ -r
+cp parsnp bin/ muscle/ template.ini Parsnp.py  $PREFIX/bin/ -r
 
