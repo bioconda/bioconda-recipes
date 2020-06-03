@@ -1,3 +1,3 @@
 #!/bin/bash
 conda install -p $PREFIX libgfortran=3.0 -y
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+$PYTHON -m pip install . --no-deps --ignore-installed -vv
