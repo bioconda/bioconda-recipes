@@ -9,5 +9,4 @@ rm mers49/._* -f
 
 parsnp -V >/dev/null
 parsnp -g ./ref/EMC_2012.gbk -d ./mers49/*.fna -C 1000 -c -o test --verbose --use-fasttree >/dev/null
-
 parsnp -r ! -d ./mers49/*.fna -o test --verbose  >/dev/null

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 mkdir -p  "$PREFIX/bin"
 
 cd muscle
