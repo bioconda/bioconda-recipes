@@ -2,8 +2,6 @@
 
 
 mkdir -p  "$PREFIX/bin"
-export CC=gcc
-export CXX=g++
 
 cd muscle
 ./autogen.sh
