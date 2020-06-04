@@ -399,7 +399,10 @@ class PackageIndex(Index):
             entries = content.setdefault(name[0].lower(), [])
             subtype = 0 # 1 has subentries, 2 is subentry
             entries.append((
-                name, subtype, docname, labelid, 'extra', 'qualifier', 'description'
+                # TODO: Add meaningful info for extra/qualifier/description
+                #       fields, e.g., latest package version.
+                # name, subtype, docname, labelid, 'extra', 'qualifier', 'description',
+                name, subtype, docname, labelid, '', '', '',
             ))
 
         collapse = True
