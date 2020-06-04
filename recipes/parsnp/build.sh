@@ -5,14 +5,14 @@ mkdir -p  "$PREFIX/bin"
 
 cd muscle
 ./autogen.sh
-./configure --prefix=$PWD --disable-shared CXXFLAGS='-fopenmp'
+./configure --prefix=$PWD --disable-shared 
 make install
 
 cd ..
 ./autogen.sh
 export ORIGIN=\$ORIGIN
-./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib' CXXFLAGS='-fopenmp'
-make LDADD=-lMUSCLE-3.7 
+./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib' 
+make LDADD='-lMUSCLE-3.7' 
 make install
 
 cp parsnp $PREFIX/bin 
