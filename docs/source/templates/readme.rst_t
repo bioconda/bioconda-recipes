@@ -35,22 +35,32 @@
    |downloads_{{package.name}}| |docker_{{package.name}}|
 
    :versions:
-      {% if package.versions|length > 10 -%}
+      {% set max_versions_visible = 9 %}
+      {% if package.versions|length > max_versions_visible %}
       .. raw:: html
 
-         <details><summary><span>{{ (package.versions[:10] + [""]) | join(",\xa0 ") }}</span></summary>
+         <details><summary><span class="truncated-version-list">
+         {%- for version in package.versions[:max_versions_visible] -%}
+            <code>{{ version }}</code>{{ ",\xa0 " }}
+         {%- endfor -%}
+            </span></summary>
+      {% endif %}
 
-      {{ package.versions | join(",\xa0 ") }}
+      {% for version in package.versions -%}
+        ``{{ version }}``
+        {%- if not loop.last -%}
+          {{ ",\xa0 " }}
+        {%- endif -%}
+      {%- endfor %}
 
+      {% if package.versions|length > max_versions_visible %}
       .. raw:: html
 
          </details>
-      {% else %}
-      {{ package.versions | join(",\xa0 ") }}
-      {%- endif %}
+      {% endif %}
 
    {% for dependency in package.depends %}
-   :depends {{dependency[0]}}: {{dependency[1]}}
+   :depends {{dependency[0]}}: {% if dependency[1] %}``{{ dependency[1].replace(" ", "\xa0") }}``{% endif %}
    {%- endfor %}
    :requirements:
 
