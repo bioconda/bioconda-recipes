@@ -4,4 +4,4 @@ curl https://github.com/marbl/harvest/raw/master/docs/content/parsnp/mers_exampl
 tar -xzvf mers_examples.tar.gz
 parsnp -V 
 parsnp -g mers_virus/ref/England1.gbk -d mers_virus/genomes/*.fna -C 1000 -c -o test --verbose --use-fasttree
-#parsnp -r ! -d mers_virus/genomes/*.fna -o test2 --verbose
+parsnp -r ! -d mers_virus/genomes/*.fna -o test2 --verbose

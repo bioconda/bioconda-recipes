@@ -18,6 +18,7 @@ make install
 cp parsnp $PREFIX/bin 
 cp Parsnp.py $PREFIX/bin
 cp template.ini $PREFIX/bin
-cp -R bin/ $PREFIX/bin 
-cp -R muscle/ $PREFIX/bin 
+cp -R bin $PREFIX/bin 
+cp -R muscle $PREFIX/bin 
+cp -R examples $PREFIX/bin
 
