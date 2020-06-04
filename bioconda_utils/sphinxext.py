@@ -274,7 +274,8 @@ class CondaObjectDescription(ObjectDescription):
     option_spec = {
         'arch': rst.directives.unchanged,
         'badges': rst.directives.unchanged,
-        'replaces_section_title': rst.directives.flag
+        'replaces_section_title': rst.directives.flag,
+        'noindex': rst.directives.flag,
     }
 
     def handle_signature(self, sig: str, signode: addnodes.desc) -> str:
