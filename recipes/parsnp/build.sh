@@ -15,5 +15,9 @@ export ORIGIN=\$ORIGIN
 make LDADD=-lMUSCLE-3.7 
 make install
 
-cp parsnp bin/ muscle/ template.ini Parsnp.py  $PREFIX/bin/ -r
+cp parsnp $PREFIX/bin 
+cp Parsnp.py $PREFIX/bin
+cp template.ini $PREFIX/bin
+cp -R bin/ $PREFIX/bin 
+cp -R muscle/ $PREFIX/bin 
 
