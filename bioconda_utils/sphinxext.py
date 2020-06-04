@@ -381,12 +381,12 @@ class CondaPackage(CondaObjectDescription):
     ]
 
 
-class RecipeIndex(Index):
-    """Index of Recipes"""
+class PackageIndex(Index):
+    """Index of Packages"""
 
-    name = "recipe_index"
-    localname = "Recipe Index"
-    shortname = "Recipes"
+    name = "package_index"
+    localname = "Package Index"
+    shortname = "Packages"
 
     def generate(self, docnames: Optional[List[str]] = None):
         """build index"""
@@ -429,7 +429,7 @@ class CondaDomain(Domain):
         'backrefs': {}  #: package_name -> docname, package_name
     }
     indices = [
-        RecipeIndex
+        PackageIndex
     ]
 
     def clear_doc(self, docname: str):
