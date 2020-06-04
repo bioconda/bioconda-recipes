@@ -1,5 +1,5 @@
 {% set name = "plastid" %}
-{% set version = "0.4.8" %}
+{% set version = "0.5.1" %}
 
 package:
   name: {{ name }}
@@ -7,15 +7,13 @@ package:
 
 source:
   url: https://files.pythonhosted.org/packages/source/p/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 48c23e07d116417347c335861a8f65cad8921ed0a40a02a4472e1a83476b4450
-  patches:
-    - 0001-Simplify-get_short_name-regex.patch # Patch submitted upstream https://github.com/joshuagryphon/plastid/pull/30
+  sha256: d4e32b7ccdeaa3d2ff907469731b54690034f145c5854211f202f02efc6cf5a8
 build:
-  number: 5
+  number: 0
 
 extra:
   skip-lints:
-    - deprecated_numpy_spec  # Later numpy causes issue: https://github.com/joshuagryphon/plastid/issues/18, remove skip-lint when fix released
+    - cython_must_be_in_host  # Plastid mistakenly checks for Cython at runtime (pkg_resources.DistributionNotFound)
 
 requirements:
   build:
@@ -24,23 +22,24 @@ requirements:
     - python
     - cython >=0.22.0
     - setuptools
-    - numpy >=1.9.0,<1.12.0  # Later numpy causes issue: https://github.com/joshuagryphon/plastid/issues/18, remove restriction when fix released
+    - numpy >=1.9.4
     - pysam >=0.8.4
     - termcolor
     - scipy >=0.15.1
     - pandas >=0.17.0
-    - matplotlib >=1.4.0
+    - matplotlib-base >=1.4.0
     - biopython >=1.64
     - twobitreader >=3.0.0
     - zlib
   run:
     - python
-    - {{ pin_compatible('numpy', max_pin='x.x') }} # Later numpy causes issue: https://github.com/joshuagryphon/plastid/issues/18, remove max_pin when fix released
+    - {{ pin_compatible('numpy') }}
     - {{ pin_compatible('pysam', max_pin='x.x.x') }}
+    - cython >=0.22.0
     - termcolor
     - scipy >=0.15.1
     - pandas >=0.17.0
-    - matplotlib >=1.4.0
+    - matplotlib-base >=1.4.0
     - biopython >=1.64
     - twobitreader >=3.0.0
     - zlib
@@ -63,8 +62,6 @@ test:
     - reformat_transcripts -h
     - findjuncs -h
     - slidejuncs -h
-    # Later numpy causes issue: https://github.com/joshuagryphon/plastid/issues/18, remove this test when fix released
-    - python -c "exec(\"import numpy\ncounts = numpy.array([1,2,3])\ncounts.reshape((len(counts)/3,3))\")"
 
 about:
   home: http://plastid.readthedocs.io/en/latest/
