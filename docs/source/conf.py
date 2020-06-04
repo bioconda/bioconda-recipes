@@ -12,8 +12,8 @@ import sys
 sys.path.insert(0, os.path.abspath('.'))
 
 def setup(app):
-    app.add_stylesheet("style.css")
-    app.add_stylesheet("font-awesome-4.7.0/css/font-awesome.min.css")
+    app.add_css_file("style.css")
+    app.add_css_file("font-awesome-4.7.0/css/font-awesome.min.css")
 
 
 # -- General configuration ------------------------------------------------
