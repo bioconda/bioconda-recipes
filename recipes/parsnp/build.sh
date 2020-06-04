@@ -5,13 +5,13 @@ mkdir -p  "$PREFIX/bin"
 
 cd muscle
 ./autogen.sh
-./configure --prefix=$PWD --disable-shared 
+./configure --prefix=$PWD --disable-shared CXXFLAGS='-fopenmp'
 make install
 
 cd ..
 ./autogen.sh
 export ORIGIN=\$ORIGIN
-./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib'
+./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib' CXXFLAGS='-fopenmp'
 make LDADD=-lMUSCLE-3.7 
 make install
 
