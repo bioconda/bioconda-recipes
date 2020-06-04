@@ -34,7 +34,21 @@
 
    |downloads_{{package.name}}| |docker_{{package.name}}|
 
-   :versions: {{ package.versions | join(",\xa0 ") }}
+   :versions:
+      {% if package.versions|length > 10 -%}
+      .. raw:: html
+
+         <details><summary><span>{{ (package.versions[:10] + [""]) | join(",\xa0 ") }}</span></summary>
+
+      {{ package.versions | join(",\xa0 ") }}
+
+      .. raw:: html
+
+         </details>
+      {% else %}
+      {{ package.versions | join(",\xa0 ") }}
+      {%- endif %}
+
    {% for dependency in package.depends %}
    :depends {{dependency[0]}}: {{dependency[1]}}
    {%- endfor %}
