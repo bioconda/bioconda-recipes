@@ -9,7 +9,7 @@ export GSL_CFLAGS
 
 export CXXFLAGS="${CXXFLAGS} -std=c++03"
 
-make
+make FC=$FC
 
 cp rmats.py $PREFIX/rMATS
 mkdir $PREFIX/rMATS/rMATS_C
