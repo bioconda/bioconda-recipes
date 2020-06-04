@@ -794,9 +794,10 @@ class LintDescriptionDirective(SphinxDirective):
 
     @classmethod
     def finalize(cls, app, env):
-        if env.bioconda_lint_checks:
-            for check in env.bioconda_lint_checks:
-                logger.error("Undocumented lint checks: %s", check)
+        # TODO: Check why 'bioconda_lint_checks' is not added to env in
+        #       parallel runs (i.e., raises AttributeError without getattr).
+        for check in getattr(env, 'bioconda_lint_checks', {}):
+            logger.error("Undocumented lint checks: %s", check)
 
 
 def setup(app):
