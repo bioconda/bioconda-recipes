@@ -5,7 +5,7 @@ mkdir -p  "$PREFIX/bin"
 
 cd muscle
 ./autogen.sh
-./configure --prefix=$PWD
+./configure --prefix=$PWD CXXFLAGS='-fopenmp'
 make install
 
 cd ..
