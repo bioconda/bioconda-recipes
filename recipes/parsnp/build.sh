@@ -7,7 +7,7 @@ cd muscle
 ./autogen.sh
 
 if [ `uname` == Darwin ]; then
-    ./configure --prefix=$PWD --disable-shared 
+    ./configure --prefix=$PWD CXXFLAGS='-fopenmp' --disable-shared 
 else
     ./configure --prefix=$PWD CXXFLAGS='-fopenmp' 
 fi
@@ -17,7 +17,7 @@ cd ..
 ./autogen.sh
 export ORIGIN=\$ORIGIN
 if [ `uname` == Darwin ]; then
-    ./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib' 
+    ./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib' CXXFLAGS='-fopenmp'
 else
     ./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib' CXXFLAGS='-fopenmp'
 fi
