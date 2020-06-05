@@ -15,6 +15,7 @@ export ORIGIN=\$ORIGIN
 make LDADD='-lMUSCLE-3.7' 
 make install
 
+
 cp parsnp $PREFIX/bin 
 cp Parsnp.py $PREFIX/bin
 cp template.ini $PREFIX/bin
