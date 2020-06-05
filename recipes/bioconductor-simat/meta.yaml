@@ -1,30 +1,31 @@
-{% set version = "1.12.1" %}
+{% set version = "1.18.0" %}
 {% set name = "SIMAT" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 4ba6cf05252f63457d121e064b0dda6412d3fd93ae1d849469d9e350534f02c3
+  md5: c848028bd8c9ac42d12ade895ef1f469
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: RUnit, BiocGenerics
 requirements:
   host:
-    - 'bioconductor-mzr >=2.17.0,<2.19.0'
+    - 'bioconductor-mzr >=2.20.0,<2.21.0'
     - r-base
     - r-ggplot2
     - 'r-rcpp >=0.11.3'
     - r-reshape2
   run:
-    - 'bioconductor-mzr >=2.17.0,<2.19.0'
+    - 'bioconductor-mzr >=2.20.0,<2.21.0'
     - r-base
     - r-ggplot2
     - 'r-rcpp >=0.11.3'
@@ -36,10 +37,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: 'This package provides a pipeline for analysis of GC-MS data acquired in selected ion monitoring (SIM) mode. The tool also provides a guidance in choosing appropriate fragments for the targets of interest by using an optimization algorithm. This is done by considering overlapping peaks from a provided library by the user.'
+  summary: 'GC-SIM-MS data processing and alaysis tool'
+  description: 'This package provides a pipeline for analysis of GC-MS data acquired in selected ion monitoring (SIM) mode. The tool also provides a guidance in choosing appropriate fragments for the targets of interest by using an optimization algorithm. This is done by considering overlapping peaks from a provided library by the user.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 extra:
   identifiers:
     - biotools:simat
     - doi:10.1186/s12859-015-0681-2
+  parent_recipe:
+    name: bioconductor-simat
+    path: recipes/bioconductor-simat
+    version: 1.12.1
+

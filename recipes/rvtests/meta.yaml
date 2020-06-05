@@ -1,29 +1,31 @@
+{% set version = "2.1.0" %}
+
 package:
   name: rvtests 
-  version: "2.0.6"
+  version: {{ version }}
 
 build:
-  number: 1
-  skip: True  # [osx]
-
+  number: 0
+ 
 source:
-  url: https://github.com/zhanxw/rvtests/archive/v2.0.6.tar.gz
-  sha256: 72f4419d5d3dd73b8eb58f7ffaabf19a41c99f968ecde9611f9b76f74acc0743
-
-channels:
-    - defaults
-    - conda-forge
+  url: https://github.com/zhanxw/rvtests/archive/v{{ version }}.tar.gz
+  sha256: bc05cd1ab1cbeda62bd79fd3ba0f46b8e304a1bc1bea556316baa2c38ef1fcf3
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
     - wget # [not osx]
     - zlib
-    - ruby # [osx]
+    - unzip
     - curl # [osx]
-
   host:
     - zlib
+    - clangdev  # [osx]
+    - llvm-openmp  # [osx]
+  run:
+    - zlib
+    - llvm-openmp  # [osx]
 
 test:
   commands:
@@ -32,7 +34,6 @@ test:
 about:
   home: https://github.com/zhanxw/rvtests
   license: GPL
-  license_file: LICENSE
   summary: Rare variant test software for next generation sequencing data
 
 extra:

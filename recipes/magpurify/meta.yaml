@@ -1,0 +1,61 @@
+{% set name = "magpurify" %}
+{% set version = "2.1.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: aeb2121824bf327e90a8f4101819dcff96ca7ecee7d9ad087b5ac3354ff0a77c
+
+build:
+  number: 0
+  skip: True  # [osx]
+  entry_points:
+    - magpurify=magpurify.cli:cli
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - biopython
+    - numpy
+    - pandas
+    - pip
+    - python >=3.6
+    - scikit-learn
+  run:
+    - biopython
+    - numpy
+    - pandas
+    - python >=3.6
+    - scikit-learn
+    - blast
+    - prodigal
+    - hmmer
+    - last
+    - mash
+    - coverm
+
+test:
+  commands:
+    - magpurify --help
+    - magpurify phylo-markers --help
+    - magpurify clade-markers --help
+    - magpurify conspecific --help
+    - magpurify tetra-freq --help
+    - magpurify gc-content --help
+    - magpurify coverage --help
+    - magpurify known-contam --help
+    - magpurify clean-bin --help
+
+about:
+  home: "https://github.com/snayfach/MAGpurify"
+  license: GPL-3
+  license_family: GPL
+  license_file: LICENSE
+  summary: "Identify and remove incorrectly binned contigs from metagenome-assembled genomes."
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic

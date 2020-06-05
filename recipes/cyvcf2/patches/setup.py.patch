@@ -1,0 +1,41 @@
+diff --git a/setup.py b/setup.py
+index 3492f55..79fc6c3 100644
+--- a/setup.py
++++ b/setup.py
+@@ -7,12 +7,6 @@ import platform
+ import pkg_resources
+ from setuptools import setup, Extension, dist
+ 
+-if sys.version_info.major == 2 and sys.version_info.minor != 7:
+-    sys.stderr.write("ERROR: cyvcf2 is only for python 2.7 or greater you are running %d.%d\n", (sys.version_info.major, sys.version_info.minor))
+-    sys.exit(1)
+-
+-# Install numpy right now
+-dist.Distribution().fetch_build_eggs(['numpy'])
+ import numpy as np
+ 
+ 
+@@ -44,20 +38,10 @@ def no_cythonize(extensions, **_ignore):
+     return extensions
+ 
+ 
+-# Build the Cython extension by statically linking to the bundled htslib
+-sources = [
+-    x for x in glob.glob('htslib/*.c') 
+-    if not any(e in x for e in ['irods', 'plugin'])
+-]
+-sources += glob.glob('htslib/cram/*.c')
+-# Exclude the htslib sources containing main()'s
+-sources = [x for x in sources if not x.endswith(('htsfile.c', 'tabix.c', 'bgzip.c'))]
+-sources.append('cyvcf2/helpers.c')
+-
+ extensions = [Extension("cyvcf2.cyvcf2",
+-                        ["cyvcf2/cyvcf2.pyx"] + sources,
+-                        libraries=['z', 'bz2', 'lzma', 'curl', 'ssl'] + (['crypt'] if platform.system() != 'Darwin' else []),
+-                        include_dirs=['htslib', 'cyvcf2', np.get_include()])]
++                        ["cyvcf2/cyvcf2.pyx", "cyvcf2/helpers.c"],
++                        libraries=['z', 'bz2', 'lzma', 'curl', 'ssl', 'hts'] + (['crypt'] if platform.system() != 'Darwin' else []),
++                        include_dirs=['cyvcf2', np.get_include()])]
+ 
+ 
+ CYTHONIZE = bool(int(os.getenv("CYTHONIZE", 0)))

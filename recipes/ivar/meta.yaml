@@ -1,0 +1,58 @@
+{% set version = "1.2" %}
+
+package:
+  name: ivar
+  version: {{ version }}
+
+source:
+  url: https://github.com/andersen-lab/ivar/archive/v1.2.tar.gz
+  sha256: 26f6547b7fb642240f31d6c6f495fe873c9ac2aa5d6dd8a5dbc11af57c026b63
+
+build:
+  number: 0
+
+requirements:
+  build:
+    # This recipe's conda_build_config.yaml
+    # file can be removed once conda-forge transitions
+    # to specify the target-specific compiler (which will be GCC7)
+    # More detail here: https://github.com/bioconda/bioconda-recipes/issues/9920#issuecomment-405358591
+    # conda-forge compiler pinning can be found here:
+    # https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/master/recipe/conda_build_config.yaml
+    # (note that as of 4-Jan-2019, conda-forge does not include gcc/gxx in the default case)
+    - '{{ compiler("c") }}'
+    - '{{ compiler("cxx") }}'
+    - make
+    - automake
+    - autoconf
+    - libtool
+    - pkg-config
+  host:
+    - htslib
+    - curl
+    - bzip2
+    - xz
+    - zlib
+    - libdeflate
+  run:
+    - htslib
+    - curl
+    - bzip2
+    - xz
+    - zlib
+    - libdeflate
+
+test:
+  commands:
+    - ivar version
+
+about:
+  home: https://andersen-lab.github.io/ivar/html/
+  license: GPL-3.0
+  license_file: LICENSE
+  summary: iVar is a computational package that contains functions broadly useful for viral amplicon-based sequencing.
+  dev_url: https://github.com/andersen-lab/ivar
+
+extra:
+  identifiers:
+    - biotools:ivar

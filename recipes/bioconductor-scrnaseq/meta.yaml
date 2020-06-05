@@ -1,33 +1,50 @@
-{% set version = "1.6.0" %}
+{% set version = "1.99.8" %}
 {% set name = "scRNAseq" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: c2272f78750ac96df37276483d3d11380d54354dbdcf0aa223b9e7d62ed04b54
+  md5: 183ad0eb4e0bddc1eddc1b38a949298a
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle, AnnotationHub, AnnotationDbi, knitr, rmarkdown, BiocFileCache, testthat
 requirements:
-  build:
-    - bioconductor-summarizedexperiment
+  host:
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-experimenthub >=1.12.0,<1.13.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
+    - 'bioconductor-singlecellexperiment >=1.8.0,<1.9.0'
+    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
     - r-base
   run:
-    - bioconductor-summarizedexperiment
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-experimenthub >=1.12.0,<1.13.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
+    - 'bioconductor-singlecellexperiment >=1.8.0,<1.9.0'
+    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
   license: CC0
-  summary: 'Gene-level read counts of three public scRNA-seq datasets. See vignette for details.'
+  summary: 'Collection of Public Single-Cell RNA-Seq Datasets'
+  description: 'Gene-level counts for a collection of public scRNA-seq datasets, provided as SingleCellExperiment objects with cell- and gene-level metadata.'
+extra:
+  parent_recipe:
+    name: bioconductor-scrnaseq
+    path: recipes/bioconductor-scrnaseq
+    version: 1.6.0
+

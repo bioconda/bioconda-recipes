@@ -1,29 +1,31 @@
-{% set version = "1.32.0" %}
+{% set version = "1.38.0" %}
 {% set name = "RTCA" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: e187ce8ce9482b78ae2ba3ec90aee2e5d2c8829111e615c1b6799b50dada3c20
+  md5: d9bd56a1db07deb1030059fb36e399b6
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: xtable
 requirements:
   host:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
     - r-gtools
     - r-rcolorbrewer
   run:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
     - r-gtools
     - r-rcolorbrewer
@@ -31,10 +33,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL-3
-  summary: 'Import, analyze and visualize data from Roche(R) xCELLigence RTCA systems. The package imports real-time cell electrical impedance data into R. As an alternative to commercial software shipped along the system, the Bioconductor package RTCA provides several unique transformation (normalization) strategies and various visualization tools.'
+  summary: 'Open-source toolkit to analyse data from xCELLigence System (RTCA)'
+  description: 'Import, analyze and visualize data from Roche(R) xCELLigence RTCA systems. The package imports real-time cell electrical impedance data into R. As an alternative to commercial software shipped along the system, the Bioconductor package RTCA provides several unique transformation (normalization) strategies and various visualization tools.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
 extra:
   identifiers:
     - biotools:rtca
     - doi:10.1016/j.compbiolchem.2013.12.004
+  parent_recipe:
+    name: bioconductor-rtca
+    path: recipes/bioconductor-rtca
+    version: 1.32.0
+

@@ -1,0 +1,68 @@
+{% set name = "bohra" %}
+{% set version = "1.2.11" %}
+{% set sha256 = "1420e10f342514e8b37af016cc324aa0648fb617a747fe1a680ff762e8b1644e" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "{{ sha256 }}"
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - bohra=bohra.bohra:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+  run:
+    - python >=3.7
+    - biopython >=1.70
+    - snakemake >=5.10
+    - pandas >=1.0
+    - numpy >=1.18.1
+    - svgwrite
+    - jinja2
+    - packaging
+    - psutil
+    - pytest-runner
+    - pytest
+    - sh
+    - snippy ==4.4.5
+    - shovill >=1.0.9
+    - prokka >=1.14.6
+    - abricate >=0.9.9
+    - mlst >=2.19
+    - snp-dists ==0.6.3
+    - iqtree
+    - seqtk
+    - roary
+    - kraken2
+    - abritamr
+    - mash
+    - toml
+
+test:
+  imports:
+    - bohra
+  commands:
+    - bohra --version | grep -F '{{ version }}'
+    - bohra --help
+
+about:
+  home: "https://github.com/kristyhoran/bohra"
+  license: "GNU General Public v3 (GPLv3)"
+  license_family: "GPL3"
+  license_file: "LICENSE.txt"
+  summary: "Pipeline for analysing Illumina data for microbiological public health."
+
+extra:
+  recipe-maintainers:
+    - kristyhoran
+    - tseemann

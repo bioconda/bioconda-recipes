@@ -1,42 +1,57 @@
-{% set version = "1.12.0" %}
+{% set version = "1.17.0" %}
 {% set name = "RnaSeqSampleSize" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'https://bioconductor.org/packages/release/bioc/src/contrib/RnaSeqSampleSize_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 60a3afc79a4ca2531adab6ea712a6ff6d5336ac24205036ffabfe8124a8b6202
+  md5: e763581def20707512926731ada15953
 build:
-  number: 2
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocStyle, knitr
 requirements:
   host:
-    - bioconductor-edgeR
-    - bioconductor-rnaseqsamplesizedata
-    - bioconductor-biomart
+    - 'bioconductor-biomart >=2.42.0,<2.43.0'
+    - 'bioconductor-edger >=3.28.0,<3.29.0'
+    - 'bioconductor-keggrest >=1.26.0,<1.27.0'
+    - 'bioconductor-rnaseqsamplesizedata >=1.18.0,<1.19.0'
+    - r-base
     - r-heatmap3
     - r-matlab
-    - bioconductor-keggrest
-    - r-base
+    - 'r-rcpp >=0.11.2'
   run:
-    - bioconductor-edgeR
-    - bioconductor-rnaseqsamplesizedata
-    - bioconductor-biomart
+    - 'bioconductor-biomart >=2.42.0,<2.43.0'
+    - 'bioconductor-edger >=3.28.0,<3.29.0'
+    - 'bioconductor-keggrest >=1.26.0,<1.27.0'
+    - 'bioconductor-rnaseqsamplesizedata >=1.18.0,<1.19.0'
+    - r-base
     - r-heatmap3
     - r-matlab
-    - bioconductor-keggrest
-    - r-base
+    - 'r-rcpp >=0.11.2'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL-2'
-  summary: 'RnaSeqSampleSize package provides a sample size calculation method based on negative binomial model and the exact test for assessing differential expression analysis of RNA-seq data.'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: RnaSeqSampleSize
+  description: 'RnaSeqSampleSize package provides a sample size calculation method based on negative binomial model and the exact test for assessing differential expression analysis of RNA-seq data'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  parent_recipe:
+    name: bioconductor-rnaseqsamplesize
+    path: recipes/bioconductor-rnaseqsamplesize
+    version: 1.12.0
+

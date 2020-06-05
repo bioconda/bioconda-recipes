@@ -1,30 +1,32 @@
-{% set version = "1.8.0" %}
+{% set version = "1.14.0" %}
 {% set name = "biomformat" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 9cdc0620e70e96b232d12cbb233e2ddcb728ff9469c1ac01960b9cd43f45375b
+  md5: 1a90d404e53ec8a87424c34ab0257e0c
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: testthat (>= 0.10), knitr (>= 1.10), BiocStyle (>= 1.6), rmarkdown (>= 0.7)
 requirements:
   host:
-    - 'bioconductor-rhdf5 >=2.24.0,<2.26.0'
+    - 'bioconductor-rhdf5 >=2.30.0,<2.31.0'
     - r-base
     - 'r-jsonlite >=0.9.16'
     - 'r-matrix >=1.2'
     - 'r-plyr >=1.8'
   run:
-    - 'bioconductor-rhdf5 >=2.24.0,<2.26.0'
+    - 'bioconductor-rhdf5 >=2.30.0,<2.31.0'
     - r-base
     - 'r-jsonlite >=0.9.16'
     - 'r-matrix >=1.2'
@@ -33,10 +35,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: 'This is an R package for interfacing with the BIOM format. This package includes basic tools for reading biom-format files, accessing and subsetting data tables from a biom object (which is more complex than a single table), as well as limited support for writing a biom-object back to a biom-format file. The design of this API is intended to match the python API and other tools included with the biom-format project, but with a decidedly "R flavor" that should be familiar to R users. This includes S4 classes and methods, as well as extensions of common core functions/methods.'
+  summary: 'An interface package for the BIOM file format'
+  description: 'This is an R package for interfacing with the BIOM format. This package includes basic tools for reading biom-format files, accessing and subsetting data tables from a biom object (which is more complex than a single table), as well as limited support for writing a biom-object back to a biom-format file. The design of this API is intended to match the python API and other tools included with the biom-format project, but with a decidedly "R flavor" that should be familiar to R users. This includes S4 classes and methods, as well as extensions of common core functions/methods.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 extra:
   identifiers:
     - biotools:biomformat
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-biomformat
+    path: recipes/bioconductor-biomformat
+    version: 1.8.0
+

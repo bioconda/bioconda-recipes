@@ -1,35 +1,44 @@
-{% set version = "1.54.0" %}
+{% set version = "1.60.0" %}
 {% set name = "affypdnn" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: dbf8564c32f3d21415d3af05fc2aa699aad74ad5b6b7fe228cd657d9b2c185f6
+  md5: 73074c64343b4512bba19bdeacb51800
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: affydata, hgu95av2probe
 requirements:
   host:
-    - 'bioconductor-affy >=1.58.0,<1.60.0'
+    - 'bioconductor-affy >=1.64.0,<1.65.0'
     - r-base
   run:
-    - 'bioconductor-affy >=1.58.0,<1.60.0'
+    - 'bioconductor-affy >=1.64.0,<1.65.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL
-  summary: 'The package contains functions to perform the PDNN method described by Li Zhang et al.'
+  summary: 'Probe Dependent Nearest Neighbours (PDNN) for the affy package'
+  description: 'The package contains functions to perform the PDNN method described by Li Zhang et al.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
 extra:
   identifiers:
     - biotools:affypdnn
+  parent_recipe:
+    name: bioconductor-affypdnn
+    path: recipes/bioconductor-affypdnn
+    version: 1.54.0
+

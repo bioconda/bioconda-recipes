@@ -1,7 +1,4 @@
-{% set version = '1.0.11' %}
-
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set version = '1.2.1' %}
 
 package:
   name: r-pma
@@ -11,42 +8,29 @@ source:
   url:
     - {{ cran_mirror }}/src/contrib/PMA_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/PMA/PMA_{{ version }}.tar.gz
-  sha256: ade8030475aac640a55e107330c1450fdb638cd7cf8fc32b39ed0b60a83110ed
+  sha256: 3a155b89e380273dfd4ab301c422184a3f6d4679dc9e3d1bb65939392af511e6
 
 build:
-  merge_build_host: True  # [win]
-
-  number: 2
-
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('c') }}        # [not win]
-    - {{ compiler('cxx') }}      # [not win]
-    - {{native}}toolchain        # [win]
-    - {{posix}}filesystem        # [win]
-    - {{posix}}make
-    - {{posix}}sed               # [win]
-    - {{posix}}coreutils         # [win]
-    - {{posix}}zip               # [win]
-
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
     - r-base
-    - 'bioconductor-impute >=1.54.0,<1.56.0'
-
+    - bioconductor-impute
   run:
     - r-base
-    - {{native}}gcc-libs         # [win]
-    - 'bioconductor-impute >=1.54.0,<1.56.0'
+    - bioconductor-impute
 
 test:
   commands:
-
-    - $R -e "library('PMA')"           # [not win]
-    - "\"%R%\" -e \"library('PMA')\""  # [win]
+    - $R -e "library('PMA')"
 
 about:
   home: https://CRAN.R-project.org/package=PMA
@@ -58,14 +42,4 @@ about:
     analysis. Biostatistics 10(3):515-534. (2) Witten and Tibshirani (2009) Extensions
     of sparse canonical correlation analysis, with applications to genomic data. Statistical
     Applications in Genetics and Molecular Biology 8(1): Article 28.'
-
   license_family: GPL3
-extra:
-  recipe-maintainers:
-    - MathiasHaudgaard
-    - FrodePedersen
-    - ArneKr
-    - johanneskoester
-    - bgruening
-    - daler
-    - jdblischak

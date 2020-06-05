@@ -1,38 +1,47 @@
-{% set version = "1.46.0" %}
+{% set version = "1.52.0" %}
 {% set name = "pkgDepTools" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: f7e5e3199cf227ab2267bfc6affdf94b4e9afec17d966e502e24967a42e13681
+  md5: 24f37cd3d6e63a9439bbacddca29fbe0
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: Biobase, Rgraphviz, RCurl, BiocManager
 requirements:
   host:
-    - 'bioconductor-graph >=1.58.0,<1.60.0'
-    - 'bioconductor-rbgl >=1.56.0,<1.58.0'
+    - 'bioconductor-graph >=1.64.0,<1.65.0'
+    - 'bioconductor-rbgl >=1.62.0,<1.63.0'
     - r-base
   run:
-    - 'bioconductor-graph >=1.58.0,<1.60.0'
-    - 'bioconductor-rbgl >=1.56.0,<1.58.0'
+    - 'bioconductor-graph >=1.64.0,<1.65.0'
+    - 'bioconductor-rbgl >=1.62.0,<1.63.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: 'This package provides tools for computing and analyzing dependency relationships among R packages.  It provides tools for building a graph-based representation of the dependencies among all packages in a list of CRAN-style package repositories.  There are also utilities for computing installation order of a given package.  If the RCurl package is available, an estimate of the download size required to install a given package and its dependencies can be obtained.'
+  summary: 'Package Dependency Tools'
+  description: 'This package provides tools for computing and analyzing dependency relationships among R packages.  It provides tools for building a graph-based representation of the dependencies among all packages in a list of CRAN-style package repositories.  There are also utilities for computing installation order of a given package.  If the RCurl package is available, an estimate of the download size required to install a given package and its dependencies can be obtained.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 extra:
   identifiers:
     - biotools:pkgdeptools
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-pkgdeptools
+    path: recipes/bioconductor-pkgdeptools
+    version: 1.46.0
+

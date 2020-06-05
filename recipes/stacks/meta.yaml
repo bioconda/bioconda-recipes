@@ -1,39 +1,63 @@
+{% set version="2.52" %}
+{% set hash="3d2c3c4ad998838fda4ba097d4e12901273509fde51f56d4ff87cb1b6fe690b7" %}
 package:
   name: stacks
-  version: "1.47"
+  version: {{ version }}
 
 build:
-  number: 2
-  skip: True # [osx]
+  number: 0
+  skip: True  # [osx]
 
 source:
-  md5: 9fa972cd95d54ef120223d615e6cc332
-  url: http://catchenlab.life.illinois.edu/stacks/source/stacks-1.47.tar.gz
+  sha256: {{ hash }}
+  url: http://catchenlab.life.illinois.edu/stacks/source/stacks-{{ version }}.tar.gz
+  patches:
+    - at.patch
 
 requirements:
   build:
     - {{ compiler('cxx') }}
   host:
     - zlib
-    - sparsehash
-    - boost
+    - openmp  # [linux]
   run:
     - perl
+    - perl-bioperl-core
+    - perl-file-spec
+    - perl-file-temp
+    - perl-posix
+    - python >=3
     - velvet
+    - samtools
     - zlib
-    - sparsehash
-    - boost
+    - openmp  # [linux]
 
 test:
   commands:
     - command -v cstacks
-    - command -v pstacks
+    - command -v gstacks
+    - command -v sstacks
+    - command -v ustacks
+    - command -v phasedstacks
+    - command -v populations
     - command -v process_radtags
+    - command -v process_shortreads
     - command -v clone_filter
+    - command -v kmer_filter
+    - command -v stacks-dist-extract
+    - command -v stacks-integrate-alignments
+    - command -v tsv2bam
+    - command -v convert_stacks.pl
+    - command -v count_fixed_catalog_snps.py
+    - command -v denovo_map.pl
+    - command -v extract_interpop_chars.pl
+    - command -v integrate_alignments.py
+    - command -v ref_map.pl
 
 about:
   home: http://catchenlab.life.illinois.edu/stacks/
   license: GPL
+  license_file: LICENSE
   summary: Stacks is a software pipeline for building loci from RAD-seq
 
 extra:

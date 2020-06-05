@@ -23,9 +23,15 @@ source:
     - abs_path_fix.patch
     # use sed, not gsed
     - gsed.patch
+    # allow building with -std=c++17 set
+    - cxxforward.patch
+    # fix some CB / casting issue
+    - nullptr.patch
+    # fix typeof not defined
+    - typeof.patch
 
 build:
-  number: 5
+  number: 8
 # constraining to perl >= 5.23 does not work via requirements, resulting in a 
 # broken build string. constraining via skip also doesn't work - the suggested
 # approach leads to str < int compare failure during lint. 
@@ -41,6 +47,8 @@ requirements:
     - xorg-makedepend
     - sed >=4.4
     - tar
+    - perl
+    - coreutils  # for gnu readlink
   host:
     - openmotif-dev
     - glib
@@ -86,9 +94,6 @@ outputs:
       run:
         - gettext
         - {{ pin_compatible("glib", max_pin="x") }}
-    build:
-      run_exports:
-        - {{ pin_subpackage("libarbdb", exact=True) }}
   - name: arb-bio-tools
     script: install_tools.sh
     requirements:
@@ -162,6 +167,9 @@ outputs:
         - fig2dev
   - name: arb-bio-devel
     script: install_devel.sh
+    build:
+      run_exports:
+        - {{ pin_subpackage("libarbdb", exact=True) }}
     requirements:
       build:
         - {{ compiler('cxx') }}
@@ -171,12 +179,33 @@ outputs:
 
 about:
   home: http://www.arb-home.de
+  dev_url: http://bugs.arb-home.de/
+  doc_url: http://www.arb-home.de/documentation.html
   license: ARB
   licence_file: arb_LICENSE.txt
   summary: ARB 6 Sequence Analysis Suite
+  description: |
+    "ARB (ARBor, Latin: tree): A software environment for maintaining
+    databases of molecular sequences and additional information, and
+    for analyzing the sequence data, with emphasis on phylogeny
+    reconstruction.
+
+    The programs have primarily been developed for ribosomal
+    ribonucleic acid (rRNA) sequences and, therefore, contain special
+    tools for alignment and analysis of these structures. However,
+    other molecular sequence data can also be handled. Protein gene
+    sequences and predicted protein primary structures as well as
+    protein secondary structures can be stored in the same database.
+
+    The ARB package is designed for graphical user interface. Program
+    control and data display are available in a hierarchical set of
+    windows and subwindows. The majority of operations can be
+    controlled using the mouse for moving the pointer and the left
+    mouse button for initiating and performing operations"
 
 extra:
+  identifiers:
+    - biotools:arb
+    - doi:10.1002/9781118010518.ch46
   recipe-maintainers:
     - epruesse
-  skip-lints:
-    - should_not_be_noarch  # false positive, `noarch: False` added by CB3 for outputs

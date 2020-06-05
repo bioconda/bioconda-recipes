@@ -1,0 +1,325 @@
+diff --git a/scripts/beagle2chromopainter.pl b/scripts/beagle2chromopainter.pl
+index a53b236..55d5a2b 100755
+--- a/scripts/beagle2chromopainter.pl
++++ b/scripts/beagle2chromopainter.pl
+@@ -33,7 +33,6 @@ sub trim($){  # remove whitespace from beginning and end of the argument
+ 	return $string;
+ }
+ 
+-use Switch;
+ use strict;
+ 
+ ###############################
+@@ -65,13 +64,13 @@ for (my $i = 0; $i < scalar(@ARGV); ++$i){
+ 	}elsif(@ARGV[$i] eq "-J"){
+ 	    $jitter=1;
+ 	}else{
+-	    switch($argon){
+-		case 0 {$BEAGLEinfile="$ARGV[$i]";}
+-		case 1 {$outfilePRE="$ARGV[$i]";}
+-		else {
+-		    help();
++		if($argon==0){
++			$BEAGLEinfile="$ARGV[$i]";
++		}elsif($argon==1){
++			$outfilePRE="$ARGV[$i]";
++		}else{
++			help();
+ 		}
+-	    }
+ 	    $argon++;
+ 	}
+ }
+diff --git a/scripts/convertrecfile.pl b/scripts/convertrecfile.pl
+index 58bc7bd..fcd23b7 100755
+--- a/scripts/convertrecfile.pl
++++ b/scripts/convertrecfile.pl
+@@ -7,7 +7,6 @@
+ 
+ package convertrecfile;
+ use Getopt::Std;
+-use Switch;
+ use strict;
+ use POSIX;
+ 
+@@ -210,101 +209,101 @@ my $continue = getopts('I:N:U:M:T:t:d:D:i:hsHAv', \%Options);
+ 
+ for my $key ( keys %Options ) {
+         my $value = $Options{$key};
+-		switch ($key) {
+-		    case "M" {
+-			if($value =~ /^[hH]/){ sethapmap();
+-			}elsif($value =~ /^[uU]/){ setplain();
+-			}else{print "Invalid mode \"$value\": try \"hapmap\" or \"plain\"\n";}
+-		    }
+-			case "I" {
+-				if($value =~ /^[sS]/){ $maptype="snp";
+-				}elsif($value =~ /^[uU]/){ $maptype="unit";
+-				}else{
+-					print "ERROR: Unrecognised -I option: \"$value\"\n";
+-					$continue=0;
+-				}
++
++	    if ($key eq "M") {
++		if($value =~ /^[hH]/){ sethapmap();
++		}elsif($value =~ /^[uU]/){ setplain();
++		}else{print "Invalid mode \"$value\": try \"hapmap\" or \"plain\"\n";}
++	    }
++		elsif ($key eq "I") {
++			if($value =~ /^[sS]/){ $maptype="snp";
++			}elsif($value =~ /^[uU]/){ $maptype="unit";
++			}else{
++				print "ERROR: Unrecognised -I option: \"$value\"\n";
++				$continue=0;
+ 			}
+-			case "N" {
+-				my @tmpvals = split(/,/, $value);
+-				if(scalar(@tmpvals)!=2){print "Invalid -N option! $value does not have two values separated by a comma.\n"; $continue=0;
+-				}else{
+-					$baserangeA=$tmpvals[0]+0;
+-					$baserangeB=$tmpvals[1]+0;
+-				}
++		}
++		elsif ($key eq "N") {
++			my @tmpvals = split(/,/, $value);
++			if(scalar(@tmpvals)!=2){print "Invalid -N option! $value does not have two values separated by a comma.\n"; $continue=0;
++			}else{
++				$baserangeA=$tmpvals[0]+0;
++				$baserangeB=$tmpvals[1]+0;
+ 			}
+-			case "U" {
+-			    my @vararr=split('/',$value);
+-			    if(scalar(@vararr)==1){ push(@vararr,"base");}
+-			    if ( ($value =~ /^[mM]/ || $value =~ /^[cC]/  || $value =~ /^[bB]/) && scalar(@vararr)!=2) {
+-				print("Specify recombination units (-U) either as a number, or \"a/b\" where \"a\" is either morgans/centi-morgans and \"b\" is base/megabase\n");
+-				$continue=0;
+-			    }else{
+-				if(scalar(@vararr)!=2){ 
+-					$unit="user";
+-					$cdvalmultiplier=$value+0; # convert to numeric
+-				}else{
+-				    if($vararr[0] =~ /^[mM]/){ $unit="morgans";
+-				    }elsif($vararr[0] =~ /^[cC]/) { 
+-					$unit="centimorgans"; 
+-					$cdvalmultiplier=1.0/100.0;
+-				    }
+-				    if($vararr[1] =~ /^[bB]/){ $unit="$unit/base";
+-				    }elsif($vararr[1] =~ /^[mM]/) { 
+-					$unit="$unit/Mbase"; 
+-					$cdvalmultiplier=$cdvalmultiplier / 1000000;
+-				    }
+-				}
+-				if($cdvalmultiplier+0.0 == 0.0){
+-				    $continue=0;
+-				    print "ERROR with -U flag: recombination multiplier is 0\n";
+-				}else{
+-				    print "Using recombination rate multiplier $cdvalmultiplier\n";
+-				}
++		}
++		elsif ($key eq "U") {
++		    my @vararr=split('/',$value);
++		    if(scalar(@vararr)==1){ push(@vararr,"base");}
++		    if ( ($value =~ /^[mM]/ || $value =~ /^[cC]/  || $value =~ /^[bB]/) && scalar(@vararr)!=2) {
++			print("Specify recombination units (-U) either as a number, or \"a/b\" where \"a\" is either morgans/centi-morgans and \"b\" is base/megabase\n");
++			$continue=0;
++		    }else{
++			if(scalar(@vararr)!=2){ 
++				$unit="user";
++				$cdvalmultiplier=$value+0; # convert to numeric
++			}else{
++			    if($vararr[0] =~ /^[mM]/){ $unit="morgans";
++			    }elsif($vararr[0] =~ /^[cC]/) { 
++				$unit="centimorgans"; 
++				$cdvalmultiplier=1.0/100.0;
++			    }
++			    if($vararr[1] =~ /^[bB]/){ $unit="$unit/base";
++			    }elsif($vararr[1] =~ /^[mM]/) { 
++				$unit="$unit/Mbase"; 
++				$cdvalmultiplier=$cdvalmultiplier / 1000000;
+ 			    }
+ 			}
+-			case "D" {
+-				if($value =~ /^[pP]/){ $dmode="pdf";
+-				}elsif($value =~ /^[cC]/){ $dmode="cdf";
+-				}else{
+-					print "ERROR: Unrecognised -M option: \"$value\"\n";
+-					$continue=0;
+-				}
++			if($cdvalmultiplier+0.0 == 0.0){
++			    $continue=0;
++			    print "ERROR with -U flag: recombination multiplier is 0\n";
++			}else{
++			    print "Using recombination rate multiplier $cdvalmultiplier\n";
+ 			}
+-			case "T" {
+-				if($value =~ /^[nN]/){ $totrec="norm";
+-				}else{
+-					$totrec=$value+0;
+-					if($totrec<=0) {
+-						print "ERROR: Invalid total recombination rate: must be >0.\n";
+-						$continue==0;						
+-					}
++		    }
++		}
++		elsif ($key eq "D") {
++			if($value =~ /^[pP]/){ $dmode="pdf";
++			}elsif($value =~ /^[cC]/){ $dmode="cdf";
++			}else{
++				print "ERROR: Unrecognised -M option: \"$value\"\n";
++				$continue=0;
++			}
++		}
++		elsif ($key eq "T") {
++			if($value =~ /^[nN]/){ $totrec="norm";
++			}else{
++				$totrec=$value+0;
++				if($totrec<=0) {
++					print "ERROR: Invalid total recombination rate: must be >0.\n";
++					$continue==0;						
+ 				}
+ 			}
+-			case "t" {
+-			    my @arrval = split(/,/ , $value);
+-			    if(scalar(@arrval) != 2 || ((!isint($arrval[0]) || !isint($arrval[1])))) { 
+-				print "ERROR: Invalid specification of \"-t\": use a single comma to separate the column numbers (e.g. \"-t 3,4\").\n";
+-				$continue==0;						
+-			    }else{
+-				$locfield=$arrval[0];
+-				$recfield=$arrval[1];
+-				$req2fields=0;
+-			    }
+- 			}
+-		    case "i" { 
+-			if($value =~ /^[pP]/){ $inputmode="phase";
+-			}elsif($value =~ /^[tT]/){ $inputmode="text";
+-			}else{print "Invalid input mode -i $value\n"; $continue=0;}
+-		    }
+-			case "d" { $sep =$value;}
+-			case "s" { $startfix=0;}
+-			case "v" { $verbose=1;}
+-			case "h" { $continue=0;}
+-			case "H" { showHelpOptions();}
+-			case "A" { showHelpAssumptions();}
+-			else {print "ERROR: Invalid option \"$key\".\n";
+-			      $continue==0;}
+ 		}
++		elsif ($key eq "t") {
++		    my @arrval = split(/,/ , $value);
++		    if(scalar(@arrval) != 2 || ((!isint($arrval[0]) || !isint($arrval[1])))) { 
++			print "ERROR: Invalid specification of \"-t\": use a single comma to separate the column numbers (e.g. \"-t 3,4\").\n";
++			$continue==0;						
++		    }else{
++			$locfield=$arrval[0];
++			$recfield=$arrval[1];
++			$req2fields=0;
++		    }
++			}
++	    elsif ($key eq "i") { 
++		if($value =~ /^[pP]/){ $inputmode="phase";
++		}elsif($value =~ /^[tT]/){ $inputmode="text";
++		}else{print "Invalid input mode -i $value\n"; $continue=0;}
++	    }
++		elsif ($key eq "d") { $sep =$value;}
++		elsif ($key eq "s") { $startfix=0;}
++		elsif ($key eq "v") { $verbose=1;}
++		elsif ($key eq "h") { $continue=0;}
++		elsif ($key eq "H") { showHelpOptions();}
++		elsif ($key eq "A") { showHelpAssumptions();}
++		else {print "ERROR: Invalid option \"$key\".\n";
++		      $continue==0;}
++
+ }
+ 
+ if($#ARGV+1 !=3) {
+@@ -338,11 +337,11 @@ print OUTPUTFILE "start.pos recom.rate.perbp\n";
+ #########################################################################
+ ## Read in the SNPS
+ my @snps; 
+-switch($inputmode) {
+-    case "phase" {@snps=readPhase($phasefile);}
+-    case "text" {@snps=readText($phasefile);}
+-    else {die "Invalid input mode $inputmode.\n"; }
+-}
++
++if ($inputmode eq "phase") {@snps=readPhase($phasefile);}
++elsif ($inputmode eq "text") {@snps=readText($phasefile);}
++else {die "Invalid input mode $inputmode.\n"; }
++
+ 
+ my $numsnps=scalar(@snps);
+ if ($verbose) {print "Found $numsnps SNPS in phase file\n";}
+diff --git a/scripts/impute2chromopainter.pl b/scripts/impute2chromopainter.pl
+index aa709e8..70566f0 100755
+--- a/scripts/impute2chromopainter.pl
++++ b/scripts/impute2chromopainter.pl
+@@ -25,7 +25,6 @@ print(" !!! WARNING:  THIS PROGRAM DOES NOT SUFFICIENTLY CHECK FOR MISSPECIFIED
+ die "\n";
+ }
+ 
+-use Switch;
+ 
+ 
+ ###############################
+@@ -53,13 +52,13 @@ for (my $i = 0; $i < scalar(@ARGV); ++$i){
+ 	}elsif(@ARGV[$i] eq "-J"){
+ 	    $jitter=1;
+ 	}else{
+-	    switch($argon){
+-		case 0 {$IMPUTEinfile="$ARGV[$i]";}
+-		case 1 {$outfilePRE="$ARGV[$i]";}
+-		else {
+-		    help();
++	    if($argon==0){
++			$IMPUTEinfile="$ARGV[$i]";
++		}elsif($argon==1){
++			$outfilePRE="$ARGV[$i]";
++		}else{
++			help();
+ 		}
+-	    }
+ 	    $argon++;
+ 	}
+ }
+diff --git a/scripts/msms2cp.pl b/scripts/msms2cp.pl
+index 151e865..221c6ee 100755
+--- a/scripts/msms2cp.pl
++++ b/scripts/msms2cp.pl
+@@ -1,6 +1,5 @@
+ #!/usr/bin/perl
+ ## CONVERTS PHASED IMPUTE2 OUTPUT TO CHROMOPAINTER-STYLE INPUT FILES
+-use Switch;
+ use strict;
+ use POSIX;
+ 
+@@ -41,13 +40,13 @@ for (my $i = 0; $i < scalar(@ARGV); ++$i){
+ 	}elsif(@ARGV[$i] eq "-v"){
+ 	    $verbose=1;
+ 	}else{
+-	    switch($argon){
+-		case 0 {$MSMSinfile="$ARGV[$i]";}
+-		case 1 {$outfilePRE="$ARGV[$i]";}
+-		else {
+-		    help();
++	    if($argon==0){
++			$MSMSinfile="$ARGV[$i]";
++		}elsif($argon==1){
++			$outfilePRE="$ARGV[$i]";
++		}else{
++			help();
+ 		}
+-	    }
+ 	    $argon++;
+ 	}
+ }
+diff --git a/scripts/plink2chromopainter.pl b/scripts/plink2chromopainter.pl
+index 6924c4e..2cb656d 100755
+--- a/scripts/plink2chromopainter.pl
++++ b/scripts/plink2chromopainter.pl
+@@ -6,7 +6,6 @@ use strict;
+ use warnings;
+ use Getopt::Long;
+ use Scalar::Util qw(looks_like_number);
+-use Switch;
+ 
+ #################
+ ## Read in command line arguments

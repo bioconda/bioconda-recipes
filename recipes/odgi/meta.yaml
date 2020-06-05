@@ -1,0 +1,43 @@
+{% set version = "0.2" %}
+
+package:
+  name: odgi
+  version: '{{version}}'
+
+source:
+  git_url: https://github.com/vgteam/odgi/
+  git_tag: {{ version }}
+  sha256: unused
+
+build:
+  skip: True  # [osx or py27]
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+    - cmake
+  host:
+    - zlib
+    - python
+  run: 
+    - llvm-openmp  # [osx]
+    - python
+    - zlib
+
+test:
+  commands:
+    - odgi test
+  imports:
+    - odgi
+
+about:
+  home: https://github.com/vgteam/odgi
+  license: MIT
+  summary: An optimized dynamic genome graph implementation
+
+extra:
+  skip-lints:
+    - uses_vcs_url

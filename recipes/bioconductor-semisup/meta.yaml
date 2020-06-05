@@ -1,36 +1,42 @@
-{% set version = "1.4.0" %}
+{% set version = "1.10.0" %}
 {% set name = "semisup" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 569f50fb9511417bce439881e31cc0c87c45ca514ab98b63ab79f3527f3cc90d
+  md5: 39b963548fa0c661fd230e6b150928a4
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr, testthat, SummarizedExperiment
 requirements:
   host:
-    - 'bioconductor-summarizedexperiment >=1.10.1,<1.12.0'
     - r-base
     - r-vgam
   run:
-    - 'bioconductor-summarizedexperiment >=1.10.1,<1.12.0'
     - r-base
     - r-vgam
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'This R packages moves away from testing interaction terms, and move towards testing whether an individual SNP is involved in any interaction. This reduces the multiple testing burden to one test per SNP, and allows for interactions with unobserved factors. Analysing one SNP at a time, it splits the individuals into two groups, based on the number of minor alleles. If the quantitative trait differs in mean between the two groups, the SNP has a main effect. If the quantitative trait differs in distribution between some individuals in one group and all other individuals, it possibly has an interactive effect. Implicitly, the membership probabilities may suggest potential interacting variables.'
-
+  summary: 'Semi-Supervised Mixture Model'
+  description: 'Useful for detecting SNPs with interactive effects on a quantitative trait. This R packages moves away from testing interaction terms, and moves towards testing whether an individual SNP is involved in any interaction. This reduces the multiple testing burden to one test per SNP, and allows for interactions with unobserved factors. Analysing one SNP at a time, it splits the individuals into two groups, based on the number of minor alleles. If the quantitative trait differs in mean between the two groups, the SNP has a main effect. If the quantitative trait differs in distribution between some individuals in one group and all other individuals, it possibly has an interactive effect. Implicitly, the membership probabilities may suggest potential interacting variables.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  parent_recipe:
+    name: bioconductor-semisup
+    path: recipes/bioconductor-semisup
+    version: 1.4.0
 

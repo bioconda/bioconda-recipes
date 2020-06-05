@@ -1,10 +1,12 @@
 #!/bin/bash
-FN="JASPAR2018_1.1.0.tar.gz"
+FN="JASPAR2018_1.1.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.7/bioc/src/contrib/JASPAR2018_1.1.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-jaspar2018/bioconductor-jaspar2018_1.1.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/JASPAR2018_1.1.1.tar.gz"
+  "https://bioarchive.galaxyproject.org/JASPAR2018_1.1.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-jaspar2018/bioconductor-jaspar2018_1.1.1_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-jaspar2018/bioconductor-jaspar2018_1.1.1_src_all.tar.gz"
 )
-MD5="7f6d748701d83294d6138b265657712a"
+MD5="d91fce6ea0dc9fa6a3be6ebc05c1af5d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -15,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

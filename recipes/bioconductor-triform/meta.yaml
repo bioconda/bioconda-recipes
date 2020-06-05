@@ -1,39 +1,48 @@
-{% set version = "1.22.0" %}
+{% set version = "1.28.0" %}
 {% set name = "triform" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 79365c1345b1a6c4a62407afe2a9299b033da3c0e78aeefb8d492c0a3026fd17
+  md5: 8744d13213a0edf1b370b6c7c7254ace
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
-    - 'bioconductor-iranges >=2.14.12,<2.16.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
     - r-base
     - r-yaml
   run:
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
-    - 'bioconductor-iranges >=2.14.12,<2.16.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
     - r-base
     - r-yaml
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: 'The Triform algorithm uses model-free statistics to identify peak-like distributions of TF ChIP sequencing reads, taking advantage of an improved peak definition in combination with known profile characteristics.'
+  summary: 'Triform finds enriched regions (peaks) in transcription factor ChIP-sequencing data'
+  description: 'The Triform algorithm uses model-free statistics to identify peak-like distributions of TF ChIP sequencing reads, taking advantage of an improved peak definition in combination with known profile characteristics.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 extra:
   identifiers:
     - biotools:triform
+  parent_recipe:
+    name: bioconductor-triform
+    path: recipes/bioconductor-triform
+    version: 1.22.0
+

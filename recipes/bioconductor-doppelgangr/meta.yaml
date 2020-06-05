@@ -1,35 +1,39 @@
-{% set version = "1.8.0" %}
+{% set version = "1.14.0" %}
 {% set name = "doppelgangR" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 8a74bd7904a0ec830ad5f48dc17aee2e8c7433e33bb64a20a02a25ab6a14ea6a
+  md5: 6f52829a986d5e5342afccf79ce91d23
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle, knitr, rmarkdown, curatedOvarianData, ROCR, pROC (>= 1.15.0), RUnit, simulatorZ, proxy
 requirements:
   host:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
-    - 'bioconductor-biocparallel >=1.14.2,<1.16.0'
-    - 'bioconductor-impute >=1.54.0,<1.56.0'
-    - 'bioconductor-sva >=3.28.0,<3.30.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-biocparallel >=1.20.0,<1.21.0'
+    - 'bioconductor-impute >=1.60.0,<1.61.0'
+    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
+    - 'bioconductor-sva >=3.34.0,<3.35.0'
     - r-base
     - r-digest
     - r-mnormt
   run:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
-    - 'bioconductor-biocparallel >=1.14.2,<1.16.0'
-    - 'bioconductor-impute >=1.54.0,<1.56.0'
-    - 'bioconductor-sva >=3.28.0,<3.30.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-biocparallel >=1.20.0,<1.21.0'
+    - 'bioconductor-impute >=1.60.0,<1.61.0'
+    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
+    - 'bioconductor-sva >=3.34.0,<3.35.0'
     - r-base
     - r-digest
     - r-mnormt
@@ -37,10 +41,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>=2.0)'
-  summary: 'The main function is doppelgangR(), which takes as minimal input a list of ExpressionSet object, and searches all list pairs for duplicated samples.  The search is based on the genomic data (exprs(eset)), phenotype/clinical data (pData(eset)), and "smoking guns" - supposedly unique identifiers found in pData(eset).'
+  summary: 'Identify likely duplicate samples from genomic or meta-data'
+  description: 'The main function is doppelgangR(), which takes as minimal input a list of ExpressionSet object, and searches all list pairs for duplicated samples.  The search is based on the genomic data (exprs(eset)), phenotype/clinical data (pData(eset)), and "smoking guns" - supposedly unique identifiers found in pData(eset).'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:doppelgangr
     - doi:10.1093/jnci/djw146
+  parent_recipe:
+    name: bioconductor-doppelgangr
+    path: recipes/bioconductor-doppelgangr
+    version: 1.8.0
+

@@ -1,0 +1,49 @@
+{% set version = "1.36.0" %}
+{% set name = "RDRToolbox" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: cf96edc2ace7c484a46c3dde163d8494
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: golubEsets
+requirements:
+  host:
+    - r-base
+    - r-mass
+    - r-rgl
+  run:
+    - r-base
+    - r-mass
+    - r-rgl
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
+test:
+  commands:
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'A package for nonlinear dimension reduction with Isomap and LLE.'
+  description: 'A package for nonlinear dimension reduction using the Isomap and LLE algorithm. It also includes a routine for computing the Davis-Bouldin-Index for cluster validation, a plotting tool and a data generator for microarray gene expression data and for the Swiss Roll dataset.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  container:
+    extended-base: true
+

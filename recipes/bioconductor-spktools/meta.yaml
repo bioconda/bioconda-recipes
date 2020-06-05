@@ -1,29 +1,31 @@
-{% set version = "1.36.0" %}
+{% set version = "1.42.0" %}
 {% set name = "spkTools" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 0c82ed79e6abd6f2ff8224e37e9afff7fe98e7b0392ec6a9a94221dc89b791ab
+  md5: da854c696808de4191107fe342c5c1f3
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: xtable
 requirements:
   host:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
     - r-gtools
     - r-rcolorbrewer
   run:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
     - r-base
     - r-gtools
     - r-rcolorbrewer
@@ -31,10 +33,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'The package contains functions that can be used to compare expression measures on different array platforms.'
+  summary: 'Methods for Spike-in Arrays'
+  description: 'The package contains functions that can be used to compare expression measures on different array platforms.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:spktools
     - doi:10.1093/nar/gkn430
+  parent_recipe:
+    name: bioconductor-spktools
+    path: recipes/bioconductor-spktools
+    version: 1.36.0
+

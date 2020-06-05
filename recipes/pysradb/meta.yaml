@@ -1,49 +1,49 @@
 {% set name = "pysradb" %}
-{% set version = "0.4.0" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "a5583eb09c23709e9d5be22e95204a73044037096cf16cd9360edb12a37266cd" %}
-
+{% set version = "0.10.2" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: c3db0a635a1c178486acb3f76a04ff6201f165a0d46a59e01ec5462c06268a83
 
 build:
   number: 0
-  entry_points:
-    - pysradb=pysradb.cli:cli
-  script: python setup.py install --single-version-externally-managed --record=record.txt
   noarch: python
+  entry_points:
+    - pysradb=pysradb.cli:parse_args
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
   host:
-    - python
-    - setuptools
-    - pandas >=0.23.4
-    - tqdm >=4.28
-    - click >=7.0
+    - python >=3
+    - pip
+    - pandas 0.25.3
+    - requests 2.22.0
+    - tqdm 4.41.1
+    - xmltodict 0.12.0
+    - sra-tools
   run:
-    - python
-    - pandas >=0.23.4
-    - tqdm >=4.28
-    - click >=7.0
+    - python >=3
+    - pandas 0.25.3
+    - requests 2.22.0
+    - tqdm 4.41.1
+    - xmltodict 0.12.0
+    - sra-tools
 
 test:
   imports:
     - pysradb
     - pysradb.sradb
-    - pysradb.geodb
   commands:
     - pysradb | grep "Query NGS metadata"
 
 about:
   home: https://github.com/saketkc/pysradb
   license: BSD License
+  license_file: LICENSE
   license_family: BSD
   summary: 'Python package for interacting with SRAdb and downloading datasets from SRA'
   description: 'Python package for interacting with SRAdb and downloading datasets from SRA'
@@ -52,7 +52,6 @@ about:
 extra:
   recipe-maintainers:
     - saketkc
-  container:
-    # click requires a unicode locale when used with Python 3
-    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
-    extended-base: true
+  identifiers:
+    - biotools:pysradb
+    - doi:10.12688/f1000research.18676.1

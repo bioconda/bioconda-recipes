@@ -1,43 +1,55 @@
-{% set version = "3.22.5" %}
+{% set version = "3.28.0" %}
 {% set name = "edgeR" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 47d2234f29a4717e4f7079f23ef300d910e81adf4721d58d62aaf18ae06c6c5e
+  md5: 4bdd4653022b8f22aee924e1297b3233
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: AnnotationDbi, jsonlite, org.Hs.eg.db, readr, rhdf5, splines
+# SystemRequirements: C++11
 requirements:
   host:
-    - 'bioconductor-limma >=3.36.0,<3.38.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
     - r-base
     - r-locfit
     - r-rcpp
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-limma >=3.36.0,<3.38.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
     - r-base
     - r-locfit
     - r-rcpp
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
     - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>=2)'
-  summary: 'Differential expression analysis of RNA-seq expression profiles with biological replication. Implements a range of statistical methodology based on the negative binomial distributions, including empirical Bayes estimation, exact tests, generalized linear models and quasi-likelihood tests. As well as RNA-seq, it be applied to differential signal analysis of other types of genomic data that produce counts, including ChIP-seq, Bisulfite-seq, SAGE and CAGE.'
+  summary: 'Empirical Analysis of Digital Gene Expression Data in R'
+  description: 'Differential expression analysis of RNA-seq expression profiles with biological replication. Implements a range of statistical methodology based on the negative binomial distributions, including empirical Bayes estimation, exact tests, generalized linear models and quasi-likelihood tests. As well as RNA-seq, it be applied to differential signal analysis of other types of genomic data that produce counts, including ChIP-seq, Bisulfite-seq, SAGE and CAGE.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:edger
+  parent_recipe:
+    name: bioconductor-edger
+    path: recipes/bioconductor-edger
+    version: 3.22.5
+

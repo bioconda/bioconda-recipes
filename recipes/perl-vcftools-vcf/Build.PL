@@ -12,6 +12,7 @@ Module::Build->new(
                       'vcf-concat',
                       'vcf-consensus',
                       'vcf-contrast',
+		      'vcf-convert',
                       'vcf-fix-newlines',
                       'vcf-fix-ploidy',
                       'vcf-haplotypes',

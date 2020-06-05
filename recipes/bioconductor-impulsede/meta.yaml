@@ -1,21 +1,23 @@
-{% set version = "1.6.0" %}
+{% set version = "1.12.0" %}
 {% set name = "ImpulseDE" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 9246bcaaba1c6ea8cf52ca4b85dbdcb6a632ff56761dc7e54bacaee5450cc68c
+  md5: 3b1473585a0d92f36d5e05ce34a7405a
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: longitudinal, knitr
 requirements:
   host:
     - r-amap
@@ -29,10 +31,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'ImpulseDE is suited to capture single impulse-like patterns in high throughput time series datasets. By fitting a representative impulse model to each gene, it reports differentially expressed genes whether across time points in a single experiment or between two time courses from two experiments. To optimize the running time, the code makes use of clustering steps and multi-threading.'
+  summary: 'Detection of DE genes in time series data using impulse models'
+  description: 'ImpulseDE is suited to capture single impulse-like patterns in high throughput time series datasets. By fitting a representative impulse model to each gene, it reports differentially expressed genes whether across time points in a single experiment or between two time courses from two experiments. To optimize the running time, the code makes use of clustering steps and multi-threading.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:impulsede
     - doi:10.1093/bioinformatics/btw665
+  parent_recipe:
+    name: bioconductor-impulsede
+    path: recipes/bioconductor-impulsede
+    version: 1.6.0
+

@@ -10,13 +10,8 @@
 set -eu -o pipefail
 
 cd t_coffee_source
-make 
+make CC=$CXX CFLAGS="$CFLAGS"
 
 # install tcoffee in the target bin directory 
 mkdir -p $PREFIX/bin
 cp t_coffee $PREFIX/bin
-
-# to be moved in a separate recipe in the future
-gfortran TMalign.f -o TMalign
-cp TMalign $PREFIX/bin
-

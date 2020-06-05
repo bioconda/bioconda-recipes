@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="reactome.db_1.64.0.tar.gz"
+FN="reactome.db_1.70.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.7/data/annotation/src/contrib/reactome.db_1.64.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/reactome.db_1.64.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-reactome.db/bioconductor-reactome.db_1.64.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/reactome.db_1.70.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/reactome.db_1.70.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-reactome.db/bioconductor-reactome.db_1.70.0_src_all.tar.gz"
 )
-MD5="4dfc5160ef8673ff4a892cb4146d1eeb"
+MD5="9c1a3bf40551b1e9189ae8a3b22adc4a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

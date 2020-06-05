@@ -1,21 +1,23 @@
-{% set version = "1.48.0" %}
+{% set version = "1.54.0" %}
 {% set name = "LBE" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: d0dcc9afb41446a8678ef0462f0338c3ae8c3ae560d014401c591250922fcaba
+  md5: b747e147f93f0b15436ce61923573331
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: qvalue
 requirements:
   host:
     - r-base
@@ -25,10 +27,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: 'LBE is an efficient procedure for estimating the proportion of true null hypotheses, the false discovery rate (and so the q-values) in the framework of estimating procedures based on the marginal distribution of the p-values without assumption for the alternative hypothesis.'
+  summary: 'Estimation of the false discovery rate.'
+  description: 'LBE is an efficient procedure for estimating the proportion of true null hypotheses, the false discovery rate (and so the q-values) in the framework of estimating procedures based on the marginal distribution of the p-values without assumption for the alternative hypothesis.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 extra:
   identifiers:
     - biotools:lbe
     - doi:10.1093/bioinformatics/bti063
+  parent_recipe:
+    name: bioconductor-lbe
+    path: recipes/bioconductor-lbe
+    version: 1.48.0
+
