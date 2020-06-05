@@ -51,7 +51,7 @@ rm -rf $STAGING
 mkdir -p $STAGING
 
 SHA=$(git rev-parse --verify HEAD)
-git clone $REPO $STAGING
+git clone $REPO $STAGING --depth=1
 cd $STAGING
 git checkout $BRANCH || git checkout --orphan $BRANCH
 rm -r *
