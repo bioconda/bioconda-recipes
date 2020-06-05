@@ -11,6 +11,7 @@ if [ `uname` == Darwin ]; then
 else
     ./configure --prefix=$PWD CXXFLAGS='-fopenmp' --disable-shared
 make install
+fi
 
 cd ..
 ./autogen.sh
