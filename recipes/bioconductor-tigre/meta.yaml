@@ -1,36 +1,39 @@
-{% set version = "1.34.0" %}
+{% set version = "1.42.0" %}
 {% set name = "tigre" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: ce2d3f680a61019347c94d83e6f35826ee208505eaef7bd1faf72bca6e2b0a4b
+  md5: 89d694eccb034f6b7b3cf41a9b052e67
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: drosgenome1.db, puma, lumi, BiocStyle, BiocManager
 requirements:
   host:
-    - 'bioconductor-annotate >=1.58.0,<1.60.0'
-    - 'bioconductor-annotationdbi >=1.42.1,<1.44.0'
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
+    - 'bioconductor-annotate >=1.66.0,<1.67.0'
+    - 'bioconductor-annotationdbi >=1.50.0,<1.51.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
     - r-base
     - r-dbi
     - r-gplots
     - r-rsqlite
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-annotate >=1.58.0,<1.60.0'
-    - 'bioconductor-annotationdbi >=1.42.1,<1.44.0'
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
+    - 'bioconductor-annotate >=1.66.0,<1.67.0'
+    - 'bioconductor-annotationdbi >=1.50.0,<1.51.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
     - r-base
     - r-dbi
     - r-gplots
@@ -42,9 +45,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: AGPL-3
-  summary: 'The tigre package implements our methodology of Gaussian process differential equation models for analysis of gene expression time series from single input motif networks. The package can be used for inferring unobserved transcription factor (TF) protein concentrations from expression measurements of known target genes, or for ranking candidate targets of a TF.'
+  summary: 'Transcription factor Inference through Gaussian process Reconstruction of Expression'
+  description: 'The tigre package implements our methodology of Gaussian process differential equation models for analysis of gene expression time series from single input motif networks. The package can be used for inferring unobserved transcription factor (TF) protein concentrations from expression measurements of known target genes, or for ranking candidate targets of a TF.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
 extra:
   identifiers:
     - biotools:tigre
+  parent_recipe:
+    name: bioconductor-tigre
+    path: recipes/bioconductor-tigre
+    version: 1.34.0
+

@@ -1,24 +1,27 @@
-{% set version = "1.18.0" %}
+{% set version = "1.26.0" %}
 {% set name = "BADER" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 3558dfd520aad4fef475918a5101ddfee2e9db855cf99e084b7e32f6c7aeef15
+  md5: 9f4f50239fcb3d3e17d82ed415d73657
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: pasilla (>= 0.2.10)
 requirements:
   host:
     - r-base
+    - libblas
+    - liblapack
   run:
     - r-base
   build:
@@ -29,10 +32,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: 'For RNA sequencing count data, BADER fits a Bayesian hierarchical model. The algorithm returns the posterior probability of differential expression for each gene between two groups A and B. The joint posterior distribution of the variables in the model can be returned in the form of posterior samples, which can be used for further down-stream analyses such as gene set enrichment.'
+  summary: 'Bayesian Analysis of Differential Expression in RNA Sequencing Data'
+  description: 'For RNA sequencing count data, BADER fits a Bayesian hierarchical model. The algorithm returns the posterior probability of differential expression for each gene between two groups A and B. The joint posterior distribution of the variables in the model can be returned in the form of posterior samples, which can be used for further down-stream analyses such as gene set enrichment.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 extra:
   identifiers:
     - biotools:bader
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-bader
+    path: recipes/bioconductor-bader
+    version: 1.20.0
+

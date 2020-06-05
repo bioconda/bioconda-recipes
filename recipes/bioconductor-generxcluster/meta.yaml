@@ -1,29 +1,32 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "geneRxCluster" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 574b94248242e36998d7c5aaa9e6cb33cd361dbf8074ed0ae94d977d0f099f05
+  md5: f8c5594cab1c24dccb9ca27cf44ea081
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: RUnit, BiocGenerics
 requirements:
   host:
-    - 'bioconductor-genomicranges >=1.32.7,<1.34.0'
-    - 'bioconductor-iranges >=2.14.12,<2.16.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
     - r-base
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-genomicranges >=1.32.7,<1.34.0'
-    - 'bioconductor-iranges >=2.14.12,<2.16.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
     - r-base
   build:
     - {{ compiler('c') }}
@@ -32,9 +35,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'Detect Differential Clustering of Genomic Sites such as gene therapy integrations.  The package provides some functions for exploring genomic insertion sites originating from two different sources. Possibly, the two sources are two different gene therapy vectors.  Vectors are preferred that target sensitive regions less frequently, motivating the search for localized clusters of insertions and comparison of the clusters formed by integration of different vectors.  Scan statistics allow the discovery of spatial differences in clustering and calculation of False Discovery Rates (FDRs) providing statistical methods for comparing retroviral vectors. A scan statistic for comparing two vectors using multiple window widths to detect clustering differentials and compute FDRs is implemented here.'
+  summary: 'gRx Differential Clustering'
+  description: 'Detect Differential Clustering of Genomic Sites such as gene therapy integrations.  The package provides some functions for exploring genomic insertion sites originating from two different sources. Possibly, the two sources are two different gene therapy vectors.  Vectors are preferred that target sensitive regions less frequently, motivating the search for localized clusters of insertions and comparison of the clusters formed by integration of different vectors.  Scan statistics allow the discovery of spatial differences in clustering and calculation of False Discovery Rates (FDRs) providing statistical methods for comparing retroviral vectors. A scan statistic for comparing two vectors using multiple window widths to detect clustering differentials and compute FDRs is implemented here.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:generxcluster
+  parent_recipe:
+    name: bioconductor-generxcluster
+    path: recipes/bioconductor-generxcluster
+    version: 1.16.0
+

@@ -1,0 +1,54 @@
+{% set name = "cromwell-tools" %}
+{% set version = "2.4.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 3401e615c3de50e7342863b101f5a47c25c2ff0dc1db14403947d3743c7f043a
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - cromwell-tools = cromwell_tools.cli:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+    - google-auth >=1.6.1,<2
+    - requests >=2.20.0,<3
+    - setuptools_scm >=3.1.0,<4
+    - six >=1.11.0
+    - python-dateutil 2.8.0
+    - google-api-python-client 1.7.11
+  run:
+    - google-auth >=1.6.1,<2
+    - python >=3.6
+    - requests >=2.20.0,<3
+    - setuptools_scm >=3.1.0,<4
+    - six >=1.11.0
+    - python-dateutil 2.8.0
+    - google-api-python-client 1.7.11
+
+test:
+  imports:
+    - cromwell_tools
+  commands:
+    - cromwell-tools --help
+
+about:
+  home: http://github.com/broadinstitute/cromwell-tools
+  license: BSD
+  license_family: BSD
+  summary: Utilities for interacting with the Cromwell workflow engine
+  doc_url: https://cromwell-tools.readthedocs.io/en/stable/
+  dev_url: http://github.com/broadinstitute/cromwell-tools
+
+extra:
+  recipe-maintainers:
+    - notestaff

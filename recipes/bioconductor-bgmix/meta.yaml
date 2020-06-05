@@ -1,16 +1,16 @@
-{% set version = "1.40.0" %}
+{% set version = "1.48.0" %}
 {% set name = "BGmix" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 1b6e97e8efb812e25f02e7a7894220229b459c0ad35681f130a3ea9be53a7f6d
+  md5: d696b62c9abd1406b22f233d0ad6dbb7
 build:
   number: 0
   rpaths:
@@ -20,6 +20,8 @@ requirements:
   host:
     - r-base
     - r-kernsmooth
+    - libblas
+    - liblapack
   run:
     - r-base
     - r-kernsmooth
@@ -32,10 +34,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: 'Fully Bayesian mixture models for differential gene expression'
+  summary: 'Bayesian models for differential gene expression'
+  description: 'Fully Bayesian mixture models for differential gene expression'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 extra:
   identifiers:
     - biotools:bgmix
     - doi:10.2202/1544-6115.1314
+  parent_recipe:
+    name: bioconductor-bgmix
+    path: recipes/bioconductor-bgmix
+    version: 1.40.0
+

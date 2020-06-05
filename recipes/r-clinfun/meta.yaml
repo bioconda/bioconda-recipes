@@ -1,0 +1,55 @@
+{% set version = '1.0.15' %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-clinfun
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/clinfun_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/clinfun/clinfun_{{ version }}.tar.gz
+  sha256: 6c5608cd3c7ed988976e5cb95004b94d6797260d42578162663a84247b9b6133
+
+build:
+  merge_build_host: True  # [win]
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('m2w64_c') }}        # [win]
+    - {{ compiler('fortran') }}        # [not win]
+    - {{ compiler('m2w64_fortran') }}  # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
+  host:
+    - r-base
+    - r-mvtnorm
+  run:
+    - r-base
+    - {{native}}gcc-libs         # [win]
+    - r-mvtnorm
+
+test:
+  commands:
+    - $R -e "library('clinfun')"           # [not win]
+    - "\"%R%\" -e \"library('clinfun')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=clinfun
+  license: GPL-2
+  summary: Utilities to make your clinical collaborations easier if not fun. It contains functions
+    for designing studies such as Simon 2-stage and group sequential designs and for
+    data analysis such as Jonckheere-Terpstra test and estimating survival quantiles.
+  license_family: GPL2
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+

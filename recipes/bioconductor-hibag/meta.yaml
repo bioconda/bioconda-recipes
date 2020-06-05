@@ -1,24 +1,27 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "HIBAG" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 8dae626b80ac14b9b420b3e8c7099809113d8f4f0ac5bf074e65faee9dd036e9
+  md5: bd034d4004c932aa7ce58a3946adbe79
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: parallel, knitr, gdsfmt, SNPRelate, SeqArray, ggplot2, reshape2
 requirements:
   host:
     - r-base
+    - libblas
+    - liblapack
   run:
     - r-base
   build:
@@ -29,9 +32,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'It is a software package for imputing HLA types using SNP data, and relies on a training set of HLA and SNP genotypes. HIBAG can be used by researchers with published parameter estimates instead of requiring access to large training sample datasets. It combines the concepts of attribute bagging, an ensemble classifier method, with haplotype inference for SNPs and HLA types. Attribute bagging is a technique which improves the accuracy and stability of classifier ensembles using bootstrap aggregating and random variable selection.'
+  summary: 'HLA Genotype Imputation with Attribute Bagging'
+  description: 'Imputes HLA classical alleles using GWAS SNP data, and it relies on a training set of HLA and SNP genotypes. HIBAG can be used by researchers with published parameter estimates instead of requiring access to large training sample datasets. It combines the concepts of attribute bagging, an ensemble classifier method, with haplotype inference for SNPs and HLA types. Attribute bagging is a technique which improves the accuracy and stability of classifier ensembles using bootstrap aggregating and random variable selection.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:hibag
+  parent_recipe:
+    name: bioconductor-hibag
+    path: recipes/bioconductor-hibag
+    version: 1.16.0
+

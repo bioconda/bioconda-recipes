@@ -1,9 +1,8 @@
 #!/bin/sh
 
-export CPP_INCLUDE_PATH=${PREFIX}/include
-export CXX_INCLUDE_PATH=${PREFIX}/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-make all
+export CXXFLAGS="${CXXFLAGS} -std=c++11"
+export CPPFLAGS="${CPPFLAGS} -std=c++11"
+export CFLAGS="$CFLAGS -std=c++11"
+make all CXX=$CXX CXXFLAGS="-D__STDC_FORMAT_MACROS -I${PREFIX}/include -L${PREFIX}/lib -Isrc/jlib/ -std=c++11"
 mkdir -p $PREFIX/bin
 cp src/alfred $PREFIX/bin

@@ -1,25 +1,28 @@
-{% set version = "1.38.0" %}
+{% set version = "1.46.0" %}
 {% set name = "HilbertVis" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: d54a7859f5addcfaedb252ba91be6b6f7d1a0c938a847adc36a230baaa71ff9f
+  md5: 67d51fd1a692229f86cf581b404f775b
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: IRanges, EBImage
 requirements:
   host:
     - r-base
     - r-lattice
+    - libblas
+    - liblapack
   run:
     - r-base
     - r-lattice
@@ -30,10 +33,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 3)'
-  summary: 'Functions to visualize long vectors of integer data by means of Hilbert curves'
+  summary: 'Hilbert curve visualization'
+  description: 'Functions to visualize long vectors of integer data by means of Hilbert curves'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:hilbertvis
     - doi:10.1093/bioinformatics/btp152
+  parent_recipe:
+    name: bioconductor-hilbertvis
+    path: recipes/bioconductor-hilbertvis
+    version: 1.38.0
+

@@ -1,40 +1,49 @@
-{% set version = "2.2.0" %}
+{% set version = "2.10.0" %}
 {% set name = "BrowserViz" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: d84c9f4238491950ab72087e14981819e0c08654deddad5f7b6e0e793bde178e
+  md5: 41ccf3da08db935ef3c379dec25a2404
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit, BiocStyle, knitr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
     - r-base
-    - 'r-httpuv >=1.4.0'
+    - 'r-httpuv >=1.5.0'
     - 'r-jsonlite >=1.5'
   run:
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
     - r-base
-    - 'r-httpuv >=1.4.0'
+    - 'r-httpuv >=1.5.0'
     - 'r-jsonlite >=1.5'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: 'Interactvive graphics in a web browser from R, using websockets and JSON.'
+  summary: 'BrowserViz: interactive R/browser graphics using websockets and JSON'
+  description: 'Interactvive graphics in a web browser from R, using websockets and JSON.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 extra:
   identifiers:
     - biotools:browserviz
     - doi:10.1007/978-1-4302-4426-4_17
+  parent_recipe:
+    name: bioconductor-browserviz
+    path: recipes/bioconductor-browserviz
+    version: 2.2.0
+

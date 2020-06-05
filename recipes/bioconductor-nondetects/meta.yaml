@@ -1,33 +1,35 @@
-{% set version = "2.10.0" %}
+{% set version = "2.18.0" %}
 {% set name = "nondetects" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 46044bcb1f09f71b7f0d17a1ca215ba1ee97fe4c0b14869ef0b688f0f78a9567
+  md5: 79ce38c6eb8959c82a1b9110ddb55c7a
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr, rmarkdown, BiocStyle (>= 1.0.0), RUnit, BiocGenerics (>= 0.8.0)
 requirements:
   host:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
-    - 'bioconductor-htqpcr >=1.34.0,<1.36.0'
-    - 'bioconductor-limma >=3.36.5,<3.38.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-htqpcr >=1.42.0,<1.43.0'
+    - 'bioconductor-limma >=3.44.0,<3.45.0'
     - r-arm
     - r-base
     - r-mvtnorm
   run:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
-    - 'bioconductor-htqpcr >=1.34.0,<1.36.0'
-    - 'bioconductor-limma >=3.36.5,<3.38.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-htqpcr >=1.42.0,<1.43.0'
+    - 'bioconductor-limma >=3.44.0,<3.45.0'
     - r-arm
     - r-base
     - r-mvtnorm
@@ -35,9 +37,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'Methods to model and impute non-detects in the results of qPCR experiments.'
+  summary: 'Non-detects in qPCR data'
+  description: 'Methods to model and impute non-detects in the results of qPCR experiments.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:nondetects
+  parent_recipe:
+    name: bioconductor-nondetects
+    path: recipes/bioconductor-nondetects
+    version: 2.10.0
+

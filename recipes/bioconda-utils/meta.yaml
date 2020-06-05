@@ -1,13 +1,13 @@
-{% set version = "0.14.9" %}
-{% set sha256 = "b23f1836f40bcde939dadd3d5ff43af596cb9835c9fffddd9e6d70ec392db4af" %}
+{% set version = "0.16.17" %}
+{% set sha256 = "40389e443e88c04e7a304e98525b278816c09211bc708f74fc4e97ee3e6f8930" %}
 
 package:
   name: bioconda-utils
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url: https://github.com/bioconda/bioconda-utils/archive/v{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  sha256: {{ sha256 }}
 
 build:
   noarch: python
@@ -18,38 +18,69 @@ build:
 
 requirements:
   host:
-    - python >=3
+    - python >=3.7
     - pip
   run:
-    - python >=3
-    - anaconda-client 1.6.*
+    - python >=3.7
+    - conda 4.6.14
+    - conda-build 3.19.2
+    - conda-verify 3.1.*
     - argh 0.26.*
-    - beautifulsoup4 4.6.*
-    - conda 4.3.33
-    - conda-build 2.1.18
-    - galaxy-lib 17.9.*
-    - jinja2 2.10.*
-    - jsonschema 2.6.*
-    - networkx 1.11
-    - pyaml 17.12.*
-    - pydotplus 2.0.*
-    - requests 2.18.*
-    - sphinx
-    - docutils
-    - sphinx_rtd_theme
-    - involucro 1.1.*
-    - pandas 0.22.*
-    - numpy 1.14.*
-    - pygithub 1.34.*
     - colorlog 3.1.*
-    - six 1.11.*
+    - tqdm >=4.26
+    - ruamel_yaml 0.15.*
+    - pyaml 17.12.*
+    - networkx 1.11
+    - pandas 0.23.*
+    - libblas * *openblas
+    - boltons 18.*
+    - jsonschema 2.6.*
+    - conda-forge-pinning 2020.05.02.14.58.15
+    - anaconda-client 1.6.*
+    - involucro 1.1.*
+    - skopeo 0.1.35
+    - git 2.14.*
+    - regex 2018.08.29
+    - aiohttp 3.4.*
+    - aiofiles 0.4.*
+    - aioftp 0.12.*
+    - backoff 1.6.*
+    - cachetools 3.0.*
+    - gitpython >=3.0.8,3.0.*
+    - gidgethub 3.0.*
+    - pyjwt 1.7.*
+    - beautifulsoup4 4.6.*
+    - galaxy-lib >=18.9.1
+    - jinja2 2.10.*
+    - sphinx
+    - sphinx-autodoc-typehints
     - alabaster 0.7.*
+    - docutils
+    - requests 2.22.*
+    - gunicorn 19.9.*
+    - celery 4.2.*
+    - aiohttp-jinja2 1.1.*
+    - aiohttp-security 0.4.*
+    - aiohttp-session 2.7.*
+    - aioredis 1.2.*
+    - cryptography 2.*
+    - markdown 3.1.*
 
 test:
   imports:
     - bioconda_utils
   commands:
     - bioconda-utils --help
+    - bioconda-utils lint --help
+    - bioconda-utils build --help
+    - >
+      CONDA_AGGRESSIVE_UPDATE_PACKAGES=
+      CONDA_AUTO_UPDATE_CONDA=0
+      "${PREFIX}/bin/conda" install --prefix="${PREFIX}" --dry-run --satisfied-skip-solve
+      --file="$( python -c
+      'from os.path import dirname, join; import bioconda_utils; print(join(dirname(bioconda_utils.__file__), "bioconda_utils-requirements.txt"))'
+      )"
+      2>&1 | tee /dev/stderr | grep -qF 'All requested packages already installed.'
 
 about:
   home: http://bioconda.github.io/build-system.html

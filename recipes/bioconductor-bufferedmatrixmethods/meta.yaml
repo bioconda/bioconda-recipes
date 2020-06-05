@@ -1,27 +1,30 @@
-{% set version = "1.44.0" %}
+{% set version = "1.52.0" %}
 {% set name = "BufferedMatrixMethods" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: b0824c8216f969d722c055ef0c38421f38533bd83c0f67c435f835de40a0a02b
+  md5: 1a14a94881314d28352e614ff9c754af
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: affyio, affy
 requirements:
   host:
-    - 'bioconductor-bufferedmatrix >=1.44.0,<1.46.0'
+    - 'bioconductor-bufferedmatrix >=1.52.0,<1.53.0'
     - r-base
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-bufferedmatrix >=1.44.0,<1.46.0'
+    - 'bioconductor-bufferedmatrix >=1.52.0,<1.53.0'
     - r-base
   build:
     - {{ compiler('c') }}
@@ -30,10 +33,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'Microarray analysis methods that use BufferedMatrix objects'
+  summary: 'Microarray Data related methods that utlize BufferedMatrix objects'
+  description: 'Microarray analysis methods that use BufferedMatrix objects'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:bufferedmatrixmethods
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-bufferedmatrixmethods
+    path: recipes/bioconductor-bufferedmatrixmethods
+    version: 1.44.0
+

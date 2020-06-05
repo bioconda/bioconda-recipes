@@ -1,7 +1,7 @@
 #!/bin/bash
-FN="bioconductor-bsgenome.mmusculus.ucsc.mm9_1.4.0_src_all.tar.gz"
+FN="BSgenome.Mmusculus.UCSC.mm9_1.4.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.7/data/annotation/src/contrib/BSgenome.Mmusculus.UCSC.mm9_1.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/BSgenome.Mmusculus.UCSC.mm9_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Mmusculus.UCSC.mm9_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mmusculus.ucsc.mm9/bioconductor-bsgenome.mmusculus.ucsc.mm9_1.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mmusculus.ucsc.mm9/bioconductor-bsgenome.mmusculus.ucsc.mm9_1.4.0_src_all.tar.gz"
@@ -17,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

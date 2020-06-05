@@ -1,16 +1,16 @@
-{% set version = "1.36.0" %}
+{% set version = "1.44.0" %}
 {% set name = "CNTools" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 8b22ddb405bec464ede7b63cce655ddf4de3d93260de91b8ebb1a7a711e24375
+  md5: a28ac31639fb984b7ac001b20d14f8d0
 build:
   number: 0
   rpaths:
@@ -18,10 +18,12 @@ build:
     - lib/
 requirements:
   host:
-    - 'bioconductor-genefilter >=1.62.0,<1.64.0'
+    - 'bioconductor-genefilter >=1.70.0,<1.71.0'
     - r-base
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-genefilter >=1.62.0,<1.64.0'
+    - 'bioconductor-genefilter >=1.70.0,<1.71.0'
     - r-base
   build:
     - {{ compiler('c') }}
@@ -30,10 +32,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL
-  summary: 'This package provides tools to convert the output of segmentation analysis using DNAcopy to a matrix structure with overlapping segments as rows and samples as columns so that other computational analyses can be applied to segmented data'
+  summary: 'Convert segment data into a region by sample matrix to allow for other high level computational analyses.'
+  description: 'This package provides tools to convert the output of segmentation analysis using DNAcopy to a matrix structure with overlapping segments as rows and samples as columns so that other computational analyses can be applied to segmented data'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
 extra:
   identifiers:
     - biotools:cntools
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-cntools
+    path: recipes/bioconductor-cntools
+    version: 1.36.0
+

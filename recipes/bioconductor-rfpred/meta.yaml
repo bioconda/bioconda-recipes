@@ -1,32 +1,35 @@
-{% set version = "1.18.0" %}
+{% set version = "1.26.0" %}
 {% set name = "rfPred" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 9515489fd5b14bd5e694569e9c25abd978c9f16f91a2125ee834441fda42efde
+  md5: fce0a7b0b7c0fd92d4f56cc8cef332a9
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocStyle
 requirements:
   host:
-    - 'bioconductor-genomicranges >=1.32.7,<1.34.0'
-    - 'bioconductor-iranges >=2.14.12,<2.16.0'
-    - 'bioconductor-rsamtools >=1.32.3,<1.34.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-rsamtools >=2.4.0,<2.5.0'
     - r-base
     - r-data.table
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-genomicranges >=1.32.7,<1.34.0'
-    - 'bioconductor-iranges >=2.14.12,<2.16.0'
-    - 'bioconductor-rsamtools >=1.32.3,<1.34.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-rsamtools >=2.4.0,<2.5.0'
     - r-base
     - r-data.table
   build:
@@ -36,10 +39,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>=2 )'
-  summary: 'Based on external numerous data files where rfPred scores are pre-calculated on all genomic positions of the human exome, the package gives rfPred scores to missense variants identified by the chromosome, the position (hg19 version), the referent and alternative nucleotids and the uniprot identifier of the protein. Note that for using the package, the user has to be connected on the Internet or to download the TabixFile and index (approximately 3.3 Go).'
+  summary: 'Assign rfPred functional prediction scores to a missense variants list'
+  description: 'Based on external numerous data files where rfPred scores are pre-calculated on all genomic positions of the human exome, the package gives rfPred scores to missense variants identified by the chromosome, the position (hg19 version), the referent and alternative nucleotids and the uniprot identifier of the protein. Note that for using the package, the user has to be connected on the Internet or to download the TabixFile and index (approximately 3.3 Go).'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:rfpred
     - doi:10.1101/037127
+  parent_recipe:
+    name: bioconductor-rfpred
+    path: recipes/bioconductor-rfpred
+    version: 1.18.0
+

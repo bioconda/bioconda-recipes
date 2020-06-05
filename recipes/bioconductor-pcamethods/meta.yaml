@@ -1,31 +1,35 @@
-{% set version = "1.72.0" %}
+{% set version = "1.80.0" %}
 {% set name = "pcaMethods" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 07284d96b9049f95280b31e06057c18c3aebf07d0ffc91c137d0e75391f3296d
+  md5: cca8e9064b776aa8d08fa5b93939d2d6
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: matrixStats, lattice, ggplot2
+# SystemRequirements: Rcpp
 requirements:
   host:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
     - r-base
     - r-mass
     - 'r-rcpp >=0.11.3'
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
     - r-base
     - r-mass
     - 'r-rcpp >=0.11.3'
@@ -37,10 +41,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 3)'
-  summary: 'Provides Bayesian PCA, Probabilistic PCA, Nipals PCA, Inverse Non-Linear PCA and the conventional SVD PCA. A cluster based method for missing value estimation is included for comparison. BPCA, PPCA and NipalsPCA may be used to perform PCA on incomplete data as well as for accurate missing value estimation. A set of methods for printing and plotting the results is also provided. All PCA methods make use of the same data structure (pcaRes) to provide a common interface to the PCA results. Initiated at the Max-Planck Institute for Molecular Plant Physiology, Golm, Germany.'
+  summary: 'A collection of PCA methods'
+  description: 'Provides Bayesian PCA, Probabilistic PCA, Nipals PCA, Inverse Non-Linear PCA and the conventional SVD PCA. A cluster based method for missing value estimation is included for comparison. BPCA, PPCA and NipalsPCA may be used to perform PCA on incomplete data as well as for accurate missing value estimation. A set of methods for printing and plotting the results is also provided. All PCA methods make use of the same data structure (pcaRes) to provide a common interface to the PCA results. Initiated at the Max-Planck Institute for Molecular Plant Physiology, Golm, Germany.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:pcamethods
     - doi:10.1093/bioinformatics/btm069
+  parent_recipe:
+    name: bioconductor-pcamethods
+    path: recipes/bioconductor-pcamethods
+    version: 1.72.0
+

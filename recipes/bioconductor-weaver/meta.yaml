@@ -1,21 +1,23 @@
-{% set version = "1.46.0" %}
+{% set version = "1.54.0" %}
 {% set name = "weaver" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: d87b51bf4c5b15c2c17f9c4310b535b7eb3abe9d2ee2918167e7193543e025cc
+  md5: 9a146ececc839c3e0a68c01551bb32e9
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: codetools
 requirements:
   host:
     - r-base
@@ -29,10 +31,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: 'This package provides enhancements on the Sweave() function in the base package.  In particular a facility for caching code chunk results is included.'
+  summary: 'Tools and extensions for processing Sweave documents'
+  description: 'This package provides enhancements on the Sweave() function in the base package.  In particular a facility for caching code chunk results is included.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 extra:
   identifiers:
     - biotools:weaver
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-weaver
+    path: recipes/bioconductor-weaver
+    version: 1.46.0
+

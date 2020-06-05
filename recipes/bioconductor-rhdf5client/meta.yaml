@@ -1,0 +1,48 @@
+{% set version = "1.10.0" %}
+{% set name = "rhdf5client" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: f0ac01bfa93d9917d51c6ef9e947b4fd
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: knitr, testthat, BiocStyle, DT, reticulate
+requirements:
+  host:
+    - 'bioconductor-delayedarray >=0.14.0,<0.15.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - r-base
+    - r-httr
+    - r-r6
+    - r-rjson
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-delayedarray >=0.14.0,<0.15.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - r-base
+    - r-httr
+    - r-r6
+    - r-rjson
+  build:
+    - {{ compiler('c') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'Access HDF5 content from h5serv'
+  description: 'Provides functionality for reading data from h5serv server from within R.'
+

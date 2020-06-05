@@ -1,27 +1,30 @@
-{% set version = "1.42.0" %}
+{% set version = "1.50.0" %}
 {% set name = "BCRANK" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 98196790877a23218038419beb4f8fc6b977f04ff58ca311998b528349810247
+  md5: daccc323fd282520a5a0ab37b9ba3898
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: seqLogo
 requirements:
   host:
-    - 'bioconductor-biostrings >=2.48.0,<2.50.0'
+    - 'bioconductor-biostrings >=2.56.0,<2.57.0'
     - r-base
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-biostrings >=2.48.0,<2.50.0'
+    - 'bioconductor-biostrings >=2.56.0,<2.57.0'
     - r-base
   build:
     - {{ compiler('c') }}
@@ -30,10 +33,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: 'Functions and classes for de novo prediction of transcription factor binding consensus by heuristic search'
+  summary: 'Predicting binding site consensus from ranked DNA sequences'
+  description: 'Functions and classes for de novo prediction of transcription factor binding consensus by heuristic search'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 extra:
   identifiers:
     - biotools:bcrank
     - doi:10.1093/nar/gkp381
+  parent_recipe:
+    name: bioconductor-bcrank
+    path: recipes/bioconductor-bcrank
+    version: 1.42.0
+

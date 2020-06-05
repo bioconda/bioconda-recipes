@@ -1,29 +1,31 @@
-{% set version = "1.4.0" %}
+{% set version = "1.12.0" %}
 {% set name = "multiOmicsViz" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: f130b07ba454588aab44c38dd1f9755c10b3c47db1751e6386f2767eb43e5f87
+  md5: 3b96d65f07f6be48aee20b4e78510305
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocGenerics
 requirements:
   host:
-    - 'bioconductor-summarizedexperiment >=1.10.1,<1.12.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
     - r-base
     - r-doparallel
     - r-foreach
   run:
-    - 'bioconductor-summarizedexperiment >=1.10.1,<1.12.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
     - r-base
     - r-doparallel
     - r-foreach
@@ -31,8 +33,14 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL
-  summary: 'Calculate the spearman correlation between the source omics data and other target omics data, identify the significant correlations and plot the significant correlations on the heat map in which the x-axis and y-axis are ordered by the chromosomal location.'
-
+  summary: 'Plot the effect of one omics data on other omics data along the chromosome'
+  description: 'Calculate the spearman correlation between the source omics data and other target omics data, identify the significant correlations and plot the significant correlations on the heat map in which the x-axis and y-axis are ordered by the chromosomal location.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+extra:
+  parent_recipe:
+    name: bioconductor-multiomicsviz
+    path: recipes/bioconductor-multiomicsviz
+    version: 1.4.0
 

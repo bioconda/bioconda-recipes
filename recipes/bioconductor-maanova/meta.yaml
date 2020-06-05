@@ -1,27 +1,30 @@
-{% set version = "1.50.0" %}
+{% set version = "1.58.0" %}
 {% set name = "maanova" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: ab170030f4581a7377913e8c27881854dfe69e5c2310b20d7b81be06fb84209d
+  md5: c5c6615dbcb60119eda312e39c0bd376
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: qvalue, snow
 requirements:
   host:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
     - r-base
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
     - r-base
   build:
     - {{ compiler('c') }}
@@ -30,10 +33,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'Analysis of N-dye Micro Array experiment using mixed model effect. Containing analysis of variance, permutation and bootstrap, cluster and consensus tree.'
+  summary: 'Tools for analyzing Micro Array experiments'
+  description: 'Analysis of N-dye Micro Array experiment using mixed model effect. Containing analysis of variance, permutation and bootstrap, cluster and consensus tree.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:maanova
     - doi:10.1007/0-387-21679-0_14
+  parent_recipe:
+    name: bioconductor-maanova
+    path: recipes/bioconductor-maanova
+    version: 1.50.0
+

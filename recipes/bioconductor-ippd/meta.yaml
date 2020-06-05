@@ -1,16 +1,16 @@
-{% set version = "1.28.0" %}
+{% set version = "1.35.0" %}
 {% set name = "IPPD" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 47c671a0beea2cb498d6d3e07d043805837afbc3dd4e8f38cd0f74a3a6f65dfe
+  md5: fb3bc760404a6e0e00a75360b5c5465f
 build:
   number: 0
   rpaths:
@@ -24,6 +24,8 @@ requirements:
     - r-mass
     - r-matrix
     - r-xml
+    - libblas
+    - liblapack
   run:
     - r-base
     - r-bitops
@@ -38,10 +40,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (version 2 or later)'
-  summary: 'The package provides functionality to extract isotopic peak patterns from raw mass spectra. This is done by fitting a large set of template basis functions to the raw spectrum using either nonnegative least squares or least absolute deviation fittting. The package offers a flexible function which tries to estimate model parameters in a way tailored to the peak shapes in the data. The package also provides functionality to process LCMS runs.'
+  summary: 'Isotopic peak pattern deconvolution for Protein Mass Spectrometry by template matching'
+  description: 'The package provides functionality to extract isotopic peak patterns from raw mass spectra. This is done by fitting a large set of template basis functions to the raw spectrum using either nonnegative least squares or least absolute deviation fittting. The package offers a flexible function which tries to estimate model parameters in a way tailored to the peak shapes in the data. The package also provides functionality to process LCMS runs.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:ippd
     - doi:10.1186/1471-2105-13-291
+  parent_recipe:
+    name: bioconductor-ippd
+    path: recipes/bioconductor-ippd
+    version: 1.28.0
+

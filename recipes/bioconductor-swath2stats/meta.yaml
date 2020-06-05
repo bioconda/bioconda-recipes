@@ -1,28 +1,32 @@
-{% set version = "1.10.2" %}
+{% set version = "1.18.0" %}
 {% set name = "SWATH2stats" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 333f5e0deaefb3fcd69d696eed715a05580cccc0e154b645b7d08cd5860623b6
+  md5: baf52c78d3906f161fa6bea93d6a589e
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: testthat, knitr
 requirements:
   host:
+    - 'bioconductor-biomart >=2.44.0,<2.45.0'
     - r-base
     - r-data.table
     - r-ggplot2
     - r-reshape2
   run:
+    - 'bioconductor-biomart >=2.44.0,<2.45.0'
     - r-base
     - r-data.table
     - r-ggplot2
@@ -31,9 +35,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'This package is intended to transform SWATH data from the OpenSWATH software into a format readable by other statistics packages while performing filtering, annotation and FDR estimation.'
+  summary: 'Transform and Filter SWATH Data for Statistical Packages'
+  description: 'This package is intended to transform SWATH data from the OpenSWATH software into a format readable by other statistics packages while performing filtering, annotation and FDR estimation.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:swath2stats
+  parent_recipe:
+    name: bioconductor-swath2stats
+    path: recipes/bioconductor-swath2stats
+    version: 1.10.2
+

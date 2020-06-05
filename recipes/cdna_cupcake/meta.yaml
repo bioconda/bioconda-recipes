@@ -1,60 +1,60 @@
-{% set version = "5.8" %}
-{% set sha256 = "a97b3663a8b499fb58faf056e86b6e74d4a4e2de87bf27c14522832bfd5ba19c" %}
+{% set version = "12.1.0" %}
 
 package:
   name: cdna_cupcake
   version: '{{ version }}'
 
 source:
-  url: https://github.com/Magdoll/cDNA_Cupcake/archive/cupcake_v{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  url: https://github.com/Magdoll/cDNA_Cupcake/archive/v{{ version }}.tar.gz
+  sha256: f0bf56228f2bfc26f2823aba25323a0b99ce406c2d48adaf6678159d86541b30
   patches:
-    - py.patch
+    - patch
 
 build:
   number: 0
-  skip: true  # [py3k]
+  skip: True  # [py < 37]
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
     - python
-    - biopython
-    - bx-python ==0.7.3
+    - pip
+    - numpy
+    - cython
   run:
     - python
     - biopython
-    - bx-python ==0.7.3
+    - bx-python >=0.7.3
+    - bcbiogff
     - r-base
     - graphviz
-    - pbcore
     - scikit-learn
+    - pysam
+    - {{ pin_compatible('numpy') }}
 
 test:
   commands:
     - parse_matchAnnot.py -h
     - make_file_for_subsampling_from_collapsed.py -h
     - subsample.py -h
+    - subsample_with_category.py -h
     - get_seq_stats.py -h
     - revcomp.py -h
     - fa2fq.py -h
     - fq2fa.py -h
-    - sort_fasta_by_len.py -h
     - get_seqs_from_list.py -h
     - err_correct_w_genome.py -h
+    - sam_to_bam.py -h 2>&1 | grep "Only accepts"
+    - sam_to_gff3.py -h
     - simulate.py -h
     - collapse_isoforms_by_sam.py -h
     - get_abundance_post_collapse.py -h
+    # Requires pbtools, which isn't listed ANYWHERE as a dependency or is availabe in conda-forge
+    #- filter_by_count.py -h
     - filter_away_subset.py -h
     - chain_samples.py -h
     - fusion_finder.py -h
-    - calc_probe_hit_from_sam.py -h
-    - calc_expected_accuracy_from_fastq.py -h
-    - summarize_sample_GFF_junctions.py -h
-    - scrub_sample_GFF_junctions.py -h
-    - get_counts_by_barcode.py -h
-    - summarize_gmap_sam.py -h
-    - filter_lq_isoforms.py -h
-    - count_hits_hg19.R 2>&1 | grep "Error" > /dev/null
 
 about:
   home: https://github.com/Magdoll/cDNA_Cupcake

@@ -1,35 +1,43 @@
-{% set version = "3.2.3" %}
+{% set version = "3.2.4" %}
 {% set name = "KEGG.db" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 02ea4630a3ec06a8d9a6151627c96d3f71dfc7e8857800bb5c0cdb6a838d6963
+  md5: 72fde6d0c81ecc42d853607e83476fd5
 build:
-  number: 3
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: DBI
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.42.1,<1.44.0'
+    - 'bioconductor-annotationdbi >=1.50.0,<1.51.0'
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.42.1,<1.44.0'
+    - 'bioconductor-annotationdbi >=1.50.0,<1.51.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: 'file LICENSE'
-  summary: 'A set of annotation maps for KEGG assembled using data from KEGG'
-
+  summary: 'A set of annotation maps for KEGG'
+  description: 'A set of annotation maps for KEGG assembled using data from KEGG'
+  license_file: LICENSE
+extra:
+  parent_recipe:
+    name: bioconductor-kegg.db
+    path: recipes/bioconductor-kegg.db
+    version: 3.2.3
 

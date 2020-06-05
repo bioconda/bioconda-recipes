@@ -1,35 +1,42 @@
-{% set version = "1.10.0" %}
+{% set version = "1.13.0" %}
 {% set name = "MeSH.db" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: bf8fc760ff396641bea95f73a8688adc43efa18d827cb2c537e4181b9bc807ee
+  md5: ad8dd6852e665591565dfe43bee774e7
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit, BiocGenerics
 requirements:
   host:
-    - 'bioconductor-meshdbi >=1.16.0,<1.18.0'
+    - 'bioconductor-meshdbi >=1.24.0,<1.25.0'
     - r-base
   run:
-    - 'bioconductor-meshdbi >=1.16.0,<1.18.0'
+    - 'bioconductor-meshdbi >=1.24.0,<1.25.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'A set of annotation maps describing the entire MeSH assembled using data from MeSH.'
-
+  summary: 'A set of annotation maps describing the entire MeSH'
+  description: 'A set of annotation maps describing the entire MeSH assembled using data from MeSH.'
+extra:
+  parent_recipe:
+    name: bioconductor-mesh.db
+    path: recipes/bioconductor-mesh.db
+    version: 1.10.0
 

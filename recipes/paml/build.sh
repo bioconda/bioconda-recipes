@@ -5,7 +5,7 @@ set -eu -o pipefail
 mkdir -p ${PREFIX}/bin
 
 cd src
-make -j 4
+make -j 4 CC=$CC
 
 cp baseml ${PREFIX}/bin/
 cp basemlg ${PREFIX}/bin/

@@ -1,83 +1,98 @@
-{% set version = "3.28.2" %}
+{% set version = "4.0.1" %}
 {% set name = "flowWorkspace" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 64f60df146a17b9ef0f4935a3db3fcabc31820aa4da61fc7408fb1c0d19a46a8
+  md5: 773d6ce1f2d14f2d423c3e43f3cd027e
 build:
   number: 0
+  skip: True  # [osx]
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: testthat, flowWorkspaceData (>= 2.23.2), knitr, ggcyto, parallel, CytoML, openCyto
+# SystemRequirements: GNU make, C++11
 requirements:
   host:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
-    - 'bioconductor-cytolib >=1.2.0,<1.4.0'
-    - 'bioconductor-flowcore >=1.46.2,<1.48.0'
-    - 'bioconductor-flowviz >=1.44.0,<1.46.0'
-    - 'bioconductor-graph >=1.58.0,<1.60.0'
-    - 'bioconductor-ncdfflow >=2.26.0,<2.28.0'
-    - 'bioconductor-rbgl >=1.56.0,<1.58.0'
-    - 'bioconductor-rgraphviz >=2.24.0,<2.26.0'
-    - 'bioconductor-rprotobuflib >=1.2.0,<1.4.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-cytolib >=2.0.0,<2.1.0'
+    - 'bioconductor-flowcore >=2.0.0,<2.1.0'
+    - 'bioconductor-graph >=1.66.0,<1.67.0'
+    - 'bioconductor-ncdfflow >=2.34.0,<2.35.0'
+    - 'bioconductor-rbgl >=1.64.0,<1.65.0'
+    - 'bioconductor-rgraphviz >=2.32.0,<2.33.0'
+    - 'bioconductor-rhdf5lib >=1.10.0,<1.11.0'
+    - 'bioconductor-rprotobuflib >=2.0.0,<2.1.0'
     - r-base
     - 'r-bh >=1.62.0-1'
     - r-data.table
+    - r-digest
     - r-dplyr
-    - r-gridextra
+    - r-ggplot2
     - r-lattice
     - r-latticeextra
     - r-matrixstats
-    - r-rcolorbrewer
     - r-rcpp
+    - r-rcpparmadillo
+    - 'r-rcppparallel >=4.4.2-1'
     - r-scales
     - r-stringr
     - r-xml
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
-    - 'bioconductor-cytolib >=1.2.0,<1.4.0'
-    - 'bioconductor-flowcore >=1.46.2,<1.48.0'
-    - 'bioconductor-flowviz >=1.44.0,<1.46.0'
-    - 'bioconductor-graph >=1.58.0,<1.60.0'
-    - 'bioconductor-ncdfflow >=2.26.0,<2.28.0'
-    - 'bioconductor-rbgl >=1.56.0,<1.58.0'
-    - 'bioconductor-rgraphviz >=2.24.0,<2.26.0'
-    - 'bioconductor-rprotobuflib >=1.2.0,<1.4.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-cytolib >=2.0.0,<2.1.0'
+    - 'bioconductor-flowcore >=2.0.0,<2.1.0'
+    - 'bioconductor-graph >=1.66.0,<1.67.0'
+    - 'bioconductor-ncdfflow >=2.34.0,<2.35.0'
+    - 'bioconductor-rbgl >=1.64.0,<1.65.0'
+    - 'bioconductor-rgraphviz >=2.32.0,<2.33.0'
+    - 'bioconductor-rhdf5lib >=1.10.0,<1.11.0'
+    - 'bioconductor-rprotobuflib >=2.0.0,<2.1.0'
     - r-base
     - 'r-bh >=1.62.0-1'
     - r-data.table
+    - r-digest
     - r-dplyr
-    - r-gridextra
+    - r-ggplot2
     - r-lattice
     - r-latticeextra
     - r-matrixstats
-    - r-rcolorbrewer
     - r-rcpp
+    - r-rcpparmadillo
+    - 'r-rcppparallel >=4.4.2-1'
     - r-scales
     - r-stringr
     - r-xml
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - automake
     - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'This package is designed to facilitate comparison of automated gating methods against manual gating done in flowJo. This package allows you to import basic flowJo workspaces into BioConductor and replicate the gating from flowJo using the flowCore functionality. Gating hierarchies, groups of samples, compensation, and transformation are performed so that the output matches the flowJo analysis.'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'file LICENSE'
+  summary: 'Infrastructure for representing and interacting with gated and ungated cytometry data sets.'
+  description: 'This package is designed to facilitate comparison of automated gating methods against manual gating done in flowJo. This package allows you to import basic flowJo workspaces into BioConductor and replicate the gating from flowJo using the flowCore functionality. Gating hierarchies, groups of samples, compensation, and transformation are performed so that the output matches the flowJo analysis.'
+  license_file: LICENSE
 extra:
   identifiers:
     - biotools:flowworkspace
     - doi:10.1186/1471-2105-13-252
+  parent_recipe:
+    name: bioconductor-flowworkspace
+    path: recipes/bioconductor-flowworkspace
+    version: 3.28.2
+

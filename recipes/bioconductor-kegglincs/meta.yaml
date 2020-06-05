@@ -1,29 +1,32 @@
-{% set version = "1.6.2" %}
+{% set version = "1.14.0" %}
 {% set name = "KEGGlincs" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: fa61e9faa467beb8500f68dcce170d8a093bf073798d13e9a58f9d6eea6b0d45
+  md5: afd795e55850c2583c42b590ff6d7a52
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocManager (>= 1.20.3), knitr, graph
+# SystemRequirements: Cytoscape (>= 3.3.0), Java (>= 8)
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.42.1,<1.44.0'
-    - 'bioconductor-hgu133a.db >=3.2.3,<3.4.0'
-    - 'bioconductor-kegggraph >=1.40.0,<1.42.0'
-    - 'bioconductor-keggrest >=1.20.2,<1.22.0'
-    - 'bioconductor-kodata >=1.6.0,<1.8.0'
-    - 'bioconductor-org.hs.eg.db >=3.6.0,<3.8.0'
+    - 'bioconductor-annotationdbi >=1.50.0,<1.51.0'
+    - 'bioconductor-hgu133a.db >=3.2.0,<3.3.0'
+    - 'bioconductor-kegggraph >=1.48.0,<1.49.0'
+    - 'bioconductor-keggrest >=1.28.0,<1.29.0'
+    - 'bioconductor-kodata >=1.14.0,<1.15.0'
+    - 'bioconductor-org.hs.eg.db >=3.11.0,<3.12.0'
     - r-base
     - r-gtools
     - r-httr
@@ -31,13 +34,14 @@ requirements:
     - r-plyr
     - r-rjsonio
     - r-xml
+    - 'cytoscape >=3.3.0'
   run:
-    - 'bioconductor-annotationdbi >=1.42.1,<1.44.0'
-    - 'bioconductor-hgu133a.db >=3.2.3,<3.4.0'
-    - 'bioconductor-kegggraph >=1.40.0,<1.42.0'
-    - 'bioconductor-keggrest >=1.20.2,<1.22.0'
-    - 'bioconductor-kodata >=1.6.0,<1.8.0'
-    - 'bioconductor-org.hs.eg.db >=3.6.0,<3.8.0'
+    - 'bioconductor-annotationdbi >=1.50.0,<1.51.0'
+    - 'bioconductor-hgu133a.db >=3.2.0,<3.3.0'
+    - 'bioconductor-kegggraph >=1.48.0,<1.49.0'
+    - 'bioconductor-keggrest >=1.28.0,<1.29.0'
+    - 'bioconductor-kodata >=1.14.0,<1.15.0'
+    - 'bioconductor-org.hs.eg.db >=3.11.0,<3.12.0'
     - r-base
     - r-gtools
     - r-httr
@@ -45,14 +49,22 @@ requirements:
     - r-plyr
     - r-rjsonio
     - r-xml
+    - 'cytoscape >=3.3.0'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'See what is going on ''under the hood'' of KEGG pathways by explicitly re-creating the pathway maps from information obtained from KGML files.'
+  summary: 'Visualize all edges within a KEGG pathway and overlay LINCS data'
+  description: 'See what is going on ''under the hood'' of KEGG pathways by explicitly re-creating the pathway maps from information obtained from KGML files.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:kegglincs
     - doi:10.7490/f1000research.1113436.1
+  parent_recipe:
+    name: bioconductor-kegglincs
+    path: recipes/bioconductor-kegglincs
+    version: 1.6.2
+

@@ -1,36 +1,45 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "Polyfit" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: e176aff4d0eeecce3c53fd16b74d66c6b531465498063853c6b42d5a9c5499bd
+  md5: 8882953117a39156cc47c4982d3acf95
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle
 requirements:
   host:
-    - 'bioconductor-deseq >=1.32.0,<1.34.0'
+    - 'bioconductor-deseq >=1.39.0,<1.40.0'
     - r-base
   run:
-    - 'bioconductor-deseq >=1.32.0,<1.34.0'
+    - 'bioconductor-deseq >=1.39.0,<1.40.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 3)'
-  summary: 'Polyfit is an add-on to the packages DESeq which ensures the p-value distribution is uniform over the interval [0, 1] for data satisfying the null hypothesis of no differential expression, and uses an adpated Storey-Tibshiran method to calculate q-values.'
+  summary: 'Add-on to DESeq to improve p-values and q-values'
+  description: 'Polyfit is an add-on to the packages DESeq which ensures the p-value distribution is uniform over the interval [0, 1] for data satisfying the null hypothesis of no differential expression, and uses an adpated Storey-Tibshiran method to calculate q-values.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:polyfit
     - doi:10.7717/peerj.576
+  parent_recipe:
+    name: bioconductor-polyfit
+    path: recipes/bioconductor-polyfit
+    version: 1.14.0
+

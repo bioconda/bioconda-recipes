@@ -1,32 +1,42 @@
-{% set version = "1.9.0" %}
-{% set sha256 = "ec608fb1a9e487aafccf4ddafe3f6bf2472963783b85cae8b486f83dfddfd6bb" %}
+{% set version = "2.9.2" %}
+{% set sha256 = "4cb2c0b30292a0a7e6b12f3f5fd865c5962273cb2bc4b4de9f439dfd1c29b385" %}
 
 package:
   name: gridss
   version: '{{ version }}'
 
 source:
-  url: https://github.com/PapenfussLab/gridss/releases/download/v{{ version }}/gridss-{{ version }}-gridss-jar-with-dependencies.jar
+  url: https://github.com/PapenfussLab/gridss/releases/download/v{{ version }}/gridss-{{ version }}.tar.gz
   sha256: '{{ sha256 }}'
 
 build:
   number: 0
-  skip: true # [osx]
+  noarch: generic
 
 requirements:
   run:
     - openjdk >=8
-    - python
+    - bwa >=0.7
+    - samtools >=1.10
+    - r-base >=3.6
+    - r-argparser
+    - r-tidyverse
+    - r-testthat
+    - r-stringdist
+    - bioconductor-structuralvariantannotation
 
 test:
   commands:
-    - "gridss gridss.CallVariants --help 2>&1 | grep 'USAGE: CallVariants'"
+    - "gridss 2>&1 | grep 'Usage:'"
+    - "gridss_somatic_filter --help 2>&1 | grep 'usage:'"
+    - "CallVariants --help 2>&1 | grep 'USAGE:'"
+    - "CollectGridssMetrics --help 2>&1 | grep 'USAGE:'"
 
 about:
   home: https://github.com/PapenfussLab/gridss
   license: GPL-3.0
   license_family: GPL
-  summary: 'GRIDSS: a Genomic Rearrangement IDentification Software Suite'
+  summary: 'GRIDSS: the Genomic Rearrangement IDentification Software Suite'
 
 extra:
   identifiers:

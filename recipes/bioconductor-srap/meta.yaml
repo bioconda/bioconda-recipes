@@ -1,31 +1,32 @@
-{% set version = "1.20.0" %}
+{% set version = "1.27.0" %}
 {% set name = "sRAP" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 3dcc600558319df54168bbd97db299ea3f34d17a1d2f0b24b46d6d7405ef7a02
+  md5: a635e019d077a5a699fb7c36f109ce7f
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
   host:
-    - 'bioconductor-qvalue >=2.12.0,<2.14.0'
+    - 'bioconductor-qvalue >=2.20.0,<2.21.0'
     - r-base
     - r-gplots
     - r-pls
     - r-rocr
     - r-writexls
   run:
-    - 'bioconductor-qvalue >=2.12.0,<2.14.0'
+    - 'bioconductor-qvalue >=2.20.0,<2.21.0'
     - r-base
     - r-gplots
     - r-pls
@@ -35,9 +36,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'This package provides a pipeline for gene expression analysis (primarily for RNA-Seq data).  The normalization function is specific for RNA-Seq analysis, but all other functions (Quality Control Figures, Differential Expression and Visualization, and Functional Enrichment via BD-Func) will work with any type of gene expression data.'
+  summary: 'Simplified RNA-Seq Analysis Pipeline'
+  description: 'This package provides a pipeline for gene expression analysis (primarily for RNA-Seq data).  The normalization function is specific for RNA-Seq analysis, but all other functions (Quality Control Figures, Differential Expression and Visualization, and Functional Enrichment via BD-Func) will work with any type of gene expression data.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:srap
+  parent_recipe:
+    name: bioconductor-srap
+    path: recipes/bioconductor-srap
+    version: 1.20.0
+

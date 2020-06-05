@@ -1,21 +1,23 @@
-{% set version = "1.16.0" %}
+{% set version = "1.23.0" %}
 {% set name = "GeneOverlap" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 3f753a59517641e56586e0c19d6657ecdc07b446cb5fa9a21e361c2a83c6b092
+  md5: 322267a25acf2dfa818b4dfd2bce9c4d
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit, BiocGenerics, BiocStyle
 requirements:
   host:
     - r-base
@@ -29,10 +31,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'Test two sets of gene lists and visualize the results.'
+  summary: 'Test and visualize gene overlaps'
+  description: 'Test two sets of gene lists and visualize the results.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:geneoverlap
     - doi:10.1167/iovs.16-20618
+  parent_recipe:
+    name: bioconductor-geneoverlap
+    path: recipes/bioconductor-geneoverlap
+    version: 1.16.0
+

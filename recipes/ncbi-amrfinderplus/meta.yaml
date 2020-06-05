@@ -1,0 +1,59 @@
+{% set version = "3.8.4" %}
+{% set sha256 = "f7a2063b19deeb965397db6b92aceea900f970326a5225c4f5632b0d9e9797ae" %}
+
+package:
+  name: ncbi-amrfinderplus
+  version: {{ version }}
+
+source:
+  url: https://github.com/ncbi/amr/archive/amrfinder_v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - coreutils
+    - libcurl
+  run:
+    - blast >=2.9
+    - hmmer >=3.2
+    - libcurl
+    - curl
+
+test:
+  commands:
+    - amr_report -help
+    - amrfinder --help
+    - amrfinder_update --help
+    - fasta_check -help
+    - fasta2parts -help
+    - gff_check -help
+    - dna_mutation -help
+    - |
+        curl --silent \
+         -O https://raw.githubusercontent.com/ncbi/amr/master/test_dna.fa \
+         -O https://raw.githubusercontent.com/ncbi/amr/master/test_prot.fa \
+         -O https://raw.githubusercontent.com/ncbi/amr/master/test_prot.gff \
+         -O https://raw.githubusercontent.com/ncbi/amr/master/test_both.expected
+        amrfinder -u
+        amrfinder --plus -n test_dna.fa -p test_prot.fa -g test_prot.gff -O Escherichia > test_both.got
+        diff test_both.expected test_both.got
+
+about:
+  home: https://github.com/ncbi/amr/wiki
+  license: Public Domain
+  license_file: LICENSE
+  summary: AMRFinderPlus finds antimicrobial resistance and other genes in protein or nucleotide sequences.
+  description: |
+      This software and the accompanying database are designed to
+      find acquired antimicrobial resistance genes in bacterial protein or
+      nucleotide sequences as well as known point mutations for several taxa. With
+      AMRFinderPlus we have added select members of additional classes of genes
+      such as virulence factors, biocide, heat, acid, and metal resistance genes.
+  doc_url: https://github.com/ncbi/amr/wiki
+
+

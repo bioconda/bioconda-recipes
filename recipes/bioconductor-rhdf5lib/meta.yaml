@@ -1,24 +1,28 @@
-{% set version = "1.2.1" %}
+{% set version = "1.10.0" %}
 {% set name = "Rhdf5lib" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 6c74f2f3acd9119af339412aa67aef295aed62b2f03d8236cc106dc31453a9f8
+  md5: 55bbe1038bd530334080470f259991be
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocStyle, knitr, rmarkdown, tinytest
+# SystemRequirements: GNU make
 requirements:
   host:
     - r-base
+    - libblas
+    - liblapack
   run:
     - r-base
   build:
@@ -29,8 +33,13 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Provides C and C++ hdf5 libraries.'
-
+  summary: 'hdf5 library as an R package'
+  description: 'Provides C and C++ hdf5 libraries.'
+extra:
+  parent_recipe:
+    name: bioconductor-rhdf5lib
+    path: recipes/bioconductor-rhdf5lib
+    version: 1.2.1
 

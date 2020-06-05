@@ -1,0 +1,66 @@
+{% set version = "4.3.10" %}
+{% set sha256 = "24d8d410138563017e6f2f1263d5e34427f5bbddb875b72a036f7c879cef203b" %}
+package:
+  name: sepp
+  version: '{{version}}'
+
+source:
+  - url: https://github.com/smirarab/sepp/archive/{{version}}.tar.gz
+    sha256: '{{sha256}}'
+    patches:
+      - relocate.run-sepp.sh.patch
+      - relocate.sepp.config.patch
+      # prevent python's setup to search for dendropy dependency via pip.
+      # Instead use dendropy provided by conda:
+      - nodeps.setup.py.patch
+
+build:
+  number: 1
+
+requirements:
+  host:
+    # no-arch package of dendropy does not work on osx:
+    # No such file or directory: '/Users/distiller/project/miniconda/conda-bld/sepp_1554794831372/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_plac/bin/python2.7': '/Users/distiller/project/miniconda/conda-bld/sepp_1554794831372/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_plac/bin/python2.7'
+    # thus, trying here to restrict to arch dependent combinations of dendropy and python for osx
+    - python  # [linux]
+    - dendropy  # [linux]
+    - python >=2.7,<3.7  # [osx]
+    - dendropy >=4.0.3,<4.4  # [osx]
+    - openjdk
+    - hmmer ==3.1b2
+
+  run:
+    - python  # [linux]
+    - dendropy  # [linux]
+    - python >=2.7,<3.7  # [osx]
+    - dendropy >=4.0.3,<4.4  # [osx]
+    - openjdk
+    - hmmer ==3.1b2
+    # TODO: source bundled binaries as conda packages. 
+    # But pplacer / guppy are not available for OSX.
+    # - pplacer
+
+test:
+  commands:
+    - run_sepp.py --help
+    # for now, ignore other programs "tipp" and "upp" due to big sized reference files
+    #- run_tipp.py --help
+    #- run_upp.py --help
+    - run-sepp.sh $PREFIX/share/sepp/ref/input_fragments.fasta testrun_tiny -a $PREFIX/share/sepp/ref/reference_alignment_tiny.fasta -t $PREFIX/share/sepp/ref/reference_phylogeny_tiny.nwk -r $PREFIX/share/sepp/ref/RAxML_info-reference-gg-raxml-bl.info -x 1 -b 1
+    - grep "f__Halomonadaceae" testrun_tiny_placement.tog.relabelled.tre
+    - grep "testseqd" testrun_tiny_placement.tog.relabelled.tre
+    
+about:
+  home: https://github.com/smirarab/sepp
+  license: GPLv3
+  license_family: GPL3
+  license_file: LICENSE
+  summary: SATe-enabled phylogenetic placement
+
+extra:
+  identifiers:
+    - biotools:sepp
+  skip-lints:
+    # necessary, because sepp is NOT platform independent:
+    # during build time, platform specific binaries for pplacer / guppy are copied into the PREFIX/bin dir
+    - should_be_noarch_generic

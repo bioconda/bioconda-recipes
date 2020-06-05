@@ -1,30 +1,36 @@
-{% set version = "2.4.9" %}
-{% set sha256 = "e18dd8372e34454ac51cf3fb846fa26f22c34e12e1c6c4aaf9573c01ccc19e29" %}
+{% set name = "igv" %}
+{% set version = "2.8.3" %}
+{% set sha256 = "89bee9a7f4c8bb05cbf8309fb9214c22e82912f1d305150699de295763710a51" %}
 
 package:
-  name: igv
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: "http://data.broadinstitute.org/igv/projects/downloads/{{ version.rsplit('.', 1)[0] }}/IGV_{{ version }}.zip"
+  url: https://github.com/igvteam/igv/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   noarch: generic
 
 requirements:
+  build:
+    - openjdk >=11
   run:
-    - openjdk >=8.0
+    - openjdk >=11
 
 test:
   commands:
-#    - "igv > log.txt 2>&1 & PID=$! && sleep 2 && kill $PID && grep 'IGV Version {{ version }}' log.txt"
+    - igv --version
+    - igv_hidpi --version
 
 about:
-  home: "http://www.broadinstitute.org/software/igv/home"
+  home: http://www.broadinstitute.org/software/igv/home
   license: MIT
-  summary: "Integrative Genomics Viewer. Fast, efficient, scalable visualization tool for genomics data and annotations"
+  summary: |
+    Integrative Genomics Viewer. Fast, efficient, scalable visualization tool for genomics
+    data and annotations.
 
 extra:
   identifiers:

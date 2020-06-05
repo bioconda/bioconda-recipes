@@ -1,0 +1,76 @@
+{% set version = "2.3.beta2" %}
+{% set sha256 = "29e79f9da9bbe5ad3a58534cf7fdb4df378366dd06986ce95ac1884a3af84151" %}
+
+
+package:
+  name: metagenome-atlas
+  version: {{ version }}
+
+source:
+  url: https://github.com/metagenome-atlas/atlas/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  entry_points:
+    - atlas=atlas.atlas:cli
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+
+
+
+requirements:
+  host:
+    - python >3.6,<3.7
+    - pip
+
+  run:
+    - python >3.6,<3.7
+    - snakemake >=5.4.5,<6
+    - pandas >=0.23
+    - click >=7
+    - ruamel.yaml=0.15.99 # needs to be explicit
+    - biopython >=1.70
+    - bbmap >=37.*
+    - git
+    - cookiecutter
+
+test:
+  imports:
+    - atlas
+  commands:
+{% set export_lang = "export LC_ALL=en_US.UTF-8 && export LANG=en_US.UTF-8" %}
+    - {{ export_lang }} && atlas --version
+    - {{ export_lang }} && atlas init --help
+    - {{ export_lang }} && atlas run --help
+
+about:
+  home: https://github.com/metagenome-atlas
+  dev_url: https://github.com/metagenome-atlas/atlas
+  doc_url: https://metagenome-atlas.rtfd.io
+  license: BSD-3-Clause
+  license_family: BSD
+  summary: ATLAS - Three commands to start analysing your metagenome data
+  description: |
+    Atlas is a easy to use metagenomic pipeline
+    # Quick Start
+
+    Three commands to start analysing your metagenome data:
+    ```
+        conda install -c bioconda -c conda-forge metagenome-atlas
+        atlas init --db-dir databases path/to/fastq/files
+        atlas run
+    ```
+    All databases and dependencies are installed on the fly in the directory `db-dir`.
+    You want to run these three commands on the example_data on the GitHub repo.
+    If you have more time, then we recommend you configure atlas according to your needs.
+      - check the `samples.tsv`
+      - edit the `config.yaml`
+      - run atlas on any cluster system
+    For more details see documentation.
+
+extra:
+  recipe-maintainers:
+    - silask
+  container:
+    extended-base: true  # unicode problem with click

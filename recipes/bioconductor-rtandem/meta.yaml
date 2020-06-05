@@ -1,0 +1,55 @@
+{% set version = "1.27.0" %}
+{% set name = "rTANDEM" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 0cf706ce4f7f3b846c1fa7b6f0c91272
+build:
+  number: 0
+  skip: True  # [osx]
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: biomaRt
+# SystemRequirements: rTANDEM uses expat and pthread libraries. See the README file for details.
+requirements:
+  host:
+    - r-base
+    - 'r-data.table >=1.8.8'
+    - r-rcpp
+    - r-xml
+    - libblas
+    - liblapack
+    - expat
+  run:
+    - r-base
+    - 'r-data.table >=1.8.8'
+    - r-rcpp
+    - r-xml
+    - expat
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'Artistic-1.0 | file LICENSE'
+  summary: 'Interfaces the tandem protein identification algorithm in R'
+  description: 'This package interfaces the tandem protein identification algorithm in R. Identification can be launched in the X!Tandem style, by using as sole parameter the path to a parameter file. But rTANDEM aslo provides extended syntax and functions to streamline launching analyses, as well as function to convert results, parameters and taxonomy to/from R. A related package, shinyTANDEM, provides visualization interface for result objects.'
+  license_file: LICENSE
+extra:
+  parent_recipe:
+    name: bioconductor-rtandem
+    path: recipes/bioconductor-rtandem
+    version: 1.22.0
+

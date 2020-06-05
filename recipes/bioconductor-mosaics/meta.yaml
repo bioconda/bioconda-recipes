@@ -1,44 +1,50 @@
-{% set version = "2.18.0" %}
+{% set version = "2.26.0" %}
 {% set name = "mosaics" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 92790b8e556304e5292db09054e392754b28692eb01daf923515848feeb1ae61
+  md5: bdbed07731f9e8d69702dc6af2423b0b
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: mosaicsExample
+# SystemRequirements: Perl
 requirements:
   host:
-    - 'bioconductor-genomeinfodb >=1.16.0,<1.18.0'
-    - 'bioconductor-genomicalignments >=1.16.0,<1.18.0'
-    - 'bioconductor-genomicranges >=1.32.7,<1.34.0'
-    - 'bioconductor-iranges >=2.14.12,<2.16.0'
-    - 'bioconductor-rsamtools >=1.32.3,<1.34.0'
-    - 'bioconductor-s4vectors >=0.18.3,<0.20.0'
+    - 'bioconductor-genomeinfodb >=1.24.0,<1.25.0'
+    - 'bioconductor-genomicalignments >=1.24.0,<1.25.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-rsamtools >=2.4.0,<2.5.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
     - r-base
     - r-lattice
     - r-mass
     - r-rcpp
+    - libblas
+    - liblapack
+    - 'perl >=5.6.0'
   run:
-    - 'bioconductor-genomeinfodb >=1.16.0,<1.18.0'
-    - 'bioconductor-genomicalignments >=1.16.0,<1.18.0'
-    - 'bioconductor-genomicranges >=1.32.7,<1.34.0'
-    - 'bioconductor-iranges >=2.14.12,<2.16.0'
-    - 'bioconductor-rsamtools >=1.32.3,<1.34.0'
-    - 'bioconductor-s4vectors >=0.18.3,<0.20.0'
+    - 'bioconductor-genomeinfodb >=1.24.0,<1.25.0'
+    - 'bioconductor-genomicalignments >=1.24.0,<1.25.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-rsamtools >=2.4.0,<2.5.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
     - r-base
     - r-lattice
     - r-mass
     - r-rcpp
+    - 'perl >=5.6.0'
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
@@ -47,10 +53,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'This package provides functions for fitting MOSAiCS and MOSAiCS-HMM, a statistical framework to analyze one-sample or two-sample ChIP-seq data of transcription factor binding and histone modification.'
+  summary: 'MOSAiCS (MOdel-based one and two Sample Analysis and Inference for ChIP-Seq)'
+  description: 'This package provides functions for fitting MOSAiCS and MOSAiCS-HMM, a statistical framework to analyze one-sample or two-sample ChIP-seq data of transcription factor binding and histone modification.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:mosaics
     - doi:10.1198/jasa.2011.ap09706
+  parent_recipe:
+    name: bioconductor-mosaics
+    path: recipes/bioconductor-mosaics
+    version: 2.18.0
+

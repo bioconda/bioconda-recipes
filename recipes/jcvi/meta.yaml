@@ -1,40 +1,34 @@
 {% set name = "jcvi" %}
-{% set version = "0.8.4" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "d326ef550fa56b45190b3f5de7c2917af9d64ace8d22592cd65ceafad10b5280" %}
+{% set version = "1.0.6" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 49565d9dfe7519ee58a365a2507162f1483943370a89dfdc357650bbc3540c25
 
 build:
-  number: 1
+  number: 0
   skip: True  # [not py27]
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - python
-    - setuptools
-    - biopython
-    - deap
-    - matplotlib
-    - networkx
-    - numpy
+    - pip
+    - numpy 
+    - cython
   run:
     - python
     - biopython
     - deap
-    - matplotlib
+    - matplotlib-base
     - networkx
-    - numpy
+    - {{ pin_compatible('numpy') }}
     - r-ggplot2 >=3.0.0
     - gffutils
 
@@ -59,6 +53,3 @@ about:
   license_family: BSD
   summary: Python utility libraries on genome assembly, annotation and comparative genomics
   description: "JCVI utility libraries"
-
-extra:
-  recipe-maintainers: ''

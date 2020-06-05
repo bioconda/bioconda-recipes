@@ -1,27 +1,28 @@
-{% set version = "1.60.1" %}
+{% set version = "1.68.0" %}
 {% set name = "MLInterfaces" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 2ac720b4aaf59b61becb23423b108863a85e404b9d42c33e47275fd0eddf22dd
+  md5: 8c3dd5699b990edc89a074ea53e65abc
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: class, e1071, ipred, randomForest, gpls, pamr, nnet, ALL, hgu95av2.db, som, hu6800.db, lattice, caret (>= 5.07), golubEsets, ada, keggorthology, kernlab, mboost, party, klaR, testthat
 requirements:
   host:
-    - 'bioconductor-annotate >=1.58.0,<1.60.0'
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
-    - 'bioconductor-genefilter >=1.62.0,<1.64.0'
+    - 'bioconductor-annotate >=1.66.0,<1.67.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-genefilter >=1.70.0,<1.71.0'
     - r-base
     - r-cluster
     - r-fpc
@@ -33,16 +34,18 @@ requirements:
     - r-mlbench
     - r-pls
     - r-rcolorbrewer
-    - r-rda
+    - r-rcpp
     - r-rpart
     - r-sfsmisc
     - r-shiny
     - 'r-threejs >=0.2.2'
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-annotate >=1.58.0,<1.60.0'
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
-    - 'bioconductor-genefilter >=1.62.0,<1.64.0'
+    - 'bioconductor-annotate >=1.66.0,<1.67.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-genefilter >=1.70.0,<1.71.0'
     - r-base
     - r-cluster
     - r-fpc
@@ -54,19 +57,29 @@ requirements:
     - r-mlbench
     - r-pls
     - r-rcolorbrewer
-    - r-rda
+    - r-rcpp
     - r-rpart
     - r-sfsmisc
     - r-shiny
     - 'r-threejs >=0.2.2'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL
-  summary: 'This package provides uniform interfaces to machine learning code for data in R and Bioconductor containers.'
+  summary: 'Uniform interfaces to R machine learning procedures for data in Bioconductor containers'
+  description: 'This package provides uniform interfaces to machine learning code for data in R and Bioconductor containers.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
 extra:
   identifiers:
     - biotools:mlinterfaces
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-mlinterfaces
+    path: recipes/bioconductor-mlinterfaces
+    version: 1.60.1
+

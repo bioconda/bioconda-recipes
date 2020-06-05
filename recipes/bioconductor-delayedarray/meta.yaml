@@ -1,42 +1,53 @@
-{% set version = "0.6.6" %}
+{% set version = "0.14.0" %}
 {% set name = "DelayedArray" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: c25d2c41c18f37930ad94ccea9d18f1c2c45481cb0253456b48e0fac5d057766
+  md5: cc0b2f8c7ff4e9d596c169decf244a23
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocParallel, HDF5Array, genefilter, SummarizedExperiment, airway, pryr, DelayedMatrixStats, knitr, BiocStyle, RUnit
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
-    - 'bioconductor-biocparallel >=1.14.2,<1.16.0'
-    - 'bioconductor-iranges >=2.14.12,<2.16.0'
-    - 'bioconductor-s4vectors >=0.18.3,<0.20.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
     - r-base
+    - r-matrix
     - r-matrixstats
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
-    - 'bioconductor-biocparallel >=1.14.2,<1.16.0'
-    - 'bioconductor-iranges >=2.14.12,<2.16.0'
-    - 'bioconductor-s4vectors >=0.18.3,<0.20.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
     - r-base
+    - r-matrix
     - r-matrixstats
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Wrapping an array-like object (typically an on-disk object) in a DelayedArray object allows one to perform common array operations on it without loading the object in memory. In order to reduce memory usage and optimize performance, operations on the object are either delayed or executed using a block processing mechanism. Note that this also works on in-memory array-like objects like DataFrame objects (typically with Rle columns), Matrix objects, and ordinary arrays and data frames.'
-
+  summary: 'A unified framework for working transparently with on-disk and in-memory array-like datasets'
+  description: 'Wrapping an array-like object (typically an on-disk object) in a DelayedArray object allows one to perform common array operations on it without loading the object in memory. In order to reduce memory usage and optimize performance, operations on the object are either delayed or executed using a block processing mechanism. Note that this also works on in-memory array-like objects like DataFrame objects (typically with Rle columns), Matrix objects, and ordinary arrays and data frames.'
+extra:
+  parent_recipe:
+    name: bioconductor-delayedarray
+    path: recipes/bioconductor-delayedarray
+    version: 0.6.6
 

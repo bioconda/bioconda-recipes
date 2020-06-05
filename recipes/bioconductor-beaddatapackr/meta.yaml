@@ -1,24 +1,27 @@
-{% set version = "1.32.0" %}
+{% set version = "1.40.0" %}
 {% set name = "BeadDataPackR" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 8247bcb91a803b6cf95d9595fac032a68c761cf78e6cdc9a949bbd1d9137d7bf
+  md5: 3d174393a6fd18073a6e8b24974f7eba
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocStyle, knitr
 requirements:
   host:
     - r-base
+    - libblas
+    - liblapack
   run:
     - r-base
   build:
@@ -28,9 +31,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: 'Provides functionality for the compression and decompression of raw bead-level data from the Illumina BeadArray platform.'
+  summary: 'Compression of Illumina BeadArray data'
+  description: 'Provides functionality for the compression and decompression of raw bead-level data from the Illumina BeadArray platform.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 extra:
   identifiers:
     - biotools:beaddatapackr
+  parent_recipe:
+    name: bioconductor-beaddatapackr
+    path: recipes/bioconductor-beaddatapackr
+    version: 1.32.0
+

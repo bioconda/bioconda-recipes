@@ -1,37 +1,35 @@
 {% set name = "CrossMap" %}
-{% set version = "0.2.8" %}
-{% set sha256hash = "783a89f7378495dc0f1dbbb1b56b780cc4aeeb20d683c2721560952305083c47" %}
+{% set version = "0.4.1" %}
+{% set sha256hash = "5e19a8290db8dfb1ecfde1c64bff67f0e540152a2c8c58fb2065b28ccbc7f1f1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: http://sourceforge.net/projects/crossmap/files/CrossMap-{{ version }}.tar.gz
+  url: https://sourceforge.net/projects/crossmap/files/CrossMap-{{ version }}.tar.gz
   sha256: {{ sha256hash }}
 
 build:
   number: 0
-  # CrossMap is very particular about Python version.
-  skip: True # [not py27]
+  noarch: python
 
 requirements:
   host:
-    - python
-    - setuptools
+    - python >=3
     - cython >=0.17
     - numpy
     - nose >=0.10.4
-    # doesn't work with pysam >=0.14.0, see https://sourceforge.net/p/crossmap/tickets/6/
-    - pysam >=0.11.1,<0.14.0
+    - pysam >=0.11.1
     - bx-python
   run:
-    - python
+    - python >=3
     - cython >=0.17
     - numpy
-    - pysam >=0.11.1,<0.14.0
+    - pysam >=0.11.1
     - bx-python
     - ucsc-wigtobigwig
+    - pybigwig
 
 test:
   commands:
@@ -41,4 +39,11 @@ test:
 about:
   home: http://crossmap.sourceforge.net
   license: GPLv2
-  summary: "Convert genomic coordiates between assemblies"
+  license_family: GPL
+  license_file: LICENSE.txt
+  summary: "CrossMap is a program for convenient conversion of genome coordinates and genomeannotation files between assemblies."
+
+extra:
+  skip-lints:
+    - cython_must_be_in_host
+    - cython_needs_compiler

@@ -1,16 +1,16 @@
-{% set version = "1.22.0" %}
+{% set version = "1.30.0" %}
 {% set name = "HMMcopy" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 722eadf9a270ed3ad47a514f94dcca7101f777eb61c795014934c807b516a2f5
+  md5: 529f168711651899200211db49e1e964
 build:
   number: 0
   rpaths:
@@ -18,13 +18,13 @@ build:
     - lib/
 requirements:
   host:
-    - 'bioconductor-geneplotter >=1.58.0,<1.60.0'
-    - 'bioconductor-iranges >=2.14.12,<2.16.0'
     - r-base
+    - 'r-data.table >=1.11.8'
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-geneplotter >=1.58.0,<1.60.0'
-    - 'bioconductor-iranges >=2.14.12,<2.16.0'
     - r-base
+    - 'r-data.table >=1.11.8'
   build:
     - {{ compiler('c') }}
     - make
@@ -32,10 +32,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'Corrects GC and mappability biases for readcounts (i.e. coverage) in non-overlapping windows of fixed length for single whole genome samples, yielding a rough estimate of copy number for furthur analysis.  Designed for rapid correction of high coverage whole genome tumour and normal samples.'
+  summary: 'Copy number prediction with correction for GC and mappability bias for HTS data'
+  description: 'Corrects GC and mappability biases for readcounts (i.e. coverage) in non-overlapping windows of fixed length for single whole genome samples, yielding a rough estimate of copy number for furthur analysis.  Designed for rapid correction of high coverage whole genome tumour and normal samples.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:hmmcopy
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-hmmcopy
+    path: recipes/bioconductor-hmmcopy
+    version: 1.22.0
+

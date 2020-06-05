@@ -1,31 +1,32 @@
-{% set version = "1.34.0" %}
+{% set version = "1.42.0" %}
 {% set name = "SpeCond" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: f5d050e5f6e4a17dcd52277e03d92448285a15350ef4ae2ae366b725d6ea750b
+  md5: 9c19bb58305d8492dced8dce763216d4
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
   host:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
     - r-base
     - r-fields
     - 'r-hwriter >=1.1'
     - 'r-mclust >=3.3.1'
     - r-rcolorbrewer
   run:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
     - r-base
     - r-fields
     - 'r-hwriter >=1.1'
@@ -35,10 +36,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'LGPL (>=2)'
-  summary: 'This package performs a gene expression data analysis to detect condition-specific genes. Such genes are significantly up- or down-regulated in a small number of conditions. It does so by fitting a mixture of normal distributions to the expression values. Conditions can be environmental conditions, different tissues, organs or any other sources that you wish to compare in terms of gene expression.'
+  summary: 'Condition specific detection from expression data'
+  description: 'This package performs a gene expression data analysis to detect condition-specific genes. Such genes are significantly up- or down-regulated in a small number of conditions. It does so by fitting a mixture of normal distributions to the expression values. Conditions can be environmental conditions, different tissues, organs or any other sources that you wish to compare in terms of gene expression.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
 extra:
   identifiers:
     - biotools:specond
     - doi:10.1186/gb-2011-12-12-413
+  parent_recipe:
+    name: bioconductor-specond
+    path: recipes/bioconductor-specond
+    version: 1.34.0
+

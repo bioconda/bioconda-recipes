@@ -1,24 +1,27 @@
-{% set version = "1.38.0" %}
+{% set version = "1.46.0" %}
 {% set name = "metahdep" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: fbe74ec3a8b05e7fb6e27a329f401740e9517d860cb819dc9d551172170ab224
+  md5: 22c95ec6794ec6c33826e17e61841046
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: affyPLM
 requirements:
   host:
     - r-base
+    - libblas
+    - liblapack
   run:
     - r-base
   build:
@@ -28,10 +31,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'Tools for meta-analysis in the presence of hierarchical (and/or sampling) dependence, including with gene expression studies'
+  summary: 'Hierarchical Dependence in Meta-Analysis'
+  description: 'Tools for meta-analysis in the presence of hierarchical (and/or sampling) dependence, including with gene expression studies'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:metahdep
     - doi:10.1093/bioinformatics/btp468
+  parent_recipe:
+    name: bioconductor-metahdep
+    path: recipes/bioconductor-metahdep
+    version: 1.38.0
+

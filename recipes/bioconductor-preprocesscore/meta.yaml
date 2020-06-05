@@ -1,16 +1,16 @@
-{% set version = "1.42.0" %}
+{% set version = "1.50.0" %}
 {% set name = "preprocessCore" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 7371a739d3481544c2e95e956d873fcc03e8f03e4761fd573d3b95747ec8caa9
+  md5: ae3034aeed6223cd1a672e706916e841
 build:
   number: 0
   rpaths:
@@ -19,6 +19,8 @@ build:
 requirements:
   host:
     - r-base
+    - libblas
+    - liblapack
   run:
     - r-base
   build:
@@ -29,10 +31,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'LGPL (>= 2)'
-  summary: 'A library of core preprocessing routines.'
+  summary: 'A collection of pre-processing functions'
+  description: 'A library of core preprocessing routines.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
 extra:
   identifiers:
     - biotools:preprocesscore
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-preprocesscore
+    path: recipes/bioconductor-preprocesscore
+    version: 1.42.0
+

@@ -1,16 +1,16 @@
-{% set version = "1.20.0" %}
+{% set version = "1.28.0" %}
 {% set name = "metaSeq" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: d493c972e22285478ad115544e85eeb52ae06b2955d55ca1eec014a0f2dfeb1e
+  md5: a240098f62510c2f5504601154dc54a5
 build:
   number: 0
   rpaths:
@@ -18,12 +18,14 @@ build:
     - lib/
 requirements:
   host:
-    - 'bioconductor-noiseq >=2.24.0,<2.26.0'
+    - 'bioconductor-noiseq >=2.31.0,<2.32.0'
     - r-base
     - r-rcpp
     - r-snow
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-noiseq >=2.24.0,<2.26.0'
+    - 'bioconductor-noiseq >=2.31.0,<2.32.0'
     - r-base
     - r-rcpp
     - r-snow
@@ -34,10 +36,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'The probabilities by one-sided NOISeq are combined by Fisher''s method or Stouffer''s method'
+  summary: 'Meta-analysis of RNA-Seq count data in multiple studies'
+  description: 'The probabilities by one-sided NOISeq are combined by Fisher''s method or Stouffer''s method'
 extra:
   identifiers:
     - biotools:metaseq
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-metaseq
+    path: recipes/bioconductor-metaseq
+    version: 1.20.0
+

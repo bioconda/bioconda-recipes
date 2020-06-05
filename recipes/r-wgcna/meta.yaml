@@ -1,7 +1,4 @@
-{% set version = '1.64-1' %}
-
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set version = '1.69' %}
 
 package:
   name: r-wgcna
@@ -11,65 +8,52 @@ source:
   url:
     - {{ cran_mirror }}/src/contrib/WGCNA_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/WGCNA/WGCNA_{{ version }}.tar.gz
-  sha256: 961a890cda40676ba533cd6de2b1d4f692addd16363f874c82ba8b65dd2d0db6
+  sha256: 2ea152d45b2d4f0e40b4b9f7b5ea8a96e230f7744ece8be27bdba96cf39d5008
 
 build:
-  merge_build_host: True  # [win]
-
-  number: 0
-  skip: true  # [win32]
-
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('c') }}        # [not win]
-    - {{ compiler('cxx') }}      # [not win]
-    - {{native}}toolchain        # [win]
-    - {{posix}}filesystem        # [win]
-    - {{posix}}make
-    - {{posix}}sed               # [win]
-    - {{posix}}coreutils         # [win]
-    - {{posix}}zip               # [win]
-
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
     - r-base
-    - 'bioconductor-annotationdbi >=1.42.0,<1.44.0'
-    - 'bioconductor-go.db >=3.6.0,<3.8.0'
+    - bioconductor-annotationdbi
+    - bioconductor-go.db
     - r-hmisc
     - r-rcpp >=0.11.0
     - r-doparallel
     - r-dynamictreecut >=1.62
     - r-fastcluster
     - r-foreach
-    - 'bioconductor-impute >=1.54.0,<1.56.0'
+    - bioconductor-impute
     - r-matrixstats >=0.8.1
-    - 'bioconductor-preprocesscore >=1.42.0,<1.44.0'
+    - bioconductor-preprocesscore
     - r-robust
     - r-survival
-
   run:
     - r-base
-    - {{native}}gcc-libs         # [win]
-    - 'bioconductor-annotationdbi >=1.42.0,<1.44.0'
-    - 'bioconductor-go.db >=3.6.0,<3.8.0'
+    - bioconductor-annotationdbi
+    - bioconductor-go.db
     - r-hmisc
     - r-rcpp >=0.11.0
     - r-doparallel
     - r-dynamictreecut >=1.62
     - r-fastcluster
     - r-foreach
-    - 'bioconductor-impute >=1.54.0,<1.56.0'
+    - bioconductor-impute
     - r-matrixstats >=0.8.1
-    - 'bioconductor-preprocesscore >=1.42.0,<1.44.0'
+    - bioconductor-preprocesscore
     - r-robust
     - r-survival
 
 test:
   commands:
-
     - $R -e "library('WGCNA')"           # [not win]
     - "\"%R%\" -e \"library('WGCNA')\""  # [win]
 
@@ -87,11 +71,3 @@ extra:
   identifiers:
     - biotools:wgcna
     - doi:10.1186/1471-2105-9-559
-  recipe-maintainers:
-    - MathiasHaudgaard
-    - FrodePedersen
-    - ArneKr
-    - johanneskoester
-    - bgruening
-    - daler
-    - jdblischak

@@ -1,25 +1,28 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "lfa" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 811f74e732d71c8587289fa21542859343a5f2acedbe4e49deca34d13fed3db4
+  md5: cab77faee2c67758acc0bfd7c3f6c0f6
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: knitr, ggplot2
 requirements:
   host:
     - r-base
     - r-corpcor
+    - libblas
+    - liblapack
   run:
     - r-base
     - r-corpcor
@@ -30,10 +33,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'LFA is a method for a PCA analogue on Binomial data via estimation of latent structure in the natural parameter.'
+  summary: 'Logistic Factor Analysis for Categorical Data'
+  description: 'LFA is a method for a PCA analogue on Binomial data via estimation of latent structure in the natural parameter.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:lfa
     - doi:10.1093/bioinformatics/btv641
+  parent_recipe:
+    name: bioconductor-lfa
+    path: recipes/bioconductor-lfa
+    version: 1.10.0
+

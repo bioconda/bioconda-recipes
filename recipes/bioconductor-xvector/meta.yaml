@@ -1,33 +1,36 @@
-{% set version = "0.20.0" %}
+{% set version = "0.28.0" %}
 {% set name = "XVector" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 6e5c1a3b9f5ff1319082165bdc7e5e33a121b8d70c1514b4040f7a4d138454fe
+  md5: 7053fb56a45728eafe5126073ddcbfe1
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: Biostrings, drosophila2probe, RUnit
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
-    - 'bioconductor-iranges >=2.14.12,<2.16.0'
-    - 'bioconductor-s4vectors >=0.18.3,<0.20.0'
-    - 'bioconductor-zlibbioc >=1.26.0,<1.28.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - 'bioconductor-zlibbioc >=1.34.0,<1.35.0'
     - r-base
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
-    - 'bioconductor-iranges >=2.14.12,<2.16.0'
-    - 'bioconductor-s4vectors >=0.18.3,<0.20.0'
-    - 'bioconductor-zlibbioc >=1.26.0,<1.28.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - 'bioconductor-zlibbioc >=1.34.0,<1.35.0'
     - r-base
   build:
     - {{ compiler('c') }}
@@ -36,10 +39,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Memory efficient S4 classes for storing sequences "externally" (behind an R external pointer, or on disk).'
+  summary: 'Foundation of external vector representation and manipulation in Bioconductor'
+  description: 'Provides memory efficient S4 classes for storing sequences "externally" (e.g. behind an R external pointer, or on disk).'
 extra:
   identifiers:
     - biotools:xvector
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-xvector
+    path: recipes/bioconductor-xvector
+    version: 0.20.0
+

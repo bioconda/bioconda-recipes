@@ -1,0 +1,66 @@
+{% set version = "19.9.0" %}
+{% set sha256 = "8afd9472e7b9a2597e46b2d9df331322511409e6923444e7a69d2cf7c0ff6f2c" %}
+
+package:
+  name: galaxy-util
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/g/galaxy-util/galaxy-util-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  # The package can become `noarch: python` when PY2 support is dropped.
+  # noarch: python
+  number: 1
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - bleach
+    - boltons
+    - docutils
+    - markupsafe
+    - packaging
+    - python
+    - pyyaml
+    - routes
+    - six >=1.9.0
+    - bz2file  # [py<33]
+    # extra: jstree
+    # - dictobj
+    # extra: template
+    # - future
+    # - cheetah3
+  run_constrained:
+    # Disallow installation of conflicting older package.
+    - galaxy-lib <0a0
+
+test:
+  imports:
+    - galaxy
+    - galaxy.exceptions
+    - galaxy.util
+    - galaxy.util.logging
+    - galaxy.util.path
+
+about:
+  home: https://galaxyproject.org
+  license: AFL-3.0
+  license_file: LICENSE
+  summary: Galaxy Generic Utilities
+  doc_url: https://docs.galaxyproject.org
+  dev_url: https://github.com/galaxyproject/galaxy
+
+extra:
+  identifiers:
+    - biotools:galaxy
+    - doi:10.1093/nar/gky379
+  recipe-maintainers:
+    - mbargull
+    - bgruening
+  skip-lints:
+    - should_be_noarch_generic

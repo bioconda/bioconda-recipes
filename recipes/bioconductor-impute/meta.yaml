@@ -1,16 +1,16 @@
-{% set version = "1.54.0" %}
+{% set version = "1.62.0" %}
 {% set name = "impute" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 19129a57c912280fae17c345174d3d6dd93c79875e300dc7b24f608a95bb6cb4
+  md5: e6885bfc8593ae958e7f7a20e3015ad0
 build:
   number: 0
   rpaths:
@@ -19,6 +19,8 @@ build:
 requirements:
   host:
     - r-base
+    - libblas
+    - liblapack
   run:
     - r-base
   build:
@@ -29,10 +31,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: 'Imputation for microarray data (currently KNN only)'
+  summary: 'impute: Imputation for microarray data'
+  description: 'Imputation for microarray data (currently KNN only)'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 extra:
   identifiers:
     - biotools:impute
     - doi:10.1007/978-3-642-57489-4_7
+  parent_recipe:
+    name: bioconductor-impute
+    path: recipes/bioconductor-impute
+    version: 1.54.0
+

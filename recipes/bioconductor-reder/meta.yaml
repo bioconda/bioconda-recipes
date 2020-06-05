@@ -1,35 +1,47 @@
-{% set version = "1.28.0" %}
+{% set version = "1.36.0" %}
 {% set name = "RedeR" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 78ddf06627aac2d18dd49022aeee9abda15853ad6ac8e3fd55042140d3d4a670
+  md5: 6722225052c921c55d7e744100ccacd7
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: pvclust, BiocStyle, knitr, rmarkdown
+# SystemRequirements: Java Runtime Environment (>= 6)
 requirements:
   host:
     - r-base
     - r-igraph
+    - openjdk
   run:
     - r-base
     - r-igraph
+    - openjdk
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'RedeR is an R-based package combined with a stand-alone Java application for interactive visualization and manipulation of modular structures, nested networks and multiple levels of hierarchical associations.'
+  summary: 'Interactive visualization and manipulation of nested networks'
+  description: 'RedeR is an R-based package combined with a stand-alone Java application for interactive visualization and manipulation of modular structures, nested networks and multiple levels of hierarchical associations.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:reder
+  parent_recipe:
+    name: bioconductor-reder
+    path: recipes/bioconductor-reder
+    version: 1.28.0
+

@@ -1,0 +1,45 @@
+{% set version = "1.3.1" %}
+{% set sha256 = "1e1957ce7f44cf61ae64aa20c069597da9c656e926feeb3098430255d605165a" %}
+
+package:
+  name: malva
+  version: {{ version }}
+
+source:
+  url: https://github.com/AlgoLab/malva/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - malva.Makefile.patch
+    - malva.MALVA.patch
+    - malva.src.patch
+
+build:
+  number: 0
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+
+  host:
+    - zlib
+    - sdsl-lite
+    - htslib
+    - kmc
+
+  run:
+    - kmc
+
+test:
+  commands:
+    - malva-geno -h
+    - MALVA -h
+
+about:
+  home: https://algolab.github.io/malva/
+  license: GPL-3.0-or-later
+  summary: genotyping by Mapping-free ALternate-allele detection of known VAriants
+
+extra:
+  identifiers:
+    - biotools:malva

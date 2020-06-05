@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="PCHiCdata_1.8.0.tar.gz"
+FN="PCHiCdata_1.16.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.7/data/experiment/src/contrib/PCHiCdata_1.8.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/PCHiCdata_1.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pchicdata/bioconductor-pchicdata_1.8.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/PCHiCdata_1.16.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/PCHiCdata_1.16.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pchicdata/bioconductor-pchicdata_1.16.0_src_all.tar.gz"
 )
-MD5="e2f47759614488314cbae936a38b7330"
+MD5="83b2b132fdf0e0cc24acbd2991636a49"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

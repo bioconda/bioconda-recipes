@@ -1,0 +1,58 @@
+{% set version = "0.16.0" %}
+{% set sha256 = "3628bc0970942e79292d60a972df85f75c7a8699c633f79fb96ba071e83600a2" %}
+
+package:
+  name: cnv_facets
+  version: '{{version}}'
+
+source:
+  url: https://github.com/dariober/cnv_facets/archive/v{{version}}.tar.gz
+  sha256: '{{sha256}}'
+
+build:
+  number: 1
+  skip: True  # [not linux]
+
+requirements:
+  build:
+      - {{ compiler('c') }}
+      - {{ compiler('cxx') }}
+      - {{ compiler('fortran') }}
+  host:
+      - r-base
+      - r-devtools
+      - r-data.table
+      - r-ggplot2
+      - r-gridextra
+      - r-jsonlite
+      - bioconductor-rsamtools
+      - htslib
+      - samtools 
+      - bcftools >=1.9
+      - snp-pileup
+  run:
+      - r-base
+      - r-data.table
+      - r-ggplot2
+      - r-gridextra
+      - r-jsonlite
+      - htslib
+      - bioconductor-rsamtools
+      - samtools 
+      - bcftools >=1.9
+      - snp-pileup
+      - python
+
+test:
+  commands:
+    - cnv_facets.R -h > /dev/null 2>&1 || [[ $? == 1 ]]
+
+about:
+  home: https://github.com/dariober/cnv_facets
+  license: MIT
+  summary: Detect somatic copy number variants (CNV) in tumour-normal samples using next generation sequencing data
+  license_family: MIT
+
+extra:
+  maintainers:
+    - Dario Beraldi

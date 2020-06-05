@@ -1,24 +1,25 @@
-{% set version = "1.26.0" %}
+{% set version = "1.34.1" %}
 {% set name = "COHCAP" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 3d6ceaf99409025c1483957c229e42c149bc9e6f41d8618e928667038ab2cdf5
+  md5: 5f276117f520d5dd4e83c94e5ab6f30c
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# SystemRequirements: Perl
 requirements:
   host:
-    - 'bioconductor-cohcapanno >=1.16.0,<1.18.0'
+    - 'bioconductor-cohcapanno >=1.24.0,<1.25.0'
     - r-base
     - r-bh
     - r-gplots
@@ -26,8 +27,11 @@ requirements:
     - r-rcpp
     - r-rcpparmadillo
     - r-writexls
+    - libblas
+    - liblapack
+    - perl
   run:
-    - 'bioconductor-cohcapanno >=1.16.0,<1.18.0'
+    - 'bioconductor-cohcapanno >=1.24.0,<1.25.0'
     - r-base
     - r-bh
     - r-gplots
@@ -35,6 +39,7 @@ requirements:
     - r-rcpp
     - r-rcpparmadillo
     - r-writexls
+    - perl >=5.6.0
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
@@ -43,9 +48,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'This package provides a pipeline to analyze single-nucleotide resolution methylation data (Illumina 450k/EPIC methylation array, targeted BS-Seq, etc.). It provides differential methylation for CpG Sites, differential methylation for CpG Islands, integration with gene expression data, with visualizaton options.'
+  summary: 'CpG Island Analysis Pipeline for Illumina Methylation Array and Targeted BS-Seq Data'
+  description: 'COHCAP (pronounced "co-cap") provides a pipeline to analyze single-nucleotide resolution methylation data (Illumina 450k/EPIC methylation array, targeted BS-Seq, etc.). It provides differential methylation for CpG Sites, differential methylation for CpG Islands, integration with gene expression data, with visualizaton options. Discussion Group: https://sourceforge.net/p/cohcap/discussion/bioconductor/'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:cohcap
+  parent_recipe:
+    name: bioconductor-cohcap
+    path: recipes/bioconductor-cohcap
+    version: 1.26.0
+

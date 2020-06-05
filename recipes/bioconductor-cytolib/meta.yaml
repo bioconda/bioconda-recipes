@@ -1,36 +1,59 @@
-{% set version = "1.2.0" %}
+{% set version = "2.0.2" %}
 {% set name = "cytolib" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: b348fb0dbe1b53484807e9a94fc14654afccdefab039ddd19037fa5cb94ca865
+  md5: 73cefbc300969df6d42a962b3470d5d2
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: knitr
+# SystemRequirements: GNU make, C++11
 requirements:
   host:
-    - 'bioconductor-rprotobuflib >=1.2.0,<1.4.0'
+    - 'bioconductor-rhdf5lib >=1.10.0,<1.11.0'
+    - 'bioconductor-rprotobuflib >=2.0.0,<2.1.0'
     - r-base
-    - 'r-bh >=1.62.0-1'
+    - 'r-bh >=1.72.0-2'
+    - r-rcpp
+    - r-rcpparmadillo
+    - 'r-rcppparallel >=4.4.2-1'
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-rprotobuflib >=1.2.0,<1.4.0'
+    - 'bioconductor-rhdf5lib >=1.10.0,<1.11.0'
+    - 'bioconductor-rprotobuflib >=2.0.0,<2.1.0'
     - r-base
-    - 'r-bh >=1.62.0-1'
+    - 'r-bh >=1.72.0-2'
+    - r-rcpp
+    - r-rcpparmadillo
+    - 'r-rcppparallel >=4.4.2-1'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'This package provides the core data structure and API to represent and interact with the gated cytometry data.'
-
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'file LICENSE'
+  summary: 'C++ infrastructure for representing and interacting with the gated cytometry'
+  description: 'This package provides the core data structure and API to represent and interact with the gated cytometry data.'
+  license_file: LICENSE
+extra:
+  parent_recipe:
+    name: bioconductor-cytolib
+    path: recipes/bioconductor-cytolib
+    version: 1.4.0
 

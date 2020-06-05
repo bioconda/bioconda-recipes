@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="org.Rn.eg.db_3.6.0.tar.gz"
+FN="org.Rn.eg.db_3.11.1.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.7/data/annotation/src/contrib/org.Rn.eg.db_3.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/org.Rn.eg.db_3.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-org.rn.eg.db/bioconductor-org.rn.eg.db_3.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/org.Rn.eg.db_3.11.1.tar.gz"
+  "https://bioarchive.galaxyproject.org/org.Rn.eg.db_3.11.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-org.rn.eg.db/bioconductor-org.rn.eg.db_3.11.1_src_all.tar.gz"
 )
-MD5="e6b4e03ec625bdfc7515ffacc4681659"
+MD5="77ad48d251583c9b6dad1e93a32d44ac"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

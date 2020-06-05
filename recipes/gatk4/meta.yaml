@@ -1,13 +1,14 @@
-{% set version = "4.0.11.0" %}
-{% set sha256 = "5ee23159be7c65051335ac155444c6a49c4d8e3515d4227646c0686819934536" %}
+{% set name = "GATK4" %}
+{% set version = "4.1.7.0" %}
+{% set sha256 = "1ed6f7c3194563a16c53b66e64d1b16d3f5e919d057d9e60f0ae6570eb0882e3" %}
 
 package:
-  name: gatk4
-  version: '{{ version }}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
   url: https://github.com/broadinstitute/gatk/releases/download/{{ version }}/gatk-{{ version }}.zip
-  sha256: '{{ sha256 }}'
+  sha256: {{ sha256 }}
 
 build:
   noarch: generic
@@ -15,15 +16,52 @@ build:
 
 requirements:
   host:
+    - r-base
+    - r-gplots
+    - r-ggplot2
+    - r-gsalib
+    - r-reshape
   run:
     - openjdk >=8,<9
     - python
+    - r-base
+    - r-gplots
+    - r-ggplot2
+    - r-gsalib
+    - r-reshape
 
 test:
   commands:
     - gatk -h
     - gatk --list
     - gatk HaplotypeCaller --help
+
+outputs:
+  - name: gatk4
+    script: build_main.sh
+    requirements:
+      run:
+        - openjdk >=8,<9
+        - python
+    test:
+      commands:
+        - gatk -h
+        - gatk --list
+        - gatk HaplotypeCaller --help
+  - name: gatk4-spark
+    script: build_spark.sh
+    build:
+            noarch: generic
+    requirements:
+      run:
+        - openjdk >=8,<9
+        - python
+        - {{ pin_subpackage("gatk4", exact=True) }}
+    test:
+      commands:
+        - gatk -h
+        - gatk --list
+        - gatk MarkDuplicatesSpark --help
 
 about:
   home: https://www.broadinstitute.org/gatk/

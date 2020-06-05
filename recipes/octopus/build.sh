@@ -9,6 +9,23 @@ export LIBRARY_PATH=${PREFIX}/lib
 # https://github.com/luntergroup/octopus/issues/38
 export HTSLIB_ROOT=${PREFIX}/lib
 
+# Ignore compiler warnings
+sed -i.bak '556i\
+    -Wno-maybe-uninitialized
+' CMakeLists.txt
+
+sed -i.bak 's/ -Werror / /' src/CMakeLists.txt
+
 cd build
-cmake  -DINSTALL_PREFIX=ON -DCMAKE_INSTALL_PREFIX=${PREFIX}/bin -DINSTALL_ROOT=ON -DCMAKE_BUILD_TYPE=Release -DBOOST_ROOT=${PREFIX} -DBoost_NO_SYSTEM_PATHS=ON ..
+cmake  -DCMAKE_CXX_COMPILER_AR=${AR} \
+       -DCMAKE_CXX_COMPILER_RANLIB=${RANLIB} \
+       -DINSTALL_PREFIX=ON \
+       -DCMAKE_INSTALL_PREFIX=${PREFIX}/bin \
+       -DINSTALL_ROOT=ON \
+       -DCMAKE_BUILD_TYPE=Release \
+       -DBOOST_ROOT=${PREFIX} \
+       -DBoost_NO_SYSTEM_PATHS=ON \
+       -DHTSLIB_ROOT=${PREFIX} \
+       ..
+
 make install

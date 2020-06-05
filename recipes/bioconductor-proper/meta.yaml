@@ -1,35 +1,44 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "PROPER" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 4ea98b7824e7bec9f69ae1cf43d8be86ef7c7b0041928b46625bf697b6159ee8
+  md5: 2df14ad9db816d74c12eea21b5c4395b
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle,DESeq,DSS,knitr
 requirements:
   host:
-    - 'bioconductor-edger >=3.22.4,<3.24.0'
+    - 'bioconductor-edger >=3.30.0,<3.31.0'
     - r-base
   run:
-    - 'bioconductor-edger >=3.22.4,<3.24.0'
+    - 'bioconductor-edger >=3.30.0,<3.31.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL
-  summary: 'This package provide simulation based methods for evaluating the statistical power in differential expression analysis from RNA-seq data.'
+  summary: 'PROspective Power Evaluation for RNAseq'
+  description: 'This package provide simulation based methods for evaluating the statistical power in differential expression analysis from RNA-seq data.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:proper
+  parent_recipe:
+    name: bioconductor-proper
+    path: recipes/bioconductor-proper
+    version: 1.14.0
+

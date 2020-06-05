@@ -1,34 +1,40 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "fgsea" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 9ac57aceebf752f287ec94ed663d383ddf8ea1e7beb419c277b3f7f2d7d5c6c0
+  md5: c5fd8822e60238965f19bccebd05f646
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: testthat, knitr, rmarkdown, reactome.db, AnnotationDbi, parallel, org.Mm.eg.db, limma, GEOquery
+# SystemRequirements: C++11
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.14.2,<1.16.0'
+    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
     - r-base
+    - r-bh
     - r-data.table
     - r-fastmatch
     - 'r-ggplot2 >=2.2.0'
     - r-gridextra
     - r-matrix
     - r-rcpp
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-biocparallel >=1.14.2,<1.16.0'
+    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
     - r-base
+    - r-bh
     - r-data.table
     - r-fastmatch
     - 'r-ggplot2 >=2.2.0'
@@ -43,10 +49,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'MIT + file LICENCE'
-  summary: 'The package implements an algorithm for fast gene set enrichment analysis. Using the fast algorithm allows to make more permutations and get more fine grained p-values, which allows to use accurate stantard approaches to multiple hypothesis correction.'
+  summary: 'Fast Gene Set Enrichment Analysis'
+  description: 'The package implements an algorithm for fast gene set enrichment analysis. Using the fast algorithm allows to make more permutations and get more fine grained p-values, which allows to use accurate stantard approaches to multiple hypothesis correction.'
 extra:
   identifiers:
     - biotools:fgsea
     - doi:10.1101/060012
+  parent_recipe:
+    name: bioconductor-fgsea
+    path: recipes/bioconductor-fgsea
+    version: 1.6.0
+

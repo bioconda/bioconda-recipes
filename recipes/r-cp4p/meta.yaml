@@ -1,0 +1,70 @@
+{% set version = '0.3.6' %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-cp4p
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/cp4p_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/cp4p/cp4p_{{ version }}.tar.gz
+  sha256: 6d21e6c0c194d1016eef953ac2da6880f7e51c17c8043ec7646e5b0fe49cadfd
+
+build:
+  merge_build_host: True  # [win]
+  number: 2
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+
+  host:
+    - r-base
+    - r-mess
+    - bioconductor-limma
+    - bioconductor-multtest
+    - bioconductor-qvalue
+  run:
+    - r-base
+    - r-mess
+    - bioconductor-limma
+    - bioconductor-multtest
+    - bioconductor-qvalue
+
+test:
+  commands:
+    - $R -e "library('cp4p')"           # [not win]
+    - "\"%R%\" -e \"library('cp4p')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=cp4p
+  license: GPL-3
+  summary: Functions to check whether a vector of p-values respects the assumptions of FDR (false
+    discovery rate) control procedures and to compute adjusted p-values.
+  license_family: GPL3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  recipe-maintainers:
+    - conda-forge/r
+
+# Package: cp4p
+# Type: Package
+# Title: Calibration Plot for Proteomics
+# Version: 0.3.5
+# Date: 2016-05-11
+# Author: Quentin Giai Gianetto, Florence Combes, Claire Ramus, Christophe Bruley, Yohann CoutA, Thomas Burger
+# Maintainer: Quentin Giai Gianetto <quentin2g@yahoo.fr>
+# Description: Functions to check whether a vector of p-values respects the assumptions of FDR (false discovery rate) control procedures and to compute adjusted p-values.
+# License: GPL-3
+# Depends: R (>= 3.2.0), MESS, graphics, stats, multtest, qvalue, limma
+# Encoding: UTF-8
+# NeedsCompilation: no
+# Packaged: 2016-05-16 15:21:26 UTC; ligges
+# Repository: CRAN
+# Date/Publication: 2016-05-16 16:21:27

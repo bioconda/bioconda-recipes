@@ -1,0 +1,74 @@
+{% set name = "artic" %}
+{% set version = "1.1.2" %}
+{% set sha256 = "80b3ebb82b5979b3ba92a0f829fce542e950c9dd62ec00be019973e9bc3c36af" %}
+
+package:
+    name: {{ name|lower }}
+    version: {{ version|replace("-", "_") }}
+source:
+  url: https://github.com/artic-network/fieldbioinformatics/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: python -m pip install  --ignore-installed .
+  entry_points:
+    - artic=artic.pipeline:main
+    - align_trim=artic.align_trim:main
+    - align_trim_n=artic.align_trim_n:main
+    - margin_cons=artic.margin_cons:main
+    - margin_cons_medaka=artic.margin_cons_medaka:main
+    - vcfextract=artic.vcfextract:main
+    - artic_vcf_merge=artic.vcf_merge:main
+    - artic_vcf_filter=artic.vcf_filter:main
+    - artic_make_depth_mask=artic.make_depth_mask:main
+    - artic_fasta_header=artic.fasta_header:main
+    - artic_mask=artic.mask:main
+
+requirements:
+  host:
+    - python >=3
+    - pip
+  run:
+    - python >=3
+    - tqdm
+    - requests
+    - biopython >=1.76
+    - clint
+    - pandas <1
+    - pyvcf >=0.6.8
+    - pysam >=0.15.3
+    - bcftools =1.9
+    - bwa =0.7.17
+    - minimap2 =2.17
+    - nanopolish >=0.13.2
+    - samtools =1.9
+    - artic-porechop =0.3.2pre
+    - longshot >=0.4.1
+    - medaka >=0.12.1
+    - muscle >=3.8
+    - pytest
+    - matplotlib-base
+    - seaborn
+
+test:
+  commands:
+    - artic -h
+    - align_trim -h
+    - align_trim_n -h
+    - margin_cons -h
+    - margin_cons_medaka -h
+    - vcfextract -h
+    - artic_vcf_merge -h
+    - artic_vcf_filter -h
+    - artic_make_depth_mask -h
+    - artic_fasta_header -h
+    - artic_mask -h
+
+about:
+    home: https://github.com/artic-network/fieldbioinformatics
+    license: MIT
+    license_file: LICENSE
+    summary: ARTIC pipeline - a bioinformatics pipeline for working with virus sequencing data sequenced with nanopore
+

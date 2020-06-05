@@ -1,16 +1,16 @@
-{% set version = "1.58.0" %}
+{% set version = "1.66.0" %}
 {% set name = "metaArray" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 6d17b3fe4860060594b99b873e476217e7c9f2f4e30501c9f16ca252accaaaea
+  md5: 94607845c643706202136b0e8bafe556
 build:
   number: 0
   rpaths:
@@ -18,12 +18,14 @@ build:
     - lib/
 requirements:
   host:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
-    - 'bioconductor-mergemaid >=2.52.0,<2.54.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-mergemaid >=2.59.0,<2.60.0'
     - r-base
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
-    - 'bioconductor-mergemaid >=2.52.0,<2.54.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-mergemaid >=2.59.0,<2.60.0'
     - r-base
   build:
     - {{ compiler('c') }}
@@ -32,10 +34,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL-2
-  summary: '1) Data transformation for meta-analysis of microarray Data: Transformation of gene expression data to signed probability scale (MCMC/EM methods) 2) Combined differential expression on raw scale: Weighted Z-score after stabilizing mean-variance relation within platform'
+  summary: 'Integration of Microarray Data for Meta-analysis'
+  description: '1) Data transformation for meta-analysis of microarray Data: Transformation of gene expression data to signed probability scale (MCMC/EM methods) 2) Combined differential expression on raw scale: Weighted Z-score after stabilizing mean-variance relation within platform'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-2'
 extra:
   identifiers:
     - biotools:metaarray
     - doi:10.1186/1471-2105-8-364
+  parent_recipe:
+    name: bioconductor-metaarray
+    path: recipes/bioconductor-metaarray
+    version: 1.58.0
+

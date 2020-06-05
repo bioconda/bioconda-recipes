@@ -1,0 +1,66 @@
+{% set version = "1.8.0" %}
+{% set name = "ccfindR" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 47f08b9a3a4ade440417b1ce7642926e
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: BiocStyle, knitr, rmarkdown
+requirements:
+  host:
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - 'bioconductor-singlecellexperiment >=1.10.0,<1.11.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
+    - r-ape
+    - r-base
+    - r-gtools
+    - r-irlba
+    - r-matrix
+    - r-rcolorbrewer
+    - r-rcpp
+    - r-rcppeigen
+    - 'r-rdpack >=0.7'
+    - r-rmpi
+    - r-rtsne
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - 'bioconductor-singlecellexperiment >=1.10.0,<1.11.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
+    - r-ape
+    - r-base
+    - r-gtools
+    - r-irlba
+    - r-matrix
+    - r-rcolorbrewer
+    - r-rcpp
+    - r-rcppeigen
+    - 'r-rdpack >=0.7'
+    - r-rmpi
+    - r-rtsne
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'Cancer Clone Finder'
+  description: 'A collection of tools for cancer genomic data clustering analyses, including those for single cell RNA-seq. Cell clustering and feature gene selection analysis employ Bayesian (and maximum likelihood) non-negative matrix factorization (NMF) algorithm. Input data set consists of RNA count matrix, gene, and cell bar code annotations.  Analysis outputs are factor matrices for multiple ranks and marginal likelihood values for each rank. The package includes utilities for downstream analyses, including meta-gene identification, visualization, and construction of rank-based trees for clusters.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

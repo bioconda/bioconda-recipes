@@ -1,26 +1,31 @@
-{% set version = "1.56.0" %}
+{% set version = "1.64.0" %}
 {% set name = "ROC" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 2814ca229c7dbb74479fbf7b76b20f816a70856beb9146a66346dc82061490a1
+  md5: 0183a4ad18e424284244a44ea66b01df
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: Biobase
 requirements:
   host:
     - r-base
+    - r-knitr
+    - libblas
+    - liblapack
   run:
     - r-base
+    - r-knitr
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
@@ -29,10 +34,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'utilities for ROC, with uarray focus'
+  summary: 'utilities for ROC, with microarray focus'
+  description: 'Provide utilities for ROC, with microarray focus.'
 extra:
   identifiers:
     - biotools:roc
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-roc
+    path: recipes/bioconductor-roc
+    version: 1.56.0
+

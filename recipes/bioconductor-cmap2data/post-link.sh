@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="cMap2data_1.16.0.tar.gz"
+FN="cMap2data_1.24.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.7/data/experiment/src/contrib/cMap2data_1.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/cMap2data_1.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-cmap2data/bioconductor-cmap2data_1.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/cMap2data_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/cMap2data_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cmap2data/bioconductor-cmap2data_1.24.0_src_all.tar.gz"
 )
-MD5="07ed9ef43caf12a0f4250f7c6e2848ff"
+MD5="1fa0b90abfea5756c36fec438ba1d9e2"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,35 +1,46 @@
-{% set version = "0.3.6" %}
-{% set sha256 = "e00f42d0d052941117f678f9ede99ab4da897606b4fa89134c0b2c60ea6798a1" %}
+{% set version = "0.5.7" %}
+{% set sha256 = "3bdc7b88282ec9b01489c965fdd55d7b13058c6604edaeed783c624648e16491" %}
 
 package:
   name: tracy
   version: '{{ version }}'
 
 source:
-  url: https://github.com/gear-genomics/tracy/archive/v{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
-  patches:
-    - Makefile.patch
+  - url: https://github.com/gear-genomics/tracy/archive/v{{ version }}.tar.gz
+    sha256: '{{ sha256 }}'
+  - folder: src/xxsds
+    git_url: https://github.com/xxsds/sdsl-lite.git
+    git_rev: a654b57
 
 build:
-  number: 1
-  skip: True # [osx]
+  number: 0
+
+extra:
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - cmake >=3.10
+    - autoconf
+    - automake
+    - pkg-config
+    - clangdev
+    - llvm-openmp
   host:
     - zlib
     - bzip2
-    - boost ==1.61.0
+    - boost-cpp
     - htslib
-    - sdsl-lite
+    - clangdev
+    - llvm-openmp
   run:
     - zlib
     - bzip2
-    - boost ==1.61.0
+    - boost-cpp
     - htslib
-    - sdsl-lite
 
 test:
   commands:
@@ -37,6 +48,7 @@ test:
 
 about:
   home: https://github.com/gear-genomics/tracy
-  license: GPL-3.0
-  license_family: GPL
-  summary: Basecalling, alignment and deconvolution of Sanger chromatogram trace files
+  license: BSD License
+  license_family: BSD
+  license_file: LICENSE
+  summary: Basecalling, alignment, assembly and deconvolution of Sanger chromatogram trace files
