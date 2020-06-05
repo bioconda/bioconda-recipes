@@ -1,33 +1,13 @@
 {% set name = "bifrost" %}
 {% set version = "1.0.4" %}
 
-package:
-  name: {{ name|lower }}
-  version: {{ version }}
-
 source:
   url: https://github.com/winni2k/{{ name|lower }}/archive/v{{ version }}.tar.gz
   sha256: 94ac84861c36bc3fb9ea7b4a630ce391c79236289e5fab7aa627dc07b286f013
 
 build:
-  number: 0
+  number: 1
   skip: true  # [osx]
-
-requirements:
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - cmake
-  host:
-    - zlib
-    - pthread-stubs
-  run:
-    - zlib
-    - pthread-stubs
-
-test:
-  commands:
-    - Bifrost
 
 about:
    home: https://github.com/pmelsted/bifrost
@@ -39,3 +19,34 @@ about:
 extra:
    identifiers:
      - doi:10.1101/695338
+
+outputs:
+  - name: {{ name|lower }}
+    version: {{ version }}
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - cmake
+      host:
+        - zlib
+        - pthread-stubs
+      run:
+        - zlib
+        - pthread-stubs
+    test:
+      commands:
+        - Bifrost
+
+  - name: {{ name|lower }}-native
+    version: {{ version }}
+    requirements:
+      run:
+        - zlib=1.2.11
+        - pthread-stubs
+	- pip=20.*
+	- pip:
+	  - bifrost-src
+    test:
+      commands:
+        - Bifrost
