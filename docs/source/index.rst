@@ -28,7 +28,7 @@ packages. Users can add additional channels from which to install
 software packages not available in the defaults channel. Bioconda is
 one such channel specializing in bioinformatics software.
 
-**Browse packages in the Bioconda channel:** `Recipe Index <conda-recipe_index.html>`_
+**Browse packages in the Bioconda channel:** `Package Index <conda-package_index.html>`_
 
 Each package added to Bioconda also has a corresponding Docker
 `BioContainer`_ automatically created and uploaded to `Quay.io`_. A

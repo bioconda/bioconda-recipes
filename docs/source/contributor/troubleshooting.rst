@@ -1,7 +1,7 @@
 Troubleshooting
 ---------------
 
-.. hightlight:: bash
+.. highlight:: bash
 
 .. contents::
    :local:
@@ -249,7 +249,7 @@ Example:
     make CC=$CC
  
 - Since it *adds* ``-lz`` to ``LDFLAGS`` to enable linking against
-  `libz`, you do not need to do anything here.
+  ``libz``, you do not need to do anything here.
 
 - The ``CFLAGS`` are more complicated. You can patch the
   Makefile to append to ``CFLAGS`` instead of overwriting::

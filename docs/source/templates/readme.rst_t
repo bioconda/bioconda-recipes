@@ -7,6 +7,7 @@
 
 .. conda:recipe:: {{recipe.reldir}}
    :replaces_section_title:
+   :noindex:
 
    {{ (about.summary or "") | rst_escape | indent(3)}}
 
@@ -33,9 +34,33 @@
 
    |downloads_{{package.name}}| |docker_{{package.name}}|
 
-   :versions: {{ package.versions | join(", ") }}
+   :versions:
+      {% set max_versions_visible = 9 %}
+      {% if package.versions|length > max_versions_visible %}
+      .. raw:: html
+
+         <details><summary><span class="truncated-version-list">
+         {%- for version in package.versions[:max_versions_visible] -%}
+            <code>{{ version }}</code>{{ ",\xa0 " }}
+         {%- endfor -%}
+            </span></summary>
+      {% endif %}
+
+      {% for version in package.versions -%}
+        ``{{ version }}``
+        {%- if not loop.last -%}
+          {{ ",\xa0 " }}
+        {%- endif -%}
+      {%- endfor %}
+
+      {% if package.versions|length > max_versions_visible %}
+      .. raw:: html
+
+         </details>
+      {% endif %}
+
    {% for dependency in package.depends %}
-   :depends {{dependency[0]}}: {{dependency[1]}}
+   :depends {{dependency[0]}}: {% if dependency[1] %}``{{ dependency[1].replace(" ", "\xa0") }}``{% endif %}
    {%- endfor %}
    :requirements:
 

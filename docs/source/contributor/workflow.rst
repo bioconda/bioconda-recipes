@@ -95,18 +95,19 @@ documentation.
 Once you have opened a PR, our build system will start testing your
 changes. The recipes you have added or modified will be linted and
 built. Unless you are very lucky, you will encounter some errors
-during the build you will have to fix. Repeat :ref:`make_some_edits` and
+during the build you will have to fix. Repeat :ref:`make_edits` and
 :ref:`push_changes` as often as needed.
 
 Eventually, your build will "turn green". If you are a member of
 Bioconda, you can now add the ``please review & merge`` label to
-submit your PR for review. Otherwise, just ask on Gitter_ or ping
-``@bioconda/core`.
+submit your PR for review. Otherwise, just ask on `Gitter`_ or ping
+``@bioconda/core``.
 
 Once you changes have been approved, they will be "merged" into our
 main repository and the altered packages uploaded to our channel.
 
 .. _`About Pull Requests`: https://help.github.com/articles/about-pull-requests/
+.. _`Gitter`: https://gitter.im/bioconda/lobby
 
 
 .. _delete_branch:

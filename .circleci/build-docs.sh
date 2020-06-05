@@ -51,13 +51,16 @@ rm -rf $STAGING
 mkdir -p $STAGING
 
 SHA=$(git rev-parse --verify HEAD)
-git clone $REPO $STAGING
+git clone $REPO $STAGING --depth=1
 cd $STAGING
 git checkout $BRANCH || git checkout --orphan $BRANCH
 rm -r *
 
 # build docs and copy over to tmpdir
 cd ${DOCSOURCE}
+# NOTE: With more build jobs (e.g., "-j8") the "Required By:" entries in the
+#       package index do not work. DO NOT change "-j1" unless that gets fixed!
+#       ref: https://github.com/bioconda/bioconda-utils/pull/658#issuecomment-639399930
 make clean html SPHINXOPTS="-T -j1" 2>&1 | grep -v "WARNING: nonlocal image URL found:"
 cp -r ${DOCHTML}/* $STAGING
 

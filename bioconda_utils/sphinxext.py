@@ -274,7 +274,8 @@ class CondaObjectDescription(ObjectDescription):
     option_spec = {
         'arch': rst.directives.unchanged,
         'badges': rst.directives.unchanged,
-        'replaces_section_title': rst.directives.flag
+        'replaces_section_title': rst.directives.flag,
+        'noindex': rst.directives.flag,
     }
 
     def handle_signature(self, sig: str, signode: addnodes.desc) -> str:
@@ -380,12 +381,12 @@ class CondaPackage(CondaObjectDescription):
     ]
 
 
-class RecipeIndex(Index):
-    """Index of Recipes"""
+class PackageIndex(Index):
+    """Index of Packages"""
 
-    name = "recipe_index"
-    localname = "Recipe Index"
-    shortname = "Recipes"
+    name = "package_index"
+    localname = "Package Index"
+    shortname = "Packages"
 
     def generate(self, docnames: Optional[List[str]] = None):
         """build index"""
@@ -398,7 +399,10 @@ class RecipeIndex(Index):
             entries = content.setdefault(name[0].lower(), [])
             subtype = 0 # 1 has subentries, 2 is subentry
             entries.append((
-                name, subtype, docname, labelid, 'extra', 'qualifier', 'description'
+                # TODO: Add meaningful info for extra/qualifier/description
+                #       fields, e.g., latest package version.
+                # name, subtype, docname, labelid, 'extra', 'qualifier', 'description',
+                name, subtype, docname, labelid, '', '', '',
             ))
 
         collapse = True
@@ -428,7 +432,7 @@ class CondaDomain(Domain):
         'backrefs': {}  #: package_name -> docname, package_name
     }
     indices = [
-        RecipeIndex
+        PackageIndex
     ]
 
     def clear_doc(self, docname: str):
@@ -790,9 +794,10 @@ class LintDescriptionDirective(SphinxDirective):
 
     @classmethod
     def finalize(cls, app, env):
-        if env.bioconda_lint_checks:
-            for check in env.bioconda_lint_checks:
-                logger.error("Undocumented lint checks: %s", check)
+        # TODO: Check why 'bioconda_lint_checks' is not added to env in
+        #       parallel runs (i.e., raises AttributeError without getattr).
+        for check in getattr(env, 'bioconda_lint_checks', {}):
+            logger.error("Undocumented lint checks: %s", check)
 
 
 def setup(app):

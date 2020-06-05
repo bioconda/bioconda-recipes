@@ -5,6 +5,13 @@ import datetime
 import os
 import sys
 
+# TODO: Remove the following filterwarnings when upstream issue is resolved:
+#       https://github.com/agronholm/sphinx-autodoc-typehints/issues/133
+import sphinx.util.inspect
+import sphinx_autodoc_typehints
+if getattr(sphinx_autodoc_typehints, 'Signature') is sphinx.util.inspect.Signature:
+    import warnings
+    warnings.filterwarnings('ignore', message='sphinx.util.inspect.Signature\(\) is deprecated')
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -12,8 +19,8 @@ import sys
 sys.path.insert(0, os.path.abspath('.'))
 
 def setup(app):
-    app.add_stylesheet("style.css")
-    app.add_stylesheet("font-awesome-4.7.0/css/font-awesome.min.css")
+    app.add_css_file("style.css")
+    app.add_css_file("font-awesome-4.7.0/css/font-awesome.min.css")
 
 
 # -- General configuration ------------------------------------------------
@@ -152,7 +159,7 @@ html_sidebars = {
 html_context = {
     'extra_nav_items': {
         'Bioconda @ Github' : 'https://github.com/bioconda/bioconda-recipes',
-        'Recipe Index': 'conda-recipe_index',
+        'Package Index': 'conda-package_index',
         '<img alt="Gitter" src="https://img.shields.io/gitter/room/bioconda/Lobby.svg">':
         'https://gitter.im/bioconda/Lobby'
     }
@@ -301,6 +308,8 @@ extlinks = {
     'biotools': ('https://bio.tools/%s', ''),
     'doi': ('https://doi.org/%s', ''),
     'debian': ('https://tracker.debian.org/pkg/%s', ''),
+    'pmid': ('https://www.ncbi.nlm.nih.gov/pubmed/%s', ''),
+    'rrid': ('https://scicrunch.org/resolver/%s', ''),
 }
 
 # add document name before automatic section title reference
