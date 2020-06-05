@@ -308,6 +308,8 @@ extlinks = {
     'biotools': ('https://bio.tools/%s', ''),
     'doi': ('https://doi.org/%s', ''),
     'debian': ('https://tracker.debian.org/pkg/%s', ''),
+    'pmid': ('https://www.ncbi.nlm.nih.gov/pubmed/%s', ''),
+    'rrid': ('https://scicrunch.org/resolver/%s', ''),
 }
 
 # add document name before automatic section title reference
