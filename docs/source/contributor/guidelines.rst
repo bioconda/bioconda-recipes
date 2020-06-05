@@ -299,7 +299,7 @@ and a post-link script (see https://github.com/bioconda/bioconda-utils/pull/169
 for details). Typically the resulting recipe can be used without modification,
 though dependencies may also need recipes. Recipes for dependencies with an
 ``r-`` prefix should be created at Conda-Forge unless the CRAN package has a
-Bioconductor dependency; see `guidelines:R (CRAN)` above.
+Bioconductor dependency; see :ref:`r-cran` above.
 
 - typical bioconductor recipe: `bioconductor-limma/meta.yaml
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/bioconductor-limma>`_

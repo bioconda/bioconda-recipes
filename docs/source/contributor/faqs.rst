@@ -60,7 +60,7 @@ How is Circle CI set up and configured?
 - ``.circleci/config.yml`` is read by the Circle CI worker.
 
 - The worker runs ``.circleci/setup.sh``. This installs conda, adds
-  channels, and installs :doc:`bioconda-utils`
+  channels, and installs :doc:`../developer/bioconda-utils`
 
 - The worker runs tests defined in ``.circleci/config.yml``.
 

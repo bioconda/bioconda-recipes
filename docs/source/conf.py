@@ -5,6 +5,13 @@ import datetime
 import os
 import sys
 
+# TODO: Remove the following filterwarnings when upstream issue is resolved:
+#       https://github.com/agronholm/sphinx-autodoc-typehints/issues/133
+import sphinx.util.inspect
+import sphinx_autodoc_typehints
+if getattr(sphinx_autodoc_typehints, 'Signature') is sphinx.util.inspect.Signature:
+    import warnings
+    warnings.filterwarnings('ignore', message='sphinx.util.inspect.Signature\(\) is deprecated')
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the

@@ -26,7 +26,7 @@ Recipes may contain a section listing lint checks to be disabled::
     skip-lints:
       - uses_setuptools  # uses pkg_resoures during run time
 
-For example, :ref:`linting:uses_setuptools` will trigger if a recipe
+For example, `uses_setuptools` will trigger if a recipe
 requires ``setuptools`` in its ``run`` section. While the vast
 majority of tools only need ``setuptools`` during installation, there
 are some exceptions to this rule. A tool accessing the
