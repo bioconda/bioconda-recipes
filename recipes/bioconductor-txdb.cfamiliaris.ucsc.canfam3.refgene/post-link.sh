@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="TxDb.Cfamiliaris.UCSC.canFam3.refGene_3.10.0.tar.gz"
+FN="TxDb.Cfamiliaris.UCSC.canFam3.refGene_3.11.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/TxDb.Cfamiliaris.UCSC.canFam3.refGene_3.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/TxDb.Cfamiliaris.UCSC.canFam3.refGene_3.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.cfamiliaris.ucsc.canfam3.refgene/bioconductor-txdb.cfamiliaris.ucsc.canfam3.refgene_3.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/TxDb.Cfamiliaris.UCSC.canFam3.refGene_3.11.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TxDb.Cfamiliaris.UCSC.canFam3.refGene_3.11.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.cfamiliaris.ucsc.canfam3.refgene/bioconductor-txdb.cfamiliaris.ucsc.canfam3.refgene_3.11.0_src_all.tar.gz"
 )
-MD5="81685d64cda4307eca2b522706047afb"
+MD5="bf6af84c14a30ad5d01f3678246b1180"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

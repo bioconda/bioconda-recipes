@@ -1,11 +1,11 @@
-{% set version = "1.1.2" %} # put in correct version here
+{% set version = "1.2.2" %} # put in correct version here
 {% set name = "panaroo" %}
 package:
   name: {{ name|lower }}
   version: {{ version }}
 source:
   url: https://github.com/gtonkinhill/{{ name|lower }}/archive/v{{ version }}.tar.gz
-  sha256: b128069c8071d3a374df0b8557eb10e0760a1af070d90e408abca598d857570c
+  sha256: 76b26af0914e4bb3044f7d009e8879b574815a3e5a9c85fff5a8d02a737c07ab
 build:
   number: 0
   noarch: python
@@ -19,6 +19,7 @@ build:
     - panaroo-spydrpick = panaroo.spydrpick:main
     - panaroo-img = panaroo.estimate_img_params:main
     - panaroo-fmg = panaroo.estimate_many_genes_params:main
+    - panaroo-msa = panaroo.post_run_alignment_gen:main
 requirements:
   host:
     - python >=3
@@ -36,11 +37,19 @@ requirements:
     - joblib
     - tqdm
     - python-edlib
-    - matplotlib
+    - matplotlib-base
     - plotly
     - dendropy
-    - cd-hit
+    - intbitset
     - mafft
+    - mash
+    - prokka
+    - cd-hit
+    # Work around cd-hit not always allowing multiple threads
+    - zlib
+    - openmp 
+    - llvm-openmp  # [osx]
+
 test:
   imports:
     - panaroo
@@ -56,4 +65,4 @@ about:
   home: https://gtonkinhill.github.io/panaroo
   license: MIT
   license_file: LICENSE
-  summary: 'panaroo - an updated pipeline for pan-genome investigation'
+  summary: 'panaroo - an updated pipeline for pangenome investigation'
