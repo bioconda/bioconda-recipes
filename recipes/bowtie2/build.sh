@@ -2,6 +2,7 @@
 
 LDFLAGS=""
 CXXFLAGS="$CXXFLAGS -std=c++11"
+mv VERSION VERSION.txt
 make CXX=$CXX CPP=$CXX CC=$CC LDLIBS="-L$PREFIX/lib -lz -ltbb -ltbbmalloc -lpthread"
 
 binaries="\
