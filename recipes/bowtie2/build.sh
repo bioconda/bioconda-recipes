@@ -1,8 +1,7 @@
 #!/bin/bash
 
 LDFLAGS=""
-CXXFLAGS="$CXXFLAGS -std=c++11"
-mv VERSION VERSION.txt
+mv VERSION VERSION.txt  # Causes issues with C++20
 make CXX=$CXX CPP=$CXX CC=$CC LDLIBS="-L$PREFIX/lib -lz -ltbb -ltbbmalloc -lpthread"
 
 binaries="\
