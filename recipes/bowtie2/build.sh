@@ -1,6 +1,7 @@
 #!/bin/bash
 
 LDFLAGS=""
+CXXFLAGS="$CXXFLAGS -std=c++11"
 make CXX=$CXX CPP=$CXX CC=$CC LDLIBS="-L$PREFIX/lib -lz -ltbb -ltbbmalloc -lpthread"
 
 binaries="\
