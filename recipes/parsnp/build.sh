@@ -3,24 +3,8 @@
 
 mkdir -p  "$PREFIX/bin"
 
-cd muscle
 ./autogen.sh
-
-if [ `uname` == Darwin ]; then
-    ./configure --prefix=$PWD LFLAGS='-fopenmp' CXXFLAGS='-fopenmp' --disable-shared 
-else
-    ./configure --prefix=$PWD CXXFLAGS='-fopenmp'
-fi
-make install
-
-cd ..
-./autogen.sh
-export ORIGIN=\$ORIGIN
-if [ `uname` == Darwin ]; then
-    ./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib' CXXFLAGS='-fopenmp' LFLAGS='-fopenmp'
-else
-    ./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib' CXXFLAGS='-fopenmp'
-fi
+./configure CXXFLAGS='-fopenmp' --with-libmuscle=${CONDA_PREFIX}/include/libMUSCLE-3.7
 make LDADD='-lMUSCLE-3.7' 
 make install
 
