@@ -8,4 +8,4 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 
 # run the install script -C
 ./install.sh -i $PREFIX -C
-
+cp exe/* $PREFIX/bin/
