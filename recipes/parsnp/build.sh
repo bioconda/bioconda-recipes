@@ -17,7 +17,7 @@ cd ..
 ./autogen.sh
 export ORIGIN=\$ORIGIN
 if [ `uname` == Darwin ]; then
-    ./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib' CXXFLAGS='-fopenmp' LFLAGS='-fopenmp' || cat config.log
+    ./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib' CXXFLAGS='-fopenmp' LFLAGS='-fopenmp'
 else
     ./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib' CXXFLAGS='-fopenmp'
 fi
