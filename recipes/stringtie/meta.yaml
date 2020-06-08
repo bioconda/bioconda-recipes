@@ -1,8 +1,14 @@
-{% set version = "2.0" %}
+{% set name = "StringTie" %}
+{% set version = "2.1.2" %}
+{% set sha256 = "0ecf14f204da612766b6ac735bf42f142e18f1433d56205fb7e5398e35978d92" %}
 
 package:
-  name: stringtie
+  name: {{ name|lower }}
   version: {{ version }}
+
+source:
+  url: https://ccb.jhu.edu/software/stringtie/dl/stringtie-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
@@ -12,28 +18,27 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - zlib
     # curl is used to download prepDE.py
     - curl
   run:
-    - zlib
     - python
-
-source:
-  sha256: 654da1b85a1eca9ad0d410d0e356ee8f05c62d89d6d4385b07bcd0d03c6b25eb
-  url: http://ccb.jhu.edu/software/stringtie/dl/stringtie-{{ version }}.tar.gz
 
 test:
   commands:
-    - "stringtie 2>&1 | grep Assemble"
+    - stringtie 2>&1 | grep "Assemble"
     - prepDE.py --help
 
 about:
   home: https://ccb.jhu.edu/software/stringtie/
-  license: Artistic License 2.0
-  summary: Transcriptome assembly and quantification for RNA-seq
+  license: MIT
+  license_file: LICENSE
+  license_family: MIT
+  summary: "StringTie is a fast and highly efficient assembler of RNA-Seq alignments into potential transcripts."
+  dev_url: https://github.com/gpertea/stringtie
 
 extra:
   identifiers:
     - biotools:StringTie
     - doi:10.1038/nbt.3122
+    - doi:10.1038/nprot.2016.095
+    - doi:10.1186/s13059-019-1910-1
