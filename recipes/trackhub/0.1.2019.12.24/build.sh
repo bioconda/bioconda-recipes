@@ -1,3 +1,3 @@
 #!/bin/bash
 
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+$PYTHON "${SRC_DIR}/setup.py install --single-version-externally-managed --record=record.txt
