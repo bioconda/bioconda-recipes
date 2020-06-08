@@ -1,50 +1,57 @@
-{% set virsorterVersion = "1.0.6" %}
-{% set virsorterSha256 = "a47202eb4abbfc7643519f891d52c55725ccceb2e4c45b8564b9d66b8f6615e0" %}
+{% set version = "2.0.alpha" %}
+{% set sha256 = "1ab774be1fc0e4f18237ebac94c4571b15373a97a159f617ce72320280caecb6" %}
+
 
 package:
   name: virsorter
-  version: {{ virsorterVersion }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/simroux/VirSorter/archive/v{{ virsorterVersion }}.tar.gz
-  sha256: {{ virsorterSha256 }}
+  url: https://github.com/jiarong/VirSorter2/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
+  entry_points:
+    - virsorter=virsorter.virsorter:cli
+  noarch: generic
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+
 
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - perl
-    - perl-bioperl
+    - python >3.6
+    - pip
+
   run:
-    - perl
-    - blast
-    - diamond =0.9.14
-    - hmmer =3.1b2
-    - mcl =14.137
-    - metagene_annotator
-    - muscle
-    - perl-bioperl
-    - perl-file-which
-    - perl-list-moreutils
-    - perl-parallel-forkmanager
+    - python >3.6
+    - ruamel.yaml =0.16.6
+    - snakemake-minimal =5.16.0
+    - click >=7
+    - git
+    - cookiecutter
 
 test:
+  imports:
+    - virsorter
   commands:
-    - wrapper_phage_contigs_sorter_iPlant.pl --help 2>&1 | grep "Required Arguments"
+{% set export_lang = "export LC_ALL=en_US.UTF-8 && export LANG=en_US.UTF-8" %}
+    - {{ export_lang }} && virsorter --version
+    - {{ export_lang }} && virsorter setup --help
+    - {{ export_lang }} && virsorter run --help
+    - {{ export_lang }} && virsorter train-feature --help
+    - {{ export_lang }} && virsorter train-model --help
 
 about:
-  home: https://github.com/simroux/VirSorter
+  home: https://github.com/jiarong/VirSorter2
+  dev_url: https://github.com/jiarong/VirSorter2/virsorter
   license: GPL-2.0
   license_family: GPL
   license_file: LICENSE
-  summary: Mining viral signal from microbial genomic data.
-  dev_url: https://github.com/simroux/VirSorter
+  summary: VirSorter2 -- A multi-classifier, expert-guided approach to detect diverse DNA and RNA virus genomes
 
 extra:
-  identifiers:
-    - doi:10.7717/peerj.985
   recipe-maintainers:
-    - wclose
+    - jiarong
+  container:
+    extended-base: true  # unicode problem with click
