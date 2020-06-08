@@ -5,7 +5,7 @@ mkdir -p  "$PREFIX/bin"
 
 ./autogen.sh
 #>&2 ls ${CONDA_PREFIX}/*/*
-./configure LDFLAGS='-L${CONDA_PREFIX}/lib' CXXFLAGS='-fopenmp' --with-libmuscle=${CONDA_PREFIX}/include/libMUSCLE-3.7
+./configure LDFLAGS='-I${CONDA_PREFIX}/include/libMUSCLE-3.7' CXXFLAGS='-fopenmp' --with-libmuscle=${CONDA_PREFIX}/include/libMUSCLE-3.7
 || >&2 cat config.log
 make LDADD='-lMUSCLE-3.7' 
 make install
