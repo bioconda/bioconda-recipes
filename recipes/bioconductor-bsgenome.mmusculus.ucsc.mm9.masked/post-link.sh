@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="BSgenome.Mmusculus.UCSC.mm9.masked_1.3.99.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/BSgenome.Mmusculus.UCSC.mm9.masked_1.3.99.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/BSgenome.Mmusculus.UCSC.mm9.masked_1.3.99.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Mmusculus.UCSC.mm9.masked_1.3.99.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mmusculus.ucsc.mm9.masked/bioconductor-bsgenome.mmusculus.ucsc.mm9.masked_1.3.99_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mmusculus.ucsc.mm9.masked/bioconductor-bsgenome.mmusculus.ucsc.mm9.masked_1.3.99_src_all.tar.gz"

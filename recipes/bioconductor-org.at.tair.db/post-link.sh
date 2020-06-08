@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="org.At.tair.db_3.10.0.tar.gz"
+FN="org.At.tair.db_3.11.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/org.At.tair.db_3.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/org.At.tair.db_3.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-org.at.tair.db/bioconductor-org.at.tair.db_3.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/org.At.tair.db_3.11.1.tar.gz"
+  "https://bioarchive.galaxyproject.org/org.At.tair.db_3.11.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-org.at.tair.db/bioconductor-org.at.tair.db_3.11.1_src_all.tar.gz"
 )
-MD5="cd4e075db0ea16e55baf915f86d50e91"
+MD5="24ed28ac46a77cd79365ed982e224dd1"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
