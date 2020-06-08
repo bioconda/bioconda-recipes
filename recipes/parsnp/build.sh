@@ -9,7 +9,7 @@ mkdir -p  "$PREFIX/bin"
 >&2 ls ${CONDA_PREFIX}/include/libMUSCLE-3.7/*/*
 >&2 echo $LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=${CONDA_PREFIX}/lib:$LD_LIBRARY_PATH
-./configure LDFLAGS='-I${CONDA_PREFIX}/include/libMUSCLE-3.7' CXXFLAGS='-fopenmp' --with-libmuscle=${CONDA_PREFIX}/include/libMUSCLE-3.7 || true
+./configure CXXFLAGS='-fopenmp' --with-libmuscle=${CONDA_PREFIX}/include/libMUSCLE-3.7 || true
 >&2 cat config.log
 make LDADD='-lMUSCLE-3.7' 
 make install
