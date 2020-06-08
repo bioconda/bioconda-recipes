@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
 # install glibc 214
-source ${PREFIX}/metabinkit_env.sh
+export LD_LIBRARY_PATH=${PREFIX}/lib:$LD_LIBRARY_PATH
+
 
