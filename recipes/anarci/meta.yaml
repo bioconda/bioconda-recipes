@@ -16,7 +16,12 @@ build:
   noarch: python
   script:
     - "{{ PYTHON }} setup.py install"
-    # muscle is not needed at runtime (but patching setup.py to remove it will make the building pipeline to fail)
+    # muscle is not needed at runtime but:
+    #  - patching setup.py to remove these binaries will make the building pipeline to fail
+    #  - these binaries make the package "noarch impossible"
+    #  - these binaries would clash with the "muscle" package
+    # solution: remove them after the build pipeline has run,
+    #           so they do not make it to the final package
     - rm -f ${PREFIX}/bin/muscle ${PREFIX}/bin/muscle_macOS
 
 requirements:
