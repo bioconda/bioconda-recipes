@@ -1,53 +1,58 @@
 {% set name = "bohra" %}
-{% set version = "1.1.8" %}
+{% set version = "1.2.12" %}
+{% set sha256 = "6da03287cb440e293d7c6fc3545ba51a2022a12d2ffe22703d111a0c5cbbf5d3" %}
 
 package:
-  name: "{{ name|lower }}"
+  name: "{{ name }}"
   version: "{{ version }}"
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "2df972f54240d5149e6acdfce15333242bfeb7aec09ac19de2c0575417612da0"
+  sha256: "{{ sha256 }}"
 
 build:
   noarch: python
   number: 0
   entry_points:
     - bohra=bohra.bohra:main
-  script: "sed -i.bak '35d;34d;28d' setup.py; {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.7
     - pip
   run:
+    - python >=3.7
     - biopython >=1.70
+    - snakemake >=5.10
+    - pandas >=1.0
+    - numpy >=1.18.1
+    - svgwrite
     - jinja2
-    - numpy
     - packaging
-    - pandas >=0.23.0
     - psutil
     - pytest-runner
     - pytest
-    - python >=3.6
     - sh
-    - snakemake >=5.4.0
-    - svgwrite
-    - snippy >=4.4.3
-    - shovill >=1.0.4
-    - roary
-    - prokka
-    - kraken2
-    - abricate
-    - mlst
+    - snippy ==4.4.5
+    - shovill >=1.0.9
+    - prokka >=1.14.6
+    - abricate >=0.9.9
+    - mlst >=2.19
+    - snp-dists ==0.6.3
     - iqtree
     - seqtk
-    - snp-dists >=0.6.3
+    - roary
+    - kraken2
+    - abritamr
+    - mash
+    - toml
 
 test:
   imports:
     - bohra
   commands:
+    - bohra --version | grep -F '{{ version }}'
     - bohra --help
 
 about:
@@ -55,8 +60,9 @@ about:
   license: "GNU General Public v3 (GPLv3)"
   license_family: "GPL3"
   license_file: "LICENSE.txt"
-  summary: "A bioinformatics pipeline for analysing short read Illumina data microbiological public health."
+  summary: "Pipeline for analysing Illumina data for microbiological public health."
 
 extra:
   recipe-maintainers:
     - kristyhoran
+    - tseemann

@@ -1,7 +1,7 @@
 {% set name = "rgi" %}
 {% set version = "5.1.0" %}
 {% set sha256 = "806ac75c38170b688222d264391e685b96a08bc77278ff9130be3797b56de2e9" %}
-{% set sha256database = "98d336e11bd84e2253c76b32d1f9371b0560c82053f4ce3cc17e91d1ca203c98" %}
+{% set sha256database = "c591cf24cbc16491e8ba256e03f7d4608c0576dc5c4f3eeae5b80b3967d4763a" %}
 
 package:
   name: {{ name }}
@@ -10,61 +10,52 @@ package:
 source:
     - url: https://github.com/arpcard/rgi/archive/{{ version }}.tar.gz
       sha256: {{ sha256 }}
-    - url: https://card.mcmaster.ca/download/0/broadstreet-v3.0.4.tar.gz
+    - url: https://card.mcmaster.ca/download/0/broadstreet-v3.0.7.tar.gz
       sha256: {{ sha256database }}
       folder: card-data
 
 build:
-  skip: True # [py27 or py == 37 ]
-  number: 0
+  noarch: python
+  number: 1
 
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - python
-    - blast ==2.6.0
+    - python >=3.5,<3.7
+    - pip
+    # setup.py uses these for some reason
+    - biopython 1.72
     - six >=1.7.0
-    - zlib
-    - prodigal ==2.6.3
-    - diamond ==0.8.36
-    - biopython ==1.72
     - filetype >=1.0.0
-    - pytest >=3.0.0
-    - mock >=2.0.0
     - pandas >=0.15.0
-    - matplotlib >=2.1.2
+    - matplotlib-base >=2.1.2
     - seaborn >=0.8.1
     - pyfaidx >=0.5.4.1
     - pyahocorasick >=1.1.7
-    - setuptools
-    
   run:
     # RGI requires these exact versions of blast prodigal and diamond, or else --alignment_mode DIAMOND fails
-    - python
-    - blast ==2.6.0
+    - python >=3.5,<3.7
+    - blast 2.9.0
     - six >=1.7.0
     - zlib
-    - prodigal ==2.6.3
-    - diamond ==0.8.36
-    - biopython ==1.72
+    - prodigal 2.6.3
+    - diamond 0.8.36
+    - biopython 1.72
     - filetype >=1.0.0
-    - pytest >=3.0.0
-    - mock >=2.0.0
     - pandas >=0.15.0
-    - matplotlib >=2.1.2
+    - matplotlib-base >=2.1.2
     - seaborn >=0.8.1
     - pyfaidx >=0.5.4.1
     - pyahocorasick >=1.1.7
-    - bowtie2 >=2.3.4.3
-    - samtools >=1.9
-    - bamtools >=2.5.1
+    - oligoarrayaux 3.8
+    - samtools 1.9
+    - bamtools 2.5.1
     - bedtools >=2.28.0
+    - bowtie2 >=2.3.4.3
     - bwa >=0.7.17
     
 test:
   commands:
-    - rgi database -v | grep "3.0.4"
+    - rgi database -v | grep "3.0.7"
     - rgi load -h
     - rgi main -h
     - rgi tab -h
