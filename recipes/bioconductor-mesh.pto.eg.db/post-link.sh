@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="MeSH.Pto.eg.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MeSH.Pto.eg.db_1.13.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.Pto.eg.db_1.13.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Pto.eg.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.pto.eg.db/bioconductor-mesh.pto.eg.db_1.13.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.pto.eg.db/bioconductor-mesh.pto.eg.db_1.13.0_src_all.tar.gz"
 )
 MD5="ed5da5dc0869b7bd47f11a2d55a7d3e3"

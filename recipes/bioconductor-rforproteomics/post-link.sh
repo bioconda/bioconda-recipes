@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RforProteomics_1.23.1.tar.gz"
+FN="RforProteomics_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/RforProteomics_1.23.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/RforProteomics_1.23.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rforproteomics/bioconductor-rforproteomics_1.23.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/RforProteomics_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RforProteomics_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rforproteomics/bioconductor-rforproteomics_1.26.0_src_all.tar.gz"
 )
-MD5="fbfa7bc8cf578502ec46e75c61cc4ba1"
+MD5="81c3a061f39d82143fc48fa0637b770e"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

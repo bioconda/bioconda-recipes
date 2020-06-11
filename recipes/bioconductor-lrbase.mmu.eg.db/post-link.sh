@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="LRBase.Mmu.eg.db_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/LRBase.Mmu.eg.db_1.2.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/LRBase.Mmu.eg.db_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/LRBase.Mmu.eg.db_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-lrbase.mmu.eg.db/bioconductor-lrbase.mmu.eg.db_1.2.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-lrbase.mmu.eg.db/bioconductor-lrbase.mmu.eg.db_1.2.0_src_all.tar.gz"
 )
 MD5="7fc903b9bde79b241e4591d0ab18a609"

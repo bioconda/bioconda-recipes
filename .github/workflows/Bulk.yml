@@ -11,19 +11,19 @@ jobs:
       fail-fast: false
       max-parallel: 15
       matrix:
-        runner: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+        runner: [0, 1, 2, 3, 4, 5, 6, 7]
     steps:
     - uses: actions/checkout@v1
 
     - name: Fetch common.sh
       run: |
-        wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
+        wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/common.sh
 
     - name: Restore cache
       id: cache
       uses: actions/cache@v1
       with:
-        path: /home/runner/miniconda
+        path: /home/runner/bioconda
         key: ${{ runner.os }}-BULK-${{ hashFiles('**/common.sh') }}
 
     - name: Setup Bioconda-utils
@@ -39,9 +39,15 @@ jobs:
         OSTYPE: "linux-gnu"
         CI: "true"
       run: |
-        export PATH=/home/runner/miniconda/envs/bioconda/bin:$PATH
+        . /home/runner/bioconda/etc/profile.d/conda.sh
+        conda activate base
+        echo '============'
+        conda info --all
+        conda config --show-sources
+        python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+        echo '============'
         bioconda-utils build recipes config.yml \
-          --worker-offset ${{ matrix.runner }} --n-workers 15 \
+          --worker-offset ${{ matrix.runner }} --n-workers 8 \
           --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
         conda clean -y --all
 
@@ -50,21 +56,21 @@ jobs:
     runs-on: macOS-latest
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 5
       matrix:
-        runner: [0, 1]
+        runner: [0, 1, 2, 3, 4]
     steps:
     - uses: actions/checkout@v1
 
     - name: Fetch common.sh
       run: |
-        wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
+        wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/common.sh
 
     - name: Restore cache
       id: cache
       uses: actions/cache@v1
       with:
-        path: /Users/runner/miniconda
+        path: /Users/runner/bioconda
         key: ${{ runner.os }}--BULK-${{ hashFiles('**/common.sh') }}
 
     - name: Setup Bioconda-utils
@@ -73,8 +79,9 @@ jobs:
 
     - name: OSX stuff
       run: |
+        . /Users/runner/bioconda/etc/profile.d/conda.sh
+        conda activate base
         # This is taken from conda-forge-ci-setup
-        export PATH=/Users/runner/miniconda/envs/bioconda/bin:/Users/runner/miniconda/condabin:$PATH
         curl -L -O https://github.com/phracker/MacOSX-SDKs/releases/download/10.13/MacOSX10.9.sdk.tar.xz
         tar -xf MacOSX10.9.sdk.tar.xz -C /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs
         # set minimum sdk version to our target
@@ -95,8 +102,14 @@ jobs:
         OSTYPE: "darwin"
         CI: "true"
       run: |
-        export PATH=/Users/runner/miniconda/envs/bioconda/bin:$PATH
+        . /Users/runner/bioconda/etc/profile.d/conda.sh
+        conda activate base
+        echo '============'
+        conda info --all
+        conda config --show-sources
+        python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+        echo '============'
         bioconda-utils build recipes config.yml \
-          --worker-offset ${{ matrix.runner }} --n-workers 2 \
+          --worker-offset ${{ matrix.runner }} --n-workers 5 \
           --anaconda-upload
         conda clean -y --all
