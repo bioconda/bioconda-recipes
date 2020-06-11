@@ -1,11 +1,15 @@
 {% set version = "0.9" %}
+{% set sha256 = "cf842d5f96c71c0dbb9abad70da5260018b6fe181839ab04f645bfebae0f320f" %}
+
 package: 
     name: cdk-inchi-to-svg
     version: {{ version }}
     
 source:
-    git_url: https://github.com/ipb-halle/cdk-inchi-to-svg.git
-    git_rev: {{ version }}
+#    git_url: https://github.com/ipb-halle/cdk-inchi-to-svg.git
+#    git_rev: {{ version }}
+     url: https://github.com/ipb-halle/cdk-inchi-to-svg/archive/{{ version }}.tar.gz
+     sha256: {{ sha256 }}
 
 build:
     skip: True # [py27]
@@ -15,11 +19,13 @@ requirements:
   build: 
     - maven
     - openjdk 8.0
+
   run:
     - openjdk 8.0
 test:
     commands:
-      - java -jar ${PREFIX}/bin/cdk-inchi-to-svg.jar -h 2>&1 > /dev/null
+      - cdk-inchi-to-svg 'InChI=1S/C28H24O5/c29-24-6-2-4-21-12-9-18-10-13-22(14-11-18)32-26-17-20(16-25(30)27(26)31)8-7-19-3-1-5-23(15-19)33-28(21)24/h1-6,10-11,13-17,29-31H,7-9,12H2' example.svg
+      - echo "7fbe5455d230c854cbfbf77f92ea31a67ec01aa99e017c36c380d21067f6882f  example.svg" | sha256sum --check --status 
 about:
     home: https://github.com/ipb-halle/cdk-inchi-to-svg
     license: BSD-2-Clause
