@@ -1,6 +1,7 @@
 #!/bin/bash
 set -eu -o pipefail
 
-./configure --with-htslib=system --prefix=${PREFIX}
+./configure --with-htslib=${PREFIX}/lib  --prefix=${PREFIX}
+
 make
 make install

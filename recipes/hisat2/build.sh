@@ -2,6 +2,7 @@
 
 mkdir -p ${PREFIX}/bin
 
+mv VERSION VERSION.txt  # Breaks C++20
 make CC=${CC} CPP=${CXX}
 
 
