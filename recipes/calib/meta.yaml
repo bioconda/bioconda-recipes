@@ -1,15 +1,23 @@
-{% set version = "0.3.3" %}
-{% set sha256 = "902aefa2b222fe60ec740e34bf904cbb232fda9f71637b6bf1e8dd419bc37089" %}
+{% set version = "0.3.4" %}
+{% set sha256 = "1787353823e2cc9843eb29a53cd99345687bac0215b9c501f0e67bf488d845eb" %}
 
 package:
   name: calib
   version: {{ version }}
 
 source:
-  url: https://github.com/vpc-ccg/calib/archive/v{{ version }}.zip
-  sha256: {{ sha256 }}
-  patches: 
-    - Makefile.patch
+  - url: https://github.com/vpc-ccg/calib/archive/v{{ version }}.zip
+    sha256: {{ sha256 }}
+    patches:  Makefile.patch
+  - url: https://github.com/rvaser/spoa/archive/1.1.3.zip
+    sha256 : 0a96c175e39b3e8badc7050f00f767f808efbf4b1bfb5c17a02b66b4a9803d94
+    folder : consensus/spoa_v1.1.3
+  - url: https://github.com/rvaser/bioparser/archive/1.2.1.zip
+    sha256: a0cbb2f1b49bb6734e6e1e524d395f4a32790d176f2e82d249889ae603394e9b
+    folder: consensus/spoa_v1.1.3/vendor/bioparser
+  - url: https://github.com/google/googletest/archive/release-1.8.1.zip
+    sha256: 927827c183d01734cc5cfef85e0ff3f5a92ffe6188e0d18e909c5efebf28a0c7
+    folder: consensus/spoa_v1.1.3/vendor/googletest
 
 build:
   number: 0
@@ -18,6 +26,7 @@ requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - cmake =3.12.0
   host:
     - zlib
   run:
@@ -25,6 +34,7 @@ requirements:
 test:
   commands:
     - calib --help
+    - calib_cons --help
 
 about:
   home: https://github.com/vpc-ccg/calib
