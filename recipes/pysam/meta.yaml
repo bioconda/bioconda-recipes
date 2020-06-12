@@ -9,7 +9,7 @@ source:
   sha256: 55a0ecc681ef1bbe847c658135ceb918f03a0d93aafb4d48b9cda0b098c1d4df
 
 build:
-  number: 0
+  number: 1
   binary_relocation: False # [linux]
 
 requirements:
@@ -23,17 +23,23 @@ requirements:
     - xz
     - bzip2
     - libdeflate
+    - libcurl
+    - openssl  # [not osx]
   run:
     - python
     - zlib
     - xz
     - bzip2
     - libdeflate
-    - curl
+    - libcurl
+    - openssl  # [not osx]
 
 test:
   imports:
     - pysam
+  commands:
+    # xref https://github.com/pysam-developers/pysam/issues/920
+    - python -c "import pysam; pysam.AlignmentFile('s3:expect_invalid_argument')"
 
 about:
   home: https://github.com/pysam-developers/pysam
