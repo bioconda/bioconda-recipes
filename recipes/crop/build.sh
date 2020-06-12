@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # compile crop 
-make LDFLAGS="$LDFLAGS" CXX=$CXX
+make LDFLAGS="$LDFLAGS" CPP=$CXX
 
 # cp executables
 mkdir -p "$PREFIX/bin"
