@@ -1,8 +1,7 @@
 #!/bin/bash
 set -eu -o pipefail
 
-CFLAGS="${CFLAGS} -Og -pedantic"
-CXXFLAGS="${CXXFLAGS} -Og -pedantic"
+CFLAGS="${CFLAGS} -Og -g -pedantic"
 
 ./configure --with-htslib=${PREFIX}/lib  --prefix=${PREFIX}
 
