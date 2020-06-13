@@ -3,24 +3,11 @@
 
 mkdir -p  "$PREFIX/bin"
 
-cd muscle
-./autogen.sh
 
-if [ `uname` == Darwin ]; then
-    ./configure --prefix=$PWD --disable-shared 
-else
-    ./configure --prefix=$PWD CXXFLAGS='-fopenmp'
-fi
-make install
 
-cd ..
 ./autogen.sh
-export ORIGIN=\$ORIGIN
-if [ `uname` == Darwin ]; then
-    ./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib'
-else
-    ./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib' CXXFLAGS='-fopenmp'
-fi
+export CPLUS_INCLUDE_PATH=$PREFIX/include
+./configure CXXFLAGS='-I${PREFIX}/include -fopenmp' --with-libmuscle=${PREFIX}/include/libMUSCLE-3.7
 make LDADD='-lMUSCLE-3.7' 
 make install
 
@@ -29,6 +16,5 @@ cp parsnp $PREFIX/bin
 cp Parsnp.py $PREFIX/bin
 cp template.ini $PREFIX/bin
 cp -R bin $PREFIX/bin 
-cp -R muscle $PREFIX/bin 
 cp -R examples $PREFIX/bin
 
