@@ -4,5 +4,6 @@
 mkdir -p  "$PREFIX/bin"
 mkdir "$PREFIX/bin/bin"
 
-cp parsnp examples template.ini $PREFIX/bin -R
+cp parsnp $PREFIX/bin 
+cp template.ini $PREFIX/bin
 cp bin/parsnp_core "$PREFIX/bin/bin"
