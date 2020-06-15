@@ -7,8 +7,8 @@ export LD_LIBRARY_PATH=${PREFIX}/lib
 #export CPLUS_INCLUDE_PATH=${PREFIX}/include
 
 # compile crop 
-# CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/gsl" LDFLAGS="$LDFLAGS"
-make CXX=$CXX
+# LDFLAGS="$LDFLAGS"
+make CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/gsl" CXX=$CXX
 
 # cp executables
 mkdir -p $PREFIX/bin
