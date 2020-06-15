@@ -1,8 +1,9 @@
 #!/bin/bash
 
+C_INCLUDE_PATH=$PREFIX/include
+
 # compile crop 
-$HACK=$CXX" -I${PREFIX}/include"
-make CXX=$HACK
+make CXX=$CXX
 
 # cp executables
 mkdir -p "$PREFIX/bin"
