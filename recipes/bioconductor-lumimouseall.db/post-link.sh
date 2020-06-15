@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="lumiMouseAll.db_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/lumiMouseAll.db_1.22.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/lumiMouseAll.db_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/lumiMouseAll.db_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-lumimouseall.db/bioconductor-lumimouseall.db_1.22.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-lumimouseall.db/bioconductor-lumimouseall.db_1.22.0_src_all.tar.gz"

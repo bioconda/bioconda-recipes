@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="BSgenome.Amellifera.UCSC.apiMel2_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/BSgenome.Amellifera.UCSC.apiMel2_1.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/BSgenome.Amellifera.UCSC.apiMel2_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Amellifera.UCSC.apiMel2_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.amellifera.ucsc.apimel2/bioconductor-bsgenome.amellifera.ucsc.apimel2_1.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.amellifera.ucsc.apimel2/bioconductor-bsgenome.amellifera.ucsc.apimel2_1.4.0_src_all.tar.gz"

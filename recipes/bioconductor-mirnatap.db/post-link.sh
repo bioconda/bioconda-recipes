@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="miRNAtap.db_0.99.10.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/miRNAtap.db_0.99.10.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/miRNAtap.db_0.99.10.tar.gz"
   "https://bioarchive.galaxyproject.org/miRNAtap.db_0.99.10.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mirnatap.db/bioconductor-mirnatap.db_0.99.10_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mirnatap.db/bioconductor-mirnatap.db_0.99.10_src_all.tar.gz"
