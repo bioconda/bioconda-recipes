@@ -3,7 +3,7 @@
 export C_INCLUDE_PATH=$PREFIX/include
 
 # compile crop 
-make CXX=$CXX CC=$CC
+make CXX=$CXX
 
 # cp executables
 mkdir -p "$PREFIX/bin"
