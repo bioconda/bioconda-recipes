@@ -1,9 +1,9 @@
 #!/bin/bash
 
-C_INCLUDE_PATH=$PREFIX/include
+export C_INCLUDE_PATH=$PREFIX/include
 
 # compile crop 
-make CXX=$CXX
+make CXX=$CXX CC=$CC
 
 # cp executables
 mkdir -p "$PREFIX/bin"
