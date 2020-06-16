@@ -1,5 +1,5 @@
 #!/bin/bash
-export HTSlib=${PREFIX}/htslib_1.10.2
+export HTSlib=${PREFIX}/htslib
 rm -rf build
 mkdir build
 cd build
