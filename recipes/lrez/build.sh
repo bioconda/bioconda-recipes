@@ -14,7 +14,7 @@ chmod +x $PREFIX/bin/Compare
 cp $PREFIX/build/tools/BamExtractor ${PREFIX}/bin/
 chmod +x $PREFIX/bin/BamExtractor
 
-cp $PREFIXscripts/reads_bx_sqlite3.py ${PREFIX}/bin/
+cp $PREFIX/scripts/reads_bx_sqlite3.py ${PREFIX}/bin/
 chmod +x $PREFIX/bin/reads_bx_sqlite3.py
 
 cp $PREFIX/scripts/idx_bx_sqlite3.py ${PREFIX}/bin/
