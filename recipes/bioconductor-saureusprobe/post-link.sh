@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="saureusprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/saureusprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/saureusprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/saureusprobe_2.18.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-saureusprobe/bioconductor-saureusprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-saureusprobe/bioconductor-saureusprobe_2.18.0_src_all.tar.gz"
