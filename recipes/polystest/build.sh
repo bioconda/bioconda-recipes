@@ -4,3 +4,5 @@
 #mkdir -p $PREFIX/bin
 #ln -s run_app.sh $PREFIX/bin
 #chmod 0755 "${PREFIX}/bin/run_app.sh"
+chmod 0755 run_app.sh
+
