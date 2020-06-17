@@ -9,7 +9,7 @@ cp -R * $outdir/
 ls -l $outdir
 mkdir -p $PREFIX/bin
 # to be removed
-cp $RECIPE_DIR/run_app.sh $outdir/searchgui
+cp $RECIPE_DIR/run_app.sh $outdir/
 ln -s $outdir/run_app.sh $PREFIX/bin
 chmod 0755 "${PREFIX}/bin/run_app.sh"
 
