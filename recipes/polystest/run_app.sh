@@ -5,7 +5,6 @@ pathname=$(readlink -f $DIR)
 echo $pathname
 #ls $pathname
 pwd
-cd $pathname
-pwd
+ls
 R -e "shiny::runApp(\"./\", port=3838)"
 
