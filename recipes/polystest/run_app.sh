@@ -1,5 +1,6 @@
 #!/bin/bash 
 pathname=$(dirname $0)
+echo $pathname
 pathname=$(readlink -f $pathname)
 echo $pathname
 ls $pathname
