@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="phastCons100way.UCSC.hg19_3.7.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/phastCons100way.UCSC.hg19_3.7.2.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/phastCons100way.UCSC.hg19_3.7.2.tar.gz"
   "https://bioarchive.galaxyproject.org/phastCons100way.UCSC.hg19_3.7.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-phastcons100way.ucsc.hg19/bioconductor-phastcons100way.ucsc.hg19_3.7.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-phastcons100way.ucsc.hg19/bioconductor-phastcons100way.ucsc.hg19_3.7.2_src_all.tar.gz"

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="aracne.networks_1.12.0.tar.gz"
+FN="aracne.networks_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/aracne.networks_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/aracne.networks_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-aracne.networks/bioconductor-aracne.networks_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/aracne.networks_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/aracne.networks_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-aracne.networks/bioconductor-aracne.networks_1.14.0_src_all.tar.gz"
 )
-MD5="e4e55763a4fb965a8fcb42d85f786b9a"
+MD5="cf0ba0d21000f6f3d17b714723d2846f"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

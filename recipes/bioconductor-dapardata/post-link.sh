@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="DAPARdata_1.16.0.tar.gz"
+FN="DAPARdata_1.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/DAPARdata_1.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/DAPARdata_1.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-dapardata/bioconductor-dapardata_1.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/DAPARdata_1.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/DAPARdata_1.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-dapardata/bioconductor-dapardata_1.18.0_src_all.tar.gz"
 )
-MD5="14be75c0ad5bc4bd5641f5b10efe7238"
+MD5="bbb5aed71fc759f2c0d80356269b76ee"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
