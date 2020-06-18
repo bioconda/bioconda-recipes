@@ -1,7 +1,8 @@
 #!/bin/bash
 set -euxo pipefail
 
-cd $SRC_DIR/c++/
+export BLAST_SRC_DIR="${SRC_DIR}/blast"
+cd $BLAST_SRC_DIR/c++/
 
 export CFLAGS="$CFLAGS -O2"
 export CXXFLAGS="$CXXFLAGS -O2"
@@ -26,9 +27,8 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 # The rpsbproc command line utility is an addition to the standalone version of
 # Reverse Position-Specific BLAST (RPS-BLAST), also known as CD-Search (Conserved
 # Domain Search).
-curl -sL https://ftp.ncbi.nih.gov/pub/mmdb/cdd/rpsbproc/RpsbProc-src.tar.gz | tar -xz
 mkdir -p src/app/RpsbProc
-cp -rf RpsbProc/src/* src/app/RpsbProc/
+cp -rf "${SRC_DIR}/RpsbProc/src/"* src/app/RpsbProc/
 
 # with/without options:
 #
@@ -85,7 +85,7 @@ cd ReleaseMT
 
 # The "datatool" binary needs the libs at build time, create
 # link from final install path to lib build dir:
-ln -s $SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
+ln -s $BLAST_SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
 
 cd build
 make -j${CPU_COUNT} -f Makefile.flat $apps
@@ -94,8 +94,8 @@ make -j${CPU_COUNT} -f Makefile.flat $apps
 rm $LIB_INSTALL_DIR
 
 mkdir -p $PREFIX/bin $LIB_INSTALL_DIR
-cp $SRC_DIR/c++/ReleaseMT/bin/* $PREFIX/bin/
-cp $SRC_DIR/c++/ReleaseMT/lib/* $LIB_INSTALL_DIR
+cp $BLAST_SRC_DIR/c++/ReleaseMT/bin/* $PREFIX/bin/
+cp $BLAST_SRC_DIR/c++/ReleaseMT/lib/* $LIB_INSTALL_DIR
 
 chmod +x $PREFIX/bin/*
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/update_blastdb.pl
