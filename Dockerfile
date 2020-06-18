@@ -8,16 +8,15 @@ ENV PATH="/opt/conda/bin:${PATH}"
 RUN conda config --add channels defaults && \
     conda config --add channels bioconda && \
     conda config --add channels conda-forge && \
+    { conda config --remove repodata_fns current_repodata.json || true ; } && \
+    conda config --prepend repodata_fns repodata.json && \
     conda config --set auto_update_conda False
 RUN : 'Make sure we get the (working) conda we want before installing the rest.' && \
-    : 'FIXME: temporary workaround: install conda=4.8.2 due to solver stalls with conda=4.6.14' && \
-    : '       (actual conda version gets still installed via bioconda_utils-requirements.txt!)' && \
-    conda install -y conda=4.8.2 && \
-    : sed -nE \
-    :     -e 's/\s*#.*$//' \
-    :     -e 's/^(conda([><!=~ ].+)?)$/\1/p' \
-    :     /tmp/repo/bioconda_utils/bioconda_utils-requirements.txt \
-    :     | xargs -r conda install -y
+    sed -nE \
+        -e 's/\s*#.*$//' \
+        -e 's/^(conda([><!=~ ].+)?)$/\1/p' \
+        /tmp/repo/bioconda_utils/bioconda_utils-requirements.txt \
+        | xargs -r conda install -y
 RUN conda install -y --file /tmp/repo/bioconda_utils/bioconda_utils-requirements.txt
 RUN conda clean -y -it
 COPY . /tmp/repo

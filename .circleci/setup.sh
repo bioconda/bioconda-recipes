@@ -33,6 +33,9 @@ if [[ ! -d $WORKSPACE/miniconda ]]; then
     conda config --system --add channels bioconda
     conda config --system --add channels conda-forge
 
+    conda config --system --remove repodata_fns current_repodata.json || true
+    conda config --system --prepend repodata_fns repodata.json
+
     # step 3: install bioconda-utils and test requirements
     conda install -y --file bioconda_utils/bioconda_utils-requirements.txt --file test-requirements.txt
 
