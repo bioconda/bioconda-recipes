@@ -11,4 +11,4 @@ fi
 LD_LIBRARY_PATH="$PREFIX/lib"
 export LD_LIBRARY_PATH
 # build statically linked binary with Rust
-RUST_BACKTRACE=1 C_INCLUDE_PATH=$PREFIX/include RUSTFLAGS="-L $PREFIX/lib" cargo install --verbose --root $PREFIX --path .
+RUST_BACKTRACE=1 C_INCLUDE_PATH=$PREFIX/include cargo install --verbose --root $PREFIX --path .
