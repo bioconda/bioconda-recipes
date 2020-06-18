@@ -15,12 +15,24 @@ if test x"`uname`" = x"Linux"; then
 fi
 
 if [ `uname` == Darwin ]; then
-    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
+    #export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2 -flat_namespace -headerpad_max_install_names"
+    export CXXFLAGS="$CXXFLAGS -fpascal-strings -fpermissive -Wno-deprecated-register -fno-common"
+    export CFLAGS="$CFLAGS -fpascal-strings -Wno-deprecated-register -fno-common"
+
 else
     export CPP_FOR_BUILD=$CPP
 fi
 
 LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
+
+# Get optional RpsbProc
+# The rpsbproc command line utility is an addition to the standalone version of
+# Reverse Position-Specific BLAST (RPS-BLAST), also known as CD-Search (Conserved
+# Domain Search).
+curl -sL https://ftp.ncbi.nih.gov/pub/mmdb/cdd/rpsbproc/RpsbProc-src.tar.gz | tar -xz
+mkdir -p src/app/RpsbProc
+cp -rf RpsbProc/src/* src/app/RpsbProc/
 
 # with/without options:
 #
@@ -30,7 +42,7 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 # -makefile-auto-update: no rebuild of makefile (one time build)
 # flat-makefile: use single makefile
 # -caution: disable configure script warnings
-# -dbapi: don't build database connectivity libs
+# -dbapi: don't build database connectivity libs <= configure: WARNING: --with(out)-dbapi is deprecated
 # -lzo: don't add lzo support
 # runpath: set runpath for installed $PREFIX location
 # hard-runpath: disable new dtags (disallow LD_LIBRARY_PATH override on Linux)
@@ -43,8 +55,8 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 # -gcrypt: disable gcrypt (needed on OSX)
 # -krb5: disable kerberos (needed on OSX)
 
-# Fixes building on Linux
-export AR="${AR} rcs" 
+# Fixes building on unix (linux and osx)
+export AR="${AR} rcs"
 
 ./configure \
     --with-dll \
@@ -54,7 +66,6 @@ export AR="${AR} rcs"
     --without-makefile-auto-update \
     --with-flat-makefile \
     --without-caution \
-    --without-dbapi \
     --without-lzo \
     --with-hard-runpath \
     --with-runpath=$LIB_INSTALL_DIR \
@@ -69,11 +80,12 @@ export AR="${AR} rcs"
     --without-sse42 \
     --without-gcrypt
 
+#list apps to build
 apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe"
 apps="$apps rpsblast.exe rpstblastn.exe makembindex.exe segmasker.exe"
-apps="$apps dustmasker.exe windowmasker.exe deltablast.exe makeblastdb.exe" 
+apps="$apps dustmasker.exe windowmasker.exe deltablast.exe makeblastdb.exe"
 apps="$apps blastdbcmd.exe blastdb_aliastool.exe convert2blastmask.exe"
-apps="$apps blastdbcheck.exe makeprofiledb.exe blast_formatter.exe"
+apps="$apps blastdbcheck.exe makeprofiledb.exe blast_formatter.exe rpsbproc.exe"
 cd ReleaseMT
 
 # The "datatool" binary needs the libs at build time, create
