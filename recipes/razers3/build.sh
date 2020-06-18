@@ -9,4 +9,4 @@ else
     cmake .. -DCMAKE_BUILD_TYPE=Release
     make razers3
     cp bin/razers3 $PREFIX/bin
-if
+fi
