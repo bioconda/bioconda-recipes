@@ -8,7 +8,7 @@ mkdir -p $PREFIX/bin
 cp -R * $outdir/
 ls -l $outdir
 mkdir -p $PREFIX/bin
-cp $REPODIR $outdir/
+cp $REPODIR/run_app.sh $outdir/
 ln -s $outdir/run_app.sh $PREFIX/bin
 chmod 0755 "${PREFIX}/bin/run_app.sh"
 
