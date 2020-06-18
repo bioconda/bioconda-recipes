@@ -16,11 +16,7 @@ if test x"`uname`" = x"Linux"; then
 fi
 
 if [ `uname` == Darwin ]; then
-    #export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
-    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2 -flat_namespace -headerpad_max_install_names"
-    export CXXFLAGS="$CXXFLAGS -fpascal-strings -fpermissive -Wno-deprecated-register -fno-common"
-    export CFLAGS="$CFLAGS -fpascal-strings -Wno-deprecated-register -fno-common"
-
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
 else
     export CPP_FOR_BUILD=$CPP
 fi
