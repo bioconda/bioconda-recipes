@@ -1,6 +1,7 @@
 #!/bin/bash 
 echo $0
-echo $PREFIX
+echo "$(eval PREFIX)"
+echo "what is that?"
 pathname=$(dirname $0)
 pathname=$(eval $pathname)
 echo $pathname
