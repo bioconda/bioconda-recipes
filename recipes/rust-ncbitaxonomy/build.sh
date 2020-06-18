@@ -8,9 +8,7 @@ if [ "$(uname)" == "Darwin" ]; then
     git config --global --unset url.ssh://git@github.com.insteadOf 
 fi
 
-echo "LIB:"
-ls $PREFIX/lib
-echo "INCLUDE:"
-ls $PREFIX/include
+LD_LIBRARY_PATH="$PREFIX/lib"
+export LD_LIBRARY_PATH
 # build statically linked binary with Rust
 RUST_BACKTRACE=1 C_INCLUDE_PATH=$PREFIX/include RUSTFLAGS="-L $PREFIX/lib" cargo install --verbose --root $PREFIX --path .
