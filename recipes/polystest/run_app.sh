@@ -1,9 +1,9 @@
 #!/bin/bash 
 echo $0
-echo "$(eval PREFIX)"
+test="$(eval PREFIX)"
+echo $test
 echo "what is that?"
 pathname=$(dirname $0)
-pathname=$(eval $pathname)
 echo $pathname
 pathname=$(readlink -f $pathname)
 echo $pathname
