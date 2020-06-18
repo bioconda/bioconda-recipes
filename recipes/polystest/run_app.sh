@@ -1,4 +1,5 @@
 #!/bin/bash 
+echo "$(cd "$(dirname "$0")" && pwd)"
 echo $0
 env
 echo $SRCDIR
