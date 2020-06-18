@@ -1,3 +1,3 @@
 #!/bin/bash -e
-make famsa -j${CPU_COUNT} NO_GPU=true CC="${CXX}"
+make famsa -j${CPU_COUNT} CC="${CXX}"
 install famsa "${PREFIX}/bin"
