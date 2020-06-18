@@ -1,8 +1,7 @@
 #!/bin/bash 
 echo $0
-test="$(eval PREFIX)"
-echo $test
-echo "what is that?"
+env
+echo $SRCDIR
 pathname=$(dirname $0)
 echo $pathname
 pathname=$(readlink -f $pathname)
