@@ -51,7 +51,7 @@ cp -rf "${SRC_DIR}/RpsbProc/src/"* src/app/RpsbProc/
 # -gcrypt: disable gcrypt (needed on OSX)
 # -krb5: disable kerberos (needed on OSX)
 
-# Fixes building on Linux
+# Fixes building on unix (linux and osx)
 export AR="${AR} rcs"
 
 ./configure \
@@ -76,6 +76,7 @@ export AR="${AR} rcs"
     --without-sse42 \
     --without-gcrypt
 
+#list apps to build
 apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe"
 apps="$apps rpsblast.exe rpstblastn.exe makembindex.exe segmasker.exe"
 apps="$apps dustmasker.exe windowmasker.exe deltablast.exe makeblastdb.exe"
