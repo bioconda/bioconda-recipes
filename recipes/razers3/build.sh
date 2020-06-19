@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$(uname)" = 'Darwin' ] ; then
-    export CPPFLAGS="${CPPFLAGS//-mmacosx-version-min=10.9/-mmacosx-version-min=10.13}"
+    export MACOSX_DEPLOYMENT_TARGET=10.13 
 fi
 
 mkdir -p $PREFIX/bin
