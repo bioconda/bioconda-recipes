@@ -3,7 +3,6 @@ mkdir build
 cd build
 
 ## See INSTALL of gromacs distro
-#for ARCH in AVX2_256 AVX_512; do \
 for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do \
   cmake .. \
   -DSHARED_LIBS_DEFAULT=OFF \
@@ -42,3 +41,10 @@ ${SRC_DIR}/src/gromacs/hardware/identifyavx512fmaunits.cpp
 
 cp -a ${RECIPE_DIR}/gmx-chooser.bash ${PREFIX}/bin/gmx
 chmod a+x ${PREFIX}/bin/gmx
+
+
+# Copy the activate scripts to $PREFIX/etc/conda/activate.d
+
+mkdir -p "${PREFIX}/etc/conda/activate.d"
+cp ${RECIPE_DIR}/activate.sh "${PREFIX}/bin/gromacs_activate.sh" 
+ln -s  ../../../bin/gromacs_activate.sh "${PREFIX}/etc/conda/activate.d/gromacs_activate.sh"

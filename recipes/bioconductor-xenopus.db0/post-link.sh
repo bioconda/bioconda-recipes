@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="xenopus.db0_3.10.0.tar.gz"
+FN="xenopus.db0_3.11.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/xenopus.db0_3.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/xenopus.db0_3.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-xenopus.db0/bioconductor-xenopus.db0_3.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/xenopus.db0_3.11.2.tar.gz"
+  "https://bioarchive.galaxyproject.org/xenopus.db0_3.11.2.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-xenopus.db0/bioconductor-xenopus.db0_3.11.2_src_all.tar.gz"
 )
-MD5="698abcaf62cbbec68d1c0c3f777fe071"
+MD5="be219eec687ecd287b108af0dd2ef9b7"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
