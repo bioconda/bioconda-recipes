@@ -1,0 +1,53 @@
+{% set name = "interproscan" %}
+{% set version = "5.45-80.0" %}
+{% set sha256 = "9aa89c9d7f07663e33b1346c082423510a6289bfbd86d765dc24bf0f180400d5" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/ebi-pf-team/interproscan/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True # [osx]
+
+requirements:
+  run:
+    - python >=3
+    - perl >=5.08
+    - openjdk >=11.0.4
+    - cath-tools # for cath-resolve-hits used by CATH-Gene3D
+    - pftools # for Pfscan/Pfsearch used by ProSite Profiles, ProSite Patterns and HAMAP
+    - hmmer2 # used by SMART
+    - hmmer >=3 # used by CATH-Gene3D, HAMAP, PANTHER, Pfam, PIRSF, SFLD, SUPERFAMILY and TIGRFAMs
+    - blast-legacy =2.2.19 # for BLASTALL used by ProDom
+    - emboss #  for getorf for nucleic acid sequence search
+    - coils # for ncoils used by Coils
+    - fingerprintscan # used by PRINTS
+    - blast >=2.9 # for rpsblast/rpsbproc used by CDD
+    - sfld # for sfld_preprocess/sfld_postprocess used by SFLD
+
+test:
+  commands:
+    - perl -version
+    - python3 --version
+    - java -version
+    - interproscan.sh --version
+#    - interproscan.sh -i test_proteins.fasta -f tsv -dp -appl sfld, hamap,prints,smart,pfam,pirsf,tigrfam,prositeprofiles,prositepatterns,gene3d,superfamily
+#    - interproscan.sh -i test_proteins.fasta -f tsv -appl sfld, hamap,prints,smart,pfam,pirsf,tigrfam,prositeprofiles,prositepatterns,gene3d,superfamily
+#    - interproscan.sh -i test_nt_seqs.fasta -t n -f tsv -dp -appl sfld, hamap,prints,smart,pfam,pirsf,tigrfam,prositeprofiles,prositepatterns,gene3d,superfamily
+#    - interproscan.sh -i test_nt_seqs.fasta -t n -f tsv -appl sfld, hamap,prints,smart,pfam,pirsf,tigrfam,prositeprofiles,prositepatterns,gene3d,superfamily
+#    - interproscan.sh -i test_nt_seqs.fasta -t n -f tsv,json,xml -appl pfam, pirsf
+#    - interproscan.sh -i test_all_appl.fasta -f tsv -dp -exclappl cdd
+#    - interproscan.sh -i test_all_appl.fasta -f tsv -dp -appl cdd
+
+about:
+  home: https://github.com/ebi-pf-team/interproscan
+  license: GPLv3
+  license_family: Apache
+  license_file: LICENSE
+  summary: InterPro is a database which integrates together predictive information about proteins' function from a number of partner resources.
+  dev_url: https://github.com/ebi-pf-team/interproscan
