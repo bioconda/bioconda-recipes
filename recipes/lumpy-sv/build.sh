@@ -27,7 +27,6 @@ make \
     ZLIB_PATH="${PREFIX/lib}"
 
 cp bin/* $PREFIX/bin
-cp $RECIPE_DIR/lumpyexpress.config $PREFIX/bin/lumpyexpress.config
 cp scripts/lumpyexpress $PREFIX/bin
 cp scripts/cnvanator_to_bedpes.py $PREFIX/bin
 
