@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="rgu34bcdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/rgu34bcdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/rgu34bcdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/rgu34bcdf_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rgu34bcdf/bioconductor-rgu34bcdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rgu34bcdf/bioconductor-rgu34bcdf_2.18.0_src_all.tar.gz"
 )
 MD5="428b3a39f0d8addd7d863539b8cda6ea"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,4 +1,6 @@
 #!/bin/bash
+sed -i.bak "s/-TP//" src/SYMPHONY/SYMPHONY/configure.ac
+sed -i.bak "s/-TP//" src/SYMPHONY/SYMPHONY/configure
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 mkdir -p ~/.R

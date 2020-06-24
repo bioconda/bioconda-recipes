@@ -1,27 +1,31 @@
 {% set name = "macs2" %}
-{% set version = "2.1.2" %}
+{% set version = "2.2.7.1" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://files.pythonhosted.org/packages/5e/32/0108a85d9a91c18413e8492bea631725cdbc20b45970ef63e8d0020ef2da/MACS2-2.1.2.1.tar.gz
-  sha256: 6ee9381bda61bacf65e2e31bde267cbcd61a1304457f8a00a0eb7632dd12419b
+  url: https://files.pythonhosted.org/packages/e2/61/85d30ecdd34525113e28cb0c5a9f393f93578165f8d848be5925c0208dfb/MACS2-2.2.7.1.tar.gz
+  sha256: ad2ca69bdd02a8942a68aae23133289b5c16ba382bcbe20c39fabf3948929de5
+  patches:
+    - patch
 
 build:
   number: 0
-  skip: True  # [py3k]
+  skip: True  # [py2k]
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
     - python
+    - numpy >=1.17
+    - cython
     - pip
-    - numpy >=1.6
-    - r-base
   run:
-    - numpy >=1.6
+    - numpy >=1.17
     - python
     - r-base
 
@@ -33,9 +37,5 @@ about:
   home: http://github.com/taoliu/MACS/
   license: BSD
   license_family: BSD
-  license_file: COPYING
+  license_file: LICENSE
   summary: Model Based Analysis for ChIP-Seq data
-
-extra:
-  recipe-maintainers:
-    - jenzopr

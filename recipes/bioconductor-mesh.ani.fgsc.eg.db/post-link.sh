@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="MeSH.Ani.FGSC.eg.db_1.11.0.tar.gz"
+FN="MeSH.Ani.FGSC.eg.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/MeSH.Ani.FGSC.eg.db_1.11.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MeSH.Ani.FGSC.eg.db_1.11.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mesh.ani.fgsc.eg.db/bioconductor-mesh.ani.fgsc.eg.db_1.11.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.Ani.FGSC.eg.db_1.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MeSH.Ani.FGSC.eg.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.ani.fgsc.eg.db/bioconductor-mesh.ani.fgsc.eg.db_1.13.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.ani.fgsc.eg.db/bioconductor-mesh.ani.fgsc.eg.db_1.13.0_src_all.tar.gz"
 )
-MD5="719ef69619c7ff3e69eb14ac01777450"
+MD5="5569e9f8eedac94d4b920561cbb724e2"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

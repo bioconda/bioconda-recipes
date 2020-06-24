@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="lumiMouseAll.db_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/lumiMouseAll.db_1.22.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/lumiMouseAll.db_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/lumiMouseAll.db_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-lumimouseall.db/bioconductor-lumimouseall.db_1.22.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-lumimouseall.db/bioconductor-lumimouseall.db_1.22.0_src_all.tar.gz"
 )
 MD5="6f12330377aaddc83bfa9c37477b999e"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

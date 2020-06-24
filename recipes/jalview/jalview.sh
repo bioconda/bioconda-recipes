@@ -6,6 +6,9 @@
 # Note, in order to run commandline-only calls use 
 #   -nodisplay
 #
+# By default, this wrapper executes java -version to determine the JRE version
+# Set JALVIEW_JRE=j1.8 or JALVIEW_JRE=j11 to skip the version check 
+#
 ###############################
 
 # Find original directory of bash script, resolving symlinks
@@ -18,15 +21,11 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"; # get final path of this script
 
-# set install path of jalview
-JALVIEWDIR=$DIR; 
+# decide which jalview jar to launch - either 'j11' or 'j1.8'
+if [[ "$JALVIEW_JRE" != "j11" && "$JALVIEW_JRE" != "j1.8" ]]; then
+  JALVIEW_JRE="j11"
+  # if java 8 is installed we pick the j1.8 build
+  if [[ $( java -version 2>&1 | grep '"1.8' ) != "" ]]; then JALVIEW_JRE=j1.8; fi
+fi
 
-CLASSPATH=`echo $JALVIEWDIR/*.jar | sed -e 's/r /r:/g'`
-
-# total physical memory in mb
-
-MAXMEM=`python -c 'from psutil import virtual_memory;print ("-Xmx%iM" % (256 if (virtual_memory().total/(1024*1024)) < 1024 else ((virtual_memory().total/(1024*1024))-1024)))'`
-
-if [[ $( $( which conda || echo $CONDA_EXE ) list openjdk | egrep -e 'openjdk:\W+9' ) ]]; then JAVA9MOD="--add-modules=java.se.ee --illegal-access=warn"; fi;
-
-java $MAXMEM $JAVA9MOD -classpath $CLASSPATH jalview.bin.Jalview ${@};
+java -jar $DIR/jalview-all-${JALVIEW_JRE}.jar ${@};

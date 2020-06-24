@@ -1,0 +1,45 @@
+{% set version = "3.2.0" %}
+{% set sha256 = "6b870dcfbc1ffb9dd664a45415fcd13cf5970f49d1c7b824160c260fa138e6d6" %}
+
+package:
+  name: hhsuite
+  version: {{ version }}
+
+build:
+  number: 1
+
+source:
+  url: https://github.com/soedinglab/hh-suite/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - fmemopen-extern-c.patch 
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - llvm-openmp # [osx]
+    - openmp
+    - cmake
+  host:
+    - llvm-openmp # [osx]
+    - openmp
+    - perl
+    - python
+  run:
+    - llvm-openmp # [osx]
+    - openmp
+    - perl
+    - python
+
+test:
+  commands:
+    - hhblits -h > /dev/null
+    - hhsearch -h > /dev/null
+    - hhalign -h > /dev/null
+
+about:
+  home: https://github.com/soedinglab/hh-suite
+  license: GPLv3
+  license_file: LICENSE
+  summary: "HH-suite3 for fast remote homology detection and deep protein annotation"

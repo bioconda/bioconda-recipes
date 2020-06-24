@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="CCl4_1.20.0.tar.gz"
+FN="CCl4_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/CCl4_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/CCl4_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ccl4/bioconductor-ccl4_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/CCl4_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/CCl4_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ccl4/bioconductor-ccl4_1.26.0_src_all.tar.gz"
 )
-MD5="f8e6ef164ec15f7b8af5bfcd78fcc34b"
+MD5="cbfa91f4bac5ec16f3976b71d1e4bc1c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

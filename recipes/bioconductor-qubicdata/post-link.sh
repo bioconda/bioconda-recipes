@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="QUBICdata_1.10.0.tar.gz"
+FN="QUBICdata_1.16.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/QUBICdata_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/QUBICdata_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-qubicdata/bioconductor-qubicdata_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/QUBICdata_1.16.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/QUBICdata_1.16.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-qubicdata/bioconductor-qubicdata_1.16.0_src_all.tar.gz"
 )
-MD5="66ed9092477ac1c0ddf2b367d55682e1"
+MD5="20c050da5a5b9cc83c9d5415f6e25888"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

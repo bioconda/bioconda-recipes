@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="methyvimData_1.4.0.tar.gz"
+FN="methyvimData_1.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/methyvimData_1.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/methyvimData_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-methyvimdata/bioconductor-methyvimdata_1.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/methyvimData_1.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/methyvimData_1.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-methyvimdata/bioconductor-methyvimdata_1.10.0_src_all.tar.gz"
 )
-MD5="2d04580044269f4e9f1f904aed11ff6f"
+MD5="afd31416500696391b474013e66b4cbc"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

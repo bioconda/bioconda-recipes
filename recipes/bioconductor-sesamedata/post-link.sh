@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="sesameData_1.0.0.tar.gz"
+FN="sesameData_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/sesameData_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/sesameData_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-sesamedata/bioconductor-sesamedata_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/sesameData_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/sesameData_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-sesamedata/bioconductor-sesamedata_1.6.0_src_all.tar.gz"
 )
-MD5="dc24068fe6bdc6ef7e62c89c38b8d949"
+MD5="c4a706744bf8cbc0265b429814aefcbd"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

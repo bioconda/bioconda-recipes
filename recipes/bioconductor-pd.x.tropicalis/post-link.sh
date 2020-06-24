@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.x.tropicalis_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.x.tropicalis_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/pd.x.tropicalis_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.x.tropicalis_3.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.x.tropicalis/bioconductor-pd.x.tropicalis_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.x.tropicalis/bioconductor-pd.x.tropicalis_3.12.0_src_all.tar.gz"
 )
 MD5="79a4de91831e4b0153495e12b9c6e8d3"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

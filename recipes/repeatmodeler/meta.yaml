@@ -1,39 +1,52 @@
-about:
-  home: 'http://www.repeatmasker.org/RepeatModeler.html'
-  license: 'Open Software License v2.1'
-  summary: 'RepeatModeler is a de-novo repeat family identification and modeling package.'
-
-source:
-  url: 'http://www.repeatmasker.org/RepeatModeler/RepeatModeler-open-1.0.11.tar.gz'
-  md5: c148b4b56bb3fbd4e9ba88ac8736baa3
-
-build:
-  number: 1
-  skip: True #[osx]
+{% set name = "RepeatModeler" %}
+{% set version = "2.0.1" %}
+{% set sha256 = "628e7e1556865a86ed9d6a644c0c5487454c99fbcac21b68eae302fae7abb7ac" %}
 
 package:
-  name: repeatmodeler
-  version: '1.0.11'
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/Dfam-consortium/RepeatModeler/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
 
 requirements:
-  build:
+  host:
     - perl
-    - rmblast
+    - rmblast>=2.9.0
   run:
     - perl
     - repeatmasker
-    - rmblast
-    - trf
-    - repeatscout
-    - recon
+    - rmblast>=2.9.0
+    - trf>=4.09
+    - repeatscout>=1.0.6
+    - recon>=1.08
     - perl-text-soundex
-
-
+    - cd-hit>=4.8.1
+    - ltr_retriever>=2.6
+    - mafft>=7.407
+    - genometools-genometools>=1.5.9
+# to be complete it is missing Ninja and ABBlast
 
 test:
+  files:
+    - test.fa
   commands:
-    - RepeatModeler > /dev/null
+     # (see run_test.sh )
+    - "RepeatModeler -h | grep SYNOPSIS"
+
+about:
+  home: 'http://www.repeatmasker.org/RepeatModeler/'
+  license: 'Open Software License v2.1'
+  license_file: LICENSE
+  summary: 'RepeatModeler is a de-novo repeat family identification and modeling package.'
+  dev_url: https://github.com/Dfam-consortium/RepeatModeler
 
 extra:
   identifiers:
     - biotools:RepeatModeler
+  skip-lints:
+    - should_be_noarch_generic

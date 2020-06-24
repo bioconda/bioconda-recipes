@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.rg.u34a_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.rg.u34a_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/pd.rg.u34a_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.rg.u34a_3.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.rg.u34a/bioconductor-pd.rg.u34a_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.rg.u34a/bioconductor-pd.rg.u34a_3.12.0_src_all.tar.gz"
 )
 MD5="ac3a6cc203dabb8faab85b97f1a7ae3c"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

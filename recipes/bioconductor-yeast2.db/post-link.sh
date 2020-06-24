@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="yeast2.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/yeast2.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/yeast2.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/yeast2.db_3.2.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yeast2.db/bioconductor-yeast2.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-yeast2.db/bioconductor-yeast2.db_3.2.3_src_all.tar.gz"
 )
 MD5="818981b9562630e8a219dbe23a316e08"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="MeSH.Sce.S288c.eg.db_1.11.0.tar.gz"
+FN="MeSH.Sce.S288c.eg.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/MeSH.Sce.S288c.eg.db_1.11.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MeSH.Sce.S288c.eg.db_1.11.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mesh.sce.s288c.eg.db/bioconductor-mesh.sce.s288c.eg.db_1.11.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.Sce.S288c.eg.db_1.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MeSH.Sce.S288c.eg.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.sce.s288c.eg.db/bioconductor-mesh.sce.s288c.eg.db_1.13.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.sce.s288c.eg.db/bioconductor-mesh.sce.s288c.eg.db_1.13.0_src_all.tar.gz"
 )
-MD5="4db271c6a1df2c4e438ca4405f4bf8ce"
+MD5="be1822e07280a1ddda11ba21e0b2b41e"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

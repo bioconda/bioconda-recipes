@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.ath1.121501_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.ath1.121501_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/pd.ath1.121501_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.ath1.121501_3.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.ath1.121501/bioconductor-pd.ath1.121501_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.ath1.121501/bioconductor-pd.ath1.121501_3.12.0_src_all.tar.gz"
 )
 MD5="d7ed8640f0deac552e0083a091e72a72"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

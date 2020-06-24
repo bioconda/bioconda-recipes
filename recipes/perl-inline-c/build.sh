@@ -1,9 +1,6 @@
 #!/bin/bash
 rm t/08taint.t
 
-# This module needs this to find gcc at runtime
-ln -s $GCC $PREFIX/bin/gcc
-
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL

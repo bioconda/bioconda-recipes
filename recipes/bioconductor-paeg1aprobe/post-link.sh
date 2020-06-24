@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="paeg1aprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/paeg1aprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/paeg1aprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/paeg1aprobe_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-paeg1aprobe/bioconductor-paeg1aprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-paeg1aprobe/bioconductor-paeg1aprobe_2.18.0_src_all.tar.gz"
 )
 MD5="493fa1fc7b92a78c8114b65038113c42"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,26 +1,19 @@
+{% set name = "GMAP" %}
+{% set version = "2020.06.01" %}
+{% set sha256 = "7917f9f78570943f419445e371f2cc948c6741e73c3cbb063391756f4479d365" %}
+
 package:
-  name: gmap
-  version: "2018.07.04"
+  name: {{ name|lower }}
+  version: {{ version }}
+
 source:
-  url: http://research-pub.gene.com/gmap/src/gmap-gsnap-2018-07-04.tar.gz
-  sha256: a9f8c1f0810df65b2a089dc10be79611026f4c95e4681dba98fea3d55d598d24
-requirements:
-  build:
-    - {{ compiler('c') }}
-  host:
-    - perl
-    - zlib
-    - bzip2
-  run:
-    - perl
-    - zlib
-    - bzip2
-about:
-  home: http://research-pub.gene.com/gmap/
-  license: Non-commercial
-  summary: Genomic mapping and alignment program for mRNA and EST sequences
+  url: http://research-pub.gene.com/gmap/src/gmap-gsnap-2020-06-01.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - single_quote_paths.patch
+
 build:
-  number: 0
+  number: 1
   binary_has_prefix_files:
     - bin/atoiindex
     - bin/cmetindex
@@ -44,11 +37,35 @@ build:
     - bin/gmap_uncompress
     - bin/gtf_introns
     - bin/gtf_splicesites
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - perl
+    # zlib is needed for gunzip
+    - zlib
+    - bzip2
+  run:
+    - perl
+    # zlib is needed for gunzip
+    - zlib
+    - bzip2
+
 test:
   commands:
-    - gmap --version
-    - gsnap --version
+    - gmap --help
+    - gsnap --help
+
+about:
+  home: http://research-pub.gene.com/gmap/
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "Genomic mapping and alignment program for mRNA and EST sequences."
 
 extra:
   identifiers:
     - biotools:gmap
+    - doi:10.1093/bioinformatics/bti310
+    - doi:10.1093/bioinformatics/btq057

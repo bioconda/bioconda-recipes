@@ -1,6 +1,6 @@
-{% set version = "2.20.0" %}
+{% set version = "2.25.0" %}
 {% set name = "flowType" %}
-{% set bioc = "3.8" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,45 +10,58 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 75344927b4bf183166789555a40a2319
+  md5: cc9f06ecd334d6da80e623c696b5d6d9
 build:
-  number: 1
+  number: 0
+  skip: True  # [osx]
   rpaths:
     - lib/R/lib/
     - lib/
 # Suggests: xtable
 requirements:
   host:
-    - 'bioconductor-biobase >=2.42.0,<2.43.0'
-    - 'bioconductor-flowclust >=3.20.0,<3.21.0'
-    - 'bioconductor-flowcore >=1.48.0,<1.49.0'
-    - 'bioconductor-flowmeans >=1.42.0,<1.43.0'
-    - 'bioconductor-flowmerge >=2.30.0,<2.31.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-flowclust >=3.26.0,<3.27.0'
+    - 'bioconductor-flowcore >=2.0.0,<2.1.0'
+    - 'bioconductor-flowmeans >=1.48.0,<1.49.0'
+    - 'bioconductor-flowmerge >=2.36.0,<2.37.0'
     - r-base
     - 'r-bh >=1.51.0-3'
     - 'r-rcpp >=0.10.4'
     - r-rrcov
     - r-sfsmisc
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-biobase >=2.42.0,<2.43.0'
-    - 'bioconductor-flowclust >=3.20.0,<3.21.0'
-    - 'bioconductor-flowcore >=1.48.0,<1.49.0'
-    - 'bioconductor-flowmeans >=1.42.0,<1.43.0'
-    - 'bioconductor-flowmerge >=2.30.0,<2.31.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-flowclust >=3.26.0,<3.27.0'
+    - 'bioconductor-flowcore >=2.0.0,<2.1.0'
+    - 'bioconductor-flowmeans >=1.48.0,<1.49.0'
+    - 'bioconductor-flowmerge >=2.36.0,<2.37.0'
     - r-base
     - 'r-bh >=1.51.0-3'
     - 'r-rcpp >=0.10.4'
     - r-rrcov
     - r-sfsmisc
   build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Phenotyping Flow Cytometry Assays using multidimentional expansion of single dimentional partitions.'
+  summary: 'Phenotyping Flow Cytometry Assays'
+  description: 'Phenotyping Flow Cytometry Assays using multidimentional expansion of single dimentional partitions.'
+extra:
+  container:
+    extended-base: true
 

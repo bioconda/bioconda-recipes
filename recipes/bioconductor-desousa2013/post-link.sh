@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="DeSousa2013_1.18.0.tar.gz"
+FN="DeSousa2013_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/DeSousa2013_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/DeSousa2013_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-desousa2013/bioconductor-desousa2013_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/DeSousa2013_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/DeSousa2013_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-desousa2013/bioconductor-desousa2013_1.24.0_src_all.tar.gz"
 )
-MD5="6059d057fb2eb7d4b64896680da57226"
+MD5="45fc6d233dea88f9240ebb982ed8751e"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

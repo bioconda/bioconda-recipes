@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="harbChIP_1.20.0.tar.gz"
+FN="harbChIP_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/harbChIP_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/harbChIP_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-harbchip/bioconductor-harbchip_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/harbChIP_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/harbChIP_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-harbchip/bioconductor-harbchip_1.26.0_src_all.tar.gz"
 )
-MD5="2dedda8ec8b79f7cd73648090853a31a"
+MD5="d3a66b521c01d0d904b4c9c016f0786b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

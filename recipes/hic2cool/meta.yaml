@@ -1,38 +1,46 @@
-{% set version = "0.4.2" %}
+{% set name = "hic2cool" %}
+{% set version = "0.8.3" %}
+{% set sha256 = "2fa1557df8b1b3eddc06df394649e69c0f1f40f1a0c951b26c16c0d3ff81a41e" %}
 
 package:
-  name: hic2cool
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
   url: https://github.com/4dn-dcic/hic2cool/archive/{{ version }}.tar.gz
-  sha256: 31e28b8a475da24384bef72186a80159a5472407c17e09788a997bf4e033e47d
+  sha256: {{ sha256 }}
 
 build:
   noarch: python
-  number: 0
+  number: 1
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
 
 requirements:
   host:
     - python
     - setuptools
     - numpy >=1.10.1
-    - cooler >=0.7.2
-    - h5py >=2.5.0
+    - scipy
+    - pandas
+    - cooler>=0.8.5
+    - h5py >=2.8.0
   run:
     - python
     - numpy >=1.10.1
-    - cooler >=0.7.2
-    - h5py >=2.5.0
+    - scipy
+    - pandas
+    - cooler>=0.8.5
+    - h5py >=2.8.0
 
 test:
   imports:
     - hic2cool
-
   commands:
     - hic2cool --version
 
 about:
   home: https://github.com/4dn-dcic/hic2cool
   license: MIT
-  summary: A converter between .hic files (from juicer) and .cool files (for cooler).
+  license_family: MIT
+  license_file: LICENSE.txt
+  summary: "A converter between .hic files (from juicer) and .cool files (for cooler)."

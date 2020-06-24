@@ -1,35 +1,39 @@
-about:
-  home: http://hartleys.github.io/QoRTs/
-  license: Public Domain
-  summary: The QoRTs software package is a fast, efficient, and portable multifunction toolkit designed to assist in the analysis, quality control, and data management of RNA-Seq datasets.
-package:
-  name: qorts
-  version: 1.3.0
+{% set name = "QoRTs" %}
+{% set version = "1.3.6" %}
 
-build:
-  noarch: generic
-  number: 1
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/hartleys/QoRTs/releases/download/1.3.0/QoRTs.jar
-  md5: 2a2448470f2ce066e4624d4cc82a358c
+  url: https://github.com/hartleys/QoRTs/archive/v{{ version }}.tar.gz
+  sha256: 51095994e1bd8fe5403d27eada8ceca97be0cecbee8eed802b6dc3fc6ce372af
+
+build:
+  number: 0
+  noarch: generic
+
 requirements:
-  host:
-    - python
   run:
     - openjdk
     - python
-    - r-qorts ==1.3.0
+    - r-qorts ==1.3.6
 
 test:
   commands:
     - qorts QC --man &> /dev/null
 
+about:
+  home: http://hartleys.github.io/QoRTs/
+  license: Public Domain
+  summary: |
+    QoRTs toolkit for analysis, quality control, and data management of RNA-Seq
+    datasets.
+
 extra:
   notes: |
-    QoRTs is Java program that comes with a custom wrapper shell script.
-    This shell wrapper is called "qorts" and is on $PATH by default. By default
-    "-Xms512m -Xmx1g" is set in the wrapper. If you want to overwrite it you can
-    specify these values directly after your binaries. If you have _JAVA_OPTIONS
-    set globally this will take precedence.
-    For example run it with "qorts -Xms512m -Xmx1g"
+    Based on the Picard equivalent, found in the BioConda recipies repo.
+    Simplifies the call to the QoRTs JAVA utility so that you can just go :-
+      qorts [Java Options] QC [QoRTs options] input.bam annotation.gtf outputDir
+    which is equivalent to :-
+      java [Java Options] -jar /path/to/jar/QoRTs.jar QC [QoRTs options] input.bam annotation.gtf outputDir

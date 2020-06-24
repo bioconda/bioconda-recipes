@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="DO.db_2.9.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/DO.db_2.9.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/DO.db_2.9.tar.gz"
   "https://bioarchive.galaxyproject.org/DO.db_2.9.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-do.db/bioconductor-do.db_2.9_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-do.db/bioconductor-do.db_2.9_src_all.tar.gz"
@@ -17,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

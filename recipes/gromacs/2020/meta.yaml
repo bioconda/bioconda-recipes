@@ -1,0 +1,68 @@
+# Update from dwnload page, e.g. http://manual.gromacs.org/2019.1/download.html
+# For latest release, see
+# http://manual.gromacs.org/documentation/
+{% set name = "gromacs" %}
+{% set version = "2020.2" %}
+{% set md5sum = "71778e2e47bca8bbb74c9d7c5ad9e5c5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True  # [osx]
+
+source:
+  url: http://ftp.gromacs.org/pub/gromacs/gromacs-{{ version }}.tar.gz
+  md5: {{ md5sum }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - pocl
+  host:
+    - openmp # [linux]
+    - ocl-icd  # [linux]
+    - khronos-opencl-icd-loader  # [osx]
+    - libhwloc 2.*
+    - fftw
+    - python >3.5
+    - perl
+  run:
+    - ocl-icd # [linux]
+    - khronos-opencl-icd-loader  # [osx]
+    - ocl_icd_wrapper_apple # [osx]
+    - openmp # [linux]
+    - fftw
+    - libhwloc 2.*
+
+test:
+  commands:
+    - gmx -version
+
+about:
+  home: http://www.gromacs.org/
+  # TODO: Check which other licenses should be included.
+  #       From the COPYING file:
+  #         GROMACS is free software, distributed under the GNU Lesser General
+  #         Public License (LGPL) Version 2.1 or (at your option) any later
+  #         version. See section 1 for details. GROMACS includes optional code
+  #         covered by several different licences as described below.  The
+  #         GROMACS package in its entirety may be copied, modified or
+  #         distributed according to the conditions described in section 1.
+  #         However, in the interests of clarity and completeness, some
+  #         individual parts of GROMACS that can be used under their respective
+  #         licenses are also noted here.
+  license: LGPL-2.1-or-later
+  license_file: COPYING
+  summary: GROMACS is a versatile package to perform molecular dynamics.
+
+extra:
+  identifiers:
+    - biotools:gromacs
+    - doi:10.5281/zenodo.2564764 # source release
+    - doi:10.5281/zenodo.2564761 # documentation release
+    - doi:10.1016/j.softx.2015.06.001 # journal article
+    - rrid:SCR_014565

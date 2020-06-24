@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="pasillaBamSubset_0.20.0.tar.gz"
+FN="pasillaBamSubset_0.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/pasillaBamSubset_0.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/pasillaBamSubset_0.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pasillabamsubset/bioconductor-pasillabamsubset_0.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/pasillaBamSubset_0.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/pasillaBamSubset_0.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pasillabamsubset/bioconductor-pasillabamsubset_0.26.0_src_all.tar.gz"
 )
-MD5="a418f3d054320e023b3c533c5df9a20a"
+MD5="45af80d04d89d5ff74f79937c463234b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

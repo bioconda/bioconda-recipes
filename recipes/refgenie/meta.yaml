@@ -1,0 +1,48 @@
+{% set name = "refgenie" %}
+{% set version = "0.9.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "e5e669c7d158659163073fa9c4140fc2aff3c7d7d681c0a26e5358a977412593"
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - refgenie = refgenie.refgenie:main
+    - import_igenome = refgenie.add_assets_igenome:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python >=3
+  run:
+    - logmuse >=0.2
+    - piper >=0.12.1
+    - pyfaidx >=0.5.5.2
+    - python >=3
+    - refgenconf >=0.5.3
+
+test:
+  imports:
+    - refgenie
+  commands:
+    - refgenie --help
+    - import_igenome --help
+
+about:
+  home: "http://refgenie.databio.org"
+  license: "BSD-2-Clause"
+  license_family: "BSD"
+  license_file: "LICENSE.txt"
+  summary: "Refgenie creates a standardized folder structure for reference genome files and indexes. You can download pre-built genomes or build your own for any fasta file"
+
+extra:
+  recipe-maintainers:
+    - michalstolarczyk
+    - apeltzer

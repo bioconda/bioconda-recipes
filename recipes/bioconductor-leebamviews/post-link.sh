@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="leeBamViews_1.18.0.tar.gz"
+FN="leeBamViews_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/leeBamViews_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/leeBamViews_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-leebamviews/bioconductor-leebamviews_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/leeBamViews_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/leeBamViews_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-leebamviews/bioconductor-leebamviews_1.24.0_src_all.tar.gz"
 )
-MD5="0ef787cb317db2a29797f2b72a513c60"
+MD5="c4d1f0a5db83968a8cd24525ec835e65"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

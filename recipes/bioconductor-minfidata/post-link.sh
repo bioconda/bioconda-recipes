@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="minfiData_0.28.0.tar.gz"
+FN="minfiData_0.34.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/minfiData_0.28.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/minfiData_0.28.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-minfidata/bioconductor-minfidata_0.28.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/minfiData_0.34.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/minfiData_0.34.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-minfidata/bioconductor-minfidata_0.34.0_src_all.tar.gz"
 )
-MD5="40cafa6a33fdc318ced42d538a27b98d"
+MD5="5cb19665950236c189cf74c0869a9066"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

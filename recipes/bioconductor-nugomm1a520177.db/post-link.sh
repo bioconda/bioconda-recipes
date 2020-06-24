@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="nugomm1a520177.db_3.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/nugomm1a520177.db_3.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/nugomm1a520177.db_3.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/nugomm1a520177.db_3.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-nugomm1a520177.db/bioconductor-nugomm1a520177.db_3.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-nugomm1a520177.db/bioconductor-nugomm1a520177.db_3.4.0_src_all.tar.gz"
 )
 MD5="99f69ea2cbb80a79bedee99e3d726e50"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

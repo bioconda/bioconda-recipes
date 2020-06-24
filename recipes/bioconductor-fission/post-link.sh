@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="fission_1.2.0.tar.gz"
+FN="fission_1.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/fission_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/fission_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-fission/bioconductor-fission_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/fission_1.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/fission_1.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-fission/bioconductor-fission_1.8.0_src_all.tar.gz"
 )
-MD5="9576468d0dd81fb3edc7e7b550e0dc86"
+MD5="aee3f3382ae2cf08f9e9123b9e696f22"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

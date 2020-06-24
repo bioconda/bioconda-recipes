@@ -1,0 +1,55 @@
+# Do not forget to update the version string in the searchgui.py file
+{% set name = "encyclopedia" %}
+{% set version = "0.9.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: generic
+
+source:
+  url: https://bitbucket.org/searleb/encyclopedia/downloads/encyclopedia-{{ version }}-executable.jar
+  sha256: 0f0264b888be50f34f4f998a7c461fa21d372e177deee899be36654d3c8c2d0b
+
+requirements:
+  run:
+    - openjdk >=8
+    - python
+
+test:
+  commands:
+    - EncyclopeDIA -h | grep -q EncyclopeDIA
+    - EncyclopeDIA edu.washington.gs.maccoss.encyclopedia.Main -walnut -h | grep -q Walnut
+    - EncyclopeDIA edu.washington.gs.maccoss.encyclopedia.Main -thesaurus -h | grep -q Thesaurus
+    - EncyclopeDIA edu.washington.gs.maccoss.encyclopedia.Main -xcordia -h | grep -q XCorDIA
+    - EncyclopeDIA edu.washington.gs.maccoss.encyclopedia.Main -walnut -h | grep -q Walnut
+    - EncyclopeDIA edu.washington.gs.maccoss.encyclopedia.Main -libexport -h | grep -q SearchToLIB
+
+about:
+  home: https://bitbucket.org/searleb/encyclopedia/wiki/Home
+  license: Apache License 2.0
+  license_family: APACHE
+  summary: EncyclopeDIA is library search engine comprised of several algorithms for DIA data analysis
+  description: |
+    EncyclopeDIA is library search engine comprised of several algorithms for DIA data analysis
+    and can search for peptides using either DDA-based spectrum libraries or
+    DIA-based chromatogram libraries.
+    Check out our manuscript describing EncyclopeDIA at Nature Communications (Searle et al, 2018)
+    for more information. EncyclopeDIA contains Walnut, an implementation of 
+    the PECAN (Ting et al, 2017) scoring system, to enable chromatogram library generation
+    from FASTA protein sequence databases when spectrum libraries are unavailable.
+
+extra:
+  notes: |
+    EncyclopeDIA is Java program that comes with a custom wrapper python shell script.
+    This shell wrapper is called "EncyclopeDIA" and is on $PATH by default. By default
+    "-Xms1g -Xmx8g" is set in the wrapper. If you want to overwrite it you can
+    specify these values directly after your binaries. If you have _JAVA_OPTIONS
+    set globally this will take precedence.
+    For example run it with "EncyclopeDIA -Xms512m -Xmx16g"
+  identifiers:
+    - biotools:encyclopedia
+    - doi:10.1038/s41467-018-07454-w

@@ -1,7 +1,4 @@
-{% set version = '3.3.9' %}
-
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set version = '3.3.12' %}
 
 package:
   name: r-classdiscovery
@@ -11,23 +8,17 @@ source:
   url:
     - {{ cran_mirror }}/src/contrib/ClassDiscovery_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/ClassDiscovery/ClassDiscovery_{{ version }}.tar.gz
-  sha256: b71c459e0224a71e8342086c71af07f6f87213cd254fb2a8a6e76d328c9e8a43
+  sha256: fe4e7ec4283f6820f2c84c1c05a1b9c71c837137edea126769f06f5a53cc2ee5
 
 build:
-  merge_build_host: True  # [win]
-  # If this is a new build for the same version, increment the build number.
-  number: 1
-
-  # This is required to make R link correctly on Linux.
+  noarch: generic
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
 
 # Suggests: xtable
 requirements:
-  build:
-    - {{posix}}zip               # [win]
-
   host:
     - r-base
     - bioconductor-biobase
@@ -35,7 +26,6 @@ requirements:
     - r-mclust
     - r-oompabase >=3.0.1
     - r-oompadata
-
   run:
     - r-base
     - bioconductor-biobase
@@ -50,19 +40,12 @@ test:
     - $R -e "library('ClassDiscovery')"           # [not win]
     - "\"%R%\" -e \"library('ClassDiscovery')\""  # [win]
 
-  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
-  # in the recipe that will be run at test time.
-
-  # requires:
-    # Put any additional test requirements here.
-
 about:
   home: http://oompa.r-forge.r-project.org/
   license: Apache (== 2.0)
   summary: 'Defines the classes used for "class discovery" problems in the OOMPA project (<http://oompa.r-forge.r-project.org/>).
     Class discovery primarily consists of unsupervised clustering methods with attempts
     to assess their statistical significance. '
-
   license_family: APACHE
 
 # The original CRAN metadata for this package was:

@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.rhesus_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.rhesus_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/pd.rhesus_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.rhesus_3.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.rhesus/bioconductor-pd.rhesus_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.rhesus/bioconductor-pd.rhesus_3.12.0_src_all.tar.gz"
 )
 MD5="51efcfe1384ac956ff93bf0530965054"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

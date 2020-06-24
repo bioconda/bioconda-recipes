@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.drogene.1.1.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.drogene.1.1.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/pd.drogene.1.1.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.drogene.1.1.st_3.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.drogene.1.1.st/bioconductor-pd.drogene.1.1.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.drogene.1.1.st/bioconductor-pd.drogene.1.1.st_3.12.0_src_all.tar.gz"
 )
 MD5="5c63236ea91390d49dbabea63a48f0a2"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

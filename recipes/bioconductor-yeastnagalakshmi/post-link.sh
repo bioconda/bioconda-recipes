@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="yeastNagalakshmi_1.18.0.tar.gz"
+FN="yeastNagalakshmi_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/yeastNagalakshmi_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/yeastNagalakshmi_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-yeastnagalakshmi/bioconductor-yeastnagalakshmi_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/yeastNagalakshmi_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/yeastNagalakshmi_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yeastnagalakshmi/bioconductor-yeastnagalakshmi_1.24.0_src_all.tar.gz"
 )
-MD5="c3f3493454c6d90bb79f06fa54021ee1"
+MD5="b0426c4c66ed04994186fc8f4c5485c4"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

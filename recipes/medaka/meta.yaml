@@ -1,5 +1,5 @@
 {% set name = "medaka" %}
-{% set version = "0.5.2" %}
+{% set version = "1.0.3" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,10 +7,10 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 42f5513deab90dd4c0982dcb27c9dc9da3246f72eb9796d54fee5e7b6b2a90a6
+  sha256: ca7808f705a87e72254a139d4d9e8929c98774267eac0947360086a845db2e45
 
 build:
-  # keras is 2.7 or 3.6 only. We need py3: 3.6 is the only possibility
+  # the pinned version of h5py is python 3.6 only
   skip: True # [not py36]
   number: 0
   entry_points:
@@ -20,42 +20,40 @@ build:
     - medaka_version_report = medaka:report_binaries
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
-    - biopython
     - cffi
-    - h5py ==2.7.1
-    - intervaltree >=3.0.0
-    - keras ==2.2.4
-    - numpy ==1.16.1
     - pip
-    - pysam
     - python
-    - tensorflow ==1.12.0
-    - htslib ==1.3.1
+    - htslib
     - bzip2
     - xz
     - zlib
-    - libdeflate
-  build:
-    - {{ compiler('c') }}
   run:
     - biopython
     - cffi
     - h5py ==2.7.1
     - intervaltree >=3.0.0
-    - keras ==2.2.4
+    - mappy
     - numpy ==1.16.1
-    - pysam
+    # various reports on OSX that numpy cannot find openblas library with newer versions.
+    - libopenblas ==0.3.3  # [osx]
+    - nomkl  # [osx]
+    - ont-fast5-api
+    - parasail-python
+    - pysam >=0.15.2
     - python
-    - tensorflow ==1.12.0
-    - samtools ==1.3.1
-    - bcftools ==1.3.1
-    - minimap2 ==2.11
-    - htslib ==1.3.1
+    - requests
+    - tensorflow ==1.14.0
+    - whatshap ==0.18
+    - samtools >=1.9
+    - bcftools >=1.9
+    - minimap2 >=2.17
+    - htslib >=1.9
     - bzip2
     - xz
     - zlib
-    - libdeflate
 
 test:
   imports:

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="BSgenome.Hsapiens.UCSC.hg19.masked_1.3.99.tar.gz"
+FN="BSgenome.Hsapiens.UCSC.hg19.masked_1.3.993.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/BSgenome.Hsapiens.UCSC.hg19.masked_1.3.99.tar.gz"
-  "https://bioarchive.galaxyproject.org/BSgenome.Hsapiens.UCSC.hg19.masked_1.3.99.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.hsapiens.ucsc.hg19.masked/bioconductor-bsgenome.hsapiens.ucsc.hg19.masked_1.3.99_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/BSgenome.Hsapiens.UCSC.hg19.masked_1.3.993.tar.gz"
+  "https://bioarchive.galaxyproject.org/BSgenome.Hsapiens.UCSC.hg19.masked_1.3.993.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.hsapiens.ucsc.hg19.masked/bioconductor-bsgenome.hsapiens.ucsc.hg19.masked_1.3.993_src_all.tar.gz"
 )
-MD5="8abeb2afb811e1a38cf822d1bc0cb50a"
+MD5="4424e1bda9cc005d75f5f05ba4a50c77"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

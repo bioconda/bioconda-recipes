@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="breakpointRdata_1.0.0.tar.gz"
+FN="breakpointRdata_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/breakpointRdata_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/breakpointRdata_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-breakpointrdata/bioconductor-breakpointrdata_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/breakpointRdata_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/breakpointRdata_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-breakpointrdata/bioconductor-breakpointrdata_1.6.0_src_all.tar.gz"
 )
-MD5="6484ead0a5a57fe29f9bd0edba517f10"
+MD5="6f194a2cce956341b6969663493daf3b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

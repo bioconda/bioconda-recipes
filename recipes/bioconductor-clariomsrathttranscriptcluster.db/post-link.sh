@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="clariomsrathttranscriptcluster.db_8.7.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/clariomsrathttranscriptcluster.db_8.7.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/clariomsrathttranscriptcluster.db_8.7.0.tar.gz"
   "https://bioarchive.galaxyproject.org/clariomsrathttranscriptcluster.db_8.7.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-clariomsrathttranscriptcluster.db/bioconductor-clariomsrathttranscriptcluster.db_8.7.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-clariomsrathttranscriptcluster.db/bioconductor-clariomsrathttranscriptcluster.db_8.7.0_src_all.tar.gz"
 )
 MD5="50399fde7380b015da941f36362a3f78"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

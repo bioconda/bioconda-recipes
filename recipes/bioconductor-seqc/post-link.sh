@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="seqc_1.16.0.tar.gz"
+FN="seqc_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/seqc_1.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/seqc_1.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-seqc/bioconductor-seqc_1.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/seqc_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/seqc_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-seqc/bioconductor-seqc_1.22.0_src_all.tar.gz"
 )
-MD5="376dcb3255c528683e1c4be13ee3c5c5"
+MD5="fcb4a8bda71e2de76bfec741109f3e71"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

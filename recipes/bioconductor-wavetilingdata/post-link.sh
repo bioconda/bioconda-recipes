@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="waveTilingData_1.18.0.tar.gz"
+FN="waveTilingData_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/waveTilingData_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/waveTilingData_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-wavetilingdata/bioconductor-wavetilingdata_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/waveTilingData_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/waveTilingData_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-wavetilingdata/bioconductor-wavetilingdata_1.24.0_src_all.tar.gz"
 )
-MD5="4fe1e828f7c998a4d3c9621886e5c5f1"
+MD5="33931b83b9bf05ea30ddfacc996abd0e"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

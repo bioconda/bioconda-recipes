@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="furrowSeg_1.10.0.tar.gz"
+FN="furrowSeg_1.16.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/furrowSeg_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/furrowSeg_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-furrowseg/bioconductor-furrowseg_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/furrowSeg_1.16.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/furrowSeg_1.16.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-furrowseg/bioconductor-furrowseg_1.16.0_src_all.tar.gz"
 )
-MD5="dc60909e3fe7d7b517d4aaa5693fbe83"
+MD5="1c3ab796ba8029e53621d67f84a19d80"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="hgu133plus2CellScore_1.2.0.tar.gz"
+FN="hgu133plus2CellScore_1.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/hgu133plus2CellScore_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/hgu133plus2CellScore_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hgu133plus2cellscore/bioconductor-hgu133plus2cellscore_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/hgu133plus2CellScore_1.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/hgu133plus2CellScore_1.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hgu133plus2cellscore/bioconductor-hgu133plus2cellscore_1.8.0_src_all.tar.gz"
 )
-MD5="354194eddcc3f67ac375b08422007602"
+MD5="35330eb9a8006a3f5a2d4a83ded4d4ef"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

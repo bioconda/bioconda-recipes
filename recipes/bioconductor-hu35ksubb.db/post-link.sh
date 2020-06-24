@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="hu35ksubb.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/hu35ksubb.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/hu35ksubb.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/hu35ksubb.db_3.2.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hu35ksubb.db/bioconductor-hu35ksubb.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hu35ksubb.db/bioconductor-hu35ksubb.db_3.2.3_src_all.tar.gz"
 )
 MD5="b49fc7bda2b0879d1be1ac0061a7ea98"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

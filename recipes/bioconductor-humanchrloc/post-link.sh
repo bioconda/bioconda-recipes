@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="humanCHRLOC_2.1.6.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/humanCHRLOC_2.1.6.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/humanCHRLOC_2.1.6.tar.gz"
   "https://bioarchive.galaxyproject.org/humanCHRLOC_2.1.6.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-humanchrloc/bioconductor-humanchrloc_2.1.6_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-humanchrloc/bioconductor-humanchrloc_2.1.6_src_all.tar.gz"
 )
 MD5="113450c0822000c9b4e8a0141cf4b819"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

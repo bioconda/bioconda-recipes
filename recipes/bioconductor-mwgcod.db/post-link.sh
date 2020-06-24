@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="mwgcod.db_3.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/mwgcod.db_3.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/mwgcod.db_3.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mwgcod.db_3.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mwgcod.db/bioconductor-mwgcod.db_3.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mwgcod.db/bioconductor-mwgcod.db_3.4.0_src_all.tar.gz"
 )
 MD5="3d6e2af6b05d6e07a212c043dc9d37c4"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

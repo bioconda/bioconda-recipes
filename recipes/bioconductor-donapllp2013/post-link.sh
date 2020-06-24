@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="DonaPLLP2013_1.20.0.tar.gz"
+FN="DonaPLLP2013_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/DonaPLLP2013_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/DonaPLLP2013_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-donapllp2013/bioconductor-donapllp2013_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/DonaPLLP2013_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/DonaPLLP2013_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-donapllp2013/bioconductor-donapllp2013_1.26.0_src_all.tar.gz"
 )
-MD5="5a228295986fdfe1ad44a66ca2f1d947"
+MD5="93278dc268d6152f97beff19c1e21cb3"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

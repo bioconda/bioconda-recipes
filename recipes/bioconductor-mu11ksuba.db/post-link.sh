@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="mu11ksuba.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/mu11ksuba.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/mu11ksuba.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/mu11ksuba.db_3.2.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mu11ksuba.db/bioconductor-mu11ksuba.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mu11ksuba.db/bioconductor-mu11ksuba.db_3.2.3_src_all.tar.gz"
 )
 MD5="2ed9098b7efa45430488d4c9f8df0750"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

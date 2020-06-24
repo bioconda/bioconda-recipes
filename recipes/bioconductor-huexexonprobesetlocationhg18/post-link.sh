@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="HuExExonProbesetLocationHg18_0.0.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/HuExExonProbesetLocationHg18_0.0.2.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/HuExExonProbesetLocationHg18_0.0.2.tar.gz"
   "https://bioarchive.galaxyproject.org/HuExExonProbesetLocationHg18_0.0.2.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-huexexonprobesetlocationhg18/bioconductor-huexexonprobesetlocationhg18_0.0.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-huexexonprobesetlocationhg18/bioconductor-huexexonprobesetlocationhg18_0.0.2_src_all.tar.gz"
 )
 MD5="bb00b7f5e4db2b04dca5951aa6bd073e"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

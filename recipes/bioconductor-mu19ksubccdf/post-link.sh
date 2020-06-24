@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="mu19ksubccdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/mu19ksubccdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/mu19ksubccdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mu19ksubccdf_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mu19ksubccdf/bioconductor-mu19ksubccdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mu19ksubccdf/bioconductor-mu19ksubccdf_2.18.0_src_all.tar.gz"
 )
 MD5="e53ef2716f88022e5e41e2cd857fc2a3"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

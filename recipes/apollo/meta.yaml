@@ -1,0 +1,58 @@
+{% set name = "apollo" %}
+{% set version = "4.2.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 3eaf1e2203a3fde246d8a0f5e59d937fed8954d9ff9b4c84ee1799ab0bbfc77a
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - arrow=arrow.cli:arrow
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - bcbio-gff
+    - biopython
+    - cachetools
+    - click >=6.7
+    - python
+    - pyyaml
+    - requests
+    - wrapt
+    - decorator
+
+test:
+  imports:
+    - apollo
+    - apollo.annotations
+    - apollo.cannedcomments
+    - apollo.cannedkeys
+    - apollo.cannedvalues
+    - apollo.groups
+    - apollo.io
+    - apollo.metrics
+    - apollo.organisms
+    - apollo.status
+    - apollo.users
+  commands:
+    - arrow --help
+
+about:
+  home: https://github.com/galaxy-genome-annotation/python-apollo
+  license: MIT
+  license_family: MIT
+  summary: WebApollo API library
+
+extra:
+  recipe-maintainers:
+    - abretaud

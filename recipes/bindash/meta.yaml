@@ -1,0 +1,42 @@
+{% set name = "bindash" %}
+{% set version = "1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/zhaoxiaofei/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: 6f7c68fec2ad5e2d869fbe52c324010de2ed61c3a5d5800cf6ab8f9c5deaaa1a
+
+build:
+  skip: True  # [osx]
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - llvm-openmp  # [osx]
+  host:
+    - zlib
+    - llvm-openmp  # [osx]
+  run:
+    - zlib
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - bindash --help 2>&1 | grep sketch
+
+about:
+   home: https://github.com/zhaoxiaofei/bindash
+   license: Apache-2.0
+   license_family: APACHE
+   license_file: LICENSE
+   summary: Fast and precise comparison of genomes and metagenomes (in the order of terabytes) on a typical personal laptop
+
+extra:
+   identifiers:
+     - doi:10.1371/journal.pgen.1007758

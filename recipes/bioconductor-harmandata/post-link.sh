@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="HarmanData_1.10.0.tar.gz"
+FN="HarmanData_1.16.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/HarmanData_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/HarmanData_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-harmandata/bioconductor-harmandata_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/HarmanData_1.16.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/HarmanData_1.16.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-harmandata/bioconductor-harmandata_1.16.0_src_all.tar.gz"
 )
-MD5="527bf6823b7a6135e7c04b0031c8c486"
+MD5="805db296ffc6a02c7e43a62d9dcf750a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

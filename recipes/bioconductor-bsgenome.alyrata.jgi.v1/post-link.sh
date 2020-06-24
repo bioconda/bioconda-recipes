@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="BSgenome.Alyrata.JGI.v1_1.0.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/BSgenome.Alyrata.JGI.v1_1.0.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/BSgenome.Alyrata.JGI.v1_1.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Alyrata.JGI.v1_1.0.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.alyrata.jgi.v1/bioconductor-bsgenome.alyrata.jgi.v1_1.0.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.alyrata.jgi.v1/bioconductor-bsgenome.alyrata.jgi.v1_1.0.0_src_all.tar.gz"
 )
 MD5="2119e78ebb1957fd55ab186b167e0995"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

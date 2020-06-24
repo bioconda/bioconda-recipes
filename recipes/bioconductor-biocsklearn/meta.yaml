@@ -1,6 +1,6 @@
-{% set version = "1.4.0" %}
+{% set version = "1.10.0" %}
 {% set name = "BiocSklearn" %}
-{% set bioc = "3.8" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,41 +10,51 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 789848b2d360055fa151d1d1724d9e37
+  md5: e45882a560d385c61b903e616b05b078
 build:
   number: 0
+  skip: True # [py3k]
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: testthat, restfulSE, HDF5Array
+# Suggests: testthat, restfulSE, HDF5Array, BiocStyle
 # SystemRequirements: python (>= 2.7), sklearn, numpy, pandas, h5py
 requirements:
   host:
-    - 'bioconductor-summarizedexperiment >=1.12.0,<1.13.0'
+    - 'bioconductor-basilisk >=1.0.0,<1.1.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
     - r-base
-    - r-bbmisc
     - r-knitr
+    - r-rcpp
     - r-reticulate
+    - libblas
+    - liblapack
     - python
+    - numpy
     - pandas
     - h5py
     - scikit-learn
   run:
-    - 'bioconductor-summarizedexperiment >=1.12.0,<1.13.0'
+    - 'bioconductor-basilisk >=1.0.0,<1.1.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
     - r-base
-    - r-bbmisc
     - r-knitr
+    - r-rcpp
     - r-reticulate
     - python
+    - numpy
     - pandas
     - h5py
     - scikit-learn
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'This package provides interfaces to selected sklearn elements, and demonstrates fault tolerant use of python modules requiring extensive iteration.'
+  summary: 'interface to python sklearn via Rstudio reticulate'
+  description: 'This package provides interfaces to selected sklearn elements, and demonstrates fault tolerant use of python modules requiring extensive iteration.'
 

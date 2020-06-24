@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="hs25kresogen.db_2.5.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/hs25kresogen.db_2.5.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/hs25kresogen.db_2.5.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hs25kresogen.db_2.5.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hs25kresogen.db/bioconductor-hs25kresogen.db_2.5.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hs25kresogen.db/bioconductor-hs25kresogen.db_2.5.0_src_all.tar.gz"
 )
 MD5="a3800d072ce0e5f6f5d8299538b99cca"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

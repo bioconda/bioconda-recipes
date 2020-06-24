@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="Affymoe4302Expr_1.20.0.tar.gz"
+FN="Affymoe4302Expr_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/Affymoe4302Expr_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/Affymoe4302Expr_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-affymoe4302expr/bioconductor-affymoe4302expr_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/Affymoe4302Expr_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/Affymoe4302Expr_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-affymoe4302expr/bioconductor-affymoe4302expr_1.26.0_src_all.tar.gz"
 )
-MD5="e21ed8d45f198ac957d5343b48dd8d2c"
+MD5="cdde2170c35776d25abba82b62634e52"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

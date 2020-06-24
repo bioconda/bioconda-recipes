@@ -1,6 +1,6 @@
-{% set version = "1.0.1" %}
+{% set version = "1.5.0" %}
 {% set name = "OMICsPCA" %}
-{% set bioc = "3.8" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,7 +10,7 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: fe7ca779103cbd3414d8d5b6bd4ad022
+  md5: 7867a8eda885fbcf10683e68a631cd70
 build:
   number: 0
   rpaths:
@@ -20,12 +20,12 @@ build:
 # Suggests: knitr, RUnit, BiocGenerics
 requirements:
   host:
-    - 'bioconductor-genomeinfodb >=1.18.0,<1.19.0'
-    - 'bioconductor-helloranges >=1.8.0,<1.9.0'
-    - 'bioconductor-iranges >=2.16.0,<2.17.0'
-    - 'bioconductor-multiassayexperiment >=1.8.0,<1.9.0'
-    - 'bioconductor-omicspcadata >=1.0.0,<1.1.0'
-    - 'bioconductor-rtracklayer >=1.42.0,<1.43.0'
+    - 'bioconductor-genomeinfodb >=1.24.0,<1.25.0'
+    - 'bioconductor-helloranges >=1.14.0,<1.15.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-multiassayexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-omicspcadata >=1.6.0,<1.7.0'
+    - 'bioconductor-rtracklayer >=1.48.0,<1.49.0'
     - r-base
     - r-cluster
     - r-clvalid
@@ -47,12 +47,12 @@ requirements:
     - r-rmarkdown
     - r-tidyr
   run:
-    - 'bioconductor-genomeinfodb >=1.18.0,<1.19.0'
-    - 'bioconductor-helloranges >=1.8.0,<1.9.0'
-    - 'bioconductor-iranges >=2.16.0,<2.17.0'
-    - 'bioconductor-multiassayexperiment >=1.8.0,<1.9.0'
-    - 'bioconductor-omicspcadata >=1.0.0,<1.1.0'
-    - 'bioconductor-rtracklayer >=1.42.0,<1.43.0'
+    - 'bioconductor-genomeinfodb >=1.24.0,<1.25.0'
+    - 'bioconductor-helloranges >=1.14.0,<1.15.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-multiassayexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-omicspcadata >=1.6.0,<1.7.0'
+    - 'bioconductor-rtracklayer >=1.48.0,<1.49.0'
     - r-base
     - r-cluster
     - r-clvalid
@@ -73,14 +73,25 @@ requirements:
     - r-rgl
     - r-rmarkdown
     - r-tidyr
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'OMICsPCA is an analysis pipeline designed to integrate multi OMICs experiments done on various subjects (e.g. Cell lines, individuals), treatments (e.g. disease/control) or time points and to analyse such integrated data from various various angles and perspectives. In it''s core OMICsPCA uses Principal Component Analysis (PCA) to integrate multiomics experiments from various sources and thus has ability to over data insufficiency issues by using the ingegrated data as representatives. OMICsPCA can be used in various application including analysis of overall distribution of OMICs assays across various samples /individuals /time points; grouping assays by user-defined conditions; identification of source of variation, similarity/dissimilarity between assays, variables or individuals.'
+  summary: 'An R package for quantitative integration and analysis of multiple omics assays from heterogeneous samples'
+  description: 'OMICsPCA is an analysis pipeline designed to integrate multi OMICs experiments done on various subjects (e.g. Cell lines, individuals), treatments (e.g. disease/control) or time points and to analyse such integrated data from various various angles and perspectives. In it''s core OMICsPCA uses Principal Component Analysis (PCA) to integrate multiomics experiments from various sources and thus has ability to over data insufficiency issues by using the ingegrated data as representatives. OMICsPCA can be used in various application including analysis of overall distribution of OMICs assays across various samples /individuals /time points; grouping assays by user-defined conditions; identification of source of variation, similarity/dissimilarity between assays, variables or individuals.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
+  container:
+    extended-base: true
   parent_recipe:
     name: bioconductor-omicspca
     path: recipes/bioconductor-omicspca

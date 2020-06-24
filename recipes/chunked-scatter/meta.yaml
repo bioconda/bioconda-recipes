@@ -1,0 +1,43 @@
+{% set name = "chunked-scatter" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: bdadc85d7c466510cddcaa30f31f6f08f1470d479fa97abba52808fecb3b3dc1
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - chunked-scatter=chunked_scatter.chunked_scatter:main
+    - scatter-regions=chunked_scatter.scatter_regions:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - python >=3.6
+
+test:
+  imports:
+    - chunked_scatter
+  commands:
+    - chunked-scatter --help
+    - scatter-regions --help
+
+about:
+  home: https://github.com/biowdl/chunked-scatter
+  license: MIT
+  license_family: MIT
+  summary: Chunk and scatter the regions in a bed or sequence dict file
+
+extra:
+  recipe-maintainers:
+    - DavyCats
+    - rhpvorderman

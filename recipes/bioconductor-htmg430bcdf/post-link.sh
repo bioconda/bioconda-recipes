@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="htmg430bcdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/htmg430bcdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/htmg430bcdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/htmg430bcdf_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-htmg430bcdf/bioconductor-htmg430bcdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-htmg430bcdf/bioconductor-htmg430bcdf_2.18.0_src_all.tar.gz"
 )
 MD5="53cc1408504a5f07b5655aa46b969157"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

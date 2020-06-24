@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="MeSH.Eco.O157.H7.Sakai.eg.db_1.11.0.tar.gz"
+FN="MeSH.Eco.O157.H7.Sakai.eg.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/MeSH.Eco.O157.H7.Sakai.eg.db_1.11.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MeSH.Eco.O157.H7.Sakai.eg.db_1.11.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mesh.eco.o157.h7.sakai.eg.db/bioconductor-mesh.eco.o157.h7.sakai.eg.db_1.11.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.Eco.O157.H7.Sakai.eg.db_1.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MeSH.Eco.O157.H7.Sakai.eg.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.eco.o157.h7.sakai.eg.db/bioconductor-mesh.eco.o157.h7.sakai.eg.db_1.13.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.eco.o157.h7.sakai.eg.db/bioconductor-mesh.eco.o157.h7.sakai.eg.db_1.13.0_src_all.tar.gz"
 )
-MD5="80d4f81563edbdf16da37e6e67cd2e04"
+MD5="57b6af1fc8bcc489a0d8c3a42a1caf1c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

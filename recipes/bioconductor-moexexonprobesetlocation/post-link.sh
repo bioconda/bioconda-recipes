@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="MoExExonProbesetLocation_1.15.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/MoExExonProbesetLocation_1.15.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MoExExonProbesetLocation_1.15.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MoExExonProbesetLocation_1.15.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-moexexonprobesetlocation/bioconductor-moexexonprobesetlocation_1.15.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-moexexonprobesetlocation/bioconductor-moexexonprobesetlocation_1.15.0_src_all.tar.gz"
 )
 MD5="07eea205fce2a8cf4585fa7e71fb0057"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

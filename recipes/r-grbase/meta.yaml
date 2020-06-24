@@ -1,6 +1,4 @@
 {% set version = '1.8-3.4' %}
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-grbase
@@ -13,23 +11,18 @@ source:
   sha256: d35f94c2fb7cbd4ce3991570424dfe6723a849658da32e13df29f53b6ea2cc2c
 
 build:
-  merge_build_host: True  # [win]
-  number: 0
+  number: 4
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('c') }}        # [not win]
-    - {{ compiler('cxx') }}      # [not win]
-    - {{native}}toolchain        # [win]
-    - {{posix}}filesystem        # [win]
-    - {{posix}}make
-    - {{posix}}sed               # [win]
-    - {{posix}}coreutils         # [win]
-    - {{posix}}zip               # [win]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
+    - libblas
     - r-base
     - r-matrix
     - bioconductor-rbgl
@@ -41,7 +34,6 @@ requirements:
     - r-magrittr
   run:
     - r-base
-    - {{native}}gcc-libs         # [win]
     - r-matrix
     - bioconductor-rbgl
     - r-rcpp >=0.11.1

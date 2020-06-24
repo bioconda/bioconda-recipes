@@ -1,0 +1,89 @@
+--- a/transIndel_call.py
++++ b/transIndel_call.py
+@@ -1,3 +1,4 @@
++#!/usr/bin/env python
+ #!/usr/bin/python
+ #-*- coding: utf-8 -*-
+ #===============================================================================
+@@ -26,8 +27,6 @@ __version__ = 'v0.1'
+ def vcf_header(output_prefix):
+ 	header = ['##fileformat=VCFv4.1']
+ 	header.append('##source=transIndel '+__version__)
+-	header.append('##ALT=<ID=DEL,Description="Deletion">')
+-	header.append('##ALT=<ID=INS,Description="Insertion">')
+ 	header.append('##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of samples with data">')
+ 	header.append('##INFO=<ID=DP,Number=1,Type=Integer,Description="Total read depth at the locus">')
+ 	header.append('##INFO=<ID=AO,Number=1,Type=Integer,Description="Alternate allele observations, with partial observations recorded fractionally">')
+@@ -37,6 +36,8 @@ def vcf_header(output_prefix):
+ 	header.append('##INFO=<ID=CHR2,Number=1,Type=String,Description="Chromosome for END coordinate in case of a translocation (under development)">')
+ 	header.append('##INFO=<ID=END,Number=1,Type=Integer,Description="end position of the indel">')
+ 	header.append('##INFO=<ID=SVMETHOD,Number=1,Type=String,Description="Type of approach used to detect indel (under development)">')
++	header.append('##ALT=<ID=DEL,Description="Deletion">')
++	header.append('##ALT=<ID=INS,Description="Insertion">')
+ 	header.append('##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">')
+ 	header.append('#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t'+output_prefix)
+ 	return '\n'.join(header)
+@@ -53,9 +54,10 @@ def is_sv(read,ref_site,mapq_cutoff):
+ 			return True
+ 	return False
+ 
+-def sv_scan(input_bam,output_prefix,ao_cutoff,dp_cutoff,vaf_cutoff,indel_len_cutoff,target,mapq_cutoff):
++def sv_scan(input_bam,output_prefix,ref_genome,ao_cutoff,dp_cutoff,vaf_cutoff,indel_len_cutoff,target,mapq_cutoff):
+ 	sv_set = set()
+ 	samfile = pysam.Samfile(input_bam,'rb')
++        fastafile = pysam.Fastafile(ref_genome) if ref_genome else None 
+ 	vcffile = open(output_prefix+'.indel.vcf','w',0)
+ 	print >> vcffile, vcf_header(output_prefix)
+ 	vcf_field_gt = 'GT\t1/1'	
+@@ -90,7 +92,8 @@ def sv_scan(input_bam,output_prefix,ao_cutoff,dp_cutoff,vaf_cutoff,indel_len_cut
+ 							try:
+ 								sv_dict[sv_id][-1] = sv_dict[sv_id][-1] + 1
+ 							except KeyError:
+-								sv_dict[sv_id] = ['.', '<DEL>', 1]
++                                                                ref_seq = fastafile.fetch(col.reference_name,col.pos+1,col.pos+2) if fastafile else '.'
++								sv_dict[sv_id] = [ref_seq, '<DEL>', 1]
+ 						elif is_sv(read, col.pos, mapq_cutoff):
+ 							sv_id = ','.join(read.alignment.get_tag('SV').split(',')[:3])
+ 							try:
+@@ -123,6 +126,7 @@ def usage():
+ 	print 'Usage:'
+ 	print ' python transIndel_call.py -i input_bam_from_transIndel_build -o output_vcf_filename_prefix [opts]'
+ 	print 'Opts:'
++        print ' -r  :reference genome used for VCF REF column (required for valid VCF)'
+ 	print ' -c  :minimal observation count for Indel (default 4)'
+ 	print ' -d  :minimal depth to call Indel (default 10)'
+ 	print ' -f  :minimal variant allele frequency (default 0.1)'
+@@ -139,6 +143,7 @@ def main():
+ 	# parameters parsing
+ 	input_bam = ''
+ 	output_vcf_prefix = ''
++        ref_genome = ''
+ 	ao_cutoff = 4
+ 	dp_cutoff = 10
+ 	vaf_cutoff = 0.1
+@@ -146,7 +151,7 @@ def main():
+ 	mapq_cutoff = 15 
+ 	target = ''
+ 	try:
+-		opts, args = getopt.getopt(sys.argv[1:], 'i:o:c:d:f:l:m:t:h:v', ['help', 'version'])
++		opts, args = getopt.getopt(sys.argv[1:], 'i:o:r:c:d:f:l:m:t:h:v', ['help', 'version'])
+ 		if not opts:
+ 			print "Please use the -h or --help option to get usage information."
+ 			sys.exit(0)
+@@ -157,6 +162,7 @@ def main():
+ 	for o, a in opts:
+ 		if o == '-i': input_bam = a
+ 		elif o == '-o': output_vcf_prefix = a
++                elif o == '-r': ref_genome = a
+ 		elif o == '-c': ao_cutoff = int(a)
+ 		elif o == '-d': dp_cutoff = int(a)
+ 		elif o == '-f': vaf_cutoff = float(a)
+@@ -182,7 +188,7 @@ def main():
+ 
+ 	print 'transIndel call starts running: ' + time.strftime("%Y-%m-%d %H:%M:%S")
+ 	start = time.time()
+-	sv_scan(input_bam, output_vcf_prefix, ao_cutoff, dp_cutoff, vaf_cutoff, indel_len_cutoff, target, mapq_cutoff)
++	sv_scan(input_bam, output_vcf_prefix, ref_genome, ao_cutoff, dp_cutoff, vaf_cutoff, indel_len_cutoff, target, mapq_cutoff)
+ 	print "transIndel call running done: " + time.strftime("%Y-%m-%d %H:%M:%S")
+ 	end = time.time()
+ 	print 'transIndel call takes ' + str(end - start) + ' seconds.'

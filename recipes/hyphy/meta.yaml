@@ -1,5 +1,5 @@
-{% set version = "2.3.14" %}
-{% set sha256 = "9e6c817cb649986e3fe944bcaf88be3533e7e62968b9a486c719e951e5ed1cf6" %}
+{% set version = "2.5.15" %}
+{% set sha256 = "74fa1b96ad901f9408ba8d1ecadab2b9e690c15e5d0cc1a42bb69f0c2bc0a2c0" %}
 
 package:
   name: hyphy
@@ -11,35 +11,37 @@ source:
 
 build:
   number: 0
-  skip: true # [osx]
 
 requirements:
   build:
     - cmake
-    - '{{ compiler("cxx") }}'
+    - {{ compiler("cxx") }}
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
   host:
+    - libcurl
     - openmpi
-    - curl
+    - openssl
   run:
+    - libcurl
     - openmpi
-    - curl
+    - openssl
 
 test:
   commands:
-    - HYPHYMP -v
-    - HYPHYMPI -v
+    - hyphy --help
 
 about:
   home: http://hyphy.org/
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: |
+  summary: "An open-source software package for comparative sequence analysis using stochastic evolutionary models."
+  description: |
     HyPhy (Hypothesis Testing using Phylogenies) is an open-source software package for the analysis of genetic sequences
     (in particular the inference of natural selection) using techniques in phylogenetics, molecular evolution, and machine learning.
   dev_url: https://github.com/veg/hyphy
 
 extra:
   container:
-    # openmpi needs ssh/rsh
     extended-base: true

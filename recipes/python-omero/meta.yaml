@@ -1,30 +1,51 @@
-{% set OMERO_VERSION = "5.4.10" %}
-{% set OMERO_BUILD = "105" %}
+{% set version = "5.7.0" %}
 
 package:
   name: python-omero
-  version: {{ OMERO_VERSION }}
+  version: {{ version }}
 
 source:
-  url: http://downloads.openmicroscopy.org/omero/{{ OMERO_VERSION }}/artifacts/OMERO.py-{{ OMERO_VERSION }}-ice36-b{{ OMERO_BUILD }}.zip
-  sha1: 0cca42b8f6e41293f6821d94bd8847f2c9712370
+  url: https://pypi.io/packages/source/o/omero-py/omero-py-{{ version }}.tar.gz
+  sha256: e421ad96d7bfbbc52fc2071552cf3085882ab18eba1dbc03c3582314d04842d2
 
 build:
-  number: 1
-  skip: True  # [py3k]
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
   host:
-    - setuptools
-    - python
+    - pip
+    - python >=3
   run:
-    - python
-    - zeroc-ice >3.5,<3.7
-
+    - future
+    - numpy
+    - pillow
+    - python >=3
+    - zeroc-ice =3.6.5
+      
 test:
+  commands:
+    - omero --help 2>&1 | grep -q "Running .*omero as root can corrupt your directory permissions."
+    - omero version 2>&1 | grep -q "Running .*omero as root can corrupt your directory permissions."
+
   imports:
     - omero
+    - omero.api
+    - omero.clients
+    - omero.cmd
+    - omero.constants
+    - omero.fs
     - omero.gateway
+    - omero.grid
+    - omero.install
+    - omero.metadatastore
+    - omero.model
+    - omero.plugins
+    - omero.romio
+    - omero.sys
+    - omero.util
+    - omero_ext
 
 about:
   home: https://www.openmicroscopy.org/

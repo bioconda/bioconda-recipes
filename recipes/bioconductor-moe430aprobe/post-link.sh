@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="moe430aprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/moe430aprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/moe430aprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/moe430aprobe_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-moe430aprobe/bioconductor-moe430aprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-moe430aprobe/bioconductor-moe430aprobe_2.18.0_src_all.tar.gz"
 )
 MD5="0aa83189d04599a65211d1a2f0a51c8f"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

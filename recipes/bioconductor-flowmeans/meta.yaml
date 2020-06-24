@@ -1,6 +1,6 @@
-{% set version = "1.42.0" %}
+{% set version = "1.48.0" %}
 {% set name = "flowMeans" %}
-{% set bioc = "3.8" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,7 +10,7 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 19389036944c6237feb203f969b5fcc6
+  md5: dbcf1c72e1833a28f4e4ef667bb6ab56
 build:
   number: 0
   rpaths:
@@ -19,22 +19,33 @@ build:
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-biobase >=2.42.0,<2.43.0'
-    - 'bioconductor-flowcore >=1.48.0,<1.49.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-flowcore >=2.0.0,<2.1.0'
     - r-base
     - r-feature
     - r-rrcov
   run:
-    - 'bioconductor-biobase >=2.42.0,<2.43.0'
-    - 'bioconductor-flowcore >=1.48.0,<1.49.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-flowcore >=2.0.0,<2.1.0'
     - r-base
     - r-feature
     - r-rrcov
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Identifies cell populations in Flow Cytometry data using non-parametric clustering and segmented-regression-based change point detection. Note: R 2.11.0 or newer is required.'
+  summary: 'Non-parametric Flow Cytometry Data Gating'
+  description: 'Identifies cell populations in Flow Cytometry data using non-parametric clustering and segmented-regression-based change point detection. Note: R 2.11.0 or newer is required.'
+extra:
+  container:
+    extended-base: true
 

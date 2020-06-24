@@ -1,43 +1,38 @@
-{% set version='0.6.8' %}
+{% set version='0.7.1' %}
+
 package:
   name: sambamba
   version: {{ version }}
 
-# There are no OSX binaries yet, so just build on both platforms
 source:
-  git_url: https://github.com/biod/sambamba
-  git_tag: v0.6.8
-  md5: unused
+  url: https://github.com/biod/sambamba/archive/v{{ version }}.tar.gz
+  sha256: f03a415a3bc572e9ad3807936fde6eea1720e85611a8890c8bb91218c598bc38
 
 build:
-  number: 1
+  number: 2
 
-# ldc provides run time libraries as well as a compiler.
-# The version needs to be pinned
 requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - ldc 1.13.*
+    - ldc >=1.17.0
     - bzip2
     - htslib
     - zlib
     - xz
+    - git  # needed for BioD
   run:
-    - ldc 1.13.*
+    - {{ pin_compatible('ldc', max_pin='x.x') }}
     - bzip2
     - zlib
     - xz
 
 test:
   commands:
-    - sambamba view
+    - sambamba view --help
 
 about:
   home: https://github.com/biod/sambamba
   license: GPLv2
+  license_file: LICENSE
   summary: Tools for working with SAM/BAM data
-
-extra:
-  skip-lints:
-    - uses_git_url

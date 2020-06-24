@@ -1,6 +1,6 @@
-{% set version = "1.8.0" %}
+{% set version = "1.14.0" %}
 {% set name = "msPurity" %}
-{% set bioc = "3.8" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,40 +10,52 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 3074b76fb2b1feb6057eefb1f0d08375
+  md5: ca213972d2e74c8e7f56a065b76f074e
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: testthat, xcms, BiocStyle, knitr, rmarkdown, msPurityData, CAMERA
+# Suggests: testthat, xcms, BiocStyle, knitr, rmarkdown, msPurityData, CAMERA, RPostgres, RMySQL
 requirements:
   host:
-    - 'bioconductor-mzr >=2.16.0,<2.17.0'
+    - 'bioconductor-mzr >=2.22.0,<2.23.0'
     - r-base
     - r-dbi
+    - r-dbplyr
     - r-dosnow
+    - r-dplyr
     - r-fastcluster
     - r-foreach
     - r-ggplot2
+    - r-jsonlite
+    - r-magrittr
     - r-plyr
     - r-rcpp
     - r-reshape2
     - r-rsqlite
     - r-stringr
+    - r-uuid
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-mzr >=2.16.0,<2.17.0'
+    - 'bioconductor-mzr >=2.22.0,<2.23.0'
     - r-base
     - r-dbi
+    - r-dbplyr
     - r-dosnow
+    - r-dplyr
     - r-fastcluster
     - r-foreach
     - r-ggplot2
+    - r-jsonlite
+    - r-magrittr
     - r-plyr
     - r-rcpp
     - r-reshape2
     - r-rsqlite
     - r-stringr
+    - r-uuid
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
@@ -53,7 +65,9 @@ test:
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'Assess the contribution of the targeted precursor in fragmentation acquired or anticipated isolation windows using a metric called "precursor purity". Also provides simple processing steps (averaging, filtering, blank subtraction, etc) for DI-MS data. Works for both LC-MS(/MS) and DI-MS(/MS) data. Spectral matching of fragmentation spectra can also be run against a SQLite database of library spectra.'
+  summary: 'Automated Evaluation of Precursor Ion Purity for Mass Spectrometry Based Fragmentation in Metabolomics'
+  description: 'msPurity R package was developed to: 1) Assess the spectral quality of fragmentation spectra by evaluating the "precursor ion purity". 2) Process fragmentation spectra. 3) Perform spectral matching. What is precursor ion purity? -What we call "Precursor ion purity" is a measure of the contribution of a selected precursor peak in an isolation window used for fragmentation. The simple calculation involves dividing the intensity of the selected precursor peak by the total intensity of the isolation window. When assessing MS/MS spectra this calculation is done before and after the MS/MS scan of interest and the purity is interpolated at the recorded time of the MS/MS acquisition. Additionally, isotopic peaks can be removed, low abundance peaks are removed that are thought to have limited contribution to the resulting MS/MS spectra and the isolation efficiency of the mass spectrometer can be used to normalise the intensities used for the calculation.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:mspurity

@@ -2,6 +2,7 @@ echo "
 HLA*LA installed.  You still need to install the data packages and
 prepare the inference graph. The following commands should do the job:
 
+mkdir $PREFIX/opt/hla-la/graphs
 cd $PREFIX/opt/hla-la/graphs
 wget http://www.well.ox.ac.uk/downloads/PRG_MHC_GRCh38_withIMGT.tar.gz
 tar -xvzf PRG_MHC_GRCh38_withIMGT.tar.gz

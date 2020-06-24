@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="chimp.db0_3.7.1.tar.gz"
+FN="chimp.db0_3.11.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/chimp.db0_3.7.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/chimp.db0_3.7.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-chimp.db0/bioconductor-chimp.db0_3.7.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/chimp.db0_3.11.2.tar.gz"
+  "https://bioarchive.galaxyproject.org/chimp.db0_3.11.2.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chimp.db0/bioconductor-chimp.db0_3.11.2_src_all.tar.gz"
 )
-MD5="e9b8c6525777c4474e79ed1edc5c5f05"
+MD5="3bb9cf2562cfeb2a7ce4b8ec46b80471"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="Iyer517_1.24.0.tar.gz"
+FN="Iyer517_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/Iyer517_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/Iyer517_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-iyer517/bioconductor-iyer517_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/Iyer517_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/Iyer517_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-iyer517/bioconductor-iyer517_1.30.0_src_all.tar.gz"
 )
-MD5="db3def2128ea25dabad86019961b2126"
+MD5="f6b8ffe2a96943b9a3b7105a25afad19"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

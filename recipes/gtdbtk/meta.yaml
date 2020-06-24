@@ -1,55 +1,55 @@
 {% set name = "gtdbtk" %}
-{% set version = "0.1.6" %}
+{% set version = "1.2.0" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: d30abfb59a1d9180bdbdb6d07d26b0baaa6fdf70f5ef08576bf284854cf3b262
-  patches:
-    - config_file.patch
+  sha256: 1eda0b342b090f7c03ddcacee0ef249fcaa0a05e664b06a88fcf57b65d990cb5
 
 build:
   number: 0
-  skip: True  # [py3k or osx]
+  noarch: python
+  entry_points:
+    - gtdbtk = gtdbtk.__main__:main
 
 requirements:
   host:
-    - biolib >=0.0.43
-    - dendropy >=4.1.0
-    - jinja2 >=2.7.3
-    - mpld3 >=0.2
     - pip
-    - python
-    - scipy
-    - perl-gtdbtk
+    - python >=3.6
   run:
-    - biolib >=0.0.43
     - dendropy >=4.1.0
-    - jinja2 >=2.7.3
-    - mpld3 >=0.2
-    - python
-    - scipy
-    - prodigal
-    - hmmer
-    - pplacer
-    - fastani
-    - fasttree
-    - perl-gtdbtk
+    - python >=3.6
+    - prodigal >=2.6.2
+    - hmmer ==3.1b2
+    - pplacer >=1.1.alpha17
+    - fastani >=1.2
+    - fasttree >=2.1.9
+    - numpy >=1.9.0
+    - mash >=2.0
+    - tqdm
 
 test:
-  commands:
-    - export GTDBTK_DB_PATH=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}/db && gtdbtk -h
   imports:
     - gtdbtk
+    - gtdbtk.biolib_lite
     - gtdbtk.config
     - gtdbtk.external
+    - gtdbtk.external.pypfam
+    - gtdbtk.external.pypfam.HMM
+    - gtdbtk.external.pypfam.Scan
+    - gtdbtk.io.marker
+    - gtdbtk.io.prodigal
 
 about:
-  home: http://pypi.python.org/pypi/gtdbtk/
+  home: https://github.com/Ecogenomics/GTDBTk
   license: GNU General Public v3 (GPLv3)
   license_family: GPL3
-  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
+  license_file: 'LICENSE'
   summary: 'A toolkit for assigning objective taxonomic classifications to bacterial and archaeal genomes.'
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btz848

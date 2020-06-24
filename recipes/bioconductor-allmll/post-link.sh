@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ALLMLL_1.22.0.tar.gz"
+FN="ALLMLL_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/ALLMLL_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ALLMLL_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-allmll/bioconductor-allmll_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/ALLMLL_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ALLMLL_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-allmll/bioconductor-allmll_1.28.0_src_all.tar.gz"
 )
-MD5="fc9e850c94ac9ec9c377f5e8843e7673"
+MD5="f4e7124f03dc806050160ae687579915"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

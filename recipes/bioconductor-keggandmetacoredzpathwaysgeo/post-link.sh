@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="KEGGandMetacoreDzPathwaysGEO_1.2.0.tar.gz"
+FN="KEGGandMetacoreDzPathwaysGEO_1.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/KEGGandMetacoreDzPathwaysGEO_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/KEGGandMetacoreDzPathwaysGEO_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-keggandmetacoredzpathwaysgeo/bioconductor-keggandmetacoredzpathwaysgeo_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/KEGGandMetacoreDzPathwaysGEO_1.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/KEGGandMetacoreDzPathwaysGEO_1.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-keggandmetacoredzpathwaysgeo/bioconductor-keggandmetacoredzpathwaysgeo_1.8.0_src_all.tar.gz"
 )
-MD5="da545248fec755e65427c118cd8d518d"
+MD5="0dcfd77bff718fe40f147f7716f12308"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

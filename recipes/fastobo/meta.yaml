@@ -1,0 +1,49 @@
+{% set name = "fastobo" %}
+{% set version = "0.8.2" %}
+
+package:
+  name: "{{ name | lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "b36dd0182423d7fff406f96aaabb464d179cb1d8ec22a658a2161a88e14d0dac"
+
+build:
+  number: 0
+  skip: True  # [osx or py27]
+
+requirements:
+  build:
+    - wget
+    - {{ compiler('c') }}  # [not osx]
+    - {{ compiler('cxx') }}  # [not osx]
+    - clang_osx-64 # [osx]
+    - clangxx_osx-64 # [osx]
+    - pkg-config  # [osx]
+  host:
+    - pip
+    - setuptools-rust
+    - python
+    - libiconv #[osx]
+  run:
+    - python
+    - libiconv #[osx]
+
+test:
+  imports:
+    - fastobo
+
+about:
+  home: "https://github.com/fastobo/fastobo-py"
+  license: "MIT"
+  license_family: "MIT"
+  license_file: "COPYING"
+  summary: "Faultless AST for Open Biomedical Ontologies in Python"
+  doc_url: "https://fastobo.readthedocs.io"
+
+extra:
+  recipe-maintainers:
+    - althonos
+  identifiers:
+    - doi:10.7490/f1000research.1117405.1

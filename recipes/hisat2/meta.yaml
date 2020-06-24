@@ -1,25 +1,20 @@
+{% set name = "HISAT2" %}
+{% set version = "2.2.0" %}
+
 package:
-  name: hisat2
-  version: 2.1.0
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.1.0-Linux_x86_64.zip #[linux]
-  sha256: 7f68df59db7db93b8a4710d934d75577ac9138ecccc2a8b26d700925354c09bc #[linux]
-
-  url: ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.1.0-OSX_x86_64.zip #[osx]
-  sha256: 7416d5381ffa64914e15f6a930cfb9eb3ab1f5b9894ef8189930d1670384cd81 #[osx]
+  url: https://github.com/DaehwanKimLab/hisat2/archive/v{{ version }}.tar.gz
+  sha256: 429882d90ad9c600a986279b3ca5d78573caacf3bf0d780c802c006d4fcf0a01
 
 build:
-  skip: True  # [not py27]
   number: 3
-
-about:
-  home: 'https://ccb.jhu.edu/software/hisat2/index.shtml'
-  license: GPLv3
-  summary: graph-based alignment of next generation sequencing reads to a population of genomes
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
     - python
@@ -29,10 +24,22 @@ requirements:
 
 test:
   commands:
-    - hisat2 --version
+    - hisat2 --help
     - hisatgenotype_extract_reads.py --help
+
+about:
+  home: http://daehwankimlab.github.io/hisat2
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: "Graph-based alignment of next generation sequencing reads to a population of genomes."
+  description: "HISAT2 is a fast and sensitive alignment program for mapping next-generation sequencing reads (both DNA and RNA) to a population of human genomes as well as to a single reference genome."
+  doc_url: https://daehwankimlab.github.io/hisat2/manual/
+  dev_url: https://github.com/DaehwanKimLab/hisat2
 
 extra:
   identifiers:
     - biotools:HISAT2
     - doi:10.1038/nmeth.3317
+    - doi:10.1038/s41587-019-0201-4
+  notes: "Pre-built indices for HISAT2 can be downloaded from https://daehwankimlab.github.io/hisat2/download/."

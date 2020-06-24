@@ -1,0 +1,117 @@
+name: Bulk branch
+on:
+  push:
+    branches:
+      - bulk
+jobs:
+  build-linux:
+    name: Bulk Linux Builds
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 15
+      matrix:
+        runner: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Fetch common.sh
+      run: |
+        wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/common.sh
+
+    - name: Restore cache
+      id: cache
+      uses: actions/cache@v1
+      with:
+        path: /home/runner/bioconda
+        key: ${{ runner.os }}-BULK-${{ hashFiles('**/common.sh') }}
+
+    - name: Setup Bioconda-utils
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: bioconda/bioconda-actions/bioconda_recipes_setup/@bulk
+
+    - name: Build and upload
+      env:
+        ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+        QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+        # Mimic circleci
+        OSTYPE: "linux-gnu"
+        CI: "true"
+      run: |
+        . /home/runner/bioconda/etc/profile.d/conda.sh
+        conda activate base
+        echo '============'
+        conda info --all
+        conda config --show-sources
+        python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+        echo '============'
+        bioconda-utils build recipes config.yml \
+          --worker-offset ${{ matrix.runner }} --n-workers 8 \
+          --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
+        conda clean -y --all
+
+  build-osx:
+    name: Bulk OSX Builds
+    runs-on: macOS-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        runner: [0, 1, 2, 3, 4]
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Fetch common.sh
+      run: |
+        wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/common.sh
+
+    - name: Restore cache
+      id: cache
+      uses: actions/cache@v1
+      with:
+        path: /Users/runner/bioconda
+        key: ${{ runner.os }}--BULK-${{ hashFiles('**/common.sh') }}
+
+    - name: Setup Bioconda-utils
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: bioconda/bioconda-actions/bioconda_recipes_setup/@bulk
+
+    - name: OSX stuff
+      run: |
+        # download SDK and setup sysroot on macOS
+        #  primarily, run_conda_forge_build_setup does the following:
+        #   - download/setup SDK:
+        #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L21-L26
+        #   - add activation script to set MACOSX_DEPLOYMENT_TARGET and CONDA_BUILD_SYSROOT:
+        #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L60-L63
+        conda activate base
+        # use "CONFIG=" to avoid writing ./.ci_support/${CONFIG}.yaml which we don't need/use.
+        CONFIG= OSX_FORCE_SDK_DOWNLOAD=1 MACOSX_DEPLOYMENT_TARGET=10.13 run_conda_forge_build_setup
+        conda_forge_ci_setup_activate_sh="${CONDA_PREFIX}/etc/conda/activate.d/conda-forge-ci-setup-activate.sh"
+        sed -Ei.bak "s/^(export MACOSX_DEPLOYMENT_TARGET)=.*$/\\1='10.9'/" "${conda_forge_ci_setup_activate_sh}"
+        rm "${conda_forge_ci_setup_activate_sh}".bak
+        cat "${conda_forge_ci_setup_activate_sh}"
+        grep -qFx "export MACOSX_DEPLOYMENT_TARGET='10.9'" "${conda_forge_ci_setup_activate_sh}"
+        conda list
+
+    - name: Build and upload
+      env:
+        ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+        QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+        # Mimic circleci
+        OSTYPE: "darwin"
+        CI: "true"
+      run: |
+        . /Users/runner/bioconda/etc/profile.d/conda.sh
+        conda activate base
+        echo '============'
+        conda info --all
+        conda config --show-sources
+        python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+        echo '============'
+        bioconda-utils build recipes config.yml \
+          --worker-offset ${{ matrix.runner }} --n-workers 5 \
+          --anaconda-upload
+        conda clean -y --all

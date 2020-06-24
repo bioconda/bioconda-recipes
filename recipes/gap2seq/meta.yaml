@@ -1,39 +1,48 @@
 {% set name = "Gap2Seq" %}
-{% set version = "2.1" %}
-{% set sha256 = "49ecc3298e91d3ce92cfe954bf3e8bf991629e7e895b04c3d4df2445dcb7a499" %}
+{% set version = "3.1" %}
+{% set sha256 = "2df2143932ece6224817d1aa80e635ebf6f3f6f91ccb0b94ce3951a354071d61" %}
+{% set gatb_core_version = "1.4.1" %}
+{% set gatb_core_sha256 = "2a20b8ec21d2876dbeffd43de894f7d43f8b62d4431f0c7ae41b630d3d387188" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 4
+  number: 1
+  skip: True  # [not linux]
 
 source:
-  url: https://www.cs.helsinki.fi/u/lmsalmel/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
-  patches:
-    - 0001-patches-for-osx.patch # [osx]
-    - 0002-added-randseed-parameter.patch
+  - url: https://github.com/rikuu/{{ name }}/archive/v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+  - url: https://github.com/GATB/gatb-core/archive/v{{ gatb_core_version }}.tar.gz
+    sha256: {{ gatb_core_sha256 }}
+    folder: thirdparty/gatb-core
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
     - pkg-config
     - cmake
     - make
+    - perl
+    - coreutils
+    - binutils
   host:
     - boost
-    - zlib
+    - python
+    - htslib
   run:
-    - boost
     - zlib
+    - python
+
 test:
   commands:
-    - GapMerger 2>&1 | grep "USAGE for"  > /dev/null
-    - GapCutter 2>&1 | grep "USAGE for"  > /dev/null
-    - Gap2Seq 2>&1 | grep "USAGE for"  > /dev/null
-    - Gap2Seq.sh 2>&1 | grep "Required parameters" > /dev/null
+    - 'GapMerger -help 2>&1 | grep "GapMerger options"  > /dev/null'
+    - 'GapCutter -help 2>&1 | grep "GapCutter options"  > /dev/null'
+    - 'Gap2Seq-core -help 2>&1 | grep "Gap2Seq options"  > /dev/null'
+    - 'Gap2Seq -h 2>&1 | grep "usage: Gap2Seq"  > /dev/null'
 
 about:
   home: https://www.cs.helsinki.fi/u/lmsalmel/Gap2Seq/

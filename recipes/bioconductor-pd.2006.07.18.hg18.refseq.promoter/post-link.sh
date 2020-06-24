@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.2006.07.18.hg18.refseq.promoter_1.8.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.2006.07.18.hg18.refseq.promoter_1.8.1.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/pd.2006.07.18.hg18.refseq.promoter_1.8.1.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.2006.07.18.hg18.refseq.promoter_1.8.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.2006.07.18.hg18.refseq.promoter/bioconductor-pd.2006.07.18.hg18.refseq.promoter_1.8.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.2006.07.18.hg18.refseq.promoter/bioconductor-pd.2006.07.18.hg18.refseq.promoter_1.8.1_src_all.tar.gz"
 )
 MD5="00838332d75b82d212078a9957f495df"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
