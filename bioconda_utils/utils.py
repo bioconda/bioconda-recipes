@@ -35,8 +35,16 @@ import backoff
 import yaml
 import jinja2
 from jinja2 import Environment, PackageLoader
+
+# FIXME(upstream): For conda>=4.7.0 initialize_logging is (erroneously) called
+#                  by conda.core.index.get_index which messes up our logging.
+# => Prevent custom conda logging init before importing anything conda-related.
+import conda.gateways.logging
+conda.gateways.logging.initialize_logging = lambda: None
+
 from conda_build import api
 from conda.exports import VersionOrder
+
 from jsonschema import validate
 from colorlog import ColoredFormatter
 from boltons.funcutils import FunctionBuilder
