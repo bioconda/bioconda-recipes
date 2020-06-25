@@ -2,6 +2,7 @@
 # Compile nim
 pushd nim_source
 if [[ $OSTYPE == "darwin"* ]]; then
+  export HOME="/Users/distiller"
   bash build.sh --os darwin --cpu x86_64
 else
   bash build.sh --os linux --cpu x86_64
@@ -16,6 +17,7 @@ bin/nim c  koch
 popd
 
 export PATH=$SRC_DIR/nim_source/bin:$PATH
+export LD_LIBRARY_PATH=$PREFIX/lib
 
 nimble install -y --verbose
 mkdir -p $PREFIX/bin
