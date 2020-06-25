@@ -1,6 +1,5 @@
-
 {% set name = "VSClust" %}
-{% set version = "0.8" %}
+{% set version = "0.81" %}
 
 package:
   name: vsclust
@@ -8,12 +7,15 @@ package:
 
 build:
   number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
   noarch: generic
 
 
 source:
-  url: https://bitbucket.org/veitveit/vsclust/get/release-0.8.tar.gz
-  sha256: 4f1d724f368f86764f5938b4b97bad199cec01cbc11789ae0134a7a3abd36623
+  url: https://bitbucket.org/veitveit/vsclust/get/release-0.81.tar.gz
+  sha256: 42879c2aea4b2f226db7edc73236ac347d7a830da1ba9a47c581a386ad3072e2
 
 requirements:
   build:
@@ -31,21 +33,9 @@ requirements:
      - make 4.2.1 h1bed415_1
      - perl 5.26.2 h14c3975_0
      - pkg-config 0.29.2 h1bed415_8
+     - gfortran_impl_linux-64
+     - gfortran_linux-64
   
-  host:
-    - r-base
-    - r-matrixstats
-    - bioconductor-mfuzz
-    - bioconductor-qvalue
-    - bioconductor-limma
-    - bioconductor-clusterprofiler
-    - bioconductor-RDAVIDWebService
-    - r-readxl
-    - r-shiny
-    - r-yaml
-    - r-shinyjs
-    - r-shinythemes
-
   run:
     - r-base
     - r-matrixstats
@@ -57,13 +47,17 @@ requirements:
     - r-readxl
     - r-shiny
     - r-yaml
+    - r-class
     - r-shinyjs
     - r-shinythemes
+    - r-data.table
+    - libgfortran
 
+   
 test:
   commands:
-#    - R -e "setTimeLimit(elapse=10, trans=T);shiny::runApp()"
-     - cd $PREFIX/bin; ls ;  runVSClust.R vsclust.yml; cd -
+#     - R -e "setTimeLimit(elapse=10, trans=T);shiny::runApp()"
+     - cd $PREFIX/bin; runVSClust.R vsclust.yml; cd -
 
 about:
   home: https://bitbucket.org/veitveit/vsclust/src/master/
@@ -73,9 +67,11 @@ about:
   summary: Interactive tool for statistical testing, data browsing and interactive visualization of quantitative omics data
   description: |
     VSClust is a web service (shiny app) and command-line tool for statistical testing, clustering and interactive visualization of quantitative omics data. Its variance-sensitive clustering algorithm improves identification of co-regulated features in noisy data with replicates
+
 extra:
   notes: |
     The shiny app can be run with the run_app.sh command. Alternative, a command-line version is available: runVSClust.R
   identifiers:
     - biotools:vsclust
     - doi:10.1093/bioinformatics/bty224 
+
