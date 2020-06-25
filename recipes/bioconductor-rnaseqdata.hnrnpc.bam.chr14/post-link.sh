@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RNAseqData.HNRNPC.bam.chr14_0.24.0.tar.gz"
+FN="RNAseqData.HNRNPC.bam.chr14_0.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/RNAseqData.HNRNPC.bam.chr14_0.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RNAseqData.HNRNPC.bam.chr14_0.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rnaseqdata.hnrnpc.bam.chr14/bioconductor-rnaseqdata.hnrnpc.bam.chr14_0.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/RNAseqData.HNRNPC.bam.chr14_0.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RNAseqData.HNRNPC.bam.chr14_0.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rnaseqdata.hnrnpc.bam.chr14/bioconductor-rnaseqdata.hnrnpc.bam.chr14_0.26.0_src_all.tar.gz"
 )
-MD5="429795be07059720dd0edd69eb9bfbf2"
+MD5="653b43fdda387c7cc85e75440bc0c144"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

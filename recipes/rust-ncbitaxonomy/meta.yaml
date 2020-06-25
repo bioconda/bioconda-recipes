@@ -1,13 +1,13 @@
-{% set version = "0.2.2" %}
+{% set version = "1.0.5" %}
 {% set name = "rust-ncbitaxonomy" %}
-{% set sha256 = "536845eac59dae48274c83220ca71b272338feb4b9084f2433f5b09072a3f831" %}
+{% set sha256 = "3da8490ef60ecd183d42a6c7c8f7440dfd973be325d1d82c71e8a7a2f8fe893f" %}
 
 package:
   name: "{{ name }}"
   version: "{{ version }}"
 
 build:
-  number: 1
+  number: 0
 
 source:
   url: "https://github.com/pvanheus/ncbitaxonomy/archive/{{ version }}.tar.gz"
@@ -16,12 +16,17 @@ source:
 requirements:
   build:
     - {{ compiler('c') }}
-    - rust >=1.38
+    - rust >=1.43
+  host:
+    - sqlite
+  run:
+    - sqlite
 
 test:
   commands:
+    - taxonomy_util --help | grep NCBI
     - taxonomy_filter_refseq --help | grep NCBI
-    - taxonomy_filter_fastq --help | grep NCBI
+    - taxonomy_filter_fastq --help | grep FASTQ
 
 about:
   home: https://github.com/pvanheus/ncbitaxonomy
