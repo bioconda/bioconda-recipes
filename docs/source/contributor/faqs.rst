@@ -159,3 +159,13 @@ In summary:
 
     # run tests
     pytest test -vv
+
+Where can I find more info on ``meta.yaml``?
+--------------------------------------------
+
+The ``meta.yaml`` file is conda's metadata definition file for recipes. 
+If you are developing a new recipe or are trying to update or improve an existing one, it can be helpful to know  
+which elements and values can appear in ``meta.yaml``.
+
+Conda has this information available [here](https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html).
+Please check that you are looking at the correct version of the documentation for the current conda version used by bioconda. 
