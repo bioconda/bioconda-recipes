@@ -1,7 +1,3 @@
 #!/bin/bash
-
-rm fastq-multx
-make
-
-mkdir -p $PREFIX/bin
+make CC=$CXX
 cp fastq-multx $PREFIX/bin
