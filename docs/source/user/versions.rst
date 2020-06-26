@@ -11,7 +11,7 @@ Bioconda only supports 64-bit Linux and Mac OS
 
 Python
 ------
-Bioconda only supports python 3.6 and 3.7. The community is currently working on adding support for
+Bioconda only supports python 2.7, 3.6 and 3.7. The community is currently working on adding support for
 python 3.8.
 
 Unsupported versions
