@@ -78,12 +78,10 @@ def jvm_opts(argv):
 
 
 def main():
-    print("Running in directory")
-    print(os.getcwd())
     java = java_executable()
     """
     In a multiuser setting, the option --exec_dir="exec_dir"
-    can be used as the location for the jmztab-m distribution.
+    can be used as the location for the jgoslin distribution.
     If the exec_dir dies not exist,
     we copy the jar file, lib, and resources to the exec_dir directory.
     """
