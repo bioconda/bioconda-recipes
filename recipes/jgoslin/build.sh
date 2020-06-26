@@ -1,6 +1,6 @@
 #!/bin/bash
 set -eu -o pipefail
-echo -e "Running in directory '${pwd}'"
+echo -e "Running in directory '$(pwd)'"
 ls -l
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
