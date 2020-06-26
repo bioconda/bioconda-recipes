@@ -79,6 +79,8 @@ def jvm_opts(argv):
 
 
 def main():
+    print("Running in directory")
+    print(os.getcwd())
     java = java_executable()
     """
     In a multiuser setting, the option --exec_dir="exec_dir"
