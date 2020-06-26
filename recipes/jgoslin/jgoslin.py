@@ -15,8 +15,7 @@ from os import getenv
 from os import X_OK
 
 # https://bintray.com/search?query=jgoslin-cli
-#jar_file = 'jgoslin-cli-1.1.2.jar'
-jar_file = 'download_file\?file_path=de%2Fisas%2Flipidomics%2Fjgoslin-cli%2F1.1.2%2Fjgoslin-cli-1.1.2.jar'
+jar_file = 'jgoslin-cli-1.1.2.jar'
 
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
