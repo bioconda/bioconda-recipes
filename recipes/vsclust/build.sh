@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # compile library
-R CMD INSTALL e1071FuzzVec_Installation
+mkdir -p $PREFIX/lib/R/library/e1071FuzzVec
+R CMD INSTALL --build e1071FuzzVec_Installation
+cp -r e1071FuzzVec_Installation/* $PREFIX/lib/R/library/e1071FuzzVec/
 
 # move all files to outdir and link into it by bin executor
 mkdir -p $PREFIX/bin
