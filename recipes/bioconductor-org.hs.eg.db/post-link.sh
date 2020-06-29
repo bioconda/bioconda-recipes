@@ -3,7 +3,7 @@ FN="org.Hs.eg.db_3.11.4.tar.gz"
 URLS=(
   "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/"$FN
 )
-MD5="d41d8cd98f00b204e9800998ecf8427e"
+MD5="87f20cd6ba544e12aa0bb044215e0729"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
