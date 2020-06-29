@@ -1,0 +1,65 @@
+{% set name = "rgcca" %}
+{% set version = "3.0.0" %}
+{% set r_version = "0" %}
+{% set build = "0" %}
+{% set sha256 = "2ee056b54a4564fdff73e02967d18132a34443ca1caed4675ae620237e43104a" %}
+
+package:
+    name: {{ name }}cmd
+    version: {{ version }}
+
+source:
+    url: https://github.com/rgcca-factory/{{ name|upper }}/archive/{{ version }}.tar.gz
+    sha256: {{sha256}}
+
+build:
+    noarch: generic
+    number: {{ build }}
+    rpaths:
+        - lib/
+        - lib/R/lib/
+
+requirements:
+    build:
+        - r-base=4.{{ r_version }}
+        - r-gridextra
+        - r-deriv
+        - r-mass
+        - r-ggplot2
+        - r-optparse
+        - r-scales
+        - r-igraph
+        - r-ggrepel
+        - r-openxlsx
+        - r-rlang
+        - r-vegan
+        - libgfortran
+    run:
+        - _r-mutex
+        - r-base=4.{{ r_version }}
+        - r-gridextra
+        - r-deriv
+        - r-mass
+        - r-ggplot2
+        - r-optparse
+        - r-scales
+        - r-igraph
+        - r-ggrepel
+        - r-openxlsx
+        - r-rlang
+        - r-vegan
+
+test:
+    commands:
+        - cd ${PREFIX} && ls && Rscript inst/launcher.R -h
+        - $R -e "library('RGCCA')"
+
+about:
+    home: https://CRAN.R-project.org/package=RGCCA
+    doc_url: https://github.com/rgcca-factory/rgcca-conda/blob/master/recipes/rgccaCmd/README.md
+    license: GPL (>= 2)
+    license_family: GPL3
+
+extra:
+    recipe-maintainers:
+        - ecamenen
