@@ -27,7 +27,6 @@ make \
     ZLIB_PATH="${PREFIX/lib}"
 
 cp bin/* $PREFIX/bin
-cp $RECIPE_DIR/lumpyexpress.config $PREFIX/bin/lumpyexpress.config
 cp scripts/lumpyexpress $PREFIX/bin
 cp scripts/cnvanator_to_bedpes.py $PREFIX/bin
 
@@ -36,7 +35,25 @@ cp scripts/*.sh $outdir/scripts
 cp scripts/*.pl $outdir/scripts
 cp scripts/extractSplitReads* $outdir/scripts
 cp scripts/vcf* $outdir/scripts
-
+cp -r scripts/bamkit $outdir/scripts
 ln -s $outdir/scripts/extractSplitReads_BwaMem $PREFIX/bin
 
 chmod +x $PREFIX/bin/extractSplitReads_BwaMem
+
+# The file lumpyexpress.config links the scripts to the install path, we need to change to the run path so basically we rebuild it
+export BIN_DIR=$PREFIX/bin
+touch ${BIN_DIR}/lumpyexpress.config
+echo "LUMPY_HOME=$outdir" >> ${BIN_DIR}/lumpyexpress.config
+echo "" >> ${BIN_DIR}/lumpyexpress.config
+echo "LUMPY=${BIN_DIR}/lumpy" >> ${BIN_DIR}/lumpyexpress.config
+echo "HEXDUMP=hexdump" >> ${BIN_DIR}/lumpyexpress.config
+echo "SAMBLASTER=samblaster" >> ${BIN_DIR}/lumpyexpress.config
+echo "SAMBAMBA=sambamba" >> ${BIN_DIR}/lumpyexpress.config
+echo "SAMTOOLS=samtools" >> ${BIN_DIR}/lumpyexpress.config
+echo "PYTHON=python" >> ${BIN_DIR}/lumpyexpress.config
+echo "" >> ${BIN_DIR}/lumpyexpress.config
+echo "PAIREND_DISTRO=$outdir/scripts/pairend_distro.py" >> ${BIN_DIR}/lumpyexpress.config
+echo "BAMGROUPREADS=$outdir/scripts/bamkit/bamgroupreads.py" >> ${BIN_DIR}/lumpyexpress.config
+echo "BAMFILTERRG=$outdir/bamkit/bamfilterrg.py" >> ${BIN_DIR}/lumpyexpress.config
+echo "BAMLIBS=$outdir/bamkit/bamlibs.py" >> ${BIN_DIR}/lumpyexpress.config
+
