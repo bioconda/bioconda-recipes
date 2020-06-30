@@ -15,7 +15,7 @@ from os import getenv
 from os import X_OK
 
 # https://bintray.com/search?query=jgoslin-cli
-jar_file = 'jgoslin-cli-1.1.2.jar'
+jar_file = '@@JAR_FILE@@'
 
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']

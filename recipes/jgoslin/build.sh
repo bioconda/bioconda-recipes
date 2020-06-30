@@ -1,11 +1,16 @@
 #!/bin/bash
 set -eu -o pipefail
-outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-mkdir -p $outdir
-mkdir -p $PREFIX/bin
-cp -R * $outdir/
-cp $RECIPE_DIR/jgoslin.py $outdir/jgoslin
-ls -l $outdir
-ln -s $outdir/jgoslin $PREFIX/bin
+
+outdir="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
+mkdir -p "$outdir"
+cp -R README* LICENSE* examples jgoslin* "$outdir/"
+sed "s/@@JAR_FILE@@/jgoslin-cli-${PKG_VERSION}.jar/" \
+    "$RECIPE_DIR/jgoslin.py" \
+    > "$outdir/jgoslin"
+chmod +x "$outdir/jgoslin"
+
+mkdir -p "$PREFIX/bin"
+ln -s "$outdir/jgoslin" "$PREFIX/bin/jgoslin"
+
 echo "Contents of '$outdir'"
-chmod 0755 "${PREFIX}/bin/jgoslin"
+ls -lA "$outdir"
