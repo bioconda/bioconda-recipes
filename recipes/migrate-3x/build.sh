@@ -15,5 +15,5 @@ make
 
 mkdir -p $PREFIX/bin
 
-cp migrate-n $PREFIX/bin
+cp $SRC_DIR/src/migrate-n $PREFIX/bin
 
