@@ -1,4 +1,4 @@
-{% set version = "0.16.0" %}
+{% set version = "0.16.0.1" %}
 
 package:
   name: pysam
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://github.com/pysam-developers/pysam/archive/v{{ version }}.tar.gz
-  sha256: 55a0ecc681ef1bbe847c658135ceb918f03a0d93aafb4d48b9cda0b098c1d4df
+  sha256: a61e98e299fa93ba121aab521081282b61bc978bb9052d33b26b38f8fe15573e
 
 build:
   number: 0
@@ -23,17 +23,24 @@ requirements:
     - xz
     - bzip2
     - libdeflate
+    - libcurl
+    - openssl  # [not osx]
   run:
     - python
     - zlib
     - xz
     - bzip2
     - libdeflate
-    - curl
+    - libcurl
+    - openssl  # [not osx]
 
 test:
   imports:
     - pysam
+  commands:
+    # xref https://github.com/pysam-developers/pysam/issues/920
+    # Please keep this to avoid the aforementioned regression
+    - python -c "import pysam; import errno; exec(\"try:\n    pysam.AlignmentFile('s3:expect_invalid_argument')\nexcept EnvironmentError as e:\n    assert e.errno == errno.EINVAL\")"
 
 about:
   home: https://github.com/pysam-developers/pysam
