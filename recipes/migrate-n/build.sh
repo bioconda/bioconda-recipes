@@ -4,6 +4,7 @@
 cd src
 
 ./configure
+
 sed -i.bak 's/#include <xlocale.h>//' data.c
 export C_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
