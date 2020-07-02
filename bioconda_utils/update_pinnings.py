@@ -2,23 +2,40 @@
 Determine which packages need updates after pinning change
 """
 
-import re
-import sys
-import os.path
-import logging
-import collections
 import enum
+import logging
+import string
 
-import networkx as nx
-
-from .utils import RepoData, load_conda_build_config, parallel_iter
+from .utils import RepoData
+# FIXME: trim_build_only_deps is not exported via conda_build.api!
+#        Re-implement it here or ask upstream to export that functionality.
+from conda_build.metadata import trim_build_only_deps
 
 # for type checking
+from typing import AbstractSet
 from .recipe import Recipe, RecipeError
 from conda_build.metadata import MetaData
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
+
+
+def skip_for_variants(meta: MetaData, variant_keys: AbstractSet[str]) -> bool:
+    """Check if the recipe uses any given variant keys
+
+    Args:
+      meta: Variant MetaData object
+
+    Returns:
+      True if any variant key from variant_keys is used
+    """
+    # This is the same behavior as in
+    # conda_build.metadata.Metadata.get_hash_contents but without leaving out
+    # "build_string_excludes" (python, r_base, etc.).
+    dependencies = set(meta.get_used_vars())
+    trim_build_only_deps(meta, dependencies)
+
+    return not dependencies.isdisjoint(variant_keys)
 
 
 def will_build_variant(meta: MetaData) -> bool:
@@ -127,7 +144,22 @@ class State(enum.Flag):
         return self & self.FAIL
 
 
-def check(recipe: Recipe, build_config, keep_metas=False) -> State:
+allowed_build_string_characters = frozenset(
+    string.digits + string.ascii_uppercase + string.ascii_lowercase + '_.'
+)
+
+
+def has_invalid_build_string(meta: MetaData) -> bool:
+    build_string = meta.build_id()
+    return not (build_string and set(build_string).issubset(allowed_build_string_characters))
+
+
+def check(
+    recipe: Recipe,
+    build_config,
+    keep_metas=False,
+    skip_variant_keys: AbstractSet[str] = frozenset(),
+) -> State:
     """Determine if a given recipe should have its build number increments
     (bumped) due to a recent change in pinnings.
 
@@ -135,9 +167,10 @@ def check(recipe: Recipe, build_config, keep_metas=False) -> State:
       recipe: The recipe to check
       build_config: conda build config object
       keep_metas: If true, `Recipe.conda_release` is not called
+      skip_variant_keys: Variant keys to skip a recipe for if they are used
 
     Returns:
-      Tuple of state and a list of rendered MetaYaml variant objects
+      Tuple of state and a the input recipe
     """
     try:
         logger.debug("Calling Conda to render %s", recipe)
@@ -145,18 +178,26 @@ def check(recipe: Recipe, build_config, keep_metas=False) -> State:
         logger.debug("Finished rendering %s", recipe)
     except RecipeError as exc:
         logger.error(exc)
-        return State.FAIL
+        return State.FAIL, recipe
     except Exception as exc:
         logger.exception("update_pinnings.check failed with exception in api.render(%s):", recipe)
-        return State.FAIL
+        return State.FAIL, recipe
 
     if metas is None:
         logger.error("Failed to render %s. Got 'None' from recipe.conda_render()", recipe)
-        return State.FAIL
+        return State.FAIL, recipe
+
+    if any(has_invalid_build_string(meta) for meta, _, _ in metas):
+        logger.error(
+            "Failed to get build strings for %s with bypass_env_check. "
+            "Probably needs build/skip instead of dep constraint.",
+            recipe,
+        )
+        return State.FAIL, recipe
 
     flags = State(0)
     for meta, _, _ in metas:
-        if meta.skip():
+        if meta.skip() or skip_for_variants(meta, skip_variant_keys):
             flags |= State.SKIP
         elif have_variant(meta):
             flags |= State.HAVE
@@ -170,4 +211,4 @@ def check(recipe: Recipe, build_config, keep_metas=False) -> State:
             flags |= State.BUMP
     if not keep_metas:
         recipe.conda_release()
-    return flags
+    return flags, recipe
