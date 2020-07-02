@@ -541,6 +541,9 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
      help="""Bump package build numbers even if the only applicable pinning
      change is the python version. This is generally required unless you plan
      on building everything.""")
+@arg('--skip-variants',
+     nargs='*',
+     help='Skip packages that use one of the given variant keys.')
 @arg('--cache', help='''To speed up debugging, use repodata cached locally in
      the provided filename. If the file does not exist, it will be created the
      first time.''')
@@ -550,6 +553,7 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
 def update_pinning(recipe_folder, config, packages="*",
                    skip_additional_channels=None,
                    bump_only_python=False,
+                   skip_variants=None,
                    cache=None):
     """Bump a package build number and all dependencies as required due
     to a change in pinnings
@@ -557,6 +561,7 @@ def update_pinning(recipe_folder, config, packages="*",
     config = utils.load_config(config)
     if skip_additional_channels:
         config['channels'] += skip_additional_channels
+    skip_variants = frozenset(skip_variants or ())
 
     if cache:
         utils.RepoData().set_cache(cache)
@@ -578,7 +583,9 @@ def update_pinning(recipe_folder, config, packages="*",
     hadErrors = set()
     bumpErrors = set()
 
-    needs_bump = partial(update_pinnings.check, build_config=build_config)
+    needs_bump = partial(
+        update_pinnings.check, build_config=build_config, skip_variant_keys=skip_variants,
+    )
 
     State = update_pinnings.State
 
