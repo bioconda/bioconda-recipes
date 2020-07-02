@@ -137,7 +137,7 @@ def check(recipe: Recipe, build_config, keep_metas=False) -> State:
       keep_metas: If true, `Recipe.conda_release` is not called
 
     Returns:
-      Tuple of state and a list of rendered MetaYaml variant objects
+      Tuple of state and a the input recipe
     """
     try:
         logger.debug("Calling Conda to render %s", recipe)
@@ -145,14 +145,14 @@ def check(recipe: Recipe, build_config, keep_metas=False) -> State:
         logger.debug("Finished rendering %s", recipe)
     except RecipeError as exc:
         logger.error(exc)
-        return State.FAIL
+        return State.FAIL, recipe
     except Exception as exc:
         logger.exception("update_pinnings.check failed with exception in api.render(%s):", recipe)
-        return State.FAIL
+        return State.FAIL, recipe
 
     if metas is None:
         logger.error("Failed to render %s. Got 'None' from recipe.conda_render()", recipe)
-        return State.FAIL
+        return State.FAIL, recipe
 
     flags = State(0)
     for meta, _, _ in metas:
@@ -170,4 +170,4 @@ def check(recipe: Recipe, build_config, keep_metas=False) -> State:
             flags |= State.BUMP
     if not keep_metas:
         recipe.conda_release()
-    return flags
+    return flags, recipe

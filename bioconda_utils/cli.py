@@ -582,7 +582,7 @@ def update_pinning(recipe_folder, config, packages="*",
 
     State = update_pinnings.State
 
-    for status, recip in zip(utils.parallel_iter(needs_bump, dag, "Processing..."), dag):
+    for status, recip in utils.parallel_iter(needs_bump, dag, "Processing..."):
         logger.debug("Recipe %s status: %s", recip, status)
         stats[status] += 1
         if status.needs_bump(bump_only_python):
