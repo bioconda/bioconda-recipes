@@ -2,17 +2,11 @@
 Determine which packages need updates after pinning change
 """
 
-import re
-import sys
-import os.path
-import logging
-import collections
 import enum
+import logging
 import string
 
-import networkx as nx
-
-from .utils import RepoData, load_conda_build_config, parallel_iter
+from .utils import RepoData
 # FIXME: trim_build_only_deps is not exported via conda_build.api!
 #        Re-implement it here or ask upstream to export that functionality.
 from conda_build.metadata import trim_build_only_deps
