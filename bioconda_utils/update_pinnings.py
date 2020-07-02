@@ -8,6 +8,7 @@ import os.path
 import logging
 import collections
 import enum
+import string
 
 import networkx as nx
 
@@ -149,6 +150,16 @@ class State(enum.Flag):
         return self & self.FAIL
 
 
+allowed_build_string_characters = frozenset(
+    string.digits + string.ascii_uppercase + string.ascii_lowercase + '_.'
+)
+
+
+def has_invalid_build_string(meta: MetaData) -> bool:
+    build_string = meta.build_id()
+    return not (build_string and set(build_string).issubset(allowed_build_string_characters))
+
+
 def check(
     recipe: Recipe,
     build_config,
@@ -180,6 +191,14 @@ def check(
 
     if metas is None:
         logger.error("Failed to render %s. Got 'None' from recipe.conda_render()", recipe)
+        return State.FAIL, recipe
+
+    if any(has_invalid_build_string(meta) for meta, _, _ in metas):
+        logger.error(
+            "Failed to get build strings for %s with bypass_env_check. "
+            "Probably needs build/skip instead of dep constraint.",
+            recipe,
+        )
         return State.FAIL, recipe
 
     flags = State(0)
