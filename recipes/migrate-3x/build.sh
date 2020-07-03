@@ -13,7 +13,7 @@ export LIBRARY_PATH=${PREFIX}/lib
 echo "@@============="
 export CFLAGS="$CFLAGS -I${PREFIX}/include"
 export LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
-./configure
+./configure --prefix=$PREFIX  --with-zlib=shipped
 echo "%%%%%%%%%%"
 echo $LIBRARY_PATH
 echo $LDFLAGS
