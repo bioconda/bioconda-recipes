@@ -10,17 +10,17 @@ export CPP_INCLUDE_PATH=${PREFIX}/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
-echo "@@============="
+#echo "@@============="
 export CFLAGS="$CFLAGS -I${PREFIX}/include"
 export LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
 ./configure --prefix=$PREFIX  --with-zlib=shipped
-echo "%%%%%%%%%%"
-echo $LIBRARY_PATH
-echo $LDFLAGS
-pkg-config zlib --libs
-echo "%%%%%%%%%%"
+#echo "%%%%%%%%%%"
+#echo $LIBRARY_PATH
+#echo $LDFLAGS
+#pkg-config zlib --libs
+#echo "%%%%%%%%%%"
 make
-echo "finished Make"
+#echo "finished Make"
 mkdir -p $PREFIX/bin
 cp $SRC_DIR/src/migrate-n $PREFIX/bin
-echo "copied migrate-n into the bin directory"
+#echo "copied migrate-n into the bin directory"
