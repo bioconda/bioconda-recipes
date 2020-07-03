@@ -17,6 +17,7 @@ export LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
 echo "%%%%%%%%%%"
 echo $LIBRARY_PATH
 echo $LDFLAGS
+pkg-config zlib --libs
 echo "%%%%%%%%%%"
 make
 echo "finished Make"
