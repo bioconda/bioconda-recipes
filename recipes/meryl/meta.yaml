@@ -1,38 +1,29 @@
 {% set name = "meryl" %}
-{% set version = "2013" %}
+{% set version = "v1.0" %}
+{% set sha256 = "6bf221b021c857ef6268494ca024f7cb7485d77df05883545f850ec3bb5986dd" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 about:
-  home: 'http://kmer.sourceforge.net/wiki/index.php/Getting_Started_with_Meryl'
-  license: "GPL"
+  home: 'https://github.com/marbl/meryl'
   summary: "meryl is a multi-threaded, multi-process, out-of-core k-mer counter"
 
 source:
-  url: http://downloads.sourceforge.net/project/kmer/meryl-r2013.tar.xz
-  md5: 445c243c5b9845acda971ec05254a025
+  url: https://github.com/marbl/{{ name }}/archive/{{ version }}.tar.gz 
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - python
-
-  run:
+    - {{ compiler('cxx') }}
 
 test:
   commands:
-    - existDB 2>&1 | grep existDB
-    - kmer-mask 2>&1 | grep kmer-mask
-    - mapMers 2>&1 | grep mapMers
-    - mapMers-depth 2>&1 | grep mapMers-depth
-    - meryl 2>&1 | grep meryl
-    - mt19937ar-test
-    - positionDB 2>&1 | grep positionDB
-    - simple 2>&1 | grep "no input"
-    - test-merStream
-    - test-seqCache
+    - meryl 2>&1 | grep "usage: meryl"
+    - meryl-lookup 2>&1 | grep "usage: meryl-lookup"
+    - meryl-import 2>&1 | grep "usage: meryl-import"
+    - sequence 2>&1 | grep "usage: sequence"
