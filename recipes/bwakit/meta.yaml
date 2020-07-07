@@ -1,25 +1,44 @@
-{% set version = "0.7.15" %}
+{% set version = "0.7.17.dev1" %}
 package:
   name: bwakit
   version: {{ version }}
 
 source:
-  url: http://downloads.sourceforge.net/project/bio-bwa/bwakit/bwakit-{{ version }}_x64-linux.tar.bz2
-  sha256: 0a7b11971bc7916b68e9df35a364afe77cb3000df02ffb3a6fbd1aff9be5878c
+  - url: http://downloads.sourceforge.net/project/bio-bwa/bwakit/bwakit-0.7.15_x64-linux.tar.bz2
+    folder: bwakit-0.7.15
+    sha256: 0a7b11971bc7916b68e9df35a364afe77cb3000df02ffb3a6fbd1aff9be5878c
+  - url: https://github.com/lh3/bwa/archive/v0.7.17.tar.gz
+    folder: bwa-0.7.17
+    sha256: 980b9591b61c60042c4a39b9e31ccaad8d17ff179d44d347997825da3fdf47fd
+    patches:
+      - patches/run-HLA.patch
 
 build:
-  number: 1
-  skip: True # [osx]
+  noarch: generic
+  number: 0
 
 requirements:
-  build:
-    - {{ compiler('c') }}
   run:
+    - k8
     - perl
+    - bwa ==0.7.17
+    - fermi2 ==r170
+    - htsbox ==r315
+    - ropebwt2 ==r187
+    - samblaster ==0.1.20
+    - samtools >=1.3
+    - seqtk ==r82
+    - trimadap ==r2
 
 test:
   commands:
-    - 'run-bwamem 2>&1 | grep "Usage:   run-bwamem"'
+    - run-bwamem 2>&1 | grep "^Usage:"
+    - run-gen-ref | grep "^Usage:"
+    - run-HLA | grep "^Usage:"
+    - typeHLA.sh | grep "^Usage:"
+    - bwa-postalt.js | grep "^Usage:"
+    - typeHLA.js | grep "^Usage:"
+    - typeHLA-selctg.js | grep "^Usage:"
 
 about:
   home: https://github.com/lh3/bwa/tree/master/bwakit

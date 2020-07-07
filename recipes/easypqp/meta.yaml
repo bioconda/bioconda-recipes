@@ -1,0 +1,59 @@
+{% set name = "easypqp" %}
+{% set version = "0.1.7" %} 
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 050ea5dac08576276342352d61f844a675dd04b36fac3ef4792d37526477e8ee
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - easypqp=easypqp.main:cli
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - click
+    - numpy
+    - scipy
+    - statsmodels
+    - pandas
+    - biopython
+    - pyprophet
+    - pyopenms
+    - matplotlib-base
+    - seaborn
+
+test:
+  imports:
+    - easypqp
+  commands:
+    - easypqp --help
+
+about:
+  home: https://github.com/grosenberger/easypqp
+  license: BSD License
+  license_family: BSD
+  license_file: LICENSE
+  summary: 'EasyPQP: Simple library generation for OpenSWATH'
+  description: "EasyPQP: Simple library generation for OpenSWATH\n================================================\n\nEasyPQP is a Python package that provides simplified and fast peptide query parameter\
+    \ generation for OpenSWATH. It can process input from MSFragger or other database search engines in pepXML format. Statistical validation can be conducted either using PyProphet or PeptideProphet/iProphet.\
+    \ Retention times are calibrated using an internal or external standard. In addition to a cumulative library, run-specific libraries are generated for non-linear RT alignment in OpenSWATH.\n\nInstallation\n\
+    ============\n\nWe strongly advice to install EasyPQP in a Python [*virtualenv*](https://virtualenv.pypa.io/en/stable/). EasyPQP is compatible with Python 3.\n\nInstall the development version of *easypqp*\
+    \ from GitHub:\n\n````\n    $ pip install git+https://github.com/grosenberger/easypqp.git@master\n````\n\nRunning EasyPQP\n===============\n\n*EasyPQP* is not only a Python package, but also a command\
+    \ line tool:\n\n````\n   $ easypqp --help\n````\n\nor:\n\n````\n   $ easypqp convert --help\n   $ easypqp library --help\n````\n\nDocker\n======\n\nEasyPQP is also available from Docker (automated builds):\n\
+    \nPull the development version of *easypqp* from DockerHub (synced with GitHub):\n\n````\n    $ docker pull grosenberger/easypqp:latest\n````\n\n\n"
+
+extra:
+  container:
+    # Click needs the extended container
+    extended-base: True

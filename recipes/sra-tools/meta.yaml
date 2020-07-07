@@ -1,6 +1,7 @@
-{% set version = "2.10.3" %}
-{% set bioconda_version = "2.10.3" %}
-{% set ngs_version = "2.10.2" %}
+{% set version = "2.10.8" %}
+{% set bioconda_version = "2.10.8" %}
+{% set vdb_version = "2.10.8" %}
+{% set ngs_version = "2.10.8" %}
 
 package:
   name: sra-tools
@@ -8,15 +9,13 @@ package:
 
 source:
   - url: https://github.com/ncbi/sra-tools/archive/{{version}}.tar.gz
-    sha256: 4a06c606b10964fa74e02ada9230da8d7374f88d4d1bfa4030c274b62a19633a
+    sha256: 4adb969a9a998f6a50020f99aa66f6ae27916f7dc83ddf6722fc0fea4a3a4d17
     folder: sra-tools
-    patches:
-      - skip_config_interactive.diff
-  - url: https://github.com/ncbi/ncbi-vdb/archive/{{version}}.tar.gz
-    sha256: 85aded6e513ec2d2aac06d398063ca6293243acadc501d47c68d9689c782150d
+  - url: https://github.com/ncbi/ncbi-vdb/archive/{{vdb_version}}.tar.gz
+    sha256: 7a593aa22584db9443bb56ac01409707bca01b8f9601fe530dac81b73f1a44df
     folder: ncbi-vdb
   - url: https://github.com/ncbi/ngs/archive/{{ngs_version}}.tar.gz
-    sha256: 613be73b31474b7e3d616ad3d7fea3a6a598a9b3695309a1b1e0bc4224248447
+    sha256: f20fae21439b69b6a3573c864a175e0f9aa47ca6dd12bea15e429b7c5a9b81b5
     folder: ngs
 
 build:
@@ -33,15 +32,19 @@ requirements:
     - hdf5
     - perl
   run:
+    - ossuuid
     - perl
     - ncbi-ngs-sdk
     - libxml2
     - hdf5
     - perl-xml-libxml
     - perl-uri
+    - curl
 
 test:
   commands:
+    # create config file with /LIBS/GUID value so tests pass; new GUID value will be created in user's home dir upon installation via post-link.sh
+    - if ! grep "/LIBS/GUID" ~/.ncbi/user-settings.mkfg &> /dev/null; then mkdir -p ~/.ncbi && printf '/LIBS/GUID = "%s"\n' `uuid` > ~/.ncbi/user-settings.mkfg; fi
     - fastq-dump --help > /dev/null
     - prefetch --help > /dev/null
     - sam-dump --help > /dev/null
