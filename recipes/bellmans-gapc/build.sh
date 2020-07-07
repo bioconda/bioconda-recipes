@@ -1,11 +1,11 @@
 #!/bin/sh
-export SED = sed
+export SED="sed"
 
 ./configure --with-boost-libdir=$PREFIX/lib/ CPPFLAGS=-I${PREFIX} --prefix=$PREFIX --disable-gsltest
 
 # change compile flags if on OSX
 if [ x"$(uname)" == x"Darwin" ]; then
-  export SED = gsed
+  export SED="gsed"
   $SED "s/^17 \-D_XOPEN_SOURCE=500 /11 /" -i src/config.mf
 fi
 
