@@ -1,6 +1,6 @@
 set -xg MERQURY $MERQURY_BACKUP
 set -e MERQURY_BACKUP
-if -z $MERQURY
+if test -z $MERQURY
     set -e MERQURY
 end
 
