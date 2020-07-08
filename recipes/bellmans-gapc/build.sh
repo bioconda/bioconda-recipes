@@ -6,9 +6,16 @@ export SYSTEM_SUFFIX="_linux-gnu"
 # change compile flags if on OSX
 if [ x"$(uname)" == x"Darwin" ]; then
   export SED="gsed"
-  export SYSTEM_SUFFIX="_darwin17.0.0"
-  $SED "s/^17 \-D_XOPEN_SOURCE=500 /11 /" -i src/config.mf
+  export SYSTEM_SUFFIX=`cat config.mf |grep "^SYSTEM_SUFFIX" | cut -d "=" -f2 | tr -d " "`
+  $SED -E "s|^YACC = .+$|YACC = /usr/local/opt/bison@2.7/bin/bison|" -i config.mf
+  $SED -E "s|^SED = .+$|SED = /usr/local/opt/gnu-sed/libexec/gnubin/sed|" -i config.mf
+  $SED -E "s/ -D_XOPEN_SOURCE=500 / /" -i config.mf
+  $SED -E "s/ -std=c\+\+17 / -std=c\+\+11 /" -i config.mf
 fi
+
+cat config.mf
+echo $SED
+echo $SYSTEM_SUFFIX
 
 make
 make install
