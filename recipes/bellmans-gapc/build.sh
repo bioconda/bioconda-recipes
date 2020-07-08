@@ -5,7 +5,7 @@ export SYSTEM_SUFFIX="_linux-gnu"
 
 # change compile flags if on OSX
 if [ x"$(uname)" == x"Darwin" ]; then
-  export SED="gsed"
+  export SED="sed"
   export SYSTEM_SUFFIX=`cat config.mf |grep "^SYSTEM_SUFFIX" | cut -d "=" -f2 | tr -d " "`
   $SED -E "s|^YACC = .+$|YACC = /usr/local/opt/bison@2.7/bin/bison|" -i config.mf
   $SED -E "s|^SED = .+$|SED = /usr/local/opt/gnu-sed/libexec/gnubin/sed|" -i config.mf
