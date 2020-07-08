@@ -1,0 +1,48 @@
+{% set name = "merqury" %}
+{% set version = "v1.0" %}
+{% set sha256 = "54967e3a9374fba33eb5dbe1c471b9e41e42f716a1fd6585d04a4a65e6265639" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/marbl/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True # [osx]
+
+requirements:
+  run:
+    - meryl>=v1.0,<2000
+    - openjdk>=11.0.1
+    - r-argparse>=2.0.1
+    - r-ggplot2>=3.3.2
+    - r-scales>=1.1.1
+    - bedtools>=2.29.2
+    - samtools>=1.10
+    - igvtools>=2.5.3
+
+test:
+  commands:
+    - merqury.sh
+    - "if [[ -z $MERQURY ]]; then exit 1; fi"
+    - "meryl 2>&1 | grep 'usage: meryl'"
+    - "meryl-lookup 2>&1 | grep 'usage: meryl-lookup'"
+    - "for script in $MERQURY/**/*.R; do $script --help; done"
+    - "for jar in $MERQURY/**/*.jar; do java -jar -Xmx128m $jar; done"
+    - igvtools version
+    - bedtools --version
+    - samtools --version
+
+about:
+  home: https://github.com/marbl/{{ name }}
+  license: PUBLIC DOMAIN
+  license_file: README.license
+  summary: Evaluate genome assemblies with k-mers and more.
+  description: >
+    Often, genome assembly projects have illumina whole genome sequencing reads available for the assembled individual.
+    The k-mer spectrum of this read set can be used for independently evaluating assembly quality without the need of a high quality reference.
+    Merqury provides a set of tools for this purpose.
