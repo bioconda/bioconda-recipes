@@ -7,8 +7,9 @@ export SYSTEM_SUFFIX="_linux-gnu"
 if [ x"$(uname)" == x"Darwin" ]; then
   export SED="sed"
   export SYSTEM_SUFFIX=`cat config.mf |grep "^SYSTEM_SUFFIX" | cut -d "=" -f2 | tr -d " "`
-  $SED -E "s|^YACC = .+$|YACC = /usr/local/opt/bison@2.7/bin/bison|" -i config.mf
-  $SED -E "s|^SED = .+$|SED = /usr/local/opt/gnu-sed/libexec/gnubin/sed|" -i config.mf
+  # maybe not necessay, since bison/sed is shipped through conda itself?
+  # $SED -E "s|^YACC = .+$|YACC = /usr/local/opt/bison@2.7/bin/bison|" -i config.mf
+  # $SED -E "s|^SED = .+$|SED = /usr/local/opt/gnu-sed/libexec/gnubin/sed|" -i config.mf
   $SED -E "s/ -D_XOPEN_SOURCE=500 / /" -i config.mf
   $SED -E "s/ -std=c\+\+17 / -std=c\+\+11 /" -i config.mf
 fi
