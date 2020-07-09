@@ -1,14 +1,14 @@
 #!/bin/bash
-set -eu -o pipefail
+set -e
 
 MERQURY=$CONDA_PREFIX/share/merqury
 
-merqury.sh
-meryl 2>&1 | grep 'usage: meryl'
-meryl-lookup 2>&1 | grep 'usage: meryl-lookup'
-for script in $MERQURY/**/*.R; do $script --help; done
-for jar in $MERQURY/**/*.jar; do java -jar -Xmx128m $jar; done
-igvtools version
-bedtools --version
-samtools --version
+merqury.sh 2>&1 | grep 'Usage: ' 1>/dev/null 2>&1
+meryl 2>&1 | grep 'usage: meryl' 1>/dev/null 2>&1
+meryl-lookup 2>&1 | grep 'usage: meryl-lookup' 1>/dev/null 2>&1
+for script in $MERQURY/**/*.R; do $script --help 1>/dev/null 2>&1; done
+for jar in $MERQURY/**/*.jar; do java -jar -Xmx128m $jar 1>/dev/null 2>&1; done
+igvtools version 1>/dev/null 2>&1
+bedtools --version 1>/dev/null 2>&1
+samtools --version 1>/dev/null 2>&1
 
