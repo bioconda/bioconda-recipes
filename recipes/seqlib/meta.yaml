@@ -1,0 +1,57 @@
+{% set name = "seqlib" %}
+{% set version = "0.1.0" %}
+{% set md5 = "341a7e5ae38f5bf398902e6522abd44e" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/kepbod/{{ name|lower }}/archive/{{ version }}.tar.gz
+  md5: {{ md5 }}
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python
+    - future
+    - requests
+    - msgpack-python
+    - docopt
+    - beautifulsoup4
+    - lxml
+    - cython
+    - pandas
+    - pysam>=0.8.4
+    - pybedtools>=0.7.8
+
+
+test:
+  imports:
+    - seqlib 
+    - seqlib.align
+    - seqlib.em
+    - seqlib.helper
+    - seqlib.interval
+    - seqlib.ngs
+    - seqlib.parse
+    - seqlib.path
+    - seqlib.sam
+    - seqlib.seq
+
+  commands:
+    - extract_junc.py --help
+    - extract_region.py --help
+    - fetch_geoinfo.py --help
+
+about:
+  home: https://github.com/kepbod/seqlib
+  license: MIT License
+  summary: 'Python library to facilitate high-throughput sequencing data analysis'
