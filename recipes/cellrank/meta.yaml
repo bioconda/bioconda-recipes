@@ -1,0 +1,69 @@
+{% set name = "cellrank" %}
+{% set version = "1.0.0b3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 9cc90a5944ad9f63e3b2576ad14c917ceecbf48365b61e370a3bfc5979e0fd52
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+    - setuptools_scm
+    - future_fstrings
+  run:
+    - anndata >=0.7.2
+    - future_fstrings
+    - joblib >=0.13.1
+    - matplotlib-base >=3.0.3
+    - networkx >=2.2
+    - numpy >=1.16.4
+    - pandas >=0.23.4
+    - python >=3.6
+    - tqdm >=4.47.0
+    - scanpy >=1.5.0
+    - scikit-learn >=0.21.3
+    - scipy >=1.2.0
+    - scvelo >=0.2.1
+    - seaborn >=0.10.0
+    - setuptools >=41.0.1
+    - tzlocal >=1.5.1
+
+test:
+  imports:
+    - cellrank
+    - cellrank._vendor.msmtools.analysis.dense
+    - cellrank.datasets
+    - cellrank.plotting
+    - cellrank.tools
+    - cellrank.tools.estimators
+    - cellrank.tools.kernels
+    - cellrank.utils
+    - cellrank.utils.models
+
+about:
+  home: "https://github.com/theislab/cellrank"
+  license: BSD
+  license_file: LICENSE
+  summary: "Continuous Lineage Decisions Uncovered by RNA Velocity"
+  description: |
+    CellRank is a toolkit to uncover cellular dynamics based on scRNA-seq data with RNA velocity annotation,
+    see La Manno et al. (2018) and Bergen et al. (2019). CellRank models cellular dynamics as a Markov chain,
+    where transition probabilities are computed based on RNA velocity and transcriptomic similarity,
+    taking into account uncertainty in the velocities.
+  doc_url: "http://cellrank.org"
+  doc_source_url: "https://github.com/theislab/cellrank/tree/master/docs"
+  dev_url: "https://github.com/theislab/cellrank"
+
+extra:
+  recipe-maintainers:
+    - michalk8

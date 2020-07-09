@@ -1,0 +1,57 @@
+{% set name = "seq2science" %}
+{% set version = "0.0.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/vanheeringen-lab/seq2science/archive/v{{ version }}.tar.gz
+  sha256: 3d5eab02b6920a6aa79a96ff3bf3294d41d4d4fa8ca25a7de2b47086003e6bb3
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - toml
+    - setuptools
+  run:
+    - python >=3.6
+    - snakemake >=5.18
+    - sra-tools >=2.9.1
+    - entrez-direct >=11.0
+    - pysam= >0.15.3
+    - norns >=0.1.5
+    - biopython >=1.74
+    - filelock >=3.0.12
+    - pyyaml >=5.3.1
+    - beautifulsoup4 >=4.9.0
+    - pretty_html_table=0.9.dev0
+    - trackhub=0.1.2019.12.24
+    - genomepy=0.8.3
+
+test:
+  commands:
+    - which seq2science
+    - seq2science --help
+    - seq2science init atac_seq
+#     - mkdir --parents results/fastq; touch results/fastq/GSM28374{88,89,90,91,92,93}.fastq.gz  # no lookup online for layout
+#     - seq2science run atac_seq --cores 5 --dryrun --snakemakeOption resources={mem_gb:100}
+
+about:
+  home: https://vanheeringen-lab.github.io/seq2science
+  license: MIT
+  license_file: LICENSE
+  license_family: MIT
+  summary: "Automated preprocessing of Next-Generation-Sequencing data."
+  dev_url: https://github.com/vanheeringen-lab/seq2science
+  doc_url: https://vanheeringen-lab.github.io/seq2science
+
+extra:
+  recipe-maintainers:
+    - Maarten-vd-Sande
