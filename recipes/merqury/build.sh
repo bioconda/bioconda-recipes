@@ -2,11 +2,12 @@
 
 this_dir=$(basename $(pwd))
 cd ..
-cp -r $this_dir $PREFIX/merqury
+mkdir -p $PREFIX/share
+cp -r $this_dir $PREFIX/share/merqury
 
 mkdir -p $PREFIX/bin
 cd $PREFIX/bin
-ln -s ../merqury/merqury.sh
+ln -s ../share/merqury/merqury.sh
 
 # https://docs.conda.io/projects/conda-build/en/latest/resources/activate-scripts.html
 # Copy the [de]activate scripts to $PREFIX/etc/conda/[de]activate.d.

@@ -2,6 +2,6 @@
 
 cat > "${PREFIX}"/.messages.txt <<- EOF
 
-    environment variable 'MERQURY' set to $PREFIX/merqury
+    environment variable 'MERQURY' set to $PREFIX/share/merqury
 
 EOF
