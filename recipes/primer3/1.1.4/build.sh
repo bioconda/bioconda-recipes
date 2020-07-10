@@ -6,7 +6,7 @@ export CPATH=${PREFIX}/include
 
 mkdir -p $PREFIX/bin
 cd src
-make
+make CC="${CC}"
 
 binaries="\
 long_seq_tm_test \

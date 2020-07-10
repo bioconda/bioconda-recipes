@@ -4,5 +4,5 @@ set -x -e
 
 mkdir -p $PREFIX/bin
 cd hs-blastn-src
-make
+make GNU_TOOLCHAIN_PREFIX="${GCC%gcc}" EXTRA_CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 cp hs-blastn $PREFIX/bin

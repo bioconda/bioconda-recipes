@@ -5,7 +5,7 @@ set -eu -o pipefail
 
 mkdir -p "${PREFIX}/bin"
 
-make all 
+make CC="${CC}" LD="${LD}" CFLAGS="${CFLAGS}" LFLAGS="${LDFLAGS}" all 
 
 mv svm_learn "${PREFIX}/bin/"
 mv svm_classify "${PREFIX}/bin/"

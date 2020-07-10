@@ -1,6 +1,6 @@
 #!/bin/bash
 
-make
+make CC="${CXX}"
 
 cp bin/yaha ${PREFIX}/bin
 

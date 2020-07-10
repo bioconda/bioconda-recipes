@@ -1,2 +1,2 @@
 cd clipper
-CFLAGS="-I. -I${PREFIX}/include -L${PREFIX}/lib" PREFIX=${PREFIX} make install
+make CC="${CXX}" CFLAGS="${CXXFLAGS}" PREFIX="${PREFIX}" install

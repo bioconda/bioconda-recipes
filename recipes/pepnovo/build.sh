@@ -2,5 +2,5 @@
 
 mkdir -p ${PREFIX}/bin
 cd src/
-make
+make CC="${CXX}" CFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}"
 cp PepNovo_bin ${PREFIX}/bin/pepnovo

@@ -7,5 +7,5 @@ export LIBRARY_PATH=${PREFIX}/lib
 export CPP_INCLUDE_PATH=${PREFIX}/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
-make CXXFLAGS+='-fpermissive'
+make CXX="${CXX}" CXXFLAGS+='-fpermissive'
 cp ../bin/tandem.exe ${PREFIX}/bin/xtandem

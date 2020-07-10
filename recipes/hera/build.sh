@@ -11,15 +11,15 @@ fi
 
 export LIBS="-pthread -lm ${PREFIX}/lib/libz.a -lm ${PREFIX}/lib/libjemalloc.a -lm ${PREFIX}/lib/libhdf5.a  -lm ${PREFIX}/lib/libhdf5_hl.a -ldl -lm ${PREFIX}/lib/libdivsufsort64.*"
 
-./configure
+./configure CC="${CC}" CFLAGS="${CFLAGS}" LIBS="${LIBS}"
 
 if [ $UNAME == "Darwin" ]
 then
   echo "Mac"
-  make -f Makefile_mac
+  make -f Makefile_mac CC="${CC}" CFLAGS="${CFLAGS}" LIBS="${LIBS}"
 else
   echo "Linux"
- make -f Makefile_linux
+ make -f Makefile_linux CCC="${CC}" FLAGS="${CFLAGS}" LIBS="${LIBS}"
 fi
 cp build/hera $PREFIX/bin
 cp build/hera_build $PREFIX/bin
