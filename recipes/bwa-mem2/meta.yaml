@@ -1,17 +1,15 @@
 {% set version = "2.0" %}
+
 package:
   name: bwa-mem2
   version: {{ version }}
 
 source:
-  - url: https://github.com/bwa-mem2/bwa-mem2/archive/v{{ version}}.tar.gz
-    sha256: 2c81ad44b58af6fba2519beefd5ac1c63b81611fda522c98b68faf54f18fa445    
-  - git_url: https://github.com/intel/safestringlib
-    folder: ext/safestringlib
-#  url: https://github.com/bwa-mem2/bwa-mem2/releases/download/v2.0/bwa-mem2-{{ version }}_x64-linux.tar.bz2
-#  sha256: 15df322cdb6ff3d12105ee1e263449a9dd7698617b641167bca575d93361489f
-
-#ext/safestringlib
+  - url: https://github.com/bwa-mem2/bwa-mem2/releases/download/v{{ version }}/Source_code_including_submodule.tar.gz
+    sha256: 23a8aa9d295ed1e042aec255157313b0ddf45ae2271a9b878b5e05a4c1026d38
+    patches:
+      - Makefile.patch
+      - 771c7692aeb857d5b9241a08bbd68f2c6be01811.patch
 
 build:
   number: 0
@@ -21,20 +19,20 @@ requirements:
     - {{ compiler('cxx') }}
   host:
     - zlib
-#    - libgcc
-#  run:
 
 test:
   commands:
     - bwa-mem2 version
+    - bwa-mem2.sse41 version
+    - bwa-mem2.avx2 version
+    - bwa-mem2.avx512bw version
 
 about:
   home: https://github.com/bwa-mem2/bwa-mem2
   license: MIT
+  license_file: LICENSE
   summary: The next version of bwa-mem 
 
 extra:
-  skip-lints:
-#    - should_use_compilers
-    - uses_vcs_url
-    - missing_hash
+  identifiers:
+    - doi:10.1109/IPDPS.2019.00041
