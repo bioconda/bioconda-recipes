@@ -1,5 +1,5 @@
 {% set name = "cellrank" %}
-{% set version = "1.0.0b3" %}
+{% set version = "1.0.0b4" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 9cc90a5944ad9f63e3b2576ad14c917ceecbf48365b61e370a3bfc5979e0fd52
+  sha256: 0877d97ef6fed9a5b9303d7ed159246cd6f211bfe7890bbdfa50b8c301862db7
 
 build:
   noarch: python
@@ -38,17 +38,36 @@ requirements:
     - setuptools >=41.0.1
     - tzlocal >=1.5.1
 
-test:
-  imports:
-    - cellrank
-    - cellrank._vendor.msmtools.analysis.dense
-    - cellrank.datasets
-    - cellrank.plotting
-    - cellrank.tools
-    - cellrank.tools.estimators
-    - cellrank.tools.kernels
-    - cellrank.utils
-    - cellrank.utils.models
+outputs:
+  - name: cellrank
+    test:
+      imports:
+        - cellrank
+        - cellrank._vendor.msmtools.analysis.dense
+        - cellrank.datasets
+        - cellrank.plotting
+        - cellrank.tools
+        - cellrank.tools.estimators
+        - cellrank.tools.kernels
+        - cellrank.utils
+        - cellrank.utils.models
+
+  - name: cellrank-krylov
+    requirements:
+      host:
+        - python >=3.6
+      run:
+        - python >=3.6
+        - openmpi >=3.0.3
+        - mpi4py >=3.0.3
+        - petsc >=3.13.0
+        - petsc4py >=3.13.0
+        - slepc >=3.13.0
+        - slepc4py >=3.13.0
+        - {{ pin_subpackage('cellrank', exact=True) }}
+    test:
+      imports:
+        - cellrank
 
 about:
   home: "https://github.com/theislab/cellrank"
