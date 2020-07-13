@@ -1,9 +1,10 @@
 #!/bin/sh
 
 if [ "$(uname)" == "Darwin" ]; then
-    make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -f Makefile.osx bin
+    DEP_LIBS="${LDFLAGS}" make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -f Makefile.osx bin
 else
-    make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" bin
+    DEP_LIBS="${LDFLAGS}" make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -f Makefile.c++11 bin
 fi
 
-cp bin/dsrc $PREFIX/bin
+mkdir -p "${PREFIX}/bin"
+cp bin/dsrc "${PREFIX}/bin/"
