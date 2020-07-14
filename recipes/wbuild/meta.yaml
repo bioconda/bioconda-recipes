@@ -14,23 +14,24 @@ build:
   noarch: generic
   entry_points:
     - wbuild=wbuild.cli:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: 
+    - sed -i.bak -e '/pytest-runner/d' -e '/[ \t]*#/d' setup.py
+    - "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
   host:
-    - click >=6.0
-    - click-log
+    - python >=3.7,<3.8
     - pip
-    - python >=3.6
-    - pyyaml >=4.2b1
-    - snakemake >=3.13.2
-    - pytest-runner
-  run:
     - click >=6.0
     - click-log
-    - python >=3.6
     - pyyaml >=4.2b1
-    - snakemake >=3.13.2
+    - snakemake >=5.5.2
+  run:
+    - python >=3.7,<3.8
+    - click >=6.0
+    - click-log
+    - pyyaml >=4.2b1
+    - snakemake >=5.5.2
 
 test:
   imports:
@@ -38,8 +39,7 @@ test:
   commands:
     - wbuild --help
   requires:
-    #- pytest
-    #- pytest-testdirectory
+    - pytest
 
 about:
   home: "https://github.com/gagneurlab/wBuild"
