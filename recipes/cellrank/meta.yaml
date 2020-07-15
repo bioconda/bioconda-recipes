@@ -1,5 +1,5 @@
 {% set name = "cellrank" %}
-{% set version = "1.0.0b3" %}
+{% set version = "1.0.0rc0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 9cc90a5944ad9f63e3b2576ad14c917ceecbf48365b61e370a3bfc5979e0fd52
+  sha256: 2c50371f750c8c3ac3f345551634e56588db7600ad8172e85da62a637ff68528
 
 build:
   noarch: python
@@ -37,6 +37,33 @@ requirements:
     - seaborn >=0.10.0
     - setuptools >=41.0.1
     - tzlocal >=1.5.1
+
+outputs:
+  - name: "{{ name }}"
+  - name: "{{ name }}-krylov"
+    build:
+      noarch: python
+      number: 0
+    requirements:
+      host:
+        - pip
+        - python >=3.6
+        - setuptools_scm
+        - future_fstrings
+      run:
+        - python >=3.6
+        - openmpi >=3.0.3
+        - mpi4py >=3.0.3
+        - petsc >=3.13.0
+        - petsc4py >=3.13.0
+        - slepc >=3.13.0
+        - slepc4py >=3.13.0
+        - {{ pin_subpackage('cellrank', exact=True) }}
+    test:
+      imports:
+        - cellrank
+        - petsc4py
+        - slepc4py
 
 test:
   imports:
