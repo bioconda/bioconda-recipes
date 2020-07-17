@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 binaries="panphlan_map.py panphlan_pangenome_generation.py panphlan_profile.py utils.py"
 
 mkdir -p $PREFIX/bin
