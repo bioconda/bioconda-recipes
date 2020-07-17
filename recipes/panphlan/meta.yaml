@@ -1,43 +1,43 @@
 {% set name = "panphlan" %}
-{% set version = "1.3" %}
-{% set sha256 = "17d0fd58e6eca92a1290548ae7c2786bbf01d3f2824b6c8ff1cb8d1e6cd43e84" %}
+{% set version = "3.0" %}
 
 package:
-  name: {{ name }}
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  sha256: {{ sha256 }}
-  url: https://github.com/SegataLab/panphlan/archive/{{ version }}.tar.gz
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 5a29d729eb6362a1b6905d09e18dc22e75d12a358b984dcb50cfe11955737245
 
 build:
   noarch: python
   number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
+  host:
+    - pip
+    - python >=3
   run:
-    - python
-    - bowtie2 >=2.0.0
-    - numpy
-    - biopython
-    - samtools
+    - python >=3
     - matplotlib-base
+    - numpy
+    - pandas
+    - scikit-learn
+    - scipy
+    - seaborn
 
 test:
   commands:
-    - panphlan_map.py -h
-    - panphlan_pangenome_generation.py -h
-    - panphlan_profile.py -h
-
+    - panphlan_download_pangenome.py --help
+    - panphlan_find_gene_grp.py --help
+    - panphlan_map.py --help
+    - panphlan_profiling.py --help
+      
 about:
-  home: https://github.com/SegataLab/panphlan
-  license: MIT License
+  home: http://github.com/SegataLab/panphlan/
+  license: MIT
   license_family: MIT
   license_file: license.txt
-  summary: |
-    PanPhlAn is a strain-level metagenomic profiling tool for identifying the 
-    gene composition and in-vivo transcriptional activity of individual strains 
-    in metagenomic samples. PanPhlAn's ability for strain-tracking and 
-    functional analysis of unknown pathogens makes it an efficient tool for 
-    culture-free infectious outbreak epidemiology and microbial population 
-    studies.
+  summary: "PanPhlAn is a strain-level metagenomic profiling tool for identifying the gene composition and *in-vivo* transcriptional activity of individual strains in metagenomic samples."
+  dev_url: http://github.com/SegataLab/panphlan/
