@@ -1,7 +1,8 @@
 #!/bin/bash
 set -euxo pipefail
 
-cd $SRC_DIR/c++/
+export BLAST_SRC_DIR="${SRC_DIR}/blast"
+cd $BLAST_SRC_DIR/c++/
 
 export CFLAGS="$CFLAGS -O2"
 export CXXFLAGS="$CXXFLAGS -O2"
@@ -22,6 +23,13 @@ fi
 
 LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 
+# Get optional RpsbProc
+# The rpsbproc command line utility is an addition to the standalone version of
+# Reverse Position-Specific BLAST (RPS-BLAST), also known as CD-Search (Conserved
+# Domain Search).
+mkdir -p src/app/RpsbProc
+cp -rf "${SRC_DIR}/RpsbProc/src/"* src/app/RpsbProc/
+
 # with/without options:
 #
 # dll: enable dynamic linking
@@ -30,7 +38,7 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 # -makefile-auto-update: no rebuild of makefile (one time build)
 # flat-makefile: use single makefile
 # -caution: disable configure script warnings
-# -dbapi: don't build database connectivity libs
+# -dbapi: don't build database connectivity libs <= configure: WARNING: --with(out)-dbapi is deprecated
 # -lzo: don't add lzo support
 # runpath: set runpath for installed $PREFIX location
 # hard-runpath: disable new dtags (disallow LD_LIBRARY_PATH override on Linux)
@@ -43,8 +51,8 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 # -gcrypt: disable gcrypt (needed on OSX)
 # -krb5: disable kerberos (needed on OSX)
 
-# Fixes building on Linux
-export AR="${AR} rcs" 
+# Fixes building on unix (linux and osx)
+export AR="${AR} rcs"
 
 ./configure \
     --with-dll \
@@ -54,7 +62,6 @@ export AR="${AR} rcs"
     --without-makefile-auto-update \
     --with-flat-makefile \
     --without-caution \
-    --without-dbapi \
     --without-lzo \
     --with-hard-runpath \
     --with-runpath=$LIB_INSTALL_DIR \
@@ -69,16 +76,17 @@ export AR="${AR} rcs"
     --without-sse42 \
     --without-gcrypt
 
+#list apps to build
 apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe"
 apps="$apps rpsblast.exe rpstblastn.exe makembindex.exe segmasker.exe"
-apps="$apps dustmasker.exe windowmasker.exe deltablast.exe makeblastdb.exe" 
+apps="$apps dustmasker.exe windowmasker.exe deltablast.exe makeblastdb.exe"
 apps="$apps blastdbcmd.exe blastdb_aliastool.exe convert2blastmask.exe"
-apps="$apps blastdbcheck.exe makeprofiledb.exe blast_formatter.exe"
+apps="$apps blastdbcheck.exe makeprofiledb.exe blast_formatter.exe rpsbproc.exe"
 cd ReleaseMT
 
 # The "datatool" binary needs the libs at build time, create
 # link from final install path to lib build dir:
-ln -s $SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
+ln -s $BLAST_SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
 
 cd build
 make -j${CPU_COUNT} -f Makefile.flat $apps
@@ -87,8 +95,8 @@ make -j${CPU_COUNT} -f Makefile.flat $apps
 rm $LIB_INSTALL_DIR
 
 mkdir -p $PREFIX/bin $LIB_INSTALL_DIR
-cp $SRC_DIR/c++/ReleaseMT/bin/* $PREFIX/bin/
-cp $SRC_DIR/c++/ReleaseMT/lib/* $LIB_INSTALL_DIR
+cp $BLAST_SRC_DIR/c++/ReleaseMT/bin/* $PREFIX/bin/
+cp $BLAST_SRC_DIR/c++/ReleaseMT/lib/* $LIB_INSTALL_DIR
 
 chmod +x $PREFIX/bin/*
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/update_blastdb.pl
