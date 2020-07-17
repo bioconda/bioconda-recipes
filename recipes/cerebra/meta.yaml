@@ -1,69 +1,78 @@
+{% set name = "cerebra" %}
 {% set version = "1.1.0" %}
 
 package:
-  name: cerebra
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://files.pythonhosted.org/packages/57/ba/75bb8436f26c54756e0ac059700327f35632f77394826889ad9403daebc8/cerebra-{{ version }}.tar.gz
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
   sha256: 9e689f16729b28235f734ca3b508330499af565259b388b82e173bf39801ab6a
 
 build:
-  entry_points:
-    - bam2fasta = bam2fasta.__main__:main
   number: 0
-  noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv "
+  entry_points:
+    - cerebra = cerebra.commandline:cli
+  script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
   host:
-    - python3
-    - pip
     - biopython
     - click
-    - cython==0.29.13
+    - colorama
+    - coverage
+    - cython
+    - flake8
     - hgvs
     - ncls
     - numpy
     - pandas
     - pathos
+    - pip
     - pyfaidx
+    - pysam==0.15.3
+    - pytest
+    - python
     - setuptools>=38.6.0
     - tqdm
     - vcfpy
-
   run:
     - biopython
     - click
-    - cython==0.29.13
+    - colorama
+    - coverage
+    - flake8
     - hgvs
     - ncls
     - numpy
     - pandas
     - pathos
     - pyfaidx
-    - setuptools>=38.6.0
+    - pysam==0.15.3
+    - pytest
+    - python
     - tqdm
     - vcfpy
 
 test:
   imports:
     - cerebra
-
   commands:
     - cerebra --help
-
+  requires:
+    - coverage
+    - flake8
+    - pytest
 
 about:
-  home: https://github.com/czbiohub/cerebra
-  license: MIT License
-  license_file: LICENSE
-  summary: 'a tool for fast and accurate summarizing of variant calling format (VCF) files'
+  home: "https://github.com/czbiohub/cerebra"
+  license: MIT
   license_family: MIT
-  dev_url: https://github.com/czbiohub/cerebra
+  license_file: 
+  summary: "a tool for fast and accurate summarizing of variant calling format (VCF) files"
+  doc_url: 
+  dev_url: 
 
 extra:
   recipe-maintainers:
     - lincoln-harris
-  identifiers:
-    - biotools:cerebra
