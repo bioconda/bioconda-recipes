@@ -7,7 +7,7 @@ export CPATH=${PREFIX}/include
 
 
 # cd to location of Makefile and source
-cd $SRC_DIR/gnuac
+cd $SRC_DIR
 
 # depends on automake, autoconf
 aclocal
