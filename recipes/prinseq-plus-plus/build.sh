@@ -1,19 +1,13 @@
 #!/bin/bash
 
-# https://bioconda.github.io/troubleshooting.html#zlib-errors
+# Add zlib support
 export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
 
-# cd to location of Makefile and source
-cd $SRC_DIR
-
-# depends on automake, autoconf
-aclocal
-autoheader
-automake -a -c
-autoconf
+# build
+./autogen.sh
 ./configure --prefix=$PREFIX
 make
 make install
