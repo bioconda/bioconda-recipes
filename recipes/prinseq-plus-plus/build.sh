@@ -8,6 +8,6 @@ export CPATH=${PREFIX}/include
 
 # build
 ./autogen.sh
-./configure --prefix=$PREFIX
+./configure
 make
 make install
