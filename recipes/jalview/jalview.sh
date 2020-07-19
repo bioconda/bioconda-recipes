@@ -6,6 +6,9 @@
 # Note, in order to run commandline-only calls use 
 #   -nodisplay
 #
+# By default, this wrapper executes java -version to determine the JRE version
+# Set JALVIEW_JRE=j1.8 or JALVIEW_JRE=j11 to skip the version check 
+#
 ###############################
 
 # Find original directory of bash script, resolving symlinks
@@ -19,9 +22,10 @@ done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"; # get final path of this script
 
 # decide which jalview jar to launch - either 'j11' or 'j1.8'
-J_VERSION="j11"
+if [[ "$JALVIEW_JRE" != "j11" && "$JALVIEW_JRE" != "j1.8" ]]; then
+  JALVIEW_JRE="j11"
+  # if java 8 is installed we pick the j1.8 build
+  if [[ $( java -version 2>&1 | grep '"1.8' ) != "" ]]; then JALVIEW_JRE=j1.8; fi
+fi
 
-# if java 8 is installed we pick the j1.8 build
-if [[ $( conda list openjdk | egrep -e 'openjdk\W+8' ) ]]; then J_VERSION=j1.8; fi
-
-java -jar $DIR/jalview-all-${J_VERSION}.jar ${@};
+java -jar $DIR/jalview-all-${JALVIEW_JRE}.jar ${@};

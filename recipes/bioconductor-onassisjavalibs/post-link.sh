@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="OnassisJavaLibs_1.8.0.tar.gz"
+FN="OnassisJavaLibs_1.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/OnassisJavaLibs_1.8.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/OnassisJavaLibs_1.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-onassisjavalibs/bioconductor-onassisjavalibs_1.8.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/OnassisJavaLibs_1.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/OnassisJavaLibs_1.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-onassisjavalibs/bioconductor-onassisjavalibs_1.10.0_src_all.tar.gz"
 )
-MD5="265b629e17abb6ad88b31c7afeeb3a96"
+MD5="64c64c2d399fbb0d8b1f14d535233387"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

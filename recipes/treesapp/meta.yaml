@@ -1,0 +1,60 @@
+{% set name = "treesapp" %}
+{% set version = "0.6.8" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 7e37ea31bb2432946266fc9277ac3a97ba2c41ebd9b19ceb8f406286e1755b69
+
+build:
+  number: 0
+  skip: True  # [py2k]
+  entry_points:
+    - treesapp = treesapp.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - pip
+    - python
+  run:
+    - python
+    - numpy
+    - scipy >=1.4.1
+    - biopython >=1.68
+    - pygtrie >=2.3.2
+    - ete3 >=3.1.1
+    - six >=1.14.0
+    - joblib >=0.14.1
+    - matplotlib-base >=3.1.2
+    - seaborn >=0.9.0
+    - hmmer >=3.1
+    - prodigal >=2.6.2
+    - fasttree >=2.1.9
+    - bwa >=0.7.3
+    - raxml ==8.2.12
+    - mafft >=7.407
+    - samsum ==0.1.2
+    - pyfastx ==0.6.10
+
+test:
+  imports:
+    - treesapp
+  commands:
+    - {{ name }} --help
+
+about:
+  home: https://github.com/hallamlab/TreeSAPP
+  license: GNU General Public v3 (GPLv3)
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "TreeSAPP is a functional and taxonomic annotation tool for microbial genomes and proteins"
+
+extra:
+  recipe-maintainers:
+    - cmorganl

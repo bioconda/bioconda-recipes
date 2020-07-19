@@ -13,7 +13,7 @@ import shutil
 from os import access
 from os import getenv
 from os import X_OK
-jar_file = 'mpa-portable-1.9.0.jar'
+jar_file = 'mpa-portable-2.0.0.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 

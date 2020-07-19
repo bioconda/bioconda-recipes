@@ -1,6 +1,6 @@
 {% set name = "pbcoretools" %}
-{% set version = "0.2.4" %}
-{% set sha256 = "b8f51e615b249e2b608367ee39817cec7a90f42e01c80088a4bbecd6b378b6bd" %}
+{% set version = "0.8.1" %}
+{% set sha256 = "c08e992593c9e53601101f40a1c13ec08df686f3ce85d6a94cdc5dec26fca638" %}
 
 package:
   name: {{ name }}
@@ -11,32 +11,36 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  skip: True # [not py27]
-  number: 4
+  noarch: generic
+  number: 0
+  entry_points:
+    - dataset = pbcoretools.dataset:main
+    - pbvalidate = pbcoretools.pbvalidate.main:main
+    - bamsieve = pbcoretools.bamsieve:main
+    - pbtools-gather = pbcoretools.tasks.gather:main
 
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - python
+    - python >=3.7,<3.8
     - setuptools
-    - cython
-    - numpy >=1.15
-    - pysam >=0.13
-    - pbcore >=1.6.5
-    - pbcommand >=1.1.1
+    - numpy >=1.17
+    - pysam >=0.15.1
+    - pbcore >=2.1.2
+    - pbcommand >=2.1.1
   run:
-    - python
-    - numpy >=1.15
-    - pysam >=0.13
-    - pbcore >=1.6.5
-    - pbcommand >=1.1.1
+    - python >=3.7,<3.8
+    - setuptools
+    - numpy >=1.17
+    - pysam >=0.15.1
+    - pbcore >=2.1.2
+    - pbcommand >=2.1.1
 
 test:
   commands:
-    - bamSieve -h
     - dataset -h
     - pbvalidate -h
+    - bamsieve -h
+    - pbtools-gather -h
 
 about:
   home: https://github.com/PacificBiosciences/pbbioconda

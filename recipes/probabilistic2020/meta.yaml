@@ -1,0 +1,55 @@
+{% set name = "probabilistic2020" %}
+{% set version = "1.2.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 6b907c9255e6fa4717cd1c03622f51513199ed477cc27fa06a59da2f852fff05
+
+build:
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  skip: True  # [osx]
+  entry_points:
+    - probabilistic2020 = prob2020.console.probabilistic2020:cli_main
+    - mut_annotate = prob2020.console.annotate:cli_main
+    - extract_gene_seq = prob2020.console.extract_gene_seq:cli_main
+    - simulate_non_silent_ratio = prob2020.console.simulate_non_silent_ratio:cli_main
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - pip
+    - cython
+    - numpy
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+    - scipy <1.3.0
+    - pandas >=0.17.0
+    - pysam
+
+test:
+  imports:
+    - prob2020
+    - prob2020.console
+    - prob2020.cpp
+    - prob2020.cython
+    - prob2020.python
+  commands:
+    - probabilistic2020 --help
+    - mut_annotate --help
+    - extract_gene_seq --help
+    - simulate_non_silent_ratio --help
+
+about:
+  home: https://github.com/KarchinLab/probabilistic2020
+  license: Apache-2-0
+  summary: Simulates somatic mutations, and calls statistically significant oncogenes and tumor suppressor genes based on a randomization-based test
+  license_family: APACHE

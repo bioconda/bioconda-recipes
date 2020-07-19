@@ -1,0 +1,38 @@
+#!/bin/bash
+# Driver script for the additional GRIDSS java utility programs
+# included in the jar
+
+# Adapted from bioconda-recipes/picard/picard.sh
+set -o pipefail
+# Find original directory of bash script, resolving symlinks
+# http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+    DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+    SOURCE="$(readlink "$SOURCE")"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+# Invoke the gridss entry point based on the name of script
+entrypoint=$(basename $0)
+namespace="gridss"
+if [[ "$entrypoint" =~ "Collect" ]] || [[ "$entrypoint" =~ "ReportThresholdCoverage" ]] ; then
+	namespace="gridss.analysis"
+fi
+# GRIDSS relies on htsjdk multi-thread I/O for performance
+# we need to add these to all entry points except IndexedExtractFullReads
+# which should not perform async read since the read-ahead results get
+# discard on every index seek
+jvm_args="
+		-Dsamjdk.use_async_io_write_samtools=true \
+		-Dsamjdk.use_async_io_write_tribble=true \
+		-Dsamjdk.buffer_size=4194304"
+if [[ "$entrypoint" =~ "IndexedExtractFullReads" ]] ; then
+	jvm_args="$jvm_args -Dsamjdk.use_async_io_read_samtools=false"
+else
+	jvm_args="$jvm_args -Dsamjdk.use_async_io_read_samtools=true"
+fi
+
+java $jvm_args -cp $DIR/gridss.jar $namespace.$entrypoint "$@"
+

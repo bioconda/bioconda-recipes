@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="bovineprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/bovineprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/bovineprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/bovineprobe_2.18.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bovineprobe/bioconductor-bovineprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bovineprobe/bioconductor-bovineprobe_2.18.0_src_all.tar.gz"
