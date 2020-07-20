@@ -1,36 +1,56 @@
+# Remarks:
+# - The name was CHANGED from graphembed to graph_embed to match
+#   the pypy package name,
+# - The pypy version is not the same version as the git version,
+#   and the previous version of the bioconda recipe was based on
+#   the git version, so we will use that.
+{% set name = "graphembed" %}
+{% set packname = "graph_embed" %}
+{% set pypyversion = "0.0.107" %}
+{% set version = "2.4" %}
+
+package:
+  name: "{{ packname|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ pypyversion }}.tar.gz"
+  sha256: b0bf6cac610c77d4a87a7f9894de453393641382c30fd042f410403f1302ed1d
+
 build:
+  number: 0
   noarch: python
-  number: 1
+  entry_points:
+    - graphembed=graphembed.graph_embed:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - python
+  run:
+    - docopt
+    - matplotlib
+    - networkx
+    - numpy
+    - python
+    - pygraphviz
+    - scikit-learn==0.22
+    - toolz
+test:
+  imports:
+    - graphembed
+  commands:
+    - graphembed --version
 
 about:
   home: https://github.com/fabriziocosta/GraphEmbed
   license: MIT
+  license_family: MIT
+  license_file: LICENSE
   summary: Compute a 2D embedding of a data matrix given supervised class information.
-
-package:
-  name: graph_embed
-  version: 1.0
-
-requirements:
-  host:
-    - python >=2.7,<3
-  run:
-    - python >=2.7,<3
-    - numpy
-    - scikit-learn
-    - docopt
-    - networkx
-    - matplotlib
-
-test:
-  commands:
-    - graph_embed --version
-
-source:
-  url: https://github.com/fabriziocosta/GraphEmbed/archive/1.0.tar.gz
-  sha256: 842fd418309a44dc65b8e802ce0365b4061658cfbdd15444214f02ee56ecdf8a
+  doc_url: https://github.com/fabriziocosta/GraphEmbed
+  dev_url: https://github.com/fabriziocosta/GraphEmbed
 
 extra:
-  container:
-    # needed for libGL.so.1
-    extended-base: true
+  recipe-maintainers:
+    - mtekman

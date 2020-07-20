@@ -1,5 +1,6 @@
 mkdir build
 cd build
+export CXXFLAGS=-ldeflate
 cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX
 
 # Fix the version

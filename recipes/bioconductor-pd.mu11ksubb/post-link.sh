@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="pd.mu11ksubb_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.mu11ksubb_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/pd.mu11ksubb_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.mu11ksubb_3.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.mu11ksubb/bioconductor-pd.mu11ksubb_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.mu11ksubb/bioconductor-pd.mu11ksubb_3.12.0_src_all.tar.gz"

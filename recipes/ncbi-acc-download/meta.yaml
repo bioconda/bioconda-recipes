@@ -1,0 +1,41 @@
+{% set name = "ncbi-acc-download" %}
+{% set version = "0.2.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/n/ncbi-acc-download/ncbi-acc-download-{{ version }}.tar.gz
+  sha256: ebe116903f02e721c997eb4945737cfd2386824c63e19b3d8a53b1c00580e2c1
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - ncbi-acc-download=ncbi_acc_download.__main__:main
+    - nad=ncbi_acc_download.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv "
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - python
+    - biopython
+    - requests >=2.4.3
+
+test:
+  imports:
+    - ncbi_acc_download
+
+  commands:
+    - ncbi-acc-download --help
+    - nad --help
+
+about:
+  home: https://github.com/kblin/ncbi-acc-download/
+  license: Apache Software License
+  summary: 'Download files from NCBI Entrez by accession.'
+  license_family: Apache

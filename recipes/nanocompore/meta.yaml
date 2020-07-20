@@ -1,0 +1,51 @@
+{% set name = "nanocompore" %}
+{% set version = "1.0.0rc3.post2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 5f74019d6e3844b139bd9b3d91f9c0c629f8b035c067f9ca3320e8a0e6d0fbe6
+
+build:
+  noarch: generic
+  number: 1
+  script:
+    - "{{ PYTHON }} -m pip install . -vv"
+    - sed -i.bak '1s|^|#!/usr/bin/env python\'$'\n|g' $PREFIX/bin/nanocompore
+
+requirements:
+  host:
+    - pip
+    - python =3.6
+    - bedparse
+    - poetry
+  run:
+    - matplotlib-base
+    - numpy >=1.16.0
+    - pandas
+    - pyfaidx
+    - python =3.6
+    - pyyaml
+    - scikit-learn =0.21
+    - scipy >=1.2.0
+    - seaborn
+    - statsmodels >=0.9.0
+    - tqdm
+    - bedparse
+
+test:
+  commands:
+    - nanocompore sampcomp --help
+    - nanocompore simreads --help
+    - nanocompore plot --help
+
+about:
+  home: "https://github.com/tleonardi/nanocompore"
+  license: "GNU General Public v3 (GPLv3)"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Nanocompore identifies raw signal changes between two conditions dRNA-Seq data."
+

@@ -1,13 +1,13 @@
 {% set name = "Augustus" %}
-{% set version = "3.3.2" %}
-{% set sha256 = "d09f972cfd88deb34b19b69878eb8af3bbbe4f1cde1434b69cedc2aa6247a0f2" %}
+{% set version = "3.3.3" %}
+{% set sha256 = "2fc5f9fd2f0c3bba2924df42ffaf55b5c130228cea18efdb3b6dfab9efa8c9f4" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/Gaius-Augustus/{{ name }}/archive/{{ version }}.tar.gz
+  url: https://github.com/Gaius-Augustus/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
     - patches/bam2hints.makefile.patch
@@ -61,6 +61,11 @@ requirements:
     - suitesparse
     - openblas
     - libcblas
+    - cdbtools
+    - diamond
+    # Needed by bamToWig.py
+    - ucsc-fatotwobit
+    - ucsc-twobitinfo
 
 test:
   commands:
@@ -151,12 +156,16 @@ test:
     - writeResultsPage.pl
     - yaml2gff.1.4.pl --help 2>&1 | grep "yaml2gff.pl" > /dev/null
     - getAnnoFastaFromJoingenes.py --help
+    - bamToWig.py --help | grep -Fq 'bamToWig.py'
+    - compare_masking.pl --help | grep -Fq 'compare_masking'
+    - merge_masking.pl --help | grep -Fq 'merge_masking.pl'
+    - fix_in_frame_stop_codon_genes.py --help | grep -Fq 'fix_in_frame_stop_codon_genes.py'
 
 about:
   home: http://bioinf.uni-greifswald.de/augustus/
   license: Artistic Licence
   license_family: Other
-  license_file: "src/LICENCE.TXT"
+  license_file: "src/LICENSE.TXT"
   summary: 'AUGUSTUS is a gene prediction program for eukaryotes written by Mario
     Stanke and Oliver Keller. It can be used as an ab initio program, which means
     it bases its prediction purely on the sequence. AUGUSTUS may also incorporate
@@ -168,3 +177,5 @@ extra:
     - biotools:augustus
     - doi:10.1093/bioinformatics/btr010
   notes: "Builds with sqlite support are currently only available on Linux due to compile issues with macOS."
+  skip-lints:
+    - should_not_be_noarch_source

@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="illuminaRatv1.db_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/illuminaRatv1.db_1.26.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/illuminaRatv1.db_1.26.0.tar.gz"
   "https://bioarchive.galaxyproject.org/illuminaRatv1.db_1.26.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-illuminaratv1.db/bioconductor-illuminaratv1.db_1.26.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-illuminaratv1.db/bioconductor-illuminaratv1.db_1.26.0_src_all.tar.gz"

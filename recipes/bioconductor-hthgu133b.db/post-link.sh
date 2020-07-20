@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="hthgu133b.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/hthgu133b.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/hthgu133b.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/hthgu133b.db_3.2.3.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hthgu133b.db/bioconductor-hthgu133b.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hthgu133b.db/bioconductor-hthgu133b.db_3.2.3_src_all.tar.gz"

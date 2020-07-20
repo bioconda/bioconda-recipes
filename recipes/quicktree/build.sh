@@ -1,5 +1,5 @@
 #!/bin/bash
 
 mkdir -p $PREFIX/bin
-make
+make CC=$CC
 cp quicktree $PREFIX/bin

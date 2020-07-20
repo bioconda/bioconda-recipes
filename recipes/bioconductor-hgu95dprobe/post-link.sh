@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="hgu95dprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/hgu95dprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/hgu95dprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hgu95dprobe_2.18.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hgu95dprobe/bioconductor-hgu95dprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hgu95dprobe/bioconductor-hgu95dprobe_2.18.0_src_all.tar.gz"

@@ -1,0 +1,52 @@
+{% set name = "abritamr" %}
+{% set version = "0.1.0" %}
+{% set blake2_sha256 = "6d1fec9fe5986578121d2faa58e6fae36a9d5bc898367464f6c04fe4f0087123" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://files.pythonhosted.org/packages/{{ blake2_sha256[0:2] }}/{{ blake2_sha256[2:4]}}/{{ blake2_sha256[4:] }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 27d767ea45635e83eb015db2c6ddffed1cd68d0cec905c1eee53dcf73270f57e
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - abritamr=abritamr.abritamr:main
+  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - click
+    - jinja2
+    - pandas
+    - python >=3.6
+    - snakemake
+    - blast=2.9=pl526h3066fca_4
+    - ncbi-amrfinderplus
+
+test:
+  imports:
+    - abritamr
+  commands:
+    - abritamr --help
+  requires:
+    - nose
+    - pytest
+
+about:
+  home: "https://github.com/MDU-PHL/abritamr"
+  license: "GNU General Public v3 (GPLv3)"
+  license_family: GPL3
+  summary: "Running AMRFinderPlus for MDU"
+  dev_url: https://github.com/MDU-PHL/abritamr 
+
+extra:
+  recipe-maintainers:
+    - andersgs
+    - kristyhoran

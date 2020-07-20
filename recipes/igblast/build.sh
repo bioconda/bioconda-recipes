@@ -1,45 +1,71 @@
 #!/bin/bash
-set -euo pipefail
+set -xeuo pipefail
 
-IGBLAST_ADDRESS=ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release
+# This script uses ideas from the build script for BLAST. See comments there.
+
 SHARE_DIR=$PREFIX/share/igblast
 
 mkdir -p $PREFIX/bin
-
-if [ $(uname) == Linux ]; then
-  # The binaries want libbz2.so.1, but the correct soname is libbz2.so.1.0
-  for name in makeblastdb igblastn igblastp; do
-    patchelf --replace-needed libbz2.so.1 libbz2.so.1.0 bin/$name
-  done
-fi
 
 # $SHARE_DIR contains the actual igblastn and igblastp binaries and also the
 # required data files. Wrappers will be installed into $PREFIX/bin that set
 # $IGDATA to point to those data files.
 mkdir -p $SHARE_DIR/bin
 
-# Copy binaries and wrappers
+if [[ $(uname) == Linux ]]; then
+    export CPPFLAGS="$CPPFLAGS -I$PREFIX/include/ncbi-vdb"
+    export CC_FOR_BUILD=$CC
+    export AR="$AR rcs"
+
+    cd c++
+
+    # IgBLAST is based on the BLAST source code and building it produces
+    # a similar set of shared libraries if --with-dll is used. To avoid
+    # conflicts when installing IgBLAST and BLAST simultaneously,
+    # we link IgBLAST statically.
+    ./configure.orig \
+        --with-static-exe \
+        --with-mt \
+        --with-openmp \
+        --without-autodep \
+        --without-makefile-auto-update \
+        --with-flat-makefile \
+        --with-caution \
+        --without-lzo \
+        --without-debug \
+        --with-strip \
+        --with-z=$PREFIX \
+        --with-bz2=$PREFIX \
+        --with-vdb=$PREFIX \
+        --without-krb5 \
+        --without-openssl \
+        --without-gnutls \
+        --without-gcrypt \
+        --with-build-root=ReleaseMT \
+        --prefix=$PREFIX
+    make -j2
+    # Move one up so it looks like the binary release
+    mv ReleaseMT/bin .
+    mv src/app/igblast/{internal_data,optional_file} $SHARE_DIR
+else
+    # On macOS, prebuilt binaries are used
+    mv internal_data optional_file $SHARE_DIR
+fi
+mv bin/makeblastdb $PREFIX/bin/
+mv bin/{igblastn,igblastp} $SHARE_DIR/bin/
+
+# Replace the shebang
+sed '1 s_^.*$_#!/usr/bin/env perl_' bin/edit_imgt_file.pl > $PREFIX/bin/edit_imgt_file.pl
+chmod +x $PREFIX/bin/edit_imgt_file.pl
+
+# Install wrappers
 for name in igblastn igblastp; do
-  mv bin/$name $SHARE_DIR/bin/
-  sed "s/igblastn/$name/g" $RECIPE_DIR/igblastn.sh > $PREFIX/bin/$name
+  cat >"${PREFIX}/bin/${name}" <<EOF
+#!/bin/sh
+IGDATA="\${IGDATA-"${PREFIX}/share/igblast"}" exec "${PREFIX}/share/igblast/bin/${name}" "\${@}"
+EOF
   chmod +x $PREFIX/bin/$name
 done
 
-# No wrapper needed
-mv bin/makeblastdb $PREFIX/bin/
-
-wget $IGBLAST_ADDRESS/edit_imgt_file.pl
-# Replace the hardcoded perl shebang pointing to /opt with `#!/usr/bin/env perl`.
-sed -i.backup '1 s_^.*$_#!/usr/bin/env perl_' edit_imgt_file.pl
-chmod +x edit_imgt_file.pl
-mv edit_imgt_file.pl $PREFIX/bin/
-
-
-# Download data files necessary to run IgBLAST. These are not included in the
-# source or binary distributions.
-# See the [IgBLAST README](ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/README)
-
-for IGBLAST_DIR in internal_data optional_file; do
-    mkdir -p $SHARE_DIR/$IGBLAST_DIR
-    wget -nv -r -nH --cut-dirs=5 -X Entries,Repository,Root,CVS -P $SHARE_DIR/$IGBLAST_DIR $IGBLAST_ADDRESS/$IGBLAST_DIR
-done
+# To Do
+# - makeblastdb conflicts with the one from BLAST

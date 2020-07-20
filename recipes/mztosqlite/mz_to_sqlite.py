@@ -5,11 +5,13 @@ import os
 import sys
 import subprocess
 from os import access, getenv, X_OK
-jar_file = 'mzToSQLite-2.0.2.jar'
 
-default_jvm_mem_opts = ['-Xms1g', '-Xmx2g']
+jar_file = "mzToSQLite-2.0.4.jar"
+
+default_jvm_mem_opts = ["-Xms1g", "-Xmx2g"]
 
 # !!! End of parameter section. No user-serviceable code below this line !!!
+
 
 def real_dirname(path):
     """Return the symlink-resolved, canonicalized directory-portion of path."""
@@ -18,13 +20,13 @@ def real_dirname(path):
 
 def java_executable():
     """Return the executable name of the Java interpreter."""
-    java_home = getenv('JAVA_HOME')
-    java_bin = os.path.join('bin', 'java')
+    java_home = getenv("JAVA_HOME")
+    java_bin = os.path.join("bin", "java")
 
     if java_home and access(os.path.join(java_home, java_bin), X_OK):
         return os.path.join(java_home, java_bin)
     else:
-        return 'java'
+        return "java"
 
 
 def jvm_opts(argv):
@@ -39,11 +41,11 @@ def jvm_opts(argv):
     pass_args = []
 
     for arg in argv:
-        if arg.startswith('-D'):
+        if arg.startswith("-D"):
             prop_opts.append(arg)
-        elif arg.startswith('-XX'):
+        elif arg.startswith("-XX"):
             prop_opts.append(arg)
-        elif arg.startswith('-Xm'):
+        elif arg.startswith("-Xm"):
             mem_opts.append(arg)
         else:
             pass_args.append(arg)
@@ -54,7 +56,7 @@ def jvm_opts(argv):
     # it is important to explictly check for equality with None
     # in the second condition, so a null envar value counts as True!
 
-    if mem_opts == [] and getenv('_JAVA_OPTIONS') == None:
+    if mem_opts == [] and getenv("_JAVA_OPTIONS") == None:
         mem_opts = default_jvm_mem_opts
 
     return (mem_opts, prop_opts, pass_args)
@@ -65,17 +67,17 @@ def main():
     jar_dir = real_dirname(sys.argv[0])
     (mem_opts, prop_opts, pass_args) = jvm_opts(sys.argv[1:])
 
-    if pass_args != [] and pass_args[0].startswith('eu'):
-        jar_arg = '-cp'
+    if pass_args != [] and pass_args[0].startswith("eu"):
+        jar_arg = "-cp"
     else:
-        jar_arg = '-jar'
+        jar_arg = "-jar"
 
     jar_path = os.path.join(jar_dir, jar_file)
 
-    java_args = [java]+ mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
+    java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
 
     sys.exit(subprocess.call(java_args))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

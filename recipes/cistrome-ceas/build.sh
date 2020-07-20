@@ -1,5 +1,4 @@
 #!/bin/bash
 
 cd published-packages/CEAS
-$PYTHON setup.py install
-
+$PYTHON -m pip install . --ignore-installed --no-deps -vv

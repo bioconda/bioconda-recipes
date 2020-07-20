@@ -1,0 +1,61 @@
+{% set name = "seqfu" %}
+{% set version = "0.5.1" %}
+{% set sha256 = "0531474bd564a5b939bc15b6e237272c6f63c43fb3db14641bd023c34c5c536b" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/quadram-institute-bioscience/{{ name }}/archive/v.{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 0
+
+requirements:
+  host:
+    - perl
+    - perl-app-cpanminus
+
+
+  run:
+    - perl
+    - perl-file-which
+    - perl-getopt-long
+    - perl-json-pp
+    - perl-fastx-reader >=0.88
+    - perl-fastx-abi
+    - perl-exporter
+    - perl-text-asciitable
+    - perl-pod-usage
+    - n50 >=1.3.0
+    - interleafq >=0.99
+
+test:
+  files:
+    - test.fa
+  commands:
+  # (see run_test.sh for remainder of tests)
+  # Perl 'use' tests
+    - perl -e "use FASTX::Reader"
+    - perl -e "use FASTX::Abi"
+    - perl -e "use Proch::N50"
+
+
+about:
+  home: http://github.com/quadram-institute-bioscience/seqfu/
+  license: mit
+  summary: 'DNA sequence utilities (N50, de/interleave FASTQ, grep etc.)'
+  description: |
+    A collection of utilities to work with FASTX (FASTA or FASTQ) files
+    using the FASTX::Reader module that accepts gzipped input.
+    'n50' will calculate N50, minimum, maximum and total size of the 
+    sequences in one or more files, supporting CSV, TSV, JSON and screen
+    friendly output.
+    'interleafq' allows to interleave or deinterleave paired-end sequences.
+
+extra:
+  identifiers:
+    - biotools:{{ name }}

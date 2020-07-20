@@ -1,20 +1,17 @@
 {% set name = "mgkit" %}
-{% set version = "0.3.4" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "635d6b8c6874492925635ac7bf8d2bddf12dd5cb5a5cc8d7aac008e20f7c5941" %}
+{% set version = "0.4.3" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 8b4276ffbe3a25bd296cbcba866610fccee1257cf16d69e8e6813dc49c0b4a89
 
 build:
   number: 0
-  skip: True # [not py27]
+  skip: True  # [py27]
   entry_points:
     - filter-gff = mgkit.workflow.filter_gff:main
     - add-gff-info = mgkit.workflow.add_gff_info:main
@@ -29,32 +26,31 @@ build:
     - sampling-utils = mgkit.workflow.sampling_utils:main
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
     - python
+    - cython
     - setuptools
-    - numpy >=1.9.2
-    - pandas >=0.18
-    - progressbar2
-    - enum34
-    - matplotlib >=2
+    - pytest-runner
   run:
     - python
     - numpy >=1.9.2
-    - pandas >=0.18
-    - progressbar2
-    - enum34
-    - htseq >=0.6.0
+    - pandas >=0.24
+    - htseq >=0.9.1
     - semidbm >=0.5.1
     - pymongo >=3.1.1
     - pytables >=3.4.2
-    - pysam >=0.8.2.1
+    - pysam >=0.14
     - scipy >=0.15.1
     - msgpack-python >=0.4.6
-    - matplotlib >=2
+    - matplotlib-base >=2
     - statsmodels >=0.8
     - future
+    - networkx
     - click
     - requests
+    - tqdm
 
 test:
   imports:
@@ -82,7 +78,7 @@ test:
     - sampling-utils --version
 
 about:
-  home: https://bitbucket.org/setsuna80/mgkit/
+  home: https://github.com/frubino/mgkit
   summary: Metagenomics Framework
   license: GNU General Public License v2 or later (GPLv2+)
   license_family: GPL2
@@ -91,3 +87,5 @@ extra:
   identifiers:
     - biotools:mgkit
     - doi:10.6084/m9.figshare.1588384
+  container:
+    extended-base: True

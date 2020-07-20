@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="oligoData_1.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/oligoData_1.8.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/oligoData_1.8.0.tar.gz"
   "https://bioarchive.galaxyproject.org/oligoData_1.8.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-oligodata/bioconductor-oligodata_1.8.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-oligodata/bioconductor-oligodata_1.8.0_src_all.tar.gz"

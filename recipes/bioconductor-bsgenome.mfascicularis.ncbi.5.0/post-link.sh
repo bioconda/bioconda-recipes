@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="BSgenome.Mfascicularis.NCBI.5.0_1.4.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Mfascicularis.NCBI.5.0_1.4.2.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/BSgenome.Mfascicularis.NCBI.5.0_1.4.2.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Mfascicularis.NCBI.5.0_1.4.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mfascicularis.ncbi.5.0/bioconductor-bsgenome.mfascicularis.ncbi.5.0_1.4.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mfascicularis.ncbi.5.0/bioconductor-bsgenome.mfascicularis.ncbi.5.0_1.4.2_src_all.tar.gz"

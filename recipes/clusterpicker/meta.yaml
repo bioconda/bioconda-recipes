@@ -1,0 +1,34 @@
+{% set name = "ClusterPicker" %}
+{% set version = "1.2.5" %}
+{% set sha256 = "bbeb3e4274f75dfd58af1dc724b21e5056c665eb28c65bda9fa823d1821db9e8" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/emmahodcroft/cluster-picker-and-cluster-matcher/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  
+build:
+  noarch: generic
+  number: 0
+
+requirements:
+  run:
+    - openjdk >=6
+
+test:
+  commands:
+    - which cluster-picker
+    - which ClusterPicker
+    - echo -e ">seq1\nATTA\n>seq2\nATTA\n>seq3\nATTA\n>seq4\nATTA" > dummy.fasta
+    - echo "(((seq1:0.001,seq2:0.002):0.001,seq3:0.005):0.004,seq4:0.003):0.001;" > dummy.nwk
+    - echo -e "y\ny\ny\ny\ny\n" | cluster-picker dummy.fasta dummy.nwk
+    - echo -e "y\ny\ny\ny\ny\n" | ClusterPicker dummy.fasta dummy.nwk
+
+about:
+  home: https://github.com/emmahodcroft/cluster-picker-and-cluster-matcher
+  license: GPLv3
+  license_family: GPL
+  summary: "The Cluster Picker identifies clusters in newick-formatted trees containing thousands of sequences within a few minutes."

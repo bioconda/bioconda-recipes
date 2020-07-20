@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="Hspec_0.99.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/Hspec_0.99.1.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/Hspec_0.99.1.tar.gz"
   "https://bioarchive.galaxyproject.org/Hspec_0.99.1.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hspec/bioconductor-hspec_0.99.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hspec/bioconductor-hspec_0.99.1_src_all.tar.gz"

@@ -10,9 +10,10 @@ source:
   sha256: '{{ sha256 }}'
 
 build:
+  number: 1
   noarch: python
-  number: 0
-  script: python -m pip install --no-deps --ignore-installed .
+  # Remove incorrect cython requirement
+  script: sed -i.bak "53d" setup.py && python -m pip install --no-deps --ignore-installed .
 
 requirements:
   host:
@@ -21,9 +22,13 @@ requirements:
     - cython
   run:
     - python
-    - cython
     - sortedcontainers
-    - pysam >0.8.3,<=0.12
+    # The actual requirements aren't this strict, but 0.9.1 has been rebuilt
+    - pysam 0.9.1
+    # These aren't actually needed, but this fixes the conda solver
+    - htslib 1.3.1
+    - samtools 1.3.1
+    - bcftools 1.3.1
 
 test:
   commands:
