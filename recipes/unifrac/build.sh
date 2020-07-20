@@ -8,9 +8,12 @@ export CPLUS_INCLUDE_PATH="${CONDA_PREFIX}/include"
 
 if [ "$(uname)" == "Darwin" ]; then
     export MACOSX_DEPLOYMENT_TARGET=10.12
+    SED='sed -i '"'"''"'"' '
+else
+    SED='sed -i'
 fi
 
-sed -i 's/^STATIC_AVAILABLE=.*/STATIC_AVAILABLE="no"/' `which h5c++`
+$SED -i 's/^STATIC_AVAILABLE=.*/STATIC_AVAILABLE="no"/' `which h5c++`
 
 pushd sucpp
 make api
