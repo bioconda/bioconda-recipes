@@ -10,6 +10,8 @@ if [ "$(uname)" == "Darwin" ]; then
     export MACOSX_DEPLOYMENT_TARGET=10.12
 fi
 
+sed -i 's/^STATIC_AVAILABLE=.*/STATIC_AVAILABLE="no"/' `which h5c++`
+
 pushd sucpp
 make api
 popd
