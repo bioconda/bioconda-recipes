@@ -1,5 +1,6 @@
 #!/bin/bash
-ls -l
+set +ex
+
 # Add zlib support
 export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
