@@ -2,7 +2,9 @@
 
 #link in /bin, following bioconda rules
 mkdir -p ${PREFIX}/bin
-echo $SRC_DIR
+echo `echo $SRC_DIR` 
 echo `ls $SRC_DIR` 
-cp $SRC_DIR/CATCh-1.0/CATCh_v1.run ${PREFIX}/bin
+echo `ls ${PREFIX}/bin`
+echo `ls -lh $SRC_DIR/CATCh_v1.run`
+cp $SRC_DIR/CATCh_v1.run ${PREFIX}/bin
 
