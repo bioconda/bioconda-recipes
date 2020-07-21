@@ -1,0 +1,45 @@
+{% set version = "1.0" %}
+{% set sha256 = "96fb7e956646808d6dfaa951b2dd15a319f5bdb551a7bec3dd261e9a1376ce2a" %}
+
+package:
+  name: freebarcodes
+  version: {{ version }}
+
+source:
+  url: https://github.com/hawkjo/freebarcodes/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
+
+requirements:
+  host:
+    - python 2.7
+  run:
+    - python 2.7
+    - pathos >=0.2.1
+    - psutil >=5.6.6
+    - h5py >=2.7.1
+    - numpy >=1.13.3
+    - docopt >=0.6.2
+    - biopython >=1.70
+    - cython >=0.24
+    - numpy >=1.13.3
+
+test:
+  commands:
+    - freebarcodes --help
+    - freebarcodes decode barcodes/barcodes8-2.txt examples/example_8-2_barcodes.fq
+    - freebarcodes decode barcodes/barcodes8-2.txt examples/example_8-2_barcodes_prefixes_TCTACTCTCCATACG_CACTTGGATC.fq --prefixes=TCTACTCTCCATACG,CACTTGGATC --max-prefix-err=3,2
+
+about:
+  home: https://finkelsteinlab.org/
+  # license: GPL-3.0
+  summary: FREE Divergence Error-Correcting DNA Barcodes.
+  dev_url: https://github.com/hawkjo/freebarcodes
+
+extra:
+  identifiers:
+    - doi:10.1073/pnas.1802640115
