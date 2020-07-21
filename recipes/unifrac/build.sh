@@ -14,7 +14,8 @@ else
     SED='sed -i'
 fi
 
-$SED -i 's/^STATIC_AVAILABLE=.*/STATIC_AVAILABLE="no"/' `which h5c++`
+$SED 's/^STATIC_AVAILABLE=.*/STATIC_AVAILABLE="no"/' `which h5c++`
+grep STATIC_AVAILABLE `which h5c++`
 
 pushd sucpp
 make api
