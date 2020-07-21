@@ -1,5 +1,5 @@
 # basic execution test, showing help
-CATCh.run
+CATCh_v1.run
 t0=$(echo $?)
 
 # do test on small sample
