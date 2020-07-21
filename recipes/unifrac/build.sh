@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set +x
 export USE_CYTHON=True
 export PERFORMING_CONDA_BUILD=True
 export LIBRARY_PATH="${CONDA_PREFIX}/lib"
