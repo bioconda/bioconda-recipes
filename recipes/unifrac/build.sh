@@ -9,7 +9,7 @@ export CPLUS_INCLUDE_PATH="${CONDA_PREFIX}/include"
 ls -l
 if [ "$(uname)" == "Darwin" ]; then
     export MACOSX_DEPLOYMENT_TARGET=10.12
-    SED='sed -i '"'"''"'"' '
+    SED="sed -i ''"
 else
     SED='sed -i'
 fi
