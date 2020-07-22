@@ -12,3 +12,4 @@ fi
 
 mkdir -p ${PREFIX}/bin
 cp -f cellsnp-lite ${PREFIX}/bin
+
