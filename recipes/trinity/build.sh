@@ -13,6 +13,11 @@ export CFLAGS="-I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
 BINARY_HOME=$PREFIX/bin
 TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION
 
+# The Makefiles hardcode g++, gcc
+sed -i.bak "s#gcc#${CC}#g" trinity-plugins/Makefile
+sed -i.bak "s#g++#${CXX}#g" trinity-plugins/Makefile
+sed -i.bak "s#g++#${CXX}#g" trinity-plugins/bamsifter/Makefile
+
 make plugins CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
 make CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
 
