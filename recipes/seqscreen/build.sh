@@ -1,6 +1,6 @@
 mkdir -p  "$PREFIX/bin"
 
-cp modules $PREFIX/bin
-cp scripts $PREFIX/bin
-cp worfklows $PREFIX/bin
+cp -R modules $PREFIX/bin
+cp -R scripts $PREFIX/bin
+cp -R worfklows $PREFIX/bin
 cp seqscreen $PREFIX/bin
