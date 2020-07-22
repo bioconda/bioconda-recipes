@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-cp -r "${SRC_DIR}/src/*.jl" "${PREFIX}/bin"
+cp -r "${SRC_DIR}/src/*.jl" "${PREFIX}/src/"
 cp -r "${SRC_DIR}/scripts" "${PREFIX}"
 cp "${SRC_DIR}/*.toml" "${PREFIX}/"
 cat <<EOF > "${PREFIX}/bin/mentalist"
