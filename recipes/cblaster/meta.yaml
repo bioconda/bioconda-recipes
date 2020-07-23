@@ -1,0 +1,53 @@
+{% set name = "cblaster" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 44557d2dacb526d04378b82373dba30f369c65a44eb67aac8b127aacdf4e1f57
+
+build:
+  number: 0
+  entry_points:
+    - cblaster=cblaster.main:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - genome2json
+    - PySimpleGUI
+    - numpy
+    - python
+    - requests
+    - scipy
+    - diamond
+
+test:
+  imports:
+    - cblaster
+    - cblaster.gui
+  commands:
+    - cblaster --help
+  requires:
+    - pytest
+    - pytest-cov
+    - pytest-mock
+    - requests-mock
+
+about:
+  home: "https://github.com/gamcil/cblaster"
+  license: MIT License or MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "cblaster: detection of co-located BLAST hits"
+  doc_url: "cblaster.readthedocs.io"
+
+extra:
+  recipe-maintainers:
+    - gamcil
