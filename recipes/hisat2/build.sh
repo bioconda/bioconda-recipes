@@ -23,13 +23,5 @@ do
     cp ${i} ${PREFIX}/bin
 done
 
-# modules needed in PYTHONPATH
-for i in \
-    hisatgenotype_modules/hisatgenotype_assembly_graph.py \
-    hisatgenotype_modules/hisatgenotype_typing_common.py ;
-do
-   cp ${i} ${PREFIX}/lib/python${PY_VER}/site-packages
-done
-
 # set permissions
 chmod +x ${PREFIX}/bin/*
