@@ -16,7 +16,7 @@ mkdir -p $PREFIX/bin/batindel/src
         echo ==========================================================
         cd BatMis-3.00
         if [[ ${target_platform} == osx-64 ]]; then
-            sed -i.bak 's/ -maccumulate-outgoing-args//' src/Makefile.am
+            sed -i.bak 's/ -maccumulate-outgoing-args/ -Dfseeko64=fseeko/' src/Makefile.am
         fi
         autoreconf -fi
         ./configure CC="${CC}" CXX="${CXX}" CPPFLAGS="${CPPFLAGS}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}"
@@ -29,7 +29,7 @@ mkdir -p $PREFIX/bin/batindel/src
         echo ==========================================================
         cd batindel
         if [[ ${target_platform} == osx-64 ]]; then
-            sed -i.bak 's/ -maccumulate-outgoing-args//' src/Makefile.am
+            sed -i.bak 's/ -maccumulate-outgoing-args/ -Dfseeko64=fseeko/' src/Makefile.am
         fi
         autoreconf -fi
         ./configure CC="${CC}" CXX="${CXX}" CPPFLAGS="${CPPFLAGS}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}"
