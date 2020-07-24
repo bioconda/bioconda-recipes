@@ -14,6 +14,7 @@ binaries="src/fragSim src/deamSim src/adptSim src/fasta2fastas"
 # We list the targets explicitly to prevent the Makefile from downloading and
 # building the external art_illumina.o dependency (added as a runtime
 # requirement instead)
+ln -s ${PREFIX} bamtools
 make CC=$CXX ${binaries}
 
 mkdir -p $PREFIX/bin
