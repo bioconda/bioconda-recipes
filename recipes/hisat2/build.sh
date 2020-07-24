@@ -17,8 +17,7 @@ for i in \
     hisat2-inspect \
     hisat2-inspect-l \
     hisat2-inspect-s \
-    *.py \
-    hisatgenotype_scripts/*.*;
+    *.py
 do
     cp ${i} ${PREFIX}/bin
 done
