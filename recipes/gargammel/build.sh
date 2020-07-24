@@ -2,6 +2,7 @@
 
 export CPATH=${PREFIX}/include
 
+export CXXFLAGS="${CXXFLAGS} -std=c++14"
 # Will be inbuilt to github repo in future
 sed -i.bak 's/make -C libgab/make -C libgab CXX=$(CC)/' Makefile
 sed -i.bak 's/make -C src/make -C src CXX=$(CC)/' Makefile
