@@ -18,6 +18,7 @@ mkdir -p $PREFIX/bin/batindel/src
         if [[ ${target_platform} == osx-64 ]]; then
             sed -i.bak 's/ -maccumulate-outgoing-args//' src/Makefile.am
         fi
+        autoreconf -fi
         ./configure CC="${CC}" CXX="${CXX}" CPPFLAGS="${CPPFLAGS}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}"
         make
         make copy
@@ -30,6 +31,7 @@ mkdir -p $PREFIX/bin/batindel/src
         if [[ ${target_platform} == osx-64 ]]; then
             sed -i.bak 's/ -maccumulate-outgoing-args//' src/Makefile.am
         fi
+        autoreconf -fi
         ./configure CC="${CC}" CXX="${CXX}" CPPFLAGS="${CPPFLAGS}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}"
         make
         cd -
