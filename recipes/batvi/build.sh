@@ -15,6 +15,9 @@ mkdir -p $PREFIX/bin/batindel/src
         echo                COMPILING BatMis
         echo ==========================================================
         cd BatMis-3.00
+        if [[ ${target_platform} == osx-64 ]]; then
+            sed -i.bak 's/ -maccumulate-outgoing-args//' src/Makefile.am
+        fi
         ./configure CC="${CC}" CXX="${CXX}" CPPFLAGS="${CPPFLAGS}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}"
         make
         make copy
@@ -24,6 +27,9 @@ mkdir -p $PREFIX/bin/batindel/src
         echo                COMPILING BATINDEL-lite
         echo ==========================================================
         cd batindel
+        if [[ ${target_platform} == osx-64 ]]; then
+            sed -i.bak 's/ -maccumulate-outgoing-args//' src/Makefile.am
+        fi
         ./configure CC="${CC}" CXX="${CXX}" CPPFLAGS="${CPPFLAGS}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}"
         make
         cd -
