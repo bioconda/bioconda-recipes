@@ -1,6 +1,24 @@
 --- src/c++/include/io/FileBufWithReopen.hh
 +++ src/c++/include/io/FileBufWithReopen.hh
-@@ -117,7 +117,7 @@
+@@ -72,16 +72,12 @@
+         SequentialOften = sequential|willneed
+     };
+ 
+-    PFilebufType reopen(const common::PathCharType* s, FadviseFlags fadvise = normal)
+-    {
+-        return reopen(s, 0, fadvise);
+-    }
+     /**
+      * \brief opens the specified file with the access mode of the file that is currently open
+      *        Supposedly does not fail due to memory allocation failure as it does not do any
+      *        Use reserve on a new object before you can execute reopen
+      */
+-    PFilebufType reopen(const common::PathCharType* s, const std::size_t fallocateSize, FadviseFlags fadvise = normal)
++    PFilebufType reopen(const common::PathCharType* s, FadviseFlags fadvise = normal)
+     {
+         const char * const openMode = iosFlagsToStdioMode(mode_);
+         ISAAC_ASSERT_MSG(openMode, "Combination of open mode flags is invalid:" << mode_);
+@@ -117,7 +113,7 @@
                  strerror(errno) << ")" << " file: " << s << std::endl;
          }
  
@@ -9,7 +27,22 @@
  // this ensures no memory allocation happens. Unfortunately freopen is not available in Win32
          FILE* result = freopen(s, openMode, this->_M_file.file());
          ISAAC_ASSERT_MSG(!result || this->_M_file.file() == result, "According to specs, returned pointer must be the same as the one passed to freopen");
-@@ -184,7 +184,7 @@
+@@ -148,14 +144,6 @@
+                 BOOST_THROW_EXCEPTION(common::IoException(errno, common::pathStringToStdString(s)));
+             }
+ 
+-            if (fallocateSize)
+-            {
+-                // don't check for failures. If pre-allocation fails, let the application still proceed
+-                // with writing into a file. It can succeed as the fallocateSize is often a pessimistic guess
+-                // rather than actual number of bytes to be written.
+-                common::linuxFallocate(fileno(result), 0, fallocateSize);
+-            }
+-
+             return this;
+         }
+         this->close();
+@@ -184,7 +172,7 @@
                  BOOST_THROW_EXCEPTION(common::IoException(errno, "Failed to flush pending data"));
              }
  
