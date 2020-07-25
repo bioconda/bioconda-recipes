@@ -1,0 +1,26 @@
+--- src/cmake/cxxConfigure.cmake
++++ src/cmake/cxxConfigure.cmake
+@@ -47,7 +47,7 @@
+ endif (iSAAC_FORCE_STATIC_LINK)
+ 
+ isaac_find_header_or_die(HAVE_INTTYPES_H inttypes.h)
+-isaac_find_header_or_die(HAVE_MALLOC_H malloc.h)
++CHECK_INCLUDE_FILE(malloc.h HAVE_MALLOC_H)
+ isaac_find_header_or_die(HAVE_MEMORY_H memory.h)
+ isaac_find_header_or_die(HAVE_SIGNAL_H signal.h)
+ isaac_find_header_or_die(HAVE_STDINT_H stdint.h)
+--- src/c++/lib/common/SystemCompatibility.cpp
++++ src/c++/lib/common/SystemCompatibility.cpp
+@@ -41,7 +41,11 @@
+ #ifdef HAVE_MALLOC_H
+ #include <malloc.h>
+ #else // #ifdef HAVE_MALLOC_H
+-#error Only POSIX systems are supported. The header <malloc.h> is required.
++#ifdef HAVE_STDLIB_H
++#include <stdlib.h>
++#else // #ifdef HAVE_STDLIB_H
++#error Only POSIX systems are supported. The header <malloc.h> or <stdlib.h> is required.
++#endif // #ifdef HAVE_STDLIB_H
+ #endif // #ifdef HAVE_MALLOC_H
+ 
+ #ifdef HAVE_TIME_H
