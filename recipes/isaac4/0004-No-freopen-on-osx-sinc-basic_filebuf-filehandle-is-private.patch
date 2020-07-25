@@ -1,0 +1,20 @@
+--- src/c++/include/io/FileBufWithReopen.hh
++++ src/c++/include/io/FileBufWithReopen.hh
+@@ -117,7 +117,7 @@
+                 strerror(errno) << ")" << " file: " << s << std::endl;
+         }
+ 
+-#ifndef _WIN32
++#if !defined(_WIN32) && !(defined(__APPLE__) && defined(__MACH__))
+ // this ensures no memory allocation happens. Unfortunately freopen is not available in Win32
+         FILE* result = freopen(s, openMode, this->_M_file.file());
+         ISAAC_ASSERT_MSG(!result || this->_M_file.file() == result, "According to specs, returned pointer must be the same as the one passed to freopen");
+@@ -184,7 +184,7 @@
+                 BOOST_THROW_EXCEPTION(common::IoException(errno, "Failed to flush pending data"));
+             }
+ 
+-#ifndef _WIN32
++#if !defined(_WIN32) && !(defined(__APPLE__) && defined(__MACH__))
+             // this ensures no memory allocation happens. Unfortunately freopen is not available in Win32
+             common::linuxFtruncate(fileno(this->_M_file.file()), this->pubseekoff(0, std::ios_base::cur, mode_));
+ #endif
