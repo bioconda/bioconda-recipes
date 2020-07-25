@@ -1,6 +1,4 @@
-export C_INCLUDE_PATH=$C_INCLUDE_PATH:${PREFIX}/include
-export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:${PREFIX}/include
-export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
+cd source
 mkdir -p $PREFIX/bin/msapipeline/msa
 mkdir -p $PREFIX/bin/bin
 mkdir -p $PREFIX/bin/BatMis-3.00/bin
@@ -50,11 +48,6 @@ mkdir -p $PREFIX/bin/batindel/src
         cd msapipeline/msa
         javac *.java
         cd -
-
-  ./manualcompile.sh
-
-        command -v blastn >/dev/null 2>&1 || { echo >&2 "Please check if BLAST is installed"; }
-        command -v bwa >/dev/null 2>&1 || { echo >&2 "Please check if BWA is installed"; }
 
 ###  END  ### copied from ./build.sh
 
