@@ -1,5 +1,14 @@
 --- gatb-core/CMakeLists.txt
 +++ gatb-core/CMakeLists.txt
+@@ -209,7 +209,7 @@
+ set (gatb-core-includes ${PROJECT_BINARY_DIR}/include  ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE} ${PROJECT_SOURCE_DIR}/src  ${PROJECT_SOURCE_DIR}/thirdparty ${gatb-core-extra-libraries-inc})
+ 
+ # We define the libraries used for linking binary based on gatb core
+-set (gatb-core-libraries   gatbcore-static  dl  pthread  z hdf5-static ${gatb-core-extra-libraries})
++set (gatb-core-libraries   gatbcore-dynamic  dl  pthread  z hdf5 ${gatb-core-extra-libraries})
+ 
+ # We define the directory where to find cmake helpers
+ set (gatb-core-cmake  ${CMAKE_MODULE_PATH})
 @@ -252,12 +252,6 @@
  ADD_SUBDIRECTORY(thirdparty)
  
@@ -85,4 +94,31 @@
 -    INSTALL (DIRECTORY ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE}/hdf5 DESTINATION include)
      INSTALL (DIRECTORY ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE}/json DESTINATION include)
      INSTALL (DIRECTORY ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE}/BooPHF DESTINATION include)
+ ENDIF ()
+--- gatb-core/src/CMakeLists.txt
++++ gatb-core/src/CMakeLists.txt
+@@ -83,11 +83,11 @@
+ 
+ include_directories (${gatb-core-includes})
+ 
+-add_library    (gatbcore-static  STATIC  ${ComponentFiles} )
+-#add_library   (gatbcore-dynamic SHARED  ${ComponentFiles} )
++#add_library    (gatbcore-static  STATIC  ${ComponentFiles} )
++add_library   (gatbcore-dynamic SHARED  ${ComponentFiles} )
+ 
+-set_target_properties  (gatbcore-static   PROPERTIES OUTPUT_NAME  gatbcore  clean_direct_output 1)
+-#set_target_properties (gatbcore-dynamic  PROPERTIES OUTPUT_NAME  gatbcore  clean_direct_output 1)
++#set_target_properties  (gatbcore-static   PROPERTIES OUTPUT_NAME  gatbcore  clean_direct_output 1)
++set_target_properties (gatbcore-dynamic  PROPERTIES OUTPUT_NAME  gatbcore  clean_direct_output 1)
+ 
+ ################################################################################
+ #  INSTALLATION 
+@@ -95,7 +95,7 @@
+ 
+ # We install the libraries
+ IF (NOT DEFINED GATB_CORE_INSTALL_EXCLUDE)
+-    install (TARGETS gatbcore-static DESTINATION lib)
++    install (TARGETS gatbcore-dynamic DESTINATION lib)
+     install (DIRECTORY ${PROJECT_SOURCE_DIR}/src/ DESTINATION include FILES_MATCHING PATTERN "*.hpp" PATTERN "*.tpp" PATTERN "*.pri" PATTERN "*.h")
+     install (FILES ${PROJECT_BINARY_DIR}/include/gatb/system/api/config.hpp DESTINATION include/gatb/system/api/)
  ENDIF ()
