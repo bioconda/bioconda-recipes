@@ -1,4 +1,6 @@
 FROM condaforge/linux-anvil-comp7
+# Pretend we'd have C.UTF-8: Just copy en_US.UTF-8
+RUN localedef -i en_US -f UTF-8 C.UTF-8
 RUN sudo -n yum install -y openssh-clients && \
     sudo -n yum clean all && \
     sudo -n rm -rf /var/cache/yum/*
