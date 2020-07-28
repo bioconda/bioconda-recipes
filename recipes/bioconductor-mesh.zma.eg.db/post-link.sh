@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="MeSH.Zma.eg.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MeSH.Zma.eg.db_1.13.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.Zma.eg.db_1.13.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Zma.eg.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.zma.eg.db/bioconductor-mesh.zma.eg.db_1.13.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.zma.eg.db/bioconductor-mesh.zma.eg.db_1.13.0_src_all.tar.gz"
 )
 MD5="072557b4deea812a58208aa690eb4ec2"

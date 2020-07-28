@@ -13,7 +13,7 @@ pushd minimap2
 make CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" LIBS="-L$PREFIX/lib -lm -lz -pthread" libminimap2.a
 popd
 
-make HDF5=noinstall EIGEN=noinstall HTS=noinstall MINIMAP=noinstall CXXFLAGS="$CXXFLAGS -Iminimap2 -g -O3" LDFLAGS="$LDFLAGS -pthread -fopenmp"
+make HDF5=noinstall EIGEN=noinstall HTS=noinstall MINIMAP=noinstall CXXFLAGS="$CXXFLAGS -Iminimap2 -fopenmp -g -O3"
 cp nanopolish $PREFIX/bin
 cp scripts/nanopolish_makerange.py $PREFIX/bin
 cp scripts/nanopolish_merge.py $PREFIX/bin

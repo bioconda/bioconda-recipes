@@ -2,6 +2,7 @@
 mkdir -p $PREFIX/bin
 
 cp pgcgap.pl $PREFIX/bin/pgcgap
+
 cp Functions/Pan/plot_3Dpie.R $PREFIX/bin/
 cp Functions/Pan/fmplot.py $PREFIX/bin/
 
