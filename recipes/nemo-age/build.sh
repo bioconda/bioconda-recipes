@@ -1,8 +1,10 @@
 #!/bin/bash
 
-export LDFLAGS="-L${PREFIX}/lib"
+export LDFLAGS="-L${PREFIX}/lib/"
 
-mkdir -p ${PREFIX}/bin
+mkdir -p ${PREFIX}/bin/
 
-make
-make install BIN_INSTALL=${PREFIX}/bin
+mkdir -p bin/
+make GSL_PATH="${PREFIX}/"
+make install BIN_INSTALL=${PREFIX}/bin/
+mv ${PREFIX}/bin/nemoage* ${PREFIX}/bin/nemoage
