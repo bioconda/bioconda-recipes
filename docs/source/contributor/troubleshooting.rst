@@ -144,9 +144,10 @@ Troubleshooting failed ``mulled-build`` tests
 
 After conda sucessfully builds and tests a package, we then perform a
 more stringent test in a minimal Docker container using
-``mulled-build``. Notably, this container does not have conda and has
-very few libraries. So this test can catch issues that the default
-conda test cannot. However the extra layer of abstraction makes it
+``mulled-build``. Notably, this container is designed to include
+only the package's runtime dependencies and as few other pieces of software
+as possible so this test can catch issues that the default conda test cannot.
+However the extra layer of abstraction makes it
 difficult to troubleshoot problems with the recipe. If the conda-build
 test works but the mulled-build test fails try these steps:
 
@@ -159,6 +160,9 @@ test works but the mulled-build test fails try these steps:
   $hash``. You can now try running the tests in the recipe that
   failed, or otherwise poke around in the running container to see
   what the problem was.
+- If the test is failing due to missing dependencies, read the guidance
+  on `test dependencies`_ and move the tests with dependencies into
+  the ``run_test.sh`` file as necessary.
 
 
 Using the extended image
