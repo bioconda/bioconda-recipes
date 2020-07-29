@@ -35,7 +35,6 @@ cp scripts/*.sh $outdir/scripts
 cp scripts/*.pl $outdir/scripts
 cp scripts/extractSplitReads* $outdir/scripts
 cp scripts/vcf* $outdir/scripts
-cp -r scripts/bamkit $outdir/scripts
 ln -s $outdir/scripts/extractSplitReads_BwaMem $PREFIX/bin
 
 chmod +x $PREFIX/bin/extractSplitReads_BwaMem
@@ -53,7 +52,7 @@ echo "SAMTOOLS=samtools" >> ${BIN_DIR}/lumpyexpress.config
 echo "PYTHON=python" >> ${BIN_DIR}/lumpyexpress.config
 echo "" >> ${BIN_DIR}/lumpyexpress.config
 echo "PAIREND_DISTRO=$outdir/scripts/pairend_distro.py" >> ${BIN_DIR}/lumpyexpress.config
-echo "BAMGROUPREADS=$outdir/scripts/bamkit/bamgroupreads.py" >> ${BIN_DIR}/lumpyexpress.config
-echo "BAMFILTERRG=$outdir/bamkit/bamfilterrg.py" >> ${BIN_DIR}/lumpyexpress.config
-echo "BAMLIBS=$outdir/bamkit/bamlibs.py" >> ${BIN_DIR}/lumpyexpress.config
+echo "BAMGROUPREADS=${BIN_DIR}/bamgroupreads.py" >> ${BIN_DIR}/lumpyexpress.config
+echo "BAMFILTERRG=${BIN_DIR}/bamfilterrg.py" >> ${BIN_DIR}/lumpyexpress.config
+echo "BAMLIBS=${BIN_DIR}/bamlibs.py" >> ${BIN_DIR}/lumpyexpress.config
 
