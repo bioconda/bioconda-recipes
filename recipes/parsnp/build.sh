@@ -10,8 +10,8 @@ make LDADD='-lMUSCLE-3.7'
 #make install
 
 cp parsnp $PREFIX/bin 
-cp src/parsnp_core $PREFIX/bin/bin
-cp template.ini $PREFIX/bin
-cp -R bin $PREFIX/bin 
+#cp src/parsnp_core $PREFIX/bin/bin
+#cp template.ini $PREFIX/bin
+#cp -R bin $PREFIX/bin 
 #cp -R muscle $PREFIX/bin 
-cp -R examples $PREFIX/bin
+#cp -R examples $PREFIX/bin
