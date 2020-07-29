@@ -14,8 +14,8 @@ from os import access
 from os import getenv
 from os import X_OK
 
-jar_file = 'GeMoMa-1.6.4.jar'
-default_jvm_mem_opts = ['-Xms1g', '-Xmx2g']
+jar_file = 'GeMoMa-1.7.jar'
+default_jvm_mem_opts = ['-Xms3g', '-Xmx6g']
 original_string = "java -jar "+jar_file+" CLI"
 wrapper_string = "GeMoMa"
 
