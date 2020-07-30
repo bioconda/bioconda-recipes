@@ -1018,6 +1018,19 @@ def check_recipe_skippable(recipe, check_channels):
     are already in channel_packages.
     """
     platform, metas = _load_platform_metas(recipe, finalize=False)
+    # The recipe likely defined skip: True
+    if not metas:
+        return True
+    # If on CI, handle noarch.
+    if os.environ.get('CI', None) == 'true':
+        first_meta = metas[0]
+        if first_meta.get_value('build/noarch'):
+            if platform != 'linux':
+                logger.debug('FILTER: only building %s on '
+                             'linux because it defines noarch.',
+                             recipe)
+                return True
+
     packages =  set(
         (meta.name(), meta.version(), int(meta.build_number() or 0))
         for meta in metas
@@ -1037,7 +1050,13 @@ def check_recipe_skippable(recipe, check_channels):
         (meta.name(), meta.version(), int(meta.build_number() or 0), _meta_subdir(meta))
         for meta in metas
     )
-    return num_new_pkg_builds == num_existing_pkg_builds
+    if num_new_pkg_builds == num_existing_pkg_builds:
+        logger.info(
+            'FILTER: not building recipe %s because '
+            'the same number of builds are in channel(s) and it is not forced.',
+            recipe)
+        return True
+    return False
 
 
 def _filter_existing_packages(metas, check_channels):
@@ -1074,26 +1093,12 @@ def get_package_paths(recipe, check_channels, force=False):
     if not force:
         if check_recipe_skippable(recipe, check_channels):
             # NB: If we skip early here, we don't detect possible divergent builds.
-            logger.info(
-                'FILTER: not building recipe %s because '
-                'the same number of builds are in channel(s) and it is not forced.',
-                recipe)
             return []
     platform, metas = _load_platform_metas(recipe, finalize=True)
 
     # The recipe likely defined skip: True
     if not metas:
         return []
-
-    # If on CI, handle noarch.
-    if os.environ.get('CI', None) == 'true':
-        first_meta = metas[0]
-        if first_meta.get_value('build/noarch'):
-            if platform != 'linux':
-                logger.debug('FILTER: only building %s on '
-                             'linux because it defines noarch.',
-                             recipe)
-                return []
 
     new_metas, existing_metas, divergent_builds = (
         _filter_existing_packages(metas, check_channels))
