@@ -148,6 +148,22 @@ include them in the PR. One shortcut is to use ``anaconda search -t conda
 recipes can give some clues into building a version of the dependency for
 bioconda.
 
+
+.. _test_dependencies:
+
+Test Dependencies
+~~~~~~~~~~~~~~~~~
+
+During a Bioconda package build, the stringent ``mulled-build`` test
+runs the tests listed in the ``test`` section of the recipe's ``meta.yaml``
+file in an environment which does not have the dependencies listed in the
+``test: requires:`` section. Because of this, all tests in that section
+must only rely on runtime dependencies or the build will fail.
+Tests that rely on the test-time dependencies listed in ``test: requires:`` should be put in
+the ``run_test.sh`` file in the same directory as the ``meta.yaml`` file. This file is
+picked up and run by the standard build that occurs before the ``mulled-build``, but is
+not passed on to and run by the ``mulled-build``.
+
 .. _patching:
 
 Patching
