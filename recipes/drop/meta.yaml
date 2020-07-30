@@ -1,5 +1,5 @@
 {% set name = "drop" %}
-{% set version = "0.9.0" %}
+{% set version = "0.9.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/gagneurlab/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: 1608a779251ee7b7d59d463d25822ad9f7f935f6669d5887145ee1d7f9104fcf
+  sha256: 621733fda4b337a164d41216938d1015ca0ef8c093a21c9ecbcd062c015148cf
 
 build:
   number: 0
@@ -20,7 +20,6 @@ requirements:
   host:
     - python >=3.6
     - pip
-    - wbuild >=1.7.0
 
   run:
     - python >=3.6
@@ -36,6 +35,8 @@ requirements:
     - graphviz
 
     # command line tools
+    - bc
+    - wget
     - tabix
     - samtools >=1.7
     - bcftools >=1.7
@@ -71,8 +72,13 @@ test:
     - drop
   commands:
     - drop --help
-  requires:
-    - pytest
+    - mkdir -p /tmp/drop_test
+    - cd /tmp/drop_test
+    - drop demo > /dev/null
+    - snakemake -n > /dev/null
+    - snakemake --cores 2 --jobs 2
+    - cd
+    - rm -rf /tmp/drop_test
 
 about:
   home: https://github.com/gagneurlab/drop
