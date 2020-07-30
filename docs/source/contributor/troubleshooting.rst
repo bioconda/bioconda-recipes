@@ -161,8 +161,8 @@ test works but the mulled-build test fails try these steps:
   failed, or otherwise poke around in the running container to see
   what the problem was.
 - If the test is failing due to missing dependencies, read the guidance
-  on `test dependencies`_ and move the tests with dependencies into
-  the ``run_test.sh`` file as necessary.
+  on :ref:`test_dependencies` and move the tests with test dependencies
+  into the ``run_test.sh`` file as necessary.
 
 
 Using the extended image
