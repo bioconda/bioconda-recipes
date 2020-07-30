@@ -1,8 +1,9 @@
 import contextlib
 import datetime
-import tempfile
 import os
 import os.path as op
+import shutil
+import tempfile
 from copy import deepcopy
 
 from ruamel_yaml import YAML
@@ -155,5 +156,17 @@ def recipe_dir(recipes_folder: py.path.local, tmpdir: py.path.local,
         for fname, data in case['add_files'].items():
             with recipe_dir.join(fname).open('w') as fdes:
                 fdes.write(data)
+
+    if 'move_files' in case:
+        for src, dest in case['move_files'].items():
+            src_path = recipe_dir.join(src)
+            if not dest:
+                if os.path.isdir(src_path):
+                    shutil.rmtree(src_path)
+                else:
+                    os.remove(src_path)
+            else:
+                dest_path = recipe_dir.join(dest)
+                shutil.move(src_path, dest_path)
 
     yield recipe_dir

@@ -800,11 +800,20 @@ def get_recipes(recipe_folder, package="*", exclude=None):
                      recipe_folder, package, p)
         path = os.path.join(recipe_folder, p)
         for new_dir in glob.glob(path):
+            meta_yaml_found = False
             for dir_path, dir_names, file_names in os.walk(new_dir):
                 if any(fnmatch.fnmatch(dir_path[len(recipe_folder):], pat) for pat in exclude):
                     continue
                 if "meta.yaml" in file_names:
+                    meta_yaml_found = True
                     yield dir_path
+            if not meta_yaml_found and os.path.isdir(new_dir):
+                logger.warn(
+                    "No meta.yaml found in %s."
+                    " If you want to ignore this directory, add it to the blacklist.",
+                    new_dir
+                )
+                yield new_dir
 
 
 def get_latest_recipes(recipe_folder, config, package="*"):
