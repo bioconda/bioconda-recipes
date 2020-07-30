@@ -22,8 +22,7 @@ builds, such as `pysam`, and so do not meet this criteria.)
 
 Unsupported versions
 --------------------
-If there is a version of a dependency you wish to build against that Bioconda does not currently support
-plesase reach out to the `Bioconda gitter <https://gitter.im/bioconda/Lobby>`_ for more information
+If there is a version of a dependency you wish to build against that Bioconda does not currently support,
+please reach out to the `Bioconda Gitter <https://gitter.im/bioconda/Lobby>`_ for more information
 about if supporting that version is feasible, if work on that is already being done, and how you
 can help.
-
