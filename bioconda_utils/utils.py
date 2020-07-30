@@ -1009,6 +1009,9 @@ def check_recipe_skippable(recipe, check_channels):
     are already in channel_packages.
     """
     platform, metas = _load_platform_metas(recipe, finalize=False)
+    # The recipe likely defined skip: True
+    if not metas:
+        return True
     # If on CI, handle noarch.
     if os.environ.get('CI', None) == 'true':
         first_meta = metas[0]
