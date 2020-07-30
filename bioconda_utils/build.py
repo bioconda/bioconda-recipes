@@ -10,9 +10,8 @@ import itertools
 
 from typing import List
 
-# TODO: UnsatisfiableError is not yet in exports for conda 4.5.4
-# from conda.exports import UnsatisfiableError
-from conda.exceptions import UnsatisfiableError
+from conda.exports import UnsatisfiableError
+from conda_build.exceptions import DependencyNeedsBuildingError
 import networkx as nx
 import pandas
 
@@ -324,7 +323,7 @@ def build_recipes(recipe_folder: str, config_path: str, recipes: List[str],
             for pkg in nx.algorithms.descendants(subdag, name):
                 skip_dependent[pkg].append(recipe)
             continue
-        except UnsatisfiableError as exc:
+        except (UnsatisfiableError, DependencyNeedsBuildingError) as exc:
             logger.error('BUILD ERROR: could not determine dependencies for recipe %s: %s',
                          recipe, exc)
             failed.append(recipe)
