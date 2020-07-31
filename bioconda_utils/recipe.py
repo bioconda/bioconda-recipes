@@ -18,6 +18,7 @@ import types
 from collections import defaultdict
 from contextlib import redirect_stdout, redirect_stderr
 from copy import deepcopy
+from pathlib import Path
 from typing import Any, Dict, List, Sequence, Tuple, Optional, Pattern
 
 
@@ -206,6 +207,13 @@ class Recipe():
         self.render()
         return self
 
+    def read_conda_build_config(self):
+        path = Path(self.dir, 'conda_build_config.yaml')
+        if path.is_file():
+            self.conda_build_config = path.read_text()
+        else:
+            self.conda_build_config = None
+
     @classmethod
     def from_file(cls, recipe_dir, recipe_fname, return_exceptions=False) -> "Recipe":
         """Create new `Recipe` object from file
@@ -225,6 +233,12 @@ class Recipe():
             if return_exceptions:
                 return exc
             raise exc
+        except Exception as exc:
+            if return_exceptions:
+                return exc
+            raise exc
+        try:
+            recipe.read_conda_build_config()
         except Exception as exc:
             if return_exceptions:
                 return exc
@@ -710,6 +724,10 @@ class Recipe():
 
         with open(os.path.join(self._conda_tempdir.name, 'meta.yaml'), 'w') as tmpfile:
                 tmpfile.write(self.dump())
+
+        if self.conda_build_config:
+            cbc_path = Path(self._conda_tempdir.name, "conda_build_config.yaml")
+            cbc_path.write_text(self.conda_build_config)
 
         old_exit = sys.exit
         if isinstance(sys.exit, types.FunctionType):
