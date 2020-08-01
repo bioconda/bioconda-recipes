@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-cd src
+cd $SRC_DIR/src
 
 sed -i.bak 's/#include <xlocale.h>//' data.c
 export C_INCLUDE_PATH=${PREFIX}/include

@@ -1,9 +1,8 @@
 #!/bin/bash
 
 
-cd src
-
-sed -i.bak 's/#include <xlocale.h>//' data.c
+cd $SRC_DIR/src
+sed -i.bak 's/#include <xlocale.h>//' src/data.c
 export C_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
