@@ -15,6 +15,6 @@ export LIBRARY_PATH=${PREFIX}/lib
 
 # build
 ./autogen.sh
-./configure --prefix=${PREFIX} 
+./configure --prefix=${PREFIX} --with-boost=${PREFIX} 
 make
 make install
