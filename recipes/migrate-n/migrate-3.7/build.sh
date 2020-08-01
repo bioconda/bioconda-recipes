@@ -14,4 +14,4 @@ export LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
 ./configure --prefix=$PREFIX
 make thread
 mkdir -p $PREFIX/bin
-cp $SRC_DIR/src/migrate-n $PREFIX/bin
+cp $SRC_DIR/src/migrate-n $PREFIX/bin/migrate-n-3.7
