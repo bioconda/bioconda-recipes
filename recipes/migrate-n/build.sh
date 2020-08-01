@@ -12,7 +12,7 @@ export LIBRARY_PATH=${PREFIX}/lib
 export CFLAGS="$CFLAGS -I${PREFIX}/include"
 export LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
 ./configure --prefix=$PREFIX
-sed -i.bak 's/-lz/-L${LIBRARY_PATH} -I${C_INCLUDE_PATH} -lz/' Makefile
+sed -i.bak 's/-lz/-L${LIBRARY_PATH} -I${C_INCLUDE_PATH} -lz -lstdc++/' Makefile
 make thread
 mkdir -p $PREFIX/bin
 cp $SRC_DIR/src/migrate-n $PREFIX/bin/migrate-n-4.4.4
