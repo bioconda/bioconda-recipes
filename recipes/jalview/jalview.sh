@@ -32,7 +32,7 @@ if [[ "$JALVIEW_JRE" != "j11" && "$JALVIEW_JRE" != "j1.8" ]]; then
 fi
 
 # check if memory maximum is set and if so forward to java-based jalview call
-if [ -z $JALVIEW_MAXMEM ]; then
+if [ -z "$JALVIEW_MAXMEM" ]; then
   VMMAXMEM=""
 else
   VMMAXMEM="-Xmx${JALVIEW_MAXMEM}"
