@@ -4,6 +4,7 @@ set +ex
 # Add zlib support
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export CXXFLAGS="$CXXFLAGS -I$PREFIX/include -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_DIR=$PREFIX/include
