@@ -10,7 +10,7 @@
 # Set JALVIEW_JRE=j1.8 or JALVIEW_JRE=j11 to skip the version check 
 #
 # By default, this wrapper does NOT restrict the memory consumption of Jalview.
-# Set eg. JALVIEW_MAXMEM=1g to set the maximal memory of Jalview's VM
+# Set the commandline option -jvmmemmax=2g to set the maximal memory of Jalview's VM
 #
 ###############################
 
@@ -31,11 +31,4 @@ if [[ "$JALVIEW_JRE" != "j11" && "$JALVIEW_JRE" != "j1.8" ]]; then
   if [[ $( java -version 2>&1 | grep '"1.8' ) != "" ]]; then JALVIEW_JRE=j1.8; fi
 fi
 
-# check if memory maximum is set and if so forward to java-based jalview call
-if [ -z "$JALVIEW_MAXMEM" ]; then
-  VMMAXMEM=""
-else
-  VMMAXMEM="-Xmx${JALVIEW_MAXMEM}"
-fi
-
-java $VMMAXMEM -jar $DIR/jalview-all-${JALVIEW_JRE}.jar ${@};
+java -jar $DIR/jalview-all-${JALVIEW_JRE}.jar ${@};
