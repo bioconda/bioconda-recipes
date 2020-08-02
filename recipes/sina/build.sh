@@ -20,7 +20,7 @@ make -j$CPU_COUNT
 # also making one that contains hex codes as file name that in 
 # turn make conda build croak. This sidesteps the issue by
 # removing the broken libraries.
-rm $PREFIX/lib/libxkbcommon*
+rm -f $PREFIX/lib/libxkbcommon*
 
 make install
 
