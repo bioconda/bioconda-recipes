@@ -82,34 +82,26 @@ def have_variant(meta: MetaData) -> bool:
     return res
 
 
-def have_variant_but_for_python(meta: MetaData) -> bool:
-    """Checks if we have an exact or ``py[23]_`` prefixed match to
-    name/version/buildstring
-
-    Ignores osx.
+def have_noarch_python_build_number(meta: MetaData) -> bool:
+    """Checks if we have a noarch:python build with same version+build_number
 
     Args:
       meta: Variant MetaData object
 
     Returns:
-      True if FIXME
+      True if noarch:python and version+build_number exists already in repodata
     """
-    def strip_py(build):
-        if build.startswith("py"):
-            return build[4:]
-        return build
-
-    builds = RepoData().get_package_data(
-        'build',
+    if meta.get_value('build/noarch') != 'python':
+        return False
+    res = RepoData().get_package_data(
         name=meta.name(), version=meta.version(),
-        platform=['linux', 'noarch']
+        build_number=meta.build_number(),
+        platform=['noarch'],
     )
-    res = [build for build in builds
-           if strip_py(build) == strip_py(meta.build_id())]
     if res:
-        logger.debug("Package %s=%s has %s (want %s)",
-                     meta.name(), meta.version(), res, meta.build_id())
-    return bool(res)
+        logger.debug("Package %s=%s[build_number=%s, subdir=noarch] exists",
+                     meta.name(), meta.version(), meta.build_number())
+    return res
 
 
 
@@ -125,17 +117,12 @@ class State(enum.Flag):
     BUMPED = enum.auto()
     #: Recipe has a variant that needs bumping
     BUMP = enum.auto()
-    #: Recipe has a variant that needs bumping only for python
-    BUMP_PYTHON_ONLY = enum.auto()
+    #: Recipe has a noarch:python variant that exists already
+    HAVE_NOARCH_PYTHON = enum.auto()
 
-    def needs_bump(self, bump_python_only=True) -> bool:
+    def needs_bump(self) -> bool:
         """Checks if the state indicates that the recipe needs to be bumped
-
-        Args:
-          bump_python_only: FIXME
         """
-        if bump_python_only:
-            return self & (self.BUMP | self.BUMP_PYTHON_ONLY)
         return self & self.BUMP
 
 
@@ -199,12 +186,12 @@ def check(
     for meta, _, _ in metas:
         if meta.skip() or skip_for_variants(meta, skip_variant_keys):
             flags |= State.SKIP
+        elif have_noarch_python_build_number(meta):
+            flags |= State.HAVE_NOARCH_PYTHON
         elif have_variant(meta):
             flags |= State.HAVE
         elif will_build_variant(meta):
             flags |= State.BUMPED
-        elif have_variant_but_for_python(meta):
-            flags |= State.BUMP_PYTHON_ONLY
         else:
             logger.info("Package %s=%s=%s missing!",
                          meta.name(), meta.version(), meta.build_id())

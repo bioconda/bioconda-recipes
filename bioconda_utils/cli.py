@@ -537,10 +537,6 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
      help="""Skip updating/bumping packges that are already built with
      compatible pinnings in one of the given channels in addition to those
      listed in 'config'.""")
-@arg('--bump-only-python',
-     help="""Bump package build numbers even if the only applicable pinning
-     change is the python version. This is generally required unless you plan
-     on building everything.""")
 @arg('--skip-variants',
      nargs='*',
      help='Skip packages that use one of the given variant keys.')
@@ -552,7 +548,6 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
 @enable_debugging()
 def update_pinning(recipe_folder, config, packages="*",
                    skip_additional_channels=None,
-                   bump_only_python=False,
                    skip_variants=None,
                    cache=None):
     """Bump a package build number and all dependencies as required due
@@ -592,7 +587,7 @@ def update_pinning(recipe_folder, config, packages="*",
     for status, recip in utils.parallel_iter(needs_bump, dag, "Processing..."):
         logger.debug("Recipe %s status: %s", recip, status)
         stats[status] += 1
-        if status.needs_bump(bump_only_python):
+        if status.needs_bump():
             logger.info("Bumping %s", recip)
             recip.reset_buildnumber(int(recip['build']['number'])+1)
             recip.save()
@@ -789,10 +784,6 @@ def clean_cran_skeleton(recipe, no_windows=False):
      Update all recipes, including those having deps in need or rebuild.''')
 @arg("--no-check-version-update",
      help='''Don't check for version updates to recipes''')
-@arg('--bump-only-python',
-     help="""Bump package build numbers even if the only applicable pinning
-     change is the python version. This is generally required unless you plan
-     on building everything.""")
 @arg('--sign', nargs="?", help='''Enable signing. Optionally takes keyid.''')
 @arg('--commit-as', nargs=2, help='''Set user and email to use for committing. '''
      '''Takes exactly two arguments.''')
@@ -809,7 +800,7 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
              max_updates=0, dry_run=False,
              no_check_pinnings=False, no_follow_graph=False,
              no_check_version_update=False,
-             no_check_pending_deps=False, bump_only_python=False,
+             no_check_pending_deps=False,
              sign=0, commit_as=None):
     """
     Updates recipes in recipe_folder
@@ -890,7 +881,7 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
     # Test if due to pinnings, the package hash would change and a rebuild
     # has become necessary. If so, bump the buildnumber.
     if not no_check_pinnings:
-        scanner.add(autobump.CheckPinning, bump_only_python)
+        scanner.add(autobump.CheckPinning)
 
     # Check for new versions and update the SHA afterwards
     if not no_check_version_update:
