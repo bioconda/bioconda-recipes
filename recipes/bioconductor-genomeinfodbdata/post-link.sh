@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="GenomeInfoDbData_1.2.2.tar.gz"
+FN="GenomeInfoDbData_1.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/GenomeInfoDbData_1.2.2.tar.gz"
-  "https://bioarchive.galaxyproject.org/GenomeInfoDbData_1.2.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-genomeinfodbdata/bioconductor-genomeinfodbdata_1.2.2_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/GenomeInfoDbData_1.2.3.tar.gz"
+  "https://bioarchive.galaxyproject.org/GenomeInfoDbData_1.2.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-genomeinfodbdata/bioconductor-genomeinfodbdata_1.2.3_src_all.tar.gz"
 )
-MD5="64c8f7158601272355f9686235dcb7e1"
+MD5="720784da6bddbd4e18ab0bccef6b0a95"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

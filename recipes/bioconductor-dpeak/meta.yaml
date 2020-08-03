@@ -1,0 +1,49 @@
+{% set version = "1.0.0" %}
+{% set name = "dpeak" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 09a2822ed3dcd3cef8bd3a5f50df0db8
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: BSgenome.Ecoli.NCBI.20080805
+# SystemRequirements: GNU make, meme, fimo
+requirements:
+  host:
+    - 'bioconductor-bsgenome >=1.56.0,<1.57.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - r-base
+    - r-mass
+    - r-rcpp
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-bsgenome >=1.56.0,<1.57.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - r-base
+    - r-mass
+    - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'dPeak (Deconvolution of Peaks in ChIP-seq Analysis)'
+  description: 'dPeak is a statistical framework for the high resolution identification of protein-DNA interaction sites using PET and SET ChIP-Seq and ChIP-exo data. It provides computationally efficient and user friendly interface to process ChIP-seq and ChIP-exo data, implement exploratory analysis, fit dPeak model, and export list of predicted binding sites for downstream analysis.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

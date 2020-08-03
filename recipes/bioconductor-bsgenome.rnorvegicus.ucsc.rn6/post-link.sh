@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="BSgenome.Rnorvegicus.UCSC.rn6_1.4.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/BSgenome.Rnorvegicus.UCSC.rn6_1.4.1.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/BSgenome.Rnorvegicus.UCSC.rn6_1.4.1.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Rnorvegicus.UCSC.rn6_1.4.1.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.rnorvegicus.ucsc.rn6/bioconductor-bsgenome.rnorvegicus.ucsc.rn6_1.4.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.rnorvegicus.ucsc.rn6/bioconductor-bsgenome.rnorvegicus.ucsc.rn6_1.4.1_src_all.tar.gz"

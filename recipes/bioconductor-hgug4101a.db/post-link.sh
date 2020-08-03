@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="hgug4101a.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/hgug4101a.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/hgug4101a.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/hgug4101a.db_3.2.3.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hgug4101a.db/bioconductor-hgug4101a.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hgug4101a.db/bioconductor-hgug4101a.db_3.2.3_src_all.tar.gz"
