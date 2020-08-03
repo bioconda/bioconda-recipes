@@ -3,6 +3,7 @@ Determine which packages need updates after pinning change
 """
 
 import enum
+from itertools import chain
 import logging
 import re
 import string
@@ -105,10 +106,17 @@ def have_variant(meta: MetaData) -> bool:
     # Stupid legacy special handling:
     #  conda-build add "special" substrings for some packages to the build
     #  string (e.g., "py38", "pl526", ...). When we use `bypass_env_check` then
-    #  it does not add those substrings if they are not part of a "variant".
+    #  it does not add those substrings somehow (?).
     #  But during the actual build, it adds those substrings even for run-only
     #  dependencies (see "blast" recipe with its "perl" run-dep for example).
-    build_variants = _get_build_variants(meta)
+    build_deps = [
+        dep.split()[0].replace('-', '_')
+        for dep in
+        chain(
+            meta.get_value('requirements/build', []),
+            meta.get_value('requirements/host', []),
+        )
+    ]
     res = RepoData().get_package_data(
         'build',
         name=meta.name(), version=meta.version(),
@@ -119,8 +127,11 @@ def have_variant(meta: MetaData) -> bool:
         match = _legacy_build_string_prefixes.match(build_id)
         trimmed_build_id = build_id
         for group, matched_str in match.groupdict().items():
-            if matched_str and group not in build_variants:
+            if matched_str and group not in build_deps:
                 trimmed_build_id = trimmed_build_id.replace(matched_str, '')
+        if trimmed_build_id.startswith('_'):
+            # If we trimmed everything but the number, no '_' is inserted.
+            trimmed_build_id = trimmed_build_id[1:]
         if trimmed_build_id == meta.build_id():
             logger.debug("Package %s=%s=%s exists",
                          meta.name(), meta.version(), build_id)
