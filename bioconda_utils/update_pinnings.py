@@ -4,6 +4,7 @@ Determine which packages need updates after pinning change
 
 import enum
 import logging
+import re
 import string
 
 from .utils import RepoData
@@ -12,12 +13,21 @@ from .utils import RepoData
 from conda_build.metadata import trim_build_only_deps
 
 # for type checking
-from typing import AbstractSet
+from typing import AbstractSet, Set
 from .recipe import Recipe, RecipeError
 from conda_build.metadata import MetaData
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
+
+
+def _get_build_variants(meta: MetaData) -> Set[str]:
+    # This is the same behavior as in
+    # conda_build.metadata.Metadata.get_hash_contents but without leaving out
+    # "build_string_excludes" (python, r_base, etc.).
+    dependencies = set(meta.get_used_vars())
+    trim_build_only_deps(meta, dependencies)
+    return dependencies
 
 
 def skip_for_variants(meta: MetaData, variant_keys: AbstractSet[str]) -> bool:
@@ -29,11 +39,7 @@ def skip_for_variants(meta: MetaData, variant_keys: AbstractSet[str]) -> bool:
     Returns:
       True if any variant key from variant_keys is used
     """
-    # This is the same behavior as in
-    # conda_build.metadata.Metadata.get_hash_contents but without leaving out
-    # "build_string_excludes" (python, r_base, etc.).
-    dependencies = set(meta.get_used_vars())
-    trim_build_only_deps(meta, dependencies)
+    dependencies = _get_build_variants(meta)
 
     return not dependencies.isdisjoint(variant_keys)
 
@@ -63,6 +69,22 @@ def will_build_variant(meta: MetaData) -> bool:
     return res
 
 
+_legacy_build_string_prefixes = re.compile(
+    '''
+    ^
+    (
+        (?P<numpy>    np   [0-9]{2,9}) |
+        (?P<python>   py   [0-9]{2,9}) |
+        (?P<perl>     pl   [0-9]{2,9}) |
+        (?P<lua>      lua  [0-9]{2,9}) |
+        (?P<r_base>   r    [0-9]{2,9}) |
+        (?P<mro_base> mro  [0-9]{3,9})
+    )*
+    ''',
+    re.X,
+)
+
+
 def have_variant(meta: MetaData) -> bool:
     """Checks if we have an exact match to name/version/buildstring
 
@@ -79,7 +101,31 @@ def have_variant(meta: MetaData) -> bool:
     if res:
         logger.debug("Package %s=%s=%s exists",
                      meta.name(), meta.version(), meta.build_id())
-    return res
+        return True
+    # Stupid legacy special handling:
+    #  conda-build add "special" substrings for some packages to the build
+    #  string (e.g., "py38", "pl526", ...). When we use `bypass_env_check` then
+    #  it does not add those substrings if they are not part of a "variant".
+    #  But during the actual build, it adds those substrings even for run-only
+    #  dependencies (see "blast" recipe with its "perl" run-dep for example).
+    build_variants = _get_build_variants(meta)
+    res = RepoData().get_package_data(
+        'build',
+        name=meta.name(), version=meta.version(),
+        build_number=meta.build_number(),
+        platform=['linux', 'noarch'],
+    )
+    for build_id in res:
+        match = _legacy_build_string_prefixes.match(build_id)
+        trimmed_build_id = build_id
+        for group, matched_str in match.groupdict().items():
+            if matched_str and group not in build_variants:
+                trimmed_build_id = trimmed_build_id.replace(matched_str, '')
+        if trimmed_build_id == meta.build_id():
+            logger.debug("Package %s=%s=%s exists",
+                         meta.name(), meta.version(), build_id)
+            return True
+    return False
 
 
 def have_noarch_python_build_number(meta: MetaData) -> bool:
