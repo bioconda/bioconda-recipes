@@ -1,3 +1,3 @@
 #!/bin/bash
 
-$PYTHON setup.py build --single-version-externally-managd --record record.txt
+$PYTHON setup.py build --single-version-externally-managed --record record.txt
