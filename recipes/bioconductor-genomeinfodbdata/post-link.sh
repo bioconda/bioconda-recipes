@@ -2,8 +2,6 @@
 FN="GenomeInfoDbData_1.2.3.tar.gz"
 URLS=(
   "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/GenomeInfoDbData_1.2.3.tar.gz"
-  "https://bioarchive.galaxyproject.org/GenomeInfoDbData_1.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-genomeinfodbdata/bioconductor-genomeinfodbdata_1.2.3_src_all.tar.gz"
 )
 MD5="720784da6bddbd4e18ab0bccef6b0a95"
 
