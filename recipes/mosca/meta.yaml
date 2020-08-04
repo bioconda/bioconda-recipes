@@ -1,0 +1,93 @@
+{% set name = "mosca" %}
+{% set version = "1.1.0" %}
+{% set sha256 = "110f3280ce4a6520f5ed775ea72c89a3db3b16ffe10ea8b6a044ecc957e538e0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/iquasere/MOSCA/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 0
+  script: |
+    dir="${PREFIX}/share/MOSCA"
+    mkdir -p "${dir}/scripts"
+    cp scripts/* "${dir}/scripts"
+    mkdir -p "${dir}/Databases"
+    cp -r Databases "${dir}/Databases"
+    chmod +x "${dir}/scripts/mosca.py"
+    ln -s "${dir}/scripts/mosca.py" "${PREFIX}/bin/"
+
+requirements:
+  run:
+    - python
+    - fastqc
+    - sortmerna=2.1
+    - seqtk
+    - trimmomatic
+    - megahit
+    - spades
+    - fraggenescan
+    - diamond
+    - upimapi
+    - htseq
+    - bowtie2
+    - maxbin2
+    - checkm-genome>=1.1.0
+    - bioconductor-deseq2=1.22.1
+    - bioconductor-edger=3.24.3
+    - r-pheatmap
+    - r-optparse
+    - blast
+    - krona
+    - seqkit
+    - svn
+    - reportlab
+    - openpyxl
+    - xlrd>=0.9.0
+    - r-rcolorbrewer
+    - pandas
+    - scikit-learn
+    - lxml
+    - biopython
+    - perl
+    - progressbar33
+    - tqdm>=4.33.0
+    - xlsxwriter
+    - recognizer
+    - maxquant
+    - quast
+
+test:
+  commands:
+    - mosca.py -v
+
+about:
+  home: https://github.com/iquasere/MOSCA
+  license: GNU General Public License v3 (GPL-3.0)
+  license_family: GPL
+  license_file: LICENSE
+  summary: 'MOSCA - Meta-Omics Software for Community Analysis'
+  description: |
+    MOSCA (portuguese for fly) is a pipeline designed for performing metagenomics (MG),
+    metatranscriptomics (MT) and metaproteomics (MP) integrated data analysis, 
+    in a mostly local and fully automated workflow. Metagenomics is used to build 
+    a reference database for MT and MP, beginning with preprocessing of data for
+    removal of Illumina adapters and lower quality regions, folowed by assembly
+    of reads into contigs, gene calling on the contigs and homology-based and 
+    domain-based annotation of identified proteins, using the UniProt and COG 
+    databases, respectively. If available, MT reads are then aligned to the ORFs 
+    for gene expression quantification, and MP spectra are submitted for
+    Peptide-to-Spectrum matching, with the annotated ORFs as reference database.
+    Final steps include differential expression analysis for both MT and MP, and
+    metabolic pathways analysis through KEGG Pathways.
+  doc_url: https://github.com/iquasere/reCOGnizer/blob/master/README.md
+  dev_url: https://github.com/iquasere/reCOGnizer
+
+extra:
+  recipe-maintainers:
+    - iquasere
