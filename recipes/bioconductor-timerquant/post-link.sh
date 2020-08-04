@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="TimerQuant_1.16.0.tar.gz"
+FN="TimerQuant_1.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/TimerQuant_1.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/TimerQuant_1.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-timerquant/bioconductor-timerquant_1.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/TimerQuant_1.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TimerQuant_1.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-timerquant/bioconductor-timerquant_1.18.0_src_all.tar.gz"
 )
-MD5="ef4ca4d199e45327ae2cd6a44be9fb20"
+MD5="ff45a2207402718e1aed3e29ad2be1a6"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

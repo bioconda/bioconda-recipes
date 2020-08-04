@@ -1,0 +1,55 @@
+{% set version = "1.4.0" %}
+{% set name = "gpuMagic" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 82aa9f27c13919c4b7237a8891cd5afb
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: testthat, knitr, rmarkdown, BiocStyle
+# SystemRequirements: 1. C++11, 2. a graphic driver or a CPU SDK. 3. ICD loader For Windows user, an ICD loader is required at C:/windows/system32/OpenCL.dll (Usually it is installed by the graphic driver). For Linux user (Except mac): ocl-icd-opencl-dev package is required. For Mac user, no action is needed for the system has installed the dependency. 4. GNU make
+requirements:
+  host:
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - r-base
+    - r-deriv
+    - r-desctools
+    - r-digest
+    - r-pryr
+    - r-rcpp
+    - r-stringr
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - r-base
+    - r-deriv
+    - r-desctools
+    - r-digest
+    - r-pryr
+    - r-rcpp
+    - r-stringr
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'An openCL compiler with the capacity to compile R functions and run the code on GPU'
+  description: 'The package aims to help users write openCL code with little or no effort. It is able to compile an user-defined R function and run it on a device such as a CPU or a GPU. The user can also write and run their openCL code directly by calling .kernel function.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

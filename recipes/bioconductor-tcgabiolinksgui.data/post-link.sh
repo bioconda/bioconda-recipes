@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="TCGAbiolinksGUI.data_1.6.0.tar.gz"
+FN="TCGAbiolinksGUI.data_1.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/TCGAbiolinksGUI.data_1.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/TCGAbiolinksGUI.data_1.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tcgabiolinksgui.data/bioconductor-tcgabiolinksgui.data_1.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/TCGAbiolinksGUI.data_1.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TCGAbiolinksGUI.data_1.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tcgabiolinksgui.data/bioconductor-tcgabiolinksgui.data_1.8.0_src_all.tar.gz"
 )
-MD5="f9ff328d3349244c1163adaf38b0a9ec"
+MD5="9cb165b08bbf7ee7694ff27b81a82f9a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
