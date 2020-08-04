@@ -20,6 +20,9 @@ export ORIGIN=\$ORIGIN
 make LDADD='-lMUSCLE-3.7'
 make install
 
+rm -R muscle/libMUSCLE
+rm -R muscle/autom4te.cache
+rm -R muscle/m4
 
 cp parsnp $PREFIX/bin 
 cp src/parsnp_core $PREFIX/bin/bin
