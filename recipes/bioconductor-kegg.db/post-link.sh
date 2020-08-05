@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="KEGG.db_3.2.3.tar.gz"
+FN="KEGG.db_3.2.4.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/KEGG.db_3.2.3.tar.gz"
-  "https://bioarchive.galaxyproject.org/KEGG.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-kegg.db/bioconductor-kegg.db_3.2.3_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-kegg.db/bioconductor-kegg.db_3.2.3_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/KEGG.db_3.2.4.tar.gz"
+  "https://bioarchive.galaxyproject.org/KEGG.db_3.2.4.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-kegg.db/bioconductor-kegg.db_3.2.4_src_all.tar.gz"
 )
-MD5="023ac22f57063627c2e62d1ae5e011b0"
+MD5="72fde6d0c81ecc42d853607e83476fd5"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
