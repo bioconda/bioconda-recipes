@@ -2,8 +2,8 @@
 
 
 cd $SRC_DIR/src
-sed -i.bak 's/#include <xlocale.h>//' src/data.c
-sed -i "s/MIGRATEGITVERSION = \$(shell . showgit.sh)/MIGRATEGITVERSION = Distribution/" Makefile.in
+
+sed -i.bak 's/#include <xlocale.h>//' data.c
 export C_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
@@ -15,5 +15,4 @@ export LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
 sed -i.bak 's/-lz/-L${LIBRARY_PATH} -I${C_INCLUDE_PATH} -lz -lstdc++/' Makefile
 make thread
 mkdir -p $PREFIX/bin
-cp $SRC_DIR/src/migrate-n $PREFIX/bin/migrate-n-4.4.4
-
+cp $SRC_DIR/src/migrate-n $PREFIX/bin/migrate-n-3.7
