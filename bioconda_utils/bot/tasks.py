@@ -264,7 +264,7 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
         title = "Some recipes had problems"
         summary += "Please fix the issues listed below."
 
-    url = 'https://bioconda.github.io/linting.html'
+    url = 'https://bioconda.github.io/contributor/linting.html'
 
     for msg in messages:
         annotations.append({
