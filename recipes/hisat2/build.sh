@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# The patch does not move the VERSION file on OSX. Let's make sure it's moved.
+mv VERSION{,.txt} || true
+
 make \
     CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
     CPP="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
