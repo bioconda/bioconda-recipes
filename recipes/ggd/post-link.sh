@@ -1,6 +1,9 @@
 #!/bin/bash
 set -eo pipefail -o nounset
 
+## Create info dir
+mkdir -m u=rwx -p $PREFIX/share/ggd_info/noarch 
+
 ## initialize local metadata
 "${PREFIX}/bin/python" -c "$( cat <<'EOF'
 """
@@ -25,7 +28,6 @@ for x in channels:
     utils.get_channel_data(x)
 
 ## Initialize pkg metadata tracking
-mkdir -m u=rwx -p "$PREFIX/share/ggd_info/noarch" 
 utils.update_installed_pkg_metadata()
 EOF
 
