@@ -1,9 +1,6 @@
 #!/bin/bash
 set -eo pipefail -o nounset
 
-## Create info dir
-mkdir -m u=rwx -p $PREFIX/share/ggd_info/noarch 
-
 ## initialize local metadata
 "${PREFIX}/bin/python" -c "$( cat <<'EOF'
 """
