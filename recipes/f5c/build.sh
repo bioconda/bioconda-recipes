@@ -1,3 +1,6 @@
 #!/bin/bash
+scripts/install-hts.sh
+./configure
+make
 mkdir -p $PREFIX/bin
-cp f5c_x86_64_linux $PREFIX/bin/f5c
+cp f5c $PREFIX/bin/f5c
