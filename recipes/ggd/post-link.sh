@@ -24,7 +24,10 @@ channels = utils.get_ggd_channels()
 for x in channels:
     utils.get_channel_data(x)
 
+
+
 ## Initialize pkg metadata tracking
+mkdir -p -m 744 "${PREFIX}/share/ggd_info/noarch" 
 utils.update_installed_pkg_metadata()
 EOF
 )" >> "${PREFIX}/.messages.txt" 2>&1
