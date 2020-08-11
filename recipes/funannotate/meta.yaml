@@ -2,21 +2,22 @@
 {% set version = "1.7.4" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: funannotate
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "0eea1fb1084672cc5f5238b55c368d651474ca9dc61d5559929abcf93553d2ab"
+  url: https://pypi.io/packages/source/f/funannotate/funannotate-{{ version }}.tar.gz
+  sha256: 0eea1fb1084672cc5f5238b55c368d651474ca9dc61d5559929abcf93553d2ab
 
 build:
-  number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  number: 1
+  skip: True  # [py>=30]
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv 
 
 requirements:
   host:
     - pip
-    - python <3
+    - python
   run:
     - biopython
     - goatools
@@ -25,7 +26,7 @@ requirements:
     - numpy
     - pandas
     - psutil
-    - python <3
+    - python
     - requests
     - scikit-learn
     - scipy
@@ -73,8 +74,8 @@ requirements:
     
 test:
   commands:
-    - "python -c \"import funannotate\""
-    - "funannotate --version 2>&1 | grep \"funannotate\ v\""
+    - python -c 'import funannotate'
+    - funannotate --version 2>&1 | grep -F 'funannotate v{{ version }}'
 
 about:
   home: "https://github.com/nextgenusfs/funannotate"
@@ -85,7 +86,5 @@ about:
   doc_url: "funannotate.readthedocs.io"
 
 extra:
-  skip-lints:
-    - should_be_noarch_python
   recipe-maintainers:
     - nextgenusfs

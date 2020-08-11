@@ -1,12 +1,11 @@
 #!/bin/bash
 
-mkdir -p ${PREFIX}/bin
-
-mv VERSION VERSION.txt  # Breaks C++20
-make CC=${CC} CPP=${CXX}
-
+make \
+    CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+    CPP="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
 # copy binaries and python scripts
+mkdir -p "${PREFIX}/bin"
 for i in \
     hisat2 \
     hisat2-align-l \
@@ -19,8 +18,6 @@ for i in \
     hisat2-inspect-s \
     *.py
 do
-    cp ${i} ${PREFIX}/bin
+    cp "${i}" "${PREFIX}/bin/"
+    chmod +x "${PREFIX}/bin/${i}"
 done
-
-# set permissions
-chmod +x ${PREFIX}/bin/*
