@@ -6,8 +6,7 @@ APPROOT=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
 mkdir -p $APPROOT
 mkdir -p ${PREFIX}/bin
 # cp -r ./* $APPROOT
-cp -r dqc $APPROOT/dqc
-cp -r docs $APPROOT/docs
+cp -r dqc $APPROOT/bin/dqc
 cp dfast_qc $APPROOT
 cp dqc_admin_tools.py $APPROOT
 cp initial_setup.sh $APPROOT
