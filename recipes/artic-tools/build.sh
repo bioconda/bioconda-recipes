@@ -1,5 +1,4 @@
-#!/bin/bashi
-git submodule update --init --recursive
+#!/bin/bash
 mkdir build && pushd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make 
