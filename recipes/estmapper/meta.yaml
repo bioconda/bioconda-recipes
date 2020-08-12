@@ -1,35 +1,39 @@
-{% set name = "estmapper" %}
+{% set name = "ESTmapper" %}
 {% set version = "2008" %}
+{% set sha256 = "2ee66fe0708b01c7fcee8836019f2b648ccd7015a7f6bd7fee29d59967a6f341" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
-
-about:
-  home: 'http://kmer.sourceforge.net/wiki/index.php/Getting_Started_with_ESTmapper'
-  license: "GPL"
-  summary: "software package for the high-throughput alignment of large cDNA (EST, mRNA) sequence sets to a large eukaryotic genome of the same species"
 
 source:
   url: http://sourceforge.net/projects/kmer/files/ESTmapper-r2008.tar.bz2
-  md5: 6d310460dec848fe057d0f51b1e4ccd9
+  sha256: {{ sha256 }}
+  patches:
+    - Makefile.patch
 
 build:
-  number: 1
+  number: 2
   skip: True  # [py3k]
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
     - python
+    - perl
     - bzip2
-    - perl
-
   run:
-    - perl
     - python
+    - perl
+    - bzip2
 
 test:
   commands:
     - ESTmapper.pl 2>&1 | grep ESTmapper
+
+about:
+  home: http://kmer.sourceforge.net/wiki/index.php/Getting_Started_with_ESTmapper
+  license: GPL
+  summary: "Software package for the high-throughput alignment of large cDNA (EST, mRNA) sequence sets to a large eukaryotic genome of the same species."

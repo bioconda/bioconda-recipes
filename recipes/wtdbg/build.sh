@@ -1,9 +1,11 @@
 #!/bin/bash
 
-mkdir -p "$PREFIX/bin"
+export CFLAGS=-I$PREFIX/include
+export CXXFLAGS=-I$PREFIX/include
+export LDFLAGS=-L$PREFIX/lib
 
-make
+mkdir -p $PREFIX/bin
 
-cp wtdmo wtdbg-cns ttr_finder map2dbgcns  *.pl *.sh $PREFIX/bin 
-cp wtdbg-1.2.8 $PREFIX/bin/wtdbg
-cp kbm-1.2.8  $PREFIX/bin/kbm
+make CC=${CC} CFLAGS="${CFLAGS} -L${PREFIX}/lib"  CXX=${CXX} CXXFLAGS="${CXXFLAGS} -L${PREFIX}/lib" LDFLAGS="${LDFLAGS}"
+
+cp wtdbg2 wtdbg-cns wtpoa-cns $PREFIX/bin

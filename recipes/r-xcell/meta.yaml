@@ -1,0 +1,64 @@
+{% set name = "r-xcell" %}
+{% set version = "1.2" %}
+{% set sha256 = "52dcd5cfb5c8a4870cb485ee57f34d7830b23bdc61fd3012d859fdcc22ad941c" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url:
+    - https://github.com/dviraran/xCell/archive/{{ version }}.tar.gz
+  sha256:  {{ sha256 }}
+
+build:
+  script: $R CMD INSTALL --build .
+  number: 3
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - r-base
+    - r-roxygen2
+    - r-mass
+    - bioconductor-gsva
+    - bioconductor-gseabase
+    - r-pracma
+    - r-digest
+    - r-quadprog
+    - r-curl
+  run:
+    - r-base >=3.1.0
+    - r-roxygen2
+    - r-mass
+    - bioconductor-gsva
+    - bioconductor-gseabase
+    - r-pracma
+    - r-digest
+    - r-quadprog
+    - r-curl
+
+test:
+  commands:
+    - $R -e "library('xCell')"
+
+
+about:
+  home: https://github.com/dviraran/xCell
+  license: GPL-3
+  summary: "Estimate immune cell proportions from gene expression data"
+  description: |
+    "Tissues are a complex milieu consisting of numerous cell types. In cancer, understanding the cellular heterogeneity in the tumor microenvironment is an emerging field of research. Numerous methods have been published in recent years for the enumeration of cell subsets from tissue expression profiles. However, the available methods suffer from three major problems: inferring cell subset based on gene sets learned and verified from limited sources; displaying only partial portrayal of the full cellular heterogeneity; and insufficient validation in mixed tissues. The xCell package performs cell type enrichment analysis from gene expression data for 64 immune and stroma cell types. xCell is a gene signatures-based method learned from thousands of pure cell types from various sources. xCell applies a novel technique for reducing associations between closley related cell types. xCell signatures were validated using extensive in-silico simulations and also cytometry immunophenotyping, and were shown to outperform previous methods. xCell allows researchers to reliably portray the cellular heterogeneity landscape of tissue expression profiles."
+  license_family: GPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  recipe-maintainers:
+    - grst
+    - dviraran
+  identifiers:
+    - doi:10.1186/s13059-017-1349-1

@@ -1,0 +1,51 @@
+{% set name = "kraken2" %}
+{% set version = "2.0.9beta" %}
+{% set kraken_ver = "2.0.9-beta" %}
+{% set sha256 = "0287cf4df4b5d5511a9132d9ab37a8d76864bae445579efb9cb76db7e9c09eba" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/DerrickWood/kraken2/archive/v{{kraken_ver}}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - Makefile.patch
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+  host:
+    - perl
+    - clangdev  # [osx]
+    - llvm-openmp  # [osx]
+  run:
+    - perl
+    - blast
+    - libcxx >=4.0  # [osx]
+    - llvm-openmp  # [osx]
+    - rsync
+    - wget
+    - tar
+    - _openmp_mutex * *_gnu  # [linux]
+test:
+  commands:
+    - kraken2 --version
+    - kraken2-build --version
+    - kraken2-inspect --version
+
+about:
+  home: https://ccb.jhu.edu/software/kraken2/
+  license: GPLv3
+  license_file: LICENSE
+  summary: Kraken2 is a system for assigning taxonomic labels to short DNA sequences, usually obtained through metagenomic studies.
+
+extra:
+  identifiers:
+    - biotools:kraken2
+    - doi:10.1186/gb-2014-15-3-r46

@@ -1,0 +1,62 @@
+{% set version = "1.6.3" %}
+{% set sha256 = "ac1521154abeab0b6156d20d9b9b563c6e2413eb27cd9ef50357aad93163c188" %}
+
+package:
+  name: r-stitch
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/rwdavies/stitch/releases/download/{{ version }}/STITCH_{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 1
+  script: '$R CMD INSTALL --build --install-tests .'
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - r-base
+    - r-rcpp >=0.12.18
+    - r-rcpparmadillo >=0.8.600.0.0
+    - r-data.table >=1.11.8
+    - r-rrbgen >=0.0.6
+    - xz
+    - gmp
+    - mpfr
+    - mpc >=1.1.0
+    - openblas    
+  run:
+    - r-base  
+    - r-rcpp >=0.12.18
+    - r-rcpparmadillo >=0.8.600.0.0
+    - r-data.table >=1.11.8
+    - r-rrbgen >=0.0.6
+    - xz
+    - gmp
+    - mpfr
+    - mpc >=1.1.0
+    - r-testthat >=2.0.0
+    - htslib >=1.4
+    - samtools >=1.4
+    - rsync
+    - openblas    
+
+test:
+  commands:
+    - $R -e "library('STITCH');  testthat::test_package('STITCH', stop_on_failure = TRUE, stop_on_warning = TRUE, filter = 'acceptance-one', reporter = 'summary')"
+
+about:
+  home: https://github.com/rwdavies/stitch
+  license: GPL3
+  license_family: GPL3
+  license_file: LICENSE
+  summary: STITCH - Sequencing To Imputation Through Constructing Haplotypes
+  doc_url: https://github.com/rwdavies/stitch
+  dev_url: https://github.com/rwdavies/stitch
+
+extra:
+  recipe-maintainers:
+    - rwdavies

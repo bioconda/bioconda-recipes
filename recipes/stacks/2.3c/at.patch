@@ -1,0 +1,71 @@
+# the stacks perl scripts don't work if there is an '@' in the exe_path
+# (where stacks searches for the binaries) this patch sets and ensures that the
+# exe_path is the empty string, i.e. PATH is used (ie conda takes care).
+diff -ruN stacks-2.3c/scripts/denovo_map.pl stacks-2.3c/scripts/denovo_map.pl
+--- stacks-2.3c/scripts/denovo_map.pl	2018-04-19 18:17:23.000000000 +0200
++++ stacks-2.3c/scripts/denovo_map.pl	2019-01-03 08:28:27.174444559 +0100
+@@ -28,7 +28,7 @@
+ use constant false => 0;
+ 
+ my $dry_run      = false;
+-my $exe_path     = "_BINDIR_";
++my $exe_path     = "";
+ my $out_path     = "";
+ my $popmap_path  = "";
+ my $sample_path  = "";
+@@ -50,13 +50,6 @@
+ 
+ parse_command_line();
+ 
+-#
+-# Check for the existence of the necessary pipeline programs
+-#
+-foreach my $prog ("ustacks", "cstacks", "sstacks", "tsv2bam", "gstacks", "populations") {
+-    die "Unable to find '" . $exe_path . $prog . "'.\n" if (!-e $exe_path . $prog);
+-}
+-
+ my ($log, $log_fh, $sample);
+ 
+ my (@sample_list, %pop_ids, %pops, %grp_ids, %grps, %sample_ids);
+@@ -558,7 +551,6 @@
+         }
+     }
+ 
+-    $exe_path = $exe_path . "/"          if (substr($exe_path, -1) ne "/");
+     $out_path = substr($out_path, 0, -1) if (substr($out_path, -1) eq "/");
+ 
+     if (scalar(@parents) > 0 && scalar(@samples) > 0) {
+diff -ruN stacks-2.3c/scripts/ref_map.pl stacks-2.3c/scripts/ref_map.pl
+--- stacks-2.3c/scripts/ref_map.pl	2018-03-21 15:51:20.000000000 +0100
++++ stacks-2.3c/scripts/ref_map.pl	2019-01-03 08:29:17.974257301 +0100
+@@ -28,7 +28,7 @@
+ use constant false => 0;
+ 
+ my $dry_run      = false;
+-my $exe_path     = "_BINDIR_";
++my $exe_path     = "";
+ my $out_path     = "";
+ my $popmap_path  = "";
+ my $sample_path  = "";
+@@ -47,13 +47,6 @@
+ 
+ parse_command_line();
+ 
+-#
+-# Check for the existence of the necessary pipeline programs
+-#
+-foreach my $prog ("gstacks", "populations") {
+-    die "Unable to find '" . $exe_path . $prog . "'.\n" if (!-e $exe_path . $prog);
+-}
+-
+ my ($log, $log_fh, $sample);
+ 
+ my (@sample_list, %pop_ids, %pops, %grp_ids, %grps, %sample_ids);
+@@ -385,7 +378,6 @@
+         }
+     }
+ 
+-    $exe_path = $exe_path . "/"          if (substr($exe_path, -1) ne "/");
+     $out_path = substr($out_path, 0, -1) if (substr($out_path, -1) eq "/");
+ 
+     if (length($popmap_path) == 0) {

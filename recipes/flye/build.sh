@@ -1,21 +1,17 @@
 #!/bin/bash
 
 #zlib headers for minimap
-export C_INCLUDE_PATH="$PREFIX/include"
-export LIBRARY_PATH="$PREFIX/lib"
+sed -i.bak 's/CFLAGS=/CFLAGS+=/' lib/minimap2/Makefile
+sed -i.bak 's/INCLUDES=/INCLUDES+=/' lib/minimap2/Makefile
+export CFLAGS="-L$PREFIX/lib"
+export INCLUDES="-I$PREFIX/include"
 
 #zlib headers for flye binaries
 export CXXFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
-#patching Makefile so the CXXFLAGS and LDFLAGS are not overwritten.
-#will fix this in the next release
-sed -i.bak '10s/=/+=/' Makefile
-sed -i.bak '11s/=/+=/' Makefile
-
 #dynamic flag is needed for backtrace printing, 
 #but it seems it fails OSX build
 sed -i.bak 's/-rdynamic//' src/Makefile
 
-python setup.py build
-python setup.py install  --record record.txt.
+$PYTHON setup.py install --single-version-externally-managed --record record.txt

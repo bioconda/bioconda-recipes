@@ -1,0 +1,43 @@
+{% set version = "0.6.14" %}
+
+package:
+  name: pyfastx
+  version: {{ version }}
+
+source:
+  url: https://github.com/lmdu/pyfastx/archive/{{ version }}.tar.gz
+  sha256: 0994103ace6ee8b33f7ca4fd3f7f753fe523c25a75bd01328ea0044686083369
+
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  skip: True  # [py2k]
+  entry_points:
+    - pyfastx = pyfastxcli:main
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - zlib
+    - pip
+  run:
+    - zlib
+    - python
+
+test:
+  imports:
+    - pyfastx
+  commands:
+    - pyfastx --help
+
+about:
+  home: https://github.com/lmdu/pyfastx
+  license: MIT
+  license_file: LICENSE
+  summary:  |
+          pyfastx is a python module for fast random
+          access to sequences from plain and gzipped
+          FASTA/Q file

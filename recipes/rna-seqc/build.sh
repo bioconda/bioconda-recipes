@@ -1,25 +1,31 @@
 #!/bin/bash
+set -eu -o pipefail
 
-# Setup path variables
-BINARY_HOME=$PREFIX/bin
-PACKAGE_HOME=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+cd ./travis/build/broadinstitute/rnaseqc
 
-# Create destination directories
-mkdir -p $BINARY_HOME
-mkdir -p $PACKAGE_HOME
+pushd SeqLib/bwa
+sed -i.bak '/^DFLAGS=/s/$/ $(LDFLAGS)/' Makefile
+make CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
+popd
 
-# Copy file into $PACKAGE_HOME
-cp RNA-SeQC_v$PKG_VERSION.jar $PACKAGE_HOME
+pushd SeqLib/fermi-lite
+make CC="$CC" CFLAGS="$CFLAGS $LDFLAGS"
+popd
 
-# Create wrapper
-SOURCE_FILE=$RECIPE_DIR/rna_seqc.sh
-DEST_FILE=$PACKAGE_HOME/rna-seqc
+pushd SeqLib/htslib
+make CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
+popd
 
-echo "#!/bin/bash" > $DEST_FILE
-echo "PKG_NAME=$PKG_NAME" >> $DEST_FILE
-echo "PKG_VERSION=$PKG_VERSION" >> $DEST_FILE
-echo "PACKAGE_HOME=$PACKAGE_HOME" >> $DEST_FILE
-cat $RECIPE_DIR/rna_seqc.sh >> $DEST_FILE
+make \
+    CC="$CXX" \
+    CPPFLAGS="-I$PREFIX/include" \
+    SeqLib/lib/libseqlib.a
 
-chmod +x $DEST_FILE
-ln -s $DEST_FILE $PREFIX/bin
+make \
+    CC="$CXX" \
+    INCLUDE_DIRS="-I$PREFIX/include -ISeqLib -ISeqLib/htslib" \
+    LIBRARY_PATHS="-L$PREFIX/lib -Wl,-rpath $PREFIX/lib"
+
+mkdir -p $PREFIX/bin
+cp rnaseqc $PREFIX/bin
+

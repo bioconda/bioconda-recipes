@@ -1,0 +1,44 @@
+{% set version = "1.6.0" %}
+{% set name = "DEqMS" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: edf23b5ec1e3b1d60575da7dd32249ab
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: BiocStyle,knitr,rmarkdown,plyr,matrixStats,reshape2,farms,utils,ggrepel,ExperimentHub,LSD
+requirements:
+  host:
+    - 'bioconductor-limma >=3.44.0,<3.45.0'
+    - r-base
+    - r-ggplot2
+  run:
+    - 'bioconductor-limma >=3.44.0,<3.45.0'
+    - r-base
+    - r-ggplot2
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: LGPL
+  summary: 'a tool to perform statistical analysis of differential protein expression for quantitative proteomics data.'
+  description: 'DEqMS is developped on top of Limma. However, Limma assumes same prior variance for all genes. In proteomics, the accuracy of protein abundance estimates varies by the number of peptides/PSMs quantified in both label-free and labelled data. Proteins quantification by multiple peptides or PSMs are more accurate. DEqMS package is able to estimate different prior variances for proteins quantified by different number of PSMs/peptides, therefore acchieving better accuracy. The package can be applied to analyze both label-free and labelled proteomics data.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+extra:
+  parent_recipe:
+    name: bioconductor-deqms
+    path: recipes/bioconductor-deqms
+    version: 1.0.0
+

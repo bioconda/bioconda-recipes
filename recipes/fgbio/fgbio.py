@@ -2,9 +2,7 @@
 #
 # Wrapper script for invoking the jar.
 #
-# This script is written for use with the Conda package manager and is ported
-# from a bash script that does the same thing, adapting the style in
-# the womtool wrapper
+# This script is written for use with the Conda package manager.
 
 import subprocess
 import sys
@@ -74,6 +72,14 @@ def main():
         jar_arg = '-cp'
     else:
         jar_arg = '-jar'
+        
+    # If not already set to some value, set MALLOC_ARENA_MAX to constrain the number of memory pools (arenas)
+    # used by glibc to a reasonable number.  The default behaviour is to scale with the number of CPUs, which
+    # can cause VIRTUAL memory usage to be ~0.5GB per cpu core in the system, e.g. 32GB of a 64-core machine
+    # even when the heap and resident memory are only 1-4GB!  See the following link for more discussion:
+    #  https://www.ibm.com/developerworks/community/blogs/kevgrig/entry/linux_glibc_2_10_rhel_6_malloc_may_show_excessive_virtual_memory_usage?lang=en
+    if not os.environ.get("MALLOC_ARENA_MAX"):
+        os.environ["MALLOC_ARENA_MAX"] = "4"
 
     jar_path = path.join(jar_dir, JAR_NAME)
     java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args

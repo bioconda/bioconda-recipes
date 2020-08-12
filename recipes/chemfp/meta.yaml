@@ -1,16 +1,18 @@
-{% set version="1.4" %}
+{% set version="1.6" %}
+{% set name="chemfp" %}
 
 package:
-  name: chemfp
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: http://dalkescientific.com/releases/chemfp-{{ version }}.tar.gz
-  sha256: acab336971f0cf5650ca91e36ae74c7ed9d1bc3a93528e2041ccbcc17c3400ab
+  url: https://chemfp.com/packages/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 21bd124c084fc622b727a148c08499485f24dfc4061c2388ddd30e5ced307a52
 
 build:
-  number: 1
-  skip: True    # [osx or py3k]
+  number: 0
+  skip: True   # [osx]
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
   entry_points:
     - ob2fps=chemfp.commandline.ob2fps:run
     - oe2fps=chemfp.commandline.oe2fps:run
@@ -23,11 +25,12 @@ requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - python
+    - python <3
+    - pip
     - openbabel
     - rdkit
   run:
-    - python
+    - python <3
     - openbabel
     - rdkit
 
@@ -62,3 +65,8 @@ about:
     fingerprint data from an SD file or by using an existing chemistry
     toolkit. chemfp supports the Python libraries from Open Babel,
     OpenEye, and RDKit toolkits.
+
+extra:
+  maintainers:
+    - simonbray
+    - bgruening

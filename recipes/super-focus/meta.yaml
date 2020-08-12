@@ -1,17 +1,16 @@
-{% set version = "0.31" %}
-{% set sha256 = "015449bed377bf5ea1f9e7c75deff69dbfb565af1ee566cba99977701902ff64" %}
+{% set version = "0.35" %}
+{% set sha256 = "569602c7a32b336551b220791fc5267e0903e2709fd4f6316b3fbff4918e7f03" %}
 
 package:
   name: super-focus
   version: '{{ version }}'
 
 source:
-  url: https://github.com/metageni/SUPER-FOCUS/archive/3679ed23ffa9a8cfee7a4be8f962a089af33e96b.tar.gz
+  url: https://github.com/metageni/SUPER-FOCUS/archive/{{ version }}.tar.gz
   sha256: '{{ sha256 }}'
-  patches:
-    - disable_setuptools_scm.patch
 
 build:
+  noarch: python
   number: 0
   script: $PYTHON -m pip install --no-deps --ignore-installed --no-cache-dir -vvv .
 
@@ -19,11 +18,13 @@ requirements:
   host:
     - python >=3
     - pip
+    - pytest
+
   run:
     - python >=3
-    - numpy
+    - numpy >=1.12.1
     - scipy
-    - jellyfish
+    - kmer-jellyfish
     - rapsearch # [not osx]
     - diamond
     - blast
@@ -31,6 +32,7 @@ requirements:
 test:
   commands:
     - superfocus --help
+    - superfocus_downloadDB --help
 
 about:
   home: https://edwards.sdsu.edu/SUPERFOCUS

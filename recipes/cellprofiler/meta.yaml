@@ -1,0 +1,69 @@
+{% set name = "CellProfiler" %}
+{% set version = "3.1.9" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/CellProfiler/{{ name  }}/archive/v{{ version }}.tar.gz
+  sha256: "44e10c57980b4fd20f530dd5dc8c8bea9c870000601e12d500c27d145ca2ee9f"
+
+build:
+  number: 1
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed . -vv"
+  skip: True  # this is using for some reason up to 3GB of memory and crashes CCI, build and push locally
+  #skip: True  # [win or osx or py3k]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - cython
+    - openjdk 8.*
+    - pytest
+  run:
+    - python
+    - boto3
+    - centrosome 
+    - docutils
+    - h5py  >=2.10
+    - inflect
+    - javabridge
+    - joblib
+    - mahotas
+    - openjdk 8.*
+    - matplotlib-base  >=2.0.0,!=2.1.0,<3
+    - mysqlclient
+    - numpy  >=1.16
+    - prokaryote
+    - python-bioformats
+    - pyzmq
+    - raven
+    - requests
+    - scikit-image  >=0.14
+    - scikit-learn  >=0.20
+    - scipy         >=1.2
+    - six
+    - future
+
+test:
+  imports:
+    - cellprofiler
+
+about:
+  home: https://github.com/CellProfiler/CellProfiler
+  license: 3-clause BSD
+  license_family: BSD
+  license_file: LICENSE
+  summary: "CellProfiler is free, open-source software for quantitative analysis of biological images"
+  description: |
+     CellProfiler is free, open-source software for quantitative analysis of biological images.No prior experience in programming or computer vision is required.
+
+extra:
+  container:
+    extended-base: true
+  recipe-maintainers:
+    - sunyi000

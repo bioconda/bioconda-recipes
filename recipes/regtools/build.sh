@@ -11,5 +11,6 @@ cd build
 cmake -D CMAKE_INSTALL_PREFIX:PATH=${PREFIX} -D CMAKE_INSTALL_RPATH:STRING=${PREFIX}/lib ..
 make -j 4
 
+mkdir -p ${PREFIX}/bin
 cp regtools ${PREFIX}/bin
 chmod +x ${PREFIX}/bin/regtools

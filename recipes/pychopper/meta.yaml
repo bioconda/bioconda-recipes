@@ -1,0 +1,40 @@
+{% set name = "pychopper" %}
+{% set version = "2.4.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/nanoporetech/pychopper/archive/v{{ version }}.tar.gz
+  sha256: 41358a12dd6948b4dc415dcaf453b125e973abd5547c959660fa1f3afb2a9102
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+
+requirements:
+  host:
+    - python >=3
+    - pip
+  run:
+    - python >=3
+    - python-edlib
+    - parasail-python
+    - hmmer >=3.2
+    - tqdm
+    - matplotlib-base
+    - seaborn
+    - six
+    - pandas
+
+test:
+  commands:
+    - cdna_classifier.py --help
+
+about:
+  home: https://github.com/nanoporetech/pychopper
+  license: MPL2
+  summary: A tool to identify, orient and rescue full length cDNA reads from nanopore data.
+  license_file: LICENSE.md

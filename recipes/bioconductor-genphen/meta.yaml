@@ -1,0 +1,55 @@
+{% set version = "1.16.0" %}
+{% set name = "genphen" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: c36a7ab7eba18f805cdc79803cce2da3
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: testthat, ggplot2, gridExtra, ape, ggrepel, knitr, reshape, xtable
+requirements:
+  host:
+    - 'bioconductor-biostrings >=2.56.0,<2.57.0'
+    - r-base
+    - r-doparallel
+    - r-e1071
+    - r-foreach
+    - r-ranger
+    - 'r-rcpp >=0.12.17'
+    - r-rpref
+    - 'r-rstan >=2.17.3'
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-biostrings >=2.56.0,<2.57.0'
+    - r-base
+    - r-doparallel
+    - r-e1071
+    - r-foreach
+    - r-ranger
+    - 'r-rcpp >=0.12.17'
+    - r-rpref
+    - 'r-rstan >=2.17.3'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'A tool for quantification of associations between genotypes and phenotypes in genome wide association studies (GWAS) with Bayesian inference and statistical learning'
+  description: 'Genetic association studies are an essential tool for studying the relationship between genotypes and phenotypes. With genphen we can jointly study multiple phenotypes of different types, by quantifying the association between different genotypes and each phenotype using a hybrid method which uses statistical learning techniques such as random forest and support vector machines, and Bayesian inference using hierarchical models.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

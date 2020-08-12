@@ -1,12 +1,7 @@
 #!/bin/bash
+mkdir ${PREFIX}/bin
+chmod +x *.py
+cp *.py ${PREFIX}/bin
 
-
-binaries="graphlan.py graphlan_annotate.py"
-
-mkdir -p $PREFIX/bin
-
-for i in $binaries; do
-    cp $i $PREFIX/bin;
-done
-
-cp -a src/ $PREFIX/bin
+chmod +x src/*.py
+cp src/*.py ${PREFIX}/bin

@@ -1,10 +1,11 @@
 #!/bin/bash
-FN="org.Bt.eg.db_3.5.0.tar.gz"
+FN="org.Bt.eg.db_3.11.1.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/org.Bt.eg.db_3.5.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-org.bt.eg.db/bioconductor-org.bt.eg.db_3.5.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/org.Bt.eg.db_3.11.1.tar.gz"
+  "https://bioarchive.galaxyproject.org/org.Bt.eg.db_3.11.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-org.bt.eg.db/bioconductor-org.bt.eg.db_3.11.1_src_all.tar.gz"
 )
-MD5="ac5441ee014eeac07e97dccd79bcfcdc"
+MD5="84741a952cfc0434e011211fa1c1b52b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -15,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
