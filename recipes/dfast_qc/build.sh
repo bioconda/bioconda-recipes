@@ -6,6 +6,7 @@ APPROOT=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
 mkdir -p $APPROOT
 mkdir -p ${PREFIX}/bin
 cp -r ./* $APPROOT
+cp -r dqc $APPROOT/dqc
 
 ls ./ # for debug
 ls $APPROOT # for debug
