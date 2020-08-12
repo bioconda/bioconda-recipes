@@ -11,10 +11,16 @@ cp -v dfast_qc $APPROOT
 cp -v dqc_admin_tools.py $APPROOT
 cp -v initial_setup.sh $APPROOT
 
+# cp -av dqc ${PREFIX}/bin/dqc
+# cp -v dfast_qc ${PREFIX}/bin
+# cp -v dqc_admin_tools.py ${PREFIX}/bin
+# cp -v initial_setup.sh ${PREFIX}/bin
 
 # cd ${PREFIX}/bin
 ln -s ${APPROOT}/dfast_qc ${PREFIX}/bin/dfast_qc
 ln -s ${APPROOT}/dqc_admin_tools.py ${PREFIX}/bin/dqc_admin_tools.py
 
 
-${PREFIX}/bin/dfast_qc --version
+# ${PREFIX}/bin/dfast_qc --version
+dfast_qc --version
+dfast_qc -h
