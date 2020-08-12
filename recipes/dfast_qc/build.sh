@@ -3,7 +3,7 @@
 APPROOT="${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}"
 
 
-# mkdir -p ${APPROOT}
+mkdir -p ${APPROOT}
 mkdir -p ${PREFIX}/bin
 cp -av . ${APPROOT}
 # cp -r dqc $APPROOT/dqc
