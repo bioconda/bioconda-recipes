@@ -1,10 +1,9 @@
 #! /bin/bash
 
-outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+outdir=$PREFIX/share/$PKG_NAME
 mkdir -p $outdir
 mkdir -p $outdir/bin
 mkdir -p $PREFIX/bin
-ln -s $outdir $PREFIX/share/$PKG_NAME
 chmod +x configureHomer.pl
 cp configureHomer.pl $outdir/
 
