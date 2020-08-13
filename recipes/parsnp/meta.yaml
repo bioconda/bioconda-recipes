@@ -1,24 +1,27 @@
-{% set version = "1.5.0" %}
-{% set base = "https://github.com/marbl/parsnp/releases/download" %}
-{% set sha256linux = "a267213e22065d0cc9d6f42672052238326f0f861954e9a17c40fc1a8ef36d93" %}
-{% set sha256osx = "22622eb99eac550434a2db9c6fb94d3fd43d6e504c9d9b3c7b42c560e1ff51be" %}
+{% set version = "1.5.3" %}
+{% set archive_base = "https://github.com/marbl/parsnp/archive" %}
+{% set sha256sourcearchive = "cbfde334d6a0540eb2e7f066976e6bcbe622a65defcfd75434ffead1664babbc" %}
 
 package:
   name: parsnp
   version: '{{version}}'
 
 source:
-  - url: '{{base}}/v{{version}}/Parsnp-Linux64-v{{version}}.tar.gz'   # [linux]
-    sha256: '{{sha256linux}}'                                         # [linux]
-  - url: '{{base}}/v{{version}}/Parsnp-OSX64-v{{version}}.tar.gz'     # [osx]
-    sha256: '{{sha256osx}}'                                           # [osx]
+  url: "{{archive_base}}/v{{version}}.tar.gz"  
+  sha256: "{{sha256sourcearchive}}"
 
 build:
-  number: 3
-  skip: True  # [py2k]
+  number: 0
 
 requirements:
   build:
+    - {{ compiler('cxx') }}
+    - automake ==1.15
+    - autoconf
+    - libtool
+    - make
+    - openmp
+    - llvm-openmp # [osx]
   host:
     - zlib
     - llvm-openmp  # [osx]
@@ -31,6 +34,7 @@ requirements:
     - phipack
     - numpy
     - zlib
+    - phipack
     - raxml
     - fasttree
     - fastani
