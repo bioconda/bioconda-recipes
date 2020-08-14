@@ -51,12 +51,10 @@ help:
 
 .PHONY: clean
 clean:
-	rm -rf $(BUILDDIR)/*
+	rm -rf $(BUILDDIR)/* _bioconda_recipes source/_autosummary source/recipes
 
 .PHONY: html
 html:
-	if [ ! -e bioconda-recipes ]; then git clone --depth=1 https://github.com/bioconda/bioconda-recipes.git bioconda-recipes; fi
-	(cd bioconda-recipes && git pull origin master)
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."

@@ -30,13 +30,21 @@ variables:
       command: .circleci/setup.sh
   macos: &macos
     macos:
-      xcode: "8.3.3"
+      xcode: "9.4.1"
   linux: &linux
     machine: true
   install_bioconda_utils: &install_bioconda_utils
     run:
       name: Install bioconda-utils
       command: python setup.py install
+  build_docker_container: &build_docker_container
+    run:
+      name: Build the updated docker container
+      command: |
+        docker build -t bioconda/bioconda-utils-build-env:latest ./
+        docker history bioconda/bioconda-utils-build-env:latest
+        docker run --rm -t bioconda/bioconda-utils-build-env:latest sh -lec 'type -t conda && conda info -a && conda list'
+        docker build -t bioconda/bioconda-utils-test-env:latest -f ./Dockerfile.test ./
   autobump_run: &autobump_run
     name: Check recipes for new upstream releases
     command: |
@@ -45,41 +53,51 @@ variables:
       git config user.name "Autobump"
       git config user.email "bioconda@users.noreply.github.com"
       mkdir -p /tmp/artifacts
-      bioconda-utils autobump recipes/ config.yml \
+      bioconda-utils autobump \
         --unparsed-urls /tmp/artifacts/unparsed_urls.txt \
         --failed-urls /tmp/artifacts/failed_urls.txt \
         --recipe-status /tmp/artifacts/status.txt \
-        --create-pr $AUTOBUMP_OPTS
+        --create-pr \
+        --no-check-pinnings \
+        --no-check-pending-deps \
+        --no-follow-graph \
+        --exclude 'bioconductor-*' \
+        --commit-as BiocondaBot 47040946+BiocondaBot@users.noreply.github.com \
+        $AUTOBUMP_OPTS
+  test_linux: &test_linux
+    <<: *linux
+    steps:
+      - checkout
+      - *common
+      - *restore_cache
+      - *setup
+      - *save_cache
+      - *install_bioconda_utils
+      - *build_docker_container
+      - run:
+          name: Testing
+          command: |
+            if git diff --name-only origin/master...$CIRCLE_SHA1 | grep -vE ^docs; then
+              py.test --durations=0 test/ -v --log-level=DEBUG --tb=native -m "${PY_TEST_MARKER}"
+            else
+              echo "Skipping pytest - only docs modified"
+            fi
+          no_output_timeout: 1200
 
 
-    
 jobs:
   test-linux:
-    <<: *linux
-    steps:
-      - checkout
-      - *common
-      - *restore_cache
-      - *setup
-      - *save_cache
-      - *install_bioconda_utils
-      - run:
-          name: Testing
-          command: py.test --duration=0 test/ -v --tb=native -m 'not long_running'
-          no_output_timeout: 1200
-  test-linux (long_running):
-    <<: *linux
-    steps:
-      - checkout
-      - *common
-      - *restore_cache
-      - *setup
-      - *save_cache
-      - *install_bioconda_utils
-      - run:
-          name: Testing
-          command: py.test --duration=0 test/ -v --tb=native -m 'long_running'
-          no_output_timeout: 1200
+    <<: *test_linux
+    environment:
+      PY_TEST_MARKER: not long_running_1 and not long_running_2
+  test-linux (long_running_1):
+    <<: *test_linux
+    environment:
+      PY_TEST_MARKER: long_running_1
+  test-linux (long_running_2):
+    <<: *test_linux
+    environment:
+      PY_TEST_MARKER: long_running_2
   test-macos:
     <<: *macos
     steps:
@@ -91,7 +109,13 @@ jobs:
       - *install_bioconda_utils
       - run:
           name: Testing
-          command: py.test --duration=0 test/ -v -k "not docker" --tb=native
+          command: |
+            if git diff --name-only origin/master...$CIRCLE_SHA1 | grep -vE ^docs; then
+              py.test --durations=0 test/ -v --log-level=DEBUG -k "not docker" --tb=native
+            else
+              echo "Skipping pytest - only docs modified"
+            fi
+
           no_output_timeout: 1200
   build-docs:
     <<: *linux
@@ -126,6 +150,9 @@ jobs:
   autobump:
     <<: *linux
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - db:1a:ec:46:59:8f:a8:ad:25:e7:7a:57:76:59:ba:24
       - checkout
       - *common
       - *restore_cache
@@ -134,11 +161,8 @@ jobs:
       - *install_bioconda_utils
       - run:
           <<: *autobump_run
-          environment:
-            AUTOBUMP_OPTS: ""
       - store_artifacts:
           path: /tmp/artifacts
-
 
 
 workflows:
@@ -146,16 +170,19 @@ workflows:
   # workflow for testing pushes and PRs
   bioconda-utils-test:
     jobs:
-      - test-linux:
-          context: org-global
-      - test-linux (long_running):
-          context: org-global
-      - test-macos:
-          context: org-global
+      # - test-linux:
+      #     context: org-global
+      # - test-linux (long_running_1):
+      #     context: org-global
+      # - test-linux (long_running_2):
+      #     context: org-global
+      #- test-macos:
+      #    context: org-global
       - build-docs:
           context: org-global
-      - autobump-test:
-          context: org-global
+      #- autobump-test:
+      #    context: org-global
+  # nightly run of autobump and build-docs
   bioconda-utils-nightly:
      triggers:
        - schedule:
@@ -168,4 +195,16 @@ workflows:
        - autobump:
            context: org-global
        - build-docs:
+           context: org-global
+  # regular runs of autobump
+  bioconda-utils-autobump:
+     triggers:
+       - schedule:
+           cron: "0 * * * *"
+           filters:
+            branches:
+               only:
+                 - master
+     jobs:
+       - autobump:
            context: org-global

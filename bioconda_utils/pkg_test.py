@@ -1,3 +1,7 @@
+"""
+Mulled Tests
+"""
+
 import subprocess as sp
 import tempfile
 import tarfile
@@ -8,14 +12,13 @@ import logging
 
 from . import utils
 
+import conda_build.api
 from conda_build.metadata import MetaData
 
 logger = logging.getLogger(__name__)
 
-# Use Miniconda 4.3.27 for now to avoid running into an issue in
-# 'conda >4.4.7,<4.4.11': https://github.com/conda/conda/issues/6811
 # TODO: Make this configurable in bioconda_utils.build and bioconda_utils.cli.
-MULLED_CONDA_IMAGE = "continuumio/miniconda3:4.3.27"
+MULLED_CONDA_IMAGE = "quay.io/dpryan79/mulled_container:latest"
 
 
 def get_tests(path):
@@ -121,9 +124,7 @@ def test_package(
 
     conda_bld_dir = os.path.abspath(os.path.dirname(os.path.dirname(path)))
 
-    sp.check_call([utils.bin_for('conda'), 'index', os.path.dirname(path)])
-    # always build noarch index to make conda happy
-    sp.check_call([utils.bin_for('conda'), 'index', os.path.join(conda_bld_dir, "noarch")])
+    conda_build.api.update_index([conda_bld_dir])
 
     spec = get_image_name(path)
 

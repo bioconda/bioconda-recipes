@@ -4,6 +4,8 @@ import yaml
 import os
 import subprocess as sp
 
+import conda_build.api
+
 
 def ensure_missing(package):
     """
@@ -23,7 +25,7 @@ def ensure_missing(package):
     if os.path.exists(package):
         os.unlink(package)
     assert not os.path.exists(package)
-    sp.check_call(['conda', 'index', os.path.dirname(package)])
+    conda_build.api.update_index([os.path.dirname(os.path.dirname(package))])
 
 
 class Recipes(object):
@@ -92,10 +94,10 @@ class Recipes(object):
 
         if from_string:
             self.data = dedent(data)
-            self.recipes = yaml.load(data)
+            self.recipes = yaml.safe_load(data)
         else:
             self.data = os.path.join(os.path.dirname(__file__), data)
-            self.recipes = yaml.load(open(self.data))
+            self.recipes = yaml.safe_load(open(self.data))
 
     def write_recipes(self):
         basedir = tempfile.mkdtemp()
@@ -108,3 +110,7 @@ class Recipes(object):
                 with open(os.path.join(rdir, key), 'w') as fout:
                     fout.write(value)
         self.basedir = basedir
+
+    @property
+    def recipe_dirnames(self):
+        return list(self.recipe_dirs.values())

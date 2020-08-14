@@ -29,7 +29,7 @@ DOCHTML=$DOCSOURCE/build/html
 # tmpdir to which built docs will be copied
 STAGING=/tmp/${GITHUB_USERNAME}-docs
 
-# Build docs only if travis-ci is testing this branch:
+# Deploy docs only from this branch (i.e. on commit)
 BUILD_DOCS_FROM_BRANCH="master"
 
 # ----------------------------------------------------------------------------
@@ -51,30 +51,34 @@ rm -rf $STAGING
 mkdir -p $STAGING
 
 SHA=$(git rev-parse --verify HEAD)
-git clone $REPO $STAGING
+git clone $REPO $STAGING --depth=1
 cd $STAGING
 git checkout $BRANCH || git checkout --orphan $BRANCH
 rm -r *
 
 # build docs and copy over to tmpdir
 cd ${DOCSOURCE}
-# TODO: reenable "-j2" when docs build fine
-make clean html SPHINXOPTS=-T 2>&1 | grep -v "WARNING: nonlocal image URL found:"
-# make clean html SPHINXOPTS="-j2" 2>&1 | grep -v "WARNING: nonlocal image URL found:"
+# NOTE: With more build jobs (e.g., "-j8") the "Required By:" entries in the
+#       package index do not work. DO NOT change "-j1" unless that gets fixed!
+#       ref: https://github.com/bioconda/bioconda-utils/pull/658#issuecomment-639399930
+make clean html SPHINXOPTS="-T -j1" 2>&1 | grep -v "WARNING: nonlocal image URL found:"
 cp -r ${DOCHTML}/* $STAGING
 
-# commit and push
-cd $STAGING
-touch .nojekyll
-git add .nojekyll
+# add README.md
+cp $DOCSOURCE/README.md $STAGING
+
+# add .nojekyll
+touch $STAGING/.nojekyll
+
 
 # committing with no changes results in exit 1, so check for that case first.
+cd $STAGING
 if git diff --quiet; then
     echo "No changes to push -- exiting cleanly"
     exit 0
 fi
 
-if [[ $CIRCLE_BRANCH != master ]]; then
+if [[ $CIRCLE_BRANCH != $BUILD_DOCS_FROM_BRANCH ]]; then
     echo "Not pushing docs because not on branch '$BUILD_DOCS_FROM_BRANCH'"
     exit 0
 fi
@@ -82,7 +86,7 @@ fi
 
 # Add, commit, and push
 echo ".*" >> .gitignore
-git config user.name "Travis CI"
+git config user.name "{GITHUB_USERNAME}"
 git config user.email "${GITHUB_USERNAME}@users.noreply.github.com"
 git add -A .
 git commit --all -m "Updated docs to commit ${SHA}."

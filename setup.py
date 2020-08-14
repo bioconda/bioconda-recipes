@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-from setuptools import setup
+from setuptools import setup, find_packages
 import versioneer
 
 
@@ -9,7 +9,7 @@ setup(
     author="Johannes Köster, Ryan Dale, The Bioconda Team",
     description="Utilities for building and managing conda packages",
     license="MIT",
-    packages=["bioconda_utils"],
+    packages=find_packages(exclude=['test']),
     include_package_data=True,
     data_files=[
         (
@@ -21,8 +21,7 @@ setup(
         )
     ],
     entry_points={"console_scripts": [
-        "bioconda-utils = bioconda_utils.cli:main",
-        "bioconductor_skeleton = bioconda_utils.bioconductor_skeleton:main"
+        "bioconda-utils = bioconda_utils.cli:main"
     ]},
     classifiers=[
         "Development Status :: 4 - Beta",

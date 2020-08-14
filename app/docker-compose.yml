@@ -1,0 +1,262 @@
+version: '3.7'
+
+volumes:
+  rabbitmq-data:  # persists items in the queue
+  redis-data:     # persists key value store
+  traefik-certs:  # persists SSL certs to avoid re-issuing on restart
+  esdata:
+
+networks:
+  backend:
+  logging:
+
+secrets:
+  app_id:
+    file: secrets/app_id.txt
+  app_key:
+    file: secrets/app_key.pem
+  app_secret:
+    file: secrets/app_secret.txt
+  app_client_id:
+    file: secrets/app_client_id.txt
+  app_client_secret:
+    file: secrets/app_client_secret.txt
+  code_sign_key:
+    file: secrets/code_sign_key.asc
+  erlang_cookie:
+    file: secrets/erlang_cookie.txt
+  circle_token:
+    file: secrets/circle_token.txt
+  gitter_token:
+    file: secrets/gitter_token.txt
+  anaconda_token:
+    file: secrets/anaconda_token.txt
+  quay_login:
+    file: secrets/quay_login.txt
+
+
+# common parameters for web and worker services using the
+# bioconda-utils code base
+x-app-common: &app-common
+  image: epruesse/biocondabot:latest
+  networks:
+    - backend
+  environment:
+    # make sure python doesn't try to buffer stdout/stderr
+    # (we want to see all log messages right away)
+    - PYTHONUNBUFFERED=true
+    # Path to secret key for signing JWTs to authenticate as Github App
+    - APP_KEY_FILE=/run/secrets/app_key
+    # Path to github App ID (not actually secret)
+    - APP_ID_FILE=/run/secrets/app_id
+    # Path to secret for SHA signing of incoming webhooks
+    - APP_SECRET_FILE=/run/secrets/app_secret
+    # Path to App OAuth Client ID
+    - APP_CLIENT_ID_FILE=/run/secrets/app_client_id
+    # PATH to APP OAuth Client Secret
+    - APP_CLIENT_SECRET_FILE=/run/secrets/app_client_secret
+    # Path to GPG key for signing commits
+    # (This key is registered with a bot account, not the app,
+    #  as github apps have no email they can't have a commit signing key)
+    - CODE_SIGNING_KEY_FILE=/run/secrets/code_sign_key
+    # CircleCI token
+    - CIRCLE_TOKEN_FILE=/run/secrets/circle_token
+    # Gitter token
+    - GITTER_TOKEN_FILE=/run/secrets/gitter_token
+    # Anaconda token
+    - ANACONDA_TOKEN_FILE=/run/secrets/anaconda_token
+    # Quay login
+    - QUAY_LOGIN_FILE=/run/secrets/quay_login
+    # Points to the AMQP message queue server
+    - CLOUDAMQP_URL=amqp://mq:5672
+    # Git committer name
+    - GIT_COMMITTER_NAME=BiocondaBot
+    # Git committer email
+    - GIT_COMMITTER_EMAIL=47040946+BiocondaBot@users.noreply.github.com
+    # Bot URL (for OAUTH redirects)
+    - BOT_BASEURL=https://biocondabot.pruesse.net
+  secrets:
+    # See above
+    - app_key
+    - app_id
+    - app_secret
+    - app_client_id
+    - app_client_secret
+    - code_sign_key
+    - circle_token
+    - gitter_token
+    - anaconda_token
+    - quay_login
+  depends_on:
+    - mq
+
+services:
+  ## Message Queue
+  mq:
+    hostname: mq    
+    image: rabbitmq:3.7-management
+    secrets:
+      - source: erlang_cookie
+        target: /var/lib/rabbitmq/.erlang.cookie
+        uid: '999'
+        gid: '999'
+        mode: 0600
+    user: rabbitmq
+    environment:
+      # We limit memory, override default 40% system memory to allow 95% of
+      # container
+      - RABBITMQ_VM_MEMORY_HIGH_WATERMARK=0.95
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - backend
+    deploy:
+      resources:
+        limits:
+          memory: 200M
+
+  ## Redis store
+  redis:
+    hostname: redis
+    image: redis
+    volumes:
+      - redis-data:/data
+    networks:
+      - backend
+    deploy:
+      resources:
+        limits:
+          memory: 100M
+
+  ## Bioconda-Utils web app
+  web:
+    <<: *app-common
+    hostname: web_{{.Task.Slot}}
+    build:
+      context: ..
+      dockerfile: Dockerfile.web
+    command: >-
+       gunicorn 
+       --worker-class aiohttp.worker.GunicornWebWorker
+       --bind 0.0.0.0:80
+       bioconda_utils.bot.web:start
+       #(disable_internal_celery=True)
+    depends_on:
+      - mq
+    deploy:
+      labels:
+        # Export this on Traefik to outside
+        traefik.enable: "true"
+        # This container runs on port 80
+        traefik.port: 80
+        # And should be mapped to https://biocondabot.pruesse.net
+        traefik.frontend.rule: "HostRegexp: {subdomain:biocondabot.*}.pruesse.net,localhost"
+      resources:
+        limits:
+          memory: 200M
+
+  ## Bioconda-Utils workers handling tasks scheduled from web app
+  worker:
+    <<: *app-common
+    hostname: worker_{{.Task.Slot}}
+    command: >-
+      celery worker
+      -l info
+      -A bioconda_utils.bot.worker
+      --without-heartbeat
+    deploy:
+      mode: replicated
+      replicas: 1  # let's have 2 for now
+      resources:
+        limits:
+          memory: 700M
+
+  ## Check services for updates to containers
+  shepherd:
+    hostname: shepherd
+    image: mazzolino/shepherd:0.3.0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - SLEEP_TIME=5m  # check every 5 minutes
+      - BLACKLIST_SERVICES="shepherd"  # things not to check
+    deploy:
+      placement:
+        constraints:
+        - node.role == manager  # must run on manager node
+      resources:
+        limits:
+          memory: 20M
+
+  ## Celery monitoring tool
+  # We map this to /flower using traefik
+  flower:
+    image: mher/flower
+    hostname: flower
+    command: >-
+      flower
+      --broker=amqp://mq:5672
+      --port=8080
+      --url_prefix=flower
+    networks:
+      - backend
+    depends_on:
+      - mq
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.port: 8080
+        traefik.frontend.rule: "Host: biocondabot.pruesse.net,localhost; PathPrefixStrip: /flower"
+      resources:
+        limits:
+          memory: 100M
+
+  ## Traefik frontent gateway
+  # - Handles SSL encryption
+  # - Maps outside domain/path to inside services
+  # Note: Traefik can't do HTTP content rewriting for url rewrites.
+  #       E.g. flower needs to be told that it will be exposed as http://host/flower/...
+  #       rather than http://host/..., so that it can point links to resources (css, images)
+  #       to the right place.
+  frontend:
+    image: traefik
+    hostname: traefik
+    command: >-
+      --api
+      --docker
+      --docker.swarmMode
+      --docker.exposedByDefault=false
+      --docker.watch
+      --docker.domain=biocondabot.pruesse.net
+      --entryPoints="Name:http Address::80 Redirect.EntryPoint:https"
+      --entryPoints="Name:https Address::443 TLS"
+      --defaultentrypoints=http,https
+      --logLevel=INFO
+      --acme
+      --acme.entryPoint=https
+      --acme.httpChallenge
+      --acme.httpChallenge.entrypoint=http
+      --acme.domains=biocondabot.pruesse.net
+      --acme.email=info@pruesse.net
+      --acme.storage=acme/certs.json
+      --acme.acmelogging
+# enable to see each access in the log
+#      --accessLog
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /dev/null:/traefik.toml
+      - traefik-certs:/acme
+    networks:
+      - backend
+    deploy:
+      labels:
+        traefik.port: 8080
+        traefik.frontend.rule: Host:biocondabot.pruesse.net,localhost;PathPrefixStrip:/traefik/
+      resources:
+        limits:
+          memory: 50M
+
+
