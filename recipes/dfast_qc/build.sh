@@ -5,7 +5,7 @@ APPROOT="${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}"
 
 mkdir -p ${APPROOT}
 mkdir -p ${PREFIX}/bin
-cp -av . ${APPROOT}
+cp -Rv ./* ${APPROOT}/
 # cp -av dqc $APPROOT/dqc
 # cp -v dfast_qc $APPROOT
 # cp -v dqc_admin_tools.py $APPROOT
@@ -17,8 +17,8 @@ cp -av . ${APPROOT}
 # cp -v initial_setup.sh ${PREFIX}/bin
 
 # cd ${PREFIX}/bin
-ln -s ${APPROOT}/dfast_qc ${PREFIX}/bin/dfast_qc
-ln -s ${APPROOT}/dqc_admin_tools.py ${PREFIX}/bin/dqc_admin_tools.py
+ln -s ${APPROOT}/dfast_qc ${PREFIX}/bin/
+ln -s ${APPROOT}/dqc_admin_tools.py ${PREFIX}/bin/
 ln -s ${APPROOT}/initial_setup.sh ${PREFIX}/bin/dqc_initial_setup.sh
 
 # ${PREFIX}/bin/dfast_qc --version
