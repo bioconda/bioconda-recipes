@@ -310,6 +310,9 @@ extlinks = {
     'debian': ('https://tracker.debian.org/pkg/%s', ''),
     'pmid': ('https://www.ncbi.nlm.nih.gov/pubmed/%s', ''),
     'rrid': ('https://scicrunch.org/resolver/%s', ''),
+    'usegalaxy-eu': ('https://usegalaxy.eu/?tool_id=%s', ''),
+    'usegalaxy-org': ('https://usegalaxy.org/?tool_id=%s', ''),
+    'usegalaxy-org.au': ('https://usegalaxy.org.au/?tool_id=%s', ''),
 }
 
 # add document name before automatic section title reference
