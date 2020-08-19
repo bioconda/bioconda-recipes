@@ -86,6 +86,104 @@ _legacy_build_string_prefixes = re.compile(
 )
 
 
+def _have_partially_matching_build_id(meta):
+    # Stupid legacy special handling:
+    res = RepoData().get_package_data(
+        'build',
+        name=meta.name(), version=meta.version(),
+        build_number=meta.build_number(),
+        platform=['linux', 'noarch'],
+    )
+    is_noarch = bool(meta.noarch)
+    current_build_id = meta.build_id()
+    current_matches = _legacy_build_string_prefixes.match(current_build_id)
+    current_prefixes = current_matches.groupdict()
+    # conda-build add "special" substrings for some packages to the build
+    # string (e.g., "py38", "pl526", ...). When we use `bypass_env_check` then
+    # it does not add those substrings somehow (?).
+    # But during the actual build, it adds those substrings even for run-only
+    # dependencies (see "blast" recipe with its "perl" run-dep for example).
+    #
+    # FIXME: The following is probably how it _should_ be done.
+    #  But we still have a lot of recipes that only define a requirements/build
+    #  without a requirements/host section.  conda-build seems to do create
+    #  host/build env how it sees fit then.  E.g.:
+    #   conda search 'gmap=2017.10.30[build_number=6,subdir=linux-64]'|tail -n1
+    #   Loading channels: done
+    #   # Name                       Version           Build  Channel
+    #   gmap                      2017.10.30      h2f06484_6  bioconda
+    #   $ conda search 'gmap=2017.10.30[build_number=6,subdir=osx-64]'|tail -n1
+    #   Loading channels: done
+    #   # Name                       Version           Build  Channel
+    #   gmap                      2017.10.30 pl526h977ceac_6  bioconda
+    #
+    # build_deps = [
+    #     dep.split()[0].replace('-', '_')
+    #     for dep in
+    #     chain(
+    #         meta.get_value('requirements/build', []),
+    #         meta.get_value('requirements/host', []),
+    #     )
+    # ]
+    # # noarch:python is handled in have_noarch_python_build_number
+    # # but we might have noarch:generic recipes that use python.
+    # # It probably doesn't matter which python is chosen then, so
+    # # we also trim the "py*" prefix in that case here.
+    # if is_noarch and current_prefixes['python']:
+    #     current_build_id = current_build_id.replace(current_prefixes['python'], '')
+    #
+    # def is_matching_trimmed_build_id(build_id, current_build_id):
+    #     matches = _legacy_build_string_prefixes.match(build_id)
+    #     trimmed_build_id = build_id
+    #     for prefix_key, prefix in matches.groupdict().items():
+    #         if prefix:
+    #             if prefix_key in build_deps:
+    #                 continue
+    #             if not (is_noarch and prefix_key == 'python'):
+    #                 continue
+    #             trimmed_build_id = trimmed_build_id.replace(prefix, '')
+    #     if trimmed_build_id.startswith('_'):
+    #         # If we trimmed everything but the number, no '_' is inserted.
+    #         trimmed_build_id = trimmed_build_id[1:]
+    #     if trimmed_build_id == current_build_id:
+    #         return True
+    #     return False
+    def is_matching_trimmed_build_id(build_id, current_build_id):
+        matches = _legacy_build_string_prefixes.match(build_id)
+        trimmed_build_id = build_id
+        trimmed_current_build_id = current_build_id
+        for prefix_key, prefix in matches.groupdict().items():
+            current_prefix = current_prefixes[prefix_key]
+            if prefix != current_prefix:
+                if prefix and current_prefix:
+                    # noarch:python is handled in have_noarch_python_build_number
+                    # but we might have noarch:generic recipes that use python.
+                    # It probably doesn't matter which python is chosen then, so
+                    # we also trim the "py*" prefix in that case here.
+                    if not (is_noarch and prefix_key == 'python'):
+                        return False
+            if prefix:
+                trimmed_build_id = trimmed_build_id.replace(prefix, '')
+            if current_prefix:
+                trimmed_current_build_id = trimmed_current_build_id.replace(current_prefix, '')
+        if trimmed_build_id.startswith('_'):
+            # If we trimmed everything but the number, no '_' is inserted.
+            trimmed_build_id = trimmed_build_id[1:]
+        if trimmed_current_build_id.startswith('_'):
+            # If we trimmed everything but the number, no '_' is inserted.
+            trimmed_current_build_id = trimmed_current_build_id[1:]
+        if trimmed_build_id == trimmed_current_build_id:
+            return True
+        return False
+
+    for build_id in res:
+        if is_matching_trimmed_build_id(build_id, current_build_id):
+            logger.debug("Package %s=%s=%s exists",
+                         meta.name(), meta.version(), build_id)
+            return True
+    return False
+
+
 def have_variant(meta: MetaData) -> bool:
     """Checks if we have an exact match to name/version/buildstring
 
@@ -103,40 +201,7 @@ def have_variant(meta: MetaData) -> bool:
         logger.debug("Package %s=%s=%s exists",
                      meta.name(), meta.version(), meta.build_id())
         return True
-    # Stupid legacy special handling:
-    #  conda-build add "special" substrings for some packages to the build
-    #  string (e.g., "py38", "pl526", ...). When we use `bypass_env_check` then
-    #  it does not add those substrings somehow (?).
-    #  But during the actual build, it adds those substrings even for run-only
-    #  dependencies (see "blast" recipe with its "perl" run-dep for example).
-    build_deps = [
-        dep.split()[0].replace('-', '_')
-        for dep in
-        chain(
-            meta.get_value('requirements/build', []),
-            meta.get_value('requirements/host', []),
-        )
-    ]
-    res = RepoData().get_package_data(
-        'build',
-        name=meta.name(), version=meta.version(),
-        build_number=meta.build_number(),
-        platform=['linux', 'noarch'],
-    )
-    for build_id in res:
-        match = _legacy_build_string_prefixes.match(build_id)
-        trimmed_build_id = build_id
-        for group, matched_str in match.groupdict().items():
-            if matched_str and group not in build_deps:
-                trimmed_build_id = trimmed_build_id.replace(matched_str, '')
-        if trimmed_build_id.startswith('_'):
-            # If we trimmed everything but the number, no '_' is inserted.
-            trimmed_build_id = trimmed_build_id[1:]
-        if trimmed_build_id == meta.build_id():
-            logger.debug("Package %s=%s=%s exists",
-                         meta.name(), meta.version(), build_id)
-            return True
-    return False
+    return _have_partially_matching_build_id(meta)
 
 
 def have_noarch_python_build_number(meta: MetaData) -> bool:
