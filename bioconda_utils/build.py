@@ -73,7 +73,7 @@ def build(recipe: str, pkg_paths: List[str] = None,
         linter.clear_messages()
         if linter.lint([recipe]):
             logger.error('\n\nThe recipe %s failed linting. See '
-                         'https://bioconda.github.io/linting.html for details:\n\n%s\n',
+                         'https://bioconda.github.io/contributor/linting.html for details:\n\n%s\n',
                          recipe, linter.get_report())
             return BuildResult(False, None)
         logger.info("Lint checks passed")
