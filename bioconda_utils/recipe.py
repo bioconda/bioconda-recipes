@@ -162,6 +162,9 @@ class Recipe():
         #: Parsed recipe YAML
         self.meta: Dict[str, Any] = {}
 
+        self.conda_build_config: str = ''
+        self.build_scripts: Dict[str, str] = {}
+
         # These will be filled in by load_from_string()
         #: Lines of the raw recipe file
         self.meta_yaml: List[str] = []
@@ -208,11 +211,30 @@ class Recipe():
         return self
 
     def read_conda_build_config(self):
+        # Cache contents of conda_build_config.yaml for conda_render.
         path = Path(self.dir, 'conda_build_config.yaml')
         if path.is_file():
             self.conda_build_config = path.read_text()
         else:
-            self.conda_build_config = None
+            self.conda_build_config = ''
+
+    def read_build_scripts(self):
+        # Cache contents of build scripts for conda_render since conda-build
+        # inspects build scripts for used variant variables.
+        scripts = ['build.sh'] + [
+            output.get('script') for output in self.meta.get('outputs') or ()
+        ]
+        self.build_scripts.clear()
+        for script in scripts:
+            if not script or os.path.sep in script:
+                # Only support flat folder structure.
+                continue
+            try:
+                path = Path(self.dir, script)
+                content = path.read_text()
+            except:
+                continue
+            self.build_scripts[script] = content
 
     @classmethod
     def from_file(cls, recipe_dir, recipe_fname, return_exceptions=False) -> "Recipe":
@@ -239,6 +261,12 @@ class Recipe():
             raise exc
         try:
             recipe.read_conda_build_config()
+        except Exception as exc:
+            if return_exceptions:
+                return exc
+            raise exc
+        try:
+            recipe.read_build_scripts()
         except Exception as exc:
             if return_exceptions:
                 return exc
@@ -728,6 +756,10 @@ class Recipe():
         if self.conda_build_config:
             cbc_path = Path(self._conda_tempdir.name, "conda_build_config.yaml")
             cbc_path.write_text(self.conda_build_config)
+
+        for script, content in self.build_scripts.items():
+            script_path = Path(self._conda_tempdir.name, script)
+            script_path.write_text(content)
 
         old_exit = sys.exit
         if isinstance(sys.exit, types.FunctionType):
