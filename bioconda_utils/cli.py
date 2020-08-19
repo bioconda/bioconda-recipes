@@ -593,7 +593,7 @@ def update_pinning(recipe_folder, config, packages="*",
             recip.save()
         elif status.failed():
             logger.info("Failed to inspect %s", recip)
-            hadErrors.add(recipe)
+            hadErrors.add(recip)
         else:
             logger.info('OK: %s', recip)
 
