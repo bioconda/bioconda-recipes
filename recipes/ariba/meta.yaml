@@ -8,9 +8,12 @@ package:
 source:
   url: https://pypi.io/packages/source/a/ariba/ariba-{{ version }}.tar.gz
   sha256: '{{ sha256 }}'
-
+  patches:
+    - pubmlst_getter.patch
+    - ref_genes_getter.patch  
+    
 build:
-  number: 0
+  number: 2
   skip: True  # [py2k]
   script: python -m pip install --no-deps --ignore-installed .
 
@@ -30,7 +33,7 @@ requirements:
     - pyfastaq >=3.12.0
     - pysam >=0.15.3 # older versions have wrong openssl pinning
     - pymummer <=0.10.3
-    - bowtie2 >=2.3.1
+    - bowtie2 <2.4.0 
     - cd-hit >=4.6.5
     - samtools >=1.2
     - bcftools >=1.2
@@ -43,6 +46,8 @@ test:
   imports:
     - ariba
     - ariba.tasks
+  commands:
+    - "ariba version"
 
 about:
   home: https://github.com/sanger-pathogens/ariba

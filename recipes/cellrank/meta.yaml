@@ -1,5 +1,5 @@
 {% set name = "cellrank" %}
-{% set version = "1.0.0b3" %}
+{% set version = "1.0.0rc4" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 9cc90a5944ad9f63e3b2576ad14c917ceecbf48365b61e370a3bfc5979e0fd52
+  sha256: 03ed0dd33accc25baddeba91e3c966bf9a54bf9e27af301d765d1dc89bd2833f
 
 build:
   noarch: python
@@ -22,21 +22,51 @@ requirements:
     - future_fstrings
   run:
     - anndata >=0.7.2
+    - docrep >=0.2.7
     - future_fstrings
     - joblib >=0.13.1
-    - matplotlib-base >=3.0.3
+    - matplotlib-base >=3.3.0
     - networkx >=2.2
-    - numpy >=1.16.4
+    - numba >=0.50.1
+    - numpy >=1.19.1
     - pandas >=0.23.4
+    - pygam >=0.8.0
     - python >=3.6
-    - tqdm >=4.47.0
-    - scanpy >=1.5.0
+    - scanpy >=1.5.1
     - scikit-learn >=0.21.3
     - scipy >=1.2.0
     - scvelo >=0.2.1
     - seaborn >=0.10.0
     - setuptools >=41.0.1
     - tzlocal >=1.5.1
+    - wrapt >=1.12.1
+
+outputs:
+  - name: "{{ name }}"
+  - name: "{{ name }}-krylov"
+    build:
+      noarch: python
+      number: 0
+    requirements:
+      host:
+        - pip
+        - python >=3.6
+        - setuptools_scm
+        - future_fstrings
+      run:
+        - python >=3.6
+        - openmpi >=3.0.3
+        - mpi4py >=3.0.3
+        - petsc >=3.13.0
+        - petsc4py >=3.13.0
+        - slepc >=3.13.0
+        - slepc4py >=3.13.0
+        - {{ pin_subpackage('cellrank', exact=True) }}
+    test:
+      imports:
+        - cellrank
+        - petsc4py
+        - slepc4py
 
 test:
   imports:
