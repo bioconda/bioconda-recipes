@@ -1,5 +1,5 @@
 #!/bin/bash
-sed -i 's/Boost_USE_STATIC_LIBS OFF/Boost_USE_STATIC_LIBS ON/' CMakeLists.txt
+sed -i.bak 's/Boost_USE_STATIC_LIBS OFF/Boost_USE_STATIC_LIBS ON/' CMakeLists.txt
 mkdir build && pushd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make 
