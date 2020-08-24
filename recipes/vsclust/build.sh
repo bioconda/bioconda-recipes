@@ -10,7 +10,7 @@ mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/share/$PKGNAME
 cp *.R $PREFIX/share/$PKGNAME
 mv run_app.R run_vsclust_app.R
-sed -i "1 a setwd(\"\$CONDA_PREFIX/share/$PKGNAME\")" run_vsclust_app.R
+#sed -i "1 a setwd(\"\$CONDA_PREFIX/share/$PKGNAME\")" run_vsclust_app.R
 cp runVSClust.R * $PREFIX/bin
 cp run_vsclust_app.R * $PREFIX/bin
 chmod a+x $PREFIX/bin/runVSClust.R
