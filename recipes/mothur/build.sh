@@ -21,18 +21,13 @@ sed 's;\(GSL_LIBRARY_DIR ?\=\) \"\\\"Enter_your_GSL_library_path_here\\\"\";\1 \
 sed 's;\(GSL_INCLUDE_DIR ?\=\) \"\\\"Enter_your_GSL_include_path_here\\\"\";\1 \"'"${PREFIX}"'\/include/gsl/\";' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
 
 
-### Reconfiguring compiler for uchime Makefile
-sed 's/g++/$CXX/g' source/uchime_src/mk > source/uchime_src/mk.tmp && mv source/uchime_src/mk.tmp source/uchime_src/mk
-# Making overwritten file executable
-chmod +x source/uchime_src/mk
-
-
-### Cleaning before compiling (just in case)
+### Compiling mothur
 make clean
-
-
-### Compiling programs
 make
+
+
+### Compiling uchime
+cd source/uchime_src && ./mk && mv uchime ../../ && cd ../../
 
 
 ### Organizing bin

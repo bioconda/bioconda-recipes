@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="MeSH.Rno.eg.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MeSH.Rno.eg.db_1.13.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.Rno.eg.db_1.13.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Rno.eg.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.rno.eg.db/bioconductor-mesh.rno.eg.db_1.13.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.rno.eg.db/bioconductor-mesh.rno.eg.db_1.13.0_src_all.tar.gz"
 )
 MD5="a9743504e75944f9e45041c51d3342b9"

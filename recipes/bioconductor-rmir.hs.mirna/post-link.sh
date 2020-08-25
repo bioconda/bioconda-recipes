@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="RmiR.Hs.miRNA_1.0.7.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/RmiR.Hs.miRNA_1.0.7.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/RmiR.Hs.miRNA_1.0.7.tar.gz"
   "https://bioarchive.galaxyproject.org/RmiR.Hs.miRNA_1.0.7.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rmir.hs.mirna/bioconductor-rmir.hs.mirna_1.0.7_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rmir.hs.mirna/bioconductor-rmir.hs.mirna_1.0.7_src_all.tar.gz"
