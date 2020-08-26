@@ -11,6 +11,7 @@ mkdir -p $PREFIX/share/$PKGNAME
 cp *.R $PREFIX/share/$PKGNAME
 cp ProtExample.csv $PREFIX/share/$PKGNAME
 cp run_app.sh run_vsclust_app.sh
+cp vsclust.yml $PREFIX/share/$PKGNAME  
 echo "sed"
 sed -i "1 a setwd(\"\$CONDA_PREFIX/share/$PKGNAME\")" run_vsclust_app.sh
 echo "copy"
