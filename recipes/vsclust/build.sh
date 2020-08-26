@@ -9,6 +9,7 @@ cp -r e1071FuzzVec_Installation/* $PREFIX/lib/R/library/e1071FuzzVec/
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/share/$PKGNAME
 cp *.R $PREFIX/share/$PKGNAME
+cp ProtExample.csv $PREFIX/share/$PKGNAME
 cp run_app.sh run_vsclust_app.sh
 echo "sed"
 sed -i "1 a setwd(\"\$CONDA_PREFIX/share/$PKGNAME\")" run_vsclust_app.sh
