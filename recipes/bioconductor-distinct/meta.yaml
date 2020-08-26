@@ -1,0 +1,51 @@
+{% set version = "1.0.0" %}
+{% set name = "distinct" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 9e1bdb741b84301630c194a437abbe6f
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: ggplot2, knitr, testthat, scater, UpSetR
+# SystemRequirements: C++11
+requirements:
+  host:
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - 'bioconductor-singlecellexperiment >=1.10.0,<1.11.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
+    - r-base
+    - r-rcpp
+    - r-rcpparmadillo
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - 'bioconductor-singlecellexperiment >=1.10.0,<1.11.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
+    - r-base
+    - r-rcpp
+    - r-rcpparmadillo
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 3)'
+  summary: 'distinct: a method for differential analyses via hierarchical permutation tests'
+  description: 'distinct is a statistical method to perform differential testing between two or more groups of distributions; differential testing is performed via hierarchical non-parametric permutation tests on the cumulative distribution functions (cdfs) of each sample. While most methods for differential expression target differences in the mean abundance between conditions, distinct, by comparing full cdfs, identifies, both, differential patterns involving changes in the mean, as well as more subtle variations that do not involve the mean (e.g., unimodal vs. bi-modal distributions with the same mean). distinct is a general and flexible tool: due to its fully non-parametric nature, which makes no assumptions on how the data was generated, it can be applied to a variety of datasets. It is particularly suitable to perform differential state analyses on single cell data (i.e., differential analyses within sub-populations of cells), such as single cell RNA sequencing (scRNA-seq) and high-dimensional flow or mass cytometry (HDCyto) data. To use distinct one needs data from two or more groups of samples (i.e., experimental conditions), with at least 2 samples (i.e., biological replicates) per group.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ProData_1.24.0.tar.gz"
+FN="ProData_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/ProData_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ProData_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-prodata/bioconductor-prodata_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/ProData_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ProData_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-prodata/bioconductor-prodata_1.26.0_src_all.tar.gz"
 )
-MD5="1d1cad79602ce73f99d9a72ac5a78a4d"
+MD5="6a560cf2edfb27d9897edf8e7bc82996"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
