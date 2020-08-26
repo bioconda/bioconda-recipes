@@ -1,13 +1,11 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
+# export ESTSCANDIR=$PREFIX
 
-export ESTSCANDIR=$PREFIX
+# Set -Wl,-no-as-needed due to wrong order of obj and lib files.
+make maskred makesmat estscan \
+    CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -Wl,-no-as-needed"
 
-sed -i -e 's/F77/#F77/' Makefile
-sed -i -e 's/winsegshuffle/#winsegshuffle/' Makefile
-
-make
-
-#cp build_model $PREFIX/bin
-cp estscan $PREFIX/bin
+install -d "${PREFIX}/bin"
+#install build_model "${PREFIX}/bin/"
+install estscan "${PREFIX}/bin/"

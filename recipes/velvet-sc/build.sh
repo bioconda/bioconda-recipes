@@ -1,10 +1,11 @@
 #!/bin/bash
 
-make
+# Adding "-Wl,--no-as-needed" since link objects are in wrong order.
+make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -Wl,--no-as-needed"
 
-ls *.pl | xargs sed -i.bak -e 's/usr\/bin\/perl/usr\/bin\/env perl/g' 
-
-mkdir -p $PREFIX/bin
-cp velvetg $PREFIX/bin
-cp velveth $PREFIX/bin
-cp *.pl $PREFIX/bin
+install -d "${PREFIX}/bin"
+install \
+    velvetg \
+    velveth \
+    *.pl \
+    "${PREFIX}/bin/"
