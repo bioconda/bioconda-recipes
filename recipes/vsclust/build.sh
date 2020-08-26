@@ -14,7 +14,7 @@ echo "sed"
 sed -i "1 a setwd(\"\$CONDA_PREFIX/share/$PKGNAME\")" run_vsclust_app.sh
 echo "copy"
 cp runVSClust.R $PREFIX/bin
-cp run_vsclust_app.sh * $PREFIX/bin
+cp run_vsclust_app.sh $PREFIX/bin
 chmod a+x $PREFIX/bin/runVSClust.R
 chmod a+x $PREFIX/bin/run_vsclust_app.sh
 echo "finished build"
