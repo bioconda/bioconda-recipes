@@ -11,6 +11,8 @@ else
 fi
 
 mv tbl2asn-forever ${PREFIX}/bin/tbl2asn
+mv tbl2asn-test ${PREFIX}/bin/tbl2asn-test
 mv fix-sqn-date.py ${PREFIX}/bin/fix-sqn-date
 chmod 755 ${PREFIX}/bin/tbl2asn
+chmod 755 ${PREFIX}/bin/tbl2asn-test
 chmod 755 ${PREFIX}/bin/fix-sqn-date
