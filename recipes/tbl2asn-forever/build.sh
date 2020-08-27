@@ -20,6 +20,8 @@ chmod 755 ${PREFIX}/bin/fix-sqn-date
 # Build libfaketime
 FAKETIME_COMPILE_CFLAGS='-DFORCE_MONOTONIC_FIX'
 export FAKETIME_COMPILE_CFLAGS
-cd libfaketime && make
-cd libfaketime && make test
-cd libfaketime && make install PREFIX=$PREFIX
+cd libfaketime
+make
+make test
+make install PREFIX=$PREFIX
+cd ..
