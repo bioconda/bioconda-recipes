@@ -8,19 +8,16 @@ cp -r e1071FuzzVec_Installation/* $PREFIX/lib/R/library/e1071FuzzVec/
 # move all files to outdir and link into it by bin executor
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/share/vsclust
-echo "sed"
-# substituting paths for testing
+# substituting paths for testing 
 cp run_app.sh run_vsclust_app.sh
 sed -i "1 a setwd(\"\$CONDA_PREFIX/share/vsclust\")" run_vsclust_app.sh
-#sed -i "s=ProtExample.csv=\$CONDA_PREFIX/share/vsclust/ProtExample.csv=" vsclust.yml
-cat vsclust.yml
-echo "copy"
+sed -i "s=FcmClustPEst.R=../share/vsclust/FcmClustPEst.R=" runVSClust.R
+sed -i "s=mfuzz.plotpdf.R=../share/vsclust/mfuzz.plotpdf.R=" runVSClust.R
+sed -i "s=HelperFuncs.R=../share/vsclust/HelperFuncs.R=" runVSClust.R
 cp *.R $PREFIX/share/vsclust/
 cp ProtExample.csv $PREFIX/share/vsclust/
 cp vsclust.yml $PREFIX/share/vsclust/
 cp runVSClust.R $PREFIX/bin
 cp run_vsclust_app.sh $PREFIX/bin
-ls $PREFIX/share/vsclust/
 chmod a+x $PREFIX/bin/runVSClust.R
 chmod a+x $PREFIX/bin/run_vsclust_app.sh
-echo "finished build"
