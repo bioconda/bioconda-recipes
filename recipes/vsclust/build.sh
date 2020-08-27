@@ -12,7 +12,8 @@ echo "sed"
 # substituting paths for testing
 cp run_app.sh run_vsclust_app.sh
 sed -i "1 a setwd(\"\$CONDA_PREFIX/share/$PKGNAME\")" run_vsclust_app.sh
-sed -i "s=ProtExample.csv=\$CONDA_PREFIX/share/$PKGNAME=" vsclust.yml
+sed -i "s=ProtExample.csv=\$CONDA_PREFIX/share/${PKGNAME}/ProtExample.csv=" vsclust.yml
+cat vsclust.yml
 echo "copy"
 cp *.R $PREFIX/share/$PKGNAME
 cp ProtExample.csv $PREFIX/share/$PKGNAME
