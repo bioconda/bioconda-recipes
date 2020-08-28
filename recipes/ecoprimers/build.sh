@@ -1,6 +1,7 @@
 #!/bin/bash
 
-cd ecoPrimers/src
+cd ecoPrimers || true
+cd src
 make -e
 
 install -d "${PREFIX}/bin"

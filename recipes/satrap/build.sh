@@ -1,6 +1,6 @@
 #!/bin/bash
 
-make CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+make CXX="${CXX} ${CXXFLAGS} -std=c++03 ${CPPFLAGS} ${LDFLAGS}"
 
 cd bin
 

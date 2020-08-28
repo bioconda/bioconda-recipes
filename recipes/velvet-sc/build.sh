@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# Adding "-Wl,--no-as-needed" since link objects are in wrong order.
-make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -Wl,--no-as-needed"
+# Object files/libraries in wrong order => can't use --as-needed.
+# (and clange does not seem to support --no-as-needed).
+export LDFLAGS="${LDFLAGS//-Wl,--as-needed/}"
+make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
 install -d "${PREFIX}/bin"
 install \

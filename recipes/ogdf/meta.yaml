@@ -11,6 +11,11 @@ source:
 
 build:
   number: 2
+  # Compilation fails on macOS due to a legitimate bug.
+  #   src/layered/sugiyama.cpp:571:42: error: ordered comparison between pointer and zero ('const ogdf::Level *' and 'int')
+  #           if (pLevel[0]->high() <= 0 || pLevel[1] <= 0) return 0;
+  # Instead of patching that here, someone should just put up a new OGDF on conda-forge.
+  skip: True  # [osx]
 
 requirements:
   build:
@@ -23,6 +28,7 @@ test:
   commands:
     - test -d "${PREFIX}/ogdf/include/ogdf"
     - test -f "${PREFIX}/ogdf/lib/libOGDF.a"
+
 about:
   home: http://http://ogdf.net/doku.php
   license: GPLv3

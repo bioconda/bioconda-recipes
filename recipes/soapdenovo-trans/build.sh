@@ -1,8 +1,8 @@
 #!/bin/bash
 
 pushd src
-make CC="${CC}" LIBPATH="${LDFLAGS}"
-make CC="${CC}" LIBPATH="${LDFLAGS}" 127mer=1
+make CC="${CC}" CFLAGS="${CFLAGS} -O3 -fomit-frame-pointer" LIBPATH="${LDFLAGS}"
+make CC="${CC}" CFLAGS="${CFLAGS} -O3 -fomit-frame-pointer" LIBPATH="${LDFLAGS}" 127mer=1
 popd
 
 install -d "${PREFIX}/bin"

@@ -1,3 +1,6 @@
+# "version" file is picked up as a c++ header file.
+mv version{,.txt}
+
 ./bootstrap
 autoreconf -fi
 ./configure --prefix="${PREFIX}"
