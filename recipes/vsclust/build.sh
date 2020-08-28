@@ -13,9 +13,9 @@ cp run_app.sh run_vsclust_app.sh
 echo "before sed"
 sed --posix -i'.orig'  '1a\ setwd("$CONDA_PREFIX/share/vsclust")' run_vsclust_app.sh
 #sed --posix -i'.orig' "1 a setwd(\"\$CONDA_PREFIX/share/vsclust\")" run_vsclust_app.sh
-sed -i'.orig' "s=FcmClustPEst.R=../share/vsclust/FcmClustPEst.R=" runVSClust.R
-sed -i'.orig' "s=mfuzz.plotpdf.R=../share/vsclust/mfuzz.plotpdf.R=" runVSClust.R
-sed -i'.orig' "s=HelperFuncs.R=../share/vsclust/HelperFuncs.R=" runVSClust.R
+sed --posix -i'.orig' "s=FcmClustPEst.R=../share/vsclust/FcmClustPEst.R=" runVSClust.R
+sed --posix -i'.orig' "s=mfuzz.plotpdf.R=../share/vsclust/mfuzz.plotpdf.R=" runVSClust.R
+sed --posix -i'.orig' "s=HelperFuncs.R=../share/vsclust/HelperFuncs.R=" runVSClust.R
 echo "after sed"
 cp *.R $PREFIX/share/vsclust/
 cp ProtExample.csv $PREFIX/share/vsclust/
