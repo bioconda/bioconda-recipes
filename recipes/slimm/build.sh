@@ -3,6 +3,8 @@
 mkdir build
 cd build
 
+# Require 10.12 SDK for SeqAN's use of std::shared_timed_mutex
+export MACOSX_DEPLOYMENT_TARGET=10.12
 cmake \
     -DCMAKE_CXX_STANDARD=14 \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
