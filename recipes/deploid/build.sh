@@ -1,5 +1,6 @@
 # "version" file is picked up as a c++ header file.
 mv version{,.txt}
+mv src/gzstream/version{,.txt}
 
 ./bootstrap
 autoreconf -fi
