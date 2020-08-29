@@ -11,7 +11,11 @@ mkdir -p $PREFIX/share/vsclust
 # substituting paths for testing 
 cp run_app.sh run_vsclust_app.sh
 echo "before sed"
-sed -i'.orig' '1a\'$'\n'setwd("$CONDA_PREFIX/share/vsclust")' run_vsclust_app.sh
+tail -n +2 run_vsclust_app.sh t.sh
+echo '#!/usr/bin/env Rscript' > tt
+echo 'setwd("$CONDA_PREFIX/share/vsclust")' > tt
+cat tt t > run_vsclust_app.sh
+#sed -i'.orig' '1a\ setwd("$CONDA_PREFIX/share/vsclust")' run_vsclust_app.sh
 #sed --posix -i'.orig' "1 a setwd(\"\$CONDA_PREFIX/share/vsclust\")" run_vsclust_app.sh
 sed -i'.orig' "s=FcmClustPEst.R=../share/vsclust/FcmClustPEst.R=" runVSClust.R
 sed -i'.orig' "s=mfuzz.plotpdf.R=../share/vsclust/mfuzz.plotpdf.R=" runVSClust.R
