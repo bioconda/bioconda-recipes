@@ -11,7 +11,7 @@ mkdir -p $PREFIX/share/vsclust
 # substituting paths for testing 
 cp run_app.sh run_vsclust_app.sh
 echo "before sed"
-tail -n +2 run_vsclust_app.sh t
+tail -n +2 run_vsclust_app.sh > t
 echo '#!/usr/bin/env Rscript' > tt
 echo 'setwd("$CONDA_PREFIX/share/vsclust")' > tt
 cat tt t > run_vsclust_app.sh
