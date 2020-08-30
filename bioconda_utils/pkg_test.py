@@ -135,6 +135,7 @@ def test_package(
         'file://{0}'.format(conda_bld_dir) if channel == 'local' else channel
         for channel in channels
     ]
+
     channel_args = ['--channels', ','.join(channels)]
 
     tests = get_tests(path)
