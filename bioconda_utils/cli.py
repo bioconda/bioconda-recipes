@@ -540,6 +540,8 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
 @arg('--skip-variants',
      nargs='*',
      help='Skip packages that use one of the given variant keys.')
+@arg('--max-bumps', type=int,
+     help='Maximum number of recipes that will be updated.')
 @arg('--cache', help='''To speed up debugging, use repodata cached locally in
      the provided filename. If the file does not exist, it will be created the
      first time.''')
@@ -549,6 +551,7 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
 def update_pinning(recipe_folder, config, packages="*",
                    skip_additional_channels=None,
                    skip_variants=None,
+                   max_bumps=None,
                    cache=None):
     """Bump a package build number and all dependencies as required due
     to a change in pinnings
@@ -573,6 +576,8 @@ def update_pinning(recipe_folder, config, packages="*",
     dag = graph.filter_recipe_dag(dag, packages, [])
 
     logger.warning("Considering %i recipes", len(dag))
+    if max_bumps is None or max_bumps < 0:
+        max_bumps = len(dag)
 
     stats = Counter()
     hadErrors = set()
@@ -584,13 +589,21 @@ def update_pinning(recipe_folder, config, packages="*",
 
     State = update_pinnings.State
 
+    num_recipes_needing_bump = 0
     for status, recip in utils.parallel_iter(needs_bump, dag, "Processing..."):
         logger.debug("Recipe %s status: %s", recip, status)
         stats[status] += 1
         if status.needs_bump():
-            logger.info("Bumping %s", recip)
-            recip.reset_buildnumber(int(recip['build']['number'])+1)
-            recip.save()
+            num_recipes_needing_bump += 1
+            if num_recipes_needing_bump <= max_bumps:
+                logger.info("Bumping %s", recip)
+                recip.reset_buildnumber(int(recip['build']['number'])+1)
+                recip.save()
+            else:
+                logger.info(
+                    "Bumping %s -- theoretically (%d out of %d allowed bumps)",
+                    recip, num_recipes_needing_bump, max_bumps,
+                )
         elif status.failed():
             logger.info("Failed to inspect %s", recip)
             hadErrors.add(recip)
@@ -604,6 +617,11 @@ def update_pinning(recipe_folder, config, packages="*",
     #print("  A rebuild for a new python version: {}".format(stats[STATE.bump_python]))
     #print("  A build number increment: {}".format(stats[STATE.bump]))
 
+    if num_recipes_needing_bump > max_bumps:
+        print(
+            f"Only bumped {max_bumps} out of {num_recipes_needing_bump} recipes"
+            " that needed a build number bump."
+        )
     if hadErrors:
         print("{} packages produced an error "
               "in conda-build: {}".format(len(hadErrors), list(hadErrors)))
