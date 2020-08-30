@@ -542,6 +542,8 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
      help='Skip packages that use one of the given variant keys.')
 @arg('--max-bumps', type=int,
      help='Maximum number of recipes that will be updated.')
+@arg('--no-leaves',
+     help='Only update recipes with dependent packages.')
 @arg('--cache', help='''To speed up debugging, use repodata cached locally in
      the provided filename. If the file does not exist, it will be created the
      first time.''')
@@ -552,6 +554,7 @@ def update_pinning(recipe_folder, config, packages="*",
                    skip_additional_channels=None,
                    skip_variants=None,
                    max_bumps=None,
+                   no_leaves=False,
                    cache=None):
     """Bump a package build number and all dependencies as required due
     to a change in pinnings
@@ -574,6 +577,11 @@ def update_pinning(recipe_folder, config, packages="*",
         if recip.reldir not in blacklist)
 
     dag = graph.filter_recipe_dag(dag, packages, [])
+    if no_leaves:
+        dag = nx.subgraph(
+            dag,
+            (node for node, degree in dag.out_degree_iter() if degree > 0),
+        )
 
     logger.warning("Considering %i recipes", len(dag))
     if max_bumps is None or max_bumps < 0:
