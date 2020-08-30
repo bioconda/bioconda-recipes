@@ -14,7 +14,7 @@ from .utils import RepoData
 from conda_build.metadata import trim_build_only_deps
 
 # for type checking
-from typing import AbstractSet, Set
+from typing import AbstractSet, List, Set
 from .recipe import Recipe, RecipeError
 from conda_build.metadata import MetaData
 
@@ -86,6 +86,7 @@ _legacy_build_string_prefixes = re.compile(
 )
 
 
+# TODO: clean this mess up
 def _have_partially_matching_build_id(meta):
     # Stupid legacy special handling:
     res = RepoData().get_package_data(
@@ -226,6 +227,37 @@ def have_noarch_python_build_number(meta: MetaData) -> bool:
     return res
 
 
+def will_build_only_missing(metas: List[MetaData]) -> bool:
+    """Checks if only new builds will be added (no divergent build ids exist)
+
+    Args:
+      metas: List of Variant MetaData objects
+
+    Returns:
+      True if no divergent build strings exist in repodata
+    """
+    builds = {
+        (meta.name(), meta.version(), meta.build_number())
+        for meta in metas
+    }
+    existing_builds = set()
+    for name, version, build_number in builds:
+        existing_builds.update(
+            map(
+                tuple,
+                RepoData().get_package_data(
+                    ["name", "version", "build"],
+                    name=name, version=version, build_number=build_number,
+                    platform=['linux', 'noarch'],
+                ),
+            ),
+        )
+    new_builds = {
+        (meta.name(), meta.version(), meta.build_id())
+        for meta in metas
+    }
+    return new_builds.issuperset(existing_builds)
+
 
 class State(enum.Flag):
     """Recipe Pinning State"""
@@ -283,7 +315,7 @@ def check(
     """
     try:
         logger.debug("Calling Conda to render %s", recipe)
-        metas = recipe.conda_render(config=build_config)
+        maybe_metas = recipe.conda_render(config=build_config)
         logger.debug("Finished rendering %s", recipe)
     except RecipeError as exc:
         logger.error(exc)
@@ -292,11 +324,12 @@ def check(
         logger.exception("update_pinnings.check failed with exception in api.render(%s):", recipe)
         return State.FAIL, recipe
 
-    if metas is None:
+    if maybe_metas is None:
         logger.error("Failed to render %s. Got 'None' from recipe.conda_render()", recipe)
         return State.FAIL, recipe
 
-    if any(has_invalid_build_string(meta) for meta, _, _ in metas):
+    metas = [meta for meta, _, _ in maybe_metas]
+    if any(has_invalid_build_string(meta) for meta in metas):
         logger.error(
             "Failed to get build strings for %s with bypass_env_check. "
             "Probably needs build/skip instead of dep constraint.",
@@ -305,7 +338,8 @@ def check(
         return State.FAIL, recipe
 
     flags = State(0)
-    for meta, _, _ in metas:
+    maybe_bump = False
+    for meta in metas:
         if meta.skip() or skip_for_variants(meta, skip_variant_keys):
             flags |= State.SKIP
         elif have_noarch_python_build_number(meta):
@@ -317,6 +351,12 @@ def check(
         else:
             logger.info("Package %s=%s=%s missing!",
                          meta.name(), meta.version(), meta.build_id())
+            maybe_bump = True
+    if maybe_bump:
+        # Skip bump if we only add to the build matrix.
+        if will_build_only_missing(metas):
+            flags |= State.BUMPED
+        else:
             flags |= State.BUMP
     if not keep_metas:
         recipe.conda_release()
