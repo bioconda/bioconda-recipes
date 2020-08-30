@@ -537,13 +537,13 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
      help="""Skip updating/bumping packges that are already built with
      compatible pinnings in one of the given channels in addition to those
      listed in 'config'.""")
-@arg('--bump-only-python',
-     help="""Bump package build numbers even if the only applicable pinning
-     change is the python version. This is generally required unless you plan
-     on building everything.""")
 @arg('--skip-variants',
      nargs='*',
      help='Skip packages that use one of the given variant keys.')
+@arg('--max-bumps', type=int,
+     help='Maximum number of recipes that will be updated.')
+@arg('--no-leaves',
+     help='Only update recipes with dependent packages.')
 @arg('--cache', help='''To speed up debugging, use repodata cached locally in
      the provided filename. If the file does not exist, it will be created the
      first time.''')
@@ -552,8 +552,9 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
 @enable_debugging()
 def update_pinning(recipe_folder, config, packages="*",
                    skip_additional_channels=None,
-                   bump_only_python=False,
                    skip_variants=None,
+                   max_bumps=None,
+                   no_leaves=False,
                    cache=None):
     """Bump a package build number and all dependencies as required due
     to a change in pinnings
@@ -576,8 +577,15 @@ def update_pinning(recipe_folder, config, packages="*",
         if recip.reldir not in blacklist)
 
     dag = graph.filter_recipe_dag(dag, packages, [])
+    if no_leaves:
+        dag = nx.subgraph(
+            dag,
+            (node for node, degree in dag.out_degree_iter() if degree > 0),
+        )
 
     logger.warning("Considering %i recipes", len(dag))
+    if max_bumps is None or max_bumps < 0:
+        max_bumps = len(dag)
 
     stats = Counter()
     hadErrors = set()
@@ -589,16 +597,24 @@ def update_pinning(recipe_folder, config, packages="*",
 
     State = update_pinnings.State
 
+    num_recipes_needing_bump = 0
     for status, recip in utils.parallel_iter(needs_bump, dag, "Processing..."):
         logger.debug("Recipe %s status: %s", recip, status)
         stats[status] += 1
-        if status.needs_bump(bump_only_python):
-            logger.info("Bumping %s", recip)
-            recip.reset_buildnumber(int(recip['build']['number'])+1)
-            recip.save()
+        if status.needs_bump():
+            num_recipes_needing_bump += 1
+            if num_recipes_needing_bump <= max_bumps:
+                logger.info("Bumping %s", recip)
+                recip.reset_buildnumber(int(recip['build']['number'])+1)
+                recip.save()
+            else:
+                logger.info(
+                    "Bumping %s -- theoretically (%d out of %d allowed bumps)",
+                    recip, num_recipes_needing_bump, max_bumps,
+                )
         elif status.failed():
             logger.info("Failed to inspect %s", recip)
-            hadErrors.add(recipe)
+            hadErrors.add(recip)
         else:
             logger.info('OK: %s', recip)
 
@@ -609,6 +625,11 @@ def update_pinning(recipe_folder, config, packages="*",
     #print("  A rebuild for a new python version: {}".format(stats[STATE.bump_python]))
     #print("  A build number increment: {}".format(stats[STATE.bump]))
 
+    if num_recipes_needing_bump > max_bumps:
+        print(
+            f"Only bumped {max_bumps} out of {num_recipes_needing_bump} recipes"
+            " that needed a build number bump."
+        )
     if hadErrors:
         print("{} packages produced an error "
               "in conda-build: {}".format(len(hadErrors), list(hadErrors)))
@@ -789,10 +810,6 @@ def clean_cran_skeleton(recipe, no_windows=False):
      Update all recipes, including those having deps in need or rebuild.''')
 @arg("--no-check-version-update",
      help='''Don't check for version updates to recipes''')
-@arg('--bump-only-python',
-     help="""Bump package build numbers even if the only applicable pinning
-     change is the python version. This is generally required unless you plan
-     on building everything.""")
 @arg('--sign', nargs="?", help='''Enable signing. Optionally takes keyid.''')
 @arg('--commit-as', nargs=2, help='''Set user and email to use for committing. '''
      '''Takes exactly two arguments.''')
@@ -809,7 +826,7 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
              max_updates=0, dry_run=False,
              no_check_pinnings=False, no_follow_graph=False,
              no_check_version_update=False,
-             no_check_pending_deps=False, bump_only_python=False,
+             no_check_pending_deps=False,
              sign=0, commit_as=None):
     """
     Updates recipes in recipe_folder
@@ -890,7 +907,7 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
     # Test if due to pinnings, the package hash would change and a rebuild
     # has become necessary. If so, bump the buildnumber.
     if not no_check_pinnings:
-        scanner.add(autobump.CheckPinning, bump_only_python)
+        scanner.add(autobump.CheckPinning)
 
     # Check for new versions and update the SHA afterwards
     if not no_check_version_update:

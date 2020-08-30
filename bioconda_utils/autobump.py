@@ -387,10 +387,9 @@ class ExcludeDependencyPending(Filter):
 class CheckPinning(Filter):
     """Bump recipes in need of rebuild after pinning changes"""
 
-    def __init__(self, scanner: Scanner, bump_only_python: bool) -> None:
+    def __init__(self, scanner: Scanner) -> None:
         self.scanner = scanner
         self.build_config = utils.load_conda_build_config()
-        self.bump_only_python = bump_only_python
 
     @staticmethod
     def match_version(spec, version):
@@ -412,7 +411,7 @@ class CheckPinning(Filter):
     async def apply(self, recipe: Recipe) -> None:
         reason = await self.scanner.run_sp(
             self._sp_apply,
-            (self.build_config, self.bump_only_python, recipe)
+            (self.build_config, recipe)
         )
         if reason:
             recipe.data['pinning'] = reason
@@ -423,9 +422,9 @@ class CheckPinning(Filter):
 
     @classmethod
     def _sp_apply(cls, data) -> None:
-        config, bop, recipe = data
+        config, recipe = data
         status = update_pinnings.check(recipe, build_config=config, keep_metas=True)
-        if status.needs_bump(bop):
+        if status.needs_bump():
             metas = recipe.conda_render(config=config)
             reason = cls.find_reason(recipe, metas)
         else:

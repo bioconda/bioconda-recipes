@@ -103,10 +103,10 @@ def build_from_recipes(recipes):
     for recipe in recipes:
         for package in recipe.package_names:
             package2recipes.setdefault(package, set()).add(recipe)
-            recipe_list.append(recipe)
+        recipe_list.append(recipe)
 
     dag = nx.DiGraph()
-    dag.add_nodes_from(recipe.reldir for recipe in recipes)
+    dag.add_nodes_from(recipe for recipe in recipe_list)
     dag.add_edges_from(
         (recipe2, recipe)
         for recipe in recipe_list
