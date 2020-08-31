@@ -4,7 +4,9 @@
 cd src
 
 # Compile using make
-make
+make \
+    F77="${FC}" \
+    CPP="${CXX}"
 
 # Copy executable to environment bin dir included in the path
 mkdir -p $PREFIX/bin
