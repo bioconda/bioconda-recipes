@@ -18,7 +18,7 @@ cp *.R $PREFIX/share/vsclust/
 cp ProtExample.csv $PREFIX/share/vsclust/
 cp vsclust.yml $PREFIX/share/vsclust/
 cp runVSClust.R $PREFIX/bin
-cp run_vsclust_app.sh $PREFIX/bin
+cp run_vsclust_app.R $PREFIX/bin
 echo "before chmod"
 chmod a+x $PREFIX/bin/runVSClust.R
 chmod a+x $PREFIX/bin/run_vsclust_app.R
