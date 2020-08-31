@@ -21,4 +21,6 @@ cp runVSClust.R $PREFIX/bin
 cp run_vsclust_app.sh $PREFIX/bin
 echo "before chmod"
 chmod a+x $PREFIX/bin/runVSClust.R
-chmod a+x $PREFIX/bin/run_vsclust_app.sh
+chmod a+x $PREFIX/bin/run_vsclust_app.R
+
+
