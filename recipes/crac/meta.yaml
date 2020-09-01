@@ -1,34 +1,43 @@
 {% set name = "CRAC" %}
 {% set version = "1.5.0" %}
+{% set sha256hash = "8c8015a77f27b72d4d26da15edc82a23894eb371cbc1e76992d855935a0940bf" %}
+
+about:
+  home: http://crac.gforge.inria.fr/
+  license_file: LICENSE/COPYING
+  license: GPL-compliant CeCILL
+  summary: CRAC an integrated approach to the analysis of RNA-seq reads. It predicts point mutations, indels, splice junction, and chimeric RNAs (ie, non colinear splice junctions).
+
+build:
+  number: 0
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
-source:
-  url: https://github.com/RipollJ/CRAC/archive/{{ version }}.tar.gz
-  sha256:  
-
-build:
-  number: 0
-
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - gsl
-    - openmp
-    - libhts1
+
   host:
     - gsl
     - openmp
-    - libhts1
+    - zlib
+    - zlib1g
+    - zlib1g-dev
+
+  run:
+    - gsl
+    - openmp
+    - zlib
+    - zlib1g
+    - zlib1g-dev
+    
+source:
+  url: https://github.com/RipollJ/{{ name }}/archives/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: {{ sha256hash }} 
 
 test:
-  files:
-    - test/test.fasta
-
-about:
-  home: http://crac.gforge.inria.fr/
-  license_file: LICENSE
-  license: GPL-compliant CeCILL
-  summary: CRAC an integrated approach to the analysis of RNA-seq reads. It predicts point mutations, indels, splice junction, and chimeric RNAs (ie, non colinear splice junctions).
+  commands:
+    - crac -h
