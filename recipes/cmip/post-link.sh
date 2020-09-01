@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+echo ""
+echo "******************************"
+echo "Thank you  for installing CMIP"
+echo "******************************"
+echo ""
+echo "For help/usage options execute:"
+echo "cmip -h"
+echo ""
+echo "To run the tests execute:"
+echo "\$CONDA_PREFIX/share/cmip/tests/tests.sh"
+echo ""
+echo "To run some predefined scripts check this folder:"
+echo "\$CONDA_PREFIX/share/cmip/scripts"
+echo ""
