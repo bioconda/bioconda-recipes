@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="MafDb.gnomAD.r3.0.GRCh38_3.10.0.tar.gz"
+FN="MafDb.gnomAD.r3.0.GRCh38_3.11.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MafDb.gnomAD.r3.0.GRCh38_3.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MafDb.gnomAD.r3.0.GRCh38_3.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mafdb.gnomad.r3.0.grch38/bioconductor-mafdb.gnomad.r3.0.grch38_3.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MafDb.gnomAD.r3.0.GRCh38_3.11.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MafDb.gnomAD.r3.0.GRCh38_3.11.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mafdb.gnomad.r3.0.grch38/bioconductor-mafdb.gnomad.r3.0.grch38_3.11.0_src_all.tar.gz"
 )
-MD5="570432fdba5ea57e426811327e55100e"
+MD5="7b97a74e64859efa5f9e086980b57dd1"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

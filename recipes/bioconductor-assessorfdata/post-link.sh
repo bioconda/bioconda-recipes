@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="AssessORFData_1.4.0.tar.gz"
+FN="AssessORFData_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/AssessORFData_1.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/AssessORFData_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-assessorfdata/bioconductor-assessorfdata_1.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/AssessORFData_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/AssessORFData_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-assessorfdata/bioconductor-assessorfdata_1.6.0_src_all.tar.gz"
 )
-MD5="86236411ecde9d19ee3f3dcc4b4bfd42"
+MD5="4a744aa6dab9adf3b786e5974252c908"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

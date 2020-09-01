@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="Rattus.norvegicus_1.3.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/Rattus.norvegicus_1.3.1.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/Rattus.norvegicus_1.3.1.tar.gz"
   "https://bioarchive.galaxyproject.org/Rattus.norvegicus_1.3.1.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rattus.norvegicus/bioconductor-rattus.norvegicus_1.3.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rattus.norvegicus/bioconductor-rattus.norvegicus_1.3.1_src_all.tar.gz"
