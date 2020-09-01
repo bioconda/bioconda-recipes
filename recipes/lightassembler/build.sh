@@ -1,4 +1,4 @@
 #!/bin/bash
-export CPATH=${PREFIX}/include
-make
-mv $SRC_DIR/LightAssembler $PREFIX/bin/LightAssembler
+make CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+install -d "${PREFIX}/bin"
+install LightAssembler "${PREFIX}/bin/"
