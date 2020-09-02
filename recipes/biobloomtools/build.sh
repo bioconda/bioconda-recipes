@@ -6,7 +6,7 @@ export CPATH="${PREFIX}/include"
 export CXXFLAGS="-I${PREFIX}/include -O3"
 export CPPFLAGS="-isystem/${PREFIX}/include"
 
-./configure --prefix=${PREFIX} --with-sparsehash="${PREFIX}" --with-sdsl="${PREFIX}" 
+./configure --prefix=${PREFIX} --with-sparsehash="${PREFIX}" --with-sdsl="${PREFIX}" --disable-debug --disable-dependency-tracking --disable-silent-rules
 
 make
 make install
