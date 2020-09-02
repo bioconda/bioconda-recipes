@@ -13,3 +13,7 @@ mkdir -p $PREFIX/bin
 
 chmod u+x cmip
 cp cmip $PREFIX/bin/
+
+cd ..
+mkdir -p $PREFIX/share/cmip
+cp -r dat tests wrappers scripts $PREFIX/share/cmip/
