@@ -5,6 +5,7 @@ export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
 
 # compile Crac 
+./configure 
 make CXX=$CXX
 
 # cp executables
