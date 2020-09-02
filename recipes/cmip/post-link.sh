@@ -1,16 +1,26 @@
-#!/usr/bin/env bash
+echo "
 
-echo ""
-echo "******************************"
-echo "Thank you  for installing CMIP"
-echo "******************************"
-echo ""
-echo "For help/usage options execute:"
-echo "cmip -h"
-echo ""
-echo "To run the tests execute:"
-echo "\$CONDA_PREFIX/share/cmip/tests/tests.sh"
-echo ""
-echo "To run some predefined scripts check this folder:"
-echo "\$CONDA_PREFIX/share/cmip/scripts"
-echo ""
+      #######################################################################
+      #                                                                     #
+      #                   ######  ##     ## #### ########                   #
+      #                  ##    ## ###   ###  ##  ##     ##                  #
+      #                  ##       #### ####  ##  ##     ##                  #
+      #                  ##       ## ### ##  ##  ########                   #
+      #                  ##       ##     ##  ##  ##                         #
+      #                  ##    ## ##     ##  ##  ##                         #
+      #                   ######  ##     ## #### ##                         #
+      #                                                                     #
+      #              Classical Molecular Interaction Potential              #
+      #                                                                     #
+      #   For help/usage options execute:                                   #
+      #   cmip -h                                                           #
+      #                                                                     #
+      #   To run the test set execute:                                      #
+      #   $PREFIX/share/cmip/tests/tests.sh                                 #
+      #                                                                     #
+      #   To run some predefined scripts check this folder:                 #
+      #   $PREFIX/share/cmip/scripts                                        #
+      #                                                                     #
+      #######################################################################
+
+" > "$PREFIX"/.messages.txt
