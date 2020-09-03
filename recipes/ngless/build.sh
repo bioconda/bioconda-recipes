@@ -71,6 +71,16 @@ if [[ -f "${HOST_LIBPTHREAD}" ]]; then
 fi
 
 
+# Ensure that GHC build platform is x86_64-unknown-linux (which GHC knows how to target),
+# rather than x86_64-conda-linux (which GHC does not know about).
+# Suggested by @isuruf on github; see
+# https://github.com/conda-forge/git-annex-feedstock/pull/96/commits/796678ac2cc106e67c4f1f89fb2e92c2ff153616 and
+# https://github.com/conda-forge/git-annex-feedstock/runs/945996913
+#
+unset host_alias
+unset build_alias
+
+
 #######################################################################################################
 # Install bootstrap ghc
 #######################################################################################################
