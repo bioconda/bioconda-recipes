@@ -2,7 +2,7 @@
 
 package:
   name: vamb
-  version: '{{version}}'
+  version: {{ version }}
 
 source:
   url: https://github.com/RasmussenLab/vamb/archive/{{ version }}.tar.gz
@@ -10,14 +10,15 @@ source:
 
 build:
   number: 1
-  skip: True  # [py2k]
+  # Skipping py>=38 since no pytorch-cpu builds for Py3.8 are available.
+  skip: True  # [py<30 or py>=38]
   entry_points:
     - vamb=vamb.__main__:main
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   build:
-    - '{{compiler("c")}}'
+    - {{ compiler('c') }}
   host:
     - python
     - pip

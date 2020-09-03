@@ -1,17 +1,18 @@
-{% set name = "treesapp" %}
 {% set version = "0.6.8" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: treesapp
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/t/treesapp/treesapp-{{ version }}.tar.gz
   sha256: 7e37ea31bb2432946266fc9277ac3a97ba2c41ebd9b19ceb8f406286e1755b69
 
 build:
   number: 1
-  skip: True  # [py2k]
+  # Skipping py>=38 because Py3.8 builds are not available for old versions of dependencies.
+  # Dependencies (pyfastx, specifically) are likely pinned downed too strictly.
+  skip: True  # [py<30 or py>=38]
   entry_points:
     - treesapp = treesapp.__main__:main
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
@@ -46,7 +47,7 @@ test:
   imports:
     - treesapp
   commands:
-    - {{ name }} --help
+    - treesapp --help
 
 about:
   home: https://github.com/hallamlab/TreeSAPP
