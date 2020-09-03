@@ -3,13 +3,14 @@
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
+export CPPFLAGS="-std=c++11"
 
 # for troubleshooting with zlib
 #export CPATH=${PREFIX}/include
 
 # compile Crac 
 ./configure
-make
+make CXX="$CXX $CXXFLAGS" CPPFLAGS="$CPPFLAGS -I. -I$PREFIX/include"
 make check
 make install
 make installcheck
