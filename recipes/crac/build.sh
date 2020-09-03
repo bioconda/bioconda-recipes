@@ -20,12 +20,12 @@ export CXX_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
 # compile Crac 
-./configure
+./configure --prefix="${PREFIX}" #/home/<user>/<some>/<directory>
 make CXX="$CXX $CXXFLAGS" CPPFLAGS="$CPPFLAGS" install ROOT="."
 make check
-sudo make install
+make install
 make installcheck
 
 # cp executables
-mkdir -pv "$PREFIX"/bin/
-cp -pf CRAC "$PREFIX"/bin/
+#mkdir -pv "$PREFIX"/bin/
+#cp -pf crac "$PREFIX"/bin/
