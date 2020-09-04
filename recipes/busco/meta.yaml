@@ -1,19 +1,19 @@
-{% set name = "busco" %}
 {% set version = "4.1.2" %}
 {% set sha256 = "c4fb4bd442c17a7b5be00d451a6eeb2d328791c288caac45bdc50f4feaffa3a6" %}
-{% set repo = "busco" %}
 
 package:
-  name: {{ name|lower }}
+  name: busco
   version: {{ version }}
 
 build:
-  number: 0
-  noarch: generic
+  number: 3
+  noarch: python
 
 source:
-  url: https://gitlab.com/ezlab/{{ repo }}/-/archive/{{ version }}/busco-{{ version }}.tar.gz
+  url: https://gitlab.com/ezlab/busco/-/archive/{{ version }}/busco-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-Add-default-config-path-within-prefix.patch
 
 requirements:
   host:
@@ -22,10 +22,8 @@ requirements:
     - findutils
     - blast >=2.10.1 # There is a multithreading problem for all BLAST versions between 2.4 and 2.10.0
     - hmmer >=3.1b2 # sepp needs this version
-    - augustus
+    - augustus >=3.3
     - biopython
-    - r-base
-    - r-ggplot2 >=2.2.1
     - prodigal
     - sepp >=4.3.10
   run:
@@ -33,7 +31,7 @@ requirements:
     - findutils
     - blast >=2.10.1 # There is a multithreading problem for all BLAST versions between 2.4 and 2.10.0
     - hmmer >=3.1b2 # sepp needs this version
-    - augustus
+    - augustus >=3.3
     - biopython
     - r-base
     - r-ggplot2 >=2.2.1
@@ -41,11 +39,13 @@ requirements:
     - sepp >=4.3.10
 
 test:
-  requires:
-    - wget
   commands:
     - busco -h
     - generate_plot.py -h
+    - python -c 'import busco.ConfigManager as cm; print(cm.BuscoConfigManager({}).get_config_file())'
+  source_files:
+    # used in run_test.sh
+    - test_data
 
 about:
   home: http://busco.ezlab.org/
@@ -60,6 +60,7 @@ extra:
   identifiers:
     - biotools:busco
     - doi:10.1093/bioinformatics/btv351
+    - usegalaxy-eu:busco
   recipe-maintainers:
     - silask
     - matsepp

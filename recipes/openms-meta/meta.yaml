@@ -13,7 +13,7 @@ source:
     - MANIFEST.in.patch
 
 build:
-  number: 4
+  number: 6
 
 # Try this when building with GUI
 #extra:
@@ -141,10 +141,13 @@ outputs:
         - {{ pin_compatible('sqlite', max_pin='x.x') }}
     test:
       commands:
-        - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/FileMerger --help  
+        - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/FileMerger --help
 
   - name: pyopenms
     version: {{ version }}
+    build:
+      # Py3.8 build fails due to some dependency error
+      skip: True  # [py>=38]
     script: install_pyopenms.sh
     # problem with pyopenms is: We could in theory skip CMake configuration
     # and save a lot of build dependencies BUT then env.py
@@ -199,6 +202,9 @@ outputs:
 
   - name: openms-thirdparty
     version: {{ version }}
+    build:
+      # Dependencies bumbershoot, fido, percolator are not available for osx.
+      skip: True  # [osx]
     requirements:
       run:
         - {{ pin_subpackage('openms', exact=True) }}
@@ -210,11 +216,17 @@ outputs:
         - msgf_plus ==2017.07.21
         - omssa ==2.1.9
         - pepnovo ==20101117
-        - percolator ==3.4
+        # percolator=3.4 is not build with newer/compatible pinnings
+        # - percolator ==3.4
+        - percolator ==3.5
         - sirius-csifingerid ==4.0.1
         - thermorawfileparser ==1.2.3
         - xtandem ==15.12.15.2
         - gnuplot
+    test:
+      # Test copied from openms output to make sure a test environment for this output is created.
+      commands:
+        - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/FileMerger --help
 
 about:
   home: https://github.com/OpenMS/OpenMS
@@ -227,4 +239,5 @@ extra:
     - build_number_needs_reset  # our linter has some issues with multi-package recipes as it seems
   identifiers:
     - biotools:openms
+    - usegalaxy-eu:openms_fileconverter
     - doi:10.1038/nmeth.3959
