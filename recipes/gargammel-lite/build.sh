@@ -2,7 +2,7 @@
 
 export CPATH=${PREFIX}/include
 
-export CXXFLAGS="${CXXFLAGS} -std=c++14"
+#export CXXFLAGS="${CXXFLAGS} -std=c++14"
 # Will be inbuilt to github repo in future
 # sed -i.bak 's/make -C libgab/make -C libgab CXX=$(CC)/' Makefile
 # sed -i.bak 's/make -C src/make -C src CXX=$(CC)/' Makefile
@@ -14,7 +14,7 @@ export CXXFLAGS="${CXXFLAGS} -std=c++14"
 cd "${SRC_DIR}"/gargammel || { echo "Folder ${SRC_DIR}/gargammel not found"; exit 1; }
 
 sed -i.bak '1s/^/#include <stddef.h>\n/' "${SRC_DIR}"/gargammel/libgab/ReconsReferenceBAM.h
-
+cp "${SRC_DIR}"/gargammel/libgab/gzstream/version "${SRC_DIR}"/gargammel/libgab/gzstream/version.txt
 
 mkdir -p "${SRC_DIR}"/gargammel/bamtools/{lib,api,shared} 
 ln -s "${PREFIX}"/lib/libbamtools* "${SRC_DIR}"/gargammel/bamtools/lib/
