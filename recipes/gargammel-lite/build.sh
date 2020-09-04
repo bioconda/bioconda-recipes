@@ -9,7 +9,12 @@ export CXXFLAGS="${CXXFLAGS} -std=c++14"
 # sed -i.bak 's/CXXFLAGS =/CXXFLAGS +=/' src/Makefile
 # sed -i.bak 's/LDFLAGS  =/LDFLAGS +=/' src/Makefile
 
+
+
 cd "${SRC_DIR}"/gargammel || { echo "Folder ${SRC_DIR}/gargammel not found"; exit 1; }
+
+sed -i.bak '1s/^/#include <stddef.h>\n/' "${SRC_DIR}"/gargammel/libgab/ReconsReferenceBAM.h
+
 
 mkdir -p "${SRC_DIR}"/gargammel/bamtools/{lib,api,shared} 
 ln -s "${PREFIX}"/lib/libbamtools* "${SRC_DIR}"/gargammel/bamtools/lib/
