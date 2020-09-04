@@ -14,7 +14,7 @@ export CPATH=${PREFIX}/include
 cd "${SRC_DIR}"/gargammel || { echo "Folder ${SRC_DIR}/gargammel not found"; exit 1; }
 
 sed -i.bak '1s/^/#include <stddef.h>\n/' "${SRC_DIR}"/gargammel/libgab/ReconsReferenceBAM.h
-cp "${SRC_DIR}"/gargammel/libgab/gzstream/version "${SRC_DIR}"/gargammel/libgab/gzstream/version.txt
+mv "${SRC_DIR}"/gargammel/libgab/gzstream/version "${SRC_DIR}"/gargammel/libgab/gzstream/version.txt
 
 mkdir -p "${SRC_DIR}"/gargammel/bamtools/{lib,api,shared} 
 ln -s "${PREFIX}"/lib/libbamtools* "${SRC_DIR}"/gargammel/bamtools/lib/
