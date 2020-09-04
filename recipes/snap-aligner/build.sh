@@ -1,4 +1,5 @@
 #!/bin/bash
-make
-mkdir -p $PREFIX/bin
-cp snap-aligner $PREFIX/bin
+CXXFLAGS="${CXXFLAGS} -std=c++03" \
+    make CXX="${CXX}"
+install -d "${PREFIX}/bin"
+install snap-aligner "${PREFIX}/bin/"
