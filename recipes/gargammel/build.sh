@@ -3,7 +3,7 @@
 export CPATH=${PREFIX}/include
 
 cd "${SRC_DIR}"/gargammel || { echo "Folder ${SRC_DIR}/gargammel not found"; exit 1; }
-
+cp "${SRC_DIR}"/gargammel/files/testUtils.cpp "${SRC_DIR}"/gargammel/libgab/
 # Avoid conflicts with C++20  
 mv "${SRC_DIR}"/gargammel/libgab/gzstream/version "${SRC_DIR}"/gargammel/libgab/gzstream/version.txt
 
