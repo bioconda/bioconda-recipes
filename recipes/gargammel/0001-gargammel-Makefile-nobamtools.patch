@@ -1,27 +1,28 @@
 --- Makefile	2020-02-28 15:33:54.000000000 +0100
-+++ Makefile	2020-09-05 12:59:21.000000000 +0200
-@@ -5,45 +5,20 @@
++++ Makefile	2020-09-05 18:37:47.000000000 +0200
+@@ -3,47 +3,22 @@
  
- all: 	src/fragSim src/deamSim src/adptSim src/fasta2fastas art_src_MountRainier/art_illumina_src/art_illumina.o
+ OS := $(shell uname)
+ 
+-all: 	src/fragSim src/deamSim src/adptSim src/fasta2fastas art_src_MountRainier/art_illumina_src/art_illumina.o
++all: 	src/fragSim src/deamSim src/adptSim src/fasta2fastas
  
 -src/fragSim: libgab/utils.o bamtools/lib/libbamtools.so
 -	make -C src
 +src/fragSim: libgab/utils.o 
-+    make -C src CXX=$(CC)
++	make -C src CXX=$(CC)
  
- src/fasta2fastas: libgab/utils.o bamtools/lib/libbamtools.so
- 	make -C src
+-src/fasta2fastas: libgab/utils.o bamtools/lib/libbamtools.so
+-	make -C src
++src/fasta2fastas: libgab/utils.o
++	make -C src CXX=$(CC
  
 -src/deamSim: libgab/utils.o bamtools/lib/libbamtools.so
 -	make -C src
-+src/deamSim: libgab/utils.o
-+	make -C src CXX=$(CC)
- 
+-
 -src/adptSim: libgab/utils.o bamtools/lib/libbamtools.so
 -	make -C src
-+src/adptSim: libgab/utils.o
-+    make -C src CXX=$(CC)
- 
+-
 -libgab/utils.h:
 -	rm -rf libgab/
 -	git clone --depth 1 --recursive https://github.com/grenaud/libgab.git
@@ -49,8 +50,14 @@
 -	cd art_src_MountRainier_Linux/ && ./configure && make && cd ..
 -	ln -s art_src_MountRainier_Linux  art_src_MountRainier
 -endif
++src/deamSim: libgab/utils.o
++	make -C src CXX=$(CC)
++
++src/adptSim: libgab/utils.o
++	make -C src CXX=$(CC)
++
 +libgab/utils.o: libgab/utils.h
-+    make -C libgab CXX=$(CC)
++	make -C libgab CXX=$(CC)
  
  bacterialex:
  	mkdir -p bactDBexample
