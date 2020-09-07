@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RTCGA.mutations_20151101.16.0.tar.gz"
+FN="RTCGA.mutations_20151101.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/RTCGA.mutations_20151101.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RTCGA.mutations_20151101.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rtcga.mutations/bioconductor-rtcga.mutations_20151101.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/RTCGA.mutations_20151101.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RTCGA.mutations_20151101.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rtcga.mutations/bioconductor-rtcga.mutations_20151101.18.0_src_all.tar.gz"
 )
-MD5="d749d246efe0a48c67e1a2ef787784cf"
+MD5="e3d716b4742c106208b0cfce640084a3"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

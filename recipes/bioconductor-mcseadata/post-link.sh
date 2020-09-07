@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="mCSEAdata_1.6.0.tar.gz"
+FN="mCSEAdata_1.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/mCSEAdata_1.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/mCSEAdata_1.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mcseadata/bioconductor-mcseadata_1.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/mCSEAdata_1.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/mCSEAdata_1.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mcseadata/bioconductor-mcseadata_1.8.0_src_all.tar.gz"
 )
-MD5="2c0ea96adefa3f5cec5f4452e81988d3"
+MD5="a86ab3f7f4a37d0c4e6aa42c9d898a19"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

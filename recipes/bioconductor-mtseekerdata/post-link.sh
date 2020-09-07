@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="MTseekerData_1.3.0.tar.gz"
+FN="MTseekerData_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/MTseekerData_1.3.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MTseekerData_1.3.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mtseekerdata/bioconductor-mtseekerdata_1.3.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/MTseekerData_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MTseekerData_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mtseekerdata/bioconductor-mtseekerdata_1.6.0_src_all.tar.gz"
 )
-MD5="748ea48b2cf6059470c5bcf0ed7f5b8b"
+MD5="042f569373a551505e9ba7101583e739"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
