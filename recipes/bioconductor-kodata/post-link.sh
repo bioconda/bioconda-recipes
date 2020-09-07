@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="KOdata_1.12.0.tar.gz"
+FN="KOdata_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/KOdata_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/KOdata_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-kodata/bioconductor-kodata_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/KOdata_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/KOdata_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-kodata/bioconductor-kodata_1.14.0_src_all.tar.gz"
 )
-MD5="6b844cf28cc292456cb6120cbc7887da"
+MD5="e49595e9598ff8ba75bcc011bc0e86e5"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

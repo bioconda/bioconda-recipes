@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="LRBase.Ssc.eg.db_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/LRBase.Ssc.eg.db_1.2.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/LRBase.Ssc.eg.db_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/LRBase.Ssc.eg.db_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-lrbase.ssc.eg.db/bioconductor-lrbase.ssc.eg.db_1.2.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-lrbase.ssc.eg.db/bioconductor-lrbase.ssc.eg.db_1.2.0_src_all.tar.gz"
 )
 MD5="d7a0e729caeb3125ce6bc21307ed7f3d"

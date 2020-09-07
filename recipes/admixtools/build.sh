@@ -2,6 +2,6 @@
 cd src
 make clobber
 
-make CFLAGS="-Wno-unused-comparison -Wno-return-type -I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" all
+make CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" all
 
 make install TOP=$PREFIX/bin

@@ -1,47 +1,48 @@
-{% set version = "6.1" %}
-{% set sha256 = "a766514d47ba012b45fef51c0ad3a810f930687c6f59531f0d2e0bd96cb05db9" %}
-{% set url = "https://github.com/merenlab/anvio/releases/download/v6.1/anvio-6.1.tar.gz" %}
+{% set version = "6.2" %}
+{% set sha256 = "af258a011c9461d6d1f03e2d71cfa20b4ead8d02606596d1ba955328d6928d58" %}
 
 package:
   name: anvio-minimal
   version: {{ version }}
 
 source:
-  url: {{ url }}
+  url: "https://github.com/merenlab/anvio/releases/download/v{{ version }}/anvio-{{ version }}.tar.gz"
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
   noarch: python
   script: python -m pip install --no-deps --ignore-installed -vv .
 
 requirements:
   host:
-    #This pins to an old snakeMake that predated 3.7
-    - python 3.6
+    - python >=3
     - pip
   run:
-    - python 3.6
+    - python >=3
     - numpy
-    - bottle ==0.12.13
-    - pysam ==0.15.2
-    - ete3 ==3.1.1
-    - scipy ==1.3.1
-    - scikit-learn ==0.21.2
-    - django ==2.0.8
-    - cherrypy ==8.0.0
-    - requests ==2.20.0
+    - bottle
+    - pysam
+    - ete3
+    - scipy
+    - scikit-learn
+    - django
+    - requests
     - psutil ==5.4.3
-    - mistune ==0.8.1
-    - six ==1.11.0
+    - mistune
+    - six
     - pandas ==0.25.1
-    - matplotlib ==2.2.3
-    - pyani ==0.2.7
-    - statsmodels ==0.9.0
-    - snakemake-minimal ==5.2.4
-    - colored ==1.3.93
-    - illumina-utils ==2.6
-    - tabulate ==0.8.3
+    - matplotlib-base
+    - statsmodels
+    - colored
+    - illumina-utils
+    - tabulate
+    - numba
+    # these three are critical versions. any changes must be
+    # tested with extra attention:
+    - pyani ==0.2.10
+    - cherrypy ==8.0.0
+    - snakemake-minimal ==5.10.0
 test:
   commands:
     - anvi-pan-genome --help

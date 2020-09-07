@@ -1,6 +1,7 @@
 #!/bin/bash
 
-cd probmask/trunk/
+cd probmask/ || true
+cd trunk/
 
 ./autogen.sh
 ./configure --prefix=${PREFIX}
