@@ -1,33 +1,31 @@
-{% set version = "0.4.6" %}
-{% set sha256 = "56f6f358a5d1f8dd0fcd1df04504079fc42cec8453a36ee59ff89295535d03f5" %}
+{% set version = "0.4.8" %}
+{% set sha256 = "e948871e4de9db5964c9ca6f8f877c3cbe6a46f62052dfab52ffe0f45bbbd203" %}
 
 package:
   name: unicycler
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   - url: https://github.com/rrwick/Unicycler/archive/v{{ version }}.tar.gz
-    sha256: '{{ sha256 }}'
+    sha256: {{ sha256 }}
     patches:
-      - Makefile.patch  #[linux]
+      - Makefile.patch
       - misc.py.patch
-  - url: https://github.com/seqan/seqan/archive/seqan-v2.4.0.tar.gz
-    sha256: 'd7084d17729214003e84818e0280a16f223c8f1c6a30eeef040c27e0c0047bd7'
-    folder: 'seqan'
 
 build:
-  number: 0
+  number: 1
+  skip: True  # [py<34]
 
 requirements:
   build:
-    - '{{ compiler("c") }}'
-    - '{{ compiler("cxx") }}'
+    - {{ compiler("c") }}
+    - {{ compiler("cxx") }}
   host:
-    - python >=3.4,!=3.7
+    - python
     - pip
     - zlib
   run:
-    - python >=3.4,!=3.7
+    - python
     - spades >=3.6.2
     - pilon
     - openjdk
@@ -41,10 +39,10 @@ requirements:
 
 test:
   commands:
-    - unicycler -h
-    - unicycler_align -h
-    - unicycler_check -h
-    - unicycler_polish -h
+    - COLUMNS=80 unicycler -h
+    - COLUMNS=80 unicycler_align -h
+    - COLUMNS=80 unicycler_check -h
+    - COLUMNS=80 unicycler_polish -h
 
 about:
   home: https://github.com/rrwick/Unicycler
@@ -52,3 +50,8 @@ about:
   license_family: GPL
   license_file: LICENSE
   summary: Hybrid assembly pipeline for bacterial genomes
+
+extra:
+  identifiers:
+    - biotools:unicycler
+    - usegalaxy-eu:unicycler

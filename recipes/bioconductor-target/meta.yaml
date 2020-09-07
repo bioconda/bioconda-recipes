@@ -1,0 +1,45 @@
+{% set version = "1.2.0" %}
+{% set name = "target" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 7b34f439975505990d5bf31c6c79430c
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: testthat (>= 2.1.0), knitr, rmarkdown, shinytest, shinyBS, covr
+requirements:
+  host:
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - r-base
+    - r-matrixstats
+    - r-shiny
+  run:
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - r-base
+    - r-matrixstats
+    - r-shiny
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Predict Combined Function of Transcription Factors'
+  description: 'Implement the BETA algorithm for infering direct target genes from DNA-binding and perturbation expression data Wang et al. (2013) <doi: 10.1038/nprot.2013.150>. Extend the algorithm to predict the combined function of two DNA-binding elements from comprable binding and expression data.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

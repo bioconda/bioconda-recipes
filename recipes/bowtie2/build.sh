@@ -1,7 +1,8 @@
 #!/bin/bash
 
 LDFLAGS=""
-make static-libs && make STATIC_BUILD=1
+mv VERSION VERSION.txt  # Causes issues with C++20
+make CXX=$CXX CPP=$CXX CC=$CC LDLIBS="-L$PREFIX/lib -lz -ltbb -ltbbmalloc -lpthread"
 
 binaries="\
 bowtie2 \

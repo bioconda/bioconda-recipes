@@ -1,5 +1,5 @@
 {% set name = "MentaLiST" %}
-{% set version = "0.2.3" %}
+{% set version = "0.2.4" %}
 
 package:
   name: {{ name|lower }}
@@ -7,21 +7,26 @@ package:
 
 source:
   url: https://github.com/WGS-TB/MentaLiST/archive/v{{ version }}.tar.gz
-  sha256: d456615fb9228737aff735d58b272d5bcefd241db6593ece218f2c26c27f165a
+  sha256: 408a1080bef46b88f21132d20c8b8d287f081f5aae47af25a379177a32e8abc5
 
 build:
-  number: 0
+  number: 3
   skip: True  # [osx]
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
-    - julia
-    - hdf5
-    - mpfr
+    # We can't use julia>=1.0 because OpenGene is not compatible with Julia 1.0+.
+    # We can't use julia=0.6 because that Conda package appears to be broken.
+    - julia 0.5.2.*
+    # Tightly pin hdf to ensure a satisfiable env with julia=0.5.
+    - hdf5 1.10.1.*
+    - mpfr 3.1.5.*
   run:
-    - julia
-    - hdf5
-    - mpfr
+    - julia 0.5.2.*
+    - hdf5 1.10.1.*
+    - mpfr 3.1.5.*
     - libxml2
     - unzip
 
@@ -34,3 +39,7 @@ about:
   summary: The MLST pipeline developed by the PathOGiST research group.
   license: MIT
   license_file: LICENSE
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic

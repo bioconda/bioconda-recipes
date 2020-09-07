@@ -1,32 +1,27 @@
 #!/usr/bin/env bash
 set -vex
+cd pb-falcon
 
-cd pypeflow
+mkdir -p pypeflow
+tar xvfz pypeflow*.tar.gz --strip=1 -C pypeflow
+pushd pypeflow
 $PYTHON setup.py install --single-version-externally-managed --record=/tmp/record.txt
-cd ..
-cd falcon_kit
+popd
+
+mkdir -p falcon_kit
+tar xvfz falcon_kit*.tar.gz --strip=1 -C falcon_kit
+pushd falcon_kit
 $PYTHON setup.py install --single-version-externally-managed --record=/tmp/record.txt
-cd ..
-cd falcon_unzip
+popd
+
+mkdir -p falcon_unzip
+tar xvfz falcon_unzip*.tar.gz --strip=1 -C falcon_unzip
+pushd falcon_unzip
 $PYTHON setup.py install --single-version-externally-managed --record=/tmp/record.txt
-cd ..
-cd falcon_phase
+popd
+
+mkdir -p falcon_phase
+tar xvfz falcon_phase*.tar.gz --strip=1 -C falcon_phase
+pushd falcon_phase
 $PYTHON setup.py install --single-version-externally-managed --record=/tmp/record.txt
-cd ..
-
-cd pb-falcon-phase
-
-cd src
-echo ${CC}
-which ${CC}
-meson --prefix "${PREFIX}" --buildtype=release ./build-meson
-ninja -C ./build-meson -v install
-#cp -f ./build-meson/falcon-phase ${PREFIX}/bin # we want RPATH munging from Meson
-cd ..
-
-cd bin
-ls -larth
-cp fc_coords2hp.py fc_emit_haplotigs.py fc_filt_hp.py fc_primary_contig_index.pl fc_scrub_names.pl FALCON_headerConverter.pl $PREFIX/bin
-cd ..
-
-cd ..
+popd

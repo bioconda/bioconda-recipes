@@ -1,0 +1,63 @@
+{% set name = "metaphlan2" %}
+{% set version = "2.8" %}
+{% set sha256 = "10c29d624c32aed45029739d72adda0def2143858eeae22ca3ec8386a2acbf9f" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/biobakery/MetaPhlAn/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+
+requirements:
+  host:
+    - python 2.7
+    - setuptools
+  run:
+    - python 2.7
+    - bowtie2 >=2.0.0
+    - dendropy
+    - numpy
+    - biom-format
+    - matplotlib-base 
+    - msgpack-python
+    - biopython
+    - pandas
+    - scipy
+    - requests
+    - blast >=2.6.0
+    - muscle >=3.8.1551
+    - pysam >=0.8.3
+    - raxml >=8.2.10
+    - samtools >=0.1.19,<1.0
+
+test:
+  commands:
+    - metaphlan2.py -v
+    - strainphlan.py -h
+    - extract_markers.py -h
+    - merge_metaphlan_tables.py -h
+    - read_fastx.py -h
+
+about:
+  home: https://github.com/biobakery/metaphlan
+  license: MIT License
+  license_family: MIT
+  license_file: license.txt
+  summary: Metagenomic Phylogenetic Analysis
+  description: |
+    MetaPhlAn is a computational tool for profiling the composition of microbial
+    communities (Bacteria, Archaea and Eukaryotes) from metagenomic
+    shotgun sequencing data with species level resolution. From version 2.0
+    MetaPhlAn is also able to identify specific strains (in the not-so-frequent
+    cases in which the sample contains a previously sequenced strains) and to
+    track strains across samples for all species.
+
+extra:
+  watch:
+    enable: yes

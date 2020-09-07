@@ -1,0 +1,58 @@
+Removes vendored samtools and allows overriding compile flags
+
+diff -ru RSEM-1.3.2.orig/Makefile RSEM-1.3.2/Makefile
+--- RSEM-1.3.2.orig/Makefile	2019-04-06 15:04:25.000000000 -0600
++++ RSEM-1.3.2/Makefile	2019-05-11 19:02:37.320313844 -0600
+@@ -11,12 +11,12 @@
+ BOOST = .
+ 
+ # Compilation variables
+-CXX = g++
+-CXXFLAGS = -std=gnu++98 -Wall -I. -I$(BOOST) -I$(SAMTOOLS)/$(HTSLIB)
+-CPPFLAGS =
++CXX ?= g++
++CXXFLAGS ?= -std=gnu++98 -Wall -I. -I$(BOOST) -I$(SAMTOOLS)/$(HTSLIB)
++CPPFLAGS ?=
+ 
+-LDFLAGS =
+-LDLIBS =
++LDFLAGS ?=
++LDLIBS ?=
+ 
+ # Installation variables
+ INSTALL = install
+@@ -54,13 +54,11 @@
+ 
+ .PHONY : all ebseq pRSEM clean
+ 
+-all : $(PROGRAMS) $(SAMTOOLS)/samtools
++all : $(PROGRAMS)
+ 
+ $(SAMTOOLS)/samtools :
+ 	cd $(SAMTOOLS) && $(CONFIGURE) --without-curses && $(MAKE) -f $(SAMTOOLS_MAKEFILE) samtools
+ 
+-$(SAMLIBS) : $(SAMTOOLS)/samtools
+-
+ 
+ # Compile objects
+ $(OBJS1) :
+@@ -163,17 +161,14 @@
+ 
+ 
+ # Install RSEM
+-install : $(PROGRAMS) $(SCRIPTS) $(SAMTOOLS)/samtools rsem_perl_utils.pm
+-	$(INSTALL_DIR) $(DESTDIR)$(bindir) $(DESTDIR)$(bindir)/$(SAMTOOLS)
++install : $(PROGRAMS) $(SCRIPTS) rsem_perl_utils.pm
++	$(INSTALL_DIR) $(DESTDIR)$(bindir)
+ 	$(foreach prog,$(PROGRAMS),$(INSTALL_PROGRAM) $(prog) $(DESTDIR)$(bindir)/$(prog) ; $(STRIP) $(DESTDIR)$(bindir)/$(prog) ;)
+-	$(INSTALL_PROGRAM) $(SAMTOOLS)/samtools $(DESTDIR)$(bindir)/$(SAMTOOLS)/samtools
+-	$(STRIP) $(DESTDIR)$(bindir)/$(SAMTOOLS)/samtools
+ 	$(foreach script,$(SCRIPTS),$(INSTALL_PROGRAM) $(script) $(DESTDIR)$(bindir)/$(script) ;)
+ 	$(INSTALL_DATA) rsem_perl_utils.pm $(DESTDIR)$(bindir)/rsem_perl_utils.pm
+ 
+ # Clean
+ clean :
+ 	rm -f *.o *~ $(PROGRAMS)
+-	cd $(SAMTOOLS) && $(MAKE) clean-all
+ 	cd EBSeq && $(MAKE) clean
+ 	cd pRSEM && $(MAKE) clean

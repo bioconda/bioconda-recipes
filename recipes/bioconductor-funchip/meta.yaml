@@ -1,29 +1,27 @@
-{% set version = "1.4.0" %}
+{% set version = "1.14.0" %}
 {% set name = "FunChIP" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 4ba53b8c8cff85329eb8046e17833e666422f15643a084dcc1e91ed2a2f4a23f
+  md5: b8994bb64ce6ed4b3d24d7c6f24af5dd
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicalignments
-    - bioconductor-genomicranges
-    - bioconductor-rsamtools
+    - 'bioconductor-genomeinfodb >=1.24.0,<1.25.0'
+    - 'bioconductor-genomicalignments >=1.24.0,<1.25.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-rsamtools >=2.4.0,<2.5.0'
     - r-base
     - r-doparallel
     - r-fda
@@ -31,11 +29,13 @@ requirements:
     - r-rcolorbrewer
     - r-rcpp
     - r-shiny
+    - libblas
+    - liblapack
   run:
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicalignments
-    - bioconductor-genomicranges
-    - bioconductor-rsamtools
+    - 'bioconductor-genomeinfodb >=1.24.0,<1.25.0'
+    - 'bioconductor-genomicalignments >=1.24.0,<1.25.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-rsamtools >=2.4.0,<2.5.0'
     - r-base
     - r-doparallel
     - r-fda
@@ -43,16 +43,24 @@ requirements:
     - r-rcolorbrewer
     - r-rcpp
     - r-shiny
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Preprocessing and smoothing of ChIP-Seq peaks and efficient implementation of the k-mean alignment algorithm to classify them.'
-
+  summary: 'Clustering and Alignment of ChIP-Seq peaks based on their shapes'
+  description: 'Preprocessing and smoothing of ChIP-Seq peaks and efficient implementation of the k-mean alignment algorithm to classify them.'
 extra:
   identifiers:
     - biotools:funchip
     - doi:10.1093/bioinformatics/btx201
+  parent_recipe:
+    name: bioconductor-funchip
+    path: recipes/bioconductor-funchip
+    version: 1.6.0
+

@@ -14,13 +14,14 @@ sh autogen.sh
 #   - phyml-beagle -- doesn't compile in this relase
 #   - phyrex -- crashes with segfault
 
+CFLAGS="$CFLAGS -std=c99 -O3 -fomit-frame-pointer -funroll-loops"
+
 for binary in mpi phyml phyrex phytime; do
     ./configure \
 	--disable-dependency-tracking \
 	--prefix $PREFIX \
-	--disable-debug \
 	--enable-$binary
-    make -j$CPU_COUNT
+    make -j$CPU_COUNT CFLAGS="$CFLAGS"
     make check
     make install
     make clean

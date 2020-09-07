@@ -1,0 +1,71 @@
+{% set name = "coinfinder" %}
+{% set version = "1.0.5" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/fwhelan/{{ name }}/archive/{{ version }}.tar.gz"
+  sha256: 0c93353c9dcb62add07f149134e8c27244ec4546bdc7f9096041642ea84654be
+
+build:
+  number: 0
+  # Skip OSX only because build times out on the `bulk` branch while solving environment on OSX.
+  skip: True  # [py<30 or osx]
+  rpaths:
+   - lib/R/lib/
+   - lib/
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
+    - boost-cpp
+    - openmp
+    - python
+  run:
+    - openmp
+    - python
+    #Depends
+    - r-base
+    #Imports
+    - r-caper
+    - r-phytools
+    - r-getopt
+    - r-igraph
+    - r-dplyr
+    - r-cowplot
+    - r-data.table
+    - r-ggraph
+    - r-future
+    - r-flock
+    #Bioconductor
+    - r-ape
+    - 'r-ggplot2 >=3.0.0'
+    - r-magrittr
+    - r-purrr
+    - r-rlang
+    - r-rvcheck
+    - r-tidyr
+    - 'r-tidytree >=0.2.6'
+    - 'bioconductor-ggtree >=2.0.0,<2.1.0' # [linux]
+    - bioconductor-ggtree # [macos]
+
+test:
+  commands:
+    - coinfinder -h || [[ "$?" == 1 ]]
+
+about:
+  home: "https://github.com/fwhelan/{{ name }}"
+  license: "GPLv3"
+  license_family: "GPL"
+  license_file: "license.txt"
+  summary: "A tool for the identification of coincident (associating and dissociating) genes in pangenomes."
+  doc_url: "https://github.com/fwhelan/{{ name }}"
+  dev_url: "https://github.com/fwhelan/{{ name }}"
+
+extra:
+  identifiers:
+    - doi:10.1101/859371

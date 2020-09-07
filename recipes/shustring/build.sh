@@ -1,3 +1,4 @@
-make
-cp shustring $PREFIX/bin
-
+#!/bin/bash
+mkdir -p ${PREFIX}/bin
+make CC=${CC}
+cp shustring ${PREFIX}/bin/

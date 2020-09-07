@@ -1,0 +1,42 @@
+{% set version = "2.1.2" %}
+{% set sha256 = "a4c5235b1ee17e277d08cc945dbfa05af084559e546a2b7f15c9c1b703f4b237" %}
+
+package:
+  name: gapfiller
+  version: {{ version }}
+
+source:
+  - url: https://sourceforge.net/projects/gapfiller/files/v{{ version }}/gapfiller-{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+  # Need a more recent version of boost.m4
+  - url: https://raw.githubusercontent.com/tsuna/boost.m4/3d67ee84e9149f6279a8df2113f5a86f0a83bd0d/build-aux/boost.m4
+    sha256: f04391a5601f2d616cc6cfb1d2863df38f084f5dc184ae106114c5fb9f323d2f
+    folder: m4
+
+build:
+  number: 1
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - libtool
+  host:
+    - zlib
+    - boost-cpp
+  run:
+    - zlib
+    - boost-cpp
+
+test:
+  commands:
+    - GapFiller --help
+
+about:
+  home: https://sourceforge.net/projects/gapfiller
+  license: GPLv3
+  license_family: GPL
+  license_file: COPYING
+  summary: "GapFiller is a seed-and-extend local assembler to fill the gap within paired reads."

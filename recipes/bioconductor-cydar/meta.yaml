@@ -1,0 +1,64 @@
+{% set version = "1.12.0" %}
+{% set name = "cydar" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: c7ded2c91e1f18416718f687b73a8d51
+build:
+  number: 0
+  skip: True  # [osx]
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: ncdfFlow, testthat, knitr, edgeR, limma, glmnet, BiocStyle, flowStats
+# SystemRequirements: C++11
+requirements:
+  host:
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-biocneighbors >=1.6.0,<1.7.0'
+    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
+    - 'bioconductor-flowcore >=2.0.0,<2.1.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - 'bioconductor-singlecellexperiment >=1.10.0,<1.11.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
+    - r-base
+    - r-rcpp
+    - r-shiny
+    - r-viridis
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-biocneighbors >=1.6.0,<1.7.0'
+    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
+    - 'bioconductor-flowcore >=2.0.0,<2.1.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - 'bioconductor-singlecellexperiment >=1.10.0,<1.11.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
+    - r-base
+    - r-rcpp
+    - r-shiny
+    - r-viridis
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Using Mass Cytometry for Differential Abundance Analyses'
+  description: 'Identifies differentially abundant populations between samples and groups in mass cytometry data. Provides methods for counting cells into hyperspheres, controlling the spatial false discovery rate, and visualizing changes in abundance in the high-dimensional marker space.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

@@ -1,10 +1,9 @@
 #!/bin/bash
-FN="org.Hs.eg.db_3.5.0.tar.gz"
+FN="org.Hs.eg.db_3.11.4.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/org.Hs.eg.db_3.5.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-org.hs.eg.db/bioconductor-org.hs.eg.db_3.5.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/"$FN
 )
-MD5="9f0d948c0d1b0be3188d51d8ca57fde4"
+MD5="87f20cd6ba544e12aa0bb044215e0729"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -15,7 +14,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

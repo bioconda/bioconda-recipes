@@ -1,0 +1,46 @@
+{% set version = '0.3.15' %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-rtfbs
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/rtfbs_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/rtfbs/rtfbs_{{ version }}.tar.gz
+  sha256: d48975a4c6c512b54e0b97cfd7a0fe684a5098fb42c0678dd42830269be48790
+
+build:
+  number: 2
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{posix}}autoconf
+    - {{posix}}automake
+    - {{posix}}pkg-config
+    - {{posix}}make
+  host:
+    - r-base
+    - r-rphast
+  run:
+    - r-base
+    - r-rphast
+
+test:
+  commands:
+    - $R -e "library('rtfbs')"
+
+about:
+  home: http://compgen.cshl.edu/rtfbs
+  license: BSD_3_clause
+  summary: Identifies and scores possible Transcription Factor Binding Sites and allows for FDR
+    analysis and pruning.  It supports splitting of sequences based on size or a specified
+    GFF, grouping by G+C content, and specification of Markov model order.  The heavy
+    lifting is done in C while all results are made available via R.
+  license_family: BSD

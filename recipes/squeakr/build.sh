@@ -1,17 +1,10 @@
 #!/bin/bash
 
-set -x -e
+make CC="${CC}" LD="${CXX}" CXX="${CXX}" \
+   LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lpthread -lboost_system -lboost_thread -lm -lbz2 -lz -lrt" \
+   CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include -I. -I${SRC_DIR}/include" \
+   CFLAGS="${CFLAGS} -I${PREFIX}/include -I. -I${SRC_DIR}/include" \
+   ARCH="${ARCH}"
 
-mkdir -p $PREFIX/bin
-
-BUILD_OS=$(uname -s)
-
-if [ ${BUILD_OS} == "Darwin" ]; then
-   LDFLAGS="-stdlib=libc++ -L ${PREFIX}/lib" CXXFLAGS="-stdlib=libc++ -I ${PREFIX}/include" make
-   else
-   LDFLAGS="-L ${PREFIX}/lib" CXXFLAGS="-L ${PREFIX}/lib -I ${PREFIX}/include" make
-fi
-
-cp squeakr-count  $PREFIX/bin
-cp squeakr-inner-prod $PREFIX/bin
-cp squeakr-query $PREFIX/bin
+install -d $PREFIX/bin
+install squeakr $PREFIX/bin
