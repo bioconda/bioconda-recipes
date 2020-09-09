@@ -18,7 +18,7 @@ mkdir $PREFIX/bin/
 cat <<EOF > $PREFIX/bin/necat
 #!/bin/bash
 
-PATH=$PATH:$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin/ necat.pl $@
+PATH=\$PATH:$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin/ necat.pl \$@
 EOF
 
 chmod +x $PREFIX/bin/necat
