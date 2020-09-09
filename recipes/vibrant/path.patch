@@ -1,5 +1,5 @@
 diff --git a/VIBRANT_run.py b/VIBRANT_run.py
-index 8b73da7..ff2ea9a 100644
+index 76ca8b1..2d0d87e 100644
 --- a/VIBRANT_run.py
 +++ b/VIBRANT_run.py
 @@ -1,4 +1,4 @@
@@ -7,48 +7,46 @@ index 8b73da7..ff2ea9a 100644
 +#!/opt/anaconda1anaconda2anaconda3/bin/python
  # Author: Kristopher Kieft, UW-Madison
  
- # VIBRANT v1.2.0
-@@ -28,7 +28,7 @@ import numpy as np
- import os
- import sklearn
+ # VIBRANT v1.2.1
+@@ -32,13 +32,13 @@ import math
+ import matplotlib.patches as mpatches
+ from matplotlib.lines import Line2D
  
 -vibrant_path = str(os.path.dirname(os.path.abspath(__file__)))
 +vibrant_path = str(os.getenv("VIBRANT_DATA_PATH"))
  working_path = str(os.getcwd())
  
- start = time.time()
-@@ -36,7 +36,7 @@ round((time.time() - start)/60,1)
- 
+ starting_time = time.time()
  start_time = str(datetime.datetime.now().time()).rsplit(".",1)[0]
  
 -vibrant = argparse.ArgumentParser(description='Usage: python3 VIBRANT_run.py -i <input_file> [options].\n VIBRANT identifies bacterial and archaeal viruses (phages) from assembled metagenomic scaffolds or whole genomes, including the excision of integrated proviruses. VIBRANT also performs curation of identified viral scaffolds, estimation of viral genome completeness and analysis of viral metabolic capabilities.')
 +vibrant = argparse.ArgumentParser(description='Usage: VIBRANT_run.py -i <input_file> [options].\n VIBRANT identifies bacterial and archaeal viruses (phages) from assembled metagenomic scaffolds or whole genomes, including the excision of integrated proviruses. VIBRANT also performs curation of identified viral scaffolds, estimation of viral genome completeness and analysis of viral metabolic capabilities.')
- vibrant.add_argument('--version', action='version', version='VIBRANT v1.2.0')
+ vibrant.add_argument('--version', action='version', version='VIBRANT v1.2.1')
  
  ####### Required
-@@ -216,9 +216,9 @@ n = 0
- p_list = []
- while n < len(parallels2):
- 	if format == "nucl":
--		execute = str(vibrant_path) + '/scripts/VIBRANT_extract_nucleotide.py ' + str(parallels2[n]) + " " + str(parallels2[n]).rsplit(".",1)[0] + ".fna " + str(args.i[0]) + " " + str(lim_low)
-+		execute = 'VIBRANT_extract_nucleotide.py ' + str(parallels2[n]) + " " + str(parallels2[n]).rsplit(".",1)[0] + ".fna " + str(args.i[0]) + " " + str(lim_low)
- 	elif format == "prot":
--		execute = str(vibrant_path) + '/scripts/VIBRANT_extract_protein.py ' + str(parallels2[n]) + " " + str(parallels2[n]).rsplit(".",1)[0] + ".faa " + str(args.i[0])
-+		execute = 'VIBRANT_extract_protein.py ' + str(parallels2[n]) + " " + str(parallels2[n]).rsplit(".",1)[0] + ".faa " + str(args.i[0])
- 	p = subprocess.Popen(execute, shell=True)
- 	p_list.append(p)
- 	n += 1
-@@ -263,7 +263,7 @@ time.sleep(0.1)
- n = 0
- p_list = []
- while n < len(listing2):
--    execute = str(vibrant_path) + '/scripts/VIBRANT_annotation.py -i ' + str(listing2[n]) + str(command)
-+    execute = 'VIBRANT_annotation.py -i ' + str(listing2[n]) + str(command)
-     p = subprocess.Popen(execute, shell=True)
-     p_list.append(p)
-     n += 1
+@@ -197,9 +197,9 @@ try:
+ 	p_list = []
+ 	while n < len(parallels2):
+ 		if format == "nucl":
+-			execute = str(vibrant_path) + '/scripts/VIBRANT_extract_nucleotide.py ' + str(parallels2[n]) + " " + str(parallels2[n]).rsplit(".",1)[0] + ".fna " + str(args.i[0]) + " " + str(lim_low)
++			execute = 'VIBRANT_extract_nucleotide.py ' + str(parallels2[n]) + " " + str(parallels2[n]).rsplit(".",1)[0] + ".fna " + str(args.i[0]) + " " + str(lim_low)
+ 		elif format == "prot":
+-			execute = str(vibrant_path) + '/scripts/VIBRANT_extract_protein.py ' + str(parallels2[n]) + " " + str(parallels2[n]).rsplit(".",1)[0] + ".faa " + str(args.i[0])
++			execute = 'VIBRANT_extract_protein.py ' + str(parallels2[n]) + " " + str(parallels2[n]).rsplit(".",1)[0] + ".faa " + str(args.i[0])
+ 		p = subprocess.Popen(execute, shell=True)
+ 		p_list.append(p)
+ 		n += 1
+@@ -239,7 +239,7 @@ try:
+ 	n = 0
+ 	p_list = []
+ 	while n < len(listing2):
+-		execute = str(vibrant_path) + '/scripts/VIBRANT_annotation.py -x ' + str(out_folder) + ' -y ' + str(base) + ' -i ' + str(listing2[n]) + str(command)
++		execute = 'VIBRANT_annotation.py -x ' + str(out_folder) + ' -y ' + str(base) + ' -i ' + str(listing2[n]) + str(command)
+ 		p = subprocess.Popen(execute, shell=True)
+ 		p_list.append(p)
+ 		n += 1
 diff --git a/databases/VIBRANT_setup.py b/databases/VIBRANT_setup.py
-index 5bcebbe..f9138ec 100644
+index 9c91200..ddc3bc0 100644
 --- a/databases/VIBRANT_setup.py
 +++ b/databases/VIBRANT_setup.py
 @@ -1,4 +1,4 @@
@@ -56,18 +54,18 @@ index 5bcebbe..f9138ec 100644
 +#!/opt/anaconda1anaconda2anaconda3/bin/python
  # Author: Kristopher Kieft, UW-Madison
  
- # VIBRANT v1.2.0
+ # VIBRANT v1.2.1
 @@ -16,7 +16,7 @@ import sys
  from io import StringIO
  import logging
  
 -vibrant = argparse.ArgumentParser(description='Usage: python3 VIBRANT_setup.py.')
 +vibrant = argparse.ArgumentParser(description='Usage: VIBRANT_setup.py.')
- vibrant.add_argument('--version', action='version', version='VIBRANT v1.2.0')
+ vibrant.add_argument('--version', action='version', version='VIBRANT v1.2.1')
  vibrant.add_argument('-test', action='store_true', help='use this setting if you only want to test downloads/dependencies [default=off]')
  vibrant.add_argument('-force', action='store_true', help='use this setting if this script is exiting and telling you to install a package/program that you know is already installed [default=off]')
 diff --git a/scripts/VIBRANT_annotation.py b/scripts/VIBRANT_annotation.py
-index 0b1d505..20a4d81 100644
+index 13d4da7..1a2fc4b 100644
 --- a/scripts/VIBRANT_annotation.py
 +++ b/scripts/VIBRANT_annotation.py
 @@ -1,4 +1,4 @@
@@ -75,9 +73,9 @@ index 0b1d505..20a4d81 100644
 +#!/opt/anaconda1anaconda2anaconda3/bin/python
  # Author: Kristopher Kieft, UW-Madison
  
- # VIBRANT v1.2.0
+ # VIBRANT v1.2.1
 diff --git a/scripts/VIBRANT_extract_nucleotide.py b/scripts/VIBRANT_extract_nucleotide.py
-index 053315b..b5986e1 100644
+index 8eb41f3..d5ddccd 100644
 --- a/scripts/VIBRANT_extract_nucleotide.py
 +++ b/scripts/VIBRANT_extract_nucleotide.py
 @@ -1,4 +1,4 @@
@@ -85,9 +83,9 @@ index 053315b..b5986e1 100644
 +#!/opt/anaconda1anaconda2anaconda3/bin/python
  # Author: Kristopher Kieft, UW-Madison
  
- # VIBRANT v1.2.0
+ # VIBRANT v1.2.1
 diff --git a/scripts/VIBRANT_extract_protein.py b/scripts/VIBRANT_extract_protein.py
-index a393233..3e65063 100644
+index da4fefb..04cb9d2 100644
 --- a/scripts/VIBRANT_extract_protein.py
 +++ b/scripts/VIBRANT_extract_protein.py
 @@ -1,4 +1,4 @@
@@ -95,4 +93,4 @@ index a393233..3e65063 100644
 +#!/opt/anaconda1anaconda2anaconda3/bin/python
  # Author: Kristopher Kieft, UW-Madison
  
- # VIBRANT v1.2.0
+ # VIBRANT v1.2.1

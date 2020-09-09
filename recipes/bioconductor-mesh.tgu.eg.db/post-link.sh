@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="MeSH.Tgu.eg.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MeSH.Tgu.eg.db_1.13.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.Tgu.eg.db_1.13.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Tgu.eg.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.tgu.eg.db/bioconductor-mesh.tgu.eg.db_1.13.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.tgu.eg.db/bioconductor-mesh.tgu.eg.db_1.13.0_src_all.tar.gz"
 )
 MD5="650eae4574ebaab77e0389ea4a912eb6"

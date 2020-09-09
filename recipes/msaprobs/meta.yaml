@@ -1,0 +1,41 @@
+{% set version = "0.9.7" %}
+
+package:
+  name: msaprobs
+  version: {{ version }}
+
+source:
+  url: https://sourceforge.net/projects/msaprobs/files/MSAProbs-{{ version }}.tar.gz
+  sha256: a14c59d714a5020c091ba9dd64d57d4d4aa5e39fefec06ba2f3d29e9ab38dad0
+  patches:
+    - Makefile.patch
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - zlib
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - llvm-openmp  # [osx]
+  host:
+    - openmp  # [osx]
+  run:
+    - llvm-openmp  # [osx]
+    - openmp  # [osx]
+
+test:
+  commands:
+    - msaprobs -version 2>&1 | grep {{ version }}
+
+about:
+  home: http://msaprobs.sourceforge.net/homepage.htm
+  license: GPL3
+  author: Yongchao Liu
+  summary: "MSAProbs is a well-established state-of-the-art multiple sequence alignment algorithm for protein sequences."
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btq338
+

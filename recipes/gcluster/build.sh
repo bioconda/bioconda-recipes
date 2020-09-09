@@ -41,5 +41,12 @@ cat <<END >>${PREFIX}/bin/interested_gene_generation.pl
 perl ${RM_DIR}/interested_gene_generation.pl \$@
 END
 
+# Set a executable file for test.pl
+cat <<END >>${PREFIX}/bin/test.pl
+#!/bin/bash
+perl ${RM_DIR}/test.pl
+END
+
 chmod a+x ${PREFIX}/bin/Gcluster.pl
 chmod a+x ${PREFIX}/bin/interested_gene_generation.pl
+chmod a+x ${PREFIX}/bin/test.pl
