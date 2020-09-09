@@ -24,6 +24,6 @@ cd ..
 
 ln -s $PREFIX/bin/sort-snos.pl  $PREFIX/bin/sort-snos
 
-mv snoscan $PREFIX/bin
+mv snoscan snoscan[AHY] $PREFIX/bin
 
 chmod u+rwx $PREFIX/bin/*
