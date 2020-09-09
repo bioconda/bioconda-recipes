@@ -17,23 +17,31 @@ cd CTPL
 git checkout 437e135dbd94eb65b45533d9ce8ee28b5bd3
 cd ..
 
-# Fix some error can't be patch
+# Fix some error can't be patch before
 if [ "$(uname)" == "Darwin" ]; then
-    sed -i '' -e "s#CXX= g++#CXX= ${CXX}#" BMEAN/makefile # Fix c++ compiler in BMEAN
-    sed -i '' -e "s#CC = gcc#CC = ${CC}#" BMEAN/Complete-Striped-Smith-Waterman-Library/src/Makefile # Fix c compiler in Complete-Striped-Smith-Waterman-Library
-    sed -i '' -e "s#CXX = g++#CXX = ${CXX}#" BMEAN/Complete-Striped-Smith-Waterman-Library/src/Makefile # Fix c++ compiler in Complete-Striped-Smith-Waterman-Library
-    sed -i '' -e "s#CFLAGS := -Wall -pipe -O2#CFLAGS := ${CFLAGS} ${LDFLAGS} -Wall -pipe -O2#" BMEAN/Complete-Striped-Smith-Waterman-Library/src/Makefile # Fix flag errase on in Complete-Striped-Smith-Waterman-Library makefile
     sed -i '' -e "s#/BMEAN/BOA/blosum80.mat#/../share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/blosum80.mat#" src/main.cpp # Fix matrix path
 else
-    sed -i'' -e "s#CXX= g++#CXX= ${CXX}#" BMEAN/makefile # Fix c++ compiler in BMEAN
-    sed -i'' -e "s#CC = gcc#CC = ${CC}#" BMEAN/Complete-Striped-Smith-Waterman-Library/src/Makefile # Fix c compiler in Complete-Striped-Smith-Waterman-Library
-    sed -i'' -e "s#CXX = g++#CXX = ${CXX}#" BMEAN/Complete-Striped-Smith-Waterman-Library/src/Makefile # Fix c++ compiler in Complete-Striped-Smith-Waterman-Library
-    sed -i'' -e "s#CFLAGS := -Wall -pipe -O2#CFLAGS := ${CFLAGS} ${LDFLAGS} -Wall -pipe -O2#" BMEAN/Complete-Striped-Smith-Waterman-Library/src/Makefile # Fix flag errase on in Complete-Striped-Smith-Waterman-Library makefile
     sed -i'' -e "s#/BMEAN/BOA/blosum80.mat#/../share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/blosum80.mat#" src/main.cpp # Fix matrix path
 fi
 
-# build 
-./install.sh
+# build
+cd BMEAN
+
+cd Complete-Striped-Smith-Waterman-Library/src
+make default CC=$CC CXX=$CXX CFLAGS="$CFLAGS $LDFLAGS  -Wall -pipe -O2"
+cd ../..
+
+cd spoa
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make
+cd ../..
+
+make CXX=$CXX # BMEAN make
+cd ..
+
+make CC="$CXX -std=c++11" # CONSENT make
 
 # rename some binary
 mv bin/explode bin/CONSENT-explode
