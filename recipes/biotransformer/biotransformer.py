@@ -88,10 +88,7 @@ def main():
     (mem_opts, prop_opts, pass_args, exec_dir) = jvm_opts(sys.argv[1:])
     jar_dir = exec_dir if exec_dir else real_dirname(sys.argv[0])
 
-    if pass_args != [] and pass_args[0].startswith('eu'):
-        jar_arg = '-cp'
-    else:
-        jar_arg = '-jar'
+    jar_arg = '-jar'
 
     jar_path = os.path.join(jar_dir, jar_file)
 
