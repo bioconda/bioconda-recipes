@@ -14,5 +14,8 @@ cmake -DCMAKE_BUILD_TYPE=RELEASE \
       -DBoost_NO_SYSTEM_PATHS=ON \
       ..
 make VERBOSE=1
-echo "installing"
-make install CFLAGS="-L${PREFIX}/lib -I${PREFIX}/include"
+
+cp src/cobs $PREFIX/bin
+
+echo "cmake-powered unit test"
+CTEST_OUTPUT_ON_FAILURE=1 make test
