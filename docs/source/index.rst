@@ -104,3 +104,4 @@ Table of contents
    user/index
    contributor/index
    developer/index
+   tutorials/index

@@ -42,6 +42,8 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx_autodoc_typehints',  # must be loaded after napoleon
     'celery.contrib.sphinx',
+
+    'sphinx.ext.graphviz',  # used for tutorial
 ]
 
 # Add any paths that contain templates here, relative to this directory.
