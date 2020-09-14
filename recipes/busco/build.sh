@@ -1,6 +1,6 @@
 #!/bin/bash
 
-"${PYTHON}" -m pip install . --no-deps -vv
+set -euxo pipefail
 
 mkdir -p $PREFIX/bin/
 cp bin/busco $PREFIX/bin/busco #python script
@@ -17,3 +17,5 @@ cp scripts/busco_configurator.py $PREFIX/bin/busco_configurator.py
 SHARE="${PREFIX}/share/busco"
 mkdir -p "${SHARE}"
 busco_configurator.py "config/config.ini" "${SHARE}/config.ini"
+
+"${PYTHON}" setup.py install
