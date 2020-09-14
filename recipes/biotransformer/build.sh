@@ -5,7 +5,7 @@ outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
 mkdir -p $PREFIX/bin
 cp -R * $outdir/
-cp $RECIPE_DIR/biotransformer.py $outdir/biotransformer.py
+cp $RECIPE_DIR/biotransformer.py $outdir/
 ls -l $outdir
 printf '#!/bin/bash\n' > $outdir/biotransformer
 printf "cd ${outdir} \n" >> $outdir/biotransformer
