@@ -1,12 +1,13 @@
 #!/bin/bash
 set -ex
 
-export CFLAGS="$CFLAGS -I$PREFIX/include"
+export CFLAGS="$CFLAGS  -I$PREFIX/include"
+export CXXFLAGS="$CXXFLAGS  -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 # build
 cd src
-make CFLAGS+="${CFLAGS}" LDFLAGS+="${LDFLAGS}"
+make CFLAGS+="${CFLAGS}" LDFLAGS+="${LDFLAGS}" CXXFLAGS+="${CXXFLAGS}"
 cd ..
 
 # create and populate binary file
