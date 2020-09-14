@@ -2,8 +2,8 @@
 
 set -eu -o pipefail
 
-make -C squid-1.5.11 CC=$CC 
-make CC=$CC
+make -C squid-1.5.11 CC="$CC" CFLAGS="$CFLAGS"
+make CC="$CC" CFLAGS="$CFLAGS"
 
 mv sort-snos sort-snos.pl
 
