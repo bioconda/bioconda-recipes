@@ -8,7 +8,7 @@ cp -R * $outdir/
 cp $RECIPE_DIR/biotransformer.py $outdir/biotransformer.py
 ls -l $outdir
 printf '#!/bin/bash\n' > $outdir/biotransformer
-printf 'cd ${outdir}\n' >> $outdir/biotransformer
+printf "cd ${outdir} \n" >> $outdir/biotransformer
 printf 'python biotransformer.py "$@"\n' >> $outdir/biotransformer
 ln -s $outdir/biotransformer $PREFIX/bin
 chmod 0755 "${PREFIX}/bin/biotransformer"
