@@ -1,0 +1,78 @@
+{% set name = "phigaro" %}
+{% set version = "2.2.6" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: f8e23c2e2f42d1fe4bfc35324f02a369c111fb4acdf6fbaa3067dd3f88f4c0ed
+
+build:
+  number: 0
+  noarch: python 
+  entry_points:
+    - phigaro = phigaro.cli.batch:main
+    - phigaro-setup = phigaro.cli.helper:main
+  script: "{{ PYTHON }} -m pip install . -vv; echo https://files.pythonhosted.org/packages/51/d3/0271413b3b9d1ed2a532e2575287bec9481d2183e445ecc0ebc1df8f1ddc/singleton-0.1.0.tar.gz > requirements.txt; {{ PYTHON }} -m pip install -r requirements.txt"
+
+requirements:
+  host:
+    - argparse
+    - beautifulsoup4 >=4.4.0
+    - biopython
+    - bs4
+    - future
+    - lxml
+    - numpy
+    - pandas >=0.23.4
+    - pip
+    - plotly
+    - python >=3.6
+    - pyyaml >=5.1
+    - sh
+    - six >=1.7.0
+    - prodigal
+    - hmmer
+  run:
+    - argparse
+    - beautifulsoup4 >=4.4.0
+    - biopython
+    - bs4
+    - future
+    - lxml
+    - numpy
+    - pandas >=0.23.4
+    - plotly
+    - python >=3.6
+    - pyyaml >=5.1
+    - sh
+    - six >=1.7.0
+    - prodigal
+    - hmmer
+
+test:
+  imports:
+    - phigaro
+    - phigaro.batch
+    - phigaro.batch.task
+    - phigaro.cli
+    - phigaro.finder
+    - phigaro.misc
+    - phigaro.to_html
+  commands:
+    - phigaro --help
+    - phigaro-setup --help
+
+about:
+  home: "https://phigaro.readthedocs.io/"
+  license: MIT
+  license_family: MIT
+  license_file: "LICENSE.md"
+  summary: "Phigaro is a scalable command-line tool for predicting phages and prophages."
+  description: 
+
+extra:
+  recipe-maintainers:
+    - PollyTikhonova
