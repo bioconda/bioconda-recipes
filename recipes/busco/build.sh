@@ -2,6 +2,8 @@
 
 set -euxo pipefail
 
+"${PYTHON}" -m pip install . --no-deps -vv
+
 mkdir -p $PREFIX/bin/
 cp bin/busco $PREFIX/bin/busco #python script
 cp scripts/generate_plot.py $PREFIX/bin/generate_plot.py
@@ -17,5 +19,3 @@ cp scripts/busco_configurator.py $PREFIX/bin/busco_configurator.py
 SHARE="${PREFIX}/share/busco"
 mkdir -p "${SHARE}"
 busco_configurator.py "config/config.ini" "${SHARE}/config.ini"
-
-"${PYTHON}" setup.py install --single-version-externally-managed --record=record.txt
