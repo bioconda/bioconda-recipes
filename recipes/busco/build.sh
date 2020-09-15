@@ -18,4 +18,4 @@ SHARE="${PREFIX}/share/busco"
 mkdir -p "${SHARE}"
 busco_configurator.py "config/config.ini" "${SHARE}/config.ini"
 
-"${PYTHON}" setup.py install --record=record.txt
+"${PYTHON}" setup.py install --single-version-externally-managed --record=record.txt
