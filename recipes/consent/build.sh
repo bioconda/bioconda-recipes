@@ -22,10 +22,8 @@ fi
 make -C BMEAN/Complete-Striped-Smith-Waterman-Library/src default CC=$CC CXX=$CXX CFLAGS="$CFLAGS $LDFLAGS  -Wall -pipe -O2"
 
 mkdir -p BMEAN/spoa/build
-cd BMEAN/spoa/build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-make
-cd ../../..
+cmake -DCMAKE_BUILD_TYPE=Release -BBMEAN/spoa/build BMEAN/spoa/
+make -C BMEAN/spoa/build
 
 make -C BMEAN CXX=$CXX # BMEAN make
 
