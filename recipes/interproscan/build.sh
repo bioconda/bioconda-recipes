@@ -18,7 +18,8 @@ ls -l target/interproscan-5-dist/
 
 # copy result into the share folder
 IPR_DIR=${PREFIX}/share/InterProScan
-cp -r target/interproscan-5-dist/* $IPR_DIR/
+mkdir -p ${IPR_DIR}
+cp -r target/interproscan-5-dist/* ${IPR_DIR}/
 
 # mv interproscan.sh in the bin
 mkdir -p ${PREFIX}/bin
