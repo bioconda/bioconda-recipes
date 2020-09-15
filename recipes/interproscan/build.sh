@@ -13,6 +13,8 @@ mvn clean package
 
 echo "debug5"
 ls -l
+ls -l target/
+ls -l target/interproscan-5-dist/
 
 # mv interproscan.sh in the bin
 mkdir -p ${PREFIX}/bin
