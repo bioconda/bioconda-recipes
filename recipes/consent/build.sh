@@ -5,17 +5,11 @@ export CFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 # Download git submodule dependencie
-rm -rf BMEAN
-git clone --recursive https://github.com/Malfoy/BMEAN.git
-cd BMEAN
-git checkout 40ab186c106b2c8303a5605e21d3f4a2e15f809e
-cd ..
+wget -O - https://github.com/Malfoy/BMEAN/tarball/40ab186c106b2c8303a5605e21d3f4a2e15f809e | tar xvfz - -C BMEAN --strip-components 1
+wget -O - https://github.com/mengyao/Complete-Striped-Smith-Waterman-Library/tarball/f0111d3d9e13c3e67e9c7c1b576fa4a6672bf545 | tar xvfz - -C BMEAN/Complete-Striped-Smith-Waterman-Library --strip-components 1
+wget -O - https://github.com/rvaser/spoa/tarball/0ed1abf371a8d00dd6b93584449db874e3e7e288 | tar xvfz - -C BMEAN/spoa --strip-components 1
 
-rm -rf CTPL
-git clone --recursive https://github.com/vit-vit/CTPL.git
-cd CTPL
-git checkout 437e135dbd94eb65b45533d9ce8ee28b5bd3
-cd ..
+wget -O - https://github.com/vit-vit/CTPL/tarball/437e135dbd94eb65b45533d9ce8ee28b5bd3 | tar xfzv - -C CTPL --strip-components 1
 
 # Fix some error can't be patch before
 if [ "$(uname)" == "Darwin" ]; then
@@ -25,21 +19,15 @@ else
 fi
 
 # build
-cd BMEAN
+make -C BMEAN/Complete-Striped-Smith-Waterman-Library/src default CC=$CC CXX=$CXX CFLAGS="$CFLAGS $LDFLAGS  -Wall -pipe -O2"
 
-cd Complete-Striped-Smith-Waterman-Library/src
-make default CC=$CC CXX=$CXX CFLAGS="$CFLAGS $LDFLAGS  -Wall -pipe -O2"
-cd ../..
-
-cd spoa
-mkdir build
-cd build
+mkdir -p BMEAN/spoa/build
+cd BMEAN/spoa/build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make
-cd ../..
+cd ../../..
 
-make CXX=$CXX # BMEAN make
-cd ..
+make -C BMEAN CXX=$CXX # BMEAN make
 
 make CC="$CXX -std=c++11" # CONSENT make
 
