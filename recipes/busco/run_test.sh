@@ -2,7 +2,7 @@
 
 set -euxo pipefail
 
-prodigal
+prodigal -h
 makeblastdb -h
 tblastn -h
 augustus
