@@ -22,5 +22,6 @@ export LD_LIBRARY_PATH=$PREFIX/lib
 
 mkdir -p $PREFIX/bin
 
+nimble install argparse
 nim c --threads:on -p:lib --opt:speed -o:$PREFIX/bin/porfast src/porfast.nim
 
