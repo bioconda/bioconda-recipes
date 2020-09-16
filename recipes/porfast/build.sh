@@ -17,11 +17,13 @@ bin/nim c  koch
 ./koch tools
 popd
 
+set -euxo pipefail
+
 export PATH=$SRC_DIR/nim_source/bin:$PATH
 export LD_LIBRARY_PATH=$PREFIX/lib
 
 mkdir -p $PREFIX/bin
-
-nimble install argparse
+nimble
+nimble install -y --verbose argparse
 nim c --threads:on -p:lib --opt:speed -o:$PREFIX/bin/porfast src/porfast.nim
 
