@@ -28,7 +28,7 @@ make \
 
 cp bin/* $PREFIX/bin
 cp scripts/lumpyexpress $PREFIX/bin
-cp scripts/cnvanator_to_bedpes.py $PREFIX/bin
+#cp scripts/cnvanator_to_bedpes.py $PREFIX/bin
 
 cp scripts/*.py $outdir/scripts
 cp scripts/*.sh $outdir/scripts
@@ -37,7 +37,7 @@ cp scripts/extractSplitReads* $outdir/scripts
 cp scripts/vcf* $outdir/scripts
 ln -s $outdir/scripts/* $PREFIX/bin/
 
-chmod +x $PREFIX/bin/extractSplitReads_BwaMem
+#chmod +x $PREFIX/bin/extractSplitReads_BwaMem
 
 # The file lumpyexpress.config links the scripts to the install path, we need to change to the run path so basically we rebuild it
 export BIN_DIR=$PREFIX/bin
