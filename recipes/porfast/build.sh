@@ -2,10 +2,15 @@
 
 set -euxo pipefail
 
-mkdir -p $PREFIX/bin
-nimble install -y --verbose argparse
-nim c --threads:on -p:lib --opt:speed -o:$PREFIX/bin/porfast src/porfast.nim
-
+if [[ $OSTYPE == "darwin"* ]]; then
+  export HOME="/Users/distiller"
+  mv bin/porfast_osx $PREFIX/bin/porfast
+  chmod +f $PREFIX/bin/porfast
+else
+  mkdir -p $PREFIX/bin
+  nimble install -y --verbose argparse
+  nim c --threads:on -p:lib --opt:speed -o:$PREFIX/bin/porfast src/porfast.nim
+fi
 
 #pushd nim_source
 #if [[ $OSTYPE == "darwin"* ]]; then
