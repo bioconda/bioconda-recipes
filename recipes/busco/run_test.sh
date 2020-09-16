@@ -2,10 +2,10 @@
 
 set -euxo pipefail
 
+prodigal
 makeblastdb -h
 tblastn -h
 augustus
-prodigal
 which gff2gbSmallDNA.pl
 etraining
 new_species.pl
