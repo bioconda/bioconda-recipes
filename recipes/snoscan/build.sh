@@ -2,7 +2,6 @@
 
 set -eu -o pipefail
 
-make -C squid-1.5.11 clean
 make -C squid-1.5.11 CC="$CC" CFLAGS="$CFLAGS"
 make CC="$CC" CFLAGS="$CFLAGS"
 
