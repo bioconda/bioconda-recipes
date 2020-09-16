@@ -19,6 +19,9 @@ cp -r target/interproscan-5-dist/* ${IPR_DIR}/
 mkdir -p ${PREFIX}/bin
 ln -s $IPR_DIR//interproscan.sh  ${PREFIX}/bin/
 
+# copy properties file to replace the default one
+cp ${RECIPE_DIR}/installer.properties ${IPR_DIR}/installer.properties
+
 # Add more build steps here, if they are necessary.
 
 # See
