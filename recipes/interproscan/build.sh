@@ -8,13 +8,7 @@ mvn clean install
 
 # cd into the jms-implementation directory and run mvn clean package
 cd jms-implementation
-
 mvn clean package
-
-echo "debug5"
-ls -l
-ls -l target/
-ls -l target/interproscan-5-dist/
 
 # copy result into the share folder
 IPR_DIR=${PREFIX}/share/InterProScan
