@@ -77,11 +77,12 @@ export AR="${AR} rcs"
     --without-gcrypt
 
 #list apps to build
-apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe"
-apps="$apps rpsblast.exe rpstblastn.exe makembindex.exe segmasker.exe"
-apps="$apps dustmasker.exe windowmasker.exe deltablast.exe makeblastdb.exe"
-apps="$apps blastdbcmd.exe blastdb_aliastool.exe convert2blastmask.exe"
-apps="$apps blastdbcheck.exe makeprofiledb.exe blast_formatter.exe rpsbproc.exe"
+#apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe"
+#apps="$apps rpsblast.exe rpstblastn.exe makembindex.exe segmasker.exe"
+#apps="$apps dustmasker.exe windowmasker.exe deltablast.exe makeblastdb.exe"
+#apps="$apps blastdbcmd.exe blastdb_aliastool.exe convert2blastmask.exe"
+#apps="$apps blastdbcheck.exe makeprofiledb.exe blast_formatter.exe rpsbproc.exe"
+apps="rpsbproc.exe"
 cd ReleaseMT
 
 # The "datatool" binary needs the libs at build time, create
