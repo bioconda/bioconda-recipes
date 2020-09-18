@@ -3,9 +3,9 @@
 set -euxo pipefail
 
 if [[ $OSTYPE == "darwin"* ]]; then
-  export HOME="/Users/distiller"
+  #export HOME="/Users/distiller"
   mv bin/porfast_osx $PREFIX/bin/porfast
-  chmod +f $PREFIX/bin/porfast
+  chmod +x $PREFIX/bin/porfast
 else
   mkdir -p $PREFIX/bin
   nimble install -y --verbose argparse
