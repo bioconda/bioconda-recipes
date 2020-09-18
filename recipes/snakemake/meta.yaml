@@ -1,4 +1,4 @@
-{% set version = "5.20.1" %}
+{% set version = "5.24.2" %}
 
 package:
   name: snakemake
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/snakemake/snakemake-{{ version }}.tar.gz
-  sha256: 0140a5e26473460e62deae2140e80a8074d918f6f9ccf023f2165bec9b073a73
+  sha256: 286bffb315529071105ccca232cd4ac7079cbf99c9115c158bccaac1eca584c5
 
 build:
   number: 0
@@ -28,7 +28,8 @@ requirements:
     - pandas
     - python-irodsclient
     - google-cloud-storage
-    - crc32c
+    - google-api-python-client
+    - google-crc32c
     - boto3
     - jsonschema
     - jinja2
@@ -38,7 +39,6 @@ requirements:
     # older versions of imagemagick sometimes fail on PDF -> PNG conversion
     - imagemagick >=7.0
     - oauth2client
-    - google-api-python-client
     - slacker
 
 test:
@@ -50,7 +50,7 @@ test:
     - snakemake --version | grep "{{ version }}"
 
 about:
-  home: https://snakemake.readthedocs.io
+  home: https://snakemake.github.io
   license: MIT
   summary: A popular workflow management system aiming at full in-silico reproducibility.
   description: |
@@ -100,6 +100,7 @@ outputs:
         - gitpython
         - toposort
         - nbformat
+        - pulp <=1.6.8  # newer pulp versions do not include a solver. Directly depending on coincbc does not work because it is not available for windows.
 
     test:
       imports:
@@ -110,7 +111,7 @@ outputs:
         - snakemake --version | grep "{{ version }}"
     
     about:
-      home: https://snakemake.readthedocs.io
+      home: https://snakemake.github.io
       license: MIT
       summary: A popular workflow management system aiming at full in-silico reproducibility.
       description: |
