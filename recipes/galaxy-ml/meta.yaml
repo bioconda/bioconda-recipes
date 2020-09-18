@@ -1,18 +1,22 @@
-{% set name = "Galaxy-ML" %}
 {% set version = "0.8.2" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: galaxy-ml
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/G/Galaxy-ML/Galaxy-ML-{{ version }}.tar.gz
   sha256: 018bab54a3e1ddd8e53758af8a705df0207451c5f07aa326f1b505b5629bbdd8
+  patches:
+    - 0001-Do-not-package-separate-docs-package.patch
 
 build:
-  number: 0
+  number: 1
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv
-  skip: true  # [py27]
+  # Skip OSX since tests fail (without any error message at all!).
+  # Skipping py>=38 because there are no Py3.8 builds of pinned down dependencies
+  # (scikit-learn 0.21.3, xgboost 0.80, tensorflow 1.15.0).
+  skip: True  # [py<30 or py>=38 or osx]
 
 requirements:
   build:
@@ -41,7 +45,7 @@ requirements:
     - skrebate==0.6
     - imbalanced-learn==0.5.0
     - tensorflow==1.15.0
-    - Keras==2.3.1
+    - keras==2.3.1
     # For training on GPU, install the following libraries manually
     # - cudatoolkit==10.0.130
     # - cudnn==7.6.0

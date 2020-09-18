@@ -1,7 +1,9 @@
 #!/bin/bash
 
 set -e
-./sraX --version
-cp -r * ${PREFIX}/bin/
-chmod u+rwx $PREFIX/bin/sraXlib/*
-chmod u+rwx $PREFIX/bin/*
+
+mkdir -p ${PREFIX}/bin
+cp -r sraXlib ${PREFIX}/bin
+cp sraX ${PREFIX}/bin
+
+chmod -R a+rx $PREFIX/bin

@@ -1,0 +1,36 @@
+{% set name = "kalign3" %}
+{% set version = "3.2.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 1
+  script: './configure --prefix=$PREFIX && make && make install'
+  skip: true # [osx]
+
+source:
+  url: https://github.com/TimoLassmann/kalign/releases/download/v{{ version }}/kalign-{{ version }}.tar.gz
+  sha256: eb7893ee62efcd83792c16ed63b8e347edb265bfa3a45dcb0dde9c516419ecbc
+  patches:
+    - configure.patch
+
+requirements:
+  build:
+  - {{ compiler('c') }}
+  - make
+
+test:
+  commands:
+    - kalign -v
+
+about:
+  home: https://github.com/TimoLassmann/kalign
+  license: GPL2
+  license_file: COPYING
+  summary: 'Kalign is a fast and accurate multiple sequence alignment algorithm.'
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btz795

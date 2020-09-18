@@ -1,14 +1,10 @@
 #!/bin/bash
 
-export CPATH=${PREFIX}/include
-export LDFLAGS="-L${PREFIX}/lib"
-export CPPFLAGS="-I$PREFIX/include"
-export LIBRARY_PATH=${PREFIX}/lib
+make \
+    CC="${CC} ${CPPFLAGS} ${CFLAGS} ${LDFLAGS}" \
+    CXX="${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS}"
 
-make
+mkdir -p "${PREFIX}/bin"
+chmod +x *.py *.sh bsmap
+cp *.py *.sh bsmap "${PREFIX}/bin/"
 
-cp *.py ${PREFIX}/bin/
-cp *.sh ${PREFIX}/bin/
-cp bsmap ${PREFIX}/bin/
-
-chmod +x ${PREFIX}/bin/*
