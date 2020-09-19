@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="TCGAcrcmiRNA_1.6.0.tar.gz"
+FN="TCGAcrcmiRNA_1.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/TCGAcrcmiRNA_1.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/TCGAcrcmiRNA_1.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tcgacrcmirna/bioconductor-tcgacrcmirna_1.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/TCGAcrcmiRNA_1.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TCGAcrcmiRNA_1.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tcgacrcmirna/bioconductor-tcgacrcmirna_1.8.0_src_all.tar.gz"
 )
-MD5="d5590baf322b30e70a31228300bd7685"
+MD5="64848864d13c2b48d9a0d950d2f6822d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

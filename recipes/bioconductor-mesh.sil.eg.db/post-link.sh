@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="MeSH.Sil.eg.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MeSH.Sil.eg.db_1.13.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.Sil.eg.db_1.13.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Sil.eg.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.sil.eg.db/bioconductor-mesh.sil.eg.db_1.13.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.sil.eg.db/bioconductor-mesh.sil.eg.db_1.13.0_src_all.tar.gz"
 )
 MD5="726d8005e272c66959f1578a14958e70"
