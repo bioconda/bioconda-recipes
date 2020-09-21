@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-set -eu -o pipefail
+set -eu
 
 make -C squid-1.5.11 CC="$CC" CFLAGS="$CFLAGS"
 make CC="$CC" CFLAGS="$CFLAGS"
@@ -11,7 +11,7 @@ mv sort-snos sort-snos.pl
 
 mkdir perl-build
 #mv sort-snos perl-build
-find . -name "*.pl" | xargs -I {} mv {} perl-build
+find . -name '*.pl' ! -path './perl-build/*.pl' -exec mv {} perl-build \;
 # find . -name "*.pm`" | xargs -I {} cp {} perl-build/lib
 cd perl-build
 cp ${RECIPE_DIR}/Build.PL ./
