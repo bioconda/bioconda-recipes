@@ -3,7 +3,6 @@
 set -euxo pipefail
 
 if [[ $OSTYPE == "darwin"* ]]; then
-  #export HOME="/Users/distiller"
   mv bin/porfast_osx $PREFIX/bin/porfast
   chmod +x $PREFIX/bin/porfast
 else
