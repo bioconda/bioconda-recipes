@@ -5,10 +5,12 @@ mkdir -p $PREFIX/bin
 #delete precompiled executables
 rm -rf bin/
 #compile new executable
-cd sources/ && make
+cd sources/
+make CC="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 #move everything to target directory
+cp genesplicer $target
 cd ../
-cp ./sources/genesplicer $target && rm -rf sources
+rm -rf sources
 cp -r * $target
 
 chmod 0755 $target/*
