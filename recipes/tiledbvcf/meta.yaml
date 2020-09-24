@@ -52,6 +52,40 @@ outputs:
     test:
       script: test-libtiledbvcf.sh
 
+
+  - name: tiledbvcf-py
+    version: {{ version }}
+    script: build-tiledbvcf-py.sh
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - cmake
+        - make
+      host:
+        - numpy >=1.16,<2.0a0
+        - {{ pin_subpackage('libtiledbvcf', exact=True) }}
+        - python
+        - pyarrow 1.0.*
+        - pybind11
+        - rpdb
+        - wheel
+        - setuptools
+        - setuptools_scm
+        - setuptools_scm_git_archive
+      run:
+        - numpy >=1.16,<2.0a0
+        - {{ pin_subpackage('libtiledbvcf', exact=True) }}
+        - python
+        - pyarrow 1.0.*
+        - pybind11
+        - pandas
+    test:
+      imports:
+        - tiledbvcf
+      command:
+        - python -c "import tiledbvcf; tiledbvcf.version"
+
 about:
   home: https://tiledb.com
   license: MIT
