@@ -2,7 +2,6 @@
 
 set -e -u -x
 
-./configure --prefix=$PREFIX
-make 
+./configure --prefix=$PREFIX --enable-threads
+make
 make install
-
