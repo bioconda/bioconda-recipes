@@ -5,6 +5,9 @@
 export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
 # Make sure bindgen passes on our compiler flags.
 export BINDGEN_EXTRA_CLANG_ARGS="${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
+if [[ -z "$OSX_ARCH" ]]; then
+    # Set this so that it doesn't fail with open ssl errors
+    export RUSTFLAGS="-C link-arg=-undefined -C link-arg=dynamic_lookup"
+fi
 
-RUST_BACKTRACE=1 cargo clean
 RUST_BACKTRACE=1 cargo install --verbose --path . --root $PREFIX
