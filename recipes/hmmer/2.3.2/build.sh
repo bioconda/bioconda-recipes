@@ -2,7 +2,9 @@
 
 set -e -u -x
 
-./configure --prefix=$PREFIX --enable-threads --enable-debugging=3
+mkdir -p $PREFIX/bin
+
+./configure --prefix=$PREFIX/bin --enable-threads --enable-debugging=3
 make
 make install
 
