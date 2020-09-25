@@ -2,8 +2,10 @@
 
 set -e -u -x
 
-mkdir -p $PREFIX/bin
+ls -l $PREFIX/bin
 
-./configure --prefix=$PREFIX/bin --enable-threads --enable-altivec --enable-debugging=3
+./configure --prefix=$PREFIX --enable-threads --enable-debugging=3
 make
 make install
+
+ls -l $PREFIX/bin
