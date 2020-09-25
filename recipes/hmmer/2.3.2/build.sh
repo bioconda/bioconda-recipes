@@ -2,9 +2,11 @@
 
 set -e -u -x
 
-export CFLAGS=-I$PREFIX/include
-export LDFLAGS=-L$PREFIX/lib
+if [ `uname` == Darwin ]; then
+    ./configure CC="clang" --prefix=$PREFIX --enable-threads
+else
+    ./configure --prefix=$PREFIX --enable-threads
+fi
 
-./configure --prefix=$PREFIX --enable-threads
-make CC=${CC} CFLAGS=${CFLAGS}  LDFLAGS=${LDFLAGS}
+make
 make install
