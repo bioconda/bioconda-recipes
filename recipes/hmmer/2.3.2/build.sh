@@ -2,10 +2,20 @@
 
 set -e -u -x
 
+HMMER2_PROGRAMS="hmmalign hmmbuild hmmcalibrate hmmconvert hmmemit hmmfetch hmmindex hmmpfam hmmsearch"
+
 mkdir -p $PREFIX/bin
 
-./configure --prefix=$PREFIX/bin --enable-threads --enable-debugging=3
+./configure --enable-threads --enable-debugging=3
 make
 make install
 
-ls -l $PREFIX/bin
+ls -l
+
+ls -l src/
+
+for name in ${HMMER2_PROGRAMS} ; do
+  cp src/${name} ${PREFIX}/bin/
+done
+
+chmod a+x ${PREFIX}/bin/*
