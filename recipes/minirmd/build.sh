@@ -1,6 +1,6 @@
 #!/bin/bash
 
-make CXX="${CXX}" CPPFLAGS="${CPPFLAGS}" LIBS="${LDFLAGS} -lm -lz -lpthread"
+make GXX="${GXX}" CPPFLAGS="${CPPFLAGS}" LIBS="${LDFLAGS} -lm -lz -lpthread"
 
 mkdir -p "${PREFIX}/bin"
 cp minirmd "${PREFIX}/bin/"
