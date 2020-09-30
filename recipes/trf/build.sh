@@ -1,5 +1,5 @@
-#!/bin/bash
+#!/bin/sh
 
-mkdir -p $PREFIX/bin
-cp trf409* $PREFIX/bin/trf
-chmod +x $PREFIX/bin/trf
+./configure --prefix=$PREFIX CPPFLAGS=-DUNIXCONSOLE
+make
+make install
