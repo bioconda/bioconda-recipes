@@ -1,10 +1,23 @@
 #!/usr/bin/env bash
 
+set -e -o pipefail -x
+
+if [ "$(uname)" == "Darwin" ]; then
+    # On Mac OS X, we use prebuilt binaries. It's not the best solution, but
+    # the solution below does not work on Mac OS X
+    mkdir -p ${PREFIX}/bin
+    chmod +x bin/ngless
+    cp -pir bin/ngless ${PREFIX}/bin
+
+    mkdir -p ${PREFIX}/share
+    chmod +x share/ngless/bin/* share/ngless/bin/*/*
+    cp -pir share/ngless ${PREFIX}/share
+    exit 0
+fi
+
 
 # This tour de force script is mostly copy&pasted from
 # https://github.com/conda-forge/git-annex-feedstock
-
-set -e -o pipefail -x
 
 
 
@@ -69,6 +82,16 @@ if [[ -f "${HOST_LIBPTHREAD}" ]]; then
     rm ${HOST_LIBPTHREAD}
     ln -s /lib64/libpthread.so.0 ${HOST_LIBPTHREAD}
 fi
+
+
+# Ensure that GHC build platform is x86_64-unknown-linux (which GHC knows how to target),
+# rather than x86_64-conda-linux (which GHC does not know about).
+# Suggested by @isuruf on github; see
+# https://github.com/conda-forge/git-annex-feedstock/pull/96/commits/796678ac2cc106e67c4f1f89fb2e92c2ff153616 and
+# https://github.com/conda-forge/git-annex-feedstock/runs/945996913
+#
+unset host_alias
+unset build_alias
 
 
 #######################################################################################################
