@@ -1,31 +1,27 @@
 #!/bin/bash
 
-# set path for libssw.so
-export LIBRARY_PATH=${PREFIX}/lib
-export C_INCLUDE_PATH=${PREFIX}/include:${PREFIX}/include/linux
-export CPP_INCLUDE_PATH=${PREFIX}/include:${PREFIX}/include/linux
-export CXX_INCLUDE_PATH=${PREFIX}/include:${PREFIX}/include/linux
-export CPLUS_INCLUDE_PATH=${PREFIX}/include:${PREFIX}/include/linux
-export JAVA_HOME="${PREFIX}/bin"
-export LDFLAGS="-L$PREFIX/lib"
+export JAVA_HOME="${PREFIX}"
 
 cd src
-make
-make java
-chmod +x *
-cp example_cpp ${PREFIX}/bin
+make \
+    CC="${CC}" CXX="${CXX}" \
+    CFLAGS="${CFLAGS} ${LDFLAGS}" \
+    CXXFLAGS="${CXXFLAGS} ${LDFLAGS}"
+make java \
+    CC="${CC}" CXX="${CXX}" \
+    CFLAGS="${CFLAGS} ${LDFLAGS}" \
+    CXXFLAGS="${CXXFLAGS} ${LDFLAGS}"
 
-for i in *.py
-do
-sed -i.bak 's#!/usr/bin/env python#!/opt/anaconda1anaconda2anaconda3/bin/python#' $i
-done
+install -d "${PREFIX}/bin"
+install \
+    example_cpp \
+    *.py* \
+    ssw_test \
+    ssw.jar \
+    "${PREFIX}/bin/"
 
-cp *.py* ${PREFIX}/bin
-cp ssw_test ${PREFIX}/bin
-cp ssw.jar ${PREFIX}/bin
-cp *.so ${PREFIX}/lib
-
-# copy c/c++ files
-cp *.h ${PREFIX}/include
-cp ssw.c ${PREFIX}/include
-cp ssw_cpp.cpp ${PREFIX}/include
+mkdir -p "${PREFIX}/"{lib,include}
+cp *.so "${PREFIX}/lib"
+cp *.h "${PREFIX}/include"
+cp ssw.c "${PREFIX}/include"
+cp ssw_cpp.cpp "${PREFIX}/include"
