@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="geneLenDataBase_1.22.0.tar.gz"
+FN="geneLenDataBase_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/geneLenDataBase_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/geneLenDataBase_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-genelendatabase/bioconductor-genelendatabase_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/geneLenDataBase_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/geneLenDataBase_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-genelendatabase/bioconductor-genelendatabase_1.24.0_src_all.tar.gz"
 )
-MD5="0b403076ee853de74895940fe6190ac5"
+MD5="f3d34e3336560b79b0c3f100d613b4d3"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

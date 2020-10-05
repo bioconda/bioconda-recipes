@@ -1,13 +1,12 @@
-{% set name = "Augustus" %}
 {% set version = "3.3.3" %}
 {% set sha256 = "2fc5f9fd2f0c3bba2924df42ffaf55b5c130228cea18efdb3b6dfab9efa8c9f4" %}
 
 package:
-  name: {{ name|lower }}
+  name: augustus
   version: {{ version }}
 
 source:
-  url: https://github.com/Gaius-Augustus/{{ name }}/archive/v{{ version }}.tar.gz
+  url: https://github.com/Gaius-Augustus/Augustus/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
     - patches/bam2hints.makefile.patch
@@ -23,29 +22,29 @@ source:
     - patches/src.makefile.patch
 
 build:
-  number: 2
+  number: 5
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - bamtools
   host:
     - zlib
     - samtools ==0.1.19
+    - bamtools
     - htslib
     - gsl
     - lp_solve
-    - boost
+    - boost-cpp
     - sqlite
     - suitesparse
-    - openblas
+    - libblas
+    - libcblas
     - perl
     - perl-module-build
-    - libcblas
   run:
     - zlib
-    - boost
+    - boost-cpp
     - gsl
     - lp_solve
     - biopython
@@ -59,13 +58,12 @@ requirements:
     - perl-parallel-forkmanager
     - sqlite
     - suitesparse
-    - openblas
-    - libcblas
     - cdbtools
     - diamond
     # Needed by bamToWig.py
     - ucsc-fatotwobit
     - ucsc-twobitinfo
+    - bamtools
 
 test:
   commands:
@@ -125,7 +123,7 @@ test:
     - maskNregions.pl
     - moveParameters.pl
     - msa2prfl.pl --help
-    - new_species.pl 
+    - new_species.pl
     - optimize_augustus.pl
     - opt_init_and_term_probs.pl 2>&1 | grep "open" > /dev/null
     - parseSim4Output.pl 2>&1 | grep "parseSim4Output.pl" > /dev/null
@@ -176,6 +174,7 @@ extra:
   identifiers:
     - biotools:augustus
     - doi:10.1093/bioinformatics/btr010
+    - usegalaxy-eu:augustus
   notes: "Builds with sqlite support are currently only available on Linux due to compile issues with macOS."
   skip-lints:
     - should_not_be_noarch_source

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ecoliLeucine_1.26.0.tar.gz"
+FN="ecoliLeucine_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/ecoliLeucine_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ecoliLeucine_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ecolileucine/bioconductor-ecolileucine_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/ecoliLeucine_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ecoliLeucine_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ecolileucine/bioconductor-ecolileucine_1.28.0_src_all.tar.gz"
 )
-MD5="62e013baf402357355e0df636141ec30"
+MD5="d896b329011c33734d5e85fd1e2675ef"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
