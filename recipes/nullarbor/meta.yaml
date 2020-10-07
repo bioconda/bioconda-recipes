@@ -1,0 +1,71 @@
+{% set name = "nullarbor" %}
+{% set version = "2.0.20191013" %}
+{% set sha256 = "7c547057eef8545f30e2173863dbfee0d85fe100c88f0aa9c706229fa30f57f2" %}
+{% set user = "tseemann" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  noarch: generic
+
+requirements:
+  run:
+    - abricate >=0.9.8
+    - any2fasta >=0.4.2
+    - centrifuge >=1.0
+    - fasttree >=2.1.10
+    - iqtree >=1.6.12
+    - kraken >=1.1
+    - kraken2 >=2.0.7
+    - make >=4.2
+    - mash >=2.2
+    - megahit >=1.1.3
+    - mlst >=2.17.6
+    - newick_utils >=1.6
+    - perl >=5.16
+    - perl-file-which
+    - perl-file-spec
+    - perl-findbin
+    - perl-json
+    - perl-list-moreutils >=0.428
+    - perl-path-tiny
+    - perl-svg
+    - perl-text-csv
+    - perl-time-piece
+    - perl-yaml-tiny
+    - pigz
+    - prokka >=1.14
+    - quicktree >=2.5
+    - roary >=3.12
+    - samtools >=1.9
+    - seqtk >=1.3
+    - shovill >=1.0.9
+    - skesa >=2.3
+    - snippy >=4.4.3
+    - snp-dists >=0.6
+    - spades >=3.13
+    - trimmomatic >=0.39
+
+test:
+  commands:
+    - {{ name }}.pl --help
+    - {{ name }}.pl --version
+    - {{ name }}.pl --version | grep '{{ version }}'
+    - {{ name }}-report.pl --version | grep '{{ version }}'
+    - {{ name }}.pl --help
+    - roary2svg.pl --help | grep -i Usage
+    - fa --help | grep -i Usage
+    - fq --help | grep -i Usage
+
+about:
+  home: https://github.com/{{ user }}/{{ name }}
+  license: GPL2
+  license_file: LICENSE
+  summary: Reads to report pipeline for bacterial isolate NGS data

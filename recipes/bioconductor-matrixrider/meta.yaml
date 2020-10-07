@@ -1,0 +1,49 @@
+{% set version = "1.20.0" %}
+{% set name = "MatrixRider" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: d1330ad240e2c23aaa9fa2bad801f3b3
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: RUnit, BiocGenerics, BiocStyle, JASPAR2014
+requirements:
+  host:
+    - 'bioconductor-biostrings >=2.56.0,<2.57.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - 'bioconductor-tfbstools >=1.26.0,<1.27.0'
+    - 'bioconductor-xvector >=0.28.0,<0.29.0'
+    - r-base
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-biostrings >=2.56.0,<2.57.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - 'bioconductor-tfbstools >=1.26.0,<1.27.0'
+    - 'bioconductor-xvector >=0.28.0,<0.29.0'
+    - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Obtain total affinity and occupancies for binding site matrices on a given sequence'
+  description: 'Calculates a single number for a whole sequence that reflects the propensity of a DNA binding protein to interact with it. The DNA binding protein has to be described with a PFM matrix, for example gotten from Jaspar.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

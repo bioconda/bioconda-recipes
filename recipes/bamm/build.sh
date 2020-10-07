@@ -1,7 +1,6 @@
 #!/bin/bash
-export CFLAGS="-I$PREFIX/include"
-export CPPFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+export C_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
 
 (rm -rf c/htslib-1.3.1/)
 (cd c/ && ./autogen.sh)

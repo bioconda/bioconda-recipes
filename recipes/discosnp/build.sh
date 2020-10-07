@@ -1,5 +1,11 @@
 #!/bin/bash
 
+
+export C_INCLUDE_PATH=${PREFIX}/include
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
+export LD_LIBRARY_PATH=${PREFIX}/lib
+export LIBRARY_PATH=${PREFIX}/lib
+
 mkdir -p ${PREFIX}/bin
 
 # decrease RAM needed
@@ -14,20 +20,27 @@ sh INSTALL
 # change run_discoSnp++.sh deps path
 sed -i.bak 's|\$EDIR/bin|\$EDIR|' run_discoSnp++.sh
 sed -i.bak 's|scripts/|../scripts/|' run_discoSnp++.sh
+sed -i.bak 's|\$EDIR/bin|\$EDIR|' run_discoSnp++_ML.sh
 
-sed -i.bak 's|\$EDIR/bin|\$EDIR|' run_discoSnpRad.sh
-sed -i.bak 's|scripts_RAD/|../scripts_RAD/|' run_discoSnpRad.sh
 
-sed -i.bak 's|\${EDIR}/../build/bin/||' scripts_RAD/discoRAD_finalization.sh
+sed -i.bak 's|\$EDIR/../bin|\$EDIR|' discoSnpRAD/run_discoSnpRad.sh
+sed -i.bak 's|\$EDIR/clustering_scripts/|\$EDIR/../discoSnpRAD/clustering_scripts/|' discoSnpRAD/run_discoSnpRad.sh
+
+
+
+sed -i.bak 's|\$EDIR/../bin|\$EDIR|' discoSnpRAD/run_discoSnpRad.sh
+sed -i.bak 's|\$EDIR/clustering_scripts/|../discoSnpRAD/clustering_scripts/|' discoSnpRAD/run_discoSnpRad.sh
+
 
 # copy binaries
 cp run_discoSnp++.sh ${PREFIX}/bin
-cp run_discoSnpRad.sh ${PREFIX}/bin
+cp run_discoSnp++_ML.sh ${PREFIX}/bin
+cp discoSnpRAD/run_discoSnpRad.sh ${PREFIX}/bin
 
 # apply permissions for pipeline
-chmod +x ${PREFIX}/bin/run_discoSnp++.sh
-chmod +x ${PREFIX}/bin/run_discoSnpRad.sh
+chmod +x ${PREFIX}/bin/*.sh
 
+# copy binaries
 cp build/ext/gatb-core/bin/dbgh5 ${PREFIX}/bin
 cp build/bin/read_file_names ${PREFIX}/bin
 cp build/bin/kissnp2 ${PREFIX}/bin
@@ -36,8 +49,8 @@ cp build/bin/quick_hierarchical_clustering ${PREFIX}/bin
 
 # copy scripts directory
 cp -R scripts ${PREFIX}
-cp -R scripts_RAD ${PREFIX}
+cp -R discoSnpRAD ${PREFIX}
 
 # apply exec permissions
 chmod +x ${PREFIX}/scripts/*.sh
-chmod +x ${PREFIX}/scripts_RAD/*.sh
+chmod +x ${PREFIX}/discoSnpRAD/clustering_scripts/*.sh

@@ -1,0 +1,47 @@
+{% set version = "1.4.0" %}
+{% set name = "Rhisat2" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 5b04147ad4ad06e94f09183acfe16ec2
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: testthat, knitr, rmarkdown, BiocStyle
+# SystemRequirements: GNU make
+requirements:
+  host:
+    - 'bioconductor-genomicfeatures >=1.40.0,<1.41.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-sgseq >=1.22.0,<1.23.0'
+    - r-base
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-genomicfeatures >=1.40.0,<1.41.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-sgseq >=1.22.0,<1.23.0'
+    - r-base
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'R Wrapper for HISAT2 Aligner'
+  description: 'An R interface to the HISAT2 spliced short-read aligner by Kim et al. (2015). The package contains wrapper functions to create a genome index and to perform the read alignment to the generated index.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

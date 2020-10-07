@@ -1,13 +1,15 @@
-{% set version = "2.2.5" %}
-{% set name = "meraculous" %}
+{% set version = "2.2.6" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: meraculous
+  version: {{ version }}
 
 source:
   url: https://sourceforge.net/projects/meraculous20/files/Meraculous-v{{ version }}.tar.gz
-  sha256: d318097111c6fa9a96b030f4269b5d9a35fb20a40ee174db825071e649263364
+  sha256: c9cf84ed6a7a15544ccff603c740b1b777cbf5b9ebc891a0a69f2c8a3b24e908
+  patches:
+    - 0001-Remove-compiler-upper-bound-version-check.patch
+    - 0002-No-static-linking.patch
 
 build:
   skip: True  # [osx]
@@ -16,19 +18,23 @@ build:
 requirements:
   build:
     - cmake >=2.8
-    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
     - libgd >=2.0
     - boost-cpp
-    - perl ==5.22.2.1
+    - perl
     - perl-log-log4perl >=1.31
     - gnuplot >=3.7
   run:
     - libgd >=2.0
     - boost-cpp
-    - perl ==5.22.2.1
+    - perl
     - perl-log-log4perl >=1.31
     - gnuplot >=3.7
+
+test:
+  commands:
+    - run_meraculous.sh -h
 
 about:
   home: https://jgi.doe.gov/data-and-tools/meraculous/
@@ -41,11 +47,7 @@ about:
     pipeline implements a highly transparent and portable model of job control and monitoring where different
     assembly stages can be executed and re-executed separately or in unison on a wide variety of architectures.
   license: GPLv3
-  license_file: Meraculous-v{{ version }}/license.txt
-
-test:
-  commands:
-    - run_meraculous.sh -h
+  license_file: license.txt
 
 extra:
   identifiers:

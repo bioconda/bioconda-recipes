@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="ngsplotdb_hg38_76_3.00.tar.gz"
 URLS=(
-  "https://drive.google.com/uc?export=download&id=0B5hDZ2BucCI6S3E4dVprdlF2YW8"
+  "https://depot.galaxyproject.org/software/ngsplotdb-hg38/ngsplotdb-hg38_3.00_src_all.tar.gz"
 )
 MD5="9d8fd42daef18bfc72131625db901204"
 
@@ -39,6 +39,6 @@ if [[ $SUCCESS != 1 ]]; then
 fi
 
 # Install and clean up
-ngsplotdb.py install "${TARBALL}" >> "${PREFIX}/.messages.txt" 2>&1
+ngsplotdb.py -y install "${TARBALL}" >> "${PREFIX}/.messages.txt" 2>&1
 rm $TARBALL
 rmdir $STAGING

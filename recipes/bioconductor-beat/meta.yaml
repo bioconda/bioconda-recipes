@@ -1,42 +1,50 @@
-{% set version = "1.16.0" %}
+{% set version = "1.26.0" %}
 {% set name = "BEAT" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: e7997b5d394caa9d407ae8915bdea3ba2825185c5006fc01a866f3ff70219374
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 2a86efccc957692674db957c6cec6273
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
   host:
-    - bioconductor-biostrings
-    - bioconductor-bsgenome
-    - bioconductor-genomicranges
-    - bioconductor-shortread
+    - 'bioconductor-biostrings >=2.56.0,<2.57.0'
+    - 'bioconductor-bsgenome >=1.56.0,<1.57.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-shortread >=1.46.0,<1.47.0'
     - r-base
   run:
-    - bioconductor-biostrings
-    - bioconductor-bsgenome
-    - bioconductor-genomicranges
-    - bioconductor-shortread
+    - 'bioconductor-biostrings >=2.56.0,<2.57.0'
+    - 'bioconductor-bsgenome >=1.56.0,<1.57.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-shortread >=1.46.0,<1.47.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'LGPL (>= 3.0)'
-  summary: 'Model-based analysis of single-cell methylation data'
-
+  summary: 'BEAT - BS-Seq Epimutation Analysis Toolkit'
+  description: 'Model-based analysis of single-cell methylation data'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
 extra:
   identifiers:
     - biotools:beat
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-beat
+    path: recipes/bioconductor-beat
+    version: 1.18.0
+

@@ -1,38 +1,46 @@
 {% set name = "nanopolish" %}
-{% set version = "0.9.2" %}
+{% set version = "0.13.2" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 5
+  number: 2
+  binary_relocation: False
 
 source:
-  url: https://github.com/jts/nanopolish/archive/v{{ version }}.tar.gz
-  sha256: 7ed50813597e07a864c20ed171ae507f978a21cb46a0dbc96f78cb0cd236dd5b
+  git_url: https://github.com/jts/nanopolish
+  git_rev: 'v{{ version }}'
+  sha256: be9ab70ff0753519323e4cd0e6be50b164c4239bd9c20ffa5207c2d6fc20d120
   patches:
     - nanopolish.patch
 
 requirements:
   build:
-  - {{ compiler('c') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
-  - fast5 ==0.6.5
-  - htslib >1.4
-  - hdf5
-  - eigen
-  - ncurses
-  - bzip2
-
+    - htslib
+    - hdf5 ==1.8.18
+    - eigen
+    - ncurses
+    - bzip2
+    - openmp
+    - libcurl
+    - zlib
   run:
-  - python
-  - hdf5
-  - biopython
-  - bwa
-  - eigen
-  - ncurses
-  - libdeflate
+    - python
+    - hdf5 ==1.8.18
+    - biopython
+    - bwa
+    - eigen
+    - ncurses
+    - libdeflate
+    - openmp
+    - minimap2
+    - libcurl
+    - zlib
 
 test:
   commands:
@@ -44,3 +52,9 @@ about:
   license: MIT
   license_file: LICENSE
   summary: 'Signal-level algorithms for MinION data.'
+
+extra:
+  skip-lints:
+    - uses_vcs_url
+  identifiers:
+    - usegalaxy-eu:nanopolish_eventalign

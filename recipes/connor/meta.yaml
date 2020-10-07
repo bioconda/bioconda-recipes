@@ -1,7 +1,5 @@
-{% set version = "0.6" %}
-{% set sha256 = "19e49182d095e6aa84f018fc4076e5c95b6e7ece7b833590e7fca8bc97d6d312" %}
-
-
+{% set version = "0.6.1" %}
+{% set sha256 = "8a97126bb3f151467b484e49932d6e7beb1dea15c85e7d4a6f6f968198043aca" %}
 
 package:
   name: connor
@@ -13,21 +11,24 @@ source:
 
 build:
   number: 2
-  script: python -m pip install --no-deps --ignore-installed .
+  noarch: python
+  # Remove incorrect cython requirement
+  script: sed -i.bak "53d" setup.py && python -m pip install --no-deps --ignore-installed .
 
 requirements:
   host:
     - python
     - pip
     - cython
-    - sortedcontainers
-    - pysam >0.8.3,<=0.12
-    - setuptools
   run:
     - python
-    - cython
     - sortedcontainers
-    - pysam >0.8.3,<=0.12
+    # The actual requirements aren't this strict, but 0.9.1 has been rebuilt
+    - pysam 0.9.1
+    # These aren't actually needed, but this fixes the conda solver
+    - htslib 1.3.1
+    - samtools 1.3.1
+    - bcftools 1.3.1
 
 test:
   commands:

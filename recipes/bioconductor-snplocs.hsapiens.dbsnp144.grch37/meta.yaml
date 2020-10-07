@@ -1,0 +1,47 @@
+{% set version = "0.99.20" %}
+{% set name = "SNPlocs.Hsapiens.dbSNP144.GRCh37" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: bd338bb583cacc18f210e871dac79ebf
+build:
+  number: 4
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: Biostrings, BSgenome.Hsapiens.UCSC.hg19
+requirements:
+  host:
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-bsgenome >=1.56.0,<1.57.0'
+    - 'bioconductor-genomeinfodb >=1.24.0,<1.25.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - r-base
+  run:
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-bsgenome >=1.56.0,<1.57.0'
+    - 'bioconductor-genomeinfodb >=1.24.0,<1.25.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - r-base
+    - curl
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'SNP locations for Homo sapiens (dbSNP Build 144)'
+  description: 'SNP locations and alleles for Homo sapiens extracted from NCBI dbSNP Build 144. The source data files used for this package were created by NCBI on May 29-30, 2015, and contain SNPs mapped to reference genome GRCh37.p13. WARNING: Note that the GRCh37.p13 genome is a patched version of GRCh37. However the patch doesn''t alter chromosomes 1-22, X, Y, MT. GRCh37 itself is the same as the hg19 genome from UCSC *except* for the mitochondrion chromosome. Therefore, the SNPs in this package can be "injected" in BSgenome.Hsapiens.UCSC.hg19 and they will land at the correct position but this injection will exclude chrM (i.e. nothing will be injected in that sequence).'
+

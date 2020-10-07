@@ -1,0 +1,55 @@
+{% set name = "LexMapr" %}
+{% set version = "0.7.1" %}
+{% set sha256 = "148e25d050cad8f20c06359a60c8d3d6b780ea5c6c2bb623d630c20bb638090e" %}
+
+package:
+    name: {{ name|lower }}
+    version: {{ version }}
+source:
+  url: https://github.com/Public-Health-Bioinformatics/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  # This could be 'noarch: python', however conda's solver gets confused, see
+  # https://github.com/bioconda/bioconda-recipes/pull/16166#issuecomment-508794805 .
+  # As a (temporary) measure, remove 'noarch: python' to constrain the solver's search space.
+  # noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  skip: True  # [py<35 or py>=38]
+  
+requirements:
+  host:
+    # TODO: Remove the jinja expression once 'noarch: python' is set again.
+    #       Without that expression conda-build 3.17.8  did not constrain the python
+    #       version for conda (see solver issue above).
+    - python {{ python }}
+    - pip
+  run:
+    # TODO: Remove the jinja expression, see TODO above.
+    - python {{ python }}
+    - python-dateutil
+    - nltk 3.4.5.*
+    - nltk_data
+    - inflection
+    - wikipedia
+    - rdflib
+
+test:
+    commands:
+        - lexmapr -h
+    imports:
+        - lexmapr
+about:
+    home: https://github.com/LexMapr/lexmapr
+    license: GPL-3.0
+    license_file: LICENSE
+    summary: A Lexicon and Rule-Based Tool for Translating Short Biomedical Specimen Descriptions into Semantic Web Ontology Terms
+
+extra:
+  skip-lints:
+    # This could be 'noarch: python', however conda's solver gets confused, see
+    # https://github.com/bioconda/bioconda-recipes/pull/16166#issuecomment-508794805 .
+    # As a (temporary) measure, remove 'noarch: python' to constrain the solver's search space.
+    - should_be_noarch_python
+    - should_not_use_skip_python

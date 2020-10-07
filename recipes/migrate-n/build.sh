@@ -1,13 +1,11 @@
 #!/bin/bash
 
-
 cd src
 
-./configure
-sed -i.bak 's/#include <xlocale.h>//' data.c
-make
-
-mkdir -p $PREFIX/bin
-
-cp migrate-n $PREFIX/bin
-
+autoreconf -fi
+./configure --prefix="${PREFIX}"
+make all mpis
+# Manual install since `make install` wants to install man pages into non-existent path.
+install -d "${PREFIX}/bin"
+install migrate-n migrate-n-mpi "${PREFIX}/bin/"
+# make install

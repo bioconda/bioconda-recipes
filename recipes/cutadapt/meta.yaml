@@ -1,25 +1,30 @@
-{% set version = "1.16" %}
+{% set version = "2.10" %}
 
 package:
   name: cutadapt
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/c/cutadapt/cutadapt-{{ version }}.tar.gz
-  sha256: 9432045dcf59802ef9bb2d1f7232e8a015eb9b984e7c7ff35a6c8a57681e7a79
+  url: https://files.pythonhosted.org/packages/4b/9d/3f98c2619206430ad11e485a2a2f6b3e37f792f11523fee372739abdc1cd/cutadapt-2.10.tar.gz
+  sha256: 936b88374b5b393a954852a0fe317a85b798dd4faf5ec52cf3ef4f3c062c242a
 
 build:
-  number: 2
-  script: pip install --no-deps .
+  number: 1
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  skip: True  # [py27]
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
     - pip
     - python
-    - xopen >=0.3.2
+    - cython
+    - setuptools_scm
   run:
     - python
-    - xopen >=0.3.2
+    - xopen >=0.8.4
+    - dnaio >=0.4.2
     - pigz
 
 test:
@@ -30,8 +35,8 @@ test:
 
 about:
   home: https://cutadapt.readthedocs.io/
-  license: MIT License
-  summary: 'trim adapters from high-throughput sequencing reads'
+  license: MIT
+  summary: Trim adapters from high-throughput sequencing reads
 
 extra:
   identifiers:

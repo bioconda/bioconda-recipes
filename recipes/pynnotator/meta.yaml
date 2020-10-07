@@ -1,0 +1,45 @@
+{% set name = "pynnotator" %}
+{% set version = "1.9.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "e50650cf5c92aabeeb747db08e295ab2cde3630e5d3b7c60e6f1b99e17d6b3dd"
+
+build:
+  number: 0
+  entry_points:
+    - pynnotator=pynnotator.main:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  noarch: python
+
+requirements:
+  host:
+    - python >=3
+  run:
+    - pysam >=0.15  # avoid inappropriate pinnings in earlier versions
+    - python >=3
+    - distro
+
+test:
+  imports:
+    - pynnotator
+    - pynnotator.helpers
+    - pynnotator.tests
+  commands:
+    - pynnotator --help
+  requires:
+    - nose
+
+about:
+  home: "http://github.com/raonyguimaraes/pynnotator"
+  license: "BSD"
+  license_family: "BSD"
+  summary: "A Python Annotation Framework for VCFs using multiple tools."
+
+extra:
+  recipe-maintainers:
+    - raonyguimaraes

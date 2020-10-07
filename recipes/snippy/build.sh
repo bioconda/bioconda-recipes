@@ -1,3 +1,4 @@
 #!/bin/bash
 
-cp -r bin/* $PREFIX/bin
+rm -f binaries/{darwin,linux}/*
+cp -r * $PREFIX/

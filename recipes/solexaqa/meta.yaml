@@ -1,0 +1,46 @@
+{% set version = "3.1.7.1" %}
+{% set sha256 = "b3bdabf955387a4f6176dbdfda1cf03bb869c077b4eec152304f2e76be5f0cf6" %}
+
+package:
+  name: solexaqa
+  version: {{ version }}
+
+build:
+  number: 1
+  skip: True  # [not linux]
+
+source:
+  url: https://downloads.sourceforge.net/project/solexaqa/src/SolexaQA++_v{{ version }}.zip
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-No-static-build.patch
+    - 0002-Replace-hardcoded-BOOST_PATH.patch
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - boost-cpp
+    - icu
+    - zlib
+  run:
+    - boost-cpp
+    - icu
+    - zlib
+    # R is not a strict dependency, but can provide enhanced functionality,
+    # so we leave it as an option for the user, not a hard requirement.
+    # - r
+
+test:
+  commands:
+    - printf '@HWI-ST871:91:C0JGJACXX:8:1302:10862:157183 1:N:0:TAGCTT\nTGTCTCTGCTTTTGAATATGCTATCTAGGTTGGTCATAACTTTCTTTCCAAGGAGTAATCATCTTTTAATTTCATGGCTACAATCACCATTTGCAGTTATT\n+\nCCCCFFFFFHHHHHJIJIJJJIIJJIGJJIJIJHIGHIJJJJJJJJIJJJJIIIGFEGIGGIJIIIJI>FHIJIHHJIHIHG>CEFFFFFED@C:>AC@>;\n' >tiny.fastq ; SolexaQA++ dynamictrim tiny.fastq
+
+about:
+  home: http://solexaqa.sourceforge.net/
+  license: GPLv3
+  summary: Quality statistics and visual representations for second-generation sequencing data
+
+extra:
+  identifiers:
+    - doi:10.1186/1471-2105-11-485

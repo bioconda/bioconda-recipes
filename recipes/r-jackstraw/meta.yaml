@@ -1,0 +1,94 @@
+{% set version = '1.3' %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-jackstraw
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/jackstraw_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/jackstraw/jackstraw_{{ version }}.tar.gz
+  sha256: 6085e6580992cb74fe97c55d101b393fda59ccdda7c12fac89d63b7085530c0b
+
+build:
+  merge_build_host: True  # [win]
+  number: 4
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+
+  host:
+    - r-base
+    - r-clusterr
+    - r-cluster
+    - r-corpcor
+    - r-irlba
+    - bioconductor-lfa
+    - bioconductor-qvalue
+    - r-rsvd
+  run:
+    - r-base
+    - r-clusterr
+    - r-cluster
+    - r-corpcor
+    - r-irlba
+    - bioconductor-lfa
+    - bioconductor-qvalue
+    - r-rsvd
+
+test:
+  commands:
+    - $R -e "library('jackstraw')"           # [not win]
+    - "\"%R%\" -e \"library('jackstraw')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=jackstraw
+  license: GPL-2
+  summary: Test for association between the observed data and their systematic patterns of variations.
+    Systematic patterns may be captured by latent variables using principal component
+    analysis (PCA), factor analysis (FA), and related methods. The jackstraw enables
+    statistical testing for association between observed variables and latent variables,
+    as captured by PCs or other estimates. Similarly, unsupervised clustering, such
+    as K-means clustering, partition around medoids (PAM), and others, finds subpopulations
+    among the observed variables. The jackstraw estimates statistical significance of
+    cluster membership, including unsupervised evaluation of cell identities in single
+    cell RNA-seq. P-values and posterior probabilities allows one to rigorously evaluate
+    the strength of cluster membership assignments.
+  license_family: GPL2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
+extra:
+  recipe-maintainers:
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak
+    - cbrueffer
+    - dbast
+
+# Package: jackstraw
+# Type: Package
+# Title: Statistical Inference for Unsupervised Learning
+# Version: 1.3
+# Date: 2018-12-03
+# Author: Neo Christopher Chung <nchchung@gmail.com>, John D. Storey <jstorey@princeton.edu>, Wei Hao <whao@princeton.edu>
+# Maintainer: Neo Christopher Chung <nchchung@gmail.com>
+# Description: Test for association between the observed data and their systematic patterns of variations. Systematic patterns may be captured by latent variables using principal component analysis (PCA), factor analysis (FA), and related methods. The jackstraw enables statistical testing for association between observed variables and latent variables, as captured by PCs or other estimates. Similarly, unsupervised clustering, such as K-means clustering, partition around medoids (PAM), and others, finds subpopulations among the observed variables. The jackstraw estimates statistical significance of cluster membership, including unsupervised evaluation of cell identities in single cell RNA-seq. P-values and posterior probabilities allows one to rigorously evaluate the strength of cluster membership assignments.
+# LazyData: true
+# Depends: R (>= 3.0.0)
+# Imports: corpcor, cluster, methods, ClusterR, qvalue, lfa, stats, irlba, rsvd
+# Suggests: parallel, knitr, rmarkdown
+# License: GPL-2
+# Encoding: UTF-8
+# RoxygenNote: 6.1.0
+# VignetteBuilder: knitr
+# NeedsCompilation: no
+# Packaged: 2018-12-03 15:41:37 UTC; nc
+# Repository: CRAN
+# Date/Publication: 2018-12-03 16:10:03 UTC

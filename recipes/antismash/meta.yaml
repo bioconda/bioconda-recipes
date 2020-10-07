@@ -1,73 +1,71 @@
-{% set version = "4.1.0" %}
-{% set sha256 = "bf2db777fdaa269728b911ebd31c4d9726039058b59fe578c09148dd7ad3cb1c" %}
+{% set name = "antiSMASH" %}
+{% set version = "5.1.2" %}
+{% set sha256 = "a500edfa344318f8cd304a9a629695e210850815b0ca4077e06bf6ad7220c4db" %}
 
 package:
-  name: antismash
+  name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 2
-  entry_points:
-    - antismash=run_antismash:main
-    - download-antismash-databases=download_databases:main
+  number: 3
+  noarch: python
 
 source:
-  url: https://dl.secondarymetabolites.org/releases/{{ version }}/antismash-{{ version }}.tar.gz
+  url: https://dl.secondarymetabolites.org/releases/{{ version }}/antismash-{{ version }}.tar.gz 
   sha256: {{ sha256 }}
-  patches:
-    - smiles.patch [osx]
-    - manifest.patch
 
 requirements:
   host:
-    - python >=2.7,<3.0a0
+    - python >=3.5
     - pip
   run:
-    - python >=2.7,<3.0a0
-    - argparse
-    - backports.lzma
-    - bcbiogff
-    - biopython >=1.65
-    - blast ==2.2.31
-    - clustalw
-    - cssselect
-    - diamond ==0.8.36
-    - ete2
-    - fasttree ==2.1.9
-    - glimmer ==3.02
-    - glimmerhmm ==3.0.4
-    - helperlibs
-    - hmmer
-    - hmmer2
-    - openjdk
-    - libxml2 ==2.9.4
-    - mafft
-    - matplotlib
-    - meme ==4.11.2
-    - muscle
-    - networkx
+    - python >=3.5
     - numpy
-    - pandas
-    - perl-bioperl
-    - perl-pathtools
-    - prodigal
-    - pyexcelerator
-    - pyquery ==1.2.9
-    - pysvg
+    - biopython >=1.71
+    - helperlibs >=0.2.0
+    - jinja2
+    - pysvg-py3
+    - bcbio-gff
+    - pyscss
+    - matplotlib-base
     - scipy
-    - scikit-learn ==0.18.2
-    - xz ==5.2.2
+    - openjdk
+    - scikit-learn >=0.19
+    - diamond 0.9.*
+    - fasttree 2.1.*
+    - glimmerhmm ==3.0.*
+    - hmmer2
+    - hmmer ==3.1b2
+    - meme <=4.11.2
+    - muscle 3.8.*
+    - blast
+    - prodigal
 
 test:
   commands:
     - antismash -h
+    - blastp -help
+    - fasttree -help
+    - diamond --help 2>&1 > /dev/null
 
 about:
-  home: http://antismash.secondarymetabolites.org/
-  license: AGPL-3.0-or-later
+  home: https://docs.antismash.secondarymetabolites.org/intro/
+  license: AGPL-3.0
+  license_family: AGPL
   license_file: LICENSE.txt
-  summary: antiSMASH allows the rapid genome-wide identification, annotation and analysis of secondary metabolite biosynthesis gene clusters.
+  summary: antiSMASH - the antibiotics and Secondary Metabolite Analysis SHell
+  description: |
+        antiSMASH allows the rapid genome-wide identification,
+        annotation and analysis of secondary metabolite biosynthesis gene clusters.
+  dev_url: https://github.com/antismash/antismash
+  doc_url: https://docs.antismash.secondarymetabolites.org
 
 extra:
   identifiers:
     - biotools:antismash
+    - doi:10.1093/nar/gkr466
+    - doi:10.1093/nar/gkt449
+    - doi:10.1093/nar/gkv437
+    - doi:10.1093/nar/gkx319
+    - doi:10.1093/nar/gkz310
+    - usegalaxy-eu:antismash

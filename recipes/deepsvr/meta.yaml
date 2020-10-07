@@ -1,0 +1,67 @@
+package:
+  name: deepsvr
+  version: "0.1.0"
+
+source:
+  url: https://github.com/griffithlab/DeepSVR/releases/download/v0.1.0/deepsvr-0.1.0.tar.gz
+  sha256: c9f394ffbdeb0fbe56b519c3aaa8e59ad00c06675b903abeeb1a4e21b4f04c54 
+
+build:                                                                          
+  noarch: python                                                                
+  script: 
+    - flake8 . -v --config=.flake8rc
+    - nosetests --verbose
+    - {{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir .
+  number: 0
+  entry_points:
+    - deepsvr = deepsvr.cli:main
+
+requirements:
+  build:
+    - python==3.6.1
+    - setuptools
+    - nose
+    - flake8
+    - pandas==0.20.3
+    - numpy==1.12.1
+    - scikit-learn
+    - matplotlib
+    - seaborn
+    - bam-readcount
+    - convert_zero_one_based
+    - click
+    - tensorflow<=1.0.1
+    - keras==2.0.4
+    - h5py
+  run:
+    - python==3.6.1
+    - bam-readcount
+    - pandas==0.20.3
+    - numpy==1.12.1
+    - scikit-learn
+    - matplotlib
+    - seaborn
+    - convert_zero_one_based
+    - click
+    - tensorflow<=1.0.1
+    - keras==2.0.4
+    - scikit-learn
+    - h5py
+
+test:
+  imports:
+    - deepsvr
+  comands:
+    - LC_ALL=C.UTF-8 LANG=C.UTF-8 deepsvr --version # [linux]
+    - LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 deepsvr --version # [osx]
+    - LC_ALL=C.UTF-8 LANG=C.UTF-8 deepsvr --help # [linux]
+    - LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 deepsvr --help # [osx]
+  extra:
+    container:
+      extended-base: true
+    
+
+about:
+  home: https://github.com/griffithlab/deepsvr
+  license: MIT
+  summary: "DeepSVR stands for deep somatic variant refinement. It uses deep learning to classify real somatic and anomalous variants in paired tumor sequencing data."

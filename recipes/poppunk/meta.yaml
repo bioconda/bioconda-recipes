@@ -1,0 +1,68 @@
+{% set version = "2.2.0" %}
+{% set name = "PopPUNK" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/p/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: 88d9820e8315a4bd86c9592a5cf307f282784489a3cc403d0bac2ed530d408fc
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  entry_points:
+    - poppunk = PopPUNK.__main__:main
+    - poppunk_prune = PopPUNK.prune_db:main
+    - poppunk_references = PopPUNK.reference_pick:main
+    - poppunk_tsne = PopPUNK.tsne:main
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+
+  run:
+    - python >=3.8
+    - numpy
+    - scipy
+    - scikit-learn
+    - dendropy
+    - pandas
+    - graph-tool
+    - matplotlib-base
+    - hdbscan
+    - pp-sketchlib >=1.5.1
+    - rapidnj
+    # The xorg-* requirements are only used for gtk3 which is pulled in via graph-tool.
+    - xorg-libxi
+    - xorg-libxcursor
+    - xorg-libxdamage
+    - xorg-libxcomposite
+    - xorg-libxrandr
+    - xorg-libxinerama
+    - xorg-libxpm
+    - xorg-libxaw
+    - xorg-libxfixes
+
+test:
+  imports:
+    - PopPUNK
+
+  commands:
+    - poppunk --help
+    - poppunk_prune --help
+    - poppunk_references --help
+    - poppunk_tsne --help
+
+about:
+  home: https://www.poppunk.net
+  license: Apache-2.0
+  license_family: APACHE
+  summary: 'PopPUNK (POPulation Partitioning Using Nucleotide Kmers)'
+
+extra:
+  identifiers:
+    - doi:10.1101/gr.241455.118

@@ -1,7 +1,9 @@
 #!/bin/bash
 
-mkdir -p ${PREFIX}/bin
 cd src/
+
 # without -fpermissive, this fails with GCC7 due to bad style
-make CXXFLAGS+='-fpermissive'
-cp ../bin/tandem.exe ${PREFIX}/bin/xtandem
+make CXX="${CXX}" CXXFLAGS+='-fpermissive' LDFLAGS+='-lpthread -lm -lexpat'
+
+mkdir -p "${PREFIX}/bin"
+cp ../bin/tandem.exe "${PREFIX}/bin/xtandem"

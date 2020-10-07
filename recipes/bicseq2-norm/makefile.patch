@@ -1,0 +1,55 @@
+--- Makefile.old	2019-04-23 18:58:43.470133958 -0500
++++ Makefile	2019-04-24 15:04:03.716333774 -0500
+@@ -1,28 +1,34 @@
+-CC = gcc
++
++PREFIX :=
++EXECUTABLE := combineFile PrepPois PrepPoisGAM BRS filterCNV purityEM random_split
++BIN_DIR := bin
+ CFLAGS = -g -O2 -lm -Wall
+ 
+-all: combineFile PrepPois PrepPoisGAM BRS filterCNV purityEM random_split
++all: directory $(EXECUTABLE)
++
++directory:
++	mkdir $(BIN_DIR)
+ 
+ combineFile: combineFile/combine.o lib/read.o
+-	$(CC) $(CFLAGS) combineFile/combine.o lib/read.o -o combineFile/combineFile
++	$(CC) $(CFLAGS) combineFile/combine.o lib/read.o -o $(BIN_DIR)/$@
+ 
+ PrepPois: DataPrepare/DtaPrep.o lib/read.o lib/statlib.o
+-	$(CC) $(CFLAGS)  DataPrepare/DtaPrep.o lib/read.o lib/statlib.o -o DataPrepare/PrepPois
++	$(CC) $(CFLAGS)  DataPrepare/DtaPrep.o lib/read.o lib/statlib.o -o $(BIN_DIR)/$@
+ 
+ PrepPoisGAM: DataPrepareGAM/DtaPrepGAM.o lib/read.o lib/statlib.o
+-	$(CC) $(CFLAGS) DataPrepareGAM/DtaPrepGAM.o lib/read.o lib/statlib.o -o DataPrepareGAM/PrepPoisGAM
++	$(CC) $(CFLAGS) DataPrepareGAM/DtaPrepGAM.o lib/read.o lib/statlib.o -o $(BIN_DIR)/$@
+ 
+ BRS: BRS_1bp/BRS.o BRS_1bp/pos_cnt_lst.o lib/read.o
+-	$(CC) $(CFLAGS) BRS_1bp/BRS.o BRS_1bp/pos_cnt_lst.o lib/read.o -o BRS_1bp/BRS
++	$(CC) $(CFLAGS) BRS_1bp/BRS.o BRS_1bp/pos_cnt_lst.o lib/read.o -o $(BIN_DIR)/$@
+ 
+ filterCNV: Filter/filter.o lib/read.o
+-	$(CC) $(CFLAGS) Filter/filter.o lib/read.o -o Filter/filterCNV
++	$(CC) $(CFLAGS) Filter/filter.o lib/read.o -o $(BIN_DIR)/$@
+ 
+ purityEM: purityEM/purityEM.o purityEM/EM.o lib/read.o purityEM/gamma.o
+-	 $(CC) $(CFLAGS) purityEM/purityEM.o purityEM/EM.o lib/read.o purityEM/gamma.o -o  purityEM/purityEM
++	 $(CC) $(CFLAGS) purityEM/purityEM.o purityEM/EM.o lib/read.o purityEM/gamma.o -o $(BIN_DIR)/$@
+ 
+ random_split: randomSample/split.o
+-	$(CC) $(CFLAGS) randomSample/split.o -o randomSample/random_split
++	$(CC) $(CFLAGS) randomSample/split.o -o $(BIN_DIR)/$@
+ 
+ 
+ combine.o: combineFile/read.h
+@@ -67,5 +73,7 @@
+ 	$(CC) $(CFLAGS) -c lib/read.c
+ 
+ clean:
+-	rm -rf combineFile/*.o DataPrepare/*.o lib/*.o DataPrepareGAM/*.o BRS_1bp/*.o Filter/*.o purityEM/*.o randomSample/*.o
++	rm -rf combineFile/*.o DataPrepare/*.o lib/*.o DataPrepareGAM/*.o BRS_1bp/*.o Filter/*.o purityEM/*.o randomSample/*.o $(BIN_DIR)
+ 
++install: $(EXECUTABLE)
++	cp $(BIN_DIR)/* $(PREFIX)/bin/

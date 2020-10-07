@@ -6,7 +6,7 @@ then
 fi
 
 mkdir -p bin
-export CFLAGS="-I${PREFIX}/include -L${PREFIX}/lib"
+export CFLAGS="-I${PREFIX}/include -L${PREFIX}/lib -fpermissive"
 make -j 2
 cp bin/* ${PREFIX}/bin
 chmod +x mapsplice.py

@@ -1,0 +1,40 @@
+{% set name = "python-bioformats" %}
+{% set version = "1.5.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+  
+source:
+  url: https://github.com/CellProfiler/python-bioformats/archive/v{{version}}.zip
+  sha256: 72e72f681f29d437a7ba71a6b1aa28f83497a2ad774c32a00f16259ae3dfae79
+  
+build:
+  noarch: python
+  number: 0
+  script:
+    - "SETUPTOOLS_SCM_PRETEND_VERSION={{version}} {{ PYTHON }} -m pip install . --no-deps -vv"
+    - mkdir -p ${PREFIX}/lib
+    - ln -s ${PREFIX}/jre/lib/amd64/server/libjvm.so  ${PREFIX}/lib/
+
+requirements:
+  host:
+    - pip
+    - python <3
+    - setuptools_scm
+    - openjdk 8.*
+  run:
+    - python <3
+    - boto3
+    - javabridge >=1.0
+    - openjdk 8.*
+
+test:
+  imports:
+    - bioformats
+
+about:
+  home: https://github.com/CellProfiler/python-bioformats
+  license: 3-clause BSD license
+  license_family: BSD
+  summary: Python-bioformats is a Python wrapper for Bio-Formats, a standalone Java library for reading and writing life sciences image file formats.

@@ -1,0 +1,77 @@
+{% set version = '0.2.0-beta' %}
+{% set sha256 = 'dc83f56eaef00b8da690cd6561fc12f8380db69115263a5d8cbaf8199f842cbf' %}
+
+package:
+  name: r-loomr
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url: https://github.com/mojaveazure/loomR/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  script: R CMD INSTALL --build .
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  host:
+    - r-base
+    - r-matrix
+    - r-r6
+    - r-hdf5r
+    - r-iterators
+    - r-itertools
+  run:
+    - r-base
+    - r-matrix
+    - r-r6
+    - r-hdf5r
+    - r-iterators
+    - r-itertools
+    - hdf5
+
+test:
+  commands:
+    - $R -e "library('loomR')"
+
+about:
+  home: https://github.com/mojaveazure/loomR
+  license: GPL-3
+  license_family: GPL3
+  summary: |
+    An interface for the single-cell RNAseq-oriented loom format. Loom files are an HDF5-based
+    format for storing and interacting with large single-cell RNAseq datasets. loomR
+    provides an interface for working with loom files in a loom-specific way; we provide
+    routines for validating loom files, iterating with chunks through data within the
+    loom file, and provide a platform for other packages to build support for loom files.
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+# The original CRAN metadata for this package was:
+
+# Package: loomR
+# Type: Package
+# Title: An R interface for loom files
+# Version: 0.2.0
+# Date: 2018-23-18
+# Authors@R: c( person(given = 'Paul', family = 'Hoffman', email = 'phoffman@nygenome.org', role = c('aut', 'cre')), person(given = 'Rahul', family = 'Satija', email = 'rsatija@nygenome.org', role = c('aut')), person(given = 'Andrew', family = 'Butler', email = 'abutler@nygenome.org', role = c('ctb')), person(given = 'Christoph', family = 'Hafemeister', email = 'chafemeister@nygenome.org', role = 'ctb') )
+# Description: An interface for the single-cell RNAseq-oriented loom format. Loom files are an HDF5-based format for storing and interacting with large single-cell RNAseq datasets. loomR provides an interface for working with loom files in a loom-specific way; we provide routines for validating loom files, iterating with chunks through data within the loom file, and provide a platform for other packages to build support for loom files.
+# URL: https://github.com/mojaveazure/loomR http://loompy.org/
+# BugReports: https://github.com/mojaveazure/loomR/issues
+# Depends: R (>= 3.2.2), R6, hdf5r, iterators, itertools
+# Imports: utils, Matrix, methods
+# Suggests: Seurat
+# Collate: 'internal.R' 'loom.R' 'package.R'
+# License: GPL-3
+# Encoding: UTF-8
+# LazyData: true
+# SystemRequirements: HDF5 (>= 1.8.13)
+# RoxygenNote: 6.0.1
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml

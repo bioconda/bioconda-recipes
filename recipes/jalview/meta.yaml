@@ -1,21 +1,27 @@
+{% set version = "2.11.1.2" %}
+
 package:
   name: jalview
-  version: 2.10.4b1
+  version: {{ version }}
 
 build:
-  number: 2
+  number: 0
+  noarch: generic
 
 source:
-  url: http://www.jalview.org/source/jalview_2_10_4b1.tar.gz
-  sha256: d2f8e02eebd47cb61d86bc36ba89fc57477607d1c5f99ea5ba48ffd879962f6b
+  url: https://www.jalview.org/source/jalview_{{ version|replace(".", "_") }}.tar.gz
+  sha256: "9bf3b937515b071b79e0a6d9cee9b39fe555925026b54637602b48782c572949"
 
 requirements:
   build:
-    - openjdk >=8
-    - ant
+    # jalview 2.11 series requires Java 11 or greater to build.
+    - gradle >5.2
+    - openjdk 11
     - xorg-libxtst
   run:
-    - openjdk >=8
+    # Jalview 2.11.1.2 can run as 1.8 or java 11+
+    # Version number reference: https://github.com/conda/conda/issues/6948#issuecomment-369360906
+    - openjdk >=8.0.192
     - xorg-libxtst
     - psutil
 
@@ -25,13 +31,20 @@ test:
 
 
 about:
-  home: http://www.jalview.org/
-  license: GNU GENERAL PUBLIC LICENSE, Version 3.0
-  summary: |
-    Jalview is a free program for multiple sequence alignment editing, visualisation and analysis.
+  home: https://www.jalview.org/
+  license: GPL-3.0-only
+  license_file: LICENSE
+  summary: Jalview is a free program for multiple sequence alignment editing, visualisation, analysis and figure generation.
+  description: |
+    Jalview is a free program for multiple sequence alignment editing, visualisation, analysis and figure generation.
     Use it to view and edit sequence alignments, analyse them with phylogenetic trees and principal
-    components analysis (PCA) plots and explore molecular structures and annotation.
+    components analysis (PCA) plots and explore molecular structures and annotation. It is also able
+    to import and annotate DNA and Protein products from VCF files and retrieve data and annotation from
+    Uniprot, Ensembl, ENA, Rfam, Pfam and the PDBe.
 
 extra:
   notes: |
     This wrapper and installation is primarily for commandline-only use.
+    Set JALVIEW_JRE=j1.8 or JALVIEW_JRE=j11 to specify the java runtime if you need jalview to start up as quickly as possible
+    Set JALVIEW_MAXMEM=2g to restrict jalviews maximal memory consumption (here to 2G RAM). Otherwise 90% of physical memory
+    (capped at 32G) is allocated.

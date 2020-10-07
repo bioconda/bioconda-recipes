@@ -1,38 +1,46 @@
-{% set version = "1.30.0" %}
+{% set version = "1.40.0" %}
 {% set name = "iSeq" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 3b84c53f24767267423624ea81c88b0c9b65aca8ecaebf8f0cedcd091ba9d767
+  md5: ac88207aabb7c4a81e732c1fac293422
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
     - r-base
+    - libblas
+    - liblapack
   run:
     - r-base
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'This package uses Bayesian hidden Ising models to identify IP-enriched genomic regions from ChIP-seq data. It can be used to analyze ChIP-seq data with and without controls and replicates.'
-
+  summary: 'Bayesian Hierarchical Modeling of ChIP-seq Data Through Hidden Ising Models'
+  description: 'Bayesian hidden Ising models are implemented to identify IP-enriched genomic regions from ChIP-seq data. They can be used to analyze ChIP-seq data with and without controls and replicates.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:iseq
     - doi:10.1111/j.1541-0420.2009.01379.x
+  parent_recipe:
+    name: bioconductor-iseq
+    path: recipes/bioconductor-iseq
+    version: 1.32.0
+

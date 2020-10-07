@@ -1,10 +1,11 @@
 #!/bin/bash
-FN="yeastExpData_0.24.0.tar.gz"
+FN="yeastExpData_0.34.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/experiment/src/contrib/yeastExpData_0.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-yeastexpdata/bioconductor-yeastexpdata_0.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/yeastExpData_0.34.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/yeastExpData_0.34.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yeastexpdata/bioconductor-yeastexpdata_0.34.0_src_all.tar.gz"
 )
-MD5="0f210bd46c16fd7b10ce38ecda8ad37a"
+MD5="bfabc29f97548c19a8121cfc9d64ba74"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -15,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

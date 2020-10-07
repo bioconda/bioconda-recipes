@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
-make
-mkdir -p $PREFIX/bin
-cp MuSE $PREFIX/bin/
+make CPP="${CXX}" CPPFLAGS="${CXXFLAGS}"
+
+mkdir -p "${PREFIX}/bin"
+cp MuSE "${PREFIX}/bin/"

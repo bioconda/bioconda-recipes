@@ -1,0 +1,53 @@
+{% set name = "epic2" %}
+{% set version = "0.0.44" %}
+{% set hash_value = "9dd5a62fbf45e8d08332ea68af02c0ccb866675af9ea1487a78456500ffd2f7b" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: '{{ hash_value }}'
+
+build: 
+  number: 0
+  # Compilation errors on OSX
+  skip: True  # [osx or py27]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - cython
+    - setuptools
+    - pysam
+    - htslib
+  run:
+    - python
+    - scipy
+    - numpy
+    - pysam
+    - natsort
+    - htslib
+
+test:
+  # Python imports
+  imports:
+    - epic2
+  commands:
+    - epic2 -h
+
+about:
+  home: http://github.com/endrebak/epic2
+  license: MIT
+  license_file: LICENSE
+  summary: 'Ultraperformant Chip-Seq broad domain finder based on SICER.'
+  
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btz232
+  recipe-maintainers:
+    - endrebak
