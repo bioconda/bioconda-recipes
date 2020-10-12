@@ -1,0 +1,95 @@
+{% set name = "correlationplus" %}
+{% set version = "0.1.6" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "e542812d2ca04f27cf1231807c2a07ee1175458a84e7e8adc74b99cbb9265336" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - correlationplus=correlationplus.scripts.correlationplus:main
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  host:
+    - python >=3.6
+    - setuptools
+    - numpy ==1.19.1
+    - matplotlib-base >=3.2.2,<=3.3.2
+    - scipy ==1.5.2
+    - networkx ==2.4
+    - biopython ==1.77
+    - prody >=1.10.8,<=1.10.11
+  run:
+    - python >=3.6
+    - numpy ==1.19.1
+    - matplotlib-base >=3.2.2,<=3.3.2
+    - scipy ==1.5.2
+    - networkx ==2.4
+    - biopython ==1.77
+    - prody >=1.10.8,<=1.10.11
+
+test:
+  imports:
+    - correlationplus
+    - correlationplus.scripts
+  commands:
+    - correlationplus --help
+
+about:
+  home: https://github.com/tekpinar/correlationplus
+  license: GNU Lesser General Public License v3 (LGPLv3)
+  license_family: LGPL
+  license_file: 'COPYING.LESSER'
+  summary: Python package to plot and analyze dynamical correlations maps of proteins.
+  description: "# correlationplus\n\nA Python package to calculate, visualize and analyze dynamical correlations of proteins.\n\ncorrelationplus contains four scripts that you can use to calculate, visualize\n\
+    and analyze dynamical correlations of proteins. \nThese correlations can be dynamical cross-correlations, linear mutual\ninformation or generalized correlations. \n\n## Installation\n\n### for users\n\
+    \nWe recommend to use pip\n```bash\npip install correlationplus\n```\n\nor if you do not have administration rights\n```bash\npip install --user correlationplus\n```\n\nIf you prefer to use a virtualenv\n\
+    ```bash\npython3 -m venv correlationplus\ncd correlationplus\nsource bin/activate\npip install correlationplus\n```\n\n### for developers\n\nWe recommend to use pip and a virtualenv\n```bash\npython3\
+    \ -m venv correlationplus\ncd correlationplus\nsource bin/activate\nmkdir src\ncd src\ngit clone https://github.com/tekpinar/correlationplus.git # or git@github.com:tekpinar/correlationplus.git\ncd\
+    \ correlationplus\npip install -e .\n```\n\n### from Docker image\n\nDocker images are also available from [Docker Hub](https://hub.docker.com/r/structuraldynamicslab/correlationplus)\nThe computation\
+    \ inside the container will performed under *correlationplus* id in */home/correlationplus* directory.\nSo before to run a *correlationplus* container,\n do not forget to create and mount a shared directory\
+    \ in the container. \n This directory must be writable.\n\n```bash\nmkdir shared_dir\ncp 6fl9_just_prot_anm_100_modes_rc_15_cross-correlations.txt 6fl9_centeredOrientedAligned2Z.pdb shared_dir\nchmod\
+    \ 777 shared_dir\ncd shared_dir\ndocker run -v $PWD:/home/correlationplus structuraldynamicslab/correlation_plus diffMap -i 6fl9_rc15_scalCoeff1_100_modes_lmi_v2.dat -j zacharias_rc15_scalCoeff15_100_modes_lmi.dat\
+    \ -p 6fl9_centeredOrientedAligned2Z.pdb -t lmi\n```\nIt is also possible to run an ipython interactive session\n```bash\ndocker run -v $PWD:/home/correlationplus --entrypoint /bin/bash -it structuraldynamicslab/correlationplus:0.1.4rc2\n\
+    ```\nthen once in the container\n```bash\nipython\n```\n### from Singularity image\n\nAs the docker image is registered in dockerhub you can also use it directly with [Singularity](https://sylabs.io/docs/)\
+    \ \n\n```bash\nsingularity run docker://structuraldynamicslab/correlationplus diffMap -i 6fl9_rc15_scalCoeff1_100_modes_lmi_v2.dat -j zacharias_rc15_scalCoeff15_100_modes_lmi.dat -p 6fl9_centeredOrientedAligned2Z.pdb\
+    \ -t lmi\n```\nor in 2 steps\n\n```bash\nsingularity pull correlationplus.simg docker://structuraldynamicslab/correlation_plus\n./correlationplus.simg -i 6fl9_rc15_scalCoeff1_100_modes_lmi_v2.dat -j\
+    \ zacharias_rc15_scalCoeff15_100_modes_lmi.dat -p 6fl9_centeredOrientedAligned2Z.pdb -t lmi\n```\n\nUnlike docker you have not to worry about shared directory, your *home* and */tmp* are automatically\
+    \ shared.\nYou can also run an *ipython* interactive session.\n```bash\nsingularity shell correlationplus.simg\n```\n\n\n## A Quick Start with correlationplus Scripts\n\n### Calculating dynamical cross-correlations\n\
+    Download examples folder and go there. \n\nTo calculate **dynamical cross-correlations** with **Gaussian** network model:\n\n```bash\ncorrelationplus calculate -p 6fl9_centeredOrientedAligned2Z.pdb\
+    \ -m GNM -o gnm-ndcc.dat\n```\n\nTo calculate **dynamical cross-correlations** with **Anisotropic** network model:\n\n```bash\ncorrelationplus calculate -p 6fl9_centeredOrientedAligned2Z.pdb -m ANM\
+    \ -o anm-ndcc.dat\n```\n\n### Visualization of correlation maps\nTo run a simple example of visualization, you can use data and pdb files in the examples folder:\n\n```bash\ncorrelationplus visualizemap\
+    \ -i 6fl9_just_prot_anm_100_modes_rc_15_cross-correlations.txt -p 6fl9_centeredOrientedAligned2Z.pdb -t absndcc\n```\nThis will produce plots of absolute values of dynamical cross correlations.\n\n\
+    The visualizemap will produce an output for overall structure \nand all individual intra-chain correlations, if exist. Moreover, the program \nwill give you inter-chain correlations, if you have more\
+    \ than one chain. \nThe correlation data has to be in matrix format, where only A(i,j) values are \nlisted in a square matrix format. LMI matrices produced by g_correlation \nprogram of Lange and Grubmuller\
+    \ can also be parsed. \n\nYou can analyze the correlations with [VMD](https://www.ks.uiuc.edu/Research/vmd/) just by loading the tcl files produced by \nvisualizemap script. You can call *VMD* and go\
+    \ to *Extensions->Tk Console menu*. \nWrite the following command to see the correlations:\n```bash\nsource correlation-interchain-chainsA-B.tcl\n```\n\nIf you prefer to do the tcl loading in a single\
+    \ command:\n```bash\nvmd -e correlation-interchain-chainsA-B.tcl\n```\nPlease, beware that the loading can take some time depending on protein size\nand number of correlations. \n\nAdditionally, vmd\
+    \ command has to be in your path if you want to do this \nwith the command above.\n \nSometimes, we may need to plot difference map of two correlation maps. \nYou may want to see the differences of\
+    \ linear mutual information \nmaps of produced with two different methods, conditions etc. The correlations\nof ligated vs unligated simulations are some common examples.  \nThe difference maps can\
+    \ be produced with diffMap app as follows:  \n\n```bash\ncorrelationplus diffMap -i 6fl9_rc15_scalCoeff1_100_modes_lmi_v2.dat -j zacharias_rc15_scalCoeff15_100_modes_lmi.dat -p 6fl9_centeredOrientedAligned2Z.pdb\
+    \ -t lmi\n```\n\n### Centrality analysis of the correlation maps\nCentrality analysis can be used to deduce active sites, binding sites, \nkey mutation sites and allosteric residues. \n**correlationplus**\
+    \ can do centrality analysis for your protein\nvia its **centralityAnalysis** app.\n\nIt can compute degree, closeness, betweenness, current flow closeness, \ncurrent flow betweenness and eigenvector\
+    \ centrality. The following command \nwill do all of the above analysis:\n\n```bash\ncorrelationplus centralityAnalysis -i 6fl9_just_prot_anm_100_modes_rc_15_cross-correlations.txt -p 6fl9_centeredOrientedAligned2Z.pdb\
+    \ -t absndcc\n```\nAfter the calculation, the centrality values will be inserted into *Bfactor*\n column of a pdb file. You can load the pdb files with your favorite visualization \nsoftware and color\
+    \ according to *Bfactors*. If you prefer *VMD* - as we do-, \nthe app will produces tcl files so that you can visualize the key residues with *VMD*.\nThe tcl script highlights the residues with the\
+    \ highest 10% of the selected centrality\nin VDW representation.\n\n```bash\nvmd -e correlation_degree.tcl\n```\n\n## Ipython Interface\nFor a detailed analysis, script interfaces provided by visualizemap,\
+    \ diffMap and \ncentralityAnalysis apps may not be sufficient. Therefore, you can use IPython \nto load the functions and do a detailed analysis as follows. \n\n```python\nfrom correlationplus.visualize\
+    \ import *\n```\n \nYou can get help for individual functions with\n\n```python\nhelp(intraChainCorrelationMaps) \n\n```\nYou can check different valueFilters, distanceFilters for your analysis. \n\
+    Even you can scan a range of values by calling the functions in a \nloop. \n\n\n## Licensing\n\n*correlationplus* is developed and released under [GNU Lesser GPL Licence](https://www.gnu.org/licenses/lgpl-3.0.en.html).\
+    \ \nPlease read to the **COPYING** and **COPYING.LESSER** files to know more."
+  doc_url: 'https://github.com/tekpinar/correlationplus'
+  dev_url: 'https://github.com/tekpinar/correlationplus'
+
+extra:
+  recipe-maintainers: 'bneron'
