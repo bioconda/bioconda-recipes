@@ -1,0 +1,44 @@
+{% set name = "ggCaller" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/samhorsfield96/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: c90d7809ceffa2925aa6337592deffd2766bd2f0f658bbd5651aa2b72c94ddf5
+
+build:
+  number: 0
+  script: {{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake >= 3.4
+    - setuptools
+    - python >= 3 
+  host:
+    - python >= 3
+    - pybind11
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux64]
+    - seqan3
+  run:
+    - python >= 3
+    - networkx
+    - biopython
+
+test:
+  imports:
+    - ggCaller
+    - match_string
+  commands:
+    - ggcaller -h
+
+about:
+   home: https://github.com/samhorsfield96/ggCaller 
+   license: MIT
+   license_file: LICENSE
+   summary: 'a gene caller for Bifrost graphs'
