@@ -2,7 +2,7 @@
 
 cd src
 
-sed -i'.bak' 's/CC = icpc/CC = g++/g' Makefile
+sed -i'.bak' 's/ifeq (${CC},g++)/ifneq (,$(findstring gnu-cc,$(CC)))/g' Makefile
 
 make CC=$CC
 
