@@ -1,10 +1,10 @@
 #!/bin/bash
 
-cp -r $SRC_DIR ${PREFIX}/papaa
 mkdir -p "${PREFIX}/bin"
-ln -s ${PREFIX}/papaa/python/scripts/*.py ${PREFIX}/bin/
-ln -s ${PREFIX}/papaa/r/scripts/*.R ${PREFIX}/bin/
+mkdir -p ${PREFIX}/share/papaa
+cp -r * ${PREFIX}/share/papaa
+ln -s ${PREFIX}/share/papaa/python/scripts/*.py ${PREFIX}/bin/
+ln -s ${PREFIX}/share/papaa/r/scripts/*.R ${PREFIX}/bin/
 
-chmod +x ${PREFIX}/papaa/python/scripts/*.py
-chmod +x ${PREFIX}/papaa/r/scripts/*.R
-
+chmod +x ${PREFIX}/share/papaa/python/scripts/*.py
+chmod +x ${PREFIX}/share/papaa/r/scripts/*.R
