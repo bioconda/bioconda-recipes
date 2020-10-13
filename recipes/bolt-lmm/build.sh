@@ -2,9 +2,9 @@
 
 cd src
 
-sed -i'.bak' 's/CC = icpc/CC = g++/g' Makefile
+#sed -i'.bak' 's/CC = icpc/CC = g++/g' Makefile
 
-make
+make CC=$CC
 
 mkdir -p ${PREFIX}/bin
 
