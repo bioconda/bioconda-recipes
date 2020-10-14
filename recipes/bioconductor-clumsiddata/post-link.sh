@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="CluMSIDdata_1.2.0.tar.gz"
+FN="CluMSIDdata_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/CluMSIDdata_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/CluMSIDdata_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-clumsiddata/bioconductor-clumsiddata_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/CluMSIDdata_1.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/CluMSIDdata_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-clumsiddata/bioconductor-clumsiddata_1.4.0_src_all.tar.gz"
 )
-MD5="b201ddc7af34c967e68144fcbd4e2dc3"
+MD5="d6d8cc5e6988a905d5519f1942b9f301"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

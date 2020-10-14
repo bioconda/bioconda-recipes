@@ -14,8 +14,8 @@ from os import access
 from os import getenv
 from os import X_OK
 
-# https://search.maven.org/remotecontent?filepath=de/isas/mztab/jmztabm-cli/1.0.4/jmztabm-cli-1.0.4.jar
-jar_file = 'jmztabm-cli-1.0.4.jar'
+# https://search.maven.org/remotecontent?filepath=de/isas/mztab/jmztabm-cli/1.0.5/jmztabm-cli-1.0.5.jar
+jar_file = 'jmztabm-cli-1.0.5.jar'
 
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']

@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="MeSH.Xla.eg.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MeSH.Xla.eg.db_1.13.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.Xla.eg.db_1.13.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Xla.eg.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.xla.eg.db/bioconductor-mesh.xla.eg.db_1.13.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.xla.eg.db/bioconductor-mesh.xla.eg.db_1.13.0_src_all.tar.gz"
 )
 MD5="da508f957537e86062a75c210db242ff"

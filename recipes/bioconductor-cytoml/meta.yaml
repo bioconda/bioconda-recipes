@@ -1,6 +1,6 @@
-{% set version = "1.12.0" %}
+{% set version = "2.0.0" %}
 {% set name = "CytoML" %}
-{% set bioc = "3.10" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,27 +10,28 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 51bcf77781d3f0653b441356a248d3b7
+  md5: bdd2615e5f2d316e0db6ea9a94b8f345
 build:
   number: 0
+  skip: True  # [osx]
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: testthat, flowWorkspaceData (>= 2.11.1), knitr, parallel
+# Suggests: testthat, flowWorkspaceData , knitr, parallel
 # SystemRequirements: xml2, GNU make, C++11
 requirements:
   host:
-    - 'bioconductor-biobase >=2.46.0,<2.47.0'
-    - 'bioconductor-cytolib >=1.8.0,<1.9.0'
-    - 'bioconductor-flowcore >=1.52.0,<1.53.0'
-    - 'bioconductor-flowworkspace >=3.34.0,<3.35.0'
-    - 'bioconductor-ggcyto >=1.14.0,<1.15.0'
-    - 'bioconductor-graph >=1.64.0,<1.65.0'
-    - 'bioconductor-ncdfflow >=2.32.0,<2.33.0'
-    - 'bioconductor-opencyto >=1.24.0,<1.25.0'
-    - 'bioconductor-rbgl >=1.62.0,<1.63.0'
-    - 'bioconductor-rgraphviz >=2.30.0,<2.31.0'
-    - 'bioconductor-rprotobuflib >=1.8.0,<1.9.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-cytolib >=2.0.0,<2.1.0'
+    - 'bioconductor-flowcore >=2.0.0,<2.1.0'
+    - 'bioconductor-flowworkspace >=4.0.0,<4.1.0'
+    - 'bioconductor-ggcyto >=1.16.0,<1.17.0'
+    - 'bioconductor-graph >=1.66.0,<1.67.0'
+    - 'bioconductor-opencyto >=2.0.0,<2.1.0'
+    - 'bioconductor-rbgl >=1.64.0,<1.65.0'
+    - 'bioconductor-rgraphviz >=2.32.0,<2.33.0'
+    - 'bioconductor-rhdf5lib >=1.10.0,<1.11.0'
+    - 'bioconductor-rprotobuflib >=2.0.0,<2.1.0'
     - r-base
     - r-base64enc
     - 'r-bh >=1.62.0-1'
@@ -41,23 +42,27 @@ requirements:
     - r-lattice
     - r-plyr
     - r-rcpp
-    - r-rcppparallel
+    - r-rcpparmadillo
+    - 'r-rcppparallel >=4.4.2-1'
     - r-runit
+    - r-tibble
     - r-xml
     - r-yaml
+    - libblas
+    - liblapack
     - libxml2
   run:
-    - 'bioconductor-biobase >=2.46.0,<2.47.0'
-    - 'bioconductor-cytolib >=1.8.0,<1.9.0'
-    - 'bioconductor-flowcore >=1.52.0,<1.53.0'
-    - 'bioconductor-flowworkspace >=3.34.0,<3.35.0'
-    - 'bioconductor-ggcyto >=1.14.0,<1.15.0'
-    - 'bioconductor-graph >=1.64.0,<1.65.0'
-    - 'bioconductor-ncdfflow >=2.32.0,<2.33.0'
-    - 'bioconductor-opencyto >=1.24.0,<1.25.0'
-    - 'bioconductor-rbgl >=1.62.0,<1.63.0'
-    - 'bioconductor-rgraphviz >=2.30.0,<2.31.0'
-    - 'bioconductor-rprotobuflib >=1.8.0,<1.9.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-cytolib >=2.0.0,<2.1.0'
+    - 'bioconductor-flowcore >=2.0.0,<2.1.0'
+    - 'bioconductor-flowworkspace >=4.0.0,<4.1.0'
+    - 'bioconductor-ggcyto >=1.16.0,<1.17.0'
+    - 'bioconductor-graph >=1.66.0,<1.67.0'
+    - 'bioconductor-opencyto >=2.0.0,<2.1.0'
+    - 'bioconductor-rbgl >=1.64.0,<1.65.0'
+    - 'bioconductor-rgraphviz >=2.32.0,<2.33.0'
+    - 'bioconductor-rhdf5lib >=1.10.0,<1.11.0'
+    - 'bioconductor-rprotobuflib >=2.0.0,<2.1.0'
     - r-base
     - r-base64enc
     - 'r-bh >=1.62.0-1'
@@ -68,8 +73,10 @@ requirements:
     - r-lattice
     - r-plyr
     - r-rcpp
-    - r-rcppparallel
+    - r-rcpparmadillo
+    - 'r-rcppparallel >=4.4.2-1'
     - r-runit
+    - r-tibble
     - r-xml
     - r-yaml
     - libxml2
@@ -83,9 +90,10 @@ test:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
+  license: 'file LICENSE'
   summary: 'A GatingML Interface for Cross Platform Cytometry Data Sharing'
   description: 'Uses platform-specific implemenations of the GatingML2.0 standard to exchange gated cytometry data with other software platforms.'
+  license_file: LICENSE
 extra:
   parent_recipe:
     name: bioconductor-cytoml

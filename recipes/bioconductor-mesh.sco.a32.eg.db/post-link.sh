@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="MeSH.Sco.A32.eg.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MeSH.Sco.A32.eg.db_1.13.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.Sco.A32.eg.db_1.13.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Sco.A32.eg.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.sco.a32.eg.db/bioconductor-mesh.sco.a32.eg.db_1.13.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.sco.a32.eg.db/bioconductor-mesh.sco.a32.eg.db_1.13.0_src_all.tar.gz"
 )
 MD5="0ea99c1ea37fb7d2c3c928b473c9b6a6"

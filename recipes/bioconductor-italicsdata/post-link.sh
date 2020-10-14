@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ITALICSData_2.24.0.tar.gz"
+FN="ITALICSData_2.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/ITALICSData_2.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ITALICSData_2.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-italicsdata/bioconductor-italicsdata_2.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/ITALICSData_2.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ITALICSData_2.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-italicsdata/bioconductor-italicsdata_2.26.0_src_all.tar.gz"
 )
-MD5="5b17b24befc1315246c3d2e535af4b4d"
+MD5="471e300666eca1bd4537bb8d763e11ad"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
