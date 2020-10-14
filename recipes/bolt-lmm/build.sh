@@ -2,7 +2,8 @@
 
 cd src
 
-sed -i'.bak' 's/ifeq (${CC},g++)/ifneq (,$(findstring gnu-cc,$(CC)))/g' Makefile
+sed -i'.bak' 's/${CC}/${CXX}/g' Makefile
+sed -i'.bak' 's/ifeq (${CXX},g++)/ifneq (,$(findstring gnu-c++,$(CXX)))/g' Makefile
 sed -i'.bak' 's/${LFLAGS}/${LFLAGS} ${LDFLAGS}/g' Makefile
 
 make CC=$CC
