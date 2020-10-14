@@ -2,7 +2,7 @@
 
 mkdir -p $PREFIX/bin
 
-export constax=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
+constax=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
 mkdir -p $constax
 echo "SINTAXPATH=vsearch" > $constax/pathfile.txt
 echo "RDPPATH=classifier" >> $constax/pathfile.txt
