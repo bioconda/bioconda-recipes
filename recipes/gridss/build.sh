@@ -9,8 +9,8 @@ echo "TGT=${TGT}"
 
 cd "${SRC_DIR}"
 cp gridss-*.jar $TGT/gridss.jar
-cp gridsstools $TGT/gridsstools
 cp *.R *.sh "${TGT}"
+cp gridsstools $PREFIX/bin
 
 cp $RECIPE_DIR/gridss $TGT/gridss
 cp $RECIPE_DIR/gridss_r_script $TGT/gridss_r_script
