@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu -o pipefail
 
-VERSION="0.1.12"
+VERSION="0.1.13"
 PSLIVAR_SHA256SUM="00ae0b0ca141af57aea7900183ef9ff0d2b8e1147a9d5ec6e0f8a4147ab40ce8"
 
 mkdir -p $PREFIX/bin
