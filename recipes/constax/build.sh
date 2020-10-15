@@ -4,9 +4,9 @@ mkdir -p $PREFIX/bin
 
 constax=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
 mkdir -p $constax
-echo "SINTAXPATH=vsearch" > $constax/pathfile.txt
-echo "RDPPATH=classifier" >> $constax/pathfile.txt
-echo "CONSTAXPATH=$constax" >> $constax/pathfile.txt
+echo "export SINTAXPATH=vsearch" > $constax/pathfile.txt
+echo "export RDPPATH=classifier" >> $constax/pathfile.txt
+echo "export CONSTAXPATH=$constax" >> $constax/pathfile.txt
 cp -r ./* $constax
 chmod +x $constax/constax.sh
 chmod +x $constax/fasta_select_by_keyword.py
