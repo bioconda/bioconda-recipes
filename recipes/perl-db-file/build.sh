@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "INCLUDE = $PREFIX/include" > config.in
+echo "INCLUDE = $PREFIX/include -I${CONDA_BUILD_SYSROOT}/usr/include" > config.in
 echo "LIB = $PREFIX/lib" >> config.in
 echo "PREFIX = size_t" >> config.in
 echo "HASH = u_int32_t" >> config.in
