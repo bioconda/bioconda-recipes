@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 mkdir -p $PREFIX/bin
 cp -R script/* $PREFIX/bin/
