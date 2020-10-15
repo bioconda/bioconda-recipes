@@ -20,14 +20,13 @@ ln -s $TGT/gridss $PREFIX/bin
 # R scripts all have a --scriptdir argument.
 # gridss_r_script is a wrapper that sets this to correct location
 ln -s $TGT/gridss_r_script $PREFIX/bin/gridss_somatic_filter
-ln -s $TGT/gridss_r_script $PREFIX/bin/gridss_annotate_insertions_repeatmaster
 # gridss_java_entrypoint is a java wrapper
 # gridss namespace
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AllocateEvidence
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AnnotateInexactHomology
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AnnotateInexactHomologyBedpe
+ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AnnotateInsertedSequence
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AnnotateReferenceCoverage
-ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AnnotateUntemplatedSequence
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AnnotateVariants
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AssembleBreakends
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/CallVariants
