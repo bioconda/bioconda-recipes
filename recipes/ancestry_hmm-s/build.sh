@@ -9,6 +9,7 @@ fi
 cd src
 
 sed -i.bak 's#ahmms.cpp#ahmms.cpp -L ${PREFIX}/lib/ -I ${PREFIX}/include/#' Makefile 
+sed -i.bak 's/ $(TCFLAGS)//' Makefile
 
 make CXX=$CXX
 
