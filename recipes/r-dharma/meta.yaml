@@ -1,0 +1,80 @@
+{% set version = '0.3.3.0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-dharma
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/DHARMa_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/DHARMa/DHARMa_{{ version }}.tar.gz
+  sha256: 29712e1ea88b143ce800c77d2fcb8a667bb3b4cf22a089ef32105d6935abbc88
+
+build:
+  merge_build_host: True  # [win]
+  number: 0
+
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+    - r-mass
+    - r-ape
+    - r-doparallel
+    - r-foreach
+    - r-gap
+    - r-glmmtmb >=1.0.1
+    - r-lme4
+    - r-lmtest
+    - r-mgcv
+    - r-qgam >=1.3.2
+    - r-sfsmisc
+
+  run:
+    - r-base
+    - r-mass
+    - r-ape
+    - r-doparallel
+    - r-foreach
+    - r-gap
+    - r-glmmtmb >=1.0.1
+    - r-lme4
+    - r-lmtest
+    - r-mgcv
+    - r-qgam >=1.3.2
+    - r-sfsmisc
+
+test:
+  commands:
+    - $R -e "library('DHARMa')"           # [not win]
+    - "\"%R%\" -e \"library('DHARMa')\""  # [win]
+
+about:
+  home: http://florianhartig.github.io/DHARMa/
+
+  license: GPL-3
+  summary: The 'DHARMa' package uses a simulation-based approach to create readily interpretable
+    scaled (quantile) residuals for fitted (generalized) linear mixed models. Currently
+    supported are linear and generalized linear (mixed) models from 'lme4' (classes
+    'lmerMod', 'glmerMod'), 'glmmTMB' and 'spaMM', generalized additive models ('gam'
+    from 'mgcv'), 'glm' (including 'negbin' from 'MASS', but excluding quasi-distributions)
+    and 'lm' model classes. Moreover, externally created simulations, e.g. posterior
+    predictive simulations from Bayesian software such as 'JAGS', 'STAN', or 'BUGS'
+    can be processed as well. The resulting residuals are standardized to values between
+    0 and 1 and can be interpreted as intuitively as residuals from a linear regression.
+    The package also provides a number of plot and test functions for typical model
+    misspecification problems, such as over/underdispersion, zero-inflation, and residual
+    spatial and temporal autocorrelation.
+
+  license_family: GPL3
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
