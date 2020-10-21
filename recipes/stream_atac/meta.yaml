@@ -1,51 +1,47 @@
+{% set version = "0.3.5" %}
+
 package:
-   name: stream_atac
-   version: 0.3.4
+  name: stream_atac
+  version: {{ version }}
 
 source:
- url: https://github.com/pinellolab/STREAM_atac/archive/v0.3.4.zip
- sha256: a809204318c10b20022c0d164cf8139d0f317631d874ff728305b1db9cca8193
+  url: https://github.com/pinellolab/STREAM_atac/archive/v{{ version }}.tar.gz
+  sha256: 8e3e5f670d7f45ba74f9705a44003520426c6d7443d348bbe3ee33c792359654
+  patches:
+    - patch
 
 build:
- number: 0
- skip: True # [py27]
+  number: 5
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
 
 requirements:
-   build:
-       - python
-       - {{ compiler('c') }}
-       - {{ compiler('cxx') }}
-       - {{ compiler('fortran') }}
-   host:
-       - python
-       - setuptools
-       - unzip
-       - zip
-       - wget
-       - perl
-       - anndata
-       - r-essentials
-       - bioconductor-chromvar=1.4.1
-       - openssl
-       - conda
-       - rpy2
-   run:
-       - python
-       - setuptools
-       - unzip
-       - zip
-       - wget
-       - perl
-       - anndata
-       - scikit-learn
-       - r-essentials
-       - bioconductor-chromvar=1.4.1
-       - conda
-       - rpy2
+  host:
+    - python >=3
+    - pip
+  run:
+    - python >=3
+    - unzip
+    - zip
+    - wget
+    - perl
+    - anndata
+    - scikit-learn
+    - r-base
+    - r-essentials
+    - bioconductor-chromvar
+    - bioconductor-bsgenome.hsapiens.ucsc.hg38
+    - bioconductor-bsgenome.hsapiens.ucsc.hg19
+    - bioconductor-bsgenome.mmusculus.ucsc.mm10
+    - bioconductor-bsgenome.mmusculus.ucsc.mm9
+    - bioconductor-motifmatchr
+    - bioconductor-jaspar2016
+    - rpy2 2.9
+    - r-optparse
 
 test:
-  imports:
-    - stream_atac
+  commands:
+    - python -c 'import stream_atac'
 
 about:
   home: https://github.com/pinellolab/STREAM_atac

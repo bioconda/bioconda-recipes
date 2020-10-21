@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="BSgenome.Hsapiens.UCSC.hg38.masked_1.3.99.tar.gz"
+FN="BSgenome.Hsapiens.UCSC.hg38.masked_1.3.993.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Hsapiens.UCSC.hg38.masked_1.3.99.tar.gz"
-  "https://bioarchive.galaxyproject.org/BSgenome.Hsapiens.UCSC.hg38.masked_1.3.99.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.hsapiens.ucsc.hg38.masked/bioconductor-bsgenome.hsapiens.ucsc.hg38.masked_1.3.99_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.hsapiens.ucsc.hg38.masked/bioconductor-bsgenome.hsapiens.ucsc.hg38.masked_1.3.99_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/BSgenome.Hsapiens.UCSC.hg38.masked_1.3.993.tar.gz"
+  "https://bioarchive.galaxyproject.org/BSgenome.Hsapiens.UCSC.hg38.masked_1.3.993.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.hsapiens.ucsc.hg38.masked/bioconductor-bsgenome.hsapiens.ucsc.hg38.masked_1.3.993_src_all.tar.gz"
 )
-MD5="50c9fc14be05113dc56651ea7a49beb1"
+MD5="127d48c58c0b12683435f0ea1767f24f"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

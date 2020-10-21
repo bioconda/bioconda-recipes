@@ -1,12 +1,12 @@
 #!/bin/bash
-FN="MafDb.gnomADex.r2.1.hs37d5_3.8.0.tar.gz"
+FN="MafDb.gnomADex.r2.1.hs37d5_3.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MafDb.gnomADex.r2.1.hs37d5_3.8.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MafDb.gnomADex.r2.1.hs37d5_3.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mafdb.gnomadex.r2.1.hs37d5/bioconductor-mafdb.gnomadex.r2.1.hs37d5_3.8.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mafdb.gnomadex.r2.1.hs37d5/bioconductor-mafdb.gnomadex.r2.1.hs37d5_3.8.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MafDb.gnomADex.r2.1.hs37d5_3.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MafDb.gnomADex.r2.1.hs37d5_3.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mafdb.gnomadex.r2.1.hs37d5/bioconductor-mafdb.gnomadex.r2.1.hs37d5_3.10.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mafdb.gnomadex.r2.1.hs37d5/bioconductor-mafdb.gnomadex.r2.1.hs37d5_3.10.0_src_all.tar.gz"
 )
-MD5="46272d8c1d0d811cf6471a7a6edd1ba2"
+MD5="6ca4d742571687a13906d99cea2dbf1f"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

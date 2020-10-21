@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="DvDdata_1.20.0.tar.gz"
+FN="DvDdata_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/DvDdata_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/DvDdata_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-dvddata/bioconductor-dvddata_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/DvDdata_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/DvDdata_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-dvddata/bioconductor-dvddata_1.24.0_src_all.tar.gz"
 )
-MD5="532227658b29e36af2d13ba3d27c4ae5"
+MD5="0cfcac096ac74f95bbe264631eb8f0d0"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

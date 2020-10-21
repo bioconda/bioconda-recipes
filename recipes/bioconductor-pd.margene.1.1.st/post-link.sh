@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="pd.margene.1.1.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.margene.1.1.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/pd.margene.1.1.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.margene.1.1.st_3.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.margene.1.1.st/bioconductor-pd.margene.1.1.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.margene.1.1.st/bioconductor-pd.margene.1.1.st_3.12.0_src_all.tar.gz"

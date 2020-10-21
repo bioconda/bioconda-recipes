@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="malaria.db0_3.8.2.tar.gz"
+FN="malaria.db0_3.11.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/malaria.db0_3.8.2.tar.gz"
-  "https://bioarchive.galaxyproject.org/malaria.db0_3.8.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-malaria.db0/bioconductor-malaria.db0_3.8.2_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/malaria.db0_3.11.2.tar.gz"
+  "https://bioarchive.galaxyproject.org/malaria.db0_3.11.2.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-malaria.db0/bioconductor-malaria.db0_3.11.2_src_all.tar.gz"
 )
-MD5="c6028e87fd7d4c72656a4f865d43e81a"
+MD5="cee5e1dbb0e6b72786d8982e35dae327"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

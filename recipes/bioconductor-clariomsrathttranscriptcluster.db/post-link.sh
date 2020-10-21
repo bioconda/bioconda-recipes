@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="clariomsrathttranscriptcluster.db_8.7.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/clariomsrathttranscriptcluster.db_8.7.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/clariomsrathttranscriptcluster.db_8.7.0.tar.gz"
   "https://bioarchive.galaxyproject.org/clariomsrathttranscriptcluster.db_8.7.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-clariomsrathttranscriptcluster.db/bioconductor-clariomsrathttranscriptcluster.db_8.7.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-clariomsrathttranscriptcluster.db/bioconductor-clariomsrathttranscriptcluster.db_8.7.0_src_all.tar.gz"

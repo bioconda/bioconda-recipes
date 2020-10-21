@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="FDb.InfiniumMethylation.hg18_2.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/FDb.InfiniumMethylation.hg18_2.2.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/FDb.InfiniumMethylation.hg18_2.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/FDb.InfiniumMethylation.hg18_2.2.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-fdb.infiniummethylation.hg18/bioconductor-fdb.infiniummethylation.hg18_2.2.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-fdb.infiniummethylation.hg18/bioconductor-fdb.infiniummethylation.hg18_2.2.0_src_all.tar.gz"

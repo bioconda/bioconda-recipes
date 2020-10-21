@@ -1,5 +1,5 @@
-{% set version = "3.0.12" %}
-{% set sha256 = "d22eb66798f75bc24e43c600473f9031391de0704ca0de8cf2925e60941eadbc" %}
+{% set version = "3.8.28" %}
+{% set sha256 = "1c4101c7d274664ad550603862cc6b3d8db27de637bfd308e59914dbd1791b79" %}
 
 package:
   name: ncbi-amrfinderplus
@@ -22,20 +22,39 @@ requirements:
     - blast >=2.9
     - hmmer >=3.2
     - libcurl
+    - curl
 
 test:
   commands:
+    - echo "PREFIX=$PREFIX   CONDA_PREFIX=$CONDA_PREFIX" # for debugging
     - amr_report -help
     - amrfinder --help
     - amrfinder_update --help
     - fasta_check -help
     - fasta2parts -help
     - gff_check -help
-    - point_mut -help
+    - dna_mutation -help
+    - |
+        curl --silent \
+         -O https://raw.githubusercontent.com/ncbi/amr/master/test_dna.fa \
+         -O https://raw.githubusercontent.com/ncbi/amr/master/test_prot.fa \
+         -O https://raw.githubusercontent.com/ncbi/amr/master/test_prot.gff \
+         -O https://raw.githubusercontent.com/ncbi/amr/master/test_both.expected
+        amrfinder -u
+        amrfinder --plus -n test_dna.fa -p test_prot.fa -g test_prot.gff -O Escherichia > test_both.got
+        diff test_both.expected test_both.got
 
 about:
   home: https://github.com/ncbi/amr/wiki
   license: Public Domain
   license_file: LICENSE
-  summary: AMRFinder find acquired antimicrobial resistance genes in protein or nucleotide sequences.
+  summary: AMRFinderPlus finds antimicrobial resistance and other genes in protein or nucleotide sequences.
+  description: |
+      This software and the accompanying database are designed to
+      find acquired antimicrobial resistance genes in bacterial protein or
+      nucleotide sequences as well as known point mutations for several taxa. With
+      AMRFinderPlus we have added select members of additional classes of genes
+      such as virulence factors, biocide, heat, acid, and metal resistance genes.
+  doc_url: https://github.com/ncbi/amr/wiki
+
 

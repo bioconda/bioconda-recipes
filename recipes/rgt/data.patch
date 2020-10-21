@@ -1,47 +1,66 @@
---- setup.py	2018-07-17 10:02:03.000000000 -0500
-+++ setup.py.new	2018-10-18 17:47:10.366333398 -0500
-@@ -76,6 +76,7 @@
+diff --git a/data/setupGenomicData.py b/data/setupGenomicData.py
+index cdc128d1..16dc1e23 100644
+--- a/data/setupGenomicData.py
++++ b/data/setupGenomicData.py
+@@ -1,3 +1,4 @@
++#!/usr/bin/env python
+ ###################################################################################################
+ # Setup Genomic Data Script
+ #   This script will fetch the necessary genomic data for all tools. Be aware that it will download
+@@ -9,7 +10,7 @@
+ from __future__ import print_function
+ import gzip
+ from optparse import OptionParser
+-from os import system, path, remove, mkdir
++from os import system, path, remove, mkdir, getenv
+ from sys import platform
+ import re
  
- common_deps = ["cython",
-                "numpy>=1.4.0",
-+               "numpy<=1.10",
-                "scipy>=1.0.0",
-                "pysam>=0.12.0",
-                "pyBigWig",
-@@ -142,7 +143,6 @@
-     )
- }
+@@ -82,7 +83,7 @@ if options.all:
+ ###################################################################################################
  
--
- ###################################################################################################
- # Auxiliary Functions/Classes
- ###################################################################################################
-@@ -165,21 +165,6 @@
-             except (BadOptionError, AmbiguousOptionError) as err:
-                 largs.append(err.opt_str)
+ # Current rgt data path
+-curr_dir = path.dirname(path.realpath(__file__))
++curr_dir = path.dirname(getenv("RGTDATA"))
  
--
--# recursive_chown_chmod Function
--def recursive_chown_chmod(path_to_walk, uid, gid, file_permission, path_permission):
--    """
--    Recursively applies chown from path.
--    """
--    for root_dir, directory_list, file_list in walk(path_to_walk):
--        chown(root_dir, uid, gid)
--        chmod(root_dir, path_permission)
--        for f in file_list:
--            current_complete_file = path.join(root_dir, f)
--            chown(current_complete_file, uid, gid)
--            chmod(current_complete_file, file_permission)
--
--
+ # Platform
+ supported_platforms = ["linux", "linux2", "darwin"]
+diff --git a/data/setupLogoData.py b/data/setupLogoData.py
+index 1d6dcb7f..5ccdfab4 100644
+--- a/data/setupLogoData.py
++++ b/data/setupLogoData.py
+@@ -1,3 +1,4 @@
++#!/usr/bin/env python
  ###################################################################################################
- # Processing Input Arguments
+ # Setup Logo Data Script
+ #   This script will create all motif logos. Be aware that this is a time consuming procedure
+@@ -10,7 +11,7 @@
+ from __future__ import print_function
+ 
+ import argparse
+-from os import path, mkdir, listdir, walk
++from os import path, mkdir, listdir, walk, getenv
+ from sys import platform, exit
+ 
+ from Bio import motifs
+@@ -34,7 +35,7 @@ if not args.all and not args.folders:
  ###################################################################################################
-@@ -226,168 +211,6 @@
+ 
+ # Current rgt data path
+-curr_dir = path.dirname(path.realpath(__file__))
++curr_dir = path.dirname(getenv("RGTDATA"))
+ 
+ # Platform
+ supported_platforms = ["linux", "linux2", "darwin"]
+diff --git a/setup.py b/setup.py
+index 1212bd19..64191333 100644
+--- a/setup.py
++++ b/setup.py
+@@ -225,168 +225,6 @@ current_install_requires = common_deps
+ for tool_option in options.param_rgt_tool:
      current_install_requires += tools_dictionary[tool_option][2]
  
- ###################################################################################################
+-###################################################################################################
 -# Creating Data Path
 -###################################################################################################
 -
@@ -74,7 +93,7 @@
 -data_config_file.write("chromosome_sizes: " + path.join(genome, "chrom.sizes.mm10\n"))
 -data_config_file.write("genes_Gencode: " + path.join(genome, "genes_Gencode_mm10.bed\n"))
 -data_config_file.write("genes_RefSeq: " + path.join(genome, "genes_RefSeq_mm10.bed\n"))
--data_config_file.write("annotation: " + path.join(genome, "gencode.vM11.annotation.gtf\n"))
+-data_config_file.write("annotation: " + path.join(genome, "gencode.vM20.annotation.gtf\n"))
 -data_config_file.write("gene_alias: " + path.join(genome, "alias_mouse.txt\n\n"))
 -genome = "hg19"
 -data_config_file.write("[" + genome + "]\n")
@@ -178,9 +197,9 @@
 -                "atac_bias_table_F.txt", "atac_bias_table_R.txt", "atac_histone.hmm", "atac_histone_bc.hmm",
 -                "double_hit_bias_table_F.txt", "double_hit_bias_table_R.txt", "H3K4me3_proximal.hmm",
 -                "LearnDependencyModel.jar", "SlimDimontPredictor.jar", "test.fa"],
--    "motifs": ["jaspar_vertebrates", "uniprobe_primary", "uniprobe_secondary", "hocomoco",
--               "jaspar_vertebrates.fpr", "uniprobe_primary.fpr", "uniprobe_secondary.fpr", "hocomoco.fpr",
--               "jaspar_vertebrates.mtf", "uniprobe_primary.mtf", "uniprobe_secondary.mtf", "hocomoco.mtf"],
+-    "motifs": ["createMtf.py", "createPwm.py",
+-               "jaspar_vertebrates", "jaspar_plants", "uniprobe_primary", "uniprobe_secondary", "hocomoco",
+-               "jaspar_vertebrates.mtf", "jaspar_plants.mtf", "uniprobe_primary.mtf", "uniprobe_secondary.mtf", "hocomoco.mtf"],
 -    "fig": ["rgt_logo.gif", "style.css", "default_motif_logo.png", "jquery-1.11.1.js", "jquery.tablesorter.min.js",
 -            "tdf_logo.png", "viz_logo.png"],
 -}
@@ -203,11 +222,10 @@
 -            #     else:
 -            #         raise
 -
--###################################################################################################
+ ###################################################################################################
  # Setup Function
  ###################################################################################################
- 
-@@ -452,19 +275,3 @@
+@@ -452,19 +290,3 @@ setup(name="RGT",
        url="http://www.regulatory-genomics.org",
        download_url="https://github.com/CostaLab/reg-gen/archive/{0}.zip".format(current_version),
        platforms=supported_platforms)
@@ -227,55 +245,3 @@
 -    current_user_gid = getpwnam(current_user).pw_gid
 -    recursive_chown_chmod(rgt_data_location, current_user_uid, current_user_gid, default_file_permission,
 -                          default_path_permission)
---- data/setupGenomicData.py	2018-07-17 10:02:03.000000000 -0500
-+++ data/setupGenomicData.py.new	2018-10-20 15:55:35.434593709 -0500
-@@ -1,3 +1,5 @@
-+#!/usr/bin/env python
-+
- ###################################################################################################
- # Setup Genomic Data Script
- #   This script will fetch the necessary genomic data for all tools. Be aware that it will download
-@@ -9,7 +11,7 @@
- from __future__ import print_function
- import gzip
- from optparse import OptionParser
--from os import system, path, remove, mkdir
-+from os import system, path, remove, mkdir, getenv
- from sys import platform
- import re
- 
-@@ -82,7 +84,7 @@
- ###################################################################################################
- 
- # Current rgt data path
--curr_dir = path.dirname(path.realpath(__file__))
-+curr_dir = path.dirname(getenv("RGTDATA"))
- 
- # Platform
- supported_platforms = ["linux", "linux2", "darwin"]
---- data/setupLogoData.py	2018-07-17 10:02:03.000000000 -0500
-+++ data/setupLogoData.py.new	2018-10-20 15:57:06.592071379 -0500
-@@ -1,3 +1,5 @@
-+#!/usr/bin/env python
-+
- ###################################################################################################
- # Setup Logo Data Script
- #   This script will create all motif logos. Be aware that this is a time consuming procedure
-@@ -10,7 +12,7 @@
- from __future__ import print_function
- 
- from optparse import OptionParser
--from os import path, walk, mkdir
-+from os import path, walk, mkdir, getenv
- from sys import platform
- 
- from Bio import motifs
-@@ -44,7 +46,7 @@
- ###################################################################################################
- 
- # Current rgt data path
--curr_dir = path.dirname(path.realpath(__file__))
-+curr_dir = path.dirname(getenv("RGTDATA"))
- 
- # Platform
- supported_platforms = ["linux", "linux2", "darwin"]

@@ -1,5 +1,5 @@
 {% set name = "iqtree" %}
-{% set version = "1.6.11" %}
+{% set version = "2.0.3" %}
 
 package:
   name: {{ name|lower }}
@@ -9,23 +9,24 @@ build:
   number: 0
 
 source:
-  url: https://github.com/Cibiv/IQ-TREE/archive/v{{ version }}.tar.gz
-  sha256: 39906e59821b6241fbe2cf5676926ed89a05433a6116322d2d448e1622d9e1c2
+  - url: https://github.com/Cibiv/IQ-TREE/archive/v{{ version }}.tar.gz
+    sha256: 5b922556a01915e6ab6a8620c489f8593872d019952affed3bf3574524b49127
+    patches:
+      - 0001-PATCH-macos-10.9.patch
+  - url: https://github.com/tothuhien/lsd2/archive/v1.6.5.tar.gz
+    sha256: f531c576a5b23c41a23b67561bcf08cb7618d6b682399c987a1ad4f3bf59d8c6
+    folder: lsd2
+
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - cmake
   host:
+    - boost-cpp
     - eigen
     - zlib
-    - clangdev  # [osx]
-    - libcxx 4.0.*  # [osx]
-    - openmp 4.0.*  # [osx]
-  run:
-    - zlib
-    - libcxx >=4.0  # [osx]
-    - openmp >=4.0  # [osx]
+    - llvm-openmp >=9  # [osx]
 
 test:
   commands:
@@ -35,6 +36,9 @@ about:
   home: "http://www.iqtree.org/"
   license: "GPL-2.0"
   summary: "Efficient phylogenomic software by maximum likelihood."
+
+extra:
   identifiers:
     - biotools:iq-tree
     - doi:10.1093/molbev/msu300
+    - usegalaxy-eu:{{ name|lower }}

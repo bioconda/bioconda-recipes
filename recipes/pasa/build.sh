@@ -9,8 +9,9 @@ cd ${SRC_DIR}
 # use the bioconda transdecoder instead of the bundled version
 sed -i.bak 's#\$PLUGINS_DIR/transdecoder/##' Launch_PASA_pipeline.pl
 sed -i.bak 's#"$transdecoder_dir/\(util\/\)*#"#' scripts/pasa_asmbls_to_training_set.dbi
-# use bioconda cdbtools instead of the bundled version
-sed -i.bak '/cdbtools/s/^/#/' Makefile
+
+# use bioconda cdbtools and slclust instead of the bundled version
+sed -i.bak -e '/cdbtools/s/^/#/' -e '/slclust/s/^/#/' Makefile
 
 make
 

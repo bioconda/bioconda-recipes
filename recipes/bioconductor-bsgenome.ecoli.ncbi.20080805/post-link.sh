@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="BSgenome.Ecoli.NCBI.20080805_1.3.1000.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Ecoli.NCBI.20080805_1.3.1000.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/BSgenome.Ecoli.NCBI.20080805_1.3.1000.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Ecoli.NCBI.20080805_1.3.1000.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.ecoli.ncbi.20080805/bioconductor-bsgenome.ecoli.ncbi.20080805_1.3.1000_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.ecoli.ncbi.20080805/bioconductor-bsgenome.ecoli.ncbi.20080805_1.3.1000_src_all.tar.gz"

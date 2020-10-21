@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="rtu34.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/rtu34.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/rtu34.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/rtu34.db_3.2.3.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rtu34.db/bioconductor-rtu34.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rtu34.db/bioconductor-rtu34.db_3.2.3_src_all.tar.gz"

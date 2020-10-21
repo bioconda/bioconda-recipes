@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="GGHumanMethCancerPanelv1.db_1.4.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/GGHumanMethCancerPanelv1.db_1.4.1.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/GGHumanMethCancerPanelv1.db_1.4.1.tar.gz"
   "https://bioarchive.galaxyproject.org/GGHumanMethCancerPanelv1.db_1.4.1.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-gghumanmethcancerpanelv1.db/bioconductor-gghumanmethcancerpanelv1.db_1.4.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-gghumanmethcancerpanelv1.db/bioconductor-gghumanmethcancerpanelv1.db_1.4.1_src_all.tar.gz"

@@ -1,6 +1,6 @@
-{% set version = "2.0.0" %}
+{% set version = "2.4.0" %}
 {% set name = "ASICS" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,7 +10,7 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 53c51cd55179c23fff2f9e2a767168cc
+  md5: 39f2d5549212d8b9288fed361f0fdb79
 build:
   number: 0
   rpaths:
@@ -20,36 +20,50 @@ build:
 # Suggests: knitr, rmarkdown, BiocStyle, testthat, ASICSdata
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
-    - 'bioconductor-pepsnmr >=1.2.0,<1.3.0'
-    - 'bioconductor-ropls >=1.16.0,<1.17.0'
-    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
+    - 'bioconductor-pepsnmr >=1.6.0,<1.7.0'
+    - 'bioconductor-ropls >=1.20.0,<1.21.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
     - r-base
     - r-ggplot2
     - r-gridextra
     - r-matrix
+    - r-mvtnorm
     - r-plyr
     - r-quadprog
     - r-tsdist
     - r-zoo
   run:
-    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
-    - 'bioconductor-pepsnmr >=1.2.0,<1.3.0'
-    - 'bioconductor-ropls >=1.16.0,<1.17.0'
-    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
+    - 'bioconductor-pepsnmr >=1.6.0,<1.7.0'
+    - 'bioconductor-ropls >=1.20.0,<1.21.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
     - r-base
     - r-ggplot2
     - r-gridextra
     - r-matrix
+    - r-mvtnorm
     - r-plyr
     - r-quadprog
     - r-tsdist
     - r-zoo
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'With a set of pure metabolite reference spectra, ASICS quantifies concentration of metabolites in a complex spectrum. The identification of metabolites is performed by fitting a mixture model to the spectra of the library with a sparse penalty. The method and its statistical properties are described in Tardivel et al. (2017) <doi:10.1007/s11306-017-1244-5>.'
+  summary: 'Automatic Statistical Identification in Complex Spectra'
+  description: 'With a set of pure metabolite reference spectra, ASICS quantifies concentration of metabolites in a complex spectrum. The identification of metabolites is performed by fitting a mixture model to the spectra of the library with a sparse penalty. The method and its statistical properties are described in Tardivel et al. (2017) <doi:10.1007/s11306-017-1244-5>.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  container:
+    extended-base: true
 

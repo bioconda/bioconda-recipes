@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ENCODExplorerData_0.99.1.tar.gz"
+FN="ENCODExplorerData_0.99.5.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/ENCODExplorerData_0.99.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/ENCODExplorerData_0.99.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-encodexplorerdata/bioconductor-encodexplorerdata_0.99.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/ENCODExplorerData_0.99.5.tar.gz"
+  "https://bioarchive.galaxyproject.org/ENCODExplorerData_0.99.5.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-encodexplorerdata/bioconductor-encodexplorerdata_0.99.5_src_all.tar.gz"
 )
-MD5="61788c5c9d248ce4b4488b0be98ea879"
+MD5="c6d9b491548529db0739b79c98adacd7"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

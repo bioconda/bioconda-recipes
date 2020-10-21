@@ -1,6 +1,6 @@
-{% set version = "1.14.0" %}
+{% set version = "1.18.0" %}
 {% set name = "iCheck" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,7 +10,7 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 11e302f09eccac2f8ac6a5c774c9df7d
+  md5: 4a47460bc655a5e63252eb7fa6d2544a
 build:
   number: 0
   rpaths:
@@ -19,12 +19,12 @@ build:
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-affy >=1.62.0,<1.63.0'
-    - 'bioconductor-biobase >=2.44.0,<2.45.0'
-    - 'bioconductor-geneselectmmd >=2.28.0,<2.29.0'
-    - 'bioconductor-limma >=3.40.0,<3.41.0'
-    - 'bioconductor-lumi >=2.36.0,<2.37.0'
-    - 'bioconductor-preprocesscore >=1.46.0,<1.47.0'
+    - 'bioconductor-affy >=1.66.0,<1.67.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-geneselectmmd >=2.32.0,<2.33.0'
+    - 'bioconductor-limma >=3.44.0,<3.45.0'
+    - 'bioconductor-lumi >=2.40.0,<2.41.0'
+    - 'bioconductor-preprocesscore >=1.50.0,<1.51.0'
     - r-base
     - r-gplots
     - r-lmtest
@@ -33,12 +33,12 @@ requirements:
     - r-rgl
     - r-scatterplot3d
   run:
-    - 'bioconductor-affy >=1.62.0,<1.63.0'
-    - 'bioconductor-biobase >=2.44.0,<2.45.0'
-    - 'bioconductor-geneselectmmd >=2.28.0,<2.29.0'
-    - 'bioconductor-limma >=3.40.0,<3.41.0'
-    - 'bioconductor-lumi >=2.36.0,<2.37.0'
-    - 'bioconductor-preprocesscore >=1.46.0,<1.47.0'
+    - 'bioconductor-affy >=1.66.0,<1.67.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-geneselectmmd >=2.32.0,<2.33.0'
+    - 'bioconductor-limma >=3.44.0,<3.45.0'
+    - 'bioconductor-lumi >=2.40.0,<2.41.0'
+    - 'bioconductor-preprocesscore >=1.50.0,<1.51.0'
     - r-base
     - r-gplots
     - r-lmtest
@@ -46,13 +46,22 @@ requirements:
     - r-randomforest
     - r-rgl
     - r-scatterplot3d
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'QC pipeline and data analysis tools for high-dimensional Illumina mRNA expression data.'
+  summary: 'QC Pipeline and Data Analysis Tools for High-Dimensional Illumina mRNA Expression Data'
+  description: 'QC pipeline and data analysis tools for high-dimensional Illumina mRNA expression data.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   container:
     extended-base: true

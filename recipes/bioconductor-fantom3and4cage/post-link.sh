@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="FANTOM3and4CAGE_1.20.0.tar.gz"
+FN="FANTOM3and4CAGE_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/FANTOM3and4CAGE_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/FANTOM3and4CAGE_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-fantom3and4cage/bioconductor-fantom3and4cage_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/FANTOM3and4CAGE_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/FANTOM3and4CAGE_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-fantom3and4cage/bioconductor-fantom3and4cage_1.24.0_src_all.tar.gz"
 )
-MD5="bfadfb9fe266c14e13c78de6887e8270"
+MD5="6bb09a528cbb9d8f923bef5ba3782daa"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

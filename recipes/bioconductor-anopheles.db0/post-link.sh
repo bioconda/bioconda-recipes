@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="anopheles.db0_3.8.2.tar.gz"
+FN="anopheles.db0_3.11.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/anopheles.db0_3.8.2.tar.gz"
-  "https://bioarchive.galaxyproject.org/anopheles.db0_3.8.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-anopheles.db0/bioconductor-anopheles.db0_3.8.2_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/anopheles.db0_3.11.2.tar.gz"
+  "https://bioarchive.galaxyproject.org/anopheles.db0_3.11.2.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-anopheles.db0/bioconductor-anopheles.db0_3.11.2_src_all.tar.gz"
 )
-MD5="8ee605dc6b30694688ffe67e71259ca8"
+MD5="733f7fb62831efce4883d07083ef83ba"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

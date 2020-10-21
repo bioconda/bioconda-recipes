@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="topdownrdata_1.6.0.tar.gz"
+FN="topdownrdata_1.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/topdownrdata_1.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/topdownrdata_1.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-topdownrdata/bioconductor-topdownrdata_1.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/topdownrdata_1.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/topdownrdata_1.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-topdownrdata/bioconductor-topdownrdata_1.10.0_src_all.tar.gz"
 )
-MD5="4d7e386274b91c3c71ab578ee607b393"
+MD5="2707b9430efaf4201ef32a5b78aedca0"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

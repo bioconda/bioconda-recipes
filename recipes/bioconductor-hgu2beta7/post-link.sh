@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="hgu2beta7_1.24.0.tar.gz"
+FN="hgu2beta7_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/hgu2beta7_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/hgu2beta7_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hgu2beta7/bioconductor-hgu2beta7_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/hgu2beta7_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/hgu2beta7_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hgu2beta7/bioconductor-hgu2beta7_1.28.0_src_all.tar.gz"
 )
-MD5="26d4ad63ca4429968dbdd8d981436c13"
+MD5="e58022ba4652414a0efe305a304c0977"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
