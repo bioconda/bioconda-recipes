@@ -20,7 +20,7 @@ class DVHelp(argparse._HelpAction):
         conda_path = os.path.dirname(os.path.realpath(sys.executable))
         lib_path = os.path.join(os.path.dirname(conda_path), "lib")
         py_exe = sys.executable
-        cmd = ("export LD_LIBRARY_PATH={lib_path}:$LD_LIBRARY_PATH && "
+        cmd = ("export LD_LIBRARY_PATH={lib_path}:\"$LD_LIBRARY_PATH\" && "
                "{py_exe} {bin_dir}/postprocess_variants.zip --help")
         print(subprocess.check_output(cmd.format(**locals()), shell=True))
         print()
@@ -40,7 +40,7 @@ def main():
     conda_path = os.path.dirname(os.path.realpath(sys.executable))
     lib_path = os.path.join(os.path.dirname(conda_path), "lib")
     py_exe = sys.executable
-    cmd = ("export LD_LIBRARY_PATH={lib_path}:$LD_LIBRARY_PATH && "
+    cmd = ("export LD_LIBRARY_PATH={lib_path}:\"$LD_LIBRARY_PATH\" && "
            "{py_exe} {bin_dir}/postprocess_variants.zip "
            "--ref {args.ref} --infile {args.infile} --outfile {args.outfile}")
     sys.exit(subprocess.call(cmd.format(**locals()), shell=True))

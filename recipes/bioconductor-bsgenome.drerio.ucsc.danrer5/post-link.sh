@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="BSgenome.Drerio.UCSC.danRer5_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/BSgenome.Drerio.UCSC.danRer5_1.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/BSgenome.Drerio.UCSC.danRer5_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Drerio.UCSC.danRer5_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.drerio.ucsc.danrer5/bioconductor-bsgenome.drerio.ucsc.danrer5_1.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.drerio.ucsc.danrer5/bioconductor-bsgenome.drerio.ucsc.danrer5_1.4.0_src_all.tar.gz"

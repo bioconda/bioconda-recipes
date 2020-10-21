@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="metaMSdata_1.22.0.tar.gz"
+FN="metaMSdata_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/metaMSdata_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/metaMSdata_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-metamsdata/bioconductor-metamsdata_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/metaMSdata_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/metaMSdata_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-metamsdata/bioconductor-metamsdata_1.24.0_src_all.tar.gz"
 )
-MD5="53c6bc9e9b37e9cae69f913b58faa333"
+MD5="9bd0fbbd22c114a49429535fe6def313"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

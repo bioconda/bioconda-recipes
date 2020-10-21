@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="MeSH.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MeSH.db_1.13.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.db_1.13.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.db/bioconductor-mesh.db_1.13.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.db/bioconductor-mesh.db_1.13.0_src_all.tar.gz"
 )
 MD5="ad8dd6852e665591565dfe43bee774e7"

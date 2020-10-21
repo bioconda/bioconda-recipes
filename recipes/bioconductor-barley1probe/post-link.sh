@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="barley1probe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/barley1probe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/barley1probe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/barley1probe_2.18.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-barley1probe/bioconductor-barley1probe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-barley1probe/bioconductor-barley1probe_2.18.0_src_all.tar.gz"

@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="lumiMouseIDMapping_1.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/lumiMouseIDMapping_1.10.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/lumiMouseIDMapping_1.10.0.tar.gz"
   "https://bioarchive.galaxyproject.org/lumiMouseIDMapping_1.10.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-lumimouseidmapping/bioconductor-lumimouseidmapping_1.10.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-lumimouseidmapping/bioconductor-lumimouseidmapping_1.10.0_src_all.tar.gz"

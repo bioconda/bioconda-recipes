@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="signatureSearchData_0.99.14.tar.gz"
+FN="signatureSearchData_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/signatureSearchData_0.99.14.tar.gz"
-  "https://bioarchive.galaxyproject.org/signatureSearchData_0.99.14.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-signaturesearchdata/bioconductor-signaturesearchdata_0.99.14_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/signatureSearchData_1.2.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/signatureSearchData_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-signaturesearchdata/bioconductor-signaturesearchdata_1.2.0_src_all.tar.gz"
 )
-MD5="dc4428f9cd4ed2ac37ca0ecc537778f3"
+MD5="e9ea9cd910146a3bd2d0806274bdd313"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

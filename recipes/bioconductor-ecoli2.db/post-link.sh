@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="ecoli2.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/ecoli2.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/ecoli2.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/ecoli2.db_3.2.3.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ecoli2.db/bioconductor-ecoli2.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ecoli2.db/bioconductor-ecoli2.db_3.2.3_src_all.tar.gz"

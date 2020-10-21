@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="MeSH.Ddi.AX4.eg.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MeSH.Ddi.AX4.eg.db_1.13.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.Ddi.AX4.eg.db_1.13.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Ddi.AX4.eg.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.ddi.ax4.eg.db/bioconductor-mesh.ddi.ax4.eg.db_1.13.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.ddi.ax4.eg.db/bioconductor-mesh.ddi.ax4.eg.db_1.13.0_src_all.tar.gz"
 )
 MD5="68e4120ed59cbb353f9e4b85d40f531d"

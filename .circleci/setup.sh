@@ -76,11 +76,14 @@ if ! type bioconda-utils 2> /dev/null || [[ $BOOTSTRAP == "true" ]]; then
     conda config --system --add channels bioconda
     conda config --system --add channels conda-forge
 
+    conda config --system --remove repodata_fns current_repodata.json || true
+    conda config --system --prepend repodata_fns repodata.json
+
     # step 3: install bioconda-utils
     additional_packages='git pip'
     if [[ $OSTYPE == darwin* ]]; then
-        # Pinned to 2.5.3 to make sure we don't get unexpected changes.
-        additional_packages="${additional_packages} conda-forge-ci-setup=2.5.3"
+        # Pinned conda-forge-ci-setup to a specific version to make sure we don't get unexpected changes.
+        additional_packages="${additional_packages} conda-forge-ci-setup=2.6.0"
     fi
     conda install -y $additional_packages --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/bioconda_utils/bioconda_utils-requirements.txt
     pip install git+https://github.com/bioconda/bioconda-utils.git@$BIOCONDA_UTILS_TAG
