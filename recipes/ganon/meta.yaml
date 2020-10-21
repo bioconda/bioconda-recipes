@@ -1,0 +1,71 @@
+{% set name = "ganon" %}
+{% set version = "0.3.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  - folder: ganon
+    url: https://github.com/pirovc/{{ name }}/archive/{{ version }}.tar.gz
+    sha256: b1bf05cdae5524b2a3b930759ef8b09753481727dfc00b70cd9a9e5144205a07 
+  - folder: seqan
+    url: https://github.com/eseiler/seqan/archive/d8b3fcd55858c150bc1dd95fa3cf4c8ebb640829.tar.gz
+    sha256: 5396aa6d541a22f32b7aa6f60015ade8a157e6af75f63aec8f3a514eeca06b80 
+  - folder: sdsl-lite
+    url: https://github.com/xxsds/sdsl-lite/archive/d6ed14d5d731ed4a4ec12627c1ed7154b396af48.tar.gz
+    sha256: db311228cd036ddf98eb130d29abd41195007c092ac2ea4092ba3567bff843c9 
+    
+build:
+  number: 0
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake >=3.10
+  host:
+    - catch2 >=2.7.0
+    - cxxopts ==2.2.0
+    - python >=3.4
+    - pandas >=0.22.0
+    - taxsbp ==1.0.0
+    - gawk
+    - grep
+    - tar
+    - curl
+    - wget
+    - coreutils
+    - zlib
+  run:
+    - python >=3.4
+    - pandas >=0.22.0
+    - taxsbp ==1.0.0
+    - gawk
+    - grep
+    - tar
+    - curl
+    - wget
+    - coreutils
+    - zlib
+    
+test:
+  commands:
+    - ganon --help
+    - ganon-build --help
+    - ganon-classify --help
+
+about:
+  home: https://github.com/pirovc/ganon
+  summary: "ganon: a read classification tool using Interleaved Bloom Filters"
+  description: |
+          ganon is a k-mer based read classification tool which uses Interleaved Bloom Filters
+          in conjunction with a taxonomic clustering and a k-mer counting-filtering scheme
+  license: MIT License
+  license_family: MIT
+
+extra:
+  identifiers:
+    - doi:10.1101/406017
+  recipe-maintainers:
+    - pirovc

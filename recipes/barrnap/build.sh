@@ -2,6 +2,7 @@
 
 DESTDIR="${PREFIX}/lib/barrnap"
 mkdir -p "${DESTDIR}"
+mkdir -p ${PREFIX}/bin
 
 # copy selectively, we only need the perl script
 # in the bin folder and the db folder containing the

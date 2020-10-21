@@ -1,84 +1,62 @@
-{% set version = "0.12.0" %}
+{% set version = "0.15.1" %}
 
 package:
   name: gimmemotifs
   version: {{ version }}
 
 source:
-  url: https://github.com/simonvh/gimmemotifs/archive/0.12.0.tar.gz
-  sha256: 199df912e7551045bba9af8be005a201bd7d3c8a45a00b283e884e1263983513
+  url: https://github.com/vanheeringen-lab/gimmemotifs/releases/download/{{ version }}/gimmemotifs-{{ version }}.tar.gz
+  sha256: dc7eff6c1148c543f1373f8c512236be48a1a302824889d7abae8887ad0691df 
 
 build:
   number: 0
+  skip: True  # [py<30]
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
+    - pip
     - python
-    - setuptools
-    - numpy
-    - scipy >=0.9.0
-    - matplotlib >=2.0
-    - jinja2
-    - pyyaml >=3.10
     - pybedtools
-    - statsmodels
-    - scikit-learn >=0.18
-    - sklearn-contrib-lightning
-    - seaborn
-    - pysam
-    - xgboost >=0.71
-    - xdg
-    - diskcache
-    - xxhash
-    - configparser # [py27]
-    - six
-    - future
-    - pillow
-    - bedtools
-    - ucsc-genepredtobed
-    - ucsc-bigbedtobed
-    - homer
-    - gadem
-    - trawler
-    - weeder
-    - tqdm
-    - genomepy
-
   run:
-    - python
-    - scipy >=0.9.0
-    - {{ pin_compatible('numpy', max_pin='x.x') }} 
-    - matplotlib >=2.0
-    - jinja2
-    - pyyaml >=3.10
-    - pybedtools
-    - statsmodels
-    - scikit-learn >=0.18
-    - sklearn-contrib-lightning
-    - seaborn
-    - pysam
-    - xgboost >=0.71
-    - xdg
+    - configparser
+    - dinamo  # [not osx]
     - diskcache
-    - xxhash
-    - configparser # [py27]
-    - six
+    - feather-format
     - future
-    - pillow
-    - bedtools
-    - ucsc-genepredtobed
-    - ucsc-bigbedtobed
-    - homer
     - gadem
+    - genomepy >=0.9.0
+    - homer
+#    - ipywidgets  # Necessary for progress bar in Jupyter notebook
+    - jinja2
+    - logomaker
+    - matplotlib-base >=3.1.2
+    - meme >=5.1.1
+    - ncurses >=6.1
+    - pandas >=1.1
+    - prosampler
+    - pillow >=0.7.1.2
+    - pyarrow >=0.16.0
+    - pybedtools
+    - python
+    - python-xxhash
+    - pyyaml >=3.10
+    - qnorm >=0.5
+    - scikit-learn >=0.23.2
+    - scipy >=1.4.1
+    - seaborn >=0.10.1
+    - six
+    - statsmodels
+    - tqdm >=4.46.1
     - trawler
+    - ucsc-bigbedtobed
     - weeder
-    - meme  # [py27]
-    - ghostscript
-    - tqdm
-    - genomepy
-
+    - xdg
+    - xgboost >=1.0.2
+    - xxmotif
+          
 test:
   imports:
     - gimmemotifs
@@ -87,10 +65,12 @@ test:
     - gimme --help
 
 about:
-  home: https://github.com/simonvh/gimmemotifs
+  home: https://github.com/vanheeringen-lab/gimmemotifs
   license: MIT
   summary: Motif prediction pipeline and various motif-related tools
 
-en_c+xtra:
+extra:
+  recipe-maintainers:
+    - simonvh
   identifiers:
     - biotools:gimmemotifs

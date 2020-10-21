@@ -1,0 +1,52 @@
+{% set version = "1.8.0" %}
+{% set name = "DEComplexDisease" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 1ddde6b5fca38195e41e8edc289d843c
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: knitr
+requirements:
+  host:
+    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
+    - 'bioconductor-complexheatmap >=2.4.0,<2.5.0'
+    - 'bioconductor-deseq2 >=1.28.0,<1.29.0'
+    - 'bioconductor-edger >=3.30.0,<3.31.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
+    - r-base
+    - 'r-rcpp >=0.12.7'
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
+    - 'bioconductor-complexheatmap >=2.4.0,<2.5.0'
+    - 'bioconductor-deseq2 >=1.28.0,<1.29.0'
+    - 'bioconductor-edger >=3.30.0,<3.31.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
+    - r-base
+    - 'r-rcpp >=0.12.7'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'A tool for differential expression analysis and DEGs based investigation to complex diseases by bi-clustering analysis'
+  description: 'It is designed to find the differential expressed genes (DEGs) for complex disease, which is characterized by the heterogeneous genomic expression profiles. Different from the established DEG analysis tools, it does not assume the patients of complex diseases to share the common DEGs. By applying a bi-clustering algorithm, DECD finds the DEGs shared by as many patients. In this way, DECD describes the DEGs of complex disease in a novel syntax, e.g. a gene list composed of 200 genes are differentially expressed in 30% percent of studied complex disease. Applying the DECD analysis results, users are possible to find the patients affected by the same mechanism based on the shared signatures.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

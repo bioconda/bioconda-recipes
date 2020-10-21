@@ -1,0 +1,55 @@
+{% set version = '0.7.14' %}
+{% set name = "cellbrowser" %}
+
+package:
+  name: ucsc-cell-browser
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "8d5cb5eb8c1a42bed46da517edba70b797a82e9f410c2dd6d35f97639bc2c0c1"
+
+build:
+  number: 0
+  entry_points:
+    - cbBuild = cellbrowser.cellbrowser:cbBuildCli
+    - cbScanpy = cellbrowser.cellbrowser:cbScanpyCli
+    - cbSeurat = cellbrowser.seurat:cbSeuratCli
+    - cbTool = cellbrowser.convert:cbToolCli
+    - cbUpgrade = cellbrowser.cellbrowser:cbUpgradeCli
+    - cbGuessGencode = cellbrowser.guessgenes:cbGuessGencodeCli
+    - cbMarkerAnnotate = cellbrowser.geneinfo:cbMarkerAnnotateCli
+    - cbImportScanpy = cellbrowser.convert:cbImportScanpyCli
+    - cbImportSeurat = cellbrowser.seurat:cbImportSeurat2Cli
+    - cbImportCellranger = cellbrowser.convert:cbCellrangerCli
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+    host:
+        - python >=3.6
+        - pip
+    run:
+        - python >=3.6
+        - numpy
+        - anndata
+
+test:
+    imports:
+        - RangeHTTPServer
+        - cellbrowser
+    commands:
+        - which cbBuild
+        - which cbGuessGencode
+        - which cbMarkerAnnotate
+        - which cbScanpy
+        - which cbImportScanpy
+        - which cbImportCellranger
+        - which cbTool
+        - which cbUpgrade
+
+about:
+  home: http://cells.ucsc.edu
+  license: GPL
+  license_file: LICENSE
+  summary: A browser for single-cell data, main site at http://cells.ucsc.edu

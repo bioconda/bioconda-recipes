@@ -1,6 +1,6 @@
 {% set name = "spaln" %}
-{% set version = "2.3.2" %}
-{% set sha256 = "2c39f338e9bad17907eadc3218937500379213fde4263dcf041994a6f58d22f0" %}
+{% set version = "2.4.03" %}
+{% set sha256 = "6b7d19392485827b1711bbafdd9305d6ed33f92b4e4ba8ec0cfad4dc20364b23" %}
 
 package:
   name: {{ name|lower }}
@@ -11,7 +11,7 @@ source:
   sha256: {{ sha256 }}
   patches:
     - patch-makefile_pl   # add a Makefile.PL for the Perl part of the code
-    - patch-adddef_h      # set MAXL to a more reasonable value - 1 larger than maximum POSIX path length
+    - patch-makefile_ldflags  # add a LDFLAGS variable to the Makefile
 
 build:
   number: 0
@@ -29,7 +29,11 @@ requirements:
 test:
   commands:
     - spaln -h 2>&1 |grep 'SPALN version' >/dev/null
-    - makblk.pl |grep makblk.pl >/dev/null
+    - makblk.pl 2>&1 |grep makblk.pl >/dev/null
+    - sortgrcd -h 2>&1 |grep sortgrcd >/dev/null
+    - makmdm -h 2>&1 |grep makmdm >/dev/null
+    - makdbs -h 2>&1 |grep makdbs >/dev/null
+    - makeidx.pl -h 2>&1 |grep makeidx.pl >/dev/null
 
 about:
   home: http://www.genome.ist.i.kyoto-u.ac.jp/~aln_user/spaln/
@@ -44,7 +48,8 @@ about:
     in a single job. Spaln also performs spliced or ordinary alignment after
     rapid similarity search against a protein sequence database, if a genomic segment 
     or an amino acid sequence is given as a query. 
+
 extra:
-  recipe-maintainers:
-    - pvanheus
+  identifiers:
+    - doi:10.1093/nar/gks708
 

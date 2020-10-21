@@ -7,13 +7,13 @@ export PKG_CONFIG_LIBDIR="${PREFIX}"/lib/pkgconfig
 # - liblzma.so.5
 # - libbz2.so.1.0
 # - libcrypto.so.1.0.0
-[[ $(uname) == Linux ]] && export LDFLAGS="-Wl,-rpath-link,${PREFIX}/lib"
+[[ $(uname) == Linux ]] && export LDFLAGS="${LDFLAGS} -Wl,-rpath-link,${PREFIX}/lib"
 
 # configure
 # '--wrap-mode nofallback' prevents meson from downloading
 # stuff from the internet or using subprojects.
 meson \
-  --default-library shared \
+  --default-library static \
   --libdir lib \
   --wrap-mode nofallback \
   --prefix "${PREFIX}" \
