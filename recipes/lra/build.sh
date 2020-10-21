@@ -3,5 +3,5 @@
 mkdir -p $PREFIX/bin
 export CPATH=${PREFIX}/include
 
-make 
+make CC="${CC}"
 cp lra $PREFIX/bin
