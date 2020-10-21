@@ -1,10 +1,11 @@
 #!/bin/bash
-FN="QDNAseq.mm10_1.8.0.tar.gz"
+FN="QDNAseq.mm10_1.18.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/experiment/src/contrib/QDNAseq.mm10_1.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-qdnaseq.mm10/bioconductor-qdnaseq.mm10_1.8.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/QDNAseq.mm10_1.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/QDNAseq.mm10_1.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-qdnaseq.mm10/bioconductor-qdnaseq.mm10_1.18.0_src_all.tar.gz"
 )
-MD5="dbbf1cb5ab643feaa7e0c2e5b8902c90"
+MD5="4b0b41b720b8da487cc85c47e0ef5dae"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -15,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

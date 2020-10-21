@@ -1,0 +1,51 @@
+{% set name = "orfipy" %}
+{% set version = "0.0.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 74db68843e741aba4e322222807a8f239e34bfd04db2b82d10619e1f403d6bf5
+
+build:
+  number: 0
+  skip: True  # [py2k]
+  entry_points:
+    - orfipy = orfipy.__main__:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - cython
+    - pip
+    - psutil
+    - pyahocorasick
+    - pyfaidx
+    - python
+  run:
+    - psutil
+    - pyahocorasick
+    - pyfaidx
+    - python
+
+test:
+  imports:
+    - orfipy
+  commands:
+    - orfipy --help
+  requires:
+    - pytest
+
+about:
+  home: "https://github.com/urmi-21/orfipy"
+  license: MIT
+  license_family: MIT
+  summary: "orfipy: fast and flexible search for open reading frames in fasta sequences"
+
+extra:
+  recipe-maintainers:
+    - urmi-21

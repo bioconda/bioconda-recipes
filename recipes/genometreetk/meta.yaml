@@ -1,0 +1,55 @@
+{% set name = "GenomeTreeTk" %}
+{% set version = "0.1.6" %}
+{% set sha256 = "db69f8989adf93d61a2209be8812a1b35a4ed4e582b3ef2a9709966c3267366a" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 2
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - biolib >=0.1.0
+    - numpy >=1.8.0
+    - future
+    - dendropy >=4.0.0
+    - fasttree
+    - blast
+    - hmmer >=3.1b2
+    - scipy >=0.16.0
+    - infernal
+    - fastani >=1.3
+    - mash
+    - mothur
+    - ssu-align
+    - easel
+
+test:
+  imports:
+    - genometreetk
+    - genometreetk.markers
+  commands:
+    - genometreetk -h 2>&1 | grep {{ version }} > /dev/null
+
+about:
+  home: https://github.com/dparks1134/GenomeTreeTk
+  license: GPL3
+  license_family: GPL3
+  license_file: LICENSE
+  summary: 'The genome tree toolkit is a collection of methods for working with genome trees.'
+
+extra:
+  recipe-maintainers:
+    - aaronmussig

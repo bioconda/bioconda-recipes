@@ -1,0 +1,48 @@
+{% set version = '0.5.3' %}
+
+package:
+  name: r-taxonomizr
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/taxonomizr_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/taxonomizr/taxonomizr_{{ version }}.tar.gz
+  sha256: 71208bb3a582192beb4a399d6e144858b0d3f10938f0593cee7aac92fd62bb43
+
+build:
+  number: 1
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - r-base
+    - r-r.utils
+    - r-rsqlite
+    - r-data.table
+  run:
+    - r-base
+    - r-r.utils
+    - r-rsqlite
+    - r-data.table
+    - parallel
+    - r-testthat
+    - r-knitr
+    - r-markdown
+
+test:
+  commands:
+    - $R -e "library('taxonomizr')"
+
+about:
+  home: https://CRAN.R-project.org/package=taxonomizr
+  license: GPL (>=2)
+  summary: Functions for assigning taxonomy to NCBI accession numbers and taxon IDs based on
+    NCBI's accession2taxid and taxdump files. This package allows the user to downloads
+    NCBI data dumps and create a local database for fast and local taxonomic assignment.
+  license_family: GPL

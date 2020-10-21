@@ -1,15 +1,12 @@
 #!/bin/bash
 
-mkdir -p ${PREFIX}/bin
-
-export CPATH=${PREFIX}/include
-
 cd src
 
-if [ `uname` == Darwin ]; then
-make -f Makefile.MacOS
+if [[ ${target_platform} =~ osx.* ]]; then
+make -f Makefile.MacOS OUR_CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 else
-make -f Makefile.Linux
+make -f Makefile.Linux OUR_CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 fi
 
-cp ../verse ${PREFIX}/bin
+install -d "${PREFIX}/bin"
+install ../verse "${PREFIX}/bin/"

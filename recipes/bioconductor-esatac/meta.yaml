@@ -1,0 +1,103 @@
+{% set version = "1.10.0" %}
+{% set name = "esATAC" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: c82cac916846d48bf750c813030f32cf
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: BSgenome.Hsapiens.UCSC.hg19, TxDb.Hsapiens.UCSC.hg19.knownGene, org.Hs.eg.db, testthat, webshot
+# SystemRequirements: C++11
+requirements:
+  host:
+    - 'bioconductor-annotationdbi >=1.50.0,<1.51.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-biostrings >=2.56.0,<2.57.0'
+    - 'bioconductor-bsgenome >=1.56.0,<1.57.0'
+    - 'bioconductor-chipseeker >=1.24.0,<1.25.0'
+    - 'bioconductor-clusterprofiler >=3.16.0,<3.17.0'
+    - 'bioconductor-genomeinfodb >=1.24.0,<1.25.0'
+    - 'bioconductor-genomicfeatures >=1.40.0,<1.41.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-jaspar2018 >=1.1.0,<1.2.0'
+    - 'bioconductor-motifmatchr >=1.10.0,<1.11.0'
+    - 'bioconductor-pipeframe >=1.4.0,<1.5.0'
+    - 'bioconductor-rbowtie2 >=1.10.0,<1.11.0'
+    - 'bioconductor-rsamtools >=2.4.0,<2.5.0'
+    - 'bioconductor-rtracklayer >=1.48.0,<1.49.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - 'bioconductor-shortread >=1.46.0,<1.47.0'
+    - 'bioconductor-tfbstools >=1.26.0,<1.27.0'
+    - r-base
+    - r-biocmanager
+    - r-corrplot
+    - r-digest
+    - r-ggplot2
+    - r-igraph
+    - r-knitr
+    - r-magrittr
+    - r-r.utils
+    - 'r-rcpp >=0.12.11'
+    - r-rjava
+    - r-rmarkdown
+    - r-venndiagram
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-annotationdbi >=1.50.0,<1.51.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-biostrings >=2.56.0,<2.57.0'
+    - 'bioconductor-bsgenome >=1.56.0,<1.57.0'
+    - 'bioconductor-chipseeker >=1.24.0,<1.25.0'
+    - 'bioconductor-clusterprofiler >=3.16.0,<3.17.0'
+    - 'bioconductor-genomeinfodb >=1.24.0,<1.25.0'
+    - 'bioconductor-genomicfeatures >=1.40.0,<1.41.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-jaspar2018 >=1.1.0,<1.2.0'
+    - 'bioconductor-motifmatchr >=1.10.0,<1.11.0'
+    - 'bioconductor-pipeframe >=1.4.0,<1.5.0'
+    - 'bioconductor-rbowtie2 >=1.10.0,<1.11.0'
+    - 'bioconductor-rsamtools >=2.4.0,<2.5.0'
+    - 'bioconductor-rtracklayer >=1.48.0,<1.49.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - 'bioconductor-shortread >=1.46.0,<1.47.0'
+    - 'bioconductor-tfbstools >=1.26.0,<1.27.0'
+    - r-base
+    - r-biocmanager
+    - r-corrplot
+    - r-digest
+    - r-ggplot2
+    - r-igraph
+    - r-knitr
+    - r-magrittr
+    - r-r.utils
+    - 'r-rcpp >=0.12.11'
+    - r-rjava
+    - r-rmarkdown
+    - r-venndiagram
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL-3 | file LICENSE'
+  summary: 'An Easy-to-use Systematic pipeline for ATACseq data analysis'
+  description: 'This package provides a framework and complete preset pipeline for quantification and analysis of ATAC-seq Reads. It covers raw sequencing reads preprocessing (FASTQ files), reads alignment (Rbowtie2), aligned reads file operations (SAM, BAM, and BED files), peak calling (F-seq), genome annotations (Motif, GO, SNP analysis) and quality control report. The package is managed by dataflow graph. It is easy for user to pass variables seamlessly between processes and understand the workflow. Users can process FASTQ files through end-to-end preset pipeline which produces a pretty HTML report for quality control and preliminary statistical results, or customize workflow starting from any intermediate stages with esATAC functions easily and flexibly.'
+  license_file: LICENSE
+
