@@ -1,0 +1,44 @@
+{% set version = "2.2.1" %}
+{% set sha256 = "e8b0cf2baccae74432955d0f14f7d3715e910d1783e2e37add99c746834530bd" %}
+
+package:
+  name: consent
+  version: '{{version}}'
+
+source:
+  url: "https://github.com/morispi/CONSENT/archive/v{{version}}.tar.gz"
+  sha256: '{{sha256}}'
+  patches:
+    - CONSENT-correct.patch
+    - CONSENT-polish.patch
+
+build:
+  skip: True  # [osx]
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c')}}
+    - {{ compiler('cxx')}}
+    - cmake
+    - wget
+  host:
+    - zlib
+  run:
+    - minimap2
+
+test:
+  commands:
+    - CONSENT-correct -h | grep "CONSENT-correct"
+    - CONSENT-polish -h | grep "CONSENT-polish"
+
+about:
+  home: https://github.com/morispi/CONSENT
+  license: AGPL-3.0
+  license_family: AGPL
+  summary: Scalable long read self-correction and assembly polishing with multiple sequence alignment
+
+extra:
+  container:
+    # Click needs the extended container
+    extended-base: True

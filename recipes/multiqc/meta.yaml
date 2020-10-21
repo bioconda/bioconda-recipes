@@ -1,48 +1,40 @@
+{% set version = "1.9" %}
+
 package:
   name: multiqc
-  version: "1.6a0"
+  version: {{ version }}
 
 source:
-  #url: https://github.com/ewels/MultiQC/archive/49aa22a.tar.gz
-  # Use development with fixes for peddy
-  url: https://github.com/chapmanb/MultiQC/archive/ae7864f.tar.gz
-  sha256: 13328c9a921d2df822f6a01712b539eb41ee5a1edd2f4ade0198340592d36b7d
+  url: https://github.com/ewels/MultiQC/archive/v{{ version }}.tar.gz
+  sha256: a278230dc8292749e40f6cf1e6b71ba8dd82f73c8c4f6dee26747279adb1243c
 
 build:
-  number: 2
-  preserve_egg_dir: True
+  number: 1
+  entry_points:
+    - multiqc=multiqc.__main__:multiqc
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   host:
-    - python
-    - setuptools
-    - click
-    - future >0.14.0
-    - lzstring
-    - jinja2 >=2.9
-    - matplotlib >=2.1.1
-    - markdown
-    - numpy
-    - pyyaml
-    - requests
-    - simplejson
-    - spectra >=0.0.10
-
+    - python >=3.6
+    - pip
   run:
-    - python
+    - python >=3.6
     - setuptools
     - click
+    - coloredlogs
     - future >0.14.0
     - jinja2 >=2.9
     - lzstring
     - markdown
-    - matplotlib >=2.1.1
+    - matplotlib-base >=2.1.1
+    - networkx
     - numpy
-    - pyyaml
+    - pyyaml >=4
     - requests
     - simplejson
     - spectra >=0.0.10
-    - enum34 # [py27]
 
 test:
   # Python imports
@@ -55,7 +47,9 @@ test:
     - multiqc.modules.bbmap
     - multiqc.modules.bcftools
     - multiqc.modules.bcl2fastq
+    - multiqc.modules.biobambam2
     - multiqc.modules.biobloomtools
+    - multiqc.modules.biscuit
     - multiqc.modules.bismark
     - multiqc.modules.bowtie1
     - multiqc.modules.bowtie2
@@ -65,55 +59,85 @@ test:
     - multiqc.modules.conpair
     - multiqc.modules.custom_content
     - multiqc.modules.cutadapt
+    - multiqc.modules.damageprofiler
     - multiqc.modules.dedup
     - multiqc.modules.deeptools
     - multiqc.modules.disambiguate
+    - multiqc.modules.dragen
+    - multiqc.modules.fastp
     - multiqc.modules.fastq_screen
     - multiqc.modules.fastqc
     - multiqc.modules.featureCounts
+    - multiqc.modules.fgbio
+    - multiqc.modules.flash
     - multiqc.modules.flexbar
     - multiqc.modules.gatk
     - multiqc.modules.goleft_indexcov
+    - multiqc.modules.happy
     - multiqc.modules.hicexplorer
+    - multiqc.modules.hicpro
     - multiqc.modules.hicup
     - multiqc.modules.hisat2
     - multiqc.modules.homer
     - multiqc.modules.htseq
     - multiqc.modules.interop
+    - multiqc.modules.ivar
     - multiqc.modules.jellyfish
+    - multiqc.modules.kaiju
     - multiqc.modules.kallisto
+    - multiqc.modules.kat
+    - multiqc.modules.kraken
     - multiqc.modules.leehom
+    - multiqc.modules.longranger
     - multiqc.modules.macs2
+    - multiqc.modules.malt
     - multiqc.modules.methylQA
+    - multiqc.modules.minionqc
+    - multiqc.modules.mirtop
+    - multiqc.modules.mirtrace
+    - multiqc.modules.mosdepth
+    - multiqc.modules.mtnucratio
+    - multiqc.modules.multivcfanalyzer
     - multiqc.modules.peddy
+    - multiqc.modules.phantompeakqualtools
     - multiqc.modules.picard
     - multiqc.modules.preseq
     - multiqc.modules.prokka
+    - multiqc.modules.pycoqc
     - multiqc.modules.qorts
     - multiqc.modules.qualimap
     - multiqc.modules.quast
     - multiqc.modules.rna_seqc
+    - multiqc.modules.rockhopper
     - multiqc.modules.rsem
     - multiqc.modules.rseqc
     - multiqc.modules.salmon
     - multiqc.modules.samblaster
     - multiqc.modules.samtools
     - multiqc.modules.sargasso
+    - multiqc.modules.seqyclean
+    - multiqc.modules.sexdeterrmine
+    - multiqc.modules.sickle
     - multiqc.modules.skewer
     - multiqc.modules.slamdunk
     - multiqc.modules.snpeff
+    - multiqc.modules.snpsplit
+    - multiqc.modules.somalier
     - multiqc.modules.sortmerna
+    - multiqc.modules.stacks
     - multiqc.modules.star
     - multiqc.modules.supernova
     - multiqc.modules.theta2
     - multiqc.modules.tophat
     - multiqc.modules.trimmomatic
+    - multiqc.modules.varscan2
     - multiqc.modules.vcftools
     - multiqc.modules.verifybamid
     - multiqc.plots
     - multiqc.templates
     - multiqc.templates.default
     - multiqc.templates.default_dev
+    - multiqc.templates.gathered
     - multiqc.templates.geo
     - multiqc.templates.sections
     - multiqc.templates.simple
@@ -126,15 +150,19 @@ test:
 about:
   home: http://multiqc.info
   license: GNU General Public License v3 (GPLv3)
-  summary: 'Create aggregate bioinformatics analysis reports across many samples and tools'
   license_family: GPL3
+  license_file: LICENSE
+  summary: 'Create aggregate bioinformatics analysis reports across many samples and tools'
+  doc_url: http://multiqc.info/docs/
+  dev_url: https://github.com/ewels/MultiQC
 
 extra:
   container:
     # click requires a unicode locale when used with Python 3
     # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
-    extended-base: true  # [py3k]
+    extended-base: true
   skip-lints:
     - uses_setuptools # uses pkg_resources
   identifiers:
     - biotools:multiqc
+    - doi:https://doi.org/10.1093/bioinformatics/btw354

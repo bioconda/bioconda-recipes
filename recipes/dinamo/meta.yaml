@@ -1,0 +1,43 @@
+{% set name = "DiNAMO" %}
+{% set version = "1.0" %}
+{% set sha256 = "9530934528dd3bff1a0b4dce33f7e5c3fece939214cbdab2ca98b5e4ef13c2dd" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  sha256: {{ sha256 }}
+  url: https://github.com/bonsai-team/{{name}}/archive/V{{version}}.tar.gz
+  patches:
+    - Makefile.patch
+
+build:
+  skip: True # [osx]
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - boost-cpp
+  run:
+    - boost-cpp
+
+test:
+  commands:
+    - dinamo -h 2>&1 | grep Usage
+
+about:
+  home: https://github.com/bonsai-team/DiNAMO/
+  license: GPLv3
+  license_family: GPL
+  license_url: https://raw.githubusercontent.com/bonsai-team/DiNAMO/master/LICENSE
+  summary: An exact and efficient method for IUPAC motif discovery in DNA sequences
+
+extra:
+  recipe-maintainers:
+    - simonvh
+  identifiers:
+    - biotools:DiNAMO
+    - doi:10.1186/s12859-018-2215-1

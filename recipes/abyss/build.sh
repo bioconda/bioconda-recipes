@@ -14,7 +14,7 @@ fi
     --with-boost="$PREFIX" \
     --with-mpi="$PREFIX" \
     --with-sparsehash="$PREFIX" \
-    --without-sqlite
+    --without-sqlite || cat config.log
 make AM_CXXFLAGS=-Wall
 make install
 

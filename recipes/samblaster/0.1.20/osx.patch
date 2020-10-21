@@ -1,0 +1,122 @@
+diff --git a/samblaster.cpp b/samblaster.cpp
+index 14a2a40..b69838d 100644
+--- a/samblaster.cpp
++++ b/samblaster.cpp
+@@ -18,8 +18,11 @@
+ 
+ */
+ 
++// This define is needed for portable definition of PRIu64
++#define __STDC_FORMAT_MACROS
++
+ #include <stdlib.h>
+-#include <stdint.h>
++#include <inttypes.h>
+ #include <stdio.h>
+ #include <string.h>
+ #include <errno.h>
+@@ -32,6 +35,15 @@ typedef uint64_t UINT64;
+ typedef uint32_t UINT32;
+ 
+ // Some helper routines.
++
++// mempcpy is a GNU extension and not available everywhere.
++#ifndef _GNU_SOURCE
++inline void *mempcpy(void *dest, const void *src, size_t n)
++{
++    return (char*) memcpy(dest, src, n) + n;
++}
++#endif
++
+ inline bool streq(char * s1, const char * s2) __attribute__((always_inline));
+ inline bool streq(char * s1, const char * s2)
+ {
+@@ -110,7 +122,7 @@ inline UINT64 diffTVs (struct timeval * startTV, struct timeval * endTV)
+ 
+ // We need to pre-define these for the SAM specific fields.
+ typedef UINT32 pos_t; // Type for reference offsets.
+-typedef UINT64 sig_t; // Type for signatures for offsets and lengths.
++typedef UINT64 sgn_t; // Type for signatures for offsets and lengths.
+ // And the type itself for the next pointer.
+ typedef struct splitLine splitLine_t;
+ splitLine_t * splitLineFreeList = NULL;
+@@ -538,13 +550,13 @@ void deleteState(state_t * s)
+ // Signatures
+ ///////////////////////////////////////////////////////////////////////////////
+ 
+-inline sig_t calcSig(splitLine_t * first, splitLine_t * second)
++inline sgn_t calcSig(splitLine_t * first, splitLine_t * second)
+ {
+     // Total nonsense to get the compiler to actually work.
+     UINT64 t1 = first->pos;
+     UINT64 t2 = t1 << 32;
+     UINT64 final = t2 | second->pos;
+-    return (sig_t)final;
++    return (sgn_t)final;
+ }
+ 
+ inline int calcSigArrOff(splitLine_t * first, splitLine_t * second, seqMap_t & seqs)
+@@ -553,7 +565,7 @@ inline int calcSigArrOff(splitLine_t * first, splitLine_t * second, seqMap_t & s
+     int s2 = (second->seqNum * 2) + (isReverseStrand(second) ? 1 : 0);
+     int retval = (s1 * seqs.size() * 2) + s2;
+ #ifdef DEBUG
+-    fprintf(stderr, "1st %d %d -> %d 2nd %d %d -> %d count %lu result %d\n", 
++    fprintf(stderr, "1st %d %d -> %d 2nd %d %d -> %d count %" PRIu64 " result %d\n", 
+             first->seqNum, isReverseStrand(first), s1, second->seqNum, isReverseStrand(second), s2, seqs.size(), retval);
+ #endif
+     return retval;
+@@ -840,7 +852,7 @@ void markDupsDiscordants(splitLine_t * block, state_t * state)
+         if (!orphan && needSwap(first, second)) swapPtrs(&first, &second);
+ 
+         // Now find the signature of the pair.
+-        sig_t sig = calcSig(first, second);
++        sgn_t sig = calcSig(first, second);
+         // Calculate the offset into the signatures array.
+         int off = calcSigArrOff(first, second, state->seqs);
+         // Attempt insert into the sigs structure.
+@@ -1123,7 +1135,7 @@ void printUsageString()
+         "-q --quiet                Output fewer statistics.\n";
+     
+         printVersionString();
+-        fprintf(stderr, useString);
++        fprintf(stderr, "%s", useString);
+ }
+ 
+ void printUsageStringAbort()
+@@ -1378,22 +1390,22 @@ int main (int argc, char *argv[])
+     if (!state->quiet)
+     {
+         if (state->discordantFile != NULL)
+-            fprintf(stderr, "samblaster: Output %lu discordant read pairs to %s\n", discCount/2, state->discordantFileName);
++            fprintf(stderr, "samblaster: Output %" PRIu64 " discordant read pairs to %s\n", discCount/2, state->discordantFileName);
+         if (state->splitterFile != NULL)
+-            fprintf(stderr, "samblaster: Output %lu split reads to %s\n", splitCount, state->splitterFileName);
++            fprintf(stderr, "samblaster: Output %" PRIu64 " split reads to %s\n", splitCount, state->splitterFileName);
+         if (state->unmappedClippedFile != NULL)
+-            fprintf(stderr, "samblaster: Output %lu unmapped/clipped reads to %s\n", unmapClipCount, state->unmappedClippedFileName);
++            fprintf(stderr, "samblaster: Output %" PRIu64 " unmapped/clipped reads to %s\n", unmapClipCount, state->unmappedClippedFileName);
+     }
+     
+     // Output stats.
+     if (state->removeDups)
+     {
+-        fprintf(stderr, "samblaster: Removed %lu of %lu (%4.2f%%) read ids as duplicates", 
++        fprintf(stderr, "samblaster: Removed %" PRIu64 " of %" PRIu64 " (%4.2f%%) read ids as duplicates", 
+                 dupCount, idCount, ((double)100)*dupCount/idCount);
+     }
+     else
+     {
+-        fprintf(stderr, "samblaster: Marked %lu of %lu (%4.2f%%) read ids as duplicates", 
++        fprintf(stderr, "samblaster: Marked %" PRIu64 " of %" PRIu64 " (%4.2f%%) read ids as duplicates", 
+                 dupCount, idCount, ((double)100)*dupCount/idCount);
+     }
+     if ((TIMING == 0) || state->quiet)
+@@ -1406,7 +1418,7 @@ int main (int argc, char *argv[])
+         getrusage(RUSAGE_SELF, &usagebuf);
+         time_t endTime = time(NULL);
+         struct timeval endRUTime = usagebuf.ru_utime;    
+-        fprintf(stderr, " using %luk memory in ", usagebuf.ru_maxrss);
++        fprintf(stderr, " using %" PRIu64 "k memory in ", usagebuf.ru_maxrss);
+         fprintTimeMicroSeconds(stderr, diffTVs(&startRUTime, &endRUTime), 3);
+         fprintf(stderr, " CPU seconds and ");
+         fprintTimeSeconds(stderr, (endTime-startTime), 0);

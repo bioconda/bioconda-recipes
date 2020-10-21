@@ -1,0 +1,20 @@
+--- sv2/sv2Config.py	2019-05-13 18:49:12.499563961 +0200
++++ sv2/sv2Config.py	2019-05-13 18:49:05.071423000 +0200
+@@ -1,4 +1,5 @@
+ #!/usr/bin/env python2
++import os.path
+ from sv2_backend import dump_json,errFH,get_path,query_yes_no
+ try:from configparser import ConfigParser
+ except ImportError:from ConfigParser import ConfigParser
+@@ -11,7 +12,10 @@
+ 			self.fh = Config.ini
+ 		else:
+ 			self.fh=get_path()+'/config/sv2.ini'
+-		self.json=get_path()+'/config/sv2_clf.json'
++		if os.path.exists(os.path.join(os.path.dirname(self.fh), 'sv2_clf.json')):
++			self.json=os.path.join(os.path.dirname(self.fh), 'sv2_clf.json')
++		else:
++			self.json=get_path()+'/config/sv2_clf.json'
+ 		self.fasta_chr_flag=False
+ 		self.clfs=None
+ 		self.gtclf={} # classifiers for genotyping

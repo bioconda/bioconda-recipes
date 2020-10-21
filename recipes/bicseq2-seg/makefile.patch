@@ -1,0 +1,72 @@
+--- Makefile.old	2019-04-24 18:20:27.376166361 -0500
++++ Makefile	2019-04-24 18:21:31.309181134 -0500
+@@ -1,36 +1,31 @@
+-CC = gcc
++PREFIX :=
++EXECUTABLE := combineFile bootstrap EstLambdaFct countRead genotype MBICseq
++BIN_DIR := bin
+ CFLAGS = -g -O2 -lm -Wall
+ 
++all: directory $(EXECUTABLE)
+ 
+-
+-all: combineFile bootstrap EstLambdaFct countRead genotype
++directory:
++	mkdir $(BIN_DIR)
+ 
+ 
+ combineFile: combineFile/combine.o lib/read.o
+-	$(CC) $(CFLAGS) combineFile/combine.o lib/read.o -o combineFile/combineFile
+-
++	$(CC) $(CFLAGS) combineFile/combine.o lib/read.o -o $(BIN_DIR)/$@
+ 
+ bootstrap:  bootstrap/bootstrap.o lib/read.o lib/gamma.o
+-	$(CC) $(CFLAGS) bootstrap/bootstrap.o lib/read.o lib/gamma.o -o bootstrap/bootstrapTest
+-
++	$(CC) $(CFLAGS) bootstrap/bootstrap.o lib/read.o lib/gamma.o -o $(BIN_DIR)/$@
+ 
+ EstLambdaFct: EstimateLambdaFactor/EstLambdaFct.o lib/read.o
+-	 $(CC) $(CFLAGS) EstimateLambdaFactor/EstLambdaFct.o lib/read.o -o EstimateLambdaFactor/EstLambdaFct
++	 $(CC) $(CFLAGS) EstimateLambdaFactor/EstLambdaFct.o lib/read.o -o $(BIN_DIR)/$@
+ 	
+ countRead: genotype/countRead.o lib/read.o genotype/ITree.o lib/rbtree.o
+-	$(CC) $(CFLAGS) genotype/countRead.o lib/read.o genotype/ITree.o lib/rbtree.o -o genotype/countRead
++	$(CC) $(CFLAGS) genotype/countRead.o lib/read.o genotype/ITree.o lib/rbtree.o -o $(BIN_DIR)/$@
+ 
+ genotype: genotype/genotype.o lib/read.o lib/gamma.o
+-	$(CC) $(CFLAGS) genotype/genotype.o lib/read.o lib/gamma.o -o genotype/genotype
++	$(CC) $(CFLAGS) genotype/genotype.o lib/read.o lib/gamma.o -o $(BIN_DIR)/$@
+ 	
+ MBICseq: MBIC-seq_v0.1.5/bin.o MBIC-seq_v0.1.5/mbic-seq.o lib/rbtree.o lib/read.o
+-	 $(CC) $(CFLAGS) MBIC-seq_v0.1.5/bin.o MBIC-seq_v0.1.5/mbic-seq.o lib/rbtree.o lib/read.o -o MBIC-seq_v0.1.5/MBICseq
+-
+-
+-
+-
+-
+-
++	 $(CC) $(CFLAGS) MBIC-seq_v0.1.5/bin.o MBIC-seq_v0.1.5/mbic-seq.o lib/rbtree.o lib/read.o -o $(BIN_DIR)/$@
+ 
+ 
+ combine.o: combineFile/read.h
+@@ -50,10 +45,6 @@
+ bin.o: MBIC-seq_v0.1.5/bin.h lib/rbtree.h lib/read.h
+ 	$(CC) $(CFLAGS) -c MBIC-seq_v0.1.5/bin.c lib/read.c lib/rbtree.c
+ 
+-
+-
+-
+-
+ ITree.o: genotype/ITree.h
+ 	$(CC) $(CFLAGS) -c genotype/ITree.c lib/rbtree.c
+ 
+@@ -68,4 +59,8 @@
+ 
+ 
+ clean:
+-	rm -rf lib/*.o combineFile/*.o bootstrap/*.o EstimateLambdaFactor/*.o genotype/*.o MBIC-seq_v0.1.5/*.o
++	rm -rf lib/*.o combineFile/*.o bootstrap/*.o EstimateLambdaFactor/*.o genotype/*.o MBIC-seq_v0.1.5/*.o $(BIN_DIR)
++
++
++install: $(EXECUTABLE)
++	cp $(BIN_DIR)/* $(PREFIX)/bin/

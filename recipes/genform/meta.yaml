@@ -1,0 +1,40 @@
+{% set version = "r8" %}
+{% set name = "genform" %}
+{% set sha256 = "d9199aa9c13c6aa68025b15e4d30a4e445a265ce828b3314103307dc7b6c13b5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  # download is a stable link for https://sourceforge.net/code-snapshots/svn/g/ge/genform/code/genform-code-r8-trunk.zip
+  url: https://depot.galaxyproject.org/software/genform/genform_r8_src_all.zip
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+
+# genform without parameter or w help has exit code 1, so we need test data
+# since test data can't be taken from the source dir its created manually
+test:
+  commands:
+    - 'echo -e "132.07686\t147049184\n133.08012\t4004960.8" > CreatineMs.txt && genform ms=CreatineMs.txt'
+about:
+  home: https://sourceforge.net/projects/genform/
+  # note sources say GPL (wo version) but LGPL licence file is shipped since 
+  # - LGPL allows to relicense under the GPL and
+  # - the package contains just a single executable and not a library
+  # we say GPL-2.0-only
+  license: 'GPL-2.0-only'
+  license_file: src/lgpl-2.0.txt 
+  summary: Generation of molecular formulas by high-resolution MS and MS/MS data
+
+extra:
+  maintainers:
+    - bernt-matthias
+  identifiers:
+    - doi:10.1101/295071

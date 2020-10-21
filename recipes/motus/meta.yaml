@@ -1,36 +1,44 @@
-{% set version = "2.0.0" %}
+{% set version = "2.5.1" %}
+{% set sha256 = "e55f884a44ca8ce6491222c6bc81eaacfa7cc842ab6d6e6911b8dfd607112e1f" %}
 
 package:
   name: motus
-  version: {{ version }}
+  version: '{{ version }}'
 
 source:
   url: https://github.com/motu-tool/mOTUs_v2/archive/{{ version }}.tar.gz
-  sha256: ab2f3dffc529cec23b02f254021fee11f99988f922217ab813664bcebd12fc65
+  sha256: '{{ sha256 }}'
 
 build:
   number: 0
-  skip: True # [osx]
+  # motus requires python3
+  #skip: True # [not py3k]
+  noarch: python
 
 requirements:
+  build:
+     - python >3
   host:
-    - python
+    - python >3
   run:
-    - metasnv
+    - metasnv=1.0.3
     - samtools
     - bwa
-    - python
+    - python >3
 
 test:
   commands:
-    - motus --version
+    - motus profile --test
 
 about:
   home: http://motu-tool.org/
-  license: GNU GPL v3
-  summary: 'Marker gene-based OTU (mOTU) profiling'
+  license: GPL-3.0
+  license_file: LICENSE
+  license_family: GPL
+  summary: Marker gene-based OTU (mOTU) profiling
+  dev_url: https://github.com/motu-tool/mOTUs_v2
 
 extra:
-  notes: 'A tiny wrapper to the command motus was added. See build.sh for additional notes'
+  notes: A tiny wrapper to the command motus was added. See build.sh for additional notes
   identifiers:
     - biotools:motus
