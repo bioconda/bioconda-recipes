@@ -1,21 +1,25 @@
 {% set name = "mlst" %}
-{% set version = "2.14" %}
-{% set sha256 = "9bba751b67ab8978c54a2c508256a76b1771402f638e7e88588149d276f4f57c" %}
+{% set version = "2.19.0" %}
+{% set sha256 = "74403be717f0bffd579028fd8e7c02d826f5c896e38e6078271a59f7dfce2b0e" %}
+{% set user = "tseemann" %}
 
 package:
-  name: {{ name }}
-  version: {{ version }}
+  name: '{{ name }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
 
 build:
   number: 0
-
-source:
-  url: https://github.com/tseemann/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  noarch: generic
 
 requirements:
   run:
-    - blast >=2.7.1
+    - any2fasta
+    - blast >=2.9.0
+    - perl
     - perl-bioperl >=1.7.2
     - perl-moo
     - perl-list-moreutils
@@ -26,11 +30,13 @@ test:
   commands:
     - mlst --version
     - mlst --check
+    - mlst --help
     - mlst --list 2>&1 | grep leptospira > /dev/null
 
 about:
-  home: https://github.com/tseemann/mlst
-  license: GPL2
+  home: https://github.com/{{ user }}/{{ name }}
+  license: GPL-2.0
+  license_family: GPL
   license_file: LICENSE
   summary: Scan contig files against PubMLST typing schemes
 

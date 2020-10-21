@@ -1,0 +1,43 @@
+{% set name = "ldsc" %}
+{% set commit = "12e2687ec9bba39da2139d14f6d1944a23d5774a" %}
+{% set owner = "bulik" %}
+{% set sha256 = "302d35c4170b2f245b925fcb70a4014ac20ad1d470a6a4117c21835fa085425f" %}
+
+package:
+  name: {{ name|lower }}
+  version: 1.0.1
+
+source:
+  url: https://github.com/{{ owner }}/{{ name }}/archive/{{ commit }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+
+requirements:
+  build:
+    - python <3
+    - pip
+  run:
+    - python <3
+    - bitarray
+    - nose ==1.3
+    - pybedtools
+    - scipy
+    - pandas
+    - numpy
+
+test:
+  commands:
+    - which ldsc.py
+    - python -c "import ldscore.ldscore as ld"
+    - ldsc.py -h
+    - munge_sumstats.py -h
+
+about:
+  home: https://github.com/bulik/ldsc/
+  license: GPLv3
+  license_file: 'LICENSE' 
+  summary: 'ldsc is a tool for estimating heritability and genetic correlation from GWAS summary statistics. It also computes LD Scores.'
+  license_family: GPL

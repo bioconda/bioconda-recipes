@@ -1,0 +1,45 @@
+{% set version = "1.44.0" %}
+{% set name = "TargetSearch" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 7d7322ff252b7ef72cb4fd1bd9f621fe
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: TargetSearchData, BiocStyle, knitr
+requirements:
+  host:
+    - r-assertthat
+    - r-base
+    - r-ncdf4
+    - r-stringr
+    - libblas
+    - liblapack
+  run:
+    - r-assertthat
+    - r-base
+    - r-ncdf4
+    - r-stringr
+  build:
+    - {{ compiler('c') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'A package for the analysis of GC-MS metabolite profiling data'
+  description: 'This packages provides a targeted pre-processing method for GC-MS data.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

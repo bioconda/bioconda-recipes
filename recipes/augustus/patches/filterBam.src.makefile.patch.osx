@@ -1,0 +1,30 @@
+--- auxprogs/filterBam/src/Makefile.old	2019-03-27 14:04:09.919943327 -0500
++++ auxprogs/filterBam/src/Makefile	2019-03-27 14:10:41.417956972 -0500
+@@ -8,10 +8,10 @@
+ 			printElapsedTime.cc sumMandIOperations.cc sumDandIOperations.cc PairednessCoverage.cc
+ PROGRAM = filterBam
+ OBJECTS = $(SOURCES:.cc=.o)
+-BAMTOOLS = /usr/include/bamtools
+-INCLUDES = -I$(BAMTOOLS) -Iheaders -I./bamtools
+-LIBS = -lbamtools -lz
+-CFLAGS = -std=c++0x
++BAMTOOLS = ${PREFIX}/include/bamtools
++INCLUDES = -I${PREFIX}/include/bamtools -Iheaders -I./bamtools
++LIBS = -L${PREFIX}/lib/ -lbamtools -lz
++CFLAGS += -std=c++11 -Wall -O2 # -g -p -g -ggdb
+ VPATH = functions
+ 
+ all : $(PROGRAM) $(OBJECTS) CHECKBAM BIN
+@@ -28,10 +28,10 @@
+ 	fi
+ 
+ $(PROGRAM) : $(OBJECTS)
+-	$(LINK.cc) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS) 
++	$(CXX) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS) 
+ 
+ $(OBJECTS) : %.o:%.cc
+-	$(LINK.cc) $(CFLAGS) $(CPPFLAGS) -c $^ -o $@ $(INCLUDES)
++	$(CXX) $(CFLAGS) $(CPPFLAGS) -c $^ -o $@ $(INCLUDES)
+ 
+ 
+ clean:

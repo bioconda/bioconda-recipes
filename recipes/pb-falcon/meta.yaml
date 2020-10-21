@@ -1,45 +1,41 @@
 {% set name = "pb-falcon" %}
-{% set version = "0.0.2" %}
+{% set version = "2.2.4" %}
+{% set sha256 = "ae5743a16e0aadbfcbd7f3a54732a693e355a19e5533959cfe1a0dfb1b759e4a" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
-about:
-  home: 'https://github.com/PacificBiosciences/pypeFLOW'
-  license: "BSD 3-Clause Clear License"
-  summary: "FALCON/Unzip tool-suite (originally by Jason Chin)"
-  authors:
-  - cschin
-  - pb-cdunn
-  - isovic
-
 source:
-  - url: https://github.com/PacificBiosciences/pypeFLOW/archive/005acb16689c18c09cf552b42911e69629ffeceb.tar.gz
-    sha256: 3ea554fcdd33964dc937e652eedb81f666eb0b55509ec523a10bf69aa3958fc7
-    folder: pypeflow
-  - url: https://github.com/PacificBiosciences/pypeFLOW/releases/download/2.0.4/falcon_kit-1.2.2+git.7ee9f87a25c888a91298cb7e288d605bf5c70c80.tar.gz
-    sha256: 4cae208ad2e06dc5a76de519a9d4ad7f4757f589f7489782a2dec05fc150a7e5
-    folder: falcon_kit
-  - url: https://github.com/PacificBiosciences/pypeFLOW/releases/download/2.0.4/falcon_unzip-1.1.2+git.faa09d8fc3a3b461f50c6cc84d0113c261dfc8ae.tar.gz
-    sha256: 95670866010df8c737157ab082fae580df20b29d2114390d39ff87897f489602
-    folder: falcon_unzip
+  - url: https://github.com/PacificBiosciences/pb-falcon/releases/download/v{{ version }}/pb-falcon.tar.gz
+    sha256: {{ sha256 }}
+    folder: pb-falcon
 
 build:
-  number: 0
-  skip: True # [not py27 or osx]
+  number: 1
+  skip: True # [py27 or py36 or osx]
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - meson
+    - ninja
+    - pkg-config
   host:
+    - zlib
+    - htslib
     - python
     - setuptools
   run:
+    - htslib
     - python
     - networkx >=1.9.1
-    - future >=0.16.0 # [not py3k]
-    - python-edlib
+    - future >=0.16.0
+    - python-edlib>=1.2.4
     - python-intervaltree
-    - python-msgpack
+    - python-msgpack>=0.6.1
+    - numpy
+    - pysam
 
 test:
   imports:
@@ -48,3 +44,14 @@ test:
     - pwatcher.mains
     - falcon_kit
     - falcon_unzip
+    - falcon_phase
+
+about:
+  home: 'https://github.com/PacificBiosciences/pbbioconda'
+  license: "BSD 3-Clause Clear License"
+  summary: "FALCON/Unzip tool-suite (originally by Jason Chin)"
+  authors:
+    - cschin
+    - pb-cdunn
+    - isovic
+    - zkronenberg

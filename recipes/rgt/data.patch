@@ -1,0 +1,247 @@
+diff --git a/data/setupGenomicData.py b/data/setupGenomicData.py
+index cdc128d1..16dc1e23 100644
+--- a/data/setupGenomicData.py
++++ b/data/setupGenomicData.py
+@@ -1,3 +1,4 @@
++#!/usr/bin/env python
+ ###################################################################################################
+ # Setup Genomic Data Script
+ #   This script will fetch the necessary genomic data for all tools. Be aware that it will download
+@@ -9,7 +10,7 @@
+ from __future__ import print_function
+ import gzip
+ from optparse import OptionParser
+-from os import system, path, remove, mkdir
++from os import system, path, remove, mkdir, getenv
+ from sys import platform
+ import re
+ 
+@@ -82,7 +83,7 @@ if options.all:
+ ###################################################################################################
+ 
+ # Current rgt data path
+-curr_dir = path.dirname(path.realpath(__file__))
++curr_dir = path.dirname(getenv("RGTDATA"))
+ 
+ # Platform
+ supported_platforms = ["linux", "linux2", "darwin"]
+diff --git a/data/setupLogoData.py b/data/setupLogoData.py
+index 1d6dcb7f..5ccdfab4 100644
+--- a/data/setupLogoData.py
++++ b/data/setupLogoData.py
+@@ -1,3 +1,4 @@
++#!/usr/bin/env python
+ ###################################################################################################
+ # Setup Logo Data Script
+ #   This script will create all motif logos. Be aware that this is a time consuming procedure
+@@ -10,7 +11,7 @@
+ from __future__ import print_function
+ 
+ import argparse
+-from os import path, mkdir, listdir, walk
++from os import path, mkdir, listdir, walk, getenv
+ from sys import platform, exit
+ 
+ from Bio import motifs
+@@ -34,7 +35,7 @@ if not args.all and not args.folders:
+ ###################################################################################################
+ 
+ # Current rgt data path
+-curr_dir = path.dirname(path.realpath(__file__))
++curr_dir = path.dirname(getenv("RGTDATA"))
+ 
+ # Platform
+ supported_platforms = ["linux", "linux2", "darwin"]
+diff --git a/setup.py b/setup.py
+index 1212bd19..64191333 100644
+--- a/setup.py
++++ b/setup.py
+@@ -225,168 +225,6 @@ current_install_requires = common_deps
+ for tool_option in options.param_rgt_tool:
+     current_install_requires += tools_dictionary[tool_option][2]
+ 
+-###################################################################################################
+-# Creating Data Path
+-###################################################################################################
+-
+-# if the environment variable is set, use it; otherwise use the home directory as a default
+-rgt_data_location = path.expanduser(getenv("RGTDATA", path.join(getenv("HOME"), "rgtdata")))
+-
+-# Creating Data Path
+-if not path.exists(rgt_data_location):
+-    makedirs(rgt_data_location)
+-
+-# Creating data.config
+-data_config_file_name = path.join(rgt_data_location, "data.config")
+-# if not os.path.isfile(data_config_file_name):
+-data_config_file = open(data_config_file_name, "w")
+-data_config_file.write("# Configuration file loaded at rgt startup. CAREFUL: any changes shall be overwritten\n"
+-                       "# whenever rgt is (re)installed. Use data.config.user for permanent changes.\n\n")
+-
+-genome = "mm9"
+-data_config_file.write("[" + genome + "]\n")
+-data_config_file.write("genome: " + path.join(genome, "genome_mm9.fa\n"))
+-data_config_file.write("chromosome_sizes: " + path.join(genome, "chrom.sizes.mm9\n"))
+-data_config_file.write("genes_Gencode: " + path.join(genome, "genes_Gencode_mm9.bed\n"))
+-data_config_file.write("genes_RefSeq: " + path.join(genome, "genes_RefSeq_mm9.bed\n"))
+-data_config_file.write("annotation: " + path.join(genome, "gencode.vM1.annotation.gtf\n"))
+-data_config_file.write("gene_alias: " + path.join(genome, "alias_mouse.txt\n\n"))
+-data_config_file.write("repeat_maskers: " + path.join(genome, "repeat_maskers\n\n"))
+-genome = "mm10"
+-data_config_file.write("[" + genome + "]\n")
+-data_config_file.write("genome: " + path.join(genome, "genome_mm10.fa\n"))
+-data_config_file.write("chromosome_sizes: " + path.join(genome, "chrom.sizes.mm10\n"))
+-data_config_file.write("genes_Gencode: " + path.join(genome, "genes_Gencode_mm10.bed\n"))
+-data_config_file.write("genes_RefSeq: " + path.join(genome, "genes_RefSeq_mm10.bed\n"))
+-data_config_file.write("annotation: " + path.join(genome, "gencode.vM20.annotation.gtf\n"))
+-data_config_file.write("gene_alias: " + path.join(genome, "alias_mouse.txt\n\n"))
+-genome = "hg19"
+-data_config_file.write("[" + genome + "]\n")
+-data_config_file.write("genome: " + path.join(genome, "genome_hg19.fa\n"))
+-data_config_file.write("chromosome_sizes: " + path.join(genome, "chrom.sizes.hg19\n"))
+-data_config_file.write("genes_Gencode: " + path.join(genome, "genes_Gencode_hg19.bed\n"))
+-data_config_file.write("genes_RefSeq: " + path.join(genome, "genes_RefSeq_hg19.bed\n"))
+-data_config_file.write("annotation: " + path.join(genome, "gencode.v19.annotation.gtf\n"))
+-data_config_file.write("gene_alias: " + path.join(genome, "alias_human.txt\n\n"))
+-data_config_file.write("repeat_maskers: " + path.join(genome, "repeat_maskers\n\n"))
+-genome = "hg38"
+-data_config_file.write("[" + genome + "]\n")
+-data_config_file.write("genome: " + path.join(genome, "genome_hg38.fa\n"))
+-data_config_file.write("chromosome_sizes: " + path.join(genome, "chrom.sizes.hg38\n"))
+-data_config_file.write("genes_Gencode: " + path.join(genome, "genes_Gencode_hg38.bed\n"))
+-data_config_file.write("genes_RefSeq: " + path.join(genome, "genes_RefSeq_hg38.bed\n"))
+-data_config_file.write("annotation: " + path.join(genome, "gencode.v24.annotation.gtf\n"))
+-data_config_file.write("gene_alias: " + path.join(genome, "alias_human.txt\n\n"))
+-data_config_file.write("repeat_maskers: " + path.join(genome, "repeat_maskers\n\n"))
+-genome = "zv9"
+-data_config_file.write("[" + genome + "]\n")
+-data_config_file.write("genome: " + path.join(genome, "genome_zv9_ensembl_release_79.fa\n"))
+-data_config_file.write("chromosome_sizes: " + path.join(genome, "chrom.sizes.zv9\n"))
+-data_config_file.write("gene_regions: " + path.join(genome, "genes_zv9.bed\n"))
+-data_config_file.write("annotation: " + path.join(genome, "Danio_rerio.Zv9.79.gtf\n"))
+-data_config_file.write("gene_alias: " + path.join(genome, "alias_zebrafish.txt\n\n"))
+-genome = "zv10"
+-data_config_file.write("[" + genome + "]\n")
+-data_config_file.write("genome: " + path.join(genome, "genome_zv10_ensembl_release_84.fa\n"))
+-data_config_file.write("chromosome_sizes: " + path.join(genome, "chrom.sizes.zv10\n"))
+-data_config_file.write("gene_regions: " + path.join(genome, "genes_zv10.bed\n"))
+-data_config_file.write("annotation: " + path.join(genome, "Danio_rerio.GRCz10.84.gtf\n"))
+-data_config_file.write("gene_alias: " + path.join(genome, "alias_zebrafish.txt\n\n"))
+-
+-data_config_file.write("[MotifData]\n")
+-data_config_file.write("pwm_dataset: motifs\n")
+-data_config_file.write("logo_dataset: logos\n")
+-data_config_file.write("repositories: jaspar_vertebrates\n\n")
+-data_config_file.write("[HmmData]\n")
+-data_config_file.write("default_hmm_dnase: fp_hmms/dnase.hmm\n")
+-data_config_file.write("default_hmm_dnase_bc: fp_hmms/dnase_bc.hmm\n")
+-data_config_file.write("default_hmm_atac_paired: fp_hmms/atac_paired.pkl\n")
+-data_config_file.write("default_hmm_atac_single: fp_hmms/atac_single.pkl\n")
+-data_config_file.write("default_hmm_histone: fp_hmms/histone.hmm\n")
+-data_config_file.write("default_hmm_dnase_histone: fp_hmms/dnase_histone.hmm\n")
+-data_config_file.write("default_hmm_dnase_histone_bc: fp_hmms/dnase_histone_bc.hmm\n")
+-data_config_file.write("default_hmm_atac_histone: fp_hmms/atac_histone.hmm\n")
+-data_config_file.write("default_hmm_atac_histone_bc: fp_hmms/atac_histone_bc.hmm\n")
+-data_config_file.write("default_bias_table_F_SH: fp_hmms/single_hit_bias_table_F.txt\n")
+-data_config_file.write("default_bias_table_R_SH: fp_hmms/single_hit_bias_table_R.txt\n")
+-data_config_file.write("default_bias_table_F_DH: fp_hmms/double_hit_bias_table_F.txt\n")
+-data_config_file.write("default_bias_table_R_DH: fp_hmms/double_hit_bias_table_R.txt\n")
+-data_config_file.write("default_bias_table_F_ATAC: fp_hmms/atac_bias_table_F.txt\n")
+-data_config_file.write("default_bias_table_R_ATAC: fp_hmms/atac_bias_table_R.txt\n")
+-data_config_file.write("dependency_model: fp_hmms/LearnDependencyModel.jar\n")
+-data_config_file.write("slim_dimont_predictor: fp_hmms/SlimDimontPredictor.jar\n")
+-data_config_file.write("default_test_fa: fp_hmms/test.fa\n\n")
+-data_config_file.write("[Library]\n")
+-data_config_file.write("path_triplexator: " + triplexes_file + "\n")
+-data_config_file.write("path_c_rgt: " + path.join("lib", libRGT) + "\n")
+-
+-data_config_file.close()
+-
+-# Creating data.config.user, but only if not already present
+-user_config_file_name = path.join(rgt_data_location, "data.config.user")
+-if not os.path.isfile(user_config_file_name):
+-    user_config_file = open(user_config_file_name, "w")
+-
+-    user_config_file.write("# Here you can overwrite any property set in the data.config file. It shall not be\n"
+-                           "# be overwritten in any case, so if you are experiencing problems rename or remove this\n"
+-                           "# file. See data.config for how the file should be formatted.\n\n")
+-    genome = "self_defined"
+-    user_config_file.write("# Template to add a genomic section.\n")
+-    user_config_file.write("#[" + genome + "]\n")
+-    user_config_file.write("#genome: undefined\n")
+-    user_config_file.write("#chromosome_sizes: undefined\n")
+-    user_config_file.write("#gene_regions: undefined\n")
+-    user_config_file.write("#annotation: undefined\n")
+-    user_config_file.write("#gene_alias: undefined\n\n")
+-
+-script_dir = path.dirname(path.abspath(__file__))
+-
+-# Copying data from package folder to installation folder
+-"""
+-Copy Files Dictionary:
+-  * Insert in the dictionary below a key + list in the format X:[Y1,Y2,...Yn], representing:
+-    - X: A path in the data folder structure.
+-    - Y1,Y2,...Yn: files/folders inside the path X to be copied.
+-"""
+-copy_files_dictionary = {
+-    ".": ["setupGenomicData.py", "setupLogoData.py"],
+-    "lib": ["libtriplexator.so", "libtriplexator.dylib", libRGT],
+-    "hg19": ["genes_Gencode_hg19.bed", "chrom.sizes.hg19", "alias_human.txt", "genes_RefSeq_hg19.bed"],
+-    "hg38": ["genes_Gencode_hg38.bed", "chrom.sizes.hg38", "alias_human.txt", "genes_RefSeq_hg38.bed"],
+-    "mm9": ["genes_Gencode_mm9.bed", "chrom.sizes.mm9", "alias_mouse.txt", "genes_RefSeq_mm9.bed"],
+-    "mm10": ["genes_Gencode_mm10.bed", "chrom.sizes.mm10", "alias_mouse.txt", "genes_RefSeq_mm10.bed"],
+-    "zv9": ["genes_zv9.bed", "chrom.sizes.zv9", "alias_zebrafish.txt"],
+-    "zv10": ["genes_zv10.bed", "chrom.sizes.zv10", "alias_zebrafish.txt"],
+-    "fp_hmms": ["dnase.hmm", "dnase_bc.hmm", "histone.hmm", "dnase_histone.hmm", "dnase_histone_bc.hmm",
+-                "single_hit_bias_table_F.txt", "single_hit_bias_table_R.txt", "atac_paired.pkl", "atac_single.pkl",
+-                "atac_bias_table_F.txt", "atac_bias_table_R.txt", "atac_histone.hmm", "atac_histone_bc.hmm",
+-                "double_hit_bias_table_F.txt", "double_hit_bias_table_R.txt", "H3K4me3_proximal.hmm",
+-                "LearnDependencyModel.jar", "SlimDimontPredictor.jar", "test.fa"],
+-    "motifs": ["createMtf.py", "createPwm.py",
+-               "jaspar_vertebrates", "jaspar_plants", "uniprobe_primary", "uniprobe_secondary", "hocomoco",
+-               "jaspar_vertebrates.mtf", "jaspar_plants.mtf", "uniprobe_primary.mtf", "uniprobe_secondary.mtf", "hocomoco.mtf"],
+-    "fig": ["rgt_logo.gif", "style.css", "default_motif_logo.png", "jquery-1.11.1.js", "jquery.tablesorter.min.js",
+-            "tdf_logo.png", "viz_logo.png"],
+-}
+-for copy_folder in copy_files_dictionary.keys():
+-    copy_dest_path = path.join(rgt_data_location, copy_folder)
+-    if not path.exists(copy_dest_path): makedirs(copy_dest_path)
+-    for copy_file in copy_files_dictionary[copy_folder]:
+-        copy_source_file = path.join(script_dir, "data", copy_folder, copy_file)
+-        copy_dest_file = path.join(copy_dest_path, copy_file)
+-        if os.path.isfile(copy_source_file):
+-            copy(copy_source_file, copy_dest_file)
+-        else:
+-            dir_util.copy_tree(copy_source_file, copy_dest_file)
+-
+-            # if not path.exists(copy_dest_file):
+-            # try: dir_util.copy_tree(copy_source_file, copy_dest_file)
+-            # except OSError as exc:
+-            #     if exc.errno == ENOTDIR:
+-            #         copy(copy_source_file, copy_dest_file)
+-            #     else:
+-            #         raise
+-
+ ###################################################################################################
+ # Setup Function
+ ###################################################################################################
+@@ -452,19 +290,3 @@ setup(name="RGT",
+       url="http://www.regulatory-genomics.org",
+       download_url="https://github.com/CostaLab/reg-gen/archive/{0}.zip".format(current_version),
+       platforms=supported_platforms)
+-
+-###################################################################################################
+-# Termination
+-###################################################################################################
+-
+-# Modifying Permissions when Running Superuser/Admin
+-# $SUDO_USER exists only if you are sudo, and returns the original user name
+-current_user = getenv("SUDO_USER")
+-default_file_permission = 0o644
+-default_path_permission = 0o755
+-
+-if current_user:
+-    current_user_uid = getpwnam(current_user).pw_uid
+-    current_user_gid = getpwnam(current_user).pw_gid
+-    recursive_chown_chmod(rgt_data_location, current_user_uid, current_user_gid, default_file_permission,
+-                          default_path_permission)
