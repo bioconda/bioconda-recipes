@@ -1,0 +1,49 @@
+{% set name = "SoftSV" %}
+{% set version = "1.4.2" %}
+{% set sha256hash = "b3caea962569f7c30f1257ad148fd1e833f8d0737105b9983579d91da2bed6e8" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://downloads.sourceforge.net/project/softsv/SoftSV_{{ version }}.zip
+  sha256: {{ sha256hash }}
+  patches:
+    - makefile.diff
+    - abs.diff
+    - misc.cpp.diff
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - bamtools 2.4.1
+    - boost-cpp
+    - seqan 2.1.1
+  run:
+    - bamtools 2.4.1
+
+test:
+  commands:
+    - SoftSV --help
+
+about:
+  home: https://sourceforge.net/projects/softsv
+  license: GPLv3
+  license_file: license.txt
+  summary: Calling structural variations. The soft way.
+  description: |
+    SoftSV is a tool for the detection of small and large deletions,
+    inversions, tandem duplications and translocations from paired-end
+    sequencing data. It uses aberrant paired-end mappings to determine
+    approximative breakpoint regions and refines the breakpoints by
+    analysing soft-clipped sequences for potential split-reads.
+extra:
+  identifiers:
+     - doi:10.1093/bib/bbv028
+  recipe-maintainers:
+     - cbrueffer

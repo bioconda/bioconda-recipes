@@ -1,0 +1,42 @@
+--- makefile	2019-05-20 18:40:41.419982767 +0200
++++ makefile	2019-06-03 18:25:35.331677135 +0200
+@@ -7,12 +7,12 @@
+ # External libraries:
+ # 2. Please specify the base directory of your BamTools installation.
+ # The BamTools C++ library can be downloaded from https://github.com/pezmaster31/bamtools
+-BAMTOOLS=/YourPath/bamtools
++BAMTOOLS=${PREFIX}/include/bamtools
+ 
+ # 3. Please specify the base directory of your SeqAn download as well.
+ # The SeqAn C++ library headers can be downloaded from http://packages.seqan.de
+ # Take care to pick a SeqAn version >= 2.0.0.
+-SEQAN=/YourPath/seqan
++SEQAN=${PREFIX}/include/seqan
+ 
+ # 4. Please make sure, that the Boost C++ libraries are installed on your machine.
+ # See, for example, package libboost-dev for Ubuntu and Debian and http://www.boost.org for more information.
+@@ -22,7 +22,7 @@
+ src/%.o: src/%.cpp
+ 	@echo 'Building file: $<'
+ 	@echo 'Invoking: GCC C++ Compiler'
+-	$(CC) -I${BAMTOOLS}/include -I${BAMTOOLS}/include/shared -I${SEQAN}/include -O3 -Wall -c -fmessage-length=0 -std=c++0x -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
++	$(CXX) -I${PREFIX}/include -I${BAMTOOLS} -I${BAMTOOLS}/include -I${BAMTOOLS}/include/shared -I${SEQAN}/include -O3 -Wall -c -fmessage-length=0 -std=c++0x -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+ 	@echo 'Finished building: $<'
+ 	@echo ' '
+ 
+@@ -39,10 +39,14 @@
+ ./src/Translocations.o \
+ ./src/Translocations_inverted.o 
+ 
++echo ${LD_LIBRARY_PATH}
++
++export LD_LIBRARY_PATH=${PREFIX}/lib
++
+ SoftSV: $(OBJS)
+ 	@echo 'Building target: $@'
+ 	@echo 'Invoking: GCC C++ Linker'
+-	$(CC)  -o $@ $(OBJS) -lboost_program_options -lboost_system -lboost_filesystem -lbamtools -L${BAMTOOLS}/lib 
++	$(CXX) -o $@ $(OBJS) -L${PREFIX}/lib -lboost_program_options -lboost_system -lboost_filesystem -lbamtools
+ 	@echo 'Finished building target: $@'
+ 	@echo ' '
+ 
