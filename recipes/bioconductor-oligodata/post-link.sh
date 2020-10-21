@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="oligoData_1.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/oligoData_1.8.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/oligoData_1.8.0.tar.gz"
   "https://bioarchive.galaxyproject.org/oligoData_1.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-oligodata/bioconductor-oligodata_1.8.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-oligodata/bioconductor-oligodata_1.8.0_src_all.tar.gz"
 )
 MD5="9625cfd4b31bb575c4029a0632a7ee12"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

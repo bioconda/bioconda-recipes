@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="PathNetData_1.18.0.tar.gz"
+FN="PathNetData_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/PathNetData_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/PathNetData_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pathnetdata/bioconductor-pathnetdata_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/PathNetData_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/PathNetData_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pathnetdata/bioconductor-pathnetdata_1.24.0_src_all.tar.gz"
 )
-MD5="baad9f77b8914d21f84963e3b19f67ed"
+MD5="56a850678a049759ba8a2a39d8721ea2"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

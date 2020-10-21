@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="pepDat_1.2.0.tar.gz"
+FN="pepDat_1.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/pepDat_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/pepDat_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pepdat/bioconductor-pepdat_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/pepDat_1.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/pepDat_1.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pepdat/bioconductor-pepdat_1.8.0_src_all.tar.gz"
 )
-MD5="6348dfe04bb83e78df150d7f67fb3e03"
+MD5="b87d82e3813dcc93cbddf5577f1c4eb7"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

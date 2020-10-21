@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.nugo.mm1a520177_3.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.nugo.mm1a520177_3.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/pd.nugo.mm1a520177_3.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.nugo.mm1a520177_3.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.nugo.mm1a520177/bioconductor-pd.nugo.mm1a520177_3.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.nugo.mm1a520177/bioconductor-pd.nugo.mm1a520177_3.4.0_src_all.tar.gz"
 )
 MD5="5cd64895eaddaf4cae1c48db9468c079"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

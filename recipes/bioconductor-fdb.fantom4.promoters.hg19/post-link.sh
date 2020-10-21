@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="FDb.FANTOM4.promoters.hg19_1.0.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/FDb.FANTOM4.promoters.hg19_1.0.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/FDb.FANTOM4.promoters.hg19_1.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/FDb.FANTOM4.promoters.hg19_1.0.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-fdb.fantom4.promoters.hg19/bioconductor-fdb.fantom4.promoters.hg19_1.0.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-fdb.fantom4.promoters.hg19/bioconductor-fdb.fantom4.promoters.hg19_1.0.0_src_all.tar.gz"
 )
 MD5="99a610eb895470e3d945acc5cfb3ebe6"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

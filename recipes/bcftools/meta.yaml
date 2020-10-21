@@ -1,7 +1,45 @@
-{% set version="1.9" %}
+{% set version="1.11" %}
+
+package:
+  name: bcftools
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  url: https://github.com/samtools/bcftools/releases/download/{{ version }}/bcftools-{{ version }}.tar.bz2
+  sha256: 3ceee47456ec481f34fa6c34beb6fe892b5b365933191132721fdf126e45a064
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - htslib
+    - zlib
+    - gsl
+  run:
+    - gsl
+    - htslib
+    # Currently removed due to size and dependency issues
+    #- matplotlib # for plot-vcfstats
+    #- tectonic # for plot-vcfstats
+    - zlib
+    - perl
+
+test:
+  commands:
+    - bcftools -h
+    - bcftools --version
+    - bcftools plugin -lv
+    - bcftools -h | grep polysomy
+    - vcfutils.pl 2>&1 | grep vcfutils
+    #- plot-vcfstats -h 2>&1 | grep -q "Plots output of "
+
 about:
   home: https://github.com/samtools/bcftools
-  license: MIT
+  license: GPL
+  license_file: LICENSE
   summary: BCFtools is a set of utilities that manipulate variant calls in the Variant
     Call Format (VCF) and its binary counterpart BCF. All commands work transparently
     with both VCFs and BCFs, both uncompressed and BGZF-compressed.  Most commands
@@ -9,42 +47,8 @@ about:
     streaming from a pipe. Indexed VCF and BCF will work in all situations. Un-indexed
     VCF and BCF and streams will work in most, but not all situations.
 
-build:
-  number: 1
-package:
-  name: bcftools
-  version: {{ version }}
-requirements:
-  build:
-    - {{ compiler('c') }}
-  host:
-    - bzip2
-    - curl
-    - xz
-    - zlib
-    - libdeflate
-  run:
-    - bzip2
-    - curl
-    # Currently removed due to size and dependency issues
-    #- matplotlib # for plot-vcfstats
-    #- texlive-core # for plot-vcfstats
-    - xz
-    - zlib
-    - libdeflate
-
-source:
-  url: https://github.com/samtools/bcftools/releases/download/{{ version }}/bcftools-{{ version }}.tar.bz2
-  sha256: 6f36d0e6f16ec4acf88649fb1565d443acf0ba40f25a9afd87f14d14d13070c8
-
-test:
-  commands:
-    - bcftools -h
-    - bcftools --version
-    - bcftools plugin -lv
-    #- plot-vcfstats -h 2>&1 | grep -q "Plots output of "
-
 extra:
   identifiers:
     - biotools:bcftools
+    - usegalaxy-eu:bcftools_merge
     - doi:10.1093/bioinformatics/btp352

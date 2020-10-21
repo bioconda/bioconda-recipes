@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="drosgenome1.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/drosgenome1.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/drosgenome1.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/drosgenome1.db_3.2.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-drosgenome1.db/bioconductor-drosgenome1.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-drosgenome1.db/bioconductor-drosgenome1.db_3.2.3_src_all.tar.gz"
 )
 MD5="44bc6356bc04226cba8cb2f3544c4688"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="FDb.UCSC.snp135common.hg19_1.0.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/FDb.UCSC.snp135common.hg19_1.0.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/FDb.UCSC.snp135common.hg19_1.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/FDb.UCSC.snp135common.hg19_1.0.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-fdb.ucsc.snp135common.hg19/bioconductor-fdb.ucsc.snp135common.hg19_1.0.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-fdb.ucsc.snp135common.hg19/bioconductor-fdb.ucsc.snp135common.hg19_1.0.0_src_all.tar.gz"
 )
 MD5="0cdca5fa595bb69464016ceb97635f78"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

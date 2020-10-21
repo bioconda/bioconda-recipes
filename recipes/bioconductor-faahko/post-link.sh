@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="faahKO_1.22.0.tar.gz"
+FN="faahKO_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/faahKO_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/faahKO_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-faahko/bioconductor-faahko_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/faahKO_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/faahKO_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-faahko/bioconductor-faahko_1.28.0_src_all.tar.gz"
 )
-MD5="c59e4588f572f3b56555cfd8d905107e"
+MD5="44909f90151666a65007ce9113c0c291"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RcisTarget.hg19.motifDBs.cisbpOnly.500bp_1.2.0.tar.gz"
+FN="RcisTarget.hg19.motifDBs.cisbpOnly.500bp_1.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/RcisTarget.hg19.motifDBs.cisbpOnly.500bp_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RcisTarget.hg19.motifDBs.cisbpOnly.500bp_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rcistarget.hg19.motifdbs.cisbponly.500bp/bioconductor-rcistarget.hg19.motifdbs.cisbponly.500bp_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/RcisTarget.hg19.motifDBs.cisbpOnly.500bp_1.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RcisTarget.hg19.motifDBs.cisbpOnly.500bp_1.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rcistarget.hg19.motifdbs.cisbponly.500bp/bioconductor-rcistarget.hg19.motifdbs.cisbponly.500bp_1.8.0_src_all.tar.gz"
 )
-MD5="a43b2fd762e2ea0d13283c4c7fa5221c"
+MD5="df98d811dccff959ff4e1c9927c86b3c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

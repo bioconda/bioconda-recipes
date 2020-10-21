@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="hgu133afrmavecs_1.5.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/hgu133afrmavecs_1.5.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/hgu133afrmavecs_1.5.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hgu133afrmavecs_1.5.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hgu133afrmavecs/bioconductor-hgu133afrmavecs_1.5.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hgu133afrmavecs/bioconductor-hgu133afrmavecs_1.5.0_src_all.tar.gz"
 )
 MD5="85034ab02491f5b3699d210cef50812d"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

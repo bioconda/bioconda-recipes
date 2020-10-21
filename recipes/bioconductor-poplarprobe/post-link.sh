@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="poplarprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/poplarprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/poplarprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/poplarprobe_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-poplarprobe/bioconductor-poplarprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-poplarprobe/bioconductor-poplarprobe_2.18.0_src_all.tar.gz"
 )
 MD5="87a608cd86084a06973a88e9b51f799a"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

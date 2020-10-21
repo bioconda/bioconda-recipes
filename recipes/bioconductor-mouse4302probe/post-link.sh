@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="mouse4302probe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/mouse4302probe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/mouse4302probe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mouse4302probe_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mouse4302probe/bioconductor-mouse4302probe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mouse4302probe/bioconductor-mouse4302probe_2.18.0_src_all.tar.gz"
 )
 MD5="7116787a7db241a545e79e419a8cfa0d"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

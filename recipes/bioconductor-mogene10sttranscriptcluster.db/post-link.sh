@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="mogene10sttranscriptcluster.db_8.7.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/mogene10sttranscriptcluster.db_8.7.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/mogene10sttranscriptcluster.db_8.7.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mogene10sttranscriptcluster.db_8.7.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mogene10sttranscriptcluster.db/bioconductor-mogene10sttranscriptcluster.db_8.7.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mogene10sttranscriptcluster.db/bioconductor-mogene10sttranscriptcluster.db_8.7.0_src_all.tar.gz"
 )
 MD5="84966d4986d62c859f61f2725c7b20ea"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

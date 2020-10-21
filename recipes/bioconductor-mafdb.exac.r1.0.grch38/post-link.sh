@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="MafDb.ExAC.r1.0.GRCh38_3.7.0.tar.gz"
+FN="MafDb.ExAC.r1.0.GRCh38_3.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/MafDb.ExAC.r1.0.GRCh38_3.7.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MafDb.ExAC.r1.0.GRCh38_3.7.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mafdb.exac.r1.0.grch38/bioconductor-mafdb.exac.r1.0.grch38_3.7.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MafDb.ExAC.r1.0.GRCh38_3.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MafDb.ExAC.r1.0.GRCh38_3.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mafdb.exac.r1.0.grch38/bioconductor-mafdb.exac.r1.0.grch38_3.10.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mafdb.exac.r1.0.grch38/bioconductor-mafdb.exac.r1.0.grch38_3.10.0_src_all.tar.gz"
 )
-MD5="ab8ee4f77c84ecb0f8954f9cec199ef4"
+MD5="303332c918996d8cb3e7b7c74d694dd1"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

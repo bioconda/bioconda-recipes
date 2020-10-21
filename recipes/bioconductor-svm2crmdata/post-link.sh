@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="SVM2CRMdata_1.14.0.tar.gz"
+FN="SVM2CRMdata_1.20.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/SVM2CRMdata_1.14.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/SVM2CRMdata_1.14.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-svm2crmdata/bioconductor-svm2crmdata_1.14.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/SVM2CRMdata_1.20.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/SVM2CRMdata_1.20.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-svm2crmdata/bioconductor-svm2crmdata_1.20.0_src_all.tar.gz"
 )
-MD5="67239ac74ee3b881f2070be62472e43b"
+MD5="6f7197efa398dab99d355a0e9dcb4ec6"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

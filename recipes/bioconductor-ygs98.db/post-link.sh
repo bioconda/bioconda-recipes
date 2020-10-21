@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="ygs98.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/ygs98.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/ygs98.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/ygs98.db_3.2.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ygs98.db/bioconductor-ygs98.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ygs98.db/bioconductor-ygs98.db_3.2.3_src_all.tar.gz"
 )
 MD5="ddbf44a3db85a114be4477f917f3a724"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

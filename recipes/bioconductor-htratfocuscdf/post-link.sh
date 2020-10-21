@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="htratfocuscdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/htratfocuscdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/htratfocuscdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/htratfocuscdf_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-htratfocuscdf/bioconductor-htratfocuscdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-htratfocuscdf/bioconductor-htratfocuscdf_2.18.0_src_all.tar.gz"
 )
 MD5="04b4952f7d8b607a7eb0f779c08c57dc"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

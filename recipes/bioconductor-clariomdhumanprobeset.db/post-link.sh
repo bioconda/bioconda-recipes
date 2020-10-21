@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="clariomdhumanprobeset.db_8.7.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/clariomdhumanprobeset.db_8.7.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/clariomdhumanprobeset.db_8.7.0.tar.gz"
   "https://bioarchive.galaxyproject.org/clariomdhumanprobeset.db_8.7.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-clariomdhumanprobeset.db/bioconductor-clariomdhumanprobeset.db_8.7.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-clariomdhumanprobeset.db/bioconductor-clariomdhumanprobeset.db_8.7.0_src_all.tar.gz"
 )
 MD5="3f390b06a44187e10e4e8a60af16375b"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

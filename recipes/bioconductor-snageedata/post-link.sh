@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="SNAGEEdata_1.18.0.tar.gz"
+FN="SNAGEEdata_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/SNAGEEdata_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/SNAGEEdata_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-snageedata/bioconductor-snageedata_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/SNAGEEdata_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/SNAGEEdata_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-snageedata/bioconductor-snageedata_1.24.0_src_all.tar.gz"
 )
-MD5="4b880530c37c0d088386211817f6f07b"
+MD5="dedb50f850777cef2a3378f254655424"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

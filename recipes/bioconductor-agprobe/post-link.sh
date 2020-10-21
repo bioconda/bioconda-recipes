@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="agprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/agprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/agprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/agprobe_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-agprobe/bioconductor-agprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-agprobe/bioconductor-agprobe_2.18.0_src_all.tar.gz"
 )
 MD5="08f7527d4c8a30d8b2f86016a53f075a"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

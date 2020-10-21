@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="GeuvadisTranscriptExpr_1.10.0.tar.gz"
+FN="GeuvadisTranscriptExpr_1.16.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/GeuvadisTranscriptExpr_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/GeuvadisTranscriptExpr_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-geuvadistranscriptexpr/bioconductor-geuvadistranscriptexpr_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/GeuvadisTranscriptExpr_1.16.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/GeuvadisTranscriptExpr_1.16.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-geuvadistranscriptexpr/bioconductor-geuvadistranscriptexpr_1.16.0_src_all.tar.gz"
 )
-MD5="e7df5c58da3c1e58245c8b0d12263735"
+MD5="86545e3439b5102189d372bd58ef0e83"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

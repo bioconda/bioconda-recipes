@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="saureuscdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/saureuscdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/saureuscdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/saureuscdf_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-saureuscdf/bioconductor-saureuscdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-saureuscdf/bioconductor-saureuscdf_2.18.0_src_all.tar.gz"
 )
 MD5="d01883e4c3dd99f32012e6dbab8cdb8b"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

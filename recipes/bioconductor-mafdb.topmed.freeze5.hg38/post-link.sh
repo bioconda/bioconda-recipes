@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="MafDb.TOPMed.freeze5.hg38_3.7.1.tar.gz"
+FN="MafDb.TOPMed.freeze5.hg38_3.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/MafDb.TOPMed.freeze5.hg38_3.7.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/MafDb.TOPMed.freeze5.hg38_3.7.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mafdb.topmed.freeze5.hg38/bioconductor-mafdb.topmed.freeze5.hg38_3.7.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MafDb.TOPMed.freeze5.hg38_3.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MafDb.TOPMed.freeze5.hg38_3.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mafdb.topmed.freeze5.hg38/bioconductor-mafdb.topmed.freeze5.hg38_3.10.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mafdb.topmed.freeze5.hg38/bioconductor-mafdb.topmed.freeze5.hg38_3.10.0_src_all.tar.gz"
 )
-MD5="9d47a5c4e2f94f243c426e4701f6b74a"
+MD5="a3355623fde26b83dfd346a32829f073"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

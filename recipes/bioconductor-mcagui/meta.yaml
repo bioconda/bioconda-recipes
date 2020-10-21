@@ -1,6 +1,6 @@
-{% set version = "1.30.0" %}
+{% set version = "1.36.0" %}
 {% set name = "mcaGUI" %}
-{% set bioc = "3.8" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,7 +10,7 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 8375e8dda6d5515700a95ab587d07c2f
+  md5: 04a7f44e538fb5802d20ef4baa577ca7
 build:
   number: 0
   rpaths:
@@ -19,7 +19,7 @@ build:
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-otubase >=1.32.0,<1.33.0'
+    - 'bioconductor-otubase >=1.38.0,<1.39.0'
     - r-base
     - r-bpca
     - r-foreign
@@ -30,7 +30,7 @@ requirements:
     - r-proto
     - r-vegan
   run:
-    - 'bioconductor-otubase >=1.32.0,<1.33.0'
+    - 'bioconductor-otubase >=1.38.0,<1.39.0'
     - r-base
     - r-bpca
     - r-foreign
@@ -40,11 +40,23 @@ requirements:
     - r-mass
     - r-proto
     - r-vegan
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'Microbial community analysis GUI for R using gWidgets.'
+  summary: 'Microbial Community Analysis GUI'
+  description: 'Microbial community analysis GUI for R using gWidgets.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  container:
+    extended-base: true
 

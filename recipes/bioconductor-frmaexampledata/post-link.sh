@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="frmaExampleData_1.18.0.tar.gz"
+FN="frmaExampleData_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/frmaExampleData_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/frmaExampleData_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-frmaexampledata/bioconductor-frmaexampledata_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/frmaExampleData_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/frmaExampleData_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-frmaexampledata/bioconductor-frmaexampledata_1.24.0_src_all.tar.gz"
 )
-MD5="d4faf0fddd05a0522bb832c1569b052d"
+MD5="50791ba67966a0eb0c9959663ecd5e0d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

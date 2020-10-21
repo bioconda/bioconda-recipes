@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="bovinecdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/bovinecdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/bovinecdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/bovinecdf_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bovinecdf/bioconductor-bovinecdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bovinecdf/bioconductor-bovinecdf_2.18.0_src_all.tar.gz"
 )
 MD5="e155fc7d5f84ee420d9b250a639af305"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

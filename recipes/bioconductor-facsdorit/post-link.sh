@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="facsDorit_1.24.0.tar.gz"
+FN="facsDorit_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/facsDorit_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/facsDorit_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-facsdorit/bioconductor-facsdorit_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/facsDorit_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/facsDorit_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-facsdorit/bioconductor-facsdorit_1.30.0_src_all.tar.gz"
 )
-MD5="9072988b0ba231cb46fb323fd326c7fe"
+MD5="3726e1637df4aeef70d14758d6be1237"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,9 +1,12 @@
 #!/bin/bash
 
-# avoid CMake Error "In-source builds not allowed."
-mkdir cmake_build_dir
-cd cmake_build_dir
+cd build
 
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$PREFIX ..
+if [[ ${target_platform} =~ linux.* ]] ; then
+    # Workaround for glibc<2.17 where clock_gettime is in librt. (clock_time being used indirectly via Boost.)
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_EXE_LINKER_FLAGS_INIT=-lrt ..
+else
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${PREFIX}" ..
+fi
 make
 make install

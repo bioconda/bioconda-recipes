@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.rcngene.1.0.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.rcngene.1.0.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/pd.rcngene.1.0.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.rcngene.1.0.st_3.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.rcngene.1.0.st/bioconductor-pd.rcngene.1.0.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.rcngene.1.0.st/bioconductor-pd.rcngene.1.0.st_3.12.0_src_all.tar.gz"
 )
 MD5="9c7c5ef4d4f5ed92d9130d77a99a0685"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

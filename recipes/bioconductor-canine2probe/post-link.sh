@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="canine2probe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/canine2probe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/canine2probe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/canine2probe_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-canine2probe/bioconductor-canine2probe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-canine2probe/bioconductor-canine2probe_2.18.0_src_all.tar.gz"
 )
 MD5="7de0f4ea616e8662dc2eaa9ab78d1f13"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

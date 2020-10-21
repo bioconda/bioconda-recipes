@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="flowWorkspaceData_2.18.0.tar.gz"
+FN="flowWorkspaceData_3.0.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/flowWorkspaceData_2.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/flowWorkspaceData_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-flowworkspacedata/bioconductor-flowworkspacedata_2.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/flowWorkspaceData_3.0.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/flowWorkspaceData_3.0.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-flowworkspacedata/bioconductor-flowworkspacedata_3.0.0_src_all.tar.gz"
 )
-MD5="67cd786b29a27ccdbb1b1c423bfce42d"
+MD5="eb173e662f711b32a2f84860d4159b1a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

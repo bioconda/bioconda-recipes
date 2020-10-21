@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="AHCytoBands_0.99.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/AHCytoBands_0.99.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/AHCytoBands_0.99.0.tar.gz"
   "https://bioarchive.galaxyproject.org/AHCytoBands_0.99.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ahcytobands/bioconductor-ahcytobands_0.99.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ahcytobands/bioconductor-ahcytobands_0.99.0_src_all.tar.gz"
 )
 MD5="87b801fe5699cae422a661711272c0a2"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

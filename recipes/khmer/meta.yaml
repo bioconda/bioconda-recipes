@@ -1,32 +1,40 @@
-{% set version = "3.0.0a2" %}
-{% set sha256 = "6a53de499ffd4a808c40973894ec4400d82d8b9e34ad012c4903578edb4be9e1" %}
+{% set version = "3.0.0a3" %}
+{% set sha256 = "9ec987442b153d45034755629d702252c3412fa8e3baf7489107a2929d195979" %}
 
 package:
   name: khmer
-  version: '{{version}}'
+  version: {{ version }}
 
 source:
   url: https://github.com/dib-lab/khmer/archive/v{{ version }}.tar.gz
-  sha256: '{{sha256}}'
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Inject-compiler-and-flags-for-third-party-compilation.patch
 
 build:
-  number: 0
-  script: python -m pip install --no-deps --ignore-installed .
+  number: 1
+  skip: True  # [py<30]
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   build:
-    - '{{compiler("c")}}'
-    - '{{compiler("cxx")}}'
+    - {{ compiler("c") }}
+    - {{ compiler("cxx") }}
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
   host:
-    - python >=3
+    - python
     - pip
-    - pytest-runner >=2.0,<3dev
     - setuptools >=18.0
     - Cython >=0.25.2
+    - bzip2
+    - zlib
   run:
-    - python >=3
+    - python
     - screed >=1.0
     - bz2file
+    - bzip2
+    - zlib
 
 test:
   imports:

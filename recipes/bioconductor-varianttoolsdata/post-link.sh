@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="VariantToolsData_1.6.0.tar.gz"
+FN="VariantToolsData_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/VariantToolsData_1.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/VariantToolsData_1.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-varianttoolsdata/bioconductor-varianttoolsdata_1.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/VariantToolsData_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/VariantToolsData_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-varianttoolsdata/bioconductor-varianttoolsdata_1.12.0_src_all.tar.gz"
 )
-MD5="6d1a1707b091b0d4beeb7f2cf0f9fb7f"
+MD5="9620297c5745263a10d8aeac6ed8b461"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

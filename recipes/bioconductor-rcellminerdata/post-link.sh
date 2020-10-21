@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="rcellminerData_2.4.0.tar.gz"
+FN="rcellminerData_2.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/rcellminerData_2.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/rcellminerData_2.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rcellminerdata/bioconductor-rcellminerdata_2.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/rcellminerData_2.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/rcellminerData_2.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rcellminerdata/bioconductor-rcellminerdata_2.10.0_src_all.tar.gz"
 )
-MD5="7259b2817b463847c17e2d6f1d85fe04"
+MD5="990c8c1a9ee10dc06f5bbafa058da9af"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

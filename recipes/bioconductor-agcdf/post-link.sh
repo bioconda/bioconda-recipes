@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="agcdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/agcdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/agcdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/agcdf_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-agcdf/bioconductor-agcdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-agcdf/bioconductor-agcdf_2.18.0_src_all.tar.gz"
 )
 MD5="5dd14bc6a6d2729f5e7b170105c78e48"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

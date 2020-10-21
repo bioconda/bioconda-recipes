@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.margene.1.0.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.margene.1.0.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/pd.margene.1.0.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.margene.1.0.st_3.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.margene.1.0.st/bioconductor-pd.margene.1.0.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.margene.1.0.st/bioconductor-pd.margene.1.0.st_3.12.0_src_all.tar.gz"
 )
 MD5="f670b192e4b453f13bb7cae154b5de42"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

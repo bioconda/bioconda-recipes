@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="silva128.1MgDb_1.00.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/silva128.1MgDb_1.00.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/silva128.1MgDb_1.00.0.tar.gz"
   "https://bioarchive.galaxyproject.org/silva128.1MgDb_1.00.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-silva128.1mgdb/bioconductor-silva128.1mgdb_1.00.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-silva128.1mgdb/bioconductor-silva128.1mgdb_1.00.0_src_all.tar.gz"
 )
 MD5="f73cc038441a0a166c07582eec9a77b4"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

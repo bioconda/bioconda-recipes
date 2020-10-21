@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="xenopuslaevisprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/xenopuslaevisprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/xenopuslaevisprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/xenopuslaevisprobe_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-xenopuslaevisprobe/bioconductor-xenopuslaevisprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-xenopuslaevisprobe/bioconductor-xenopuslaevisprobe_2.18.0_src_all.tar.gz"
 )
 MD5="06a25268a5ab57bddf28bbb364ea977b"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

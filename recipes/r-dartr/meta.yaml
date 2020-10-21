@@ -1,7 +1,4 @@
-{% set version = '1.0.5' %}
-
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set version = '1.1.11' %}
 
 package:
   name: r-dartr
@@ -11,26 +8,25 @@ source:
   url:
     - {{ cran_mirror }}/src/contrib/dartR_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/dartR/dartR_{{ version }}.tar.gz
-  sha256: fc2b5643ef222ac20e62c5899f8f36b5ba92bf9146b7a5e25457d7ac789fb3f5
+  sha256: 28968f0137be05dcb1b58c2c7775b8f8c74990090edd264e74844752ef45e64c
 
 build:
-  merge_build_host: True  # [win]
-
   number: 1
-  skip: true  # [win32]
-
+  noarch: generic
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{posix}}zip               # [win]
-
+    - {{ cdt('mesa-libgl-devel') }}
+    - {{ cdt('mesa-dri-drivers') }}
+    - {{ cdt('libselinux') }}
+    - {{ cdt('libxdamage') }}
+    - {{ cdt('libxxf86vm') }}
+    - {{ cdt('libxfixes') }}
   host:
     - r-base
-    - r-dbi
-    - r-demerelate
     - r-mass
     - bioconductor-snprelate
     - r-snpassoc
@@ -43,26 +39,26 @@ requirements:
     - r-doparallel
     - r-foreach
     - r-ggplot2
-    - r-misc3d
     - r-pca3d
     - r-pegas
-    - r-plotly
     - r-plyr
-    - r-quadprog
     - bioconductor-qvalue
     - r-reshape2
     - r-rgdal
-    - r-rgl
     - r-seqinr
     - r-sp
     - r-stringr
     - r-tidyr
     - r-vegan
-
+    - r-gdistance
+    - r-hierfstat
+    - r-igraph
+    - r-leaflet
+    - r-mmod
+    - r-popgenreport
+    - r-rrblup
   run:
     - r-base
-    - r-dbi
-    - r-demerelate
     - r-mass
     - bioconductor-snprelate
     - r-snpassoc
@@ -75,27 +71,28 @@ requirements:
     - r-doparallel
     - r-foreach
     - r-ggplot2
-    - r-misc3d
     - r-pca3d
     - r-pegas
-    - r-plotly
     - r-plyr
-    - r-quadprog
     - bioconductor-qvalue
     - r-reshape2
     - r-rgdal
-    - r-rgl
     - r-seqinr
     - r-sp
     - r-stringr
     - r-tidyr
     - r-vegan
+    - r-gdistance
+    - r-hierfstat
+    - r-igraph
+    - r-leaflet
+    - r-mmod
+    - r-popgenreport
+    - r-rrblup
 
 test:
   commands:
-
-    - $R -e "library('dartR')"           # [not win]
-    - "\"%R%\" -e \"library('dartR')\""  # [win]
+    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64:/usr/lib/x86_64-linux-gnu/" $R -e "library('dartR')"
 
 about:
   home: https://CRAN.R-project.org/package=dartR
@@ -112,15 +109,8 @@ about:
     facilitate transfer of data between genlight/genind objects and newhybrids, related,
     phylip, structure, faststructure packages.
   license_family: GPL2
+
 extra:
   container:
     # needed for libGL.so.1
     extended-base: true
-  recipe-maintainers:
-    - MathiasHaudgaard
-    - FrodePedersen
-    - ArneKr
-    - johanneskoester
-    - bgruening
-    - daler
-    - jdblischak

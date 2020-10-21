@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="geuvStore2_1.12.0.tar.gz"
+FN="geuvStore2_1.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/geuvStore2_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/geuvStore2_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-geuvstore2/bioconductor-geuvstore2_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/geuvStore2_1.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/geuvStore2_1.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-geuvstore2/bioconductor-geuvstore2_1.18.0_src_all.tar.gz"
 )
-MD5="4a979fce43756a969ef30510fc7edd7f"
+MD5="16c97672f9406dc3434133762fde6f5e"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

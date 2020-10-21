@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="BSgenome.Ggallus.UCSC.galGal4_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/BSgenome.Ggallus.UCSC.galGal4_1.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/BSgenome.Ggallus.UCSC.galGal4_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Ggallus.UCSC.galGal4_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.ggallus.ucsc.galgal4/bioconductor-bsgenome.ggallus.ucsc.galgal4_1.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.ggallus.ucsc.galgal4/bioconductor-bsgenome.ggallus.ucsc.galgal4_1.4.0_src_all.tar.gz"
 )
 MD5="c2cb4bfc39db93c060e78d8d12542c11"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="JazaeriMetaData.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/JazaeriMetaData.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/JazaeriMetaData.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/JazaeriMetaData.db_3.2.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-jazaerimetadata.db/bioconductor-jazaerimetadata.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-jazaerimetadata.db/bioconductor-jazaerimetadata.db_3.2.3_src_all.tar.gz"
 )
 MD5="3a154a74ac2acebe3471b039c9d9a4dc"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

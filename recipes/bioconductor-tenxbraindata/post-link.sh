@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="TENxBrainData_1.2.0.tar.gz"
+FN="TENxBrainData_1.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/TENxBrainData_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/TENxBrainData_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tenxbraindata/bioconductor-tenxbraindata_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/TENxBrainData_1.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TENxBrainData_1.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tenxbraindata/bioconductor-tenxbraindata_1.8.0_src_all.tar.gz"
 )
-MD5="8f4e0317f3db09ed897fc30484e48115"
+MD5="2565b4297c72e40bdcfa9ab9be5da1e6"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

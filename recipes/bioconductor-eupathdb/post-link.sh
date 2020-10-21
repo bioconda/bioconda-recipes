@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="EuPathDB_1.0.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/EuPathDB_1.0.1.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/EuPathDB_1.0.1.tar.gz"
   "https://bioarchive.galaxyproject.org/EuPathDB_1.0.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-eupathdb/bioconductor-eupathdb_1.0.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-eupathdb/bioconductor-eupathdb_1.0.1_src_all.tar.gz"
 )
 MD5="1451c3ab6c224d9a4cfbdf27dc5c2680"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

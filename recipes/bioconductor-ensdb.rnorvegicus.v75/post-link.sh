@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="EnsDb.Rnorvegicus.v75_2.99.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/EnsDb.Rnorvegicus.v75_2.99.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/EnsDb.Rnorvegicus.v75_2.99.0.tar.gz"
   "https://bioarchive.galaxyproject.org/EnsDb.Rnorvegicus.v75_2.99.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ensdb.rnorvegicus.v75/bioconductor-ensdb.rnorvegicus.v75_2.99.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ensdb.rnorvegicus.v75/bioconductor-ensdb.rnorvegicus.v75_2.99.0_src_all.tar.gz"
 )
 MD5="40ff53b41aa6fad0d5bd15f9c6f3bad8"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

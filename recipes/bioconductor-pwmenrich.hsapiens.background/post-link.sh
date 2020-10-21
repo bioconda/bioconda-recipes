@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="PWMEnrich.Hsapiens.background_4.16.0.tar.gz"
+FN="PWMEnrich.Hsapiens.background_4.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/PWMEnrich.Hsapiens.background_4.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/PWMEnrich.Hsapiens.background_4.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pwmenrich.hsapiens.background/bioconductor-pwmenrich.hsapiens.background_4.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/PWMEnrich.Hsapiens.background_4.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/PWMEnrich.Hsapiens.background_4.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pwmenrich.hsapiens.background/bioconductor-pwmenrich.hsapiens.background_4.22.0_src_all.tar.gz"
 )
-MD5="bffb6a95c2c744fe3a430bbb758dc8e0"
+MD5="0bf3079f50863b03adac22ab870a0394"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

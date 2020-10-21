@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="HumanAffyData_1.8.0.tar.gz"
+FN="HumanAffyData_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/HumanAffyData_1.8.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/HumanAffyData_1.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-humanaffydata/bioconductor-humanaffydata_1.8.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/HumanAffyData_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/HumanAffyData_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-humanaffydata/bioconductor-humanaffydata_1.14.0_src_all.tar.gz"
 )
-MD5="dfe3425fce62815fdd066bd003bfb4d5"
+MD5="0e19759f0110a6e6698ff080b69e9f8c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="IlluminaHumanMethylation450kprobe_2.0.6.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/IlluminaHumanMethylation450kprobe_2.0.6.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/IlluminaHumanMethylation450kprobe_2.0.6.tar.gz"
   "https://bioarchive.galaxyproject.org/IlluminaHumanMethylation450kprobe_2.0.6.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-illuminahumanmethylation450kprobe/bioconductor-illuminahumanmethylation450kprobe_2.0.6_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-illuminahumanmethylation450kprobe/bioconductor-illuminahumanmethylation450kprobe_2.0.6_src_all.tar.gz"
 )
 MD5="84c31861fcbaddbf2a9c500b8d8d767d"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

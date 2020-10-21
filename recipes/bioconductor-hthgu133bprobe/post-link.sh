@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="hthgu133bprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/hthgu133bprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/hthgu133bprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hthgu133bprobe_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hthgu133bprobe/bioconductor-hthgu133bprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hthgu133bprobe/bioconductor-hthgu133bprobe_2.18.0_src_all.tar.gz"
 )
 MD5="8a2e306638a81fdec3b10a014c04c6b9"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

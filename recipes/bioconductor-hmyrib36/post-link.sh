@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="hmyriB36_1.18.0.tar.gz"
+FN="hmyriB36_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/hmyriB36_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/hmyriB36_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hmyrib36/bioconductor-hmyrib36_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/hmyriB36_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/hmyriB36_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hmyrib36/bioconductor-hmyrib36_1.24.0_src_all.tar.gz"
 )
-MD5="b5674b509a47b85c82b4173b4a13e5f1"
+MD5="c0016f0a9fe99056caec4f8088103e55"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

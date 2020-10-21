@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.rhegene.1.1.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.rhegene.1.1.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/pd.rhegene.1.1.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.rhegene.1.1.st_3.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.rhegene.1.1.st/bioconductor-pd.rhegene.1.1.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.rhegene.1.1.st/bioconductor-pd.rhegene.1.1.st_3.12.0_src_all.tar.gz"
 )
 MD5="4f63424ab52283a95731767dce6623cd"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="MAQCsubsetILM_1.20.0.tar.gz"
+FN="MAQCsubsetILM_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/MAQCsubsetILM_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MAQCsubsetILM_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-maqcsubsetilm/bioconductor-maqcsubsetilm_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/MAQCsubsetILM_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MAQCsubsetILM_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-maqcsubsetilm/bioconductor-maqcsubsetilm_1.26.0_src_all.tar.gz"
 )
-MD5="92c3de4c8a84a1ef6f3ef994f9a627f3"
+MD5="671c20d0a49f94f92779ed392dd45eb5"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="riceprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/riceprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/riceprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/riceprobe_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-riceprobe/bioconductor-riceprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-riceprobe/bioconductor-riceprobe_2.18.0_src_all.tar.gz"
 )
 MD5="2fac7746c343546cf30e6d54bc1e2019"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RTCGA.RPPA_1.10.0.tar.gz"
+FN="RTCGA.RPPA_1.16.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/RTCGA.RPPA_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RTCGA.RPPA_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rtcga.rppa/bioconductor-rtcga.rppa_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/RTCGA.RPPA_1.16.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RTCGA.RPPA_1.16.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rtcga.rppa/bioconductor-rtcga.rppa_1.16.0_src_all.tar.gz"
 )
-MD5="22570706e120890e3bc21225a910409b"
+MD5="97d9e29f9155b813392f24c90e4c84f2"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="XhybCasneuf_1.20.0.tar.gz"
+FN="XhybCasneuf_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/XhybCasneuf_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/XhybCasneuf_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-xhybcasneuf/bioconductor-xhybcasneuf_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/XhybCasneuf_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/XhybCasneuf_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-xhybcasneuf/bioconductor-xhybcasneuf_1.26.0_src_all.tar.gz"
 )
-MD5="e31cf97fb07e30678b32d6db51a6cea5"
+MD5="820170bee79b4c34ac1b6e6053f1ccb7"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

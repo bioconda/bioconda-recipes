@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="derfinderData_2.0.0.tar.gz"
+FN="derfinderData_2.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/derfinderData_2.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/derfinderData_2.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-derfinderdata/bioconductor-derfinderdata_2.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/derfinderData_2.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/derfinderData_2.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-derfinderdata/bioconductor-derfinderdata_2.6.0_src_all.tar.gz"
 )
-MD5="a33f63fe0dc553cdb09434a7b243535b"
+MD5="b86ad84ae94a1852faf773b7768472e3"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

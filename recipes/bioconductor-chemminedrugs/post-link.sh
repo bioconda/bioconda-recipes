@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="ChemmineDrugs_1.0.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/ChemmineDrugs_1.0.2.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/ChemmineDrugs_1.0.2.tar.gz"
   "https://bioarchive.galaxyproject.org/ChemmineDrugs_1.0.2.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chemminedrugs/bioconductor-chemminedrugs_1.0.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-chemminedrugs/bioconductor-chemminedrugs_1.0.2_src_all.tar.gz"
 )
 MD5="2a3646e5173e93080fb5b49564f5d545"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

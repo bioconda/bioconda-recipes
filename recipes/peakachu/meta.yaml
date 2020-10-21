@@ -3,22 +3,24 @@
 
 package:
   name: peakachu
-  version: "{{ version }}"
+  version: {{ version }}
 
 source:
   url: https://github.com/tbischler/PEAKachu/archive/v{{ version }}.tar.gz
-  sha256: "{{ sha256 }}"
+  sha256: {{ sha256 }}
   patches:
     - pandas.patch
 
 build:
-  skip: True  # [py<=27 or py>=37]
-  number: 3
+  skip: True  # [py<30]
+  number: 5
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
+    - pip
     - python
   run:
     - python
@@ -30,7 +32,7 @@ requirements:
     - bcbiogff
     - statsmodels
     - rpy2
-    - bioconductor-deseq2 1.18.1
+    - bioconductor-deseq2 >=1.18.1
     - bioconductor-edger
     - blockbuster
 

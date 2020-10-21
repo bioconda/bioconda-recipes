@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="vulcandata_1.4.0.tar.gz"
+FN="vulcandata_1.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/vulcandata_1.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/vulcandata_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-vulcandata/bioconductor-vulcandata_1.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/vulcandata_1.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/vulcandata_1.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-vulcandata/bioconductor-vulcandata_1.10.0_src_all.tar.gz"
 )
-MD5="65a1dc1a4c75edacf512fe57434790e2"
+MD5="22b33ffd770acaa442a07a97a35173fd"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

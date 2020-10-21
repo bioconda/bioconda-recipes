@@ -1,20 +1,25 @@
-{% set version = "2.16.1" %}
-{% set sha256 = "933798f7e83c7e3acd8174eeecc2c6fa1d49abc80db6c70e5da31a9adedbe52e" %}
+{% set name = "mlst" %}
+{% set version = "2.19.0" %}
+{% set sha256 = "74403be717f0bffd579028fd8e7c02d826f5c896e38e6078271a59f7dfce2b0e" %}
+{% set user = "tseemann" %}
 
 package:
-  name: mlst
+  name: '{{ name }}'
   version: '{{ version }}'
 
 source:
-  url: https://github.com/tseemann/mlst/archive/v{{ version }}.tar.gz
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: '{{ sha256 }}'
 
 build:
   number: 0
+  noarch: generic
 
 requirements:
   run:
-    - blast >=2.7.1
+    - any2fasta
+    - blast >=2.9.0
+    - perl
     - perl-bioperl >=1.7.2
     - perl-moo
     - perl-list-moreutils
@@ -25,10 +30,11 @@ test:
   commands:
     - mlst --version
     - mlst --check
+    - mlst --help
     - mlst --list 2>&1 | grep leptospira > /dev/null
 
 about:
-  home: https://github.com/tseemann/mlst
+  home: https://github.com/{{ user }}/{{ name }}
   license: GPL-2.0
   license_family: GPL
   license_file: LICENSE
@@ -36,4 +42,4 @@ about:
 
 extra:
   identifiers:
-    - biotools:mlst
+    - biotools:{{ name }}

@@ -1,6 +1,6 @@
-{% set version = "1.8.0" %}
+{% set version = "1.14.0" %}
 {% set name = "GeneGeneInteR" %}
-{% set bioc = "3.8" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,20 +10,19 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: aa36bdccea1e40711a5ed4b583c8e602
+  md5: 725082a6860d2b4f65fd2624bc52f69a
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
 requirements:
   host:
-    - 'bioconductor-genomicranges >=1.34.0,<1.35.0'
-    - 'bioconductor-ggtools >=5.18.0,<5.19.0'
-    - 'bioconductor-iranges >=2.16.0,<2.17.0'
-    - 'bioconductor-rsamtools >=1.34.0,<1.35.0'
-    - 'bioconductor-snpstats >=1.32.0,<1.33.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-ggtools >=5.24.0,<5.25.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-rsamtools >=2.4.0,<2.5.0'
+    - 'bioconductor-snpstats >=1.38.0,<1.39.0'
     - r-base
     - r-data.table
     - r-factominer
@@ -31,13 +30,14 @@ requirements:
     - r-kernlab
     - r-mvtnorm
     - r-plspm
-    - r-rioja
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-genomicranges >=1.34.0,<1.35.0'
-    - 'bioconductor-ggtools >=5.18.0,<5.19.0'
-    - 'bioconductor-iranges >=2.16.0,<2.17.0'
-    - 'bioconductor-rsamtools >=1.34.0,<1.35.0'
-    - 'bioconductor-snpstats >=1.32.0,<1.33.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-ggtools >=5.24.0,<5.25.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-rsamtools >=2.4.0,<2.5.0'
+    - 'bioconductor-snpstats >=1.38.0,<1.39.0'
     - r-base
     - r-data.table
     - r-factominer
@@ -45,12 +45,17 @@ requirements:
     - r-kernlab
     - r-mvtnorm
     - r-plspm
-    - r-rioja
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'The aim of this package is to propose several methods for testing gene-gene interaction in case-control association studies. Such a test can be done by aggregating SNP-SNP interaction tests performed at the SNP level (SSI) or by using gene-gene multidimensionnal methods (GGI) methods. The package also proposes tools for a graphic display of the results.'
+  summary: 'Tools for Testing Gene-Gene Interaction at the Gene Level'
+  description: 'The aim of this package is to propose several methods for testing gene-gene interaction in case-control association studies. Such a test can be done by aggregating SNP-SNP interaction tests performed at the SNP level (SSI) or by using gene-gene multidimensionnal methods (GGI) methods. The package also proposes tools for a graphic display of the results.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 

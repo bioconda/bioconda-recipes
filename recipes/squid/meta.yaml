@@ -5,7 +5,9 @@ package:
   version: {{ version }}
 
 build:
-  number: 0
+  number: 3
+  # Test fails on OSX
+  skip: True  # [osx]
 
 source:
   url: https://github.com/Kingsford-Group/squid/archive/v{{ version }}.tar.gz
@@ -15,19 +17,16 @@ requirements:
   build:
     - {{ compiler('cxx') }}
   host:
-    - boost
-    - zlib
     - bamtools
+    - boost-cpp
     - glpk
+    - zlib
   run:
-    - boost
     - zlib
-    - bamtools
-    - glpk
 
 test:
   commands:
-    - squid --help
+    - squid --help 2>&1 | grep SQUID
 
 extra:
   identifiers:

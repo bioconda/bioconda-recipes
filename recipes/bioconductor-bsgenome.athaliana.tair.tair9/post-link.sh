@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="BSgenome.Athaliana.TAIR.TAIR9_1.3.1000.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/BSgenome.Athaliana.TAIR.TAIR9_1.3.1000.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/BSgenome.Athaliana.TAIR.TAIR9_1.3.1000.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Athaliana.TAIR.TAIR9_1.3.1000.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.athaliana.tair.tair9/bioconductor-bsgenome.athaliana.tair.tair9_1.3.1000_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.athaliana.tair.tair9/bioconductor-bsgenome.athaliana.tair.tair9_1.3.1000_src_all.tar.gz"
 )
 MD5="8c6709a5f544616d59f4d39aac5787a7"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

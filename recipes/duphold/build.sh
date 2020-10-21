@@ -1,6 +1,15 @@
 #!/bin/bash
 set -eu -o pipefail
 
-mkdir -p $PREFIX/bin
-chmod a+x duphold
-cp duphold $PREFIX/bin
+pushd hts-nim
+nimble install -y --verbose
+popd
+
+pushd genoiser
+nimble install -y --verbose
+popd
+
+nimble install -y --verbose
+
+mkdir -p "${PREFIX}/bin"
+mv duphold "${PREFIX}/bin/"

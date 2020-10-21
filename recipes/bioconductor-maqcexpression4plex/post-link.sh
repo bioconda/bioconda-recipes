@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="maqcExpression4plex_1.26.0.tar.gz"
+FN="maqcExpression4plex_1.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/maqcExpression4plex_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/maqcExpression4plex_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-maqcexpression4plex/bioconductor-maqcexpression4plex_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/maqcExpression4plex_1.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/maqcExpression4plex_1.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-maqcexpression4plex/bioconductor-maqcexpression4plex_1.32.0_src_all.tar.gz"
 )
-MD5="3ce8a0a849ae354153897db598f86fab"
+MD5="d412df2079b96c9f07d2ffc10e9f2868"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
