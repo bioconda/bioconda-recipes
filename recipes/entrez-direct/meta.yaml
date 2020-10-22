@@ -1,6 +1,6 @@
-{% set version = "7.70" %}
-{% set date = "20180103" %}
-{% set sha256 = "674ab325d0de96577455e8569f4d5451583b784df22e2c93d8c05d29488fae4a" %}
+{% set version = "13.9" %}
+{% set date = "20200916" %}
+{% set sha256 = "8736d9aede063c9b1df9719d6b2d9d15ae3823fd06adc58d165f64e87e6ebca8" %}
 
 package:
   name: entrez-direct
@@ -10,30 +10,57 @@ build:
   number: 0
 
 source:
-  fn: edirect.tar.gz
   url: ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/edirect.tar.gz
   sha256: {{ sha256 }}
   patches:
-  - ftp-cp.patch
-  - xtract.patch
+    - xtract.patch
 
 requirements:
   build:
-  - perl
-
+    # The installer script downloads statically compiled binaries, so this is effectively just avoiding linter errors
+    - {{ compiler('go') }}
+  host:
+    - perl
+    - perl-html-parser
+    - perl-html-tagset
+    - perl-html-tree
+    - perl-http-cookies
+    - perl-http-date
+    - perl-http-message
+    - perl-http-negotiate
+    - perl-io-socket-ssl
+    - perl-lwp-mediatypes
+    - perl-lwp-protocol-https
+    - perl-net-http
+    - perl-uri
+    - perl-www-robotrules
+    - perl-mozilla-ca
+    - perl-xml-simple
   run:
-  - perl
-  - perl-lwp-protocol-https
+    - perl
+    - perl-html-parser
+    - perl-html-tagset
+    - perl-html-tree
+    - perl-http-cookies
+    - perl-http-date
+    - perl-http-message
+    - perl-http-negotiate
+    - perl-io-socket-ssl
+    - perl-lwp-mediatypes
+    - perl-lwp-protocol-https
+    - perl-net-http
+    - perl-uri
+    - perl-www-robotrules
+    - perl-mozilla-ca
+    - perl-xml-simple
 
 test:
   commands:
     - efetch --help
     - epost --help
     - efilter --help
-    - eproxy --help
     - einfo --help
     - esearch --help
-    - econtact --help
     - elink --help
     - espell --help
     - enotify --help
@@ -45,4 +72,3 @@ about:
   home: ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/README
   license: PUBLIC DOMAIN
   summary: Entrez Direct (EDirect) is an advanced method for accessing the NCBI's set of interconnected databases (publication, sequence, structure, gene, variation, expression, etc.) from a UNIX terminal window. Functions take search terms from command-line arguments. Individual operations are combined to build multi-step queries. Record retrieval and formatting normally complete the process.
-

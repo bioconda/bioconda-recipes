@@ -1,14 +1,18 @@
+{% set version = "1.7.1" %}
+
 package:
   name: ddrage
-  version: "1.4.0"
+  version: {{ version }}
 
 source:
-  fn: ddrage-1.4.0.tar.gz
-  url: https://bitbucket.org/genomeinformatics/rage/get/1.4.0.tar.gz
-  md5: 500839e1b75e5263afb9005cfb6628ed
+  url: https://bitbucket.org/genomeinformatics/rage/get/{{ version }}.tar.gz
+  sha256: 4ae5a34428658087ca70ad29ae8d3c7a3b55170bfa419d3adcf727fe807d93f3
+
 
 build:
-  skip: True # [py2k or py34]
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
   entry_points:
     - rage = ddrage.__main__:main
     - ddrage = ddrage.__main__:main
@@ -16,30 +20,23 @@ build:
     - learn_qmodel = ddrage.tools.learn_qmodel:main
     - visualize_bbd = ddrage.tools.bbd_visualization:main_standalone
     - remove_annotation = ddrage.tools.remove_annotation:main
-  number: 0
+    - split_by_p7_barcode = ddrage.tools.split_by_p7_barcode:main
+
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - numpy
-    - numba
-    - matplotlib
-    - scipy
-    - pyyaml
-    - libgcc
-
+  host:
+    - python >=3
+    - pip
   run:
-    - python
+    - python >=3
     - numpy
     - numba
-    - matplotlib
-    - scipy
+    - matplotlib-base
+    - scipy >=1.4.1
     - pyyaml
-    - libgcc
     - dinopy
     - seaborn
-    
+
 
 test:
   imports:
@@ -53,11 +50,12 @@ test:
     - learn_qmodel --help
     # - visualize_bbd --help  # adding bokeh as a hard dependency made the build stall.
     - remove_annotation --help
+    - split_by_p7_barcode --help
 
 about:
   home: https://bitbucket.org/genomeinformatics/rage
   license: MIT License
-  summary: 'Simulator for ddRADseq (double digest restriction site associdated DNA squencing) datasets. Generates reads (FASTQ format) that can be analyzed and validated using a ground truth file (YAML).'
+  summary: 'Simulator for ddRADseq (double digest restriction site associated DNA sequencing) datasets. Generates reads (FASTQ format) that can be analyzed and validated using a ground truth file (YAML).'
   license_family: MIT
 
 extra:

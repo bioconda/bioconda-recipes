@@ -1,0 +1,36 @@
+--- /home/sjanssen/Desktop/sepp/sepp-package/run-sepp.sh	2019-03-19 16:33:17.267182143 +0100
++++ sepp-package/run-sepp.sh	2019-03-19 20:23:08.591954892 +0100
+@@ -111,7 +111,7 @@
+ done
+ 
+ 
+-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
++DIR=/opt/anaconda1anaconda2anaconda3/share/sepp/
+ 
+ # Reference tree
+ if [ -z $t ]; then
+@@ -134,7 +134,7 @@
+ if [ ! -z "$printDebug" ]; then
+ 	export SEPP_DEBUG=True
+ fi;
+-python $DIR/sepp/run_sepp.py -P $p -A $a -t $t -a $alg -r $rxi -f $f -o $name $opts -d $tmp/ -p $tmpssd 1>sepp-$name-out.log 2>sepp-$name-err.log
++run_sepp.py -P $p -A $a -t $t -a $alg -r $rxi -f $f -o $name $opts -d $tmp/ -p $tmpssd 1>sepp-$name-out.log 2>sepp-$name-err.log
+ 
+ tail sepp-$name-*
+ 
+@@ -146,13 +146,11 @@
+ # we might want to split computation in two parts: a) obtaining placements and b) creation of an insertion tree.
+ # If -n set to something, we stop after a) and leave it to the user to compute b) afterwards.
+ if [ -z ${noTree+x} ]; then
+-	gbin=$( dirname `grep -A1 "pplacer" $DIR/sepp/.sepp/main.config |grep path|sed -e "s/^path=//g"` )
+-
+-	$gbin/guppy tog ${name}_placement.json
++	guppy tog ${name}_placement.json
+ 
+ 	cat ${name}_placement.tog.tre | python ${name}_rename-json.py > ${name}_placement.tog.relabelled.tre
+ 
+-	$gbin/guppy tog --xml ${name}_placement.json
++	guppy tog --xml ${name}_placement.json
+ 
+ 	cat ${name}_placement.tog.xml | python ${name}_rename-json.py > ${name}_placement.tog.relabelled.xml
+ else

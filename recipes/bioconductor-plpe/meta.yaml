@@ -1,42 +1,48 @@
-{% set version = "1.38.0" %}
+{% set version = "1.48.0" %}
 {% set name = "PLPE" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: fbef60b65c303a1ffd10ae51ddd0d22120014448c58f868e2cfe68b8679316f1
+  md5: 8749ed8d7f5cc3297ebacc33a56e0ea0
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - 'bioconductor-biobase >=2.5.5'
-    - bioconductor-lpe
+  host:
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-lpe >=1.62.0,<1.63.0'
     - r-base
     - r-mass
   run:
-    - 'bioconductor-biobase >=2.5.5'
-    - bioconductor-lpe
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-lpe >=1.62.0,<1.63.0'
     - r-base
     - r-mass
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'This package performs tests for paired high-throughput data.'
-
+  summary: 'Local Pooled Error Test for Differential Expression with Paired High-throughput Data'
+  description: 'This package performs tests for paired high-throughput data.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:plpe
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-plpe
+    path: recipes/bioconductor-plpe
+    version: 1.40.0
+

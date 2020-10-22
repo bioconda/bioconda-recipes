@@ -6,24 +6,23 @@ package:
   version: {{ version }}
 
 source:
-  fn: cd-hit-{{ version }}.tar.gz
   url: https://github.com/weizhongli/cdhit/archive/V{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-Append-compiler-linker-flags.patch
 
 build:
-  number: 0
+  number: 2
 
 requirements:
   build:
-    - gcc   # [not osx]
-    - llvm  # [osx]
-
+    - {{ compiler('cxx') }}
+  host:
   run:
-    - libgcc # [not osx]
 
 test:
-    commands:
-      - cd-hit-dup --help | grep 'Usage' > /dev/null
+  commands:
+    - cd-hit-dup --help | grep -qF 'Usage'
 
 about:
   home: https://github.com/weizhongli/cdhit

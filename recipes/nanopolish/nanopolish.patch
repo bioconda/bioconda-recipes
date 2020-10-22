@@ -1,43 +1,26 @@
---- Makefile    2018-03-03 21:35:11.450748318 +0000
-+++ Makefile    2018-03-12 22:26:32.603369889 +0000
-@@ -8,7 +8,7 @@
- #
-
- #Basic flags every build needs
--LIBS=-lz
-+LIBS=-lcrypto -lz -llzma -lbz2 -lcurl
- CXXFLAGS ?= -g -O3
- CXXFLAGS += -std=c++11 -fopenmp -fsigned-char
- CFLAGS ?= -O3 -std=c99
-@@ -46,19 +46,8 @@
-     EIGEN_CHECK=
- endif
-
--# Default to build and link the libhts submodule
--ifeq ($(HTS), install)
--    HTS_LIB=./htslib/libhts.a
--    HTS_INCLUDE=-I./htslib
--else
--    # Use system-wide htslib
--    HTS_LIB=
--    HTS_INCLUDE=
--    LIBS += -lhts
--endif
--
- # Include the header-only fast5 library
--FAST5_INCLUDE=-I./fast5/include
-+#FAST5_INCLUDE=-I./fast5/include
-
- # Include the header-only eigen library
- EIGEN_INCLUDE=-I./eigen/
---- src/nanopolish_methyltrain.cpp    2018-03-03 21:35:35.230748318 +0000
-+++ src/nanopolish_methyltrain.cpp    2018-03-03 21:35:58.920748318 +0000
-@@ -42,7 +42,7 @@
+diff --git a/src/nanopolish_call_methylation.cpp b/src/nanopolish_call_methylation.cpp
+index 90f2370..029f6aa 100644
+--- a/src/nanopolish_call_methylation.cpp
++++ b/src/nanopolish_call_methylation.cpp
+@@ -43,7 +43,7 @@
+ #include "H5pubconf.h"
+ #include "profiler.h"
+ #include "progress.h"
+-#include "minimap.h"
++#include "../minimap2/minimap.h"
+ #include "bseq.h"
+ #include "mmpriv.h"
+ 
+diff --git a/src/nanopolish_methyltrain.cpp b/src/nanopolish_methyltrain.cpp
+index b97a2f9..436bf11 100644
+--- a/src/nanopolish_methyltrain.cpp
++++ b/src/nanopolish_methyltrain.cpp
+@@ -45,7 +45,7 @@
  #include "logger.hpp"
-
+ 
  #include "nanopolish_scorereads.h"
 -#include "Eigen/Dense"
 +#include <eigen3/Eigen/Dense>
-
+ 
  extern float g_p_skip, g_p_skip_self, g_p_bad, g_p_bad_self;
-
+ 

@@ -1,37 +1,36 @@
+{% set name = "pyGenomeTracks" %}
+{% set version = "3.5.1" %}
+ 
 package:
-  name: pygenometracks
-  version: 2.0
+  name: {{ name | lower }}
+  version: {{ version }}
 
 source:
-  fn: 2.0.tar.gz
-  url: https://github.com/deeptools/pyGenomeTracks/archive/2.0.tar.gz
-  sha256: 9fbcf699eeaa33f056ec97f13d4f1e3b3079050f8f280a90ba9dd866c350adce
+  url: https://github.com/deeptools/pyGenomeTracks/archive/{{ version }}.tar.gz
+  sha256: d4aecff7194350d82cafcfbeaff7d133ce832022a73a7f75f1bc6326d866bdb2
 
 build:
   number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  noarch: python
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - numpy >=1.12.1
-    - matplotlib >=2.0.0
-    - intervaltree >=2.1.0
-    - pybigwig >=0.3.4
-    - pytest
-    - configparser >=3.5.0  # [py2k]
-    - future >=0.16.0
-    - hicexplorer >=1.8
+  host:
+    - python >=3.6
+    - pip
   run:
-    - python
-    - numpy >=1.12.1
-    - matplotlib >=2.0.0
+    - python >=3.6
+    - numpy >=1.16
+    - matplotlib-base =3.1.1
     - intervaltree >=2.1.0
-    - pybigwig >=0.3.4
-    - pytest
-    - configparser >=3.5.0  # [py2k]
-    - future >=0.16.0
-    - hicexplorer >=1.8
+    - pybigwig >=0.3.16
+    - future >=0.17.0
+    - hicmatrix >=15
+    - pysam >=0.14
+    - gffutils >=0.9
+    - tqdm >=4.20
+    - pybedtools >=0.8.1
+
 test:
   imports:
     - pygenometracks
@@ -39,7 +38,10 @@ test:
 about:
   home: https://github.com/deeptools/pyGenomeTracks/
   license: GPL3
+  license_file: LICENSE
   summary: Standalone program and library to plot beautiful genome browser tracks.
 
 extra:
-  recipe-maintainers: fidel.ramirez@gmail.com
+  recipe-maintainers:
+    - fidelram
+    - joachimwolff

@@ -1,32 +1,33 @@
-{% set version = "1.18.0" %}
+{% set version = "1.28.0" %}
 {% set name = "pvca" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: fbfa536b88dae30d0fc925fdc3852af96bdf6fbdf203198244ea3283dd495bae
+  md5: 3f4dbe1c5f9ccea74d79a44679aedd47
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: golubEsets
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-vsn
+  host:
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-vsn >=3.56.0,<3.57.0'
     - r-base
     - r-lme4
     - r-matrix
   run:
-    - bioconductor-biobase
-    - bioconductor-vsn
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-vsn >=3.56.0,<3.57.0'
     - r-base
     - r-lme4
     - r-matrix
@@ -34,11 +35,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'LGPL (>= 2.0)'
-  summary: 'This package contains the function to assess the batch sourcs by fitting all "sources" as random effects including two-way interaction terms in the Mixed Model(depends on lme4 package) to selected principal components, which were obtained from the original data correlation matrix. This package accompanies the book "Batch Effects and Noise in Microarray Experiements, chapter 12.'
-
+  summary: 'Principal Variance Component Analysis (PVCA)'
+  description: 'This package contains the function to assess the batch sourcs by fitting all "sources" as random effects including two-way interaction terms in the Mixed Model(depends on lme4 package) to selected principal components, which were obtained from the original data correlation matrix. This package accompanies the book "Batch Effects and Noise in Microarray Experiements, chapter 12.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
 extra:
   identifiers:
     - biotools:pvca
     - doi:10.1002/9780470685983.ch12
+  parent_recipe:
+    name: bioconductor-pvca
+    path: recipes/bioconductor-pvca
+    version: 1.20.0
+

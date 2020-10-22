@@ -1,0 +1,37 @@
+diff --git a/src/AlleleParser.cpp b/src/AlleleParser.cpp
+index 72c0c14..a6b16ae 100644
+--- a/src/AlleleParser.cpp
++++ b/src/AlleleParser.cpp
+@@ -2001,6 +2001,12 @@ void AlleleParser::updateAlignmentQueue(long int position,
+                 continue;
+             }
+ 
++            // skip reads that fail QC, used by VariantBam for high coverage downsampling
++            if (currentAlignment.ISFAILQC) {
++              DEBUG("skipping alignment " << currentAlignment.QNAME << " because it is fails QC");
++              continue;
++            }
++
+             // skip alignments which have no aligned bases
+             if (currentAlignment.ALIGNEDBASES == 0) {
+                 DEBUG("skipping alignment " << currentAlignment.QNAME << " because it has no aligned bases");
+diff --git a/src/LeftAlign.h b/src/LeftAlign.h
+index 46aa8f5..98e4539 100644
+--- a/src/LeftAlign.h
++++ b/src/LeftAlign.h
+@@ -49,6 +49,7 @@ using namespace BamTools;
+ #define ISPAIRED IsPaired()
+ #define ISMATEMAPPED IsMateMapped()
+ #define ISPROPERPAIR IsProperPair()
++#define ISFAILQC IsFailedQC()
+ #define CIGLEN Length
+ #define CIGTYPE Type
+ #define BAMREADER BamMultiReader
+@@ -90,6 +91,7 @@ using namespace BamTools;
+ #define GETCIGAR GetCigar()
+ #define GETREFID(name) Header().Name2ID(name)
+ #define ISDUPLICATE DuplicateFlag()
++#define ISFAILQC QCFailFlag()
+ #define CIGLEN Length()
+ #define CIGTYPE Type()
+ #define ADDCIGAR add

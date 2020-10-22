@@ -1,31 +1,42 @@
+{% set version = "2.3" %}
+
+package:
+  name: ragout
+  version: {{ version }} 
+
+source:
+  url: https://github.com/fenderglass/Ragout/archive/{{ version }}.tar.gz 
+  sha256: 69d50a7ff49f03821e0143449ee0dc3e80c73e2c24568cad71948a5492613bca
+
+build:
+  number: 2
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - setuptools
+  host:
+    - python
+    - setuptools
+  run:
+    - python
+    - decorator ==4.3.0
+    - networkx ==2.2
+    - sibelia
+    - setuptools
+
+extra:
+  skip-lints:
+    - uses_setuptools  #uses pkg_resources
+
+test:
+  commands:
+    - ragout -h
+    - Sibelia --version
+    - python -c "import ragout.tests.test_toy as t; t.main()"
+
 about:
   home: https://github.com/fenderglass/Ragout
   license: GPLv3
-  summary: "Ragout (Reference-Assisted Genome Ordering UTility) is a tool for chromosome assembly using multiple references"
-build:
-  number: 2
-  skip: True  # [py3k]
-  
-package:
-  name: ragout
-  version: 2.0
-source:
-  fn: ragout_2.0.tar.gz
-  url: https://github.com/fenderglass/Ragout/archive/2.0.tar.gz
-  sha256: 85d57ab050572332eb5879e4ac98acf50c0de373b1a1a01876e60b6e222f1486
-requirements:
-  build:
-    - gcc  # [not osx]
-    - llvm  # [osx]
-    - cmake
-    - python
-  run:
-    - libgcc  # [not osx]
-    - python
-    - networkx ==1.8
-    - python-mailund-newick
-    - sibelia
-test:
-  commands:
-    - ragout.py -h
-    - Sibelia --version
+  summary: "Chromosome-level scaffolding using multiple references"

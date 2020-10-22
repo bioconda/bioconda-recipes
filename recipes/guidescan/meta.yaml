@@ -9,25 +9,16 @@ source:
   url: https://bitbucket.org/arp2012/guidescan_public/get/v{{ version }}.tar.gz
   sha256: 8b3707922bfd986d9d3c784953c3d47c26c0cc5726462a1e2a39bcd5627320bc
 
-# if/when a tagged release of guidescan is available, the source
-# should be switched from git_url&git_rev to url&sha256.
-# At that time, these lint-skip lines can be removed:
-extra:
-  skip-lints:
-    - uses_git_url
-    - missing_hash
-
 build:
-  number: 0
+  number: 1
   skip: True # [not py27]
 
 requirements:
   build:
-    - gcc   # [not osx]
-    - llvm  # [osx]
-
-    - python >=2.7.13
-    #- setuptools
+    - {{ compiler('c') }}
+  host:
+    - python
+    - setuptools
     - samtools ==1.3.1
     - coreutils
     - rename
@@ -42,12 +33,8 @@ requirements:
     - pandas
     - openblas
     - python-dateutil >=2.5.0
-
   run:
-    - libgcc # [not osx]
-
-    - python >=2.7.13
-    #- setuptools
+    - python
     - samtools ==1.3.1
     - coreutils
     - rename
@@ -66,7 +53,7 @@ requirements:
 test:
   imports:
     - guidescan
-  commands: 
+  commands:
     - "guidescan_processer -h"
     - "guidescan_bamdata -h"
     - "guidescan_guidequery -h"
@@ -77,3 +64,8 @@ about:
   home: https://bitbucket.org/arp2012/guidescan_public
   license: Unknown
   summary: Tools to create and interface genome-wide CRISPR guideRNA databases
+
+extra:
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

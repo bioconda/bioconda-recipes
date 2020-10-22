@@ -1,35 +1,37 @@
-{% set version="2.3" %}
+{% set version="2.4" %}
 
 package:
   name: clever-toolkit
   version: {{ version }}
 
 build:
-  number: 0
-  string: py{{CONDA_PY}}_boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+  number: 8
   skip: True  # [osx or py2k]
 
 source:
-  fn: clever-toolkit-{{ version }}.tar.gz
   url: https://bitbucket.org/tobiasmarschall/clever-toolkit/downloads/clever-toolkit-v{{ version }}.tar.gz
-  sha256: 25e3e41340c55d2e48c2d7d467061b1e0e3d492f69309680bba8e8b869487faa
+  sha256: a8db97fd9c23a4519f63d60955361547fadcc1ece1bc51e4dd3ee224fb2131b7
+  patches:
+    - patch
 
 requirements:
   build:
-    - gxx_linux-64
-    - boost {{CONDA_BOOST}}*
+    - {{ compiler('cxx') }}
     - cmake
-    - zlib {{CONDA_ZLIB}}*
-  run:
-    - libgcc
-    - libstdcxx-ng
+  host:
     - python
-    - boost {{CONDA_BOOST}}*
-    - zlib {{CONDA_ZLIB}}*
-    - bedtools 2.26.*
-    - samtools 1.*
-    - bcftools 1.*
-    - matplotlib 2.*
+    - boost-cpp
+    - zlib
+  run:
+    - python
+    - boost-cpp
+    - zlib
+    - bedtools >=2.26
+    - bwa
+    - samtools >=1
+    - bcftools >=1
+    - matplotlib 2
+    - make
 
 test:
   commands:

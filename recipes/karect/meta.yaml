@@ -1,26 +1,28 @@
-{% set name = "Karect" %}
 {% set version = "1.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: karect
   version: {{ version }}
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://github.com/aminallam/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  url: https://github.com/aminallam/karect/archive/v{{ version }}.tar.gz
   sha256: 47d90bf2e6d4dd26a48bcf9c8041cbe95af0bec48d2488422485378fd8c35681
 
 build:
-  number: 0
+  number: 2
   skip: True  # [not linux]
-  script: "make && cp karect ${PREFIX}/bin/"
+  script: |
+    install -d "${PREFIX}/bin"
+    "${CXX}" ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS} \
+        -O3 -Wall -pthread -lpthread \
+        karect.cpp \
+        -o "${PREFIX}/bin/karect"
 
 requirements:
   build:
-    - gcc >=4.8.2
-
+    - {{ compiler('cxx') }}
+  host:
   run:
-    - libgcc
 
 test:
   commands:

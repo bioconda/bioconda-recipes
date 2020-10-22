@@ -1,31 +1,29 @@
-{% set name = "primer3" %}
 {% set version = "2.0.0a" %}
 
 package:
-  name: {{ name|lower }}
+  name: primer3
   version: {{ version }}
 
 build:
-  number: 0
+  number: 3
 
 source:
-  fn: {{ name }}-2.0.0-alpha.tar.gz
   url: https://sourceforge.net/projects/primer3/files/primer3/2.0.0-alpha/primer3-2.0.0-alpha.tar.gz
   sha256: cae9512b7ca9fa0908f63f148ceb07680e8cdf90aff105eb54682cb7cc80b7a8
 
 requirements:
   build:
-    - make
-    - perl
-    - gcc   # [not osx]
-    - llvm  # [osx]
+    - {{ compiler('c') }}
+  host:
   run:
     - perl
-    - libgcc    # [not osx]
 
 test:
   commands:
-    - primer3_core --help 2>&1 | grep "This is primer3"
+    - primer3_core --help 2>&1 | grep -F 'This is primer3'
+    - test -x "${PREFIX}/bin/long_seq_tm_test"
+    - test -x "${PREFIX}/bin/ntdpal"
+    - test -x "${PREFIX}/bin/oligotm"
 
 about:
   home: http://primer3.sourceforge.net/

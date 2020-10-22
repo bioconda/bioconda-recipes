@@ -1,38 +1,45 @@
+{% set name = "perl-gd" %}
+{% set version = "2.71" %}
+{% set sha256 = "451be4873b2ad7261cc5679698cd9d2e84dbdde4309971869fc7734b569b7ac7" %}
+
 package:
-  name: perl-gd
-  version: "2.56"
+  name: {{ name }}
+  version: {{ version }}
+
 source:
-  fn: GD-2.56.tar.gz
-  url: https://cpan.metacpan.org/authors/id/L/LD/LDS/GD-2.56.tar.gz
-  md5: c4b3afd98b2c4ce3c2e1027d101a8f1e
+  url: https://cpan.metacpan.org/authors/id/R/RU/RURBAN/GD-2.71.tar.gz
+  sha256: {{ sha256 }}
+
 build:
-  ##ignore_prefix_files: True
-  number: 6
-  skip: True  # [osx]
+  number: 0
 
 requirements:
   build:
-# Temporarily remove gcc build requirement because conda-forge Perl was compiled
-# with -fstack-protector-strong option and defaults gcc does not support it, see
-# https://github.com/bioconda/bioconda-recipes/pull/3839
-#    - gcc # [linux]
-    - llvm # [osx]
-    - libgd >=2.2.4
+    - {{ compiler('cxx') }}
+
+  host:
     - perl
-    - perl-module-build
+    - perl-extutils-makemaker
+    - perl-extutils-pkgconfig
+    - perl-test-fork
+    - perl-extutils-constant
+    - libgd
+    - zlib
 
   run:
-    - libgcc # [not osx]
-    - libgd >=2.2.4
+    - libgd
     - perl
+    - zlib
 
 test:
-  # Perl 'use' tests
   imports:
     - GD
-    - GD::Simple ## (no version defined)
-    - GD::Polygon ## (no version defined)
-    # - GD::Polyline ## (version 0.2 defined?!)
+#    - GD::Group ## (version 1.00 defined?!)
+#    - GD::Image ## (version 2.67 defined?!)
+    - GD::Polygon
+#    - GD::Polyline
+    - GD::Simple
+
 
 about:
   home: http://metacpan.org/pod/GD

@@ -1,42 +1,42 @@
-about:
-    home: http://subread.sourceforge.net/
-    license: GPLv3
-    summary: High-performance read alignment, quantification, and mutation discovery
 package:
-    name: subread
-    version: 1.6.1
+  name: subread
+  version: 2.0.1
+
+source:
+  url: https://downloads.sourceforge.net/project/subread/subread-2.0.1/subread-2.0.1-source.tar.gz
+  sha256: d808eb5b1823c572cb45a97c95a3c5acb3d8e29aa47ec74e3ca1eb345787c17b
 
 build:
   number: 0
 
-source:
-    fn: subread-1.6.1-source.tar.gz
-    url: https://downloads.sourceforge.net/project/subread/subread-1.6.1/subread-1.6.1-source.tar.gz
-    sha256: 7c69ab2bdfa471ffeb26525b35f5efc851f82b7877d26c5e1786ccdc6b3e27ca
-
 requirements:
   build:
-    - zlib {{ CONDA_ZLIB}}*
-    - gcc  # [linux]
-    - llvm  # [osx]
+    - {{ compiler('c') }}
+  host:
+    - zlib
   run:
-    - zlib {{ CONDA_ZLIB}}*
-    - libgcc # [linux]
+    - zlib
+
 test:
-    commands:
-        - featureCounts -v
-        - subread-align || [[ $? == 1 ]]
-        - exactSNP
-        - subread-buildindex || [[ $? == 255 ]]
-        - subjunc || [[ $? == 1 ]]
-        - subindel || [[ $? = 255 ]]
-        - repair -h
-        - txUnique || [[ $? == 1 ]]
-        - qualityScores
-        - subread-fullscan || [[ $? == 255 ]]
-        - coverageCount
+  commands:
+    - featureCounts -v
+    - subread-align || [[ $? == 1 ]]
+    - exactSNP
+    - subread-buildindex || [[ $? == 255 ]]
+    - subjunc || [[ $? == 1 ]]
+    - subindel || [[ $? = 255 ]]
+    - repair -h
+    - txUnique || [[ $? == 1 ]]
+    - qualityScores
+    - subread-fullscan || [[ $? == 255 ]]
+
+about:
+  home: http://subread.sourceforge.net/
+  license: GPLv3
+  summary: High-performance read alignment, quantification, and mutation discovery
 
 extra:
   identifiers:
     - biotools:subread
+    - usegalaxy-eu:featurecounts
     - doi:10.1093/nar/gkt214

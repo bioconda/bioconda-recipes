@@ -1,5 +1,5 @@
 {% set name = "nanopolish" %}
-{% set version = "0.9.0" %}
+{% set version = "0.13.2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,34 +7,40 @@ package:
 
 build:
   number: 2
-  string: "py{{CONDA_PY}}_ncurses{{CONDA_NCURSES}}_{{PKG_BUILDNUM}}"
+  binary_relocation: False
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://github.com/jts/nanopolish/archive/v{{ version }}.tar.gz
-  sha256: 9ee50c6ffc23a9fc9aa2079f737c70c696d1f211adf1e30c9ba8e53d606285bb
+  git_url: https://github.com/jts/nanopolish
+  git_rev: 'v{{ version }}'
+  sha256: be9ab70ff0753519323e4cd0e6be50b164c4239bd9c20ffa5207c2d6fc20d120
   patches:
     - nanopolish.patch
 
 requirements:
   build:
-  - gcc
-  - fast5 ==0.6.5
-  - htslib  {{ CONDA_HTSLIB }}*
-  - hdf5 {{ CONDA_HDF5 }}*
-  - eigen
-  - ncurses {{CONDA_NCURSES}}*
-  - bzip2 {{CONDA_BZIP2}}*
-
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - htslib
+    - hdf5 ==1.8.18
+    - eigen
+    - ncurses
+    - bzip2
+    - openmp
+    - libcurl
+    - zlib
   run:
-  - libgcc
-  - python
-  - hdf5 {{ CONDA_HDF5 }}*
-  - biopython
-  - bwa
-  - eigen
-  - ncurses {{CONDA_NCURSES}}*
-  - bzip2 {{CONDA_BZIP2}}*
+    - python
+    - hdf5 ==1.8.18
+    - biopython
+    - bwa
+    - eigen
+    - ncurses
+    - libdeflate
+    - openmp
+    - minimap2
+    - libcurl
+    - zlib
 
 test:
   commands:
@@ -46,3 +52,9 @@ about:
   license: MIT
   license_file: LICENSE
   summary: 'Signal-level algorithms for MinION data.'
+
+extra:
+  skip-lints:
+    - uses_vcs_url
+  identifiers:
+    - usegalaxy-eu:nanopolish_eventalign

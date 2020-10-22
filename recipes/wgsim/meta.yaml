@@ -1,26 +1,29 @@
-{% set version = "1.0" %}
-
 package:
   name: wgsim
-  version: {{ version }}
+  version: 1.0
+
+source:
+  url: https://github.com/lh3/wgsim/archive/a12da3375ff3b51a5594d4b6fa35591173ecc229.tar.gz
+  sha256: e1e6bff5c084e4494023505206ae3e0b0f5a315c9f7390b2f347c370c7f36533
+  patches:
+    - 0001-Fix-shebang-in-perl-script.patch
 
 build:
-  number: 0
+  number: 3
 
 requirements:
   build:
-    - gcc   # [not osx]
-    - llvm  # [osx]
-    - libgcc # [not osx]
-    - zlib {{CONDA_ZLIB}}*
-
+    - {{ compiler('c') }}
+  host:
+    - zlib
   run:
-    - libgcc  # [not osx]
-    - zlib {{CONDA_ZLIB}}*
+    - perl
+    - zlib
 
 test:
   commands:
     - printf ">a\nAAAAA" > ref.fa; wgsim -1 1 -2 1 ref.fa /dev/null /dev/null
+    - '{ wgsim_eval.pl 2>&1 || true ; } | grep Usage'
 
 about:
   home:  https://github.com/lh3/wgsim

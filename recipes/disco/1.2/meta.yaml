@@ -1,28 +1,31 @@
-{% set name = "disco" %}
 {% set version = "1.2" %}
 {% set md5 = "8fe5ecc2ca4c7766f0e78acf13b3ed57" %}
 
 package:
-  name: {{ name }}
+  name: disco
   version: {{ version }}
 
 source:
-  fn: {{ version }}.tar.gz
   url: https://github.com/abiswas-odu/Disco/archive/{{ version }}.tar.gz
   md5: {{ md5 }}
+  patches:
+    - 0001-Replace-g++-by-CXX.patch
 
 build:
-  number: 1
+  number: 2
 
 requirements:
   build:
-    - gcc
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+  host:
     - openmpi >=1.8
-    - zlib {{ CONDA_ZLIB }}*
+    - zlib
   run:
-    - libgcc # [not osx]
     - openmpi >=1.8
-    - zlib {{ CONDA_ZLIB }}*
+    - zlib
     - biopython
     - bbmap
 
@@ -31,6 +34,10 @@ test:
     - runDisco.sh -h 2>&1 | grep "runDisco"
     - runAssembly.sh -h 2>&1 | grep "runDisco"
     - runECC.sh -h 2>&1 | grep "runDisco"
+    - buildG --help
+    - buildG-MPI --help
+    - buildG-MPIRMA --help
+    - fullsimplify --help
 
 about:
   home: http://disco.omicsbio.org/

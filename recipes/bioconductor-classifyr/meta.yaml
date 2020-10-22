@@ -1,43 +1,52 @@
-{% set version = "1.12.2" %}
+{% set version = "2.8.0" %}
 {% set name = "ClassifyR" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 5c32745f0c94df16dc20a31cb84a9faef95060ef3cfcb3407f8dc442e0d66cf9
+  md5: 054167acf0cf0ba6012486c735d0cd15
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: limma, genefilter, edgeR, car, Rmixmod, ggplot2 (>= 3.0.0), gridExtra (>= 2.0.0), cowplot, BiocStyle, pamr, PoiClaClu, parathyroidSE, knitr, htmltools, gtable, scales, e1071, rmarkdown, IRanges, randomForest, robustbase, glmnet, class
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-biocparallel
+  host:
+    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
+    - 'bioconductor-multiassayexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
     - r-base
     - r-locfit
-    - r-rocr
+    - r-plyr
   run:
-    - bioconductor-biobase
-    - bioconductor-biocparallel
+    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
+    - 'bioconductor-multiassayexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
     - r-base
     - r-locfit
-    - r-rocr
+    - r-plyr
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'The software formalises a framework for classification in R. There are four stages; Data transformation, feature selection, classifier training, and prediction. The requirements of variable types and names are fixed, but specialised variables for functions can also be provided. The classification framework is wrapped in a driver loop, that reproducibly carries out a number of cross-validation schemes. Functions for differential expression, differential variability, and differential distribution are included. Additional functions may be developed by the user, by creating an interface to the framework.'
-
+  summary: 'A framework for cross-validated classification problems, with applications to differential variability and differential distribution testing'
+  description: 'The software formalises a framework for classification in R. There are four stages; Data transformation, feature selection, classifier training, and prediction. The requirements of variable types and names are fixed, but specialised variables for functions can also be provided. The classification framework is wrapped in a driver loop, that reproducibly carries out a number of cross-validation schemes. Functions for differential expression, differential variability, and differential distribution are included. Additional functions may be developed by the user, by creating an interface to the framework.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:classifyr
+  parent_recipe:
+    name: bioconductor-classifyr
+    path: recipes/bioconductor-classifyr
+    version: 2.2.4
+

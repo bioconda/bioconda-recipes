@@ -1,31 +1,36 @@
 {% set name = "pantools" %}
-{% set version = "1.0" %}
-# Do not forget to update the version string in the pantools.py file
+{% set version = "1.2" %}
+{% set sha256 = "ff9e93f10e3c83d45a1fddb28bfbd5b5eee3aa017fbff4ee03455e462703c4ee" %}
 
 package:
-    name: {{ name }}
-    version: {{ version }}
-
-build:
-  number: 0
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-    fn: {{ name }}-{{ version }}.tar.gz
-    url: https://github.com/Sheikhizadeh/pantools/archive/v{{ version }}.tar.gz
-    md5: 28c6ce2af0ecd25e50f8152c1c87a4f1
+  url: https://github.com/Sheikhizadeh/pantools/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 1
 
 requirements:
-  build:
   run:
-    - java-jdk  >=6
     - python
+    - openjdk >=8
+    - mcl
     - kmc
 
 test:
-    commands:
-      - pantools --help | grep 'reconstruct' > /dev/null
+  commands:
+    - pantools help 2>&1 | grep "pantools.jar" > /dev/null
 
 about:
-    home: https://github.com/Sheikhizadeh/pantools
-    license: Unknown
-    summary: PanTools is a disk-based java application for computational pan-genomics
+  home: https://github.com/Sheikhizadeh/pantools
+  # Request for license type upstream, https://github.com/Sheikhizadeh/pantools/issues/10
+  license: Unknown
+  summary: "PanTools is a disk-based java application for computational pan-genomics."
+
+extra:
+  identifiers:
+    - doi:https://doi.org/10.1186/s12859-018-2362-4

@@ -1,30 +1,30 @@
-{% set name = "minimap2" %}
-{% set version = "2.10" %}
-{% set hash = "3cb8e32afefbe0c30c0211879987fd4e25909330e0b331734ec407a004254901" %}
+{% set version = "2.17" %}
 
 package:
-  name: {{ name|lower }}
+  name: minimap2
   version: {{ version }}
 
 source:
   url: https://github.com/lh3/minimap2/archive/v{{ version }}.tar.gz
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  sha256: {{ hash }}
+  sha256: 0a3eaa3ef3d9f9e41f48199cc4aac0508366ac644fc3e8fe05e3463acd23d20b
 
 build:
-    number: 1
+  number: 3
 
 requirements:
-    build:
-        - gcc
-        - zlib {{ CONDA_ZLIB }}*
+  build:
+    - {{ compiler('c') }}
+  host:
+    - zlib
+  run:
+    - k8
+    - zlib
 
-    run:
-        - libgcc
-        - zlib {{ CONDA_ZLIB }}*
 test:
   commands:
     - minimap2 2>&1 | grep 'Usage'
+    - paftools.js version | grep {{ version }}
+    - sdust  2>&1 | grep 'Usage'
 
 about:
   home: https://github.com/lh3/minimap2

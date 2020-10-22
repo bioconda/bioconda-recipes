@@ -1,22 +1,24 @@
+{% set name = "goatools" %}
+{% set version = "1.0.6" %}
+{% set sha256 = "3deeee5d207e5a2053a874e4e37e1f76de227aed72ca6abb7df8b888607c5e52" %}
+
 package:
-  name: goatools
-  version: '0.7.11'
+  name: {{ name|lower }}
+  version: '{{version}}'
 
 source:
-  fn: goatools-0.7.11.tar.gz
-  url: https://pypi.python.org/packages/ce/e8/34430e4868544b0e2b34c48645c85081474c9968e9816b90e9b544613c19/goatools-0.7.11.tar.gz
-  md5: f2ab989ec9c4acdd80504b263c3b3188
-  patches:
-    - fix-requirements.patch
-    - exclude-test_data.patch
+  url: https://pypi.io/packages/source/g/goatools/goatools-{{version}}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
+  noarch: python
   number: 1
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
-  build:
+  host:
     - python
-    - setuptools
+    - pip
   run:
     - python
     - python-wget
@@ -28,6 +30,7 @@ requirements:
     # - xlrd
     - pygraphviz
     - pydot
+    - requests
 
 test:
   commands:
@@ -41,6 +44,11 @@ test:
     - goatools.associations
 
 about:
-  home: 'https://github.com/tanghaibao/goatools'
-  summary: 'Python scripts to find enrichment of GO terms'
+  home: https://github.com/tanghaibao/goatools
+  summary: "Python scripts to find enrichment of GO terms"
   license: BSD-2-Clause
+  license_family: BSD
+
+extra:
+  identifiers:
+    - doi:10.5281/zenodo.31628

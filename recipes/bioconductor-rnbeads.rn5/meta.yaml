@@ -1,34 +1,43 @@
-{% set version = "1.10.0" %}
+{% set version = "1.20.0" %}
 {% set name = "RnBeads.rn5" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 6c153bdbea13a5b0d470e4ab31426f8c7529aec9311d5b927566b36487c6efe0
+  md5: 774a485d3267dc115694a033ec3dc9ae
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RnBeads
 requirements:
-  build:
-    - bioconductor-genomicranges
+  host:
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
     - r-base
   run:
-    - bioconductor-genomicranges
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
   license: GPL-3
-  summary: 'Automatically generated RnBeads annotation package for the assembly rn5.'
+  summary: RnBeads.rn5
+  description: 'Automatically generated RnBeads annotation package for the assembly rn5.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  parent_recipe:
+    name: bioconductor-rnbeads.rn5
+    path: recipes/bioconductor-rnbeads.rn5
+    version: 1.12.0
+

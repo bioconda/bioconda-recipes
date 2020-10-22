@@ -1,57 +1,68 @@
+{% set name = "python-chado" %}
+{% set version = "2.3.3" %}
+{% set sha256 = "6cd0e9e87790d28fb9dc0f903799ee5e594537061860f338c7b30deb18822dd0" %}
+
 package:
-  name: python-chado
-  version: "2.1.1"
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  fn: chado-2.1.1.tar.gz
-  url: https://files.pythonhosted.org/packages/8a/5c/40fdd05729ed6e96dccbea910c5e81332352b4212e13b946d65a0193db4e/chado-2.1.1.tar.gz
-  sha256: 319e8073b07857e432127e164e731f88ea75cc9abc2aa694e89296b604f0f20e
+  url: https://pypi.io/packages/source/c/chado/chado-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
+  noarch: python
+  entry_points:
+    - chakin=chakin.cli:chakin
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
-  build:
+  host:
+    - pip
     - python
-    - setuptools
-    - sqlalchemy
-    - psycopg2
-    - biopython ==1.67
-    - bcbiogff
-    - wrapt
-    - click
-    - pyyaml
-
   run:
-    - python
-    - sqlalchemy
-    - psycopg2
-    - biopython ==1.67
-    - bcbiogff
-    - wrapt
+    - bcbio-gff ==0.6.4
+    - biopython
     - click
-    - pyyaml
     - future
+    - psycopg2
+    - python
+    - pyyaml
+    - sqlalchemy
+    - wrapt
 
 test:
   imports:
     - chado
     - chado.analysis
     - chado.export
+    - chado.expression
+    - chado.feature
     - chado.organism
+    - chado.phylogeny
     - chado.util
-
+    - chakin
+    - chakin.commands
+    - chakin.commands.analysis
+    - chakin.commands.export
+    - chakin.commands.expression
+    - chakin.commands.feature
+    - chakin.commands.organism
+    - chakin.commands.phylogeny
+    - chakin.commands.util
   commands:
-    - chakin --help > /dev/null
-    - chakin analysis --help > /dev/null
+    - chakin --help
+    - chakin analysis --help
 
 about:
   home: https://github.com/galaxy-genome-annotation/python-chado
-  license: MIT License
-  summary: 'Chado library'
+  license: MIT
   license_family: MIT
+  icense_file: '{{ environ["RECIPE_DIR"] }}/LICENSE.txt'
+  summary: "A Python library for interacting with Chado database."
 
 extra:
-    container:
-        # unicode problem with click
-        extended-base: true
+  container:
+    # unicode problem with click
+    extended-base: true

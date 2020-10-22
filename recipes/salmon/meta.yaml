@@ -1,52 +1,51 @@
-{% set version="0.10.0" %}
-{% set llvm_version = "4.0.0" %}
-
-build:
-  number: 1
-  # OSX failing due to libary issues even though shipping with Salmon binary
-  # dyld: Library not loaded: /usr/local/opt/tbb/lib/libtbbmalloc_proxy.dylib
-  # https://travis-ci.org/bioconda/bioconda-recipes/jobs/211785820#L295
-  #skip: true # [osx]
-
-about:
-    home: https://github.com/COMBINE-lab/salmon
-    license: GPLv3
-    summary: Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using lightweight alignments
+{% set version="1.3.0" %}
 
 package:
-    name: salmon
-    version: {{ version }}
+  name: salmon
+  version: {{ version }}
+
+build:
+  number: 0
 
 source:
-  fn: Salmon-{{ version }}_src.tar.gz 
   url: https://github.com/COMBINE-lab/salmon/archive/v{{ version }}.tar.gz
-  md5: 53b6c9321b3a8533666eb4f3ee804f36 
+  sha256: c105be481630d57e7022bf870eb040857834303abff05fe0e971dda5ed6f0236
 
 requirements:
   build:
-    - llvm # [osx]
-    - clangdev =={{ llvm_version }}  # [osx]
-    - libcxx =={{ llvm_version }}  # [osx]
-    - gcc ==4.8.5 # [linux]
-    - autoconf 2.69 pl5.*
-    - boost {{CONDA_BOOST}}*
-    - icu 58.*
+    - autoconf
     - cmake
-    - zlib {{CONDA_ZLIB}}*
-    - bzip2 {{CONDA_BZIP2}}*
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - boost-cpp
+    - icu 
+    - zlib
+    - bzip2
     - unzip
-    - jemalloc ==4.5.0
-    - tbb
+    - jemalloc >=5.1.0
+    - tbb-devel
   run:
-    - libgcc # [linux]
-    - libcxx =={{ llvm_version }}  # [osx]
-    - boost {{CONDA_BOOST}}*
-    - icu 58.*
-    - jemalloc ==4.5.0
     - tbb
-    - zlib {{CONDA_ZLIB}}*
-    - bzip2 {{CONDA_BZIP2}}*
 
 test:
+  source_files:
+    - sample_data.tgz
   commands:
     - salmon --help
+
+about:
+  home: https://github.com/COMBINE-lab/salmon
+  license: GPLv3
+  license_file: LICENSE
+  summary: Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using selective alignment
+
+extra:
+  recipe-maintainers:
+    - rob-p
+    - k3yavi
+  identifiers:
+    - biotools:salmon
+    - usegalaxy-eu:salmon
+    - usegalaxy-eu:alevin
+    - doi:10.1038/nmeth.4197

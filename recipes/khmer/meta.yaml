@@ -1,38 +1,42 @@
-{% set name = "khmer" %}
-{% set version = "2.1.2" %}
-{% set sha256hash = "e349cac450963822ac74a3313be5164a1bdadb0bf3767285f43b9d2f10ef7f88" %}
+{% set version = "3.0.0a3" %}
+{% set sha256 = "9ec987442b153d45034755629d702252c3412fa8e3baf7489107a2929d195979" %}
 
 package:
-  name: {{ name|lower }}
+  name: khmer
   version: {{ version }}
 
 source:
-  fn: v{{ version }}.tar.gz
   url: https://github.com/dib-lab/khmer/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256hash }}
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Inject-compiler-and-flags-for-third-party-compilation.patch
 
 build:
-  number: 0
+  number: 1
+  skip: True  # [py<30]
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   build:
-    - gcc  # [not osx]
-    - llvm  # [osx]
+    - {{ compiler("c") }}
+    - {{ compiler("cxx") }}
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
     - python
-    - cython
-    - setuptools
-    - screed >=1.0
-    - bz2file
-    - pytest-runner
-
+    - pip
+    - setuptools >=18.0
+    - Cython >=0.25.2
+    - bzip2
+    - zlib
   run:
-    - libgcc  # [not osx]
     - python
     - screed >=1.0
     - bz2file
+    - bzip2
+    - zlib
 
 test:
-  # Python imports
   imports:
     - khmer
     - khmer.tests
@@ -41,8 +45,9 @@ test:
 about:
   home: https://khmer.readthedocs.io/
   license: BSD License
-  summary: 'khmer k-mer counting library'
   license_family: BSD
+  summary: khmer k-mer counting library
+  dev_url: https://github.com/dib-lab/khmer
 
 extra:
   identifiers:

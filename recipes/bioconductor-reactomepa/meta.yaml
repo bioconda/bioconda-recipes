@@ -1,45 +1,58 @@
-{% set version = "1.22.0" %}
+{% set version = "1.32.0" %}
 {% set name = "ReactomePA" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 824d7201a42378397661683075768e83b46b0de3aa382e1e31735fc08796937d
+  md5: 71580e01eeedfa438b23276ecfbc6d55
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle, clusterProfiler, knitr, org.Hs.eg.db, prettydoc, testthat
 requirements:
-  build:
-    - bioconductor-annotationdbi
-    - 'bioconductor-dose >=3.0.0'
-    - bioconductor-graphite
-    - bioconductor-reactome.db
+  host:
+    - 'bioconductor-annotationdbi >=1.50.0,<1.51.0'
+    - 'bioconductor-dose >=3.14.0,<3.15.0'
+    - 'bioconductor-enrichplot >=1.8.0,<1.9.0'
+    - 'bioconductor-graphite >=1.34.0,<1.35.0'
+    - 'bioconductor-reactome.db >=1.70.0,<1.71.0'
     - r-base
+    - r-ggplot2
+    - r-ggraph
     - r-igraph
   run:
-    - bioconductor-annotationdbi
-    - 'bioconductor-dose >=3.0.0'
-    - bioconductor-graphite
-    - bioconductor-reactome.db
+    - 'bioconductor-annotationdbi >=1.50.0,<1.51.0'
+    - 'bioconductor-dose >=3.14.0,<3.15.0'
+    - 'bioconductor-enrichplot >=1.8.0,<1.9.0'
+    - 'bioconductor-graphite >=1.34.0,<1.35.0'
+    - 'bioconductor-reactome.db >=1.70.0,<1.71.0'
     - r-base
+    - r-ggplot2
+    - r-ggraph
     - r-igraph
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: 'This package provides functions for pathway analysis based on REACTOME pathway database. It implements enrichment analysis, gene set enrichment analysis and several functions for visualization.'
-
+  summary: 'Reactome Pathway Analysis'
+  description: 'This package provides functions for pathway analysis based on REACTOME pathway database. It implements enrichment analysis, gene set enrichment analysis and several functions for visualization.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 extra:
   identifiers:
     - biotools:reactomepa
+  parent_recipe:
+    name: bioconductor-reactomepa
+    path: recipes/bioconductor-reactomepa
+    version: 1.24.0
+

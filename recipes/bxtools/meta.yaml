@@ -1,41 +1,46 @@
-{% set version="0.0" %}
-{% set revision="bdf2982" %}
+{% set version="0.1.0" %}
+
 package:
-  name: bxtools 
+  name: bxtools
   version: {{ version }}
 
 build:
   number: 1
 
-extra:
-  # Needs to do recursive Git clone to get sub modules
-  # and has not done any releases yet
-  skip-lints:
-    - uses_git_url
-
 source:
-  git_url: https://github.com/walaj/bxtools
-  git_rev: {{ revision }}
-  md5: unused
+  - url: https://github.com/walaj/bxtools/archive/{{ version }}.tar.gz
+    sha256: 2ea08a71cb3914141970948340750a6e642c167affd5f3b503ed7bf1c5fd9217
+  - url: https://github.com/walaj/SeqLib/archive/f19055cefcd8f41f13450080bbcf453f692278b2.tar.gz
+    sha256: 7e708710649789fd3c451daa1cb0761e383005362f582b95669ea0d4fdc59777
+    folder: SeqLib
+  - url: https://github.com/walaj/bwa/archive/c02766e3c34ac3f4af9842e20a54b7f9f4b36d0b.tar.gz
+    sha256: 023ccd462a9d2df24c8dd23e42180081a0800134cac2307ac117c21b0ae0ea8c
+    folder: SeqLib/bwa
+  - url: https://github.com/walaj/fermi-lite/archive/5bc90f8d70e2b66184eccbd223a3be714c914365.tar.gz
+    sha256: 58c066239929f48383044fde68ba164bdd15edb2ff0603cdcd6c3fe095171008
+    folder: SeqLib/fermi-lite
+  - url: https://github.com/samtools/htslib/archive/6c06833519551eb61d4e5b9aceb2383e21996930.tar.gz
+    sha256: 79589561b1a6f0cc1b778d5e6c53ce667778c3a3cdec4f85e578b9a9fe81bbfa
+    folder: SeqLib/htslib
 
 requirements:
   build:
-    - gcc
-    - backports.lzma
-    - bzip2 {{ CONDA_BZIP2 }}*
-    - zlib {{ CONDA_ZLIB }}*
-    - xz {{ CONDA_XZ }}*
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - bzip2
+    - zlib
+    - xz
   run:
-    - libgcc
-    - bzip2 {{ CONDA_BZIP2 }}*
-    - zlib {{ CONDA_ZLIB }}*
-    - xz {{ CONDA_XZ }}*
+    - bzip2
+    - zlib
+    - xz
 
 test:
-    commands:
-      - bxtools --help
+  commands:
+    - bxtools --help
 
 about:
-    home: https://github.com/walaj/bxtools
-    license: GPLv3
-    summary: Tools for analyzing 10X Genomics data
+  home: https://github.com/walaj/bxtools
+  license: GPLv3
+  summary: Tools for analyzing 10X Genomics data

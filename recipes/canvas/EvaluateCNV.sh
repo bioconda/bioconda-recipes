@@ -1,5 +1,5 @@
 #!/bin/bash
-# EvaluateCNV wrapper script for anaconda mono installation
+# EvaluateCNV wrapper script for external dotnet installation
 
 set -o pipefail
 
@@ -15,6 +15,6 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 ENV_PREFIX="$(dirname $(dirname $(dirname $(dirname $DIR))))"
 # Use mono installed with Anaconda
-mono="$ENV_PREFIX/bin/mono"
+#mono="$ENV_PREFIX/bin/mono"
 
-exec $mono ${DIR}/EvaluateCNV.dll "$@"
+exec dotnet ${DIR}/EvaluateCNV.dll "$@"

@@ -1,71 +1,49 @@
+{% set version = "2.7.8" %}
+{% set sha256 = "02aa297f602b55587782c959379cada8d8b0570973da75eb9f5786089a3ed485" %}
+
 package:
   name: ddocent
-  version: '2.3.8'
+  version: '{{ version }}'
 
 source:
-  fn: v2.3.8.zip
-  sha256: 540abc1d7c0f77bcf20835ef764ce3db6956719083d058cd2939433331215fb3
-  url: https://github.com/jpuritz/dDocent/archive/v2.3.8.zip
-
+  url: https://github.com/jpuritz/dDocent/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 build:
-  number: 0
-  skip: True # [osx]
-  string: bamtools{{CONDA_BAMTOOLS}}_{{PKG_BUILDNUM}}
+  number: 3
+  noarch: generic
 
 requirements:
   build:
-    - gcc #  [unix]
-    - curl
-    - cmake
-    - freebayes
-    - gawk
-    - stacks
-    - trimmomatic
-    - mawk
-    - bwa
-    - samtools 
-    - vcftools ==0.1.14
-    - rainbow
-    - seqtk
-    - cd-hit
-    - bedtools ==2.26.0
-    - vcflib
-    - gnuplot
-    - parallel
-    - bamtools {{ CONDA_BAMTOOLS }}*
-    - openjdk
-    - pear
-    - unzip
+  host:
   run:
-    - libgcc # [unix]
+    - fastp
+    - seqtk >=1.3
+    - coreutils >=8.22
     - curl
-    - cmake
     - freebayes
-    - gawk
-    - stacks
-    - trimmomatic
     - mawk
     - bwa
     - samtools
-    - vcftools ==0.1.14
+    - vcftools >=0.1.15
     - rainbow
-    - seqtk
     - cd-hit
-    - bedtools ==2.26.0
+    - bedtools >=2.26.0
     - vcflib
     - gnuplot
     - parallel
-    - bamtools {{ CONDA_BAMTOOLS }}*
-    - openjdk
     - pear
     - unzip
     - grep
-    
-test:
-    commands:
-        - "dDocent --help"
-about:
-    home: "http://ddocent.com"
-    license: "The MIT License (MIT)"
-    summary: " dDocent is  an interactive bash wrapper to QC, assemble, map, and call SNPs from all types of RAD data"
+    - sed
 
+test:
+  commands:
+    - "dDocent --help"
+about:
+  home: "http://ddocent.com"
+  license: "The MIT License (MIT)"
+  summary: " dDocent is  an interactive bash wrapper to QC, assemble, map, and call SNPs from all types of RAD data"
+
+extra:
+  container:
+    extended-base: True

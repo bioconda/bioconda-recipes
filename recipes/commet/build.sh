@@ -3,7 +3,7 @@
 mkdir -p ${PREFIX}/bin
 
 # installation
-make
+make CC=$CXX CFLAGS="$CXXFLAGS -Iinclude -L${PREFIX}/lib"
 
 # copy binaries and scripts
 cp Commet.py ${PREFIX}/bin

@@ -1,27 +1,30 @@
 package:
   name: htseq
-  version: "0.6.1.post1"
+  version: 0.6.1.post1
 
 source:
-  fn: HTSeq-0.6.1p1.tar.gz
   url: https://pypi.python.org/packages/source/H/HTSeq/HTSeq-0.6.1p1.tar.gz
   md5: c44d7b256281a8a53b6fe5beaeddd31c
 
 build:
-  preserve_egg_dir: True
-  number: 1
-  skip: True # [not py27]
+  number: 5
+  skip: True # [py>=30]
+  script: |
+    sed -i.bak 's/0\.6\.1p1/0.6.1.post1/' PKG-INFO VERSION HTSeq/_version.py
+    {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - pip
     - python
-    - setuptools
     - numpy
-
   run:
     - python
-    - numpy
-    - matplotlib
+    - {{ pin_compatible('numpy') }}
+    - matplotlib-base
     - pysam
 
 test:
@@ -32,7 +35,6 @@ test:
     - HTSeq._version
     - HTSeq.scripts.qa
     - HTSeq.scripts.count
-
 
   commands:
     - htseq-count -h

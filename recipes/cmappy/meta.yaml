@@ -1,36 +1,36 @@
-{% set version = "3.2.0" %}
+{% set version = "4.0.1" %}
+{% set sha256 = "ecd6349a2de743176f12cd36019844ed1dd45bdb4f45e125d260675bb219ad90" %}
 
 package:
   name: cmappy
-  version: {{ version }}
+  version: '{{version}}'
 
 source:
-  fn: cmapPy-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/c/cmappy/cmapPy-{{ version }}.tar.gz
-  sha256: 895a0f85efb6d8e04d6c8b4750d9cefe4e0b46d7019db3bc0c10b975e539d109
+  sha256: ecd6349a2de743176f12cd36019844ed1dd45bdb4f45e125d260675bb219ad90
 
 build:
-  skip: True  # [not py27] 
   entry_points:
     - gctx2gct=cmapPy.pandasGEXpress.gctx2gct:main
     - gct2gctx=cmapPy.pandasGEXpress.gct2gctx:main
-    - concat_gctoo=cmapPy.pandasGEXpress.concat_gctoo:main
-    - slice_gct=cmapPy.pandasGEXpress.slice_gct:main
-  number: 0
- 
+    - concat=cmapPy.pandasGEXpress.concat:main
+    - subset=cmapPy.pandasGEXpress.subset:main
+  number: 1
+  skip: True  # [py<30]
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
+
 requirements:
-   build:
-     - python
-     - setuptools
-   run:
-     - python
-     - numpy >=1.11.2
-     - pandas >=0.18
-     - h5py >=2.6.0
-     - requests >=2.13.0
-     # pandas package currently misses C++ runtime lib dependencies:
-     - libgcc  # [not osx]
-     - libcxx  # [osx]
+  build:
+    - {{ compiler("cxx") }}
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - numpy >=1.11.2
+    - pandas >=0.18
+    - h5py >=2.6.0
+    - requests >=2.13.0
 
 test:
   imports:
@@ -42,9 +42,11 @@ test:
     - gctx2gct --help
     - gct2gctx --help
     - concat --help
+    - subset --help
 
 about:
   home: https://github.com/cmap/cmapPy
   license: BSD 3-clause
-  summary: 'Assorted tools for interacting with .gct, .gctx, .grp, and .gmt files as well as other Connectivity Map (Broad Institute) data/tools'
   license_family: BSD
+  summary: Assorted tools for interacting with .gct, .gctx, .grp, and .gmt files as
+    well as other Connectivity Map (Broad Institute) data/tools

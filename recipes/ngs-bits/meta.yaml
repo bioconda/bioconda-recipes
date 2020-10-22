@@ -1,4 +1,4 @@
-{% set version = "2018_04" %}
+{% set version = "2020_09" %}
 
 package:
   name: ngs-bits
@@ -8,30 +8,42 @@ build:
   number: 0
 
 source:
-  git_rev: ngs-bits-{{ version }}.tgz
   url: https://github.com/imgag/ngs-bits/releases/download/{{ version }}/ngs-bits-{{ version }}.tgz
-  sha256: a462403bed98de7c7b09558f61841ce5227c69721058ed356f4689795e07661b
+  sha256: 671a048358b701f8b6ef131494dac0bedec19acb52da1423d93b41f08d550401
 
 requirements:
   build:
-    - bzip2 {{ CONDA_BZIP2 }}*
-    - xz {{ CONDA_XZ }}*
-    - zlib {{ CONDA_ZLIB }}*
-    - gcc   # [linux]
-    - llvm  # [osx]
-    - qt >=5.5.0
-    - htslib {{CONDA_HTSLIB}}*
+    - {{ compiler('cxx') }}
+    - {{ cdt('mesa-libgl-devel') }}
+    - {{ cdt('mesa-dri-drivers') }}
+    - {{ cdt('libselinux') }}
+    - {{ cdt('libxdamage') }}
+    - {{ cdt('libxxf86vm') }}
+    - {{ cdt('libxfixes') }}
+  host:
+    - bzip2
+    - xz
+    - zlib
+    - qt
+    - htslib
+    - xorg-libxfixes  # [linux]
   run:
-    - bzip2 {{ CONDA_BZIP2 }}*
-    - xz {{ CONDA_XZ }}*
-    - zlib {{ CONDA_ZLIB }}*
-    - libgcc  # [linux]
+    - bzip2
+    - xz
+    - zlib
     - python
-    - matplotlib
-    - qt >=5.5.0
-    - htslib {{CONDA_HTSLIB}}*
+    - matplotlib-base
+    - qt
+    - htslib
+
+extra:
+  container:
+    extended-base: True
 
 about:
   home: https://github.com/imgag/ngs-bits
   license: MIT license
+  license_file: LICENSE
   summary: Short-read sequencing tools
+
+#For libGL dependency docu see: https://conda-forge.org/docs/maintainer/knowledge_base.html#core-dependency-tree-packages-cdt

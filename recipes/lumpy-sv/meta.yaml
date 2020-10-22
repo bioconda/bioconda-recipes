@@ -1,50 +1,41 @@
+{% set version = '0.3.1' %}
 
 package:
   name: lumpy-sv
-  version: 0.2.14a
+  version: {{ version }}
 
 source:
-  git_url: https://github.com/arq5x/lumpy-sv.git
-  git_tag: c1bcea1
-  #fn: lumpy-sv-v0.2.13.tar.gz
-  #url: https://github.com/arq5x/lumpy-sv/releases/download/0.2.13/lumpy-sv-v0.2.13.tar.gz
-  #sha256: 1a7a5d18875b297acaa68ee1e864ca048654ebc85348920b518dc689d2b7a3cf
+  url: https://github.com/arq5x/lumpy-sv/archive/v{{ version }}.tar.gz
+  sha256: 6a75dffafd238417011416c62d4351f64ea71bd018b5a7660383566f2cbb7c5d
+  patches:
+    - patch
 
 build:
   number: 1
-  skip: True # [not py27]
+  noarch: generic
 
 requirements:
-  build:
-    - zlib {{CONDA_ZLIB}}*
-    - gcc
-    - autoconf
-    - automake
-    - curl
-
   run:
-    - zlib {{CONDA_ZLIB}}*
-    - python
+    - lumpy-sv-minimal {{ version }}
+    - htslib
+    - python 2.7.*
     - samtools
     - gawk
-    - libgcc
-    - curl
     - pysam
     - numpy
+    - util-linux  #contains hexdump
+    - sambamba  #lumpy-express dependency
+    - samblaster  #lumpy-express dependency
+    - bamkit  #lumpy-express dependency
 
 test:
-    commands:
-      - 'lumpy 2>&1 | grep -q structural'
-      - 'lumpy_filter 2>&1 | grep -q lumpy_filter\:\ usage'
-      - 'lumpyexpress 2>&1 | grep -q lumpyexpress'
+  commands:
+    - 'lumpy 2>&1 | grep -q structural'
+    - 'lumpy_filter 2>&1 | grep -q lumpy_filter\:\ usage'
+    - 'lumpyexpress 2>&1 | grep -q lumpyexpress'
+    - extractSplitReads_BwaMem --help
 
 about:
-    home: https://github.com/arq5x/lumpy-sv
-    license: MIT
-    summary: a general probabilistic framework for structural variant discovery
-
-extra:
-  skip-lints:
-    # Use recursive git clone
-    - uses_git_url
-    - missing_hash
+  home: https://github.com/arq5x/lumpy-sv
+  license: MIT
+  summary: a general probabilistic framework for structural variant discovery

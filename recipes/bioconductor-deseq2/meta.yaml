@@ -1,74 +1,75 @@
-{% set version = "1.18.1" %}
+{% set version = "1.28.0" %}
 {% set name = "DESeq2" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: bb6a175217f3aea72003457f092df029800d20d2087444776db774a0c3abd1c7
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 701bb6219ca39952e85f729d967a24b9
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: testthat, knitr, rmarkdown, vsn, pheatmap, RColorBrewer, apeglm, ashr, tximport, tximeta, tximportData, readr, pbapply, airway, pasilla (>= 0.2.10)
 requirements:
-  build:
-    - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.7.5'
-    - 'bioconductor-biocparallel >=1.12.0'
-    - bioconductor-genefilter
-    - bioconductor-geneplotter
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - 'bioconductor-s4vectors >=0.9.25'
-    - 'bioconductor-summarizedexperiment >=1.8.0'
+  host:
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
+    - 'bioconductor-genefilter >=1.70.0,<1.71.0'
+    - 'bioconductor-geneplotter >=1.66.0,<1.67.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
     - r-base
     - r-ggplot2
-    - r-hmisc
-    - 'r-lazyeval >=0.2.0'
     - r-locfit
     - 'r-rcpp >=0.11.0'
     - r-rcpparmadillo
-    - gcc  # [linux]
-    - llvm  # [osx]
+    - libblas
+    - liblapack
   run:
-    - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.7.5'
-    - 'bioconductor-biocparallel >=1.12.0'
-    - bioconductor-genefilter
-    - bioconductor-geneplotter
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - 'bioconductor-s4vectors >=0.9.25'
-    - 'bioconductor-summarizedexperiment >=1.8.0'
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
+    - 'bioconductor-genefilter >=1.70.0,<1.71.0'
+    - 'bioconductor-geneplotter >=1.66.0,<1.67.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
     - r-base
     - r-ggplot2
-    - r-hmisc
-    - 'r-lazyeval >=0.2.0'
     - r-locfit
     - 'r-rcpp >=0.11.0'
     - r-rcpparmadillo
-    # optional dependencies
-    - bioconductor-tximport
-    - r-rjson
-    - r-hmisc
-    - r-getopt
-    - r-gplots
-
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'LGPL (>= 3)'
-  summary: 'Estimate variance-mean dependence in count data from high-throughput sequencing assays and test for differential expression based on a model using the negative binomial distribution.'
-
+  summary: 'Differential gene expression analysis based on the negative binomial distribution'
+  description: 'Estimate variance-mean dependence in count data from high-throughput sequencing assays and test for differential expression based on a model using the negative binomial distribution.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
 extra:
   identifiers:
     - biotools:deseq2
     - doi:10.1186/s13059-014-0550-8
+    - usegalaxy-eu:deseq2
+  parent_recipe:
+    name: bioconductor-deseq2
+    path: recipes/bioconductor-deseq2
+    version: 1.20.0
+

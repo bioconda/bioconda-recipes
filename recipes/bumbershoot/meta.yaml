@@ -1,5 +1,5 @@
-{% set version = "3_0_11579" %}
-{% set buildid = "512555" %}
+{% set version = "3_0_20295_bfe5db0" %}
+{% set buildid = "1148131" %}
 {% set root = "pwiz_tools/Bumbershoot/" %}
 {% set targets = root~"myrimatch//install "~root~"directag//install "~root~"tagrecon//install "~root~"idpicker//install "~root~"pepitome//install "~root~"quameter//install" %}
 
@@ -9,17 +9,21 @@ package:
 
 source:
   url: http://teamcity.labkey.org/guestAuth/repository/download/ProteoWizard_BumbershootUpdateBioconda/{{ buildid }}:id/bumbershoot-src-without-t-{{ version }}.tar.bz2
-  sha256: b48d4074ce1492b2eff2baa5001dd28ebd2c44af77e15f3a58aaa0b9075082ef
+  sha256: 672dcc67b1c959b637dc5ccb1f19ad90485dfd0c1ec278a0ea3f5e7fbe981261
 
 build:
-  script: bash -c "./quickbuild.sh -j{{ CPU_COUNT }} address-model=64 runtime-link=shared {{ targets }} && cp build-linux-x86_64/gcc-release-x86_64/* $PREFIX/bin"
-  skip: True # [osx]
+  number: 0
+  script:
+    - 'echo "using gcc : : ${GXX} ;" > site-config.jam'
+    - "./quickbuild.sh -j{{ CPU_COUNT }} address-model=64 runtime-link=shared {{ targets }} --site-config=site-config.jam"
+    - "mkdir -p $PREFIX/bin"
+    - "cp build-linux-x86_64/gcc-release-x86_64/* $PREFIX/bin"
+  skip: True  # [osx]
 
 requirements:
   build:
-    - gcc   # [linux]
+    - {{ compiler('cxx') }}
   run:
-    - libgcc # [linux]
 
 
 about:
@@ -33,4 +37,4 @@ test:
     - directag --help
     - quameter --help
     - pepitome --help
-
+    - idpQuery 2>&1 | grep "Not enough arguments"

@@ -1,35 +1,38 @@
-{% set version = "2.6.6" %}
+{% set version = "2.16.0" %}
 {% set name = "DiffBind" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 77ee6153d3756247bb230cdfd70efaee75f6a3c736e4697474129e83ad81a5ea
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 2d617d6e6245d4ff697004185c9778d7
 build:
-  number: 0
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: DESeq, BiocStyle, testthat
+# SystemRequirements: GNU make
 requirements:
-  build:
-    - bioconductor-biocparallel
-    - bioconductor-deseq2
-    - bioconductor-edger
-    - bioconductor-genomicalignments
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-limma
-    - bioconductor-rsamtools
-    - bioconductor-s4vectors
-    - bioconductor-summarizedexperiment
-    - bioconductor-systempiper
-    - bioconductor-zlibbioc
+  host:
+    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
+    - 'bioconductor-deseq2 >=1.28.0,<1.29.0'
+    - 'bioconductor-edger >=3.30.0,<3.31.0'
+    - 'bioconductor-genomicalignments >=1.24.0,<1.25.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-limma >=3.44.0,<3.45.0'
+    - 'bioconductor-rhtslib >=1.20.0,<1.21.0'
+    - 'bioconductor-rsamtools >=2.4.0,<2.5.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
+    - 'bioconductor-systempiper >=1.22.0,<1.23.0'
+    - 'bioconductor-apeglm >=1.10.0'
     - r-amap
     - r-base
     - r-dplyr
@@ -40,21 +43,24 @@ requirements:
     - r-locfit
     - r-rcolorbrewer
     - r-rcpp
-    - gcc  # [linux]
-    - llvm  # [osx]
+    - libblas
+    - liblapack
+    - xorg-libxt
+    - fonts-conda-ecosystem
   run:
-    - bioconductor-biocparallel
-    - bioconductor-deseq2
-    - bioconductor-edger
-    - bioconductor-genomicalignments
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-limma
-    - bioconductor-rsamtools
-    - bioconductor-s4vectors
-    - bioconductor-summarizedexperiment
-    - bioconductor-systempiper
-    - bioconductor-zlibbioc
+    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
+    - 'bioconductor-deseq2 >=1.28.0,<1.29.0'
+    - 'bioconductor-edger >=3.30.0,<3.31.0'
+    - 'bioconductor-genomicalignments >=1.24.0,<1.25.0'
+    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
+    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - 'bioconductor-limma >=3.44.0,<3.45.0'
+    - 'bioconductor-rhtslib >=1.20.0,<1.21.0'
+    - 'bioconductor-rsamtools >=2.4.0,<2.5.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
+    - 'bioconductor-systempiper >=1.22.0,<1.23.0'
+    - 'bioconductor-apeglm >=1.10.0'
     - r-amap
     - r-base
     - r-dplyr
@@ -65,15 +71,26 @@ requirements:
     - r-locfit
     - r-rcolorbrewer
     - r-rcpp
-    - libcxx # [osx]
+    - xorg-libxt
+    - fonts-conda-ecosystem
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Compute differentially bound sites from multiple ChIP-seq experiments using affinity (quantitative) data. Also enables occupancy (overlap) analysis and plotting functions.'
-
+  summary: 'Differential Binding Analysis of ChIP-Seq Peak Data'
+  description: 'Compute differentially bound sites from multiple ChIP-seq experiments using affinity (quantitative) data. Also enables occupancy (overlap) analysis and plotting functions.'
 extra:
   identifiers:
     - biotools:diffbind
+    - usegalaxy-eu:diffbind
+  parent_recipe:
+    name: bioconductor-diffbind
+    path: recipes/bioconductor-diffbind
+    version: 2.8.0
+

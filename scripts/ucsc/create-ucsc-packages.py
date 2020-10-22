@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import os
 import re
 import sys
 import yaml
 from textwrap import dedent
 import tarfile
-from conda.fetch import download
+import urllib.request
 
 # e.g., "========   addCols   ===================================="
 re_header = re.compile(r'^=+\s+(?P<program>\w+)\s+=+$')
@@ -63,10 +63,14 @@ tarball = (
     'http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{0}.src.tgz'
     .format(VERSION))
 if not os.path.exists(os.path.basename(tarball)):
-    download(tarball, os.path.basename(tarball))
-download(
-    'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/FOOTER',
-    'FOOTER')
+    f = urllib.request.urlopen(tarball)
+    of = open(os.path.basename(tarball), "wb")
+    of.write(f.read())
+    of.close()
+f = urllib.request.urlopen('http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/FOOTER')
+of = open("FOOTER", "wb")
+of.write(f.read())
+of.close()
 
 # Different programs are built under different subdirectories in the source. So
 # get a directory listing of the tarball
@@ -87,22 +91,19 @@ def program_subdir(program, names):
     return top.replace('./userApps/', '')
 
 
-meta_template = open('template-meta.yaml').read()
-build_template = open('template-build.sh').read()
-test_template = open('template-run_test.sh').read()
-
 # relative to where this file lives
 recipes_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'recipes')
 
 # Mismatches between what is parsed from FOOTER and where a program lives in
 # the source
 problematic = {
-    'LiftSpec': 'liftSpec',
+#    'LiftSpec': 'liftSpec',
 }
 
 # Mismatches between the header and the summary; keys are the program name in
 # the header and values are the dir in the source code.
 resolve_header_and_summary_conflicts = {
+    'cpg_lh': 'cpglh',
     'rmFaDups': 'rmFaDups',
     'bedJoinTabOffset': 'bedJoinTabOffset',
     'webSync': 'webSync',
@@ -173,6 +174,19 @@ manual_descriptions = {
         """
         transform a psl format file to a bed format file.
         """),  # note for those keeping track, s/tranform/transform
+
+    'paraNodeStop': dedent(
+        """
+        Shut down parasol node daemons on a list of machines
+        """),
+
+    'parasol': dedent(
+        """
+        Parasol is the name given to the overall system for managing jobs on
+        a computer cluster and to this specific command.  This command is
+        intended primarily for system administrators.  The 'para' command
+        is the primary command for users.
+        """),
 }
 
 # programs listed in FOOTER that should not be considered a "ucsc utility"
@@ -193,14 +207,30 @@ custom_build_scripts = {
     'pslMap': 'template-build-with-stringify.sh',
     'overlapSelect': 'template-build-with-stringify.sh',
     'expMatrixToBarchartBed': 'template-build-cp.sh',
+    'gensub2': 'template-build-parasol.sh',
+    'para': 'template-build-parasol.sh',
+    'paraHub': 'template-build-parasol.sh',
+    'paraHubStop': 'template-build-parasol.sh',
+    'paraNode': 'template-build-parasol.sh',
+    'paraNodeStart': 'template-build-parasol.sh',
+    'paraNodeStop': 'template-build-parasol.sh',
+    'paraNodeStatus': 'template-build-parasol.sh',
+    'parasol': 'template-build-parasol.sh',
+    'paraTestJob': 'template-build-parasol.sh',
+    'bedJoinTabOffset': 'template-build-cp-short.sh',
+    'webSync': 'template-build-cp-short.sh',
 }
 
 custom_tests = {
     'expMatrixToBarchartBed': 'template-run_test-exit1.sh',
+    'bedJoinTabOffset': 'template-run_test-exit1.sh',
+    'webSync': 'template-run_test-exit1.sh',
 }
 
 custom_meta = {
     'expMatrixToBarchartBed': 'template-meta-with-python.yaml',
+    'bedJoinTabOffset': 'template-meta-with-python.yaml',
+    'webSync': 'template-meta-with-python.yaml',
 }
 
 
@@ -241,8 +271,6 @@ for block in parse_footer('FOOTER'):
     # conda package names must be lowercase
     package = 'ucsc-' + program.lower()
     recipe_dir = os.path.join(recipes_dir, package)
-    if not os.path.exists(recipe_dir):
-        os.makedirs(recipe_dir)
 
     # Identify the subdirectory we need to go to in the build script. In some
     # cases it may not exist, in which case we expect a custom build script.
@@ -250,6 +278,9 @@ for block in parse_footer('FOOTER'):
     if subdir is None and program not in custom_build_scripts:
         sys.stderr.write(" Skipping {0} ".format(program))
         continue
+
+    if not os.path.exists(recipe_dir):
+        os.makedirs(recipe_dir)
 
     # Fill in templates and write them to recipe dir
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:

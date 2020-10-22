@@ -2,68 +2,63 @@
 {% set version = "1.1.3" %}
 {% set sha256 = "3b89623fcbef71193503adce5ea05fb62f4c1d9cb46c599705942a06ccfb8e87" %}
 
-about:
-    summary: The Short Reads Assembly into Haplotypes (ShoRAH) program for inferring viral haplotypes from NGS data
-    home: https://github.com/cbg-ethz/{{ name }}
-    license: GPLv3
-    license_family: GPL3
-
 package:
-    name: {{ name|lower }}
-    version: {{ version }}
-
-build:
-    number: 1
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-    fn: {{ name }}-{{ version }}.tar.bz2
-    url: https://github.com/cbg-ethz/shorah/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.bz2
-    sha256: {{ sha256 }}
+  url: https://github.com/cbg-ethz/shorah/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.bz2
+  sha256: {{ sha256 }}
+
+build:
+  number: 7
+  script:
+    - ./configure --prefix="${PREFIX}" PYTHON="${PYTHON}" PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfigs
+    - make install
 
 requirements:
-    build:
-     - gcc # [linux]
-     - llvm # [osx]
-     - python
-     - pkgconfig
-     - gsl {{ CONDA_GSL }}*
-     - zlib {{ CONDA_ZLIB }}*
-    run:
-     - perl
-     - python
-     - samtools
-     - biopython
-     - numpy
-     - gsl {{ CONDA_GSL }}*
-     - zlib {{ CONDA_ZLIB }}*
+  build:
+    - {{ compiler('cxx') }}
+    - pkg-config
+  host:
+    - python
+    - gsl
+    - zlib
+    - blas {{ blas }}
+  run:
+    - perl
+    - python
+    - samtools
+    - biopython
+    - numpy
+    - gsl
+    - zlib
+    - blas {{ blas }}
 
 test:
-  imports:
-     - shorah_dec
-     - shorah_mm
-     - shorah_snv
-
+  source_files:
+  - examples/amplicon_test/reference.fasta
+  - examples/amplicon_test/ampli_sorted.bam
   commands:
-    - shorah.py -h
-    - dec.py -h
-    - mm.py -h
-    - snv.py -h
-    - amplian.py -h 
-    - fas2read.pl -h
+  - shorah.py -h
+  - dec.py -h
+  - mm.py -h
+  - snv.py -h
+  - amplian.py -h
+  - fas2read.pl -h
+  - contain -h
+  - b2w -h
+  - diri_sampler -h
+  - freqEst -h
+  - ([[ -d examples/amplicon_test/ ]]&&cp -r examples/amplicon_test ./||cp -r /usr/local/share/shorah/amplicon_test ./;cd amplicon_test/;amplian.py -f reference.fasta -b ampli_sorted.bam); rm -rf amplicon_test/
 
-    - contain -h
-    - b2w -h
-    - diri_sampler -h
-    - freqEst -h
-
-#    # quick test skipped to shave off a few seconds of CircleCi's runtime
-#    - amplian.py -b examples/amplicon_test/ampli_sorted.bam -f examples/amplicon_test/reference.fasta
-#
-#  source_files:
-#    - examples/amplicon_test/ampli_sorted.bam
-#    - examples/amplicon_test/reference.fasta
-    
+about:
+  summary: The Short Reads Assembly into Haplotypes (ShoRAH) program for inferring viral haplotypes from NGS data
+  home: https://github.com/cbg-ethz/{{ name }}
+  license: GPLv3
+  license_family: GPL3
+  license_file: LICENSE
 
 extra:
   identifiers:
-    - biotools:shorah
+  - biotools:shorah

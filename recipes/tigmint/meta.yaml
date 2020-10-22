@@ -1,0 +1,49 @@
+{% set name = "tigmint" %}
+{% set version = "1.2.1" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/bcgsc/tigmint/archive/{{ version }}.tar.gz
+  sha256: d0220f2b5b9e8c7ec4f34efb223e04954fe3d741d099a92f7ed0c59c831b8420
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv; cp bin/*py ${PREFIX}/bin"
+
+requirements:
+  host:
+    - pip
+    - python >=3
+  run:
+    - python >=3
+    - intervaltree
+    - make
+    - pybedtools
+    - pysam
+    - minimap2
+
+test:
+  commands:
+    - make -f $(command -v tigmint-make) version | grep -q "{{ version }}"
+    - tigmint-cut --version | grep -q "{{ version }}"
+    - tigmint-molecule --version | grep -q "{{ version }}"
+    - long-to-linked --help
+
+about:
+  home: https://bcgsc.github.io/tigmint/
+  license: GNU General Public v3 (GPLv3)
+  license_family: GPL3
+#  license_file: LICENSE
+  summary: Correct misassemblies using linked reads
+  dev_url: https://github.com/bcgsc/tigmint
+  doc_url: https://github.com/bcgsc/tigmint#readme
+
+extra:
+  identifiers:
+    - doi:10.1101/304253
+  recipe-maintainers:
+    - sjackman

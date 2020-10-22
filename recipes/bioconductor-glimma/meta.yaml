@@ -1,43 +1,49 @@
-{% set version = "1.6.0" %}
+{% set version = "1.16.0" %}
 {% set name = "Glimma" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: f82f75d4b3ce484624b52e011c4b2ba0fc942915624eb523553b5ee23203c4a4
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 76d483028efb966ae5c763c4b1536102
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle, IRanges, GenomicRanges, SummarizedExperiment, DESeq2, limma, testthat, knitr, rmarkdown, pryr
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-edger
-    - bioconductor-s4vectors
+  host:
+    - 'bioconductor-edger >=3.30.0,<3.31.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
     - r-base
     - r-jsonlite
   run:
-    - bioconductor-biobase
-    - bioconductor-edger
-    - bioconductor-s4vectors
+    - 'bioconductor-edger >=3.30.0,<3.31.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
     - r-base
     - r-jsonlite
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL-3 | file LICENSE'
-  summary: 'This package generates interactive visualisations for analysis of RNA-sequencing data using output from limma, edgeR or DESeq2 packages in an HTML page. The interactions are built on top of the popular static representations of analysis results in order to provide additional information.'
-
+  summary: 'Interactive HTML graphics'
+  description: 'This package generates interactive visualisations for analysis of RNA-sequencing data using output from limma, edgeR or DESeq2 packages in an HTML page. The interactions are built on top of the popular static representations of analysis results in order to provide additional information.'
+  license_file: LICENSE
 extra:
   identifiers:
     - biotools:glimma
     - doi:10.1101/096107
+  parent_recipe:
+    name: bioconductor-glimma
+    path: recipes/bioconductor-glimma
+    version: 1.8.2
+

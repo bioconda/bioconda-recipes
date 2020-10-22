@@ -1,7 +1,6 @@
 #!/bin/bash
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    make no_omp
-else
-    make
-fi
-cp akt $PREFIX/bin
+make default \
+    CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+    CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+install -d "${PREFIX}/bin"
+install ./akt "${PREFIX}/bin/"

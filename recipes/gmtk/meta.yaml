@@ -2,17 +2,25 @@ package:
   name: gmtk
   version: "1.4.4"
 
+build:
+  number: 6
+  skip: True # [osx]
+
 source:
-  fn: gmtk-1.4.4.tar.gz
-  url: http://melodi.ee.washington.edu/downloads/gmtk/gmtk-1.4.4.tar.gz
+  url: https://depot.galaxyproject.org/software/gmtk/gmtk_1.4.4_src_all.tar.gz
   md5: aba3b8d26f5308ec21c1f2364263d132
 
 requirements:
   build:
-    - gcc
-    - automake
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - hdf5
+    - zlib
   run:
-    - libgcc
+    - {{ compiler('cxx') }}
+    - hdf5
+    - zlib
 
 test:
   commands:
@@ -22,3 +30,8 @@ about:
   home: http://melodi.ee.washington.edu/gmtk/
   license: OSL-3.0
   summary: 'A publicly available toolkit for rapidly prototyping statistical models using dynamic graphical models (DGMs) and dynamic Bayesian networks (DBNs)'
+
+extra:
+  skip-lints:
+    # Apparently this is needed during run time
+    - compilers_must_be_in_build

@@ -1,32 +1,23 @@
 {% set version="2.0" %}
 {% set hash="a721b7367a9a342163e8d848d34616419a8c32e4be5ababfaa4f5d7c02d8cfa1" %}
-# `gxx_*`/`gcc_*`/`clang_*` below should be replaced by `compiler("cxx")` with conda-build 3
-{% set gxx_version = "7.2.0" %}
-{% set clang_version = "4.0.1" %}
-
 
 package:
   name: stacks
   version: {{ version }}
 
 build:
-  number: 0
+  number: 2
 
 source:
-  fn: stacks-{{ version }}.tar.gz
   sha256: {{ hash }}
   url: http://catchenlab.life.illinois.edu/stacks/source/stacks-{{ version }}.tar.gz
 
 requirements:
   build:
-    - gcc_linux-64 {{ gxx_version }}  # [linux64]
-    - gxx_linux-64 {{ gxx_version }}  # [linux64]
-    - clangxx_osx-64 {{ clang_version }} # [osx]
-    - clang_osx-64 {{ clang_version }}   # [osx]
-    - zlib {{CONDA_ZLIB}}*
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
     - openmp  # [linux]
-    - llvm-openmp  # [osx]
-
   run:
     - perl
     - perl-bioperl-core
@@ -36,11 +27,8 @@ requirements:
     - python <3
     - velvet
     - samtools
-    - libgcc >={{ gxx_version }}  # [linux]
-    - libcxx >={{ clang_version }} # [osx]
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
     - openmp  # [linux]
-    - llvm-openmp  # [osx]
 
 test:
   commands:
@@ -63,7 +51,6 @@ test:
     - command -v extract_interpop_chars.pl
     - command -v integrate_alignments.py
     - command -v ref_map.pl
-#    - command -v stacks-gdb # Not usefull in production. Needs gdb dependency
 
 about:
   home: http://catchenlab.life.illinois.edu/stacks/

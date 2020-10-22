@@ -1,5 +1,8 @@
 #!/bin/bash
-cd HMMcopy
+
+# Source archive contains some macOS junk files,
+# which prevent hoisting the HMMcopy on Linux only.
+cd HMMcopy || true
 cmake .
 make
 mkdir -p $PREFIX/bin

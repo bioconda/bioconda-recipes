@@ -1,18 +1,10 @@
 #!/bin/bash
-set -euo pipefail
 
-# fix automake
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/aclocal
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/automake
-
-# fix autoconf
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autom4te
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoheader
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoreconf
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/ifnames
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoscan
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoupdate
-
+# Remove configure.ac C(XX)?FLAGS override
+sed -i.bak 's/ *CX\?X\?FLAGS/#\0/p' configure.ac
+# Remove MACOS_DEPLOYMENT_TARGET override
+sed -i.bak 's/MACOSX_DEPLOYMENT_TARGET=/#\0/' configure.ac
+sed -i.bak 's/export MACOSX_DEPLOYMENT_TARGET=/#\0/' src/Makefile.am
 
 ./autogen.sh
 ./configure --prefix=$PREFIX

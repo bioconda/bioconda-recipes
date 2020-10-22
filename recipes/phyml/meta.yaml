@@ -1,37 +1,29 @@
 {% set name = "PhyML" %}
-{% set version = "3.3.20170530" %}
-{% set sha256 = "f826726cd56b755be75f923abdf29aca8a9951d6af948cddbab40739a8f99f74" %}
+{% set version = "3.3.20200621" %}
+{% set sha256 = "a8243923ee08c74cab609a4b086ade66c6156fc2b24450e2a500108dc644c867" %}
 
 package:
   name: {{ name | lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name | lower }}-{{ version }}.tar.gz
   url: https://github.com/stephaneguindon/{{ name | lower }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    # remove broken include
-    - no_malloc_h.patch
-    # don't update version to current date
-    - pin_version.patch
 
 build:
   number: 0
 
 requirements:
   build:
-    - gcc   # [linux]
-    - llvm  # [osx]
+    - {{ compiler('c') }}
     - autoconf
     - automake
+    - libtool
     - pkg-config
-    - openmpi 2.*
-    - beagle-lib
+  host:
+    - openmpi
   run:
-    - libgcc   # [linux]
-    - openmpi 2.*
-    - beagle-lib
+    - openmpi
 test:
   requirements:
     - conda
@@ -50,10 +42,10 @@ test:
 about:
   home: http://www.atgc-montpellier.fr/phyml/
   dev_url: https://github.com/stephaneguindon/phyml/
-  license: GPLv2
+  license: GPL-3.0-only
   license_family: GPL
-  license_file: COPYING
-  summary: Phylogenetic estimation using (Maximum) Likelihood 
+  license_file: COPYING 
+  summary: Phylogenetic estimation using (Maximum) Likelihood
   description: |
     PhyML is a software that estimates maximum likelihood phylogenies from
     alignments of nucleotide or amino acid sequences. The main strength of
@@ -70,3 +62,5 @@ extra:
   identifiers:
     - biotools:phyml
     - doi:10.1093/sysbio/syq010
+  maintainers:
+    - epruesse

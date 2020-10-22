@@ -1,51 +1,42 @@
-{% set version = "1.1.9" %}
+{% set version = "2.0.2" %}
 
 package:
   name: secapr
   version: {{ version }}
 
 source:
-  fn: secapr_{{ version }}.tar.gz
   url: https://github.com/AntonelliLab/seqcap_processor/archive/v{{ version }}.tar.gz
-  sha256: ca80b1d8fa99e572ffe0a7a7c09f77cfa0f2701cb4ffeb21a6b1a4468640b059
+  sha256: 2812e5c278f190cb064dfd95c7bd3640414341d3712b938ec2a08bc730c3b96a
 
 build:
-  skip: True  # [not py27]
+  noarch: python
   number: 0
-  script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
   entry_points:
     - secapr = secapr.__main__:main
 
 requirements:
-  build:
+  host:
     - python
+    - pip
     - setuptools
-    - biopython
-    - pandas
-    - r-base
 
   run:
     - python
-    - biopython ==1.68
-    - emboss ==6.5.7
-    - bcftools ==1.8
-    - samtools ==0.1.19
-    - picard ==1.126
-    - seqtk >=1.0.82,<=1.2
-    - bwa >=0.7
-    - lastz
-    - mafft >=7.2
-    - muscle ==3.8.31
-    - trimmomatic ==0.33
+    - pandas
+    - matplotlib-base
+    - biopython
+    - trimmomatic
+    - fastqc
     - abyss
-    - trinity
-    - fastqc 0.11*
-    - pandas ==0.22.0
-    - numpy ==1.14
-    - cogent ==1.5.3
-    - r-base
-    - r-tidyverse
-    
+    - spades
+    - blast
+    - mafft
+    - muscle
+    - emboss
+    - bwa
+    - samtools
+
 test:
   imports:
     - secapr
@@ -56,4 +47,4 @@ about:
   home: 'https://github.com/AntonelliLab/seqcap_processor'
   license: MIT
   license_file: LICENSE
-  summary: 'Process sequence-capture FASTQ files into alignments for phylogenetic analyses. Integrates allele phasing, producing haplotype alignments.'
+  summary: 'Process sequence-capture FASTQ files into alignments for phylogenetic analyses. Integrates allele phasing.'

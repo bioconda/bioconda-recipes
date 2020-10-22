@@ -1,28 +1,28 @@
-{% set version = "1.7.6" %}
+{% set version = "1.16.0" %}
 {% set name = "SC3" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 9aa3703cf71fa5ad3fed2318788a3b33c90e6eadac5e63cab90495f883e3404e
+  md5: 747990dd40e05eb2a980dff2fce662ee
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: knitr, rmarkdown, mclust, scater
 requirements:
-  build:
-    - bioconductor-biocgenerics
-    - bioconductor-s4vectors
-    - bioconductor-singlecellexperiment
-    - bioconductor-summarizedexperiment
+  host:
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - 'bioconductor-singlecellexperiment >=1.10.0,<1.11.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
     - r-base
     - r-cluster
     - r-doparallel
@@ -38,13 +38,13 @@ requirements:
     - r-rrcov
     - r-shiny
     - r-writexls
-    - gcc  # [linux]
-    - llvm  # [osx]
+    - libblas
+    - liblapack
   run:
-    - bioconductor-biocgenerics
-    - bioconductor-s4vectors
-    - bioconductor-singlecellexperiment
-    - bioconductor-summarizedexperiment
+    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - 'bioconductor-singlecellexperiment >=1.10.0,<1.11.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
     - r-base
     - r-cluster
     - r-doparallel
@@ -60,14 +60,24 @@ requirements:
     - r-rrcov
     - r-shiny
     - r-writexls
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'A tool for unsupervised clustering and analysis of single cell RNA-Seq data.'
-
+  summary: 'Single-Cell Consensus Clustering'
+  description: 'A tool for unsupervised clustering and analysis of single cell RNA-Seq data.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:sc3
+  parent_recipe:
+    name: bioconductor-sc3
+    path: recipes/bioconductor-sc3
+    version: 1.8.0
+
