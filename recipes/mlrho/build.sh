@@ -1,4 +1,4 @@
 #!/bin/bash
 make
-cp mlRho $PREFIX/bin
-chmod +x $PREFIX/bin/mlRho
+mkdir -p "${PREFIX}/bin"
+cp mlRho "${PREFIX}/bin/"

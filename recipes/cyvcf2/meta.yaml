@@ -1,6 +1,6 @@
 {% set name = "cyvcf2" %}
-{% set version = "0.8.4" %}
-{% set sha256hash = "ab1a04a69e50d0d1dbabd5fd498e6f968dfa768f6c77096037318c31162b2360" %}
+{% set version = "0.20.9" %}
+{% set sha256hash = "5e4751c6f6ef6adbcdea2ff6b725c173b56b906576fc3bafde2d591a3d53b67e" %}
 
 package:
   name: {{ name|lower }}
@@ -9,9 +9,12 @@ package:
 source:
   url: https://github.com/brentp/cyvcf2/archive/v{{ version }}.tar.gz
   sha256: {{ sha256hash }}
+  patches:
+    # Link to htslib shipped by conda
+    - patches/setup.py.patch
 
 build:
-  number: 3
+  number: 0
 
 requirements:
   build:
@@ -22,6 +25,11 @@ requirements:
     - cython
     - numpy
     - zlib
+    - libcurl
+    # cyvcf2 can only link to the htslib version
+    # specified in conda_build_config.yaml
+    - htslib
+    - openssl
 
   run:
     - python
@@ -29,6 +37,11 @@ requirements:
     - zlib
     - coloredlogs
     - click
+    - libcurl
+    # htslib version fixed by conda_build_config.yaml
+    - htslib
+    - openssl
+    - pathlib2  # [py<34]
 
 test:
   imports:

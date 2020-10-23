@@ -1,38 +1,50 @@
-{% set version = "1.16.0" %}
+{% set version = "1.26.0" %}
 {% set name = "methylMnM" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.11" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: b028097051c7a446303fa85e8aef2c6a277f55be2bb1a7192238781fe99b0153
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: d5e545f467bd0bbb643dda916904bab8
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   host:
-    - bioconductor-edger
+    - 'bioconductor-edger >=3.30.0,<3.31.0'
     - r-base
     - r-statmod
+    - libblas
+    - liblapack
   run:
-    - bioconductor-edger
+    - 'bioconductor-edger >=3.30.0,<3.31.0'
     - r-base
     - r-statmod
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'To give the exactly p-value and q-value of MeDIP-seq and MRE-seq data for different samples comparation.'
-
+  summary: 'detect different methylation level (DMR)'
+  description: 'To give the exactly p-value and q-value of MeDIP-seq and MRE-seq data for different samples comparation.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:methylmnm
     - doi:10.1101/gr.156539.113
+  parent_recipe:
+    name: bioconductor-methylmnm
+    path: recipes/bioconductor-methylmnm
+    version: 1.18.0
+

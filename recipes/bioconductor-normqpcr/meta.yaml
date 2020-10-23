@@ -1,0 +1,52 @@
+{% set version = "1.34.0" %}
+{% set name = "NormqPCR" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 08a0f7e3e91b1f5fbea22a0799d725ff
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+requirements:
+  host:
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-readqpcr >=1.34.0,<1.35.0'
+    - r-base
+    - r-qpcr
+    - r-rcolorbrewer
+  run:
+    - 'bioconductor-biobase >=2.48.0,<2.49.0'
+    - 'bioconductor-readqpcr >=1.34.0,<1.35.0'
+    - r-base
+    - r-qpcr
+    - r-rcolorbrewer
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
+test:
+  commands:
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: LGPL-3
+  summary: 'Functions for normalisation of RT-qPCR data'
+  description: 'Functions for the selection of optimal reference genes and the normalisation of real-time quantitative PCR data.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+extra:
+  container:
+    extended-base: true
+

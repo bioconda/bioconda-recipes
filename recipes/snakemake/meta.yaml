@@ -1,4 +1,4 @@
-{% set version = "5.2.0" %}
+{% set version = "5.26.1" %}
 
 package:
   name: snakemake
@@ -6,35 +6,16 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/snakemake/snakemake-{{ version }}.tar.gz
-  sha256: 4123accb7853371d5f7f62f22c2fbafd1e8fd4b6c9d773edbfb5ae8ecb2e3128
+  sha256: 94cfed2f47f6441cca6cf9d53cffdc11eb78dd1758d96c0af9cd5e453247363e
 
 build:
-  number: 0
-  skip: True # [py27]
-  script: python -m pip install --no-deps --ignore-installed .
-  entry_points:
-    - snakemake = snakemake:main
-    - snakemake-bash-completion = snakemake:bash_completion
+  number: 1
+  noarch: generic
 
 requirements:
-  host:
-    - python
-    - pip
-    - setuptools
-    - wrapt
-    - requests
-    - ratelimiter
-    - configargparse
-    - appdirs
-    - datrie
   run:
-    - python
-    - wrapt
-    - requests
-    - docutils
-    - pyyaml
-    - datrie
-    - requests >=2.8.1
+    - snakemake-minimal ={{ version }}
+    # optional dependencies needed for the full experience
     # require this dropbox version to ensure that a conda doesn't pick up the
     # outdated version available
     - dropbox >=7.2.1
@@ -45,31 +26,106 @@ requirements:
     - aioeasywebdav
     # pandas is optional, but required for many workflows
     - pandas
-    - ratelimiter
-    - configargparse
-    - appdirs
     - python-irodsclient
     - google-cloud-storage
+    - google-api-python-client
+    - google-crc32c
     - boto3
-    - aioeasywebdav
     - jsonschema
     - jinja2
-    - pygraphviz
+    - pygraphviz >=1.5
     - networkx >=2.0
+    - pygments
+    # older versions of imagemagick sometimes fail on PDF -> PNG conversion
+    - imagemagick >=7.0
+    - oauth2client
+    - slacker
+    # libXau is currently a missing dep for graphviz (linked by lib/graphviz/libgvplugin_pango.so)
+    - xorg-libxau
 
 test:
   imports:
     - snakemake
   commands:
+    - export GIT\_PYTHON_REFRESH=warn
     - snakemake --version
     - snakemake --version | grep "{{ version }}"
+    # Generate a report to check whether graphviz dependencies (libXau) are properly installed:
+    - 'printf %s\\n "rule empty:" > Snakefile && snakemake --cores 1 --report'
+    # Remove test artifacts from command above.
+    - rm -rf .snakemake Snakefile report.html
 
 about:
-  home: https://snakemake.readthedocs.io
+  home: https://snakemake.github.io
   license: MIT
-  summary: Snakemake is a workflow management system that aims to reduce the complexity of creating workflows by providing a fast and comfortable execution environment, together with a clean and modern specification language in python style. Snakemake workflows are essentially Python scripts extended by declarative code to define rules. Rules describe how to create output files from input files.
+  summary: A popular workflow management system aiming at full in-silico reproducibility.
+  description: |
+        Snakemake is a workflow management system that aims to reduce the complexity of creating 
+        workflows by providing a fast and comfortable execution environment, together with a clean 
+        and modern specification language in python style. Snakemake workflows are essentially Python 
+        scripts extended by declarative code to define rules. Rules describe how to create output 
+        files from input files.
 
 extra:
   identifiers:
     - doi:10.1093/bioinformatics/bts480
     - biotools:Snakemake
+  skip-lints:
+    - uses_setuptools  # uses pkg_resoures during run time
+    - should_be_noarch_python  # toplevel metapackage is noarch:generic
+
+outputs:
+  - name: snakemake-minimal
+
+    build:
+      noarch: python
+      script: python -m pip install --no-deps --ignore-installed .
+      entry_points:
+        - snakemake = snakemake:main
+        - snakemake-bash-completion = snakemake:bash_completion
+
+    requirements:
+      host:
+        - python >=3.5
+        - pip
+        - setuptools
+      run:
+        - python >=3.5
+        - setuptools
+        - wrapt
+        - requests
+        - docutils
+        - pyyaml
+        - datrie
+        - requests >=2.8.1
+        - psutil
+        - ratelimiter
+        - configargparse
+        - appdirs
+        - jsonschema
+        - gitpython
+        - toposort
+        - nbformat
+        - pulp >=2.0
+
+    test:
+      imports:
+        - snakemake
+      commands:
+        - export GIT\_PYTHON_REFRESH=warn
+        - snakemake --version
+        - snakemake --version | grep "{{ version }}"
+    
+    about:
+      home: https://snakemake.github.io
+      license: MIT
+      summary: A popular workflow management system aiming at full in-silico reproducibility.
+      description: |
+        Snakemake is a workflow management system that aims to reduce the complexity
+        of creating workflows by providing a fast and comfortable execution 
+        environment, together with a clean and modern specification language in 
+        python style. Snakemake workflows are essentially Python scripts extended 
+        by declarative code to define rules. Rules describe how to create output 
+        files from input files. This package provides the core snakemake functionality.
+        For features like reports and remote files, check out the snakemake package 
+        which provides all optional dependencies.

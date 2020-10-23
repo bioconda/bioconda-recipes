@@ -1,0 +1,37 @@
+{% set version = "0.1.1" %}
+
+package:
+  name: clinvar-tsv
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/bihealth/clinvar-tsv/archive/v{{ version }}.tar.gz
+  sha256: a1539a9b08f88408bb9f4c02ea52f7e4fc8bb7f56fba8b66c1ffa1364ab40fe1
+
+build:
+  number: 0
+  noarch: python
+  script: python -m pip install --no-deps --ignore-installed .
+  entry_points:
+    - clinvar_tsv = clinvar_tsv.__main__:main
+
+requirements:
+  host:
+    - python >=3.5
+    - pip
+  run:
+    - python >=3.5
+    - snakemake-minimal >=5.3.0
+    - pysam >=0.15.1
+
+test:
+  imports:
+    - clinvar_tsv
+  commands:
+    - clinvar_tsv --version
+    - clinvar_tsv --version | grep "{{ version }}"
+
+about:
+  home: https://github.com/bihealth/clinvar-tsv
+  license: MIT
+  summary: A Snakemake-based program to download ClinVar and convert to easy-to-use TSV files.
