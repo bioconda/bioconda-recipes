@@ -1,6 +1,7 @@
 #!/bin/bash
 set -eu
 
+ls
 cd *-release-*/x86_64-etch-linux-gnu
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
