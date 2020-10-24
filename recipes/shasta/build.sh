@@ -6,10 +6,10 @@
 # make all -j
 # make install
 if [[ "$OSTYPE" == "darwin"* ]];then
-  mv shasta-macOS-0.6.0 shasta
+  mv shasta-macOS-${PKG_VERSION} shasta
 fi
 if [[ "$OSTYPE" == "linux-gnu"* ]];then
-  mv shasta-Linux-0.6.0 shasta
+  mv shasta-Linux-${PKG_VERSION} shasta
 fi
 
 chmod +x shasta
