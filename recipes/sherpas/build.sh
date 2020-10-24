@@ -14,4 +14,5 @@ make
 
 cp sherpas/SHERPAS $PREFIX/bin
 cp sherpas/libxpas_dna.so $PREFIX/lib
+cp sherpas/libutils.so $PREFIX/lib
 chmod +x $PREFIX/bin/SHERPAS
