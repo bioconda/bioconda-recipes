@@ -13,6 +13,7 @@ cmake ..
 make
 
 cp sherpas/SHERPAS $PREFIX/bin
+ls -l
 cp sherpas/libxpas_dna.so $PREFIX/lib
 cp sherpas/libutils.so $PREFIX/lib
 chmod +x $PREFIX/bin/SHERPAS
