@@ -13,6 +13,7 @@ cmake ..
 make
 
 cp sherpas/SHERPAS $PREFIX/bin
+find . -name *.so -print
 ls -l lib/xpas
 cp lib/libxpas_dna.so $PREFIX/lib
 cp lib/libutils.so $PREFIX/lib
