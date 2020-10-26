@@ -1,0 +1,45 @@
+{% set version = "1.6.2" %}
+{% set sha256 = "178a72250e873f2e789f9b9ff6483aa3e825d86ed32152d07794eb98ecd12cfd" %}
+
+package:
+  name: kmer-db
+  version: {{ version }}
+
+source:
+  url: https://github.com/refresh-bio/kmer-db/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-makefile.patch
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - llvm-openmp # [osx]
+    - openmp
+  host:
+    - zlib
+    - openmp
+    - llvm-openmp # [osx]
+  run:
+    - zlib
+    - openmp
+    - llvm-openmp # [osx]
+
+test:
+  commands:
+    - kmer-db-AVX --help
+    - kmer-db-AVX2 --help
+
+about:
+  home: https://github.com/refresh-bio/kmer-db
+  license: GPL3
+  license_file: LICENSE
+  summary: Kmer-db is a fast and memory-efficient tool for estimating evolutionary distances.
+
+extra:
+  identifiers:
+    - biotools:kmer-db
+    - doi:10.1093/bioinformatics/bty610

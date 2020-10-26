@@ -1,0 +1,131 @@
+From f6ba82f2ee72411d4a42f44e50fd1d237293dd3c Mon Sep 17 00:00:00 2001
+From: Anders Goncalves da Silva <andersgs@gmail.com>
+Date: Wed, 31 Jul 2019 17:02:10 -0700
+Subject: [PATCH 1/4] Patch makefile to use LDFLAGS
+
+---
+ makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/makefile b/makefile
+index 53c33b8..a2cc966 100644
+--- a/makefile
++++ b/makefile
+@@ -64,7 +64,7 @@ kmer-db: $(OBJS) $(AVX_OBJS)
+ 	$(CC) $(CLINK) -o $(KMER_DB_ROOT_DIR)/$@ $(OBJS) $(AVX_OBJS) $(EXTRA_LIBS_DIR)/libz.a
+ else
+ kmer-db: $(OBJS) $(AVX_OBJS)
+-	$(CC) $(CLINK) -o $(KMER_DB_ROOT_DIR)/$@ $(OBJS) $(AVX_OBJS) -lz
++	$(CC) $(CLINK) -o $(KMER_DB_ROOT_DIR)/$@ $(OBJS) $(AVX_OBJS) $(LDFLAGS) -lz
+ endif	
+ 
+ clean:
+-- 
+2.20.1 (Apple Git-117)
+
+
+From 54490703de94985c49a4a892326808aa7f196f77 Mon Sep 17 00:00:00 2001
+From: Anders Goncalves da Silva <andersgs@gmail.com>
+Date: Wed, 31 Jul 2019 17:08:43 -0700
+Subject: [PATCH 2/4] Patch makefile to use LDFLAGS
+
+---
+ makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/makefile b/makefile
+index a2cc966..1fba8e5 100644
+--- a/makefile
++++ b/makefile
+@@ -36,7 +36,7 @@ OBJS := $(KMER_DB_MAIN_DIR)/analyzer.o \
+ 	$(KMER_DB_LIBS_DIR)/mmer.o 
+ 
+ $(KMER_DB_MAIN_DIR)/parallel_sorter.o: $(KMER_DB_MAIN_DIR)/parallel_sorter.cpp
+-	$(CC) -O3 -mavx -m64 -std=c++14 -pthread -fopenmp -c $< -o $@
++	$(CC) -O3 -mavx -m64 -std=c++14 $(LDFLAGS) -pthread -fopenmp -c $< -o $@
+ 
+ ifeq ($(NO_AVX2),true)
+ ## no avx2 support
+-- 
+2.20.1 (Apple Git-117)
+
+
+From fdf25ca231f7f0400c8425e58fb379f055846a23 Mon Sep 17 00:00:00 2001
+From: Anders Goncalves da Silva <andersgs@gmail.com>
+Date: Wed, 31 Jul 2019 17:21:59 -0700
+Subject: [PATCH 3/4] Patch makefile to use LDFLAGS
+
+---
+ makefile | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/makefile b/makefile
+index 1fba8e5..9a958d1 100644
+--- a/makefile
++++ b/makefile
+@@ -16,8 +16,8 @@ else
+ endif
+ 
+ CC = g++
+-CFLAGS	= -Wall -O3 -m64 -std=c++14 -fopenmp -pthread -mavx -I $(KMER_DB_LIBS_DIR) -I $(EXTRA_LIBS_DIR)
+-CFLAGS_AVX2	= -Wall -O3 -m64 -std=c++14 -fopenmp -pthread -mavx2 -I $(KMER_DB_LIBS_DIR) -I $(EXTRA_LIBS_DIR)
++CFLAGS_AVX 	= $(CFLAGS) -m64 -std=c++14 -fopenmp -pthread -mavx -I $(KMER_DB_LIBS_DIR) -I $(EXTRA_LIBS_DIR)
++CFLAGS_AVX2	= $(CFLAGS) -m64 -std=c++14 -fopenmp -pthread -mavx2 -I $(KMER_DB_LIBS_DIR) -I $(EXTRA_LIBS_DIR)
+ CLINK	= -lm -O3 -std=c++14 -lpthread -fopenmp -mavx -fabi-version=6 
+ 
+ OBJS := $(KMER_DB_MAIN_DIR)/analyzer.o \
+@@ -42,14 +42,14 @@ ifeq ($(NO_AVX2),true)
+ ## no avx2 support
+ AVX_OBJS := $(KMER_DB_MAIN_DIR)/row_add_avx.o 
+ $(KMER_DB_MAIN_DIR)/row_add_avx.o: $(KMER_DB_MAIN_DIR)/row_add_avx.cpp
+-	$(CC) $(CFLAGS) -DNO_AVX2 -c $< -o $@
++	$(CC) $(CFLAGS_AVX) -DNO_AVX2 -c $< -o $@
+ 
+ else
+ # with avx2 support
+ AVX_OBJS := $(KMER_DB_MAIN_DIR)/row_add_avx.o \
+ 	$(KMER_DB_MAIN_DIR)/row_add_avx2.o 
+ $(KMER_DB_MAIN_DIR)/row_add_avx.o: $(KMER_DB_MAIN_DIR)/row_add_avx.cpp
+-	$(CC) $(CFLAGS) -c $< -o $@
++	$(CC) $(CFLAGS_AVX) -c $< -o $@
+ $(KMER_DB_MAIN_DIR)/row_add_avx2.o: $(KMER_DB_MAIN_DIR)/row_add_avx2.cpp
+ 	$(CC) $(CFLAGS_AVX2) -c $< -o $@
+ 
+@@ -57,7 +57,7 @@ endif
+ 
+ 
+ %.o: %.cpp
+-	$(CC) $(CFLAGS) -c $< -o $@
++	$(CC) $(CFLAGS_AVX) -c $< -o $@
+ 
+ ifeq ($(INTERNAL_ZLIB),true)
+ kmer-db: $(OBJS) $(AVX_OBJS)
+-- 
+2.20.1 (Apple Git-117)
+
+
+From f4538869b86389ad3d2a184a13d4cf6612bd4769 Mon Sep 17 00:00:00 2001
+From: Anders Goncalves da Silva <andersgs@gmail.com>
+Date: Wed, 31 Jul 2019 17:27:09 -0700
+Subject: [PATCH 4/4] Patch makefile to use LDFLAGS
+
+---
+ makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/makefile b/makefile
+index 9a958d1..2d0aa3a 100644
+--- a/makefile
++++ b/makefile
+@@ -36,7 +36,7 @@ OBJS := $(KMER_DB_MAIN_DIR)/analyzer.o \
+ 	$(KMER_DB_LIBS_DIR)/mmer.o 
+ 
+ $(KMER_DB_MAIN_DIR)/parallel_sorter.o: $(KMER_DB_MAIN_DIR)/parallel_sorter.cpp
+-	$(CC) -O3 -mavx -m64 -std=c++14 $(LDFLAGS) -pthread -fopenmp -c $< -o $@
++	$(CC) $(CFLAGS_AVX) $(LDFLAGS) -pthread -fopenmp -c $< -o $@
+ 
+ ifeq ($(NO_AVX2),true)
+ ## no avx2 support
+-- 
+2.20.1 (Apple Git-117)
+
