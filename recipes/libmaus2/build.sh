@@ -2,9 +2,6 @@
 export LDFLAGS="-lstdc++fs"
 
 mkdir -p $PREFIX/lib
-./configure
+./configure --prefix $PREFIX
 make
-ls
-find . -name *.h -print
-cp ./src/.libs/*.so $PREFIX/lib
-cp ./src/.libs/*.a $PREFIX/lib
+make install
