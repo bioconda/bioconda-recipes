@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# out comment lines in project specific makefile which overwrites the flags set by conda env
+sed -e '/CC=/s/^/#/g' -i src/Makefile
+sed -e '/CFLAGS=/s/^/#/g' -i src/Makefile
+
 # Install both the pairix binaries and the Python extension module
 export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
