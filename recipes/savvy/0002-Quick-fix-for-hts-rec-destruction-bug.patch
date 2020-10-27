@@ -1,0 +1,68 @@
+From 4f781e953afa23fd116b2b4366b282b55c8c0266 Mon Sep 17 00:00:00 2001
+From: jonathonl <jonathonl@users.noreply.github.com>
+Date: Fri, 10 Aug 2018 08:57:04 -0400
+Subject: [PATCH 2/3] Quick fix for hts rec destruction bug.
+
+---
+ src/savvy/vcf_reader.cpp | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/src/savvy/vcf_reader.cpp b/src/savvy/vcf_reader.cpp
+index 9256dc4..1ac2981 100644
+--- a/src/savvy/vcf_reader.cpp
++++ b/src/savvy/vcf_reader.cpp
+@@ -86,7 +86,7 @@ namespace savvy
+             bcf_hdr_destroy(hdr_);
+           if (file_)
+             bcf_close(file_);
+-          if (rec_)
++          if (rec_ && destroy_hdr_)
+             bcf_destroy1(rec_);
+         }
+         catch (...)
+@@ -296,8 +296,8 @@ namespace savvy
+     class hts_indexed_file : public hts_file
+     {
+     public:
+-      hts_indexed_file(bcf_srs_t* sr, bcf_hdr_t* hdr, bcf1_t* rec) :
+-        hts_file(nullptr, hdr, rec, false),
++      hts_indexed_file(bcf_srs_t* sr, bcf_hdr_t* hdr) :
++        hts_file(nullptr, hdr, nullptr, false),
+         synced_readers_(sr)
+       {
+       }
+@@ -348,9 +348,9 @@ namespace savvy
+     std::unique_ptr<detail::hts_file_base> detail::hts_file_base::create_indexed_file(const std::string& file_path, const region& reg)
+     {
+       bcf_srs_t* sr = bcf_sr_init();
+-      bcf1_t* rec = bcf_init1();
++      //bcf1_t* rec = bcf_init1();
+ 
+-      if (sr && rec)
++      if (sr)// && rec)
+       {
+         std::stringstream contigs;
+         contigs << reg.chromosome();
+@@ -362,7 +362,7 @@ namespace savvy
+           bcf_hdr_t* hdr = bcf_sr_get_header(sr, 0);
+           if (hdr)
+           {
+-            return std::unique_ptr<detail::hts_file_base>(new hts_indexed_file(sr, hdr, rec));
++            return std::unique_ptr<detail::hts_file_base>(new hts_indexed_file(sr, hdr));
+           }
+         }
+       }
+@@ -370,8 +370,8 @@ namespace savvy
+       if (sr)
+         bcf_sr_destroy(sr);
+ 
+-      if (rec)
+-        bcf_destroy1(rec);
++//      if (rec)
++//        bcf_destroy1(rec);
+ 
+       return nullptr;
+     }
+-- 
+2.23.0
+
