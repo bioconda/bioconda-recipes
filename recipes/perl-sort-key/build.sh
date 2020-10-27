@@ -1,8 +1,5 @@
 #!/bin/bash
-ls -l /usr/include
 set -o errexit -o pipefail
-echo PREFIX=$PREFIX
-echo RECIPE=$RECIPE_DIR
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL
@@ -21,5 +18,4 @@ else
     exit 1
 fi
 
-find . -type f
 
