@@ -1,0 +1,47 @@
+{% set name = "shrinkwrap" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/jonathonl/shrinkwrap/archive/v{{ version }}-beta.tar.gz
+  sha256: c9e7e7eb4ea7ea85ddffd0d7ecdc2febdcac8486d178cdc99d762404fe3bb8dd
+
+build:
+  skip: True  # [win]
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - make  # [not win]
+    - xz
+    - zstd
+  host:
+    - xz
+    - zlib
+    - zstd
+
+test:
+  commands:
+    - test -f $PREFIX/include/shrinkwrap/istream.hpp  # [not win]
+    - test -f $PREFIX/include/shrinkwrap/gz.hpp  # [not win]
+    - test -f $PREFIX/include/shrinkwrap/zstd.hpp  # [not win]
+    - test -f $PREFIX/include/shrinkwrap/xz.hpp  # [not win]
+    - test -f $PREFIX/share/shrinkwrap/shrinkwrap-config.cmake  # [not win]
+    - test -f $PREFIX/share/shrinkwrap/shrinkwrap-config-version.cmake  # [not win]
+
+about:
+  home: https://github.com/jonathonl/shrinkwrap
+  license: MIT
+  license_file: LICENSE
+  summary: A std::streambuf wrapper for compression formats.
+  dev_url: https://github.com/jonathonl/shrinkwrap
+
+extra:
+  recipe-maintainers:
+    - matuskosut
