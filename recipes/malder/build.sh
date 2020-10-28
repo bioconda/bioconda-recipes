@@ -2,16 +2,11 @@
 
 cd MALDER
 
-if [[ $(uname -s) == Darwin ]]; then
-	make CXX=clang++ \
-		 CXXFLAGS="-Wall -Wno-return-type -Wno-write-strings -I$PREFIX/include -Iadmixtools_src -Iadmixtools_src/nicksrc" \
-		 CFLAGS="-c -O2 -Wimplicit -Wno-return-type -Wno-write-strings -I$PREFIX/include -I. -I./nicksrc" \
-		 L="-L$PREFIX/lib -lfftw3 -llapack -lgsl -fopenmp"
-else
-	make CXXFLAGS="-Wall -Wno-return-type -Wno-write-strings -I$PREFIX/include -Iadmixtools_src -Iadmixtools_src/nicksrc" \
-		 CFLAGS="-c -O2 -Wimplicit -Wno-return-type -Wno-write-strings -I$PREFIX/include -I. -I./nicksrc" \
-		 L="-L$PREFIX/lib -lfftw3 -llapack -lgsl -fopenmp"
-fi
+make \
+    CXX="${CXX}" \
+    CXXFLAGS="${CXXFLAGS} -Wall -Wno-return-type -Wno-write-strings -Iadmixtools_src -Iadmixtools_src/nicksrc" \
+    CFLAGS="${CFLAGS} -c -O2 -Wimplicit -Wno-return-type -Wno-write-strings -I. -I./nicksrc" \
+    L="${LDFLAGS} -lfftw3 -llapack -lgsl -fopenmp"
 
-mkdir -p $PREFIX/bin
-cp malder $PREFIX/bin/
+mkdir -p "${PREFIX}/bin"
+cp malder "${PREFIX}/bin/"
