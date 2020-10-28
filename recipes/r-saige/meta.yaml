@@ -1,0 +1,78 @@
+{% set name = "r-saige" %}
+{% set version = "0.42.1" %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/huntdatacenter/SAIGE/archive/{{ version }}.tar.gz
+  sha256: a71c714b3f8a8b6bf21889c1c076d61abe39ff6723066b6d24026f4ffbbd5464
+  patches:
+    # Fixing shared lib issues
+    - patches/0001-use-shared-libs-in-makevars.patch
+
+build:
+  merge_build_host: true  # [win]
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('m2w64_c') }}        # [win]
+    - {{ compiler('cxx') }}            # [not win]
+    - {{ compiler('m2w64_cxx') }}      # [win]
+    - {{ compiler('fortran') }}        # [not win]
+    - {{ compiler('m2w64_fortran') }}  # [win]
+    - {{ posix }}filesystem            # [win]
+    - {{ posix }}make
+    - {{ posix }}sed                   # [win]
+    - {{ posix }}coreutils             # [win]
+    - {{ posix }}zip                   # [win]
+    - r-base
+    - r-skat
+    - r-metaskat
+    - r-devtools
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-rcppparallel
+    - r-data.table
+    - r-rcppeigen
+    - r-bh
+    - r-optparse
+    - boost
+    - boost-cpp
+    - huntcloud::savvy
+    - bioconda::superlu
+  host:
+    - r-base
+    - huntcloud::savvy
+    - bioconda::superlu
+    - zstd
+    - zlib
+    - boost
+  run:
+    - boost
+    - r-base
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('SAIGE')"
+
+about:
+  home: https://github.com/weizhouUMICH/SAIGE
+  license: GNU GPL
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Saige R package
+  dev_url: https://github.com/weizhouUMICH/SAIGE
+
+extra:
+  recipe-maintainers:
+    - matuskosut
