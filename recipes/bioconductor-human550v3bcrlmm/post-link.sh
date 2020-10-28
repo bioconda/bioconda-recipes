@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="human550v3bCrlmm_1.0.4.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/human550v3bCrlmm_1.0.4.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/human550v3bCrlmm_1.0.4.tar.gz"
   "https://bioarchive.galaxyproject.org/human550v3bCrlmm_1.0.4.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-human550v3bcrlmm/bioconductor-human550v3bcrlmm_1.0.4_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-human550v3bcrlmm/bioconductor-human550v3bcrlmm_1.0.4_src_all.tar.gz"

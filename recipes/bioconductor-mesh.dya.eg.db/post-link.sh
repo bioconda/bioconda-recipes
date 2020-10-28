@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="MeSH.Dya.eg.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MeSH.Dya.eg.db_1.13.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.Dya.eg.db_1.13.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Dya.eg.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.dya.eg.db/bioconductor-mesh.dya.eg.db_1.13.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.dya.eg.db/bioconductor-mesh.dya.eg.db_1.13.0_src_all.tar.gz"
 )
 MD5="b4239f5f42430de06224a6a59c9babd3"

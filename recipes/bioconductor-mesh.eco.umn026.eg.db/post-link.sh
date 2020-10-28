@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="MeSH.Eco.UMN026.eg.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MeSH.Eco.UMN026.eg.db_1.13.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.Eco.UMN026.eg.db_1.13.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Eco.UMN026.eg.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.eco.umn026.eg.db/bioconductor-mesh.eco.umn026.eg.db_1.13.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.eco.umn026.eg.db/bioconductor-mesh.eco.umn026.eg.db_1.13.0_src_all.tar.gz"
 )
 MD5="04f44fd2e9a8966fc28b8878bd598241"

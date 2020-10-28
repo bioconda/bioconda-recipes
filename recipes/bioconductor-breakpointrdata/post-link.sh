@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="breakpointRdata_1.4.0.tar.gz"
+FN="breakpointRdata_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/breakpointRdata_1.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/breakpointRdata_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-breakpointrdata/bioconductor-breakpointrdata_1.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/breakpointRdata_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/breakpointRdata_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-breakpointrdata/bioconductor-breakpointrdata_1.6.0_src_all.tar.gz"
 )
-MD5="2686fbd46c1078496dce0640061dfeaf"
+MD5="6f194a2cce956341b6969663493daf3b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

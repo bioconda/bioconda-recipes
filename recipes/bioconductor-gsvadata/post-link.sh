@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="GSVAdata_1.22.0.tar.gz"
+FN="GSVAdata_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/GSVAdata_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/GSVAdata_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-gsvadata/bioconductor-gsvadata_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/GSVAdata_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/GSVAdata_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-gsvadata/bioconductor-gsvadata_1.24.0_src_all.tar.gz"
 )
-MD5="3c4a96c7351c6561b0c971b83bdc6570"
+MD5="a97a510dd1470f223174cc639c015231"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

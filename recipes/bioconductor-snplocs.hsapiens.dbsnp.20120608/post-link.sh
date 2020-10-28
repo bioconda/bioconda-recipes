@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="SNPlocs.Hsapiens.dbSNP.20120608_0.99.11.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/SNPlocs.Hsapiens.dbSNP.20120608_0.99.11.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/SNPlocs.Hsapiens.dbSNP.20120608_0.99.11.tar.gz"
   "https://bioarchive.galaxyproject.org/SNPlocs.Hsapiens.dbSNP.20120608_0.99.11.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-snplocs.hsapiens.dbsnp.20120608/bioconductor-snplocs.hsapiens.dbsnp.20120608_0.99.11_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-snplocs.hsapiens.dbsnp.20120608/bioconductor-snplocs.hsapiens.dbsnp.20120608_0.99.11_src_all.tar.gz"

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="JASPAR2014_1.22.0.tar.gz"
+FN="JASPAR2014_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/JASPAR2014_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/JASPAR2014_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-jaspar2014/bioconductor-jaspar2014_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/JASPAR2014_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/JASPAR2014_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-jaspar2014/bioconductor-jaspar2014_1.24.0_src_all.tar.gz"
 )
-MD5="be25a9c4799095141e830e1fb5290b41"
+MD5="82e115eb60267bc92bd1ea2ca374e8e7"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

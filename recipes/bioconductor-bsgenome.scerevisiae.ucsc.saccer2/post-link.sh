@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="BSgenome.Scerevisiae.UCSC.sacCer2_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/BSgenome.Scerevisiae.UCSC.sacCer2_1.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/BSgenome.Scerevisiae.UCSC.sacCer2_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Scerevisiae.UCSC.sacCer2_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.scerevisiae.ucsc.saccer2/bioconductor-bsgenome.scerevisiae.ucsc.saccer2_1.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.scerevisiae.ucsc.saccer2/bioconductor-bsgenome.scerevisiae.ucsc.saccer2_1.4.0_src_all.tar.gz"

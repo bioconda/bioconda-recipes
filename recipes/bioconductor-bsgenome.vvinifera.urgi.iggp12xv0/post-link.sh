@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="BSgenome.Vvinifera.URGI.IGGP12Xv0_0.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/BSgenome.Vvinifera.URGI.IGGP12Xv0_0.1.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/BSgenome.Vvinifera.URGI.IGGP12Xv0_0.1.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Vvinifera.URGI.IGGP12Xv0_0.1.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.vvinifera.urgi.iggp12xv0/bioconductor-bsgenome.vvinifera.urgi.iggp12xv0_0.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.vvinifera.urgi.iggp12xv0/bioconductor-bsgenome.vvinifera.urgi.iggp12xv0_0.1_src_all.tar.gz"

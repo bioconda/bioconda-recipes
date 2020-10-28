@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="hom.Mm.inp.db_3.1.2.tar.gz"
+FN="hom.Mm.inp.db_3.1.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/hom.Mm.inp.db_3.1.2.tar.gz"
-  "https://bioarchive.galaxyproject.org/hom.Mm.inp.db_3.1.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hom.mm.inp.db/bioconductor-hom.mm.inp.db_3.1.2_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hom.mm.inp.db/bioconductor-hom.mm.inp.db_3.1.2_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/hom.Mm.inp.db_3.1.3.tar.gz"
+  "https://bioarchive.galaxyproject.org/hom.Mm.inp.db_3.1.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hom.mm.inp.db/bioconductor-hom.mm.inp.db_3.1.3_src_all.tar.gz"
 )
-MD5="27d49db64f3f6049210456121f33d6c0"
+MD5="b76d9c5b16bfc8fae4327761071b3542"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

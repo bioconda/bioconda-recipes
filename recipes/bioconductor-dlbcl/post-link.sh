@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="DLBCL_1.26.0.tar.gz"
+FN="DLBCL_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/DLBCL_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/DLBCL_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-dlbcl/bioconductor-dlbcl_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/DLBCL_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/DLBCL_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-dlbcl/bioconductor-dlbcl_1.28.0_src_all.tar.gz"
 )
-MD5="7438690c0491967ca15472b6d5e2d19a"
+MD5="2e77e961495f381aa4995356c6503937"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

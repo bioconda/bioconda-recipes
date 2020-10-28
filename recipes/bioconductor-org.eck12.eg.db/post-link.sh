@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="org.EcK12.eg.db_3.10.0.tar.gz"
+FN="org.EcK12.eg.db_3.11.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/org.EcK12.eg.db_3.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/org.EcK12.eg.db_3.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-org.eck12.eg.db/bioconductor-org.eck12.eg.db_3.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/org.EcK12.eg.db_3.11.1.tar.gz"
+  "https://bioarchive.galaxyproject.org/org.EcK12.eg.db_3.11.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-org.eck12.eg.db/bioconductor-org.eck12.eg.db_3.11.1_src_all.tar.gz"
 )
-MD5="3d8b0c463acc5aebaee6c6c171fd0bd9"
+MD5="c55059d6096be5b5b50ceeeade76bb97"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

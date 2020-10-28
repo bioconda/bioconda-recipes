@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="SomatiCAData_1.24.0.tar.gz"
+FN="SomatiCAData_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/SomatiCAData_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/SomatiCAData_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-somaticadata/bioconductor-somaticadata_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/SomatiCAData_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/SomatiCAData_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-somaticadata/bioconductor-somaticadata_1.26.0_src_all.tar.gz"
 )
-MD5="36d94260214d55e94aefd773318555a7"
+MD5="dfaee129ff0ade2b2140b4951f35eb9b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

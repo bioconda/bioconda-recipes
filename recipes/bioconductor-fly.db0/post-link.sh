@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="fly.db0_3.10.0.tar.gz"
+FN="fly.db0_3.11.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/fly.db0_3.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/fly.db0_3.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-fly.db0/bioconductor-fly.db0_3.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/fly.db0_3.11.2.tar.gz"
+  "https://bioarchive.galaxyproject.org/fly.db0_3.11.2.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-fly.db0/bioconductor-fly.db0_3.11.2_src_all.tar.gz"
 )
-MD5="d7110707d1ca7dd0aaef3897834b1863"
+MD5="cc1583d94daf477342f6510e64340459"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
