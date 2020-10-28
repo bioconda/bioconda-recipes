@@ -10,10 +10,10 @@ source:
   sha256: 82faf11665b9150297a4f7d1668df0937a5f6f49f5b8ea0f24f35aa09517c7cf
   patches:
     # Fixing postrelease issues
-    - 0001-Quick-fix-for-hts_hdr-destruction-bug.patch
-    - 0002-Quick-fix-for-hts-rec-destruction-bug.patch
-    - 0003-Fixes-s1r-bug-in-last-leaf-node.patch
-    - 0004-Patch-CMakeLists.txt-for-conda-build.patch
+    - patches/0001-Quick-fix-for-hts_hdr-destruction-bug.patch
+    - patches/0002-Quick-fix-for-hts-rec-destruction-bug.patch
+    - patches/0003-Fixes-s1r-bug-in-last-leaf-node.patch
+    - patches/0004-Patch-CMakeLists.txt-for-conda-build.patch
 
 build:
   skip: True  # [win]
@@ -42,10 +42,17 @@ requirements:
     - htslib
 
 test:
+  source_files:
+    - test_file.vcf
   commands:
     - test -d ${PREFIX}/include/savvy  # [not win]
     - test -f ${PREFIX}/lib/libsavvy.so  # [not win]
     - sav --help
+    - sav import --index test_file.vcf test_file.sav
+    - sav head test_file.sav
+    - sav stat-index test_file.sav.s1r
+    - sav export --regions chr1,chr2:10000-20000 --sample-ids ID1,ID2,ID3 test_file.sav test_regions.vcf
+    - sav export test_file.sav test_export.vcf
 
 about:
   home: https://github.com/statgen/savvy
