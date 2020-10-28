@@ -7,6 +7,8 @@ sed -e '/^CFLAGS=/s/^/#/g' -i src/Makefile
 # Install both the pairix binaries and the Python extension module
 export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
+export CPPFLAGS='-I${PREFIX}/include'
+export LDFLAGS='-L${PREFIX}lib'
 cd src
 make
 cd ..
