@@ -18,6 +18,7 @@ else
 fi
 LDFLAGS='-Wl,-rpath,${RPATH}'
 
+# -DCMAKE_EXE_LINKER_FLAGS="-static-libgcc -static-libstdc++"
 cmake \
   -DBUILD_SHARED_LIBS:BOOL=ON \
   -DCMAKE_PREFIX_PATH:PATH=${PREFIX} \
@@ -26,7 +27,6 @@ cmake \
   -DCMAKE_BUILD_TYPE="Release" \
   -DUSE_CXX3_ABI=ON \
   -DBUILD_TESTS=ON \
-  -DCMAKE_EXE_LINKER_FLAGS="-static-libgcc -static-libstdc++" \
   ${SRC_DIR}
 
 make -j${CPU_COUNT} savvy
