@@ -1,3 +1,6 @@
+#!/bin/bash
+$PYTHON -m pip install --no-deps --ignore-installed .
+
 # hmmscan in TEsorter need hmmpress first
 # see here https://github.com/oushujun/EDTA/issues/121
 ls -l
