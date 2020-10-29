@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ReactomeGSA.data_1.2.0.tar.gz"
+FN="ReactomeGSA.data_1.3.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/ReactomeGSA.data_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ReactomeGSA.data_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-reactomegsa.data/bioconductor-reactomegsa.data_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/ReactomeGSA.data_1.3.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ReactomeGSA.data_1.3.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-reactomegsa.data/bioconductor-reactomegsa.data_1.3.0_src_all.tar.gz"
 )
-MD5="ef619301527644da1c2b6745360542a1"
+MD5="a8b23f63526b418510853a5818d9dda4"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

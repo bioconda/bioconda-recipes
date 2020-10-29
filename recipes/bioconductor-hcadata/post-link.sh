@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="HCAData_1.4.0.tar.gz"
+FN="HCAData_1.5.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/HCAData_1.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/HCAData_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hcadata/bioconductor-hcadata_1.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/HCAData_1.5.1.tar.gz"
+  "https://bioarchive.galaxyproject.org/HCAData_1.5.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hcadata/bioconductor-hcadata_1.5.1_src_all.tar.gz"
 )
-MD5="ed1c180ee468fe9f60d6276531167653"
+MD5="2bff42beba1c9b239baa55079c0bff93"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

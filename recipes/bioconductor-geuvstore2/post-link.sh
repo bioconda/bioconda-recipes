@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="geuvStore2_1.18.0.tar.gz"
+FN="geuvStore2_1.19.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/geuvStore2_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/geuvStore2_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-geuvstore2/bioconductor-geuvstore2_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/geuvStore2_1.19.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/geuvStore2_1.19.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-geuvstore2/bioconductor-geuvstore2_1.19.0_src_all.tar.gz"
 )
-MD5="16c97672f9406dc3434133762fde6f5e"
+MD5="2ace13e6f654dceeeed0bc902218de48"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

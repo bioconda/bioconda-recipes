@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="MouseGastrulationData_1.2.0.tar.gz"
+FN="MouseGastrulationData_1.3.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/MouseGastrulationData_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MouseGastrulationData_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mousegastrulationdata/bioconductor-mousegastrulationdata_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/MouseGastrulationData_1.3.3.tar.gz"
+  "https://bioarchive.galaxyproject.org/MouseGastrulationData_1.3.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mousegastrulationdata/bioconductor-mousegastrulationdata_1.3.3_src_all.tar.gz"
 )
-MD5="1190c18c7ee7fe58b19f15505ec8e4d3"
+MD5="ab384f4b6924f7845ce57be664b084dd"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

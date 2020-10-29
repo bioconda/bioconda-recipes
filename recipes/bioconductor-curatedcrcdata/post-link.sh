@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="curatedCRCData_2.20.0.tar.gz"
+FN="curatedCRCData_2.21.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/curatedCRCData_2.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/curatedCRCData_2.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-curatedcrcdata/bioconductor-curatedcrcdata_2.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/curatedCRCData_2.21.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/curatedCRCData_2.21.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-curatedcrcdata/bioconductor-curatedcrcdata_2.21.0_src_all.tar.gz"
 )
-MD5="4ed552d5a51cca21c220299f4235f2c0"
+MD5="29c3ca3d3e0a2d364fdacd00ddf3aa04"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="MUGAExampleData_1.8.0.tar.gz"
+FN="MUGAExampleData_1.9.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/MUGAExampleData_1.8.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MUGAExampleData_1.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mugaexampledata/bioconductor-mugaexampledata_1.8.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/MUGAExampleData_1.9.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MUGAExampleData_1.9.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mugaexampledata/bioconductor-mugaexampledata_1.9.0_src_all.tar.gz"
 )
-MD5="d5bdebfa4b6ad4df2d2fa1f2b201aa39"
+MD5="b1273b8fca225143f160157c163c2b3b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

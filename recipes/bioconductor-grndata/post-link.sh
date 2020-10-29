@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="grndata_1.20.0.tar.gz"
+FN="grndata_1.21.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/grndata_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/grndata_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-grndata/bioconductor-grndata_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/grndata_1.21.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/grndata_1.21.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-grndata/bioconductor-grndata_1.21.0_src_all.tar.gz"
 )
-MD5="4f9d4a42aa45f728479094dc9c1525e7"
+MD5="f9afa2692d9c6e822f99bf9f67c5a999"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

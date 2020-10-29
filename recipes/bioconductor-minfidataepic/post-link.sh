@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="minfiDataEPIC_1.14.0.tar.gz"
+FN="minfiDataEPIC_1.15.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/minfiDataEPIC_1.14.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/minfiDataEPIC_1.14.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-minfidataepic/bioconductor-minfidataepic_1.14.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/minfiDataEPIC_1.15.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/minfiDataEPIC_1.15.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-minfidataepic/bioconductor-minfidataepic_1.15.0_src_all.tar.gz"
 )
-MD5="0cc652fdcfcc9fd2a9ce06e9ea05dd34"
+MD5="76819bdcd80c39b56dcfd9e8b5795888"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

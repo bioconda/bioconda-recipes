@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="COSMIC.67_1.24.0.tar.gz"
+FN="COSMIC.67_1.25.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/COSMIC.67_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/COSMIC.67_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-cosmic.67/bioconductor-cosmic.67_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/COSMIC.67_1.25.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/COSMIC.67_1.25.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cosmic.67/bioconductor-cosmic.67_1.25.0_src_all.tar.gz"
 )
-MD5="d5af6869f6f1f5f9710cfad7eaeb5785"
+MD5="970e77754e5bb380d2828455a064351a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

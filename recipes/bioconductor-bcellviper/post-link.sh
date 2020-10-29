@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="bcellViper_1.24.0.tar.gz"
+FN="bcellViper_1.25.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/bcellViper_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/bcellViper_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bcellviper/bioconductor-bcellviper_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/bcellViper_1.25.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/bcellViper_1.25.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bcellviper/bioconductor-bcellviper_1.25.0_src_all.tar.gz"
 )
-MD5="ee103a8611b9fcfdc8867c9a9410faac"
+MD5="f963fa20465aa08586268d39a660b5cb"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

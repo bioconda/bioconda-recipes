@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="sampleClassifierData_1.12.0.tar.gz"
+FN="sampleClassifierData_1.13.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/sampleClassifierData_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/sampleClassifierData_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-sampleclassifierdata/bioconductor-sampleclassifierdata_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/sampleClassifierData_1.13.1.tar.gz"
+  "https://bioarchive.galaxyproject.org/sampleClassifierData_1.13.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-sampleclassifierdata/bioconductor-sampleclassifierdata_1.13.1_src_all.tar.gz"
 )
-MD5="1f0e51b7f7595a053d69b44c65b2ea68"
+MD5="ffa878fe52114b7743996a794de603a4"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ALL_1.30.0.tar.gz"
+FN="ALL_1.31.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/ALL_1.30.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ALL_1.30.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-all/bioconductor-all_1.30.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/ALL_1.31.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ALL_1.31.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-all/bioconductor-all_1.31.0_src_all.tar.gz"
 )
-MD5="9b5ba4d3b4dceee08052e297e873a9b1"
+MD5="960b1f2a581defbb6f56188e97d8e6ba"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="microRNAome_1.10.0.tar.gz"
+FN="microRNAome_1.11.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/microRNAome_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/microRNAome_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-micrornaome/bioconductor-micrornaome_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/microRNAome_1.11.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/microRNAome_1.11.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-micrornaome/bioconductor-micrornaome_1.11.0_src_all.tar.gz"
 )
-MD5="fcf1929bb829e25fe7925390f664e24b"
+MD5="e5536558f786a9803585a44469cd48ad"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

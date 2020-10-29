@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="HarmonizedTCGAData_1.10.0.tar.gz"
+FN="HarmonizedTCGAData_1.11.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/HarmonizedTCGAData_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/HarmonizedTCGAData_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-harmonizedtcgadata/bioconductor-harmonizedtcgadata_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/HarmonizedTCGAData_1.11.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/HarmonizedTCGAData_1.11.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-harmonizedtcgadata/bioconductor-harmonizedtcgadata_1.11.0_src_all.tar.gz"
 )
-MD5="e8722284b3a1cc99bdc6a058bafd0848"
+MD5="ea636960eba82501daaf14ce10f0fc3c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="Fletcher2013a_1.24.0.tar.gz"
+FN="Fletcher2013a_1.25.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/Fletcher2013a_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/Fletcher2013a_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-fletcher2013a/bioconductor-fletcher2013a_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/Fletcher2013a_1.25.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/Fletcher2013a_1.25.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-fletcher2013a/bioconductor-fletcher2013a_1.25.0_src_all.tar.gz"
 )
-MD5="0eec985432de0c759e723d713addd0d0"
+MD5="3b5dc64569d1db76eae2574fd1d5407c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

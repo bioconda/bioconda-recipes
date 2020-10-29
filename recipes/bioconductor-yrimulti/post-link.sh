@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="yriMulti_0.18.0.tar.gz"
+FN="yriMulti_0.19.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/yriMulti_0.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/yriMulti_0.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-yrimulti/bioconductor-yrimulti_0.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/yriMulti_0.19.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/yriMulti_0.19.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yrimulti/bioconductor-yrimulti_0.19.0_src_all.tar.gz"
 )
-MD5="a606bbaf14953ca71f1925b97fb01de4"
+MD5="1be47b590d01aa030ffae8e32754c23b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

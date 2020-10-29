@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="DREAM4_1.24.0.tar.gz"
+FN="DREAM4_1.25.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/DREAM4_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/DREAM4_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-dream4/bioconductor-dream4_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/DREAM4_1.25.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/DREAM4_1.25.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-dream4/bioconductor-dream4_1.25.0_src_all.tar.gz"
 )
-MD5="20252a21ea768b057f8a1d5425d4ec05"
+MD5="7cfc31be91f4e7bee22d29c1b71e76cd"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

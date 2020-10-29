@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="KEGGandMetacoreDzPathwaysGEO_1.8.0.tar.gz"
+FN="KEGGandMetacoreDzPathwaysGEO_1.9.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/KEGGandMetacoreDzPathwaysGEO_1.8.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/KEGGandMetacoreDzPathwaysGEO_1.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-keggandmetacoredzpathwaysgeo/bioconductor-keggandmetacoredzpathwaysgeo_1.8.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/KEGGandMetacoreDzPathwaysGEO_1.9.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/KEGGandMetacoreDzPathwaysGEO_1.9.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-keggandmetacoredzpathwaysgeo/bioconductor-keggandmetacoredzpathwaysgeo_1.9.0_src_all.tar.gz"
 )
-MD5="0dcfd77bff718fe40f147f7716f12308"
+MD5="b4e2e817db81c44bf58e4c3c9abf1416"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

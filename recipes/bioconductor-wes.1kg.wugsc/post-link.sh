@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="WES.1KG.WUGSC_1.20.0.tar.gz"
+FN="WES.1KG.WUGSC_1.21.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/WES.1KG.WUGSC_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/WES.1KG.WUGSC_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-wes.1kg.wugsc/bioconductor-wes.1kg.wugsc_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/WES.1KG.WUGSC_1.21.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/WES.1KG.WUGSC_1.21.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-wes.1kg.wugsc/bioconductor-wes.1kg.wugsc_1.21.0_src_all.tar.gz"
 )
-MD5="9f959f03aa9ed6b1f5f1dffc6597dc6c"
+MD5="c8bfc2b8a09f1a53ca7b96c4d1a0573e"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
