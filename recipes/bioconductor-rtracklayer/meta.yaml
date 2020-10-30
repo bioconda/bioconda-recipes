@@ -11,8 +11,11 @@ source:
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
   md5: 4cfe973ff5d2be86eb1cd0cd88287b01
+  patches:
+    - 0001-Remove-Homebrew-specific-PKG_CONFIG_PATH-override.patch
+
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
@@ -34,6 +37,8 @@ requirements:
     - 'r-xml >=1.98-0'
     - libblas
     - liblapack
+    - openssl
+    - zlib
   run:
     - 'bioconductor-biocgenerics >=0.36.0,<0.37.0'
     - 'bioconductor-biostrings >=2.58.0,<2.59.0'
@@ -51,7 +56,9 @@ requirements:
   build:
     - {{ compiler('c') }}
     - automake
+    - autoconf
     - make
+    - pkg-config
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
