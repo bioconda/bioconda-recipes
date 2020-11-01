@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RTCGA.RPPA_1.17.0.tar.gz"
+FN="RTCGA.RPPA_1.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/RTCGA.RPPA_1.17.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RTCGA.RPPA_1.17.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rtcga.rppa/bioconductor-rtcga.rppa_1.17.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/RTCGA.RPPA_1.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RTCGA.RPPA_1.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rtcga.rppa/bioconductor-rtcga.rppa_1.18.0_src_all.tar.gz"
 )
-MD5="f1c30a8f8555b692d2cc1c3b30469460"
+MD5="633094117181e59aae4b4dde340b4c05"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
