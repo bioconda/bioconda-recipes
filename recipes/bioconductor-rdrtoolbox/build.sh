@@ -9,4 +9,5 @@ CXX98=$CXX
 CXX11=$CXX
 CXX14=$CXX" > ~/.R/Makevars
 export LD_LIBRARY_PATH=${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64
+find / -name libXfixes.so.3 -print
 $R CMD INSTALL --build .
