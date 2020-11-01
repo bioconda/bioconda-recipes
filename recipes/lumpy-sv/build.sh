@@ -13,20 +13,6 @@ mkdir -p $outdir
 mkdir -p $outdir/scripts
 mkdir -p $PREFIX/bin
 
-pushd src/utils/sqlite3
-sed -i.bak "s#@gcc#${CC}#g" Makefile
-popd
-
-make \
-    CC="${CC}" \
-    CXX="${CXX}" \
-    CPPFLAGS="${CPPFLAGS}" \
-    CFLAGS="${CFLAGS}" \
-    CXXFLAGS="${CXXFLAGS}" \
-    LDFLAGS="${LDFLAGS}" \
-    ZLIB_PATH="${PREFIX/lib}"
-
-cp bin/* $PREFIX/bin
 cp scripts/lumpyexpress $PREFIX/bin
 cp scripts/cnvanator_to_bedpes.py $PREFIX/bin
 

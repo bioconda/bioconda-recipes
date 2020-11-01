@@ -1,5 +1,4 @@
 #!/bin/bash
-gcc -o collect_mgf collect_mgf.c
-mkdir -p $PREFIX/bin
-cp collect_mgf $PREFIX/bin/collect_mgf
-chmod +x $PREFIX/bin/collect_mgf
+"${CC}" ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -o collect_mgf collect_mgf.c
+install -d "${PREFIX}/bin"
+install collect_mgf "${PREFIX}/bin/"
