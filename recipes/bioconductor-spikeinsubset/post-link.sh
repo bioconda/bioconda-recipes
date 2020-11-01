@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="SpikeInSubset_1.29.0.tar.gz"
+FN="SpikeInSubset_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/SpikeInSubset_1.29.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/SpikeInSubset_1.29.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-spikeinsubset/bioconductor-spikeinsubset_1.29.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/SpikeInSubset_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/SpikeInSubset_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-spikeinsubset/bioconductor-spikeinsubset_1.30.0_src_all.tar.gz"
 )
-MD5="a0d0c0cf0851fa404ce29543e4f511f4"
+MD5="8d161157f44ae59e5e95e8be8fef2b68"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

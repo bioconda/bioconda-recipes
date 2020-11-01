@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="curatedBreastData_2.17.0.tar.gz"
+FN="curatedBreastData_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/curatedBreastData_2.17.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/curatedBreastData_2.17.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-curatedbreastdata/bioconductor-curatedbreastdata_2.17.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/curatedBreastData_2.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/curatedBreastData_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-curatedbreastdata/bioconductor-curatedbreastdata_2.18.0_src_all.tar.gz"
 )
-MD5="5bff31e849de3a6968020338b1f7f407"
+MD5="a7d4a16107607aac279cf9408454189a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

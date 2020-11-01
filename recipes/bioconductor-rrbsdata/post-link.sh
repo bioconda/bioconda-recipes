@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RRBSdata_1.9.0.tar.gz"
+FN="RRBSdata_1.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/RRBSdata_1.9.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RRBSdata_1.9.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rrbsdata/bioconductor-rrbsdata_1.9.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/RRBSdata_1.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RRBSdata_1.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rrbsdata/bioconductor-rrbsdata_1.10.0_src_all.tar.gz"
 )
-MD5="140bfcd1188638faad60fd10eaeb6ea4"
+MD5="1fd71908f0416a54d9445d091918f2b3"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

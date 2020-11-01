@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="LiebermanAidenHiC2009_0.27.0.tar.gz"
+FN="LiebermanAidenHiC2009_0.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/LiebermanAidenHiC2009_0.27.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/LiebermanAidenHiC2009_0.27.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-liebermanaidenhic2009/bioconductor-liebermanaidenhic2009_0.27.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/LiebermanAidenHiC2009_0.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/LiebermanAidenHiC2009_0.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-liebermanaidenhic2009/bioconductor-liebermanaidenhic2009_0.28.0_src_all.tar.gz"
 )
-MD5="18cd8442251dcb16d74593fcb3ae9434"
+MD5="2ec616658f92b93df6b438223e2c22f3"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

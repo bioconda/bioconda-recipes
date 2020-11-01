@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="pRolocdata_1.27.1.tar.gz"
+FN="pRolocdata_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/pRolocdata_1.27.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/pRolocdata_1.27.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-prolocdata/bioconductor-prolocdata_1.27.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/pRolocdata_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/pRolocdata_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-prolocdata/bioconductor-prolocdata_1.28.0_src_all.tar.gz"
 )
-MD5="1d1b993eed40b59cc10ccdc1d1ecbcea"
+MD5="5ee41d08e66faba9bfb7e174bdba5c05"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

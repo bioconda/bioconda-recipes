@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="PREDAsampledata_0.29.0.tar.gz"
+FN="PREDAsampledata_0.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/PREDAsampledata_0.29.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/PREDAsampledata_0.29.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-predasampledata/bioconductor-predasampledata_0.29.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/PREDAsampledata_0.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/PREDAsampledata_0.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-predasampledata/bioconductor-predasampledata_0.30.0_src_all.tar.gz"
 )
-MD5="74edc3e06bb4aa5e08a3e28232331b7a"
+MD5="196ea85e4e11d75d7904fd42e52705d3"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
