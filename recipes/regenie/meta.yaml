@@ -1,0 +1,55 @@
+{% set name = "regenie" %}
+{% set version = "1.0.6.7" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/rgcgithub/regenie/archive/v{{ version }}.tar.gz
+  sha256: 94b08348feb2cdeb9d94c821442a20aad4f3da79cc61b62cf6a8ba950fe0d0d2
+  patches:
+    # Fixing postrelease issues
+    - patches/0001-use-shared-cxxopts.patch
+    - patches/0002-import-shared-Eigen3.patch
+    - patches/0003-use-conda-cmakelists.patch
+
+build:
+  skip: True  # [win]
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - cmake
+    - make
+  host:
+    - bgenix>=1.1.7
+    - boost
+    - boost-cpp
+    - cxxopts
+    - eigen
+    - blas=2.20=mkl
+    - mkl-include
+    # c-compiler cxx-compiler fortran-compiler
+    # "gxx_linux-64=7.5.0" "gcc_linux-64=7.5.0" "gfortran_linux-64=7.5.0" "libgomp=7.5.0"
+  run:
+    - blas=2.20=mkl
+
+test:
+  commands:
+    - test -f ${PREFIX}/bin/regenie  # [linux]
+    - regenie --help
+
+about:
+  home: https://github.com/rgcgithub/regenie
+  license: MIT
+  license_file: LICENSE
+  summary: 'Regenie is a C++ program for whole genome regression modelling of large genome-wide association studies.'
+  dev_url: https://github.com/rgcgithub/regenie
+
+extra:
+  recipe-maintainers:
+    - matuskosut
