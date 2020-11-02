@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="TENxBrainData_1.9.0.tar.gz"
+FN="TENxBrainData_1.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/TENxBrainData_1.9.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/TENxBrainData_1.9.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tenxbraindata/bioconductor-tenxbraindata_1.9.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/TENxBrainData_1.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TENxBrainData_1.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tenxbraindata/bioconductor-tenxbraindata_1.10.0_src_all.tar.gz"
 )
-MD5="ad026b0395aefbda2ae73ea8c7d6b609"
+MD5="e085743f73d5fada27265ce1956f4286"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

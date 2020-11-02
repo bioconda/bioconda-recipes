@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="PWMEnrich.Hsapiens.background_4.23.2.tar.gz"
+FN="PWMEnrich.Hsapiens.background_4.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/PWMEnrich.Hsapiens.background_4.23.2.tar.gz"
-  "https://bioarchive.galaxyproject.org/PWMEnrich.Hsapiens.background_4.23.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pwmenrich.hsapiens.background/bioconductor-pwmenrich.hsapiens.background_4.23.2_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/PWMEnrich.Hsapiens.background_4.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/PWMEnrich.Hsapiens.background_4.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pwmenrich.hsapiens.background/bioconductor-pwmenrich.hsapiens.background_4.24.0_src_all.tar.gz"
 )
-MD5="d4003a85e4b7f80ef0534aec41edbcf7"
+MD5="f9110634c557cbef10df0b45788b5b7b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

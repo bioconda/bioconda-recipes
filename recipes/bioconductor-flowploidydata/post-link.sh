@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="flowPloidyData_1.15.0.tar.gz"
+FN="flowPloidyData_1.16.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/flowPloidyData_1.15.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/flowPloidyData_1.15.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-flowploidydata/bioconductor-flowploidydata_1.15.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/flowPloidyData_1.16.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/flowPloidyData_1.16.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-flowploidydata/bioconductor-flowploidydata_1.16.0_src_all.tar.gz"
 )
-MD5="0680ee841b7ed6b7ea965a982d2d3671"
+MD5="65ae27ef08ec3633dbe2f25ab5574adc"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
