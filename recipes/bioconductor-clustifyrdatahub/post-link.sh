@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="clustifyrdatahub_0.99.5.tar.gz"
+FN="clustifyrdatahub_1.0.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/clustifyrdatahub_0.99.5.tar.gz"
-  "https://bioarchive.galaxyproject.org/clustifyrdatahub_0.99.5.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-clustifyrdatahub/bioconductor-clustifyrdatahub_0.99.5_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/clustifyrdatahub_1.0.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/clustifyrdatahub_1.0.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-clustifyrdatahub/bioconductor-clustifyrdatahub_1.0.0_src_all.tar.gz"
 )
-MD5="838e75434cd4da1f60f615edf10ca49a"
+MD5="fa00df701fefb222dce66346414395c8"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
