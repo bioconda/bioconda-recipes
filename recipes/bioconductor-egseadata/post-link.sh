@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="EGSEAdata_1.17.0.tar.gz"
+FN="EGSEAdata_1.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/EGSEAdata_1.17.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/EGSEAdata_1.17.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-egseadata/bioconductor-egseadata_1.17.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/EGSEAdata_1.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/EGSEAdata_1.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-egseadata/bioconductor-egseadata_1.18.0_src_all.tar.gz"
 )
-MD5="0117584187d6023b14c1a0882a8685d5"
+MD5="0f3e2631bed49e54122484c3fb141790"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

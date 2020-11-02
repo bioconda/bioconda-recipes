@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="SNAGEEdata_1.25.0.tar.gz"
+FN="SNAGEEdata_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/SNAGEEdata_1.25.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/SNAGEEdata_1.25.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-snageedata/bioconductor-snageedata_1.25.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/SNAGEEdata_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/SNAGEEdata_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-snageedata/bioconductor-snageedata_1.26.0_src_all.tar.gz"
 )
-MD5="fec8fbe08e0d81f2eb5c9b15ce04662f"
+MD5="9951bf260fe26f22b0c69b704e13cccf"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

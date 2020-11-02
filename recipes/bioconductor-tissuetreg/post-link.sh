@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="tissueTreg_1.9.0.tar.gz"
+FN="tissueTreg_1.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/tissueTreg_1.9.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/tissueTreg_1.9.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tissuetreg/bioconductor-tissuetreg_1.9.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/tissueTreg_1.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/tissueTreg_1.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tissuetreg/bioconductor-tissuetreg_1.10.0_src_all.tar.gz"
 )
-MD5="ed0f8d57c1260eb1c8ff936307c3b457"
+MD5="3b1721e4047f6446069ce776038636cd"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

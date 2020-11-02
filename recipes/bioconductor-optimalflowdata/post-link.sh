@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="optimalFlowData_1.1.0.tar.gz"
+FN="optimalFlowData_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/optimalFlowData_1.1.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/optimalFlowData_1.1.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-optimalflowdata/bioconductor-optimalflowdata_1.1.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/optimalFlowData_1.2.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/optimalFlowData_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-optimalflowdata/bioconductor-optimalflowdata_1.2.0_src_all.tar.gz"
 )
-MD5="5ddca4b54bf0b07ff472cc815f702a10"
+MD5="1a38124fe2886e193b38e0f8e24e7fda"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

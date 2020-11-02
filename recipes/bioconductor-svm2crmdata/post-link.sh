@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="SVM2CRMdata_1.21.0.tar.gz"
+FN="SVM2CRMdata_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/SVM2CRMdata_1.21.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/SVM2CRMdata_1.21.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-svm2crmdata/bioconductor-svm2crmdata_1.21.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/SVM2CRMdata_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/SVM2CRMdata_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-svm2crmdata/bioconductor-svm2crmdata_1.22.0_src_all.tar.gz"
 )
-MD5="7558a6987a7f777ae43f3a28a4724812"
+MD5="b6da6180ff95e623d6f9637f874d8ad4"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

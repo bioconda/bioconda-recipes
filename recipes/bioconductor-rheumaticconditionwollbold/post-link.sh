@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="rheumaticConditionWOLLBOLD_1.27.0.tar.gz"
+FN="rheumaticConditionWOLLBOLD_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/rheumaticConditionWOLLBOLD_1.27.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/rheumaticConditionWOLLBOLD_1.27.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rheumaticconditionwollbold/bioconductor-rheumaticconditionwollbold_1.27.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/rheumaticConditionWOLLBOLD_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/rheumaticConditionWOLLBOLD_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rheumaticconditionwollbold/bioconductor-rheumaticconditionwollbold_1.28.0_src_all.tar.gz"
 )
-MD5="d739a4ad5a6ddcac7f5f0e4629772ddd"
+MD5="e6dd8c70198e59afc648fe567e55ca58"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
