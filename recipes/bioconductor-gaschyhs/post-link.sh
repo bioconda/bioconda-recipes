@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="gaschYHS_1.27.0.tar.gz"
+FN="gaschYHS_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/gaschYHS_1.27.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/gaschYHS_1.27.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-gaschyhs/bioconductor-gaschyhs_1.27.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/gaschYHS_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/gaschYHS_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-gaschyhs/bioconductor-gaschyhs_1.28.0_src_all.tar.gz"
 )
-MD5="05bdf8b449af3f98b5a94d53f9bbe963"
+MD5="f5d6cb2475a29d034c2e8c2b960a908c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

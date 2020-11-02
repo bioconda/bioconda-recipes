@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="GeuvadisTranscriptExpr_1.17.0.tar.gz"
+FN="GeuvadisTranscriptExpr_1.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/GeuvadisTranscriptExpr_1.17.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/GeuvadisTranscriptExpr_1.17.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-geuvadistranscriptexpr/bioconductor-geuvadistranscriptexpr_1.17.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/GeuvadisTranscriptExpr_1.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/GeuvadisTranscriptExpr_1.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-geuvadistranscriptexpr/bioconductor-geuvadistranscriptexpr_1.18.0_src_all.tar.gz"
 )
-MD5="f163d65162b0f7e114f823464b1476dc"
+MD5="d07a57af5638d89a643169cd8755ecf0"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

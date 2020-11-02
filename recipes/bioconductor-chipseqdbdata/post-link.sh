@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="chipseqDBData_1.5.6.tar.gz"
+FN="chipseqDBData_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/chipseqDBData_1.5.6.tar.gz"
-  "https://bioarchive.galaxyproject.org/chipseqDBData_1.5.6.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-chipseqdbdata/bioconductor-chipseqdbdata_1.5.6_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/chipseqDBData_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/chipseqDBData_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chipseqdbdata/bioconductor-chipseqdbdata_1.6.0_src_all.tar.gz"
 )
-MD5="0ff798aa5a1dbfac2f6c8ca146a079f7"
+MD5="d2e9b600e63871f7e6de934928eeb909"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

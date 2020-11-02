@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="celarefData_1.7.0.tar.gz"
+FN="celarefData_1.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/celarefData_1.7.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/celarefData_1.7.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-celarefdata/bioconductor-celarefdata_1.7.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/celarefData_1.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/celarefData_1.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-celarefdata/bioconductor-celarefdata_1.8.0_src_all.tar.gz"
 )
-MD5="2a31f57308ba9d42dd9f847584cdbf1e"
+MD5="339c1fdafb03680b9ef8e3df52f7e7fb"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

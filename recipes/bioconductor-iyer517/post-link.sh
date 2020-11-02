@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="Iyer517_1.31.0.tar.gz"
+FN="Iyer517_1.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/Iyer517_1.31.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/Iyer517_1.31.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-iyer517/bioconductor-iyer517_1.31.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/Iyer517_1.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/Iyer517_1.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-iyer517/bioconductor-iyer517_1.32.0_src_all.tar.gz"
 )
-MD5="110b730965971583b6fcec0c518ede37"
+MD5="51d87a8341cb9c69243aa156ba0ad39e"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

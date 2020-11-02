@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="HighlyReplicatedRNASeq_1.1.0.tar.gz"
+FN="HighlyReplicatedRNASeq_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/HighlyReplicatedRNASeq_1.1.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/HighlyReplicatedRNASeq_1.1.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-highlyreplicatedrnaseq/bioconductor-highlyreplicatedrnaseq_1.1.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/HighlyReplicatedRNASeq_1.2.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/HighlyReplicatedRNASeq_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-highlyreplicatedrnaseq/bioconductor-highlyreplicatedrnaseq_1.2.0_src_all.tar.gz"
 )
-MD5="9a9b6a926606d07e80cecd9110c85054"
+MD5="963bfa9341ba5ac9aae0d5c183fe2b52"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
