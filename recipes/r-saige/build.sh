@@ -8,6 +8,16 @@ if [[ $target_platform =~ linux.* ]] || [[ $target_platform == win-32 ]] || [[ $
   export DISABLE_AUTOBREW=1
   rm configure
   $R CMD INSTALL --build .
+  mkdir -p "${PREFIX}/lib/R/library/${PKG_NAME}/"
+
+  cp extdata/cmd.sh "${PREFIX}/lib/R/library/${PKG_NAME}/"
+  for item in step1_fitNULLGLMM.R step2_SPAtests.R createSparseGRM.R; do
+    cp "extdata/${item}" "${PREFIX}/lib/R/library/${PKG_NAME}/${item}"
+    chmod +x "${PREFIX}/lib/R/library/${PKG_NAME}/${item}"
+    pushd ${PREFIX}/bin
+      ln -s ../lib/R/library/${PKG_NAME}/${item} ${item}
+    popd
+  done
 else
   mkdir -p $PREFIX/lib/R/library/$PKG_NAME
   mv * $PREFIX/lib/R/library/$PKG_NAME
