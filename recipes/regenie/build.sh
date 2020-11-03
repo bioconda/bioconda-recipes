@@ -5,6 +5,10 @@
 set -e
 set -x
 
+if [ "$(uname)" = "Darwin" ]; then
+  # LDFLAGS fix: https://github.com/AnacondaRecipes/intel_repack-feedstock/issues/8
+  export LDFLAGS="-Wl,-pie -Wl,-headerpad_max_install_names -Wl,-rpath,$PREFIX/lib -L$PREFIX/lib"
+fi
 export MKL_THREADING_LAYER="GNU"
 # export PREFIX="${CONDA_PREFIX}"
 # export CPU_COUNT="${CPU_COUNT:=8}"
