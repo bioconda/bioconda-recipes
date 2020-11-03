@@ -7,10 +7,12 @@ echo "local path"
 pwd
 echo "Python's site-packages location"
 ls -l $SP_DIR
+ls -l $SP_DIR/TEsorter
+ls -l $SP_DIR/TEsorter/database
 echo "local dir"
 ls -l
 echo "Run hmmpress to get the DB ready to use"
-cd TEsorter/database
+cd $SP_DIR/TEsorter/database
 echo "database folder before"
 ls -l
 for i in `ls *hmm | sed 's/.hmm//g'`; do hmmpress ${i}.hmm > ../${i}.hmm;done
