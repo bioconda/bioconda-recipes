@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# conda install -c huntcloud -c conda-forge "bgenix=1.1.7" boost boost-cpp make c-compiler cxx-compiler fortran-compiler "gxx_linux-64=7.5.0" "gcc_linux-64=7.5.0" "gfortran_linux-64=7.5.0" "libgomp=7.5.0" cxxopts eigen "blas=2.20=mkl" mkl-include
-
 set -e
 set -x
 
@@ -10,12 +8,7 @@ if [ "$(uname)" = "Darwin" ]; then
   export LDFLAGS="-Wl,-pie -Wl,-headerpad_max_install_names -Wl,-rpath,$PREFIX/lib -L$PREFIX/lib"
 fi
 export MKL_THREADING_LAYER="GNU"
-# export PREFIX="${CONDA_PREFIX}"
-# export CPU_COUNT="${CPU_COUNT:=8}"
-# export BGEN_PATH="${BGEN_PATH}"
-# export SRC_DIR="$(pwd)"
 
-# rm -rf build
 mkdir -p build
 cd build
 
