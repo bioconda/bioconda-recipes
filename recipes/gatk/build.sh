@@ -21,5 +21,5 @@ mv $JAR $PACKAGE_HOME/
 
 chmod +x $PACKAGE_HOME/*.{py,jar}
 
-ln -s $PACKAGE_HOME/gatk.py $PREFIX/bin/gatk
-ln -s $PACKAGE_HOME/gatk.py $PREFIX/bin/GenomeAnalysisTK
+ln -s $PACKAGE_HOME/gatk.py $PREFIX/bin/gatk3
+ln -s $PACKAGE_HOME/gatk.py $PREFIX/bin/GenomeAnalysisTK3
