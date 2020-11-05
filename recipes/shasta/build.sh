@@ -1,10 +1,10 @@
 #!/bin/bash
 
 if [[ "$OSTYPE" == "darwin"* ]];then
-  mv shasta-macOS-${PKG_VERSION} shasta
+  mv ${PKG_NAME}-macOS-${PKG_VERSION} shasta
 fi
 if [[ "$OSTYPE" == "linux-gnu"* ]];then
-  mv shasta-Linux-${PKG_VERSION} shasta
+  mv ${PKG_NAME}-Linux-${PKG_VERSION} shasta
 fi
 
 chmod +x shasta
