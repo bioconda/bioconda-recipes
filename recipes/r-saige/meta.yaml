@@ -29,28 +29,9 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
-    - r-base {{ R }}
-    - bgenix 1.1.4
-    - r-spatest 3.0.0
-    - r-rcpp
-    - r-rcpparmadillo
-    - r-rcppparallel
-    - r-metaskat
-    - r-skat
-    - r-devtools
-    - r-matrix
-    - r-data.table
-    - r-rcppeigen
-    - r-bh
-    - r-optparse
-    - savvy
-    - boost
-    - boost-cpp
-    - superlu
   host:
-    - r-base {{ R }}
+    - r-base {{ r_base }}
     - bgenix 1.1.4
-    - boost
     - boost-cpp
     - r-spatest 3.0.0
     - r-rcpp
@@ -65,14 +46,14 @@ requirements:
     - r-bh
     - r-optparse
     - liblapack
+    - libopenblas
     - superlu
     - savvy
     - zstd
     - zlib
   run:
-    - r-base {{ R }}
+    - r-base {{ r_base }}
     - boost-cpp
-    - liblapack
     - bgenix 1.1.4
     - savvy
     - r-rcpp
@@ -80,11 +61,17 @@ requirements:
     - r-matrix
     - r-data.table
     - r-optparse
+    - liblapack
+    - libopenblas
     - sqlite
 
 test:
   commands:
+    - test -f ${PREFIX}/lib/R/lib/SAIGE.so  # [linux]
     - $R -e "library('SAIGE')"
+    - step1_fitNULLGLMM.R --help
+    - step2_SPAtests.R --help
+    - createSparseGRM.R --help
 
 about:
   home: https://github.com/weizhouUMICH/SAIGE
