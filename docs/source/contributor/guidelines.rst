@@ -266,10 +266,17 @@ R (CRAN)
           commands:
             - $R -e "library('RNeXML')"  # [not win]
             - "\"%R%\" -e \"library('RNeXML')\""  # [win]
+     and
+     .. code-block:: yaml
+     
+         requirements:
+           build:
+             - {{ posix }}zip               # [win]
 
     The bioconda channel does not build for Windows. To keep recipes
     streamlined, please remove the "set posix" and "set native" lines described
-    above and convert the ``test:commands:`` block to only:
+    above, remove the whole ``build`` entry under ``requirements``, and convert
+    the ``test:commands:`` block to only:
 
     .. code-block:: yaml
 
