@@ -1,0 +1,81 @@
+From 1332db6bf455d2b0caf0eed95d02154100d4bec7 Mon Sep 17 00:00:00 2001
+From: Brent Pedersen <bpederse@gmail.com>
+Date: Mon, 13 Apr 2020 17:23:24 -0600
+Subject: [PATCH] update for recent hts-nim and nim versions
+
+---
+ src/duphold.nim | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/src/duphold.nim b/src/duphold.nim
+index 1ebfc64..21d3570 100644
+--- a/src/duphold.nim
++++ b/src/duphold.nim
+@@ -114,7 +114,7 @@ proc find(targets:seq[Target], chrom:string): int =
+         if t.name == chrom: return i
+     return -1
+ 
+-proc count_gc(gc: var seq[bool], s:int, e:int): float32 {.inline.} =
++proc count_gc(gc: var seq[bool], s:int64, e:int64): float32 {.inline.} =
+     var tot = 0
+     for i in s..<min(e, gc.len):
+         tot += gc[i].int
+@@ -286,7 +286,7 @@ proc duphold*[T](variant:Variant, values:var seq[T], sample_i: int, stats:var Me
+     if isBnd or variant.ALT[0].startswith("<DEL") or (variant.ALT[0] != "<" and len(variant.REF) > len(variant.ALT[0])):
+       var ints = newSeq[int32](variant.vcf.n_samples)
+       get_or_empty(variant, "DHSP", ints)
+-      ints[sample_i] = discordants.count(s, e, i99).int32
++      ints[sample_i] = discordants.count(s.int, e.int, i99).int32
+       if variant.format.set("DHSP", ints) != Status.OK:
+           quit "error setting DHSP in VCF"
+ 
+@@ -326,7 +326,7 @@ proc get_isize_distribution*(bam:Bam, n:int=5_000_000, skip=1_500_000): MedianSt
+         if aln.mapping_quality == 0: continue
+         #if not aln.flag.proper_pair: continue
+         if aln.start > aln.mate_pos or aln.isize <= 0: continue
+-        result.add(max(0, aln.isize))
++        result.add(max(0, aln.isize.int))
+         if result.n == n:
+             return
+ 
+@@ -357,9 +357,9 @@ iterator duphold*(bam:Bam, vcf:VCF, fai:Fai, sample_i:int, step:int=STEP): Varia
+       if f.unmapped or f.secondary or f.qcfail or f.dup: return
+       var stop = aln.stop
+       if stop - aln.start < 500:
+-        posns.add((aln.start, stop, 1))
++        posns.add((aln.start.int, stop.int, 1))
+       else: # for long reads, we actually parse the cigar.
+-        var pos = aln.start
++        var pos = aln.start.int
+         for op in aln.cigar:
+           var c = op.consumes
+           if not c.reference: continue
+@@ -391,7 +391,6 @@ iterator duphold*(bam:Bam, vcf:VCF, fai:Fai, sample_i:int, step:int=STEP): Varia
+           yield variant
+           continue
+ 
+-      target = nil
+       last_chrom = $variant.CHROM
+       stats = MedianStats()
+       gc_stats = newSeq[MedianStats](GC_BINS)
+@@ -413,7 +412,10 @@ iterator duphold*(bam:Bam, vcf:VCF, fai:Fai, sample_i:int, step:int=STEP): Varia
+       discs.setLen(0)
+       GC_fullCollect()
+ 
+-      discard genoiser[int16](bam, @[depths], target.name, 0, target.length.int)
++      # required for recent nim version
++      var odepths:seq[Fun[int16]] = @[depths]
++
++      discard genoiser[int16](bam, odepths, $target.name, 0, target.length.int)
+ 
+       gc_count = fai.gc_content(last_chrom, step, gc_bool)
+       depths.values.fill_stats(stats, gc_stats, gc_count, step, target.length.int)
+@@ -430,7 +432,7 @@ iterator duphold*(bam:Bam, vcf:VCF, fai:Fai, sample_i:int, step:int=STEP): Varia
+ type inner = tuple[left: int, right:int]
+ 
+ proc innerCI(v:Variant): inner {.inline.} =
+-    result = (v.start, v.stop)
++    result = (v.start.int, v.stop.int)
+     var ci = newSeq[int32](2)
+     if v.info.get("CIPOS95", ci) == Status.OK:
+         result[0] += ci[1]

@@ -1,11 +1,7 @@
 #!/bin/bash
 
-export C_INCLUDE_PATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
+make CC="${CC}" CPPFLAGS="${CPPFLAGS}" LIBS="${LDFLAGS} -lm -lz -lpthread"
 
-mkdir -p $PREFIX/bin
-
-make 
-cp minidot $PREFIX/bin 
-cp miniasm $PREFIX/bin
-
+mkdir -p "${PREFIX}/bin"
+cp minidot "${PREFIX}/bin/"
+cp miniasm "${PREFIX}/bin/"

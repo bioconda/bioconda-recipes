@@ -1,4 +1,4 @@
-{% set version = "2.2.0" %}
+{% set version = "2.3.5" %}
 
 package:
   name: crispritz
@@ -6,25 +6,20 @@ package:
 
 source:
   url: https://github.com/pinellolab/CRISPRitz/archive/v{{ version }}.tar.gz
-  sha256: aa5eb34792f8dbbf6aa851feb9fe61e6b17f274151c526c8f3c7cd6aad287265
- 
+  sha256: 8d815f7bcfb0b62cbeca6997902f799a358cc1b2d114b68c056526af1299e06c
+
 build:
   number: 0
-  skip: True  # [osx]
+  skip: True  # [osx or py<36]
 
 requirements:
-
   build:
-    - {{compiler('cxx')}}
-    - boost
-    - openmp
-
+    - {{ compiler('cxx') }}
+    - libgomp  # [linux]
   host:
     - make
     - boost
-    - openmp
-    - python >=3.6
-    
+    - python
   run:
     - dash
     - dash-renderer
@@ -49,8 +44,9 @@ requirements:
     - openmp
     - libdeflate
     - libcxx
-    - python >=3.6
-    
+    - python
+    - bedops
+
 test:
   commands:
     - crispritz.py
@@ -58,4 +54,5 @@ test:
 about:
   home: https://github.com/pinellolab/CRISPRitz
   license: GPL3
+  license_file: LICENSE
   summary: CRISPRitz, tool package for CRISPR experiments assessment and analysis.
