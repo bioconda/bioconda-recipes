@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="SCLCBam_1.18.0.tar.gz"
+FN="SCLCBam_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/SCLCBam_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/SCLCBam_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-sclcbam/bioconductor-sclcbam_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/SCLCBam_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/SCLCBam_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-sclcbam/bioconductor-sclcbam_1.22.0_src_all.tar.gz"
 )
-MD5="9aafb61efe3067831319e9863c116ac5"
+MD5="97a1d00b7bc1ce93f5bb8199c8f5a507"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
