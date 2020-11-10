@@ -267,6 +267,7 @@ R (CRAN)
             - $R -e "library('RNeXML')"  # [not win]
             - "\"%R%\" -e \"library('RNeXML')\""  # [win]
      and
+     
      .. code-block:: yaml
      
          requirements:
