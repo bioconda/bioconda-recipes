@@ -11,8 +11,4 @@ make
 
 #link in /bin, following bioconda rules
 install -d ${PREFIX}/bin
-echo "LISTING FILES HERE"
-ls
 install appspam ${PREFIX}/bin/
-echo "LISTING FILES There"
-ls ${PREFIX}/bin/
