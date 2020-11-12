@@ -16,3 +16,7 @@ cargo install --force --root $PREFIX
 
 # move Rscript
 cp src/snp_density_plots.R $CONDA_PREFIX/bin/
+
+# move python module
+cp src/bin/cluster.py $CONDA_PREFIX/bin/
+chmod +x $CONDA_PREFIX/bin/cluster.py
