@@ -24,17 +24,24 @@ requirements:
     - r-base
     - libblas
     - liblapack
-    - 'libsbml 5.10.2'
+    # From configure.in: PKG_CHECK_MODULES(LIBSBML, [libsbml >= 3.0.2], [LIBSBML="yes"])
+    #      DESCRIPTION: SystemRequirements: libsbml (==5.10.2)
+    #      INSTALL: ... on Windows ... libsbml 5.10.0 ...
+    #               It might work ... other versions, but ... only really tested 5.10.0.
+    # => libsbml >=3.0.2 might be okay, but let's use >=5.10.2,<6.0a0 for now.
+
+    - libsbml >=5.10.2,<6.0a0
   run:
     - 'bioconductor-biocgenerics >=0.36.0,<0.37.0'
     - 'bioconductor-graph >=1.68.0,<1.69.0'
     - r-base
-    - 'libsbml 5.10.2'
+    - {{ pin_compatible('libsbml') }}
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - automake
     - make
+    - pkg-config
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
