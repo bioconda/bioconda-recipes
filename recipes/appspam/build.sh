@@ -10,5 +10,9 @@ cmake ..
 make
 
 #link in /bin, following bioconda rules
-mkdir -p ${PREFIX}/bin
+install -d ${PREFIX}/bin
+echo "LISTING FILES HERE"
+ls
 install appspam ${PREFIX}/bin/
+echo "LISTING FILES There"
+ls ${PREFIX}/bin/
