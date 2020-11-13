@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="synapterdata_1.26.0.tar.gz"
+FN="synapterdata_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/synapterdata_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/synapterdata_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-synapterdata/bioconductor-synapterdata_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/synapterdata_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/synapterdata_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-synapterdata/bioconductor-synapterdata_1.28.0_src_all.tar.gz"
 )
-MD5="76c2521fdb547657f89fa84d6b977635"
+MD5="a2be9b10dcda1e3f3c41ec9c797b8438"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

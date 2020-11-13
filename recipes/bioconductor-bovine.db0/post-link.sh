@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="bovine.db0_3.11.2.tar.gz"
+FN="bovine.db0_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/bovine.db0_3.11.2.tar.gz"
-  "https://bioarchive.galaxyproject.org/bovine.db0_3.11.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bovine.db0/bioconductor-bovine.db0_3.11.2_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/bovine.db0_3.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/bovine.db0_3.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bovine.db0/bioconductor-bovine.db0_3.12.0_src_all.tar.gz"
 )
-MD5="2121697749f4b05e290df9260865e74d"
+MD5="16e4e0479901044d2b2b2fc60335f3a0"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
