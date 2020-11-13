@@ -20,7 +20,7 @@ else
 fi
 
 # TEST GREP
-GREP=$(fu-grep.pl -n gnl  test.fa | grep '>' | wc -l)
+GREP=$(fu-grep -n gnl  test.fa | grep '>' | wc -l)
 if [[ $GREP == '3' ]]; then
  echo "[fu-grep] GREP OK: $GREP [PASS]"
 else

@@ -20,3 +20,7 @@ make CC=$CXX
 # copy binaries
 cp bin/* ${PREFIX}/bin
 cp HG-CoLoR ${PREFIX}/bin
+
+# fix paths in HG-CoLoR script that expect another level of bin/ subdirectory
+# also the botched up path to PsAGen; everything is in the same bin directory
+sed -i -e 's#^\$hgf[^ ]\+/\([^ ]\+\)#$hgf/\1#' ${PREFIX}/bin/HG-CoLoR

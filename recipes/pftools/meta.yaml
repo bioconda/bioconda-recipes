@@ -1,0 +1,44 @@
+{% set name = "pftools" %}
+{% set version = "2.3.5" %}
+{% set sha256 = "4d4080572479a6bb2b97f03c84331190a82adfa6cc6be131d78672507f4418f5" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: ftp://ftp.lausanne.isb-sib.ch/pub/software/unix/pftools/pft2.3/pft{{ version }}.d.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('fortran') }}
+    - {{ compiler('cxx') }}
+  host:
+    - r-base
+  run:
+    - r-base
+
+test:
+  commands:
+    - gtop -h 2>&1 | grep -i usage
+    - pfmake -h 2>&1 | grep -i usage
+    - pfscan -h 2>&1 | grep -i usage
+    - pfw -h 2>&1 | grep -i usage
+    - ptoh -h 2>&1 | grep -i usage
+    - htop -h 2>&1 | grep -i usage
+    - pfscale -h 2>&1 | grep -i usage
+    - pfsearch -h 2>&1 | grep -i usage
+    - psa2msa -h 2>&1 | grep -i usage
+    - 2ft -h 2>&1 | grep -i usage
+    - 6ft -h 2>&1 | grep -i usage
+    - ptof -h 2>&1 | grep -i usage
+
+about:
+  home: https://web.expasy.org/pftools/
+  license: GPLv2
+  summary: 'A generalized profile syntax for biomolecular sequence motifs and its function in automatic sequence interpretation.'
+  dev_url: https://github.com/sib-swiss/pftools3
