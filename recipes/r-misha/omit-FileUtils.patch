@@ -1,0 +1,46 @@
+This code does not compile on non-Linux platforms as it uses Linux's sendfile.
+Fortunately it is currently unused anyway.
+
+diff --git a/src/FileUtils.cpp b/src/FileUtils.cpp
+index ffbe0f0..b85affb 100644
+--- a/src/FileUtils.cpp
++++ b/src/FileUtils.cpp
+@@ -3,13 +3,13 @@
+ #include <stdio.h>
+ #include <string.h>
+ #include <unistd.h>
+-#include <sys/sendfile.h>
+ #include <sys/stat.h>
+ #include <sys/types.h>
+ 
+ #include "FileUtils.h"
+ #include "TGLException.h"
+ 
++#if 0
+ struct FD {
+     int fd{-1};
+     ~FD() {
+@@ -48,3 +48,4 @@ void FileUtils::move_file(const char *src, const char *tgt)
+             TGLError(errno, "Error moving file %s to %s: %s\n", src, tgt);
+     }
+ }
++#endif
+diff --git a/src/FileUtils.h b/src/FileUtils.h
+index 3f141a7..320a1f3 100644
+--- a/src/FileUtils.h
++++ b/src/FileUtils.h
+@@ -1,6 +1,7 @@
+ #ifndef FILEUTILS_H_INCLUDED
+ #define FILEUTILS_H_INCLUDED
+ 
++#if 0
+ namespace FileUtils {
+     // Makes a fast copy of a file while preserving permissions.
+     // Throws TGLException on error, TGLException::code contains errno.
+@@ -10,5 +11,6 @@ namespace FileUtils {
+     // Throws TGLException on error, TGLException::code contains errno.
+     void move_file(const char *src, const char *tgt);
+ }
++#endif
+ 
+ #endif
