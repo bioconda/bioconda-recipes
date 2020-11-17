@@ -3,7 +3,7 @@ set -e
 set -x
 
 platform="$(uname)"
-unzip comet_source_"$PKG_VERSION".zip
+unzip comet_"$PKG_VERSION"_src.zip
 if [ "$platform" = "Darwin" ]; then
     sed -i.bak -e 's/ -static//' -e 's/ -o / -headerpad_max_install_names&/' Makefile
     sed -i.bak -e "s/sha1Report='..'/sha1Report=NULL/" MSToolkit/include/MSReader.h
