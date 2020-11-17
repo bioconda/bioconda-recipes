@@ -7,6 +7,7 @@ export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 
 find . -type f -exec sed -i 's/\r$//' {} \;
+sed -i 's/\r$//' $RECIPE_DIR/source.patch
 patch -p 0 -u < $RECIPE_DIR/source.patch
 
 mkdir -p "$PREFIX/include/rdkit/External/INCHI-API"
