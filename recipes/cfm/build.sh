@@ -21,7 +21,7 @@ cmake .. -DCFM_OUTPUT_DIR="${PREFIX}/bin/" \
         -DBOOST_LIBRARYDIR="${PREFIX}/lib" \
         -DRDKIT_INCLUDE_DIR="${PREFIX}/include/rdkit" \
         -DRDKIT_INCLUDE_EXT_DIR="${PREFIX}/include/rdkit/External" \
-	-DLBFGS_INCLUDE_DIR="${PREFIX}/include" -DLBFGS_LIBRARY_DIR="${PREFIX}/lib" \
+        -DLBFGS_INCLUDE_DIR="${PREFIX}/include" -DLBFGS_LIBRARY_DIR="${PREFIX}/lib" \
         -DINCLUDE_TESTS=ON -DINCLUDE_TRAIN=ON
 #-DRDKIT_LIBRARIES="${PREFIX}/lib"
 
