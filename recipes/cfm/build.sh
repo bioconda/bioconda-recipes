@@ -6,6 +6,8 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 
+echo "PWD $pwd"
+
 ls -la *
 
 find . -type f -exec sed -i 's/\r$//' {} \;
@@ -18,7 +20,7 @@ cp "$PREFIX/include/rdkit/GraphMol/inchi.h" "$PREFIX/include/rdkit/External/INCH
 mkdir build
 cd build
 
-cmake .. -DCFM_OUTPUT_DIR="${PREFIX}/bin/" \
+cmake ../cfm/ -DCFM_OUTPUT_DIR="${PREFIX}/bin/" \
         -DLPSOLVE_INCLUDE_DIR="${PREFIX}/include/lpsolve" \
         -DLPSOLVE_LIBRARY_DIR="${PREFIX}/lib" \
         -DBoost_INCLUDE_DIR="${PREFIX}/include" \
