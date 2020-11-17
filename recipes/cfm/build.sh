@@ -6,7 +6,8 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 
-find . -type f -exec dos2unix {} \;
+find . -type f -exec sed -i 's/\r$//' {} \;
+patch -p 0 -u < $RECIPE_DIR/source.patch
 
 mkdir -p "$PREFIX/include/rdkit/External/INCHI-API"
 cp "$PREFIX/include/rdkit/GraphMol/inchi.h" "$PREFIX/include/rdkit/External/INCHI-API"
