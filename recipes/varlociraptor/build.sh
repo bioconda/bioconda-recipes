@@ -6,4 +6,5 @@ export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
 # Make sure bindgen passes on our compiler flags.
 export BINDGEN_EXTRA_CLANG_ARGS="${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
 
+RUSTFLAGS="${RUSTFLAGS-} -Clinker=clang -Clinker-plugin-lto -Clink-arg=-fuse-ld=lld" \
 cargo install --path . --root $PREFIX --verbose
