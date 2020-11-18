@@ -56,24 +56,23 @@ requirements:
     - bioconductor-deseq2
     - bioconductor-GenomicScores
     - bioconductor-outrider
-    - bioconductor-fraser
+    - bioconductor-fraser>=1.2.0
     - bioconductor-variantannotation
     - bioconductor-bsgenome.hsapiens.ucsc.hg19
       #- bioconductor-mafdb.gnomad.r2.1.hs37d5
       #- bioconductor-mafdb.gnomad.r2.1.grch38
 
 test:
-  imports:
+  source_files:
+    - tests/requirements.txt
+  requires:
     - drop
+  requires:
+    - pytest
+    - pip
   commands:
-    - drop --help
-    - mkdir -p /tmp/drop_test
-    - cd /tmp/drop_test
-    - drop demo > /dev/null
-    - snakemake -n > /dev/null
-    - snakemake --cores 1 --jobs 1
-    - cd
-    - rm -rf /tmp/drop_test
+    - pip install -r tests/requirements.txt
+    - pytest --durations=10 --durations-min=1.0
 
 about:
   home: https://github.com/gagneurlab/drop
