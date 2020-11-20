@@ -1,4 +1,4 @@
-{% set version = "5.14.0" %}
+{% set version = "5.29.0" %}
 
 package:
   name: snakemake
@@ -6,10 +6,10 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/snakemake/snakemake-{{ version }}.tar.gz
-  sha256: b11b7ac30808f573883d5db79595ac62db6d1416b24fd71e1a27dc7b3e5678e8
+  sha256: 47417307d08ecb0707b3b29effc933bd63d8c8e3ab15509c62b685b7614c6568
 
 build:
-  number: 1
+  number: 0
   noarch: generic
 
 requirements:
@@ -28,7 +28,8 @@ requirements:
     - pandas
     - python-irodsclient
     - google-cloud-storage
-    - crc32c
+    - google-api-python-client
+    - google-crc32c
     - boto3
     - jsonschema
     - jinja2
@@ -37,6 +38,10 @@ requirements:
     - pygments
     # older versions of imagemagick sometimes fail on PDF -> PNG conversion
     - imagemagick >=7.0
+    - oauth2client
+    - slacker
+    # libXau is currently a missing dep for graphviz (linked by lib/graphviz/libgvplugin_pango.so)
+    - xorg-libxau
 
 test:
   imports:
@@ -45,9 +50,13 @@ test:
     - export GIT\_PYTHON_REFRESH=warn
     - snakemake --version
     - snakemake --version | grep "{{ version }}"
+    # Generate a report to check whether graphviz dependencies (libXau) are properly installed:
+    - 'printf %s\\n "rule empty:" > Snakefile && snakemake --cores 1 --report'
+    # Remove test artifacts from command above.
+    - rm -rf .snakemake Snakefile report.html
 
 about:
-  home: https://snakemake.readthedocs.io
+  home: https://snakemake.github.io
   license: MIT
   summary: A popular workflow management system aiming at full in-silico reproducibility.
   description: |
@@ -97,6 +106,7 @@ outputs:
         - gitpython
         - toposort
         - nbformat
+        - pulp >=2.0
 
     test:
       imports:
@@ -107,7 +117,7 @@ outputs:
         - snakemake --version | grep "{{ version }}"
     
     about:
-      home: https://snakemake.readthedocs.io
+      home: https://snakemake.github.io
       license: MIT
       summary: A popular workflow management system aiming at full in-silico reproducibility.
       description: |
