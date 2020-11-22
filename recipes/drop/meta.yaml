@@ -1,5 +1,5 @@
 {% set name = "drop" %}
-{% set version = "1.0.1" %} 
+{% set version = "1.0.2" %} 
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/gagneurlab/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: e5818b1a76e8e74b707e8a2019c6135202d9693391789f244908bb383b5df109
+  sha256: 08c6cac15a7301d257a05558320ce2ecef0664ff5220fe1297f6a0089149531a
 
 build:
   number: 0
@@ -56,24 +56,21 @@ requirements:
     - bioconductor-deseq2
     - bioconductor-GenomicScores
     - bioconductor-outrider
-    - bioconductor-fraser
+    - bioconductor-fraser >=1.0.2
     - bioconductor-variantannotation
-    - bioconductor-bsgenome.hsapiens.ucsc.hg19
+      #- bioconductor-bsgenome.hsapiens.ucsc.hg19
       #- bioconductor-mafdb.gnomad.r2.1.hs37d5
       #- bioconductor-mafdb.gnomad.r2.1.grch38
 
 test:
   imports:
     - drop
-  commands:
-    - drop --help
-    - mkdir -p /tmp/drop_test
-    - cd /tmp/drop_test
-    - drop demo > /dev/null
-    - snakemake -n > /dev/null
-    - snakemake --cores 1 --jobs 1
-    - cd
-    - rm -rf /tmp/drop_test
+  requires:
+    - pip
+    - piptest
+    - pytest-runner
+  source_files:
+    - tests/
 
 about:
   home: https://github.com/gagneurlab/drop
