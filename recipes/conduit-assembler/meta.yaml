@@ -1,0 +1,42 @@
+{% set name = "conduit-assembler" %}
+{% set version = "0.1.1" %}
+{% set sha256hash = "1d2b96bffde9c9c733848c16488eca2bbc9b24c4b0179a573527f96c5707127f" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/NatPRoach/conduit/releases/download/{{ version }}/conduit_{{ version }}.tar.gz
+    sha256 : {{ sha256hash }}
+
+  - url: https://github.com/brentp/hts-nim/archive/v0.3.11.tar.gz
+    sha256: 8c89c3414321237c611f1a232ea77517b044b48041f363ef94db41df0d0591f6
+    folder: hts-nim
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - nim
+  host:
+    - htslib
+  run:
+    - htslib
+    - samtools
+    - bowtie2
+
+test:
+  commands:
+    - conduit --help
+    - conduit hybrid --help
+    - conduitUtils --help
+    # - conduit_clustering --help
+
+about:
+  home: https://github.com/NatPRoach/conduit
+  license: GPL2
+  license_file: LICENSE
+  summary: 'Long- and short-read hybrid de novo transcriptome assembly'
