@@ -1,0 +1,116 @@
+From 38cf311fd20dc3a0ec82f2d35af500732d91614a Mon Sep 17 00:00:00 2001
+From: Matus Kosut <matus.kosut@ntnu.no>
+Date: Sun, 1 Nov 2020 15:48:54 +0100
+Subject: [PATCH 3/3] use conda cmakelists
+
+---
+ CMakeLists.txt | 98 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 98 insertions(+)
+ create mode 100644 CMakeLists.txt
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..b959bef
+--- /dev/null
++++ CMakeLists.txt
+@@ -0,0 +1,98 @@
++cmake_minimum_required(VERSION 3.15)
++file(STRINGS "VERSION" PROJECT_VERSION)
++project(regenie VERSION "${PROJECT_VERSION}")
++include(CMakePackageConfigHelpers)
++include(GNUInstallDirs)
++
++set(CMAKE_CXX_STANDARD 11)
++set(CMAKE_CXX_STANDARD_REQUIRED True)
++
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -ffast-math -std=c++11")
++set(THREADS_PREFER_PTHREAD_FLAG TRUE CACHE BOOL
++    "Prefer using the -pthread compiler flag over -lpthread")
++
++set(ENV{CFLAGS}  "${CMAKE_C_FLAGS}")
++set(ENV{CXXFLAGS} "${CMAKE_CXX_FLAGS}")
++set(ENV{LDFLAGS} "-L${CMAKE_PREFIX_PATH}/lib")
++set(ENV{MKLROOT} "${CMAKE_PREFIX_PATH}")
++
++if(BUILD_SHARED_LIBS)
++  set(ENV{STATIC} OFF)
++  set(Boost_USE_STATIC_LIBS OFF)
++  set(BLA_STATIC OFF)
++else()
++  set(ENV{STATIC} ON)
++  set(BLA_STATIC ON)
++  set(Boost_USE_STATIC_LIBS ON)
++  set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
++  set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc" "-static-libstdc++")
++endif(BUILD_SHARED_LIBS)
++set(Boost_USE_DEBUG_LIBS     OFF)
++set(Boost_USE_MULTITHREADED  ON)
++set(Boost_USE_STATIC_RUNTIME OFF)
++
++find_package(Boost REQUIRED COMPONENTS iostreams system filesystem thread)
++find_library(ZLIB_LIBRARY z)
++find_library(MLIB_LIBRARY m)
++find_library(DLLIB_LIBRARY dl)
++find_library(ZSTD_LIBRARY zstd)
++find_library(BGEN_LIBRARY bgen)
++find_library(SQLITE3_LIBRARY sqlite3)
++find_library(DB_LIBRARY db)
++find_package(Threads)
++find_package(BLAS)
++find_package(LAPACK)
++find_package(Eigen3 3.3 REQUIRED NO_MODULE)
++
++if(Boost_FOUND)
++  add_definitions(${Boost_DEFINITIONS})
++  if(Boost_iostreams_FOUND)
++    add_definitions(-DHAS_BOOST_IOSTREAM=1)
++    add_definitions(-DVERSION_NUMBER="${PROJECT_VERSION}.gz")
++  else()
++    add_definitions(-DVERSION_NUMBER="${PROJECT_VERSION}")
++  endif(Boost_iostreams_FOUND)
++endif(Boost_FOUND)
++
++if(BLAS_FOUND)
++  if(LAPACK_FOUND)
++    add_definitions(-DWITH_MKL)
++    add_definitions(-DEIGEN_USE_BLAS)
++    add_definitions(-DEIGEN_USE_LAPACKE)
++  endif(LAPACK_FOUND)
++endif(BLAS_FOUND)
++
++set(SIMDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external_libs/pgenlib/simde")
++file(GLOB SIMDE_SOURCES "${SIMDE_PATH}/*.h" "${SIMDE_PATH}/x86/*.h")
++add_library(simde INTERFACE)
++target_sources(simde INTERFACE "${SIMDE_SOURCES}")
++target_compile_options(simde BEFORE INTERFACE "-fopenmp-simd")
++target_include_directories(simde INTERFACE $<BUILD_INTERFACE:${SIMDE_PATH}> $<BUILD_INTERFACE:${SIMDE_PATH}/x86>)
++
++set(PGEN_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external_libs/pgenlib")
++file(GLOB PGEN_SOURCES "${PGEN_PATH}/*.cpp" "${PGEN_PATH}/*.h" "${PGEN_PATH}/**/*.cc" "${PGEN_PATH}/**/*.h")
++add_library(pgen INTERFACE)
++target_link_libraries(pgen INTERFACE simde)
++target_sources(pgen INTERFACE "${PGEN_SOURCES}")
++target_include_directories(pgen INTERFACE $<BUILD_INTERFACE:${PGEN_PATH}>)
++
++file(GLOB REGENIE_PATHS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp")
++add_executable(regenie "${REGENIE_PATHS}")
++target_link_libraries(regenie pgen ${BGEN_LIBRARY} ${DB_LIBRARY} ${SQLITE3_LIBRARY} Boost::iostreams Boost::system Boost::filesystem Boost::thread LAPACK::LAPACK Eigen3::Eigen ${ZLIB_LIBRARY} ${ZSTD_LIBRARY} ${MLIB_LIBRARY} ${DLLIB_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
++target_include_directories(regenie PUBLIC
++                           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
++                           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/genfile>
++                           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/db>
++                           $<INSTALL_INTERFACE:${BOOST_INCLUDEDIR}>)
++
++install(TARGETS regenie
++        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++        OPTIONAL)
++
++write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake COMPATIBILITY SameMajorVersion)
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake DESTINATION share/${PROJECT_NAME})
++
++set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
++set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
++set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
++include(CPack)
+--
+2.23.0
