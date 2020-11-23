@@ -1,8 +1,9 @@
 #!/bin/sh
 
-mkdir bin
+cd FamSeq || true
 cd src
-make
-cd ..
-
-cp ${SRC_DIR}/src/FamSeq $PREFIX/bin/FamSeq 
+make \
+    CC="${CXX} ${CXXFLAGS} ${CPPFLAGS}" \
+    LDFLAGS="${LDFLAGS}"
+install -d "${PREFIX}/bin"
+install FamSeq "${PREFIX}/bin/"

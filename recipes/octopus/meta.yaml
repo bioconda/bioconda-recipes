@@ -1,28 +1,28 @@
-{% set version="0.4.1a" %}
-about:
-  home: https://github.com/luntergroup/octopus
-  license: MIT
-  summary: Bayesian haplotype-based mutation calling
+{% set name = "octopus" %}
+{% set version = "0.6.3b" %}
+{% set sha256 = "46e3d8ecc737e98a00aa66eefd663edb2b606873839b898210a4369311c12c67" %}
+
 package:
-  name: octopus
+  name: {{ name }}
   version: {{ version }}
+
 build:
-  number: 0
-  # We can re-add use of pre-build conda boost when bioconda version
-  # updated to at least 1.65 and compiled with 7.x compilers
-  # Not building on osx CircleCI and unsure how to fix; does not pick
-  # up 7.2 compilers
-  skip: true # [osx]
+  number: 2
+
 source:
-  url: https://github.com/luntergroup/octopus/archive/v0.4.1-alpha.tar.gz
-  md5: cac9f55aa5594ce85dac0547a6bfc10f
+  url: https://github.com/luntergroup/{{ name }}/archive/v0.6.3-beta.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Fix-Clang-8-compile-errors.patch
+
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
   host:
-    #- boost
+    - boost-cpp
+    - gmp
     - htslib
     - wget
     - icu
@@ -30,16 +30,21 @@ requirements:
     - xz
     - zlib
   run:
-    #- boost
+    - boost-cpp
+    - gmp
     - htslib
     - icu
     - bzip2
     - xz
     - zlib
+
 test:
   commands:
     - octopus -h
 
-extra:
-  skip-lints:
-    - boost_not_pinned
+about:
+  home: https://github.com/luntergroup/octopus
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Octopus is a mapping-based variant caller that implements several calling models within a unified haplotype-aware framework."

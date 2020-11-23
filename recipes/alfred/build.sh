@@ -1,7 +1,3 @@
 #!/bin/sh
 
-
-# build alfred
-make all
-mkdir -p $PREFIX/bin
-cp src/alfred $PREFIX/bin
+CXXFLAGS="${CXXFLAGS} -D__STDC_FORMAT_MACROS" make CXX="${CXX}" prefix="${PREFIX}" install

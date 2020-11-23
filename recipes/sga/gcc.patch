@@ -1,0 +1,55 @@
+--- src/SGA/rmdup.cpp.old	2019-05-03 17:08:00.502487040 -0500
++++ src/SGA/rmdup.cpp	2019-05-03 17:10:14.720528594 -0500
+@@ -232,7 +232,7 @@
+     while(!done)
+     {
+         // Parse a line from the current file
+-        bool valid = getline(*reader_vec[currReaderIdx], line);
++        bool valid = static_cast<bool>(getline(*reader_vec[currReaderIdx], line));
+         ++numRead;
+         // Deal with switching the active reader and the end of files
+         if(!valid || numRead == buffer_size)
+--- src/Util/VariantIndex.cpp.old	2019-05-03 17:03:03.624395127 -0500
++++ src/Util/VariantIndex.cpp	2019-05-03 17:03:32.969404212 -0500
+@@ -86,7 +86,7 @@
+         for(size_t vi = 0; vi < bucket.size(); ++vi)
+         {
+             const VariantRecord& record = m_records[bucket[vi]];
+-            if(abs(record.position - position) < distance)
++            if(static_cast<int>(record.position - position) < distance)
+                 out.push_back(record);
+         }
+     }
+--- src/Util/StdAlnTools.cpp.old	2019-05-03 16:59:37.333331257 -0500
++++ src/Util/StdAlnTools.cpp	2019-05-03 17:00:26.633346524 -0500
+@@ -119,7 +119,7 @@
+     char code;
+     while(parser >> length)
+     {
+-        bool success = parser >> code;
++        bool success = static_cast<bool>(parser >> code);
+         expanded.append(length, code);
+         assert(success);
+         (void)success;
+--- src/Algorithm/GapFillProcess.cpp.old	2019-05-03 17:03:58.464412105 -0500
++++ src/Algorithm/GapFillProcess.cpp	2019-05-03 17:04:16.076417559 -0500
+@@ -233,7 +233,7 @@
+ 
+     for(size_t i = 0; i < sequences.size(); ++i)
+     {
+-        int diff = abs(sequences[i].size() - estimatedSize);
++        int diff = static_cast<int>(sequences[i].size() - estimatedSize);
+         //printf("ES: %d S: %zu D: %d\n", estimatedSize, sequences[i].size(), diff);
+ 
+         if(diff < selectedSizeDiff)
+--- src/Util/ClusterReader.cpp.old	2019-05-03 16:57:36.235293762 -0500
++++ src/Util/ClusterReader.cpp	2019-05-03 16:58:50.261316685 -0500
+@@ -67,7 +67,7 @@
+ bool ClusterReader::readCluster(ClusterRecord& record)
+ {
+     std::string line;
+-    bool good = getline(*m_pReader, line);
++    bool good = static_cast<bool>(getline(*m_pReader, line));
+     if(!good || line.empty())
+         return false;
+     std::stringstream parser(line);

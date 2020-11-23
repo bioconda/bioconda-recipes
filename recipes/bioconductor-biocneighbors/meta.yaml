@@ -1,0 +1,53 @@
+{% set version = "1.6.0" %}
+{% set name = "BiocNeighbors" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: e84eb90e799c129ba0b5c5f6a9426285
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: testthat, BiocStyle, knitr, rmarkdown, FNN, RcppAnnoy, RcppHNSW
+# SystemRequirements: C++11
+requirements:
+  host:
+    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - r-base
+    - r-matrix
+    - r-rcpp
+    - r-rcppannoy
+    - r-rcpphnsw
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
+    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
+    - r-base
+    - r-matrix
+    - r-rcpp
+    - r-rcppannoy
+    - r-rcpphnsw
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Nearest Neighbor Detection for Bioconductor Packages'
+  description: 'Implements exact and approximate methods for nearest neighbor detection, in a framework that allows them to be easily switched within Bioconductor packages or workflows. Exact searches can be performed using the k-means for k-nearest neighbors algorithm or with vantage point trees. Approximate searches can be performed using the Annoy or HNSW libraries. Searching on either Euclidean or Manhattan distances is supported. Parallelization is achieved for all methods by using BiocParallel. Functions are also provided to search for all neighbors within a given distance.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

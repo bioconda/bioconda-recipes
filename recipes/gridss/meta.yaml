@@ -1,31 +1,47 @@
-{% set version = "1.7.2" %}
-{% set sha256 = "2ccf15e81fb24909bf777a13b68e95c2a08c5400f3c92a1c1323b329e8540b48" %}
+{% set version = "2.10.1" %}
+{% set sha256 = "c269ceb149050cfaa8428f7d8486399a46fcbb8fb7d2445564e366fc86e38bfa" %}
 
 package:
   name: gridss
-  version: '{{version}}'
+  version: '{{ version }}'
 
 source:
-  url: https://github.com/PapenfussLab/gridss/releases/download/v{{version}}/gridss-{{version}}-gridss-jar-with-dependencies.jar
-  sha256: '{{sha256}}'
+  url: https://github.com/PapenfussLab/gridss/releases/download/v{{ version }}/gridss-{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
 build:
-  number: 2
-  skip: true # [osx]
+  number: 0
+  noarch: generic
 
 requirements:
   run:
     - openjdk >=8
-    - python
+    - bwa >=0.7
+    - samtools >=1.10
+    - kraken2
+    - r-base >=3.6
+    - r-argparser
+    - r-tidyverse
+    - r-testthat
+    - r-stringdist
+    - bioconductor-structuralvariantannotation
 
 test:
   commands:
-    - "gridss gridss.CallVariants --help 2>&1 | grep 'USAGE: CallVariants'"
+    - "gridss 2>&1 | grep 'Usage:'"
+    # gridsstools currently not installed
+    #- "gridsstools 2>&1 | grep 'Usage:'"
+    - "gridss_somatic_filter --help 2>&1 | grep 'usage:'"
+    - "CallVariants --help 2>&1 | grep 'USAGE:'"
+    - "CollectGridssMetrics --help 2>&1 | grep 'USAGE:'"
+    - "AnnotateVariantsKraken --help 2>&1 | grep 'USAGE:'"
+    - "AnnotateVariantsRepeatMasker --help 2>&1 | grep 'USAGE:'"
 
 about:
   home: https://github.com/PapenfussLab/gridss
-  license: GPL-3.0
-  summary: 'GRIDSS: a Genomic Rearrangement IDentification Software Suite'
+  license: GPL-3.0-only
   license_family: GPL
+  summary: 'GRIDSS: the Genomic Rearrangement IDentification Software Suite'
 
 extra:
   identifiers:

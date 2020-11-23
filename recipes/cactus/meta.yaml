@@ -1,0 +1,63 @@
+package:
+  name: cactus
+  # Version prefixed with 0.0. since there is now an official
+  # https://github.com/ComparativeGenomicsToolkit/cactus/releases/tag/v1.0.0
+  # TODO: Old builds with 2019.03.01 may be moved off the main label.
+  version: "0.0.2019.03.01"
+
+source:
+  # This uses non-upstream sources!
+  # When updating the recipe, please use https://github.com/ComparativeGenomicsToolkit/cactus .
+  url: https://github.com/pbasting/cactus/archive/833d8ca015deecdfa5d0aca01211632cdaca9e58.zip
+  md5: 61ba6e8093a6649c43da1950074d9d5f
+  patches:
+    - 0001-Unvendor-HDF5-and-do-not-copy-hal-bin.patch
+    - 0002-Do-not-make-redundant-copies-of-hal-bin.patch
+    - 0003-Remove-unused-Cython-import.patch
+    # changes setup.py so it doesn't call git and doesn't try and install dependencies
+    - setup.patch
+
+build:
+  number: 2
+  skip: true # [osx or py>27]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+
+  host:
+    - pip
+    - python
+    - hdf5
+    - zlib
+    - kyototycoon
+    - cython
+  run:
+    - decorator
+    - subprocess32
+    - psutil
+    - networkx >=2,<3
+    - python
+    - hdf5
+    - zlib
+    - kyototycoon
+    - biopython
+    - toil 3.14.0
+    - ucsc-fatotwobit
+    - ucsc-bedsort
+    - ucsc-bedtobigbed
+    - ucsc-bigbedtobed
+    - openssl
+    - sonlib
+    - jobtree
+
+test:
+  commands:
+    - cactus -h
+    - hal2assemblyHub.py -h
+
+about:
+  home: https://github.com/ComparativeGenomicsToolkit/cactus
+  license: https://github.com/ComparativeGenomicsToolkit/cactus/blob/master/LICENSE.txt
+  summary: 'Cactus is a reference-free whole-genome multiple alignment program based upon notion of Cactus graphs'

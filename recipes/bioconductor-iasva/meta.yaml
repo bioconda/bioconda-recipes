@@ -1,0 +1,43 @@
+{% set version = "1.6.0" %}
+{% set name = "iasva" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 638c5b3e459761f44f6a507f5cc1e03f
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: knitr, testthat, rmarkdown, sva, Rtsne, pheatmap, corrplot, DescTools, RColorBrewer
+requirements:
+  host:
+    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
+    - r-base
+    - r-cluster
+    - r-irlba
+  run:
+    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
+    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
+    - r-base
+    - r-cluster
+    - r-irlba
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'Iteratively Adjusted Surrogate Variable Analysis'
+  description: 'Iteratively Adjusted Surrogate Variable Analysis (IA-SVA) is a statistical framework to uncover hidden sources of variation even when these sources are correlated. IA-SVA provides a flexible methodology to i) identify a hidden factor for unwanted heterogeneity while adjusting for all known factors; ii) test the significance of the putative hidden factor for explaining the unmodeled variation in the data; and iii), if significant, use the estimated factor as an additional known factor in the next iteration to uncover further hidden factors.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+

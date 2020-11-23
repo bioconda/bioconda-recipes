@@ -1,6 +1,9 @@
 #!/bin/sh
 set -x -e
 
-mkdir -p $PREFIX/bin
+cd rbluo/temp/ecProj/src
 
-cp rbluo/temp/ecProj/src/ErrorCorrection $PREFIX/bin/
+mkdir -p "${PREFIX}/bin"
+"${CXX}" ${CXXFLAGS} ${CPPLAGS} ${LDFLAGS} \
+    connect.cpp  correct.cpp  ec.cpp  general.cpp  gzstream.cpp  kmerFreq.cpp  seqKmer.cpp \
+    -O4 -fomit-frame-pointer -o "${PREFIX}/bin/ErrorCorrection" -lz

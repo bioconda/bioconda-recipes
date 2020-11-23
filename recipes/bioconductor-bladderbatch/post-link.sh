@@ -1,10 +1,11 @@
 #!/bin/bash
-FN="bladderbatch_1.14.0.tar.gz"
+FN="bladderbatch_1.26.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.5/data/experiment/src/contrib/bladderbatch_1.14.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bladderbatch/bioconductor-bladderbatch_1.14.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/bladderbatch_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/bladderbatch_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bladderbatch/bioconductor-bladderbatch_1.26.0_src_all.tar.gz"
 )
-MD5="e78d20742c18d7a526aefed891ee12b5"
+MD5="5c23e9ea5b0b88779c1c4b4ad20b6297"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -15,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

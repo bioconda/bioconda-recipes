@@ -1,0 +1,45 @@
+{% set version = "1.20.0" %}
+{% set name = "immunoClust" %}
+{% set bioc = "3.11" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 75a9780820692c9272357493b866bc8e
+build:
+  number: 0
+  skip: True  # [osx]
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: BiocStyle, utils
+requirements:
+  host:
+    - 'bioconductor-flowcore >=2.0.0,<2.1.0'
+    - r-base
+    - r-lattice
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-flowcore >=2.0.0,<2.1.0'
+    - r-base
+    - r-lattice
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'immunoClust - Automated Pipeline for Population Detection in Flow Cytometry'
+  description: 'immunoClust is a model based clustering approach for Flow Cytometry samples. The cell-events of single Flow Cytometry samples are modelled by a mixture of multinominal normal- or t-distributions. The cell-event clusters of several samples are modelled by a mixture of multinominal normal-distributions aiming stable co-clusters across these samples.'
+
