@@ -1,34 +1,31 @@
-{% set version = "0.7.2" %}
-{% set sha256 = "53a977b85bf4b7bdf327e07db10ac571aa09b0cc1d5c8af22085bbf4d7076365" %}
+{% set version = "0.7.3" %}
 
 package:
   name: kaptive
-  version: '{{version}}'
+  version: {{ version }}
 
 source:
-  url: https://github.com/katholt/Kaptive/archive/{{version}}.tar.gz
-  sha256: '{{sha256}}'
+  url: https://github.com/katholt/Kaptive/archive/v{{ version }}.tar.gz
+  sha256: 436ebe884e5000c023d78c098596d22c235c916f91e6c29a79b88a21e611fcb4
 
 build:
-  noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
-  number: 0
+  number: 1
+  # Fails on OSX due to 3.8 multiprocessing change from fork to spawn model.
+  skip: True  # [osx and py>=38]
 
 requirements:
   host:
     - python >=3
-    - pip
   run:
-    - blast
-    - biopython
     - python >=3
+    - biopython <1.78
+    - blast >=2.3.0
 
 test:
   commands:
-    - kaptive.py  -h
+    - kaptive.py -h
 
 about:
   home: https://github.com/katholt/Kaptive
-  license: GPL-3.0-only
-  summary: Kaptive reports information about capsular (K) loci found in genome assemblies
-  license_family: GPL
+  license: GPL3
+  summary: Reports information about surface polysaccharide loci for Klebsiella and Acinetobacter baumannii genome assemblies
