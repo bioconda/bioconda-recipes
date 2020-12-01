@@ -1,3 +1,3 @@
 #!/bin/bash
 
-rm $PREFIX/bin/MetaCHIP
+cp bin/MetaCHIP $PREFIX/bin
