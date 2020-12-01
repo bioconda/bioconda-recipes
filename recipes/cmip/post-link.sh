@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 echo "      #######################################################################" >> "${PREFIX}"/.messages.txt
 echo "      #                                                                     #" >> "${PREFIX}"/.messages.txt
 echo "      #                   ######  ##     ## #### ########                   #" >> "${PREFIX}"/.messages.txt
