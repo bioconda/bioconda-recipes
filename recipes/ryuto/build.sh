@@ -28,7 +28,7 @@ make install
 
 cd ../../..
 
-./configure --prefix=$PREFIX --with-htslib="$PREFIX" --with-zlib="$PREFIX" --with-boost="$PREFIX" --with-staticcoin=`pwd`/libraries_to_install/Clp-1.16.11 --with-lemon=`pwd`/libraries_to_install/lemon-f51c01a1b88e/build
+./configure --prefix=$PREFIX --with-htslib="$PREFIX" --with-zlib="$PREFIX" --with-boost="$PREFIX" --with-clp=`pwd`/libraries_to_install/Clp-1.16.11 --with-staticcoin=`pwd`/libraries_to_install/Clp-1.16.11 --with-lemon=`pwd`/libraries_to_install/lemon-f51c01a1b88e/build
 
 make LIBS+=-lhts
 make install
