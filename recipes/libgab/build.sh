@@ -7,4 +7,5 @@ make \
   CXX="${CXX}" \
   all
 cd ..
+cp libgab.a $PREFIX/lib/
 
