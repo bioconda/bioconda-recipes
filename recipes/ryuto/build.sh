@@ -5,6 +5,8 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
 
+./reset_autogen.sh
+
 cd libraries_to_install
 
 unzip Clp-1.16.11.zip
