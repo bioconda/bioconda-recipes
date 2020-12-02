@@ -6,6 +6,6 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 make \
   CXX="${CXX}" \
   all
-cd ..
 cp libgab.a $PREFIX/lib/
+cd ..
 
