@@ -22,7 +22,7 @@ cd ../lemon-f51c01a1b88e
 
 mkdir build
 cd build
-cmake -DLEMON_DEFAULT_LP=CLP -DCOIN_ROOT_DIR=`pwd`/../../Clp-1.16.11 -DCMAKE_INSTALL_PREFIX=`pwd` ${CMAKE_PLATFORM_FLAGS[@]}  ..
+cmake -DLEMON_DEFAULT_LP=CLP -DCOIN_ROOT_DIR=$SRC_DIR/libraries_to_install/Clp-1.16.11 -DCMAKE_INSTALL_PREFIX=`pwd` ${CMAKE_PLATFORM_FLAGS[@]}  ..
 make
 make install 
 
