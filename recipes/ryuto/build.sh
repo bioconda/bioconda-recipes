@@ -14,7 +14,7 @@ tar -xvf lemon-f51c01a1b88e_mod.tar.gz
 
 cd Clp-1.16.11
 
-./configure --enable-static --disable-shared --prefix=`pwd` --disable-bzlib --disable-zlib
+./configure --enable-static --enable-shared --prefix=`pwd` --disable-bzlib --disable-zlib
 make
 make install
 
