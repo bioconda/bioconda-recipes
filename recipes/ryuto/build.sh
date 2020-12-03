@@ -9,6 +9,9 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 # Build static libraries. Sadly Lemon from Forge cannot be linked to CLP correctly. So this is a workaround for now.
 
+echo "Recipe Dir"
+echo $RECIPE_DIR
+
 cd $RECIPE_DIR
 
 unzip clp_mod.zip
@@ -24,22 +27,22 @@ cd ../lemon_mod
 
 mkdir build
 cd build
-cmake -DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake" -DLEMON_DEFAULT_LP=CLP -DCOIN_ROOT_DIR=$RECIPE_DIR/clp_mod -DCMAKE_INSTALL_PREFIX="$RECIPE_DIR/clp_mod"  ..
+cmake -DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake" -DLEMON_DEFAULT_LP=CLP -DCOIN_ROOT_DIR=$RECIPE_DIR/clp_mod -DCMAKE_INSTALL_PREFIX=$RECIPE_DIR/lemon_mod  ..
 make
 make install 
 
 #echo "========================== CMAKE LOG =========================="
-#cat CMakeFiles/CMakeOutput.log
+cat CMakeFiles/CMakeOutput.log
 #echo "========================== CMAKE ERR =========================="
-#cat CMakeFiles/CMakeError.log
+cat CMakeFiles/CMakeError.log
 #echo "========================== CMAKE VAL =========================="
-#cat CMakeCache.txt
+cat CMakeCache.txt
 
 # RUN RYUTO
 
 cd $SRC_DIR
 
-./configure --prefix=$PREFIX --with-htslib="$PREFIX" --with-zlib="$PREFIX" --with-boost="$PREFIX" --with-clp=$RECIPE_DIR/clp_mod --with-staticcoin=$RECIPE_DIR/lemon_mod --with-lemon=$RECIPE_DIR/lemon_mod
+./configure --prefix=$PREFIX --with-htslib="$PREFIX" --with-zlib="$PREFIX" --with-boost="$PREFIX" --with-clp=$RECIPE_DIR/clp_mod --with-staticcoin=$RECIPE_DIR/clp_mod --with-lemon=$RECIPE_DIR/lemon_mod
 
 make LIBS+=-lhts
 make install
