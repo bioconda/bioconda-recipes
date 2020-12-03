@@ -21,7 +21,7 @@ cd ../lemon-f51c01a1b88e
 
 mkdir build
 cd build
-cmake -Wdev --debug-output --trace -DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake" -DLEMON_DEFAULT_LP=CLP -DCOIN_ROOT_DIR=$SRC_DIR/libraries_to_install/Clp-1.16.11 -DCMAKE_INSTALL_PREFIX=`pwd`  ..
+cmake -DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake"   ..
 make
 make install 
 
