@@ -3,6 +3,12 @@
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
+echo ">>>>>>> Pref"
+echo $PREFIX
+echo ">>>>>>> Recipe Src"
+echo $RECIPE_DIR
+echo ">>>>>>> Src"
+echo $SRC_DIR
 
 ./reset_autogen.sh
 
@@ -21,7 +27,7 @@ cd ../lemon-f51c01a1b88e
 
 mkdir build
 cd build
-cmake -DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake"   ..
+cmake -DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake" -DLEMON_DEFAULT_LP=CLP -DCOIN_ROOT_DIR="${SRC_DIR}/libraries_to_install/Clp-1.16.11" -DCMAKE_INSTALL_PREFIX="${SRC_DIR}/libraries_to_install/Clp-1.16.11"  ..
 make
 make install 
 

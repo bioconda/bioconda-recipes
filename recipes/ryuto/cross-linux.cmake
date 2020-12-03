@@ -11,11 +11,6 @@ set(CMAKE_CXX_COMPILER $ENV{CXX})
 # where is the target environment
 set(CMAKE_FIND_ROOT_PATH $ENV{PREFIX} $ENV{BUILD_PREFIX}/$ENV{HOST}/sysroot)
 
-set(LEMON_DEFAULT_LP CLP) 
-set(COIN_ROOT_DIR $ENV{SRC_DIR}/libraries_to_install/Clp-1.16.11)
-set(CMAKE_INSTALL_PREFIX $ENV{SRC_DIR}/libraries_to_install/Clp-1.16.11)
-
-
 # search for programs in the build host directories
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 # for libraries and headers in the target directories
