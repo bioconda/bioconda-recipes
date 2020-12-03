@@ -10,6 +10,11 @@ echo $RECIPE_DIR
 echo ">>>>>>> Src"
 echo $SRC_DIR
 
+echo $CPPFLAGS
+echo $LDFLAGS
+
+exit 1
+
 ./reset_autogen.sh
 
 cd libraries_to_install
