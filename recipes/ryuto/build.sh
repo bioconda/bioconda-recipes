@@ -3,7 +3,6 @@
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
-CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
 
 ./reset_autogen.sh
 
@@ -22,7 +21,7 @@ cd ../lemon-f51c01a1b88e
 
 mkdir build
 cd build
-cmake -DLEMON_DEFAULT_LP=CLP -DCOIN_ROOT_DIR=$SRC_DIR/libraries_to_install/Clp-1.16.11 -DCMAKE_INSTALL_PREFIX=`pwd` ${CMAKE_PLATFORM_FLAGS[@]}  ..
+cmake -DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake" -DLEMON_DEFAULT_LP=CLP -DCOIN_ROOT_DIR=$SRC_DIR/libraries_to_install/Clp-1.16.11 -DCMAKE_INSTALL_PREFIX=`pwd`  ..
 make
 make install 
 
