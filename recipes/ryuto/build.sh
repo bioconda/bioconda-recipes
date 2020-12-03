@@ -3,55 +3,43 @@
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
-echo ">>>>>>> Pref"
-echo $PREFIX
-echo ">>>>>>> Recipe Src"
-echo $RECIPE_DIR
-echo ">>>>>>> Src"
-echo $SRC_DIR
-
-echo ">>>>>>>"
-echo $CPPFLAGS
-echo $LDFLAGS
-
-echo ">>>>>>>"
-wd=$(pwd)
-echo $wd
-
-
-exit 1
+# RESET AUTOMAKE just in case for RYUTO
 
 ./reset_autogen.sh
 
-cd libraries_to_install
+# Build static libraries. Sadly Lemon from Forge cannot be linked to CLP correctly. So this is a workaround for now.
 
-unzip Clp-1.16.11.zip
-tar -xvf lemon-f51c01a1b88e_mod.tar.gz
+cd $RECIPE_DIR
 
-cd Clp-1.16.11
+unzip clp_mod.zip
+tar lemon_mod.tar.gz
+
+cd clp_mod
 
 ./configure --enable-static --disable-shared --prefix=`pwd` --disable-bzlib --disable-zlib
 make
 make install
 
-cd ../lemon-f51c01a1b88e
+cd ../lemon_mod
 
 mkdir build
 cd build
-cmake -DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake" -DLEMON_DEFAULT_LP=CLP -DCOIN_ROOT_DIR="${SRC_DIR}/libraries_to_install/Clp-1.16.11" -DCMAKE_INSTALL_PREFIX="${SRC_DIR}/libraries_to_install/Clp-1.16.11"  ..
+cmake -DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake" -DLEMON_DEFAULT_LP=CLP -DCOIN_ROOT_DIR=$RECIPE_DIR/clp_mod -DCMAKE_INSTALL_PREFIX="$RECIPE_DIR/clp_mod"  ..
 make
 make install 
 
-echo "========================== CMAKE LOG =========================="
-cat CMakeFiles/CMakeOutput.log
-echo "========================== CMAKE ERR =========================="
-cat CMakeFiles/CMakeError.log
-echo "========================== CMAKE VAL =========================="
-cat CMakeCache.txt
+#echo "========================== CMAKE LOG =========================="
+#cat CMakeFiles/CMakeOutput.log
+#echo "========================== CMAKE ERR =========================="
+#cat CMakeFiles/CMakeError.log
+#echo "========================== CMAKE VAL =========================="
+#cat CMakeCache.txt
 
-cd ../../..
+# RUN RYUTO
 
-./configure --prefix=$PREFIX --with-htslib="$PREFIX" --with-zlib="$PREFIX" --with-boost="$PREFIX" --with-clp=`pwd`/libraries_to_install/Clp-1.16.11 --with-staticcoin=`pwd`/libraries_to_install/Clp-1.16.11 --with-lemon=`pwd`/libraries_to_install/lemon-f51c01a1b88e/build
+cd $SRC_DIR
+
+./configure --prefix=$PREFIX --with-htslib="$PREFIX" --with-zlib="$PREFIX" --with-boost="$PREFIX" --with-clp=$RECIPE_DIR/clp_mod --with-staticcoin=$RECIPE_DIR/lemon_mod --with-lemon=$RECIPE_DIR/lemon_mod
 
 make LIBS+=-lhts
 make install
