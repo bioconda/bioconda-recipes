@@ -7,5 +7,6 @@ make \
   CXX="${CXX}" \
   all
 cp libgab.a $PREFIX/lib/
+cp libgab.h $PREFIX/include/
 cd ..
 
