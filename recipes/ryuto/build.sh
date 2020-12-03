@@ -13,7 +13,7 @@ tar -xvf lemon-f51c01a1b88e_mod.tar.gz
 
 cd Clp-1.16.11
 
-./configure --enable-static --enable-shared --prefix=`pwd` --disable-bzlib --disable-zlib
+./configure --enable-static --disable-shared --prefix=`pwd` --disable-bzlib --disable-zlib
 make
 make install
 
@@ -21,9 +21,14 @@ cd ../lemon-f51c01a1b88e
 
 mkdir build
 cd build
-cmake -DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake" -DLEMON_DEFAULT_LP=CLP -DCOIN_ROOT_DIR=$SRC_DIR/libraries_to_install/Clp-1.16.11 -DCMAKE_INSTALL_PREFIX=`pwd`  ..
+cmake -Wdev --debug-output --trace -DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake" -DLEMON_DEFAULT_LP=CLP -DCOIN_ROOT_DIR=$SRC_DIR/libraries_to_install/Clp-1.16.11 -DCMAKE_INSTALL_PREFIX=`pwd`  ..
 make
 make install 
+
+echo "========================== CMAKE LOG =========================="
+cat CMakeFiles/CMakeOutput.log
+echo "========================== CMAKE ERR =========================="
+cat CMakeFiles/CMakeError.log.log
 
 cd ../../..
 
