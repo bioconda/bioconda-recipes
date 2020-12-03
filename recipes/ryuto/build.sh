@@ -12,7 +12,7 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 cd $RECIPE_DIR
 
 unzip clp_mod.zip
-tar lemon_mod.tar.gz
+tar -xvf lemon_mod.tar.gz
 
 cd clp_mod
 
