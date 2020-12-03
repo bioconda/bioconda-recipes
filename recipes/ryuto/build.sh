@@ -10,8 +10,14 @@ echo $RECIPE_DIR
 echo ">>>>>>> Src"
 echo $SRC_DIR
 
+echo ">>>>>>>"
 echo $CPPFLAGS
 echo $LDFLAGS
+
+echo ">>>>>>>"
+wd=$(pwd)
+echo $wd
+
 
 exit 1
 
