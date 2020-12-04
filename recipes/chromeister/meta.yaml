@@ -12,12 +12,6 @@ source:
 build:
   number: 0
 
-extra:
-  container:
-    extended-base: True
-  identifiers:
-    - doi:10.1038/s41598-019-46773-w
-
 requirements:
   build:
     - {{ compiler('c') }}
@@ -27,8 +21,10 @@ requirements:
     - {{ cdt('libxdamage') }}  # [linux]
     - {{ cdt('libxxf86vm') }}  # [linux]
     - {{ cdt('libxext') }}     # [linux]
+    - xorg-libxfixes  # [linux]
     - make
-    - python >=3
+  host:
+    - python
     - pip
     - scikit-build
     - cycler
@@ -39,15 +35,7 @@ requirements:
     - pyparsing
     - python-dateutil
     - six
-  host:
-    - xorg-libxfixes  # [linux]
   run:
-    - {{ cdt('mesa-libgl-devel') }}  # [linux]
-    - {{ cdt('mesa-dri-drivers') }}  # [linux]
-    - {{ cdt('libselinux') }}  # [linux]
-    - {{ cdt('libxdamage') }}  # [linux]
-    - {{ cdt('libxxf86vm') }}  # [linux]
-    - {{ cdt('libxext') }}     # [linux]
     - r-ape
     - r-base
     - python >=3
@@ -62,11 +50,10 @@ requirements:
     - six
 
 test:
-  imports:
-    - cv2
   commands:
-    - CHROMEISTER --help 2>&1 > /dev/null
-    - detect_events.py > /dev/null
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" python -c "import cv2"
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" CHROMEISTER --help 2>&1 > /dev/null
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" detect_events.py > /dev/null
 
 about:
   home: https://github.com/estebanpw/chromeister
@@ -74,3 +61,9 @@ about:
   license_family: GPL
   license_file: LICENSE
   summary: An ultra fast, heuristic approach to detect conserved signals in extremely large pairwise genome comparisons
+
+extra:
+  container:
+    extended-base: True
+  identifiers:
+    - doi:10.1038/s41598-019-46773-w
