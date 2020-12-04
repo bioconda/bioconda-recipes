@@ -41,12 +41,12 @@ echo "========================== make done"
 make install 
 echo "========================== make install done"
 
-echo "========================== CMAKE LOG =========================="
-cat CMakeFiles/CMakeOutput.log
-echo "========================== CMAKE ERR =========================="
-cat CMakeFiles/CMakeError.log
-echo "========================== CMAKE VAL =========================="
-cat CMakeCache.txt
+#echo "========================== CMAKE LOG =========================="
+#cat CMakeFiles/CMakeOutput.log
+#echo "========================== CMAKE ERR =========================="
+#cat CMakeFiles/CMakeError.log
+#echo "========================== CMAKE VAL =========================="
+#cat CMakeCache.txt
 
 # RUN RYUTO
 
