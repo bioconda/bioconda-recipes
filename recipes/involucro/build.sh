@@ -4,7 +4,9 @@ export GOPATH="$( pwd )"
 
 module_path="$( go env GOPATH )"/src/github.com/involucro/involucro/cmd/involucro
 GOBIN="$( go env GOBIN )" \
-  go get -ldflags='-s' "${module_path}"
+  go get \
+  -ldflags="-s -X github.com/involucro/involucro/app.version=${PKG_VERSION}" \
+  "${module_path}"
 
 
 # If/when https://github.com/conda/conda-build/issues/4121 is supported, the
