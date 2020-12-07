@@ -53,6 +53,7 @@ echo "========================== make install done"
 cd $SRC_DIR
 echo "========================== RYUTO =========================="
 ./configure --prefix=$PREFIX --with-htslib="$PREFIX" --with-zlib="$PREFIX" --with-boost="$PREFIX" --with-clp=$RECIPE_DIR/clp_mod --with-staticcoin=$RECIPE_DIR/clp_mod --with-lemon=$RECIPE_DIR/lemon_mod
-echo "========================== configure down"
+echo "========================== configure dowe"
 make LIBS+=-lhts
+echo "========================== make dowe"
 make install
