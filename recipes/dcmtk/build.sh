@@ -3,6 +3,8 @@
 mkdir build
 cd build
 
+# WARNING: with the default value of USE_COMPILER_HIDDEN_VISIBILITY (TRUE/ON),
+# link problems arise when linking (at least) ofstd.
 cmake \
     -G Ninja \
     -D CMAKE_BUILD_TYPE:STRING=Release \
