@@ -1,6 +1,7 @@
 #!/bin/bash
 
-cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - Unix Makefiles" ..
+mkdir build
+cd build
 cmake -DCMAKE_MODULE_PATH=`python -c 'import torch;print(torch.utils.cmake_prefix_path)'` ..
-cmake --build ./cmake-build-release --target Balrog -- -j 3
+cmake --build . --target Balrog -- -j 3
 make install
