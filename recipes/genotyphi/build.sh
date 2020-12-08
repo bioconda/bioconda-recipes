@@ -1,5 +1,5 @@
 #!/bin/bash
-set +ex
+set -ex
 mkdir -p $PREFIX/bin
 cp genotyphi.py $PREFIX/bin/genotyphi.py
 ln $PREFIX/bin/genotyphi.py $PREFIX/bin/genotyphi
