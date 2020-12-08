@@ -1,6 +1,7 @@
 #!/bin/bash
 
-export CPATH=${PREFIX}/include
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 mkdir build
 cd build
