@@ -1,9 +1,7 @@
 #!/bin/bash
 
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
-export CPATH=${PREFIX}/include
-export LD_LIBRARY_PATH=$PREFIX/lib:$LD_LIBRARY_PATH
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 mkdir build
 cd build
