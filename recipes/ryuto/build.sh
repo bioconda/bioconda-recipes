@@ -11,6 +11,8 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 echo "Recipe Dir"
 echo $RECIPE_DIR
+echo "Source Dir"
+echo $SRC_DIR
 
 cd $RECIPE_DIR
 
@@ -43,8 +45,8 @@ echo "========================== make install done"
 
 #echo "========================== CMAKE LOG =========================="
 #cat CMakeFiles/CMakeOutput.log
-#echo "========================== CMAKE ERR =========================="
-#cat CMakeFiles/CMakeError.log
+echo "========================== CMAKE ERR =========================="
+cat CMakeFiles/CMakeError.log
 #echo "========================== CMAKE VAL =========================="
 #cat CMakeCache.txt
 
