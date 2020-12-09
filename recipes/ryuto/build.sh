@@ -3,6 +3,8 @@
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
+cd $RECIPE_DIR
+
 cd omp_test
 
 ./reset_autogen.sh
