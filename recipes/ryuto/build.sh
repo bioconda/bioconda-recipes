@@ -70,13 +70,11 @@ echo "========================== make install done"
 
 cd $SRC_DIR
 echo "========================== RYUTO =========================="
-#if [ `uname` == Darwin ]; then
-#    ./configure --prefix=$PREFIX --with-htslib="$PREFIX" --with-zlib="$PREFIX" --with-boost="$PREFIX" --with-clp=$RECIPE_DIR/clp_mod --with-staticcoin=$RECIPE_DIR/clp_mod --with-lemon=$RECIPE_DIR/lemon_mod CFLAGS="-fopenmp" CXXFLAGS='-fopenmp'
-#else
-./configure --prefix=$PREFIX --with-htslib="$PREFIX" --with-zlib="$PREFIX" --with-boost="$PREFIX" --with-clp=$RECIPE_DIR/clp_mod --with-staticcoin=$RECIPE_DIR/clp_mod --with-lemon=$RECIPE_DIR/lemon_mod
-#fi
 
-echo "========================== configure dowe"
+./configure --prefix=$PREFIX --with-htslib="$PREFIX" --with-zlib="$PREFIX" --with-boost="$PREFIX" --with-clp=$RECIPE_DIR/clp_mod --with-staticcoin=$RECIPE_DIR/clp_mod --with-lemon=$RECIPE_DIR/lemon_mod
+
+
+echo "========================== configure done"
 make LIBS+=-lhts
-echo "========================== make dowe"
+echo "========================== make done"
 make install
