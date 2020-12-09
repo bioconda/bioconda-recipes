@@ -35,6 +35,11 @@ cd ..
 
 echo "========================== RYUTO =========================="
 
+
+aclocal
+autoconf
+automake --add-missing --foreign
+
 ./configure --prefix=$PREFIX --with-htslib="$PREFIX" --with-zlib="$PREFIX" --with-boost="$PREFIX" --with-clp=$cwd/libs --with-staticcoin=$cwd/libs --with-lemon=$cwd/libs
 
 make LIBS+=-lhts
