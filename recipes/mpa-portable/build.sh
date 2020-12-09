@@ -11,3 +11,5 @@ chmod 0755 "${PREFIX}/bin/mpa-portable"
 if [ -f $outdir/built/Comet/linux/comet.exe ] ; then chmod 0755 $outdir/built/Comet/linux/comet.exe ; fi
 if [ -f $outdir/built/X!Tandem/linux/linux_64bit/tandem ] ; then chmod 0755 $outdir/built/X!Tandem/linux/linux_64bit/tandem ; fi
 if [ -f $outdir/built/X!Tandem/linux/linux_32bit/tandem ] ; then chmod 0755 $outdir/built/X!Tandem/linux/linux_32bit/tandem ; fi
+find $outdir/ -type f -exec chmod ugo+r {} \;
+find $outdir/ -type d -exec chmod ugo+rx {} \;
