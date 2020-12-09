@@ -6,7 +6,8 @@ make -f Makefile_conda \
 mkdir -p "${PREFIX}/bin"
 mkdir -p "${PREFIX}/opt/crispritz"
 chmod -R 700 .
-cp crispritz.py "${PREFIX}/bin/"
+mv crispritz.py crispritz
+cp crispritz "${PREFIX}/bin/"
 cp -R \
     buildTST \
     searchTST \
