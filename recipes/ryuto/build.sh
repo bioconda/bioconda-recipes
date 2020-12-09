@@ -3,6 +3,20 @@
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
+cd omp_test
+
+./reset_autogen.sh
+./configure
+make
+
+./configure CFLAGS="-fopenmp" CXXFLAGS='-fopenmp'
+make
+
+./configure --enable-mac
+make
+
+exit 0
+
 # RESET AUTOMAKE just in case for RYUTO
 
 ./reset_autogen.sh
