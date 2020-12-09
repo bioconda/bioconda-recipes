@@ -3,21 +3,21 @@
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
-cd $RECIPE_DIR
+#cd $RECIPE_DIR
 
-cd omp_test
+#cd omp_test
 
-./reset_autogen.sh
-./configure
-make
+#./reset_autogen.sh
+#./configure
+#make
 
-./configure CFLAGS="-fopenmp" CXXFLAGS='-fopenmp'
-make
+#./configure CFLAGS="-fopenmp" CXXFLAGS='-fopenmp'
+#make
 
-./configure --enable-mac
-make
+#./configure --enable-mac
+#make
 
-exit 0
+#exit 0
 
 # RESET AUTOMAKE just in case for RYUTO
 
@@ -70,11 +70,11 @@ echo "========================== make install done"
 
 cd $SRC_DIR
 echo "========================== RYUTO =========================="
-if [ `uname` == Darwin ]; then
-    ./configure --prefix=$PREFIX --with-htslib="$PREFIX" --with-zlib="$PREFIX" --with-boost="$PREFIX" --with-clp=$RECIPE_DIR/clp_mod --with-staticcoin=$RECIPE_DIR/clp_mod --with-lemon=$RECIPE_DIR/lemon_mod CFLAGS="-fopenmp" CXXFLAGS='-fopenmp'
-else
-    ./configure --prefix=$PREFIX --with-htslib="$PREFIX" --with-zlib="$PREFIX" --with-boost="$PREFIX" --with-clp=$RECIPE_DIR/clp_mod --with-staticcoin=$RECIPE_DIR/clp_mod --with-lemon=$RECIPE_DIR/lemon_mod
-fi
+#if [ `uname` == Darwin ]; then
+#    ./configure --prefix=$PREFIX --with-htslib="$PREFIX" --with-zlib="$PREFIX" --with-boost="$PREFIX" --with-clp=$RECIPE_DIR/clp_mod --with-staticcoin=$RECIPE_DIR/clp_mod --with-lemon=$RECIPE_DIR/lemon_mod CFLAGS="-fopenmp" CXXFLAGS='-fopenmp'
+#else
+./configure --prefix=$PREFIX --with-htslib="$PREFIX" --with-zlib="$PREFIX" --with-boost="$PREFIX" --with-clp=$RECIPE_DIR/clp_mod --with-staticcoin=$RECIPE_DIR/clp_mod --with-lemon=$RECIPE_DIR/lemon_mod
+#fi
 
 echo "========================== configure dowe"
 make LIBS+=-lhts
