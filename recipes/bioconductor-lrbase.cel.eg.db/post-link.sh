@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="LRBase.Cel.eg.db_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/LRBase.Cel.eg.db_1.2.0.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/LRBase.Cel.eg.db_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/LRBase.Cel.eg.db_1.2.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-lrbase.cel.eg.db/bioconductor-lrbase.cel.eg.db_1.2.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-lrbase.cel.eg.db/bioconductor-lrbase.cel.eg.db_1.2.0_src_all.tar.gz"
