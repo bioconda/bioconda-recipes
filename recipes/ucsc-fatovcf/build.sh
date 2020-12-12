@@ -9,5 +9,5 @@ mkdir -p "$BINDIR"
 (cd kent/src/jkOwnLib && make)
 (cd kent/src/hg/lib && make)
 (cd kent/src/utils/faFilter && make)
-cp bin/faFilter "$PREFIX/bin"
-chmod +x "$PREFIX/bin/faFilter"
+cp bin/faToVcf "$PREFIX/bin"
+chmod +x "$PREFIX/bin/faToVcf"
