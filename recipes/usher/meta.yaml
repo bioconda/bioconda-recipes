@@ -1,0 +1,43 @@
+{% set version="0.1.3" %}
+
+package:
+  name: usher
+  version: {{ version }}
+
+source:
+  - url: https://github.com/yatisht/usher/archive/v{{ version  }}.tar.gz
+    sha256: 336a40a522f966ee7044c69029878435c8793e320ce8f68eac8c85642aede403
+  - url: https://github.com/oneapi-src/oneTBB/archive/2019_U9.tar.gz
+    folder: oneTBB-2019_U9
+    sha256: 3f5ea81b9caa195f1967a599036b473b2e7c347117330cda99b79cfcf5b77c84
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - autoconf
+    - cmake
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - boost-cpp
+    - libprotobuf
+    - wget
+  run:
+    - python
+    - mafft
+    - biopython
+    - {{ pin_compatible('boost-cpp', max_pin='x.x.x') }}
+
+test:
+  commands:
+    - usher --help
+    - faToVcf 2>&1 | grep 'Treat all IUPAC ambiguous bases'
+
+about:
+  home: https://github.com/yatisht/usher
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Ultrafast Sample Placement on Existing Trees (UShER)
