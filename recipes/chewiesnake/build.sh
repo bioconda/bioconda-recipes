@@ -8,5 +8,5 @@ cp chewieSnake_join.py $PREFIX/bin/chewiesnake_join
 
 cp scripts/ $PREFIX/bin/
 
-chmod -R u+x $PREFIX/bin/*
+chmod -r u+x $PREFIX/bin/*
 
