@@ -1,0 +1,51 @@
+{% set name = "pargenes" %}
+{% set version = "v1.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/benoitmorel/{{ name|lower }}.git
+  git_rev: {{ version }}
+  sha256: unused
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - bison
+    - flex
+    - cmake
+  host:
+    - openmpi
+    - python
+  run:
+    - openmpi
+    - python
+
+test:
+  commands:
+    - pargenes.py --help
+    - pargenes-hpc.py --help
+    - pargenes-hpc-debug.py --help
+    - python tests/run_tests.py
+
+about:
+   home: https://github.com/benoitmorel/pargenes
+   license: GPL-3
+   license_family: GPL
+   license_file: LICENSE
+   summary: "Pargenes: a massively parallel tool for model selection and tree inference on thousands of genes"
+
+extra:
+   container:
+     # openmpi needs ssh client
+     extended-base: true
+   skip-lints:
+     # uses submodules
+     - uses_vcs_url
+   identifiers:
+     - doi:10.1093/bioinformatics/bty839
