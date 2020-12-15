@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # pthreads
-./install.sh
+CXX=mpicxx ./install.sh
 ./checker.sh
 install pargenes/pargenes.py ${PREFIX}/bin
 install pargenes/pargenes-hpc.py ${PREFIX}/bin
