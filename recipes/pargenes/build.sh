@@ -3,7 +3,7 @@
 # pthreads
 CXX=mpicxx ./install.sh
 ./checker.sh
-install pargenes/pargenes.py ${PREFIX}/bin
-install pargenes/pargenes-hpc.py ${PREFIX}/bin
-install pargenes/pargenes-hpc-debug.py ${PREFIX}/bin
+ln -s pargenes/pargenes.py ${PREFIX}/bin/pargenes.py
+ln -s pargenes/pargenes-hpc.py ${PREFIX}/bin/pargenes-hpc.py
+ln -s pargenes/pargenes-hpc-debug.py ${PREFIX}/bin/pargenes-hpc-debug.py
 
