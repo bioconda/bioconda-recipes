@@ -6,4 +6,4 @@ cp aquamis.py $PREFIX/bin/aquamis
 
 cp scripts/*.py scripts/*.Rmd scripts/*.sh $PREFIX/bin/
 
-chmod -R u+x $PREFIX/bin/*.sh $PREFIX/bin/*.R $PREFIX/bin/*.py $PREFIX/bin/aquamis 
+chmod -R u+x $PREFIX/bin/*.sh $PREFIX/bin/*.Rmd $PREFIX/bin/*.py $PREFIX/bin/aquamis 
