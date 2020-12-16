@@ -10,8 +10,10 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 
 echo "print prefix"
 ls -s ${PREFIX}
-echo "print reicpe dir"
-ls -s ${RECIPE_DIR}
+echo "print prefix lib"
+ls -s ${PREFIX}/lib
+echo "print prefix share"
+ls -s ${PREFIX}/share
 
 # prepare lib installed from bamtools
 cp ${PREFIX}/lib/libbamtools.a .
