@@ -28,7 +28,7 @@ for i in api/shared/*.h;do sed -i.bak "s#shared/##g" $i;done
 # prepare bin folder
 mkdir -p  "${PREFIX}/bin"
 # prepare flag
-export CXXFLAGS="-O3 -L./"
+export CXXFLAGS="${CXXFLAGS} -O3 -L./"
 #now compile
 ${CXX} ${CXXFLAGS} bamaddrg.cpp -o ${PREFIX}/bin/bamaddrg -lbamtools -lz
 # make it executable
