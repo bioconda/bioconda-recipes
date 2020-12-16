@@ -20,6 +20,6 @@ for patt in ".*/pargenes/.*\.py" ".*\.so" ".*\.jar" ".*\.dylib"; do
 done
 
 cd ${dest}
-ln -s "$(pwd)pargenes/pargenes.py" "$(pwd)pargenes.py"
-ln -s "$(pwd)pargenes/pargenes-hpc.py" "$(pwd)pargenes-hpc.py"
-ln -s "$(pwd)pargenes/pargenes-hpc-debug.py" "$(pwd)pargenes-hpc-debug.py"
+ln -s "pargenes/pargenes.py" "pargenes.py"
+ln -s "pargenes/pargenes-hpc.py" "pargenes-hpc.py"
+ln -s "pargenes/pargenes-hpc-debug.py" "pargenes-hpc-debug.py"
