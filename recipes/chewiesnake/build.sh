@@ -14,3 +14,5 @@ ln -s $PREFIX/opt/chewiesnake/chewieSnake_join.py $PREFIX/bin/chewiesnake_join
 
 chmod -R u+x $PREFIX/bin/*
 
+#cd $PREFIX/opt/chewiesnake && git init && git add . && git commit -a -m "initial commit" && git tag -a v3.0.0 -m "faketag for testing"
+
