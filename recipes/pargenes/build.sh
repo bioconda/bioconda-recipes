@@ -8,7 +8,7 @@ export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
 
 # build
-./install.sh
+CXX=mpicxx ./install.sh
 
 dest=${PREFIX}/bin
 mkdir -p ${dest}
