@@ -24,6 +24,8 @@ for i in api/*.h;do sed -i.bak "s#api/##g" $i;done
 cp -r ${BUILD_PREFIX}/include/bamtools/shared/ api/
 for i in api/shared/*.h;do sed -i.bak "s#shared/##g" $i;done
 
+# prepare bin folder
+mkdir -p  "${PREFIX}/bin"
 # prepare flag
 CXXFLAGS="-O3 -L./"
 #now compile
