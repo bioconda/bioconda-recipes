@@ -8,11 +8,16 @@ export INCLUDE_PATH="${PREFIX}/include/"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 
+echo "print prefix"
+ls -s ${PREFIX}
+echo "print reicpe dir"
+ls -s ${RECIPE_DIR}
+
 # prepare lib installed from bamtools
 cp ${PREFIX}/lib/libbamtools.a .
-cp -r /home/jdainat/miniconda3/envs/bamtools/include/bamtools/api/ .
+cp -r ${PREFIX}/include/bamtools/api/ .
 for i in api/*.h;do sed -i.bak "s#api/##g" $i;done
-cp -r /home/jdainat/miniconda3/envs/bamtools/include/bamtools/shared/ api/
+cp -r ${PREFIX}/include/bamtools/shared/ api/
 for i in api/shared/*.h;do sed -i.bak "s#shared/##g" $i;done
 
 # prepare flag
