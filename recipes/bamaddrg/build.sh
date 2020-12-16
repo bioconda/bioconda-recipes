@@ -4,19 +4,12 @@
 # that can be retrived already compiled from conda.
 #
 
-export INCLUDE_PATH="${PREFIX}/include/"
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-
-echo "print buildprefix"
-ls -s ${BUILD_PREFIX}
-echo "print buildprefix lib"
-ls -s ${BUILD_PREFIX}/lib
-echo "print buildprefix share"
-ls -s ${BUILD_PREFIX}/share
-
-
+# without these lines, -lz can not be found
+export CXXFLAGS="$CXXFLAGS -L${PREFIX}/lib -O3 -L./"
+export LIBRARY_PATH=${PREFIX}/lib
+export CPP_INCLUDE_PATH=${PREFIX}/include
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
+export CXX_INCLUDE_PATH=${PREFIX}/include
 
 # prepare lib installed from bamtools
 cp ${BUILD_PREFIX}/lib/libbamtools.a .
@@ -27,8 +20,6 @@ for i in api/shared/*.h;do sed -i.bak "s#shared/##g" $i;done
 
 # prepare bin folder
 mkdir -p  "${PREFIX}/bin"
-# prepare flag
-export CXXFLAGS="${CXXFLAGS} -O3 -L./"
 #now compile
 ${CXX} ${CXXFLAGS} bamaddrg.cpp -o ${PREFIX}/bin/bamaddrg -lbamtools -lz
 # make it executable
