@@ -21,3 +21,4 @@ ln -s $PREFIX/opt/chewiesnake/chewieSnake.py $PREFIX/bin/chewiesnake
 ln -s $PREFIX/opt/chewiesnake/chewieSnake_join.py $PREFIX/bin/chewiesnake_join
 
 chmod -R u+x $PREFIX/bin/*
+
