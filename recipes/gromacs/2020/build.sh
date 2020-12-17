@@ -2,27 +2,51 @@
 mkdir build
 cd build
 
-## See INSTALL of gromacs distro
-for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do \
-  cmake .. \
-  -DSHARED_LIBS_DEFAULT=OFF \
-  -DBUILD_SHARED_LIBS=OFF \
-  -DGMX_PREFER_STATIC_LIBS=YES \
-  -DGMX_BUILD_OWN_FFTW=OFF \
-  -DGMX_DEFAULT_SUFFIX=ON \
-  -DREGRESSIONTEST_DOWNLOAD=ON \
-  -DGMX_MPI=OFF \
-  -DGMX_GPU=ON \
-  -DGMX_USE_OPENCL=ON \
-  -DCMAKE_PREFIX_PATH=${PREFIX} \
-  -DGMX_INSTALL_PREFIX=${PREFIX} \
-  -DCMAKE_INSTALL_PREFIX=${PREFIX} \
-  -DGMX_SIMD=${ARCH} \
-  -DCMAKE_INSTALL_BINDIR=bin.${ARCH} \
-  -DCMAKE_INSTALL_LIBDIR=lib.${ARCH}
-  make -j${CPU_COUNT}
-  make install
-done;
+if [[ "$mpi" == "nompi" ]]; then
+    ## See INSTALL of gromacs distro
+    for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do \
+	cmake .. \
+	      -DSHARED_LIBS_DEFAULT=OFF \
+	      -DBUILD_SHARED_LIBS=OFF \
+	      -DGMX_PREFER_STATIC_LIBS=YES \
+	      -DGMX_BUILD_OWN_FFTW=OFF \
+	      -DGMX_DEFAULT_SUFFIX=ON \
+	      -DREGRESSIONTEST_DOWNLOAD=ON \
+	      -DGMX_GPU=ON \
+	      -DGMX_USE_OPENCL=ON \
+	      -DCMAKE_PREFIX_PATH=${PREFIX} \
+	      -DGMX_INSTALL_PREFIX=${PREFIX} \
+	      -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+	      -DGMX_SIMD=${ARCH} \
+	      -DCMAKE_INSTALL_BINDIR=bin.${ARCH} \
+	      -DCMAKE_INSTALL_LIBDIR=lib.${ARCH} \
+	      -DGMX_MPI=ON # MPI DISABLED
+	make -j${CPU_COUNT}
+	make install
+    done;
+else
+    ## See INSTALL of gromacs distro
+    for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do \
+	cmake .. \
+	      -DSHARED_LIBS_DEFAULT=OFF \
+	      -DBUILD_SHARED_LIBS=OFF \
+	      -DGMX_PREFER_STATIC_LIBS=YES \
+	      -DGMX_BUILD_OWN_FFTW=OFF \
+	      -DGMX_DEFAULT_SUFFIX=ON \
+	      -DREGRESSIONTEST_DOWNLOAD=ON \
+	      -DGMX_GPU=ON \
+	      -DGMX_USE_OPENCL=ON \
+	      -DCMAKE_PREFIX_PATH=${PREFIX} \
+	      -DGMX_INSTALL_PREFIX=${PREFIX} \
+	      -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+	      -DGMX_SIMD=${ARCH} \
+	      -DCMAKE_INSTALL_BINDIR=bin.${ARCH} \
+	      -DCMAKE_INSTALL_LIBDIR=lib.${ARCH} \
+	      -DGMX_MPI=ON #MPI enabled
+	make -j${CPU_COUNT}
+	make install
+    done;
+fi
 
 
 #

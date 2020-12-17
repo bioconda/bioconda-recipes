@@ -5,6 +5,10 @@
 {% set version = "2020.4" %}
 {% set md5sum = "aead694ec7d1222cbc40011c88047c3d" %}
 
+# taken from: https://github.com/conda-forge/hdf5-feedstock/blob/master/recipe/meta.yaml
+{% set mpi = mpi or 'nompi' %}
+
+
 package:
   name: {{ name }}
   version: {{ version }}
@@ -23,13 +27,13 @@ requirements:
     - cmake
     - pocl
   host:
-    - openmp # [linux]
     - ocl-icd  # [linux]
     - khronos-opencl-icd-loader  # [osx]
     - libhwloc 2.*
     - fftw
     - python >3.5
     - perl
+    - {{ mpi }}  # [mpi != 'nompi']
   run:
     - ocl-icd # [linux]
     - khronos-opencl-icd-loader  # [osx]
@@ -37,10 +41,12 @@ requirements:
     - openmp # [linux]
     - fftw
     - libhwloc 2.*
+    - {{ mpi }}  # [mpi != 'nompi']
 
 test:
   commands:
-    - gmx -version
+    - gmx -version # [mpi == 'nompi']
+    - gmx_mpi -version # [mpi != 'nompi']
 
 about:
   home: http://www.gromacs.org/
