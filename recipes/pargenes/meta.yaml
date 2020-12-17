@@ -1,17 +1,17 @@
-{% set name = "pargenes" %}
-{% set version = "v1.1.2" %}
-
+{% set version = "condatest2" %}
+ 
 package:
-  name: {{ name|lower }}
+  name: pargenes
   version: {{ version }}
-
-source:
-  git_url: https://github.com/benoitmorel/{{ name|lower }}.git
-  git_rev: {{ version }}
-  sha256: unused
 
 build:
   number: 0
+  # skip: True  # [py3k]
+
+source:
+  git_url: https://github.com/BenoitMorel/ParGenes.git
+  git_rev: {{ version }}
+  sha256: 3398c8389291cd3eab03b907a3bb54e43d01924cfe210065ca972f24cd3c7301
 
 requirements:
   build:
@@ -20,33 +20,34 @@ requirements:
     - flex
     - cmake
     - unzip
+    - openjdk
   host:
-    - openmpi
     - python
+    - gmp
+    - openmpi
+    - openjdk
   run:
-    - openmpi
     - python
+    - openmpi
+    - openjdk
 
 test:
+  source_files:
+    - tests
   commands:
     - pargenes.py --help
     - pargenes-hpc.py --help
     - pargenes-hpc-debug.py --help
-    - python ${SRC_DIR}/tests/run_tests.py --run-as-binary
+    - python tests/run_tests.py --run-as-binary
 
 about:
-   home: https://github.com/benoitmorel/pargenes
-   license: GPL-3
-   license_family: GPL
-   license_file: LICENSE
-   summary: "Pargenes: a massively parallel tool for model selection and tree inference on thousands of genes"
+  home: https://github.com/BenoitMorel/ParGenes
+  license: GNU General Public License v3.
+  license_file: LICENSE
+  summary: A massively parallel tool for model selection and tree inference on thousands of genes
 
 extra:
-   container:
-     # openmpi needs ssh client
-     extended-base: true
-   skip-lints:
-     # uses submodules
-     - uses_vcs_url
-   identifiers:
-     - doi:10.1093/bioinformatics/bty839
+  skip-lints:
+    - uses_vcs_url
+  identifiers:
+    - doi:10.1101/2020.02.28.969980
