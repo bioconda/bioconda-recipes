@@ -1,0 +1,48 @@
+{% set name = "rfplasmid" %}
+{% set version = "0.0.14" %}
+{% set blake2_sha256 = "51802261a0ee64282abc12fe1265e1d14d9af324241ab8a6073e193079bef594" %}
+
+package:
+  name:  {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/{{ blake2_sha256[0:2] }}/{{ blake2_sha256[2:4] }}/{{ blake2_sha256[4:] }}/{{ name }}-{{ version }}-py3-none-any.whl
+  sha256: 6351fbc4b8152582acbfa925f829ab44c738f159b638694354e3a2830038d14d
+
+build:
+  noarch: generic
+  skip: True  # [py<30 or (py>=38 and osx)]
+  number: 0
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - biopython
+    - checkm-genome
+    - diamond
+    - kmer-jellyfish
+    - pandas
+    - python >=3.6
+    - r-randomforest
+    - zlib
+    - wget
+
+test:
+  commands:
+    - "rfplasmid.py --version"
+    - "rfplasmid.py --help"
+
+about:
+  home: https://github.com/aldertzomer/RFPlasmid
+  license: GNU General Public License v3 (GPL-3.0)
+  license_family: GPL
+  license_file: LICENSE
+  summary: 'RFPlasmid predicts plasmid contigs from assemblies using single copy marker genes, plasmid genes, and kmers.'
+
+extra:
+  skip-lints:
+    - should_not_be_noarch_source
+    - should_be_noarch_python
