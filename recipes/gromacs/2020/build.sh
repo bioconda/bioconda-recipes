@@ -21,9 +21,9 @@ for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do
     -DCMAKE_INSTALL_LIBDIR="lib.${ARCH}"
   )
   if [[ "${mpi}" == "nompi" ]]; then
-    cmake_args+=(-DGMX_MPI=ON)
-  else
     cmake_args+=(-DGMX_MPI=OFF)
+  else
+    cmake_args+=(-DGMX_MPI=ON)
   fi
   cmake .. "${cmake_args[@]}"
   make -j "${CPU_COUNT}"
