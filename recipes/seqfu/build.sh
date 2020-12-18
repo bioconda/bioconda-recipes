@@ -11,7 +11,10 @@ mkdir -p $PREFIX/bin
 nimble install -y --verbose argparse docopt terminaltables
 nim c --threads:on -p:lib --opt:speed -d:release -o:$PREFIX/bin/seqfu src/sfu.nim
 
+
 for SOURCE in src/fu_*.nim;
 do
-	nim c --threads:on  -p:lib --opt:speed -d:release -o:"$PREFIX/bin/${SOURCE/_/-}" "$SOURCE"
+	NAME=$(basename $SOURCE | sed 's/_/-/'  |cut -f1 -d.)
+	echo "$SOURCE -> $NAME"
+	nim c --threads:on  -p:lib --opt:speed -d:release -o:"$PREFIX/bin/${NAME}" "$SOURCE" || true
 done
