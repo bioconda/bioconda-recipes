@@ -15,13 +15,15 @@ mkdir -p ${dest}
 
 echo "Pargenes installer: copying the three main executables"
 # copy over all relevant files for the package
-for file in raxml-ng modeltest-ng mpi-scheduler; do
-  find . -type f -name ${file} -print -exec cp --parents '{}' ${dest} \;
-done
 
-echo "Pargenes installer: copying relevant python and binary files"
-for patt in ".*/pargenes/.*\.py" ".*\.so" ".*\.jar" ".*\.dylib"; do
-  find . -type f -regextype posix-egrep -regex "${patt}" -print -exec cp --parents '{}' ${dest} \;
+
+dependencies="raxml-ng" "modeltest-ng" "mpi-scheduler" "astral.jar"
+if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+  dependencies+=( "raxml-ng-mpi.so" "modeltest-ng-mpi/so" )
+fi
+
+for file in $dependencies do
+  find . -type f -name ${file} -print -exec cp --parents '{}' ${dest} \;
 done
 
 echo "Pargenes installer: before cd ${dest}"
