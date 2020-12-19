@@ -16,5 +16,5 @@ for SOURCE in src/fu_*.nim;
 do
 	NAME=$(basename $SOURCE | sed 's/_/-/'  |cut -f1 -d.)
 	echo "$SOURCE -> $NAME"
-	nim c --threads:on  -p:lib --opt:speed -d:release -o:"$PREFIX/bin/${NAME}" "$SOURCE" || true
+	nim c -p:lib --opt:speed -d:release -o:"$PREFIX/bin/${NAME}" "$SOURCE" || true
 done
