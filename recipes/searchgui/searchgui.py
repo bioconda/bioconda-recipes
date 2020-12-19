@@ -14,7 +14,7 @@ from os import access
 from os import getenv
 from os import X_OK
 
-jar_file = 'SearchGUI-4.0.5.jar' 
+jar_file = 'SearchGUI-4.0.7.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
@@ -60,6 +60,11 @@ def jvm_opts(argv):
             exec_dir = arg.split('=')[1].strip('"').strip("'")
             if not os.path.exists(exec_dir):
                 shutil.copytree(real_dirname(sys.argv[0]), exec_dir, symlinks=False, ignore=None)
+                src = real_dirname(sys.argv[0])
+                os.remove(os.path.join(exec_dir, "resources/XTandem/linux/linux_64bit/tandem"))
+                os.symlink(os.path.join(src, "resources/XTandem/linux/linux_64bit/tandem"),
+                           os.path.join(exec_dir, "resources/XTandem/linux/linux_64bit/tandem"))
+
         else:
             pass_args.append(arg)
 
