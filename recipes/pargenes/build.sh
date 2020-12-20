@@ -8,7 +8,7 @@ export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
 
 # build
-CXX=mpicxx ./install.sh
+OMPI_MCA_rmaps_base_oversubscribe=1 OMPI_ALLOW_RUN_AS_ROOT=1 OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1 CXX=mpicxx ./install.sh
 
 dest=${PREFIX}/bin/
 mkdir -p ${dest}
