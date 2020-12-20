@@ -10,31 +10,9 @@ export CXX_INCLUDE_PATH=${PREFIX}/include
 # build
 CXX=mpicxx ./install.sh
 
-dest=${PREFIX}/bin
+dest=${PREFIX}/bin/
 mkdir -p ${dest}
 
-echo "Pargenes installer: copying the three main executables"
-# copy over all relevant files for the package
+cp -r pargenes $dest
 
 
-
-dependencies="raxml-ng" "modeltest-ng" "mpi-scheduler" "astral.jar"
-if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-echo "initial dependencies: $dependencies"
-  echo "In linux case, ade .so files"
-  dependencies+=( "raxml-ng-mpi.so" "modeltest-ng-mpi.so" )
-  echo "ok"
-fi
-
-echo "current dependencies: $dependencies"
-for file in $dependencies do
-  echo "Copying dependency ${file}"
-  find . -type f -name ${file} -print -exec cp --parents '{}' ${dest} \;
-done
-
-echo "Pargenes installer: before cd ${dest}"
-cd ${dest}
-echo "Pargenes installer: Before ln"
-ln -s pargenes/pargenes.py pargenes.py
-ln -s pargenes/pargenes-hpc.py pargenes-hpc.py
-ln -s pargenes/pargenes-hpc-debug.py pargenes-hpc-debug.py
