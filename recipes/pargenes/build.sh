@@ -19,10 +19,11 @@ echo "Pargenes installer: copying the three main executables"
 
 dependencies="raxml-ng" "modeltest-ng" "mpi-scheduler" "astral.jar"
 if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-  dependencies+=( "raxml-ng-mpi.so" "modeltest-ng-mpi/so" )
+  dependencies+=( "raxml-ng-mpi.so" "modeltest-ng-mpi.so" )
 fi
 
 for file in $dependencies do
+  echo "Copying dependency ${file}"
   find . -type f -name ${file} -print -exec cp --parents '{}' ${dest} \;
 done
 
