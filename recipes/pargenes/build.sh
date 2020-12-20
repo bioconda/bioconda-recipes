@@ -13,6 +13,6 @@ CXX=mpicxx ./install.sh
 dest=${PREFIX}/bin/
 mkdir -p ${dest}
 
-cp -r pargenes $dest
+cp -r pargenes/* $dest
 
 
