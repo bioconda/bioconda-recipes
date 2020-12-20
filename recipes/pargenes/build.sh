@@ -8,11 +8,18 @@ export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
 
 # build
-OMPI_MCA_rmaps_base_oversubscribe=1 OMPI_ALLOW_RUN_AS_ROOT=1 OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1 CXX=mpicxx ./install.sh
+export OMPI_MCA_rmaps_base_oversubscribe=1 
+export OMPI_ALLOW_RUN_AS_ROOT=1 
+export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1 
+
+echo "Bioconda Pargenes installer: running install.sh"
+CXX=mpicxx ./install.sh
 
 dest=${PREFIX}/bin/
 mkdir -p ${dest}
 
 cp -r pargenes/* $dest
 
+echo "Bioconda Pargenes installer: running python tests/run_tests.py"
+python tests/run_tests.py --run-as-binary --report
 
