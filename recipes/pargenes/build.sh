@@ -13,7 +13,11 @@ export OMPI_ALLOW_RUN_AS_ROOT=1
 export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1 
 
 echo "Bioconda Pargenes installer: running install.sh"
-CXX=mpicxx ./install.sh
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  ./install.sh 1
+else
+  CXX=mpicxx ./install.sh
+fi
 
 dest=${PREFIX}/bin/
 mkdir -p ${dest}
