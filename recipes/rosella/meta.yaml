@@ -1,13 +1,14 @@
-{% set version="0.0.2" %}
-{% set hash="30e62a9c66fc0c3aec957d2665a1669ae16c89e5db3ae4d8abd467f08593ba19" %}
+{% set version="0.1.0" %}
+#{% set hash="30e62a9c66fc0c3aec957d2665a1669ae16c89e5db3ae4d8abd467f08593ba19" %}
 
 package:
   name: rosella
   version: {{ version }}
 
 source:
-  url: https://github.com/rhysnewell/rosella/archive/v{{ version }}.tar.gz
-  sha256: {{ hash }}
+  git_url: https://github.com/rhysnewell/rosella.git
+  git_tag: "v{{ version}}"
+#  sha256: {{ hash }}
 
 build:
   number: 0
@@ -15,12 +16,36 @@ build:
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
 
 requirements:
+  build:
+    - rust >=1.40
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - pkg-config
   host:
-    - python >=3.6
-    - pip
+    - zlib
+    - gsl
+    - openblas
+    - openssl
+    - clangdev
   run:
-    - python>=3.6
-    - umap-learn
+    - python>=3.8
+    - parallel
+    - pysam>=0.16
+    - svim
+    - svim-asm
+    - freebayes
+    - prodigal
+    - samtools=1.9
+    - vt
+    - pkg-config
+    - zlib
+    - gsl
+    - starcode
+    - openblas
+    - bwa
+    - minimap2
+    - fastani
+    - dashing
     - hdbscan
     - matplotlib-base
     - numpy
@@ -29,13 +54,14 @@ requirements:
     - scikit-bio
     - numba
     - biopython
+    - pynndescent
+    - pip
+    - pip:
+        - umap-learn>=0.5
 
 test:
-  imports:
-    - rosella
-    - rosella.metrics
-    - rosella.binning
-    - rosella.cluster
+  commands:
+    - {{ name }} --version | grep '{{ version }}'
 
 about:
   home: https://rhysnewell.github.io/rosella/
