@@ -1,4 +1,4 @@
-{% set version = "1.5.0" %}
+{% set version = "2.5.3" %}
 
 package:
   name: varlociraptor
@@ -6,10 +6,17 @@ package:
 
 build:
   number: 0
+  # Skipping macOS builds due to unresolved linking error:
+  #  Undefined symbols for architecture x86_64:
+  #    "_SSLCopyALPNProtocols", referenced from:
+  #        _sectransp_connect_step2 in libcurl_sys-c372a728cc50d01a.rlib(sectransp.o)
+  #    "_SSLSetALPNProtocols", referenced from:
+  #        _sectransp_connect_common in libcurl_sys-c372a728cc50d01a.rlib(sectransp.o)
+  skip: True  # [osx]
 
 source:
   url: https://github.com/varlociraptor/varlociraptor/archive/v{{ version }}.tar.gz
-  sha256: 992dd73a30cc72ba23fa8bfb16f2d986f0184831281f931922f09cf62a767243
+  sha256: 481fb4fc282b230ef674c434791e441a26fe4fe989c1fac9eebe827c31a13041
 
 requirements:
   build:
@@ -20,20 +27,14 @@ requirements:
     - pkg-config
   host:
     - gsl
-    - openblas
     - libcblas
+    - openssl
     - zlib
     - bzip2
     - xz
     - clangdev
     - blis
   run:
-    - gsl
-    - openblas
-    - libcblas
-    - zlib
-    - bzip2
-    - xz
     - blis
 
 test:

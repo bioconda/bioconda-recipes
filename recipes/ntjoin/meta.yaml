@@ -1,0 +1,42 @@
+{% set version = "1.0.5" %}
+
+package:
+  name: ntjoin
+  version: {{ version }}
+
+source:
+  url: https://github.com/bcgsc/ntJoin/releases/download/v{{ version }}/ntJoin-{{ version }}.tar.gz 
+  sha256: 84a396f4397a32da15925ce481d1fdf00df859c8b21458c13d9f2535b1faa597 
+
+build:
+  number: 0
+  skip: True  # [py<30]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
+    - python
+    - pip
+    - zlib
+  run:
+    - python-igraph
+    - pybedtools
+    - pymannkendall
+    - bedtools >=2.21.0
+    - samtools
+    - python
+    - zlib
+    - make
+
+test:
+  commands:
+    - ntJoin help 
+
+about:
+  home: http://www.bcgsc.ca/platform/bioinfo/software/ntjoin
+  license: GPL-3.0
+  license_file: LICENSE
+  summary: 'Genome assembly scaffolder using minimizer graphs'

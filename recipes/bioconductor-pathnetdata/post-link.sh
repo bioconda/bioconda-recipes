@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="PathNetData_1.22.0.tar.gz"
+FN="PathNetData_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/PathNetData_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/PathNetData_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pathnetdata/bioconductor-pathnetdata_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/PathNetData_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/PathNetData_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pathnetdata/bioconductor-pathnetdata_1.26.0_src_all.tar.gz"
 )
-MD5="cc73f25fe4c3612e31216aaa9200611f"
+MD5="7e3f6b58403749727af386484b41563c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

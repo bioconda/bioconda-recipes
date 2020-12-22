@@ -1,25 +1,26 @@
-{% set version = "1.4.0" %}
-
+{% set version = "1.5.0" %}
+{% set sha256 = "b261914d9f7ffc0e655079ceba3e348ba11df1a1f73c4e47a4b1ca154754985c" %}
 package:
   name: magicblast
   version: {{ version }}
 
 source:
-  - url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/magicblast/LATEST/ncbi-magicblast-{{ version }}-x64-linux.tar.gz # [linux]
-    sha256: 9995524a2ce67850516debb3341f268d485113f1c28005e39b5fbf47fe27d250 # [linux]
-  - url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/magicblast/LATEST/ncbi-magicblast-{{ version }}-x64-macosx.tar.gz # [osx]
-    sha256: f48daeb86065be4f256820b5c189f0141eafdf50e5a0b8e837b381e82a447b0e # [osx]
+  - url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/magicblast/LATEST/ncbi-magicblast-{{ version }}-src.tar.gz
+    sha256: {{ sha256 }}
 
 build:
   number: 0
 
 requirements:
   build:
-    - patchelf  # [linux]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
     - zlib #1.2.7
     - bzip2 #1.0.6
     - libxml2 >=2.9.1,<2.10.0a0
+    - ncbi-vdb 
   run:
     - zlib #1.2.7
     - bzip2 #1.0.6
@@ -54,12 +55,13 @@ about:
     distinguish short indels from substitutions near the edges.
 
     More details about the algorithm and comparison with other similar tools
-    are presented here: https://www.biorxiv.org/content/early/2018/08/14/390013.
+    are presented here:
+    https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2996-x.
 
 extra:
   identifiers:
     - biotools:magicblast
-    - doi:10.1101/390013
+    - doi:10.1186/s12859-019-2996-x
   recipe-maintainers:
     - boratyng
   skip-lints:

@@ -3,7 +3,7 @@ set -eoux pipefail
 
 mkdir build
 pushd build
-cmake -DCMAKE_BUILD_TYPE=Release -Dspoa_build_executable=ON ..
+cmake -DCMAKE_BUILD_TYPE=Release -Dspoa_build_executable=ON -Dspoa_optimize_for_portability=ON ..
 make
 
 mkdir -p ${PREFIX}/bin
