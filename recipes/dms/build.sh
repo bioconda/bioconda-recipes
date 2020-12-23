@@ -1,6 +1,7 @@
 #!/bin/bash
 
-mkdir -p ${PREFIX}/bin
-make bin
 make
-cp ../bin/ ${PREFIX}/bin
+
+mkdir -p $PREFIX/bin
+ls
+cp bin/* $PREFIX/bin/
