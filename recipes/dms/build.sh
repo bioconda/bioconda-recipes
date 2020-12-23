@@ -1,7 +1,6 @@
 #!/bin/bash
 
+cd $PREFIX/$PKG_NAME
 make
-
 mkdir -p $PREFIX/bin
-ls
 cp bin/* $PREFIX/bin/
