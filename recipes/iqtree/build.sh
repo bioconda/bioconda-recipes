@@ -16,3 +16,4 @@ $BUILD_PREFIX/bin/cmake -D CMAKE_INSTALL_PREFIX:PATH=$PREFIX -DUSE_LSD2=ON -DIQT
 
 make --jobs "${CPU_COUNT}"
 make install
+cp ${PREFIX}/bin/iqtree2 ${PREFIX}/bin/iqtree
