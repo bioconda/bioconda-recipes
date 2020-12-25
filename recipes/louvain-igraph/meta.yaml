@@ -1,0 +1,45 @@
+{% set name = "louvain-igraph" %}
+{% set pkg_name = "louvain" %}
+{% set version = "0.7.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ pkg_name[0] }}/{{ pkg_name }}/{{ pkg_name }}-{{ version }}.tar.gz
+  sha256: 9734fc6bf8c15546d685a8c6d7d7ca0574cad4cb641e9ca91c3334028658f7c6
+
+build:
+  number: 0
+  skip: True  # [py27]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - flex
+  host:
+    - python
+    - pip
+    - setuptools_scm
+    - python-igraph
+  run:
+    - python
+    - python-igraph
+
+test:
+  imports:
+    - igraph
+    - louvain
+
+about:
+  home: https://github.com/vtraag/louvain-igraph
+  license: GPL-3.0-or-later
+  license_family: GPL
+  license_file: LICENSE
+  summary: "Python wrapper for Louvain algorithm implementation using igraph library, which is widely used in the cell clustering step of single-cell data analysis."
+
+extra:
+  recipe-maintainers:
+    - yihming
