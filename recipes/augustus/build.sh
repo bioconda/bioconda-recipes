@@ -24,6 +24,7 @@ make \
     BAMTOOLS_CXX="${CXX}" \
     BAMTOOLS="${PREFIX}" \
     COMPGENPRED=true \
+    MYSQL=false \
     $sqlite
 
 
