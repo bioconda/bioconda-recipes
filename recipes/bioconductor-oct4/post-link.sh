@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="oct4_1.2.0.tar.gz"
+FN="oct4_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/oct4_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/oct4_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-oct4/bioconductor-oct4_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/oct4_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/oct4_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-oct4/bioconductor-oct4_1.6.0_src_all.tar.gz"
 )
-MD5="8f37221ceef6d91b09056c0de1975802"
+MD5="1649199754337c520da0409e3d9c5b29"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

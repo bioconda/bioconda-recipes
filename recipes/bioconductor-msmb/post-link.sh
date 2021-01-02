@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="MSMB_1.4.0.tar.gz"
+FN="MSMB_1.7.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/MSMB_1.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MSMB_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-msmb/bioconductor-msmb_1.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/MSMB_1.7.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MSMB_1.7.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-msmb/bioconductor-msmb_1.7.0_src_all.tar.gz"
 )
-MD5="c630de7a58dfb4ae2dafb3603d1a81ff"
+MD5="c0a3f4ab42a50a077b0dce75a1a769c7"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

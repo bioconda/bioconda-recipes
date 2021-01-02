@@ -1,5 +1,6 @@
 #!/bin/bash
-BACTOPIA="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
+BACTOPIA_VERSION="${PKG_VERSION%.*}.x"
+BACTOPIA="${PREFIX}/share/${PKG_NAME}-${BACTOPIA_VERSION}"
 mkdir -p ${PREFIX}/bin ${BACTOPIA}
 
 chmod 777 bactopia
