@@ -11,6 +11,6 @@ fi
 
 mkdir build
 pushd build
-./configure --enable-hts --prefix=${PREFIX} CXX=$CXX LIBS="-L$PREFIX/lib -lgsl -lgslcblas -lz"
+../configure --enable-hts --prefix=${PREFIX} CXX=$CXX LIBS="-L$PREFIX/lib -lgsl -lgslcblas -lz"
 make
 make install
