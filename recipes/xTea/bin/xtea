@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# vim: set syntax=python
-
 ##11/04/2018
 ##@@author: Simon (Chong) Chu, DBMI, Harvard Medical School
 ##@@contact: chong.simon.chu@gmail.com
@@ -13,6 +10,7 @@ import ntpath
 
 ILLUMINA="illumina"
 X10="10X"
+S_VERSION="v0.1"
 
 ####
 PUB_CLIP="pub_clip"
@@ -1013,6 +1011,9 @@ def parse_option():
     parser.add_option("--resume",
                       action="store_true", dest="resume", default=False,
                       help="Resume the running, which will skip the step if output file already exists!")
+    parser.add_option("-V", "--version",
+                      action="store_true", dest="version", default=False,
+                      help="Print xTea version")
 
     parser.add_option("-i", "--id", dest="id",
                       help="sample id list file ", metavar="FILE")
@@ -1075,80 +1076,84 @@ def parse_option():
 ####
 if __name__ == '__main__':
     (options, args) = parse_option()
-    sf_id = options.id
-    sf_bams = options.bam ###input is a bam file
-    sf_bams_10X = options.x10
-    sf_sbatch_sh = options.output  # this is the shell for submitting the jobs
-    s_wfolder = options.wfolder
-    b_mosaic = options.mosaic
-    b_user_par = options.user
-    b_force = options.force
-    b_case_control=options.case_control #whether case control mode
-    b_tumor = options.tumor
-    f_purity = options.purity
-    b_lsf=options.lsf
-    b_resume = options.resume
-####
-
-    if s_wfolder[-1]!="/":
-        s_wfolder+="/"
-    if os.path.exists(s_wfolder) == False:
-        scmd = "mkdir {0}".format(s_wfolder)
-        Popen(scmd, shell=True, stdout=PIPE).communicate()
-
-    if os.path.isfile(sf_bams) == False:
-        sf_bams = "null"
-    if os.path.isfile(sf_bams_10X) == False:
-        sf_bams_10X = "null"
-####
-    spartition = options.partition
-    stime = options.time
-    smemory = options.memory
-    ncores = options.cores
-    sf_folder_rep1 = options.lib  ##this is the lib folder path
-    sf_ref1=options.ref ####reference genome
-    sf_folder_xtea=options.xtea#
-
-    sf_folder_rep=sf_folder_rep1
-    sf_ref=sf_ref1
-    if options.decompress==True:
-        decompress(sf_folder_rep1, s_wfolder)
-        decompress(sf_ref1, s_wfolder)
-        sf_folder_rep = s_wfolder+"rep_lib_annotation/" #trim tar.gz
-        sf_ref=s_wfolder+"genome.fa"
-    sf_gene=options.gene
-    sf_black_list = options.blacklist
-
-    i_rep_type=options.rep_type
-    l_rep_type = []
-    if i_rep_type & 1 != 0:
-        l_rep_type.append(REP_TYPE_L1)
-    if i_rep_type & 2 != 0:
-        l_rep_type.append(REP_TYPE_ALU)
-    if i_rep_type & 4 != 0:
-        l_rep_type.append(REP_TYPE_SVA)
-    if i_rep_type & 8 != 0:
-        l_rep_type.append(REP_TYPE_HERV)
-    if i_rep_type & 16 != 0:
-        l_rep_type.append(REP_TYPE_MIT)
-    if i_rep_type & 32 != 0:
-        l_rep_type.append(REP_TYPE_MSTA)
-
-    if b_case_control==False:
-        gnrt_running_shell(sf_id, sf_bams, sf_bams_10X, l_rep_type, b_mosaic, b_user_par, b_force, b_tumor, f_purity,
-                           s_wfolder, sf_folder_rep, sf_ref, sf_gene, sf_black_list, sf_folder_xtea, spartition, stime,
-                           smemory, ncores, sf_sbatch_sh, "null", b_lsf, b_resume)
+    b_version=options.version
+    if b_version==True:
+        print("xTea %s for short and linked reads on hg38\n" % S_VERSION)
     else:
-        #if in case-control mode, then need to separate to two steps
-        #thus need to prepare the files separately
-        sf_sprt_bams=sf_bams + CASE_LIST_SUFFIX
-        sf_control_bams=sf_bams + CTRL_LIST_SUFFIX
-        print sf_control_bams
-        prepare_case_control_bam(sf_bams, sf_sprt_bams, sf_control_bams)
-        #first, run the jobs seperately for all the case and control samples
-        gnrt_running_shell(sf_id, sf_sprt_bams, sf_bams_10X, l_rep_type, b_mosaic, b_user_par, b_force, b_tumor,
-                           f_purity, s_wfolder, sf_folder_rep, sf_ref, sf_gene, sf_black_list, sf_folder_xtea,
-                           spartition, stime, smemory, ncores, sf_sbatch_sh, sf_bams, b_lsf, b_resume)
+        sf_id = options.id
+        sf_bams = options.bam ###input is a bam file
+        sf_bams_10X = options.x10
+        sf_sbatch_sh = options.output  # this is the shell for submitting the jobs
+        s_wfolder = options.wfolder
+        b_mosaic = options.mosaic
+        b_user_par = options.user
+        b_force = options.force
+        b_case_control=options.case_control #whether case control mode
+        b_tumor = options.tumor
+        f_purity = options.purity
+        b_lsf=options.lsf
+        b_resume = options.resume
+    ####
+
+        if s_wfolder[-1]!="/":
+            s_wfolder+="/"
+        if os.path.exists(s_wfolder) == False:
+            scmd = "mkdir {0}".format(s_wfolder)
+            Popen(scmd, shell=True, stdout=PIPE).communicate()
+
+        if os.path.isfile(sf_bams) == False:
+            sf_bams = "null"
+        if os.path.isfile(sf_bams_10X) == False:
+            sf_bams_10X = "null"
+    ####
+        spartition = options.partition
+        stime = options.time
+        smemory = options.memory
+        ncores = options.cores
+        sf_folder_rep1 = options.lib  ##this is the lib folder path
+        sf_ref1=options.ref ####reference genome
+        sf_folder_xtea=options.xtea#
+
+        sf_folder_rep=sf_folder_rep1
+        sf_ref=sf_ref1
+        if options.decompress==True:
+            decompress(sf_folder_rep1, s_wfolder)
+            decompress(sf_ref1, s_wfolder)
+            sf_folder_rep = s_wfolder+"rep_lib_annotation/" #trim tar.gz
+            sf_ref=s_wfolder+"genome.fa"
+        sf_gene=options.gene
+        sf_black_list = options.blacklist
+
+        i_rep_type=options.rep_type
+        l_rep_type = []
+        if i_rep_type & 1 != 0:
+            l_rep_type.append(REP_TYPE_L1)
+        if i_rep_type & 2 != 0:
+            l_rep_type.append(REP_TYPE_ALU)
+        if i_rep_type & 4 != 0:
+            l_rep_type.append(REP_TYPE_SVA)
+        if i_rep_type & 8 != 0:
+            l_rep_type.append(REP_TYPE_HERV)
+        if i_rep_type & 16 != 0:
+            l_rep_type.append(REP_TYPE_MIT)
+        if i_rep_type & 32 != 0:
+            l_rep_type.append(REP_TYPE_MSTA)
+
+        if b_case_control==False:
+            gnrt_running_shell(sf_id, sf_bams, sf_bams_10X, l_rep_type, b_mosaic, b_user_par, b_force, b_tumor, f_purity,
+                               s_wfolder, sf_folder_rep, sf_ref, sf_gene, sf_black_list, sf_folder_xtea, spartition, stime,
+                               smemory, ncores, sf_sbatch_sh, "null", b_lsf, b_resume)
+        else:
+            #if in case-control mode, then need to separate to two steps
+            #thus need to prepare the files separately
+            sf_sprt_bams=sf_bams + CASE_LIST_SUFFIX
+            sf_control_bams=sf_bams + CTRL_LIST_SUFFIX
+            print sf_control_bams
+            prepare_case_control_bam(sf_bams, sf_sprt_bams, sf_control_bams)
+            #first, run the jobs seperately for all the case and control samples
+            gnrt_running_shell(sf_id, sf_sprt_bams, sf_bams_10X, l_rep_type, b_mosaic, b_user_par, b_force, b_tumor,
+                               f_purity, s_wfolder, sf_folder_rep, sf_ref, sf_gene, sf_black_list, sf_folder_xtea,
+                               spartition, stime, smemory, ncores, sf_sbatch_sh, sf_bams, b_lsf, b_resume)
 
     #run_pipeline(l_rep_type, sample_id, s_wfolder)
     #cp_compress_results(s_wfolder, l_rep_type, sample_id)
