@@ -13,9 +13,6 @@ mkdir -p $LIBEXEC_HOME
 
 mv $SRC_DIR/* $FROGS_HOME
 
-#Make sure all css and js requests are https so reports work on https servers
-sed -i.bak 's/src="http:/src="https:/' $FROGS_HOME/tools/*/*_tpl.html
-
 ln -s $FROGS_HOME/app/*.py $BINARY_HOME
 ln -s $FROGS_HOME/app/*.html $BINARY_HOME
 ln -s $FROGS_HOME/app/*.Rmd $BINARY_HOME
