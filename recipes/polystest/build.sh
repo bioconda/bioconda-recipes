@@ -6,6 +6,7 @@ mkdir -p $PREFIX/share/polystest
 # substituting paths for testing 
 cp run_app_conda.R run_polystest_app.R
 sed -i'.orig' "s=HelperFuncs.R=../share/polystest/HelperFuncs.R=" runPolySTestCLI.R
+sed -i'.orig' "s=rankprodbounds.R=../share/polystest/rankprodbounds.R=" HelperFuncs.R
 
 # copying files
 cp *.R $PREFIX/share/polystest/
