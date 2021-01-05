@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="leukemiasEset_1.22.0.tar.gz"
+FN="leukemiasEset_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/leukemiasEset_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/leukemiasEset_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-leukemiaseset/bioconductor-leukemiaseset_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/leukemiasEset_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/leukemiasEset_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-leukemiaseset/bioconductor-leukemiaseset_1.26.0_src_all.tar.gz"
 )
-MD5="7e19ace548cce0aa486eaf3f9840b843"
+MD5="f9018f85f407e29c30409596f6e5797f"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

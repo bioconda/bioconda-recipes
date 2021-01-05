@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="harbChIP_1.24.0.tar.gz"
+FN="harbChIP_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/harbChIP_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/harbChIP_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-harbchip/bioconductor-harbchip_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/harbChIP_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/harbChIP_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-harbchip/bioconductor-harbchip_1.28.0_src_all.tar.gz"
 )
-MD5="af8b667dfbc4aa3e6a72177101a32f47"
+MD5="652671ee0af64c10801b632aca8eee42"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
