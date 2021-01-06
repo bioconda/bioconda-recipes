@@ -6,4 +6,3 @@ cd ../../assemblies_psiclass_modified/
 make
 cd ../..
 chmod -R a+x *
-
