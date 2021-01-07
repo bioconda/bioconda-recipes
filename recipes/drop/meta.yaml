@@ -1,5 +1,5 @@
 {% set name = "drop" %}
-{% set version = "0.9.1" %}
+{% set version = "1.0.2" %} 
 
 package:
   name: "{{ name|lower }}"
@@ -7,33 +7,30 @@ package:
 
 source:
   url: https://github.com/gagneurlab/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: 621733fda4b337a164d41216938d1015ca0ef8c093a21c9ecbcd062c015148cf
+  sha256: 08c6cac15a7301d257a05558320ce2ecef0664ff5220fe1297f6a0089149531a
 
 build:
   number: 0
   noarch: python
   entry_points:
     - drop=drop.cli:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --ignore-installed"
 
 requirements:
   host:
     - python >=3.6
     - pip
-
   run:
     - python >=3.6
     - pandas
     - Click >=7.0
     - click-log
     - python-dateutil
-
     # snakemake/wbuild
     - snakemake >=5.5.2
-    - wbuild >=1.7.0
+    - wbuild >=1.7.1
     - pandoc
     - graphviz
-
     # command line tools
     - bc
     - wget
@@ -42,7 +39,6 @@ requirements:
     - bcftools >=1.7
     - gatk4 >=4.0.4
     - star >=2.7
-
     # R dependencies
     - r-base>=4.0.0
     - r-rmarkdown
@@ -56,29 +52,25 @@ requirements:
     - r-magrittr
     - r-devtools
     - r-tmae
-
     # bioconductor packages
     - bioconductor-deseq2
     - bioconductor-GenomicScores
     - bioconductor-outrider
-    - bioconductor-fraser
+    - bioconductor-fraser >=1.0.2
     - bioconductor-variantannotation
-    - bioconductor-bsgenome.hsapiens.ucsc.hg19
+      #- bioconductor-bsgenome.hsapiens.ucsc.hg19
       #- bioconductor-mafdb.gnomad.r2.1.hs37d5
       #- bioconductor-mafdb.gnomad.r2.1.grch38
 
 test:
   imports:
     - drop
-  commands:
-    - drop --help
-    - mkdir -p /tmp/drop_test
-    - cd /tmp/drop_test
-    - drop demo > /dev/null
-    - snakemake -n > /dev/null
-    - snakemake --cores 2 --jobs 2
-    - cd
-    - rm -rf /tmp/drop_test
+  requires:
+    - pip
+    - piptest
+    - pytest-runner
+  source_files:
+    - tests/
 
 about:
   home: https://github.com/gagneurlab/drop
@@ -98,4 +90,3 @@ extra:
   recipe-maintainers:
     - c-mertes
     - mumichae
-
