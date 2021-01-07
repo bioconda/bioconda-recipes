@@ -8,7 +8,7 @@ make
 cd "${SRC_DIR}/src"
 chmod -R a+x *
 mkdir -p "${PREFIX}/bin/scripts"
-mkdir -p "${PREFIX}/src"
+#mkdir -p "${PREFIX}/src"
 cp "${SRC_DIR}/finder" "${PREFIX}/bin"
 cp "${SRC_DIR}/scripts/"* "${PREFIX}/bin/scripts"
 #cp "${SRC_DIR}/src/"* "${PREFIX}/src/"
