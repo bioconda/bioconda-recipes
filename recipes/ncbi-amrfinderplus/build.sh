@@ -6,7 +6,8 @@ echo "PREFIX =" $PREFIX CONDA_PREFIX = $CONDA_PREFIX BUILD_PREFIX = $BUILD_PREFI
 echo $PREFIX
 
 # test fix for version 3.9.8
-patch < patch.3.9.8
+# move patch to meta.yaml
+# patch < patch.3.9.8
 
 # note that for version 3.7 the make command should be:
 make CXX="$CXX $LDFLAGS" CPPFLAGS="$CXXFLAGS" PREFIX="$PREFIX" CONDA_DB_DIR="$CONDA_PREFIX/share/amrfinderplus/data"
