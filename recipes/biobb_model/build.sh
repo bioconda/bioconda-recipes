@@ -9,3 +9,6 @@ cp $SP_DIR/biobb_model/model/mutate.py $PREFIX/bin/mutate
 
 chmod u+x $SP_DIR/biobb_model/model/fix_side_chain.py
 cp $SP_DIR/biobb_model/model/fix_side_chain.py $PREFIX/bin/fix_side_chain
+
+chmod u+x $SP_DIR/biobb_model/model/fix_backbone.py
+cp $SP_DIR/biobb_model/model/fix_backbone.py $PREFIX/bin/fix_backbone
