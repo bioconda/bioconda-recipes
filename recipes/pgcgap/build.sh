@@ -19,7 +19,7 @@ cp Functions/MASH/get_Mash_Matrix.pl $PREFIX/bin/
 cp Functions/MASH/Plot_MashHeatmap.R $PREFIX/bin/
 
 cp Functions/Assemble/genome_LenFilter_stats.pl $PREFIX/bin/
-cp Functions/Assemble/get_stats_summary.pl.pl $PREFIX/bin/
+cp Functions/Assemble/get_stats_summary.pl $PREFIX/bin/
 
 chmod a+x $PREFIX/bin/pgcgap
 chmod a+x $PREFIX/bin/plot_3Dpie.R
