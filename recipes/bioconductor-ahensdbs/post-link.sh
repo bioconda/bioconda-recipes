@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="AHEnsDbs_1.0.14.tar.gz"
+FN="AHEnsDbs_1.0.15.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/AHEnsDbs_1.0.14.tar.gz"
-  "https://bioarchive.galaxyproject.org/AHEnsDbs_1.0.14.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ahensdbs/bioconductor-ahensdbs_1.0.14_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/AHEnsDbs_1.0.15.tar.gz"
+  "https://bioarchive.galaxyproject.org/AHEnsDbs_1.0.15.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ahensdbs/bioconductor-ahensdbs_1.0.15_src_all.tar.gz"
 )
-MD5="e129b39719011f34d61675ca26090d0e"
+MD5="75d35fc9b0171d0260d3512d7d5a34e2"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
