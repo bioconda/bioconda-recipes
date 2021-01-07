@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="waveTilingData_1.22.0.tar.gz"
+FN="waveTilingData_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/waveTilingData_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/waveTilingData_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-wavetilingdata/bioconductor-wavetilingdata_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/waveTilingData_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/waveTilingData_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-wavetilingdata/bioconductor-wavetilingdata_1.26.0_src_all.tar.gz"
 )
-MD5="28bb68fbd8fbf6f69a55644956f70bcb"
+MD5="b52fb120bef93cb2dfca4493f2728957"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

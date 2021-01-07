@@ -1,70 +1,42 @@
 {% set name = "seqfu" %}
-{% set version = "0.1.0" %}
-{% set sha256 = "9f87b16e7144a07143a2c5deed6a849f56eced7956c931f832baac738a170f9f" %}
+{% set version = "0.8.2" %}
+{% set sha256 = "cb073f77c4dafb250e3a66e452f0b575c67f5849da9b7b0d35db3ef7c7aeb433" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/quadram-institute-bioscience/{{ name }}/archive/v.{{ version }}.tar.gz
+  url: https://github.com/telatin/{{ name }}2/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  noarch: generic
   number: 0
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - nim
   host:
-    - n50
-    - interleafq
-    - any2fasta
-    - perl
-    - perl-app-cpanminus
-    - perl-file-which
-    - perl-json-pp
-    - perl-fastx-reader
-    - perl-fastx-abi
-    - perl-getopt-long
-    - perl-exporter
-    - perl-text-asciitable
-    - perl-pod-usage
-
-  run:
-    - perl
-    - perl-file-which
-    - perl-getopt-long
-    - perl-json-pp
-    - perl-fastx-reader
-    - perl-fastx-abi
-    - perl-exporter
-    - perl-text-asciitable
-    - perl-pod-usage
-    - n50
-    - interleafq
-
+    - zlib
+    - pcre
+    
 test:
-  files:
-    - test.fa
   commands:
-  # (see run_test.sh for remainder of tests)
-  # Perl 'use' tests
-    - perl -e "use FASTX::Reader"
-    - perl -e "use FASTX::Abi"
-    - perl -e "use Proch::N50"
+    - seqfu --help
+    - seqfu stats --help
+    - "seqfu  --version | grep 'version: {{ version }}'"
+
 
 
 about:
-  home: http://github.com/quadram-institute-bioscience/seqfu/
+  home: http://github.com/telatin/seqfu/
   license: mit
-  summary: 'DNA sequence utilities (N50, de/interleave FASTQ, grep etc.)'
+  summary: 'DNA sequence utilities'
   description: |
     A collection of utilities to work with FASTX (FASTA or FASTQ) files
-    using the FASTX::Reader module that accepts gzipped input.
-    'n50' will calculate N50, minimum, maximum and total size of the 
-    sequences in one or more files, supporting CSV, TSV, JSON and screen
-    friendly output.
-    'interleafq' allows to interleave or deinterleave paired-end sequences.
+    that accept gzipped input.
+    Tools to interleave and deinterleave
 
 extra:
   identifiers:

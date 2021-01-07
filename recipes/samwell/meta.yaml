@@ -1,0 +1,59 @@
+{% set name = "samwell" %}
+{% set version = "0.0.2" %}
+
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/samwell-{{ version }}.tar.gz
+  sha256: 69ae76a2676b3d0136090b9b61d4ec72c92bcfc79c7e507dceffdf6dda5b2490
+  patches:
+    - do_not_require_cython.patch
+
+build:
+  number: 0
+  skip: true   # [py2k]
+  script: {{ PYTHON }} -m pip install . -vv
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - pip
+    - python
+    - cython
+    - poetry
+  run:
+    - cython
+    - typing_extensions >=3.7.4
+    - typing_inspect >=0.3.1
+    - attrs >=19.3.0
+    - defopt >=6.0
+    - intervaltree >=3.0.2
+    - mypy_extensions >=0.4.3
+    - pybedtools >=0.8.1
+    - pysam >=0.15.3
+    - python
+
+test:
+  imports:
+    - samwell
+    - samwell.sam
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://pypi.org/project/samwell/
+  summary: Useful utilities for biological data formats and analyses
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  skip-lints:
+    - cython_must_be_in_host
+  recipe-maintainers:
+    - nh13

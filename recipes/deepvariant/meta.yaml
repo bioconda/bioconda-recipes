@@ -1,5 +1,5 @@
-{% set version = "0.10.0" %}
-{% set sha256 = "0ae6640eb9c0ed249abc50194cc734334a1de73e40594d2158b49886993f058b" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "438bdabd56a6ad1847f63568b6ac1b8354b87960b5bc9dcf349aefb3edf57fa3" %}
 # When updating, also need to update model reference in post-link.sh
 
 package:
@@ -19,7 +19,7 @@ source:
   sha256: '{{ sha256 }}'
 
 build:
-  number: 2
+  number: 0
   skip: true  # [osx or not py36]
 
 requirements:
@@ -35,6 +35,13 @@ requirements:
   run:
     - openjdk >=8,<9
     - python 3.6.*
+    # TF slim is difficult because there is an existing tf-slim package in conda-forge
+    # https://github.com/conda-forge/tf-slim-feedstock
+    # which is different than the google one: https://github.com/google-research/tf-slim
+    # This appears to be a temporary situation: https://github.com/google-research/tf-slim/issues/6
+    # so temporarily install via pip in the build.sh to avoid conflicts
+    - absl-py
+    # - tf-slim
     - google-cloud-sdk
     - zlib
     - boost
@@ -51,6 +58,7 @@ requirements:
     - psutil
     - requests
     - scipy
+    - altair
     - oauth2client
     - six
     - crcmod

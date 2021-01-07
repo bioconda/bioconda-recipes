@@ -1,10 +1,23 @@
 #!/usr/bin/env bash
 
+set -e -o pipefail -x
+
+if [ "$(uname)" == "Darwin" ]; then
+    # On Mac OS X, we use prebuilt binaries. It's not the best solution, but
+    # the solution below does not work on Mac OS X
+    mkdir -p ${PREFIX}/bin
+    chmod +x bin/ngless
+    cp -pir bin/ngless ${PREFIX}/bin
+
+    mkdir -p ${PREFIX}/share
+    chmod +x share/ngless/bin/* share/ngless/bin/*/*
+    cp -pir share/ngless ${PREFIX}/share
+    exit 0
+fi
+
 
 # This tour de force script is mostly copy&pasted from
 # https://github.com/conda-forge/git-annex-feedstock
-
-set -e -o pipefail -x
 
 
 
@@ -71,6 +84,16 @@ if [[ -f "${HOST_LIBPTHREAD}" ]]; then
 fi
 
 
+# Ensure that GHC build platform is x86_64-unknown-linux (which GHC knows how to target),
+# rather than x86_64-conda-linux (which GHC does not know about).
+# Suggested by @isuruf on github; see
+# https://github.com/conda-forge/git-annex-feedstock/pull/96/commits/796678ac2cc106e67c4f1f89fb2e92c2ff153616 and
+# https://github.com/conda-forge/git-annex-feedstock/runs/945996913
+#
+unset host_alias
+unset build_alias
+
+
 #######################################################################################################
 # Install bootstrap ghc
 #######################################################################################################
@@ -93,7 +116,6 @@ popd
 pushd ${SRC_DIR}/ghc_src
 
 touch mk/build.mk
-echo "HADDOCK_DOCS = NO" >> mk/build.mk
 echo "BuildFlavour = quick" >> mk/build.mk
 echo "libraries/integer-gmp_CONFIGURE_OPTS += --configure-option=--with-gmp-includes=$PREFIX/include" >> mk/build.mk
 echo "libraries/integer-gmp_CONFIGURE_OPTS += --configure-option=--with-gmp-libraries=$PREFIX/lib" >> mk/build.mk
@@ -107,6 +129,7 @@ set -e
 make
 make install
 ghc-pkg recache
+ghc --version
 popd
 
 #######################################################################################################
@@ -132,7 +155,7 @@ stack setup
 stack update
 make NGLess/Dependencies/Versions.hs
 make external-deps CC=$CC CXX=$GCC
-stack build --extra-include-dirs ${PREFIX}/include --extra-lib-dirs ${PREFIX}/lib --ghc-options " -optc-I${PREFIX}/include -optl-L${PREFIX}/lib " --local-bin-path ${PREFIX}/bin
+stack build --extra-include-dirs ${PREFIX}/include --extra-lib-dirs ${PREFIX}/lib --local-bin-path ${PREFIX}/bin
 
 make install WGET="wget --no-check-certificate" prefix=$PREFIX CC=$CC
 
