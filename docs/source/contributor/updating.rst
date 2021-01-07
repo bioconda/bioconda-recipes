@@ -10,7 +10,7 @@ packages to know when something has been updated.
 
 .. code-block:: bash
 
-    bioconda-utils update recipes/ config.yml --packages <my-package-name>
+    bioconda-utils autobump recipes/ config.yml --packages <my-package-name>
 
 will update the package's recipe which you can then inspect. If you have
 a `GitHub personal access token
@@ -20,7 +20,7 @@ additionally submit a pull request on your behalf:
 
 .. code-block:: bash
 
-    bioconda-utils update recipes/ config.yml \
+    bioconda-utils autobump recipes/ config.yml \
       --packages <my-package-name> \
       --create-pr
 
