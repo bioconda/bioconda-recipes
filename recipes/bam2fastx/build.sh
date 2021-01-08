@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -vex
 
 export BOOST_ROOT="${PREFIX}"
 export PKG_CONFIG_LIBDIR="${PREFIX}"/lib/pkgconfig
