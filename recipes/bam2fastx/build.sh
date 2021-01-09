@@ -6,6 +6,7 @@ export PKG_CONFIG_LIBDIR="${PREFIX}"/lib/pkgconfig:${PKG_CONFIG_LIBDIR}
 
 pkg-config --list-all
 pkg-config --cflags pbbam
+pkg-config --cflags pbcopper
 
 # configure
 # '--wrap-mode nofallback' prevents meson from downloading
