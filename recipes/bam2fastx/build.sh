@@ -2,7 +2,7 @@
 set -vex
 
 export BOOST_ROOT="${PREFIX}"
-export PKG_CONFIG_LIBDIR="${PREFIX}"/lib/pkgconfig
+#export PKG_CONFIG_LIBDIR="${PREFIX}"/lib/pkgconfig
 
 pkg-config --list-all
 pkg-config --cflags pbbam
