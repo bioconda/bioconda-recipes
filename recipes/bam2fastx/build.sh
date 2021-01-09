@@ -2,7 +2,10 @@
 set -vex
 
 export BOOST_ROOT="${PREFIX}"
-export PKG_CONFIG_LIBDIR="${PREFIX}"/lib/pkgconfig
+export PKG_CONFIG_LIBDIR="${PREFIX}"/lib/pkgconfig:${PKG_CONFIG_LIBDIR}
+
+pkg-config --list-all
+pkg-config --cflags pbbam
 
 # configure
 # '--wrap-mode nofallback' prevents meson from downloading
