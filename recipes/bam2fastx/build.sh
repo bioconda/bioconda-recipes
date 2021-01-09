@@ -12,7 +12,9 @@ echo ${PREFIX}
 ls -larth ${PREFIX}
 ls -larth ${PREFIX}/include
 ls -larth ${PREFIX}/include/pbcopper
+set +e
 ls -larth ${PREFIX}/include/pbcopper/cli
+set -e
 ls -larth ${PREFIX}/lib
 ls -larth ${PREFIX}/lib/pkgconfig
 cat ${PREFIX}/lib/pkgconfig/pbbam.pc
