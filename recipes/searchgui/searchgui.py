@@ -16,7 +16,7 @@ from os import X_OK
 
 jar_file = 'SearchGUI-4.0.7.jar'
 
-default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
+default_jvm_mem_opts = ['-Xms512m', '-Xmx4g']
 
 # !!! End of parameter section. No user-serviceable code below this line !!!
 
