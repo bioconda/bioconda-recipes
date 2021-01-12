@@ -18,4 +18,4 @@ LIBCLANG_PATH=$PREFIX/lib/libclang.so \
 cargo install --force --root $PREFIX
 
 # Install flight
-cd flight/ && pip install . && cd ../
+# cd flight/ && pip install . && cd ../
