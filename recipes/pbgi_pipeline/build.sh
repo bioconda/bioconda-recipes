@@ -2,6 +2,7 @@
 set -e
 
 mkdir -p "${PREFIX}/bin"
-mv bin/* "${PREFIX}/bin/"
+mv ./scripts/* "${PREFIX}/bin/"
+mv ./* "${PREFIX}/bin/"
 
 exit 0
