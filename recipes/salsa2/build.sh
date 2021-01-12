@@ -1,6 +1,8 @@
 #!/bin/bash
 
-make
+sed -i.bak '1d' Makefile
+
+COMPILER=${CXX} make
 
 echo "#!/bin/env/python" > ${PREFIX}/bin/run_pipeline.py
 cat ./run_pipeline.py >> ${PREFIX}/bin/run_pipeline.py
