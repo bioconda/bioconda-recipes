@@ -1,9 +1,8 @@
 #!/bin/bash
 
-## Make package
 make
-echo "#!/bin/env/python" > ${PREFIX}/bin/run_pipeline.py
 
+echo "#!/bin/env/python" > ${PREFIX}/bin/run_pipeline.py
 cat ./run_pipeline.py >> ${PREFIX}/bin/run_pipeline.py
 cp ./correct.py ${PREFIX}/bin/correct.py
 cp ./fast_scaled_scores.py ${PREFIX}/bin/fast_scaled_scores.py
