@@ -1,18 +1,18 @@
 {% set name = "tigmint" %}
-{% set version = "1.1.2" %}
+{% set version = "1.2.1" %}
 
 package:
   name: "{{ name }}"
   version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 17ea87a303e3f4eb0e466c21730a3e3c78bc328b64a4f314f9e53a887b3460f4
+  url: https://github.com/bcgsc/tigmint/archive/{{ version }}.tar.gz
+  sha256: d0220f2b5b9e8c7ec4f34efb223e04954fe3d741d099a92f7ed0c59c831b8420
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv; cp bin/*py ${PREFIX}/bin"
 
 requirements:
   host:
@@ -24,12 +24,14 @@ requirements:
     - make
     - pybedtools
     - pysam
+    - minimap2
 
 test:
   commands:
     - make -f $(command -v tigmint-make) version | grep -q "{{ version }}"
     - tigmint-cut --version | grep -q "{{ version }}"
     - tigmint-molecule --version | grep -q "{{ version }}"
+    - long-to-linked --help
 
 about:
   home: https://bcgsc.github.io/tigmint/
