@@ -1,0 +1,145 @@
+--- src/mcupgma/clustering_util/Tree.hpp
++++ src/mcupgma/clustering_util/Tree.hpp
+@@ -58,7 +58,7 @@
+       //vector<uint > sizes     = vector<uint>(N,0);
+    void init(string tree_file);
+    void init_sizes(string sizes_file);
+-   void valid_edges(istream& edge_stream, ostream& live_edges,ostream& new_edges);
++   // void valid_edges(istream& edge_stream, ostream& live_edges,ostream& new_edges);
+    void verbose();
+ };
+ #endif //_TREE_HPP
+--- src/mcupgma/clustering_util/Tree.cpp
++++ src/mcupgma/clustering_util/Tree.cpp
+@@ -135,67 +135,67 @@
+ }  
+ 
+ //never tested yet:
+-void
+-Tree::valid_edges(istream& edge_stream, ostream& live_edges,ostream& new_edges){
+-   if (!was_init) 
+-      die("illegal: must call init(..) before this");
+-   /******************************************************
+-    *** Read edges - live (thin) edges to stream
+-    ***              dead edges accumalte in hash
+-    ******************************************************/
+-   EdgePtrReader er = EdgePtrReader(edge_stream);
+-   e2uint e2count;
+-   while(er.has_next()){
+-      Edge * e = er.next();
+-      assert(parents.size() > MAX(e->i(),e->j()));
+-      if (parents[e->i()] == 0 && parents[e->j()] == 0){
+-	 /** Case A - both vertices are valid **/
+-	 live_edges << e;
+-      } else {
+-	 /** Case B - at least one of the vertices was merged */
+-	 //climb up code here..	 
+-	 if (e->i() == e->j()){
+-	    /** Case 0 - an intra-cluster edge - irrelevant as it was already merged */	    	 	 
+-	 } else {
+-	    e2uint::iterator itr;
+-	    if ((itr = e2count.find(e)) == e2count.end()){
+-	       /** Case 1 - we have'nt seen an edge between these clusters yet **/
+-	       e2count[e] = 1;
+-	       continue; //this the only case where we don't want to delete e
+-	    } else {
+-	       /** Case 2 - we have seen an edge between these clusters  **/
+-	       //we cannot modify the key so we erase the element from the hash
+-	       // call copy c-tor to assign (new) comulative dist and increment count
+-	       Edge * was = itr->first;
+-	       itr->edge_count += 1;
+-	       assert(was->i() == e->i() && was->j() == e->j());
+-	       //e2count.erase(itr++);
+-	       *was = Edge(was->i(),was->j(),was->dist()+e->dist());
+-	       //itr--;
+-	       //e2count.insert(itr,e2uint::value_type(was,count));	    
+-	    }	
+-	 }
+-      }
+-      delete e;      
+-   } //end while(has_next())  
+-     /*******************************************************
+-      ***  Calculate thick edges
+-      *******************************************************/
+-   vector<Edge *> res = vector<Edge *>();
+-   res.reserve(e2count.size());
+-   for (e2uint::iterator itr = e2count.begin(); itr != e2count.end() ; itr++){
+-      Edge * e   = itr->first;
+-      uint count = itr->second;
+-      uint expected_count = sizes[e->i()] * sizes[e->j()];
+-      *e = Edge(e->i(), e->j(), (e->dist() + (expected_count - count) * MISSING_EDGE_WEIGHT) / expected_count);
+-      res.push_back(e);
+-   }
+-   e2count.clear();
+-   sort(res.begin(),res.end(),LT_Edge_dist());
+-   
+-   for (vector<Edge *>::iterator itr = res.begin() ; itr != res.end() ; itr++){
+-      new_edges << *itr;
+-      delete *itr;
+-   }
+-   res.clear();
+-}
++// void
++// Tree::valid_edges(istream& edge_stream, ostream& live_edges,ostream& new_edges){
++//    if (!was_init) 
++//       die("illegal: must call init(..) before this");
++//    /******************************************************
++//     *** Read edges - live (thin) edges to stream
++//     ***              dead edges accumalte in hash
++//     ******************************************************/
++//    EdgePtrReader er = EdgePtrReader(edge_stream);
++//    e2uint e2count;
++//    while(er.has_next()){
++//       Edge * e = er.next();
++//       assert(parents.size() > MAX(e->i(),e->j()));
++//       if (parents[e->i()] == 0 && parents[e->j()] == 0){
++// 	 /** Case A - both vertices are valid **/
++// 	 live_edges << e;
++//       } else {
++// 	 /** Case B - at least one of the vertices was merged */
++// 	 //climb up code here..	 
++// 	 if (e->i() == e->j()){
++// 	    /** Case 0 - an intra-cluster edge - irrelevant as it was already merged */	    	 	 
++// 	 } else {
++// 	    e2uint::iterator itr;
++// 	    if ((itr = e2count.find(e)) == e2count.end()){
++// 	       /** Case 1 - we have'nt seen an edge between these clusters yet **/
++// 	       e2count[e] = 1;
++// 	       continue; //this the only case where we don't want to delete e
++// 	    } else {
++// 	       /** Case 2 - we have seen an edge between these clusters  **/
++// 	       //we cannot modify the key so we erase the element from the hash
++// 	       // call copy c-tor to assign (new) comulative dist and increment count
++// 	       Edge * was = itr->first;
++// 	       itr->edge_count += 1;
++// 	       assert(was->i() == e->i() && was->j() == e->j());
++// 	       //e2count.erase(itr++);
++// 	       *was = Edge(was->i(),was->j(),was->dist()+e->dist());
++// 	       //itr--;
++// 	       //e2count.insert(itr,e2uint::value_type(was,count));	    
++// 	    }	
++// 	 }
++//       }
++//       delete e;      
++//    } //end while(has_next())  
++//      /*******************************************************
++//       ***  Calculate thick edges
++//       *******************************************************/
++//    vector<Edge *> res = vector<Edge *>();
++//    res.reserve(e2count.size());
++//    for (e2uint::iterator itr = e2count.begin(); itr != e2count.end() ; itr++){
++//       Edge * e   = itr->first;
++//       uint count = itr->second;
++//       uint expected_count = sizes[e->i()] * sizes[e->j()];
++//       *e = Edge(e->i(), e->j(), (e->dist() + (expected_count - count) * MISSING_EDGE_WEIGHT) / expected_count);
++//       res.push_back(e);
++//    }
++//    e2count.clear();
++//    sort(res.begin(),res.end(),LT_Edge_dist());
++//    
++//    for (vector<Edge *>::iterator itr = res.begin() ; itr != res.end() ; itr++){
++//       new_edges << *itr;
++//       delete *itr;
++//    }
++//    res.clear();
++// }

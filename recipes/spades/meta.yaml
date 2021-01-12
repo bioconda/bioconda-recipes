@@ -1,19 +1,20 @@
-{% set version = "3.13.1" %}
-{% set sha256 = "8da29b72fb56170dd39e3a8ea5074071a8fa63b29346874010b8d293c2f72a3e" %}
+{% set version = "3.14.1" %}
+{% set sha256 = "d629b78f7e74c82534ac20f5b3c2eb367f245e6840a67b9ef6a76f6fac5323ca" %}
 
 package:
   name: spades
   version: {{ version }}
 
 source:
-  url: http://cab.spbu.ru/files/release{{ version }}/SPAdes-{{ version }}.tar.gz
+  url: http://cab.spbu.ru/files/release{{ version }}/SPAdes-{{ version }}.tar.gz  
   sha256: {{ sha256 }}
   patches:
     - 0001-change-verbosity.patch
-    - 0002-disable-parallel-libstdc.patch  # [osx]
+    - 0001-add-rt-lib-to-easel.patch  # [linux]
+    - 0001-link-rt-for-static-jemalloc.patch  # [linux]
 
 build:
-  number: 2
+  number: 0
 
 requirements:
   build:
@@ -23,6 +24,7 @@ requirements:
     - llvm-openmp  # [osx]
     - openmp  # [linux]
     - cmake
+    - pkg-config
   host:
     - llvm-openmp  # [osx]
     - openmp  # [linux]
@@ -35,13 +37,16 @@ requirements:
 
 test:
   commands:
-    - spades.py --version
-    - rnaspades.py --version
-    - truspades.py --version
-    - metaspades.py --version
-    - plasmidspades.py --version
-    - spades-kmercount -h
+    - spades.py --version 2>&1 | grep {{ version }}
+    - rnaspades.py --version 2>&1 | grep {{ version }}
+    - truspades.py --help 2>&1 | grep {{ version }}
+    - metaspades.py --version 2>&1 | grep {{ version }}
+    - plasmidspades.py --version 2>&1 | grep {{ version }}
+    - spades-kmercount -h 2>&1 | grep spades-kmercount
+    - spades-gmapper 2>&1 | grep spades-gmapper
+    - spades-gbuilder 2>&1 | grep spades-gbuilder
     - spades.py --test && rm -rf spades_test
+
 
 about:
   home: http://cab.spbu.ru/software/spades/
@@ -59,13 +64,18 @@ about:
 
   dev_url: https://github.com/ablab/spades
   doc_url: http://cab.spbu.ru/files/release{{version}}/manual.html
+
+
 extra:
   recipe-maintainers:
     - druvus
     - notestaff
   identifiers:
     - biotools:spades
+    - usegalaxy-eu:spades
     - doi:10.1089/cmb.2012.0021
     - doi:10.1101/gr.213959.116
+    - doi:10.1093/gigascience/giz100
+    - doi:10.1093/bioinformatics/btz349
   skip-lints:
     - should_not_be_noarch_source

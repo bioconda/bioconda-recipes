@@ -1,13 +1,26 @@
-{% set version = "2.9.0" %}
-{% set sha256 = "a390cc2d7a09422759fc178db84de9def822cbe485916bbb2ec0d215dacdc257" %}
+{% set version = "2.10.1" %}
+{% set sha256 = "110729decf082f69b90b058c0cabaea38f771983a564308ae19cb30a68ce7b86" %}
 
 package:
   name: blast
   version: {{ version }}
 
 source:
-  url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz
-  sha256: {{ sha256 }}
+  - url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz
+    sha256: {{ sha256 }}
+    folder: blast
+    patches:
+      - configurellvm.patch
+      - get_species_taxids.patch
+  # Get optional RpsbProc
+  # The rpsbproc command line utility is an addition to the standalone version of
+  # Reverse Position-Specific BLAST (RPS-BLAST), also known as CD-Search (Conserved
+  # Domain Search).
+  - url: https://ftp.ncbi.nih.gov/pub/mmdb/cdd/rpsbproc/RpsbProc-src.tar.gz
+    sha256: 8b29f7e7d0a0654d10943e362557ed2d8df9a16218a4c8441c4dea4e7dc9154f
+    folder: RpsbProc
+    patches:
+      - normbase.patch
 
 build:
   number: 3
@@ -22,6 +35,7 @@ requirements:
     - pcre
     - entrez-direct
     - curl
+    - llvm-openmp  # [osx]
   run:
     - zlib
     - bzip2
@@ -32,6 +46,7 @@ requirements:
     - perl-json
     - entrez-direct
     - curl
+    - llvm-openmp  # [osx]
 
 test:
   files:
@@ -55,6 +70,7 @@ test:
     - psiblast -version > /dev/null
     - rpsblast -version > /dev/null
     - rpstblastn -version > /dev/null
+    - rpsbproc -version > /dev/null
     - segmasker -version > /dev/null
     - tblastn -version > /dev/null
     - tblastx -version > /dev/null
@@ -71,6 +87,7 @@ extra:
   identifiers:
     - biotools:blast
     - doi:10.1016/S0022-2836(05)80360-2
+    - usegalaxy-eu:ncbi_blastx_wrapper
   recipe-maintainers:
     - christiam
     - epruesse

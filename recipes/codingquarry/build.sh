@@ -31,9 +31,11 @@ fi
 sed -i.bak 's|/usr/bin/python|/usr/bin/env python|' $SRC_DIR/QuarryFiles/scripts/fastaTranslate.py
 sed -i.bak 's|/usr/bin/python|/usr/bin/env python|' $SRC_DIR/QuarryFiles/scripts/gene_errors_Xs.py
 sed -i.bak 's|/usr/bin/python|/usr/bin/env python|' $SRC_DIR/QuarryFiles/scripts/split_fasta.py
-mkdir -p ${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}/QuarryFiles
-cp -R $SRC_DIR/QuarryFiles ${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}/QuarryFiles
+mkdir -p ${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}
+cp -R $SRC_DIR/QuarryFiles ${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}
 
 #required ENV variable
 mkdir -p ${PREFIX}/etc/conda/activate.d/
 echo "export QUARRY_PATH=${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}/QuarryFiles" > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}-${PKG_VERSION}.sh
+mkdir -p ${PREFIX}/etc/conda/deactivate.d/
+echo "unset QUARRY_PATH" > ${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}-${PKG_VERSION}.sh

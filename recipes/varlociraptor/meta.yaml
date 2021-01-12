@@ -1,41 +1,40 @@
-{% set version = "1.1.1" %}
+{% set version = "2.5.4" %}
 
 package:
   name: varlociraptor
   version: {{ version }}
 
 build:
-  number: 1
+  number: 0
+  # Skipping macOS builds due to unresolved linking error:
+  #  Undefined symbols for architecture x86_64:
+  #    "_SSLCopyALPNProtocols", referenced from:
+  #        _sectransp_connect_step2 in libcurl_sys-c372a728cc50d01a.rlib(sectransp.o)
+  #    "_SSLSetALPNProtocols", referenced from:
+  #        _sectransp_connect_common in libcurl_sys-c372a728cc50d01a.rlib(sectransp.o)
+  skip: True  # [osx]
 
 source:
-  url: https://github.com/varlociraptor/varlociraptor/archive/varlociraptor-{{ version }}.tar.gz
-  sha256: 544addaa15220e4a27d25aef4f4090f5958184b41afc4e1da45e85335894a86a
+  url: https://github.com/varlociraptor/varlociraptor/archive/v{{ version }}.tar.gz
+  sha256: d993f5afb780bc864075157ea4227a1f7d4e074485e189084f079b4bc5c5b5eb
 
 requirements:
   build:
     - rust >=1.30
     - clangdev
-    - {{ compiler('c') }}  # [not osx]
-    - {{ compiler('cxx') }}  # [not osx]
-    - clang_osx-64 # [osx]
-    - clangxx_osx-64 # [osx]
-    - pkg-config  # [osx]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - pkg-config
   host:
     - gsl
-    - openblas
     - libcblas
+    - openssl
     - zlib
     - bzip2
     - xz
     - clangdev
     - blis
   run:
-    - gsl
-    - openblas
-    - libcblas
-    - zlib
-    - bzip2
-    - xz
     - blis
 
 test:

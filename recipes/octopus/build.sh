@@ -25,6 +25,7 @@ cmake  -DCMAKE_CXX_COMPILER_AR=${AR} \
        -DCMAKE_BUILD_TYPE=Release \
        -DBOOST_ROOT=${PREFIX} \
        -DBoost_NO_SYSTEM_PATHS=ON \
+       -DHTSLIB_ROOT=${PREFIX} \
        ..
 
 make install

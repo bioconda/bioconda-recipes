@@ -1,6 +1,6 @@
-{% set version = "1.10.2" %}
+{% set version = "2.4.0" %}
 {% set name = "synergyfinder" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.12" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,13 +10,12 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 992f8467068362404e15d3a3c13e37c7
+  md5: c13e3e5cb1cc9577deb3290207db6b07
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
 # Suggests: knitr, rmarkdown
 requirements:
   host:
@@ -26,7 +25,8 @@ requirements:
     - 'r-lattice >=0.20-33'
     - 'r-nleqslv >=3.0'
     - 'r-reshape2 >=1.4.1'
-    - 'r-spatialextremes >=2.0-2'
+    - libblas
+    - liblapack
   run:
     - r-base
     - 'r-drc >=2.5-12'
@@ -34,14 +34,17 @@ requirements:
     - 'r-lattice >=0.20-33'
     - 'r-nleqslv >=3.0'
     - 'r-reshape2 >=1.4.1'
-    - 'r-spatialextremes >=2.0-2'
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'Mozilla Public License 2.0'
-  summary: 'Efficient implementations for all the popular synergy scoring models for drug combinations, including HSA, Loewe, Bliss and ZIP and visualization of the synergy scores as either a two-dimensional or a three-dimensional interaction surface over the dose matrix.'
+  summary: 'Calculate and Visualize Synergy Scores for Drug Combinations'
+  description: 'Efficient implementations for all the popular synergy scoring models for drug combinations, including HSA, Loewe, Bliss and ZIP and visualization of the synergy scores as either a two-dimensional or a three-dimensional interaction surface over the dose matrix.'
 extra:
   identifiers:
     - biotools:synergyfinder

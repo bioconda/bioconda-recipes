@@ -17,4 +17,5 @@ TEST_FILE="workflow.test.xml"
 sedinline "s#BASE_DIR#${OUT}/#" "${TEST_FILE}"
 # workflow test
 timeoutbash watchdog-cmd -mailWaitTime 0 -x "${TEST_FILE}" -p 8616 2>&1>/dev/null
+echo "Finished Watchdog sleep test!"
 exit 0

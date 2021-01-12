@@ -1,6 +1,6 @@
 # Do not forget to update the version string in the searchgui.py file
 {% set name = "SearchGUI" %}
-{% set version = "4.0.1.alpha" %}
+{% set version = "4.0.7" %}
 
 package:
   name: searchgui
@@ -9,27 +9,33 @@ package:
 build:
   number: 0
 
-#  url: http://genesis.ugent.be/maven2/eu/isas/searchgui/{{ name }}/{{ version }}/{{ name }}-{{ version }}-mac_and_linux.tar.gz
-#  sha256: 76c0dc1470c6ff549d14f0b3f4ec19f82e02bbdd80c695873ca09074b0c5f88b
-
 source:
-  url: https://github.com/CarlosHorro/PeptideShaker2-tests/raw/master/SearchGUI-4.0.1-SNAPSHOT-mac_and_linux.tar.gz
-  sha256: 8faf059aa097e9d98bb965b78da06abf901079692d05a9b2b9fca80162fd139b
+  url: http://genesis.ugent.be/maven2/eu/isas/searchgui/{{ name }}/{{ version }}/{{ name }}-{{ version }}-mac_and_linux.tar.gz
+  sha256: 39a37c23a39ad1ab4dd1868dac7421d6ac5e612c012517cc0b7a5a3192ff79bc
 
 requirements:
-  host:
+
   build:
     - {{ compiler('c') }}
+  host:
+    - xtandem ==15.12.15.2
   run:
-    - openjdk >=8
-    - mono >=4.0.0
+    - openjdk >=11
+    - mono >=5.0.0
     - python
+    - xtandem ==15.12.15.2
+    - fontconfig
+    - fonts-conda-ecosystem
 
 test:
+  files:
+    - tests/Identification_Parameters_default.par
+    - tests/searchgui_tinyspectra1.mgf
+    - tests/fastacli_searchgui_tinydb1_concatenated_target_decoy.fasta
   commands:
     - searchgui eu.isas.searchgui.cmd.FastaCLI
     - searchgui eu.isas.searchgui.cmd.FastaCLI -Xms512m -Xmx1g
-
+    - searchgui eu.isas.searchgui.cmd.SearchCLI -id_params "Identification_Parameters_default.par" -fasta_file "fastacli_searchgui_tinydb1_concatenated_target_decoy.fasta" -spectrum_files "searchgui_tinyspectra1.mgf" -xtandem 1 -output_folder "." -output_option 0  -output_data 1
 
 about:
   home: https://github.com/compomics/searchgui
@@ -38,7 +44,6 @@ about:
   summary: User-friendly graphical tool for using proteomics identification search engines
   description: |
     SearchGUI is a user-friendly open-source graphical user interface for configuring and running proteomics identification search engines, currently supporting X!Tandem, MS-GF+, MS Amanda, MyriMatch, Comet, Tide, Andromeda and OMSSA.
-
 
 extra:
   notes: |
@@ -50,4 +55,6 @@ extra:
     For example run it with "searchgui -Xms512m -Xmx1g"
   identifiers:
     - biotools:searchgui
+    - usegalaxy-eu:search_gui
     - doi:10.1002/pmic.201000595
+  extended-base: true  ## precompiled packages
