@@ -15,7 +15,7 @@ C_INCLUDE_PATH=$PREFIX/include \
 LIBRARY_PATH=$PREFIX/lib \
 LD_LIBRARY_PATH=$CONDA_PREFIX/lib \
 LIBCLANG_PATH=$PREFIX/lib/libclang.so \
-cargo install --path ./ --force
+cargo install --path ./ --force --root $PREFIX/bin
 # cp target/release/rosella $PREFIX/bin
 # cp target/release/remove_minimap2_duplicated_headers $PREFIX/bin
 
