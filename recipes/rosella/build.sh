@@ -21,4 +21,4 @@ cargo install --path ./ --force --root $PREFIX
 
 # Install flight
 # cd flight/ && pip install . && cd ../
-python -m pip install git+https://github.com/rhysnewell/flight
+python -m pip install --user git+https://github.com/rhysnewell/flight
