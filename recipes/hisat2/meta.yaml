@@ -1,30 +1,30 @@
-{% set name = "HISAT2" %}
 {% set version = "2.2.1" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: hisat2
+  version: {{ version }}
 
 source:
   url: https://github.com/DaehwanKimLab/hisat2/archive/v{{ version }}.tar.gz
   sha256: f3f4f867d0a6b1f880d64efc19deaa5788c62050e0a4d614ce98b3492f702599
+  patches:
+    - 0001-Rename-VERSION-to-VERSION.txt.patch
 
 build:
-  number: 0
+  number: 2
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - python >3.5
   run:
     - python >3.5
     - perl
 
 test:
   commands:
-    - hisat2 --help
+    - hisat2 --help | grep -F {{ version }}
 
 about:
   home: http://daehwankimlab.github.io/hisat2
@@ -41,4 +41,5 @@ extra:
     - biotools:HISAT2
     - doi:10.1038/nmeth.3317
     - doi:10.1038/s41587-019-0201-4
+    - usegalaxy-eu:hisat2
   notes: "Pre-built indices for HISAT2 can be downloaded from https://daehwankimlab.github.io/hisat2/download/."

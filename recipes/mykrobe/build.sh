@@ -24,7 +24,10 @@ for make_file in libs/string_buffer/Makefile $(find libs/seq_file -name Makefile
 done
 
 make MAXK=31
-
+cp bin/mccortex31 ../src/mykrobe/cortex/
 cd ../ || exit 1
 
-python setup.py install --single-version-externally-managed --record=record.txt
+"$PYTHON" -m pip install . -vv
+mykrobe panels update_metadata
+mykrobe panels update_species all
+

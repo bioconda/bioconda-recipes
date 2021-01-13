@@ -1,21 +1,18 @@
-{% set version = "2.0" %}
+{% set version = "2.1" %}
 
 package:
   name: bwa-mem2
   version: {{ version }}
 
 source:
-  - url: https://github.com/bwa-mem2/bwa-mem2/releases/download/v{{ version }}/Source_code_including_submodule.tar.gz
-    sha256: 23a8aa9d295ed1e042aec255157313b0ddf45ae2271a9b878b5e05a4c1026d38
+  - url: https://github.com/bwa-mem2/bwa-mem2/releases/download/v{{ version }}/Source_code_including_submodules.tar.gz
+    sha256: 6edfd466a05c51be1399455b1e8d6fb161e7ec1eaf78096dd55ec1f4b40c9296
     patches:
       - Makefile.patch
-      - 771c7692aeb857d5b9241a08bbd68f2c6be01811.patch
-      # Below patch make sure the correct executables are found for older processors.
-      # TODO: remove this patch on the next update.
-      - find_executable.patch
+      - main.cpp.patch
 
 build:
-  number: 1
+  number: 0
   # Compilation fails on OSX:
   #   ext/safestringlib/include/safe_mem_lib.h:100:16: error: conflicting types for 'memset_s'
   #   extern errno_t memset_s(void *dest, rsize_t dmax, uint8_t value);
@@ -34,13 +31,15 @@ test:
   commands:
     - bwa-mem2 version
     - bwa-mem2.sse41 version
+    - bwa-mem2.sse42 version
+    - bwa-mem2.avx version
     - bwa-mem2.avx2 version
     - bwa-mem2.avx512bw version
 
 about:
   home: https://github.com/bwa-mem2/bwa-mem2
   license: MIT
-  license_file: LICENSE
+  license_file: bwa-mem2-{{ version }}/LICENSE
   summary: The next version of bwa-mem 
 
 extra:

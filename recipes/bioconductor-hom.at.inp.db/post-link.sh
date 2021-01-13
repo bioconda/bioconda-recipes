@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="hom.At.inp.db_3.1.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/hom.At.inp.db_3.1.3.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/hom.At.inp.db_3.1.3.tar.gz"
   "https://bioarchive.galaxyproject.org/hom.At.inp.db_3.1.3.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hom.at.inp.db/bioconductor-hom.at.inp.db_3.1.3_src_all.tar.gz"
 )
