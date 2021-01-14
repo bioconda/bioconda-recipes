@@ -12,7 +12,7 @@ fi
 mkdir build
 cd build
 
-$BUILD_PREFIX/bin/cmake -D CMAKE_INSTALL_PREFIX:PATH=$PREFIX -DIQTREE_FLAGS=omp ..
+$BUILD_PREFIX/bin/cmake -D CMAKE_INSTALL_PREFIX:PATH=$PREFIX -DUSE_LSD2=ON -DIQTREE_FLAGS=omp ..
 
 make --jobs "${CPU_COUNT}"
 make install
