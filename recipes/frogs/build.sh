@@ -13,9 +13,7 @@ mkdir -p $LIBEXEC_HOME
 
 mv $SRC_DIR/* $FROGS_HOME
 
-ln -s $FROGS_HOME/app/*.py $BINARY_HOME
-ln -s $FROGS_HOME/app/*.html $BINARY_HOME
-ln -s $FROGS_HOME/app/*.Rmd $BINARY_HOME
+ln -s $FROGS_HOME/app/* $BINARY_HOME
 ln -s $FROGS_HOME/lib/* $LIB_HOME
 ln -s $FROGS_HOME/libexec/* $LIBEXEC_HOME
 ln -s $PREFIX/share/rdptools-*/classifier.jar $BINARY_HOME
