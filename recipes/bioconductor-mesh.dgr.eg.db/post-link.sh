@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="MeSH.Dgr.eg.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.Dgr.eg.db_1.13.0.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/MeSH.Dgr.eg.db_1.13.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Dgr.eg.db_1.13.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.dgr.eg.db/bioconductor-mesh.dgr.eg.db_1.13.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.dgr.eg.db/bioconductor-mesh.dgr.eg.db_1.13.0_src_all.tar.gz"

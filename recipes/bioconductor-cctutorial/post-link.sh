@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ccTutorial_1.26.0.tar.gz"
+FN="ccTutorial_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/ccTutorial_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ccTutorial_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-cctutorial/bioconductor-cctutorial_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/ccTutorial_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ccTutorial_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cctutorial/bioconductor-cctutorial_1.28.0_src_all.tar.gz"
 )
-MD5="2751c4b91326014260483c37ce05acbb"
+MD5="a36b66e1fad77bd562e41ee01483a119"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
