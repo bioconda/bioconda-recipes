@@ -16,3 +16,7 @@
         export IS_UNIX=true
 
 make
+
+# put the exe in the bin
+mkdir -p ${PREFIX}/bin
+cp RNAEditingIndex ${PREFIX}/bin
