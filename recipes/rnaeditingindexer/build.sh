@@ -11,7 +11,7 @@
         export JAVA_HOME=${JAVA_HOME}
         export BAM_UTILS_PATH=bam
         export PYTHON27_PATH=python
-        export DONT_DOWNLOAD=false
+        export DONT_DOWNLOAD=true
         export DONT_WRITE=false
         export IS_UNIX=true
 
