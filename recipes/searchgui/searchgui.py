@@ -79,18 +79,20 @@ def jvm_opts(argv):
 
     return (mem_opts, prop_opts, pass_args, exec_dir)
 
-def def_temp_opts(args):
+def def_temp_log_opts(args):
     """
-    Establish default temporary folders.
+    Establish default temporary and log folders.
     """
+    TEMP  = os.getenv("TEMP")
 
-    if '-log' not in args:
-        args.append('-log')
-        args.append('$TEMP/logs')
+    if TEMP is not None:
+        if '-log' not in args:
+            args.append('-log')
+            args.append(TEMP+'/logs')
 
-    if '-search_engine_temp' not in args and '-temp_folder' not in args :
-        args.append('-temp_folder')
-        args.append('$TEMP')
+        if '-search_engine_temp' not in args and '-temp_folder' not in args :
+            args.append('-temp_folder')
+            args.append(TEMP)
 
     return args
 
@@ -104,7 +106,7 @@ def main():
     we copy the jar file, lib, and resources to the exec_dir directory.
     """
     (mem_opts, prop_opts, pass_args, exec_dir) = jvm_opts(sys.argv[1:])
-    pass_args = def_temp_opts(pass_args)
+    pass_args = def_temp_log_opts(pass_args)
 
     jar_dir = exec_dir if exec_dir else real_dirname(sys.argv[0])
 
