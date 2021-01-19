@@ -36,3 +36,6 @@ cp $SP_DIR/biobb_structure_utils/utils/sort_gro_residues.py $PREFIX/bin/sort_gro
 
 chmod u+x $SP_DIR/biobb_structure_utils/utils/str_check_add_hydrogens.py
 cp $SP_DIR/biobb_structure_utils/utils/str_check_add_hydrogens.py $PREFIX/bin/str_check_add_hydrogens
+
+chmod u+x $SP_DIR/biobb_structure_utils/utils/structure_check.py
+cp $SP_DIR/biobb_structure_utils/utils/structure_check.py $PREFIX/bin/structure_check
