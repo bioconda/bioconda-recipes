@@ -87,7 +87,7 @@ def def_temp_log_opts(args):
             args.append('-log')
             args.append(TEMP+'/logs')
 
-        if '-search_engine_temp' not in args and '-temp_folder' not in args :
+        if '-temp_folder' not in args :
             args.append('-temp_folder')
             args.append(TEMP)
 
