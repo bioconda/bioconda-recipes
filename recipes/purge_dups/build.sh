@@ -9,6 +9,7 @@ export BOOST_INCLUDE=$PREFIX/include
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 
 cd ./src
+sed -i.bak '1d' makefile
 COMPILER=${CXX} make
 
 cp ./purge_dups ${PREFIX}/bin/purge_dups
