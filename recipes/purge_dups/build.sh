@@ -10,7 +10,7 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib -lz -lm"
 export CPATH=${PREFIX}/include
 
 cd ./src
-sed -i.bak '3d' makefile
+sed -i.bak '1,3d' makefile
 COMPILER=${CC} make
 
 cp ./purge_dups ${PREFIX}/bin/purge_dups
