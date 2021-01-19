@@ -4,8 +4,13 @@ export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 
+export CFLAGS="$CFLAGS -I$PREFIX/include -g -Wall"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib -lz -lm"
+
+export CPATH=${PREFIX}/include
+
 cd ./src
-sed -i.bak '1d' makefile
+sed -i.bak '3d' makefile
 COMPILER=${CC} make
 
 cp ./purge_dups ${PREFIX}/bin/purge_dups
