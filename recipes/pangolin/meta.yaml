@@ -1,44 +1,49 @@
-{% set version = "1.1" %}
+{% set version = "2.1.7" %}
 
 package:
   name: pangolin
   version: {{ version }}
 
 source:
-  - url: https://github.com/hCoV-2019/pangolin/archive/v{{ version }}.tar.gz
-    sha256: cdd88a06d74be86d90c7775bcbf1aa837c505ad750200979b4e47c27e9f7e70e
-    folder: pangolin
-  - url: https://github.com/hCoV-2019/lineages/archive/2020-04-27.tar.gz
-    sha256: 0a998177c5395386e4d18a215c37db7a9af03d55f110ed319c94810ff7f86522
-    folder: lineages
-
+  url: https://github.com/cov-lineages/pangolin/archive/v{{ version }}.tar.gz
+  sha256: 4c5fcea76515d85117556c99c3b5aa976681a86a78a2bb3eb10a9b6c2ad638f6
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install ./pangolin/. --no-deps -vv && {{ PYTHON }} -m pip install ./lineages/. --no-deps -vv
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
   host:
-    - python
+    - python >=3.6
     - pip
   run:
     - python >=3.6
-    - pip
-    - biopython
-    - iqtree =1.6.12
-    - mafft
-    - snakemake-minimal
-    - pytools
+    - biopython >=1.70
     - dendropy >=4.4.0
+    - pytools >=2020.1
+    - pandas >=1.0.1
+    - joblib >=0.11
+    - scikit-learn ==0.23.1
+    - pulp >=2
+    - pysam >=0.15.4
+    - iqtree <2
+    - mafft
+    - minimap2
+    - snakemake-minimal >=5.13
+    - pytools >=2020.1
+    - datafunk
+    - pangolearn !=2020.12.17_2
+    - cov-lineages
 
 test:
   commands:
     - pangolin -h
+    - pangolin -pv
     - pangolin -lv
 
 about:
-  home: https://github.com/hCoV-2019/pangolin
+  home: https://github.com/cov-lineages/pangolin
   license: GPL-3.0
-  license_file: pangolin/LICENSE.txt
+  license_file: LICENSE.txt
   summary: Phylogenetic Assignment of Named Global Outbreak LINeages
