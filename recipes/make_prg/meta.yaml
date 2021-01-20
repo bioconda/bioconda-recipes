@@ -1,0 +1,48 @@
+{% set name = "make_prg" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/rmcolq/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: 785e3c3c3ad18c0c4da77614f11732b139611ffb93e53abd4d841e7f8fb31688
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+  entry_points:
+    - make_prg = make_prg.__main__:main
+
+requirements:
+  host:
+    - python
+    - setuptools
+
+  run:
+    - python
+    - numpy >=1.14
+    - biopython >=1.70
+    - scikit-learn >=0.19.1
+    - scipy >=1.0.1
+
+test:
+  imports:
+    - make_prg
+  commands:
+    - make_prg --help
+    - make_prg from_msa --help
+
+about:
+  home: "https://github.com/rmcolq/make_prg"
+  license: MIT
+  license_file: LICENSE
+  summary: "A tool to create a PRG for input to Pandora and Gramtools from a Multiple Sequence Alignment."
+
+extra:
+  recipe-maintainers:
+    - mbhall88
+    - bricoletc
+    - leoisl
