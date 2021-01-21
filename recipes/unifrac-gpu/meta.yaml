@@ -1,0 +1,63 @@
+{% set version = "0.20.1" %}
+
+package:
+  name: unifrac
+  version: {{ version }}
+
+source:
+  url: https://github.com/biocore/unifrac/archive/{{ version }}.tar.gz
+  sha256: cc5180256d53d959c89555a3818253af85bba21a435d66d5e9cbe9e7a1caf0ab
+
+build:
+  number: 0
+  skip: True  # [py<30]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - pip
+    - h5py >=2.9.0
+    - cython >=0.28.3
+    - numpy >=1.12.1
+    - lz4
+    - hdf5
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+    - {{ pin_compatible('h5py', max_pin='x') }}
+    - biom-format
+    - scikit-bio >=0.5.1
+    - lz4
+    - hdf5
+
+test:
+  imports:
+    - unifrac
+  commands:
+    - ssu --help
+    - faithpd --help
+    - python -m unittest unifrac.tests.test_methods
+    - python -m unittest unifrac.tests.test_api
+  
+about:
+  home: https://github.com/biocore/unifrac
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: 'Fast phylogenetic diversity calculations'
+  description: |
+    UniFrac is a commonly phylogenetic diversity distance metric used in 
+    microbiome research. The metric relates two microbiome samples together
+    within the context of an evolutionary history, and produces a distance
+    that corresponds to how similar two samples by the amount of overlapping
+    branch length. 
+  
+  doc_url: https://github.com/biocore/unifrac
+  dev_url: https://github.com/biocore/unifrac
+
+extra:
+  recipe-maintainers:
+    - wasade
