@@ -2,9 +2,9 @@
 TOOL_BASE=${PREFIX}/share
 TOOL_DIR=${TOOL_BASE}/RNAEditingIndexer
 mkdir -p ${TOOL_BASE}
-cd ${TOOL_BASE}
-git clone https://github.com/shalomhillelroth/RNAEditingIndexer
-cd RNAEditingIndexer
+#cd ${TOOL_BASE}
+#git clone https://github.com/shalomhillelroth/RNAEditingIndexer
+#cd RNAEditingIndexer
 
 # run only for the log to see if path is ok
 ./configure.sh -j=${JAVA_HOME}
@@ -25,6 +25,7 @@ make
 # put the exe in the bin
 mkdir -p ${PREFIX}/bin
 ls -l
-chmod 755 RNAEditingIndex
-ln -s RNAEditingIndex ${PREFIX}/bin/RNAEditingIndex
+cp -r ../RNAEditingIndexer ${TOOL_BASE}/
+ln -s ${TOOL_DIR}/RNAEditingIndex ${PREFIX}/bin/RNAEditingIndex
+chmod 755 ${PREFIX}/bin/RNAEditingIndex
 ls -l ${PREFIX}/bin
