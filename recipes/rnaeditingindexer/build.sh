@@ -24,4 +24,7 @@ make
 
 # put the exe in the bin
 mkdir -p ${PREFIX}/bin
+ls -l
+chmod 755 RNAEditingIndex
 ln -s RNAEditingIndex ${PREFIX}/bin/RNAEditingIndex
+ls -l ${PREFIX}/bin
