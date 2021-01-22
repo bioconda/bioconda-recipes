@@ -4,6 +4,7 @@ TOOL_DIR=${PREFIX}/share/RNAEditingIndexer
 mkdir -p ${TOOL_DIR}
 cd ${TOOL_DIR}
 git clone https://github.com/shalomhillelroth/RNAEditingIndexer
+cd RNAEditingIndexer
 
 # run only for the log to see if path is ok
 ./configure.sh -j=${JAVA_HOME}
