@@ -1,8 +1,8 @@
 #!/bin/bash
-
-TOOL_DIR=${PREFIX}/share/RNAEditingIndexer
-mkdir -p ${TOOL_DIR}
-cd ${TOOL_DIR}
+TOOL_BASE=${PREFIX}/share
+TOOL_DIR=${TOOL_BASE}/RNAEditingIndexer
+mkdir -p ${TOOL_BASE}
+cd ${TOOL_BASE}
 git clone https://github.com/shalomhillelroth/RNAEditingIndexer
 cd RNAEditingIndexer
 
