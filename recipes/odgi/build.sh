@@ -11,4 +11,4 @@
 #mkdir -p $PREFIX/lib/python$PYVER/site-packages
 #mv lib/*cpython* $PREFIX/lib/python$PYVER/site-packages
 #mv lib/* $PREFIX/lib
-gcc --version
+$CXX --version
