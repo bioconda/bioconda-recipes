@@ -1,10 +1,14 @@
 #!/bin/bash
 
+TOOL_DIR=${PREFIX}/share/RNAEditingIndexer
+mkdir -p ${TOOL_DIR}
+cd ${TOOL_DIR}
+git clone https://github.com/shalomhillelroth/RNAEditingIndexer
 
 # run only for the log to see if path is ok
 ./configure.sh -j=${JAVA_HOME}
 #  . ./ syntax does not work. Lets import direclty what is needed
-        export DEV_ROOT=`pwd`
+        export DEV_ROOT=${TOOL_DIR}
         export BEDTOOLS_PATH=bedtools
         export SAMTOOLS_PATH=samtools
         export RESOURCES_DIR="${DEV_ROOT}/Resources"
@@ -19,4 +23,4 @@ make
 
 # put the exe in the bin
 mkdir -p ${PREFIX}/bin
-cp RNAEditingIndex ${PREFIX}/bin
+ln -s RNAEditingIndex ${PREFIX}/bin/RNAEditingIndex
