@@ -1,0 +1,70 @@
+{% set version = "20.9.0" %}
+{% set sha256 = "0cc55cefbf0434660a20916b2e0060abcc41550504f48b21311711d4bc5a21c8" %}
+
+package:
+  name: galaxy-data
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/0e/4e/43a7eaecae187c4a6fe983ed4199cbd399f2388f41e8477d5669ff43b727/galaxy-data-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+
+requirements:
+  host:
+    - pip
+    - python >=3.5
+  run:
+    # TODO - galaxy-objectstore https://github.com/bioconda/bioconda-recipes/pull/26366
+    - galaxy_sequence_utils
+    - galaxy-util
+    # TODO - bdbag https://github.com/conda-forge/staged-recipes/pull/9803
+    - bx-python
+    - h5py
+    # TODO - isa-rwval
+    - parsley
+    - numpy
+    - pycryptodome
+    - pydantic
+    - pysam
+    - social-auth-core
+    # ? - openidconnect ==3.3.0
+    - sqlalchemy
+    - sqlalchemy-migrate
+    - sqlalchemy-utils
+    - WebOb
+    - python >=3.5
+    - six >=1.9.0
+    # extra: jstree
+    # - dictobj
+    # extra: template
+    # - future
+    # - cheetah3
+
+test:
+  imports:
+    - galaxy
+    - galaxy.exceptions
+    - galaxy.model
+    - galaxy.datatypes.dataproviders
+    - galaxy.quota
+    - galaxy.security
+
+about:
+  home: https://galaxyproject.org
+  license: AFL-3.0
+  license_file: LICENSE
+  summary: The Galaxy models, datatype framework, and datatype implementations.
+  doc_url: https://docs.galaxyproject.org
+  dev_url: https://github.com/galaxyproject/galaxy
+
+extra:
+  identifiers:
+    - biotools:galaxy
+    - doi:10.1093/nar/gky379
+  recipe-maintainers:
+    - bernt-matthias
