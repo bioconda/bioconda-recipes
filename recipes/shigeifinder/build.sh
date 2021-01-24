@@ -1,9 +1,12 @@
 #!/bin/bash
 
-outdir="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
-mkdir -p "${outdir}"
-mkdir -p "${PREFIX}/bin"
+mkdir -p $PREFIX/bin
+cp -r * $PREFIX
 
-cp * "${outdir}/"
-chmod +x "${outdir}/shigeifinder.py"
-ln -s "${outdir}/shigeifinder.py" "${PREFIX}/bin/shigeifinder.py"
+#outdir="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
+#mkdir -p "${outdir}"
+#mkdir -p "${PREFIX}/bin"
+#
+#cp * "${outdir}/"
+#chmod +x "${outdir}/shigeifinder.py"
+#ln -s "${outdir}/shigeifinder.py" "${PREFIX}/bin/shigeifinder.py"
