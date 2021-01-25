@@ -495,7 +495,7 @@ class CondaDomain(Domain):
           - -1: object should not show up in search at all
         """
         for (typ, name), (docname, ref) in self.data['objects'].items():
-            dispname = "Recipe '{}'".format(name)
+            dispname = "{} '{}'".format(typ, name)
             yield name, dispname, typ, docname, ref, 1
 
     def merge_domaindata(self, docnames: List[str], otherdata: Dict) -> None:
