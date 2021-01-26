@@ -10,3 +10,4 @@ cp -R dist/* $PACKAGE_HOME/
 cp $RECIPE_DIR/pantools.py $PACKAGE_HOME/pantools.py
 chmod +x $PACKAGE_HOME/pantools.py
 ln -s $PACKAGE_HOME/pantools.py $PREFIX/bin/pantools
+ln -s $PACKAGE_HOME/pantools.jar $PREFIX/bin/pantools.jar
