@@ -1,6 +1,15 @@
---- lib/GI.pm	2014-12-01 23:37:10.000000000 +0100
-+++ lib/GI.pm	2020-12-12 10:22:03.306721820 +0100
-@@ -4354,33 +4354,14 @@
+--- a/lib/GI.pm
++++ b/lib/GI.pm
+@@ -3845,7 +3845,7 @@ sub set_defaults {
+       my @all_alts = grep {-f $_ && -x $_} (File::Glob::bsd_glob("{$FindBin::RealBin/../exe/*/*,$FindBin::RealBin/../exe/*/bin/*}"));
+       foreach my $exe (@exes) {
+ 	  my @alts = grep {/\/$exe$/} @all_alts;
+-	  my $loc = shift @alts || File::Which::which($exe) || '';
++	  my $loc = shift @alts || File::Which::which($exe eq 'evm' ? 'evidence_modeler.pl' : $exe) || '';
+ 	  if(! $loc && $exe eq 'blasta'){ #find blasta using blastx
+ 	      ($loc) = (map {Cwd::abs_path($_)} grep {Cwd::abs_path($_) =~ /blasta$/} (File::Which::where('blastx')));
+ 	  }
+@@ -4950,33 +4950,14 @@ sub load_control_files {
     confess "ERROR: Could not build output directory $CTL_OPT{out_base}\n"
          if(! -d $CTL_OPT{out_base});
  
@@ -11,7 +20,8 @@
         my $exe = Cwd::abs_path($CTL_OPT{RepeatMasker});
         my ($lib) = $exe =~ /(.*\/)RepeatMasker$/;
 -       die "ERROR: Could not determine if RepBase is installed\n" if(! $lib);
--
++       die "ERROR: Could not determine if DFam is installed\n" if(! $lib);
+ 
 -       $lib .= "Libraries/RepeatMaskerLib.embl";
 -       die "ERROR: Could not determine if RepBase is installed\n" if(! -f $lib);
 -
@@ -25,8 +35,7 @@
 -           }
 -       }
 -       close($IN);
-+       die "ERROR: Could not determine if DFam is installed\n" if(! $lib);
- 
+-
 -       if(! $rb_flag){
 -	   warn "WARNING: RepBase is not installed for RepeatMasker. This limits\n".
 -	       "RepeatMasker's functionality and makes the model_org option in the\n".
@@ -39,7 +48,7 @@
     }
  
     #--set an initialization lock so steps are locked to a single process
-@@ -4530,7 +4511,7 @@
+@@ -5196,7 +5177,7 @@ sub generate_control_files {
         print OUT "protein_gff=$O{protein_gff}  #aligned protein homology evidence from an external GFF3 file\n";
         print OUT "\n";
         print OUT "#-----Repeat Masking (leave values blank to skip repeat masking)\n";
