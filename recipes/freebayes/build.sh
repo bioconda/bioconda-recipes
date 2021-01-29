@@ -19,11 +19,16 @@ export INCLUDES="-I . -Ihtslib -I$PREFIX/include -Itabixpp/htslib -I\$(INC_DIR) 
 export LIBPATH="-L. -Lhtslib -L$PREFIX/lib"
 export CXXFLAGS="-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
 
+#Updating some commands with inspiration from the pbmm2 build
 
-meson build/ --buildtype debug
+meson build/ --buildtype debug --libdir lib --prefix "${PREFIX}"
 
 cd build
-ninja
-ninja test
+ninja -v
+ninja -v install
+
+
+
+
 
 
