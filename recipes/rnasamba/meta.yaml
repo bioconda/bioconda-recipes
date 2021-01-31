@@ -1,23 +1,26 @@
-{% set name = "rnasamba" %}
 {% set version = "0.2.4" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: rnasamba
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/r/rnasamba/rnasamba-{{ version }}.tar.gz
   sha256: b8efaa6c44eb4bc8f51b5ce20c6369c7ebec5a32102f7e818aa9af273abd77bf
+  patches:
+    - 0001-Enable-stable-Rust.patch
 
 build:
-  number: 0
-  skip: True  # [py27]
+  number: 1
+  # Skipping py>=38 because Py3.8 builds are only available for keras>=2.3.1 and tensorflow>=2.0.
+  skip: True  # [py<30 or py>=38]
   entry_points:
     - rnasamba=rnasamba.cli:cli
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - rust >=1.40
   host:
     - biopython
     - keras >=2.1.0,<2.3.0

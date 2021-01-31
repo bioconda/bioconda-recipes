@@ -76,6 +76,9 @@ if ! type bioconda-utils 2> /dev/null || [[ $BOOTSTRAP == "true" ]]; then
     conda config --system --add channels bioconda
     conda config --system --add channels conda-forge
 
+    conda config --system --remove repodata_fns current_repodata.json || true
+    conda config --system --prepend repodata_fns repodata.json
+
     # step 3: install bioconda-utils
     additional_packages='git pip'
     if [[ $OSTYPE == darwin* ]]; then

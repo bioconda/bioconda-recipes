@@ -1,7 +1,7 @@
 {% set name = "rgi" %}
-{% set version = "5.1.0" %}
-{% set sha256 = "806ac75c38170b688222d264391e685b96a08bc77278ff9130be3797b56de2e9" %}
-{% set sha256database = "c591cf24cbc16491e8ba256e03f7d4608c0576dc5c4f3eeae5b80b3967d4763a" %}
+{% set version = "5.1.1" %}
+{% set sha256 = "962e61e4e817820c0d8f0d0523a5daab856aa1986420cc02cf3ebb484b461170" %}
+{% set sha256database = "96693cac5aeaefbac8cb90a388ada117e6c931653d77b854b385450e9db03e00" %}
 
 package:
   name: {{ name }}
@@ -10,19 +10,18 @@ package:
 source:
     - url: https://github.com/arpcard/rgi/archive/{{ version }}.tar.gz
       sha256: {{ sha256 }}
-    - url: https://card.mcmaster.ca/download/0/broadstreet-v3.0.7.tar.gz
+    - url: https://card.mcmaster.ca/download/0/broadstreet-v3.0.9.tar.bz2
       sha256: {{ sha256database }}
       folder: card-data
 
 build:
   noarch: python
-  number: 1
+  number: 0
 
 requirements:
   host:
     - python >=3.5,<3.7
     - pip
-    # setup.py uses these for some reason
     - biopython 1.72
     - six >=1.7.0
     - filetype >=1.0.0
@@ -52,19 +51,22 @@ requirements:
     - bedtools >=2.28.0
     - bowtie2 >=2.3.4.3
     - bwa >=0.7.17
+    - kma >=1.2.26
     
 test:
   commands:
-    - rgi database -v | grep "3.0.7"
-    - rgi load -h
-    - rgi main -h
-    - rgi tab -h
-    - rgi parser -h
-    - rgi clean -h
-    - rgi galaxy -h
-    - rgi bwt -h
-    - rgi kmer_build -h
-    - rgi kmer_query -h
+    - rgi database -v | grep "3.0.9" > /dev/null 2>&1
+    - rgi load -h > /dev/null 2>&1
+    - rgi main -h > /dev/null 2>&1
+    - rgi tab -h > /dev/null 2>&1
+    - rgi parser -h > /dev/null 2>&1
+    - rgi clean -h > /dev/null 2>&1
+    - rgi galaxy -h > /dev/null 2>&1
+    - rgi bwt -h > /dev/null 2>&1
+    - rgi kmer_build -h > /dev/null 2>&1
+    - rgi kmer_query -h > /dev/null 2>&1
+    - wget --quiet --output-document=homolog.fasta https://raw.githubusercontent.com/arpcard/rgi/master/tests/inputs/homolog.fasta | rgi main -i homolog.fasta  -o output --debug -a diamond --clean > /dev/null 2>&1
+
 
 about:
   home: https://card.mcmaster.ca
@@ -74,4 +76,4 @@ about:
 
 extra:
   identifiers:
-    - doi:10.1093/nar/gkw1004
+    - doi:10.1093/nar/gkz935

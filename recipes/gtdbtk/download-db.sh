@@ -7,7 +7,7 @@ echo "Downloading the GTDB-Tk database to ${GTDBTK_DATA_PATH}..."
 # GTDBTK_DB_PATH is defined in build.sh, store the db there
 
 
-db_url=https://data.ace.uq.edu.au/public/gtdb/data/releases/latest/gtdbtk_data.tar.gz
+db_url=https://data.ace.uq.edu.au/public/gtdb/data/releases/latest/auxillary_files/gtdbtk_data.tar.gz
 
 
 wget $db_url -P ${GTDBTK_DATA_PATH}
