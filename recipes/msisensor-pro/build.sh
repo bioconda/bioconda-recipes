@@ -7,7 +7,7 @@ export CPATH=${PREFIX}/include
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
-export 
+#export 
 echo =============================
 #vendor/htslib-1.11/configure
 #echo start ls -------
