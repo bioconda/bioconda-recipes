@@ -9,7 +9,8 @@ export CFLAGS="-g -Wall -O2 -I$PREFIX/include -L$PREFIX/lib"
 #cd $SRC_DIR/cpp
 #make CC=$CC
 echo =============================
-locate libz
+cd ${SRC_DIR}/vendor/htslib-1.11
+./configure --prefix=${PREFIX} --enable-libcurl --with-libdeflate --enable-plugins --enable-gcs --enable-s3
 cd $SRC_DIR/cpp
 make CC=$CC CXX=$CXX
 cd -
