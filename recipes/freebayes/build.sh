@@ -2,12 +2,14 @@
 
 #Whole new build that hopefully can use installed libraries and end this craziness for good.
 
-if [ "$(uname)" == "Darwin" ]; then
-    # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14.
-    export CXXFLAGS="${CXXFLAGS} CXX=clang++" 
-    export CC=clang 
-    export CC_LD=lld 
-fi
+#May not need these any more
+
+#if [ "$(uname)" == "Darwin" ]; then
+#    # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14.
+#    export CXXFLAGS="${CXXFLAGS} CXX=clang++" 
+#    export CC=clang 
+#    export CC_LD=lld 
+#fi
 
 
 #May not need these any more
