@@ -7,7 +7,7 @@ export LDFLAGS="-L$PREFIX/lib"
 echo =============================
 which htsfile
 echo "hhhhh"
-make CC=$CC CXX=$CXX
+make CC=$CC CXX=$CXX -C $SRC_DIR/cpp
 #make INCLUDES="-I$PREFIX/include -I$PREFIX/include/ncurses -I$SRC_DIR/vendor/htslib-1.11" LIBCURSES="-L$PREFIX/lib -lncurses -ltinfo -lz" LIBPATH="-L$PREFIX/lib" CC=$CC CXX=$CXX CFLAGS="-g -Wall -O2 -I$PREFIX/include -L$PREFIX/lib" -C$SRC_DIR/cpp/
 
 #cd ${SRC_DIR}/vendor/htslib-1.11
