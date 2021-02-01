@@ -1,12 +1,7 @@
 #!/bin/sh
-# Compile nim
-pushd nim_source
 
 if [[ $OSTYPE == "darwin"* ]]; then
   export HOME="/Users/distiller"
-  bash build.sh --os darwin --cpu x86_64
-else
-  bash build.sh --os linux --cpu x86_64
 fi
 
 bname=`basename $CC`
