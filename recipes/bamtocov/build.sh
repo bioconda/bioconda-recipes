@@ -9,7 +9,8 @@ export LD_LIBRARY_PATH=$PREFIX/lib
 
 nimble install -y --verbose
 mkdir -p $PREFIX/bin
-for BIN in covtobed covtotarget covtocounts;
+
+for BIN in $(ls src/* | grep -v '\.');
 do
   chmod a+x src/${BIN}
   cp ${BIN} "$PREFIX"/bin/${BIN}
