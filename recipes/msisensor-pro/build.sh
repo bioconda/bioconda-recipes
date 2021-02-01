@@ -11,16 +11,16 @@ export LDFLAGS="-L$PREFIX/lib"
 echo =============================
 #vendor/htslib-1.11/configure
 #echo start ls -------
-./INSTALL
+#./INSTALL
 #echo end ls -----
 #make CC=$CC CXX=$CXX -C $SRC_DIR/cpp
 #make INCLUDES="-I$PREFIX/include -I$PREFIX/include/ncurses -I$SRC_DIR/vendor/htslib-1.11" LIBCURSES="-L$PREFIX/lib -lncurses -ltinfo -lz" LIBPATH="-L$PREFIX/lib" CC=$CC CXX=$CXX CFLAGS="-g -Wall -O2 -I$PREFIX/include -L$PREFIX/lib" -C$SRC_DIR/cpp/
 
-#cd ${SRC_DIR}/vendor/htslib-1.11
-#./configure --prefix=${PREFIX} --enable-libcurl --with-libdeflate --enable-plugins --enable-gcs --enable-s3
-#cd $SRC_DIR/cpp
-#make CC=$CC CXX=$CXX
-#cd -
+cd ${SRC_DIR}/vendor/htslib-1.11
+./configure 
+cd $SRC_DIR/cpp
+make CC=$CC CXX=$CXX
+cd -
 echo ==============================
 #make INCLUDES="-I$PREFIX/include -I$PREFIX/include/ncurses  LIBCURSES="-L$PREFIX/lib -lncurses -ltinfo" LIBPATH="-L$PREFIX/lib" CC=$CC CXX=$CXX CFLAGS="-g -Wall -O2 -I$PREFIX/include -L$PREFIX/lib" -C$SRC_DIR/cpp/ 
 #cd -
