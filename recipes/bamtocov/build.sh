@@ -3,13 +3,7 @@
 if [[ $OSTYPE == "darwin"* ]]; then
   export HOME="/Users/distiller"
 fi
-
-bname=`basename $CC`
-echo "gcc.exe = \"${bname}\"" >> config/nim.cfg
-echo "gcc.linkerexe = \"${bname}\"" >> config/nim.cfg
-echo "clang.exe = \"${bname}\"" >> config/nim.cfg
-echo "clang.linkerexe = \"${bname}\"" >> config/nim.cfg
-
+ 
  
 export LD_LIBRARY_PATH=$PREFIX/lib
 
