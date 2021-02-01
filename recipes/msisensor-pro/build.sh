@@ -8,6 +8,8 @@ export CFLAGS="$CFLAGS -I$PREFIX/include"
 export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 cd ${SRC_DIR}/vendor/htslib-1.11
+autoheader
+autoconf
 ./configure 
 cd $SRC_DIR/cpp
 make CC=$CC CXX=$CXX
