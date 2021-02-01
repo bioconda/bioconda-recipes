@@ -10,7 +10,7 @@ export CFLAGS="-g -Wall -O2 -I$PREFIX/include -L$PREFIX/lib"
 #make CC=$CC
 echo =============================
 
-make INCLUDES=${INCLUDES} LIBCURSES=${LIBCURSES} LIBPATH=${LIBPATH} CC=$CC CXX=$CXX -C$SRC_DIR/cpp/ -shared $(LDFLAGS) 
+make INCLUDES=${INCLUDES} LIBCURSES=${LIBCURSES} LIBPATH=${LIBPATH} CC=$CC CXX=$CXX -C$SRC_DIR/cpp/ -shared ${LDFLAGS}
 echo ==============================
 #make INCLUDES="-I$PREFIX/include -I$PREFIX/include/ncurses  LIBCURSES="-L$PREFIX/lib -lncurses -ltinfo" LIBPATH="-L$PREFIX/lib" CC=$CC CXX=$CXX CFLAGS="-g -Wall -O2 -I$PREFIX/include -L$PREFIX/lib" -C$SRC_DIR/cpp/ 
 #cd -
