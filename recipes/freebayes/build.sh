@@ -20,13 +20,12 @@ export LIBPATH="-L. -Lhtslib -L$PREFIX/lib"
 export CXXFLAGS="-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
 
 #Updating some commands with inspiration from the pbmm2 build
-
-meson build/ --buildtype debug --libdir lib --prefix "${PREFIX}"
+mkdir build
+meson build/ --buildtype debug --prefix "${PREFIX}"
 
 cd build
 ninja -v
 ninja -v install
-
 
 
 
