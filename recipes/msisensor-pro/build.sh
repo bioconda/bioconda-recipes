@@ -9,6 +9,7 @@ export CFLAGS="-g -Wall -O2 -I$PREFIX/include -L$PREFIX/lib"
 #cd $SRC_DIR/cpp
 #make CC=$CC
 echo =============================
+locate libz
 cd $SRC_DIR/cpp
 make CC=$CC CXX=$CXX
 cd -
