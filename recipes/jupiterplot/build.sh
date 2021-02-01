@@ -1,4 +1,4 @@
 #!/bin/bash
 
 chmod +x jupiter
-cp -r . $PREFIX
+cp -r . $PREFIX/bin
