@@ -7,6 +7,8 @@ export CPATH=${PREFIX}/include
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
+export CC=${PREFIX}/bin/gcc
+export CXX=${PREFIX}/bin/g++
 cd ${SRC_DIR}/vendor/htslib-1.11
 autoheader
 autoconf
