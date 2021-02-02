@@ -29,10 +29,16 @@ fi
 #sed -i.bak 's/-ltabix//' Makefile
 #sed -i.bak 's/make/make -e/' Makefile
 
-make -e \
-    CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
-    CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+#make -e \
+#    CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+#    CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+
+pkg-config --list-all
+mkdir -p build
+cd build
+cmake ..
+cmake --build . --verbose
 
 mkdir -p $PREFIX/bin
-cp bin/* $PREFIX/bin
+cp * $PREFIX/bin
 
