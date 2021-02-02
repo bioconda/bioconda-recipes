@@ -14,10 +14,5 @@ mkdir -p $PREFIX/bin
 pwd
 ls -l bin/* 
 
-for BIN in $(ls bin/* | grep -v '\.');
-do
-  if [ ! -e "$PREFIX"/bin/${BIN} ]; then
-	chmod a+x ${BIN}
-    cp ${BIN} "$PREFIX"/bin/${BIN}
-  fi
-done
+chmod a+x bin/* 
+cp bin/* "$PREFIX"/bin/ 
