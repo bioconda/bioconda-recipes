@@ -7,16 +7,18 @@ export CPATH=${PREFIX}/include
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
-export CC=${PREFIX}/bin/gcc
-export CXX=${PREFIX}/bin/g++
+#export CC=${PREFIX}/bin/gcc
+#export CXX=${PREFIX}/bin/g++
 echo ==============================
-which gcc
-which g++
-echo ==============================
+#which gcc
+#which g++
+#echo ==============================
 cd ${SRC_DIR}/vendor/htslib-1.11
 autoheader
 autoconf
 ./configure 
+make 
+make install
 cd $SRC_DIR/cpp
 make CC=$CC CXX=$CXX
 cd -
