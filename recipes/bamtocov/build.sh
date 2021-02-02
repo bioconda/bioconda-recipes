@@ -12,6 +12,8 @@ mkdir -p $PREFIX/bin
 
 for BIN in $(ls src/* | grep -v '\.');
 do
-  chmod a+x src/${BIN}
-  cp ${BIN} "$PREFIX"/bin/${BIN}
+  if [ ! -e "$PREFIX"/bin/${BIN} ]; then
+	chmod a+x ${BIN}
+    cp ${BIN} "$PREFIX"/bin/${BIN}
+  fi
 done
