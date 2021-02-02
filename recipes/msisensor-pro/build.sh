@@ -20,6 +20,11 @@ autoconf
 make 
 make install
 cd $SRC_DIR/cpp
+if [ `uname -s` == "Darwin" ];
+then
+ 	sed -i 's|-Wl,-rpath=${HTSLIB}||g' makefile 	   
+fi
+
 make CC=$CC CXX=$CXX
 cd -
 cp -rf $SRC_DIR/cpp/msisensor-pro $SRC_DIR/binary/
