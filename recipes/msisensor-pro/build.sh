@@ -18,7 +18,6 @@ autoheader
 autoconf
 ./configure 
 make 
-make install
 cd $SRC_DIR/cpp
 if [ `uname -s` == "Darwin" ];
 then
