@@ -19,17 +19,16 @@ autoconf
 ./configure 
 make 
 
-echo "========finish htslib make======"
-./htsfile
 
 cd ${SRC_DIR}/cpp
-if [ `uname -s` == "Darwin" ];
-then
- 	sed -i 's|-Wl,-rpath=${HTSLIB}||g' ./makefile 	   
-	sed -i 's|htsfile ||g' ./makefile
 
-fi
-cat ./makefile
+#if [ `uname -s` == "Darwin" ];
+#then
+# 	sed -i 's|-Wl,-rpath=${HTSLIB}||g' ./makefile 	   
+#	sed -i 's|htsfile ||g' ./makefile
+#
+#fi
+#cat ./makefile
 echo "=========start msisensor-pro make ========="
 
 make CC=$CC CXX=$CXX
