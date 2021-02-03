@@ -18,6 +18,13 @@ mkdir -p $PERLLIB && chmod a+x $PERLLIB
 
 ## install modules from CPAN directly as they are no conda packages for these modules
 
+# A little hack to try to nudge Bioconda MacOS CI- which seems to not have HOME
+# set, which disrupts cpanm
+
+if [ -z "$HOME" ] && [ -d "Users/distiller" ]; then
+    export HOME=/Users/distiller
+fi
+
 cpanm -l $PERLLIB MooseX::FollowPBP \
                     URI::Escape \
                     URL::Encode \
