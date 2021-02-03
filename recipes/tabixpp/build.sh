@@ -15,5 +15,6 @@ export HTS_HEADERS="$PREFIX/include/htslib/bgzf.h $PREFIX/include/htslib/tbx.h"
 export HTS_LIB="$PREFIX/lib/libhts.a"
 
 make 
+cp tabix++ $PREFIX/bin
 
 
