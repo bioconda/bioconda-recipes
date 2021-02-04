@@ -1,5 +1,4 @@
 #!/bin/bash
-
 mkdir -p ${PREFIV}/bin
 OMPFLG=-fopenmp
 HASHFLG=-Wno-deprecated
