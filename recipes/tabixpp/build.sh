@@ -16,5 +16,5 @@ export HTS_LIB="$PREFIX/lib/libhts.a"
 
 make 
 cp tabix++ $PREFIX/bin
-
+ln -s $PREFIX/bin/tabix++ $PREFIX/bin/tabixpp
 
