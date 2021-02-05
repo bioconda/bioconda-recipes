@@ -14,7 +14,15 @@
 #export HTS_HEADERS="$PREFIX/include/htslib/bgzf.h $PREFIX/include/htslib/tbx.h"
 #export HTS_LIB="$PREFIX/lib/libhts.a"
 
+if [ "$(uname)" == "Darwin" ]; then
+    # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14.
+    export CXXFLAGS="${CXXFLAGS} CXX=clang++" 
+    export CC=clang 
+    export CC_LD=lld 
+    sed -i.bak 's/-Wl,-soname/-Wl,-install_name/g' Makefile
+    sed -i.bak sed 's/\.so.$(SONUMBER)/.$(SONUMBER).dylib/g' Makefile
+fi
+
 make 
 cp tabix++ $PREFIX/bin
-#ln -s $PREFIX/bin/tabix++ $PREFIX/bin/tabixpp
 
