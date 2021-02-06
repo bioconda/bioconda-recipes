@@ -1,5 +1,4 @@
 #!/bin/bash
-make CC=$CXX
 
 cd src
-make
+make CC=$CXX
