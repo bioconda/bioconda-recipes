@@ -1,6 +1,6 @@
 #!/bin/bash
 
-brew install gcc
+sudo apt-get install g++
 
 chmod u+x install.sh
 ./install.sh
