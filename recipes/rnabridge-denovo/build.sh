@@ -5,4 +5,4 @@ export LIBRARY_PATH=$PREFIX/lib
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 cd src
-make CC=$CXX
+make CC=$CXX lib
