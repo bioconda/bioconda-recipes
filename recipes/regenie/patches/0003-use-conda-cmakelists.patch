@@ -4,8 +4,8 @@ Date: Sun, 1 Nov 2020 15:48:54 +0100
 Subject: [PATCH 3/3] use conda cmakelists
 
 ---
- CMakeLists.txt | 98 ++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 98 insertions(+)
+ CMakeLists.txt | 104 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 104 insertions(+)
  create mode 100644 CMakeLists.txt
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
@@ -13,7 +13,7 @@ new file mode 100644
 index 0000000..b959bef
 --- /dev/null
 +++ CMakeLists.txt
-@@ -0,0 +1,98 @@
+@@ -0,0 +1,104 @@
 +cmake_minimum_required(VERSION 3.15)
 +file(STRINGS "VERSION" PROJECT_VERSION)
 +project(regenie VERSION "${PROJECT_VERSION}")
@@ -92,9 +92,15 @@ index 0000000..b959bef
 +target_sources(pgen INTERFACE "${PGEN_SOURCES}")
 +target_include_directories(pgen INTERFACE $<BUILD_INTERFACE:${PGEN_PATH}>)
 +
++set(MVTNORM_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external_libs")
++file(GLOB MVTNORM_SOURCES "${MVTNORM_PATH}/mvtnorm/*.cpp" "${MVTNORM_PATH}/mvtnorm/*.h")
++add_library(mvtnorm INTERFACE)
++target_sources(mvtnorm INTERFACE "${MVTNORM_SOURCES}")
++target_include_directories(mvtnorm INTERFACE $<BUILD_INTERFACE:${MVTNORM_PATH}>)
++
 +file(GLOB REGENIE_PATHS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp")
 +add_executable(regenie "${REGENIE_PATHS}")
-+target_link_libraries(regenie pgen ${BGEN_LIBRARY} ${DB_LIBRARY} ${SQLITE3_LIBRARY} Boost::iostreams Boost::system Boost::filesystem Boost::thread LAPACK::LAPACK Eigen3::Eigen ${ZLIB_LIBRARY} ${ZSTD_LIBRARY} ${MLIB_LIBRARY} ${DLLIB_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
++target_link_libraries(regenie pgen mvtnorm ${BGEN_LIBRARY} ${DB_LIBRARY} ${SQLITE3_LIBRARY} Boost::iostreams Boost::system Boost::filesystem Boost::thread LAPACK::LAPACK Eigen3::Eigen ${ZLIB_LIBRARY} ${ZSTD_LIBRARY} ${MLIB_LIBRARY} ${DLLIB_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 +target_include_directories(regenie PUBLIC
 +                           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 +                           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/genfile>
