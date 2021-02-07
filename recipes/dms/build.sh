@@ -1,5 +1,5 @@
 #!/bin/bash
-
+mkdir -p ${PREFIX}/bin
 chmod u+x install.sh
 ./install.sh
 mkdir -p ${PREFIX}/bin
