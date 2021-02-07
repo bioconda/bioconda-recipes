@@ -7,3 +7,4 @@ export LD_LIBRARY_PATH=$PREFIX/lib
 
 cd src
 make CXX=$CXX
+cp rnabridge-denovo ../rnabridge-denovo
