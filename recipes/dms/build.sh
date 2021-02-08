@@ -1,7 +1,8 @@
 #!/bin/bash
 
 export DynamicMetaStorms=${PREFIX}
-export PATH=${PATH}:${DynamicMetaStorms}/bin
+export PATH="${PATH}:${DynamicMetaStorms}/bin"
+source ~/.bashrc
 
 mkdir -p ${PREFIX}/bin
 
