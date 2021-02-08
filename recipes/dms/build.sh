@@ -2,6 +2,8 @@
 
 mkdir -p ${PREFIX}/bin
 
+export DynamicMetaStorms=${PREFIX}
+
 make
 
 cp bin/* ${PREFIX}/bin
