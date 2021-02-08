@@ -20,7 +20,7 @@ if [ "$(uname)" == "Darwin" ]; then
     export CC=clang 
     export CC_LD=lld 
     sed -i.bak 's/-Wl,-soname/-Wl,-install_name/g' Makefile
-    sed -i.bak sed 's/\.so.$(SONUMBER)/.$(SONUMBER).dylib/g' Makefile
+    sed -i.bak 's/\.so.$(SONUMBER)/.$(SONUMBER).dylib/g' Makefile
 fi
 
 make 
