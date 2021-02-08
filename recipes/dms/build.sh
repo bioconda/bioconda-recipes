@@ -1,10 +1,8 @@
 #!/bin/bash
 
-export DynamicMetaStorms=${PREFIX}
-export PATH="${PATH}:${DynamicMetaStorms}/bin"
-source ~/.bashrc
-
 mkdir -p ${PREFIX}/bin
+export PATH=${PREFIX}/bin
+export DynamicMetaStorms=${PREFIX}
 
 chmod u+x install.sh
 ./install.sh
