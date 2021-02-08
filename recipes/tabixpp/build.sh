@@ -16,9 +16,9 @@
 
 if [ "$(uname)" == "Darwin" ]; then
     # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14.
-    export CXXFLAGS="${CXXFLAGS} CXX=clang++" 
-    export CC=clang 
-    export CC_LD=lld 
+    #export CXXFLAGS="${CXXFLAGS} CXX=clang++" 
+    #export CC=clang 
+    #export CC_LD=lld 
     sed -i.bak 's/-Wl,-soname/-Wl,-install_name/g' Makefile
     sed -i.bak 's/\.so.$(SONUMBER)/.$(SONUMBER).dylib/g' Makefile
 fi
