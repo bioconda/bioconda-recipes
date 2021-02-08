@@ -3,6 +3,7 @@
 export DynamicMetaStorms=${PREFIX}
 export PATH="${PATH}:${DynamicMetaStorms}/bin"
 source ~/.bashrc
+
 echo $DynamicMetaStorms
 echo $PATH
 
