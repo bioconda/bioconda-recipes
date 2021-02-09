@@ -7,4 +7,6 @@ fi
 
 make 
 cp tabix++ $PREFIX/bin
+cp libtabixpp.so.* ${PREFIX}/lib/libtabixpp.so
+cp *.hpp ${PREFIX}/include
 
