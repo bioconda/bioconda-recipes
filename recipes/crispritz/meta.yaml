@@ -1,43 +1,38 @@
-{% set version = "1.1.1" %}
+{% set version = "2.3.7" %}
 
 package:
   name: crispritz
   version: {{ version }}
 
 source:
-  url: https://github.com/InfOmics/CRISPRitz/archive/v{{ version }}.tar.gz
-  sha256: a49ba9a17d25f88632fef5837a0e195d866a87cc50f3952aa189306d577812fa
+  url: https://github.com/pinellolab/CRISPRitz/archive/v{{ version }}.tar.gz
+  sha256: 98e25e4ad680cb02fc418ece7b7161b17c4e6b02963a2bda08ed0a6401278f08
 
 build:
-  number: 1
+  number: 0
+  skip: True  # [osx or py<36]
 
 requirements:
   build:
-    - {{compiler('cxx')}} =5.4 # [not osx]
-    - {{compiler('cxx')}} # [osx]
+    - {{ compiler('cxx') }}
+    - libgomp  # [linux]
+  host:
     - make
     - boost
-    - openmp
-    
-  host:
-    - intervaltree
-    - matplotlib
-    - pandas
-    - scipy
-    - numpy
-    - more-itertools
-    - statsmodels
-    - bcftools
-    - boost
-    - tk
-    - openmp
-    - libdeflate
-    - libcxx
     - python
-    
   run:
+    - dash
+    - dash-renderer
+    - dash-daq
+    - flask-caching
+    - rename
+    - dash-bootstrap-components
+    - poppler
+    - bedtools
+    - scikit-learn=0.23.2
+    - biopython
     - intervaltree
-    - matplotlib
+    - matplotlib-base
     - pandas
     - scipy
     - numpy
@@ -50,12 +45,14 @@ requirements:
     - libdeflate
     - libcxx
     - python
-    
+    - bedops
+
 test:
   commands:
     - crispritz.py
 
 about:
-  home: https://github.com/InfOmics/CRISPRitz
+  home: https://github.com/pinellolab/CRISPRitz
   license: GPL3
+  license_file: LICENSE
   summary: CRISPRitz, tool package for CRISPR experiments assessment and analysis.

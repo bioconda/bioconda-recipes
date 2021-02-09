@@ -1,0 +1,64 @@
+From 9d9574d85924eda419f6196bd2f38589d853afae Mon Sep 17 00:00:00 2001
+From: Afif Elghraoui <aelghraoui@sdsu.edu>
+Date: Mon, 30 Sep 2019 17:55:36 -0700
+Subject: [PATCH] Automatically set RATT_HOME to $PREFIX/lib/ratt/
+
+This only applies to the conda package since users of it will not
+know where the files live.
+---
+ ratt      | 13 ++++++-------
+ ratt.1.md |  5 -----
+ 2 files changed, 6 insertions(+), 12 deletions(-)
+
+diff --git a/ratt b/ratt
+index 6c2374e..b8da5ad 100755
+--- a/ratt
++++ b/ratt
+@@ -42,14 +42,14 @@ done
+ refembl=$1
+ query=$2
+ 
+-if [ -z "$RATT_HOME" ]; then
+- echo "Please set the RATT_HOME variable."
+- echo "At Sanger for bash it is RATT_HOME=/nfs/users/nfs_t/tdo/Bin/ratt; export RATT_HOME"
+- echo "At Sanger for tcsh setenv RATT_HOME /nfs/users/nfs_t/tdo/Bin/"
++RATT_BIN=$(dirname "${BASH_SOURCE[0]}")
++export RATT_HOME=$(cd "${RATT_BIN}/../lib/ratt" > /dev/null 2>&1 && pwd)
+ 
+- echo "I will use the sanger default!"
+-RATT_HOME=/nfs/users/nfs_t/tdo/Bin/ratt; export RATT_HOME
+-fi;
++if [ $? != 0 ]
++then
++ echo "Could not locate supporting files. Check your installation." >&2
++ exit 5
++fi
+ 
+ ### parameter of nucmer
+ D=5
+diff --git a/ratt.1.md b/ratt.1.md
+index 9f1b3a8..98dbf44 100644
+--- a/ratt.1.md
++++ b/ratt.1.md
+@@ -8,7 +8,6 @@ ratt - genome annotation transfer
+ 
+ # SYNOPSIS
+ 
+-RATT_HOME=/path/to/RATT \\ \
+ **ratt** \\ \
+ {**-p**|**--prefix**} *result-prefix* \\ \
+ {**-t**|**--type**} *transfer-type* \\ \
+@@ -83,10 +82,6 @@ RATT_HOME=/path/to/RATT \\ \
+ 
+ # ENVIRONMENT
+ 
+-**RATT_HOME**
+-:    Path to the **ratt** source directory.
+-     This variable must be set for the program to function.
+-
+ **RATT_CONFIG**
+ :    Path to a custom configuration file to use.
+      As start codons and splice sites might vary between organisms, it will be necessary to generate a configuration file for your specific needs.
+-- 
+2.1.4
+

@@ -1,43 +1,32 @@
---- auxprogs/homGeneMapping/src/Makefile.old	2019-03-27 17:21:20.840182632 -0500
-+++ auxprogs/homGeneMapping/src/Makefile	2019-03-27 15:18:31.958165897 -0500
-@@ -7,14 +7,12 @@
- # database access for retrieval of hints
- # SQLITE = true
+diff --git a/auxprogs/homGeneMapping/src/Makefile b/auxprogs/homGeneMapping/src/Makefile
+index c45b70ca..90000998 100644
+--- a/auxprogs/homGeneMapping/src/Makefile
++++ b/auxprogs/homGeneMapping/src/Makefile
+@@ -12,14 +12,12 @@ ifeq (,$(findstring $(COMPGENEPRED),0 false False FALSE)) # if COMPGENEPRED is n
+ 	SQLITE ?= true
+ endif
  
--CC      = g++
+-CXX   ?= g++
 -
  # Notes: - "-Wno-sign-compare" eliminates a high number of warnings (see footnote below). Please adopt
  #          a strict signed-only usage strategy to avoid mistakes since we are not warned about this.
  #        - The order of object files in $(OBJS) IS IMPORTANT (see lldouble.hh)
- CFLAGS := -Wall -Wno-sign-compare -ansi -pedantic -std=c++0x -pthread -O2 ${CFLAGS} # -DDEBUG -g -ggdb -pg
+ CXXFLAGS := -Wall -Wno-sign-compare -ansi -pedantic -std=c++0x -pthread -O2 ${CXXFLAGS}
  
 -INCLS	= -I../include
 +INCLS	= -I../include -I${PREFIX}/include
  LIBS	=
  OBJS	= gene.o genome.o
  
-@@ -25,9 +23,9 @@
+@@ -29,9 +27,9 @@ ifeq (,$(findstring $(BOOST),0 false False FALSE)) # if BOOST is not defined or
+ endif
  
- ifdef SQLITE
- INCLS	+=           # add the sqlite include path here, if sqlite is not installed system-wide
--LIBS    += -lsqlite3 # add the sqlite library path here, if sqlite is not install system-wide
-+LIBS    += ${PREFIX}/lib/libsqlite3.a # add the sqlite library path here, if sqlite is not install system-wide
- OBJS    += sqliteDB.o
--CFLAGS  += -DSQLITE
-+CFLAGS  += -DSQLITE -ldl
+ ifneq (,$(findstring $(SQLITE),1 true True TRUE)) # if SQLITE is defined and contains 1, true, True or TRUE
+-	LIBS    += -lsqlite3 # add the sqlite library path here, if sqlite is not install system-wide
++	LIBS    += -lsqlite3 -L${PREFIX}/lib/ # add the sqlite library path here, if sqlite is not install system-wide
+ 	OBJS    += sqliteDB.o
+-	CPPFLAGS  += -DM_SQLITE
++	CPPFLAGS  += -DM_SQLITE -ldl
  endif
  
  all: homGeneMapping
-@@ -36,10 +34,10 @@
- .SUFFIXES: .cc .o .so
- 
- .cc.o:
--	$(CC) -c $(CFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ $< $(INCLS)
-+	$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ $< $(INCLS)
- 
- homGeneMapping: main.cc $(OBJS)
--	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $^ $(INCLS)  $(LIBS)
-+	$(CXX) $(CFLAGS) $(CPPFLAGS) -o $@ $^ $(INCLS)  $(LIBS)
- 	cp homGeneMapping ../../../bin/homGeneMapping
- 
- clean:

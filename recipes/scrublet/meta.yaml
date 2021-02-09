@@ -1,0 +1,58 @@
+{% set name = "scrublet" %}
+{% set version = "0.2.3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 2185f63070290267f82a36e5b4cae8c321f10415d2d0c9f7e5e97b1126bf653a
+  patches:
+    - patch
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python-annoy
+    - cython
+    - matplotlib-base
+    - numba
+    - numpy>=1.13
+    - pandas
+    - pip
+    - python
+    - scikit-image
+    - scikit-learn
+    - scipy
+    - umap-learn
+  run:
+    - python-annoy
+    - matplotlib-base
+    - numba
+    - {{ pin_compatible('numpy') }}
+    - pandas
+    - python
+    - scikit-image
+    - scikit-learn
+    - scipy
+    - umap-learn
+
+test:
+  imports:
+    - scrublet
+
+about:
+  home: https://github.com/allonkleinlab/scrublet
+  license: MIT License
+  license_family: MIT
+  summary: Doublet prediction in single-cell RNA-sequencing data
+
+extra:
+  recipe-maintainers:
+    - pinin4fjords

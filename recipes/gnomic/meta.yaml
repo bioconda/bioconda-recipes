@@ -1,0 +1,40 @@
+{% set name = "gnomic" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 9883833860a14c66d1be6e5fbab75ecbfb0eade4fca084426b3997a54094b215
+
+build:
+  noarch: python
+  number: 1
+  script: "sed -i.bak '15d' setup.py && {{ PYTHON }} -m pip install . -vv --ignore-installed --no-deps"
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - grako >=3.18.1
+    - python
+    - six >=1.8.0
+
+test:
+  imports:
+    - gnomic
+  requires:
+    - pytest
+
+about:
+  home: https://github.com/biosustain/gnomic
+  license: Apache Software
+  license_family: APACHE
+  summary: "A grammar for describing microbial genotypes and phenotypes"
+
+extra:
+  recipe-maintainers:
+    - chapmanb

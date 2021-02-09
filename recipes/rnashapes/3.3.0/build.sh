@@ -1,7 +1,5 @@
 #!/bin/sh
-cd Misc/Applications/RNAshapes/
-PREFIX=$PREFIX && make all 
-cp x86_*/* $PREFIX/bin/
-cp ../lib/* $PREFIX/lib/ -r
-cp RNAshapes $PREFIX/bin/
+make PREFIX=$PREFIX CC=$CC -C Misc/Applications/RNAshapes all
+make PREFIX=$PREFIX CC=$CC -C Misc/Applications/RNAshapes install-program
+make PREFIX=$PREFIX CC=$CC -C Misc/Applications/lib install
 chmod +x $PREFIX/bin/*

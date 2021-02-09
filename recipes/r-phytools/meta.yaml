@@ -1,4 +1,4 @@
-{% set version = '0.6-60' %}
+{% set version = '0.6-99' %}
 
 package:
   name: r-phytools
@@ -8,15 +8,23 @@ source:
   url:
     - {{ cran_mirror }}/src/contrib/phytools_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/phytools/phytools_{{ version }}.tar.gz
-  sha256: 55cad759510d247ebbf03a53a46caddadd3bf87584ccf7fcd6dd06d44516b377
+  sha256: 2ef532cba77c5f73803bd34582bef05709705311a0b50e42316e69944567390f
 
 build:
-  number: 2
+  noarch: generic
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
   host:
     - r-base
     - r-mass
@@ -26,6 +34,7 @@ requirements:
     - r-coda
     - r-combinat
     - r-expm
+    - r-gtools
     - r-maps
     - r-mnormt
     - r-nlme
@@ -33,6 +42,9 @@ requirements:
     - r-phangorn >=2.3.1
     - r-plotrix
     - r-scatterplot3d
+    - r-geiger
+    - r-rgl
+    - r-rcolorbrewer
   run:
     - r-base
     - r-mass
@@ -42,6 +54,7 @@ requirements:
     - r-coda
     - r-combinat
     - r-expm
+    - r-gtools
     - r-maps
     - r-mnormt
     - r-nlme
@@ -49,15 +62,19 @@ requirements:
     - r-phangorn >=2.3.1
     - r-plotrix
     - r-scatterplot3d
+    - r-geiger
+    - r-rgl
+    - r-rcolorbrewer
 
 test:
   commands:
-    - $R -e "library('phytools')"
+    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library('phytools')"
 
 about:
   home: http://github.com/liamrevell/phytools
   license: GPL (>= 2)
-  summary: A wide range of functions for phylogenetic analysis. Functionality is concentrated
+  summary: Phylogenetic tools for comparative biology
+  description: A wide range of functions for phylogenetic analysis. Functionality is concentrated
     in phylogenetic comparative biology, but also includes a diverse array of methods
     for visualizing, manipulating, reading or writing, and even inferring phylogenetic
     trees and data. Included among the functions in phylogenetic comparative biology
@@ -74,13 +91,8 @@ about:
     a wide variety of other manipulations and analyses that phylogenetic biologists
     might find useful in their research.
   license_family: GPL3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 
 extra:
-  recipe-maintainers:
-    - MathiasHaudgaard
-    - FrodePedersen
-    - ArneKr
-    - johanneskoester
-    - bgruening
-    - daler
-    - jdblischak
+  container:
+    extended-base: true

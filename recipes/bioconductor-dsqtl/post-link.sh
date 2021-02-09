@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="dsQTL_0.22.0.tar.gz"
+FN="dsQTL_0.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/dsQTL_0.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/dsQTL_0.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-dsqtl/bioconductor-dsqtl_0.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/dsQTL_0.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/dsQTL_0.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-dsqtl/bioconductor-dsqtl_0.28.0_src_all.tar.gz"
 )
-MD5="832fc2afb33890374a5efa553fe276ab"
+MD5="fbfe32fb1a198d0d3b2af1d521b83828"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,0 +1,41 @@
+{% set version = "1.0.4" %}
+{% set sha256 = "eafa7fcafa6c0fdb202934fd7aaabf85fbb055447e0660246fba6ae3f0fd0c7c" %}
+
+package:
+  name: elector
+  version: {{ version }}
+
+source:
+  url: https://github.com/kamimrcht/ELECTOR/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Makefiles.patch
+    - elector_utils.patch
+
+build:
+  number: 1
+  skip: True # [osx or py<30]
+  
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - libgomp  # [linux]
+    - make
+  host:
+    - biopython
+    - python
+  run:
+    - python
+    - samtools
+    - minimap2
+    - biopython
+
+test:
+  commands:
+    - elector --help
+
+about:
+  home: https://github.com/kamimrcht/ELECTOR
+  license: AGPL-3.0
+  summary: ELECTOR EvaLuator of Error Correction Tools for lOng Reads 

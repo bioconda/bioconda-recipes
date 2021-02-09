@@ -1,31 +1,28 @@
-{% set version = "1.8" %}
-{% set sha256 = "30ecfe574166f54f79606038830f68927cf0efab33bdc3c6e43fd1448fa0b2e4" %}
+{% set version = "2.1.1" %}
 
 package:
   name: canu
   version: '{{version}}'
 
 source:
-  # Canu currently needs to come from git to get its version string right
-  url: https://github.com/marbl/canu/archive/v{{version}}.tar.gz
-  sha256: '{{sha256}}'
+  git_url: https://github.com/marbl/canu.git
+  git_rev: 5638f7d9a5379373310ab62c28aa0cdbd864722d
 
 build:
   number: 0
   skip: true  # [osx]
-  detect_binary_files_with_prefix: true
 
 requirements:
   build:
     - '{{ compiler("c") }}'
+    - '{{ compiler("cxx") }}'
   host:
-    - perl
-    - gnuplot >=5.0.5
+    - gnuplot >=5.2
   run:
     - perl
     - perl-filesys-df
     - openjdk
-    - gnuplot >=5.0.5
+    - gnuplot >=5.2
 
 test:
   commands:
@@ -34,7 +31,15 @@ test:
 about:
   home: http://canu.readthedocs.org/
   license: GPLv2 and others
+  license_file: README.licenses
   license_family: GPL
   summary: Canu is a fork of the Celera Assembler designed for high-noise single-molecule
     sequencing.
   dev_url: https://github.com/marbl/canu
+
+extra:
+  identifiers:
+    - usegalaxy-eu:canu
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

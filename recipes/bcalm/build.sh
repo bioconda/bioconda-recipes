@@ -5,9 +5,10 @@ export LIBRARY_PATH=${PREFIX}/lib
 
 # we can't build bcalm with avaible gatb, link trouble
 rm -rf gatb-core
-wget https://github.com/GATB/gatb-core/archive/v1.4.1.tar.gz
-tar xvfz v1.4.1.tar.gz
-mv gatb-core-1.4.1 gatb-core                                
+git clone https://github.com/GATB/gatb-core.git
+cd gatb-core
+git checkout d053d0dffdfb9d31e45d42a3da49d2f71c8f87b3
+cd ..
 
 # avoid gatb example install
 if [ "$(uname)" == "Darwin" ]; then
@@ -20,6 +21,6 @@ fi
 mkdir build
 cd build
 
-cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -DKSIZE_LIST="32 64 96 128 160 192 224 256" ..
-make -j 4
+cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -DKSIZE_LIST="32 64 96 128 160 192" ..
+make
 make install

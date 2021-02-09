@@ -1,3 +1,6 @@
 #!/bin/bash
-cd BETA_1.0.7
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+if [ -d "BETA_1.0.7" ] ; then
+    cd BETA_1.0.7
+fi
+$PYTHON -m pip install . --ignore-installed --no-deps -vv
+
