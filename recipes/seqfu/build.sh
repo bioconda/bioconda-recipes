@@ -9,7 +9,7 @@ fi
 mkdir -p $PREFIX/bin
 
 echo " * Attempt automatic build"
-nimble build --verbose || true
+nimble build -y --verbose || true
 
 ls -ltr *.nimble bin/*.nim
 
