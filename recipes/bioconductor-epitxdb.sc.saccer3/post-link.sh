@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="EpiTxDb.Sc.sacCer3_0.99.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/EpiTxDb.Sc.sacCer3_0.99.3.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/EpiTxDb.Sc.sacCer3_0.99.3.tar.gz"
   "https://bioarchive.galaxyproject.org/EpiTxDb.Sc.sacCer3_0.99.3.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-epitxdb.sc.saccer3/bioconductor-epitxdb.sc.saccer3_0.99.3_src_all.tar.gz"
 )

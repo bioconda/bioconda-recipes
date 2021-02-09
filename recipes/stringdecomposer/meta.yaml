@@ -1,0 +1,43 @@
+{% set version="1.0.0" %}
+
+package:
+  name: stringdecomposer
+  version: {{ version }}
+
+source:
+  url: https://github.com/ablab/stringdecomposer/archive/v{{ version }}.tar.gz
+  sha256: 561deea67808bc4d0bab04b2167ef47f918f2080f8ea1d8cc1e92e045f00aa84
+
+build:
+  skip: True  # [py27 or osx]
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --ignore-installed --no-deps
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+  host:
+    - python
+    - pip
+    - llvm-openmp  # [osx]
+  run:
+    - python
+    - biopython
+    - joblib
+    - numpy
+    - pandas
+    - python-edlib
+    - scikit-learn
+ 
+test:
+  commands:
+    - run_decomposer -h | grep Decomposes
+
+about:
+  home: https://github.com/ablab/stringdecomposer
+  license: GPLv2
+  license_family: GPL
+  license_file: LICENSE
+  summary: A tool for decomposing of strings into a set of given monomers
+  description: StringDecomposer (SD) algorithm takes the set of monomers and a long error-prone read (or a genomic segment) and partitions this read into distinct monomers.

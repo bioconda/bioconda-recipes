@@ -1,6 +1,7 @@
 {% set name = "ngless" %}
-{% set version = "1.1.1" %}
-{% set sha256 = "c83648cf6359edea6987b708ea08bd7f4731bd8a8ca3e7a0cfaea2a60fa4ae0c" %}
+{% set version = "1.2.0" %}
+{% set sha256 = "7541de26727c48d053cd9e53b50d152362e226985739886d0ac0a26b2fb61c44" %}
+{% set osx_binaries_sha256 = "0403981f9c85ee1e06947f3d29c06ca4c6ec4c0b17ac1a709da1c230f609aaa2" %}
 
 {% set ghc_src_version = "8.6.5" %}
 {% set ghc_src_sha256 = "4d4aa1e96f4001b934ac6193ab09af5d6172f41f5a5d39d8e43393b9aafee361" %}
@@ -12,36 +13,38 @@ package:
   version: {{ version }}
 
 source:
-  - url: https://github.com/ngless-toolkit/ngless/archive/v{{ version }}.tar.gz
-    sha256: {{ sha256 }}
-    folder: ngless
+  - url: https://github.com/ngless-toolkit/ngless/archive/v{{ version }}.tar.gz # [linux]
+    sha256: {{ sha256 }} # [linux]
+    folder: ngless # [linux]
   - url: https://downloads.haskell.org/~ghc/{{ ghc_bootstrap_version }}/ghc-{{ ghc_bootstrap_version }}-x86_64-centos67-linux.tar.xz  # [linux]
     sha256: {{ ghc_bootstrap_linux_sha256 }}  # [linux]
-    folder: ghc_bootstrap
+    folder: ghc_bootstrap # [linux]
 
-  - url: https://downloads.haskell.org/~ghc/{{ ghc_src_version }}/ghc-{{ ghc_src_version }}-src.tar.xz
-    sha256: {{ ghc_src_sha256 }}
-    folder: ghc_src
+  - url: https://downloads.haskell.org/~ghc/{{ ghc_src_version }}/ghc-{{ ghc_src_version }}-src.tar.xz # [linux]
+    sha256: {{ ghc_src_sha256 }} # [linux]
+    folder: ghc_src # [linux]
+
+  - url: https://github.com/ngless-toolkit/ngless/releases/download/v{{ version }}/NGLess-{{ version }}-osx.zip # [osx]
+    sha256: {{ osx_binaries_sha256 }} # [osx]
 
 
 build:
-  number: 0
-  skip: True # [osx]
+  number: 3
 
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-    - perl
-    - coreutils
-    - binutils
-    - pkg-config
-    - automake
-    - autoconf
-    - libtool
-    - stack >=1.9.3
+    - {{ compiler('c') }} # [linux]
+    - {{ compiler('cxx') }} # [linux]
+    - make # [linux]
+    - perl # [linux]
+    - coreutils # [linux]
+    - binutils # [linux]
+    - pkg-config # [linux]
+    - automake # [linux]
+    - autoconf # [linux]
+    - libtool # [linux]
+    - stack >=1.9.3 # [linux]
   host:
     - gmp
     - xz
@@ -50,9 +53,11 @@ requirements:
     - backports.lzma
     - libiconv
     - openssh
-    - wget
+    - wget # [linux]
+    - libffi # [linux]
   run:
-    - python
+    - libffi # [linux]
+
 
 test:
   commands:
