@@ -11,5 +11,6 @@ make VERBOSE=1
 cp mergestatetrees $PREFIX/bin
 cp generatestatetrees $PREFIX/bin
 
+cd ..
 $PYTHON -m pip install . --ignore-installed --no-deps -vv
 
