@@ -11,8 +11,8 @@ mkdir -p $PREFIX/bin
 echo " * Attempt automatic build"
 nimble build -y --verbose || true
 
-ls -ltr *.nimble bin/*.nim
-
+pwd
+ls -ltr $PREFIX/bin/
 
 echo " * Legacy procedure"
 nimble install -y --verbose argparse docopt terminaltables readfq iterutils
