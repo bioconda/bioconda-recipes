@@ -13,6 +13,7 @@ nimble build -y --verbose || true
 
 ls -ltr *.nimble bin/*.nim
 
+
 echo " * Legacy procedure"
 nimble install -y --verbose argparse docopt terminaltables readfq iterutils
 
