@@ -23,10 +23,10 @@ nim c --threads:on -p:lib --opt:speed -d:release -o:$PREFIX/bin/seqfu src/sfu.ni
 
 for SOURCE in src/fu_*.nim;
 do
-	NAME=$(basename ${SOURCE%.nim} | sed 's/_/-/' )
+	NAME=$(basename "${SOURCE%.nim}" | sed 's/_/-/' )
     THREADS=""
     echo " * Build $NAME"
-    CHECK_THREADS=$(grep thread build.sh | wc -l || true )
+    CHECK_THREADS=$(grep thread "$SOURCE" | wc -l || true )
 	if [[ "$OK" -ne 0 ]]; then
 	    THREADS=" --threads:on "
 	fi
