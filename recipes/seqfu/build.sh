@@ -27,8 +27,8 @@ do
     THREADS=""
     echo " * Build $NAME"
     CHECK_THREADS=$(grep thread "$SOURCE" | wc -l || true )
-	if [[ "$OK" -ne 0 ]]; then
+	if [[ "$CHECK_THREADS" -ne 0 ]]; then
 	    THREADS=" --threads:on "
 	fi
-	nim c -p:lib --opt:speed -d:release -o:"$PREFIX/bin/${NAME}" "$SOURCE" || true
+	nim c $THREADS -p:lib --opt:speed -d:release -o:"$PREFIX/bin/${NAME}" "$SOURCE" || true
 done
