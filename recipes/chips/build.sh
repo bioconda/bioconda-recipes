@@ -7,7 +7,7 @@
 
 # export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
 export CFLAGS="$CFLAGS -I$PREFIX/include -DVERSION=1.2.3"
-export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
+export CXXFLAGS="$CXXFLAGS -I$PREFIX/include -std=c++11"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib -lz"
 export CPPFLAGS="$CPPFLAGS"
 # export CPATH=$CPATH:${PREFIX}/include
