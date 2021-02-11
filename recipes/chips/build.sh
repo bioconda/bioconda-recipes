@@ -6,7 +6,7 @@
 # export CXX_INCLUDE_PATH=$CXX_INCLUDE_PATH:${PREFIX}/include
 
 # export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
-export CFLAGS="$CFLAGS -I$PREFIX/include"
+export CFLAGS="$CFLAGS -I$PREFIX/include -std=c++11"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib -lz"
 # export CPATH=$CPATH:${PREFIX}/include
 
