@@ -55,7 +55,20 @@ fi
 pass_arr=($pass_args)
 if [[ "$1" == self-test ]]
 then
-    test -e $JAR_DIR/exomiser-rest-prioritiser-$PKG_VERSION.jar || exit 1
+    error=0
+    java -version &>/dev/null
+    if [[ $0 -ne 0 ]]; then
+        >&2 echo "ERROR: Call to 'java -version' failed."
+        error=1
+    fi
+    if [[ ! -e $JAR_DIR/exomiser-rest-prioritiser-$PKG_VERSION.jar ]]; then
+        >&2 echo "ERROR: JAR file not found at $JAR_DIR/exomiser-rest-prioritiser-$PKG_VERSION.jar "
+        error=1
+    fi
+    if [[ $error -ne 0 ]]; then
+        >&2 echo "ERROR: failed self-test, see above for details"
+        exit 1
+    fi
 elif [[ ${pass_arr[0]:=} == \'org* ]]
 then
     eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/exomiser-rest-prioritiser-$PKG_VERSION.jar" $pass_args
