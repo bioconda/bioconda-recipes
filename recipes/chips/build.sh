@@ -7,7 +7,7 @@
 
 # export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
 export CFLAGS="$CFLAGS -I$PREFIX/include -DVERSION=1.2.3"
-export CXXFLAGS="$CXXFLAGS -I$PREFIX/include -std=gnu++11"
+export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib -lz"
 export CPPFLAGS="$CPPFLAGS"
 # export CPATH=$CPATH:${PREFIX}/include
@@ -16,7 +16,7 @@ mkdir build
 cd build
 cmake ..
 make VERBOSE=1 \
-    CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS} -std=c++11" \
+    CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
     CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
 # CC=$CC CXX=$CXX CFLAGS="$CFLAGS -DVERSION=1.2.3" CXXFLAGS="$CXXFLAGS -std=c++11" LDFLAGS+="-lz"
