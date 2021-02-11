@@ -12,5 +12,5 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 mkdir build
 cd build
-cmake .. LDFLAGS+="-lz $LDFLAGS"
-make CC=$CC CFLAGS="$CFLAGS -DVERSION=1.2.3"
+cmake ..
+make CC=$CC CFLAGS="$CFLAGS -DVERSION=1.2.3" LDFLAGS+="-lz $LDFLAGS"
