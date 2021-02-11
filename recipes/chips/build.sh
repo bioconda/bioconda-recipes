@@ -13,4 +13,4 @@ export CPATH=$CPATH:${PREFIX}/include
 mkdir build
 cd build
 cmake ..
-make CC=$CC CXX=$CXX LIBS="-L$PREFIX/lib -lhts -lz -lm"
+make CC=$CC CXX=$CXX LIBS="-L$PREFIX/lib -lhts -lz -lm" LDFLAGS="$LDFLAGS"
