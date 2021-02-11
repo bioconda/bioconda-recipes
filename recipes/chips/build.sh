@@ -15,4 +15,4 @@ mkdir build
 cd build
 cmake ..
 #make CC=$CC CFLAGS="$CFLAGS -DVERSION=1.2.3" LDFLAGS+="-lz $LDFLAGS"
-make CC=$CC CXX=$CXX
+make CC=$CC CXX=$CXX CFLAGS="$CFLAGS -DVERSION=1.2.3"
