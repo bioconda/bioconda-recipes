@@ -8,11 +8,11 @@
 # export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export CXXFLAGS="$CXXFLAGS -I$PREFIX/include -std=c++11"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib -lz"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 # export CPATH=$CPATH:${PREFIX}/include
 
 mkdir build
 cd build
 cmake ..
-#make CC=$CC CFLAGS="$CFLAGS -DVERSION=1.2.3" LDFLAGS+="-lz $LDFLAGS"
-make CC=$CC CXX=$CXX CFLAGS="$CFLAGS -DVERSION=1.2.3"
+make CC=$CC CXX=$CXX CFLAGS="$CFLAGS -DVERSION=1.2.3" LDFLAGS+="-lz"
+#make CC=$CC CXX=$CXX CFLAGS="$CFLAGS -DVERSION=1.2.3"
