@@ -8,3 +8,12 @@ fi
 make 
 cp tabix++ $PREFIX/bin
 
+if [ "$(uname)" == "Darwin" ]; then
+    cp libtabixpp.*.dylib ${PREFIX}/lib/
+    ln -s ${PREFIX}/lib/libtabixpp.*.dylib ${PREFIX}/lib/libtabixpp.dylib 
+else 
+    cp libtabixpp.so.* ${PREFIX}/lib/libtabixpp.so
+fi
+
+cp *.hpp ${PREFIX}/include
+
