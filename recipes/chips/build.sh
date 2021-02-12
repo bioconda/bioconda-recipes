@@ -19,4 +19,4 @@ make VERBOSE=1 \
     CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
     CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
-# CC=$CC CXX=$CXX CFLAGS="$CFLAGS -DVERSION=1.2.3" CXXFLAGS="$CXXFLAGS -std=c++11" LDFLAGS+="-lz"
+cp -v chips ${PREFIX}/bin/chips
