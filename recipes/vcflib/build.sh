@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#export LDFLAGS="${LDFLAGS} -L\$(LIB_DIR) -lvcflib -lhts -lpthread -lz -lm -llzma -lbz2"
-#export INCLUDES="-I . -Ihtslib -I$PREFIX/include -Itabixpp/htslib -I\$(INC_DIR) -L. -Ltabixpp/htslib"
+export LDFLAGS="${LDFLAGS} -L\$(LIB_DIR) -lvcflib -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2"
+export INCLUDES="-I . -Ihtslib -I$PREFIX/include -Itabixpp -I\$(INC_DIR) -L."
 export LIBPATH="-L. -Lhtslib -L$PREFIX/lib"
 #export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
 
@@ -36,8 +36,7 @@ fi
 pkg-config --list-all
 mkdir -p build
 cd build
-cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX 
-#cmake -DTABIXPP_LOCAL:STRING=$PREFIX/lib ..
+cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DTABIXPP_LOCAL:STRING=$PREFIX/lib
 cmake --build . 
 cmake --install .
 
