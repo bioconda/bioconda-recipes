@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export LDFLAGS="${LDFLAGS} -L\$(LIB_DIR) -lvcflib -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2"
+export LDFLAGS="${LDFLAGS} -L\$(LIB_DIR) -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2"
 export INCLUDES="-I . -Ihtslib -I$PREFIX/include -Itabixpp -I\$(INC_DIR) -L."
 export LIBPATH="-L. -Lhtslib -L$PREFIX/lib"
 #export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
