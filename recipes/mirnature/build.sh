@@ -1,6 +1,8 @@
 #!/bin/bash
 
+set -xe
+
 perl Build.PL
-./Build
-./Build test
-./Build install
+perl ./Build
+perl ./Build test
+perl ./Build install
