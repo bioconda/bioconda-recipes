@@ -14,15 +14,24 @@ cp -r . $PACKAGE_HOME/.
 # Patch CADD.sh
 sed -i -e 's/^export CADD.*/export CADD=${CADD-$(dirname "$SCRIPT")}/' $PACKAGE_HOME/CADD.sh
 
-# Create wrapper
+# Create wrappers
 SOURCE_FILE=$RECIPE_DIR/cadd-wrapper.sh
-DEST_FILE=$PACKAGE_HOME/cadd-wrapper.sh
+DEST_FILE_CADD=$PACKAGE_HOME/cadd-wrapper.sh
+DEST_FILE_INST=$PACKAGE_HOME/cadd-wrapper.sh
 
-echo "#!/bin/bash" > $DEST_FILE
-echo "PKG_NAME=$PKG_NAME" >> $DEST_FILE
-echo "PKG_VERSION=$PKG_VERSION" >> $DEST_FILE
-echo "PACKAGE_HOME=$PACKAGE_HOME" >> $DEST_FILE
-cat $SOURCE_FILE >> $DEST_FILE
+echo "#!/bin/bash" > $DEST_FILE_CADD
+echo "PKG_NAME=$PKG_NAME" >> $DEST_FILE_CADD
+echo "PKG_VERSION=$PKG_VERSION" >> $DEST_FILE_CADD
+echo "PACKAGE_HOME=$PACKAGE_HOME" >> $DEST_FILE_CADD
+cat $SOURCE_FILE >> $DEST_FILE_CADD
+chmod +x $DEST_FILE_CADD
+ln -s $DEST_FILE_CADD $PREFIX/bin/cadd.sh
 
-chmod +x $DEST_FILE
-ln -s $DEST_FILE $PREFIX/bin/cadd.sh
+echo "#!/bin/bash" > $DEST_FILE_INST
+echo "PKG_NAME=$PKG_NAME" >> $DEST_FILE_INST
+echo "PKG_VERSION=$PKG_VERSION" >> $DEST_FILE_INST
+echo "PACKAGE_HOME=$PACKAGE_HOME" >> $DEST_FILE_INST
+cat $SOURCE_FILE >> $DEST_FILE_INST
+chmod +x $DEST_FILE_INST
+ln -s $DEST_FILE_INST $PREFIX/bin/cadd-install.sh
+
