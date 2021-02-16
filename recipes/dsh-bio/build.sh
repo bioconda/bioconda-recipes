@@ -40,6 +40,7 @@ ln -s $PACKAGE_HOME/bin/dsh-filter-vcf $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-gfa1-to-gfa2 $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-interleave-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-intersect-bed $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-remap-dbsnp $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-remap-phase-set $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-rename-references $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-split-bed $BINARY_HOME
