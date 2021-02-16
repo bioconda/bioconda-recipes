@@ -2,8 +2,8 @@
 
 export LDFLAGS="${LDFLAGS} -L\$(LIB_DIR) -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2"
 export INCLUDES="-I . -Ihtslib -I$PREFIX/include -Itabixpp -I\$(INC_DIR) -L."
-export LIBPATH="-L. -Lhtslib -L$PREFIX/lib"
-#export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
+export LIBPATH="-L. -Lhtslib -L$PREFIX/lib -Ltabixpp"
+export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
 
 sed -i.bak 's/CFFFLAGS:= -O3/CFFFLAGS=-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x/' smithwaterman/Makefile
 sed -i.bak 's/CFLAGS/CXXFLAGS/g' smithwaterman/Makefile
@@ -36,7 +36,8 @@ fi
 pkg-config --list-all
 mkdir -p build
 cd build
-cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DTABIXPP_LOCAL:STRING=$PREFIX/lib
+#cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DTABIXPP_LOCAL:STRING=$PREFIX/lib
+cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX 
 cmake --build . 
 cmake --install .
 
