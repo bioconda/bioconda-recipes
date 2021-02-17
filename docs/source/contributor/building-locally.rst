@@ -32,6 +32,24 @@ container. It will detect which recipes where modified using the
 
 Please note that this will only run the Linux build steps.
 
+You can use Docker volume bind-mounts to capture the local package
+channel with the newly built packages::
+
+    mkdir /tmp/conda-bld
+    circleci build --volume /tmp/conda-bld:/opt/conda/conda-bld
+
+After a successful build, you can then install from the local channel by
+providing the path to it::
+
+    conda install -c file:///tmp/conda-bld your-package
+
+Note that if the package also exists with the same version or a newer
+version in remote channels, then you may need to specify the exact local
+build string in your package spec to ensure your local build is
+installed, e.g.  ``your-package ==x.y.z build_string``.  See
+`conda-build:resources/package-spec` for more details on how to specify
+packages.
+
 
 .. _bootstrap:
 
