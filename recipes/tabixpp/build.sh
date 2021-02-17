@@ -10,14 +10,11 @@ cp tabix++ $PREFIX/bin
 
 if [ "$(uname)" == "Darwin" ]; then
     cp libtabixpp.*.dylib ${PREFIX}/lib/
-    cp libtabixpp.a ${PREFIX}/lib/
     ln -s ${PREFIX}/lib/libtabixpp.*.dylib ${PREFIX}/lib/libtabixpp.dylib 
 else 
-    cp libtabixpp.so.* ${PREFIX}/lib/libtabixpp.so
-    cp libtabixpp.a ${PREFIX}/lib/
-    
-    
+    cp libtabixpp.so.* ${PREFIX}/lib/
+    ln -s ${PREFIX}/lib/libtabixpp.so.* ${PREFIX}/lib/libtabixpp.so  
 fi
 
 cp *.hpp ${PREFIX}/include
-
+cp libtabixpp.a ${PREFIX}/lib/
