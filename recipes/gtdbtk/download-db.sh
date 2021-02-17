@@ -11,8 +11,8 @@ db_url=https://data.gtdb.ecogenomic.org/releases/release95/95.0/auxillary_files/
 
 
 wget $db_url -P ${GTDBTK_DATA_PATH}
-tar xvzf ${GTDBTK_DATA_PATH}/gtdbtk_data.tar.gz -C ${GTDBTK_DATA_PATH} --strip 1
-rm ${GTDBTK_DATA_PATH}/gtdbtk_data.tar.gz
+tar xvzf ${GTDBTK_DATA_PATH}/gtdbtk_r95_data.tar.gz -C ${GTDBTK_DATA_PATH} --strip 1
+rm ${GTDBTK_DATA_PATH}/gtdbtk_r95_data.tar.gz
 
 echo "GTDB-Tk database has been successfully downloaded."
 
