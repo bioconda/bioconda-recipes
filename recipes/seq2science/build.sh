@@ -1,3 +1,5 @@
+$PYTHON -m pip install . -vv
+
 # https://docs.conda.io/projects/conda-build/en/latest/resources/activate-scripts.html
 for CHANGE in "activate" "deactivate"
 do
