@@ -1,19 +1,23 @@
 #!/bin/bash
 
+# Install python packages
+cd ${SRC_DIR}/ganon/
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+
+# Build and install cpp packages
+# Copy libs downloaded from source to their correct location
 mv ${SRC_DIR}/seqan ${SRC_DIR}/ganon/libs/
 mv ${SRC_DIR}/sdsl-lite ${SRC_DIR}/ganon/libs/
-
-mkdir ${SRC_DIR}/ganon/build
-cd ${SRC_DIR}/ganon/build
-cmake -DCMAKE_BUILD_TYPE=Release -DVERBOSE_CONFIG=ON -DGANON_OFFSET=ON -DINCLUDE_DIRS=${PREFIX}/include -DCONDA=ON ..
+mkdir build_cpp && cd build_cpp
+cmake -DCMAKE_BUILD_TYPE=Release -DVERBOSE_CONFIG=ON -DGANON_OFFSET=ON -DINCLUDE_DIRS=${PREFIX}/include -DCONDA=ON -DCMAKE_INSTALL_PREFIX=${PREFIX} ..
 make
-ctest -VV .
+make install
 
+# Tests cpp
+ctest -VV . 
+
+# Test python
 cd ${SRC_DIR}/ganon/
-python3 -m unittest discover -s tests/ganon/unit/
-python3 -m unittest discover -s tests/ganon/integration/
-
-mkdir -p ${PREFIX}/bin
-cp ${SRC_DIR}/ganon/src/ganon/ganon.py ${PREFIX}/bin/ganon
-cp ${SRC_DIR}/ganon/build/ganon-build ${SRC_DIR}/ganon/build/ganon-classify ${SRC_DIR}/ganon/scripts/ganon-get-len-taxid.sh ${PREFIX}/bin/
-
+$PYTHON -m unittest discover -s tests/ganon/unit/ -v
+$PYTHON -m unittest discover -s tests/ganon/integration/ -v
+$PYTHON -m unittest discover -s tests/ganon/integration_online/ -v

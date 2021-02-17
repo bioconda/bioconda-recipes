@@ -20,7 +20,7 @@ class DVHelp(argparse._HelpAction):
         conda_path = os.path.dirname(os.path.realpath(sys.executable))
         lib_path = os.path.join(os.path.dirname(conda_path), "lib")
         py_exe = sys.executable
-        cmd = ("export LD_LIBRARY_PATH={lib_path}:$LD_LIBRARY_PATH && "
+        cmd = ("export LD_LIBRARY_PATH={lib_path}:\"$LD_LIBRARY_PATH\" && "
                "{py_exe} {bin_dir}/make_examples.zip --help")
         print(subprocess.check_output(cmd.format(**locals()), shell=True))
         print()
@@ -46,7 +46,7 @@ def main():
     py_exe = sys.executable
     split_inputs = " ".join(str(x) for x in range(0, int(args.cores)))
     regions = ("--regions %s" % args.regions) if args.regions else ""
-    cmd = ("export PATH={conda_path}:$PATH && export LD_LIBRARY_PATH={lib_path}:$LD_LIBRARY_PATH && "
+    cmd = ("export PATH={conda_path}:\"$PATH\" && export LD_LIBRARY_PATH={lib_path}:\"$LD_LIBRARY_PATH\" && "
            "parallel --eta --halt 2 --joblog {args.logdir}/log --res {args.logdir} "
            "{py_exe} {bin_dir}/make_examples.zip "
            "--mode calling --ref {args.ref} --reads {args.reads} {regions} "

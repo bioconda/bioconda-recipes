@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="tartare_0.99.14.tar.gz"
+FN="tartare_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/tartare_0.99.14.tar.gz"
-  "https://bioarchive.galaxyproject.org/tartare_0.99.14.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tartare/bioconductor-tartare_0.99.14_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/tartare_1.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/tartare_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tartare/bioconductor-tartare_1.4.0_src_all.tar.gz"
 )
-MD5="2c90ea8fd5d1624838af1126be2dc11e"
+MD5="5a72965c07427ac22bf8eb4d200a1b6e"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

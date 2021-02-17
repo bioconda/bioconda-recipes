@@ -1,0 +1,1 @@
+plaster example/*.fasta

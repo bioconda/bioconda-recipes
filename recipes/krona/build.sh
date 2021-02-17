@@ -2,6 +2,7 @@
 mkdir -p $PREFIX/opt/krona
 mv ./* $PREFIX/opt/krona
 cd $PREFIX/opt/krona
+find . -type f -name '._*' -delete
 ./install.pl --prefix=$PREFIX
 ln -s $PREFIX/opt/krona/updateTaxonomy.sh $PREFIX/bin/ktUpdateTaxonomy.sh
 mkdir $PREFIX/bin/scripts
