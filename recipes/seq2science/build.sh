@@ -1,2 +1,6 @@
-mkdir -p "${PREFIX}/etc/conda/activate.d"
-cp "${RECIPE_DIR}/activate.sh" "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.sh"
+# https://docs.conda.io/projects/conda-build/en/latest/resources/activate-scripts.html
+for CHANGE in "activate" "deactivate"
+do
+    mkdir -p "${PREFIX}/etc/conda/${CHANGE}.d"
+    cp "${RECIPE_DIR}/${CHANGE}.sh" "${PREFIX}/etc/conda/${CHANGE}.d/${PKG_NAME}_${CHANGE}.sh"
+done
