@@ -2,4 +2,4 @@
 set -eu -o pipefail
 
 CADD=$PACKAGE_HOME \
-    $PACKAGE_HOME/CADD.sh "$@"
+    $PACKAGE_HOME/install.sh "$@"

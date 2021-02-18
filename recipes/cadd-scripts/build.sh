@@ -17,7 +17,7 @@ sed -i -e 's/^export CADD.*/export CADD=${CADD-$(dirname "$SCRIPT")}/' $PACKAGE_
 # Create wrappers
 SOURCE_FILE=$RECIPE_DIR/cadd-wrapper.sh
 DEST_FILE_CADD=$PACKAGE_HOME/cadd-wrapper.sh
-DEST_FILE_INST=$PACKAGE_HOME/cadd-wrapper.sh
+DEST_FILE_INST=$PACKAGE_HOME/cadd-wrapper-install.sh
 
 echo "#!/bin/bash" > $DEST_FILE_CADD
 echo "PKG_NAME=$PKG_NAME" >> $DEST_FILE_CADD
