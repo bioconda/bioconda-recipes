@@ -7,22 +7,28 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: a24e43d7698fe78a98c0ca4368ba66a5e377c7415b0b0b4e1b4789424d32954d
+  sha256: 037ce5cc3ffc660d59805e30e160b33f31fa305c4fd8da234cbca48b872dddd2
+
 
 build:
-  noarch: python
   number: 0
-  entry_points:
-    - ultraplex = ultraplex.__main__:main
-  script: "{{ PYTHON }} -m pip install . -vv --ignore-installed --no-deps"
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  skip: True  # [py27]
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
     - pip
     - python
+    - cython
+    - setuptools_scm
   run:
-    - cutadapt ==2.10
     - python
+    - xopen >=1.0.0
+    - dnaio >=0.5.0
+    - dataclasses >=0.7  # [py36]
+    - pigz
 
 test:
   imports:
