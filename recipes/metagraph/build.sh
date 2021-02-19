@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-git submodule sync
-git submodule update --init --recursive
-
 pushd metagraph/external-libraries/sdsl-lite
 ./install.sh $PWD
 popd
