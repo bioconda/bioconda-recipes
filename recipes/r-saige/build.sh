@@ -2,7 +2,10 @@
 
 if [[ $target_platform =~ linux.* ]] || [[ $target_platform == win-32 ]] || [[ $target_platform == win-64 ]] || [[ $target_platform == osx-64 ]]; then
   export DISABLE_AUTOBREW=1
-  rm configure
+  # rm -f configure
+  rm -f src/*.so
+  rm -f src/*.o
+
   $R CMD INSTALL --build .
   mkdir -p "${PREFIX}/lib/R/library/${PKG_NAME}/"
 

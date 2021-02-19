@@ -1,5 +1,6 @@
 {% set name = "r-saige" %}
-{% set version = "0.42.0" %}
+{% set version = "0.43.3" %}
+{% set vcommit = "8bfb93b76aa442f4ca316b3ef347d31fa7538a54" %}
 
 package:
   name: {{ name|lower }}
@@ -7,19 +8,16 @@ package:
 
 source:
   # url: https://github.com/weizhouUMICH/SAIGE/archive/{{ version }}.tar.gz
-  url: https://github.com/weizhouUMICH/SAIGE/archive/19afee629fbfe1c450e57a717fc621cce17c8199.tar.gz
-  sha256: d21907d821356c828a7fc7594ebffeb8a6e459fb603b05c40f37309205cd2fb9
+  url: https://github.com/weizhouUMICH/SAIGE/archive/{{ vcommit }}.tar.gz
+  sha256: 4031675434257fc2393a0c88999810781941e13e7a3fd547feea15aaf30c4e1f
   patches:
     # Fixing shared lib issues
     - patches/0001-use-shared-libs-in-makevars.patch
-    # - patches/0358-use-shared-libs-in-makevars-0.35.8.patch
     # - patches/0002-fix-rcpp-returns.patch
-    - patches/0003-fix-gettimeofday-import.patch
-    - patches/0004-fix-paths-of-imported-libs-should-never-use-path.patch
 
 build:
   skip: true  # [win]
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
@@ -33,6 +31,9 @@ requirements:
     - r-base {{ r_base }}
     - bgenix 1.1.4
     - boost-cpp
+    - openblas
+    - libblas
+    - liblapack
     - r-spatest 3.1.2
     - r-rcpp
     - r-rcpparmadillo
@@ -45,26 +46,21 @@ requirements:
     - r-rcppeigen
     - r-bh
     - r-optparse
-    - liblapack
-    - libopenblas  # [osx]
-    - libblas  # [linux]
     - superlu
     - savvy
     - zstd
     - zlib
   run:
     - r-base {{ r_base }}
-    - boost-cpp
     - bgenix 1.1.4
+    - boost-cpp
     - savvy
+    - r-spatest 3.1.2
     - r-rcpp
     - r-rcppparallel
     - r-matrix
     - r-data.table
     - r-optparse
-    - liblapack
-    - libopenblas  # [osx]
-    - libblas  # [linux]
     - sqlite
 
 test:
@@ -95,3 +91,6 @@ extra:
 # Versioning guide for builders
 # 0.35.8.8: tagged
 # 0.42.0: commit 19afee629fbfe1c450e57a717fc621cce17c8199
+# 0.42.1: commit 29d4426dd4ae62c50fa7ce96794ec302f9d44b1b
+# 0.43.0: commit 1f6278a39a57ee8054d084319640a121cb92d4bf
+# 0.43.3: commit 8bfb93b76aa442f4ca316b3ef347d31fa7538a54
