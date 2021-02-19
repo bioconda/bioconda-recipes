@@ -11,4 +11,5 @@ make
 
 mkdir -p ${PREFIX}/bin
 
-install -m775 bin/shapeit4 ${PREFIX}/bin/
+install -m775 bin/shapeit4* ${PREFIX}/bin/
+ln -s ${PREFIX}/bin/shapeit4* ${PREFIX}/bin/shapeit4

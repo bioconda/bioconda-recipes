@@ -1,5 +1,4 @@
 #!/bin/bash
-make
-mkdir -p $PREFIX/bin
-cp bin/strike $PREFIX/bin/strike
-chmod +x $PREFIX/bin/strike
+make CC="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+install -d "${PREFIX}/bin"
+install bin/strike "${PREFIX}/bin/"

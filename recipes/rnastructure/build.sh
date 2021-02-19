@@ -1,5 +1,5 @@
 #!/bin/sh
-make all
+make CC="${CC}" CXX="${CXX}" all
 
 mkdir -p $PREFIX/bin
 mv ./exe/* $PREFIX/bin/
