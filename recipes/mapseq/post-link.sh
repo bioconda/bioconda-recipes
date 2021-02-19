@@ -14,6 +14,10 @@ STAGING=$PREFIX/share/mapseq
 mkdir -p $STAGING
 TARBALL=$STAGING/$FN
 
+# debugging info
+ls -lahrt $STAGING
+ldd $PREFIX/bin/mapseq
+
 SUCCESS=0
 for URL in ${URLS[@]}; do
   curl -L $URL > $TARBALL
@@ -44,5 +48,8 @@ tar -xvzf $TARBALL
 mv $STAGING/mapref-2.2b/* $STAGING/
 rmdir $STAGING/mapref-2.2b
 rm $TARBALL
+
+ls -lahrt $STAGING
+
 #rmdir $STAGING
 
