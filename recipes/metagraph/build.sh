@@ -12,6 +12,7 @@ if [[ $OSTYPE == linux* ]]; then
     CMAKE_PLATFORM_FLAGS=""
     export CXXFLAGS="${CXXFLAGS} -Wno-attributes"
 elif [[ $OSTYPE == darwin* ]]; then
+    echo "on darwin"
     CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15"
     export CXXFLAGS="${CXXFLAGS} -Wno-suggest-destructor-override -Wno-deprecated-copy -Wno-error=deprecated-copy"
 fi
@@ -19,7 +20,7 @@ fi
 # needed for setting up integration test environment
 export PIP_NO_INDEX=False
 
-cmake -DBUILD_KMC=OFF \
+cmake --debug-output -DBUILD_KMC=OFF \
       -DBOOST_ROOT=${BUILD_PREFIX} \
       -DJEMALLOC_ROOT=${BUILD_PREFIX} \
       -DOMP_ROOT=${BUILD_PREFIX} \
@@ -29,6 +30,7 @@ cmake -DBUILD_KMC=OFF \
       ${CMAKE_PLATFORM_FLAGS} \
       -DCMAKE_INSTALL_PREFIX=${PREFIX} ..
 
-make -j $(($(getconf _NPROCESSORS_ONLN) - 1)) metagraph
+echo "building"
+make VERBOSE=1 -j $(($(getconf _NPROCESSORS_ONLN) - 1)) metagraph
 
 make install
