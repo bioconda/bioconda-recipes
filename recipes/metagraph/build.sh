@@ -14,7 +14,7 @@ if [[ $OSTYPE == linux* ]]; then
 elif [[ $OSTYPE == darwin* ]]; then
     echo "on darwin"
     CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15"
-    export CXXFLAGS="${CXXFLAGS} -Wno-suggest-destructor-override -Wno-deprecated-copy -Wno-error=deprecated-copy"
+    export CXXFLAGS="${CXXFLAGS} -Wno-suggest-destructor-override -Wno-deprecated-copy -Wno-error=deprecated-copy -DJEMALLOC_MANGLE"
 fi
 
 # needed for setting up integration test environment
