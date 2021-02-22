@@ -54,35 +54,35 @@ touch "${PREFIX}/bin/${gmx}"
 chmod +x "${PREFIX}/bin/${gmx}"
 ￼
 { cat <<EOF
-￼#! /bin/sh
-￼
-￼function _gromacs_bin_dir() {
-￼  local arch
-￼  arch='SSE2'
-￼  case \$( cat /proc/cpuinfo | grep -m1 '^flags' ) in
-￼    *\ avx512f\ *)
-￼      test -d "${PREFIX}/bin.AVX_512" && \
-￼        "${PREFIX}/bin.AVX_512/identifyavx512fmaunits" | grep -q '2' && \
-￼        arch='AVX_512'
-￼    ;;
-￼    *\ avx2\ *)
-￼      test -d "${PREFIX}/bin.AVX2_256" && \
-￼        arch='AVX2_256'
-￼    ;;
-￼    *\ avx\ *)
-￼      test -d "${PREFIX}/bin.AVX_256" && \
-￼        arch='AVX_256'
-￼  esac
-￼  printf '%s' "${PREFIX}/bin.\${arch}"
-￼}
-￼
-￼EOF
-￼} | tee "${PREFIX}/bin/${gmx}" > "${PREFIX}/etc/conda/activate.d/gromacs_activate.sh"
-￼
-￼cat >> "${PREFIX}/etc/conda/activate.d/gromacs_activate.sh" <<EOF
-￼. "\$( _gromacs_bin_dir )/GMXRC" "\${@}"
-￼EOF
-￼
-￼cat >> "${PREFIX}/bin/${gmx}" <<EOF
-￼exec "\$( _gromacs_bin_dir )/${gmx}" "\${@}"
-￼EOF
+#! /bin/sh
+
+function _gromacs_bin_dir() {
+  local arch
+  arch='SSE2'
+  case \$( cat /proc/cpuinfo | grep -m1 '^flags' ) in
+    *\ avx512f\ *)
+      test -d "${PREFIX}/bin.AVX_512" && \
+        "${PREFIX}/bin.AVX_512/identifyavx512fmaunits" | grep -q '2' && \
+        arch='AVX_512'
+    ;;
+    *\ avx2\ *)
+      test -d "${PREFIX}/bin.AVX2_256" && \
+        arch='AVX2_256'
+    ;;
+    *\ avx\ *)
+      test -d "${PREFIX}/bin.AVX_256" && \
+        arch='AVX_256'
+  esac
+  printf '%s' "${PREFIX}/bin.\${arch}"
+}
+
+EOF
+} | tee "${PREFIX}/bin/${gmx}" > "${PREFIX}/etc/conda/activate.d/gromacs_activate.sh"
+
+cat >> "${PREFIX}/etc/conda/activate.d/gromacs_activate.sh" <<EOF
+. "\$( _gromacs_bin_dir )/GMXRC" "\${@}"
+EOF
+
+cat >> "${PREFIX}/bin/${gmx}" <<EOF
+exec "\$( _gromacs_bin_dir )/${gmx}" "\${@}"
+EOF
