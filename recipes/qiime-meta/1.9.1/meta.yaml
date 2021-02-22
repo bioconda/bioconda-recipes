@@ -12,10 +12,37 @@ source:
 build:
   number: 4
   noarch: generic
+  version: {{ version }}
+
+requirements:
+  run:
+    - {{ pin_subpackage('qiime', exact=True) }}
+    - blast-legacy ==2.2.22
+    - cd-hit ==4.6.6
+    - clearcut ==1.0.9
+    - clustalw ==2.1
+    - fastq-join ==1.3.1
+    - infernal ==1.0.2
+    - mafft ==7.305
+    - mothur ==1.36.1
+    - muscle ==3.8.1551
+    - r-optparse
+    - r-vegan # ==2.3_4
+    - r-base >=3,<4
+    - raxml ==8.2.9
+    - sortmerna ==2.1b
+    - vsearch ==2.3.4
 test:
+  # Test copied from openms output to make sure a test environment for this output is created.
+  imports:
+    - qiime
+    - qiime.util
+    - qiime.check_id_map
+    - qiime.sort
   commands:
     - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
     - conda inspect objects -p $PREFIX $PKG_NAME  # [osx]
+    - add_alpha_to_mapping_file.py -h
 
 outputs:
   - name: qiime
@@ -216,36 +243,6 @@ outputs:
         - upgma_cluster.py -h
         - validate_demultiplexed_fasta.py -h
         - validate_mapping_file.py -h
-
-  - name: qiime-thirdparty
-    version: {{ version }}
-    requirements:
-      run:
-        - {{ pin_subpackage('qiime', exact=True) }}
-        - blast-legacy ==2.2.22
-        - cd-hit ==4.6.6
-        - clearcut ==1.0.9
-        - clustalw ==2.1
-        - fastq-join ==1.3.1
-        - infernal ==1.0.2
-        - mafft ==7.305
-        - mothur ==1.36.1
-        - muscle ==3.8.1551
-        - r-optparse
-        - r-vegan # ==2.3_4
-        - r-base >=3,<4
-        - raxml ==8.2.9
-        - sortmerna ==2.1b
-        - vsearch ==2.3.4
-    test:
-      # Test copied from openms output to make sure a test environment for this output is created.
-      imports:
-        - qiime
-        - qiime.util
-        - qiime.check_id_map
-        - qiime.sort
-      commands:
-        - add_alpha_to_mapping_file.py -h
 
 about:
   home: http://www.qiime.org
