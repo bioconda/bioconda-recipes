@@ -7,4 +7,6 @@ make
 mkdir -p $PREFIX/bin
 
 chmod u+x Cur+
-cp Cur+ $PREFIX/bin/
+chmod u+x Canal
+chmod u+x Canion
+cp Cur+ Canal Canion $PREFIX/bin/
