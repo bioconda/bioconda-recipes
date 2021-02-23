@@ -48,11 +48,11 @@ chmod a+x ${PREFIX}/bin/gmx
 # Variable declaration from MPI script fewer changes if left in.
 
 gmx='gmx'
-￼
+
 mkdir -p "${PREFIX}/etc/conda/activate.d"
 touch "${PREFIX}/bin/${gmx}"
 chmod +x "${PREFIX}/bin/${gmx}"
-￼
+
 { cat <<EOF
 #! /bin/sh
 
