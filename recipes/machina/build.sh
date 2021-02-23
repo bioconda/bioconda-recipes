@@ -8,6 +8,7 @@ GUROBI_HOME=$(realpath gurobi902)
 
 mkdir -p build && cd build
 cmake .. \
+  -DCMAKE_CXX_COMPILER=${CXX} \
   -DGUROBI_HOME=$GUROBI_HOME \
   -DLIBLEMON_ROOT=$CONDA_PREFIX/lib
 make
