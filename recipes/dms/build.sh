@@ -3,7 +3,7 @@
 mkdir -p ${PREFIX}/bin
 
 echo "~~~~~~~~~~~~~~~~~~"
-echo ${CONDA_PREFIX}
+echo `ls ${PREFIX}/include` 
 echo "~~~~~~~~~~~~~~~~~~"
 echo `ls ${CONDA_PREFIX}/lib`
 echo "~~~~~~~~~~~~~~~~~~"
