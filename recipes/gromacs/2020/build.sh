@@ -56,10 +56,15 @@ chmod +x "${PREFIX}/bin/${gmx}"
 { cat <<EOF
 #! /bin/bash
 
+case "$OSTYPE" in
+  darwin*) hardware_info_command="sysctl -a | grep -m1 '^hw.optional'"
+  *)       hardware_info_command="cat /proc/cpuinfo | grep -m1 '^flags'"
+esac
+
 function _gromacs_bin_dir() {
   local arch
   arch='SSE2'
-  case \$( cat /proc/cpuinfo | grep -m1 '^flags' ) in
+  case \$( ${hardware_info_command} ) in
     *\ avx512f\ *)
       test -d "${PREFIX}/bin.AVX_512" && \
         "${PREFIX}/bin.AVX_512/identifyavx512fmaunits" | grep -q '2' && \
