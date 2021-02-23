@@ -54,7 +54,7 @@ touch "${PREFIX}/bin/${gmx}"
 chmod +x "${PREFIX}/bin/${gmx}"
 
 { cat <<EOF
-#! /bin/sh
+#! /bin/bash
 
 function _gromacs_bin_dir() {
   local arch
