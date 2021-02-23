@@ -5,7 +5,7 @@ sed -i 's/C++/CPP/g' gurobi902/linux64/src/build/Makefile
 (cd gurobi902/linux64/src/build && make CPP=${CXX})
 (cd gurobi902/linux64/lib && ln -f -s ../src/build/libgurobi_c++.a libgurobi_c++.a)
 
-GUROBI_HOME=$(realpath gurobi902)
+GUROBI_HOME=gurobi902
 
 mkdir -p build && cd build
 cmake .. \
