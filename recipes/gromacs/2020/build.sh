@@ -54,7 +54,7 @@ touch "${PREFIX}/bin/${gmx}"
 chmod +x "${PREFIX}/bin/${gmx}"
 
 case "$OSTYPE" in
-  darwin*) hardware_info_command="sysctl -a | grep '^hw.optional'"
+  darwin*) hardware_info_command="sysctl -a | grep '^hw.optional\.(.*): 1$'"
   ;;
   *)       hardware_info_command="cat /proc/cpuinfo | grep -m1 '^flags'"
   ;;
