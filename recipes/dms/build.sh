@@ -4,7 +4,7 @@ mkdir -p ${PREFIX}/bin
 
 make
 
-cat ${PREFIX}/../run_test.sh
+head -n 10 ${PREFIX}/../run_test.sh
 
 cp bin/* ${PREFIX}/bin
 cp -r databases ${PREFIX}
