@@ -96,17 +96,18 @@ chmod +x "${PREFIX}/bin/${gmx}"
 # where only the available features are listed. Either way, we then use
 # bash extended pattern matching to find the features we need.
 case "$OSTYPE" in
-  darwin*) hardware_info_command="sysctl -a | grep '^hw.optional\..*: 1$'";;
-  *)       hardware_info_command="cat /proc/cpuinfo | grep -m1 '^flags'";;
+    darwin*) hardware_info_command="sysctl -a | grep '^hw.optional\..*: 1$'"
+             ;;
+    *)       hardware_info_command="cat /proc/cpuinfo | grep -m1 '^flags'"
+             ;;
 esac
 
+# Search first for AVX512, then AVX2, then AVX. Fall back on SSE2
 { cat <<EOF
 #! /bin/bash
 
-# Search first for AVX512, then AVX2, then AVX. Fall back on SSE2
 function _gromacs_bin_dir() {
   local arch
-  # Make a valid fallback choice that will always work (on x86 at least)
   arch='SSE2'
   case \$( ${hardware_info_command} ) in
     *avx512f*)
