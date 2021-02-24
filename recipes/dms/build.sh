@@ -8,4 +8,3 @@ cp bin/* ${PREFIX}/bin
 cp -r databases ${PREFIX}
 cp -r example ${PREFIX}
 
-
