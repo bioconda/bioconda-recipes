@@ -96,8 +96,8 @@ chmod +x "${PREFIX}/bin/${gmx}"
 # where only the available features are listed. Either way, we then use
 # bash extended pattern matching to find the features we need.
 case "$OSTYPE" in
-  darwin*) hardware_info_command="sysctl -a | grep '^hw.optional\..*: 1$'" ;;
-  *)       hardware_info_command="cat /proc/cpuinfo | grep -m1 '^flags'" ;;
+  darwin*) hardware_info_command="sysctl -a | grep '^hw.optional\..*: 1$'";;
+  *)       hardware_info_command="cat /proc/cpuinfo | grep -m1 '^flags'";;
 esac
 
 { cat <<EOF
