@@ -103,23 +103,21 @@ esac
 { cat <<EOF
 #! /bin/bash
 
+# Search first for AVX512, then AVX2, then AVX. Fall back on SSE2
 function _gromacs_bin_dir() {
   local arch
   # Make a valid fallback choice that will always work (on x86 at least)
   arch='SSE2'
   case \$( ${hardware_info_command} ) in
-    # First, is there AVX512?
     *avx512f*)
       test -d "${PREFIX}/bin.AVX_512" && \
         "${PREFIX}/bin.AVX_512/identifyavx512fmaunits" | grep -q '2' && \
         arch='AVX_512'
     ;;
-    # Next, is there AVX2?
     *avx2?(_0)*)
       test -d "${PREFIX}/bin.AVX2_256" && \
         arch='AVX2_256'
     ;;
-    # Finally, is there AVX?
     *avx?(1_0)*)
       test -d "${PREFIX}/bin.AVX_256" && \
         arch='AVX_256'
