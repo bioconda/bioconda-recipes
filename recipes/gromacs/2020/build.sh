@@ -53,13 +53,15 @@ mkdir -p "${PREFIX}/etc/conda/activate.d"
 touch "${PREFIX}/bin/${gmx}"
 chmod +x "${PREFIX}/bin/${gmx}"
 
-{ cat <<EOF
-#! /bin/bash
-
 case "$OSTYPE" in
   darwin*) hardware_info_command="sysctl -a | grep -m1 '^hw.optional'"
+  ;;
   *)       hardware_info_command="cat /proc/cpuinfo | grep -m1 '^flags'"
+  ;;
 esac
+
+{ cat <<EOF
+#! /bin/bash
 
 function _gromacs_bin_dir() {
   local arch
