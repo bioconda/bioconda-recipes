@@ -10,7 +10,7 @@ echo "~~~~~~~~~~~~~~~~~~"
 echo `ls ${BUILD_PREFIX}/include`
 echo "~~~~~~~~~~~~~~~~~~"
 
-make INCFLG=${BUILD_PREFIX}/include
+make
 
 cp bin/* ${PREFIX}/bin
 cp -r databases ${PREFIX}
