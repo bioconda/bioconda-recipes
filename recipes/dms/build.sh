@@ -8,7 +8,7 @@ echo "~~~~~~~~~~~~~~~~~~"
 echo `ls ${CONDA_PREFIX}/lib`
 echo "~~~~~~~~~~~~~~~~~~"
 
-make
+make INCFLG=${PREFIX}/include
 
 cp bin/* ${PREFIX}/bin
 cp -r databases ${PREFIX}
