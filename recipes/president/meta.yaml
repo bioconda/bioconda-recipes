@@ -1,4 +1,4 @@
-{% set version = "0.2.1" %}
+{% set version = "0.5.1" %}
 {% set name = "president" %}
 
 package:
@@ -6,13 +6,15 @@ package:
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
   noarch: python
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  script:
+    - sed -i 's/version=__version__/version="v{{ version }}"/g' president/__main__.py
+    - {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 source:
   url: https://gitlab.com/RKIBioinformaticsPipelines/{{ name }}/-/archive/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
-  sha256: 26401ac4d15ea05b8ed21805e50d0c34ca7bf9436940ed1de682d275bc7f90ea
+  sha256: 9f332c95e04dc61ba8e8a147647fab251f0ce95186954161f47fdc7ab6aec01b
 
 requirements:
   host:
@@ -30,6 +32,7 @@ test:
     - president
   commands:
     - president -h | grep {{ name }}
+    - president -v | grep {{ version }}
 
 about:
   home: https://gitlab.com/RKIBioinformaticsPipelines/president
