@@ -2,6 +2,12 @@
 
 mkdir -p ${PREFIX}/bin
 
+echo "~~~~~~~~~"
+echo `ls ${PREFIX}`
+echo "~~~~~~~~~"
+echo `ls ${PREFIX}/*`
+echo "~~~~~~~~~"
+
 make
 
 cp bin/* ${PREFIX}/bin
