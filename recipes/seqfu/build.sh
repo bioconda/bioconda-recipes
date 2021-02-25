@@ -18,4 +18,4 @@ echo " * Legacy procedure"
 nimble install -y --verbose argparse docopt terminaltables readfq iterutils
 
 mkdir -p "${PREFIX}/bin"
-mv seqfu fu-* "${PREFIX}/bin/"
+mv bin/* "${PREFIX}/bin/"
