@@ -1,0 +1,44 @@
+{% set version = "0.3.2" %}
+{% set sha256 = "214010162ffc8570fd4b73bf0d1a3e4536d72b999d415c805edd3b123863f2ec" %}
+
+package:
+  name: balrog
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True  # [py!=37]
+  rpaths:
+    - lib/python3.7/site-packages/torch/lib/
+
+source:
+  url: https://github.com/Markusjsommer/BalrogCPP/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
+    - zlib
+    - pytorch ==1.7.1
+    - python
+    - mmseqs2
+  run:
+    - zlib
+    - pytorch ==1.7.1
+    - python
+    - mmseqs2
+
+test:
+  commands:
+    - balrog --help
+
+about:
+  home: https://github.com/Markusjsommer/BalrogCPP
+  license: MIT
+  license_file: LICENSE
+  summary: "Balrog: A universal protein model for prokaryotic gene prediction"
