@@ -4,5 +4,5 @@
 ./configure
 make
 make install
-mkdir "${PREFIX}/bin"
+mkdir -p "${PREFIX}/bin"
 cp komb "${PREFIX}/bin"
