@@ -41,6 +41,8 @@ ${CXX} -O3 -mavx512f -std=c++11 \
 -o ${PREFIX}/bin.AVX_512/identifyavx512fmaunits \
 ${SRC_DIR}/src/gromacs/hardware/identifyavx512fmaunits.cpp
 
+cp -a ${RECIPE_DIR}/gmx-chooser.bash ${PREFIX}/bin/gmx
+chmod a+x ${PREFIX}/bin/gmx
 
 # Create wrapper and activation scripts
 # Variable declaration from MPI script fewer changes if left in.
@@ -52,12 +54,12 @@ touch "${PREFIX}/bin/${gmx}"
 chmod +x "${PREFIX}/bin/${gmx}"
 
 { cat <<EOF
-#! /bin/sh
+#! /bin/bash
 
 function _gromacs_bin_dir() {
   local arch
   arch='SSE2'
-  case \$( grep -m1 '^flags' ) in
+  case \$( cat /proc/cpuinfo | grep -m1 '^flags' ) in
     *\ avx512f\ *)
       test -d "${PREFIX}/bin.AVX_512" && \
         "${PREFIX}/bin.AVX_512/identifyavx512fmaunits" | grep -q '2' && \
