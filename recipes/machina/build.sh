@@ -12,7 +12,7 @@ GUROBI_HOME=$(cd gurobi902 && pwd)
 mkdir -p build && cd build
 cmake .. \
   -DGUROBI_HOME=$GUROBI_HOME \
-  -DLIBLEMON_ROOT=$CONDA_PREFIX/lib
+  -DLIBLEMON_ROOT=$PREFIX
 make
 
 cp cluster $PREFIX/bin

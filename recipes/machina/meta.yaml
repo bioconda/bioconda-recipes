@@ -14,7 +14,7 @@ source:
     folder: gurobi902
 
 build:
-  number: 0
+  number: 1
   skip: True  # [osx]
 
 requirements:
@@ -22,22 +22,27 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake>=3.9
   host:
+    - python >=3.8
     - boost-cpp
     - lemon
     - zlib
+  run:
+    - boost-cpp
+    - glpk
 
 test:
   commands:
-    - test -f $PREFIX/bin/cluster
-    - test -f $PREFIX/bin/generatemigrationtrees
-    - test -f $PREFIX/bin/generatemutationtrees
-    - test -f $PREFIX/bin/pmh_sankoff
-    - test -f $PREFIX/bin/pmh
-    - test -f $PREFIX/bin/pmh_tr
-    - test -f $PREFIX/bin/pmh_ti
-    - test -f $PREFIX/bin/ms
-    - test -f $PREFIX/bin/visualizeclonetree
-    - test -f $PREFIX/bin/visualizemigrationgraph
+    # All Machina commands support a --help option and return 1
+    - $PREFIX/bin/cluster --help > /dev/null 2>&1 || [[ "$?" == 1 ]]
+    - $PREFIX/bin/generatemigrationtrees --help > /dev/null 2>&1 || [[ "$?" == 1 ]]
+    - $PREFIX/bin/generatemutationtrees --help > /dev/null 2>&1 || [[ "$?" == 1 ]]
+    - $PREFIX/bin/pmh --help > /dev/null 2>&1 || [[ "$?" == 1 ]]
+    - $PREFIX/bin/pmh_tr --help > /dev/null 2>&1 || [[ "$?" == 1 ]]
+    - $PREFIX/bin/pmh_ti --help > /dev/null 2>&1 || [[ "$?" == 1 ]]
+    - $PREFIX/bin/pmh_sankoff --help > /dev/null 2>&1 || [[ "$?" == 1 ]]
+    - $PREFIX/bin/ms --help > /dev/null 2>&1 || [[ "$?" == 1 ]]
+    - $PREFIX/bin/visualizeclonetree --help > /dev/null 2>&1 || [[ "$?" == 1 ]]
+    - $PREFIX/bin/visualizemigrationgraph --help > /dev/null 2>&1 || [[ "$?" == 1 ]]
 
 about:
   home: https://github.com/raphael-group/machina
