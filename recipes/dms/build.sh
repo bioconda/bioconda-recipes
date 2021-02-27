@@ -5,7 +5,7 @@ mkdir -p ${PREFIX}/bin
 echo "~~~~~~~~~"
 echo `ls ${PREFIX}`
 echo "~~~~~~~~~"
-echo `ls ${PREFIX}/*`
+echo `ls -lh ${PREFIX}/*`
 echo "~~~~~~~~~"
 
 make
