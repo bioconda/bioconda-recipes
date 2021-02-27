@@ -15,6 +15,10 @@ cmake .. \
   -DLIBLEMON_ROOT=$PREFIX
 make
 
+mkdir -p $PREFIX/lib
+cp $GUROBI_HOME/linux64/lib/libgurobi90.so $PREFIX/lib
+
+mkdir -p $PREFIX/bin
 cp cluster $PREFIX/bin
 cp generatemigrationtrees $PREFIX/bin
 cp generatemutationtrees $PREFIX/bin
