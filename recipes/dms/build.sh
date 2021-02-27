@@ -1,5 +1,9 @@
 #!/bin/bash
 
+ifneq (,$(findstring Darwin,$(shell uname)))
+	chmod 777 $PREFIX/include/c++
+endif 
+
 mkdir -p ${PREFIX}/bin
 
 echo "~~~~~~~~~"
