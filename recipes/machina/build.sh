@@ -12,9 +12,13 @@ GUROBI_HOME=$(cd gurobi902 && pwd)
 mkdir -p build && cd build
 cmake .. \
   -DGUROBI_HOME=$GUROBI_HOME \
-  -DLIBLEMON_ROOT=$CONDA_PREFIX/lib
+  -DLIBLEMON_ROOT=$PREFIX
 make
 
+mkdir -p $PREFIX/lib
+cp $GUROBI_HOME/linux64/lib/libgurobi90.so $PREFIX/lib
+
+mkdir -p $PREFIX/bin
 cp cluster $PREFIX/bin
 cp generatemigrationtrees $PREFIX/bin
 cp generatemutationtrees $PREFIX/bin
