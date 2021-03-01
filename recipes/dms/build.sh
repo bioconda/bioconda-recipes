@@ -12,7 +12,7 @@ echo "~~~~~~~~~"
 echo `ls ${PREFIX}/*`
 echo "~~~~~~~~~"
 
-make --enable-shared --enable-static
+make
 
 cp -r bin/* ${PREFIX}/bin
 cp -r databases ${PREFIX}
