@@ -1,15 +1,15 @@
 #!/bin/bash
 
-ifneq (,$(findstring Darwin,$(shell uname)))
-	chmod 777 $PREFIX/include/c++
-endif 
+if [ x"$(uname)" == x"Darwin" ]; then
+        chmod 777 $PREFIX/include/c++
+fi
 
 mkdir -p ${PREFIX}/bin
 
 echo "~~~~~~~~~"
 echo `ls ${PREFIX}`
 echo "~~~~~~~~~"
-echo `ls -lh ${PREFIX}/*/*`
+echo `ls ${PREFIX}/*`
 echo "~~~~~~~~~"
 
 make
