@@ -1,0 +1,43 @@
+{% set version = "0.5.2" %}
+{% set name = "president" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+
+source:
+  url: https://gitlab.com/RKIBioinformaticsPipelines/{{ name }}/-/archive/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
+  sha256: cab7a8dc5ffbe6ed0001a4b91810e30eb4ad85e871cf0b98487624e74e83f777
+
+requirements:
+  host:
+    - python >=3.8
+    - pip >=20.3.3
+  run:
+    - python >=3.8
+    - pandas >=1.2.1
+    - screed >=1.0.4
+    - numpy >=1.19.5
+    - pblat >=2.5
+
+test:
+  imports:
+    - president
+  commands:
+    - president -h | grep {{ name }}
+    - president -v | grep {{ version }}
+
+about:
+  home: https://gitlab.com/RKIBioinformaticsPipelines/president
+  license: MIT
+  license_file: LICENSE
+  summary: 'Calculate pairwise nucleotide identity with respect to a reference sequence.'
+
+extra:
+  identifiers:
+    - biotools:president
