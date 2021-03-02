@@ -9,8 +9,8 @@ ninja -v
 ninja -v install
 
 #Copy scripts over
-#cp -n ../scripts/*.py $PREFIX/bin
-#cp -n ../scripts/*.sh $PREFIX/bin
+cp -n ../scripts/*.py $PREFIX/bin
+cp -n ../scripts/*.sh $PREFIX/bin
 #cp -n ../scripts/*.pl $PREFIX/bin 
 #cp -n ../scripts/*.R $PREFIX/bin
 cp -n ../scripts/bgziptabix ../scripts/freebayes-parallel $PREFIX/bin
