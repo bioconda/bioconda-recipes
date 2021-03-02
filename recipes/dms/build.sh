@@ -6,7 +6,7 @@
 
 mkdir -p ${PREFIX}/bin
 
-make
+make CXX="${CXX} ${CPPFLAGS} ${CXXFLAGS} -fopenmp -DOMP ${LDFLAGS}"
 
 cp -r databases ${PREFIX}
 cp -r example ${PREFIX}
