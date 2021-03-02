@@ -1,0 +1,56 @@
+{% set version = "3.0.3" %}
+
+package:
+  name: nextstrain-cli
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/n/nextstrain-cli/nextstrain-cli-{{ version }}.tar.gz
+  sha256: 335a946f4e03f580036721a8212ef54af1776403c67da6628d5c5879b772e967
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - nextstrain = nextstrain.cli.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+
+  run:
+    - python >=3.6
+    - boto3
+    - fsspec
+    - netifaces >=0.10.6
+    - requests
+    - s3fs
+    - setuptools >=8.0.3
+
+test:
+  requires:
+    - augur
+    - git
+    - pytest
+  imports:
+    - nextstrain.cli
+
+about:
+  home: https://docs.nextstrain.org/projects/cli/
+  dev_url: https://github.com/nextstrain/cli
+  doc_url: https://docs.nextstrain.org/projects/cli/
+  license: MIT
+  summary: The Nextstrain command-line interface (CLI)
+  description: >
+    The Nextstrain command-line interface (CLI)—a program called
+    nextstrain—aims to provide a consistent way to run and visualize pathogen
+    builds and access Nextstrain components like Augur and Auspice across
+    computing environments such as Docker, Conda, and AWS Batch.
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - tsibley

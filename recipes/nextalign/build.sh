@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-chmod +x "${SRC_DIR}/nextalign-Linux-x86_64"
+chmod +x "${SRC_DIR}"/nextalign*
 mkdir -p "${PREFIX}/bin"
-mv "${SRC_DIR}/nextalign-Linux-x86_64" "${PREFIX}/bin/nextalign"
+mv "${SRC_DIR}"/nextalign* "${PREFIX}"/bin/nextalign
