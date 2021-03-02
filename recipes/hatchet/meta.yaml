@@ -1,0 +1,52 @@
+{% set name = "hatchet" %}
+{% set version = "0.2.9" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  - url: https://github.com/raphael-group/{{ name }}/archive/v{{ version }}.zip
+    sha256: 67531ff13fb20d1ad63c621ff8f0632a050a3fdc592c5ec494aea1daf795b1aa
+
+  - url: https://packages.gurobi.com/9.0/gurobi9.0.2_linux64.tar.gz
+    sha256: 6527581aef11c3e425c52993d108861ef53ec13971d9931861bf9c88d9d111f3
+    folder: gurobi902
+
+build:
+  number: 1
+  skip: True  # [osx or py < 37]
+
+requirements:
+  build:  
+    - {{ compiler('cxx') }}
+    - cmake>=3.9
+  host:
+    - python
+  run:
+    - python
+    - bcftools
+    - biopython
+    - matplotlib-base
+    - pandas
+    - psutil
+    - pysam
+    - requests
+    - samtools
+    - seaborn 
+    - scikit-learn
+    - scipy 
+
+test:
+  imports:
+    - hatchet 
+
+about:
+  home: https://github.com/raphael-group/hatchet
+  license: BSD-3
+  summary: "Holistic Allele-specific Tumor Copy-number Heterogeneity"
+  description: |
+    HATCHet is an algorithm to infer allele and clone-specific copy-number
+    aberrations (CNAs), clone proportions, and whole-genome duplications
+    (WGD) for several tumor clones jointly from multiple bulk-tumor samples
+    of the same patient or from a single bulk-tumor sample.

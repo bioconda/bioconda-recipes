@@ -1,0 +1,54 @@
+{% set name = "genewalk" %}
+{% set version = "1.5.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "f82202c460dd37f8752d73f9bbff4d7a8689ba8ae5685302d58d4951ca9345e3"
+
+build:
+  number: 0
+  noarch: python
+  entry_points: 
+    - genewalk = genewalk.cli:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - gensim
+    - goatools
+    - networkx >=2.1
+    - numpy
+    - pandas
+    - python
+    - scipy >=1.3.0
+    - matplotlib-base
+    - seaborn
+    - plotly>=4.0.0
+
+test:
+  imports:
+    - genewalk
+    - genewalk.tests
+  commands:
+    - genewalk --help
+  requires:
+    - nose
+
+about:
+  home: "https://github.com/churchmanlab/genewalk"
+  license: "BSD"
+  license_family: "BSD"
+  summary: "Determine gene function based on network embeddings."
+  doc_url: "https://genewalk.readthedocs.io/en/latest/"
+  dev_url: "https://github.com/churchmanlab/genewalk"
+
+extra:
+  recipe-maintainers:
+    - bgyori
