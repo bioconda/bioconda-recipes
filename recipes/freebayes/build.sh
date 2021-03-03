@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sed "s/dependency('libvcflib'/cc.find_library('vcflib'/g" meson.build
+sed -i "s/dependency('libvcflib'/cc.find_library('vcflib'/g" meson.build
 
 mkdir build
 meson build/ --buildtype debug --prefix "${PREFIX}"
