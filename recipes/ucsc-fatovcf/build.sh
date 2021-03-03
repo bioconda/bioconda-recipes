@@ -13,6 +13,6 @@ mkdir -p "$BINDIR"
 (cd kent/src/htslib && make)
 (cd kent/src/jkOwnLib && make)
 (cd kent/src/hg/lib && make)
-(cd kent/src/utils/faToVcf && make)
+(cd kent/src/hg/utils/faToVcf && make)
 cp bin/faToVcf "$PREFIX/bin"
 chmod +x "$PREFIX/bin/faToVcf"
