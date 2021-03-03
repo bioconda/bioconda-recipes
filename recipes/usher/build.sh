@@ -13,8 +13,3 @@ cp ./usher ${PREFIX}/bin/
 cp ./tbb_cmake_build/tbb_cmake_build_subdir_release/* ${PREFIX}/lib/
 
 popd
-
-#pushd ${PREFIX}/bin
-#wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/faToVcf
-#chmod +x faToVcf
-#popd
