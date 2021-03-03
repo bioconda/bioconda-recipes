@@ -1,4 +1,9 @@
 #!/bin/bash
+
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export CPATH=${PREFIX}/include
+
 mkdir -p "$PREFIX/bin"
 export MACHTYPE=x86_64
 export BINDIR=$(pwd)/bin
