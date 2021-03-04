@@ -3,6 +3,7 @@
 export C_INCLUDE_PATH=${PREFIX}/include
 export LD_LIBRARY_PATH=${PREFIX}/lib
 sed -i 's=/usr/local/BerkeleyDB/include='"${C_INCLUDE_PATH}"'=' config.in
+sed -i 's=/usr/local/BerkeleyDB/lib='"${LD_LIBRARY_PATH}"'=' config.in
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
