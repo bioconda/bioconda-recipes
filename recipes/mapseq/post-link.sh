@@ -50,6 +50,9 @@ rmdir $STAGING/mapref-2.2b
 rm $TARBALL
 
 # testing to ensure dataset is correctly installed and found by mapseq
+head -n 2 $STAGING/mapref-2.2b.fna >> $PREFIX/.messages.txt
+strings `which mapseq` | grep mapref >> $PREFIX/.messages.txt
+
 head -n 2 $STAGING/mapref-2.2b.fna | mapseq - > $STAGING/test.fna.mseq 2>> $PREFIX/.messages.txt || ( echo "ERROR running mapseq"; exit -1 )
 cat $STAGING/test.fna.mseq >> $PREFIX/.messages.txt
 rm $STAGING/test.fna.mseq
