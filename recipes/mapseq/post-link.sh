@@ -44,7 +44,7 @@ if [[ $SUCCESS != 1 ]]; then
   exit 1
 fi
 
-tar -xvzf $TARBALL >> $PREFIX/.messages.txt
+tar -C $STAGING -xvzf $TARBALL >> $PREFIX/.messages.txt
 echo "Staging directory: $STAGING" >> $PREFIX/.messages.txt
 ls -lahrt $STAGING >> $PREFIX/.messages.txt
 ls -lahrt $STAGING/mapref-2.2b >> $PREFIX/.messages.txt
