@@ -44,27 +44,30 @@ if [[ $SUCCESS != 1 ]]; then
   exit 1
 fi
 
-tar -C $STAGING -xvzf $TARBALL >> $PREFIX/.messages.txt
-echo "Staging directory: $STAGING" >> $PREFIX/.messages.txt
-ls -lahrt $STAGING >> $PREFIX/.messages.txt
-ls -lahrt $STAGING/mapref-2.2b >> $PREFIX/.messages.txt
+tar -C $STAGING -xvzf $TARBALL # >> $PREFIX/.messages.txt
+#echo "Staging directory: $STAGING" >> $PREFIX/.messages.txt
+#ls -lahrt $STAGING >> $PREFIX/.messages.txt
+#ls -lahrt $STAGING/mapref-2.2b >> $PREFIX/.messages.txt
 mv $STAGING/mapref-2.2b/* $STAGING/
 rmdir $STAGING/mapref-2.2b
 rm $TARBALL
 
-# testing to ensure dataset is correctly installed and found by mapseq
-echo "Staging directory2: $STAGING" >> $PREFIX/.messages.txt
-ls -lahrt $STAGING >> $PREFIX/.messages.txt
+
+#echo "Staging directory2: $STAGING" >> $PREFIX/.messages.txt
+#ls -lahrt $STAGING >> $PREFIX/.messages.txt
 echo "mapref:" >> $PREFIX/.messages.txt
 head -n 2 $STAGING/mapref-2.2b.fna >> $PREFIX/.messages.txt
-echo `which mapseq` >> $PREFIX/.messages.txt
-strings `which mapseq` | grep 'share/' >> $PREFIX/.messages.txt
-ls -lahrt $STAGING/mapref-2.2b.fna >> $PREFIX/.messages.txt
+#echo `which mapseq` >> $PREFIX/.messages.txt
+#strings `which mapseq` | grep 'share/' >> $PREFIX/.messages.txt
+#ls -lahrt $STAGING/mapref-2.2b.fna >> $PREFIX/.messages.txt
 
-head -n 2 $STAGING/mapref-2.2b.fna | mapseq - > $STAGING/test.fna.mseq 2>> $PREFIX/.messages.txt || ( echo "ERROR running mapseq"; exit -1 )
+
+
+# testing to ensure dataset is correctly installed and found by mapseq
+#head -n 2 $STAGING/mapref-2.2b.fna | mapseq - > $STAGING/test.fna.mseq 2>> $PREFIX/.messages.txt || ( echo "ERROR running mapseq"; exit -1 )
+head -n 2 $STAGING/mapref-2.2b.fna | mapseq - > $STAGING/test.fna.mseq || ( echo "ERROR running mapseq"; exit -1 )
+test "$(wc -l < test.fna.mseq)" -eq 3 || ( rm $STAGING/test.fna.mseq; echo "ERROR running mapseq: unexpected output"; exit -1 )
 echo "Results: $STAGING" >> $PREFIX/.messages.txt
 cat $STAGING/test.fna.mseq >> $PREFIX/.messages.txt
 rm $STAGING/test.fna.mseq
-
-#ls -lahrt $STAGING
 
