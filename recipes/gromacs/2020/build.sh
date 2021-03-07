@@ -115,11 +115,11 @@ function _gromacs_bin_dir() {
         "${PREFIX}/bin.AVX_512/identifyavx512fmaunits" | grep -q '2' && \
         arch='AVX_512'
     ;;
-    *\ avx2\ * | *avx_2*)
+    *\ avx2\ * | *avx2_0*)
       test -d "${PREFIX}/bin.AVX2_256" && \
         arch='AVX2_256'
     ;;
-    *\ avx\ * | *avx_1*)
+    *\ avx\ * | *avx1_0*)
       test -d "${PREFIX}/bin.AVX_256" && \
         arch='AVX_256'
   esac
