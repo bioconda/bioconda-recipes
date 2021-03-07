@@ -16,6 +16,9 @@ make \
     F77="${FC}" \
     CPP="${CXX}"
 
+# Change folder
+cd ..
+
 # Copy executable to environment bin dir included in the path
 mkdir -p $PREFIX/bin
 
