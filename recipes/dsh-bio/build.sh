@@ -42,7 +42,9 @@ ln -s $PACKAGE_HOME/bin/dsh-interleave-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-intersect-bed $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-remap-dbsnp $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-remap-phase-set $BINARY_HOME
-ln -s $PACKAGE_HOME/bin/dsh-rename-references $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-rename-bed-references $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-rename-gff3-references $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-rename-vcf-references $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-split-bed $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-split-fasta $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-split-fastq $BINARY_HOME
