@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd bwa-mem2-2.2
+cd bwa-mem2-*
 
 LIBS="${LDFLAGS}" make CC="${CC}" CXX="${CXX}" multi
 
