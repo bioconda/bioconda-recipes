@@ -6,16 +6,29 @@ Description: Build shared lib with bioconda's htslib and tabixpp
 Author: Andreas Tille <tille@debian.org> modified for bioconda by Jon Puritz jpuritz@gmail.com
 --- vcflib/CMakeLists.txt
 +++ vcflib/CMakeLists.txt
-@@ -72,7 +72,7 @@
-   intervaltree/*.h*
+@@ -74,7 +74,7 @@
+   fastahack/*.h*
    filevercmp/*.h*)
- 
+
 -add_library(vcflib STATIC
 +add_library(vcflib SHARED
      src/Variant.h
      src/split.h
      src/pdflib.hpp
-@@ -186,6 +186,10 @@
+@@ -100,6 +100,12 @@
+     filevercmp/filevercmp.c
+     )
+
++target_link_libraries(vcflib
++    tabixpp
++    )
++
++
++
+ set(BINS
+     vcfecho
+     dumpContigsFromHeader
+@@ -191,6 +197,10 @@
  file (STRINGS "VERSION" BUILD_NUMBER)
  add_definitions(-DVCFLIB_VERSION="${BUILD_NUMBER}")
  add_definitions(-DVERSION="${BUILD_NUMBER}")
@@ -23,6 +36,6 @@ Author: Andreas Tille <tille@debian.org> modified for bioconda by Jon Puritz jpu
 +set_target_properties(vcflib PROPERTIES
 +	SOVERSION ${MAJOR_BUILD_NUMBER}
 +    )
- 
+
  # ---- Build htslib
  #
