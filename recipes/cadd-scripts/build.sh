@@ -13,6 +13,8 @@ cp -r . $PACKAGE_HOME/.
 
 # Patch CADD.sh
 sed -i -e 's/^export CADD.*/export CADD=${CADD-$(dirname "$SCRIPT")}/' $PACKAGE_HOME/CADD.sh
+# Copy patched install.sh
+cp install.sh $PACKAGE_HOME
 
 # Create wrappers
 SOURCE_FILE=$RECIPE_DIR/cadd-wrapper.sh
