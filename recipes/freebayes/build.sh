@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export C_INCLUDE_PATH=$PREFIX/include
-export CPLUS_INCLUDE_PATH=$PREFIX/include
+#export C_INCLUDE_PATH=$PREFIX/include
+#export CPLUS_INCLUDE_PATH=$PREFIX/include
 
 
 mkdir build
