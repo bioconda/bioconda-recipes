@@ -19,7 +19,7 @@ for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do
     -DGMX_SIMD="${ARCH}"
     -DCMAKE_INSTALL_BINDIR="bin.${ARCH}"
     -DCMAKE_INSTALL_LIBDIR="lib.${ARCH}"
-    -DGMX_MPI=OFF
+    -DGMX_MPI=ON
   )
   cmake .. "${cmake_args[@]}"
   make -j "${CPU_COUNT}"
@@ -47,7 +47,7 @@ chmod a+x ${PREFIX}/bin/gmx
 # Create wrapper and activation scripts
 # Variable declaration from MPI script fewer changes if left in.
 
-gmx='gmx'
+gmx='gmx_mpi'
 
 mkdir -p "${PREFIX}/etc/conda/activate.d"
 touch "${PREFIX}/bin/${gmx}"
