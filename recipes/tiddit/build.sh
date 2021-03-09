@@ -10,7 +10,7 @@ cd build
 cmake ..
 make
 cp ../bin/TIDDIT $PREFIX/bin
-cp -r ../lib/bamtools $PREFIX/lib  # Yes, this vendors bamtools :(
+cp lib/bamtools/src/api/libbamtools.* $PREFIX/lib  # Yes, this vendors bamtools :(
 cd ../src
 python -m pip install . --ignore-installed --no-deps -vv
 cd ../build
