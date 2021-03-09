@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+
 mkdir -p $PREFIX/bin
 rm -rf build
 mkdir build
