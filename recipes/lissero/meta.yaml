@@ -1,0 +1,52 @@
+{% set name = "lissero" %}
+{% set version = "0.4.3" %}
+
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/lissero-{{ version }}.tar.gz
+  sha256: 602a3c69ff378f508c62bc0784e846fc052c19c824b51192568d3a56533c77a1
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - lissero = lissero.run_lissero:run_lissero
+  script: {{ PYTHON }} -m pip install . -vv
+
+requirements:
+  host:
+    - pip
+    - python >=3.6,<4.0
+  run:
+    - biopython ==1.77
+    - click ==7.1.2
+    - loguru ==0.5.1
+    - numpy ==1.19.0
+    - python >=3.6,<4.0
+    - blast == 2.10.0
+
+test:
+  imports:
+    - lissero
+    - lissero.scripts
+  commands:
+    - pip check
+    - lissero --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/MDU-PHL/lissero
+  summary: In silico serotyping of Listeria monocytogenes
+  dev_url: https://github.com/MDU-PHL/lissero/
+  license: GPL-3.0
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - abcdtree
+
