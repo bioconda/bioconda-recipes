@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export CPATH=${PREFIX}/include
-
 mkdir -p $PREFIX/bin
 rm -rf build
 mkdir build
