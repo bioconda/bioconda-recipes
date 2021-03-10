@@ -6,5 +6,5 @@ mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 conda activate
-make
+make CC=$CC
 cp ./bin/ra $PREFIX/bin/ra
