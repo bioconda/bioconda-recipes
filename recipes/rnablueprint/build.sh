@@ -13,6 +13,6 @@ autoreconf -fi
   --disable-perl \
   LIBS="${libs}"
 
-make -j
+make -j V=1
 make check
 make install
