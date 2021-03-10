@@ -12,7 +12,7 @@ cp ${RECIPE_DIR}/download-db.sh ${PREFIX}/bin
 chmod +x ${PREFIX}/bin/download-db.sh
 
 # create folder for database download
-export VIBRANT_DATA_PATH=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}
+VIBRANT_DATA_PATH=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}/db/
 mkdir -p ${VIBRANT_DATA_PATH}
 cp -r databases ${VIBRANT_DATA_PATH}
 cp -r files ${VIBRANT_DATA_PATH}

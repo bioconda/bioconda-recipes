@@ -1,0 +1,94 @@
+{% set name = "cellrank" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 34cc100be6e661e6148236d09853083aae40c4bf05d1f824f5fec488947bfb6f
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+    - setuptools_scm
+    - future_fstrings
+  run:
+    - anndata >=0.7.2
+    - docrep >=0.3.0
+    - future_fstrings
+    - ipywidgets >=7.5.1
+    - joblib >=0.13.1
+    - matplotlib-base >=3.3.0
+    - networkx >=2.2
+    - numba >=0.51.0
+    - numpy >=1.19.1
+    - pandas >=1.0.0
+    - pygam >=0.8.0
+    - pygpcca >=1.0.0
+    - python >=3.6
+    - scanpy >=1.6.0
+    - scikit-learn >=0.21.3
+    - scipy >=1.2.0
+    - scvelo >=0.2.2
+    - seaborn >=0.10.0
+    - setuptools >=41.0.1
+    - tzlocal >=1.5.1
+    - wrapt >=1.12.1
+
+outputs:
+  - name: "{{ name }}"
+  - name: "{{ name }}-krylov"
+    build:
+      noarch: python
+      number: 0
+    requirements:
+      host:
+        - pip
+        - python >=3.6
+        - setuptools_scm
+        - future_fstrings
+      run:
+        - python >=3.6
+        - openmpi >=3.0.3
+        - mpi4py >=3.0.3
+        - petsc >=3.13.0
+        - petsc4py >=3.13.0
+        - slepc >=3.13.0
+        - slepc4py >=3.13.0
+        - {{ pin_subpackage('cellrank', exact=True) }}
+    test:
+      imports:
+        - cellrank
+        - petsc4py
+        - slepc4py
+
+test:
+  imports:
+    - cellrank
+    - pygpcca
+
+about:
+  home: "https://github.com/theislab/cellrank"
+  license: BSD
+  license_file: LICENSE
+  summary: "Continuous Lineage Decisions Uncovered by RNA Velocity"
+  description: |
+    CellRank is a toolkit to uncover cellular dynamics based on scRNA-seq data with RNA velocity annotation,
+    see La Manno et al. (2018) and Bergen et al. (2020). CellRank models cellular dynamics as a Markov chain,
+    where transition probabilities are computed based on RNA velocity and transcriptomic similarity,
+    taking into account uncertainty in the velocities.
+  doc_url: "https://cellrank.org"
+  doc_source_url: "https://github.com/theislab/cellrank/tree/master/docs"
+  dev_url: "https://github.com/theislab/cellrank"
+
+extra:
+  recipe-maintainers:
+    - michalk8

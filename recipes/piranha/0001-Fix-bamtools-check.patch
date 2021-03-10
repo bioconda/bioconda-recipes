@@ -1,0 +1,51 @@
+--- configure.ac
++++ configure.ac
+@@ -56,14 +56,14 @@
+ 
+ # check for BAMTools but force 'as-needed' linking to be off
+ # this works on Ubuntu, but not on MacOS
++SAVED_LIBS=$LIBS
+ SAVED_LDFLAGS=$LDFLAGS
+ SAVED_CXXFLAGS=$CXXFLAGS
++LIBS=-lbamtools
+ CXXFLAGS="$CXXFLAGS -Wl,--no-as-needed"
+ if test "$BAM_LIBRARIES_DIR" != ""
+ then
+-  LDFLAGS="$LDFLAGS -L$BAM_LIBRARIES_DIR -lbamtools"
+-else 
+-  LDFLAGS="$LDFLAGS -lbamtools"
++  LDFLAGS="$LDFLAGS -L$BAM_LIBRARIES_DIR"
+ fi
+ if test "$BAM_HEADERS_DIR" != ""
+ then
+@@ -74,18 +74,19 @@
+     [BamTools::BamAlignment dummy])],
+   [ac_cv_lib_bamtools_BamAlignment=yes],
+   [])
++LIBS=$SAVED_LIBS
+ LDFLAGS=$SAVED_LDFLAGS
+ CXXFLAGS=$SAVED_CXXFLAGS
+ 
+ # check for BAM tools using the default linking order (this works on 
+ # MacOS, but not on Ubuntu)  
++SAVED_LIBS=$LIBS
+ SAVED_LDFLAGS=$LDFLAGS
+ SAVED_CXXFLAGS=$CXXFLAGS
++LIBS=-lbamtools
+ if test "$BAM_LIBRARIES_DIR" != ""
+ then
+-  LDFLAGS="$LDFLAGS -L$BAM_LIBRARIES_DIR -lbamtools"
+-else 
+-  LDFLAGS="$LDFLAGS -lbamtools"
++  LDFLAGS="$LDFLAGS -L$BAM_LIBRARIES_DIR"
+ fi
+ if test "$BAM_HEADERS_DIR" != ""
+ then
+@@ -96,6 +97,7 @@
+     [BamTools::BamAlignment dummy])],
+   [ac_cv_lib_bamtools_BamAlignment=yes],
+   [])
++LIBS=$SAVED_LIBS
+ LDFLAGS=$SAVED_LDFLAGS
+ CXXFLAGS=$SAVED_CXXFLAGS
+ 

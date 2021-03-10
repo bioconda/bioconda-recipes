@@ -1,0 +1,20 @@
+Avoid enumerable_thread_local.h and enumerable_thread_local_iterator.h,
+which are included via <seqan/find.h>.
+
+These headers use std::shared_timed_mutex, which is not available in Apple's
+system libc++ prior to macOS 10.12. However calc_adapter_content.cpp does not
+in fact use these classes, so it suffices to avoid including the headers.
+
+diff --git a/src/calc_adapter_content.cpp b/src/calc_adapter_content.cpp
+index ef13e4d..6863322 100644
+--- a/src/calc_adapter_content.cpp
++++ b/src/calc_adapter_content.cpp
+@@ -4,6 +4,8 @@
+ #include "gzstream.h"
+ #include "zlib.h"
+ #ifndef __WIN32
++#define INCLUDE_SEQAN_ALIGN_PARALLEL_ENUMERABLE_THREAD_LOCAL_H_
++#define INCLDUE_SEQAN_ALIGN_PARALLEL_ENUMERABLE_THREAD_LOCAL_ITERATOR_H_
+ #include <seqan/find.h>
+ #include <seqan/sequence.h>
+ #endif
