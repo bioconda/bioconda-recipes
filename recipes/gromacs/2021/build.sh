@@ -1,4 +1,11 @@
 #!/bin/bash
+
+# C++17 is not properly supported on early OSX versions
+if [ "$(uname)" = 'Darwin' ] ; then
+    export MACOSX_DEPLOYMENT_TARGET=10.13 
+fi
+
+
 mkdir build
 cd build
 
@@ -12,7 +19,6 @@ for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do
     -DGMX_DEFAULT_SUFFIX=ON
     -DREGRESSIONTEST_DOWNLOAD=ON
     -DGMX_GPU=OpenCL
-    -DGMX_USE_OPENCL=ON
     -DCMAKE_PREFIX_PATH="${PREFIX}"
     -DGMX_INSTALL_PREFIX="${PREFIX}"
     -DCMAKE_INSTALL_PREFIX="${PREFIX}"
