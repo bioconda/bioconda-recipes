@@ -14,9 +14,9 @@ from os import access
 from os import getenv
 from os import X_OK
 
-jar_file = 'SearchGUI-4.0.12.jar'
+jar_file = 'SearchGUI-4.0.22.jar'
 
-default_jvm_mem_opts = ['-Xms512m', '-Xmx4g']
+default_jvm_mem_opts = ['-Xms2g', '-Xmx4g']
 
 # !!! End of parameter section. No user-serviceable code below this line !!!
 
