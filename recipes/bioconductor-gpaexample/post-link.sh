@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="gpaExample_1.0.0.tar.gz"
+FN="gpaExample_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/gpaExample_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/gpaExample_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-gpaexample/bioconductor-gpaexample_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/gpaExample_1.2.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/gpaExample_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-gpaexample/bioconductor-gpaexample_1.2.0_src_all.tar.gz"
 )
-MD5="c0e73f2cd4f21f7a625d03b59c9ecb61"
+MD5="6ff1aa08699bf83b1d88bbe5908494f9"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
