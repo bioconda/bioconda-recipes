@@ -2,7 +2,6 @@
 set -eu
 
 mkdir -p $PREFIX/bin
-LDFLAGS="-L$PREFIX/lib"
 export CPP_INCLUDE_PATH=${PREFIX}/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
