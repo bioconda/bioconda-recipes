@@ -16,7 +16,7 @@ if test x"`uname`" = x"Linux"; then
 fi
 
 if [ `uname` == Darwin ]; then
-    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2 -lomp"
 else
     export CPP_FOR_BUILD=$CPP
 fi
@@ -102,3 +102,6 @@ chmod +x $PREFIX/bin/*
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/update_blastdb.pl
 # Patches to enable this script to work better in bioconda
 sed -i.bak 's/mktemp.*/mktemp`/; s/exit 1/exit 0/; s/^export PATH=\/bin:\/usr\/bin:/\#export PATH=\/bin:\/usr\/bin:/g' $PREFIX/bin/get_species_taxids.sh
+
+#extra log to check all exe are present
+ls -s $PREFIX/bin/
