@@ -6,4 +6,6 @@ export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
 # Make sure bindgen passes on our compiler flags.
 export BINDGEN_EXTRA_CLANG_ARGS="${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
 
+# Use -Cembed-bitcode=yes until https://github.com/rust-lang/cargo/pull/8754 is in a new Cargo release.
+RUSTFLAGS="${RUSTFLAGS-} -Cembed-bitcode=yes" \
 cargo install --path . --root $PREFIX --verbose
