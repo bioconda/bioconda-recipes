@@ -10,9 +10,8 @@ fi
 autoreconf -fi
 ./configure \
   --prefix=${PREFIX} \
-  --disable-perl \
   LIBS="${libs}"
 
-make -j V=1
+make -j
 make check
 make install
