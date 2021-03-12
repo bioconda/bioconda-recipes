@@ -8,7 +8,5 @@ export CXX_INCLUDE_PATH=${PREFIX}/include
 export LD_LIBRARY_PATH=${PREFIX}/lib
 export LIBRARY_PATH=${PREFIX}/lib
 
-#autoreconf -i -f
-#./configure --with-libmaus2=${PREFIX}/lib	--prefix=${PREFIX}/bin/
-./configure --prefix=${PREFIX}/bin/
+./configure --with-libmaus2=${PREFIX}/lib	--prefix=${PREFIX}/bin/
 make install
