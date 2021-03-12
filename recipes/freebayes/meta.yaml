@@ -7,20 +7,20 @@ package:
 source:
   url: https://github.com/freebayes/freebayes/releases/download/v{{ version }}/freebayes-{{ version }}-src.tar.gz
   sha256: 7e2635690e916ed85cec36b3263e6e5357413a4f2bf3035362d9749335e8a696
+  patches:
+    - meson.patch
 
 
 build:
-  number: 0
+  number: 1
+  
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - zlib
     - bzip2
-    - python >=3
-    - xz
     - htslib
     - parallel
     - meson
@@ -31,20 +31,18 @@ requirements:
     - pkg-config #needed for MacOS build
     
   run:
-    - zlib
-    - bzip2
-    - python >=3
+# Freebayes does not require vcfpy, but it does require python 3.  I don't know how to require python 3 but not force python 3.9  
+    - vcfpy
     - htslib
     - parallel
-    - xz
     - bc
     - samtools
     - vcflib
 test:
   commands:
     - freebayes --version
+    - freebayes-parallel
     
-
 about:
   home: https://github.com/ekg/freebayes
   license: MIT
