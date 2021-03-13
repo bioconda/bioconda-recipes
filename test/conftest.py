@@ -65,7 +65,6 @@ def mock_repodata(repodata, case):
     else:
         data = repodata
 
-    print(utils.RepoData.columns)
     dataframe = pd.DataFrame(columns=utils.RepoData.columns)
     for channel, packages in data.items():
         for name, versions in packages.items():
