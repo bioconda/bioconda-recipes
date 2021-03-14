@@ -12,6 +12,8 @@ import logging
 import shutil
 from textwrap import dedent
 
+from conda_build import metadata
+
 from bioconda_utils import utils
 from bioconda_utils import pkg_test
 from bioconda_utils import docker_utils
@@ -523,7 +525,7 @@ def test_built_package_paths():
 
     # Newer conda-build versions add the channel_targets and target_platform to the hash
     d = {"channel_targets": "bioconda main", "target_platform": "{}-64".format(sys.platform)}
-    h = conda_build.metadata._hash_dependencies(d, 7)
+    h = metadata._hash_dependencies(d, 7)
 
     assert os.path.basename(
         utils.built_package_paths(r.recipe_dirs['one'])[0]
