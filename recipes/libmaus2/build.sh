@@ -1,7 +1,9 @@
 #!/bin/bash
-export LDFLAGS="-lstdc++fs"
+set -eu
 
 mkdir -p $PREFIX/lib
-./configure --prefix $PREFIX
+export LIBS="-lstdc++fs -lcurl"
+
+./configure --prefix $PREFIX --with-snappy --with-io_lib
 make
 make install
