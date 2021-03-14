@@ -524,7 +524,7 @@ def test_built_package_paths():
     r.write_recipes()
 
     # Newer conda-build versions add the channel_targets and target_platform to the hash
-    platform == 'linux' if sys.platform == 'linux' else 'osx'
+    platform = 'linux' if sys.platform == 'linux' else 'osx'
     d = {"channel_targets": "bioconda main", "target_platform": "{}-64".format(platform)}
     h = metadata._hash_dependencies(d, 7)
 
