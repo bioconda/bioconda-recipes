@@ -521,9 +521,13 @@ def test_built_package_paths():
         """, from_string=True)
     r.write_recipes()
 
+    # Newer conda-build versions add the channel_targets and target_platform to the hash
+    d = {"channel_targets": "bioconda main", "target_platform": "{}-64".format(sys.platform)}
+    h = conda_build.metadata._hash_dependencies(d, 7)
+
     assert os.path.basename(
         utils.built_package_paths(r.recipe_dirs['one'])[0]
-    ) == 'one-0.1-py36_0.tar.bz2'
+    ) == 'one-0.1-py36{}_0.tar.bz2'.format(h)
 
 
 def test_string_or_float_to_integer_python():
