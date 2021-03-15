@@ -1,5 +1,5 @@
 This recipe is for the MPI enabled version of GROMACS.  For the non MPI
-enebaled version, use the GROMACS package.
+enabled version, use the GROMACS package.
 
 GROMACS versions are released in series, so we maintain one
 recipe folder for each major version.

@@ -46,14 +46,14 @@ ${CXX} -O3 -mavx512f -std=c++11 \
 -DSIMD_AVX_512_CXX_SUPPORTED=1 \
 -o ${PREFIX}/bin.AVX_512/identifyavx512fmaunits \
 ${SRC_DIR}/src/gromacs/hardware/identifyavx512fmaunits.cpp
-
-cp -a ${RECIPE_DIR}/gmx-chooser.bash ${PREFIX}/bin/gmx
-chmod a+x ${PREFIX}/bin/gmx
-
 # Create wrapper and activation scripts
 # Variable declaration from MPI script fewer changes if left in.
 
 gmx='gmx_mpi'
+
+
+cp -a "${RECIPE_DIR}/gmx-chooser.bash" "${PREFIX}/bin/${gmx}"
+chmod a+x "${PREFIX}/bin/${gmx}"
 
 mkdir -p "${PREFIX}/etc/conda/activate.d"
 touch "${PREFIX}/bin/${gmx}"

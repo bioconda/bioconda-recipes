@@ -21,4 +21,4 @@ elif echo $FLAGS | grep " avx " > /dev/null && test -d ${DIR}/../bin.AVX_256; th
 else
     ARCH="SSE2"
 fi
-${DIR}/../bin.${ARCH}/gmx $@
+${DIR}/../bin.${ARCH}/gmx_mpi $@
