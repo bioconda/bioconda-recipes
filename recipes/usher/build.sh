@@ -10,6 +10,8 @@ cmake -DTBB_DIR=${PWD}/../oneTBB-2019_U9 -DCMAKE_PREFIX_PATH=${PWD}/../oneTBB-20
 make -j 1
 
 cp ./usher ${PREFIX}/bin/
+cp ./matUtils ${PREFIX}/bin/
+cp ./matOptimize ${PREFIX}/bin/
 cp ./tbb_cmake_build/tbb_cmake_build_subdir_release/* ${PREFIX}/lib/
 
 popd
