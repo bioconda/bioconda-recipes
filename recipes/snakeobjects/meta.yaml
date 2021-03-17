@@ -1,0 +1,60 @@
+
+{% set data = load_setup_py_data() %}
+
+package:
+  name: snakeobjects
+  
+  version: {{ data['version'] }}
+
+source:
+  url: https://github.com/iossifovlab/{{ name|lower }}/archive/{{ version }}.tar.gz
+  sha256: {{ hash }}
+
+  #path: ..
+
+build:
+  # If the installation is complex, or different between Unix and Windows, use
+  # separate bld.bat and build.sh files instead of this key.  Add the line
+  # "skip: True  # [py<35]" (for example) to limit to Python 3.5 and newer, or
+  # "skip: True  # [not win]" to limit to Windows.
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed -vv .
+  noarch: python
+  
+  entry_points:
+    {% for entry in data['entry_points']['console_scripts'] %}
+      - {{ entry.split('=')[0].strip() }} = {{ entry.split('=')[1].strip() }}
+    {% endfor %}
+  
+
+requirements:
+  # if you need compilers, uncomment these
+  #    read more at https://docs.conda.io/projects/conda-build/en/latest/resources/compiler-tools.html
+  # build:
+  #   - {{ compilers('c') }}
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - snakemake-minimal>=5.20
+    # dependencies are defined in setup.py
+    {% for dep in data['install_requires'] %}
+    - {{ dep.lower() }}
+    {% endfor %}
+    {# raw is for ignoring templating with cookiecutter, leaving it for use with conda-build #}
+
+test:
+  source_files:
+    - tests
+  requires:
+    - pytest
+    - pytest-cov
+    - snakemake-minimal>=5.20
+  commands:
+    - pytest tests
+
+about:
+  home: https://github.com/iossifovlab/snakeobjects
+  summary: Our pipeline infrastructure.
+  license: {{ data.get('license') }}
+  license_file: LICENSE
