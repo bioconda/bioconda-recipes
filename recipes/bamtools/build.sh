@@ -27,4 +27,4 @@ cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} \
       ..
 make install
 ar cr ${PREFIX}/lib/libbamtools_utils.a src/utils/CMakeFiles/BamTools-utils.dir/*o
-
+cp -f ../src/utils/*.h ${PREFIX}/include
