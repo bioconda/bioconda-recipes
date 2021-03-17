@@ -26,3 +26,5 @@ cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} \
       -DZLIB_ROOT=$PREFIX \
       ..
 make install
+ar cr ${PREFIX}/lib/libbamtools_utils.a src/utils/CMakeFiles/BamTools-utils.dir/*o
+
