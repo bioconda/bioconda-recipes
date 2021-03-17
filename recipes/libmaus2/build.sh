@@ -1,12 +1,7 @@
 #!/bin/bash
-export LIBS="-lstdc++fs -lcurl -lio_lib"
+set -eu
 
-./configure --prefix $PREFIX --with-snappy
-
-#debug
-echo "START CONFIG.LOG"
-cat config.log
-echo "END CONFIG.LOG"
+./configure --prefix $PREFIX --with-snappy --with-io_lib || cat config.log
 
 make
 make install
