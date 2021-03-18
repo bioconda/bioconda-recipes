@@ -1,5 +1,4 @@
-{% set version = "0.8.2" %}
-{% set sha = "11c51f29d0d696451896fc56e940e059d191b6f17616776e08eb5b1c5ac5dda5" %}
+{% set version = "0.10.0" %}
 
 package:
   name: sequana
@@ -7,11 +6,14 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/sequana/sequana-{{ version }}.tar.gz
-  sha256: {{ sha }}
+  sha256: 611d22d8288086877f7795e1093775ac04eebfd5eb02d51aba07cfb8ee6be2b6
 
 build:
   preserve_egg_dir: True
-  number: 1
+  number: 0
+  # This restriction should probably be
+  # replaced by a pyqt version restriction (once 5.13 is in conda-forge), ref:
+  # https://github.com/sequana/sequana/issues/574
   skip: True  # [py<36 or py>=38]
   entry_points:
     - sequana_gui=sequana.gui.sequana_gui:main
@@ -51,46 +53,53 @@ requirements:
     # quality_control pipeline, which is in its own repository since v0.8.0
     # not true for atropos, which is still used in some modules
     - python
-    # This restriction (as well as the py>=38 skip above) should probably be
-    # replaced by a pyqt version restriction (once 5.13 is in conda-forge), ref:
-    # https://github.com/sequana/sequana/issues/574
-    - python >=3.6,<=3.7.3
     - atropos >=1.1.16
     - bcftools
     - bedtools
     - bioservices >=1.5.1
+    - brokenaxes
+    - bx-python
     #- bowtie2
     - colorlog >=3.1.0
+    - colormap
+    - cookiecutter
     #- cutadapt
-    - easydev >=0.9.36
+    - easydev >=0.10
     - fastqc ==0.11.5
     - freebayes
     - graphviz >=2.42.3
+    - gseapy
     - itolapi
     - khmer
     - kraken ==1.1 # [not osx]
     - krona
     - lxml
-    - matplotlib <3.1.2
+    - matplotlib
+    - matplotlib-venn
     - mock
-    - multiqc >=1.8
+    - multiqc
     - numexpr
     - packaging
     - pandas >=0.22
     - pigz
     - psutil
     - pykwalify >=1.6
+    - pyopengl
     - pyyaml >=5.3.1
-    - pyvcf >=0.6.8
-    - pysam >=0.15.3
+    - pyvcf
+    - pysam >=0.16.0
     - ruamel.yaml
     - qtconsole >=4.7.2
     - samtools >=1.10
+    - seaborn
     - snakemake >=5.13.0
-    - scipy >=1.4.1
+    - scipy
+    - scikit-learn
+    - statsmodels
     - xlrd >=1.2.0
     - cython >=0.29.16 # this should be removed from run requirements as soon as sequana allows it
     - xmltodict >=0.12.0
+    - {{ cdt('mesa-libgl') }}
 
 test:
   imports:
@@ -155,3 +164,4 @@ extra:
     - cokelaer
   skip-lints:
     - cython_must_be_in_host
+    - uses_matplotlib
