@@ -12,6 +12,8 @@ import logging
 import shutil
 from textwrap import dedent
 
+from conda_build import metadata
+
 from bioconda_utils import utils
 from bioconda_utils import pkg_test
 from bioconda_utils import docker_utils
@@ -521,9 +523,14 @@ def test_built_package_paths():
         """, from_string=True)
     r.write_recipes()
 
+    # Newer conda-build versions add the channel_targets and target_platform to the hash
+    platform = 'linux' if sys.platform == 'linux' else 'osx'
+    d = {"channel_targets": "bioconda main", "target_platform": "{}-64".format(platform)}
+    h = metadata._hash_dependencies(d, 7)
+
     assert os.path.basename(
         utils.built_package_paths(r.recipe_dirs['one'])[0]
-    ) == 'one-0.1-py36_0.tar.bz2'
+    ) == 'one-0.1-py36{}_0.tar.bz2'.format(h)
 
 
 def test_string_or_float_to_integer_python():
