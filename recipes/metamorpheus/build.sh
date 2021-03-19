@@ -1,6 +1,6 @@
 #!/bin/bash
 
 mkdir -p $PREFIX/bin
-cp -r * $PREFIX
-cp $RECIPE_DIR/metamorpheus $PREFIX/bin/metamorpheus
-chmod +x $PREFIX/bin/metamorpheus
+cp -r $SRC_DIR/* $PREFIX
+cp $RECIPE_DIR/metamorpheus $PREFIX/metamorpheus
+chmod +x $PREFIX/metamorpheus
