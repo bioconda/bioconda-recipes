@@ -6,8 +6,9 @@ package:
   version: {{ data['version'] }}
 
 source:
-  url: https://github.com/iossifovlab/snakeobjects/archive/2.rc6.tar.gz
-  sha256: {{ sha256 }}
+  #url: https://github.com/iossifovlab/{{ name|lower }}/archive/{{ version }}.tar.gz
+  url:  https://github.com/iossifovlab/snakeobjects/archive/1.0.2.tar.gz
+  sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 
 
 build:
@@ -17,7 +18,7 @@ build:
   # "skip: True  # [not win]" to limit to Windows.
   script: {{ PYTHON }} -m pip install --no-deps --ignore-installed -vv .
   noarch: python
-  
+  build: 1
   entry_points:
     {% for entry in data['entry_points']['console_scripts'] %}
       - {{ entry.split('=')[0].strip() }} = {{ entry.split('=')[1].strip() }}
@@ -30,11 +31,11 @@ requirements:
   # build:
   #   - {{ compilers('c') }}
   host:
-    - python
+    - python >=3.6
     - pip
   run:
-    - python
-    - snakemake-minimal>=5.20
+    - python >=3.6
+    - snakemake-minimal >=5.20
     # dependencies are defined in setup.py
     {% for dep in data['install_requires'] %}
     - {{ dep.lower() }}
@@ -49,7 +50,7 @@ test:
     - pytest-cov
     - snakemake-minimal>=5.20
   commands:
-    - pytest tests
+    - pytest
 
 about:
   home: https://github.com/iossifovlab/snakeobjects
