@@ -1,7 +1,6 @@
 #!/bin/bash
 
 mkdir -p $PREFIX/bin
-
 mkdir -p $PREFIX/opt/aquamis/
 
 cp -r * $PREFIX/opt/aquamis/
