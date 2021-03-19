@@ -12,32 +12,34 @@ source:
 
 
 build:
-  number: 1
-  
+  skip: True  # [py2k]
+  number: 2
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - meson
+    - ninja
+    - bc
+    - pkg-config
   host:
     - bzip2
     - htslib
     - parallel
-    - meson
-    - ninja
-    - bc
     - samtools
     - vcflib
-    - pkg-config #needed for MacOS build
-    
+    - tabixpp
+    # This is pulled in by vcflib but not actually linked against, but that causes conda to incorrectly pin it.
+    - python
   run:
-# Freebayes does not require vcfpy, but it does require python 3.  I don't know how to require python 3 but not force python 3.9  
-    - vcfpy
     - htslib
+    - python
     - parallel
-    - bc
     - samtools
     - vcflib
+    - tabixpp
+    
 test:
   commands:
     - freebayes --version
