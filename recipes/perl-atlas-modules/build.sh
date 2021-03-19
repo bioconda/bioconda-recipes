@@ -13,7 +13,7 @@ perl_version=$(perl -e 'print $^V');
 perl_version=${perl_version:1}
 
 PERLLIB="${PREFIX}/lib/perl5/${perl_version}/perl_lib"
-mkdir -p $PERLLIB 
+mkdir -p $PERLLIB
 
 ## install modules from CPAN directly as they are no conda packages for these modules
 
@@ -35,7 +35,8 @@ cpanm -l $PERLLIB MooseX::FollowPBP \
                     Text::TabularDisplay \
                     Log::Dispatch::File \
                     IO::CaptureOutput \
-                    Class::DBI
+                    Class::DBI \
+                    Proc::Daemon
 
 mkdir -p ${PREFIX}/etc/conda/activate.d/
 echo "export PERL5LIB=$PERL5LIB:$atlasprodDir/perl_modules:$PERLLIB/lib/perl5" > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}-${PKG_VERSION}.sh
