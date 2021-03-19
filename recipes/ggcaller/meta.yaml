@@ -1,5 +1,5 @@
 {% set name = "ggCaller" %}
-{% set version = "1.1.1" %}
+{% set version = "1.2.2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,9 +7,7 @@ package:
 
 source:
   url: https://github.com/samhorsfield96/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 99eeff6a10394cb8c26709099ea4dd15b0f346ec300555d6f8d740494e0f547f
-  patches:
-    - 0001-Corrects_CMakeLists_txt_for_location_of_z_and_bifrost_libraries_.patch
+  sha256: a4d8e1cb4c97a9dba36aef0601e61693c6e54227968f86bf42cb053d01c11245
 
 build:
   number: 0
@@ -33,7 +31,6 @@ requirements:
     - seqan3
     - bifrost
     - pthread-stubs
-    - biopython
     - zlib
     - bzip2
   run:
@@ -41,10 +38,24 @@ requirements:
     - bifrost
     - pthread-stubs
     - biopython
+    - graph-tool
+    - pytorch
+    # The xorg-* requirements are only used for gtk3 which is pulled in via graph-tool.
+    - xorg-libxi
+    - xorg-libxcursor
+    - xorg-libxdamage
+    - xorg-libxcomposite
+    - xorg-libxrandr
+    - xorg-libxinerama
+    - xorg-libxpm
+    - xorg-libxaw
+    - xorg-libxfixes
 
 test:
   imports:
     - ggCaller_cpp
+    - balrog
+    - ggCaller
   commands:
     - ggcaller -h | grep -q "Generates ORFs from a Bifrost graph."
 
