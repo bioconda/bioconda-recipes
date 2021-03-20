@@ -61,6 +61,7 @@ import conda
 import conda_build
 
 from . import utils
+from . import __version__
 
 import logging
 logger = logging.getLogger(__name__)
@@ -163,7 +164,7 @@ class RecipeBuilder(object):
         keep_image=False,
         build_image=False,
         image_build_dir=None,
-        docker_base_image='bioconda/bioconda-utils-build-env:latest'
+        docker_base_image='bioconda/bioconda-utils-build-env:{}'.format(__version__)
     ):
         """
         Class to handle building a custom docker container that can be used for
@@ -245,7 +246,7 @@ class RecipeBuilder(object):
 
         docker_base_image : str or None
             Name of base image that can be used in **dockerfile_template**.
-            Defaults to 'bioconda/bioconda-utils-build-env:latest'
+            Defaults to 'bioconda/bioconda-utils-build-env:bioconda-utils-version'
         """
         self.requirements = requirements
         self.conda_build_args = ""
