@@ -1,3 +1,5 @@
+#!/bin/bash
+
 SCRIPTS="kreport2mpa.py combine_mpa.py combine_kreports.py extract_kraken_reads.py filter_bracken.out.py fix_unmapped.py kreport2krona.py make_kreport.py make_ktaxonomy.py"
 
 for script in $SCRIPTS ; do 
