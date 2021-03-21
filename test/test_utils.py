@@ -14,6 +14,7 @@ from textwrap import dedent
 
 from conda_build import metadata
 
+from bioconda_utils import __version__
 from bioconda_utils import utils
 from bioconda_utils import pkg_test
 from bioconda_utils import docker_utils
@@ -228,6 +229,30 @@ def test_multi_build(multi_build):
     for v in multi_build.values():
         for pkg in v:
             assert os.path.exists(pkg)
+
+
+@pytest.mark.skipif(SKIP_DOCKER_TESTS, reason='skipping on osx')
+def test_docker_bioconda_utils_version():
+    """
+    Test for same bioconda-utils version in build container.
+    """
+    docker_builder = docker_utils.RecipeBuilder(
+        build_script_template=('''
+#! /usr/bin/env bash
+python -c '
+import bioconda_utils
+with open("{self.container_staging}/version", "w") as version_file:
+    version_file.write(bioconda_utils.__version__)
+'
+'''
+        ),
+        docker_base_image=DOCKER_BASE_IMAGE,
+    )
+    temp_dir = docker_builder.pkg_dir
+    # Set recipe_dir to any temporary directory, e.g., docker_builder.pkg_dir.
+    docker_builder.build_recipe(temp_dir, build_args='', env={})
+    with open(os.path.join(temp_dir, 'version')) as container_version_file:
+        assert container_version_file.read() == __version__
 
 
 @pytest.mark.skipif(SKIP_DOCKER_TESTS, reason='skipping on osx')
