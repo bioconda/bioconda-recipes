@@ -164,7 +164,7 @@ class RecipeBuilder(object):
         keep_image=False,
         build_image=False,
         image_build_dir=None,
-        docker_base_image='quay.io/bioconda/bioconda-utils-build-env:{}'.format(__version__)
+        docker_base_image='quay.io/bioconda/bioconda-utils-build-env:{}'.format(__version__.replace('+', '_'))
     ):
         """
         Class to handle building a custom docker container that can be used for
