@@ -118,7 +118,7 @@ chown $HOST_USER:$HOST_USER {self.container_staging}/{arch}/*
 # This template can be used for last-minute changes to the docker image, such
 # as adding proxies.
 #
-# The default image is created automatically on DockerHub using the Dockerfile
+# The default image is created automatically for releases using the Dockerfile
 # in the bioconda-utils repo.
 
 DOCKERFILE_TEMPLATE = \
@@ -164,7 +164,7 @@ class RecipeBuilder(object):
         keep_image=False,
         build_image=False,
         image_build_dir=None,
-        docker_base_image='bioconda/bioconda-utils-build-env:{}'.format(__version__)
+        docker_base_image='quay.io/bioconda/bioconda-utils-build-env:{}'.format(__version__)
     ):
         """
         Class to handle building a custom docker container that can be used for
@@ -246,7 +246,7 @@ class RecipeBuilder(object):
 
         docker_base_image : str or None
             Name of base image that can be used in **dockerfile_template**.
-            Defaults to 'bioconda/bioconda-utils-build-env:bioconda-utils-version'
+            Defaults to 'quay.io/bioconda/bioconda-utils-build-env:bioconda-utils-version'
         """
         self.requirements = requirements
         self.conda_build_args = ""
