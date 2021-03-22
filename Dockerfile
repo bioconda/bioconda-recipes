@@ -1,38 +1,56 @@
-FROM condaforge/linux-anvil-comp7 as base
-# Pretend we'd have C.UTF-8: Just copy en_US.UTF-8
-RUN localedef -i en_US -f UTF-8 C.UTF-8
-RUN sudo -n yum install -y openssh-clients && \
-    sudo -n yum clean all && \
-    sudo -n rm -rf /var/cache/yum/*
-ENV PATH="/opt/conda/bin:${PATH}"
-RUN conda config --add channels defaults && \
-    conda config --add channels bioconda && \
-    conda config --add channels conda-forge && \
-    { conda config --remove repodata_fns current_repodata.json || true ; } && \
+FROM quay.io/condaforge/linux-anvil-cos7-x86_64 as base
+
+# Copy over C.UTF-8 locale from our base image to make it consistently available during build.
+COPY --from=quay.io/bioconda/base-glibc-busybox-bash /usr/lib/locale/C.UTF-8 /usr/lib/locale/C.UTF-8
+
+# Provide system deps unconditionally until we are able to offer per-recipe installs.
+# (Addresses, e.g., "ImportError: libGL.so.1" in tests directly invoked by conda-build.)
+# Also install packages that have been installed historically (openssh-client).
+RUN yum install -y \
+      mesa-libGL-devel \
+      openssh-client \
+    && \
+    yum clean all && \
+    rm -rf /var/cache/yum/*
+
+# This changes root's .condarc which ENTRYPOINT copies to /home/conda/.condarc later.
+RUN . /opt/conda/etc/profile.d/conda.sh && \
+    conda config \
+      --prepend channels defaults \
+      --prepend channels bioconda \
+      --prepend channels conda-forge \
+    && \
+    { conda config --remove repodata_fns current_repodata.json 2> /dev/null || true ; } && \
     conda config --prepend repodata_fns repodata.json && \
     conda config --set auto_update_conda False
 
 FROM base as build
 WORKDIR /tmp/repo
 COPY . ./
-RUN pip wheel . && \
+RUN . /opt/conda/etc/profile.d/conda.sh  && conda activate base && \
+    pip wheel . && \
     mkdir - /opt/bioconda-utils && \
     cp ./bioconda_utils-*.whl \
         ./bioconda_utils/bioconda_utils-requirements.txt \
-        ./docker-entrypoint* \
-        /opt/bioconda-utils/
+        /opt/bioconda-utils/ \
+    && \
+    chgrp -R lucky /opt/bioconda-utils && \
+    chmod -R g=u /opt/bioconda-utils
 
 FROM base
 COPY --from=build /opt/bioconda-utils /opt/bioconda-utils
-RUN \
+RUN . /opt/conda/etc/profile.d/conda.sh  && conda activate base && \
     # Make sure we get the (working) conda we want before installing the rest.
     sed -nE \
-        -e 's/\s*#.*$//' \
-        -e 's/^(conda([><!=~ ].+)?)$/\1/p' \
+        '/^conda([><!=~ ].+)?$/p' \
         /opt/bioconda-utils/bioconda_utils-requirements.txt \
-        | xargs -r conda install -y && \
-    conda install -y --file /opt/bioconda-utils/bioconda_utils-requirements.txt && \
-    pip install --no-deps -f /opt/bioconda-utils bioconda_utils && \
-    conda clean -y -it
-
-ENTRYPOINT [ "/opt/conda/bin/tini", "--", "/opt/bioconda-utils/docker-entrypoint" ]
+        | xargs -r conda install --yes && \
+    conda install --yes --file /opt/bioconda-utils/bioconda_utils-requirements.txt && \
+    pip install --no-deps --find-links /opt/bioconda-utils bioconda_utils && \
+    conda clean --yes --index --tarballs && \
+    # Find files that are not already in group "lucky" and change their group and mode.
+    find /opt/conda \
+      \! -group lucky \
+      -exec chgrp --no-dereference lucky {} + \
+      \! -type l \
+      -exec chmod g=u {} +
