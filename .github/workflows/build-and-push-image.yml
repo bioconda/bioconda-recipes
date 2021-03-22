@@ -17,6 +17,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - id: get-tag
+      run: |
+        tag=${{ github.event.release && github.event.release.tag_name || github.sha }}
+        printf %s "::set-output name=tag::${tag#v}"
+
     - name: Build Image
       id: buildah-build
       uses: redhat-actions/buildah-build@v2
@@ -24,7 +29,7 @@ jobs:
         image: bioconda-utils-build-env-cos7
         tags: >-
           latest
-          ${{ github.event.release && github.event.release.tag_name || github.sha }}
+          ${{ steps.get-tag.outputs.tag }}
         dockerfiles: |
           ./Dockerfile
 
