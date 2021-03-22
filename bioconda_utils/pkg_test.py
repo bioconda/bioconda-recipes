@@ -18,7 +18,7 @@ from conda_build.metadata import MetaData
 logger = logging.getLogger(__name__)
 
 # TODO: Make this configurable in bioconda_utils.build and bioconda_utils.cli.
-MULLED_CONDA_IMAGE = "quay.io/bioconda/create-env:1.0.1"
+MULLED_CONDA_IMAGE = "quay.io/bioconda/create-env:1.0.2"
 
 
 def get_tests(path):
