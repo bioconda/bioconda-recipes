@@ -843,7 +843,7 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
         no_skip_pending_deps = True
     else:
         recipe_source = autobump.RecipeGraphSource(
-            recipe_folder, packages, exclude, not no_shuffle,
+            recipe_folder, packages, exclude or [], not no_shuffle,
             config_dict, cache_fn=cache and cache + "_dag.pkl")
 
     # Setup scanning pipeline
