@@ -18,7 +18,7 @@ from conda_build.metadata import MetaData
 logger = logging.getLogger(__name__)
 
 # TODO: Make this configurable in bioconda_utils.build and bioconda_utils.cli.
-MULLED_CONDA_IMAGE = "quay.io/dpryan79/mulled_container:latest"
+MULLED_CONDA_IMAGE = "quay.io/bioconda/create-env:1.0.1"
 
 
 def get_tests(path):
@@ -154,10 +154,10 @@ def test_package(
     cmd += shlex.split(mulled_args)
 
     # galaxy-lib always downloads involucro, unless it's in cwd or its path is explicitly given.
-    # TODO: This should go into galaxy-lib. Once it is fixed upstream, remove this here.
-    involucro_path = which('involucro')
-    if involucro_path:
-        cmd += ['--involucro-path', involucro_path]
+    # We inject a POSTINSTALL to the involucro command with a small wrapper to
+    # create activation / entrypoint scripts for the container.
+    involucro_path = os.path.join(os.path.dirname(__file__), 'involucro')
+    cmd += ['--involucro-path', involucro_path]
 
     logger.debug('mulled-build command: %s' % cmd)
 
