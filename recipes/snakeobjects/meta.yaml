@@ -1,9 +1,6 @@
-
-{% set data = load_setup_py_data() %}
-
 package:
   name: snakeobjects
-  version: {{ data['version'] }}
+  version: "1.0.2"
 
 source:
   #url: https://github.com/iossifovlab/{{ name|lower }}/archive/{{ version }}.tar.gz
@@ -20,27 +17,19 @@ build:
   noarch: python
   number: 0
   entry_points:
-    {% for entry in data['entry_points']['console_scripts'] %}
-      - {{ entry.split('=')[0].strip() }} = {{ entry.split('=')[1].strip() }}
-    {% endfor %}
+    # {% for entry in data['entry_points']['console_scripts'] %}
+    # - {{ entry.split('=')[0].strip() }} = {{ entry.split('=')[1].strip() }}
+    # {% endfor %}
+    - sobjects = snakeobjects.cli:cli
   
 
 requirements:
-  # if you need compilers, uncomment these
-  #    read more at https://docs.conda.io/projects/conda-build/en/latest/resources/compiler-tools.html
-  # build:
-  #   - {{ compilers('c') }}
   host:
     - python
     - pip
   run:
     - python
     - snakemake-minimal >=5.20
-    # dependencies are defined in setup.py
-    {% for dep in data['install_requires'] %}
-    - {{ dep.lower() }}
-    {% endfor %}
-    {# raw is for ignoring templating with cookiecutter, leaving it for use with conda-build #}
 
 test:
   source_files:
