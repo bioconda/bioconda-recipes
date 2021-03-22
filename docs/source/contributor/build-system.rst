@@ -29,7 +29,7 @@ need to create the entire bioconda-build system environment from scratch for
 each build.
 
 When testing locally with ``circleci build``, we use the
-``bioconda/bioconda-utils-build-env`` Docker container to avoid changing the
+``quay.io/bioconda/bioconda-utils-build-env-cos7`` Docker container to avoid changing the
 local system. This container is defined by `this Dockerfile
 <https://github.com/bioconda/bioconda-utils/blob/master/Dockerfile>`_.
 
@@ -69,7 +69,7 @@ Configure the environment
     - package with that version number and build number does not exist in
       bioconda channel (we check the channel for each of the changed recipes)
 
-- Download the configured Docker container (currently based on CentOS 6)
+- Download the configured Docker container (currently based on CentOS 7)
     - default configured in ``bioconda-utils: docker_utils.py``
 
 - Build a new, temporary Docker container
@@ -97,8 +97,8 @@ Configure the environment
   `galaxy-lib <https://github.com/galaxyproject/galaxy-lib>`_). This acts as
   a more stringent test than ``conda-build`` alone. The BusyBox container
   purposefully is missing many system libraries (like libgcc) that may be
-  present in the CentOS 6 container. Note that it is common for a package to
-  build in the CentOS 6 container but fail in the BusyBox container. When this
+  present in the CentOS 7 container. Note that it is common for a package to
+  build in the CentOS 7 container but fail in the BusyBox container. When this
   happens, it is often because a dependency needs to be added to the recipe.
 
 - Upon successfully testing the package in the BusyBox container, we have a branch point:

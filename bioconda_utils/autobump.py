@@ -423,7 +423,7 @@ class CheckPinning(Filter):
     @classmethod
     def _sp_apply(cls, data) -> None:
         config, recipe = data
-        status = update_pinnings.check(recipe, build_config=config, keep_metas=True)
+        status, recipe = update_pinnings.check(recipe, build_config=config, keep_metas=True)
         if status.needs_bump():
             metas = recipe.conda_render(config=config)
             reason = cls.find_reason(recipe, metas)

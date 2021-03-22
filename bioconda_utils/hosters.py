@@ -330,7 +330,7 @@ class GithubRelease(GithubBase):
 
 class GithubTag(GithubBase):
     """Matches GitHub repository archives created automatically from tags"""
-    link_pattern = r"/{account}/{project}/archive/{tag}{ext}"
+    link_pattern = r"/{account}/{project}/archive(/refs/tags)?/{tag}{ext}"
     releases_formats = ["https://github.com/{account}/{project}/tags"]
 
 

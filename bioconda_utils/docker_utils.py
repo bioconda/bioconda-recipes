@@ -61,6 +61,7 @@ import conda
 import conda_build
 
 from . import utils
+from . import __version__
 
 import logging
 logger = logging.getLogger(__name__)
@@ -117,14 +118,21 @@ chown $HOST_USER:$HOST_USER {self.container_staging}/{arch}/*
 # This template can be used for last-minute changes to the docker image, such
 # as adding proxies.
 #
-# The default image is created automatically on DockerHub using the Dockerfile
+# The default image is created automatically for releases using the Dockerfile
 # in the bioconda-utils repo.
 
 DOCKERFILE_TEMPLATE = \
-"""
+r"""
 FROM {docker_base_image}
 {proxies}
-RUN /opt/conda/bin/conda install -y conda={conda_ver} conda-build={conda_build_ver}
+RUN \
+    /opt/conda/bin/conda install -y conda={conda_ver} conda-build={conda_build_ver} \
+    && \
+    find /opt/conda \
+      \! -group lucky \
+      -exec chgrp --no-dereference lucky {{}} + \
+      \! -type l \
+      -exec chmod g=u {{}} +
 """  # noqa: E122 continuation line missing indentation or outdented
 
 
@@ -163,7 +171,7 @@ class RecipeBuilder(object):
         keep_image=False,
         build_image=False,
         image_build_dir=None,
-        docker_base_image='bioconda/bioconda-utils-build-env:latest'
+        docker_base_image='quay.io/bioconda/bioconda-utils-build-env-cos7:{}'.format(__version__.replace('+', '_'))
     ):
         """
         Class to handle building a custom docker container that can be used for
@@ -245,7 +253,7 @@ class RecipeBuilder(object):
 
         docker_base_image : str or None
             Name of base image that can be used in **dockerfile_template**.
-            Defaults to 'bioconda/bioconda-utils-build-env:latest'
+            Defaults to 'quay.io/bioconda/bioconda-utils-build-env-cos7:bioconda-utils-version'
         """
         self.requirements = requirements
         self.conda_build_args = ""

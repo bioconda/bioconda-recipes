@@ -101,7 +101,8 @@ def test_pkg_test_conda_image():
     # Inspects the installing conda version by writing $PREFIX/conda-version as
     # a post-link step -- but only if we are actually doing mulled tests, i.e.,
     # when $PREFIX == /usr/local.
-    recipe = dedent("""
+    conda_version = '4.9.2'
+    recipe = dedent(f"""
         one:
           meta.yaml: |
             package:
@@ -109,14 +110,14 @@ def test_pkg_test_conda_image():
               version: 0.1
             test:
               commands:
-                - '[ "${PREFIX}" != /usr/local ] || cat /usr/local/conda-version'
-                - '[ "${PREFIX}" != /usr/local ] || grep -F ''conda 4.3.11'' /usr/local/conda-version'
+                - '[[ "${{PREFIX}}" != /usr/local ]] || cat /usr/local/conda-version'
+                - '[[ "${{PREFIX}}" != /usr/local ]] || grep -F ''conda {conda_version}'' /usr/local/conda-version'
           post-link.sh: |
             #!/bin/bash
-            if [ "${PREFIX}" == /usr/local ] ; then
-                /opt/conda/bin/conda --version > /usr/local/conda-version
+            if [[ "${{PREFIX}}" == /usr/local ]] ; then
+                /opt/*/bin/conda --version > /usr/local/conda-version
             fi
     """)  # noqa: E501: line too long
     built_packages = _build_pkg(recipe)
     for pkg in built_packages:
-        pkg_test.test_package(pkg, conda_image="continuumio/miniconda3:4.3.11")
+        pkg_test.test_package(pkg, conda_image=f"quay.io/bioconda/create-env:1.0.1-{conda_version}")
