@@ -1,6 +1,6 @@
 #!/bin/bash
 set -eu
-export LIBS="-lcurl"
+export LIBS="-lstdc++fs -lcurl"
 
 ./configure --prefix $PREFIX --with-snappy --with-io_lib
 
