@@ -1,0 +1,48 @@
+{% set version = "1.0.0" %}
+
+package:
+  name: proksee
+  version: {{ version }}
+
+source:
+  url: https://github.com/proksee-project/proksee-cmd/archive/v{{ version }}.tar.gz
+  sha256: [CHANGEME]
+
+build:
+  noarch: python
+  number: 1
+  entry_points:
+    - proksee = proksee.cli:cli
+
+requirements:
+  host:
+    - python
+    - setuptools
+
+  run:
+    - python
+    - numpy
+    - scipy
+    - skesa
+    - refseq_masher
+    - quast
+    - scipy
+    - spades
+    - click
+
+test:
+  commands:
+    # click requires a unicode locale
+    - proksee assemble --help
+    - proksee evaluate --help
+
+about:
+  home: https://github.com/proksee-project/proksee-cmd
+  license: Apache License, Version 2.0
+  summary: Proksee is a suite of command line tools for performing assembly, annotation and visualization of microbial genomes.
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true
