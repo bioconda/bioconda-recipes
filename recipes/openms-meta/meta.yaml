@@ -1,12 +1,13 @@
 {% set name = "OpenMS" %}
-{% set version = "2.6.0" %}
+{% set version = "2.7.0pre" %}
 package:
   name: {{ name|lower  }}-meta
   version: {{ version  }}
 
 source:
-  url: https://abibuilder.informatik.uni-tuebingen.de/archive/openms/OpenMSInstaller/release/{{ version }}/OpenMS-{{ version }}-src.tar.gz
-  sha256: 55f30d09cba420009587e50d70812a4775d012151df8c600c7c39e59079bc10b
+  git_url: https://github.com/OpenMS/OpenMS.git
+  git_rev: develop
+  git_depth: 1 # (Defaults to -1/not shallow)
   patches:
     - apple_pyoms_nofixup.patch
     - init.py.patch
@@ -40,7 +41,6 @@ requirements:
     - bzip2
     - qt >=5.5
     - libsvm
-    - seqan-library ==1.4.2
     - coinmp
     - sqlite
 
@@ -80,7 +80,6 @@ outputs:
           - bzip2
           - qt >=5.5
           - libsvm
-          - seqan-library ==1.4.2
           - coinmp
           - sqlite
     build:
@@ -123,7 +122,6 @@ outputs:
         - bzip2
         - qt >=5.5
         - libsvm
-        - seqan-library ==1.4.2
         - coinmp
         - sqlite
       run:
@@ -169,7 +167,6 @@ outputs:
         - bzip2
         - qt >=5.5
         - libsvm
-        - seqan-library ==1.4.2
         - coinmp
         - sqlite
         - python {{ python }}
@@ -235,6 +232,8 @@ about:
 extra:
   skip-lints:
     - build_number_needs_reset  # our linter has some issues with multi-package recipes as it seems
+    - uses_vcs_url  # only for nightly builds
+    - missing_hash  # only for nightly builds
   identifiers:
     - biotools:openms
     - usegalaxy-eu:openms_fileconverter
