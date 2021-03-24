@@ -1,15 +1,13 @@
 #!/bin/bash
 
-export CFLAGS="$CFLAGS -I$PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-export CPATH=${PREFIX}/include
-
 pushd gzstream
-make CXX="$CXX $CXXFLAGS -L${PREFIX}/lib" CPPFLAGS="$CPPFLAGS -I. -I$PREFIX/include" AR="$AR cr"
+# Avoid version file to be misinterpreted as C++20 version header file.
+mv version version.txt
+make CXX="$CXX $CXXFLAGS $CPPFLAGS $LDFLAGS" AR="$AR cr"
 popd
 
 pushd Default
-make all CXX="$CXX $CXXFLAGS -L${PREFIX}/lib" CPPFLAGS="$CPPFLAGS -I. -I$PREFIX/include" AR="$AR cr"
+make all CXX="$CXX $CXXFLAGS $CPPFLAGS $LDFLAGS" AR="$AR cr"
 popd
 
 mkdir -p $PREFIX/bin
