@@ -1,7 +1,7 @@
 #!/bin/bash
 
 pushd gzstream
-make CXX="$CXX $CXXFLAGS" CPPFLAGS="$CPPFLAGS -I. -I$PREFIX/include" AR="$AR cr"
+make CXX="$CXX $CXXFLAGS" CPPFLAGS="$CPPFLAGS -I. -I$PREFIX/include" AR="$AR cr" LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 popd
 
 pushd Default
