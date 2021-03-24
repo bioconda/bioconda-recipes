@@ -56,3 +56,15 @@ ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/ExtractBestSequencesBasedOnReport
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/SubsetToTaxonomy
 # gridss.repeatmasker namespace
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AnnotateVariantsRepeatMasker
+
+# build and install gridsstools
+tar xf gridsstools.src.tar.gz
+cd src/main/c/gridsstools
+#autoheader
+#autoconf
+#./configure && make
+#cd ..
+autoheader
+autoconf
+./configure && make all
+cp gridsstools $PREFIX/bin

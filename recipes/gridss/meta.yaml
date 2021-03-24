@@ -3,17 +3,28 @@
 
 package:
   name: gridss
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url: https://github.com/PapenfussLab/gridss/releases/download/v{{ version }}/gridss-{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  sha256: {{ sha256 }}
 
 build:
-  number: 0
-  noarch: generic
+  number: 1
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - automake
+    - autoconf
+  host:
+    #- libcurl
+    #- bzip2
+    #- xz
+    #- zlib
+    #- libdeflate
+    #- openssl  # [not osx]
+    - htslib
   run:
     - openjdk >=8
     - bwa >=0.7
@@ -29,8 +40,7 @@ requirements:
 test:
   commands:
     - "gridss 2>&1 | grep 'Usage:'"
-    # gridsstools currently not installed
-    #- "gridsstools 2>&1 | grep 'Usage:'"
+    - "gridsstools 2>&1 | grep 'Usage:'"
     - "gridss_somatic_filter --help 2>&1 | grep 'usage:'"
     - "CallVariants --help 2>&1 | grep 'USAGE:'"
     - "CollectGridssMetrics --help 2>&1 | grep 'USAGE:'"
