@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ceu1kgv_0.30.0.tar.gz"
+FN="ceu1kgv_0.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/ceu1kgv_0.30.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ceu1kgv_0.30.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ceu1kgv/bioconductor-ceu1kgv_0.30.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/ceu1kgv_0.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ceu1kgv_0.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ceu1kgv/bioconductor-ceu1kgv_0.32.0_src_all.tar.gz"
 )
-MD5="65034a5c3ab6baa96b5285be6c0c066d"
+MD5="06142b0a3776177b425b42c5c4a089fe"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

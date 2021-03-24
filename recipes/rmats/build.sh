@@ -7,11 +7,10 @@ GSL_CFLAGS="$(gsl-config --cflags)"
 export GSL_LDFLAGS
 export GSL_CFLAGS
 
-export CXXFLAGS="${CXXFLAGS} -std=c++03"
-
-make FC=$FC CC=$CC
+make
 
 cp rmats.py $PREFIX/rMATS
+cp cp_with_prefix.py $PREFIX/rMATS
 mkdir $PREFIX/rMATS/rMATS_C
 cp rMATS_C/rMATSexe $PREFIX/rMATS/rMATS_C
 cp -R rMATS_P $PREFIX/rMATS
