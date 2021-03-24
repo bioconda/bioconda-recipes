@@ -157,6 +157,8 @@ def test_package(
     # We inject a POSTINSTALL to the involucro command with a small wrapper to
     # create activation / entrypoint scripts for the container.
     involucro_path = os.path.join(os.path.dirname(__file__), 'involucro')
+    if not os.path.exists(involucro_path):
+        raise RuntimeError('internal involucro wrapper missing')
     cmd += ['--involucro-path', involucro_path]
 
     logger.debug('mulled-build command: %s' % cmd)
