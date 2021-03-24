@@ -9,7 +9,7 @@ make CXX="$CXX $CXXFLAGS -L${PREFIX}/lib" CPPFLAGS="$CPPFLAGS -I. -I$PREFIX/incl
 popd
 
 pushd Default
-make all
+make all CXX="$CXX $CXXFLAGS -L${PREFIX}/lib" CPPFLAGS="$CPPFLAGS -I. -I$PREFIX/include" AR="$AR cr"
 popd
 
 mkdir -p $PREFIX/bin
