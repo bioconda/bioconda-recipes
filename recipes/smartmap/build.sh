@@ -5,7 +5,7 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
 pushd gzstream
-make CXX="$CXX $CXXFLAGS" CPPFLAGS="$CPPFLAGS -I. -I$PREFIX/include" AR="$AR cr"
+make CXX="$CXX $CXXFLAGS -L${PREFIX}/lib" CPPFLAGS="$CPPFLAGS -I. -I$PREFIX/include" AR="$AR cr"
 popd
 
 pushd Default
