@@ -1,0 +1,81 @@
+{% set name = "imaps-icount" %}
+{% set version = "3.0.4" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "981d7a0de95be012befc91636eebc681783505792a02740dcd45be55529bf4ba" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  entry_points:
+    - imaps_icount = imaps_icount.cli:main
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - numpy
+    - pandas
+    - cutadapt >=1.10
+    - pysam
+    - pybedtools
+    - numpydoc
+    - sphinx >=1.4
+    - matplotlib
+  run:
+    - python
+    - numpy
+    - pandas
+    - cutadapt >=1.10
+    - pysam
+    - pybedtools
+    - numpydoc
+    - sphinx >=1.4
+    - matplotlib
+
+test:
+  imports:
+    - imaps_icount
+    - imaps_icount.analysis
+    - imaps_icount.examples
+    - imaps_icount.externals
+    - imaps_icount.files
+    - imaps_icount.genomes
+    - imaps_icount.mapping
+    - imaps_icount.plotting
+  commands:
+    - imaps_icount --help
+
+about:
+  home: https://github.com/tomazc/iCount
+  license: MIT
+  license_family: MIT
+  license_file: ''
+  summary: Computational pipeline for analysis of iCLIP data
+  description: "# iCount: protein-RNA interaction analysis\n\niCount is a Python module and associated command-line interface (CLI),\nwhich provides all the commands needed to process iCLIP data on \nprotein-RNA\
+    \ interactions and generate:\n \n+ demultiplexed and adapter-trimmed FASTQ files,\n+ BAM files with mapped iCLIP reads,\n+ identified protein-RNA cross-linked sites, saved to BED files,\n+ peaks composed\
+    \ of statistically significant cross-linked sites, saved to BED files,\n+ clusters of significant cross-linked sites, saved to BED files,\n+ grouping of individual replicate experiments,\n+ RNAmap generation\
+    \ showing the positional distribution of cross-linked sites relative to genomic landmarks,\n+ kmer enrichment analysis,\n+ and other.\n\nYou may start with the [tutorial](http://icount.readthedocs.io/en/latest/tutorial.html)\
+    \ or dive into the \n[documentation](http://icount.readthedocs.io/en/latest/index.html).\n\n\n## Authors\n\niCount is developed and supported by [Toma\u017E Curk](http://curk.info) from the \n[Bioinformatics\
+    \ Laboratory](http://biolab.si) at the [University of Ljubljana](http://www.uni-lj.si), \n[Faculty of Computer and Information Science](http://www.fri.uni-lj.si) and in collaboration with \nthe laboratory\
+    \ of [Jernej Ule](http://ulelab.info).\n\nThe development started in late 2008 when Toma\u017E Curk and Gregor Rot\nwrote a first prototype of iCount. In mid-2016, [Jure Zmrzlikar](https://github.com/JureZmrzlikar)\n\
+    from [Genialis](http://www.genialis.com) helped refactoring and improving the code, \nwhich is now available here. For details and full acknowledgments,\nsee the [how to cite](http://icount.readthedocs.io/en/latest/cite.html)\
+    \ section in the documentation.\n\n\n## Contributing\n\nContributions (pull requests) are welcome! Please submit your contributions by following the\n[guidelines](http://icount.readthedocs.io/en/latest/contributing.html).\n\
+    \n\n## Reporting problems\n\nUse the [issues page](https://github.com/tomazc/iCount/issues) to report issues and request enhancements. Before submitting, please check the list of already reported issues.\
+    \ Also, have a look at the [FAQ](http://icount.readthedocs.io/en/latest/faq.html) to see if the problem has been addressed already."
+  doc_url: ''
+  dev_url: ''
+
+extra:
+  recipe-maintainers: ''
+
+noarch: python
