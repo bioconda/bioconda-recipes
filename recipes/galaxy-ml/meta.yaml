@@ -11,12 +11,13 @@ source:
     - 0001-Do-not-package-separate-docs-package.patch
 
 build:
-  number: 2
+  number: 4
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv
   # Skip OSX since tests fail (without any error message at all!).
   # Skipping py>=38 because there are no Py3.8 builds of pinned down dependencies
   # (scikit-learn 0.21.3, xgboost 0.80, tensorflow 1.15.0).
-  skip: True  # [py<30 or py>=38]
+  # Skip Py3.7 because of numpy issue.
+  skip: True  # [py<30 or py>=37]
 
 requirements:
   build:
@@ -27,14 +28,14 @@ requirements:
     - cython
     - pip
     - setuptools
-    - numpy >=1.17
+    - numpy >=1.17, <1.19
   run:
     - python
     - pyfaidx
     - pytabix
     - tabix
     - readme_renderer >=24.0
-    - numpy >=1.17
+    - numpy >=1.17.0, <1.19
     - scipy >=1.3
     - joblib
     - asteval >=0.9
@@ -44,7 +45,7 @@ requirements:
     - mlxtend <0.18
     - skrebate <0.7
     - imbalanced-learn <0.6
-    - tensorflow ==1.15.0
+    - tensorflow >=1.15.0, <2.0
     - tensorflow-estimator ==1.15.1
     - keras ==2.3.1
     # For training on GPU, install the following libraries manually
@@ -57,6 +58,7 @@ requirements:
     - matplotlib-base
     - graphviz >=2.38
     - pillow >=6.0
+    - h5py >=2.10.0, <3.0
 
 test:
   imports:
