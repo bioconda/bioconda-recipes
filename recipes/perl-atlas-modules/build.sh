@@ -35,9 +35,13 @@ cpanm -l $PERLLIB MooseX::FollowPBP \
                     Text::TabularDisplay \
                     Log::Dispatch::File \
                     IO::CaptureOutput \
+                    TIMB/DBI-1.636.tar.gz \
                     Class::DBI \
                     DETI/Proc/Proc-Daemon-0.14.tar.gz \
-                    Mail::Sendmail
+                    Proc::ProcessTable
+
+
+cpanm -l $PERLLIB --force Mail::Sendmail
 
 mkdir -p ${PREFIX}/etc/conda/activate.d/
 echo "export PERL5LIB=$PERL5LIB:$atlasprodDir/perl_modules:$PERLLIB/lib/perl5" > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}-${PKG_VERSION}.sh
