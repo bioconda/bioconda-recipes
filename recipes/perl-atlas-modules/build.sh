@@ -20,7 +20,7 @@ mkdir -p $PERLLIB
 # A little hack to try to nudge Bioconda MacOS CI- which seems to have HOME set
 # to 'UNKNOWN' which disrupts cpanm
 
-if [[ ${HOST} =~ .*darwin.* && -z "$HOME" ]]; then
+if [[ ${HOST} =~ .*darwin.* && ("$HOME" == 'UNKNOWN' || -z "$HOME") ]]; then
     export HOME=/Users/distiller
 fi
 
