@@ -6,9 +6,9 @@ COPY --from=quay.io/bioconda/base-glibc-busybox-bash /usr/lib/locale/C.UTF-8 /us
 # Provide system deps unconditionally until we are able to offer per-recipe installs.
 # (Addresses, e.g., "ImportError: libGL.so.1" in tests directly invoked by conda-build.)
 # Also install packages that have been installed historically (openssh-client).
-RUN yum install -y \
-      mesa-libGL-devel \
-      openssh-client \
+RUN yum install -y mesa-libGL-devel \
+    && \
+    yum install -y openssh-clients \
     && \
     yum clean all && \
     rm -rf /var/cache/yum/*
