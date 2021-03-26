@@ -1,6 +1,6 @@
 
 
-export CPPFLAGS="-I$PREFIX/include"
+export CXXFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
 chmod +x ./configure
