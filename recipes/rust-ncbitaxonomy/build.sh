@@ -3,6 +3,7 @@
 if [ "$(uname)" == "Darwin" ]; then
     # Apparently the Home variable isn't set correctly
     export HOME="/Users/distiller"
+    touch $HOME/.gitconfig
 
     # According to https://github.com/rust-lang/cargo/issues/2422#issuecomment-198458960 remove circle ci default configuration solve cargo trouble
     git config --global --unset url.ssh://git@github.com.insteadOf 
