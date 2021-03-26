@@ -13,12 +13,14 @@ jobs:
     - name: Setup ssh (pre)
       run: |
         cp /usr/local/lib/libstdc++.so* /lib/x86_64-linux-gnu/
-      env:
-        HOME: /root
     - name: Setup ssh
       uses: webfactory/ssh-agent@v0.4.1
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: Setup ssh (post)
+      run: |
+        mkdir -p /root/.ssh
+        cat /github/home/.ssh/known_hosts >> /root/.ssh/known_hosts
     - name: Run comment action
       env:
         BOT_TOKEN: ${{ secrets.GITHUBTOKEN }}
