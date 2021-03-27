@@ -5,6 +5,7 @@ if [ "$(uname)" == "Darwin" ]; then
 
     # apparently the HOME variable isn't set correctly, and circle ci output indicates the following as the home directory
     export HOME="/Users/distiller"
+    export HOME=`pwd`
     echo "HOME is $HOME"
     mkdir -p $HOME/.nim
 
