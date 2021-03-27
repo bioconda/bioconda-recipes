@@ -8,7 +8,6 @@ export LD_LIBRARY_PATH=${PREFIX}/lib
 CFLAGS="$CFLAGS -g -Wall -O3 -Wsign-compare -L$PREFIX/lib -I$PREFIX/include"
 LIBS="$LDFLAGS -L$PREFIX/lib -lcurl -lm -lz"
 
-cd $SRC_DIR
 make install prefix=$PREFIX/ CC=$CC CFLAGS="$CFLAGS" LIBS="$LIBS"
 make test/testLocal CC=$CC CFLAGS="$CFLAGS" LIBS="$LIBS"
 cp bigWig.h $PREFIX/include
