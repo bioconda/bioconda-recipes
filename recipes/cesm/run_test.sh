@@ -5,7 +5,6 @@ export NETCDF_DIR=$(nc-config --prefix)
 export CIME_MODEL=cesm
 export CESM_DATA_ROOT=$HOME
 export CESM_WORK_ROOT=$HOME
-export CESM_PES=8
 
 mkdir -p $CESM_DATA_ROOT/inputdata
 
