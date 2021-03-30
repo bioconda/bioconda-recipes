@@ -22,7 +22,10 @@ class DVHelp(argparse._HelpAction):
         py_exe = sys.executable
         cmd = ("export LD_LIBRARY_PATH={lib_path}:\"$LD_LIBRARY_PATH\" && "
                "{py_exe} {bin_dir}/postprocess_variants.zip --help")
-        print(subprocess.check_output(cmd.format(**locals()), shell=True))
+        try:
+            subprocess.check_output(cmd.format(**locals()), shell=True)
+        except subprocess.CalledProcessError as e:
+            print(e.stdout.decode('UTF-8'))
         print()
         print("Wrapper arguments")
         parser.print_help()
