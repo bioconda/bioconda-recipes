@@ -6,6 +6,7 @@ nimble install -y
 popd
 
 ## Install CONDUIT proper
+export CFLAGS="${CFLAGS} -fcommon"
 nimble build -y --verbose
 chmod +x conduit
 chmod +x conduitUtils
