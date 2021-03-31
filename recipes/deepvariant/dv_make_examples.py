@@ -39,6 +39,7 @@ def main():
     parser.add_argument("--regions", help="Genomic region to process")
     parser.add_argument("--logdir", required=True)
     parser.add_argument("--examples", required=True, help="Output directory for examples")
+    parser.add_argument("--gvcf", help="Output directory for gvcf files")
     parser.add_argument("-h", "--help", action=DVHelp)
 
     args = parser.parse_args()
@@ -49,10 +50,12 @@ def main():
     py_exe = sys.executable
     split_inputs = " ".join(str(x) for x in range(0, int(args.cores)))
     regions = ("--regions %s" % args.regions) if args.regions else ""
+    gvcf = ("--gvcf {args.gvcf}/{args.sample}.gvcf.tfrecord@{args.cores}.gz".format(**locals()) if args.gvcf else ""
     cmd = ("export PATH={conda_path}:\"$PATH\" && export LD_LIBRARY_PATH={lib_path}:\"$LD_LIBRARY_PATH\" && "
            "parallel --eta --halt 2 --joblog {args.logdir}/log --res {args.logdir} "
            "{py_exe} {bin_dir}/make_examples.zip "
            "--mode calling --ref {args.ref} --reads {args.reads} {regions} "
+           "{gvcf} "
            "--examples {args.examples}/{args.sample}.tfrecord@{args.cores}.gz --task {{}} "
            "::: {split_inputs}")
     sys.exit(subprocess.call(cmd.format(**locals()), shell=True))
