@@ -8,7 +8,7 @@ sed -i.bak '
     /FLAGS_OPT=/ s@-Ofast -march=native@-O3 -march=x86-64 -mtune=generic@
   ' Makefile.mk.in
 
-
+export CFLAGS="${CFLAGS} -fcommon"
 ./configure
 make all
 mkdir -p $PREFIX/bin
