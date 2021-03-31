@@ -2,12 +2,11 @@
 
 ## Install hts-nim dependency
 pushd hts-nim
-nimble install -y
+nimble install -y --passC="-fcommon"
 popd
 
 ## Install CONDUIT proper
-export CFLAGS="${CFLAGS} -fcommon"
-nimble build -y --verbose
+nimble build -y --verbose --passC="-fcommon"
 chmod +x conduit
 chmod +x conduitUtils
 # chmod +x conduit_clustering
