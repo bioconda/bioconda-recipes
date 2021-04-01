@@ -9,6 +9,9 @@ sed -i.bak '
   ' Makefile.mk.in
 
 export CFLAGS="${CFLAGS} -fcommon"
+export CXXFLAGS="${CFLAGS} -fcommon"
+export CC="${CC} -fcommon"
+export CXX="${CXX} -fcommon"
 ./configure
 make all
 mkdir -p $PREFIX/bin
