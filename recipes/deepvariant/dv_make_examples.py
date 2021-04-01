@@ -50,7 +50,7 @@ def main():
     py_exe = sys.executable
     split_inputs = " ".join(str(x) for x in range(0, int(args.cores)))
     regions = ("--regions %s" % args.regions) if args.regions else ""
-    gvcf = ("--gvcf {args.gvcf}/{args.sample}.gvcf.tfrecord@{args.cores}.gz".format(**locals()) if args.gvcf else ""
+    gvcf = ("--gvcf {args.gvcf}/{args.sample}.gvcf.tfrecord@{args.cores}.gz".format(**locals())) if args.gvcf else ""
     cmd = ("export PATH={conda_path}:\"$PATH\" && export LD_LIBRARY_PATH={lib_path}:\"$LD_LIBRARY_PATH\" && "
            "parallel --eta --halt 2 --joblog {args.logdir}/log --res {args.logdir} "
            "{py_exe} {bin_dir}/make_examples.zip "

@@ -23,7 +23,7 @@ class DVHelp(argparse._HelpAction):
         try:
             subprocess.check_output([sys.executable, "%s/call_variants.zip" % real_dirname(BINARY_DIR), "--help"])
         except subprocess.CalledProcessError as e:
-            print(e.stdout.decode('UTF-8')
+            print(e.stdout.decode('UTF-8'))
         print()
         print("Wrapper arguments")
         parser.print_help()
