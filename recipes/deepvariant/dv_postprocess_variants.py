@@ -46,7 +46,7 @@ def main():
     lib_path = os.path.join(os.path.dirname(conda_path), "lib")
     py_exe = sys.executable
     gvcf = ("--nonvariant_site_tfrecord_path {args.gvcf_infile} "
-            "--gvcf_outfile {args.gvcf_outfile ").format(**locals()) if args.gvcf_infile and args.gvcf_outfile else ""
+            "--gvcf_outfile {args.gvcf_outfile} ").format(**locals()) if args.gvcf_infile and args.gvcf_outfile else ""
     cmd = ("export LD_LIBRARY_PATH={lib_path}:\"$LD_LIBRARY_PATH\" && "
            "{py_exe} {bin_dir}/postprocess_variants.zip "
            "{gvcf} "
