@@ -39,7 +39,7 @@ def main():
     parser.add_argument("--regions", help="Genomic region to process")
     parser.add_argument("--logdir", required=True)
     parser.add_argument("--examples", required=True, help="Output directory for examples")
-    parser.add_argument("--gvcf", help="Output directory for gvcf files")
+    parser.add_argument("--gvcf", help="Output directory for gvcf files. Generates output files as {{gvcf}}/{{sample}}.gvcf.tfrecord@{{cores}}.gz")
     parser.add_argument("-h", "--help", action=DVHelp)
 
     args = parser.parse_args()

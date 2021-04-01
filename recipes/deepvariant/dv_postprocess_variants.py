@@ -35,7 +35,7 @@ def main():
     parser.add_argument("--ref", required=True, help="Reference genome")
     parser.add_argument("--infile", required=True, help="Input tfrecord file from call_variants")
     parser.add_argument("--outfile", required=True)
-    parser.add_argument("--gvcf_infile", help="Input gVCF tfrecord file from make_examples")
+    parser.add_argument("--gvcf_infile", help="Input gVCF tfrecord file from make_examples, formatted as {{gvcf}}/{{sample}}.gvcf.tfrecord@{{cores}}.gz, with arguments as supplied to make_examples.")
     parser.add_argument("--gvcf_outfile", help="gVCF output file")
     parser.add_argument("-h", "--help", action=DVHelp)
 
