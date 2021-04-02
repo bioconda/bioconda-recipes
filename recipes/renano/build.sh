@@ -7,7 +7,8 @@ cd renano
 # > CXXFLAGS = -Wall -fopenmp -O3
 # We patch these to add to environment, rather than override
 # because we can't get to the `make` call easily.
-sed -i.bak 's/CXX *=/CXX ?=/; s/CXXFLAGS *=/CXXFLAGS +=/' Makefile 
+sed -i.bak 's/CXX *=/CXX ?=/; s/CXXFLAGS *=/CXXFLAGS +=/' Makefile
+sed -i.bak 's/^LDFLAGS  =$//g' Makefile
 
 # Work around "unknown type name 'mach_port_t'" error
 if [ x"$(uname)" == x"Darwin" ]; then
