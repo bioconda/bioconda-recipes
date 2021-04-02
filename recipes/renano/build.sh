@@ -20,7 +20,7 @@ fi
 
 # export CPATH=${PREFIX}/include
 # export CXXPATH=${PREFIX}/include
-# export CFLAGS="$CFLAGS -I$PREFIX/include"
+export CFLAGS="$CFLAGS -I$PREFIX/include"
 export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 echo $CXXFLAGS
