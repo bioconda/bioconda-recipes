@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="VariantToolsData_1.12.0.tar.gz"
+FN="VariantToolsData_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/VariantToolsData_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/VariantToolsData_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-varianttoolsdata/bioconductor-varianttoolsdata_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/VariantToolsData_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/VariantToolsData_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-varianttoolsdata/bioconductor-varianttoolsdata_1.14.0_src_all.tar.gz"
 )
-MD5="9620297c5745263a10d8aeac6ed8b461"
+MD5="943b64e4ff261fe355a02a4a1b6eaa60"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
