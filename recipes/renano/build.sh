@@ -9,8 +9,7 @@ cd renano
 # because we can't get to the `make` call easily.
 sed -i.bak 's/CXX *=/CXX ?=/; s/CXXFLAGS *=/CXXFLAGS +=/' Makefile
 sed -i.bak 's/^LDFLAGS  =$//g' Makefile
-CXXFLAGS=""
-CPPFLAGS=""
+
 # Work around "unknown type name 'mach_port_t'" error
 if [ x"$(uname)" == x"Darwin" ]; then
   CXXFLAGS="$CXXFLAGS -D_DARWIN_C_SOURCE"
