@@ -1,0 +1,47 @@
+{% set name = "cath-tools" %}
+{% set version = "0.16.5" %}
+{% set sha256 = "10b2913edf70cda698a47003d4f1ad8de89fc73ccacdafb1d75ce444be25bffe" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/UCLOrengoGroup/cath-tools/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake >3.2
+    - gsl >=2.6
+    - llvm-openmp  # [osx]
+    - perl >=5.08
+    - pkgconfig
+    - pthread-stubs
+    - boost-cpp
+
+
+test:
+  source_files:
+    - build-test-data
+    - perl
+  commands:
+    - cath-assign-domains -h
+    - cath-cluster -h
+    - cath-map-clusters -h
+    - cath-refine-align -h
+    - cath-resolve-hits -h
+    - cath-score-align -h
+    - cath-ssap -h 2>&1 | grep -i usage
+    - cath-superpose -h
+
+about:
+  home: https://github.com/UCLOrengoGroup/cath-tools
+  license: GPLv3
+  license_file: LICENSE
+  summary: 'Protein structure comparison tools such as SSAP, as used by the Orengo Group in curating CATH.'
+  dev_url: https://github.com/UCLOrengoGroup/cath-tools

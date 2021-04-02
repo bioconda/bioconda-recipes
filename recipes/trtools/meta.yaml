@@ -1,0 +1,76 @@
+{% set name = "trtools" %}
+{% set version = "4.0.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 8ad1ffc565cb7982cc5d6be42c5bf82a48bad8fbd21fcd3cffef66108879cc59
+  # To get the checksum for a new version, download the .tar.gz file from pip and
+  # run `openssl sha256 <file name>.tar.gz`.
+  # You may need the openssl package, available on conda-forge:
+  #  `conda install openssl -c conda-forge``
+
+build: 
+  # don't support deprecated python versions
+  noarch: python
+  entry_points:
+    - dumpSTR=trtools.dumpSTR:run
+    - mergeSTR=trtools.mergeSTR:run
+    - statSTR=trtools.statSTR:run
+    - compareSTR=trtools.compareSTR:run
+    - qcSTR=trtools.qcSTR:run
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  # If this is a new build for the same version, increment the build number.
+  number: 1
+
+requirements:
+  host:
+    - python >=3.5
+    - pip >=20.1.1
+  run:
+    - cyvcf2 >=0.30.1
+    - matplotlib-base
+    - numpy
+    - pandas
+    - pybedtools
+    - pysam >=0.15.3 #per suggestion here: https://github.com/bioconda/bioconda-recipes/pull/17448
+    - python >=3.5
+    - scikit-learn
+    - scipy
+
+test:
+  imports:
+    - trtools
+    - trtools.compareSTR
+    - trtools.dumpSTR
+    - trtools.mergeSTR
+    - trtools.qcSTR
+    - trtools.statSTR
+    - trtools.utils
+  requires:
+    - bcftools
+    - git
+    - pytest
+    - tabix
+  commands:
+    - dumpSTR --help
+    - mergeSTR --help
+    - statSTR --help
+    - compareSTR --help
+    - qcSTR --help
+
+about:
+  home: http://github.com/gymreklab/TRTools
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  summary: Toolkit for genome-wide analysis of tandem repeats https://trtools.readthedocs.io/ 
+  doc_url: https://trtools.readthedocs.io/
+  dev_url: https://github.com/gymreklab/TRTools
+
+extra:
+  recipe-maintainers:
+    - LiterallyUniqueLogin

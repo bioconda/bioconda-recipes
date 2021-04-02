@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="M3DExampleData_1.12.0.tar.gz"
+FN="M3DExampleData_1.16.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/M3DExampleData_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/M3DExampleData_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-m3dexampledata/bioconductor-m3dexampledata_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/M3DExampleData_1.16.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/M3DExampleData_1.16.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-m3dexampledata/bioconductor-m3dexampledata_1.16.0_src_all.tar.gz"
 )
-MD5="3887775f0fd3ccdd51fa270dbfef563f"
+MD5="e9dc468595bb9005f391c7ed92090e26"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

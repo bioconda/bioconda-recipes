@@ -2,6 +2,7 @@
 mkdir -p $PREFIX/bin
 
 cp pgcgap.pl $PREFIX/bin/pgcgap
+
 cp Functions/Pan/plot_3Dpie.R $PREFIX/bin/
 cp Functions/Pan/fmplot.py $PREFIX/bin/
 
@@ -18,6 +19,7 @@ cp Functions/MASH/get_Mash_Matrix.pl $PREFIX/bin/
 cp Functions/MASH/Plot_MashHeatmap.R $PREFIX/bin/
 
 cp Functions/Assemble/genome_LenFilter_stats.pl $PREFIX/bin/
+cp Functions/Assemble/get_stats_summary.pl $PREFIX/bin/
 
 chmod a+x $PREFIX/bin/pgcgap
 chmod a+x $PREFIX/bin/plot_3Dpie.R
@@ -32,5 +34,6 @@ chmod a+x $PREFIX/bin/Plot_COG_Abundance.R
 chmod a+x $PREFIX/bin/get_Mash_Matrix.pl
 chmod a+x $PREFIX/bin/Plot_MashHeatmap.R
 chmod a+x $PREFIX/bin/genome_LenFilter_stats.pl
+chmod a+x $PREFIX/bin/get_stats_summary.pl
 
 pgcgap --version

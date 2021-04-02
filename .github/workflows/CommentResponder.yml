@@ -7,11 +7,20 @@ jobs:
   pr_comment:
     runs-on: ubuntu-latest
     name: PR comment responder
+    container:
+      image: quay.io/bioconda/bioconda-recipes-issue-responder
     steps:
+    - name: Setup ssh (pre)
+      run: |
+        cp /usr/local/lib/libstdc++.so* /lib/x86_64-linux-gnu/
     - name: Setup ssh
-      uses: webfactory/ssh-agent@v0.1.1
+      uses: webfactory/ssh-agent@v0.4.1
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: Setup ssh (post)
+      run: |
+        mkdir -p /root/.ssh
+        cat /github/home/.ssh/known_hosts >> /root/.ssh/known_hosts
     - name: Run comment action
       env:
         BOT_TOKEN: ${{ secrets.GITHUBTOKEN }}
@@ -21,4 +30,4 @@ jobs:
         GITTER_TOKEN: ${{ secrets.GITTER_TOKEN }}
         CODE_SIGNING_KEY: ${{ secrets.CODE_SIGNING_KEY }}
         JOB_CONTEXT: ${{ toJson(github) }}
-      uses: bioconda/bioconda-actions/bioconda_recipes_issue_responder/@issue_responder
+      run: issue-responder

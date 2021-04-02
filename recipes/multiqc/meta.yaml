@@ -1,26 +1,26 @@
+{% set version = "1.10.1" %}
+
 package:
   name: multiqc
-  version: "1.8"
+  version: {{ version }}
 
 source:
-  url: https://github.com/ewels/MultiQC/archive/v1.8.tar.gz
-  sha256: 8d2ae93bd2b9e58db11f7453462f0b41bd21e8c751e7b522dc7e32ff73b78ea9
-  patches:
-    - patch
+  url: https://github.com/ewels/MultiQC/archive/v{{ version }}.tar.gz
+  sha256: ff9cdc7311f0240df8a6eec9c0cf2f72640539afcce2fae003262e62ccb00493
 
 build:
-  number: 2
+  number: 0
   entry_points:
     - multiqc=multiqc.__main__:multiqc
   noarch: python
-  preserve_egg_dir: True
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   host:
-    - python
-    - setuptools
+    - python >=3.6
+    - pip
   run:
-    - python
+    - python >=3.6
     - setuptools
     - click
     - coloredlogs
@@ -28,11 +28,12 @@ requirements:
     - jinja2 >=2.9
     - lzstring
     - markdown
-    - matplotlib-base >=2.1.1,<3.1.2
-    - networkx <2.3
+    - matplotlib-base >=2.1.1
+    - networkx
     - numpy
     - pyyaml >=4
     - requests
+    - rich >=9.4.0
     - simplejson
     - spectra >=0.0.10
 
@@ -63,6 +64,8 @@ test:
     - multiqc.modules.dedup
     - multiqc.modules.deeptools
     - multiqc.modules.disambiguate
+    - multiqc.modules.dragen
+    - multiqc.modules.eigenstratdatabasetools
     - multiqc.modules.fastp
     - multiqc.modules.fastq_screen
     - multiqc.modules.fastqc
@@ -78,39 +81,58 @@ test:
     - multiqc.modules.hicup
     - multiqc.modules.hisat2
     - multiqc.modules.homer
+    - multiqc.modules.hops
     - multiqc.modules.htseq
     - multiqc.modules.interop
+    - multiqc.modules.ivar
+    - multiqc.modules.jcvi
     - multiqc.modules.jellyfish
+    - multiqc.modules.kaiju
     - multiqc.modules.kallisto
     - multiqc.modules.kat
+    - multiqc.modules.kraken
     - multiqc.modules.leehom
     - multiqc.modules.longranger
     - multiqc.modules.macs2
+    - multiqc.modules.malt
     - multiqc.modules.methylQA
     - multiqc.modules.minionqc
+    - multiqc.modules.mirtop
     - multiqc.modules.mirtrace
     - multiqc.modules.mosdepth
     - multiqc.modules.mtnucratio
+    - multiqc.modules.multivcfanalyzer
+    - multiqc.modules.ngsderive
+    - multiqc.modules.optitype
     - multiqc.modules.peddy
     - multiqc.modules.phantompeakqualtools
     - multiqc.modules.picard
     - multiqc.modules.preseq
     - multiqc.modules.prokka
+    - multiqc.modules.purple
+    - multiqc.modules.pychopper
+    - multiqc.modules.pycoqc
+    - multiqc.modules.qc3C
     - multiqc.modules.qorts
     - multiqc.modules.qualimap
     - multiqc.modules.quast
     - multiqc.modules.rna_seqc
+    - multiqc.modules.rockhopper
     - multiqc.modules.rsem
     - multiqc.modules.rseqc
     - multiqc.modules.salmon
     - multiqc.modules.samblaster
     - multiqc.modules.samtools
     - multiqc.modules.sargasso
+    - multiqc.modules.sentieon
     - multiqc.modules.seqyclean
     - multiqc.modules.sexdeterrmine
+    - multiqc.modules.sickle
     - multiqc.modules.skewer
     - multiqc.modules.slamdunk
     - multiqc.modules.snpeff
+    - multiqc.modules.snpsplit
+    - multiqc.modules.somalier
     - multiqc.modules.sortmerna
     - multiqc.modules.stacks
     - multiqc.modules.star
@@ -118,12 +140,14 @@ test:
     - multiqc.modules.theta2
     - multiqc.modules.tophat
     - multiqc.modules.trimmomatic
+    - multiqc.modules.varscan2
     - multiqc.modules.vcftools
     - multiqc.modules.verifybamid
     - multiqc.plots
     - multiqc.templates
     - multiqc.templates.default
     - multiqc.templates.default_dev
+    - multiqc.templates.gathered
     - multiqc.templates.geo
     - multiqc.templates.sections
     - multiqc.templates.simple
