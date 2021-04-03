@@ -22,7 +22,11 @@ fi
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
-echo $CXXFLAGS
-echo $LDFLAGS
+echo "Cxxflags:"
+echo "$CXXFLAGS"
+echo "Ldflags:"
+echo "$LDFLAGS"
+echo "prefix:"
+echo "$PREFIX"
 make
 cp renano $PREFIX/bin
