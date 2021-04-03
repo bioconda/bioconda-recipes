@@ -11,14 +11,10 @@ if [ x"$(uname)" == x"Darwin" ]; then
   export CXXFLAGS CPPFLAGS
 fi
 
-#! /bin/bash
-mkdir -p $PREFIX/bin
-cd renano
-
 
 # export CPATH=${PREFIX}/include
 # export CXXPATH=${PREFIX}/include
 # export CFLAGS="$CFLAGS -I$PREFIX/include"
-export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
-make INCLUDES="-I$PREFIX/include" CFLAGS="-fopenmp -std=c++11 -O3 -march=native -fstrict-aliasing -ffast-math -fomit-frame-pointer -Wall -L$PREFIX/lib"
+# export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
+make INCLUDES="-I$PREFIX/include -L$PREFIX/lib" CFLAGS="-fopenmp -std=c++11 -O3 -march=native -fstrict-aliasing -ffast-math -fomit-frame-pointer -Wall"
 cp renano $PREFIX/bin
