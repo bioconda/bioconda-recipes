@@ -21,12 +21,6 @@ fi
 # export CXXPATH=${PREFIX}/include
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
-echo "Cxxflags:"
-echo "$CXXFLAGS"
-echo "Ldflags:"
-echo "$LDFLAGS"
-echo "prefix:"
-echo "$PREFIX"
-make
+export LDFLAGS="-I$PREFIX/include -L$PREFIX/lib"
+make 
 cp renano $PREFIX/bin
