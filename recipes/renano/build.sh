@@ -2,25 +2,5 @@
 mkdir -p $PREFIX/bin
 cd renano
 
-# src/Makefile uses
-# > CXX = g++
-# > CXXFLAGS = -Wall -fopenmp -O3
-# We patch these to add to environment, rather than override
-# because we can't get to the `make` call easily.
-sed -i.bak 's/CXX *=/CXX ?=/; s/CXXFLAGS *=/CXXFLAGS +=/' Makefile
-sed -i.bak 's/^LDFLAGS  =$//g' Makefile
-
-# Work around "unknown type name 'mach_port_t'" error
-if [ x"$(uname)" == x"Darwin" ]; then
-  CXXFLAGS="$CXXFLAGS -D_DARWIN_C_SOURCE"
-  CPPFLAGS="$CPPFLAGS -D_DARWIN_C_SOURCE"
-  export CXXFLAGS CPPFLAGS
-fi
-
-# export CPATH=${PREFIX}/include
-# export CXXPATH=${PREFIX}/include
-export CFLAGS="$CFLAGS -I$PREFIX/include"
-export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
-export LDFLAGS="-I$PREFIX/include -L$PREFIX/lib"
-make 
+make INCLUDES="-I$PREFIX/include" CFLAGS="-fopenmp -std=c++11 -O3 -march=native -fstrict-aliasing -ffast-math -fomit-frame-pointer -Wall -L$PREFIX/lib"
 cp renano $PREFIX/bin
