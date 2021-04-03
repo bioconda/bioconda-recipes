@@ -15,6 +15,6 @@ fi
 # export CPATH=${PREFIX}/include
 # export CXXPATH=${PREFIX}/include
 # export CFLAGS="$CFLAGS -I$PREFIX/include"
-# export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
+export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
 make INCLUDES="-I$PREFIX/include -L$PREFIX/lib" CFLAGS="-fopenmp -std=c++11 -O3 -march=native -fstrict-aliasing -ffast-math -fomit-frame-pointer -Wall"
 cp renano $PREFIX/bin
