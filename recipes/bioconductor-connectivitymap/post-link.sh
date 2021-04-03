@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="ConnectivityMap_1.20.0.tar.gz"
+FN="ConnectivityMap_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ConnectivityMap_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ConnectivityMap_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-connectivitymap/bioconductor-connectivitymap_1.20.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-connectivitymap/bioconductor-connectivitymap_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/ConnectivityMap_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ConnectivityMap_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-connectivitymap/bioconductor-connectivitymap_1.26.0_src_all.tar.gz"
 )
-MD5="0556684e97c094a8206e314400bb5165"
+MD5="5c08dc220e174734ca74fd589aec189a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

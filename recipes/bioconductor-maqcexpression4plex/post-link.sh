@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="maqcExpression4plex_1.28.0.tar.gz"
+FN="maqcExpression4plex_1.34.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/maqcExpression4plex_1.28.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/maqcExpression4plex_1.28.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-maqcexpression4plex/bioconductor-maqcexpression4plex_1.28.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-maqcexpression4plex/bioconductor-maqcexpression4plex_1.28.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/maqcExpression4plex_1.34.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/maqcExpression4plex_1.34.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-maqcexpression4plex/bioconductor-maqcexpression4plex_1.34.0_src_all.tar.gz"
 )
-MD5="fa9ecd1de4f0ee49935ea8620c3605e2"
+MD5="27afa66e5943a7e91b05572fd07aaafa"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

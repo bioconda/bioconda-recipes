@@ -1,0 +1,45 @@
+{% set name = "unitem" %}
+{% set version = "0.0.18" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: f9f6c59c1925ddfa190a83719b294da1e331ed031bb3f8b3648db098e3c3c948
+  patches:
+    - shebang.patch
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
+
+requirements:
+  host:
+    - pip
+    - python <3
+  run:
+    - python <3
+    - biolib >=0.0.46,<0.1.0
+    - svgwrite>=1.1.9
+    - metabat2 >=2.10.2
+    - maxbin2 >=2.2.2
+    - groopm
+    - binsanity >=0.2.5
+    - checkm-genome >=1.0.7
+    - future
+
+test:
+  commands:
+    - unitem -h
+  imports:
+    - unitem
+
+about:
+  home: https://github.com/dparks1134/UniteM
+  license: GNU General Public v3 (GPLv3)
+  license_family: GPL3
+  license_file: 'LICENSE'
+  summary: 'Ensemble binning strategies for combining the output of multiple binning methods.'

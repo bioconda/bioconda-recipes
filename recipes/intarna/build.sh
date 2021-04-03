@@ -25,6 +25,7 @@ export LDFLAGS=${LDFLAGS}
 ./configure --prefix=$PREFIX \
             --with-vrna=$PREFIX \
             --with-boost=$PREFIX \
+            --with-zlib=$PREFIX \
             --disable-log-coloring \
             --with-boost-libdir=$PREFIX/lib \
             --disable-intarnapvalue \

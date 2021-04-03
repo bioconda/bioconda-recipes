@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="tximportData_1.12.0.tar.gz"
+FN="tximportData_1.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/tximportData_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/tximportData_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tximportdata/bioconductor-tximportdata_1.12.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tximportdata/bioconductor-tximportdata_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/tximportData_1.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/tximportData_1.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tximportdata/bioconductor-tximportdata_1.18.0_src_all.tar.gz"
 )
-MD5="8ac5ace87e64a47a3b4c68acfd5ae976"
+MD5="8cd06bd336aedef19f19fd75615c92e8"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

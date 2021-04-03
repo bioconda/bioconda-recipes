@@ -1,29 +1,33 @@
---- auxprogs/bam2wig/Makefile.old	2019-03-28 00:15:21.797235983 -0500
-+++ auxprogs/bam2wig/Makefile	2019-03-28 00:18:04.488231631 -0500
-@@ -7,7 +7,7 @@
- #
- 
- ifndef TOOLDIR
+diff --git a/auxprogs/bam2wig/Makefile b/auxprogs/bam2wig/Makefile
+index 8584531b..28e109d8 100644
+--- a/auxprogs/bam2wig/Makefile
++++ b/auxprogs/bam2wig/Makefile
+@@ -9,7 +9,7 @@
+ ifdef TOOLDIR
+ 	DEF_TOOLDIR=1
+ else
 -	TOOLDIR=$(HOME)/tools
-+	TOOLDIR=${PREFIX}/include
- # replace with your own parent directory of samtools, htslib, bcftools, tabix
- # if TOOLDIR is not specified as environment variable
++	TOOLDIR=${PREFIX}/tools
+ 	# replace with your own parent directory of htslib
+ 	# if TOOLDIR is not specified as environment variable
+ 	# and libhts-dev is not installed
+@@ -20,14 +20,14 @@ SOURCES = $(PROGRAM)
+ OBJECTS = $(SOURCES:.c=.o)
+ 
+ ifneq ($(wildcard ${TOOLDIR}/htslib/htslib/.),) # if TOOLDIR exists and contains htslib
+-	INCLUDES=-I$(TOOLDIR)/htslib -I$(TOOLDIR)/htslib/htslib
+-	HTSLIBS=-L$(TOOLDIR)/htslib -Wl,-rpath,$(TOOLDIR)/htslib -lhts -lcurses -lm -lz -lpthread -lcurl -lssl -lcrypto -lbz2 -llzma
++	INCLUDES=-I${PREFIX}/include/htslib
++	HTSLIBS=-L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib -lhts -lcurses -lm -lz -lpthread -lcurl -lssl -lcrypto -lbz2 -llzma
+ 	HTSERRHINT="Check if the installed HTSlib is of version 1.10 or higher - see README.txt"
+ else
+-	INCLUDES=-I/usr/include/htslib
+-	HTSLIBS=-lhts -lz -lpthread
++	INCLUDES=-I${PREFIX}/include/htslib
++	HTSLIBS=-L${PREFIX}/lib -lhts -lz -lpthread
+ 	ifdef DEF_TOOLDIR
+-		HTSERRHINT="There is no htslib folder in directory $(TOOLDIR) \n"
++		HTSERRHINT="There is no htslib folder in directory ${PREFIX} \n"
+ 	endif
+ 	HTSERRHINT:=$(HTSERRHINT)"Check if HTSlib is installed and of version 1.10 or higher - see README.txt"
  endif
-@@ -19,14 +19,13 @@
- HTSLIB=$(TOOLDIR)/htslib/
- BCFTOOLS=$(TOOLDIR)/bcftools/
- TABIX=$(TOOLDIR)/tabix/
--INCLUDES=-I$(SAMTOOLS) -I. -I$(HTSLIB) -I$(BCFTOOLS) -I$(TABIX)
-+INCLUDES=-I$(SAMTOOLS) -I. -I${PREFIX}/include/bam -I${PREFIX}/include
- VPATH=$(SAMTOOLS)
--LIBS=$(SAMTOOLS)/libbam.a $(HTSLIB)/libhts.a -lcurses -lm -lz -lpthread -lcurl -lssl -lcrypto
-+LIBS=${PREFIX}/lib/libbam.a ${PREFIX}/lib/libhts.a ${PREFIX}/lib/libncurses.a -lm ${PREFIX}/lib/libz.a -lpthread ${PREFIX}/lib/libcurl.a ${PREFIX}/lib/libssl.a ${PREFIX}/lib/libcrypto.a ${PREFIX}/lib/libbz2.a ${PREFIX}/lib/liblzma.a
- CFLAGS=-Wall -O2 $(INCLUDES)
--CC=gcc
- 
- $(PROGRAM) : bam2wig.o
--	$(CC) $(CFLAGS) $^ -o $@ $(LIBS) -lbz2 -llzma
-+	$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
- 	cp bam2wig ../../bin/bam2wig
- 
- bam2wig.o : bam2wig.c

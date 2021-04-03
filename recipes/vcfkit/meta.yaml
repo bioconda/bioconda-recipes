@@ -1,71 +1,60 @@
+{% set version = "0.2.9" %}
+{% set sha256 = "1534727cc059453df3cfe27e326b7b5c8f99792ed086fd69a7a558f7a0f66462" %}
+
 package:
   name: vcfkit
-  version: "0.1.6"
+  version: {{ version }}
 
 source:
-  url: https://github.com/AndersenLab/VCF-kit/archive/0.1.6.tar.gz
-  sha256: 4865414ac9dc6996c0baeefadf1d528c28e6d0c3cc3dbdc28a2cdc6e06212428
+  url: https://pypi.io/packages/source/V/VCF-kit/VCF-kit-{{ version }}.tar.gz
+  sha256: 1534727cc059453df3cfe27e326b7b5c8f99792ed086fd69a7a558f7a0f66462
+  patches:
+    - setup.patch
 
 build:
-  number: 2
-  skip: True  # [not py27]
-  preserve_egg_dir: True
+  number: 0
+  noarch: python
   entry_points:
     - vk=vcfkit.vk:main
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
   host:
-    - python
-    - awesome-slugify
-    - matplotlib
-    - scipy
-    - numpy
     - cython
-    - cyvcf2 >=0.1.9
-    - docopt
-    - biopython
-    - yahmm
-    - clint
-    - requests
-    - intervaltree
-    - tabulate
-    - yahmm
-    - jinja2
-    - pytest-runner
-
+    - numpy
+    - pip
+    - python
   run:
-    - python
     - awesome-slugify
-    - matplotlib
-    - scipy
-    - numpy
-    - cython
-    - cyvcf2 >=0.1.9
-    - docopt
     - biopython
-    - yahmm
     - clint
-    - requests
-    - intervaltree
-    - tabulate
-    - yahmm
+    - cyvcf2 >=0.6.5
+    - docopt
+    - intervaltree ==2.1.0
     - jinja2
-    - pytest-runner
+    - matplotlib-base
+    - networkx ==1.11
+    - numpy
+    - python
+    - requests
+    - scipy
+    - tabulate
+    - yahmm >=1.1.2
+    - bwa >=0.7.12
+    - samtools >=1.3
+    - bcftools >=1.3
+    - blast >=2.2.31
+    - muscle >=3.8.31
 
 test:
   imports:
     - vcfkit
     - vcfkit.utils
-
   commands:
     - vk --help
 
-  requires:
-    - coveralls
-    - pytest
-
 about:
   home: https://github.com/AndersenLab/VCF-kit
-  license: MIT License
-  summary: 'Assorted utilities for the variant call format'
+  license: MIT
   license_family: MIT
+  summary: "VCF-kit is a command-line based collection of utilities for performing analysis on Variant Call Format (VCF) files."

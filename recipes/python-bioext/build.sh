@@ -8,4 +8,4 @@ fi
 
 export FREETYPE2_ROOT=$PREFIX
 
-python3 setup.py install --single-version-externally-managed --record=record.txt
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt
