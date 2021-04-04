@@ -12,6 +12,7 @@ cmake -DCMAKE_BUILD_TYPE=RELEASE \
       -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
       -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX \
       -DBoost_NO_SYSTEM_PATHS=ON \
+      -DNO_IPO=TRUE \
       ..
 make VERBOSE=1
 echo "unit test executable"
