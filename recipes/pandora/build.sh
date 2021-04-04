@@ -2,7 +2,6 @@
 set -eux -o pipefail
 
 export gcc=$GCC
-export g++=$CXX
 mkdir -p build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release \
