@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eux -o pipefail
 
-export gcc=$GCC
+export cc=$GCC
 mkdir -p build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release \
