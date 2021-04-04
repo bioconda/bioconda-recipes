@@ -1,8 +1,8 @@
 #!/bin/bash
-set -eu -o pipefail
+set -eux -o pipefail
 
-alias gcc=$GCC
-alias g++=$CXX
+export gcc=$GCC
+export g++=$CXX
 mkdir -p build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release \
