@@ -7,5 +7,7 @@
 # install PlasFlow
 $PYTHON -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
 
+ls -la
+
 # copy models
 cp -r PlasFlow/models $PREFIX/bin/
