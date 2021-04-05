@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="derfinderData_2.8.0.tar.gz"
+FN="derfinderData_2.8.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/derfinderData_2.8.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/derfinderData_2.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-derfinderdata/bioconductor-derfinderdata_2.8.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/derfinderData_2.8.1.tar.gz"
+  "https://bioarchive.galaxyproject.org/derfinderData_2.8.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-derfinderdata/bioconductor-derfinderdata_2.8.1_src_all.tar.gz"
 )
-MD5="a4c64812ffeccfa41fc0279e583d3023"
+MD5="f869a002a5f352d038887b03e85e6ece"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
