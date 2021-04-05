@@ -1,8 +1,6 @@
 #!/bin/bash
-
 set -x -e
 
-cd demuxlet
 export CFLAGS="${CFLAGS} -I${PREFIX}/include -I${PREFIX}/include/htslib -ldl -ldeflate -fno-strict-aliasing"
 #export LDFLAGS="-ldl"
 export CXXFLAGS="${CXXFLAGS} -ldl -ldeflate"
