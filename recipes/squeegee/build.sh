@@ -1,1 +1,0 @@
-squeegee --help
