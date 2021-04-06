@@ -3,7 +3,8 @@ set -x -e
 
 # install dependencies
 cpanm Getopt::Long::Subcommand
-per_ver=$(perl -e '$ver=$^V; $ver=~s/v//; print $ver;')
+#per_ver=$(perl -e '$ver=$^V; $ver=~s/v//; print $ver;')
+per_ver=5.32.0
 
 # copy the viewBS
 mkdir -p ${PREFIX}/bin
