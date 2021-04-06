@@ -15,7 +15,7 @@ from os import getenv
 from os import X_OK
 
 # https://bitbucket.org/searleb/encyclopedia/downloads/encyclopedia-1.2.2-executable.jar
-jar_file = 'encyclopedia-1.2.2-executable.jar'
+jar_file = f'encyclopedia-{ getenv("PKG_VERSION") }-executable.jar'
 
 default_jvm_mem_opts = ['-Xms1g', '-Xmx8g']
 
