@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export CC="\"${CC} -fcommon\""
 ## Install hts-nim dependency
 pushd hts-nim
 nimble install -y
