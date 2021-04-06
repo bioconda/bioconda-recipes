@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="TMExplorer_0.99.6.tar.gz"
+FN="TMExplorer_1.0.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/TMExplorer_0.99.6.tar.gz"
-  "https://bioarchive.galaxyproject.org/TMExplorer_0.99.6.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tmexplorer/bioconductor-tmexplorer_0.99.6_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/TMExplorer_1.0.1.tar.gz"
+  "https://bioarchive.galaxyproject.org/TMExplorer_1.0.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tmexplorer/bioconductor-tmexplorer_1.0.1_src_all.tar.gz"
 )
-MD5="600f8e56d962c990ef26f75b99b5f287"
+MD5="950a8242d2704ac4eadf0c190c3111fd"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
