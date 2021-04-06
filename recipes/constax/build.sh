@@ -9,9 +9,9 @@ echo "export RDPPATH=classifier" >> $constax/pathfile.txt
 echo "export CONSTAXPATH="$constax >> $constax/pathfile.txt
 
 cp -r ./* $constax
-sed -i "s/VERSION=2....; BUILD=./VERSION=$PKG_VERSION; BUILD=$PKG_BUILDNUM/" $constax/constax_no_inputs.sh
-sed -i "s/VERSION=2....; BUILD=./VERSION=$PKG_VERSION; BUILD=$PKG_BUILDNUM/" $constax/constax.sh
-sed -i 's/version="2...."; build="."/version="'"$PKG_VERSION"'"; build="'"$PKG_BUILDNUM"'"/' $constax/constax_wrapper.py
+sed -i'' -e "s/VERSION=2....; BUILD=.; BUILD_STRING=.*/VERSION=$PKG_VERSION; BUILD=$PKG_BUILDNUM; BUILD_STRING=$PKG_BUILD_STRING/" $constax/constax_no_inputs.sh
+sed -i'' -e "s/VERSION=2....; BUILD=.; BUILD_STRING=.*/VERSION=$PKG_VERSION; BUILD=$PKG_BUILDNUM; BUILD_STRING=$PKG_BUILD_STRING/" $constax/constax.sh
+sed -i'' -e 's/version="2...."; build="."; build_string=".*"/version="'"$PKG_VERSION"'"; build="'"$PKG_BUILDNUM"'"; build_string="'"$PKG_BUILD_STRING"'"/' $constax/constax_wrapper.py
 
 chmod +x $constax/constax_no_inputs.sh
 chmod +x $constax/constax.sh
