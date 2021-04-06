@@ -2,13 +2,14 @@
 set -e
 
 export NETCDF_DIR=$(nc-config --prefix)
-export CIME_MODEL=noresm
+export CIME_MODEL=cesm
 export CESM_DATA_ROOT=$HOME
 export CESM_WORK_ROOT=$HOME
 
+# export AR=---
 mkdir -p $CESM_DATA_ROOT/inputdata
 
-create_newcase --case $CESM_WORK_ROOT/cases/NF2000climo  --compset NF2000climo --res f19_g17 --machine espresso --run-unsupported
+create_newcase --case $CESM_WORK_ROOT/cases/NF2000climo  --compset NF2000climo --res f19_f19_mg17 --machine espresso --run-unsupported
 
 cd $CESM_WORK_ROOT/cases/NF2000climo
 ./case.setup
