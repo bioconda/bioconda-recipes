@@ -1,4 +1,4 @@
-{% set version = "0.99.3" %}
+{% set version = "1.0.2" %}
 {% set name = "MSstatsTMTPTM" %}
 {% set bioc = "3.12" %}
 
@@ -10,13 +10,12 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 6297a7f253c55a6585b11cfdb7344af8
+  md5: 35268ed9410bae542aa94339a427c102
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
 # Suggests: BiocStyle, knitr, rmarkdown, testthat, MSstats, covr
 requirements:
   host:
@@ -25,16 +24,24 @@ requirements:
     - r-dplyr
     - r-ggplot2
     - r-gridextra
+    - r-rcpp
     - r-reshape2
     - r-stringr
+    - libblas
+    - liblapack
   run:
     - 'bioconductor-msstatstmt >=1.8.0,<1.9.0'
     - r-base
     - r-dplyr
     - r-ggplot2
     - r-gridextra
+    - r-rcpp
     - r-reshape2
     - r-stringr
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
