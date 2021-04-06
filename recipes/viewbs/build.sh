@@ -3,8 +3,7 @@ set -x -e
 
 # install dependencies
 cpanm Getopt::Long::Subcommand
-#per_ver=$(perl -e '$ver=$^V; $ver=~s/v//; print $ver;')
-per_ver=5.26.0
+per_ver=$(perl -e '$ver=$^V; $ver=~s/v//; print $ver;')
 
 # copy the viewBS
 mkdir -p ${PREFIX}/bin
@@ -19,5 +18,5 @@ chmod a+x ${PREFIX}/bin/{brat2bismark.pl,bsseeker2bismark.pl,gff2tab.pl,mer_fig.
 # copy the depencies
 mkdir -p ${PREFIX}/lib/site_perl/${per_ver}
 cp -r doc ${PREFIX}/bin
-cp -r lib/SubCmd ${PREFIX}/lib/site_perl/${per_ver}
-cp -r lib/Meth ${PREFIX}/lib/site_perl/${per_ver}
+cp -r lib/SubCmd ${PREFIX}/lib/site_perl/${per_ver}/
+cp -r lib/Meth ${PREFIX}/lib/site_perl/${per_ver}/
