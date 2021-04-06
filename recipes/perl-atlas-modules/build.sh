@@ -35,7 +35,7 @@ cpanm -l $PERLLIB MooseX::FollowPBP \
                     Text::TabularDisplay \
                     Log::Dispatch::File \
                     IO::CaptureOutput \
-                    TIMB/DBI-1.636.tar.gz \
+                    MIYAGAWA/Class-Trigger-0.15.tar.gz \
                     Class::DBI \
                     DETI/Proc/Proc-Daemon-0.14.tar.gz \
                     Proc::ProcessTable
