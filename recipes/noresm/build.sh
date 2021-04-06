@@ -35,6 +35,3 @@ for file in $list_files; do  sed -i.bak 's|#!/bin/csh|#!/bin/env tcsh|' $file; d
 for file in $list_files; do  sed -i.bak 's|#! /bin/csh -f|#!/bin/env tcsh|' $file; done
 for file in $list_files; do  sed -i.bak 's|#!/bin/tcsh|#!/bin/env tcsh|' $file; done
 
-# install XML::LibXML
-export PERL_MM_USE_DEFAULT=1
-cpan XML::LibXML
