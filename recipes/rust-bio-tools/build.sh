@@ -5,4 +5,4 @@ export \
     CARGO_HOME="${BUILD_PREFIX}/.cargo" \
     BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
-cargo install --path . --root "${PREFIX}"
+cargo install --path . --root "${PREFIX}" --verbose
