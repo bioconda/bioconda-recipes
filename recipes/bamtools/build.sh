@@ -4,6 +4,8 @@ sed -i.bak '14i\
 cmake_policy(SET CMP0042 NEW)' CMakeLists.txt
 export LD_LIBRARY_PATH=${PREFIX}/lib
 export LIBRARY_PATH=${PREFIX}/lib
+mkdir -p ${PREFIX}/include/bamtools_utils/
+
 mkdir -p build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} \
@@ -26,3 +28,6 @@ cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} \
       -DZLIB_ROOT=$PREFIX \
       ..
 make install
+ar cr ${PREFIX}/lib/libbamtools_utils.a src/utils/CMakeFiles/BamTools-utils.dir/*o
+cp -f ../src/utils/*.h ${PREFIX}/include/bamtools_utils/
+
