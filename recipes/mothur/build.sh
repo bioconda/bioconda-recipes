@@ -4,7 +4,7 @@ unset LDFLAGS
 export LDFLAGS="-L${PREFIX}/lib"
 # Compiler flags
 unset CXXFLAGS
-export CXXFLAGS="-I${PREFIX}/include"
+export CXXFLAGS="-I${PREFIX}/include -I."
 
 
 ### Configuring settings within mothur Makefile
