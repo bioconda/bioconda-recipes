@@ -11,6 +11,8 @@ export CPATH=${PREFIX}/include
 
 cd ./VGP
 COMPILER=${CC} make
+mkdir -p ${PREFIX}/bin
+
 
 cp ./VGPzip ${PREFIX}/bin/VGPzip
 cp ./VGPseq ${PREFIX}/bin/VGPseq
