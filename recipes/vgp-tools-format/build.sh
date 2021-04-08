@@ -10,7 +10,7 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib -lz -lm"
 export CPATH=${PREFIX}/include
 
 cd ./VGP
-COMPILER=${CC} make
+COMPILER=${CC} make CC=$CC
 mkdir -p ${PREFIX}/bin
 
 
