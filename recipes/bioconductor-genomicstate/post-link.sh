@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="GenomicState_0.99.9.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/GenomicState_0.99.9.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/GenomicState_0.99.9.tar.gz"
   "https://bioarchive.galaxyproject.org/GenomicState_0.99.9.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-genomicstate/bioconductor-genomicstate_0.99.9_src_all.tar.gz"
 )

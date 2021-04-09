@@ -1,5 +1,5 @@
 {% set name = "coinfinder" %}
-{% set version = "1.0.5" %}
+{% set version = "1.0.7" %}
 
 package:
   name: "{{ name }}"
@@ -7,12 +7,11 @@ package:
 
 source:
   url: "https://github.com/fwhelan/{{ name }}/archive/{{ version }}.tar.gz"
-  sha256: 0c93353c9dcb62add07f149134e8c27244ec4546bdc7f9096041642ea84654be
+  sha256: 0d44db16b4a5d1cf93bbafcf3d69199f1b8765b20925bdb3d8cb55a4edba8161
 
 build:
-  number: 0
-  # Skip OSX only because build times out on the `bulk` branch while solving environment on OSX.
-  skip: True  # [py<30 or osx]
+  number: 1
+  skip: True  # [py2k]
   rpaths:
    - lib/R/lib/
    - lib/
@@ -21,37 +20,38 @@ requirements:
   build:
     - {{ compiler('cxx') }}
     - cmake
+    - make
   host:
     - boost-cpp
     - openmp
     - python
   run:
     - openmp
+    - boost-cpp
     - python
     #Depends
     - r-base
     #Imports
     - r-caper
-    - r-phytools
+    - 'r-phytools >=0.6_99'
     - r-getopt
     - r-igraph
-    - r-dplyr
+    - 'r-dplyr >=1.0.2'
     - r-cowplot
     - r-data.table
     - r-ggraph
     - r-future
     - r-flock
     #Bioconductor
-    - r-ape
+    - 'r-ape >=5.4.1'
     - 'r-ggplot2 >=3.0.0'
     - r-magrittr
     - r-purrr
     - r-rlang
     - r-rvcheck
-    - r-tidyr
+    - 'r-tidyr >=1.1.2'
     - 'r-tidytree >=0.2.6'
-    - 'bioconductor-ggtree >=2.0.0,<2.1.0' # [linux]
-    - bioconductor-ggtree # [macos]
+    - 'bioconductor-ggtree >=2.0.0,<2.1.0'
 
 test:
   commands:
@@ -59,7 +59,7 @@ test:
 
 about:
   home: "https://github.com/fwhelan/{{ name }}"
-  license: "GPLv3"
+  license: GPL-3.0-only
   license_family: "GPL"
   license_file: "license.txt"
   summary: "A tool for the identification of coincident (associating and dissociating) genes in pangenomes."

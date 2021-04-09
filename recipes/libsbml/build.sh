@@ -6,8 +6,8 @@ cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} \
       -DCMAKE_CXX_COMPILER=${CXX} \
       -DCMAKE_C_COMPILER=${CC} \
       -DWITH_SWIG=OFF \
-      -DLIBXML_LIBRARY=${PREFIX}/lib \
+      -DLIBSBML_DEPENDENCY_DIR="${PREFIX}" \
       -DLIBXML_INCLUDE_DIR=${PREFIX}/include/libxml2 \
       ..
-make
+make -j"${CPU_COUNT}"
 make install
