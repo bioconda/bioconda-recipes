@@ -6,9 +6,9 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 
 export LDFLAGS="-L${PREFIX}/lib"
-export CXXFLAGS="-I${SRC_DIR}/trinity-plugins/bamsifter/htslib -I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
-export CPPFLAGS="-I${SRC_DIR}/trinity-plugins/bamsifter/htslib -I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
-export CFLAGS="-I${SRC_DIR}/trinity-plugins/bamsifter/htslib -I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
+export CXXFLAGS="-I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
+export CPPFLAGS="-I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
+export CFLAGS="-I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
 
 BINARY_HOME=$PREFIX/bin
 TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION
