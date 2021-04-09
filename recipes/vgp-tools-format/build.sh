@@ -10,9 +10,9 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib -lz -lm"
 export CPATH=${PREFIX}/include
 
 cd ./VGP
-COMPILER=${CC} make CC=$CC
+sed -i '' 's/gcc/${CC}/g' Makefile
+COMPILER=${CC} make
 mkdir -p ${PREFIX}/bin
-
 
 cp ./VGPzip ${PREFIX}/bin/VGPzip
 cp ./VGPseq ${PREFIX}/bin/VGPseq
