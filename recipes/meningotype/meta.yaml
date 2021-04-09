@@ -1,0 +1,49 @@
+{% set name = "meningotype" %}
+{% set version = "0.8.4" %}
+
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/meningotype-{{ version }}.tar.gz
+  sha256: f9c38dd377346d5e62543a2df53115c31f1dcc7974b6e148f39daa08f9f304ef
+
+build:
+  number: 1
+  noarch: python
+  entry_points:
+    - meningotype=meningotype.meningotype:main
+  script: {{ PYTHON }} -m pip install . -vv
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - biopython
+    - python >=3.6
+    - ispcr
+    - blast
+    - mlst 
+
+test:
+  imports:
+    - meningotype
+  commands:
+    - pip check
+    - meningotype --help
+    - meningotype --test
+  requires:
+    - pip
+
+about:
+  home: https://github.com/MDU-PHL/meningotype
+  summary: In silico serotyping and finetyping (porA and fetA) of Neisseria meningitidis
+  license: GPL-3.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - andersgs
