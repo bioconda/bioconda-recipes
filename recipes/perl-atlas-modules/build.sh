@@ -35,8 +35,9 @@ cpanm -l $PERLLIB MooseX::FollowPBP \
                     Text::TabularDisplay \
                     Log::Dispatch::File \
                     IO::CaptureOutput \
+                    TIMB/DBI-1.636.tar.gz \
                     MIYAGAWA/Class-Trigger-0.15.tar.gz \
-                    Class::DBI \
+                    TMTM/Class-DBI-v3.0.17.tar.gz \
                     DETI/Proc/Proc-Daemon-0.14.tar.gz \
                     Proc::ProcessTable
 
@@ -45,3 +46,5 @@ cpanm -l $PERLLIB --force Mail::Sendmail
 
 mkdir -p ${PREFIX}/etc/conda/activate.d/
 echo "export PERL5LIB=$PERL5LIB:$atlasprodDir/perl_modules:$PERLLIB/lib/perl5" > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}-${PKG_VERSION}.sh
+
+patch ${PREFIX}/lib/perl5/5.26.2/perl_lib/lib/perl5/Class/DBI.pm ${RECIPE_DIR}/Class-DBI_last_insert.patch
