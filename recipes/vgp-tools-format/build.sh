@@ -10,7 +10,7 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib -lz -lm"
 export CPATH=${PREFIX}/include
 
 cd ./VGP
-sed -i '' 's/gcc/${CC}/g' Makefile
+sed -i.bak 's/gcc/${CC}/g' Makefile
 COMPILER=${CC} make
 mkdir -p ${PREFIX}/bin
 
