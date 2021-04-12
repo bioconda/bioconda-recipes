@@ -1,0 +1,42 @@
+{% set name = "emu" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: 'https://gitlab.com/treangenlab/emu/-/archive/v{{version}}/emu-v{{version}}.tar.gz'
+  sha256: 8c7f4445b4d08482fed92950437dd503fae3fec4028294049cee6a01652024b3
+
+build:
+  noarch: generic
+  number: 1
+  script: mkdir -p ${PREFIX}/bin && cp emu ${PREFIX}/bin
+
+requirements:
+  run:
+    - biopython
+    - python >=3.6,<=3.8
+    - pysam >=0.15
+    - numpy >=1.11
+    - pandas >=1.1.3
+    - flatten-dict
+    - bioawk
+    - minimap2
+
+test:
+  source_files:
+    - example
+    - example/*
+    - emu_database
+    - emu_database/*
+  commands:
+    - emu --help 
+
+about:
+  home: https://gitlab.com/treangenlab/emu
+  license: MIT
+  license_file: LICENSE.txt
+  summary: Emu is a relative abundance estimator for 16s genomic data.
+
