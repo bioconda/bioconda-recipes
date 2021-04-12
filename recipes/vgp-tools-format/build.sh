@@ -11,8 +11,13 @@ export CPATH=${PREFIX}/include
 
 cd ./VGP
 sed -i.bak 's/CC     = gcc//g' HTSLIB/Makefile
+sed -i.bak 's/CPPFLAGS =//g' HTSLIB/Makefile
+sed -i.bak 's|prefix      = /usr/local||g' HTSLIB/Makefile
+
 sed -i.bak 's/gcc/${CC}/g' Makefile
-COMPILER=${CC} make
+
+COMPILER=${CC} make prefix=${PREFIX} CC=${CC} AR=${AR} RANLIB=${RANLIB} CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" install
+
 mkdir -p ${PREFIX}/bin
 
 cp ./VGPzip ${PREFIX}/bin/VGPzip
