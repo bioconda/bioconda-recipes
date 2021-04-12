@@ -1,0 +1,52 @@
+{% set version = "0.4.2" %}
+
+
+package:
+  name: mimsi
+  version: {{ version }}
+
+source:
+  url: https://github.com/mskcc/mimsi/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b5d8aa6012c5b452e100d9a7940cb262b491976e0f83fd90c9b56b94114e629c
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir "
+
+requirements:
+  host:
+    - python >=2.7
+    - python <3.9
+    - setuptools
+    - pip
+
+  run:
+    - python >=2.7
+    - python <3.9
+    - future
+    - nose >=1.3.7
+    - pytorch
+    - torchvision
+    - numpy ==1.14.6 # [py==35]
+    - numpy # [py>=36]
+    - numpy # [py==27]
+    - pandas ==0.24.2 # [py==27]
+    - pandas # [py>=35]
+    - pysam
+    - scikit-learn # [py>=35]
+    - scikit-learn >=0.20.0 # [py==27]
+  
+
+
+test:
+  commands:
+    - evaluate_sample --version
+    - analyze --version
+    - create_data --version
+    - mi_msi_train_test --version
+
+about:
+  home: https://github.com/mskcc/mimsi
+  summary: 'A Deep Mulitple Instance Learning Classifier for Microsatellite Instability'
+  license: GNU GPL v3.0
