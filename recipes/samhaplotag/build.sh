@@ -10,5 +10,6 @@ fi
 
 cd builddir
 meson compile
+meson test
 meson install
 
