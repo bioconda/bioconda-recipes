@@ -16,7 +16,8 @@ sed -i.bak 's|prefix      = /usr/local||g' HTSLIB/Makefile
 
 sed -i.bak 's/gcc/${CC}/g' Makefile
 
-COMPILER=${CC} make prefix=${PREFIX} CC=${CC} AR=${AR} RANLIB=${RANLIB} CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" install
+COMPILER=${CC} make prefix=${PREFIX} CC=${CC} AR=${AR} RANLIB=${RANLIB} CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
+make install
 
 mkdir -p ${PREFIX}/bin
 
