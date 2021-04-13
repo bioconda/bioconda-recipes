@@ -10,19 +10,20 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib -lz -lm"
 export CPATH=${PREFIX}/include
 
 cd ./VGP
-sed -i.bak 's/CC     = gcc//g' HTSLIB/Makefile
-sed -i.bak 's/CPPFLAGS =//g' HTSLIB/Makefile
-# sed -i.bak 's/libhts.a: HTSLIB//g' Makefile
-# sed -i.bak 's/libhts.a//g' Makefile
 
-sed -i.bak 's/cd HTSLIB; make; cd ..//g' Makefile
-sed -i.bak 's/gcc/${CC}/g' Makefile
+# sed -i.bak 's/cd HTSLIB; make; cd ..//g' Makefile
+# sed -i.bak 's/all: deflate.lib libhts.a $(ALL)/HTSFLAG = -L${BUILD_PREFIX}/lib\nall: deflate.lib $(ALL)/g' Makefile
+# sed -i.bak 's/include HTSLIB/htslib_static.mk//g' Makefile
+# sed -i.bak 's/libhts.a: HTSLIB//g' Makefile
+# sed -i.bak 's/cd HTSLIB; make; cd ..//g' Makefile
+# sed -i.bak 's/VGPseq: VGPseq.c $(ONE_DPND) $(GENE_DPND) HTSLIB/libhts.a/VGPseq: VGPseq.c $(ONE_DPND) $(GENE_DPND)/g' Makefile
+# sed -i.bak 's/gcc $(CFLAGS) -o VGPseq -I./HTSLIB $(HTSLIB_static_LDFLAGS) VGPseq.c $(ONE_LIB) $(GENE_CORE) HTSLIB/libhts.a -lpthread $(HTSLIB_static_LIBS)/gcc $(CFLAGS) -o VGPseq $(HTSFLAG) VGPseq.c $(ONE_LIB) $(GENE_CORE) -lhts -lpthread/g' Makefile
+# sed -i.bak 's/cd HTSLIB; make clean; cd ..//g' Makefile
+# sed -i.bak 's/tar -zcf VGPtools.tar.gz Makefile *.h *.c LIBDEFLATE HTSLIB//g' Makefile
+# sed -i.bak 's/gcc/${CC}/g' Makefile
 cat Makefile
-cd HTSLIB
+
 COMPILER=${CC} make prefix=${PREFIX} CC=${CC} AR=${AR} RANLIB=${RANLIB} CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
-cd ..
-COMPILER=${CC} make prefix=${PREFIX} CC=${CC} AR=${AR} RANLIB=${RANLIB} CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
-make install
 
 mkdir -p ${PREFIX}/bin
 
