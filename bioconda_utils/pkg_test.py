@@ -18,7 +18,7 @@ from conda_build.metadata import MetaData
 logger = logging.getLogger(__name__)
 
 # TODO: Make this configurable in bioconda_utils.build and bioconda_utils.cli.
-MULLED_CONDA_IMAGE = "quay.io/bioconda/create-env:1.0.2"
+MULLED_CONDA_IMAGE = "quay.io/bioconda/create-env:2.0.0"
 
 
 def get_tests(path):
@@ -28,7 +28,10 @@ def get_tests(path):
     t.extractall(tmp)
     input_dir = os.path.join(tmp, 'info', 'recipe')
 
-    tests = []
+    tests = [
+        '/usr/local/env-execute true',
+        '. /usr/local/env-activate.sh',
+    ]
     recipe_meta = MetaData(input_dir)
 
     tests_commands = recipe_meta.get_value('test/commands')
