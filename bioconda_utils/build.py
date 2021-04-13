@@ -105,9 +105,9 @@ def build(recipe: str, pkg_paths: List[str] = None,
     is_noarch = bool(meta.get_value('build/noarch', default=False))
     use_base_image = meta.get_value('extra/container', {}).get('extended-base', False)
     if use_base_image:
-        base_image = 'quay.io/bioconda/base-glibc-debian-bash:2.0.0'
+        base_image = 'quay.io/bioconda/base-glibc-debian-bash:2.1.0'
     else:
-        base_image = 'quay.io/bioconda/base-glibc-busybox-bash:2.0.0'
+        base_image = 'quay.io/bioconda/base-glibc-busybox-bash:2.1.0'
 
     try:
         if docker_builder is not None:
