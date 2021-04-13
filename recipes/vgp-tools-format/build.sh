@@ -12,10 +12,15 @@ export CPATH=${PREFIX}/include
 cd ./VGP
 sed -i.bak 's/CC     = gcc//g' HTSLIB/Makefile
 sed -i.bak 's/CPPFLAGS =//g' HTSLIB/Makefile
-sed -i.bak 's|prefix      = /usr/local||g' HTSLIB/Makefile
+# sed -i.bak 's/libhts.a: HTSLIB//g' Makefile
+# sed -i.bak 's/libhts.a//g' Makefile
 
+sed -i.bak 's/cd HTSLIB; make; cd ..//g' Makefile
 sed -i.bak 's/gcc/${CC}/g' Makefile
-
+cat Makefile
+cd HTSLIB
+COMPILER=${CC} make prefix=${PREFIX} CC=${CC} AR=${AR} RANLIB=${RANLIB} CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
+cd ..
 COMPILER=${CC} make prefix=${PREFIX} CC=${CC} AR=${AR} RANLIB=${RANLIB} CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
 make install
 
