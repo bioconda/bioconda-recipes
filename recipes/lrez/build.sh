@@ -1,8 +1,6 @@
 #!/bin/bash
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export LIBS="-lz -lm -lc -lboost_iostreams"
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
 
 mkdir -p ${PREFIX}/bin
 
@@ -16,14 +14,14 @@ make install
 cd ../
 if [ -d "lib64" ]
 then
-    	mv lib64 lib
+    mv lib64 lib
 fi
-cp ${SRC_DIR}/bamtools/lib/*.so* ${PREFIX}/lib
+cp "${SRC_DIR}/bamtools/lib/"*"${SHLIB_EXT}"* "${PREFIX}/lib/"
 
 # Install LRez
 cd ../
 make CC="${CXX} ${LDFLAGS}"
-cp ${SRC_DIR}/lib/liblrez.so ${PREFIX}/lib
+cp "./lib/liblrez${SHLIB_EXT}" "${PREFIX}/lib/"
 
 # Copy binaries
 cp bin/* ${PREFIX}/bin
