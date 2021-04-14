@@ -21,6 +21,7 @@ ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-ar $BUILD_PREFIX/bin/ar
 ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-ld $BUILD_PREFIX/bin/ld
 
 
+echo "compiling ncbi-vdb"
 pushd ncbi-vdb
 ./configure \
     --prefix=$PREFIX \
@@ -29,6 +30,7 @@ pushd ncbi-vdb
 make -j${CPU_COUNT}
 popd
 
+echo "compiling sra-tools"
 pushd sra-tools
 
 pushd tools/driver-tool/utf8proc
