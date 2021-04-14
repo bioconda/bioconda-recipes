@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export LIBS="-lz -lm -lc -lboost_iostreams"
+export CPATH=${PREFIX}/include
 
 mkdir -p ${PREFIX}/bin
 
