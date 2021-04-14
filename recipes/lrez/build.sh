@@ -1,23 +1,35 @@
 #!/bin/bash
-export HTSLIB_ROOT=${PREFIX}/lib
-rm -rf build
-mkdir build
+
+
+export C_INCLUDE_PATH=${PREFIX}/include
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
+export LD_LIBRARY_PATH=${PREFIX}/lib
+export LIBRARY_PATH=${PREFIX}/lib
+
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export LDFLAGS="-lz -lm -lc -lboost_iostreams -L$PREFIX/lib"
+export CPATH=${PREFIX}/include
+
+mkdir -p ${PREFIX}/bin
+
+# Install bamtools
+cd bamtools
+mkdir -p build
 cd build
-cmake ..
-make -j2
-cd ..
+cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$PWD/../ ..
+make
+make install
+cd ../
+if [ -d "lib64" ]
+then
+	mv lib64 lib
+fi
+cp ${SRC_DIR}/bamtools/lib/*.so* ${PREFIX}/lib
 
-mkdir -p $PREFIX/bin/
+# Install LRez
+cd ../
+make CC="$CXX -L${PREFIX}/lib"
+cp ${SRC_DIR}/lib/liblrez.so ${PREFIX}/lib
 
-
-cp build/tools/Compare ${PREFIX}/bin/
-chmod +x $PREFIX/bin/Compare
-
-cp build/tools/BamExtractor ${PREFIX}/bin/
-chmod +x $PREFIX/bin/BamExtractor
-
-cp scripts/reads_bx_sqlite3.py ${PREFIX}/bin/
-chmod +x $PREFIX/bin/reads_bx_sqlite3.py
-
-cp scripts/idx_bx_sqlite3.py ${PREFIX}/bin/
-chmod +x $PREFIX/bin/idx_bx_sqlite3.py
+# Copy binaries
+cp bin/* ${PREFIX}/bin
