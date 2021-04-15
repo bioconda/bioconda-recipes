@@ -1,0 +1,24 @@
+name: AutoMerge
+on:
+  status:
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    name: bioconda-bot automerge
+    if: >-
+      (
+        github.event_name == 'status' &&
+        github.event.state == 'success'
+      )
+    container:
+      image: 'quay.io/bioconda/bot:merge'
+    steps:
+    - name: bioconda-bot automerge
+      env:
+        BOT_TOKEN: ${{ secrets.GITHUBTOKEN }}
+        ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+        QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
+        JOB_CONTEXT: ${{ toJson(github) }}
+      run: bioconda-bot automerge
