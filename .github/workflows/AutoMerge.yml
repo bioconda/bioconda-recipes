@@ -1,5 +1,9 @@
 name: AutoMerge
-on: status
+on:
+  status:
+  check_suite:
+    types:
+    - completed
 
 jobs:
   automerge:
@@ -9,6 +13,10 @@ jobs:
       (
         github.event_name == 'status' &&
         github.event.state == 'success'
+      ) ||
+      (
+        github.event_name == 'check_suite' &&
+        github.event.check_suite.conclusion == 'success'
       )
     container:
       image: 'quay.io/bioconda/bot:merge'
