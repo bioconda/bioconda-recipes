@@ -1,5 +1,9 @@
 name: CommentResponder
 on:
+  status:
+  check_suite:
+    types:
+    - completed
   issue_comment:
     types:
     - created
@@ -9,13 +13,24 @@ jobs:
     runs-on: ubuntu-latest
     name: bioconda-bot comment
     if: >-
-      github.event.issue.pull_request &&
       (
-        startsWith(github.event.comment.body, '@bioconda-bot') ||
-        startsWith(github.event.comment.body, '@biocondabot')
-      ) &&
-      ! contains(github.event.comment.body, 'please merge') &&
-      ! contains(github.event.comment.body, 'please update')
+        github.event_name == 'status' &&
+        github.event.state == 'success'
+      ) ||
+      (
+        github.event_name == 'check_suite' &&
+        github.event.check_suite.conclusion == 'success'
+      ) ||
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        (
+          startsWith(github.event.comment.body, '@bioconda-bot') ||
+          startsWith(github.event.comment.body, '@biocondabot')
+        ) &&
+        ! contains(github.event.comment.body, 'please merge') &&
+        ! contains(github.event.comment.body, 'please update')
+      )
     container:
       image: 'quay.io/bioconda/bot:comment'
     steps:
@@ -30,12 +45,15 @@ jobs:
     runs-on: ubuntu-latest
     name: bioconda-bot repost
     if: >-
-      github.event.issue.pull_request &&
-      ! (
-        startsWith(github.event.comment.body, '@bioconda-bot') ||
-        startsWith(github.event.comment.body, '@biocondabot')
-      ) &&
-      contains(github.event.comment.body, '@bioconda/')
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        ! (
+          startsWith(github.event.comment.body, '@bioconda-bot') ||
+          startsWith(github.event.comment.body, '@biocondabot')
+        ) &&
+        contains(github.event.comment.body, '@bioconda/')
+      )
     container:
       image: 'quay.io/bioconda/bot:comment'
     steps:
@@ -49,13 +67,16 @@ jobs:
     runs-on: ubuntu-latest
     name: bioconda-bot merge
     if: >-
-      github.event.issue.pull_request &&
       (
-        startsWith(github.event.comment.body, '@bioconda-bot') ||
-        startsWith(github.event.comment.body, '@biocondabot')
-      ) &&
-      contains(github.event.comment.body, 'please merge') &&
-      ! contains(github.event.comment.body, 'please update')
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        (
+          startsWith(github.event.comment.body, '@bioconda-bot') ||
+          startsWith(github.event.comment.body, '@biocondabot')
+        ) &&
+        contains(github.event.comment.body, 'please merge') &&
+        ! contains(github.event.comment.body, 'please update')
+      )
     container:
       image: 'quay.io/bioconda/bot:merge'
     steps:
@@ -72,13 +93,16 @@ jobs:
     runs-on: ubuntu-latest
     name: bioconda-bot update
     if: >-
-      github.event.issue.pull_request &&
       (
-        startsWith(github.event.comment.body, '@bioconda-bot') ||
-        startsWith(github.event.comment.body, '@biocondabot')
-      ) &&
-      ! contains(github.event.comment.body, 'please merge') &&
-      contains(github.event.comment.body, 'please update')
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        (
+          startsWith(github.event.comment.body, '@bioconda-bot') ||
+          startsWith(github.event.comment.body, '@biocondabot')
+        ) &&
+        ! contains(github.event.comment.body, 'please merge') &&
+        contains(github.event.comment.body, 'please update')
+      )
     container:
       image: 'quay.io/bioconda/bot:update'
     steps:
