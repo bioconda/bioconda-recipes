@@ -14,4 +14,5 @@ scripts/install.py \
     --boost ${PREFIX} \
     --htslib ${PREFIX} \
     --architecture haswell \
+    --threads 1 \
     --verbose
