@@ -7,6 +7,8 @@ export CMAKE_LDFLAGS="-L${PREFIX}/lib"
 export LIBRARY_PATH=${PREFIX}/lib
 
 scripts/install.py \
+    -c ${CC_FOR_BUILD} \
+    -cxx ${CXX_FOR_BUILD} \
     --prefix ${PREFIX}/bin \
     --gmp ${PREFIX} \
     --boost ${PREFIX} \
