@@ -1,0 +1,27 @@
+{% set version = "0.0.1" %}
+{% set version_string = "0.0.1-beta" %}
+{% set sha256 = "af8ae5faa8290c91cfcc185d89190c5dd95bcab735402c24a919f71826565331" %}
+
+package:
+  name: peptidedb
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/PeptideDB/{{ version_string }}
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  script:
+    - dotnet tool install --add-source $SRC_DIR --tool-path $PREFIX/bin --version {{ version_string }} PeptideDB
+
+requirements:
+  build:
+    - dotnet-sdk
+  run:
+    - dotnet-sdk
+
+test:
+  commands:
+    - dotnet tool list --tool-path $PREFIX/bin
