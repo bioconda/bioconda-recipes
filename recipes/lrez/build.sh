@@ -1,9 +1,6 @@
 #!/bin/bash
 
+export DYLD_FALLBACK_LIBRARY_PATH=${PREFIX}/lib/
+
 make -j"${CPU_COUNT}"
 make install
-if [ ${SHLIB_EXT} == ".dylib" ]; then
-	mkdir -p ${PREFIX}/bin/lib
-	cp -a ${PREFIX}/lib/liblrez* ${PREFIX}/bin/lib/
-	cp -a ${PREFIX}/lib/liblrez* ${PREFIX}/bin/
-fi
