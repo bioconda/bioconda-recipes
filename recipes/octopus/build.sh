@@ -19,7 +19,7 @@ cmake  -DCMAKE_CXX_COMPILER_AR=${AR} \
        -DBoost_NO_SYSTEM_PATHS=TRUE \
        -DHTSLIB_ROOT=${PREFIX} \
        -DHTSlib_NO_SYSTEM_PATHS=TRUE \
-       -DGMP_ROOT=${PREFIX}
+       -DGMP_ROOT=${PREFIX} \
        ..
 
 make install
