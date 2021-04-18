@@ -17,7 +17,7 @@ cmake -DBIOCONDA=True \
       -DHUNTER_JOBS_NUMBER=4 \
       -DCMAKE_INSTALL_PREFIX="$PREFIX" \
       ..
-make -j4
+make -j1  # Note: don't change this, or Bioconda Circle CI will error out with "OSError: [Errno 12] Cannot allocate memory"
 
 # test
 ctest
