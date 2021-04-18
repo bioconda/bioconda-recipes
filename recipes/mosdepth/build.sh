@@ -3,6 +3,7 @@
 pushd nim_source
 if [[ $OSTYPE == "darwin"* ]]; then
   export HOME="/Users/distiller"
+  export HOME=`pwd`
   bash build.sh --os darwin --cpu x86_64
 else
   bash build.sh --os linux --cpu x86_64
