@@ -7,8 +7,10 @@ odir=$PREFIX/$tag
 
 # Makefile hardcodes "CC=g++" so we need to comment that out
 sed -i 's/^CC=g++/# CC=g++/' src/snpCaller/Makefile
+# And replace uses of $CC with $CXX
+sed -i 's/$(CC)/$(CXX)/' Makefile
 
-make CC=$CC
+make
 mkdir -p $odir
 cp -pr src $odir
 cp -pr metaSNV.py $odir
