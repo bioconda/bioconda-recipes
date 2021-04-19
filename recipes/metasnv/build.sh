@@ -8,7 +8,7 @@ odir=$PREFIX/$tag
 # Makefile hardcodes "CC=g++" so we need to comment that out
 sed -i 's/^CC=g++/# CC=g++/' src/snpCaller/Makefile
 # And replace uses of $CC with $CXX
-sed -i 's/$(CC)/$(CXX)/' Makefile
+sed -i 's/$(CC)/$(CXX)/' src/snpCaller/Makefile
 
 make
 mkdir -p $odir
