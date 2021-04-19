@@ -1,0 +1,79 @@
+From e6361a8125bf7e4cfb2867d0bfd08c299ab6123f Mon Sep 17 00:00:00 2001
+From: Marcel Bargull <marcel.bargull@udo.edu>
+Date: Mon, 19 Apr 2021 16:45:32 +0200
+Subject: [PATCH 4/4] Makefile: Make build prefix configurable
+
+---
+ Makefile | 27 ++++++++++++++++-----------
+ 1 file changed, 16 insertions(+), 11 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index e13d1f8..cadb4bb 100644
+--- a/Makefile
++++ b/Makefile
+@@ -7,20 +7,23 @@ ifeq ($(SHLIB_EXT),)
+ 	endif
+ endif
+ 
+-curDir = $(shell pwd)
+-
+ PREFIX ?= /usr/local
+ BINDIR = $(PREFIX)/bin
+ LIBDIR = $(PREFIX)/lib
+ 
++BUILD_PREFIX = $(shell pwd)
++BUILD_BINDIR = $(BUILD_PREFIX)/bin
++BUILD_LIBDIR = $(BUILD_PREFIX)/lib
++BUILD_INCLUDEDIR = $(BUILD_PREFIX)/include
++
+ CXX ?= g++
+ CXXFLAGS += -Wall -pedantic -O3 -m64 -std=c++11 -fPIC
+-LDFLAGS += -L$(curDir)/lib -Wl,-rpath,$(LIBDIR)
++LDFLAGS += -L$(BUILD_LIBDIR) -Wl,-rpath,$(LIBDIR)
+ 
+ BAMTOOLS_LIB_PREFIX = lrez_
+-BAMTOOLS_LIB = lib/lib$(BAMTOOLS_LIB_PREFIX)bamtools$(SHLIB_EXT)
++BAMTOOLS_LIB = $(BUILD_LIBDIR)/lib$(BAMTOOLS_LIB_PREFIX)bamtools$(SHLIB_EXT)
+ 
+-BAMTOOLS_INC = ./include/bamtools/
++BAMTOOLS_INC = $(BUILD_INCLUDEDIR)/bamtools/
+ LREZ_INC = ./src/include/
+ 
+ LIBS_LREZ = -llrez
+@@ -32,13 +35,13 @@ REVCOMP = src/reverseComplement.o
+ SOURCE = src/alignmentsRetrieval.o src/barcodesComparison.o src/barcodesExtraction.o src/indexManagementBam.o src/utils.o src/indexManagementFastq.o src/readsRetrieval.o src/gzIndex.o
+ SUBCOMMANDS = src/subcommands/compare.o src/subcommands/extract.o src/subcommands/help.o src/subcommands/indexBam.o src/subcommands/queryBam.o src/subcommands/indexFastq.o src/subcommands/queryFastq.o
+ 
+-EXEC = bin/LRez
+-LIB = lib/liblrez${SHLIB_EXT}
++EXEC = $(BUILD_BINDIR)/LRez
++LIB = $(BUILD_LIBDIR)/liblrez${SHLIB_EXT}
+ 
+ all: $(LIB) $(EXEC)
+ 
+ directories:
+-	mkdir -p bin/ lib/
++	mkdir -p $(BUILD_BINDIR) $(BUILD_LIBDIR)
+ 
+ $(BAMTOOLS_LIB):
+ 	mkdir -p bamtools/build
+@@ -46,11 +49,13 @@ $(BAMTOOLS_LIB):
+ 		cmake \
+ 			-DBUILD_SHARED_LIBS=ON \
+ 			-DCMAKE_SHARED_LIBRARY_PREFIX_CXX=lib$(BAMTOOLS_LIB_PREFIX) \
+-			-DCMAKE_INSTALL_LIBDIR=lib \
+-			-DCMAKE_INSTALL_PREFIX=$(curDir) \
++			-DCMAKE_INSTALL_LIBDIR=$(BUILD_LIBDIR) \
++			-DCMAKE_INSTALL_INCLUDEDIR=$(BUILD_INCLUDEDIR) \
++			-DCMAKE_INSTALL_PREFIX=$(BUILD_PREFIX) \
+ 			.. && \
+ 		$(MAKE) && \
+-		$(MAKE) install
++		cmake -DCOMPONENT=Development -P cmake_install.cmake && \
++		cmake -P src/api/cmake_install.cmake
+ 
+ $(LIB): $(SUBCOMMANDS) $(SOURCE) $(REVCOMP) $(BAMTOOLS_LIB) directories
+ 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) -shared -o $(LIB) $(SUBCOMMANDS) $(SOURCE) $(REVCOMP) $(LIBS_BAMTOOLS) $(LIBS_BOOST_LZ_LM)
+-- 
+2.31.1
+
