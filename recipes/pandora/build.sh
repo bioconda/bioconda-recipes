@@ -4,6 +4,10 @@ set -eux -o pipefail
 # make compilation not be dependent on locale settings
 export LC_ALL=C
 
+# make GATB not try to write to /tmp and fail
+export TMPDIR="$PREFIX"/temp
+mkdir -p "${TMPDIR}"
+
 # allows boost to find gcc/g++ toolset
 BIN_DIR=$(realpath /opt/conda/conda-bld/pandora_*/_build_env/bin/)
 cp "${BIN_DIR}/x86_64-conda-linux-gnu-gcc" "${BIN_DIR}/gcc"
@@ -20,7 +24,6 @@ cmake -DBIOCONDA=True \
 make -j1  # Note: don't change this, or Bioconda Circle CI will error out with "OSError: [Errno 12] Cannot allocate memory"
 
 # test
-ctest -VV --debug --output-on-failure --timeout 10
-
+ctest -VV -j1
 # install
 make install
