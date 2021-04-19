@@ -1,22 +1,29 @@
+[![CircleCI](https://circleci.com/gh/bioconda/bioconda-utils/tree/master.svg?style=shield)](https://circleci.com/gh/bioconda/bioconda-utils/tree/master)
+[![Gitter](https://badges.gitter.im/bioconda/bioconda-recipes.svg)](https://gitter.im/bioconda/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 ![](https://raw.githubusercontent.com/bioconda/bioconda-recipes/master/logo/bioconda_monochrome_small.png
  "Bioconda")
 
-# The bioconda channel
+`bioconda-utils` is a set of utilities for building and managing
+[bioconda](https://github.com/bioconda/bioconda-recipes) recipes.
 
-[![CircleCI](https://circleci.com/gh/bioconda/bioconda-recipes/tree/master.svg?style=shield)](https://circleci.com/gh/bioconda/bioconda-recipes/tree/master)
-[![Gitter](https://badges.gitter.im/bioconda/bioconda-recipes.svg)](https://gitter.im/bioconda/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+Since `bioconda-utils` is tightly coupled to `bioconda-recipes`, it is
+strongly recommended that `bioconda-utils` be set up and used according to the
+instructions at https://bioconda.github.io/contributor/index.html. This will
+ensure that your local setup matches that used to build recipes on travis-ci as
+closely as possible.
 
-[Conda](http://anaconda.org) is a platform- and language-independent package
-manager that sports easy distribution, installation and version management of
-software.  The [bioconda channel](https://anaconda.org/bioconda) is a Conda
-channel providing bioinformatics related packages for **Linux** and **Mac OS**.
-This repository hosts the corresponding recipes.
+However, if you would like to test in a standalone manner or help develop
+bioconda-utils, you can install requirements via conda into your root conda
+environment and then install the package:
 
-## User guide
+```bash
+conda install --file bioconda_utils/bioconda_utils-requirements.txt -c conda-forge -c bioconda 
+python setup.py install
+```
 
-Please visit https://bioconda.github.io for details. 
+See the help for the `bioconda-utils` command-line interface for details:
 
-## Developer guide
-
-Please visit the new docs at https://bioconda.github.io/contributor/index.html for details.
-
+```bash
+bioconda-utils -h
+```

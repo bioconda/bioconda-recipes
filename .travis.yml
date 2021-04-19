@@ -1,0 +1,26 @@
+os:
+- linux
+- osx
+language: python - "3.5"
+sudo: required
+services:
+- docker
+install: ./travis-setup.sh
+before_script:
+- export PATH=/opt/involucro:/anaconda/bin:$PATH
+script:
+  - while sleep 9m; do echo "[TRAVIS] Still running..."; done &
+  - ./travis-run.sh
+env:
+  global:
+  - ENCRYPTION_LABEL=195cdfd31577
+  - MINICONDA_VER="4.3.21"
+  matrix:
+  - BIOCONDA_UTILS_TEST_TYPE=pytest_docker
+  - BIOCONDA_UTILS_TEST_TYPE=pytest_not_docker
+  - BIOCONDA_UTILS_TEST_TYPE=docs
+matrix:
+  fast_finish: true
+branches:
+  only:
+  - master

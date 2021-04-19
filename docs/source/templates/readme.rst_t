@@ -1,0 +1,115 @@
+:orphan:  .. only available via index, not via toctree
+
+.. title:: Package Recipe '{{name}}'
+.. highlight: bash
+
+{{name | underline}}
+
+.. conda:recipe:: {{recipe.reldir}}
+   :replaces_section_title:
+   :noindex:
+
+   {{ (about.summary or "") | rst_escape | indent(3)}}
+
+   :homepage: {{ about.home }}
+   {%- if about.doc_url and about.doc_url != about.home %}
+   :documentation: {{ about.doc_url }}
+   {% endif %}
+   {%- if about.dev_url and about.dev_url != about.home %}
+   :developer docs: {{ about.dev_url }}
+   {%- endif %}
+   :license: {{ [about.license_family, about.license]
+                | reject('undefined') | join(' / ') | rst_link(about.license_url) }}
+   :recipe: {% for part in recipe.relpath|prefixes('/') -%}
+   	    /`{{part.part}} <{{gh_recipes + part.path}}>`_
+	    {%- endfor %}
+   {%- if extra.identifiers %}
+   :links: {{ extra.identifiers | as_extlink | join(", ") }}
+   {%- endif %}
+
+   {{ (about.description or "") | rst_escape | indent(3) }}
+
+{% for package in packages %}
+.. conda:package:: {{package.name}}
+
+   |downloads_{{package.name}}| |docker_{{package.name}}|
+
+   :versions:
+      {% set max_versions_visible = 9 %}
+      {% if package.versions|length > max_versions_visible %}
+      .. raw:: html
+
+         <details><summary><span class="truncated-version-list">
+         {%- for version in package.versions[:max_versions_visible] -%}
+            <code>{{ version }}</code>{{ ",\xa0 " }}
+         {%- endfor -%}
+            </span></summary>
+      {% endif %}
+
+      {% for version in package.versions -%}
+        ``{{ version }}``
+        {%- if not loop.last -%}
+          {{ ",\xa0 " }}
+        {%- endif -%}
+      {%- endfor %}
+
+      {% if package.versions|length > max_versions_visible %}
+      .. raw:: html
+
+         </details>
+      {% endif %}
+
+   {% for dependency in package.depends %}
+   :depends {{dependency[0]}}: {% if dependency[1] %}``{{ dependency[1].replace(" ", "\xa0") }}``{% endif %}
+   {%- endfor %}
+   :requirements:
+
+   .. rubric:: Installation
+
+   With an activated Bioconda channel (see :ref:`set-up-channels`), install with::
+
+      conda install {{ package.name }}
+
+   and update with::
+
+      conda update {{  package.name }}
+
+   or use the docker container::
+
+      docker pull quay.io/biocontainers/{{ package.name }}:<tag>
+
+   (see `{{package.name}}/tags`_ for valid values for ``<tag>``)
+
+
+.. |downloads_{{package.name}}| image:: https://img.shields.io/conda/dn/bioconda/{{package.name}}.svg?style=flat
+   :target: https://anaconda.org/bioconda/{{package.name}}
+   :alt:   (downloads)
+.. |docker_{{package.name}}| image:: https://quay.io/repository/biocontainers/{{ name }}/status
+   :target: https://quay.io/repository/biocontainers/{{ name }}
+.. _`{{package.name}}/tags`: https://quay.io/repository/biocontainers/{{package.name}}?tab=tags
+
+
+{% endfor %}
+
+
+{% if extra.notes %}
+Notes
+-----
+{%- if extra.notes is string %}
+{{ extra.notes | rst_escape }}
+{% else %}
+{%- for note in extra.notes %}
+- {{ note | rst_escape }}
+{% endfor -%}
+{% endif -%}
+{% endif %}
+
+Link to this page
+-----------------
+
+Render an |install-with-bioconda| badge with the following MarkDown::
+
+   [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/{{ name }}/README.html)
+
+.. |install-with-bioconda| image:: https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat
+   :target: http://bioconda.github.io/recipes/{{ name }}/README.html

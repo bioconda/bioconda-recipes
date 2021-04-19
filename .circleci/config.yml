@@ -1,168 +1,103 @@
 version: 2
-# trigger cache invalidation: 2018-09-16T22:39+00:00
 
 variables:
   restore_cache: &restore_cache
     restore_cache:
       keys:
-        - miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
+        - bioconda-utils-{{
+            checksum ".circleci/common.sh" }}-{{
+            checksum ".circleci/setup.sh" }}-{{
+            checksum ".circleci/config.yml" }}-{{
+            checksum "bioconda_utils/bioconda_utils-requirements.txt" }}-{{
+            arch }}
   save_cache: &save_cache
     save_cache:
-      key: miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
+      key: bioconda-utils-{{
+             checksum ".circleci/common.sh" }}-{{
+             checksum ".circleci/setup.sh" }}-{{
+             checksum ".circleci/config.yml" }}-{{
+             checksum "bioconda_utils/bioconda_utils-requirements.txt" }}-{{
+             arch }}
       paths:
         - miniconda
   common: &common
     run:
       name: Download common definitions
-      command: |
-        curl -s https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh > .circleci/common.sh
+      command: curl -s https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh > .circleci/common.sh
   setup: &setup
     run:
-      name: Setup bioconda-utils
+      name: Setup dependencies
       command: .circleci/setup.sh
-  setup_macos_sdk: &setup_macos_sdk
-    run:
-      name: Run run_conda_forge_build_setup
-      command: |
-        # download SDK and setup sysroot on macOS
-        #  primarily, run_conda_forge_build_setup does the following:
-        #   - download/setup SDK:
-        #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L21-L26
-        #   - add activation script to set MACOSX_DEPLOYMENT_TARGET and CONDA_BUILD_SYSROOT:
-        #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L60-L63
-        conda activate base
-        # use "CONFIG=" to avoid writing ./.ci_support/${CONFIG}.yaml which we don't need/use.
-        CONFIG= OSX_FORCE_SDK_DOWNLOAD=1 MACOSX_DEPLOYMENT_TARGET=10.13 run_conda_forge_build_setup
-        conda_forge_ci_setup_activate_sh="${CONDA_PREFIX}/etc/conda/activate.d/conda-forge-ci-setup-activate.sh"
-        sed -Ei.bak "s/^(export MACOSX_DEPLOYMENT_TARGET)=.*$/\\1='10.9'/" "${conda_forge_ci_setup_activate_sh}"
-        rm "${conda_forge_ci_setup_activate_sh}".bak
-        cat "${conda_forge_ci_setup_activate_sh}"
-        grep -qFx "export MACOSX_DEPLOYMENT_TARGET='10.9'" "${conda_forge_ci_setup_activate_sh}"
   macos: &macos
     macos:
-      xcode: 9.4.1
-    environment:
-      LC_ALL: en_US.UTF-8
-      LANG: en_US.UTF-8
+      xcode: "9.4.1"
   linux: &linux
     machine: true
-  skip_fork: &skip_fork
+  install_bioconda_utils: &install_bioconda_utils
     run:
-      name: Check for fork
-      command: |
-        [[ $CIRCLE_PROJECT_USERNAME == bioconda ]] || (
-            echo "Skipping build for fork '$CIRCLE_PROJECT_USERNAME'"
-            circleci step halt
-        )
-  fail_fork: &fail_fork
+      name: Install bioconda-utils
+      command: python setup.py install
+  build_docker_container: &build_docker_container
     run:
-      name: Check for fork
+      name: Build the updated docker container
       command: |
-        [[ $CIRCLE_PROJECT_USERNAME == bioconda ]] || (
-            echo "Aborting build for fork '$CIRCLE_PROJECT_USERNAME'"
-            echo "Please use a branch other than 'master' or 'bulk' on your fork"
-            exit 1
-        )
-  store_built_packages: &store_built_packages
-    run:
-      name: Copying packages
-      when: always
-      no_output_timeout: 20m
-      command: |
-        (
-        # Run in subshell just to be safe. Don't want workflows to fail because of this.
-        mkdir -p /tmp/artifacts/packages
-        cd miniconda/conda-bld || exit 0
-        find -name .cache | xargs rm -rf || true
-        for n in rss.xml index.html channeldata.json linux-64 osx-64 noarch broken; do
-          cp -rv $n /tmp/artifacts/packages || true
-        done
-        if command -V docker >/dev/null; then
-          mkdir -p /tmp/artifacts/images
-          cd /tmp/artifacts/images
-          docker image ls --format='{{.Repository}}:{{.Tag}}' | \
-            { grep biocontainers || true ; } | \
-            xargs -n1 -P4 bash -c '
-              test -n "${1+x}" || exit 0
-              echo "Start compressing docker image ${1} ..."
-              docker save "${1}" | gzip -c > "${1##*/}.tar.gz"
-              echo "Finished compressing docker image ${1} ."
-              ' --
-        fi
-        ) || true
-
-  store_artifacts: &store_artifacts
-    store_artifacts:
-      path: /tmp/artifacts
+        docker build -t quay.io/bioconda/bioconda-utils-build-env-cos7:latest ./
+        docker history quay.io/bioconda/bioconda-utils-build-env-cos7:latest
+        docker run --rm -t quay.io/bioconda/bioconda-utils-build-env-cos7:latest sh -lec 'type -t conda && conda info -a && conda list'
+        docker build -t quay.io/bioconda/bioconda-utils-test-env-cos7:latest -f ./Dockerfile.test ./
+  autobump_run: &autobump_run
+    name: Check recipes for new upstream releases
+    command: |
+      git clone git@github.com:bioconda/bioconda-recipes
+      cd bioconda-recipes
+      git config user.name "Autobump"
+      git config user.email "bioconda@users.noreply.github.com"
+      mkdir -p /tmp/artifacts
+      bioconda-utils autobump \
+        --unparsed-urls /tmp/artifacts/unparsed_urls.txt \
+        --failed-urls /tmp/artifacts/failed_urls.txt \
+        --recipe-status /tmp/artifacts/status.txt \
+        --create-pr \
+        --no-check-pinnings \
+        --no-check-pending-deps \
+        --no-follow-graph \
+        --exclude 'bioconductor-*' \
+        --commit-as BiocondaBot 47040946+BiocondaBot@users.noreply.github.com \
+        $AUTOBUMP_OPTS
+  test_linux: &test_linux
+    <<: *linux
+    steps:
+      - checkout
+      - *common
+      - *restore_cache
+      - *setup
+      - *save_cache
+      - *install_bioconda_utils
+      - *build_docker_container
+      - run:
+          name: Testing
+          command: |
+            if git diff --name-only origin/master...$CIRCLE_SHA1 | grep -vE ^docs; then
+              py.test --durations=0 test/ -v --log-level=DEBUG --tb=native -m "${PY_TEST_MARKER}"
+            else
+              echo "Skipping pytest - only docs modified"
+            fi
+          no_output_timeout: 1200
 
 
 jobs:
-  # When running CircleCI locally, we put everything in one job.
-  build:
-    docker:
-      - image: bioconda/bioconda-utils-build-env
-    steps:
-      - checkout
-      - run:
-          name: Setup ssh
-          command: |
-            mkdir -p ~/.ssh
-            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-      - run: echo ". /opt/conda/etc/profile.d/conda.sh" >> $BASH_ENV
-      - run: echo "conda activate" >> $BASH_ENV
-      - *common
-      - *setup
-      - run:
-          name: Linting
-          command: |
-            bioconda-utils lint recipes config.yml \
-            --loglevel debug --full-report \
-            --git-range master HEAD
-      - run:
-          name: Testing
-          # Currently, using --docker below causes a permission error on Fedora 27,
-          # although it should be supported by the setup_remote_docker directive
-          # above. A workaround or an upstream fix would be welcome.
-          command: |
-            bioconda-utils build recipes config.yml \
-            --git-range master HEAD
-
-  lint:
-    <<: *linux
-    steps:
-      - checkout
-      - *common
-      - *restore_cache
-      - *setup
-      - *save_cache
-      - run:
-          name: Linting
-          command: |
-            bioconda-utils lint recipes config.yml \
-            --loglevel debug --full-report \
-            --git-range master HEAD
-
-  # build and test on linux
   test-linux:
-    <<: *linux
-    steps:
-      - checkout
-      - *common
-      - *restore_cache
-      - *setup
-      - *save_cache
-      - run:
-          name: Building and testing
-          command: |
-            docker pull quay.io/dpryan79/mulled_container:latest
-            bioconda-utils build recipes config.yml \
-              --docker --mulled-test \
-              --git-range master HEAD
-            docker rmi quay.io/dpryan79/mulled_container:latest
-      - *store_built_packages
-      - *store_artifacts
-
-  # build and test on macos
+    <<: *test_linux
+    environment:
+      PY_TEST_MARKER: not long_running_1 and not long_running_2
+  test-linux (long_running_1):
+    <<: *test_linux
+    environment:
+      PY_TEST_MARKER: long_running_1
+  test-linux (long_running_2):
+    <<: *test_linux
+    environment:
+      PY_TEST_MARKER: long_running_2
   test-macos:
     <<: *macos
     steps:
@@ -171,183 +106,91 @@ jobs:
       - *restore_cache
       - *setup
       - *save_cache
-      - *setup_macos_sdk
+      - *install_bioconda_utils
       - run:
-          name: Building and testing
+          name: Testing
           command: |
-            bioconda-utils build recipes config.yml \
-            --git-range master HEAD
-      - *store_built_packages
-      - *store_artifacts
+            if git diff --name-only origin/master...$CIRCLE_SHA1 | grep -vE ^docs; then
+              py.test --durations=0 test/ -v --log-level=DEBUG -k "not docker" --tb=native
+            else
+              echo "Skipping pytest - only docs modified"
+            fi
 
-  # build, test and upload on linux
-  upload-linux:
+          no_output_timeout: 1200
+  build-docs:
     <<: *linux
     steps:
-      - *fail_fork
+      - add_ssh_keys:
+          fingerprints:
+            - f8:26:86:86:f8:d3:a5:66:ea:7d:f6:42:2e:5c:7a:82
       - checkout
       - *common
       - *restore_cache
       - *setup
       - *save_cache
-      # build only current commit (since we use squashed merging, this is safe)
+      - *install_bioconda_utils
       - run:
-          name: Building, testing, and uploading
-          command: |
-            docker pull quay.io/dpryan79/mulled_container:latest
-            bioconda-utils build recipes config.yml \
-              --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
-              --git-range $CIRCLE_SHA1~1 $CIRCLE_SHA1 \
-              --prelint
-  # build, test and upload on macos
-  upload-macos:
-    <<: *macos
-    steps:
-      - *fail_fork
-      - checkout
-      - *common
-      - *restore_cache
-      - *setup
-      - *save_cache
-      - *setup_macos_sdk
-      # build only current commit (since we use squashed merging, this is safe)
+          # TODO: This could go into bioconda_utils-requirements.txt.
+          #       But actually, it would make sense to create a separate
+          #       requirements file with all the docs/sphinx-related deps.
+          #       (Need to check if Bot uses those first.)
+          name: Install Graphviz for tutorial page
+          command: conda install -y graphviz fonts-conda-ecosystem
       - run:
-          name: Building, testing and uploading
-          command: |
-            bioconda-utils build recipes config.yml \
-              --anaconda-upload \
-              --git-range $CIRCLE_SHA1~1 $CIRCLE_SHA1 \
-              --prelint
-
-  # build, test and upload for bulk branch on linux
-  bulk-linux:
+          name: Build and upload docs
+          command: .circleci/build-docs.sh
+  autobump-test:
     <<: *linux
     steps:
-      - *fail_fork
       - checkout
       - *common
       - *restore_cache
       - *setup
       - *save_cache
+      - *install_bioconda_utils
       - run:
-          name: Building, testing, and uploading of all unpublished recipes
-          command: |
-            bioconda-utils build recipes config.yml \
-              --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
-
-  # build, test and upload for bulk branch on macos
-  bulk-macos:
-    <<: *macos
-    steps:
-      - *fail_fork
-      - checkout
-      - *common
-      - *restore_cache
-      - *setup
-      - *save_cache
-      - *setup_macos_sdk
-      - run:
-          name: Building, testing and uploading of all unpublished recipes
-          command: |
-            bioconda-utils build recipes config.yml \
-              --anaconda-upload
-
-  # nightly build, test and upload of unpublished recipes on linux
-  nightly-upload-linux:
+          <<: *autobump_run
+          environment:
+            AUTOBUMP_OPTS: --dry-run
+      - store_artifacts:
+          path: /tmp/artifacts
+  autobump:
     <<: *linux
     steps:
-      - *skip_fork
+      - add_ssh_keys:
+          fingerprints:
+            - db:1a:ec:46:59:8f:a8:ad:25:e7:7a:57:76:59:ba:24
       - checkout
       - *common
       - *restore_cache
       - *setup
       - *save_cache
+      - *install_bioconda_utils
       - run:
-          name: Building, testing, and uploading of all unpublished recipes
-          command: |
-            docker pull quay.io/dpryan79/mulled_container:latest
-            bioconda-utils build recipes config.yml \
-              --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
-              --prelint
-
-  # nightly build, test and upload of unpublished recipes on macos
-  nightly-upload-macos:
-    <<: *macos
-    steps:
-      - *skip_fork
-      - checkout
-      - *common
-      - *restore_cache
-      - *setup
-      - *save_cache
-      - run:
-          name: Building, testing and uploading of all unpublished recipes
-          command: |
-            bioconda-utils build recipes config.yml \
-              --anaconda-upload \
-              --prelint
+          <<: *autobump_run
+      - store_artifacts:
+          path: /tmp/artifacts
 
 
 workflows:
   version: 2
   # workflow for testing pushes and PRs
-  bioconda-test:
+  bioconda-utils-test:
     jobs:
-      # Linting is now also performed just before a recipe is built with
-      # bioconda-utils build --prelint.
-      - lint:
-          filters:
-            branches:
-              ignore:
-                - master
-                - bulk
-      - test-linux:
-          requires:
-            - lint
-          filters:
-            branches:
-              ignore:
-                - master
-                - bulk
-      - test-macos:
-          requires:
-            - lint
-            - test-linux
-          filters:
-            branches:
-              ignore:
-                - master
-                - bulk
-  # workflow for uploading packages from master and bulk branch
-  bioconda-upload-master:
-    jobs:
-      - upload-linux:
-          filters:
-            branches:
-              only:
-                - master
-      - upload-macos:
-          filters:
-            branches:
-              only:
-                - master
-  ## workflow for bulk-updates
-  #bioconda-upload-bulk-linux:
-  #  jobs:
-  #    - bulk-linux:
-  #        filters:
-  #          branches:
-  #            only:
-  #              - bulk
-  #bioconda-upload-bulk-macos:
-  #  jobs:
-  #    - bulk-macos:
-  #        filters:
-  #          branches:
-  #            only:
-  #              - bulk
-  # nightly workflow to capture missed recipes
-  bioconda-nightly-upload-linux:
+      # - test-linux:
+      #     context: org-global
+      # - test-linux (long_running_1):
+      #     context: org-global
+      # - test-linux (long_running_2):
+      #     context: org-global
+      #- test-macos:
+      #    context: org-global
+      - build-docs:
+          context: org-global
+      #- autobump-test:
+      #    context: org-global
+  # nightly run of autobump and build-docs
+  bioconda-utils-nightly:
      triggers:
        - schedule:
            cron: "0 0 * * *"
@@ -356,14 +199,19 @@ workflows:
                only:
                  - master
      jobs:
-       - nightly-upload-linux
-  bioconda-nightly-upload-macos:
+       - autobump:
+           context: org-global
+       - build-docs:
+           context: org-global
+  # regular runs of autobump
+  bioconda-utils-autobump:
      triggers:
        - schedule:
-           cron: "0 0 * * *"
+           cron: "0 * * * *"
            filters:
-             branches:
+            branches:
                only:
                  - master
      jobs:
-       - nightly-upload-macos
+       - autobump:
+           context: org-global
