@@ -20,7 +20,7 @@ cmake -DBIOCONDA=True \
 make -j1  # Note: don't change this, or Bioconda Circle CI will error out with "OSError: [Errno 12] Cannot allocate memory"
 
 # test
-ctest -VV
+ctest -VV --debug --output-on-failure --timeout 10
 
 # install
 make install
