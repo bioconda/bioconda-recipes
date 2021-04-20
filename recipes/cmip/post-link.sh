@@ -1,3 +1,5 @@
+echo "" >> "${PREFIX}"/.messages.txt
+echo "" >> "${PREFIX}"/.messages.txt
 echo "      #######################################################################" >> "${PREFIX}"/.messages.txt
 echo "      #                                                                     #" >> "${PREFIX}"/.messages.txt
 echo "      #                   ######  ##     ## #### ########                   #" >> "${PREFIX}"/.messages.txt
@@ -12,6 +14,10 @@ echo "      #              Classical Molecular Interaction Potential            
 echo "      #                                                                     #" >> "${PREFIX}"/.messages.txt
 echo "      #   For help/usage options execute:                                   #" >> "${PREFIX}"/.messages.txt
 echo "      #   cmip -h                                                           #" >> "${PREFIX}"/.messages.txt
+echo "      #   titration -h                                                      #" >> "${PREFIX}"/.messages.txt
+echo "      #   cavities -h                                                       #" >> "${PREFIX}"/.messages.txt
+echo "      #   cavities2 -h                                                      #" >> "${PREFIX}"/.messages.txt
+echo "      #   watden -h                                                         #" >> "${PREFIX}"/.messages.txt
 echo "      #                                                                     #" >> "${PREFIX}"/.messages.txt
 echo "      #   To run the test set execute:                                      #" >> "${PREFIX}"/.messages.txt
 echo "      #   \$CONDA_PREFIX/share/cmip/tests/tests.sh                           #" >> "${PREFIX}"/.messages.txt
