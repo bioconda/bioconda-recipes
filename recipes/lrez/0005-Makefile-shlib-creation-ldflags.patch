@@ -1,0 +1,26 @@
+diff --git a/Makefile b/Makefile
+index 2de8868..5b74723 100644
+--- a/Makefile
++++ b/Makefile
+@@ -35,6 +35,12 @@ SUBCOMMANDS = src/subcommands/compare.o src/subcommands/extract.o src/subcommand
+ EXEC = bin/LRez
+ LIB = lib/liblrez${SHLIB_EXT}
+ 
++ifeq ($(findstring dylib,$(SHLIB_EXT)),)
++LIBLREZ_LDFLAGS = -shared
++else
++LIBLREZ_LDFLAGS = -dynamiclib -install_name liblrez.dylib
++endif
++
+ all: $(LIB) $(EXEC)
+ 
+ directories:
+@@ -53,7 +59,7 @@ $(BAMTOOLS_LIB):
+ 		$(MAKE) install
+ 
+ $(LIB): $(SUBCOMMANDS) $(SOURCE) $(REVCOMP) $(BAMTOOLS_LIB) directories
+-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) -shared -o $(LIB) $(SUBCOMMANDS) $(SOURCE) $(REVCOMP) $(LIBS_BAMTOOLS) $(LIBS_BOOST_LZ_LM)
++	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $(LIBLREZ_LDFLAGS) -o $(LIB) $(SUBCOMMANDS) $(SOURCE) $(REVCOMP) $(LIBS_BAMTOOLS) $(LIBS_BOOST_LZ_LM)
+ 
+ $(EXEC): $(MAIN) $(LIB) directories
+ 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $(EXEC) $(MAIN) $(LIBS_LREZ) $(LIBS_BAMTOOLS) $(LIBS_BOOST_LZ_LM)
