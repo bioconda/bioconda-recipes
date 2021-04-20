@@ -1,8 +1,10 @@
 #!/bin/bash
 
-mkdir -p build
+mkdir build
 cd build
-cmake ..
-make
-
-cp haploflow $PREFIX/bin/
+cmake \
+    -DBoost_USE_STATIC_LIBS=OFF \
+    -DCOMPILER_FLAGS= \
+..
+make -j"${CPU_COUNT}"
+make install
