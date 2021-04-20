@@ -47,9 +47,6 @@ ${CXX} -O3 -mavx512f -std=c++11 \
 -o ${PREFIX}/bin.AVX_512/identifyavx512fmaunits \
 ${SRC_DIR}/src/gromacs/hardware/identifyavx512fmaunits.cpp
 
-cp -a ${RECIPE_DIR}/gmx-chooser.bash ${PREFIX}/bin/gmx
-chmod a+x ${PREFIX}/bin/gmx
-
 # Create wrapper and activation scripts
 # Variable declaration from MPI script fewer changes if left in.
 
