@@ -32,7 +32,12 @@ variables:
         #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L60-L63
         conda activate base
         # use "CONFIG=" to avoid writing ./.ci_support/${CONFIG}.yaml which we don't need/use.
-        CONFIG= OSX_FORCE_SDK_DOWNLOAD=1 run_conda_forge_build_setup
+        CONFIG= OSX_FORCE_SDK_DOWNLOAD=1 MACOSX_DEPLOYMENT_TARGET=10.13 run_conda_forge_build_setup
+        conda_forge_ci_setup_activate_sh="${CONDA_PREFIX}/etc/conda/activate.d/conda-forge-ci-setup-activate.sh"
+        sed -Ei.bak "s/^(export MACOSX_DEPLOYMENT_TARGET)=.*$/\\1='10.9'/" "${conda_forge_ci_setup_activate_sh}"
+        rm "${conda_forge_ci_setup_activate_sh}".bak
+        cat "${conda_forge_ci_setup_activate_sh}"
+        grep -qFx "export MACOSX_DEPLOYMENT_TARGET='10.9'" "${conda_forge_ci_setup_activate_sh}"
   macos: &macos
     macos:
       xcode: 9.4.1
@@ -149,9 +154,11 @@ jobs:
       - run:
           name: Building and testing
           command: |
+            docker pull quay.io/dpryan79/mulled_container:latest
             bioconda-utils build recipes config.yml \
               --docker --mulled-test \
               --git-range master HEAD
+            docker rmi quay.io/dpryan79/mulled_container:latest
       - *store_built_packages
       - *store_artifacts
 
@@ -187,6 +194,7 @@ jobs:
       - run:
           name: Building, testing, and uploading
           command: |
+            docker pull quay.io/dpryan79/mulled_container:latest
             bioconda-utils build recipes config.yml \
               --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
               --git-range $CIRCLE_SHA1~1 $CIRCLE_SHA1 \
@@ -257,6 +265,7 @@ jobs:
       - run:
           name: Building, testing, and uploading of all unpublished recipes
           command: |
+            docker pull quay.io/dpryan79/mulled_container:latest
             bioconda-utils build recipes config.yml \
               --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
               --prelint

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="mitoODEdata_1.22.0.tar.gz"
+FN="mitoODEdata_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/mitoODEdata_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/mitoODEdata_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mitoodedata/bioconductor-mitoodedata_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/mitoODEdata_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/mitoODEdata_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mitoodedata/bioconductor-mitoodedata_1.26.0_src_all.tar.gz"
 )
-MD5="e2a6c95f44c085263286574647f6285f"
+MD5="e5b78fa55840c36c08a6ae09a887d71e"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

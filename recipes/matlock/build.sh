@@ -1,9 +1,5 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
-git submodule init
-git submodule update
-export C_INCLUDE_PATH=$PREFIX/include
-export LIBRARY_PATH=$PREFIX/lib
-make
-cp bin/matlock $PREFIX/bin
+make CC="${CC} -fcommon ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+install -d "${PREFIX}/bin"
+install bin/matlock "${PREFIX}/bin/"

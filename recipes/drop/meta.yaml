@@ -1,0 +1,92 @@
+{% set name = "drop" %}
+{% set version = "1.0.3" %} 
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/gagneurlab/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: b4f4481bedfec212085646c6f1bebf3d113bc8490e127337d693a01bc95c7e51
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - drop=drop.cli:main
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --ignore-installed"
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - pandas
+    - Click >=7.0
+    - click-log
+    - python-dateutil
+    # snakemake/wbuild
+    - snakemake >=5.5.2
+    - wbuild >=1.7.1
+    - pandoc
+    - graphviz
+    # command line tools
+    - bc
+    - wget
+    - tabix
+    - samtools >=1.7
+    - bcftools >=1.7
+    - gatk4 >=4.0.4
+    - star >=2.7
+    # R dependencies
+    - r-base>=4.0.0
+    - r-rmarkdown
+    - r-knitr
+    - r-ggplot2
+    - r-ggthemes
+    - r-cowplot
+    - r-data.table
+    - r-dplyr
+    - r-tidyr
+    - r-magrittr
+    - r-devtools
+    - r-tmae
+    # bioconductor packages
+    - bioconductor-deseq2
+    - bioconductor-GenomicScores
+    - bioconductor-outrider >=1.6.1
+    - bioconductor-fraser >=1.2.1
+    - bioconductor-variantannotation
+      #- bioconductor-bsgenome.hsapiens.ucsc.hg19
+      #- bioconductor-mafdb.gnomad.r2.1.hs37d5
+      #- bioconductor-mafdb.gnomad.r2.1.grch38
+
+test:
+  imports:
+    - drop
+  requires:
+    - pip
+    - pytest
+    - pytest-runner
+  source_files:
+    - tests/
+
+about:
+  home: https://github.com/gagneurlab/drop
+  license: MIT
+  license_family: OTHER
+  summary: Detection of RNA Outlier Pipeline
+  doc_url: https://gagneurlab-drop.readthedocs.io/en/latest/
+  dev_url: https://github.com/gagneurlab/drop
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true
+  identifiers:
+    - https://doi.org/10.1038/s41596-020-00462-5
+  recipe-maintainers:
+    - c-mertes
+    - mumichae

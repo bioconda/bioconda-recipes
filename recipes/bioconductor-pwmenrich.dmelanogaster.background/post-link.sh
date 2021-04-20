@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="PWMEnrich.Dmelanogaster.background_4.20.0.tar.gz"
+FN="PWMEnrich.Dmelanogaster.background_4.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/PWMEnrich.Dmelanogaster.background_4.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/PWMEnrich.Dmelanogaster.background_4.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pwmenrich.dmelanogaster.background/bioconductor-pwmenrich.dmelanogaster.background_4.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/PWMEnrich.Dmelanogaster.background_4.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/PWMEnrich.Dmelanogaster.background_4.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pwmenrich.dmelanogaster.background/bioconductor-pwmenrich.dmelanogaster.background_4.24.0_src_all.tar.gz"
 )
-MD5="9a27ac10834b4bea4dd7f7f536347fe0"
+MD5="e6b46ce8b619bd07902b43b1a0596d31"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
