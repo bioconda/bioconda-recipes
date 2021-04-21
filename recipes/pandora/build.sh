@@ -1,17 +1,34 @@
 #!/bin/bash
 set -eux -o pipefail
 
+# recognise running environment (from https://stackoverflow.com/a/3466183/5264075)
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     machine=Linux;;
+    Darwin*)    machine=Mac;;
+    CYGWIN*)    machine=Cygwin;;
+    MINGW*)     machine=MinGw;;
+    *)          machine="UNKNOWN:${unameOut}"
+esac
+echo "Compiling pandora on ${machine}"
+
 # make compilation not be dependent on locale settings
 export LC_ALL=C
 
-# make GATB not try to write to /tmp and fail
-export TMPDIR="$PREFIX"/temp
-mkdir -p "${TMPDIR}"
-
-# allows boost to find gcc/g++ toolset
+# allows boost to find the correct build toolset
 BIN_DIR=$(realpath /opt/conda/conda-bld/pandora_*/_build_env/bin/)
-cp "${BIN_DIR}/x86_64-conda-linux-gnu-gcc" "${BIN_DIR}/gcc"
-cp "${BIN_DIR}/x86_64-conda-linux-gnu-g++" "${BIN_DIR}/g++"
+if [ "$machine" = "Linux" ]
+then
+	cp "${BIN_DIR}/x86_64-conda-linux-gnu-gcc" "${BIN_DIR}/gcc"
+	cp "${BIN_DIR}/x86_64-conda-linux-gnu-g++" "${BIN_DIR}/g++"
+elif [ "$machine" = "Mac" ]
+then
+	cp "${BIN_DIR}/x86_64-apple-darwin*-clang" "${BIN_DIR}/clang"
+	cp "${BIN_DIR}/x86_64-apple-darwin*-clang++" "${BIN_DIR}/clang++"
+else
+	echo "Unsupported"
+	exit 1
+fi
 
 # build pandora
 mkdir -p build
