@@ -23,7 +23,7 @@ ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-ld $BUILD_PREFIX/bin/ld
 
 echo "compiling ncbi-vdb"
 pushd ncbi-vdb
-sed -i.bak "s|\"/etc/ssl/certs/ca-certificates.crt\"|\"${PREFIX}/ssl\", \n\"/etc/ssl/certs/ca-certificates.crt\",|" libs/kns/tls.c
+sed -i.bak "s|\"/etc/ssl/certs/ca-certificates.crt\"|\"${PREFIX}/ssl\", \n\"/etc/ssl/certs/ca-certificates.crt\"|" libs/kns/tls.c
 ./configure \
     --prefix=$PREFIX \
     --build-prefix=$NCBI_OUTDIR \
