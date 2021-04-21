@@ -7,4 +7,6 @@ cmake \
     -DCOMPILER_FLAGS= \
 ..
 make -j"${CPU_COUNT}"
-make install
+
+install -d "${PREFIX}/bin"
+install haploflow "${PREFIX}/bin/"
