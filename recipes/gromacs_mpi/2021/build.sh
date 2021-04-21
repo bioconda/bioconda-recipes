@@ -25,8 +25,12 @@ for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do
     -DGMX_SIMD="${ARCH}"
     -DCMAKE_INSTALL_BINDIR="bin.${ARCH}"
     -DCMAKE_INSTALL_LIBDIR="lib.${ARCH}"
-    -DGMX_MPI=ON
   )
+  if [[ "${mpi}" == "nompi" ]]; then
+      cmake_args+=(-DGMX_MPI=OFF)
+  else
+      cmake_args+=(-DGMX_MPI=ON)
+  fi
   cmake .. "${cmake_args[@]}"
   make -j "${CPU_COUNT}"
   make install
@@ -49,7 +53,12 @@ ${SRC_DIR}/src/gromacs/hardware/identifyavx512fmaunits.cpp
 # Create wrapper and activation scripts
 # Variable declaration from MPI script fewer changes if left in.
 
-gmx='gmx_mpi'
+
+if [ "${mpi}" = 'nompi' ] ; then
+    gmx='gmx'
+else
+    gmx='gmx_mpi'
+fi
 
 mkdir -p "${PREFIX}/etc/conda/activate.d"
 touch "${PREFIX}/bin/${gmx}"
