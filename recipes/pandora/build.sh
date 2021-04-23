@@ -16,15 +16,18 @@ echo "Compiling pandora on ${machine}"
 export LC_ALL=C
 
 # allows boost to find the correct build toolset
-BIN_DIR=$(realpath /opt/conda/conda-bld/pandora_*/_build_env/bin/)
 if [ "$machine" = "Linux" ]
 then
+	BIN_DIR=$(which x86_64-conda-linux-gnu-gcc)
+	BIN_DIR="$(dirname "${BIN_DIR}")"
 	cp "${BIN_DIR}/x86_64-conda-linux-gnu-gcc" "${BIN_DIR}/gcc"
 	cp "${BIN_DIR}/x86_64-conda-linux-gnu-g++" "${BIN_DIR}/g++"
 elif [ "$machine" = "Mac" ]
 then
-	cp "${BIN_DIR}/x86_64-apple-darwin*-clang" "${BIN_DIR}/clang"
-	cp "${BIN_DIR}/x86_64-apple-darwin*-clang++" "${BIN_DIR}/clang++"
+	BIN_DIR=$(which x86_64-apple-darwin13.4.0-clang)
+	BIN_DIR="$(dirname "${BIN_DIR}")"
+	cp "${BIN_DIR}/x86_64-apple-darwin13.4.0-clang" "${BIN_DIR}/clang"
+	cp "${BIN_DIR}/x86_64-apple-darwin13.4.0-clang++" "${BIN_DIR}/clang++"
 else
 	echo "Unsupported"
 	exit 1
