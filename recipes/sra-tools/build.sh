@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 # Build uses hard-coded references to gcc/g++/etc. and does not properly honor all *FLAGS.
 make_wrapper() {
@@ -42,9 +42,12 @@ end-of-patch
 } | patch -p0 -i-
 
 ./configure \
-    --prefix=$PREFIX \
-    --build-prefix=$NCBI_OUTDIR \
-    --with-ngs-sdk-prefix=$PREFIX
+    --prefix="${PREFIX}" \
+    --build-prefix="${NCBI_OUTDIR}" \
+    --with-ngs-sdk-prefix="${PREFIX}" \
+    --with-hdf5-prefix="${PREFIX}" \
+    --with-xml2-prefix="${PREFIX}" \
+    ;
 # Make target dependencies seems broken; build fails with -j"${CPU_COUNT}"
 make
 popd
@@ -53,23 +56,30 @@ echo "compiling sra-tools"
 pushd sra-tools
 
 pushd tools/driver-tool/utf8proc
-make -j${CPU_COUNT}
+make -j"${CPU_COUNT}"
 popd
 
 ./configure \
-    --prefix=$PREFIX \
-    --build-prefix=$NCBI_OUTDIR \
-    --with-ngs-sdk-prefix=$PREFIX \
-    --with-ncbi-vdb-build=$NCBI_OUTDIR
-make -j${CPU_COUNT}
+    --prefix="${PREFIX}" \
+    --build-prefix="${NCBI_OUTDIR}" \
+    --with-ngs-sdk-prefix="${PREFIX}" \
+    --with-hdf5-prefix="${PREFIX}" \
+    --with-xml2-prefix="${PREFIX}" \
+    --with-ncbi-vdb-build="${NCBI_OUTDIR}" \
+    ;
+make -j"${CPU_COUNT}"
 make install
 popd
 
 # Strip package version from binary names
-cd $PREFIX/bin
-ln -s fastq-dump-orig.$PKG_VERSION fastq-dump-orig
-ln -s fasterq-dump-orig.$PKG_VERSION fasterq-dump-orig
-ln -s prefetch-orig.$PKG_VERSION prefetch-orig
-ln -s sam-dump-orig.$PKG_VERSION sam-dump-orig
-ln -s srapath-orig.$PKG_VERSION srapath-orig
-ln -s sra-pileup-orig.$PKG_VERSION sra-pileup-orig
+cd "${PREFIX}/bin"
+for exe in \
+    fastq-dump-orig \
+    fasterq-dump-orig \
+    prefetch-orig \
+    sam-dump-orig \
+    srapath-orig \
+    sra-pileup-orig
+do
+    ln -s "${exe}.${PKG_VERSION}" "${exe}"
+done
