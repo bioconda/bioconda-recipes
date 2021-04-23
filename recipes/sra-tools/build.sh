@@ -1,24 +1,28 @@
 #!/bin/bash
 
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
-export CPATH=${PREFIX}/include
+# Build uses hard-coded references to gcc/g++/etc. and does not properly honor all *FLAGS.
+make_wrapper() {
+    [ -n "${2:+x}" ] || return 0
+    local exe
+    exe="${BUILD_PREFIX}/bin/${3}"
+    touch "${exe}"
+    chmod +x "${exe}"
+    cat > "${exe}" <<EOF
+#! /bin/sh
+exec ${2} ${1} ${CPPFLAGS} ${LDFLAGS} "\${@}"
+EOF
+}
+make_wrapper "${CFLAGS}" "${CC}" cc
+make_wrapper "${CFLAGS}" "${GCC}" gcc
+make_wrapper "${CFLAGS}" "${CLANG}" clang
+make_wrapper "${CXXFLAGS}" "${CXX}" c++
+make_wrapper "${CXXFLAGS}" "${GXX}" g++
+make_wrapper "${CXXFLAGS}" "${CLANGXX}" clang++
+ln -s "${AR}" "${BUILD_PREFIX}/bin/ar"
+ln -s "${LD}" "${BUILD_PREFIX}/bin/ld"
+
 
 NCBI_OUTDIR=$SRC_DIR/ncbi-outdir
-
-if [[ $OSTYPE == darwin* ]]; then
-     export CFLAGS="${CFLAGS} -i sysroot ${CONDA_BUILD_SYSROOT}"
-     export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
-fi
-
-export PATH=$BUILD_PREFIX/bin:$PATH
-
-ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-gcc $BUILD_PREFIX/bin/gcc
-ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-c++ $BUILD_PREFIX/bin/g++
-ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-cc $BUILD_PREFIX/bin/cc
-ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-c++ $BUILD_PREFIX/bin/c++
-ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-ar $BUILD_PREFIX/bin/ar
-ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-ld $BUILD_PREFIX/bin/ld
 
 
 echo "compiling ncbi-vdb"
