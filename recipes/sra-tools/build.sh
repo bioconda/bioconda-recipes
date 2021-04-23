@@ -27,7 +27,20 @@ NCBI_OUTDIR=$SRC_DIR/ncbi-outdir
 
 echo "compiling ncbi-vdb"
 pushd ncbi-vdb
-sed -i.bak "s|\"/etc/ssl/certs/ca-certificates.crt\"|\"${PREFIX}/ssl\", \n\"/etc/ssl/certs/ca-certificates.crt\"|" libs/kns/tls.c
+
+{
+cat <<end-of-patch
+--- libs/kns/tls.c
++++ libs/kns/tls.c
+@@ -431,4 +431,5 @@
+         const char * root_ca_paths [] =
+         {
++            "${PREFIX}", /* conda-forge::ca-certificates */
+             "/etc/ssl/certs/ca-certificates.crt",                /* Debian/Ubuntu/Gentoo etc */
+             "/etc/pki/tls/certs/ca-bundle.crt",                  /* Fedora/RHEL */
+end-of-patch
+} | patch -p0 -i-
+
 ./configure \
     --prefix=$PREFIX \
     --build-prefix=$NCBI_OUTDIR \
