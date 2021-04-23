@@ -35,7 +35,7 @@ cat <<end-of-patch
 @@ -431,4 +431,5 @@
          const char * root_ca_paths [] =
          {
-+            "${PREFIX}", /* conda-forge::ca-certificates */
++            "${PREFIX}/ssl/cacert.pem", /* conda-forge::ca-certificates */
              "/etc/ssl/certs/ca-certificates.crt",                /* Debian/Ubuntu/Gentoo etc */
              "/etc/pki/tls/certs/ca-bundle.crt",                  /* Fedora/RHEL */
 end-of-patch
