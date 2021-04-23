@@ -5,6 +5,7 @@ make_wrapper() {
     [ -n "${2:+x}" ] || return 0
     local exe
     exe="${BUILD_PREFIX}/bin/${3}"
+    rm -f "${exe}"
     touch "${exe}"
     chmod +x "${exe}"
     cat > "${exe}" <<EOF
