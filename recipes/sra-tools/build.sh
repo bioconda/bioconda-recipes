@@ -32,7 +32,8 @@ sed -i.bak "s|\"/etc/ssl/certs/ca-certificates.crt\"|\"${PREFIX}/ssl\", \n\"/etc
     --prefix=$PREFIX \
     --build-prefix=$NCBI_OUTDIR \
     --with-ngs-sdk-prefix=$PREFIX
-make -j${CPU_COUNT}
+# Make target dependencies seems broken; build fails with -j"${CPU_COUNT}"
+make
 popd
 
 echo "compiling sra-tools"
