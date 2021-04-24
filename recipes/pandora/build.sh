@@ -26,7 +26,7 @@ elif [ "$machine" = "Mac" ]
 then
 	BIN_DIR=$(which x86_64-apple-darwin13.4.0-clang)
 	BIN_DIR="$(dirname "${BIN_DIR}")"
-	cp "${BIN_DIR}/x86_64-apple-darwin13.4.0-clang" "${BIN_DIR}/clang"
+	# cp "${BIN_DIR}/x86_64-apple-darwin13.4.0-clang" "${BIN_DIR}/clang"
 	cp "${BIN_DIR}/x86_64-apple-darwin13.4.0-clang++" "${BIN_DIR}/clang++"
 else
 	echo "Unsupported"
