@@ -15,22 +15,13 @@ echo "Compiling pandora on ${machine}"
 # make compilation not be dependent on locale settings
 export LC_ALL=C
 
-# allows boost to find the correct build toolset
+# allows boost to find the correct build toolset in Linux
 if [ "$machine" = "Linux" ]
 then
 	BIN_DIR=$(which x86_64-conda-linux-gnu-gcc)
 	BIN_DIR="$(dirname "${BIN_DIR}")"
 	cp "${BIN_DIR}/x86_64-conda-linux-gnu-gcc" "${BIN_DIR}/gcc"
 	cp "${BIN_DIR}/x86_64-conda-linux-gnu-g++" "${BIN_DIR}/g++"
-elif [ "$machine" = "Mac" ]
-then
-	BIN_DIR=$(which x86_64-apple-darwin13.4.0-clang)
-	BIN_DIR="$(dirname "${BIN_DIR}")"
-	# cp "${BIN_DIR}/x86_64-apple-darwin13.4.0-clang" "${BIN_DIR}/clang"
-	cp "${BIN_DIR}/x86_64-apple-darwin13.4.0-clang++" "${BIN_DIR}/clang++"
-else
-	echo "Unsupported"
-	exit 1
 fi
 
 # build pandora
