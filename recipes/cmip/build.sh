@@ -11,8 +11,8 @@ make \
 # Copy executable to environment bin dir included in the path
 mkdir -p $PREFIX/bin
 
-chmod u+x cmip
-cp cmip $PREFIX/bin/
+chmod u+x cmip watden titration
+cp cmip watden titration $PREFIX/bin/
 
 cd ..
 mkdir -p $PREFIX/share/cmip
