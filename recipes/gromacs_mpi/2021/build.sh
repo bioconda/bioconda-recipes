@@ -113,7 +113,7 @@ case "$OSTYPE" in
              ;;
 esac
 
-# Search first for AVX512, then AVX2, then AVX. Fall back on SSE2
+# Search first for AVX2, then AVX. Fall back on SSE2
 { cat <<EOF
 #! /bin/bash
 
@@ -121,11 +121,6 @@ function _gromacs_bin_dir() {
   local arch
   arch='SSE2'
   case \$( ${hardware_info_command} ) in
-    *avx512f*)
-      test -d "${PREFIX}/bin.AVX_512" && \
-        "${PREFIX}/bin.AVX_512/identifyavx512fmaunits" | grep -q '2' && \
-        arch='AVX_512'
-    ;;
     *\ avx2\ * | *avx2_0*)
       test -d "${PREFIX}/bin.AVX2_256" && \
         arch='AVX2_256'
