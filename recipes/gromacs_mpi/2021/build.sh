@@ -44,14 +44,14 @@ done
 # there's only a single one we prefer AVX2_256 SIMD instead.
 #
 
-${CXX} -O3 -mavx512f -std=c++11 \
--DGMX_IDENTIFY_AVX512_FMA_UNITS_STANDALONE=1 \
--DGMX_X86_GCC_INLINE_ASM=1 \
--DSIMD_AVX_512_CXX_SUPPORTED=1 \
--o ${PREFIX}/bin.AVX_512/identifyavx512fmaunits \
-${SRC_DIR}/src/gromacs/hardware/identifyavx512fmaunits.cpp
-# Create wrapper and activation scripts
-# Variable declaration from MPI script fewer changes if left in.
+#${CXX} -O3 -mavx512f -std=c++11 \
+#-DGMX_IDENTIFY_AVX512_FMA_UNITS_STANDALONE=1 \
+#-DGMX_X86_GCC_INLINE_ASM=1 \
+#-DSIMD_AVX_512_CXX_SUPPORTED=1 \
+#-o ${PREFIX}/bin.AVX_512/identifyavx512fmaunits \
+#${SRC_DIR}/src/gromacs/hardware/identifyavx512fmaunits.cpp
+## Create wrapper and activation scripts
+## Variable declaration from MPI script fewer changes if left in.
 
 
 if [ "${mpi}" = 'nompi' ] ; then
