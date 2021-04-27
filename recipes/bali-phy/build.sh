@@ -9,7 +9,7 @@ pkg-config --list-all
 
 # configure
 export CC=clang
-export CXX=clang++
+export CXX=clang
 meson \
     --prefix="$PREFIX" \
     -Db_ndebug=true \
