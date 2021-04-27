@@ -6,6 +6,7 @@ export BOOST_ROOT="${PREFIX}"
 export PKG_CONFIG_LIBDIR="${PREFIX}"/lib/pkgconfig
 
 pkg-config --list-all
+pkg-config --cflags cairo
 
 echo "CC=$CC"
 echo "CXX=$CXX"
@@ -18,6 +19,8 @@ meson \
     builddir .
 
 cd builddir
+
+cat meson-logs/meson-log.txt
 
 # build
 meson compile
