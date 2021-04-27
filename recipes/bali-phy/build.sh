@@ -7,9 +7,10 @@ export PKG_CONFIG_LIBDIR="${PREFIX}"/lib/pkgconfig
 
 pkg-config --list-all
 
+echo "CC=$CC"
+echo "CXX=$CXX"
+
 # configure
-export CC=clang
-export CXX=clang
 meson \
     --prefix="$PREFIX" \
     --buildtype=release \
