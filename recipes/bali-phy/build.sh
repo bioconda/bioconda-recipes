@@ -12,6 +12,7 @@ export CC=clang
 export CXX=clang
 meson \
     --prefix="$PREFIX" \
+    --buildtype=release \
     -Db_ndebug=true \
     builddir .
 
