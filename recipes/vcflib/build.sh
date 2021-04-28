@@ -37,8 +37,10 @@ pkg-config --list-all
 mkdir -p build
 cd build
 
+
 #cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DTABIXPP_LOCAL:STRING=$PREFIX/lib
 cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX 
 cmake --build . 
 cmake --install .
 cp -n ../scripts/* $PREFIX/bin
+cp -n -r ../src/simde $PREFIX/include/
