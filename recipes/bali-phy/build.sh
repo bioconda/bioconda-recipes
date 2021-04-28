@@ -2,6 +2,11 @@
 
 set -vex
 
+# C++17 is not properly supported on early OSX versions
+if [ "$(uname)" = 'Darwin' ] ; then
+    export MACOSX_DEPLOYMENT_TARGET=10.13
+fi
+
 export BOOST_ROOT="${PREFIX}"
 export PKG_CONFIG_LIBDIR="${PREFIX}"/lib/pkgconfig
 
