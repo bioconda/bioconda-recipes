@@ -6,6 +6,7 @@ set -vex
 case "${target_platform}" in osx-*)
     export MACOSX_DEPLOYMENT_TARGET=10.13
     xcodebuild -sdk -version
+    ${CXX} -v
 esac
 
 export BOOST_ROOT="${PREFIX}"
