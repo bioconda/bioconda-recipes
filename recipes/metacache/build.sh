@@ -2,8 +2,7 @@
 
 set -e
 
-export LDFLAGS="-L$PREFIX/lib"
-export CPATH=${PREFIX}/include
+# export CPATH=${PREFIX}/include
 
 mkdir -p $PREFIX/bin
 
