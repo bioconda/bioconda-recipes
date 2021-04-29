@@ -1,1 +1,2 @@
+#!/bin/bash
 export DEEPSIG_ROOT=$PREFIX/opt/PKG_NAME-$PKG_VERSION/
