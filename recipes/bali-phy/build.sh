@@ -18,7 +18,13 @@ pkg-config --cflags cairo
 echo "CC=$CC"
 echo "CFLAGS=$CFLAGS"
 echo "CXX=$CXX"
+echo "CPPFLAGS=$CPPFLAGS"
 echo "CXXFLAGS=$CXXFLAGS"
+
+echo "Removing -mmacosx-version-min=10.9 from CPPFLAGS..."
+CPPFLAGS="$(echo $CPPFLAGS | sed 's/-mmacosx-version-min=10.9/-mmacosx-version-min=10.13/g')"
+echo "CPPFLAGS=$CPPFLAGS"
+
 echo "Removing -O2 and -std=c++14 from CXXFLAGS..."
 CXXFLAGS="$(echo $CXXFLAGS | sed 's/-O2//g' | sed 's/-std=c++14//g')"
 echo "CXXFLAGS=$CXXFLAGS"
