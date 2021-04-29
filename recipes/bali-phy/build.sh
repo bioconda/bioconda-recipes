@@ -4,7 +4,7 @@ set -vex
 
 # C++17 is not properly supported on early OSX versions
 if [ "$(uname)" = 'Darwin' ] ; then
-    export MACOSX_DEPLOYMENT_TARGET=10.13
+    export MACOSX_DEPLOYMENT_TARGET=10.14
 fi
 
 export BOOST_ROOT="${PREFIX}"
