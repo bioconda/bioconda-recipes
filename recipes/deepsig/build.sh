@@ -2,9 +2,9 @@
 
 python -m pip install --no-deps --ignore-installed .
 
-mkdir $PREFIX/opt/$PKG_NAME-$PKG_VERSION/
-cp -r models/ $PREFIX/opt/$PKG_NAME-$PKG_VERSION/
-cp -r tools/ $PREFIX/opt/$PKG_NAME-$PKG_VERSION/
+mkdir -p $PREFIX/share/$PKG_NAME-$PKG_VERSION/
+cp -r models/ $PREFIX/share/$PKG_NAME-$PKG_VERSION/
+cp -r tools/ $PREFIX/share/$PKG_NAME-$PKG_VERSION/
 
 # add de/activation scripts to set the DEEPSIG_ROOT env var
 for CHANGE in "activate" "deactivate"
