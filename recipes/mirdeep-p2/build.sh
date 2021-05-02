@@ -2,4 +2,5 @@
 
 mkdir -p $PREFIX/bin
 cp -r scripts $PREFIX/bin
-cp mirDP* $PREFIX/bin
+ls -l
+cp mir* $PREFIX/bin
