@@ -1,0 +1,118 @@
+{% set name = "epimuller" %}
+{% set version = "0.0.5" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "800b067705e229bb0d1a77322f980cdd6d498ba97a2e61fbf260e10cdaebfcaf" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  entry_points:
+    - epimuller=scripts.mutationLinages_report:main
+    - epimuller-draw=scripts.drawMuller:main
+    - epimuller-define=scripts.defineAndCountClades:main
+    - epimuller-parse=scripts.parseFastaNames:main
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - ete3
+    - datetime
+    - statistics
+    - svgwrite
+    - pycairo
+    - cairosvg
+    - argparse
+    - numpy
+    - six
+  run:
+    - python
+    - ete3
+    - datetime
+    - statistics
+    - svgwrite
+    - pycairo
+    - cairosvg
+    - argparse
+    - numpy
+    - six
+
+test:
+  imports:
+    - scripts
+  commands:
+    - epimuller --help
+    - epimuller-draw --help
+    - epimuller-define --help
+    - epimuller-parse --help
+
+about:
+  home: https://github.com/jennifer-bio/epimuller
+  license: MIT License
+  license_family: MIT
+  license_file: ''
+  summary: Visualize lineages overtime, with phylogentic context, based on viral genomes
+  description: "# epiMuller README\n\n![Muller plot image](https://raw.githubusercontent.com/jennifer-bio/epiMuller/main/images/case_scaled_lineages_long.png)\n\n##### About\n\n###### Author\nJennifer L\
+    \ Havens\n\n###### Purpose\nVisualize lineages overtime, with phylogentic context, based on viral genomes\n\n###### Language\nPython3\n\n###### Inputs\nAlingment, collection date, PANGO lineage, Nextstain\
+    \ JSON files, and timetree\n\n###### Source code avaliblity\n[gitHub](https://github.com/jennifer-bio/epimuller)\n\n###### Documentation avaliblity \n[Read the Docs](https://epimuller.readthedocs.io/en/stable/)\n\
+    \n## Quick start\n\n```\npip install epimuller\n\nepimuller [-h] [-oDir OUTDIRECTORY] -oP OUTPREFIX -n\n\t INNEXTSTRAIN -m INMETA [-p INPANGOLIN]\n\t [-f TRAITOFINTERSTFILE]\n\t [-k TRAITOFINTERSTKEY]\n\
+    \t [-aa AAVOCLIST [AAVOCLIST ...]]\n\t [-t TIMEWINDOW] [-s STARTDATE] [-e ENDDATE]\n\t [-mt MINTIME] [-min MINTOTALCOUNT]\n\t [-c CASES_NAME] [-l {date,time}]\n\t [-lp {Right,Max,Start,End}]\n\n```\n\
+    \n## SOME EXAMPLES \n\n#### Examples for full run \nTo prep files for these examples for epimuller look at Example_CommandsFromScratch.txt\n\n##### Visulize default aa mutation list\n\n```\nepimuller\
+    \ \\\n\t-n inputData/GISAID_NYCPHL_04_29/02_nextstrainResults \\\n\t-m inputData/GISAID_NYCPHL_04_29/gisaid_2021_04_30_00_rename.tsv \\\n\t-oDir 03_results_NYCPHL_April29 \\\n\t-oP 01_defaultAAList\
+    \ \\\n\t-c inputData/CITY_US-NY_NYC_outbreakinfo_epidemiology_data_2021-04-30.tsv\n```\n\n##### Visulize a trait: lineage \n\n```\nepimuller \\\n\t-n inputData/GISAID_NYCPHL_04_29/02_nextstrainResults\
+    \ \\\n\t-m inputData/GISAID_NYCPHL_04_29/gisaid_2021_04_30_00_rename.tsv \\\n\t-oDir 03_results_NYCPHL_April29 \\\n\t-oP 02_pangolin \\\n\t-c inputData/CITY_US-NY_NYC_outbreakinfo_epidemiology_data_2021-04-30.tsv\
+    \ \\\n\t--traitOfInterstFile traits.json \\\n\t--traitOfInterstKey lineage \\\n\t-lp Max \\\n\t-min 100 \\\n```\n\n\n##### Visulize your own aa mutation list\n\n```\nepimuller \\\n\t-n inputData/GISAID_NYCPHL_04_29/02_nextstrainResults\
+    \ \\\n\t-m inputData/GISAID_NYCPHL_04_29/gisaid_2021_04_30_00_rename.tsv \\\n\t-oDir 03_results_NYCPHL_April29 \\\n\t-oP 03_selectedAA \\\n\t-c inputData/CITY_US-NY_NYC_outbreakinfo_epidemiology_data_2021-04-30.tsv\
+    \ \\\n\t-aa 'SE484K' 'S*452*' \\\n\t-min 50 \\ \n\t-mt 20\n```\n\n\n## Known edge cases / featrues to add  \nKnown edge cases which are not correctly dealt with or features I intend to add (that I will\
+    \ get around to fixing eventually) \nIf you run into anything else please let me know on [gitHub](https://github.com/jennifer-bio/epimuller)\n```\n\t- nt_muts ; not set up for nt mutations (only amino\
+    \ acid or trait)\n\t- only takes nextstrain json files - intending to set up to take treetime output\n\t- feel free to ignore the undefined.svg that gets made - it is related to checking the size of\
+    \ the text to space out labels\n\t- add plot and font size to arg options\n```\n\n## Addtional features\n\n##### Color\nIf you would like to specify color for clade: in --parentHierarchy_name file (of\
+    \ epimuller-draw/drawMuller.py input) add col with name: \"color\" and hex color value (starting with #) for clades you want to specify.\n\n##### Plot and font size\nIn the file: scripts/drawMuller.py\
+    \ ; near top of script change value for desired WIDTH, HEIGHT , LEGENDWIDTH (space on right side of plot for labels), MARGIN, or FONTSIZE variables.\nThen run with source code in epimuller folder by\
+    \ $python scripts/drawMuller.py [Arugments]\n\n##### Parse GISAID fasta for metadata\nepimuller-parse\nIf you have downloaded sequences from GISAID under the search tab, you can parse out the names\
+    \ into a metadata file (format tested as of 2021-04-30)\n\n\n## ARGUMENTS  \n\n```\noptional arguments:\n\t-h, --help            show this help message and exit\n\nOptions for full repot:\n\t-oDir OUTDIRECTORY,\
+    \ --outDirectory OUTDIRECTORY\n\t\tfolder for output (default: ./)\n\t-oP OUTPREFIX, --outPrefix OUTPREFIX\n\t\tprefix of out files withen outDirectory (default:\n\t\tNone)\n\nOptions passed to epimuller-define:\n\
+    \t-n INNEXTSTRAIN, --inNextstrain INNEXTSTRAIN\n\t\tnextstrain results with tree.nwk and\n\t\t[traitOfInterst].json (default: None)\n\t-m INMETA, --inMeta INMETA\n\t\tmetadata tsv with 'strain' and\
+    \ 'date'cols, optional:\n\t\tcols of trait of interst; and pangolin col named:\n\t\t'lineage' or 'pangolin_lin' (default: None)\n\t-p INPANGOLIN, --inPangolin INPANGOLIN\n\t\tpangolin output lineage_report.csv\
+    \ file, if argument\n\t\tnot supplied looks in inMeta for col with\n\t\t'pangolin_lin' or 'lineage' (default: metadata)\n\t-f TRAITOFINTERSTFILE, --traitOfInterstFile TRAITOFINTERSTFILE\n\t\tname of\
+    \ nextstrain [traitOfInterst].json in\n\t\t'inNextstrain' folder (default: aa_muts.json)\n\t-k TRAITOFINTERSTKEY, --traitOfInterstKey TRAITOFINTERSTKEY\n\t\tkey for trait of interst in json file (default:\n\
+    \t\taa_muts)\n\t-aa AAVOCLIST [AAVOCLIST ...], --aaVOClist AAVOCLIST [AAVOCLIST ...]\n\t\tlist of aa of interest in form\n\t\t[GENE][*ORAncAA][site][*ORtoAA] ex. S*501*, gaps\n\t\trepresed by X (default:\
+    \ None)\n\t-t TIMEWINDOW, --timeWindow TIMEWINDOW\n\t\tnumber of days for sampling window (default: 7)\n\t-s STARTDATE, --startDate STARTDATE\n\t\tstart date in iso format YYYY-MM-DD or 'firstDate'\n\
+    \t\twhich sets start date to first date in metadata\n\t\t(default: 2020-03-01)\n\t-e ENDDATE, --endDate ENDDATE\n\t\tend date in iso format YYYY-MM-DD or 'lastDate' which\n\t\tsets end date as last\
+    \ date in metadata (default:\n\t\tlastDate)\n\nOptions passed to epimuller-draw:\n\t-mt MINTIME, --MINTIME MINTIME\n\t\tminimum time point to start plotting (default: 30)\n\t-min MINTOTALCOUNT, --MINTOTALCOUNT\
+    \ MINTOTALCOUNT\n\t\tminimum total count for group to be included (default:\n\t\t10)\n\t-c CASES_NAME, --cases_name CASES_NAME\n\t\tfile with cases - formated with 'date' in ISO format\n\t\tand 'confirmed_rolling'\
+    \ cases, in tsv format (default:\n\t\tNone)\n\t-l {date,time}, --xlabel {date,time}\n\t\tFormat of x axis label: ISO date format or timepoints\n\t\tfrom start (default: date)\n\t-lp {Right,Max,Start,End},\
+    \ --labelPosition {Right,Max,Start,End}\n\t\tchoose position of clade labels (default: Right)\n\n```\n\n\n\n## Only make abundance and hiearchy files \n\n```\nusage: epimuller-define [-h] -n INNEXTSTRAIN\
+    \ -m INMETA [-p INPANGOLIN]\n\t [-f TRAITOFINTERSTFILE] [-k TRAITOFINTERSTKEY]\n\t [-aa AAVOCLIST [AAVOCLIST ...]]\n\t [-oDir OUTDIRECTORY] -oP OUTPREFIX\n\t [-t TIMEWINDOW] [-s STARTDATE] [-e ENDDATE]\n\
+    \noptional arguments:\n\t-h, --help            show this help message and exit\n\t-n INNEXTSTRAIN, --inNextstrain INNEXTSTRAIN\n\t\tnextstrain results with tree.nwk and\n\t\t[traitOfInterst].json (default:\
+    \ None)\n\t-m INMETA, --inMeta INMETA\n\t\tmetadata tsv with 'strain' and 'date'cols, optional:\n\t\tcols of trait of interst; and pangolin col named:\n\t\t'lineage' or 'pangolin_lin' (default: None)\n\
+    \t-p INPANGOLIN, --inPangolin INPANGOLIN\n\t\tpangolin output lineage_report.csv file, if argument\n\t\tnot supplied looks in inMeta for col with\n\t\t'pangolin_lin' or 'lineage' (default: metadata)\n\
+    \t-f TRAITOFINTERSTFILE, --traitOfInterstFile TRAITOFINTERSTFILE\n\t\tname of nextstrain [traitOfInterst].json in\n\t\t'inNextstrain' folder (default: aa_muts.json)\n\t-k TRAITOFINTERSTKEY, --traitOfInterstKey\
+    \ TRAITOFINTERSTKEY\n\t\tkey for trait of interst in json file (default:\n\t\taa_muts)\n\t-aa AAVOCLIST [AAVOCLIST ...], --aaVOClist AAVOCLIST [AAVOCLIST ...]\n\t\tlist of aa of interest in form\n\t\
+    \t[GENE][*ORAncAA][site][*ORtoAA] ex. S*501*, gaps\n\t\trepresed by X (default: None)\n\t-oDir OUTDIRECTORY, --outDirectory OUTDIRECTORY\n\t\tfolder for output (default: ./)\n\t-oP OUTPREFIX, --outPrefix\
+    \ OUTPREFIX\n\t\tprefix of out files withen outDirectory (default:\n\t\tNone)\n\t-t TIMEWINDOW, --timeWindow TIMEWINDOW\n\t\tnumber of days for sampling window (default: 7)\n\t-s STARTDATE, --startDate\
+    \ STARTDATE\n\t\tstart date in iso format YYYY-MM-DD or 'firstDate'\n\t\twhich is in metadata (default: 2020-03-01)\n\t-e ENDDATE, --endDate ENDDATE\n\t\tend date in iso format YYYY-MM-DD or 'lastDate'\
+    \ which\n\t\tis in metadata (default: lastDate)\n```\n\n\n## Only plot \n\n```\nusage: epimuller-draw [-h] -p PARENTHIERARCHY_NAME -a ABUNDANCE_NAME\n\t [-c CASES_NAME] -o OUTFOLDER [-mt MINTIME]\n\t\
+    \ [-min MINTOTALCOUNT] [-l {date,time}]\n\t [-lp {Right,Max,Start,End}]\n\noptional arguments:\n\t-h, --help            show this help message and exit\n\t-p PARENTHIERARCHY_NAME, --parentHierarchy_name\
+    \ PARENTHIERARCHY_NAME\n\t\tcsv output from mutationLinages_report.py with child\n\t\tparent col (default: None)\n\t-a ABUNDANCE_NAME, --abundance_name ABUNDANCE_NAME\n\t\tcsv output from mutationLinages_report.py\
+    \ with\n\t\tabundances of clades (default: None)\n\t-c CASES_NAME, --cases_name CASES_NAME\n\t\tfile with cases - formated with 'date' in ISO format\n\t\tand 'confirmed_rolling' cases, in tsv format\
+    \ (default:\n\t\tNone)\n\t-o OUTFOLDER, --outFolder OUTFOLDER\n\t\tcsv output from mutationLinages_report.py with child\n\t\tparent col (default: None)\n\t-mt MINTIME, --MINTIME MINTIME\n\t\tminimum\
+    \ time point to start plotting (default: 30)\n\t-min MINTOTALCOUNT, --MINTOTALCOUNT MINTOTALCOUNT\n\t\tminimum total count for group to be included (default:\n\t\t10)\n\t-l {date,time}, --xlabel {date,time}\n\
+    \t\tFormat of x axis label: ISO date format or timepoints\n\t\tfrom start (default: date)\n\t-lp {Right,Max,Start,End}, --labelPosition {Right,Max,Start,End}\n\t\tchoose position of clade labels (default:\
+    \ Right)\n\n```\n\n## Citation\n\nPlease [link to this github](https://github.com/jennifer-bio/epimuller) if you have used epimuller in your research. \n\n#### Extra notes on GISAID\n\nIf you do use\
+    \ GISAID data please acknowledge the contributers, such as with [language suggested by GISAID](https://www.gisaid.org/help/publish-with-data-from-gisaid/).\n\n\n"
+  doc_url: ''
+  dev_url: ''
+
+extra:
+  recipe-maintainers: ''
