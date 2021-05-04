@@ -1,0 +1,38 @@
+{% set name = "contrafold" %}
+{% set version = "2.02" %}
+{% set sha256 = "9e2657262797f9fcba5c325deaca565401698d682026439476774abee08163cd" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  script: 'cd ./src && make clean && make && make viz'
+
+source:
+  url: http://contra.stanford.edu/{{ name }}/{{ name }}_v{{ version | replace('.', '_') }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+  - libgd
+  - libpng
+  - make
+  - {{ compiler('cxx') }}
+
+  run:
+  - libgcc
+  - perl
+
+test:
+  commands:
+    - contrafold --help
+    - make_coords --help
+    - plot_rna --help
+
+about:
+  home: http://contra.stanford.edu/contrafold/download.html
+  license: BSD-3-Clause
+  license_file: LICENSE
+  summary: 'Hybrid assembly pipeline for bacterial genomes'
