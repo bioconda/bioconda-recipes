@@ -1,0 +1,65 @@
+diff --git a/StringGraph/SGVisitors.cpp b/StringGraph/SGVisitors.cpp
+index 76d4d9c..d8727b0 100644
+--- a/StringGraph/SGVisitors.cpp
++++ b/StringGraph/SGVisitors.cpp
+@@ -792,25 +792,25 @@ bool SGBothShortEdgesRemoveVisitor::visit(StringGraph* , Vertex* pVertex)
+ 			avgKmerFreqs = (float) sumKmerFreqs/numKmer;
+         }
+ 
+-        if(m_fileHandle!=NULL)
++        if(m_fileHandle)
+ 		m_fileHandle << ">" << pVertex->getID()  << " " << pVertex->getSeqLen()
+ 					 << " " << maxOverlapLength[ED_SENSE]  << " " << maxOverlapLength[ED_ANTISENSE]  ;
+ 
+ 		if ( avgKmerFreqs < 0 )
+ 		{
+ 			pVertex->setColor(GC_BLACK);
+-            if(m_fileHandle!=NULL) m_fileHandle << " BLACK";
++            if(m_fileHandle) m_fileHandle << " BLACK";
+ 			changed = true;
+ 		}
+ 
+ 		else if (avgKmerFreqs<=threshold)
+ 		{
+ 			pVertex->setColor(GC_BLACK);
+-            if(m_fileHandle!=NULL) m_fileHandle << " BLACK " << avgKmerFreqs ;
++            if(m_fileHandle) m_fileHandle << " BLACK " << avgKmerFreqs ;
+ 			changed = true;
+         }
+ 
+-        if(m_fileHandle!=NULL)
++        if(m_fileHandle)
+             m_fileHandle << "\n" << pVertex->getSeq() << std::endl;
+ 	}
+ 
+@@ -873,7 +873,7 @@ bool SGLowOverlapRatioEdgeSweepVisitor::visit(StringGraph* , Vertex* pVertex)
+ 				pTwin->setColor(GC_BLACK);
+ 				changed = true;
+ 
+-				if(m_fileHandle!=NULL)
++				if(m_fileHandle)
+                     m_fileHandle
+                     << "Remove edge between " << pVertex->getID() <<"(" << originLength << ") and "
+                     << pW->getID() <<"(" << anotherOriginLength << ") " << matchLen << "/" << minLength
+@@ -999,7 +999,7 @@ bool SGLowOverlapRatioEdgeRemoveVisitor::visit(StringGraph* , Vertex* pVertex)
+ 				pTwin->setColor(GC_BLACK);
+ 				changed = true;
+ 
+-				if(m_fileHandle!=NULL)
++				if(m_fileHandle)
+                     m_fileHandle
+                     << "Remove edge between " << pVertex->getID() <<" and " <<  pW->getID() << "with ratio difference: " << vwDiff  << ".\n"
+                     << pW->getID() << " exist another low overlap ratio difference (" <<  reliableDiff << ")." << std::endl;
+diff --git a/Algorithm/KmerOverlaps.cpp b/Algorithm/KmerOverlaps.cpp
+index c2d918d..eb2dab0 100755
+--- a/Algorithm/KmerOverlaps.cpp
++++ b/Algorithm/KmerOverlaps.cpp
+@@ -206,7 +206,7 @@ SequenceOverlapPairVector KmerOverlaps::retrieveMatches(const std::string& query
+
+         //The pos of two kmers shouldn't differ more than the min_overlap allowed
+         size_t maxshift = query.length()-min_overlap+bandwidth/2;
+-        if(abs(pos_0-pos_1) > maxshift)
++        if(abs((long long int) (pos_0-pos_1)) > maxshift)^M
+             continue;
+
+         // Check for secondary occurrences
