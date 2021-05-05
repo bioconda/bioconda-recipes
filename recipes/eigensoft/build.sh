@@ -1,7 +1,7 @@
 cd src
 make clobber
 
-make CFLAGS="-I$PREFIX/include -I../../include" LDFLAGS="-L$PREFIX/lib" all
+make all
 
 # Install (makefile install has hard-coded destination, so have to do this manually)
  mkdir -p $PREFIX/bin

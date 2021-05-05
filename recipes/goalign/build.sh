@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
 export CGO_ENABLED=0
+export GOPATH=$PWD
 
 go get -u github.com/golang/dep/cmd/dep
-cd "$GOPATH/src/github.com/evolbioinfo/goalign"
+cd src/github.com/evolbioinfo/${PKG_NAME}
 dep ensure
-go build -o ${PREFIX}/bin/goalign -ldflags "-X github.com/evolbioinfo/goalign/version.Version=${PKG_VERSION}" github.com/evolbioinfo/goalign
+go build -o ${PREFIX}/bin/${PKG_NAME} -ldflags "-X github.com/evolbioinfo/${PKG_NAME}/version.Version=${PKG_VERSION}" github.com/evolbioinfo/${PKG_NAME}
 
 # Goalign test data
 cp -r tests/data $PREFIX/goalign_test_data
