@@ -1,28 +1,14 @@
 #!/bin/bash
 set -eux -o pipefail
 
-# recognise running environment (from https://stackoverflow.com/a/3466183/5264075)
-unameOut="$(uname -s)"
-case "${unameOut}" in
-    Linux*)     machine=Linux;;
-    Darwin*)    machine=Mac;;
-    CYGWIN*)    machine=Cygwin;;
-    MINGW*)     machine=MinGw;;
-    *)          machine="UNKNOWN:${unameOut}"
-esac
-echo "Compiling pandora on ${machine}"
-
 # make compilation not be dependent on locale settings
 export LC_ALL=C
 
 # allows boost to find the correct build toolset in Linux
-if [ "$machine" = "Linux" ]
-then
-	BIN_DIR=$(which x86_64-conda-linux-gnu-gcc)
-	BIN_DIR="$(dirname "${BIN_DIR}")"
-	cp "${BIN_DIR}/x86_64-conda-linux-gnu-gcc" "${BIN_DIR}/gcc"
-	cp "${BIN_DIR}/x86_64-conda-linux-gnu-g++" "${BIN_DIR}/g++"
-fi
+BIN_DIR=$(which x86_64-conda-linux-gnu-gcc)
+BIN_DIR="$(dirname "${BIN_DIR}")"
+cp "${BIN_DIR}/x86_64-conda-linux-gnu-gcc" "${BIN_DIR}/gcc"
+cp "${BIN_DIR}/x86_64-conda-linux-gnu-g++" "${BIN_DIR}/g++"
 
 # build pandora
 mkdir -p build
