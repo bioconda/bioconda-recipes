@@ -1,0 +1,59 @@
+{% set version = "3.6.3" %}
+{% set sha256 = "81e787f447f869ac89b16bc0f4c22fc2e65843fc99be004792cd946e2026ccfc" %}
+
+package:
+  name: "ms2pip"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/m/ms2pip/ms2pip-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True  # [py27 or osx]
+  entry_points:
+    - ms2pip=ms2pip.__main__:main
+    - fasta2speclib=fasta2speclib.fasta2speclib:main
+  script:
+    - "CFLAGS=${CFLAGS//-pipe/}"
+    - "DEBUG_CFLAGS=${DEBUG_CFLAGS//-pipe/}"
+    - "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - cython >=0.29.2,<1
+    - numpy >=1.15,<2
+    - pip
+    - python
+  run:
+    - biopython >=1.74,<2
+    - numpy >=1.16,<2
+    - pandas >=0.24,<2
+    - pyteomics >=3.5,<5
+    - python
+    - scipy >=1.2,<2
+    - pytables >=3.4
+    - tqdm >=4,<5
+    - tomlkit >=0.5.11,<1
+
+test:
+  imports:
+    - ms2pip
+  commands:
+    - ms2pip --help
+
+about:
+  home: http://compomics.github.io/projects/ms2pip_c
+  license: Apache-2.0
+  license_file: LICENSE
+  license_family: APACHE
+  summary: "MS²PIP: MS² Peak Intensity Prediction"
+  doc_url: http://compomics.github.io/projects/ms2pip_c
+  dev_url: https://github.com/compomics/ms2pip_c
+
+extra:
+  recipe-maintainers:
+    - compomics

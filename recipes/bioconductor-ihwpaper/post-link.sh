@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="IHWpaper_1.16.0.tar.gz"
+FN="IHWpaper_1.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/IHWpaper_1.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/IHWpaper_1.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ihwpaper/bioconductor-ihwpaper_1.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/IHWpaper_1.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/IHWpaper_1.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ihwpaper/bioconductor-ihwpaper_1.18.0_src_all.tar.gz"
 )
-MD5="56c66dd65e4fdf7734729f35fd19e603"
+MD5="cd9648189ae94a6dac79695bbc29483a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

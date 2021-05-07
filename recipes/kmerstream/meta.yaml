@@ -5,7 +5,7 @@ package:
   version: {{ version }}
 
 build:
-  number: 0
+  number: 2
 
 source:
   url: https://github.com/pmelsted/KmerStream/archive/v{{ version }}.tar.gz
@@ -13,17 +13,21 @@ source:
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
   host:
     - zlib
   run:
     - python
     - zlib
+    - scipy
 
 test:
   commands:
     # WARNING - kmerstream does not return exit code 0 when it displays help
     - KmerStream 2>&1 | grep "KmerStream {{ version }}"
+    - KmerStreamJoin 2>&1 | grep "KmerStreamJoin {{ version }}"
+    - KmerStreamEstimate.py 2>&1 | grep "estimate.py TSV-FILE"
 
 about:
   home: https://github.com/pmelsted/KmerStream

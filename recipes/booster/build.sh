@@ -1,8 +1,11 @@
 #!/bin/bash
 
-cd $SRC_DIR/src
-make CC=$CC
+cd src
+make \
+    CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+    CFLAGS_OMP='$(CFLAGS) -fopenmp' \
+    GIT_VERSION="${PKG_VERSION}"
 
-mkdir -p $PREFIX/bin
-cp booster $PREFIX/bin
+install -d "${PREFIX}/bin"
+install booster "${PREFIX}/bin/"
 

@@ -17,6 +17,8 @@ make install
 BAM2CFG_LIB=`dirname $( find ${PREFIX}/lib -name "bam2cfg.pl" )`
 ${PREFIX}/bin/sed -i'' "s@use AlnParser;@use lib \"${BAM2CFG_LIB}\";\nuse AlnParser;@" ${BAM2CFG_LIB}/bam2cfg.pl
 ln -s ${BAM2CFG_LIB}/bam2cfg.pl ${PREFIX}/bin
+# copy samtools to bin
+cp vendor/samtools/samtools ${PREFIX}/bin
 # Remove the fake links
 unlink ${PREFIX}/bin/gcc
 unlink ${PREFIX}/bin/g++

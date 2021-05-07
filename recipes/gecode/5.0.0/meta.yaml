@@ -2,22 +2,20 @@ package:
   name: gecode
   version: "5.0.0"
 
-about:
-  home: http://www.gecode.org/
-  license: MIT
-  license_file: LICENSE
-  summary: Generic constraint development environment
+source:
+  url: https://github.com/Gecode/gecode/archive/release-5.0.0.tar.gz
+  sha256: 1f1063ff0116cde1a1e0dde47c1328dcf5d92ef0ea8f38d3ad8e7d4c97b4020e
 
 build:
-  number: 1
-
-source:
-  url: "http://www.gecode.org/download/gecode-5.0.0.tar.gz"
-  sha256: f4ff2fa115fed8c09a049b2d8520363b1f9b1a39d80461f597e29dab2ba9e77b
+  number: 3
+  # OSX build fail due to Clang catching a bug:
+  #   examples/photo.cpp:103:10: error: reference member 'spec' binds to a temporary object whose lifetime would be shorter than the lifetime of the constructed object
+  skip: True  # [osx]
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - make
+    - {{ compiler('cxx') }}
     - perl
     - mpfr
     - gmp
@@ -29,3 +27,9 @@ test:
   commands:
     - fzn-gecode --help >& /dev/null
     - magic-sequence --help >& /dev/null
+
+about:
+  home: http://www.gecode.org/
+  license: MIT
+  license_file: LICENSE
+  summary: Generic constraint development environment
