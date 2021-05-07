@@ -2,9 +2,11 @@
 set -x
 
 # specify zlib location https://bioconda.github.io/troubleshooting.html#zlib-errors
-export CFLAGS="-I$PREFIX/include"
+export CFLAGS="-I$PREFIX/include -fcommon"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH="$PREFIX/include"
+export CC="${CC} -fcommon"
+export CXX="${CC} -fcommon"
 
 # download phelim's fork of mccortex
 MCCORTEX_DIR=mccortex
