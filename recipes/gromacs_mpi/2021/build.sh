@@ -10,7 +10,7 @@ mkdir build
 cd build
 
 ## See INSTALL of gromacs distro
-for ARCH in SSE2 AVX_256 AVX2_256; do
+for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do
   cmake_args=(
     -DSHARED_LIBS_DEFAULT=ON
     -DBUILD_SHARED_LIBS=ON
@@ -25,12 +25,8 @@ for ARCH in SSE2 AVX_256 AVX2_256; do
     -DGMX_SIMD="${ARCH}"
     -DCMAKE_INSTALL_BINDIR="bin.${ARCH}"
     -DCMAKE_INSTALL_LIBDIR="lib.${ARCH}"
+    -DGMX_MPI=ON
   )
-  if [[ "${mpi}" == "nompi" ]]; then
-      cmake_args+=(-DGMX_MPI=OFF)
-  else
-      cmake_args+=(-DGMX_MPI=ON)
-  fi
   cmake .. "${cmake_args[@]}"
   make -j "${CPU_COUNT}"
   make install
@@ -44,21 +40,16 @@ done
 # there's only a single one we prefer AVX2_256 SIMD instead.
 #
 
-#${CXX} -O3 -mavx512f -std=c++11 \
-#-DGMX_IDENTIFY_AVX512_FMA_UNITS_STANDALONE=1 \
-#-DGMX_X86_GCC_INLINE_ASM=1 \
-#-DSIMD_AVX_512_CXX_SUPPORTED=1 \
-#-o ${PREFIX}/bin.AVX_512/identifyavx512fmaunits \
-#${SRC_DIR}/src/gromacs/hardware/identifyavx512fmaunits.cpp
-## Create wrapper and activation scripts
-## Variable declaration from MPI script fewer changes if left in.
+${CXX} -O3 -mavx512f -std=c++11 \
+-DGMX_IDENTIFY_AVX512_FMA_UNITS_STANDALONE=1 \
+-DGMX_X86_GCC_INLINE_ASM=1 \
+-DSIMD_AVX_512_CXX_SUPPORTED=1 \
+-o ${PREFIX}/bin.AVX_512/identifyavx512fmaunits \
+${SRC_DIR}/src/gromacs/hardware/identifyavx512fmaunits.cpp
+# Create wrapper and activation scripts
+# Variable declaration from MPI script fewer changes if left in.
 
-
-if [ "${mpi}" = 'nompi' ] ; then
-    gmx='gmx'
-else
-    gmx='gmx_mpi'
-fi
+gmx='gmx_mpi'
 
 mkdir -p "${PREFIX}/etc/conda/activate.d"
 touch "${PREFIX}/bin/${gmx}"
@@ -113,7 +104,7 @@ case "$OSTYPE" in
              ;;
 esac
 
-# Search first for AVX2, then AVX. Fall back on SSE2
+# Search first for AVX512, then AVX2, then AVX. Fall back on SSE2
 { cat <<EOF
 #! /bin/bash
 
@@ -121,6 +112,11 @@ function _gromacs_bin_dir() {
   local arch
   arch='SSE2'
   case \$( ${hardware_info_command} ) in
+    *avx512f*)
+      test -d "${PREFIX}/bin.AVX_512" && \
+        "${PREFIX}/bin.AVX_512/identifyavx512fmaunits" | grep -q '2' && \
+        arch='AVX_512'
+    ;;
     *\ avx2\ * | *avx2_0*)
       test -d "${PREFIX}/bin.AVX2_256" && \
         arch='AVX2_256'

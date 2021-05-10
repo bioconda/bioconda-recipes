@@ -3,8 +3,7 @@
 # https://manual.gromacs.org/documentation/
 {% set version = "2021.1" %}
 {% set md5sum = "3c13b7dc3d8627904dc401dc893934d6" %}
-{% set build = 1 %}
-{% set build = build + 100 %}  # [mpi == 'nompi']
+{% set build = 0 %}
 
 package:
   name: gromacs_mpi
@@ -12,10 +11,7 @@ package:
 
 build:
   number: {{ build }}
-  string: >-
-    nompi_h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [mpi == 'nompi']
-    mpi_{{ mpi }}_h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [mpi != 'nompi']
-    
+
 source:
   url: http://ftp.gromacs.org/pub/gromacs/gromacs-{{ version }}.tar.gz
   md5: {{ md5sum }}
@@ -36,19 +32,18 @@ requirements:
     - khronos-opencl-icd-loader  # [osx]
     - libhwloc 2.*
     - fftw
-    - {{ mpi }} # [mpi != 'nompi']
+    - {{ mpi }}
   run:
     - ocl-icd # [linux]
     - khronos-opencl-icd-loader  # [osx]
     - ocl_icd_wrapper_apple # [osx]
     - fftw
     - libhwloc 2.*
-    - {{ mpi }} # [mpi != 'nompi']
+    - {{ mpi }}
 
 test:
   commands:
-    - gmx -version  # [mpi == 'nompi']
-    - gmx_mpi -version  # [mpi != 'nompi']
+    - gmx_mpi -version
 
 about:
   home: http://www.gromacs.org/
