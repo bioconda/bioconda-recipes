@@ -7,7 +7,7 @@ export LC_ALL=C
 # installs make_prg
 python -m pip install git+https://github.com/leoisl/make_prg --no-deps --ignore-installed --no-cache-dir -vvv
 
-allows boost to find the correct build toolset in Linux
+# allows boost to find the correct build toolset in Linux
 BIN_DIR=$(which x86_64-conda-linux-gnu-gcc)
 BIN_DIR="$(dirname "${BIN_DIR}")"
 cp "${BIN_DIR}/x86_64-conda-linux-gnu-gcc" "${BIN_DIR}/gcc"
