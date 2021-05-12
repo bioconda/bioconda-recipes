@@ -1,6 +1,6 @@
 #!/bin/bash
 pushd autodock
-alias csh=tsch
+ln -s $PREFIX/bin/tcsh $PREFIX/bin/csh
 ./configure PREFIX=$PREFIX
 make
 make check
