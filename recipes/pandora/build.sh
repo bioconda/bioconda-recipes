@@ -5,7 +5,7 @@ set -eux -o pipefail
 export LC_ALL=C
 
 # installs make_prg
-python -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
+python -m pip install git+https://github.com/leoisl/make_prg --no-deps --ignore-installed --no-cache-dir -vvv
 
 # allows boost to find the correct build toolset in Linux
 # BIN_DIR=$(which x86_64-conda-linux-gnu-gcc)
