@@ -4,6 +4,9 @@ set -eux -o pipefail
 # make compilation not be dependent on locale settings
 export LC_ALL=C
 
+# installs make_prg
+pip install git+https://github.com/leoisl/make_prg --prefix="$PREFIX"
+
 # allows boost to find the correct build toolset in Linux
 BIN_DIR=$(which x86_64-conda-linux-gnu-gcc)
 BIN_DIR="$(dirname "${BIN_DIR}")"
@@ -24,6 +27,8 @@ make -j1  # Note: don't change this, or Bioconda Circle CI will error out with "
 cd test
 ./pandora_test --gtest_filter=-FindPathsThroughCandidateRegionTest.endKmerExistsInStartKmersFindPathAndCycles:FindPathsThroughCandidateRegionTest.doGraphCleaningtwoIdenticalReadsPlusNoiseReturnOnePath:FindPathsThroughCandidateRegionTest.twoIdenticalReadsReturnOnePath:FindPathsThroughCandidateRegionTest.twoPossiblePathsOneWithLowCovgOnOneReturnsOnePath:FindPathsThroughCandidateRegionTest.twoPossiblePathsWithGoodCovgReturnsTwoPaths:GetNodeFromGraph.LowestKmerOfNode_KmerFoundInGraphAndNeighbour:GetNodeFromGraph.HighestKmerOfNode_KmerFoundInGraph:GetNodeFromGraph.HighestKmerOfNode_KmerFoundInGraphAndNeighbour:GetNodeFromGraph.LowestKmerOfStartNode_KmerFoundInGraphButNotNeighbourOfStart:GetNodeFromGraph.RevcompKmerOfInitialSeq_KmerFoundInGraphAndCorrectNeighbourFound:GetNodeFromGraph.NonExistentKmer_NotFoundInGraphAndNodeEmpty:GetPathsBetweenTest.OnlyReturnPathsBetweenStartAndEndKmers:GetPathsBetweenTest.lotsOfHighCovgCyclesReturnEmpty:DepthFirstSearchFromTest.SimpleGraphTwoNodesReturnSeqPassedIn:DepthFirstSearchFromTest.SimpleGraphSixNodesReturnSeqPassedIn:DepthFirstSearchFromTest.TwoReadsSameSequenceReturnOneSequence:DepthFirstSearchFromTest.TwoReadsOneVariantReturnOriginalTwoSequences:DepthFirstSearchFromTest.ThreeReadsTwoVariantsReturnOriginalSequences:DepthFirstSearchFromTest.TwoReadsTwoVariantsReturnOriginalTwoSequencesPlusTwoMosaics:DepthFirstSearchFromTest.ThreeReadsOneReverseComplimentReturnPathsForStrandOfStartAndEndKmers:DepthFirstSearchFromTest.SimpleCycleReturnPathsOfLengthsUpToMaxPathLengthCycling:GraphCleaningTest.simpleTipRemove:QueryAbundance.oneKmer_ReturnOne:QueryAbundance.twoKmers_ReturnTwo:QueryAbundance.fakeKmer_ReturnZero --gtest_color=no
 cd ..
+
+# TODO: test sample example
 
 # install
 make install
