@@ -1,8 +1,8 @@
 #!/bin/bash
 pushd autodock
-ln -s $PREFIX/bin/csh $PREFIX/bin/tcsh 
+ln -s $BUILD_PREFIX/bin/tcsh $BUILD_PREFIX/bin/csh 
 ./configure PREFIX=$PREFIX
 make
 make check
 make install
-unlink $PREFIX/bin/csh
+unlink $BUILD_PREFIX/bin/csh
