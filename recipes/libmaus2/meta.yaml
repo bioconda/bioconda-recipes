@@ -1,0 +1,45 @@
+{% set name = "libmaus2" %}
+{% set version = "2.0.777" %}
+{% set datestamp = "20210420125003" %}
+{% set sha256hash = "fde618b416d9b605ddf1900964bd28ec5a998ff8d666fb3d98f9cff6efe43217" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  # There's some issue with clang
+  skip: True  # [osx]
+  number: 0
+
+source:
+  url: https://gitlab.com/german.tischler/libmaus2/-/archive/{{ version }}-release-{{ datestamp }}/libmaus2-{{ version }}-release-{{ datestamp }}.tar.gz
+  sha256: {{ sha256hash }}
+  patches:
+    # Until gcc >=8 is being used
+    - patch
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - boost-cpp
+    - libcurl
+    - snappy
+    - staden_io_lib >=1.14.14
+  run:
+    - boost-cpp
+    - libcurl
+    - snappy
+    - staden_io_lib >=1.14.14
+
+about:
+  home: https://gitlab.com/german.tischler/libmaus2
+  license: GPL3
+  summary: collection of data structures and algorithms for NGS data
+
+test:
+  commands:
+    - echo

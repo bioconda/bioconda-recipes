@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="NGScopyData_1.8.0.tar.gz"
+FN="NGScopyData_1.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/NGScopyData_1.8.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/NGScopyData_1.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ngscopydata/bioconductor-ngscopydata_1.8.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/NGScopyData_1.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/NGScopyData_1.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ngscopydata/bioconductor-ngscopydata_1.10.0_src_all.tar.gz"
 )
-MD5="eb4267dbbb96181d864b14603f413e9b"
+MD5="1269189e1a0ce421247335d808f88368"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

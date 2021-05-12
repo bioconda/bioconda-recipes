@@ -1,18 +1,18 @@
-{% set name = "sequana" %}
 {% set version = "0.8.2" %}
 {% set sha = "11c51f29d0d696451896fc56e940e059d191b6f17616776e08eb5b1c5ac5dda5" %}
 
 package:
-  name: {{ name }}
+  name: sequana
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/s/sequana/sequana-{{ version }}.tar.gz
   sha256: {{ sha }}
 
 build:
   preserve_egg_dir: True
-  number: 0
+  number: 2
+  skip: True  # [py<36 or py>=38]
   entry_points:
     - sequana_gui=sequana.gui.sequana_gui:main
     - sequanix=sequana.gui.sequana_gui:main
@@ -39,7 +39,7 @@ requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - python >=3.6,<=3.7.3
+    - python
     - setuptools
     - pip
     - cython
@@ -50,8 +50,12 @@ requirements:
     # not required strictly speaking, only in the 
     # quality_control pipeline, which is in its own repository since v0.8.0
     # not true for atropos, which is still used in some modules
+    - python
+    # This restriction (as well as the py>=38 skip above) should probably be
+    # replaced by a pyqt version restriction (once 5.13 is in conda-forge), ref:
+    # https://github.com/sequana/sequana/issues/574
     - python >=3.6,<=3.7.3
-    - atropos
+    - atropos >=1.1.16
     - bcftools
     - bedtools
     - bioservices >=1.5.1
@@ -67,6 +71,7 @@ requirements:
     - kraken ==1.1 # [not osx]
     - krona
     - lxml
+    - matplotlib <3.1.2
     - mock
     - multiqc >=1.8
     - numexpr

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="estrogen_1.34.0.tar.gz"
+FN="estrogen_1.36.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/estrogen_1.34.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/estrogen_1.34.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-estrogen/bioconductor-estrogen_1.34.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/estrogen_1.36.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/estrogen_1.36.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-estrogen/bioconductor-estrogen_1.36.0_src_all.tar.gz"
 )
-MD5="87b47c295533659312df5ed826d1decb"
+MD5="2d2db0089775e2269a83d091e43f8e69"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

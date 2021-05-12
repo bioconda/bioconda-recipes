@@ -1,23 +1,26 @@
+{% set version = "2.11.1.4" %}
+
 package:
   name: jalview
-  version: 2.11.1.0
+  version: {{ version }}
 
 build:
-  number: 0 
+  number: 1
   noarch: generic
 
 source:
-  url: http://www.jalview.org/source/jalview_2_11_1_0.tar.gz
-  sha256: "80423601e439a4620a8f27f42f96d496a297d4d9e1ea68e818fb8b06151f44b5"
+  url: https://www.jalview.org/source/jalview_{{ version|replace(".", "_") }}.tar.gz
+  sha256: "30c0a89bbaf58bc5fd15fd7b167768d21cda1431676f28e22669fd5a342396eb"
 
 requirements:
   build:
+    - make
     # jalview 2.11 series requires Java 11 or greater to build.
-    - gradle >5.0
+    - gradle >5.2
     - openjdk 11
     - xorg-libxtst
   run:
-    # Jalview 2.11.1.0 can run as 1.8 or java 9+ 
+    # Jalview 2.11.1.4 can run as 1.8 or java 11+
     # Version number reference: https://github.com/conda/conda/issues/6948#issuecomment-369360906
     - openjdk >=8.0.192
     - xorg-libxtst
@@ -29,8 +32,9 @@ test:
 
 
 about:
-  home: http://www.jalview.org/
-  license: GPL3
+  home: https://www.jalview.org/
+  license: GPL-3.0-only
+  license_file: LICENSE
   summary: Jalview is a free program for multiple sequence alignment editing, visualisation, analysis and figure generation.
   description: |
     Jalview is a free program for multiple sequence alignment editing, visualisation, analysis and figure generation.
@@ -43,3 +47,5 @@ extra:
   notes: |
     This wrapper and installation is primarily for commandline-only use.
     Set JALVIEW_JRE=j1.8 or JALVIEW_JRE=j11 to specify the java runtime if you need jalview to start up as quickly as possible
+    Set JALVIEW_MAXMEM=2g to restrict jalviews maximal memory consumption (here to 2G RAM). Otherwise 90% of physical memory
+    (capped at 32G) is allocated.
