@@ -14,7 +14,7 @@ from os import access
 from os import getenv
 from os import X_OK
 
-jar_file = 'SearchGUI-4.0.32.jar'
+jar_file = 'SearchGUI-4.0.33.jar'
 
 default_jvm_mem_opts = ['-Xms2g', '-Xmx4g']
 
@@ -102,7 +102,7 @@ def main():
     SearchGui updates files relative to the path of the jar file.
     In a multiuser setting, the option --exec_dir="exec_dir"
     can be used as the location for the peptide-shaker distribution.
-    If the exec_dir does not exist,
+    If the exec_dir dies not exist,
     we copy the jar file, lib, and resources to the exec_dir directory.
     """
     (mem_opts, prop_opts, pass_args, exec_dir) = jvm_opts(sys.argv[1:])
