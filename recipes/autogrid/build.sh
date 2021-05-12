@@ -5,5 +5,5 @@ ln -s $BUILD_PREFIX/bin/tcsh $BUILD_PREFIX/bin/csh
 make
 make check
 mkdir -p $PREFIX/bin
-make install PREFIX=$PREFIX
+install -c autogrid4 $PREFIX/bin
 unlink $BUILD_PREFIX/bin/csh
