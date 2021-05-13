@@ -4,11 +4,6 @@ set -eux -o pipefail
 # make compilation not be dependent on locale settings
 export LC_ALL=C
 
-# installs make_prg
-wget https://github.com/leoisl/make_prg/releases/download/v0.2.0/make_prg_0.2.0 -O make_prg
-chmod +x make_prg
-sha256sum --check <(echo "193347b22775ece7065b20f258899b1afbee5ab91c34a7e86d43f00e307bf29a  make_prg")
-
 # allows boost to find the correct build toolset in Linux
 BIN_DIR=$(which x86_64-conda-linux-gnu-gcc)
 BIN_DIR="$(dirname "${BIN_DIR}")"
