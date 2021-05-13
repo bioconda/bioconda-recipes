@@ -10,10 +10,9 @@ cp configs/LotuS.cfg.def lOTUs.cfg
 for binary in blastn clustalo lambda LCA mafft minimap2 rtk sdm swarm vsearch; do
     sed -i.bak -e "s|^$binary[[:space:]].*|$binary $PREFIX/bin/$binary|" lOTUs.cfg
 done
-for binary in cd-hit fasttree hmmsearch iqtree itsx lambda_index makeBlastDB; do
+for binary in cd-hit fasttree hmmsearch iqtree itsx lambda_index makeBlastDB RDPjar; do
     sed -i.bak -e "s|^$binary[[:space:]]\(.*\)|$binary $PREFIX/bin/\1|" lOTUs.cfg
 done
-sed -i.bak -e "s|^RDPjar[[:space:]].*|RDPjar $PREFIX/share/rdp_classifier/rdp_classifier.jar|" lOTUs.cfg
 
 # install LotuS2 wrapper
 mkdir -p "${PREFIX}/bin"
