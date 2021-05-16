@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="cgdv17_0.26.0.tar.gz"
+FN="cgdv17_0.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/cgdv17_0.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/cgdv17_0.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-cgdv17/bioconductor-cgdv17_0.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/cgdv17_0.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/cgdv17_0.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cgdv17/bioconductor-cgdv17_0.28.0_src_all.tar.gz"
 )
-MD5="d1f265e1e675653e473f4dacb23c6394"
+MD5="37f5ae3d4f5ff05dbecf18340991ad74"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

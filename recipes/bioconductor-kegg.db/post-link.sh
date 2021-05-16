@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="KEGG.db_3.2.4.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/KEGG.db_3.2.4.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/KEGG.db_3.2.4.tar.gz"
   "https://bioarchive.galaxyproject.org/KEGG.db_3.2.4.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-kegg.db/bioconductor-kegg.db_3.2.4_src_all.tar.gz"
 )

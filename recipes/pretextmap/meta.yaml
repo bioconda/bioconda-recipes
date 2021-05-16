@@ -1,23 +1,25 @@
 {% set name = "PretextMap" %}
-{% set version = "0.1.2" %}
+{% set version = "0.1.5" %}
+{% set sha256 = "1e4862d5dfaaeed475f51ad58690bf211683d6a13d33552655cfc4edefd9f87e" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://github.com/wtsi-hpag/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: fd8d0adbdef8acb4c76d76554233ebd2380be687f89f5b982fc83082377c4486
+  url: https://github.com/wtsi-hpag/{{name}}/releases/download/{{version}}/Source_with_Submodules.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - bioconda_libdeflate_include_path.patch
 
 build:
   number: 0
 
 requirements:
   build:
-    - {{ compiler('cxx') }} # [linux64]
-    - make
-    - clang>=9.0.0
-    - python
+    - {{ compiler('cxx') }}
+    - clang>=9.0.1 # [linux] 
+    - meson>=0.57.1
 
 test:
   commands:

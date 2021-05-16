@@ -1,0 +1,42 @@
+diff --git a/stream_atac/core.py b/stream_atac/core.py
+index 97389ec..51222c1 100755
+--- a/stream_atac/core.py
++++ b/stream_atac/core.py
+@@ -11,7 +11,6 @@ import sys
+ import gzip
+ from sklearn import preprocessing
+ from rpy2.robjects.packages import importr
+-import conda.cli
+ 
+ os.environ['KMP_DUPLICATE_LIB_OK']='True'
+ 
+@@ -84,22 +83,6 @@ def preprocess_atac(file_count,file_region,file_sample, genome = 'hg19',
+     if(genome in ['mm9','mm10']):
+         species = "Mus musculus"
+ 
+-    print('Checking if required packages are installed ...')
+-    rbase = importr('base')
+-    if(not rbase.requireNamespace(dict_genome[genome], quietly = True)[0]):
+-        pkg = 'bioconductor-'+dict_genome[genome].lower()
+-        print("Installing pacakge '%s' ..." % pkg)
+-        conda.cli.main('conda', 'install',  '-y', pkg)
+-    if(feature == 'motif'):
+-        if(not rbase.requireNamespace('motifmatchr', quietly = True)[0]):
+-            pkg = 'bioconductor-motifmatchr'
+-            print("Installing pacakge '%s' ..." % pkg)
+-            conda.cli.main('conda', 'install',  '-y', pkg)
+-        if(not rbase.requireNamespace('JASPAR2016', quietly = True)[0]):
+-            pkg = 'bioconductor-jaspar2016'
+-            print("Installing pacakge '%s' ..." % pkg)
+-            conda.cli.main('conda', 'install',  '-y', pkg)
+-    
+     if(workdir==None):
+         workdir = os.path.join(os.getcwd(), 'stream_result')
+         print("Using default working directory.")
+@@ -129,4 +112,4 @@ def preprocess_atac(file_count,file_region,file_sample, genome = 'hg19',
+     adata.uns['experiment'] = 'atac-seq'
+     adata.layers["zscores"] = df_zscores.values.T
+     adata.layers["zscores_scaled"] = df_zscores_scaled.values.T
+-    return adata
+\ No newline at end of file
++    return adata
