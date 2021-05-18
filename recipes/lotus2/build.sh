@@ -16,4 +16,4 @@ done
 
 # install LotuS2 wrapper
 mkdir -p "${PREFIX}/bin"
-sed -e "s|CHANGEME|${SHARE_DIR}|" "$RECIPE_DIR/lotus2.sh" > "${PREFIX}/bin/lotus2"
+ln -s "${SHARE_DIR}/lotus2" "${PREFIX}/bin/"
