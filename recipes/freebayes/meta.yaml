@@ -7,44 +7,44 @@ package:
 source:
   url: https://github.com/freebayes/freebayes/releases/download/v{{ version }}/freebayes-{{ version }}-src.tar.gz
   sha256: 7e2635690e916ed85cec36b3263e6e5357413a4f2bf3035362d9749335e8a696
+  patches:
+    - meson.patch
 
 
 build:
-  number: 0
+  skip: True  # [py2k]
+  number: 3
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-  host:
-    - zlib
-    - bzip2
-    - python >=3
-    - xz
-    - htslib
-    - parallel
     - meson
     - ninja
     - bc
-    - samtools
-    - vcflib
-    - pkg-config #needed for MacOS build
-    
-  run:
-    - zlib
+    - pkg-config
+  host:
     - bzip2
-    - python >=3
     - htslib
     - parallel
-    - xz
-    - bc
     - samtools
     - vcflib
+    - tabixpp
+    # This is pulled in by vcflib but not actually linked against, but that causes conda to incorrectly pin it.
+    - python
+  run:
+    - htslib
+    - python
+    - parallel
+    - samtools
+    - vcflib
+    - tabixpp
+    
 test:
   commands:
     - freebayes --version
+    - freebayes-parallel
     
-
 about:
   home: https://github.com/ekg/freebayes
   license: MIT
