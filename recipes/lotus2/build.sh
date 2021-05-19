@@ -10,8 +10,6 @@ done
 for binary in cd-hit fasttree hmmsearch iqtree itsx lambda_index makeBlastDB RDPjar; do
     sed -i.bak -e "s|^$binary[[:space:]]\(.*\)|$binary $PREFIX/bin/\1|" lOTUs.cfg
 done
-# Already fixed upstream
-sed -i.bak -e 's|^#!/usr/bin/perl|#!/usr/bin/env perl|' lotus2
 # Install
 mkdir -p "$SHARE_DIR"
 cp -R * "$SHARE_DIR/"
