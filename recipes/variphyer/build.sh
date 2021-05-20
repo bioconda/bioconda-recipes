@@ -1,10 +1,15 @@
 #!/bin/bash
 
+# define and make a src folder
 VARIPHYER="${PREFIX}/share/${PKG_NAME}"
-mkdir -p ${PREFIX}/bin ${VARIPHYER}
+mkdir -p ${VARIPHYER}
 
-chmod 777 variphyer
-mv variphyer ${PREFIX}/bin
+# copy everything into src folder
+cp -r ./* ${VARIPHYER}
 
-# Move bactopia nextflow
-mv main.nf nextflow.config ${VARIPHYER}
+chmod 777 ${VARIPHYER}/variphyer
+
+#make a bin folder
+mkdir -p ${PREFIX}/bin 
+
+ln -s ${VARIPHYER}/variphyer ${PREFIX}/bin/variphyer
