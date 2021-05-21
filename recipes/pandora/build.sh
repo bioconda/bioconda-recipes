@@ -10,7 +10,7 @@ BIN_DIR="$(dirname "${BIN_DIR}")"
 cp "${BIN_DIR}/x86_64-conda-linux-gnu-gcc" "${BIN_DIR}/gcc"
 cp "${BIN_DIR}/x86_64-conda-linux-gnu-g++" "${BIN_DIR}/g++"
 
-# build pandora
+# build pandora 
 mkdir -p build
 cd build
 cmake -DBIOCONDA=True \
