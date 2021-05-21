@@ -26,9 +26,9 @@ cd test
 cd ..
 
 # test sample example
-cd example
-./run_pandora.sh conda
-cd ..
+cd ../example
+PATH=../build:"$PATH" ./run_pandora.sh conda
+cd ../build
 
 # install
 make install
