@@ -67,6 +67,9 @@ cp $SP_DIR/biobb_ml/utils/correlation_matrix.py $PREFIX/bin/correlation_matrix
 chmod u+x $SP_DIR/biobb_ml/utils/dendrogram.py
 cp $SP_DIR/biobb_ml/utils/dendrogram.py $PREFIX/bin/dendrogram
 
+chmod u+x $SP_DIR/biobb_ml/utils/drop_columns.py
+cp $SP_DIR/biobb_ml/utils/drop_columns.py $PREFIX/bin/drop_columns
+
 chmod u+x $SP_DIR/biobb_ml/utils/dummy_variables.py
 cp $SP_DIR/biobb_ml/utils/dummy_variables.py $PREFIX/bin/dummy_variables
 
@@ -75,6 +78,9 @@ cp $SP_DIR/biobb_ml/utils/map_variables.py $PREFIX/bin/map_variables
 
 chmod u+x $SP_DIR/biobb_ml/utils/pairwise_comparison.py
 cp $SP_DIR/biobb_ml/utils/pairwise_comparison.py $PREFIX/bin/pairwise_comparison
+
+chmod u+x $SP_DIR/biobb_ml/utils/scale_columns.py
+cp $SP_DIR/biobb_ml/utils/scale_columns.py $PREFIX/bin/scale_columns
 
 chmod u+x $SP_DIR/biobb_ml/neural_networks/autoencoder_neural_network.py
 cp $SP_DIR/biobb_ml/neural_networks/autoencoder_neural_network.py $PREFIX/bin/autoencoder_neural_network
@@ -102,3 +108,12 @@ cp $SP_DIR/biobb_ml/dimensionality_reduction/pls_regression.py $PREFIX/bin/pls_r
 
 chmod u+x $SP_DIR/biobb_ml/dimensionality_reduction/principal_component.py
 cp $SP_DIR/biobb_ml/dimensionality_reduction/principal_component.py $PREFIX/bin/principal_component
+
+chmod u+x $SP_DIR/biobb_ml/resampling/oversampling.py
+cp $SP_DIR/biobb_ml/resampling/oversampling.py $PREFIX/bin/oversampling
+
+chmod u+x $SP_DIR/biobb_ml/resampling/resampling.py
+cp $SP_DIR/biobb_ml/resampling/resampling.py $PREFIX/bin/resampling
+
+chmod u+x $SP_DIR/biobb_ml/resampling/undersampling.py
+cp $SP_DIR/biobb_ml/resampling/undersampling.py $PREFIX/bin/undersampling
