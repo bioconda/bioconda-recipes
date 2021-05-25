@@ -33,11 +33,12 @@ chmod +x $TGT/gridss_*
 
 rm gridsstools # don't use the pre-compiled gridsstools - rebuild it ourselves
 tar zxf gridsstools-src-$PKG_VERSION.tar.gz
-cd "${SRC_DIR}/gridsstools/htslib"
-./configure && make
-# can't make all since the files needed by 'test' aren't included in the GRIDSS release package
+rm -r "${SRC_DIR}/gridsstools/htslib"
 cd "${SRC_DIR}/gridsstools"
-./configure --prefix=$PREFIX && make gridsstools 
+# cut/paste from samtools/build.sh
+CURSES_LIB="-ltinfow -lncursesw"
+./configure --prefix=$PREFIX --with-htslib=system CURSES_LIB="$CURSES_LIB"
+make gridsstools 
 cp gridsstools $PREFIX/bin
 
 # Wrapper script to add --jar command line argument
