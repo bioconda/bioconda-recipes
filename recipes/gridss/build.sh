@@ -35,10 +35,12 @@ rm gridsstools # don't use the pre-compiled gridsstools - rebuild it ourselves
 tar zxf gridsstools-src-$PKG_VERSION.tar.gz
 rm -r "${SRC_DIR}/gridsstools/htslib"
 cd "${SRC_DIR}/gridsstools"
-# cut/paste from samtools/build.sh
-CURSES_LIB="-ltinfow -lncursesw"
+CURSES_LIB="-ltinfow -lncursesw" # from samtools/meta.yaml
 ./configure --prefix=$PREFIX --with-htslib=system CURSES_LIB="$CURSES_LIB"
-make gridsstools 
+# hack the GRIDSS Makefile to use the conda htslib library
+sed -i 's/gridsstools: htslib/gridsstools:/' Makefile # remove local htslib dependency
+sed -i 's/htslib\/libhts.a/-lhts/' Makefile # replace local static library with the conda htslib one
+make gridsstools # can't make all since the files needed by 'test' aren't included in the GRIDSS release package
 cp gridsstools $PREFIX/bin
 
 # Wrapper script to add --jar command line argument
