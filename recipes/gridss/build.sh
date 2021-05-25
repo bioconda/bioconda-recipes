@@ -32,9 +32,10 @@ cp $RECIPE_DIR/gridss_r_script $TGT/
 
 rm gridsstools # don't use the pre-compiled gridsstools - rebuild it ourselves
 tar zxf gridsstools-src-$PKG_VERSION.tar.gz
-cd gridsstools/htslib
+cd "${SRC_DIR}/gridsstools/htslib"
 ./configure && make
 # can't make all since the files needed by 'test' aren't included in the GRIDSS release package
+cd "${SRC_DIR}/gridsstools"
 ./configure --prefix=$PREFIX && make gridsstools 
 cp gridsstools $PREFIX/bin
 
