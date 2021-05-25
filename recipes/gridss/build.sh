@@ -9,6 +9,7 @@ echo "TGT=${TGT}"
 
 cd "${SRC_DIR}"
 cp gridss-*.jar $TGT/gridss.jar
+# GRIDSS tools needing argument massaging
 cp gridss \
 	gridss.config.R \
 	gridss_annotate_vcf_kraken2 \
@@ -17,9 +18,11 @@ cp gridss \
 	gridss_somatic_filter \
 	libgridss.R \
 	virusbreakend \
-	virusbreakend-build \
 	"${TGT}/"
 chmod +x ${TGT}/*
+# GRIDSS tools that can be run completely as-is
+cp virusbreakend-build \
+	$PREFIX/bin/
 
 # Need to go in the same directory as the jar/R files
 # so we can resolve the location at runtime
@@ -47,6 +50,7 @@ ln -s $TGT/gridss_shell_with_jar_entrypoint $PREFIX/bin/gridss
 ln -s $TGT/gridss_shell_with_jar_entrypoint $PREFIX/bin/gridss_annotate_vcf_kraken2
 ln -s $TGT/gridss_shell_with_jar_entrypoint $PREFIX/bin/gridss_annotate_vcf_repeatmasker
 ln -s $TGT/gridss_shell_with_jar_entrypoint $PREFIX/bin/gridss_extract_overlapping_fragments
+ln -s $TGT/gridss_shell_with_jar_entrypoint $PREFIX/bin/virusbreakend
 
 # Wrapper script to add --scriptdir command line argument
 ln -s $TGT/gridss_r_script $PREFIX/bin/gridss_somatic_filter
