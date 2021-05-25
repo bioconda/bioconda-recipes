@@ -30,20 +30,13 @@ cp $RECIPE_DIR/gridss_shell_with_jar_entrypoint $TGT/
 cp $RECIPE_DIR/gridss_java_entrypoint $TGT/
 cp $RECIPE_DIR/gridss_r_script $TGT/
 
-####################### START adapt samtools build script to build gridsstools
-# Ensure we run successfully using either conda-forge or defaults ncurses
-# (unlike other platforms, the latter does not automatically pull in libtinfo)
-CURSES_LIB="-ltinfow -lncursesw"
-rm gridsstools
+rm gridsstools # don't use the pre-compiled gridsstools - rebuild it ourselves
 tar zxf gridsstools-src-$PKG_VERSION.tar.gz
 cd gridsstools/htslib
-./configure CURSES_LIB="$CURSES_LIB"
-make
-cd ..
-./configure --prefix=$PREFIX CURSES_LIB="$CURSES_LIB"
-make gridsstools # can't make all since the files needed by 'test' aren't included in the GRIDSS release package
+./configure && make
+# can't make all since the files needed by 'test' aren't included in the GRIDSS release package
+./configure --prefix=$PREFIX && make gridsstools 
 cp gridsstools $PREFIX/bin
-####################### END adapt samtools build script to build gridsstools
 
 # Wrapper script to add --jar command line argument
 ln -s $TGT/gridss_shell_with_jar_entrypoint $PREFIX/bin/gridss
