@@ -29,6 +29,7 @@ cp virusbreakend-build \
 cp $RECIPE_DIR/gridss_shell_with_jar_entrypoint $TGT/
 cp $RECIPE_DIR/gridss_java_entrypoint $TGT/
 cp $RECIPE_DIR/gridss_r_script $TGT/
+chmod +x $TGT/gridss_*
 
 rm gridsstools # don't use the pre-compiled gridsstools - rebuild it ourselves
 tar zxf gridsstools-src-$PKG_VERSION.tar.gz
