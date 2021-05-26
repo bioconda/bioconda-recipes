@@ -38,11 +38,10 @@ cd "${SRC_DIR}/gridsstools"
 CURSES_LIB="-ltinfow -lncursesw" # from samtools/meta.yaml
 ./configure --prefix=$PREFIX --with-htslib=system CURSES_LIB="$CURSES_LIB"
 # hack the GRIDSS Makefile to use the conda htslib library
-# can't use sed -i as it doesn' work in macos
 mv Makefile Makefile.tmp
 # remove local htslib dependency
 # replace local static library with the conda htslib one
-sed 's/gridsstools: htslib/gridsstools:/' < Makefile.tmp | sed 's/htslib\/libhts.a/-lhts/' > Makefile 
+sed 's/gridsstools: htslib/gridsstools:/' < Makefile.tmp | sed 's/htslib\/libhts.a/-lhts/' > Makefile # can't use sed -i as it doesn' work in macos
 make gridsstools # can't make all since the files needed by 'test' aren't included in the GRIDSS release package
 cp gridsstools $PREFIX/bin
 
