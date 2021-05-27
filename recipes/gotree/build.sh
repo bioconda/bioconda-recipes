@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
 export CGO_ENABLED=0
+export GOPATH=$PWD
 
 go get -u github.com/golang/dep/cmd/dep
-cd "$GOPATH/src/github.com/evolbioinfo/gotree"
+
+cd src/github.com/evolbioinfo/${PKG_NAME}
 dep ensure
-go build -o ${PREFIX}/bin/gotree -ldflags "-X github.com/evolbioinfo/gotree/version.Version=${PKG_VERSION}" github.com/evolbioinfo/gotree
+go build -o ${PREFIX}/bin/${PKG_NAME} -ldflags "-X github.com/evolbioinfo/${PKG_NAME}/cmd.Version=${PKG_VERSION}" github.com/evolbioinfo/${PKG_NAME}
 
 # Gotree test data
 cp -r tests/data $PREFIX/gotree_test_data

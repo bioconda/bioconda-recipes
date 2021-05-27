@@ -1,0 +1,96 @@
+{% set name = "pegasuspy" %}
+{% set version = "1.2.0" %}
+
+package:
+    name: {{ name|lower }}
+    version: {{ version }}
+
+source:
+    url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+    sha256: e5f2074352baf14cbc54b541e9e4016f9bd959b8f3fadf6f3e932a29b8d2c71f
+
+
+build:
+    number: 2
+    skip: True  # [py27 or py36]
+    entry_points:
+        - pegasus = pegasus.__main__:main
+    script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+    build:
+        - {{ compiler('c') }}
+    host:
+        - python
+        - cython
+        - setuptools_scm
+        - pip
+    run:
+        - python
+        - numpy
+        - pandas >=0.24
+        - anndata >=0.7
+        - loompy
+        - docopt
+        - scipy
+        - importlib_metadata >=0.7
+        - pegasusio >=0.2.9
+        - adjusttext
+        - demuxem
+        - forceatlas2-python
+        - gprofiler-official
+        - harmony-pytorch
+        - hnswlib
+        - joblib
+        - lightgbm
+        - louvain >=0.7.0
+        - leidenalg >=0.8.0
+        - matplotlib-base >=2.0.0
+        - natsort
+        - numba
+        - pyarrow
+        - pybind11
+        - python-igraph >=0.8.0
+        - scanorama
+        - scikit-learn >=0.23.2
+        - scikit-misc
+        - seaborn
+        - statsmodels
+        - pyfit-sne >=1.1.1
+        - umap-learn >=0.4
+        - xlrd
+        - xlsxwriter
+
+test:
+    imports:
+        - pegasus
+        - pegasus.commands
+        - pegasus.cylib.cfisher
+        - pegasus.cylib.fast_utils
+        - pegasus.cylib.de_utils
+        - hnswlib
+        - igraph
+        - louvain
+        - leidenalg
+        - fitsne
+    commands:
+        - pegasus --help
+        - java --version
+
+about:
+    home: https://github.com/klarman-cell-observatory/pegasus
+    doc_url: https://pegasus.readthedocs.io
+    dev_url: https://github.com/klarman-cell-observatory/pegasus
+    license: BSD-3-Clause
+    license_family: BSD
+    license_file: LICENSE
+    summary: "An efficient Python analysis tool which scales to transcriptomes of millions of single cells." 
+    description: |
+        Pegasus is a tool for analyzing transcriptomes of millions of single cells. 
+        It is a command line tool, a python package and a base for Cloud-based analysis workflows.
+
+extra:
+    recipe-maintainers:
+        - yihming
+    identifiers:
+        - doi:10.1038/s41592-020-0905-x
