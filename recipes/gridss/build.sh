@@ -42,7 +42,7 @@ mv Makefile Makefile.tmp
 # remove local htslib dependency
 # replace local static library with the conda htslib one
 # remove htslib library dependencies since we're not static linking
-sed -i.orig '/gridsstools:/s/htslib//;s,htslib/libhts.a,-lhts,;s,-lz -lm -lbz2 -llzma -lcurl -lcrypto -lpthread,' Makefile
+sed -i.orig '/gridsstools:/s/htslib//;s,htslib/libhts.a,-lhts,;s,-lz -lm -lbz2 -llzma -lcurl -lcrypto -lpthread,,' Makefile
 make gridsstools # can't make all since the files needed by 'test' aren't included in the GRIDSS release package
 cp gridsstools $PREFIX/bin
 
