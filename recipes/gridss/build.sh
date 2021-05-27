@@ -38,7 +38,6 @@ cd "${SRC_DIR}/gridsstools"
 CURSES_LIB="-ltinfow -lncursesw" # from samtools/meta.yaml
 ./configure --prefix=$PREFIX --with-htslib=system CURSES_LIB="$CURSES_LIB"
 # hack the GRIDSS Makefile to use the conda htslib library
-mv Makefile Makefile.tmp
 # remove local htslib dependency
 # replace local static library with the conda htslib one
 # remove htslib library dependencies since we're not static linking
