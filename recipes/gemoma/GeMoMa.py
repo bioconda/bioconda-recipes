@@ -96,8 +96,9 @@ def main():
     for line in iter(p.stderr.readline,b''):
         tomod = line.decode("utf-8")
         tomod = tomod.replace(original_string,wrapper_string)
-        print(tomod,end='')
+        print(tomod,end='',file=sys.stderr)
 
+    exit(p.wait())
 
 if __name__ == '__main__':
     main()
