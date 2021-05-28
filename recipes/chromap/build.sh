@@ -1,7 +1,7 @@
 #!/bin/bash
 
 make \
-    CXX="${CXX}" \
+    CXX="g++" \
     CXXFLAGS="${CXXFLAGS} -Wformat -O3" \
     LINKPATH="${LDFLAGS}"
 install -d "${PREFIX}/bin"
