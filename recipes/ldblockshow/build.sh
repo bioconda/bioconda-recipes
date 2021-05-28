@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mv bin/ShowLDSVG $PREFIX/bin/ShowLDSVG
+mv bin/ShowLDSVG $PREFIX/bin/ShowLDSVG && chmod 755 $PREFIX/bin/ShowLDSVG
 
 chmod 755 ./configure
 ./configure --prefix=$PREFIX
