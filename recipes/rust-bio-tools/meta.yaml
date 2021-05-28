@@ -5,11 +5,18 @@ package:
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
 
 source:
-  url: https://github.com/rust-bio/rust-bio-tools/archive/v{{ version }}.tar.gz
-  sha256: cea85cdc4ddfb448538dceb55824b01a58723baa41a7652a684ca8e98ceb28e4
+  - url: https://github.com/rust-bio/rust-bio-tools/archive/v{{ version }}.tar.gz
+    sha256: cea85cdc4ddfb448538dceb55824b01a58723baa41a7652a684ca8e98ceb28e4
+    patches:
+      - 0001-Use-local-patched-rocksdb.patch
+  - git_url: https://github.com/rust-rocksdb/rust-rocksdb
+    git_rev: v0.16.0
+    folder: rocksdb
+    patches:
+      - 0001-gh-526-Make-SSE-inclusion-conditional-for-target-features.patch
 
 requirements:
   build:
@@ -41,3 +48,7 @@ extra:
   recipe-maintainers:
     - fxwiegand
     - felixmoelder
+  skip-lints:
+    # Needed for the patched rocksdb crate and its git submodules.
+    - uses_vcs_url
+    - missing_hash
