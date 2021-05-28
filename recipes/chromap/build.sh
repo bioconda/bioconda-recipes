@@ -1,7 +1,8 @@
 #!/bin/bash
 
+install -d objs
 make \
-    CXX="g++" \
+    CXX="${CXX}" \
     CXXFLAGS="${CXXFLAGS} -Wformat -O3" \
     LINKPATH="${LDFLAGS}"
 install -d "${PREFIX}/bin"
