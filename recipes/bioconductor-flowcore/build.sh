@@ -4,8 +4,8 @@ grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 mkdir -p ~/.R
 echo -e "CC=$CC
 FC=$FC
-CXX=$CXX -fcommon
-CXX98=$CXX -fcommon
-CXX11=$CXX -fcommon
-CXX14=$CXX -fcommon" > ~/.R/Makevars
+CXX=$CXX
+CXX98=$CXX
+CXX11=$CXX
+CXX14=$CXX" > ~/.R/Makevars
 $R CMD INSTALL --build .
