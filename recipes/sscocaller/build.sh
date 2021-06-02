@@ -18,7 +18,7 @@ sed -i 's/exit(strncmp(ZLIB_VERSION, "1.2.5", 5) < 0);/exit(ZLIB_VERNUM < 0x1250
 cd src/nmath/standalone/
 make
 
-cp libRmath* $HOME/.nimble/lib/
+cp libRmath* "${PREFIX}/lib"
 
 cd ../../../../
 rm r-source
