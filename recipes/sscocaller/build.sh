@@ -16,8 +16,9 @@ sed -i 's/exit(strncmp(ZLIB_VERSION, "1.2.5", 5) < 0);/exit(ZLIB_VERNUM < 0x1250
 ./configure --with-readline=no --with-x=no --prefix=$PREFIX --enable-libcurl CFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" 
 
 cd src/nmath/standalone/
-make   
-cp rmathlib/* $HOME/.nimble/lib/
+make
+
+cp libRmath* $HOME/.nimble/lib/
 
 cd ../../../../
 rm r-source
