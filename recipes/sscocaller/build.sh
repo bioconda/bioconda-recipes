@@ -8,7 +8,7 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 export CFLAGS="-I$PREFIX/include"
 export CPATH="${PREFIX}/include"
 export CC="${CC}"
-export CPP="${CXX}"
+export CXX="${CXX}"
 
 git clone https://github.com/SurajGupta/r-source
 cd r-source
