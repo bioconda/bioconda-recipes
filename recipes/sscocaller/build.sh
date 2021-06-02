@@ -21,7 +21,7 @@ make
 cp libRmath* "${PREFIX}/lib"
 
 cd ../../../../
-rm r-source
+rm -r r-source
 
 nimble --localdeps build -y --verbose -d:release
 mkdir -p "${PREFIX}/bin"
