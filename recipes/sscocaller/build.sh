@@ -1,7 +1,5 @@
 #!/bin/sh
 
-export F77="${FC}"
-export CPP="${CXX}"
 export CC="${CC}"
 
 git clone https://github.com/SurajGupta/r-source
