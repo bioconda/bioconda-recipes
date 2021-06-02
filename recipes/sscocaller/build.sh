@@ -12,7 +12,7 @@ export CC="${CC}"
 git clone https://github.com/SurajGupta/r-source
 cd r-source
 chmod 755 configure
-./configure --with-readline=no --with-x=no 
+./configure --with-readline=no --with-x=no --prefix=$PREFIX --enable-libcurl CFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" 
 
 cd src/nmath/standalone/
 make   
