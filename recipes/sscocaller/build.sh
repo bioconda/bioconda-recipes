@@ -2,6 +2,7 @@
 git clone https://github.com/SurajGupta/r-source
 cd r-source
 ./configure
+chmod 755 ./configure
 cd src/nmath/standalone/
 make
 cp rmathlib/* $HOME/.nimble/lib/
