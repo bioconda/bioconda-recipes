@@ -1,5 +1,14 @@
 #!/bin/sh
 
+export F77="${FC}"
+export CPP="${CXX}"
+export CC="${CC}"
+
+echo $F77
+echo $CPP
+echo $CC
+echo ${GFORTRAN}
+
 git clone https://github.com/SurajGupta/r-source
 cd r-source
 chmod 755 configure
