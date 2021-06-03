@@ -9,12 +9,21 @@ export CFLAGS="-I$PREFIX/include"
 export CPATH="${PREFIX}/include"
 export CC="${CC}"
 export CXX="${CXX}"
+export CXXFLAGS="-I$PREFIX/include"
+
+
+if [ `uname` == Darwin ] ; then
+    CXXFLAGS="$CXXFLAGS -stdlib=libc++"
+    LDFLAGS="$LDFLAGS -stdlib=libc++"
+else ## linux
+    CXXFLAGS="$CXXFLAGS"
+fi
 
 git clone https://github.com/SurajGupta/r-source
 cd r-source
 chmod 775 configure
 sed -i.bak 's/exit(strncmp(ZLIB_VERSION, "1.2.5", 5) < 0);/exit(ZLIB_VERNUM < 0x1250);/g' configure
-./configure --with-readline=no --with-x=no --prefix=$PREFIX --enable-libcurl CFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" CPPFLAGS="-I$PREFIX/include"
+./configure --with-readline=no --with-x=no --prefix=$PREFIX --enable-libcurl CFLAGS="-I$PREFIX/include" LDFLAGS="$LDFLAGS" CXXFLAGS="$CXXFLAGS"
 cd src/nmath/standalone/
 make
 
