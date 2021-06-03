@@ -11,6 +11,7 @@ export CC="${CC}"
 export CXX="${CXX}"
 export CXXFLAGS="-I$PREFIX/include"
 
+export LD_PRELOAD="${PREFIX}/lib/preloadable_libiconv.so"
 
 if [ `uname` == Darwin ] ; then
     CXXFLAGS="$CXXFLAGS -stdlib=libc++"
