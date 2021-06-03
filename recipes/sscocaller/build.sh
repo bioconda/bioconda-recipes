@@ -11,20 +11,16 @@ export CC="${CC}"
 export CXX="${CXX}"
 export CXXFLAGS="-I$PREFIX/include"
 
-export LD_PRELOAD="${PREFIX}/lib/preloadable_libiconv.so"
-
-if [ `uname` == Darwin ] ; then
-    CXXFLAGS="$CXXFLAGS -stdlib=libc++"
-    LDFLAGS="$LDFLAGS -stdlib=libc++"
-else ## linux
-    CXXFLAGS="$CXXFLAGS"
+if [[ $OSTYPE == darwin* ]]; then
+     export CFLAGS="${CFLAGS} -i sysroot ${CONDA_BUILD_SYSROOT}"
+     export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
 fi
 
 git clone https://github.com/SurajGupta/r-source
 cd r-source
 chmod 775 configure
 sed -i.bak 's/exit(strncmp(ZLIB_VERSION, "1.2.5", 5) < 0);/exit(ZLIB_VERNUM < 0x1250);/g' configure
-./configure --with-readline=no --with-x=no --prefix=$PREFIX --enable-libcurl CFLAGS="-I$PREFIX/include" LDFLAGS="$LDFLAGS" CXXFLAGS="$CXXFLAGS" LIBICONV="$PREFIX/lib"
+./configure --with-readline=no --with-x=no --prefix=$PREFIX --enable-libcurl CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CXXFLAGS="$CXXFLAGS" LIBICONV="$PREFIX/lib"
 cd src/nmath/standalone/
 make
 
