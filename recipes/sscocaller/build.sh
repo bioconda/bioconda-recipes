@@ -24,7 +24,7 @@ git clone https://github.com/SurajGupta/r-source
 cd r-source
 chmod 775 configure
 sed -i.bak 's/exit(strncmp(ZLIB_VERSION, "1.2.5", 5) < 0);/exit(ZLIB_VERNUM < 0x1250);/g' configure
-./configure --with-readline=no --with-x=no --prefix=$PREFIX --enable-libcurl CFLAGS="-I$PREFIX/include" LDFLAGS="$LDFLAGS" CXXFLAGS="$CXXFLAGS"
+./configure --with-readline=no --with-x=no --prefix=$PREFIX --enable-libcurl CFLAGS="-I$PREFIX/include" LDFLAGS="$LDFLAGS" CXXFLAGS="$CXXFLAGS" LIBICONV="$PREFIX/lib"
 cd src/nmath/standalone/
 make
 
