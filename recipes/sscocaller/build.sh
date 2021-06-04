@@ -14,6 +14,7 @@ export CXXFLAGS="-I$PREFIX/include"
 if [ `uname` == Darwin ] ; then
     CXXFLAGS="$CXXFLAGS -stdlib=libc++"
     LDFLAGS="$LDFLAGS -stdlib=libc++"
+    DYLD_LIBRARY_PATH=${PREFIX}/lib:${DYLD_LIBRARY_PATH}
 else ## linux
     CXXFLAGS="$CXXFLAGS"
 fi
