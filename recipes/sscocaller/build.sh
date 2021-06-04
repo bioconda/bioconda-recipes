@@ -11,6 +11,12 @@ export CC="${CC}"
 export CXX="${CXX}"
 export CXXFLAGS="-I$PREFIX/include"
 
+if [ `uname` == Darwin ] ; then
+    CXXFLAGS="$CXXFLAGS -stdlib=libc++"
+    LDFLAGS="$LDFLAGS -stdlib=libc++"
+else ## linux
+    CXXFLAGS="$CXXFLAGS"
+fi
 
 git clone https://github.com/SurajGupta/r-source
 cd r-source
