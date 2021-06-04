@@ -11,10 +11,6 @@ export CC="${CC}"
 export CXX="${CXX}"
 export CXXFLAGS="-I$PREFIX/include"
 
-if [[ $OSTYPE == darwin* ]]; then
-     export CFLAGS="${CFLAGS} -i sysroot ${CONDA_BUILD_SYSROOT}"
-     export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
-fi
 
 git clone https://github.com/SurajGupta/r-source
 cd r-source
