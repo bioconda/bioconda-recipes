@@ -2,6 +2,7 @@
 
 curl -sSL https://get.haskellstack.org/ | sh
 
+unzip v*.zip
 cd poseidon-hs*
 stack install poseidon-hs:trident
 mkdir -p bin
