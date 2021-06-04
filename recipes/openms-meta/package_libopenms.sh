@@ -12,9 +12,6 @@ cp -R build/lib/* $PREFIX/lib/
 # Copy share, excluding examples
 mkdir -p $PREFIX/share/OpenMS/examples
 shopt -s extglob
-ls -la
-ls -la share/*
-cp -R share/!(OpenMS) $PREFIX/share/
 cp -R share/OpenMS/!(examples) $PREFIX/share/OpenMS
 # Copy the default models from the examples/simulation folder.
 # TODO move models and remove this exception in later OpenMS releases
