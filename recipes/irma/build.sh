@@ -14,6 +14,6 @@ rm $PREFIX/bin/IRMA_RES/scripts/samtools_*
 rm -rf $PREFIX/bin/LABEL_RES/scripts/binaries_and_licenses/muscle*
 rm -rf $PREFIX/bin/LABEL_RES/scripts/binaries_and_licenses/fasttree2.1.4
 rm $PREFIX/bin/LABEL_RES/scripts/binaries_and_licenses/shogun1.1.0_cmdline_static/shogun_linux32
-rm $PREFIX/bin/bin/LABEL_RES/scripts/FastTreeMP*
+#rm $PREFIX/bin/bin/LABEL_RES/scripts/FastTreeMP*
 rm $PREFIX/bin/bin/LABEL_RES/scripts/muscle*
 rm $PREFIX/bin/bin/LABEL_RES/scripts/shogun_Linux32
