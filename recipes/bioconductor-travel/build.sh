@@ -2,6 +2,7 @@
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 mkdir -p ~/.R
+export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig/
 echo -e "CC=$CC
 FC=$FC
 CXX=$CXX
