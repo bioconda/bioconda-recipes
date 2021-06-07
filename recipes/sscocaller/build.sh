@@ -18,6 +18,8 @@ if [ `uname` == Darwin ] ; then
     CXXFLAGS="$CXXFLAGS -stdlib=libc++"
     LDFLAGS="$LDFLAGS -stdlib=libc++"
     DYLD_LIBRARY_PATH=${PREFIX}/lib:${BUILD_PREFIX}/lib:${DYLD_LIBRARY_PATH}
+    cp $BUILD_PREFIX/lib/* ${PREFIX}/lib/
+    cp $BUILD_PREFIX/include/* ${PREFIX}/include/
 else ## linux
     CXXFLAGS="$CXXFLAGS"
 fi
