@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="MeSH.Hsa.eg.db_1.15.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/MeSH.Hsa.eg.db_1.15.0.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/MeSH.Hsa.eg.db_1.15.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Hsa.eg.db_1.15.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.hsa.eg.db/bioconductor-mesh.hsa.eg.db_1.15.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.hsa.eg.db/bioconductor-mesh.hsa.eg.db_1.15.0_src_all.tar.gz"
 )
 MD5="ffe80f70aad73418a5a90e4294cc34cd"

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="blimaTestingData_1.10.0.tar.gz"
+FN="blimaTestingData_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/blimaTestingData_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/blimaTestingData_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-blimatestingdata/bioconductor-blimatestingdata_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/blimaTestingData_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/blimaTestingData_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-blimatestingdata/bioconductor-blimatestingdata_1.12.0_src_all.tar.gz"
 )
-MD5="b1a62eb143707a3f3cbcd48c98d56f17"
+MD5="f162e7eb662e93357bdd1195e53e07bb"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

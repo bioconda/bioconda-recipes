@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="alpineData_1.16.0.tar.gz"
+FN="alpineData_1.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/alpineData_1.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/alpineData_1.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-alpinedata/bioconductor-alpinedata_1.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/alpineData_1.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/alpineData_1.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-alpinedata/bioconductor-alpinedata_1.18.0_src_all.tar.gz"
 )
-MD5="b8fb0e3c6e8cbe7b8b3415c8ad77302a"
+MD5="09b71ec159d4d29fd1564eb60cb942ec"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

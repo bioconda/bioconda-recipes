@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="geneplast.data_0.99.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/geneplast.data_0.99.2.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/geneplast.data_0.99.2.tar.gz"
   "https://bioarchive.galaxyproject.org/geneplast.data_0.99.2.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-geneplast.data/bioconductor-geneplast.data_0.99.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-geneplast.data/bioconductor-geneplast.data_0.99.2_src_all.tar.gz"
 )
 MD5="5fc5272191d3468b1e3c140cb9416eee"
