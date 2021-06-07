@@ -1,0 +1,50 @@
+--- lib/bloomfilter/BloomFilter.hpp	2018-10-25 10:04:43.000000000 -0700
++++ BloomFilter.patch.hpp	2021-06-03 09:31:53.000000000 -0700
+@@ -65,7 +65,7 @@
+ 	 *
+ 	 * kmerSize refers to the number of bases the kmer has
+ 	 */
+-	BloomFilter(size_t filterSize, unsigned hashNum, unsigned kmerSize) :
++	BloomFilter(uint64_t filterSize, unsigned hashNum, unsigned kmerSize) :
+ 		m_filter(NULL), m_size(filterSize), m_hashNum(hashNum),
+ 		m_kmerSize(kmerSize), m_dFPR(0), m_nEntry(0), m_tEntry(0)
+ 	{
+@@ -77,7 +77,7 @@
+ 	 *
+ 	 * If hashNum is set to 0, an optimal value is computed based on the FPR
+ 	 */
+-	BloomFilter(size_t expectedElemNum, double fpr, unsigned hashNum,
++	BloomFilter(uint64_t expectedElemNum, double fpr, unsigned hashNum,
+ 			unsigned kmerSize) :
+ 			m_size(0), m_hashNum(hashNum), m_kmerSize(kmerSize), m_dFPR(fpr), m_nEntry(
+ 					0), m_tEntry(0) {
+@@ -107,7 +107,7 @@
+ 
+ 		long int lCurPos = ftell(file);
+ 		fseek(file, 0, 2);
+-		size_t fileSize = ftell(file) - sizeof(struct FileHeader);
++		uint64_t fileSize = ftell(file) - sizeof(struct FileHeader);
+ 		fseek(file, lCurPos, 0);
+ 		if (fileSize != m_sizeInBytes) {
+ 			cerr << "Error: " << filterFilePath
+@@ -116,7 +116,7 @@
+ 			exit(1);
+ 		}
+ 
+-		size_t countRead = fread(m_filter, fileSize, 1, file);
++		uint64_t countRead = fread(m_filter, fileSize, 1, file);
+ 		if (countRead != 1 && fclose(file) != 0) {
+ 			cerr << "file \"" << filterFilePath << "\" could not be read."
+ 					<< endl;
+@@ -350,7 +350,7 @@
+ 	/*
+ 	 * Checks filter size and initializes filter
+ 	 */
+-	void initSize(size_t size) {
++	void initSize(uint64_t size) {
+ 		if (size % 8 != 0) {
+ 			cerr << "ERROR: Filter Size \"" << size
+ 					<< "\" is not a multiple of 8." << endl;
+@@ -367,8 +367,8 @@
+ 	 * Is an estimated size using approximations of FPR formula
+ 	 * given the number of hash functions
