@@ -18,8 +18,8 @@ if [ `uname` == Darwin ] ; then
     CXXFLAGS="$CXXFLAGS -stdlib=libc++"
     LDFLAGS="$LDFLAGS -stdlib=libc++"
     DYLD_LIBRARY_PATH=${PREFIX}/lib:${DYLD_LIBRARY_PATH}
-    CFLAGS="$CFLAGS -I$BUILD_PREFIX/include"
-    LDFLAGS="$LDFLAGS -L$BUILD_PREFIX/lib"
+#    CFLAGS="$CFLAGS -I$BUILD_PREFIX/include"
+#    LDFLAGS="$LDFLAGS -L$BUILD_PREFIX/lib"
 else ## linux
     CXXFLAGS="$CXXFLAGS"
 fi
@@ -28,7 +28,7 @@ git clone https://github.com/SurajGupta/r-source
 cd r-source
 chmod 775 configure
 sed -i.bak 's/exit(strncmp(ZLIB_VERSION, "1.2.5", 5) < 0);/exit(ZLIB_VERNUM < 0x1250);/g' configure
-./configure --with-readline=no --with-x=no --prefix=$PREFIX  INCICONV=$INCLUDE_PATH LIBICONV=$LIBRARY_PATH CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CXXFLAGS="$CXXFLAGS" 
+./configure --with-readline=no --with-x=no --prefix=$PREFIX R_BZIPCMD=$PREFIX/bin/bzip2 INCICONV=$INCLUDE_PATH LIBICONV=$LIBRARY_PATH CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CXXFLAGS="$CXXFLAGS" 
 cd src/nmath/standalone/
 make
 
