@@ -1,0 +1,62 @@
+{% set version = "1.0.0" %}
+{% set name = "XNAString" %}
+{% set bioc = "3.13" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: d4bae97228a5fc7b92782d2d2f03f64d
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: BiocStyle, knitr, rmarkdown, markdown, testthat, BSgenome.Hsapiens.UCSC.hg38, pander
+requirements:
+  host:
+    - 'bioconductor-biostrings >=2.60.0,<2.61.0'
+    - 'bioconductor-bsgenome >=1.60.0,<1.61.0'
+    - 'bioconductor-genomicranges >=1.44.0,<1.45.0'
+    - 'bioconductor-iranges >=2.26.0,<2.27.0'
+    - 'bioconductor-s4vectors >=0.30.0,<0.31.0'
+    - r-base
+    - r-data.table
+    - r-formattable
+    - r-future.apply
+    - r-rcpp
+    - r-stringi
+    - r-stringr
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-biostrings >=2.60.0,<2.61.0'
+    - 'bioconductor-bsgenome >=1.60.0,<1.61.0'
+    - 'bioconductor-genomicranges >=1.44.0,<1.45.0'
+    - 'bioconductor-iranges >=2.26.0,<2.27.0'
+    - 'bioconductor-s4vectors >=0.30.0,<0.31.0'
+    - r-base
+    - r-data.table
+    - r-formattable
+    - r-future.apply
+    - r-rcpp
+    - r-stringi
+    - r-stringr
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'Efficient Manipulation of Modified Oligonucleotide Sequences'
+  description: 'The XNAString package allows for description of base sequences and associated chemical modifications in a single object. XNAString is able to capture single stranded, as well as double stranded molecules. Chemical modifications are represented as independent strings associated with different features of the molecules (base sequence, sugar sequence, backbone sequence, modifications) and can be read or written to a HELM notation. It also enables secondary structure prediction using RNAfold from ViennaRNA. XNAString is designed to be efficient representation of nucleic-acid based therapeutics, therefore it stores information about target sequences and provides interface for matching and alignment functions from Biostrings package.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
