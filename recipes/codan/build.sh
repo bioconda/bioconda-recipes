@@ -6,7 +6,7 @@ cp bin/* $PREFIX/bin
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
   chmod +x for_MacOS_users/*
-  cp for_MacOS_users/tops-viterbi_decoding $PREFIX/bin
+  cp for_MacOS_users/* $PREFIX/bin
 fi
 
 # This will allow them to be run on environment activation.
