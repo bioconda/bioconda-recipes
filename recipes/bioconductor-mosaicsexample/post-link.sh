@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="mosaicsExample_1.22.0.tar.gz"
+FN="mosaicsExample_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/mosaicsExample_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/mosaicsExample_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mosaicsexample/bioconductor-mosaicsexample_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/mosaicsExample_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/mosaicsExample_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mosaicsexample/bioconductor-mosaicsexample_1.30.0_src_all.tar.gz"
 )
-MD5="c87a905df5b38287895aff9adb2c8406"
+MD5="b1df94c2fe1e824bee018e8fdb866452"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

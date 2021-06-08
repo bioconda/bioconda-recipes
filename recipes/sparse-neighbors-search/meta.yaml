@@ -1,41 +1,49 @@
+{% set version = "0.7" %}
+
 package:
   name: sparse-neighbors-search
-  version: 0.3
+  version: {{ version }}
 
 source:
-  url: https://github.com/joachimwolff/minHashNearestNeighbors/archive/0.3.tar.gz
-  md5: bed04589d2c05c916a7b7ebdf31e71f2
+  url: https://github.com/joachimwolff/sparse-neighbors-search/archive/{{ version }}.tar.gz
+  sha256: 4c824eacb1d3c3fafba31eb5803b6291fc098be278b1eb8a63fd9cc7d998621b
 
 build:
-  skip: True  # [not py27]
-  number: 1
+  number: 2
+  skip: True # [py<30]
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
+    - pip
     - python
     - setuptools
-    - scipy
-    - numpy
-    - scikit-learn
+    - scipy >=1.3
+    - numpy >=1.17
+    - scikit-learn >=0.21
     - cython
-
+    - umap-learn
+    - openmp
   run:
     - python
-    - scipy
-    - numpy
-    - scikit-learn
-    - cython
+    - scipy >=1.3
+    - numpy >=1.17
+    - scikit-learn >=0.21
+    - umap-learn
 
 test:
   imports:
     - sparse_neighbors_search
 
 about:
-  maintainers:
-  - Joachim Wolff
-  home: https://github.com/joachimwolff/minHashNearestNeighbors
+  home: https://github.com/joachimwolff/sparse-neighbors-search
   summary: 'Approximate k-nearest neighbors search on sparse datasets'
   license: MIT
   license_file: LICENSE
+
+extra:
+  maintainers:
+    - Joachim Wolff

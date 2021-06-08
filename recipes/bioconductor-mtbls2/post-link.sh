@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="mtbls2_1.14.0.tar.gz"
+FN="mtbls2_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/mtbls2_1.14.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/mtbls2_1.14.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mtbls2/bioconductor-mtbls2_1.14.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/mtbls2_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/mtbls2_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mtbls2/bioconductor-mtbls2_1.22.0_src_all.tar.gz"
 )
-MD5="c6b95b76c7aa21672c277100dbf75f19"
+MD5="35d066f278a7dbfa793e801fa0b737e9"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

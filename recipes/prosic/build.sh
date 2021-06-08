@@ -1,15 +1,10 @@
-#!/bin/bash -euo
+#!/bin/bash
 
-# taken from yacrd recipe, see: https://github.com/bioconda/bioconda-recipes/blob/2b02c3db6400499d910bc5f297d23cb20c9db4f8/recipes/yacrd/build.sh
-if [ "$(uname)" == "Darwin" ]; then
-
-    # apparently the HOME variable isn't set correctly, and circle ci output indicates the following as the home directory
-    export HOME="/Users/distiller"
-
-    # according to https://github.com/rust-lang/cargo/issues/2422#issuecomment-198458960 removing circle ci default configuration solves cargo trouble downloading crates
-    git config --global --unset url.ssh://git@github.com.insteadOf
-
-fi
-
-# build statically linked binary with Rust
-C_INCLUDE_PATH=$PREFIX/include LIBRARY_PATH=$PREFIX/lib cargo install --path . --root $PREFIX
+# Add workaround for SSH-based Git connections from Rust/cargo.  See https://github.com/rust-lang/cargo/issues/2078 for details.
+# We set CARGO_HOME because we don't pass on HOME to conda-build, thus rendering the default "${HOME}/.cargo" defunct.
+export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
+# Make sure bindgen passes on our compiler flags.
+# export BINDGEN_EXTRA_CLANG_ARGS="${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
+# Can't use BINDGEN_EXTRA_CLANG_ARGS because prosic2 depends on rust-htslib=0.22 which uses bindgen<0.49.
+export C_INCLUDE_PATH=$PREFIX/include
+cargo install --path . --root $PREFIX

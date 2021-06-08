@@ -1,41 +1,43 @@
 {% set name = "idr-py" %}
-{% set version = "0.3.0" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "5488217bc5c84440722511a8f695d6cfa1034899edf1bba8a0ec12d2cdef0c16" %}
+{% set version = "0.4.2" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 946388a4ad4b3d3ed9e5a5b3f331e92388ee1834cfb83af88186f61387cea07a
 
 build:
-  number: 1
-  script: python -m pip install --no-deps --ignore-installed .
-  skip: True  # [not py27]
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 requirements:
   host:
-    - python
+    - python >=3
     - pip
-    - setuptools
   run:
-    - python
-    - python-omero <5.5
+    - python >=3
+    - python-omero
     - ipython
     - ipywidgets
-    - matplotlib
+    - matplotlib-base
     - pandas
     - requests
     - seaborn
 
 test:
-  commands:
-    - env MPLBACKEND=Agg python -c "import idr"
-    - env MPLBACKEND=Agg python -c "import idr.tests"
+  imports:
+    - idr
+    - idr.tests
+    - idr.attributes
+    - idr.connections
+    - idr.externalDBs
+    - idr.images
+    - idr.visualizations
+    - idr.widgets
 
 about:
   home: https://github.com/IDR/idr-py
@@ -44,12 +46,12 @@ about:
   license_file: ''
   summary: Helper methods for accessing the Image Data Resource (IDR)
   description: ".. image:: https://travis-ci.org/IDR/idr-py.svg?branch=master\n    :target: https://travis-ci.org/IDR/idr-py\n\n.. image:: https://badge.fury.io/py/idr-py.svg\n    :target: https://badge.fury.io/py/idr-py\n\
-    \nIDR-PY\n======\n\nLibrary with helper methods for accessing the Image Data Resource (IDR).\n\nRequirements\n============\n\n * OMERO.py 5.3.x\n * Python 2.6+\n\nInstalling from PyPI\n====================\n\
+    \nIDR-PY\n======\n\nLibrary with helper methods for accessing the Image Data Resource (IDR).\n\nRequirements\n============\n\n * OMERO.py 5.6.x\n * Python 3\n\nInstalling from PyPI\n====================\n\
     \nThis section assumes that an OMERO.web is already installed.\n\n\nInstall the app using `pip <https://pip.pypa.io/en/stable/>`_:\n\n::\n\n    $ pip install -U idr-py\n\n\nLicense\n-------\n\nThis\
-    \ project, similar to many Open Microscopy Environment (OME) projects, is licensed under the terms of the GNU General Public License (GPL) v2 or later.\n\nCopyright\n---------\n\n2017, The Open Microscopy\
+    \ project, similar to many Open Microscopy Environment (OME) projects, is licensed under the terms of the GNU General Public License (GPL) v2 or later.\n\nCopyright\n---------\n\n2017-2020, The Open Microscopy\
     \ Environment"
-  doc_url: ''
-  dev_url: ''
+  doc_url: 'https://idr.openmicroscopy.org/about/api.html'
+  dev_url: 'https://github.com/IDR/idr-py'
 
 extra:
   recipe-maintainers: ''

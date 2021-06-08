@@ -1,59 +1,52 @@
-{% set name = "MAGpurify" %}
-{% set version = "1.0" %}
-
+{% set version = "2.1.2" %}
 
 package:
-  name: {{ name|lower }}
+  name: magpurify
   version: {{ version }}
 
 source:
-  url: https://github.com/snayfach/MAGpurify/archive/v{{ version }}.tar.gz
-  sha256: e706d9380fe228c61ced5135708192de582bc642e7d9f89a12ab0f20b010bb53
+  url: https://pypi.io/packages/source/m/magpurify/magpurify-{{ version }}.tar.gz
+  sha256: aeb2121824bf327e90a8f4101819dcff96ca7ecee7d9ad087b5ac3354ff0a77c
 
 build:
   number: 1
-
+  noarch: python
+  entry_points:
+    - magpurify=magpurify.cli:cli
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   host:
-    - wget
-    - blast=2.7.1
-    - last
-    - prodigal=2.6.3
-    - hmmer=3.1b2
-    - mash=2.0
-    - python=2.7.*
-    - pandas
-    - numpy
-    - scikit-learn
-    - biopython
-
+    - pip
+    - python >=3.6
   run:
-    - blast=2.7.1
-    - last
-    - prodigal=2.6.3
-    - hmmer=3.1b2
-    - mash=2.0
-    - python=2.7.*
-    - pandas
-    - numpy
-    - scikit-learn
     - biopython
+    - numpy
+    - pandas
+    - python >=3.6
+    - scikit-learn
+    - blast
+    - prodigal
+    - hmmer
+    - last
+    - mash
+    - coverm
 
 test:
   commands:
-    - run_qc.py -h || [[ $? == 1 ]]
-
+    - magpurify --help
+    - magpurify phylo-markers --help
+    - magpurify clade-markers --help
+    - magpurify conspecific --help
+    - magpurify tetra-freq --help
+    - magpurify gc-content --help
+    - magpurify coverage --help
+    - magpurify known-contam --help
+    - magpurify clean-bin --help
 
 about:
-  home: https://github.com/snayfach/MAGpurify
+  home: "https://github.com/snayfach/MAGpurify"
   license: GPL-3
+  license_family: GPL
   license_file: LICENSE
-  summary: |
-    Improvement of metagenome-assembled genomes
-
-extra:
-  identifiers:
-    - doi:http://dx.doi.org/10.1038/s41586-019-1058-x
-  recipe-maintainers:
-    - silask
+  summary: "Identify and remove incorrectly binned contigs from metagenome-assembled genomes."

@@ -1,24 +1,25 @@
-{% set version = "5.0.2" %}
+{% set name = "MEME" %}
+{% set version = "5.3.0" %}
 
 package:
-  name: meme
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: http://alternate.meme-suite.org/meme-software/{{ version }}/meme-{{ version }}.tar.gz
-  sha256: 5840bbfbfdf303c2707cad30f9a80b463cffed6ddcb5fa4a77451625532b23b7
-  patches:
-    - mast.patch
+  url: http://meme-suite.org/meme-software/{{ version }}/meme-{{ version }}.tar.gz
+  sha256: b2ddec9db972fcf77b29c7deb62df8b1dd8a6638c13c1aa06a5d563c4a7ff756
 
 build:
-  number: 5
+  number: 2
   detect_binary_files_with_prefix: True
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
   host:
     - yaml
+    - icu
     - python
     - perl
     - ghostscript
@@ -43,6 +44,7 @@ requirements:
     - openmpi
   run:
     - yaml
+    - icu
     - expat
     - python
     - perl
@@ -79,9 +81,11 @@ test:
     - mcast -version
     - glam2scan -version
     - momo simple -version
+    - getsize -version
+    - dreme -version
 
 about:
-  home: http://alternate.meme-suite.org/
+  home: http://meme-suite.org
   license: Custom
   license_file: COPYING
   summary: Motif based sequence Analysis tools
@@ -90,3 +94,6 @@ extra:
   container:
     # openmpi needs ssh/rsh
     extended-base: true
+  identifiers:
+    - biotools:meme_suite
+    - usegalaxy-eu:meme_dreme

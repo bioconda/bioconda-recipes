@@ -1,15 +1,14 @@
 #!/bin/bash -e
 
-# taken from yacrd recipe, see: https://github.com/bioconda/bioconda-recipes/blob/2b02c3db6400499d910bc5f297d23cb20c9db4f8/recipes/yacrd/build.sh
-if [ "$(uname)" == "Darwin" ]; then
+# Dependency crate librocksdb-sys uses SSE4.1/4.2 and PCLMUL unconditionally.
+# => Set architecture compatibility to "westmere".
+export \
+    CFLAGS="${CFLAGS} -march=westmere" \
+    CXXFLAGS="${CXXFLAGS} -march=westmere"
 
-    # apparently the HOME variable isn't set correctly, and circle ci output indicates the following as the home directory
-    export HOME="/Users/distiller"
+export \
+    CARGO_NET_GIT_FETCH_WITH_CLI=true \
+    CARGO_HOME="${BUILD_PREFIX}/.cargo" \
+    BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
-    # according to https://github.com/rust-lang/cargo/issues/2422#issuecomment-198458960 removing circle ci default configuration solves cargo trouble downloading crates
-    git config --global --unset url.ssh://git@github.com.insteadOf
-
-fi
-
-# build statically linked binary with Rust
-C_INCLUDE_PATH=$PREFIX/include LIBRARY_PATH=$PREFIX/lib cargo install --path . --root $PREFIX
+cargo install --path . --root "${PREFIX}" --verbose

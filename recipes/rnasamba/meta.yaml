@@ -1,42 +1,47 @@
-{% set name = "rnasamba" %}
-{% set version = "0.1.2" %}
+{% set version = "0.2.5" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: rnasamba
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 4f51a7fc868c9d9132ce52aa392f8e31d15984c9ce141191db88fb1132d915fc
+  url: https://pypi.io/packages/source/r/rnasamba/rnasamba-{{ version }}.tar.gz
+  sha256: 23bf656e21eb3e1a1052928e19dc59b80bae65190a11d6f3d3f0e7f19e488011
 
 build:
   number: 0
-  noarch: python
+  # Skipping py>=38 because Py3.8 builds are only available for keras>=2.3.1 and tensorflow>=2.0.
+  skip: True  # [py<30 or py>=38]
   entry_points:
-    - rnasamba-classify=rnasamba.cli:classify_cli
-    - rnasamba-train=rnasamba.cli:train_cli
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+    - rnasamba=rnasamba.cli:cli
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - rust >=1.40
   host:
     - biopython
-    - keras >=2.1.0
-#    - numpy (allow tensorflow to pick version, avoid pinning)
+    - keras >=2.1.0,<2.3.0
+    - numpy <1.17
     - pip
-    - python >=3.6
+    - setuptools-rust
+    - python
     - tensorflow >=1.5.0,<2.0
+    - h5py <3.0.0
   run:
     - biopython
-    - keras >=2.1.0
-#    - numpy
-    - python >=3.6
+    - keras >=2.1.0,<2.3.0
+    - numpy <1.17
+    - python
     - tensorflow >=1.5.0,<2.0
+    - h5py <3.0.0
 
 # Tests fail due to tensorflow needing GLIBC 2.16 missing in container
-#test:
-#  commands:
-#    - rnasamba-classify --help
-#    - rnasamba-train --help
+test:
+  commands:
+    - rnasamba --help
+    - rnasamba classify --help
+    - rnasamba train --help
 
 about:
   home: http://apcamargo.github.io/RNAsamba/
@@ -45,6 +50,6 @@ about:
   license_file: LICENSE
   summary: A tool for computing the coding potential of RNA transcript sequences using deep learning.
 
-extra:
-  skip-lints:
-    - missing_tests  # conda-forge::tensorflow needs GLIBC 2.16
+#extra:
+#  skip-lints:
+#    - missing_tests  # conda-forge::tensorflow needs GLIBC 2.16

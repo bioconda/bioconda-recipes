@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RnaSeqSampleSizeData_1.16.0.tar.gz"
+FN="RnaSeqSampleSizeData_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RnaSeqSampleSizeData_1.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RnaSeqSampleSizeData_1.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rnaseqsamplesizedata/bioconductor-rnaseqsamplesizedata_1.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/RnaSeqSampleSizeData_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RnaSeqSampleSizeData_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rnaseqsamplesizedata/bioconductor-rnaseqsamplesizedata_1.24.0_src_all.tar.gz"
 )
-MD5="b5807095357790233a3b0901e093d4e2"
+MD5="aa8a48d9a69e94a5e959ab84fc5fba19"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,6 +1,10 @@
 #!/bin/bash
 
 mkdir -p "${PREFIX}"/bin/src
+
+# inject compilers
+sed -i.bak "s#g++#${CXX} -I${BUILD_PREFIX}/include#" src/Makefile
+
 sh install_bracken.sh
 cp bracken "${PREFIX}"/bin
 cp bracken-build "${PREFIX}"/bin

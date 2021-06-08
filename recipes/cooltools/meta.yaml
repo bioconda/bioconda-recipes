@@ -1,0 +1,62 @@
+{% set name = "cooltools" %}
+{% set version = "0.4.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 24de6ae8039bc34aaa41f090093ef3f3869f55d107c5fa25c66f8bed88bc9ee7
+
+build:
+  number: 0
+  skip: True  # [py2k]
+  entry_points:
+    - cooltools = cooltools.cli:cli
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - cython
+    - pip
+    - python
+    - numpy
+  run:
+    - bioframe >=0.2.0
+    - click >=7
+    - cooler >=0.8.5
+    - cytoolz
+    - joblib
+    - matplotlib-base
+    - multiprocess
+    - numba
+    - numpy
+    - pandas
+    - python
+    - scikit-learn
+    - scipy
+    - pytables
+
+test:
+  imports:
+    - cooltools
+    - cooltools.cli
+    - cooltools.io
+    - cooltools.lib
+  commands:
+    - cooltools --help
+
+about:
+  home: "https://github.com/open2c/cooltools"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Analysis tools for genomic interaction data stored in .cool format"
+  doc_url: https://cooltools.readthedocs.io
+
+extra:
+  recipe-maintainers:
+    - abretaud

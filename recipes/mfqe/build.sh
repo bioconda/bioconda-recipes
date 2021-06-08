@@ -6,4 +6,5 @@ LIBRARY_PATH=$PREFIX/lib \
 cargo build --release
 
 # Install the binary
+mkdir -p ${PREFIX}/bin
 cp target/release/mfqe $PREFIX/bin

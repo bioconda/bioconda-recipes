@@ -10,18 +10,23 @@ source:
   sha256: 408a1080bef46b88f21132d20c8b8d287f081f5aae47af25a379177a32e8abc5
 
 build:
-  number: 2
+  number: 4
   skip: True  # [osx]
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
-    - julia 0.6.1 blas_openblas_202
-    - hdf5
-    - mpfr 3.1.5
+    # We can't use julia>=1.0 because OpenGene is not compatible with Julia 1.0+.
+    # We can't use julia=0.6 because that Conda package appears to be broken.
+    - julia 0.5.2.*
+    # Tightly pin hdf to ensure a satisfiable env with julia=0.5.
+    - hdf5 1.10.1.*
+    - mpfr 3.1.5.*
   run:
-    - julia 0.6.1 blas_openblas_202
-    - hdf5
-    - mpfr 3.1.5
+    - julia 0.5.2.*
+    - hdf5 1.10.1.*
+    - mpfr 3.1.5.*
     - libxml2
     - unzip
 
@@ -34,3 +39,7 @@ about:
   summary: The MLST pipeline developed by the PathOGiST research group.
   license: MIT
   license_file: LICENSE
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic

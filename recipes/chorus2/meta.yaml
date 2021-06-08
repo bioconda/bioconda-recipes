@@ -1,37 +1,41 @@
-{% set version = "2.0" %}
+{% set version = "2.01" %}
 
 package:
   name: chorus2
   version: {{ version }}
 
 source:
-  url: https://github.com/zhangtaolab/Chorus2/archive/v2.0.tar.gz
-  sha256: 7cb9895230705fc3d040d5ce8ee3f6f89bbec934ac7374a397e352fdf13abbc3
+  url: https://github.com/zhangtaolab/Chorus2/archive/v{{ version }}.tar.gz
+  sha256: 8e58db0470803c618aab5c283ea3979af4d668a6e4f1b371db0200b6cc0cc207
 
 build:
-  number: 4
-  noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps -v"
+  number: 1
+  skip: True  # [py<30]
+  script: {{ PYTHON }} -m pip install . --no-deps -v
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
-    - python >=3
-    - setuptools
+    - python
+    - cython
     - pip
   run:
-    - cython
-    - python >=3
+    - python
     - pybigwig
     - numpy
     - pyfasta
+    - pybedtools
     - pandas
     - primer3-py >=0.4.2
-    - matplotlib >=3
+    - matplotlib-base >=3
     - pyqt <5.11
     - sip >=4
-    - jellyfish >=2.2.3
+    - kmer-jellyfish 2.*
     - bwa >=0.7.3a
     - bwa <=0.7.8
+    - samtools
+    - bcftools
 
 test:
   imports:

@@ -1,31 +1,35 @@
-{% set name = "GapFiller" %}
-{% set version = "2.1.1" %}
-{% set sha256 = "52e6a96c00fa730fb9b48d97168b8c2c0756ae2532d290272aa0d9a2e6583b8f" %}
+{% set version = "2.1.2" %}
+{% set sha256 = "a4c5235b1ee17e277d08cc945dbfa05af084559e546a2b7f15c9c1b703f4b237" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: gapfiller
+  version: {{ version }}
 
 source:
-  url: https://iweb.dl.sourceforge.net/project/{{ name|lower }}/v{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  - url: https://sourceforge.net/projects/gapfiller/files/v{{ version }}/gapfiller-{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+  # Need a more recent version of boost.m4
+  - url: https://raw.githubusercontent.com/tsuna/boost.m4/3d67ee84e9149f6279a8df2113f5a86f0a83bd0d/build-aux/boost.m4
+    sha256: f04391a5601f2d616cc6cfb1d2863df38f084f5dc184ae106114c5fb9f323d2f
+    folder: m4
 
 build:
-  number: 0
-  skip: True # [osx]
+  number: 2
+  skip: True  # [osx]
 
 requirements:
   build:
-    # old code needs old GCC
-    - gcc =4.8.5
+    - make
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - libtool
   host:
     - zlib
-    # old code needs old Boost
-    - boost <=1.57
+    - boost-cpp
   run:
     - zlib
-    - boost
-    - libgcc
+    - boost-cpp
 
 test:
   commands:
@@ -37,7 +41,3 @@ about:
   license_family: GPL
   license_file: COPYING
   summary: "GapFiller is a seed-and-extend local assembler to fill the gap within paired reads."
-
-extra:
-  skip-lints:
-    - should_use_compilers

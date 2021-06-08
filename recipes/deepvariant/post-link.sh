@@ -1,10 +1,10 @@
 #!/bin/bash
 set -eu -o pipefail
 
-MODEL_VERSION="0.8.0"
+MODEL_VERSION=$PKG_VERSION
 
 GSUTIL=$PREFIX/bin/gsutil
-for MODEL_TYPE in wgs wes
+for MODEL_TYPE in wgs wes pacbio hybrid
 do
 	MODEL_NAME="DeepVariant-inception_v3-${MODEL_VERSION}+data-${MODEL_TYPE}_standard"
 	GSREF="gs://deepvariant/models/DeepVariant/$MODEL_VERSION/$MODEL_NAME"

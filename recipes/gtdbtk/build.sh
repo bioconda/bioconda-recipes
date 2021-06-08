@@ -1,12 +1,7 @@
 #!/bin/bash
 
 # install python libraries
-#python -m pip install . --no-deps --ignore-installed
 python -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
-
-# copy main gtdbtk python script
-chmod +x bin/gtdbtk
-cp bin/gtdbtk ${PREFIX}/bin/
 
 # copy script to download database
 chmod +x ${RECIPE_DIR}/download-db.sh
@@ -26,4 +21,3 @@ EOF
 cat <<EOF >> ${PREFIX}/etc/conda/deactivate.d/gtdbtk.sh
 unset GTDBTK_DATA_PATH
 EOF
-

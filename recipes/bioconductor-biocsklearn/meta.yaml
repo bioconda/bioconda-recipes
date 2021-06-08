@@ -1,6 +1,6 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "BiocSklearn" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.13" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,43 +10,45 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 08d1933cf9d02f67c3eb8bbda351afd5
+  md5: b7d1749587500b58b5de0995763119f1
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
 # Suggests: testthat, restfulSE, HDF5Array, BiocStyle
 # SystemRequirements: python (>= 2.7), sklearn, numpy, pandas, h5py
 requirements:
   host:
-    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-basilisk >=1.4.0,<1.5.0'
+    - 'bioconductor-summarizedexperiment >=1.22.0,<1.23.0'
     - r-base
-    - r-bbmisc
     - r-knitr
+    - r-rcpp
     - r-reticulate
-    - python
-    - sklearn
-    - numpy
-    - pandas
-    - h5py
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-basilisk >=1.4.0,<1.5.0'
+    - 'bioconductor-summarizedexperiment >=1.22.0,<1.23.0'
     - r-base
-    - r-bbmisc
     - r-knitr
+    - r-rcpp
     - r-reticulate
     - python
-    - sklearn
     - numpy
     - pandas
     - h5py
+    - scikit-learn
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'This package provides interfaces to selected sklearn elements, and demonstrates fault tolerant use of python modules requiring extensive iteration.'
+  summary: 'interface to python sklearn via Rstudio reticulate'
+  description: 'This package provides interfaces to selected sklearn elements, and demonstrates fault tolerant use of python modules requiring extensive iteration.'
 

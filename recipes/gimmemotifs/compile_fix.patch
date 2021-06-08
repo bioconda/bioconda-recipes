@@ -1,16 +1,13 @@
---- compile_externals.py	2019-07-16 12:48:20.464794208 +0200
-+++ compile_externals.fix.py	2019-07-16 12:48:11.872510195 +0200
-@@ -10,11 +10,11 @@
-         return
-     
-     try:
--        Popen("gcc", stdout=PIPE, stderr=PIPE).communicate()
-+        Popen(os.environ["CC"], stdout=PIPE, stderr=PIPE).communicate()
-     except Exception:
-         return
-     
--    Popen(["gcc","-o%s" % name, "%s.c" % name, "-lm"], cwd=path, stdout=PIPE).communicate()
-+    Popen([os.environ["CC"],"-o%s" % name, "%s.c" % name, "-lm"], cwd=path, stdout=PIPE).communicate()
-     if os.path.exists(os.path.join(path, name)):
-         return True
+--- compile_externals.py	2019-12-05 13:00:52.183937725 +0100
++++ compile_externals.fix.py	2019-12-05 13:01:05.988415174 +0100
+@@ -6,8 +6,8 @@
+ 
+ def compile_simple(name, src_dir="src"):
+     gcc = "gcc"
+-    if "GCC" in os.environ and os.environ["GCC"]:
+-        gcc = os.environ["GCC"]
++    if "CC" in os.environ and os.environ["CC"]:
++        gcc = os.environ["CC"]
+ 
+     path = os.path.join(src_dir, "%s" % name)
  

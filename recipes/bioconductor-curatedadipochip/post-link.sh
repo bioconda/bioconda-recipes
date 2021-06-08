@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="curatedAdipoChIP_1.0.0.tar.gz"
+FN="curatedAdipoChIP_1.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/curatedAdipoChIP_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/curatedAdipoChIP_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-curatedadipochip/bioconductor-curatedadipochip_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/curatedAdipoChIP_1.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/curatedAdipoChIP_1.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-curatedadipochip/bioconductor-curatedadipochip_1.8.0_src_all.tar.gz"
 )
-MD5="bd1152653faf9424562c638ea8fc1ded"
+MD5="ff74ac6b1878ddf7ec17f07e5fff11c7"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

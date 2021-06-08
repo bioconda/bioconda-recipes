@@ -1,15 +1,11 @@
 #!/bin/bash
 set -eu -o pipefail
-
-# Build script based off of mosdepth/hts-nim-tools build.
-
-echo $PATH
-
 set -vx
 
 echo $(pwd)
 ls -larth
+ls -larth bin/
 
 #mkdir -p $PREFIX
+chmod -R a+x bin
 cp -Rf bin ${PREFIX}
-chmod -R a+x ${PREFIX}/bin

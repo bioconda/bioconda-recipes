@@ -1,0 +1,35 @@
+--- c++/src/build-system/configure	2020-05-11 18:30:05.000000000 +0200
++++ c++/src/build-system/configure	2020-07-24 10:35:24.895652529 +0200
+@@ -9207,10 +9207,12 @@
+       CONF_loadable_ext=".dylib"
+    fi
+    if test "$compiler" = AppleClang \
+-      ||  ("$compiler" = GCC  &&  $CXX -v 2>&1 | grep -q Apple) ; then
++      || test "$compiler" = LLVMClang \
++      || (test "$compiler" = GCC  &&  $CXX -v 2>&1 | grep -i -q Apple) ; then
+       CFLAGS="-fpascal-strings $CFLAGS"
+       CXXFLAGS="-fpascal-strings $CXXFLAGS"
+-      if test "$compiler" = AppleClang; then
++      if test "$compiler" = AppleClang \
++        || test "$compiler" = LLVMClang; then
+          try_old_sdks=no
+       else
+          try_old_sdks=$with_ncbi_public
+@@ -9617,7 +9619,7 @@
+ else
+   ac_cv_header_stdc=no
+ fi
+-rm -f conftest*
++rm -rf conftest*
+ 
+ fi
+ 
+@@ -9634,7 +9636,7 @@
+ else
+   ac_cv_header_stdc=no
+ fi
+-rm -f conftest*
++rm -rf conftest*
+ 
+ fi
+ 
