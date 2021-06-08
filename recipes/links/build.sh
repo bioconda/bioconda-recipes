@@ -13,7 +13,7 @@ cd lib/bloomfilter/swig/
 if [[ $OSTYPE == linux* ]]; then
 	suffix="so"
 else
-	suffix="bundle"
+	suffix="dylib"
 fi
 
 
