@@ -11,6 +11,6 @@ cmake -DPYOPENMS=ON -DPY_NUM_MODULES=16 .
 #make -j${CPU_COUNT} pyopenms
 pushd pyOpenMS
 $PYTHON create_cpp_extension.py
-$PYTHON -m pip install . --ignore-installed --no-deps --single-threaded
+$PYTHON -m pip install . --ignore-installed --no-deps --global-option="--single-threaded"
 popd
 popd
