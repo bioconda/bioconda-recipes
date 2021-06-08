@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="chimp.db0_3.12.0.tar.gz"
+FN="chimp.db0_3.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/chimp.db0_3.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/chimp.db0_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-chimp.db0/bioconductor-chimp.db0_3.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/chimp.db0_3.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/chimp.db0_3.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chimp.db0/bioconductor-chimp.db0_3.13.0_src_all.tar.gz"
 )
-MD5="d153e325f53252f2cd421098889c036a"
+MD5="6fd15916d65c4716e7a4f8b1c70a9d49"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
