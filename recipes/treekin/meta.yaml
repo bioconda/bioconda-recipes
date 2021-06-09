@@ -1,0 +1,41 @@
+{% set name = "treekin" %}
+{% set version = "0.5.1" %}
+{% set sha256 = "e976ea2e565de6b7608a85648f2f2dff70284fe2ac4f004ffe5ea4243d8f1690" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  skip: True # [osx]
+  number: 1
+
+source:
+  url: https://github.com/ViennaRNA/Treekin/releases/download/v{{ version }}/Treekin-{{ version }}.tar.gz 
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - autoconf
+    - automake
+    - pkg-config
+
+  host:
+    - mlapack
+    - lapack <3.9
+  run:
+    - mlapack
+    - lapack <3.9
+
+test:
+  commands:
+    - treekin --version
+
+about:
+  home: https://www.tbi.univie.ac.at/RNA/Treekin/
+  license: GPL
+  license_file: COPYING
+  summary: "Compute folding dynamics on coarse grained version of an energy landscape by numeric integration of a Markov process"
