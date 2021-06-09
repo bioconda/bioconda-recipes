@@ -21,6 +21,5 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   #           - whereas ENVNAME = name of the environment with CodAn                           #
   #                                                                                            #
   ##############################################################################################
-
 EOF
 fi
