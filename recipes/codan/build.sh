@@ -5,8 +5,8 @@ chmod +x bin/*
 cp bin/* $PREFIX/bin
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  chmod +x ../work/for_MacOS_users/*
-  cp ../work/for_MacOS_users/* $PREFIX/bin
+  chmod +x for_MacOS_users/*
+  cp for_MacOS_users/* $PREFIX/bin
 fi
 
 # This will allow them to be run on environment activation.
