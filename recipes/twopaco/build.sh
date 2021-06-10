@@ -1,17 +1,18 @@
 #!/bin/bash
 
-export CFLAGS="-I${PREFIX}/include"
-export CXXFLAGS="-I{$PREFIX}/include"
-export LDFLAGS="-L${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"
-export CPATH=${PREFIX}/include
-export C_INCLUDE_PATH=$PREFIX/include
-
 mkdir build 
 cd build
 
-cmake ../src
+cmake \
+    -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+    -DCMAKE_CXX_STANDARD=11 \
+    -DTBB_LIB_DIR="${PREFIX}/lib" \
+    -DTBB_INCLUDE_DIR="${PREFIX}/include" \
+    ../src
 make
 
-cp graphconstructor/twopaco ${PREFIX}/bin/
-cp graphdump/graphdump ${PREFIX}/bin/
+install -d "${PREFIX}/bin"
+install \
+    graphconstructor/twopaco \
+    graphdump/graphdump \
+    "${PREFIX}/bin/"

@@ -7,7 +7,7 @@ export PKG_CONFIG_LIBDIR="${PREFIX}"/lib/pkgconfig
 # '--wrap-mode nofallback' prevents meson from downloading
 # stuff from the internet or using subprojects.
 meson \
-  --default-library shared \
+  --default-library static \
   --libdir lib \
   --wrap-mode nofallback \
   --prefix "${PREFIX}" \

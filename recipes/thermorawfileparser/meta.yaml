@@ -1,5 +1,5 @@
 {% set name = "ThermoRawFileParser" %}
-{% set version = "1.1.11" %}
+{% set version = "1.3.4" %}
 
 package:
   name: {{ name|lower }}
@@ -13,15 +13,21 @@ build:
     - cp * $PREFIX/bin
     - cp $RECIPE_DIR/ThermoRawFileParser.sh $PREFIX/bin
     - chmod +x $PREFIX/bin/ThermoRawFileParser.sh
+    - ln -s $PREFIX/bin/ThermoRawFileParser.sh $PREFIX/bin/ThermoRawFileParser
+    - ln -s $PREFIX/bin/ThermoRawFileParser.sh $PREFIX/bin/thermorawfileparser
 
 source:
   # downloading pre-compiled packages, msbuild is a hell to compile unter Linux
   url: https://github.com/compomics/ThermoRawFileParser/releases/download/v{{ version }}/ThermoRawFileParser.zip
-  sha256: e9cb091413a062621a9ee5754a6a83980dcc7663108e6a5ab7d16c8e1a1c26ad
+  sha256: 848e0761beb84ca11441a08e2c9c7aacee8eff779c689b98a1b20a7677564793
 
 requirements:
+  build:
+    - zlib
   run:
-    - mono >=5
+    # mono <6 due to https://github.com/compomics/ThermoRawFileParser/issues/108
+    - mono >=5, <6
+    - zlib
 
 test:
   commands:
@@ -29,8 +35,13 @@ test:
 
 about:
   home: https://github.com/compomics/ThermoRawFileParser
-  license: Other
-  license_file: LICENSE
+  license: Apache Software
+  license_family: APACHE
+  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
   summary: Wrapper around the .net (C#) ThermoFisher ThermoRawFileReader library for running on Linux with mono
   dev_url: https://github.com/compomics/ThermoRawFileParser
   doc_url: https://github.com/compomics/ThermoRawFileParser/blob/master/README.md
+
+extra:
+  recipe-maintainers:
+    - RECETOX

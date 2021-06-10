@@ -1,0 +1,77 @@
+diff --git a/sfld_postprocess.c b/sfld_postprocess.c
+index be22cbc..025b9cf 100755
+--- a/sfld_postprocess.c
++++ b/sfld_postprocess.c
+@@ -197,13 +197,13 @@ void output_dom_sites_as_tab(struct hmmer_dom *dom_hits, int n_dom_hits, struct
+ 
+ void identify_site_matches(char *aln_fn, struct family *families, int n_families, struct site_match **site_hits, int *n_site_hits, int *ali_present, struct no_hit **no_hits, int *n_no_hits)
+ {
+-    ESLX_MSAFILE *msaf;
++    ESL_MSAFILE *msaf;
+     ESL_MSA *msa = NULL;
+     struct feature *features = NULL;
+     int rv;
+     int nfam = 0;
+ 
+-    if (eslx_msafile_Open(NULL, aln_fn, NULL, eslMSAFILE_STOCKHOLM, NULL, &msaf) != eslOK) {
++    if (esl_msafile_Open(NULL, aln_fn, NULL, eslMSAFILE_STOCKHOLM, NULL, &msaf) != eslOK) {
+         fprintf(stderr, "ESL: Error opening %s\n", aln_fn);
+         exit (1);
+     }
+@@ -211,7 +211,7 @@ void identify_site_matches(char *aln_fn, struct family *families, int n_families
+     // Loop through alignments - for each one we need to read through the list of families
+     // to get the next one which reported an alignment - important that the input files were from
+     // the same search!
+-    while ((rv = eslx_msafile_Read(msaf, &msa)) != eslEOF) {
++    while ((rv = esl_msafile_Read(msaf, &msa)) != eslEOF) {
+         while (ali_present[nfam] == 0) { // Skip to the next one which has an alignment
+             nfam++;
+         }
+@@ -228,7 +228,7 @@ void identify_site_matches(char *aln_fn, struct family *families, int n_families
+ 
+     qsort(*site_hits, *n_site_hits, sizeof(struct site_match), cmp_site_query_model);
+     qsort(*no_hits, *n_no_hits, sizeof(struct no_hit), cmp_nohit_query_model);
+-    eslx_msafile_Close(msaf);
++    esl_msafile_Close(msaf);
+ }
+ 
+ 
+diff --git a/sfld_preprocess.c b/sfld_preprocess.c
+index 0ae8b21..fddbab0 100755
+--- a/sfld_preprocess.c
++++ b/sfld_preprocess.c
+@@ -106,7 +106,7 @@ void show_help(char *progname)
+ 
+ void store_site_data(char *msa_fn, char *out_fn)
+ {
+-    ESLX_MSAFILE *msaf = NULL;
++    ESL_MSAFILE *msaf = NULL;
+     ESL_MSA *msa = NULL;
+     FILE *fp;
+     int count;
+@@ -121,7 +121,7 @@ void store_site_data(char *msa_fn, char *out_fn)
+         fprintf(stderr, "Unable to write site info to '%s'\n", out_fn);
+     }
+ 
+-    if (eslx_msafile_Open(NULL, msa_fn, NULL, eslMSAFILE_STOCKHOLM, NULL, &msaf) != eslOK) {
++    if (esl_msafile_Open(NULL, msa_fn, NULL, eslMSAFILE_STOCKHOLM, NULL, &msaf) != eslOK) {
+         fprintf(stderr, "ESL: Error opening alignments file '%s'\n", msa_fn);
+         exit (1);
+     }
+@@ -137,7 +137,7 @@ void store_site_data(char *msa_fn, char *out_fn)
+     strftime(timestr, 21, "%Y-%m-%d %H:%M:%S", tm);
+     fprintf(fp, "# Date %s\n", timestr);
+ 
+-    while ((rv = eslx_msafile_Read(msaf, &msa)) != eslEOF) {
++    while ((rv = esl_msafile_Read(msaf, &msa)) != eslEOF) {
+         if (rv != eslOK) {
+             fprintf(stderr, "Error reading from '%s'\n", msa_fn);
+             exit(1);
+@@ -160,6 +160,6 @@ void store_site_data(char *msa_fn, char *out_fn)
+         esl_msa_Destroy(msa);
+     }
+ 
+-    eslx_msafile_Close(msaf);
++    esl_msafile_Close(msaf);
+     fclose(fp);
+ }

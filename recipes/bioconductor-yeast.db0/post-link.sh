@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="yeast.db0_3.10.1.tar.gz"
+FN="yeast.db0_3.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/yeast.db0_3.10.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/yeast.db0_3.10.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-yeast.db0/bioconductor-yeast.db0_3.10.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/yeast.db0_3.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/yeast.db0_3.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yeast.db0/bioconductor-yeast.db0_3.13.0_src_all.tar.gz"
 )
-MD5="6cf1e6bf8ad23832dac70bd2a723123b"
+MD5="81727457bbfd73c77231469ef5d77369"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

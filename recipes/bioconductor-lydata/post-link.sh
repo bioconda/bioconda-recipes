@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="lydata_1.12.0.tar.gz"
+FN="lydata_1.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/lydata_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/lydata_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-lydata/bioconductor-lydata_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/lydata_1.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/lydata_1.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-lydata/bioconductor-lydata_1.18.0_src_all.tar.gz"
 )
-MD5="0ba12a3942c3676341d353caa5e82342"
+MD5="698aaf8fa9335620c5c308295a00056c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="COPDSexualDimorphism.data_1.22.0.tar.gz"
+FN="COPDSexualDimorphism.data_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/COPDSexualDimorphism.data_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/COPDSexualDimorphism.data_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-copdsexualdimorphism.data/bioconductor-copdsexualdimorphism.data_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/COPDSexualDimorphism.data_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/COPDSexualDimorphism.data_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-copdsexualdimorphism.data/bioconductor-copdsexualdimorphism.data_1.28.0_src_all.tar.gz"
 )
-MD5="deac37f69646cf073110846d56c9ba05"
+MD5="411ed032ce2269e61615ddc800c1ca4f"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

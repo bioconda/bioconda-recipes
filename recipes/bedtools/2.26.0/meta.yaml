@@ -6,13 +6,19 @@ source:
   url: https://github.com/arq5x/bedtools2/releases/download/v2.26.0/bedtools-2.26.0.tar.gz
   sha256: 65f32f32cbf1b91ba42854b40c604aa6a16c7d3b3ec110d6acf438eb22df0a4a
   patches:
-    - 2.26.0_postrelease.patch
+    - 0001-2.26.0_postrelease.patch
+    - 0002-Makefile-append-CXXFLAGS.patch
 
 build:
-  number: 3
+  number: 5
+  # Compilation fails on osx.
+  # ../include/c++/v1/queue:436:5: error: static_assert failed due to requirement 'is_same<Record *, const Record *>::value' ""
+  # Maybe src/utils/FileRecordTools/Records/StrandQueue.h:33 needs to be patched to have matching `Record` (`const Record`).
+  skip: True  # [osx]
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
   host:
     - zlib

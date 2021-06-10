@@ -1,7 +1,10 @@
 #!/bin/bash
-pushd include/bwa
-make CC=$CC
-popd
-make CC=$CXX CFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS -pthread -static-libstdc++ -lz"
+
+# Create bin directory
 mkdir -p $PREFIX/bin/
-cp bin/radsex $PREFIX/bin/
+
+# Build radsex specifying CPP compiler and C compiler
+make CXX=$CXX CC=$CC
+
+# Copy all generated binaries to bin
+cp bin/radsex $PREFIX/bin/radsex

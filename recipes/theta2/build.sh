@@ -4,14 +4,14 @@ set -eu
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
 mkdir -p $PREFIX/bin
-cp -r python $outdir
+cp python/* $outdir
 
 # bnpy dependency
 wget -O bnpy-dev.zip https://bitbucket.org/michaelchughes/bnpy-dev/get/590663f97f93.zip
 unzip bnpy-dev.zip
-mv michaelchughes-bnpy-dev-590663f97f93/bnpy $outdir/python
+mv michaelchughes-bnpy-dev-590663f97f93/bnpy $outdir
 
-maincmd=$outdir/python/RunTHetA.py
+maincmd=$outdir/RunTHetA.py
 sed -i.bak '1i#!/opt/anaconda1anaconda2anaconda3/bin/python' $maincmd
 sed -i.bak '2iimport os\nthis_dir = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(os.path.realpath(__file__))))\nimport sys\nsys.path.append(this_dir)' $maincmd
 chmod a+x $maincmd

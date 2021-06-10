@@ -1,40 +1,59 @@
-{% set version = "1.9" %}
-{% set sha256 = "6b086ab6086c050752166500378bc4b3b3543d4c617863e894d296171cee3385" %}
+{% set version = "2.1.1" %}
 
 package:
   name: canu
   version: '{{version}}'
 
 source:
-  url: https://github.com/marbl/canu/archive/v{{version}}.tar.gz
-  sha256: '{{sha256}}'
+  git_url: https://github.com/marbl/canu.git
+  git_rev: 5638f7d9a5379373310ab62c28aa0cdbd864722d
 
 build:
-  number: 0
-  # This should actually work, but it explicitly checks for gcc
-  skip: True  # [osx]
+  number: 2
+  skip: true  # [osx]
 
 requirements:
   build:
+    - make
     - '{{ compiler("c") }}'
     - '{{ compiler("cxx") }}'
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - {{ cdt('libxext') }}     # [linux]
   host:
-    - gnuplot >=5.0.5
+    - gnuplot >=5.2
+    - xorg-libxfixes  # [linux]
   run:
     - perl
     - perl-filesys-df
     - openjdk
-    - gnuplot >=5.0.5
+    - minimap2
+    - gnuplot >=5.2
 
 test:
   commands:
     - canu --version
+    # needed internally
+    - getconf --help
+    ##- gnuplot --help
 
 about:
   home: http://canu.readthedocs.org/
   license: GPLv2 and others
   license_file: README.licenses
   license_family: GPL
-  summary: Canu is a fork of the Celera Assembler designed for high-noise single-molecule
-    sequencing.
+  summary: Canu is a fork of the Celera Assembler designed for high-noise single-molecule sequencing.
   dev_url: https://github.com/marbl/canu
+
+extra:
+  container:
+    # libGL needed for gnuplot
+    extended-base: true
+  identifiers:
+    - usegalaxy-eu:canu
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash
