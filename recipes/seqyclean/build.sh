@@ -1,9 +1,8 @@
 #!/bin/bash
 
-export C_INCLUDE_PATH=${PREFIX}/include
-export CXX_INCLUDE_PATH=${PREFIX}/include
-export CPP_INCLUDE_PATH=${PREFIX}/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-make
-cp ./bin/* ${PREFIX}/bin/
+make \
+    CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+    CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+    AR="${AR} cr"
+install -d "${PREFIX}/bin"
+install ./bin/* "${PREFIX}/bin/"

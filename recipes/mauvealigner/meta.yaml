@@ -7,14 +7,19 @@ package:
 
 build:
   skip: True  # [osx]
-  number: 0
+  number: 2
 
 source:
   url: https://depot.galaxyproject.org/software/mauveAligner/mauveAligner_{{ version }}_src_all.zip
   sha256: {{ sha256 }}
+  patches:
+    #Disable static builds since these won't link to standard libraries
+    - 0001-remove-STATIC_FLAG.patch
+    - 0002-68f36be602b760bdde275bb882210f125958b868.patch
 
 requirements:
   build:
+    - make
     - {{ compiler("c") }}
     - {{ compiler("cxx") }}
     - autoconf
@@ -22,12 +27,12 @@ requirements:
     - libtool
     - pkg-config
   host:
-    - boost-cpp 1.65
+    - boost-cpp
     - libgenome
     - libmuscle
     - libmems
   run:
-    - boost-cpp 1.65
+    - boost-cpp
     - libgenome
     - libmuscle
     - libmems

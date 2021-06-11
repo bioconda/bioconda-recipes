@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="HiCDataHumanIMR90_1.6.0.tar.gz"
+FN="HiCDataHumanIMR90_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/HiCDataHumanIMR90_1.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/HiCDataHumanIMR90_1.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hicdatahumanimr90/bioconductor-hicdatahumanimr90_1.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/HiCDataHumanIMR90_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/HiCDataHumanIMR90_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hicdatahumanimr90/bioconductor-hicdatahumanimr90_1.12.0_src_all.tar.gz"
 )
-MD5="2bc0b0b3428c4ad513a3c10015e585fd"
+MD5="9f44cd5335a03f05f5b0e2b42ddda6f1"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

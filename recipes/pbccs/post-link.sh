@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 cat > "${PREFIX}"/.messages.txt <<- EOF
-	
+
 	##############################################################################
 	#                                                                            #
 	# PacBio(R) tools distributed via Bioconda are: pre-release versions, not    #
@@ -27,7 +27,7 @@ cat > "${PREFIX}"/.messages.txt <<- EOF
 	#                                                                            #
 	#   BSD-3 Clause Clear                                                       #
 	#                                                                            #
-	# and statically links GNU C Library v2.29 licensed under LGPL.              #
+	# and statically links GNU C Library v2.32 licensed under LGPL.              #
 	# Per LPGL 2.1 subsection 6c, you are entitled to request the complete       #
 	# machine-readable work that uses glibc in object code.                      #
 	#                                                                            #

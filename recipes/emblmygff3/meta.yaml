@@ -1,0 +1,42 @@
+{% set name = "EMBLmyGFF3" %}
+{% set version = "2.1" %}
+{% set sha256 = "64aef403bc64088eca504b69acffb3fb16ec4448cd3d6c9692b7baf276b92fd2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/NBISweden/EMBLmyGFF3/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  entry_points:
+    - EMBLmyGFF3 = EMBLmyGFF3:main
+  script: python -m pip install --no-deps --ignore-installed .
+  number: 0
+
+
+requirements:
+  host:
+    - python >=3.6
+  run:
+    - python >=3.6
+    - biopython >=1.67,<=1.77
+    - bcbio-gff >=0.6.4
+    - numpy <1.16.5
+
+test:
+  commands:
+    - "EMBLmyGFF3-augustus-example"
+    - "EMBLmyGFF3-maker-example"
+    - "EMBLmyGFF3-prokka-example"
+
+about:
+  home: https://github.com/NBISweden/EMBLmyGFF3
+  license: GPLv3
+  license_family: GPL
+  license_file: LICENSE
+  summary: An efficient way to convert gff3 annotation files into EMBL format ready to submit.
+  dev_url: https://github.com/NBISweden/EMBLmyGFF3

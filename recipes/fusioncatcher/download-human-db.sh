@@ -1,17 +1,20 @@
 #!/usr/bin/env bash
 
-echo "Downloading Human Ensembl v95 database to ${FC_DB_PATH}/current/..."
+# FusionCatcher v1.20 uses Human Ensembl v98
+echo "Downloading Human Ensembl v98 database to ${FC_DB_PATH}/current/..."
 
 # Direct download:
 cd ${FC_DB_PATH}
-rm -rf human_v95.tar.gz.*
-wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v95.tar.gz.aa
-wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v95.tar.gz.ab
-wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v95.tar.gz.ac
-wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v95.tar.gz.ad
-cat human_v95.tar.gz.* | tar xz
-ln -s human_v95 current
+rm -rf human*.tar.gz.*
 
-echo "Human Ensembl v95 database is downloaded."
+wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.aa -O human_v98.tar.gz.aa
+wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.ab -O human_v98.tar.gz.ab
+wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.ac -O human_v98.tar.gz.ac
+wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.ad -O human_v98.tar.gz.ad
+
+cat human_v98.tar.gz.* | tar xz
+ln -s human_v98 current
+
+echo "Human Ensembl v98 database is downloaded."
 
 exit 0

@@ -1,9 +1,11 @@
 #!/bin/bash -e
 
-# circumvent a bug in conda-build >=2.1.18,<3.0.10
-# https://github.com/conda/conda-build/issues/2255
-[[ -z $REQUESTS_CA_BUNDLE && ${REQUESTS_CA_BUNDLE+x} ]] && unset REQUESTS_CA_BUNDLE
-[[ -z $SSL_CERT_FILE && ${SSL_CERT_FILE+x} ]] && unset SSL_CERT_FILE
+# Add workaround for SSH-based Git connections from Rust/cargo.  See https://github.com/rust-lang/cargo/issues/2078 for details.
+# We set CARGO_HOME because we don't pass on HOME to conda-build, thus rendering the default "${HOME}/.cargo" defunct.
+export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
+# Make sure bindgen passes on our compiler flags.
+# export BINDGEN_EXTRA_CLANG_ARGS="${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
+# Can't use BINDGEN_EXTRA_CLANG_ARGS because we depend on rust-htslib<0.23 which uses bindgen<0.49.
+export C_INCLUDE_PATH=$PREFIX/include
 
-# build statically linked binary with Rust
-C_INCLUDE_PATH=$PREFIX/include LIBRARY_PATH=$PREFIX/lib cargo install --root $PREFIX
+cargo install --path . --root $PREFIX

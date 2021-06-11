@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="zebrafishRNASeq_1.6.0.tar.gz"
+FN="zebrafishRNASeq_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/zebrafishRNASeq_1.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/zebrafishRNASeq_1.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-zebrafishrnaseq/bioconductor-zebrafishrnaseq_1.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/zebrafishRNASeq_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/zebrafishRNASeq_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-zebrafishrnaseq/bioconductor-zebrafishrnaseq_1.12.0_src_all.tar.gz"
 )
-MD5="b596f49dfa03f1c7f09b912b0852a45f"
+MD5="b8d149b3c2ddb73299113559f0b83d9d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

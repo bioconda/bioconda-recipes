@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="seqc_1.20.0.tar.gz"
+FN="seqc_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/seqc_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/seqc_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-seqc/bioconductor-seqc_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/seqc_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/seqc_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-seqc/bioconductor-seqc_1.26.0_src_all.tar.gz"
 )
-MD5="e19646a7605500b7e9a8d8813df5debc"
+MD5="da005ee7ebf42ebf59e6c95a65a6d209"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

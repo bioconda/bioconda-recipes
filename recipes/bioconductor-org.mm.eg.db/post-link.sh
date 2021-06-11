@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="org.Mm.eg.db_3.10.0.tar.gz"
+FN="org.Mm.eg.db_3.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/org.Mm.eg.db_3.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/org.Mm.eg.db_3.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-org.mm.eg.db/bioconductor-org.mm.eg.db_3.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/org.Mm.eg.db_3.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/org.Mm.eg.db_3.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-org.mm.eg.db/bioconductor-org.mm.eg.db_3.13.0_src_all.tar.gz"
 )
-MD5="fc999b934468b9fca1ed6267f7cd4ff5"
+MD5="79a002b4c84fc7ed901673879b736643"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

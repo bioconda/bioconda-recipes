@@ -1,6 +1,6 @@
-{% set version = "1.22.0" %}
+{% set version = "1.28.0" %}
 {% set name = "iClusterPlus" %}
-{% set bioc = "3.10" %}
+{% set bioc = "3.13" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,7 +10,10 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 0207662f9c22530faf26d7066a7b96fb
+  md5: fe6307505fe0e1a72663fc5fd3e21c92
+  patches:
+    - 0001-Detect-compiler-with-gfortran-suffix.patch
+
 build:
   number: 0
   rpaths:
@@ -20,11 +23,14 @@ build:
 requirements:
   host:
     - r-base
+    - libblas
+    - liblapack
   run:
     - r-base
   build:
     - {{ compiler('c') }}
     - {{ compiler('fortran') }}
+    - autoconf
     - automake
     - make
 test:
