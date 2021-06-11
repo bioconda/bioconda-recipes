@@ -106,3 +106,5 @@ sed -i.bak 's/mktemp.*/mktemp`/; s/exit 1/exit 0/; s/^export PATH=\/bin:\/usr\/b
 
 #extra log to check all exe are present
 ls -s $PREFIX/bin/
+
+
