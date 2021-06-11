@@ -4,7 +4,7 @@ export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
 cd htslib*
-./configure --prefix=$PREFIX --enable-libcurl CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
+./configure --prefix=$PREFIX --enable-libcurl --enable-libgsl CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
 make
 cd ..
 
