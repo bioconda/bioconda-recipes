@@ -4,9 +4,9 @@ mkdir -p $PREFIX/bin
 chmod +x bin/*
 cp bin/* $PREFIX/bin
 
-#mkdir -p $PREFIX/for_MacOS_users
-#chmod +x for_MacOS_users/*
-#cp for_MacOS_users/* $PREFIX/for_MacOS_users
+mkdir -p $PREFIX/for_MacOS_users
+chmod +x for_MacOS_users/*
+cp for_MacOS_users/* $PREFIX/for_MacOS_users
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
   chmod +x for_MacOS_users/*
