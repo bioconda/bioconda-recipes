@@ -73,6 +73,7 @@ export AR="${AR} rcs"
     --with-z=$PREFIX \
     --with-bz2=$PREFIX \
     --without-krb5 \
+    --with-experimental=Int8GI \
     --without-openssl \
     --without-gnutls \
     --without-sse42 \
@@ -97,10 +98,11 @@ make -j${CPU_COUNT} -f Makefile.flat $apps
 rm $LIB_INSTALL_DIR
 
 mkdir -p $PREFIX/bin $LIB_INSTALL_DIR
+chmod +x $BLAST_SRC_DIR/c++/ReleaseMT/bin/*
 cp $BLAST_SRC_DIR/c++/ReleaseMT/bin/* $PREFIX/bin/
 cp $BLAST_SRC_DIR/c++/ReleaseMT/lib/* $LIB_INSTALL_DIR
 
-chmod +x $PREFIX/bin/*
+#chmod +x $PREFIX/bin/*
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/update_blastdb.pl
 # Patches to enable this script to work better in bioconda
 sed -i.bak 's/mktemp.*/mktemp`/; s/exit 1/exit 0/; s/^export PATH=\/bin:\/usr\/bin:/\#export PATH=\/bin:\/usr\/bin:/g' $PREFIX/bin/get_species_taxids.sh
