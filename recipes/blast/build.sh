@@ -66,6 +66,7 @@ export AR="${AR} rcs"
     --with-hard-runpath \
     --with-runpath=$LIB_INSTALL_DIR \
     --without-debug \
+    --with-experimental=Int8GI \
     --with-strip \
     --without-vdb \
     --with-z=$PREFIX \
