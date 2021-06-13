@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="LRBase.Dre.eg.db_1.2.0.tar.gz"
+FN="LRBase.Dre.eg.db_2.0.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/LRBase.Dre.eg.db_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/LRBase.Dre.eg.db_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-lrbase.dre.eg.db/bioconductor-lrbase.dre.eg.db_1.2.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-lrbase.dre.eg.db/bioconductor-lrbase.dre.eg.db_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/LRBase.Dre.eg.db_2.0.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/LRBase.Dre.eg.db_2.0.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-lrbase.dre.eg.db/bioconductor-lrbase.dre.eg.db_2.0.0_src_all.tar.gz"
 )
-MD5="6c2f86f458d5c0c3bb8c4f1c73cd0f9a"
+MD5="6f5c8bc53a6c33d388afef881b894695"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
