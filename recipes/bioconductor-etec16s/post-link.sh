@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="etec16s_1.18.0.tar.gz"
+FN="etec16s_1.20.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/etec16s_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/etec16s_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-etec16s/bioconductor-etec16s_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/etec16s_1.20.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/etec16s_1.20.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-etec16s/bioconductor-etec16s_1.20.0_src_all.tar.gz"
 )
-MD5="b21ca05bc6c54f26c97d6253524906c4"
+MD5="de72a8a4a4e422597413abec2a932799"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

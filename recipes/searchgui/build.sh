@@ -13,3 +13,7 @@ chmod 0755 "${PREFIX}/bin/searchgui"
 # removing xtandem prebuilt binaries and replacing them by xtandem package ones
 rm -f "$outdir"'/resources/XTandem/linux/linux_64bit/tandem'
 ln -sf "$(which xtandem)" "$outdir"'/resources/XTandem/linux/linux_64bit/tandem'
+
+# removing MetaMorpheus prebuilt binaries and replacing them by Metamorpheus package ones
+rm -rf "$outdir"'/resources/MetaMorpheus/*'
+ln -sf "$(which metamorpheus)" "$outdir"'/resources/MetaMorpheus/metamorpheus'
