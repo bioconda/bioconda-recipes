@@ -56,6 +56,7 @@ cp -rf "${SRC_DIR}/RpsbProc/src/"* src/app/RpsbProc/
 export AR="${AR} rcs"
 
 ./configure \
+    --with-64 \
     --with-dll \
     --with-mt \
     --with-openmp \
