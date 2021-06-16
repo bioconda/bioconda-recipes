@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RNAinteractMAPK_1.25.0.tar.gz"
+FN="RNAinteractMAPK_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/RNAinteractMAPK_1.25.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RNAinteractMAPK_1.25.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rnainteractmapk/bioconductor-rnainteractmapk_1.25.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/RNAinteractMAPK_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RNAinteractMAPK_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rnainteractmapk/bioconductor-rnainteractmapk_1.30.0_src_all.tar.gz"
 )
-MD5="4181a8d48e2ba8b0719bbb951cda1937"
+MD5="e9e9d278ffb92366d0c9ccf8050ec684"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

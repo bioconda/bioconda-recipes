@@ -1,6 +1,6 @@
 {% set name = "artic-tools" %}
-{% set version = "0.2.4" %}
-{% set sha256 = "baab7157b6981ddbe0c52f967b5fa8e61c3762cd0082272924860cc7ca4c9b63" %}
+{% set version = "0.3.0" %}
+{% set sha256 = "b6c6d401926b58987a8503dc8e5c02c7ad19136daeaa668618e5396f743d841d" %}
 
 package:
   name: {{ name|lower }}
@@ -21,20 +21,31 @@ source:
   - url: https://github.com/gabime/spdlog/archive/v1.7.0.zip
     sha256 : c8f1e1103e0b148eb8832275d8e68036f2fdd3975a1199af0e844908c56f6ea5
     folder : extlibs/spdlog
+  - url: https://github.com/cartoonist/kseqpp/archive/v0.2.1.zip
+    sha256 : b0fec6670ad91197b6d4b00be258c6699e86b2b94f9dc26e947cacb066bb2a00
+    folder : extlibs/kseq++
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
     - cmake>=3.12
+    - curl # used to grab headers during build, no release available to grab sooner
   host:
-    - htslib>=1.10
+    - htslib
     - boost-cpp
+    - zlib
+    - bzip2
+    - libcurl
   run:
-    - htslib>=1.10
+    - htslib
     - boost-cpp
+    - zlib
+    - bzip2
+    - libcurl
 
 test:
   commands:
@@ -44,6 +55,8 @@ test:
     - artic-tools get_scheme -h
     - artic-tools validate_scheme -h
     - artic-tools check_vcf -h
+    - artic-tools get_scheme --schemeVersion 2 ncov
+    - artic-tools validate_scheme ncov.v2.primer.bed
 
 about:
   home: https://github.com/will-rowe/artic-tools

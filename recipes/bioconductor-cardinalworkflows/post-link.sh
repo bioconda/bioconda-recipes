@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="CardinalWorkflows_1.20.0.tar.gz"
+FN="CardinalWorkflows_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/CardinalWorkflows_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/CardinalWorkflows_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-cardinalworkflows/bioconductor-cardinalworkflows_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/CardinalWorkflows_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/CardinalWorkflows_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cardinalworkflows/bioconductor-cardinalworkflows_1.24.0_src_all.tar.gz"
 )
-MD5="55a4e7eedacbdc6791f3b05411e4193b"
+MD5="ed08ee33d6ac9b3aa3b570ef7cfdeff3"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

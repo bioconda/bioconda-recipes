@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="BSgenome.Hsapiens.UCSC.hg38.masked_1.3.993.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/BSgenome.Hsapiens.UCSC.hg38.masked_1.3.993.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/BSgenome.Hsapiens.UCSC.hg38.masked_1.3.993.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Hsapiens.UCSC.hg38.masked_1.3.993.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.hsapiens.ucsc.hg38.masked/bioconductor-bsgenome.hsapiens.ucsc.hg38.masked_1.3.993_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.hsapiens.ucsc.hg38.masked/bioconductor-bsgenome.hsapiens.ucsc.hg38.masked_1.3.993_src_all.tar.gz"
 )
 MD5="127d48c58c0b12683435f0ea1767f24f"

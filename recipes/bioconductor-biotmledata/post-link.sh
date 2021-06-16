@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="biotmleData_1.12.0.tar.gz"
+FN="biotmleData_1.16.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/biotmleData_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/biotmleData_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-biotmledata/bioconductor-biotmledata_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/biotmleData_1.16.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/biotmleData_1.16.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-biotmledata/bioconductor-biotmledata_1.16.0_src_all.tar.gz"
 )
-MD5="ea487c9e6fcf3ef42cb10cb7af7e6f9c"
+MD5="7bbc9905d3f9192b549d62a5c67a701d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
