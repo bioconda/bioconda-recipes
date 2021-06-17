@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="seq2pathway.data_1.22.0.tar.gz"
+FN="seq2pathway.data_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/seq2pathway.data_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/seq2pathway.data_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-seq2pathway.data/bioconductor-seq2pathway.data_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/seq2pathway.data_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/seq2pathway.data_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-seq2pathway.data/bioconductor-seq2pathway.data_1.24.0_src_all.tar.gz"
 )
-MD5="8fb6db12ac9673267562e1404d959c06"
+MD5="6a3a58a0b01ee8306c29f2a6f0314f0b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
