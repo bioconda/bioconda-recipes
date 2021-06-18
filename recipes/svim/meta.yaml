@@ -1,24 +1,34 @@
-{% set version = "1.4.2" %}
+{% set name = "svim" %}
+{% set version = "2.0.0" %}
 
 package:
-  name: svim
-  version: '{{ version }}'
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://github.com/eldariont/svim/archive/v{{ version }}.tar.gz
-  sha256: 790a51b30e80a0932ac95fc9c9626b2913907110b8bbc9e688fa37fc8ce32ab2
+  url: https://github.com/eldariont/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 895a418ea9d76ad501ebaa6aec6a9d1dd497b41a4cefe6be746c1b447e713344
 
 requirements:
   host:
     - python >=3.6
     - pip
-  run:
-    - python >=3.6
-    - pysam >=0.15
+    - pysam >=0.15.2
     - numpy
     - scipy
-    - matplotlib-base
-    - networkx
+    - matplotlib-base >=3.3.0
+    - edlib
+    - pyspoa >=0.0.6
+    - py-cpuinfo >=7.0.0
+  run:
+    - python >=3.6
+    - pysam >=0.15.2
+    - numpy
+    - scipy
+    - matplotlib-base >=3.3.0
+    - edlib
+    - pyspoa >=0.0.6
+    - py-cpuinfo >=7.0.0
     - ngmlr
     - minimap2
     - samtools
@@ -29,6 +39,9 @@ build:
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
 
 test:
+  imports:
+    - svim
+    - tests
   commands:
     - svim -h
 
@@ -39,3 +52,6 @@ about:
   license_file: LICENSE
   summary: SVIM is a structural variant caller for long reads.
 
+extra:
+  recipe-maintainers:
+    - eldariont
