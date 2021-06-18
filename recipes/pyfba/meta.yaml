@@ -1,0 +1,49 @@
+{% set name = "pyfba" %}
+{% set ucname = "PyFBA" %}
+{% set version = "2.51" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ ucname }}-{{ version }}.tar.gz"
+  sha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+build:
+  number: 0
+  entry_points:
+    - pyfba = PyFBA.cmd.entry:run
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv "
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - python >=3.6
+    - glpk
+
+test:
+  imports:
+    - PyFBA
+  commands:
+    - pyfba --help
+    - pyfba gapfill_roles --help
+
+about:
+  home: "https://linsalrob.github.io/PyFBA/"
+  license: MIT
+  license_family: MIT
+  summary: "Python-based Flux Balance Analysis using the ModelSEED"
+  doc_url: "https://linsalrob.github.io/PyFBA/"
+  dev_url: "https://github.com/linsalrob/PyFBA/"
+
+extra:
+  recipe-maintainers:
+    - linsalrob
+  identifiers:
+    - doi:10.5281/zenodo.4972064
