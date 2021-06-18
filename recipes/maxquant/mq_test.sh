@@ -1,3 +1,3 @@
-#!/bin/sh
-
-MaxQuantCmd.exe --version
+#!/bin/bash
+DIR="$(cd "$(dirname "$0")" && pwd)"
+dotnet $DIR/MaxQuantCmd.exe --version "$@"
