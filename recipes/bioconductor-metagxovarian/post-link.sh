@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="MetaGxOvarian_1.10.0.tar.gz"
+FN="MetaGxOvarian_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/MetaGxOvarian_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MetaGxOvarian_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-metagxovarian/bioconductor-metagxovarian_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/MetaGxOvarian_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MetaGxOvarian_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-metagxovarian/bioconductor-metagxovarian_1.12.0_src_all.tar.gz"
 )
-MD5="f70f0daf06d6bdd45b499ddabb6dc22d"
+MD5="1b905aa8a607d865380784df318ddc4f"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
