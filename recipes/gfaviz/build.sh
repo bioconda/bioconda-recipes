@@ -5,7 +5,7 @@ export CPATH=${PREFIX}/include
 
 mkdir -p $PREFIX/bin
 
-qmake
+qmake CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"  CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"  CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
-cp viz.x $PREFIX/bin
+cp gfaviz $PREFIX/bin
 
