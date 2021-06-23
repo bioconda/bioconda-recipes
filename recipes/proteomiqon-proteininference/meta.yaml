@@ -1,0 +1,39 @@
+{% set version = "0.0.5" %}
+{% set sha256 = "7c6408c63eb57121182b1187444bf8fac76ffe2b5cb2e00b0a141f6a7e6aa30c" %}
+
+package:
+  name: proteomiqon-proteininference
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/ProteomIQon.ProteinInference/{{ version }}
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  script:
+    - dotnet tool install --add-source $SRC_DIR --tool-path $PREFIX/bin --version {{ version }} ProteomIQon.ProteinInference
+
+requirements:
+  host:
+    - dotnet-sdk
+  run:
+    - dotnet-runtime
+
+test:
+  commands:
+    - proteomiqon-proteininference --help
+
+about:
+  home: https://csbiology.github.io/ProteomIQon/
+  license: MIT
+  summary: "MS-based shotgun proteomics estimates protein abundances using a proxy: peptides. The process of 'Protein Inference' is concerned with the mapping of identified peptides to the proteins they putatively originated from."
+  description: |
+    MS-based shotgun proteomics estimates protein abundances using a proxy: peptides. The process of 'Protein Inference' is concerned with the mapping of identified peptides to
+    the proteins they putatively originated from. This process is not as straightforward as one might think at a first glance on the subject, since the peptide-to-protein mapping
+    is not necessarily a one-to-one relationship but in many cases a one-to-many relationship. This is due to the fact that many proteins share peptides with an identical sequence,
+    e.g. two proteins originating from two different splice variants of the same gene. The ProteinInference tool relies on the concepts of protein groups and peptide evidence
+    classes.
+  dev_url: https://github.com/CSBiology/ProteomIQon
+  doc_url: https://csbiology.github.io/ProteomIQon/tools/ProteinInference.html
