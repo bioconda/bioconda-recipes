@@ -17,10 +17,8 @@ make -j
 make install
 
 PLUGIN_PATH=${PREFIX}/hdf5/lib/plugin/
-mkdir -p ${PREFIX}/bin
-cp bin/libvbz_hdf_plugin.so ${PLUGIN_PATH}
-cp bin/vbz*test ${PREFIX}/bin
-#pip install ../python/pyvbz/dist/pyvbz*whl
+
+
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
 
 echo "export HDF5_PLUGIN_PATH='${PLUGIN_PATH}'" > "${PREFIX}/etc/conda/activate.d/${PKG_NAME}-env_vars.sh"
