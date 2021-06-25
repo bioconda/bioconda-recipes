@@ -12,3 +12,4 @@ mkdir -p $PREFIX/bin
 #nim c -d:useLibzipSrc -d:release -p:lib/yaml --opt:speed -o:$PREFIX/bin/qax src/qax.nim
 
 nimble build -y
+mv ./bin/qax "$PREFIX"/bin/
