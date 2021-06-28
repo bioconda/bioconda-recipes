@@ -10,3 +10,4 @@ cp $RECIPE_DIR/lrscaf.py $outdir/lrscaf
 
 ln -s $outdir/lrscaf $PREFIX/bin
 chmod 0755 "${PREFIX}/bin/lrscaf"
+
