@@ -17,3 +17,8 @@ ln -sf "$(which xtandem)" "$outdir"'/resources/XTandem/linux/linux_64bit/tandem'
 # removing MetaMorpheus prebuilt binaries and replacing them by Metamorpheus package ones
 rm -rf "$outdir"'/resources/MetaMorpheus/*'
 ln -sf "$(which metamorpheus)" "$outdir"'/resources/MetaMorpheus/metamorpheus'
+
+
+# removing makeblast prebuilt binary and replacing it by blast package ones
+rm -f "$outdir"'/resources/makeblastdb/linux/linux_64bit/makeblastdb'
+ln -sf "$(which makeblastdb)" "$outdir"'/resources/makeblastdb/linux/linux_64bit/makeblastdb'
