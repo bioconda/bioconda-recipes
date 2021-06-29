@@ -1,0 +1,49 @@
+{% set name = "decifer" %}
+{% set version = "1.1" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/raphael-group/{{ name }}/archive/v{{ version }}.zip
+  sha256: 2f903895814e847e5f79cebecda23bc94e66bb9a917d535b67264ed8bd734a84
+
+build:
+  skip: True  # [py3k]
+  number: 0
+  entry_points:
+    - decifer = decifer.decifer:main
+    - fitbeta = decifer.generator:main
+
+requirements:
+  build:
+    - make
+    - cmake >=3.9
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - pip
+    - lemon
+    - boost-cpp
+  run:
+    - python
+    - numpy >=1.16.1
+    - scipy >=1.2.1
+    - pandas 
+    - seaborn >=0.7.1
+
+test:
+  commands:
+    - generatestatetrees
+    - mergestatetrees
+    - decifer -h
+    - fitbeta -h
+
+about:
+  home: https://github.com/raphael-group/decifer
+  license: BSD-3
+  summary: "DeCiFer simultaneously selects mutation multiplicities and clusters SNVs by their corresponding descendant cell fractions (DCF)"
+  description: |
+    DeCiFer is an algorithm that simultaneously selects mutation multiplicities and clusters SNVs by their corresponding descendant cell fractions (DCF), a statistic that quantifies the proportion of cells which acquired the SNV or whose ancestors acquired the SNV. DCF is related to the commonly used cancer cell fraction (CCF) but further accounts for SNVs which are lost due to deleterious somatic copy-number aberrations (CNAs), identifying clusters of SNVs which occur in the same phylogenetic branch of tumour evolution.
+
