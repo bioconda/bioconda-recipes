@@ -107,7 +107,7 @@ def main():
     """
     (mem_opts, prop_opts, pass_args, exec_dir) = jvm_opts(sys.argv[1:])
 
-    system_opts = 'export LC_ALL=C && '
+    system_opts = 'export LC_ALL=C'
 
     pass_args = def_temp_log_opts(pass_args)
 
@@ -121,7 +121,10 @@ def main():
     jar_path = os.path.join(jar_dir, jar_file)
 
     java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
-    sys.exit(subprocess.call(system_opts , java_args))
+
+    subprocess.call([system_opts])
+
+    sys.exit(subprocess.call(java_args))
 
 
 if __name__ == '__main__':
