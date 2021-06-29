@@ -45,3 +45,9 @@ cp $SP_DIR/biobb_amber/process/process_mdout.py $PREFIX/bin/process_mdout
 
 chmod u+x $SP_DIR/biobb_amber/sander/sander_mdrun.py
 cp $SP_DIR/biobb_amber/sander/sander_mdrun.py $PREFIX/bin/sander_mdrun
+
+chmod u+x $SP_DIR/biobb_amber/cphstats/cphstats_run.py
+cp $SP_DIR/biobb_amber/cphstats/cphstats_run.py $PREFIX/bin/cphstats_run
+
+chmod u+x $SP_DIR/biobb_amber/cphstats/cestats_run.py
+cp $SP_DIR/biobb_amber/cphstats/cestats_run.py $PREFIX/bin/cestats_run
