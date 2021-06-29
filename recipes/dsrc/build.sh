@@ -1,21 +1,10 @@
 #!/bin/sh
 
-# The static boost_thread library cannot be found during the linkage. Let us
-# comment the -static flag
-sed -i -e "s/CXXFLAGS += -static/#CXXFLAGS += -static/g" Makefile
-
-# Append to CXXFLAGS instead of overiding it
-sed -i -e "s/CXXFLAGS =/CXXFLAGS +=/g" Makefile
-
-# Tell the compiler where to find boost
-export CXXFLAGS=" -I${PREFIX}/include -L${PREFIX}/lib "
-
-#CXX=${PREFIX}/bin/g++
-
 if [ "$(uname)" == "Darwin" ]; then
-    make -f Makefile.osx bin #CXX=$CXX
+    DEP_LIBS="${LDFLAGS}" make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -f Makefile.osx bin
 else
-    make bin #CXX=$CXX
+    DEP_LIBS="${LDFLAGS}" make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -f Makefile.c++11 bin
 fi
 
-cp bin/dsrc $PREFIX/bin
+mkdir -p "${PREFIX}/bin"
+cp bin/dsrc "${PREFIX}/bin/"

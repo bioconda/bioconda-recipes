@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="dressCheck_0.26.0.tar.gz"
+FN="dressCheck_0.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/dressCheck_0.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/dressCheck_0.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-dresscheck/bioconductor-dresscheck_0.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/dressCheck_0.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/dressCheck_0.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-dresscheck/bioconductor-dresscheck_0.30.0_src_all.tar.gz"
 )
-MD5="347763d4cbb4ffefa39ce02b4971782e"
+MD5="f921f44b84fe8d85b1561049698222a8"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

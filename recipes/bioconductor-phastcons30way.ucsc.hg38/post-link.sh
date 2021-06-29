@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="phastCons30way.UCSC.hg38_3.11.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/phastCons30way.UCSC.hg38_3.11.1.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/phastCons30way.UCSC.hg38_3.11.1.tar.gz"
   "https://bioarchive.galaxyproject.org/phastCons30way.UCSC.hg38_3.11.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-phastcons30way.ucsc.hg38/bioconductor-phastcons30way.ucsc.hg38_3.11.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-phastcons30way.ucsc.hg38/bioconductor-phastcons30way.ucsc.hg38_3.11.1_src_all.tar.gz"
 )
 MD5="d00ce5dd1a942a964e131b3536aaa8ec"

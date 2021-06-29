@@ -1,8 +1,7 @@
 #!/bin/bash
 
 LDFLAGS=""
-mv VERSION VERSION.txt  # Causes issues with C++20
-make CXX=$CXX CPP=$CXX CC=$CC LDLIBS="-L$PREFIX/lib -lz -ltbb -ltbbmalloc -lpthread"
+make CXX=$CXX CPP=$CXX CC=$CC LDLIBS="-L$PREFIX/lib -lz -lzstd -ltbb -ltbbmalloc -lpthread" WITH_ZSTD=1
 
 binaries="\
 bowtie2 \

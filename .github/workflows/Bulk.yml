@@ -9,9 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      max-parallel: 15
+      max-parallel: 13
       matrix:
-        runner: [0, 1, 2, 3, 4, 5, 6, 7]
+        runner: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     steps:
     - uses: actions/checkout@v1
 
@@ -24,11 +24,13 @@ jobs:
       uses: actions/cache@v1
       with:
         path: /home/runner/bioconda
-        key: ${{ runner.os }}-BULK-${{ hashFiles('**/common.sh') }}
+        key: ${{ runner.os }}--bulk--${{ hashFiles('**/common.sh') }}
 
     - name: Setup Bioconda-utils
       if: steps.cache.outputs.cache-hit != 'true'
       uses: bioconda/bioconda-actions/bioconda_recipes_setup/@bulk
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
     - name: Build and upload
       env:
@@ -47,7 +49,7 @@ jobs:
         python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
         echo '============'
         bioconda-utils build recipes config.yml \
-          --worker-offset ${{ matrix.runner }} --n-workers 8 \
+          --worker-offset ${{ matrix.runner }} --n-workers 13 \
           --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
         conda clean -y --all
 
@@ -56,9 +58,9 @@ jobs:
     runs-on: macOS-latest
     strategy:
       fail-fast: false
-      max-parallel: 5
+      max-parallel: 4
       matrix:
-        runner: [0, 1, 2, 3, 4]
+        runner: [0, 1, 2, 3]
     steps:
     - uses: actions/checkout@v1
 
@@ -71,11 +73,13 @@ jobs:
       uses: actions/cache@v1
       with:
         path: /Users/runner/bioconda
-        key: ${{ runner.os }}--BULK-${{ hashFiles('**/common.sh') }}
+        key: ${{ runner.os }}--bulk--${{ hashFiles('**/common.sh') }}
 
     - name: Setup Bioconda-utils
       if: steps.cache.outputs.cache-hit != 'true'
       uses: bioconda/bioconda-actions/bioconda_recipes_setup/@bulk
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
     - name: OSX stuff
       run: |
@@ -85,6 +89,7 @@ jobs:
         #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L21-L26
         #   - add activation script to set MACOSX_DEPLOYMENT_TARGET and CONDA_BUILD_SYSROOT:
         #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L60-L63
+        . /Users/runner/bioconda/etc/profile.d/conda.sh
         conda activate base
         # use "CONFIG=" to avoid writing ./.ci_support/${CONFIG}.yaml which we don't need/use.
         CONFIG= OSX_FORCE_SDK_DOWNLOAD=1 MACOSX_DEPLOYMENT_TARGET=10.13 run_conda_forge_build_setup
@@ -112,6 +117,6 @@ jobs:
         python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
         echo '============'
         bioconda-utils build recipes config.yml \
-          --worker-offset ${{ matrix.runner }} --n-workers 5 \
+          --worker-offset ${{ matrix.runner }} --n-workers 4 \
           --anaconda-upload
         conda clean -y --all

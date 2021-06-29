@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="EpiTxDb.Hs.hg38_0.99.3.tar.gz"
+FN="EpiTxDb.Hs.hg38_0.99.7.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/EpiTxDb.Hs.hg38_0.99.3.tar.gz"
-  "https://bioarchive.galaxyproject.org/EpiTxDb.Hs.hg38_0.99.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-epitxdb.hs.hg38/bioconductor-epitxdb.hs.hg38_0.99.3_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/EpiTxDb.Hs.hg38_0.99.7.tar.gz"
+  "https://bioarchive.galaxyproject.org/EpiTxDb.Hs.hg38_0.99.7.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-epitxdb.hs.hg38/bioconductor-epitxdb.hs.hg38_0.99.7_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-epitxdb.hs.hg38/bioconductor-epitxdb.hs.hg38_0.99.7_src_all.tar.gz"
 )
-MD5="cf8e686c0a2545efff9a01a5292590ed"
+MD5="e30af95f285788a9777a8207a8ef73a9"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

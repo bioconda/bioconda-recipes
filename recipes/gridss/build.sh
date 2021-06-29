@@ -9,36 +9,75 @@ echo "TGT=${TGT}"
 
 cd "${SRC_DIR}"
 cp gridss-*.jar $TGT/gridss.jar
-cp *.R *.sh "${TGT}"
+# GRIDSS tools needing argument massaging
+cp gridss \
+	gridss.config.R \
+	gridss_annotate_vcf_kraken2 \
+	gridss_annotate_vcf_repeatmasker \
+	gridss_extract_overlapping_fragments \
+	gridss_somatic_filter \
+	libgridss.R \
+	virusbreakend \
+	"${TGT}/"
+chmod +x ${TGT}/*
+# GRIDSS tools that can be run completely as-is
+cp virusbreakend-build \
+	$PREFIX/bin/
 
-cp $RECIPE_DIR/gridss $TGT/gridss
-cp $RECIPE_DIR/gridss_r_script $TGT/gridss_r_script
-cp $RECIPE_DIR/gridss_java_entrypoint $TGT/gridss_java_entrypoint
+# Need to go in the same directory as the jar/R files
+# so we can resolve the location at runtime
+cp $RECIPE_DIR/gridss_shell_with_jar_entrypoint $TGT/
+cp $RECIPE_DIR/gridss_java_entrypoint $TGT/
+cp $RECIPE_DIR/gridss_r_script $TGT/
+chmod +x $TGT/gridss_*
 
-# gridss wraps gridss.sh to specify the location of the gridss jar
-ln -s $TGT/gridss $PREFIX/bin
-# R scripts all have a --scriptdir argument.
-# gridss_r_script is a wrapper that sets this to correct location
+rm gridsstools # don't use the pre-compiled gridsstools - rebuild it ourselves
+tar zxf gridsstools-src-$PKG_VERSION.tar.gz
+rm -r "${SRC_DIR}/gridsstools/htslib"
+cd "${SRC_DIR}/gridsstools"
+CURSES_LIB="-ltinfow -lncursesw" # from samtools/meta.yaml
+./configure --prefix=$PREFIX --with-htslib=system CURSES_LIB="$CURSES_LIB"
+# hack the GRIDSS Makefile to use the conda htslib library
+# remove local htslib dependency
+# replace local static library with the conda htslib one
+# remove htslib library dependencies since we're not static linking
+sed -i.orig '/gridsstools:/s/htslib//;s,htslib/libhts.a,-lhts,;s,-lz -lm -lbz2 -llzma -lcurl -lcrypto -lpthread,,' Makefile
+make gridsstools # can't make all since the files needed by 'test' aren't included in the GRIDSS release package
+cp gridsstools $PREFIX/bin
+
+# Wrapper script to add --jar command line argument
+ln -s $TGT/gridss_shell_with_jar_entrypoint $PREFIX/bin/gridss
+ln -s $TGT/gridss_shell_with_jar_entrypoint $PREFIX/bin/gridss_annotate_vcf_kraken2
+ln -s $TGT/gridss_shell_with_jar_entrypoint $PREFIX/bin/gridss_annotate_vcf_repeatmasker
+ln -s $TGT/gridss_shell_with_jar_entrypoint $PREFIX/bin/gridss_extract_overlapping_fragments
+ln -s $TGT/gridss_shell_with_jar_entrypoint $PREFIX/bin/virusbreakend
+
+# Wrapper script to add --scriptdir command line argument
 ln -s $TGT/gridss_r_script $PREFIX/bin/gridss_somatic_filter
-ln -s $TGT/gridss_r_script $PREFIX/bin/gridss_annotate_insertions_repeatmaster
-# gridss_java_entrypoint is a java wrapper
+
+# Wrapper script so to avoid having to run java -cp gridss.jar gridss.* ...
+## gridss namespace
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AllocateEvidence
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AnnotateInexactHomology
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AnnotateInexactHomologyBedpe
+ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AnnotateInsertedSequence
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AnnotateReferenceCoverage
-ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AnnotateUntemplatedSequence
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AnnotateVariants
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AssembleBreakends
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/CallVariants
-ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/CollectGridssMetricsAndExtractFullReads
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/CollectGridssMetricsAndExtractSVReads
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/ComputeSamTags
-ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/ExtractFullReads
+ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/ExtractFragmentsToFastq
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/ExtractSVReads
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/GeneratePonBedpe
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/IdentifyVariants
-ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/IndexedExtractFullReads
+ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/InsertedSequencesToFasta
+ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/PrepareReference
+ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/PreprocessForBreakendAssembly
+ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/SanityCheckEvidence
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/SoftClipsToSplitReads
+ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/VirusBreakendFilter
+## gridss.analysis namespace
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/CollectCigarMetrics
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/CollectFragmentGCMetrics
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/CollectGridssMetrics
@@ -47,3 +86,10 @@ ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/CollectMapqMetrics
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/CollectStructuralVariantReadMetrics
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/CollectTagMetrics
 ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/ReportThresholdCoverage
+## gridss.kraken namespace
+ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AnnotateVariantsKraken
+ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/ExtractBestViralReference
+ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/IdentifyViralTaxa
+ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/SubsetToTaxonomy
+## gridss.repeatmasker namespace
+ln -s $TGT/gridss_java_entrypoint $PREFIX/bin/AnnotateVariantsRepeatMasker

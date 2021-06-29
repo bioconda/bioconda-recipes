@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="BeadArrayUseCases_1.26.0.tar.gz"
+FN="BeadArrayUseCases_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/BeadArrayUseCases_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/BeadArrayUseCases_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-beadarrayusecases/bioconductor-beadarrayusecases_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/BeadArrayUseCases_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/BeadArrayUseCases_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-beadarrayusecases/bioconductor-beadarrayusecases_1.30.0_src_all.tar.gz"
 )
-MD5="ad8a040bfacef12609829bbba42383d3"
+MD5="bcaa49ab8944a60b0205aa50832d0799"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

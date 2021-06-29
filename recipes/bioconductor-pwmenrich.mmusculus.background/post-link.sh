@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="PWMEnrich.Mmusculus.background_4.22.0.tar.gz"
+FN="PWMEnrich.Mmusculus.background_4.26.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/PWMEnrich.Mmusculus.background_4.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/PWMEnrich.Mmusculus.background_4.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pwmenrich.mmusculus.background/bioconductor-pwmenrich.mmusculus.background_4.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/PWMEnrich.Mmusculus.background_4.26.1.tar.gz"
+  "https://bioarchive.galaxyproject.org/PWMEnrich.Mmusculus.background_4.26.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pwmenrich.mmusculus.background/bioconductor-pwmenrich.mmusculus.background_4.26.1_src_all.tar.gz"
 )
-MD5="5849da9d0ed4207a670677b11375ecde"
+MD5="fb6c2acbf757ccc8e8079d4d6782b694"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

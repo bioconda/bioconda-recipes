@@ -1,40 +1,38 @@
 {% set name = "python-bioformats" %}
-{% set version = "1.5.2" %}
+{% set version = "4.0.5" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
-  
+
 source:
-  url: https://github.com/CellProfiler/python-bioformats/archive/v{{version}}.zip
-  sha256: 72e72f681f29d437a7ba71a6b1aa28f83497a2ad774c32a00f16259ae3dfae79
-  
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: f9fa3a2b3c0f1eac6070dff6c513444e9fde9a1f794ec4c21fca85833dbb5192
+
 build:
-  noarch: python
   number: 0
-  script:
-    - "SETUPTOOLS_SCM_PRETEND_VERSION={{version}} {{ PYTHON }} -m pip install . --no-deps -vv"
-    - mkdir -p ${PREFIX}/lib
-    - ln -s ${PREFIX}/jre/lib/amd64/server/libjvm.so  ${PREFIX}/lib/
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --ignore-installed"
 
 requirements:
   host:
     - pip
-    - python <3
+    - python
     - setuptools_scm
-    - openjdk 8.*
   run:
-    - python <3
-    - boto3
-    - javabridge >=1.0
-    - openjdk 8.*
+    - boto3 >=1.14.23
+    - future >=0.18.2
+    - python
+    - python-javabridge ==4.0.0
+    - openjdk
 
 test:
   imports:
     - bioformats
 
 about:
-  home: https://github.com/CellProfiler/python-bioformats
-  license: 3-clause BSD license
-  license_family: BSD
-  summary: Python-bioformats is a Python wrapper for Bio-Formats, a standalone Java library for reading and writing life sciences image file formats.
+  home: "http://github.com/CellProfiler/python-bioformats/"
+  license: "GNU General Public v2 (GPLv2)"
+  license_family: GPL2
+  license_file: LICENSE
+  summary: "Read and write life sciences file formats"

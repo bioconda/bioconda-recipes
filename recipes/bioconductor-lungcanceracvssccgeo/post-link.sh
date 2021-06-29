@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="LungCancerACvsSCCGEO_1.24.0.tar.gz"
+FN="LungCancerACvsSCCGEO_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/LungCancerACvsSCCGEO_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/LungCancerACvsSCCGEO_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-lungcanceracvssccgeo/bioconductor-lungcanceracvssccgeo_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/LungCancerACvsSCCGEO_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/LungCancerACvsSCCGEO_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-lungcanceracvssccgeo/bioconductor-lungcanceracvssccgeo_1.28.0_src_all.tar.gz"
 )
-MD5="52cfa30bfebb559df00e464cc822d79f"
+MD5="45a8a608e219565ae154488c2bf8bf97"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
