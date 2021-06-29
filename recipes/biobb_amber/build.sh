@@ -31,8 +31,8 @@ cp $SP_DIR/biobb_amber/parmed/parmed_cpinutil.py $PREFIX/bin/parmed_cpinutil
 chmod u+x $SP_DIR/biobb_amber/parmed/parmed_hmassrepartition.py
 cp $SP_DIR/biobb_amber/parmed/parmed_hmassrepartition.py $PREFIX/bin/parmed_hmassrepartition
 
-chmod u+x $SP_DIR/biobb_amber/pdb4amber/pdb4amber.py
-cp $SP_DIR/biobb_amber/pdb4amber/pdb4amber.py $PREFIX/bin/pdb4amber
+chmod u+x $SP_DIR/biobb_amber/pdb4amber/pdb4amber_run.py
+cp $SP_DIR/biobb_amber/pdb4amber/pdb4amber_run.py $PREFIX/bin/pdb4amber_run
 
 chmod u+x $SP_DIR/biobb_amber/pmemd/pmemd_mdrun.py
 cp $SP_DIR/biobb_amber/pmemd/pmemd_mdrun.py $PREFIX/bin/pmemd_mdrun
@@ -45,3 +45,9 @@ cp $SP_DIR/biobb_amber/process/process_mdout.py $PREFIX/bin/process_mdout
 
 chmod u+x $SP_DIR/biobb_amber/sander/sander_mdrun.py
 cp $SP_DIR/biobb_amber/sander/sander_mdrun.py $PREFIX/bin/sander_mdrun
+
+chmod u+x $SP_DIR/biobb_amber/cphstats/cphstats_run.py
+cp $SP_DIR/biobb_amber/cphstats/cphstats_run.py $PREFIX/bin/cphstats_run
+
+chmod u+x $SP_DIR/biobb_amber/cphstats/cestats_run.py
+cp $SP_DIR/biobb_amber/cphstats/cestats_run.py $PREFIX/bin/cestats_run
