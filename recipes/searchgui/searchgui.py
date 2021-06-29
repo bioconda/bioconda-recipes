@@ -107,7 +107,7 @@ def main():
     """
     (mem_opts, prop_opts, pass_args, exec_dir) = jvm_opts(sys.argv[1:])
 
-    system_opts = 'export LC_ALL=C;'
+    system_opts = 'export LC_ALL=C && '
 
     pass_args = def_temp_log_opts(pass_args)
 
