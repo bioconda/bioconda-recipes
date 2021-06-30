@@ -5,7 +5,8 @@ export BLAST_SRC_DIR="${SRC_DIR}/blast"
 cd $BLAST_SRC_DIR/c++/
 
 export CFLAGS="$CFLAGS -O2"
-export CXXFLAGS="$CXXFLAGS -O2"
+# fails with -std=c++17
+export CXXFLAGS="$CXXFLAGS -O2 -std=c++14"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CC_FOR_BUILD=$CC
@@ -55,6 +56,7 @@ cp -rf "${SRC_DIR}/RpsbProc/src/"* src/app/RpsbProc/
 export AR="${AR} rcs"
 
 ./configure \
+    --with-64 \
     --with-dll \
     --with-mt \
     --with-openmp \
@@ -72,6 +74,7 @@ export AR="${AR} rcs"
     --with-z=$PREFIX \
     --with-bz2=$PREFIX \
     --without-krb5 \
+    --with-experimental=Int8GI \
     --without-openssl \
     --without-gnutls \
     --without-sse42 \
@@ -96,13 +99,16 @@ make -j${CPU_COUNT} -f Makefile.flat $apps
 rm $LIB_INSTALL_DIR
 
 mkdir -p $PREFIX/bin $LIB_INSTALL_DIR
+chmod +x $BLAST_SRC_DIR/c++/ReleaseMT/bin/*
 cp $BLAST_SRC_DIR/c++/ReleaseMT/bin/* $PREFIX/bin/
 cp $BLAST_SRC_DIR/c++/ReleaseMT/lib/* $LIB_INSTALL_DIR
 
-chmod +x $PREFIX/bin/*
+#chmod +x $PREFIX/bin/*
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/update_blastdb.pl
 # Patches to enable this script to work better in bioconda
 sed -i.bak 's/mktemp.*/mktemp`/; s/exit 1/exit 0/; s/^export PATH=\/bin:\/usr\/bin:/\#export PATH=\/bin:\/usr\/bin:/g' $PREFIX/bin/get_species_taxids.sh
 
 #extra log to check all exe are present
 ls -s $PREFIX/bin/
+
+
