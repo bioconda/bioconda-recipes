@@ -93,6 +93,7 @@ def def_temp_log_opts(args):
 
     return args
 
+
 def main():
     java = java_executable()
     """
