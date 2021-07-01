@@ -1,2 +1,2 @@
 #!/bin/bash
-export DEEPSIG_ROOT=$PREFIX/share/$PKG_NAME-$PKG_VERSION/
+export DEEPSIG_ROOT=$CONDA_PREFIX/share/deepsig/
