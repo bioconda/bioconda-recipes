@@ -8,4 +8,4 @@ gem install -n ${PREFIX}/bin transrate
 #ruby ${PREFIX}/bin/transrate --install-deps all
 
 # Clean up the build a bit
-rm ${PREFIX}/lib/ruby/gems/*/gems/transrate-*/ext/transrate/transrate.o
+rm -f ${PREFIX}/lib/ruby/gems/*/gems/transrate-*/ext/transrate/transrate.o
