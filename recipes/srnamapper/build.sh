@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sed -i 's|gcc|cc|' makefile
+sed -i 's|gcc|cc|' Makefile
 
 make
 chmod +x srnaMapper
