@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # zlib hack
-sed -i 's/-lz//' Makefile
 echo -e "export CFLAGS=\"$CFLAGS -I$PREFIX/include\"\nexport LDFLAGS=\"$LDFLAGS -L$PREFIX/lib -lz\"\nexport CPATH=${PREFIX}/include\n$(cat Makefile)" > Makefile
 sed -i 's/CFLAGS =/CFLAGS +=/' Makefile
 
