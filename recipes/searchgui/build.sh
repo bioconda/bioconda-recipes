@@ -22,3 +22,6 @@ ln -sf "$(which metamorpheus)" "$outdir"'/resources/MetaMorpheus/metamorpheus'
 # removing makeblast prebuilt binary and replacing it by blast package ones
 rm -f "$outdir"'/resources/makeblastdb/linux/linux_64bit/makeblastdb'
 ln -sf "$(which makeblastdb)" "$outdir"'/resources/makeblastdb/linux/linux_64bit/makeblastdb'
+
+# removing MsAmanda prebuilt binary for macosx until .NET Core 6 is released
+rm -f "$outdir"'/resources/MS Amanda/osx/*'
