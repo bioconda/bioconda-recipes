@@ -42,6 +42,6 @@ echo "installing recontig python package"
 # workaround is temporarily linking $CC as gcc
 ln -s $CC $PREFIX/bin/gcc
 $PYTHON setup.py build --compiler ldc
-$PYTHON setup.py install 
+$PYTHON setup.py install
 deactivate
 rm $PREFIX/bin/gcc
