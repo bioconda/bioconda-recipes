@@ -45,3 +45,8 @@ $PYTHON setup.py build --compiler ldc
 $PYTHON setup.py install
 deactivate
 rm $PREFIX/bin/gcc
+# fix pyd bug with osx
+if [ "$(uname)" == "Darwin" ]; then
+    BAD_SO=$(ls $PREFIX/lib/python*/site-packages/recontig*.so)
+    mv $BAD_SO "${BAD_SO%.*}.dylib"
+fi
