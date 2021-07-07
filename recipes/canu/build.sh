@@ -5,6 +5,7 @@ set -e
 
 mkdir -p "$PREFIX/bin"
 
+rm -rf ./.git*
 pushd src
 make clean TARGET_DIR=$PREFIX CC=$CC CXX=$CXX
 make TARGET_DIR=$PREFIX CC=$CC CXX=$CXX
