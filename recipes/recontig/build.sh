@@ -23,19 +23,19 @@ export LIBRARY_PATH="$PREFIX/lib:$LIBRARY_PATH"
 ./recontig
 cp recontig $PREFIX/bin
 
-export HTSLIB_DIR=$PREFIX/lib
-
-# install pyd via github as pip doesn't work
-echo "installing pyd"
-git clone https://github.com/ariovistus/pyd.git
-cd pyd
-echo "$CC"
-git checkout v0.14.1
-CC="$CC" $PYTHON setup.py install
-cd ..
-
 # Turning off python building for osx
 if [ "$(uname)" != "Darwin" ]; then
+    export HTSLIB_DIR=$PREFIX/lib
+
+    # install pyd via github as pip doesn't work
+    echo "installing pyd"
+    git clone https://github.com/ariovistus/pyd.git
+    cd pyd
+    echo "$CC"
+    git checkout v0.14.1
+    CC="$CC" $PYTHON setup.py install
+    cd ..
+    
     # install recontig python extension
     echo "installing recontig python package"
     . $DENV
