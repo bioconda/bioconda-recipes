@@ -34,19 +34,17 @@ git checkout v0.14.1
 CC="$CC" $PYTHON setup.py install
 cd ..
 
-# install recontig python extension
-echo "installing recontig python package"
-. $DENV
-# pyd doesn't like not having gcc 
-# availiable
-# workaround is temporarily linking $CC as gcc
-ln -s $CC $PREFIX/bin/gcc
-$PYTHON setup.py build --compiler ldc
-$PYTHON setup.py install
-deactivate
-rm $PREFIX/bin/gcc
-# fix pyd bug with osx
-if [ "$(uname)" == "Darwin" ]; then
-    BAD_SO=$(ls $PREFIX/lib/python*/site-packages/recontig*.so)
-    mv $BAD_SO "${BAD_SO%.*}.dylib"
+# Turning off python building for osx
+if [ "$(uname)" != "Darwin" ]; then
+    # install recontig python extension
+    echo "installing recontig python package"
+    . $DENV
+    # pyd doesn't like not having gcc 
+    # availiable
+    # workaround is temporarily linking $CC as gcc
+    ln -s $CC $PREFIX/bin/gcc
+    $PYTHON setup.py build --compiler ldc
+    $PYTHON setup.py install
+    deactivate
+    rm $PREFIX/bin/gcc
 fi
