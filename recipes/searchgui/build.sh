@@ -24,8 +24,4 @@ rm -f "$outdir"'/resources/makeblastdb/linux/linux_64bit/makeblastdb'
 ln -sf "$(which makeblastdb)" "$outdir"'/resources/makeblastdb/linux/linux_64bit/makeblastdb'
 
 # removing MsAmanda prebuilt binary for macosx until .NET Core 6 is released
-# rm -f "$outdir"'/resources/MS Amanda/osx/*'
-if [ "$(uname)" == "Darwin" ]
-then
-  chmod -x "$outdir"'/resources/MS Amanda/osx/MSAmanda'
-fi
+rm -f "$outdir"'/resources/MS Amanda/osx/'*
