@@ -19,4 +19,5 @@ cp pl/asm2stats.pl "${PREFIX}/bin"
 chmod +x "${PREFIX}/bin/asm2stats.minmaxgc.pl"
 chmod +x "${PREFIX}/bin/asm2stats.pl"
 
-sed -i 's|/usr/bin/perl|/usr/bin/env perl' "${PREFIX}/bin/asm2stats.minmaxgc.pl" "${PREFIX}/bin/asm2stats.pl"
+sed -i.bak 's|/usr/bin/perl|/usr/bin/env perl|' "${PREFIX}/bin/asm2stats.minmaxgc.pl" "${PREFIX}/bin/asm2stats.pl"
+rm "${PREFIX}/bin/asm2stats.pl.bak"
