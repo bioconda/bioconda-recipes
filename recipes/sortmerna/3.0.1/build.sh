@@ -1,0 +1,30 @@
+export SMR_HOME=$PREFIX
+mkdir -pv $PREFIX/bin
+mkdir -p build
+cd build
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DSRC_ROCKSDB=1 -DSRC_RAPIDJSON=1 -DSET_ROCKSDB=1 ..
+echo "build dir content\n"
+ls
+echo "root dir content\n"
+ls ..
+echo "current path"
+pwd
+export BUILDPATH=$(pwd)
+mkdir -p $SMR_HOME/3rdparty/rocksd/build/Release
+pushd $SMR_HOME/3rdparty/rocksdb/build/Release
+echo "postpush content"
+ls
+echo "postpush path"
+pwd
+cd $BUILDPATH
+echo "BUILDPATH"
+pwd
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DPORTABLE=1 -DWITH_ZLIB=1 -DWITH_TESTS=0 -DWITH_TOOLS=0 .
+ls
+ls ..
+make
+popd
+make
+cp $SMR_HOME/build/src/indexdb $PREFIX/bin
+cp $SMR_HOME/build/src/sortmerna $PREFIX/bin
+cp $PREFIX/scripts/{merge-paired-reads.sh,unmerge-paired-reads.sh}  $PREFIX/bin
