@@ -1,0 +1,44 @@
+{% set version = "v0.1.2" %}
+{% set sha256 = "a0cf819fd06bf277dccdc7b74ebaf69115908d9f3dbcfdd7b8f92b167457c29f" %}
+
+package:
+  name: mcroni
+  version: {{ version }}
+
+source:
+  url: https://github.com/liampshaw/mcroni/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - mcroni = mcroni.mcroni:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+
+requirements:
+  host:
+    - python
+    - pip
+
+  run:
+    - python
+    - pandas
+    - biopython
+    - numpy
+
+test:
+  imports:
+    - mcroni
+  requires:
+    - pytest
+  source_files:
+    - mcroni/tests/test_mcroni.py
+  commands:
+    - mcroni --help
+    - pytest
+
+about:
+  home: https://github.com/liampshaw/mcroni
+  summary: 'mcr-1 analysis'
+  license: MIT
