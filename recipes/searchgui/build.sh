@@ -28,6 +28,4 @@ ln -sf "$(which makeblastdb)" "$outdir"'/resources/makeblastdb/linux/linux_64bit
 if [ "$(uname)" == "Darwin" ]
 then
   chmod -x "$outdir"'/resources/MS Amanda/osx/MSAmanda'
-else
-    # GNU/Linux recipe
 fi
