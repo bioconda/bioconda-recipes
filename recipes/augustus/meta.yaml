@@ -1,5 +1,5 @@
-{% set version = "3.3.3" %}
-{% set sha256 = "2fc5f9fd2f0c3bba2924df42ffaf55b5c130228cea18efdb3b6dfab9efa8c9f4" %}
+{% set version = "3.4.0" %}
+{% set sha256 = "2c06cf5953da5afdce1478fa10fcd3c280a3b050f1b2367bf3e731d7374d9bb8" %}
 
 package:
   name: augustus
@@ -13,19 +13,20 @@ source:
     - patches/bam2wig.makefile.patch
     - patches/compileSpliceCands.makefile.patch
     - patches/filterBam.makefile.patch
-    - patches/filterBam.src.makefile.patch  # [linux]
-    - patches/filterBam.src.makefile.patch.osx  # [osx]
+    - patches/filterBam.src.makefile.patch
+    #- patches/filterBam.src.makefile.patch.osx  # [osx]
     - patches/homGeneMapping.src.makefile.patch
-    - patches/joingenes.makefile.patch
+    #- patches/joingenes.makefile.patch
     - patches/utrrnaseq.src.patch
     - patches/utrrnaseq.patch
     - patches/src.makefile.patch
 
 build:
-  number: 5
+  number: 1
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
@@ -134,7 +135,6 @@ test:
     - polyA2hints.pl
     - pslMap.pl 2>&1 | grep "pslMap.pl" > /dev/null
     - randomSplit.pl
-    - ratewig.pl
     - rmRedundantHints.pl 2>&1 | grep "rmRedundantHints.pl" > /dev/null
     - runAllSim4.pl --help 2>&1 | grep "runAllSim4.pl" > /dev/null
     - samMap.pl
@@ -176,5 +176,3 @@ extra:
     - doi:10.1093/bioinformatics/btr010
     - usegalaxy-eu:augustus
   notes: "Builds with sqlite support are currently only available on Linux due to compile issues with macOS."
-  skip-lints:
-    - should_not_be_noarch_source

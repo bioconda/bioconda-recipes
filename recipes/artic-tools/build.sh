@@ -9,6 +9,10 @@ curl -o flat_hash_map.hpp https://raw.githubusercontent.com/skarupke/flat_hash_m
 curl -o unordered_map.hpp https://raw.githubusercontent.com/skarupke/flat_hash_map/master/unordered_map.hpp
 popd
 
+mkdir -p extlibs/PicoSHA2 && pushd extlibs/PicoSHA2
+curl -o picosha2.h https://raw.githubusercontent.com/okdshin/PicoSHA2/master/picosha2.h
+popd
+
 mkdir build && pushd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make 

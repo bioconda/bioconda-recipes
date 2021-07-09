@@ -1,0 +1,63 @@
+{% set name = "pegasusio" %}
+{% set version = "0.3.0" %}
+
+package:
+    name: {{ name|lower }}
+    version: {{ version }}
+
+source:
+    url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+    sha256: "1eb5d9e812df1d3c077fe0d7e5d52f30e3895c85d21e46d9835603f40ec6c6dd"
+
+
+build:
+    number: 0
+    skip: True  # [py<37]
+    entry_points:
+        - pegasusio = pegasusio.__main__:main
+    script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+    build:
+        - {{ compiler('c') }}
+    host:
+        - python
+        - cython
+        - setuptools_scm
+        - pip
+    run:
+        - python
+        - numpy
+        - pandas >=1.2.0
+        - anndata >=0.7
+        - loompy
+        - docopt
+        - natsort
+        - scipy
+        - importlib_metadata >=0.7
+        - zarr
+
+test:
+    requires:
+        - anndata
+        - loompy
+        - zarr
+    imports:
+        - pegasusio
+        - pegasusio.commands
+        - pegasusio.cylib.funcs
+        - pegasusio.cylib.io
+    commands:
+        - pegasusio --help
+
+about:
+    home: https://github.com/klarman-cell-observatory/pegasusio
+    doc_url: https://pegasusio.readthedocs.io
+    license: BSD
+    license_file: LICENSE
+    summary: "PegasusIO is the IO package for Pegasus."
+
+extra:
+    recipe-maintainers:
+        - yihming
+        - bli25broad

@@ -3,7 +3,7 @@
 set -x -e
 
 #export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libstdc++ -stdlib=libc++ -DUSE_BOOST"
-export CXXFLAGS="${CXXFLAGS} -std=c++11  -DUSE_BOOST -I${PREFIX}/include/bamtools"
+export CXXFLAGS="${CXXFLAGS} -std=c++11  -DUSE_BOOST -I${PREFIX}/include/bamtools -I${PREFIX}/include"
 
 mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/scripts
@@ -24,6 +24,7 @@ make \
     BAMTOOLS_CXX="${CXX}" \
     BAMTOOLS="${PREFIX}" \
     COMPGENPRED=true \
+    MYSQL=false \
     $sqlite
 
 
