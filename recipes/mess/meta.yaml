@@ -1,0 +1,48 @@
+{% set version = "v0.2.1" %}
+{% set sha256 = "5db4eae119ebb84082bec9e23bb0c6c7280c662e839c19460e7e5e4ba0483f08" %}
+
+package:
+  name: mess
+  version: {{ version }}
+
+source:
+  url: https://github.com/metagenlab/MeSS/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  entry_points:
+    - mess=mess.mess:cli
+  noarch: python
+  script: "python -m pip install --no-deps --ignore-installed ."
+
+requirements:
+  host:
+    - python>3.6,<3.9
+    - pip
+
+  run:
+    - python>3.6,<3.9
+    - snakemake-minimal=6.2.1
+    - pandas >1
+    - click>=7
+
+test:
+    imports:
+        - mess
+    commands:
+        - mess run -h
+        - mess --version
+
+about:
+  home: https://github.com/metagenlab/MeSS
+  license: GPL-3.0
+  license_file: LICENSE
+  summary: The Metagenomic Sequence Simulator (MeSS) is a snakemake workflow used for simulating metagenomic mock communities.
+
+extra:
+  recipe-maintainers:
+    - idfarbanecha
+
+container:
+  extended-base: true
