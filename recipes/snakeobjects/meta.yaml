@@ -1,0 +1,46 @@
+package:
+  name: snakeobjects
+  version: "2.rc8"
+
+source:
+  #url: https://github.com/iossifovlab/{{ name|lower }}/archive/{{ version }}.tar.gz
+  url:  https://github.com/iossifovlab/snakeobjects/archive/2.rc8.tar.gz
+  sha256: 954c1eaf17441439d7dcdd12420c9b6459285ada851c32ccff1d6c33a4ed11f1
+
+
+build:
+  # If the installation is complex, or different between Unix and Windows, use
+  # separate bld.bat and build.sh files instead of this key.  Add the line
+  # "skip: True  # [py<35]" (for example) to limit to Python 3.5 and newer, or
+  # "skip: True  # [not win]" to limit to Windows.
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed -vv .
+  noarch: python
+  number: 0
+  entry_points:
+    # {% for entry in data['entry_points']['console_scripts'] %}
+    # - {{ entry.split('=')[0].strip() }} = {{ entry.split('=')[1].strip() }}
+    # {% endfor %}
+    - sobjects = snakeobjects.cli:cli
+  
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - snakemake-minimal >=5.20
+
+test:
+  source_files:
+    - tests
+  requires:
+    - pytest
+    - pytest-cov
+    - snakemake-minimal>=5.20
+
+about:
+  home: https://github.com/iossifovlab/snakeobjects
+  summary: Our pipeline infrastructure.
+  license: MIT
+  license_file: LICENSE
