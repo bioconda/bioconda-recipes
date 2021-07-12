@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eu -o pipefail
+set -vxeu -o pipefail
 
 chmod a+rx bin/falconc
 #bin/falconc version
