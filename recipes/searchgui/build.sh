@@ -13,3 +13,15 @@ chmod 0755 "${PREFIX}/bin/searchgui"
 # removing xtandem prebuilt binaries and replacing them by xtandem package ones
 rm -f "$outdir"'/resources/XTandem/linux/linux_64bit/tandem'
 ln -sf "$(which xtandem)" "$outdir"'/resources/XTandem/linux/linux_64bit/tandem'
+
+# removing MetaMorpheus prebuilt binaries and replacing them by Metamorpheus package ones
+rm -rf "$outdir"'/resources/MetaMorpheus/*'
+ln -sf "$(which metamorpheus)" "$outdir"'/resources/MetaMorpheus/metamorpheus'
+
+
+# removing makeblast prebuilt binary and replacing it by blast package ones
+rm -f "$outdir"'/resources/makeblastdb/linux/linux_64bit/makeblastdb'
+ln -sf "$(which makeblastdb)" "$outdir"'/resources/makeblastdb/linux/linux_64bit/makeblastdb'
+
+# removing MsAmanda prebuilt binary for macosx until .NET Core 6 is released
+rm -f "$outdir"'/resources/MS Amanda/osx/'*

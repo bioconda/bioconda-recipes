@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="DeSousa2013_1.26.0.tar.gz"
+FN="DeSousa2013_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/DeSousa2013_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/DeSousa2013_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-desousa2013/bioconductor-desousa2013_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/DeSousa2013_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/DeSousa2013_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-desousa2013/bioconductor-desousa2013_1.28.0_src_all.tar.gz"
 )
-MD5="de6791649f9c7eb0ee52e07ac94081d1"
+MD5="dbd01320474db595c34599f57e31c53a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
