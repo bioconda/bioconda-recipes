@@ -19,20 +19,19 @@ entrypoint=$(basename $0)
 namespace="gridss"
 if [[ "$entrypoint" =~ "Collect" ]] || [[ "$entrypoint" =~ "ReportThresholdCoverage" ]] ; then
 	namespace="gridss.analysis"
+elif [[ "$entrypoint" =~ "AnnotateVariantsKraken" ]] || [[ "$entrypoint" =~ "ExtractBestSequencesBasedOnReport" ]] || [[ "$entrypoint" =~ "SubsetToTaxonomy" ]] ; then
+	namespace="gridss.kraken"
+elif [[ "$entrypoint" =~ "AnnotateVariantsRepeatMasker" ]] ; then
+	namespace="gridss.repeatmasker"
 fi
+
 # GRIDSS relies on htsjdk multi-thread I/O for performance
-# we need to add these to all entry points except IndexedExtractFullReads
-# which should not perform async read since the read-ahead results get
-# discard on every index seek
+# we need to add these to all entry points.
 jvm_args="
 		-Dsamjdk.use_async_io_write_samtools=true \
 		-Dsamjdk.use_async_io_write_tribble=true \
-		-Dsamjdk.buffer_size=4194304"
-if [[ "$entrypoint" =~ "IndexedExtractFullReads" ]] ; then
-	jvm_args="$jvm_args -Dsamjdk.use_async_io_read_samtools=false"
-else
-	jvm_args="$jvm_args -Dsamjdk.use_async_io_read_samtools=true"
-fi
+		-Dsamjdk.buffer_size=4194304 \
+		-Dsamjdk.use_async_io_read_samtools=true"
 
 java $jvm_args -cp $DIR/gridss.jar $namespace.$entrypoint "$@"
 

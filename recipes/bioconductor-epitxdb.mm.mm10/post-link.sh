@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="EpiTxDb.Mm.mm10_0.99.4.tar.gz"
+FN="EpiTxDb.Mm.mm10_0.99.6.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/EpiTxDb.Mm.mm10_0.99.4.tar.gz"
-  "https://bioarchive.galaxyproject.org/EpiTxDb.Mm.mm10_0.99.4.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-epitxdb.mm.mm10/bioconductor-epitxdb.mm.mm10_0.99.4_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/EpiTxDb.Mm.mm10_0.99.6.tar.gz"
+  "https://bioarchive.galaxyproject.org/EpiTxDb.Mm.mm10_0.99.6.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-epitxdb.mm.mm10/bioconductor-epitxdb.mm.mm10_0.99.6_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-epitxdb.mm.mm10/bioconductor-epitxdb.mm.mm10_0.99.6_src_all.tar.gz"
 )
-MD5="d9483a04c2624bc3ce4d75ee90db8fbe"
+MD5="518e4967f7f038e3cbf2865b74dc4f1b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

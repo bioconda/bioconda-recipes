@@ -25,6 +25,8 @@ if [[ $SVD == "-h" || $SVD == "--help" ]]; then
 	$DIR/VerifyBamID --help
 elif [[ "$*" == *"--SVDPrefix"* ]]; then
 	$DIR/VerifyBamID "$@"
+elif [[ "$*" == *"--RefVCF"* ]]; then
+	$DIR/VerifyBamID "$@"
 else
 #for backward compatibility
 	$DIR/VerifyBamID --SVDPrefix $DIR/resource/$SVD.$DENSITY.$GENOME.vcf.gz.dat "${@:4}"

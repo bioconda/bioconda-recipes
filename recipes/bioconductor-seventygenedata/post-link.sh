@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="seventyGeneData_1.24.0.tar.gz"
+FN="seventyGeneData_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/seventyGeneData_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/seventyGeneData_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-seventygenedata/bioconductor-seventygenedata_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/seventyGeneData_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/seventyGeneData_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-seventygenedata/bioconductor-seventygenedata_1.28.0_src_all.tar.gz"
 )
-MD5="8419905855f84d2c237331cf512462dc"
+MD5="62c364f2ec3d1efb02e881ce7d6d8520"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

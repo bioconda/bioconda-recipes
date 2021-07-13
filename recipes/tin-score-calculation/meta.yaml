@@ -1,0 +1,45 @@
+{% set name = "tin-score-calculation" %}
+{% set version = "0.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 8b4b172f58c47d86de3540bcf65afce2d03fc034a4973e6d6ea6c49b8252b168
+
+build:
+  noarch: python
+  number: 0
+  script: "touch requirements.txt && {{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - matplotlib-base
+    - bx-python >=0.8.10
+    - guppy3 >=3
+    - pandas >=0.25
+    - psutil >=5.8.0
+    - pysam >=0.16
+    - RSeQC >=3
+    - python
+
+test:
+  commands:
+    - calculate-tin.py --help
+    - merge-tin.py --help
+    - plot-tin.py --help
+
+about:
+  home: The package home page
+  license: GNU General Public License v3.0
+  license_family: GPL3
+  summary: "Given a set of BAM files and a gene annotation BED file, calculates the Transcript Integrity Number (TIN) for each transcript."
+
+extra:
+  recipe-maintainers:
+    - fgypas

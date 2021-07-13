@@ -1,0 +1,51 @@
+{% set name = "riboloco" %}
+{% set version = "0.3.9" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 34667a80097b7b717afa95a961d6737cc68aa70a0ffec2f6221a0775a1ce66ca
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - riboloco=riboloco.__main__:main
+    - riboloco_convert_gtf=riboloco.convert_gtf:main
+    - riboloco_find_orfs=riboloco.find_orfs:main
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps"
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - gffutils
+    - matplotlib-base
+    - pandas
+    - pysam
+    - python
+    - scipy
+    - seaborn
+    - scikit-learn
+
+test:
+  imports:
+    - riboloco
+  commands:
+    - riboloco --help
+    - riboloco_convert_gtf --help
+    - riboloco_find_orfs --help
+
+about:
+  home: "https://github.com/Delayed-Gitification/riboloco.git"
+  license: MIT
+  license_family: MIT
+  summary: "Riboseq analysis"
+
+extra:
+  recipe-maintainers:
+    - Delayed-Gitification

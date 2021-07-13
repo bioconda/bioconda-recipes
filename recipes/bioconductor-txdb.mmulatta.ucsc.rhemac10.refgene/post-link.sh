@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="TxDb.Mmulatta.UCSC.rheMac10.refGene_3.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/TxDb.Mmulatta.UCSC.rheMac10.refGene_3.10.0.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/TxDb.Mmulatta.UCSC.rheMac10.refGene_3.10.0.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Mmulatta.UCSC.rheMac10.refGene_3.10.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.mmulatta.ucsc.rhemac10.refgene/bioconductor-txdb.mmulatta.ucsc.rhemac10.refgene_3.10.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.mmulatta.ucsc.rhemac10.refgene/bioconductor-txdb.mmulatta.ucsc.rhemac10.refgene_3.10.0_src_all.tar.gz"

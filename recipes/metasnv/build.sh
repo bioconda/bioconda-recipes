@@ -5,6 +5,11 @@ export LDFLAGS="-L$PREFIX/lib"
 tag=share/metasnv-${PKG_VERSION}/
 odir=$PREFIX/$tag
 
+# Makefile hardcodes "CC=g++" so we need to comment that out
+# And replace uses of $CC with $CXX
+sed 's/^CC=g++/# CC=g++/' src/snpCaller/Makefile | sed 's/$(CC)/$(CXX)/' > src/snpCaller/Makefile.tmp
+mv src/snpCaller/Makefile.tmp src/snpCaller/Makefile
+
 make
 mkdir -p $odir
 cp -pr src $odir
