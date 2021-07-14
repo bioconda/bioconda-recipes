@@ -1,0 +1,57 @@
+From 39e7dbdabbf1e97c8133489a694e7433c8a0c9fc Mon Sep 17 00:00:00 2001
+From: Marcel Bargull <marcel.bargull@udo.edu>
+Date: Fri, 28 May 2021 11:24:27 +0200
+Subject: [PATCH] Make SSE inclusion conditional for target features
+
+---
+ CHANGELOG.md            |  1 +
+ librocksdb-sys/build.rs | 22 ++++++++++++++++------
+ 2 files changed, 17 insertions(+), 6 deletions(-)
+
+ diff --git a/CHANGELOG.md b/CHANGELOG.md
+ index 306688621..41931e36e 100644
+ --- a/CHANGELOG.md
+ +++ b/CHANGELOG.md
+ @@ -3,6 +3,7 @@
+  ## [Unreleased]
+  
+  * Bump `librocksdb-sys` up to 6.19.3 (olegnn)
+ +* Make SSE inclusion conditional for target features (mbargull)
+  
+  ## 0.16.0 (2021-04-18)
+  
+diff --git a/librocksdb-sys/build.rs b/librocksdb-sys/build.rs
+index 28433a5bf..b34f37ac5 100644
+--- a/librocksdb-sys/build.rs
++++ b/librocksdb-sys/build.rs
+@@ -103,14 +103,24 @@ fn build_rocksdb() {
+         // This is needed to enable hardware CRC32C. Technically, SSE 4.2 is
+         // only available since Intel Nehalem (about 2010) and AMD Bulldozer
+         // (about 2011).
+-        config.define("HAVE_SSE42", Some("1"));
+-        config.flag_if_supported("-msse2");
+-        config.flag_if_supported("-msse4.1");
+-        config.flag_if_supported("-msse4.2");
++        let target_feature = env::var("CARGO_CFG_TARGET_FEATURE").unwrap();
++        let target_features: Vec<_> = target_feature.split(",").collect();
++        if target_features.contains(&"sse2") {
++            config.flag_if_supported("-msse2");
++        }
++        if target_features.contains(&"sse4.1") {
++            config.flag_if_supported("-msse4.1");
++        }
++        if target_features.contains(&"sse4.2") {
++            config.flag_if_supported("-msse4.2");
++            config.define("HAVE_SSE42", Some("1"));
++        }
+ 
+         if !target.contains("android") {
+-            config.define("HAVE_PCLMUL", Some("1"));
+-            config.flag_if_supported("-mpclmul");
++            if target_features.contains(&"pclmulqdq") {
++                config.define("HAVE_PCLMUL", Some("1"));
++                config.flag_if_supported("-mpclmul");
++            }
+         }
+     }
+ 
