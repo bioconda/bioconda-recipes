@@ -1,9 +1,6 @@
 #!/bin/bash
-conda install -c bioconda mmseqs2
-conda install -c bioconda genmap
-conda install -c bioconda seqkit
-conda install -c bioconda primer3
-conda install -c bioconda primer3-py
+install -d "${PREFIX}/bin"
+install probeit.py "${PREFIX}/bin/"
 cd setcover
-make
-cd ..
+make -j $CPU_COUNT
+install setcover "${PREFIX}/bin/"
