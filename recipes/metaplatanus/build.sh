@@ -11,7 +11,8 @@ wget https://github.com/rkajitani/NextPolish/releases/download/v1.3.1/NextPolish
 tar xf NextPolish_v1.3.1.tar.gz
 cd NextPolish_v1.3.1
 alias gcc=${CC}
-alias g++=${CXX}
+ln -s `which ${CC}` `dirname \`which ${CC}\``/gcc
+ln -s `which ${CXX}` `dirname \`which ${CC}\``/g++
 make
 cp -r nextPolish lib bin $PREFIX/bin/sub_bin
 cd ..
