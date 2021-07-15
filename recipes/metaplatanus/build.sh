@@ -1,5 +1,9 @@
 #!/bin/sh
 
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+
 mkdir -p $PREFIX/bin/sub_bin
 
 make CXX=${CXX}
