@@ -1,9 +1,5 @@
 #!/bin/sh
 
-export CFLAGS="$CFLAGS -I$PREFIX/include"
-export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-
 mkdir -p $PREFIX/bin/sub_bin
 
 make CXX=${CXX}
@@ -11,6 +7,10 @@ cp metaplatanus $PREFIX/bin
 cp src/scripts/tgsgapcloser_mod $PREFIX/bin
 cp -r sub_bin/* $PREFIX/bin/sub_bin
 
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export LD_LIBRARY_PATH=$PREFIX/lib:$LD_LIBRARY_PATH
 wget https://github.com/rkajitani/NextPolish/releases/download/v1.3.1/NextPolish_v1.3.1.tar.gz
 tar xf NextPolish_v1.3.1.tar.gz
 cd NextPolish_v1.3.1
