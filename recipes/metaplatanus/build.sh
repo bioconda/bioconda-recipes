@@ -1,5 +1,4 @@
 #!/bin/sh
-
 mkdir -p $PREFIX/bin/sub_bin
 
 make CXX=${CXX}
