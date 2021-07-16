@@ -4,7 +4,7 @@
 pushd build
 
 # Split in more modules to reduce memory usage (default=8), stay on serial compilation (default PY_NUM_THREADS=1)
-cmake -DPYOPENMS=ON -DPY_NUM_MODULES=16 .
+cmake -DPYOPENMS=ON -DPY_NUM_MODULES=8 .
 # Unfortunately if we would call make, it thinks that OpenMS lib is not built since the build folder
 # might have been copied, so it rebuilds. Skip this by using setup.py directly.
 # TODO check that it actually uses the prebuilt libOpenMS from the prefix.
