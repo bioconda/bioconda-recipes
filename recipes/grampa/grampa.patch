@@ -1,0 +1,146 @@
+diff --git a/grampa.py b/grampa.py
+index db4ee64..463f08d 100755
+--- a/grampa.py
++++ b/grampa.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/usr/bin/env python3
+ #############################################################################
+ # Gene-tree Reconciliation Algorithm with MUL-trees for Polyploid Analysis.
+ # This is the main interface and handles user options and tree searching.
+@@ -15,8 +15,7 @@ import sys, os, timeit, multiprocessing as mp
+ from functools import partial
+ import pickle
+ 
+-sys.path.append("lib/");
+-import lib.reconcore as RC, mul_recon as ALG, opt_parse as OP, mul_tree as MT, spec_tree as ST, gene_tree as GT, global_vars as globs, mul_out as OUT
++from grampa_lib import reconcore as RC, mul_recon as ALG, opt_parse as OP, mul_tree as MT, spec_tree as ST, gene_tree as GT, global_vars as globs, mul_out as OUT
+ 
+ def grampa(starttime):
+ 	###########################
+@@ -192,7 +191,7 @@ def grampa(starttime):
+ 	###########################
+ 	### Begin orthology prediction block. *BETA*
+ 	if globs.orth_opt:
+-		import lib.orth_label as OL
++		import grampa_lib.orth_label as OL
+ 		step = RC.printStep(step, "# " + RC.getDateTime() + " --> STEP " + str(step) + " " + RC.getLogTime() +  ": *BETA* Mapping polyploid genes.");
+ 		min_tree = mul_trees[min_num][0];
+ 		min_clade = mul_trees[min_num][2];
+diff --git a/lib/gene_tree.py b/lib/gene_tree.py
+index dfd1d56..fefbdf4 100644
+--- a/lib/gene_tree.py
++++ b/lib/gene_tree.py
+@@ -1,4 +1,4 @@
+-import recontree as RT, reconcore as RC, global_vars as globs, sys
++import grampa_lib.recontree as RT, grampa_lib.reconcore as RC, grampa_lib.global_vars as globs, sys
+ 
+ #############################################################################
+ def readGeneTree(gene_tree_input):
+diff --git a/lib/lca_check.py b/lib/lca_check.py
+index 307fb86..59aead7 100644
+--- a/lib/lca_check.py
++++ b/lib/lca_check.py
+@@ -1,5 +1,5 @@
+ ## Given a GT, a MT, an LCA in the MT, and a set of maps
+-import sys, os, re, time, recontree as RT, reconcore as RC, mul_recon as ALG
++import sys, os, re, time, grampa_lib.recontree as RT, grampa_lib.reconcore as RC, grampa_lib.mul_recon as ALG
+ 
+ def lcaCheck(gt, ginfo, maps, dups, hybrid_clade, gene_num, loutfile, orthoutfile):
+ 
+diff --git a/lib/mul_out.py b/lib/mul_out.py
+index 4172ec9..2456d12 100644
+--- a/lib/mul_out.py
++++ b/lib/mul_out.py
+@@ -1,4 +1,4 @@
+-import os, reconcore as RC, mul_tree as MT, global_vars as globs
++import os, grampa_lib.reconcore as RC, grampa_lib.mul_tree as MT, grampa_lib.global_vars as globs
+ import pickle
+ 
+ #############################################################################
+@@ -172,7 +172,7 @@ def mainOut(mul_trees, all_scores, min_num, min_score, min_maps, multiple_maps):
+ #############################################################################
+ 
+ def detOut(gene_trees, min_tree, min_num, min_maps):
+-	import gene_tree as GT
++	import grampa_lib.gene_tree as GT
+ 	multiple_maps = 0;
+ 	det_header = "# GT/MT combo\t# dups\t# losses\tTotal score";
+ 	if globs.maps_opt:
+diff --git a/lib/mul_recon.py b/lib/mul_recon.py
+index 1e09753..636020a 100644
+--- a/lib/mul_recon.py
++++ b/lib/mul_recon.py
+@@ -5,7 +5,8 @@
+ # Fall 2015, Combo algorithm implemented Spring 2016
+ #############################################################################
+ 
+-import os, itertools, recontree as RT, mul_tree as MT, reconcore as RC, gene_tree as GT, global_vars as globs
++import os, itertools
++from grampa_lib import recontree as RT, mul_tree as MT, reconcore as RC, gene_tree as GT, global_vars as globs
+ import pickle
+ 
+ #############################################################################
+diff --git a/lib/mul_tree.py b/lib/mul_tree.py
+index 02b1b0f..12e782a 100644
+--- a/lib/mul_tree.py
++++ b/lib/mul_tree.py
+@@ -1,4 +1,4 @@
+-import re, recontree as RT, reconcore as RC, global_vars as globs, sys
++import re, grampa_lib.recontree as RT, grampa_lib.reconcore as RC, grampa_lib.global_vars as globs, sys
+ 
+ #############################################################################
+ def countMULTrees(hybrid_nodes, copy_nodes, st, sinfo, starttime):
+diff --git a/lib/opt_parse.py b/lib/opt_parse.py
+index 978cebb..24ca778 100644
+--- a/lib/opt_parse.py
++++ b/lib/opt_parse.py
+@@ -1,4 +1,4 @@
+-import sys, os, reconcore as RC, global_vars as globs
++import sys, os, grampa_lib.reconcore as RC, grampa_lib.global_vars as globs
+ 
+ #############################################################################
+ 
+diff --git a/lib/orth_label.py b/lib/orth_label.py
+index fc1036b..dd53459 100644
+--- a/lib/orth_label.py
++++ b/lib/orth_label.py
+@@ -1,4 +1,4 @@
+-import recontree as RT, mul_tree as MT, global_vars as globs
++from grampa_lib import recontree as RT, mul_tree as MT, global_vars as globs
+ 
+ def orthLabel(gene_trees, min_maps, min_tree, min_clade):
+ 
+diff --git a/lib/reconcore.py b/lib/reconcore.py
+index a54a3a6..d63cbcc 100644
+--- a/lib/reconcore.py
++++ b/lib/reconcore.py
+@@ -6,7 +6,7 @@ from __future__ import print_function
+ # Forked from core on 12.13.2015
+ #############################################################################
+ 
+-import sys, os, subprocess, datetime, time, opt_parse as OP, global_vars as globs
++import sys, os, subprocess, datetime, time, grampa_lib.opt_parse as OP, grampa_lib.global_vars as globs
+ 
+ #############################################################################
+ 
+diff --git a/lib/spec_tree.py b/lib/spec_tree.py
+index 36333f4..7d30dc4 100644
+--- a/lib/spec_tree.py
++++ b/lib/spec_tree.py
+@@ -1,4 +1,4 @@
+-import sys, os, reconcore as RC, recontree as RT, global_vars as globs
++import sys, os, grampa_lib.reconcore as RC, grampa_lib.recontree as RT, grampa_lib.global_vars as globs
+ 
+ #############################################################################
+ 
+diff --git a/lib/tests.py b/lib/tests.py
+index 12da40e..da6011f 100644
+--- a/lib/tests.py
++++ b/lib/tests.py
+@@ -1,4 +1,4 @@
+-import sys, os, subprocess, reconcore as RC
++import sys, os, subprocess, grampa_lib.reconcore as RC
+ 
+ ###############################
+ 

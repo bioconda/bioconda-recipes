@@ -1,0 +1,59 @@
+{% set version = "1.0.0" %}
+{% set name = "epialleleR" %}
+{% set bioc = "3.13" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 96984d5c93ffc2a060907648e015405b
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: RUnit, knitr, rmarkdown
+requirements:
+  host:
+    - 'bioconductor-biocgenerics >=0.38.0,<0.39.0'
+    - 'bioconductor-genomeinfodb >=1.28.0,<1.29.0'
+    - 'bioconductor-genomicranges >=1.44.0,<1.45.0'
+    - 'bioconductor-rsamtools >=2.8.0,<2.9.0'
+    - 'bioconductor-summarizedexperiment >=1.22.0,<1.23.0'
+    - 'bioconductor-variantannotation >=1.38.0,<1.39.0'
+    - r-base
+    - r-bh
+    - r-data.table
+    - r-rcpp
+    - r-stringi
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-biocgenerics >=0.38.0,<0.39.0'
+    - 'bioconductor-genomeinfodb >=1.28.0,<1.29.0'
+    - 'bioconductor-genomicranges >=1.44.0,<1.45.0'
+    - 'bioconductor-rsamtools >=2.8.0,<2.9.0'
+    - 'bioconductor-summarizedexperiment >=1.22.0,<1.23.0'
+    - 'bioconductor-variantannotation >=1.38.0,<1.39.0'
+    - r-base
+    - r-bh
+    - r-data.table
+    - r-rcpp
+    - r-stringi
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'Fast, Epiallele-Aware Methylation Reporter'
+  description: 'Epialleles are specific DNA methylation patterns that are mitotically and/or meiotically inherited. This package calls hypermethylated epiallele frequencies at the level of genomic regions or individual cytosines in next-generation sequencing data using binary alignment map (BAM) files as an input. Other functionality includes computing the empirical cumulative distribution function for per-read beta values, and testing the significance of the association between epiallele methylation status and base frequencies at particular genomic positions (SNPs).'
+

@@ -1,0 +1,37 @@
+{% set version = "0.18.1" %}
+package:
+  name: poseidon-trident
+  version: {{ version }}
+
+source:
+  - url: https://github.com/poseidon-framework/poseidon-hs/releases/download/v{{ version }}/trident-centos7 # [linux]
+    md5: b945f14166a36657c6de56d3656b511a # [linux]
+  - url: https://github.com/poseidon-framework/poseidon-hs/releases/download/v{{ version }}/trident-macOS # [osx]
+    md5: 3f531e78178b6c93aa994320e2071737 # [osx]
+
+build:
+  number: 0
+  script:
+    - "mkdir -p $PREFIX/bin"
+    - "mv trident* $PREFIX/bin/trident"
+    - "chmod u+x $PREFIX/bin/trident"
+
+requirements:
+  build:
+    # Precompiled binaries still link against libgcc
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - gmp
+  run:
+    - zlib
+    - gmp
+
+test:
+  commands:
+     - trident --version
+
+about:
+  home: https://poseidon-framework.github.io/#/
+  license: MIT
+  summary: "A tool (trident) to work with modular genotype databases formatted using Poseidon."
