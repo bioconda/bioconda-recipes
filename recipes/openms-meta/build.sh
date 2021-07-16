@@ -53,7 +53,7 @@ cmake .. \
   -DBoost_ARCHITECTURE="-x64" \
   -DBUILD_EXAMPLES=OFF
 
-ulimit -v 1280000
+ulimit -v 2560000
 make -j2 OpenMS TOPP UTILS SuperHirn
 ulimit -v unlimited
 
