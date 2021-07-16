@@ -10,7 +10,9 @@ cmake -DPYOPENMS=ON -DPY_NUM_MODULES=16 .
 # TODO check that it actually uses the prebuilt libOpenMS from the prefix.
 #make -j${CPU_COUNT} pyopenms
 pushd pyOpenMS
+ulimit -v 128k
 $PYTHON create_cpp_extension.py
 $PYTHON -m pip install . --ignore-installed --no-deps --global-option="--single-threaded"
+ulimit -v unlimited
 popd
 popd
