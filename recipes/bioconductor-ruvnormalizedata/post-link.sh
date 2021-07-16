@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RUVnormalizeData_1.10.0.tar.gz"
+FN="RUVnormalizeData_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/RUVnormalizeData_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RUVnormalizeData_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ruvnormalizedata/bioconductor-ruvnormalizedata_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/RUVnormalizeData_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RUVnormalizeData_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ruvnormalizedata/bioconductor-ruvnormalizedata_1.12.0_src_all.tar.gz"
 )
-MD5="248e26e3fa9bff5a7aac430397cd1822"
+MD5="12f415ab25f7c2aba7e78ddbe635d306"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
