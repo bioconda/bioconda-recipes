@@ -14,6 +14,9 @@
 #
 ###############################
 
+# ARG1 saved to check whether we need "-open" later
+ARG1=$1
+
 # Find original directory of bash script, resolving symlinks
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128
 SOURCE="${BASH_SOURCE[0]}"
@@ -38,4 +41,11 @@ else
   VMMAXMEM="-Xmx${JALVIEW_MAXMEM}"
 fi
 
-java $VMMAXMEM -jar $DIR/jalview-all-${JALVIEW_JRE}.jar ${@};
+# check to see if $1 is set and is not start of other cli set args
+OPEN=""
+if [ -n "$ARG1" -a "$ARG1" = "${ARG1#-}" ]; then
+ # first argument exists and does not start with a "-"
+ OPEN="-open"
+fi
+
+java $VMMAXMEM -jar $DIR/jalview-all-${JALVIEW_JRE}.jar $OPEN ${@};
