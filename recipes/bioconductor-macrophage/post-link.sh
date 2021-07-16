@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="macrophage_1.6.0.tar.gz"
+FN="macrophage_1.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/macrophage_1.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/macrophage_1.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-macrophage/bioconductor-macrophage_1.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/macrophage_1.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/macrophage_1.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-macrophage/bioconductor-macrophage_1.8.0_src_all.tar.gz"
 )
-MD5="749f419e5c6ef325bb6f742af9e02fa4"
+MD5="a180dc530275e7d6f9044b4f2ca06f99"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="MafDb.TOPMed.freeze5.hg19_3.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/MafDb.TOPMed.freeze5.hg19_3.10.0.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/MafDb.TOPMed.freeze5.hg19_3.10.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MafDb.TOPMed.freeze5.hg19_3.10.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mafdb.topmed.freeze5.hg19/bioconductor-mafdb.topmed.freeze5.hg19_3.10.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mafdb.topmed.freeze5.hg19/bioconductor-mafdb.topmed.freeze5.hg19_3.10.0_src_all.tar.gz"
