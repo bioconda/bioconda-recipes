@@ -53,9 +53,9 @@ cmake .. \
   -DBoost_ARCHITECTURE="-x64" \
   -DBUILD_EXAMPLES=OFF
 
-ulimit -v 2560000
-make -j2 OpenMS TOPP UTILS SuperHirn
-ulimit -v unlimited
+#ulimit -v 2560000
+make -j1 OpenMS TOPP UTILS SuperHirn
+#ulimit -v unlimited
 
 # The subpackages will do that (unfortunately "make install" installs everything right away)
 # Another option would be to install somewhere into the build dir (to use the existent install commands)
