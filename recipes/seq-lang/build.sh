@@ -7,7 +7,12 @@ export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 
 #Check gcc is present
-gcc --version
+echo $CC
+
+sed -E -i.bak \
+    -e 's/gcc/$CC/' \
+    ./scripts/deps.sh
+
 
 ./scripts/deps.sh 2 
 
