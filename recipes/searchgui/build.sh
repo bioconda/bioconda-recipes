@@ -14,10 +14,10 @@ chmod 0755 "${PREFIX}/bin/searchgui"
 rm -f "$outdir"'/resources/XTandem/linux/linux_64bit/tandem'
 ln -sf "$(which xtandem)" "$outdir"'/resources/XTandem/linux/linux_64bit/tandem'
 
-# removing MetaMorpheus prebuilt binaries and replacing them by Metamorpheus package ones
-rm -rf "$outdir"'/resources/MetaMorpheus/*'
+# replacing all metamorpheus stuff included in the source package by the one provided by MetaMorpheus Conda package
+# specific folders and files provided by the source package will be kept
+cp -TR "$(command -v metamorpheus | xargs dirname | xargs dirname)/lib/dotnet/tools/metamorpheus/" "$outdir"'/resources/MetaMorpheus/'
 ln -sf "$(which metamorpheus)" "$outdir"'/resources/MetaMorpheus/metamorpheus'
-
 
 # removing makeblast prebuilt binary and replacing it by blast package ones
 rm -f "$outdir"'/resources/makeblastdb/linux/linux_64bit/makeblastdb'
