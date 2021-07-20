@@ -1,5 +1,14 @@
 #!/bin/bash
 
+export INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LD_LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="-L${PREFIX}/lib"
+export CPPFLAGS="-I${PREFIX}/include"
+
+#Check gcc is present
+gcc --version
+
 ./scripts/deps.sh 2 
 
 mkdir build
