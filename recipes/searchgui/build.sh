@@ -23,6 +23,5 @@ ln -sf "$(which metamorpheus)" "$outdir"'/resources/MetaMorpheus/metamorpheus'
 rm -f "$outdir"'/resources/makeblastdb/linux/linux_64bit/makeblastdb'
 ln -sf "$(which makeblastdb)" "$outdir"'/resources/makeblastdb/linux/linux_64bit/makeblastdb'
 
-# TODO: It will probably not be necessary. To be removed in next release if everything goes well.
 # removing MsAmanda prebuilt binary for macosx until .NET Core 6 is released
-# rm -f "$outdir"'/resources/MS Amanda/osx/'*
+rm -f "$outdir"'/resources/MS Amanda/osx/'*
