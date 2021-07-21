@@ -8,7 +8,11 @@ export CPPFLAGS="-I${PREFIX}/include"
 
 #Check gcc is present
 gcc=${CC}
-gcc --version
+
+sed -E -i.bak \
+    -e 's/gcc/$CC/' \
+    ripts/deps.sh
+
 
 ./scripts/deps.sh 2 
 
