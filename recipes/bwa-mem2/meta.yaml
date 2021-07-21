@@ -1,18 +1,14 @@
-{% set version = "2.0" %}
+{% set version = "2.2.1" %}
 
 package:
   name: bwa-mem2
   version: {{ version }}
 
 source:
-  - url: https://github.com/bwa-mem2/bwa-mem2/releases/download/v{{ version }}/Source_code_including_submodule.tar.gz
-    sha256: 23a8aa9d295ed1e042aec255157313b0ddf45ae2271a9b878b5e05a4c1026d38
+  - url: https://github.com/bwa-mem2/bwa-mem2/releases/download/v{{ version }}/Source_code_including_submodules.tar.gz
+    sha256: 9b001bdc7666ee3f14f3698b21673714d429af50438b894313b05bc4688b1f6d
     patches:
       - Makefile.patch
-      - 771c7692aeb857d5b9241a08bbd68f2c6be01811.patch
-      # Below patch make sure the correct executables are found for older processors.
-      # TODO: remove this patch on the next update.
-      - find_executable.patch
 
 build:
   number: 1
@@ -26,6 +22,7 @@ build:
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
   host:
     - zlib
@@ -34,6 +31,8 @@ test:
   commands:
     - bwa-mem2 version
     - bwa-mem2.sse41 version
+    - bwa-mem2.sse42 version
+    - bwa-mem2.avx version
     - bwa-mem2.avx2 version
     - bwa-mem2.avx512bw version
 

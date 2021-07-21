@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="HarmanData_1.16.0.tar.gz"
+FN="HarmanData_1.20.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/HarmanData_1.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/HarmanData_1.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-harmandata/bioconductor-harmandata_1.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/HarmanData_1.20.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/HarmanData_1.20.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-harmandata/bioconductor-harmandata_1.20.0_src_all.tar.gz"
 )
-MD5="805db296ffc6a02c7e43a62d9dcf750a"
+MD5="8c2c0e9091dfac89e9a9d1c10a03eeaf"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

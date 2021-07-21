@@ -1,5 +1,5 @@
 {% set name = "drop" %}
-{% set version = "0.9.2" %}
+{% set version = "1.0.5" %} 
 
 package:
   name: "{{ name|lower }}"
@@ -7,42 +7,38 @@ package:
 
 source:
   url: https://github.com/gagneurlab/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: 77c2335fe550ce855e0f36464dae2d5362784e4c6785a62d3c447a61db6da4c6
+  sha256: eb780f2dfcaf6d5c914bc066f7ec55ac69874d389c3fa7db5077456e24ff38a8
 
 build:
   number: 0
   noarch: python
   entry_points:
     - drop=drop.cli:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --ignore-installed"
 
 requirements:
   host:
     - python >=3.6
     - pip
-
   run:
     - python >=3.6
     - pandas
     - Click >=7.0
     - click-log
     - python-dateutil
-
     # snakemake/wbuild
     - snakemake >=5.5.2
-    - wbuild =1.7.0
+    - wbuild >=1.7.1
     - pandoc
     - graphviz
-
     # command line tools
     - bc
     - wget
-    - tabix
+    - htslib
     - samtools >=1.7
     - bcftools >=1.7
     - gatk4 >=4.0.4
     - star >=2.7
-
     # R dependencies
     - r-base>=4.0.0
     - r-rmarkdown
@@ -56,29 +52,25 @@ requirements:
     - r-magrittr
     - r-devtools
     - r-tmae
-
     # bioconductor packages
     - bioconductor-deseq2
     - bioconductor-GenomicScores
-    - bioconductor-outrider
-    - bioconductor-fraser
+    - bioconductor-outrider >=1.6.1
+    - bioconductor-fraser >=1.2.1
     - bioconductor-variantannotation
-    - bioconductor-bsgenome.hsapiens.ucsc.hg19
+      #- bioconductor-bsgenome.hsapiens.ucsc.hg19
       #- bioconductor-mafdb.gnomad.r2.1.hs37d5
       #- bioconductor-mafdb.gnomad.r2.1.grch38
 
 test:
   imports:
     - drop
-  commands:
-    - drop --help
-    - mkdir -p /tmp/drop_test
-    - cd /tmp/drop_test
-    - drop demo > /dev/null
-    - snakemake -n > /dev/null
-    - snakemake --cores 2 --jobs 2
-    - cd
-    - rm -rf /tmp/drop_test
+  requires:
+    - pip
+    - pytest
+    - pytest-runner
+  source_files:
+    - tests/
 
 about:
   home: https://github.com/gagneurlab/drop
@@ -94,8 +86,7 @@ extra:
     # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
     extended-base: true
   identifiers:
-    - https://dx.doi.org/10.21203/rs.2.19080/v1
+    - https://doi.org/10.1038/s41596-020-00462-5
   recipe-maintainers:
     - c-mertes
     - mumichae
-

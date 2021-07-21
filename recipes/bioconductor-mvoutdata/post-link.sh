@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="mvoutData_1.24.0.tar.gz"
+FN="mvoutData_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/mvoutData_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/mvoutData_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mvoutdata/bioconductor-mvoutdata_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/mvoutData_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/mvoutData_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mvoutdata/bioconductor-mvoutdata_1.28.0_src_all.tar.gz"
 )
-MD5="088c4ccaa9b20ff009b78b946ac76bcf"
+MD5="8476aaf7ad4b323c5c35efda3c97b5b2"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

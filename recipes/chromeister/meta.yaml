@@ -1,0 +1,57 @@
+{% set version = "1.5.a" %}
+{% set sha256 = "c65c1b1b973210e8d9500718640f688ca3ecb5aff02c874791588f97d4fbb5d2" %}
+
+package:
+  name: chromeister
+  version: {{ version }}
+
+source:
+  url: https://github.com/estebanpw/chromeister/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 2
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - {{ cdt('libxext') }}     # [linux]
+    - xorg-libxfixes  # [linux]
+    - make
+  run:
+    - r-ape
+    - r-base
+    - python >=3
+    - scikit-build
+    - cycler
+    - kiwisolver
+    - numpy
+    - opencv
+    - Pillow
+    - pyparsing
+    - python-dateutil
+    - six
+
+test:
+  commands:
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" python -c "import cv2"'
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" CHROMEISTER --help 2>&1 > /dev/null'
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" detect_events.py > /dev/null'
+
+about:
+  home: https://github.com/estebanpw/chromeister
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: An ultra fast, heuristic approach to detect conserved signals in extremely large pairwise genome comparisons
+
+extra:
+  container:
+    extended-base: True
+  identifiers:
+    - doi:10.1038/s41598-019-46773-w

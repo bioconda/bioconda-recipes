@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="OMICsPCAdata_1.6.0.tar.gz"
+FN="OMICsPCAdata_1.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/OMICsPCAdata_1.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/OMICsPCAdata_1.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-omicspcadata/bioconductor-omicspcadata_1.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/OMICsPCAdata_1.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/OMICsPCAdata_1.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-omicspcadata/bioconductor-omicspcadata_1.10.0_src_all.tar.gz"
 )
-MD5="ed5c7c47a43a30319c22213608889ac5"
+MD5="2f37a7d97a6618bc1ffe640114508f68"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,45 +1,22 @@
 {% set name = "GMAP" %}
-{% set version = "2020.06.30" %}
-{% set sha256 = "e60fcc85c55606503ddbd5a3ef7b5e61aecb38ac0c8a132e4aea8c8588ce38ee" %}
+{% set version = "2021.05.27" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: http://research-pub.gene.com/gmap/src/gmap-gsnap-2020-06-30.tar.gz
-  sha256: {{ sha256 }}
+  url: http://research-pub.gene.com/gmap/src/gmap-gsnap-{{ version | replace(".", "-") }}.tar.gz
+  sha256: 81d3e80df4b648b88aa5f18e2ecc4aa649468f09590e967d6e04c010b632dfe7
   patches:
     - single_quote_paths.patch
 
 build:
   number: 0
-  binary_has_prefix_files:
-    - bin/atoiindex
-    - bin/cmetindex
-    - bin/get-genome
-    - bin/gmap.sse42
-    - bin/gmap.nosimd
-    - bin/gmapl.sse42
-    - bin/gmapl.nosimd
-    - bin/gsnap.sse42
-    - bin/gsnap.nosimd
-    - bin/gsnapl.sse42
-    - bin/gsnapl.nosimd
-    - bin/sam_sort
-    - bin/snpindex
-    - bin/uniqscan
-    - bin/uniqscanl
-  has_prefix_files:
-    - bin/gff3_introns
-    - bin/gff3_splicesites
-    - bin/gmap_build
-    - bin/gmap_uncompress
-    - bin/gtf_introns
-    - bin/gtf_splicesites
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
   host:
     - perl
@@ -56,6 +33,7 @@ test:
   commands:
     - gmap --help
     - gsnap --help
+    - ": | fa_coords | grep 'Error: No contigs were read in.'"
 
 about:
   home: http://research-pub.gene.com/gmap/

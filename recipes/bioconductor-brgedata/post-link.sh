@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="brgedata_1.10.0.tar.gz"
+FN="brgedata_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/brgedata_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/brgedata_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-brgedata/bioconductor-brgedata_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/brgedata_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/brgedata_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-brgedata/bioconductor-brgedata_1.14.0_src_all.tar.gz"
 )
-MD5="8e29ff5cad6bd078e209bf7651d3a45d"
+MD5="67be36659c7d587f17c722b0a19b4481"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
