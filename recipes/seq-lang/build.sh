@@ -13,12 +13,17 @@ sed -E -i.bak \
     -e 's/gcc/$CC/' \
     ./scripts/deps.sh
 
+echo "running deps.sh"
 
 ./scripts/deps.sh 2 
 
+echo "deps.sh done"
+
 mkdir build
-(cd build && cmake .. -DCMAKE_BUILD_TYPE=Release \
-                      -DSEQ_DEP=/path/to/deps \
-                      -DCMAKE_C_COMPILER=clang \
-                      -DCMAKE_CXX_COMPILER=clang++)
+cd build 
+cmake .. -DCMAKE_BUILD_TYPE=Release \
+                      -DSEQ_DEP=../deps \
+                      -DCMAKE_C_COMPILER=${CC} \
+                      -DCMAKE_CXX_COMPILER=${CXX}
+
 cmake --build build --config Release
