@@ -11,7 +11,7 @@ gcc=${CC}
 
 sed -E -i.bak \
     -e 's/gcc/$CC/' \
-    ripts/deps.sh
+    ./sripts/deps.sh
 
 
 ./scripts/deps.sh 2 
