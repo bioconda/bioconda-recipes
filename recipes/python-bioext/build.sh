@@ -10,14 +10,12 @@ export FREETYPE2_ROOT=$PREFIX
 
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 
-for CHANGE in "activate" "deactivate"
-do
-    mkdir -p "${PREFIX}/etc/conda/${CHANGE}.d"
-    cp "${RECIPE_DIR}/${CHANGE}.sh" "${PREFIX}/etc/conda/${CHANGE}.d/${PKG_NAME}_${CHANGE}.sh"
-done
+cp ${RECIPE_DIR}/activate.sh "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.sh"
+cp ${RECIPE_DIR}/deactivate.sh "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.sh"
 
-# Symlink reference data to /usr/local/share, since the site-packages path may vary depending on python version
-mkdir -p "${PREFIX}/usr/local/share/bealign_references"
-ln -s "$SP_DIR/BioExt/data/references/hxb2" "$PREFIX/usr/local/share/bealign_references/HXB2"
-ln -s "$SP_DIR/BioExt/data/references/cov2" "$PREFIX/usr/local/share/bealign_references/CoV2"
-ln -s "$SP_DIR/BioExt/data/references/nl4-3" "$PREFIX/usr/local/share/bealign_references/NL4-3"
+export TARGET=$PREFIX/usr/share/$PKG_NAME/reference_data
+
+# Symlink reference data to /usr/local/share/$TARGET, since the site-packages
+# path may vary depending on the python version
+mkdir -p "$TARGET"
+ln -s "$SP_DIR/BioExt/data/references" "$TARGET"
