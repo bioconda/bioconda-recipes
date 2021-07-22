@@ -8,7 +8,7 @@ export CPPFLAGS="-I${PREFIX}/include"
 
 # add gcc link
 cc_path=$(which ${CC})
-ln -s $cc_path ${PREFIX}/bin/gcc
+ln -s $cc_path ${BUILD_PREFIX}/bin/gcc
 
 #check it works
 gcc --version
