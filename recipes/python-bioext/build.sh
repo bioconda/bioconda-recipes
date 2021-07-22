@@ -10,6 +10,7 @@ export FREETYPE2_ROOT=$PREFIX
 
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 
+mkdir -p "${PREFIX}/etc/conda/activate.d" "${PREFIX}/etc/conda/deactivate.d"
 cp ${RECIPE_DIR}/activate.sh "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.sh"
 cp ${RECIPE_DIR}/deactivate.sh "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.sh"
 
