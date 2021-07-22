@@ -1,1 +1,0 @@
-export BEALIGN_REFERENCE_DIR=usr/local/share/bealign_references
