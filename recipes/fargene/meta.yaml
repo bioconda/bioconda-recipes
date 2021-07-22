@@ -1,41 +1,26 @@
-{% set name="fargene" %}
 {% set version="0.1" %}
-{% set sha256="047b27c41cf8a632a3c3da9a825492f2d77eb53a87ad195d71c7ace6493409fb" %}
 
 build:
-  noarch: generic
-  number: 2
-#  script: python -m pip install --no-deps --ignore-installed .
+  skip: True  # [py>=30]
+  number: 4
 
 package:
-  name: {{ name }}
+  name: fargene
   version: {{ version }}
 
 source:
-  url: https://github.com/thanhleviet/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  - url: https://github.com/thanhleviet/fargene/archive/v{{ version }}.tar.gz
+    sha256: 047b27c41cf8a632a3c3da9a825492f2d77eb53a87ad195d71c7ace6493409fb
+  - url: ftp://ftp.ncbi.nlm.nih.gov/genomes/TOOLS/ORFfinder/linux-i64/ORFfinder.gz  # [linux]
+    sha256: a5e05e6664ea4fb22b34ea4115ccd17efe396cfeb43b8fe2cb2a45e4c5652c27  # [linux]
 
 
 requirements:
   host:
-    - python <3
+    - python
     - pip
-    - biopython >=1.68
-    - PyYAML
-    - numpy
-    - matplotlib
-    - emboss
-    - seqtk
-    - hmmer
-    - trim-galore
-    - clustalo
-    - spades
-    - prodigal
-    - unzip
-    - wget
-
   run:
-    - python <3
+    - python
     - pip
     - biopython >=1.68
     - PyYAML
@@ -52,6 +37,7 @@ requirements:
 test:
   commands:
     - fargene --help
+    - command -v ORFfinder  # [linux]
 
 about:
   home: https://github.com/fannyhb/fargene

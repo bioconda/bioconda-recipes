@@ -3,29 +3,22 @@
 mkdir build
 cd build
 
-export C_INCLUDE_PATH=${PREFIX}/include
-export CPP_INCLUDE_PATH=${PREFIX}/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export CXX_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-
-DCMTK_HOME=$PREFIX \
+# WARNING: with the default value of USE_COMPILER_HIDDEN_VISIBILITY (TRUE/ON),
+# link problems arise when linking (at least) ofstd.
+# WARNING: CMAKE_INSTALL_LIBDIR defaults to lib64, while conda expects lib
 cmake \
-	-D CMAKE_FIND_ROOT_PATH=${PREFIX} \
-	-D CMAKE_INSTALL_PREFIX=${PREFIX} \
-        -D CMAKE_BUILD_TYPE:STRING=Release \
-	-D DCMTK_WITH_OPENSSL:BOOL=TRUE \
-	-D DCMTK_WITH_PNG:BOOL=TRUE \
-	-D DCMTK_WITH_THREADS:BOOL=TRUE \
-	-D DCMTK_WITH_TIFF:BOOL=TRUE \
-	-D DCMTK_WITH_XML:BOOL=TRUE \
-	-D DCMTK_WITH_ZLIB:BOOL=TRUE \
-	-D BUILD_SHARED_LIBS:BOOL=TRUE \
-	-D CMAKE_POSITION_INDEPENDENT_CODE:BOOL=TRUE \
-	..
+    -G Ninja \
+    -D CMAKE_BUILD_TYPE:STRING=Release \
+    -D BUILD_SHARED_LIBS:BOOL=TRUE \
+    -D USE_COMPILER_HIDDEN_VISIBILITY:BOOL=FALSE \
+    -D CMAKE_INSTALL_LIBDIR:PATH=lib \
+    -D CMAKE_INSTALL_PREFIX="${PREFIX}" \
+    -D ICU_ROOT="${CONDA_PREFIX}" \
+    -D OPENSSL_ROOT_DIR="${CONDA_PREFIX}" \
+    -D DCMTK_ENABLE_PRIVATE_TAGS:BOOL=TRUE \
+    ..
 
-make -j${CPU_COUNT} all
-make install
+cmake --build . --target install
 
-mkdir ${PREFIX}/include/dcmtk/dcmjpeg/libijg8/
-cp -R ../dcmjpeg/libijg8/*.h ${PREFIX}/include/dcmtk/dcmjpeg/libijg8/
+mkdir -p "${PREFIX}/include/dcmtk/dcmjpeg/libijg8"
+cp ../dcmjpeg/libijg8/*.h "${PREFIX}/include/dcmtk/dcmjpeg/libijg8/"

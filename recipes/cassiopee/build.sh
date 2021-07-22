@@ -9,7 +9,7 @@ export LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
 export CPPFLAGS="$CPPFLAGS -I${PREFIX}/include"
 
 # DEBUG purpose to find boost related libs on travis
-cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX .
+cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -DBoost_NO_BOOST_CMAKE=ON .
 make
 make install
 

@@ -1,0 +1,50 @@
+{% set version = "1.0.1" %}
+{% set github = "https://github.com/GeneDx/scramble" %}
+
+package:
+  name: scramble
+  version: {{ version }}
+
+source:
+  url: {{ github }}/archive/v{{ version }}.tar.gz
+  sha256: 8ee9965f04bf860951aca74c5524e185156a11b709a9a67874ffaed537001554
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - htslib >=1.11
+  run:
+    - r-base >=4.0.3
+    - r-optparse >=1.6.6
+    - r-rblast >=0.99.1
+    - r-stringr >=1.4.0
+    - bioconductor-rsamtools >=2.4.0
+
+test:
+  commands:
+    - cluster_identifier -v 2>&1 >/dev/null | grep {{ version }}
+    # additional tests are in run_test.sh to be excluded from the stringent mulled-build test runs
+  source_files:
+    - validation/test*
+
+about:
+  home: {{ github }}
+  license: CC
+  license_file: LICENSE
+  summary: Soft Clipped Read Alignment Mapper
+  description: |
+    SCRAMble identifies clusters of soft clipped reads in a BAM file, builds consensus sequences,
+    aligns to representative L1Ta, AluYa5, and SVA-E sequences, and outputs MEI calls
+
+extra:
+  identifiers:
+    - doi:10.1038/s41436-020-0749-x
+  notes: |
+    SCRAMble runs as a two-step process. First cluster_identifier is used to generate soft-clipped
+    read cluster consensus sequences. Second, SCRAMble.R analyzes the cluster file for likely MEIs.
+    Custom wrapper script scramble.sh is provided to help setting location of SCRAMble.R script,
+    and values for --install-dir and --mei-refs params.

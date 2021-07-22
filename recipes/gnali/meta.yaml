@@ -1,0 +1,56 @@
+
+{% set name = "gNALI" %}
+{% set version = "1.0.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/phac-nml/gnali/archive/v{{ version }}.tar.gz
+  sha256: 7c91accf025f52e3e61155daae52e032bfc43e40ada9ccb8953c7090a95ede90
+  patches:
+    - patch
+
+build:
+  number: 1
+  noarch: python
+  entry_points:
+    - gnali = gnali.gnali:main
+    - gnali_get_data = gnali.gnali_get_data:main
+  script: "$PYTHON setup.py install --single-version-externally-managed --record=record.txt"
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - ensembl-vep
+    - samtools
+    - htslib
+    - perl-bio-bigfile
+    - pybiomart
+    - pandas
+    - numpy
+    - pysam<0.16
+    - filelock
+    - pyyaml
+    - py-bgzip
+    - python-magic
+    - progress
+    - git >=2
+
+test:
+  imports:
+    - gnali
+  commands:
+    - gnali --help
+
+about:
+  home: https://github.com/phac-nml/gnali
+  license: Apache-2.0
+  license_file: LICENSE.txt
+  license_family: APACHE
+  summary: "gNALI (gene nonessentiality and loss-of-function identifier) is a tool for finding PLoF gene variants."
+  dev_url: https://github.com/phac-nml/gnali

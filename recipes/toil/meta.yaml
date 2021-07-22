@@ -1,53 +1,53 @@
-{% set version="3.24.0" %}
+{% set version="5.4.0" %}
 package:
   name: toil
   version: {{ version }}
 
 source:
   url: https://pypi.io/packages/source/t/toil/toil-{{ version }}.tar.gz
-  sha256: 53206bc5e8f3c3879bd18bc69bbee157412bde1764260db8e33d735083b8e1cc
+  sha256: 73c0648828bd3610c07b7648dd06d6ec27efefdb09473bf01d05d91eb899c9fd
+  patches:
+    - remove_wdlparse.patch
 
 build:
   number: 0
-  noarch: python
+  noarch: python 
   entry_points:
     - toil = toil.utils.toilMain:main
     - _toil_worker = toil.worker:main
     - cwltoil = toil.cwl.cwltoil:main [cwl]
     - toil-cwl-runner = toil.cwl.cwltoil:main [cwl]
-    - toil-wdl-runner = toil.wdl.toilwdl:main
+    #- toil-wdl-runner = toil.wdl.toilwdl:main
     - _toil_mesos_executor = toil.batchSystems.mesos.executor:main [mesos]
 
 requirements:
   host:
-    - python
+    - python >=3.6
     - pip
   run:
-    - python
-    - dill >=0.2.7.1
+    - python >=3.6
+    - dill >=0.3.2,<0.4
     - six >=1.10.0
-    - future
+    - future 
     - requests 2
     - docker-py >=2.5.1
     - python-dateutil
     - psutil >=3.0.1,<6
-    - subprocess32 <=3.5.2  # [py27]
-    - addict <=2.2.0
+    - addict >=2.2.1,<2.3
     - sphinx >=1.7.5
     - pathlib2 >=2.3.2
     #mesos pymesos isn't available
     #aws reqs
     - boto >=2.48.0
     - boto3 >=1.7.50,<2.0
-    - futures >=3.1.1  # [py27]
     - pycryptodome >=3.5.1
     #azure reqs secretstorage<3 isn't available
     #encryption reqs
-    - pynacl 1.1.2
+    - pynacl ==1.3.0
     #google reqs gcs-oauth2-boto-plugin 1.14 hasn't been added to conda-forge yet
     #cwl_reqs
-    - cwltool >=1.0.20190815141648
-    - schema-salad >=4.5.20190815125611,<5
+    - cwltool ==3.0.20201203173111
+    - schema-salad >7,<=8
     - galaxy-lib >=18.9.2
     #htcondor_reqs htcondor isn't available
 
@@ -67,9 +67,8 @@ test:
     - toil.wdl
   commands:
     - toil --help
-    - cwltoil --help
     - toil-cwl-runner --help
-    - toil-wdl-runner --help
+    #- toil-wdl-runner --help
 
 about:
   home: https://github.com/BD2KGenomics/toil

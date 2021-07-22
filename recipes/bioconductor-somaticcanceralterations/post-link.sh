@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="SomaticCancerAlterations_1.22.0.tar.gz"
+FN="SomaticCancerAlterations_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/SomaticCancerAlterations_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/SomaticCancerAlterations_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-somaticcanceralterations/bioconductor-somaticcanceralterations_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/SomaticCancerAlterations_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/SomaticCancerAlterations_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-somaticcanceralterations/bioconductor-somaticcanceralterations_1.28.0_src_all.tar.gz"
 )
-MD5="5f08c1e7c3b0e341b216103ef08a3164"
+MD5="2a56b23b0fc73d92cb85c733ea98dc43"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

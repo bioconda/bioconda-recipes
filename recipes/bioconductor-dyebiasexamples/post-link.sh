@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="dyebiasexamples_1.26.0.tar.gz"
+FN="dyebiasexamples_1.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/dyebiasexamples_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/dyebiasexamples_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-dyebiasexamples/bioconductor-dyebiasexamples_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/dyebiasexamples_1.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/dyebiasexamples_1.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-dyebiasexamples/bioconductor-dyebiasexamples_1.32.0_src_all.tar.gz"
 )
-MD5="3edd6f4cb6063aea756f0046cfb0c022"
+MD5="3b318cf5600367bf33f7ca40f918c6a9"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

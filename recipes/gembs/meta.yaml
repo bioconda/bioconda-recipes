@@ -10,43 +10,42 @@ package:
 source:
   - url: https://github.com/heathsc/gemBS/archive/v{{ version }}.tar.gz
     sha256: {{ sha256 }}
-  - url: https://github.com/samtools/bcftools/releases/download/{{ bcftoolsversion }}/bcftools-{{ bcftoolsversion }}.tar.bz2
-    sha256: {{ bcftoolssha256 }}
-    folder: tools/bcftools
+    patches:
+      - 0001-Unvendor-bcftools.patch
 
 build:
-  number: 3
-  skip: True # [py2k]
-  script: $PYTHON setup.py install --minimal --single-version-externally-managed --record=record.txt
+  number: 5
+  skip: True # [py<30]
+  script: {{ PYTHON }} -m pip install . --no-deps -vv --install-option=--minimal
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - make
   host:
+    - pip
     - python
     - zlib
     - bzip2
     - xz
-    - htslib =1.8
+    - htslib
+    - bcftools
     - multiprocess
-    - curl
-    - wget
   run:
     - python
     - zlib
     - bzip2
     - xz
     - pigz
-    - htslib =1.8
+    - htslib
     - matplotlib
     - multiprocess
-    - samtools =1.8
-    - gem3-mapper =3.6.1
-    - bs_call =2.02
+    - samtools
+    - bcftools
+    - gem3-mapper 3.6.1.*
+    - bs_call 2.02.*
     - ucsc-bedtobigbed
     - ucsc-wigtobigwig
-    - curl
-    - wget
 
 test:
   commands:

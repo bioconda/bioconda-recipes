@@ -12,7 +12,9 @@ cp -R $SRC_DIR/* $MUMMER_HOME
 
 cd $MUMMER_HOME
 
-make CC=$CC CXX=$CXX
+# One of the Makefiles references a shell script not in the path
+export PATH="$PATH:."
+make CC=$CC CXX=$CXX CPPFLAGS="-O3 -DSIXTYFOURBITS"
 
 binaries="\
 combineMUMs \

@@ -1,6 +1,7 @@
-{% set version = "2.10.1" %}
-{% set bioconda_version = "2.10.1" %}
-{% set ngs_version = "2.10.1" %}
+{% set version = "2.11.0" %}
+{% set bioconda_version = "2.11.0" %}
+{% set vdb_version = "2.11.0" %}
+{% set ngs_version = "2.11.0" %}
 
 package:
   name: sra-tools
@@ -8,14 +9,16 @@ package:
 
 source:
   - url: https://github.com/ncbi/sra-tools/archive/{{version}}.tar.gz
-    sha256: 6c522f1014831c0ff1429f56fe50408c917f193f83469831d227bb084299f9e3
+    sha256: 10ac0a4d1fafc274bc107de811891d3e803d0713a247581dece4448231883810
+    patches:
+      # FIXME: Configure script does not recognize HDF5 as installed on macOS.
+      - 0001-No-libhdf5-libxml2-static-link-sra-tools.patch
     folder: sra-tools
-  - url: https://github.com/ncbi/ncbi-vdb/archive/{{version}}.tar.gz
-    sha256: b55e28a264602613fe36fa82f4e38fc36631b361fd08d4b442afdba258fb1f6c
+  - url: https://github.com/ncbi/ncbi-vdb/archive/{{vdb_version}}.tar.gz
+    sha256: 9a65e3885b9ae1ebecbec871f04ce3162ac3764fb556ecdc8c1e61993e2164aa
+    patches:
+      - 0002-No-libhdf5-libxml2-static-link-ncbi-vdb.patch
     folder: ncbi-vdb
-  - url: https://github.com/ncbi/ngs/archive/{{ngs_version}}.tar.gz
-    sha256: c1fde07b7b7fb9f0ab63adc3791146c36821a533def054df214c28b676e70309
-    folder: ngs
 
 build:
   number: 0
@@ -24,24 +27,26 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - make
+    - patch
   host:
     - ncbi-ngs-sdk
     - libxml2
     - hdf5
     - perl
   run:
+    - ca-certificates
+    - ossuuid
     - perl
     - ncbi-ngs-sdk
-    - libxml2
-    - hdf5
     - perl-xml-libxml
     - perl-uri
+    - curl
 
 test:
   commands:
-    # "Frequently Used Tools"
-    - sratools help
-    # Ensure the old executable names still work
+    # create config file with /LIBS/GUID value so tests pass; new GUID value will be created in user's home dir upon installation via post-link.sh
+    - if ! grep "/LIBS/GUID" ~/.ncbi/user-settings.mkfg &> /dev/null; then mkdir -p ~/.ncbi && printf '/LIBS/GUID = "%s"\n' `uuid` > ~/.ncbi/user-settings.mkfg; fi
     - fastq-dump --help > /dev/null
     - prefetch --help > /dev/null
     - sam-dump --help > /dev/null

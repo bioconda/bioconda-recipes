@@ -1,6 +1,8 @@
 #!/bin/bash
-mkdir -p ${PREFIX}/bin
 
-make
-mv fmlrc ${PREFIX}/bin/
-mv fmlrc-convert ${PREFIX}/bin/
+make CC="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+install -d "${PREFIX}/bin"
+install \
+    fmlrc \
+    fmlrc-convert \
+    "${PREFIX}/bin/"
