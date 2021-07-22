@@ -6,8 +6,12 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 
-#Check gcc is present
-gcc=${CC}
+# add gcc link
+cc_path=$(which ${CC})
+ln -s $cc_path ${PREFIX}/bin/gcc
+
+#check it works
+gcc --version
 
 sed -E -i.bak \
     -e 's/gcc/$CC/' \
