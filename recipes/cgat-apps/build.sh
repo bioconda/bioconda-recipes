@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # export compiler flags
-#export CFLAGS=${CFLAGS}" -I${PREFIX}/include -L${PREFIX}/lib"
-#export CPPFLAGS=${CPPFLAGS}" -I${PREFIX}/include -L${PREFIX}/lib"
+export CFLAGS=${CFLAGS}" -I${PREFIX}/include -L${PREFIX}/lib"
+export CPPFLAGS=${CPPFLAGS}" -I${PREFIX}/include -L${PREFIX}/lib"
 export LDFLAGS=${LDFLAGS}" -I${PREFIX}/include -L${PREFIX}/lib"
 export CPATH=${CPATH}" -I${PREFIX}/include -L${PREFIX}/lib"
 export C_INCLUDE_PATH=${C_INCLUDE_PATH}:${PREFIX}/include
