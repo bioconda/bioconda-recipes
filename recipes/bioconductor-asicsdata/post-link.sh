@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ASICSdata_1.8.0.tar.gz"
+FN="ASICSdata_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/ASICSdata_1.8.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ASICSdata_1.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-asicsdata/bioconductor-asicsdata_1.8.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/ASICSdata_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ASICSdata_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-asicsdata/bioconductor-asicsdata_1.12.0_src_all.tar.gz"
 )
-MD5="5e5e105cad605cb4053c381876f4dbb0"
+MD5="9bef1320498e351d5ad9d405430796d8"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

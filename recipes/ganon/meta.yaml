@@ -1,5 +1,5 @@
 {% set name = "ganon" %}
-{% set version = "0.2.3" %}
+{% set version = "0.4.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -8,7 +8,7 @@ package:
 source:
   - folder: ganon
     url: https://github.com/pirovc/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: 6512094561d1df5a878ec598bc225d5025721f2de644f3fab7f431ba5793ff41
+    sha256: 68c90e10f152021c90a3e5aa24d81d1ce7ad46054b6dcccef1fe986f29216524
   - folder: seqan
     url: https://github.com/eseiler/seqan/archive/d8b3fcd55858c150bc1dd95fa3cf4c8ebb640829.tar.gz
     sha256: 5396aa6d541a22f32b7aa6f60015ade8a157e6af75f63aec8f3a514eeca06b80 
@@ -18,34 +18,43 @@ source:
     
 build:
   number: 0
-  skip: True # [osx]
+  skip: True  # [py<35 or osx]
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
     - cmake >=3.10
-    - python >=3.4
-    - taxsbp ==0.1.2
-    - gawk
-    - pandas >=1.0.0
-    - coreutils
   host:
     - catch2 >=2.7.0
     - cxxopts ==2.2.0
-    - zlib
-  run:
-    - python >=3.4
-    - taxsbp ==0.1.2
+    - python
+    - pandas >=0.22.0
+    - taxsbp ==1.1.1
     - gawk
+    - grep
+    - tar
+    - curl
+    - wget
     - coreutils
     - zlib
-    - pandas >=1.0.0
-
+  run:
+    - python
+    - pandas >=0.22.0
+    - taxsbp ==1.1.1
+    - gawk
+    - grep
+    - tar
+    - curl
+    - wget
+    - coreutils
+    - zlib
+    
 test:
   commands:
     - ganon --help
-    - ganon-build --help 2>&1 | grep "Ganon builder"
-    - ganon-classify --help 2>&1 | grep "Ganon classifier"
+    - ganon-build --help
+    - ganon-classify --help
 
 about:
   home: https://github.com/pirovc/ganon
@@ -61,4 +70,3 @@ extra:
     - doi:10.1101/406017
   recipe-maintainers:
     - pirovc
-

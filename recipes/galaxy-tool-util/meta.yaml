@@ -1,5 +1,5 @@
-{% set version = "19.9.1" %}
-{% set sha256 = "21f86217b4faeb7771ba9983510ae86f9b32dd233ba175a69ee66bc3c6fa1af8" %}
+{% set version = "21.1.2" %}
+{% set sha256 = "4e4ac6ca6425ed618a7222becf3d3b0258fd687ce248a952400abfd47ed24319" %}
 {% set galaxy_version = version.split(".")[:2]|join(".") %}
 
 package:
@@ -20,21 +20,25 @@ build:
     - mulled-search=galaxy.tool_util.deps.mulled.mulled_search:main
     - mulled-build-tool=galaxy.tool_util.deps.mulled.mulled_build_tool:main
     - mulled-build-files=galaxy.tool_util.deps.mulled.mulled_build_files:main
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+    - mulled-list=galaxy.tool_util.deps.mulled.mulled_list:main
+    - mulled-update-singularity-containers=galaxy.tool_util.deps.mulled.mulled_update_singularity_containers:main
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.5
     # Depend on galaxy-util during build time to avoid packaging galaxy/__init__.py .
     - galaxy-util >={{ galaxy_version }}
     # Depend on galaxy-containers due to shortcomings of bioconda-utils' build graph generation.
-    - galaxy-containers >={{ galaxy_version }}
+    - galaxy-containers
   run:
-    - galaxy-containers >={{ galaxy_version }}
+    - galaxy-containers >=20.5.0
     - galaxy-util >={{ galaxy_version }}
-    - python
+    - python >=3.5
     - six
+    - whoosh
+    - conda
 
 test:
   imports:
@@ -55,8 +59,11 @@ test:
     - mulled-build --help
     - mulled-build-channel --help
     - mulled-search --help
+    - mulled-search -s bwa
     - mulled-build-tool --help
     - mulled-build-files --help
+    - mulled-list --help
+    - mulled-update-singularity-containers --help
 
 about:
   home: https://galaxyproject.org

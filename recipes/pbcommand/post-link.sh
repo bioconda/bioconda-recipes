@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cat > "${PREFIX}"/.messages.txt <<- EOF
+cat >> "${PREFIX}"/.messages.txt <<- EOF
 	
 	##############################################################################
 	#                                                                            #

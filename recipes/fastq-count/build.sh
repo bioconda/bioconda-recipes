@@ -1,14 +1,7 @@
 #!/bin/bash -euo
 
-# taken from yacrd recipe, see: https://github.com/bioconda/bioconda-recipes/blob/2b02c3db6400499d910bc5f297d23cb20c9db4f8/recipes/yacrd/build.sh
-if [ "$(uname)" == "Darwin" ]; then
-
-    # apparently the HOME variable isn't set correctly, and circle ci output indicates the following as the home directory
-    export HOME="/Users/distiller"
-
-    # according to https://github.com/rust-lang/cargo/issues/2422#issuecomment-198458960 removing circle ci default configuration solves cargo trouble downloading crates
-    git config --global --unset url.ssh://git@github.com.insteadOf
-
-fi
+# Add workaround for SSH-based Git connections from Rust/cargo.  See https://github.com/rust-lang/cargo/issues/2078 for details.
+# We set CARGO_HOME because we don't pass on HOME to conda-build, thus rendering the default "${HOME}/.cargo" defunct.
+export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
 
 RUST_BACKTRACE=1 C_INCLUDE_PATH=$PREFIX/include LIBRARY_PATH=$PREFIX/lib cargo install --verbose --root $PREFIX --path .

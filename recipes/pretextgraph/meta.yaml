@@ -1,23 +1,25 @@
 {% set name = "PretextGraph" %}
-{% set version = "0.0.2" %}
+{% set version = "0.0.5" %}
+{% set sha256 = "35ee7dd443fbe906b65b67920eddede475c89fab0e51053280a77d071afa84e7" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://github.com/wtsi-hpag/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: 7111d588e211a1a677e01af94eb33b154828ca1ea2a0390bc7ac2303d280a57c
+  url: https://github.com/wtsi-hpag/{{name}}/releases/download/{{version}}/Source_with_Submodules.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - bioconda_libdeflate_include_path.patch
 
 build:
   number: 0
 
 requirements:
   build:
-    - {{ compiler('cxx') }} # [linux64]
-    - make
-    - clang>=9.0.0
-    - python
+    - {{ compiler('cxx') }}
+    - clang>=9.0.1 # [linux] 
+    - meson>=0.57.1
 
 test:
   commands:

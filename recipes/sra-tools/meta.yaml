@@ -1,7 +1,7 @@
-{% set version = "2.10.7" %}
-{% set bioconda_version = "2.10.7" %}
-{% set vdb_version = "2.10.7" %}
-{% set ngs_version = "2.10.5" %}
+{% set version = "2.11.0" %}
+{% set bioconda_version = "2.11.0" %}
+{% set vdb_version = "2.11.0" %}
+{% set ngs_version = "2.11.0" %}
 
 package:
   name: sra-tools
@@ -9,36 +9,39 @@ package:
 
 source:
   - url: https://github.com/ncbi/sra-tools/archive/{{version}}.tar.gz
-    sha256: b81e24c6025f180a8c5ee57052f3ce7f9e53117178c783dc07f740fc2c77d5f2
+    sha256: 10ac0a4d1fafc274bc107de811891d3e803d0713a247581dece4448231883810
+    patches:
+      # FIXME: Configure script does not recognize HDF5 as installed on macOS.
+      - 0001-No-libhdf5-libxml2-static-link-sra-tools.patch
     folder: sra-tools
   - url: https://github.com/ncbi/ncbi-vdb/archive/{{vdb_version}}.tar.gz
-    sha256: ca8c87b7a852dca4cb44256bd05bc9353eac862a6158b2cfed75e81c7dbe3f22
+    sha256: 9a65e3885b9ae1ebecbec871f04ce3162ac3764fb556ecdc8c1e61993e2164aa
+    patches:
+      - 0002-No-libhdf5-libxml2-static-link-ncbi-vdb.patch
     folder: ncbi-vdb
-  - url: https://github.com/ncbi/ngs/archive/{{ngs_version}}.tar.gz
-    sha256: c39ee65a625e3646e0212c5d8be846e45d368c644a053d3b54cf63f53853f02f
-    folder: ngs
 
 build:
-  number: 1
-  skip: True  # [osx]
+  number: 0
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - make
+    - patch
   host:
     - ncbi-ngs-sdk
     - libxml2
     - hdf5
     - perl
   run:
+    - ca-certificates
     - ossuuid
     - perl
     - ncbi-ngs-sdk
-    - libxml2
-    - hdf5
     - perl-xml-libxml
     - perl-uri
+    - curl
 
 test:
   commands:

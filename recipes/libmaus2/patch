@@ -1,0 +1,131 @@
+diff --git a/src/libmaus2/aio/OFStreamOutputStreamFactory.hpp b/src/libmaus2/aio/OFStreamOutputStreamFactory.hpp
+index 008100d1..36d10338 100644
+--- a/src/libmaus2/aio/OFStreamOutputStreamFactory.hpp
++++ b/src/libmaus2/aio/OFStreamOutputStreamFactory.hpp
+@@ -21,7 +21,7 @@
+ 
+ #include <libmaus2/aio/OutputStreamFactory.hpp>
+ #include <libmaus2/exception/LibMausException.hpp>
+-#include <filesystem>
++#include <experimental/filesystem>
+ #include <fstream>
+ #include <cstring>
+ 
+@@ -72,8 +72,8 @@ namespace libmaus2
+ 			}
+ 			virtual void mkdir(std::string const & name, uint64_t const mode)
+ 			{
+-				std::filesystem::create_directory(name,std::filesystem::current_path());
+-				std::filesystem::permissions(name,static_cast<std::filesystem::perms>(mode));
++				std::experimental::filesystem::create_directory(name,std::experimental::filesystem::current_path());
++				std::experimental::filesystem::permissions(name,static_cast<std::experimental::filesystem::perms>(mode));
+ 			}
+ 		};
+ 	}
+diff --git a/src/libmaus2/aio/OutputStreamFactoryContainer.hpp b/src/libmaus2/aio/OutputStreamFactoryContainer.hpp
+index 86a25bcd..ad6f4544 100644
+--- a/src/libmaus2/aio/OutputStreamFactoryContainer.hpp
++++ b/src/libmaus2/aio/OutputStreamFactoryContainer.hpp
+@@ -27,6 +27,7 @@
+ #include <libmaus2/aio/SecrecyOutputStreamFactory.hpp>
+ #include <libmaus2/aio/URLObject.hpp>
+ #include <cctype>
++#include <experimental/filesystem>
+ 
+ namespace libmaus2
+ {
+@@ -282,7 +283,7 @@ namespace libmaus2
+ 
+ 				for ( uint64_t i = 0; i < V.size(); ++i )
+ 					// check whether path already exists
+-					if ( ! std::filesystem::exists(V[i]) )
++					if ( ! std::experimental::filesystem::exists(V[i]) )
+ 						// if not, then create it as a directory
+ 						mkdir(V[i],mode);
+ 			}
+diff --git a/src/libmaus2/aio/PosixFdOutputStreamFactory.hpp b/src/libmaus2/aio/PosixFdOutputStreamFactory.hpp
+index 083fad49..cb95a6be 100644
+--- a/src/libmaus2/aio/PosixFdOutputStreamFactory.hpp
++++ b/src/libmaus2/aio/PosixFdOutputStreamFactory.hpp
+@@ -21,7 +21,7 @@
+ 
+ #include <libmaus2/aio/OutputStreamFactory.hpp>
+ #include <libmaus2/aio/PosixFdOutputStream.hpp>
+-#include <filesystem>
++#include <experimental/filesystem>
+ 
+ namespace libmaus2
+ {
+@@ -88,8 +88,8 @@ namespace libmaus2
+ 			}
+ 			virtual void mkdir(std::string const & name, uint64_t const mode)
+ 			{
+-				std::filesystem::create_directory(name,std::filesystem::current_path());
+-				std::filesystem::permissions(name,static_cast<std::filesystem::perms>(mode));
++				std::experimental::filesystem::create_directory(name,std::experimental::filesystem::current_path());
++				std::experimental::filesystem::permissions(name,static_cast<std::experimental::filesystem::perms>(mode));
+ 			}
+ 		};
+ 	}
+diff --git a/src/libmaus2/util/ArgInfo.cpp b/src/libmaus2/util/ArgInfo.cpp
+index a93401fc..b4f7837e 100644
+--- a/src/libmaus2/util/ArgInfo.cpp
++++ b/src/libmaus2/util/ArgInfo.cpp
+@@ -24,7 +24,7 @@
+ #include <libmaus2/demangle/Demangle.hpp>
+ #include <libmaus2/network/GetHostName.hpp>
+ #include <libmaus2/util/PathTools.hpp>
+-#include <filesystem>
++#include <experimental/filesystem>
+ 
+ bool libmaus2::util::ArgInfo::helpRequested() const
+ {
+@@ -74,7 +74,7 @@ std::string libmaus2::util::ArgInfo::getCurDir()
+ 
+ std::string libmaus2::util::ArgInfo::getDirName(std::string absprogname)
+ {
+-	return std::filesystem::path(absprogname).remove_filename();
++	return std::experimental::filesystem::path(absprogname).remove_filename();
+ }
+ 
+ std::string libmaus2::util::ArgInfo::getAbsProgName() const
+diff --git a/src/libmaus2/util/PathTools.cpp b/src/libmaus2/util/PathTools.cpp
+index a8566b2e..095cb07b 100644
+--- a/src/libmaus2/util/PathTools.cpp
++++ b/src/libmaus2/util/PathTools.cpp
+@@ -16,27 +16,27 @@
+     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ #include <libmaus2/util/PathTools.hpp>
+-#include <filesystem>
++#include <experimental/filesystem>
+ 
+ std::string libmaus2::util::PathTools::getAbsPath(std::string const fn)
+ {
+ 	if ( ! fn.size() )
+ 		return fn;
+ 	else
+-		return std::filesystem::absolute(std::filesystem::path(fn));
++		return std::experimental::filesystem::absolute(std::experimental::filesystem::path(fn));
+ }
+ 
+ std::string libmaus2::util::PathTools::getCurDir()
+ {
+-	return std::filesystem::current_path();
++	return std::experimental::filesystem::current_path();
+ }
+ 
+ std::string libmaus2::util::PathTools::sbasename(std::string const & s)
+ {
+-	return std::filesystem::path(s).filename();
++	return std::experimental::filesystem::path(s).filename();
+ }
+ 
+ std::string libmaus2::util::PathTools::sdirname(std::string const & s)
+ {
+-	return std::filesystem::path(s).remove_filename();
++	return std::experimental::filesystem::path(s).remove_filename();
+ }
+-- 
+2.31.0
+
