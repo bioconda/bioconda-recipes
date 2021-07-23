@@ -1,7 +1,14 @@
 #!/bin/bash
 
+# create IPR dir
+IPR_DIR=${PREFIX}/share/InterProScan
+mkdir -p ${IPR_DIR}
+
 # cd into the core directory, where the master pom.xml file (Maven build file) is located.
 cd core
+
+# copy fingerprintscan exe - version from bioconda does not work
+cp jms-implementation/support-mini-x86-32/bin/prints/fingerPRINTScan ${PREFIX}/bin
 
 # Run mvn clean install to build and install (into your local Maven repository) all of the modules for InterProScan 5.
 mvn clean install
@@ -11,8 +18,6 @@ cd jms-implementation
 mvn clean package
 
 # copy result into the share folder
-IPR_DIR=${PREFIX}/share/InterProScan
-mkdir -p ${IPR_DIR}
 cp -r target/interproscan-5-dist/* ${IPR_DIR}/
 
 # mv interproscan.sh in the bin
