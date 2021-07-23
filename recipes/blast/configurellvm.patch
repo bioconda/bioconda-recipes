@@ -1,0 +1,33 @@
+# fix OSX build issue
+# see issue #20874 for more info
+diff -ruN c++/src/build-system/configure c++/src/build-system/configure
+--- c++/src/build-system/configure	2021-05-06 17:50:09.000000000 +0200
++++ c++/src/build-system/configure	2021-07-13 10:33:01.000000000 +0200
+@@ -9317,7 +9317,8 @@
+       CONF_loadable_ext=".dylib"
+    fi
+    if test "$compiler" = AppleClang \
+-      ||  ("$compiler" = GCC  &&  $CXX -v 2>&1 | grep -q Apple) ; then
++      ||  test "$compiler" = LLVMClang \
++      ||  (test "$compiler" = GCC  &&  $CXX -v 2>&1 | grep -i -q Apple) ; then
+       CFLAGS="-fpascal-strings $CFLAGS"
+       CXXFLAGS="-fpascal-strings $CXXFLAGS"
+       if test "$compiler" = AppleClang; then
+@@ -9727,7 +9728,7 @@
+ else
+   ac_cv_header_stdc=no
+ fi
+-rm -f conftest*
++rm -rf conftest*
+ 
+ fi
+ 
+@@ -9744,7 +9745,7 @@
+ else
+   ac_cv_header_stdc=no
+ fi
+-rm -f conftest*
++rm -rf conftest*
+ 
+ fi
+ 

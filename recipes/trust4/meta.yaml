@@ -1,0 +1,42 @@
+{% set version = "1.0.5" %}
+
+package:
+  name: trust4
+  version: '{{ version }}'
+
+build:
+  number: 0
+
+source:
+  url: https://github.com/liulab-dfci/TRUST4/archive/v{{ version }}.tar.gz
+  sha256: 45900aca87884de95ce752b2ba0d24bcad31ec3ce25ce0a8e84cb51f1c5da69e
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - samtools 0.1.19.*
+    - zlib
+  run:
+    - perl
+
+test:
+  commands:
+    - trust4 2>&1 | cat > /dev/null
+    - fastq-extractor 2>&1 | cat > /dev/null
+    - bam-extractor 2>&1 | cat > /dev/null
+    - annotator 2>&1 | cat > /dev/null
+    - which trust-simplerep.pl
+    - which trust-barcoderep.pl
+    - which trust-smartseq.pl
+    - which BuildDatabaseFa.pl
+    - which BuildImgtAnnot.pl
+    - which run-trust4
+
+about:
+  home: https://github.com/liulab-dfci/TRUST4 
+  summary: TCR and BCR assembly from bulk or single-cell RNA-seq data
+  license: GPL-3.0-only
+  license_file: LICENSE.txt

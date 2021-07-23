@@ -1,20 +1,19 @@
-{% set version = "3.14.0" %}
-{% set sha256 = "18988dd51762863a16009aebb6e873c1fbca92328b0e6a5af0773e2b1ad7ddb9" %}
+{% set version = "3.15.2" %}
+{% set sha256 = "e93b43951a814dc7bd6a246e1e863bbad6aac4bfe1928569402c131b2af99d0d" %}
 
 package:
   name: spades
   version: {{ version }}
 
 source:
-  url: http://cab.spbu.ru/files/release{{ version }}/SPAdes-{{ version }}.tar.gz
+  url: https://github.com/ablab/spades/releases/download/v{{version}}/SPAdes-{{version}}.tar.gz
   sha256: {{ sha256 }}
   patches:
     - 0001-change-verbosity.patch
-    - 0001-add-rt-lib-to-easel.patch  # [linux]
-    - 0001-link-rt-for-static-jemalloc.patch  # [linux]
 
 build:
-  number: 0
+  number: 1
+  skip: True  # [osx]
 
 requirements:
   build:
@@ -24,16 +23,20 @@ requirements:
     - llvm-openmp  # [osx]
     - openmp  # [linux]
     - cmake
+    - make
     - pkg-config
+    - sysroot_linux-64=2.17 # [linux]
   host:
     - llvm-openmp  # [osx]
     - openmp  # [linux]
     - zlib
     - bzip2
+    - sysroot_linux-64=2.17 # [linux]
   run:
     - llvm-openmp  # [osx]
     - openmp  # [linux]
     - python
+    - sysroot_linux-64=2.17 # [linux]
 
 test:
   commands:
@@ -46,6 +49,7 @@ test:
     - spades-gmapper 2>&1 | grep spades-gmapper
     - spades-gbuilder 2>&1 | grep spades-gbuilder
     - spades.py --test && rm -rf spades_test
+
 
 about:
   home: http://cab.spbu.ru/software/spades/
@@ -63,12 +67,15 @@ about:
 
   dev_url: https://github.com/ablab/spades
   doc_url: http://cab.spbu.ru/files/release{{version}}/manual.html
+
+
 extra:
   recipe-maintainers:
     - druvus
     - notestaff
   identifiers:
     - biotools:spades
+    - usegalaxy-eu:spades
     - doi:10.1089/cmb.2012.0021
     - doi:10.1101/gr.213959.116
     - doi:10.1093/gigascience/giz100

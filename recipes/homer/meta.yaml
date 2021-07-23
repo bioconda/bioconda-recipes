@@ -12,10 +12,13 @@ package:
 source:
   - url: http://homer.ucsd.edu/homer/configureHomer.pl
     sha256: 37e36fb10387a90050251683d35fe568657941b863b2088dcb0d09d9b1b59477
+    patches:
+      - configureHomer.patch
 
 build:
+  number: 5
+  # Ships pre-built binaries that install_name_tool isn't able to fix.
   skip: True  # [osx]
-  number: 1
 
 # dependencies according to README.txt installed by configureHomer.pl
 # are ghostscript, weblogo v2 NOT v2.8 and blat. Note, however, that there
@@ -23,15 +26,16 @@ build:
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - make
   host:
-    - python
-    - setuptools
     - perl
     - wget
     - unzip
     - zip
   run:
     - perl
+    - wget
+    - unzip
 
 test:
   commands:

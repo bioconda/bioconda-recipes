@@ -1,26 +1,28 @@
-{% set name = "pylibseq" %}
-{% set version = "0.2.2" %}
-{% set sha256 = "1f09494ae88fa568cf08a115876683ba49daa4f9c30bdaa21237ac59549f53be" %}
+{% set version = "0.2.3" %}
+{% set sha256 = "112adec97fbc7c6011e910848e4d40920e68f74de0b5d4b9958be2d40f42fd26" %}
 
 package:
-  name: {{ name|lower }}
+  name: pylibseq
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/d2/47/9ea249b4893506732bd69baf8b6509ca62a2e3dd640d37ec991e431d63f2/{{ name|lower }}-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/p/pylibseq/pylibseq-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  skip: True # [py27]
   number: 1
+  skip: True  # [py<30]
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - cmake
+    - make
   host:
+    - pip
     - python
-    - pybind11 ==2.3.0
+    - pybind11 >=2.2.3
     - msprime >=0.7.0
   run:
     - python

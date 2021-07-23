@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="parathyroidSE_1.26.0.tar.gz"
+FN="parathyroidSE_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/parathyroidSE_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/parathyroidSE_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-parathyroidse/bioconductor-parathyroidse_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/parathyroidSE_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/parathyroidSE_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-parathyroidse/bioconductor-parathyroidse_1.30.0_src_all.tar.gz"
 )
-MD5="822cbe197d585cb470ed296b812c28fa"
+MD5="43a65e8c4bd83e469a201c4a1564074a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

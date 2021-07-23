@@ -1,7 +1,6 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
 cd nano_src
-make
-cp nanoblaster $PREFIX/bin
-
+make CC="${CXX} ${CXXFLAGS} ${CPPFLAGS}"
+install -d "${PREFIX}/bin"
+install nanoblaster "${PREFIX}/bin/"

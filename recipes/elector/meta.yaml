@@ -1,34 +1,36 @@
-{% set version = "1.0.2" %}
-{% set sha256 = "b405c4d5c73fe0b5eb6147b62267323d3282751201091115409ff3035991445b" %}
+{% set version = "1.0.4" %}
+{% set sha256 = "eafa7fcafa6c0fdb202934fd7aaabf85fbb055447e0660246fba6ae3f0fd0c7c" %}
 
 package:
   name: elector
-  version: '{{version}}'
+  version: {{ version }}
 
 source:
-  url: "https://github.com/kamimrcht/ELECTOR/archive/v{{version}}.tar.gz"
-  sha256: '{{sha256}}'
+  url: https://github.com/kamimrcht/ELECTOR/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
   patches:
+    - 0001-Makefiles.patch
     - elector_utils.patch
 
 build:
-  number: 1
-  skip: True # [osx]
+  number: 2
+  skip: True # [osx or py<30]
   
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-  host:
+    - libgomp  # [linux]
     - make
+  host:
     - biopython
-    - python >=3
+    - python
   run:
-    - python >=3
+    - python
     - samtools
     - minimap2
     - biopython
-    
+
 test:
   commands:
     - elector --help
