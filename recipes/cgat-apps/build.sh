@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # export compiler flags
-export CFLAGS=${CFLAGS}" -I${PREFIX}/include -L${PREFIX}/lib"
-export CPPFLAGS=${CPPFLAGS}" -I${PREFIX}/include -L${PREFIX}/lib"
+#export CFLAGS=${CFLAGS}" -I${PREFIX}/include -L${PREFIX}/lib"
+#export CPPFLAGS=${CPPFLAGS}" -I${PREFIX}/include -L${PREFIX}/lib"
 export LDFLAGS=${LDFLAGS}" -I${PREFIX}/include -L${PREFIX}/lib"
 export CPATH=${CPATH}" -I${PREFIX}/include -L${PREFIX}/lib"
 export C_INCLUDE_PATH=${C_INCLUDE_PATH}:${PREFIX}/include
@@ -25,5 +25,5 @@ sed -i'' -e '/REPO_REQUIREMENT/,/pass/d' setup.py
 sed -i'' -e '/# dependencies/,/dependency_links=dependency_links,/d' setup.py
 
 # https://bioconda.github.io/linting.html#setup-py-install-args
-$PYTHON -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
+$PYTHON -m pip install . --no-deps --ignore-installed --upgrade setuptools pip --no-cache-dir -vvv
 
