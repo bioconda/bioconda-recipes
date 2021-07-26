@@ -23,6 +23,7 @@ ln -s $PACKAGE_HOME/bin/dsh-create-sequence-dictionary $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-disinterleave-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-downsample-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-downsample-interleaved-fastq $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-export-segments $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-extract-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-extract-fastq-by-length $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-fasta-to-fastq $BINARY_HOME
