@@ -25,4 +25,4 @@ sed -i'' -e '/REPO_REQUIREMENT/,/pass/d' setup.py
 sed -i'' -e '/# dependencies/,/dependency_links=dependency_links,/d' setup.py
 
 # https://bioconda.github.io/linting.html#setup-py-install-args
-$PYTHON -m pip install . -vv --no-deps --ignore-installed
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt
