@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="pasillaBamSubset_0.24.0.tar.gz"
+FN="pasillaBamSubset_0.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/pasillaBamSubset_0.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/pasillaBamSubset_0.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pasillabamsubset/bioconductor-pasillabamsubset_0.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/pasillaBamSubset_0.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/pasillaBamSubset_0.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pasillabamsubset/bioconductor-pasillabamsubset_0.30.0_src_all.tar.gz"
 )
-MD5="44a6ec4a409b140905deaf65159efb0a"
+MD5="63ee14564613fbb3f6562d46581b4ee6"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

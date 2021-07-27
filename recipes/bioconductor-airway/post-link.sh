@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="airway_1.6.0.tar.gz"
+FN="airway_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/airway_1.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/airway_1.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-airway/bioconductor-airway_1.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/airway_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/airway_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-airway/bioconductor-airway_1.12.0_src_all.tar.gz"
 )
-MD5="03a66e6072f906c0cfbca4ecd5a33404"
+MD5="ddffcaf19692ac091ba694b6251bdcfa"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

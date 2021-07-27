@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="pcaGoPromoter.Rn.rn4_1.22.0.tar.gz"
+FN="pcaGoPromoter.Rn.rn4_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/pcaGoPromoter.Rn.rn4_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/pcaGoPromoter.Rn.rn4_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pcagopromoter.rn.rn4/bioconductor-pcagopromoter.rn.rn4_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/pcaGoPromoter.Rn.rn4_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/pcaGoPromoter.Rn.rn4_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pcagopromoter.rn.rn4/bioconductor-pcagopromoter.rn.rn4_1.26.0_src_all.tar.gz"
 )
-MD5="c464f89d84749cfe1c713d523c8cecce"
+MD5="2086f764f93b01317fabb0615bc52071"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

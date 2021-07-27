@@ -1,5 +1,5 @@
 {% set name = "phylodm" %}
-{% set version = "1.0.0" %}
+{% set version = "1.3.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,23 +7,27 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 8104f1b8599be84469cb0a0227f7c78e76029bd0b4cabedbbc9978473368e377
+  sha256: 74dd9a6d61e67bf28980f7437b7edb2c20a1bfb40485f2a6f056367fcad9677d
 
 build:
-  noarch: python
-  number: 0
+  number: 1
+  skip: True  # [py2k]
   script: "{{ PYTHON }} -m pip install . --no-deps -vv"
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
-    - python >=3.6
+    - python
     - pip
+    - cython
+    - numpy
+    - setuptools
   run:
-    - python >=3.6
+    - python
     - numpy
     - dendropy
     - h5py
-    - tqdm
 
 test:
   imports:

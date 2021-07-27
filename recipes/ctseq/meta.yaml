@@ -1,0 +1,54 @@
+{% set name = "ctseq" %}
+{% set version = "0.0.2" %}
+{% set sha256 = "912c74e5c49744b60f71bcab6e2ce51360ee1e1657c552653ea6b5ca1b927d95" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+    url: https://github.com/ryanhmiller/ctseq/archive/v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+  run:
+    - python >=3.7
+    - numpy
+    - cutadapt
+    - bismark
+    - samtools=1.9
+    - umi_tools
+    - simplesam=0.1.3.1
+    - ncurses=6.1=he6710b0_1
+    - openssl=1.0.2p=h14c3975_1002
+    - r-base=3.5.1
+    - r-ggplot2
+    - r-reshape
+    - r-pheatmap
+
+test:
+  commands:
+      - ctseq -h
+      - ctseq make_methyl_ref -h
+      - ctseq analyze -h
+      - ctseq plot -h
+      - ctseq plot_multiple -h
+
+about:
+    home: https://github.com/ryanhmiller/ctseq
+    license: MIT
+    license_file: LICENSE
+    license_family: MIT
+    summary: "ctSeq is a pipeline to analyze methylation patch PCR data"
+
+extra:
+    recipe-maintainers:
+        - ryanhmiller

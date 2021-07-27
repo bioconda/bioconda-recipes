@@ -1,17 +1,18 @@
-{% set name = "treesapp" %}
-{% set version = "0.6.7" %}
+{% set version = "0.11.2" %} 
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: treesapp
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 309fcfb815c7cc905ceac1b13db6e2e9db304dcdb7a97d8136727613beb55339
+  url: https://pypi.io/packages/source/t/treesapp/treesapp-{{ version }}.tar.gz
+  sha256: ef913744fcad08b4cfb35f9bc60a285f2a9107ca7f7d68221e61a48803490e40
 
 build:
   number: 0
-  skip: True  # [py2k]
+  # Skipping py>=38 because Py3.8 builds are not available for old versions of dependencies.
+  # Dependencies (pyfastx, specifically) are likely pinned downed too strictly.
+  skip: True  # [py<30 or py>=38]
   entry_points:
     - treesapp = treesapp.__main__:main
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
@@ -22,34 +23,43 @@ requirements:
   host:
     - pip
     - python
+    - setuptools >=50.0.0
   run:
     - python
-    - numpy
-    - scipy >=1.4.1
-    - biopython >=1.68
-    - pygtrie >=2.3.2
-    - ete3 >=3.1.1
-    - six >=1.14.0
-    - joblib >=0.14.1
-    - matplotlib-base >=3.1.2
-    - seaborn >=0.9.0
-    - hmmer >=3.1
+    - numpy >=1.18.1
+    - scipy >=1.5.2
+    - scikit-learn ==0.23.1
+    - biopython >=1.78
+    - pygtrie >=2.3.3
+    - ete3 >=3.1.2
+    - six >=1.15.0
+    - tqdm >=4.50.0
+    - joblib ==1.0.0
+    - matplotlib-base >=3.3.0
+    - seaborn >=0.11.0
+    - pandas >=1.1.0
+    - packaging >=20.4
+    - samsum >=0.1.4
+    - pyfastx >=0.8.2
+    - hmmer >=3.3
     - prodigal >=2.6.2
-    - fasttree >=2.1.9
-    - bwa >=0.7.3
-    - raxml ==8.2.12
-    - mafft >=7.407
-    - samsum ==0.1.2
+    - fasttree >=2.1.10
+    - bwa >=0.7.17
+    - epa-ng >=0.3.8
+    - raxml-ng >=1.0.1
+    - mafft >=7.471
+    - vsearch >=2.15.0
+    - mmseqs2 >=12.113e3
 
 test:
   imports:
     - treesapp
   commands:
-    - {{ name }} --help
+    - treesapp --help
 
 about:
   home: https://github.com/hallamlab/TreeSAPP
-  license: GNU General Public v3 (GPLv3)
+  license: GPL-3.0-only
   license_family: GPL3
   license_file: LICENSE
   summary: "TreeSAPP is a functional and taxonomic annotation tool for microbial genomes and proteins"
