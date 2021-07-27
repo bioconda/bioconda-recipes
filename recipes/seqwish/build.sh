@@ -4,4 +4,4 @@ export C_INCLUDE_PATH=${PREFIX}/include
 cmake -H. -Bbuild
 cmake --build build
 mkdir -p $PREFIX/bin
-mv bin/* $PREFIX/bin
+mv build/bin/* $PREFIX/bin
