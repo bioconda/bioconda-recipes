@@ -19,8 +19,8 @@ cp $SP_DIR/biobb_structure_utils/utils/extract_heteroatoms.py $PREFIX/bin/extrac
 chmod u+x $SP_DIR/biobb_structure_utils/utils/extract_model.py
 cp $SP_DIR/biobb_structure_utils/utils/extract_model.py $PREFIX/bin/extract_model
 
-chmod u+x $SP_DIR/biobb_structure_utils/utils/extract_protein.py
-cp $SP_DIR/biobb_structure_utils/utils/extract_protein.py $PREFIX/bin/extract_protein
+chmod u+x $SP_DIR/biobb_structure_utils/utils/extract_molecule.py
+cp $SP_DIR/biobb_structure_utils/utils/extract_molecule.py $PREFIX/bin/extract_molecule
 
 chmod u+x $SP_DIR/biobb_structure_utils/utils/remove_ligand.py
 cp $SP_DIR/biobb_structure_utils/utils/remove_ligand.py $PREFIX/bin/remove_ligand
