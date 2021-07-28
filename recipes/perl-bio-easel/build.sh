@@ -1,4 +1,7 @@
 #!/bin/bash
+mkdir -p $PREFIX/bin
+chmod 755 scripts/*.pl
+cp scripts/*.pl $PREFIX/bin
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
