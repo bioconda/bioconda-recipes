@@ -8,7 +8,7 @@ if [ -f Build.PL ]; then
     perl ./Build install --installdirs site
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
-    perl Makefile.PL INSTALL_BASE=$PREFIX INSTALLDIRS=site
+    perl Makefile.PL PREFIX=$PREFIX INSTALLDIRS=site
     make
     make test
     make install
