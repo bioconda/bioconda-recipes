@@ -1,18 +1,16 @@
 #!/bin/bash
-# If it has Build.PL use that, otherwise use Makefile.PL
-if [ -f Build.PL ]; then
-    perl Build.PL
-    perl ./Build
-    perl ./Build test
-    # Make sure this goes in site
-    perl ./Build install --installdirs site
-elif [ -f Makefile.PL ]; then
-    # Make sure this goes in site
-    perl Makefile.PL PREFIX=$PREFIX INSTALLDIRS=site
-    make
-    make test
-    make install
-else
-    echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
-    exit 1
-fi
+SHARE_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
+mkdir -p $SHARE_DIR/
+cp -r src/ $SHARE_DIR/
+
+# Build and install Bio-Easel
+perl Makefile.PL PREFIX=$PREFIX INSTALLDIRS=site
+make
+make test
+make install
+
+echo "export BIO_EASEL_SHARE_DIR=$SHARE_DIR" > ${PREFIX}/etc/conda/activate.d/perl-bio-easel.sh
+chmod a+x ${PREFIX}/etc/conda/activate.d/perl-bio-easel.sh
+
+echo "unset BIO_EASEL_SHARE_DIR" > ${PREFIX}/etc/conda/deactivate.d/perl-bio-easel.sh
+chmod a+x ${PREFIX}/etc/conda/deactivate.d/perl-bio-easel.sh
