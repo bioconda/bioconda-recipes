@@ -1,4 +1,4 @@
 #!/bin/bash
-make
+make CC=$CXX
 mkdir -p $PREFIX/bin
 cp mstmap $PREFIX/bin
