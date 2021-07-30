@@ -22,6 +22,7 @@ make -j 1
 cp ./usher ${PREFIX}/bin/
 cp ./matUtils ${PREFIX}/bin/
 cp ./matOptimize ${PREFIX}/bin/
+cp ./ripples ${PREFIX}/bin/
 if [ -d ./tbb_cmake_build ]; then
     cp ./tbb_cmake_build/tbb_cmake_build_subdir_release/* ${PREFIX}/lib/
 elif [[ "$OSTYPE" == "darwin"* ]]; then
