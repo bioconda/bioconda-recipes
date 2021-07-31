@@ -28,7 +28,7 @@ for model in $*; do
         clean_model=${model%viridae}
     fi
 
-    wget -O vadr-models-${model}.tar.gz https://ftp.ncbi.nlm.nih.gov/pub/nawrocki/vadr-models/${model}/${MVERSION}/vadr-models-${clean_model}-${MVERSION}.tar.gz
+    wget --quiet -O vadr-models-${model}.tar.gz https://ftp.ncbi.nlm.nih.gov/pub/nawrocki/vadr-models/${model}/${MVERSION}/vadr-models-${clean_model}-${MVERSION}.tar.gz
     tar -xzf vadr-models-${model}.tar.gz
     mv vadr-models-${clean_model}-$MVERSION/* ${VADRMODELDIR}/
     rm -rf $VADRMODELDIR/tmp/*
