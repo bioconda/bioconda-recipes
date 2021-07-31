@@ -6,6 +6,10 @@ cp *.pl ${PREFIX}/bin
 cp miniscripts/*.pl ${PREFIX}/bin
 chmod 755 ${PREFIX}/bin/*.pl
 
+# copy script to download database
+chmod 755 ${RECIPE_DIR}/download-vadr-models.sh
+cp ${RECIPE_DIR}/download-vadr-models.sh ${PREFIX}/bin/
+
 # Setup shared directory
 SHARE_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
 VADR_DIR="${SHARE_DIR}/vadr"
@@ -16,7 +20,8 @@ touch ${SHARE_DIR}/vadr-models/vadr-models-placeholder.txt
 
 # Setup the VADR env variables
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
-echo "export VADRINSTALLDIR=${PREFIX}" > ${PREFIX}/etc/conda/activate.d/vadr.sh
+echo "export VADRVERSION=${PKG_VERSION}" > ${PREFIX}/etc/conda/activate.d/vadr.sh
+echo "export VADRINSTALLDIR=${PREFIX}" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
 echo "export VADRSCRIPTSDIR=${VADR_DIR}" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
 echo "export VADRMODELDIR=${VADR_MODEL_DIR}" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
 echo "export VADRINFERNALDIR=${PREFIX}/bin" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
@@ -30,7 +35,8 @@ echo "export PERL5LIB=${VADR_DIR}:${PERL5LIB}" >> ${PREFIX}/etc/conda/activate.d
 chmod a+x ${PREFIX}/etc/conda/activate.d/vadr.sh
 
 # Unset them
-echo "unset VADRINSTALLDIR" > ${PREFIX}/etc/conda/deactivate.d/vadr.sh
+echo "unset VADRVERSION" > ${PREFIX}/etc/conda/deactivate.d/vadr.sh
+echo "unset VADRINSTALLDIR" >> ${PREFIX}/etc/conda/deactivate.d/vadr.sh
 echo "unset VADRSCRIPTSDIR" >> ${PREFIX}/etc/conda/deactivate.d/vadr.sh
 echo "unset VADRMODELDIR" >> ${PREFIX}/etc/conda/deactivate.d/vadr.sh
 echo "unset VADRINFERNALDIR" >> ${PREFIX}/etc/conda/deactivate.d/vadr.sh
