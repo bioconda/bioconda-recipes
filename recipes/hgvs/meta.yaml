@@ -1,0 +1,58 @@
+{% set name = "hgvs" %}
+{% set version = "1.5.1" %}
+
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/hgvs-{{ version }}.tar.gz
+  sha256: 0e84ee43cd84ceb9b88d69802f3fc6ff001b8791067f8fafd9f40deaa58d365d
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - hgvs-shell = hgvs.shell:shell
+  script: {{ PYTHON }} -m pip install . -vv
+
+requirements:
+  host:
+    - cython
+    - pip
+    - pytest-runner
+    - python
+    - setuptools-scm
+    - wheel
+  run:
+    - attrs >=17.4.0
+    - biocommons.seqrepo <1.0
+    - bioutils >=0.4.0,<1.0
+    - configparser >=3.3.0
+    - ipython
+    - parsley
+    - psycopg2-binary
+    - python
+    - six
+
+test:
+  imports:
+    - hgvs
+    - hgvs.dataproviders
+  commands:
+    #- pip check #requests-html 0.10.0 requires bs4, which is not installed. will re-enable after new release
+    #- hgvs-shell --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/biocommons/hgvs
+  summary: HGVS Parser, Formatter, Mapper, Validator
+  doc_url: https://pythonhosted.org/hgvs/
+  license: Apache-2.0
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - ok-gitr
