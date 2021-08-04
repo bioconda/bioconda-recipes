@@ -2,5 +2,5 @@
 set -e
 set -x
 
-download-vadr-models.sh caliciviridae flaviviridae
+download-vadr-models.sh calici flavi
 $VADRSCRIPTSDIR/testfiles/do-install-tests-local.sh

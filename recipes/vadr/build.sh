@@ -7,8 +7,8 @@ cp miniscripts/*.pl ${PREFIX}/bin
 chmod 755 ${PREFIX}/bin/*.pl
 
 # copy script to download database
-chmod 755 ${RECIPE_DIR}/download-vadr-models.sh ${RECIPE_DIR}/run-vadr-local-tests.sh
-cp ${RECIPE_DIR}/download-vadr-models.sh ${RECIPE_DIR}/run-vadr-local-tests.sh ${PREFIX}/bin/
+chmod 755 ${RECIPE_DIR}/download-vadr-models.sh ${RECIPE_DIR}/installed-vadr-models.sh ${RECIPE_DIR}/run-vadr-local-tests.sh
+cp ${RECIPE_DIR}/download-vadr-models.sh ${RECIPE_DIR}/installed-vadr-models.sh ${RECIPE_DIR}/run-vadr-local-tests.sh ${PREFIX}/bin/
 
 # Setup shared directory
 SHARE_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
