@@ -17,6 +17,6 @@ do
         BOOST_LIB_PO="-lboost_program_options" \
     ;
     # Install the binaries
-    install bin/GLIMPSE_${subdir}
+    install "bin/GLIMPSE_${subdir}" "${PREFIX}/bin"
     popd
 done
