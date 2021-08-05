@@ -7,8 +7,8 @@ do
     # Build the binaries
     make \
         -j 4 \
-        CC="$CC -std=c++11" \
         DYN_LIBS="-lz -lpthread -lbz2 -llzma -lcurl -lhts -ldeflate" \
+        CXX="$CXX -std=c++11" \
         CXXFLAG="$CXXFLAGS ${PREFIX}/lib" \
         LDFLAG="$LDFLAGS" \
         HTSLIB_INC=${PREFIX}/lib \
