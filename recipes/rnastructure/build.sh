@@ -8,7 +8,7 @@ else
 fi
 
 # build
-make CC="${CC}" CXX="${CXX}" all
+make CC="${CC}" CXX="${CXX}" CPP_FLAGS="${CPP_FLAGS}" all
 
 mkdir -p $PREFIX/bin
 mv ./exe/* $PREFIX/bin/
