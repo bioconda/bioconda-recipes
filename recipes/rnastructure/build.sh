@@ -3,14 +3,13 @@
 # Fix for OSX build
 if [ `uname` == Darwin ]; then
     CPP_FLAGS="${CXXFLAGS} -g -O3 -fopenmp -I${PREFIX}/include"
-    DLIBS_SMP="-lpthread -lomp"
+    sed -i.bak "s/gomp/omp/g" compiler.h
 else
     CPP_FLAGS="${CXXFLAGS} -fopenmp -g -O3"
-    DLIBS_SMP="-lpthread -lgomp"
 fi
 
 # build
-make CC="${CC}" CXX="${CXX}" CPP_FLAGS="${CPP_FLAGS}" DLIBS_SMP="${DLIBS_SMP}" all
+make CC="${CC}" CXX="${CXX}" CPP_FLAGS="${CPP_FLAGS}" all
 
 mkdir -p $PREFIX/bin
 mv ./exe/* $PREFIX/bin/
