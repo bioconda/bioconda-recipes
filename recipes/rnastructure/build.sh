@@ -2,9 +2,9 @@
 
 # Fix for OSX build
 if [ `uname` == Darwin ]; then
-	CXXFLAGS="${CXXFLAGS} -g -O3 -fopenmp -I${PREFIX}/include"
+    CPP_FLAGS="${CXXFLAGS} -g -O3 -fopenmp -I${PREFIX}/include"
 else
-	CXXFLAGS="${CXXFLAGS} -fopenmp -g -O3"
+    CPP_FLAGS="${CXXFLAGS} -fopenmp -g -O3"
 fi
 
 # build
