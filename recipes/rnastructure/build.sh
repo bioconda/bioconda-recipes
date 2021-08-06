@@ -1,4 +1,13 @@
 #!/bin/sh
+
+# Fix for OSX build
+if [ `uname` == Darwin ]; then
+	CXXFLAGS="${CXXFLAGS} -g -O3 -fopenmp -I${PREFIX}/include"
+else
+	CXXFLAGS="${CXXFLAGS} -fopenmp -g -O3"
+fi
+
+# build
 make CC="${CC}" CXX="${CXX}" all
 
 mkdir -p $PREFIX/bin
