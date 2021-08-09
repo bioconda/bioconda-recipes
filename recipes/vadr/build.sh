@@ -16,7 +16,9 @@ VADR_DIR="${SHARE_DIR}/vadr"
 VADR_MODEL_DIR="${SHARE_DIR}/vadr-models"
 mkdir -p ${VADR_DIR} ${VADR_MODEL_DIR}
 cp -r ./ ${VADR_DIR}/
-touch ${SHARE_DIR}/vadr-models/vadr-models-placeholder.txt
+
+# Install SARS-CoV-2 model (~15mb)
+${PREFIX}/bin/download-vadr-models.sh sarscov2
 
 # Setup the VADR env variables
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
