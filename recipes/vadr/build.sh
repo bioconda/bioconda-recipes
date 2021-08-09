@@ -13,7 +13,7 @@ cp ${RECIPE_DIR}/download-vadr-models.sh ${RECIPE_DIR}/installed-vadr-models.sh 
 # Setup shared directory
 SHARE_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
 VADR_DIR="${SHARE_DIR}/vadr"
-VADR_MODEL_DIR="${SHARE_DIR}/vadr-models"
+VADRMODELDIR="${SHARE_DIR}/vadr-models"
 mkdir -p ${VADR_DIR} ${VADR_MODEL_DIR}
 cp -r ./ ${VADR_DIR}/
 
@@ -25,7 +25,7 @@ mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
 echo "export VADRVERSION=${PKG_VERSION}" > ${PREFIX}/etc/conda/activate.d/vadr.sh
 echo "export VADRINSTALLDIR=${PREFIX}" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
 echo "export VADRSCRIPTSDIR=${VADR_DIR}" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
-echo "export VADRMODELDIR=${VADR_MODEL_DIR}" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
+echo "export VADRMODELDIR=${VADRMODELDIR}" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
 echo "export VADRINFERNALDIR=${PREFIX}/bin" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
 echo "export VADREASELDIR=${PREFIX}/bin" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
 echo "export VADRHMMERDIR=${PREFIX}/bin" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
