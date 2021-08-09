@@ -10,8 +10,3 @@ chmod u+x Cur+
 chmod u+x Canal
 chmod u+x Canion
 cp Cur+ Canal Canion $PREFIX/bin/
-
-mkdir $HOME/.curvesplus
-cp standard_b.lis $HOME/.curvesplus
-cp standard_i.lis $HOME/.curvesplus
-cp standard_s.lis $HOME/.curvesplus
