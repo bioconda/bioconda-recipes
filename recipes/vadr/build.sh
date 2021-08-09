@@ -14,7 +14,7 @@ cp ${RECIPE_DIR}/download-vadr-models.sh ${RECIPE_DIR}/installed-vadr-models.sh 
 SHARE_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
 VADR_DIR="${SHARE_DIR}/vadr"
 VADRMODELDIR="${SHARE_DIR}/vadr-models"
-mkdir -p ${VADR_DIR} ${VADR_MODEL_DIR}
+mkdir -p ${VADR_DIR} ${VADRMODELDIR}
 cp -r ./ ${VADR_DIR}/
 
 # Install SARS-CoV-2 model (~15mb)
