@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="msqc1_1.18.0.tar.gz"
+FN="msqc1_1.20.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/msqc1_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/msqc1_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-msqc1/bioconductor-msqc1_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/msqc1_1.20.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/msqc1_1.20.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-msqc1/bioconductor-msqc1_1.20.0_src_all.tar.gz"
 )
-MD5="9834d58363b4027a188fb06d9f0d5e7d"
+MD5="691c20a0e8915634c7866581e62ae214"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -4,6 +4,7 @@ set -euxo pipefail
 
 if [[ $OSTYPE == "darwin"* ]]; then
   export HOME="/Users/distiller"
+  export HOME=`pwd`
 fi
 
 mkdir -p $PREFIX/bin
