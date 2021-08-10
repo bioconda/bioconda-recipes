@@ -20,7 +20,7 @@ if [ $# -eq 0 ]; then
 fi
 
 # Verify VADR version matches expected
-if [[ -z "${BIOCONDA_BUILD}" ]]; then
+if [[ -z "${BIOCONDA_BUILD+x}" ]]; then
     CURRENT_VERSION=$(v-annotate.pl -h | head -n 2 | tail -n 1)
     EXPECTED_VERSION=$(head -n 1 ${MODEL_VERSIONS})
     if [[ "${CURRENT_VERSION}" != "${EXPECTED_VERSION}" ]]; then
