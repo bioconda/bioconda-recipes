@@ -1,0 +1,94 @@
+{% set version = '0.1.5' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-seqmagick
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/seqmagick_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/seqmagick/seqmagick_{{ version }}.tar.gz
+  sha256: 6facd51e9b7bb68c1b59e61c6fea07a6042d26d78f81eda4ba754c84ba6e3b40
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+  noarch: generic
+  # no skip
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: downloader, knitr, rmarkdown, GenomicAlignments, GenomicRanges, IRanges, muscle, Rsamtools, prettydoc
+requirements:
+  build:
+    - {{ posix }}zip               # [win]
+
+  host:
+    - r-base>=3.6.0
+    - bioconductor-biostrings
+    - r-magrittr
+
+  run:
+    - r-base>=3.6.0
+    - bioconductor-biostrings
+    - r-magrittr
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('seqmagick')"           # [not win]
+    - "\"%R%\" -e \"library('seqmagick')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://github.com/YuLab-SMU/seqmagick
+
+  license: Artistic-2.0
+  summary: Supports reading and writing sequences for different formats (currently interleaved
+    and sequential formats for 'FASTA' and 'PHYLIP'), file conversion, and manipulation
+    (e.g. filter sequences that contain specify pattern, export consensus sequence from
+    an alignment).
+
+  license_family: OTHER
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/Artistic-2.0'
+
+# The original CRAN metadata for this package was:
+
+# Package: seqmagick
+# Title: Sequence Manipulation Utilities
+# Version: 0.1.5
+# Authors@R: c( person("Guangchuang", "Yu",     email = "guangchuangyu@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-6485-8781")) )
+# Description: Supports reading and writing sequences for different formats (currently interleaved and sequential formats for 'FASTA' and 'PHYLIP'), file conversion, and manipulation (e.g. filter sequences that contain specify pattern, export consensus sequence from an alignment).
+# Depends: R (>= 3.6.0)
+# Imports: Biostrings, magrittr, utils
+# Suggests: downloader, knitr, rmarkdown, GenomicAlignments, GenomicRanges, IRanges, muscle, Rsamtools, prettydoc
+# VignetteBuilder: knitr
+# ByteCompile: true
+# URL: https://github.com/YuLab-SMU/seqmagick
+# BugReports: https://github.com/YuLab-SMU/seqmagick/issues
+# License: Artistic-2.0
+# Encoding: UTF-8
+# RoxygenNote: 7.1.1
+# NeedsCompilation: no
+# Packaged: 2021-04-25 06:27:46 UTC; ygc
+# Author: Guangchuang Yu [aut, cre] (<https://orcid.org/0000-0002-6485-8781>)
+# Maintainer: Guangchuang Yu <guangchuangyu@gmail.com>
+# Repository: CRAN
+# Date/Publication: 2021-04-25 06:50:02 UTC
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml
