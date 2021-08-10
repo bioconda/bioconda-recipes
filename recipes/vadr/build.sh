@@ -13,17 +13,19 @@ cp ${RECIPE_DIR}/download-vadr-models.sh ${RECIPE_DIR}/installed-vadr-models.sh 
 # Setup shared directory
 SHARE_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
 VADR_DIR="${SHARE_DIR}/vadr"
-VADR_MODEL_DIR="${SHARE_DIR}/vadr-models"
-mkdir -p ${VADR_DIR} ${VADR_MODEL_DIR}
+VADRMODELDIR="${SHARE_DIR}/vadr-models"
+mkdir -p ${VADR_DIR} ${VADRMODELDIR}
 cp -r ./ ${VADR_DIR}/
-touch ${SHARE_DIR}/vadr-models/vadr-models-placeholder.txt
+
+# Install SARS-CoV-2 model (~15mb)
+VADRMODELDIR="${VADRMODELDIR}" BIOCONDA_BUILD=1 bash -c '${PREFIX}/bin/download-vadr-models.sh sarscov2'
 
 # Setup the VADR env variables
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
 echo "export VADRVERSION=${PKG_VERSION}" > ${PREFIX}/etc/conda/activate.d/vadr.sh
 echo "export VADRINSTALLDIR=${PREFIX}" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
 echo "export VADRSCRIPTSDIR=${VADR_DIR}" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
-echo "export VADRMODELDIR=${VADR_MODEL_DIR}" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
+echo "export VADRMODELDIR=${VADRMODELDIR}" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
 echo "export VADRINFERNALDIR=${PREFIX}/bin" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
 echo "export VADREASELDIR=${PREFIX}/bin" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
 echo "export VADRHMMERDIR=${PREFIX}/bin" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
