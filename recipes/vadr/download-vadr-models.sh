@@ -20,12 +20,15 @@ if [ $# -eq 0 ]; then
 fi
 
 # Verify VADR version matches expected
-EXPECTED_VERSION=$(head -n 1 ${MODEL_VERSIONS})
-if [[ "${VADRVERSION}" != "${EXPECTED_VERSION}" ]]; then
-    echo "Installed VADR Version: ${VADRVERSION}"
-    echo "Expected VADR Version: ${EXPECTED_VERSION}"
-    echo "Please update your install of VADR to use the download script. Otherwise you will need to manually install the models."
-    exit 1
+if [[ -z "${BIOCONDA_BUILD}" ]]; then
+    CURRENT_VERSION=$(v-annotate.pl -h | head -n 2 | tail -n 1)
+    EXPECTED_VERSION=$(head -n 1 ${MODEL_VERSIONS})
+    if [[ "${CURRENT_VERSION}" != "${EXPECTED_VERSION}" ]]; then
+        echo "Installed VADR Version: ${VADRVERSION}"
+        echo "Expected VADR Version: ${EXPECTED_VERSION}"
+        echo "Please update your install of VADR to use the download script. Otherwise you will need to manually install the models."
+        exit 1
+    fi
 fi
 
 # Download model
