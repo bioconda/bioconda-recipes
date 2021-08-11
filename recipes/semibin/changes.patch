@@ -1,13 +1,13 @@
-From 1ba87553b0dca6107e4c7c104f1804324dfa39e1 Mon Sep 17 00:00:00 2001
+From c07224a62b5cf8c7c1244b0e38225a9babf6e964 Mon Sep 17 00:00:00 2001
 From: psj1997 <1176894699@qq.com>
-Date: Wed, 11 Aug 2021 18:07:10 +0800
-Subject: [PATCH 1/3] Fix pandas merge deprecated warning
+Date: Wed, 11 Aug 2021 20:45:10 +0800
+Subject: [PATCH] Fix pd.merge warning
 
 ---
  SemiBin/generate_coverage.py | 21 +++++++++++----------
- SemiBin/main.py              | 15 ++++-----------
  setup.py                     |  5 ++---
- 3 files changed, 17 insertions(+), 24 deletions(-)
+ test/test_cov.py             |  3 +++
+ 3 files changed, 16 insertions(+), 13 deletions(-)
 
 diff --git a/SemiBin/generate_coverage.py b/SemiBin/generate_coverage.py
 index dd598f5..ec11c5f 100644
@@ -59,52 +59,6 @@ index dd598f5..ec11c5f 100644
  
          contig_cov = contig_cov.apply(lambda x: x + 1e-5)
          must_link_contig_cov = must_link_contig_cov.apply(lambda x: x + 1e-5)
-diff --git a/SemiBin/main.py b/SemiBin/main.py
-index 61813fe..e38de44 100644
---- a/SemiBin/main.py
-+++ b/SemiBin/main.py
-@@ -114,9 +114,7 @@ def parse_args(args):
-     training.add_argument('--mode',
-                           required=True,
-                           type=str,
--                          help='[single/several] Train models from one sample or several samples (train model across several samples with single-sample binning can get better pre-trained model). '
--                          'In `several` mode, you must provide data, data_split, cannot, and fasta files for corresponding samples in the same order. '
--                          'Note: You can only use `several` mode when performing single-sample binning. Training from several samples with multi-sample binning is not supported.',
-+                          help='[single/several]Train models from one sample or several samples (train model across several samples with single-sample binning can get better pre-trained model.). In several mode, must input data, data_split, cannot, fasta files for corresponding sample with same order. Note: You can just set `several` with this option when single-sample binning. Training from several samples with multi-sample binning is not support.',
-                           dest='mode',
-                           default='single')
- 
-@@ -220,19 +218,14 @@ def parse_args(args):
-         p.add_argument('-m', '--min-len',
-                        required=False,
-                        type=int,
--                       help='Minimal length for contigs in binning. '
--                            'If you use SemiBin with multi steps and you use this parameter, please use this parameter consistently with all subcommands. '
--                            '(Default: SemiBin chooses 1000bp or 2500bp according the ratio of the number of base pairs of contigs between 1000-2500bp).',
-+                       help='Minimal length for contigs in binning. If you use SemiBin with multi steps and you use this parameter, please use this parameter consistently with all subcommands.(Default: SemiBin chooses 1000bp or 2500 bp according the ratio of the number of base pairs of contigs between 1000-2500 bp)',
-                        dest='min_len',
-                        default=None,
-                        )
-         p.add_argument('--ratio',
-                        required=False,
-                        type=float,
--                       help='If the ratio of the number of base pairs of contigs between 1000-2500 bp smaller than this value, the minimal length will be set as 1000bp, otherwise 2500bp. '
--                       'Note that setting `--min-length/-m` overrules this parameter. '
--                       'If you use SemiBin with multi steps and you use this parameter, please use this parameter consistently with all subcommands. '
--                       '(Default: 0.05)',
-+                       help='If the ratio of the number of base pairs of contigs between 1000-2500 bp smaller than this value, the minimal length will be set as 1000bp, otherwise 2500bp. If you set -m parameter, you do not need to use this parameter. If you use SemiBin with multi steps and you use this parameter, please use this parameter consistently with all subcommands.(Default: 0.05)',
-                        dest='ratio',
-                        default=0.05)
- 
-@@ -337,7 +330,7 @@ def parse_args(args):
-         p.add_argument('--ml-threshold',
-                        required=False,
-                        type=int,
--                       help='Length threshold for generating must-link constraints. (By default, the threshold is calculated from the contig, and the default minimum value is 4,000 bp)',
-+                       help='Length threshold for generating must-link constraints.(By default, the threshold is calculated from the contig, and the default minimum value is 4,000 bp)',
-                        dest='ml_threshold',
-                        default=None)
- 
 diff --git a/setup.py b/setup.py
 index d66b31e..a88225b 100644
 --- a/setup.py
@@ -135,21 +89,8 @@ index d66b31e..a88225b 100644
            'scikit-learn',
            'requests',
        ],
--- 
-2.23.0.windows.1
-
-
-From 8de1a8d0337f956c99fffaaf95d9f74600a25a84 Mon Sep 17 00:00:00 2001
-From: psj1997 <1176894699@qq.com>
-Date: Wed, 11 Aug 2021 18:19:09 +0800
-Subject: [PATCH 2/3] Fix test error
-
----
- test/test_cov.py | 3 +++
- 1 file changed, 3 insertions(+)
-
 diff --git a/test/test_cov.py b/test/test_cov.py
-index 9438b48..2296544 100644
+index 9438b48..07cc0a0 100644
 --- a/test/test_cov.py
 +++ b/test/test_cov.py
 @@ -34,6 +34,8 @@ def test_cov(tmpdir):
@@ -165,31 +106,6 @@ index 9438b48..2296544 100644
          must_link_threshold=0,
          is_combined=False,
          contig_threshold=0)
-+    cov.columns = [['mean', 'var']]
-     assert_frame_equal(cov, pd.DataFrame([[2.581818, 0.606942], [
-                        2.627907, 0.252244]], index=['k141_63080', 'k141_0'], columns=['mean', 'var']))
--- 
-2.23.0.windows.1
-
-
-From 035c17049189cbf9d8cffe86c639df9fa55b61d6 Mon Sep 17 00:00:00 2001
-From: psj1997 <1176894699@qq.com>
-Date: Wed, 11 Aug 2021 18:25:23 +0800
-Subject: [PATCH 3/3] Fix test error
-
----
- test/test_cov.py | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/test/test_cov.py b/test/test_cov.py
-index 2296544..07cc0a0 100644
---- a/test/test_cov.py
-+++ b/test/test_cov.py
-@@ -46,6 +46,6 @@ def test_cov(tmpdir):
-         must_link_threshold=0,
-         is_combined=False,
-         contig_threshold=0)
--    cov.columns = [['mean', 'var']]
 +    cov.columns = ['mean', 'var']
      assert_frame_equal(cov, pd.DataFrame([[2.581818, 0.606942], [
                         2.627907, 0.252244]], index=['k141_63080', 'k141_0'], columns=['mean', 'var']))
