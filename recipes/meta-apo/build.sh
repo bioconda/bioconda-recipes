@@ -5,6 +5,7 @@ make
 
 cp -r bin/* ${PREFIX}/bin
 
+
 PKG_NAME=meta-apo
 PKG_VERSION=v1.0
 MetaApo_path=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}
