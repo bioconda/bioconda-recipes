@@ -1,4 +1,4 @@
-{% set version = "0.20.0" %}
+{% set version = "0.20.2" %}
 
 package:
   name: unifrac
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://github.com/biocore/unifrac/archive/{{ version }}.tar.gz
-  sha256: e2692c683fddc6450ca4da049112b00264cf61aef1071d2ebc0f0539b86611b8
+  sha256: 74976c8ae3beeb4dd4f70228d05fde324b819f090f4e9eccf7a41d6bb270221d
 
 build:
   number: 1
@@ -14,6 +14,7 @@ build:
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
@@ -23,7 +24,9 @@ requirements:
     - cython >=0.28.3
     - numpy >=1.12.1
     - lz4
-    - hdf5
+    - hdf5-static
+    - mkl-include
+    - liblapacke  # [osx]
   run:
     - python
     - {{ pin_compatible('numpy') }}
@@ -41,7 +44,7 @@ test:
     - faithpd --help
     - python -m unittest unifrac.tests.test_methods
     - python -m unittest unifrac.tests.test_api
-
+  
 about:
   home: https://github.com/biocore/unifrac
   license: BSD-3-Clause

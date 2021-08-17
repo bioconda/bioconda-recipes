@@ -1,0 +1,67 @@
+Description: Build shared lib with bioconda's htslib
+ The upstream repo includes htslib as a submodule that gets
+ built with the tabixpp code. This patch changes this to use
+ bioconda's shared libhts from the archive.
+ Also builds a shared library instead of a static one.
+Author: Sascha Steinbiss <sascha@steinbiss.name> modified for bioconda by Jon Puritz jpuritz@gmail.com
+--- tabixpp/Makefile
++++ tabixpp/Makefile
+@@ -3,7 +3,7 @@
+ 
+ CC?=		gcc
+ CXX?= 		g++
+-CXXFLAGS?=	-g -Wall -O2 -fPIC #-m64 #-arch ppc
++CXXFLAGS+=	-fPIC
+ INCLUDES?=	-Ihtslib
+ HTS_HEADERS?=	htslib/htslib/bgzf.h htslib/htslib/tbx.h
+ HTS_LIB?=	htslib/libhts.a
+@@ -12,6 +12,7 @@
+ DFLAGS=		-D_FILE_OFFSET_BITS=64 -D_USE_KNETFILE
+ PROG=		tabix++
+ SUBDIRS=.
++SONUMBER=0
+ 
+ ifeq ($(OS),Windows_NT)
+ 	LIBS += -lws2_32
+@@ -22,31 +23,22 @@
+ .c.o:
+ 	$(CC) $(CPPFLAGS) -c $(CXXFLAGS) $(DFLAGS) $(INCLUDES) $< -o $@
+ 
+-all-recur lib-recur clean-recur cleanlocal-recur install-recur:
+-	@target=`echo $@ | sed s/-recur//`; \
+-	wdir=`pwd`; \
+-	list='$(SUBDIRS)'; for subdir in $$list; do \
+-		cd $$subdir; \
+-		$(MAKE) CC="$(CC)" DFLAGS="$(DFLAGS)" CXXFLAGS="$(CXXFLAGS)" \
+-			INCLUDES="$(INCLUDES)" LIBPATH="$(LIBPATH)" $$target \
+-			|| exit 1; \
+-		cd $$wdir; \
+-	done;
++all:   $(PROG) libtabixpp.so.$(SONUMBER) libtabixpp.a
+ 
+-all:	$(PROG)
+-
+-tabix.o: $(HTS_HEADERS) tabix.cpp tabix.hpp
++tabix.o: tabix.cpp tabix.hpp
+ 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c tabix.cpp $(INCLUDES)
+ 
+-htslib/libhts.a:
+-	cd htslib && $(MAKE) lib-static
++libtabixpp.a: tabix.o
++	ar rcs $@ $<
++
++libtabixpp.so.$(SONUMBER): tabix.o
++	$(CXX) -shared -o $@ $< -fPIC -Wl,-soname,libtabixpp.so.$(SONUMBER) $(LDFLAGS) -lhts
+ 
+-tabix++: tabix.o main.cpp $(HTS_LIB)
++tabix++: tabix.o main.cpp
+ 	$(CXX) $(LDFLAGS) $(CPPFLAGS) $(CXXFLAGS) -o $@ main.cpp tabix.o $(INCLUDES) $(LIBPATH) $(LIBS)
+ 
+ cleanlocal:
+ 	rm -fr gmon.out *.o a.out *.dSYM $(PROG) *~ *.a tabix.aux tabix.log \
+-		tabix.pdf *.class libtabix.*.dylib libtabix.so*
+-	cd htslib && $(MAKE) clean
++		tabix.pdf *.class libtabix*.dylib libtabix*so*
+ 
+-clean:cleanlocal-recur
++clean: cleanlocal

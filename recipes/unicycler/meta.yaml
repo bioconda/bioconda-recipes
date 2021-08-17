@@ -13,13 +13,14 @@ source:
       - misc.py.patch
 
 build:
-  number: 2
+  number: 4
   skip: True  # [py<34]
 
 requirements:
   build:
     - {{ compiler("c") }}
     - {{ compiler("cxx") }}
+    - make
   host:
     - python
     - pip
@@ -43,6 +44,8 @@ test:
     - COLUMNS=80 unicycler_check -h
     - COLUMNS=80 unicycler_polish -h
     - samtools --help
+    # test that bowtie outputs its version
+    - bowtie2 --version | grep -q "bowtie2-align-s version [0-9]"
     # test if https protocol works, if it doesnt samtools will fail with "Protocol not supported"
     - samtools view 'https://example.com' 2>&1 | grep 'fail to read the header' -q
 

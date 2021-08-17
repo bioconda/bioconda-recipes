@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="pwrEWAS.data_1.2.0.tar.gz"
+FN="pwrEWAS.data_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/pwrEWAS.data_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/pwrEWAS.data_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pwrewas.data/bioconductor-pwrewas.data_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/pwrEWAS.data_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/pwrEWAS.data_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pwrewas.data/bioconductor-pwrewas.data_1.6.0_src_all.tar.gz"
 )
-MD5="a04941cf4eb836420917e93134de2e59"
+MD5="184d3e18c60bdc0369167465e92177c2"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
