@@ -1,0 +1,69 @@
+{% set name = "track-analyzer" %}
+{% set pypi_name = "track_analyzer" %}
+{% set version = "0.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ pypi_name }}-{{ version }}.tar.gz"
+  sha256: 048bc3139c0e63d1e7c13519f70fef8dc07d928dcf8667c0d523d7c508877de8
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - traj_analysis=track_analyzer.scripts.analyze_tracks:main
+    - map_analysis=track_analyzer.scripts.analyze_maps:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - ipyfilechooser
+    - ipywidgets
+    - jupyter
+    - lmfit
+    - matplotlib-base
+    - napari[all]
+    - pandas
+    - pip
+    - python
+    - scikit-image
+    - scipy
+    - seaborn
+    - tifffile
+  run:
+    - ipyfilechooser
+    - ipywidgets
+    - jupyter
+    - lmfit
+    - matplotlib-base
+    - napari[all]
+    - pandas
+    - python
+    - scikit-image
+    - scipy
+    - seaborn
+    - tifffile
+
+test:
+  imports:
+    - track_analyzer
+    - track_analyzer.scripts
+  commands:
+    - traj_analysis --help
+    - map_analysis --help
+
+about:
+  home: "https://gitlab.pasteur.fr/track-analyzer/track-analyzer"
+  license: GPLv3
+  license_family: GPL3
+  license_file: COPYING
+  summary: "Track Analyzer: quantification and visualization of tracking data"
+  doc_url: https://track-analyzer.pages.pasteur.fr/track-analyzer/
+  dev_url: https://gitlab.pasteur.fr/track-analyzer/track-analyzer
+
+extra:
+  recipe-maintainers:
+    - bneron
