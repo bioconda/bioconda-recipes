@@ -2,7 +2,7 @@
 
 mkdir -pv $PREFIX/bin
 mkdir -pv $PREFIX/MegaPath
-cp -rv * $PREFIX/MegaPath
+rsync -av * $PREFIX/MegaPath
 ln -s $PREFIX/MegaPath/runMegaPath.sh $PREFIX/bin
 
 make -C $PREFIX/MegaPath/megahit/
