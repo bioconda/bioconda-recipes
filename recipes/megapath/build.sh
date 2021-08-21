@@ -9,4 +9,4 @@ export CFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 make CC=$CXX CXX=${CXX} -C $PREFIX/MegaPath/soap4/2bwt-lib/ 
-make CC=$CXX CXX=${CXX} CFLAGS="${CFLAGS} -L${PREFIX}/lib" CXXFLAGS="${CXXFLAGS} -L${PREFIX}/lib" LDFLAGS="${LDFLAGS}" -C $PREFIX/MegaPath/soap4/ 
+make CC=$CXX CXX=${CXX} CXXFLAGS="${CXXFLAGS} -L${PREFIX}/lib" LDFLAGS="${LDFLAGS}" -C $PREFIX/MegaPath/soap4/ 
