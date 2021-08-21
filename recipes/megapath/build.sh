@@ -7,7 +7,7 @@ ln -s $PREFIX/MegaPath/runMegaPath.sh $PREFIX/bin
 
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-CC=gcc
+export CC=gcc
+export CXX=g++
 make CC=${CC} -C $PREFIX/MegaPath/soap4/2bwt-lib/ 
-CC=g++
-make CC=${CC} -C $PREFIX/MegaPath/soap4/ 
+make CXX=${CXX} -C $PREFIX/MegaPath/soap4/ 
