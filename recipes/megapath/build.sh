@@ -8,6 +8,6 @@ ln -s $PREFIX/MegaPath/runMegaPath.sh $PREFIX/bin
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
-make CC=$CXX CXX=${CXX} CXXFLAGS="${CXXFLAGS} -L${PREFIX}/lib" LDFLAGS="${LDFLAGS}" -C $PREFIX/MegaPath/cc/ 
+make CC=$CXX CXX=${CXX} CXXFLAGS="${CXXFLAGS} -L${PREFIX}/lib -std=c++11 -g -O2 -Wall -std=c++0x -fopenmp -lz" LDFLAGS="${LDFLAGS}" -C $PREFIX/MegaPath/cc/ 
 make CC=$CXX CXX=${CXX} -C $PREFIX/MegaPath/soap4/2bwt-lib/ 
 make CC=$CXX CXX=${CXX} CXXFLAGS="${CXXFLAGS} -L${PREFIX}/lib -msse4.1 -pthread -lpthread -fopenmp" LDFLAGS="${LDFLAGS}" -C $PREFIX/MegaPath/soap4/ 
