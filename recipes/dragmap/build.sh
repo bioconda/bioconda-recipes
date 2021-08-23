@@ -8,6 +8,5 @@ sed -i.bak 's/CXX=g++//' config.mk
 sed -i.bak 's/CC=gcc//' config.mk
 
 make CXX=$CXX CC=$CC
-make install
 mkdir -p "${PREFIX}/bin"
 mv build/release/dragen-os ${PREFIX}/bin/
