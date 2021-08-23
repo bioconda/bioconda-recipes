@@ -7,7 +7,8 @@ cp -r bin/* ${PREFIX}/bin
 
 
 PKG_NAME=meta-apo
-PKG_VERSION=v1.0
+PKG_VERSION=v1.1
+
 MetaApo_path=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}
 mkdir -p ${MetaApo_path}
 
