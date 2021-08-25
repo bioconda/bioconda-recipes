@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # call installer
-chmod u+x MALT_unix_0_5_2.sh
+chmod u+x MALT_unix_0_5_3.sh
 MALT="$PREFIX/opt/$PKG_NAME-$PKG_VERSION"
 ./MALT_unix_0_5_2.sh -q -dir "$MALT"
 
