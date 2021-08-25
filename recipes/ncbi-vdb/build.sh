@@ -27,7 +27,7 @@ sed -i.backup \
 #     -e "s|= ar|= $AR|" \
 #     build/Makefile.config.linux.x86_64
 
-make
+make CC=$CC
 
 # This does not install the header files
 make install
