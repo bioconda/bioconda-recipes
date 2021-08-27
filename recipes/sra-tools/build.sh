@@ -16,9 +16,9 @@ EOF
 make_wrapper "${CFLAGS}" "${CC}" cc
 make_wrapper "${CFLAGS}" "${GCC}" gcc
 make_wrapper "${CFLAGS}" "${CLANG}" clang
-make_wrapper "${CXXFLAGS}" "${CXX}" c++
-make_wrapper "${CXXFLAGS}" "${GXX}" g++
-make_wrapper "${CXXFLAGS}" "${CLANGXX}" clang++
+make_wrapper "${CXXFLAGS} -Wno-unused-result" "${CXX}" c++
+make_wrapper "${CXXFLAGS} -Wno-unused-result" "${GXX}" g++
+make_wrapper "${CXXFLAGS} -Wno-unused-result" "${CLANGXX}" clang++
 ln -s "${AR}" "${BUILD_PREFIX}/bin/ar"
 ln -s "${LD}" "${BUILD_PREFIX}/bin/ld"
 
