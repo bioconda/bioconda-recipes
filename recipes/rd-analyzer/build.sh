@@ -10,3 +10,9 @@ MAIN_CMD=${PREFIX}/bin/RD-Analyzer.py
 echo '#!/usr/bin/env python' >$MAIN_CMD
 cat RD-Analyzer.py >> $MAIN_CMD
 chmod a+x $MAIN_CMD
+
+
+EXTENDED_MAIN_CMD=${PREFIX}/bin/RD-Analyzer-extended.py
+echo '#!/usr/bin/env python' >$EXTENDED_MAIN_CMD
+cat RD-Analyzer-extended.py >> $EXTENDED_MAIN_CMD
+chmod a+x $EXTENDED_MAIN_CMD
