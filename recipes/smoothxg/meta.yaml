@@ -1,0 +1,42 @@
+{% set name = "smoothxg" %}
+{% set version = "0.6.0" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/pangenome/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
+  sha256: b98b476d8a6647a300a0c6f55ba85f2fb1e0616723d83aba94c7a3aa2e0916b4
+
+build:
+  skip: True  # [osx]
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+    - cmake
+    - make
+  host:
+    - zlib
+    - zstd
+    - jemalloc
+  run:
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - smoothxg --help
+
+about:
+  home: https://github.com/pangenome/smoothxg
+  license: MIT
+  license_file: LICENSE
+  summary: Local reconstruction of variation graphs using partial order alignment
+
+extra:
+  skip-lints:
+    - uses_vcs_url
