@@ -4,6 +4,8 @@ RD_ANALYZER_DIR=${PREFIX}/share/RD-Analyzer
 mkdir -p $RD_ANALYZER_DIR
 cp -r *py $RD_ANALYZER_DIR
 
+cp -r Reference $RD_ANALYZER_DIR/
+
 mkdir -p ${PREFIX}/bin
 
 MAIN_CMD=${PREFIX}/bin/RD-Analyzer.py
