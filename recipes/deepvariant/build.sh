@@ -43,6 +43,11 @@ do
 	mv $ZIPBIN.zip $PREFIX/$BINARY_DIR
 done
 
+
+cp ${SRC_DIR}/scripts/run_deepvariant.py $PREFIX/bin
+cp ${SRC_DIR}/scripts/run_deeptrio.py $PREFIX/bin
+
+
 # Copy wrapper scripts, pointing to internal binary and model directories
 cp ${RECIPE_DIR}/dv_make_examples.py $PREFIX/bin
 sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_make_examples.py
