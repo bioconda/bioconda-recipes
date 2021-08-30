@@ -4,6 +4,8 @@ mkdir -p $PREFIX/bin
 mv * $PREFIX/bin
 mkdir -p "$PREFIX/home"
 export HOME="$PREFIX/home"
+export TERM=xterm
+echo "running setup.sh"
 sh ${PREFIX}/bin/setup.sh
 
 # clean up
