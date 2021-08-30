@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 mkdir -p $PREFIX/bin
 mv * $PREFIX/bin
 mkdir -p "$PREFIX/home"
