@@ -6,7 +6,15 @@ mkdir -p "$PREFIX/home"
 export HOME="$PREFIX/home"
 export TERM=xterm
 echo "running setup.sh"
-sh ${PREFIX}/bin/setup.sh
+
+# Generate a different setup script.
+echo "set -x" > ${PREFIX}/bin/run.sh
+
+# Cut the prompt from the setup.
+cat ${PREFIX}/bin/setup.sh | head -59 >> ${PREFIX}/bin/run.sh
+
+# Execute the new installer.
+sh ${PREFIX}/bin/run.sh
 
 # clean up
 rm -rf $PREFIX/bin/src $PREFIX/bin/*.log $PREFIX/bin/*.go $PREFIX/bin/*.yaml $PREFIX/bin/*.sh
