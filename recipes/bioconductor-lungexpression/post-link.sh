@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="lungExpression_0.22.0.tar.gz"
+FN="lungExpression_0.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/lungExpression_0.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/lungExpression_0.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-lungexpression/bioconductor-lungexpression_0.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/lungExpression_0.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/lungExpression_0.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-lungexpression/bioconductor-lungexpression_0.30.0_src_all.tar.gz"
 )
-MD5="ca0abb60a770427af34dbe8f5498effc"
+MD5="f161520ca421f94f17061bdf2f76d228"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

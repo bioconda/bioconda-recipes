@@ -1,4 +1,4 @@
-{% set version = "2.6.0" %}
+{% set version = "2.12.1" %}
 
 package:
   name: tiddit
@@ -6,39 +6,38 @@ package:
 
 source:
   url: https://github.com/SciLifeLab/TIDDIT/archive/TIDDIT-{{ version }}.tar.gz
-  sha256: 3e107776f0386508d05059751590393400f637e93ebd5ed48d3f3dbcf5c8b73f
+  sha256: 2676ac5cf9566bfaf53b87f0d54b2f61e2803cb464267e7f72a80ffcbe35eac1
+  patches:
+    - TIDDIT.py.patch
 
 build:
-  number: 0
+  number: 1
   skip: True  # [osx]
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
-    - cython
+    - {{ compiler('c') }}
     - cmake
-    - numpy
-    - python=2.7.15
-    - setuptools
   host:
+    - python
     - cython
-    - cmake
     - numpy
-    - python=2.7.15
-    - setuptools
+    - pip
   run:
-    - python=2.7.15
-    - cython
-    - cmake
+    - python
     - numpy
     - pysam
-    - numpy
 
 test:
   commands:
-    - tiddit >/dev/null
+    - TIDDIT
+    - TIDDIT.py
+    - tiddit --help
 
 about:
   home: https://github.com/SciLifeLab/TIDDIT
-  license: GPL-3
+  license: GPL-3.0-only
+  license_file: LICENSE
   summary: "TIDDIT - structural variant calling."

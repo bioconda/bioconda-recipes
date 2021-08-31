@@ -1,57 +1,62 @@
-{% set name = "trinity" %}
-{% set version = "2.8.4" %}
-{% set hash = "e119bfc302f8fbdb66b1222e9f14f5d61f46a1fc5581a06b363bd31d5a1bcbd4" %}
-
+{% set name = "Trinity" %}
+{% set version = "2.12.0" %}
+{% set sha256 = "0d47dc433cc3003e1c732b97da605e29c6ccafa38cd52cdb8ecc42399a9195d0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/trinityrnaseq/trinityrnaseq/archive/Trinity-v{{ version }}.tar.gz
-  sha256: {{ hash }}
+  url: https://github.com/trinityrnaseq/trinityrnaseq/releases/download/v{{ version }}/trinityrnaseq-v{{ version }}.FULL.tar.gz
+  sha256: {{ sha256 }}
   patches:
-    - trinseqtk.make.patch
-    - trinity-plugins.makefile.clean.patch
+    - makefile.patch
 
 build:
-  number: 0
   skip: True  # [osx]
+  number: 1
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
     - cmake
     - autoconf
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  host:
     - zlib
-
+    - htslib
   run:
+    - zlib
     - trimmomatic >=0.36
     - bowtie
     - bowtie2 >=2.3.0
-    - jellyfish >=2.2.6
+    - kmer-jellyfish >=2.2
     - openjdk >=8
-    - perl >=5.8
-    - python >=2.7
-    - samtools >=1.3
-    - zlib
-    - salmon >=0.9.1
+    - perl
+    - python >=3.6
+    - samtools >=1.9
+    - salmon >=1.0
     - numpy
-
-  host:
-    - bowtie
-    - bowtie2 >=2.3.0
-    - jellyfish >=2.2.6
-    - openjdk >=8
-    - perl >=5.8
-    - python >=2.7
-    - samtools >=1.3
-    - zlib
-    - salmon >=0.9.1
-    - cmake
-    - numpy
-
+    - r-cluster
+    - r-gplots
+    - bioconductor-qvalue
+    - r-fastcluster
+    - r-argparse
+    - bioconductor-ctc
+    - r-ape
+    - bioconductor-edger
+    - r-phangorn
+    - r-gplots
+    - r-tidyverse
+    - bioconductor-goseq
+    - bioconductor-go.db
+    - r-sm
+    - bioconductor-dexseq
+    - r-vioplot
+    - htslib
 
 test:
   commands:
@@ -67,9 +72,17 @@ test:
 
 about:
   home: https://github.com/trinityrnaseq/trinityrnaseq/
-  license: 'BSD-3-Clause'
-  summary: 'Trinity RNA-Seq de novo transcriptome assembly'
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file:
+    - LICENSE
+    - LICENSE.txt
+  summary: "Trinity assembles transcript sequences from Illumina RNA-Seq data."
+  doc_url: https://github.com/trinityrnaseq/trinityrnaseq/wiki
+  dev_url: https://github.com/trinityrnaseq/trinityrnaseq/
 
 extra:
   identifiers:
     - biotools:trinity
+    - doi:10.1038/nbt.1883
+    - usegalaxy-eu:trinity

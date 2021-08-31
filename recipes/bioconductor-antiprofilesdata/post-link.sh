@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="antiProfilesData_1.20.0.tar.gz"
+FN="antiProfilesData_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/antiProfilesData_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/antiProfilesData_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-antiprofilesdata/bioconductor-antiprofilesdata_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/antiProfilesData_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/antiProfilesData_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-antiprofilesdata/bioconductor-antiprofilesdata_1.28.0_src_all.tar.gz"
 )
-MD5="939e6ebc361769f5198676a9502baba7"
+MD5="7c177570c06d14b13e4daf1ad7ff8bfa"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,0 +1,48 @@
+# Do not forget to update the version string in the jgoslin.py file
+{% set name = "jgoslin" %}
+{% set version = "1.1.2" %}
+
+package:
+  name: jgoslin
+  version: {{ version }}
+
+build:
+  number: 1
+  noarch: generic
+
+source:
+  url: https://bintray.com/lifs/maven/download_file?file_path=de%2Fisas%2Flipidomics%2F{{ name }}-cli%2F{{ version }}%2F{{ name }}-cli-{{ version }}-bin.zip
+  sha256: 65c6439f69382bd3318ac66ea430c64b58f07592511548209b2346595af632ea
+
+requirements:
+  run:
+    - openjdk >=11
+    - python
+
+test:
+  commands:
+    - jgoslin
+    - jgoslin -Xms512m -Xmx1g
+    - jgoslin -n "PE 18:1(9E)/16:0;1"
+
+about:
+  home: https://github.com/lifs-tools/jgoslin
+  license: Apache License 2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: This project is a parser, validator and normalizer for shorthand lipid names, based on the Goslin project.
+  description: |
+        The Grammar of succinct lipid nomenclature project (Goslin) defines multiple grammers compatible with ANTLRv4 for different sources of shorthand lipid nomenclature. 
+        This allows to generate parsers based on the defined grammars, which provide immediate feedback whether a processed lipid shorthand notation string is compliant with a particular grammar, or not. jGoslin uses the Goslin grammars and the generated parser to support the following general tasks. 1) Facilitate the parsing of shorthand lipid names dialects. 2) Provide a structural representation of the shorthand lipid after parsing. 3) Use the structural representation to generate normalized names.
+
+extra:
+  notes: |
+    jgoslin is Java program that comes with a custom wrapper shell script.
+    This shell wrapper is called "opsin" and is on $PATH by default. By default
+    "-Xms512m -Xmx1g" is set in the wrapper. If you want to overwrite it you can
+    specify these values directly after your binaries. If you have _JAVA_OPTIONS
+    set globally this will take precedence.
+    For example run it with "jgoslin -Xms512m -Xmx1g"
+  identifiers:
+    - biotools:jgoslin
+    - doi:10.5281/zenodo.3842332

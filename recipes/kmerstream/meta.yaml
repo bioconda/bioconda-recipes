@@ -1,0 +1,40 @@
+{% set version = "1.1" %}
+
+package:
+  name: kmerstream
+  version: {{ version }}
+
+build:
+  number: 2
+
+source:
+  url: https://github.com/pmelsted/KmerStream/archive/v{{ version }}.tar.gz
+  md5: d3a9b488074694cf058a93f5b8bdaf2c
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+  run:
+    - python
+    - zlib
+    - scipy
+
+test:
+  commands:
+    # WARNING - kmerstream does not return exit code 0 when it displays help
+    - KmerStream 2>&1 | grep "KmerStream {{ version }}"
+    - KmerStreamJoin 2>&1 | grep "KmerStreamJoin {{ version }}"
+    - KmerStreamEstimate.py 2>&1 | grep "estimate.py TSV-FILE"
+
+about:
+  home: https://github.com/pmelsted/KmerStream
+  license: 'free software license'
+  summary: 'Streaming algorithm for computing kmer statistics for massive genomics datasets'
+
+extra:
+  identifiers:
+    - biotools:kmerstream
+    - doi:10.1093/bioinformatics/btu713

@@ -2,22 +2,31 @@ package:
   name: glimmer
   version: 3.02
 
-about:
-  home: https://ccb.jhu.edu/software/glimmer/index.shtml
-  license: Custom
-  license_file: LICENSE
-  summary: Glimmer is a system for finding genes in microbial DNA
-
 source:
   url: https://ccb.jhu.edu/software/glimmer/glimmer302b.tar.gz
   md5: 344d012ae12596de905866fe9eb7f16c
 
 build:
-  number: 3
+  number: 5
+  # Fails on osx. Probably needs some explicit `-std=` and/or remove
+  # `CXXDEFS= -D__cplusplus` from src/c_make.gen
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
 
 test:
   commands:
     - glimmer3 | cat
+
+about:
+  home: https://ccb.jhu.edu/software/glimmer/index.shtml
+  license: Custom
+  license_file: LICENSE
+  summary: Glimmer is a system for finding genes in microbial DNA
 
 extra:
   identifiers:

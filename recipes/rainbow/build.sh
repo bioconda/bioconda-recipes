@@ -2,9 +2,13 @@
 
 mkdir -p $PREFIX/bin
 
-cd rainbow_$PKG_VERSION
+# The tarball has "._*" files (something macOS related?!),
+# which also includes "._rainbow_$PKG_VERSION".
+# conda-build may or may not hoist the folder, apparently.
+# => Add a "|| true" so it is Ok to fail on the "cd".
+cd rainbow_$PKG_VERSION || true
 
-make
+make CC="${CC}" CFLAGS="${CFLAGS}"
 
 cp rainbow $PREFIX/bin
 

@@ -1,33 +1,32 @@
-{% set version = "0.4.7" %}
-{% set sha256 = "a8cf65e46dc2694b0fbd4e9190c73a1f300921457aadfab27a1792b785620d63" %}
+{% set version = "0.4.8" %}
+{% set sha256 = "e948871e4de9db5964c9ca6f8f877c3cbe6a46f62052dfab52ffe0f45bbbd203" %}
 
 package:
   name: unicycler
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   - url: https://github.com/rrwick/Unicycler/archive/v{{ version }}.tar.gz
-    sha256: '{{ sha256 }}'
+    sha256: {{ sha256 }}
     patches:
-      - Makefile.patch  #[linux]
+      - Makefile.patch
       - misc.py.patch
-  - url: https://github.com/seqan/seqan/archive/seqan-v2.4.0.tar.gz
-    sha256: 'd7084d17729214003e84818e0280a16f223c8f1c6a30eeef040c27e0c0047bd7'
-    folder: 'seqan'
 
 build:
-  number: 0
+  number: 4
+  skip: True  # [py<34]
 
 requirements:
   build:
-    - '{{ compiler("c") }}'
-    - '{{ compiler("cxx") }}'
+    - {{ compiler("c") }}
+    - {{ compiler("cxx") }}
+    - make
   host:
-    - python >=3.4,!=3.7
+    - python
     - pip
     - zlib
   run:
-    - python >=3.4,!=3.7
+    - python
     - spades >=3.6.2
     - pilon
     - openjdk
@@ -37,7 +36,6 @@ requirements:
     - freebayes
     - racon
     - miniasm
-    - zlib
 
 test:
   commands:
@@ -45,6 +43,11 @@ test:
     - COLUMNS=80 unicycler_align -h
     - COLUMNS=80 unicycler_check -h
     - COLUMNS=80 unicycler_polish -h
+    - samtools --help
+    # test that bowtie outputs its version
+    - bowtie2 --version | grep -q "bowtie2-align-s version [0-9]"
+    # test if https protocol works, if it doesnt samtools will fail with "Protocol not supported"
+    - samtools view 'https://example.com' 2>&1 | grep 'fail to read the header' -q
 
 about:
   home: https://github.com/rrwick/Unicycler
@@ -52,3 +55,8 @@ about:
   license_family: GPL
   license_file: LICENSE
   summary: Hybrid assembly pipeline for bacterial genomes
+
+extra:
+  identifiers:
+    - biotools:unicycler
+    - usegalaxy-eu:unicycler

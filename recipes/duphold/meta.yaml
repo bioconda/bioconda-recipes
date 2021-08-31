@@ -1,22 +1,36 @@
-{% set name = "duphold" %}
-{% set version = "0.1.4" %}
-{% set sha256hash = "53cdb8fd450e2815d1ee7290f43837c33218e377bb5b12a3a78899b2a83dfebd" %}
+{% set version = "0.2.1" %}
 
 package:
-  name: {{ name|lower }}
+  name: duphold
   version: {{ version }}
 
 source:
-  url: https://github.com/brentp/duphold/releases/download/v{{ version }}/duphold_shared
-  sha256: {{ sha256hash }}
+  - url: https://github.com/brentp/duphold/archive/v{{ version }}.tar.gz
+    sha256: f5211f405b4580b409f0b11d2322703a6639efb7377ec439dcbf8d698368ca32
+    patches:
+      - 0001-duphold-dep-restrict-hts-nim-upper-version.patch
+      - 0002-1332db6bf455d2b0caf0eed95d02154100d4bec7.patch
+  - url: https://github.com/brentp/hts-nim/archive/v0.2.23.tar.gz
+    sha256: 19f46dd89a7f13df5a679a93113aedab55fa99e1fa0bd4d2c5fed51b0526f56c
+    folder: hts-nim
+  - url: https://github.com/brentp/genoiser/archive/v0.2.7.tar.gz
+    sha256: ff8dee83cca89a1ebbb357334308460134fcd18121322f3fe709276b0cc1b4d5
+    folder: genoiser
+    patches:
+      - 0001-genoiser-dep-restrict-hts-nim-upper-version.patch
 
 build:
-  number: 0
+  number: 2
   skip: True  # [osx]
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - nim
+  host:
+    - htslib 1.9.*
   run:
-    - htslib
+    - htslib 1.9.*
 
 test:
   commands:
@@ -25,4 +39,5 @@ test:
 about:
   home: https://github.com/brentp/duphold
   license: MIT
+  license_file: LICENSE
   summary: SV callers like lumpy look at split-reads and pair distances to find structural variants. This tool is a fast way to add depth information to those calls.

@@ -1,6 +1,4 @@
-{% set version = "0.15.2" %}
-{% set samtools_version = "1.9" %}
-{% set bcftools_version = "1.9" %}
+{% set version = "0.16.0.1" %}
 
 package:
   name: pysam
@@ -8,7 +6,7 @@ package:
 
 source:
   url: https://github.com/pysam-developers/pysam/archive/v{{ version }}.tar.gz
-  sha256: 8cb3dd70f0d825086ac059ec2445ebd2ec5f14af73e7f1f4bd358966aaee5ed3
+  sha256: a61e98e299fa93ba121aab521081282b61bc978bb9052d33b26b38f8fe15573e
 
 build:
   number: 3
@@ -17,31 +15,30 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
+    - make
   host:
-    - htslib
-    - samtools {{ samtools_version }}
-    - bcftools {{ bcftools_version }}
     - cython
     - python
     - setuptools
     - zlib
-    - curl
+    - xz
+    - bzip2
     - libdeflate
+    - libcurl
+    - openssl  # [not osx]
   run:
-    - samtools {{ samtools_version }}
-    - bcftools {{ bcftools_version }}
     - python
-    - curl
+    - zlib
+    - xz
+    - bzip2
     - libdeflate
-
-test:
-  imports:
-    - pysam
+    - libcurl
+    - openssl  # [not osx]
 
 about:
   home: https://github.com/pysam-developers/pysam
   license: MIT
-  summary: "Pysam is a python module for reading and manipulating Samfiles. It is a lightweight wrapper of the samtools C-API. Pysam also includes an interface for tabix."
+  summary: "Pysam is a Python module for reading and manipulating SAM/BAM/VCF/BCF files. It's a lightweight wrapper of the htslib C-API, the same one that powers samtools, bcftools, and tabix."
 
 extra:
   identifiers:

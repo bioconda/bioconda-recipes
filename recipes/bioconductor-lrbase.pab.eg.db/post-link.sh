@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="LRBase.Pab.eg.db_0.99.1.tar.gz"
+FN="LRBase.Pab.eg.db_2.0.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/LRBase.Pab.eg.db_0.99.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/LRBase.Pab.eg.db_0.99.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-lrbase.pab.eg.db/bioconductor-lrbase.pab.eg.db_0.99.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/LRBase.Pab.eg.db_2.0.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/LRBase.Pab.eg.db_2.0.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-lrbase.pab.eg.db/bioconductor-lrbase.pab.eg.db_2.0.0_src_all.tar.gz"
 )
-MD5="7492982789b07131beb6f0f9d9ad6743"
+MD5="1b5c6515198eff0e0eab8ea44b235913"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

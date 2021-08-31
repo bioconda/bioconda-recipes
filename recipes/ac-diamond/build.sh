@@ -1,7 +1,9 @@
-cd src/
-export CPP_INCLUDE_PATH=${PREFIX}/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export CXX_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
+mkdir build
+cd build
+cmake \
+    -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS} -msse4.1" \
+    -DCMAKE_CXX_STANDARD=98 \
+    ..
 make
-cp ../bin/ac-diamond $PREFIX/bin
+make install

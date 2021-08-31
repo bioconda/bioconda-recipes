@@ -1,0 +1,41 @@
+{% set version = "2.2.1" %}
+
+package:
+  name: tetranscripts
+  version: {{ version }}
+
+source:
+  url: https://github.com/mhammell-laboratory/TEtranscripts/archive/{{ version }}.tar.gz
+  sha256: ff0d0276910905e132d6c55a1dfd7e901458abefb05ea19514b617400f0b5e09
+
+build:
+  noarch: python
+  number: 1
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - pysam >=0.15.3
+    - r-base
+    - bioconductor-deseq >=1.38
+    - bioconductor-deseq2 >=1.26
+
+test:
+  imports:
+    - TEToolkit
+    - TEToolkit.IO
+    - TEToolkit.ShortRead
+  commmands:
+    - TEtranscripts --version
+    - TEcount --version
+
+about:
+  home: http://hammelllab.labsites.cshl.edu/software#TEToolkit
+  license: GPL-3.0-only
+  license_file: COPYING
+  summary: 'A package for including transposable elements in differential enrichment analysis of sequencing datasets.'
+  license_family: GPL3

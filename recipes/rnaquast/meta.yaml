@@ -1,6 +1,6 @@
 {% set name = "rnaQUAST" %}
-{% set version = "1.5.1" %}
-{% set sha256 = "f603f847bce0346292d2d74c756d32f69c6bffad282d5fff36479d3a901d1f1e" %}
+{% set version = "2.2.0" %}
+{% set sha256 = "d5072b30fc83ea9213ef6678bc7131c38982f8a7160e94ae335240bc38dd3b95" %}
 
 package:
   name: {{ name | lower }}
@@ -11,30 +11,36 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
-  skip: True # [osx]
+  number: 2
+  skip: True  # [osx]
 
 requirements:
   run:
+    - python
     - blast
     - blat
-    - busco >=2
+    - busco >=4
     - emboss
-    - gmap
-    - python <3
+    - gmap <2021.02.22
     - gffutils
     - joblib
-    - matplotlib
+    - matplotlib-base
     - ucsc-pslsort
     - star
-    - tophat
     - samtools
 
 test:
   commands:
     - rnaQUAST.py --test
+    - makeblastdb -help
+    # test fa_coords from gmap
+    - ": | fa_coords | grep 'Error: No contigs were read in.'"
 
 about:
   summary: rnaQUAST is a tool for evaluating RNA-Seq assemblies using reference genome and gene database. In addition, rnaQUAST is also capable of estimating gene database coverage by raw reads and de novo quality assessment using third-party software.
   home: http://cab.spbu.ru/software/rnaquast/
   license: GPLv2
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic

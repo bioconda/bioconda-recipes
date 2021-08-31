@@ -1,9 +1,6 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
-export C_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-
-make 
-mv bgt  $PREFIX/bin
+make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+install -d "${PREFIX}/bin"
+install bgt "${PREFIX}/bin/"
 

@@ -1,32 +1,25 @@
-{% set version="0.13.1" %}
-
-build:
-  number: 0
-
-about:
-  home: https://github.com/COMBINE-lab/salmon
-  license: GPLv3
-  summary: Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using lightweight alignments
+{% set version="1.5.2" %}
 
 package:
   name: salmon
   version: {{ version }}
 
+build:
+  number: 0
+
 source:
   url: https://github.com/COMBINE-lab/salmon/archive/v{{ version }}.tar.gz
-  # work on develop until everything compiles cleanly
-  #url: https://github.com/COMBINE-lab/salmon/archive/develop.tar.gz
-  md5: bae03f0e2b30d976029f83e745a3ad65
-  #patches: salmon_cmake.patch
+  sha256: 5a0b8db4a9bebaf5d7d03d8804e7f0c7dce3f340d1c998cea7565bb167d3481c
 
 requirements:
   build:
     - autoconf
     - cmake
+    - make
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
   host:
-    - libboost 
+    - boost-cpp
     - icu 
     - zlib
     - bzip2
@@ -34,13 +27,27 @@ requirements:
     - jemalloc >=5.1.0
     - tbb-devel
   run:
-    - libboost 
-    - icu 
-    - jemalloc >=5.1.0
+    - boost-cpp
     - tbb
-    - zlib
-    - bzip2
 
 test:
+  source_files:
+    - sample_data.tgz
   commands:
     - salmon --help
+
+about:
+  home: https://github.com/COMBINE-lab/salmon
+  license: GPLv3
+  license_file: LICENSE
+  summary: Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using selective alignment
+
+extra:
+  recipe-maintainers:
+    - rob-p
+    - k3yavi
+  identifiers:
+    - biotools:salmon
+    - usegalaxy-eu:salmon
+    - usegalaxy-eu:alevin
+    - doi:10.1038/nmeth.4197

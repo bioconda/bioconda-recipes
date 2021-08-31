@@ -1,7 +1,7 @@
 #!/bin/bash
 mkdir -p $PREFIX/bin
 
-make
+make CC=$CC
 make install
 
 binaries="\

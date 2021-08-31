@@ -1,5 +1,5 @@
 {% set name = "ganon" %}
-{% set version = "0.1.2" %}
+{% set version = "1.0.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,45 +7,65 @@ package:
 
 source:
   - folder: ganon
-    url: https://github.com/pirovc/{{ name }}/archive/v{{ version }}.tar.gz
-    sha256: 84814caf51616911166840819fd14b9436bcf2cdfd261040ac1064a9acd4d16a
-  - folder: seqan
-    url: https://github.com/eseiler/seqan/archive/c308e99f10d942382d4c7ed6fc91be1a889e644c.tar.gz
-    sha256: c9dc728f51ac91831ed1aa73e7ad8904838f72291e4d27177fb3db12649922a8 
-  - folder: sdsl-lite
-    url: https://github.com/xxsds/sdsl-lite/archive/d6ed14d5d731ed4a4ec12627c1ed7154b396af48.tar.gz
-    sha256: db311228cd036ddf98eb130d29abd41195007c092ac2ea4092ba3567bff843c9 
+    url: https://github.com/pirovc/{{ name }}/archive/{{ version }}.tar.gz
+    sha256: 1a24da960a3ef99a93c8d64a26d3a2ed9ae25ba1bb9f8333a08af9001a82353a
+  - folder: seqan3
+    url: https://github.com/seqan/seqan3/releases/download/3.1.0-rc.1/seqan3-3.1.0-rc.1-Source.tar.xz
+    sha256: 8284c051e81bc7245408d8b902de7efc9dcb3e2a14e966d43c6654411adae59f
     
 build:
   number: 0
-  skip: true # [osx]
+  skip: True  # [py<35 or osx]
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
-    - cmake >=3.8.2
+    - cmake >=3.14
   host:
+    - bzip2
     - catch2 >=2.7.0
-    - cxxopts >=2.1.2
+    - cxxopts ==2.2.0
+    - python
+    - pandas >=0.22.0
+    - taxsbp ==1.1.1
+    - gawk
+    - grep
+    - tar
+    - curl
+    - wget
+    - coreutils
     - zlib
   run:
-    - python # [py>=3.3]
+    - bzip2
+    - python
+    - pandas >=0.22.0
+    - taxsbp ==1.1.1
+    - gawk
+    - grep
+    - tar
+    - curl
+    - wget
+    - coreutils
     - zlib
-    - taxsbp >=0.1.1
-    - pandas
-
+    
 test:
   commands:
     - ganon --help
-    - ganon-build --help 2>&1 | grep "Ganon builder"
-    - ganon-classify --help 2>&1 | grep "Ganon classifier"
+    - ganon-build --help
+    - ganon-classify --help
 
 about:
   home: https://github.com/pirovc/ganon
+  summary: "ganon: a read classification tool using Interleaved Bloom Filters"
+  description: |
+          ganon is a k-mer based read classification tool which uses Interleaved Bloom Filters
+          in conjunction with a taxonomic clustering and a k-mer counting-filtering scheme
   license: MIT License
-  summary: 'ganon is a k-mer based read classification tool which uses Interleaved Bloom Filters in conjunction with a taxonomic clustering and a k-mer counting-filtering scheme'
   license_family: MIT
 
 extra:
   identifiers:
     - doi:10.1101/406017
+  recipe-maintainers:
+    - pirovc

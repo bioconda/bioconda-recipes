@@ -1,0 +1,48 @@
+{% set name = "refgenieserver" %}
+{% set version = "0.6.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "bb355301efa0ea264d978efae5678e5afc9aa46e0a46cc160e8fd3330f549102"
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - refgenieserver = refgenieserver.main:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - python >=3.6
+    - aiofiles
+    - fastapi
+    - jinja2
+    - logmuse >=0.2
+    - refgenconf >=0.10.0
+    - uvicorn >=0.7.1
+    - ubiquerg >=0.6.1
+
+test:
+  imports:
+    - refgenieserver
+  commands:
+    - refgenieserver --help
+
+about:
+  home: "https://refgenie.databio.org/"
+  license: "BSD-2-Clause"
+  license_family: "BSD"
+  license_file: "LICENSE.txt"
+  summary: "This server provides both a web interface and a RESTful API. Users may explore and download archived indexes from the web interface or develop tools that programmatically query the API."
+
+extra:
+  recipe-maintainers:
+    - stolarczyk

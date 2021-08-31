@@ -5,22 +5,36 @@ package:
   version: {{ version }}
 
 build:
-  number: 1
-  skip: false
+  number: 3
 
 source:
   url: http://membres-timc.imag.fr/Olivier.Francois/snmf/files/sNMF_CL_v{{ version }}.zip
   md5: 280df791c1c50ac15244cc86f6abf69e
-
+  folder: src
 
 requirements:
   build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - perl
+    - perl-bioperl
+    - perl-lib
+  run:
+    - perl
     - perl-bioperl
     - perl-lib
 
 test:
   commands:
-    - sNMF |grep "sNMF Version {{ version }}"
+    - sNMF | grep -F 'sNMF Version {{ version }}'
+    - test -x "${PREFIX}/bin/crossEntropy"
+    - test -x "${PREFIX}/bin/createDataSet"
+    - test -x "${PREFIX}/bin/vcf2geno"
+    - test -x "${PREFIX}/bin/ancestrymap2geno"
+    - test -x "${PREFIX}/bin/ped2geno"
+    - test -x "${PREFIX}/bin/lfmm2geno"
+    - test -x "${PREFIX}/bin/geno2lfmm"
 
 about:
   home: http://membres-timc.imag.fr/Olivier.Francois/snmf/index.htm

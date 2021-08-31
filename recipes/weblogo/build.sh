@@ -1,2 +1,3 @@
 #!/bin/bash
-$PYTHON setup.py install --single-version-externally-managed --record /tmp/$PKG_NAME.log
+sed -i.bak "26d;23d" setup.py
+$PYTHON -m pip install . --no-deps --ignore-installed -vvv

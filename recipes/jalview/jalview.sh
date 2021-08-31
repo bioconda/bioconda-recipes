@@ -6,7 +6,16 @@
 # Note, in order to run commandline-only calls use 
 #   -nodisplay
 #
+# By default, this wrapper executes java -version to determine the JRE version
+# Set JALVIEW_JRE=j1.8 or JALVIEW_JRE=j11 to skip the version check 
+#
+# By default, this wrapper does NOT restrict the memory consumption of Jalview.
+# Set eg. JALVIEW_MAXMEM=1g to set the maximal memory of Jalview's VM
+#
 ###############################
+
+# ARG1 saved to check whether we need "-open" later
+ARG1=$1
 
 # Find original directory of bash script, resolving symlinks
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128
@@ -18,15 +27,25 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"; # get final path of this script
 
-# set install path of jalview
-JALVIEWDIR=$DIR; 
+# decide which jalview jar to launch - either 'j11' or 'j1.8'
+if [[ "$JALVIEW_JRE" != "j11" && "$JALVIEW_JRE" != "j1.8" ]]; then
+  JALVIEW_JRE="j11"
+  # if java 8 is installed we pick the j1.8 build
+  if [[ $( java -version 2>&1 | grep '"1.8' ) != "" ]]; then JALVIEW_JRE=j1.8; fi
+fi
 
-CLASSPATH=`echo $JALVIEWDIR/*.jar | sed -e 's/r /r:/g'`
+# check if memory maximum is set and if so forward to java-based jalview call
+if [ -z "$JALVIEW_MAXMEM" ]; then
+  VMMAXMEM=""
+else
+  VMMAXMEM="-Xmx${JALVIEW_MAXMEM}"
+fi
 
-# total physical memory in mb
+# check to see if $1 is set and is not start of other cli set args
+OPEN=""
+if [ -n "$ARG1" -a "$ARG1" = "${ARG1#-}" ]; then
+ # first argument exists and does not start with a "-"
+ OPEN="-open"
+fi
 
-MAXMEM=`python -c 'from psutil import virtual_memory;print ("-Xmx%iM" % (256 if (virtual_memory().total/(1024*1024)) < 1024 else ((virtual_memory().total/(1024*1024))-1024)))'`
-
-if [[ $( $( which conda || echo $CONDA_EXE ) list openjdk | egrep -e 'openjdk:\W+9' ) ]]; then JAVA9MOD="--add-modules=java.se.ee --illegal-access=warn"; fi;
-
-java $MAXMEM $JAVA9MOD -classpath $CLASSPATH jalview.bin.Jalview ${@};
+java $VMMAXMEM -jar $DIR/jalview-all-${JALVIEW_JRE}.jar $OPEN ${@};

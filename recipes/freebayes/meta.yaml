@@ -1,48 +1,58 @@
+{% set version = "1.3.5" %}
+
 package:
   name: freebayes
-  version: '1.2.0'
+  version: {{ version }}
 
 source:
-  git_url: https://github.com/ekg/freebayes.git
-  git_tag: 40155b407a4bead708aaafcadf7904854c411275
+  url: https://github.com/freebayes/freebayes/releases/download/v{{ version }}/freebayes-{{ version }}-src.tar.gz
+  sha256: 7e2635690e916ed85cec36b3263e6e5357413a4f2bf3035362d9749335e8a696
   patches:
-    - qcfail.diff
+    - meson.patch
+
 
 build:
-  number: 4
+  skip: True  # [py2k]
+  number: 3
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - meson
+    - ninja
+    - bc
+    - pkg-config
   host:
-    - zlib
     - bzip2
-    - python
-    - xz
-  run:
-    - zlib
-    - bzip2
-    - python
     - htslib
     - parallel
-    - xz
+    - samtools
+    - vcflib
+    - tabixpp
+    # This is pulled in by vcflib but not actually linked against, but that causes conda to incorrectly pin it.
+    - python
+  run:
+    - htslib
+    - python
+    - parallel
+    - samtools
+    - vcflib
+    - tabixpp
+    
 test:
   commands:
     - freebayes --version
-    - vcfstreamsort -h
-    - bamleftalign -h
-
+    - freebayes-parallel
+    
 about:
   home: https://github.com/ekg/freebayes
   license: MIT
   license_file: LICENSE
   license_family: MIT
   summary: Bayesian haplotype-based polymorphism discovery and genotyping
+  maintainers: jpuritz
 
 extra:
-  skip-lints:
-    - uses_git_url
-    - missing_hash
-  identifiers:
+   identifiers:
     - biotools:freebayes

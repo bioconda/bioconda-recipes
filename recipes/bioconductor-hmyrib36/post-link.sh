@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="hmyriB36_1.20.0.tar.gz"
+FN="hmyriB36_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/hmyriB36_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/hmyriB36_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hmyrib36/bioconductor-hmyrib36_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/hmyriB36_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/hmyriB36_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hmyrib36/bioconductor-hmyrib36_1.26.0_src_all.tar.gz"
 )
-MD5="e08284e8555bcedcdbdb4b1aa677b748"
+MD5="299c4cc1c567d4e22dd574ba84dbae48"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

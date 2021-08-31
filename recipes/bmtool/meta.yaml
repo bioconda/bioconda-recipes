@@ -3,24 +3,28 @@ package:
   version: 3.101
 
 source:
-  url: ftp://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/bmtools.tar.gz # [linux]
-  md5: 719474a0e3b54449cbe06f6e442994dd # [linux]
-  url: ftp://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/mac-os/bmtool # [osx]
-  md5: 43f112115af7ef2a28c6a64b31374c12 # [osx]
+  - url: ftp://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/bmtools.tar.gz # [linux]
+    md5: 719474a0e3b54449cbe06f6e442994dd # [linux]
+    patches:  # [linux]
+      - 0001-Cast-getline-stream-to-bool.patch  # [linux]
+  - url: ftp://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/mac-os/bmtool # [osx]
+    md5: 43f112115af7ef2a28c6a64b31374c12 # [osx]
 
 build:
-  number: 2
-  skip: False
+  number: 4
 
 requirements:
   build:
-    - {{ compiler('cxx') }}
+    - make
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
   run:
 
 test:
   commands:
-    - "bmtool -h &> /dev/null"
+    - bmtool -h
+
 about:
   home: ftp://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/
   license: Public Domain

@@ -1,0 +1,58 @@
+{% set name = "smallgenomeutilities" %}
+{% set version = "0.3.0" %}
+{% set sha256 = "4c4732b69ade137153f4c6d1d596471592963ec625d8da15a3af10bd0c1ad867" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  #url: https://pypi.io/packages/source/{{ name[0]|lower }}/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz
+  url: https://github.com/cbg-ethz/{{ name|lower }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+
+requirements:
+  host:
+    - python >=3
+    - pip
+  run:
+    - python >=3
+    - biopython
+    - numpy
+    - progress
+    - pysam
+    - scikit-learn
+    - scipy
+    - matplotlib-base
+
+test:
+  imports:
+    - smallgenomeutilities
+
+  commands:
+    - convert_qr -h
+    - convert_reference -h
+    - coverage -h
+    - coverage_stats -h
+    - extract_consensus -h
+    - extract_coverage_intervals -h
+    - extract_sam -h
+    - extract_seq -h
+    - mapper -h
+    - minority_freq -h
+    - pair_sequences -h
+    - predict_num_reads -h
+    - remove_gaps_msa -h
+    - MPLBACKEND="Agg" compute_mds  -h
+      # NOTE the default matplotlib backend used in Linux (Qt) is openGL-accelerated. Use the pure software "Agg" instead for testing inside GL-less containers
+
+about:
+  home: https://github.com/cbg-ethz/smallgenomeutilities
+  license: GNU General Public License v2 or later (GPLv2+)
+  summary: 'A collection of scripts that are useful for dealing with viral RNA NGS data.'
+  license_family: GPL2
+  license_file: LICENSE

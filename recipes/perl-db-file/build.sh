@@ -15,6 +15,11 @@ if [ -f Build.PL ]; then
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
     perl Makefile.PL INSTALLDIRS=site
+
+    # As the compiler bin is a symlink to another dir, the sysroot in the Makefile is wrong. Correcting it.
+    # It would be better to make sure the Makefile is generated with the correct value, but I didn't find how the wrong value ended there.
+    sed -i.bak 's|x86_64-conda_cos6-linux-gnu/sysroot|x86_64-conda-linux-gnu/sysroot|' Makefile
+
     make
     make test
     make install

@@ -1,0 +1,41 @@
+{% set name = "PretextSnapshot" %}
+{% set version = "0.0.4" %}
+{% set sha256 = "7d170437e6368cf51ae72c31eced828d61d23753f048e711bf88a09f92e0518e" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/wtsi-hpag/{{name}}/releases/download/{{version}}/Source_with_Submodules.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - bioconda_libdeflate_include_path.patch
+    #  - 0001-disable-auto-vectorisation-for-conda-libm.patch # [linux]
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - clang>=9.0.1 # [linux] 
+    - meson>=0.57.1
+
+test:
+  commands:
+    - {{ name }}
+
+#extra:
+#  skip-lints:
+#    - should_not_be_noarch_source
+
+about:
+  home: https://github.com/wtsi-hpag/{{ name }}
+  license: MIT
+  license_file: LICENSE
+  license_family: MIT
+  summary: Commandline image generator for Pretext Hi-C genome contact maps.
+  description: >
+    This is a tool for generating images (png, bmp or jpeg) of Hi-C contact maps in the Pretext format.
+    See https://github.com/wtsi-hpag/PretextMap for how to generate Pretext contact maps, or search for pretextmap on bioconda.

@@ -8,4 +8,5 @@ CXX=$CXX
 CXX98=$CXX
 CXX11=$CXX
 CXX14=$CXX" > ~/.R/Makevars
+CXXFLAGS="${CXXFLAGS} -std=c++14" \
 $R CMD INSTALL --build .

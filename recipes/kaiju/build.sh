@@ -28,3 +28,4 @@ cp kaiju-mkbwt $PREFIX/bin
 cp kaiju-mkfmi $PREFIX/bin
 cp kaiju-convertMAR.py $PREFIX/bin
 cp kaiju-taxonlistEuk.tsv $PREFIX/bin
+cp kaiju-excluded-accessions.txt $PREFIX/bin

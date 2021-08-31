@@ -1,16 +1,17 @@
-{% set version = "0.5.3" %}
+{% set version = "0.6.4" %}
 
 package:
   name: cgat-apps
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/d7/05/6518cd6bf64bc0d15f474ea707979b8a47d502b2ee7c043d3a5e33f602c9/cgat-0.5.3.tar.gz
-  sha256: 2ea78bcee73c0aa2427466efe4dab3d6b035089bb42cc735480dafe5ceb2f191
+  url: https://pypi.io/packages/source/c/cgat/cgat-{{ version }}.tar.gz
+  sha256: 9ec800fd8a928d058ad2ccfab810bd25089e44f9f3aadfa7e874dac659f2e21e
 
+  
 build:
-  skip: True # [not py3k]
-  number: 0
+  skip: True # [py2k or py == 39]
+  number: 1
   entry_points:
     - cgat = cgat.cgat:main
 
@@ -18,58 +19,55 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-
   host:
     - python
-    - cython 0.27.*
+    - cython
     - numpy
     - pysam
+    - htslib
     - setuptools
-    - coreutils
-    - libpng
-    - zlib
-
+    - ucsc-wigtobigwig
   run:
     - python
-    - cgatcore
-    - alignlib-lite 
-    - biopython 
-    - cython 
-    - future 
-    - matplotlib 
-    - numpy 
-    - pandas 
-    - pybedtools 
-    - pybigwig 
-    - pysam 
-    - python-lzo 
-    - pyyaml 
+    - cgatcore>=0.6.5
+    - alignlib-lite
+    - biopython
+    - future
+    - matplotlib-base
+    - numpy
+    - pandas
+    - pybedtools
+    - pybigwig
+    - pysam
+    - htslib
+    - pyyaml
+    - quicksect
     - scipy
-    - setuptools
-    - six 
+    - six
+    - jinja2
+    - scikit-learn
+    - sortedcontainers
     # Misc dependencies
     - bedtools
     - ucsc-bedgraphtobigwig
     - ucsc-bedtobigbed
     - ucsc-wigtobigwig
-    - coreutils 
-    - grep 
-    - libpng 
+    - coreutils
+    - grep
     - zlib
-    - quicksect
 
 test:
-
   imports:
     - cgat
-
   commands:
     - cgat --help
     - cgat --help Conversion
     - cgat gtf2table -h
+    - find ${PREFIX} -iname "*bamtools.cpython-*-x86_64-linux-gnu.so*" -exec ldd {} \;
+    - cgat bam2bed -h
 
 about:
-  home: https://www.cgat.org/downloads/public/cgat/documentation
+  home: https://cgat-apps.readthedocs.io/en/latest/
   license: MIT
   license_file: LICENSE
   summary: "Computational Genomics Analysis Toolkit"

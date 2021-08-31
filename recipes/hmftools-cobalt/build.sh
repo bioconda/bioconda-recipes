@@ -5,7 +5,7 @@ TGT="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
 [ -d "${PREFIX}/bin" ] || mkdir -p "${PREFIX}/bin"
 
 cd "${SRC_DIR}"
-mv count-bam-lines*.jar $TGT/cobalt.jar
+mv *.jar $TGT/cobalt.jar
 
 cp $RECIPE_DIR/COBALT.sh $TGT/COBALT
 ln -s $TGT/COBALT $PREFIX/bin

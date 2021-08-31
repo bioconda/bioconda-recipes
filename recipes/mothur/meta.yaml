@@ -1,35 +1,45 @@
-{% set version = "1.42.0" %}
+{% set mothurVersion = "1.46.0" %}
+{% set mothurSha256 = "0bb833b82c8841dca8cecfa58c93d537ec55f4a66d0def40916668a18baf6424" %}
+{% set vsearchVersion = "2.15.2" %}
 
 package:
   name: mothur
-  version: {{ version }}
+  version: {{ mothurVersion }}
 
 source:
-  url: https://github.com/mothur/mothur/archive/v{{ version }}.tar.gz
-  sha256: d56d3ff63b37d209038c5e2c2c26cd68a342bb3fb646d33f5705ecb27c471c01
+  url: https://github.com/mothur/mothur/archive/refs/tags/v{{ mothurVersion }}.tar.gz
+  sha256: {{ mothurSha256 }}
+  patches:
+    - makefile.patch
 
 build:
+  skip: True  # [osx]
   number: 0
-  skip: true # [not linux64 or osx]
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - zlib
-    - ncurses
-    - readline
-    - boost
     - blast-legacy
+    - boost-cpp
+    - gsl
     - hdf5
+    - readline
+    - sra-tools
+    - vsearch ={{ vsearchVersion }}
+    - zlib
   run:
-    - zlib
-    - ncurses
-    - readline
-    - boost
     - blast-legacy
+    - boost-cpp
+    - gsl
     - hdf5
+    - readline
+    - sra-tools
+    - vsearch ={{ vsearchVersion }}
+    - zlib
+
 test:
   commands:
     - mothur "#help()"
@@ -46,3 +56,4 @@ about:
 extra:
   identifiers:
     - doi:10.1128/AEM.01541-09
+    - usegalaxy-eu:mothur_get_label

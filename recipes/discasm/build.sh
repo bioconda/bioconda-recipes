@@ -9,6 +9,7 @@ chmod a+x $DISCASM_INSTALL_PATH/DISCASM
 # install path rather than creating a symlink to DISCASM from $PREFIX/bin
 # because DISCASM uses its own location to find other scripts and packages
 # which are included with it.
+mkdir -p ${PREFIX}/bin
 echo "#!/bin/bash" > $PREFIX/bin/DISCASM
 echo "$DISCASM_INSTALL_PATH/DISCASM \$@" >> $PREFIX/bin/DISCASM
 chmod +x $PREFIX/bin/DISCASM
