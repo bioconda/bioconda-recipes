@@ -14,8 +14,9 @@ cmake -DPYOPENMS=ON -DPY_NUM_MODULES=8 .
 pushd pyOpenMS
 #ulimit -v 2560000
 $PYTHON create_cpp_extension.py
-$PYTHON -m pip install . --ignore-installed --no-deps --global-option="--single-threaded"
+$PYTHON -m pip install . --ignore-installed --no-deps --global-option="--single-threaded" --global-option="--debug"
 #ulimit -v unlimited
+cat setup.py
 popd
 popd
 
