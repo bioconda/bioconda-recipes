@@ -16,9 +16,9 @@ pushd pyOpenMS
 $PYTHON create_cpp_extension.py
 
 tree .
-$PYTHON -m pip install . --ignore-installed --no-deps --global-option="--single-threaded" --global-option="--debug"
-#ulimit -v unlimited
 cat setup.py
+$PYTHON -m pip install . --ignore-installed --no-deps --global-option="--single-threaded"
+#ulimit -v unlimited
 popd
 popd
 
