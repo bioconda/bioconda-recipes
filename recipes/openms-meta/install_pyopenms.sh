@@ -20,3 +20,5 @@ popd
 popd
 
 tree $PREFIX
+
+du -s $PREFIX
