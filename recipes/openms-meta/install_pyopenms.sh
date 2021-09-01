@@ -17,7 +17,8 @@ $PYTHON create_cpp_extension.py
 
 tree .
 cat setup.py
-$PYTHON -m pip install . --ignore-installed --no-deps --global-option="--single-threaded"
+ls -lh
+$PYTHON -m pip install . --ignore-installed --no-deps --verbose --global-option="--single-threaded"
 #ulimit -v unlimited
 popd
 popd
