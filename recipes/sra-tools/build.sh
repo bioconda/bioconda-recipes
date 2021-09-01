@@ -56,7 +56,7 @@ end-of-patch
     --with-xml2-prefix="${PREFIX}" \
     ;
 # Make target dependencies seems broken; build fails with -j"${CPU_COUNT}"
-make -j2
+make -j1
 popd
 
 echo "compiling sra-tools"
