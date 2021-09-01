@@ -18,3 +18,5 @@ $PYTHON -m pip install . --ignore-installed --no-deps --global-option="--single-
 #ulimit -v unlimited
 popd
 popd
+
+tree $PREFIX
