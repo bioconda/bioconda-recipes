@@ -1,16 +1,22 @@
 {% set name = "scanpy-scripts" %}
-{% set version = "1.1.0" %}
+{% set version = "1.1.1" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: c22bec782aea45b863cf7cf6fb6b48cea9a19514c91d10d5f383754ac4dced33
+  - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 9ca7c2f52fa2d164268da26f11d3365687170e5a1ff1d81d35eb757ab4028ea3
+    folder: scanpy-scripts
+  - url: https://pypi.io/packages/source/s/scanpy/scanpy-1.8.1.tar.gz 
+    sha256: 1b8603a868d783bd6c18c8db763a450153feefc8daed862c440749790d47c654
+    folder: scanpy
+    patches:
+      - scrublet.patch
 
 build:
-  number: 0
+  number: 1
   noarch: python
   entry_points:
     - scanpy-cli=scanpy_scripts.cli:cli
@@ -29,11 +35,18 @@ build:
     - scanpy-find-markers=scanpy_scripts.cmds:DIFFEXP_CMD
     - scanpy-integrate=scanpy_scripts.cli:integrate
     - scanpy-multiplet=scanpy_scripts.cli:multiplet
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: 
+    - "{{ PYTHON }} -m pip install {{ SRC_DIR }}/scanpy --no-deps --ignore-installed -vv" 
+    - "{{ PYTHON }} -m pip install {{ SRC_DIR }}/scanpy-scripts --no-deps --ignore-installed -vv"
 
 requirements:
   host:
-    - python>=3.6
+    - python >=3.7
+    - pip
+    - flit-core
+    - setuptools_scm
+    - pytoml
+    - packaging
   run:
     - anndata
     - bbknn>=1.5.0
@@ -49,7 +62,8 @@ requirements:
     - packaging
     - pandas
     - python>=3.6
-    - scanpy>=1.8.0
+    - scanpy=1.8.1
+    - scikit-misc
     - scipy 
     - scrublet
     - umap-learn
