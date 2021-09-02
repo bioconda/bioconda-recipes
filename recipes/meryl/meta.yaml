@@ -1,32 +1,44 @@
 {% set name = "meryl" %}
-{% set version = "v1.0" %}
-{% set sha256 = "6bf221b021c857ef6268494ca024f7cb7485d77df05883545f850ec3bb5986dd" %}
+{% set version = "1.3" %}
+{% set sha256 = "8872795e23513e01859e9007af74b14fee48f0d450c78e88df135da31dc79ba4" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
-about:
-  home: 'https://github.com/marbl/meryl'
-  summary: "meryl is a multi-threaded, multi-process, out-of-core k-mer counter"
-  license: PUBLIC DOMAIN
-  license_file: README.license
-
 source:
-  url: https://github.com/marbl/{{ name }}/archive/{{ version }}.tar.gz 
+  url: https://github.com/marbl/{{name}}/releases/download/v{{version}}/{{name}}-{{version}}.tar.xz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-Do-not-bail-out-for-Clang-on-macOS.patch
+    - 0002-macos-cmath.patch # [osx]
 
 build:
   number: 0
-  skip: True # [osx]
 
 requirements:
   build:
+    - make
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
 
 test:
   commands:
     - "meryl 2>&1 | grep 'usage: meryl'"
-    - "meryl-lookup 2>&1 | grep 'usage: meryl-lookup'"
+    - "meryl-analyze 2>&1 | grep 'usage: meryl-analyze'"
     - "meryl-import 2>&1 | grep 'usage: meryl-import'"
-    - "sequence 2>&1 | grep 'usage: sequence'"
+    - "meryl-lookup 2>&1 | grep 'usage: meryl-lookup'"
+    - "meryl-simple 2>&1 | grep 'usage: meryl-simple'"
+
+about:
+  home: https://github.com/marbl/meryl
+  dev_url: https://github.com/marbl/meryl
+  doc_url: https://github.com/marbl/meryl
+  summary: "meryl is a multi-threaded, multi-process, out-of-core k-mer counter"
+  license: LicenseRef-Public-Domain AND MIT AND RSA-MD AND BSD-3-Clause AND BSD-2-Clause AND LicenseRef-parasail
+  license_file:
+    - README.licenses
+    - src/utility/README.licenses

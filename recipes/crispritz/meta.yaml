@@ -1,4 +1,4 @@
-{% set version = "2.4.3" %}
+{% set version = "2.6.0" %}
 
 package:
   name: crispritz
@@ -6,19 +6,20 @@ package:
 
 source:
   url: https://github.com/pinellolab/CRISPRitz/archive/v{{ version }}.tar.gz
-  sha256: 670bac6241946a15caa6f42e4ccd8aa22ef8a92f2a6dbdaebadb6007fc5e5acd
+  sha256: 5ac8853aed8f131694e7eb4af50cf8f15c68d5dd1db9150489dd43dcb24056df
 
 build:
   number: 0
-  skip: True  # [osx or py<36]
+  skip: True  # [py2k or osx]
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - libgomp  # [linux]
-  host:
+    - llvm-openmp  # [osx]
     - make
-    - boost
+  host:
+    - boost-cpp
     - python
   run:
     - rename
@@ -34,13 +35,11 @@ requirements:
     - more-itertools
     - statsmodels
     - bcftools
-    - boost
+    - boost-cpp
     - tk
     - openmp
-    - libdeflate
-    - libcxx
     - python
-    - tabix
+    - htslib
 
 test:
   commands:
