@@ -1,0 +1,74 @@
+{% set name = "gadma" %}
+{% set version = "2.0.0rc17" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: fa6f554f93addd3ee0144a2337c9ada32d873ac7f34a329c618f2e2f4f03bf46
+
+build:
+  number: 0
+  entry_points:
+    - gadma = gadma.core:main
+    - gadma-run_ls_on_boot_data = gadma.run_ls_on_boot_data:main
+    - gadma-get_confidence_intervals = gadma.get_confidence_intervals:main
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  skip: True  # [py27]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python >=3.6
+    - cython
+    - dadi
+    - matplotlib-base
+    - mpmath
+    - nlopt
+    - numpy
+    - pillow
+    - pip
+    - ruamel.yaml
+    - scipy
+    - setuptools_scm 
+  run:
+    - dadi
+    - matplotlib-base
+    - mpmath
+    - nlopt
+    - numpy
+    - pandas
+    - pillow
+    - python >=3.6
+    - ruamel.yaml
+    - scipy
+
+test:
+  imports:
+    - gadma
+    - gadma.cli
+    - gadma.code_generator
+    - gadma.core
+    - gadma.data
+    - gadma.engines
+    - gadma.models
+    - gadma.optimizers
+    - gadma.utils
+  commands:
+    - gadma --help
+    - gadma-run_ls_on_boot_data --help
+    - gadma-get_confidence_intervals --help
+
+about:
+  home: "https://github.com/ctlab/GADMA"
+  license: "GNU General Public (GPL)"
+  license_family: LGPL
+  license_file: LICENSE
+  summary: "Genetic Algorithm for Demographic Inference"
+
+extra:
+  identifiers:
+    - doi:10.1093/gigascience/giaa005
