@@ -4,7 +4,7 @@ export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 export LD_LIBRARY_PATH=${PREFIX}/lib
 
-autoreconf -iv
+#autoreconf -iv
 ./configure     # Needed for choosing optional functionality
 make
 
