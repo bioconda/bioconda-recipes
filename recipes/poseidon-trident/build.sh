@@ -1,5 +1,7 @@
 #!/bin/env bash
 
+yum -y install zlib-devel
+
 mkdir -p ~/.stack
 cat << EOF > ~/.stack/config.yaml
 setup-info:
