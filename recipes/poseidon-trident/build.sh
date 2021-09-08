@@ -5,7 +5,7 @@ cat << EOF > ~/.stack/config.yaml
 setup-info:
   ghc:
     linux64:
-        8.10.6:
+        8.10.3:
             url: "https://downloads.haskell.org/~ghc/8.10.3/ghc-8.10.3-x86_64-centos7-linux.tar.xz"
             content-length: 203627484
             sha1: 19a5e446ebab64cde968bb2fc6ed97ae9c0ce3d3
