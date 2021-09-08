@@ -5,7 +5,7 @@ TGT="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
 [ -d "${PREFIX}/bin" ] || mkdir -p "${PREFIX}/bin"
 
 cd "${SRC_DIR}"
-mv sv-linx*.jar $TGT/sv-linx.jar
+mv linx*.jar $TGT/sv-linx.jar
 
 cp $RECIPE_DIR/linx.sh $TGT/linx
 ln -s $TGT/linx $PREFIX/bin
