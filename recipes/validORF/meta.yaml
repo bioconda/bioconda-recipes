@@ -1,0 +1,38 @@
+{% set version = "v1.0.4" %}
+{% set sha256 = "c0fa5f905489de345196b0d220b042ea2bbe744f3a82791518cd1c8bace9c9a7" %}
+
+package:
+  name: validORF
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - ncbi-genome-download=ncbi_genome_download.__main__:main
+    - ngd=ncbi_genome_download.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+source:
+  url: "https://github.com/Woosub-Kim/validORF/archive/refs/tags/{{ version }}.tar.gz"
+  sha256: {{ sha256 }}
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - python
+    - biopython
+
+test:
+  commands:
+    - validORF -h
+    - validORF --help
+    - validORF ATGTTTTGATTTATGGGGTGA
+
+about:
+  home: https://github.com/Woosub-Kim/validORF
+  summary: "validORF: find translatable ORF from input sequence"
+  license: GPLv3
+
