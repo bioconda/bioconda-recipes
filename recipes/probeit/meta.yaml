@@ -1,0 +1,51 @@
+{% set version = "v1.9" %}
+{% set sha256 = "5d1148b7f2cd927865e755ff457d2aa705de6918131ecb04c51c45053cc473ee" %}
+
+package:
+  name: probeit
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  url: "https://github.com/steineggerlab/probeit/archive/refs/tags/{{ version }}.tar.gz"
+  sha256: {{ sha256 }}
+  patches:
+    - "fix-setcover-from-path.patch"
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - make
+  host:
+    - pip
+    - python
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+    - pandas
+    - biopython
+    - mmseqs2 >=13.45111
+    - genmap
+    - seqkit
+    - primer3-py
+    - bedtools
+
+test:
+  files:
+    - bin/sample/positive.fasta
+    - bin/sample/negative.fasta
+    - bin/sample/ref.fasta
+    - bin/sample/ref.gff
+    - bin/sample/str.fasta
+  commands:
+    - setcover > /dev/null
+    - probeit > /dev/null
+
+about:
+  home: https://github.com/steineggerlab/probeit
+  summary: "Probeit: a probe designer for detecting and genotyping pathogen!"
+  license: AGPL-3.0
+
