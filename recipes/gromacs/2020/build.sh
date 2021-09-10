@@ -20,7 +20,6 @@ for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do
     -DCMAKE_INSTALL_BINDIR="bin.${ARCH}"
     -DCMAKE_INSTALL_LIBDIR="lib.${ARCH}"
     -DGMX_MPI=OFF
-    -DGMX_VERSION_STRING_OF_FORK="bioconda"
   )
   cmake .. "${cmake_args[@]}"
   make -j "${CPU_COUNT}"
