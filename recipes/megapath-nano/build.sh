@@ -11,4 +11,5 @@ $CXX -std=c++11 -shared -fPIC -o debruijn_graph -O3 debruijn_graph.cpp -I $PREFI
 $CC -Wall -O3 -pipe -fPIC -shared -rdynamic -o libssw.so ssw.c ssw.h
 cd $PREFIX/MegaPath-Nano/bin/Clair-ensemble/Clair.beta.ensemble.cpu/clair/
 $CXX ensemble.cpp -o ensemble
+python -m pip install --upgrade pip
 pip install biopython && pip install git+https://github.com/arpcard/rgi.git
