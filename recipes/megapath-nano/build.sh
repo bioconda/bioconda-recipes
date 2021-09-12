@@ -16,4 +16,7 @@ $CXX ensemble.cpp -o ensemble
 export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 cd $PREFIX/MegaPath-Nano/bin/samtools-1.13
-./configure --prefix=$PREFIX/MegaPath-Nano/bin/samtools && make && make install
+./configure \
+    --prefix=$PREFIX/MegaPath-Nano/bin/samtools \
+    CURSES_LIB='-ltinfow -lncursesw' 
+make && make install
