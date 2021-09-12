@@ -18,6 +18,5 @@ export LDFLAGS="-L$PREFIX/lib"
 cd $PREFIX/MegaPath-Nano/bin/samtools-1.13
 ./configure \
     --prefix=$PREFIX/MegaPath-Nano/bin/samtools \
-    --with-htslib=system \
-    CURSES_LIB='-ltinfow -lncursesw' 
+    --without-curses 
 make && make install
