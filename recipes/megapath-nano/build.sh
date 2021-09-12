@@ -16,5 +16,7 @@ $CXX ensemble.cpp -o ensemble
 export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 cd $PREFIX/MegaPath-Nano/bin/samtools-1.13
-./configure --without-curses 
+./configure \
+    --prefix=$PREFIX/MegaPath-Nano/bin/samtools-1.13 \
+    --without-curses 
 make && make install
