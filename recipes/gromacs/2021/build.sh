@@ -17,7 +17,7 @@ for ARCH in SSE2 AVX_256 AVX2_256; do
     -DGMX_PREFER_STATIC_LIBS=NO
     -DGMX_BUILD_OWN_FFTW=OFF
     -DGMX_DEFAULT_SUFFIX=ON
-    # Tests are not currently run, so don't download them
+    # Tests are not currently run, so do not download them
     # -DREGRESSIONTEST_DOWNLOAD=ON
     -DCMAKE_PREFIX_PATH="${PREFIX}"
     -DGMX_INSTALL_PREFIX="${PREFIX}"
