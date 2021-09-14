@@ -1,5 +1,6 @@
+
 {% set name = "gNALI" %}
-{% set version = "1.0.3" %}
+{% set version = "1.1.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,48 +8,36 @@ package:
 
 source:
   url: https://github.com/phac-nml/gnali/archive/v{{ version }}.tar.gz
-  sha256: 9feb01cce8e2e9c88fbc96b6320624bc4553e6ee053fe3eb16c1b6ebb370c82b
+  sha256: 1663db929f860f9ad0dbdffe9d13a15d2a611f0f6c42b7ae7d17792e3045080a
 
 build:
   number: 0
-  skip: True  # [not linux]
+  noarch: python
   entry_points:
     - gnali = gnali.gnali:main
-    - gnali_setup = gnali.gnali_setup:main
+    - gnali_get_data = gnali.gnali_get_data:main
   script: "$PYTHON setup.py install --single-version-externally-managed --record=record.txt"
 
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
     - python >=3.6
     - pip
-    - ensembl-vep
-    - samtools
-    - tabix
-    - libcurl
-    - perl-bio-bigfile
-    - py-bgzip
-    - cython
-    - git >=2
   run:
     - python >=3.6
     - ensembl-vep
     - samtools
-    - tabix
-    - libcurl
+    - htslib
     - perl-bio-bigfile
     - pybiomart
     - pandas
     - numpy
-    - pysam <0.16
+    - pysam<0.16
     - filelock
     - pyyaml
     - py-bgzip
     - python-magic
     - progress
     - git >=2
-    - pytest
 
 test:
   imports:
