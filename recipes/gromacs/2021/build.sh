@@ -26,6 +26,7 @@ for ARCH in SSE2 AVX_256 AVX2_256; do
     -DCMAKE_INSTALL_BINDIR="bin.${ARCH}"
     -DCMAKE_INSTALL_LIBDIR="lib.${ARCH}"
     -DGMX_VERSION_STRING_OF_FORK="bioconda"
+    -DGMX_GPU=OpenCL
   )
   if [[ "${mpi}" == "nompi" ]]; then
       cmake_args+=(-DGMX_MPI=OFF)
