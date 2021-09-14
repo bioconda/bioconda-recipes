@@ -5,8 +5,8 @@ compile_file="${SRC_DIR}/src/compile.jl"
 # file with precompilation statements: 
 precompiled_file="${SRC_DIR}/src/precompiled.jl"
 # test files for precompilation run, if necessary:
-contigs="${RECIPE_DIR}/test/07673_lcal.fa"
-reference="${RECIPE_DIR}/test/07673_Alitta_succinea.fa"
+contigs="${RECIPE_DIR}/precompile_statements/07673_lcal.fa"
+reference="${RECIPE_DIR}/precompile_statements/07673_Alitta_succinea.fa"
 # directory to contain the finished build:
 build_dir="${SRC_DIR}/build"
 # inside build_dir, contains directories artifacts, bin with executable patchwork, and lib:
