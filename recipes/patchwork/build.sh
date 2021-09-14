@@ -21,8 +21,8 @@ fi
 # this is entirely elegant, but you need the .toml files for compilation and conda-build only 
 # copies the stuff inside the "src"-directory of the repo to its own working directory SRC_DIR,
 # so make sure you have the .toml files in the RECIPE_DIR together with meta.yaml and build.sh
-cp "${RECIPE_DIR}/Project.toml" "${SRC_DIR}"
-cp "${RECIPE_DIR}/Manifest.toml" "${SRC_DIR}"
+cp "${RECIPE_DIR}/dependencies/Project.toml" "${SRC_DIR}"
+cp "${RECIPE_DIR}/dependencies/Manifest.toml" "${SRC_DIR}"
 
 mkdir -p "${build_dir}/${patchwork_dir}"
 # compile Patchwork: 
