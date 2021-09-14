@@ -12,7 +12,7 @@ export CXX_INCLUDE_PATH=${PREFIX}/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Release ..
 make CXX="$CXX" CC="$CC" CXXFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS"
 
 mv ExpansionHunter ${PREFIX}/bin/ExpansionHunter
