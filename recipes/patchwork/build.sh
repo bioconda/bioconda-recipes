@@ -18,7 +18,7 @@ then
     julia --trace-compile="${precompiled_file}" "${SRC_DIR}/src/Patchwork.jl" --contigs "${contigs}" --reference "${reference}"
 fi
 
-# this is entirely elegant, but you need the .toml files for compilation and conda-build only 
+# this is not entirely elegant, but you need the .toml files for compilation and conda-build only 
 # copies the stuff inside the "src"-directory of the repo to its own working directory SRC_DIR,
 # so make sure you have the .toml files in the RECIPE_DIR together with meta.yaml and build.sh
 cp "${RECIPE_DIR}/dependencies/Project.toml" "${SRC_DIR}"
@@ -33,6 +33,8 @@ echo "##########################################################################
 mv "${GCC}" "${BUILD_PREFIX}/bin/gcc"
 #which gcc
 echo "###################################################################################"
+# maybe: 
+julia -e "import Pkg; Pkg.add([\"ArgParse\", \"PackageCompiler\"])"
 # compile Patchwork: 
 julia "${compile_file}" "${SRC_DIR}" "${precompiled_file}" "${build_dir}/${patchwork_dir}"
 
