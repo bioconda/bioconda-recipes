@@ -1,0 +1,56 @@
+{% set setup_data = load_setup_py_data(setup_file="../setup.py",from_recipe_dir=True) %}
+{% set description = setup_data['description'] %}
+{% set url = setup_data['url'] %}
+{% set name = setup_data['name'] %}
+{% set version = setup_data['version'] %}
+
+package:
+  name: liquorice
+  version: {{ setup_data.get('version') }}
+
+source:
+  git_rev: v{{ version }}
+  git_url: . #{{ url }}.git
+  #path: ..
+
+build:
+  number: 0
+  entry_points:
+    - LIQUORICE = liquorice.LIQUORICE:main
+    - LIQUORICE_summary = liquorice.LIQUORICE_summary:main
+  noarch: python
+  script: {{PYTHON}} setup.py install
+
+requirements:
+  host:
+    - python
+  run:
+    - python ==3.7.9
+    - biopython >=1.78
+    - deeptools >=3.5.0
+    - lmfit >=1.0.1
+    - matplotlib-base ==3.1.1
+    - modin[ray]
+    - modin  ==0.8.2
+    - numpy >=1.19.5
+    - pandas >=1.1.4
+    - joblib >=1.0.0
+    - pybedtools >=0.8.1
+    - pybigwig >=0.3.17
+    - ray-core ==1.1.0
+    - scikit-learn >=0.24.0
+    - scipy >=1.6.0
+    - swifter >=1.0.6
+    - parallel
+    - seaborn ==0.11.2
+    - pysam ==0.16.0.1
+
+about:
+  home: "{{ url }}"
+  license_file:
+
+    LICENSE
+  license: GPL-3.0
+  license_family: GPL
+  summary: "{{ description }}"
+  description: See the package README.rst for more information.
