@@ -30,7 +30,7 @@ cp "${RECIPE_DIR}/dependencies/Manifest.toml" "${SRC_DIR}"
 
 mkdir -p "${build_dir}/${patchwork_dir}"
 #GCC=$(find "${PREFIX}" -type f -name "")
-ln -s "${CC}" "gcc"
+ln -s "${GCC}" "gcc"
 # compile Patchwork: 
 julia "${compile_file}" "${SRC_DIR}" "${precompiled_file}" "${build_dir}/${patchwork_dir}"
 # --> in compile.jl, set ENV["JULIA_CC"] = ARGS[4]
