@@ -31,8 +31,7 @@ echo "##########################################################################
 echo $GCC
 echo "###################################################################################"
 mv "${GCC}" "${BUILD_PREFIX}/bin/gcc"
-apropos gcc
-which gcc
+#which gcc
 echo "###################################################################################"
 # compile Patchwork: 
 julia "${compile_file}" "${SRC_DIR}" "${precompiled_file}" "${build_dir}/${patchwork_dir}"
