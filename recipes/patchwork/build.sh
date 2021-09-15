@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-echo "######################################################################################"
-echo $CC
-echo "######################################################################################"
-
 # script for compiling:
 compile_file="${SRC_DIR}/src/compile.jl"
 # file with precompilation statements: 
@@ -29,12 +25,17 @@ cp "${RECIPE_DIR}/dependencies/Project.toml" "${SRC_DIR}"
 cp "${RECIPE_DIR}/dependencies/Manifest.toml" "${SRC_DIR}"
 
 mkdir -p "${build_dir}/${patchwork_dir}"
-#GCC=$(find "${PREFIX}" -type f -name "")
-ln -s "${GCC}" "gcc"
+# PackageCompiler.jl get_compiler() searches for "gcc" and "clang", therefore:
+#ln -s "${GCC}" "${BUILD_PREFIX}/bin/gcc" # for Linux; do same thing with clang for MacOS?
+echo "###################################################################################"
+echo $GCC
+echo "###################################################################################"
+mv "${GCC}" "${BUILD_PREFIX}/bin/gcc"
+apropos gcc
+which gcc
+echo "###################################################################################"
 # compile Patchwork: 
 julia "${compile_file}" "${SRC_DIR}" "${precompiled_file}" "${build_dir}/${patchwork_dir}"
-# --> in compile.jl, set ENV["JULIA_CC"] = ARGS[4]
-# julia "${compile_file}" "${SRC_DIR}" "${precompiled_file}" "${build_dir}/${patchwork_dir}" "${CC}"
 
 # bundle together for conda packaging: 
 mkdir -p "${PREFIX}/bin"
