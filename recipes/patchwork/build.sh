@@ -26,14 +26,8 @@ cp "${RECIPE_DIR}/dependencies/Manifest.toml" "${SRC_DIR}"
 
 mkdir -p "${build_dir}/${patchwork_dir}"
 # PackageCompiler.jl get_compiler() searches for "gcc" and "clang", therefore:
-#ln -s "${GCC}" "${BUILD_PREFIX}/bin/gcc" # for Linux; do same thing with clang for MacOS?
-echo "###################################################################################"
-echo $GCC
-echo "###################################################################################"
 mv "${GCC}" "${BUILD_PREFIX}/bin/gcc"
-#which gcc
-echo "###################################################################################"
-# maybe: 
+# not sure if this is necessary, but can't have these in the Patchwork module:
 julia -e "import Pkg; Pkg.add([\"ArgParse\", \"PackageCompiler\"])"
 # compile Patchwork: 
 julia "${compile_file}" "${SRC_DIR}" "${precompiled_file}" "${build_dir}/${patchwork_dir}"
