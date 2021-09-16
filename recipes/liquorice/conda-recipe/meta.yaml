@@ -1,17 +1,10 @@
-{% set setup_data = load_setup_py_data(setup_file="../setup.py",from_recipe_dir=True) %}
-{% set description = setup_data['description'] %}
-{% set url = setup_data['url'] %}
-{% set name = setup_data['name'] %}
-{% set version = setup_data['version'] %}
-
 package:
   name: liquorice
-  version: {{ setup_data.get('version') }}
+  version: 0.5.0
 
 source:
-  git_rev: v{{ version }}
-  git_url: . #{{ url }}.git
-  #path: ..
+  url: https://github.com/epigen/LIQUORICE/archive/refs/tags/v0.5.0.tar.gz
+  sha256: fdbbced331d810b982ac30513d4980b57cb0825318c3919c711640c1f61fcc4d
 
 build:
   number: 0
@@ -45,12 +38,19 @@ requirements:
     - seaborn ==0.11.2
     - pysam ==0.16.0.1
 
-about:
-  home: "{{ url }}"
-  license_file:
+test:
+  commands:
+    - LIQUORICE --help
+    - LIQUORICE_summary --help
+  imports:
+    - liquorice
+    - liquorice.utils.Workflows
+    - liquorice.LIQUORICE
 
-    LICENSE
+about:
+  home: https://github.com/epigen/LIQUORICE
+  license_file: LICENSE
   license: GPL-3.0
   license_family: GPL
-  summary: "{{ description }}"
+  summary: A tool for bias correction and quantification of changes in coverage around regions of interest in cfDNA WGS datasets
   description: See the package README.rst for more information.
