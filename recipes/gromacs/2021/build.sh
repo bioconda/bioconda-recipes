@@ -17,15 +17,20 @@ for ARCH in SSE2 AVX_256 AVX2_256; do
     -DGMX_PREFER_STATIC_LIBS=NO
     -DGMX_BUILD_OWN_FFTW=OFF
     -DGMX_DEFAULT_SUFFIX=ON
-    -DREGRESSIONTEST_DOWNLOAD=ON
-    -DGMX_GPU=OpenCL
+    # Tests are not currently run, so do not download them
+    # -DREGRESSIONTEST_DOWNLOAD=ON
     -DCMAKE_PREFIX_PATH="${PREFIX}"
     -DGMX_INSTALL_PREFIX="${PREFIX}"
     -DCMAKE_INSTALL_PREFIX="${PREFIX}"
     -DGMX_SIMD="${ARCH}"
     -DCMAKE_INSTALL_BINDIR="bin.${ARCH}"
     -DCMAKE_INSTALL_LIBDIR="lib.${ARCH}"
+    -DGMX_VERSION_STRING_OF_FORK="bioconda"
   )
+  # OpenCL header on Mac is not recognized by GROMACS
+  if [ "$(uname)" != 'Darwin' ] ; then
+      cmake_args+=(-DGMX_GPU=OpenCL)
+  fi
   if [[ "${mpi}" == "nompi" ]]; then
       cmake_args+=(-DGMX_MPI=OFF)
   else
