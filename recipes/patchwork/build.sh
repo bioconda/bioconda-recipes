@@ -27,7 +27,7 @@ cp "${RECIPE_DIR}/dependencies/Manifest.toml" "${SRC_DIR}"
 mkdir -p "${build_dir}/${patchwork_dir}"
 # PackageCompiler.jl get_compiler() searches for "gcc" and "clang", therefore:
 mv "${GCC}" "${BUILD_PREFIX}/bin/gcc"
-libmbedcrypto=$(find "${BUILD_PREFIX}" -name "libmbedcrypto.so")
+libmbedcrypto=$(find "${BUILD_PREFIX}" -name "libmbedcrypto.so.*")
 echo "${libmbedcrypto}"
 # libmbedcrypto="${BUILD_PREFIX}/bin/lib/julia/libmbedcrypto.so"
 ln -s "${libmbedcrypto}" "${BUILD_PREFIX}/bin/lib/julia/libmbedcrypto.so.5"
