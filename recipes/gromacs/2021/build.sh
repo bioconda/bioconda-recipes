@@ -26,15 +26,15 @@ for ARCH in SSE2 AVX_256 AVX2_256; do
     -DCMAKE_INSTALL_BINDIR="bin.${ARCH}"
     -DCMAKE_INSTALL_LIBDIR="lib.${ARCH}"
     -DGMX_VERSION_STRING_OF_FORK="bioconda"
-    -DGMX_GPU=OpenCL
   )
+  # OpenCL header on Mac is not recognized by GROMACS
+  if [ "$(uname)" != 'Darwin' ] ; then
+      cmake_args+=(-DGMX_GPU=OpenCL)
+  fi
   if [[ "${mpi}" == "nompi" ]]; then
       cmake_args+=(-DGMX_MPI=OFF)
   else
       cmake_args+=(-DGMX_MPI=ON)
-  fi
-  if [ "$(uname)" = 'Darwin' ] ; then
-      cmake_args+=(-DOpenCL_INCLUDE_DIR=/Applications/Xcode-11.2.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/System/Library/Frameworks/OpenCL.framework/Headers)
   fi
   cmake .. "${cmake_args[@]}"
   make -j "${CPU_COUNT}"
