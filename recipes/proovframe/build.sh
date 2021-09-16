@@ -4,5 +4,5 @@ mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
 chmod +x bin/*
 
-cp -r bin $PREFIX/bin
+cp -r bin $PREFIX/
 cp -r lib/Fasta $PREFIX/lib/
