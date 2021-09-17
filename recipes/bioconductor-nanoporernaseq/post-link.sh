@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="NanoporeRNASeq_1.0.0.tar.gz"
+FN="NanoporeRNASeq_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/NanoporeRNASeq_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/NanoporeRNASeq_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-nanoporernaseq/bioconductor-nanoporernaseq_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/NanoporeRNASeq_1.2.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/NanoporeRNASeq_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-nanoporernaseq/bioconductor-nanoporernaseq_1.2.0_src_all.tar.gz"
 )
-MD5="aea2d0400b2f9b2ff2c315642d520d59"
+MD5="3974ab6746855ff420983f51d5f7cc9d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
