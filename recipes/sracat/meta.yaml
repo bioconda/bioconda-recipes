@@ -1,0 +1,40 @@
+{% set version = "0.2" %}
+
+package:
+  name: sracat
+  version: '{{ version }}'
+
+source:
+  - url: https://github.com/lanl/sracat/archive/v{{version}}.tar.gz
+    sha256: 6253b52e0d54cc675647ef66227792d24dde315743c14ea688a038a99277391b
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - ncbi-ngs-sdk
+    - sra-tools
+  run:
+    - ca-certificates
+
+test:
+  commands:
+    # create config file with /LIBS/GUID value so tests pass; new GUID value will be created in user's home dir upon installation via post-link.sh
+    - if ! grep "/LIBS/GUID" ~/.ncbi/user-settings.mkfg &> /dev/null; then mkdir -p ~/.ncbi && printf '/LIBS/GUID = "%s"\n' `uuid` > ~/.ncbi/user-settings.mkfg; fi
+    - sracat --help > /dev/null
+    - sracat SRR000001 | head -1 | grep '@SRR000001.1'
+
+about:
+  home: https://github.com/lanl/sracat
+  license: BSD-3-Clause
+  license_family: BSD
+  summary: a command-line tool for extracting unordered read data from SRA files
+  description:  |
+    sracat is small C++ program that uses the NCBI sra-toolkit C++ API to
+    extract sequence (and optionally quailty scores) from SRA records. Unlike
+    the fasterq-dump program included with the sra-toolkit, sracat does not
+    output the reads in their origianlly submitted order, but rather outputs
+    reads in the order in which they are stored in the SRA file.
