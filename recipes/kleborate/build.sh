@@ -1,6 +1,6 @@
 #! /bin/bash
 
-$PYTHON -m  -m pip install . --ignore-installed --no-deps -vv
+$PYTHON -m pip install . --ignore-installed --no-deps -vv
 
 # Make blastdbs of Kleborate data
 # Allows containters to be usable
