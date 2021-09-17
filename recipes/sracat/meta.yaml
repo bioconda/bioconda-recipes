@@ -15,17 +15,18 @@ requirements:
   build:
     - {{ compiler('cxx') }}
   host:
-    - ncbi-ngs-sdk
+    - ncbi-vdb
     - sra-tools
   run:
     - ca-certificates
+    - zlib
 
 test:
   commands:
     # create config file with /LIBS/GUID value so tests pass; new GUID value will be created in user's home dir upon installation via post-link.sh
     - if ! grep "/LIBS/GUID" ~/.ncbi/user-settings.mkfg &> /dev/null; then mkdir -p ~/.ncbi && printf '/LIBS/GUID = "%s"\n' `uuid` > ~/.ncbi/user-settings.mkfg; fi
     - sracat --help > /dev/null
-    - sracat SRR000001 | head -1 | grep '@SRR000001.1'
+    - sracat SRR000001 | head -1 | grep '>SRR000001.1'
 
 about:
   home: https://github.com/lanl/sracat
