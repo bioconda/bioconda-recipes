@@ -1,4 +1,5 @@
 {% set version = "0.2" %}
+{% set ncbi_sdk_version = "2.11.0" %}
 
 package:
   name: sracat
@@ -15,21 +16,20 @@ requirements:
   build:
     - {{ compiler('cxx') }}
   host:
-    - ncbi-vdb
-    - sra-tools
+    - ncbi-vdb =={{ ncbi_sdk_version }}
+    - ncbi-ngs-sdk =={{ ncbi_sdk_version }}
   run:
     - ca-certificates
     - zlib
 
 test:
   commands:
-    # create config file with /LIBS/GUID value so tests pass; new GUID value will be created in user's home dir upon installation via post-link.sh
-    - if ! grep "/LIBS/GUID" ~/.ncbi/user-settings.mkfg &> /dev/null; then mkdir -p ~/.ncbi && printf '/LIBS/GUID = "%s"\n' `uuid` > ~/.ncbi/user-settings.mkfg; fi
-    - sracat --help > /dev/null
-    - sracat SRR000001 | head -1 | grep '>SRR000001.1'
+    - sracat -h 2>&1 | grep {{ version }}
+    - sracat SRR5142144 > out.fa && grep -m1 '>SRR5142144.1' out.fa
 
 about:
   home: https://github.com/lanl/sracat
+  dev_url: https://github.com/lanl/sracat
   license: BSD-3-Clause
   license_family: BSD
   summary: a command-line tool for extracting unordered read data from SRA files
@@ -39,3 +39,10 @@ about:
     the fasterq-dump program included with the sra-toolkit, sracat does not
     output the reads in their origianlly submitted order, but rather outputs
     reads in the order in which they are stored in the SRA file.
+
+extra:
+  authors:
+    - jgans
+  recipe-maintainers:
+    - luizirber
+    - wwood
