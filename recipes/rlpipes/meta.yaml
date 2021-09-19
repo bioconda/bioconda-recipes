@@ -1,37 +1,51 @@
 {% set name = "rlpipes" %}
 {% set version = "0.9.0" %}
 
-
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
   sha256: 99023fc956edff8e4779a051f99b427c542aef45e28240918c980d6c389a1d5d
 
+build:
+  number: 0
+  entry_points:
+    - RLPipes = rlpipes.cli:cli
+  script: "{{ PYTHON }} -m pip install . -vv"
+
 requirements:
-  build:
-    - python >=3.9
-    - setuptools
+  host:
     - click
-    - pysradb
-    - pysam
+    - pandas ==1.2.0
+    - pip
     - pyfastx
-    - pandas==1.2.0
+    - snakemake-minimal ==6.4.0
+    - pysam
+    - pysradb
+    - python
   run:
-    - python >=3.9
-    - graphviz
-    - snakemake-minimal
     - click
-    - pysradb
-    - pysam
+    - pandas ==1.2.0
     - pyfastx
-    - pandas==1.2.0
+    - pysam
+    - snakemake-minimal ==6.4.0
+    - pysradb
+    - python
+
+test:
+  imports:
+    - rlpipes
+  commands:
+    - RLPipes --help
 
 about:
-  home: https://github.com/Bishop-Laboratory/RLPipes
+  home: "https://github.com/Bishop-Laboratory/RLPipes"
   license: MIT
   license_family: MIT
-  summary: A standardized R-loop-mapping pipeline.
-  
+  summary: "A standardized R-loop-mapping pipeline"
+
+extra:
+  recipe-maintainers:
+    - millerh1
