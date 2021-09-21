@@ -12,3 +12,5 @@ set -eu -o pipefail
 cd $SRC_DIR
 mkdir -p $PREFIX/bin/
 cp StrobeMap $PREFIX/bin/
+cp -r modules $PREFIX/bin/
+cp -r evaluation $PREFIX/bin/
