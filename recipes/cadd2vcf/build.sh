@@ -11,7 +11,7 @@ DENV=$(./install.sh ldc-1.26.0 -p $PWD -a)
 export LIBRARY_PATH="$PREFIX/lib:$LIBRARY_PATH"
 export LD_LIBRARY_PATH="$PREFIX/lib:$LD_LIBRARY_PATH"
 
-# build fade binary
+# build cadd2vcf binary
 cd $SRC_DIR
 echo "building cadd2vcf binary"
 
