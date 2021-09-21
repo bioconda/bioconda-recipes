@@ -5,10 +5,9 @@ $PYTHON -m pip install . --ignore-installed --no-deps -vv
 # Add default databases
 SPATYPER_SHARE="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
 mkdir -p ${SPATYPER_SHARE}
-ls -lh
-chmod 755 download-spatypes.sh
-./download-spatypes.sh ${SPATYPER_SHARE}
-mv download-spatypes.sh ${PREFIX}/bin
+chmod 755 ${RECIPE_DIR}/download-spatypes.sh
+bash ${RECIPE_DIR}/download-spatypes.sh ${SPATYPER_SHARE}
+mv ${RECIPE_DIR}/download-spatypes.sh ${PREFIX}/bin
 
 # Setup the spaTyper env variables
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
