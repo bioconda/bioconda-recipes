@@ -25,6 +25,8 @@ ls -lah .
 #popd
 #
 npm install --unsafe-perm
+
+export PATH=$PATH:"$HOME/.meteor"
 #ls -lah .
 #
 #meteor node -v
