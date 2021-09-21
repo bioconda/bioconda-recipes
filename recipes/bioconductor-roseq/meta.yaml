@@ -1,0 +1,41 @@
+{% set version = "1.4.0" %}
+{% set name = "ROSeq" %}
+{% set bioc = "3.13" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 91040e48e12b28cd1f49b37dd40441bf
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: knitr, rmarkdown, testthat, RUnit, BiocGenerics
+requirements:
+  host:
+    - 'bioconductor-edger >=3.34.0,<3.35.0'
+    - 'bioconductor-limma >=3.48.0,<3.49.0'
+    - r-base
+    - r-pbmcapply
+  run:
+    - 'bioconductor-edger >=3.34.0,<3.35.0'
+    - 'bioconductor-limma >=3.48.0,<3.49.0'
+    - r-base
+    - r-pbmcapply
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Modeling expression ranks for noise-tolerant differential expression analysis of scRNA-Seq data'
+  description: 'ROSeq - A rank based approach to modeling gene expression with filtered and normalized read count matrix. ROSeq takes filtered and normalized read matrix and cell-annotation/condition as input and determines the differentially expressed genes between the contrasting groups of single cells. One of the input parameters is the number of cores to be used.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

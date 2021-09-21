@@ -1,6 +1,6 @@
-{% set version = "2.2.0" %}
+{% set version = "2.8.0" %}
 {% set name = "maftools" %}
-{% set bioc = "3.10" %}
+{% set bioc = "3.13" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,27 +10,34 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 2d9c26a0fbc3a05b6db29444bc458897
+  md5: 6998ada22cf1462acee534bd32e8aaa8
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, rmarkdown, BSgenome, Biostrings, NMF, mclust
+# Suggests: berryFunctions, Biostrings, BSgenome, BSgenome.Hsapiens.UCSC.hg19, GenomicRanges, IRanges, knitr, mclust, MultiAssayExperiment, NMF, R.utils, RaggedExperiment, rmarkdown, S4Vectors, pheatmap, curl
+# SystemRequirements: GNU make
 requirements:
   host:
+    - 'bioconductor-rhtslib >=1.24.0,<1.25.0'
+    - 'bioconductor-zlibbioc >=1.38.0,<1.39.0'
     - r-base
     - r-data.table
     - r-rcolorbrewer
     - r-survival
-    - r-wordcloud
+    - libblas
+    - liblapack
   run:
+    - 'bioconductor-rhtslib >=1.24.0,<1.25.0'
+    - 'bioconductor-zlibbioc >=1.38.0,<1.39.0'
     - r-base
     - r-data.table
     - r-rcolorbrewer
     - r-survival
-    - r-wordcloud
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

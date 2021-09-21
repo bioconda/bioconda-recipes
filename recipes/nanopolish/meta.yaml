@@ -1,34 +1,32 @@
 {% set name = "nanopolish" %}
-{% set version = "0.12.3" %}
+{% set version = "0.13.2" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 0
-  skip: True  # [osx]
-  binary_relocation: False
+  number: 5
 
 source:
   git_url: https://github.com/jts/nanopolish
   git_rev: 'v{{ version }}'
-  sha256: 8e944d18099ff286f41b91196b0f6e015cc90ff80e0730d7151f7bd04490b56e
+  sha256: be9ab70ff0753519323e4cd0e6be50b164c4239bd9c20ffa5207c2d6fc20d120
   patches:
     - nanopolish.patch
+    - patch
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
   host:
     - htslib
     - hdf5
     - eigen
-    - ncurses
-    - bzip2
-    - openmp
-    - libcurl
     - zlib
   run:
     - python
@@ -36,11 +34,7 @@ requirements:
     - biopython
     - bwa
     - eigen
-    - ncurses
-    - libdeflate
-    - openmp
     - minimap2
-    - libcurl
     - zlib
 
 test:
@@ -57,3 +51,5 @@ about:
 extra:
   skip-lints:
     - uses_vcs_url
+  identifiers:
+    - usegalaxy-eu:nanopolish_eventalign

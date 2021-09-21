@@ -1,0 +1,40 @@
+{% set name = "gcnvkernel" %}
+{% set version = "0.7" %}
+{% set gatk_version = "4.1.7.0" %}
+{% set gatk_sha256 = "1ed6f7c3194563a16c53b66e64d1b16d3f5e919d057d9e60f0ae6570eb0882e3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/broadinstitute/gatk/releases/download/{{ gatk_version }}/gatk-{{ gatk_version }}.zip
+  sha256: {{ gatk_sha256 }}
+
+build:
+  noarch: python
+  number: 0
+
+requirements:
+  build:
+    - python =3
+    - unzip
+  run:
+    - python =3
+    - mkl  # required by theano
+    - numpy
+    - pymc3 =3.1
+    - scipy <1.3.0
+    - theano
+    - tqdm
+
+test:
+  imports:
+    - gcnvkernel
+
+about:
+  home: https://www.broadinstitute.org/gatk/
+  license: BSD-3-Clause
+  license_family: BSD
+  summary: Python package to support GATK gCNV calling.
+  dev_url: https://github.com/broadinstitute/gatk

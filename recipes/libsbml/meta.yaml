@@ -1,33 +1,36 @@
 {% set version = "5.18.0" %}
-{% set sha256 = "900a8a41682c6fe69b162bce45e4221d7e23f30acb6c3d3516d1d931f353936a" %}
+{% set sha256 = "6c01be2306ec0c9656b59cb082eb7b90176c39506dd0f912b02e08298a553360" %}
 
 package:
   name: libsbml
   version: {{ version }}
 
 build:
-  number: 0
-  skip: True  # [osx]
+  number: 5
 
 source:
-  url: https://sourceforge.net/projects/sbml/files/libsbml/{{ version }}/stable/libSBML-{{ version }}-core-src.tar.gz
+  url:
+    - https://sourceforge.net/projects/sbml/files/libsbml/{{ version }}/stable/libSBML-{{ version }}-core-plus-packages-src.tar.gz
   sha256: {{ sha256 }}
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
   host:
+    - bzip2
     - libxml2
     - zlib
   run:
+    - bzip2
     - libxml2
     - zlib
 
 test:
   commands:
-    - test -f ${PREFIX}/lib/libsbml.so  # [linux]
+    - test -f "${PREFIX}/lib/libsbml${SHLIB_EXT-.so}"
 
 about:
   home: http://sbml.org/Software/libSBML

@@ -1,0 +1,47 @@
+{% set name = "bwread" %}
+{% set version = "0.0.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 327bacba723671e3d0586e5933b8e31536e2b90ddf2091d01fc63b8feb37c8af
+
+build:
+  number: 0
+  skip: True  # [py27]
+  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - cython
+  run:
+    - python
+    - natsort
+    - numpy
+    - pandas
+    - pybigwig
+    - pyranges
+    - setuptools
+
+test:
+  imports:
+    - bwread
+
+about:
+  home: "http://github.com/endrebak/bwread"
+  license: MIT
+  license_family: MIT
+  summary: "Read bigwig files quickly into PyRanges or DataFrames"
+
+extra:
+  recipe-maintainers:
+    - endrebak
+  skip-lints:
+    - uses_setuptools  # import pkg_resources at run time

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="curatedOvarianData_1.24.0.tar.gz"
+FN="curatedOvarianData_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/curatedOvarianData_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/curatedOvarianData_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-curatedovariandata/bioconductor-curatedovariandata_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/curatedOvarianData_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/curatedOvarianData_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-curatedovariandata/bioconductor-curatedovariandata_1.30.0_src_all.tar.gz"
 )
-MD5="f21b3a7854b93a58d648f08c54a41c74"
+MD5="c64f32a8c11e1d6a7be978e4decb6995"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

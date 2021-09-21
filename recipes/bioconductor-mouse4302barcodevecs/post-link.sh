@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="mouse4302barcodevecs_1.24.0.tar.gz"
+FN="mouse4302barcodevecs_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/mouse4302barcodevecs_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/mouse4302barcodevecs_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mouse4302barcodevecs/bioconductor-mouse4302barcodevecs_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/mouse4302barcodevecs_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/mouse4302barcodevecs_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mouse4302barcodevecs/bioconductor-mouse4302barcodevecs_1.30.0_src_all.tar.gz"
 )
-MD5="d40a0ee15b9a2d36d0c3a0739219b4e0"
+MD5="836023a7d2ac8673b5873f5073796199"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

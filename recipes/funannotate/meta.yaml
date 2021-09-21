@@ -1,31 +1,32 @@
 {% set name = "funannotate" %}
-{% set version = "1.7.4" %}
+{% set version = "1.8.9" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: funannotate
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "0eea1fb1084672cc5f5238b55c368d651474ca9dc61d5559929abcf93553d2ab"
+  url: https://pypi.io/packages/source/f/funannotate/funannotate-{{ version }}.tar.gz
+  sha256: 5c292f71bd7a4e6c99f0a358530cf8ff437775e4a9e6bd03469aa9364f298375
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
   host:
     - pip
-    - python <3
+    - python >=3.6,<3.9
   run:
+    - python >=3.6,<3.9
     - biopython
     - goatools
-    - matplotlib
+    - matplotlib-base
     - natsort
     - numpy
     - pandas
     - psutil
-    - python <3
     - requests
     - scikit-learn
     - scipy
@@ -35,7 +36,7 @@ requirements:
     - bedtools
     - hmmer
     - exonerate
-    - diamond >0.9,<=0.9.24
+    - diamond >=2.0.5
     - tbl2asn
     - ucsc-pslcdnafilter
     - pasa >=2.4.1
@@ -44,7 +45,7 @@ requirements:
     - trimal
     - mafft >=7
     - iqtree
-    - kallisto
+    - kallisto >=0.46.0,<0.46.2
     - minimap2
     - evidencemodeler
     - codingquarry
@@ -52,14 +53,13 @@ requirements:
     - snap
     - glimmerhmm
     - bamtools  # [linux]
-    - augustus  >3.3  # [linux]
+    - augustus  ==3.3.3=pl5262h5a9fe7b_6  # [linux]
     - trinity >=2.8.5=h8b12597_5  # [linux]
     - trnascan-se
     - hisat2
-    - proteinortho >=6.0.9
+    - proteinortho >=6.0.16
     - salmon >=0.9
     - perl
-    - perl-bioperl >1.7
     - perl-dbd-mysql
     - perl-clone
     - perl-hash-merge
@@ -69,23 +69,24 @@ requirements:
     - perl-scalar-util-numeric
     - perl-text-soundex
     - perl-parallel-forkmanager
+    - perl-db-file
     - r-base >=3.4.1
-    
+    - ete3
+    - distro
+    - samtools >=1.9
+
 test:
   commands:
-    - "python -c \"import funannotate\""
-    - "funannotate --version 2>&1 | grep \"funannotate\ v\""
+    - "funannotate --help | grep \"Funannotate is a genome prediction\""
 
 about:
   home: "https://github.com/nextgenusfs/funannotate"
-  license: "BSD-2"
+  license: "BSD-2-Clause"
   license_family: "BSD"
   license_file: "LICENSE.md"
   summary: "funannotate: eukaryotic genome annotation pipeline"
   doc_url: "funannotate.readthedocs.io"
 
 extra:
-  skip-lints:
-    - should_be_noarch_python
   recipe-maintainers:
     - nextgenusfs

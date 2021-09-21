@@ -1,76 +1,39 @@
-{% set version = "13.3" %}
-{% set date = "20200128" %}
-{% set sha256 = "63f06c4ef87bb8f61f38d5b729f6eaee5a98143a0dd58a3c8037a04de7b97f24" %}
+{% set version = "15.6" %}
+{% set date = "20210906" %}
+{% set sha256 = "dba444c9a7754936b0a3ef3ebe68be0bec3f6d52e8970ccf4aea590be64cec38" %}
 
 package:
   name: entrez-direct
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
 
 source:
-  url: ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/edirect.tar.gz
+  url: https://raw.githubusercontent.com/biostars/conda-ready-entrez-direct/main/dist/edirect-15.6.20210906.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - xtract.patch
 
 requirements:
   build:
     # The installer script downloads statically compiled binaries, so this is effectively just avoiding linter errors
     - {{ compiler('go') }}
-  host:
-    - perl
-    - perl-html-parser
-    - perl-html-tagset
-    - perl-html-tree
-    - perl-http-cookies
-    - perl-http-date
-    - perl-http-message
-    - perl-http-negotiate
-    - perl-io-socket-ssl
-    - perl-lwp-mediatypes
-    - perl-lwp-protocol-https
-    - perl-net-http
-    - perl-uri
-    - perl-www-robotrules
-    - perl-mozilla-ca
-    - perl-xml-simple
-  run:
-    - perl
-    - perl-html-parser
-    - perl-html-tagset
-    - perl-html-tree
-    - perl-http-cookies
-    - perl-http-date
-    - perl-http-message
-    - perl-http-negotiate
-    - perl-io-socket-ssl
-    - perl-lwp-mediatypes
-    - perl-lwp-protocol-https
-    - perl-net-http
-    - perl-uri
-    - perl-www-robotrules
-    - perl-mozilla-ca
-    - perl-xml-simple
 
 test:
   commands:
     - efetch --help
     - epost --help
     - efilter --help
-    - eproxy --help
     - einfo --help
     - esearch --help
-    - econtact --help
     - elink --help
-    - espell --help
-    - enotify --help
     - esummary --help
-    - entrez-phrase-search --help
     - xtract -version
 
 about:
   home: ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/README
   license: PUBLIC DOMAIN
   summary: Entrez Direct (EDirect) is an advanced method for accessing the NCBI's set of interconnected databases (publication, sequence, structure, gene, variation, expression, etc.) from a UNIX terminal window. Functions take search terms from command-line arguments. Individual operations are combined to build multi-step queries. Record retrieval and formatting normally complete the process.
+
+extra:
+  container:
+    extended-base: True

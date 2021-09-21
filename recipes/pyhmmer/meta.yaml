@@ -1,0 +1,45 @@
+{% set name = "pyhmmer" %}
+{% set version = "0.4.6" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: d6bebae6059fa9cb56c6ae81a1f4bfead2d7db1a7b7874253e0235904ef98fd8
+
+build:
+  number: 0
+  skip: True  #[py2k or win]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - cython
+    - setuptools >=46.4
+    - psutil >=5.8
+  run:
+    - python
+    - psutil >=5.8
+
+test:
+  imports:
+    - {{ name }}
+
+about:
+  home: https://github.com/althonos/pyhmmer
+  license: MIT
+  license_file: COPYING
+  summary: Cython bindings and Python interface to HMMER3.
+  doc_url: https://pyhmmer.readthedocs.io
+
+extra:
+  recipe-maintainers:
+    - althonos
+  identifiers:
+    - DOI:10.5281/zenodo.4270012

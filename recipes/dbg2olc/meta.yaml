@@ -6,8 +6,11 @@ package:
   version: {{ version }}
 
 build:
-  number: 0
-  script: "mkdir -p $PREFIX/bin; g++ -O3 -o DBG2OLC *.cpp; mv DBG2OLC $PREFIX/bin"
+  number: 2
+  script: |
+    "${CXX}" ${CPPFLAGS} ${CXXFLAGS} -O3 -o DBG2OLC *.cpp ${LDFLAGS}
+    mkdir -p "${PREFIX}/bin"
+    mv DBG2OLC "${PREFIX}/bin/"
 
 source:
   url: https://github.com/yechengxi/DBG2OLC/archive/0246e46184935534eb2d5d77a064cf919bcf0913.tar.gz
@@ -15,7 +18,7 @@ source:
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
 
   host:
     - zlib
@@ -28,7 +31,7 @@ requirements:
 
 test:
   commands:
-    - DBG2OLC | grep "Chengxi Ye cxy@umd.edu" > /dev/null
+    - DBG2OLC | grep -qF 'Chengxi Ye cxy@umd.edu'
 
 about:
   home: https://github.com/yechengxi/DBG2OLC

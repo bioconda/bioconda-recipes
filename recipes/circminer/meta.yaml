@@ -1,0 +1,50 @@
+{% set name = "circminer" %}
+{% set version = "0.4.2" %}
+{% set sha256 = "35b103404f5dd77341490c997d504a1fee89519df38b964f21a7cd94fb1d00ec" %}
+{% set mrsfast_git_sha = "32dda6a9d306a91a7e6e46a2e5b3aa92ae8c965b" %}
+{% set mrsfast_sha256 = "8d94765eb2a554b73740459ccf8d15635dabeed4d8892252d75484828b252a66" %}
+{% set edlib_git_sha = "ba4272ba68fcdbe31cbc10853de1841701e4e60a" %}
+{% set edlib_sha256 = "087c666b52dbf60138328e96a42df49ce7ff64d3477e8ecd9dfe385339546059" %}
+{% set logger_git_sha = "ead6c47d1fcf15ce2b85ee8cb6dee893ba4eb834" %}
+{% set logger_sha256 = "c40343cead30bb5283282adfe3b839c8bc527176b86b18f88a0e0330fedeeca4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/vpc-ccg/{{ name }}/archive/v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+  - url: https://github.com/sfu-compbio/mrsfast/archive/{{ mrsfast_git_sha }}.tar.gz
+    folder: lib/mrsfast
+    sha256: {{ mrsfast_sha256 }}
+  - url: https://github.com/Martinsos/edlib/archive/{{ edlib_git_sha }}.tar.gz
+    folder: lib/edlib
+    sha256: {{ edlib_sha256 }}
+  - url: https://github.com/vpc-ccg/util-logger/archive/{{ logger_git_sha }}.tar.gz
+    folder: lib/util-logger
+    sha256: {{ logger_sha256 }}
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+    - zlib
+  host:
+    - zlib
+  run:
+    - zlib
+    - coreutils
+test:
+  commands:
+    - {{ name }} -v
+
+about:
+  home: https://github.com/vpc-ccg/{{ name }}
+  license: GPLv3
+  license_file: LICENSE
+  summary: Sensitive and fast computational tool for detecting circular RNAs (circRNAs) from RNA-Seq data.

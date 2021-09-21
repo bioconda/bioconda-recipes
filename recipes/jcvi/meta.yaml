@@ -1,5 +1,5 @@
 {% set name = "jcvi" %}
-{% set version = "1.0.5" %}
+{% set version = "1.1.18" %}
 
 package:
   name: '{{ name|lower }}'
@@ -7,11 +7,11 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 5dd0515541548cee07a0cbb26bec70cdea8d502fc365971c420f3b919ef3074b
+  sha256: 69b508b722786ffe6ba03cdbab3e456404ae000adbe79c3f3ad8b791fb5f7679
 
 build:
+  skip: True  # [py2k]
   number: 0
-  skip: True  # [not py27]
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
@@ -25,12 +25,29 @@ requirements:
   run:
     - python
     - biopython
+    - boto3
+    - brewer2mpl
+    - coveralls
     - deap
-    - matplotlib-base
-    - networkx
-    - {{ pin_compatible('numpy') }}
-    - r-ggplot2 >=3.0.0
+    - ete3
     - gffutils
+    - goatools
+    - graphviz
+    - jinja2
+    - matplotlib-base
+    - natsort
+    - networkx
+    - numpy
+    - pypdf2
+    - pytest
+    - pytest-benchmark
+    - pytest-cov
+    - pyyaml
+    - rich
+    - scipy
+    - seaborn
+    #- texlive-core
+    - ucsc-liftover
 
 test:
   imports:
@@ -46,10 +63,12 @@ test:
     - jcvi.utils
     - jcvi.utils.data
     - jcvi.variation
+  commands:
+    - python -m jcvi.apps 2>&1 | grep "JCVI utility libraries"
 
 about:
   home: http://github.com/tanghaibao/jcvi
-  license: BSD License
+  license: BSD-2-Clause
   license_family: BSD
   summary: Python utility libraries on genome assembly, annotation and comparative genomics
   description: "JCVI utility libraries"

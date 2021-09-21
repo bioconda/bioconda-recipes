@@ -3,18 +3,26 @@ package:
   version: 1.3.0
 
 build:
-  number: 0
+  number: 2
   skip: True # [osx]
 
 source:
   url: https://github.com/evotools/hapbin/archive/v1.3.0.tar.gz
   sha256: 2443cb1783a5f40c042d02e84eece97220c38530e8d887b2d3c5e9354400f92d
+  patches:
+    # aligned_alloc is patched into non-C11 sources upstream without any guards:
+    # https://github.com/conda-forge/linux-sysroot-feedstock/blob/1c47b9672874dc7faf34b7fd78cafaa395f60e50/recipe/meta.yaml#L28
+    - 0001-Remove-aligned_alloc-definition-already-in-patched-glibc.patch
 
 requirements:
   build:
+    - make
     - cmake
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
   run:
 
 about:
