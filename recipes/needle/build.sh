@@ -2,7 +2,7 @@
 
 mkdir -p build
 cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-mavx2" -DNEEDLE_NATIVE_BUILD=OFF
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-mavx2"
 make -j"${CPU_COUNT}"
 
 mkdir -p $PREFIX/bin
