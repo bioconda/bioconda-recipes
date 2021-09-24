@@ -9,8 +9,15 @@
 #
 set -eu -o pipefail
 
-cd $SRC_DIR
+CFLAGS="$CFLAGS -I/usr/include"
+LDFLAGS="$LDFLAGS -L/usr/lib"
+
 mkdir -p $PREFIX/bin/
-cp StrobeMap $PREFIX/bin/
+
+cd $SRC_DIR/
 cp -r modules $PREFIX/bin/
 cp -r evaluation $PREFIX/bin/
+
+cd $SRC_DIR/strobemers_cpp
+$CXX $CFLAGS $LDFLAGS -std=c++14 main.cpp index.cpp -lz -fopenmp -o StrobeMap -O3 -mavx2
+cp StrobeMap $PREFIX/bin/
