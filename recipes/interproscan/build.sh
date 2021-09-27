@@ -10,6 +10,10 @@ cd core
 # copy fingerprintscan exe - version from bioconda does not work
 cp jms-implementation/support-mini-x86-32/bin/prints/fingerPRINTScan ${PREFIX}/bin
 
+
+# copy coils exe - version from bioconda does not work
+cp jms-implementation/support-mini-x86-32/bin/ncoils/2.2.1/ncoils ${PREFIX}/bin
+
 # Run mvn clean install to build and install (into your local Maven repository) all of the modules for InterProScan 5.
 mvn clean install
 
