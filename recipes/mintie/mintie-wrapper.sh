@@ -23,7 +23,7 @@ do
         echo "Invokes the MINTIE bpipe pileline."
         echo "See https://github.com/Oshlack/MINTIE/wiki/ for further information on using MINTIE."
         echo -e "\nusage (info): mintie [-h] "
-        echo -e "\nusage (setup references): mintie [-r] "
+        echo -e "\nusage (setup references): mintie -r "
         echo -e "\nusage (wrapper): mintie -w -p [params.txt] cases/*.fastq.gz controls/*.fastq.gz "
         echo -e "\nusage (direct):\n export \$MINTIEDIR=$PACKAGE_HOME;\n bpipe run -@$MINTIEDIR/params.txt  [ <other bpipe options >] \n\t \$MINTIEDIR/MINTIE.groovy cases/*.fastq.gz controls/*fastq.gz"
         echo ""
