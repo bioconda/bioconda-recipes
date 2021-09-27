@@ -1,22 +1,20 @@
 #!/bin/bash
 
-package_home="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
+PACKAGE_HOME="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 BINARY_HOME=$PREFIX/bin
 
-mkdir -p "${package_home}"
+mkdir -p "${PACKAGE_HOME}"
 mkdir -p ${BINARY_HOME}
 
-cp -aR * "${package_home}/"
+cp -aR * "${PACKAGE_HOME}/"
 
 SOURCE_FILE=${RECIPE_DIR}/mintie-wrapper.sh
-DEST_FILE=${package_home}/mintie
+DEST_FILE=${PACKAGE_HOME}/mintie
 
-sed \
-    's|\$PACKAGE_HOME|'"${package_home}"'|g' \
+# insert package home path into wrapper script
+sed 's|\$PACKAGE_HOME|'"${PACKAGE_HOME}"'|g' \
     "${SOURCE_FILE}" \
     > "${DEST_FILE}"
-
-#cp ${SOURCE_FILE} ${DEST_FILE}
 
 chmod +x ${DEST_FILE}
 
