@@ -12,7 +12,6 @@ cd core
 
 # coils must be recompiled - version from bioconda is different than the one shipped within Interproscan
 current_dir=`pwd`
-support-mini-x86-32/src/coils/ncoils/2.2.1/
 cd jms-implementation/support-mini-x86-32/src/coils/ncoils/2.2.1/
 make
 cp ncoils ../../../../bin/ncoils/2.2.1/
