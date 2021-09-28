@@ -28,10 +28,10 @@ mkdir -p "${build_dir}/${patchwork_dir}"
 # PackageCompiler.jl get_compiler() searches for "gcc" and "clang", therefore:
 mv "${GCC}" "${BUILD_PREFIX}/bin/gcc"
 
-libmbedcrypto=$(find "${BUILD_PREFIX}" -name "libmbedcrypto.so.*")
+libmbedcrypto=$(find "${BUILD_PREFIX}" -name "libmbedcrypto.so*")
 echo "${libmbedcrypto}"
 # libmbedcrypto="${BUILD_PREFIX}/bin/lib/julia/libmbedcrypto.so"
-mv "${libmbedcrypto}" "${libmbedcrypto}.5"
+#mv "${libmbedcrypto}" "${libmbedcrypto}.5"
 
 # not sure if this is necessary, but can't have these in the Patchwork module:
 julia -e "import Pkg; Pkg.add([\"ArgParse\", \"PackageCompiler\"])"
