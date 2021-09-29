@@ -10,6 +10,7 @@ source:
   sha256: {{ sha256 }}
   patches:
     - 0001-change-verbosity.patch
+    - 0002-disable-parallel-libstdc.patch  # [osx]
 
 build:
   number: 1
@@ -19,36 +20,34 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - clangdev  # [osx]
     - llvm-openmp  # [osx]
+    - clangdev  # [osx]
     - openmp  # [linux]
     - cmake
-    - make
-    - pkg-config
-    - sysroot_linux-64=2.17 # [linux]
   host:
     - llvm-openmp  # [osx]
-    - openmp  # [linux]
     - zlib
     - bzip2
-    - sysroot_linux-64=2.17 # [linux]
+    - openmp  # [linux]
+    - jemalloc
+    - readline
+    - ncurses
   run:
     - llvm-openmp  # [osx]
     - openmp  # [linux]
+    - jemalloc
+    - ncurses
     - python
-    - sysroot_linux-64=2.17 # [linux]
 
 test:
   commands:
-    - spades.py --version 2>&1 | grep {{ version }}
-    - rnaspades.py --version 2>&1 | grep {{ version }}
-    - truspades.py --help 2>&1 | grep {{ version }}
-    - metaspades.py --version 2>&1 | grep {{ version }}
-    - plasmidspades.py --version 2>&1 | grep {{ version }}
-    - spades-kmercount -h 2>&1 | grep spades-kmercount
-    - spades-gmapper 2>&1 | grep spades-gmapper
-    - spades-gbuilder 2>&1 | grep spades-gbuilder
-    - spades.py --test && rm -rf spades_test
+    - spades.py --version
+    - rnaspades.py --version
+    - truspades.py --version
+    - metaspades.py --version
+    - plasmidspades.py --version
+    - spades-kmercount -h
+    - spades.py --test && chmod -R u+w spades_test && rm -rf spades_test
 
 
 about:
