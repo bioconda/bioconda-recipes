@@ -38,6 +38,7 @@ do
         echo -e "\nusage (setup test data): mintie -t "
         echo -e "\nusage (wrapper): mintie -w -p [params.txt] cases/*.fastq.gz controls/*.fastq.gz "
         echo -e "\nusage (downgrade SOAPdenovo-trans to v1.03): mintie --downgrade-soap "
+        echo -e "\nusage (wrapper): mintie -w -p [params.txt] cases/*.fastq.gz controls/*.fastq.gz "
         echo -e "\nusage (direct):\n export \$MINTIEDIR=$PACKAGE_HOME;\n bpipe run -@$MINTIEDIR/params.txt  [ <other bpipe options >] \n\t \$MINTIEDIR/MINTIE.groovy cases/*.fastq.gz controls/*fastq.gz"
         echo ""
         exit 0
@@ -59,6 +60,8 @@ do
         --downgrade-soap)
         echo -e "Downgrading SOAPdenovo-trans...\n"
 		downgrade_soap ;
+        echo "Generating references...\n"
+        cd $PACKAGE_HOME && ./setup_references_hg38.sh
         exit 0
         shift
         ;;
