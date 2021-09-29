@@ -27,8 +27,13 @@ cp "${RECIPE_DIR}/dependencies/Manifest.toml" "${SRC_DIR}"
 mkdir -p "${build_dir}/${patchwork_dir}"
 # PackageCompiler.jl get_compiler() searches for "gcc" and "clang", therefore:
 #mv "${GCC}" "${BUILD_PREFIX}/bin/gcc"
-ln -s "${GCC}" "${BUILD_PREFIX}/bin/gcc"
-ln -s "${CLANG}" "${BUILD_PREFIX}/bin/clang"
+if [ -f "${GCC}" ]
+then
+    ln -s "${GCC}" "${BUILD_PREFIX}/bin/gcc"
+elif [ -f "${CLANG}" ]
+then
+    ln -s "${CLANG}" "${BUILD_PREFIX}/bin/clang"
+fi
 
 # not sure if this is necessary, but can't have these in the Patchwork module:
 julia -e "import Pkg; Pkg.add([\"ArgParse\", \"PackageCompiler\"])"
