@@ -26,12 +26,9 @@ cp "${RECIPE_DIR}/dependencies/Manifest.toml" "${SRC_DIR}"
 
 mkdir -p "${build_dir}/${patchwork_dir}"
 # PackageCompiler.jl get_compiler() searches for "gcc" and "clang", therefore:
-echo "${GCC}"
-mv "${GCC}" "${BUILD_PREFIX}/bin/gcc"
-
-#libmbedcrypto=$(find "${BUILD_PREFIX}" -name "libmbedcrypto.so*")
-#echo "${libmbedcrypto}"
-#mv "${libmbedcrypto}" "${libmbedcrypto}.5"
+#mv "${GCC}" "${BUILD_PREFIX}/bin/gcc"
+ln -s "${GCC}" "${BUILD_PREFIX}/bin/gcc"
+ln -s "${CLANG}" "${BUILD_PREFIX}/bin/clang"
 
 # not sure if this is necessary, but can't have these in the Patchwork module:
 julia -e "import Pkg; Pkg.add([\"ArgParse\", \"PackageCompiler\"])"
