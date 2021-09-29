@@ -11,6 +11,17 @@ Method for Inferring Novel Transcripts and Isoforms using Equivalences classes
 END
 )
 
+downgrade_soap() {
+	# ugly hack -- because v1.04 segfaults on test data but v1.03 isn't on bioconda
+	cd $PACKAGE_HOME ;
+	wget --no-check-certificate \
+		https://sourceforge.net/projects/soapdenovotrans/files/SOAPdenovo-Trans/bin/v1.03/SOAPdenovo-Trans-bin-v1.03.tar.gz ;
+	mkdir -p SOAPdenovo-Trans-bin-v1.03 ;
+	tar -xvzf SOAPdenovo-Trans-bin-v1.03.tar.gz -C SOAPdenovo-Trans-bin-v1.03 && rm SOAPdenovo-Trans-bin-v1.03.tar.gz ;
+	sed '/soap/d' tools.groovy > tmp.groovy && mv tmp.groovy tools.groovy ;
+	echo "soapdenovotrans=\"$PACKAGE_HOME/SOAPdenovo-Trans-bin-v1.03/SOAPdenovo-Trans-127mer\"" >> tools.groovy
+}
+
 while [[ $# -gt 0 ]]
 do
 	arg="$1"
@@ -47,13 +58,7 @@ do
         ;;
         --downgrade-soap)
         echo -e "Downgrading SOAPdenovo-trans...\n"
-        # ugly hack -- because v1.04 segfaults on test data but v1.03 isn't on bioconda
-        cd $PACKAGE_HOME ;
-        wget --no-check-certificate https://sourceforge.net/projects/soapdenovotrans/files/SOAPdenovo-Trans/bin/v1.03/SOAPdenovo-Trans-bin-v1.03.tar.gz ;
-        mkdir -p SOAPdenovo-Trans-bin-v1.03 ;
-        tar -xvzf SOAPdenovo-Trans-bin-v1.03.tar.gz -C SOAPdenovo-Trans-bin-v1.03 && rm SOAPdenovo-Trans-bin-v1.03.tar.gz ;
-        sed '/soap/d' tools.groovy > tmp && mv tmp tools.groovy ;
-        echo "soapdenovotrans=\"$PACKAGE_HOME/SOAPdenovo-Trans-bin-v1.03/SOAPdenovo-Trans-127mer\"" >> tools.groovy
+		downgrade_soap ;
         exit 0
         shift
         ;;
