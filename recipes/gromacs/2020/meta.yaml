@@ -1,17 +1,17 @@
-# Update from dwnload page, e.g. http://manual.gromacs.org/2019.1/download.html
+# Update from download page, e.g. http://manual.gromacs.org/2020.5/download.html
 # For latest release, see
 # http://manual.gromacs.org/documentation/
-{% set name = "gromacs" %}
-{% set version = "2020.5" %}
-{% set md5sum = "0b4f28fadfa2b95f3c811346672a132e" %}
+{% set version = "2020.6" %}
+{% set md5sum = "dc0156d330ae94bb53d75f419229aec8" %}
+{% set build = 0 %}
+
 
 package:
-  name: {{ name }}
+  name: gromacs
   version: {{ version }}
 
 build:
-  number: 0
-  skip: True  # [osx]
+  number: {{ build }}
 
 source:
   url: http://ftp.gromacs.org/pub/gromacs/gromacs-{{ version }}.tar.gz
@@ -19,17 +19,19 @@ source:
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
     - cmake
     - pocl
-  host:
-    - openmp # [linux]
-    - ocl-icd  # [linux]
-    - khronos-opencl-icd-loader  # [osx]
-    - libhwloc 2.*
-    - fftw
     - python >3.5
     - perl
+  host:
+    - ocl-icd  # [linux]
+    - khronos-opencl-icd-loader  # [osx]
+    - llvm-openmp  # [osx]
+    - openmp  # [linux]
+    - libhwloc 2.*
+    - fftw
   run:
     - ocl-icd # [linux]
     - khronos-opencl-icd-loader  # [osx]

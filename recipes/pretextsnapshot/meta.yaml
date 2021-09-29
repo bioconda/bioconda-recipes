@@ -1,34 +1,34 @@
 {% set name = "PretextSnapshot" %}
-{% set version = "0.0.3" %}
-{% set checksum = "14155871ea06e06b93fb81697c0398ce8a428d32caee04471fc5ddd71657b03c" %}
+{% set version = "0.0.4" %}
+{% set sha256 = "7d170437e6368cf51ae72c31eced828d61d23753f048e711bf88a09f92e0518e" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://github.com/wtsi-hpag/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: {{ checksum }}
+  url: https://github.com/wtsi-hpag/{{name}}/releases/download/{{version}}/Source_with_Submodules.tar.gz
+  sha256: {{ sha256 }}
   patches:
-    - 0001-disable-auto-vectorisation-for-conda-libm.patch # [linux]
+    - bioconda_libdeflate_include_path.patch
+    #  - 0001-disable-auto-vectorisation-for-conda-libm.patch # [linux]
 
 build:
-  number: 1
+  number: 0
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - make
-    - clang >=9
-    - python
+    - clang>=9.0.1 # [linux] 
+    - meson>=0.57.1
 
 test:
   commands:
     - {{ name }}
 
-extra:
-  skip-lints:
-    - should_not_be_noarch_source
+#extra:
+#  skip-lints:
+#    - should_not_be_noarch_source
 
 about:
   home: https://github.com/wtsi-hpag/{{ name }}
