@@ -1,4 +1,4 @@
-{% set version = "0.0.2" %}
+{% set version = "0.0.3" %}
 
 package:
   name: harvest-variants
@@ -6,13 +6,16 @@ package:
 
 source:
   url: 'https://gitlab.com/treangenlab/sars-cov-2-harvest-variants/-/archive/v{{version}}/sars-cov-2-harvest-variants-v{{version}}.tar.gz'
-  sha256: 34f89639d525b207ee840b9e5ee3427038cfda482a4945a8430be44222e16ed3
+  sha256: caf614e7d16375feb0dc993783ca9102fb70dead470a2eb07fff76e933939c86
 
 build:
   noarch: generic
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv && mkdir -p ${PREFIX}/bin && mv pipeline.py sra2vcf.py ${PREFIX}/bin
-"
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv && mkdir -p ${PREFIX}/bin && mv pipeline.py sra2vcf.py ${PREFIX}/bin"
+  entry_points:
+    - pipeline.py = HarvestVariants.pipeline:main
+    - sra2vcf.py = HarvestVariants.sra2vcf:main
+
 requirements:
   run:
     - biopython
@@ -32,8 +35,7 @@ test:
     - examples/
     - examples/*
   commands:
-    - echo "hello"
-
+    - pipeline.py --help
 about:
   home: https://gitlab.com/treangenlab/sars-cov-2-harvest-variants
   license: MIT
