@@ -1,0 +1,39 @@
+{% set version="1.0.0" %}
+
+package:
+    name: nerpa
+    version: {{ version }}
+    
+source:
+    url: https://github.com/ablab/nerpa/archive/v{{ version }}.tar.gz
+    sha256: 7894064e78ec25ab1dca7996a537abf896d5128275209ca4fefbc4146f2510b6
+    
+
+build:
+    number: 0
+    skip: True # [py27]
+
+requirements:
+    build:
+      - {{ compiler('cxx') }}
+      - cmake
+    host:
+      - python
+    run:
+      - python
+      - rdkit
+      - networkx
+      - openjdk
+
+test:
+    commands:
+      - nerpa.py --help 
+      - nerpa.py -a $PREFIX/share/nerpa/test_data/MIBiG_subset/genome_predictions --smiles-tsv $PREFIX/share/nerpa/test_data/MIBiG_subset/structures_info.tsv 
+    
+about:
+    home: https://github.com/ablab/nerpa
+    license: GPLv3
+    license_family: GPL
+    license_file: LICENSE.txt
+    summary: A tool for discovering biosynthetic gene clusters of nonribosomal peptides
+    description: Nerpa is a tool for linking biosynthetic gene clusters (BGCs) to known nonribosomal peptides (NRPs). BGCs are predicted in genome sequences (FASTA or GBK) with antiSMASH. Known NRPs are accepted in the SMILES format and processed with rBAN.
