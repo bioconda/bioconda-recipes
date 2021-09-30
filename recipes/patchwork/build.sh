@@ -26,7 +26,6 @@ cp "${RECIPE_DIR}/dependencies/Manifest.toml" "${SRC_DIR}"
 
 mkdir -p "${build_dir}/${patchwork_dir}"
 # PackageCompiler.jl get_compiler() searches for "gcc" and "clang", therefore:
-#mv "${GCC}" "${BUILD_PREFIX}/bin/gcc"
 if [ -f "${GCC}" ]
 then
     ln -s "${GCC}" "${BUILD_PREFIX}/bin/gcc"
@@ -42,5 +41,5 @@ julia "${compile_file}" "${SRC_DIR}" "${precompiled_file}" "${build_dir}/${patch
 
 # bundle together for conda packaging: 
 mkdir -p "${PREFIX}/bin"
-cp -r ${build_dir}/* "${PREFIX}/bin"
+cp -r "${build_dir}/*" "${PREFIX}/bin"
 ln -s "${PREFIX}/bin/${patchwork_dir}/bin/patchwork" "${PREFIX}/bin/patchwork"
