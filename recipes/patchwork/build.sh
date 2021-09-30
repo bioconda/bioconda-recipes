@@ -41,5 +41,5 @@ julia "${compile_file}" "${SRC_DIR}" "${precompiled_file}" "${build_dir}/${patch
 
 # bundle together for conda packaging: 
 mkdir -p "${PREFIX}/bin"
-cp -r "${build_dir}/*" "${PREFIX}/bin"
+cp -r "${build_dir}"/* "${PREFIX}/bin"
 ln -s "${PREFIX}/bin/${patchwork_dir}/bin/patchwork" "${PREFIX}/bin/patchwork"
