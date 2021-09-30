@@ -1,0 +1,47 @@
+{% set version = "0.0.3" %}
+
+package:
+  name: harvest-variants
+  version: '{{version}}'
+
+source:
+  url: 'https://gitlab.com/treangenlab/sars-cov-2-harvest-variants/-/archive/v{{version}}/sars-cov-2-harvest-variants-v{{version}}.tar.gz'
+  sha256: caf614e7d16375feb0dc993783ca9102fb70dead470a2eb07fff76e933939c86
+
+build:
+  noarch: generic
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
+  entry_points:
+    - hv-pipeline.py = HarvestVariants.pipeline:main
+    - sra2vcf.py = HarvestVariants.sra2vcf:main
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+  run:
+    - biopython
+    - python >=3.7
+    - pyvcf
+    - sra-tools
+    - parsnp
+    - fastp
+    - samtools
+    - bcftools
+    - bedtools
+    - bwa
+    - lofreq
+
+test:
+  source_files:
+    - examples/
+    - examples/*
+  commands:
+    - hv-pipeline.py --help
+about:
+  home: https://gitlab.com/treangenlab/sars-cov-2-harvest-variants
+  license: MIT
+  summary: Harvest Variants is a pipeline for variant calling on SARS-CoV-2 samples
+
+
