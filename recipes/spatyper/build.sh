@@ -8,6 +8,7 @@ mkdir -p ${SPATYPER_SHARE}
 chmod 755 ${RECIPE_DIR}/download-spatypes.sh
 bash ${RECIPE_DIR}/download-spatypes.sh ${SPATYPER_SHARE}
 mv ${RECIPE_DIR}/download-spatypes.sh ${PREFIX}/bin
+sed -i "s/BIOCONDA_SED_REPLACE/${SPATYPER_SHARE}/" ${PREFIX}/bin/spaTyper
 
 # Setup the spaTyper env variables
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
