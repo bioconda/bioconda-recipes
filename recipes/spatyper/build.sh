@@ -1,7 +1,7 @@
 #! /bin/bash
 
 SPATYPER_SHARE="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
-sed -i "s/BIOCONDA_SED_REPLACE/$SPATYPER_SHARE/" main/spaTyper
+sed -i "s=BIOCONDA_SED_REPLACE=$SPATYPER_SHARE=" main/spaTyper
 $PYTHON -m pip install . --ignore-installed --no-deps -vv
 
 # Add default databases
