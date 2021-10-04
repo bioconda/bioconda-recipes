@@ -12,6 +12,8 @@ build_dir="${SRC_DIR}/build"
 # inside build_dir, contains directories artifacts, bin with executable patchwork, and lib:
 patchwork_dir="patchwork-${PKG_VERSION}"
 
+# not sure if this is necessary, but can't have these in the Patchwork module:
+julia -e "import Pkg; Pkg.add([\"ArgParse\", \"PackageCompiler\"])"
 # precompile, if necessary: 
 #if [ ! -f "${precompiled_file}" ]
 #then 
@@ -35,8 +37,6 @@ then
     ln -s "${CLANG}" "${BUILD_PREFIX}/bin/clang"
 fi
 
-# not sure if this is necessary, but can't have these in the Patchwork module:
-julia -e "import Pkg; Pkg.add([\"ArgParse\", \"PackageCompiler\"])"
 # compile Patchwork: 
 julia "${compile_file}" "${SRC_DIR}" "${precompiled_file}" "${build_dir}/${patchwork_dir}"
 
