@@ -1,4 +1,5 @@
 import bamr
+from bamr.bamr import SamFlags
 
 if __name__ == "__main__":
-	print(bamr.SamFlags.PAIRED)
+	assert SamFlags.PAIRED == 1
