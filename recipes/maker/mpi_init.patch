@@ -19,41 +19,8 @@
 +carp "Calling MPI_Init";
 +MPI_Init();
 +
---- src/bin/maker
-+++ src/bin/maker
-@@ -198,6 +198,11 @@ Options:
-      -cpus|c  <integer>  Tells how many cpus to use for BLAST analysis.
-                          Note: this is for BLAST and not for MPI!
- 
-+     -mpi                Forces MAKER to use MPI (overriding MPI autodetection).
-+                         Useful if MAKER doesn't correctly detect that it was
-+                         launched using an MPI process manager, or if running
-+                         in a Singularity container.
-+
-      -force|f            Forces MAKER to delete old files before running again.
- 			 This will require all blast analyses to be rerun.
- 
-@@ -247,7 +252,8 @@ my %OPT;
- carp "Calling GetOptions pre-init" if($main::debug);
- Getopt::Long::Configure(qw(pass_through));
- GetOptions("MPICC=s" => \$OPT{MPICC}, #hidden
--	   "MPIDIR=s" => \$OPT{MPIDIR},); #hidden
-+	   "MPIDIR=s" => \$OPT{MPIDIR},   #hidden
-+	   "mpi" => \$main::mpi);
- 
- #--set MPI configuration if specified on the command line
- if($OPT{MPICC} || $OPT{MPIDIR}){
 --- src/lib/Parallel/Application/MPI.pm
 +++ src/lib/Parallel/Application/MPI.pm
-@@ -165,7 +165,7 @@ sub _load {
-     require Proc::Signal;
- 
-     my $name = Proc::Signal::get_pname_by_id($$);
--    if($name =~ /(mpiexec|mpirun|mpdrun|mpdexec|mpd|smpd|orted|orterun|pmi_proxy|hydra|mpispawn|exec\d+)$/){
-+    if($main::mpi or $name =~ /(mpiexec|mpirun|mpdrun|mpdexec|mpd|smpd|orted|orterun|pmi_proxy|hydra|mpispawn|exec\d+)$/){
- 	require MAKER::ConfigData;
- 	my $mpi_support = MAKER::ConfigData->feature('mpi_support');
- 	if(! $mpi_support){
 @@ -232,7 +232,9 @@ sub _bind {
  
      eval{

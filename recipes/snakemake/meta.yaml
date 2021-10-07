@@ -1,4 +1,4 @@
-{% set version = "5.23.0" %}
+{% set version = "6.9.1" %}
 
 package:
   name: snakemake
@@ -6,10 +6,10 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/snakemake/snakemake-{{ version }}.tar.gz
-  sha256: d8bbde85fa8d93bd6312cae5d39247b316ead0589022aa7b48760374b1994b79
+  sha256: 8a8d196324cb93f5516c277360a5b46eee133e81b4eacdd74935212806e61c0f
 
 build:
-  number: 2
+  number: 0
   noarch: generic
 
 requirements:
@@ -40,6 +40,9 @@ requirements:
     - imagemagick >=7.0
     - oauth2client
     - slacker
+    # libXau is currently a missing dep for graphviz (linked by lib/graphviz/libgvplugin_pango.so)
+    - xorg-libxau
+    - peppy
 
 test:
   imports:
@@ -48,6 +51,10 @@ test:
     - export GIT\_PYTHON_REFRESH=warn
     - snakemake --version
     - snakemake --version | grep "{{ version }}"
+    # Generate a report to check whether graphviz dependencies (libXau) are properly installed:
+    - 'printf %s\\n "rule empty:" > Snakefile && snakemake --cores 1 --report'
+    # Remove test artifacts from command above.
+    - rm -rf .snakemake Snakefile report.html
 
 about:
   home: https://snakemake.github.io
@@ -100,7 +107,12 @@ outputs:
         - gitpython
         - toposort
         - nbformat
-        - pulp
+        - connection_pool >=0.0.3
+        - pulp >=2.0
+        - smart_open >=3.0
+        - filelock
+        - stopit
+        - tabulate
 
     test:
       imports:

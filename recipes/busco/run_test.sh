@@ -1,14 +1,15 @@
 #!/bin/bash
 
-set -euo pipefail
+set -euxo pipefail
 
-cat > ex.fasta <<EOF
->1
-AATTCC
-EOF
-
-
-busco -i ex.fasta -o out -l proteobacteria_odb10 -m geno
-
-
-busco -i test_data/bacteria/genome.fna -c 4 -m geno -f --out test_bacteria
+prodigal -h
+makeblastdb -h
+tblastn -h
+augustus
+which gff2gbSmallDNA.pl
+etraining
+new_species.pl
+optimize_augustus.pl
+hmmsearch -h
+run_sepp.py -h
+metaeuk -h

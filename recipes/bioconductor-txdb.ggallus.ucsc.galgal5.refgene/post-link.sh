@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="TxDb.Ggallus.UCSC.galGal5.refGene_3.11.0.tar.gz"
+FN="TxDb.Ggallus.UCSC.galGal5.refGene_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/TxDb.Ggallus.UCSC.galGal5.refGene_3.11.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/TxDb.Ggallus.UCSC.galGal5.refGene_3.11.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.ggallus.ucsc.galgal5.refgene/bioconductor-txdb.ggallus.ucsc.galgal5.refgene_3.11.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/TxDb.Ggallus.UCSC.galGal5.refGene_3.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TxDb.Ggallus.UCSC.galGal5.refGene_3.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.ggallus.ucsc.galgal5.refgene/bioconductor-txdb.ggallus.ucsc.galgal5.refgene_3.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.ggallus.ucsc.galgal5.refgene/bioconductor-txdb.ggallus.ucsc.galgal5.refgene_3.12.0_src_all.tar.gz"
 )
-MD5="473be8c3e424c5d9d5e0858a70dd2a4a"
+MD5="0df53cd4f8e29705df75867a427de56e"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="tweeDEseqCountData_1.26.0.tar.gz"
+FN="tweeDEseqCountData_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/tweeDEseqCountData_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/tweeDEseqCountData_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tweedeseqcountdata/bioconductor-tweedeseqcountdata_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/tweeDEseqCountData_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/tweeDEseqCountData_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tweedeseqcountdata/bioconductor-tweedeseqcountdata_1.30.0_src_all.tar.gz"
 )
-MD5="b01753363d53356a51aaeda233923d78"
+MD5="bca5308c4ccc5a06bdca06eca68e0bf8"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

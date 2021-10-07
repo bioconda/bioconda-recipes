@@ -1,34 +1,36 @@
-{% set version = "4.1.2" %}
-{% set sha256 = "c4fb4bd442c17a7b5be00d451a6eeb2d328791c288caac45bdc50f4feaffa3a6" %}
+{% set version = "5.2.2" %}
+{% set sha256 = "6da327a21674d354dccebcaaa9594fcb5a3b40d1917b7786c5212920e724229f" %}
 
 package:
   name: busco
   version: {{ version }}
 
 build:
-  number: 2
-  skip: True  # [py<33]
+  number: 0
+  noarch: python
 
 source:
   url: https://gitlab.com/ezlab/busco/-/archive/{{ version }}/busco-{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - 0001-Add-default-config-path-within-prefix.patch
+    - 0001-Add-default-config-path-within-prefix-updated.patch
 
 requirements:
   host:
-    - python
+    - python >=3.3
     - pip
-    - findutils
+    - wget
     - blast >=2.10.1 # There is a multithreading problem for all BLAST versions between 2.4 and 2.10.0
     - hmmer >=3.1b2 # sepp needs this version
     - augustus >=3.3
     - biopython
     - prodigal
     - sepp >=4.3.10
+    - metaeuk
+    - pandas
   run:
-    - python
-    - findutils
+    - python >=3.3
+    - wget
     - blast >=2.10.1 # There is a multithreading problem for all BLAST versions between 2.4 and 2.10.0
     - hmmer >=3.1b2 # sepp needs this version
     - augustus >=3.3
@@ -37,12 +39,17 @@ requirements:
     - r-ggplot2 >=2.2.1
     - prodigal
     - sepp >=4.3.10
+    - metaeuk
+    - pandas
+    - fonts-conda-ecosystem
 
 test:
   commands:
     - busco -h
     - generate_plot.py -h
-    - python -c 'import busco.ConfigManager as cm; print(cm.BuscoConfigManager({}).get_config_file())'
+  source_files:
+    # used in run_test.sh
+    - test_data
 
 about:
   home: http://busco.ezlab.org/
@@ -54,6 +61,11 @@ about:
            near-universal single-copy orthologs selected from OrthoDB.
 
 extra:
+  container:
+    # Necessary to allow Busco to download files from the internet when used with Singularity
+    # and default bind paths (see also https://github.com/bioconda/bioconda-recipes/issues/11583).
+    # Should be removed again when the base container is fixed.
+    extended-base: True
   identifiers:
     - biotools:busco
     - doi:10.1093/bioinformatics/btv351

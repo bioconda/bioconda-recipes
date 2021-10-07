@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="affydata_1.36.0.tar.gz"
+FN="affydata_1.40.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/affydata_1.36.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/affydata_1.36.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-affydata/bioconductor-affydata_1.36.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/affydata_1.40.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/affydata_1.40.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-affydata/bioconductor-affydata_1.40.0_src_all.tar.gz"
 )
-MD5="797ac335c7b9381f29fae9db20af2666"
+MD5="5d9a3027ac633d612386cd9a4f47105e"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

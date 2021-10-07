@@ -1,6 +1,7 @@
 #!/bin/bash
- 
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ./easel/devkit/sqc
+
+grep -l -r "/usr/bin/perl" . | xargs sed -i.bak -e 's/usr\/bin\/perl/usr\/bin\/env perl/g'
+
 
 ./configure --prefix=$PREFIX
 make -j 2
