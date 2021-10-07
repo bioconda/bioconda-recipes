@@ -7,9 +7,6 @@ mkdir -p ${IPR_DIR}
 # cd into the core directory, where the master pom.xml file (Maven build file) is located.
 cd core
 
-# copy fingerprintscan exe - version from bioconda does not work
-#cp jms-implementation/support-mini-x86-32/bin/prints/fingerPRINTScan ${PREFIX}/bin
-
 # coils must be recompiled - version from bioconda is different than the one shipped within Interproscan
 current_dir=`pwd`
 cd jms-implementation/support-mini-x86-32/src/coils/ncoils/2.2.1/
