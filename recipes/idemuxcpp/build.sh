@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./configure --prefix="${PREFIX}"
+./configure --enable-tests --prefix="${PREFIX}"
 make
 make install
 make check
