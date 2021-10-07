@@ -13,7 +13,8 @@ cd core
 # coils must be recompiled - version from bioconda is different than the one shipped within Interproscan
 current_dir=`pwd`
 cd jms-implementation/support-mini-x86-32/src/coils/ncoils/2.2.1/
-CC=$CC
+# remove CC=gcc from Makefile
+perl -ni -e 'print unless $. == 1' Makefile
 make
 cp ncoils ../../../../bin/ncoils/2.2.1/
 cd ${current_dir}
