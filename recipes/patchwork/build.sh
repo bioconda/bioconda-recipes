@@ -5,21 +5,25 @@ compile_file="${SRC_DIR}/src/compile.jl"
 # file with precompilation statements: 
 precompiled_file="${SRC_DIR}/src/precompiled.jl"
 # test files for precompilation run, if necessary:
-#contigs="${RECIPE_DIR}/precompile_statements/07673_lcal.fa"
-#reference="${RECIPE_DIR}/precompile_statements/07673_Alitta_succinea.fa"
+contigs="${RECIPE_DIR}/precompile_statements/07673_lcal.fa"
+reference="${RECIPE_DIR}/precompile_statements/07673_Alitta_succinea.fa"
 # directory to contain the finished build:
 build_dir="${SRC_DIR}/build"
 # inside build_dir, contains directories artifacts, bin with executable patchwork, and lib:
 patchwork_dir="patchwork-${PKG_VERSION}"
 
 # not sure if this is necessary, but can't have these in the Patchwork module:
-julia -e "import Pkg; Pkg.add([\"ArgParse\", \"PackageCompiler\"])"
+julia -e "import Pkg; Pkg.add([\"PackageCompiler\"])"
 # precompile, if necessary: 
 #if [ ! -f "${precompiled_file}" ]
 #then 
+#    julia -e "import Pkg; Pkg.add([\"ArgParse\", \"BioAlignments\", \"BioCore\", \"BioSequences\", \"BioSymbols\", \"CSV\", 
+#              \"DataFrames\", \"FASTX\", \"GFF3\", \"GenomicFeatures\", \"Random\", \"Statistics\"])"
 #    julia --trace-compile="${precompiled_file}" "${SRC_DIR}/src/Patchwork.jl" --contigs "${contigs}" --reference "${reference}"
 #fi
-#julia --trace-compile="${precompiled_file}" "${SRC_DIR}/src/Patchwork.jl" --contigs "${contigs}" --reference "${reference}"
+julia -e "import Pkg; Pkg.add([\"ArgParse\", \"BioAlignments\", \"BioCore\", \"BioSequences\", \"BioSymbols\", \"CSV\", 
+          \"DataFrames\", \"FASTX\", \"GFF3\", \"GenomicFeatures\", \"Random\", \"Statistics\"])"
+julia --trace-compile="${precompiled_file}" "${SRC_DIR}/src/Patchwork.jl" --contigs "${contigs}" --reference "${reference}"
 
 # this is not entirely elegant, but you need the .toml files for compilation and conda-build only 
 # copies the stuff inside the "src"-directory of the repo to its own working directory SRC_DIR,
