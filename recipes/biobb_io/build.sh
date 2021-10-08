@@ -4,8 +4,8 @@ python3 setup.py install --single-version-externally-managed --record=record.txt
 
 mkdir -p $PREFIX/bin
 
-chmod u+x $SP_DIR/biobb_io/api/binding_site.py
-cp $SP_DIR/biobb_io/api/binding_site.py $PREFIX/bin/binding_site
+chmod u+x $SP_DIR/biobb_io/api/api_binding_site.py
+cp $SP_DIR/biobb_io/api/api_binding_site.py $PREFIX/bin/api_binding_site
 
 chmod u+x $SP_DIR/biobb_io/api/canonical_fasta.py
 cp $SP_DIR/biobb_io/api/canonical_fasta.py $PREFIX/bin/canonical_fasta

@@ -14,7 +14,7 @@ from os import access
 from os import getenv
 from os import X_OK
 
-jar_file = 'webin-cli-3.7.0.jar'
+jar_file = 'webin-cli-4.1.0.jar'
 default_jvm_mem_opts = ['-Xms2g', '-Xmx4g']
 original_string = "java -jar " + jar_file + " CLI"
 wrapper_string = "webin-cli"
