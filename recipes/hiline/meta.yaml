@@ -1,68 +1,58 @@
-{% set version = "0.0.9" %}
-{% set sha256 = "03a7ab5a453b41709604e6dd238226adef8b87f220321877fa8d5ce949097d88" %}
-{% set hyperscan_version = "5.2.1" %}
-{% set hyperscan_sha256 = "fd879e4ee5ecdd125e3a79ef040886978ae8f1203832d5a3f050c48f17eec867" %}
+{% set name = "HiLine" %}
+{% set version = "0.2.2" %}
+{% set sha256 = "b37c02d589685aa4351b24f4c6f39495b97d2b1e23538fb8ae2d6ae2cd4550d1" %}
 
 package:
-  name: hiline
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  - url: https://github.com/wtsi-hpag/HiLine/archive/{{ version }}.tar.gz
-    sha256: {{ sha256 }}
-    patches:
-      - 0001-Do-not-fetch-hyperscan-via-git.patch
-      - 0002-Use-more-general-compiler-detection.patch
-      - 0003-Disambiguate-sequence-struct-type.patch
-  - url: https://github.com/intel/hyperscan/archive/v{{ hyperscan_version }}.tar.gz
-    sha256: {{ hyperscan_sha256 }}
-    patches:
-      - 0004-hyperline-cmake-build_wrapper.sh.patch
-    folder: hyperscan
+  url: https://github.com/wtsi-hpag/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 3
-  skip: True  # [py<38]
-  script: |
-    export LIBHS_DIRECTORY='{{ SRC_DIR }}/hyperscan'
-    {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
+  skip: True  # [py < 38]
+  number: 2
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - git
     - cmake >=3.16.4
     - pkgconfig >=1.3.1
-    # hyperline/cmake/build_wrapper.sh uses `rev` provides by util-linux.
-    - util-linux  # [linux]
   host:
-    # Ninja is a build tool but in reqs/host to not pull python into reqs/build.
-    - ninja >=1.10.0
-    - boost >=1.72.0
-    - ragel >=6.10
-    - pcre >=8.44
-    - numpy >=1.18.1
+    - numpy
     - pip >=20.0.2
     - python
     - setuptools >=46.0.0
+    - boost-cpp
+    - ragel >=6.10
+    - pcre
+    - ninja >=1.10.0
   run:
     - python
     - bwa >=0.7.17
+    - bwa-mem2 >=2.0 # [linux]
+    - minimap2 >=2.17
+    - gawk >=5.1.0
+    - perl >=5.30.3
     - samtools >=1.10
     - click >=7.0
     - pandas >=1.0.1
-    - numpy >=1.18.1
+    - {{ pin_compatible('numpy') }}
     - seaborn >=0.10.0
     - matplotlib-base >=3.2.0
     - biopython >=1.76
 
 test:
   commands:
-    - HiLine --help
+    - {{ name }} --help
   imports:
-    - HiLine
+    - {{ name }}
 
 about:
-  home: https://github.com/wtsi-hpag/HiLine
+  home: https://github.com/wtsi-hpag/{{ name }}
   license: MIT
   license_file: LICENSE
   license_family: MIT
@@ -73,5 +63,5 @@ about:
     of reference sequences and finally split the output alignments based on HiC read-type.
     It can also optionally process and output HiC alignment statistics.
     Under the hood, it uses bwa mem and samtools to perform and process alignments.
-    It also uses a custom C++ Python extension to perform the in-slico digest
+    It also uses a custom C++ Python extension to perform the in-silico digest
     (using the Hyperscan (https://github.com/intel/hyperscan) regex library) and subsequent HiC classification.  

@@ -1,5 +1,5 @@
-{% set version = "6.2" %}
-{% set sha256 = "af258a011c9461d6d1f03e2d71cfa20b4ead8d02606596d1ba955328d6928d58" %}
+{% set version = "7" %}
+{% set sha256 = "2bdbd4b21e465207661fc23bc8522b843b87b81f4a4a83f72bd14910c5571ac2" %}
 
 package:
   name: anvio-minimal
@@ -10,7 +10,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   noarch: python
   script: python -m pip install --no-deps --ignore-installed -vv .
 
@@ -25,7 +25,7 @@ requirements:
     - pysam
     - ete3
     - scipy
-    - scikit-learn
+    - scikit-learn <0.21
     - django
     - requests
     - psutil ==5.4.3
@@ -38,21 +38,26 @@ requirements:
     - illumina-utils
     - tabulate
     - numba
+    - sqlite >=3.31.1
+    - paste
     # these three are critical versions. any changes must be
     # tested with extra attention:
     - pyani ==0.2.10
-    - cherrypy ==8.0.0
     - snakemake-minimal ==5.10.0
 test:
   commands:
     - anvi-pan-genome --help
     - anvi-script-reformat-fasta --help
-    - anvi-profile --version
 
 about:
-  home: http://merenlab.org/software/anvio/index.html
+  home: http://merenlab.org/software/anvio/
   license: GPL-3.0-or-later
   license_family: GPL3
   license_file: LICENSE.txt
   summary: "An interactive analysis and visualization platform for omics data"
   dev_url:  https://github.com/merenlab/anvio
+  
+extra:
+  container:
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: True

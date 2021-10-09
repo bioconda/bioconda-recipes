@@ -1,16 +1,21 @@
-{% set name = "quast" %}
 {% set version = "5.0.2" %}
 {% set hash = "2b31aac010f5c04d5367f1bf718516ae" %}
 
 package:
-  name: {{ name|lower }}
+  name: quast
   version: {{ version }}
 
 build:
-  number: 2
+  number: 4
+  # Needs to adjust cgi.escape to be html.escape for Python 3.8.
+  # (cgi.escape is deprecated since 3.2)
+  # AttributeError: module 'cgi' has no attribute 'escape'
+  skip: True  # [py>=38]
 
 source:
-  url: http://downloads.sourceforge.net/project/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz
+  url:
+    - https://github.com/ablab/quast/releases/download/quast_{{ version }}/quast-{{ version }}.tar.gz
+    - http://downloads.sourceforge.net/project/quast/quast-{{ version }}.tar.gz
   md5: {{ hash }}
   patches:
     - genemark-issue_disable-and-exclude-from-package.patch
@@ -20,6 +25,7 @@ source:
 requirements:
   build:
     - {{ compiler('c') }}    
+    - make
   host:
     - perl
     - python
@@ -54,7 +60,7 @@ test:
     - metaquast --version
 
 about:
-  home: http://{{ name|lower }}.sourceforge.net/
+  home: http://quast.sourceforge.net/
   license: Custom
   license_file: LICENSE.txt
   summary: Quality Assessment Tool for Genome Assemblies

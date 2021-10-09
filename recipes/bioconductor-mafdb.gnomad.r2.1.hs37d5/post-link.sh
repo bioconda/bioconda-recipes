@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="MafDb.gnomAD.r2.1.hs37d5_3.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MafDb.gnomAD.r2.1.hs37d5_3.10.0.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/MafDb.gnomAD.r2.1.hs37d5_3.10.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MafDb.gnomAD.r2.1.hs37d5_3.10.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mafdb.gnomad.r2.1.hs37d5/bioconductor-mafdb.gnomad.r2.1.hs37d5_3.10.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mafdb.gnomad.r2.1.hs37d5/bioconductor-mafdb.gnomad.r2.1.hs37d5_3.10.0_src_all.tar.gz"

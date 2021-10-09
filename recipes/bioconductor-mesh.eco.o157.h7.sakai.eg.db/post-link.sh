@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="MeSH.Eco.O157.H7.Sakai.eg.db_1.13.0.tar.gz"
+FN="MeSH.Eco.O157.H7.Sakai.eg.db_1.15.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/MeSH.Eco.O157.H7.Sakai.eg.db_1.13.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MeSH.Eco.O157.H7.Sakai.eg.db_1.13.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mesh.eco.o157.h7.sakai.eg.db/bioconductor-mesh.eco.o157.h7.sakai.eg.db_1.13.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mesh.eco.o157.h7.sakai.eg.db/bioconductor-mesh.eco.o157.h7.sakai.eg.db_1.13.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/MeSH.Eco.O157.H7.Sakai.eg.db_1.15.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MeSH.Eco.O157.H7.Sakai.eg.db_1.15.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.eco.o157.h7.sakai.eg.db/bioconductor-mesh.eco.o157.h7.sakai.eg.db_1.15.0_src_all.tar.gz"
 )
-MD5="57b6af1fc8bcc489a0d8c3a42a1caf1c"
+MD5="63d8151318bb5ca890db189103063d59"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
