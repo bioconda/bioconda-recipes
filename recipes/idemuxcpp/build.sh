@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./configure --enable-tests --prefix="${PREFIX}"
+./configure --enable-tests --prefix="${PREFIX}" LIBS="-lrt"
 make
 make install
-# make check # no boost-test no check
+make check
