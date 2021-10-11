@@ -2,4 +2,4 @@
 
 export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
-cargo install --no-track --locked --verbose --root "${PREFIX}" --path .
+cargo install --no-track --verbose --root "${PREFIX}" --path .
