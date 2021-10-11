@@ -1,0 +1,42 @@
+{% set version = "1.1.0" %}
+
+package:
+  name: ntlink
+  version: {{ version }}
+
+source:
+  url: https://github.com/bcgsc/ntLink/releases/download/v{{ version }}/ntLink-{{ version }}.tar.gz 
+  sha256: 836b70e13cd0ba07d24698b350a666f23e2ae921af04868b61b548c6e0a8ea01 
+
+build:
+  number: 0
+  skip: True  # [py<30]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
+    - python
+    - pip
+    - zlib
+  run:
+    - python
+    - zlib
+    - make
+    - numpy
+    - python-igraph
+    - abyss >=2.3.0
+
+
+test:
+  commands:
+    - ntLink help
+
+about:
+  home: https://github.com/bcgsc/ntLink
+  license: GPL-3.0
+  license_file: LICENSE
+  summary: 'Genome assembly scaffolder using long reads and minimizers'
