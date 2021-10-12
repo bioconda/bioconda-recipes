@@ -9,6 +9,7 @@ mkdir -p $PREFIX/share/doc/ispcr
 export MACHTYPE=unix
 mkdir -p "bin/$MACHTYPE"
 mkdir -p "lib/$MACHTYPE"
+export CFLAGS="${CFLAGS} -fcommon"
 
 make HOME=$PWD CC=${CC} CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 

@@ -8,3 +8,4 @@ export CPATH=${PREFIX}/include
 make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"  CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
 cp lra $PREFIX/bin
+
