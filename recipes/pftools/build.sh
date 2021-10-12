@@ -9,5 +9,5 @@ mkdir build
 cd build/
 cmake ..
 make CC=${CC} CXX=${CXX} F77=${GFORTRAN} CFLAGS="$CFLAGS $LDFLAGS"
-make install INSTALLDIR="${PREFIX}/bin"
+make install
 ls -l ${PREFIX}/bin
