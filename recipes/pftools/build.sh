@@ -9,11 +9,5 @@ mkdir build
 cd build/
 cmake ..
 make CC=${CC} CXX=${CXX} F77=${GFORTRAN} CFLAGS="$CFLAGS $LDFLAGS"
-
-ls -l
-
-# copy tools in the bin
-mkdir -p ${PREFIX}/bin
-for PROGRAM in ${PFTOOLS_PROGRAMS} ; do
-  cp ${PROGRAM} ${PREFIX}/bin
-done
+make install INSTALLDIR="${PREFIX}/bin"
+ls -l ${PREFIX}/bin
