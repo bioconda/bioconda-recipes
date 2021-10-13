@@ -18,4 +18,3 @@ cp -R share/OpenMS/examples/simulation $PREFIX/share/OpenMS/examples/
 mkdir -p $PREFIX/include
 cp -R build/src/openms/include/* $PREFIX/include/
 cp -R build/src/openswathalgo/include/* $PREFIX/include/
-cp -R build/src/superhirn/include/* $PREFIX/include/
