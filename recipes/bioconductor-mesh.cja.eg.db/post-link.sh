@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="MeSH.Cja.eg.db_1.13.0.tar.gz"
+FN="MeSH.Cja.eg.db_1.15.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/MeSH.Cja.eg.db_1.13.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MeSH.Cja.eg.db_1.13.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mesh.cja.eg.db/bioconductor-mesh.cja.eg.db_1.13.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mesh.cja.eg.db/bioconductor-mesh.cja.eg.db_1.13.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/MeSH.Cja.eg.db_1.15.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MeSH.Cja.eg.db_1.15.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.cja.eg.db/bioconductor-mesh.cja.eg.db_1.15.0_src_all.tar.gz"
 )
-MD5="996b0c23d012fa821d0ec824ce30a1d9"
+MD5="570fa935f87ac911ecd99b781132a626"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
