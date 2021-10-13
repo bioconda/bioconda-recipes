@@ -7,7 +7,9 @@ set -x -e
 PFTOOLS_PROGRAMS="pfscanV3 pfsearchV3 gtop pfmake pfscan pfw ptoh htop pfscale pfsearch psa2msa 2ft 6ft ptof"
 mkdir build
 cd build/
-cmake ..
+cmake -DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}/bin" ..
 make CC=${CC} CXX=${CXX} F77=${GFORTRAN} CFLAGS="$CFLAGS $LDFLAGS"
 make install
+make test
+
 ls -l ${PREFIX}/bin
