@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="golubEsets_1.32.0.tar.gz"
+FN="golubEsets_1.34.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/golubEsets_1.32.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/golubEsets_1.32.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-golubesets/bioconductor-golubesets_1.32.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/golubEsets_1.34.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/golubEsets_1.34.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-golubesets/bioconductor-golubesets_1.34.0_src_all.tar.gz"
 )
-MD5="66c2f633c545a1965990fd7ababfb895"
+MD5="c0e41897e54cd1edda3aefac97e64ff2"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
