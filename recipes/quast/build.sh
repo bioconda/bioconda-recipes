@@ -11,8 +11,14 @@ QUAST_HOME=$PREFIX/opt/quast-$PKG_VERSION
 mkdir -p $BINARY_HOME
 mkdir -p $QUAST_HOME
 
-rm -r $SRC_DIR/quast_libs/site_packages/joblib*
-rm -r $SRC_DIR/quast_libs/site_packages/simplejson
+rm -rf $SRC_DIR/quast_libs/site_packages/joblib*
+rm -rf $SRC_DIR/quast_libs/site_packages/simplejson
+
+sed -i 's/CC=/#CC=/' $SRC_DIR/quast_libs/bwa/Makefile
+sed -i 's/INCLUDES=/#INCLUDES=/' $SRC_DIR/quast_libs/bwa/Makefile
+
+sed -i 's/export CXX\s/#export CXX/' $SRC_DIR/quast_libs/bedtools/Makefile
+sed -i 's/CXXFLAGS =/CXXFLAGS +=/' $SRC_DIR/quast_libs/bedtools/Makefile
 
 $PYTHON -m pip install . --ignore-installed --no-deps -vv
 
