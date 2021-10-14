@@ -14,13 +14,16 @@ mkdir -p $QUAST_HOME
 rm -rf $SRC_DIR/quast_libs/site_packages/joblib*
 rm -rf $SRC_DIR/quast_libs/site_packages/simplejson
 
-sed -i 's/CC=/#CC=/' $SRC_DIR/quast_libs/bwa/Makefile
-sed -i 's/INCLUDES=/#INCLUDES=/' $SRC_DIR/quast_libs/bwa/Makefile
+sed -i'.bak' 's/CC=/#CC=/' $SRC_DIR/quast_libs/bwa/Makefile
+sed -i'.bak' 's/INCLUDES=/#INCLUDES=/' $SRC_DIR/quast_libs/bwa/Makefile
+sed -i'.bak' 's/CFLAGS=/CFLAGS+= -fcommon/' $SRC_DIR/quast_libs/bwa/Makefile
 
-sed -i 's/export CXX\s/#export CXX/' $SRC_DIR/quast_libs/bedtools/Makefile
-sed -i 's/CXXFLAGS =/CXXFLAGS +=/' $SRC_DIR/quast_libs/bedtools/Makefile
+sed -i'.bak' 's/export CXX\s/#export CXX/' $SRC_DIR/quast_libs/bedtools/Makefile
+sed -i'.bak' 's/CXXFLAGS =/CXXFLAGS +=/' $SRC_DIR/quast_libs/bedtools/Makefile
 
 $PYTHON -m pip install . --ignore-installed --no-deps -vv
+
+tail -n50 $SRC_DIR/quast_libs/*/make.*
 
 cp -R $SRC_DIR/*quast*.py $QUAST_HOME/
 cp -R $SRC_DIR/icarus.py $QUAST_HOME/
