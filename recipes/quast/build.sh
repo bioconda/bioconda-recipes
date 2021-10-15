@@ -23,7 +23,7 @@ sed -i'.bak' 's/CXXFLAGS =/CXXFLAGS +=/' $SRC_DIR/quast_libs/bedtools/Makefile
 
 $PYTHON -m pip install . --ignore-installed --no-deps -vv
 
-tail -n50 $SRC_DIR/quast_libs/*/make.*
+tail -n50 $SRC_DIR/quast_libs/*/make.* || true
 
 cp -R $SRC_DIR/*quast*.py $QUAST_HOME/
 cp -R $SRC_DIR/icarus.py $QUAST_HOME/
