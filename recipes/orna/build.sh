@@ -14,7 +14,7 @@ cd build
 cmake ..
 
 #Running the make command
-make -j 10
+make -j 1
 
 cd ..
 
