@@ -27,7 +27,7 @@ else
   conda install --yes -c conda-forge -c bioconda clangxx_osx-64=10.0.0
 fi 
 conda install --yes -c conda-forge -c bioconda cython "hdf5>=1.8.17" biom-format numpy "h5py>=2.7.0" "scikit-bio>=0.5.1" flake8 nose
-conda install --yes -c conda-forge -c bioconda mkl-include lz4 hdf5-static
+conda install --yes -c conda-forge -c bioconda mkl-include lz4 hdf5-static wget
 
 if [[ "$(uname -s)" == "Linux" ]];
 then
@@ -49,6 +49,8 @@ fi
 pushd sucpp
 make main
 make api
+make test
+./test_su
 popd
 
 $PYTHON -m pip install --no-deps --ignore-installed .
