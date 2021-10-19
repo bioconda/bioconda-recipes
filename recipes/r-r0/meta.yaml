@@ -1,0 +1,45 @@
+{% set name = "r-r0" %}
+{% set version = '1.2-6' %}
+{% set sha256 = "6863ea978d152e6e329bd3bffc42a3b333956dbfe8193ef19bf048da217b6cfb" %}
+
+package:
+  name: {{ name }}
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/R0_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/R0/R0_{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  host:
+    - r-base
+    - r-mass
+
+  run:
+    - r-base
+    - r-mass
+
+test:
+  commands:
+    - $R -e "library('R0')"
+
+about:
+  home: https://CRAN.R-project.org/package=R0
+  license: GPL-2
+  summary: "Estimation of R0 and Real-Time Reproduction Number from Epidemics."
+  license_family: GPL2
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
+extra:
+  recipe-maintainers:
+    - acaprez
