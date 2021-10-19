@@ -8,7 +8,7 @@ if [[ ${target_platform} =~ linux.* ]] ; then
     cp -a ./* $outdir/
     chmod +x $outdir/bin/sirius
     # protecting libs from being modified by conda-build
-    tar czf $outdir/lib.tgz $outdir/lib
+    tar czf $outdir/lib.tgz -C $outdir/lib .
     rm -r $outdir/lib
 
     ln -s $outdir/bin/sirius $PREFIX/bin
@@ -20,8 +20,8 @@ elif [[ ${target_platform} =~ osx.* ]] ; then
      chmod +x $outdir/Contents/MacOS/sirius
 
      # protecting libs from being modified by conda-build
-     tar czf $outdir/Contents/runtime.tgz $outdir/Contents/runtime
-     tar czf $outdir/Contents/native.tgz $outdir/Contents/native
+     tar czf $outdir/Contents/runtime.tgz -C $outdir/Contents/runtime .
+     tar czf $outdir/Contents/native.tgz -C $outdir/Contents/native .
      rm -r $outdir/Contents/runtime
      rm -r $outdir/Contents/native
 
