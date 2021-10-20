@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-make \
-    F77="${FC}"
+make
 
 chmod u+x Cur+
 chmod u+x Canal
