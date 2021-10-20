@@ -1,8 +1,8 @@
 #!/bin/bash
 
-set -ue pipefail;
+set -uoe pipefail
 
-tar -xf input_files.tar.gz;
+tar -xf input_files.tar.gz
   
 # Curves+ executable
 Cur+ <<!
@@ -21,9 +21,9 @@ Cur+ <<!
 36:19     
 !
 
-test -e curout_ions.cda;
-test -e curout_ions.cdi;
-test -e curout_ions.lis;
+test -e curout_ions.cda
+test -e curout_ions.cdi
+test -e curout_ions.lis
  
 # test Canal executable
 Canal <<! 
@@ -34,8 +34,8 @@ Canal <<!
 curout_ions.cda GCAACGTGCTATGGAAGC       
 !
 
-test -e canout.lis;
-test $(ls|grep canout|wc -l) = 45;
+test -e canout.lis
+test $(ls|grep canout|wc -l) = 45
 
 # test Canion executable
 Canion <<!
@@ -48,16 +48,5 @@ Canion <<!
 &end
 !
 
-test -e canionout.lis;
-test $(ls | grep canionout | wc -l) = 9;
-
-# cleanup after last execution 
-rm curout_ions.cda 
-rm curout_ions.cdi 
-rm curout_ions.lis
-rm canout* 
-rm canionout.*
-rm abctop_nowat.prmtop 
-rm mABCs1_avg.pdb 
-rm mABCs1_stride.trj
-rm curout_avg.afr
+test -e canionout.lis
+test $(ls | grep canionout | wc -l) = 9
