@@ -42,7 +42,7 @@ fi
 
 if [[ "$(uname -s)" == "Linux" ]];
 then
-  ./scripts/install_hpc_sdk.sh
+  bash -x ./scripts/install_hpc_sdk.sh
   source setup_nv_h5.sh
 fi
 
