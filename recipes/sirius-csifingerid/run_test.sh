@@ -1,8 +1,6 @@
 #!/bin/bash
-#outdir="$(dirname $(readlink -f $(which sirius)))/.."
-outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-echo "OUTDIR: ${outdir}"
-# unpack library directory
+outdir=$(readlink -m "$(dirname $(readlink -f $(which sirius)))/..")
+echo "OUTDIR_TEST_SH: ${outdir}"
 
 if [ "$(uname)" == "Darwin" ]; then
     # Do something under Mac OS X platform
