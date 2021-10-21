@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -uoe pipefail
+set -euo pipefail
 
 tar -xf input_files.tar.gz
   
