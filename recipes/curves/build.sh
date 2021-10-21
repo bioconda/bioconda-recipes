@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 make \ 
-    FC="${FC}" CC="${CC}"
+    FC="${FC}" CC="${GCC}"
 
 chmod u+x Cur+
 chmod u+x Canal
