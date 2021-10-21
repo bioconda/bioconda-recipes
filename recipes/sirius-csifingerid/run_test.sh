@@ -1,5 +1,7 @@
 #!/bin/bash
-outdir="${PREFIX}"/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+#outdir="$(dirname $(readlink -f $(which sirius)))/.."
+outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+echo "OUTDIR: ${outdir}"
 # unpack library directory
 
 if [ "$(uname)" == "Darwin" ]; then
@@ -14,3 +16,5 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     tar -xf $outdir/lib.tgz -C $outdir/
     rm $outdir/lib.tgz
 fi
+
+test sirius -h
