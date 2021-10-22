@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="scRNAseq_2.3.17.tar.gz"
+FN="scRNAseq_2.6.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/scRNAseq_2.3.17.tar.gz"
-  "https://bioarchive.galaxyproject.org/scRNAseq_2.3.17.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-scrnaseq/bioconductor-scrnaseq_2.3.17_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/scRNAseq_2.6.1.tar.gz"
+  "https://bioarchive.galaxyproject.org/scRNAseq_2.6.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-scrnaseq/bioconductor-scrnaseq_2.6.1_src_all.tar.gz"
 )
-MD5="5678512f501e0168f2a458b45cdc107a"
+MD5="88e7b134781f1df31d5b6a0501e61c8d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
