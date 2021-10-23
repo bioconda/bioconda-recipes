@@ -12,13 +12,16 @@ source:
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
   md5: 92f1968f6d70442bb1cf260b481ace51
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 # Suggests: BiocParallel, GenomicRanges, SummarizedExperiment (>= 1.15.1), h5vcData, ExperimentHub, TENxBrainData, zellkonverter, GenomicFeatures, RUnit, SingleCellExperiment
 # SystemRequirements: GNU make
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
   host:
     - 'bioconductor-biocgenerics >=0.38.0,<0.39.0'
     - 'bioconductor-delayedarray >=0.18.0,<0.19.0'
@@ -31,6 +34,7 @@ requirements:
     - r-matrix
     - libblas
     - liblapack
+    - openssl
   run:
     - 'bioconductor-biocgenerics >=0.38.0,<0.39.0'
     - 'bioconductor-delayedarray >=0.18.0,<0.19.0'
@@ -41,9 +45,6 @@ requirements:
     - 'bioconductor-s4vectors >=0.30.0,<0.31.0'
     - r-base
     - r-matrix
-  build:
-    - {{ compiler('c') }}
-    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
