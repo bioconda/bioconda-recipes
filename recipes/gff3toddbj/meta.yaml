@@ -1,0 +1,58 @@
+{% set name = "gff3toddbj" %}
+{% set version = "0.4.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 255bb2b2f57dd648e9a5115f73f4dc3ffdd2abb7296080410f49c6c233a9657f
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - gff3-to-ddbj = gff3toddbj:main
+    - split-fasta = tools.splitfasta:main
+    - normalize-entry-names = tools.normalize_seqids:main
+    - list-products = tools.list_products:main
+    - genbank-to-ddbj = gff3toddbj.genbank_to_ddbj:main
+    - compare-ddbj = gff3toddbj.evaluate:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - pip
+    - python
+
+  run:
+    - bcbio-gff >=0.6.6
+    - biopython >=1.75
+    - python
+    - toml
+    - pysam
+    - samtools
+
+test:
+  imports:
+    - gff3toddbj
+    - tools
+    - tools.list_products
+    - tools.normalize_seqids
+    - tools.splitfasta
+  commands:
+    - gff3-to-ddbj --help
+    - split-fasta --help
+    - normalize-entry-names --help
+    - list-products --help
+    - genbank-to-ddbj --help
+    - compare-ddbj --help
+
+about:
+  home: "https://github.com/yamaton/gff3toddbj"
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Create a DDBJ annotation file from GFF3 and FASTA files"
+
