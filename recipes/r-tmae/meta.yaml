@@ -1,39 +1,24 @@
 {% set name = 'tMAE' %}
-{% set version = '1.0.0' %}
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set version = '1.0.2' %}
 
 package:
   name: r-tmae
-  version: {{ version|replace("-", "_") }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/mumichae/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: c418876819abcbde3d439d9c6504b32411b412d0242a245437c41465adcc952c
+  url: https://github.com/gagneurlab/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: 5fda2eefb3ee06ac8f9bbe6bcdd847f013fd5576a2069f933d0642010dfbd6f3
 
 build:
-  merge_build_host: True  # [win]
-  number: 2
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 
 requirements:
-  build:
-    - {{ compiler('c') }}        # [not win]
-    - {{ compiler('m2w64_c') }}  # [win]
-    - {{posix}}filesystem        # [win]
-    - {{posix}}sed               # [win]
-    - {{posix}}grep              # [win]
-    - {{posix}}autoconf
-    - {{posix}}automake          # [not win]
-    - {{posix}}automake-wrapper  # [win]
-    - {{posix}}pkg-config
-    - {{posix}}make
-    - {{posix}}coreutils         # [win]
-    - {{posix}}zip               # [win]
   host:
-    - r-base
+    - r-base >=3.6
     - r-BiocManager
     - r-data.table
     - r-dplyr
@@ -46,8 +31,7 @@ requirements:
     - bioconductor-GenomicScores
     - bioconductor-S4Vectors
   run:
-    - {{native}}gcc-libs         # [win]
-    - r-base
+    - r-base >=3.6
     - r-BiocManager
     - r-data.table
     - r-dplyr
@@ -62,14 +46,13 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('tMAE')"           # [not win]
-    - "\"%R%\" -e \"library('tMAE')\""  # [win]
+     - '$R -e "library(''{{ name }}'')"'
 
 about:
-  home: https://github.com/mumichae/tMAE
+  home: https://github.com/gagneurlab/tMAE
   license: MIT
   license_family: MIT
-  summary: Tests and visualizes for Mono-allelic expressed variants.
+  summary: Tests and visualizations for mono-allelicly expressed variants.
 
 extra:
   recipe-maintainers:
