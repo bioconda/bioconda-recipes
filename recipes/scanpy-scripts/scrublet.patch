@@ -1,5 +1,5 @@
 diff --git a/scanpy/scanpy/external/pl.py b/scanpy/scanpy/external/pl.py
-index 629b40cc..6eb61c48 100644
+index 629b40cc..a699e119 100644
 --- a/scanpy/scanpy/external/pl.py
 +++ b/scanpy/scanpy/external/pl.py
 @@ -340,6 +340,8 @@ def scrublet_score_distribution(
@@ -11,7 +11,7 @@ index 629b40cc..6eb61c48 100644
      Parameters
      ----------
      adata
-@@ -372,40 +374,86 @@ def scrublet_score_distribution(
+@@ -372,40 +374,98 @@ def scrublet_score_distribution(
          simulation separately for advanced usage.
      """
  
@@ -74,13 +74,17 @@ index 629b40cc..6eb61c48 100644
 +
 +    for idx, ad in enumerate(adatas):
 +
++        threshold = None
++
 +        # We'll need multiple rows if Scrublet was run in multiple batches
 +
 +        if 'batched_by' in adata.uns['scrublet']:
 +
 +            batch = batches[idx]
 +
-+            threshold = adata.uns['scrublet']['batches'][batch]['threshold']
++            if 'threshold' in adata.uns['scrublet']['batches'][batch]:
++                threshold = adata.uns['scrublet']['batches'][batch]['threshold']
++
 +            doublet_scores_sim = adata.uns['scrublet']['batches'][batch][
 +                'doublet_scores_sim'
 +            ]
@@ -89,7 +93,9 @@ index 629b40cc..6eb61c48 100644
 +            sim_ax = axs[idx][1]
 +
 +        else:
-+            threshold = adata.uns['scrublet']['threshold']
++            if 'threshold' in adata.uns['scrublet']:
++                threshold = adata.uns['scrublet']['threshold']
++
 +            doublet_scores_sim = adata.uns['scrublet']['doublet_scores_sim']
 +            axis_lab_suffix = ''
 +            obs_ax = axs[0]
@@ -107,7 +113,10 @@ index 629b40cc..6eb61c48 100644
 +        obs_ax.set_yscale(scale_hist_obs)
 +        yl = obs_ax.get_ylim()
 +        obs_ax.set_ylim(yl)
-+        obs_ax.plot(threshold * np.ones(2), yl, c='black', linewidth=1)
++
++        if threshold is not None:
++            obs_ax.plot(threshold * np.ones(2), yl, c='black', linewidth=1)
++
 +        obs_ax.set_title('Observed transcriptomes%s' % axis_lab_suffix)
 +        obs_ax.set_xlabel('Doublet score')
 +        obs_ax.set_ylabel('Prob. density')
@@ -124,7 +133,10 @@ index 629b40cc..6eb61c48 100644
 +        sim_ax.set_yscale(scale_hist_sim)
 +        yl = sim_ax.get_ylim()
 +        sim_ax.set_ylim(yl)
-+        sim_ax.plot(threshold * np.ones(2), yl, c='black', linewidth=1)
++
++        if threshold is not None:
++            sim_ax.plot(threshold * np.ones(2), yl, c='black', linewidth=1)
++
 +        sim_ax.set_title('Simulated doublets%s' % axis_lab_suffix)
 +        sim_ax.set_xlabel('Doublet score')
 +        sim_ax.set_ylabel('Prob. density')
@@ -132,7 +144,7 @@ index 629b40cc..6eb61c48 100644
      fig.tight_layout()
  
 diff --git a/scanpy/scanpy/external/pp/_scrublet.py b/scanpy/scanpy/external/pp/_scrublet.py
-index 7ebb7b5b..85682088 100644
+index 7ebb7b5b..46807e4e 100644
 --- a/scanpy/scanpy/external/pp/_scrublet.py
 +++ b/scanpy/scanpy/external/pp/_scrublet.py
 @@ -1,6 +1,7 @@
@@ -294,23 +306,23 @@ index 7ebb7b5b..85682088 100644
 +        scrubbed_obs = pd.concat([scrub['obs'] for scrub in scrubbed])
 +
 +        # Now reset the obs to get the scrublet scores
-+
+ 
+-    # Copy outcomes to input object from our processed version
 +        adata.obs = scrubbed_obs.loc[adata.obs_names.values]
-+
+ 
+-    adata.obs['doublet_score'] = adata_obs.obs['doublet_score']
+-    adata.obs['predicted_doublet'] = adata_obs.obs['predicted_doublet']
+-    adata.uns['scrublet'] = adata_obs.uns['scrublet']
 +        # Save the .uns from each batch separately
 +
 +        adata.uns['scrublet'] = {}
 +        adata.uns['scrublet']['batches'] = dict(
 +            zip(batches, [scrub['uns'] for scrub in scrubbed])
 +        )
- 
--    # Copy outcomes to input object from our processed version
++
 +        # Record that we've done batched analysis, so e.g. the plotting
 +        # function knows what to do.
- 
--    adata.obs['doublet_score'] = adata_obs.obs['doublet_score']
--    adata.obs['predicted_doublet'] = adata_obs.obs['predicted_doublet']
--    adata.uns['scrublet'] = adata_obs.uns['scrublet']
++
 +        adata.uns['scrublet']['batched_by'] = batch_key
 +
 +    else:
@@ -326,3 +338,36 @@ index 7ebb7b5b..85682088 100644
  
      if copy:
          return adata
+@@ -409,12 +455,10 @@ def _scrublet_call_doublets(
+     # Store results in AnnData for return
+ 
+     adata_obs.obs['doublet_score'] = scrub.doublet_scores_obs_
+-    adata_obs.obs['predicted_doublet'] = scrub.predicted_doublets_
+ 
+     # Store doublet Scrublet metadata
+ 
+     adata_obs.uns['scrublet'] = {
+-        'threshold': scrub.threshold_,
+         'doublet_scores_sim': scrub.doublet_scores_sim_,
+         'doublet_parents': adata_sim.obsm['doublet_parents'],
+         'parameters': {
+@@ -429,6 +473,19 @@ def _scrublet_call_doublets(
+         },
+     }
+ 
++    # If threshold hasn't been located successfully then we couldn't make any
++    # predictions. The user will get a warning from Scrublet, but we need to
++    # set the boolean so that any downstream filtering on
++    # predicted_doublet=False doesn't incorrectly filter cells. The user can
++    # still use this object to generate the plot and derive a threshold
++    # manually.
++
++    if hasattr(scrub, 'threshold_'):
++        adata_obs.uns['scrublet']['threshold'] = scrub.threshold_
++        adata_obs.obs['predicted_doublet'] = scrub.predicted_doublets_
++    else:
++        adata_obs.obs['predicted_doublet'] = False
++
+     if get_doublet_neighbor_parents:
+         adata_obs.uns['scrublet'][
+             'doublet_neighbor_parents'
