@@ -1,5 +1,5 @@
 {% set name = "gff3toddbj" %}
-{% set version = "0.1.1" %}
+{% set version = "0.4.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 1c2ace61e2ee8c645ab102bc8e7fd2ec3fcad1bc0a05b8950fafa37e7ec7b290
+  sha256: 255bb2b2f57dd648e9a5115f73f4dc3ffdd2abb7296080410f49c6c233a9657f
 
 build:
   number: 0
@@ -15,8 +15,10 @@ build:
   entry_points:
     - gff3-to-ddbj = gff3toddbj:main
     - split-fasta = tools.splitfasta:main
-    - rename-ids = tools.regularize_seqids:main
+    - normalize-entry-names = tools.normalize_seqids:main
     - list-products = tools.list_products:main
+    - genbank-to-ddbj = gff3toddbj.genbank_to_ddbj:main
+    - compare-ddbj = gff3toddbj.evaluate:main
   script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
@@ -29,19 +31,23 @@ requirements:
     - biopython >=1.75
     - python
     - toml
+    - pysam
+    - samtools
 
 test:
   imports:
     - gff3toddbj
     - tools
     - tools.list_products
-    - tools.regularize_seqids
+    - tools.normalize_seqids
     - tools.splitfasta
   commands:
     - gff3-to-ddbj --help
     - split-fasta --help
-    - rename-ids --help
+    - normalize-entry-names --help
     - list-products --help
+    - genbank-to-ddbj --help
+    - compare-ddbj --help
 
 about:
   home: "https://github.com/yamaton/gff3toddbj"
