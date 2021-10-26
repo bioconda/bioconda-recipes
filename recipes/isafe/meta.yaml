@@ -8,27 +8,32 @@ package:
 source:
   url: https://github.com/alek0991/iSAFE/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-converted-to-py3-added-pip-packaging.patch
 
 build:
   number: 0
-  noarch: generic
+  noarch: python
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed .
 
 requirements:
-  host:
+  build:
     - python
+    - pip
   run:
     - python
     - numpy >=1.9.0
     - pandas >=0.18.0
+    - pysam
     - bcftools >=1.2
 
 test:
   commands:
-    - isafe.py --help 2>&1 | grep 'iSAFE v{{ version }}'
+    - isafe --help 2>&1 | grep 'iSAFE v{{ version }}'
 
 about:
   home: https://github.com/alek0991/iSAFE
-  license: BSD-4-Clause
+  license: BSD-3-Clause
   license_family: BSD
   license_file: License.txt
   summary: A program for identifying a favored mutation in positive selective sweep.
