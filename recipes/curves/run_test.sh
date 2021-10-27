@@ -35,7 +35,10 @@ curout_ions.cda GCAACGTGCTATGGAAGC
 !
 
 test -e canout.lis
-test $(ls|grep canout|wc -l) = 45
+ls -l
+ls | grep canout
+ls | grep -c canout
+test $(ls | grep -c canout) = 45
 
 # test Canion executable
 Canion <<!
@@ -49,4 +52,8 @@ Canion <<!
 !
 
 test -e canionout.lis
-test $(ls | grep canionout | wc -l) = 9
+ls -l
+ls -l | grep canionout
+ls -l | grep -c canionout
+
+test $(ls | grep -c canionout ) = 9
