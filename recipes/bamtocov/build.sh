@@ -11,7 +11,7 @@ export LD_LIBRARY_PATH="$PREFIX"/lib
 
 
 # nimble install -y --verbose
-nimble build -y --verbose -d:static -d:release --opt:speed
+nimble build -y --verbose  -d:release --opt:speed
 mkdir -p "$PREFIX"/bin
 
 pwd
