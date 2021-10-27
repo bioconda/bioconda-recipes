@@ -27,12 +27,13 @@ make -C BMEAN/spoa/build
 
 make -C BMEAN CXX=$CXX # BMEAN make
 
+mkdir -p bin
 make CC="$CXX -std=c++11" # CONSENT make
 
 # rename some binary
 mv bin/explode bin/CONSENT-explode
 mv bin/merge bin/CONSENT-merge
-mv bin/reformatPAF.py bin/CONSENT-reformatPAF.py
+mv bin/reformatPAF bin/CONSENT-reformatPAF
 
 # install matrix
 mkdir -p $PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="MMDiffBamSubset_1.26.0.tar.gz"
+FN="MMDiffBamSubset_1.28.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/MMDiffBamSubset_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MMDiffBamSubset_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mmdiffbamsubset/bioconductor-mmdiffbamsubset_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/MMDiffBamSubset_1.28.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MMDiffBamSubset_1.28.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mmdiffbamsubset/bioconductor-mmdiffbamsubset_1.28.0_src_all.tar.gz"
 )
-MD5="7331050e61076bdba1a2914d7062743a"
+MD5="d627bea662c8baddd99d606baca149a8"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
