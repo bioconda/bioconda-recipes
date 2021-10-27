@@ -4,10 +4,8 @@ set -euo pipefail
 
 tar -xf input_files.tar.gz
 
-echo $(which Cur+)
-echo $(which Canal)
-echo $(which Canion)
-  
+ls $CONDA_PREFIX/.curvesplus 
+
 # Curves+ executable
 Cur+ <<!
 &inp 
