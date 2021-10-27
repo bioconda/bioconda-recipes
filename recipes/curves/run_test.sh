@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 set -euo pipefail
 
 tar -xf input_files.tar.gz
