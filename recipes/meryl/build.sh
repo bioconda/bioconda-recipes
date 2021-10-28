@@ -1,16 +1,9 @@
 #!/bin/bash
 
-pushd src
-env -u PREFIX make
-popd
+make -C src \
+  BUILD_DIR="$( pwd )/build" \
+  TARGET_DIR="${PREFIX}" \
+  CC="${CC}" \
+  CXX="${CXX}"
 
-mkdir -p $PREFIX/bin
-
-if [ `uname` == Darwin ]; then
-    cp Darwin-amd64/bin/* $PREFIX/bin/
-    cp Darwin-amd64/lib/* $PREFIX/lib/
-else
-    cp Linux-amd64/bin/* $PREFIX/bin/
-    cp Linux-amd64/lib/* $PREFIX/lib/
-fi
-
+rm "${PREFIX}/lib/libmeryl.a"

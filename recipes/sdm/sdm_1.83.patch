@@ -1,0 +1,30 @@
+diff --git a/Makefile b/Makefile
+index df16bce..5967e96 100644
+--- a/Makefile
++++ b/Makefile
+@@ -15,13 +15,22 @@ program_INCLUDE_DIRS := ./
+ program_LIBRARY_DIRS := ${CPATH}
+ program_LIBRARIES :=
+ 
+-
+-CPPFLAGS += -O3 -std=c++17 -lrt
++UNAME := $(shell uname)
++CPPFLAGS += -O3 -std=c++17 -pthread
+ CPPFLAGS += $(foreach includedir,$(program_INCLUDE_DIRS),-I$(includedir))
++ifeq ($(UNAME), Darwin)
++# 'shared_mutex' is available from macOS 10.12
++CPPFLAGS += -mmacosx-version-min=10.12
++endif
+ CXXFLAGS=-D__STDC_CONSTANT_MACROS
+-LDFLAGS +=   $(foreach librarydir,$(program_LIBRARY_DIRS),-L$(librarydir)) -pthread -Wl,--whole-archive -lpthread -Wl,--no-whole-archive
++LDFLAGS += $(foreach librarydir,$(program_LIBRARY_DIRS),-L$(librarydir))
+ LDFLAGS += $(foreach library,$(program_LIBRARIES),-l$(library))
+ LDLIBS += -lz
++ifeq ($(UNAME), Linux)
++LDLIBS += -lrt -Wl,--whole-archive -lpthread -Wl,--no-whole-archive
++else
++LDLIBS += -lpthread
++endif
+ 
+ .PHONY: all clean distclean
+ 

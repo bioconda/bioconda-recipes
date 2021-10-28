@@ -23,6 +23,7 @@ ln -s $PACKAGE_HOME/bin/dsh-create-sequence-dictionary $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-disinterleave-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-downsample-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-downsample-interleaved-fastq $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-export-segments $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-extract-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-extract-fastq-by-length $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-fasta-to-fastq $BINARY_HOME
@@ -38,10 +39,14 @@ ln -s $PACKAGE_HOME/bin/dsh-filter-paf $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-filter-sam $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-filter-vcf $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-gfa1-to-gfa2 $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-identify-gfa1 $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-interleave-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-intersect-bed $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-remap-dbsnp $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-remap-phase-set $BINARY_HOME
-ln -s $PACKAGE_HOME/bin/dsh-rename-references $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-rename-bed-references $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-rename-gff3-references $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-rename-vcf-references $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-split-bed $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-split-fasta $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-split-fastq $BINARY_HOME
