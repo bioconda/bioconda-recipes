@@ -52,7 +52,7 @@ echo "unset PERL5LIB" >> ${PREFIX}/etc/conda/deactivate.d/vadr.sh
 chmod a+x ${PREFIX}/etc/conda/deactivate.d/vadr.sh
 
 # Play nicely with workflow managers (e.g. Nextflow's --entrypoint)
-echo "$!/usr/bin/env bash" > ${PREFIX}/bin/vadr-run.sh
-cat ${PREFIX}/etc/conda/activate.d/vadr.sh >> ${PREFIX}/bin/vadr-run.sh
+echo "#!/usr/bin/env bash" > ${PREFIX}/bin/vadr-run.sh
+cat ${PREFIX}/etc/conda/activate.d/* >> ${PREFIX}/bin/vadr-run.sh
 echo '"$@"' >> ${PREFIX}/bin/vadr-run.sh
 chmod 755 ${PREFIX}/bin/vadr-run.sh
