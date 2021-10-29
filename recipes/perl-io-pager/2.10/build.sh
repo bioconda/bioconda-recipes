@@ -2,8 +2,8 @@
 
 set -o errexit -o pipefail
 
-# Need to skip test 10-close_interactive.t as $TERM is not set.
-test_files='t/0*.t t/11-*.t t/12-*.t t/13-*.t t/14-*.t t/15-*.t t/16-*.t'
+# Need to skip test 11-redirect-oo.t as $TERM is not set.
+test_files='t/0*.t t/10-*.t t/12-*.t t/13-*.t t/14-*.t t/15-*.t t/16-*.t'
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
