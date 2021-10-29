@@ -20,6 +20,12 @@ cp -r ./ ${VADR_DIR}/
 # Install SARS-CoV-2 model (~15mb)
 VADRMODELDIR="${VADRMODELDIR}" BIOCONDA_BUILD=1 bash -c '${PREFIX}/bin/download-vadr-models.sh sarscov2'
 
+# Play nicely with workflow managers (e.g. Nextflow's --entrypoint)
+echo "$!/usr/bin/env bash" > ${PREFIX}/bin/vadr-run.sh
+cat ${PREFIX}/etc/conda/activate.d/vadr.sh >> ${PREFIX}/bin/vadr-run.sh
+echo '"$@"' >> ${PREFIX}/vadr-run.sh
+chmod 755 ${PREFIX}/bin/vadr-run.sh
+
 # Setup the VADR env variables
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
 echo "export VADRVERSION=${PKG_VERSION}" > ${PREFIX}/etc/conda/activate.d/vadr.sh
