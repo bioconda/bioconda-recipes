@@ -78,7 +78,13 @@ export AR="${AR} rcs"
     --without-pcre
 
 exit_code=$?
-cp config.log /tmp/artifacts/packages/osx-64/config.log
+if [[ $(uname) = Linux ]] ; then
+    mkdir -p /tmp/artifacts/packages/linux
+    cp config.log /tmp/artifacts/packages/linux/
+else
+    mkdir -p /tmp/artifacts/packages/osx-64
+    cp config.log /tmp/artifacts/packages/osx-64/
+fi
 
 if [ $exit_code -ne 0 ] ; then
    exit $exit_code
