@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="IlluminaDataTestFiles_1.30.0.tar.gz"
+FN="IlluminaDataTestFiles_1.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/IlluminaDataTestFiles_1.30.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/IlluminaDataTestFiles_1.30.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-illuminadatatestfiles/bioconductor-illuminadatatestfiles_1.30.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/IlluminaDataTestFiles_1.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/IlluminaDataTestFiles_1.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-illuminadatatestfiles/bioconductor-illuminadatatestfiles_1.32.0_src_all.tar.gz"
 )
-MD5="5df0470a51f3c416bec4d487c997e8c1"
+MD5="ff565ddbda6014942ac9036fa8eb9d28"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

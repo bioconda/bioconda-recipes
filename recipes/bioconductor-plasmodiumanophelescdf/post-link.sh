@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="plasmodiumanophelescdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/plasmodiumanophelescdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/plasmodiumanophelescdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/plasmodiumanophelescdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-plasmodiumanophelescdf/bioconductor-plasmodiumanophelescdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-plasmodiumanophelescdf/bioconductor-plasmodiumanophelescdf_2.18.0_src_all.tar.gz"
 )
 MD5="54c5c326977d6358c40cacf34cb2aca2"

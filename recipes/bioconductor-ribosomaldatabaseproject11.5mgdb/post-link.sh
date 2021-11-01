@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="ribosomaldatabaseproject11.5MgDb_1.00.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/ribosomaldatabaseproject11.5MgDb_1.00.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/ribosomaldatabaseproject11.5MgDb_1.00.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ribosomaldatabaseproject11.5MgDb_1.00.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ribosomaldatabaseproject11.5mgdb/bioconductor-ribosomaldatabaseproject11.5mgdb_1.00.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ribosomaldatabaseproject11.5mgdb/bioconductor-ribosomaldatabaseproject11.5mgdb_1.00.0_src_all.tar.gz"
 )
 MD5="b50b3dedc5ed906df4f335c80ad072cf"

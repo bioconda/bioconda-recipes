@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="silva128.1MgDb_1.00.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/silva128.1MgDb_1.00.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/silva128.1MgDb_1.00.0.tar.gz"
   "https://bioarchive.galaxyproject.org/silva128.1MgDb_1.00.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-silva128.1mgdb/bioconductor-silva128.1mgdb_1.00.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-silva128.1mgdb/bioconductor-silva128.1mgdb_1.00.0_src_all.tar.gz"
 )
 MD5="f73cc038441a0a166c07582eec9a77b4"
