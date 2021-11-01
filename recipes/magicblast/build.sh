@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euxo pipefail
+#set -euxo pipefail
 
 # Arrange ncbi-vdb files in a form that NCBI C++ tookit
 # build can consume them.
@@ -76,6 +76,13 @@ export AR="${AR} rcs"
     --without-gnutls \
     --without-gcrypt \
     --without-pcre
+
+exit_code=$?
+cp config.log /tmp/artifacts/packages/osx-64/config.log
+
+if [ $exit_code -ne 0 ] ; then
+   exit $exit_code
+fi
 
 cd ReleaseMT
 
