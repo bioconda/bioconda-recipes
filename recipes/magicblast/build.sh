@@ -78,17 +78,18 @@ export AR="${AR} rcs"
     --without-pcre
 
 exit_code=$?
+echo "configure exit code: $exit_code"
 if [[ $(uname) = Linux ]] ; then
-    mkdir -p /tmp/artifacts/packages/linux
-    cp config.log /tmp/artifacts/packages/linux/
+    mkdir -p /tmp/artifacts/magicblast/linux
+    cp config.log /tmp/artifacts/magicblast/linux/
 else
-    mkdir -p /tmp/artifacts/packages/osx-64
-    cp config.log /tmp/artifacts/packages/osx-64/
+    mkdir -p /tmp/artifacts/magicblast/osx-64
+    cp config.log /tmp/artifacts/magicblast/osx-64/
 fi
 
-if [ $exit_code -ne 0 ] ; then
-   exit $exit_code
-fi
+#if [ $exit_code -ne 0 ] ; then
+#   exit $exit_code
+#fi
 
 cd ReleaseMT
 
