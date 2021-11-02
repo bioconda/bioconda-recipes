@@ -53,6 +53,6 @@ chmod a+x ${PREFIX}/etc/conda/deactivate.d/vadr.sh
 
 # Play nicely with Docker's --entrypoint
 echo "#!/usr/bin/env bash" > ${PREFIX}/bin/vadr-run.sh
-echo "for f in ${PREFIX}/etc/conda/activate.d/*; do source ${f}; done" >> ${PREFIX}/bin/vadr-run.sh
+echo "for f in ${PREFIX}/etc/conda/activate.d/*; do source \${f}; done" >> ${PREFIX}/bin/vadr-run.sh
 echo '"$@"' >> ${PREFIX}/bin/vadr-run.sh
 chmod 755 ${PREFIX}/bin/vadr-run.sh
