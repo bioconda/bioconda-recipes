@@ -75,10 +75,10 @@ export AR="${AR} rcs"
     --with-bz2=$PREFIX \
     --without-gnutls \
     --without-gcrypt \
-    --without-pcre
+    --without-pcre || true
 
 exit_code=$?
-echo "configure exit code: $exit_code"
+echo "Configure exited with ${exit_code}"
 if [[ $(uname) = Linux ]] ; then
     mkdir -p /tmp/artifacts/magicblast/linux
     cp config.log /tmp/artifacts/magicblast/linux/
