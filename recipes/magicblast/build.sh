@@ -1,5 +1,5 @@
 #!/bin/bash
-#set -euxo pipefail
+set -euxo pipefail
 
 # Arrange ncbi-vdb files in a form that NCBI C++ tookit
 # build can consume them.
@@ -62,34 +62,37 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-magicblast
 # Fixes building on Linux
 export AR="${AR} rcs" 
 
-./configure \
-    --with-bin-release \
-    --with-mt \
-    --with-openmp \
-    --with-flat-makefile \
-    --without-debug \
-    --with-strip \
-    --with-vdb=$VDB \
-    --with-static-vdb \
-    --with-z=$PREFIX \
-    --with-bz2=$PREFIX \
-    --without-gnutls \
-    --without-gcrypt \
-    --without-pcre || true
-
-exit_code=$?
-echo "Configure exited with ${exit_code}"
 if [[ $(uname) = Linux ]] ; then
-    mkdir -p /tmp/artifacts/magicblast/linux
-    cp config.log /tmp/artifacts/magicblast/linux/
+    ./configure \
+        --with-bin-release \
+        --with-mt \
+        --with-openmp \
+        --with-flat-makefile \
+        --without-debug \
+        --with-strip \
+        --with-vdb=$VDB \
+        --with-static-vdb \
+        --with-z=$PREFIX \
+        --with-bz2=$PREFIX \
+        --without-gnutls \
+        --without-gcrypt \
+        --without-pcre
 else
-    mkdir -p /tmp/artifacts/magicblast/osx-64
-    cp config.log /tmp/artifacts/magicblast/osx-64/
+    ./configure \
+        --with-bin-release \
+        --with-mt \
+        --without-openmp \
+        --with-flat-makefile \
+        --without-debug \
+        --with-strip \
+        --with-vdb=$VDB \
+        --with-static-vdb \
+        --with-z=$PREFIX \
+        --with-bz2=$PREFIX \
+        --without-gnutls \
+        --without-gcrypt \
+        --without-pcre
 fi
-
-#if [ $exit_code -ne 0 ] ; then
-#   exit $exit_code
-#fi
 
 cd ReleaseMT
 
