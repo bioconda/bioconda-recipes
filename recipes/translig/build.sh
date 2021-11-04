@@ -2,7 +2,7 @@
 export BOOST_ROOT=${PREFIX}
 export CFLAGS="$CFLAGS $LDFLAGS"
 # dpkg -s libboost-dev | grep 'Version'
-export boost_cv_lib_version=1_74_0
+export boost_cv_lib_version=`dpkg -s libboost-dev | grep ' Boost version' | sed 's/[a-zA-Z]\|(\|)\| //g' | sed 's/\./_/g' | sed 's/_$/_0/'`
 ./configure --prefix=${PREFIX} --with-boost-libdir=${PREFIX}/lib
 make
 ls -lh
