@@ -11,3 +11,4 @@ mv src/refine ${PREFIX}/bin/
 mv src/connect_graph ${PREFIX}/bin/
 mv src/TransLiG_iteration ${PREFIX}/bin/
 mv src/Get_output ${PREFIX}/bin/
+mv src/TransLIG ${PREFIX}/bin/
