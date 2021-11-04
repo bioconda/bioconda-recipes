@@ -17,3 +17,6 @@ sh install.sh
 rm -rf eutils cmd help   
 rm -rf *.log *.go *.yaml setup.sh install.sh *.gz *.pdf 
 rm -rf idx-* index-*  pm-*  custom* xy-* CA.pm cacert.pem
+
+# Copy the help files to be accessible
+cp -r help ${PREFIX}/bin
