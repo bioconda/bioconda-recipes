@@ -13,6 +13,9 @@ Cur+ <<!
  ftop=abctop_nowat.prmtop,
  lis=curout_ions,
  lib=$CONDA_PREFIX/.curvesplus/standard,
+ line=.t.,
+ fit=.t.,
+ test=.t.,
  ions=.t.,
 &end        
 2 1 -1 0 0                                               
@@ -23,7 +26,7 @@ Cur+ <<!
 test -e curout_ions.cda
 test -e curout_ions.cdi
 test -e curout_ions.lis
-ls -l
+cat curout_ions.lis
 
 # test Canal executable
 Canal <<! 
