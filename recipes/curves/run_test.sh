@@ -4,7 +4,7 @@ set -euo pipefail
 
 tar -xf input_files.tar.gz
 
-ls $CONDA_PREFIX/.curvesplus 
+cp $CONDA_PREFIX/.curvesplus/* .
 
 # Curves+ executable
 Cur+ <<!
@@ -12,7 +12,7 @@ Cur+ <<!
  file=mABCs1_stride.trj,
  ftop=abctop_nowat.prmtop,
  lis=curout_ions,
- lib=$CONDA_PREFIX/.curvesplus/standard,
+ lib=standard,
  line=.t.,
  fit=.t.,
  test=.t.,
@@ -26,7 +26,6 @@ Cur+ <<!
 test -e curout_ions.cda
 test -e curout_ions.cdi
 test -e curout_ions.lis
-cat curout_ions.lis
 
 # test Canal executable
 Canal <<! 
