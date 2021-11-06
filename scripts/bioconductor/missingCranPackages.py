@@ -30,6 +30,9 @@ def printMissingCRAN(config_path, recipe_folder):
         if "bioconductor" not in r:
             continue
         d = utils.load_meta_fast(r)[0]  # a dictionary with keys requirements, build, etc.
+        if d['requirements']['run'] is None:
+            print(r)
+            continue
         for dep in d['requirements']['run']:
             if dep.startswith('r-'):
                 dependencies.add(dep.split(' ')[0])
