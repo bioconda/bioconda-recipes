@@ -1,6 +1,6 @@
 #!/bin/bash
 mkdir -p ${PREFIX}/bin
-
+cd ${SRC_DIR}
 make 
 
 cp -r bin/* ${PREFIX}/bin
