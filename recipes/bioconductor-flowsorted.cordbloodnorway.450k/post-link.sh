@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ex
 FN="FlowSorted.CordBloodNorway.450k_1.20.0.tar.gz"
 URLS=(
   "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/FlowSorted.CordBloodNorway.450k_1.20.0.tar.gz"
