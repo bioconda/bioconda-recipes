@@ -1,0 +1,111 @@
+{% set version = '1.0.2' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-ggmsa
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/ggmsa_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/ggmsa/ggmsa_{{ version }}.tar.gz
+  sha256: 2af603f2e0d9b5940189e225e744b3b003c9cf90365f65b4ae70581f4649a152
+
+build:
+  noarch: generic
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 1
+  # no skip
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: ggtreeExtra, ggtree (>= 1.17.1), ape, cowplot, knitr, prettydoc, rmarkdown, seqmagick, readxl, ggnewscale, kableExtra, gggenes
+requirements:
+  build:
+    - {{ posix }}zip               # [win]
+
+  host:
+    - r-base
+    - bioconductor-biostrings
+    - bioconductor-r4rna
+    - r-rcolorbrewer
+    - r-aplot
+    - r-dplyr
+    - r-ggalt
+    - r-ggforce
+    - r-ggplot2
+    - r-magrittr
+    - r-stringr
+    - r-tidyr
+    - r-seqmagick
+
+  run:
+    - r-base
+    - bioconductor-biostrings
+    - bioconductor-r4rna
+    - r-rcolorbrewer
+    - r-aplot
+    - r-dplyr
+    - r-ggalt
+    - r-ggforce
+    - r-ggplot2
+    - r-magrittr
+    - r-stringr
+    - r-tidyr
+    - r-seqmagick
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('ggmsa')"           # [not win]
+    - "\"%R%\" -e \"library('ggmsa')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://CRAN.R-project.org/package=ggmsa
+  license: Artistic-2.0
+  summary: Supports visualizing multiple sequence alignment of DNA and protein sequences using
+    'ggplot2'. It supports a number of colour schemes, including Chemistry, Clustal,
+    Shapely, Taylor and Zappo. Multiple sequence alignment can easily be combined with
+    other 'ggplot2' plots, such as aligning a phylogenetic tree produced by 'ggtree'
+    with multiple sequence alignment.
+
+  license_family: OTHER
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/Artistic-2.0'
+
+# The original CRAN metadata for this package was:
+
+# Package: ggmsa
+# Title: Plot Multiple Sequence Alignment using 'ggplot2'
+# Version: 1.0.2
+# Authors@R: c( person("Guangchuang", "Yu", email = "guangchuangyu@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-6485-8781")), person("Lang", "Zhou",      email = "nyzhoulang@gmail.com",    role = "aut"), person("Shuangbin", "Xu",   email = "xshuangbin@163.com",    role = "ctb"), person("Huina", "Huang",    email = "1185796994@qq.com",       role = "ctb"))
+# Description: Supports visualizing multiple sequence alignment of DNA and protein sequences using 'ggplot2'. It supports a number of colour schemes, including Chemistry, Clustal, Shapely, Taylor and Zappo. Multiple sequence alignment can easily be combined with other 'ggplot2' plots, such as aligning a phylogenetic tree produced by 'ggtree' with multiple sequence alignment.
+# Depends: R (>= 3.5.0)
+# Imports: Biostrings, ggplot2, magrittr, tidyr, utils, stats, stringr, aplot, RColorBrewer, ggalt, ggforce, methods, dplyr, R4RNA
+# Suggests: ggtreeExtra, ggtree (>= 1.17.1), ape, cowplot, knitr, prettydoc, rmarkdown, seqmagick, readxl, ggnewscale, kableExtra, gggenes
+# License: Artistic-2.0
+# Encoding: UTF-8
+# RoxygenNote: 7.1.1
+# VignetteBuilder: knitr
+# NeedsCompilation: no
+# Packaged: 2021-08-03 07:37:14 UTC; ygc
+# Author: Guangchuang Yu [aut, cre] (<https://orcid.org/0000-0002-6485-8781>), Lang Zhou [aut], Shuangbin Xu [ctb], Huina Huang [ctb]
+# Maintainer: Guangchuang Yu <guangchuangyu@gmail.com>
+# Repository: CRAN
+# Date/Publication: 2021-08-03 08:00:05 UTC
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml
