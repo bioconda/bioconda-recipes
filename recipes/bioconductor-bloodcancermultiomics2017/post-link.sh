@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="BloodCancerMultiOmics2017_1.10.0.tar.gz"
+FN="BloodCancerMultiOmics2017_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/BloodCancerMultiOmics2017_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/BloodCancerMultiOmics2017_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bloodcancermultiomics2017/bioconductor-bloodcancermultiomics2017_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/BloodCancerMultiOmics2017_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/BloodCancerMultiOmics2017_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bloodcancermultiomics2017/bioconductor-bloodcancermultiomics2017_1.12.0_src_all.tar.gz"
 )
-MD5="f946cd2e702bbb48fcd3cfb37cdb3a5b"
+MD5="1401fe153134596371e049ac4e8cd26f"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
