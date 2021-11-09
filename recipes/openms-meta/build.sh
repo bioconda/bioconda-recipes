@@ -10,6 +10,28 @@ export LIBRARY_PATH=${PREFIX}/lib
 export LD_LIBRARY_PATH=${PREFIX}/lib
 #export DYLD_LIBRARY_PATH=${PREFIX}/lib
 
+SWAP_SIZE=6G
+
+# Default swap file
+
+SWAP_FILE=/var/lib/swap
+# Checking if swap already exists in ./etc/fstab
+grep -q "swap" /etc/fstab
+if ! grep -q "swap" /etc/fstab; then
+   fallocate -l "$SWAP_SIZE" "$SWAP_FILE"
+   chmod 600 "$SWAP_FILE"
+   mkswap "$SWAP_FILE"
+   swapon "$SWAP_FILE"  
+  echo "$SWAP_FILE   none    swap    sw    0   0" |  tee /etc/fstab -a
+else
+  echo 'swapfile found. No changes made.'
+fi
+
+echo '----------------------'
+echo 'Checking list of swap'
+echo '----------------------'
+swapon -s
+
 mkdir contrib-build
 cd contrib-build
 ## By default WM is built and linked statically such that it does not
