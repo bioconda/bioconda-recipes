@@ -16,16 +16,12 @@ SWAP_SIZE=6G
 
 SWAP_FILE=/var/lib/swap
 # Checking if swap already exists in ./etc/fstab
-grep -q "swap" /etc/fstab
-if ! grep -q "swap" /etc/fstab; then
-   fallocate -l "$SWAP_SIZE" "$SWAP_FILE"
-   chmod 600 "$SWAP_FILE"
-   mkswap "$SWAP_FILE"
-   swapon "$SWAP_FILE"  
-  echo "$SWAP_FILE   none    swap    sw    0   0" |  tee /etc/fstab -a
-else
-  echo 'swapfile found. No changes made.'
-fi
+
+fallocate -l "$SWAP_SIZE" "$SWAP_FILE"
+chmod 600 "$SWAP_FILE"
+mkswap "$SWAP_FILE"
+swapon "$SWAP_FILE"
+
 
 echo '----------------------'
 echo 'Checking list of swap'
