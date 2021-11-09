@@ -1,5 +1,143 @@
---- Trinotate	2017-07-24 13:53:21.120002438 +0200
-+++ Trinotate	2017-07-24 13:56:46.825089493 +0200
+diff -ruN Trinotate-Trinotate-v3.2.2-org/admin/Build_Trinotate_Boilerplate_SQLite_db.pl Trinotate-Trinotate-v3.2.2/admin/Build_Trinotate_Boilerplate_SQLite_db.pl
+--- Trinotate-Trinotate-v3.2.2-org/admin/Build_Trinotate_Boilerplate_SQLite_db.pl	2021-05-05 20:03:29.316610891 +0200
++++ Trinotate-Trinotate-v3.2.2/admin/Build_Trinotate_Boilerplate_SQLite_db.pl	2021-05-05 20:27:51.503038659 +0200
+@@ -14,10 +14,10 @@
+ my $no_cleanup_flag = $ARGV[1] || 0;
+ 
+ 
+-my $UTILDIR = "$FindBin::RealBin/util";
++my $UTILDIR = "$FindBin::RealBin";
+ 
+ ## Resources:
+-my $SPROT_DAT_URL = "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.dat.gz";
++my $SPROT_DAT_URL = "http://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.dat.gz";
+ my $EGGNOG_DAT_URL = "http://eggnogdb.embl.de/download/eggnog_4.5/data/NOG/NOG.annotations.tsv.gz";
+ my $GENE_ONTOLOGY_DAT_URL = "http://purl.obolibrary.org/obo/go/go-basic.obo";
+ my $PFAM_DAT_URL = "ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz";
+diff -ruN Trinotate-Trinotate-v3.2.2-org/sample_data/runMe.sh Trinotate-Trinotate-v3.2.2/sample_data/runMe.sh
+--- Trinotate-Trinotate-v3.2.2-org/sample_data/runMe.sh	2021-05-05 20:03:29.328610811 +0200
++++ Trinotate-Trinotate-v3.2.2/sample_data/runMe.sh	2021-05-05 20:06:47.919310732 +0200
+@@ -44,7 +44,7 @@
+ echo Loading protein set
+ echo "###############################"
+ 
+-../Trinotate ${sqlite_db} init --gene_trans_map data/Trinity.fasta.gene_to_trans_map --transcript_fasta data/Trinity.fasta --transdecoder_pep data/Trinity.fasta.transdecoder.pep
++Trinotate ${sqlite_db} init --gene_trans_map data/Trinity.fasta.gene_to_trans_map --transcript_fasta data/Trinity.fasta --transdecoder_pep data/Trinity.fasta.transdecoder.pep
+ 
+ 
+ 
+@@ -52,35 +52,35 @@
+ echo Loading swissprot blast results
+ echo "##############################"
+ 
+-../Trinotate ${sqlite_db} LOAD_swissprot_blastp data/swissprot.blastp.outfmt6
+-../Trinotate ${sqlite_db} LOAD_swissprot_blastx data/swissprot.blastx.outfmt6
++Trinotate ${sqlite_db} LOAD_swissprot_blastp data/swissprot.blastp.outfmt6
++Trinotate ${sqlite_db} LOAD_swissprot_blastx data/swissprot.blastx.outfmt6
+ 
+ 
+ echo "#############################"
+ echo Loading PFAM results
+ echo "#############################"
+ 
+-../Trinotate ${sqlite_db} LOAD_pfam data/TrinotatePFAM.out 
++Trinotate ${sqlite_db} LOAD_pfam data/TrinotatePFAM.out 
+ 
+ 
+ echo "############################"
+ echo Loading TMHMM results
+ echo "############################"
+ 
+-../Trinotate ${sqlite_db} LOAD_tmhmm data/tmhmm.out
++Trinotate ${sqlite_db} LOAD_tmhmm data/tmhmm.out
+ 
+ echo "###########################"
+ echo Loading SignalP results
+ echo "###########################"
+ 
+-../Trinotate ${sqlite_db} LOAD_signalp data/signalp.out
++Trinotate ${sqlite_db} LOAD_signalp data/signalp.out
+ 
+ 
+ #echo "###########################"
+ #echo Loading RNAMMER results
+ #echo "###########################"
+ #
+-#../Trinotate ${sqlite_db} LOAD_rnammer data/Trinity.fasta.rnammer.gff
++#Trinotate ${sqlite_db} LOAD_rnammer data/Trinity.fasta.rnammer.gff
+ 
+ 
+ #################################################################
+@@ -95,13 +95,13 @@
+ echo "###################################################"
+ 
+ # expression data load for genes
+-../util/transcript_expression/import_expression_and_DE_results.pl --sqlite ${sqlite_db} --gene_mode \
++import_expression_and_DE_results.pl --sqlite ${sqlite_db} --gene_mode \
+         --samples_file data/samples.txt \
+         --count_matrix data/Trinity_genes.counts.matrix \
+         --fpkm_matrix data/Trinity_genes.TMM.EXPR.matrix 
+ 
+ # DE results load for genes
+-../util/transcript_expression/import_expression_and_DE_results.pl --sqlite ${sqlite_db} --gene_mode \
++import_expression_and_DE_results.pl --sqlite ${sqlite_db} --gene_mode \
+         --samples_file data/samples.txt \
+         --DE_dir DESeq2_gene
+ 
+@@ -111,13 +111,13 @@
+ echo "##################################################"
+ 
+ # expression data load for transcripts
+-../util/transcript_expression/import_expression_and_DE_results.pl --sqlite ${sqlite_db} --transcript_mode \
++import_expression_and_DE_results.pl --sqlite ${sqlite_db} --transcript_mode \
+         --samples_file data/samples.txt \
+         --count_matrix data/Trinity_trans.counts.matrix \
+         --fpkm_matrix data/Trinity_trans.TMM.EXPR.matrix
+ 
+ # DE results load for transcripts
+-../util/transcript_expression/import_expression_and_DE_results.pl --sqlite ${sqlite_db} --transcript_mode \
++import_expression_and_DE_results.pl --sqlite ${sqlite_db} --transcript_mode \
+         --samples_file data/samples.txt \
+         --DE_dir DESeq2_trans
+ 
+@@ -128,29 +128,29 @@
+ 
+ 
+ # import the transcription profile cluster stuff
+-../util/transcript_expression/import_transcript_clusters.pl --group_name DE_all_vs_all --analysis_name diffExpr.P0.1_C1.matrix.RData.clusters_fixed_P_60 --sqlite ${sqlite_db} DESeq2_trans/diffExpr.P1e-3_C2.matrix.RData.clusters_fixed_P_60/*matrix
++import_transcript_clusters.pl --group_name DE_all_vs_all --analysis_name diffExpr.P0.1_C1.matrix.RData.clusters_fixed_P_60 --sqlite ${sqlite_db} DESeq2_trans/diffExpr.P1e-3_C2.matrix.RData.clusters_fixed_P_60/*matrix
+ 
+ 
+ echo "###########################"
+ echo Generating report table
+ echo "###########################"
+ 
+-../Trinotate ${sqlite_db} report > Trinotate_report.xls
++Trinotate ${sqlite_db} report > Trinotate_report.xls
+ 
+ 
+ echo "#########################################"
+ echo Extracting Gene Ontology Mappings Per Gene
+ echo "#########################################"
+ 
+-../util/extract_GO_assignments_from_Trinotate_xls.pl  --Trinotate_xls Trinotate_report.xls -G -I > Trinotate_report.xls.gene_ontology
++extract_GO_assignments_from_Trinotate_xls.pl  --Trinotate_xls Trinotate_report.xls -G -I > Trinotate_report.xls.gene_ontology
+ 
+ # Load annotations
+-../util/annotation_importer/import_transcript_names.pl ${sqlite_db} Trinotate_report.xls
++import_transcript_names.pl ${sqlite_db} Trinotate_report.xls
+ 
+ 
+ 
+ # Generate trinotate report summary statistics
+-../util/report_summary/trinotate_report_summary.pl Trinotate_report.xls Trinotate_report_stats
++trinotate_report_summary.pl Trinotate_report.xls Trinotate_report_stats
+ 
+ 
+ echo "##########################"
+diff -ruN Trinotate-Trinotate-v3.2.2-org/Trinotate Trinotate-Trinotate-v3.2.2/Trinotate
+--- Trinotate-Trinotate-v3.2.2-org/Trinotate	2021-05-05 20:03:29.240611387 +0200
++++ Trinotate-Trinotate-v3.2.2/Trinotate	2021-05-06 09:32:53.726437426 +0200
 @@ -75,19 +75,19 @@
  
  my %command_to_params = ( 
@@ -45,3 +183,15 @@
      &process_cmd($cmd);
  }
  else {
+diff -ruN Trinotate-Trinotate-v3.2.2-org/util/report_summary/trinotate_report_summary.pl Trinotate-Trinotate-v3.2.2/util/report_summary/trinotate_report_summary.pl
+--- Trinotate-Trinotate-v3.2.2-org/util/report_summary/trinotate_report_summary.pl	2021-05-05 20:03:29.336610759 +0200
++++ Trinotate-Trinotate-v3.2.2/util/report_summary/trinotate_report_summary.pl	2021-05-05 20:11:48.241344670 +0200
+@@ -17,7 +17,7 @@
+ my $TOP_TAX_LEVEL = 6;
+ 
+ 
+-my $UTILDIR = "$FindBin::Bin/util";
++my $UTILDIR = "$FindBin::Bin";
+ 
+ main: {
+ 

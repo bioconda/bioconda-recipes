@@ -1,0 +1,43 @@
+{% set version = "0.0.1" %}
+{% set sha256 = "3514cbfd13ee4620bf305a246c7328e62f88687f30de7a19c6fedc5d1267f059" %}
+
+package:
+  name: proteomiqon-labelfreeproteinquantification
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/ProteomIQon.LabelFreeProteinQuantification/{{ version }}
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  script:
+    - dotnet tool install --add-source $SRC_DIR --tool-path $PREFIX/bin --version {{ version }} ProteomIQon.LabelFreeProteinQuantification
+
+requirements:
+  host:
+    - dotnet-sdk
+  run:
+    - dotnet-runtime
+
+test:
+  commands:
+    - proteomiqon-labelfreeproteinquantification --help
+
+about:
+  home: https://csbiology.github.io/ProteomIQon/
+  license: MIT
+  summary: The tool LabelFreeProteinQuantification estimates protein abundances using quantified peptide ions.
+  description: |
+    After quantification and protein inference are performed, it is known which peptide originated from which protein, as well as the intensity of each peptide. 
+    The information available for each peptide now needs to be aggragated for their proteins.
+    This tool performs the aggregation from the peptides to the protein in several steps. The first two aggregation steps are optional. One of them is the 
+    aggregation based on charge state. Peptides with the same sequence and modifications, but different charge states are being aggregated. The next optional step 
+    does the same for peptides with the same sequence, but different modifications. Those steps build upon each other. The last step is the aggregation of all 
+    peptides of a protein. The result of each aggregation step is given as a tab separated file. The aggregation is performed according to the given parameters for 
+    each step. If an optional aggregation is not performed, the next step takes the result from the prior aggregation. For example, if aggregation by charge and 
+    modification are skipped, the protein aggregation is performed on previously unaggregated peptides, where a peptidesequence can occur with different charge 
+    states and modifications.
+  dev_url: https://github.com/CSBiology/ProteomIQon
+  doc_url: https://csbiology.github.io/ProteomIQon/tools/LabelFreeProteinQuantification.html

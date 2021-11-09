@@ -1,0 +1,65 @@
+{% set name = "CITE-seq-Count" %}
+{% set version = "1.4.4" %}
+{% set sha256 = "1245c0dabf2c2ee80f9afcac4c70bb97c2d8b5aea73adfcfc7062e3984d57e39" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: {{ sha256 }}
+  patches:
+    - pytest_deps.patch
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - CITE-seq-Count = cite_seq_count.__main__:main
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps"
+
+requirements:
+  host:
+    - python >=3.6
+    - multiprocess >=0.70.6.1
+    - pandas >=0.23.4
+    - pip
+    - pybktree ==1.1
+    - pytest
+    - pytest-dependency
+    - python-levenshtein >=0.12.0
+    - scipy >=1.1.0
+    - umi_tools ==1.0.0
+  run:
+    - python >=3.6
+    - multiprocess >=0.70.6.1
+    - pandas >=0.23.4
+    - pybktree ==1.1
+    - pytest
+    - pytest-dependency
+    - python-levenshtein >=0.12.0
+    - scipy >=1.1.0
+    - umi_tools ==1.0.0
+
+test:
+  imports:
+    - cite_seq_count
+  commands:
+    - CITE-seq-Count --help
+
+about:
+  home: "https://hoohm.github.io/CITE-seq-Count/"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A python package to map reads from CITE-seq or hashing data for single cell experiments"
+  doc_url: "https://hoohm.github.io/CITE-seq-Count/"
+  dev_url: "https://github.com/Hoohm/CITE-seq-Count/"
+
+extra:
+  recipe-maintainers:
+    - acaprez
+  identifiers:
+    - biotools:CITE-seq-Count
+    - doi:10.5281/zenodo.2590196

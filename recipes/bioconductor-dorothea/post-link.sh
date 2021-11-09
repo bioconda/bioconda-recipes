@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="dorothea_1.2.1.tar.gz"
+FN="dorothea_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/dorothea_1.2.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/dorothea_1.2.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-dorothea/bioconductor-dorothea_1.2.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/dorothea_1.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/dorothea_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-dorothea/bioconductor-dorothea_1.4.0_src_all.tar.gz"
 )
-MD5="6cccdc9eda6bf8e8737f8f0e1dce9664"
+MD5="552391298d571b210caa40a5195c31eb"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
