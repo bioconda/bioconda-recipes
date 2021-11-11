@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="TxDb.Mmusculus.UCSC.mm39.refGene_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/TxDb.Mmusculus.UCSC.mm39.refGene_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/TxDb.Mmusculus.UCSC.mm39.refGene_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Mmusculus.UCSC.mm39.refGene_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.mmusculus.ucsc.mm39.refgene/bioconductor-txdb.mmusculus.ucsc.mm39.refgene_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.mmusculus.ucsc.mm39.refgene/bioconductor-txdb.mmusculus.ucsc.mm39.refgene_3.12.0_src_all.tar.gz"
 )
 MD5="2525799b85e0a52bf274ab5eed51cd84"

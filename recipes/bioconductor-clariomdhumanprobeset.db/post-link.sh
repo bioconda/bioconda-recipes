@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="clariomdhumanprobeset.db_8.7.0.tar.gz"
+FN="clariomdhumanprobeset.db_8.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/clariomdhumanprobeset.db_8.7.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/clariomdhumanprobeset.db_8.7.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-clariomdhumanprobeset.db/bioconductor-clariomdhumanprobeset.db_8.7.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-clariomdhumanprobeset.db/bioconductor-clariomdhumanprobeset.db_8.7.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/clariomdhumanprobeset.db_8.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/clariomdhumanprobeset.db_8.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-clariomdhumanprobeset.db/bioconductor-clariomdhumanprobeset.db_8.8.0_src_all.tar.gz"
 )
-MD5="3f390b06a44187e10e4e8a60af16375b"
+MD5="01cb1a5cc4674750b6ce5988cd62fad3"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

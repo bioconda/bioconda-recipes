@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="pumadata_2.28.0.tar.gz"
+FN="pumadata_2.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/pumadata_2.28.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/pumadata_2.28.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pumadata/bioconductor-pumadata_2.28.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/pumadata_2.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/pumadata_2.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pumadata/bioconductor-pumadata_2.30.0_src_all.tar.gz"
 )
-MD5="4c397d3f3274f16c929c515ad9b51a2e"
+MD5="4fddd2a385ffa24edbfe23c4fd62c1b8"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
