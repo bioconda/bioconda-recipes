@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="canineprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/canineprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/canineprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/canineprobe_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-canineprobe/bioconductor-canineprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-canineprobe/bioconductor-canineprobe_2.18.0_src_all.tar.gz"
 )
 MD5="e5467bc9b7e54c5adce6b409ba7df767"
