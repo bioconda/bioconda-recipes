@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="barley1cdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/barley1cdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/barley1cdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/barley1cdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-barley1cdf/bioconductor-barley1cdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-barley1cdf/bioconductor-barley1cdf_2.18.0_src_all.tar.gz"
 )
 MD5="16a2ca83f550518756d9fa3273672157"
