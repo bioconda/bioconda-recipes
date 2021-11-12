@@ -1,3 +1,4 @@
 #!/bin/bash
-make
-cp fastool $PREFIX/bin
+make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+install -d "${PREFIX}/bin"
+install fastool "${PREFIX}/bin/"

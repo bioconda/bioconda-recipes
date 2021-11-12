@@ -1,0 +1,53 @@
+{% set name = "phylorank" %}
+{% set version = "0.1.11" %}
+{% set sha256 = "c5518c42614c3f63a0ece8719b76f6ede19ec3c4c669b2675fb1aabd2f0a7205" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vvv
+  entry_points:
+    - phylorank = phylorank.__main__:main
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - numpy
+    - matplotlib-base
+    - jinja2 >=2.7.3
+    - dendropy >=4.1.0
+    - biolib >=0.1.0
+    - scipy
+    - mpld3 >=0.5.2
+
+test:
+  imports:
+    - phylorank
+    - phylorank.plot
+  commands:
+    - phylorank -h
+
+about:
+  home: https://github.com/dparks1134/PhyloRank
+  license: GNU General Public v3 (GPLv3)
+  license_family: GPL3
+  license_file: LICENSE
+  summary: |
+    PhyloRank provides functionality for calculating the relative evolutionary
+    divergence (RED) of taxa in a tree and for finding the best placement of
+    taxonomic labels in a tree.
+
+extra:
+  recipe-maintainers:
+    - aaronmussig

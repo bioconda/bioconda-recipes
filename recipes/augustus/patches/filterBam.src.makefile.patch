@@ -1,30 +1,31 @@
---- auxprogs/filterBam/src/Makefile.old	2019-03-27 14:04:09.919943327 -0500
-+++ auxprogs/filterBam/src/Makefile	2019-03-27 14:10:41.417956972 -0500
-@@ -8,10 +8,10 @@
+diff --git a/auxprogs/filterBam/src/Makefile b/auxprogs/filterBam/src/Makefile
+index 34a3a8a0..c3b6d17c 100644
+--- a/auxprogs/filterBam/src/Makefile
++++ b/auxprogs/filterBam/src/Makefile
+@@ -8,9 +8,10 @@ SOURCES = filterBam.cc MatePairs.cc getReferenceName.cc initOptions.cc SingleAli
  			printElapsedTime.cc sumMandIOperations.cc sumDandIOperations.cc PairednessCoverage.cc
  PROGRAM = filterBam
  OBJECTS = $(SOURCES:.cc=.o)
 -BAMTOOLS = /usr/include/bamtools
 -INCLUDES = -I$(BAMTOOLS) -Iheaders -I./bamtools
 -LIBS = -lbamtools -lz
--CFLAGS = -std=c++0x
 +BAMTOOLS = ${PREFIX}/include/bamtools
 +INCLUDES = -I${PREFIX}/include/bamtools -Iheaders -I./bamtools
-+LIBS = ${PREFIX}/lib/libbamtools.a -lz
-+CFLAGS += -std=c++11 -Wall -O2 -static # -g -p -g -ggdb
++LIBS = -L${PREFIX}/lib/ -lbamtools -lz
++CFLAGS += -std=c++11 -Wall -O2
+ CXXFLAGS := -std=c++0x ${CXXFLAGS}
  VPATH = functions
- 
- all : $(PROGRAM) $(OBJECTS) CHECKBAM BIN
-@@ -28,10 +28,10 @@
+ LINK.cc ?= g++
+@@ -30,10 +31,10 @@ CHECKBAM:
  	fi
  
  $(PROGRAM) : $(OBJECTS)
--	$(LINK.cc) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS) 
-+	$(CXX) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS) 
+-	$(LINK.cc) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
++	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
  
  $(OBJECTS) : %.o:%.cc
--	$(LINK.cc) $(CFLAGS) $(CPPFLAGS) -c $^ -o $@ $(INCLUDES)
-+	$(CXX) $(CFLAGS) $(CPPFLAGS) -c $^ -o $@ $(INCLUDES)
+-	$(LINK.cc) $(CXXFLAGS) $(CPPFLAGS) -c $^ -o $@ $(INCLUDES)
++	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $^ -o $@ $(INCLUDES)
  
  
  clean:

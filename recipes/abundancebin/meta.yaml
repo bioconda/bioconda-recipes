@@ -1,27 +1,32 @@
-{% set name = "abundancebin" %}
 {% set version = "1.0.1" %}
 {% set sha256 = "49e73c1c3717da15d2b9bd76487516228b912a071b3cd589b8e7fe519395cd6f" %}
 
 package:
-  name: {{ name }}
+  name: abundancebin
   version: {{ version }}
 
 source:
-  url: "http://omics.informatics.indiana.edu/mg/get.php?justdoit=yes&software={{ name }}.{{ version }}.tar.gz"
+  url:
+    - https://depot.galaxyproject.org/software/abundancebin/abundancebin_{{ version }}_src_all.tar.gz
+    - http://omics.informatics.indiana.edu/mg/get.php?justdoit=yes&software=abundancebin.{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-Use-CXX-and-flags.patch
 
 build:
-  number: 1
+  number: 3
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
+  host:
   run:
 
 test:
   commands:
     - command -v abundancebin
-    - abundancebin || [[ "$?" == "255" ]]
+    - abundancebin || [[ $? == 255 ]]
 
 about:
   home: http://omics.informatics.indiana.edu/AbundanceBin/

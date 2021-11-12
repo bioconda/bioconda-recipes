@@ -1,7 +1,7 @@
 #!/bin/sh
 
 cd source
-make
+make CC="${CXX}" FLAGS="${CPPFLAGS} ${CXXFLAGS}"
 
 mkdir -p $PREFIX/bin
 

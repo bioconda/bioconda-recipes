@@ -23,9 +23,9 @@
  	sh ./util/support_scripts/plugin_install_tests.sh
  
  test:
---- trinity-plugins/Makefile	2020-01-23 10:08:12.000000000 -0600
-+++ trinity-plugins/Makefile.new	2020-01-28 13:12:51.035149275 -0600
-@@ -16,13 +16,13 @@
+--- trinity-plugins/Makefile	2020-06-30 19:44:14.000000000 +0200
++++ trinity-plugins/Makefile.new	2020-07-22 13:30:33.268135000 +0200
+@@ -19,17 +19,17 @@
  
  
  seqtk_target:
@@ -39,10 +39,15 @@
 -	cp bin/ParaFly ../BIN/
 +        cd ${PARAFLY_CODE} && $(MAKE) install prefix=`pwd` INSTALL="install -c" MKDIR_P="mkdir -p" mkdir_p="mkdir -p" CXX=$(CXX) CC=$(CC) CFLAGS="$(CFLAGS) -fopenmp" CXXFLAGS="$(CXXFLAGS) -fopenmp" && \
 + 	cp bin/ParaFly ../BIN/
- 
+
+
+ bamsifter_target:
+-	cd bamsifter && make
++	cd bamsifter && $(MAKE) CXX=$(CXX) CC=$(CC) CFLAGS="$(CFLAGS)" CXXFLAGS="$(CXXFLAGS)" 
  
  ##################################
-@@ -34,7 +34,7 @@
+ ### Needed for downstream analyses
+@@ -40,7 +40,7 @@
  
  
  slclust_target:
@@ -71,3 +76,16 @@
  
  clean:
  	@echo cleaning
+--- trinity-plugins/bamsifter/Makefile	2020-06-30 19:44:41.000000000 +0200
++++ trinity-plugins/bamsifter/Makefile	2020-07-22 14:29:48.952113000 +0200
+@@ -2,8 +2,8 @@
+ 
+ cwd = $(shell pwd)
+ 
+-sift_bam_max_cov: sift_bam_max_cov.cpp htslib/version.h
+-	g++ -std=c++11 -o _sift_bam_max_cov sift_bam_max_cov.cpp -Wall -O2 -L./htslib/build/lib/ -I./htslib/build/include -lhts
++sift_bam_max_cov: sift_bam_max_cov.cpp
++	${CXX} -std=c++11 -o _sift_bam_max_cov sift_bam_max_cov.cpp -Wall -O2 ${LDFLAGS} ${CXXFLAGS} -lhts
+ 
+ 
+ htslib/version.h :

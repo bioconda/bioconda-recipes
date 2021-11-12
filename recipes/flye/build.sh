@@ -14,5 +14,4 @@ export LDFLAGS="-L$PREFIX/lib"
 #but it seems it fails OSX build
 sed -i.bak 's/-rdynamic//' src/Makefile
 
-python setup.py build
-python setup.py install  --record record.txt.
+$PYTHON setup.py install --single-version-externally-managed --record record.txt

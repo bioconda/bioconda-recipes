@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RTCGA.CNV_1.14.0.tar.gz"
+FN="RTCGA.CNV_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/RTCGA.CNV_1.14.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RTCGA.CNV_1.14.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rtcga.cnv/bioconductor-rtcga.cnv_1.14.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/RTCGA.CNV_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RTCGA.CNV_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rtcga.cnv/bioconductor-rtcga.cnv_1.22.0_src_all.tar.gz"
 )
-MD5="96f56a89124fefd1b2b85b7646fb7745"
+MD5="079c0d504ac0d3c7db25a9959ebc2432"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

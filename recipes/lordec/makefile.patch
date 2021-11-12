@@ -36,20 +36,24 @@
  # get version from a file
  VERSION := $(shell cat version.txt)
  LICENSE=./LICENSE/Licence_CeCILL_V2.1-en.txt
-@@ -89,7 +77,12 @@
+@@ -88,9 +76,14 @@
+ ADDITIONAL_INCLUDE="-Iboost_include/"
  endif
  GATB=gatb_v$(GATBVERSION)$(SUFFIX)
- CPPFLAGS = -w -I$(GATB)/include/ $(ADDITIONAL_INCLUDE) -DGATB_V$(GATBSHORTVERSION) -DLORDECVERSION=$(VERSION)$(SUFFIX) -DGATBVERSION=$(GATBVERSION)$(SUFFIX) $(MACMACROS) -std=c++0x -O3 $(CDEBUG)
+-CPPFLAGS = -w -I$(GATB)/include/ $(ADDITIONAL_INCLUDE) -DGATB_V$(GATBSHORTVERSION) -DLORDECVERSION=$(VERSION)$(SUFFIX) -DGATBVERSION=$(GATBVERSION)$(SUFFIX) $(MACMACROS) -std=c++0x -O3 $(CDEBUG)
 -LDFLAGS = -L$(GATB)/lib/ -lgatbcore -lhdf5$(HDFSUFFIX) -ldl -lz -lpthread -std=c++0x -O3 $(EXTRALDFLAGS)
+-CXXFLAGS = -w #-Wall  # put compiler settings here
++CPPFLAGS += -w -I$(GATB)/include/ $(ADDITIONAL_INCLUDE) -DGATB_V$(GATBSHORTVERSION) -DLORDECVERSION=$(VERSION)$(SUFFIX) -DGATBVERSION=$(GATBVERSION)$(SUFFIX) $(MACMACROS) -std=c++0x -O3 $(CDEBUG)
 +ifeq ($(UNAME_S),Darwin)
-+LDFLAGS = -L$(GATB)/lib/ -lgatbcore -lhdf5$(HDFSUFFIX) -ldl -lz -lpthread -std=c++0x -O3 $(EXTRALDFLAGS)
++LDFLAGS += -L$(GATB)/lib/ -lgatbcore -lhdf5$(HDFSUFFIX) -ldl -lz -lpthread -std=c++0x -O3 $(EXTRALDFLAGS)
 +else
 +# on NON-MacOS, we need to add RT library
-+LDFLAGS = -L$(GATB)/lib/ -lgatbcore -lhdf5$(HDFSUFFIX) -lrt -ldl -lz -lpthread -std=c++0x -O3 $(EXTRALDFLAGS)
++LDFLAGS += -L$(GATB)/lib/ -lgatbcore -lhdf5$(HDFSUFFIX) -lrt -ldl -lz -lpthread -std=c++0x -O3 $(EXTRALDFLAGS)
 +endif
- CXXFLAGS = -w #-Wall  # put compiler settings here
++CXXFLAGS += -w #-Wall  # put compiler settings here
  ####################################################
  
+ # binary list to build lordec
 @@ -188,27 +181,6 @@
  	GATBVERSION=$(shell echo $(*) | sed 's:\(.\):.\1:g' | sed 's:^\.::g');\
  	EXTRALDFLAGS=-lgcov CDEBUG="-fprofile-arcs -ftest-coverage -g" GATBSHORTVERSION=$$GATBSHORTVERSION GATBVERSION=$$GATBVERSION $(MAKE) $(PROG_CATCHTEST_CORRECT)

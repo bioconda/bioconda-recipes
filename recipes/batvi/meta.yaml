@@ -2,13 +2,35 @@ package:
   name: batvi
   version: "1.04"
 
-
 source:
-  url: https://github.com/22noon/BatVI/archive/master.zip
+  url: https://github.com/22noon/BatVI/archive/d19c2e575ccd3f82a43c96de8f13423cf8af01d4.tar.gz
   path: src
-  sha256: 0072a56055998d0d67822d66128de1e84ea9d34770fd3752192ca1f93bf6569d
+  sha256: 7e95f6010799d5d2aabc13038b76f4b8b4d74d57797fec962efe2731d879633f
+  patches:
+    - 0001-Replace-include-malloc.h-by-stdlib.h.patch
+    - 0002-bin-build.sh--Use-CC-CXX-and-FLAGS.patch
+    - 0003-Unvendor-zlib.patch
+    - 0004-Remove-warning-causing-dead-code.patch
+    - 0005-Remove-Linux-specific-Set_Affinity-for-OSX.patch  # [osx]
+  folder: source
+  # Previously, the master.zip with the checksum below pointed to
+  # commit d19c2e5, which is now used above.
+  # url: https://github.com/22noon/BatVI/archive/master.zip
+  # sha256: 0072a56055998d0d67822d66128de1e84ea9d34770fd3752192ca1f93bf6569d
+
+build:
+  number: 6
 
 requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+  host:
+    - zlib
+    - openjdk
   run:
     - samtools
     - blast
@@ -18,16 +40,6 @@ requirements:
     - zlib
     - openjdk
 
-  host:
-    - zlib
-    - openjdk
-
-  build:
-    - {{ compiler('c') }}
-
-build:
-  number: 1
-  string: cond
 about:
   home: https://www.comp.nus.edu.sg/~bioinfo/batvi/
   license: GPLv3+

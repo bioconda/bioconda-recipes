@@ -1,0 +1,41 @@
+{% set version = "1.4.0" %}
+{% set name = "ResidualMatrix" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: be25e0053ad57148766c93f16766ee92
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: testthat, BiocStyle, knitr, rmarkdown, BiocSingular
+requirements:
+  host:
+    - 'bioconductor-delayedarray >=0.20.0,<0.21.0'
+    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
+    - r-base
+    - r-matrix
+  run:
+    - 'bioconductor-delayedarray >=0.20.0,<0.21.0'
+    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
+    - r-base
+    - r-matrix
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Creating a DelayedMatrix of Regression Residuals'
+  description: 'Provides delayed computation of a matrix of residuals after fitting a linear model to each column of an input matrix. Also supports partial computation of residuals where selected factors are to be preserved in the output matrix. Implements a number of efficient methods for operating on the delayed matrix of residuals, most notably matrix multiplication and calculation of row/column sums or means.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

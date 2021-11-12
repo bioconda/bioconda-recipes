@@ -1,43 +1,41 @@
-{% set version = "4.0.2" %}
+{% set version = "4.1.1" %}
 
 package:
   name: rmats
   version: {{ version }}
 
 source:
-  sha256: afab002a9ae836d396909aede96318f6dab6e5818078246419dd563624bf26d1
-  url: https://sourceforge.net/projects/rnaseq-mats/files/MATS/rMATS.{{ version }}.tgz
-  patches:
-    - linux.patch
+  sha256: e9724a97a8ee8db99f138b38d74a3384164eadcd43d14609fdc27ecbcf3d37d7
+  url: https://github.com/Xinglab/rmats-turbo/releases/download/v{{ version }}/rmats_turbo_v{{ version|replace(".","_") }}.tar.gz
 
 build:
-  number: 4
-  skip: True  # [py3k or osx]
+  number: 1
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
+    - cmake
   host:
     - python
+    - cython
     - numpy
-    - scipy
-    - gsl 1.16
+    - gsl
     - zlib
-    - libgfortran
+    - libblas
   run:
     - python
     - numpy
-    - scipy
-    - gsl 1.16
+    - gsl
     - zlib
-    - libgfortran
     - star >=2.5
+    - libblas
 
 test:
   commands:
-    - rmats.py
+    - rmats.py --version
     - $PREFIX/rMATS/rMATS_C/rMATSexe | grep "Fail to open"
 
 about:
@@ -45,8 +43,3 @@ about:
   license: Free for non-commercial use, see LICENSE file
   summary: MATS is a computational tool to detect differential alternative splicing events from RNA-Seq data.
   license_file: LICENSE
-
-extra:
-  skip-lints:
-    # This seems to need an old libgfortran
-    - should_use_compilers

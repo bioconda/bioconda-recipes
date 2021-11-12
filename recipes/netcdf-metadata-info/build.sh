@@ -1,5 +1,4 @@
 #!/bin/bash
-export LD_LIBRARY_PATH="$PREFIX/lib:$LD_LIBRARY_PATH"
-make
+make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 mkdir -p "$PREFIX/bin"
-cp netcdf-metadata-info "$PREFIX/bin"
+cp netcdf-metadata-info "$PREFIX/bin/"

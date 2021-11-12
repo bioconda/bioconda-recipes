@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="MAQCsubsetILM_1.24.0.tar.gz"
+FN="MAQCsubsetILM_1.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/MAQCsubsetILM_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MAQCsubsetILM_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-maqcsubsetilm/bioconductor-maqcsubsetilm_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/MAQCsubsetILM_1.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MAQCsubsetILM_1.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-maqcsubsetilm/bioconductor-maqcsubsetilm_1.32.0_src_all.tar.gz"
 )
-MD5="422b884209358bf70446c59e553485d5"
+MD5="b96fad384d7d77cdb262d96da40a62b5"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

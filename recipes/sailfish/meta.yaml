@@ -1,12 +1,3 @@
-build:
-  number: 3
-  skip: True # [osx]
-
-about:
-  home: http://www.cs.cmu.edu/~ckingsf/software/sailfish/
-  license: GPLv3
-  summary: Rapid Mapping-based Isoform Quantification from RNA-Seq Reads
-
 package:
   name: sailfish
   version: 0.10.1
@@ -14,23 +5,37 @@ package:
 source:
   url: https://github.com/kingsfordgroup/sailfish/archive/v0.10.1.tar.gz
   md5: e6dab4cf3a39f346df7c28f40eb58cad
+  patches:
+    - 0001-Avoid-static-linking.patch
+    - 0002-Append-CMAKE_CXX_FLAGS.patch
+
+build:
+  number: 5
+  skip: True  # [osx]
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
     - cmake
     - autoconf
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
   host:
-    - boost
-    - tbb
+    - boost-cpp
+    - tbb-devel
     - unzip
     - perl
     - icu
   run:
-    - boost
-    - tbb
+    - boost-cpp
     - icu
 
 test:
   commands:
     - sailfish --help
+
+about:
+  home: http://www.cs.cmu.edu/~ckingsf/software/sailfish/
+  license: GPLv3
+  summary: Rapid Mapping-based Isoform Quantification from RNA-Seq Reads

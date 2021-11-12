@@ -1,35 +1,42 @@
-{% set name = "nimnexus" %}
 {% set version = "0.1.1" %}
-{% set revision = "f99eaf1" %}
-{% set sha256hash = "620a85f688ab2b431629a4f716f652e5c6e1ff2dd30fab74c44039f18305fbb9" %}
+{% set sha256hash = "3e0656e02cbd3222e0b302681f26f478717aa4ad69e6b13ceaafff498c23ca2a" %}
 
 package:
-  name: {{ name|lower }}
+  name: nimnexus
   version: {{ version }}
 
 source:
-  url: https://github.com/avsecz/{{ name }}/archive/{{ revision }}.tar.gz
-  sha256: {{ sha256hash }}
+  - url: https://github.com/avsecz/nimnexus/archive/{{ version }}.tar.gz
+    sha256: {{ sha256hash }}
+    patches:
+      - 0001-add-hts-dep-upper-constraint.patch
+  - url: https://github.com/brentp/hts-nim/archive/v0.2.23.tar.gz
+    sha256: 19f46dd89a7f13df5a679a93113aedab55fa99e1fa0bd4d2c5fed51b0526f56c
+    folder: hts-nim
+  - url: https://github.com/brentp/genoiser/archive/v0.2.7.tar.gz
+    sha256: ff8dee83cca89a1ebbb357334308460134fcd18121322f3fe709276b0cc1b4d5
+    folder: genoiser
 
 build:
-  number: 0
+  number: 2
   skip: True  # [osx]
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - nim
   host:
     - pcre
-    - htslib
+    - htslib 1.9.*
   run:
     - pcre
-    - htslib
+    - htslib 1.9.*
 
 test:
   commands:
     - nimnexus trim -h
     - nimnexus dedup -h
-    
+
 about:
   home: https://github.com/avsecz/nimnexus
   license: MIT

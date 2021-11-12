@@ -1,0 +1,53 @@
+{% set version = "04.18.11.09" %}
+{% set sha256 = "90309b5ac7f77d5ee0c5ff07daccbb96b3004dd02b5d426eab9da502bacc55d9" %}
+
+package:
+  name: isaac4
+  version: {{ version }}
+
+source:
+  url: https://github.com/Illumina/Isaac4/archive/Isaac-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - patch-configure.diff
+    - patch-src-cplusplus-lib-alignment-TemplateBuilder.cpp.diff
+    - patch-src-cplusplus-lib-io-FileBufWithReopen.cpp.diff
+
+build:
+  number: 1
+  skip: true  # [osx]
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - cmake >=3.10.2
+  host:
+    - zlib
+    - boost-cpp
+    - libxml2
+    - libxslt >=1.1.31
+    - markdown
+  run:
+    - zlib
+    - libxml2
+    - libxslt >=1.1.31
+    - gnuplot >=4.0
+
+test:
+  commands:
+    - isaac-align -h
+    - isaac-reorder-reference -h
+
+about:
+  home: 'https://github.com/Illumina/Isaac4'
+  license: GPL-3.0-only
+  license_file: COPYRIGHT
+  summary: 'Ultra-fast whole-genome alignment for Illumina sequencing platforms.'
+
+extra:
+  identifiers:
+    - biotools:isaac
+    - doi:10.1093/bioinformatics/btt314
+  recipe-maintainers:
+    - cbrueffer

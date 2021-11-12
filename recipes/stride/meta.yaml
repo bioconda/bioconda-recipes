@@ -1,32 +1,38 @@
-{% set name = "stride" %}
 {% set version = "1.0" %}
 {% set md5 = "f5861823b1eccd6326f62eb21ffac9e7" %}
 
 package:
-  name: {{ name }}
+  name: stride
   version: {{ version }}
 
 build:
-  number: 4
-  skip: True # [osx]
+  number: 6
+  skip: True  # [osx]
 
 source:
   url: https://github.com/ythuang0522/StriDe/archive/v{{ version }}.tar.gz
   md5: {{ md5 }}
+  patches:
+    - 0001-Fix-type-errors.patch
+    - 0002-ambiguous-errors.patch
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
     - autoconf
     - automake
     - m4
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
   host:
     - sparsehash
     - perl
     - zlib
   run:
     - zlib
+
 test:
   commands:
     - stride 2>&1 | grep "stride"

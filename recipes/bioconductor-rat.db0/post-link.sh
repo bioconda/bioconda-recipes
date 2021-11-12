@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="rat.db0_3.10.0.tar.gz"
+FN="rat.db0_3.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/rat.db0_3.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/rat.db0_3.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rat.db0/bioconductor-rat.db0_3.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/rat.db0_3.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/rat.db0_3.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rat.db0/bioconductor-rat.db0_3.14.0_src_all.tar.gz"
 )
-MD5="9674dd4cd078f95a0873eb4def9c0657"
+MD5="bde6f46d1cc4d2d9282f11431e40e56f"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

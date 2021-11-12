@@ -1,0 +1,51 @@
+{% set version = "1.6.0" %}
+{% set name = "pmp" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: fbe4e787a1d080448335ecd48f4f96ce
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: testthat, covr, knitr, rmarkdown, BiocStyle, gridExtra, magick
+requirements:
+  host:
+    - 'bioconductor-impute >=1.68.0,<1.69.0'
+    - 'bioconductor-pcamethods >=1.86.0,<1.87.0'
+    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - r-base
+    - r-ggplot2
+    - r-matrixstats
+    - r-missforest
+    - r-reshape2
+  run:
+    - 'bioconductor-impute >=1.68.0,<1.69.0'
+    - 'bioconductor-pcamethods >=1.86.0,<1.87.0'
+    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - r-base
+    - r-ggplot2
+    - r-matrixstats
+    - r-missforest
+    - r-reshape2
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Peak Matrix Processing and signal batch correction for metabolomics datasets'
+  description: 'Methods and tools for (pre-)processing of metabolomics datasets (i.e. peak matrices), including filtering, normalisation, missing value imputation, scaling, and signal drift and batch effect correction methods. Filtering methods are based on: the fraction of missing values (across samples or features); Relative Standard Deviation (RSD) calculated from the Quality Control (QC) samples; the blank samples. Normalisation methods include Probabilistic Quotient Normalisation (PQN) and normalisation to total signal intensity. A unified user interface for several commonly used missing value imputation algorithms is also provided. Supported methods are: k-nearest neighbours (knn), random forests (rf), Bayesian PCA missing value estimator (bpca), mean or median value of the given feature and a constant small value. The generalised logarithm (glog) transformation algorithm is available to stabilise the variance across low and high intensity mass spectral features. Finally, this package provides an implementation of the Quality Control-Robust Spline Correction (QCRSC) algorithm for signal drift and batch effect correction of mass spectrometry-based datasets.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

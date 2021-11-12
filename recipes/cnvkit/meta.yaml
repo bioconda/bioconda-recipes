@@ -1,31 +1,31 @@
-{% set version="0.9.6" %}
+{% set version="0.9.9" %}
 package:
   name: cnvkit
   version: {{ version }}
 
 source:
   url: https://github.com/etal/cnvkit/archive/v{{ version }}.tar.gz
-  sha256: c6f20e7cf22b20c81325f7cd55d4a8c835b37b1227f274386a6cc48450be9acd
+  sha256: 8c8c94d0f2736bf98c32853926dbcdb93633c21a05c737f0920d714a5a07b054
 
 build:
   noarch: python
-  number: 2
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   host:
-    - python
-    - setuptools
+    - python >=3.5
+    - pip
   run:
-    - python
+    - python >=3.5
     - bioconductor-dnacopy
     - biopython >=1.62
-    - future >=0.15.2
-    - futures >=3.0  # [py27]
-    - matplotlib >=1.3.1
+    - joblib <1.0
+    - matplotlib-base >=1.3.1
+    - networkx >=2.4
     - numpy >=1.9
-    - pandas >=0.22.0
+    - pandas >=0.23.3
     - pomegranate >=0.9.0
-    - python-dateutil >=2.5.0
     - pyfaidx >=0.4.7
     - pysam >=0.10.0
     - r-base >=3.4.1
@@ -36,13 +36,15 @@ requirements:
 test:
   imports:
     - cnvlib
+    - cnvlib.segmentation
     - skgenome
+    - skgenome.tabio
   commands:
     - cnvkit.py -h
 
 about:
   home: https://github.com/etal/cnvkit
-  license: Apache License 2.0
+  license: Apache-2.0
   summary: Copy number variant detection from high-throughput sequencing
 
 extra:

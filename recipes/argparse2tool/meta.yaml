@@ -1,0 +1,48 @@
+{% set name = "argparse2tool" %}
+{% set version = "0.4.9" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: ecd7142c1ce60bf9e1416443ce393907b7f99a9396a0530277c110dcb7106579
+
+build:
+  number: 0
+  entry_points:
+    - argparse2tool_check_path = argparse2tool.check_path:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  noarch: python
+
+requirements:
+  host:
+    - pip
+    - python >=3
+  run:
+    - click
+    - galaxyxml >=0.2.3
+    - jinja2
+    - python >=3
+
+test:
+  imports:
+    - argparse2tool
+    - argparse2tool.cmdline2cwl
+    - argparse2tool.cmdline2gxml
+  commands:
+    - argparse2tool_check_path --help
+
+about:
+  home: "https://github.com/erasche/argparse2tool"
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE.TXT
+  summary: "Instrument for forming Galaxy XML and CWL tool descriptions from argparse arguments"
+  doc_url: "https://github.com/erasche/argparse2tool"
+  dev_url: "https://github.com/erasche/argparse2tool"
+
+extra:
+  recipe-maintainers:
+    - bernt-matthias 

@@ -1,5 +1,4 @@
 #!/bin/bash
-
 make
 
 TGT="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"

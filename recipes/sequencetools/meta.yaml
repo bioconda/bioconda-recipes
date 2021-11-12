@@ -1,42 +1,47 @@
-{% set name = "sequencetools" %}
-{% set version = "1.2.2" %}
-{% set md5 = "35bafae8813a7510cadf87057bd42df4" %}
+{% set version = "1.5.1" %}
 
 package:
-  name: {{ name }}
+  name: sequencetools
   version: {{ version }}
 
 source:
-  url: https://github.com/stschiff/sequenceTools/archive/v{{ version }}.tar.gz
-  md5: {{ md5 }}
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/genoStats-linux # [linux]
+    md5: 23c1c44a922e59e373abf2e31acc5294 # [linux]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/pileupCaller-linux # [linux]
+    md5: 01905d6dec5cc7424f76af677b0a7907 # [linux]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/vcf2eigenstrat-linux # [linux]
+    md5: 21059ed4aab2df2a9e230bb8cfbcce63 # [linux]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/genoStats-macOS # [osx]
+    md5: f37bb9a842f4db11ca3009217ef8ed26 # [osx]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/pileupCaller-macOS # [osx]
+    md5: d23cb7c7084dc3f0891a4b48b81c2694 # [osx]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/vcf2eigenstrat-macOS # [osx]
+    md5: 146d9d0e2a3d3d1d6d48dae70378e854 # [osx]
 
 build:
-  number: 1
-  skip: True  #  [osx]
+  number: 0
+  script:
+    - "mkdir -p $PREFIX/bin"
+    - "for TOOL in genoStats pileupCaller vcf2eigenstrat; do mv $TOOL-* $PREFIX/bin/$TOOL; chmod u+x $PREFIX/bin/$TOOL; done"
+
 
 requirements:
   build:
     - {{ compiler('c') }}
-  host:
-    - stack >=1.7.1
-    - zlib
-    - wget
-    - gmp
-    - perl 
-    - xz
   run:
     - zlib
     - xz
     - gmp
     - samtools
 
-
-
 test:
   commands:
     - pileupCaller --version
+    - genoStats --version
+    - vcf2eigenstrat --version
 
 about:
   home: https://github.com/stschiff/sequenceTools
   license: MIT
-  summary: Tools for population genetics on sequencing datas
+  summary: Tools for population genetics on sequencing data
+

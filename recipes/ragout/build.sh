@@ -3,4 +3,4 @@
 python setup.py build
 
 #installs ragout as a python pachage
-$PYTHON -m pip install . --ignore-installed --no-deps -vv
+$PYTHON setup.py install --single-version-externally-managed --record record.txt

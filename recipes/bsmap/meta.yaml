@@ -8,17 +8,20 @@ package:
 
 source:
   sha256: {{ sha256 }}
-  url: http://lilab.research.bcm.edu/dldcc-web/lilab/yxi/{{ name|lower }}/{{ name|lower }}-{{ version }}.tgz
+  url: http://lilab.research.bcm.edu/dldcc-web/lilab/yxi/bsmap/bsmap-2.90.tgz
   patches:
+    - 0001-Use-CXX-instead-of-CC-for-c++-compiler.patch
     - path.patch
     - osx_compile.patch  # [osx]
 
 build:
-  number: 2
-  skip: True  # [py3k]
+  number: 4
+  skip: True  # [py>27]
 
 requirements:
   build:
+    - make
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
     - python
@@ -30,7 +33,7 @@ requirements:
 
 test:
   commands:
-    - bsmap -h 2>&1 | grep "bsmap" > /dev/null
+    - bsmap -h 2>&1 | grep -qF bsmap
     - bsp2sam.py -h
     - methdiff.py -h
     - methratio.py -h

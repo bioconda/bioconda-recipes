@@ -1,0 +1,65 @@
+{% set version = "1.4.0" %}
+{% set name = "corral" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 3a9af1fa5cfbbe8146e698a881caf663
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: ade4, BiocStyle, CellBench, DuoClustering2018, knitr, rmarkdown, testthat
+requirements:
+  host:
+    - 'bioconductor-multiassayexperiment >=1.20.0,<1.21.0'
+    - 'bioconductor-singlecellexperiment >=1.16.0,<1.17.0'
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - r-base
+    - r-ggplot2
+    - r-ggthemes
+    - r-gridextra
+    - r-irlba
+    - r-matrix
+    - r-pals
+    - r-transport
+  run:
+    - 'bioconductor-multiassayexperiment >=1.20.0,<1.21.0'
+    - 'bioconductor-singlecellexperiment >=1.16.0,<1.17.0'
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - r-base
+    - r-ggplot2
+    - r-ggthemes
+    - r-gridextra
+    - r-irlba
+    - r-matrix
+    - r-pals
+    - r-transport
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
+test:
+  commands:
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'Correspondence Analysis for Single Cell Data'
+  description: 'Correspondence analysis (CA) is a matrix factorization method, and is similar to principal components analysis (PCA). Whereas PCA is designed for application to continuous, approximately normally distributed data, CA is appropriate for non-negative, count-based data that are in the same additive scale. The corral package implements CA for dimensionality reduction of a single matrix of single-cell data, as well as a multi-table adaptation of CA that leverages data-optimized scaling to align data generated from different sequencing platforms by projecting into a shared latent space. corral utilizes sparse matrices and a fast implementation of SVD, and can be called directly on Bioconductor objects (e.g., SingleCellExperiment) for easy pipeline integration. The package also includes the option to apply CA-style processing to continuous data (e.g., proteomic TOF intensities) with the Hellinger distance adaptation of CA.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+extra:
+  container:
+    extended-base: true
+
