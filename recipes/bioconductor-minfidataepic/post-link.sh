@@ -1,6 +1,7 @@
 #!/bin/bash
 set -ex
-R -e "library('IlluminaHumanMethylationEPICanno.ilm10b2.hg19')"
+R -e 'installed.packages()'
+R -e "library(IlluminaHumanMethylationEPICanno.ilm10b2.hg19)"
 FN="minfiDataEPIC_1.20.0.tar.gz"
 URLS=(
   "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/minfiDataEPIC_1.20.0.tar.gz"
