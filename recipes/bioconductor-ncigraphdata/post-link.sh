@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="NCIgraphData_1.28.0.tar.gz"
+FN="NCIgraphData_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/NCIgraphData_1.28.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/NCIgraphData_1.28.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ncigraphdata/bioconductor-ncigraphdata_1.28.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/NCIgraphData_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/NCIgraphData_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ncigraphdata/bioconductor-ncigraphdata_1.30.0_src_all.tar.gz"
 )
-MD5="5e2a390ae372976c610793f05c884ee2"
+MD5="f55af9bbc8157ec549e5e480f1de7764"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
