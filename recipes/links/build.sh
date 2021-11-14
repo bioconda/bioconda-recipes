@@ -1,28 +1,41 @@
-mkdir -p $PREFIX/bin
-
-#Copying perl script to bin folder
-cp  LINKS $PREFIX/bin
-chmod +x $PREFIX/bin/LINKS
-
+#!/bin/sh
 
 set -eux -o pipefail
 
-#Recompiling C code
-cd lib/bloomfilter/swig/
+./configure && make
 
-if [[ $OSTYPE == linux* ]]; then
-	suffix="so"
-else
-	suffix="dylib"
-fi
+mkdir -p ${PREFIX}/bin/
+mkdir -p ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin
+mkdir -p ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/src
+
+cp src/LINKS_CPP ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/src
+cp bin/* ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin
+cp bin/LINKS* ${PREFIX}/bin/
 
 
-PERL5DIR=`(perl -e 'use Config; print $Config{archlibexp}, "\n";') 2>/dev/null`
-swig -Wall -c++ -perl5 BloomFilter.i
-${CXX} -c BloomFilter_wrap.cxx -I$PERL5DIR/CORE -fPIC -O3
-${CXX} -Wall -shared BloomFilter_wrap.o -o BloomFilter.${suffix} -O3 -L$PERL5DIR/CORE -lperl
+echo "#!/bin/bash" > ${PREFIX}/bin/LINKS-make
+echo "make -f $(command -v ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin/LINKS-make) \$@" >> ${PREFIX}/bin/LINKS-make
 
-mkdir -p $PREFIX/lib/site_perl/BloomFilter
+######./configure --prefix=${PREFIX} CXXFLAGS="${CXXFLAGS} -Wno-error=unused-result"
+######make install
 
-cp BloomFilter.* $PREFIX/lib/site_perl/BloomFilter
 
+##mkdir -p ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin
+#mkdir -p ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/src
+
+##cp bin/LINKS ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin
+##cp bin/LINKS-make ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin
+#cp src/LINKS_CPP ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/src
+
+##mkdir -p $PREFIX/bin
+##mkdir -p $PREFIX/src
+#####cp bin/LINKS $PREFIX/bin
+#####cp bin/LINKS-make $PREFIX/bin
+##cp src/LINKS_CPP $PREFIX/src
+
+#chmod +x $PREFIX/bin/*
+
+#echo "#!/bin/bash" > ${PREFIX}/bin/LINKS
+#echo "make -f $(command -v ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/Examples/arcs-make) \$@" >> ${PREFIX}/bin/arcs-make
+
+#####################################
