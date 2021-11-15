@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="XhybCasneuf_1.30.0.tar.gz"
+FN="XhybCasneuf_1.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/XhybCasneuf_1.30.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/XhybCasneuf_1.30.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-xhybcasneuf/bioconductor-xhybcasneuf_1.30.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/XhybCasneuf_1.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/XhybCasneuf_1.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-xhybcasneuf/bioconductor-xhybcasneuf_1.32.0_src_all.tar.gz"
 )
-MD5="ed70932ad60da477a9883cb0e54bea86"
+MD5="a9eee1113f117088905fce12b5d1dd97"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

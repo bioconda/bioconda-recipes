@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="beadarrayExampleData_1.30.0.tar.gz"
+FN="beadarrayExampleData_1.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/beadarrayExampleData_1.30.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/beadarrayExampleData_1.30.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-beadarrayexampledata/bioconductor-beadarrayexampledata_1.30.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/beadarrayExampleData_1.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/beadarrayExampleData_1.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-beadarrayexampledata/bioconductor-beadarrayexampledata_1.32.0_src_all.tar.gz"
 )
-MD5="78bd38e4588c20d686f5a93af7827809"
+MD5="bedef596363e3c5853cbcdb232a92b02"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
