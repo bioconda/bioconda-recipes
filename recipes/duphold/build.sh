@@ -1,13 +1,8 @@
 #!/bin/bash
 set -eu -o pipefail
 
-pushd hts-nim
-nimble install -y --verbose
-popd
-
-pushd genoiser
-nimble install -y --verbose
-popd
+nimble install -y hts@0.3.8
+nimble install -y genoiser@0.2.7
 
 nimble install -y --verbose
 
