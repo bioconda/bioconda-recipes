@@ -10,7 +10,7 @@ mkdir -p  "$PREFIX/bin/bin"
 cd muscle
 ./autogen.sh
 if [ `uname` == Darwin ]; then
-    ./configure --prefix=$PWD CXXFLAGS='${CPPFLAGS} -fopenmp' --disable-shared 
+    ./configure --prefix=$PWD CXXFLAGS='-fopenmp' --disable-shared 
 else
     ./configure --prefix=$PWD CXXFLAGS='-fopenmp'
 fi
@@ -20,7 +20,7 @@ make install
 cd ..
 ./autogen.sh
 export ORIGIN=\$ORIGIN
-./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib' CXXFLAGS='${CPPFLAGS} -fopenmp' --disable-shared
+./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib' CXXFLAGS='-fopenmp' --disable-shared
 make LDADD='-lMUSCLE-3.7'
 make install
 
