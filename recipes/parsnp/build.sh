@@ -20,8 +20,7 @@ make install
 cd ..
 ./autogen.sh
 export ORIGIN=\$ORIGIN
-./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib' CXXFLAGS='-fopenmp' --disable-shared
-make LDADD='-lMUSCLE-3.7'
+./configure LDFLAGS='-Wl,-rpath,$$ORIGIN/../muscle/lib' CXXFLAGS='-fopenmp'
 make install
 
 rm -R muscle/libMUSCLE
