@@ -10,7 +10,7 @@ mkdir -p  "$PREFIX/bin/bin"
 cd muscle
 ./autogen.sh
 if [ `uname` == Darwin ]; then
-    ./configure --prefix=$PWD CXXFLAGS='${CPPFLAGS} -fopenmp --disable-shared' 
+    ./configure --prefix=$PWD CXXFLAGS='${CPPFLAGS} -fopenmp' --disable-shared 
 else
     ./configure --prefix=$PWD CXXFLAGS='-fopenmp'
 fi
