@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="TCGAMethylation450k_1.26.0.tar.gz"
+FN="TCGAMethylation450k_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/TCGAMethylation450k_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/TCGAMethylation450k_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tcgamethylation450k/bioconductor-tcgamethylation450k_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/TCGAMethylation450k_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TCGAMethylation450k_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tcgamethylation450k/bioconductor-tcgamethylation450k_1.30.0_src_all.tar.gz"
 )
-MD5="7212b9155400bcb2ac808e36cb57f238"
+MD5="a5abdb3ba8409c4830cdfd5f56ae6cf2"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

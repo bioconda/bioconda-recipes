@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="ye6100subacdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/ye6100subacdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/ye6100subacdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ye6100subacdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ye6100subacdf/bioconductor-ye6100subacdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ye6100subacdf/bioconductor-ye6100subacdf_2.18.0_src_all.tar.gz"
 )
 MD5="27bd71410956bfe8bffc8de14b85bdb0"

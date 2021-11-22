@@ -1,0 +1,57 @@
+{% set version = "1.0.0" %}
+{% set name = "MAI" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: f977508bf05bdccbbce9f49b29de90d3
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: knitr, rmarkdown, BiocStyle, testthat (>= 3.0.0)
+requirements:
+  host:
+    - 'bioconductor-pcamethods >=1.86.0,<1.87.0'
+    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - r-base
+    - r-caret
+    - r-doparallel
+    - r-e1071
+    - r-foreach
+    - r-future
+    - r-future.apply
+    - r-missforest
+    - r-tidyverse
+  run:
+    - 'bioconductor-pcamethods >=1.86.0,<1.87.0'
+    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - r-base
+    - r-caret
+    - r-doparallel
+    - r-e1071
+    - r-foreach
+    - r-future
+    - r-future.apply
+    - r-missforest
+    - r-tidyverse
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Mechanism-Aware Imputation'
+  description: 'A two-step approach to imputing missing data in metabolomics. Step 1 uses a random forest classifier to classify missing values as either Missing Completely at Random/Missing At Random (MCAR/MAR) or Missing Not At Random (MNAR). MCAR/MAR are combined because it is often difficult to distinguish these two missing types in metabolomics data. Step 2 imputes the missing values based on the classified missing mechanisms, using the appropriate imputation algorithms. Imputation algorithms tested and available for MCAR/MAR include Bayesian Principal Component Analysis (BPCA), Multiple Imputation No-Skip K-Nearest Neighbors (Multi_nsKNN), and Random Forest. Imputation algorithms tested and available for MNAR include nsKNN and a single imputation approach for imputation of metabolites where left-censoring is present.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
