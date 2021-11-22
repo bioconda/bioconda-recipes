@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="MIGSAdata_1.14.0.tar.gz"
+FN="MIGSAdata_1.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/MIGSAdata_1.14.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MIGSAdata_1.14.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-migsadata/bioconductor-migsadata_1.14.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/MIGSAdata_1.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MIGSAdata_1.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-migsadata/bioconductor-migsadata_1.18.0_src_all.tar.gz"
 )
-MD5="b07b7a6f0ac2a4d561441a7efb88eef1"
+MD5="598b38369bb86037f3c77d7d19b75fa4"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

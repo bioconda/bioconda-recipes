@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="hapmap370k_1.0.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/hapmap370k_1.0.1.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hapmap370k_1.0.1.tar.gz"
   "https://bioarchive.galaxyproject.org/hapmap370k_1.0.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hapmap370k/bioconductor-hapmap370k_1.0.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hapmap370k/bioconductor-hapmap370k_1.0.1_src_all.tar.gz"
 )
 MD5="569556341a45da799372aaf1012be72e"
