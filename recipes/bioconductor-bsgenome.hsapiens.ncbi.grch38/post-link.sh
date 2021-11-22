@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="BSgenome.Hsapiens.NCBI.GRCh38_1.3.1000.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/BSgenome.Hsapiens.NCBI.GRCh38_1.3.1000.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Hsapiens.NCBI.GRCh38_1.3.1000.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Hsapiens.NCBI.GRCh38_1.3.1000.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.hsapiens.ncbi.grch38/bioconductor-bsgenome.hsapiens.ncbi.grch38_1.3.1000_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.hsapiens.ncbi.grch38/bioconductor-bsgenome.hsapiens.ncbi.grch38_1.3.1000_src_all.tar.gz"
 )
 MD5="733d324b34d34d7da8c4bf38459f4fae"

@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="BSgenome.Dmelanogaster.UCSC.dm6_1.4.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/BSgenome.Dmelanogaster.UCSC.dm6_1.4.1.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Dmelanogaster.UCSC.dm6_1.4.1.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Dmelanogaster.UCSC.dm6_1.4.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.dmelanogaster.ucsc.dm6/bioconductor-bsgenome.dmelanogaster.ucsc.dm6_1.4.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.dmelanogaster.ucsc.dm6/bioconductor-bsgenome.dmelanogaster.ucsc.dm6_1.4.1_src_all.tar.gz"
 )
 MD5="f9d6e406b7893a17c08edd4521c2802f"

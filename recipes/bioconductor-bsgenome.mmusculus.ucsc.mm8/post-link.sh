@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="BSgenome.Mmusculus.UCSC.mm8_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/BSgenome.Mmusculus.UCSC.mm8_1.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Mmusculus.UCSC.mm8_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Mmusculus.UCSC.mm8_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mmusculus.ucsc.mm8/bioconductor-bsgenome.mmusculus.ucsc.mm8_1.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mmusculus.ucsc.mm8/bioconductor-bsgenome.mmusculus.ucsc.mm8_1.4.0_src_all.tar.gz"
 )
 MD5="f6aa91cdce2607f30a34f6dd0d678aff"

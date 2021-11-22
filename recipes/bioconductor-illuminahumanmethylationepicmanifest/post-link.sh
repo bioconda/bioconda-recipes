@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="IlluminaHumanMethylationEPICmanifest_0.3.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/IlluminaHumanMethylationEPICmanifest_0.3.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/IlluminaHumanMethylationEPICmanifest_0.3.0.tar.gz"
   "https://bioarchive.galaxyproject.org/IlluminaHumanMethylationEPICmanifest_0.3.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-illuminahumanmethylationepicmanifest/bioconductor-illuminahumanmethylationepicmanifest_0.3.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-illuminahumanmethylationepicmanifest/bioconductor-illuminahumanmethylationepicmanifest_0.3.0_src_all.tar.gz"
 )
 MD5="c6b0268de177badfe0b8184002da7e16"

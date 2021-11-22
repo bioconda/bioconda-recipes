@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="yeast2cdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/yeast2cdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/yeast2cdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/yeast2cdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-yeast2cdf/bioconductor-yeast2cdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-yeast2cdf/bioconductor-yeast2cdf_2.18.0_src_all.tar.gz"
 )
 MD5="0a718d78ae56bef9bad8168123038ac8"

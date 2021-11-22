@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="gp53cdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/gp53cdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/gp53cdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/gp53cdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-gp53cdf/bioconductor-gp53cdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-gp53cdf/bioconductor-gp53cdf_2.18.0_src_all.tar.gz"
 )
 MD5="2887dd15d3fa29b5c13b068c8d641f61"

@@ -1,0 +1,92 @@
+--- ncbi/api/asn2gnb2.c.orig	2021-05-21 18:31:24.000000000 -0700
++++ ncbi/api/asn2gnb2.c	2021-05-21 18:32:09.000000000 -0700
+@@ -56,6 +56,7 @@
+ #include <edutil.h>
+ #include <alignmgr2.h>
+ #include <asn2gnbi.h>
++#include <ffprint.h>
+
+ #ifdef WIN_MAC
+ #if __profile__
+--- ncbi/api/salutil.c.orig	2021-05-21 17:33:10.000000000 -0700
++++ ncbi/api/salutil.c	2021-05-21 17:33:34.000000000 -0700
+@@ -51,6 +51,7 @@
+ #include <edutil.h>
+ #include <sequtil.h>
+ #include <sqnutils.h>
++#include <alignmgr2.h>
+
+ #ifdef SALSA_DEBUG
+ #include <simutil.h>
+--- ncbi/network/wwwblast/Src/viewgif.c.orig	2021-05-21 17:34:12.000000000 -0700
++++ ncbi/network/wwwblast/Src/viewgif.c	2021-05-21 17:34:39.000000000 -0700
+@@ -45,6 +45,7 @@
+ #include <string.h>
+ #include <signal.h>
+ #include <fcntl.h>
++#include <unistd.h>
+
+
+ static void SigAlrmHandler(int);
+--- ncbi/network/wwwblast/Src/wblast2.c.orig	2021-05-21 17:35:19.000000000 -0700
++++ ncbi/network/wwwblast/Src/wblast2.c	2021-05-21 17:36:02.000000000 -0700
+@@ -296,6 +296,9 @@
+ #include <algo/blast/api/twoseq_api.h>
+ #endif
+
++#include <algo/blast/core/blast_util.h>
++#include <accid1.h>
++
+ #define MY_BLOSUM62 0
+ #define MY_PAM30 1
+ #define MY_PAM70 2
+--- ncbi/corelib/ncbimisc.c.orig	2021-05-21 18:20:30.000000000 -0700
++++ ncbi/corelib/ncbimisc.c	2021-05-21 18:20:54.000000000 -0700
+@@ -1266,7 +1266,7 @@
+   if (len < 1) return NULL;
+ 
+   rsult = (Nlm_CharPtr) MemNew (len + 3);
+-  if (rsult == NULL) return;
++  if (rsult == NULL) return NULL;
+   tmp = rsult;
+ 
+   for (i = 0; /* local [i] != NULL */ i < numitems; i++) {
+--- ncbi/make/makedis.csh.orig	2021-05-25 19:09:16.000000000 -0700
++++ ncbi/make/makedis.csh	2021-05-25 19:32:11.000000000 -0700
+@@ -57,8 +57,8 @@
+ 	tar xf $tar_file
+ else
+ 	# make sure that ncbi/build directory exists
+-	if ( ! -d "ncbi/build" ) then
+-		echo 'ncbi/build directory should exist. Did you extract ncbi.tar.Z?'
++	if ( ! -d "build" ) then
++		echo 'build directory should exist. Did you extract ncbi.tar.Z?'
+ 		exit 2
+ 	endif
+ endif
+@@ -240,7 +240,6 @@
+ 		endif
+ 	endif
+ 	set HAVE_MOTIF=0
+-	set HAVE_MAC=1
+ 	breaksw
+ case NetBSD:
+ 	set platform=netbsd
+@@ -300,7 +299,7 @@
+ echo platform is $platform
+ uname -a
+ 
+-set NCBI_DOT_MK = ncbi/platform/${platform}.ncbi.mk
++set NCBI_DOT_MK = platform/${platform}.ncbi.mk
+ 
+ if (! -r "$NCBI_DOT_MK") then
+   goto BADPLATFORM
+@@ -323,7 +322,7 @@
+     echo "Enabling assert()."
+ endif
+ 
+-cd ncbi/build
++cd build
+ ln -s ../make/*.unx .
+ ln -s ../make/ln-if-absent .
+ mv makeall.unx makefile
