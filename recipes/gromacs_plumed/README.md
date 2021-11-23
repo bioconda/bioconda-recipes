@@ -9,6 +9,11 @@ to the maximum allowed build time.
 
 # Notes for future releases
 
+- plumed patches are only available for very specific versions of gromacs. Before
+updating this recipe you should check that your versions of plumed and gromacs are 
+compatible. Do this by locally installing the desired plumed conda package, and then
+running: plumed patch -l
+
 - AVX512: This was removed from the SIMD list as it is not widly used on laptops and
 desktops currently.  It should be added back in the future, but another SIMD type
 will need to be removed to keep the build time down.
