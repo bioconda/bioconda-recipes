@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="colonCA_1.34.0.tar.gz"
+FN="colonCA_1.36.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/colonCA_1.34.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/colonCA_1.34.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-colonca/bioconductor-colonca_1.34.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/colonCA_1.36.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/colonCA_1.36.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-colonca/bioconductor-colonca_1.36.0_src_all.tar.gz"
 )
-MD5="494d6b66c75c2b7fa93258f95fa88a9b"
+MD5="90ea77f6fb2cf38e0f40787153536e2d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
