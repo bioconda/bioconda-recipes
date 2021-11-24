@@ -1,0 +1,37 @@
+pr:
+  autoCancel: true
+
+jobs:
+
+- job: 'lint'
+  pool:
+    vmImage: 'ubuntu-latest'
+  strategy:
+    maxParallel: 8
+
+  steps:
+    steps:
+    - bash: echo "##vso[task.prependpath]$CONDA/bin"
+      displayName: Add conda to PATH
+
+    - displayName: Fetch common.sh
+      bash: |
+        which conda
+        wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
+
+    - task: Cache@2
+      inputs:
+        path: "##vso[task.prependpath]$CONDA/envs/bioconda"
+        key: '"$(Agent.OS)" | **/common.sh'
+        cacheHitVar: CACHE_RESTORED
+      displayName: Restore cache
+
+    - displayName: Setup Bioconda-utils
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: bioconda/bioconda-actions/bioconda_recipes_setup
+      script: ./.azure-pipelines/createEnv.py
+
+    - displayName: Lint
+      bash: |
+          conda activate bioconda
+          bioconda-utils lint --loglevel debug --full-report --git-range master HEAD
