@@ -18,9 +18,8 @@ if not os.path.exists('common.sh'):
     sys.exit("Can't find common.sh!")
 
 common = parseCommonSH()
-if sys.platform == 'linux':
-    CMD = ['conda', 'create', '-n', 'bioconda', '-y', 'bioconda-utils={}'.format(common['BIOCONDA_UTILS_TAG'])]
-else:
-    CMD = ['conda', 'create', '-n', 'bioconda', '-y', 'bioconda-utils={}'.format(common['BIOCONDA_UTILS_TAG']), 'conda-forge-ci-setup=2.6.0']
+CMD = ['conda', 'create', '-n', 'bioconda', '-y', '-c', 'conda-forge', '-c', 'bioconda', 'bioconda-utils={}'.format(common['BIOCONDA_UTILS_TAG'])]
+if sys.platform != 'linux':
+    CMD.append('conda-forge-ci-setup=2.6.0')
 
 subprocess.check_call(CMD)
