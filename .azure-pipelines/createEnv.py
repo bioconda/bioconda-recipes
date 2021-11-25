@@ -17,7 +17,7 @@ def parseCommonSH():
 if not os.path.exists('common.sh'):
     sys.exit("Can't find common.sh!")
 
-common = parserCommonSH()
+common = parseCommonSH()
 if sys.platform == 'linux':
     CMD = ['conda', 'create', '-n', 'bioconda', '-y', 'bioconda-utils={}'.format(common['BIOCONDA_UTILS_TAG'])]
 else:
