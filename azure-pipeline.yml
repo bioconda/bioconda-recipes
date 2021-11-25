@@ -13,10 +13,10 @@ jobs:
     - bash: echo "##vso[task.prependpath]$CONDA/bin"
       displayName: Add conda to PATH
 
-    - displayName: Fetch common.sh
-      bash: |
+    - bash: |
         which conda
         wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
+      displayName: Fetch common.sh
 
     - task: Cache@2
       inputs:
@@ -25,12 +25,13 @@ jobs:
         cacheHitVar: CACHE_RESTORED
       displayName: Restore cache
 
-    - displayName: Setup Bioconda-utils
+    - task: setupBioconda
       if: steps.cache.outputs.cache-hit != 'true'
       uses: bioconda/bioconda-actions/bioconda_recipes_setup
       script: ./.azure-pipelines/createEnv.py
+      displayName: Setup Bioconda-utils
 
-    - displayName: Lint
-      bash: |
+    - bash: |
           conda activate bioconda
           bioconda-utils lint --loglevel debug --full-report --git-range master HEAD
+      displayName: Lint
