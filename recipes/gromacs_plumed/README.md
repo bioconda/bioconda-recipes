@@ -7,6 +7,7 @@ results in a build of 2hr30 minutes for Linux and 2hrs for OSX.  This pushes clo
 to the maximum allowed build time.
 
 
+
 # Notes for future releases
 
 - plumed patches are only available for very specific versions of gromacs. Before
