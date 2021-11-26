@@ -3,6 +3,13 @@ pr:
 
 stages:
 - stage: 'lint'
+  trigger:
+    branches:
+      exclude:
+        - master
+    pr:
+      - master
+
   jobs:
   - job: 'lint'  
     pool:
@@ -44,6 +51,12 @@ stages:
       displayName: Lint
 
 - stage: 'test_linux'
+  trigger:
+    branches:
+      exclude:
+        - master
+    pr:
+      - master
   jobs:
   - job: 'test_linux'
     pool:
@@ -82,7 +95,7 @@ stages:
           set -e
           source activate bioconda
           docker pull quay.io/dpryan79/mulled_container:latest
-          ls -l /usr/share/miniconda/envs/bioconda/conda-bld
+          ls -l /usr/share/miniconda/envs/bioconda
           conda install conda-build
           bioconda-utils build recipes config.yml \
               --docker --mulled-test \
