@@ -2,7 +2,9 @@ pr:
   autoCancel: true
 
 stages:
-  stage: 'lint'
+- stage: 'lint'
+  jobs:
+  - job: 'lint'  
       pool:
         vmImage: 'ubuntu-latest'
       strategy:
@@ -15,7 +17,7 @@ stages:
             git pull upstream master
             source=$(Build.SourceBranch)
             git checkout ${source#"refs/heads/"}
-      
+
         - bash: echo "##vso[task.prependpath]$CONDA/bin"
           displayName: Add conda to PATH
 
@@ -41,46 +43,48 @@ stages:
               bioconda-utils lint --loglevel debug --full-report --git-range master HEAD
           displayName: Lint
 
-  - stage: 'test_linux'
-      pool:
-        vmImage: 'ubuntu-latest'
-      strategy:
-        maxParallel: 8
+- stage: 'test_linux'
+  jobs:
+  - job: 'test_linux'
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      maxParallel: 8
 
-      steps:
-        - script: |
-            git remote add upstream https://github.com/bioconda/bioconda-recipes
-            git checkout master
-            git pull upstream master
-            source=$(Build.SourceBranch)
-            git checkout ${source#"refs/heads/"}
-      
-        - bash: echo "##vso[task.prependpath]$CONDA/bin"
-          displayName: Add conda to PATH
+    steps:
+      - script: |
+          git remote add upstream https://github.com/bioconda/bioconda-recipes
+          git checkout master
+          git pull upstream master
+          source=$(Build.SourceBranch)
+          git checkout ${source#"refs/heads/"}
 
-        - bash: |
-            which conda
-            wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
-          displayName: Fetch common.sh
+      - bash: echo "##vso[task.prependpath]$CONDA/bin"
+        displayName: Add conda to PATH
 
-        - task: Cache@2
-          inputs:
-            path: "/usr/share/miniconda/envs/bioconda"
-            key: '"$(Agent.OS)" | **/common.sh'
-            cacheHitVar: CACHE_RESTORED
-          displayName: Restore cache
+      - bash: |
+          which conda
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
+        displayName: Fetch common.sh
 
-        - script: .azure-pipelines/createEnv.py
-          condition: ne(variables.CACHE_RESTORED, 'true')
-          displayName: Install bioconda-utils
+      - task: Cache@2
+        inputs:
+          path: "/usr/share/miniconda/envs/bioconda"
+          key: '"$(Agent.OS)" | **/common.sh'
+          cacheHitVar: CACHE_RESTORED
+        displayName: Restore cache
 
-        - bash: |
-              set -e
-              source activate bioconda
-              docker pull quay.io/dpryan79/mulled_container:latest
-              conda list
-              bioconda-utils build recipes config.yml \
-                  --docker --mulled-test \
-                  --git-range master HEAD
-              docker rmi quay.io/dpryan79/mulled_container:latest
-          displayName: Test
+      - script: .azure-pipelines/createEnv.py
+        condition: ne(variables.CACHE_RESTORED, 'true')
+        displayName: Install bioconda-utils
+
+      - bash: |
+          set -e
+          source activate bioconda
+          docker pull quay.io/dpryan79/mulled_container:latest
+          conda list
+          bioconda-utils build recipes config.yml \
+              --docker --mulled-test \
+              --git-range master HEAD
+          docker rmi quay.io/dpryan79/mulled_container:latest
+        displayName: Test
