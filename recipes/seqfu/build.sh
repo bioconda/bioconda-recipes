@@ -10,13 +10,8 @@ fi
 mkdir -p $PREFIX/bin
 
 echo " * Attempt automatic build"
-nimble build -y --verbose || true
+nimble build -y --verbose 
 
 pwd
 ls -ltr $PREFIX/bin/
-
-echo " * Legacy procedure"
-nimble install -y --verbose argparse docopt terminaltables readfq iterutils
-
-mkdir -p "${PREFIX}/bin"
-mv bin/* "${PREFIX}/bin/"
+ 
