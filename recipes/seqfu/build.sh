@@ -7,11 +7,15 @@ if [[ $OSTYPE == "darwin"* ]]; then
   export HOME=`pwd`
 fi
 
-mkdir -p $PREFIX/bin
+mkdir -p "$PREFIX"/bin
 
-echo " * Attempt automatic build"
+echo "## Automatic build"
 nimble build -y --verbose 
+./bin/seqfu version || true
 
-pwd
-ls -ltr $PREFIX/bin/
+echo "## Current dir: $(pwd)"
+mv bin/* "$PREFIX"/bin/
+
+echo "## List files in \$PREFIX/bin:"
+ls -ltr "$PREFIX"/bin/
  
