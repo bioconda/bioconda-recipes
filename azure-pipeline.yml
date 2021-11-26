@@ -5,43 +5,43 @@ stages:
 - stage: 'lint'
   jobs:
   - job: 'lint'  
-      pool:
-        vmImage: 'ubuntu-latest'
-      strategy:
-        maxParallel: 8
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      maxParallel: 8
 
-      steps:
-        - script: |
-            git remote add upstream https://github.com/bioconda/bioconda-recipes
-            git checkout master
-            git pull upstream master
-            source=$(Build.SourceBranch)
-            git checkout ${source#"refs/heads/"}
+    steps:
+    - script: |
+        git remote add upstream https://github.com/bioconda/bioconda-recipes
+        git checkout master
+        git pull upstream master
+        source=$(Build.SourceBranch)
+        git checkout ${source#"refs/heads/"}
 
-        - bash: echo "##vso[task.prependpath]$CONDA/bin"
-          displayName: Add conda to PATH
+    - bash: echo "##vso[task.prependpath]$CONDA/bin"
+      displayName: Add conda to PATH
 
-        - bash: |
-            which conda
-            wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
-          displayName: Fetch common.sh
+    - bash: |
+        which conda
+        wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
+      displayName: Fetch common.sh
 
-        - task: Cache@2
-          inputs:
-            path: "/usr/share/miniconda/envs/bioconda"
-            key: '"$(Agent.OS)" | **/common.sh'
-            cacheHitVar: CACHE_RESTORED
-          displayName: Restore cache
+    - task: Cache@2
+      inputs:
+        path: "/usr/share/miniconda/envs/bioconda"
+        key: '"$(Agent.OS)" | **/common.sh'
+        cacheHitVar: CACHE_RESTORED
+      displayName: Restore cache
 
-        - script: .azure-pipelines/createEnv.py
-          condition: ne(variables.CACHE_RESTORED, 'true')
-          displayName: Install bioconda-utils
+    - script: .azure-pipelines/createEnv.py
+      condition: ne(variables.CACHE_RESTORED, 'true')
+      displayName: Install bioconda-utils
 
-        - bash: |
-              source activate bioconda
-              which python
-              bioconda-utils lint --loglevel debug --full-report --git-range master HEAD
-          displayName: Lint
+    - bash: |
+          source activate bioconda
+          which python
+          bioconda-utils lint --loglevel debug --full-report --git-range master HEAD
+      displayName: Lint
 
 - stage: 'test_linux'
   jobs:
