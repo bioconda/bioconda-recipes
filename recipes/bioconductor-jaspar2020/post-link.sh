@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="JASPAR2020_0.99.10.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/JASPAR2020_0.99.10.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/JASPAR2020_0.99.10.tar.gz"
   "https://bioarchive.galaxyproject.org/JASPAR2020_0.99.10.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-jaspar2020/bioconductor-jaspar2020_0.99.10_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-jaspar2020/bioconductor-jaspar2020_0.99.10_src_all.tar.gz"
 )
 MD5="bfcaf41ebf0935b8d146afd37719de2d"
