@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="illuminaMousev1.db_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/illuminaMousev1.db_1.26.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/illuminaMousev1.db_1.26.0.tar.gz"
   "https://bioarchive.galaxyproject.org/illuminaMousev1.db_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-illuminamousev1.db/bioconductor-illuminamousev1.db_1.26.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-illuminamousev1.db/bioconductor-illuminamousev1.db_1.26.0_src_all.tar.gz"
 )
 MD5="13818c3b9acabe75550492bbe638fc05"

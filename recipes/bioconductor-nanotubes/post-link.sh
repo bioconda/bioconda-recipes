@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="nanotubes_1.8.0.tar.gz"
+FN="nanotubes_1.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/nanotubes_1.8.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/nanotubes_1.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-nanotubes/bioconductor-nanotubes_1.8.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/nanotubes_1.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/nanotubes_1.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-nanotubes/bioconductor-nanotubes_1.10.0_src_all.tar.gz"
 )
-MD5="c412bd43bd75d8d69759ff593b44ed9b"
+MD5="2131c1444c971bf1c157d620a0d18e61"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
