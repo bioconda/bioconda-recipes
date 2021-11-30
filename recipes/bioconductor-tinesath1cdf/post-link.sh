@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="tinesath1cdf_1.30.0.tar.gz"
+FN="tinesath1cdf_1.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/tinesath1cdf_1.30.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/tinesath1cdf_1.30.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tinesath1cdf/bioconductor-tinesath1cdf_1.30.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/tinesath1cdf_1.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/tinesath1cdf_1.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tinesath1cdf/bioconductor-tinesath1cdf_1.32.0_src_all.tar.gz"
 )
-MD5="ba2f604556b939a161447a57dc5a82f7"
+MD5="a2d6af0143d967218d5a57de160246f1"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

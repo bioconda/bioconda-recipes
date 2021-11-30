@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="BSgenome.Mmusculus.UCSC.mm10.masked_1.3.99.tar.gz"
+FN="BSgenome.Mmusculus.UCSC.mm10.masked_1.4.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/BSgenome.Mmusculus.UCSC.mm10.masked_1.3.99.tar.gz"
-  "https://bioarchive.galaxyproject.org/BSgenome.Mmusculus.UCSC.mm10.masked_1.3.99.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mmusculus.ucsc.mm10.masked/bioconductor-bsgenome.mmusculus.ucsc.mm10.masked_1.3.99_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mmusculus.ucsc.mm10.masked/bioconductor-bsgenome.mmusculus.ucsc.mm10.masked_1.3.99_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Mmusculus.UCSC.mm10.masked_1.4.3.tar.gz"
+  "https://bioarchive.galaxyproject.org/BSgenome.Mmusculus.UCSC.mm10.masked_1.4.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mmusculus.ucsc.mm10.masked/bioconductor-bsgenome.mmusculus.ucsc.mm10.masked_1.4.3_src_all.tar.gz"
 )
-MD5="c6a5365fa1a0d2a5ecb63752960eb3d7"
+MD5="40d51fb428a5fda8c05101a3dddb8957"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
