@@ -2,4 +2,4 @@
 
 echo -e "\n\n*** TEST ***\n\n"
 python -m selenzy_wrapper --help
-pytest -v
+pytest -v tests/test_outputs.py
