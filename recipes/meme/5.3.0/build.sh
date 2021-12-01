@@ -7,8 +7,8 @@ perl scripts/dependencies.pl
 
 ./configure --prefix="$PREFIX"
 
-make clean
-make AM_CFLAGS='-DNAN="(0.0/0.0)"'
+make -j2 clean
+make -j2 AM_CFLAGS='-DNAN="(0.0/0.0)"'
 
 # tests will only work inside the build dir, but
 # https://github.com/conda/conda-build/issues/1453
