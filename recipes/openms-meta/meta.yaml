@@ -1,19 +1,19 @@
 {% set name = "OpenMS" %}
-{% set version = "2.5.0" %}
+{% set version = "2.6.0" %}
 package:
   name: {{ name|lower  }}-meta
   version: {{ version  }}
 
 source:
-  url: https://github.com/OpenMS/OpenMS/releases/download/Release{{ version }}/OpenMS-{{ version }}-src.tar.gz
-  sha256: af62010174f9e04d158fadfd4efdc5c3c9acc2b85a04ab2190ddd97a2f1ad7df
+  url: https://abibuilder.informatik.uni-tuebingen.de/archive/openms/OpenMSInstaller/release/{{ version }}/OpenMS-{{ version }}-src.tar.gz
+  sha256: 55f30d09cba420009587e50d70812a4775d012151df8c600c7c39e59079bc10b
   patches:
     - apple_pyoms_nofixup.patch
     - init.py.patch
     - MANIFEST.in.patch
 
 build:
-  number: 6
+  number: 1
 
 # Try this when building with GUI
 #extra:
@@ -22,6 +22,7 @@ build:
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
     - cmake
     - autoconf
@@ -141,13 +142,11 @@ outputs:
         - {{ pin_compatible('sqlite', max_pin='x.x') }}
     test:
       commands:
+        - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/OpenMSInfo
         - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/FileMerger --help
 
   - name: pyopenms
     version: {{ version }}
-    build:
-      # Py3.8 build fails due to some dependency error
-      skip: True  # [py>=38]
     script: install_pyopenms.sh
     # problem with pyopenms is: We could in theory skip CMake configuration
     # and save a lot of build dependencies BUT then env.py
@@ -209,15 +208,13 @@ outputs:
       run:
         - {{ pin_subpackage('openms', exact=True) }}
         - bumbershoot ==3_0_11579
-        - comet-ms ==2016013
+        - comet-ms ==2019015
         - crux-toolkit ==3.2
         - fido ==1.0
-        - luciphor2 ==2018_06_28
-        - msgf_plus ==2017.07.21
+        - luciphor2 ==2020_04_03
+        - msgf_plus ==2020.08.05
         - omssa ==2.1.9
         - pepnovo ==20101117
-        # percolator=3.4 is not build with newer/compatible pinnings
-        # - percolator ==3.4
         - percolator ==3.5
         - sirius-csifingerid ==4.0.1
         - thermorawfileparser ==1.2.3
@@ -226,6 +223,7 @@ outputs:
     test:
       # Test copied from openms output to make sure a test environment for this output is created.
       commands:
+        - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/OpenMSInfo
         - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/FileMerger --help
 
 about:

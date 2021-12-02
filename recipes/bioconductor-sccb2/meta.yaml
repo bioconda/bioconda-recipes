@@ -1,0 +1,56 @@
+{% set version = "1.4.0" %}
+{% set name = "scCB2" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: d79488ccf4ca93488a0c8834e82ca272
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: testthat (>= 2.1.0), KernSmooth, beachmat, knitr, BiocStyle, rmarkdown
+# SystemRequirements: C++11
+requirements:
+  host:
+    - 'bioconductor-dropletutils >=1.14.0,<1.15.0'
+    - 'bioconductor-edger >=3.36.0,<3.37.0'
+    - 'bioconductor-rhdf5 >=2.38.0,<2.39.0'
+    - 'bioconductor-singlecellexperiment >=1.16.0,<1.17.0'
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - r-base
+    - r-doparallel
+    - r-foreach
+    - r-iterators
+    - r-matrix
+    - r-seurat
+  run:
+    - 'bioconductor-dropletutils >=1.14.0,<1.15.0'
+    - 'bioconductor-edger >=3.36.0,<3.37.0'
+    - 'bioconductor-rhdf5 >=2.38.0,<2.39.0'
+    - 'bioconductor-singlecellexperiment >=1.16.0,<1.17.0'
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - r-base
+    - r-doparallel
+    - r-foreach
+    - r-iterators
+    - r-matrix
+    - r-seurat
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'CB2 improves power of cell detection in droplet-based single-cell RNA sequencing data'
+  description: 'scCB2 is an R package implementing CB2 for distinguishing real cells from empty droplets in droplet-based single cell RNA-seq experiments (especially for 10x Chromium). It is based on clustering similar barcodes and calculating Monte-Carlo p-value for each cluster to test against background distribution. This cluster-level test outperforms single-barcode-level tests in dealing with low count barcodes and homogeneous sequencing library, while keeping FDR well controlled.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

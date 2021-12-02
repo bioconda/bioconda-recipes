@@ -1,0 +1,43 @@
+{% set version = "1.2.0" %}
+{% set name = "Travel" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: f67a36b5df7db2da6df4ad58c32fcbfa
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: testthat, BiocStyle, knitr, rmarkdown, inline, parallel
+# SystemRequirements: C++11 Windows: Dokan Linux&Mac: fuse, pkg-config
+requirements:
+  host:
+    - r-base
+    - r-rcpp
+    - libblas
+    - liblapack
+  run:
+    - r-base
+    - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'An utility to create an ALTREP object with a virtual pointer'
+  description: 'Creates a virtual pointer for R''s ALTREP object which does not have the data allocates in memory. The pointer is made by the file mapping of a virtual file so it behaves exactly the same as a regular pointer. All the requests to access the pointer will be sent to the underlying file system and eventually handled by a customized data-reading function. The main purpose of the package is to reduce the memory consumption when using R''s vector to represent a large data. The use cases of the package include on-disk data representation, compressed vector(e.g. RLE) and etc.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

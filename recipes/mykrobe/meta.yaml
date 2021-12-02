@@ -1,4 +1,4 @@
-{% set version = "0.8.2" %}
+{% set version = "0.10.0" %}
 
 package:
   name: mykrobe
@@ -6,17 +6,17 @@ package:
 
 source:
   url: https://github.com/Mykrobe-tools/mykrobe/archive/v{{ version }}.tar.gz
-  sha256: ab44b8e205198011012272ca7d3ed166c20ba2df9b788cbeb071c8cc819ccca3
+  sha256: ac08a8b53c621f7c41a29c861b2e7353c725131cf627768cc4abdec8531d9f67
 
 build:
-  number: 1
-  # Skipping py>38 due to some dependency incompatibility.
-  skip: True  # [py<30 or py>=38]
+  number: 0
+  skip: True  # [py<30]
   entry_points:
     - mykrobe = mykrobe.cli:main
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
@@ -24,11 +24,7 @@ requirements:
     - pip
     - zlib
     - wget
-    - numpy
     - cython
-    - mongoengine >=0.18.0
-    - pyvcf
-    - biopython
     - requests
   run:
     - python
@@ -39,13 +35,11 @@ requirements:
     - mongoengine >=0.18.0
     - pyvcf
     - biopython
+    - anytree
+    - requests
 
 test:
   imports:
-    - numpy
-    - mongoengine
-    - vcf
-    - Bio
     - mykrobe
 
   commands:
@@ -53,11 +47,9 @@ test:
     - mykrobe --help
     - mykrobe predict --help
     - mykrobe variants --help
-    - mykrobe genotype --help
+    - mykrobe panels describe
     - test -x $PREFIX/lib/python*/site-packages/mykrobe/cortex/mccortex31
     - $PREFIX/lib/python*/site-packages/mykrobe/cortex/mccortex31 uniqkmers -k 7 1
-    - find $PREFIX/lib/python*/site-packages/mykrobe/data -print
-    - test -f $PREFIX/lib/python*/site-packages/mykrobe/data/panels/tb-species-170421.fasta.gz
 
 about:
   home: https://github.com/Mykrobe-tools/mykrobe
@@ -65,3 +57,8 @@ about:
   license_file: LICENSE
   summary: 'Antibiotic resistance prediction in minutes'
   description: 'Rapid antibiotic-resistance predictions from genome sequence data for Staphylococcus aureus and Mycobacterium tuberculosis.'
+
+extra:
+  recipe-maintainers:
+    - mbhall88
+    - martinghunt

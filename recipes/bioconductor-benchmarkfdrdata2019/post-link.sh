@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="benchmarkfdrData2019_1.2.0.tar.gz"
+FN="benchmarkfdrData2019_1.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/benchmarkfdrData2019_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/benchmarkfdrData2019_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-benchmarkfdrdata2019/bioconductor-benchmarkfdrdata2019_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/benchmarkfdrData2019_1.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/benchmarkfdrData2019_1.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-benchmarkfdrdata2019/bioconductor-benchmarkfdrdata2019_1.8.0_src_all.tar.gz"
 )
-MD5="09df67163db4c49aefd606e2d6330dd6"
+MD5="fb9ddd048615e87da449fc19ddff9fb8"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

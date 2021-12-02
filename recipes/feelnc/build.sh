@@ -3,7 +3,7 @@
 mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/utils
 
-sed -i.bak 's/#!\/usr\/bin\/perl -w/#!\/usr\/bin\/env perl/' scripts/*
+sed -i.bak 's/#!\/usr\/bin\/perl/#!\/usr\/bin\/env perl/' scripts/*
 
 cp scripts/* ${PREFIX}/bin/
 cp utils/FEELnc_pipeline.sh ${PREFIX}/bin/
