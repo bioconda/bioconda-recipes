@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="MEDIPSData_1.24.0.tar.gz"
+FN="MEDIPSData_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/MEDIPSData_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MEDIPSData_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-medipsdata/bioconductor-medipsdata_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/MEDIPSData_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MEDIPSData_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-medipsdata/bioconductor-medipsdata_1.30.0_src_all.tar.gz"
 )
-MD5="ab00c1a30429f6b0f65ed915b05403d3"
+MD5="7cebbdbbf294c64aa869c0efdd414cf6"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

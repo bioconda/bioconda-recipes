@@ -1,0 +1,49 @@
+{% set version = "1.4.0" %}
+{% set name = "densvis" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 1d9cdd21e5314b2cf63b1ce600ee4c73
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: knitr, rmarkdown, BiocStyle, ggplot2, Rtsne, uwot, testthat
+requirements:
+  host:
+    - 'bioconductor-basilisk >=1.6.0,<1.7.0'
+    - r-assertthat
+    - r-base
+    - r-rcpp
+    - r-reticulate
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-basilisk >=1.6.0,<1.7.0'
+    - r-assertthat
+    - r-base
+    - r-rcpp
+    - r-reticulate
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'MIT + file LICENSE'
+  summary: 'Density-Preserving Data Visualization via Non-Linear Dimensionality Reduction'
+  description: 'Implements the density-preserving modification to t-SNE and UMAP described by Narayan et al. (2020) <doi:10.1101/2020.05.12.077776>. The non-linear dimensionality reduction techniques t-SNE and UMAP enable users to summarise complex high-dimensional sequencing data such as single cell RNAseq using lower dimensional representations. These lower dimensional representations enable the visualisation of discrete transcriptional states, as well as continuous trajectory (for example, in early development). However, these methods focus on the local neighbourhood structure of the data. In some cases, this results in misleading visualisations, where the density of cells in the low-dimensional embedding does not represent the transcriptional heterogeneity of data in the original high-dimensional space. den-SNE and densMAP aim to enable more accurate visual interpretation of high-dimensional datasets by producing lower-dimensional embeddings that accurately represent the heterogeneity of the original high-dimensional space, enabling the identification of homogeneous and heterogeneous cell states. This accuracy is accomplished by including in the optimisation process a term which considers the local density of points in the original high-dimensional space. This can help to create visualisations that are more representative of heterogeneity in the original high-dimensional space.'
+  license_file: LICENSE
+

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="chromstaRData_1.14.0.tar.gz"
+FN="chromstaRData_1.20.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/chromstaRData_1.14.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/chromstaRData_1.14.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-chromstardata/bioconductor-chromstardata_1.14.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/chromstaRData_1.20.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/chromstaRData_1.20.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chromstardata/bioconductor-chromstardata_1.20.0_src_all.tar.gz"
 )
-MD5="f306d7bab83f0177eb9bd5adbec364e1"
+MD5="f31265dfefdbc525d18e41193753a18d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

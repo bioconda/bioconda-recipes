@@ -1,0 +1,50 @@
+{% set name = "Raptor" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  git_url: https://github.com/seqan/raptor # recursive checkout
+  git_rev: raptor-v{{ version }}
+
+build:
+  number: 0
+  skip: True # [osx]
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - cmake >=3.8
+  host:
+    - bzip2
+    - zlib
+  run:
+    - bzip2
+    - zlib
+
+test:
+  commands:
+    - raptor --version
+    - raptor --help 2>&1 > /dev/null
+    - raptor build --help 2>&1 > /dev/null
+    - raptor search --help 2>&1 > /dev/null
+
+about:
+  home: https://github.com/seqan/raptor
+  summary: "Raptor: A fast and space-efficient pre-filter for querying very large collections of nucleotide sequences"
+  description: "Raptor is a tool for approximately searching many queries in large collections of nucleotide sequences."
+  license: BSD-3-Clause License
+  license_family: BSD
+  license_file: LICENSE.md
+
+extra:
+  identifiers:
+    - doi:10.1016/j.isci.2021.102782
+  recipe-maintainers:
+    - eseiler
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash
