@@ -19,6 +19,6 @@ cp util/seg/segToMap $PREFIX/bin/segToMap
 cp util/bigwig/wigToBigWig $PREFIX/bin/wigToBigWig
 cp bin/* $PREFIX/bin
 cd $PREFIX/bin
-sed -i "s,internal/,," generateMap.pl
-sed -i "s,../renameChr.pl,renameChr.pl," generateMap.pl
-sed -i "s,../bigwig/,," generateMap.pl
+sed -i'.bak' "s,internal/,," generateMap.pl
+sed -i'.bak' "s,../renameChr.pl,renameChr.pl," generateMap.pl
+sed -i'.bak' "s,../bigwig/,," generateMap.pl
