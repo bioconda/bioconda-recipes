@@ -99,6 +99,34 @@ stages:
           docker rmi quay.io/dpryan79/mulled_container:latest
         displayName: Test
 
+      - bash: |
+          mkdir -p /tmp/artifacts/packages
+          env
+          ls -l $CONDA
+          cd $CONDA_PREFIX/conda-bld || exit 0
+          find -name .cache | xargs rm -rf || true
+          for n in rss.xml index.html channeldata.json linux-64 osx-64 noarch broken; do
+            cp -rv $n /tmp/artifacts/packages || true
+          done
+          if command -V docker >/dev/null; then
+            mkdir -p /tmp/artifacts/images
+            cd /tmp/artifacts/images
+            docker image ls --format='{{.Repository}}:{{.Tag}}' | \
+              { grep biocontainers || true ; } | \
+              xargs -n1 -P4 bash -c '
+                test -n "${1+x}" || exit 0
+                echo "Start compressing docker image ${1} ..."
+                docker save "${1}" | gzip -c > "${1##*/}.tar.gz"
+                echo "Finished compressing docker image ${1} ."
+                ' --
+          fi
+          ) || true
+
+      - publish: /tmp/artifacts
+        artifact: LinuxArtifacts
+
+- stage: 'test_osx'
+  jobs:
   - job: 'test_osx'  
     pool:
       vmImage: 'macOS-latest'
@@ -125,7 +153,7 @@ stages:
 
     - task: Cache@2
       inputs:
-        path: "/usr/share/miniconda/envs/bioconda"
+        path: "$CONDA/envs/bioconda"
         key: '"$(Agent.OS)" | **/common.sh'
         cacheHitVar: CACHE_RESTORED
       displayName: Restore cache
