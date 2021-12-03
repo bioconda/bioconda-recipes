@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="Mu15v1.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/Mu15v1.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/Mu15v1.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/Mu15v1.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mu15v1.db/bioconductor-mu15v1.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mu15v1.db/bioconductor-mu15v1.db_3.2.3_src_all.tar.gz"
 )
 MD5="e9297b5fe223b046bc65dc6ea0b4376d"

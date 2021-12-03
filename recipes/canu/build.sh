@@ -4,10 +4,9 @@
 set -e
 
 mkdir -p "$PREFIX/bin"
+mkdir -p "$PREFIX/lib"
+mkdir -p "$PREFIX/share"
 
-pushd src
-make clean TARGET_DIR=$PREFIX CC=$CC CXX=$CXX
-make TARGET_DIR=$PREFIX CC=$CC CXX=$CXX
-
-# This installs all of the object files as well, remove that
-rm -rf $PREFIX/*amd64
+cp -r bin/* $PREFIX/bin/
+cp -r lib/* $PREFIX/lib/
+cp -r share/* $PREFIX/share/
