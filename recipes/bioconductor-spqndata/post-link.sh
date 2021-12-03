@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="spqnData_1.4.0.tar.gz"
+FN="spqnData_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/spqnData_1.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/spqnData_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-spqndata/bioconductor-spqndata_1.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/spqnData_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/spqnData_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-spqndata/bioconductor-spqndata_1.6.0_src_all.tar.gz"
 )
-MD5="05bab0a3b7a9fe854eb5c32ddf4559d9"
+MD5="09552855b53fafcb1aa8e390ca557539"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

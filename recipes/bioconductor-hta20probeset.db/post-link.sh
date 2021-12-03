@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="hta20probeset.db_8.7.0.tar.gz"
+FN="hta20probeset.db_8.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/hta20probeset.db_8.7.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/hta20probeset.db_8.7.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hta20probeset.db/bioconductor-hta20probeset.db_8.7.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hta20probeset.db/bioconductor-hta20probeset.db_8.7.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hta20probeset.db_8.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/hta20probeset.db_8.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hta20probeset.db/bioconductor-hta20probeset.db_8.8.0_src_all.tar.gz"
 )
-MD5="d2123b0ecd324626b06a920f947a114e"
+MD5="8cc15bb71f3c2776015e55a2d7df2c2f"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
