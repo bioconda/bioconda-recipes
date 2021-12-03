@@ -55,81 +55,76 @@ stages:
       maxParallel: 8
 
     steps:
-      - script: |
-          git remote add upstream https://github.com/bioconda/bioconda-recipes
-          git checkout master
-          git pull upstream master
-          source=$(Build.SourceBranch)
-          git checkout ${source#"refs/heads/"}
+    - script: |
+        git remote add upstream https://github.com/bioconda/bioconda-recipes
+        git checkout master
+        git pull upstream master
+        source=$(Build.SourceBranch)
+        git checkout ${source#"refs/heads/"}
 
-      - bash: echo "##vso[task.prependpath]$CONDA/bin"
-        displayName: Add conda to PATH
+    - bash: echo "##vso[task.prependpath]$CONDA/bin"
+      displayName: Add conda to PATH
 
-      - bash: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
-        displayName: Fetch common.sh
+    - bash: |
+        wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
+      displayName: Fetch common.sh
 
-      - task: Cache@2
-        inputs:
-          path: "/usr/share/miniconda/envs/bioconda"
-          key: '"$(Agent.OS)" | **/common.sh'
-          cacheHitVar: CACHE_RESTORED
-        displayName: Restore cache
+    - task: Cache@2
+      inputs:
+        path: "/usr/share/miniconda/envs/bioconda"
+        key: '"$(Agent.OS)" | **/common.sh'
+        cacheHitVar: CACHE_RESTORED
+      displayName: Restore cache
 
-      - script: .azure-pipelines/createEnv.py
-        condition: ne(variables.CACHE_RESTORED, 'true')
-        displayName: Install bioconda-utils
+    - script: .azure-pipelines/createEnv.py
+      condition: ne(variables.CACHE_RESTORED, 'true')
+      displayName: Install bioconda-utils
 
-      - bash: |
-          set -e
+    - bash: |
+        set -e
 
-          rm -f "${HOME}/.condarc"
-          # Activate our Conda installation as "base".
-          . /usr/share/miniconda/envs/bioconda/etc/profile.d/conda.sh
-          conda activate base
-          #source activate bioconda
-          ## This is needed so the wrong conda doesn't get used!
-          #export CONDA_EXE=${CONDA_PREFIX}/bin/conda
-          #export CONDA_PYTHON_EXE=${CONDA_PREFIX}/bin/python
+        rm -f "${HOME}/.condarc"
+        # Activate our Conda installation as "base".
+        . /usr/share/miniconda/envs/bioconda/etc/profile.d/conda.sh
+        conda activate base
 
-          conda config --system --add channels defaults
-          conda config --system --add channels bioconda
-          conda config --system --add channels conda-forge
-          docker pull quay.io/dpryan79/mulled_container:latest
-          mkdir -p ${CONDA_PREFIX}/conda-bld
+        conda config --system --add channels defaults
+        conda config --system --add channels bioconda
+        conda config --system --add channels conda-forge
+        docker pull quay.io/dpryan79/mulled_container:latest
+        mkdir -p ${CONDA_PREFIX}/conda-bld
 
-          bioconda-utils build recipes config.yml \
-              --docker --mulled-test \
-              --git-range master HEAD
-          docker rmi quay.io/dpryan79/mulled_container:latest
-        displayName: Test
+        bioconda-utils build recipes config.yml \
+            --docker --mulled-test \
+            --git-range master HEAD
+        docker rmi quay.io/dpryan79/mulled_container:latest
+      displayName: Test
 
-      - bash: |
-          (
-          mkdir -p /tmp/artifacts/packages
-          env
-          cd /usr/share/miniconda/envs/bioconda/conda-bld || exit 0
-          ls -l *
-          find -name .cache | xargs rm -rf || true
-          for n in index.html channeldata.json linux-64 osx-64 noarch; do
-            cp -rv $n /tmp/artifacts/packages || true
-          done
-          if command -V docker >/dev/null; then
-            mkdir -p /tmp/artifacts/images
-            cd /tmp/artifacts/images
-            docker image ls --format='{{.Repository}}:{{.Tag}}' | \
-              { grep biocontainers || true ; } | \
-              xargs -n1 -P4 bash -c '
-                test -n "${1+x}" || exit 0
-                echo "Start compressing docker image ${1} ..."
-                docker save "${1}" | gzip -c > "${1##*/}.tar.gz"
-                echo "Finished compressing docker image ${1} ."
-                ' --
-          fi
-          ) || true
+    - bash: |
+        (
+        mkdir -p /tmp/artifacts/packages
+        cd /usr/share/miniconda/envs/bioconda/conda-bld || exit 0
+        find -name .cache | xargs rm -rf || true
+        for n in index.html channeldata.json linux-64 osx-64 noarch; do
+          cp -rv $n /tmp/artifacts/packages || true
+        done
+        if command -V docker >/dev/null; then
+          mkdir -p /tmp/artifacts/images
+          cd /tmp/artifacts/images
+          docker image ls --format='{{.Repository}}:{{.Tag}}' | \
+            { grep biocontainers || true ; } | \
+            xargs -n1 -P4 bash -c '
+              test -n "${1+x}" || exit 0
+              echo "Start compressing docker image ${1} ..."
+              docker save "${1}" | gzip -c > "${1##*/}.tar.gz"
+              echo "Finished compressing docker image ${1} ."
+              ' --
+        fi
+        ) || true
+      displayName: Prepare artifacts
 
-      - publish: /tmp/artifacts
-        artifact: LinuxArtifacts
+    - publish: /tmp/artifacts
+      artifact: LinuxArtifacts
 
 - stage: 'test_osx'
   jobs:
@@ -173,11 +168,6 @@ stages:
 
         . /usr/local/miniconda/envs/bioconda/etc/profile.d/conda.sh
         conda activate base
-        #source activate bioconda
-        ## This is needed so the wrong conda doesn't get used!
-        #export CONDA_EXE=${CONDA_PREFIX}/bin/conda
-        #export CONDA_PYTHON_EXE=${CONDA_PREFIX}/bin/python
-        #env
 
         conda config --system --add channels defaults
         conda config --system --add channels bioconda
@@ -187,3 +177,17 @@ stages:
         bioconda-utils build recipes config.yml \
             --git-range master HEAD
       displayName: Test
+
+    - bash: |
+        (
+        mkdir -p /tmp/artifacts/packages
+        cd /usr/local/miniconda/envs/bioconda/conda-bld || exit 0
+        find -name .cache | xargs rm -rf || true
+        for n in index.html channeldata.json linux-64 osx-64 noarch; do
+          cp -rv $n /tmp/artifacts/packages || true
+        done
+        ) || true
+      displayName: Prepare artifacts
+
+    - publish: /tmp/artifacts
+      artifact: OSXArtifacts
