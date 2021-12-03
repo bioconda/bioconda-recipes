@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="scTHI.data_1.4.0.tar.gz"
+FN="scTHI.data_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/scTHI.data_1.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/scTHI.data_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-scthi.data/bioconductor-scthi.data_1.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/scTHI.data_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/scTHI.data_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-scthi.data/bioconductor-scthi.data_1.6.0_src_all.tar.gz"
 )
-MD5="934ddabeb602eadf3adc82acf2b51aa1"
+MD5="20f84fbf97a954050265834e23a77777"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
