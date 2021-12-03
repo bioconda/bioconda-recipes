@@ -100,12 +100,13 @@ stages:
         displayName: Test
 
       - bash: |
+          (
           mkdir -p /tmp/artifacts/packages
           env
           cd /usr/share/miniconda/envs/bioconda/conda-bld || exit 0
           ls -l *
           find -name .cache | xargs rm -rf || true
-          for n in rss.xml index.html channeldata.json linux-64 osx-64 noarch broken; do
+          for n in index.html channeldata.json linux-64 osx-64 noarch; do
             cp -rv $n /tmp/artifacts/packages || true
           done
           if command -V docker >/dev/null; then
@@ -153,7 +154,7 @@ stages:
 
     - task: Cache@2
       inputs:
-        path: "$CONDA/envs/bioconda"
+        path: "/usr/local/miniconda/envs/bioconda"
         key: '"$(Agent.OS)" | **/common.sh'
         cacheHitVar: CACHE_RESTORED
       displayName: Restore cache
