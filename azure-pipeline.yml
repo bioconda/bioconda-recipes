@@ -82,10 +82,15 @@ stages:
 
       - bash: |
           set -e
-          source activate bioconda
-          # This is needed so the wrong conda doesn't get used!
-          export CONDA_EXE=${CONDA_PREFIX}/bin/conda
-          export CONDA_PYTHON_EXE=${CONDA_PREFIX}/bin/python
+
+          rm -f "${HOME}/.condarc"
+          # Activate our Conda installation as "base".
+          . /usr/share/miniconda/envs/bioconda/etc/profile.d/conda.sh
+          conda activate base
+          #source activate bioconda
+          ## This is needed so the wrong conda doesn't get used!
+          #export CONDA_EXE=${CONDA_PREFIX}/bin/conda
+          #export CONDA_PYTHON_EXE=${CONDA_PREFIX}/bin/python
 
           conda config --system --add channels defaults
           conda config --system --add channels bioconda
@@ -165,11 +170,14 @@ stages:
 
     - bash: |
         set -e
+
+        . ${CONDA_PREFIX}/envs/bioconda/etc/profile.d/conda.sh
+        conda activate base
         source activate bioconda
-        # This is needed so the wrong conda doesn't get used!
-        export CONDA_EXE=${CONDA_PREFIX}/bin/conda
-        export CONDA_PYTHON_EXE=${CONDA_PREFIX}/bin/python
-        env
+        ## This is needed so the wrong conda doesn't get used!
+        #export CONDA_EXE=${CONDA_PREFIX}/bin/conda
+        #export CONDA_PYTHON_EXE=${CONDA_PREFIX}/bin/python
+        #env
 
         conda config --system --add channels defaults
         conda config --system --add channels bioconda
