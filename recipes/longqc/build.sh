@@ -1,5 +1,4 @@
 #!/bin/bash
-
 mkdir -p $PREFIX/bin
 
 cp -r mixEM $PREFIX/bin
