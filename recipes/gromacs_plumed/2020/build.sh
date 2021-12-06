@@ -69,7 +69,6 @@ else
     gmx='gmx_mpi'
 fi
 
-mkdir -p "${PREFIX}/etc/conda/activate.d"
 touch "${PREFIX}/bin/${gmx}"
 chmod +x "${PREFIX}/bin/${gmx}"
 
@@ -141,13 +140,6 @@ function _gromacs_bin_dir() {
   printf '%s' "${PREFIX}/bin.\${arch}"
 }
 
-EOF
-} | tee "${PREFIX}/bin/${gmx}" > "${PREFIX}/etc/conda/activate.d/gromacs_activate.sh"
-
-cat >> "${PREFIX}/etc/conda/activate.d/gromacs_activate.sh" <<EOF
-. "\$( _gromacs_bin_dir )/GMXRC" "\${@}"
-EOF
-
-cat >> "${PREFIX}/bin/${gmx}" <<EOF
 exec "\$( _gromacs_bin_dir )/${gmx}" "\${@}"
 EOF
+} > "${PREFIX}/bin/${gmx}"
