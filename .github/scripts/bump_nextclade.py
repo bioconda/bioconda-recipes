@@ -31,6 +31,7 @@ shas = {}
 for asset in nextclade_latest["assets"]:
     r = requests.get(asset["url"], headers={"Accept": "application/octet-stream"})
     h = hashlib.sha256()
+    print(r.content)
     h.update(r.content)
     shas[asset["name"]] = h.hexdigest()
 print(shas)
@@ -46,12 +47,13 @@ recipes = {}
 #%%
 for task in tasks:
     # recipes[task] = requests.get("https://raw.githubusercontent.com/corneliusroemer/bioconda-recipes/master/recipes/nextclade/meta.yaml").content.decode("utf-8")
-    recipes[task] = requests.get("https://raw.githubusercontent.com/bioconda/bioconda-recipes/ac724fd1871dff89d41ee5145bb0af3468a6465c/recipes/nextclade/meta.yaml").content.decode("utf-8")
+    recipes[task] = requests.get("https://raw.githubusercontent.com/bioconda/bioconda-recipes/nextalign/recipes/nextclade/meta.yaml").content.decode("utf-8")
     regex = r'version = "(.+)"'
     recipes[task] = re.sub(regex, latest_version + "test", recipes[task])
     for selector, asset_name in oses.items():
-        regex = rf'sha256: (\S+)\s+# \[{selector}\]'
-        recipes[task] = re.sub(regex, shas[f"{task}-{asset_name}"], recipes[task])
+        regex = rf'(?<=sha256: )(\S+)(?=\s+# \[{selector}\])'
+        sha = shas[f"{task}-{asset_name}"]
+        recipes[task] = re.sub(regex, rf"{sha}", recipes[task])
     with open(f"recipes/{task}/meta.yaml", "w") as f:
         f.write(recipes[task])
 

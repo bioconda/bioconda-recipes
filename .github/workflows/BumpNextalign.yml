@@ -5,15 +5,15 @@
 # 5. Add and commit recipe to repo
 # 6. Create PR to bioconda
 
-name: "Create clean branch"
+name: "Bump nextalign"
 
 on:
   workflow_dispatch: # click the button on Github repo!
 
 jobs:
-  sync_latest_from_upstream:
+  bump_nextalign:
     runs-on: ubuntu-latest
-    name: Sync latest commits from upstream repo
+    name: bump nextalign
 
     steps:
       # REQUIRED step
@@ -24,23 +24,23 @@ jobs:
           python-version: "3.9"
           cache: "pip"
       - run: pip install -r .github/scripts/requirements.txt
-      - run: python .github/scripts/autobumper.py
+      - run: python .github/scripts/bump_nextalign.py
       - run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git remote add upstream https://github.com/bioconda/bioconda-recipes
           git fetch upstream
-          git checkout -b update/nextclade
+          git checkout -b update/nextalign
           git reset --mixed upstream/master
-          git add recipes/nextclade/meta.yaml
-          git commit -m "Update nextclade recipe to latest version"
+          git add recipes/nextalign/meta.yaml
+          git commit -m "Update nextalign recipe to latest version"
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: update/nextclade
           force: true
-      - run: gh pr create --head corneliusroemer:update/nextclade -d --title "Pull request title" --body "Pull request body"
+      - run: gh pr create --head corneliusroemer:update/nextalign -d --title "Update Nextalign" --body ""
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 # - run: |
