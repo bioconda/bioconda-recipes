@@ -52,7 +52,7 @@ for task in tasks:
     for selector, asset_name in oses.items():
         regex = rf'(?<=sha256: )(\S+)(?=\s+# \[{selector}\])'
         sha = shas[f"{task}-{asset_name}"]
-        recipes[task] = re.sub(regex, rf"test{sha}", recipes[task])
+        recipes[task] = re.sub(regex, rf"{sha}", recipes[task])
     with open(f"recipes/{task}/meta.yaml", "w") as f:
         f.write(recipes[task])
 

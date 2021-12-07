@@ -31,7 +31,6 @@ shas = {}
 for asset in nextclade_latest["assets"]:
     r = requests.get(asset["url"], headers={"Accept": "application/octet-stream"})
     h = hashlib.sha256()
-    print(r.content)
     h.update(r.content)
     shas[asset["name"]] = h.hexdigest()
 print(shas)
