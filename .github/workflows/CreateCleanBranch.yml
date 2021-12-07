@@ -19,18 +19,21 @@ jobs:
       # REQUIRED step
       # Step 1: run a standard checkout action, provided by github
       - uses: actions/checkout@v2
-      - run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git remote add upstream https://github.com/bioconda/bioconda-recipes
-          git fetch upstream
-          git checkout -b update/test
-          git reset --hard upstream/master
       - uses: actions/setup-python@v2
         with:
           python-version: "3.9"
-      - run: pip install hashlib
+      - run: |
+          python -m pip install --upgrade pip
+          pip install hashlib
       - run: python autobumper.py
       - run: |
           git add .
           git push --set-upstream update/test
+
+# - run: |
+# git config user.name github-actions
+# git config user.email github-actions@github.com
+# git remote add upstream https://github.com/bioconda/bioconda-recipes
+# git fetch upstream
+# git checkout -b update/test
+# git reset --hard upstream/master
