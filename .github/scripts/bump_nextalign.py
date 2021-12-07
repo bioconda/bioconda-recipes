@@ -31,7 +31,6 @@ shas = {}
 for asset in nextclade_latest["assets"]:
     r = requests.get(asset["url"], headers={"Accept": "application/octet-stream"})
     h = hashlib.sha256()
-    print(r.content)
     h.update(r.content)
     shas[asset["name"]] = h.hexdigest()
 print(shas)
@@ -53,7 +52,7 @@ for task in tasks:
     for selector, asset_name in oses.items():
         regex = rf'(?<=sha256: )(\S+)(?=\s+# \[{selector}\])'
         sha = shas[f"{task}-{asset_name}"]
-        recipes[task] = re.sub(regex, rf"{sha}", recipes[task])
+        recipes[task] = re.sub(regex, rf"test{sha}", recipes[task])
     with open(f"recipes/{task}/meta.yaml", "w") as f:
         f.write(recipes[task])
 
