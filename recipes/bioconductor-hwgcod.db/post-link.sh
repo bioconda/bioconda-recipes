@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="hwgcod.db_3.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/hwgcod.db_3.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hwgcod.db_3.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hwgcod.db_3.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hwgcod.db/bioconductor-hwgcod.db_3.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hwgcod.db/bioconductor-hwgcod.db_3.4.0_src_all.tar.gz"
 )
 MD5="a46bf1a242853bbab26351a11b18030a"

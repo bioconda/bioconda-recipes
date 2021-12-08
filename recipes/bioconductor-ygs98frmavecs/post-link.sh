@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="ygs98frmavecs_1.3.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/ygs98frmavecs_1.3.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/ygs98frmavecs_1.3.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ygs98frmavecs_1.3.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ygs98frmavecs/bioconductor-ygs98frmavecs_1.3.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ygs98frmavecs/bioconductor-ygs98frmavecs_1.3.0_src_all.tar.gz"
 )
 MD5="e78c8447eb381b91dafb2f9688da39dc"
