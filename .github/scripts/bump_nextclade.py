@@ -50,7 +50,7 @@ for task in tasks:
     # recipes[task] = requests.get("https://raw.githubusercontent.com/corneliusroemer/bioconda-recipes/master/recipes/nextclade/meta.yaml").content.decode("utf-8")
     recipes[task] = requests.get("https://raw.githubusercontent.com/bioconda/bioconda-recipes/master/recipes/nextclade/meta.yaml").content.decode("utf-8")
     regex = r'version = "(.+)"'
-    recipes[task] = re.sub(regex, f'version = "{latest_version}" test' , recipes[task])
+    recipes[task] = re.sub(regex, f'version = "{latest_version}"' , recipes[task])
     for selector, asset_name in oses.items():
         regex = rf'(?<=sha256: )(\S+)(?=\s+# \[{selector}\])'
         sha = shas[f"{task}-{asset_name}"]
