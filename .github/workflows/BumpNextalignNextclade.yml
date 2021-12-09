@@ -34,10 +34,11 @@ jobs:
           git show master:.github/scripts/bump_nextclade.py > bump_nextclade.py
       - run: python .github/scripts/bump_nextclade.py
       - run: |
+          git remote add fork https://github.com/corneliusroemer/bioconda-recipes
           git checkout -b update/nextclade-"$(cat version)"
           git add recipes/nextclade/meta.yaml
           git commit -m "Update nextclade recipe to latest version" || true
-          git push --force
+          git push --set-upstream fork update/nextclade-"$(cat version)"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: gh pr create --head corneliusroemer:update/nextclade-"$(cat version)" -d --title "Update Nextclade" --body ""
