@@ -24,7 +24,6 @@ jobs:
           python-version: "3.9"
           cache: "pip"
       - run: pip install -r .github/scripts/requirements.txt
-      - run: python .github/scripts/bump_nextclade.py
       - run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
@@ -38,13 +37,8 @@ jobs:
           git checkout -b update/nextclade-"$(cat version)"
           git add recipes/nextclade/meta.yaml
           git commit -m "Update nextclade recipe to latest version" || true
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: update/nextclade
-          force: true
-      - run: gh pr create --head corneliusroemer:update/nextclade -d --title "Update Nextclade" --body ""
+          git push --force
+      - run: gh pr create --head corneliusroemer:update/nextclade-"$(cat version)" -d --title "Update Nextclade" --body ""
         env:
           GITHUB_TOKEN: ${{ secrets.ACTION }}
   bump_nextalign:
