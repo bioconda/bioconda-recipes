@@ -9,7 +9,6 @@ echo '' >> bin/config-metawrap
 echo "# CONFIGURABLE PATHS FOR DATABASES (see 'Databases' section of metaWRAP README for details)" >> bin/config-metawrap
 echo "# path to kraken standard database" >> bin/config-metawrap
 echo "KRAKEN_DB=~/KRAKEN_DB" >> bin/config-metawrap
-echo "KRAKEN2_DB=~/KRAKEN_DB2" >> bin/config-metawrap
 echo "" >> bin/config-metawrap
 
 echo "# path to indexed human (or other host) genome (see metaWRAP website for guide). This includes .bitmask and .srprism files"  >> bin/config-metawrap

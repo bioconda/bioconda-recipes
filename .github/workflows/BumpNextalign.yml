@@ -1,0 +1,54 @@
+# 1. Compare version of recipe with latest release
+# 2. If version is newer than latest release, bump the version
+# 3. Download assets, get SHA256, update SH256 in recipe
+# 4. Checkout branch, reset to master (or use non-master branch synced without the workflow)
+# 5. Add and commit recipe to repo
+# 6. Create PR to bioconda
+
+name: "Bump nextalign"
+
+on:
+  workflow_dispatch: # click the button on Github repo!
+
+jobs:
+  bump_nextalign:
+    runs-on: ubuntu-latest
+    name: bump nextalign
+
+    steps:
+      # REQUIRED step
+      # Step 1: run a standard checkout action, provided by github
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+          cache: "pip"
+      - run: pip install -r .github/scripts/requirements.txt
+      - run: python .github/scripts/bump_nextalign.py
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git remote add upstream https://github.com/bioconda/bioconda-recipes
+          git fetch upstream
+          git checkout -b update/nextalign
+          git reset --mixed upstream/master
+          git add recipes/nextalign/meta.yaml
+          git commit -m "Update nextalign recipe to latest version" || true
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: update/nextalign
+          force: true
+      - run: gh pr create --head corneliusroemer:update/nextalign -d --title "Update Nextalign" --body ""
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTION }}
+# - run: |
+# git config user.name github-actions
+# git config user.email github-actions@github.com
+# git remote add upstream https://github.com/bioconda/bioconda-recipes
+# git fetch upstream
+# git checkout -b update/test
+# git reset --hard upstream/master
+# git commit -m "bump nextclade version"
+# git push -u origin update/test --force
