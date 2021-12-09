@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="BSgenome.Osativa.MSU.MSU7_0.99.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/BSgenome.Osativa.MSU.MSU7_0.99.2.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Osativa.MSU.MSU7_0.99.2.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Osativa.MSU.MSU7_0.99.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.osativa.msu.msu7/bioconductor-bsgenome.osativa.msu.msu7_0.99.2_src_all.tar.gz"
 )
