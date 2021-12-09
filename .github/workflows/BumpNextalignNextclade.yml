@@ -29,21 +29,23 @@ jobs:
           git config user.email github-actions@github.com
           git remote add upstream https://github.com/bioconda/bioconda-recipes
           git fetch upstream
-          git checkout -b upstream/master
+          git branch -D upstream/master
+          git checkout -b upstream/master upstream/master
           git clean -d -x -f
           git show master:.github/scripts/bump_nextclade.py > bump_nextclade.py
       - run: python .github/scripts/bump_nextclade.py
       - run: |
           git remote add fork https://github.com/corneliusroemer/bioconda-recipes
+          git branch -D update/nextclade-"$(cat version)"
           git checkout -b update/nextclade-"$(cat version)"
           git add recipes/nextclade/meta.yaml
           git commit -m "Update nextclade recipe to latest version" || true
           git push --set-upstream fork update/nextclade-"$(cat version)"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: gh pr create --head corneliusroemer:update/nextclade-"$(cat version)" -d --title "Update Nextclade" --body ""
-        env:
-          GITHUB_TOKEN: ${{ secrets.ACTION }}
+      # - run: gh pr create --head corneliusroemer:update/nextclade-"$(cat version)" -d --title "Update Nextclade" --body ""
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.ACTION }}
   bump_nextalign:
     runs-on: ubuntu-latest
     name: bump nextalign
