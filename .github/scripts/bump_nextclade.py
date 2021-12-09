@@ -53,7 +53,7 @@ for task in tasks:
         regex = rf'(?<=sha256: )(\S+)(?=\s+# \[{selector}\])'
         sha = shas[f"{task}-{asset_name}"]
         recipes[task] = re.sub(regex, rf"{sha}", recipes[task])
-    with open(f"recipes/{task}/meta.yaml", "w") as f:
+    with open("recipes/nextclade/meta.yaml", "w") as f:
         f.write(recipes[task])
 
 print(recipes)
