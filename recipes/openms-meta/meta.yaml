@@ -1,13 +1,12 @@
 {% set name = "OpenMS" %}
-{% set version = "2.7.0pre" %}
+{% set version = "2.7.0" %}
 package:
   name: {{ name|lower  }}-meta
   version: {{ version  }}
 
 source:
-  git_url: https://github.com/OpenMS/OpenMS.git
-  git_rev: develop
-  git_depth: 1 # (Defaults to -1/not shallow)
+  url: https://abibuilder.informatik.uni-tuebingen.de/archive/openms/OpenMSInstaller/release/{{ version }}/OpenMS-{{ version }}-src.tar.gz
+  sha256: 62bce6215bc88ca7d1f1b7abf15cea4061bdcfa10dbb1e652b1d8c2ff9b3f081
   patches:
     - apple_pyoms_nofixup.patch
     - init.py.patch
@@ -15,6 +14,8 @@ source:
 
 build:
   number: 1
+  # Problems with memory usage on gcc+circleci. Needs to be built manually and pushed.
+  skip: True  # [linux]
 
 # Try this when building with GUI
 #extra:
@@ -39,7 +40,7 @@ requirements:
     - glpk
     - hdf5
     - bzip2
-    - qt >=5.5
+    - qt >=5.6
     - libsvm
     - coinmp
     - sqlite
@@ -78,7 +79,7 @@ outputs:
           - glpk
           - hdf5
           - bzip2
-          - qt >=5.5
+          - qt >=5.6
           - libsvm
           - coinmp
           - sqlite
@@ -120,7 +121,7 @@ outputs:
         - glpk
         - hdf5
         - bzip2
-        - qt >=5.5
+        - qt >=5.6
         - libsvm
         - coinmp
         - sqlite
@@ -166,7 +167,7 @@ outputs:
         - glpk
         - hdf5
         - bzip2
-        - qt >=5.5
+        - qt >=5.6
         - libsvm
         - coinmp
         - sqlite
@@ -231,8 +232,6 @@ about:
 extra:
   skip-lints:
     - build_number_needs_reset  # our linter has some issues with multi-package recipes as it seems
-    - uses_vcs_url  # only for nightly builds
-    - missing_hash  # only for nightly builds
   identifiers:
     - biotools:openms
     - usegalaxy-eu:openms_fileconverter

@@ -10,24 +10,6 @@ export LIBRARY_PATH=${PREFIX}/lib
 export LD_LIBRARY_PATH=${PREFIX}/lib
 #export DYLD_LIBRARY_PATH=${PREFIX}/lib
 
-SWAP_SIZE=6G
-
-# Default swap file
-
-SWAP_FILE=/var/lib/swap
-# Checking if swap already exists in ./etc/fstab
-
-fallocate -l "$SWAP_SIZE" "$SWAP_FILE"
-chmod 600 "$SWAP_FILE"
-mkswap "$SWAP_FILE"
-swapon "$SWAP_FILE"
-
-
-echo '----------------------'
-echo 'Checking list of swap'
-echo '----------------------'
-swapon -s
-
 mkdir contrib-build
 cd contrib-build
 ## By default WM is built and linked statically such that it does not
@@ -53,7 +35,7 @@ LDFLAGS='-Wl,-rpath,${RPATH}'
 cmake .. \
   -DOPENMS_CONTRIB_LIBS='../../contrib-build' \
   -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
-  -DOPENMS_GIT_SHORT_SHA1="2537a5d" \
+  -DOPENMS_GIT_SHORT_SHA1="9110e58" \
   -DCMAKE_BUILD_TYPE="Release" \
   -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} \
   -DCMAKE_MACOSX_RPATH=ON \
