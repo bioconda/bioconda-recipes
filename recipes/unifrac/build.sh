@@ -13,6 +13,8 @@ then
   sudo xcode-select --switch /Applications/Xcode_11.7.app
   # the system tools are unusable, hide them
   sudo mv -f /Library/Developer/CommandLineTools /Library/Developer/CommandLineTools.org
+else
+  sudo apt-get update && apt-get install -y libc-dev && ln -s ln -s /usr/lib/x86_64-linux-gnu /usr/lib64
 fi
 
 if [[ "$(uname -s)" == "Linux" ]];
