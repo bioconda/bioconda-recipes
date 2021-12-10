@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="ratCHRLOC_2.1.6.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/ratCHRLOC_2.1.6.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/ratCHRLOC_2.1.6.tar.gz"
   "https://bioarchive.galaxyproject.org/ratCHRLOC_2.1.6.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ratchrloc/bioconductor-ratchrloc_2.1.6_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ratchrloc/bioconductor-ratchrloc_2.1.6_src_all.tar.gz"
 )
 MD5="6fecff4821a5a47e3bd38a2ff78173d5"

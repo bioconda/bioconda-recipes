@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="hugene10stv1probe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/hugene10stv1probe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hugene10stv1probe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hugene10stv1probe_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hugene10stv1probe/bioconductor-hugene10stv1probe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hugene10stv1probe/bioconductor-hugene10stv1probe_2.18.0_src_all.tar.gz"
 )
 MD5="6ed3c17dd026acf008658a5994044c62"
