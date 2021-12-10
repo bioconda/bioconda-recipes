@@ -10,7 +10,7 @@ mkdir build
 cd build
 
 ## See INSTALL of gromacs distro
-for ARCH in SSE2 AVX_256 AVX2_256; do
+for ARCH in SSE2; do
   cmake_args=(
     -DSHARED_LIBS_DEFAULT=ON
     -DBUILD_SHARED_LIBS=ON
