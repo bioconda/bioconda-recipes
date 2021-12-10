@@ -6,17 +6,6 @@ export LIBRARY_PATH="${CONDA_PREFIX}/lib"
 export LD_LIBRARY_PATH=${LIBRARY_PATH}:${LD_LIBRARY_PATH}
 export CPLUS_INCLUDE_PATH="${CONDA_PREFIX}/include"
 
-if [[ "$(uname -s)" != "Linux" ]];
-then
-  ls -l /Applications/
-  # coonda clang does not like xcode 12
-  sudo xcode-select --switch /Applications/Xcode_11.7.app
-  # the system tools are unusable, hide them
-  sudo mv -f /Library/Developer/CommandLineTools /Library/Developer/CommandLineTools.org
-else
-  sudo apt-get update && apt-get install -y libc-dev && ln -s ln -s /usr/lib/x86_64-linux-gnu /usr/lib64
-fi
-
 if [[ "$(uname -s)" == "Linux" ]];
 then
   which x86_64-conda-linux-gnu-gcc
