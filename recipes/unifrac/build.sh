@@ -23,7 +23,10 @@ then
   ls -l ${CONDA_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64/crt*
 
   echo "====installing===="
-  sed -i 's/wget -q /aria2c -x 5 -s 5 /g' ./scripts/install_hpc_sdk.sh
+  # Patch install script to use inline fetch and untar
+  sed -i 's/tar /#tar /g' ./scripts/install_hpc_sdk.sh
+  sed -i 's/rm /#rm /g' ./scripts/install_hpc_sdk.sh
+  sed -i 's/wget -q \(.*\)gz/curl \1gz | tar xpzf -/g' ./scripts/install_hpc_sdk.sh
   bash -x ./scripts/install_hpc_sdk.sh
   # patch localrc to find crt1.o
   echo "set DEFSTDOBJDIR=${CONDA_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64;" >> hpc_sdk/*/*/compilers/bin/localrc
