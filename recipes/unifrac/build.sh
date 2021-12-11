@@ -18,6 +18,9 @@ fi
 
 if [[ "$(uname -s)" == "Linux" ]];
 then
+  echo "find crt1.o"
+  find ${CONDA_PREFIX} -name crt1.o
+  echo "Patching install_hpc_sdk script"
   # the script in this version needs patching
   cat >script.patch <<EOF
 diff --git a/scripts/install_hpc_sdk.sh.1 b/scripts/install_hpc_sdk.sh
