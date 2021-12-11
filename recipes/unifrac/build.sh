@@ -18,9 +18,6 @@ fi
 
 if [[ "$(uname -s)" == "Linux" ]];
 then
-  echo "====find crt1.o==="
-  find ${CONDA_PREFIX} -name crt1.o
-
   echo "====list lib64===="
   echo ${CONDA_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64
   ls -l ${CONDA_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64/crt*
