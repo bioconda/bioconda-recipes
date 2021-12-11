@@ -49,7 +49,7 @@ EOF
 
   patch -p1 <script.patch 
   echo "====check makelocalrc==="
-  grep -A5 nvhpc_*/install_components/Linux_x86_64/21.7/compilers/bin/makelocalrc
+  grep -A5 crt nvhpc_*/install_components/Linux_x86_64/21.7/compilers/bin/makelocalrc
   echo "====installing===="
   bash -x ./scripts/install_hpc_sdk.sh
   echo "====localrc===="
