@@ -19,10 +19,6 @@ fi
 
 if [[ "$(uname -s)" == "Linux" ]];
 then
-  echo "====list lib64===="
-  echo ${CONDA_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64
-  ls -l ${CONDA_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64/crt*
-
   echo "====installing===="
   # Patch install script to use inline fetch and untar
   sed -i 's/tar /#tar /g' ./scripts/install_hpc_sdk.sh
