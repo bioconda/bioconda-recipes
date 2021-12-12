@@ -29,10 +29,12 @@ then
   sed -i 's#wget -q \(.*\)gz#curl https://developer.download.nvidia.com/hpc-sdk/20.9/nvhpc_2020_209_Linux_x86_64_cuda_11.0.tar.gz | tar xpzf -#g' ./scripts/install_hpc_sdk.sh
   bash -x ./scripts/install_hpc_sdk.sh
   # patch localrc to find crt1.o
-  echo "set DEFSTDOBJDIR=${CONDA_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64;" >> hpc_sdk/*/*/compilers/bin/localrc
-  echo "====localrc===="
-  cat hpc_sdk/*/*/compilers/bin/localrc
-  echo "===="
+  for f in hpc_sdk/*/*/compilers/bin/localrc; do
+    echo "set DEFSTDOBJDIR=${CONDA_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64;" >> $f
+    echo "====localrc $f ===="
+    cat $f
+    echo "===="
+  done
   source setup_nv_h5.sh
 fi
 
