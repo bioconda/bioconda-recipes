@@ -32,6 +32,10 @@ then
     cat $f
     echo "===="
   done
+
+  # Here lapacke is needed on Linux, too
+  sed -i 's/BLASLIB=-lcblas/BLASLIB=-llapacke -lcblas/g' sucpp/Makefile
+
   source setup_nv_h5.sh
 fi
 
