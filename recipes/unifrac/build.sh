@@ -6,6 +6,7 @@ export LIBRARY_PATH="${CONDA_PREFIX}/lib"
 export LD_LIBRARY_PATH=${LIBRARY_PATH}:${LD_LIBRARY_PATH}
 export CPLUS_INCLUDE_PATH="${CONDA_PREFIX}/include"
 
+echo "==== Native compiler versions ===="
 if [[ "$(uname -s)" == "Linux" ]];
 then
   which x86_64-conda-linux-gnu-gcc
@@ -30,7 +31,7 @@ then
   bash -x ./scripts/install_hpc_sdk.sh
   # patch localrc to find crt1.o
   for f in hpc_sdk/*/*/compilers/bin/localrc; do
-    echo "set DEFSTDOBJDIR=${CONDA_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64;" >> $f
+    echo "set DEFSTDOBJDIR=$BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot/usr/lib64;" >> $f
     echo "====localrc $f ===="
     cat $f
     echo "===="
@@ -38,6 +39,11 @@ then
   source setup_nv_h5.sh
 fi
 
+echo "==== Compiler version ===="
+which h5c++
+h5c++ --version
+
+echo "==== Compiling ===="
 pushd sucpp
 make main
 make api
