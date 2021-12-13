@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.hg18.60mer.expr_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/pd.hg18.60mer.expr_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.hg18.60mer.expr_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.hg18.60mer.expr_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.hg18.60mer.expr/bioconductor-pd.hg18.60mer.expr_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.hg18.60mer.expr/bioconductor-pd.hg18.60mer.expr_3.12.0_src_all.tar.gz"
 )
 MD5="ee8d3813f74edce4e796933aa63999fb"
