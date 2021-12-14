@@ -17,8 +17,9 @@ stages:
     steps:
     - script: |
         git remote add upstream https://github.com/bioconda/bioconda-recipes
-        git checkout master
-        git pull upstream master
+        git fetch upstream master
+        #git checkout master
+        #git pull upstream master
         source=$(Build.SourceBranch)
         git checkout ${source#"refs/heads/"}
 
@@ -43,7 +44,7 @@ stages:
     - bash: |
           source activate bioconda
           set -e
-          bioconda-utils lint --loglevel debug --full-report --git-range master HEAD
+          bioconda-utils lint --loglevel debug --full-report --git-range upstream/master HEAD
       displayName: Lint
 
 - stage: 'test_linux'
@@ -57,8 +58,9 @@ stages:
     steps:
     - script: |
         git remote add upstream https://github.com/bioconda/bioconda-recipes
-        git checkout master
-        git pull upstream master
+        git fetch upstream master
+        #git checkout master
+        #git pull upstream master
         source=$(Build.SourceBranch)
         git checkout ${source#"refs/heads/"}
 
@@ -96,7 +98,7 @@ stages:
 
         bioconda-utils build recipes config.yml \
             --docker --mulled-test \
-            --git-range master HEAD
+            --git-range upstream/master HEAD
         docker rmi quay.io/dpryan79/mulled_container:latest
       displayName: Test
 
@@ -137,8 +139,9 @@ stages:
     steps:
     - script: |
         git remote add upstream https://github.com/bioconda/bioconda-recipes
-        git checkout master
-        git pull upstream master
+        git fetch upstream master
+        #git checkout master
+        #git pull upstream master
         source=$(Build.SourceBranch)
         git checkout ${source#"refs/heads/"}
 
@@ -175,7 +178,7 @@ stages:
         mkdir -p ${CONDA_PREFIX}/conda-bld
 
         bioconda-utils build recipes config.yml \
-            --git-range master HEAD
+            --git-range upstream/master HEAD
       displayName: Test
 
     - bash: |
