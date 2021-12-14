@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="TxDb.Cfamiliaris.UCSC.canFam3.refGene_3.11.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/TxDb.Cfamiliaris.UCSC.canFam3.refGene_3.11.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/TxDb.Cfamiliaris.UCSC.canFam3.refGene_3.11.0.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Cfamiliaris.UCSC.canFam3.refGene_3.11.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.cfamiliaris.ucsc.canfam3.refgene/bioconductor-txdb.cfamiliaris.ucsc.canfam3.refgene_3.11.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.cfamiliaris.ucsc.canfam3.refgene/bioconductor-txdb.cfamiliaris.ucsc.canfam3.refgene_3.11.0_src_all.tar.gz"
 )
 MD5="bf6af84c14a30ad5d01f3678246b1180"

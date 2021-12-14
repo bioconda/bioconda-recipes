@@ -4,10 +4,13 @@ mkdir -p $PREFIX/bin
 chmod +x bin/*
 cp bin/* $PREFIX/bin
 
+mkdir -p $PREFIX/for_MacOS_users
+chmod +x for_MacOS_users/*
+cp for_MacOS_users/* $PREFIX/for_MacOS_users
+
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  unzip for_MacOS_users.zip
   chmod +x for_MacOS_users/*
-  cp for_MacOS_users/tops-viterbi_decoding $PREFIX/bin
+  cp for_MacOS_users/* $PREFIX/bin
 fi
 
 # This will allow them to be run on environment activation.
