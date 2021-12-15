@@ -19,6 +19,8 @@ chmod +x ${PREFIX}/bin/paths2gfa.py
 chmod +x ${PREFIX}/bin/gfa2_to_gfa1.py
 chmod +x ${PREFIX}/bin/gfa2fasta.py
 chmod +x ${PREFIX}/bin/gfa2_to_fasta.py
-chmod +x ${PREFIX}/bin/fasta2gfa.py
 chmod +x ${PREFIX}/bin/matrix2gfa.py
 chmod +x ${PREFIX}/bin/mergegfa.py
+chmod +x ${PREFIX}/bin/fasta2bed.py
+chmod +x ${PREFIX}/bin/bed2gfa.py
+
