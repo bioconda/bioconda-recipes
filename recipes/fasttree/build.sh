@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -ex
 mkdir -p $PREFIX/bin
 
 # build FastTree
