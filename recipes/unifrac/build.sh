@@ -19,7 +19,6 @@ fi
 
 if [[ "$(uname -s)" == "Linux" ]];
 then
-   echo "Linux install patching"
    #
    # This is a helper script for installing the NVIDIA HPC SDK 
    # needed to compile a GPU-enabled version of unifrac.
