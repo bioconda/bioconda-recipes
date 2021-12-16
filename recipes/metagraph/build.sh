@@ -32,7 +32,7 @@ CMAKE_PARAMS="-DBUILD_KMC=OFF \
 
 cmake ${CMAKE_PARAMS} ..
 
-BUILD_CMD="make VERBOSE=1 -j$(($(getconf _NPROCESSORS_ONLN) - 1)) metagraph-core"
+BUILD_CMD="make VERBOSE=1 -j$(($(getconf _NPROCESSORS_ONLN) - 1)) metagraph"
 
 ${BUILD_CMD}
 
