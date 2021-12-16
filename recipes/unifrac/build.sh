@@ -98,7 +98,7 @@ then
    ls -l $BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot/usr/lib64/crt*
 
    # patch localrc to find crt1.o
-   for f in hpc_sdk/*/202*/compilers/bin/localrc; do
+   for f in ${NVHPC_INSTALL_DIR}/*/202*/compilers/bin/localrc; do
     echo 'set DEFSTDOBJDIR=$BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot/usr/lib64;' >> $f
     echo "====localrc $f ===="
     cat $f
