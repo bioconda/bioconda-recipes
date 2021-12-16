@@ -61,8 +61,8 @@ then
    # pgc++ does not define it, but gcc libraries expect it
    # also remove the existing conda flags, which are not compatible
    export CPPFLAGS=-D__GCC_ATOMIC_TEST_AND_SET_TRUEVAL=0
-   export CXXFLAGS=\${CPPFLAGS}
-   export CFLAGS=\${CPPFLAGS}
+   export CXXFLAGS=${CPPFLAGS}
+   export CFLAGS=${CPPFLAGS}
 
    # we will not bother with debug flags, just remove
    unset DEBUG_CPPFLAGS
