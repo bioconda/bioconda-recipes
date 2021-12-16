@@ -18,6 +18,7 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     tar -xzvpf gperftools-2.5.tar.gz
     cd gperftools-2.5
     ./configure --prefix=$SRC_DIR/external/install
+    export CFLAGS='-std=c++14'
     make install
     # build Salmon
     cd $SRC_DIR
