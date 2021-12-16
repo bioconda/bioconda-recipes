@@ -27,6 +27,7 @@ CMAKE_PARAMS="-DBUILD_KMC=OFF \
             -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib \
             -DCMAKE_BUILD_TYPE=Release \
             ${CMAKE_PLATFORM_FLAGS} \
+            -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=1 \
             -DCMAKE_INSTALL_PREFIX=${PREFIX}"
 
 cmake ${CMAKE_PARAMS} ..
