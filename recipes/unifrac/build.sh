@@ -92,8 +92,6 @@ then
    echo 'Patched grep FLAGS= $BUILD_PREFIX/bin/h5c++'
    grep FLAGS= $BUILD_PREFIX/bin/h5c++
 
-   echo 'ls -l $PREFIX/x86_64-conda-linux-gnu/sysroot/usr/lib64/crt*'
-   ls -l $PREFIX/x86_64-conda-linux-gnu/sysroot/usr/lib64/crt*
    echo 'ls -l $BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot/usr/lib64/crt*'
    ls -l $BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot/usr/lib64/crt*
 
