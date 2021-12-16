@@ -39,4 +39,4 @@ rm -r r-source
 
 nimble --localdeps build -y --verbose -d:release
 mkdir -p "${PREFIX}/bin"
-cp sscocaller "${PREFIX}/bin/"
+cp sgcocaller "${PREFIX}/bin/"
