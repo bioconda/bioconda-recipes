@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.ath1.121501_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/pd.ath1.121501_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.ath1.121501_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.ath1.121501_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.ath1.121501/bioconductor-pd.ath1.121501_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.ath1.121501/bioconductor-pd.ath1.121501_3.12.0_src_all.tar.gz"
 )
 MD5="d7ed8640f0deac552e0083a091e72a72"
