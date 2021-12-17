@@ -70,7 +70,6 @@ then
    unset DEBUG_CFLAGS
 
    # h5c++ patch
-   cp $BUILD_PREFIX/bin/h5c++ $BUILD_PREFIX/bin/h5c++.org
 
    #echo 'Org grep FLAGS= $BUILD_PREFIX/bin/h5c++'
    #grep FLAGS= $BUILD_PREFIX/bin/h5c++
@@ -120,20 +119,4 @@ make test
 popd
 
 $PYTHON -m pip install --no-deps --ignore-installed .
-rc=$?
-
-if [[ "$(uname -s)" == "Linux" ]];
-then
-   # Final cleanup
-   for f in \
-     ar as c++ cc cpp g++ gcc ld nm ranlib strip; \
-     do \
-       rm -f $BUILD_PREFIX/bin/${f}; \
-     done 
-
-   cp $BUILD_PREFIX/bin/h5c++.org $BUILD_PREFIX/bin/h5c++
-   rm -fr ${NVHPC_INSTALL_DIR}
-fi
-
-exit $rc
 
