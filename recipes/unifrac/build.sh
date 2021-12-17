@@ -72,8 +72,8 @@ then
    # h5c++ patch
    cp $BUILD_PREFIX/bin/h5c++ $BUILD_PREFIX/bin/h5c++.org
 
-   echo 'Org grep FLAGS= $BUILD_PREFIX/bin/h5c++'
-   grep FLAGS= $BUILD_PREFIX/bin/h5c++
+   #echo 'Org grep FLAGS= $BUILD_PREFIX/bin/h5c++'
+   #grep FLAGS= $BUILD_PREFIX/bin/h5c++
 
    # This works on linux with gcc ..
    sed -i \
@@ -89,11 +89,11 @@ then
      's#H5BLD_LDFLAGS=".*"#H5BLD_LDFLAGS=" -L$BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot/usr/lib64/ -L${libdir} -Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,-rpath,$BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot/usr/lib64/ -Wl,-rpath,$BUILD_PREFIX/lib -Wl,-rpath,$BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot/usr/lib64/ -Wl,-rpath,${libdir}"#g' \
      $BUILD_PREFIX/bin/h5c++
 
-   echo 'Patched grep FLAGS= $BUILD_PREFIX/bin/h5c++'
-   grep FLAGS= $BUILD_PREFIX/bin/h5c++
+   #echo 'Patched grep FLAGS= $BUILD_PREFIX/bin/h5c++'
+   #grep FLAGS= $BUILD_PREFIX/bin/h5c++
 
-   echo 'ls -l $BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot/usr/lib64/crt*'
-   ls -l $BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot/usr/lib64/crt*
+   #echo 'ls -l $BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot/usr/lib64/crt*'
+   #ls -l $BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot/usr/lib64/crt*
 
    # patch localrc to find crt1.o
    for f in ${NVHPC_INSTALL_DIR}/*/202*/compilers/bin/localrc; do
