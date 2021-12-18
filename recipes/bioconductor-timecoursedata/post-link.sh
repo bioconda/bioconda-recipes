@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="timecoursedata_1.2.0.tar.gz"
+FN="timecoursedata_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/timecoursedata_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/timecoursedata_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-timecoursedata/bioconductor-timecoursedata_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/timecoursedata_1.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/timecoursedata_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-timecoursedata/bioconductor-timecoursedata_1.4.0_src_all.tar.gz"
 )
-MD5="b3e3975ae4d672f6bba646120d06c66e"
+MD5="3989adda3533efe4c27405b0e217c149"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
