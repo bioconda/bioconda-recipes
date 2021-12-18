@@ -16,6 +16,10 @@ elif [[ $OSTYPE == darwin* ]]; then
     export CXXFLAGS="${CXXFLAGS} -Wno-suggest-destructor-override -Wno-error=deprecated-copy"
 fi
 
+if [[ "${target_platform}" == "osx-64" ]]; then
+    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+fi
+
 # needed for setting up python based integration test environment
 export PIP_NO_INDEX=False
 
