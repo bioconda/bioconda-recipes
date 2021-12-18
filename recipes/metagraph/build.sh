@@ -12,7 +12,7 @@ if [[ $OSTYPE == linux* ]]; then
     CMAKE_PLATFORM_FLAGS=""
     export CXXFLAGS="${CXXFLAGS} -Wno-attributes"
 elif [[ $OSTYPE == darwin* ]]; then
-    CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0"
+    CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
     export CXXFLAGS="${CXXFLAGS} -Wno-suggest-destructor-override -Wno-error=deprecated-copy"
 fi
 
