@@ -12,13 +12,13 @@ if [[ $OSTYPE == linux* ]]; then
     CMAKE_PLATFORM_FLAGS=""
     export CXXFLAGS="${CXXFLAGS} -Wno-attributes"
 elif [[ $OSTYPE == darwin* ]]; then
-    CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}" # -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
-    export CXXFLAGS="${CXXFLAGS} -Wno-suggest-destructor-override -Wno-error=deprecated-copy" # -nostdlib
+    CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0"
+    export CXXFLAGS="${CXXFLAGS} -Wno-suggest-destructor-override -Wno-error=deprecated-copy"
 fi
 
-if [[ "${target_platform}" == "osx-64" ]]; then
-    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-fi
+#if [[ "${target_platform}" == "osx-64" ]]; then
+#    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+#fi
 
 # needed for setting up python based integration test environment
 export PIP_NO_INDEX=False
