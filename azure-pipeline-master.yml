@@ -1,0 +1,116 @@
+pr: none
+trigger:
+- master
+
+jobs:
+- job: 'build_and_push_linux'
+  pool:
+    vmImage: 'ubuntu-latest'
+  strategy:
+    maxParallel: 8
+  timeoutInMinutes: 360
+
+  steps:
+  - script: |
+      git remote add upstream https://github.com/bioconda/bioconda-recipes
+      git fetch upstream master
+      git checkout ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
+
+  - bash: echo "##vso[task.prependpath]$CONDA/bin"
+    displayName: Add conda to PATH
+
+  - bash: |
+      wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
+    displayName: Fetch common.sh
+
+  - task: Cache@2
+    inputs:
+      path: "/usr/share/miniconda/envs/bioconda"
+      key: '"$(Agent.OS)" | **/common.sh'
+      cacheHitVar: CACHE_RESTORED
+    displayName: Restore cache
+
+  - script: .azure-pipelines/createEnv.py
+    condition: ne(variables.CACHE_RESTORED, 'true')
+    displayName: Install bioconda-utils
+
+  - bash: |
+      set -e
+
+      rm -f "${HOME}/.condarc"
+      # Activate our Conda installation as "base".
+      . /usr/share/miniconda/envs/bioconda/etc/profile.d/conda.sh
+      conda activate base
+
+      conda config --system --add channels defaults
+      conda config --system --add channels bioconda
+      conda config --system --add channels conda-forge
+      docker pull quay.io/dpryan79/mulled_container:latest
+      mkdir -p ${CONDA_PREFIX}/conda-bld
+
+      bioconda-utils build recipes config.yml \
+          --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
+          --git-range $CIRCLE_SHA1~1 $CIRCLE_SHA1 \
+          --docker --mulled-test \
+          --prelint
+      docker rmi quay.io/dpryan79/mulled_container:latest
+      env:
+        QUAY_OAUTH_TOKEN: $(QUAY_OAUTH_TOKEN)
+        ANACONDA_TOKEN: $(ANACONDA_TOKEN)
+        INVOLUCRO_AUTH: $(INVOLUCRO_AUTH)
+    displayName: Build_and_push
+
+- job: 'build_and_push_osx'
+  pool:
+    vmImage: 'macOS-latest'
+  strategy:
+    maxParallel: 4
+  timeoutInMinutes: 360
+
+  steps:
+  - script: |
+      git remote add upstream https://github.com/bioconda/bioconda-recipes
+      git fetch upstream master
+      git checkout ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
+
+  - bash: echo "##vso[task.prependpath]$CONDA/bin"
+    displayName: Add conda to PATH
+
+  - bash: sudo chown -R $USER $CONDA
+    displayName: Take ownership of conda installation
+
+  - bash: |
+      wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
+    displayName: Fetch common.sh
+
+  - task: Cache@2
+    inputs:
+      path: "/usr/local/miniconda/envs/bioconda"
+      key: '"$(Agent.OS)" | **/common.sh'
+      cacheHitVar: CACHE_RESTORED
+    displayName: Restore cache
+
+  - script: .azure-pipelines/createEnv.py
+    condition: ne(variables.CACHE_RESTORED, 'true')
+    displayName: Install bioconda-utils
+
+  - bash: |
+      set -e
+
+      . /usr/local/miniconda/envs/bioconda/etc/profile.d/conda.sh
+      conda activate base
+
+      conda config --system --add channels defaults
+      conda config --system --add channels bioconda
+      conda config --system --add channels conda-forge
+      mkdir -p ${CONDA_PREFIX}/conda-bld
+
+      bioconda-utils build recipes config.yml \
+          --anaconda-upload \
+          --git-range ${Build_SourceVersion}~1 ${Build_SourceVersion} \
+          --prelint
+      env:
+        QUAY_OAUTH_TOKEN: $(QUAY_OAUTH_TOKEN)
+        ANACONDA_TOKEN: $(ANACONDA_TOKEN)
+        INVOLUCRO_AUTH: $(INVOLUCRO_AUTH)
+    displayName: Build_and_push
