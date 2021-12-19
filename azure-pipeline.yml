@@ -4,6 +4,7 @@ trigger:
   branches:
     exclude:
       - master
+      - '*'
 
 stages:
 - stage: 'lint'
@@ -18,8 +19,7 @@ stages:
     - script: |
         git remote add upstream https://github.com/bioconda/bioconda-recipes
         git fetch upstream master
-        source=`echo $(Build.SourceBranch) | sed -e "s#^refs/pull/#pull/#"`
-        git checkout ${source#"refs/heads/"}
+        git checkout ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
 
     - bash: echo "##vso[task.prependpath]$CONDA/bin"
       displayName: Add conda to PATH
@@ -59,9 +59,7 @@ stages:
     - script: |
         git remote add upstream https://github.com/bioconda/bioconda-recipes
         git fetch upstream master
-        git branch
-        source=$(Build.SourceBranch)
-        git checkout ${source#"refs/heads/"}
+        git checkout ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
 
     - bash: echo "##vso[task.prependpath]$CONDA/bin"
       displayName: Add conda to PATH
@@ -139,8 +137,7 @@ stages:
     - script: |
         git remote add upstream https://github.com/bioconda/bioconda-recipes
         git fetch upstream master
-        source=$(Build.SourceBranch)
-        git checkout ${source#"refs/heads/"}
+        git checkout ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
 
     - bash: echo "##vso[task.prependpath]$CONDA/bin"
       displayName: Add conda to PATH
