@@ -1,8 +1,9 @@
-pr: none
-trigger:
-  branches:
-    exclude:
-      - master
+pr: 
+  autoCancel: true
+#trigger:
+#  branches:
+#    exclude:
+#      - master
 
 stages:
 - stage: 'lint'
@@ -19,7 +20,8 @@ stages:
         git remote add upstream https://github.com/bioconda/bioconda-recipes
         git fetch upstream master
         source=`echo $(Build.SourceBranch) | sed -e "s#^refs/pull/#pull/#"`
-        git checkout ${source#"refs/heads/"}
+        #git checkout ${source#"refs/heads/"}
+        git checkout ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
 
     - bash: echo "##vso[task.prependpath]$CONDA/bin"
       displayName: Add conda to PATH
