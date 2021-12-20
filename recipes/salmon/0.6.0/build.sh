@@ -29,6 +29,6 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     sed -i 's#set(Boost_ADDITIONAL_VERSIONS "1.53" "1.53.0" "1.54" "1.55" "1.56" "1.57.0" "1.58")#set(Boost_ADDITIONAL_VERSIONS "1.53" "1.53.0" "1.54" "1.55" "1.56" "1.57.0" "1.58" "1.77.0")#' CMakeLists.txt
     sed -i 's#find_package(Boost 1.53.0#find_package(Boost 1.77.0#' CMakeLists.txt
     cd build
-    cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBOOST_ROOT=$PREFIX -DBoost_NO_SYSTEM_PATHS=ON -DBoost_DEBUG=ON ..
+    cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBOOST_ROOT=$PREFIX -DBoost_NO_SYSTEM_PATHS=ON -DBoost_DEBUG=ON -DBoost_NO_BOOST_CMAKE=ON -DBOOST_LIBRARYDIR=/usr/lib64/boost177 -DBOOST_INCLUDEDIR=/usr/include/boost177 ..
     make install
 fi
