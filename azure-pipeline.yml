@@ -16,13 +16,6 @@ stages:
       maxParallel: 8
 
     steps:
-    - script: |
-        #git remote add upstream $SYSTEM_PULLREQUEST_SOURCEREPOSITORYURI
-        #git fetch upstream ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
-        git fetch origin ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
-        git checkout ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
-        git remote -v | sed -e "s/github//g"
-
     - bash: echo "##vso[task.prependpath]$CONDA/bin"
       displayName: Add conda to PATH
 
@@ -45,8 +38,7 @@ stages:
           source activate bioconda
           set -e
           source=`echo $(Build.SourceBranch) | sed -e "s#^refs/pull/#pull/#"`
-          echo "source is $source"
-          bioconda-utils lint --loglevel debug --full-report --git-range origin/master "$source"
+          bioconda-utils lint --loglevel debug --full-report --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH" "$source"
       displayName: Lint
 
 - stage: 'test_linux'
@@ -59,12 +51,6 @@ stages:
     timeoutInMinutes: 360
 
     steps:
-    - script: |
-        #git remote add upstream https://github.com/bioconda/bioconda-recipes
-        #git fetch upstream master
-        git fetch origin ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
-        git checkout ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
-
     - bash: echo "##vso[task.prependpath]$CONDA/bin"
       displayName: Add conda to PATH
 
@@ -99,7 +85,7 @@ stages:
 
         bioconda-utils build recipes config.yml \
             --docker --mulled-test \
-            --git-range origin/master HEAD
+            --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH" HEAD
         docker rmi quay.io/dpryan79/mulled_container:latest
       displayName: Test
 
@@ -139,12 +125,6 @@ stages:
     timeoutInMinutes: 360
 
     steps:
-    - script: |
-        #git remote add upstream https://github.com/bioconda/bioconda-recipes
-        #git fetch upstream master
-        git fetch origin ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
-        git checkout ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
-
     - bash: echo "##vso[task.prependpath]$CONDA/bin"
       displayName: Add conda to PATH
 
@@ -179,7 +159,7 @@ stages:
 
         export OSTYPE="darwin"
         bioconda-utils build recipes config.yml \
-            --git-range origin/master HEAD
+            --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH" HEAD
       displayName: Test
 
     - bash: |
