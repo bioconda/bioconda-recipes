@@ -19,9 +19,9 @@ stages:
     - script: |
         #git remote add upstream $SYSTEM_PULLREQUEST_SOURCEREPOSITORYURI
         #git fetch upstream ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
-        git fetch origin ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
-        git checkout ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
-        git remote -v | sed -e "s/github//g"
+        #git fetch origin master
+        #export source=`echo "${BUILD_SOURCEBRANCH}" | sed -e "s#^refs/pull/#pull/#"`
+        #git checkout "${source}"
 
     - bash: echo "##vso[task.prependpath]$CONDA/bin"
       displayName: Add conda to PATH
@@ -62,8 +62,9 @@ stages:
     - script: |
         #git remote add upstream https://github.com/bioconda/bioconda-recipes
         #git fetch upstream master
-        git fetch origin ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
-        git checkout ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
+        #git fetch origin ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
+        #git checkout ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
+        env
 
     - bash: echo "##vso[task.prependpath]$CONDA/bin"
       displayName: Add conda to PATH
@@ -97,7 +98,6 @@ stages:
         docker pull quay.io/dpryan79/mulled_container:latest
         mkdir -p ${CONDA_PREFIX}/conda-bld
 
-        export OSTYPE="darwin"
         bioconda-utils build recipes config.yml \
             --docker --mulled-test \
             --git-range origin/master HEAD
