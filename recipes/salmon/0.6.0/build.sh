@@ -26,9 +26,7 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     # Use the tcmalloc installed above
     sed -i 's#set (HAVE_FAST_MALLOC FALSE)#set (HAVE_FAST_MALLOC TRUE)\nset (FAST_MALLOC_LIB ${CMAKE_CURRENT_SOURCE_DIR}/external/install/lib/libtcmalloc.a)#' CMakeLists.txt
     sed -i 's/Boost_USE_STATIC_LIBS ON/Boost_USE_STATIC_LIBS OFF/' CMakeLists.txt
-    sed -i 's#set(Boost_ADDITIONAL_VERSIONS "1.53" "1.53.0" "1.54" "1.55" "1.56" "1.57.0" "1.58")#set(Boost_ADDITIONAL_VERSIONS "1.53" "1.53.0" "1.54" "1.55" "1.56" "1.57.0" "1.58" "1.77.0")#' CMakeLists.txt
-    sed -i 's#find_package(Boost 1.53.0#find_package(Boost 1.77.0#' CMakeLists.txt
     cd build
-    cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBOOST_ROOT=$PREFIX -DBoost_NO_SYSTEM_PATHS=ON -DBoost_DEBUG=ON -DBoost_NO_BOOST_CMAKE=ON -DBOOST_LIBRARYDIR=/usr/lib64/boost177 -DBOOST_INCLUDEDIR=/usr/include/boost177 ..
+    cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBOOST_ROOT=$PREFIX -DBoost_NO_SYSTEM_PATHS=ON -DBoost_DEBUG=ON ..
     make install
 fi
