@@ -17,17 +17,10 @@ stages:
 
     steps:
     - script: |
-        git remote -v | sed -e "s/github//g"
-        # SYSTEM_PULLREQUEST_SOURCEREPOSITORYURI is bioconda
-        if [[ $BUILD_REPOSITORY_URI == "https://github.com/bioconda/bioconda-recipes" ]] ; then
-            echo "same"
-        else
-            echo "different"
-        fi
-        env | sed -e "s/github//g"
-        git remote add upstream https://github.com/bioconda/bioconda-recipes
-        git fetch upstream master
+        git remote add upstream $SYSTEM_PULLREQUEST_SOURCEREPOSITORYURI
+        git fetch upstream ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
         git checkout ${SYSTEM_PULLREQUEST_SOURCEBRANCH}
+        git remote -v | sed -e "s/github//g"
 
     - bash: echo "##vso[task.prependpath]$CONDA/bin"
       displayName: Add conda to PATH
