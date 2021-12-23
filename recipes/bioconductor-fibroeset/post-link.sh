@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="fibroEset_1.32.0.tar.gz"
+FN="fibroEset_1.36.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/fibroEset_1.32.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/fibroEset_1.32.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-fibroeset/bioconductor-fibroeset_1.32.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/fibroEset_1.36.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/fibroEset_1.36.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-fibroeset/bioconductor-fibroeset_1.36.0_src_all.tar.gz"
 )
-MD5="8904c2a4b2860cfb07e0aa68f8958344"
+MD5="109e6763b069a0454cf42edd78095a8d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.maize_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/pd.maize_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.maize_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.maize_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.maize/bioconductor-pd.maize_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.maize/bioconductor-pd.maize_3.12.0_src_all.tar.gz"
 )
 MD5="a1689518c8525d3dfa97e870f90b7a7b"

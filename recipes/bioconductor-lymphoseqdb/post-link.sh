@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="LymphoSeqDB_0.99.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/LymphoSeqDB_0.99.2.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/LymphoSeqDB_0.99.2.tar.gz"
   "https://bioarchive.galaxyproject.org/LymphoSeqDB_0.99.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-lymphoseqdb/bioconductor-lymphoseqdb_0.99.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-lymphoseqdb/bioconductor-lymphoseqdb_0.99.2_src_all.tar.gz"
 )
 MD5="22fc0dc2439ef497982a5ffddda1e418"

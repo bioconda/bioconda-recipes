@@ -20,6 +20,9 @@ cp gridss \
 	virusbreakend \
 	"${TGT}/"
 chmod +x ${TGT}/*
+# GRIDSS tools that can be run completely as-is
+cp virusbreakend-build \
+	$PREFIX/bin/
 
 # Need to go in the same directory as the jar/R files
 # so we can resolve the location at runtime
