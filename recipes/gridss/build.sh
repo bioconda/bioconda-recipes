@@ -45,7 +45,6 @@ ln -s $TGT/gridss_shell_with_jar_entrypoint $PREFIX/bin/gridss_annotate_vcf_krak
 ln -s $TGT/gridss_shell_with_jar_entrypoint $PREFIX/bin/gridss_annotate_vcf_repeatmasker
 ln -s $TGT/gridss_shell_with_jar_entrypoint $PREFIX/bin/gridss_extract_overlapping_fragments
 ln -s $TGT/gridss_shell_with_jar_entrypoint $PREFIX/bin/virusbreakend
-ln -s $TGT/gridss_shell_with_jar_entrypoint $PREFIX/bin/virusbreakend-build
 
 # Wrapper script to add --scriptdir command line argument
 ln -s $TGT/gridss_r_script $PREFIX/bin/gridss_somatic_filter
