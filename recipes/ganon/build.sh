@@ -5,10 +5,9 @@ cd ${SRC_DIR}/ganon/
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 
 # Build and install cpp packages
-# Seqan3.1.0-rc1 from source since still not available on bioconda
-mv ${SRC_DIR}/seqan3 ${SRC_DIR}/ganon/libs/
+mv ${SRC_DIR}/robin-hood-hashing ${SRC_DIR}/ganon/libs/
 mkdir build_cpp && cd build_cpp
-cmake -DCMAKE_BUILD_TYPE=Release -DVERBOSE_CONFIG=ON -DINCLUDE_DIRS=${PREFIX}/include -DCONDA=ON -DCMAKE_INSTALL_PREFIX=${PREFIX} ..
+cmake -DCMAKE_BUILD_TYPE=Release -DVERBOSE_CONFIG=ON -DCONDA=ON -DCMAKE_INSTALL_PREFIX=${PREFIX} ..
 make
 make install
 
