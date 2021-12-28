@@ -10,7 +10,7 @@ ${CXX} -o build/sankoff src/sankoff.cc -std=c++11 -Wall -lboost_program_options 
 fi
 
 if [ "$(uname)" == "Darwin" ]; then
-${CXX} -o build/sankoff src/sankoff.cc -std=c++11 -Wall -lboost_program_options -I${PREFIX}/include -L${PREFIX}/lib -ltbb -v
+${CXX} -o build/sankoff src/sankoff.cc -std=c++11 -Wall -lboost_program_options -I${BUILD_PREFIX}/include -L${BUILD_PREFIX}/lib -ltbb -v
 fi
 
 cp build/sankoff ${PREFIX}/bin/sankoff
