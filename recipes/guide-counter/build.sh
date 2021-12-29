@@ -1,3 +1,3 @@
 #!/bin/bash -euo
 
-RUST_BACKTRACE=1 cargo install --verbose --path . --root $PREFIX
+RUST_BACKTRACE=1 cargo install --locked --path . --root $PREFIX
