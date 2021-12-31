@@ -4,6 +4,10 @@ TGT="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
 [ -d "$TGT" ] || mkdir -p "$TGT"
 [ -d "${PREFIX}/bin" ] || mkdir -p "${PREFIX}/bin"
 
+sed -e "s/\r//g" gridss_somatic_filter > gridss_somatic_filter.new
+mv gridss_somatic_filter.new gridss_somatic_filter
+chmod +x gridss_somatic_filter
+
 echo "PREFIX=${PREFIX}"
 echo "TGT=${TGT}"
 
