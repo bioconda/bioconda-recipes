@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RTCGA.methylation_1.18.0.tar.gz"
+FN="RTCGA.methylation_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/RTCGA.methylation_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RTCGA.methylation_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rtcga.methylation/bioconductor-rtcga.methylation_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/RTCGA.methylation_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RTCGA.methylation_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rtcga.methylation/bioconductor-rtcga.methylation_1.22.0_src_all.tar.gz"
 )
-MD5="e35fd39ede52974f7a370301d0cd100b"
+MD5="ba6e702a49a572ecbf6553c161acbc3a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

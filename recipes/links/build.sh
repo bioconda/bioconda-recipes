@@ -1,19 +1,16 @@
-mkdir -p $PREFIX/bin
+#!/bin/sh
+set -eux -o pipefail
 
-#Copying perl script to bin folder
-cp  LINKS $PREFIX/bin
-chmod +x $PREFIX/bin/LINKS
+./configure && make
+
+mkdir -p ${PREFIX}/bin/
+mkdir -p ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin
+mkdir -p ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/src
+
+cp src/LINKS_CPP ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/src
+cp bin/* ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin
+cp bin/LINKS* ${PREFIX}/bin/
 
 
-#Recompiling C code
-cd lib/bloomfilter/swig/
-
-PERL5DIR=`(perl -e 'use Config; print $Config{archlibexp}, "\n";') 2>/dev/null`
-swig -Wall -c++ -perl5 BloomFilter.i
-${CXX} -c BloomFilter_wrap.cxx -I$PERL5DIR/CORE -fPIC -O3
-${CXX} -Wall -shared BloomFilter_wrap.o -o BloomFilter.so -O3 
-
-mkdir -p $PREFIX/lib/site_perl/BloomFilter
-
-cp BloomFilter.* $PREFIX/lib/site_perl/BloomFilter
-
+echo "#!/bin/bash" > ${PREFIX}/bin/LINKS-make
+echo "make -f $(command -v ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin/LINKS-make) \$@" >> ${PREFIX}/bin/LINKS-make

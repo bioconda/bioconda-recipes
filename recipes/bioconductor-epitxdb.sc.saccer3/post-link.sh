@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="EpiTxDb.Sc.sacCer3_0.99.3.tar.gz"
+FN="EpiTxDb.Sc.sacCer3_0.99.5.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/EpiTxDb.Sc.sacCer3_0.99.3.tar.gz"
-  "https://bioarchive.galaxyproject.org/EpiTxDb.Sc.sacCer3_0.99.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-epitxdb.sc.saccer3/bioconductor-epitxdb.sc.saccer3_0.99.3_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/EpiTxDb.Sc.sacCer3_0.99.5.tar.gz"
+  "https://bioarchive.galaxyproject.org/EpiTxDb.Sc.sacCer3_0.99.5.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-epitxdb.sc.saccer3/bioconductor-epitxdb.sc.saccer3_0.99.5_src_all.tar.gz"
 )
-MD5="2a258608ab94330eac1e5ba2d2712506"
+MD5="6d9e5f37e5dcb60e890d99d80fddda00"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
