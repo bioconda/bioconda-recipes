@@ -1,0 +1,25 @@
+diff --git a/Makefile b/Makefile
+index d7b179e..c02b646 100644
+--- a/Makefile
++++ b/Makefile
+@@ -31,7 +31,7 @@ LDFLAGS := $(if $(LDFLAGS),$(LDFLAGS),-g)
+ 
+ # LDFLAGS += -L${BAM}
+ 
+-LIBS    := ${HTSLIB}/libhts.a ${LIBBZ2} ${LIBLZMA} ${LIBDEFLATE} -lz -lm
++LIBS    := -lhtslib -lz -lm
+ 
+ ifneq (,$(filter %nothreads %prof %profile, $(MAKECMDGOALS)))
+  NOTHREADS=1
+@@ -172,10 +172,7 @@ tablemaker.o : tablemaker.h rlink.h
+ ##${BAM}/libbam.a: 
+ ##	cd ${BAM} && make lib
+ 
+-${HTSLIB}/libhts.a:
+-	cd ${HTSLIB} && ./build_lib.sh
+-
+-stringtie${EXE}: ${HTSLIB}/libhts.a $(OBJS) stringtie.o
++stringtie${EXE}: $(OBJS) stringtie.o
+ 	${LINKER} ${LDFLAGS} -o $@ ${filter-out %.a %.so, $^} ${LIBS}
+ 	@echo
+ 	${DBG_WARN}
