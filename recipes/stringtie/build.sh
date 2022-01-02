@@ -6,7 +6,7 @@ export LINKER="$CXX"
 export CXXFLAGS="$CPPFLAGS"
 
 pushd htslib
-make CC=${CC} LDFLAGS="-fvisibility=hidden -L./xlibs/lib -L$PREFIX/lib"
+make CC=${CC} LDFLAGS="-fvisibility=hidden -L./xlibs/lib -L$PREFIX/lib" lib-static
 popd
 
 make release CXX=$CXX
