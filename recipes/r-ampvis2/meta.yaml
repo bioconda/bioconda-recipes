@@ -1,0 +1,86 @@
+{% set name = "r-ampvis2" %}
+{% set version = "2.7.12" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/MadsAlbertsen/ampvis2/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 87fd2be88352d7b2af63b783337615e4ae8667ffaeb8f63921790772b73b213b
+  patches:
+    - ggally.patch # https://github.com/MadsAlbertsen/ampvis2/pull/133
+
+build:
+  number: 1
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  host:
+    - r-base >=3.5.0
+    - r-ggplot2
+    - r-plyr
+    - r-dplyr
+    - r-magrittr
+    - r-vegan
+    - r-tidyr
+    - r-purrr
+    - r-data.table
+    - r-plotly
+    - r-stringr
+    - r-scales
+    - r-rcolorbrewer
+    - r-ggrepel
+    - r-ape
+    - r-crayon
+    - r-cli
+    - parallel
+  run:
+    # requirements according to https://github.com/MadsAlbertsen/ampvis2/blob/main/DESCRIPTION
+    # Depends/Imports section
+    - r-base >=3.5.0
+    - r-ggplot2
+    - r-r.utils # ??? utils
+    - r-plyr
+    - r-dplyr
+    - r-magrittr
+    - r-vegan
+    - r-tidyr
+    - r-purrr
+    - r-data.table
+    - r-plotly
+    - r-stringr
+    - r-scales
+    - r-rcolorbrewer
+    - r-ggrepel
+    - r-ape
+    - r-crayon
+    - r-cli
+    - parallel
+    # Suggests section
+    - bioconductor-biomformat
+    - r-network # needed in amp_out_network (I think this could also be added to r-gally)
+    - r-sna  # needed in amp_out_network (I think this could also be added to r-gally)
+    - r-ggally # provides ggnet/ggnet2 functionality needed in amp_otu_network (also see ggally.patch)
+    - r-patchwork # needed in amp_heatmap if plot_functions=T
+    - r-lubridate # needed in amp_timeseries
+    - r-doparallel # might be removed later https://github.com/MadsAlbertsen/ampvis2/pull/137
+    # Others
+    - r-svglite # needed if ggsave is used for saving the plots
+
+test:
+  commands:
+    - $R -e "library('ampvis2')"
+
+about:
+  home: https://github.com/MadsAlbertsen/ampvis2
+  license: GPL-2.0-only
+  license_file: LICENSE
+  summary: 'Tools for visualising amplicon data'
+
+extra:
+  recipe-maintainers:
+    - bernt-matthias
