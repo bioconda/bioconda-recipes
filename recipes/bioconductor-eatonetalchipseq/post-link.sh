@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="EatonEtAlChIPseq_0.28.0.tar.gz"
+FN="EatonEtAlChIPseq_0.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/EatonEtAlChIPseq_0.28.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/EatonEtAlChIPseq_0.28.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-eatonetalchipseq/bioconductor-eatonetalchipseq_0.28.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/EatonEtAlChIPseq_0.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/EatonEtAlChIPseq_0.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-eatonetalchipseq/bioconductor-eatonetalchipseq_0.32.0_src_all.tar.gz"
 )
-MD5="9ed0412eab89b316b17c190c6d2c167c"
+MD5="e73b8726e36eb460752a1679703be0f9"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

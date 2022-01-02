@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="drosophila2.db_3.2.3.tar.gz"
+FN="drosophila2.db_3.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/drosophila2.db_3.2.3.tar.gz"
-  "https://bioarchive.galaxyproject.org/drosophila2.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-drosophila2.db/bioconductor-drosophila2.db_3.2.3_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-drosophila2.db/bioconductor-drosophila2.db_3.2.3_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/drosophila2.db_3.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/drosophila2.db_3.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-drosophila2.db/bioconductor-drosophila2.db_3.13.0_src_all.tar.gz"
 )
-MD5="04a372eff398f79691216ed9fcc34bc8"
+MD5="c01d0d1b5e17c3b36ad801b44da72b96"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

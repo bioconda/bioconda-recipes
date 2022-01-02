@@ -14,7 +14,7 @@ from os import access
 from os import getenv
 from os import X_OK
 
-jar_file = 'SearchGUI-4.0.33.jar'
+jar_file = 'SearchGUI-4.0.41.jar'
 
 default_jvm_mem_opts = ['-Xms2g', '-Xmx4g']
 
@@ -106,6 +106,7 @@ def main():
     we copy the jar file, lib, and resources to the exec_dir directory.
     """
     (mem_opts, prop_opts, pass_args, exec_dir) = jvm_opts(sys.argv[1:])
+
     pass_args = def_temp_log_opts(pass_args)
 
     jar_dir = exec_dir if exec_dir else real_dirname(sys.argv[0])
@@ -118,8 +119,11 @@ def main():
     jar_path = os.path.join(jar_dir, jar_file)
 
     java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
-    sys.exit(subprocess.call(java_args))
 
+    new_env = dict( os.environ )
+    new_env['LC_ALL'] = 'C'
+
+    sys.exit(subprocess.call(java_args, env=new_env))
 
 if __name__ == '__main__':
     main()

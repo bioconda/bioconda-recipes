@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="CLL_1.30.0.tar.gz"
+FN="CLL_1.34.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/CLL_1.30.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/CLL_1.30.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-cll/bioconductor-cll_1.30.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/CLL_1.34.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/CLL_1.34.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cll/bioconductor-cll_1.34.0_src_all.tar.gz"
 )
-MD5="e9732351c00670d6708201866f150119"
+MD5="e6ff81277c7e8e743ea6934b34f1eaec"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

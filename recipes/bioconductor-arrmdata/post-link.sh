@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ARRmData_1.26.0.tar.gz"
+FN="ARRmData_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/ARRmData_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ARRmData_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-arrmdata/bioconductor-arrmdata_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/ARRmData_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ARRmData_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-arrmdata/bioconductor-arrmdata_1.30.0_src_all.tar.gz"
 )
-MD5="505a7b4638390d6852c2fe5154ff222d"
+MD5="b830eb5c1ebf8fd859bde3e0d620eb15"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
