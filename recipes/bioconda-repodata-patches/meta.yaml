@@ -1,0 +1,37 @@
+{% set version = datetime.datetime.utcnow().strftime('%Y%m%d') %}
+
+package:
+  name: bioconda-repodata-patches
+  version: {{ version }}
+
+source:
+  path: .
+
+build:
+  noarch: generic
+  number: 0
+
+requirements:
+  build:
+    - python 3.*
+    - setuptools
+    - requests
+    - tqdm
+
+test:
+  commands:
+    {% for subdir in ("noarch", "linux-64", "osx-64") %}
+    - test -e $PREFIX/{{ subdir }}/patch_instructions.json
+    {% endfor %}
+
+about:
+  summary: generate tweaks to index metadata, hosted separately from anaconda.org index
+  home: https://github.com/bioconda/bioconda-recipes
+  license: CC-PDDC
+
+extra:
+  recipe-maintainers:
+    - bioconda/core
+  skip-lints:
+    - missing_hash
+    - should_be_noarch_python
