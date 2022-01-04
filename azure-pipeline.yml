@@ -197,3 +197,100 @@ stages:
 
     - publish: /tmp/artifacts
       artifact: OSXArtifacts
+
+- stage: 'test_osx_arm'
+  jobs:
+  - job: 'test_osx_arm'
+    pool:
+      vmImage: 'macOS-latest'
+    strategy:
+      maxParallel: 4
+    timeoutInMinutes: 360
+
+    steps:
+    - bash: |
+        set -xe
+
+        MINIFORGE_HOME=${MINIFORGE_HOME:-${HOME}/miniforge3}
+
+        echo "Installing a fresh version of Miniforge"
+
+        MINIFORGE_URL="https://github.com/conda-forge/miniforge/releases/latest/download"
+        MINIFORGE_FILE="Miniforge3-MacOSX-$(uname -m).sh"
+        curl -L -O "${MINIFORGE_URL}/${MINIFORGE_FILE}"
+        rm -rf ${MINIFORGE_HOME}
+        bash $MINIFORGE_FILE -b -p ${MINIFORGE_HOME}
+
+        echo "Configuring conda"
+        GET_BOA=boa
+        BUILD_CMD=mambabuild
+
+        source ${MINIFORGE_HOME}/etc/profile.d/conda.sh
+        conda activate base
+      displayName: Setup miniforge
+
+    - bash: |
+        wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
+      displayName: Fetch common.sh
+
+    - script: .azure-pipelines/createEnv.py
+      condition: ne(variables.CACHE_RESTORED, 'true')
+      displayName: Install bioconda-utils
+
+    - script: |
+        # download SDK and setup sysroot on macOS
+        #  primarily, run_conda_forge_build_setup does the following:
+        #   - download/setup SDK:
+        #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L21-L26
+        #   - add activation script to set MACOSX_DEPLOYMENT_TARGET and CONDA_BUILD_SYSROOT:
+        #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L60-L63
+        # use "CONFIG=" to avoid writing ./.ci_support/${CONFIG}.yaml which we don't need/use.
+        MINIFORGE_HOME=${MINIFORGE_HOME:-${HOME}/miniforge3}
+        source ${MINIFORGE_HOME}/etc/profile.d/conda.sh
+        conda activate base
+
+        export target_platform="osx-arm64"
+        export build_platform="osx-64"
+
+        CONFIG= OSX_FORCE_SDK_DOWNLOAD=1 MACOSX_DEPLOYMENT_TARGET=11.0 run_conda_forge_build_setup
+        conda_forge_ci_setup_activate_sh="${CONDA_PREFIX}/etc/conda/activate.d/conda-forge-ci-setup-activate.sh"
+        sed -Ei.bak "s/^(export MACOSX_DEPLOYMENT_TARGET)=.*$/\\1='10.9'/" "${conda_forge_ci_setup_activate_sh}"
+        rm "${conda_forge_ci_setup_activate_sh}".bak
+        cat "${conda_forge_ci_setup_activate_sh}"
+        grep -qFx "export MACOSX_DEPLOYMENT_TARGET='10.9'" "${conda_forge_ci_setup_activate_sh}"
+        conda list
+      displayName: OSX setup
+
+    - bash: |
+        set -e
+
+        MINIFORGE_HOME=${MINIFORGE_HOME:-${HOME}/miniforge3}
+        source ${MINIFORGE_HOME}/etc/profile.d/conda.sh
+        conda activate base
+
+        conda config --system --add channels defaults
+        conda config --system --add channels bioconda
+        conda config --system --add channels conda-forge
+        mkdir -p ${CONDA_PREFIX}/conda-bld
+
+        export OSTYPE="darwin"
+        export CI="true"
+        export CONDA_BUILD_CROSS_COMPILATION=1
+        export target_platform="osx-arm64"
+        export build_platform="osx-64"
+        bioconda-utils build recipes config.yml \
+            --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH" HEAD
+      displayName: Test
+
+    - bash: |
+        (
+        mkdir -p /tmp/artifacts/packages
+        cd /usr/local/miniconda/envs/bioconda/conda-bld || exit 0
+        find -name .cache | xargs rm -rf || true
+        for n in index.html channeldata.json osx-arm64; do
+          cp -rv $n /tmp/artifacts/packages || true
+        done
+        ) || true
+      displayName: Prepare artifacts
+
+    - publish: /tmp/artifacts
