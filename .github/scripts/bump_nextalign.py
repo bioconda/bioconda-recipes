@@ -34,6 +34,8 @@ for asset in nextclade_latest["assets"]:
     h.update(r.content)
     shas[asset["name"]] = h.hexdigest()
 print(shas)
+with open("version", "w") as f:
+    f.write(latest_version)
 
 # %%
 oses = {
