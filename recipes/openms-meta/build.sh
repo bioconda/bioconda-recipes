@@ -33,7 +33,7 @@ fi
 LDFLAGS='-Wl,-rpath,${RPATH}'
 
 cmake .. \
-  -GNinja
+  -GNinja \
   -DOPENMS_CONTRIB_LIBS='../../contrib-build' \
   -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
   -DOPENMS_GIT_SHORT_SHA1="9110e58" \
