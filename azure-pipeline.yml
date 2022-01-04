@@ -233,8 +233,11 @@ stages:
         wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
       displayName: Fetch common.sh
 
-    - script: .azure-pipelines/createEnv.py
-      condition: ne(variables.CACHE_RESTORED, 'true')
+    - bash: |
+        MINIFORGE_HOME=${MINIFORGE_HOME:-${HOME}/miniforge3}
+        source ${MINIFORGE_HOME}/etc/profile.d/conda.sh
+        conda activate base
+        .azure-pipelines/createEnv.py
       displayName: Install bioconda-utils
 
     - script: |
