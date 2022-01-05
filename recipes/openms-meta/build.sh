@@ -33,7 +33,6 @@ fi
 LDFLAGS='-Wl,-rpath,${RPATH}'
 
 cmake .. \
-  -DCMAKE_FIND_DEBUG_MODE=true \
   -DOPENMS_CONTRIB_LIBS='../../contrib-build' \
   -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
   -DOPENMS_GIT_SHORT_SHA1="9110e58" \
