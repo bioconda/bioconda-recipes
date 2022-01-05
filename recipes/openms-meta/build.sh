@@ -32,8 +32,8 @@ else
 fi
 LDFLAGS='-Wl,-rpath,${RPATH}'
 
-cmake --debug-find .. \
-  -GNinja \
+cmake .. \
+  -DCMAKE_FIND_DEBUG_MODE=true \
   -DOPENMS_CONTRIB_LIBS='../../contrib-build' \
   -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
   -DOPENMS_GIT_SHORT_SHA1="9110e58" \
@@ -57,7 +57,7 @@ cmake --debug-find .. \
 cat $SRC_DIR/build/CMakeFiles/CMakeOutput.log
 cat $SRC_DIR/build/CMakeFiles/CMakeError.log
 
-ninja -j${CPU_COUNT} OpenMS TOPP UTILS
+make -j${CPU_COUNT} OpenMS TOPP UTILS
 # The subpackages will do that (unfortunately "make install" installs everything right away)
 # Another option would be to install somewhere into the build dir (to use the existent install commands)
 # and then copy the relevant parts to the prefix. See CMAKE_INSTALL_PREFIX.
