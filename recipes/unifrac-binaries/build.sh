@@ -23,7 +23,10 @@ fi
 which h5c++
 if [[ "$(uname -s)" == "Linux" ]];
 then
-          ./scripts/install_hpc_sdk.sh
+          # remove unused pieces to save space
+          cat install_hpc_sdk.sh |sed 's/tar xpzf/tar --exclude hpcx --exclude openmpi4 --exclude 10.2 -xpzf/g' >my_install_hpc_sdk.sh
+          chmod a+x my_install_hpc_sdk.sh
+          my_install_hpc_sdk.sh
           source setup_nv_h5.sh
 fi
 
