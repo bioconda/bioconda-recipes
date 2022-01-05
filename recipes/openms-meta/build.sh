@@ -33,6 +33,7 @@ fi
 LDFLAGS='-Wl,-rpath,${RPATH}'
 
 cmake .. \
+  --debug-find \
   -GNinja \
   -DOPENMS_CONTRIB_LIBS='../../contrib-build' \
   -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
@@ -52,7 +53,10 @@ cmake .. \
   -DBOOST_USE_STATIC=OFF \
   -DBoost_NO_BOOST_CMAKE=ON \
   -DBoost_ARCHITECTURE="-x64" \
-  -DBUILD_EXAMPLES=OFF
+  -DBUILD_EXAMPLES=OFF || true
+
+less CMakeOutput.log
+less CMakeError.log
 
 ninja -j${CPU_COUNT} OpenMS TOPP UTILS
 # The subpackages will do that (unfortunately "make install" installs everything right away)
