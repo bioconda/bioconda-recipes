@@ -51,10 +51,7 @@ cmake .. \
   -DBOOST_USE_STATIC=OFF \
   -DBoost_NO_BOOST_CMAKE=ON \
   -DBoost_ARCHITECTURE="-x64" \
-  -DBUILD_EXAMPLES=OFF || true
-
-cat $SRC_DIR/build/CMakeFiles/CMakeOutput.log
-cat $SRC_DIR/build/CMakeFiles/CMakeError.log
+  -DBUILD_EXAMPLES=OFF
 
 make -j${CPU_COUNT} OpenMS TOPP UTILS
 # The subpackages will do that (unfortunately "make install" installs everything right away)
