@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+set -x
+set -e
+
 nextclade dataset get --name 'sars-cov-2' --output-dir 'data/sars-cov-2'
 
 nextclade run \
