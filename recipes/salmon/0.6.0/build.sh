@@ -28,6 +28,7 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     sed -i 's/Boost_USE_STATIC_LIBS ON/Boost_USE_STATIC_LIBS OFF/' CMakeLists.txt
     sed -i 's#set(Boost_ADDITIONAL_VERSIONS "1.53" "1.53.0" "1.54" "1.55" "1.56" "1.57.0" "1.58")#set(Boost_ADDITIONAL_VERSIONS "1.53" "1.53.0" "1.54" "1.55" "1.56" "1.57.0" "1.58" "1.74.0")#' CMakeLists.txt
     sed -i 's#BUILD_COMMAND sh -c "make CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER}"#BUILD_COMMAND sh -c "make CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS+=-I$PREFIX/include CFLAGS+=-I$PREFIX/bin"#' CMakeLists.txt
+    sed -i 's#INSTALL_COMMAND cp -r <SOURCE_DIR>/include/spdlog <INSTALL_DIR>/include#INSTALL_COMMAND ""#' CMakeLists.txt
     cd build
     cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBOOST_ROOT=$PREFIX -DBoost_DEBUG=ON -DBoost_NO_BOOST_CMAKE=ON ..
     make install
