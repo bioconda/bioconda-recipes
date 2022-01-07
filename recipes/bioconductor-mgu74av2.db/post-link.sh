@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="mgu74av2.db_3.2.3.tar.gz"
+FN="mgu74av2.db_3.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/mgu74av2.db_3.2.3.tar.gz"
-  "https://bioarchive.galaxyproject.org/mgu74av2.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mgu74av2.db/bioconductor-mgu74av2.db_3.2.3_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mgu74av2.db/bioconductor-mgu74av2.db_3.2.3_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/mgu74av2.db_3.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/mgu74av2.db_3.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mgu74av2.db/bioconductor-mgu74av2.db_3.13.0_src_all.tar.gz"
 )
-MD5="ca637dece483fe0a0f752e4fa013d389"
+MD5="3205856d0c7725acded5238415e907bc"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

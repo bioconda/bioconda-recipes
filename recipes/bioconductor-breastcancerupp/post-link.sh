@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="breastCancerUPP_1.28.0.tar.gz"
+FN="breastCancerUPP_1.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/breastCancerUPP_1.28.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/breastCancerUPP_1.28.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-breastcancerupp/bioconductor-breastcancerupp_1.28.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/breastCancerUPP_1.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/breastCancerUPP_1.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-breastcancerupp/bioconductor-breastcancerupp_1.32.0_src_all.tar.gz"
 )
-MD5="f174af97676727b7948d59c4ca575aa4"
+MD5="07add7ff3b76620b02388425aadee058"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

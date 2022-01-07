@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="hpAnnot_1.0.1.tar.gz"
+FN="hpAnnot_1.1.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/hpAnnot_1.0.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/hpAnnot_1.0.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hpannot/bioconductor-hpannot_1.0.1_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hpannot/bioconductor-hpannot_1.0.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hpAnnot_1.1.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/hpAnnot_1.1.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hpannot/bioconductor-hpannot_1.1.0_src_all.tar.gz"
 )
-MD5="7a1254a1d184b1a065f5f24d266cebdc"
+MD5="fbc94a00b0f33b41bc5ff53fbe060663"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
