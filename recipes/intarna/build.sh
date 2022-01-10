@@ -13,8 +13,6 @@ LDFLAGS="$LDFLAGS -Wl,-rpath ${PREFIX}/lib";
 if [ `uname` == Darwin ] ; then
     CXXFLAGS="$CXXFLAGS -stdlib=libc++"
     LDFLAGS="$LDFLAGS -stdlib=libc++"
-    # update grep to be working without "-P" option
-    sed -i.orig  -e "s/grep [^|]*/grep 'case\\\\\\\\s*IntaRNA\\\\\\\\S' /" ./configure
 else ## linux
     CXXFLAGS="$CXXFLAGS"
 fi
