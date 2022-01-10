@@ -5,7 +5,7 @@ pushd tools/utils
 ls
 popd
 pushd tools
-make setup _utils
+make setup _utils CC=${CC}
 ls -la
 popd
 
