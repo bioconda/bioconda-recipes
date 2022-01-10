@@ -2,6 +2,7 @@
 set -ex
 pushd tools/utils
 ./configure --with-htslib=${PREFIX}
+mkdir ../bin
 make all CC=${CC} LDFLAGS="${LDFLAGS}"
 popd
 #pushd tools
