@@ -26,9 +26,8 @@ if [ `uname` == Darwin ] ; then
     echo 
     echo "testing ld/clang options"
     echo
-    ld -help
+    man -P cat ld
     clang-11 -help
-    clang-11 -help-hidden
     echo
 fi
 
@@ -40,7 +39,12 @@ fi
             --with-boost-libdir=$PREFIX/lib \
             --disable-intarnapvalue \
             ${extra_config_options}
-            
-make -j 2
-make tests -j 2
+
+if [ `uname` == Darwin ] ; then
+  make 
+  make tests
+else
+  make -j ${CPU_COUNT}
+  make tests -j ${CPU_COUNT}
+fi
 make install
