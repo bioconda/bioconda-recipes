@@ -5,7 +5,7 @@ pushd tools/utils
 ls
 popd
 pushd tools
-make setup 
+make setup _utils
 ls -la
 popd
 
