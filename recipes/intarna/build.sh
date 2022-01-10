@@ -11,8 +11,8 @@ CXXFLAGS="$CXXFLAGS -w -fopenmp";
 LDFLAGS="$LDFLAGS -Wl,-rpath ${PREFIX}/lib";
 
 if [ `uname` == Darwin ] ; then
-    CXXFLAGS="$CXXFLAGS -stdlib=libc++"
-    LDFLAGS="$LDFLAGS -stdlib=libc++"
+    CXXFLAGS="$CXXFLAGS -stdlib=libc++ -v"
+    LDFLAGS="$LDFLAGS -stdlib=libc++ -v"
 else ## linux
     CXXFLAGS="$CXXFLAGS"
 fi
@@ -21,6 +21,16 @@ export CC=${CC}
 export CXX=${CXX}
 export CXXFLAGS=${CXXFLAGS}
 export LDFLAGS=${LDFLAGS}
+
+if [ `uname` == Darwin ] ; then
+    echo 
+    echo "testing ld/clang options"
+    echo
+    ld -help
+    clang-11 -help
+    clang-11 -help-hidden
+    echo
+fi
 
 ./configure --prefix=$PREFIX \
             --with-vrna=$PREFIX \
