@@ -13,7 +13,7 @@ LDFLAGS="$LDFLAGS -Wl,-rpath ${PREFIX}/lib";
 if [ `uname` == Darwin ] ; then
     CXXFLAGS="$CXXFLAGS -stdlib=libc++ -v"
     LDFLAGS="$LDFLAGS -stdlib=libc++ -v"
-    extra_config_options="$extra_config_options --disable_pkg_config"
+    extra_config_options="$extra_config_options --disable-pkg-config"
 else ## linux
     CXXFLAGS="$CXXFLAGS"
 fi
