@@ -3,7 +3,7 @@ set -ex
 pushd tools/utils
 export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
-./configure --with-htslib=${PREFIX}
+./configure
 mkdir ../bin
 make CC="${CC}" LDFLAGS="${LDFLAGS}"
 popd
