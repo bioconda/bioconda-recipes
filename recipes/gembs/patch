@@ -134,24 +134,19 @@ index 2b0ce0d..816b347 100644
  				reg->nseqs++;
  				reg->seq_names[i] = ctgs[i].name;
 diff --git a/tools/utils/mextr/mextr.h b/tools/utils/mextr/mextr.h
-index ad7672a..33e8245 100644
+index ad7672a..378a2d2 100644
 --- a/tools/utils/mextr/mextr.h
 +++ b/tools/utils/mextr/mextr.h
-@@ -189,7 +189,11 @@ void fill_base_prob_table(void);
+@@ -189,7 +189,6 @@ void fill_base_prob_table(void);
  void print_headers(args_t *args);
  int calc_phred(double z);
  double *get_prob_dist(int ns, double *Q[]);
 -char trans_base[256];
-+char trans_base[256] = {
-+                ['A'] = 'T', ['C'] = 'G', ['G'] = 'C', ['T'] = 'A',
-+                ['Y'] = 'R', ['R'] = 'Y', ['S'] = 'S', ['W'] = 'W', ['K'] = 'M', ['M'] = 'K',
-+                ['B'] = 'V', ['V'] = 'B', ['D'] = 'H', ['H'] = 'D', ['N'] = 'N', ['.'] = '.'
-+};
  
  #define ks_output(fp, s) { \
  	int r; \
 diff --git a/tools/utils/mextr/output.c b/tools/utils/mextr/output.c
-index 260457d..75e6728 100644
+index 260457d..1cca3f7 100644
 --- a/tools/utils/mextr/output.c
 +++ b/tools/utils/mextr/output.c
 @@ -4,7 +4,8 @@
@@ -164,6 +159,19 @@ index 260457d..75e6728 100644
  
  #include "mextr.h"
  #include "bbi.h"
+@@ -12,6 +13,12 @@
+ #include "htslib/hfile.h"
+ #include "htslib/tbx.h"
+ 
++char trans_base[256] = {
++                ['A'] = 'T', ['C'] = 'G', ['G'] = 'C', ['T'] = 'A',
++                ['Y'] = 'R', ['R'] = 'Y', ['S'] = 'S', ['W'] = 'W', ['K'] = 'M', ['M'] = 'K',
++                ['B'] = 'V', ['V'] = 'B', ['D'] = 'H', ['H'] = 'D', ['N'] = 'N', ['.'] = '.'
++};
++
+ void output_cpg(args_t *const args, rec_t ** const lrec, const int idx) {
+ 	static char *gt_iupac = "AMRWCSYGKT";
+ 	static uint8_t gt_msk[] = {0x11, 0xb3, 0x55, 0x99, 0xa2, 0xf6, 0xaa, 0x54, 0xdc, 0x88};
 diff --git a/tools/utils/mextr/output_utils.c b/tools/utils/mextr/output_utils.c
 index 1da6816..e8d7ae8 100644
 --- a/tools/utils/mextr/output_utils.c
