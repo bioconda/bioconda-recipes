@@ -11,8 +11,8 @@ CXXFLAGS="$CXXFLAGS -w -fopenmp";
 LDFLAGS="$LDFLAGS -Wl,-rpath ${PREFIX}/lib";
 
 if [ `uname` == Darwin ] ; then
-    CXXFLAGS="$CXXFLAGS -stdlib=libc++ -v"
-    LDFLAGS="$LDFLAGS -stdlib=libc++ -v"
+    CXXFLAGS="$CXXFLAGS -stdlib=libc++"
+    LDFLAGS="$LDFLAGS -stdlib=libc++"
     extra_config_options="$extra_config_options --disable-pkg-config"
 else ## linux
     CXXFLAGS="$CXXFLAGS"
