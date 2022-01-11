@@ -48,45 +48,42 @@ index ebd8f3a..27e760d 100644
  
  utils/Makefile: utils/Makefile.in utils/configure _samtools
 diff --git a/tools/utils/mextr/command_line.c b/tools/utils/mextr/command_line.c
-index 2b0ce0d..0ceba19 100644
+index 2b0ce0d..816b347 100644
 --- a/tools/utils/mextr/command_line.c
 +++ b/tools/utils/mextr/command_line.c
-@@ -25,6 +25,7 @@
- // These are copied from htslib:synced_bcf_reader.c as the definitions are not visible
- // in the standard library and we need them to allow sorting of regions
- 
-+/*
- typedef struct {
+@@ -29,10 +29,10 @@ typedef struct {
  	hts_pos_t start, end;
  } region1_t;
-@@ -33,6 +34,7 @@ struct _region_t {
+ 
+-struct _region_t {
++struct bcf_sr_region_t {
  	region1_t *regs;
  	int nregs, mregs, creg;
- };
-+*/
+-};
++} _region_t;
  
  const char *usage(void) {
  	return
-@@ -297,11 +299,11 @@ void handle_command_line(int argc, char *argv[], args_t * const args) {
+@@ -297,11 +297,11 @@ void handle_command_line(int argc, char *argv[], args_t * const args) {
  		if(!nr) error("None of the requested contigs are present in the input file\n");
  		qsort_r(ix, nr, sizeof(int), cmp_reg, reg);
  		char **tseq = malloc(sizeof(char *) * nr);
 -		struct _region_t *treg = malloc(sizeof(struct _region_t) * nr);
-+		bcf_sr_regions_t *treg = malloc(sizeof(bcf_sr_regions_t) * nr);
++		struct bcf_sr_region_t *treg = malloc(sizeof(struct bcf_sr_region_t) * nr);
  		for(int i = 0; i < nr; i++) {
  			const int j = ix[i];
  			tseq[i] = reg->seq_names[j];
 -			memcpy(treg + i, reg->regs + j, sizeof(struct _region_t));
-+			memcpy(treg + i, reg->regs + j, sizeof(bcf_sr_regions_t));
++			memcpy(treg + i, reg->regs + j, sizeof(struct bcf_sr_region_t));
  			khash_str2int_set(reg->seq_hash, tseq[i], i);
  		}
  		free(reg->seq_names);
-@@ -335,7 +337,7 @@ void handle_command_line(int argc, char *argv[], args_t * const args) {
+@@ -335,7 +335,7 @@ void handle_command_line(int argc, char *argv[], args_t * const args) {
  			reg->prev_start = reg->prev_end = reg->prev_seq = -1;
  			reg->seq_hash = khash_str2int_init();
  			reg->seq_names = calloc(nctgs, sizeof(char *));
 -			reg->regs = calloc(nctgs, sizeof(struct _region_t));
-+			reg->regs = calloc(nctgs, sizeof(bcf_sr_regions_t));
++			reg->regs = calloc(nctgs, sizeof(struct bcf_sr_region_t));
  			for(int i = 0; i < nctgs; i++) {
  				reg->nseqs++;
  				reg->seq_names[i] = ctgs[i].name;
