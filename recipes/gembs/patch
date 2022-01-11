@@ -80,6 +80,19 @@ index 12aced1..369ef09 100755
  		HTSINC=""
  fi
  
+diff --git a/tools/utils/md5_fasta.c b/tools/utils/md5_fasta.c
+index d87e2a7..4a3ea97 100644
+--- a/tools/utils/md5_fasta.c
++++ b/tools/utils/md5_fasta.c
+@@ -79,7 +79,7 @@ static int get_cache_fname(char *path, const char * cache, const char * str) {
+ 	s -= ln;
+ 	while(ln--) *path++ = *cache++;
+ 	bool need_slash = (*str && path > init && path[-1] != '/');
+-	ln = strlen(str) + need_slash ? 1 : 0;
++	ln = strlen(str) + (need_slash ? 1 : 0);
+ 	if(ln >= s) return -1;
+ 	if(need_slash) *path++ = '/';
+ 	strcpy(path, str);
 diff --git a/tools/utils/mextr/command_line.c b/tools/utils/mextr/command_line.c
 index 2b0ce0d..816b347 100644
 --- a/tools/utils/mextr/command_line.c
@@ -120,6 +133,23 @@ index 2b0ce0d..816b347 100644
  			for(int i = 0; i < nctgs; i++) {
  				reg->nseqs++;
  				reg->seq_names[i] = ctgs[i].name;
+diff --git a/tools/utils/mextr/mextr.h b/tools/utils/mextr/mextr.h
+index ad7672a..33e8245 100644
+--- a/tools/utils/mextr/mextr.h
++++ b/tools/utils/mextr/mextr.h
+@@ -189,7 +189,11 @@ void fill_base_prob_table(void);
+ void print_headers(args_t *args);
+ int calc_phred(double z);
+ double *get_prob_dist(int ns, double *Q[]);
+-char trans_base[256];
++char trans_base[256] = {
++                ['A'] = 'T', ['C'] = 'G', ['G'] = 'C', ['T'] = 'A',
++                ['Y'] = 'R', ['R'] = 'Y', ['S'] = 'S', ['W'] = 'W', ['K'] = 'M', ['M'] = 'K',
++                ['B'] = 'V', ['V'] = 'B', ['D'] = 'H', ['H'] = 'D', ['N'] = 'N', ['.'] = '.'
++};
+ 
+ #define ks_output(fp, s) { \
+ 	int r; \
 diff --git a/tools/utils/mextr/output.c b/tools/utils/mextr/output.c
 index 260457d..75e6728 100644
 --- a/tools/utils/mextr/output.c
@@ -134,6 +164,20 @@ index 260457d..75e6728 100644
  
  #include "mextr.h"
  #include "bbi.h"
+diff --git a/tools/utils/mextr/output_utils.c b/tools/utils/mextr/output_utils.c
+index 1da6816..e8d7ae8 100644
+--- a/tools/utils/mextr/output_utils.c
++++ b/tools/utils/mextr/output_utils.c
+@@ -43,9 +43,3 @@ double *get_prob_dist(int ns, double *Q[]) {
+ 	return q0;
+ }
+ 
+-char trans_base[256] = {
+-		['A'] = 'T', ['C'] = 'G', ['G'] = 'C', ['T'] = 'A',
+-		['Y'] = 'R', ['R'] = 'Y', ['S'] = 'S', ['W'] = 'W', ['K'] = 'M', ['M'] = 'K',
+-		['B'] = 'V', ['V'] = 'B', ['D'] = 'H', ['H'] = 'D', ['N'] = 'N', ['.'] = '.'
+-};
+-
 diff --git a/tools/utils/snpxtr/command_line.c b/tools/utils/snpxtr/command_line.c
 index e9bc962..c335f8b 100644
 --- a/tools/utils/snpxtr/command_line.c
