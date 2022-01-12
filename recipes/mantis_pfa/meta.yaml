@@ -1,0 +1,64 @@
+{% set name = "mantis_pfa" %}
+{% set version = "1.4.3" %}
+
+
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PedroMTQ/Mantis/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 49942c5de92ddbfb5ffa06ad4ea317045f9d236c9cc8822928d30bde22de7b71
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv
+  skip: True  # [ py < 37 ]
+  entry_points:
+    - mantis = mantis.__main__:main
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+
+  host:
+    - setuptools >=42
+    - wheel
+    - pip
+    - python
+
+  run:
+    - nltk>=1.18.1
+    - python
+    - requests>=2.22.0
+    - psutil>=5.6.7
+    - cython
+    - hmmer >=3.2.1
+    - diamond >=2.0.13
+
+
+test:
+  imports:
+    - mantis
+
+about:
+  home: https://github.com/PedroMTQ/Mantis
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Consensus-driven protein function annotation tool
+  description: |
+    Mantis is a fully customizable protein function annotation,
+    that dynamically integrates multiple reference databases to
+    produce consensus-driven annotations.
+  dev_url: https://github.com/PedroMTQ/Mantis
+
+extra:
+  recipe-maintainers:
+    - PedroMTQ
+  identifiers:
+    - biotools:mantis_pfa
+    - doi:10.1093/gigascience/giab042
+  skip-lints:
+    - cython_must_be_in_host
