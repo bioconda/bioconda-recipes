@@ -13,6 +13,7 @@ LDFLAGS="$LDFLAGS -Wl,-rpath ${PREFIX}/lib";
 if [ `uname` == Darwin ] ; then
     CXXFLAGS="$CXXFLAGS -stdlib=libc++"
     LDFLAGS="$LDFLAGS -stdlib=libc++"
+    extra_config_options="$extra_config_options --disable-pkg-config"
 else ## linux
     CXXFLAGS="$CXXFLAGS"
 fi
@@ -30,7 +31,8 @@ export LDFLAGS=${LDFLAGS}
             --with-boost-libdir=$PREFIX/lib \
             --disable-intarnapvalue \
             ${extra_config_options}
-            
-make -j 2
-make tests -j 2
+
+
+make -j ${CPU_COUNT}
+make tests -j ${CPU_COUNT}
 make install
