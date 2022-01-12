@@ -1,0 +1,64 @@
+{% set version = "0.1.1" %}
+
+package:
+  name: yafqc
+  version: {{ version }}
+
+source:
+  - url: https://gitlab.com/gecocoo/yafqc/-/archive/master/yafqc-master.tar.gz
+    sha256: 201b6e652e2856ab70c17aad84e31bb4f05ba0fa3859e0e03d6f1d5aa233d44c
+  - url: https://gitlab.com/gecocoo/gecocoo/-/archive/master/gecocoo-master.tar.gz
+    folder: gecocoo
+    sha256: f687405239faf32c74a8cf9fa0f4486d66d6072d3ab6a10f425930acfc00b9d6
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - yafqc = yafqc.__init__:main
+  script: |
+    {{ PYTHON }} -m pip install gecocoo -vv
+    {{ PYTHON }} -m pip install . -vv
+
+requirements:
+  host:
+    - pip
+    - python=3.8
+    - numpy=1.19.5
+    - numba=0.52.0
+    - pytest
+    - pytest-cov
+    - matplotlib-base
+    - jinja2
+    - requests
+    - llvmlite=0.35
+    - strictyaml
+    - hypothesis=6.0.1
+    - PuLP
+  run:
+    - python=3.8
+    - numpy
+    - numba
+    - pytest
+    - pytest-cov
+    - matplotlib-base
+    - jinja2
+    - requests
+    - llvmlite=0.35
+    - strictyaml
+
+test:
+  imports:
+    - yafqc
+  commands:
+    - yafqc --help
+
+about:
+  home: https://gitlab.com/gecocoo/yafqc
+  license: MIT
+  license_file: LICENSE.md
+  summary: Yet Another FastQ Quality Control
+
+extra:
+  recipe-maintainers:
+    - fxwiegand
