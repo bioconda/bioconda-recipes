@@ -1,0 +1,48 @@
+{% set name = "LinkStats" %}
+{% set version = "0.1.3" %}
+{% set sha256 = "d6c3026f1d01647d624121a1e80d458f7608131a2194b34a0e5174e0ba84f0f3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/wtsi-hpag/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  skip: True # [py < 38]
+  number: 0
+  script: "CXX=clang {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }} # [osx]
+    - clang >=11.0 # [linux]
+    - pkg-config >=0.29.2
+  host:
+    - htslib
+    - python
+    - pip
+    - meson >=0.60.0
+  run:
+    - htslib
+    - python
+    - numpy >=1.22.0
+    - click >=8.0.3
+    - matplotlib-base >=3.5.1
+    - pandas >=1.3.5
+    - seaborn >=0.11.2
+    - tqdm >=4.62.3
+
+test:
+  commands:
+    - {{ name }} --help
+
+about:
+  home: https://github.com/wtsi-hpag/{{ name }}
+  license: MIT
+  license_file: LICENSE
+  license_family: MIT
+  summary: Collect and process statistics from aligned linked-reads.
