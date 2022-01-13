@@ -1,7 +1,7 @@
 {% set name = "rgi" %}
-{% set version = "5.2.0" %}
-{% set sha256 = "896d375500b7137fc0d5a55292cde766aadb4cb98f8be839883e183740d8ff6d" %}
-{% set sha256database = "f9c4a77eae54a29a16b8acf83c4b4fe85225582086de6099a5a5583cb692f7b5" %}
+{% set version = "5.2.1" %}
+{% set sha256 = "1b2de93da1efc16ea41bac9e5ce8f3fc998185d8c0ab08aaad7bf16e4a5433b6" %}
+{% set sha256database = "ca9190336d7692caf9b5b4e03a10c1cc2b089180f5e4c705471912367a27a47b" %}
 
 package:
   name: {{ name }}
@@ -10,19 +10,20 @@ package:
 source:
     - url: https://github.com/arpcard/rgi/archive/{{ version }}.tar.gz
       sha256: {{ sha256 }}
-    - url: https://card.mcmaster.ca/download/0/broadstreet-v3.1.1.tar.bz2
+    - url: https://card.mcmaster.ca/download/0/broadstreet-v3.1.4.tar.bz2
       sha256: {{ sha256database }}
       folder: card-data
 
 build:
   noarch: python
-  number: 0
+  number: 1
 
 requirements:
   host:
-    - python >=3.5,<3.7
+    #- python >=3.5,<3.7
+    - python >=3.5
     - pip
-    - biopython 1.72
+    - biopython 1.78
     - six >=1.7.0
     - filetype >=1.0.0
     - pandas >=0.15.0
@@ -33,15 +34,17 @@ requirements:
     - beautifulsoup4==4.9.3
     - requests==2.24.0
     - pysam==0.16.0.1
+    - lxml==4.6.5
   run:
     # RGI requires these exact versions of blast prodigal and diamond, or else --alignment_mode DIAMOND fails
-    - python >=3.5,<3.7
+    # - python >=3.5,<3.7
+    - python >=3.5
     - blast 2.9.0
     - six >=1.7.0
     - zlib
     - prodigal 2.6.3
     - diamond 0.8.36
-    - biopython 1.72
+    - biopython 1.78
     - filetype >=1.0.0
     - pandas >=0.15.0
     - matplotlib-base >=2.1.2
@@ -58,10 +61,11 @@ requirements:
     - beautifulsoup4==4.9.3
     - requests==2.24.0
     - pysam==0.16.0.1
+    - lxml==4.6.5
     
 test:
   commands:
-    - rgi database -v | grep "3.1.1" > /dev/null 2>&1
+    - rgi database -v | grep "3.1.4" > /dev/null 2>&1
     - rgi load -h > /dev/null 2>&1
     - rgi auto_load -h > /dev/null 2>&1
     - rgi main -h > /dev/null 2>&1
