@@ -6,17 +6,16 @@ mkdir -p  "$PREFIX/bin/bin"
 cd muscle
 ./autogen.sh
 if [ `uname` == Darwin ]; then
-    ./configure --prefix=$PWD --disable-shared 
+    ./configure --prefix=$PREFIX --disable-shared 
 else
-    ./configure --prefix=$PWD
+    ./configure --prefix=$PREFIX
 fi
 make -j 2
 make install
 
 cd ..
 ./autogen.sh
-export ORIGIN=\$ORIGIN
-./configure LDFLAGS="$LDFLAGS -Wl,-rpath,$ORIGIN/../muscle/lib"
+./configure --with-libmuscle=$PREFIX/include
 make LDADD="$LDADD -lMUSCLE-3.7"
 make install
 
