@@ -6,9 +6,9 @@ mkdir -p  "$PREFIX/bin/bin"
 cd muscle
 ./autogen.sh
 if [ `uname` == Darwin ]; then
-    ./configure --prefix=$PREFIX --disable-shared 
+    ./configure --prefix=$PREFIX --exec-prefix=EPREFIX=/tmp --disable-shared 
 else
-    ./configure --prefix=$PREFIX
+    ./configure --prefix=$PREFIX --exec-prefix=/tmp
 fi
 make -j 2
 make install
