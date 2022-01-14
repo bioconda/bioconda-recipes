@@ -6,9 +6,9 @@ mkdir -p  "$PREFIX/bin/bin"
 cd muscle
 ./autogen.sh
 if [ `uname` == Darwin ]; then
-    ./configure --prefix=$PREFIX --disable-shared 
+    ./configure --prefix=$PREFIX CXXFLAGS='-fopenmp' --disable-shared 
 else
-    ./configure --prefix=$PREFIX 
+    ./configure --prefix=$PREFIX CXXFLAGS='-fopenmp'
 fi
 make -j 2
 make install
