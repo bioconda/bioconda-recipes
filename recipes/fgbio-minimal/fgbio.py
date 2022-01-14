@@ -12,7 +12,7 @@ from os import access, getenv, path, X_OK
 
 # Expected name of the VarScan JAR file.
 JAR_NAME = 'fgbio.jar'
-PKG_NAME = 'fgbio'
+PKG_NAME = 'fgbio-minimal'
 
 # Default options passed to the `java` executable.
 DEFAULT_JVM_MEM_OPTS = ['-Xms512m', '-Xmx1g']
