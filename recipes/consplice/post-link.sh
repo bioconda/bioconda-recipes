@@ -10,6 +10,7 @@ cur_path = consplice.__cur_path__
 model_path = os.path.abspath(os.path.join(cur_path,'../../config/ConSpliceML_Model'))
 
 ## Check ConspliceML model
+print(model_path)
 assert os.path.exists(os.path.join(model_path,'trained_ConSpliceML.rf'))
 assert os.path.isfile(os.path.join(model_path,'trained_ConSpliceML.rf'))
 assert os.path.getsize(os.path.join(model_path,'trained_ConSpliceML.rf')) > 0
