@@ -9,5 +9,5 @@ cp *.pl ${PREFIX}/bin
 # copy perl libraries
 perl_version=$(perl -e 'print $^V');
 perl_version=${perl_version:1}
-mkdir -b ${PREFIX}/lib/${perl_version}/
+mkdir -p ${PREFIX}/lib/${perl_version}/
 cp Codon.pm ${PREFIX}/lib/${perl_version}/
