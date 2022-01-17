@@ -1,10 +1,10 @@
 #!/bin/bash
-echo Contents of /usr/local/include
-ls -lah /usr/local/include || true
+echo Contents of /usr/local
+ls -lah /usr/local || true
 echo
 
-echo Searching for htslib directory:
-find /usr/local -name htslib || true
+echo Searching for sam.h file:
+find / -name sam.h || true
 echo
 
 cd bamcmp-2.1 || true
