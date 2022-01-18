@@ -1,9 +1,11 @@
-{% set name = "alakazam" %}
-{% set version = "1.2.0" %}
+{% set name = 'alakazam' %}
+{% set version = '1.2.0' %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
-  name: "r-alakazam"
-  version: "{{ version }}"
+  name: r-alakazam
+  version: {{ version|replace("-", "_") }}
 
 source:
   url:
@@ -12,6 +14,7 @@ source:
   sha256: d5f2389d7f4d37d3c838aa63f390590ab22faceaff83f3a2790cd3d4ab721b53
 
 build:
+  merge_build_host: True  # [win]
   number: 0
   rpaths:
     - lib/R/lib/
@@ -28,6 +31,7 @@ requirements:
     - {{ posix }}sed               # [win]
     - {{ posix }}coreutils         # [win]
     - {{ posix }}zip               # [win]
+
   host:
     - r-base
     - bioconductor-biostrings >=2.56.0
@@ -39,8 +43,7 @@ requirements:
     - r-ape
     - r-dplyr >=1.0
     - r-ggplot2 >=3.3.4
-    - r-igraph >=1.0.0
-    - r-lazyeval
+    - r-igraph >=1.0
     - r-progress
     - r-readr
     - r-rlang
@@ -48,7 +51,8 @@ requirements:
     - r-seqinr
     - r-stringi
     - r-tibble
-    - r-tidyr
+    - r-tidyr >=1.0
+
   run:
     - r-base
     - bioconductor-biostrings >=2.56.0
@@ -62,7 +66,6 @@ requirements:
     - r-dplyr >=1.0
     - r-ggplot2 >=3.3.4
     - r-igraph >=1.0.0
-    - r-lazyeval
     - r-progress
     - r-readr
     - r-rlang
@@ -70,7 +73,7 @@ requirements:
     - r-seqinr
     - r-stringi
     - r-tibble
-    - r-tidyr
+    - r-tidyr >=1.0
 
 test:
   commands:
@@ -79,12 +82,12 @@ test:
 
 about:
   home: http://alakazam.readthedocs.org
-  license: AGPL-3.0-only
+  license: AGPL-3
   summary: 'Provides methods for high-throughput adaptive immune  receptor repertoire sequencing (AIRR-Seq; Rep-Seq) analysis. In  particular, immunoglobulin (Ig) sequence lineage reconstruction,  lineage topology analysis, diversity profiling, amino acid property  analysis and gene usage. Citations:  Gupta and Vander Heiden,
     et al (2017) <doi:10.1093/bioinformatics/btv359>, Stern, Yaari and Vander Heiden, et al (2014) <doi:10.1126/scitranslmed.3008879>.'
-  license_family: CC
+  license_family: AGPL
   license_file:
-    - {{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
 
 extra:
   recipe-maintainers:
