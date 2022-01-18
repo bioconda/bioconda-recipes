@@ -1,6 +1,5 @@
 {% set name = 'alakazam' %}
 {% set version = '1.2.0' %}
-{% set posix = 'm2-' if win else '' %}
 {% set native = 'm2w64-' if win else '' %}
 
 package:
@@ -14,7 +13,6 @@ source:
   sha256: d5f2389d7f4d37d3c838aa63f390590ab22faceaff83f3a2790cd3d4ab721b53
 
 build:
-  merge_build_host: True  # [win]
   number: 0
   rpaths:
     - lib/R/lib/
@@ -22,16 +20,9 @@ build:
 
 requirements:
   build:
-    - {{ compiler('c') }}        # [not win]
-    - {{ compiler('cxx') }}      # [not win]
-    - {{ compiler('m2w64_c') }}        # [win]
-    - {{ compiler('m2w64_cxx') }}      # [win]
-    - {{ posix }}filesystem        # [win]
-    - {{ posix }}make
-    - {{ posix }}sed               # [win]
-    - {{ posix }}coreutils         # [win]
-    - {{ posix }}zip               # [win]
-
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
     - r-base
     - bioconductor-biostrings >=2.56.0
@@ -77,8 +68,7 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('alakazam')"           # [not win]
-    - "\"%R%\" -e \"library('alakazam')\""  # [win]
+    - $R -e "library('alakazam')"
 
 about:
   home: http://alakazam.readthedocs.org
@@ -90,5 +80,7 @@ about:
     - '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
 
 extra:
+  skip-lints:
+    - in_other_channels
   recipe-maintainers:
     - ggabernet
