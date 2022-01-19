@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="SNAData_1.38.0.tar.gz"
+FN="SNAData_1.40.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/SNAData_1.38.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/SNAData_1.38.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-snadata/bioconductor-snadata_1.38.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/SNAData_1.40.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/SNAData_1.40.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-snadata/bioconductor-snadata_1.40.0_src_all.tar.gz"
 )
-MD5="bb5de6b64075410cbd92333d8f1b2e55"
+MD5="c85acfd6119146aa8a62dc22b6e3b81b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
