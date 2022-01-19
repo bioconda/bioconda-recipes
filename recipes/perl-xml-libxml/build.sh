@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ex
 
 if [ `uname -s` == "Darwin" ]; then
     # Force use of conda's libxml instead of the system one
@@ -20,7 +21,7 @@ if [ -f Build.PL ]; then
     ./Build install --installdirs site
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
-    perl Makefile.PL INSTALLDIRS=site LDFLAGS="$LDFLAGS"
+    perl Makefile.PL DEBUG=1 INSTALLDIRS=site LDFLAGS="$LDFLAGS"
     make
     make test
     make install
