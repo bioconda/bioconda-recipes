@@ -1,0 +1,45 @@
+{% set name = "verkko" %}
+{% set version = "1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/maickrau/verkko.git
+  git_rev: c8f6e8dc36b6080805df037d31996569e3c3409f
+  patches: version.patch
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - git
+    - make
+    - llvm-openmp  # [osx]
+    - openmp  # [linux]
+    - {{ compiler('cxx') }}
+  host:
+    - gsl
+    - llvm-openmp  # [osx]
+    - openmp  # [linux]
+  run:
+    - llvm-openmp  # [osx]
+    - openmp  # [linux]
+    - python >=3.7
+    - snakemake >=6.0.0
+    - graphaligner >=1.0.14
+    - mbg >=1.0.8
+test:
+  requires:
+    - curl
+  commands:
+     - verkko --version
+
+about:
+about:
+  home: https://github.com/maickrau/verkko
+  license: CC0
+  license_file: README.licenses
+  summary: Assembler for hybrid combinations of long reads
