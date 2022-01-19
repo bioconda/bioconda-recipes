@@ -26,6 +26,7 @@ elif [ -f Makefile.PL ]; then
     sed -i.bak 's|-I/usr/local/include|-I${PREFIX}/include|g' Makefile
     #Hack to get this built on OSX
     sed -i.bak 's|cc -c|cc -c -I${PREFIX}/include|g' Makefile
+    cat Makefile
     make
     make test
     make install
