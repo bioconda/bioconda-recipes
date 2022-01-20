@@ -5,8 +5,6 @@ set -e
 
 
 cd $SRC_DIR/src
-git submodule init
-git submodule update
 make clean && make -j$CPU_COUNT
 cd ..
 
