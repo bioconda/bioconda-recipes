@@ -1,12 +1,9 @@
 #!/bin/bash
-
-# fail on all errors
 set -e
 
-
-cd $SRC_DIR/src
+pushd src
 make clean && make -j$CPU_COUNT
-cd ..
+popd
 
 mkdir -p "$PREFIX/bin"
 cp -r bin/* $PREFIX/bin/
