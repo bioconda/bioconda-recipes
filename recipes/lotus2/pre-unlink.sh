@@ -1,4 +1,0 @@
-#!/bin/sh
-TARGET=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-
-rm -rf "$TARGET/DB/"
