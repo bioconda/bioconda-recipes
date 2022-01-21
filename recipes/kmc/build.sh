@@ -9,7 +9,7 @@ if [ "$(uname)" == "Darwin" ]; then
     mv bin/kmc_tools ${PREFIX}/bin
     mv bin/kmc_dump ${PREFIX}/bin
 else
-    make -j32 all bin/libkmc_api.so    
+    make CC=${CXX} -j32 all bin/libkmc_api.so
     mv bin/kmc $PREFIX/bin
     mv bin/kmc_tools $PREFIX/bin
     mv bin/kmc_dump $PREFIX/bin
