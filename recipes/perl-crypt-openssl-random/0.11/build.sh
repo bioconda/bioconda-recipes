@@ -30,6 +30,7 @@ elif [ -f Makefile.PL ]; then
     find $PREFIX -name Random.so -ls
     #make test
     make install
+    ldd -r $PREFIX/lib/perl5/5.32/site_perl/auto/Crypt/OpenSSL/Random/Random.so
 else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1

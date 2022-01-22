@@ -33,13 +33,12 @@ elif [ -f Makefile.PL ]; then
     if [ `uname -m` == "ppc64le" ]; then
         patch -p0 < fix-link-order.patch
     fi
-    make
     find $PREFIX -name Tidy.so -ls
+    echo "looking for Tidy.so"
+    make
     make test
     make install
 else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
 fi
-
-chmod u+rwx $PREFIX/bin/*
