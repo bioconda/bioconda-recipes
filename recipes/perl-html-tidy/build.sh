@@ -34,6 +34,7 @@ elif [ -f Makefile.PL ]; then
         patch -p0 < fix-link-order.patch
     fi
     make
+    find $PREFIX -name Tidy.so -ls
     make test
     make install
 else

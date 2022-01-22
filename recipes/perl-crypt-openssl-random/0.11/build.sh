@@ -27,6 +27,7 @@ elif [ -f Makefile.PL ]; then
     #Hack to get this built on OSX
     sed -i.bak 's|cc -c|cc -c -I${PREFIX}/include -L${PREFIX}/lib|g' Makefile
     make LIB="-L$PREFIX/lib -lssl -lcrypto"
+    find $PREFIX -name Random.so -ls
     #make test
     make install
 else
