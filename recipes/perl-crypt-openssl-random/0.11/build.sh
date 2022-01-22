@@ -25,9 +25,9 @@ elif [ -f Makefile.PL ]; then
     sed -i.bak 's|LD_RUN_PATH = /usr/lib64|LD_RUN_PATH = ${PREFIX}/lib|g' Makefile
     sed -i.bak 's|-I/usr/local/include|-I${PREFIX}/include|g' Makefile
     #Hack to get this built on OSX
-    sed -i.bak 's|cc -c|cc -c -I${PREFIX}/include -L${PREFIX}/lib|g' Makefile
+    sed -i.bak 's|cc -c|${CC} -c -I${PREFIX}/include -L${PREFIX}/lib|g' Makefile
     make LIB="-L$PREFIX/lib -lssl -lcrypto"
-    cat makefile | grep Random.so
+    cat Makefile | grep Random.so
     #make test
     make install
     ldd -r $PREFIX/lib/perl5/5.32/site_perl/auto/Crypt/OpenSSL/Random/Random.so
