@@ -5,4 +5,4 @@ mkdir -p $PREFIX/bin
 
 
 cp debreak *.py $PREFIX/bin
-chmod +x debreak
+chmod +x $PREFIX/bin/debreak
