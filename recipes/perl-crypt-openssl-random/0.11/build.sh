@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ex
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
@@ -26,11 +27,10 @@ elif [ -f Makefile.PL ]; then
     sed -i.bak 's|-I/usr/local/include|-I${PREFIX}/include|g' Makefile
     #Hack to get this built on OSX
     sed -i.bak 's|cc -c|${CC} -c -I${PREFIX}/include -L${PREFIX}/lib|g' Makefile
-    make LIB="-L$PREFIX/lib -lssl -lcrypto"
-    cat Makefile | grep Random.so
-    #make test
+    sed -i.bak "s#^LDDLFLAGS = #LDDLFLAGS = ${LDFLAGS} -L$PREFIX/lib -lssl -lcrypto #g" Makefile
+    make
+    make test
     make install
-    ldd -r $PREFIX/lib/perl5/5.32/site_perl/auto/Crypt/OpenSSL/Random/Random.so
 else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
