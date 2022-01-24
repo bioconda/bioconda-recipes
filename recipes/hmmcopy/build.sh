@@ -22,3 +22,7 @@ cd $PREFIX/bin
 sed -i'.bak' "s,internal/,," generateMap.pl
 sed -i'.bak' "s,../renameChr.pl,renameChr.pl," generateMap.pl
 sed -i'.bak' "s,../bigwig/,," generateMap.pl
+sed -i'.bak' "s,/usr/bin/perl -w,/usr/bin/env perl," generateMap.pl
+sed -i'.bak' "s,/usr/bin/perl -w,/usr/bin/env perl," readToMap.pl
+sed -i'.bak' "s,/usr/bin/perl -w,/usr/bin/env perl," renameChr.pl
+rm *.bak
