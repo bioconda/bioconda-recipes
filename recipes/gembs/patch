@@ -1,481 +1,201 @@
-diff --git a/.gitignore b/.gitignore
-index f34f4c8..36f3c0b 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -17,3 +17,12 @@ tools/bin/
- *.[oa]
- *.so
- *junk*
-+autom4te*
-+config.log
-+config.status
-+.project
-+.cproject
-+.settings
-+tools/htslib
-+tools/samtools
-+tools/bcftools
-diff --git a/README.md b/README.md
-index 82f2f4e..4e7f03d 100644
---- a/README.md
-+++ b/README.md
-@@ -1,6 +1,10 @@
-+News
-+====
-+First release of gemBS-rs, a complete rewrite of the gemBS pipeline (apart from the mapper) in Rust bringing increased
-+stability while maintaining the high performance of gemBS: https://github.com/heathsc/gemBS-rs.git
-+
- gemBS
- =====
--
- gemBS is a high performance bioinformatic pipeline designed for highthroughput analysis
- of DNA methylation data from whole genome bisulfites sequencing data
- (WGBS). It combines GEM3, a high performance read aligner and
-@@ -63,18 +67,24 @@ Check your installation
- -----------------------
-
- For checking your installation follow this
--[worked example](http://statgen.cnag.cat/gemBS/UserGuide/_build/html/example.html).
-+[worked example](http://statgen.cnag.cat/gemBS/v3/UserGuide/_build/html/example.html).
-
- -------------
- Documentation
- -------------
-
- Documentation can be found at
--[gemBS](http://statgen.cnag.cat/gemBS/)
-+[gemBS](http://statgen.cnag.cat/gemBS/v3/UserGuide/_build/html/index.html).
-
-
- ----------
- Changelog:
- ----------
-+    3.5.5 Fix logging bug caused by trimming change in 3.5.3
-+    3.5.4 Fix bug in the output of strand specific cpg txt files (not
-+          encode Bed files) where the 'C' entry was not being printed
-+    3.5.3 Allow for read end specific trimming in bs_call
-+    3.5.3 Enable range checks and asserts in bs_call all target; add bs_call debug target
-+    3.5.2 Correct problems with gcc10.  Move to htslib/samtools/bcftools version 1.11
-     3.5.1 Check if C compiler requires --std=c99 flag for standards conformant behaviour
-     3.5.1 Make sure bgzip is copied correctly during installation
-     3.5.0 Make bs_call process contig pools from largest to smallest (this change alters the sqlite db format so
-diff --git a/gemBS/parser.py b/gemBS/parser.py
-old mode 100755
-new mode 100644
-diff --git a/gemBS/production.py b/gemBS/production.py
-index 6e922fe..61d71cc 100644
---- a/gemBS/production.py
-+++ b/gemBS/production.py
-@@ -901,8 +901,8 @@ class MethylationCall(BasicPipeline):
-         parser.add_argument('-b','--barcode',dest="sample",metavar="BARCODE",help="Barcode of sample to be called")
-         parser.add_argument('-q','--mapq-threshold', dest="mapq_threshold", type=int, help="Threshold for MAPQ scores")
-         parser.add_argument('-Q','--qual-threshold', dest="qual_threshold", type=int, help="Threshold for base quality scores")
--        parser.add_argument('-g','--right-trim', dest="right_trim", metavar="BASES",type=int, help='Bases to trim from right of read pair, Default: 0')
--        parser.add_argument('-f','--left-trim', dest="left_trim", metavar="BASES",type=int, help='Bases to trim from left of read pair, Default: 5')
-+        parser.add_argument('-g','--right-trim', dest="right_trim", metavar="BASES", help='Bases to trim from right of read pair, Default: 0')
-+        parser.add_argument('-f','--left-trim', dest="left_trim", metavar="BASES", help='Bases to trim from left of read pair, Default: 5')
-         parser.add_argument('-t','--threads', dest="threads", metavar="THREADS", help='Number of threads, Default: %s' %self.threads)
-         parser.add_argument('--call-threads', dest="call_threads", metavar="THREADS", help='Number of threads for calling process, Default: 1s')
-         parser.add_argument('--merge-threads', dest="merge_threads", metavar="THREADS", help='Number of threads for merging process, Default: threads')
-@@ -946,8 +946,12 @@ class MethylationCall(BasicPipeline):
-         self.jobs = self.jsonData.check(section='calling',key='jobs',arg=args.jobs,default=1,int_type=True)
-         self.mapq_threshold = self.jsonData.check(section='calling',key='mapq_threshold',arg=args.mapq_threshold)
-         self.qual_threshold = self.jsonData.check(section='calling',key='qual_threshold',arg=args.qual_threshold)
--        self.left_trim = self.jsonData.check(section='calling',key='left_trim',arg=args.left_trim,default='5',int_type=True)
--        self.right_trim = self.jsonData.check(section='calling',key='right_trim',arg=args.right_trim,default='0',int_type=True)
-+        self.left_trim = self.jsonData.check(section='calling',key='left_trim',arg=args.left_trim,default='5')
-+        if isinstance(self.left_trim, list):
-+            self.left_trim = ','.join(self.left_trim)
-+        self.right_trim = self.jsonData.check(section='calling',key='right_trim',arg=args.right_trim,default='0')
-+        if isinstance(self.right_trim, list):
-+            self.right_trim = ','.join(self.right_trim)
-         self.ref_bias = self.jsonData.check(section='calling',key='reference_bias',arg=args.ref_bias)
-         self.keep_unmatched = self.jsonData.check(section='calling',key='keep_improper_pairs',arg=args.keep_unmatched,boolean=True)
-         self.keep_duplicates = self.jsonData.check(section='calling',key='keep_duplicates',arg=args.keep_duplicates,boolean=True)
-@@ -1225,8 +1229,8 @@ class MethylationCall(BasicPipeline):
-         printer("----------- Methylation Calling --------")
-         printer("Reference       : %s", self.fasta_reference)
-         printer("Species         : %s", self.species)
--        printer("Right Trim      : %i", self.right_trim)
--        printer("Left Trim       : %i", self.left_trim)
-+        printer("Right Trim      : %s", self.right_trim)
-+        printer("Left Trim       : %s", self.left_trim)
-         printer("Chromosomes     : %s", self.contig_list)
-         printer("Threads         : %s", self.threads)
-         if self.dbSNP_index_file:
-diff --git a/gemBS/reportStats.py b/gemBS/reportStats.py
-index 5814893..58f891a 100644
---- a/gemBS/reportStats.py
-+++ b/gemBS/reportStats.py
-@@ -279,7 +279,7 @@ class BsStats:
-         return self.getConversionRate(a_bp_pair_one,a_bp_pair_two,c_bp_pair_one,c_bp_pair_two,g_bp_pair_one,g_bp_pair_two,t_bp_pair_one,t_bp_pair_two)
-
-     def getConversionRate(self,a_bp_pair_one=0,a_bp_pair_two=0,c_bp_pair_one=0,c_bp_pair_two=0,g_bp_pair_one=0,g_bp_pair_two=0,t_bp_pair_one=0,t_bp_pair_two=0):
--        """Get Over Conversion Rate"""
-+        """Get Conversion Rate"""
-         n1 = float(a_bp_pair_one + g_bp_pair_one + c_bp_pair_two + t_bp_pair_two)
-         n2 = float(c_bp_pair_one + t_bp_pair_one + a_bp_pair_two + g_bp_pair_two)
-         if (n1 + n2) < 10000:
-diff --git a/gemBS/version.py b/gemBS/version.py
-index 1525de6..82a686f 100644
---- a/gemBS/version.py
-+++ b/gemBS/version.py
-@@ -1,4 +1,4 @@
- __VERSION_MAJOR = "3"
- __VERSION_MINOR = "5"
--__VERSION_SUBMINOR = "1"
-+__VERSION_SUBMINOR = "5"
- __VERSION__ = "%s.%s.%s" % (__VERSION_MAJOR, __VERSION_MINOR,__VERSION_SUBMINOR)
+diff --git a/gemBS/commands.py b/gemBS/commands.py
+index 3db936d..c50591c 100644
+--- a/gemBS/commands.py
++++ b/gemBS/commands.py
+@@ -97,15 +97,6 @@ def gemBS_main():
+         parser.add_argument('-j', '--json-file', dest="json", help="Location of gemBS JSON file")
+         parser.add_argument('-d', '--dir', dest="wd", metavar="DIR",help="Set working directory")
+         
+-        if pkg_resources.resource_exists("gemBS", "bin"):
+-            f = pkg_resources.resource_filename("gemBS", "bin")
+-        path = os.environ.get("PATH")
+-        if path == None:
+-            path = f
+-        else:
+-            path = f + ":" + path
+-            os.environ["PATH"] = path
+-            
+         commands = {
+             "prepare" : PrepareConfiguration,            
+             "index" : Index,
+diff --git a/setup.py b/setup.py
+index b095d25..bdb1c80 100644
+--- a/setup.py
++++ b/setup.py
+@@ -155,16 +155,16 @@ class install(_install):
+     _install.boolean_options.extend(['no-samtools','no-gem3','no-bscall','minimal'])
+ 
+     def initialize_options(self):
+-        self.minimal = False
+-        self.no_samtools = False
+-        self.no_gem3 = False
+-        self.no_bscall = False
+-        self.disable_cuda = False
++        self.minimal = True
++        self.no_samtools = True
++        self.no_gem3 = True
++        self.no_bscall = True
++        self.disable_cuda = True
+         self.enable_cuda = False
+         _install.initialize_options(self)
+         
+     def run(self):
+-        options=['setup', '_bcftools', '_utils']
++        options=['setup', '_utils']
+         if not self.minimal:
+             if not self.no_samtools:
+                 options.append('_samtools')
+@@ -176,7 +176,7 @@ class install(_install):
+         if not self.enable_cuda:
+             self.diable_cuda = True
+             
+-        compile_gemBS_tools(options, self.enable_cuda, self.disable_cuda)
++        #compile_gemBS_tools(options, self.enable_cuda, self.disable_cuda)
+         _install.run(self)
+ 
+         # find target folder
 diff --git a/tools/Makefile b/tools/Makefile
-index e911d8b..be3f646 100644
+index ebd8f3a..27e760d 100644
 --- a/tools/Makefile
 +++ b/tools/Makefile
-@@ -10,9 +10,9 @@
- ROOT_PATH=$(CURDIR)
-
- # samtools and bcftools definitions
--SAMTOOLS_VERSION=1.10
--BCFTOOLS_VERSION=1.10.2
--HTSLIB_VERSION=1.10.2
-+SAMTOOLS_VERSION=1.11
-+BCFTOOLS_VERSION=1.11
-+HTSLIB_VERSION=1.11
- SAMTOOLS_DIR=samtools
- BCFTOOLS_DIR=bcftools
- HTSLIB_DIR=htslib
-@@ -34,8 +34,6 @@ FOLDER_BIN=bin
-
- all: setup gem3 _samtools _bcftools _bs_call _utils
-
--all_static: setup gem3-static _samtools _bcftools _bs_call _utils
--
- all_debug: setup gem3-debug _samtools _bcftools _bs_call _utils
-
- _samtools: $(HTSLIB_DIR) $(SAMTOOLS_DIR) $(SAMTOOLS_DIR)/config.mk
-@@ -84,7 +82,6 @@ $(BCFTOOLS_DIR)/config.h:
- $(HTSLIB_DIR):
-        wget -O $(HTSLIB_TAR) $(HTSLIB_URL) && tar -zxf $(HTSLIB_TAR) && rm -f $(HTSLIB_TAR)
-        mv htslib-$(HTSLIB_VERSION) $(HTSLIB_DIR)
--       (cd $(HTSLIB_DIR) && cat ../patches/*.patch | patch && autoheader && autoconf && ./configure)
-
- $(SAMTOOLS_DIR):
-        wget -O $(SAMTOOLS_TAR) $(SAMTOOLS_URL) && tar -zxf $(SAMTOOLS_TAR) && rm -f $(SAMTOOLS_TAR)
-diff --git a/tools/bs_call b/tools/bs_call
-index c172df4..7447b22 160000
---- a/tools/bs_call
-+++ b/tools/bs_call
-@@ -1 +1 @@
--Subproject commit c172df48590c360f218c0fe958ff64ae5e92a5ec
-+Subproject commit 7447b225866fdd6c399ce799586d97d8259d1106
-diff --git a/tools/gem3-mapper b/tools/gem3-mapper
-index 1586839..882b0d8 160000
---- a/tools/gem3-mapper
-+++ b/tools/gem3-mapper
-@@ -1 +1 @@
--Subproject commit 1586839f638cdae901a3ef0a4b289c77a7234020
-+Subproject commit 882b0d80953fb1ec6a2f97268b56ec7aac46e4bc
-diff --git a/tools/patches/0008-Fixes-threaded-bgzf-write-index.patch b/tools/patches/0008-Fixes-threaded-bgzf-write-index.patch
-deleted file mode 100644
-index 64cf0ed..0000000
---- a/tools/patches/0008-Fixes-threaded-bgzf-write-index.patch
-+++ /dev/null
-@@ -1,105 +0,0 @@
--From e9863a0f149ea4d9e4336a061d7437952b6c7c8e Mon Sep 17 00:00:00 2001
--From: James Bonfield <jkb@sanger.ac.uk>
--Date: Wed, 19 Feb 2020 11:23:33 +0000
--Subject: [PATCH 08/10] Fixes threaded bgzf --write-index.
--
--This adds the analogue of the hts_idx_amend_last function for bgzf.
--This is necessary when multi-threading output using --write-index.
--
--Fixes samtools/samtools#1197
--
--In theory the change should have no impact as the only difference is
--whether our virtual offset points to the end of a block or the start
--of the next block.  Either way the two offsets are essentially the
--same locaiton on disk.  However due to a bug elsewhere (see next
--commit) this lead to unreported bgzf_read failures.
-----
-- bgzf.c         | 34 ++++++++++++++++++++++++++++++++++
-- hts_internal.h | 12 ++++++++++++
-- sam.c          |  2 ++
-- 3 files changed, 48 insertions(+)
--
--diff --git a/bgzf.c b/bgzf.c
--index 0a76676..f2e9b1e 100644
----- a/bgzf.c
--+++ b/bgzf.c
--@@ -226,6 +226,40 @@ int bgzf_idx_push(BGZF *fp, hts_idx_t *hidx, int tid, hts_pos_t beg, hts_pos_t e
--     return 0;
-- }
--
--+/*
--+ * bgzf analogue to hts_idx_amend_last.
--+ *
--+ * This is needed when multi-threading and writing indices on the fly.
--+ * At the point of writing a record we know the virtual offset for start
--+ * and end, but that end virtual offset may be the end of the current
--+ * block.  In standard indexing our end virtual offset becomes the start
--+ * of the next block.  Thus to ensure bit for bit compatibility we
--+ * detect this boundary case and fix it up here.
--+ *
--+ * In theory this has no behavioural change, but it also works around
--+ * a bug elsewhere which causes bgzf_read to return 0 when our offset
--+ * is the end of a block rather than the start of the next.
--+ */
--+void bgzf_idx_amend_last(BGZF *fp, hts_idx_t *hidx, uint64_t offset) {
--+    mtaux_t *mt = fp->mt;
--+    if (!mt) {
--+        hts_idx_amend_last(hidx, offset);
--+        return;
--+    }
--+
--+    pthread_mutex_lock(&mt->idx_m);
--+    hts_idx_cache_t *ic = &mt->idx_cache;
--+    if (ic->nentries > 0) {
--+        hts_idx_cache_entry *e = &ic->e[ic->nentries-1];
--+        if ((offset & 0xffff) == 0 && e->offset != 0) {
--+            // bumped to next block number
--+            e->offset = 0;
--+            e->block_number++;
--+        }
--+    }
--+    pthread_mutex_unlock(&mt->idx_m);
--+}
--+
-- static int bgzf_idx_flush(BGZF *fp) {
--     mtaux_t *mt = fp->mt;
--
--diff --git a/hts_internal.h b/hts_internal.h
--index dad04cb..2708123 100644
----- a/hts_internal.h
--+++ b/hts_internal.h
--@@ -108,6 +108,18 @@ void close_plugin(void *plugin);
--  */
-- int bgzf_idx_push(BGZF *fp, hts_idx_t *hidx, int tid, hts_pos_t beg, hts_pos_t end, uint64_t offset, int is_mapped);
--
--+/*
--+ * bgzf analogue to hts_idx_amend_last.
--+ *
--+ * This is needed when multi-threading and writing indices on the fly.
--+ * At the point of writing a record we know the virtual offset for start
--+ * and end, but that end virtual offset may be the end of the current
--+ * block.  In standard indexing our end virtual offset becomes the start
--+ * of the next block.  Thus to ensure bit for bit compatibility we
--+ * detect this boundary case and fix it up here.
--+ */
--+void bgzf_idx_amend_last(BGZF *fp, hts_idx_t *hidx, uint64_t offset);
--+
-- #ifdef __cplusplus
-- }
-- #endif
--diff --git a/sam.c b/sam.c
--index ea66d25..0185b82 100644
----- a/sam.c
--+++ b/sam.c
--@@ -740,6 +740,8 @@ static int bam_write_idx1(htsFile *fp, const sam_hdr_t *h, const bam1_t *b) {
--         return -1;
--     if (!bfp->mt)
--         hts_idx_amend_last(fp->idx, bgzf_tell(bfp));
--+    else
--+        bgzf_idx_amend_last(bfp, fp->idx, bgzf_tell(bfp));
--
--     int ret = bam_write1(bfp, b);
--     if (ret < 0)
----
--2.25.1
--
-diff --git a/tools/patches/0009-Permit-bgzf-block-offsets-to-be-at-the-end-of-a-bloc.patch b/tools/patches/0009-Permit-bgzf-block-offsets-to-be-at-the-end-of-a-bloc.patch
-deleted file mode 100644
-index 02cd211..0000000
---- a/tools/patches/0009-Permit-bgzf-block-offsets-to-be-at-the-end-of-a-bloc.patch
-+++ /dev/null
-@@ -1,50 +0,0 @@
--From 3868315dc8b6102a8de6cf44d7eae4b1a9aa40e7 Mon Sep 17 00:00:00 2001
--From: James Bonfield <jkb@sanger.ac.uk>
--Date: Wed, 19 Feb 2020 12:30:42 +0000
--Subject: [PATCH 09/10] Permit bgzf block offsets to be at the end of a block.
--
--This fixes a bug caused by indices generated with
--"samtools view --write-index -@8" (fixed in previous commit).  This
--was leaving some block offsets at the end of the current block instead
--of the start of the next block.
--
--However bgzf_read treated such scenarios as a truncated read of length
--0, which the calling code then interpreted as EOF.
--
--Now at the exact end of a block is valid and triggers reading the next
--block, but beyond the end of a block is treated as an erroneous block
--offset.
-----
-- bgzf.c | 16 +++++++++++++++-
-- 1 file changed, 15 insertions(+), 1 deletion(-)
--
--diff --git a/bgzf.c b/bgzf.c
--index f2e9b1e..184cf89 100644
----- a/bgzf.c
--+++ b/bgzf.c
--@@ -1155,7 +1155,21 @@ ssize_t bgzf_read(BGZF *fp, void *data, size_t length)
--                 return -1;
--             }
--             available = fp->block_length - fp->block_offset;
---            if (available <= 0) break;
--+            if (available == 0) {
--+                if (fp->block_length == 0)
--+                    break; // EOF
--+
--+                // Offset was at end of block (see commit e9863a0)
--+                fp->block_address = bgzf_htell(fp);
--+                fp->block_offset = fp->block_length = 0;
--+                continue;
--+            } else if (available < 0) {
--+                // Block offset was set to an invalid coordinate
--+                hts_log_error("BGZF block offset %d set beyond block size %d",
--+                              fp->block_offset, fp->block_length);
--+                fp->errcode |= BGZF_ERR_MISUSE;
--+                return -1;
--+            }
--         }
--         copy_length = length - bytes_read < available? length - bytes_read : available;
--         buffer = (uint8_t*)fp->uncompressed_block;
----
--2.25.1
--
-diff --git a/tools/patches/README b/tools/patches/README
-deleted file mode 100644
-index 29cde4f..0000000
---- a/tools/patches/README
-+++ /dev/null
-@@ -1,3 +0,0 @@
--These patches are from the devel branch of htslib in github and
--correct a bug in htslib that affected the --write-index option in
--samtools 1.10 and could cause contigs to be skipped from the index.
+@@ -47,7 +47,7 @@ _bcftools: $(HTSLIB_DIR) $(BCFTOOLS_DIR) $(BCFTOOLS_DIR)/config.h
+ _bs_call: bs_call/src/Makefile.mk
+ 	$(MAKE) --directory=bs_call
+ 
+-_utils: utils/Makefile 
++_utils:
+ 	$(MAKE) --directory=utils
+ 
+ utils/Makefile: utils/Makefile.in utils/configure _samtools
+diff --git a/tools/utils/configure b/tools/utils/configure
+index 12aced1..369ef09 100755
+--- a/tools/utils/configure
++++ b/tools/utils/configure
+@@ -1681,7 +1681,7 @@ if test "x$with_htslib" != "x"; then
+       HTSLIBS="$with_htslib/libhts.a -lcurl -lcrypto -llzma"
+ 		HTSINC="-I$with_htslib"
+ else
+-      HTSLIBS="-lhts -lcurl -lcrypto -llzma"
++      HTSLIBS="-lhts -lcrypto"
+ 		HTSINC=""
+ fi
+ 
+diff --git a/tools/utils/md5_fasta.c b/tools/utils/md5_fasta.c
+index d87e2a7..4a3ea97 100644
+--- a/tools/utils/md5_fasta.c
++++ b/tools/utils/md5_fasta.c
+@@ -79,7 +79,7 @@ static int get_cache_fname(char *path, const char * cache, const char * str) {
+ 	s -= ln;
+ 	while(ln--) *path++ = *cache++;
+ 	bool need_slash = (*str && path > init && path[-1] != '/');
+-	ln = strlen(str) + need_slash ? 1 : 0;
++	ln = strlen(str) + (need_slash ? 1 : 0);
+ 	if(ln >= s) return -1;
+ 	if(need_slash) *path++ = '/';
+ 	strcpy(path, str);
 diff --git a/tools/utils/mextr/command_line.c b/tools/utils/mextr/command_line.c
-index 2b0ce0d..a7d8b1e 100644
+index 2b0ce0d..816b347 100644
 --- a/tools/utils/mextr/command_line.c
 +++ b/tools/utils/mextr/command_line.c
-@@ -18,7 +18,6 @@
-
- #include "htslib/hfile.h"
- #include "htslib/khash_str2int.h"
--
- #include "utils.h"
- #include "mextr.h"
-
-@@ -29,10 +28,10 @@ typedef struct {
-        hts_pos_t start, end;
+@@ -29,10 +29,10 @@ typedef struct {
+ 	hts_pos_t start, end;
  } region1_t;
-
+ 
 -struct _region_t {
-+typedef struct bcf_sr_region_t {
-        region1_t *regs;
-        int nregs, mregs, creg;
++struct bcf_sr_region_t {
+ 	region1_t *regs;
+ 	int nregs, mregs, creg;
 -};
-+} region_t;
-
++} _region_t;
+ 
  const char *usage(void) {
-        return
-@@ -40,22 +39,22 @@ const char *usage(void) {
-                        "About: Extract CpG and nonCpG sites.\n"
-                        "Usage: mextr [file] [regions]\n"
-                        "Options:\n"
--                       "   -o, --cpgfile            Output file for CpG sites (default, not output)\n"
--                       "   -n, --noncpgfile         Output file for nonCpG sites (default, not output)\n"
-+                       "   -o, --cpgfile           Output file for CpG sites (default, not output)\n"
-+                       "   -n, --noncpgfile        Output file for nonCpG sites (default, not output)\n"
-                        "   -b, --bed-methyl        Output file base for bedMethly files. Not compatible with multi-sample files  (default, not output)\n"
-                        "   -t, --bed-track-line    Track line for for bedMethly files (default, info taken from input VCF file)\n"
--                       "   -S, --report-file        Output file for JSON report (default, not output)\n"
-+                       "   -S, --report-file       Output file for JSON report (default, not output)\n"
-                        "   -r, --regions           restrict to comma separated list of regions\n"
--                       "   -R, --regions-file       restrict to regions listed in file\n"
-+                       "   -R, --regions-file      restrict to regions listed in file\n"
-                        "   -@, --threads           Extra threads\n"
-                        "   -H, --no_header         Do not print header line(s) in output file(s) (default, false)\n"
-                        "   -g, --common-gt         Recall genotypes assuming common genotypes across samples\n"
-                        "   -m, --mode              Output mode for CpG sites\n"
-                        "         combined          Generate one line per CpG with combined estimates (default)\n"
--                       "         strand-specific    Generate two lines per CpG with the strand specific estimates\n"
-+                       "         strand-specific   Generate two lines per CpG with the strand specific estimates\n"
-                        "   -w, --bw-mode           Output mode for bigWig files\n"
-                        "         combined          Generate one bigWig file for both strands (default)\n"
--                       "         strand-specific    Generate one bigWig files for each strand\n"+                       "         strand-specific   Generate one bigWig files for each strand\n"
-                        "   -s, --select            Select mode for sites/CpGs\n"
-                        "         hom               Select on homozygote sites/CpGs (default)\n"
-                        "         het               Select on heterozygote sites/CpGs\n"
-@@ -297,11 +296,11 @@ void handle_command_line(int argc, char *argv[], args_t * const args) {
-                if(!nr) error("None of the requested contigs are present in the input file\n");
-                qsort_r(ix, nr, sizeof(int), cmp_reg, reg);
-                char **tseq = malloc(sizeof(char *) * nr);
--               struct _region_t *treg = malloc(sizeof(struct _region_t) * nr);
-+               region_t *treg = malloc(sizeof(region_t) * nr);
-                for(int i = 0; i < nr; i++) {
-                        const int j = ix[i];
-                        tseq[i] = reg->seq_names[j];
--                       memcpy(treg + i, reg->regs + j, sizeof(struct _region_t));
-+                       memcpy(treg + i, reg->regs + j, sizeof(region_t));
-                        khash_str2int_set(reg->seq_hash, tseq[i], i);
-                }
-                free(reg->seq_names);
-@@ -335,7 +334,7 @@ void handle_command_line(int argc, char *argv[], args_t * const args) {
-                        reg->prev_start = reg->prev_end = reg->prev_seq = -1;
-                        reg->seq_hash = khash_str2int_init();
-                        reg->seq_names = calloc(nctgs, sizeof(char *));
--                       reg->regs = calloc(nctgs, sizeof(struct _region_t));
-+                       reg->regs = calloc(nctgs, sizeof(region_t));
-                        for(int i = 0; i < nctgs; i++) {
-                                reg->nseqs++;
-                                reg->seq_names[i] = ctgs[i].name;
+ 	return
+@@ -297,11 +297,11 @@ void handle_command_line(int argc, char *argv[], args_t * const args) {
+ 		if(!nr) error("None of the requested contigs are present in the input file\n");
+ 		qsort_r(ix, nr, sizeof(int), cmp_reg, reg);
+ 		char **tseq = malloc(sizeof(char *) * nr);
+-		struct _region_t *treg = malloc(sizeof(struct _region_t) * nr);
++		struct bcf_sr_region_t *treg = malloc(sizeof(struct bcf_sr_region_t) * nr);
+ 		for(int i = 0; i < nr; i++) {
+ 			const int j = ix[i];
+ 			tseq[i] = reg->seq_names[j];
+-			memcpy(treg + i, reg->regs + j, sizeof(struct _region_t));
++			memcpy(treg + i, reg->regs + j, sizeof(struct bcf_sr_region_t));
+ 			khash_str2int_set(reg->seq_hash, tseq[i], i);
+ 		}
+ 		free(reg->seq_names);
+@@ -335,7 +335,7 @@ void handle_command_line(int argc, char *argv[], args_t * const args) {
+ 			reg->prev_start = reg->prev_end = reg->prev_seq = -1;
+ 			reg->seq_hash = khash_str2int_init();
+ 			reg->seq_names = calloc(nctgs, sizeof(char *));
+-			reg->regs = calloc(nctgs, sizeof(struct _region_t));
++			reg->regs = calloc(nctgs, sizeof(struct bcf_sr_region_t));
+ 			for(int i = 0; i < nctgs; i++) {
+ 				reg->nseqs++;
+ 				reg->seq_names[i] = ctgs[i].name;
 diff --git a/tools/utils/mextr/mextr.h b/tools/utils/mextr/mextr.h
-index ad7672a..3573c78 100644
+index ad7672a..378a2d2 100644
 --- a/tools/utils/mextr/mextr.h
 +++ b/tools/utils/mextr/mextr.h
-@@ -189,7 +189,7 @@ void fill_base_prob_table(void);
+@@ -189,7 +189,6 @@ void fill_base_prob_table(void);
  void print_headers(args_t *args);
  int calc_phred(double z);
  double *get_prob_dist(int ns, double *Q[]);
 -char trans_base[256];
-+extern char trans_base[256];
-
+ 
  #define ks_output(fp, s) { \
-        int r; \
+ 	int r; \
 diff --git a/tools/utils/mextr/output.c b/tools/utils/mextr/output.c
-index 260457d..8b5eb97 100644
+index 260457d..1cca3f7 100644
 --- a/tools/utils/mextr/output.c
 +++ b/tools/utils/mextr/output.c
-@@ -102,6 +102,7 @@ void output_cpg(args_t *const args, rec_t ** const lrec, const int idx) {
-                                        }
-                                }
-                                kputc('\n', s);
-+                               ks_output(fp, s);
-                        } else {
-                                for(int pos = 0; pos < 2; pos++) {
-                                        rec_t *rec = lrec[idx ^ pos];
-@@ -142,9 +143,9 @@ void output_cpg(args_t *const args, rec_t ** const lrec, const int idx) {
-                                                }
-                                        }
-                                        kputc('\n', s);
-+                                       ks_output(fp, s);
-                                }
-                        }
--                       ks_output(fp, s);
-                }
-        }
+@@ -4,7 +4,8 @@
+ #include <math.h>
+ #include <stdbool.h>
+ #include <pthread.h>
+-#include <values.h>
++#include <limits.h>
++#include <float.h>
+ 
+ #include "mextr.h"
+ #include "bbi.h"
+@@ -12,6 +13,12 @@
+ #include "htslib/hfile.h"
+ #include "htslib/tbx.h"
+ 
++char trans_base[256] = {
++                ['A'] = 'T', ['C'] = 'G', ['G'] = 'C', ['T'] = 'A',
++                ['Y'] = 'R', ['R'] = 'Y', ['S'] = 'S', ['W'] = 'W', ['K'] = 'M', ['M'] = 'K',
++                ['B'] = 'V', ['V'] = 'B', ['D'] = 'H', ['H'] = 'D', ['N'] = 'N', ['.'] = '.'
++};
++
+ void output_cpg(args_t *const args, rec_t ** const lrec, const int idx) {
+ 	static char *gt_iupac = "AMRWCSYGKT";
+ 	static uint8_t gt_msk[] = {0x11, 0xb3, 0x55, 0x99, 0xa2, 0xf6, 0xaa, 0x54, 0xdc, 0x88};
+diff --git a/tools/utils/mextr/output_utils.c b/tools/utils/mextr/output_utils.c
+index 1da6816..e8d7ae8 100644
+--- a/tools/utils/mextr/output_utils.c
++++ b/tools/utils/mextr/output_utils.c
+@@ -43,9 +43,3 @@ double *get_prob_dist(int ns, double *Q[]) {
+ 	return q0;
  }
+ 
+-char trans_base[256] = {
+-		['A'] = 'T', ['C'] = 'G', ['G'] = 'C', ['T'] = 'A',
+-		['Y'] = 'R', ['R'] = 'Y', ['S'] = 'S', ['W'] = 'W', ['K'] = 'M', ['M'] = 'K',
+-		['B'] = 'V', ['V'] = 'B', ['D'] = 'H', ['H'] = 'D', ['N'] = 'N', ['.'] = '.'
+-};
+-
 diff --git a/tools/utils/snpxtr/command_line.c b/tools/utils/snpxtr/command_line.c
-index e9bc962..f591c2b 100644
+index e9bc962..c335f8b 100644
 --- a/tools/utils/snpxtr/command_line.c
 +++ b/tools/utils/snpxtr/command_line.c
-@@ -29,10 +29,10 @@ typedef struct {
-        hts_pos_t start, end;
+@@ -29,7 +29,7 @@ typedef struct {
+ 	hts_pos_t start, end;
  } region1_t;
-
+ 
 -struct _region_t {
 +struct bcf_sr_region_t {
-        region1_t *regs;
-        int nregs, mregs, creg;
--};
-+} region_t;
-
- const char *usage(void) {
-        return
+ 	region1_t *regs;
+ 	int nregs, mregs, creg;
+ };
