@@ -7,6 +7,7 @@ export C_INCLUDE_PATH=${PREFIX}/include
 
 # Tell the build system where to find samtools
 export SAMTOOLS="${PREFIX}"
+unset LD
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then

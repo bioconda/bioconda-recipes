@@ -28,11 +28,8 @@ if [ -f Build.PL ]; then
     ./Build install --installdirs site
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
-    perl Makefile.PL INSTALLDIRS=site \
-        INC="-I${PREFIX}/include/tidyp" LIBS="-L${PREFIX}/lib"
-    if [ `uname -m` == "ppc64le" ]; then
-        patch -p0 < fix-link-order.patch
-    fi
+    perl Makefile.PL INSTALLDIRS=site INC="-I${PREFIX}/include/tidyp" LIBS="-L${PREFIX}/lib"
+    patch -p0 < fix-link-order.patch
     make
     make test
     make install
