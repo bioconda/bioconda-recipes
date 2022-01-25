@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="mm24kresogen.db_2.5.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/mm24kresogen.db_2.5.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/mm24kresogen.db_2.5.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mm24kresogen.db_2.5.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mm24kresogen.db/bioconductor-mm24kresogen.db_2.5.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mm24kresogen.db/bioconductor-mm24kresogen.db_2.5.0_src_all.tar.gz"
 )
 MD5="437f5d4bc225ee500af1ecc2d4da472b"

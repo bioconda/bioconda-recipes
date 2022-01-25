@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="sesameData_1.10.0.tar.gz"
+FN="sesameData_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/sesameData_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/sesameData_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-sesamedata/bioconductor-sesamedata_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/sesameData_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/sesameData_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-sesamedata/bioconductor-sesamedata_1.12.0_src_all.tar.gz"
 )
-MD5="7d6e9c42ad2ba0a0b3eaa10670e05723"
+MD5="5ed6a29498b1980d409725179485fbc7"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

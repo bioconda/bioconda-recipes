@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="BSgenome.Drerio.UCSC.danRer6.masked_1.3.99.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/BSgenome.Drerio.UCSC.danRer6.masked_1.3.99.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Drerio.UCSC.danRer6.masked_1.3.99.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Drerio.UCSC.danRer6.masked_1.3.99.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.drerio.ucsc.danrer6.masked/bioconductor-bsgenome.drerio.ucsc.danrer6.masked_1.3.99_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.drerio.ucsc.danrer6.masked/bioconductor-bsgenome.drerio.ucsc.danrer6.masked_1.3.99_src_all.tar.gz"
 )
 MD5="71c9b05c27b8d2e05735e6494a8f17ba"
