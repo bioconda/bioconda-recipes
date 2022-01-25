@@ -1,7 +1,6 @@
 #!/bin/bash
 set -ex
-export LDFLAGS="-Wl,-rpath,$PREFIX/lib -Wl,-rpath-link,$PREFIX/lib -L$PREFIX/lib"
-echo $LDFLAGS
+unset LD  # Otherwise the C compiler options are passed to LD
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL
@@ -11,10 +10,8 @@ if [ -f Build.PL ]; then
     perl ./Build install --installdirs site
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
-    perl Makefile.PL INSTALLDIRS=site CC=${CC} DEBUG=1
-    echo "FOOOOOOOOOOOOOOOOOOOOOOOOOOO"
-    grep "-Wl,-O2" makefile
-    env | grep "-Wl,-O2" || continue
+    perl -V
+    perl Makefile.PL INSTALLDIRS=site CC=${CC}
     make
     make test
     make install
