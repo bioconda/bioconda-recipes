@@ -97,38 +97,23 @@ diff --git a/tools/utils/mextr/command_line.c b/tools/utils/mextr/command_line.c
 index 2b0ce0d..816b347 100644
 --- a/tools/utils/mextr/command_line.c
 +++ b/tools/utils/mextr/command_line.c
-@@ -29,10 +29,10 @@ typedef struct {
- 	hts_pos_t start, end;
- } region1_t;
- 
--struct _region_t {
-+struct bcf_sr_region_t {
- 	region1_t *regs;
- 	int nregs, mregs, creg;
--};
-+} _region_t;
- 
- const char *usage(void) {
- 	return
-@@ -297,11 +297,11 @@ void handle_command_line(int argc, char *argv[], args_t * const args) {
- 		if(!nr) error("None of the requested contigs are present in the input file\n");
+@@ -299,10 +299,10 @@ if(!nr) error("None of the requested contigs are present in the input file\n");
  		qsort_r(ix, nr, sizeof(int), cmp_reg, reg);
  		char **tseq = malloc(sizeof(char *) * nr);
--		struct _region_t *treg = malloc(sizeof(struct _region_t) * nr);
+-		region_t *treg = malloc(sizeof(region_t) * nr);
 +		struct bcf_sr_region_t *treg = malloc(sizeof(struct bcf_sr_region_t) * nr);
  		for(int i = 0; i < nr; i++) {
  			const int j = ix[i];
  			tseq[i] = reg->seq_names[j];
--			memcpy(treg + i, reg->regs + j, sizeof(struct _region_t));
+-			memcpy(treg + i, reg->regs + j, sizeof(region_t));
 +			memcpy(treg + i, reg->regs + j, sizeof(struct bcf_sr_region_t));
  			khash_str2int_set(reg->seq_hash, tseq[i], i);
  		}
  		free(reg->seq_names);
-@@ -335,7 +335,7 @@ void handle_command_line(int argc, char *argv[], args_t * const args) {
- 			reg->prev_start = reg->prev_end = reg->prev_seq = -1;
+@@ -337,6 +337,6 @@ reg->prev_start = reg->prev_end = reg->prev_seq = -1;
  			reg->seq_hash = khash_str2int_init();
  			reg->seq_names = calloc(nctgs, sizeof(char *));
--			reg->regs = calloc(nctgs, sizeof(struct _region_t));
+-			reg->regs = calloc(nctgs, sizeof(region_t));
 +			reg->regs = calloc(nctgs, sizeof(struct bcf_sr_region_t));
  			for(int i = 0; i < nctgs; i++) {
  				reg->nseqs++;
@@ -137,11 +122,11 @@ diff --git a/tools/utils/mextr/mextr.h b/tools/utils/mextr/mextr.h
 index ad7672a..378a2d2 100644
 --- a/tools/utils/mextr/mextr.h
 +++ b/tools/utils/mextr/mextr.h
-@@ -189,7 +189,6 @@ void fill_base_prob_table(void);
+@@ -192,7 +192,6 @@ void fill_base_prob_table(void);
  void print_headers(args_t *args);
  int calc_phred(double z);
  double *get_prob_dist(int ns, double *Q[]);
--char trans_base[256];
+-extern char trans_base[256];
  
  #define ks_output(fp, s) { \
  	int r; \
@@ -186,16 +171,3 @@ index 1da6816..e8d7ae8 100644
 -		['B'] = 'V', ['V'] = 'B', ['D'] = 'H', ['H'] = 'D', ['N'] = 'N', ['.'] = '.'
 -};
 -
-diff --git a/tools/utils/snpxtr/command_line.c b/tools/utils/snpxtr/command_line.c
-index e9bc962..c335f8b 100644
---- a/tools/utils/snpxtr/command_line.c
-+++ b/tools/utils/snpxtr/command_line.c
-@@ -29,7 +29,7 @@ typedef struct {
- 	hts_pos_t start, end;
- } region1_t;
- 
--struct _region_t {
-+struct bcf_sr_region_t {
- 	region1_t *regs;
- 	int nregs, mregs, creg;
- };
