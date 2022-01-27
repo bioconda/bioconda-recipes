@@ -1,13 +1,10 @@
 #!/bin/bash
 
-echo Where is ncm.py located?
-find /. -name ncm.py
-echo
+cd $PREFIX
+mv $SRC_DIR $PREFIX/NGSCheckMate-1.0.0
 
-cd $BUILD_PREFIX
-mv NGSCheckMate-1.0.0 $PREFIX/
-
-cat << EOF > $PREFIX/ncm.py
+mkdir $PREFIX/bin
+cat << EOF > $PREFIX/bin/ncm.py
 #!/usr/bin/env bash
 
 python /usr/local/NGSCheckMate-1.0.0/ncm.py "\$@"
