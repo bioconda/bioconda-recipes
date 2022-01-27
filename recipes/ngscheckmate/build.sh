@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo Where is ncm.py located?
+find /. -name ncm.py
+echo
+
 cd $BUILD_PREFIX
 mv NGSCheckMate-1.0.0 $PREFIX/
 
