@@ -1,6 +1,8 @@
 #!/bin/bash
 set -ex
 pushd tools
+export C_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
 make
 popd
 #pushd tools
