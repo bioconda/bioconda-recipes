@@ -3,7 +3,7 @@ set -ex
 pushd tools
 export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
-make CC="${CC}"
+make CC="${CC}" CFLAGS="${CFLAGS}"
 popd
 #pushd tools
 #make setup _utils CC=${CC} LDFLAGS="${LDFLAGS}"
