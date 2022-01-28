@@ -6,7 +6,12 @@ export CFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 make clean
-make CC=${CC}
+
+if [ "$(uname)" == "Darwin" ]; then
+	# clang++ is required for OSX build
+	make CC=${CXX}
+else
+	make CC=${CC}
 
 chmod +x fastqtk
 cp fastqtk ${PREFIX}/bin/fastqtk
