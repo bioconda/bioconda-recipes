@@ -12,6 +12,7 @@ if [ "$(uname)" == "Darwin" ]; then
 	make CC=${CXX}
 else
 	make CC=${CC}
+fi
 
 chmod +x fastqtk
 cp fastqtk ${PREFIX}/bin/fastqtk
