@@ -27,4 +27,6 @@ else
     exit 1
 fi
 
-chmod u+rwx $PREFIX/bin/*
+chmod +rx $PREFIX/bin/chrom_sizes.pl
+chmod +rx $PREFIX/bin/bamToGBrowse.pl
+chmod +rx $PREFIX/bin/genomeCoverageBed.pl
