@@ -5,9 +5,9 @@ export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 if [[ "${target_platform}" =~ linux* ]]; then
     # Workaround for glibc<2.17 where clock_gettime is in librt. (clock_time being used by bs_call.)
-    make BS_CALL_LIBS:= $(LIBS) -lpthread -lrt ..
+    make BS_CALL_LIBS:= "$(LIBS) -lpthread -lrt"
 else
-    make BS_CALL_LIBS:= $(LIBS) -lpthread ..
+    make BS_CALL_LIBS:= "$(LIBS) -lpthread"
 fi
 make CC="${CC}" LDFLAGS="${LDFLAGS}"
 popd
