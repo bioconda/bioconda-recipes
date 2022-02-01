@@ -14,5 +14,4 @@ popd
 #pushd tools
 #make setup _utils CC=${CC} LDFLAGS="${LDFLAGS}"
 #popd
-
-python -m pip install . -vv --no-deps --install-option="--minimal"
+python3 setup.py install --single-version-externally-managed --record=record.txt
