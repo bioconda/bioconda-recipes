@@ -1,0 +1,35 @@
+{% set name = "contrafold" %}
+{% set version = "2.02" %}
+{% set sha256 = "9e2657262797f9fcba5c325deaca565401698d682026439476774abee08163cd" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True  # [osx]
+
+source:
+  url: http://contra.stanford.edu/{{ name }}/{{ name }}_v{{ version | replace('.', '_') }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - {{ name }}-{{ version }}-legacy.patch 
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+
+  run:
+    - perl
+
+test:
+  commands:
+    - contrafold predict --version
+
+about:
+  home: http://contra.stanford.edu/contrafold/faq.html
+  license: BSD
+  license_file: LICENSE
+  summary: 'CONditional TRAining for RNA Secondary Structure Prediction'

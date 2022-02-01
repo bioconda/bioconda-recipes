@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="maizecdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/maizecdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/maizecdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/maizecdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-maizecdf/bioconductor-maizecdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-maizecdf/bioconductor-maizecdf_2.18.0_src_all.tar.gz"
 )
 MD5="f9dec9e46688d96daf1e07d4e815afb4"

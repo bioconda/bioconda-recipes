@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RTCGA.PANCAN12_1.18.0.tar.gz"
+FN="RTCGA.PANCAN12_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/RTCGA.PANCAN12_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RTCGA.PANCAN12_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rtcga.pancan12/bioconductor-rtcga.pancan12_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/RTCGA.PANCAN12_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RTCGA.PANCAN12_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rtcga.pancan12/bioconductor-rtcga.pancan12_1.22.0_src_all.tar.gz"
 )
-MD5="46773c210d21b9adaa0b6fee183b1b7c"
+MD5="5d326c4615582030e8b9a30948906155"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

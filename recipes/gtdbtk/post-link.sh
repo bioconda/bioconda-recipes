@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "
-     GTDB-Tk v${PKG_VERSION} requires ~25G of external data which needs to be downloaded
+     GTDB-Tk v${PKG_VERSION} requires ~40G of external data which needs to be downloaded
      and unarchived. This can be done automatically, or manually:
 
      1. Run the command download-db.sh to automatically download to:

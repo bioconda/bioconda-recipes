@@ -35,7 +35,7 @@ LDFLAGS='-Wl,-rpath,${RPATH}'
 cmake .. \
   -DOPENMS_CONTRIB_LIBS='../../contrib-build' \
   -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
-  -DOPENMS_GIT_SHORT_SHA1="2537a5d" \
+  -DOPENMS_GIT_SHORT_SHA1="9110e58" \
   -DCMAKE_BUILD_TYPE="Release" \
   -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} \
   -DCMAKE_MACOSX_RPATH=ON \
@@ -53,7 +53,7 @@ cmake .. \
   -DBoost_ARCHITECTURE="-x64" \
   -DBUILD_EXAMPLES=OFF
 
-make -j${CPU_COUNT} OpenMS TOPP UTILS SuperHirn
+make -j${CPU_COUNT} OpenMS TOPP UTILS
 # The subpackages will do that (unfortunately "make install" installs everything right away)
 # Another option would be to install somewhere into the build dir (to use the existent install commands)
 # and then copy the relevant parts to the prefix. See CMAKE_INSTALL_PREFIX.

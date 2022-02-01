@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.rhegene.1.0.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/pd.rhegene.1.0.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.rhegene.1.0.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.rhegene.1.0.st_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.rhegene.1.0.st/bioconductor-pd.rhegene.1.0.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.rhegene.1.0.st/bioconductor-pd.rhegene.1.0.st_3.12.0_src_all.tar.gz"
 )
 MD5="6469add6928e663529df4df98fcdd7a8"

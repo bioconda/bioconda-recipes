@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="DmelSGI_1.22.0.tar.gz"
+FN="DmelSGI_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/DmelSGI_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/DmelSGI_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-dmelsgi/bioconductor-dmelsgi_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/DmelSGI_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/DmelSGI_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-dmelsgi/bioconductor-dmelsgi_1.26.0_src_all.tar.gz"
 )
-MD5="e6224a4ddf25a8dba7731f9106ab6c0e"
+MD5="21aa1d8d00f1781241a38c4d482574fe"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

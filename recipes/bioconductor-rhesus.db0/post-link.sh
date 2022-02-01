@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="rhesus.db0_3.12.0.tar.gz"
+FN="rhesus.db0_3.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/rhesus.db0_3.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/rhesus.db0_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rhesus.db0/bioconductor-rhesus.db0_3.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/rhesus.db0_3.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/rhesus.db0_3.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rhesus.db0/bioconductor-rhesus.db0_3.14.0_src_all.tar.gz"
 )
-MD5="5830781159aa3d48f273c8569076622b"
+MD5="7bc2e827e1c03a25c470f3a21f98ecc1"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

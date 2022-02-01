@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="cottoncdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/cottoncdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/cottoncdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/cottoncdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-cottoncdf/bioconductor-cottoncdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-cottoncdf/bioconductor-cottoncdf_2.18.0_src_all.tar.gz"
 )
 MD5="b9d2a4b43235c6e531b78cca006e84b2"

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="GenomicState_0.99.9.tar.gz"
+FN="GenomicState_0.99.15.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/GenomicState_0.99.9.tar.gz"
-  "https://bioarchive.galaxyproject.org/GenomicState_0.99.9.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-genomicstate/bioconductor-genomicstate_0.99.9_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/GenomicState_0.99.15.tar.gz"
+  "https://bioarchive.galaxyproject.org/GenomicState_0.99.15.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-genomicstate/bioconductor-genomicstate_0.99.15_src_all.tar.gz"
 )
-MD5="43d1a02c4653471bb9dd291ff0c10c9f"
+MD5="59c2d85a72f62cb12bad697fcbce5edc"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -4,7 +4,7 @@
 export C_INCLUDE_PATH=$C_INCLUDE_PATH:${PREFIX}/include
 export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:${PREFIX}/include
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${PREFIX}/lib
-export JAVA_HOME=${PREFIX}/jre
+export JAVA_HOME=${PREFIX}
 
 # skip ruby tests
 export TRAVIS=1

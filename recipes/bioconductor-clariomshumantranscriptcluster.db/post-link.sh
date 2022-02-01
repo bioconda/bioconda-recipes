@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="clariomshumantranscriptcluster.db_8.7.0.tar.gz"
+FN="clariomshumantranscriptcluster.db_8.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/clariomshumantranscriptcluster.db_8.7.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/clariomshumantranscriptcluster.db_8.7.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-clariomshumantranscriptcluster.db/bioconductor-clariomshumantranscriptcluster.db_8.7.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-clariomshumantranscriptcluster.db/bioconductor-clariomshumantranscriptcluster.db_8.7.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/clariomshumantranscriptcluster.db_8.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/clariomshumantranscriptcluster.db_8.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-clariomshumantranscriptcluster.db/bioconductor-clariomshumantranscriptcluster.db_8.8.0_src_all.tar.gz"
 )
-MD5="0b92969a4bb4a2d8e972602f68c7ad1b"
+MD5="309b29e044e1227da6d4825bbdf04b76"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

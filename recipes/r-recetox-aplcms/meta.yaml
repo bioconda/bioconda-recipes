@@ -1,0 +1,72 @@
+{% set name = "recetox-aplcms" %}
+{% set version = "0.9.3" %}
+{% set github = "https://github.com/RECETOX" %}
+
+package:
+  name: "r-{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "{{ github }}/recetox-aplcms/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: 46fe7c8a3c92f0365979aa411c5503ae97a9bf3f85e0cf04dcbaba71d3535112
+
+build:
+  number: 0
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  script_env:
+    - RGL_USE_NULL=TRUE # avoid warning at test-time
+  script: R CMD INSTALL --build . 
+  
+requirements:
+  host:
+    - r-base
+    - r-mass
+    - r-rgl
+    - bioconductor-mzr
+    - r-doparallel
+    - r-foreach
+    - r-iterators
+    - r-snow
+    - r-gbm
+    - r-e1071
+    - r-randomforest
+    - r-rocr
+    - r-rocs
+    - r-rcpp
+
+  run:
+    - r-base
+    - r-mass
+    - r-rgl
+    - bioconductor-mzr
+    - r-doparallel
+    - r-foreach
+    - r-iterators
+    - r-snow
+    - r-gbm
+    - r-e1071
+    - r-randomforest
+    - r-rocr
+    - r-rocs 
+    - r-rcpp
+
+test:
+  commands:
+    - $R -e "library('recetox.aplcms')"
+
+about:
+  home: "{{ github }}"
+  license: GPL-2.0
+  license_file: LICENSE
+  summary: apLCMS generates a feature table from a batch of LC/MS spectra.
+
+extra:
+  maintainers:
+    - RECETOX/conda
+  identifiers:
+    - doi:10.1021/acs.analchem.6b01214
+  container:
+    extended-base: True
