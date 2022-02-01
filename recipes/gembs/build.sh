@@ -11,7 +11,14 @@ else
 fi
 make CC="${CC}" LDFLAGS="${LDFLAGS}"
 popd
-#pushd tools
-#make setup _utils CC=${CC} LDFLAGS="${LDFLAGS}"
-#popd
-python3 setup.py install --single-version-externally-managed --record=record.txt
+gemBS --version
+wget http://statgen.cnag.cat/gemBS/v3/UserGuide/downloads/gemBS_example.tar.gz
+tar -zxvf gemBS_example.tar.gz
+cd gemBS_example
+gemBS prepare -c example.conf -t example.csv
+gemBS index
+gemBS map
+gemBS call
+gemBS extract
+gemBS map-report
+gemBS call-report
