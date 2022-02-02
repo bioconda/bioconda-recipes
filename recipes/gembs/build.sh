@@ -12,7 +12,9 @@ fi
 make CC="${CC}" LDFLAGS="${LDFLAGS}"
 popd
 cd $SRC_DIR
-cd ../test_tmp
+cd ..
+mkdir test_tmp
+cd test_tmp
 wget http://statgen.cnag.cat/gemBS/v3/UserGuide/downloads/gemBS_example.tar.gz
 tar -zxvf gemBS_example.tar.gz
 cd $SRC_DIR
