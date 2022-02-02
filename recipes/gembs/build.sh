@@ -13,15 +13,6 @@ make CC="${CC}" LDFLAGS="${LDFLAGS}"
 popd
 #python -m pip install . -vv --no-deps --install-option="--minimal"
 python -m pip install . -vv --no-deps
-python3 -m pip3 install matplotlib
-gemBS --version
 wget http://statgen.cnag.cat/gemBS/v3/UserGuide/downloads/gemBS_example.tar.gz
 tar -zxvf gemBS_example.tar.gz
-cd gemBS_example
-gemBS prepare -c example.conf -t example.csv
-gemBS index
-gemBS map
-gemBS call
-gemBS extract
-gemBS map-report
-gemBS call-report
+pushd gemBS_example
