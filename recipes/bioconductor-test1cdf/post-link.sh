@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="test1cdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/test1cdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/test1cdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/test1cdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-test1cdf/bioconductor-test1cdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-test1cdf/bioconductor-test1cdf_2.18.0_src_all.tar.gz"
 )
 MD5="8c94708b49ccc7bbf127485155970b9b"

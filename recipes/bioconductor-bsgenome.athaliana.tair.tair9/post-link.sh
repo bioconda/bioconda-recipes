@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="BSgenome.Athaliana.TAIR.TAIR9_1.3.1000.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/BSgenome.Athaliana.TAIR.TAIR9_1.3.1000.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Athaliana.TAIR.TAIR9_1.3.1000.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Athaliana.TAIR.TAIR9_1.3.1000.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.athaliana.tair.tair9/bioconductor-bsgenome.athaliana.tair.tair9_1.3.1000_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.athaliana.tair.tair9/bioconductor-bsgenome.athaliana.tair.tair9_1.3.1000_src_all.tar.gz"
 )
 MD5="8c6709a5f544616d59f4d39aac5787a7"

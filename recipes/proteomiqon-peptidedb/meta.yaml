@@ -1,0 +1,39 @@
+{% set version = "0.0.7" %}
+{% set sha256 = "009b0205c1335ad89ede069d38d5e579dbf9624dc86abf863d0d225b9c627038" %}
+
+package:
+  name: proteomiqon-peptidedb
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/ProteomIQon.PeptideDB/{{ version }}
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  script:
+    - dotnet tool install --add-source $SRC_DIR --tool-path $PREFIX/bin --version {{ version }} ProteomIQon.PeptideDB
+
+requirements:
+  host:
+    - dotnet-sdk
+  run:
+    - dotnet-runtime
+
+test:
+  commands:
+    - proteomiqon-peptidedb --help
+
+about:
+  home: https://csbiology.github.io/ProteomIQon/
+  license: MIT
+  summary: The tool ProteomIQon.PeptideDB creates a peptide database in the SQLite format.
+  description: | 
+    MS-based shotgun proteomics estimates protein abundances using a proxy: peptides. 
+    An established method to identify acquired MS/MS spectra is the comparison of each spectrum with peptides in a reference database. 
+    The PeptideDB tool helps to create peptide databases by in silico digestion given proteome information in the FASTA format and a set of parameters that 
+    allow the user to mimic conditions of their specific experiment. The created database stores peptide protein relationships in a SQLite database which can 
+    then be supplied to other ProteomIQon tools.
+  dev_url: https://github.com/CSBiology/ProteomIQon
+  doc_url: https://csbiology.github.io/ProteomIQon/tools/PeptideDB.html

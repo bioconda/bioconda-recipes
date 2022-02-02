@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="illuminaHumanv2BeadID.db_1.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/illuminaHumanv2BeadID.db_1.8.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/illuminaHumanv2BeadID.db_1.8.0.tar.gz"
   "https://bioarchive.galaxyproject.org/illuminaHumanv2BeadID.db_1.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-illuminahumanv2beadid.db/bioconductor-illuminahumanv2beadid.db_1.8.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-illuminahumanv2beadid.db/bioconductor-illuminahumanv2beadid.db_1.8.0_src_all.tar.gz"
 )
 MD5="b5a2b2deaa9a9b245a141043e7bc5270"

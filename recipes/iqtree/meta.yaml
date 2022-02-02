@@ -1,40 +1,44 @@
 {% set name = "iqtree" %}
-{% set version = "2.0.3" %}
+{% set version = "2.2.0-beta" %}
 
 package:
   name: {{ name|lower }}
-  version: {{ version }}
+  version: {{ version | replace("-", "_") }}
 
 build:
-  number: 1
+  number: 0
 
 source:
-  - url: https://github.com/Cibiv/IQ-TREE/archive/v{{ version }}.tar.gz
-    sha256: 5b922556a01915e6ab6a8620c489f8593872d019952affed3bf3574524b49127
+  - url: https://github.com/iqtree/iqtree2/archive/v2.2-beta.tar.gz
+    sha256: 3eb47b3af537fb68bd5c85fb729fa043dd02a2c451268130437ccd3f1fcc3465
     patches:
       - 0001-PATCH-macos-10.9.patch
-  - url: https://github.com/tothuhien/lsd2/archive/v1.6.5.tar.gz
-    sha256: f531c576a5b23c41a23b67561bcf08cb7618d6b682399c987a1ad4f3bf59d8c6
+  - url: https://github.com/tothuhien/lsd2/archive/v1.9.9.tar.gz
+    sha256: decda612ad7f26c67d50f3dc46fb14bfc2ac90776e460b14c548fd6f9d281454
     folder: lsd2
-
 
 requirements:
   build:
+    - make
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
+    - llvm-openmp  # [osx]
+    - ld64 # [osx]
   host:
     - boost-cpp
     - eigen
     - zlib
-    - llvm-openmp >=9  # [osx]
 
 test:
   commands:
     - iqtree
+    - iqtree2
 
 about:
   home: "http://www.iqtree.org/"
-  license: "GPL-2.0"
+  dev_url: https://github.com/iqtree/iqtree2
+  license: GPL-2.0-or-later
   summary: "Efficient phylogenomic software by maximum likelihood."
 
 extra:

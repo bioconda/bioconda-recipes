@@ -1,5 +1,5 @@
 {% set name = "trtools" %}
-{% set version = "4.0.0" %}
+{% set version = "4.0.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,14 +7,9 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 8ad1ffc565cb7982cc5d6be42c5bf82a48bad8fbd21fcd3cffef66108879cc59
-  # To get the checksum for a new version, download the .tar.gz file from pip and
-  # run `openssl sha256 <file name>.tar.gz`.
-  # You may need the openssl package, available on conda-forge:
-  #  `conda install openssl -c conda-forge``
+  sha256: 7aba95de5b5019cba44da237d1060cff0492fd63f384d63cf41204b644566bb9
 
 build: 
-  # don't support deprecated python versions
   noarch: python
   entry_points:
     - dumpSTR=trtools.dumpSTR:run
@@ -23,8 +18,7 @@ build:
     - compareSTR=trtools.compareSTR:run
     - qcSTR=trtools.qcSTR:run
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
-  # If this is a new build for the same version, increment the build number.
-  number: 1
+  number: 0
 
 requirements:
   host:
@@ -32,14 +26,14 @@ requirements:
     - pip >=20.1.1
   run:
     - cyvcf2 >=0.30.1
-    - matplotlib-base
-    - numpy
-    - pandas
-    - pybedtools
-    - pysam >=0.15.3 #per suggestion here: https://github.com/bioconda/bioconda-recipes/pull/17448
+    - matplotlib-base >=3.2.2
+    - numpy >=1.18.5
+    - pandas >=1.0.5
+    - pybedtools >=0.8.1
+    - pysam >=0.16.0.1
     - python >=3.5
-    - scikit-learn
-    - scipy
+    - scikit-learn >=0.23.1
+    - scipy >=1.4.1
 
 test:
   imports:
@@ -54,7 +48,7 @@ test:
     - bcftools
     - git
     - pytest
-    - tabix
+    - htslib
   commands:
     - dumpSTR --help
     - mergeSTR --help

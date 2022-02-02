@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.ovigene.1.1.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/pd.ovigene.1.1.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.ovigene.1.1.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.ovigene.1.1.st_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.ovigene.1.1.st/bioconductor-pd.ovigene.1.1.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.ovigene.1.1.st/bioconductor-pd.ovigene.1.1.st_3.12.0_src_all.tar.gz"
 )
 MD5="d6158cacd32a1892975fddd8dc8bb3f2"

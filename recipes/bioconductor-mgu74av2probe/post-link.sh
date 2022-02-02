@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="mgu74av2probe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/mgu74av2probe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/mgu74av2probe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mgu74av2probe_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mgu74av2probe/bioconductor-mgu74av2probe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mgu74av2probe/bioconductor-mgu74av2probe_2.18.0_src_all.tar.gz"
 )
 MD5="ac540b0e26b14a411740233b02d3e11c"

@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="BSgenome.Hsapiens.1000genomes.hs37d5_0.99.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/BSgenome.Hsapiens.1000genomes.hs37d5_0.99.1.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Hsapiens.1000genomes.hs37d5_0.99.1.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Hsapiens.1000genomes.hs37d5_0.99.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.hsapiens.1000genomes.hs37d5/bioconductor-bsgenome.hsapiens.1000genomes.hs37d5_0.99.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.hsapiens.1000genomes.hs37d5/bioconductor-bsgenome.hsapiens.1000genomes.hs37d5_0.99.1_src_all.tar.gz"
 )
 MD5="164e1692d38fefa499c2c8ac5fc22793"

@@ -1,23 +1,28 @@
-{% set version = "3.1.2" %}
-{% set rc = "rc1" %}
-{% set printed_version = "3.1.1" %}
+{% set version = "3.2.1" %}
+{% set url = "https://github.com/refresh-bio/KMC/archive/v3.2.1.tar.gz" %}  # [linux]
+{% set sha256 = "7db333091a754508163a097c41720cf32a80abe160bef60f3fc82c8da1d67896" %}  # [linux]
+{% set url = "https://github.com/refresh-bio/kmc/releases/download/v3.2.1/kmc3.2.1.mac.tar.gz" %}  # [osx]
+{% set sha256 = "d4bd30d5e16bcbaac7f979f18e49e7447b0148709fb26f754490be9e3e766e73" %}  # [osx]
+
 
 package:
   name: kmc
-  version: {{ version }}{{ rc }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/refresh-bio/KMC/archive/v{{ version }}{{ rc }}.tar.gz
-  sha256: a1958c4f3c6fd7c7ebb8b478c00fce1fd0f328c634042f723c5917a9d030a3fe
+  url: {{ url }}
+  sha256:  {{ sha256 }}
   patches:
-    - shared_library.patch
+    - Makefile.patch  # [linux]
 
 build:
-  number: 0
-  skip: True  # [osx]
+  number: 1
 
 requirements:
   build:
+    - make
+    - bzip2
+    - zlib
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
@@ -27,24 +32,15 @@ requirements:
     - zlib
     - bzip2
 
+about:
+  home: https://github.com/refresh-bio/kmc
+  summary: "Tools for efficient k-mer counting and filtering of reads based on k-mer content."
+  description: |
+    KMC is a utility designed for counting k-mers (sequences
+    of consecutive k symbols) in a set of DNA sequences. KMC tools allow performing various operations on k-mers sets.
+  license: GPL-3
+  license_family: GPL
+  license_file: gpl-3.0.txt
 test:
   commands:
-    - (kmc 2>&1; true) | grep -q "K-Mer Counter (KMC) ver. {{ printed_version }}"
-    - (kmc_dump 2>&1; true) | grep -q "KMC dump ver. {{ printed_version }}"
-    - (kmc_tools 2>&1; true) | grep -q "kmc_tools ver. {{ printed_version }}"
-
-about:
-  home: http://sun.aei.polsl.pl/kmc/
-  license: GPL3
-  license_family: GPL3
-  license_file: '{{ environ["RECIPE_DIR"] }}/gpl-3.0.txt'
-  summary: Tools for efficient k-mer counting and filtering of reads based on k-mer content
-  description: |
-    K-mer Counter is a utility designed for counting k-mers (sequences
-    of consecutive k symbols) in a set of reads from genome sequencing
-    projects.
-
-extra:
-  identifiers:
-    - biotools:KMC
-    - doi:10.1093/bioinformatics/btx304
+    - kmc --help

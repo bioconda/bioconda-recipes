@@ -1,0 +1,63 @@
+From 1ad57867df0a3c5ce663cee4dd693145c1cb72d4 Mon Sep 17 00:00:00 2001
+From: David Seifert <SoapZA@users.noreply.github.com>
+Date: Mon, 23 Sep 2019 17:48:06 +0200
+Subject: [PATCH] Const qualify all functors' `operator()` member functions
+
+---
+ src/api/algorithms/Sort.h               | 8 ++++----
+ src/api/internal/bam/BamMultiMerger_p.h | 2 +-
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/src/api/algorithms/Sort.h b/src/api/algorithms/Sort.h
+index e9017cb..e418b5b 100644
+--- a/src/api/algorithms/Sort.h
++++ b/src/api/algorithms/Sort.h
+@@ -89,7 +89,7 @@ struct API_EXPORT Sort
+         {}
+ 
+         // comparison function
+-        bool operator()(const BamTools::BamAlignment& lhs, const BamTools::BamAlignment& rhs)
++        bool operator()(const BamTools::BamAlignment& lhs, const BamTools::BamAlignment& rhs) const
+         {
+             return sort_helper(m_order, lhs.Name, rhs.Name);
+         }
+@@ -130,7 +130,7 @@ struct API_EXPORT Sort
+         {}
+ 
+         // comparison function
+-        bool operator()(const BamTools::BamAlignment& lhs, const BamTools::BamAlignment& rhs)
++        bool operator()(const BamTools::BamAlignment& lhs, const BamTools::BamAlignment& rhs) const
+         {
+ 
+             // force unmapped aligmnents to end
+@@ -182,7 +182,7 @@ struct API_EXPORT Sort
+         {}
+ 
+         // comparison function
+-        bool operator()(const BamTools::BamAlignment& lhs, const BamTools::BamAlignment& rhs)
++        bool operator()(const BamTools::BamAlignment& lhs, const BamTools::BamAlignment& rhs) const
+         {
+ 
+             // force alignments without tag to end
+@@ -222,7 +222,7 @@ struct API_EXPORT Sort
+     {
+ 
+         // comparison function
+-        inline bool operator()(const BamTools::BamAlignment&, const BamTools::BamAlignment&)
++        inline bool operator()(const BamTools::BamAlignment&, const BamTools::BamAlignment&) const
+         {
+             return false;  // returning false tends to retain insertion order
+         }
+diff --git a/src/api/internal/bam/BamMultiMerger_p.h b/src/api/internal/bam/BamMultiMerger_p.h
+index 03bc5f2..c01dd5d 100644
+--- a/src/api/internal/bam/BamMultiMerger_p.h
++++ b/src/api/internal/bam/BamMultiMerger_p.h
+@@ -62,7 +62,7 @@ struct MergeItemSorter : public std::binary_function<MergeItem, MergeItem, bool>
+         : m_comp(comp)
+     {}
+ 
+-    bool operator()(const MergeItem& lhs, const MergeItem& rhs)
++    bool operator()(const MergeItem& lhs, const MergeItem& rhs) const
+     {
+         const BamAlignment& l = *lhs.Alignment;
+         const BamAlignment& r = *rhs.Alignment;
