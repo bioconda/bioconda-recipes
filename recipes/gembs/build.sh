@@ -12,7 +12,5 @@ fi
 make CC="${CC}" LDFLAGS="${LDFLAGS}"
 popd
 #python -m pip install . -vv --no-deps --install-option="--minimal"
-python -m pip install . -vv --no-deps
-wget http://statgen.cnag.cat/gemBS/v3/UserGuide/downloads/gemBS_example.tar.gz
-tar -zxvf gemBS_example.tar.gz
-pushd gemBS_example
+#python -m pip install . -vv --no-deps
+python3 setup.py install --single-version-externally-managed --record=record.txt
