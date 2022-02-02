@@ -13,7 +13,5 @@ make CC="${CC}" LDFLAGS="${LDFLAGS}"
 popd
 wget http://statgen.cnag.cat/gemBS/v3/UserGuide/downloads/gemBS_example.tar.gz
 tar -zxvf gemBS_example.tar.gz
-cd gemBS_example
-pwd
-#python -m pip install . -vv --no-deps --install-option="--minimal"
+pushd gemBS_example
 python -m pip install . -vv --no-deps
