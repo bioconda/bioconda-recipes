@@ -32,10 +32,10 @@ else
 fi
 LDFLAGS='-Wl,-rpath,${RPATH}'
 
-cmake .. \
-  -DOPENMS_CONTRIB_LIBS='../../contrib-build' \
   #-DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
   #-DOPENMS_GIT_SHORT_SHA1="2537a5d" \
+cmake .. \
+  -DOPENMS_CONTRIB_LIBS='../../contrib-build' \
   -DCMAKE_BUILD_TYPE="Release" \
   -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} \
   -DCMAKE_MACOSX_RPATH=ON \
@@ -50,7 +50,7 @@ cmake .. \
   -DWITH_GUI=OFF \
   -DBOOST_USE_STATIC=OFF \
   -DBoost_NO_BOOST_CMAKE=ON \
-  -DBoost_DEBUG=ON \
+  -DBoost_ARCHITECTURE="-x64" \
   -DBUILD_EXAMPLES=OFF
 
 make -j${CPU_COUNT} OpenMS TOPP UTILS
