@@ -50,7 +50,7 @@ cmake .. \
   -DWITH_GUI=OFF \
   -DBOOST_USE_STATIC=OFF \
   -DBoost_NO_BOOST_CMAKE=ON \
-  -DBoost_ARCHITECTURE="-x64" \
+  -DBoost_DEBUG=ON \
   -DBUILD_EXAMPLES=OFF
 
 make -j${CPU_COUNT} OpenMS TOPP UTILS
