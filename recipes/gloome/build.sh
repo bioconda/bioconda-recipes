@@ -4,10 +4,12 @@ export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
 cd libs/phylogeny
-make CC=$CXX
+sed -i.bak 's/CXX=g++//' Makefile
+make CXX=$CXX CC=$CC
 
 cd ../../programs/gainLoss
-make CC=$CXX
+sed -i.bak 's/CXX=g++//' ../Makefile.generic
+make CXX=$CXX CC=$CC
 
 mkdir -p $PREFIX/bin
 cp gainLoss $PREFIX/bin
