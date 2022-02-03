@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.081229.hg18.promoter.medip.hx1_0.99.4.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/pd.081229.hg18.promoter.medip.hx1_0.99.4.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.081229.hg18.promoter.medip.hx1_0.99.4.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.081229.hg18.promoter.medip.hx1_0.99.4.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.081229.hg18.promoter.medip.hx1/bioconductor-pd.081229.hg18.promoter.medip.hx1_0.99.4_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.081229.hg18.promoter.medip.hx1/bioconductor-pd.081229.hg18.promoter.medip.hx1_0.99.4_src_all.tar.gz"
 )
 MD5="f3c240fa0d4503e94047be5ee323856b"

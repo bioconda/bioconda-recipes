@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.fingene.1.0.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/pd.fingene.1.0.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.fingene.1.0.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.fingene.1.0.st_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.fingene.1.0.st/bioconductor-pd.fingene.1.0.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.fingene.1.0.st/bioconductor-pd.fingene.1.0.st_3.12.0_src_all.tar.gz"
 )
 MD5="b79e4f8a52cad3b62e32401bbe74603d"

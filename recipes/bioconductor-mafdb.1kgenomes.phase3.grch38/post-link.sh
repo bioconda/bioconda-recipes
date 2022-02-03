@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="MafDb.1Kgenomes.phase3.GRCh38_3.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/MafDb.1Kgenomes.phase3.GRCh38_3.10.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/MafDb.1Kgenomes.phase3.GRCh38_3.10.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MafDb.1Kgenomes.phase3.GRCh38_3.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mafdb.1kgenomes.phase3.grch38/bioconductor-mafdb.1kgenomes.phase3.grch38_3.10.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mafdb.1kgenomes.phase3.grch38/bioconductor-mafdb.1kgenomes.phase3.grch38_3.10.0_src_all.tar.gz"
 )
 MD5="ee57d9cb6a1748932407d20b9bffd8a2"

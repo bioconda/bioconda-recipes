@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="kidpack_1.34.0.tar.gz"
+FN="kidpack_1.36.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/kidpack_1.34.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/kidpack_1.34.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-kidpack/bioconductor-kidpack_1.34.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/kidpack_1.36.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/kidpack_1.36.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-kidpack/bioconductor-kidpack_1.36.0_src_all.tar.gz"
 )
-MD5="286a73600408ee0f95b9039c3112f009"
+MD5="a31afbf354301483d216f9d59f82f956"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

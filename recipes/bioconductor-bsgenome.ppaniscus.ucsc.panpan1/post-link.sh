@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="BSgenome.Ppaniscus.UCSC.panPan1_1.4.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/BSgenome.Ppaniscus.UCSC.panPan1_1.4.3.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Ppaniscus.UCSC.panPan1_1.4.3.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Ppaniscus.UCSC.panPan1_1.4.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.ppaniscus.ucsc.panpan1/bioconductor-bsgenome.ppaniscus.ucsc.panpan1_1.4.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.ppaniscus.ucsc.panpan1/bioconductor-bsgenome.ppaniscus.ucsc.panpan1_1.4.3_src_all.tar.gz"
 )
 MD5="186adb59264d468d17c0f6374e2eb1f6"

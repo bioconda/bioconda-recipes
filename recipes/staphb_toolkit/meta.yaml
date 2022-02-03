@@ -1,0 +1,57 @@
+{% set name = "staphb_toolkit" %}
+{% set version = "1.3.9" %}
+{% set sha256 = "1fa536990c1074eccb1eebb9a59eeb425d2f7a367e6ab79f35c475b317779857" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  entry_points:
+    - staphb-tk = staphb_toolkit.toolkit_apps:main
+    - staphb-wf = staphb_toolkit.toolkit_workflows:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+  noarch: python
+
+requirements:
+  host:
+    - python >=3.6
+    - docker-py >=4.1.0
+    - pexpect >=4.8
+    - pip
+    - psutil >=5.6.3
+    - spython >=0.0.73
+  run:
+    - python >=3.6
+    - docker-py >=4.1.0
+    - pexpect >=4.8
+    - psutil >=5.6.3
+    - spython >=0.0.73
+    - openjdk
+
+test:
+  requires:
+    - singularity
+  imports:
+    - staphb_toolkit
+    - staphb_toolkit.apps
+    - staphb_toolkit.core
+    - staphb_toolkit.workflows
+
+about:
+  home: "https://staphb.org/staphb_toolkit/"
+  license: GPLv3
+  license_family: GPL
+  license_file: LICENSE
+  summary: "A ToolKit of commonly used Public Health Bioinformatics Tools"
+  doc_url: "https://staphb.org/staphb_toolkit"
+  dev_url: "https://github.com/StaPH-B/staphb_toolkit"
+
+extra:
+  recipe-maintainers:
+    - acaprez
