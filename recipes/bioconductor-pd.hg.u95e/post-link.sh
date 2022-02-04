@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.hg.u95e_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/pd.hg.u95e_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.hg.u95e_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.hg.u95e_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.hg.u95e/bioconductor-pd.hg.u95e_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.hg.u95e/bioconductor-pd.hg.u95e_3.12.0_src_all.tar.gz"
 )
 MD5="9295e2fd1b4be6ff58477ea5a5de45ee"

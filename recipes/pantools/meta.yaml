@@ -1,36 +1,56 @@
 {% set name = "pantools" %}
-{% set version = "1.2" %}
-{% set sha256 = "ff9e93f10e3c83d45a1fddb28bfbd5b5eee3aa017fbff4ee03455e462703c4ee" %}
+{% set version = "3.3.3" %}
+{% set sha256 = "0ca1183d76aa7e4aaa36bce14b6afd4bc0a2606a403cb84412866b8746dd2f95" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/Sheikhizadeh/pantools/archive/v{{ version }}.tar.gz
+  url: https://git.wur.nl/bioinformatics/pantools/-/archive/a96f1dcbd6273ce484c513c42c3bb7c3d8abe119/pantools-a96f1dcbd6273ce484c513c42c3bb7c3d8abe119.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  noarch: python
-  number: 1
+  noarch: generic
+  number: 0
 
 requirements:
+  build:
+    - openjdk =8
+    - maven
   run:
     - python
-    - openjdk >=8
+    - openjdk =8
     - mcl
     - kmc
 
 test:
   commands:
-    - pantools help 2>&1 | grep "pantools.jar" > /dev/null
+    # pantools returns non-zero exit code for version and help; grep a known output string to work around this
+    - pantools version | grep -i "pantools version" >/dev/null
 
 about:
-  home: https://github.com/Sheikhizadeh/pantools
-  # Request for license type upstream, https://github.com/Sheikhizadeh/pantools/issues/10
-  license: Unknown
-  summary: "PanTools is a disk-based java application for computational pan-genomics."
+  home: https://git.wur.nl/bioinformatics/pantools
+  license: GPL-3.0-only
+  license_family: GPL
+  license_file: LICENSE
+  summary: "PanTools is a pangenomic toolkit for comparative analysis of large number of genomes."
+  description: |
+    PanTools is a pangenomic toolkit for comparative analysis of large number
+    of genomes. It is developed in the Bioinformatics Group of Wageningen
+    University, the Netherlands. Please cite the relevant publication(s) from
+    the list of publications if you use PanTools in your research.
+
 
 extra:
+  notes: |
+    PanTools is Java program that comes with a custom wrapper Python script.
+    This wrapper is called "pantools" and is on $PATH by default. By default
+    "-Xms512m -Xmx1g" is set in the wrapper. If you want to overwrite it you can
+    specify these values directly after your binaries. If you have _JAVA_OPTIONS
+    set globally this will take precedence.
+    For example run it with "pantools -Xms512m -Xmx1g"
   identifiers:
+    - doi:https://doi.org/10.1093/bioinformatics/btw455
     - doi:https://doi.org/10.1186/s12859-018-2362-4
+    - doi:https://doi.org/10.1101/813634

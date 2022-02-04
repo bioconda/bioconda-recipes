@@ -1,12 +1,12 @@
 {% set name = "ThermoRawFileParser" %}
-{% set version = "1.2.3" %}
+{% set version = "1.3.4" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 1
+  number: 0
   noarch: generic
   script:
     - mkdir $PREFIX/bin
@@ -19,11 +19,15 @@ build:
 source:
   # downloading pre-compiled packages, msbuild is a hell to compile unter Linux
   url: https://github.com/compomics/ThermoRawFileParser/releases/download/v{{ version }}/ThermoRawFileParser.zip
-  sha256: 764bee60b13cfb0b2f856079677cc511d579d4775cddbf46e47902ef3e454300
+  sha256: 848e0761beb84ca11441a08e2c9c7aacee8eff779c689b98a1b20a7677564793
 
 requirements:
+  build:
+    - zlib
   run:
-    - mono >=5
+    # mono <6 due to https://github.com/compomics/ThermoRawFileParser/issues/108
+    - mono >=5, <6
+    - zlib
 
 test:
   commands:
@@ -31,8 +35,13 @@ test:
 
 about:
   home: https://github.com/compomics/ThermoRawFileParser
-  license: Other
-  license_file: LICENSE
+  license: Apache Software
+  license_family: APACHE
+  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
   summary: Wrapper around the .net (C#) ThermoFisher ThermoRawFileReader library for running on Linux with mono
   dev_url: https://github.com/compomics/ThermoRawFileParser
   doc_url: https://github.com/compomics/ThermoRawFileParser/blob/master/README.md
+
+extra:
+  recipe-maintainers:
+    - RECETOX

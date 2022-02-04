@@ -2,9 +2,6 @@
 # rdp_classifier executable shell script, adapted from trimmomatic shell script
 set -eu -o pipefail
 
-set -o pipefail
-export LC_ALL=en_US.UTF-8
-
 # Find original directory of bash script, resovling symlinks
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128
 SOURCE="${BASH_SOURCE[0]}"
@@ -55,8 +52,8 @@ fi
 pass_arr=($pass_args)
 if [[ ${pass_arr[0]:=} == org* ]]
 then
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/rdp_classifier.jar" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/classifier.jar" $pass_args
 else
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/rdp_classifier.jar" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/classifier.jar" $pass_args
 fi
 exit

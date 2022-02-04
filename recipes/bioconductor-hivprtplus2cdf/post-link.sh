@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="hivprtplus2cdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/hivprtplus2cdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hivprtplus2cdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hivprtplus2cdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hivprtplus2cdf/bioconductor-hivprtplus2cdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hivprtplus2cdf/bioconductor-hivprtplus2cdf_2.18.0_src_all.tar.gz"
 )
 MD5="143d9c2f5f328786bae7bb8dc4daf261"

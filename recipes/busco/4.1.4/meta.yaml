@@ -1,0 +1,75 @@
+{% set version = "4.1.4" %}
+{% set sha256 = "9a71a1b56aaaaa46906a7473ff9398f10e5a59227d4b5b70712de350d7318736" %}
+
+package:
+  name: busco
+  version: {{ version }}
+
+build:
+  number: 2
+  noarch: python
+
+source:
+  url: https://gitlab.com/ezlab/busco/-/archive/{{ version }}/busco-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Add-default-config-path-within-prefix.patch
+
+requirements:
+  host:
+    - python >=3.3
+    - pip
+    - wget
+    - blast >=2.10.1 # There is a multithreading problem for all BLAST versions between 2.4 and 2.10.0
+    - hmmer >=3.1b2 # sepp needs this version
+    - augustus >=3.3
+    - biopython
+    - prodigal
+    - sepp >=4.3.10
+  run:
+    - python >=3.3
+    - wget
+    - blast >=2.10.1 # There is a multithreading problem for all BLAST versions between 2.4 and 2.10.0
+    - hmmer >=3.1b2 # sepp needs this version
+    - augustus >=3.3
+    - biopython
+    - r-base
+    - r-ggplot2 >=2.2.1
+    - prodigal
+    - sepp >=4.3.10
+    - cairo >=1.16.0
+    - r-rgtk2 >=2.20.36
+    - fonts-conda-ecosystem
+
+test:
+  commands:
+    - busco -h
+    - generate_plot.py -h
+    - python -c 'import busco.ConfigManager as cm; print(cm.BuscoConfigManager({}).get_config_file())'
+  source_files:
+    # used in run_test.sh
+    - test_data
+
+about:
+  home: http://busco.ezlab.org/
+  license: MIT
+  license_file: LICENSE
+  summary: BUSCO provides measures for quantitative assessment of genome
+           assembly, gene set, and transcriptome completeness based on
+           evolutionarily informed expectations of gene content from
+           near-universal single-copy orthologs selected from OrthoDB.
+
+extra:
+  container:
+    # Necessary to allow Busco to download files from the internet when used with Singularity
+    # and default bind paths (see also https://github.com/bioconda/bioconda-recipes/issues/11583).
+    # Should be removed again when the base container is fixed.
+    extended-base: True
+  identifiers:
+    - biotools:busco
+    - doi:10.1093/bioinformatics/btv351
+    - usegalaxy-eu:busco
+  recipe-maintainers:
+    - silask
+    - matsepp
+    - berkelem

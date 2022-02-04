@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "cmake_minimum_required(VERSION 3.7)
+echo "cmake_minimum_required(VERSION 3.14)
 project(seqan3 NONE)
 include (\${SEQAN3_CLONE_DIR}/build_system/seqan3-install.cmake)" > CMakeLists.txt
 

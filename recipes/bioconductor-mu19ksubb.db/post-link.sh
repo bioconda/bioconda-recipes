@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="mu19ksubb.db_3.2.3.tar.gz"
+FN="mu19ksubb.db_3.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/mu19ksubb.db_3.2.3.tar.gz"
-  "https://bioarchive.galaxyproject.org/mu19ksubb.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mu19ksubb.db/bioconductor-mu19ksubb.db_3.2.3_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mu19ksubb.db/bioconductor-mu19ksubb.db_3.2.3_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/mu19ksubb.db_3.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/mu19ksubb.db_3.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mu19ksubb.db/bioconductor-mu19ksubb.db_3.13.0_src_all.tar.gz"
 )
-MD5="54ffae3e05d9fd79caadf51954473b93"
+MD5="1b177a3b5626c825c91e7c25e0acd897"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

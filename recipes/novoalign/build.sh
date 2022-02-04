@@ -1,8 +1,14 @@
 #!/bin/bash
 set -eu
 
+mkdir -p "${PREFIX}/bin"
+
 # Compile and install novo2maq
-make -C novo2maq CC="$CC" CXX="$CXX" CFLAGS="-g -Wall -O2 -m64 -fpermissive -isystem $PREFIX/include" LIBS="-L${PREFIX}/lib -lz -lm"
+make -C novo2maq \
+    CC="${CC}" \
+    CXX="${CXX}" \
+    CFLAGS="${CFLAGS} ${CPPFLAGS} -g -Wall -O2 -m64 ${LDFLAGS}" \
+    CXXFLAGS="${CXXFLAGS} ${CPPFLAGS} -g -Wall -O2 -m64 -fpermissive ${LDFLAGS}"
 cp novo2maq/novo2maq ${PREFIX}/bin
 
 # Install all executables

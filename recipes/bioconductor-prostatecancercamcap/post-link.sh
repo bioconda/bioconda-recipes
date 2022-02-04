@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="prostateCancerCamcap_1.18.0.tar.gz"
+FN="prostateCancerCamcap_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/prostateCancerCamcap_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/prostateCancerCamcap_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-prostatecancercamcap/bioconductor-prostatecancercamcap_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/prostateCancerCamcap_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/prostateCancerCamcap_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-prostatecancercamcap/bioconductor-prostatecancercamcap_1.22.0_src_all.tar.gz"
 )
-MD5="2b1fa1c883bf7dbded0cb728abd53f70"
+MD5="26c4c76f7fca72e6073fc539885f0b5f"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

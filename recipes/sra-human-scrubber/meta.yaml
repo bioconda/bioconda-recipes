@@ -1,0 +1,37 @@
+
+{% set name = "sra-human-scrubber" %}
+{% set version = "1.0.2021_05_05" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/ncbi/{{ name }}/archive/refs/tags/{{ version|replace("_", "-") }}.tar.gz
+    sha256: ccedb2c253e8db560a08c2f78139c50f84eb2bb5870914a23b7007f920969fe4
+    patches:
+      - fix_scrub_path.patch
+      - fix_init_db_path.patch
+
+build:
+  noarch: generic
+  number: 0
+
+requirements:
+  run:
+    - python >=3.7
+    - curl
+
+test:
+  commands:
+    - scrub.sh -h
+
+about:
+  home: https://github.com/ncbi/sra-human-scrubber
+  license: Public Domain
+  license_family: Public Domain
+  summary: An SRA tool identifies and removes any significant human read, and outputs the edited (cleaned) fastq file for SRA submission.
+
+extra:
+  recipe-maintainers:
+    - rpetit3

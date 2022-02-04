@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="mgu74ccdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/mgu74ccdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/mgu74ccdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mgu74ccdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mgu74ccdf/bioconductor-mgu74ccdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mgu74ccdf/bioconductor-mgu74ccdf_2.18.0_src_all.tar.gz"
 )
 MD5="172e626b0e3072edc65c4efff35fe998"

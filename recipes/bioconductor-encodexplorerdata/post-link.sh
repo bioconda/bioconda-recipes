@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="ENCODExplorerData_0.99.5.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/ENCODExplorerData_0.99.5.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/ENCODExplorerData_0.99.5.tar.gz"
   "https://bioarchive.galaxyproject.org/ENCODExplorerData_0.99.5.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-encodexplorerdata/bioconductor-encodexplorerdata_0.99.5_src_all.tar.gz"
 )

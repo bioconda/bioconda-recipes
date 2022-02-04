@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.aragene.1.1.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/pd.aragene.1.1.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.aragene.1.1.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.aragene.1.1.st_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.aragene.1.1.st/bioconductor-pd.aragene.1.1.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.aragene.1.1.st/bioconductor-pd.aragene.1.1.st_3.12.0_src_all.tar.gz"
 )
 MD5="828ad790eb2495e396d7fcd9bcbf9133"

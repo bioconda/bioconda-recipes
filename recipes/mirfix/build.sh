@@ -1,3 +1,3 @@
 #!/bin/bash
-
-cp scripts/* ${PREFIX}/bin/
+mkdir -p $PREFIX/bin
+cp -r scripts/* ${PREFIX}/bin/

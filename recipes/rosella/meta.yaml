@@ -1,0 +1,54 @@
+{% set version = "0.4.1" %}
+{% set name = "rosella" %}
+{% set hash = "1980f1487cc0622fdb913d2f74c794d80a8c539d4b696cf0111ebc704c0bdfec" %}
+
+package:
+  name: rosella
+  version: {{ version }}
+
+source:
+  url: https://github.com/rhysnewell/rosella/archive/v{{ version }}.tar.gz
+  sha256: {{ hash }}
+
+build:
+  number: 0
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - rust >=1.40
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - pkg-config
+    - make
+    - cmake
+  host:
+    - zlib
+    - blis
+    - libblas
+    - openblas
+    - openssl
+    - clangdev
+  run:
+    - parallel
+    - samtools
+    - starcode
+    - bwa
+    - minimap2
+    - flight-genome>=1.4.1
+
+test:
+  commands:
+    - {{ name }} --version | grep {{ version }}
+    - flight -h
+
+about:
+  home: https://github.com/rhysnewell/rosella.git
+  license: GPL3
+  license_file: LICENSE
+  summary: 'Metagenomic binning pipeline and algorithm using UMAP and HDBSCAN'
+
+extra:
+  recipe-maintainers:
+    - rhysnewell
+    - aaronmussig

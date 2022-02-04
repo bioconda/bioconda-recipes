@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.charm.hg18.example_0.99.4.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/pd.charm.hg18.example_0.99.4.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.charm.hg18.example_0.99.4.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.charm.hg18.example_0.99.4.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.charm.hg18.example/bioconductor-pd.charm.hg18.example_0.99.4_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.charm.hg18.example/bioconductor-pd.charm.hg18.example_0.99.4_src_all.tar.gz"
 )
 MD5="e201d4281a23c202f57bae1135e226b4"

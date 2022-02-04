@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="BSgenome.Ggallus.UCSC.galGal6_1.4.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/BSgenome.Ggallus.UCSC.galGal6_1.4.2.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Ggallus.UCSC.galGal6_1.4.2.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Ggallus.UCSC.galGal6_1.4.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.ggallus.ucsc.galgal6/bioconductor-bsgenome.ggallus.ucsc.galgal6_1.4.2_src_all.tar.gz"
 )

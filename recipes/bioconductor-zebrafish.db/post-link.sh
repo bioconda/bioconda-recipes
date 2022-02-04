@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="zebrafish.db_3.2.3.tar.gz"
+FN="zebrafish.db_3.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/zebrafish.db_3.2.3.tar.gz"
-  "https://bioarchive.galaxyproject.org/zebrafish.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-zebrafish.db/bioconductor-zebrafish.db_3.2.3_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-zebrafish.db/bioconductor-zebrafish.db_3.2.3_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/zebrafish.db_3.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/zebrafish.db_3.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-zebrafish.db/bioconductor-zebrafish.db_3.13.0_src_all.tar.gz"
 )
-MD5="bd3924751e782a01b08d82b0aae07579"
+MD5="64e40a61e81ac9397affb09880846559"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
