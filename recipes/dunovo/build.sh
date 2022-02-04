@@ -23,7 +23,7 @@ while read name version owner repo hash; do
 done < submodules.txt
 
 # Compile binaries and move them to lib.
-make
+make CC=$CC
 mkdir -p "$PREFIX/lib"
 mv *.so "$PREFIX/lib"
 while read name rest; do
