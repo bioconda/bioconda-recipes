@@ -24,6 +24,7 @@ done < submodules.txt
 
 # Compile binaries and move them to lib.
 sed -i.bak "s#gcc#${CC}#g" Makefile
+sed -i.bak "s#gcc#${CC}#g" bfx/Makefile
 make
 mkdir -p "$PREFIX/lib"
 mv *.so "$PREFIX/lib"
