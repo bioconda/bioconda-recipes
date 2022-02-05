@@ -1,0 +1,38 @@
+diff --git a/src/Makefile b/src/Makefile
+index 0931cf6..633e08b 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -488,33 +488,6 @@ define TEST_COMPILER
+   endif
+ endef
+ 
+-ifeq (${OSTYPE}, Darwin)
+-  $(foreach suffix,mp-9 9  mp-8 8  mp-7 7,$(eval $(call TEST_COMPILER,${suffix})))
+-
+-  ifneq ($(shell echo `$(CXX) --version 2>&1 | grep -c clang`), 0)
+-     CPATH := $(shell echo `which $(CXX)`)
+-     CLANG := $(shell echo `$(CXX) --version 2>&1 | grep clang`)
+-     space := 
+-
+-     $(warning )
+-     ifeq ($(CXX), $(CPATH))
+-       $(warning Compiler '$(CXX)' reports version '$(CLANG)'.)
+-     else
+-       $(warning Compiler '$(CXX)' at '$(CPATH)' reports version '$(CLANG)'.)
+-     endif
+-     $(warning )
+-     $(warning Canu cannot be compiled with this compiler.  Please install GCC and/or)
+-     $(warning specify a non-Clang compiler on the command line, e.g.,)   #  Quite the evil trick to get
+-     $(warning $(space)    make CC=/path/to/gcc CXX=/path/to/g++);        #  this line indented!
+-     $(warning )
+-     $(error unsupported compiler)
+-  endif
+-
+-  CXXFLAGS += -fopenmp -pthread -fPIC -m64 -Wno-format
+-  LDFLAGS  += -fopenmp -pthread -lm
+-endif
+-
+-
+ ifeq (${OSTYPE}, FreeBSD)
+ ifeq (${CANU_BUILD_ENV}, ports)
+ 
