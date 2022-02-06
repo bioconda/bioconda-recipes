@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="fission_1.12.0.tar.gz"
+FN="fission_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/fission_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/fission_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-fission/bioconductor-fission_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/fission_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/fission_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-fission/bioconductor-fission_1.14.0_src_all.tar.gz"
 )
-MD5="30384475923d69b93a3696bd5fe7eca6"
+MD5="8d33b6c56c5cdc66c13b26681a68dc67"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
