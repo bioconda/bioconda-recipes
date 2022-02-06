@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -o errexit -o pipefail
+
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL
@@ -21,5 +23,5 @@ fi
 # Add more build steps here, if they are necessary.
 
 # See
-# http://docs.continuum.io/conda/build.html
+# https://docs.conda.io/projects/conda-build
 # for a list of environment variables that are set during the build process.
