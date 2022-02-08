@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
@@ -10,6 +11,7 @@ if [ -f Build.PL ]; then
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
     perl Makefile.PL INSTALLDIRS=site
+    ls -l
     make
     make test
     make install
