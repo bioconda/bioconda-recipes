@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.chigene.1.1.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/pd.chigene.1.1.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.chigene.1.1.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.chigene.1.1.st_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.chigene.1.1.st/bioconductor-pd.chigene.1.1.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.chigene.1.1.st/bioconductor-pd.chigene.1.1.st_3.12.0_src_all.tar.gz"
 )
 MD5="bec602b45961607f5a4571977d54e015"

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="PANTHER.db_1.0.10.tar.gz"
+FN="PANTHER.db_1.0.11.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/PANTHER.db_1.0.10.tar.gz"
-  "https://bioarchive.galaxyproject.org/PANTHER.db_1.0.10.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-panther.db/bioconductor-panther.db_1.0.10_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/PANTHER.db_1.0.11.tar.gz"
+  "https://bioarchive.galaxyproject.org/PANTHER.db_1.0.11.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-panther.db/bioconductor-panther.db_1.0.11_src_all.tar.gz"
 )
-MD5="4f8cc91f84bdfdf0bf3128693bee867a"
+MD5="561f6b164b27f6dc4287f0d7fd6bb8b3"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

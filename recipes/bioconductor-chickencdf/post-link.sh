@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="chickencdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/chickencdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/chickencdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/chickencdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-chickencdf/bioconductor-chickencdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-chickencdf/bioconductor-chickencdf_2.18.0_src_all.tar.gz"
 )
 MD5="ab0097b4b7b6c4d94360feb84ab69972"

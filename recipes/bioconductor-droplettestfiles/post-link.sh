@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="DropletTestFiles_1.0.0.tar.gz"
+FN="DropletTestFiles_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/DropletTestFiles_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/DropletTestFiles_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-droplettestfiles/bioconductor-droplettestfiles_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/DropletTestFiles_1.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/DropletTestFiles_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-droplettestfiles/bioconductor-droplettestfiles_1.4.0_src_all.tar.gz"
 )
-MD5="1ece96b688674c1001b7adb4dd816433"
+MD5="d42d17a434ca202a8f2797f7840e316f"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
