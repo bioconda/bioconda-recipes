@@ -14,7 +14,7 @@ from os import access
 from os import getenv
 from os import X_OK
 
-jar_file = 'webin-cli-4.2.1.jar'
+jar_file = 'webin-cli-4.3.0.jar'
 default_jvm_mem_opts = ['-Xms2g', '-Xmx4g']
 original_string = "java -jar " + jar_file + " CLI"
 wrapper_string = "webin-cli"
@@ -75,40 +75,15 @@ def jvm_opts(argv):
 
     return (mem_opts, prop_opts, pass_args, exec_dir)
 
-
-def def_temp_log_opts(args):
-    """
-    Establish default temporary and log folders.
-    """
-    TEMP  = os.getenv("TEMP")
-
-    if TEMP is not None:
-        if '-log' not in args:
-            args.append('-log')
-            args.append(TEMP+'/logs')
-
-        if '-temp_folder' not in args :
-            args.append('-temp_folder')
-            args.append(TEMP)
-
-    return args
-
 def main():
     java = java_executable()
     (mem_opts, prop_opts, pass_args, exec_dir) = jvm_opts(sys.argv[1:])
-    pass_args = def_temp_log_opts(pass_args)
     jar_dir = exec_dir if exec_dir else real_dirname(sys.argv[0])
     jar_arg = '-jar'
     jar_path = os.path.join(jar_dir, jar_file)
     java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
-    # cmd = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + [cli] + pass_args
-    sys.exit(subprocess.call(java_args))
-
-    # p = subprocess.Popen(cmd,stderr=subprocess.PIPE);
-    # for line in iter(p.stderr.readline,b''):
-        # tomod = line.decode("utf-8")
-        # tomod = tomod.replace(original_string,wrapper_string)
-        # print(tomod,end='')
+    command = ' '.join(java_args)
+    sys.exit(os.system(command))
 
 
 if __name__ == '__main__':
