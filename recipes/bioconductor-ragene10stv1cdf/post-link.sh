@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="ragene10stv1cdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/ragene10stv1cdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/ragene10stv1cdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ragene10stv1cdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ragene10stv1cdf/bioconductor-ragene10stv1cdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ragene10stv1cdf/bioconductor-ragene10stv1cdf_2.18.0_src_all.tar.gz"
 )
 MD5="df696e9dbf5b3f2761b6a0a5914be058"

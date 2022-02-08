@@ -22,6 +22,7 @@ cp kaiju2krona $PREFIX/bin
 cp kaiju2table $PREFIX/bin
 cp kaijup $PREFIX/bin
 cp kaijux $PREFIX/bin
+cp kaiju-multi $PREFIX/bin
 cp kaiju-makedb $PREFIX/bin
 cp kaiju-mergeOutputs $PREFIX/bin
 cp kaiju-mkbwt $PREFIX/bin

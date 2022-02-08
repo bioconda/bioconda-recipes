@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="lumiHumanAll.db_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/lumiHumanAll.db_1.22.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/lumiHumanAll.db_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/lumiHumanAll.db_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-lumihumanall.db/bioconductor-lumihumanall.db_1.22.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-lumihumanall.db/bioconductor-lumihumanall.db_1.22.0_src_all.tar.gz"
 )
 MD5="ce7e219b50833ceab203f0bbfb11d917"

@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="hugene.1.0.st.v1frmavecs_1.1.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/hugene.1.0.st.v1frmavecs_1.1.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hugene.1.0.st.v1frmavecs_1.1.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hugene.1.0.st.v1frmavecs_1.1.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hugene.1.0.st.v1frmavecs/bioconductor-hugene.1.0.st.v1frmavecs_1.1.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hugene.1.0.st.v1frmavecs/bioconductor-hugene.1.0.st.v1frmavecs_1.1.0_src_all.tar.gz"
 )
 MD5="711a69e6fa6dd3737a90615222416dfc"

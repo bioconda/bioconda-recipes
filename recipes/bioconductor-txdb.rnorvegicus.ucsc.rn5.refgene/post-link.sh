@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="TxDb.Rnorvegicus.UCSC.rn5.refGene_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/TxDb.Rnorvegicus.UCSC.rn5.refGene_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/TxDb.Rnorvegicus.UCSC.rn5.refGene_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Rnorvegicus.UCSC.rn5.refGene_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.rnorvegicus.ucsc.rn5.refgene/bioconductor-txdb.rnorvegicus.ucsc.rn5.refgene_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.rnorvegicus.ucsc.rn5.refgene/bioconductor-txdb.rnorvegicus.ucsc.rn5.refgene_3.12.0_src_all.tar.gz"
 )
 MD5="8a93a15b37bf73e5c529c976c4561537"

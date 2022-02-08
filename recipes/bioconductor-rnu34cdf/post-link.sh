@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="rnu34cdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/rnu34cdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/rnu34cdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/rnu34cdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rnu34cdf/bioconductor-rnu34cdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rnu34cdf/bioconductor-rnu34cdf_2.18.0_src_all.tar.gz"
 )
 MD5="0f2564fc6ac89de4d779faf253f23ce3"
