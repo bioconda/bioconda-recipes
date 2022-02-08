@@ -23,7 +23,9 @@ ls -lah .
 #./meteor --version
 #export PATH=$(pwd):$PATH
 #popd
-#
+
+curl https://install.meteor.com/
+
 npm install --unsafe-perm
 
 export PATH=$PATH:"$HOME/.meteor"
