@@ -31,12 +31,15 @@ else
   RPATH='$${ORIGIN}/../lib'
 fi
 LDFLAGS='-Wl,-rpath,${RPATH}'
-CWD=$(pwd)
+CWD=$(pwd)/..
+parentdir="$(dirname "$CWD")"
+
+echo "Adding OPENMS_CONTRIB_LIBS=$parentdir/contrib-build"
 
   #-DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
   #-DOPENMS_GIT_SHORT_SHA1="2537a5d" \
 cmake .. \
-  -DOPENMS_CONTRIB_LIBS="${CWD}" \
+  -DOPENMS_CONTRIB_LIBS="$parentdir/contrib-build" \
   -DCMAKE_BUILD_TYPE="Release" \
   -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} \
   -DCMAKE_MACOSX_RPATH=ON \
