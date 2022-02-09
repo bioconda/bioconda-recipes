@@ -1,5 +1,5 @@
-{% set version = "2.12.0" %}
-{% set sha256 = "5f00c918804a4e0cbe7dd8c61963058841f2104a01c58fc34bc19a0cc8c1a763" %}
+{% set version = "2.13.2" %}
+{% set sha256 = "4d5651b1fc27928c0f76f1e8e7b90a74e6feae0c1cb9abea17fa2bd359f1d704" %}
 
 package:
   name: gridss
@@ -10,25 +10,27 @@ source:
   sha256: '{{ sha256 }}'
 
 build:
-  number: 1
+  number: 0
   skip: True # [osx]
 
 requirements:
   build:
-    #- autoconf
+    - autoconf
+    - automake
     - make
     - {{ compiler('c') }}
   host:
     - ncurses
     - zlib
-    - htslib >=1.10
+    - htslib >=1.14
   run:
+    - bc
     - ncurses
     - zlib
     - openjdk >=8
     - bwa >=0.7
-    - samtools >=1.10
-    - htslib >=1.10
+    - samtools >=1.14
+    - htslib >=1.14
     - kraken2 >=2.1
     - repeatmasker >=4.1.1
     - entrez-direct
@@ -49,7 +51,7 @@ test:
     - "gridss_extract_overlapping_fragments 2>&1 | grep 'Usage:'"
     - "virusbreakend 2>&1 | grep 'Usage:'"
     - "virusbreakend-build --help 2>&1 | grep 'Usage:'"
-    - "gridss_somatic_filter --help 2>&1 | grep 'usage:'"
+    - "gridss_somatic_filter --help 2>&1 | grep -i usage"
     - "CallVariants --help 2>&1 | grep 'USAGE:'"
     - "CollectGridssMetrics --help 2>&1 | grep 'USAGE:'"
     - "AnnotateVariantsKraken --help 2>&1 | grep 'USAGE:'"
@@ -65,4 +67,5 @@ extra:
   identifiers:
     - biotools:gridss
     - doi:10.1101/gr.222109.117
+    - doi:10.1186/s13059-021-02423-x
   notes: The package contains additional command line wrappers for the GRIDSS java-based utilities.

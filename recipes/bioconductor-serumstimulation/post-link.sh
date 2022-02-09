@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="serumStimulation_1.28.0.tar.gz"
+FN="serumStimulation_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/serumStimulation_1.28.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/serumStimulation_1.28.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-serumstimulation/bioconductor-serumstimulation_1.28.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/serumStimulation_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/serumStimulation_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-serumstimulation/bioconductor-serumstimulation_1.30.0_src_all.tar.gz"
 )
-MD5="ce841efe10b5cc30cbef9828e1a0e6ad"
+MD5="516fa8c883d2c2786931f78abbaa370c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

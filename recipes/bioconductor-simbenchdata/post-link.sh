@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="SimBenchData_1.0.0.tar.gz"
+FN="SimBenchData_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/SimBenchData_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/SimBenchData_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-simbenchdata/bioconductor-simbenchdata_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/SimBenchData_1.2.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/SimBenchData_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-simbenchdata/bioconductor-simbenchdata_1.2.0_src_all.tar.gz"
 )
-MD5="00416c09020fcc8df04e467db235cd55"
+MD5="27242df2e4ffdf72f86861c8db9f6c3a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

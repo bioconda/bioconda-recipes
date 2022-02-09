@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="lumiHumanIDMapping_1.10.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/lumiHumanIDMapping_1.10.1.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/lumiHumanIDMapping_1.10.1.tar.gz"
   "https://bioarchive.galaxyproject.org/lumiHumanIDMapping_1.10.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-lumihumanidmapping/bioconductor-lumihumanidmapping_1.10.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-lumihumanidmapping/bioconductor-lumihumanidmapping_1.10.1_src_all.tar.gz"
 )
 MD5="007e5aa2f1596cc08d888ba6dce7148a"
