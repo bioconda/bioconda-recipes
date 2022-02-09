@@ -24,7 +24,7 @@ ls -lah .
 #export PATH=$(pwd):$PATH
 #popd
 
-curl https://install.meteor.com/
+curl --insecure https://install.meteor.com/
 
 npm install --unsafe-perm
 
