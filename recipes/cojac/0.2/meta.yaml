@@ -1,6 +1,6 @@
 {% set name = "cojac" %}
-{% set version = "0.1" %}
-{% set sha256 = "8a10efba4212a2713f12d943fc98ab6dc5ab210f296ad0a754a3cf0e9b6a4852" %}
+{% set version = "0.2" %}
+{% set sha256 = "51899fb1797e635a9279d82ae94af215c61eb824414ea7323086a87cdf412be5" %}
 
 package:
   name: {{ name|lower }}
@@ -15,22 +15,29 @@ build:
   number: 0
   script:
     - mkdir -p ${PREFIX}/bin/
-    - cp cooc-* ${PREFIX}/bin/
-
+    - cp cooc-* phe2cojac ${PREFIX}/bin/
+    - mkdir -p ${PREFIX}/share/{{ name }}/
+    - cp -r nCoV-2019.insert.V3.bed SARS-CoV-2.insert.V4.txt voc  ${PREFIX}/share/{{ name }}/
 
 requirements:
   run:
     - python >=3
     - numpy
-    - pysam >0.15.3
+    - pysam >=0.17
     - pandas
     - pyyaml
+    - strictyaml
+    - requests
 
 test:
   commands:
     - cooc-mutbamscan -h
     - cooc-colourmut -h
     - cooc-pubmut -h
+    - cooc-curate -h
+    - phe2cojac -h
+    # quick tests
+    - cooc-mutbamscan -m ${CONDA_PREFIX}/share/{{ name }}/voc/ -b ${CONDA_PREFIX}/share/{{ name }}/nCoV-2019.insert.V3.bed -A amplicons.v3.yaml
 
 about:
   home: https://github.com/cbg-ethz/cojac
@@ -38,3 +45,7 @@ about:
   summary: 'Command-line tools to analyse co-occurrence of mutations on amplicons.'
   license_family: GPL3
   license_file: LICENSE.md
+
+extra:
+  recipe-maintainers:
+    - DrYak
