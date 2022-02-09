@@ -1,5 +1,6 @@
 #!/bin/bash
-
+set -ex
+unset LD  # Otherwise the C compiler options are passed to LD
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL
@@ -9,7 +10,8 @@ if [ -f Build.PL ]; then
     perl ./Build install --installdirs site
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
-    perl Makefile.PL INSTALLDIRS=site
+    perl -V
+    perl Makefile.PL INSTALLDIRS=site CC=${CC}
     make
     make test
     make install

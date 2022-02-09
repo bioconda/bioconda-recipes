@@ -1,0 +1,86 @@
+{% set blast_version = "2.9.0" %}
+
+package:
+  name: maker
+  version: 2.31.11
+
+source:
+  url: http://weatherby.genetics.utah.edu/maker_downloads/static/maker-2.31.11.tgz
+  sha256: 129ce1d33df8ae29d417f0dac0df756398c5b76bdd58213233e94e735fe38c37
+  patches:
+    - "repeatmasker_check.patch"
+    - "mpi_init.patch"
+
+build:
+  noarch: generic
+  number: 1
+
+requirements:
+  host:
+    - augustus >=3.2.3
+    - blast {{ blast_version }}
+    - exonerate
+    - repeatmasker >=4.1.1
+    - snap
+    - snoscan
+    - perl
+    - perl-bioperl-core >=1.007002
+    - perl-bit-vector
+    - perl-dbd-pg
+    - perl-dbd-sqlite
+    - perl-dbi
+    - perl-file-which
+    - perl-io-all
+    - perl-io-prompt
+    - perl-inline-c >=0.78
+    - perl-perlio-gzip
+    - perl-forks
+    - perl-list-moreutils
+    - perl-perl-unsafe-signals
+    - mpich
+    - trnascan-se ==1.3.1
+    - postgresql
+  run:
+    - augustus >=3.2.3
+    - blast {{ blast_version }}
+    - exonerate
+    - repeatmasker >=4.1.1
+    - rmblast {{ blast_version }} # blast and rmblast must be pinned to the same version as they share some libraries
+    - snap
+    - snoscan
+    - perl
+    - perl-bioperl-core >=1.007002
+    - perl-bit-vector
+    - perl-dbd-pg
+    - perl-dbd-sqlite
+    - perl-dbi
+    - perl-file-which
+    - perl-io-all
+    - perl-io-prompt
+    - perl-inline-c >=0.78
+    - perl-perlio-gzip
+    - perl-forks
+    - perl-list-moreutils
+    - perl-perl-unsafe-signals
+    - mpich
+    - trnascan-se ==1.3.1
+    - postgresql
+    # GeneMarkS, GeneMark-ES and FGENESH are optional requirements but are not free
+
+about:
+  home: http://www.yandell-lab.org/software/maker.html
+  license: GPL3
+  license_file: LICENSE
+  summary: MAKER is a portable and easily configurable genome annotation pipeline.
+
+test:
+  commands:
+    - maker --version
+
+extra:
+  container:
+    # mpich needs /etc/resolv.conf : https://github.com/bioconda/bioconda-recipes/issues/11583
+    extended-base: true
+  identifiers:
+    - biotools:maker
+    - usegalaxy-eu:maker
