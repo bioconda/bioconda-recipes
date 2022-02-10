@@ -26,4 +26,9 @@ ln -s $PREFIX/bin/sort-snos.pl  $PREFIX/bin/sort-snos
 
 mv snoscan snoscan[AHY] $PREFIX/bin
 
-chmod u+rwx $PREFIX/bin/*
+chmod +rx $PREFIX/bin/genpept2gsi.pl
+chmod +rx $PREFIX/bin/sort-snos.pl
+chmod +rx $PREFIX/bin/genbank2gsi.pl
+chmod +rx $PREFIX/bin/swiss2gsi.pl
+chmod +rx $PREFIX/bin/fasta2gsi.pl
+chmod +rx $PREFIX/bin/pir2gsi.pl
