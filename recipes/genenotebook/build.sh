@@ -24,7 +24,9 @@ ls -lah .
 #export PATH=$(pwd):$PATH
 #popd
 
-curl --insecure https://install.meteor.com/
+# Temp fix for cert error on Azure os x builder
+sed -i.bak 's|curl https|curl --insecure https|' package.json
+rm package.json.bak
 
 npm install --unsafe-perm
 
