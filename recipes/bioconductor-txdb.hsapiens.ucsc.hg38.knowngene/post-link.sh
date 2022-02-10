@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="TxDb.Hsapiens.UCSC.hg38.knownGene_3.13.0.tar.gz"
+FN="TxDb.Hsapiens.UCSC.hg38.knownGene_3.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/TxDb.Hsapiens.UCSC.hg38.knownGene_3.13.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/TxDb.Hsapiens.UCSC.hg38.knownGene_3.13.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.hsapiens.ucsc.hg38.knowngene/bioconductor-txdb.hsapiens.ucsc.hg38.knowngene_3.13.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/TxDb.Hsapiens.UCSC.hg38.knownGene_3.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TxDb.Hsapiens.UCSC.hg38.knownGene_3.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.hsapiens.ucsc.hg38.knowngene/bioconductor-txdb.hsapiens.ucsc.hg38.knowngene_3.14.0_src_all.tar.gz"
 )
-MD5="bdca30421251eae309dbd5935bb48378"
+MD5="a931ccbc39dd4500b55b8aa2f3623ae7"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

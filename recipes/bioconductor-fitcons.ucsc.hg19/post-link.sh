@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="fitCons.UCSC.hg19_3.7.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/fitCons.UCSC.hg19_3.7.1.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/fitCons.UCSC.hg19_3.7.1.tar.gz"
   "https://bioarchive.galaxyproject.org/fitCons.UCSC.hg19_3.7.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-fitcons.ucsc.hg19/bioconductor-fitcons.ucsc.hg19_3.7.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-fitcons.ucsc.hg19/bioconductor-fitcons.ucsc.hg19_3.7.1_src_all.tar.gz"
 )
 MD5="53d954890ec9b91084664a10161ce391"

@@ -1,5 +1,5 @@
 #!/bin/sh
 
-nimble --localdeps build -y --verbose -d:release
+chmod +x mosdepth
 mkdir -p "${PREFIX}/bin"
 cp mosdepth "${PREFIX}/bin/"

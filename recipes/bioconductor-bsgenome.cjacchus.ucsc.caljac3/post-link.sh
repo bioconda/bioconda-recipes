@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="BSgenome.Cjacchus.UCSC.calJac3_1.4.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/BSgenome.Cjacchus.UCSC.calJac3_1.4.2.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Cjacchus.UCSC.calJac3_1.4.2.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Cjacchus.UCSC.calJac3_1.4.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.cjacchus.ucsc.caljac3/bioconductor-bsgenome.cjacchus.ucsc.caljac3_1.4.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.cjacchus.ucsc.caljac3/bioconductor-bsgenome.cjacchus.ucsc.caljac3_1.4.2_src_all.tar.gz"
 )
 MD5="41f927aa0d6ffbdaa6ad93c9135409e6"

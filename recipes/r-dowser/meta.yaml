@@ -1,0 +1,86 @@
+{% set version = '0.1.0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-dowser
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/dowser_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/dowser/dowser_{{ version }}.tar.gz
+  sha256: 49ed1b2ae8951f5a016784622a7e1582ae3be24035f699c2fc73ce503ba905cd
+
+build:
+  number: 0
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: knitr, rmarkdown, testthat
+requirements:
+  build:
+    - {{ posix }}zip               # [win]
+
+  host:
+    - r-base
+    - bioconductor-biostrings
+    - bioconductor-ggtree
+    - r-rcolorbrewer
+    - r-alakazam >=1.1.0
+    - r-ape >=5.5
+    - r-dplyr >=0.8.1
+    - r-ggplot2 >=3.2.0
+    - r-gridextra
+    - r-markdown
+    - r-phangorn >=2.7.1
+    - r-phylotate
+    - r-rlang
+    - r-shazam >=1.1.0
+    - r-stringr
+    - r-tidyr
+    - r-tidyselect
+
+  run:
+    - r-base
+    - bioconductor-biostrings
+    - bioconductor-ggtree
+    - r-rcolorbrewer
+    - r-alakazam >=1.1.0
+    - r-ape >=5.5
+    - r-dplyr >=0.8.1
+    - r-ggplot2 >=3.2.0
+    - r-gridextra
+    - r-markdown
+    - r-phangorn >=2.7.1
+    - r-phylotate
+    - r-rlang
+    - r-shazam >=1.1.0
+    - r-stringr
+    - r-tidyr
+    - r-tidyselect
+
+test:
+  commands:
+    - $R -e "library('dowser')"
+
+about:
+  home: https://dowser.readthedocs.io
+  license: AGPL-3
+  summary: 'Provides a set of functions for inferring, visualizing, and analyzing B cell phylogenetic
+    trees. Provides methods to 1) reconstruct unmutated ancestral sequences, 2) build
+    B cell phylogenetic trees using multiple methods, 3) visualize trees with metadata
+    at the tips, 4) reconstruct intermediate sequences, 5) detect biased ancestor-descendant
+    relationships among metadata types Workflow examples available at documentation
+    site (see URL). Citations: Hoehn et al (2020) <doi:10.1101/2020.05.30.124446>, Hoehn
+    et al (2021) <doi:10.1101/2021.01.06.425648>.'
+  license_family: AGPL
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+
+extra:
+  recipe-maintainers:
+    - ggabernet
