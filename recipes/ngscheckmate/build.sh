@@ -9,8 +9,8 @@ cat << EOF > $PREFIX/bin/ncm.py
 #!/usr/bin/env bash
 
 export NCM_HOME=$PREFIX/NGSCheckMate
-echo Set the path to your reference file with the NCM_REF environment variable
-echo eg. export NCM_PATH=/<path>/<to>/<reference> 
+echo "Set the path to your reference file with the NCM_REF environment variable"
+echo "eg. export NCM_PATH=/<path>/<to>/<reference>" 
 echo
 python $PREFIX/NGSCheckMate/ncm.py "\$@"
 EOF
