@@ -1,0 +1,52 @@
+{% set version = "1.0.3" %} # Remember to update sha256 below
+
+package:
+  name: biophi
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/Merck/BioPhi/archive/v{{ version }}.tar.gz
+  sha256: '556bacca15ca20ffd32fe8c22a08ca2f3df2332952a1cf08051331ca6cea35bd'
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - biophi = biophi.common.cli.main:main
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+    - pytest
+  run:
+    - python >=3.8
+    - abnumber ==0.2.7
+    - click >=7
+    - pandas
+    - sqlalchemy
+    - flask
+    - redis
+    - celery
+    - biopython
+    - requests
+    - tqdm
+    - xlsxwriter
+    - humanize
+    - fairseq ==0.10.2  
+
+test:
+  imports:
+    - biophi
+  commands:
+    - biophi --help
+    - biophi sapiens --help
+    - biophi oasis --help
+
+about:
+  home: https://github.com/Merck/BioPhi
+  license: MIT
+  license_family: MIT
+  summary: BioPhi open-source antibody design platform

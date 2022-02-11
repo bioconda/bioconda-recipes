@@ -1,6 +1,6 @@
 {% set name = "RepeatModeler" %}
-{% set version = "2.0.1" %}
-{% set sha256 = "628e7e1556865a86ed9d6a644c0c5487454c99fbcac21b68eae302fae7abb7ac" %}
+{% set version = "2.0.2a" %}
+{% set sha256 = "8a9d69c8d7afbfb07f8bb6560c5f2fd35e61e5e7ccd01361e4f9a63f4ef3e50c" %}
 
 package:
   name: "{{ name|lower }}"
@@ -9,26 +9,39 @@ package:
 source:
   url: https://github.com/Dfam-consortium/RepeatModeler/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - patch
 
 build:
+  # Tests are failing on osx, see https://github.com/bioconda/bioconda-recipes/pull/28531 for details
+  skip: True  # [osx]
   number: 1
 
 requirements:
   host:
     - perl
-    - rmblast>=2.9.0
+    - perl-file-which
+    - rmblast=2.10.0
+    - perl-uri
+    - perl-libwww-perl
   run:
     - perl
+    - perl-file-which
+    - perl-devel-size
+    - perl-uri
+    - perl-libwww-perl
     - repeatmasker
-    - rmblast>=2.9.0
+    - rmblast=2.10.0
     - trf>=4.09
     - repeatscout>=1.0.6
     - recon>=1.08
-    - perl-text-soundex
     - cd-hit>=4.8.1
     - ltr_retriever>=2.6
     - mafft>=7.407
     - genometools-genometools>=1.5.9
+    - ucsc-twobitinfo
+    - ucsc-twobittofa
+    - ucsc-fatotwobit
 # to be complete it is missing Ninja and ABBlast
 
 test:

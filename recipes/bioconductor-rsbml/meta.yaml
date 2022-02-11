@@ -1,6 +1,6 @@
-{% set version = "2.48.0" %}
+{% set version = "2.52.0" %}
 {% set name = "rsbml" %}
-{% set bioc = "3.12" %}
+{% set bioc = "3.14" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,38 +10,31 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: ca1483ff4f8db766e3e2892a05182a66
+  md5: c3905e11077cebbc29c7a6c33d4ef8d0
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 # SystemRequirements: libsbml (==5.10.2)
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.36.0,<0.37.0'
-    - 'bioconductor-graph >=1.68.0,<1.69.0'
+    - 'bioconductor-biocgenerics >=0.40.0,<0.41.0'
+    - 'bioconductor-graph >=1.72.0,<1.73.0'
     - r-base
     - libblas
     - liblapack
-    # From configure.in: PKG_CHECK_MODULES(LIBSBML, [libsbml >= 3.0.2], [LIBSBML="yes"])
-    #      DESCRIPTION: SystemRequirements: libsbml (==5.10.2)
-    #      INSTALL: ... on Windows ... libsbml 5.10.0 ...
-    #               It might work ... other versions, but ... only really tested 5.10.0.
-    # => libsbml >=3.0.2 might be okay, but let's use >=5.10.2,<6.0a0 for now.
-
-    - libsbml >=5.10.2,<6.0a0
+    - libsbml >=5.10.2
   run:
-    - 'bioconductor-biocgenerics >=0.36.0,<0.37.0'
-    - 'bioconductor-graph >=1.68.0,<1.69.0'
+    - 'bioconductor-biocgenerics >=0.40.0,<0.41.0'
+    - 'bioconductor-graph >=1.72.0,<1.73.0'
     - r-base
-    - {{ pin_compatible('libsbml') }}
+    - libsbml >=5.10.2
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - automake
     - make
-    - pkg-config
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

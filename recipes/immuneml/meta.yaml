@@ -1,5 +1,5 @@
 {% set name = "immuneML" %}
-{% set version = "1.2.0" %}
+{% set version = "2.1.2" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,26 +7,29 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: bdf4a9e3e4e8bb4afdb96877ce0875ec347a796aafdf2f3c81c79fb47d470fa4
+  sha256: c6b510f6197477c7ee22b00a61b22d40ae4347a765e26b4e27051ea1044f114c
 
 build:
-  number: 0
-  noarch: python
+  number: 1
+  skip: true [py2k or py <= 36]
   entry_points:
     - immune-ml = immuneML.app.ImmuneMLApp:main
     - immune-ml-quickstart = immuneML.workflows.instructions.quickstart:main
   script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
     - pip
-    - python >=3.7,<3.9
+    - python
+    - cython
   run:
     - airr >=1
     - dill >=0.3
     - editdistance ==0.5.3
     - fishersapi
-    - gensim >=3.8
+    - gensim >=3.8,<4
     - h5py >=2.9.0
     - logomaker >=0.8
     - matplotlib-base >=3.1
@@ -37,15 +40,16 @@ requirements:
     - pystache ==0.5.4
     - pytest >=4
     - pytorch >=1.5.1
-    - python >=3.7,<3.9
+    - python
     - pyyaml >=5.3
     - regex
     - requests >=2.21
     - scikit-learn >=0.23
     - scipy
-    - tensorboard ==1.14.0
+    - tensorboard >=1.14.0
     - tqdm >=0.24
     - tzlocal
+    - cython
 
 test:
   imports:
@@ -63,6 +67,8 @@ about:
   dev_url: "https://github.com/uio-bmi/immuneML"
 
 extra:
+  skip-lints:
+    - cython_must_be_in_host
   recipe-maintainers:
     - knutwa-ext 
     - BlueBasilisk

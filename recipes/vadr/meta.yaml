@@ -1,0 +1,54 @@
+
+{% set name = "vadr" %}
+{% set version = "1.4.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/ncbi/{{ name }}/archive/refs/tags/{{ name }}-{{ version }}.tar.gz
+    sha256: a8c238bf9b638fa69fdd1b097d39a7e3948aa30536ff5b227da091bd8b8fa770
+    patches:
+      - fix_vannotate_path.patch
+      - fix_local_test_path.patch
+
+build:
+  noarch: generic
+  number: 1
+
+requirements:
+  build:
+    - wget
+  host:
+    - perl
+    - sequip >=0.08
+  run:
+    - blast >=2.11.0
+    - easel >=0.48
+    - fasta3 >=36.3.8
+    - hmmer >=3.3.2
+    - infernal >=1.1.4
+    - perl
+    - perl-bio-easel >=0.15
+    - perl-lwp-simple
+    - perl-lwp-protocol-https >=6.07
+    - perl-net-ssleay >=1.88
+    - sequip >=0.08
+    - wget
+
+test:
+  commands:
+    - v-annotate.pl -h
+    - v-build.pl -h
+    - installed-vadr-models.sh
+
+about:
+  home: https://github.com/ncbi/vadr
+  license: Public Domain
+  license_file: LICENSE
+  summary: Viral Annotation DefineR - classification and annotation of viral sequences based on RefSeq annotation
+
+extra:
+  recipe-maintainers:
+    - rpetit3
