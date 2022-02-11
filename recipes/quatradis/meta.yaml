@@ -1,0 +1,53 @@
+{% set version="0.3.4" %}
+
+package:
+  name: quatradis
+  version: {{ version }}
+
+source:
+  url: https://github.com/quadram-institute-bioscience/QuaTradis/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 6f796a8b08d950642623da72ac140cdf34cc0e6d9461a51b57570aa3ce9fb6ff
+
+build:
+  number: 0
+  skip: True  # [py<30]
+  script: python -m pip install --ignore-installed .
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - python
+    - cython
+    - pip
+  run:
+    - smalt
+    - r-base
+    - r-getopt
+    - r-mass
+    - bwa
+    - minimap2
+    - nextflow
+
+test:
+  commands:
+    - tradis --help 2>&1 | grep tradis > /dev/null
+
+about:
+  home: https://github.com/quadram-institute-bioscience/QuaTradis
+  license: 'GNU General Public License v3 (GPLv3)'
+  license_family: GPL3
+  license_file: LICENSE
+  summary: 'A set of tools to analyse the output from TraDIS analyses'
+
+extra:
+  skip-lints:
+    # Uses pyximport
+    - cython_must_be_in_host
+  recipe-maintainers:
+    - sbastkowski
+    - maplesond
+    - thanhleviet
+  doi:
+    - 10.1093/bioinformatics/btw022
