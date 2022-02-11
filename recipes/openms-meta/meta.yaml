@@ -57,17 +57,16 @@ outputs:
     version: {{ version }}
     script: package_libopenms.sh
     requirements:
-        # build requirements should be loaded from the meta package already.
+        # no actual build is done. CMake is used to install different parts of the existing build
         # But since the other packages depend on its run_exports
         # We want to make sure that the versions of the dependencies used are the same as above
         build:
+          - cmake
 #         - {{ compiler('cxx') }}
-#          - cmake
-#          - make
-#          - autoconf
-#          - automake
+#         - make
+#         - autoconf
+#         - automake
         host:
-          # openms-general
           - llvm-openmp # [osx]
           - zlib >=1.2
           - libtool
@@ -101,14 +100,14 @@ outputs:
     version: {{ version }}
     script: package_openms-tools.sh
     requirements:
-      # TODO not sure if build/host reqs are needed since the tools are only packaged here
-#      build:
-#        - {{ compiler('cxx') }}
+      # no actual build is done. CMake is used to install different parts of the existing build
+      build:
+        - cmake
+#       - {{ compiler('cxx') }}
       host:
         - {{ pin_subpackage('libopenms', exact=True) }}
       # conda apparently does not support run_exports in subpackages yet. https://github.com/conda/conda-build/issues/3478
-      # so specify everything again, such that EXACTLY the same versions are used! Current problem is boost.
-      # In the meta build it uses e.g. 1.72 but the tests for the tools suddenly choose 1.70
+      # so specify everything again, such that EXACTLY the same versions are used!
       # I could not get the "resolved_packages" jinja function to gather dependencies from other subpackages.
         - llvm-openmp # [osx]
         - zlib >=1.2
