@@ -1,7 +1,8 @@
 #!/bin/bash
 export C_INCLUDE_PATH=$PREFIX/include
 target=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-version=103
+# Strip .X subversion from vep package version to get plugins version
+version=${PKG_VERSION%%.*}
 mkdir -p $target
 mkdir -p $PREFIX/bin
 

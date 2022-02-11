@@ -1,5 +1,7 @@
 #!/bin/bash
-cp -r ${SRC_DIR}/R ${SRC_DIR}/inst ${PREFIX}
+cp -r ${SRC_DIR}/R ${PREFIX}
+mkdir -p ${PREFIX}/inst
+wget -O ${PREFIX}/inst/launcher.R https://raw.githubusercontent.com/BrainAndSpineInstitute/rgcca_ui/master/inst/launcher.R
 if [[ $target_platform =~ linux.* ]] || [[ $target_platform == win-32 ]]; then
   $R CMD INSTALL --build .
 else

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="yeastNagalakshmi_1.26.0.tar.gz"
+FN="yeastNagalakshmi_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/yeastNagalakshmi_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/yeastNagalakshmi_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-yeastnagalakshmi/bioconductor-yeastnagalakshmi_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/yeastNagalakshmi_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/yeastNagalakshmi_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yeastnagalakshmi/bioconductor-yeastnagalakshmi_1.30.0_src_all.tar.gz"
 )
-MD5="8bbfff7430c654e9546aecaa4b3b0e9f"
+MD5="fe0a8fcfa22e87d6b4521a28c545ae5f"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

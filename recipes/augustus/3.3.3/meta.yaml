@@ -1,0 +1,182 @@
+{% set version = "3.3.3" %}
+{% set sha256 = "2fc5f9fd2f0c3bba2924df42ffaf55b5c130228cea18efdb3b6dfab9efa8c9f4" %}
+
+package:
+  name: augustus
+  version: {{ version }}
+
+source:
+  url: https://github.com/Gaius-Augustus/Augustus/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - patches/bam2hints.makefile.patch
+    - patches/bam2wig.makefile.patch
+    - patches/compileSpliceCands.makefile.patch
+    - patches/filterBam.makefile.patch
+    - patches/filterBam.src.makefile.patch  # [linux]
+    - patches/filterBam.src.makefile.patch.osx  # [osx]
+    - patches/homGeneMapping.src.makefile.patch
+    - patches/joingenes.makefile.patch
+    - patches/utrrnaseq.src.patch
+    - patches/utrrnaseq.patch
+    - patches/src.makefile.patch
+
+build:
+  skip: true  # [osx]
+  number: 7
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - zlib
+    - samtools ==0.1.19
+    - bamtools
+    - htslib
+    - gsl
+    - lp_solve
+    - boost-cpp
+    - sqlite
+    - suitesparse
+    - libblas
+    - libcblas
+    - perl
+    - perl-module-build
+  run:
+    - zlib
+    - boost-cpp
+    - gsl
+    - lp_solve
+    - biopython <=1.77
+    - perl
+    - perl-app-cpanminus
+    - perl-module-build
+    - perl-yaml
+    - perl-dbi
+    - perl-scalar-list-utils
+    - perl-file-which
+    - perl-parallel-forkmanager
+    - sqlite
+    - suitesparse
+    - cdbtools
+    - diamond
+    # Needed by bamToWig.py
+    - ucsc-fatotwobit
+    - ucsc-twobitinfo
+    - bamtools
+
+test:
+  commands:
+    - augustus --version
+    - aa2nonred.pl --help 2>&1 | grep "aa2nonred.pl" > /dev/null
+    - autoAug.pl --help
+    - autoAugPred.pl --help
+    - autoAugTrain.pl --help 2>&1 | grep "autoAugTrain.pl" > /dev/null
+    - bam2hints --help
+    - bam2wig 2>&1 | grep "bam2wig" > /dev/null
+    - bedgraph2wig.pl
+    - blat2gbrowse.pl --help 2>&1 | grep "blat2gbrowse.pl" > /dev/null
+    - blat2hints.pl
+    - cegma2gff.pl 2>&1 | grep "cegma2gff.pl" > /dev/null
+    - checkParamArchive.pl
+    - cleanDOSfasta.pl
+    - clusterAndSplitGenes.pl --help
+    - compileSpliceCands 2>&1 | grep "compileSpliceCands" > /dev/null
+    - computeFlankingRegion.pl 2>&1 | grep "computeFlankingRegion.pl" > /dev/null
+    - createAugustusJoblist.pl
+    - del_from_prfl.pl --help 2>&1 | grep "del_from_prfl.pl" > /dev/null
+    - evalCGP.pl
+    - eval_dualdecomp.pl --help
+    - eval_multi_gtf.pl --help 2>&1 | grep "eval_multi_gtf.pl" > /dev/null
+    - exonerate2hints.pl
+    - filterBam --help 2>&1 | grep "filterBam" > /dev/null
+    - filterGenesIn_mRNAname.pl
+    - filterGenesIn.pl
+    - filterGenesOut_mRNAname.pl
+    - filterGenes.pl
+    - filterInFrameStopCodons.pl
+    - filterMaf.pl --help 2>&1 | grep "filterMaf.pl" > /dev/null
+    - filterPSL.pl --help
+    - filterShrimp.pl --help
+    - filterSpliceHints.pl
+    - findGffNamesInFasta.pl --help 2>&1 | grep "file" > /dev/null
+    - gbrowseold2gff3.pl --help 2>&1 | grep "gbrowseold2gff3.pl" > /dev/null
+    - gbSmallDNA2gff.pl 2>&1 | grep "gbSmallDNA2gff.pl" > /dev/null
+    - getAnnoFasta.pl
+    - getLinesMatching.pl 2>&1 | grep "getLinesMatching.pl" > /dev/null
+    - gff2gbSmallDNA.pl 2>&1 | grep "gff2gbSmallDNA.pl" > /dev/null
+    - gffGetmRNA.pl
+    - gp2othergp.pl --help 2>&1 | grep "gp2othergp.pl" > /dev/null
+    - gtf2aa.pl 2>&1 | grep "gtf2aa.pl" > /dev/null
+    - gtf2bed.pl --help 2>&1 | grep "gtf2bed.pl" > /dev/null
+    - gtf2gff.pl --help 2>&1 | grep "gtf2gff.pl" > /dev/null
+    - gth2gtf.pl 2>&1 | grep "gth2gtf.pl" > /dev/null
+    - hal2maf_split.pl --help 2>&1 | grep "hal2maf_split.pl" > /dev/null
+    - homGeneMapping --help 2>&1 | grep "homGeneMapping" > /dev/null
+    - intron2exex.pl --help 2>&1 | grep "intron2exex.pl" > /dev/null
+    - join_mult_hints.pl --help 2>&1 | grep "join_mult_hints.pl" > /dev/null
+    - joingenes --help 2>&1 | grep "joingenes" > /dev/null
+    - joinPeptides.pl 2>&1 | grep "joinPeptides.pl" > /dev/null
+    - maf2conswig.pl --help 2>&1 | grep "maf2conswig.pl" > /dev/null
+    - makeMatchLists.pl --help 2>&1 | grep "help" > /dev/null
+    - makeUtrTrainingSet.pl 2>&1 | grep "makeUtrTrainingSet.pl" > /dev/null
+    - maskNregions.pl
+    - moveParameters.pl
+    - msa2prfl.pl --help
+    - new_species.pl
+    - optimize_augustus.pl
+    - opt_init_and_term_probs.pl 2>&1 | grep "open" > /dev/null
+    - parseSim4Output.pl 2>&1 | grep "parseSim4Output.pl" > /dev/null
+    - partition_gtf2gb.pl --help 2>&1 | grep "parition_gtf2gb.pl" > /dev/null
+    - pasapolyA2hints.pl 2>&1 | grep "pasapolyA2hints.pl" > /dev/null
+    - peptides2alternatives.pl 2>&1 | grep "peptides2alternatives.pl" > /dev/null
+    - peptides2hints.pl 2>&1 | grep "peptides2hints.pl" > /dev/null
+    - polyA2hints.pl
+    - pslMap.pl 2>&1 | grep "pslMap.pl" > /dev/null
+    - randomSplit.pl
+    - ratewig.pl
+    - rmRedundantHints.pl 2>&1 | grep "rmRedundantHints.pl" > /dev/null
+    - runAllSim4.pl --help 2>&1 | grep "runAllSim4.pl" > /dev/null
+    - samMap.pl
+    - scipiogff2gff.pl 2>&1 | grep "scipiogff2gff.pl" > /dev/null
+    - setStopCodonFreqs.pl 2>&1 | grep "setStopCodonFreqs.pl" > /dev/null
+    - simpleFastaHeaders.pl 2>&1 | grep "simpleFastaHeaders.pl" > /dev/null
+    - simplifyFastaHeaders.pl 2>&1 | grep "simplifyFastaHeaders.pl" > /dev/null
+    - splitMfasta.pl
+    - split_wiggle.pl
+    - summarizeACGTcontent.pl 2>&1 | grep "summarizeACGTcontent.pl" > /dev/null
+    - transMap2hints.pl
+    - uniquePeptides.pl 2>&1 | grep "uniquePeptides.pl" > /dev/null
+    - utrgff2gbrowse.pl --help 2>&1 | grep "utrgff2gbrowse.pl" > /dev/null
+    - utrrnaseq --help
+    - weedMaf.pl --help 2>&1 | grep "weedMaf.pl" > /dev/null
+    - wigchoose.pl --help
+    - writeResultsPage.pl
+    - yaml2gff.1.4.pl --help 2>&1 | grep "yaml2gff.pl" > /dev/null
+    - getAnnoFastaFromJoingenes.py --help
+    - bamToWig.py --help | grep -Fq 'bamToWig.py'
+    - compare_masking.pl --help | grep -Fq 'compare_masking'
+    - merge_masking.pl --help | grep -Fq 'merge_masking.pl'
+    - fix_in_frame_stop_codon_genes.py --help | grep -Fq 'fix_in_frame_stop_codon_genes.py'
+
+about:
+  home: http://bioinf.uni-greifswald.de/augustus/
+  license: Artistic Licence
+  license_family: Other
+  license_file: "src/LICENSE.TXT"
+  summary: 'AUGUSTUS is a gene prediction program for eukaryotes written by Mario
+    Stanke and Oliver Keller. It can be used as an ab initio program, which means
+    it bases its prediction purely on the sequence. AUGUSTUS may also incorporate
+    hints on the gene structure coming from extrinsic sources such as EST, MS/MS,
+    protein alignments and synthenic genomic alignments.'
+
+extra:
+  identifiers:
+    - biotools:augustus
+    - doi:10.1093/bioinformatics/btr010
+    - usegalaxy-eu:augustus
+  notes: "Builds with sqlite support are currently only available on Linux due to compile issues with macOS."
+  skip-lints:
+    - should_not_be_noarch_source

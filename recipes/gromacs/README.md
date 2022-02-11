@@ -1,8 +1,20 @@
 GROMACS versions are released in series, so we maintain one
 recipe folder for each major version.
 
-Be careful with the CI build time if updating multiple 
-recipes, a single build takes about 1h12.
+Do not update more than 1 recipe at a time.  To build GROMACS for a single SIMD
+takes approximatly 25 minutes.  3 SIMD types built for both nompi and OpenMPI
+results in a build of 2hr30 minutes for Linux and 2hrs for OSX.  This pushes close
+to the maximum allowed build time.
+
+
+# Notes for future releases
+
+- GROMACS 2021.1: This version of GROMACS has a fault and has to be patched manually.
+This patch will need to be removed for future versions.
+
+- AVX512: This was removed from the SIMD list as it is not widly used on laptops and
+desktops currently.  It should be added back in the future, but another SIMD type
+will need to be removed to keep the build time down.
 
 From https://manual.gromacs.org/documentation/2021.1/release-notes/index.html
 
