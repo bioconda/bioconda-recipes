@@ -6,15 +6,11 @@ mkdir -p $PREFIX/etc/conda/activate.d/ $PREFIX/etc/conda/deactivate.d/
 cp $RECIPE_DIR/activate.sh $PREFIX/etc/conda/activate.d/libopenms.sh
 cp $RECIPE_DIR/deactivate.sh $PREFIX/etc/conda/deactivate.d/libopenms.sh
 
-mkdir -p $PREFIX/lib
-cp -R build/lib/* $PREFIX/lib/
-# Copy share, excluding examples
-mkdir -p $PREFIX/share/OpenMS/examples
-shopt -s extglob
-cp -R share/OpenMS/!(examples) $PREFIX/share/OpenMS
-# Copy the default models from the examples/simulation folder.
-# TODO move models and remove this exception in later OpenMS releases
-cp -R share/OpenMS/examples/simulation $PREFIX/share/OpenMS/examples/
-mkdir -p $PREFIX/include
-cp -R build/src/openms/include/* $PREFIX/include/
-cp -R build/src/openswathalgo/include/* $PREFIX/include/
+cmake -DCOMPONENT="library" -P build/cmake_install.cmake
+cmake -DCOMPONENT="OpenMS_headers" -P build/cmake_install.cmake
+cmake -DCOMPONENT="OpenSwathAlgo_headers" -P build/cmake_install.cmake
+cmake -DCOMPONENT="thirdparty_headers" -P build/cmake_install.cmake
+cmake -DCOMPONENT="share" -P build/cmake_install.cmake
+cmake -DCOMPONENT="cmake" -P build/cmake_install.cmake
+
+
