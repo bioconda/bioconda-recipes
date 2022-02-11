@@ -1,1 +1,1 @@
-$R CMD INSTALL --build ./Source
+$R CMD INSTALL --build .
