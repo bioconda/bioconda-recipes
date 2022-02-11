@@ -1,11 +1,15 @@
 #!/bin/bash
-if [ -f Build.PL ]; then
+
+set -o errexit -o pipefail
+
+# If it has Build.PL use that, otherwise use Makefile.PL
+if [[ -f Build.PL ]]; then
     perl Build.PL
     perl ./Build
     perl ./Build test
     # Make sure this goes in site
     perl ./Build install --installdirs site
-elif [ -f Makefile.PL ]; then
+elif [[ -f Makefile.PL ]]; then
     # Make sure this goes in site
     perl Makefile.PL INSTALLDIRS=site
     make
@@ -16,6 +20,8 @@ else
     exit 1
 fi
 
-chmod +x $PREFIX/bin/dbiproxy
-chmod +x $PREFIX/bin/dbilogstrip
-chmod +x $PREFIX/bin/dbiprof
+# Add more build steps here, if they are necessary.
+
+# See
+# https://docs.conda.io/projects/conda-build
+# for a list of environment variables that are set during the build process.
