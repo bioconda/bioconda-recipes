@@ -1,29 +1,39 @@
 {% set version = "0.1.5" %}
-{% set system = "Linux"%}  # [x86_64 and linux]
 {% set system = "Mac"%}  # [x86_64 and osx]
-{% set sha256 = "bd06d62ef83438588f086c8e8c9e8fc44960a3560153d32a2a65ce0240343659" %} # [x86_64 and linux]
-{% set sha256 = "ccbddd6d4be5b8bd1a80bcd4cb4e29538eb168ee2a018cd44dc7d444e03ff50a" %} # [x86_64 and osx]
+{% set sha256 = "3545e2af48da510313d1c4c84cf4c6d9ff08c7500113f0f8dd9abf1ad3d2beaa" %} # [x86_64 and osx]
+
+{% set sha256 = "a9c9f2d26fce2489d5f63455e2d54570532b98aa3752e1c0417d60eff7698dfe" %} # [x86_64 and linux]
 
 package:
   name: pcaone
   version: '{{ version }}'
 
 source:
-  url: https://github.com/Zilong-Li/PCAone/releases/download/v{{ version }}/PCAone-v{{ version }}_x64-{{ system }}-iomp5.zip
+  url: https://github.com/Zilong-Li/PCAone/archive/refs/tags/v{{ version }}.tar.gz # [x86_64 and linux]
+  url: https://github.com/Zilong-Li/PCAone/releases/download/v{{ version }}/PCAone-v{{ version }}_x64-Mac.zip # [x86_64 and osx]
   sha256: '{{ sha256 }}'
 
 build:
   number: 0
-  noarch: generic
+  skip: true # [osx]
 
 requirements:
   build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
 
   host:
     - mkl
+    - mkl-include
+    - zlib
+    - zstd
 
   run:
     - mkl
+    - mkl-include
+    - zlib
+    - zstd
 
 test:
   commands:

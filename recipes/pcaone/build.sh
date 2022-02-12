@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
 mkdir -p ${PREFIX}/bin
-cp PCAone ${PREFIX}/bin
-
-# Set up build environment
-export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"
 # on mac, add conda lib to @rpath
 if [ "$(uname)" == "Darwin" ]; then
-    install_name_tool -add_rpath ${PREFIX}/lib ${PREFIX}/bin/PCAone
+    cp PCAone ${PREFIX}/bin
+    # install_name_tool -add_rpath ${PREFIX}/lib ${PREFIX}/bin/PCAone
+else 
+# Set up build environment
+# export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"
+    awk -v dir=${PREFIX}/lib 'NR==7 {$0=dir}; 1' Makefile > linux.makefile && make -f linux.makefile && cp PCAone ${PREFIX}/bin
 fi
 
 # put runtime lib into user's env
