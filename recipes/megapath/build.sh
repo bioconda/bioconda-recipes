@@ -11,7 +11,7 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 make CC=$CXX CXX=${CXX} CXXFLAGS="${CXXFLAGS} -L${PREFIX}/lib -std=c++11 -g -O2 -Wall -std=c++0x -fopenmp -lz" LDFLAGS="${LDFLAGS}" -C $PREFIX/MegaPath/cc/ 
 make CC=$CXX CXX=${CXX} -C $PREFIX/MegaPath/soap4/2bwt-lib/ 
-make CC=$CXX CXX=${CXX} -C $PREFIX/MegaPath/soap4/ 
+make CC=$CXX CXX=${CXX} LDFLAGS="${LDFLAGS}" -C $PREFIX/MegaPath/soap4/ 
 #make CC=$CXX CXX=${CXX} LDFLAGS="${LDFLAGS}" CXXFLAGS="${CXXFLAGS} -L${PREFIX}/lib -w -O3 -funroll-loops -march=native -maccumulate-outgoing-args -Wno-unused-result -static-libgcc -mavx -fopenmp -std=c++0x -fomit-frame-pointer" -C $PREFIX/MegaPath/soap4/ 
 
 cd $PREFIX/MegaPath/scripts/realignment/realign/
