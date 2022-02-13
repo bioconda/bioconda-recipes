@@ -14,6 +14,6 @@ WORK_DIR="build_spades"
 mkdir -p $WORK_DIR
 
 cd "$WORK_DIR"
-cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$PREFIX" -DSPADES_BUILD_INTERNAL=OFF ../src
+$BUILD_PREFIX/bin/cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$PREFIX" -DSPADES_BUILD_INTERNAL=OFF ../src
 make -j 4
 make install
