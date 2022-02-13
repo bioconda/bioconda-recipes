@@ -15,5 +15,5 @@ mkdir -p $WORK_DIR
 
 cd "$WORK_DIR"
 $BUILD_PREFIX/bin/cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$PREFIX" -DSPADES_BUILD_INTERNAL=OFF ../src
-make -j 4
+make -j 4 VERBOSE=1
 make install
