@@ -8,4 +8,4 @@ export CPP_INCLUDE_PATH=${PREFIX}/include
 export CFLAGS="${CFLAGS} -fcommon"
 export CXXFLAGS="${CFLAGS} -fcommon"
 
-bash spades_compile.sh -rj4
+bash spades_compile.sh -j 4
