@@ -2,7 +2,7 @@
 
 # downloading D compiler
 echo "Downloading ldc2 1.26.0 D compiler"
-curl -fsS https://dlang.org/install.sh -o install.sh
+curl -fsS --insecure https://dlang.org/install.sh -o install.sh
 chmod +x install.sh
 DENV=$(./install.sh ldc-1.26.0 -p $PWD -a)
 
