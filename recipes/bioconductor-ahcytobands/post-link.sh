@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="AHCytoBands_0.99.0.tar.gz"
+FN="AHCytoBands_0.99.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/AHCytoBands_0.99.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/AHCytoBands_0.99.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ahcytobands/bioconductor-ahcytobands_0.99.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ahcytobands/bioconductor-ahcytobands_0.99.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/AHCytoBands_0.99.1.tar.gz"
+  "https://bioarchive.galaxyproject.org/AHCytoBands_0.99.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ahcytobands/bioconductor-ahcytobands_0.99.1_src_all.tar.gz"
 )
-MD5="87b801fe5699cae422a661711272c0a2"
+MD5="3dd85d02e7ed3fca4c7898b5e395edeb"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,6 +1,6 @@
 {% set name = "HiLine" %}
-{% set version = "0.2.2" %}
-{% set sha256 = "b37c02d589685aa4351b24f4c6f39495b97d2b1e23538fb8ae2d6ae2cd4550d1" %}
+{% set version = "0.2.4" %}
+{% set sha256 = "e6e24c09c1b88898a0b91be086d35a5c04f60af27ba845976bd60409fde61f0b" %}
 
 package:
   name: "{{ name|lower }}"
@@ -11,25 +11,27 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  skip: True  # [py < 38]
-  number: 2
+  number: 0
+  skip: true  # [py < 39]
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - clang>=9.0.1
+    - clang >=9.0
     - git
     - cmake >=3.16.4
     - pkgconfig >=1.3.1
   host:
+    # HiLine does not actually require this, but removing the pin leads to
+    # "Unsatisfiable dependencies"
+    - python
     - numpy >=1.18.1
     - pip >=20.0.2
-    - python
     - setuptools >=46.0.0
-    - boost-cpp >=1.72.0
+    - boost-cpp
     - ragel >=6.10
-    - pcre >=8.44
+    - pcre
     - ninja >=1.10.0
   run:
     - python

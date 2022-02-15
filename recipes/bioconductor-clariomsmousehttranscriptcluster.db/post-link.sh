@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="clariomsmousehttranscriptcluster.db_8.7.0.tar.gz"
+FN="clariomsmousehttranscriptcluster.db_8.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/clariomsmousehttranscriptcluster.db_8.7.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/clariomsmousehttranscriptcluster.db_8.7.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-clariomsmousehttranscriptcluster.db/bioconductor-clariomsmousehttranscriptcluster.db_8.7.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-clariomsmousehttranscriptcluster.db/bioconductor-clariomsmousehttranscriptcluster.db_8.7.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/clariomsmousehttranscriptcluster.db_8.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/clariomsmousehttranscriptcluster.db_8.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-clariomsmousehttranscriptcluster.db/bioconductor-clariomsmousehttranscriptcluster.db_8.8.0_src_all.tar.gz"
 )
-MD5="ba6fdb1816669b4ffb2707a0fe89ef59"
+MD5="c0aa96cbd5ee7e19296dde5a72232d17"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

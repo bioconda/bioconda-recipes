@@ -1,4 +1,6 @@
-{% set version = '1.8-3.4' %}
+{% set version = '1.8-6.7' %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-grbase
@@ -8,37 +10,48 @@ source:
   url:
     - {{ cran_mirror }}/src/contrib/gRbase_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/gRbase/gRbase_{{ version }}.tar.gz
-  sha256: d35f94c2fb7cbd4ce3991570424dfe6723a849658da32e13df29f53b6ea2cc2c
+  sha256: aaafc7e1b521de60e1a57c0175ac64d4283850c3273bd14774cf24dabc743388
 
 build:
-  number: 5
+  merge_build_host: True  # [win]
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('m2w64_c') }}        # [win]
+    - {{ compiler('cxx') }}            # [not win]
+    - {{ compiler('m2w64_cxx') }}      # [win]
+    - {{ posix }}filesystem        # [win]
+    - {{ posix }}make
+    - {{ posix }}sed               # [win]
+    - {{ posix }}coreutils         # [win]
+    - {{ posix }}zip               # [win]
   host:
-    - libblas
     - r-base
     - r-matrix
     - bioconductor-rbgl
     - r-rcpp >=0.11.1
     - r-rcpparmadillo
     - r-rcppeigen
+    - bioconductor-rgraphviz
     - bioconductor-graph
     - r-igraph
     - r-magrittr
+    - libblas
+    - liblapack
   run:
     - r-base
+    - {{ native }}gcc-libs         # [win]
     - r-matrix
     - bioconductor-rbgl
     - r-rcpp >=0.11.1
     - r-rcpparmadillo
     - r-rcppeigen
+    - bioconductor-rgraphviz
     - bioconductor-graph
     - r-igraph
     - r-magrittr
@@ -50,23 +63,40 @@ test:
 
 about:
   home: http://people.math.aau.dk/~sorenh/software/gR/
-  license: GPL (>= 2)
-  summary: 'The ''gRbase'' package provides general features which are used by other graphical
-    modelling packages, in particular by the packages ''gRain'', ''gRim'' and ''gRc''.
-    ''gRbase'' contains several data sets relevant for use in connection with graphical
-    models. Almost all data sets used in the book Graphical Models with R (2012) are
-    contained in ''gRbase''. ''gRbase'' implements several graph algorithms (based mainly
-    on representing graphs as adjacency matrices - either in the form of a standard
-    matrix or a sparse matrix). Some graph algorithms are: (i) maximum cardinality search
-    (for marked and unmarked graphs). (ii) moralize. (iii) triangulate. (iv) junction
-    tree. ''gRbase'' facilitates array operations, ''gRbase'' implements functions for
-    testing for conditional independence. ''gRbase'' illustrates how hierarchical log-linear
-    models may be implemented and describes concept of graphical meta data. These features,
-    however, are not maintained anymore and remains in ''gRbase'' only because there
-    exists a paper describing these facilities: A Common Platform for Graphical Models
-    in R: The ''gRbase'' Package, Journal of Statistical Software, Vol 14, No 17, 2005.
-    NOTICE Proper functionality of ''gRbase'' requires that the packages graph, ''Rgraphviz''
-    and ''RBGL'' are installed from ''bioconductor''; for installation instructions
-    please refer to the web page given below.'
-  license_family: GPL3
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  license: GPL-2.0-or-later
+  summary: "The 'gRbase' package provides graphical modelling features used by e.g. the packages
+    'gRain', 'gRim' and 'gRc'. 'gRbase' implements graph algorithms including (i) maximum
+    cardinality search (for marked and unmarked graphs). (ii) moralization, (iii) triangulation,
+    (iv) creation of junction tree. 'gRbase' facilitates array operations, 'gRbase'
+    implements functions for testing for conditional independence. 'gRbase' illustrates
+    how hierarchical log-linear models may be implemented and describes concept of graphical
+    meta data. The facilities of the package are documented in the book by H\xF8jsgaard,
+    Edwards and Lauritzen (2012, <doi:10.1007/978-1-4614-2299-0>) and in the paper by
+    Dethlefsen and H\xF8jsgaard, (2005, <doi:10.18637/jss.v014.i17>). Please see 'citation(\"gRbase\")'
+    for citation details. NOTICE  'gRbase' requires that the packages graph, 'Rgraphviz'
+    and 'RBGL' are installed from 'bioconductor'; for installation instructions please
+    refer to the web page given below."
+  license_family: GPL2
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
+# Package: gRbase
+# Version: 1.8-6.7
+# Title: A Package for Graphical Modelling in R
+# Author: Sren Hjsgaard <sorenh@math.aau.dk>
+# Maintainer: Sren Hjsgaard <sorenh@math.aau.dk>
+# Description: The 'gRbase' package provides graphical modelling features used by e.g. the packages 'gRain', 'gRim' and 'gRc'. 'gRbase' implements graph algorithms including (i) maximum cardinality search (for marked and unmarked graphs). (ii) moralization, (iii) triangulation, (iv) creation of junction tree. 'gRbase' facilitates array operations, 'gRbase' implements functions for testing for conditional independence. 'gRbase' illustrates how hierarchical log-linear models may be implemented and describes concept of graphical meta data. The facilities of the package are documented in the book by Hjsgaard, Edwards and Lauritzen (2012, <doi:10.1007/978-1-4614-2299-0>) and in the paper by Dethlefsen and Hjsgaard, (2005, <doi:10.18637/jss.v014.i17>). Please see 'citation("gRbase")' for citation details. NOTICE  'gRbase' requires that the packages graph, 'Rgraphviz' and 'RBGL' are installed from 'bioconductor'; for installation instructions please refer to the web page given below.
+# License: GPL (>= 2)
+# URL: http://people.math.aau.dk/~sorenh/software/gR/
+# ByteCompile: Yes
+# Encoding: UTF-8
+# VignetteBuilder: knitr
+# Depends: R (>= 3.6.0), methods
+# Imports: graph, Rgraphviz, RBGL, stats4, igraph, magrittr, Matrix, Rcpp (>= 0.11.1)
+# Suggests: testthat (>= 2.1.0), microbenchmark, knitr
+# LinkingTo: Rcpp (>= 0.11.1), RcppEigen, RcppArmadillo
+# RoxygenNote: 7.1.1
+# NeedsCompilation: yes
+# Packaged: 2020-07-03 05:18:45 UTC; sorenh
+# Repository: CRAN
+# Date/Publication: 2020-07-03 16:50:08 UTC

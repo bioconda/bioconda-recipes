@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="Single.mTEC.Transcriptomes_1.18.0.tar.gz"
+FN="Single.mTEC.Transcriptomes_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/Single.mTEC.Transcriptomes_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/Single.mTEC.Transcriptomes_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-single.mtec.transcriptomes/bioconductor-single.mtec.transcriptomes_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/Single.mTEC.Transcriptomes_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/Single.mTEC.Transcriptomes_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-single.mtec.transcriptomes/bioconductor-single.mtec.transcriptomes_1.22.0_src_all.tar.gz"
 )
-MD5="dc96320ac09f9b5816d9cb0a70419d9b"
+MD5="79dbd7a13a6d67b2e31008dffe81c871"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

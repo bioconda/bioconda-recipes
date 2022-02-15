@@ -7,19 +7,27 @@ package:
   version: "{{ version }}"
 
 source:
-  url: https://github.com/Gaius-Augustus/BRAKER/archive/v{{ version }}.tar.gz
+- url: https://github.com/Gaius-Augustus/BRAKER/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - path.patch
+    - braker.pl.patch
+- url: https://raw.githubusercontent.com/Gaius-Augustus/GUSHR/ee26d5c7eee97170c6183089d57477b338a7bc4b/gushr.py
+  sha256: 28f1faff34a75b0bea79510fddc8eddf2ba0d0aca18030c5af252364bf708eab
+  patches:
+    - gushr.py.patch
+- url: https://github.com/Gaius-Augustus/TSEBRA/archive/refs/tags/v1.0.1.tar.gz
+  sha256: afe4c008d964d3554e1e6804e8330cd392d4daa38f1aa0a2739c1e8fbd6278fc
+  folder: tsebra
 
 build:
-  number: 3
+  number: 5
   noarch: generic
 
 requirements:
   run:
     - python >=3.3
     - biopython
+    - gemoma ==1.6.4
     - perl
     - perl-app-cpanminus
     - perl-hash-merge
@@ -33,7 +41,6 @@ requirements:
     - perl-file-which
     - perl-file-spec
     - perl-list-moreutils
-    - perl-list-util
     - perl-logger-simple
     - perl-math-utils
     - perl-module-load-conditional
@@ -61,6 +68,9 @@ test:
     - filterIntronsFindStrand.pl
     - findGenesInIntrons.pl 2>&1 | grep "findGenesInIntrons.pl" > /dev/null
     - startAlign.pl
+    - "gushr.py -h | grep -q 'usage: gushr.py'"
+    - "fix_gtf_ids.py -h | grep -q usage:"
+    - "tsebra.py -h | grep -q usage:"
 
 about:
   home: https://github.com/Gaius-Augustus/BRAKER

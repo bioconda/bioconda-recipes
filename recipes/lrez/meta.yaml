@@ -1,36 +1,40 @@
-{% set name = "lrez" %}
-{% set version = "1.1" %}
-{% set sha256 = "5daac98361ff45f454e1d24ff33f259958d4c94bb627ee01a4beacd5b959db28" %}
+{% set version = "2.2.3" %}
+{% set sha256 = "2bb94618669fc690311c0a31a0d7579b21e452aadef73562126110558152816f" %}
 
 package:
   name: lrez
-  version: {{ version }} 
-
-build:
-  number: 1
+  version: {{ version }}
 
 source:
-  url: https://github.com/flegeai/LRez/archive/{{ version }}.tar.gz
+  url: https://github.com/morispi/LRez/releases/download/v{{ version }}/LRez.tar.gz
   sha256: {{ sha256 }}
+
+build:
+  number: 0
 
 requirements:
   build:
-    - make
     - {{ compiler('cxx') }}
     - cmake
+    - make
   host:
-    - htslib
+    - zlib
+    - boost-cpp
   run:
-    - htslib
-    - python>=3
-    - indexed_gzip
-    
+    - boost-cpp
+
 test:
   commands:
-    - idx_bx_sqlite3.py  -h
+    - LRez -h | grep "LRez"
 
 about:
-  home: https://github.com/flegeai/LRez
-  license: file
-  license_file: LICENSE
-  summary: LRez - tools for manipulating 10X fastq and bam files
+  home: https://github.com/morispi/LRez
+  license: AGPL-3.0-or-later AND MIT
+  license_file:
+    - LICENSE
+    - bamtools/LICENSE
+  summary: Standalone tool and library allowing to work with barcoded linked-reads
+
+extra:
+  recipe-maintainers:
+    - morispi

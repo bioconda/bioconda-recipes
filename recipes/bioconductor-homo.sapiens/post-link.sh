@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="Homo.sapiens_1.3.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/Homo.sapiens_1.3.1.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/Homo.sapiens_1.3.1.tar.gz"
   "https://bioarchive.galaxyproject.org/Homo.sapiens_1.3.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-homo.sapiens/bioconductor-homo.sapiens_1.3.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-homo.sapiens/bioconductor-homo.sapiens_1.3.1_src_all.tar.gz"
 )
 MD5="653b60cfcdaefd171729115cd629b585"

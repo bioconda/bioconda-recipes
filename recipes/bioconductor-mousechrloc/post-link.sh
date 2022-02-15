@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="mouseCHRLOC_2.1.6.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/mouseCHRLOC_2.1.6.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/mouseCHRLOC_2.1.6.tar.gz"
   "https://bioarchive.galaxyproject.org/mouseCHRLOC_2.1.6.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mousechrloc/bioconductor-mousechrloc_2.1.6_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mousechrloc/bioconductor-mousechrloc_2.1.6_src_all.tar.gz"
 )
 MD5="0b81d7391e628cc355af4de3c5585a5f"

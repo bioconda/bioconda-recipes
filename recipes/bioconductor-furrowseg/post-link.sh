@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="furrowSeg_1.18.0.tar.gz"
+FN="furrowSeg_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/furrowSeg_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/furrowSeg_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-furrowseg/bioconductor-furrowseg_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/furrowSeg_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/furrowSeg_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-furrowseg/bioconductor-furrowseg_1.22.0_src_all.tar.gz"
 )
-MD5="908a1933c02e1b4c0976366fb71a2657"
+MD5="492f8a2657384276a783955b090382b4"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
