@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -o errexit -o pipefail
+export DBDPG_TEMPDIR=/tmp
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
