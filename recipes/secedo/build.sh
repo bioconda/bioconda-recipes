@@ -11,5 +11,6 @@ cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} \
       -DCMAKE_INSTALL_INCLUDEDIR=${PREFIX}/include \
       -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib \
       -DZLIB_ROOT=$PREFIX \
+      -D_LIBCPP_DISABLE_AVAILABILITY \
       ..
 make install
