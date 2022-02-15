@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ -n "${MACOSX_DEPLOYMENT_TARGET}" ]; then
+     CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+fi
+
 sed -i.bak '14i\
 cmake_policy(SET CMP0042 NEW)' CMakeLists.txt
 export LD_LIBRARY_PATH=${PREFIX}/lib
@@ -11,6 +15,6 @@ cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} \
       -DCMAKE_INSTALL_INCLUDEDIR=${PREFIX}/include \
       -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib \
       -DZLIB_ROOT=$PREFIX \
-      -D_LIBCPP_DISABLE_AVAILABILITY \
+      ${EXTRA_PARAMS} \
       ..
 make install
