@@ -14,6 +14,11 @@ make -j 2
 make install
 
 cd ..
+
+# Patch automake update. remove for future release 
+sed '1 s/.*/AC_INIT([parsnp],[1.6.1])/' configure.ac
+sed '2 s/.*/AM_INIT_AUTOMAKE([-Wall])/' configure.ac
+
 ./autogen.sh
 ./configure --with-libmuscle=$PREFIX/include
 make LDADD="$LDADD -lMUSCLE-3.7"
