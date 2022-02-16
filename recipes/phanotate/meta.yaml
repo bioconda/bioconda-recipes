@@ -1,0 +1,50 @@
+{% set name = "phanotate" %}
+{% set version = "1.5.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "589e441d2369e5550aef98b8d99fd079d130363bf881a70ac862fc7a8e0d2c88"
+
+build:
+  number: 0
+  skip: True  # [py27]
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv "
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - pip
+    - python
+  run:
+    - fastpath
+    - matplotlib-base
+    - scipy
+    - seaborn
+    - statsmodels
+    - backports.tempfile
+    - textwrap3
+
+test:
+  commands:
+    - phanotate.py --version
+
+about:
+  home: "https://github.com/deprekate/PHANOTATE"
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Phanotate gene caller for phages"
+  doc_url: "https://github.com/deprekate/PHANOTATE/blob/master/README.md"
+  dev_url: "https://github.com/deprekate/PHANOTATE"
+
+extra:
+  recipe-maintainers:
+    - linsalrob
+    - deprekate
+  identifiers:
+    - doi:10.1093/bioinformatics

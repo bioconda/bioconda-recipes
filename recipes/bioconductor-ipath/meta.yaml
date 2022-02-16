@@ -1,0 +1,59 @@
+{% set version = "1.0.0" %}
+{% set name = "iPath" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 37c41c94b38416f47307f38e34d102ad
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: rmarkdown, BiocStyle, knitr
+# SystemRequirements: C++11
+requirements:
+  host:
+    - 'bioconductor-biocparallel >=1.28.0,<1.29.0'
+    - r-base
+    - r-ggplot2
+    - r-ggpubr
+    - r-matrixstats
+    - r-mclust
+    - 'r-rcpp >=1.0.5'
+    - r-rcpparmadillo
+    - r-survival
+    - r-survminer
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-biocparallel >=1.28.0,<1.29.0'
+    - r-base
+    - r-ggplot2
+    - r-ggpubr
+    - r-matrixstats
+    - r-mclust
+    - 'r-rcpp >=1.0.5'
+    - r-rcpparmadillo
+    - r-survival
+    - r-survminer
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'iPath pipeline for detecting perturbed pathways at individual level'
+  description: 'iPath is the Bioconductor package used for calculating personalized pathway score and test the association with survival outcomes. Abundant single-gene biomarkers have been identified and used in the clinics. However, hundreds of oncogenes or tumor-suppressor genes are involved during the process of tumorigenesis. We believe individual-level expression patterns of pre-defined pathways or gene sets are better biomarkers than single genes. In this study, we devised a computational method named iPath to identify prognostic biomarker pathways, one sample at a time. To test its utility, we conducted a pan-cancer analysis across 14 cancer types from The Cancer Genome Atlas and demonstrated that iPath is capable of identifying highly predictive biomarkers for clinical outcomes, including overall survival, tumor subtypes, and tumor stage classifications. We found that pathway-based biomarkers are more robust and effective than single genes.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+

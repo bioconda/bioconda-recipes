@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.x.tropicalis_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/pd.x.tropicalis_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.x.tropicalis_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.x.tropicalis_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.x.tropicalis/bioconductor-pd.x.tropicalis_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.x.tropicalis/bioconductor-pd.x.tropicalis_3.12.0_src_all.tar.gz"
 )
 MD5="79a4de91831e4b0153495e12b9c6e8d3"

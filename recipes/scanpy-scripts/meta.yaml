@@ -1,16 +1,22 @@
 {% set name = "scanpy-scripts" %}
-{% set version = "1.0.0" %}
+{% set version = "1.1.3" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: f0863e1c743dda5aee84d14ee787ce4c887e310c2e80196e33c87200e1551c71
+  - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 96eb39bedb5cd075509247d770cfd951e57f2834248bf1e6896c55e7fe2c524f
+    folder: scanpy-scripts
+  - url: https://pypi.io/packages/source/s/scanpy/scanpy-1.8.1.tar.gz 
+    sha256: 1b8603a868d783bd6c18c8db763a450153feefc8daed862c440749790d47c654
+    folder: scanpy
+    patches:
+      - scrublet.patch
 
 build:
-  number: 1
+  number: 0
   noarch: python
   entry_points:
     - scanpy-cli=scanpy_scripts.cli:cli
@@ -28,11 +34,19 @@ build:
     - scanpy-find-cluster=scanpy_scripts.cli:cluster
     - scanpy-find-markers=scanpy_scripts.cmds:DIFFEXP_CMD
     - scanpy-integrate=scanpy_scripts.cli:integrate
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+    - scanpy-multiplet=scanpy_scripts.cli:multiplet
+  script: 
+    - "{{ PYTHON }} -m pip install {{ SRC_DIR }}/scanpy --no-deps --ignore-installed -vv" 
+    - "{{ PYTHON }} -m pip install {{ SRC_DIR }}/scanpy-scripts --no-deps --ignore-installed -vv"
 
 requirements:
   host:
-    - python>=3.6
+    - python >=3.7
+    - pip
+    - flit-core
+    - setuptools_scm
+    - pytoml
+    - packaging
   run:
     - anndata
     - bbknn>=1.5.0
@@ -48,10 +62,11 @@ requirements:
     - packaging
     - pandas
     - python>=3.6
-    - scanpy>=1.8.0
+    - scanpy=1.8.1
+    - scikit-misc
     - scipy 
     - scrublet
-    - umap-learn<0.4.0
+    - umap-learn
 
 test:
   imports:
@@ -73,6 +88,7 @@ test:
     - scanpy-find-cluster --help
     - scanpy-find-markers --help
     - scanpy-integrate --help
+    - scanpy-multiplet --help
 
 about:
   home: https://github.com/ebi-gene-expression-group/scanpy-scripts

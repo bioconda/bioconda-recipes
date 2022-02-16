@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="XtraSNPlocs.Hsapiens.dbSNP144.GRCh38_0.99.12.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/XtraSNPlocs.Hsapiens.dbSNP144.GRCh38_0.99.12.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/XtraSNPlocs.Hsapiens.dbSNP144.GRCh38_0.99.12.tar.gz"
   "https://bioarchive.galaxyproject.org/XtraSNPlocs.Hsapiens.dbSNP144.GRCh38_0.99.12.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-xtrasnplocs.hsapiens.dbsnp144.grch38/bioconductor-xtrasnplocs.hsapiens.dbsnp144.grch38_0.99.12_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-xtrasnplocs.hsapiens.dbsnp144.grch38/bioconductor-xtrasnplocs.hsapiens.dbsnp144.grch38_0.99.12_src_all.tar.gz"
 )
 MD5="c617aa805c7ecf60ee9283eb3c51b1c7"
