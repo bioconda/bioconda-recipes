@@ -1,11 +1,16 @@
+SubModules="bfx kalign utillib ET"
 
 # Compile binaries and move them to lib.
-make "CC=$CC"
+if [[ "$CC" ]]; then
+  make "CC=$CC"
+else
+  make
+fi
 mkdir -p "$PREFIX/lib"
 mv *.so "$PREFIX/lib"
-while read name rest; do
-  mv "$name" "$PREFIX/lib/$name"
-done < submodules.txt
+for submodule in $SubModules; do
+  mv "$submodule" "$PREFIX/lib/$submodule"
+done
 
 # Move scripts to lib and link to them from bin.
 mkdir -p "$PREFIX/bin"
