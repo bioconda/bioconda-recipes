@@ -14,13 +14,14 @@ cp ${RECIPE_DIR}/update-serotypefinder-db.sh ${PREFIX}/bin/update-serotypefinder
 # very often (~7 commits in 5 years). 25ddd141d245db6382ca5876f7c7ddd0288aeb30 is the
 # latest commit as of 2021/07/22. A script is provided to allow users to update in the
 # event an update is made.
-mkdir database/
-git clone https://bitbucket.org/genomicepidemiology/serotypefinder_db.git database/
-cd database/
-git checkout 25ddd141d245db6382ca5876f7c7ddd0288aeb30
+curl https://bitbucket.org/genomicepidemiology/serotypefinder_db/get/25ddd141d245.zip > db.zip
+unzip db.zip
+rm db.zip
+mv genomicepidemiology-serotypefinder_db-25ddd141d245 database
+pushd database
 python3 INSTALL.py
 echo "25ddd141d245db6382ca5876f7c7ddd0288aeb30" > serotypefinder-db-commit.txt
-cd ..
+popd
 
 # Path for database
 outdir=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
