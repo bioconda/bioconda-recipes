@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ex
 
 export LDFLAGS="${LDFLAGS} -L$PREFIX/lib -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2"
 export INCLUDES="-I . -Ihtslib -I$PREFIX/include -Itabixpp -I\$(INC_DIR) -L."
