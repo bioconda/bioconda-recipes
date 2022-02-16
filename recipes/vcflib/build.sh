@@ -43,5 +43,5 @@ cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX 
 cmake --build . 
 cmake --install .
-cp -n ../scripts/* $PREFIX/bin
-cp -n -r ../src/simde $PREFIX/include/
+#cp -n ../scripts/* $PREFIX/bin
+#cp -n -r ../src/simde $PREFIX/include/
