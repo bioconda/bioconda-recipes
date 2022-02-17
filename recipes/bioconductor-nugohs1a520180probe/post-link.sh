@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="nugohs1a520180probe_3.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/nugohs1a520180probe_3.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/nugohs1a520180probe_3.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/nugohs1a520180probe_3.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-nugohs1a520180probe/bioconductor-nugohs1a520180probe_3.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-nugohs1a520180probe/bioconductor-nugohs1a520180probe_3.4.0_src_all.tar.gz"
 )
 MD5="6acf20ac4a799eaae97d0a64426d6ac3"

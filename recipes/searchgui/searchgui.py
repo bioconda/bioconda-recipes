@@ -10,7 +10,6 @@ import os
 import subprocess
 import sys
 import shutil
-import locale
 from os import access
 from os import getenv
 from os import X_OK
@@ -108,8 +107,6 @@ def main():
     """
     (mem_opts, prop_opts, pass_args, exec_dir) = jvm_opts(sys.argv[1:])
 
-    locale.setlocale(locale.LC_ALL, 'C')
-
     pass_args = def_temp_log_opts(pass_args)
 
     jar_dir = exec_dir if exec_dir else real_dirname(sys.argv[0])
@@ -123,8 +120,10 @@ def main():
 
     java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
 
-    sys.exit(subprocess.call(java_args))
+    new_env = dict( os.environ )
+    new_env['LC_ALL'] = 'C'
 
+    sys.exit(subprocess.call(java_args, env=new_env))
 
 if __name__ == '__main__':
     main()

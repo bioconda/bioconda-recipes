@@ -12,4 +12,29 @@ perl ./Build
 perl ./Build test 
 perl ./Build install --installdirs site
 
-chmod u+rwx $PREFIX/bin/*
+chmod +rx $PREFIX/bin/vcf-compare
+chmod +rx $PREFIX/bin/fill-an-ac
+chmod +rx $PREFIX/bin/vcf-to-tab
+chmod +rx $PREFIX/bin/fill-aa
+chmod +rx $PREFIX/bin/vcf-convert
+chmod +rx $PREFIX/bin/vcf-fix-newlines
+chmod +rx $PREFIX/bin/vcf-merge
+chmod +rx $PREFIX/bin/fill-ref-md5
+chmod +rx $PREFIX/bin/vcf-indel-stats
+chmod +rx $PREFIX/bin/vcf-fix-ploidy
+chmod +rx $PREFIX/bin/vcf-isec
+chmod +rx $PREFIX/bin/vcf-stats
+chmod +rx $PREFIX/bin/vcf-subset
+chmod +rx $PREFIX/bin/vcf-phased-join
+chmod +rx $PREFIX/bin/vcf-query
+chmod +rx $PREFIX/bin/vcf-consensus
+chmod +rx $PREFIX/bin/vcf-shuffle-cols
+chmod +rx $PREFIX/bin/vcf-validator
+chmod +rx $PREFIX/bin/vcf-contrast
+chmod +rx $PREFIX/bin/vcf-haplotypes
+chmod +rx $PREFIX/bin/vcf-tstv
+chmod +rx $PREFIX/bin/vcf-sort
+chmod +rx $PREFIX/bin/vcf-concat
+chmod +rx $PREFIX/bin/vcf-annotate
+chmod +rx $PREFIX/bin/tab-to-vcf
+chmod +rx $PREFIX/bin/fill-fs
