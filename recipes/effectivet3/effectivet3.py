@@ -95,7 +95,7 @@ def main():
 
     java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
 
-    sys.exit(subprocess.call(java_args))
+    sys.exit(subprocess.check_call(java_args))
 
 
 if __name__ == '__main__':
