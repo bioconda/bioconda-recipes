@@ -6,7 +6,6 @@ mkdir -p $outdir
 mkdir -p $outdir/module
 mkdir -p $PREFIX/bin
 cp -R * $outdir/
-ls $outdir
 cp $RECIPE_DIR/effectivet3.py $outdir/effectivet3
 ls -l $outdir
 ln -s $outdir/effectivet3 $PREFIX/bin
