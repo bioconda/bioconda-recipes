@@ -13,7 +13,7 @@ import shutil
 from os import access
 from os import getenv
 from os import X_OK
-jar_file = 'TTSS_GUI-1.0.1.jar'
+jar_file = 'TTSS_GUI_1.0.1_src_all.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
