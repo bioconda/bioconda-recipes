@@ -39,7 +39,11 @@ cpanm -l $PERLLIB MooseX::FollowPBP \
                     MIYAGAWA/Class-Trigger-0.15.tar.gz \
                     TMTM/Class-DBI-v3.0.17.tar.gz \
                     DETI/Proc/Proc-Daemon-0.14.tar.gz \
-                    Proc::ProcessTable
+                    Proc::ProcessTable \
+                    Bio::Phenotype::OMIM::OMIMparser \
+                    OWL::Simple::Parser \
+                    MeSH::Parser::ASCII \
+                    LWP::UserAgent::ProxyAny
 
 
 cpanm -l $PERLLIB --force Mail::Sendmail
