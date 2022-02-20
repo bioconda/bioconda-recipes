@@ -39,4 +39,4 @@ cmake ../src/pyOpenMS \
 # NO_DEPENDENCIES since conda takes over re-linking etc.
 
 make -j${CPU_COUNT} pyopenms
-$PYTHON -m pip install ./pyOpenMS/diet/*.whl --ignore-installed --no-deps
+$PYTHON -m pip install ./pyOpenMS/dist/*.whl --ignore-installed --no-deps
