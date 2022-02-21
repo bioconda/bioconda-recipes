@@ -18,4 +18,5 @@ else
     exit 1
 fi
 
-chmod u+rwx $PREFIX/bin/*
+chmod +rx $PREFIX/bin/stubmaker.pl
+chmod +rx $PREFIX/bin/SOAPsh.pl
