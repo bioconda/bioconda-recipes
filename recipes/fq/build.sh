@@ -2,10 +2,11 @@
 
 set -eu
 
-#if [ `uname` == Darwin ]; then
-#  export HOME=`mktemp -d`
-#fi
+if [ "$(uname)" == "Darwin" ]; then
+  export HOME=`mktemp -d`
+fi
 
 cargo build --release
 
 mv target/release/fq "${PREFIX}/bin"
+
