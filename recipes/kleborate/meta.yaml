@@ -1,5 +1,5 @@
 {% set name = "Kleborate" %}
-{% set version = "2.0.3" %}
+{% set version = "2.2.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,21 +7,24 @@ package:
 
 source:
   url: https://github.com/katholt/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 9515d8a7351360429b72effe6ed67eacdf4b3a470eaf11fb76ba44e0b8d27d0c
+  sha256: 436923c766137783b89ec569a15db2030812f20819253df8c8be6a622a49c7af
+  patches:
+    - fix_get_kaptive_path.patch
 
 build:
   noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 requirements:
   host:
     - python >=3.7
-    - biopython >=1.73
-    - pip
+    - biopython >=1.73,<1.78
+    - kaptive
+    - blast >=2.2.31
+    - mash
   run:
     - python >=3.7
-    - biopython >=1.73
+    - biopython >=1.73,<1.78
     - kaptive
     - blast >=2.2.31
     - mash
@@ -30,6 +33,7 @@ test:
   commands:
     - kaptive.py -h
     - kleborate -h
+    - kleborate -a $(which kleborate | sed 's=bin/kleborate=opt/kaptive_reference_database/exact_match.fasta=')
 
 about:
   home: https://github.com/katholt/Kleborate

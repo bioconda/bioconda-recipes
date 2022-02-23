@@ -1,6 +1,6 @@
-{% set version = "1.2.0" %}
+{% set version = "1.6.0" %}
 {% set name = "tscR" %}
-{% set bioc = "3.12" %}
+{% set bioc = "3.14" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,20 +10,20 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: ec418fc28b2c5cb98b666fe37cb64d88
+  md5: ca72cd69016b6d032962d477b8e30bbe
 build:
+  skip: true  # [osx]
   number: 0
-  skip: True  # [osx]
   rpaths:
     - lib/R/lib/
     - lib/
 # Suggests: testthat
 requirements:
   host:
-    - 'bioconductor-genomicranges >=1.42.0,<1.43.0'
-    - 'bioconductor-iranges >=2.24.0,<2.25.0'
-    - 'bioconductor-s4vectors >=0.28.0,<0.29.0'
-    - 'bioconductor-summarizedexperiment >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.46.0,<1.47.0'
+    - 'bioconductor-iranges >=2.28.0,<2.29.0'
+    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
     - r-base
     - r-class
     - r-cluster
@@ -40,10 +40,10 @@ requirements:
     - libblas
     - liblapack
   run:
-    - 'bioconductor-genomicranges >=1.42.0,<1.43.0'
-    - 'bioconductor-iranges >=2.24.0,<2.25.0'
-    - 'bioconductor-s4vectors >=0.28.0,<0.29.0'
-    - 'bioconductor-summarizedexperiment >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.46.0,<1.47.0'
+    - 'bioconductor-iranges >=2.28.0,<2.29.0'
+    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
     - r-base
     - r-class
     - r-cluster
@@ -60,15 +60,9 @@ requirements:
   build:
     - {{ compiler('c') }}
     - make
-    - {{ cdt('mesa-libgl-devel') }}  # [linux]
-    - {{ cdt('mesa-dri-drivers') }}  # [linux]
-    - {{ cdt('libselinux') }}  # [linux]
-    - {{ cdt('libxdamage') }}  # [linux]
-    - {{ cdt('libxxf86vm') }}  # [linux]
-    - xorg-libxfixes  # [linux]
 test:
   commands:
-    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library(''{{ name }}'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>=2)'

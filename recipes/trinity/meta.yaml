@@ -1,27 +1,30 @@
 {% set name = "Trinity" %}
-{% set version = "2.11.0" %}
-{% set sha256 = "230798b3c2eea7043098de3055a1fe150213929b0773e6d374fc0c7219c310c6" %}
+{% set version = "2.13.2" %}
+{% set sha256 = "7985e0ddb875ed9476f810c2b8e3b79c809d8ca0a5664754b8eb32e105020971" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
-source:
-  url: https://github.com/trinityrnaseq/trinityrnaseq/releases/download/v{{ version }}/trinityrnaseq-v{{ version }}.FULL.tar.gz
+source: 
+  url: https://github.com/trinityrnaseq/trinityrnaseq/releases/download/Trinity-v{{ version }}/trinityrnaseq-v{{ version }}.FULL.tar.gz
   sha256: {{ sha256 }}
   patches:
     - makefile.patch
 
 build:
-  number: 1
   skip: True  # [osx]
+  number: 1
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
     - cmake
     - autoconf
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
   host:
     - zlib
     - htslib
@@ -36,8 +39,8 @@ requirements:
     - python >=3.6
     - samtools >=1.9
     - salmon >=1.0
+    - kallisto
     - numpy
-    - htslib
     - r-cluster
     - r-gplots
     - bioconductor-qvalue
@@ -54,6 +57,9 @@ requirements:
     - r-sm
     - bioconductor-dexseq
     - r-vioplot
+    - htslib
+    - coreutils
+    - r-base >=4
 
 test:
   commands:

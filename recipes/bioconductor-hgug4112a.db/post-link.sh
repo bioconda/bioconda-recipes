@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="hgug4112a.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/hgug4112a.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hgug4112a.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/hgug4112a.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hgug4112a.db/bioconductor-hgug4112a.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hgug4112a.db/bioconductor-hgug4112a.db_3.2.3_src_all.tar.gz"
 )
 MD5="67ecf8c887e2ebe1941cc51d0f5fb468"

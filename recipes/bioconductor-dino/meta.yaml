@@ -1,0 +1,53 @@
+{% set version = "1.0.0" %}
+{% set name = "Dino" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: d62fe57595dc42a82af57f89a5f50a12
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: testthat (>= 2.1.0), knitr, rmarkdown, BiocStyle, devtools, ggplot2, gridExtra, ggpubr, grid
+requirements:
+  host:
+    - 'bioconductor-biocparallel >=1.28.0,<1.29.0'
+    - 'bioconductor-biocsingular >=1.10.0,<1.11.0'
+    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
+    - 'bioconductor-scran >=1.22.0,<1.23.0'
+    - 'bioconductor-singlecellexperiment >=1.16.0,<1.17.0'
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - r-base
+    - r-matrix
+    - r-matrixstats
+    - r-seurat
+  run:
+    - 'bioconductor-biocparallel >=1.28.0,<1.29.0'
+    - 'bioconductor-biocsingular >=1.10.0,<1.11.0'
+    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
+    - 'bioconductor-scran >=1.22.0,<1.23.0'
+    - 'bioconductor-singlecellexperiment >=1.16.0,<1.17.0'
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - r-base
+    - r-matrix
+    - r-matrixstats
+    - r-seurat
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Normalization of Single-Cell mRNA Sequencing Data'
+  description: 'Dino normalizes single-cell, mRNA sequencing data to correct for technical variation, particularly sequencing depth, prior to downstream analysis. The approach produces a matrix of corrected expression for which the dependency between sequencing depth and the full distribution of normalized expression; many existing methods aim to remove only the dependency between sequencing depth and the mean of the normalized expression. This is particuarly useful in the context of highly sparse datasets such as those produced by 10X genomics and other uninque molecular identifier (UMI) based microfluidics protocols for which the depth-dependent proportion of zeros in the raw expression data can otherwise present a challenge.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

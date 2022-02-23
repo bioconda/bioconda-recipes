@@ -1,0 +1,61 @@
+{% set name = "GECCO" %}
+{% set name_pypi = "gecco-tool" %}
+{% set version = "0.8.9" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.org/packages/source/g/{{ name_pypi }}/{{ name_pypi }}-{{ version }}.tar.gz
+  sha256: 85b3e6fc142f2e69910284c55f16d22d7d0fa4f4dd666f5e8cd6da909cad8118
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - setuptools >=39.2
+    - wheel >=0.30
+    - pyhmmer >=0.4
+    - tqdm >=4.41
+  run:
+    - python >=3.6
+    - biopython >=1.73
+    - dataclasses >=0.8         #[py36]
+    - docopt >=0.6.2
+    - importlib_metadata >=1.4  #[py36]
+    - importlib_metadata >=1.4  #[py37]
+    - importlib_resources >=1.0 #[py36]
+    - numpy >=1.16
+    - psutil >=5.8
+    - pyhmmer >=0.4.2
+    - pyrodigal >=0.6.4
+    - rich >=9.0.0
+    - scikit-learn >=0.24.0     #[py36]
+    - scikit-learn >=1.0        #[not py36]
+    - scipy >=1.4
+    - sklearn-crfsuite >=0.3.6
+
+test:
+  imports:
+    - {{ name|lower }}
+  commands:
+    - python -m {{ name|lower }} --help
+
+about:
+  home: https://gecco.embl.de/
+  license: GPL-3
+  license_family: GPL
+  license_file: LICENSE
+  summary: Biosynthetic Gene Cluster prediction with Conditional Random Fields.
+
+extra:
+  recipe-maintainers:
+    - althonos
+  identifiers:
+    - doi:10.1101/2021.05.03.442509  # bioRxiv preprint

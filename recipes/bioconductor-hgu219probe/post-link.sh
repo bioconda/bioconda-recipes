@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="hgu219probe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/hgu219probe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hgu219probe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hgu219probe_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hgu219probe/bioconductor-hgu219probe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hgu219probe/bioconductor-hgu219probe_2.18.0_src_all.tar.gz"
 )
 MD5="c5bb2f7b2e0f8fa89e6a30befaee6497"

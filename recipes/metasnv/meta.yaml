@@ -1,42 +1,76 @@
-{% set version = "1.0.3" %}
-{% set sha256 = "41bbff76450cf7ad2cfb30f4ec39bfdb51cbe34200c8ddd9418f3340ce843955" %}
+{% set version = "2.0.4" %}
+{% set sha256 = "7fcd9db7e31e3e0fda8d7db5522297c44aba6c0d8f5cca31d183d738cb96aef1" %}
 
 package:
   name: metasnv
   version: {{ version }}
 
 source:
-  url: https://git.embl.de/costea/metaSNV/repository/v{{ version }}/archive.tar.gz
+  url: https://github.com/metasnv-tool/metaSNV/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 3
+  skip: True  # [py2k or py36]
+  number: 1
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - make
+    - {{ compiler('cxx') }}
     - pkg-config
     - libtool
   host:
-    - boost
+    - python
+    - libboost
     - htslib
     - numpy
     - pandas
     - zlib
   run:
+    - python
+    - pandoc >=2.1
     - numpy
     - pandas
     - htslib
+    - samtools >=1.12
     - zlib
+    - r-base >=4.0
+    - bioconductor-biocparallel >=1.26
+    - r-ape
+    - r-batchtools
+    - r-cairo
+    - r-cluster
+    - r-data.table
+    - r-dplyr
+    - r-dt
+    - r-forcats
+    - r-fpc
+    - r-futile.logger
+    - r-getopt
+    - r-ggplot2
+    - r-ggrepel
+    - r-gridextra
+    - r-kableextra
+    - r-optparse
+    - r-readr
+    - r-reshape2
+    - r-rmarkdown
+    - r-tidyr
 
 test:
   commands:
-    - metaSNV.py -h
-    - metaSNV_post.py -h
+    - metaSNV.py --help
+    - metaSNV_Filtering.py --help
+    - metaSNV_DistDiv.py --help
+    - metaSNV_subpopr.R --help
 
 about:
-  home: http:// metasnv.embl.de
+  home: http://metasnv.embl.de
   license: GPLv3
+  license_file: LICENSE
   summary: SNV calling software
 
-
+extra:
+  recipe-maintainers:
+    - AlessioMilanese
+    - LucasPaoli

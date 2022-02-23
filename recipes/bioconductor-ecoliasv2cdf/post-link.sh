@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="ecoliasv2cdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/ecoliasv2cdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/ecoliasv2cdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ecoliasv2cdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ecoliasv2cdf/bioconductor-ecoliasv2cdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ecoliasv2cdf/bioconductor-ecoliasv2cdf_2.18.0_src_all.tar.gz"
 )
 MD5="d7771ca1648b26a6af5bfb7582c6c778"

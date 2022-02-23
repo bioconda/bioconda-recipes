@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="TxDb.Athaliana.BioMart.plantsmart28_3.2.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/TxDb.Athaliana.BioMart.plantsmart28_3.2.2.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/TxDb.Athaliana.BioMart.plantsmart28_3.2.2.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Athaliana.BioMart.plantsmart28_3.2.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.athaliana.biomart.plantsmart28/bioconductor-txdb.athaliana.biomart.plantsmart28_3.2.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.athaliana.biomart.plantsmart28/bioconductor-txdb.athaliana.biomart.plantsmart28_3.2.2_src_all.tar.gz"
 )
 MD5="9ed52284f01e08fc382db179b544bb17"

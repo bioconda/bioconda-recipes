@@ -1,0 +1,46 @@
+{% set version = "1.2.0_9643238d" %}
+{% set commit_id = "9643238d39baa171c96a6afac92ab9d928a77588" %}
+
+package:
+  name: "phylocsfpp"
+  version: "{{ version }}"
+
+source:
+  git_url: https://github.com/cpockrandt/PhyloCSFpp.git
+  git_rev: {{ commit_id }}
+
+build:
+  number: 2
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - cmake >=3.2
+    - make
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  host:
+    - gsl
+    - libcblas
+    - zlib
+    - libbigwig
+  run:
+    - gsl
+    - zlib
+    - libbigwig
+
+test:
+  commands:
+      - phylocsf++ --help > /dev/null
+
+about:
+  home: https://github.com/cpockrandt/PhyloCSFpp
+  license: AGPLv3
+  license_file: LICENSE.md
+  summary: 'A fast and user-friendly implementation of PhyloCSF with annotation tools.'
+
+extra:
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

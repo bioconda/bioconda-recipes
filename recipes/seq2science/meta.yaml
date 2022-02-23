@@ -1,5 +1,5 @@
 {% set name = "seq2science" %}
-{% set version = "0.4.3" %}
+{% set version = "0.7.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,12 +7,11 @@ package:
 
 source:
   url: https://github.com/vanheeringen-lab/seq2science/archive/v{{ version }}.tar.gz
-  sha256: a0b1437ba22448fe42e872ab51e22cc3900df67fbb2f936f31d30e3eb75dd55f
+  sha256: d399d29f4d7fa7a4860cd1cf7dd54629af9ad3f1198097590eb175e801ca01d5
 
 build:
   noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
   host:
@@ -21,18 +20,20 @@ requirements:
     - toml
     - setuptools
   run:
-    - python >=3.6
-    - snakemake =5.18.1
-    - genomepy =0.9.1
-    - conda =4.8.4
-    - biopython =1.74
-    - filelock =3.0.12
-    - pyyaml =5.3.1
-    - pandas_schema =0.3.5
-    - trackhub =0.1.2019.12.24
-    - pysradb =0.11.1
-    - matplotlib-base =3.3.2
-    - xdg =5.0.1
+    - python=3.8
+    - snakemake-minimal=5.18.1
+    - conda=4.11.0
+    - mamba=0.19.0
+    - genomepy=0.11.1
+    - biopython=1.79
+    - filelock=3.4.0
+    - pyyaml=6.0
+    - pandas_schema=0.3.5
+    - trackhub=0.1.2019.12.24
+    - pysradb=1.0.1
+    - matplotlib-base=3.5.0
+    - xdg=5.1.1
+    - argcomplete=1.12.3
 
 test:
   commands:
@@ -42,8 +43,9 @@ test:
     - mkdir --parents results/fastq; touch results/fastq/GSM28374{88,89,90,91,92,93}.fastq.gz  # no lookup online for layout
     - mkdir --parents genomes/Bl71nemr; touch genomes/Bl71nemr/Bl71nemr{.fa,.fa.sizes,.gaps.bed,.annotation.gtf,.annotation.bed}
     - echo -e "chr1\t100000" > genomes/Bl71nemr/Bl71nemr.fa.sizes
-    - seq2science run atac-seq --dryrun --snakemakeOption resources={mem_gb:100}
+    - seq2science run atac-seq --dryrun --snakemakeOptions resources={mem_gb:100} quiet=True
     - chmod -R 777 .   # make sure everything can be deleted
+    - deseq2science -v 
 
 about:
   home: https://vanheeringen-lab.github.io/seq2science

@@ -1,27 +1,24 @@
 {% set name = "OpenMS" %}
-{% set version = "2.6.0" %}
+{% set version = "2.7.0" %}
 package:
   name: {{ name|lower  }}-meta
   version: {{ version  }}
 
 source:
   url: https://abibuilder.informatik.uni-tuebingen.de/archive/openms/OpenMSInstaller/release/{{ version }}/OpenMS-{{ version }}-src.tar.gz
-  sha256: 55f30d09cba420009587e50d70812a4775d012151df8c600c7c39e59079bc10b
+  sha256: 62bce6215bc88ca7d1f1b7abf15cea4061bdcfa10dbb1e652b1d8c2ff9b3f081
   patches:
     - apple_pyoms_nofixup.patch
     - init.py.patch
     - MANIFEST.in.patch
+    - ParamValue_h.patch
 
 build:
-  number: 0
-
-# Try this when building with GUI
-#extra:
-#  container:
-#    extended-base: True
+  number: 1
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
     - cmake
     - autoconf
@@ -37,9 +34,8 @@ requirements:
     - glpk
     - hdf5
     - bzip2
-    - qt >=5.5
+    - qt >=5.6
     - libsvm
-    - seqan-library ==1.4.2
     - coinmp
     - sqlite
 
@@ -77,9 +73,8 @@ outputs:
           - glpk
           - hdf5
           - bzip2
-          - qt >=5.5
+          - qt >=5.6
           - libsvm
-          - seqan-library ==1.4.2
           - coinmp
           - sqlite
     build:
@@ -120,9 +115,8 @@ outputs:
         - glpk
         - hdf5
         - bzip2
-        - qt >=5.5
+        - qt >=5.6
         - libsvm
-        - seqan-library ==1.4.2
         - coinmp
         - sqlite
       run:
@@ -154,6 +148,7 @@ outputs:
     requirements:
       build:
         - {{ compiler('cxx') }}
+        - make
         - cmake
       host:
         - {{ pin_subpackage('libopenms', exact=True) }}
@@ -161,28 +156,27 @@ outputs:
         - zlib
         - libtool
         - xerces-c
-        - boost
+        - boost-cpp
         - eigen
         - glpk
         - hdf5
         - bzip2
-        - qt >=5.5
+        - qt >=5.6
         - libsvm
-        - seqan-library ==1.4.2
         - coinmp
         - sqlite
         - python {{ python }}
+        - pip
         - cython
         - autowrap
-        - numpy
-        - pip
         - nose
+        - numpy {{ numpy }}
       run:
         - {{ pin_subpackage('libopenms', exact=True) }}
         - {{ pin_compatible('llvm-openmp', max_pin='x.x') }} # [osx]
         - {{ pin_compatible('zlib', max_pin='x.x') }}
         - {{ pin_compatible('xerces-c', max_pin='x.x') }}
-        - {{ pin_compatible('boost', max_pin='x.x') }}
+        - {{ pin_compatible('boost-cpp', max_pin='x.x') }}
         - {{ pin_compatible('eigen', max_pin='x.x') }}
         - {{ pin_compatible('glpk', max_pin='x.x') }}
         - {{ pin_compatible('hdf5', max_pin='x.x') }}
@@ -192,7 +186,7 @@ outputs:
         - {{ pin_compatible('coinmp', max_pin='x.x') }}
         - {{ pin_compatible('sqlite', max_pin='x.x') }}
         - python {{ python }}
-        - numpy
+        - numpy {{ numpy }}
     test:
       commands:
         - python -c "import pyopenms; print(pyopenms.__version__)"
@@ -206,17 +200,16 @@ outputs:
     requirements:
       run:
         - {{ pin_subpackage('openms', exact=True) }}
-        - bumbershoot ==3_0_11579
+        - bumbershoot ==3_0_20295_bfe5db0
         - comet-ms ==2019015
         - crux-toolkit ==3.2
         - fido ==1.0
         - luciphor2 ==2020_04_03
-        - msgf_plus ==2020.08.05
-        - omssa ==2.1.9
+        - msgf_plus ==2021.03.22
         - pepnovo ==20101117
         - percolator ==3.5
         - sirius-csifingerid ==4.0.1
-        - thermorawfileparser ==1.2.3
+        - thermorawfileparser ==1.3.4
         - xtandem ==15.12.15.2
         - gnuplot
     test:
@@ -238,3 +231,6 @@ extra:
     - biotools:openms
     - usegalaxy-eu:openms_fileconverter
     - doi:10.1038/nmeth.3959
+# Try this when building with GUI
+#  container:
+#    extended-base: True

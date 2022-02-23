@@ -15,6 +15,8 @@ cd $PREFIX
 BINARY_DIR=`ls -d $SHAREDIR/binaries/DeepVariant/*/DeepVariant*`
 WGS_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wgs_standard`
 WES_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wes_standard`
+PACBIO_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*pacbio_standard`
+HYBRID_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*hybrid_standard`
 cd $SRC_DIR
 
 # TF slim is difficult because there is an existing tf-slim package in conda-forge
@@ -48,6 +50,8 @@ cp ${RECIPE_DIR}/dv_call_variants.py $PREFIX/bin
 sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_call_variants.py
 sed -i.bak "s|WGSMODELSUB|${WGS_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
 sed -i.bak "s|WESMODELSUB|${WES_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
+sed -i.bak "s|PACBIOMODELSUB|${PACBIO_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
+sed -i.bak "s|HYBRIDMODELSUB|${HYBRID_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
 cp ${RECIPE_DIR}/dv_postprocess_variants.py $PREFIX/bin
 sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_postprocess_variants.py
 rm -f $PREFIX/bin/*.bak
