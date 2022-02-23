@@ -17,14 +17,7 @@ build:
 #  container:
 #    extended-base: True
 
-# Unfortunately we can't include a dependency on the subpackages here
-# (probably bc of the jinja function in the compiler; but we need it
-# since this meta build prepares all the other builds and saves time)
-# Instead, we create an openms-full package later.
 requirements:
-    # build requirements should be loaded from the meta package already.
-    # But since the other packages depend on its run_exports
-    # We want to make sure that the versions of the dependencies used are the same as above
     build:
       - {{ compiler('cxx') }}
       - cmake
@@ -32,7 +25,6 @@ requirements:
       - autoconf
       - automake
     host:
-      # openms-general
       - llvm-openmp # [osx]
       - zlib >=1.2
       - libtool
@@ -62,10 +54,6 @@ outputs:
         # We want to make sure that the versions of the dependencies used are the same as above
         build:
           - cmake
-#         - {{ compiler('cxx') }}
-#         - make
-#         - autoconf
-#         - automake
         host:
           - llvm-openmp # [osx]
           - zlib >=1.2
@@ -103,10 +91,10 @@ outputs:
       # no actual build is done. CMake is used to install different parts of the existing build
       build:
         - cmake
-#       - {{ compiler('cxx') }}
       host:
         - {{ pin_subpackage('libopenms', exact=True) }}
-      # conda apparently does not support run_exports in subpackages yet. https://github.com/conda/conda-build/issues/3478
+      # conda apparently does not support run_exports in subpackages yet, otherwise having libopenms in host would be enough.
+      # see https://github.com/conda/conda-build/issues/3478
       # so specify everything again, such that EXACTLY the same versions are used!
       # I could not get the "resolved_packages" jinja function to gather dependencies from other subpackages.
         - llvm-openmp # [osx]
@@ -140,61 +128,6 @@ outputs:
       commands:
         - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/OpenMSInfo
         - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/FileMerger --help
-
-  # - name: pyopenms
-  #   version: {{ version }}
-  #   script: install_pyopenms.sh
-  #   # problem with pyopenms is: We could in theory skip CMake configuration
-  #   # and save a lot of build dependencies that are not in the API, BUT then env.py
-  #   # does not contain the right paths anymore, since the build folder is copied for each
-  #   # subpackage.
-  #   requirements:
-  #     build:
-  #       - {{ compiler('cxx') }}
-  #       - make
-  #       - cmake
-  #     host:
-  #       - {{ pin_subpackage('libopenms', exact=True) }}
-  #       - llvm-openmp # [osx]
-  #       - zlib >=1.2
-  #       - libtool
-  #       - xerces-c >=3.2
-  #       - boost-cpp >=1.60
-  #       - eigen >=3.3.2
-  #       - glpk >=4.45
-  #       - hdf5 >=1.10
-  #       - bzip2 >=1.0
-  #       - qt >=5.5
-  #       - libsvm >=3.21
-  #       - coinmp >=1.8
-  #       - sqlite >=3.30      
-  #       - python {{ python }}
-  #       - cython >=0.25.2
-  #       - autowrap >=0.22.6
-  #       - nose
-  #       - numpy {{ numpy }}
-  #       - pandas
-  #     run:
-  #       - {{ pin_subpackage('libopenms', exact=True) }}
-  #       - {{ pin_compatible('llvm-openmp', max_pin='x.x') }} # [osx]
-  #       - {{ pin_compatible('zlib', max_pin='x.x') }}
-  #       - {{ pin_compatible('xerces-c', max_pin='x.x') }}
-  #       - {{ pin_compatible('boost-cpp', max_pin='x.x') }}
-  #       - {{ pin_compatible('eigen', max_pin='x.x') }}
-  #       - {{ pin_compatible('glpk', max_pin='x.x') }}
-  #       - {{ pin_compatible('hdf5', max_pin='x.x') }}
-  #       - {{ pin_compatible('bzip2', max_pin='x.x') }}
-  #       - {{ pin_compatible('qt', max_pin='x.x') }}
-  #       - {{ pin_compatible('libsvm', max_pin='x.x') }}
-  #       - {{ pin_compatible('coinmp', max_pin='x.x') }}
-  #       - {{ pin_compatible('sqlite', max_pin='x.x') }}
-  #       - python {{ python }}
-  #       - numpy {{ numpy }}
-  #       - pandas
-  #   test:
-  #     commands:
-  #       - python -c "import pyopenms; print(pyopenms.__version__)"
-  #       # We cant use the PYTHON variable since it does not exist on the biocontainer?!
 
 #  - name: openms-thirdparty
 #    version: {{ version }}
