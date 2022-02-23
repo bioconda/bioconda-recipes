@@ -22,9 +22,10 @@ else
 fi
 LDFLAGS='-Wl,-rpath,${RPATH}'
 
-  #-DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
-  #-DOPENMS_GIT_SHORT_SHA1="2537a5d" \
+
 cmake ../src/pyOpenMS \
+  -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
+  -DOPENMS_GIT_SHORT_SHA1="b59e0c3" \
   -DCMAKE_BUILD_TYPE="Release" \
   -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} \
   -DCMAKE_MACOSX_RPATH=ON \
@@ -38,5 +39,6 @@ cmake ../src/pyOpenMS \
 
 # NO_DEPENDENCIES since conda takes over re-linking etc.
 
-make -j${CPU_COUNT} pyopenms
+# limit parallel jobs to 1 for memory usage since pyopenms has huge cython generated cpp files
+make -j1 pyopenms
 $PYTHON -m pip install ./pyOpenMS/dist/*.whl --ignore-installed --no-deps
