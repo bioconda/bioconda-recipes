@@ -1,13 +1,12 @@
 {% set name = "pyopenms" %}
-{% set version = "2.8.0dev" %}
+{% set version = "2.8.0" %}
 package:
   name: {{ name|lower  }}
   version: {{ version  }}
 
 source:
-  git_url: https://github.com/OpenMS/OpenMS.git
-  git_rev: develop
-  git_depth: 1 # (Defaults to -1/not shallow)
+  url: https://abibuilder.informatik.uni-tuebingen.de/archive/openms/OpenMSInstaller/release/{{ version }}/OpenMS-{{ version }}-src.tar.gz
+  sha256: c39e3ccdce5c335d2659cfa9d0bb63555a01ec422757afd90706d3869bf611ac
 
 build:
   number: 1
@@ -20,38 +19,17 @@ requirements:
   host:
     - libopenms {{ version }}
     - llvm-openmp # [osx]
-    #- zlib >=1.2
-    - libtool
     - libsvm >=3.21
     - xerces-c >=3.2
     - boost-cpp >=1.60
-    - qt >=5.5
-    #- eigen >=3.3.2
-    #- glpk >=4.45
-    #- hdf5 >=1.10
-    #- bzip2 >=1.0
-    #- coinmp >=1.8
-    #- sqlite >=3.30      
+    - qt >=5.5   
     - python {{ python }}
     - cython >=0.25.2
     - autowrap >=0.22.6
     - nose
     - numpy {{ numpy }}
     - pandas
-  run:
-    #- libopenms {{ version }}
-    #- {{ pin_compatible('llvm-openmp', max_pin='x.x') }} # [osx]
-    #- {{ pin_compatible('zlib', max_pin='x.x') }}
-    #- {{ pin_compatible('xerces-c', max_pin='x.x') }}
-    #- {{ pin_compatible('boost-cpp', max_pin='x.x') }}
-    #- {{ pin_compatible('eigen', max_pin='x.x') }}
-    #- {{ pin_compatible('glpk', max_pin='x.x') }}
-    #- {{ pin_compatible('hdf5', max_pin='x.x') }}
-    #- {{ pin_compatible('bzip2', max_pin='x.x') }}
-    #- {{ pin_compatible('qt', max_pin='x.x') }}
-    #- {{ pin_compatible('libsvm', max_pin='x.x') }}
-    #- {{ pin_compatible('coinmp', max_pin='x.x') }}
-    #- {{ pin_compatible('sqlite', max_pin='x.x') }}
+  run: # run_exports in libopenms should take care of the libraries
     - python {{ python }}
     - numpy {{ numpy }}
     - pandas
@@ -67,10 +45,6 @@ about:
   summary: python bindings for OpenMS, an open-source software C++ library for LC-MS data management and analyses
 
 extra:
-  skip-lints:
-    - build_number_needs_reset  # our linter has some issues with multi-package recipes as it seems
-    - uses_vcs_url  # only for nightly builds
-    - missing_hash  # only for nightly builds
   identifiers:
     - biotools:openms
     - doi:10.1038/nmeth.3959
