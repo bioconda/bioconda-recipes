@@ -1,4 +1,4 @@
 #!/bin/bash
 set -x
-faToVcf
+set +o pipefail
 faToVcf 2> /dev/null || [[ "$?" == 255 ]]
