@@ -3,6 +3,7 @@
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
+export USE_HIC=0
 
 mkdir -p "$PREFIX/bin"
 export MACHTYPE=x86_64
