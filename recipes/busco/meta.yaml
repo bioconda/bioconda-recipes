@@ -1,54 +1,76 @@
-{% set name = "busco" %}
-{% set version = "3.0.2" %}
-{% set sha256 = "7cfc50b1a256cd697ec7e2b1c3b5af7118f50e2d809533df3d5d8dfca7560c46" %}
+{% set version = "5.2.2" %}
+{% set sha256 = "6da327a21674d354dccebcaaa9594fcb5a3b40d1917b7786c5212920e724229f" %}
 
 package:
-  name: {{ name|lower }}
+  name: busco
   version: {{ version }}
 
 build:
-  number: 12
+  number: 0
+  noarch: python
 
 source:
   url: https://gitlab.com/ezlab/busco/-/archive/{{ version }}/busco-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-Add-default-config-path-within-prefix-updated.patch
 
 requirements:
   host:
-    - python >=3
+    - python >=3.3
+    - pip
+    - wget
+    - blast >=2.10.1 # There is a multithreading problem for all BLAST versions between 2.4 and 2.10.0
+    - hmmer >=3.1b2 # sepp needs this version
+    - augustus >=3.3
+    - biopython
+    - prodigal
+    - sepp >=4.3.10
+    - metaeuk
+    - pandas
   run:
-    - python >=3
-    - findutils
-    - blast >=2.2,<2.4
-    - hmmer
-    - augustus >=3.3.2
+    - python >=3.3
+    - wget
+    - blast >=2.10.1 # There is a multithreading problem for all BLAST versions between 2.4 and 2.10.0
+    - hmmer >=3.1b2 # sepp needs this version
+    - augustus >=3.3
+    - biopython
     - r-base
     - r-ggplot2 >=2.2.1
+    - prodigal
+    - sepp >=4.3.10
+    - metaeuk
+    - pandas
+    - fonts-conda-ecosystem
 
 test:
-  requires:
-    - wget
   commands:
-    - run_BUSCO.py -h
-    - run_busco -h
+    - busco -h
     - generate_plot.py -h
-    - generate_plot -h
-    - mkdir findtest ; cd findtest ; touch file ; find . -delete ; cd ..
-
-    # Message reported by busco when the config file exists but no input provided
-    - run_busco | grep "Please add it in the config file"
+  source_files:
+    # used in run_test.sh
+    - test_data
 
 about:
   home: http://busco.ezlab.org/
-  license: GPL
+  license: MIT
+  license_file: LICENSE
   summary: BUSCO provides measures for quantitative assessment of genome
            assembly, gene set, and transcriptome completeness based on
            evolutionarily informed expectations of gene content from
            near-universal single-copy orthologs selected from OrthoDB.
 
 extra:
+  container:
+    # Necessary to allow Busco to download files from the internet when used with Singularity
+    # and default bind paths (see also https://github.com/bioconda/bioconda-recipes/issues/11583).
+    # Should be removed again when the base container is fixed.
+    extended-base: True
   identifiers:
     - biotools:busco
     - doi:10.1093/bioinformatics/btv351
-  skip-lints:
-    - should_be_noarch
+    - usegalaxy-eu:busco
+  recipe-maintainers:
+    - silask
+    - matsepp
+    - berkelem

@@ -1,0 +1,56 @@
+{% set version = "0.1.2" %}
+{% set name = "cobs" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  # This is needed due to submodules
+  git_url: https://github.com/bingmann/{{ name|lower }}
+  git_rev: 1915fc061bbe47946116b4a051ed7b4e3f3eca15
+  sha256: f4784e0c8863c266c2b826078bfe46fca4943fcde5799337891c333c9e0d29b4
+  patches:
+    - 0001-Add-openmp-to-compile-flags.patch
+
+build:
+  number: 1
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  skip: true  # [osx or py2k]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - cmake
+    - make
+  host:
+    - python
+    - pip
+    - zlib
+    - boost-cpp
+    - libgomp
+  run:
+    - python
+    - zlib
+    - libgomp
+
+about:
+  home: https://panthema.net/cobs
+  license: MIT
+  summary: Compact Bit-Sliced Signature Index (for Genomic k-Mer Data or q-Grams)
+  license_file: LICENSE
+
+test:
+  imports:
+    - cobs_index
+
+  commands:
+    - cobs
+
+extra:
+  recipe-maintainers:
+    - luizirber
+    - johnlees
+  skip-lints:
+    - uses_vcs_url

@@ -1,6 +1,6 @@
-{% set version = "1.6.0" %}
+{% set version = "2.6.0" %}
 {% set name = "cytolib" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.14" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,31 +10,47 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: b485d248ce7346c0beafaff56d68dcd7
+  md5: 3d2281614ed0f65e4c25f4522e524e62
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr
+# Suggests: knitr, rmarkdown
 # SystemRequirements: GNU make, C++11
 requirements:
   host:
-    - 'bioconductor-rprotobuflib >=1.6.0,<1.7.0'
+    - 'bioconductor-rhdf5lib >=1.16.0,<1.17.0'
+    - 'bioconductor-rprotobuflib >=2.6.0,<2.7.0'
     - r-base
-    - 'r-bh >=1.62.0-1'
+    - 'r-bh >=1.75.0.0'
+    - r-rcpp
+    - r-rcpparmadillo
+    - 'r-rcppparallel >=4.4.2-1'
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-rprotobuflib >=1.6.0,<1.7.0'
+    - 'bioconductor-rhdf5lib >=1.16.0,<1.17.0'
+    - 'bioconductor-rprotobuflib >=2.6.0,<2.7.0'
     - r-base
-    - 'r-bh >=1.62.0-1'
+    - 'r-bh >=1.75.0.0'
+    - r-rcpp
+    - r-rcpparmadillo
+    - 'r-rcppparallel >=4.4.2-1'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'This package provides the core data structure and API to represent and interact with the gated cytometry data.'
+  license: 'file LICENSE'
+  summary: 'C++ infrastructure for representing and interacting with the gated cytometry data'
+  description: 'This package provides the core data structure and API to represent and interact with the gated cytometry data.'
+  license_file: LICENSE
 extra:
   parent_recipe:
     name: bioconductor-cytolib

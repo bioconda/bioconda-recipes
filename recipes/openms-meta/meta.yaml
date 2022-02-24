@@ -1,0 +1,236 @@
+{% set name = "OpenMS" %}
+{% set version = "2.7.0" %}
+package:
+  name: {{ name|lower  }}-meta
+  version: {{ version  }}
+
+source:
+  url: https://abibuilder.informatik.uni-tuebingen.de/archive/openms/OpenMSInstaller/release/{{ version }}/OpenMS-{{ version }}-src.tar.gz
+  sha256: 62bce6215bc88ca7d1f1b7abf15cea4061bdcfa10dbb1e652b1d8c2ff9b3f081
+  patches:
+    - apple_pyoms_nofixup.patch
+    - init.py.patch
+    - MANIFEST.in.patch
+    - ParamValue_h.patch
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - cmake
+    - autoconf
+    - automake
+  host:
+    # openms-general
+    - llvm-openmp # [osx]
+    - zlib
+    - libtool
+    - xerces-c
+    - boost-cpp
+    - eigen
+    - glpk
+    - hdf5
+    - bzip2
+    - qt >=5.6
+    - libsvm
+    - coinmp
+    - sqlite
+
+    # Unfortunately we can't include a dependency on the subpackages here
+    # (probably bc of the jinja function in the compiler; but we need it
+    # since this meta build prepares all the other builds and saves time)
+    # Instead, we create an openms-full package later.
+    
+test:
+  commands:
+    - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
+    - conda inspect objects -p $PREFIX $PKG_NAME  # [osx]
+
+outputs:
+  - name: libopenms
+    version: {{ version }}
+    script: package_libopenms.sh
+    requirements:
+        # build requirements should be loaded from the meta package already.
+        # But since the other packages depend on its run_exports
+        # We want to make sure that the versions of the dependencies used are the same as above
+        build:
+          - {{ compiler('cxx') }}
+          - cmake
+          - autoconf
+          - automake
+        host:
+          # openms-general
+          - llvm-openmp # [osx]
+          - zlib
+          - libtool
+          - xerces-c
+          - boost-cpp
+          - eigen
+          - glpk
+          - hdf5
+          - bzip2
+          - qt >=5.6
+          - libsvm
+          - coinmp
+          - sqlite
+    build:
+      run_exports:
+          - {{ pin_compatible('llvm-openmp', max_pin='x.x') }} # [osx]
+          - {{ pin_compatible('zlib', max_pin='x.x') }}
+          - {{ pin_compatible('xerces-c', max_pin='x.x') }}
+          - {{ pin_compatible('boost-cpp', max_pin='x.x') }}
+          - {{ pin_compatible('eigen', max_pin='x.x') }}
+          - {{ pin_compatible('glpk', max_pin='x.x') }}
+          - {{ pin_compatible('hdf5', max_pin='x.x') }}
+          - {{ pin_compatible('bzip2', max_pin='x.x') }}
+          - {{ pin_compatible('qt', max_pin='x.x') }}
+          - {{ pin_compatible('libsvm', max_pin='x.x') }}
+          - {{ pin_compatible('coinmp', max_pin='x.x') }}
+          - {{ pin_compatible('sqlite', max_pin='x.x') }}
+          - libopenms {{ version }}
+
+  - name: openms
+    version: {{ version }}
+    script: package_openms-tools.sh
+    requirements:
+      # TODO not sure if build reqs are needed
+      build:
+        - {{ compiler('cxx') }}
+      host:
+        - {{ pin_subpackage('libopenms', exact=True) }}
+      # conda apparently does not support run_exports in subpackages yet. https://github.com/conda/conda-build/issues/3478
+      # so specify everything again, such that EXACTLY the same versions are used! Current problem is boost.
+      # In the meta build it uses e.g. 1.72 but the tests for the tools suddenly choose 1.70
+      # I could not get the "resolved_packages" jinja function to gather dependencies from other subpackages.
+        - llvm-openmp # [osx]
+        - zlib
+        - libtool
+        - xerces-c
+        - boost-cpp
+        - eigen
+        - glpk
+        - hdf5
+        - bzip2
+        - qt >=5.6
+        - libsvm
+        - coinmp
+        - sqlite
+      run:
+        - {{ pin_subpackage('libopenms', exact=True) }}
+        - {{ pin_compatible('llvm-openmp', max_pin='x.x') }} # [osx]
+        - {{ pin_compatible('zlib', max_pin='x.x') }}
+        - {{ pin_compatible('xerces-c', max_pin='x.x') }}
+        - {{ pin_compatible('boost-cpp', max_pin='x.x') }}
+        - {{ pin_compatible('eigen', max_pin='x.x') }}
+        - {{ pin_compatible('glpk', max_pin='x.x') }}
+        - {{ pin_compatible('hdf5', max_pin='x.x') }}
+        - {{ pin_compatible('bzip2', max_pin='x.x') }}
+        - {{ pin_compatible('qt', max_pin='x.x') }}
+        - {{ pin_compatible('libsvm', max_pin='x.x') }}
+        - {{ pin_compatible('coinmp', max_pin='x.x') }}
+        - {{ pin_compatible('sqlite', max_pin='x.x') }}
+    test:
+      commands:
+        - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/OpenMSInfo
+        - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/FileMerger --help
+
+  - name: pyopenms
+    version: {{ version }}
+    script: install_pyopenms.sh
+    # problem with pyopenms is: We could in theory skip CMake configuration
+    # and save a lot of build dependencies BUT then env.py
+    # does not contain the right paths anymore, since the build folder is copied for each
+    # subpackage.
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+        - make
+        - cmake
+      host:
+        - {{ pin_subpackage('libopenms', exact=True) }}
+        - llvm-openmp # [osx]
+        - zlib
+        - libtool
+        - xerces-c
+        - boost-cpp
+        - eigen
+        - glpk
+        - hdf5
+        - bzip2
+        - qt >=5.6
+        - libsvm
+        - coinmp
+        - sqlite
+        - python {{ python }}
+        - pip
+        - cython
+        - autowrap
+        - nose
+        - numpy {{ numpy }}
+      run:
+        - {{ pin_subpackage('libopenms', exact=True) }}
+        - {{ pin_compatible('llvm-openmp', max_pin='x.x') }} # [osx]
+        - {{ pin_compatible('zlib', max_pin='x.x') }}
+        - {{ pin_compatible('xerces-c', max_pin='x.x') }}
+        - {{ pin_compatible('boost-cpp', max_pin='x.x') }}
+        - {{ pin_compatible('eigen', max_pin='x.x') }}
+        - {{ pin_compatible('glpk', max_pin='x.x') }}
+        - {{ pin_compatible('hdf5', max_pin='x.x') }}
+        - {{ pin_compatible('bzip2', max_pin='x.x') }}
+        - {{ pin_compatible('qt', max_pin='x.x') }}
+        - {{ pin_compatible('libsvm', max_pin='x.x') }}
+        - {{ pin_compatible('coinmp', max_pin='x.x') }}
+        - {{ pin_compatible('sqlite', max_pin='x.x') }}
+        - python {{ python }}
+        - numpy {{ numpy }}
+    test:
+      commands:
+        - python -c "import pyopenms; print(pyopenms.__version__)"
+        # We cant use the PYTHON variable since it does not exist on the biocontainer?!
+
+  - name: openms-thirdparty
+    version: {{ version }}
+    build:
+      # Dependencies bumbershoot, fido, percolator are not available for osx.
+      skip: True  # [osx]
+    requirements:
+      run:
+        - {{ pin_subpackage('openms', exact=True) }}
+        - bumbershoot ==3_0_20295_bfe5db0
+        - comet-ms ==2019015
+        - crux-toolkit ==3.2
+        - fido ==1.0
+        - luciphor2 ==2020_04_03
+        - msgf_plus ==2021.03.22
+        - pepnovo ==20101117
+        - percolator ==3.5
+        - sirius-csifingerid ==4.0.1
+        - thermorawfileparser ==1.3.4
+        - xtandem ==15.12.15.2
+        - gnuplot
+    test:
+      # Test copied from openms output to make sure a test environment for this output is created.
+      commands:
+        - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/OpenMSInfo
+        - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/FileMerger --help
+
+about:
+  home: https://github.com/OpenMS/OpenMS
+  license: BSD
+  license_file: LICENSE
+  summary: OpenMS is an open-source software C++ library for LC-MS data management and analyses
+
+extra:
+  skip-lints:
+    - build_number_needs_reset  # our linter has some issues with multi-package recipes as it seems
+  identifiers:
+    - biotools:openms
+    - usegalaxy-eu:openms_fileconverter
+    - doi:10.1038/nmeth.3959
+# Try this when building with GUI
+#  container:
+#    extended-base: True

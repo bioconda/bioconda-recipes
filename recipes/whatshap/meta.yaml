@@ -1,10 +1,10 @@
 package:
   name: whatshap
-  version: "0.18"
+  version: "1.2.1"
 
 source:
-  url: https://files.pythonhosted.org/packages/f0/e4/4392c2f1320ea8d4b79a76e3a6dcb9bd7bf6ed70e11499c9acf2db2d42ef/whatshap-0.18.tar.gz
-  sha256: c566130eca57fe9e34f5193390856dc44171c397f9708c49fcbf204e575b6695
+  url: https://files.pythonhosted.org/packages/e1/e3/84376a94a15622efc336fe72ffb37d448b91abfe5fa21421684495e30eb9/whatshap-1.2.1.tar.gz
+  sha256: 123a3282fc5e1eacd7fe1bf953735ddc3f0cedacb469f05c3a90233b76ef3cb8
 
 build:
   skip: True  # [not py3k]
@@ -17,17 +17,22 @@ requirements:
   host:
     - python
     - pip
+    - cython
     - setuptools
-    - setuptools_scm
+    - setuptools-scm
   run:
     - python
-    - setuptools
-    - pysam >=0.15
-    - pyvcf
+    - pysam >=0.17
     - pyfaidx >=0.5.5.2
-    - xopen >=0.5.0
-    - networkx
+    - networkx >=2.4
     - biopython >=1.73
+    - scipy
+    - xopen >=1.2.0
+    - dataclasses  # [py<37]
+    # This is not an actual requirement, but allows to run subsequent WhatsHap commands
+    # in the same container (input files need to be indexed with tabix)
+    - htslib
+    - setuptools  # workaround missing dependency in pyfaidx, remove on next version bump
 
 test:
   imports:
@@ -40,7 +45,9 @@ about:
   license: MIT License
   summary: 'phase genomic variants using DNA sequencing reads (haplotype assembly)'
 
-bextra:
+extra:
   identifiers:
     - biotools:whatshap
     - doi:10.1089/cmb.2014.0157
+  recipe-maintainers:
+    - marcelm

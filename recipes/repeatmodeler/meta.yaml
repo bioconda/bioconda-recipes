@@ -1,37 +1,65 @@
+{% set name = "RepeatModeler" %}
+{% set version = "2.0.2a" %}
+{% set sha256 = "8a9d69c8d7afbfb07f8bb6560c5f2fd35e61e5e7ccd01361e4f9a63f4ef3e50c" %}
+
 package:
-  name: repeatmodeler
-  version: '1.0.11'
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: 'http://www.repeatmasker.org/RepeatModeler/RepeatModeler-open-1.0.11.tar.gz'
-  md5: c148b4b56bb3fbd4e9ba88ac8736baa3
+  url: https://github.com/Dfam-consortium/RepeatModeler/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - patch
 
 build:
+  # Tests are failing on osx, see https://github.com/bioconda/bioconda-recipes/pull/28531 for details
+  skip: True  # [osx]
   number: 1
-  skip: True #[osx]
 
 requirements:
-  build:
+  host:
     - perl
-    - rmblast
+    - perl-file-which
+    - rmblast=2.10.0
+    - perl-uri
+    - perl-libwww-perl
   run:
     - perl
+    - perl-file-which
+    - perl-devel-size
+    - perl-uri
+    - perl-libwww-perl
     - repeatmasker
-    - rmblast
-    - trf
-    - repeatscout
-    - recon
-    - perl-text-soundex
+    - rmblast=2.10.0
+    - trf>=4.09
+    - repeatscout>=1.0.6
+    - recon>=1.08
+    - cd-hit>=4.8.1
+    - ltr_retriever>=2.6
+    - mafft>=7.407
+    - genometools-genometools>=1.5.9
+    - ucsc-twobitinfo
+    - ucsc-twobittofa
+    - ucsc-fatotwobit
+# to be complete it is missing Ninja and ABBlast
 
 test:
+  files:
+    - test.fa
   commands:
-    - RepeatModeler > /dev/null
+     # (see run_test.sh )
+    - "RepeatModeler -h | grep SYNOPSIS"
 
 about:
-  home: 'http://www.repeatmasker.org/RepeatModeler.html'
+  home: 'http://www.repeatmasker.org/RepeatModeler/'
   license: 'Open Software License v2.1'
+  license_file: LICENSE
   summary: 'RepeatModeler is a de-novo repeat family identification and modeling package.'
+  dev_url: https://github.com/Dfam-consortium/RepeatModeler
 
 extra:
   identifiers:
     - biotools:RepeatModeler
+  skip-lints:
+    - should_be_noarch_generic

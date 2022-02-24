@@ -1,10 +1,9 @@
-{% set version = "3.1.1b" %}
-{% set sha256 = "b52a3a91442973206e4ca69b8224cc991a9e400bb522420605c67813d883ff3f" %}
+{% set version = "3.10.23" %}
+{% set sha256 = "86c9b56413219f7229511292f97816dc488eae763a861e9632553cc97f6d58cd" %}
 
 package:
   name: ncbi-amrfinderplus
   version: {{ version }}
-
 
 source:
   url: https://github.com/ncbi/amr/archive/amrfinder_v{{ version }}.tar.gz
@@ -15,6 +14,7 @@ build:
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
   host:
     - coreutils
@@ -23,16 +23,27 @@ requirements:
     - blast >=2.9
     - hmmer >=3.2
     - libcurl
+    - curl
 
 test:
   commands:
+    - echo "PREFIX=$PREFIX   CONDA_PREFIX=$CONDA_PREFIX" # for debugging
     - amr_report -help
     - amrfinder --help
     - amrfinder_update --help
     - fasta_check -help
     - fasta2parts -help
     - gff_check -help
-    - point_mut -help
+    - dna_mutation -help
+    - |
+        curl --silent \
+         -O https://raw.githubusercontent.com/ncbi/amr/master/test_dna.fa \
+         -O https://raw.githubusercontent.com/ncbi/amr/master/test_prot.fa \
+         -O https://raw.githubusercontent.com/ncbi/amr/master/test_prot.gff \
+         -O https://raw.githubusercontent.com/ncbi/amr/master/test_both.expected
+        amrfinder -u
+        amrfinder --plus -n test_dna.fa -p test_prot.fa -g test_prot.gff -O Escherichia > test_both.got
+        diff test_both.expected test_both.got
 
 about:
   home: https://github.com/ncbi/amr/wiki
@@ -47,4 +58,7 @@ about:
       such as virulence factors, biocide, heat, acid, and metal resistance genes.
   doc_url: https://github.com/ncbi/amr/wiki
 
+extra:
+  recipe-maintainers:
+    - evolarjun
 

@@ -1,0 +1,55 @@
+{% set version = "0.4.0" %}
+
+package:
+  name: hesslab-gambit
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/hesslab-gambit/gambit/archive/v{{ version }}.tar.gz
+  sha256: 16b7bc65a4f4ef05a5afadf1b4d2adae2898e103acda80497bd037c2f039969a
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed ."
+  skip: True  # [py < 37]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - numpy >=1.13
+    - cython
+  run:
+    - python
+    - numpy >=1.13
+    - sqlalchemy >=1.1
+    - biopython >=1.69
+    - alembic >=1.0
+    - attrs >=20
+    - cattrs >=1.0
+    - click >=7.0
+    - h5py >=3.0
+    - setuptools
+
+test:
+  requires:
+    - pytest
+  source_files:
+    - tests/
+  imports:
+    - gambit
+  commands:
+    # Just check command is available
+    - gambit --help
+
+about:
+  home: https://github.com/hesslab-gambit/gambit
+  summary: Tool for rapid taxonomic identification of microbial pathogens
+  license: AGPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - jlumpe

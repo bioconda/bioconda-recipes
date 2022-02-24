@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="moex10sttranscriptcluster.db_8.7.0.tar.gz"
+FN="moex10sttranscriptcluster.db_8.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/moex10sttranscriptcluster.db_8.7.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/moex10sttranscriptcluster.db_8.7.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-moex10sttranscriptcluster.db/bioconductor-moex10sttranscriptcluster.db_8.7.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-moex10sttranscriptcluster.db/bioconductor-moex10sttranscriptcluster.db_8.7.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/moex10sttranscriptcluster.db_8.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/moex10sttranscriptcluster.db_8.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-moex10sttranscriptcluster.db/bioconductor-moex10sttranscriptcluster.db_8.8.0_src_all.tar.gz"
 )
-MD5="67253f6ab5cb335049139951ca8064bd"
+MD5="bc3357b3c77ab7bf1dfb66f5f7da36ec"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

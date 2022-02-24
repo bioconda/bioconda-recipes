@@ -1,0 +1,52 @@
+{% set name = "grafimo" %}
+{% set version = "1.1.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "ff409a60fd609bedb39dd6d31124816dbc35a07fc5630665916c71a504611c68"
+
+build:
+  number: 1
+  entry_points:
+    - grafimo = grafimo.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  skip: true  # [osx or py < 37]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - numpy
+    - pandas
+    - pip
+    - python
+    - cython >=0.28
+    - sphinx
+  run:
+    - numba >=0.47,<1
+    - {{ pin_compatible('numpy') }}
+    - {{ pin_compatible('pandas') }}
+    - python
+    - statsmodels >=0.11
+    - colorama
+    - vg
+    - graphviz
+    - htslib
+
+test:
+  commands:
+    - grafimo --help
+
+about:
+  home: https://github.com/pinellolab/GRAFIMO
+  license: MIT
+  summary: "GRAFIMO, GRAph-based Finding of Indivividual Motif Occurrences"
+  
+
+extra:
+  recipe-maintainers:
+    - ManuelTgn

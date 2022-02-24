@@ -1,35 +1,50 @@
-{% set name = "irida-uploader" %}
-{% set version = "0.2.1" %}
+{% set name = "iridauploader" %}
+{% set version = "0.7.1" %}
+{% set pkg_name = "irida-uploader" %}
 
 package:
-  name: '{{ name }}'
-  version: '{{ version }}'
+  name: "{{ pkg_name }}"
+  version: "{{ version }}"
 
 source:
-  url: https://github.com/phac-nml/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: f0c82ad6624dc1330b10e9002c0f54ae0807f68a5906ba055d6c7cbe333d5815
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 27460b6854434ba5802f780405901fa9f3492f638c471aa1ef857d625c2acb32
 
 build:
   number: 0
-  noarch: generic
+  noarch: python
+  entry_points:
+    - irida-uploader=iridauploader.core.cli:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
-  run:
+  host:
+    - appdirs>=1.4.3
+    - argparse
+    - cerberus
+    - pip
     - python>=3.5.*
     - rauth>=0.7.3
     - requests>=2.21.0
+    - requests-toolbelt>=0.9.1
+  run:
     - appdirs>=1.4.3
+    - argparse
     - cerberus
+    - python>=3.5.*
+    - rauth>=0.7.3
+    - requests>=2.21.0
+    - requests-toolbelt>=0.9.1
+
 test:
   commands:
     - irida-uploader --help
 
 about:
   home: https://github.com/phac-nml/irida-uploader
-  license: Apache Software License
+  license: Apache-2.0
   license_family: APACHE
-  license_file: 'LICENSE'
-  summary: Sequence file uploader for IRIDA
+  summary: Upload NGS data to IRIDA system
   author: Jeffrey Thiessen
   doc_url: 'https://irida-uploader.readthedocs.io/en/latest'
   dev_url: 'https://github.com/phac-nml/irida-uploader'

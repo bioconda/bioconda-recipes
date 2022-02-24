@@ -1,48 +1,51 @@
 {% set name = "perl-test2-suite" %}
-{% set version = "0.000117" %}
-{% set sha256 = "e8877a90655ace2e8302104e0de27faf777397194738b085b209749c091ef154" %}
+{% set version = "0.000144" %}
+{% set sha256 = "90c03c4445bf5657d6befeb29228ee2b7ee2ca3f915cd10a856436c6daeb8e01" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://cpan.metacpan.org/authors/id/E/EX/EXODIST/Test2-Suite-0.000117.tar.gz
+  url: https://cpan.metacpan.org/authors/id/E/EX/EXODIST/Test2-Suite-0.000144.tar.gz
   sha256: {{ sha256 }}
 
+# If this is a new build for the same version, increment the build
+# number. If you do not include this key, it defaults to 0.
 build:
+  noarch: generic
   number: 0
+  run_exports:
+    weak:
+      - {{ name }} ={{ version }}
 
 requirements:
+  build:
+    - make
+  # Run exports are used now
   host:
     - perl
-    - perl-module-build
     - perl-importer
+    - perl-term-table
     - perl-sub-info
     - perl-scope-guard
-    - perl-extutils-makemaker
-    - perl-term-table
     - perl-module-pluggable
-    - perl-carp
-    - perl-data-dumper
-    - perl-time-hires
-    - perl-exporter
     - perl-test-simple
 
   run:
     - perl
     - perl-importer
+    - perl-term-table
     - perl-sub-info
     - perl-scope-guard
-    - perl-term-table
-    - perl-module-pluggable
-    - perl-carp
-    - perl-data-dumper
-    - perl-time-hires
-    - perl-exporter
 
 test:
+  # Perl 'use' tests
   imports:
+    - Test2::AsyncSubtest
+    - Test2::AsyncSubtest::Event::Attach
+    - Test2::AsyncSubtest::Event::Detach
+    - Test2::AsyncSubtest::Hub
     - Test2::Bundle
     - Test2::Bundle::Extended
     - Test2::Bundle::More
@@ -57,7 +60,9 @@ test:
     - Test2::Compare::Delta
     - Test2::Compare::Event
     - Test2::Compare::EventMeta
+    - Test2::Compare::Float
     - Test2::Compare::Hash
+    - Test2::Compare::Isa
     - Test2::Compare::Meta
     - Test2::Compare::Negatable
     - Test2::Compare::Number
@@ -71,12 +76,40 @@ test:
     - Test2::Compare::String
     - Test2::Compare::Undef
     - Test2::Compare::Wildcard
+    - Test2::Manual
+    - Test2::Manual::Anatomy
+    - Test2::Manual::Anatomy::API
+    - Test2::Manual::Anatomy::Context
+    - Test2::Manual::Anatomy::EndToEnd
+    - Test2::Manual::Anatomy::Event
+    - Test2::Manual::Anatomy::Hubs
+    - Test2::Manual::Anatomy::IPC
+    - Test2::Manual::Anatomy::Utilities
+    - Test2::Manual::Concurrency
+    - Test2::Manual::Contributing
+    - Test2::Manual::Testing
+    - Test2::Manual::Testing::Introduction
+    - Test2::Manual::Testing::Migrating
+    - Test2::Manual::Testing::Planning
+    - Test2::Manual::Testing::Todo
+    - Test2::Manual::Tooling
+    - Test2::Manual::Tooling::FirstTool
+    - Test2::Manual::Tooling::Formatter
+    - Test2::Manual::Tooling::Nesting
+    - Test2::Manual::Tooling::Plugin::TestExit
+    - Test2::Manual::Tooling::Plugin::TestingDone
+    - Test2::Manual::Tooling::Plugin::ToolCompletes
+    - Test2::Manual::Tooling::Plugin::ToolStarts
+    - Test2::Manual::Tooling::Subtest
+    - Test2::Manual::Tooling::TestBuilder
+    - Test2::Manual::Tooling::Testing
     - Test2::Mock
     - Test2::Plugin
     - Test2::Plugin::BailOnFail
     - Test2::Plugin::DieOnFail
     - Test2::Plugin::ExitSummary
     - Test2::Plugin::SRand
+    - Test2::Plugin::Times
     - Test2::Plugin::UTF8
     - Test2::Require
     - Test2::Require::AuthorTesting
@@ -89,6 +122,7 @@ test:
     - Test2::Suite
     - Test2::Todo
     - Test2::Tools
+    - Test2::Tools::AsyncSubtest
     - Test2::Tools::Basic
     - Test2::Tools::Class
     - Test2::Tools::ClassicCompare
@@ -98,21 +132,41 @@ test:
     - Test2::Tools::Event
     - Test2::Tools::Exception
     - Test2::Tools::Exports
+    - Test2::Tools::GenTemp
     - Test2::Tools::Grab
     - Test2::Tools::Mock
     - Test2::Tools::Ref
+    - Test2::Tools::Spec
     - Test2::Tools::Subtest
     - Test2::Tools::Target
+    - Test2::Tools::Tester
     - Test2::Tools::Warnings
     - Test2::Util::Grabber
     - Test2::Util::Ref
     - Test2::Util::Stash
     - Test2::Util::Sub
     - Test2::Util::Table
+    - Test2::Util::Table::Cell
     - Test2::Util::Table::LineBreak
+    - Test2::Util::Term
+    - Test2::Util::Times
+    - Test2::V0
+    - Test2::Workflow
+    - Test2::Workflow::BlockBase
+    - Test2::Workflow::Build
+    - Test2::Workflow::Runner
+    - Test2::Workflow::Task
+    - Test2::Workflow::Task::Action
+    - Test2::Workflow::Task::Group
+
+  # You can also put a file called run_test.pl (or run_test.py) in the recipe
+  # that will be run at test time.
 
 about:
-  home: http://metacpan.org/pod/Test2::Suite
+  home: http://metacpan.org/pod/Test2-Suite
   license: perl_5
   summary: 'Distribution with a rich set of tools built upon the Test2 framework.'
 
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml

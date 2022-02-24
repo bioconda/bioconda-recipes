@@ -3,29 +3,32 @@
 
 package:
   name: selscan
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url: https://github.com/szpiech/selscan/archive/{{ version }}.tar.gz
   patches:
     - Makefile.linux.patch # [linux]
     - Makefile.mac.patch # [osx]
-  sha256: '{{ sha256 }}'
+  sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 3
 
 requirements:
   build:
-    - '{{ compiler("c") }}'
+    - make
+    - {{ compiler('cxx') }}
   host:
+    - gsl
     - zlib
   run:
+    - gsl
     - zlib
 
 test:
   commands:
-    - selscan 2>&1 | grep 'selscan' &> /dev/null
+    - selscan 2>&1 | grep -qF 'selscan'
 
 about:
   home: https://github.com/szpiech/selscan
@@ -37,3 +40,5 @@ extra:
   identifiers:
     - biotools:selscan
     - doi:10.1093/molbev/msu211
+  skip-lints:
+    - should_not_be_noarch_source

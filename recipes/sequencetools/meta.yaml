@@ -1,0 +1,47 @@
+{% set version = "1.5.2" %}
+
+package:
+  name: sequencetools
+  version: {{ version }}
+
+source:
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/genoStats-linux # [linux]
+    md5: 9f136feb11db3ab34951528e19fcd787 # [linux]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/pileupCaller-linux # [linux]
+    md5: 7f58cc43b413e87a98b4a9f806b376c7 # [linux]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/vcf2eigenstrat-linux # [linux]
+    md5: 344e8f6f96b5d3def40e95ad89f82c48 # [linux]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/genoStats-macOS # [osx]
+    md5: c13feadc53561b189b023aa1f1382ba4 # [osx]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/pileupCaller-macOS # [osx]
+    md5: 669b9a1e4ffb6e3e4320d2d1ef5c20ca # [osx]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/vcf2eigenstrat-macOS # [osx]
+    md5: b757cfd497f769378b768c5e8f0b3ab7 # [osx]
+
+build:
+  number: 0
+  script:
+    - "mkdir -p $PREFIX/bin"
+    - "for TOOL in genoStats pileupCaller vcf2eigenstrat; do mv $TOOL-* $PREFIX/bin/$TOOL; chmod u+x $PREFIX/bin/$TOOL; done"
+
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  run:
+    - zlib
+    - xz
+    - gmp
+    - samtools
+
+test:
+  commands:
+    - pileupCaller --version
+    - genoStats --version
+    - vcf2eigenstrat --version
+
+about:
+  home: https://github.com/stschiff/sequenceTools
+  license: MIT
+  summary: Tools for population genetics on sequencing data
+

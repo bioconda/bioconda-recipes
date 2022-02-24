@@ -1,4 +1,4 @@
-{% set version = "5.5.4" %}
+{% set version = "7.0.0" %}
 
 package:
   name: snakemake
@@ -6,10 +6,10 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/snakemake/snakemake-{{ version }}.tar.gz
-  sha256: 44ef8e4d9850b2480f29ddbcc6d57540be9440d1422366bb3bb68e285377a959
+  sha256: ab5c6b8f97d93714d2289dcb23cdc1027df2bc45cc09d083c759b24820fc53f4
 
 build:
-  number: 1
+  number: 0
   noarch: generic
 
 requirements:
@@ -28,12 +28,20 @@ requirements:
     - pandas
     - python-irodsclient
     - google-cloud-storage
+    - google-api-python-client
+    - google-crc32c
     - boto3
     - jsonschema
-    - jinja2
-    - pygraphviz
+    - pygraphviz >=1.5
     - networkx >=2.0
     - pygments
+    # older versions of imagemagick sometimes fail on PDF -> PNG conversion
+    - imagemagick >=7.0
+    - oauth2client
+    - slacker
+    # libXau is currently a missing dep for graphviz (linked by lib/graphviz/libgvplugin_pango.so)
+    - xorg-libxau
+    - peppy
 
 test:
   imports:
@@ -42,9 +50,13 @@ test:
     - export GIT\_PYTHON_REFRESH=warn
     - snakemake --version
     - snakemake --version | grep "{{ version }}"
+    # Generate a report to check whether graphviz dependencies (libXau) are properly installed:
+    - 'printf %s\\n "rule empty:" > Snakefile && snakemake --cores 1 --report'
+    # Remove test artifacts from command above.
+    - rm -rf .snakemake Snakefile report.html
 
 about:
-  home: https://snakemake.readthedocs.io
+  home: https://snakemake.github.io
   license: MIT
   summary: A popular workflow management system aiming at full in-silico reproducibility.
   description: |
@@ -92,6 +104,16 @@ outputs:
         - appdirs
         - jsonschema
         - gitpython
+        - toposort
+        - nbformat
+        - connection_pool >=0.0.3
+        - pulp >=2.0
+        - smart_open >=3.0
+        - filelock
+        - stopit
+        - tabulate
+        - jinja2 >=3.0,<4.0
+        - yte >=1.0,<2.0
 
     test:
       imports:
@@ -102,7 +124,7 @@ outputs:
         - snakemake --version | grep "{{ version }}"
     
     about:
-      home: https://snakemake.readthedocs.io
+      home: https://snakemake.github.io
       license: MIT
       summary: A popular workflow management system aiming at full in-silico reproducibility.
       description: |

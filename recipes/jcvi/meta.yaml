@@ -1,43 +1,53 @@
 {% set name = "jcvi" %}
-{% set version = "0.8.12" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "dbe6422b388f92abf806f5c21ec3fd050b6a1a5471bd459b538827e109224d8d" %}
+{% set version = "1.1.19" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: bbe3f75d26c621ef1bc3c1ae067a707576fc677479f55addc6c9f0b6d2d8951d
 
 build:
-  number: 1
-  skip: True  # [not py27]
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  skip: True  # [py2k]
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - python
-    - setuptools
-    - biopython
-    - deap
-    - matplotlib
-    - networkx
-    - numpy
+    - pip
+    - numpy 
     - cython
   run:
     - python
     - biopython
+    - boto3
+    - brewer2mpl
+    - coveralls
     - deap
-    - matplotlib
+    - ete3
+    - gffutils
+    - goatools
+    - graphviz
+    - jinja2
+    - matplotlib-base
+    - natsort
     - networkx
     - numpy
-    - r-ggplot2 >=3.0.0
-    - gffutils
+    - pypdf2
+    - pytest
+    - pytest-benchmark
+    - pytest-cov
+    - pyyaml
+    - rich
+    - scipy
+    - seaborn
+    #- texlive-core
+    - ucsc-liftover
 
 test:
   imports:
@@ -53,13 +63,12 @@ test:
     - jcvi.utils
     - jcvi.utils.data
     - jcvi.variation
+  commands:
+    - python -m jcvi.apps 2>&1 | grep "JCVI utility libraries"
 
 about:
   home: http://github.com/tanghaibao/jcvi
-  license: BSD License
+  license: BSD-2-Clause
   license_family: BSD
   summary: Python utility libraries on genome assembly, annotation and comparative genomics
   description: "JCVI utility libraries"
-
-extra:
-  recipe-maintainers: ''

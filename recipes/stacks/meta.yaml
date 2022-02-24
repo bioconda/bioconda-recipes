@@ -1,0 +1,70 @@
+{% set version="2.60" %}
+{% set hash="a69286ed9d53c8bc14caa4671989374163c9a8a78d716d3818c5bb9b23c548d3" %}
+package:
+  name: stacks
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True  # [osx]
+
+source:
+  sha256: {{ hash }}
+  url: https://catchenlab.life.illinois.edu/stacks/source/stacks-{{ version }}.tar.gz
+  patches:
+    - at.patch
+    - kmer_exit.patch
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - openmp  # [linux]
+  run:
+    - perl
+    - perl-bioperl-core
+    - perl-file-spec
+    - perl-file-temp
+    - perl-posix
+    - python >=3
+    - velvet
+    - samtools
+    - zlib
+    - openmp  # [linux]
+    - r-base >=4
+
+test:
+  commands:
+    - cstacks 2>&1 | grep -Fq 'cstacks {{ version }}'
+    - gstacks 2>&1 | grep -Fq 'gstacks {{ version }}'
+    - sstacks 2>&1 | grep -Fq 'sstacks {{ version }}'
+    - ustacks 2>&1 | grep -Fq 'ustacks {{ version }}'
+    - phasedstacks 2>&1 | grep -Fq 'phasedstacks {{ version }}'
+    - populations 2>&1 | grep -Fq 'populations {{ version }}'
+    - process_radtags 2>&1 | grep -Fq 'process_radtags {{ version }}'
+    - process_shortreads 2>&1 | grep -Fq 'process_shortreads {{ version }}'
+    - clone_filter 2>&1 | grep -Fq 'clone_filter {{ version }}'
+    - kmer_filter 2>&1 | grep -Fq 'kmer_filter {{ version }}'
+    - stacks-dist-extract 2>&1 | grep -q Usage
+    - tsv2bam 2>&1 | grep -Fq 'tsv2bam {{ version }}'
+    - convert_stacks.pl 2>&1 | grep -Fq 'convert_stacks.pl _VERSION_'
+    - denovo_map.pl -h 2>&1 | grep -Fq 'denovo_map.pl {{ version }}'
+    - extract_interpop_chars.pl -h 2>&1 | grep -Fq 'extract-interpop-chars.pl'
+    - stacks-integrate-alignments 2>&1 | grep -Fq usage
+    - ref_map.pl 2>&1 | grep -Fq 'ref_map.pl {{ version }}'
+    - stacks-count-reads-per-sample-per-locus 2>&1 | grep -Fq usage
+    - stacks-hist2d-loci-samples-coverage 2>&1 | grep -Fq usage
+    - stacks-samtools-tview 2>&1 | grep -Fq usage
+
+about:
+  home: https://catchenlab.life.illinois.edu/stacks/
+  license: GPL
+  license_file: LICENSE
+  summary: Stacks is a software pipeline for building loci from RAD-seq
+
+extra:
+  identifiers:
+    - biotools:Stacks
+    - doi:10.1111/mec.12354

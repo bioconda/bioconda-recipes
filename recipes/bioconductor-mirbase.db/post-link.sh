@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="mirbase.db_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/mirbase.db_1.2.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/mirbase.db_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mirbase.db_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mirbase.db/bioconductor-mirbase.db_1.2.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mirbase.db/bioconductor-mirbase.db_1.2.0_src_all.tar.gz"
 )
 MD5="316bc12cee8c2dd9240b7fc30cd1619e"

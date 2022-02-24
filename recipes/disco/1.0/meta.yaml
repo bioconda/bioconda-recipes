@@ -1,23 +1,27 @@
-{% set name = "disco" %}
 {% set version = "1.0" %}
 {% set md5 = "774c877e4cf31ebc73ee5ad66a4ed054" %}
 
 package:
-  name: {{ name }}
+  name: disco
   version: {{ version }}
 
 source:
   url: https://github.com/abiswas-odu/Disco/archive/{{ version }}.tar.gz
   md5: {{ md5 }}
+  patches:
+    - 0001-Replace-g++-by-CXX.patch
 
 build:
-  number: 2
+  number: 4
   skip: True  # [osx]
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
   host:
     - openmpi >=1.8
     - zlib
@@ -31,11 +35,20 @@ test:
     - runDisco-MPI.sh -h  2>&1 | grep "runDisco"
     - runDisco-MPI-ALPS.sh -h 2>&1 | grep "runDisco"
     - runDisco-MPI-SLURM.sh -h 2>&1 | grep "runDisco"
-    - runAssembly.sh -h 2>&1 | grep "runAssembly"
-    - runAssembly-MPI.sh -h 2>&1 | grep "runAssembly"
-    - runECC.sh -h 2>&1 | grep "runECC"
+    - runAssembly.sh -h 2>&1 | grep "runDisco"
+    - runAssembly-MPI.sh -h 2>&1 | grep "runDisco"
+    - runECC.sh -h 2>&1 | grep "runDisco"
+    - buildG --help
+    - buildG-MPI --help
+    - buildG-MPIRMA --help
+    - fullsimplify --help
 
 about:
   home: http://disco.omicsbio.org/
   license: 'GPL-3.0'
   summary: 'Multi-threaded Distributed Memory Overlap-Layout-Consensus (OLC) Metagenome Assembler'
+
+extra:
+  container:
+    # "nproc: command not found"
+    extended-base: True

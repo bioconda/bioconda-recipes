@@ -1,0 +1,61 @@
+{% set name = "megalodon" %}
+{% set version = "2.4.1" %}
+{% set hash = "c67de21120407258019498cd704892573f687576edbb3d4d4c5bb4b48aa56e7c" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/nanoporetech/megalodon/archive/{{ version }}.tar.gz
+  sha256: {{ hash }}
+
+build:
+  number: 0
+  entry_points:
+    - megalodon = megalodon.__main__:_main
+    - megalodon_extras = megalodon_extras.__main__:_main
+  skip: True  # [py2k or py == 39]
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - cython
+    - python
+    - pip
+    - numpy >=1.9.0
+    - setuptools  # [osx]
+  run:
+    - python
+    - setuptools
+    - h5py >=2.2.1
+    - numpy >=1.9.0
+    - scipy >=1.1.0
+    - mappy >=2.16
+    - pysam >=0.15
+    - ont-fast5-api >=3.2
+    - tqdm
+    - scikit-learn
+    - seaborn
+
+test:
+  imports:
+    - megalodon
+  commands:
+    - megalodon --help
+    - megalodon_extras --help
+
+about:
+  home: https://github.com/nanoporetech/megalodon
+  license: Mozilla Public License 2.0
+  license_family: OTHER
+  license_file: LICENCE.txt
+  summary: Nanopore modified base and sequence variant detection.
+  doc_url: https://nanoporetech.github.io/megalodon/index.html
+  dev_url: https://github.com/nanoporetech/megalodon
+
+extra:
+  recipe-maintainers:
+    - marcus1487

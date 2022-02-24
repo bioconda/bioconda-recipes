@@ -7,8 +7,8 @@ source:
   md5: 883df68d2f989c4c431ebb253ca104f7
 
 build:
-  skip: True # [py27]
-  number: 3
+  noarch: python
+  number: 4
   entry_points:
     - compile_stats=samsifter.stats.compile_stats:main
     - count_taxon_reads=samsifter.tools.count_taxon_reads:main
@@ -25,20 +25,18 @@ build:
     - samsifter=samsifter.samsifter:main
 
 requirements:
+  build:
+    - xorg-libxfixes  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
   host:
-    - python
-    - setuptools
-    - matplotlib >=1.3.1
-    - python-dateutil
-    - pandas >=0.14.1
-    - numpy >=1.6.1
-    - pyqt 4.11.*
-    - glib
-    - pytz
-    - xorg-libsm
-    - xorg-libxrender
+    - python >=3
+    - pip
   run:
-    - python
+    - python >=3
     - matplotlib >=1.3.1
     - pandas >=0.14.1
     - numpy >=1.6.1
@@ -62,7 +60,7 @@ test:
 
   commands:
     - compile_stats --help
-    - count_taxon_reads --help
+    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" count_taxon_reads --help
     - filter_read_conservation --help
     - filter_read_list --help
     - filter_ref_coverage --help
@@ -78,9 +76,9 @@ test:
 about:
   home: http://pypi.python.org/pypi/SamSifter/
   license: GNU General Public License v3 (GPLv3)
+  license_file: LICENSE.txt
   summary: 'Workflow editor for metagenomic analysis'
 
 extra:
   container:
-    # matplotlib needs opengl support
-    extended-base: true
+    extended-base: True

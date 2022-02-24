@@ -1,0 +1,37 @@
+{% set version = "1.2.3" %}
+
+package:
+  name: arcs
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  url: https://github.com/bcgsc/arcs/releases/download/v{{ version }}/arcs-{{ version }}.tar.gz
+  sha256: 191c863e4fb556bdbad20e8dfa675cb35e209b9198ab06bb8e7b948d9469a066 
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - boost-cpp
+    - sparsehash
+    - zlib
+    - llvm-openmp # [osx]
+  run:
+    - zlib
+    - llvm-openmp # [osx]
+    - make
+
+test:
+  commands:
+    - arcs --version | grep 'arcs {{ version }}'
+    - arcs-make help
+
+about:
+  home: https://github.com/bcgsc/arcs
+  license: GPL-3.0
+  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
+  summary: Scaffolding genome sequence assemblies using linked or long reads 

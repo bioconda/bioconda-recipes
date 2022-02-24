@@ -1,0 +1,75 @@
+# Update from download page, e.g. https://manual.gromacs.org/documentation/2021/download.html
+# For latest release, see
+# https://manual.gromacs.org/documentation/
+{% set version = "2021.1" %}
+{% set md5sum = "3c13b7dc3d8627904dc401dc893934d6" %}
+{% set build = 0 %}
+
+package:
+  name: gromacs_mpi
+  version: {{ version }}
+
+build:
+  number: {{ build }}
+
+source:
+  url: http://ftp.gromacs.org/pub/gromacs/gromacs-{{ version }}.tar.gz
+  md5: {{ md5sum }}
+  patches: 0001-Fix-OpenCL-build-on-OSX.patch
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - cmake >3.13
+    - pocl
+    - python >3.5
+    - perl
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  host:
+    - ocl-icd  # [linux]
+    - khronos-opencl-icd-loader  # [osx]
+    - libhwloc 2.*
+    - fftw
+    - {{ mpi }}
+  run:
+    - ocl-icd # [linux]
+    - khronos-opencl-icd-loader  # [osx]
+    - ocl_icd_wrapper_apple # [osx]
+    - fftw
+    - libhwloc 2.*
+    - {{ mpi }}
+
+test:
+  commands:
+    - gmx_mpi -version
+
+about:
+  home: http://www.gromacs.org/
+  # TODO: Check which other licenses should be included.
+  #       From the COPYING file:
+  #         GROMACS is free software, distributed under the GNU Lesser General
+  #         Public License (LGPL) Version 2.1 or (at your option) any later
+  #         version. See section 1 for details. GROMACS includes optional code
+  #         covered by several different licences as described below.  The
+  #         GROMACS package in its entirety may be copied, modified or
+  #         distributed according to the conditions described in section 1.
+  #         However, in the interests of clarity and completeness, some
+  #         individual parts of GROMACS that can be used under their respective
+  #         licenses are also noted here.
+  license: LGPL-2.1-or-later
+  license_file: COPYING
+  summary: GROMACS is a versatile package to perform molecular dynamics.
+
+extra:
+  container:
+    # openmpi needs ssh/rsh
+    extended-base: true
+  identifiers:
+    - biotools:gromacs
+    - doi:10.5281/zenodo.2564764 # source release
+    - doi:10.5281/zenodo.2564761 # documentation release
+    - doi:10.1016/j.softx.2015.06.001 # journal article
+    - rrid:SCR_014565
+    - usegalaxy-eu:gmx_sim

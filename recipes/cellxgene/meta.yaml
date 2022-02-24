@@ -1,0 +1,78 @@
+{% set name = "cellxgene" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "205d5e9c38ac4186f163d574291f8866eefc8aa30d6a0d2fccb282ea9d4de7b4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - cellxgene = server.cli.cli:cli
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - anndata >=0.7.6
+    - boto3 >=1.12.18
+    - click >=7.1.2
+    - fastobo >=0.6.1
+    - flask >=1.0.2
+    - flask-compress >=1.4.0
+    - flask-cors >=3.0.9
+    - flask-restful >=0.3.6
+    - flask-server-timing >=0.1.2
+    - flask-talisman >=0.7.0
+    - python-flatbuffers >=1.11.0,<2.0.0
+    - flatten-dict >=0.2.0
+    - fsspec >=0.4.4,<0.8.0
+    - gunicorn >=20.0.4
+    - h5py >=3.0.0
+    - numba >=0.51.2
+    - numpy >=1.17.5
+    - packaging >=20.0
+    - pandas >=1.0,!=1.1
+    - python >=3.6
+    - pyyaml >=5.4
+    - requests >=2.22.0
+    - s3fs ==0.4.2
+    - scipy >=1.4.0
+    - tiledb-py >=0.6.2
+    - sqlalchemy
+
+test:
+  imports:
+    - server
+    - server.app
+    - server.cli
+    - server.common
+    - server.common.web
+    - server.data_anndata
+    - server.data_common
+  commands:
+    - cellxgene --help
+
+about:
+  home: https://chanzuckerberg.github.io/cellxgene/
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Web application for exploration of large scale scRNA-seq datasets"
+  doc_url: "https://github.com/chanzuckerberg/cellxgene"
+  dev_url: "https://chanzuckerberg.github.io/cellxgene/"
+
+extra:
+  recipe-maintainers:
+    - bgruening
+    - holtgrewe
+  identifiers:
+    - usegalaxy-eu:interactive_tool_cellxgene

@@ -1,9 +1,22 @@
 #!/bin/bash
+set -eu -o pipefail
 
-$PYTHON setup.py install
+OUTPREFIX=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 
-# Add more build steps here, if they are necessary.
+# Create directory
+mkdir -p ${OUTPREFIX}
+mkdir -p ${OUTPREFIX}/script
 
-# See
-# http://docs.continuum.io/conda/build.html
-# for a list of environment variables that are set during the build process.
+# Copy bin file and script
+cp medusa.jar ${OUTPREFIX}
+cp medusa_scripts/* ${OUTPREFIX}/script/
+
+mkdir -p ${PREFIX}/bin
+cat > ${PREFIX}/bin/medusa <<EOF
+#!/bin/bash
+
+java -jar ${OUTPREFIX}/medusa.jar -scriptPath ${OUTPREFIX}/script/ \$@
+
+EOF
+
+chmod +x ${PREFIX}/bin/medusa

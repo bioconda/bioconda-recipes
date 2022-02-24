@@ -1,11 +1,7 @@
-#!/bin/sh
-set -e
+#!/bin/bash
+python -m pip install . --ignore-installed --no-deps -vv
+mkdir -p $PREFIX/opt/kaptive_reference_database
+mkdir -p $PREFIX/opt/kaptive_sample_data
 
-
-mkdir -p $PREFIX/bin
-
-cp kaptive.py $PREFIX/bin
-cp extras/kaptive_slurm.py $PREFIX/bin
-
-chmod a+x $PREFIX/bin/kaptive.py
-chmod a+x $PREFIX/bin/kaptive_slurm.py
+mv $SRC_DIR/reference_database/*.* $PREFIX/opt/kaptive_reference_database/
+mv $SRC_DIR/sample_data/*.* $PREFIX/opt/kaptive_reference_database/

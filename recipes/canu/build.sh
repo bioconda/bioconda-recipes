@@ -1,10 +1,12 @@
 #!/bin/bash
 
-mkdir -p "$PREFIX/libexec" "$PREFIX/bin"
+# fail on all errors
+set -e
 
-# Build Canu into libexec dir
-( cd src; make TARGET_DIR=$PREFIX/libexec )
+mkdir -p "$PREFIX/bin"
+mkdir -p "$PREFIX/lib"
+mkdir -p "$PREFIX/share"
 
-# Link all executable files to bin
-find $PREFIX/libexec -type f -perm +111 -exec ln -s {} $PREFIX/bin \;
-
+cp -r bin/* $PREFIX/bin/
+cp -r lib/* $PREFIX/lib/
+cp -r share/* $PREFIX/share/

@@ -1,19 +1,18 @@
-{% set name = "matlock" %}
-{% set version = "20181227" %}
-{% set commit = "9fe3fdd30ca792a4e43324137d84793689893e4d" %}
-{% set sha256 = "658b61873fa95c510735978404f3779d8aaa3e5841a1c47887f93494ec09699f" %}
-
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: matlock
+  version: 20181227
 
 build:
-  number: 0
+  number: 3
 
 source:
-  git_url: https://github.com/phasegenomics/{{ name }}.git
-  git_rev: {{ commit }}
-  sha256: {{ sha256 }}
+  - url: https://github.com/phasegenomics/matlock/archive/9fe3fdd30ca792a4e43324137d84793689893e4d.tar.gz
+    sha256: 658b61873fa95c510735978404f3779d8aaa3e5841a1c47887f93494ec09699f
+    patches:
+      - 0001-Use-CC.patch
+  - url: https://github.com/samtools/htslib/archive/af40c731bddaa933fe1ca5beb5cd14d7c042b10f.tar.gz
+    sha256: 624357a528734e163417c13c9c90d86821a465444497a891172854d5b37feaf5
+    folder: htslib
 
 requirements:
   build:
@@ -21,16 +20,15 @@ requirements:
     - make
   host:
     - gsl
-    - openblas
+    - libcblas
     - zlib
     - bzip2
-    - backports.lzma
+    - xz
   run:
     - gsl
-    - openblas
     - zlib
     - bzip2
-    - backports.lzma
+    - xz
 
 test:
   commands:
@@ -41,7 +39,3 @@ about:
   license: GNU Affero General Public License v3
   license_file: LICENSE
   summary: Simple tools for working with Hi-C data
-
-extra:
-  skip-lints:
-    - uses_git_url

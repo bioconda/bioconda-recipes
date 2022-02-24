@@ -1,109 +1,80 @@
 {% set name = "mikado" %}
-{% set version = "1.2.4" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "d9268b08aba2635ad8941371bdbfd415344dc640349bbfcdccbcaf82e6cb064b" %}
+{% set version = "2.3.3" %}
+
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: 'https://github.com/lucventurini/{{name}}/archive/{{version}}.{{file_ext}}'
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/Mikado-{{ version }}.tar.gz
+  sha256: a6cd21a6ce8758bdb316694d24fadcc6bb004a88f9eb244922e960bc106ed526
 
 build:
-  skip: True # [py27 or osx or py33]
   number: 0
+  skip: True   # [py < 37]
   entry_points:
-    - mikado = Mikado:main
-    - daijin = Mikado.daijin:main
-  script: python -m pip install --no-deps --ignore-installed .
+    - mikado = Mikado.__main__:main
+    - daijin = Mikado.daijin.__main__:main
+  script: {{ PYTHON }} -m pip install . -vv
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
-    - python
+    - cython
+    - numpy
     - pip
-    - setuptools
-    - wheel >=0.28.0
-    - pyyaml
-    - jsonschema
-    - cython >=0.28.2
-    - numpy
-    - networkx >=1.10
-    - sqlalchemy >=1
-    - sqlalchemy-utils
-    - biopython >=1.66
-    - intervaltree
-    - nose
-    - pyfaidx
-    - scikit-learn >=0.17.0
-    - scipy >=0.15.0
-    - frozendict
-    - libmagic
-    - python-magic
-    - drmaa
-    - snakemake
-    - docutils !=0.13.1
-    - tabulate
-    - simplejson
-    - ujson
-    - typing
-  run:
     - python
-    - wheel >=0.28.0
-    - pyyaml
-    - jsonschema
-    - cython >=0.28.2
-    - numpy
-    - networkx >=1.10
-    - sqlalchemy >=1
-    - sqlalchemy-utils
-    - biopython >=1.66
-    - intervaltree
-    - nose
-    - pyfaidx
-    - scikit-learn >=0.17.0
-    - scipy >=0.15.0
-    - frozendict
-    - libmagic
-    - python-magic
+    - scipy
+  run:
+    - biopython >=1.78
+    - datrie >=0.8
     - drmaa
-    - snakemake
-    - simplejson
-    - docutils !=0.13.1
-    - tabulate
-    - ujson
-    - portcullis
-    - typing
+    - sqlite
+    - hypothesis
+    - marshmallow >=3.1.0
+    - marshmallow-dataclass >=8.3.1
+    - msgpack-python >=1.0.0
+    - networkx >=2.3
+    - {{ pin_compatible('numpy') }}
+    - {{ pin_compatible('scipy') }}
+    - pandas >=1.0
+    - pyfaidx >=0.5.8
+    - pysam >=0.15.3
+    - pytest
+    - python
+    - pyyaml >=5.1.2
+    - python-rapidjson >=1.0
+    - six >=1.12.0
+    - snakemake-minimal >=5.7.0
+    - sqlalchemy >=1.4.0
+    - sqlalchemy-utils >=0.34.1
+    - tabulate >=0.8.5
+    - toml >=0.10.0
+    - typeguard >=2.9.1
 
 test:
   imports:
     - Mikado
     - Mikado.configuration
-    - Mikado.daijin
     - Mikado.loci
-    - Mikado.parsers
-    - Mikado.picking
-    - Mikado.preparation
-    - Mikado.scales
-    - Mikado.serializers
-    - Mikado.serializers.blast_serializer
-    - Mikado.subprograms
-    - Mikado.subprograms.util
-    - Mikado.tests
-    - Mikado.transcripts
-    - Mikado.transcripts.transcript_methods
-    - Mikado.utilities
-    - nose
+    - rapidjson
   commands:
     - mikado --help
     - daijin --help
-    - python -c "import Mikado; Mikado.test()"
+    #- python -c "import Mikado; Mikado.test(label='fast')"
 
 about:
-  home: https://github.com/lucventurini/mikado
-  license: GNU Lesser General Public License v3 or later (LGPLv3+)
-  license_family: LGPL
+  home: https://github.com/EI-CoreBioinformatics/mikado
   summary: A Python3 annotation program to select the best gene model in each locus
+  license: LGPL-3.0-or-later
+  license_file: LICENSE.txt
 
+extra:
+  recipe-maintainers:
+    - lucventurini
+    - ljyanesm
+    - gemygk
+    - swarbred

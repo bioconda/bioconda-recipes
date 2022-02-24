@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="TxDb.Ptroglodytes.UCSC.panTro4.refGene_3.4.6.tar.gz"
+FN="TxDb.Ptroglodytes.UCSC.panTro4.refGene_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Ptroglodytes.UCSC.panTro4.refGene_3.4.6.tar.gz"
-  "https://bioarchive.galaxyproject.org/TxDb.Ptroglodytes.UCSC.panTro4.refGene_3.4.6.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.ptroglodytes.ucsc.pantro4.refgene/bioconductor-txdb.ptroglodytes.ucsc.pantro4.refgene_3.4.6_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.ptroglodytes.ucsc.pantro4.refgene/bioconductor-txdb.ptroglodytes.ucsc.pantro4.refgene_3.4.6_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/TxDb.Ptroglodytes.UCSC.panTro4.refGene_3.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TxDb.Ptroglodytes.UCSC.panTro4.refGene_3.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.ptroglodytes.ucsc.pantro4.refgene/bioconductor-txdb.ptroglodytes.ucsc.pantro4.refgene_3.12.0_src_all.tar.gz"
 )
-MD5="4cc70fea8cd33576909f8729af2e9a51"
+MD5="9bdd3ba81561550f50250368d7d52eaa"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

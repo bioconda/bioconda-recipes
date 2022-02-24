@@ -1,0 +1,71 @@
+# Update from download page, e.g. http://manual.gromacs.org/2020.5/download.html
+# For latest release, see
+# http://manual.gromacs.org/documentation/
+{% set version = "2020.6" %}
+{% set md5sum = "dc0156d330ae94bb53d75f419229aec8" %}
+{% set build = 0 %}
+
+
+package:
+  name: gromacs
+  version: {{ version }}
+
+build:
+  number: {{ build }}
+
+source:
+  url: http://ftp.gromacs.org/pub/gromacs/gromacs-{{ version }}.tar.gz
+  md5: {{ md5sum }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - cmake
+    - pocl
+    - python >3.5
+    - perl
+  host:
+    - ocl-icd  # [linux]
+    - khronos-opencl-icd-loader  # [osx]
+    - llvm-openmp  # [osx]
+    - openmp  # [linux]
+    - libhwloc 2.*
+    - fftw
+  run:
+    - ocl-icd # [linux]
+    - khronos-opencl-icd-loader  # [osx]
+    - ocl_icd_wrapper_apple # [osx]
+    - openmp # [linux]
+    - fftw
+    - libhwloc 2.*
+
+test:
+  commands:
+    - gmx -version
+
+about:
+  home: http://www.gromacs.org/
+  # TODO: Check which other licenses should be included.
+  #       From the COPYING file:
+  #         GROMACS is free software, distributed under the GNU Lesser General
+  #         Public License (LGPL) Version 2.1 or (at your option) any later
+  #         version. See section 1 for details. GROMACS includes optional code
+  #         covered by several different licences as described below.  The
+  #         GROMACS package in its entirety may be copied, modified or
+  #         distributed according to the conditions described in section 1.
+  #         However, in the interests of clarity and completeness, some
+  #         individual parts of GROMACS that can be used under their respective
+  #         licenses are also noted here.
+  license: LGPL-2.1-or-later
+  license_file: COPYING
+  summary: GROMACS is a versatile package to perform molecular dynamics.
+
+extra:
+  identifiers:
+    - biotools:gromacs
+    - doi:10.5281/zenodo.2564764 # source release
+    - doi:10.5281/zenodo.2564761 # documentation release
+    - doi:10.1016/j.softx.2015.06.001 # journal article
+    - rrid:SCR_014565
+    - usegalaxy-eu:gmx_sim

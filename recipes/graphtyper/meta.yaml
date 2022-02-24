@@ -1,0 +1,52 @@
+{% set name = "graphtyper" %}
+{% set version = "2.7.2" %}
+
+package:
+  name: {{ name }}
+  version: '{{ version }}'
+
+source:
+  # git_url is required for submodule retrieval
+  git_url: https://github.com/DecodeGenetics/{{ name }}.git
+  git_rev: v{{ version }}
+
+build:
+  number: 0
+  #binary_relocation: false
+  skip: true  # [not linux]
+
+requirements:
+  build:
+    - automake
+    - autoconf
+    - libtool
+    - pkg-config
+    - coreutils
+    - binutils
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake >=3.2
+    - make
+  host:
+    - zlib
+    - bzip2
+    - xz
+  run:
+    - zlib
+    - bzip2
+    - xz
+
+test:
+  commands:
+    - graphtyper construct -h
+    - graphtyper genotype -h
+
+about:
+  home: https://github.com/DecodeGenetics/graphtyper
+  license: MIT
+  summary: Population-scale genotyping using pangenome graphs
+
+extra:
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

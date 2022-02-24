@@ -1,36 +1,33 @@
-{% set version="1.9" %}
+{% set version="1.15" %}
 
 package:
   name: bcftools
   version: {{ version }}
 
 build:
-  number: 5
+  number: 0
 
 source:
   url: https://github.com/samtools/bcftools/releases/download/{{ version }}/bcftools-{{ version }}.tar.bz2
-  sha256: 6f36d0e6f16ec4acf88649fb1565d443acf0ba40f25a9afd87f14d14d13070c8
+  sha256: 1885ccb450a86e97a00aa905d7381ca9e07bd8967c05705a61d0007d2e22296e
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
   host:
-    - bzip2
-    - curl
-    - xz
+    - htslib
     - zlib
-    - libdeflate
     - gsl
+    - libcblas
   run:
-    - bzip2
-    - curl
     - gsl
+    - htslib
     # Currently removed due to size and dependency issues
     #- matplotlib # for plot-vcfstats
     #- tectonic # for plot-vcfstats
-    - xz
     - zlib
-    - libdeflate
+    - perl
 
 test:
   commands:
@@ -38,11 +35,13 @@ test:
     - bcftools --version
     - bcftools plugin -lv
     - bcftools -h | grep polysomy
+    - vcfutils.pl 2>&1 | grep vcfutils
     #- plot-vcfstats -h 2>&1 | grep -q "Plots output of "
 
 about:
   home: https://github.com/samtools/bcftools
-  license: MIT
+  license: GPL
+  license_file: LICENSE
   summary: BCFtools is a set of utilities that manipulate variant calls in the Variant
     Call Format (VCF) and its binary counterpart BCF. All commands work transparently
     with both VCFs and BCFs, both uncompressed and BGZF-compressed.  Most commands
@@ -53,4 +52,5 @@ about:
 extra:
   identifiers:
     - biotools:bcftools
+    - usegalaxy-eu:bcftools_merge
     - doi:10.1093/bioinformatics/btp352

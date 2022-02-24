@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="mogene10stv1cdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/mogene10stv1cdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/mogene10stv1cdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mogene10stv1cdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mogene10stv1cdf/bioconductor-mogene10stv1cdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mogene10stv1cdf/bioconductor-mogene10stv1cdf_2.18.0_src_all.tar.gz"
 )
 MD5="9c0271f5d6493290fc47f041a8c3f925"

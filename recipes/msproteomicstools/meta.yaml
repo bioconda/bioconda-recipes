@@ -1,39 +1,32 @@
-{% set name = "msproteomicstools" %}
-{% set version = "0.8.0" %}
-{% set sha256 = "056be6c6180a316f3b4c9eb9a4c5c486a875473f03c1db5ea6561b86b37b8433" %}
+{% set version = "0.11.0" %}
+{% set sha256 = "8ec16ea0d8f852aaa04cd4dcc01838077dc4a234454340df79792e6217cc2c8e" %}
 
 package:
-  name: {{ name|lower }}
+  name: msproteomicstools
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/5d/53/ae715b4dec1e9baa087c7a484c33a9b6d619a0b9e7db9c9802a4bc807b6b/{{ name|lower }}-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/m/msproteomicstools/msproteomicstools-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-setup.py.patch
 
 build:
-  number: 0
+  number: 3
+  skip: True  # [py>=30]
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
-    - python <3
+    - pip
+    - python
     - cython
     - numpy
-    - scipy
-    - mercurial
-    - python-cluster ==1.3.3
-    - pyteomics >=2.4.0
-    - xlsxwriter >=0.5.3
-    - scikits-datasmooth
-    - pymzml ==0.7.8
-    - lxml
-    - configobj
-    - biopython
-    - xlwt
   run:
-    - python <3
-    - numpy
+    - python
+    - {{ pin_compatible('numpy') }}
     - scipy
     - python-cluster ==1.3.3
     - pyteomics >=2.4.0
@@ -41,6 +34,9 @@ requirements:
     - scikits-datasmooth
     - pymzml ==0.7.8
     - lxml
+    - statsmodels
+    ## cylowess would make it faster, but this package is 10 years old
+    ##- cylowess
     - configobj
     - biopython
     - xlwt
@@ -65,5 +61,5 @@ about:
   home: https://github.com/msproteomicstools/msproteomicstools
   license: BSD
   license_family: BSD
-  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
+  license_file: LICENSE
   summary: "msproteomicstools is a Python library that can be used in LC-MS/MS based proteomics. It features a core library called."

@@ -20,9 +20,27 @@ variables:
     run:
       name: Setup bioconda-utils
       command: .circleci/setup.sh
+  setup_macos_sdk: &setup_macos_sdk
+    run:
+      name: Run run_conda_forge_build_setup
+      command: |
+        # download SDK and setup sysroot on macOS
+        #  primarily, run_conda_forge_build_setup does the following:
+        #   - download/setup SDK:
+        #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L21-L26
+        #   - add activation script to set MACOSX_DEPLOYMENT_TARGET and CONDA_BUILD_SYSROOT:
+        #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L60-L63
+        conda activate base
+        # use "CONFIG=" to avoid writing ./.ci_support/${CONFIG}.yaml which we don't need/use.
+        CONFIG= OSX_FORCE_SDK_DOWNLOAD=1 MACOSX_DEPLOYMENT_TARGET=10.13 run_conda_forge_build_setup
+        conda_forge_ci_setup_activate_sh="${CONDA_PREFIX}/etc/conda/activate.d/conda-forge-ci-setup-activate.sh"
+        sed -Ei.bak "s/^(export MACOSX_DEPLOYMENT_TARGET)=.*$/\\1='10.9'/" "${conda_forge_ci_setup_activate_sh}"
+        rm "${conda_forge_ci_setup_activate_sh}".bak
+        cat "${conda_forge_ci_setup_activate_sh}"
+        grep -qFx "export MACOSX_DEPLOYMENT_TARGET='10.9'" "${conda_forge_ci_setup_activate_sh}"
   macos: &macos
     macos:
-      xcode: "8.3.3"
+      xcode: 11.2.1
     environment:
       LC_ALL: en_US.UTF-8
       LANG: en_US.UTF-8
@@ -51,7 +69,8 @@ variables:
       when: always
       no_output_timeout: 20m
       command: |
-        set +e  # Just to be safe. Don't want workflows to fail because of this.
+        (
+        # Run in subshell just to be safe. Don't want workflows to fail because of this.
         mkdir -p /tmp/artifacts/packages
         cd miniconda/conda-bld || exit 0
         find -name .cache | xargs rm -rf || true
@@ -61,11 +80,16 @@ variables:
         if command -V docker >/dev/null; then
           mkdir -p /tmp/artifacts/images
           cd /tmp/artifacts/images
-          docker image ls --format '{{.Repository}}:{{.Tag}}' | \
-            (grep biocontainers || true) | \
-            xargs -n1 -P4 bash -c 'docker save $1 | gzip -c > "${1##*/}.tar.gz"' --
+          docker image ls --format='{{.Repository}}:{{.Tag}}' | \
+            { grep biocontainers || true ; } | \
+            xargs -n1 -P4 bash -c '
+              test -n "${1+x}" || exit 0
+              echo "Start compressing docker image ${1} ..."
+              docker save "${1}" | gzip -c > "${1##*/}.tar.gz"
+              echo "Finished compressing docker image ${1} ."
+              ' --
         fi
-        true
+        ) || true
 
   store_artifacts: &store_artifacts
     store_artifacts:
@@ -130,9 +154,11 @@ jobs:
       - run:
           name: Building and testing
           command: |
+            docker pull quay.io/dpryan79/mulled_container:latest
             bioconda-utils build recipes config.yml \
               --docker --mulled-test \
               --git-range master HEAD
+            docker rmi quay.io/dpryan79/mulled_container:latest
       - *store_built_packages
       - *store_artifacts
 
@@ -145,6 +171,7 @@ jobs:
       - *restore_cache
       - *setup
       - *save_cache
+      - *setup_macos_sdk
       - run:
           name: Building and testing
           command: |
@@ -167,6 +194,7 @@ jobs:
       - run:
           name: Building, testing, and uploading
           command: |
+            docker pull quay.io/dpryan79/mulled_container:latest
             bioconda-utils build recipes config.yml \
               --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
               --git-range $CIRCLE_SHA1~1 $CIRCLE_SHA1 \
@@ -181,6 +209,7 @@ jobs:
       - *restore_cache
       - *setup
       - *save_cache
+      - *setup_macos_sdk
       # build only current commit (since we use squashed merging, this is safe)
       - run:
           name: Building, testing and uploading
@@ -216,6 +245,7 @@ jobs:
       - *restore_cache
       - *setup
       - *save_cache
+      - *setup_macos_sdk
       - run:
           name: Building, testing and uploading of all unpublished recipes
           command: |
@@ -235,6 +265,7 @@ jobs:
       - run:
           name: Building, testing, and uploading of all unpublished recipes
           command: |
+            docker pull quay.io/dpryan79/mulled_container:latest
             bioconda-utils build recipes config.yml \
               --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
               --prelint
@@ -260,61 +291,61 @@ jobs:
 workflows:
   version: 2
   # workflow for testing pushes and PRs
-  bioconda-test:
-    jobs:
-      # Linting is now also performed just before a recipe is built with
-      # bioconda-utils build --prelint.
-      - lint:
-          filters:
-            branches:
-              ignore:
-                - master
-                - bulk
-      - test-linux:
-          requires:
-            - lint
-          filters:
-            branches:
-              ignore:
-                - master
-                - bulk
-      - test-macos:
-          requires:
-            - lint
-            - test-linux
-          filters:
-            branches:
-              ignore:
-                - master
-                - bulk
-  # workflow for uploading packages from master and bulk branch
-  bioconda-upload-master:
-    jobs:
-      - upload-linux:
-          filters:
-            branches:
-              only:
-                - master
-      - upload-macos:
-          filters:
-            branches:
-              only:
-                - master
-  # workflow for bulk-updates
-  bioconda-upload-bulk-linux:
-    jobs:
-      - bulk-linux:
-          filters:
-            branches:
-              only:
-                - bulk
-  bioconda-upload-bulk-macos:
-    jobs:
-      - bulk-macos:
-          filters:
-            branches:
-              only:
-                - bulk
+  #bioconda-test:
+  #  jobs:
+  #    # Linting is now also performed just before a recipe is built with
+  #    # bioconda-utils build --prelint.
+  #    - lint:
+  #        filters:
+  #          branches:
+  #            ignore:
+  #              - master
+  #              - bulk
+  #    - test-linux:
+  #        requires:
+  #          - lint
+  #        filters:
+  #          branches:
+  #            ignore:
+  #              - master
+  #              - bulk
+  #    - test-macos:
+  #        requires:
+  #          - lint
+  #          - test-linux
+  #        filters:
+  #          branches:
+  #            ignore:
+  #              - master
+  #              - bulk
+  ## workflow for uploading packages from master and bulk branch
+  #bioconda-upload-master:
+  #  jobs:
+  #    - upload-linux:
+  #        filters:
+  #          branches:
+  #            only:
+  #              - master
+  #    - upload-macos:
+  #        filters:
+  #          branches:
+  #            only:
+  #              - master
+  ## workflow for bulk-updates
+  #bioconda-upload-bulk-linux:
+  #  jobs:
+  #    - bulk-linux:
+  #        filters:
+  #          branches:
+  #            only:
+  #              - bulk
+  #bioconda-upload-bulk-macos:
+  #  jobs:
+  #    - bulk-macos:
+  #        filters:
+  #          branches:
+  #            only:
+  #              - bulk
   # nightly workflow to capture missed recipes
   bioconda-nightly-upload-linux:
      triggers:

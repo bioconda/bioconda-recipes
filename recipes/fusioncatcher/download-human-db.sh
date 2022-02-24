@@ -1,17 +1,20 @@
 #!/usr/bin/env bash
 
-echo "Downloading Human Ensembl v90 database to ${FC_DB_PATH}/current/..."
+# FusionCatcher v1.33 uses Human Ensembl v102
+echo "Downloading Human Ensembl v102 database to ${FC_DB_PATH}/current/..."
 
 # Direct download:
 cd ${FC_DB_PATH}
-rm -rf human_v90.tar.gz.*
-wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v90.tar.gz.aa
-wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v90.tar.gz.ab
-wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v90.tar.gz.ac
-wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v90.tar.gz.ad
-cat human_v90.tar.gz.* | tar xz
-ln -s human_v90 current
+rm -rf human*.tar.gz.*
 
-echo "Human Ensembl v90 database is downloaded."
+wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/human_v102.tar.gz.aa -O human_v102.tar.gz.aa
+wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/human_v102.tar.gz.ab -O human_v102.tar.gz.ab
+wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/human_v102.tar.gz.ac -O human_v102.tar.gz.ac
+wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/human_v102.tar.gz.ad -O human_v102.tar.gz.ad
+
+cat human_v102.tar.gz.* | tar xz
+ln -s human_v102 current
+
+echo "Human Ensembl v102 database is downloaded."
 
 exit 0

@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="huex10stprobeset.db_8.7.0.tar.gz"
+FN="huex10stprobeset.db_8.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/huex10stprobeset.db_8.7.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/huex10stprobeset.db_8.7.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-huex10stprobeset.db/bioconductor-huex10stprobeset.db_8.7.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-huex10stprobeset.db/bioconductor-huex10stprobeset.db_8.7.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/huex10stprobeset.db_8.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/huex10stprobeset.db_8.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-huex10stprobeset.db/bioconductor-huex10stprobeset.db_8.8.0_src_all.tar.gz"
 )
-MD5="52cf39820872de4ac5529aa1192328b5"
+MD5="fda9fc7340aeda2564a76756d2b8d4d3"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

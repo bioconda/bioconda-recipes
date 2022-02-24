@@ -1,0 +1,48 @@
+{% set version = "1.8.0" %}
+{% set name = "SharedObject" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 015f1a42130d955ce058b206a2e49bb1
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: testthat, parallel, knitr, rmarkdown, BiocStyle
+# SystemRequirements: GNU make, C++11
+requirements:
+  host:
+    - 'bioconductor-biocgenerics >=0.40.0,<0.41.0'
+    - r-base
+    - r-bh
+    - r-rcpp
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-biocgenerics >=0.40.0,<0.41.0'
+    - r-base
+    - r-bh
+    - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Sharing R objects across multiple R processes without memory duplication'
+  description: 'This package is developed for facilitating parallel computing in R. It is capable to create an R object in the shared memory space and share the data across multiple R processes. It avoids the overhead of memory dulplication and data transfer, which make sharing big data object across many clusters possible.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

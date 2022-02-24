@@ -1,47 +1,42 @@
-{% set version = "1.9" %}
+{% set version = "1.15" %}
 
 package:
   name: samtools
   version: {{ version }}
 
 build:
-  number: 11
+  number: 0
 
 source:
-  url: https://github.com/samtools/samtools/releases/download/{{ version }}/samtools-1.9.tar.bz2
-  sha256: 083f688d7070082411c72c27372104ed472ed7a620591d06f928e653ebc23482
+  url: https://github.com/samtools/samtools/releases/download/{{ version }}/samtools-{{ version }}.tar.bz2
+  sha256: 35d945a5eee9817a764490870474f24e538400b0397b28f94247a5b91447215d
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
   host:
-    - openssl
+    - htslib
     - ncurses
     - zlib
-    - bzip2
-    - curl
-    - xz
-    - libdeflate
   run:
-    - openssl
+    - htslib
     - ncurses
     - zlib
-    - bzip2
-    - curl
-    - xz
-    - libdeflate
 
 about:
   home: https://github.com/samtools/samtools
   license: MIT
+  license_file: LICENSE
   summary: Tools for dealing with SAM, BAM and CRAM files
 
 test:
   commands:
     - samtools --help
     # test if https protocol works, if it doesnt samtools will fail with "Protocol not supported"
-    - samtools view 'https://example.com' 2>&1 | grep 'truncated file.' -q
+    - samtools view 'https://example.com' 2>&1 | grep 'fail to read the header' -q
 
 extra:
   identifiers:
     - biotools:samtools
+    - usegalaxy-eu:samtools_flagstat

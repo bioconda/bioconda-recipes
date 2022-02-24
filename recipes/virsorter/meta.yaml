@@ -1,0 +1,54 @@
+{% set version = "2.2.3" %}
+{% set sha256 = "b883966e63291147389526fc4ea3b1d844b525a9b092ab0c4969a96b3f02162e" %}
+
+package:
+  name: virsorter
+  version: {{ version }}
+
+source:
+  url: https://github.com/jiarong/VirSorter2/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1      # must start from 0
+  entry_points:
+    - virsorter=virsorter.virsorter:cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - ruamel.yaml =0.16
+    - snakemake-minimal >=5.18,<=5.26
+    - click >=7
+    - git
+    - cookiecutter
+    - mamba
+
+test:
+  imports:
+    - virsorter
+  commands:
+    - virsorter --version
+    - virsorter setup --help
+    - virsorter run --help
+    - virsorter train-feature --help
+    - virsorter train-model --help
+
+about:
+  home: https://github.com/jiarong/VirSorter2
+  dev_url: https://github.com/jiarong/VirSorter2/virsorter
+  license: GPL-2.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: VirSorter2 --  A multi-classifier, expert-guided approach to detect diverse DNA and RNA virus genomes
+
+extra:
+  recipe-maintainers:
+    - jiarong
+  container:
+    extended-base: true  # unicode problem with click

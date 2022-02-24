@@ -1,44 +1,60 @@
-{% set version = "12.00.7fb08c2" %}
+{% set version = "13.45.0.4846264" %}
 
 package:
   name: t-coffee
   version: {{ version }}
 
 build:
-  number: 2
+  number: 4
+  skip: True  # [osx]
 
 source:
-  url: http://tcoffee.org/Packages/Stable/Latest/T-COFFEE_distribution_Version_{{ version }}.tar.gz
-  sha256: 6119514a0e36da4b4de88741b8c12f9c8ab653772b3952a011d4cb373beee44f
+  # The latest stable release is at http://www.tcoffee.org/Packages/Stable/Latest/ ,
+  # but is then archived at http://www.tcoffee.org/Packages/Archives/
+  url: http://www.tcoffee.org/Packages/Archives/T-COFFEE_distribution_Version_{{ version }}.tar.gz
+  sha256: c8e5ba17de11ddf07cf2ed37f077d81c1432d55b77761f115f9374de6f8d0d03
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   run:
     - blast
     - clustalo
     - clustalw
+    - consan # [not osx]
     - dca
     - dialign-tx=1.0.2
+    - kalign2
     - mafft=7.310
     - muscle
     - mustang=3.2.3
+    - pasta
+    - perl
+    - phylip
     - poa=2.0 # [not osx]
     - prank
-    - phylip
-    - viennarna=2.1.9
-    - consan # [not osx]
-    - pasta
+    - probcons
+    - probconsrna
+    - ruby
+    - sap
     - tmalign
-
+    - viennarna=2.1.9
+    
 test:
   commands:
-    - HOME=/tmp/ t_coffee -version
+    - HOME=/tmp t_coffee -version
+    - HOME=/tmp t_coffee 2>&1 | grep "kalign is  Installed"
+    - HOME=/tmp t_coffee 2>&1 | grep "mafft is  Installed"
+    - HOME=/tmp t_coffee 2>&1 | grep "probcons is  Installed"
+    - HOME=/tmp t_coffee 2>&1 | grep "probconsRNA is  Installed"
+    - HOME=/tmp t_coffee 2>&1 | grep "sap is  Installed"
 
 about:
-  home: "https://github.com/cbcrg/tcoffee"
-  license: "GPL"
+  home: http://www.tcoffee.org/Projects/tcoffee/
+  license: GPL-2.0-only
+  license_file: license.txt
   summary: "A collection of tools for Multiple Alignments of DNA, RNA, Protein Sequence"
 
 extra:

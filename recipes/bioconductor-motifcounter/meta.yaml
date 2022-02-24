@@ -1,6 +1,6 @@
-{% set version = "1.8.0" %}
+{% set version = "1.18.0" %}
 {% set name = "motifcounter" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.14" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,19 +10,21 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: b2423266714b75836a8250ebb1a3a0a6
+  md5: e29b1fa1804ec336fcf23ab632f47b66
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 # Suggests: knitr, rmarkdown, testthat, MotifDb, seqLogo, prettydoc
 requirements:
   host:
-    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-biostrings >=2.62.0,<2.63.0'
     - r-base
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-biostrings >=2.62.0,<2.63.0'
     - r-base
   build:
     - {{ compiler('c') }}
@@ -33,7 +35,9 @@ test:
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: '''motifcounter'' provides motif matching, motif counting and motif enrichment functionality based on position frequency matrices. The main features of the packages include the utilization of higher-order background models and accounting for self-overlapping motif matches when determining motif enrichment. The background model allows to capture dinucleotide (or higher-order nucleotide) composition adequately which may reduced model biases and misleading results compared to using simple GC background models. When conducting a motif enrichment analysis based on the motif match count, the package relies on a compound Poisson distribution or alternatively a combinatorial model. These distribution account for self-overlapping motif structures as exemplified by repeat-like or palindromic motifs, and allow to determine the p-value and fold-enrichment for a set of observed motif matches.'
+  summary: 'R package for analysing TFBSs in DNA sequences'
+  description: '''motifcounter'' provides motif matching, motif counting and motif enrichment functionality based on position frequency matrices. The main features of the packages include the utilization of higher-order background models and accounting for self-overlapping motif matches when determining motif enrichment. The background model allows to capture dinucleotide (or higher-order nucleotide) composition adequately which may reduced model biases and misleading results compared to using simple GC background models. When conducting a motif enrichment analysis based on the motif match count, the package relies on a compound Poisson distribution or alternatively a combinatorial model. These distribution account for self-overlapping motif structures as exemplified by repeat-like or palindromic motifs, and allow to determine the p-value and fold-enrichment for a set of observed motif matches.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 extra:
   parent_recipe:
     name: bioconductor-motifcounter

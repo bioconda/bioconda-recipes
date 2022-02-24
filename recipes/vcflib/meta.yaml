@@ -1,30 +1,36 @@
-{% set name = "vcflib" %}
+{% set version = "1.0.3" %}
 
 package:
-  name: {{ name }}
-  version: '1.0.0_rc3'
+  name: vcflib
+  version: {{ version }}
 
 source:
-  git_url: https://github.com/{{ name }}/{{ name }}.git
-  git_rev: 45c68d2df744c0baf3953c10e9220e9d9a1422e3
+  url: https://github.com/vcflib/vcflib/releases/download/v{{ version }}/vcflib-{{ version }}-src.tar.gz
+  sha256: 766bb8f47eb19810b7a0c53b6e3130658300450493d39db46eadc6124b0af200
+  patches:
+    - shared_lib.patch
+    - pkg-config.patch
 
 build:
   number: 0
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-  host:
+    # python really only used as a build tool; no ${PREFIX}/bin/python needed.
     - python >=3
-    - zlib
-    - bzip2
-    - xz
+    - cmake
+    - pkg-config
+  host:
+    - htslib
+    - tabixpp
   run:
     - python >=3
-    - zlib
-    - bzip2
-    - xz
+    - zlib   
+    - htslib
+    - tabixpp
 
 test:
   commands:
@@ -34,14 +40,12 @@ test:
     - vcfrandom | grep 'fileformat=VCF'
 
 about:
-  home: https://github.com/{{ name }}/{{ name }}
+  home: https://github.com/vcflib/vcflib
   license: MIT
   summary: Command-line tools for manipulating VCF files
+  maintainers: jpuritz
 
 extra:
   identifiers:
-    - biotools:{{ name }}
+    - biotools:vcflib
     - doi:10.1101/023754
-  skip-lints:
-    - uses_vcs_url
-    - missing_hash

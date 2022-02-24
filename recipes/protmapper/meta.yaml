@@ -1,0 +1,49 @@
+{% set name = "protmapper" %}
+{% set version = "0.0.21" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "86e939659e3cecbde324250b66b0025d147de819c352a6c0e99d1eae526a33c8"
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - protmapper = protmapper.cli:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python >=3
+  run:
+    - boto3
+    - python >=3
+    - rdflib
+    - requests
+
+test:
+  imports:
+    - protmapper
+    - protmapper.rest_api
+  commands:
+    - protmapper --help
+  requires:
+    - nose
+
+about:
+  home: "https://github.com/indralab/protmapper"
+  license: "BSD"
+  license_family: "BSD"
+  license_file: ""
+  summary: "Map protein sites to human reference sequence."
+  doc_url: "https://protmapper.readthedocs.io"
+  dev_url: "https://github.com/indralab/protmapper"
+
+extra:
+  recipe-maintainers:
+    - bgyori

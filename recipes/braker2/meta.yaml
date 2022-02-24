@@ -1,24 +1,33 @@
 {% set name = "BRAKER2" %}
-{% set version = "2.1.2" %}
-{% set sha256 = "9f178c5fe64ae358dcba9936802d24e330312e698a3f7930d1f91e58974129d3" %}
+{% set version = "2.1.6" %}
+{% set sha256 = "eef3c4037364472988a010322cbd79b5171158f9c016f4383809adade4866c06" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://github.com/Gaius-Augustus/BRAKER/archive/v{{ version }}.tar.gz
+- url: https://github.com/Gaius-Augustus/BRAKER/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - path.patch
+    - braker.pl.patch
+- url: https://raw.githubusercontent.com/Gaius-Augustus/GUSHR/ee26d5c7eee97170c6183089d57477b338a7bc4b/gushr.py
+  sha256: 28f1faff34a75b0bea79510fddc8eddf2ba0d0aca18030c5af252364bf708eab
+  patches:
+    - gushr.py.patch
+- url: https://github.com/Gaius-Augustus/TSEBRA/archive/refs/tags/v1.0.1.tar.gz
+  sha256: afe4c008d964d3554e1e6804e8330cd392d4daa38f1aa0a2739c1e8fbd6278fc
+  folder: tsebra
 
 build:
-  number: 2
+  number: 5
+  noarch: generic
 
 requirements:
   run:
-    - python >=3
+    - python >=3.3
     - biopython
+    - gemoma ==1.6.4
     - perl
     - perl-app-cpanminus
     - perl-hash-merge
@@ -31,20 +40,24 @@ requirements:
     - perl-file-homedir
     - perl-file-which
     - perl-file-spec
-    - perl-list-util
+    - perl-list-moreutils
     - perl-logger-simple
+    - perl-math-utils
     - perl-module-load-conditional
     - perl-posix
-    - augustus >=3.3.1
+    - perl-mce
+    - augustus >=3.4.0
     - bamtools >=2.5.1
     - samtools >=1.7
-    - spaln >=2.3.1
-    - exonerate >=2.2.0
-    - blast >=2.2.31
+    - spaln >=2.3.3
+    - exonerate >=2.2.0  # Can be used by braker2, but deprecated in favour of genomethreader
+    - blast >=2.2.31  # Can be used by braker2, but deprecated in favour of diamond
     - makehub
-    - eval
-      #    - genemark-et >=4.33
-      #    - genomethreader >=1.7.9
+    - cdbtools >=0.99
+    - genomethreader >=1.7.0
+    - diamond >=0.9.24
+      #    - genemark-et >=4.48
+      #    - prothint >=2.2.0
 
 test:
   commands:
@@ -55,19 +68,21 @@ test:
     - filterIntronsFindStrand.pl
     - findGenesInIntrons.pl 2>&1 | grep "findGenesInIntrons.pl" > /dev/null
     - startAlign.pl
+    - "gushr.py -h | grep -q 'usage: gushr.py'"
+    - "fix_gtf_ids.py -h | grep -q usage:"
+    - "tsebra.py -h | grep -q usage:"
 
 about:
   home: https://github.com/Gaius-Augustus/BRAKER
   license: Artistic License
   license_family: Other
-  license_file: "scripts/licence.txt"
-  summary: "BRAKER2 is an extension of BRAKER1 which allows for fully automated training of the gene prediction tools GeneMark-EX and AUGUSTUS from RNA-Seq and/or protein homology information, and that integrates the extrinsic evidence from RNA-Seq and protein homology information into the prediction."
+  license_file: LICENSE.TXT
+  summary: "BRAKER2 is an extension of BRAKER1"
+  description: "BRAKER2 is an extension of BRAKER1 which allows for fully automated training of the gene prediction tools GeneMark-EX and AUGUSTUS from RNA-Seq and/or protein homology information, and that integrates the extrinsic evidence from RNA-Seq and protein homology information into the prediction."
 
 extra:
-  skip-lints:
-    - should_be_noarch
   identifiers:
-    - doi:10.13140/RG.2.2.12857.62564
+    - doi:10.1093/nargab/lqaa108
   notes:
     - GeneMark software can be used for free, but requires a license file and should be additionally installed on the machine where the BRAKER2 environment is.
-    - GenomeThreader software can be used for free, but all warranties are excluded and thus the user should additionally install it on the machine where the BRAKER2 environment is.
+    - ProtHint software can be used for free, but doesn't allow redistribution and should be additionally installed on the machine where the BRAKER2 environment is.

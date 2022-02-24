@@ -9,25 +9,29 @@ source:
   url: https://github.com/eclarke/swga/archive/2f240cbb356d8c4b4130d9e442596d10227738ff.tar.gz
   sha256: 28f6971234453f8ba91997c3203e71e94a4de5e37f7bcfd01096deb1fcb952c0
   patches:
+    - 0001-Use-compiler-and-flags-from-env.patch
     - SortingCount.cpp.patch
 
 build:
-  skip: true # [osx]
+  number: 3
+  skip: True  # [py>=30]
   entry_points:
     - swga = swga.main:main
-  number: 1
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
   host:
-    - python <3
+    - python
     - pip
     - bc
     - zlib
   run:
-    - python <3
+    - python
     - pyfaidx >0.4.5.2
     - click
     - pyyaml

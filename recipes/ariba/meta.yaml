@@ -1,35 +1,42 @@
-{% set version = "2.14.1" %}
-{% set sha256 = "7d463bf6efe271587f6755dee3cfeda083ef4875941db1e27e1d63deb152ca9b" %}
+{% set version = "2.14.6" %}
+{% set sha256 = "5cf0fb1f40591225e3aa8e4d2b804513f580e35f450e0699824b03386e4bc23c" %}
 
 package:
   name: ariba
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url: https://pypi.io/packages/source/a/ariba/ariba-{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  sha256: {{ sha256 }}
+  patches:
+    - external_progs.patch
+    - mlst_profile.patch
+    - ref_genes_getter.patch
 
 build:
-  number: 0
+  number: 2
+  # Skipping py>=36 on osx because the bowtie2 <2.4.0 recipes are currently skipped on osx.
+  skip: True  # [py<30 or (py>=36 and osx)]
   script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
   build:
-    - '{{ compiler("c") }}'
-    - '{{ compiler("cxx") }}'
+    - {{ compiler("c") }}
+    - {{ compiler("cxx") }}
   host:
-    - python <3.7
+    - python
     - pip
   run:
-    - python <3.7
+    - python
     - beautifulsoup4 >=4.1.0
     - dendropy >=4.2.0
-    - matplotlib >=3.1.0
+    - matplotlib-base >=3.1.0
     - biopython
     - pyfastaq >=3.12.0
-    - pysam >=0.9.1
+    # older pysam versions have wrong openssl pinning
+    - pysam >=0.15.3
     - pymummer <=0.10.3
-    - bowtie2 >=2.3.1
+    - bowtie2 <2.4.0 
     - cd-hit >=4.6.5
     - samtools >=1.2
     - bcftools >=1.2
@@ -42,11 +49,14 @@ test:
   imports:
     - ariba
     - ariba.tasks
+  commands:
+    - "ariba version"
 
 about:
   home: https://github.com/sanger-pathogens/ariba
   license: GNU General Public License v3 (GPL-3.0)
   license_family: GPL
+  license_file: LICENSE
   summary: 'ARIBA: Antibiotic Resistance Identification By Assembly'
 
 extra:

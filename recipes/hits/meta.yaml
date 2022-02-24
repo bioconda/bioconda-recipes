@@ -1,0 +1,52 @@
+{% set name = "hits" %}
+{% set version = "0.3.3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "c20f4dd629337bff6cf8d231768b980f6ecda2590602a4d309be3685bf9973e6"
+
+build:
+  number: 0
+  skip: True  # [py != 37]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - cython >=0.29.7
+    - pip
+    - python
+  run:
+    - biopython ==1.78
+    - bokeh ==2.4.2
+    - ipython ==7.30.1
+    - ipywidgets ==7.5.1
+    - matplotlib-base ==3.3.3
+    - numpy ==1.21.4
+    - pandas ==1.1.2
+    - pillow ==7.2.0
+    - pysam >=0.15
+    - python
+    - pyyaml ==5.3
+    - scipy ==1.5.2
+    - seaborn ==0.11.0
+
+test:
+  imports:
+    - hits
+    - hits.visualize
+    - hits.visualize.interactive
+
+about:
+  home: "https://github.com/jeffhussmann/hits"
+  license: GPLv3
+  summary: "utilities for processing high-throughput sequencing experiments"
+
+extra:
+  recipe-maintainers:
+    - jeffhussmann

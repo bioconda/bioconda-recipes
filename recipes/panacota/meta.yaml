@@ -1,0 +1,67 @@
+{% set name = "panacota" %}
+{% set version = "1.3.1" %}
+
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/gem-pasteur/{{ name }}/archive/v{{ version }}.zip"
+  sha256: 98b4a76f5b03ceac84738c7902092088a24f8c68bb92f3f18d0ff48bc203ded8
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - PanACoTA=PanACoTA.bin.run_panacota:main
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed -vv ."
+
+requirements:
+  host:
+    - python>=3.4
+    - pip
+  run:
+    - python>=3.4
+    - argparse
+    - biopython >=1.60
+    - colorlog
+    - matplotlib-base >=2.0.0
+    - ncbi-genome-download >=0.3.0
+    - numpy >=1.11
+    - progressbar2 >=3.18.0
+    - scipy
+    - termcolor
+    - mash
+    - prodigal >=2.6.2
+    - prokka ==1.14.5
+    - mmseqs2
+    - mafft
+    - iqtree >=1.6.12
+    - fasttree >=2.1.10
+    - quicktree
+    - fastme
+
+test:
+  imports:
+    - PanACoTA
+    - PanACoTA.align_module
+    - PanACoTA.annotate_module
+    - PanACoTA.bin
+    - PanACoTA.corepers_module
+    - PanACoTA.pangenome_module
+    - PanACoTA.prepare_module
+    - PanACoTA.subcommands
+    - PanACoTA.tree_module
+  commands:
+    - PanACoTA --help
+    - PanACoTA --version
+
+about:
+  home: "https://github.com/gem-pasteur/PanACoTA"
+  license: GNU Affero General Public v3
+  license_family: AGPL
+  license_file: COPYING
+  summary: "Large scale comparative genomics tools: annotate genomes, do pangenome, core/persistent genome, align core/persistent families, infer phylogenetic tree."
+  doc_url: "https://aperrin.pages.pasteur.fr/pipeline_annotation/html-doc/"
+  dev_url: "https://github.com/gem-pasteur/PanACoTA"

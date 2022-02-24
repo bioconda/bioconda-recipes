@@ -1,0 +1,81 @@
+{% set version = "0.4.5" %}
+{% set name = "sketchy" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/esteinig/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: bf415dcce37fdba9d2597aa01343c6049e312b5ec42b0f6499af3f35dd6af508
+
+build:
+  number: 1
+  # Skip OSX due to
+  #  thread 'main' panicked at '`UNKNOWN/.cargo/registry/src/github.com-1ecc6299db9ec823/atty-0.2.13/UNKNOWN/.cargo/registry/src/github.com-1ecc6299db9ec823/atty-0.2.13/src/lib.rs` is not absolute', src/tools/cargo/src/cargo/core/manifest.rs:247:9
+  #  stack backtrace:
+  #     ...
+  #     8:        0x1091b5df5 - cargo::core::manifest::Target::with_path::h0d6bccbb0c82df85
+  #     9:        0x1091b5e5b - cargo::core::manifest::Target::lib_target::ha498fecd5e5acc79
+  #    10:        0x109386059 - cargo::util::toml::targets::targets::he88352cf0787c1d2
+  #    11:        0x1093febc5 - cargo::util::toml::TomlManifest::to_real_manifest::h7f44f68ae845afdc
+  #    12:        0x1093f0eea - cargo::util::toml::read_manifest::h15132428ff9deeb1
+  #    13:        0x10921f4c4 - cargo::ops::cargo_read_manifest::read_package::h3154b37587ef9358
+  #    14:        0x1095175f5 - cargo::sources::path::PathSource::read_packages::h4d75984df9aec236
+  #    15:        0x10951bb26 - <cargo::sources::path::PathSource as cargo::core::source::Source>::update::hb3849341d4698b14
+  #    16:        0x1093513fe - cargo::sources::registry::RegistrySource::get_pkg::h6bb5169b1cb4fdde
+  #    17:        0x109353455 - <cargo::sources::registry::RegistrySource as cargo::core::source::Source>::finish_download::h8621dda3f771fbd8
+  #    ...
+  skip: True  # [py != 37 or osx]
+  entry_points:
+    - sketchy = sketchy.terminal.client:terminal_client
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - rust >=1.39
+  host:
+    - python
+    - pip
+    - git
+  run:
+    - python
+    - mash ==2.2
+    - wget
+    - nextflow
+    - tqdm
+    - colorama
+    - pandas
+    - click
+    - pytest
+    - seaborn
+    - scipy
+    - python-dateutil
+    - numpy
+    - pysam
+    - psutil
+    - matplotlib-base
+    - deprecation
+    - braceexpand
+    - networkx
+    - pyfastx
+    - watchdog
+    - dendropy
+
+test:
+  imports:
+    - sketchy
+  commands:
+    - sketchy --help
+    - sketchy-rs -h
+
+about:
+  home: https://github.com/esteinig/sketchy
+  license: MIT
+  license_file: LICENSE
+  summary: 'Real-time lineage hashing and genotyping of bacterial pathogens'
+
+extra:
+  recipe-maintainers:
+    - esteinig
+    - mbhall88

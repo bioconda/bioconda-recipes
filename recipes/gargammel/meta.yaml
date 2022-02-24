@@ -1,0 +1,59 @@
+{% set version = "1.1.2" %}
+{% set sha256_gargammel = "c4b5ca081087fa5ecf086dbd49a4db0fb3c7d2d3d13eb30bdfc96b964661c3c1" %}
+{% set sha256_libgab = "ef4d4e980918f48b9a5c454f46afe3ffe6d97a075bbbf89abb7e3553cd6b9827" %} 
+
+package:
+  name: gargammel
+  version: {{ version }}
+
+build:
+  number: 4
+
+source:
+  - url: https://github.com/grenaud/libgab/archive/d2bbab7d88fbfdaa0ce57a26dc908d2fc66bf656.tar.gz
+    sha256: {{ sha256_libgab }}
+    folder: gargammel/libgab
+  - url: https://github.com/grenaud/gargammel/archive/{{ version }}.tar.gz
+    sha256: {{ sha256_gargammel }}
+    folder: gargammel
+    patches:
+      - 0001-gargammel-Makefile-nobamtools.patch
+      - 0002-gargammel-src-Makefile-change-CXXFLAGS-and-LDFLAGS.patch
+      - 0003-libgab-gzstream-Makefile-use-CXXFLAGS-and-LDFLAGS.patch
+      - 0004-libgab-Makefile-removed-CXX.patch
+      - 0005-libgab-ReconsReferenceBAM-OSX.patch
+      
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - gsl
+    - bamtools
+  run:
+    - zlib
+    - openssl 1.0.2n
+    - perl
+    - gsl
+    - art
+    - samtools
+
+about:
+  home: https://github.com/grenaud/gargammel
+  license: GPL-3.0-only
+  license_file: gargammel/LICENSE
+  summary: Tool for simulating ancient DNA datasets
+  description: |
+    gargammel is a set of programs aimed at simulating ancient DNA
+    fragments. For ancient hominin samples our program can also 
+    simulate various levels of present-day human contamination and 
+    microbial contamination.
+
+test:
+  commands:
+    - gargammel --help 
+    - adptSim --help | grep -q 'adptSim'
+    - deamSim --help | grep -q 'deamSim'
+    - fasta2fastas --help | grep -q 'fasta2fastas'
+    - fragSim --help | grep -q 'fragSim'
+

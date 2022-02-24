@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="reactome.db_1.68.0.tar.gz"
+FN="reactome.db_1.77.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/reactome.db_1.68.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/reactome.db_1.68.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-reactome.db/bioconductor-reactome.db_1.68.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-reactome.db/bioconductor-reactome.db_1.68.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/reactome.db_1.77.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/reactome.db_1.77.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-reactome.db/bioconductor-reactome.db_1.77.0_src_all.tar.gz"
 )
-MD5="281e47eea8f6bf72502843ad6a48dab0"
+MD5="02cf27bf49660cc2daeaeb3643e71d5c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

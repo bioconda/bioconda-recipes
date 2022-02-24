@@ -1,60 +1,49 @@
+{% set name = "GMAP" %}
+{% set version = "2021.08.25" %}
 
 package:
-  name: gmap
-  version: 2019.06.10
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: http://research-pub.gene.com/gmap/src/gmap-gsnap-2019-06-10.tar.gz
-  sha256: 6b90c09931d0aef36e28c526233054144af32542ae22b079379fcf5f25f58dd1
+  url: http://research-pub.gene.com/gmap/src/gmap-gsnap-{{ version | replace(".", "-") }}.tar.gz
+  sha256: ef58843eb9cfbe174fad8444bf1b52b3f8841731412a3f90544a0e2bb85799b5
+  patches:
+    - single_quote_paths.patch
 
 build:
-  number: 0
-  binary_has_prefix_files:
-    - bin/atoiindex
-    - bin/cmetindex
-    - bin/get-genome
-    - bin/gmap.sse42
-    - bin/gmap.nosimd
-    - bin/gmapl.sse42
-    - bin/gmapl.nosimd
-    - bin/gsnap.sse42
-    - bin/gsnap.nosimd
-    - bin/gsnapl.sse42
-    - bin/gsnapl.nosimd
-    - bin/sam_sort
-    - bin/snpindex
-    - bin/uniqscan
-    - bin/uniqscanl
-  has_prefix_files:
-    - bin/gff3_introns
-    - bin/gff3_splicesites
-    - bin/gmap_build
-    - bin/gmap_uncompress
-    - bin/gtf_introns
-    - bin/gtf_splicesites
+  number: 1
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
   host:
     - perl
+    # zlib is needed for gunzip
     - zlib
     - bzip2
   run:
     - perl
+    # zlib is needed for gunzip
     - zlib
     - bzip2
 
 test:
   commands:
-    - gmap --version
-    - gsnap --version
+    - gmap --help
+    - gsnap --help
+    - ": | fa_coords | grep 'Error: No contigs were read in.'"
 
 about:
   home: http://research-pub.gene.com/gmap/
-  license: Non-commercial
-  summary: Genomic mapping and alignment program for mRNA and EST sequences
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "Genomic mapping and alignment program for mRNA and EST sequences."
 
 extra:
   identifiers:
     - biotools:gmap
+    - doi:10.1093/bioinformatics/bti310
+    - doi:10.1093/bioinformatics/btq057

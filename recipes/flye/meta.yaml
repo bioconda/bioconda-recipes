@@ -1,4 +1,4 @@
-{% set version = "2.5" %}
+{% set version = "2.9" %}
 
 package:
   name: flye
@@ -6,25 +6,34 @@ package:
 
 source:
   url: https://github.com/fenderglass/Flye/archive/{{ version }}.tar.gz
-  sha256: 0ffcb5167650d4854ca2f82e5d36dbcbd80374fd400f5014c297ee551cc21206
+  sha256: 158ea620d4aa92a53dae1832b09fd605e17552e45b83eecbf28e41a4516a6957
 
 build:
   number: 0
-  skip: True # [not py27]
+  # Fails on OSX due to 3.8 multiprocessing change from fork to spawn model.
+  skip: True  # [osx and py>=38]
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - zlib
+    - make
   host:
     - python
+    - setuptools
     - zlib
   run:
     - python
+    - setuptools
+
+extra:
+  skip-lints:
+    - uses_setuptools  #uses pkg_resources
 
 test:
   commands:
     - flye -h | grep Assembly
+      #skip failing tests for now, some kind of trouble with minimap2
+      #- python -c "import flye.tests.test_toy as t; t.main()"
 
 about:
   home: https://github.com/fenderglass/Flye/

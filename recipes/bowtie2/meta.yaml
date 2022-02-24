@@ -1,34 +1,40 @@
-{% set version = "2.3.5" %}
-
+{% set version = "2.4.5" %}
 
 package:
   name: bowtie2
   version: {{ version }}
 
 source:
-  url: http://downloads.sourceforge.net/project/bowtie-bio/bowtie2/{{ version }}/bowtie2-{{ version }}-source.zip
-  sha256: 2b6b2c46fbb5565ba6206b47d07ece8754b295714522149d92acebefef08347b
+  url: https://github.com/BenLangmead/bowtie2/archive/v{{ version }}.tar.gz
+  sha256: db101391b54a5e0eeed7469b05aee55ee6299558b38607f592f6b35a7d41dcb6
 
 build:
-  number: 0
+  number: 1
+  skip: True  # [py2k]
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - make
   host:
     - python
     - zlib
+    - zstd
     - tbb-devel
     - tbb
   run:
     - python
     - perl
     - zlib
+    - zstd
     - tbb
 
 test:
   commands:
     - bowtie2 --help
+    - bowtie2 --version
+    # test if bowtie2 reports its version
+    - bowtie2 --version | grep -q "bowtie2-align-s version [0-9]"  # [linux]
     - bowtie2-align-l --help
     - bowtie2-align-s --help
     - bowtie2-build --help
@@ -40,10 +46,13 @@ test:
 
 about:
   home: 'http://bowtie-bio.sourceforge.net/bowtie2/index.shtml'
-  license: GPLv3
-  summary: Fast and sensitive read alignment
+  license: GPL-3.0-only
+  license_file: LICENSE
+  summary: Fast and sensitive gapped read alignment
 
 extra:
   identifiers:
     - biotools:bowtie2
     - doi:10.1038/nmeth.1923
+    - debian:bowtie2
+    - usegalaxy-eu:bowtie2

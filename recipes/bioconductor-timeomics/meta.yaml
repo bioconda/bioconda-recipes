@@ -1,0 +1,69 @@
+{% set version = "1.6.0" %}
+{% set name = "timeOmics" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 0ea9f516c23b3f1022b02ca3f101d199
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: BiocStyle, knitr, rmarkdown, testthat, snow, tidyverse, igraph, gplots
+requirements:
+  host:
+    - 'bioconductor-mixomics >=6.17.0,<6.18.0'
+    - r-base
+    - r-dplyr
+    - r-ggplot2
+    - r-ggrepel
+    - r-lmtest
+    - r-magrittr
+    - r-plyr
+    - r-propr
+    - r-purrr
+    - r-stringr
+    - r-tibble
+    - r-tidyr
+  run:
+    - 'bioconductor-mixomics >=6.17.0,<6.18.0'
+    - r-base
+    - r-dplyr
+    - r-ggplot2
+    - r-ggrepel
+    - r-lmtest
+    - r-magrittr
+    - r-plyr
+    - r-propr
+    - r-purrr
+    - r-stringr
+    - r-tibble
+    - r-tidyr
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
+test:
+  commands:
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Time-Course Multi-Omics data integration'
+  description: 'timeOmics is a generic data-driven framework to integrate multi-Omics longitudinal data measured on the same biological samples and select key temporal features with strong associations within the same sample group. The main steps of timeOmics are: 1. Plaform and time-specific normalization and filtering steps; 2. Modelling each biological into one time expression profile; 3. Clustering features with the same expression profile over time; 4. Post-hoc validation step.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  container:
+    extended-base: true
+

@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="lumiRatIDMapping_1.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/lumiRatIDMapping_1.10.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/lumiRatIDMapping_1.10.0.tar.gz"
   "https://bioarchive.galaxyproject.org/lumiRatIDMapping_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-lumiratidmapping/bioconductor-lumiratidmapping_1.10.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-lumiratidmapping/bioconductor-lumiratidmapping_1.10.0_src_all.tar.gz"
 )
 MD5="1122fc25e3fff62678bed36f9d7b5709"

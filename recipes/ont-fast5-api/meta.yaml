@@ -1,31 +1,39 @@
-{% set version = "1.4.7" %}
+{% set name = "ont-fast5-api" %}
+{% set version = "4.0.0" %}
 
 package:
-  name: "ont-fast5-api"
+  name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/o/ont-fast5-api/ont-fast5-api-{{ version }}.tar.gz
-  sha256: 02d47386b8264761ba0c34b0e06fa1afa59d6bf09ba9e2e14f19424fdcad00b5
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: a249813104439bfe3d4e346bb560756e23217655273410c60b9bade205eb3e66
 
 build:
-  noarch: python
   number: 0
+  noarch: python
   entry_points:
     - multi_to_single_fast5=ont_fast5_api.conversion_tools.multi_to_single_fast5:main
     - single_to_multi_fast5=ont_fast5_api.conversion_tools.single_to_multi_fast5:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+    - fast5_subset=ont_fast5_api.conversion_tools.fast5_subset:main
+    - compress_fast5=ont_fast5_api.conversion_tools.compress_fast5:main
+    - check_compression=ont_fast5_api.conversion_tools.check_file_compression:main
+  script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3
   run:
-    - h5py >=2.2.1
-    - numpy >=1.8.1
+    - h5py >=2.6
+    - numpy >=1.11
     - progressbar33 >=2.3.1
-    - python
+    - python >=3
     - six >=1.9
+    - packaging
+    - tar
+    - hdf5
+    - zstd
 
 test:
   imports:
@@ -35,10 +43,13 @@ test:
   commands:
     - multi_to_single_fast5 --help
     - single_to_multi_fast5 --help
+    - fast5_subset --help
+    - compress_fast5 --help
+    - check_compression --help
 
 about:
   home: https://github.com/nanoporetech/ont_fast5_api
-  license: Mozilla Public 2.0 (MPL 2.0)
-  license_family: OTHER
+  license: MPL-2.0
+  license_family: MOZILLA
   license_file: LICENSE.md
   summary: Oxford Nanopore Technologies fast5 API software

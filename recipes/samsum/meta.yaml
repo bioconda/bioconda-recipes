@@ -1,0 +1,49 @@
+{% set name = "samsum" %}
+{% set version = "0.1.4" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 36b1fc0eaa4da1b7a70d2791357c7547612c9653e4e0ea7db39ba96cdd03ffc5
+
+build:
+  number: 1
+  skip: True  # [py2k]
+  entry_points:
+    - samsum = samsum.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - numpy
+    - pip
+    - pytest
+    - python
+  run:
+    - {{ pin_compatible('numpy') }}
+    - pytest
+    - python
+    - pyfastx
+
+test:
+  imports:
+    - samsum
+  commands:
+    - {{ name }} --help
+    - {{ name }} info
+
+about:
+  home: https://github.com/hallamlab/samsum
+  license: GNU General Public v3 (GPLv3)
+  license_family: GPL3
+  license_file: LICENSE
+  summary: A light-weight python package for summarizing sequence coverage from SAM and BAM files
+
+extra:
+  recipe-maintainers:
+    - cmorganl

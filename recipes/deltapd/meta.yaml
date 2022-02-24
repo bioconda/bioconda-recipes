@@ -1,0 +1,55 @@
+{% set name = "deltapd" %}
+{% set version = "0.1.5" %}
+{% set sha256 = "e55f57e5792baa37af5e5ae3d0b37b5cf847f0a04800655491a80bb4a8252378" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  skip: True  # [py2k]
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vvv
+  entry_points:
+    - deltapd = deltapd.__main__:main
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - pip
+    - python
+    - cython
+    - numpy
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+    - phylodm
+    - tqdm
+    - ete3
+    - dendropy
+    - matplotlib-base
+    - jinja2
+    - seaborn
+
+test:
+  imports:
+    - deltapd
+    - deltapd.file
+  commands:
+    - deltapd --version > /dev/null 2>&1
+
+about:
+  home: https://github.com/Ecogenomics/DeltaPD
+  license: AGPL-3.0-only
+  license_family: AGPL
+  license_file: LICENSE
+  summary: 'DeltaPD is a tool used to determine outliers in a gene tree when compared against a reference tree.'
+
+extra:
+  identifiers:
+    - doi:10.5281/zenodo.4107213

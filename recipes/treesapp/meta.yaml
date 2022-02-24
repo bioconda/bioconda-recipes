@@ -1,0 +1,69 @@
+{% set version = "0.11.3" %} 
+
+package:
+  name: treesapp
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/t/treesapp/treesapp-{{ version }}.tar.gz
+  sha256: c0e004b0e59203f5eb5dface986ec2d5b90323060957414ba535163e7e74afe0
+
+build:
+  number: 0
+  # Skipping py>=38 because Py3.8 builds are not available for old versions of dependencies.
+  # Dependencies (pyfastx, specifically) are likely pinned downed too strictly.
+  skip: True  # [py<30 or py>=38]
+  entry_points:
+    - treesapp = treesapp.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - pip
+    - python
+    - setuptools >=50.0.0
+  run:
+    - python
+    - numpy >=1.18.1
+    - scipy >=1.5.2
+    - scikit-learn ==0.23.1
+    - biopython >=1.78
+    - pygtrie >=2.3.3
+    - ete3 >=3.1.2
+    - six >=1.15.0
+    - tqdm >=4.50.0
+    - joblib ==1.0.0
+    - matplotlib-base >=3.3.0
+    - seaborn >=0.11.0
+    - pandas >=1.1.0
+    - packaging >=20.4
+    - samsum >=0.1.4
+    - pyfastx >=0.8.2
+    - hmmer >=3.3
+    - prodigal >=2.6.2
+    - fasttree >=2.1.10
+    - bwa >=0.7.17
+    - epa-ng >=0.3.8
+    - raxml-ng >=1.0.1
+    - mafft >=7.471
+    - vsearch >=2.15.0
+    - mmseqs2 >=12.113e3
+
+test:
+  imports:
+    - treesapp
+  commands:
+    - treesapp --help
+
+about:
+  home: https://github.com/hallamlab/TreeSAPP
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "TreeSAPP is a functional and taxonomic annotation tool for microbial genomes and proteins"
+
+extra:
+  recipe-maintainers:
+    - cmorganl

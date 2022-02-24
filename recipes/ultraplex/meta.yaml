@@ -1,0 +1,46 @@
+{% set name = "ultraplex" %}
+{% set version = "1.2.5" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 13fcb6bcbb20c1765a544869171dff4f31a930b77ebb44bed6a6000c4ea9a3b4
+
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  skip: True  # [py < 37]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - pip
+    - python
+    - cython
+    - setuptools_scm
+  run:
+    - python
+    - xopen >=1.0.0
+    - dnaio >=0.5.0
+    - pigz
+
+test:
+  imports:
+    - ultraplex
+  commands:
+    - ultraplex --help
+
+about:
+  home: "https://github.com/ulelab/ultraplex.git"
+  license: MIT
+  license_family: MIT
+  summary: "fastq demultiplexer"
+
+extra:
+  recipe-maintainers:
+    - Delayed-Gitification

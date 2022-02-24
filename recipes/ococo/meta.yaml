@@ -1,23 +1,29 @@
 {% set version = "0.1.2.7" %}
 {% set sha256 = "0a93ca3ed14cdeb1b274a30b433db128105274caed2b0b06742fc42de7ed6d75" %}
+{% set htslib_commit = "b6aa0e6" %}
 
 package:
   name: ococo
   version: {{ version }}
 
 build:
-  number: 0
+  number: 3
 
 source:
-  url: https://github.com/karel-brinda/ococo/archive/{{ version }}.tar.gz
-  sha256:  {{ sha256 }}
+  - url: https://github.com/karel-brinda/ococo/archive/{{ version }}.tar.gz
+    sha256:  {{ sha256 }}
+    patches:
+      - 0001-Use-already-downloaded-HTSlib-sources.patch
+  - url: https://github.com/samtools/htslib/archive/{{ htslib_commit }}.tar.gz
+    sha256: 85e5ea12e34ddbf137a96f15dd79e9221df1c8d15ad0094ad193e026b1f6fa9d
+    folder: ext/htslib-{{ htslib_commit }}
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
   host:
     - zlib
-
   run:
     - zlib
 

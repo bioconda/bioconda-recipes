@@ -1,34 +1,53 @@
-{% set version = "2.0.3" %}
-{% set sha256 = "8422bbe7bdff2aef5ecbccde58666b35587902f94edaa1c05cb37cdd2e2013c0" %}
+{% set name = "rmats2sashimiplot" %}
+{% set version = "2.0.4" %}
+
 package:
-  name: rmats2sashimiplot
-  version: '{{version}}' # Version number indicated in the setup.py file.
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://github.com/Xinglab/rmats2sashimiplot/archive/v{{version}}.tar.gz
-  sha256: '{{sha256}}'
-requirements:
-  host:
-    - python
-  run:
-    - python ==2.6*|2.7*
-    - matplotlib
-    - scipy
-    - pysam ==0.9.0
-    - samtools ==1.3.1
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 2bd76cc2e95a6b3dcd81e0ff212261cd2891d28e4ac314b5211489a6b426a9d3
 
 build:
   number: 2
-  skip: true # [not py27]
-  preserve_egg_dir: true
+  entry_points:
+    - rmats2sashimiplot=rmats2sashimiplot.rmats2sashimiplot:main
+    - index_gff=MISO.misopy.index_gff:main
+    - sashimi_plot=MISO.misopy.sashimi_plot.sashimi_plot:main
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - bedtools
+    - matplotlib-base
+    - numpy
+    - pysam
+    - python
+    - samtools
+    - scipy
 
 test:
+  imports:
+    - MISO
+    - MISO.misopy
+    - MISO.misopy.sashimi_plot
+    - MISO.misopy.sashimi_plot.plot_utils
+    - rmats2sashimiplot
   commands:
-    - rmats2sashimiplot -h
+    - rmats2sashimiplot --help
+    - index_gff --help
+    - sashimi_plot --help
 
 about:
-  home: https://github.com/Xinglab/rmats2sashimiplot
-  license: GPL-2.0
+  home: "https://github.com/Xinglab/rmats2sashimiplot"
+  license: "GNU General Public v2 (GPLv2)"
+  license_family: GPL2
   license_file: LICENSE
-  summary: rmats2sashimiplot is a tool that generates sahimi plots from rMATS outputs.
-  license_family: GPL
+  summary: "rmats2sashimiplot"
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic  # needs separate builds with and without 2to3

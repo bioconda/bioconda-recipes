@@ -1,0 +1,58 @@
+{% set goname = "github.com/nanoporetech/spliced_bam2gff" %}
+{% set version = "1.3" %}
+
+{% set name = goname.split('/')[-1] %}
+{% set pkg_src = 'src/'+goname %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - folder: {{ pkg_src }}
+    url: https://{{ goname }}/archive/v{{ version }}.tar.gz
+    sha256: 23e9ffda9751a3198177b40d8427efdd692a7a5316a56a0781a15c68a866f5ef
+
+build:
+  number: 1
+  binary_relocation: False
+  script:
+    - pushd {{ pkg_src }}
+    - export GOPATH=`readlink -f {{ pkg_src }}/gopath`
+    - pwd -P
+    - go get -v -u github.com/biogo/biogo/feat
+    - go get -v -u github.com/biogo/hts/bam
+    - go build -v
+    - mkdir -p {{ PREFIX }}/bin
+    - cp spliced_bam2gff {{ PREFIX }}/bin
+    
+
+requirements:
+  build:
+    - {{ compiler('go') }}
+
+test:
+  commands:
+    - spliced_bam2gff -h
+
+about:
+  home: https://github.com/nanoporetech/spliced_bam2gff
+  license: MPL-2
+  license_family: MOZILLA
+  license_file: {{ pkg_src }}/LICENSE.md
+  summary: A tool to convert spliced BAM alignments into GFF2 format
+
+  description: |
+    The spliced_bam2gff tool converts BAM alignments, produced by spliced aligners (such as minimap2, gmap), into a GFF2 format.
+
+    By default, introns are created based on the N cigar feature. Alternatively, if -d (i.e. for deletion) is specified, any deletions larger than the limit will be classified as an intron. The orientation of the GFF2 features is determined by the XS strand tag and SAM flags depending on the aligner.
+
+    The tool supports splitting the output into loci and bundles of loci with a minimum number of features, which enables easy parallelisation of downstream analyses. 
+  dev_url: https://github.com/nanoporetech/spliced_bam2gff
+  doc_url: https://github.com/nanoporetech/spliced_bam2gff
+
+extra:
+    skip-lints:
+      - should_be_noarch_generic
+      - should_not_be_noarch_source
+

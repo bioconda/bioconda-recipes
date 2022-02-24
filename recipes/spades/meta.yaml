@@ -1,19 +1,19 @@
-{% set version = "3.13.1" %}
-{% set sha256 = "8da29b72fb56170dd39e3a8ea5074071a8fa63b29346874010b8d293c2f72a3e" %}
+{% set version = "3.15.4" %}
+{% set sha256 = "3b241c528a42a8bdfdf23e5bf8f0084834790590d08491decea9f0f009d8589f" %}
 
 package:
   name: spades
   version: {{ version }}
 
 source:
-  url: http://cab.spbu.ru/files/release{{ version }}/SPAdes-{{ version }}.tar.gz
+  url: https://github.com/ablab/spades/releases/download/v{{version}}/SPAdes-{{version}}.tar.gz
   sha256: {{ sha256 }}
   patches:
     - 0001-change-verbosity.patch
-    - 0002-disable-parallel-libstdc.patch  # [osx]
 
 build:
-  number: 2
+  number: 0
+  skip: True  # [osx]
 
 requirements:
   build:
@@ -23,25 +23,33 @@ requirements:
     - llvm-openmp  # [osx]
     - openmp  # [linux]
     - cmake
+    - make
+    - pkg-config
+    - sysroot_linux-64=2.17 # [linux]
   host:
     - llvm-openmp  # [osx]
     - openmp  # [linux]
     - zlib
     - bzip2
+    - sysroot_linux-64=2.17 # [linux]
   run:
     - llvm-openmp  # [osx]
     - openmp  # [linux]
-    - python
+    - python <=3.9
+    - sysroot_linux-64=2.17 # [linux]
 
 test:
   commands:
-    - spades.py --version
-    - rnaspades.py --version
-    - truspades.py --version
-    - metaspades.py --version
-    - plasmidspades.py --version
-    - spades-kmercount -h
+    - spades.py --version 2>&1 | grep {{ version }}
+    - rnaspades.py --version 2>&1 | grep {{ version }}
+    - truspades.py --help 2>&1 | grep {{ version }}
+    - metaspades.py --version 2>&1 | grep {{ version }}
+    - plasmidspades.py --version 2>&1 | grep {{ version }}
+    - spades-kmercount -h 2>&1 | grep spades-kmercount
+    - spades-gmapper 2>&1 | grep spades-gmapper
+    - spades-gbuilder 2>&1 | grep spades-gbuilder
     - spades.py --test && rm -rf spades_test
+
 
 about:
   home: http://cab.spbu.ru/software/spades/
@@ -59,13 +67,18 @@ about:
 
   dev_url: https://github.com/ablab/spades
   doc_url: http://cab.spbu.ru/files/release{{version}}/manual.html
+
+
 extra:
   recipe-maintainers:
     - druvus
     - notestaff
   identifiers:
     - biotools:spades
+    - usegalaxy-eu:spades
     - doi:10.1089/cmb.2012.0021
     - doi:10.1101/gr.213959.116
+    - doi:10.1093/gigascience/giz100
+    - doi:10.1093/bioinformatics/btz349
   skip-lints:
     - should_not_be_noarch_source

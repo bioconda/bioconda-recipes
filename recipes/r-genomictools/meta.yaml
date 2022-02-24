@@ -1,0 +1,58 @@
+{% set version = '0.2.9.7' %}
+
+package:
+  name: r-genomictools
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/GenomicTools_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/GenomicTools/GenomicTools_{{ version }}.tar.gz
+  sha256: 15fcf653177f3b9cb822c4da08d7cc5507b9f48d4a6ca58e523c3e965787daa4
+
+build:
+  number: 2
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
+  host:
+    - r-base
+    - r-genomictools.filehandler >=0.1.5.8
+    - r-rcpp >=0.9.13
+    - r-rcpparmadillo
+    - r-circlize
+    - r-data.table >=1.9.6
+    - r-gmwt >=1.1
+    - bioconductor-snpstats
+    - r-stringr
+  run:
+    - r-base
+    - r-genomictools.filehandler >=0.1.5.8
+    - r-rcpp >=0.9.13
+    - r-rcpparmadillo
+    - r-circlize
+    - r-data.table >=1.9.6
+    - r-gmwt >=1.1
+    - bioconductor-snpstats
+    - r-stringr
+
+test:
+  commands:
+    - $R -e "library('GenomicTools')"           # [not win]
+    - "\"%R%\" -e \"library('GenomicTools')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=GenomicTools
+  license: GPL-2
+  summary: A loose collection of tools for the analysis of expression and genotype data, currently
+    with the main focus on (e)QTL and MDR analysis.
+  license_family: GPL2
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'

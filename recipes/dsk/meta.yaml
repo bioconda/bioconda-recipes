@@ -1,30 +1,35 @@
+{% set version = '2.3.3' %}
+
 package:
   name: dsk
-  version: "2.2.0"
+  version: {{ version }}
 
 source:
-  url: https://github.com/GATB/dsk/releases/download/v2.2.0/dsk-v2.2.0-Source.tar.gz
-  md5: dbdfe583b45e78f965e6f78cf2c9628c
+  url: https://github.com/GATB/dsk/archive/v{{ version }}.tar.gz
+  sha256: b74b44eb233937223c3b0c2c00053d88c8d89c5b84e20fcda589a5e5c5a52a36
   patches:
     - install_paths.patch
 
 build:
-  number: 2
+  number: 1
+  # Requires clang>=4.5
+  skip: True  # [osx]
 
 requirements:
   build:
+    - make
     - cmake
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
     - zlib
     - cppunit
-
   run:
     - zlib
 
 test:
   commands:
-    - dsk -h
+    - dsk -help
 
 about:
   home: https://github.com/GATB/dsk/

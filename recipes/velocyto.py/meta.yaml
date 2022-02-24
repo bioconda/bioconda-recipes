@@ -1,0 +1,60 @@
+{% set version = "0.17.17" %}
+
+package:
+  name: velocyto.py
+  version: {{ version }}
+
+source:
+  url: https://github.com/velocyto-team/velocyto.py/archive/{{ version }}.tar.gz
+  sha256: 2461eabf2ec6b152240c95f7ad8a0a5768a83c72822d9398beec2981732b890d
+
+build:
+  number: 4
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
+  skip: True  # [py2k]
+  entry_points:
+    - velocyto = velocyto.commands.velocyto:cli
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+  host:
+    - python
+    - pip
+    - numpy
+    - cython
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+    - scipy
+    - numba
+    - matplotlib-base
+    - scikit-learn
+    - h5py
+    - loompy
+    - pysam
+    - click
+    - pandas
+    - samtools
+
+test:
+  imports:
+    - velocyto
+  commands:
+    - velocyto --version
+
+about:
+  home: https://github.com/velocyto-team/velocyto.py
+  license: MIT
+  license_file: LICENSE
+  summary: A library for the analysis of RNA velocity.
+
+extra:
+  identifiers:
+    - doi:10.1038/s41586-018-0414-6
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true

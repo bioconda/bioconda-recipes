@@ -1,0 +1,40 @@
+{% set name = "predicthaplo" %}
+{% set version = "2.1.4" %}
+{% set sha256 = "a67bd7b5bb09adf90ed23eefd3ae8f612d4d1411a77f7b1122809596f78baf25" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/cbg-ethz/PredictHaplo/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  script:
+    - make
+    - mkdir -p $PREFIX/bin
+    - cp predicthaplo $PREFIX/bin/
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - libblas
+    - liblapack
+
+test:
+  commands:
+    - predicthaplo --help
+
+about:
+  home: https://github.com/cbg-ethz/PredictHaplo
+  license: GPLv3
+  license_file: COPYING
+  summary: This software aims at reconstructing haplotypes from next-generation sequencing data.
+
+extra:
+  identifiers:
+    - biotools:PredictHaplo

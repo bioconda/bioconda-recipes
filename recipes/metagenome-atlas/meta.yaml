@@ -1,37 +1,38 @@
-{% set version = "2.1.4" %}
-{% set sha256 = "f84f59c106d13996edcd9613d8fb320ba4f6a14957e58ff55dfe21018be84fd0" %}
+{% set version = "2.8.2" %}
+{% set sha256 = "db0036c004d0444c28167d40f27cff29106e1b45680270dfd625e39104b37aaa" %}
 
 package:
   name: metagenome-atlas
   version: {{ version }}
 
 source:
-  url: https://github.com/metagenome-atlas/atlas/archive/{{ version }}.tar.gz
+  url: https://github.com/metagenome-atlas/atlas/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   entry_points:
     - atlas=atlas.atlas:cli
   noarch: python
   script: "{{ PYTHON }} -m pip install . --no-deps -vv"
 
-
-
 requirements:
   host:
-    - python >3.6,<3.7
+    - python=3.8
     - pip
 
   run:
-    - python >3.6,<3.7
-    - snakemake >=5.4.5,<6
-    - pandas >=0.23
-    - click >=7
-    - ruamel.yaml >=0.15
-    - biopython >=1.70
-    - bbmap >=37.78
-    - git
+    - python=3.8
+    - mamba
+    - bbmap=38
+    - snakemake-minimal=6.7
+    - pandas=1.2
+    - click=7
+    - ruamel.yaml=0.17
+    - biopython=1.74
+    - cookiecutter
+    # optional to help conda solve
+    - numpy= 1.21
 
 test:
   imports:
@@ -51,8 +52,6 @@ about:
   summary: ATLAS - Three commands to start analysing your metagenome data
   description: |
     Atlas is a easy to use metagenomic pipeline
-    ![scheme of workflow](https://github.com/metagenome-atlas/atlas/blob/f8627545bcfb8f2b55733a35ecd0426ae4bbd5d1/resources/images/ATLAS_scheme.png)
-
     # Quick Start
 
     Three commands to start analysing your metagenome data:
@@ -74,3 +73,5 @@ extra:
     - silask
   container:
     extended-base: true  # unicode problem with click
+  identifiers:
+    - doi:10.1101/737528

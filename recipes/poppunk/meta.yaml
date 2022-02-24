@@ -1,4 +1,4 @@
-{% set version = "1.1.6" %}
+{% set version = "2.4.0" %}
 {% set name = "PopPUNK" %}
 
 package:
@@ -6,56 +6,97 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/p/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz
-  sha256: 2bf88d6fd6dd24885d746b617d42cc73d3bef502fc4718e85e47dc5e2697804a
+  url: https://github.com/johnlees/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: c2f7eb18affaa22ec2ba5ddd86fa4cc3f4fef40abd4bea40176f39a3c4f142aa
 
 build:
-  number: 0
-  noarch: python
+  number: 1
+  skip: true  # [py < 38]
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
   entry_points:
     - poppunk = PopPUNK.__main__:main
+    - poppunk_assign = PopPUNK.assign:main
+    - poppunk_visualise = PopPUNK.visualise:main
+    - poppunk_mst = PopPUNK.sparse_mst:main
     - poppunk_prune = PopPUNK.prune_db:main
     - poppunk_references = PopPUNK.reference_pick:main
     - poppunk_tsne = PopPUNK.tsne:main
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux64]
+    - cmake >=3.18
+    - make
   host:
-    - python >=3
+    # python
+    - python
     - pip
-
+    # C++ extension
+    - pybind11
+    - zlib
+    - eigen
+    - boost-cpp
+    - openblas
   run:
-    - python >=3
+    # python
+    - python
     - numpy
-    - mkl
     - scipy
-    - scikit-learn
-    - dendropy
-    - sharedmem
-    - numba
+    - scikit-learn >=0.24
+    - dendropy >=4.4.0
     - pandas
-    - networkx >=2.1
-    - matplotlib
+    - graph-tool >=2.35
+    - matplotlib-base
     - hdbscan
-    - mash >=2.0
+    - pp-sketchlib >=1.7.0
     - rapidnj
+    - networkx
+    - h5py
+    - tqdm
+    # http server
+    - requests
+    - flask
+    - flask-cors
+    - flask-apscheduler
+    - gunicorn
+    # C++ extension
+    - zlib
+    - libblas
+    # The xorg-* requirements are only used for gtk3 which is pulled in via graph-tool.
+    - xorg-libxi
+    - xorg-libxcursor
+    - xorg-libxdamage
+    - xorg-libxcomposite
+    - xorg-libxrandr
+    - xorg-libxinerama
+    - xorg-libxpm
+    - xorg-libxaw
+    - xorg-libxfixes
 
 test:
   imports:
     - PopPUNK
+    - poppunk_refine
 
   commands:
     - poppunk --help
+    - poppunk_assign --help
+    - poppunk_visualise --help
+    - poppunk_mst --help
     - poppunk_prune --help
     - poppunk_references --help
     - poppunk_tsne --help
 
 about:
-  home: https://github.com/johnlees/PopPUNK
+  home: https://www.poppunk.net
   license: Apache-2.0
   license_family: APACHE
   summary: 'PopPUNK (POPulation Partitioning Using Nucleotide Kmers)'
 
 extra:
-   identifiers:
-     - doi:10.1101/gr.241455.118
+  identifiers:
+    - doi:10.1101/gr.241455.118

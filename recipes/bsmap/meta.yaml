@@ -8,20 +8,23 @@ package:
 
 source:
   sha256: {{ sha256 }}
-  url: http://lilab.research.bcm.edu/dldcc-web/lilab/yxi/{{ name|lower }}/{{ name|lower }}-{{ version }}.tgz
+  url: http://lilab.research.bcm.edu/dldcc-web/lilab/yxi/bsmap/bsmap-2.90.tgz
   patches:
+    - 0001-Use-CXX-instead-of-CC-for-c++-compiler.patch
     - path.patch
     - osx_compile.patch  # [osx]
 
 build:
-  number: 2
-  skip: True  # [py3k]
+  number: 4
+  skip: True  # [py>27]
 
 requirements:
   build:
+    - make
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - python
   host:
+    - python
     - zlib
   run:
     - python
@@ -30,7 +33,7 @@ requirements:
 
 test:
   commands:
-    - bsmap -h 2>&1 | grep "bsmap" > /dev/null
+    - bsmap -h 2>&1 | grep -qF bsmap
     - bsp2sam.py -h
     - methdiff.py -h
     - methratio.py -h
@@ -46,4 +49,6 @@ about:
 extra:
   identifiers:
     - biotools:bsmap
-  doi: doi.org/10.1186/1471-2105-10-232
+    - doi:10.1186/1471-2105-10-232
+  skip-lints:
+    - should_not_be_noarch_source

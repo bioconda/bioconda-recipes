@@ -1,5 +1,5 @@
 {% set name = "medaka" %}
-{% set version = "0.8.1" %}
+{% set version = "1.5.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,12 +7,13 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: dfd3780311e8aeee20ea276a0b5633ac80ffb6f23e97ec2dd68f248a8bd8a715
+  sha256: 8a0b8d5997fe45b8d5a1317b2b6bfe117cb6b551928faef62e4e958cf14b5ea4
+  patches:
+    - patch
 
 build:
-  # keras is 2.7 or 3.6 only. We need py3: 3.6 is the only possibility
-  skip: True # [not py36]
   number: 1
+  skip: True  # # [py!=38 or osx]
   entry_points:
     - medaka = medaka.medaka:main
     - medaka_counts = medaka.medaka_counts:main
@@ -22,37 +23,37 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
-
+    - coreutils
   host:
     - cffi
     - pip
     - python
-    - htslib ==1.9
+    - htslib
     - bzip2
     - xz
     - zlib
-    - libdeflate
-
   run:
     - biopython
     - cffi
-    - h5py ==2.7.1
+    - h5py
     - intervaltree >=3.0.0
-    - keras ==2.2.4
-    - numpy ==1.16.1
-    - pysam
+    - mappy
+    - numpy <1.20.0
+    - nomkl  # [osx]
+    - ont-fast5-api
+    - parasail-python
+    - pysam >=0.16.0.1
     - python
-    - pyyaml ==5.1
-    - tensorflow >=1.12.2
-    - whatshap ==0.18
-    - samtools ==1.9
-    - bcftools ==1.9
-    - minimap2 ==2.17
-    - htslib ==1.9
-    - bzip2
-    - xz
-    - zlib
-    - libdeflate
+    - python-edlib
+    - requests
+    - tensorflow ==2.2.*
+    - whatshap >=0.18
+    - samtools >=1.9
+    - bcftools >=1.9
+    - minimap2 >=2.17
+    - htslib >=1.9
+    - pyspoa
+    - racon >=1.4.13
 
 test:
   imports:
@@ -75,3 +76,5 @@ about:
 extra:
   recipe-maintainers:
     - cjw85
+  identifiers:
+    - usegalaxy-eu:medaka_consensus

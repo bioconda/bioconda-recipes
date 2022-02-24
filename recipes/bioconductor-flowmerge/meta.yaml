@@ -1,6 +1,6 @@
-{% set version = "2.32.0" %}
+{% set version = "2.42.0" %}
 {% set name = "flowMerge" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.14" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,15 +10,35 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: aa5796d15c5bbe1e10f1d1204cafe657
+  md5: 2060d7e5bf538ee3eff41d8ff85157c4
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   noarch: generic
 # Suggests: knitr, rmarkdown
 requirements:
+  host:
+    - 'bioconductor-flowclust >=3.32.0,<3.33.0'
+    - 'bioconductor-flowcore >=2.6.0,<2.7.0'
+    - 'bioconductor-graph >=1.72.0,<1.73.0'
+    - 'bioconductor-rgraphviz >=2.38.0,<2.39.0'
+    - r-base
+    - r-feature
+    - r-foreach
+    - r-rrcov
+    - r-snow
+  run:
+    - 'bioconductor-flowclust >=3.32.0,<3.33.0'
+    - 'bioconductor-flowcore >=2.6.0,<2.7.0'
+    - 'bioconductor-graph >=1.72.0,<1.73.0'
+    - 'bioconductor-rgraphviz >=2.38.0,<2.39.0'
+    - r-base
+    - r-feature
+    - r-foreach
+    - r-rrcov
+    - r-snow
   build:
     - {{ cdt('mesa-libgl-devel') }}  # [linux]
     - {{ cdt('mesa-dri-drivers') }}  # [linux]
@@ -26,33 +46,15 @@ requirements:
     - {{ cdt('libxdamage') }}  # [linux]
     - {{ cdt('libxxf86vm') }}  # [linux]
     - xorg-libxfixes  # [linux]
-  host:
-    - 'bioconductor-flowclust >=3.22.0,<3.23.0'
-    - 'bioconductor-flowcore >=1.50.0,<1.51.0'
-    - 'bioconductor-graph >=1.62.0,<1.63.0'
-    - 'bioconductor-rgraphviz >=2.28.0,<2.29.0'
-    - r-base
-    - r-feature
-    - r-foreach
-    - r-rrcov
-    - r-snow
-  run:
-    - 'bioconductor-flowclust >=3.22.0,<3.23.0'
-    - 'bioconductor-flowcore >=1.50.0,<1.51.0'
-    - 'bioconductor-graph >=1.62.0,<1.63.0'
-    - 'bioconductor-rgraphviz >=2.28.0,<2.29.0'
-    - r-base
-    - r-feature
-    - r-foreach
-    - r-rrcov
-    - r-snow
 test:
   commands:
-    - 'LD_LIBRARY_PATH=${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64 $R -e "library(''{{ name }}'')"'
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Merging of mixture components for model-based automated gating of flow cytometry data using the flowClust framework. Note: users should have a working copy of flowClust 2.0 installed.'
+  summary: 'Cluster Merging for Flow Cytometry Data'
+  description: 'Merging of mixture components for model-based automated gating of flow cytometry data using the flowClust framework. Note: users should have a working copy of flowClust 2.0 installed.'
 extra:
   container:
     extended-base: true
+

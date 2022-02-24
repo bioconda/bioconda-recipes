@@ -1,5 +1,5 @@
-{% set version = "4.3.9" %}
-{% set sha256 = "58b043d27278bf4d9cab81216f32192c6316094b05ae3cfaaa4acfba02c9713a" %}
+{% set version = "4.5.1" %}
+{% set sha256 = "51e052569ae89f586a1a94c804f09fe1b7910a3ffff7664e2005f18c7d3f717b" %}
 package:
   name: sepp
   version: '{{version}}'
@@ -16,40 +16,35 @@ source:
 
 build:
   number: 0
+  skip: true  # [py != 37]
 
 requirements:
   host:
-    # no-arch package of dendropy does not work on osx:
-    # No such file or directory: '/Users/distiller/project/miniconda/conda-bld/sepp_1554794831372/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_plac/bin/python2.7': '/Users/distiller/project/miniconda/conda-bld/sepp_1554794831372/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_plac/bin/python2.7'
-    # thus, trying here to restrict to arch dependent combinations of dendropy and python for osx
-    - python  # [linux]
-    - dendropy  # [linux]
-    - python >=2.7,<3.7  # [osx]
-    - dendropy >=4.0.3,<4.4  # [osx]
+    - python
+    - setuptools
+    - pip
+    - dendropy
     - openjdk
     - hmmer ==3.1b2
 
   run:
-    - python  # [linux]
-    - dendropy  # [linux]
-    - python >=2.7,<3.7  # [osx]
-    - dendropy >=4.0.3,<4.4  # [osx]
+    - python
+    - dendropy
     - openjdk
     - hmmer ==3.1b2
-    # TODO: source bundled binaries as conda packages. 
+    # TODO: source bundled binaries as conda packages.
     # But pplacer / guppy are not available for OSX.
     # - pplacer
 
 test:
   commands:
     - run_sepp.py --help
-    # for now, ignore other programs "tipp" and "upp" due to big sized reference files
-    #- run_tipp.py --help
+    # for now, ignore "upp" 
     #- run_upp.py --help
     - run-sepp.sh $PREFIX/share/sepp/ref/input_fragments.fasta testrun_tiny -a $PREFIX/share/sepp/ref/reference_alignment_tiny.fasta -t $PREFIX/share/sepp/ref/reference_phylogeny_tiny.nwk -r $PREFIX/share/sepp/ref/RAxML_info-reference-gg-raxml-bl.info -x 1 -b 1
     - grep "f__Halomonadaceae" testrun_tiny_placement.tog.relabelled.tre
     - grep "testseqd" testrun_tiny_placement.tog.relabelled.tre
-    
+
 about:
   home: https://github.com/smirarab/sepp
   license: GPLv3

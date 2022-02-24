@@ -1,43 +1,38 @@
 {% set name = "nanopolish" %}
-{% set version = "0.11.1" %}
+{% set version = "0.13.2" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 0
+  number: 9
 
 source:
-  url: https://github.com/jts/nanopolish/archive/v{{ version }}.tar.gz
-  sha256: c78f8b91e1b66f79cf6239f6cb84592d4b4acc75044d1120978efba5f98a193d
+  git_url: https://github.com/jts/nanopolish
+  git_rev: 'v{{ version }}'
+  sha256: be9ab70ff0753519323e4cd0e6be50b164c4239bd9c20ffa5207c2d6fc20d120
   patches:
     - nanopolish.patch
+    - patch
 
 requirements:
   build:
-    - {{ compiler('cxx') }}  # [linux64]
-    - gcc                    # [osx]
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - eigen 
   host:
-    - fast5 0.6.5
     - htslib
     - hdf5
+    - zlib
     - eigen
-    - ncurses
-    - bzip2
-    - openmp
-    - libcurl
   run:
-    - python
-    - hdf5
     - biopython
-    - bwa
-    - eigen
-    - ncurses
-    - libdeflate
-    - openmp
-    - libgcc                # [osx]
-    - libcurl
+    - python
+    - ont_vbz_hdf_plugin
 
 test:
   commands:
@@ -52,4 +47,6 @@ about:
 
 extra:
   skip-lints:
-    - should_use_compilers
+    - uses_vcs_url
+  identifiers:
+    - usegalaxy-eu:nanopolish_eventalign

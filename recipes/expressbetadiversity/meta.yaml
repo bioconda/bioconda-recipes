@@ -1,0 +1,50 @@
+{% set name = "ExpressBetaDiversity" %}
+{% set version = "1.0.10" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/dparks1134/ExpressBetaDiversity/archive/v{{ version }}.tar.gz
+  sha256: c3ee0894ed0beea42f7668e531e53d01f4c19374d0dfd287cb400a68241c6c03
+  patches:
+    - 0001-Fix-hardcoded-g++.patch
+
+build:
+  number: 2
+  skip: True  # [not linux]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - python >=3  # required for source/dep.py
+  host:
+  run:
+    - python >=3
+    - numpy
+    - matplotlib-base
+
+test:
+  commands:
+    - ExpressBetaDiversity -h
+    - convertToEBD.py -h
+    - convertToFullMatrix.py -h
+
+about:
+  home: https://github.com/dparks1134/ExpressBetaDiversity
+  license: GPL-3
+  license_family: GPL3
+  license_file: license.txt
+  summary: 'Taxon- and phylogenetic-based beta diversity measures.'
+
+  description: 'Taxon- and phylogenetic-based beta diversity measures.'
+  doc_url: https://github.com/dparks1134/ExpressBetaDiversity
+  dev_url: https://github.com/dparks1134/ExpressBetaDiversity
+
+extra:
+  recipe-maintainers:
+    - aaronmussig
+  identifiers:
+    - doi:10.1038/ismej.2012.88

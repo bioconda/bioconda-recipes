@@ -1,6 +1,6 @@
-{% set version = "11.0" %}
-{% set date = "20190322" %}
-{% set sha256 = "8296ea52598a3589f61eba688ca94251d01166b132bfbb590b8ee2d7a56d6979" %}
+{% set version = "16.2" %}
+{% set date = "20211103" %}
+{% set sha256 = "42124ac5aa9aed2bb399b064ad4dfe418b9facb6f61eef95ac7e92e7cc410dd3" %}
 
 package:
   name: entrez-direct
@@ -10,62 +10,23 @@ build:
   number: 0
 
 source:
-  url: ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/edirect.tar.gz
+  url: https://raw.githubusercontent.com/biostars/conda-ready-entrez-direct/main/dist/edirect-16.2.20211103.tar.gz
   sha256: {{ sha256 }}
-  patches:
-  - xtract.patch
 
 requirements:
-  host:
-  - perl
-  - perl-html-parser
-  - perl-html-tagset
-  - perl-html-tree
-  - perl-http-cookies
-  - perl-http-date
-  - perl-http-message
-  - perl-http-negotiate
-  - perl-io-socket-ssl
-  - perl-lwp-mediatypes
-  - perl-lwp-protocol-https
-  - perl-net-http
-  - perl-uri
-  - perl-www-robotrules
-  - perl-mozilla-ca
-  - perl-xml-simple
-
-  run:
-  - perl
-  - perl-html-parser
-  - perl-html-tagset
-  - perl-html-tree
-  - perl-http-cookies
-  - perl-http-date
-  - perl-http-message
-  - perl-http-negotiate
-  - perl-io-socket-ssl
-  - perl-lwp-mediatypes
-  - perl-lwp-protocol-https
-  - perl-net-http
-  - perl-uri
-  - perl-www-robotrules
-  - perl-mozilla-ca
-  - perl-xml-simple
+  build:
+    # The installer script downloads statically compiled binaries, so this is effectively just avoiding linter errors
+    - {{ compiler('go') }}
 
 test:
   commands:
     - efetch --help
     - epost --help
     - efilter --help
-    - eproxy --help
     - einfo --help
     - esearch --help
-    - econtact --help
     - elink --help
-    - espell --help
-    - enotify --help
     - esummary --help
-    - entrez-phrase-search --help
     - xtract -version
 
 about:

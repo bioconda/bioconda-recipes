@@ -1,40 +1,49 @@
+{% set version = "3.3.0" %}
+{% set sha256 = "3a099249304e2c43e3c96ba9dfe2bb712f48e23ca62f4e3a57fa9d65a63b9e41" %}
+
 package:
   name: rnashapes
   version: 3.3.0
 
 source:
-  sha256: d5d21ce1035e6cb9952cf803f8ad43cd986c172b6b11c2c43a5ad6722d98f2db
-  url: https://depot.galaxyproject.org/software/Fold-Grammars/Fold-Grammars_1.0_src_all.zip
+  sha256: {{ sha256 }}
+  # the repository "fold-grammars" contains sources for several programs, i.e. pKiss, RNAshapes, ...
+  # thus, the version number does not correspond to the RNAshapes version number
+  url: https://github.com/jlab/fold-grammars/archive/2.2.12.tar.gz
+  patches:
+    - switch_hardcoded_compiler.patch
 
 build:
-  number: 2
-  skip: True # [osx]
+  number: 6
+  skip: False # [osx]
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - make
+    - {{ compiler('cxx') }}
   host:
     - perl
-    - bellmans-gapc
-    - boost
-    - gsl
+    - bellmans-gapc >=2020.12.08
   run:
     - perl
-    - bellmans-gapc
-    - boost
-    - gsl
+    - bellmans-gapc >=2020.12.08
 
 test:
   commands:
-  - RNAshapes -h
-  - RNAshapes CGCAUGCUAGUCGCG
+    - RNAshapes -h
+    - RNAshapes CGCAUGCUAGUCGCG
 
 about:
-  home: http://bibiserv.techfak.uni-bielefeld.de/rnashapes
-  license: 'Uknown - Please refer to the tool homepage'
+  home: https://bibiserv.cebitec.uni-bielefeld.de/rnashapes
+  license: 'GPLv3+'
+  license_file: LICENSE
   summary: "RNAshape abstraction maps structures to a tree-like domain of shapes,
     retaining adjacency and nesting of structural features, but disregarding helix
     lengths. Shape abstraction integrates well with dynamic programming algorithms,
     and hence it can be applied during structure prediction rather than afterwards.
     This avoids exponential explosion and can still give us a non-heuristic and complete
     account of properties of the molecule's folding space."
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btu649

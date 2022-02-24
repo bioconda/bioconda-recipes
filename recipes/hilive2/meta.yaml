@@ -1,0 +1,44 @@
+{% set name = "hilive2" %}
+{% set version = "2.0" %}
+
+package:
+ name: "{{ name|lower }}"
+ version: "{{ version }}"
+
+source:
+  url: https://gitlab.com/rki_bioinformatics/HiLive2/-/archive/v{{ version }}/HiLive2-v{{ version }}.tar.bz2
+  sha256: 75532847abedc9041b8710490088a64c2c200fc0652368fb0ac75477ad62bd39
+
+build:
+ number: 0
+ skip: True # [osx]
+
+requirements:
+ build:
+  - {{ compiler('cxx') }}
+  - seqan-library =2.4.0
+  - make
+  - cmake >=3.10
+ host:
+  - zlib
+  - boost-cpp =1.69.0
+  - lz4-c
+  - bzip2
+ run:
+
+about:
+ home: https://gitlab.com/rki_bioinformatics/HiLive2
+ license: BSD-3-Clause
+ license_family: BSD
+ license_file: LICENSE.md
+ summary: "Tool for real-time read alignment of Illumina sequencing data"
+
+test:
+ commands:
+  - hilive --help 2> /dev/null | grep "Realtime Alignment of Illumina Reads"
+  - hilive-build --help 2> /dev/null | grep "Build Index for Realtime Alignment of Illumina Reads"
+  - hilive-out --help 2> /dev/null | grep "Output of Realtime Alignments of Illumina Reads"
+
+extra:
+ recipe-maintainers:
+  - tloka

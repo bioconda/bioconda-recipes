@@ -1,22 +1,63 @@
 {% set name = "ngless" %}
-{% set version = "1.0.1" %}
-{% set md5 = "f36f674fd3b5cf51f4946605b4ac3007" %}
+{% set version = "1.3.0" %}
+{% set sha256 = "b0a114ed901b378189b09d091308e5ad554fdbbd7d3722c935d26c0ddd7328d6" %}
+{% set osx_binaries_sha256 = "e72fa4bc5d1666432d4a86c417ec7f80fa21cb4c1f4b3ba5c6490fe8c7f140f9" %}
+
+{% set ghc_src_version = "8.6.5" %}
+{% set ghc_src_sha256 = "4d4aa1e96f4001b934ac6193ab09af5d6172f41f5a5d39d8e43393b9aafee361" %}
+{% set ghc_bootstrap_version = "8.4.2" %}
+{% set ghc_bootstrap_linux_sha256 = "28c31489ed9a83af4400685ec8bc72a6d43d08958d75b2dc35d29a894a5c9d93" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/ngless-toolkit/ngless/releases/download/v{{ version }}/ngless-{{ version }}-static-Linux64
-  md5: {{ md5 }}
+  - url: https://github.com/ngless-toolkit/ngless/archive/v{{ version }}.tar.gz # [linux]
+    sha256: {{ sha256 }} # [linux]
+    folder: ngless # [linux]
+  - url: https://downloads.haskell.org/~ghc/{{ ghc_bootstrap_version }}/ghc-{{ ghc_bootstrap_version }}-x86_64-centos67-linux.tar.xz  # [linux]
+    sha256: {{ ghc_bootstrap_linux_sha256 }}  # [linux]
+    folder: ghc_bootstrap # [linux]
+
+  - url: https://downloads.haskell.org/~ghc/{{ ghc_src_version }}/ghc-{{ ghc_src_version }}-src.tar.xz # [linux]
+    sha256: {{ ghc_src_sha256 }} # [linux]
+    folder: ghc_src # [linux]
+
+  - url: https://github.com/ngless-toolkit/ngless/releases/download/v{{ version }}/NGLess-{{ version }}-osx.zip # [osx]
+    sha256: {{ osx_binaries_sha256 }} # [osx]
+
 
 build:
-  number: 0
-  skip: True  #  [osx]
+  number: 1
+
 
 requirements:
+  build:
+    - make
+    - {{ compiler('c') }} # [linux]
+    - {{ compiler('cxx') }} # [linux]
+    - make # [linux]
+    - perl # [linux]
+    - coreutils # [linux]
+    - binutils # [linux]
+    - pkg-config # [linux]
+    - automake # [linux]
+    - autoconf # [linux]
+    - libtool # [linux]
+    - stack >=1.9.3 # [linux]
+  host:
+    - gmp
+    - xz
+    - zlib
+    - bzip2
+    - backports.lzma
+    - libiconv
+    - openssh
+    - wget # [linux]
+    - libffi # [linux]
   run:
-    - python
+    - libffi # [linux]
 
 
 test:
@@ -27,4 +68,13 @@ test:
 about:
   home: https://ngless.embl.de
   license: MIT
-  summary: A tool for metagenomics processing with a focus on metagenomics
+  summary: A tool for short-read processing with a focus on metagenomics
+
+extra:
+  container:
+    # For GHC
+    extended-base: true
+  recipe-maintainers:
+    - luispedro
+  identifiers:
+    - "doi:10.1186/s40168-019-0684-8" # Publication

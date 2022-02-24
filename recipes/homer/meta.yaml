@@ -1,23 +1,24 @@
-about:
-  home: 'http://homer.salk.edu/homer/'
-  license: GPLv3
-  summary:  Software for motif discovery and next generation sequencing analysis
+{% set version = "4.11" %}
 
 # Note that the script to install homer is always the same (configureHomer.pm)
 # but its content changes. Behind the scene a specific version is downloaded
-# For instance for version 4.9.1, this file is downloaded and installed
-# http://homer.ucsd.edu/homer/data/software/homer.v4.9.1.zip
+# For instance for version 4.10, this file is downloaded and installed
+# http://homer.ucsd.edu/homer/data/software/homer.v4.10.zip
 
 package:
   name: homer
-  version: '4.9.1'
+  version: '{{ version }}'
 
 source:
-  md5: eb02e7243c5af5980fce00e98c34278f
-  url: http://homer.salk.edu/homer/configureHomer.pl
+  - url: http://homer.ucsd.edu/homer/configureHomer.pl
+    sha256: 37e36fb10387a90050251683d35fe568657941b863b2088dcb0d09d9b1b59477
+    patches:
+      - configureHomer.patch
 
 build:
-  number: 7
+  number: 6
+  # Ships pre-built binaries that install_name_tool isn't able to fix.
+  skip: True  # [osx]
 
 # dependencies according to README.txt installed by configureHomer.pl
 # are ghostscript, weblogo v2 NOT v2.8 and blat. Note, however, that there
@@ -25,34 +26,30 @@ build:
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - make
   host:
-    - python
-    - setuptools
     - perl
     - wget
     - unzip
     - zip
   run:
     - perl
+    - wget
+    - unzip
 
 test:
-  requires:
-    - perl
   commands:
-    #- configureHomer.pl 2>&1 | grep "share" > /dev/null
-    #- findMotifs.pl 2>&1 | grep "findMotifs.pl" > /dev/null
-    #- findMotifs.pl 2>&1 | grep "please run configureHomer.pl" > /dev/null
-    - findMotifs.pl -h > /dev/null
-    - homer2 > /dev/null
-    #- GenomeOntology.pl > /dev/null
-    #- homer > /dev/null
-    #- makeTagDirectory > /dev/null
+    - annotatePeaks.pl -h > /dev/null 2>&1
+    - findMotifs.pl -h > /dev/null 2>&1
+    - homer2 > /dev/null 2>&1
+    - GenomeOntology.pl > /dev/null 2>&1
+    - makeTagDirectory > /dev/null 2>&1
 
 about:
   home: 'http://homer.ucsd.edu/homer/index.html'
-  license: "GPL3"
+  license: "GNU General Public v3 (GPLv3)"
+  license_family: "GPL3"
+  license_file: "LICENSE.txt"
   summary: 'Software for motif discovery and next generation sequencing analysis'
-  license_family: GPL
-  maintainer: BioNinja, cokelaer, simonvh
-
+  maintainer: BioNinja, cokelaer, simonvh, r78v10a07
 

@@ -1,0 +1,55 @@
+{% set name = "metapi" %}
+{% set version = "1.1.0" %}
+{% set sha256 = "98ac19430aa759860eced3955310885ae6b2c0d62bf825807778fda64f60652f" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ohmeta/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  entry_points:
+    - metapi = metapi.corer:main
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - pysam
+    - numpy
+    - pandas
+    - matplotlib-base
+    - seaborn
+    - openpyxl
+    - biopython
+    - ruamel.yaml
+    - snakemake
+
+test:
+  imports:
+    - metapi
+  commands:
+    - metapi --version
+    - metapi init --help
+    - metapi gene_wf --help
+    - metapi mag_wf --help
+
+about:
+  home: https://github.com/ohmeta/metapi
+  summary: 'A general metagenomics data mining system focus on robust microbiome research'
+  license: GPL3
+  license_family: GPL
+
+extra:
+  identifiers:
+    - biotools:metapi
+  recipe-maintainers:
+    - alienzj
