@@ -1,7 +1,7 @@
 #!/bin/sh
 
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 mkdir -p $PREFIX/bin/
 
