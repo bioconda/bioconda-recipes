@@ -1,5 +1,8 @@
 #!/bin/sh
 
+export CFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+
 mkdir -p $PREFIX/bin/
 
 # To run boost linking $CC and $CXX to gcc and g++
