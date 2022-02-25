@@ -17,14 +17,6 @@ bowtie2-inspect-s \
 directories="scripts"
 pythonfiles="bowtie2-build bowtie2-inspect"
 
-PY3_BUILD="${PY_VER%.*}"
-
-if [ $PY3_BUILD -eq 3 ]; then
-    for i in $pythonfiles; do
-	2to3 --write $i
-    done
-fi
-
 for i in $binaries; do
     cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i
 done

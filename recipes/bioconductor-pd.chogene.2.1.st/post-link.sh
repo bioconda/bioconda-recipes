@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.chogene.2.1.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/pd.chogene.2.1.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.chogene.2.1.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.chogene.2.1.st_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.chogene.2.1.st/bioconductor-pd.chogene.2.1.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.chogene.2.1.st/bioconductor-pd.chogene.2.1.st_3.12.0_src_all.tar.gz"
 )
 MD5="ed25825e58a514cdde70b961bce9b4d7"

@@ -1,0 +1,42 @@
+{% set name = "verkko" %}
+{% set version = "1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/marbl/{{ name }}/releases/download/v{{ version }}_beta/{{ name }}-v{{ version }}.tar.gz
+  md5: ae57ec883cafd846b84fcc5795949e34
+  patches:
+    - version.patch
+
+build:
+  number: 0
+  skip: True # [osx]
+
+requirements:
+  build:
+    - make
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - {{ compiler('cxx') }}
+  host:
+    - gsl
+  run:
+    - python >=3.7
+    - snakemake-minimal >=6.0.0
+    - graphaligner >=1.0.14
+    - mbg >=1.0.8
+
+test:
+  requires:
+    - curl
+  commands:
+     - verkko --version
+
+about:
+  home: https://github.com/marbl/verkko
+  license: CC0
+  license_file: README.licenses
+  summary: Assembler for hybrid combinations of long reads
