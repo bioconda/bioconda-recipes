@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.rta.1.0_3.12.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/pd.rta.1.0_3.12.2.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.rta.1.0_3.12.2.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.rta.1.0_3.12.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.rta.1.0/bioconductor-pd.rta.1.0_3.12.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.rta.1.0/bioconductor-pd.rta.1.0_3.12.2_src_all.tar.gz"
 )
 MD5="90752a892a103c7fe4cd6c86e61a61db"

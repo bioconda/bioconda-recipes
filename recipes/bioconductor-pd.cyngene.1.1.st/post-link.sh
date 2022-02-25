@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.cyngene.1.1.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/pd.cyngene.1.1.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.cyngene.1.1.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.cyngene.1.1.st_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.cyngene.1.1.st/bioconductor-pd.cyngene.1.1.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.cyngene.1.1.st/bioconductor-pd.cyngene.1.1.st_3.12.0_src_all.tar.gz"
 )
 MD5="a6217267e3e08a15f70c600918c7d4f6"

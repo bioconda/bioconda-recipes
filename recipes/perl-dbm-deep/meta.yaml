@@ -1,34 +1,46 @@
+{% set name = "perl-dbm-deep" %}
+{% set version = "2.0016" %}
+{% set sha256 = "902a7c7aa0488d8d0a0e8a6cf3da0e96b4093ae471e6b772f0c6d5898e470e4d" %}
+
 package:
-  name: perl-dbm-deep
-  version: "2.0013"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://cpan.metacpan.org/authors/id/R/RK/RKINYON/DBM-Deep-2.0013.tar.gz
-  md5: ea3e7afa296a4c7b87cf06eac3b674bf
+  url: https://cpan.metacpan.org/authors/id/S/SP/SPROUT/DBM-Deep-2.0016.tar.gz
+  sha256: {{ sha256 }}
 
+# If this is a new build for the same version, increment the build
+# number. If you do not include this key, it defaults to 0.
 build:
-  number: 1
+  number: 0
+  noarch: generic
+  run_exports:
+    weak:
+      - {{ name }} ={{ version }}
 
 requirements:
+  build:
+    - make
+  # Run exports are used now
   host:
     - perl
-    - perl-file-path
-    - perl-test-simple
     - perl-test-deep
-    - perl-scalar-list-utils
     - perl-test-warn
     - perl-test-exception
+    - perl-scalar-list-utils
     - perl-module-build
     - perl-digest-md5
     - perl-dbi
 
   run:
     - perl
-    - perl-digest-md5
     - perl-scalar-list-utils
+    - perl-digest-md5
     - perl-dbi
 
 test:
+  # Perl 'use' tests
   imports:
     - DBM::Deep
     - DBM::Deep::Array
@@ -57,7 +69,14 @@ test:
     - DBM::Deep::Storage::DBI
     - DBM::Deep::Storage::File
 
+  # You can also put a file called run_test.pl (or run_test.py) in the recipe
+  # that will be run at test time.
+
 about:
-  home: http://metacpan.org/pod/DBM::Deep
+  home: http://metacpan.org/pod/DBM-Deep
   license: perl_5
   summary: 'A pure perl multi-level hash/array DBM that supports transactions'
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml

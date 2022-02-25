@@ -15,8 +15,8 @@ Commands:
 =========
 # See here for latest db available: https://github.com/ebi-pf-team/interproscan or http://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/
 # Set version
-version_major=5.52
-version_minor=86.0
+version_major=5.54
+version_minor=87.0
 
 # get the md5 of the databases
 wget http://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/${version_major}-${version_minor}/interproscan-${version_major}-${version_minor}-64-bit.tar.gz.md5
@@ -25,7 +25,7 @@ wget http://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/${version_major}-${version
 # checksum
 md5sum -c interproscan-${version_major}-${version_minor}-64-bit.tar.gz.md5
 # untar gz
-tar xvzf interproscan-${version_major}-${version_minor}-64-bit.tar.gz.md5
+tar xvzf interproscan-${version_major}-${version_minor}-64-bit.tar.gz
 # remove old DB
 rm -rf $CONDA_PREFIX/share/InterProScan/data/
 # copy past the new db

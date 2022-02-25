@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="OperonHumanV3.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/OperonHumanV3.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/OperonHumanV3.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/OperonHumanV3.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-operonhumanv3.db/bioconductor-operonhumanv3.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-operonhumanv3.db/bioconductor-operonhumanv3.db_3.2.3_src_all.tar.gz"
 )
 MD5="648da5d4d63c6c8327f6035ee09f2b65"

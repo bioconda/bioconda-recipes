@@ -1,7 +1,7 @@
 #!/bin/bash
 mkdir -p ${PREFIX}/bin
 
-make 
+make CC=$CXX
 
 cp -r bin/* ${PREFIX}/bin
 
