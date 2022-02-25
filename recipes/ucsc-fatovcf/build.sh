@@ -11,7 +11,7 @@ export MACHTYPE=x86_64
 export BINDIR=$(pwd)/bin
 export L="${LDFLAGS}"
 mkdir -p "$BINDIR"
-printenv
+ls -R $PREFIX
 (cd kent/src/lib && make)
 (cd kent/src/htslib && make)
 (cd kent/src/jkOwnLib && make)
