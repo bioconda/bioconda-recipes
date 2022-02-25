@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
@@ -17,3 +18,4 @@ mkdir -p "$BINDIR"
 (cd kent/src/hg/utils/faToVcf && make)
 cp bin/faToVcf "$PREFIX/bin"
 chmod +x "$PREFIX/bin/faToVcf"
+ls -l "$PREFIX/bin/faToVcf"
