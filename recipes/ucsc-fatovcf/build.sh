@@ -11,6 +11,7 @@ export MACHTYPE=x86_64
 export BINDIR=$(pwd)/bin
 export L="${LDFLAGS}"
 mkdir -p "$BINDIR"
+printenv
 (cd kent/src/lib && make)
 (cd kent/src/htslib && make)
 (cd kent/src/jkOwnLib && make)
@@ -18,4 +19,3 @@ mkdir -p "$BINDIR"
 (cd kent/src/hg/utils/faToVcf && make)
 cp bin/faToVcf "$PREFIX/bin"
 chmod +x "$PREFIX/bin/faToVcf"
-ls -l "$PREFIX/bin/faToVcf"
