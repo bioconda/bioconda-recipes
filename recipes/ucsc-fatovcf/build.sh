@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
@@ -11,7 +10,6 @@ export MACHTYPE=x86_64
 export BINDIR=$(pwd)/bin
 export L="${LDFLAGS}"
 mkdir -p "$BINDIR"
-ls -R $PREFIX
 patch kent/src/inc/common.mk $RECIPE_DIR/inc.common.mk.v426.patch
 (cd kent/src/lib && make)
 (cd kent/src/htslib && make)
