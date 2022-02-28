@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="BioImageDbs_1.0.2.tar.gz"
+FN="BioImageDbs_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/BioImageDbs_1.0.2.tar.gz"
-  "https://bioarchive.galaxyproject.org/BioImageDbs_1.0.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bioimagedbs/bioconductor-bioimagedbs_1.0.2_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/BioImageDbs_1.2.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/BioImageDbs_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bioimagedbs/bioconductor-bioimagedbs_1.2.0_src_all.tar.gz"
 )
-MD5="002433d829a272b05a954edc7edfb6e6"
+MD5="50714878456f9009e9e18a357f22fcc8"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
