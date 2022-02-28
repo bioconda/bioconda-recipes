@@ -26,11 +26,13 @@ def printRootNodes(config_path, recipe_folder, sinceNDays, missing, rootNodes):
     recipes = utils.get_recipes(recipe_folder)
 
     if sinceNDays:
-       timeStamp = datetime.timestamp(datetime.now() - timedelta(sinceNDays))
-       linux, noarch, osx = getRepoData(timeStamp)
-       arch = linux.intersection(osx)
-       ready = noarch.union(arch)
-       print("{} built in noarch and both archs combined: {} noarch, {} linux-64, {} osx-64".format(len(ready), len(noarch), len(linux), len(osx)))
+        timeStamp = datetime.timestamp(datetime.now() - timedelta(sinceNDays))
+        linux, noarch, osx = getRepoData(timeStamp)
+        arch = linux.intersection(osx)
+        ready = noarch.union(arch)
+        print("{} built in noarch and both archs combined: {} noarch, {} linux-64, {} osx-64".format(len(ready), len(noarch), len(linux), len(osx)))
+    timeStamp = datetime.timestamp(datetime.now() - timedelta(360))
+    linux, noarch, osx = getRepoData(timeStamp)
 
     dag, name2recipes = graph.build(recipes, config=config_path, blacklist=blacklist)
     if not rootNodes:
@@ -51,7 +53,8 @@ def printRootNodes(config_path, recipe_folder, sinceNDays, missing, rootNodes):
             elif missing:
                 print("recipes/{}\t{}".format(n[1], n[0]))
         else:
-            print("recipes/{}\t{}".format(n[1], n[0]))
+            if n[1] in noarch:
+                print("recipes/{}\t{}".format(n[1], n[0]))
 
 
 def main():
