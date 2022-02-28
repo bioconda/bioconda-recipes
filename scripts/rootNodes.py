@@ -25,12 +25,13 @@ def printRootNodes(config_path, recipe_folder, sinceNDays, missing, rootNodes):
     blacklist = utils.get_blacklist(config, recipe_folder)
     recipes = utils.get_recipes(recipe_folder)
 
+    linuxN = set()
     if sinceNDays:
         timeStamp = datetime.timestamp(datetime.now() - timedelta(sinceNDays))
-        linux, noarch, osx = getRepoData(timeStamp)
-        arch = linux.intersection(osx)
+        linuxN, noarch, osx = getRepoData(timeStamp)
+        arch = linuxN.intersection(osx)
         ready = noarch.union(arch)
-        print("{} built in noarch and both archs combined: {} noarch, {} linux-64, {} osx-64".format(len(ready), len(noarch), len(linux), len(osx)))
+        print("{} built in noarch and both archs combined: {} noarch, {} linux-64, {} osx-64".format(len(ready), len(noarch), len(linuxN), len(osx)))
     timeStamp = datetime.timestamp(datetime.now() - timedelta(360))
     linux, noarch, osx = getRepoData(timeStamp)
 
@@ -53,7 +54,7 @@ def printRootNodes(config_path, recipe_folder, sinceNDays, missing, rootNodes):
             elif missing:
                 print("recipes/{}\t{}".format(n[1], n[0]))
         else:
-            if n[1] in noarch:
+            if n[1] in noarch or n[1] in linuxN:
                 print("recipes/{}\t{}".format(n[1], n[0]))
 
 
