@@ -9,7 +9,8 @@ make
 cp simulator $PREFIX/bin/
 
 cd ../poa-graph
-make poa CXXFLAGS="$CXXFLAGS -fcommon"
+head -n 50 Makefile
+make poa CFLAGS="$CFLAGS -fcommon"
 cp poa $PREFIX/bin/
 
 cd ../utils

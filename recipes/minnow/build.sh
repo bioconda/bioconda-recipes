@@ -12,7 +12,7 @@ mkdir -p $PREFIX/lib
 mkdir -p build
 cd build
 cmake ..
-make
+make DEBUG=1
 cp src/minnow $PREFIX/bin/ 
 cp src/fixfasta $PREFIX/bin/ 
 

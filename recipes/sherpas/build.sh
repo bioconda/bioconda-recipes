@@ -8,6 +8,7 @@ export CXX_INCLUDE_PATH=${PREFIX}/include
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
 
+ls -l
 mkdir release-build
 cd release-build
 cmake --build ..
