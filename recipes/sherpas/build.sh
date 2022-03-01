@@ -9,7 +9,7 @@ mkdir -p $PREFIX/lib
 
 mkdir release-build
 cd release-build
-cmake --target SHERPAS ..
+cmake --build .. --target SHERPAS
 make
 
 cp sherpas/SHERPAS $PREFIX/bin
