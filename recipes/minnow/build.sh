@@ -11,7 +11,7 @@ mkdir -p $PREFIX/lib
 
 mkdir -p build
 cd build
-cmake ..
+cmake -D CMAKE_C_COMPILER="${CC}" -D CMAKE_CXX_COMPILER="${CXX}" ..
 make VERBOSE=1
 cp src/minnow $PREFIX/bin/ 
 cp src/fixfasta $PREFIX/bin/ 
