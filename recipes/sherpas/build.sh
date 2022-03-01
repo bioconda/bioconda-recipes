@@ -12,7 +12,8 @@ cmake .
 mkdir release-build
 cd release-build
 cmake --build .. --target SHERPAS
-make
+ls
+ls sherpas
 
 cp sherpas/SHERPAS $PREFIX/bin
 chmod +x $PREFIX/bin/SHERPAS
