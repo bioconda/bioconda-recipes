@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="MethylSeqData_1.2.0.tar.gz"
+FN="MethylSeqData_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/MethylSeqData_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MethylSeqData_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-methylseqdata/bioconductor-methylseqdata_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/MethylSeqData_1.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MethylSeqData_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-methylseqdata/bioconductor-methylseqdata_1.4.0_src_all.tar.gz"
 )
-MD5="e1b910ab4ef4d30e57a481b3bb10c58f"
+MD5="f838eb82311805a96d9ca0112d6d1033"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

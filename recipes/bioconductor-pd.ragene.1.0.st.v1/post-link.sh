@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.ragene.1.0.st.v1_3.14.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/pd.ragene.1.0.st.v1_3.14.1.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.ragene.1.0.st.v1_3.14.1.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.ragene.1.0.st.v1_3.14.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.ragene.1.0.st.v1/bioconductor-pd.ragene.1.0.st.v1_3.14.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.ragene.1.0.st.v1/bioconductor-pd.ragene.1.0.st.v1_3.14.1_src_all.tar.gz"
 )
 MD5="122cb69603e705218d01d70f48e90cad"

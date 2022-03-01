@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="BSgenome.Tguttata.UCSC.taeGut1.masked_1.3.99.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/BSgenome.Tguttata.UCSC.taeGut1.masked_1.3.99.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Tguttata.UCSC.taeGut1.masked_1.3.99.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Tguttata.UCSC.taeGut1.masked_1.3.99.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.tguttata.ucsc.taegut1.masked/bioconductor-bsgenome.tguttata.ucsc.taegut1.masked_1.3.99_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.tguttata.ucsc.taegut1.masked/bioconductor-bsgenome.tguttata.ucsc.taegut1.masked_1.3.99_src_all.tar.gz"
 )
 MD5="63684abb5b330bb54ff89fe78f2e6444"

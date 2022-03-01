@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="human650v3aCrlmm_1.0.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/human650v3aCrlmm_1.0.3.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/human650v3aCrlmm_1.0.3.tar.gz"
   "https://bioarchive.galaxyproject.org/human650v3aCrlmm_1.0.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-human650v3acrlmm/bioconductor-human650v3acrlmm_1.0.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-human650v3acrlmm/bioconductor-human650v3acrlmm_1.0.3_src_all.tar.gz"
 )
 MD5="4b0de367ccc0f7499dcffe21ef1893c2"

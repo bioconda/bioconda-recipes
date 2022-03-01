@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="EnsDb.Mmusculus.v79_2.99.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/EnsDb.Mmusculus.v79_2.99.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/EnsDb.Mmusculus.v79_2.99.0.tar.gz"
   "https://bioarchive.galaxyproject.org/EnsDb.Mmusculus.v79_2.99.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ensdb.mmusculus.v79/bioconductor-ensdb.mmusculus.v79_2.99.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ensdb.mmusculus.v79/bioconductor-ensdb.mmusculus.v79_2.99.0_src_all.tar.gz"
 )
 MD5="28bbab743b0d2d550dbfa0bcd3274fad"
