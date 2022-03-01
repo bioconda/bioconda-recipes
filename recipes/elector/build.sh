@@ -9,8 +9,7 @@ make
 cp simulator $PREFIX/bin/
 
 cd ../poa-graph
-head -n 50 Makefile
-make poa CFLAGS="$CFLAGS -fcommon"
+make poa CC=$CC CFLAGS="$CFLAGS -fcommon -Ofast -DUSE_WEIGHTED_LINKS -DUSE_PROJECT_HEADER -I. -pthread"
 cp poa $PREFIX/bin/
 
 cd ../utils
