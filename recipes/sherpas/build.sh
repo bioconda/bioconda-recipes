@@ -9,9 +9,9 @@ mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
 
 ls -l
+cmake --build .
 mkdir release-build
 cd release-build
-cmake --build ..
 cmake --build .. --target SHERPAS
 make
 

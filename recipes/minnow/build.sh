@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -ex
 export CFLAGS="-I$PREFIX/include"
 #export LDFLAGS="-L$PREFIX/lib"
 
