@@ -38,7 +38,10 @@ make install
 make -C test/vdb
 
 # Copy headers manually. As done by Debian, install them into a common subdirectory
-mv -r interfaces/* $PREFIX/include/ncbi-vdb
+ls interfaces
+for f in interfaces/* ; do
+    mv $f $PREFIX/include/ncbi-vdb
+done
 
 
 # To Do
