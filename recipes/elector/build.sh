@@ -9,7 +9,7 @@ make
 cp simulator $PREFIX/bin/
 
 cd ../poa-graph
-make poa
+make poa CXXFLAGS="$CXXFLAGS -fcommon"
 cp poa $PREFIX/bin/
 
 cd ../utils
