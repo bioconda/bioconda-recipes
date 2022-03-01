@@ -12,6 +12,7 @@ sed -i.backup \
 
 # * --debug lets the configure script print extra info
 # * Only LDFLAGS and CXX can be customized at configure time.
+./configure --help
 ./configure \
     --debug \
     --prefix=$PREFIX \
