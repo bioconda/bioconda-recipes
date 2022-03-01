@@ -1,3 +1,5 @@
+#!/bin/bash
+set -e
 # For inspiration, see also Debian's ncbi-vdb package:
 # https://salsa.debian.org/med-team/ncbi-vdb
 
@@ -36,7 +38,7 @@ make install
 make -C test/vdb
 
 # Copy headers manually. As done by Debian, install them into a common subdirectory
-mv interfaces/* $PREFIX/include/ncbi-vdb
+mv -r interfaces/* $PREFIX/include/ncbi-vdb
 
 
 # To Do
