@@ -17,7 +17,6 @@ sed -i.backup \
     --debug \
     --prefix=$PREFIX \
     --build-prefix=ncbi-outdir \
-    --with-ngs-sdk-prefix=$PREFIX \
     CXX=$CXX
 
 # Edit the generated build configuration to use the proper tools
