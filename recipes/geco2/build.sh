@@ -6,7 +6,7 @@ export CPPFLAGS="$CXXFLAGS -fcommon"
 export CFLAGS="$CFLAGS -fcommon"
 
 cd src 
-cmake .
+cmake -D CMAKE_C_FLAGS="$CFLAGS" -D CMAKE_CXX_FLAGS="$CXXFLAGS" .
 make -j8 VERBOSE=1
 mkdir -p ${PREFIX}/bin
 mv GeCo2 ${PREFIX}/bin
