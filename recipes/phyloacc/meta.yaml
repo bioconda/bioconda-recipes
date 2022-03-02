@@ -1,113 +1,66 @@
-# Note: there are many handy hints in comments in this example -- remove them when you've finalized your recipe
+#######################################################################
+# Conda recipe for installing PhyloAcc
+# Supported platforms: Linux
+# Author: Gregg Thomas (gwct@github)
+#######################################################################
 
-# Jinja variables help maintain the recipe as you'll update the version only here.
-# Using the name variable with the URL in line 14 is convenient
-# when copying and pasting from another recipe, but not really needed.
 {% set name = "PhyloAcc" %}
-{% set version = "0.1.0" %}
-{% set sha256 = "a7be709e66a60a066a4d887201d35b5d864d74ab020a9cd39f8ff085b2bb8a2c" %}
+{% set version = "1.1.0" %}
+{% set sha256 = "1500ae0a562ca1c8d55bcd081b6d2da27d77657b6cc5811fe8b540b61bb31621" %}
+# Setting some Jinja variables for the recipe
+# sha256 from openssl sha256 <release tarball>
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
+# Package info
 
 source:
-  #url: file:///mnt/c/bin/PhyloAcc-interface.tar.gz
-  # Local linux build
-
-  #url: file://C:\bin\PhyloAcc-interface.tar.gz
-  #path: /mnt/c/bin/PhyloAcc-interface.tar.gz
-  # Local windows build (doesn't work)
-
-  # If getting the source from GitHub, remove the line above,
-  # uncomment the line below, and modify as needed. Use releases if available:
-
-  #url: https://github.com/harvardinformatics/{{ name }}-interface/archive/refs/tags/v{{ version }}-beta.tar.gz
-  #sha256: {{ sha256 }}
-  # sha256 is the preferred checksum -- you can get it for a file with:
-  #  `openssl sha256 <file name>`.
-  # You may need the openssl package, available on conda-forge:
-  #  `conda install openssl -c conda-forge``
-  # Remote release build
-
-  git_url: https://github.com/gwct/PhyloAcc.git
-  #git_url: https://github.com/harvardinformatics/PhyloAcc-interface.git
-  git-tag: main
-  #git_tag: conda-dev
-  # Remote source build
+  url: https://github.com/phyloacc/PhyloAcc/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+# Source location
 
 build:
-  # Uncomment the following line if the package is pure Python and the recipe is exactly the same for all platforms.
-  # It is okay if the dependencies are not built for all platforms/versions, although selectors are still not allowed.
-  # See https://conda-forge.org/docs/maintainer/knowledge_base.html#noarch-python for more details.
-  # noarch: python
   number: 0
-  # If the installation is complex, or different between Unix and Windows, use separate bld.bat and build.sh files instead of this key.
-  # By default, the package will be built for the Python versions supported by conda-forge and for all major OSs.
-  # Add the line "skip: True  # [py<35]" (for example) to limit to Python 3.5 and newer, or "skip: True  # [not win]" to limit to Windows.
-  # script: "{{ PYTHON }} -m pip install . -vv"
+# Build info
 
 requirements:
   build:
-    # If your project compiles code (such as a C extension) then add the required compilers as separate entries here.
-    # Compilers are named 'c', 'cxx' and 'fortran'.
     - {{ compiler('cxx') }}
-    - {{ compiler('clang') }} # [osx]
     - make
-    - llvm-openmp # [osx]
   host:
-    - llvm-openmp # [osx]
     - gsl
     - openblas
     - liblapack
     - armadillo
-    - python
-    # - matplotlib
-    # - biopython
-    # - numpy
+    - python >=3.6
   run:
-    - llvm-openmp # [osx]
-    - python
-    - matplotlib
+    - python >=3.6
+    - matplotlib-base
     - biopython
     - numpy
     - snakemake
+# Dependencies for each stage of building and running
 
 test:
-#   # Some packages might need a `test/commands` key to check CLI.
-#   # List all the packages/modules that `run_test.py` imports.
-#   imports:
-#     - simplejson
-#     - simplejson.tests
-#   # For python packages, it is useful to run pip check. However, sometimes the
-#   # metadata used by pip is out of date. Thus this section is optional if it is
-#   # failing.
-#   requires:
-#     - pip
   commands:
     - phyloacc.py --version
     - phyloacc.py --depcheck
+# Test commands to run after building and installing
 
 about:
-  home: https://xyz111131.github.io/PhyloAcc/
-  # Remember to specify the license variants for BSD, Apache, GPL, and LGPL.
-  # Use the SPDX identifier, e.g: GPL-2.0-only instead of GNU General Public License version 2.0
-  # See https://spdx.org/licenses/
+  home: https://github.com/phyloacc/PhyloAcc
   license: GNU GPLv3 
-  # The license_family, i.e. "BSD" if license is "BSD-3-Clause". (optional)
   license_family: GPL
-  # It is strongly encouraged to include a license file in the package,
-  # (even if the license doesn't require it) using the license_file entry.
-  # See https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#license-file
   license_file: LICENSE.md
   summary: 'Bayesian estimation of substitution rate shifts in non-coding regions'
-  # The remaining entries in this section are optional, but recommended.
   description: 'Bayesian estimation of substitution rate shifts in non-coding regions'
-  doc_url: https://xyz111131.github.io/PhyloAcc/
-  dev_url: https://github.com/xyz111131/PhyloAcc
+  doc_url: https://github.com/phyloacc/PhyloAcc
+  dev_url: https://github.com/phyloacc/PhyloAcc
+# Package meta info
+# URLs just point to the github page until we update the docs
 
 extra:
   recipe-maintainers:
-    # GitHub IDs for maintainers of the recipe.
-    # Always check with the people listed below if they are OK becoming maintainers of the recipe. (There will be spam!)
     - gwct
+# Extra info
