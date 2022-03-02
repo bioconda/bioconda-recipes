@@ -6,7 +6,7 @@ export CFLAGS="$CFLAGS -fcommon"
 
 cd src 
 cmake .
-make -j8
+make -j8 VERBOSE=1
 mkdir -p ${PREFIX}/bin
 mv GeCo2 ${PREFIX}/bin
 mv GeDe2 ${PREFIX}/bin
