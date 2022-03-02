@@ -9,6 +9,7 @@ cp Functions/Pan/grep_cds_aas_from_gff3.pl $PREFIX/bin/
 
 cp Functions/COG/COG.pl $PREFIX/bin/
 cp Functions/COG/COG2020.pl $PREFIX/bin/
+cp Functions/COG/COGdiamond2022.pl $PREFIX/bin/
 cp Functions/COG/get_flag_relative_abundances_table.pl $PREFIX/bin/
 cp Functions/COG/Plot_COG.R $PREFIX/bin/
 cp Functions/COG/Plot_COG_Abundance.R $PREFIX/bin/
@@ -29,6 +30,7 @@ chmod a+x $PREFIX/bin/fmplot.py
 chmod a+x $PREFIX/bin/grep_cds_aas_from_gff3.pl
 chmod a+x $PREFIX/bin/COG.pl
 chmod a+x $PREFIX/bin/COG2020.pl
+chmod a+x $PREFIX/bin/COGdiamond2022.pl
 chmod a+x $PREFIX/bin/get_flag_relative_abundances_table.pl
 chmod a+x $PREFIX/bin/Plot_COG.R
 chmod a+x $PREFIX/bin/triangle2list.pl
