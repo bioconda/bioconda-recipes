@@ -1,5 +1,26 @@
+diff --git a/configure.ac b/configure.ac
+index 89f186ca..bb8dc294 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -2118,12 +2118,12 @@ AC_LINK_IFELSE([AC_LANG_SOURCE([#include <tuple>
+ AC_MSG_RESULT($have_std_move)
+ 
+ AC_MSG_CHECKING([whether std::filesystem exists])
+-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <filesystem>]],
+-				[[std::filesystem::create_directory("tmp");]])],
++AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <experimental/filesystem>]],
++				[[std::experimental::filesystem::create_directory("tmp");]])],
+ 	[have_std_filesystem=yes],
+ 	[LIBS="-lstdc++fs ${LIBS_SAVE}"
+-	 AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <filesystem>]],
+-					 [[std::filesystem::create_directory("tmp");]])],
++	 AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <experimental/filesystem>]],
++					 [[std::experimental::filesystem::create_directory("tmp");]])],
+ 		[have_std_filesystem="yes (using -lstdc++fs)"
+ 		 LIBMAUSLIBS="${LIBMAUSLIBS} -lstdc++fs"],
+ 		[have_std_filesystem=no])
 diff --git a/src/libmaus2/aio/OFStreamOutputStreamFactory.hpp b/src/libmaus2/aio/OFStreamOutputStreamFactory.hpp
-index 008100d1..36d10338 100644
+index a5a9031f..b15be85c 100644
 --- a/src/libmaus2/aio/OFStreamOutputStreamFactory.hpp
 +++ b/src/libmaus2/aio/OFStreamOutputStreamFactory.hpp
 @@ -21,7 +21,7 @@
@@ -11,7 +32,7 @@ index 008100d1..36d10338 100644
  #include <fstream>
  #include <cstring>
  
-@@ -72,8 +72,8 @@ namespace libmaus2
+@@ -72,12 +72,12 @@ namespace libmaus2
  			}
  			virtual void mkdir(std::string const & name, uint64_t const mode)
  			{
@@ -20,21 +41,18 @@ index 008100d1..36d10338 100644
 +				std::experimental::filesystem::create_directory(name,std::experimental::filesystem::current_path());
 +				std::experimental::filesystem::permissions(name,static_cast<std::experimental::filesystem::perms>(mode));
  			}
+ 			virtual void rmdir(std::string const & name)
+ 			{
+-				std::filesystem::remove(name);
++				std::experimental::filesystem::remove(name);
+ 			}
  		};
  	}
 diff --git a/src/libmaus2/aio/OutputStreamFactoryContainer.hpp b/src/libmaus2/aio/OutputStreamFactoryContainer.hpp
-index 86a25bcd..ad6f4544 100644
+index 4a99002d..f99b6c7b 100644
 --- a/src/libmaus2/aio/OutputStreamFactoryContainer.hpp
 +++ b/src/libmaus2/aio/OutputStreamFactoryContainer.hpp
-@@ -27,6 +27,7 @@
- #include <libmaus2/aio/SecrecyOutputStreamFactory.hpp>
- #include <libmaus2/aio/URLObject.hpp>
- #include <cctype>
-+#include <experimental/filesystem>
- 
- namespace libmaus2
- {
-@@ -282,7 +283,7 @@ namespace libmaus2
+@@ -303,7 +303,7 @@ namespace libmaus2
  
  				for ( uint64_t i = 0; i < V.size(); ++i )
  					// check whether path already exists
@@ -44,7 +62,7 @@ index 86a25bcd..ad6f4544 100644
  						mkdir(V[i],mode);
  			}
 diff --git a/src/libmaus2/aio/PosixFdOutputStreamFactory.hpp b/src/libmaus2/aio/PosixFdOutputStreamFactory.hpp
-index 083fad49..cb95a6be 100644
+index 43227b31..6b4857dc 100644
 --- a/src/libmaus2/aio/PosixFdOutputStreamFactory.hpp
 +++ b/src/libmaus2/aio/PosixFdOutputStreamFactory.hpp
 @@ -21,7 +21,7 @@
@@ -56,7 +74,7 @@ index 083fad49..cb95a6be 100644
  
  namespace libmaus2
  {
-@@ -88,8 +88,8 @@ namespace libmaus2
+@@ -88,13 +88,13 @@ namespace libmaus2
  			}
  			virtual void mkdir(std::string const & name, uint64_t const mode)
  			{
@@ -65,10 +83,103 @@ index 083fad49..cb95a6be 100644
 +				std::experimental::filesystem::create_directory(name,std::experimental::filesystem::current_path());
 +				std::experimental::filesystem::permissions(name,static_cast<std::experimental::filesystem::perms>(mode));
  			}
+ 
+ 			virtual void rmdir(std::string const & name)
+ 			{
+-				std::filesystem::remove(name);
++				std::experimental::filesystem::remove(name);
+ 			}
  		};
  	}
+diff --git a/src/libmaus2/parallel/threadpool/bam/BamHeaderSeqData.hpp b/src/libmaus2/parallel/threadpool/bam/BamHeaderSeqData.hpp
+index e740798e..01aee219 100644
+--- a/src/libmaus2/parallel/threadpool/bam/BamHeaderSeqData.hpp
++++ b/src/libmaus2/parallel/threadpool/bam/BamHeaderSeqData.hpp
+@@ -20,7 +20,7 @@
+ 
+ #include <cassert>
+ #include <regex>
+-#include <filesystem>
++#include <experimental/filesystem>
+ #include <libmaus2/exception/LibMausException.hpp>
+ #include <libmaus2/aio/InputStreamInstance.hpp>
+ 
+@@ -99,7 +99,7 @@ namespace libmaus2
+ 					}
+ 
+ 
+-					bool sequencesMissing(std::filesystem::path const & ref_cache_path) const
++					bool sequencesMissing(std::experimental::filesystem::path const & ref_cache_path) const
+ 					{
+ 						bool needfascan = false;
+ 
+@@ -120,10 +120,10 @@ namespace libmaus2
+ 
+ 							std::string const m5 = it_M5->second;
+ 
+-							std::filesystem::path dictpath = ref_cache_path;
++							std::experimental::filesystem::path dictpath = ref_cache_path;
+ 							dictpath /= m5;
+ 
+-							if ( ! std::filesystem::exists(dictpath) )
++							if ( ! std::experimental::filesystem::exists(dictpath) )
+ 								needfascan = true;
+ 						}
+ 
+diff --git a/src/libmaus2/suffixsort/BwtMergeTempFileNameSet.hpp b/src/libmaus2/suffixsort/BwtMergeTempFileNameSet.hpp
+index 134ff0f4..b8fcfe88 100644
+--- a/src/libmaus2/suffixsort/BwtMergeTempFileNameSet.hpp
++++ b/src/libmaus2/suffixsort/BwtMergeTempFileNameSet.hpp
+@@ -166,12 +166,12 @@ namespace libmaus2
+ 			void setSampledISA(std::vector<std::string> const & rsampledisa) { sampledisa = rsampledisa; }
+ 
+ 			void setTempPrefixSingle(std::string const & dir_name) {
+-				std::filesystem::path const p_dir_name(dir_name);
++				std::experimental::filesystem::path const p_dir_name(dir_name);
+ 
+-				std::filesystem::path const p_hwt_req(p_dir_name / "block.hwtreq");
+-				std::filesystem::path const p_hwt(p_dir_name / "block.hwt");
+-				std::filesystem::path const p_hist(p_dir_name / "block.hist");
+-				std::filesystem::path const p_hist_freq(p_dir_name / "block.histfreq");
++				std::experimental::filesystem::path const p_hwt_req(p_dir_name / "block.hwtreq");
++				std::experimental::filesystem::path const p_hwt(p_dir_name / "block.hwt");
++				std::experimental::filesystem::path const p_hist(p_dir_name / "block.hist");
++				std::experimental::filesystem::path const p_hist_freq(p_dir_name / "block.histfreq");
+ 
+ 				setHWTReq  (p_hwt_req.string());
+ 				setHWT     (p_hwt.string());
+diff --git a/src/libmaus2/suffixsort/bwtb3m/BwtMergeSortTemplate.hpp b/src/libmaus2/suffixsort/bwtb3m/BwtMergeSortTemplate.hpp
+index 1e8e53b9..a91d1916 100644
+--- a/src/libmaus2/suffixsort/bwtb3m/BwtMergeSortTemplate.hpp
++++ b/src/libmaus2/suffixsort/bwtb3m/BwtMergeSortTemplate.hpp
+@@ -111,11 +111,11 @@ namespace libmaus2
+ 				// base tmp directory name
+ 				std::string tmpdirname;
+ 				// tmpdirname as path object
+-				std::filesystem::path tmppath;
+-				std::filesystem::path base_tmp_path;
+-				std::filesystem::path ds_tmp_path_base_ds_tmp;
+-				std::filesystem::path merge_tmp_path;
+-				std::filesystem::path ds_tmp_path_merge_ds_tmp;
++				std::experimental::filesystem::path tmppath;
++				std::experimental::filesystem::path base_tmp_path;
++				std::experimental::filesystem::path ds_tmp_path_base_ds_tmp;
++				std::experimental::filesystem::path merge_tmp_path;
++				std::experimental::filesystem::path ds_tmp_path_merge_ds_tmp;
+ 
+ 				std::unique_ptr<libmaus2::util::DirectoryStructure> DSbase;
+ 				std::unique_ptr<libmaus2::util::DirectoryStructure> DSmerge;
+@@ -333,7 +333,7 @@ namespace libmaus2
+ 					return C;
+ 				}
+ 
+-				static std::filesystem::path ensureDirectory(std::filesystem::path path)
++				static std::experimental::filesystem::path ensureDirectory(std::experimental::filesystem::path path)
+ 				{
+ 					libmaus2::aio::OutputStreamFactoryContainer::mkdirp(path.string(),0700);
+ 					return path;
 diff --git a/src/libmaus2/util/ArgInfo.cpp b/src/libmaus2/util/ArgInfo.cpp
-index a93401fc..b4f7837e 100644
+index 3802cbb7..8ecd441c 100644
 --- a/src/libmaus2/util/ArgInfo.cpp
 +++ b/src/libmaus2/util/ArgInfo.cpp
 @@ -24,7 +24,7 @@
@@ -84,13 +195,13 @@ index a93401fc..b4f7837e 100644
  
  std::string libmaus2::util::ArgInfo::getDirName(std::string absprogname)
  {
--	return std::filesystem::path(absprogname).remove_filename();
-+	return std::experimental::filesystem::path(absprogname).remove_filename();
+-	return std::filesystem::path(absprogname).remove_filename().string();
++	return std::experimental::filesystem::path(absprogname).remove_filename().string();
  }
  
  std::string libmaus2::util::ArgInfo::getAbsProgName() const
 diff --git a/src/libmaus2/util/PathTools.cpp b/src/libmaus2/util/PathTools.cpp
-index a8566b2e..095cb07b 100644
+index af1b3188..669e511e 100644
 --- a/src/libmaus2/util/PathTools.cpp
 +++ b/src/libmaus2/util/PathTools.cpp
 @@ -16,27 +16,27 @@
@@ -105,27 +216,78 @@ index a8566b2e..095cb07b 100644
  	if ( ! fn.size() )
  		return fn;
  	else
--		return std::filesystem::absolute(std::filesystem::path(fn));
-+		return std::experimental::filesystem::absolute(std::experimental::filesystem::path(fn));
+-		return std::filesystem::absolute(std::filesystem::path(fn)).string();
++		return std::experimental::filesystem::absolute(std::experimental::filesystem::path(fn)).string();
  }
  
  std::string libmaus2::util::PathTools::getCurDir()
  {
--	return std::filesystem::current_path();
-+	return std::experimental::filesystem::current_path();
+-	return std::filesystem::current_path().string();
++	return std::experimental::filesystem::current_path().string();
  }
  
  std::string libmaus2::util::PathTools::sbasename(std::string const & s)
  {
--	return std::filesystem::path(s).filename();
-+	return std::experimental::filesystem::path(s).filename();
+-	return std::filesystem::path(s).filename().string();
++	return std::experimental::filesystem::path(s).filename().string();
  }
  
  std::string libmaus2::util::PathTools::sdirname(std::string const & s)
  {
--	return std::filesystem::path(s).remove_filename();
-+	return std::experimental::filesystem::path(s).remove_filename();
+-	return std::filesystem::path(s).remove_filename().string();
++	return std::experimental::filesystem::path(s).remove_filename().string();
  }
+diff --git a/src/test/testThreadPoolCramEncode.cpp b/src/test/testThreadPoolCramEncode.cpp
+index 2ff71e4a..0714e612 100644
+--- a/src/test/testThreadPoolCramEncode.cpp
++++ b/src/test/testThreadPoolCramEncode.cpp
+@@ -21,7 +21,7 @@
+ #include <libmaus2/util/GetFileSize.hpp>
+ #include <libmaus2/parallel/NumCpus.hpp>
+ #include <regex>
+-#include <filesystem>
++#include <experimental/filesystem>
+ #include <libmaus2/fastx/FastAReader.hpp>
+ #include <libmaus2/digest/md5.hpp>
+ 
+@@ -59,10 +59,10 @@ int main(int argc, char * argv[])
+ 			return EXIT_FAILURE;
+ 		}
+ 
+-		std::filesystem::path ref_cache_path(ref_cache);
+-		std::set<std::filesystem::path> Spathseen;
++		std::experimental::filesystem::path ref_cache_path(ref_cache);
++		std::set<std::experimental::filesystem::path> Spathseen;
+ 
+-		while ( std::filesystem::exists(ref_cache_path) && std::filesystem::is_symlink(ref_cache_path) )
++		while ( std::experimental::filesystem::exists(ref_cache_path) && std::experimental::filesystem::is_symlink(ref_cache_path) )
+ 		{
+ 			if ( Spathseen.find(ref_cache_path) != Spathseen.end() )
+ 			{
+@@ -72,12 +72,12 @@ int main(int argc, char * argv[])
+ 
+ 			Spathseen.insert(ref_cache_path);
+ 
+-			auto n_ref_cache_path = std::filesystem::read_symlink(ref_cache_path);
++			auto n_ref_cache_path = std::experimental::filesystem::read_symlink(ref_cache_path);
+ 
+ 			ref_cache_path = n_ref_cache_path;
+ 		}
+ 
+-		if ( !std::filesystem::exists(ref_cache_path) )
++		if ( !std::experimental::filesystem::exists(ref_cache_path) )
+ 		{
+ 			std::cerr << "[E] REF_CACHE directory " << ref_cache_path << " does not exist" << std::endl;
+ 			return EXIT_FAILURE;
+@@ -112,7 +112,7 @@ int main(int argc, char * argv[])
+ 					return EXIT_FAILURE;
+ 				}
+ 
+-				std::filesystem::path dictpath = ref_cache_path;
++				std::experimental::filesystem::path dictpath = ref_cache_path;
+ 				dictpath /= digest;
+ 
+ 				std::cerr << "[V] writing " << dictpath << " for " << pat.sid << " in " << ref << std::endl;
 -- 
-2.31.0
+2.33.0
 
