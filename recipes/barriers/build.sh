@@ -1,6 +1,5 @@
 #!/bin/sh
-
+set -ex
 ./configure --prefix=$PREFIX || (cat config.log ; exit 1)
-cat Makefile
 make
 make install

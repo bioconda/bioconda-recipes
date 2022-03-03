@@ -8,6 +8,7 @@ if [ $(uname) == "Darwin" ]; then
     export LDFLAGS="-headerpad_max_install_names ${LDFLAGS}"
 fi
 
+grep -r gcc
 make CC=${CC} LIBRARY_PATH=${PREFIX}/lib prefix=${PREFIX}
 make test
 make install prefix=${PREFIX}
