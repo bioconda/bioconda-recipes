@@ -1,17 +1,16 @@
 #!/bin/bash
 mkdir -p ${PREFIX}/bin
 
-make 
+make CC=$CXX
 
 cp -r bin/* ${PREFIX}/bin
 
-
-PKG_NAME=meta-apo
-PKG_VERSION=v1.0
+# path for meta-apo database and example
 MetaApo_path=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}
 mkdir -p ${MetaApo_path}
-
-cp -r databases ${MetaApo_path}/databases
+# conda will do the downloading and unpacking, I need do the file moving
+mv databases/ ${MetaApo_path}
+mv examples/ ${MetaApo_path}
 
 # set VIBRANT DB PATH variable on env activation
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
