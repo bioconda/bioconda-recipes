@@ -42,4 +42,4 @@ chmod a+x $PREFIX/bin/Plot_MashHeatmap.R
 chmod a+x $PREFIX/bin/genome_LenFilter_stats.pl
 chmod a+x $PREFIX/bin/get_stats_summary.pl
 
-pgcgap --version
+#pgcgap --version
