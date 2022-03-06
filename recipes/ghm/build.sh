@@ -13,7 +13,7 @@ if [[ ${target_platform} =~ linux.* ]] ; then
 elif [[ ${target_platform} =~ osx.* ]] ; then
     sys=-D_SYS_OSX
 fi
-make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" SYS="${sys}"
+make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -fcommon" SYS="${sys}"
 
 install -d "${PREFIX}/bin"
 install ./ghm "${PREFIX}/bin/"
