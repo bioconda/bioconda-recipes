@@ -1,4 +1,5 @@
 find $PREFIX -name Rcpp.h
+mkdir ~/.R
 echo -e "CC=$CC -I$PREFIX/include
 FC=$FC
 CXX=$CXX -I$PREFIX/include
