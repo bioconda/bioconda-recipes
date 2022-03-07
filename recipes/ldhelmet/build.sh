@@ -1,4 +1,5 @@
 #!/bin/bash
+ls -l
 
 make \
     CC="${CXX} ${CXXFLAGS} ${CPPFLAGS}" \
