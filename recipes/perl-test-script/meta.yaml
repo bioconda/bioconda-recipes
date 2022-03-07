@@ -1,26 +1,31 @@
 {% set name = "perl-test-script" %}
-{% set version = "1.25" %}
-{% set sha256 = "b6803312744a192422e06563a3a6902d7f2bffb3415da316e6fc9f03213a3aa5" %}
+{% set version = "1.29" %}
+{% set sha256 = "892e7e6c1ea7b16710909942cf5c0bdab70eee2efd4aa9c16ea952e2b90f8950" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/Test-Script-{{ version }}.tar.gz
+  url: https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/Test-Script-1.29.tar.gz
   sha256: {{ sha256 }}
 
+# If this is a new build for the same version, increment the build
+# number. If you do not include this key, it defaults to 0.
 build:
   noarch: generic
   number: 0
+  run_exports:
+    weak:
+      - {{ name }} ={{ version }}
 
 requirements:
-  build:      
-  
+  build:
+    - make
+
+  # Run exports are used now
   host:
     - perl
-    - perl-extutils-makemaker
-    - perl-text-parsewords
     - perl-capture-tiny
     - perl-probe-perl
     - perl-test2-suite >=0.000117
@@ -28,14 +33,21 @@ requirements:
   run:
     - perl
     - perl-capture-tiny
-    - perl-text-parsewords
     - perl-probe-perl
 
 test:
+  # Perl 'use' tests
   imports:
     - Test::Script
+
+  # You can also put a file called run_test.pl (or run_test.py) in the recipe
+  # that will be run at test time.
 
 about:
   home: https://metacpan.org/pod/Test::Script
   license: perl_5
   summary: 'Basic cross-platform tests for scripts'
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml
