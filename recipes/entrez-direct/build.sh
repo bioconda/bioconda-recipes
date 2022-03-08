@@ -15,5 +15,5 @@ sh install.sh
 
 # clean up
 rm -rf eutils cmd help   
-rm -rf *.log *.go *.yaml setup.sh install.sh *.gz *.txt *.pdf 
+rm -rf *.log *.go *.yaml setup.sh install.sh *.gz *.pdf 
 rm -rf idx-* index-*  pm-*  custom* xy-* CA.pm cacert.pem
