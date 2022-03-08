@@ -26,7 +26,6 @@ fi
 
 cpanm -l $PERLLIB MooseX::FollowPBP \
                     URI::Escape \
-                    URL::Encode \
                     Config::YAML \
                     File::Basename \
                     Bio::MAGETAB \
@@ -34,16 +33,11 @@ cpanm -l $PERLLIB MooseX::FollowPBP \
                     Test::MockObject \
                     Text::TabularDisplay \
                     Log::Dispatch::File \
-                    IO::CaptureOutput \
                     TIMB/DBI-1.636.tar.gz \
                     MIYAGAWA/Class-Trigger-0.15.tar.gz \
                     TMTM/Class-DBI-v3.0.17.tar.gz \
                     DETI/Proc/Proc-Daemon-0.14.tar.gz \
-                    Proc::ProcessTable \
-                    Bio::Phenotype::OMIM::OMIMparser \
-                    OWL::Simple::Parser \
-                    MeSH::Parser::ASCII \
-                    LWP::UserAgent::ProxyAny
+                    Proc::ProcessTable
 
 
 cpanm -l $PERLLIB --force Mail::Sendmail
