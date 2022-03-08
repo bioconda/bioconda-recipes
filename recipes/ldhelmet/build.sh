@@ -1,4 +1,5 @@
 #!/bin/bash
+pushd LDhelmet_v1.10
 ls -l
 
 make \
