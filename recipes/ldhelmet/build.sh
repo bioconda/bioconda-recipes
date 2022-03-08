@@ -3,7 +3,7 @@ pushd LDhelmet_v1.10
 ls -l
 
 make \
-    CC="${CXX} ${CXXFLAGS} ${CPPFLAGS}" \
+    CC="${CXX} ${CXXFLAGS} ${CPPFLAGS} -fcommon" \
     INC_FLAG="-I${PREFIX}/include" \
     LIB_FLAG="${LDFLAGS}"
 install -d "${PREFIX}/bin"
