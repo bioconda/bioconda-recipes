@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="mu19ksubbcdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/mu19ksubbcdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/mu19ksubbcdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mu19ksubbcdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mu19ksubbcdf/bioconductor-mu19ksubbcdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mu19ksubbcdf/bioconductor-mu19ksubbcdf_2.18.0_src_all.tar.gz"
 )
 MD5="35e5ebcb4cb51950a85c1e3622bb39f0"

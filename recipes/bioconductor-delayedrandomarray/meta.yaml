@@ -1,0 +1,49 @@
+{% set version = "1.2.0" %}
+{% set name = "DelayedRandomArray" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 925dad60cdf727bddf0fc24b1415eddf
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: testthat, knitr, BiocStyle, rmarkdown, Matrix
+# SystemRequirements: C++11
+requirements:
+  host:
+    - 'bioconductor-delayedarray >=0.20.0,<0.21.0'
+    - r-base
+    - r-bh
+    - r-dqrng
+    - r-rcpp
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-delayedarray >=0.20.0,<0.21.0'
+    - r-base
+    - r-bh
+    - r-dqrng
+    - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Delayed Arrays of Random Values'
+  description: 'Implements a DelayedArray of random values where the realization of the sampled values is delayed until they are needed. Reproducible sampling within any subarray is achieved by chunking where each chunk is initialized with a different random seed and stream. The usual distributions in the stats package are supported, along with scalar, vector and arrays for the parameters.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="HEEBOdata_1.28.0.tar.gz"
+FN="HEEBOdata_1.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/HEEBOdata_1.28.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/HEEBOdata_1.28.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-heebodata/bioconductor-heebodata_1.28.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/HEEBOdata_1.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/HEEBOdata_1.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-heebodata/bioconductor-heebodata_1.32.0_src_all.tar.gz"
 )
-MD5="583bbe64e660308f14490fabf12ab408"
+MD5="e3143c96a75c4974d020f9077f717469"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
