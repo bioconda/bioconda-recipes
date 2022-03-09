@@ -12,14 +12,14 @@ make
 cp ../bin/TIDDIT $PREFIX/bin
 cp lib/bamtools/src/api/libbamtools.* $PREFIX/lib  # Yes, this vendors bamtools :(
 cd ../src
-python -m pip install . --ignore-installed --no-deps -vv
-cd ../build
-make DESTDIR=${PREFIX} install
+python setup.py build_ext --inplace
 cd ..
 
 # Clean up bamtools
 rm -rf $PREFIX/usr
 
 mv TIDDIT.py ${PREFIX}/bin
+mv src ${PREFIX}/bin
+
 ln -s ${PREFIX}/bin/TIDDIT.py $PREFIX/bin/tiddit 
 chmod a+x ${PREFIX}/bin/*

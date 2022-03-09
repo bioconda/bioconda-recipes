@@ -1,5 +1,5 @@
-{% set version = "0.4.8" %}
-{% set sha256 = "e948871e4de9db5964c9ca6f8f877c3cbe6a46f62052dfab52ffe0f45bbbd203" %}
+{% set version = "0.5.0" %}
+{% set sha256 = "84a8709c9f2e624225410af702d779ffb0cb06f7c22c20e1f01b989945e08a47" %}
 
 package:
   name: unicycler
@@ -13,8 +13,8 @@ source:
       - misc.py.patch
 
 build:
-  number: 5
-  skip: True  # [py<34]
+  number: 0
+  skip: True  # [py<34 or osx]
 
 requirements:
   build:
@@ -22,32 +22,19 @@ requirements:
     - {{ compiler("cxx") }}
     - make
   host:
-    - python
+    - python >=3.4
     - pip
     - zlib
   run:
-    - python
-    - spades >=3.6.2
-    - pilon
-    - openjdk
-    - bowtie2 >=2.4.4
-    - samtools >=1.0
+    - python >=3.4
+    - spades >=3.15.3
     - blast
-    - freebayes
     - racon
     - miniasm
 
 test:
   commands:
     - COLUMNS=80 unicycler -h
-    - COLUMNS=80 unicycler_align -h
-    - COLUMNS=80 unicycler_check -h
-    - COLUMNS=80 unicycler_polish -h
-    - samtools --help
-    # test that bowtie outputs its version
-    - bowtie2 --version | grep -q "bowtie2-align-s version [0-9]"  # [linux]
-    # test if https protocol works, if it doesnt samtools will fail with "Protocol not supported"
-    - samtools view 'https://example.com' 2>&1 | grep 'fail to read the header' -q  # [linux]
 
 about:
   home: https://github.com/rrwick/Unicycler
