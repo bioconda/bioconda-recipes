@@ -1,5 +1,6 @@
 find $PREFIX -name Rcpp.h
 mkdir /Users/runner/.R
+export CXXFLAGS="$CXXFLAGS -I$PREFIX/lib/R/library/Rcpp/include"
 echo -e "CC=$CC -I$PREFIX/include -I$PREFIX/lib/R/library/Rcpp/include
 FC=$FC
 CXX=$CXX -I$PREFIX/include -I$PREFIX/lib/R/library/Rcpp/include
