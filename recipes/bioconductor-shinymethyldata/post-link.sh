@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="shinyMethylData_1.12.0.tar.gz"
+FN="shinyMethylData_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/shinyMethylData_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/shinyMethylData_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-shinymethyldata/bioconductor-shinymethyldata_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/shinyMethylData_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/shinyMethylData_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-shinymethyldata/bioconductor-shinymethyldata_1.14.0_src_all.tar.gz"
 )
-MD5="6c57e2d495c1415947b1325be6467f54"
+MD5="09993a0215b1963a89b4eeb99847e4e6"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="saureuscdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/saureuscdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/saureuscdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/saureuscdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-saureuscdf/bioconductor-saureuscdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-saureuscdf/bioconductor-saureuscdf_2.18.0_src_all.tar.gz"
 )
 MD5="d01883e4c3dd99f32012e6dbab8cdb8b"

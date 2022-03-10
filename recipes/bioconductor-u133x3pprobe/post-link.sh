@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="u133x3pprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/u133x3pprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/u133x3pprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/u133x3pprobe_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-u133x3pprobe/bioconductor-u133x3pprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-u133x3pprobe/bioconductor-u133x3pprobe_2.18.0_src_all.tar.gz"
 )
 MD5="81e2b00985688160805147bef0c638be"
