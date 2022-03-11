@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="TxDb.Sscrofa.UCSC.susScr11.refGene_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/TxDb.Sscrofa.UCSC.susScr11.refGene_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/TxDb.Sscrofa.UCSC.susScr11.refGene_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Sscrofa.UCSC.susScr11.refGene_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.sscrofa.ucsc.susscr11.refgene/bioconductor-txdb.sscrofa.ucsc.susscr11.refgene_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.sscrofa.ucsc.susscr11.refgene/bioconductor-txdb.sscrofa.ucsc.susscr11.refgene_3.12.0_src_all.tar.gz"
 )
 MD5="a6c5a2c402ad904a2f55099e391d18de"

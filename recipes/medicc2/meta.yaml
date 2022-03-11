@@ -1,5 +1,5 @@
 {% set name = "medicc2" %}
-{% set version = "0.5b4" %}
+{% set version = "0.7.0" %}
 
 
 package:
@@ -8,10 +8,11 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 25c49728f3fd4356fd807b61e53151827c68e7b7d45d2f1e8aebfc95014e0a0d
+  sha256: e13442dca1bebd8ef03f7f20b09e742766c2ed91510156b84c9b493e285b0ee8
 
 build:
   number: 0
+  skip: true  # [py27 or py < 37]
   script: {{ PYTHON }} -m pip install . -vv
 
 requirements:
@@ -19,27 +20,32 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler("cxx") }}
   host:
-    - python >=3.6
+    - python
     - pip
-    - numpy>=1.20.1
-    - openfst>=1.8.1
+    # The following are needed for building the Cython extension
+    - numpy >=1.20.1
+    - openfst ==1.8.1
     - setuptools
-    - cython>=0.29.21
-    - pathlib
+    - cython >=0.29.21
   run:
-    - python >=3.6
-    - numpy>=1.20.1
-    - pyyaml>=5.4.1
-    - openfst>=1.8.1
-    - pandas>=1.2.2
-    - joblib>=1.0.1
-    - biopython>=1.78
-    - scipy>=1.7
-    - matplotlib-base>=3.3
+    - python
+    - numpy >=1.20.1
+    - pyyaml >=5.4.1
+    - openfst ==1.8.1
+    - pandas >=1.2.2
+    - joblib >=1.0.1
+    - biopython >=1.78
+    - scipy >=1.7
+    - matplotlib-base >=3.3
+    - pyranges
 
 test:
   commands:
     - medicc2 --help
+
+extra:
+  recipe-maintainers:
+    - tlkaufmann
 
 about:
   home: https://bitbucket.org/schwarzlab/medicc2
