@@ -1,4 +1,4 @@
 #!/bin/bash -e
 set -x
-ls ${SRC_DIR}
-export PATH=$PATH:${SRC_DIR}
+chmod a+x ${SRC_DIR}/*.py
+ln -s ${SRC_DIR}/*.py ${PREFIX}/bin
