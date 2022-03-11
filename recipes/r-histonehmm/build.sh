@@ -1,6 +1,5 @@
 #!/bin/bash
 #mkdir /Users/runner/.R
-#echo -e "CC=$CC -I$PREFIX/include -I$PREFIX/lib/R/library/Rcpp/include
 #FC=$FC
 #CXX=$CXX -I$PREFIX/include -I$PREFIX/lib/R/library/Rcpp/include
 #CXX98=$CXX -I$PREFIX/include -I$PREFIX/lib/R/library/Rcpp/include
