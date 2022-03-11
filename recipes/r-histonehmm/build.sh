@@ -1,7 +1,5 @@
 #!/bin/bash
 #mkdir /Users/runner/.R
-export CXX_INCLUDE_PATH=$PREFIX/lib/R/library/Rcpp/include
-Rscript -e "Rcpp:::CxxFlags()
 #echo -e "CC=$CC -I$PREFIX/include -I$PREFIX/lib/R/library/Rcpp/include
 #FC=$FC
 #CXX=$CXX -I$PREFIX/include -I$PREFIX/lib/R/library/Rcpp/include
