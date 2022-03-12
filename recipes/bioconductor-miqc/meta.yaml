@@ -1,0 +1,41 @@
+{% set version = "1.2.0" %}
+{% set name = "miQC" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 0d6edaa37f4cd12199ba1fee4d5f3968
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: scRNAseq, scater, biomaRt, BiocStyle, knitr, rmarkdown
+requirements:
+  host:
+    - 'bioconductor-singlecellexperiment >=1.16.0,<1.17.0'
+    - r-base
+    - r-flexmix
+    - r-ggplot2
+  run:
+    - 'bioconductor-singlecellexperiment >=1.16.0,<1.17.0'
+    - r-base
+    - r-flexmix
+    - r-ggplot2
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'BSD_3_clause + file LICENSE'
+  summary: 'Flexible, probabilistic metrics for quality control of scRNA-seq data'
+  description: 'Single-cell RNA-sequencing (scRNA-seq) has made it possible to profile gene expression in tissues at high resolution.  An important preprocessing step prior to performing downstream analyses is to identify and remove cells with poor or degraded sample quality using quality control (QC) metrics.  Two widely used QC metrics to identify a ‘low-quality’ cell are (i) if the cell includes a high proportion of reads that map to mitochondrial DNA encoded genes (mtDNA) and (ii) if a small number of genes are detected. miQC is data-driven QC metric that jointly models both the proportion of reads mapping to mtDNA and the number of detected genes with mixture models in a probabilistic framework to predict the low-quality cells in a given dataset.'
+  license_file: LICENSE
+

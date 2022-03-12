@@ -9,12 +9,15 @@ package:
 source:
   url: https://github.com/vcftools/vcftools/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - patch
 
 build:
-  number: 4
+  number: 6
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
     - autoconf
     - automake
@@ -22,18 +25,20 @@ requirements:
     - pkg-config
   host:
     - zlib
+    - perl
   run:
     - zlib
+    - perl
 
 test:
   commands:
     - vcftools -h
-    #- vcf-isec -h  # outputs to stderr, can't use this as a test.
+    #- vcf-sort -h  2>&1 | grep "{{ version }}"
 
 about:
   home: https://vcftools.github.io/
   license: LGPL
-  summary: A set of tools written in Perl and C++ for working with VCF files. This package only contains the C++ libraries whereas the package perl-vcftools-vcf contains the perl libraries
+  summary: A set of tools written in Perl and C++ for working with VCF files.
 
 extra:
   identifiers:

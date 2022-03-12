@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="hcg110.db_3.2.3.tar.gz"
+FN="hcg110.db_3.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/hcg110.db_3.2.3.tar.gz"
-  "https://bioarchive.galaxyproject.org/hcg110.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hcg110.db/bioconductor-hcg110.db_3.2.3_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hcg110.db/bioconductor-hcg110.db_3.2.3_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hcg110.db_3.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/hcg110.db_3.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hcg110.db/bioconductor-hcg110.db_3.13.0_src_all.tar.gz"
 )
-MD5="eaba09d7e88bb913fd18f4e8fb72760b"
+MD5="4c536c3539a61d7f1f67dac149f10b11"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,0 +1,49 @@
+{% set name = "py_fasta_validator" %}
+{% set version = "0.5" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "1f22c832bbc76b7d12e4f137224b5f19f0d0e61b30709455ef66a8deefcdeade"
+
+build:
+  number: 1
+  skip: True  # [py27]
+  script: "{{ PYTHON }} -m pip install --ignore-installed --no-cache-dir -vvv ." 
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - pip
+    - setuptools >=38.6.0
+    - setuptools_scm
+  run:
+    - python
+    - setuptools >=38.6.0
+    - setuptools_scm
+
+test:
+  imports:
+    - FastaValidator
+    - PyFastaValidator
+  commands:
+    - py_fasta_validator -v
+
+about:
+  home: "https://github.com/linsalrob/py_fasta_validator"
+  license: MIT
+  license_family: MIT
+  summary: "Simply and quickly validate a fasta file. Invalid files return non-zero exit codes"
+  doc_url: "https://github.com/linsalrob/py_fasta_validator"
+  dev_url: "https://github.com/linsalrob/py_fasta_validator"
+
+extra:
+  recipe-maintainers:
+    - linsalrob
+  identifiers:
+    - doi:10.5281/zenodo.5006657

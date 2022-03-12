@@ -1,13 +1,19 @@
 {% set name = "scanpy-scripts" %}
-{% set version = "0.3.2" %}
+{% set version = "1.1.5" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 5f24951f7c094176fb0615ed0eb1ac7faf111c6885f2bc97b15fc286de43b6a8
+  - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 7c99554f240be1cd1a57a797cc47faec74858230d70b88f58509d715b0ffccad
+    folder: scanpy-scripts
+  - url: https://pypi.io/packages/source/s/scanpy/scanpy-1.8.1.tar.gz 
+    sha256: 1b8603a868d783bd6c18c8db763a450153feefc8daed862c440749790d47c654
+    folder: scanpy
+    patches:
+      - scrublet.patch
 
 build:
   number: 0
@@ -28,29 +34,39 @@ build:
     - scanpy-find-cluster=scanpy_scripts.cli:cluster
     - scanpy-find-markers=scanpy_scripts.cmds:DIFFEXP_CMD
     - scanpy-integrate=scanpy_scripts.cli:integrate
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+    - scanpy-multiplet=scanpy_scripts.cli:multiplet
+  script: 
+    - "{{ PYTHON }} -m pip install {{ SRC_DIR }}/scanpy --no-deps --ignore-installed -vv" 
+    - "{{ PYTHON }} -m pip install {{ SRC_DIR }}/scanpy-scripts --no-deps --ignore-installed -vv"
 
 requirements:
   host:
-    - python=3.6
+    - python >=3.7
+    - pip
+    - flit-core
+    - setuptools_scm
+    - pytoml
+    - packaging
   run:
     - anndata
-    - click
-    - leidenalg
-    - loompy >=2.0.0,<3.0.0
-    - louvain
-    - multicore-tsne
-    - matplotlib-base
-    - pandas
-    - h5py<3.0.0 
-    - packaging
-    - python=3.6
-    - scanpy>=1.6.0
-    - scipy 
-    - umap-learn<0.4.0
-    - mnnpy>=0.1.9.5
+    - bbknn>=1.5.0
+    - click<8
+    - h5py<3.0.0
     - harmonypy>=0.0.5
-    - bbknn>=1.3.12
+    - leidenalg
+    - loompy
+    - louvain
+    - matplotlib-base
+    - mnnpy>=0.1.9.5
+    - multicore-tsne
+    - packaging
+    - pandas
+    - python>=3.6
+    - scanpy=1.8.1
+    - scikit-misc
+    - scipy 
+    - scrublet
+    - umap-learn
 
 test:
   imports:
@@ -72,6 +88,7 @@ test:
     - scanpy-find-cluster --help
     - scanpy-find-markers --help
     - scanpy-integrate --help
+    - scanpy-multiplet --help
 
 about:
   home: https://github.com/ebi-gene-expression-group/scanpy-scripts
@@ -86,3 +103,4 @@ extra:
     extended-base: True
   recipe-maintainers:
     - nh3
+    - pinin4fjords

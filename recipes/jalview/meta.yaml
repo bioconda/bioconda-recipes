@@ -1,4 +1,4 @@
-{% set version = "2.11.1.4" %}
+{% set version = "2.11.1.5" %}
 
 package:
   name: jalview
@@ -10,18 +10,21 @@ build:
 
 source:
   url: https://www.jalview.org/source/jalview_{{ version|replace(".", "_") }}.tar.gz
-  sha256: "30c0a89bbaf58bc5fd15fd7b167768d21cda1431676f28e22669fd5a342396eb"
+  sha256: "80661a5be48f15a609f006d234b5da9cc6492509b8e323dd10a742f14720bfb9"
 
 requirements:
   build:
+    - make
+    - gradle >5.2,<6.6
     # jalview 2.11 series requires Java 11 or greater to build.
-    - gradle >5.2
     - openjdk 11
     - xorg-libxtst
   run:
     # Jalview 2.11.1.4 can run as 1.8 or java 11+
     # Version number reference: https://github.com/conda/conda/issues/6948#issuecomment-369360906
-    - openjdk >=8.0.192
+    # A bug with OpenJDK 11.0.9.1+1 makes Jalview crash on macOS. Fixed with later versions.
+    - openjdk >=8.0.192,!=11.0.9.*,<12 # [osx]
+    - openjdk >=8.0.192,<12 # [not osx]
     - xorg-libxtst
     - psutil
 

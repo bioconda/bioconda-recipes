@@ -1,5 +1,5 @@
 {% set name = "funannotate" %}
-{% set version = "1.8.3" %}
+{% set version = "1.8.9" %}
 
 package:
   name: funannotate
@@ -7,26 +7,26 @@ package:
 
 source:
   url: https://pypi.io/packages/source/f/funannotate/funannotate-{{ version }}.tar.gz
-  sha256: 3671a7bd92c23e94f00ebe0d2c1624f991a406eba387701e3f1da3e1828f6a45
+  sha256: 5c292f71bd7a4e6c99f0a358530cf8ff437775e4a9e6bd03469aa9364f298375
 
 build:
-  number: 0
+  number: 3
   noarch: python
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.6,<3.9
   run:
+    - python >=3.6,<3.9
     - biopython
     - goatools
-    - matplotlib-base
+    - matplotlib-base <3.5
     - natsort
     - numpy
     - pandas
     - psutil
-    - python
     - requests
     - scikit-learn
     - scipy
@@ -53,14 +53,16 @@ requirements:
     - snap
     - glimmerhmm
     - bamtools  # [linux]
-    - augustus  >3.3  # [linux]
+    - augustus  ==3.3.3=pl5262h5a9fe7b_6  # [linux]
     - trinity >=2.8.5=h8b12597_5  # [linux]
     - trnascan-se
     - hisat2
-    - proteinortho >=6.0.9
+    - proteinortho >=6.0.16
     - salmon >=0.9
+    - phyml
     - perl
-    - perl-bioperl >1.7
+    - perl-math-utils  # Needed by GeneMark
+    - perl-mce  # Needed by GeneMark
     - perl-dbd-mysql
     - perl-clone
     - perl-hash-merge
@@ -75,10 +77,10 @@ requirements:
     - ete3
     - distro
     - samtools >=1.9
-    
+
 test:
-  imports:
-    - funannotate
+  commands:
+    - "funannotate --help | grep \"Funannotate is a genome prediction\""
 
 about:
   home: "https://github.com/nextgenusfs/funannotate"

@@ -1,0 +1,64 @@
+{% set version = "0.14.2" %}
+{% set mpi = mpi or 'nompi' %}
+
+package:
+  name: seidr
+  version: {{ version }}
+
+source:
+   url: https://github.com/bschiffthaler/seidr/releases/download/0.14.2/seidr-0.14.2.tar.gz
+   sha256: 771442aa7fd8e7ed97d3db465496a6004e163f9c111cd91c19fe86f4961f216f
+
+build:
+  number: 1
+  {% if mpi != 'nompi' %}
+  {% set mpi_prefix = "mpi_" + mpi %}
+  {% else %}
+  {% set mpi_prefix = "nompi" %}
+  {% endif %}
+  string: "{{ mpi_prefix }}_h{{ PKG_HASH }}"
+  skip: True # [osx]
+
+requirements:
+  build:
+    - cmake
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+  host:
+    - armadillo=*=*openblas*
+    - boost-cpp
+    - zlib
+    - coin-or-clp
+    - tbb-devel
+    - {{ mpi }}  # [mpi != 'nompi']
+  run:
+    - armadillo=*=*openblas*
+    - boost-cpp
+    - zlib
+    - coin-or-clp
+    - tbb
+    - {{ mpi }}  # [mpi != 'nompi']
+
+about:
+  home: https://github.com/bschiffthaler/seidr
+  license: GPL-2.0-or-later
+  license_file: LICENCE
+  summary: Community gene network inference and exploration toolkit
+
+test:
+  commands:
+    - seidr version 
+    - anoverence -V 
+    - correlation -V 
+    - el-ensemble -V # [mpi == 'nompi']
+    - genie3 -V # [mpi == 'nompi']
+    - llr-ensemble -V # [mpi == 'nompi']
+    - mi -V # [mpi == 'nompi']
+    - narromi -V # [mpi == 'nompi']
+    - pcor -V 
+    - plsnet -V # [mpi == 'nompi']
+    - svm-ensemble -V # [mpi == 'nompi']
+    - tigress -V # [mpi == 'nompi']
+    - tomsimilarity -V 

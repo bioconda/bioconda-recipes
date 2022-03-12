@@ -1,3 +1,5 @@
+#!/bin/bash
+set -e
 # For inspiration, see also Debian's ncbi-vdb package:
 # https://salsa.debian.org/med-team/ncbi-vdb
 
@@ -12,11 +14,11 @@ sed -i.backup \
 
 # * --debug lets the configure script print extra info
 # * Only LDFLAGS and CXX can be customized at configure time.
+./configure --help
 ./configure \
     --debug \
     --prefix=$PREFIX \
     --build-prefix=ncbi-outdir \
-    --with-ngs-sdk-prefix=$PREFIX \
     CXX=$CXX
 
 # Edit the generated build configuration to use the proper tools
@@ -27,7 +29,7 @@ sed -i.backup \
 #     -e "s|= ar|= $AR|" \
 #     build/Makefile.config.linux.x86_64
 
-make
+make CC=$CC
 
 # This does not install the header files
 make install
@@ -36,7 +38,10 @@ make install
 make -C test/vdb
 
 # Copy headers manually. As done by Debian, install them into a common subdirectory
-mv interfaces/* $PREFIX/include/ncbi-vdb
+ls interfaces
+for f in interfaces/* ; do
+    mv $f $PREFIX/include/ncbi-vdb
+done
 
 
 # To Do

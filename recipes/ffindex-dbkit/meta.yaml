@@ -1,0 +1,41 @@
+{% set name = "ffindex-dbkit" %}
+{% set version = "0.2" %}
+{% set sha256 = "c8b6830d380856b68332afc69d4a1282f6729c89f921fd726e856d4fc3d5ac3b" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/guerler/springsuite/archive/refs/heads/skip_invalid_entries.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 2
+  script: |
+    PYVER=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version_info[1]))'`
+    mkdir -p ${PREFIX}/lib/python${PYVER}/site-packages/
+    cp -r ./src/dbkit/dbkit_package ${PREFIX}/lib/python${PYVER}/site-packages/
+    cp ./src/dbkit/*.py ${PREFIX}/bin/
+    chmod +x ${PREFIX}/bin/*.py
+
+requirements:
+  host:
+    - python
+  run:
+    - python
+    - python-wget
+
+test:
+  commands:
+    - dbkit_merge.py --help
+    - dbkit_extract.py --help
+    - dbkit_create.py --help
+
+about:
+  home: https://github.com/guerler/spring
+  license: GPL-2.0-only
+  summary: 'Tools to create ffindex files'
+  license_family: GPL
+  license_file: LICENSE

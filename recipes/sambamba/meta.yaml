@@ -1,20 +1,28 @@
-{% set version='0.8.0' %}
-
+{% set name = "sambamba" %}
+{% set version = "0.8.1" %}
+{% set sha256 = "f432fdce3c51d333f2472c5fb1f84c87822a32639afe2b96434a13e7e7b7f7ef" %}
 package:
-  name: sambamba
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  git_url: https://github.com/biod/sambamba
-  git_revision: {{version}}
-  sha256: b3d9df34208c0b2d17153de0839116d8794c2d0c4bd846d806eafaf398e66663
+  - url: https://github.com/biod/sambamba/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+    patches:
+      - makefile.patch
+  - url: https://github.com/lz4/lz4/archive/b3692db46d2b23a7c0af2d5e69988c94f126e10a.zip
+    sha256: 341fc478ccaf5f3ec1b620607d68541dfca3324dd2dbd386e9d45e85d2d26603
+    folder: lz4
 
 build:
-  number: 0
+  number: 1
+  skip: True # [osx]
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
+    - python >=3
   host:
     - ldc >=1.17.0
     - bzip2
@@ -29,11 +37,14 @@ test:
     - sambamba view --help
 
 about:
-  home: https://github.com/biod/sambamba
-  license: GPLv2
+  home: "https://github.com/biod/sambamba"
+  doc_url: "https://lomereiter.github.io/sambamba/docs/sambamba-view.html"
+  dev_url: "https://github.com/biod/sambamba"
+  license: GPL2
+  license_family: GPL2
   license_file: LICENSE
-  summary: Tools for working with SAM/BAM data
+  summary: "Tools for working with SAM/BAM data"
 
 extra:
-  skip-lints:
-    - uses_vcs_url
+  identifiers:
+    - doi:10.1093/bioinformatics/btv098

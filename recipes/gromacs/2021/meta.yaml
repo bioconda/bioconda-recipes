@@ -1,8 +1,8 @@
 # Update from download page, e.g. https://manual.gromacs.org/documentation/2021/download.html
 # For latest release, see
 # https://manual.gromacs.org/documentation/
-{% set version = "2021" %}
-{% set md5sum = "176f7decc09b23d79a495107aaedb426" %}
+{% set version = "2021.3" %}
+{% set md5sum = "1850870fbbfb228051ee0afc1c5ddeff" %}
 {% set build = 0 %}
 
 package:
@@ -11,40 +11,45 @@ package:
 
 build:
   number: {{ build }}
-  
+  string: >-
+    nompi_h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [mpi == 'nompi']
+    mpi_{{ mpi }}_h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [mpi != 'nompi']
+    
 source:
-  url: http://ftp.gromacs.org/pub/gromacs/gromacs-{{ version }}.tar.gz
+  url: https://ftp.gromacs.org/pub/gromacs/gromacs-{{ version }}.tar.gz
   md5: {{ md5sum }}
-  patches: 0001-add-header.patch
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
-    - cmake
+    - cmake >3.13
     - pocl
+    - python >3.5
+    - perl
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
   host:
     - ocl-icd  # [linux]
     - khronos-opencl-icd-loader  # [osx]
-    - llvm-openmp  # [osx]
-    - openmp  # [linux]
     - libhwloc 2.*
     - fftw
-    - python >3.5
-    - perl
+    - {{ mpi }} # [mpi != 'nompi']
   run:
     - ocl-icd # [linux]
     - khronos-opencl-icd-loader  # [osx]
     - ocl_icd_wrapper_apple # [osx]
-    - openmp # [linux]
     - fftw
     - libhwloc 2.*
+    - {{ mpi }} # [mpi != 'nompi']
 
 test:
   commands:
-    - gmx -version
+    - gmx -version  # [mpi == 'nompi']
+    - gmx_mpi -version  # [mpi != 'nompi']
 
 about:
-  home: http://www.gromacs.org/
+  home: https://www.gromacs.org/
   # TODO: Check which other licenses should be included.
   #       From the COPYING file:
   #         GROMACS is free software, distributed under the GNU Lesser General
@@ -61,10 +66,13 @@ about:
   summary: GROMACS is a versatile package to perform molecular dynamics.
 
 extra:
+  container:
+    # openmpi needs ssh/rsh
+    extended-base: true
   identifiers:
     - biotools:gromacs
-    - doi:10.5281/zenodo.2564764 # source release
-    - doi:10.5281/zenodo.2564761 # documentation release
+    - doi:10.5281/zenodo.5053201 # source release
+    - doi:10.5281/zenodo.5053200 # documentation release
     - doi:10.1016/j.softx.2015.06.001 # journal article
     - rrid:SCR_014565
     - usegalaxy-eu:gmx_sim

@@ -18,9 +18,10 @@ TGT="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
 [ -d "${PREFIX}/bin" ] || mkdir -p "${PREFIX}/bin"
 
 mv bin/VerifyBamID $TGT/VerifyBamID
-mkdir -p $TGT/resource
+mkdir -p $TGT/resource $TGT/resource/exome
 mv resource/1000g* $TGT/resource
 mv resource/hgdp* $TGT/resource
+mv resource/exome/1000g* $TGT/resource/exome
 cp $RECIPE_DIR/verifybamid2.sh $TGT/verifybamid2
 chmod a+x $TGT/verifybamid2
 ln -s $TGT/verifybamid2 $PREFIX/bin/verifybamid2

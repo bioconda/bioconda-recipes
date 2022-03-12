@@ -1,0 +1,41 @@
+{% set version = "0.6" %}
+{% set sha256 = "75f94f4e7afd8a84dc8af5d3ee87de44d22ce8fa73a0f53f6399fdb726e97e75" %}
+
+package:
+  name: r-merge-kallisto
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/zavolanlab/merge_kallisto/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build: 
+  number: 1
+  noarch: generic
+  script: "mkdir -p $PREFIX/bin && mv R/merge* $PREFIX/bin"
+
+requirements:
+  run:
+    - r-base
+    - r-rcpp
+    - bioconductor-rtracklayer
+    - bioconductor-tximport
+    - r-optparse
+    - bioconductor-rhdf5
+    - rsync
+    - coreutils
+
+test:
+  commands:
+    - merge_kallisto.R --help
+    - R -e "library('optparse'); library('tximport'); library('rhdf5'); library('rtracklayer');"
+
+about:
+  home: https://github.com/zavolanlab/merge_kallisto
+  license: Apache License 2.0
+  license_family: APACHE
+  summary: merge_kallisto
+
+extra:
+  recipe-maintainers:
+    - fgypas

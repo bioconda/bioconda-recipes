@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="HD2013SGI_1.30.0.tar.gz"
+FN="HD2013SGI_1.34.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/HD2013SGI_1.30.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/HD2013SGI_1.30.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hd2013sgi/bioconductor-hd2013sgi_1.30.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/HD2013SGI_1.34.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/HD2013SGI_1.34.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hd2013sgi/bioconductor-hd2013sgi_1.34.0_src_all.tar.gz"
 )
-MD5="586411d5b3526cba04977b060e6f26d4"
+MD5="8f5116963391093a3184adac7ae81b9e"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
