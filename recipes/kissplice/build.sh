@@ -11,6 +11,6 @@ export CFLAGS="$CXXFLAGS -fcommon"
 cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} ..
 
 # make commands
-make -j1
+make -j1 VERBOSE=1
 make test
 make install
