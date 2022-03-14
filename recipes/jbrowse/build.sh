@@ -72,5 +72,6 @@ mkdir -p $PREFIX/opt/jbrowse/
 cp -r * $PREFIX/opt/jbrowse/
 
 if [ ! -f "$PREFIX/opt/jbrowse/dist/main.bundle.js" ]; then
-    echo "$PREFIX/opt/jbrowse/dist/main.bundle.js not found, something went bad during the build."
+    echo "$PREFIX/opt/jbrowse/dist/main.bundle.js not found, something went bad during the build." >&2
+    exit 1
 fi
