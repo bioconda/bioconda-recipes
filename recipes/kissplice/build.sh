@@ -5,6 +5,8 @@ mkdir -p ${PREFIX}/bin
 mkdir -p build
 cd build
 
+export CXXFLAGS="$CXXFLAGS -fcommon"
+export CFLAGS="$CXXFLAGS -fcommon"
 # cmake command
 cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} ..
 
