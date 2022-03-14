@@ -6,4 +6,5 @@ mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$PREFIX -Dspoa_optimize_for_portability=ON ..
 make
-cmake --target install -DCMAKE_INSTALL_PREFIX=$PREFIX
+find . -name raven -ls
+cp raven $PREFIX/bin
