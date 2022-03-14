@@ -1,7 +1,7 @@
 #!/bin/sh
 set -x -e
 
-export CXXFLAGS="-I$PREFIX/include -lrt -std=gnu++11 -Wall -mssse3 -fopenmp"
+export CXXFLAGS="-I$PREFIX/include -std=gnu++11 -Wall -mssse3 -fopenmp"
 
 mkdir -p ${PREFIX}/bin
 
