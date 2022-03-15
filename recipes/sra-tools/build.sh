@@ -62,9 +62,9 @@ popd
 echo "compiling sra-tools"
 pushd sra-tools
 
-pushd tools/driver-tool/utf8proc
-make -j"${CPU_COUNT}"
-popd
+#pushd tools/driver-tool/utf8proc
+#make -j"${CPU_COUNT}"
+#popd
 
 ./configure --help
 ./configure \
