@@ -1,5 +1,7 @@
 #!/bin/bash
 
+find / -name "*wiz*"
+
 mkdir -p build/maracluster
 cd build/maracluster
 
