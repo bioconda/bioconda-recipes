@@ -52,7 +52,6 @@ end-of-patch
 ./configure \
     --prefix="${PREFIX}" \
     --build-prefix="${NCBI_OUTDIR}" \
-    --with-ngs-sdk-prefix="${PREFIX}" \
     --with-hdf5-prefix="${PREFIX}" \
     --with-xml2-prefix="${PREFIX}" \
     ;
@@ -67,6 +66,7 @@ pushd tools/driver-tool/utf8proc
 make -j"${CPU_COUNT}"
 popd
 
+./configure --help
 ./configure \
     --prefix="${PREFIX}" \
     --build-prefix="${NCBI_OUTDIR}" \
