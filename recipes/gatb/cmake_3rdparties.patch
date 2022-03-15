@@ -1,31 +1,21 @@
---- gatb-core/CMakeLists.txt	2017-12-14 06:52:34.000000000 +0100
-+++ gatb-core/CMakeLists.txt	2018-08-30 11:52:50.556242054 +0200
-@@ -261,20 +261,14 @@
- ADD_SUBDIRECTORY(thirdparty)
+diff --git a/gatb-core/CMakeLists.txt b/gatb-core/CMakeLists.txt
+index dc36b1b..2bd8c6d 100644
+--- a/gatb-core/CMakeLists.txt
++++ b/gatb-core/CMakeLists.txt
+@@ -255,7 +255,7 @@ ADD_SUBDIRECTORY(thirdparty)
+ #  DEPENDENCIES 
+ ################################################################################
+ # we must be sure that hdf5 is built and installed before building gatb-core
+-ADD_DEPENDENCIES (gatbcore-static hdf5-static hdf5_postbuild)
++#ADD_DEPENDENCIES (gatbcore-static hdf5-static hdf5_postbuild)
  
  ################################################################################
--#  DEPENDENCIES 
--################################################################################
--# we must be sure that hdf5 is built and installed before building gatb-core
--ADD_DEPENDENCIES (gatbcore-static hdf5 hdf5_postbuild)
--
--################################################################################
--#  DOCUMENTATION GENERATION 
-+#  DOCUMENTATION GENERATION
- ################################################################################
- IF (EXISTS "${PROJECT_SOURCE_DIR}/doc")
-     ADD_SUBDIRECTORY(doc EXCLUDE_FROM_ALL)
- ENDIF()
- 
- ################################################################################
--#  EXAMPLES GENERATION 
-+#  EXAMPLES GENERATION
- ################################################################################
- IF (EXISTS "${PROJECT_SOURCE_DIR}/examples")
-     IF (GATB_CORE_INCLUDE_EXAMPLES)
---- gatb-core/thirdparty/CMakeLists.txt	2017-12-14 06:52:34.000000000 +0100
-+++ gatb-core/thirdparty/CMakeLists.txt	2018-08-30 11:35:32.118424979 +0200
-@@ -1,53 +1,5 @@
+ #  DOCUMENTATION GENERATION 
+diff --git a/gatb-core/thirdparty/CMakeLists.txt b/gatb-core/thirdparty/CMakeLists.txt
+index 6e0b5c4..64c7945 100644
+--- a/gatb-core/thirdparty/CMakeLists.txt
++++ b/gatb-core/thirdparty/CMakeLists.txt
+@@ -1,69 +1,7 @@
 -################################################################################
 -#  HDF5 GENERATION 
 -################################################################################
@@ -35,8 +25,8 @@
 -
 -##########  MOMENTARY DEACTIVATED => CRASH ON MACOS TO BE INVESTIGATED  ##########
 -SET (HDF5_BUILD_TOOLS             ON CACHE BOOL "Build HDF5 Tools")
- #SET (CMAKE_EXE_LINKER_FLAGS       "-lpthread -lz")
- 
+-#SET (CMAKE_EXE_LINKER_FLAGS       "-lpthread -lz")
+-
 -SET (HDF5_EXTERNALLY_CONFIGURED     ON)
 -
 -#SET (HDF5_INSTALL_BIN_DIR           ${PROJECT_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE})
@@ -76,15 +66,19 @@
 -foreach (header ${headerfiles})
 -  add_custom_command (TARGET hdf5_postbuild POST_BUILD  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${header} ${HDF5_INSTALL_INCLUDE_DIR}  )
 -endforeach()
- 
- # include other smaller libraries (json, Boophf)
- 
-@@ -60,10 +12,9 @@
- add_custom_command (TARGET thirdparty_copy  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/thirdparty/json/json.hpp   ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE}/json/)
- 
+-
+-# include other smaller libraries (json, Boophf)
+-
+-add_custom_target (thirdparty_copy ALL)
+-add_custom_command (TARGET thirdparty_copy COMMAND ${CMAKE_COMMAND} -E
+-    make_directory ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE}/json)
+-add_custom_command (TARGET thirdparty_copy COMMAND ${CMAKE_COMMAND} -E
+-    make_directory ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE}/BooPHF)
+-add_custom_command (TARGET thirdparty_copy  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/thirdparty/BooPHF/BooPHF.h ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE}/BooPHF/)
+-add_custom_command (TARGET thirdparty_copy  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/thirdparty/json/json.hpp   ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE}/json/)
+-
  ################################################################################
--#  INSTALL 
-+#  INSTALL
+ #  INSTALL 
  ################################################################################
  IF (NOT DEFINED GATB_CORE_INSTALL_EXCLUDE)
 -    INSTALL (DIRECTORY ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE}/hdf5 DESTINATION include)
