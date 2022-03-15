@@ -1,36 +1,26 @@
---- build/ld.linux.exe.sh
-+++ build/ld.linux.exe.sh
-@@ -298,7 +298,7 @@
+diff --git a/build/ld.linux.exe.sh b/build/ld.linux.exe.sh
+index e8b7580..62ffb72 100755
+--- a/build/ld.linux.exe.sh
++++ b/build/ld.linux.exe.sh
+@@ -296,7 +296,7 @@ fi
+ # add in xml
+ if grep -q HAVE_XML2 ${BUILD_DIR}/Makefile.config.linux.$ARCH > /dev/null
  then
-     if grep -q XML2_LIBDIR ${BUILD_DIR}/Makefile.config.linux.$ARCH > /dev/null
+-    if grep -q XML2_LIBDIR ${BUILD_DIR}/Makefile.config.linux.$ARCH > /dev/null
++    if true || grep -q XML2_LIBDIR ${BUILD_DIR}/Makefile.config.linux.$ARCH > /dev/null
      then
--        if grep -q 'OS_DISTRIBUTOR = Ubuntu' ${BUILD_DIR}/Makefile.config.linux.$ARCH > /dev/null
-+        if true || grep -q 'OS_DISTRIBUTOR = Ubuntu' ${BUILD_DIR}/Makefile.config.linux.$ARCH > /dev/null
+         if grep -q 'OS_DISTRIBUTOR = Ubuntu' ${BUILD_DIR}/Makefile.config.linux.$ARCH > /dev/null
          then
-             ##### Do not link libxml2 statically on Ubuntu: it does not compile
-             XMLLIBDIR="-L$(grep XML2_LIBDIR ${BUILD_DIR}/Makefile.config.linux.$ARCH | perl -e'while(<>){if(/XML2_LIBDIR = (.+)/){print $1}}')"
---- setup/konfigure.perl
-+++ setup/konfigure.perl
-@@ -1654,7 +1654,7 @@
+diff --git a/setup/konfigure.perl b/setup/konfigure.perl
+index 3ec705d..31f1579 100644
+--- a/setup/konfigure.perl
++++ b/setup/konfigure.perl
+@@ -1697,7 +1697,7 @@ sub check_compiler {
              $flags = $n;
              $log = '                      int main() {                     }\n'
          } elsif ($n eq 'hdf5') {
 -            $library = '-Wl,-Bstatic -lhdf5 -Wl,-Bdynamic -ldl -lm -lz';
-+            $library = '-Wl,-Bdynamic -lhdf5 -ldl -lm -lz';
++            $library = '-Wl,-Bstatic -lhdf5 -ldl -lm -lz';
              $log = '#include <hdf5.h>  \n int main() { H5close         (); }\n'
          } elsif ($n eq 'fuse') {
              $flags = '-D_FILE_OFFSET_BITS=64';
---- tools/pacbio-load/Makefile
-+++ tools/pacbio-load/Makefile
-@@ -105,9 +105,9 @@
- 	-stk-version \
- 	-skdf5 \
- 	-sload \
--	-shdf5 \
-+	-lhdf5 \
- 	-sncbi-wvdb \
--	-sm \
-+	-lm \
- 
- ifdef HDF5_LIBDIR
- 	PACBIO_LOAD_LIB += $(addprefix -L,$(HDF5_LIBDIR))
