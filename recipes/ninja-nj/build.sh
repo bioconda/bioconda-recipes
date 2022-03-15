@@ -1,7 +1,11 @@
 #!/bin/sh
 set -x -e
 
-export CXXFLAGS="-I$PREFIX/include -std=gnu++11 -Wall -mssse3 -fopenmp"
+if [[ $(uname -s) == "Linux" ]]; then
+  export CXXFLAGS="-I$PREFIX/include -lrt -std=gnu++11 -Wall -mssse3 -fopenmp"
+else
+  export CXXFLAGS="-I$PREFIX/include -std=gnu++11 -Wall -mssse3 -fopenmp"
+fi
 
 mkdir -p ${PREFIX}/bin
 
