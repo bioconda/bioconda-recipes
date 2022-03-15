@@ -58,6 +58,12 @@ export HOME=/tmp
 
 ./setup.sh
 
+if [ ! -f "$PREFIX/opt/jbrowse/dist/main.bundle.js" ]; then
+    echo "$PREFIX/opt/jbrowse/dist/main.bundle.js not found, something went bad during the build. Here's the content of setup.log:" >&2
+    cat setup.log
+    exit 1
+fi
+
 # Remove temp dirs
 rm -rf node_modules/ browser/ build/ css/ extlib/ tests/ utils/ website/ setup.log
 rm -rf plugins/MultiBigWig/test/
@@ -70,8 +76,3 @@ rm $PREFIX/bin/*.pl.bak
 
 mkdir -p $PREFIX/opt/jbrowse/
 cp -r * $PREFIX/opt/jbrowse/
-
-if [ ! -f "$PREFIX/opt/jbrowse/dist/main.bundle.js" ]; then
-    echo "$PREFIX/opt/jbrowse/dist/main.bundle.js not found, something went bad during the build." >&2
-    exit 1
-fi
