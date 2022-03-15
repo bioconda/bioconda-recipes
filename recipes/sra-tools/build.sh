@@ -48,6 +48,7 @@ cat <<end-of-patch
 end-of-patch
 } | patch -p0 -i-
 
+./configure --help
 ./configure \
     --prefix="${PREFIX}" \
     --build-prefix="${NCBI_OUTDIR}" \
