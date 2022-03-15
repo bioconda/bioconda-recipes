@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -exo pipefail
-
 mkdir -p $PREFIX/etc/conda/activate.d/
 echo "export JBROWSE_SOURCE_DIR=$PREFIX/opt/jbrowse" > $PREFIX/etc/conda/activate.d/jbrowse-sourcedir.sh
 chmod a+x $PREFIX/etc/conda/activate.d/jbrowse-sourcedir.sh
@@ -59,7 +57,7 @@ export HOME=/tmp
 ./setup.sh
 
 if [ ! -f "$PREFIX/opt/jbrowse/dist/main.bundle.js" ]; then
-    echo "$PREFIX/opt/jbrowse/dist/main.bundle.js not found, something went bad during the build. Here's the content of setup.log:" >&2
+    echo "$PREFIX/opt/jbrowse/dist/main.bundle.js not found, something went wrong during the build. Here's the content of setup.log:" >&2
     cat setup.log
     exit 1
 fi
