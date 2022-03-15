@@ -66,14 +66,11 @@ pushd sra-tools
 #make -j"${CPU_COUNT}"
 #popd
 
-./configure --help
 ./configure \
     --prefix="${PREFIX}" \
     --build-prefix="${NCBI_OUTDIR}" \
-    --with-ngs-sdk-prefix="${PREFIX}" \
     --with-hdf5-prefix="${PREFIX}" \
     --with-xml2-prefix="${PREFIX}" \
-    --with-ncbi-vdb-build="${NCBI_OUTDIR}" \
     ;
 make -j"${CPU_COUNT}"
 make install
