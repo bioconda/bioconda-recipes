@@ -1,4 +1,5 @@
-#!/bin/bash -e
+#!/bin/bash
+set -ex
 
 # Build uses hard-coded references to gcc/g++/etc. and does not properly honor all *FLAGS.
 make_wrapper() {
@@ -48,7 +49,6 @@ cat <<end-of-patch
 end-of-patch
 } | patch -p0 -i-
 
-./configure --help
 ./configure \
     --prefix="${PREFIX}" \
     --build-prefix="${NCBI_OUTDIR}" \
