@@ -66,13 +66,14 @@ pushd sra-tools
 #make -j"${CPU_COUNT}"
 #popd
 
+export LD_LIBRARY_PATH=$PREFIX/lib
 ./configure \
     --prefix="${PREFIX}" \
     --build-prefix="${NCBI_OUTDIR}" \
     --with-hdf5-prefix="${PREFIX}" \
     --with-xml2-prefix="${PREFIX}" \
     ;
-make -j"${CPU_COUNT}"
+make
 make install
 popd
 
