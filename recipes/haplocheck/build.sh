@@ -4,4 +4,4 @@ curl -SL https://github.com/genepi/haplocheck/releases/download/v1.3.3/haplochec
 unzip haplocheck.zip
 
 mkdir -p "${PREFIX}/bin"
-cp haplocheck "${PREFIX}/bin/"
+cp haplocheck haplocheck.jar "${PREFIX}/bin/"
