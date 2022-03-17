@@ -2,7 +2,7 @@
 set -e
 set -x
 
-unzip Comet-"$PKG_VERSION".zip
+unzip comet_source_"$PKG_VERSION".zip
 sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" CometSearch/Makefile
 sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" MSToolkit/Makefile
 make CXX=${CXX} CXXFLAGS="${CXXFLAGS} -mcmodel=large"
