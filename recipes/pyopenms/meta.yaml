@@ -1,0 +1,50 @@
+{% set name = "pyopenms" %}
+{% set version = "2.8.0" %}
+package:
+  name: {{ name|lower  }}
+  version: {{ version  }}
+
+source:
+  url: https://abibuilder.informatik.uni-tuebingen.de/archive/openms/OpenMSInstaller/release/{{ version }}/OpenMS-{{ version }}-src.tar.gz
+  sha256: c39e3ccdce5c335d2659cfa9d0bb63555a01ec422757afd90706d3869bf611ac
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake
+  host:
+    - libopenms {{ version }}
+    - llvm-openmp # [osx]
+    - libsvm >=3.21
+    - xerces-c >=3.2
+    - boost-cpp >=1.60
+    - qt >=5.5   
+    - python {{ python }}
+    - cython >=0.25.2
+    - autowrap >=0.22.6
+    - nose
+    - numpy {{ numpy }}
+    - pandas
+  run: # run_exports in libopenms should take care of the libraries
+    - python {{ python }}
+    - numpy {{ numpy }}
+    - pandas
+test:
+  commands:
+    - python -c "import pyopenms; print(pyopenms.__version__)"
+    # We cant use the PYTHON variable since it does not exist on the biocontainer?!
+
+about:
+  home: https://github.com/OpenMS/OpenMS
+  license: BSD
+  license_file: LICENSE
+  summary: python bindings for OpenMS, an open-source software C++ library for LC-MS data management and analyses
+
+extra:
+  identifiers:
+    - biotools:openms
+    - doi:10.1038/nmeth.3959
