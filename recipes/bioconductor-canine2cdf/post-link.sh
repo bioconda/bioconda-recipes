@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="canine2cdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/canine2cdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/canine2cdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/canine2cdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-canine2cdf/bioconductor-canine2cdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-canine2cdf/bioconductor-canine2cdf_2.18.0_src_all.tar.gz"
 )
 MD5="78740cde98c75e6680470564a4df74c3"

@@ -1,0 +1,48 @@
+{% set name = "fastq-filter" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 2bd51b1b1954e139da44b0f6d0fef1c6f55926ad956b81ee1c6bfc67918f995e
+
+build:
+  number: 2
+  skip: true  # [py < 38]
+  entry_points:
+    - fastq-filter=fastq_filter:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  build:
+    - "{{ compiler('c') }}"
+  host:
+    - pip
+    - setuptools
+    - cython
+    - python
+    - dnaio >=0.6.0
+    - xopen >=1.2.1
+  run:
+    - python
+    - dnaio >=0.6.0
+    - xopen >=1.2.1
+
+test:
+  imports:
+    - fastq_filter
+  commands:
+    - fastq-filter --help
+
+about:
+  home: https://github.com/LUMC/fastq-filter
+  license: MIT
+  license_family: MIT
+  summary: A fast FASTQ filter program.
+
+extra:
+  recipe-maintainers:
+    - rhpvorderman

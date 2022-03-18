@@ -1,45 +1,63 @@
 {% set name = "pftools" %}
-{% set version = "2.3.5" %}
-{% set sha256 = "4d4080572479a6bb2b97f03c84331190a82adfa6cc6be131d78672507f4418f5" %}
+{% set version = "3.2.11" %}
+{% set sha256 = "b45381584c57bc7c3ac6544f8654752095a5c04fd8242ab270b1d8cdce40d94a" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: ftp://ftp.lausanne.isb-sib.ch/pub/software/unix/pftools/pft2.3/pft{{ version }}.d.tar.gz
+  url: https://github.com/sib-swiss/pftools3/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 2
+  skip: True  # [osx]
 
 requirements:
   build:
     - make
     - {{ compiler('fortran') }}
     - {{ compiler('cxx') }}
+    - cmake
   host:
     - r-base
+    - perl
+    - zlib
+    - perl-file-slurp
   run:
     - r-base
+    - perl
+    - zlib
+    - perl-file-slurp
 
 test:
   commands:
     - gtop -h 2>&1 | grep -i usage
     - pfmake -h 2>&1 | grep -i usage
     - pfscan -h 2>&1 | grep -i usage
+    - pfscanV3 -h
+    - pfsearchV3 -h
     - pfw -h 2>&1 | grep -i usage
     - ptoh -h 2>&1 | grep -i usage
     - htop -h 2>&1 | grep -i usage
     - pfscale -h 2>&1 | grep -i usage
     - pfsearch -h 2>&1 | grep -i usage
+    - ps_scan.pl -h 2>&1 | grep -i version
+    - sort_fasta.pl -h
+    - scramble_fasta.pl -h 2>&1 | grep -i usage
+    - make_iupac_cmp.pl -h
+    - fasta_to_fastq.pl -h
     - psa2msa -h 2>&1 | grep -i usage
     - 2ft -h 2>&1 | grep -i usage
     - 6ft -h 2>&1 | grep -i usage
     - ptof -h 2>&1 | grep -i usage
+    # compare_2_profiles.pl and split_profile_file.pl cannot be tested
 
 about:
   home: https://web.expasy.org/pftools/
   license: GPLv2
+  license_family: GPL
+  license_file: LICENSE
   summary: 'A generalized profile syntax for biomolecular sequence motifs and its function in automatic sequence interpretation.'
   dev_url: https://github.com/sib-swiss/pftools3
