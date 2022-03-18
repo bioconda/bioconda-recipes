@@ -8,12 +8,12 @@ if [ "$(uname)" = "Darwin" ]; then
   export LDFLAGS="-Wl,-pie -Wl,-headerpad_max_install_names -Wl,-rpath,$PREFIX/lib -L$PREFIX/lib"
 else
   export LDFLAGS="-L$PREFIX/lib"
+  export MKL_THREADING_LAYER="GNU"
 fi
 # https://bioconda.github.io/troubleshooting.html#zlib-errors
 export CFLAGS="-I$PREFIX/include"
 export CPATH=${PREFIX}/include
 
-export MKL_THREADING_LAYER="GNU"
 
 mkdir -p build
 
