@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="bovinecdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/bovinecdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/bovinecdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/bovinecdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bovinecdf/bioconductor-bovinecdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bovinecdf/bioconductor-bovinecdf_2.18.0_src_all.tar.gz"
 )
 MD5="e155fc7d5f84ee420d9b250a639af305"

@@ -1,0 +1,55 @@
+{% set version = "1.0.0" %}
+{% set name = "mitoClone2" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 4e0de5c5c21b464a50b045247c3f1d89
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: knitr, rmarkdown, Biostrings, testthat
+# SystemRequirements: GNU make, PhISCS (optional)
+requirements:
+  host:
+    - 'bioconductor-deepsnv >=1.40.0,<1.41.0'
+    - 'bioconductor-genomicranges >=1.46.0,<1.47.0'
+    - 'bioconductor-rhtslib >=1.26.0,<1.27.0'
+    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
+    - r-base
+    - r-ggplot2
+    - r-pheatmap
+    - r-reshape2
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-deepsnv >=1.40.0,<1.41.0'
+    - 'bioconductor-genomicranges >=1.46.0,<1.47.0'
+    - 'bioconductor-rhtslib >=1.26.0,<1.27.0'
+    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
+    - r-base
+    - r-ggplot2
+    - r-pheatmap
+    - r-reshape2
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Clonal Population Identification in Single-Cell RNA-Seq Data using Mitochondrial and Somatic Mutations'
+  description: 'This package primarily identifies variants in mitochondrial genomes from BAM alignment files. It filters these variants to remove RNA editing events then estimates their evolutionary relationship (i.e. their phylogenetic tree) and groups single cells into clones. It also visualizes the mutations and providing additional genomic context.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

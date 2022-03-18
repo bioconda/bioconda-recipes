@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="primeviewcdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/primeviewcdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/primeviewcdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/primeviewcdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-primeviewcdf/bioconductor-primeviewcdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-primeviewcdf/bioconductor-primeviewcdf_2.18.0_src_all.tar.gz"
 )
 MD5="71e39a59a5907e9b8a8dba58d36eee50"

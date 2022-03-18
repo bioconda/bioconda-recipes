@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RTCGA.rnaseq_20151101.22.0.tar.gz"
+FN="RTCGA.rnaseq_20151101.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/RTCGA.rnaseq_20151101.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RTCGA.rnaseq_20151101.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rtcga.rnaseq/bioconductor-rtcga.rnaseq_20151101.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/RTCGA.rnaseq_20151101.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RTCGA.rnaseq_20151101.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rtcga.rnaseq/bioconductor-rtcga.rnaseq_20151101.24.0_src_all.tar.gz"
 )
-MD5="fd942fdb854a1d36149a0e83cf52f5a5"
+MD5="8fcfb806862c0e631370e80bd6cc5aea"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
