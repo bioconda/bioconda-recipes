@@ -1,14 +1,14 @@
-From 5bb1b4ad775ca5ad54035e27aee56e2daa62d84c Mon Sep 17 00:00:00 2001
+From a9b92e4a59ff5ef6dd030257cf7e943705130cf2 Mon Sep 17 00:00:00 2001
 From: Joelle Mbatchou <joelle.mbatchou@regeneron.com>
-Date: Fri, 18 Mar 2022 14:28:55 -0500
+Date: Fri, 18 Mar 2022 16:18:21 -0500
 Subject: [PATCH] fix cmakelist file for osx
 
 ---
- CMakeLists.txt | 213 ++++++++++++++++++++++++-------------------------
- 1 file changed, 103 insertions(+), 110 deletions(-)
+ CMakeLists.txt | 200 ++++++++++++++++++++++---------------------------
+ 1 file changed, 90 insertions(+), 110 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 5153c91..f3e57e5 100644
+index 5153c91..eb42dc0 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,11 +1,3 @@
@@ -85,7 +85,7 @@ index 5153c91..f3e57e5 100644
  
  # list each file specifically 
  add_executable(regenie 
-@@ -100,32 +61,60 @@ add_executable(regenie
+@@ -100,32 +61,54 @@ add_executable(regenie
    ${CMAKE_SOURCE_DIR}/src/Step1_Models.cpp
    ${CMAKE_SOURCE_DIR}/src/Step2_Models.cpp
    )
@@ -113,28 +113,14 @@ index 5153c91..f3e57e5 100644
 -target_include_directories(regenie PRIVATE ${EXTERN_LIBS_PATH}/)
 +set(EXTERN_LIBS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external_libs")
 +target_include_directories(regenie PUBLIC ${EXTERN_LIBS_PATH}/)
- 
--# BGEN library and its dependencies
--find_library(ZSTD_LIBRARY libzstd.a HINTS "${BGEN_PATH}/build/3rd_party/zstd-1.1.0" REQUIRED)
--find_library(DB_LIBRARY libdb.a HINTS "${BGEN_PATH}/build/db" REQUIRED)
--find_library(SQLITE3_LIBRARY libsqlite3.a HINTS "${BGEN_PATH}/build/3rd_party/sqlite3" REQUIRED)
--find_library(Boost_LIBRARY libboost.a HINTS "${BGEN_PATH}/build/3rd_party/boost_1_55_0" REQUIRED)
--find_library(BGEN_LIBRARY libbgen.a HINTS "${BGEN_PATH}/build" REQUIRED)
--target_link_libraries(regenie PRIVATE ${ZSTD_LIBRARY} ${BGEN_LIBRARY} ${DB_LIBRARY} ${SQLITE3_LIBRARY} ${Boost_LIBRARY})
--target_include_directories(regenie PRIVATE ${BGEN_PATH} ${BGEN_PATH}/genfile/include/ ${BGEN_PATH}/3rd_party/boost_1_55_0/ ${BGEN_PATH}/3rd_party/zstd-1.1.0/lib ${BGEN_PATH}/db/include/ ${BGEN_PATH}/3rd_party/sqlite3)
++
 +# for BGEN (choose static if present first)
-+find_library(ZSTD_LIBRARY 
-+  NAMES libzstd.a zstd 
-+  REQUIRED
-+  )
++find_library(ZSTD_LIBRARY zstd REQUIRED)
 +find_library(DB_LIBRARY 
 +  NAMES libdb.a db 
 +  REQUIRED
 +  )
-+find_library(SQLITE3_LIBRARY 
-+  NAMES libsqlite3.a sqlite3 
-+  REQUIRED
-+  )
++find_library(SQLITE3_LIBRARY sqlite3 REQUIRED)
 +find_package(Boost 
 +  REQUIRED COMPONENTS system filesystem thread 
 +  OPTIONAL_COMPONENTS iostreams
@@ -152,7 +138,15 @@ index 5153c91..f3e57e5 100644
 +  $<INSTALL_INTERFACE:${BOOST_INCLUDEDIR}>
 +  )
 +add_definitions(${Boost_DEFINITIONS})
-+
+ 
+-# BGEN library and its dependencies
+-find_library(ZSTD_LIBRARY libzstd.a HINTS "${BGEN_PATH}/build/3rd_party/zstd-1.1.0" REQUIRED)
+-find_library(DB_LIBRARY libdb.a HINTS "${BGEN_PATH}/build/db" REQUIRED)
+-find_library(SQLITE3_LIBRARY libsqlite3.a HINTS "${BGEN_PATH}/build/3rd_party/sqlite3" REQUIRED)
+-find_library(Boost_LIBRARY libboost.a HINTS "${BGEN_PATH}/build/3rd_party/boost_1_55_0" REQUIRED)
+-find_library(BGEN_LIBRARY libbgen.a HINTS "${BGEN_PATH}/build" REQUIRED)
+-target_link_libraries(regenie PRIVATE ${ZSTD_LIBRARY} ${BGEN_LIBRARY} ${DB_LIBRARY} ${SQLITE3_LIBRARY} ${Boost_LIBRARY})
+-target_include_directories(regenie PRIVATE ${BGEN_PATH} ${BGEN_PATH}/genfile/include/ ${BGEN_PATH}/3rd_party/boost_1_55_0/ ${BGEN_PATH}/3rd_party/zstd-1.1.0/lib ${BGEN_PATH}/db/include/ ${BGEN_PATH}/3rd_party/sqlite3)
 +# Boost IO
 +if(Boost_iostreams_FOUND) 
 +  add_definitions(-DHAS_BOOST_IOSTREAM)
@@ -162,7 +156,7 @@ index 5153c91..f3e57e5 100644
  
  # MVTNorm library
  set(MVTN_PATH "${EXTERN_LIBS_PATH}/mvtnorm")
-@@ -134,7 +123,7 @@ add_custom_target(
+@@ -134,7 +117,7 @@ add_custom_target(
     COMMAND make
     WORKING_DIRECTORY ${MVTN_PATH}
  )
@@ -171,7 +165,7 @@ index 5153c91..f3e57e5 100644
  add_dependencies(regenie libMvtnorm)
  
  # QF library
-@@ -144,7 +133,7 @@ add_custom_target(
+@@ -144,7 +127,7 @@ add_custom_target(
     COMMAND make
     WORKING_DIRECTORY ${QF_PATH}
  )
@@ -180,7 +174,7 @@ index 5153c91..f3e57e5 100644
  add_dependencies(regenie libqf)
  
  # Quadpack library
-@@ -154,7 +143,7 @@ add_custom_target(
+@@ -154,7 +137,7 @@ add_custom_target(
     COMMAND make
     WORKING_DIRECTORY ${QUAD_PATH}
  )
@@ -189,7 +183,7 @@ index 5153c91..f3e57e5 100644
  add_dependencies(regenie libquad)
  
  # PGEN library
-@@ -164,59 +153,61 @@ add_custom_target(
+@@ -164,59 +147,54 @@ add_custom_target(
     COMMAND make
     WORKING_DIRECTORY ${PGEN_PATH}
  )
@@ -210,26 +204,22 @@ index 5153c91..f3e57e5 100644
 -    find_library(MKL_CORE_LIB libmkl_core.a HINTS "${MKLROOT}/lib/intel64" REQUIRED)
 -    target_link_libraries(regenie PRIVATE "-Wl,--start-group" ${MKL_LP64_LIB} ${MKL_THREAD_LIB} ${MKL_CORE_LIB} "-Wl,--end-group" -lgomp)
 +  target_include_directories(regenie PUBLIC ${MKLROOT}/include/)
-+  find_library(MKL_LP64_LIB 
-+    NAMES libmkl_intel_lp64.a mkl_intel_lp64 
++  find_library(MKL_LP64_LIB mkl_intel_lp64 
 +    HINTS "${MKLROOT}/lib/" 
 +    REQUIRED
 +    )
 +  if("${UNAME_S}" STREQUAL "Linux")
-+    find_library(MKL_THREAD_LIB 
-+      NAMES libmkl_gnu_thread.a mkl_gnu_thread 
++    find_library(MKL_THREAD_LIB mkl_gnu_thread 
 +      HINTS "${MKLROOT}/lib/" 
 +      REQUIRED
 +      )
 +  elseif("${UNAME_S}" STREQUAL "Darwin")
-+    find_library(MKL_THREAD_LIB 
-+      NAMES libmkl_intel_thread.a mkl_intel_thread 
++    find_library(MKL_THREAD_LIB mkl_intel_thread 
 +      HINTS "${MKLROOT}/lib/" 
 +      REQUIRED
 +      )
 +  endif()
-+  find_library(MKL_CORE_LIB 
-+    NAMES libmkl_core.a mkl_core 
++  find_library(MKL_CORE_LIB mkl_core 
 +    HINTS "${MKLROOT}/lib/" 
 +    REQUIRED
 +    )
@@ -282,14 +272,11 @@ index 5153c91..f3e57e5 100644
  
  # Other libraries
 -find_library(ZLIB_LIBRARY libz.a z REQUIRED)
-+find_library(ZLIB_LIBRARY 
-+  NAMES libz.a z 
-+  REQUIRED
-+  )
++find_library(ZLIB_LIBRARY z REQUIRED)
  find_library(M_LIB m REQUIRED) 
  find_library(DL_LIB dl REQUIRED) 
  if("${UNAME_S}" STREQUAL "Linux")
-@@ -224,14 +215,16 @@ if("${UNAME_S}" STREQUAL "Linux")
+@@ -224,14 +202,16 @@ if("${UNAME_S}" STREQUAL "Linux")
  elseif("${UNAME_S}" STREQUAL "Darwin")
    find_library(GFORTRAN_LIBRARY gfortran REQUIRED)
  endif()
