@@ -1,5 +1,5 @@
 #!/bin/sh
-
+set -x
 # useless default include directory that is silently added by the compiler packages "to help"...
 # it is not even added with -isystem https://github.com/AnacondaRecipes/aggregate/blob/master/clang/activate-clang%2B%2B.sh#L87
 USELESS="-I${PREFIX}/include"
@@ -22,7 +22,12 @@ else
 fi
 LDFLAGS='-Wl,-rpath,${RPATH}'
 
+echo "Helloooo?????"
+
 $PYTHON -c "import Cython"
+
+$PYTHON -c "import Cython" > log.txt 2>&1
+cat log.txt
 
 cmake ../src/pyOpenMS \
   -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
