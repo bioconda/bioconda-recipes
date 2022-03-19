@@ -22,6 +22,7 @@ else
 fi
 LDFLAGS='-Wl,-rpath,${RPATH}'
 
+$PYTHON -c "import Cython"
 
 cmake ../src/pyOpenMS \
   -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
