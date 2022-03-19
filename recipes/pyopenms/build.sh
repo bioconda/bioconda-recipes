@@ -27,7 +27,7 @@ echo "Helloooo?????"
 $PYTHON -c "import Cython"
 
 $PYTHON -c "import Cython" > log.txt 2>&1
-cat log.txt
+cat log.txt | echo
 
 cmake ../src/pyOpenMS \
   -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
