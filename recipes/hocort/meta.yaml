@@ -1,0 +1,56 @@
+{% set version = "0.3.2" %}
+{% set sha256 = "e41c9409eca646889b2d186a1257636f2125ade2d4b44f57743dd69c992caf00" %}
+
+package:
+  name: hocort
+  version: {{ version }}
+
+source:
+  url: https://github.com/ignasrum/hocort/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  entry_points:
+    - hocort = hocort.__main__:main
+  script: python -m pip install --no-deps --ignore-installed .
+  number: 0
+
+requirements:
+  host:
+    - python >=3.7,<3.10
+    - pip
+    - setuptools
+  run:
+    - python >=3.7,<3.10
+    - samtools >=1.8
+    - tbb =2020.2
+    - kraken2 >=2.1.2
+    - bowtie2
+    - hisat2
+    - bwa-mem2
+    - bbmap
+    - minimap2
+
+test:
+  requires:
+    - pytest
+  imports:
+    - hocort
+    - pytest
+  source_files:
+    - tests
+  commands:
+    - hocort -h
+
+about:
+  home: https://github.com/ignasrum/hocort
+  license: MIT
+  license_file: LICENSE
+  license_family: MIT
+  summary: HoCoRT - Host Contamination Removal Tool
+  dev_url: https://github.com/ignasrum/hocort
+
+extra:
+  recipe-maintainers:
+    - ignasrum
