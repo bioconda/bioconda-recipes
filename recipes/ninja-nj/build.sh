@@ -10,5 +10,5 @@ fi
 mkdir -p ${PREFIX}/bin
 
 cd NINJA/
-make all CXX="$CXX" CXXFLAGS="$CXXFLAGS"
+make all CXX="$CXX $LDFLAGS" CXXFLAGS="$CXXFLAGS"
 cp Ninja ${PREFIX}/bin
