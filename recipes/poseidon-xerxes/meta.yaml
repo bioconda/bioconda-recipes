@@ -1,0 +1,37 @@
+{% set version = "0.1.0.0" %}
+package:
+  name: poseidon-xerxes
+  version: {{ version }}
+
+source:
+  - url: https://github.com/poseidon-framework/poseidon-analysis-hs/releases/download/v{{ version }}/xerxes-linux # [linux]
+    md5: 7b91c8fbc22e8aa3315a7f17af78aafe # [linux]
+  - url: https://github.com/poseidon-framework/poseidon-analysis-hs/releases/download/v{{ version }}/xerxes-macOS # [osx]
+    md5: 6896e59a0023bf8c882b6cd775dff059 # [osx]
+
+build:
+  number: 1
+  script:
+    - "mkdir -p $PREFIX/bin"
+    - "mv trident* $PREFIX/bin/xerxes"
+    - "chmod u+x $PREFIX/bin/xerxes"
+
+requirements:
+  build:
+    # Precompiled binaries still link against libgcc
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - gmp
+  run:
+    - zlib
+    - gmp
+
+test:
+  commands:
+     - xerxes --version
+
+about:
+  home: https://poseidon-framework.github.io/#/
+  license: MIT
+  summary: "A tool (xerxes) to analyse genotype databases formatted using Poseidon."
