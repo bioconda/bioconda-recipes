@@ -11,9 +11,8 @@ cd ${RM_DIR}
 
 # prompt 1: <PRESS ENTER TO CONTINUE>
 # prompt 2: confirm path to running perl interpreter
-# prompt 3: Configure for LTR structural search [y] or n?
-# Answering n, because NINJA is not yet in bioconda
-printf "\n\nn\n" | perl ./configure \
+# prompt 3: Configure for LTR structural search [y] or n? Answering y
+printf "\n\ny\n" | perl ./configure \
     -cdhit_dir ${PREFIX}/bin \
     -genometools_dir ${PREFIX}/bin \
     -ltr_retriever_dir ${PREFIX}/bin \
@@ -23,9 +22,8 @@ printf "\n\nn\n" | perl ./configure \
     -rmblast_dir ${PREFIX}/bin \
     -rscout_dir ${PREFIX}/bin \
     -trf_prgm ${PREFIX}/bin/trf \
-    -ucsctools_dir ${PREFIX}/bin
-
-# TODO: add '-ninja_dir ${PREFIX}/bin' once available in bioconda
+    -ucsctools_dir ${PREFIX}/bin \
+    -ninja_dir ${PREFIX}/bin
 
 # ----- add tools within the bin ------
 
