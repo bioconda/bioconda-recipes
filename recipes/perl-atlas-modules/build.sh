@@ -32,7 +32,6 @@ cpanm -l $PERLLIB MooseX::FollowPBP \
                     Date::Parse \
                     Test::MockObject \
                     Text::TabularDisplay \
-                    Log::Dispatch::File \
                     TIMB/DBI-1.636.tar.gz \
                     MIYAGAWA/Class-Trigger-0.15.tar.gz \
                     TMTM/Class-DBI-v3.0.17.tar.gz \
@@ -41,7 +40,7 @@ cpanm -l $PERLLIB MooseX::FollowPBP \
 
 
 cpanm -l $PERLLIB --force Mail::Sendmail \
-                          Log::Dispatch::File 
+                          Log::Dispatch::File
 
 mkdir -p ${PREFIX}/etc/conda/activate.d/
 echo "export PERL5LIB=$PERL5LIB:$atlasprodDir/perl_modules:$PERLLIB/lib/perl5" > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}-${PKG_VERSION}.sh
