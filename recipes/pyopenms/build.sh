@@ -38,7 +38,7 @@ cmake ../src/pyOpenMS \
   -DPython_FIND_STRATEGY="LOCATION" \
   -DNO_DEPENDENCIES=ON
 
-# NO_DEPENDENCIES since conda takes over re-linking etc.
+# NO_DEPENDENCIES since conda takes over re-linking etc
 
 # limit parallel jobs to 1 for memory usage since pyopenms has huge cython generated cpp files
 make -j1 pyopenms
