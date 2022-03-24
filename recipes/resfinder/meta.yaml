@@ -1,0 +1,47 @@
+{% set name = "ResFinder" %}
+{% set version = "4.1.11" %}
+{% set sha256 = "e312ff8dc23f329baf8b0a4dc3c41f0006778772e8f736086cf12d03bc76c9c8" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://bitbucket.org/genomicepidemiology/{{ name|lower }}/get/{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+  patches:
+    - python_path.patch
+    - remove_version_git_tag.patch
+
+build:
+  number: 0
+  noarch: generic
+
+requirements:
+  host:
+    - python >=3
+    - git
+    - kma
+  run:
+    - python >=3
+    - kma
+    - biopython
+    - blast >=2.8.1
+    - cgecore 1.5.5
+    - tabulate 0.7.7
+    - gitpython
+    - python-dateutil
+
+test:
+  commands:
+    - run_resfinder.py --help
+
+about:
+  home: https://bitbucket.org/genomicepidemiology/resfinder
+  license: APACHE-2.0
+  license_family: APACHE
+  license_file: LICENSE-2.0.txt
+  summary: ResFinder identifies acquired antimicrobial resistance genes in total or partial sequenced isolates of bacteria.
+
+extra:
+  notes: "ResFinder requires databases that can be downloaded with download-db.sh."
