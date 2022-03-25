@@ -8,5 +8,5 @@ sed -i 's=main.nf=${LMAS}/main.nf=' LMAS
 cp LMAS ${PREFIX}/bin
 cp get_data.sh ${PREFIX}/bin/get_lmas_data.sh
 
-# Move LMAS nextflow
+# Move LMAS
 mv conf/ docker/ docs/ lib/ modules/ resources/ templates/ test/ main.nf nextflow.config ${LMAS}
