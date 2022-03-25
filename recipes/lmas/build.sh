@@ -7,7 +7,7 @@ chmod 775 LMAS get_data.sh
 cp get_data.sh ${PREFIX}/bin/get_lmas_data.sh
 
 echo "#!/bin/bash" > $PREFIX/bin/LMAS
-echo "$LMAS/LMAS \"\${@:1}\"" >> $PREFIX/bin/LMAS
+echo "nextflow run $LMAS/main.nf \"\${@:1}\"" >> $PREFIX/bin/LMAS
 chmod 755 $PREFIX/bin/LMAS
 
 # Move LMAS
