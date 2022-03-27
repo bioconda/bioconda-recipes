@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="pepDat_1.10.0.tar.gz"
+FN="pepDat_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/pepDat_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/pepDat_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pepdat/bioconductor-pepdat_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/pepDat_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/pepDat_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pepdat/bioconductor-pepdat_1.14.0_src_all.tar.gz"
 )
-MD5="c761ec707c83cd3a216065db41625767"
+MD5="947204ab5b408148a1592ccfc5a0ffa6"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

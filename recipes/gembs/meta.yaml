@@ -1,50 +1,53 @@
-{% set version = "3.2.0" %}
-{% set sha256 = "e3ee12740994cde0b94b932c5a23f9544951bde6d223aae4d0061876ef95a0c5" %}
-{% set bcftoolsversion = "1.8" %}
-{% set bcftoolssha256 = "4acbfd691f137742e0be63d09f516434f0faf617a5c60f466140e0677915fced"%}
+{% set version = "3.5.5_IHEC" %}
+{% set sha256 = "687ed92052dbd8400563e5d7e431fee90645250e065f8f345bb16b0a0c2d416f" %}
 
 package:
   name: gembs
   version: {{ version }}
 
 source:
-  - url: https://github.com/heathsc/gemBS/archive/v{{ version }}.tar.gz
-    sha256: {{ sha256 }}
-    patches:
-      - 0001-Unvendor-bcftools.patch
+  url: https://github.com/JakeLehle/gemBS/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - patch
 
 build:
   number: 4
-  skip: True # [py<30]
-  script: {{ PYTHON }} -m pip install . --no-deps -vv --install-option=--minimal
+  # This should probably be split into gemBS-tools and a noarch: python gemBS package
+  skip: true  # [py < 37]
 
 requirements:
   build:
+    - make
+    - autoconf
+    - automake
     - {{ compiler('c') }}
+    - wget
   host:
     - pip
     - python
-    - zlib
-    - bzip2
-    - xz
     - htslib
-    - bcftools
-    - multiprocess
+    - openssl
+    - bzip2
+    - zlib
   run:
     - python
-    - zlib
-    - bzip2
-    - xz
+    - matplotlib-base
+    - multiprocess
     - pigz
+    - openssl
+    - bzip2
+    - zlib
     - htslib
-    - matplotlib
+    - matplotlib-base
     - multiprocess
     - samtools
     - bcftools
-    - gem3-mapper 3.6.1.*
-    - bs_call 2.02.*
+    - bs_call
+    - gem3-mapper
     - ucsc-bedtobigbed
     - ucsc-wigtobigwig
+    - setuptools
 
 test:
   commands:
@@ -54,8 +57,10 @@ about:
   home: https://github.com/heathsc/gemBS
   license: GPL-3.0
   license_file: LICENSE.md
-  summary: gemBS is a bioinformatics pipeline designed for high throughput analysis of DNA methylation from Whole Genome Bisulfite Sequencing data (WGBS). 
+  summary: gemBS is a bioinformatics pipeline designed for high throughput analysis of DNA methylation from Whole Genome Bisulfite Sequencing data (WGBS).
 
 extra:
   identifiers:
     - doi:10.1101/201988
+  skip-lints:
+    - uses_setuptools  # uses pkg_resoures during run time

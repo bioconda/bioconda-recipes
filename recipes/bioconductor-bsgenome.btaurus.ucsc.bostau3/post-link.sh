@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="BSgenome.Btaurus.UCSC.bosTau3_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/BSgenome.Btaurus.UCSC.bosTau3_1.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Btaurus.UCSC.bosTau3_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Btaurus.UCSC.bosTau3_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.btaurus.ucsc.bostau3/bioconductor-bsgenome.btaurus.ucsc.bostau3_1.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.btaurus.ucsc.bostau3/bioconductor-bsgenome.btaurus.ucsc.bostau3_1.4.0_src_all.tar.gz"
 )
 MD5="fe6c4d5853f91c3db3e716ddbc773580"

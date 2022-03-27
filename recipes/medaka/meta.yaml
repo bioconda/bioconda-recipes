@@ -1,5 +1,5 @@
 {% set name = "medaka" %}
-{% set version = "1.2.1" %}
+{% set version = "1.6.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,11 +7,13 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 7aa75e1d149c3496afc3cf40067f11080c89203ad5614babdaa060a71cff30f6
+  sha256: a8389f90cba77095061c4ff22c7cce8d73908e2451fa1d07b94c2f8ce4152628
+  patches:
+    - patch
 
 build:
   number: 0
-  skip: True  # [py<36 or osx]
+  skip: True  # # [py!=38 or osx]
   entry_points:
     - medaka = medaka.medaka:main
     - medaka_counts = medaka.medaka_counts:main
@@ -21,6 +23,7 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
+    - coreutils
   host:
     - cffi
     - pip
@@ -35,7 +38,7 @@ requirements:
     - h5py
     - intervaltree >=3.0.0
     - mappy
-    - numpy
+    - numpy <1.20.0
     - nomkl  # [osx]
     - ont-fast5-api
     - parasail-python
@@ -43,13 +46,14 @@ requirements:
     - python
     - python-edlib
     - requests
-    - tensorflow >=2.2.0
+    - tensorflow ==2.2.*
     - whatshap >=0.18
     - samtools >=1.9
     - bcftools >=1.9
     - minimap2 >=2.17
     - htslib >=1.9
     - pyspoa
+    - racon >=1.4.13
 
 test:
   imports:

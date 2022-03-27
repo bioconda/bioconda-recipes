@@ -1,4 +1,4 @@
-{% set version = "0.5" %}
+{% set version = "1.4.0" %}
 
 package:
   name: bakta
@@ -6,35 +6,43 @@ package:
 
 source:
   url: https://github.com/oschwengers/bakta/archive/v{{ version }}.tar.gz
-  sha256: '11a46709492efacc5e3d3db4ffa45172f1e06c7e5c3e5c796a6f94cbe053ced6'
+  sha256: '0a87e29b1b690b2de8a7abcbc28a67482ae33a679f4d84ff127368445a627311'
 
 build:
   noarch: python
-  number: 0
+  number: 1
   script: python -m pip install --no-deps --ignore-installed .
   entry_points:
-    - bakta = bakta.bakta:main
+    - bakta = bakta.main:main
+    - bakta_proteins = bakta.proteins:main
+    - bakta_db = bakta.db:main
 
 requirements:
   host:
-    - python >=3
+    - python >=3.8
     - pip
   run:
-    - python >=3
-    - biopython >=1.72
-    - xopen >=0.9.0
-    - trnascan-se >=2.0.6
+    - python >=3.8
+    - biopython >=1.78
+    - xopen >=1.1.0
+    - requests >=2.25.1
+    - alive-progress ==1.6.2
+    - trnascan-se >=2.0.8
     - aragorn >=1.2.38
-    - infernal >=1.1.2
+    - infernal >=1.1.4
     - piler-cr
     - prodigal >=2.6.3
-    - hmmer >=3.3.1
-    - diamond >=2.0.4
-    - blast >=2.7.1
+    - hmmer >=3.3.2
+    - diamond >=2.0.14
+    - blast >=2.12.0
+    - ncbi-amrfinderplus >=3.10.23
 
 test:
   import:
     - Bio.SeqIO
+    - xopen.xopen
+    - requests
+    - alive_progress
   commands:
     - bakta --help
 
@@ -43,11 +51,13 @@ about:
   license: GPLv3
   license_family: GPL
   license_file: LICENSE
-  summary: Rapid & standardized annotation of bacterial genomes & plasmids.
+  summary: Rapid & standardized annotation of bacterial genomes, MAGs & plasmids.
   dev_url: https://github.com/oschwengers/bakta
 
 extra:
   identifiers:
     - biotools:bakta
+    - doi:10.1099/mgen.0.000685
+    - doi:10.5281/zenodo.4247252
   recipe-maintainers:
     - oschwengers

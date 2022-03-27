@@ -1,0 +1,37 @@
+{% set version = "1.2.5" %}
+
+package: 
+  name: purge_dups
+  version: {{ version }}
+
+build:
+  number: 2
+
+source:
+  url: https://github.com/dfguan/purge_dups/archive/v{{ version }}.tar.gz
+  sha256: 7879a8ecc26e5de1eaaf4b4633cb240ed2802d648068b193652477317a3e2645
+
+requirements:
+  build: 
+    - {{ compiler("c") }}
+    - make
+  host:
+    - zlib
+    - minimap2
+  run:
+    - minimap2
+
+test:
+  commands: 
+    - purge_dups -h 2>&1 | grep Usage
+    - split_fa -h 2>&1 | grep Usage
+    - pbcstat -h 2>&1 | grep Usage
+    - ngscstat -h 2>&1 | grep Usage
+    - calcuts -h 2>&1 | grep Usage
+    - get_seqs -h 2>&1 | grep Usage
+
+about:
+  home: https://github.com/dfguan/purge_dups
+  license: MIT
+  license_file: LICENSE
+  summary: Purge_dups is a package used to purge haplotigs and overlaps in an assembly based on read depth

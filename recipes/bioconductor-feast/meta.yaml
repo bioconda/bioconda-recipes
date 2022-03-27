@@ -1,0 +1,55 @@
+{% set version = "1.2.0" %}
+{% set name = "FEAST" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 3af523e79c129dc013654aa5a4e6a7d7
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: rmarkdown, Seurat, ggpubr, knitr, testthat (>= 3.0.0), BiocStyle
+requirements:
+  host:
+    - 'bioconductor-biocparallel >=1.28.0,<1.29.0'
+    - 'bioconductor-sc3 >=1.22.0,<1.23.0'
+    - 'bioconductor-singlecellexperiment >=1.16.0,<1.17.0'
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-tscan >=1.32.0,<1.33.0'
+    - r-base
+    - r-irlba
+    - r-matrixstats
+    - r-mclust
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-biocparallel >=1.28.0,<1.29.0'
+    - 'bioconductor-sc3 >=1.22.0,<1.23.0'
+    - 'bioconductor-singlecellexperiment >=1.16.0,<1.17.0'
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-tscan >=1.32.0,<1.33.0'
+    - r-base
+    - r-irlba
+    - r-matrixstats
+    - r-mclust
+  build:
+    - {{ compiler('c') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'FEAture SelcTion (FEAST) for Single-cell clustering'
+  description: 'Cell clustering is one of the most important and commonly performed tasks in single-cell RNA sequencing (scRNA-seq) data analysis. An important step in cell clustering is to select a subset of genes (referred to as “features”), whose expression patterns will then be used for downstream clustering. A good set of features should include the ones that distinguish different cell types, and the quality of such set could have significant impact on the clustering accuracy. FEAST is an R library for selecting most representative features before performing the core of scRNA-seq clustering. It can be used as a plug-in for the etablished clustering algorithms such as SC3, TSCAN, SHARP, SIMLR, and Seurat. The core of FEAST algorithm includes three steps: 1. consensus clustering; 2. gene-level significance inference; 3. validation of an optimized feature set.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+

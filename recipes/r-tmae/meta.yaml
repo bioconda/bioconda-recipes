@@ -1,61 +1,58 @@
 {% set name = 'tMAE' %}
-{% set version = '0.9.0' %}
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set version = '1.0.4' %}
 
 package:
   name: r-tmae
-  version: {{ version|replace("-", "_") }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/c-mertes/{{ name }}/archive/{{ version }}-1.tar.gz
-  sha256: 7a47516123d2bc6e14233e095e59c4027299b9a0b3bf903b1549fd9107335a26
+  url: https://github.com/gagneurlab/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: 8d11bcf01459dd7f69ecbd22a293b422c218a63d2cf49c1c9bba080bcb58b3aa
 
 build:
-  merge_build_host: True  # [win]
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 
 requirements:
-  build:
-    - {{ compiler('c') }}        # [not win]
-    - {{ compiler('m2w64_c') }}  # [win]
-    - {{posix}}filesystem        # [win]
-    - {{posix}}sed               # [win]
-    - {{posix}}grep              # [win]
-    - {{posix}}autoconf
-    - {{posix}}automake          # [not win]
-    - {{posix}}automake-wrapper  # [win]
-    - {{posix}}pkg-config
-    - {{posix}}make
-    - {{posix}}coreutils         # [win]
-    - {{posix}}zip               # [win]
   host:
     - r-base
-    - r-dplyr
+    - r-BiocManager
     - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-magrittr
+    - bioconductor-BiocGenerics
     - bioconductor-DESeq2
+    - bioconductor-IRanges
+    - bioconductor-GenomicRanges
     - bioconductor-GenomicScores
+    - bioconductor-S4Vectors
   run:
-    - {{native}}gcc-libs         # [win]
     - r-base
-    - r-dplyr
+    - r-BiocManager
     - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-magrittr
+    - bioconductor-BiocGenerics
     - bioconductor-DESeq2
+    - bioconductor-IRanges
+    - bioconductor-GenomicRanges
     - bioconductor-GenomicScores
+    - bioconductor-S4Vectors
 
 test:
   commands:
-    - $R -e "library('tMAE')"           # [not win]
-    - "\"%R%\" -e \"library('tMAE')\""  # [win]
+     - '$R -e "library(''{{ name }}'')"'
 
 about:
-  home: https://github.com/mumichae/tMAE
-  license: UNKOWN
-  license_family: OTHER
-  summary: Tests and visualizes for Mono-allelic expressed variants.
+  home: https://github.com/gagneurlab/tMAE
+  license: MIT
+  license_family: MIT
+  summary: Tests and visualizations for mono-allelicly expressed variants.
 
 extra:
   recipe-maintainers:

@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.clariom.d.human_3.14.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/pd.clariom.d.human_3.14.1.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.clariom.d.human_3.14.1.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.clariom.d.human_3.14.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.clariom.d.human/bioconductor-pd.clariom.d.human_3.14.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.clariom.d.human/bioconductor-pd.clariom.d.human_3.14.1_src_all.tar.gz"
 )
 MD5="9d3505af53cc7c99980f29c527f0f37d"

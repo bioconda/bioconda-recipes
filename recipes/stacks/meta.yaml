@@ -1,5 +1,5 @@
-{% set version="2.53" %}
-{% set hash="ee1efceaeeeb7a39f0c2e804ad7c0a003094db28c9101120c38ddb02846e90fd" %}
+{% set version="2.60" %}
+{% set hash="a69286ed9d53c8bc14caa4671989374163c9a8a78d716d3818c5bb9b23c548d3" %}
 package:
   name: stacks
   version: {{ version }}
@@ -10,13 +10,14 @@ build:
 
 source:
   sha256: {{ hash }}
-  url: http://catchenlab.life.illinois.edu/stacks/source/stacks-{{ version }}.tar.gz
+  url: https://catchenlab.life.illinois.edu/stacks/source/stacks-{{ version }}.tar.gz
   patches:
     - at.patch
     - kmer_exit.patch
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
   host:
     - zlib
@@ -32,31 +33,33 @@ requirements:
     - samtools
     - zlib
     - openmp  # [linux]
+    - r-base >=4
 
 test:
   commands:
-    - command -v cstacks
-    - command -v gstacks
-    - command -v sstacks
-    - command -v ustacks
-    - command -v phasedstacks
-    - command -v populations
-    - command -v process_radtags
-    - command -v process_shortreads
-    - command -v clone_filter
-    - command -v kmer_filter
-    - command -v stacks-dist-extract
-    - command -v stacks-integrate-alignments
-    - command -v tsv2bam
-    - command -v convert_stacks.pl
-    - command -v count_fixed_catalog_snps.py
-    - command -v denovo_map.pl
-    - command -v extract_interpop_chars.pl
-    - command -v integrate_alignments.py
-    - command -v ref_map.pl
+    - cstacks 2>&1 | grep -Fq 'cstacks {{ version }}'
+    - gstacks 2>&1 | grep -Fq 'gstacks {{ version }}'
+    - sstacks 2>&1 | grep -Fq 'sstacks {{ version }}'
+    - ustacks 2>&1 | grep -Fq 'ustacks {{ version }}'
+    - phasedstacks 2>&1 | grep -Fq 'phasedstacks {{ version }}'
+    - populations 2>&1 | grep -Fq 'populations {{ version }}'
+    - process_radtags 2>&1 | grep -Fq 'process_radtags {{ version }}'
+    - process_shortreads 2>&1 | grep -Fq 'process_shortreads {{ version }}'
+    - clone_filter 2>&1 | grep -Fq 'clone_filter {{ version }}'
+    - kmer_filter 2>&1 | grep -Fq 'kmer_filter {{ version }}'
+    - stacks-dist-extract 2>&1 | grep -q Usage
+    - tsv2bam 2>&1 | grep -Fq 'tsv2bam {{ version }}'
+    - convert_stacks.pl 2>&1 | grep -Fq 'convert_stacks.pl _VERSION_'
+    - denovo_map.pl -h 2>&1 | grep -Fq 'denovo_map.pl {{ version }}'
+    - extract_interpop_chars.pl -h 2>&1 | grep -Fq 'extract-interpop-chars.pl'
+    - stacks-integrate-alignments 2>&1 | grep -Fq usage
+    - ref_map.pl 2>&1 | grep -Fq 'ref_map.pl {{ version }}'
+    - stacks-count-reads-per-sample-per-locus 2>&1 | grep -Fq usage
+    - stacks-hist2d-loci-samples-coverage 2>&1 | grep -Fq usage
+    - stacks-samtools-tview 2>&1 | grep -Fq usage
 
 about:
-  home: http://catchenlab.life.illinois.edu/stacks/
+  home: https://catchenlab.life.illinois.edu/stacks/
   license: GPL
   license_file: LICENSE
   summary: Stacks is a software pipeline for building loci from RAD-seq

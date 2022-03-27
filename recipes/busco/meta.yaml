@@ -1,5 +1,5 @@
-{% set version = "4.1.4" %}
-{% set sha256 = "9a71a1b56aaaaa46906a7473ff9398f10e5a59227d4b5b70712de350d7318736" %}
+{% set version = "5.3.1" %}
+{% set sha256 = "df133acc2f5c3dc4756dd1baf4a4965ee0e417ad33b455c06eda8687dd56cd1a" %}
 
 package:
   name: busco
@@ -13,7 +13,7 @@ source:
   url: https://gitlab.com/ezlab/busco/-/archive/{{ version }}/busco-{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - 0001-Add-default-config-path-within-prefix.patch
+    - 0001-Add-default-config-path-within-prefix-updated.patch
 
 requirements:
   host:
@@ -26,6 +26,8 @@ requirements:
     - biopython
     - prodigal
     - sepp >=4.3.10
+    - metaeuk
+    - pandas
   run:
     - python >=3.3
     - wget
@@ -37,12 +39,14 @@ requirements:
     - r-ggplot2 >=2.2.1
     - prodigal
     - sepp >=4.3.10
+    - metaeuk
+    - pandas
+    - fonts-conda-ecosystem
 
 test:
   commands:
     - busco -h
     - generate_plot.py -h
-    - python -c 'import busco.ConfigManager as cm; print(cm.BuscoConfigManager({}).get_config_file())'
   source_files:
     # used in run_test.sh
     - test_data
@@ -57,6 +61,11 @@ about:
            near-universal single-copy orthologs selected from OrthoDB.
 
 extra:
+  container:
+    # Necessary to allow Busco to download files from the internet when used with Singularity
+    # and default bind paths (see also https://github.com/bioconda/bioconda-recipes/issues/11583).
+    # Should be removed again when the base container is fixed.
+    extended-base: True
   identifiers:
     - biotools:busco
     - doi:10.1093/bioinformatics/btv351

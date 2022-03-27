@@ -14,9 +14,9 @@ from os import access
 from os import getenv
 from os import X_OK
 
-jar_file = 'SearchGUI-4.0.7.jar'
+jar_file = 'SearchGUI-4.0.41.jar'
 
-default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
+default_jvm_mem_opts = ['-Xms2g', '-Xmx4g']
 
 # !!! End of parameter section. No user-serviceable code below this line !!!
 
@@ -79,6 +79,22 @@ def jvm_opts(argv):
 
     return (mem_opts, prop_opts, pass_args, exec_dir)
 
+def def_temp_log_opts(args):
+    """
+    Establish default temporary and log folders.
+    """
+    TEMP  = os.getenv("TEMP")
+
+    if TEMP is not None:
+        if '-log' not in args:
+            args.append('-log')
+            args.append(TEMP+'/logs')
+
+        if '-search_engine_temp' not in args and '-temp_folder' not in args :
+            args.append('-temp_folder')
+            args.append(TEMP)
+
+    return args
 
 def main():
     java = java_executable()
@@ -90,6 +106,9 @@ def main():
     we copy the jar file, lib, and resources to the exec_dir directory.
     """
     (mem_opts, prop_opts, pass_args, exec_dir) = jvm_opts(sys.argv[1:])
+
+    pass_args = def_temp_log_opts(pass_args)
+
     jar_dir = exec_dir if exec_dir else real_dirname(sys.argv[0])
 
     if pass_args != [] and (pass_args[0].startswith('eu') or pass_args[0].startswith('com')):
@@ -100,8 +119,11 @@ def main():
     jar_path = os.path.join(jar_dir, jar_file)
 
     java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
-    sys.exit(subprocess.call(java_args))
 
+    new_env = dict( os.environ )
+    new_env['LC_ALL'] = 'C'
+
+    sys.exit(subprocess.call(java_args, env=new_env))
 
 if __name__ == '__main__':
     main()

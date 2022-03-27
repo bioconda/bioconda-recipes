@@ -1,4 +1,4 @@
-{% set version = "0.16.0.1" %}
+{% set version = "0.18.0" %}
 
 package:
   name: pysam
@@ -6,15 +6,18 @@ package:
 
 source:
   url: https://github.com/pysam-developers/pysam/archive/v{{ version }}.tar.gz
-  sha256: a61e98e299fa93ba121aab521081282b61bc978bb9052d33b26b38f8fe15573e
+  sha256: db1ddf41639e4dbb3f94cc9afb14e879bff15690de5b713dec3a81e43f6fa131
+  patches:
+    - separate-symbols.diff
 
 build:
-  number: 1
+  number: 2
   binary_relocation: False # [linux]
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - make
   host:
     - cython
     - python
@@ -34,18 +37,10 @@ requirements:
     - libcurl
     - openssl  # [not osx]
 
-test:
-  imports:
-    - pysam
-  commands:
-    # xref https://github.com/pysam-developers/pysam/issues/920
-    # Please keep this to avoid the aforementioned regression
-    - python -c "import pysam; import errno; exec(\"try:\n    pysam.AlignmentFile('s3:expect_invalid_argument')\nexcept EnvironmentError as e:\n    assert e.errno == errno.EINVAL\")"
-
 about:
   home: https://github.com/pysam-developers/pysam
   license: MIT
-  summary: "Pysam is a python module for reading and manipulating Samfiles. It is a lightweight wrapper of the samtools C-API. Pysam also includes an interface for tabix."
+  summary: "Pysam is a Python module for reading and manipulating SAM/BAM/VCF/BCF files. It's a lightweight wrapper of the htslib C-API, the same one that powers samtools, bcftools, and tabix."
 
 extra:
   identifiers:

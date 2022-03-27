@@ -1,4 +1,4 @@
-{% set version="1.0.0" %}
+{% set version="1.1.2" %}
 
 package:
   name: stringdecomposer
@@ -6,33 +6,32 @@ package:
 
 source:
   url: https://github.com/ablab/stringdecomposer/archive/v{{ version }}.tar.gz
-  sha256: 561deea67808bc4d0bab04b2167ef47f918f2080f8ea1d8cc1e92e045f00aa84
+  sha256: 6bcd81d1762edc39c9125965f2b7a3d6d7bf39eb2bd043eaffc732795754968a
 
 build:
   skip: True  # [py27 or osx]
-  number: 0
+  number: 1
   script: {{ PYTHON }} -m pip install . -vv --ignore-installed --no-deps
+  # script: make install PREFIX=${PREFIX}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+    - make
   host:
     - python
     - pip
-    - llvm-openmp  # [osx]
   run:
     - python
     - biopython
-    - joblib
-    - numpy
     - pandas
     - python-edlib
-    - scikit-learn
  
 test:
   commands:
-    - run_decomposer -h | grep Decomposes
+    - stringdecomposer -h | grep -q "Decomposes string into blocks alphabet"
 
 about:
   home: https://github.com/ablab/stringdecomposer

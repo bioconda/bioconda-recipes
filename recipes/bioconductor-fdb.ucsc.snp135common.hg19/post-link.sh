@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="FDb.UCSC.snp135common.hg19_1.0.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/FDb.UCSC.snp135common.hg19_1.0.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/FDb.UCSC.snp135common.hg19_1.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/FDb.UCSC.snp135common.hg19_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-fdb.ucsc.snp135common.hg19/bioconductor-fdb.ucsc.snp135common.hg19_1.0.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-fdb.ucsc.snp135common.hg19/bioconductor-fdb.ucsc.snp135common.hg19_1.0.0_src_all.tar.gz"
 )
 MD5="0cdca5fa595bb69464016ceb97635f78"

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="mAPKLData_1.22.0.tar.gz"
+FN="mAPKLData_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/mAPKLData_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/mAPKLData_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mapkldata/bioconductor-mapkldata_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/mAPKLData_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/mAPKLData_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mapkldata/bioconductor-mapkldata_1.26.0_src_all.tar.gz"
 )
-MD5="fae437ec8d2ef7f1752cd2f8b8a3a0c9"
+MD5="e4b59441109316d1b2c4e85294c8f8f2"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,0 +1,42 @@
+{% set name = "LinearFold" %}
+{% set version = "1.0" %}
+{% set sha256 = "2ae56b5f183472c2de96782e770a91e57f82e0ab511dfc0d9d612aa4e6155f60" %}
+
+package:
+  name: {{ name | lower }}
+  version: {{ version }}
+
+build:
+  number: 1
+  skip: True  # [osx]
+
+source:
+  url: https://github.com/{{ name }}/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-FIX-command-broken-with-symbolic-link.patch
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+
+  run:
+    - python-gflags
+    - python=2.7
+
+test:
+  source_files:
+    - testseq
+    - testcons
+    - testeval
+  commands:
+    - "cat testseq | linearfold"
+    - "cat testcons | linearfold --constraints"
+    - "cat testeval | linearfold --eval"
+
+about:
+  home: https://github.com/LinearFold/LinearFold
+  license: custom
+  license_file: LICENSE
+  summary: 'Linear-Time Prediction for RNA Secondary Structures'

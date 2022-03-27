@@ -1,5 +1,5 @@
 {% set name = "grafimo" %}
-{% set version = "1.1.3" %}
+{% set version = "1.1.4" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,43 +7,37 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "8d7575594c68111515d7cb23c0d2910f8ce61c5904beda065ad97d8c40678df6"
+  sha256: "ff409a60fd609bedb39dd6d31124816dbc35a07fc5630665916c71a504611c68"
 
 build:
-  number: 0
+  number: 2
   entry_points:
     - grafimo = grafimo.__main__:main
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
-  skip: true  # [osx]
+  skip: true  # [osx or py < 37]
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - numba >=0.47,<1
-    - numpy >=1.16,<1.17
-    - pandas >=0.24.2,<0.25
+    - numpy
+    - pandas
     - pip
-    - python >=3.6
-    - statsmodels >=0.10.0,<0.11
+    - python
     - cython >=0.28
-    - vg
-    - graphviz
-    - tabix
     - sphinx
   run:
     - numba >=0.47,<1
-    - numpy >=1.16,<1.17
-    - pandas >=0.24.2,<0.25
-    - python >=3.6
-    - statsmodels >=0.10.0,<0.11
+    - {{ pin_compatible('numpy') }}
+    - {{ pin_compatible('pandas') }}
+    - python
+    - statsmodels >=0.11
+    - colorama
     - vg
     - graphviz
-    - tabix
+    - htslib
 
 test:
-  imports:
-    - grafimo
   commands:
     - grafimo --help
 

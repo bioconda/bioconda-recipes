@@ -1,0 +1,71 @@
+diff -urNp sra-tools-2.11.0-orig/tools/driver-tool/imp_fastq_dump.cpp sra-tools-2.11.0/tools/driver-tool/imp_fastq_dump.cpp
+--- sra-tools-2.11.0-orig/tools/driver-tool/imp_fastq_dump.cpp	2021-03-15 18:25:25.000000000 +0000
++++ sra-tools-2.11.0/tools/driver-tool/imp_fastq_dump.cpp	2021-11-10 11:59:23.000000000 +0000
+@@ -359,12 +359,11 @@ struct FastqParams final : CmnOptAndAcce
+ 
+     int run() const override {
+         auto const theirArgv0 = what.toolpath.getPathFor(TOOL_NAME).fullpath();
+-        {
+-            auto const realpath = what.toolpath.getPathFor(TOOL_ORIGINAL_NAME);
+-            if (realpath.executable())
+-                return ToolExec::run(TOOL_NAME, realpath.fullpath(), theirArgv0, *this, accessions);
+-        }
+-        throw std::runtime_error(TOOL_NAME " was not found or is not executable.");
++	auto const realpath = what.toolpath.getPathFor(TOOL_ORIGINAL_NAME);
++	if (realpath.executable())
++	    return ToolExec::run(TOOL_NAME, realpath.fullpath(), theirArgv0, *this, accessions);
++
++        throw std::runtime_error(realpath.fullpath() + " (aka " TOOL_NAME ") was not found or is not executable.");
+     }
+ 
+ };
+diff -urNp sra-tools-2.11.0-orig/tools/driver-tool/sratools.cpp sra-tools-2.11.0/tools/driver-tool/sratools.cpp
+--- sra-tools-2.11.0-orig/tools/driver-tool/sratools.cpp	2021-03-15 18:25:25.000000000 +0000
++++ sra-tools-2.11.0/tools/driver-tool/sratools.cpp	2021-11-10 19:06:55.000000000 +0000
+@@ -54,6 +54,10 @@
+ #include <sysexits.h>
+ #endif
+ 
++#if MAC
++#include <mach-o/dyld.h>
++#endif
++
+ #include "sratools2.hpp"
+ #include "support2.hpp"
+ #include "globals.hpp"
+@@ -228,11 +232,17 @@ namespace sratools {
+     std::string ToolPath::get_exec_path(std::string const &argv0, char *extra[])
+     {
+ #if MAC
+-        if (extra) {
+-            for (auto i = extra; *i; ++i) {
+-                if (starts_with("executable_path=", *i)) {
+-                    return *i + 16;
+-                }
++        {
++            std::string path(128, '\0');
++            uint32_t bufsize = path.size();
++            auto result = _NSGetExecutablePath(&path[0], &bufsize);
++            if (result < 0) {
++                path.resize(bufsize);
++                result = _NSGetExecutablePath(&path[0], &bufsize);
++            }
++            if (result == 0) {
++                path.resize(path.find('\0'));
++                return path;
+             }
+         }
+ #elif LINUX
+diff -urNp sra-tools-2.11.0-orig/tools/driver-tool/support2.hpp sra-tools-2.11.0/tools/driver-tool/support2.hpp
+--- sra-tools-2.11.0-orig/tools/driver-tool/support2.hpp	2021-03-15 18:25:25.000000000 +0000
++++ sra-tools-2.11.0/tools/driver-tool/support2.hpp	2021-11-10 12:01:06.000000000 +0000
+@@ -663,9 +663,6 @@ namespace sratools2
+                 std::cerr << e.what() << std::endl;
+                 return EX_USAGE;
+             }
+-            catch (std::exception const &e) {
+-                throw e;
+-            }
+             catch (...) {
+                 throw;
+             }

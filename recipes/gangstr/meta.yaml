@@ -1,0 +1,42 @@
+{% set version = "2.5.0" %}
+{% set version_short = "2.5" %}
+{% set sha256 = "32b39cc5cb0bbd5fc3e1ab6749e1461fe321c8ffd2b2efb9560c57006c193153" %}
+
+package:
+  name: gangstr
+  version: {{ version }}
+
+source:
+  url: https://github.com/gymreklab/GangSTR/releases/download/v{{ version_short }}/GangSTR-{{ version }}-Source.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Unvendor-dependencies-use-pkg-config-instead.patch
+
+build:
+  number: 3
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake >=3.16
+    - make
+    - pkg-config
+  host:
+    - gsl
+    - htslib
+    - nlopt
+  run:
+
+test:
+  commands:
+    - GangSTR --version 2>&1 | grep -qFx '{{ version }}'
+
+about:
+  home: https://github.com/gymreklab/GangSTR
+  license: GPL-3.0-or-later
+  license_file: COPYING
+  summary: GangSTR is a tool for genome-wide profiling tandem repeats from short reads.
+
+extra:
+  identifiers:
+    - doi:10.1093/nar/gkz501

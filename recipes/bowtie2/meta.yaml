@@ -1,4 +1,4 @@
-{% set version = "2.4.2" %}
+{% set version = "2.4.5" %}
 
 package:
   name: bowtie2
@@ -6,31 +6,35 @@ package:
 
 source:
   url: https://github.com/BenLangmead/bowtie2/archive/v{{ version }}.tar.gz
-  sha256: ea33a1562faf759b21b3a905e20b87a3524ac4e53af8cd723d9a9f31ee159c8a
+  sha256: db101391b54a5e0eeed7469b05aee55ee6299558b38607f592f6b35a7d41dcb6
 
 build:
-  number: 1
+  number: 2
   skip: True  # [py2k]
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - make
   host:
     - python
     - zlib
+    - zstd
     - tbb-devel
     - tbb
   run:
     - python
     - perl
     - zlib
+    - zstd
     - tbb
 
 test:
   commands:
     - bowtie2 --help
+    - bowtie2 --version
     # test if bowtie2 reports its version
-    - bowtie2 --version | grep -q "bowtie2-align-s version [0-9]"
+    - bowtie2 --version | grep -q "bowtie2-align-s version [0-9]"  # [linux]
     - bowtie2-align-l --help
     - bowtie2-align-s --help
     - bowtie2-build --help

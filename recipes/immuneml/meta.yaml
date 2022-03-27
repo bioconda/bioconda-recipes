@@ -1,0 +1,75 @@
+{% set name = "immuneML" %}
+{% set version = "2.2.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 78e6074eaf5a1fc575aa401fe381bca374221a25e70a4ef3d00429e3a056d4dc
+
+build:
+  number: 0
+  skip: true [py2k or py <= 36]
+  entry_points:
+    - immune-ml = immuneML.app.ImmuneMLApp:main
+    - immune-ml-quickstart = immuneML.workflows.instructions.quickstart:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - pip
+    - python
+    - cython
+  run:
+    - airr >=1
+    - dill >=0.3
+    - editdistance ==0.5.3
+    - fishersapi
+    - gensim >=3.8,<4
+    - h5py >=2.9.0
+    - logomaker >=0.8
+    - matplotlib-base >=3.1
+    - matplotlib-venn >=0.11
+    - numpy >=1.18
+    - pandas >=1
+    - plotly >=4
+    - pystache ==0.5.4
+    - pytest >=4
+    - pytorch >=1.5.1
+    - python
+    - pyyaml >=5.3
+    - regex
+    - requests >=2.21
+    - scikit-learn >=0.23
+    - scipy
+    - tensorboard >=1.14.0
+    - tqdm >=0.24
+    - tzlocal
+    - cython
+
+test:
+  imports:
+    - immuneML
+  commands:
+    - immune-ml -h
+
+about:
+  home: "https://github.com/uio-bmi/immuneML"
+  license: APGL-3.0-only
+  license_family: AGPL
+  license_file: LICENSE.md
+  summary: "immuneML is a software platform for machine learning analysis of immune receptor repertoires."
+  doc_url: "https://docs.immuneml.uio.no/"
+  dev_url: "https://github.com/uio-bmi/immuneML"
+
+extra:
+  skip-lints:
+    - cython_must_be_in_host
+  recipe-maintainers:
+    - knutwa-ext 
+    - BlueBasilisk
+    - pavlovicmilena

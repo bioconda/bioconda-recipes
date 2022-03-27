@@ -1,27 +1,39 @@
+{% set name = "libmaus2" %}
+{% set version = "2.0.810" %}
+{% set datestamp = "20220216151520" %}
+{% set sha256hash = "6639289aba6bbece3057ab7d1782a1b94b80a9ae22fc3d136a78ba8f7b9edaee" %}
+
 package:
-  name: libmaus2
-  version: 2.0.760
+  name: {{ name }}
+  version: {{ version }}
 
 build:
   # There's some issue with clang
   skip: True  # [osx]
-  number: 0
+  number: 1
 
 source:
-  url: https://gitlab.com/german.tischler/libmaus2/-/archive/2.0.760-release-20201023104034/libmaus2-2.0.760-release-20201023104034.tar.bz2
-  sha256: f8d0440ae2e66238be711fb48b3b604ce7b92f5c42e6b593cc22067c0be968e3
+  url: https://gitlab.com/german.tischler/libmaus2/-/archive/{{ version }}-release-{{ datestamp }}/libmaus2-{{ version }}-release-{{ datestamp }}.tar.gz
+  sha256: {{ sha256hash }}
   patches:
     # Until gcc >=8 is being used
     - patch
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
     - boost-cpp
+    - libcurl
+    - snappy
+    - staden_io_lib >=1.14.14
   run:
     - boost-cpp
+    - libcurl
+    - snappy
+    - staden_io_lib >=1.14.14
 
 about:
   home: https://gitlab.com/german.tischler/libmaus2

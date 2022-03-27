@@ -1,0 +1,49 @@
+{% set name = "bamtocov" %}
+{% set version = "2.6.1" %}
+{% set sha256hash = "8ce941b7a7772a8652a7d58e5decaa2b04f8f77c5ecb726657cbbce972dcb85e" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/telatin/bamtocov/archive/v{{ version }}.tar.gz
+    sha256: {{ sha256hash }}
+
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - nim
+  host:
+    - zlib
+    - pcre
+    - htslib >=1.10
+  run:
+
+
+test:
+  commands:
+    - covtotarget --help
+    - covtotarget --version | grep {{ version }}
+    - bamtocov --version | grep {{ version }}
+
+about:
+  home: https://github.com/telatin/bamtocov
+  docs: https://telatin.github.io/bamtocov
+  license: MIT
+  summary: 'Extract coverage information from BAM files, supporting stranded and physical coverage and streams.'
+  description: |
+    A collection of tools to extract coverage information from BAM and CRAM files,
+    supporting target (BED, GFF) and reporting the output in bedGraph (BED) or WIG format.
+  
+
+extra:
+  recipe-maintainers:
+    - telatin
+  identifiers:
+    - biotools:{{ name }}
+    - doi:10.3390/bioengineering8050059
