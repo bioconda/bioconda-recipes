@@ -1,7 +1,6 @@
 #!/bin/bash
-set -o errexit -o pipefail
+set -ex
 unset LD
-env | sort
 
 if [[ -f Build.PL ]]; then
     perl Build.PL
