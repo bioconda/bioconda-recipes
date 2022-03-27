@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="FDb.UCSC.tRNAs_1.0.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/FDb.UCSC.tRNAs_1.0.1.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/FDb.UCSC.tRNAs_1.0.1.tar.gz"
   "https://bioarchive.galaxyproject.org/FDb.UCSC.tRNAs_1.0.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-fdb.ucsc.trnas/bioconductor-fdb.ucsc.trnas_1.0.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-fdb.ucsc.trnas/bioconductor-fdb.ucsc.trnas_1.0.1_src_all.tar.gz"
 )
 MD5="77bfdadd4d9f995a72b001e4e41792fa"

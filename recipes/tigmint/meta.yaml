@@ -1,44 +1,51 @@
 {% set name = "tigmint" %}
-{% set version = "1.2.2" %}
+{% set version = "1.2.5" %}
 
 package:
   name: "{{ name }}"
   version: "{{ version }}"
 
 source:
-  url: https://github.com/bcgsc/tigmint/archive/{{ version }}.tar.gz
-  sha256: 3b3d7615f0d25209e093143344d574863cf0f4fc17f3d25d8ea2b80d64d9f64b 
+  url: https://github.com/bcgsc/tigmint/releases/download/v{{ version }}/tigmint-{{ version }}.tar.gz
+  sha256: 15a56748f19732462c0445fe9df2f737a4bf8caa97dbc0fe6e943e3fd1c6b5f0 
 
 build:
-  number: 0
-  noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv; cp bin/*py ${PREFIX}/bin"
+  number: 1
+  skip: True  # [py<30]
+
 
 requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
   host:
     - pip
-    - python >=3
+    - python
+    - zlib
   run:
-    - python >=3
+    - python
     - intervaltree
     - make
     - pybedtools
     - pysam >=0.15.3
     - minimap2
+    - bwa
+    - zsh
 
 test:
   commands:
-    - make -f $(command -v tigmint-make) version | grep -q "{{ version }}"
+    - tigmint-make version | grep -q "{{ version }}"
     - tigmint-cut --version | grep -q "{{ version }}"
-    - tigmint-molecule --version | grep -q "{{ version }}"
-    - long-to-linked --help
+    - tigmint_molecule.py --version | grep -q "{{ version }}"
 
 about:
   home: https://bcgsc.github.io/tigmint/
   license: GNU General Public v3 (GPLv3)
   license_family: GPL3
 #  license_file: LICENSE
-  summary: Correct misassemblies using linked reads
+  summary: Correct misassemblies using linked or long reads
   dev_url: https://github.com/bcgsc/tigmint
   doc_url: https://github.com/bcgsc/tigmint#readme
 

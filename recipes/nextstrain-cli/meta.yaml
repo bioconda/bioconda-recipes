@@ -1,0 +1,64 @@
+{% set version = "3.2.1" %}
+
+package:
+  name: nextstrain-cli
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/n/nextstrain-cli/nextstrain-cli-{{ version }}.tar.gz
+  sha256: 197519575f3c302759def7bda6012c55d7136db172505b40f0e3267efb244fb0
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - nextstrain = nextstrain.cli.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+
+  run:
+    - python >=3.6
+    - docutils
+    - fasteners
+    - pyjwt >=2.0.0
+    - cryptography # Required for pyjwt digital signature support. Replicates "pip install pyjwt[crypto]".
+    - requests
+    - typing_extensions >=3.6.4
+    - wcmatch >=6.0
+    # nextstrain-cli requires boto3 but does not directly declare this
+    # dependency, to avoid issues with pip dependency resolution with s3fs and
+    # botocore. We can declare the boto3 dependency and unpinned s3fs here,
+    # since Conda can resolve these dependency issues.
+    # See: https://github.com/nextstrain/cli/blob/77c97bfecaf3dda84a8c20c343afc70cc6659f53/setup.py#L91-L98
+    - fsspec
+    - boto3
+    - s3fs
+    - setuptools >=8.0.3
+
+test:
+  requires:
+    - pytest
+  imports:
+    - nextstrain.cli
+
+about:
+  home: https://docs.nextstrain.org/projects/cli/
+  dev_url: https://github.com/nextstrain/cli
+  doc_url: https://docs.nextstrain.org/projects/cli/
+  license: MIT
+  summary: The Nextstrain command-line interface (CLI)
+  description: >
+    The Nextstrain command-line interface (CLI)—a program called
+    nextstrain—aims to provide a consistent way to run and visualize pathogen
+    builds and access Nextstrain components like Augur and Auspice across
+    computing environments such as Docker, Conda, and AWS Batch.
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - tsibley

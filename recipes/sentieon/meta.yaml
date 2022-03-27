@@ -1,43 +1,49 @@
-{% set version="201808.08" %}
+{% set version="202112" %}
 
 package:
   name: sentieon
   version: {{ version }}
 source:
-  url: https://s3.amazonaws.com/sentieon-release/software/sentieon-genomics-{{ version }}.tar.gz
-  sha256: 90ba4f71d03922e421fbb7e0895ca7c6f516d83df0ccb7f42b943d01c98adbc2
-  patches:
-    # Fix driver scripts so they resolves location including symlinks
-    - sentieon_symlinks.patch
-    - bwa_symlinks.patch
+  - url: https://s3.amazonaws.com/sentieon-release/software/sentieon-genomics-{{ version }}.tar.gz # [linux64]
+    sha256: d95e8d004dfd476a78c70702d9353267eaf2b296113fa1284d02e7f5cb7dafda # [linux64]
+    patches: # [linux64]
+      # Fix driver scripts so they resolves location including symlinks
+      - sentieon_symlinks.patch # [linux64]
+      - bwa_symlinks.patch # [linux64]
+  - url: https://s3.amazonaws.com/sentieon-release/software/mac-sentieon-genomics-{{ version }}.tar.gz # [osx]
+    sha256: ae71c3c58c41d8beaf2a641ba1dd811d79b62f75d7b4b32f5d46b349a79eec07 # [osx]
+    patches: # [osx]
+      - sentieon_symlinks.patch # [osx]
+      - bwa_symlinks.patch # [osx]
 
 build:
-  number: 0
-  # Currently failing on OSX when copying and fixing shared libraries
-  # included with sentieon package. I don't understand problem:
-  # https://travis-ci.org/bioconda/bioconda-recipes/jobs/141822657
-  skip: True # [not linux]
+  number: 1
+  skip: True # [not linux64 and not osx]
   binary_relocation: false
 
 requirements:
   build:
-    - {{ compiler('fortran') }}
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
     - zlib
   run:
-    - python >=2.7,<3.0a0
+    - python >=2.7
     - zlib
 
 test:
   commands:
-    - sentieon driver
-    - sentieon driver --help --algo TNscope
-    # Tests have issues with on quay/mulled when combined, non-zero exit code
-    #- sentieon-bwa 2>&1 | grep Burrows-Wheeler
-    #- sentieon-licsrvr 2>&1 | grep SENTIEON_LICENSE
+    - LD_LIBRARY_PATH=/usr/local/lib sentieon driver
+    - LD_LIBRARY_PATH=/usr/local/lib sentieon driver --help --algo TNscope
+    - LD_LIBRARY_PATH=/usr/local/lib sentieon STAR --help # [linux64]
+    - LD_LIBRARY_PATH=/usr/local/lib sentieon umi --help
+    - LD_LIBRARY_PATH=/usr/local/lib sentieon util --help
 
 about:
-  home: http://sentieon.com
+  home: https://www.sentieon.com
   license: Commercial (requires license for use; redistribution allowed)
   summary: Accelerated performance bioinformatics tools for mapping and variant calling
+
+extra:
+  skip-lints:
+      - should_be_noarch_generic # Supports OSX and Linux only

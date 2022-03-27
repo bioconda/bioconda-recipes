@@ -1,5 +1,6 @@
 {% set name = "regenie" %}
-{% set version = "1.0.6.9" %}
+{% set version = "3.0.1" %}
+{% set sha256 = "0d0c003c5a77234e093d743ea3bca1ff6cab7e264f491917d542a45246abb334" %}
 
 package:
   name: {{ name|lower }}
@@ -7,13 +8,16 @@ package:
 
 source:
   url: https://github.com/rgcgithub/regenie/archive/v{{ version }}.tar.gz
-  sha256: ac17d01438467daa379a80eeafe391f124ea9f6a26365a8602e3788bbe3ec967
+  sha256: {{ sha256 }}
   patches:
     # Fixing postrelease issues
     # - patches/0001-use-shared-cxxopts.patch
     # - patches/0002-import-shared-Eigen3.patch
-    - patches/0003-use-conda-cmakelists.patch
+    # - patches/0003-use-conda-cmakelists.patch
     # - patches/0004-fix-fail-exit-on-help.patch
+    # - patches/0005-use-conda-cmakelist-file.patch
+    # - patches/0006-fix-cmakelist-file.patch
+    - patches/0007-fix-cmakelist-file-for-osx.patch
 
 build:
   number: 0
@@ -24,24 +28,22 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
-    - cmake >=3.15
+    - binutils >=2.33.1  # [linux]
+    - cmake >=3.13
     - make
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
   host:
     - bgenix >=1.1.7
     - boost-cpp
-    - blas=2.20=mkl
+    - liblapack * *mkl
+    - mkl >=2020.4
     - mkl-include
-    - cxxopts
-    - eigen
     - zlib
     - zstd
   run:
-    - bgenix >=1.1.7
     - boost-cpp
-    - blas=2.20=mkl
-    - llvm-openmp
-    - mkl-include
-    - mkl
+    - mkl >=2020.4
     - sqlite
     - zlib
     - zstd
@@ -50,6 +52,7 @@ test:
   commands:
     - test -f ${PREFIX}/bin/regenie  # [linux]
     - regenie --help
+    - regenie --version
 
 about:
   home: https://rgcgithub.github.io/regenie/
@@ -62,3 +65,4 @@ about:
 extra:
   recipe-maintainers:
     - matuskosut
+    - joellembatchou

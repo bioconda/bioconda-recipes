@@ -1,0 +1,63 @@
+Index: CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- CMakeLists.txt	(revision caac54e32bc2aef0ed819210a31017de279618a7)
++++ CMakeLists.txt	(revision 350bd2866fabe3a11cf7664bbfd512859f744eda)
+@@ -19,20 +19,36 @@
+   SET(CONDA_DIR "$ENV{CONDA_PREFIX}")
+   # find Seqan3 packages
+   find_path(SEQAN3_CLONE_DIR name bin PATHS ${CONDA_DIR} NO_DEFAULT_PATH)
+-  find_path(SEQAN3_INCLUDE_DIR name seqan PATHS "${SEQAN3_CLONE_DIR}/include" NO_DEFAULT_PATH)
+-  find_path(SEQAN3_SUBMODULES_DIR name submodules PATHS "${SEQAN3_INCLUDE_DIR}/seqan3" NO_DEFAULT_PATH)
+-  find_package(SeqAn3 REQUIRED HINT "${CONDA_PREFIX}/share/cmake/seqan3")
+-  # link bifrost, zlib, seqan and pthreads
+-  target_link_libraries(ggCaller_cpp PRIVATE seqan3::seqan3 ${CONDA_DIR}/lib/libbifrost.so ${CONDA_DIR}/lib/libz.so ${CONDA_DIR}/lib/libomp.so Threads::Threads)
+-ELSE()
+-  # find packages if conda not used
+-  find_package(SeqAn3 REQUIRED)
+-  find_library(z REQUIRED)
+-  find_library(bifrost REQUIRED)
+-  find_package(OpenMP)
+-  target_link_libraries(ggCaller_cpp PRIVATE seqan3::seqan3 bifrost z pthread)
+-  # link OpenMP if found
+-  if(OpenMP_CXX_FOUND)
+-    target_link_libraries(ggCaller_cpp PRIVATE OpenMP::OpenMP_CXX)
+-  endif()
+-ENDIF()
+\ No newline at end of file
++  find_path(SEQAN3_INCLUDE_DIR name seqan PATHS ${SEQAN3_CLONE_DIR}/include NO_DEFAULT_PATH)
++  find_path(SEQAN3_SUBMODULES_DIR name submodules PATHS ${SEQAN3_INCLUDE_DIR}/seqan3 NO_DEFAULT_PATH)
++ENDIF()
++
++#Find include dirs for z and bifrost
++FIND_PATH(z_INCLUDE_DIR NAMES zlib.h HINTS ${CONDA_DIR}/include)
++FIND_PATH(bifrost_INCLUDE_DIR bifrost/CompactedDBG.hpp HINTS ${CONDA_DIR}/include)
++
++# Find libraries for z and bifrost
++FIND_LIBRARY(z_LIBRARY NAMES z HINTS ${CONDA_DIR}/lib REQUIRED)
++FIND_LIBRARY(bifrost_LIBRARY NAMES bifrost HINTS ${CONDA_DIR}/lib REQUIRED)
++
++# Set package found as true
++FIND_PACKAGE_HANDLE_STANDARD_ARGS(z DEFAULT_MSG z_INCLUDE_DIR z_LIBRARY)
++FIND_PACKAGE_HANDLE_STANDARD_ARGS(bifrost DEFAULT_MSG bifrost_INCLUDE_DIR bifrost_LIBRARY)
++
++# Set dirs if multiple include/libraries found
++SET( z_INCLUDE_DIRS ${z_INCLUDE_DIR} )
++SET( z_LIBRARIES ${z_LIBRARY} )
++SET( bifrost_INCLUDE_DIRS ${z_INCLUDE_DIR} )
++SET( bifrost_LIBRARIES ${bifrost_LIBRARY} )
++
++# find Seqan3 package
++find_package(SeqAn3 REQUIRED HINTS ${CONDA_DIR}/share/cmake/seqan3)
++
++# link libraries
++target_link_libraries(ggCaller_cpp PRIVATE seqan3::seqan3 ${bifrost_LIBRARIES} ${z_LIBRARIES} Threads::Threads)
++
++find_package(OpenMP)
++
++if(OpenMP_CXX_FOUND)
++  target_link_libraries(ggCaller_cpp PRIVATE OpenMP::OpenMP_CXX)
++endif()
+\ No newline at end of file

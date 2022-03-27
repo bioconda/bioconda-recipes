@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="gatingMLData_2.30.0.tar.gz"
+FN="gatingMLData_2.34.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/gatingMLData_2.30.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/gatingMLData_2.30.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-gatingmldata/bioconductor-gatingmldata_2.30.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/gatingMLData_2.34.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/gatingMLData_2.34.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-gatingmldata/bioconductor-gatingmldata_2.34.0_src_all.tar.gz"
 )
-MD5="c59b4ff5a1101584c69d6793b80b256e"
+MD5="4686f7c845916bbfb46c3a79846a5c83"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="htrat230pmcdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/htrat230pmcdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/htrat230pmcdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/htrat230pmcdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-htrat230pmcdf/bioconductor-htrat230pmcdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-htrat230pmcdf/bioconductor-htrat230pmcdf_2.18.0_src_all.tar.gz"
 )
 MD5="c6683d16e8aacccd326f7a7eebb79b98"
