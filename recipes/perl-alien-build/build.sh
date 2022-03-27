@@ -12,7 +12,6 @@ elif [[ -f Makefile.PL ]]; then
     # Make sure this goes in site
     $PREFIX/bin/perl Makefile.PL INSTALLDIRS=site
     make
-    # locale breaks tests
     #make test
     make install
 else
