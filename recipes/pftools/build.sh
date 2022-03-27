@@ -10,4 +10,4 @@ cd build/
 cmake -DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}" ..
 make CC=${CC} CXX=${CXX} F77=${GFORTRAN} CFLAGS="$CFLAGS $LDFLAGS"
 make install
-make test
+make test --output-on-failure
