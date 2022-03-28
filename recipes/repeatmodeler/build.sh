@@ -21,7 +21,7 @@ printf "\n\ny\n" | perl ./configure \
     -repeatmasker_dir ${PREFIX}/share/RepeatMasker \
     -rmblast_dir ${PREFIX}/bin \
     -rscout_dir ${PREFIX}/bin \
-    -trf_prgm ${PREFIX}/bin/trf \
+    -trf_dir ${PREFIX}/bin/trf \
     -ucsctools_dir ${PREFIX}/bin \
     -ninja_dir ${PREFIX}/bin
 
