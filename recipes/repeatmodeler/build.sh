@@ -9,7 +9,7 @@ cp -r * ${RM_DIR}
 # configure
 cd ${RM_DIR}
 
-CONGIG_OPTIONS= \
+CONGIG_OPTIONS=" \
     -cdhit_dir ${PREFIX}/bin \
     -genometools_dir ${PREFIX}/bin \
     -ltr_retriever_dir ${PREFIX}/bin \
@@ -19,12 +19,12 @@ CONGIG_OPTIONS= \
     -rmblast_dir ${PREFIX}/bin \
     -rscout_dir ${PREFIX}/bin \
     -trf_dir ${PREFIX}/bin \
-    -ucsctools_dir ${PREFIX}/bin
+    -ucsctools_dir ${PREFIX}/bin"
 
 if [[ $(uname) == Linux ]]; then
     LTR_STRUCTURAL_SEARCH="y"
-    CONGIG_OPTIONS+= \
-    -ninja_dir ${PREFIX}/bin
+    CONGIG_OPTIONS+=" \
+    -ninja_dir ${PREFIX}/bin"
 else
     LTR_STRUCTURAL_SEARCH="n"
     # ninja_dir option not set for osx because package not available in bioconda
