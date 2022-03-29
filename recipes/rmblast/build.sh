@@ -5,8 +5,8 @@ patch -p1 < $RECIPE_DIR/isb-2.11.0+-rmblast.patch
 
 cd $SRC_DIR/c++/
 
-export CFLAGS="$CFLAGS -Ofast"
-export CXXFLAGS="$CXXFLAGS -Ofast"
+export CFLAGS="$CFLAGS -Ofast -std=c++11"
+export CXXFLAGS="$CXXFLAGS -Ofast -std=c++1"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CC_FOR_BUILD=$CC
