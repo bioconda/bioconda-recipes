@@ -13,7 +13,7 @@ cd ${RM_DIR}
 # prompt 2: confirm path to running perl interpreter
 # prompt 3: Configure for LTR structural search [y] or n?
 # Answering n, because NINJA is not yet in bioconda
-printf "\n\nn\n" | perl ./configure \
+CONFIG_OPTIONS=" \
     -cdhit_dir ${PREFIX}/bin \
     -genometools_dir ${PREFIX}/bin \
     -ltr_retriever_dir ${PREFIX}/bin \
@@ -22,12 +22,23 @@ printf "\n\nn\n" | perl ./configure \
     -repeatmasker_dir ${PREFIX}/share/RepeatMasker \
     -rmblast_dir ${PREFIX}/bin \
     -rscout_dir ${PREFIX}/bin \
-    -trf_prgm ${PREFIX}/bin/trf \
-    -ucsctools_dir ${PREFIX}/bin
+    -trf_dir ${PREFIX}/bin/trf \
+    -ucsctools_dir ${PREFIX}/bin"
+    
+if [[ $(uname) == Linux ]]; then
+    LTR_STRUCTURAL_SEARCH="y"
+    CONGIG_OPTIONS+=" \
+    -ninja_dir ${PREFIX}/bin"
+else
+    LTR_STRUCTURAL_SEARCH="n"
+    # ninja_dir option not set for osx because package not available in bioconda
+fi
 
-# TODO: add '-ninja_dir ${PREFIX}/bin' once available in bioconda
-
-# ----- add tools within the bin ------
+# prompt 1: <PRESS ENTER TO CONTINUE>
+# prompt 2: confirm path to running perl interpreter
+# prompt 3: Configure for LTR structural search [y] or n?
+# Answering y for linux; n for osx because NINJA is not available for osx in bioconda
+printf "\n\n${LTR_STRUCTURAL_SEARCH}\n" | perl ./configure ${CONGIG_OPTIONS}
 
 # add RepeatModeler
 ln -s ${RM_DIR}/RepeatModeler ${PREFIX}/bin/RepeatModeler
