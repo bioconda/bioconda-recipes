@@ -11,5 +11,5 @@ cp -r src db $DESTDIR
 chmod +x $DESTDIR/DAS_Tool
 
 ln -s $DESTDIR/DAS_Tool $PREFIX/bin/
-ln -s $DESTDIR/src/Fasta_to_Contigs2Bin.sh $PREFIX/bin/
+ln -s $DESTDIR/src/Fasta_to_Contig2Bin.sh $PREFIX/bin/
 ln -s $DESTDIR/src/Contigs2Bin_to_Fasta.sh $PREFIX/bin/
