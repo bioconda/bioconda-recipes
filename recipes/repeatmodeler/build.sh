@@ -19,7 +19,7 @@ CONFIG_OPTIONS=" \
     -ltr_retriever_dir ${PREFIX}/bin \
     -mafft_dir ${PREFIX}/bin \
     -recon_dir ${PREFIX}/bin \
-    -repeatmasker_dir ${PREFIX}/bin \
+    -repeatmasker_dir ${PREFIX}/share/RepeatMasker \
     -rmblast_dir ${PREFIX}/bin \
     -rscout_dir ${PREFIX}/bin \
     -trf_dir ${PREFIX}/bin/trf \
