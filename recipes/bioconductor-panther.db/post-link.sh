@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="PANTHER.db_1.0.11.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/PANTHER.db_1.0.11.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/PANTHER.db_1.0.11.tar.gz"
   "https://bioarchive.galaxyproject.org/PANTHER.db_1.0.11.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-panther.db/bioconductor-panther.db_1.0.11_src_all.tar.gz"
 )

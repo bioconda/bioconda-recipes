@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="TxDb.Celegans.UCSC.ce6.ensGene_3.2.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/TxDb.Celegans.UCSC.ce6.ensGene_3.2.2.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/TxDb.Celegans.UCSC.ce6.ensGene_3.2.2.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Celegans.UCSC.ce6.ensGene_3.2.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.celegans.ucsc.ce6.ensgene/bioconductor-txdb.celegans.ucsc.ce6.ensgene_3.2.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.celegans.ucsc.ce6.ensgene/bioconductor-txdb.celegans.ucsc.ce6.ensgene_3.2.2_src_all.tar.gz"
 )
 MD5="215c2edd440a3df8229fe6a75b431aa8"

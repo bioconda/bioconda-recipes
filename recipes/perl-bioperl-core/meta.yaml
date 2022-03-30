@@ -1,95 +1,77 @@
+{% set name = "perl-bioperl-core" %}
+{% set version = "1.7.8" %}
+{% set sha256 = "c490a3be7715ea6e4305efd9710e5edab82dabc55fd786b6505b550a30d71738" %}
+
 package:
-  name: perl-bioperl-core
-  version: "1.007002"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://cpan.metacpan.org/authors/id/C/CJ/CJFIELDS/BioPerl-1.007002.tar.gz
-  sha256: 17aa3aaab2f381bbcaffdc370002eaf28f2c341b538068d6586b2276a76464a1
-  patches:
-    - "pr309.patch"
+  url: https://cpan.metacpan.org/authors/id/C/CJ/CJFIELDS/BioPerl-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
+# If this is a new build for the same version, increment the build
+# number. If you do not include this key, it defaults to 0.
 build:
   noarch: generic
-  number: 3
+  number: 1
+  run_exports:
+    weak:
+      - {{ name }} ={{ version }}
 
 requirements:
+  build:
+    - make
+  # Run exports are used now
   host:
     - perl
-    # Required packages
-    - perl-data-stag
-    - perl-io-string
-    # Testing packages
-    - perl-test-most
-    - perl-module-build
     - perl-uri
-    # Recommended packages
-    - perl-aceperl
-    - perl-algorithm-munkres
-    - perl-array-compare
-    - perl-bio-phylo
-    - perl-clone
-    - perl-convert-binary-c
-    - perl-db-file
-    - perl-dbd-sqlite
-    - perl-dbi
-    - perl-error
-    - perl-gd
-    - perl-graphviz
-    - perl-html-tableextract
-    - perl-io-stringy
-    - perl-list-moreutils
-    - perl-postscript
-    - perl-set-scalar
-    - perl-soap-lite
-    - perl-sort-naturally
-    - perl-spreadsheet-parseexcel
-    - perl-svg
-    - perl-svg-graph
-    - perl-xml-dom
-    - perl-xml-dom-xpath
     - perl-xml-sax-writer
-    - perl-xml-simple
-    - perl-xml-twig
+    - perl-io-string
+    - perl-xml-sax-base
+    - perl-test-requiresinternet
+    - perl-ipc-run
+    - perl-xml-libxml
+    - perl-list-moreutils
+    - perl-xml-sax
     - perl-xml-writer
+    - perl-xml-dom
+    - perl-test-most
+    - perl-data-stag
+    - perl-error
+    - perl-set-scalar
     - perl-yaml
+    - perl-xml-twig
+    # Required at least for testing
+    # (run-time dependency for Bio::Index and its descendants)
+    - perl-db_file
 
   run:
     - perl
-    # Required packages...
-    - perl-data-stag
-    - perl-io-string
-    # Recommended packages...
-    - perl-aceperl
-    - perl-algorithm-munkres
-    - perl-array-compare
-    - perl-bio-phylo
-    - perl-clone
-    - perl-convert-binary-c
-    - perl-db-file
-    - perl-dbd-sqlite
-    - perl-dbi
-    - perl-error
-    - perl-gd
-    - perl-graphviz
-    - perl-html-tableextract
-    - perl-io-stringy
-    - perl-list-moreutils
-    - perl-postscript
-    - perl-set-scalar
-    - perl-soap-lite
-    - perl-sort-naturally
-    - perl-spreadsheet-parseexcel
-    - perl-svg
-    - perl-svg-graph
-    - perl-xml-dom
-    - perl-xml-dom-xpath
-    - perl-xml-sax-writer
-    - perl-xml-simple
-    - perl-xml-twig
-    - perl-xml-writer
-    - perl-yaml
+    - perl-db_file
+    #- perl-xml-writer
+    #- perl-uri
+    #- perl-xml-dom
+    #- perl-xml-sax-writer
+    #- perl-io-string
+    #- perl-xml-sax-base
+    #- perl-test-most
+    #- perl-test-requiresinternet
+    #- perl-ipc-run
+    #- perl-data-stag
+    #- perl-xml-libxml
+    #- perl-list-moreutils
+    #- perl-error
+    #- perl-set-scalar
+    #- perl-yaml
+    #- perl-xml-twig
+    #- perl-xml-sax
+
+test:
+  imports:
+    - BioPerl
 
 about:
-  home: http://metacpan.org/pod/BioPerl
+  home: https://metacpan.org/release/BioPerl
   license: perl_5
-  summary: '"Core" packages for the BioPerl toolkit; you really should install perl-bioperl.'
+  summary: 'Perl modules for biology'

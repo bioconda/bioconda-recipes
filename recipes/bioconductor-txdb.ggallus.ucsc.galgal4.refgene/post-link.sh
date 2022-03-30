@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="TxDb.Ggallus.UCSC.galGal4.refGene_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/TxDb.Ggallus.UCSC.galGal4.refGene_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/TxDb.Ggallus.UCSC.galGal4.refGene_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Ggallus.UCSC.galGal4.refGene_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.ggallus.ucsc.galgal4.refgene/bioconductor-txdb.ggallus.ucsc.galgal4.refgene_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.ggallus.ucsc.galgal4.refgene/bioconductor-txdb.ggallus.ucsc.galgal4.refgene_3.12.0_src_all.tar.gz"
 )
 MD5="d50eb467227cd9077a7a690ae6934d11"

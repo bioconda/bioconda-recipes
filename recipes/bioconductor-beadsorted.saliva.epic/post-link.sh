@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="BeadSorted.Saliva.EPIC_1.0.0.tar.gz"
+FN="BeadSorted.Saliva.EPIC_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/BeadSorted.Saliva.EPIC_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/BeadSorted.Saliva.EPIC_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-beadsorted.saliva.epic/bioconductor-beadsorted.saliva.epic_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/BeadSorted.Saliva.EPIC_1.2.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/BeadSorted.Saliva.EPIC_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-beadsorted.saliva.epic/bioconductor-beadsorted.saliva.epic_1.2.0_src_all.tar.gz"
 )
-MD5="50eb43855238700598c318024c585893"
+MD5="e4ed2400a2fd2389b3dd9a48d0b4e878"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -9,6 +9,11 @@ export PKG_CONFIG_LIBDIR="${PREFIX}"/lib/pkgconfig
 # - libcrypto.so.1.0.0
 [[ $(uname) == Linux ]] && export LDFLAGS="${LDFLAGS} -Wl,-rpath-link,${PREFIX}/lib"
 
+# The SDK is too old otherwise
+if [[ $(uname) != "Linux" ]] ; then
+    CXXFLAGS="$CXXFLAGS -D_LIBCPP_DISABLE_AVAILABILITY"
+fi
+
 # configure
 # '--wrap-mode nofallback' prevents meson from downloading
 # stuff from the internet or using subprojects.
