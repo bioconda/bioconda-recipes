@@ -27,7 +27,7 @@ CONFIG_OPTIONS=" \
     
 if [[ $(uname) == Linux ]]; then
     LTR_STRUCTURAL_SEARCH="y"
-    CONGIG_OPTIONS+=" \
+    CONFIG_OPTIONS+=" \
     -ninja_dir ${PREFIX}/bin"
 else
     LTR_STRUCTURAL_SEARCH="n"
