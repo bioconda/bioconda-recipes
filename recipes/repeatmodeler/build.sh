@@ -38,7 +38,7 @@ fi
 # prompt 2: confirm path to running perl interpreter
 # prompt 3: Configure for LTR structural search [y] or n?
 # Answering y for linux; n for osx because NINJA is not available for osx in bioconda
-printf "\n\n${LTR_STRUCTURAL_SEARCH}\n" | perl ./configure ${CONGIG_OPTIONS}
+printf "\n\n${LTR_STRUCTURAL_SEARCH}\n" | perl ./configure ${CONFIG_OPTIONS}
 
 # add RepeatModeler
 ln -s ${RM_DIR}/RepeatModeler ${PREFIX}/bin/RepeatModeler
