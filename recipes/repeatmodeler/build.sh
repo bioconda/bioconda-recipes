@@ -22,7 +22,7 @@ CONFIG_OPTIONS=" \
     -repeatmasker_dir ${PREFIX}/share/RepeatMasker \
     -rmblast_dir ${PREFIX}/bin \
     -rscout_dir ${PREFIX}/bin \
-    -trf_dir ${PREFIX}/bin/trf \
+    -trf_dir ${PREFIX}/bin \
     -ucsctools_dir ${PREFIX}/bin"
     
 if [[ $(uname) == Linux ]]; then
