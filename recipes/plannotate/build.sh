@@ -5,4 +5,5 @@ $PYTHON -m pip install . --no-deps --ignore-installed -vv
 # Clean up any extraneous OSX files in the DB archive
 rm BLAST_dbs/._*
 # Install databases
-mv BLAST_dbs $PREFIX/lib/python3.*/site-packages/plannotate/data/
+bpath=`python -c "import sys; print(sys.path[-1])"`
+mv BLAST_dbs $bpath/plannotate/data/
