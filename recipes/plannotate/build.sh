@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -ex
 $PYTHON -m pip install . --no-deps --ignore-installed -vv
 
 # Clean up any extraneous OSX files in the DB archive
