@@ -10,7 +10,7 @@ export MACHTYPE=x86_64
 export BINDIR=$(pwd)/bin
 export L="${LDFLAGS}"
 mkdir -p "$BINDIR"
-patch kent/src/inc/common.mk $RECIPE_DIR/inc.common.mk.v426.patch
+
 (cd kent/src/lib && make)
 (cd kent/src/htslib && make)
 (cd kent/src/jkOwnLib && make)
