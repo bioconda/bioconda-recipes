@@ -1,0 +1,51 @@
+{% set name = "gbkviz" %}
+{% set version = "1.1.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/GBKviz-{{ version }}.tar.gz
+  sha256: bd7cb015f1b4ebb66ac7b9d2df2a8135a39c89f823afc8013c3ed9800912b4ae
+
+build:
+  entry_points:
+    - gbkviz_webapp = gbkviz.scripts.launch_gbkviz_webapp:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+
+requirements:
+  host:
+    - pip
+    - poetry
+    - python >=3.6,<4.0
+  run:
+    - biopython >=1.79,<2.0
+    - python >=3.6,<4.0
+    - reportlab >=3.5.68,<4.0.0
+    - streamlit >=1.5.0,<2.0.0
+    - mummer4 >=4.0.0rc1
+
+test:
+  imports:
+    - gbkviz
+  commands:
+    - pip check
+    - gbkviz_webapp --help
+  requires:
+    - pip
+    - pytest
+  source_files:
+    - tests/
+
+about:
+  home: https://github.com/moshi4/GBKviz/
+  summary: Simple web application to visualize and compare genomes in Genbank files
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - moshi4
