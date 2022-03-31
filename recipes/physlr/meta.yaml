@@ -1,0 +1,50 @@
+{% set name = "physlr" %}
+{% set version = "1.0.0" %}
+ 
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 1
+
+source:
+  url: https://github.com/bcgsc/{{ name|lower }}/releases/download/v{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: 
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - GCC >=6.0.0 
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - make
+  host:
+    - Python >=3.5.0
+    - boost-cpp
+  run:
+    - Python >=3.5.0
+    - ntCard
+    - ntHits
+    - community
+    - networkx
+    - numpy
+    - scipy
+    - sklearn
+    - tqdm
+    - make
+    - pigz
+    
+test:
+  commands:
+    - Physlr --version | grep -q "{{ version }}"
+    - Physlr help | grep -q "Assemble reads into contigs and scaffolds"
+    - Physlr test
+
+about:
+  home: https://github.com/bcgsc/physlr
+  license: GPL3
+  license_file: LICENSE
+  summary: Physlr; Next-generation physical maps using linked reads
+  dev_url: https://github.com/bcgsc/physlr
+  doc_url: https://github.com/bcgsc/physlr#readme
