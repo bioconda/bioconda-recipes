@@ -1,0 +1,47 @@
+{% set version = "1.0.1" %}
+
+package:
+  name: bwa-meme
+  version: {{ version }}
+
+source:
+  - url: https://github.com/kaist-ina/BWA-MEME/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: 0d244c24f6b3281f4ce10c94ffc1ecb69a2091eb87eb1bbbc0659cbe600ec7e5
+    patches:
+      - Makefile.patch
+
+build:
+  number: 2
+  # Compilation fails on OSX:
+  #   ext/safestringlib/include/safe_mem_lib.h:100:16: error: conflicting types for 'memset_s'
+  #   extern errno_t memset_s(void *dest, rsize_t dmax, uint8_t value);
+  #   /Applications/Xcode-9.4.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/usr/include/string.h:145:9: note: previous declaration is here
+  #   errno_t memset_s(void *__s, rsize_t __smax, int __c, rsize_t __n) __OSX_AVAILABLE_STARTING(__MAC_10_9, __IPHONE_7_0);
+  # Cause: https://github.com/intel/safestringlib/issues/14
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+
+test:
+  commands:
+    - bwa-meme version
+    - bwa-meme.sse41 version
+    - bwa-meme.sse42 version
+    - bwa-meme.avx version
+    - bwa-meme.avx2 version
+    - bwa-meme.avx512bw version
+
+about:
+  home: https://github.com/kaist-ina/BWA-MEME
+  license: MIT
+  license_file: LICENSE
+  summary: Faster BWA-MEM2 using learned-index
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btac137
