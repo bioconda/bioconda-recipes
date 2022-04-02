@@ -1,27 +1,68 @@
+{% set name = "latch" %}
 {% set version = "0.7.0" %}
-{% set sha256 = "47e0bff003433db2397b1f4c10bf10d8e8e5e4ff813ffb7ca3e22865ef75cab8" %}
 
 package:
-  name: latch
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://github.com/latchbio/latch/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: d0e125354366cf73d08bf519aa142240437fe3c8216d52cf74512923d0d84ab3
 
 build:
   number: 0
-  noarch: generic
+  entry_points:
+    - latch=latch.cli.main:main
+  script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
+  host:
+    - boto3 >=1.2
+    - click >=7.0
+    - docker >=5.0
+    - flaightkit ==0.2.0
+    - flaightkitplugins-pod ==0.0.1
+    - pip
+    - pyjwt >=0.2.0
+    - python
+    - requests >=2.0
+    - tqdm >=4.63.0
+    - typing-extensions ==4.0.1
   run:
-  - python >=3.7,<3.9
+    - boto3 >=1.2
+    - click >=7.0
+    - docker >=5.0
+    - flaightkit ==0.2.0
+    - flaightkitplugins-pod ==0.0.1
+    - pyjwt >=0.2.0
+    - python
+    - requests >=2.0
+    - tqdm >=4.63.0
+    - typing-extensions ==4.0.1
 
 test:
+  imports:
+    - latch
+    - latch.auth
+    - latch.cli
+    - latch.config
+    - latch.resources
+    - latch.services
+    - latch.services.register
+    - latch.types
+    - tests
   commands:
     - latch --help
 
 about:
-  license: MIT
-  license_file: LICENSE
-  summary: Command line tool to launch + investigate workflows and data objects.
+  home: The package home page
+  license: UNKNOWN
+  license_family: OTHER
+  license_file: 
+  summary: "latch sdk"
+  doc_url: 
+  dev_url: 
+
+extra:
+  recipe-maintainers:
+    - your-github-id-here
