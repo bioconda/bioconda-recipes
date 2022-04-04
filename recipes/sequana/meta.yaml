@@ -1,157 +1,107 @@
-{% set version = "0.8.2" %}
-{% set sha = "11c51f29d0d696451896fc56e940e059d191b6f17616776e08eb5b1c5ac5dda5" %}
+{% set version = "0.14.0" %}
+{% set sha = "f4d391807d9436cae161e196ca5596e3f2463199ce0daa350a10999f6965abda" %}
+{% set name = "sequana" %}
 
 package:
-  name: sequana
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/s/sequana/sequana-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/s/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha }}
+  #patches:
+  #  - patch
 
 build:
   preserve_egg_dir: True
-  number: 2
-  skip: True  # [py<36 or py>=38]
+  number: 0
+  noarch: python
   entry_points:
-    - sequana_gui=sequana.gui.sequana_gui:main
-    - sequanix=sequana.gui.sequana_gui:main
-    - fastq_head=sequana.scripts.fastq_head:main
-    - fastq_count=sequana.scripts.fastq_count:main
-    - sequana_fastq_head=sequana.scripts.fastq_head:main
-    - sequana_fastq_count=sequana.scripts.fastq_count:main
-    - sequana_fastq_summary=sequana.scripts.fastq_summary:main
-    - sequana_lane_merging=sequana.scripts.lane_merging:main
+    - sequana=sequana.scripts.main.main:main
     - sequana_taxonomy=sequana.scripts.taxonomy:main
     - sequana_coverage=sequana.scripts.coverage:main
-    - sequana_summary=sequana.scripts.summary:main
-    - sequana_mapping=sequana.scripts.mapping:main
-    - sequana_compressor=sequana.scripts.compressor:main
-    - sequana_report=sequana.scripts.reports:main
-    - sequana_vcf_filter=sequana.scripts.vcf_filter:main
-    - sequana_bam_splitter=sequana.scripts.bam_splitter:main
-    - sequana_substractor=sequana.scripts.substractor:main
     - sequana_start_pipeline=sequana.scripts.start_pipeline:main
-    - sequana_gtf_fixer=sequana.scripts.gtf_fixer:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
     - python
-    - setuptools
     - pip
-    - cython
   run:
-    # lxml is temporary for bioservices until new recipe is available
-    # krona/bowtie/kraken are for testing
-    # cutadapt removed for now (breaking the build for py3.8). 
-    # not required strictly speaking, only in the 
-    # quality_control pipeline, which is in its own repository since v0.8.0
-    # not true for atropos, which is still used in some modules
-    - python
-    # This restriction (as well as the py>=38 skip above) should probably be
-    # replaced by a pyqt version restriction (once 5.13 is in conda-forge), ref:
-    # https://github.com/sequana/sequana/issues/574
-    - python >=3.6,<=3.7.3
-    - atropos >=1.1.16
-    - bcftools
-    - bedtools
-    - bioservices >=1.5.1
-    #- bowtie2
+    - adjusttext
+    - bioservices >=1.7.8
+    - brokenaxes
+    - bx-python
+    - click>=8.1.0
     - colorlog >=3.1.0
-    #- cutadapt
-    - easydev >=0.9.36
-    - fastqc ==0.11.5
-    - freebayes
-    - graphviz >=2.42.3
+    - colormap
+    - cookiecutter
+    - cython
+    - docutils
+    - easydev >=0.11.1
+    - gseapy
     - itolapi
-    - khmer
-    - kraken ==1.1 # [not osx]
-    - krona
     - lxml
-    - matplotlib <3.1.2
+    - matplotlib-base
+    - matplotlib-venn
     - mock
-    - multiqc >=1.8
-    - numexpr
+    - multiqc
     - packaging
     - pandas >=0.22
-    - pigz
+    - plotly
     - psutil
-    - pykwalify >=1.6
-    - pyyaml >=5.3.1
-    - pyvcf >=0.6.8
-    - pysam >=0.15.3
-    - ruamel.yaml
-    - qtconsole >=4.7.2
-    - samtools >=1.10
-    - snakemake >=5.13.0
-    - scipy >=1.4.1
-    - xlrd >=1.2.0
-    - cython >=0.29.16 # this should be removed from run requirements as soon as sequana allows it
-    - xmltodict >=0.12.0
+    - pykwalify
+    - pysam >=0.16
+    - python
+    - ruamel.yaml >=0.16.0
+    - scikit-learn
+    - scipy
+    - snakemake
+    - seaborn
+    - statsmodels
+    - UpSetPlot
+    - vcfpy
+    - xlrd
 
 test:
   imports:
     - sequana
-    - sequana.gui
+    - sequana.enrichment
+    - sequana.kraken
     - sequana.modules_report
     - sequana.multiqc
-    - sequana.pipelines
     - sequana.plots
     - sequana.resources
-    - sequana.resources.busco
     - sequana.resources.canvas
     - sequana.resources.css
     - sequana.resources.data
-    - sequana.resources.data.adapters
+    - sequana.resources.doc
+    - sequana.resources.doc.rnadiff_compare
+    - sequana.resources.examples
     - sequana.resources.images
     - sequana.resources.js
     - sequana.resources.snpeff
     - sequana.resources.templates
     - sequana.resources.testing
-    - sequana.rules
-    - sequana.rules.Adapters
-    - sequana.rules.Assembly
-    - sequana.rules.Pacbio
-    - sequana.rules.SnpEff
-    - sequana.rules.Taxonomy
-    - sequana.rules.Utils
-    - sequana.rules.Variant_caller
-    - sequana.rules.codecs
-    - sequana.rules.deeptools
-    - sequana.rules.idr
-    - sequana.rules.sambamba
     - sequana.scripts
-    - sequana.sphinxext
     - sequana.utils
     - sequana.viz
   commands:
-    - fastq_count --help 1>out 2>err
-    - sequana_fastq_head --help
-    - sequana_fastq_count --help
-    - sequana_taxonomy --help 1>out 2>err
-    - sequana_coverage --help 1>out 2>err
-  #  - sequanix
-    - sequana_mapping --help 1>out 2>err
-    - sequana_compressor --help
-
-# commands:
-#    - MPLBACKEND=agg bioconvert --help
-#    - MPLBACKEND=agg bioconvert_init --help
+    - {{ name }} --version > /dev/null
+    - {{ name }} --version | grep {{ version }}
+    - {{ name }} --help
 
 about:
-  home: 'http://sequana.readthedocs.io/'
+  home: "http://sequana.readthedocs.io/"
   license: "BSD 3-clause"
-  summary: 'A set of standalone application and snakemake pipelines dedicated to NGS (new generation sequencing) analysis'
+  summary: "A set of standalone application and snakemake pipelines dedicated to NGS (new generation sequencing) analysis"
   license_family: BSD
+  doc_url: "https://sequana.readthedocs.io"
 
 extra:
   container:
-    # needs libGL.so.1
     extended-base: true
-  recipe-maintainers: 
+  recipe-maintainers:
     - cokelaer
   skip-lints:
     - cython_must_be_in_host
