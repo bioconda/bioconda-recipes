@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="wheatcdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/wheatcdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/wheatcdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/wheatcdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-wheatcdf/bioconductor-wheatcdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-wheatcdf/bioconductor-wheatcdf_2.18.0_src_all.tar.gz"
 )
 MD5="0abeeeb9700b8d93a1a83769bdd8480f"

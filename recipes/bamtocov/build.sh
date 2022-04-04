@@ -17,5 +17,10 @@ mkdir -p "$PREFIX"/bin
 pwd
 ls -l bin/* 
 
+# Copy binaries
 chmod a+x bin/* 
 cp bin/* "$PREFIX"/bin/ 
+
+# Auxiliary python scripts
+chmod a+x scripts/*.py
+cp scripts/*.py "$PREFIX"/bin

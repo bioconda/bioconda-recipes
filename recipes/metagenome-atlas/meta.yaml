@@ -1,7 +1,6 @@
-{% set version = "2.8.0" %}
-{% set sha256 = "374b1d7cf68cb92539cf57e6079ce08d989970742a50d2a58b04f45d96afa12d
-" %}
 
+{% set version = "2.9.0" %}
+{% set sha256 = "6a421d2a9c0af0231fe4d123457a774e1989437b9beea2ce7ee3f04b00114cdf" %}
 
 package:
   name: metagenome-atlas
@@ -18,26 +17,25 @@ build:
   noarch: python
   script: "{{ PYTHON }} -m pip install . --no-deps -vv"
 
-
-
 requirements:
   host:
     - python=3.8
     - pip
-
   run:
-    - python=3.8
+    - python>=3.8, <3.11
     - mamba
-    - bbmap=38
-    - snakemake-minimal=6.7
-    - pandas=1.2
-    - click=7
+    - bbmap = 38
+    - snakemake-minimal = 7.3
+    - pandas >=1.2, <1.5
+    - click >=7
     - ruamel.yaml=0.17
     - biopython=1.74
     - cookiecutter
+    - pathlib2
+    - xmltodict
     # optional to help conda solve
     - numpy= 1.21
-
+ 
 
 test:
   imports:
@@ -47,6 +45,7 @@ test:
     - {{ export_lang }} && atlas --version
     - {{ export_lang }} && atlas init --help
     - {{ export_lang }} && atlas run --help
+    - {{ export_lang }} && ./test/dryrun.sh # script in repo I hopw the path is ok
 
 about:
   home: https://github.com/metagenome-atlas
@@ -61,7 +60,7 @@ about:
 
     Three commands to start analysing your metagenome data:
     ```
-        conda install -c bioconda -c conda-forge metagenome-atlas
+        mamba install -c bioconda -c conda-forge metagenome-atlas
         atlas init --db-dir databases path/to/fastq/files
         atlas run
     ```
