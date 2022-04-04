@@ -1,0 +1,63 @@
+{% set version = "0.2.1-beta" %}
+{% set sha256 = "e449d5d4ddd74002315a717d5c36ed8e" %}
+
+package:
+  name: scar
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/Novartis/scAR/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  string: {{ build_variant }}
+  run_exports:
+    - {{ pin_subpackage('pytorch-mutex', exact=True) }}
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+
+requirements:
+  host:
+    - conda-forge::python>=3.8.6
+    - nvidia::cudatoolkit>=11.1
+    - pytorch::pytorch>=1.10.0
+    - pytorch::torchvision>=0.9.0
+    - pytorch::torchaudio>=0.8.0
+    - pytorch-mutex=*={{ string }}
+    - conda-forge::tqdm>=4.62.3
+    - conda-forge::pandas>=1.3.4
+    - conda-forge::seaborn>=0.11.2
+    - conda-forge::tensorboard>=2.2.1
+    - conda-forge::scikit-learn>=1.0.1
+    - conda-forge::anndata
+    - conda-forge::scanpy
+    - conda-forge::pyro-ppl>=1.8.0
+    - conda-forge::pip
+  run:
+    - conda-forge::python>=3.8.6
+    - nvidia::cudatoolkit>=11.1
+    - pytorch::pytorch>=1.10.0
+    - pytorch::torchvision>=0.9.0
+    - pytorch::torchaudio>=0.8.0
+    - pytorch-mutex=*={{ string }}
+    - conda-forge::tqdm>=4.62.3
+    - conda-forge::pandas>=1.3.4
+    - conda-forge::seaborn>=0.11.2
+    - conda-forge::tensorboard>=2.2.1
+    - conda-forge::scikit-learn>=1.0.1
+    - conda-forge::anndata
+    - conda-forge::scanpy
+    - conda-forge::pyro-ppl>=1.8.0
+    - conda-forge::pip
+
+test:
+  commands:
+    - scAR -h
+
+about:
+  home: https://github.com/Novartis/scAR
+  license: MIT
+  license_file: LICENSE
+  summary: 'scAR (single cell Ambient Remover) is a package for denoising multiple single cell omics data.'
