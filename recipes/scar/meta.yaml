@@ -13,10 +13,14 @@ build:
   noarch: python
   number: 0
   string: {{ build_variant }}
+  # also lower cpu priority with track_features
+  {% if build_variant == 'cpu' %}
+  track_features:
+      - pytorch-mutex
+  {% endif %}
   run_exports:
     - {{ pin_subpackage('pytorch-mutex', exact=True) }}
   script: "{{ PYTHON }} -m pip install . -vv"
-
 
 requirements:
   host:
@@ -25,7 +29,7 @@ requirements:
     - pytorch::pytorch>=1.10.0
     - pytorch::torchvision>=0.9.0
     - pytorch::torchaudio>=0.8.0
-    - pytorch::pytorch-mutex=1.0={{ build_variant }}
+    - pytorch::pytorch-mutex
     - conda-forge::tqdm>=4.62.3
     - conda-forge::pandas>=1.3.4
     - conda-forge::seaborn>=0.11.2
@@ -41,7 +45,7 @@ requirements:
     - pytorch::pytorch>=1.10.0
     - pytorch::torchvision>=0.9.0
     - pytorch::torchaudio>=0.8.0
-    - pytorch::pytorch-mutex=1.0={{ build_variant }}
+    - pytorch::pytorch-mutex
     - conda-forge::tqdm>=4.62.3
     - conda-forge::pandas>=1.3.4
     - conda-forge::seaborn>=0.11.2
