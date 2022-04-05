@@ -5,11 +5,11 @@
 # Copied from https://github.com/bioconda/bioconda-recipes/blob/25ee215/recipes/mentalist/build.sh
 ln -s "${GCC}" "${BUILD_PREFIX}/gcc"
 
-cp -r $SRC_DIR/src/* $PREFIX/bin/
-ln -s $PREFIX/bin/TreeKnit.jl $PREFIX/bin/treeknit
-chmod +x $PREFIX/bin/treeknit
+#cp -r $SRC_DIR/src/* $PREFIX/bin/
+#ln -s $PREFIX/bin/TreeKnit.jl $PREFIX/bin/treeknit
+#chmod +x $PREFIX/bin/treeknit
 
 julia -e 'using Pkg'
-julia -e 'Pkg.add("TreeTools")'
+julia -e 'Pkg.build(; verbose = true)'
 
 rm "${BUILD_PREFIX}/gcc"
