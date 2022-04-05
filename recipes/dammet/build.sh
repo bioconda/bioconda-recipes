@@ -8,6 +8,6 @@ export LIBRARY_PATH=${PREFIX}/lib
 export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
-make -f Makefile.bioconda PREFIX=${PREFIX}
-make -f Makefile.bioconda install PREFIX=${PREFIX}
+make -f Makefile PREFIX=${PREFIX}
+make -f Makefile install PREFIX=${PREFIX}
 
