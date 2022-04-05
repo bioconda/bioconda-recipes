@@ -9,7 +9,7 @@ cp -r $SRC_DIR/src/* $PREFIX/bin/
 ln -s $PREFIX/bin/TreeKnit.jl $PREFIX/bin/treeknit
 chmod +x $PREFIX/bin/treeknit
 
-julia -e 'Pkg.init()'
+julia -e 'using Pkg'
 julia -e 'Pkg.add("TreeTools")'
 
 rm "${BUILD_PREFIX}/gcc"
