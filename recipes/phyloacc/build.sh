@@ -1,6 +1,5 @@
 #!/bin/bash
 
-#make CXX=${CXX}
 make install CXX=${CXX}
 cp src/PhyloAcc-interface/phyloacc.py ${PREFIX}/bin/.
 mkdir -p ${SP_DIR}
