@@ -10,5 +10,6 @@ ln -s "${GCC}" "${BUILD_PREFIX}/gcc"
 #chmod +x $PREFIX/bin/treeknit
 
 julia --project="$SRC_DIR" -e 'using Pkg; Pkg.build(verbose=true)'
+cp ~/.julia/bin/treeknit $PREFIX/bin/
 
 rm "${BUILD_PREFIX}/gcc"
