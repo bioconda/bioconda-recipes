@@ -1,4 +1,4 @@
-{% set version="0.4.2" %}
+{% set version="0.7.0" %}
 
 package:
   name: quatradis
@@ -6,22 +6,26 @@ package:
 
 source:
   url: https://github.com/quadram-institute-bioscience/QuaTradis/archive/refs/tags/{{ version }}.tar.gz
-  sha256: cebb993752afb30dc1ca53a7aba4a4b53fef7ae4052c3d503f228a003ca3eb35
+  sha256: fa20e4b2f091976d6ea09e80c62eb1ea0b210415e64336fadaf3f2746a0c9087
 
 build:
   number: 0
-  skip: True  # [py<30]
-  script: python -m pip install --ignore-installed .
+  noarch: python
+  script: python -m pip install -v --no-deps --ignore-installed .
 
 requirements:
-  build:
-    - make
-    - {{ compiler('c') }}
   host:
-    - python
-    - cython
+    - python >=3
     - pip
   run:
+    - python >=3
+    - setuptools  # for pkg_resources
+    - biopython
+    - pysam
+    - matplotlib-base
+    - numpy
+    - pandas
+    - htslib
     - smalt
     - r-base
     - r-getopt
@@ -29,10 +33,11 @@ requirements:
     - bwa
     - minimap2
     - nextflow
-
+    - snakeviz
+        
 test:
   commands:
-    - tradis --help 2>&1 | grep tradis > /dev/null
+    - tradis --help
 
 about:
   home: https://github.com/quadram-institute-bioscience/QuaTradis
@@ -43,8 +48,7 @@ about:
 
 extra:
   skip-lints:
-    # Uses pyximport
-    - cython_must_be_in_host
+    - uses_setuptools  # uses pkg_resources
   recipe-maintainers:
     - sbastkowski
     - maplesond
