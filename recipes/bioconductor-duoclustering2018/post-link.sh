@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="DuoClustering2018_1.0.0.tar.gz"
+FN="DuoClustering2018_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/DuoClustering2018_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/DuoClustering2018_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-duoclustering2018/bioconductor-duoclustering2018_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/DuoClustering2018_1.2.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/DuoClustering2018_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-duoclustering2018/bioconductor-duoclustering2018_1.2.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-duoclustering2018/bioconductor-duoclustering2018_1.2.0_src_all.tar.gz"
 )
-MD5="533a6230137770c646ced387a5ecd4fd"
+MD5="49e45aac011f59a54755d13f314949c3"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
