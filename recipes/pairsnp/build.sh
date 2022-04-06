@@ -13,8 +13,5 @@ if [[ $(uname) == Darwin ]]; then
 fi
 
 
-# depends on automake, autoconf
-autoreconf --install
-./configure --prefix=$PREFIX
 make
 make install
