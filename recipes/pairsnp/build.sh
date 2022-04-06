@@ -2,8 +2,8 @@
 #!/bin/bash
 
 # https://bioconda.github.io/troubleshooting.html#zlib-errors
-export CFLAGS="$CFLAGS -I$PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export CFLAGS="${CFLAGS} -I$PREFIX/include"
+export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
 # conda on macOS will fall back to libstdc++
@@ -13,5 +13,5 @@ if [[ $(uname) == Darwin ]]; then
 fi
 
 
-make CXX="${CXX}" PREFIX="${PREFIX}"
+make CXX="${CXX}" LINK="${CXX}" SWITCHES="${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS}" PREFIX="${PREFIX}"
 make install
