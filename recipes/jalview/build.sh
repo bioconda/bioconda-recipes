@@ -12,6 +12,10 @@ echo "rootProject.name = 'jalview'" >> settings.gradle
 # First the Java 1.8 build
 gradle -PJAVA_VERSION=1.8 -PINSTALLATION="bioconda (build $PKG_BUILDNUM)" -PJALVIEW_VERSION="$PKG_VERSION" -Pproject.ext.gitHash="" -Pproject.ext.gitBranch="" shadowJar
 
+ls -l
+ls -l build
+ls -l build/libs
+
 # copy jalview jar to target
 cp -vR build/libs/jalview-all-$PKG_VERSION-j1.8.jar $JALVIEWDIR/jalview-all-j1.8.jar
 
