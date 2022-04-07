@@ -25,6 +25,7 @@ cp Functions/Assemble/genome_LenFilter_stats.pl $PREFIX/bin/
 cp Functions/Assemble/get_stats_summary.pl $PREFIX/bin/
 
 cp Functions/ACC/id2seq.pl $PREFIX/bin/
+cp Functions/ACC/get_repeats.pl $PREFIX/bin/
 
 chmod a+x $PREFIX/bin/pgcgap
 chmod a+x $PREFIX/bin/plot_3Dpie.R
@@ -44,5 +45,6 @@ chmod a+x $PREFIX/bin/Plot_MashHeatmap.R
 chmod a+x $PREFIX/bin/genome_LenFilter_stats.pl
 chmod a+x $PREFIX/bin/get_stats_summary.pl
 chmod a+x $PREFIX/bin/id2seq.pl
+chmod a+x $PREFIX/bin/get_repeats.pl
 
 pgcgap --version
