@@ -1,0 +1,68 @@
+{% set name = "strainge" %}
+{% set version = "1.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: d3a53ead5539fc530061608bf17ae638ad4272db02aa114fd8e0463693458c1e
+
+build:
+  number: 1
+  skip: true  # [py < 37]
+  entry_points:
+    - strainge=strainge.cli.main:strainge_cli
+    - straingst=strainge.cli.main:straingst_cli
+    - straingr=strainge.cli.main:straingr_cli
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - pip
+    - pybind11
+    - numpy
+    - h5py
+    - matplotlib-base
+    - bzip2
+    - zlib
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+    - pybind11
+    - h5py
+    - intervaltree
+    - matplotlib-base
+    - scikit-bio >=0.5
+    - scikit-learn >=0.24
+    - pysam
+    - scipy
+    - bzip2
+    - zlib
+
+test:
+  imports:
+    - strainge
+    - strainge.cli
+    - strainge.io
+  commands:
+    - strainge --help
+    - straingst --help
+    - straingr --help
+
+about:
+  home: The package home page
+  license: BSD
+  license_family: BSD
+  license_file: 
+  summary: "Strain Genome Explorer: a tool suite for tracking and characterizing low-abundance strains."
+  doc_url: 
+  dev_url: 
+
+extra:
+  recipe-maintainers:
+    - lrvdijk

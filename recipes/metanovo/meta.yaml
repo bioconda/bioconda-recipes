@@ -1,0 +1,72 @@
+{% set name = "metanovo" %}
+{% set version = "1.9.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/uct-cbio/proteomics-pipelines/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 009acafadd49e7da9d09697a919764aeed09570aeddc26619b618b4ce8245c01
+
+requirements:
+  build:
+    - python=3.9.9
+    - setuptools=59.8.0
+    - pip=22.0.4
+    - unzip=6.0
+    - wget=1.20.1
+  run:
+    - python=3.9.9
+    - parallel=20220222
+    - biopython==1.79
+    - numpy==1.22.1
+    - pandas==1.3.5
+
+build:
+  skip: True # [not linux64]
+  number: 1
+  missing_dso_whitelist:
+    - /lib64/ld-linux-x86-64.so.2
+    - /lib64/libbz2.so.1
+    - /lib64/libc.so.6
+    - /lib64/libdl.so.2
+    - /lib64/libm.so.6
+    - /lib64/libnsl.so.1
+    - /lib64/libpthread.so.0
+    - /lib64/librt.so.1
+    - /lib64/libstdc++.so.6
+    - lib/libgcc_s.so.1
+    - lib/libz.so.1
+    - $RPATH/ld-linux.so.2
+    - $RPATH/libbz2.so.1
+    - $RPATH/libc.so.6
+    - $RPATH/libdl.so.2
+    - $RPATH/libm.so.6
+    - $RPATH/libnsl.so.1
+    - $RPATH/libpthread.so.0
+    - $RPATH/librt.so.1
+    - $RPATH/libstdc++.so.6
+
+test:
+  commands:
+    - test -f $PREFIX/bin/metanovo.sh
+    - test -f $PREFIX/bin/compomics.sh
+    - test -f $PREFIX/bin/bp_export_tags.py
+    - test -f $PREFIX/bin/bp_mapped_tags.py
+    - test -f $PREFIX/bin/bp_export_proteins.py
+    - test -f $PREFIX/bin/bp_fasta_prepare.py
+    - test -f $PREFIX/bin/bp_parse_tags.py
+    - test -d $PREFIX/bio/DeNovoGUI
+    - test -d $PREFIX/bio/PeptideShaker
+    - test -d $PREFIX/bio/SearchGUI
+    - test -d $PREFIX/bio/utilities
+
+about:
+  home: https://github.com/uct-cbio/proteomics-pipelines
+  license: MIT
+  summary: Produce targeted databases for mass spectrometry analysis.
+
+extra:
+  skip-lints:
+    - should_be_noarch_python

@@ -1,0 +1,53 @@
+{% set version = "0.8.0" %}
+{% set name = "sequana_pipetools" %}
+{% set sha = "e44eff43126f9e24c7dec8c204077ce716f5c05896a7713933c7e0608a13d757" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/s/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha }}
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - sequana_completion=sequana_pipetools.completion:main
+    - sequana_slurm_status=sequana_pipetools.slurm:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - pip
+  run:
+    - python
+    - python >=3.7
+    - deprecated
+    - easydev
+    - parse
+    - ruamel.yaml
+    - pykwalify
+    - importlib_resources
+    - pyyaml
+
+test:
+  imports:
+    - sequana_pipetools
+  commands:
+    - sequana_completion --help 1>out 2>err
+    - sequana_slurm_status --help 1>out 2>err
+
+
+about:
+  home: "https://github.com/sequana/sequana_pipetools"
+  license: "BSD 3-clause"
+  summary: "A set of tools to help building or using Sequana pipelines"
+  license_family: BSD
+
+extra:
+  recipe-maintainers: 
+    - cokelaer
