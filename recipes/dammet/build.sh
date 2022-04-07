@@ -8,6 +8,6 @@ export LIBRARY_PATH=${PREFIX}/lib
 export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
-make -f Makefile PREFIX=${PREFIX}
+make -f Makefile
 make -f Makefile install PREFIX=${PREFIX}
 
