@@ -12,6 +12,6 @@ if [[ $(uname) == Darwin ]]; then
 	export CXXFLAGS+="${CXXFLAGS} -stdlib=libc++"
 fi
 
-
+mkdir -p "${PREFIX}/bin"
 make CXX="${CXX}" LINK="${CXX}" SWITCHES="${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS}" PREFIX="${PREFIX}"
-make install
+cp pairsnp ${PREFIX}/bin/
