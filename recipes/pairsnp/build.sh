@@ -13,5 +13,5 @@ if [[ $(uname) == Darwin ]]; then
 fi
 
 mkdir -p "${PREFIX}/bin"
-make CXX="${CXX}" LINK="${CXX}" SWITCHES="${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS}" PREFIX="${PREFIX}"
+make CXX="${CXX}" PREFIX="${PREFIX}"
 cp pairsnp ${PREFIX}/bin/
