@@ -1,7 +1,9 @@
 {% set name = "interproscan" %}
-{% set version_minor = "86.0" %}
-{% set version_major = "5.52" %}
-{% set md5 = "b450ae120f6cfef2c146ca7fea9c178f" %}
+# Remember to update db versions in interproscan.properties for each new release
+# Look at ./core/jms-implementation/support-mini-x86-32/interproscan.properties in the archive
+{% set version_minor = "87.0" %}
+{% set version_major = "5.54" %}
+{% set md5 = "78e4a2a5e17f936a48aad5ee6f4243c4" %}
 
 package:
   name: "{{ name|lower }}"
@@ -10,11 +12,9 @@ package:
 source:
   url: https://github.com/ebi-pf-team/interproscan/archive/{{ version_major }}-{{ version_minor }}.tar.gz
   md5: {{ md5 }}
-  patches:
-    - initial_setup.py.patch
 
 build:
-  number: 0
+  number: 4
   skip: True  # [osx]
 
 requirements:
@@ -33,8 +33,8 @@ requirements:
     - hmmer >=3 # used by CATH-Gene3D, HAMAP, PANTHER, Pfam, PIRSF, SFLD, SUPERFAMILY and TIGRFAMs
     - emboss #  for getorf for nucleic acid sequence search
 #    - coils # for ncoils used by Coils <= Must used the one shipped with INTERPROSCAN because slighlty modified
-    - blast >=2.9 # for rpsblast/rpsbproc used by CDD
-    - sfld # for sfld_preprocess/sfld_postprocess used by SFLD 
+    - blast >=2.12 # for rpsblast/rpsbproc used by CDD
+    - sfld # for sfld_preprocess/sfld_postprocess used by SFLD
 #    - fingerprintscan # used by PRINTS <= use the one shipped with INTERPROSCAN because this one is problematic/crash
 
 test:
@@ -48,7 +48,7 @@ test:
     - java -version
     - interproscan.sh | grep XX
     - interproscan.sh | grep Xmx
-    - interproscan.sh --version 
+    - interproscan.sh --version
 #    - interproscan.sh -i test_proteins.fasta -cpu 1 -f tsv -dp -appl sfld, hamap,prints,smart,pfam,pirsf,tigrfam,prositeprofiles,prositepatterns,gene3d,superfamily
 #    - interproscan.sh -i test_proteins.fasta -cpu 1 -f tsv -appl sfld, hamap,prints,smart,pfam,pirsf,tigrfam,prositeprofiles,prositepatterns,gene3d,superfamily
 #    - interproscan.sh -i test_nt_seqs.fasta -cpu 1 -t n -f tsv -dp -appl sfld, hamap,prints,smart,pfam,pirsf,tigrfam,prositeprofiles,prositepatterns,gene3d,superfamily
