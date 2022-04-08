@@ -17,3 +17,4 @@ rm ${GTDBTK_DATA_PATH}/gtdbtk_r202_data.tar.gz
 echo "GTDB-Tk database has been successfully downloaded."
 
 exit 0
+
