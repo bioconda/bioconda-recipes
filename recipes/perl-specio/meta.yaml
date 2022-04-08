@@ -1,55 +1,51 @@
 {% set name = "perl-specio" %}
-{% set version = "0.43" %}
-{% set sha256 = "3cd0debf7b6404127d5e0bb7fb78cfef9df5e2519d3d6ad7113b59ad1da9fa1d" %}
+{% set version = "0.47" %}
+{% set sha256 = "f41307f14444f8777e572f27eeb6a964084399e7e382c47c577827ad8a286a1c" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/Specio-0.43.tar.gz
+  url: https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/Specio-0.47.tar.gz
   sha256: {{ sha256 }}
 
+# If this is a new build for the same version, increment the build
+# number. If you do not include this key, it defaults to 0.
 build:
   number: 0
+  run_exports:
+    weak:
+      - {{ name }} ={{ version }}
 
 requirements:
+  build:
+    - make
+  # Run exports are used now
   host:
     - perl
-    - perl-extutils-makemaker
-    - perl-lib
-    - perl-try-tiny
-    - perl-role-tiny
-    - perl-parent
-    - perl-devel-stacktrace
-    - perl-version
-    - perl-eval-closure
-    - perl-carp
-    - perl-sub-quote
-    - perl-mro-compat
-    - perl-storable
-    - perl-test-needs
     - perl-module-runtime
-    - perl-exporter
+    - perl-try-tiny
+    - perl-mro-compat
+    - perl-role-tiny
+    - perl-eval-closure
+    - perl-devel-stacktrace
+    - perl-sub-quote
     - perl-test-fatal
-
+    - perl-test-needs
   run:
     - perl
-    - perl-storable
-    - perl-try-tiny
-    - perl-role-tiny
-    - perl-parent
-    - perl-devel-stacktrace
-    - perl-exporter
-    - perl-version
     - perl-module-runtime
-    - perl-eval-closure
-    - perl-carp
-    - perl-sub-quote
+    - perl-try-tiny
     - perl-mro-compat
+    - perl-role-tiny
+    - perl-eval-closure
+    - perl-devel-stacktrace
+    - perl-sub-quote
     - perl-test-fatal
 
 test:
+  # Perl 'use' tests
   imports:
     - Specio
     - Specio::Coercion
@@ -91,8 +87,14 @@ test:
     - Specio::Subs
     - Specio::TypeChecks
 
+  # You can also put a file called run_test.pl (or run_test.py) in the recipe
+  # that will be run at test time.
+
 about:
-  home: http://metacpan.org/release/Specio
+  home: https://metacpan.org/release/Specio
   license: artistic_2
   summary: 'Type constraints and coercions for Perl'
 
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml

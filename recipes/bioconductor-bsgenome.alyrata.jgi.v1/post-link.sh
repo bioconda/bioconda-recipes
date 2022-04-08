@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="BSgenome.Alyrata.JGI.v1_1.0.0.tar.gz"
+FN="BSgenome.Alyrata.JGI.v1_1.0.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Alyrata.JGI.v1_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/BSgenome.Alyrata.JGI.v1_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.alyrata.jgi.v1/bioconductor-bsgenome.alyrata.jgi.v1_1.0.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.alyrata.jgi.v1/bioconductor-bsgenome.alyrata.jgi.v1_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Alyrata.JGI.v1_1.0.1.tar.gz"
+  "https://bioarchive.galaxyproject.org/BSgenome.Alyrata.JGI.v1_1.0.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.alyrata.jgi.v1/bioconductor-bsgenome.alyrata.jgi.v1_1.0.1_src_all.tar.gz"
 )
-MD5="2119e78ebb1957fd55ab186b167e0995"
+MD5="64878499c633de66ccf4c5abc32c0aeb"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="hapmap100khind_1.26.0.tar.gz"
+FN="hapmap100khind_1.36.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/hapmap100khind_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/hapmap100khind_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hapmap100khind/bioconductor-hapmap100khind_1.26.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hapmap100khind/bioconductor-hapmap100khind_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/hapmap100khind_1.36.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/hapmap100khind_1.36.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hapmap100khind/bioconductor-hapmap100khind_1.36.0_src_all.tar.gz"
 )
-MD5="a5072491e91e762e1ec95fe998413f77"
+MD5="b5445b0eba7a9616241b9e390f870fa5"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

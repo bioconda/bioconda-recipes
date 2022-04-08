@@ -1,11 +1,15 @@
 #!/bin/bash
+set -euxo pipefail
+
+patch -p1 < $RECIPE_DIR/isb-2.11.0+-rmblast.patch
 
 cd $SRC_DIR/c++/
 
-export CFLAGS="$CFLAGS -O2"
-export CXXFLAGS="$CXXFLAGS -O2"
+export CFLAGS="$CFLAGS -Ofast -std=c++14"
+export CXXFLAGS="$CXXFLAGS -Ofast -std=c++14"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export CC_FOR_BUILD=$CC
 
 if test x"`uname`" = x"Linux"; then
     # only add things needed; not supported by OSX ld
@@ -14,6 +18,8 @@ fi
 
 if [ `uname` == Darwin ]; then
     export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
+else
+    export CPP_FOR_BUILD=$CPP
 fi
 
 LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
@@ -42,12 +48,16 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 # nettle: set nettle
 # -krb5: disable kerberos (needed on OSX)
 
+# Fixes building on Linux
+export AR="${AR} rcs"
+
 if [ `uname` == Linux ]; then
   CONFIG_ARGS="--without-openssl --with-gnutls=$PREFIX"
 else
   CONFIG_ARGS="--without-gnutls --with-openssl=$PREFIX"
 fi
 
+# not building with boost as it's only used for unit tests
 ./configure \
     --with-dll \
     --with-mt \
@@ -64,11 +74,10 @@ fi
     --without-vdb \
     --with-z=$PREFIX \
     --with-bz2=$PREFIX \
-    --with-boost=$PREFIX \
-    --without-gcrypt \
     --with-nettle=$PREFIX \
-    --with-z=$PREFIX \
-    --without-krb5 $CONFIG_ARGS
+    --without-krb5 \
+    --without-sse42 \
+    --without-gcrypt $CONFIG_ARGS
 
 projects="algo/blast/ app/ objmgr/ objtools/align_format/ objtools/blast/"
 cd ReleaseMT
@@ -84,9 +93,10 @@ make -j${CPU_COUNT} -f Makefile.flat all_projects="$projects"
 rm $LIB_INSTALL_DIR
 
 mkdir -p $PREFIX/bin $LIB_INSTALL_DIR
-rm $SRC_DIR/c++/ReleaseMT/bin/*_unit_test
+chmod +x $SRC_DIR/c++/ReleaseMT/bin/*
 cp $SRC_DIR/c++/ReleaseMT/bin/* $PREFIX/bin/
 cp $SRC_DIR/c++/ReleaseMT/lib/* $LIB_INSTALL_DIR
 
-chmod +x $PREFIX/bin/*
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/update_blastdb.pl
+# Patches to enable this script to work better in bioconda
+sed -i.bak 's/mktemp.*/mktemp`/; s/exit 1/exit 0/; s/^export PATH=\/bin:\/usr\/bin:/\#export PATH=\/bin:\/usr\/bin:/g' $PREFIX/bin/get_species_taxids.sh

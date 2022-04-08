@@ -1,8 +1,9 @@
 #!/bin/bash
 
-make
+make CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
-cp swipe $PREFIX/bin 
-cp mpiswipe $PREFIX/bin 
-chmod +x  $PREFIX/bin/mpiswipe
-chmod +x $PREFIX/bin/swipe
+install -d "${PREFIX}/bin"
+install \
+    swipe \
+    mpiswipe \
+    "${PREFIX}/bin/"

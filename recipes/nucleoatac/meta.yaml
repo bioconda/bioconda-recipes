@@ -6,31 +6,41 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/n/nucleoatac/NucleoATAC-{{version}}.tar.gz
-  sha256: {{sha256}}
+  url: https://pypi.io/packages/source/n/nucleoatac/NucleoATAC-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Remove-runtime-usage-of-pyximport.patch
 
 build:
-  noarch: python
-  number: 2
-  script: python -m pip install --no-deps --ignore-installed .
+  number: 7
+  skip: True  # [py>=30]
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
-    - python <3
+    - python
     - pip
-  run:
-    - python <3
     - cython >=0.22
     - numpy >=1.9.1
+    - htslib
+    - pysam >=0.10.0
+    - zlib
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
     - scipy
-    - matplotlib
-    - pysam >=0.8.1
+    - matplotlib-base
+    - htslib
+    - pysam >=0.10.0
     - zlib
 
 test:
   commands:
     - nucleoatac run --help
     - pyatac --help
+    - MPLBACKEND=agg python -c 'import nucleoatac.run_nuc'
   import:
     - pyatac.fragmentsizes
 

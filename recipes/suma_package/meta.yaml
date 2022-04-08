@@ -3,18 +3,21 @@ package:
   version: 1.0.00
 
 source:
-  url: ftp://ftp.microbio.me/pub/QIIME-v1.9.0-dependencies/suma_package_V_1.0.00.tar.gz
+  url:
+    - https://depot.galaxyproject.org/software/suma_package/suma_package_1.0.00_src_all.tar.gz
+    - ftp://ftp.microbio.me/pub/QIIME-v1.9.0-dependencies/suma_package_V_1.0.00.tar.gz
   md5: e528493d05225a605adacd0961b8f50c
-  patches:
-    - ldflags.patch
 
 build:
-  number: 2
-  skip: True # [not linux64 or osx]
+  number: 5
+  skip: True  # [not linux]
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
   host:
     - zlib
   run:
@@ -22,8 +25,8 @@ requirements:
 
 test:
   commands:
-    - sumaclust -h > /dev/null
-    - sumatra -h > /dev/null
+    - sumaclust -h
+    - sumatra -h
 
 about:
   home: http://metabarcoding.org/sumatra

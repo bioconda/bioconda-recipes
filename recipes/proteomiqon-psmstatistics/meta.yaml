@@ -1,0 +1,41 @@
+{% set version = "0.0.7" %}
+{% set sha256 = "85112aadd966965839f8655815ec6448aea699993d4c69f4754b4892e9c93975" %}
+
+package:
+  name: proteomiqon-psmstatistics
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/ProteomIQon.PSMStatistics/{{ version }}
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  script:
+    - dotnet tool install --add-source $SRC_DIR --tool-path $PREFIX/bin --version {{ version }} ProteomIQon.PSMStatistics
+
+requirements:
+  host:
+    - dotnet-sdk
+  run:
+    - dotnet-runtime
+
+test:
+  commands:
+    - proteomiqon-psmstatistics --help
+
+about:
+  home: https://csbiology.github.io/ProteomIQon/
+  license: MIT
+  summary: The PSMStatistics tool utilizes semi supervised machine learning techniques to integrate search engine scores as well as the mentioned quality scores into one single consensus score.
+  description: | 
+    To measure the similarity of in silico generated spectra and measured MS/MS scans we use our own implementations of three established search enginge scores: 
+    SEQUEST, Andromeda and XTandem. Additionally, we also record quality control parameters such as the mass difference between the precursor ion and the theoretically 
+    calulated mass or the uniquness of each score in comparison to 'competing' peptides within the search space. The PSMStatistics tool utilizes semi supervised machine 
+    learning techniques to integrate search engine scores as well as the mentioned quality scores into one single consensus score.
+    Since the search space is extended by so called decoys - reversed counterparts of peptides within the search space - we can estimate the distribution of 'true negatives' and 
+    calculate local (PEP values) and global (Q values) false discovery rates at each consensus score. The reported peptides at user defined local and global FDR cutoffs can then
+    be used as inputs for any downstream analysis be it ProteinInference or PSMBasedQuantification.
+  dev_url: https://github.com/CSBiology/ProteomIQon
+  doc_url: https://csbiology.github.io/ProteomIQon/tools/PSMStatistics.html

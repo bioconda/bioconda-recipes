@@ -1,14 +1,9 @@
 #!/bin/bash
 
-export INCLUDE_PATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
+make \
+  CC="${CC}" CXX="${CXX}" \
+  INCLUDES='-I./lib -I. -I./lib/Rmath' \
+  CFLAGS="${CFLAGS}"'-pipe -std=c++0x $(OPTFLAG) $(INCLUDES) -D__STDC_LIMIT_MACROS -DPCRE2_CODE_UNIT_WIDTH=8'
 
-export CFLAGS="-I$PREFIX/include"
-export CPATH=${PREFIX}/include
-export LDFLAGS="-L${PREFIX}/lib"
-export CPPFLAGS="-I${PREFIX}/include"
-
-make
 mkdir -p $PREFIX/bin
 cp vt $PREFIX/bin

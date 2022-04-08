@@ -1,12 +1,12 @@
-{% set version="1.3.2" %}
+{% set version="1.4.1" %}
 
 package:
   name: advntr
   version: {{ version }}
 
 build:
-  skip: True  # [py==37]
-  number: 0
+  skip: True  # [py>=37]
+  number: 2
   script:
     - make install CXX="${CXX} ${CXXFLAGS}" PREFIX=${PREFIX}
     - python -m pip install --no-deps --ignore-installed .
@@ -15,7 +15,7 @@ build:
 
 source:
   url: https://github.com/mehrdadbakhtiari/adVNTR/archive/{{ version }}.tar.gz
-  sha256: 2d66ec1564e800916ca3f53a66289251bba89dfea1cdc49f3e6bf762d5417e79
+  sha256: dcc670a2ef9f08c4d8a7249ade80540ad565811aade3779c9a1452a7845c49c4
 
 requirements:
   build:
@@ -31,17 +31,19 @@ requirements:
     - scipy
   run:
     - python
-    - cython
     - {{ pin_compatible('numpy') }}
     - {{ pin_compatible('scipy') }}
-    - matplotlib
+    - matplotlib-base
     - networkx 1.11
     - joblib
     - scikit-learn
+    - cython
     - biopython
     - muscle
     - pysam 0.15.1
     - htslib 1.9
+    - keras 2.2.4
+    - tensorflow 1.13.1
 
 test:
   commands:
@@ -53,3 +55,7 @@ about:
   license: BSD 3-Clause
   license_file: LICENSE
   summary: A tool for genotyping Variable Number Tandem Repeats (VNTR) from sequence data
+
+extra:
+  skip-lints:
+    - cython_must_be_in_host

@@ -5,7 +5,7 @@ package:
   version: {{ version }}
 
 build:
-  number: 3
+  number: 8
 
 source:
   url: https://github.com/czc/novobreak_src/archive/7435b2758c1c861eadce90cf1d4e199fbbaa981a.zip
@@ -13,13 +13,16 @@ source:
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
   host:
     - zlib
-    - samtools ==0.1.12  # novobreak relies on some functions only available in this old version. The library is statically linked.
   run:
     - bwa >=0.7.10
     - zlib
+    - perl
+    - ssake
+    - samtools 1.* # needed for run_novobreak
 
 test:
   commands:
@@ -29,3 +32,9 @@ about:
   home: https://github.com/czc/nb_distribution
   license: MIT
   summary: local assembly for breakpoint detection in cancer genomes
+
+extra:
+  notes: |
+    This package makes novobreak available via a wrapper in PATH, called `run_novobreak`, which 
+    takes all arguments of the run_novoBreak.sh script except the first, which is automatically
+    inferred.

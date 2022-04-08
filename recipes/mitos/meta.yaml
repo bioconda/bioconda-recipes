@@ -1,5 +1,5 @@
 {% set name = "mitos" %}
-{% set version = "2.0.1" %}
+{% set version = "2.0.8" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,28 +7,31 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: cc622e1f408b04f840f9c11db1f5639c7ce5798869728bd65fcda1fd4d228099
+  sha256: dd6c8ae202edae80874d99968df974f767d040adbf1947828fa71d5382c18ffe
 
 build:
-  number: 0
+  number: 1
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
-  noarch: generic
+  noarch: python
 
 requirements:
   host:
     - pip
     - python <3
   run:
-    - biopython ==1.73
-    - ete2 ==2.3*
+    - biopython
+    # only needed in some scripts (which do not run anyway)
+    # - ete2
     - python <3
-    - reportlab
-    - blast-legacy ==2.2*
+    # only needed for the MITOS webserver
+    # - reportlab
+    - blast ==2.9*
     - hmmer ==3.2*
     - infernal ==1.1*
     - viennarna <2
-    - r-base  
-    - r-ggplot2 ==3.1*
+    - r-base >=4
+    - r-ggplot2
+    - r-reshape2
     - openjdk
 
 test:
@@ -36,7 +39,8 @@ test:
     - mitos
     - mitos.bedfile
     - mitos.blast
-    - mitos.draw
+    # does not work wo reportlab (see above)
+    # - mitos.draw
     - mitos.extprog
     - mitos.feature
     - mitos.gb
@@ -60,7 +64,7 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE 
-  summary: MITOS is a tool for the annotation of metazoan mitochondrial genomes. Besides MITOS the package contains scripts for the handing of mitochondrial genomes and their annotations. 
+  summary: MITOS is a tool for the annotation of metazoan mitochondrial genomes.
   dev_url: https://gitlab.com/Bernt/MITOS 
 
 extra:

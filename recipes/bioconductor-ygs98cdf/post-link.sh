@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="ygs98cdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/ygs98cdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/ygs98cdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ygs98cdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ygs98cdf/bioconductor-ygs98cdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ygs98cdf/bioconductor-ygs98cdf_2.18.0_src_all.tar.gz"
 )
 MD5="ec7df7564cf28e093646325ec55baf1e"

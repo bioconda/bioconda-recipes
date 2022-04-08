@@ -1,40 +1,65 @@
-{% set name = "trinity" %}
-{% set version = "2.8.5" %}
+{% set name = "Trinity" %}
+{% set version = "2.13.2" %}
+{% set sha256 = "7985e0ddb875ed9476f810c2b8e3b79c809d8ca0a5664754b8eb32e105020971" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
-source:
-  url: https://github.com/trinityrnaseq/trinityrnaseq/archive/Trinity-v{{ version }}.tar.gz
-  sha256: eef3691aee5dbc73d8ce609f82912d3d0ae81eabced5fa61d1e53dbfe37cf3dc
+source: 
+  url: https://github.com/trinityrnaseq/trinityrnaseq/releases/download/Trinity-v{{ version }}/trinityrnaseq-v{{ version }}.FULL.tar.gz
+  sha256: {{ sha256 }}
   patches:
-    - patch
+    - makefile.patch
 
 build:
-  number: 2
   skip: True  # [osx]
+  number: 2
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
     - cmake
     - autoconf
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
   host:
     - zlib
+    - htslib
   run:
+    - zlib
     - trimmomatic >=0.36
     - bowtie
     - bowtie2 >=2.3.0
-    - jellyfish >=2.2.6
+    - kmer-jellyfish >=2.2
     - openjdk >=8
     - perl
-    - python
-    - samtools >=1.3
-    - zlib
-    - salmon >=0.9.1
+    - python >=3.6
+    - samtools >=1.9
+    - salmon >=1.0
+    - kallisto
     - numpy
+    - r-cluster
+    - r-gplots
+    - bioconductor-qvalue
+    - r-fastcluster
+    - r-argparse
+    - bioconductor-ctc
+    - r-ape
+    - bioconductor-edger
+    - r-phangorn
+    - r-gplots
+    - r-tidyverse
+    - bioconductor-goseq
+    - bioconductor-go.db
+    - r-sm
+    - bioconductor-dexseq
+    - r-vioplot
+    - htslib
+    - coreutils
+    - r-base >=4
 
 test:
   commands:
@@ -50,9 +75,17 @@ test:
 
 about:
   home: https://github.com/trinityrnaseq/trinityrnaseq/
-  license: 'BSD-3-Clause'
-  summary: 'Trinity RNA-Seq de novo transcriptome assembly'
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file:
+    - LICENSE
+    - LICENSE.txt
+  summary: "Trinity assembles transcript sequences from Illumina RNA-Seq data."
+  doc_url: https://github.com/trinityrnaseq/trinityrnaseq/wiki
+  dev_url: https://github.com/trinityrnaseq/trinityrnaseq/
 
 extra:
   identifiers:
     - biotools:trinity
+    - doi:10.1038/nbt.1883
+    - usegalaxy-eu:trinity

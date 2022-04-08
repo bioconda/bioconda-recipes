@@ -1,38 +1,52 @@
+{% set version = "1.17.1" %}
+
 package:
   name: igblast
-  version: "1.10.0"
+  version: "{{ version }}"
 
 about:
   home: http://www.ncbi.nlm.nih.gov/projects/igblast/
-  license: Public Domain
-  summary: A tool for analyzing immunoglobulin (IG) and T cell receptor (TR) sequences.
+  license: Public Domain and others
+  license_file:
+    - c++/include/misc/jsonwrapp/rapidjson10/license.txt  # [linux]
+    - c++/include/misc/jsonwrapp/rapidjson11/license.txt  # [linux]
+    - c++/include/util/bitset/license.txt                 # [linux]
+    - c++/scripts/projects/blast/LICENSE                  # [linux]
+    - c++/scripts/projects/igblast/LICENSE                # [linux]
+    - c++/src/util/compress/bzip2/LICENSE                 # [linux]
+    - c++/src/util/lmdb/LICENSE                           # [linux]
+    - c++/src/util/lmdbxx/UNLICENSE                       # [linux]
+    - LICENSE                                             # [osx]
+  summary: A tool for analyzing immunoglobulin (IG) and T cell receptor (TR) sequences
 
 source:
-  sha256: a811a9b2487a8ea1f7162a4c338c1f5a898b6b0788bc30d36a3f11a77db14a76  # [linux]
-  sha256: c573299c2c99b6f5660b52e9e2d2ad80a404bfe2426c1f7870fd64269e7d40e9  # [osx]
-  url: ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/1.10.0/ncbi-igblast-1.10.0-x64-linux.tar.gz  # [linux]
-  url: ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/1.10.0/ncbi-igblast-1.10.0-x64-macosx.tar.gz  # [osx]
+  url: ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/{{ version }}/ncbi-igblast-{{ version }}-src.tar.gz  # [linux]
+  sha256: 4320a8ff4518230daf36818f3809d4d85e204759f3fb22081c9504bc9c24a74a  # [linux]
+  url: ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/{{ version }}/ncbi-igblast-{{ version }}-x64-macosx.tar.gz  # [osx]
+  sha256: b9a56aae680c0e344d9e4f7fa1fac4888764a8225eaa48fab6ae1397056dbf39 # [osx]
+  patches:
+    - shared_vdb.patch  # [linux]
 
 build:
   number: 1
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
-    - patchelf  # [linux]
+    - {{ compiler('cxx') }}
     - wget
   host:
     - zlib
     - bzip2
     - libidn11
     - libxml2
+    - ncbi-vdb >=2.9.6
   run:
-    - zlib
-    - bzip2
-    - libidn11
-    - libxml2
+    - ncbi-vdb >=2.9.6
     - perl
     - gnutls  # [osx]
+
 test:
   commands:
     - igblastn -h

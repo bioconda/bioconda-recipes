@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.drosophila.2_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.drosophila.2_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.drosophila.2_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.drosophila.2_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.drosophila.2/bioconductor-pd.drosophila.2_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.drosophila.2/bioconductor-pd.drosophila.2_3.12.0_src_all.tar.gz"
 )
 MD5="ddb821e35e722af8dcf0807c6da4fac1"

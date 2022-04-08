@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="raex10stprobeset.db_8.7.0.tar.gz"
+FN="raex10stprobeset.db_8.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/raex10stprobeset.db_8.7.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/raex10stprobeset.db_8.7.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-raex10stprobeset.db/bioconductor-raex10stprobeset.db_8.7.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-raex10stprobeset.db/bioconductor-raex10stprobeset.db_8.7.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/raex10stprobeset.db_8.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/raex10stprobeset.db_8.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-raex10stprobeset.db/bioconductor-raex10stprobeset.db_8.8.0_src_all.tar.gz"
 )
-MD5="9cdc6abb3cf39eb7363fe74a0963c5b7"
+MD5="a386809ea8da340f315e378fa329b3ac"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

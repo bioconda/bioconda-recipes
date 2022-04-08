@@ -1,16 +1,24 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
+BINDIR="${PREFIX}/bin"
+mkdir -p "${BINDIR}"
 
 # build FastTree
-gcc -O3 -DUSE_DOUBLE -finline-functions -funroll-loops -Wall -o FastTree $SRC_DIR/FastTree-2.1.3.c -lm
-chmod +x FastTree
-cp ./FastTree $PREFIX/bin/fasttree
+"${CC}" ${CPPFLAGS} ${CFLAGS} \
+    -O3 -DUSE_DOUBLE -finline-functions -funroll-loops -Wall \
+    -o "${BINDIR}"/FastTree \
+    FastTree-${PKG_VERSION}.c \
+    ${LDFLAGS} -lm
+
 
 
 # Build FastTreeMP on Linux
 if [ "$(uname)" == "Linux" ]; then
-    gcc -DOPENMP -fopenmp -O3 -DUSE_DOUBLE -finline-functions -funroll-loops -Wall -o FastTreeMP $SRC_DIR/FastTree-2.1.3.c -lm
-    chmod +x FastTreeMP
-    mv -v ./FastTree* $PREFIX/bin
+    "${CC}" ${CPPFLAGS} ${CFLAGS} \
+        -DOPENMP -fopenmp -O3 -DUSE_DOUBLE -finline-functions -funroll-loops -Wall \
+        -o "${BINDIR}"/FastTreeMP \
+        FastTree-${PKG_VERSION}.c \
+        ${LDFLAGS} -lm
 fi
+
+cp "${BINDIR}/FastTree" "${BINDIR}"/fasttree

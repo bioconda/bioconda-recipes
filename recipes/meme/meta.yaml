@@ -1,20 +1,23 @@
-{% set version = "5.0.5" %}
+{% set name = "MEME" %}
+{% set version = "5.4.1" %}
 
 package:
-  name: meme
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
   url: http://meme-suite.org/meme-software/{{ version }}/meme-{{ version }}.tar.gz
-  sha256: 94826793576f4dd2f10fef829426dcde57f3cc990e462d9428c84f83d71eaeeb
+  sha256: c07fb8afafa60fc5e84ca24493c82fa6f4bd1df1a2622102edbf86a1c30fd11f
 
 build:
-  number: 0
+  number: 2
   detect_binary_files_with_prefix: True
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
+    - nodejs
   host:
     - yaml
     - icu
@@ -67,11 +70,13 @@ requirements:
 test:
   commands:
     - meme -version
+    - streme -version
+    - xstreme -version
     - meme-chip -version
     - glam2 -version
     - tomtom -version
     - centrimo -version
-    - ame -version
+    - ame --version 2>&1 | grep -i usage
     - spamo -version
     - gomo -version
     - fimo -version
@@ -80,6 +85,7 @@ test:
     - glam2scan -version
     - momo simple -version
     - getsize -version
+    - dreme -version
 
 about:
   home: http://meme-suite.org
@@ -91,3 +97,6 @@ extra:
   container:
     # openmpi needs ssh/rsh
     extended-base: true
+  identifiers:
+    - biotools:meme_suite
+    - usegalaxy-eu:meme_dreme

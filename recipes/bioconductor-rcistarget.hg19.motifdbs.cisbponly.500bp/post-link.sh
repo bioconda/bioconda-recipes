@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="RcisTarget.hg19.motifDBs.cisbpOnly.500bp_1.4.0.tar.gz"
+FN="RcisTarget.hg19.motifDBs.cisbpOnly.500bp_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RcisTarget.hg19.motifDBs.cisbpOnly.500bp_1.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RcisTarget.hg19.motifDBs.cisbpOnly.500bp_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rcistarget.hg19.motifdbs.cisbponly.500bp/bioconductor-rcistarget.hg19.motifdbs.cisbponly.500bp_1.4.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rcistarget.hg19.motifdbs.cisbponly.500bp/bioconductor-rcistarget.hg19.motifdbs.cisbponly.500bp_1.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/RcisTarget.hg19.motifDBs.cisbpOnly.500bp_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RcisTarget.hg19.motifDBs.cisbpOnly.500bp_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rcistarget.hg19.motifdbs.cisbponly.500bp/bioconductor-rcistarget.hg19.motifdbs.cisbponly.500bp_1.14.0_src_all.tar.gz"
 )
-MD5="2558d0f1567d5e36b21cc109a030d844"
+MD5="3e889cb080920cf8a4b1642accc1edbb"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

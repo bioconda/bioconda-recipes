@@ -8,4 +8,9 @@ export LIBRARY_PATH=${PREFIX}/lib
 if [ "$(uname)" == "Darwin" ]; then
     CXXFLAGS="-stdlib=libstdc++"
 fi
-make install ROOT="."
+
+mkdir build
+pushd build
+../configure --enable-hts --prefix=${PREFIX} CXX=$CXX LIBS="-L$PREFIX/lib -lgsl -lgslcblas -lz"
+make
+make install

@@ -1,15 +1,15 @@
 {% set name = "megan" %}
-{% set version = "6.12.3" %}
+{% set version = "6.21.7" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: http://ab.inf.uni-tuebingen.de/data/software/megan6/download/MEGAN_Community_unix_6_12_3.sh   # [linux]
-  sha256: a9062c33692eac51db135161d04163d412a0ec83cb94ada40f7f912186fc7529   # [linux]
-#   url: http://ab.inf.uni-tuebingen.de/data/software/megan6/download/MEGAN_Community_macos_6_12_3.dmg   # [osx]
-#   sha256: 6ac0134a8774311026b3cb0969d2adaad67d50b88aa1fc89baae5419e5bf3012   # [osx]
+  url: https://software-ab.informatik.uni-tuebingen.de/download/megan6/MEGAN_Community_unix_{{ version|replace(".", "_") }}.sh   # [linux]
+  sha256: f2da828122b3cf6d74ed4ef85bf11f8bd505deea31c01c2f891ba903fab72ef9   # [linux]
+#   url: https://software-ab.informatik.uni-tuebingen.de/download/megan6/MEGAN_Community_macos_{{ version|replace(".", "_") }}.dmg   # [osx]
+#   sha256: dd843e823f358f496834a2034e1b638e9602ba83251a5f0542f20b0d22d7dc70   # [osx]
 
 build:
 #  detect_binary_files_with_prefix: true
@@ -17,14 +17,14 @@ build:
   skip: True  # [osx]
 
 requirements:
-  build:
-    - openjdk >=8.0.144
+  host:
+    - openjdk >=11
   run:
     # Enforce a version requirement on openjdk to ensure
     # it comes from the conda-forge channel and not default.
     # Many yaks were shaved to bring us this information.
     # Version number reference: https://github.com/conda/conda/issues/6948#issuecomment-369360906
-    - openjdk >=8.0.144
+    - openjdk >=11
 
 test:
   commands:
@@ -32,12 +32,16 @@ test:
     - aadder-build -h
     - blast2lca -h
     - blast2rma -h
+    - compute-comparison -h
     - daa2info -h
     - daa2rma -h
     - daa-meganizer -h
     - extract-biome -h
     - gc-assembler -h
     - maf2daa -h
+#    - megan-server -h # Not executable as other tools, not sure why, so disabling for safety.
+    - read-extractor -h
+    - reanalyzer -h
     - rma2info -h
     - sam2rma -h
     - sort-last-maf -h
@@ -52,3 +56,6 @@ about:
 extra:
   identifiers:
     - biotools:megan
+  skip-lints:
+    - should_be_noarch_generic
+    - should_not_be_noarch_source

@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="vulcandata_1.6.0.tar.gz"
+FN="vulcandata_1.16.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/vulcandata_1.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/vulcandata_1.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-vulcandata/bioconductor-vulcandata_1.6.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-vulcandata/bioconductor-vulcandata_1.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/vulcandata_1.16.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/vulcandata_1.16.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-vulcandata/bioconductor-vulcandata_1.16.0_src_all.tar.gz"
 )
-MD5="f4b88fcd71e15eaa28291dfa423b90b5"
+MD5="51ba15f1f2f9a75530515332c880e88b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

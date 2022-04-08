@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="human.db0_3.8.2.tar.gz"
+FN="human.db0_3.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/human.db0_3.8.2.tar.gz"
-  "https://bioarchive.galaxyproject.org/human.db0_3.8.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-human.db0/bioconductor-human.db0_3.8.2_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-human.db0/bioconductor-human.db0_3.8.2_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/human.db0_3.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/human.db0_3.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-human.db0/bioconductor-human.db0_3.14.0_src_all.tar.gz"
 )
-MD5="b150cae85c2594ebb694fa1996895ac0"
+MD5="91042bc1f21f377233bfc0ba64e95cdd"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

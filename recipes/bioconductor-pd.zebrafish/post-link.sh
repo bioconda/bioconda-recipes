@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.zebrafish_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.zebrafish_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.zebrafish_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.zebrafish_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.zebrafish/bioconductor-pd.zebrafish_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.zebrafish/bioconductor-pd.zebrafish_3.12.0_src_all.tar.gz"
 )
 MD5="101f09a9d9304d1d8fbcc7f4812897b1"

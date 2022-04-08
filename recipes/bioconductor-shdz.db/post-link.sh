@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="SHDZ.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/SHDZ.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/SHDZ.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/SHDZ.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-shdz.db/bioconductor-shdz.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-shdz.db/bioconductor-shdz.db_3.2.3_src_all.tar.gz"
 )
 MD5="63c4439a272a5cd0c4746e9e53a7bdc7"

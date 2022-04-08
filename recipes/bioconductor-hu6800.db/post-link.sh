@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="hu6800.db_3.2.3.tar.gz"
+FN="hu6800.db_3.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/hu6800.db_3.2.3.tar.gz"
-  "https://bioarchive.galaxyproject.org/hu6800.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hu6800.db/bioconductor-hu6800.db_3.2.3_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hu6800.db/bioconductor-hu6800.db_3.2.3_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hu6800.db_3.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/hu6800.db_3.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hu6800.db/bioconductor-hu6800.db_3.13.0_src_all.tar.gz"
 )
-MD5="7783c1539639aec9d3d736e38b4f028c"
+MD5="aa1cb6c107dee6d2ed1929b48aa831e9"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,0 +1,43 @@
+{% set version = "1.0.1" %}
+
+package:
+  name: ont_vbz_hdf_plugin
+  version: '{{version}}'
+
+source:
+  git_url: https://github.com/nanoporetech/vbz_compression.git
+  git_rev: v{{ version }}
+
+build:
+  number: 2
+
+extra:
+  skip-lints:
+    # This needs git for recursive checkouts
+    - uses_vcs_url
+    - missing_hash
+
+  
+requirements:
+  build:
+    - make
+    - '{{ compiler("c") }}'
+    - '{{ compiler("cxx") }}'
+    - cmake
+  host:
+    - hdf5
+    - zstd
+  run:
+    - zstd
+    - hdf5  
+
+test:
+  source_files:
+    - test_data/multi_fast5_vbz_v1.fast5
+
+about:
+  home: https://github.com/nanoporetech
+  license: MPL-2
+  license_file: LICENCE.txt
+  license_family: MOZILLA
+  summary: VBZ compression plugin for nanopore signal data

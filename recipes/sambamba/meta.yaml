@@ -1,39 +1,50 @@
-{% set version='0.7.0' %}
-
+{% set name = "sambamba" %}
+{% set version = "0.8.2" %}
+{% set sha256 = "10f7160db5a1c50296b32e94f7d7570739aa7d90c93fe0981246fe89eab6dd98" %}
 package:
-  name: sambamba
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/biod/sambamba/archive/v{{ version }}.tar.gz
-  sha256: 038ffd6af574a0b1e5c716e8f68bc7b9e46ecd3141b6f6956cd48ab3e29cafc1
+  url: https://github.com/biod/sambamba/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  #patches:
+  #  - makefile.patch
+  #- url: https://github.com/lz4/lz4/archive/b3692db46d2b23a7c0af2d5e69988c94f126e10a.zip
+  #  sha256: 341fc478ccaf5f3ec1b620607d68541dfca3324dd2dbd386e9d45e85d2d26603
+  #  folder: lz4
 
 build:
-  number: 1
+  number: 2
+  skip: True # [osx]
 
-# ldc > 1.10 causes segfaults: https://github.com/biod/sambamba/issues/393
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
+    - python >=3
   host:
-    - ldc 1.10.*
+    - ldc >=1.17.0
     - bzip2
-    - htslib
     - zlib
     - xz
-    - git  # needed for BioD
+    - lz4-c
   run:
-    - ldc 1.10.*
-    - bzip2
-    - zlib
-    - xz
+    - {{ pin_compatible('ldc', max_pin='x.x') }}
 
 test:
   commands:
     - sambamba view --help
 
 about:
-  home: https://github.com/biod/sambamba
-  license: GPLv2
+  home: "https://github.com/biod/sambamba"
+  doc_url: "https://lomereiter.github.io/sambamba/docs/sambamba-view.html"
+  dev_url: "https://github.com/biod/sambamba"
+  license: GPL2
+  license_family: GPL2
   license_file: LICENSE
-  summary: Tools for working with SAM/BAM data
+  summary: "Tools for working with SAM/BAM data"
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btv098

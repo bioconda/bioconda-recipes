@@ -1,0 +1,49 @@
+{% set name = "ngs-smap" %}
+{% set version = "4.5.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 1bcd8f53496009e1ec920ab67de875fb8782a8ae74a430017502924979657b6f
+  patches:
+    - patch
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - smap = smap.__main__:main
+  ignore_prefix_files: True
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - setuptools-scm
+    - setuptools_scm_git_archive
+    - python >=3.8.1
+  run:
+    - pybedtools~=0.9.0
+    - pysam~=0.18.0
+    - pandas~=1.4.0
+    - matplotlib~=3.5.1
+    - colorlog~=6.6.0
+    - python >=3.8.1
+
+test:
+  commands:
+    - smap compare --help
+
+about:
+  home: "https://gitlab.com/truttink/smap"
+  license: "CC BY-NC-SA 4.0"
+  license_family: CC
+  license_file: 
+  summary: "SMAP is an analysis tool for stack-based NGS read mapping"
+
+extra:
+  recipe-maintainers:
+    - ieguinoa
+

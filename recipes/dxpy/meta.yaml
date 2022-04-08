@@ -1,5 +1,5 @@
 {% set name = "dxpy" %}
-{% set version = "0.286.1" %}
+{% set version = "0.322.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 775c2f739e8fbed4e860392bfa73bfd350f8c417d25fc30e4fd58a1ca469d002
+  sha256: cbaad43e7f59d856fae993133cf06257b256a0389ba67ef8a1367d6823fa116d
 
 build:
   number: 0
@@ -16,32 +16,24 @@ build:
     - dx-build-applet = dxpy.scripts.dx_build_applet:main
     - dx-build-app = dxpy.scripts.dx_build_app:main
     - dx = dxpy.scripts.dx:main
-    - dx-build-report-html = dxpy.scripts.dx_build_report_html:main
     - dx-app-wizard = dxpy.scripts.dx_app_wizard:main
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
 
 requirements:
   host:
-    - argcomplete >=1.9.4
-    - beautifulsoup4 >=4.4.1
-    - cryptography <=2.2.2
-    - setuptools
-    - psutil >=3.3.0
     - python
-    - python-dateutil >=2.5
-    - python-magic >=0.4.6
-    - requests >=2.8.0
-    - websocket-client >=0.53.0
+    - pip
   run:
     - argcomplete >=1.9.4
     - beautifulsoup4 >=4.4.1
-    - cryptography <=2.2.2
+    - cryptography >=2.3,<3.0
     - psutil >=3.3.0
     - python
     - python-dateutil >=2.5
     - python-magic >=0.4.6
-    - requests >=2.8.0
+    - requests >=2.8.0,<2.24.0
     - websocket-client >=0.53.0
+    - xattr >=0.9.6
 
 test:
   imports:
@@ -56,20 +48,21 @@ test:
     - dx-build-applet --help
     - dx-build-app --help
     - dx --help
-    - dx-build-report-html --help
     - dx-app-wizard --help
   requires:
     - mock >=2.0.0
     - pexpect >=4.6
     - pyopenssl >=17.5.0
-    - pytest >=3.5.1
+    - pytest >=4.6.9
+    - pytest-timeout >=1.3.4
+    - pytest-xdist >=1.31.0
 
 about:
   home: https://github.com/dnanexus/dx-toolkit
   license: Apache-2.0
   license_family: Apache
   summary: DNAnexus Platform API bindings for Python
-  doc_url: https://wiki.dnanexus.com/downloads#DNAnexus-Platform-SDK
+  doc_url: http://autodoc.dnanexus.com/bindings/python/current/
   dev_url: https://github.com/dnanexus/dx-toolkit
 
 extra:

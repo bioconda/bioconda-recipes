@@ -1,34 +1,39 @@
-{% set version = "0.10.0" %}
+{% set version = "1.0.0" %}
 
 package:
   name: unifrac
   version: {{ version }}
 
 source:
-  url: https://github.com/biocore/unifrac/archive/{{ version }}.tar.gz
-  sha256: 97507caa5536bf445ca712ec495a39c4c95db3388d3259be3270e0e15ceb5ce5
+  url: https://github.com/biocore/unifrac/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 9a443111c620c17912039f4dd800ba179a1cf9994a7f80827bc00660ec75a9a1
 
 build:
   number: 1
-  skip: True # [py27]
+  skip: True  # [py<30]
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-
+    - unifrac-binaries
+    - hdf5 <1.11.0
   host:
     - python
     - pip
-    - h5py 2.9.0
+    - h5py >=2.9.0
     - cython >=0.28.3
     - numpy >=1.12.1
-
+    - unifrac-binaries
+    - hdf5 <1.11.0
   run:
     - python
     - {{ pin_compatible('numpy') }}
-    - {{ pin_compatible('h5py') }}
+    - {{ pin_compatible('h5py', max_pin='x') }}
     - biom-format
     - scikit-bio >=0.5.1
+    - unifrac-binaries
+    - hdf5 <1.11.0
 
 test:
   imports:
@@ -38,10 +43,24 @@ test:
     - faithpd --help
     - python -m unittest unifrac.tests.test_methods
     - python -m unittest unifrac.tests.test_api
-
+  
 about:
   home: https://github.com/biocore/unifrac
   license: BSD-3-Clause
   license_family: BSD
+  license_file: LICENSE
   summary: 'Fast phylogenetic diversity calculations'
+  description: |
+    UniFrac is a commonly phylogenetic diversity distance metric used in 
+    microbiome research. The metric relates two microbiome samples together
+    within the context of an evolutionary history, and produces a distance
+    that corresponds to how similar two samples by the amount of overlapping
+    branch length. 
+  
+  doc_url: https://github.com/biocore/unifrac
+  dev_url: https://github.com/biocore/unifrac
 
+extra:
+  recipe-maintainers:
+    - wasade
+    - sfiligoi

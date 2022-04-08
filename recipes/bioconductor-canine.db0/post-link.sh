@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="canine.db0_3.8.2.tar.gz"
+FN="canine.db0_3.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/canine.db0_3.8.2.tar.gz"
-  "https://bioarchive.galaxyproject.org/canine.db0_3.8.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-canine.db0/bioconductor-canine.db0_3.8.2_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-canine.db0/bioconductor-canine.db0_3.8.2_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/canine.db0_3.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/canine.db0_3.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-canine.db0/bioconductor-canine.db0_3.14.0_src_all.tar.gz"
 )
-MD5="56742a475a81dacaedd6c100df27eff0"
+MD5="846a411806e39db196cfe58e14d5e3e4"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

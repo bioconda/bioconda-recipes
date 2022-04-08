@@ -1,16 +1,21 @@
-{% set name = "quast" %}
 {% set version = "5.0.2" %}
 {% set hash = "2b31aac010f5c04d5367f1bf718516ae" %}
 
 package:
-  name: {{ name|lower }}
+  name: quast
   version: {{ version }}
 
 build:
-  number: 1
+  number: 7
+  # Needs to adjust cgi.escape to be html.escape for Python 3.8.
+  # (cgi.escape is deprecated since 3.2)
+  # AttributeError: module 'cgi' has no attribute 'escape'
+  skip: True  # [py>=38]
 
 source:
-  url: http://downloads.sourceforge.net/project/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz
+  url:
+    - https://github.com/ablab/quast/releases/download/quast_{{ version }}/quast-{{ version }}.tar.gz
+    - http://downloads.sourceforge.net/project/quast/quast-{{ version }}.tar.gz
   md5: {{ hash }}
   patches:
     - genemark-issue_disable-and-exclude-from-package.patch
@@ -20,21 +25,25 @@ source:
 requirements:
   build:
     - {{ compiler('c') }}    
-  host:    
+    - {{ compiler('cxx') }}
+    - make
+  host:
     - perl
     - python
+    - pip
     - setuptools
-    - matplotlib
+    - matplotlib-base
     - joblib
     - simplejson
     - blast
     - zlib
     - glimmerHMM
     - circos
+    - minimap2 >=2.10
   run:
     - perl
     - python
-    - matplotlib
+    - matplotlib-base
     - openjdk >=8
     - joblib
     - simplejson
@@ -42,6 +51,7 @@ requirements:
     - zlib
     - glimmerHMM
     - circos
+    - minimap2 >=2.10
 
 test:
   source_files:
@@ -51,13 +61,17 @@ test:
     - metaquast --version
 
 about:
-  home: http://{{ name|lower }}.sourceforge.net/
+  home: http://quast.sourceforge.net/
   license: Custom
   license_file: LICENSE.txt
   summary: Quality Assessment Tool for Genome Assemblies
 
 extra:
+  container:
+    # ascii fallback fails without locale
+    extended-base: true
   notes: |
     - GeneMark gene prediction software is disabled due to licensing issues
   identifiers:
     - biotools:quast
+    - doi:10.1093/bioinformatics/btt086

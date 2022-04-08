@@ -1,0 +1,48 @@
+{% set version = "0.1.9.5" %}
+
+package:
+  name: mnnpy
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/m/mnnpy/mnnpy-{{ version }}.tar.gz
+  sha256: 41cdafaf21392144b683d7acf99f7a1fc59085f9b3697cd6ace57f40dddace9c
+  patches:
+    - 0001-Fix-missing-forceobj-for-numba.jit.patch
+
+build:
+  number: 3
+  skip: True  # [py<34]
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
+    - cython
+    - pip
+    - python
+  run:
+    - anndata
+    - numba
+    - numpy
+    - pandas
+    - python
+    - scipy
+
+test:
+  imports:
+    - mnnpy
+
+about:
+  home: http://github.com/chriscainx/mnnpy
+  license: BSD-3-Clause
+  license_file: LICENSE
+  license_family: BSD
+  summary: Mutual nearest neighbors correction in python.
+
+extra:
+  recipe-maintainers:
+    - pinin4fjords

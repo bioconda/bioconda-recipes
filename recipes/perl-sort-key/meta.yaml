@@ -1,0 +1,42 @@
+{% set name = "perl-sort-key" %}
+{% set version = "1.33" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://cpan.metacpan.org/authors/id/S/SA/SALVA/Sort-Key-{{ version }}.tar.gz
+  sha256: ed6a4ccfab094c9cd164f564024e98bd21d94f4312ccac4d6246d22b34081acf
+
+build:
+  number: 3
+  run_exports:
+    weak:
+      - {{ name }} ={{ version }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+
+  # Run exports are used now
+  host:
+    - perl
+
+  run:
+    - perl
+
+test:
+  imports:
+    - Sort::Key qw(multikeysorter)
+    - Sort::Key::Maker bar_sort => qw(int int str);
+    - Sort::Key::Multi qw(sikeysort)
+    - Sort::Key::Natural qw(natsort)
+
+about:
+  home: http://metacpan.org/pod/Sort-Key
+  license: Artistic-1.0-Perl
+  license_file: LICENSE.txt
+  summary: 'the fastest way to sort anything in Perl'
+

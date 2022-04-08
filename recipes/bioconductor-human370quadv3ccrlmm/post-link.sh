@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="human370quadv3cCrlmm_1.0.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/human370quadv3cCrlmm_1.0.3.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/human370quadv3cCrlmm_1.0.3.tar.gz"
   "https://bioarchive.galaxyproject.org/human370quadv3cCrlmm_1.0.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-human370quadv3ccrlmm/bioconductor-human370quadv3ccrlmm_1.0.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-human370quadv3ccrlmm/bioconductor-human370quadv3ccrlmm_1.0.3_src_all.tar.gz"
 )
 MD5="33c3ccc3793ed95647418b746a5177f9"

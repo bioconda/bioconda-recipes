@@ -1,0 +1,56 @@
+{% set version = "1.0" %}
+
+package:
+  name: cnvpytor
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/c/cnvpytor/CNVpytor-{{ version }}.tar.gz
+  sha256: b9b5c57a57bce16a08b8012e7a93234520c11d300573aead46690ac2c9fe2b78
+
+build:
+  number: 2
+  skip: True  # [py<30]
+  entry_points:
+    - cnvpytor = cnvpytor.__main__:main
+  script:
+    - {{ PYTHON }} -m pip install . --no-deps -vv
+    - cnvpytor -download
+
+requirements:
+  host:
+    - gnureadline # [osx]
+    - h5py >=2.9
+    - matplotlib-base >=2.2
+    - numpy >=1.16
+    - pathlib >=1.0
+    - pip
+    - pysam >=0.15
+    - python
+    - requests >=2.0
+    - scipy >=1.1
+  run:
+    - gnureadline # [osx]
+    - h5py >=2.9
+    - matplotlib-base >=2.2
+    - numpy >=1.16
+    - pathlib >=1.0
+    - pysam >=0.15
+    - python
+    - requests >=2.0
+    - scipy >=1.1
+
+test:
+  imports:
+    - cnvpytor
+  commands:
+    - cnvpytor --help
+
+about:
+  home: "https://github.com/abyzovlab/CNVpytor"
+  license: MIT
+  license_family: MIT
+  summary: "Python extension of CNVnator"
+
+extra:
+  notes: The package comes with downloaded reference data, such that `cnvpytor -download` can be omitted.

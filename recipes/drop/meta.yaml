@@ -1,0 +1,90 @@
+{% set name = "drop" %}
+{% set version = "1.1.4" %} 
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/gagneurlab/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: 0ea30a369a52db4426bdb05501e17939a670691ed17c6bce7b982d58127cf540
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - drop=drop.cli:main
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --ignore-installed"
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - pandas
+    - Click >=7.0
+    - click-log
+    - python-dateutil
+    # snakemake/wbuild
+    - snakemake-minimal >=5.5.2
+    - wbuild >=1.8
+    - pandoc
+    - graphviz
+    # command line tools
+    - bc
+    - wget
+    - htslib
+    - samtools >=1.9
+    - bcftools >=1.9
+    - gatk4 >=4.0.4
+    - star >=2.7
+    # R dependencies
+    - r-base>=4.0.0
+    - r-rmarkdown
+    - r-knitr
+    - r-ggplot2
+    - r-ggthemes
+    - r-cowplot
+    - r-data.table
+    - r-dplyr
+    - r-tidyr
+    - r-magrittr
+    - r-devtools
+    - r-tmae >=1.0.4
+    # bioconductor packages
+    - bioconductor-deseq2
+    - bioconductor-GenomicScores
+    - bioconductor-outrider >=1.6.1
+    - bioconductor-fraser >=1.2.1
+    - bioconductor-variantannotation
+    
+test:
+  imports:
+    - drop
+  requires:
+    - pip
+    - pytest
+    - pytest-runner
+  source_files:
+    - tests/
+
+about:
+  home: https://github.com/gagneurlab/drop
+  license: MIT
+  license_family: OTHER
+  summary: Detection of RNA Outlier Pipeline
+  doc_url: https://gagneurlab-drop.readthedocs.io/en/latest/
+  dev_url: https://github.com/gagneurlab/drop
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true
+  identifiers:
+    - https://doi.org/10.1038/s41596-020-00462-5
+  recipe-maintainers:
+    - c-mertes
+    - mumichae
+    - vyepez88

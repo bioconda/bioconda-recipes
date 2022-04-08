@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="ecolicdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/ecolicdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/ecolicdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ecolicdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ecolicdf/bioconductor-ecolicdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ecolicdf/bioconductor-ecolicdf_2.18.0_src_all.tar.gz"
 )
 MD5="4e664c1ac41a8ab68ef22f8a889b916c"

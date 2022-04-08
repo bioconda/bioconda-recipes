@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="h20kcod.db_3.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/h20kcod.db_3.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/h20kcod.db_3.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/h20kcod.db_3.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-h20kcod.db/bioconductor-h20kcod.db_3.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-h20kcod.db/bioconductor-h20kcod.db_3.4.0_src_all.tar.gz"
 )
 MD5="3647facb272f58424f4c94ef92e8ee45"

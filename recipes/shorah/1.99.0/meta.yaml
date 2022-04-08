@@ -1,0 +1,68 @@
+{% set name = "shorah" %}
+{% set version = "1.99.0" %}
+{% set sha256 = "a723ea9865cba22b62fa1b9ba98182c0bd3afb93c6c162c8418f68b8fd32f434" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/cbg-ethz/shorah/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.xz
+  sha256: {{ sha256 }}
+
+build:
+  skip: True  # [py27]
+  number: 4
+  script:
+    - ./configure --prefix="${PREFIX}" PYTHON="${PYTHON}" PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig
+    - make install
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - pkg-config
+    - make
+  host:
+    - python
+    # BUG HTSlib version >1.10 causes crashes in b2w and fil (fixed in ShoRAH 1.99.2)
+    - htslib 1.9
+    - gsl
+    - boost-cpp
+    - zlib
+    - blas {{ blas }}
+  run:
+    - python
+    - htslib
+    - biopython
+    - numpy
+    - gsl
+    - zlib
+    - blas {{ blas }}
+    # BUG ShoRAH version 1.99.0 crashes on Mac OS X if setuptools is absent (fixed in ShoRAH 1.99.1)
+    - setuptools # osx
+
+test:
+  source_files:
+  - examples/amplicon_test/reference.fasta
+  - examples/amplicon_test/ampli_sorted.bam
+  imports:
+  - shorah
+  commands:
+  - shorah -h
+  - shorah shotgun -h
+  - shorah amplicon -h
+  - shorah snv -h
+  - b2w -h
+  - diri_sampler -h
+  - ([[ -d examples/amplicon_test/ ]]&&cp -r examples/amplicon_test ./||cp -r /usr/local/share/shorah/amplicon_test ./;cd amplicon_test/;shorah amplicon -f reference.fasta -b ampli_sorted.bam); rm -rf amplicon_test/
+
+about:
+  summary: The Short Reads Assembly into Haplotypes (ShoRAH) program for inferring viral haplotypes from NGS data
+  home: https://github.com/cbg-ethz/{{ name }}
+  license: GPLv3
+  license_family: GPL3
+  license_file: LICENSE
+
+extra:
+  identifiers:
+  - biotools:shorah

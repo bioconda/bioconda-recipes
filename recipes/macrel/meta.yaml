@@ -1,0 +1,55 @@
+{% set name = "macrel" %}
+{% set version = "1.1.0" %}
+{% set sha256 = "21171fa87a18030d2ed43fc6f51f915b01e2ba75d37fe0e7ec18e461cf82b10c" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+  
+source:
+ url: https://github.com/BigDataBiology/macrel/archive/v{{ version }}.tar.gz
+ sha256: {{ sha256 }}
+
+build:
+  number: 1
+  skip: True # [py2k]
+  entry_points:
+    - macrel= macrel.main:main
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - atomicwrites
+    - ngless
+    - megahit
+    - paladin
+    - pandas
+    - scikit-learn
+    - tzlocal
+
+test:
+  imports:
+    - macrel
+  commands:
+    - macrel --version
+
+about:
+  home: https://github.com/BigDataBiology/macrel
+  license: MIT
+  summary: "A pipeline for AMP (antimicrobial peptide) prediction"
+  description: |
+    Used for the prediction of AMPs in (meta)genomes.
+  dev_url: https://github.com/BigDataBiology/macrel
+  
+extra:
+  recipe-maintainers:
+    - celiosantosjr
+    - luispedro
+  identifiers:
+    - "doi:10.7717/peerj.10555" # Paper

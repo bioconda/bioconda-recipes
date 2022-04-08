@@ -1,6 +1,9 @@
 #!/bin/bash
 
-make;
+make \
+  CC="${CXX}" \
+  CFLAGS="${CXXFLAGS} -Wall -Wextra  -Ofast -std=c++11  -pthread -pipe -fopenmp" \
+  LDFLAGS="${LDFLAGS} -pthread -fopenmp"
 
-mkdir -p $PREFIX/bin
-cp btrim $PREFIX/bin
+mkdir -p "${PREFIX}/bin"
+cp btrim "${PREFIX}/bin/"

@@ -1,0 +1,56 @@
+{% set name = "kat" %}
+{% set version = "2.4.2" %}
+{% set sha256 = "d6116cefdb5ecd9ec40898dd92362afe1a76fa560abfe0f2cd29cbe0d95cb877" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/TGAC/KAT/archive/Release-{{version}}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - patch
+    - patch2
+
+build:
+  number: 3
+  skip: True  # [osx or py27]
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - libtool
+  host:
+    - zlib
+    - python
+    - numpy
+    - scipy
+    - matplotlib-base
+    - tabulate
+    - boost-cpp
+  run:
+    - python
+    - zlib
+    - tabulate
+    - matplotlib-base
+    - scipy
+    - numpy
+    - boost-cpp
+
+test:
+  commands:
+    - kat --version
+
+about:
+  home: https://github.com/TGAC/KAT
+  license: GPL3
+  license_file: COPYING
+  summary: 'KAT is a suite of tools that analyse jellyfish hashes or sequence files (fasta or fastq) using kmer counts'
+
+extra:
+  identifiers:
+    - biotools:KAT

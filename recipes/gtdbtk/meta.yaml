@@ -1,5 +1,5 @@
 {% set name = "gtdbtk" %}
-{% set version = "0.3.2" %}
+{% set version = "2.0.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,25 +7,29 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 8df3b941df5aa1a4bd0e0344da179d73f756a20b5f28610f3837efacbb019f4a
+  sha256: 53496443d6fcca675c3f3078d76cef25c2040e894fd403b74397980578ddb815
 
 build:
-  number: 1
-  skip: True  # [osx or py3k]
+  number: 0
+  noarch: python
+  entry_points:
+    - gtdbtk = gtdbtk.__main__:main
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.6
   run:
     - dendropy >=4.1.0
-    - python
-    - future >=0.15.2
-    - prodigal
-    - hmmer
-    - pplacer
-    - fastani
-    - fasttree
+    - python >=3.6
+    - prodigal >=2.6.2
+    - hmmer ==3.1b2
+    - pplacer >=1.1.alpha17
+    - fastani <=1.32
+    - fasttree >=2.1.9
+    - numpy >=1.9.0
+    - mash >=2.0
+    - tqdm >=4.35.0
 
 test:
   imports:
@@ -36,15 +40,18 @@ test:
     - gtdbtk.external.pypfam
     - gtdbtk.external.pypfam.HMM
     - gtdbtk.external.pypfam.Scan
+    - gtdbtk.io.marker
+    - gtdbtk.io.prodigal
 
 about:
   home: https://github.com/Ecogenomics/GTDBTk
   license: GNU General Public v3 (GPLv3)
   license_family: GPL3
-  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
+  license_file: 'LICENSE'
   summary: 'A toolkit for assigning objective taxonomic classifications to bacterial and archaeal genomes.'
 
 extra:
-  skip-lints:
-    - should_be_noarch_python
-    - should_not_use_skip_python
+  identifiers:
+    - doi:10.1093/bioinformatics/btz848
+  recipe-maintainers:
+    - aaronmussig

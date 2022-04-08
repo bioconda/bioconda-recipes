@@ -1,0 +1,66 @@
+{% set name = "ggCaller" %}
+{% set version = "1.2.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/samhorsfield96/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 6438f18d3c99e33aa810e066dd0e175c573bbd6e1324893f13c79e5ae0fdf8d2
+
+build:
+  number: 2
+  skip: True  # [osx or py < 38]
+  script: {{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt
+  entry_points:
+    - ggcaller = ggCaller.__main__:main
+
+requirements:
+  build:
+    - {{ compiler('c')}}
+    - {{ compiler('cxx') }}
+    - cmake >=3.4
+    - make
+    - setuptools
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux64]
+  host:
+    - python
+    - pybind11
+    - seqan3 <3.1
+    - bifrost
+    - pthread-stubs
+    - zlib
+    - bzip2
+  run:
+    - python
+    - bifrost
+    - pthread-stubs
+    - biopython
+    - graph-tool
+    - pytorch
+    # The xorg-* requirements are only used for gtk3 which is pulled in via graph-tool.
+    - xorg-libxi
+    - xorg-libxcursor
+    - xorg-libxdamage
+    - xorg-libxcomposite
+    - xorg-libxrandr
+    - xorg-libxinerama
+    - xorg-libxpm
+    - xorg-libxaw
+    - xorg-libxfixes
+
+test:
+  imports:
+    - ggCaller_cpp
+    - balrog
+    - ggCaller
+  commands:
+    - ggcaller -h | grep -q "Generates ORFs from a Bifrost graph."
+
+about:
+   home: https://github.com/samhorsfield96/ggCaller
+   license: MIT
+   license_file: LICENSE
+   summary: 'a gene caller for Bifrost graphs'

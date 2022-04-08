@@ -6,18 +6,21 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/mlbendall/{{ name }}/archive/v{{ version }}.tar.gz
+  url: https://github.com/mlbendall/telescope/archive/v{{ version }}.tar.gz
   sha256: 115928f5aa347bf2416a15e9d790744e42553bb1118809b5677788e649269f74
+  patches:
+    - 0001-Fix-setup.py.patch
 
 build:
-  number: 0
-  script: "python setup.py install --single-version-externally-managed --record=record.txt"
-  skip: True  # [py2k]
+  number: 4
+  skip: True  # [py<30]
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
+    - pip
     - python
     - numpy >=1.16.3
     - scipy >=1.2.1
@@ -26,15 +29,14 @@ requirements:
     - pyyaml >=5.1
     - cython
     - intervaltree
-    - setuptools
+    - htslib
   run:
     - python
-    - numpy >=1.16.3
+    - {{ pin_compatible('numpy') }}
     - scipy >=1.2.1
     - pysam >=0.15.2
     - future >=0.17.1
     - pyyaml >=5.1
-    - cython
     - intervaltree >=3.0.2
 
 test:

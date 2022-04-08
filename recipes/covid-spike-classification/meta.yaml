@@ -1,0 +1,46 @@
+{% set name = "covid-spike-classification" %}
+{% set version = "0.6.3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 408b959280f2092fbc9c467adfb340aa3c6e38bbc17d5ac71c99575c549a9998
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - covid-spike-classification=covid_spike_classification.__main__:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - pip
+    - python>=3.8
+  run:
+    - biopython>=1.78
+    - bowtie2>=2.4.2
+    - python>=3.8
+    - samtools>=1.10
+    - tracy>=0.5.3
+
+
+test:
+  imports:
+    - covid_spike_classification
+  commands:
+    - covid-spike-classification --help
+
+about:
+  home: "https://github.com/kblin/covid-spike-classification/"
+  license: Apache Software
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "Detect interesting SARS-CoV-2 spike protein variants from Sanger sequencing data."
+
+extra:
+  recipe-maintainers:
+    - kblin

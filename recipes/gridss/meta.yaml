@@ -1,34 +1,71 @@
-{% set version = "2.6.2" %}
-{% set sha256 = "846834762ed15b0c7eb9bca95bdb0ea5680fcf694d5cd181c78e1846e881fe33" %}
+{% set version = "2.13.2" %}
+{% set sha256 = "4d5651b1fc27928c0f76f1e8e7b90a74e6feae0c1cb9abea17fa2bd359f1d704" %}
 
 package:
   name: gridss
   version: '{{ version }}'
 
 source:
-  url: https://github.com/PapenfussLab/gridss/releases/download/v{{ version }}/gridss-{{ version }}-gridss-jar-with-dependencies.jar
+  url: https://github.com/PapenfussLab/gridss/releases/download/v{{ version }}/gridss-{{ version }}.tar.gz
   sha256: '{{ sha256 }}'
 
 build:
-  number: 0
-  noarch: generic
+  number: 1
+  skip: True # [osx]
 
 requirements:
+  build:
+    - autoconf
+    - automake
+    - make
+    - {{ compiler('c') }}
+  host:
+    - ncurses
+    - zlib
+    - htslib >=1.14
   run:
+    - bc
+    - ncurses
+    - zlib
     - openjdk >=8
-    - python
+    - bwa >=0.7
+    - samtools >=1.14
+    - htslib >=1.14
+    - kraken2 >=2.1
+    - repeatmasker >=4.1.1
+    - entrez-direct
+    - r-base >=4.0
+    - r-argparser
+    - r-tidyverse
+    - r-testthat
+    - r-stringdist
+    - bioconductor-structuralvariantannotation >=1.6
+    - bcftools
 
 test:
   commands:
-    - "gridss gridss.CallVariants --help 2>&1 | grep 'USAGE: CallVariants'"
+    - "gridss -h 2>&1 | grep 'Usage:'"
+    - "gridsstools 2>&1 | grep 'Usage:'"
+    - "gridss_annotate_vcf_kraken2 2>&1 | grep 'Usage:'"
+    - "gridss_annotate_vcf_repeatmasker 2>&1 | grep 'Usage:'"
+    - "gridss_extract_overlapping_fragments 2>&1 | grep 'Usage:'"
+    - "virusbreakend 2>&1 | grep 'Usage:'"
+    - "virusbreakend-build --help 2>&1 | grep 'Usage:'"
+    - "gridss_somatic_filter --help 2>&1 | grep -i usage"
+    - "CallVariants --help 2>&1 | grep 'USAGE:'"
+    - "CollectGridssMetrics --help 2>&1 | grep 'USAGE:'"
+    - "AnnotateVariantsKraken --help 2>&1 | grep 'USAGE:'"
+    - "AnnotateVariantsRepeatMasker --help 2>&1 | grep 'USAGE:'"
 
 about:
   home: https://github.com/PapenfussLab/gridss
-  license: GPL-3.0
+  license: GPL-3.0-only
   license_family: GPL
-  summary: 'GRIDSS: a Genomic Rearrangement IDentification Software Suite'
+  summary: 'GRIDSS: the Genomic Rearrangement IDentification Software Suite'
 
 extra:
   identifiers:
     - biotools:gridss
-    - doi:10.1101/110387
+    - doi:10.1101/gr.222109.117
+    - doi:10.1186/s13059-021-02423-x
+  notes: The package contains additional command line wrappers for the GRIDSS java-based utilities.

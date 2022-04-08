@@ -5,17 +5,30 @@ package:
 source:
   url: https://github.com/ogdf/ogdf/archive/sakura-201207.tar.gz
   sha256: 2676d0ce8940079dcf7dd7e94ec35b67beb31f86587b33fd94a019e947c43e6e
-  patches: # [osx]
+  patches:
+    - 0001-Add-missing-include-for-memcpy.patch
     - osx.patch # [osx]
 
 build:
-  number: 1
+  number: 4
+  # Compilation fails on macOS due to a legitimate bug.
+  #   src/layered/sugiyama.cpp:571:42: error: ordered comparison between pointer and zero ('const ogdf::Level *' and 'int')
+  #           if (pLevel[0]->high() <= 0 || pLevel[1] <= 0) return 0;
+  # Instead of patching that here, someone should just put up a new OGDF on conda-forge.
+  skip: True  # [osx]
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - python >=2.7,<3
+    - make
+    - {{ compiler('cxx') }}
+    - python 2.*
+  host:
   run:
+
+test:
+  commands:
+    - test -d "${PREFIX}/ogdf/include/ogdf"
+    - test -f "${PREFIX}/ogdf/lib/libOGDF.a"
 
 about:
   home: http://http://ogdf.net/doku.php
