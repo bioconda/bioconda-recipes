@@ -12,7 +12,7 @@ elif [ -f Makefile.PL ]; then
     perl Makefile.PL INSTALLDIRS=site
     make
     # locale breaks this
-    make test
+    #make test
     make install
 else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
