@@ -1,5 +1,5 @@
 {% set name = "r-ampvis2" %}
-{% set version = "2.7.12" %}
+{% set version = "2.7.22" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/MadsAlbertsen/ampvis2/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 87fd2be88352d7b2af63b783337615e4ae8667ffaeb8f63921790772b73b213b
+  sha256: 177cff1bfdbc7f09b4b429bfdaf00dd6352650d0668854ec906332ad3b29d6a6
 
 build:
   number: 0
@@ -18,7 +18,7 @@ build:
 
 requirements:
   host:
-    - r-base >=3.5.0
+    - r-base
     - r-ggplot2
     - r-plyr
     - r-dplyr
@@ -38,7 +38,8 @@ requirements:
     - parallel
   run:
     # requirements according to https://github.com/MadsAlbertsen/ampvis2/blob/main/DESCRIPTION
-    - r-base >=3.5.0
+    # Depends/Imports section
+    - r-base
     - r-ggplot2
     - r-r.utils # ??? utils
     - r-plyr
@@ -57,13 +58,20 @@ requirements:
     - r-crayon
     - r-cli
     - parallel
+    - r-foreach # required by ordinate
+    # Suggests section
     - bioconductor-biomformat
-    - r-ggnetwork
+    - r-network # needed in amp_out_network (I think this could also be added to r-gally)
+    - r-sna  # needed in amp_out_network (I think this could also be added to r-gally)
+    - r-ggally # provides ggnet/ggnet2 functionality needed in amp_otu_network (also see ggally.patch)
+    - r-patchwork # needed in amp_heatmap if plot_functions=T
+    - r-lubridate # needed in amp_timeseries
+    # Others
+    - r-svglite # needed if ggsave is used for saving the plots
 
 test:
   commands:
-    - $R -e "library('ampvis2')"  # [not win]
-    - "\"%R%\" -e \"library('ampvis2')\""  # [win]
+    - $R -e "library('ampvis2')"
 
 about:
   home: https://github.com/MadsAlbertsen/ampvis2
