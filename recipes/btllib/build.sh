@@ -11,3 +11,4 @@ cp install/include/* ${PREFIX}/include/
 cp install/lib/* ${PREFIX}/lib/
 
 # python wrappers:
+pip install install/lib/btllib/python
