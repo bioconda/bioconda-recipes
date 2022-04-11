@@ -6,9 +6,9 @@ mkdir -p ${PREFIX}/bin/
 mkdir -p ${PREFIX}/include/
 mkdir -p ${PREFIX}/lib/
 
-cp install/bin/* ${PREFIX}/bin/
-cp install/include/* ${PREFIX}/include/
-cp install/lib/* ${PREFIX}/lib/
+cp -r install/bin/* ${PREFIX}/bin/
+cp -r install/include/* ${PREFIX}/include/
+cp -r install/lib/* ${PREFIX}/lib/
 
 # python wrappers:
 pip install install/lib/btllib/python
