@@ -1,0 +1,59 @@
+{% set name = "biom-format" %}
+{% set version = "2.1.12" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: a4460e803b2abfcabe76d5d8fec0f3f7e76a8cd0e09bf22bb38dea9fca224ac2
+
+build:
+  number: 1
+  skip: true  # [py2k]
+  entry_points:
+    - biom = biom.cli:cli
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - cython
+    - numpy
+    - h5py
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+    - click
+    - future >=0.16.0
+    - pandas >=0.20.0
+    - scipy >=1.3.1
+    - six >=1.10.0
+    - h5py
+
+test:
+  imports:
+    - biom
+    - biom._filter
+    - biom._transform
+    - biom._subsample
+  commands:
+    - biom --help
+
+about:
+  home: http://biom-format.org/
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: COPYING.txt
+  summary: Biological Observation Matrix (BIOM) format
+  dev_url: https://github.com/biocore/biom-format
+
+extra:
+  recipe-maintainers:
+    - synapticarbors
+    - wasade
+    - nsoranzo
+    - thermokarst
