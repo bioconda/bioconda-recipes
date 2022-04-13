@@ -20,5 +20,5 @@ cp src/physlr-molecules ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 cp src/physlr-overlap ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/src/physlr-overlap
 cp src/physlr-split-minimizers ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/src/physlr-split-minimizers
 
-echo "#!/bin/bash" > ${PREFIX}/bin/physlr-make
-echo "make -f $(command -v ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/physlr-make) \$@" >> ${PREFIX}/bin/physlr-make
+echo "#!/bin/bash" > ${PREFIX}/bin/physlr
+echo "make -f $(command -v ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/physlr-make) \$@" >> ${PREFIX}/bin/physlr
