@@ -1,4 +1,4 @@
-{% set version = "4.9.8" %}
+{% set version = "4.9.15" %}
 
 package:
   name: sirius-csifingerid
@@ -8,9 +8,13 @@ build:
   number: 0
 source:
   - url: https://github.com/boecker-lab/sirius/releases/download/v{{ version }}/sirius-{{ version }}-linux64.zip  # [linux]
-    sha256: 0312915249181df975a23b605608b69badd4a657236a8bb7a0aa174a840ddc56  # [linux]
+    sha256: 6c468672cc59d20d3aa73c3b8a7932e8150e7ecd29c319ae6499572fe67dfc9f  # [linux]
+    # the runner script sets LD_LIBRARY_PATH which leads to `error while loading shared libraries: libz.so.1`
+    # the patch adds the lib path where conda installs libaries to the variable
+    patches:  # [linux]
+      - sirius.patch  # [linux]
   - url: https://github.com/boecker-lab/sirius/releases/download/v{{ version }}/sirius-{{ version }}-osx64.zip  # [osx]
-    sha256: ed9e853974feb942b6833c5ce0685c9307f074bc6519a4428c45c11859ae508f  # [osx]
+    sha256: e9c61bb99b653c7ad490208ae5e68cca91f1120bab8194cb54361ff79e1ec6a5  # [osx]
 
 requirements:
   build:
@@ -21,6 +25,11 @@ requirements:
 test:
   requires:
     - wget
+  # run_test.sh does not run in containerized tests
+  # but only in the conda based test
+  # hence we add this redundant test command
+  commands:
+    - sirius --version
 
 about:
     home: https://bio.informatik.uni-jena.de/software/sirius/
