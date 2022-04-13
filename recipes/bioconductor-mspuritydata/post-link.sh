@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="msPurityData_1.16.0.tar.gz"
+FN="msPurityData_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/msPurityData_1.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/msPurityData_1.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mspuritydata/bioconductor-mspuritydata_1.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/msPurityData_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/msPurityData_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mspuritydata/bioconductor-mspuritydata_1.22.0_src_all.tar.gz"
 )
-MD5="1dc8c550f928db3abc95ca0f00e24708"
+MD5="7fec1bacf818c9d52a99d82f4657e1e6"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

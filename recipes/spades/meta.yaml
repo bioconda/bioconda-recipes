@@ -1,20 +1,19 @@
-{% set version = "3.14.1" %}
-{% set sha256 = "d629b78f7e74c82534ac20f5b3c2eb367f245e6840a67b9ef6a76f6fac5323ca" %}
+{% set version = "3.15.4" %}
+{% set sha256 = "3b241c528a42a8bdfdf23e5bf8f0084834790590d08491decea9f0f009d8589f" %}
 
 package:
   name: spades
   version: {{ version }}
 
 source:
-  url: http://cab.spbu.ru/files/release{{ version }}/SPAdes-{{ version }}.tar.gz  
+  url: https://github.com/ablab/spades/releases/download/v{{version}}/SPAdes-{{version}}.tar.gz
   sha256: {{ sha256 }}
   patches:
     - 0001-change-verbosity.patch
-    - 0001-add-rt-lib-to-easel.patch  # [linux]
-    - 0001-link-rt-for-static-jemalloc.patch  # [linux]
 
 build:
   number: 0
+  skip: True  # [osx]
 
 requirements:
   build:
@@ -24,16 +23,20 @@ requirements:
     - llvm-openmp  # [osx]
     - openmp  # [linux]
     - cmake
+    - make
     - pkg-config
+    - sysroot_linux-64=2.17 # [linux]
   host:
     - llvm-openmp  # [osx]
     - openmp  # [linux]
     - zlib
     - bzip2
+    - sysroot_linux-64=2.17 # [linux]
   run:
     - llvm-openmp  # [osx]
     - openmp  # [linux]
-    - python
+    - python <=3.9
+    - sysroot_linux-64=2.17 # [linux]
 
 test:
   commands:

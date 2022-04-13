@@ -3,7 +3,7 @@ set -eu -o pipefail
 
 # ## Binary install with wrappers
 
-make CC="${CC}" LD="${CC}" CFLAGS="${CFLAGS}" LFLAGS="${LDFLAGS}" all
+make CC="${CC}" LD="${CC}" CFLAGS="-fcommon ${CFLAGS}" LFLAGS="${LDFLAGS}" all
 
 mkdir -p "${PREFIX}/bin"
 
