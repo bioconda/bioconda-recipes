@@ -1,4 +1,4 @@
 eval "$(register-python-argcomplete seq2science)"
 
-export _PYTHONUSERBASE=$PYTHONUSERBASE
-export PYTHONUSERBASE=seq2science-disabled
+export _PYTHONNOUSERSITE=$PYTHONNOUSERSITE
+export PYTHONNOUSERSITE=1
