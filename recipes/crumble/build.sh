@@ -1,8 +1,6 @@
 #!/bin/sh
-
-aclocal
+set -ex
 autoconf
-automake
 ./configure --prefix=${PREFIX}
 make
 make install
