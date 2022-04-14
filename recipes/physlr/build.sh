@@ -21,4 +21,4 @@ cp src/physlr-overlap ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/s
 cp src/physlr-split-minimizers ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/src/physlr-split-minimizers
 
 echo "#!/bin/bash" > ${PREFIX}/bin/physlr
-echo "make -f $(command -v ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/physlr-make) \$@" >> ${PREFIX}/bin/physlr
+echo "make -f $(command -v ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin/physlr-make) \$@" >> ${PREFIX}/bin/physlr
