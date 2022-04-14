@@ -1,25 +1,33 @@
-build:
-  number: 0
-
-about:
-  home: https://github.com/seqan/slimm/blob/master/README.md
-  license: https://github.com/seqan/slimm/blob/master/LICENSE
-  summary: SLIMM - Species Level Identification of Microbes from Metagenomes
-
 package:
   name: slimm
   version: 0.3.4
 
-source:
-  url: https://github.com/seqan/slimm/releases/download/v0.3.4/slimm-0.3.4-Linux-x86_64_sse4.tar.bz2 # [linux]
-  sha256: 8b4fccda3768d4e646924244369642fde735c38fd9bdd348cc2f6ff250e2f61d # [linux]
-  url: https://github.com/seqan/slimm/releases/download/v0.3.4/slimm-0.3.4-Mac-x86_64_sse4.zip # [osx]
-  sha256: f6c0a3b30642815ed546c9e4ea42e24e5bcc1857d4bf9f1228385b774c47c38b # [osx]
+build:
+  number: 3
 
+source:
+  - url: https://github.com/seqan/slimm/archive/v0.3.4.tar.gz
+    sha256: be96b31fdb990d36dd1f10139a868fad639d41010789d7de3b826958906dfc0b
+  - url: https://github.com/USCiLab/cereal/archive/51cbda5f30e56c801c07fe3d3aba5d7fb9e6cca4.tar.gz
+    sha256: 26361b539fe50eee308b564faa2742166d2922a7ab0bd4870ac55708581228c8
+    folder: include/cereal
+  - url: https://github.com/seqan/seqan/archive/584ae4fbff8312cfe31b3e0aea651edfb1b580ef.tar.gz
+    sha256: 05a43ec2952a03fee7e4c00a2db4c8a29299c3bd92d832220f96a8600561b76a
+    folder: include/seqan
+  # TODO: Remove lines below if source-based build works on macOS.
+  #- url: https://github.com/seqan/slimm/releases/download/v0.3.4/slimm-0.3.4-Linux-x86_64_sse4.tar.bz2  # [linux]
+  #  sha256: 8b4fccda3768d4e646924244369642fde735c38fd9bdd348cc2f6ff250e2f61d  # [linux]
+  #- url: https://github.com/seqan/slimm/releases/download/v0.3.4/slimm-0.3.4-Mac-x86_64_sse4.zip  # [osx]
+  #  sha256: f6c0a3b30642815ed546c9e4ea42e24e5bcc1857d4bf9f1228385b774c47c38b  # [osx]
 
 requirements:
   build:
-
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
   host:
     - bzip2
     - zlib
@@ -32,9 +40,18 @@ test:
     - slimm --help 2>&1 > /dev/null
     - slimm_build --help 2>&1 > /dev/null
 
+about:
+  home: https://github.com/seqan/slimm/blob/master/README.md
+  license: https://github.com/seqan/slimm/blob/master/LICENSE
+  summary: SLIMM - Species Level Identification of Microbes from Metagenomes
+
 extra:
   identifiers:
     - biotools:slimm
     - doi:10.7717/peerj.3138
   recipe-maintainers:
     - temehi
+  # TODO: Remove lines below if source-based build works on macOS.
+  #skip-lints:
+  #  - should_be_noarch_generic
+  #  - should_not_be_noarch_source

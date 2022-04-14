@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="ricecdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/ricecdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/ricecdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ricecdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ricecdf/bioconductor-ricecdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ricecdf/bioconductor-ricecdf_2.18.0_src_all.tar.gz"
 )
 MD5="51db6f51f4adcfb7f4940d07668db8b8"

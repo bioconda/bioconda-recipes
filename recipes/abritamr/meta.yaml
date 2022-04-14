@@ -1,0 +1,51 @@
+{% set name = "abritamr" %}
+{% set version = "1.0.7" %}
+{% set sha256 = "bfad90d14bf140f70ecf70fa9710f20179ea305d625af8cafea130234870dcf0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/abritamr-{{ version }}.tar.gz"
+  sha256: "{{ sha256 }}"
+
+build:
+  number: 1
+  noarch: python
+  entry_points:
+    - abritamr=abritamr.abritamr:main
+  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+
+requirements:
+  host:
+    - pip
+    - python=3.7
+  run:
+    - pandas
+    - xlsxwriter
+    - ncbi-amrfinderplus=3.10.16
+    - blast 
+    - hmmer 
+    - libcurl
+
+test:
+  imports:
+    - abritamr
+  commands:
+    - abritamr --help
+  requires:
+    - nose
+    - pytest
+
+about:
+  home: "https://github.com/MDU-PHL/abritamr"
+  license: "GNU General Public v3 (GPLv3)"
+  license_family: GPL3
+  summary: "Running AMRFinderPlus for MDU"
+  dev_url: https://github.com/MDU-PHL/abritamr 
+
+extra:
+  recipe-maintainers:
+    - kristyhoran
+    - andergs

@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="PolyPhen.Hsapiens.dbSNP131_1.0.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/PolyPhen.Hsapiens.dbSNP131_1.0.2.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/PolyPhen.Hsapiens.dbSNP131_1.0.2.tar.gz"
   "https://bioarchive.galaxyproject.org/PolyPhen.Hsapiens.dbSNP131_1.0.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-polyphen.hsapiens.dbsnp131/bioconductor-polyphen.hsapiens.dbsnp131_1.0.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-polyphen.hsapiens.dbsnp131/bioconductor-polyphen.hsapiens.dbsnp131_1.0.2_src_all.tar.gz"
 )
 MD5="763e9cd4afd97b36f7e659f5454ef61f"

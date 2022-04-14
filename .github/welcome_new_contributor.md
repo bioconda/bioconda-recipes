@@ -1,4 +1,4 @@
-Welcome to Bioconda, @{{user}}! Thank you for opening your first pull request! As you're new to Bioconda, please read through our [documentation about contributing recipes](https://bioconda.github.io/contributing.html). If you need help, please ping one of the following teams:
+Welcome to Bioconda, @{{user}}! Thank you for opening your first pull request! As you're new to Bioconda, please read through our [documentation about contributing recipes](https://bioconda.github.io/contributor/guidelines.html). If you need help, please ping one of the following teams:
 
  - `@bioconda/haskel` for Haskell packages
  - `@bioconda/lib` for C/C++ packages

@@ -1,22 +1,24 @@
 {% set name = "mummer4" %}
-{% set version = "4.0.0beta2" %}
+{% set version = "4.0.0rc1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  sha256: cece76e418bf9c294f348972e5b23a0230beeba7fd7d042d5584ce075ccd1b93
+  sha256: 85006adb2d6539c2f738c3e3bb14b58bb6f62cd6c6ca5ede884a87ae76e07d1d
   url: https://github.com/mummer4/mummer/releases/download/v{{ version }}/mummer-{{ version }}.tar.gz
   patches:
     - Makefile.am.patch # replaces some double quotes with single quotes to accomodate filepaths with '@' (Galaxy)
     - Makefile.in.patch
+    - 0001-sort-mgaps-file-before-postpro.-on-behalf-of-jervied.patch  # fixes https://github.com/mummer4/mummer/issues/55
 
 build:
-  number: 4
+  number: 3
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
@@ -26,6 +28,7 @@ requirements:
 
 test:
   commands:
+    - "delta2vcf -h 2>&1 | grep delta2vcf &> /dev/null"
     - "mummer 2>&1 | grep mummer &> /dev/null"
     - "mummerplot  2>&1 | grep mummer &> /dev/null"
     - "nucmer  2>&1 | grep nucmer &> /dev/null"

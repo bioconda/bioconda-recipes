@@ -1,28 +1,10 @@
 #!/bin/bash
 
-
-# adding activation and deactivation scripts to set PYTHONPATH
-mkdir -p ${PREFIX}/etc/conda/activate.d
-mkdir -p ${PREFIX}/etc/conda/deactivate.d
-
-if [ ! -f ${PREFIX}/etc/conda/activate.d/env_vars.sh ]; then
-    echo "#!/bin/bash" > ${PREFIX}/etc/conda/activate.d/env_vars.sh
-fi
-echo "PYTHONPATH=${PREFIX}/lib/python2.7/site-packages:${PYTHONPATH}" >> ${PREFIX}/etc/conda/activate.d/env_vars.sh
-
-if [ ! -f ${PREFIX}/etc/conda/deactivate.d/env_vars.sh ]; then
-    echo "#!/bin/bash" > ${PREFIX}/etc/conda/deactivate.d/env_vars.sh
-fi
-echo "unset PYTHONPATH" >> ${PREFIX}/etc/conda/deactivate.d/env_vars.sh
-
-
-
 # setup environment variables
-export PYTHONPATH=${PREFIX}/lib/python2.7/site-packages:${PYTHONPATH}
 export kyotoTycoonIncl="-I${PREFIX}/include -DHAVE_KYOTO_TYCOON=1 -I-I${PREFIX}/lib"
 export kyotoTycoonLib="-L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib -lkyototycoon -lkyotocabinet -lz -lpthread -lm -lstdc++ -llzo2"
-export LD_LIBRARY_PATH=${PREFIX}/lib
-export CPATH=$PREFIX/include
+export CFLAGS="$CFLAGS -fcommon"
+export CXXFLAGS="$CXXFLAGS -fcommon"
 
 # some makefiles don't use variables and call gcc or c++/g++. The conda executables have different names
 GCC_PATH=$(dirname "${CC}")
@@ -34,13 +16,19 @@ mkdir submodules/sonLib/externalTools/quicktree_1.1/bin
 mkdir submodules/hal/lib
 mkdir submodules/hal/bin
 
-make
-$PYTHON setup.py install
+rm -rf submodules/hdf5
+make cxx="${CC} ${CPPFLAGS} ${CFLAGS} ${LDFLAGS}" cpp="${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS}" LDLIBS='-lhdf5_cpp -lhdf5' h5c++="${PREFIX}/bin/h5c++"
+$PYTHON -m pip install . --ignore-installed --no-deps -vv
+
+find bin -type f -executable -exec strip {} \;
 cp -r bin/* ${PREFIX}/bin
+
+find submodules/hal -name \*.a -o -name \*.o -delete
+find submodules/hal -type f -executable -exec strip {} \;
 cp -r submodules/hal ${PREFIX}/lib/python2.7/site-packages
+for binary in ${PREFIX}/lib/python2.7/site-packages/hal/bin/* ; do
+    ln -s ${binary} ${PREFIX}/bin/
+done
 
-
-
-
-
-
+rm ${GCC_PATH}/gcc
+rm ${GCC_PATH}/c++

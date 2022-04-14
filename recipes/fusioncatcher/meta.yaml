@@ -1,56 +1,30 @@
 {% set name = "fusioncatcher" %}
-{% set version = "1.00" %}
-{% set sha256 = "46cd7ab4f06160b9735b03893254171ecc387d35c12796998448cd1594775dbc" %}
+{% set version = "1.33" %}
+{% set sha256 = "7a1b3b0cf699b030d1bebe83b898ed594988be96b87c3ac31f3d768b31de534a" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://sourceforge.net/projects/{{ name }}/files/{{ name }}_v{{ version }}.zip
+  url: https://github.com/ndaniel/fusioncatcher/archive/refs/tags/{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
     - paths.patch
 
 build:
-  number: 1
-  skip: True  # [py3k]
+  number: 3
+  noarch: generic
 
 requirements:
-  host:
-    - python
-    - biopython >=1.50
-    - bowtie=1.2.0
-    - fusioncatcher-seqtk=1.2
-    - star=2.5.2b
-    - bowtie2=2.3.0
-    - bbmap
-    - blat=35
-    - lzo
-    - bwa=0.7.12
-    - ucsc-faToTwoBit 
-    - velvet=1.2.10
-    - openpyxl=2.5.0a2
-    - xlrd=1.0.0
-    - pigz=2.3
-    - samtools=0.1.19
-    - picard=2.10.6
-    - numpy=1.13.1
-    - parallel=20171222
-    - ucsc-liftover
-    - oases
-    - lzop
-    - java-jdk
-    - sra-tools=2.6.2
-    - zip
   run:
-    - python
+    - python <3
     - biopython >=1.50
-    - bowtie=1.2.0
+    - bowtie=1.2.3
     - fusioncatcher-seqtk=1.2
-    - star=2.5.2b
-    - bowtie2=2.3.0
-    - bbmap
+    - star=2.7.2b
+    - bowtie2=2.3.5
+    - bbmap=38.44
     - blat=35
     - lzo
     - bwa=0.7.12
@@ -66,24 +40,27 @@ requirements:
     - ucsc-liftover
     - oases
     - lzop
-    - java-jdk
-    - sra-tools=2.6.2
+    - openjdk
+    - sra-tools=2.9.6
     - zip
+    - coreutils
+    - grep
+    - fastqtk
+    - tbb=2020.2
 
 test:
   commands:
-    - export FC_DB_PATH=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}/db && fusioncatcher -h
-    - export FC_DB_PATH=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}/db && fusioncatcher-build -h
+    - export FC_DB_PATH=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}/db && fusioncatcher.py -h
+    - export FC_DB_PATH=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}/db && fusioncatcher-build.py -h
 
 about:
   home: https://github.com/ndaniel/fusioncatcher
   license: GPL-3.0
-  summary: "Finder of Somatic Fusion Genes in RNA-seq data."
   license_family: GPL
   license_file: LICENSE
+  summary: "Finder of Somatic Fusion Genes in RNA-seq data."
 
 extra:
   identifiers:
     - doi:10.1101/011650
-  skip-lints:
-    - uses_javajdk
+  notes: download-human-db.sh should be updated when new version of FusionCatcher is released.

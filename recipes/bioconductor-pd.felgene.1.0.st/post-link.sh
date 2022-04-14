@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.felgene.1.0.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.felgene.1.0.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.felgene.1.0.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.felgene.1.0.st_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.felgene.1.0.st/bioconductor-pd.felgene.1.0.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.felgene.1.0.st/bioconductor-pd.felgene.1.0.st_3.12.0_src_all.tar.gz"
 )
 MD5="b7ac0a5cbde5f248aac5d0a7422bd88d"

@@ -1,65 +1,65 @@
-{% set version = "2.0.6" %}
-{% set sha256 = "b842d63cf6159935a0fc62addf64fa4762250f9ffc34feb161f354c66155e498" %}
+
+{% set version = "2.9.1" %}
+{% set sha256 = "321e8a99c2792ed9b6730de03b07ee5aca52f0fa84f71b432db7a4d33c515c77" %}
 
 package:
   name: metagenome-atlas
   version: {{ version }}
 
 source:
-  url: https://github.com/metagenome-atlas/atlas/archive/v{{ version }}.tar.gz # [linux]
-  sha256: {{ sha256 }}  # [linux]
+  url: https://github.com/metagenome-atlas/atlas/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  skip: True  # [osx]
-  number: 1
+  number: 0
   entry_points:
     - atlas=atlas.atlas:cli
-
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
 
 requirements:
-  build:
-    - python=3.6
-    - setuptools
-    - snakemake=5.4.2
-    - pandas=0.23
-    - click=7
-    - ruamel.yaml=0.15
-    - biopython>=1.70
-    - git # this is apparently needed for snakemake
+  host:
+    - python=3.8
+    - pip
   run:
-    - python=3.6
-    - snakemake=5.4
-    - pandas=0.23
-    - click=7
-    - ruamel.yaml=0.15
-    - biopython>=1.70
-    - bbmap=37.78
-    - git
+    - python>=3.8, <3.11
+    - mamba
+    - bbmap =38
+    - snakemake-minimal =7.3
+    - pandas >=1.2, <1.5
+    - click >=7
+    - ruamel.yaml =0.17
+    - biopython =1.74
+    - cookiecutter
+    - pathlib2
+    - xmltodict
+    # optional to help conda solve
+    - numpy =1.21
+ 
 
 test:
   imports:
     - atlas
-  # commands:
-  #   - LANG=en_US.utf8 atlas --version
-  #   - LANG=en_US.utf8 atlas init --help
-  #   - LANG=en_US.utf8 atlas run --help
+  commands:
+{% set export_lang = "export LC_ALL=en_US.UTF-8 && export LANG=en_US.UTF-8" %}
+    - {{ export_lang }} && atlas --version
+    - {{ export_lang }} && atlas init --help
+    - {{ export_lang }} && atlas run --help
 
 about:
   home: https://github.com/metagenome-atlas
+  dev_url: https://github.com/metagenome-atlas/atlas
+  doc_url: https://metagenome-atlas.rtfd.io
   license: BSD-3-Clause
   license_family: BSD
-  summary: |
-    ATLAS - Three commands to start analysing your metagenome data
-
+  summary: ATLAS - Three commands to start analysing your metagenome data
   description: |
     Atlas is a easy to use metagenomic pipeline
-    ![scheme of workflow](https://github.com/metagenome-atlas/atlas/blob/f8627545bcfb8f2b55733a35ecd0426ae4bbd5d1/resources/images/ATLAS_scheme.png)
-
     # Quick Start
 
     Three commands to start analysing your metagenome data:
     ```
-        conda install -c bioconda -c conda-forge metagenome-atlas
+        mamba install -c bioconda -c conda-forge metagenome-atlas
         atlas init --db-dir databases path/to/fastq/files
         atlas run
     ```
@@ -71,12 +71,10 @@ about:
       - run atlas on any cluster system
     For more details see documentation.
 
-  dev_url: https://github.com/metagenome-atlas/atlas
-  doc_url: https://metagenome-atlas.rtfd.io
 extra:
   recipe-maintainers:
     - silask
-    - brwnj
-#  identifiers:
-#    - biotools:Spades
-#    - doi:10.1089/cmb.2012.0021
+  container:
+    extended-base: true  # unicode problem with click
+  identifiers:
+    - doi:10.1101/737528

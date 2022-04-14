@@ -1,8 +1,18 @@
-# the flags the new gxx activate script sets breaks the build, so unset them here
+### Dumping preset flags because they break the build process on linux
+# Linker flags
+unset LDFLAGS
+export LDFLAGS="-L${PREFIX}/lib"
+# Compiler flags
 unset CXXFLAGS
-export CXXFLAGS="-I${PREFIX}/include"
-mkdir -pv $PREFIX/bin/blast/bin
-sed -i 's/g++/$CXX/g' source/uchime_src/mk
-make -j 2
-cp {mothur,uchime} $PREFIX/bin
-ln -s $PREFIX/bin/{bl2seq,formatdb,blastall,megablast} $PREFIX/bin/blast/bin/
+export CXXFLAGS="-I${PREFIX}/include -I."
+
+
+### Compiling mothur
+make clean
+make -j 4
+make install
+cp -a uchime ${PREFIX}/bin
+
+# Linking BLAST binaries to default location for mothur
+mkdir -pv "${PREFIX}"/bin/blast/bin/
+ln -s "${PREFIX}"/bin/{blastall,formatdb,megablast} "${PREFIX}"/bin/blast/bin/

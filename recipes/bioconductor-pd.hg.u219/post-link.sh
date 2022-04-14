@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.hg.u219_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.hg.u219_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.hg.u219_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.hg.u219_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.hg.u219/bioconductor-pd.hg.u219_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.hg.u219/bioconductor-pd.hg.u219_3.12.0_src_all.tar.gz"
 )
 MD5="dab073d315af47ff3001c72a6d1e7972"

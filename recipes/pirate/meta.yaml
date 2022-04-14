@@ -1,0 +1,51 @@
+{% set name = "PIRATE" %}
+{% set version = "1.0.4" %}
+{% set sha256 = "ed2bad7d73d5c445f565fd7532265b75dad079594d589ece87ae738b712f6bd3" %}
+{% set user = "SionBayliss" %}
+  
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 2
+  noarch: generic
+
+requirements:
+  run:
+    - perl-bioperl >=1.7.2
+    - mcl >=14.137
+    - mafft >=7.310
+    - cd-hit >=4.7
+    - fasttree >=2.1.10
+    - blast >=2.2.31
+    - diamond >=0.9.14
+    - parallel >=20170422
+    - unzip
+    - r-dplyr
+    - r-ggplot2
+
+test:
+  commands:
+    - {{ name }} -v | grep '{{ version }}'
+    - {{ name }} -h | grep 'pangenome'
+    - {{ name }} --check
+    
+about:
+  home: https://github.com/{{ user }}/{{ name }}
+  license: GPL3
+  license_file: LICENSE
+  license_family: GPL
+  summary: Pangenome analysis and threshold evaluation toolbox
+
+extra:
+  # this is needed for the test with xargs -I to work
+  container: 
+    extended-base: true
+  identifiers:
+    - biotools:{{ name|lower }}
+    - doi:10.1101/598391

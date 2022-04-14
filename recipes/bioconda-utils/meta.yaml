@@ -1,13 +1,13 @@
-{% set version = "0.15.12" %}
-{% set sha256 = "5c6a6af83236931065bf9b16cdb55c9535aa4d0bd816acd66155d81114f7a8db" %}
+{% set version = "0.19.3" %}
+{% set sha256 = "db2fa92194a15af2d4581594ba7dc928e21cd0d95c162f0816f9740e7b9680f7" %}
 
 package:
   name: bioconda-utils
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url: https://github.com/bioconda/bioconda-utils/archive/v{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  sha256: {{ sha256 }}
 
 build:
   noarch: python
@@ -18,47 +18,49 @@ build:
 
 requirements:
   host:
-    - python >=3
+    - python >=3.7
     - pip
   run:
-    - python >=3
-    - anaconda-client 1.6.*
+    - python >=3.7
+    - conda 4.12.0
+    - boa 0.9.*
+    - conda-build 3.21.8
+    - conda-verify 3.1.*
     - argh 0.26.*
-    - beautifulsoup4 4.6.*
-    - conda 4.6.12
-    - conda-build 3.17.8
-    - galaxy-lib >=18.9.1
-    - jinja2 2.10.*
-    - jsonschema 2.6.*
-    - networkx 1.11
+    - colorlog 3.1.*
+    - tqdm >=4.26
+    - ruamel_yaml 0.15.*
     - pyaml 17.12.*
-    - requests 2.20.*
-    - sphinx
+    - networkx 2.*
+    - pandas 0.23.*
+    - numpy 1.19.*
+    - libblas * *openblas
+    - boltons 18.*
+    - jsonschema 2.6.*
+    - conda-forge-pinning 2022.02.18.13.24.38
+    - anaconda-client 1.6.*
+    - involucro 1.1.*
+    - skopeo 0.1.35
+    - git 2.*
+    - regex 2018.08.29
+    - aiohttp 3.8.*
+    - aiofiles 0.8.*
+    - aioftp 0.12.*
+    - backoff 1.6.*
+    - cachetools 3.0.*
+    - gitpython >=3.0.8,3.0.*
+    - gidgethub 3.0.*
+    - pyjwt 1.7.*
+    - beautifulsoup4 4.6.*
+    - galaxy-lib >=18.9.1
+    - jinja2 >2.10.1,<3
+    - markupsafe <2.1
+    - sphinx >=4.1
+    - celery
     - sphinx-autodoc-typehints
     - alabaster 0.7.*
     - docutils
-    - involucro 1.1.*
-    - pandas 0.23.*
-    - numpy 1.15.*
-    - pygithub 1.34.*
-    - colorlog 3.1.*
-    - six 1.11.*
-    - git
-    - conda-forge-pinning 2019.03.04
-    - aiohttp 3.4.*
-    - aiofiles 0.4.*
-    - aioftp 0.12.*
-    - regex 2018.08.29
-    - backoff 1.6.*
-    - tqdm >=4.26
-    - ruamel_yaml 0.15.*
-    - GitPython 2.1.*
-    - gidgethub 3.0.*
-    - boltons 18.*
-    - gunicorn 19.9.*
-    - cachetools 3.0.*
-    - pyjwt 1.7.*
-    - celery 4.2.*
+    - requests 2.22.*
 
 test:
   imports:
@@ -67,6 +69,14 @@ test:
     - bioconda-utils --help
     - bioconda-utils lint --help
     - bioconda-utils build --help
+    - >
+      CONDA_AGGRESSIVE_UPDATE_PACKAGES=
+      CONDA_AUTO_UPDATE_CONDA=0
+      "${PREFIX}/bin/conda" install --prefix="${PREFIX}" --dry-run --satisfied-skip-solve
+      --file="$( python -c
+      'from os.path import dirname, join; import bioconda_utils; print(join(dirname(bioconda_utils.__file__), "bioconda_utils-requirements.txt"))'
+      )"
+      2>&1 | grep -qF 'All requested packages already installed.'
 
 about:
   home: http://bioconda.github.io/build-system.html

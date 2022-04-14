@@ -1,37 +1,67 @@
+{% set name = "RepeatModeler" %}
+{% set version = "2.0.3" %}
+{% set sha256 = "063bb8ab6b9f4bf18458504f6f90c0022ef5a5aebf2176f78f87f9e69faf7408" %}
+
 package:
-  name: repeatmodeler
-  version: '1.0.11'
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: 'http://www.repeatmasker.org/RepeatModeler/RepeatModeler-open-1.0.11.tar.gz'
-  md5: c148b4b56bb3fbd4e9ba88ac8736baa3
+  url: https://github.com/Dfam-consortium/RepeatModeler/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - patch
 
 build:
-  number: 1
-  skip: True #[osx]
+  skip: True  # [osx]
+  number: 0
 
 requirements:
-  build:
+  host:
     - perl
-    - rmblast
+    - perl-file-which
+    - rmblast >=2.11.0
+    - perl-uri
+    - perl-libwww-perl
+    - perl-devel-size
   run:
     - perl
+    - perl-file-which
+    - perl-devel-size
+    - perl-uri
+    - perl-libwww-perl
+    - perl-devel-size
     - repeatmasker
-    - rmblast
-    - trf
-    - repeatscout
-    - recon
-    - perl-text-soundex
+    - rmblast >=2.11.0
+    - trf >=4.09
+    - repeatscout >=1.0.6
+    - recon >=1.08
+    - cd-hit >=4.8.1
+    - ltr_retriever >=2.9
+    - mafft >=7.471
+    - genometools-genometools >=1.6
+    - ucsc-twobitinfo
+    - ucsc-twobittofa
+    - ucsc-fatotwobit
+    - ninja-nj    # [not osx]
+# to be complete it is missing ABBlast
 
 test:
+  files:
+    - test.fa
   commands:
-    - RepeatModeler > /dev/null
+     # (see run_test.sh )
+    - "RepeatModeler -h | grep SYNOPSIS"
 
 about:
-  home: 'http://www.repeatmasker.org/RepeatModeler.html'
+  home: 'http://www.repeatmasker.org/RepeatModeler/'
   license: 'Open Software License v2.1'
+  license_file: LICENSE
   summary: 'RepeatModeler is a de-novo repeat family identification and modeling package.'
+  dev_url: https://github.com/Dfam-consortium/RepeatModeler
 
 extra:
   identifiers:
     - biotools:RepeatModeler
+  skip-lints:
+    - should_be_noarch_generic

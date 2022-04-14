@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="hspeccdf_0.99.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/hspeccdf_0.99.1.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hspeccdf_0.99.1.tar.gz"
   "https://bioarchive.galaxyproject.org/hspeccdf_0.99.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hspeccdf/bioconductor-hspeccdf_0.99.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hspeccdf/bioconductor-hspeccdf_0.99.1_src_all.tar.gz"
 )
 MD5="89f81adf91094710558ce6aec79fc7fd"

@@ -1,0 +1,45 @@
+{% set name = "IRMA" %}
+{% set version = "1.0.2" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "ad9187d898742288d2e9a0585a394a79c082983730237477926f3f7f72438a18" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://wonder.cdc.gov/amd/flu/irma/flu-amd-202103.zip
+  {{ hash_type }}: {{ hash_value }}
+  patches:
+    - irma-fix-bin-cmds.patch
+    - label-fix-bin-cmds.patch
+
+build:
+  number: 1
+  noarch: generic
+
+requirements:
+  host:
+    - perl
+  run:
+    - perl
+    - r-base >=3.5.1
+    - parallel >=20181022
+    - pigz >=2.3.4
+    - blat >=35
+    - samtools >=1.2
+    - fasttree >=2.1.3
+    - muscle >=3.8.1551
+    - minimap2 >=2.17
+    - zip >=3.0
+
+test:
+  files:
+    - test1.fa
+    - test2.fastq
+
+about:
+  home: https://wonder.cdc.gov/amd/flu/irma/
+  license: GNU General Public License v3 or later (GPLv3+)
+  summary: "IRMA: Iterative Refinement Meta-Assembler for the robust assembly, variant calling, and phasing of highly variable RNA viruses."
+license_family: GPL3

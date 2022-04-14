@@ -1,50 +1,56 @@
-{% set version = "0.7.2" %}
+{% set name = "kneaddata" %}
+{% set version = "0.10.0" %}
 
 package:
-  name: kneaddata
-  version: {{ version }}
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
 
 source:
-  url: https://bitbucket.org/biobakery/kneaddata/get/{{ version }}.tar.gz
-  sha256: 87f74c5f94a28d61384a11544f23bd6bdbca0fb4477ac29727929024e140bacb
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: ae43a1ebafbf9bc282492178eb632a6b2e8d1e4c57d691419e19050f20488425
 
 build:
-  number: 1
+  number: 0
   noarch: python
+  script: {{ PYTHON }} setup.py install --bypass-dependencies-install --single-version-externally-managed --record=record.txt
   entry_points:
     - kneaddata = kneaddata.knead_data:main
+    - kneaddata_bowtie2_discordant_pairs = kneaddata.bowtie2_discordant_pairs:main
     - kneaddata_database = kneaddata.download_db:main
     - kneaddata_build_database = kneaddata.generate_db:main
+    - kneaddata_read_count_table = kneaddata.read_count_table:main
     - kneaddata_test = kneaddata.tests.kneaddata_test:main
 
 requirements:
-  host:
-    - python
+  build:
+    - python >=3
     - setuptools
-
+    - bowtie2 >=2.2
   run:
-    - python
-    - trimmomatic
-    - bowtie2
-    - bmtagger
+    - python >=3
+    - bowtie2 >=2.2
     - fastqc
-    - trf
     - samtools
+    - trimmomatic
+    - trf
 
 test:
   imports:
     - kneaddata
     - kneaddata.db_preprocessing
     - kneaddata.tests
-
   commands:
     - kneaddata --help
+    - kneaddata_bowtie2_discordant_pairs --help
     - kneaddata_database --help
     - kneaddata_build_database --help
+    - kneaddata_read_count_table --help
     - kneaddata_test --help
 
 about:
   home: http://huttenhower.sph.harvard.edu/kneaddata
   license: MIT
-  summary: 'KneadData is a tool designed to perform quality control on metagenomic and metatranscriptomic sequencing data, especially data from microbiome experiments.'
   license_family: MIT
+  summary: KneadData is a tool designed to perform quality control on metagenomic sequencing data.
+  description: KneadData is a tool designed to perform quality control on metagenomic sequencing data, especially data from microbiome experiments. In these experiments, samples are typically taken from a host in hopes of learning something about the microbial community on the host. However, metagenomic sequencing data from such experiments will often contain a high ratio of host to bacterial reads. This tool aims to perform principled in silico separation of bacterial reads from these "contaminant" reads, be they from the host, from bacterial 16S sequences, or other user-defined sources.
+  doc_url: http://huttenhower.sph.harvard.edu/kneaddata

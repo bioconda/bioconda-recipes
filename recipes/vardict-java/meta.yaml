@@ -1,30 +1,28 @@
-{% set version = "1.5.2" %}
+{% set version = "1.8.3" %}
 
 package:
   name: vardict-java
   version: {{ version }}
 
 source:
-  git_url: https://github.com/AstraZeneca-NGS/VarDictJava.git
-  git_rev: {{ version }}
+  url: https://github.com/AstraZeneca-NGS/VarDictJava/releases/download/v{{ version }}/VarDict-{{ version }}.zip
+  sha256: c1940c1b0308a431879010b52036c02c39ca0f97af04fd56c2f1b6febe75734b
 
 build:
-  number: 1
+  number: 0
   noarch: generic
 
 requirements:
-  build:
-    - openjdk
   run:
     - openjdk
     - perl
-    - r
+    - r-base >=3.5.1
 
 test:
   commands:
     - vardict-java -h
-    - vardict-var2vcf
-    - vardict-var2vcf-paired
+    - var2vcf_paired.pl -h
+    - echo -e "Sample\tchrM\tchrM\t16263\t16263\tC\tT\t4\t4\t0\t0\t2\t2\tT/T\t1.0000\t0;2\t25.8\t1\t34.2\t1\t60.0\t3.000\t1.0000\t0\t4\t4.000\t1\t3.0\t3\t3\tACTGCAACTCCAAAGCCACC\tCTCACCCACTAGGATACCAA\tchrM:2-16571\tSNV\t0\t0" | teststrandbias.R
 
 about:
   home: https://github.com/AstraZeneca-NGS/VarDictJava
@@ -32,18 +30,6 @@ about:
   summary: Java port of the VarDict variant discovery program
 
 extra:
-  skip-lints:
-    - uses_git_url
-    - missing_hash
-  notes: >
-    Provides five binaries:
-    * `vardict-java`
-    * `vardict-strandbias`
-    * `vardict-testsomatic`
-    * `vardict-var2vcf`
-    * `vardict-var2vcf-paired`
-
-    A typical single sample variant call would involve
-    `vardict-java [some flags] | vardict-strandbias | vardict-var2vcf [some flags]`
-    A typical paired variant call would involve
-    `vardict-java [some flags] | vardict-testsomatic | vardict-var2vcf-paired [some flags]`
+  recipe-maintainers:
+    - roryk
+    - cbrueffer

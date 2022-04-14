@@ -1,0 +1,50 @@
+# Upstream source is not versioned by Git tags but with define BEDTK_VERSION in ./bedtk.c.
+# The `bedtk version | grep` test checks if version and commit are in sync.
+{% set upstream_version = "0.0-r25-dirty" %}
+{% set upstream_commit = "fee50660b1717c4b4620c46308400f4edb9f6c72" %}
+{% set version = upstream_version | replace("-", ".") %}
+{% set sha256 = "c636f5ac11edc36fce81c59cb7b0627a6bb40f30d004ac4f930657cdb49c03ae" %}
+
+package:
+  name: bedtk
+  version: {{ version }}
+
+source:
+  url: https://github.com/lh3/bedtk/archive/{{ upstream_commit }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 2
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - zlib
+  run:
+
+test:
+  commands:
+    - bedtk
+    - bedtk version | grep -qxF '{{ upstream_version }}'
+
+about:
+  home: https://github.com/lh3/bedtk
+  dev_url: https://github.com/lh3/bedtk
+  doc_url: https://github.com/lh3/bedtk
+  license: MIT
+  license_file: LICENSE.txt
+  summary: Bedtk is a set of simple tools to process BED files.
+  description: >
+    Bedtk is a set of simple tools to process BED files.
+    It so far implements intersection, subtraction, sorting, merging and computing the breadth of coverage.
+    Bedtk is not as versatile as bedtools and never aims to match the bedtools feature set.
+    It instead focuses on performance.
+    Bedtk is several to tens of times faster and uses a fraction of memory.
+    It also provides a few convenient functions.
+    For example, sorting, merging and intersection can be done in one go without Unix pipes.
+
+extra:
+  identifiers:
+    - biotools:bedtk

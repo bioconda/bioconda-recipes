@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="celegans.db_3.2.3.tar.gz"
+FN="celegans.db_3.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/celegans.db_3.2.3.tar.gz"
-  "https://bioarchive.galaxyproject.org/celegans.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-celegans.db/bioconductor-celegans.db_3.2.3_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-celegans.db/bioconductor-celegans.db_3.2.3_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/celegans.db_3.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/celegans.db_3.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-celegans.db/bioconductor-celegans.db_3.13.0_src_all.tar.gz"
 )
-MD5="fb4631ee29a20c20d5766aed4c04cac1"
+MD5="3cfa9df5a81ef538a890ed8c5d5a98ad"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

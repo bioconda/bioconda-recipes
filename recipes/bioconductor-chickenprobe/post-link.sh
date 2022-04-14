@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="chickenprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/chickenprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/chickenprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/chickenprobe_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-chickenprobe/bioconductor-chickenprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-chickenprobe/bioconductor-chickenprobe_2.18.0_src_all.tar.gz"
 )
 MD5="b33599081ce1ba768ff7992e143c01d0"

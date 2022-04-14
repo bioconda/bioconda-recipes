@@ -1,63 +1,64 @@
 package:
   name: cactus
-  version: "2019.03.01"
+  # Version prefixed with 0.0. since there is now an official
+  # https://github.com/ComparativeGenomicsToolkit/cactus/releases/tag/v1.0.0
+  # TODO: Old builds with 2019.03.01 may be moved off the main label.
+  version: "0.0.2019.03.01"
 
 source:
+  # This uses non-upstream sources!
+  # When updating the recipe, please use https://github.com/ComparativeGenomicsToolkit/cactus .
   url: https://github.com/pbasting/cactus/archive/833d8ca015deecdfa5d0aca01211632cdaca9e58.zip
   md5: 61ba6e8093a6649c43da1950074d9d5f
-
   patches:
-    # changes c++ std for sonlib make to c++ 11
-    - sonlib_include.patch
+    - 0001-Unvendor-HDF5-and-do-not-copy-hal-bin.patch
+    - 0002-Do-not-make-redundant-copies-of-hal-bin.patch
+    - 0003-Remove-unused-Cython-import.patch
     # changes setup.py so it doesn't call git and doesn't try and install dependencies
     - setup.patch
 
 build:
-  number: 1
-  skip: true # [osx]
-
+  number: 4
+  skip: true # [osx or py>27]
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - python=2.7
-    - zlib
 
   host:
-    - python=2.7
+    - pip
+    - python
+    - hdf5
     - zlib
-    - setuptools
     - kyototycoon
-
+    - cython
   run:
     - decorator
     - subprocess32
     - psutil
-    - networkx=1.11
-    - python=2.7
+    - networkx >=2,<3
+    - python
+    - hdf5
     - zlib
     - kyototycoon
     - biopython
-    - toil=3.14.0
+    - toil 3.14.0
     - ucsc-fatotwobit
     - ucsc-bedsort
     - ucsc-bedtobigbed
     - ucsc-bigbedtobed
-    - openssl=1.0.2
+    - openssl
     - sonlib
     - jobtree
-    - cython
-
 
 test:
   commands:
     - cactus -h
     - hal2assemblyHub.py -h
 
-
 about:
   home: https://github.com/ComparativeGenomicsToolkit/cactus
   license: https://github.com/ComparativeGenomicsToolkit/cactus/blob/master/LICENSE.txt
   summary: 'Cactus is a reference-free whole-genome multiple alignment program based upon notion of Cactus graphs'
-

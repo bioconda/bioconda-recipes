@@ -1,0 +1,53 @@
+{% set name = "pbipa" %}
+{% set version = "1.8.0" %}
+{% set sha256 = "8c08fc53a17dfc6e773c10a3e565ea7224595829e0b48adcd76556418544388a" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/PacificBiosciences/pbipa/releases/download/v{{ version }}/pbipa.tar.gz
+    sha256: {{ sha256 }}
+
+build:
+  number: 1
+  skip: True # [osx]
+
+extra:
+  recipe-maintainers:
+    - pb-cdunn
+    - isovic
+
+requirements:
+  build: 
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - htslib >=1.15
+    - pcre
+  run:
+    - htslib >=1.15
+    - networkx
+    - snakemake-minimal >=7.0.4
+    - racon
+    - pb-falconc >=1.15
+    - samtools >=1.15
+    - minimap2
+
+test:
+  commands:
+      - nighthawk --version
+      - pblayout --version
+      - pancake --version
+      - ipa --help
+      - ipa validate
+
+about:
+  home: 'https://github.com/PacificBiosciences/pbbioconda'
+  license: "BSD 3-Clause Clear License"
+  summary: "Improved Phased Assembly"
+  authors:
+    - isovic
+    - zkronenberg
+    - pb-cdunn

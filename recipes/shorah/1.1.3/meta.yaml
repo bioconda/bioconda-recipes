@@ -11,12 +11,16 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 2
+  number: 10
+  script:
+    - ./configure --prefix="${PREFIX}" PYTHON="${PYTHON}" PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfigs
+    - make install
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
     - pkg-config
+    - make
   host:
     - python
     - gsl
@@ -33,6 +37,9 @@ requirements:
     - blas {{ blas }}
 
 test:
+  source_files:
+  - examples/amplicon_test/reference.fasta
+  - examples/amplicon_test/ampli_sorted.bam
   commands:
   - shorah.py -h
   - dec.py -h
@@ -44,12 +51,14 @@ test:
   - b2w -h
   - diri_sampler -h
   - freqEst -h
+  - ([[ -d examples/amplicon_test/ ]]&&cp -r examples/amplicon_test ./||cp -r /usr/local/share/shorah/amplicon_test ./;cd amplicon_test/;amplian.py -f reference.fasta -b ampli_sorted.bam); rm -rf amplicon_test/
 
 about:
   summary: The Short Reads Assembly into Haplotypes (ShoRAH) program for inferring viral haplotypes from NGS data
   home: https://github.com/cbg-ethz/{{ name }}
   license: GPLv3
   license_family: GPL3
+  license_file: LICENSE
 
 extra:
   identifiers:

@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="hu35ksubbcdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/hu35ksubbcdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hu35ksubbcdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hu35ksubbcdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hu35ksubbcdf/bioconductor-hu35ksubbcdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hu35ksubbcdf/bioconductor-hu35ksubbcdf_2.18.0_src_all.tar.gz"
 )
 MD5="d873b6c521e926b331f799baf10a4e13"
