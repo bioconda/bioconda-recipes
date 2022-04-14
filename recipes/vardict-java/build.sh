@@ -5,16 +5,10 @@ mkdir -p $outdir/bin
 mkdir -p $outdir/lib
 mkdir -p $PREFIX/bin
 
-# Compile
-TERM=xterm ./gradlew clean installDist
-
-# Copy into prefix
-cp build/install/VarDict/lib/*.jar $outdir/lib
-cp build/install/VarDict/bin/VarDict $outdir/bin/vardict-java
-cp build/install/VarDict/bin/VarDict.bat $outdir/bin/vardict-java.bat
-cp VarDict/teststrandbias.R $outdir/bin/vardict-strandbias
-cp VarDict/testsomatic.R $outdir/bin/vardict-testsomatic
-cp VarDict/var2vcf_valid.pl $outdir/bin/vardict-var2vcf
-cp VarDict/var2vcf_paired.pl $outdir/bin/vardict-var2vcf-paired
-chmod +x $outdir/bin/*
-ln -s $outdir/bin/* $PREFIX/bin
+cp lib/*.jar $outdir/lib
+cp bin/VarDict $outdir/bin/vardict-java
+cp bin/*.{R,pl} $outdir/bin
+for executable in vardict-java testsomatic.R teststrandbias.R var2vcf_paired.pl var2vcf_valid.pl; do
+  chmod +x $outdir/bin/$executable
+  ln -s $outdir/bin/$executable $PREFIX/bin
+done
