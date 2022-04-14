@@ -1,4 +1,4 @@
 eval "$(register-python-argcomplete seq2science)"
 
-export _PYTHONNOUSERSITE=$PYTHONNOUSERSITE
-export PYTHONNOUSERSITE=1
+export _PYTHONUSERBASE=$PYTHONUSERBASE
+export PYTHONUSERBASE=1
