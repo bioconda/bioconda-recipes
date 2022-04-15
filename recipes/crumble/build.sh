@@ -1,9 +1,7 @@
 #!/bin/sh
 set -ex
 
-aclocal
-automake --force-missing --add-missing
-autoconf
+autoreconf -i
 ./configure --prefix=${PREFIX}
 make
 make install
