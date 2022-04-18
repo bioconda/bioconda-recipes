@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="DuoClustering2018_1.2.0.tar.gz"
+FN="DuoClustering2018_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/DuoClustering2018_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/DuoClustering2018_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-duoclustering2018/bioconductor-duoclustering2018_1.2.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-duoclustering2018/bioconductor-duoclustering2018_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/DuoClustering2018_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/DuoClustering2018_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-duoclustering2018/bioconductor-duoclustering2018_1.12.0_src_all.tar.gz"
 )
-MD5="49e45aac011f59a54755d13f314949c3"
+MD5="2ddbf25c606acfa420c3788eb812a32e"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

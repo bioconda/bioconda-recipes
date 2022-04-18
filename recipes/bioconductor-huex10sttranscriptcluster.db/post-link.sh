@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="huex10sttranscriptcluster.db_8.7.0.tar.gz"
+FN="huex10sttranscriptcluster.db_8.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/huex10sttranscriptcluster.db_8.7.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/huex10sttranscriptcluster.db_8.7.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-huex10sttranscriptcluster.db/bioconductor-huex10sttranscriptcluster.db_8.7.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-huex10sttranscriptcluster.db/bioconductor-huex10sttranscriptcluster.db_8.7.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/huex10sttranscriptcluster.db_8.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/huex10sttranscriptcluster.db_8.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-huex10sttranscriptcluster.db/bioconductor-huex10sttranscriptcluster.db_8.8.0_src_all.tar.gz"
 )
-MD5="7fb762002b5792c64ccafbd7bacf92a4"
+MD5="0789a1e8ee4474bd64c2772eab0db247"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

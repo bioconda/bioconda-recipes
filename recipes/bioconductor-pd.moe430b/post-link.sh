@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.moe430b_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.moe430b_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.moe430b_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.moe430b_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.moe430b/bioconductor-pd.moe430b_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.moe430b/bioconductor-pd.moe430b_3.12.0_src_all.tar.gz"
 )
 MD5="c19d2ee5e7e87703cf73afa33a5f3156"

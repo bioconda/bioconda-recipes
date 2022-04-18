@@ -7,14 +7,18 @@ source:
   md5: 5a6400b6cb5a331589f831ba0b6020f0
 
 build:
-  skip: True  # [py27]
-  script: python -m pip install --no-deps --ignore-installed .
-  number: 2
+  skip: True  # [py<34]
+  script: |
+    # remove PKG-INFO to trigger cythonize
+    rm PKG-INFO
+    {{ PYTHON }} -m pip install . --no-deps -vv
+  number: 4
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
+    - cython
     - python
     - pip
     - cutadapt

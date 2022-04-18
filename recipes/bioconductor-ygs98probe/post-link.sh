@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="ygs98probe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/ygs98probe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/ygs98probe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ygs98probe_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ygs98probe/bioconductor-ygs98probe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ygs98probe/bioconductor-ygs98probe_2.18.0_src_all.tar.gz"
 )
 MD5="f40f21d7074818a4ee74a45b5533e89d"

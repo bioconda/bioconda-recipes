@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="BSgenome.Osativa.MSU.MSU7_0.99.1.tar.gz"
+FN="BSgenome.Osativa.MSU.MSU7_0.99.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Osativa.MSU.MSU7_0.99.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/BSgenome.Osativa.MSU.MSU7_0.99.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.osativa.msu.msu7/bioconductor-bsgenome.osativa.msu.msu7_0.99.1_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.osativa.msu.msu7/bioconductor-bsgenome.osativa.msu.msu7_0.99.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Osativa.MSU.MSU7_0.99.2.tar.gz"
+  "https://bioarchive.galaxyproject.org/BSgenome.Osativa.MSU.MSU7_0.99.2.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.osativa.msu.msu7/bioconductor-bsgenome.osativa.msu.msu7_0.99.2_src_all.tar.gz"
 )
-MD5="459fe50be785d06ab680565aacca1c57"
+MD5="80648058756a2f74aa5a246d38ecf576"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

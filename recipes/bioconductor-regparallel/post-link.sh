@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="RegParallel_1.2.0.tar.gz"
+FN="RegParallel_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RegParallel_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RegParallel_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-regparallel/bioconductor-regparallel_1.2.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-regparallel/bioconductor-regparallel_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/RegParallel_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RegParallel_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-regparallel/bioconductor-regparallel_1.12.0_src_all.tar.gz"
 )
-MD5="cebd94e58b4216cd3c14e4586d8761e1"
+MD5="6116a1c971bc59b18b3a96db14d6104d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

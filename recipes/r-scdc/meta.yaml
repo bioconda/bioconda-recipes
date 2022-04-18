@@ -1,0 +1,63 @@
+{% set version = "0" %}
+
+package:
+  name: r-scdc
+  version: {{ version }}
+
+source:
+  url:
+    - https://github.com/meichendong/SCDC/archive/refs/heads/master.zip
+  sha256: b6d132900d363163ab340002d5daeaf7c67b042a74ac37135cd30c2420ca9239
+
+build:
+  number: 2
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  # the dependencies are set to relatively high minimal requirements, not because 
+  # the package itself would require it, but because the conda solver failed
+  # with a timeout when no constraints are given. 
+  host:
+    - r-base>=4.0.5
+    - r-roxygen2>=7.1.2
+    - r-rcpp>=1.0.7
+    - r-l1pack>=0.38.196
+    - bioconductor-biobase>=2.50.0
+    - r-nnls>=1.4
+    - r-reshape>=0.8.8
+    - xbioc>=0.1.19
+    - r-cowplot>=1.1.1
+    - r-ggplot2>=3.3.5
+    - r-pheatmap>=1.0.12
+  run:
+    - r-base>=4.0.5
+    - r-rcpp>=1.0.7
+    - r-l1pack>=0.38.196
+    - bioconductor-biobase>=2.50.0
+    - r-nnls>=1.4
+    - r-reshape>=0.8.8
+    - xbioc>=0.1.19
+    - r-cowplot>=1.1.1
+    - r-ggplot2>=3.3.5
+    - r-pheatmap>=1.0.12
+
+test:
+  commands:
+    - $R -e "library('SCDC')"
+
+about:
+  home: https://github.com/meichendong/SCDC
+  license: MIT
+  summary: "SCDC adopts an ENSEMBLE method to integrate deconvolution results from different scRNA-seq datasets that are produced in different laboratories and at different times, implicitly addressing the batch-effect confounding."
+  license_family: MIT
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/MIT'
+
+extra:
+  recipe-maintainers:
+    - PelzKo
+  identifiers:
+    - doi:10.1093/bib/bbz166

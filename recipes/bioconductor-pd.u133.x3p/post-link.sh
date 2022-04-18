@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.u133.x3p_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.u133.x3p_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.u133.x3p_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.u133.x3p_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.u133.x3p/bioconductor-pd.u133.x3p_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.u133.x3p/bioconductor-pd.u133.x3p_3.12.0_src_all.tar.gz"
 )
 MD5="e3f343e32273667f851e26d7b8a7a5db"

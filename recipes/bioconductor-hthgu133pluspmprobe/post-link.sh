@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="hthgu133pluspmprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/hthgu133pluspmprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hthgu133pluspmprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hthgu133pluspmprobe_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hthgu133pluspmprobe/bioconductor-hthgu133pluspmprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hthgu133pluspmprobe/bioconductor-hthgu133pluspmprobe_2.18.0_src_all.tar.gz"
 )
 MD5="74713e822a689007892d0eb92dbd456b"

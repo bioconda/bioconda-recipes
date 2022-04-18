@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="rwgcod.db_3.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/rwgcod.db_3.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/rwgcod.db_3.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/rwgcod.db_3.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rwgcod.db/bioconductor-rwgcod.db_3.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rwgcod.db/bioconductor-rwgcod.db_3.4.0_src_all.tar.gz"
 )
 MD5="c8d2fa81b6f03c4ee629a0883431e5fd"

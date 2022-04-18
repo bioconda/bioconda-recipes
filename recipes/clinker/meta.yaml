@@ -1,0 +1,40 @@
+{% set version = "1.32" %}
+
+package:
+  name: clinker
+  version: {{ version }}
+
+source:
+  url: https://github.com/Oshlack/Clinker/archive/v{{ version }}.tar.gz
+  sha256: 5dbb97da27f29f53a8282e456ba0093bbdde292eb9e76405434117da4d1a76be
+
+build:
+  number: 2
+  noarch: generic
+  # Cleaning up the build container fails somehow
+  # PermissionError: [Errno 13] Permission denied: 'jobs'
+  # skip: True  # [linux]
+
+requirements:
+  run:
+    - samtools
+    - bpipe
+    - star >=2.5.3a
+    - bioconductor-gviz
+    - bioconductor-biomart
+    - python 2.7.*
+
+test:
+  commands:
+    - clinker -h
+    - cd /tmp && bpipe --help
+
+about:
+  home: https://github.com/Oshlack/Clinker
+  summary: "Clinker is a bioinformatics pipeline that generates a superTranscriptome from popular fusion finder outputs (JAFFA, tophatFusion, SOAP, deFUSE, Pizzly, etc), that can be then be either viewed in genome viewers such as IGV or through the included plotting feature developed with GViz."
+  license: MIT
+  license_file: LICENSE
+ 
+extra:
+  notes: "Wrapper script provided to indicate clinker is a bpipe pipeline, provide example command from wiki, and also a passthrough option."
+

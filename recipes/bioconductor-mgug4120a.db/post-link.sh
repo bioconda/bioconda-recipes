@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="mgug4120a.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/mgug4120a.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/mgug4120a.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/mgug4120a.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mgug4120a.db/bioconductor-mgug4120a.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mgug4120a.db/bioconductor-mgug4120a.db_3.2.3_src_all.tar.gz"
 )
 MD5="bb57e8b2efe3d038ec2a0ace0313a4e7"

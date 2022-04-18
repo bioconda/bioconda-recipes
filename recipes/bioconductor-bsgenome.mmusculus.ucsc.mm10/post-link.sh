@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="BSgenome.Mmusculus.UCSC.mm10_1.4.0.tar.gz"
+FN="BSgenome.Mmusculus.UCSC.mm10_1.4.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Mmusculus.UCSC.mm10_1.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/BSgenome.Mmusculus.UCSC.mm10_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mmusculus.ucsc.mm10/bioconductor-bsgenome.mmusculus.ucsc.mm10_1.4.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mmusculus.ucsc.mm10/bioconductor-bsgenome.mmusculus.ucsc.mm10_1.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Mmusculus.UCSC.mm10_1.4.3.tar.gz"
+  "https://bioarchive.galaxyproject.org/BSgenome.Mmusculus.UCSC.mm10_1.4.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mmusculus.ucsc.mm10/bioconductor-bsgenome.mmusculus.ucsc.mm10_1.4.3_src_all.tar.gz"
 )
-MD5="929f8bd0ea9ad416ecc0c2c002500414"
+MD5="ffddc2e035527ed1a1e201ac4cc0b1f3"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

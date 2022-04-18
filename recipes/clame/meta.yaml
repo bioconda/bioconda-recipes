@@ -1,0 +1,46 @@
+{% set name = "clame" %}
+{% set version = "1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/andvides/CLAME/releases/download/v1.0/CLAME_v1.zip
+  sha256: ccead68e51391f443b3c91d2234acd03ee2993d2c1ec730029093b30a3e61a2c
+  
+build:
+  number: 2
+  skip: True # [osx]
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - openmp  # [linux]
+    - cmake
+    - sdsl-lite
+    - libstdcxx-ng # [linux]
+    - libgomp # [linux]
+    - openlibm # [linux]
+    - gcc_impl_linux-64 # [linux]
+    
+test:
+  commands:
+    - clame -h 2>&1 | grep "clame" > /dev/null
+    - binning -h 2>&1 | grep "binning" > /dev/null
+    - genFm9 -h 2>&1 | grep "genFm9" > /dev/null
+    - mapping -h 2>&1 | grep "mapping" > /dev/null
+
+about:
+  home: https://github.com/andvides/CLAME
+  license: GPL-3.0
+  license_file: LICENSE
+  license_family: GPL
+  summary: "CLAME is a binning software for metagenomic reads. It immplements a fm-index search algorithm for nucleotide sequence alignment. Then it uses strongly connected component strategy to bin sequences with similar DNA composition."
+
+extra:
+  identifiers:
+    - doi:10.1186/s12864-018-5191-y
+  

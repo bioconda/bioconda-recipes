@@ -1,0 +1,50 @@
+{% set version = "0.7.1" %}
+
+package:
+  name: vembrane
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/v/vembrane/vembrane-{{ version }}.tar.gz
+  sha256: 8d271c105362aade9219787bea2405b009d0024a6a70a9dc58a6756ff7a4870b
+
+build:
+  number: 0
+  entry_points:
+    - vembrane = vembrane.cli:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+
+requirements:
+  host:
+    - pip
+    - poetry >=0.12
+    - python >=3.7
+  run:
+    - asttokens >=2.0,<3.0
+    # importlib_metadata is needed for py<38 only, but conda does not support conditional
+    # dependencies. Hence, we add it here generally to still get a noarch:python package.
+    - importlib_metadata >=1.7.0,<2.0.0
+    - intervaltree ==2.1
+    - numpy >=1.20,<2.0
+    - pysam >=0.16,<0.17
+    - python >=3.7
+    - pyyaml >=5.3,<6
+
+test:
+  imports:
+    - vembrane
+  commands:
+    - vembrane --help
+    - vembrane --version
+
+about:
+  home: https://github.com/vembrane/vembrane
+  license: MIT
+  license_file: LICENSE
+  summary: Filter VCF/BCF files with Python expressions.
+
+extra:
+  recipe-maintainers:
+    - felixmoelder
+    - mbargull

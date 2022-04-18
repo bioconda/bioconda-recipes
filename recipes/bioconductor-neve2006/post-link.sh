@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="Neve2006_0.22.0.tar.gz"
+FN="Neve2006_0.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/Neve2006_0.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/Neve2006_0.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-neve2006/bioconductor-neve2006_0.22.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-neve2006/bioconductor-neve2006_0.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/Neve2006_0.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/Neve2006_0.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-neve2006/bioconductor-neve2006_0.32.0_src_all.tar.gz"
 )
-MD5="1649911c89a1d20393bd58b3376e622d"
+MD5="b383b579cabe236dc5ca8a78e17e0755"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

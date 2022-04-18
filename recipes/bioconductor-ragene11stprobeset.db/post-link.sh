@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="ragene11stprobeset.db_8.7.0.tar.gz"
+FN="ragene11stprobeset.db_8.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/ragene11stprobeset.db_8.7.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ragene11stprobeset.db_8.7.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ragene11stprobeset.db/bioconductor-ragene11stprobeset.db_8.7.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ragene11stprobeset.db/bioconductor-ragene11stprobeset.db_8.7.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/ragene11stprobeset.db_8.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ragene11stprobeset.db_8.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ragene11stprobeset.db/bioconductor-ragene11stprobeset.db_8.8.0_src_all.tar.gz"
 )
-MD5="5ce8dfb793afc7307106f3d4872dfeb1"
+MD5="86f7704c4852c514b3bc3221f7692ba3"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

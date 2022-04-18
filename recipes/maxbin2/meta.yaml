@@ -1,29 +1,34 @@
 {% set name = "maxbin2" %}
-{% set version = "2.2.6" %}
-{% set sha256 = "2fdef85a7af175c605be51dd7b410087bf2602945ca692521c06c24d0c90cd30" %}
+{% set version = "2.2.7" %}
+{% set sha256 = "cb6429e857280c2b75823c8cd55058ed169c93bc707a46bde0c4383f2bffe09e" %}
 
 build:
-  number: 0
+  number: 4
+  skip: true  # [osx]
 
 package:
   name: {{ name }}
   version: {{ version }}
 source:
-  url: http://downloads.jbei.org/data/microbial_communities/MaxBin/getfile.php?MaxBin-{{ version }}.tar.gz
+  url: https://sourceforge.net/projects/maxbin2/files/MaxBin-{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
     - makefile.patch
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   run:
     - fraggenescan >=1.30
     - bowtie2
     - hmmer
     - idba
+    - perl=5.26
     - perl-lwp-simple
     - r-base
     - r-gplots
+    - tar
 test:
   commands:
     - run_MaxBin.pl
@@ -37,6 +42,7 @@ extra:
   recipe-maintainers:
     - colinbrislawn
     - keuv-grvl
+    - silask
   doi:
     - 10.1186/2049-2618-2-26
     - 10.1093/bioinformatics/btv638

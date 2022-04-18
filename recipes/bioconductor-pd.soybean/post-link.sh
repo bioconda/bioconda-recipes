@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.soybean_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.soybean_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.soybean_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.soybean_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.soybean/bioconductor-pd.soybean_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.soybean/bioconductor-pd.soybean_3.12.0_src_all.tar.gz"
 )
 MD5="6dbe167be9d40c1d9096485afb4525f0"
