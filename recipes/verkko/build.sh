@@ -2,7 +2,6 @@
 set -e
 
 pushd src
-rm -f rukki/Cargo.lock
 make clean && make -j$CPU_COUNT
 popd
 
