@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -ex
 if [ "$(uname)" == Darwin ] ; then
         CXXFLAGS="$CXXFLAGS -fopenmp"
 fi
