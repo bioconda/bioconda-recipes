@@ -2,7 +2,12 @@
 set -e
 
 pushd src
-cargo fetch --verbose --offline --manifest-path rukki/Cargo.toml
+pushd rukki
+rm Cargo.lock
+cargo fetch -vv --manifest-path rukki/Cargo.toml
+cargo clean
+cargo build --release
+popd
 make clean && make -j$CPU_COUNT
 popd
 
