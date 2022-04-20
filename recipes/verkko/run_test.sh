@@ -1,6 +1,6 @@
 #!/bin/bash
 # stop on error
-set -eu -o pipefail
+set -exu -o pipefail
 
 # download and run a small assembly
 
