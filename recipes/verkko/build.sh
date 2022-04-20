@@ -1,13 +1,20 @@
 #!/bin/bash
 set -e
 
+# taken from yacrd recipe, see: https://github.com/bioconda/bioconda-recipes/blob/2b02c3db6400499d910bc5f297d23cb20c9db4f8/recipes/yacrd/build.sh
+if [ "$(uname)" == "Darwin" ]; then
+
+    # apparently the HOME variable isn't set correctly, and circle ci output indicates the following as the home directory
+    export HOME="/Users/distiller"
+    export HOME=`pwd`
+    echo "HOME is $HOME"
+    mkdir -p $HOME/.cargo/registry/index/
+
+    #export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
+fi
+
+
 pushd src
-pushd rukki
-rm Cargo.lock
-cargo fetch -vv --manifest-path rukki/Cargo.toml
-cargo clean
-cargo build --release
-popd
 make clean && make -j$CPU_COUNT
 popd
 
