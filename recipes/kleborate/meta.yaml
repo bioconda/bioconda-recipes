@@ -1,41 +1,46 @@
 {% set name = "Kleborate" %}
-{% set repo_owner = "katholt" %}
-{% set version = "0.3.0" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "2b666e8aee77a76c1f85434220ecee31cc9cfa28d35fc4b799558570e4c9b84e" %}
+{% set version = "2.2.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/{{ repo_owner }}/{{ name }}/archive/v{{ version }}.tar.gz
-  {{ hash_type }}: {{ hash_value }}
+  url: https://github.com/katholt/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 436923c766137783b89ec569a15db2030812f20819253df8c8be6a622a49c7af
+  patches:
+    - fix_get_kaptive_path.patch
 
 build:
   noarch: python
   number: 0
-  script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
-  build:
-    - python
-    - setuptools
+  host:
+    - python >=3.7
+    - biopython >=1.73,<1.78
+    - kaptive
     - blast >=2.2.31
     - mash
   run:
-    - python
+    - python >=3.7
+    - biopython >=1.73,<1.78
+    - kaptive
     - blast >=2.2.31
     - mash
 
 test:
   commands:
+    - kaptive.py -h
     - kleborate -h
+    - kleborate -a $(which kleborate | sed 's=bin/kleborate=opt/kaptive_reference_database/exact_match.fasta=')
 
 about:
   home: https://github.com/katholt/Kleborate
   license: GNU General Public License v3 or later (GPLv3+)
-  summary: 'A tool to screen Klebiella genome assembiles for: MLST sequence type, 
+  license_file: LICENSE
+  summary: 'Screening Klebsiella genome assemblies for MLST, sub-species, and other Klebsiella related genes of interest'
+  long_summary: 'A tool to screen Klebsiella genome assembiles for: MLST sequence type, 
   species (e.g. K. pneumoniae, K. quasipneumoniae, K. variicola, etc.), 
   ICEKp associated virulence loci: yersiniabactin (ybt), colibactin (clb), virulence plasmid associated loci: salmochelin (iro), aerobactin (iuc), hypermucoidy (rmpA, rmpA2), antimicrobial resistance genes, including quinolone resistance SNPs and colistin resistance truncations, 
   and K (capsule) and O antigen (LPS) serotype prediction, via wzi alleles and Kaptive.'

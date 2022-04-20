@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="hgu95b.db_3.2.3.tar.gz"
+FN="hgu95b.db_3.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/hgu95b.db_3.2.3.tar.gz"
-  "https://bioarchive.galaxyproject.org/hgu95b.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hgu95b.db/bioconductor-hgu95b.db_3.2.3_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hgu95b.db/bioconductor-hgu95b.db_3.2.3_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hgu95b.db_3.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/hgu95b.db_3.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hgu95b.db/bioconductor-hgu95b.db_3.13.0_src_all.tar.gz"
 )
-MD5="c532e54fd7087f1b1cce0c1e61ae1c16"
+MD5="12334c263cfd9f7dc835762b4661edc1"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.ht.hg.u133.plus.pm_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.ht.hg.u133.plus.pm_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.ht.hg.u133.plus.pm_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.ht.hg.u133.plus.pm_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.ht.hg.u133.plus.pm/bioconductor-pd.ht.hg.u133.plus.pm_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.ht.hg.u133.plus.pm/bioconductor-pd.ht.hg.u133.plus.pm_3.12.0_src_all.tar.gz"
 )
 MD5="5b1c3dd0ab3f8b21154982c197512a7c"

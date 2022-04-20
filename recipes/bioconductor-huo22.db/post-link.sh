@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="HuO22.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/HuO22.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/HuO22.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/HuO22.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-huo22.db/bioconductor-huo22.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-huo22.db/bioconductor-huo22.db_3.2.3_src_all.tar.gz"
 )
 MD5="ddabf6c01f94c1dfd6ab35b40852828a"

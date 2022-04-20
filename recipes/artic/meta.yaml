@@ -1,0 +1,78 @@
+{% set name = "artic" %}
+{% set version = "1.2.2" %}
+{% set sha256 = "4f8ea1ef98d01329ef60e9f3159db6b753bb7151ec405577c8719e1d23ca2942" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version|replace("-", "_") }}
+source:
+  url: https://github.com/artic-network/fieldbioinformatics/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: python -m pip install --ignore-installed .
+  entry_points:
+    - artic=artic.pipeline:main
+    - align_trim=artic.align_trim:main
+    - align_trim_n=artic.align_trim_n:main
+    - margin_cons=artic.margin_cons:main
+    - margin_cons_medaka=artic.margin_cons_medaka:main
+    - vcfextract=artic.vcfextract:main
+    - artic_vcf_merge=artic.vcf_merge:main
+    - artic_vcf_filter=artic.vcf_filter:main
+    - artic_make_depth_mask=artic.make_depth_mask:main
+    - artic_fasta_header=artic.fasta_header:main
+    - artic_mask=artic.mask:main
+    - artic_get_stats=artic.artic_mqc:main
+
+requirements:
+  host:
+    - python >=3
+    - pip
+  run:
+    - artic-porechop =0.3.2pre
+    - artic-tools =0.2.6
+    - bcftools =1.10.2
+    - biopython =1.76
+    - bwa =0.7.17
+    - clint
+    - htslib =1.10.2
+    - longshot =0.4.1
+    - medaka =1.0.3
+    - minimap2 =2.17
+    - multiqc
+    - muscle =3.8
+    - nanopolish =0.13.2
+    - pandas =0.23.0
+    - pip
+    - pysam =0.16.0.1
+    - pytest
+    - python =3.6.13
+    - pyvcf =0.6.8
+    - requests
+    - samtools =1.10
+    - tqdm
+
+test:
+  commands:
+    - artic -h
+    - align_trim -h
+    - align_trim_n -h
+    - margin_cons -h
+    - margin_cons_medaka -h
+    - vcfextract -h
+    - artic_vcf_merge -h
+    - artic_vcf_filter -h
+    - artic_make_depth_mask -h
+    - artic_fasta_header -h
+    - artic_mask -h
+    - artic_get_stats -h
+
+about:
+    home: https://github.com/artic-network/fieldbioinformatics
+    license: MIT
+    license_file: LICENSE
+    summary: ARTIC pipeline - a bioinformatics pipeline for working with virus sequencing data sequenced with nanopore
+

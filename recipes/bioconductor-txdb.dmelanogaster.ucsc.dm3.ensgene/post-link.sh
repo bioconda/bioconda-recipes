@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="TxDb.Dmelanogaster.UCSC.dm3.ensGene_3.2.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Dmelanogaster.UCSC.dm3.ensGene_3.2.2.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/TxDb.Dmelanogaster.UCSC.dm3.ensGene_3.2.2.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Dmelanogaster.UCSC.dm3.ensGene_3.2.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.dmelanogaster.ucsc.dm3.ensgene/bioconductor-txdb.dmelanogaster.ucsc.dm3.ensgene_3.2.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.dmelanogaster.ucsc.dm3.ensgene/bioconductor-txdb.dmelanogaster.ucsc.dm3.ensgene_3.2.2_src_all.tar.gz"
 )
 MD5="46b7ffe0c516edf8a2a3b5d78e0d8b67"

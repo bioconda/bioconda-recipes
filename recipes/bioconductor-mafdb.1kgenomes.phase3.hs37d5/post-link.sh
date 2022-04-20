@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="MafDb.1Kgenomes.phase3.hs37d5_3.7.0.tar.gz"
+FN="MafDb.1Kgenomes.phase3.hs37d5_3.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MafDb.1Kgenomes.phase3.hs37d5_3.7.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MafDb.1Kgenomes.phase3.hs37d5_3.7.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mafdb.1kgenomes.phase3.hs37d5/bioconductor-mafdb.1kgenomes.phase3.hs37d5_3.7.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mafdb.1kgenomes.phase3.hs37d5/bioconductor-mafdb.1kgenomes.phase3.hs37d5_3.7.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/MafDb.1Kgenomes.phase3.hs37d5_3.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MafDb.1Kgenomes.phase3.hs37d5_3.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mafdb.1kgenomes.phase3.hs37d5/bioconductor-mafdb.1kgenomes.phase3.hs37d5_3.10.0_src_all.tar.gz"
 )
-MD5="a659554d3056e019b4f3a179e9628a2d"
+MD5="ac3cbbf52eb2026f067a4f42c6654555"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

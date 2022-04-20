@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="BSgenome.Rnorvegicus.UCSC.rn5.masked_1.3.99.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Rnorvegicus.UCSC.rn5.masked_1.3.99.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Rnorvegicus.UCSC.rn5.masked_1.3.99.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Rnorvegicus.UCSC.rn5.masked_1.3.99.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.rnorvegicus.ucsc.rn5.masked/bioconductor-bsgenome.rnorvegicus.ucsc.rn5.masked_1.3.99_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.rnorvegicus.ucsc.rn5.masked/bioconductor-bsgenome.rnorvegicus.ucsc.rn5.masked_1.3.99_src_all.tar.gz"
 )
 MD5="663233774b79012cb2cc08224ac275ed"

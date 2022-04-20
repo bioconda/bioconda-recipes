@@ -1,5 +1,5 @@
-{% set version = "2.5" %}
-{% set sha256 = "75b02b2f3a863d919adba067ef94f796580604a7e34cfc52cac304037c14b51b" %}
+{% set version = "2.6.2" %}
+{% set sha256 = "c83665c613861fe0dc2637d9c190105f0b08f5c4cda97a0dc86a6357aab66be3" %}
 
 package:
   name: bracken
@@ -13,19 +13,20 @@ source:
     - py3.patch
 
 build:
-  number: 1
+  skip: True  # [osx]
+  number: 0
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - make
   host:
     - python
   run:
     - python
-    - kraken
     - kraken2
-    - llvm-openmp  # [osx]
 
 test:
   commands:
@@ -33,7 +34,6 @@ test:
     - bracken-build -h
     - est_abundance.py -h
     - generate_kmer_distribution.py -h
-    - kreport2mpa.py -h
     - kmer2read_distr --help
     - combine_bracken_outputs.py -h
 
@@ -47,5 +47,3 @@ extra:
   identifiers:
     - biotools:Bracken
     - doi:10.7717/peerj-cs.104
-  skip-lints:
-    - should_not_be_noarch_source

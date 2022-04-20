@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="TxDb.Hsapiens.UCSC.hg19.lincRNAsTranscripts_3.2.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Hsapiens.UCSC.hg19.lincRNAsTranscripts_3.2.2.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/TxDb.Hsapiens.UCSC.hg19.lincRNAsTranscripts_3.2.2.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Hsapiens.UCSC.hg19.lincRNAsTranscripts_3.2.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.hsapiens.ucsc.hg19.lincrnastranscripts/bioconductor-txdb.hsapiens.ucsc.hg19.lincrnastranscripts_3.2.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.hsapiens.ucsc.hg19.lincrnastranscripts/bioconductor-txdb.hsapiens.ucsc.hg19.lincrnastranscripts_3.2.2_src_all.tar.gz"
 )
 MD5="a0d61cd90639c40b3d0bb6bdb043cf12"

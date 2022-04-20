@@ -1,32 +1,36 @@
-{% set name = "FastPhylo" %}
 {% set version = "1.0.3" %}
 
 package:
-  name: {{ name|lower }}
+  name: fastphylo
   version: {{ version }}
 
 build:
-  number: 1
+  number: 4
 
 source:
-  fn: {{ name|lower }}-{{ version }}.tar.gz
-  url: https://github.com/arvestad/{{ name }}/archive/{{ version }}.tar.gz
+  url: https://github.com/arvestad/FastPhylo/archive/{{ version }}.tar.gz
   sha256: b53c44aadea21aaf2e0645cbd18ff7eea99dbf8545a42b005443332fd84d41a2
+  patches:
+    - 0001-Fix-implicit-nullptr-comparison.patch
 
 requirements:
   build:
-  - gcc # [not osx]
-  - llvm # [osx]
-  - cmake
-  - openmpi
-  - openblas
-  - libxml2
-  - wget
-
+    - make
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
+    # Newer conda-forge::openmp do not include the deprecated C++ bindings.
+    # ref: https://github.com/conda-forge/openmpi-feedstock/pull/53
+    - openmpi <4.0.2
+    - libblas
+    - liblapack
+    - libxml2
+    - gengetopt
+    - zlib
   run:
-  - openmpi
-  - openblas
-  - libxml2
+    - openmpi <4.0.2
+    - libxml2
+    - zlib
 
 test:
   commands:

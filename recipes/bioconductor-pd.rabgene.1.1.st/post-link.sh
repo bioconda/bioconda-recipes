@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.rabgene.1.1.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.rabgene.1.1.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.rabgene.1.1.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.rabgene.1.1.st_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.rabgene.1.1.st/bioconductor-pd.rabgene.1.1.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.rabgene.1.1.st/bioconductor-pd.rabgene.1.1.st_3.12.0_src_all.tar.gz"
 )
 MD5="2492695661309f5e6628612685460ee5"

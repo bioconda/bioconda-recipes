@@ -1,17 +1,16 @@
 {% set name = "unitig-caller" %}
-{% set version = "1.0.0" %}
+{% set version = "1.2.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  git_url: https://github.com/johnlees/{{ name|lower }}.git
-  git_rev: v{{ version }}
-  sha256: b1d2cd8b579d3b56192e673d6f69bbec3e31e3ebe5744c04ae864aee99cab0b5
+  url: https://github.com/johnlees/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: 84efc6eca6ae39af79ec4f152907383af871ad54f8ddd758c11305a1ead93b32
 
 build:
-  number: 0
+  number: 1
   skip: True  # [osx or py27]
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
   entry_points:
@@ -22,21 +21,24 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
+    - make
   host:
     - python
     - pip
     - pybind11
     - zlib
     - bzip2
+    - bifrost >=1.0.6
+    - seqan3 >=3.1.0
+    - pthread-stubs
   run:
     - python
-    - mantis >=0.2.0
-    - squeakr >=0.6
+    - bifrost >=1.0.6
 
 test:
   imports:
     - unitig_caller
-    - map_strings
+    - unitig_query
   commands:
     - unitig-caller --version
 
@@ -47,7 +49,3 @@ about:
    license_file: LICENSE
    summary: Determines presence/absence of sequence elements in bacterial sequence data.
 
-extra:
-   skip-lints:
-     - uses_git_url
-     - uses_vcs_url

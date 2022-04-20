@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="RMassBankData_1.22.0.tar.gz"
+FN="RMassBankData_1.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RMassBankData_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RMassBankData_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rmassbankdata/bioconductor-rmassbankdata_1.22.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rmassbankdata/bioconductor-rmassbankdata_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/RMassBankData_1.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RMassBankData_1.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rmassbankdata/bioconductor-rmassbankdata_1.32.0_src_all.tar.gz"
 )
-MD5="fc66ede0eb4d7ad10d96b38d2c1a212a"
+MD5="baedad284adc6d408cef70bcf0c1b023"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

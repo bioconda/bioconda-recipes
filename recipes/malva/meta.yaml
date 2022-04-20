@@ -1,5 +1,5 @@
-{% set version = "1.1.1" %}
-{% set sha256 = "6251f8fc585decb16a142db7071d36fce9af7ef3b3d3d6957b3be537d1682c1a" %}
+{% set version = "2.0.0" %}
+{% set sha256 = "972c2fd38d70e645d14051bd15f95173829fae8a823850b3ef700b34e6127c51" %}
 
 package:
   name: malva
@@ -9,9 +9,8 @@ source:
   url: https://github.com/AlgoLab/malva/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - malva.Makefile.patch
     - malva.MALVA.patch
-    - malva.src.patch
+    - malva.CMakeList.patch
 
 build:
   number: 0
@@ -19,20 +18,23 @@ build:
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
-
+    - cmake
+    - zstd
+    - zstd-static
+    - sdsl-lite
   host:
     - zlib
-    - sdsl-lite
     - htslib
     - kmc
-
   run:
+    - htslib
     - kmc
 
 test:
   commands:
-    - malva-geno -h
+    - malva-geno index -h
     - MALVA -h
 
 about:

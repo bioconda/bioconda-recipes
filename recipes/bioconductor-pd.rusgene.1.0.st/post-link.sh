@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.rusgene.1.0.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.rusgene.1.0.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.rusgene.1.0.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.rusgene.1.0.st_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.rusgene.1.0.st/bioconductor-pd.rusgene.1.0.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.rusgene.1.0.st/bioconductor-pd.rusgene.1.0.st_3.12.0_src_all.tar.gz"
 )
 MD5="0b9b00fee58ef211e041395052344483"

@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="TCGAWorkflowData_1.8.0.tar.gz"
+FN="TCGAWorkflowData_1.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/TCGAWorkflowData_1.8.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/TCGAWorkflowData_1.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tcgaworkflowdata/bioconductor-tcgaworkflowdata_1.8.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tcgaworkflowdata/bioconductor-tcgaworkflowdata_1.8.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/TCGAWorkflowData_1.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TCGAWorkflowData_1.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tcgaworkflowdata/bioconductor-tcgaworkflowdata_1.18.0_src_all.tar.gz"
 )
-MD5="90d52109bd55f983c51da4ae7bc8a63c"
+MD5="989aa189fc3da188540e67766e30cf1e"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

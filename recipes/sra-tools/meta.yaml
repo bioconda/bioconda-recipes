@@ -1,6 +1,7 @@
-{% set version = "2.10.0" %}
-{% set bioconda_version = "2.10.0" %}
-{% set ngs_version = "2.10.0" %}
+{% set version = "2.11.0" %}
+{% set bioconda_version = "2.11.0" %}
+{% set vdb_version = "2.11.0" %}
+{% set ngs_version = "2.11.0" %}
 
 package:
   name: sra-tools
@@ -8,34 +9,45 @@ package:
 
 source:
   - url: https://github.com/ncbi/sra-tools/archive/{{version}}.tar.gz
-    sha256: 6d2b02bad674cde6b9677a522f62da092da5471d23738976abce8eae5710fa0c
+    sha256: 10ac0a4d1fafc274bc107de811891d3e803d0713a247581dece4448231883810
+    patches:
+      # FIXME: Configure script does not recognize HDF5 as installed on macOS.
+      - 0001-No-libhdf5-libxml2-static-link-sra-tools.patch
+      - 0003-_NSGetExecutablePath-macos.patch
     folder: sra-tools
-  - url: https://github.com/ncbi/ncbi-vdb/archive/{{version}}.tar.gz
-    sha256: a6cc88e8d12f536dc96d5f60698d0ef4cf2f63e31d3d12d23da39b1de39563e1
+  - url: https://github.com/ncbi/ncbi-vdb/archive/{{vdb_version}}.tar.gz
+    sha256: 9a65e3885b9ae1ebecbec871f04ce3162ac3764fb556ecdc8c1e61993e2164aa
+    patches:
+      - 0002-No-libhdf5-libxml2-static-link-ncbi-vdb.patch
     folder: ncbi-vdb
-  - url: https://github.com/ncbi/ngs/archive/{{ngs_version}}.tar.gz
-    sha256: 4139adff83af213d7880bc80d1c0f5ee9b00c6c4e615d00aa47aaa267e40ed25
-    folder: ngs
 
 build:
-  number: 0
+  number: 3
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - make
+    - patch
   host:
     - ncbi-ngs-sdk
+    - libxml2
+    - hdf5
     - perl
   run:
+    - ca-certificates
+    - ossuuid
     - perl
     - ncbi-ngs-sdk
     - perl-xml-libxml
     - perl-uri
+    - curl
 
 test:
   commands:
-    # "Frequently Used Tools"
+    # create config file with /LIBS/GUID value so tests pass; new GUID value will be created in user's home dir upon installation via post-link.sh
+    - if ! grep "/LIBS/GUID" ~/.ncbi/user-settings.mkfg &> /dev/null; then mkdir -p ~/.ncbi && printf '/LIBS/GUID = "%s"\n' `uuid` > ~/.ncbi/user-settings.mkfg; fi
     - fastq-dump --help > /dev/null
     - prefetch --help > /dev/null
     - sam-dump --help > /dev/null

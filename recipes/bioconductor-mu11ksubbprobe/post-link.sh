@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="mu11ksubbprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/mu11ksubbprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/mu11ksubbprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mu11ksubbprobe_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mu11ksubbprobe/bioconductor-mu11ksubbprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mu11ksubbprobe/bioconductor-mu11ksubbprobe_2.18.0_src_all.tar.gz"
 )
 MD5="28d162e18e4e16e3c6db47195d2ea0ac"

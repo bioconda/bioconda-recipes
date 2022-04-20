@@ -1,0 +1,56 @@
+{% set name = "vafator" %}
+{% set version = "1.2.5" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 45050438426d6ac5edca6f9afbb655b4ed450c56fe6e467dedc932be88b380a2
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - vafator=vafator.command_line:annotator
+    - multiallelics-filter=vafator.command_line:multiallelics_filter
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - cyvcf2==0.30.11
+    - pandas==1.3.3
+    - pip
+    - pysam==0.17.0
+    - python==3.7.*
+    - pybedtools==0.8.2
+    - logzero==1.7.0
+  run:
+    - cyvcf2==0.30.11
+    - pandas==1.3.3
+    - pysam==0.17.0
+    - python==3.7.*
+    - pybedtools==0.8.2
+    - logzero==1.7.0
+
+test:
+  imports:
+    - vafator
+    - vafator.tests
+  commands:
+    - vafator --help
+    - multiallelics-filter --help
+
+about:
+  home: "https://github.com/tron-bioinformatics/vafator"
+  license: MIT
+  license_family: MIT
+  license_file: 
+  summary: "Annotate a VCF file with AF, AD and DP from tumor and normal BAMs"
+  doc_url: 
+  dev_url: 
+
+extra:
+  recipe-maintainers:
+    - your-github-id-here

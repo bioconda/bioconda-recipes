@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="TxDb.Mmusculus.UCSC.mm10.knownGene_3.4.7.tar.gz"
+FN="TxDb.Mmusculus.UCSC.mm10.knownGene_3.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Mmusculus.UCSC.mm10.knownGene_3.4.7.tar.gz"
-  "https://bioarchive.galaxyproject.org/TxDb.Mmusculus.UCSC.mm10.knownGene_3.4.7.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.mmusculus.ucsc.mm10.knowngene/bioconductor-txdb.mmusculus.ucsc.mm10.knowngene_3.4.7_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.mmusculus.ucsc.mm10.knowngene/bioconductor-txdb.mmusculus.ucsc.mm10.knowngene_3.4.7_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/TxDb.Mmusculus.UCSC.mm10.knownGene_3.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TxDb.Mmusculus.UCSC.mm10.knownGene_3.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.mmusculus.ucsc.mm10.knowngene/bioconductor-txdb.mmusculus.ucsc.mm10.knowngene_3.10.0_src_all.tar.gz"
 )
-MD5="48ca12361578a95864fc4c59524b61e9"
+MD5="129b610bf05ec77451731196baa55bcc"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

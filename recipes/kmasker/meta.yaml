@@ -1,0 +1,69 @@
+{% set version = "1.1.1" %}
+{% set sha256 = "a416b97fdb5cede618523aa35de5f83a3a588c0f940d8f5ef2ce8fd6a278494e" %}
+
+package:
+  name: kmasker
+  version: {{ version }}
+
+source:
+ url: https://github.com/tschmutzer/kmasker/releases/download/{{ version  }}/kmasker_release_source.tar
+ sha256: {{ sha256 }}
+
+build:
+  skip: True  # [py27]
+  number: 4
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - scons
+    - pkg-config
+  host:
+    - python
+    - pip
+    - r-base
+    - jellyfish 2.2.10
+    - r-getopt
+    - r-zoo
+    - r-pillar
+    - r-ggplot2
+    - r-scales
+    - r-stringr
+    - r-reshape2
+    - r-data.table
+    - r-dplyr
+    - numpy >=1.15.0
+    - pandas
+    - kpal
+    - scipy
+    - biopython
+    - perl
+  run:
+    - blast
+    - jellyfish 2.2.10
+    - r-base
+    - python
+    - perl
+    - gffread
+    - ea-utils # [not osx]
+    - coreutils >=8.15
+    - which >=2.21
+    
+
+test:
+  commands:
+    - Kmasker --show_version 2>&1 > /dev/null
+    - cmasker -h 2>&1 > /dev/null
+    - fastq-stats -h 2>&1 > /dev/null
+
+about:
+  home: https://kmasker.ipk-gatersleben.de/
+  license: GPL3
+  license_file: LICENSE
+  summary: A tool for masking and exploring of sequences from plant species.
+  dev_url: https://github.com/tschmutzer/kmasker
+
+extra:
+  identifiers:
+    - biotools:kmasker

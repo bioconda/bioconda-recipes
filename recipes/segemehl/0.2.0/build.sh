@@ -1,13 +1,13 @@
 #!/bin/bash
 
-export C_INCLUDE_PATH=${PREFIX}/include:${PREFIX}/include/ncurses
-export LIBRARY_PATH=${PREFIX}/lib
-
 cd segemehl
-make segemehl.x -j${CPU_COUNT}
-make testrealign.x -j${CPU_COUNT}
-make lack.x -j${CPU_COUNT}
+make -j"${CPU_COUNT}" CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" segemehl.x
+make -j"${CPU_COUNT}" CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" testrealign.x
+make -j"${CPU_COUNT}" CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" lack.x
 
-for i in *.x ; do
-    install ${i} ${PREFIX}/bin
-done
+install -d "${PREFIX}/bin"
+install \
+    segemehl.x \
+    testrealign.x \
+    lack.x \
+    "${PREFIX}/bin/"

@@ -1,30 +1,33 @@
 {% set name = "muscle" %}
-{% set version = "3.8.1551" %}
+{% set version = "5.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  md5: 1b7c9661f275a82d3cf708f923736bf8
-  url: http://www.drive5.com/muscle/muscle_src_3.8.1551.tar.gz
+  url: https://github.com/rcedgar/muscle/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 091d9f8733b92ff106c2a8eb274d1e5a57960d397a2068d8638d6002e8880dab
   patches:
-    - osx-makefile.patch
+    - 0001-Replace-zero-macro-with-memset_zero.patch
+    - 0002-Move-va_start-va_end-out-of-critical-section.patch
 
 build:
-  number: 4
+  number: 1
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-  run:
+    - llvm-openmp  # [osx]
+    - make
 
 test:
   commands:
     - muscle -version
 about:
-  home: 'http://www.drive5.com/muscle/'
-  license: "http://www.drive5.com/muscle/manual/license.html"
+  home: https://github.com/rcedgar/muscle
+  license: GPL-3.0-only
+  license_file: LICENSE
   summary: "MUSCLE: multiple sequence alignment with high accuracy and high throughput"
 
 extra:

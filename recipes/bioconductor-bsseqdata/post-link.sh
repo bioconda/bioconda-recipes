@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="bsseqData_0.22.0.tar.gz"
+FN="bsseqData_0.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/bsseqData_0.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/bsseqData_0.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsseqdata/bioconductor-bsseqdata_0.22.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsseqdata/bioconductor-bsseqdata_0.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/bsseqData_0.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/bsseqData_0.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsseqdata/bioconductor-bsseqdata_0.32.0_src_all.tar.gz"
 )
-MD5="e7675043ef714d778044e826b0dd2b1d"
+MD5="ac11b357c8f01bb38c16cbaedfe528b4"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

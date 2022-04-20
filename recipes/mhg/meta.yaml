@@ -1,0 +1,42 @@
+{% set name = "mhg" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: 'https://github.com/NakhlehLab/Maximal-Homologous-Groups/archive/refs/tags/v{{version}}.tar.gz'
+  sha256: 9a7c670fc6bcd28b57b48663fee2c153c9f30cabc37dd36cbcd8f9470f165626
+
+build:
+  noarch: generic
+  number: 0
+  script: mkdir -p ${PREFIX}/bin && cp MHG MHG-partition genome-to-blast-db ${PREFIX}/bin
+
+requirements:
+  run:
+    - biopython
+    - python >=3.6,<3.9
+    - blast
+    - numpy >=1.11
+    - pandas >=1.1.3
+    - networkx
+    - biopython
+    - bedtools
+
+test:
+  source_files:
+    - genomes
+    - genomes/*
+  commands:
+    - MHG --help 
+    - genome-to-blast-db --help
+    - MHG-partition --help
+
+about:
+  home: https://github.com/NakhlehLab/Maximal-Homologous-Groups
+  license: MIT
+  license_file: LICENSE.txt
+  summary: MHG is an annotation-free graph-based tool to merge and partition homologous groups.
+

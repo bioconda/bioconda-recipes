@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.s.aureus_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.s.aureus_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.s.aureus_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.s.aureus_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.s.aureus/bioconductor-pd.s.aureus_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.s.aureus/bioconductor-pd.s.aureus_3.12.0_src_all.tar.gz"
 )
 MD5="f173ae6e4316aaa2eafbde92d5868a5a"

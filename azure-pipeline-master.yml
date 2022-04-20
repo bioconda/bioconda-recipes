@@ -1,0 +1,134 @@
+pr: none
+trigger:
+- master
+
+jobs:
+- job: 'build_and_push_linux'
+  pool:
+    vmImage: 'ubuntu-latest'
+  strategy:
+    maxParallel: 8
+  timeoutInMinutes: 360
+
+  steps:
+  - script: |
+      git checkout master
+
+  - bash: echo "##vso[task.prependpath]$CONDA/bin"
+    displayName: Add conda to PATH
+
+  - bash: |
+      wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
+    displayName: Fetch common.sh
+
+  - task: Cache@2
+    inputs:
+      path: "/usr/share/miniconda/envs/bioconda"
+      key: '"$(Agent.OS)" | **/common.sh'
+      cacheHitVar: CACHE_RESTORED
+    displayName: Restore cache
+
+  - script: .azure-pipelines/createEnv.py
+    condition: ne(variables.CACHE_RESTORED, 'true')
+    displayName: Install bioconda-utils
+
+  - bash: |
+      set -e
+
+      rm -f "${HOME}/.condarc"
+      # Activate our Conda installation as "base".
+      . /usr/share/miniconda/envs/bioconda/etc/profile.d/conda.sh
+      conda activate base
+
+      conda config --system --add channels defaults
+      conda config --system --add channels bioconda
+      conda config --system --add channels conda-forge
+      docker pull quay.io/dpryan79/mulled_container:latest
+      mkdir -p ${CONDA_PREFIX}/conda-bld
+
+      export OSTYPE="linux-gnu"
+      export CI="true"
+      bioconda-utils build recipes config.yml \
+          --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
+          --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
+          --prelint
+      docker rmi quay.io/dpryan79/mulled_container:latest
+    env:
+      QUAY_OAUTH_TOKEN: $(QUAY_OAUTH_TOKEN)
+      ANACONDA_TOKEN: $(ANACONDA_TOKEN)
+      INVOLUCRO_AUTH: $(INVOLUCRO_AUTH)
+    displayName: Build_and_push
+
+- job: 'build_and_push_osx'
+  pool:
+    vmImage: 'macOS-latest'
+  strategy:
+    maxParallel: 4
+  timeoutInMinutes: 360
+
+  steps:
+  - script: |
+      git checkout master
+
+  - bash: echo "##vso[task.prependpath]$CONDA/bin"
+    displayName: Add conda to PATH
+
+  - bash: sudo chown -R $USER $CONDA
+    displayName: Take ownership of conda installation
+
+  - bash: |
+      wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
+    displayName: Fetch common.sh
+
+  - task: Cache@2
+    inputs:
+      path: "/usr/local/miniconda/envs/bioconda"
+      key: '"$(Agent.OS)" | **/common.sh'
+      cacheHitVar: CACHE_RESTORED
+    displayName: Restore cache
+
+  - script: .azure-pipelines/createEnv.py
+    condition: ne(variables.CACHE_RESTORED, 'true')
+    displayName: Install bioconda-utils
+
+  - script: |
+      # download SDK and setup sysroot on macOS
+      #  primarily, run_conda_forge_build_setup does the following:
+      #   - download/setup SDK:
+      #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L21-L26
+      #   - add activation script to set MACOSX_DEPLOYMENT_TARGET and CONDA_BUILD_SYSROOT:
+      #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L60-L63
+      # use "CONFIG=" to avoid writing ./.ci_support/${CONFIG}.yaml which we don't need/use.
+      . /usr/local/miniconda/envs/bioconda/etc/profile.d/conda.sh
+      conda activate base
+      CONFIG= OSX_FORCE_SDK_DOWNLOAD=1 MACOSX_DEPLOYMENT_TARGET=10.13 run_conda_forge_build_setup
+      conda_forge_ci_setup_activate_sh="${CONDA_PREFIX}/etc/conda/activate.d/conda-forge-ci-setup-activate.sh"
+      sed -Ei.bak "s/^(export MACOSX_DEPLOYMENT_TARGET)=.*$/\\1='10.9'/" "${conda_forge_ci_setup_activate_sh}"
+      rm "${conda_forge_ci_setup_activate_sh}".bak
+      cat "${conda_forge_ci_setup_activate_sh}"
+      grep -qFx "export MACOSX_DEPLOYMENT_TARGET='10.9'" "${conda_forge_ci_setup_activate_sh}"
+      conda list
+    displayName: OSX setup
+
+  - bash: |
+      set -e
+
+      . /usr/local/miniconda/envs/bioconda/etc/profile.d/conda.sh
+      conda activate base
+
+      conda config --system --add channels defaults
+      conda config --system --add channels bioconda
+      conda config --system --add channels conda-forge
+      mkdir -p ${CONDA_PREFIX}/conda-bld
+
+      export OSTYPE="darwin"
+      export CI="true"
+      bioconda-utils build recipes config.yml \
+          --anaconda-upload \
+          --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
+          --prelint
+    env:
+      QUAY_OAUTH_TOKEN: $(QUAY_OAUTH_TOKEN)
+      ANACONDA_TOKEN: $(ANACONDA_TOKEN)
+      INVOLUCRO_AUTH: $(INVOLUCRO_AUTH)
+    displayName: Build_and_push

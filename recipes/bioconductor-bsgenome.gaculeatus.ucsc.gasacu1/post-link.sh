@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="BSgenome.Gaculeatus.UCSC.gasAcu1_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Gaculeatus.UCSC.gasAcu1_1.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Gaculeatus.UCSC.gasAcu1_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Gaculeatus.UCSC.gasAcu1_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.gaculeatus.ucsc.gasacu1/bioconductor-bsgenome.gaculeatus.ucsc.gasacu1_1.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.gaculeatus.ucsc.gasacu1/bioconductor-bsgenome.gaculeatus.ucsc.gasacu1_1.4.0_src_all.tar.gz"
 )
 MD5="412aa0570d9c556861b7bb9a5bbc2007"

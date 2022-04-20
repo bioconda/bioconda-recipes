@@ -1,5 +1,5 @@
-{% set version = "0.8.0" %}
-{% set sha256 = "1d5a2aba453227c7aee739e182e37e25879c4adf00e151fe06b2edf281d04e0c" %}
+{% set version = "1.3.0" %}
+{% set sha256 = "9c771d15a4b5458f29f5a017c01c0fd8b3cf55708c3eca37905addbbcaed1dac" %}
 # When updating, also need to update model reference in post-link.sh
 
 package:
@@ -10,16 +10,17 @@ package:
 # - Uses pre-built binaries, building problematic due to clif dependency
 # - Need recent kernel with GLIBC > 2.23 due to pre-built htslib
 # - Build patches __main__.py in zip files to generalize python dependency
-# - Requires numpy 1.14, want to sync with CONDA_NPY
+# - Requires numpy 1.16, want to sync with CONDA_NPY
 # - Uses python wrappers that don't expose all underlying options
 # - Ships with pre-built model. Longer term will need way to fetch models on demand.
 
 source:
   url: https://github.com/google/deepvariant/releases/download/v{{ version }}/deepvariant.zip
   sha256: '{{ sha256 }}'
+
 build:
   number: 0
-  skip: true  # [osx or not py27]
+  skip: true  # [osx or not py36]
 
 requirements:
   host:
@@ -33,27 +34,37 @@ requirements:
     # - bazel
   run:
     - openjdk >=8,<9
-    - python
+    - python 3.6.*
+    # TF slim is difficult because there is an existing tf-slim package in conda-forge
+    # https://github.com/conda-forge/tf-slim-feedstock
+    # which is different than the google one: https://github.com/google-research/tf-slim
+    # This appears to be a temporary situation: https://github.com/google-research/tf-slim/issues/6
+    # so temporarily install via pip in the build.sh to avoid conflicts
+    - absl-py
+    # - tf-slim
     - google-cloud-sdk
     - zlib
     - boost
     - htslib
     - numpy
     - curl
-    - tensorflow 1.12.*
+    - tensorflow-gpu 2.0.*
+    - tensorflow-estimator 2.0.*
     - protobuf
     - contextlib2
     - enum34
     - intervaltree
     - mock
-    - numpy 1.14.*
+    - numpy 1.16.*
     - psutil
     - requests
     - scipy
+    - altair
     - oauth2client
     - six
     - crcmod
     - parallel
+    - unzip
 
 test:
   commands:
@@ -67,3 +78,8 @@ about:
   license: MIT
   summary: DeepVariant is an analysis pipeline that uses a deep neural network to
     call genetic variants from next-generation DNA sequencing data
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic
+    - missing_tests
