@@ -22,4 +22,8 @@ fi
 
 wget https://raw.githubusercontent.com/sanger-pathogens/Roary/master/bin/create_pan_genome_plots.R -P $PREFIX/bin/
 
-chmod u+rwx $PREFIX/bin/*
+chmod u+rwx $PREFIX/bin/create_pan_genome_plots.R
+chmod u+rwx $PREFIX/bin/roar*
+chmod u+rwx $PREFIX/bin/pan_*
+chmod u+rwx $PREFIX/bin/create_*
+
