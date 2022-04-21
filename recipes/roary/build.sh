@@ -20,4 +20,6 @@ else
     exit 1
 fi
 
+wget https://raw.githubusercontent.com/sanger-pathogens/Roary/master/bin/create_pan_genome_plots.R -P bin/
+
 chmod u+rwx $PREFIX/bin/*
