@@ -2,9 +2,9 @@
 
 set -e -o pipefail -x
 
-export LIBRARY_PATH=${PREFIX}/lib
-export C_INCLUDE_PATH=${PREFIX}/include
-export CPP_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${RECIPE_DIR}/lib
+export C_INCLUDE_PATH=${RECIPE_DIR}/include
+export CPP_INCLUDE_PATH=${RECIPE_DIR}/include
 export CFLAGS="${CFLAGS} -fcommon"
 export CXXFLAGS="${CFLAGS} -fcommon"
 
@@ -16,5 +16,5 @@ git submodule update --init
 git checkout 0a42916922d42611a087d4df871e424a8907896e
 ./autogen.sh
 ./configure --prefix=${PREFIX}
-make -j 4
+make ${MAKEFLAGS}
 make install
