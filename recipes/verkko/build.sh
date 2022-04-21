@@ -5,7 +5,7 @@ set -e
 if [ "$(uname)" == "Darwin" ]; then
 
     # apparently the HOME variable isn't set correctly, and circle ci output indicates the following as the home directory
-    #export HOME=`pwd`
+    export HOME=`pwd`
     echo "HOME is $HOME"
     mkdir -p $HOME/.cargo/registry/index/
 fi
