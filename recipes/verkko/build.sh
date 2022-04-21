@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 # taken from yacrd recipe, see: https://github.com/bioconda/bioconda-recipes/blob/2b02c3db6400499d910bc5f297d23cb20c9db4f8/recipes/yacrd/build.sh
 if [ "$(uname)" == "Darwin" ]; then
