@@ -1,0 +1,38 @@
+{% set version = "0.0.7" %}
+{% set sha256 = "720357e04484bf8ea0b5b138798cc676507c10deaf7f3461f994443d466db0d8" %}
+
+package:
+  name: proteomiqon-peptidespectrummatching
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/ProteomIQon.PeptideSpectrumMatching/{{ version }}
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  script:
+    - dotnet tool install --add-source $SRC_DIR --tool-path $PREFIX/bin --version {{ version }} ProteomIQon.PeptideSpectrumMatching
+
+requirements:
+  host:
+    - dotnet-sdk
+  run:
+    - dotnet-runtime
+
+test:
+  commands:
+    - proteomiqon-peptidespectrummatching --help
+
+about:
+  home: https://csbiology.github.io/ProteomIQon/
+  license: MIT
+  summary: Given raw an MS run in the mzLite format, this tool iterates across all MS/MS scans, determines precursor charge states and possible peptide spectrum matches using reimplementations of SEQUEST, Andromeda and XTandem.
+  description: |
+    Given raw a MS run in the mzLite or mzml format, this tool iterates accross all recorded MS/MS scans and determines the charge state of precursor 
+    ions which were selected for fragmentation. With this it is possible to query the peptide data base for every precursor ion mass +/- a
+    tolerance (which defines the so called 'search space') and retrieve peptides that are theoretical candidates for a match. For each of the peptide
+    candidates we create an theoretical spectrum in silico and compare it to the measured MS/MS scan.
+  dev_url: https://github.com/CSBiology/ProteomIQon
+  doc_url: https://csbiology.github.io/ProteomIQon/tools/PeptideSpectrumMatching.html

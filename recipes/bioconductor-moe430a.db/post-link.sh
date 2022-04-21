@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="moe430a.db_3.2.3.tar.gz"
+FN="moe430a.db_3.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/moe430a.db_3.2.3.tar.gz"
-  "https://bioarchive.galaxyproject.org/moe430a.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-moe430a.db/bioconductor-moe430a.db_3.2.3_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-moe430a.db/bioconductor-moe430a.db_3.2.3_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/moe430a.db_3.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/moe430a.db_3.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-moe430a.db/bioconductor-moe430a.db_3.13.0_src_all.tar.gz"
 )
-MD5="c95b12e1954943ccc347ae57794e1c19"
+MD5="2bcdace3c55437bc8428b99064e486b1"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

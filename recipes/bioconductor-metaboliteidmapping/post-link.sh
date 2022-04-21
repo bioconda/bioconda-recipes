@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="metaboliteIDmapping_0.99.8.tar.gz"
+FN="metaboliteIDmapping_1.0.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/metaboliteIDmapping_0.99.8.tar.gz"
-  "https://bioarchive.galaxyproject.org/metaboliteIDmapping_0.99.8.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-metaboliteidmapping/bioconductor-metaboliteidmapping_0.99.8_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/metaboliteIDmapping_1.0.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/metaboliteIDmapping_1.0.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-metaboliteidmapping/bioconductor-metaboliteidmapping_1.0.0_src_all.tar.gz"
 )
-MD5="20a35d4b6e942d9e18589e004c314d18"
+MD5="bd78ec373ce90fac1a10d2c64c462e77"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

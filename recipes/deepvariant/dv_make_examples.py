@@ -56,6 +56,7 @@ def main():
            "{py_exe} {bin_dir}/make_examples.zip "
            "--mode calling --ref {args.ref} --reads {args.reads} {regions} "
            "{gvcf} "
+           "--sample_name {args.sample} "
            "--examples {args.examples}/{args.sample}.tfrecord@{args.cores}.gz --task {{}} "
            "::: {split_inputs}")
     sys.exit(subprocess.call(cmd.format(**locals()), shell=True))

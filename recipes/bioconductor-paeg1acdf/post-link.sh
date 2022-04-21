@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="paeg1acdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/paeg1acdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/paeg1acdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/paeg1acdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-paeg1acdf/bioconductor-paeg1acdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-paeg1acdf/bioconductor-paeg1acdf_2.18.0_src_all.tar.gz"
 )
 MD5="73af974112051db0f715518393e84726"

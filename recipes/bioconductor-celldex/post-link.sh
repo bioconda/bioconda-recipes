@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="celldex_1.0.0.tar.gz"
+FN="celldex_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/celldex_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/celldex_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-celldex/bioconductor-celldex_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/celldex_1.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/celldex_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-celldex/bioconductor-celldex_1.4.0_src_all.tar.gz"
 )
-MD5="fcbf9341066a8ece3a934a925a6b47f8"
+MD5="ee74c66b52e6f5ec9834d3ae3b9b5218"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

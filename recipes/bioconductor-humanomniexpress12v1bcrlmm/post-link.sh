@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="humanomniexpress12v1bCrlmm_1.0.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/humanomniexpress12v1bCrlmm_1.0.1.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/humanomniexpress12v1bCrlmm_1.0.1.tar.gz"
   "https://bioarchive.galaxyproject.org/humanomniexpress12v1bCrlmm_1.0.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-humanomniexpress12v1bcrlmm/bioconductor-humanomniexpress12v1bcrlmm_1.0.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-humanomniexpress12v1bcrlmm/bioconductor-humanomniexpress12v1bcrlmm_1.0.1_src_all.tar.gz"
 )
 MD5="abdb730fc230db669e588e024ee7624b"

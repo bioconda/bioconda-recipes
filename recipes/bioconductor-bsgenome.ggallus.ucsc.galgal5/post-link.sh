@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="BSgenome.Ggallus.UCSC.galGal5_1.4.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/BSgenome.Ggallus.UCSC.galGal5_1.4.2.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Ggallus.UCSC.galGal5_1.4.2.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Ggallus.UCSC.galGal5_1.4.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.ggallus.ucsc.galgal5/bioconductor-bsgenome.ggallus.ucsc.galgal5_1.4.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.ggallus.ucsc.galgal5/bioconductor-bsgenome.ggallus.ucsc.galgal5_1.4.2_src_all.tar.gz"
 )
 MD5="93b42354404edd848b21ea6781ca135c"
