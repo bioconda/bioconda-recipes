@@ -1,6 +1,9 @@
 #!/bin/bash
 
-sed -i.bak \
+python -m pip install . --no-deps --ignore-installed -vv
+
+if [[ $(uname -s -m) != "Linux x86_64" ]]; then
+sed -i'' \
   -e '/^minimap2:/ {
     N
     N
@@ -10,4 +13,5 @@ sed -i.bak \
     N
     s|^\(mashmap:\n  exec: \)default|\1 mashmap|
   }' \
-  ${PREFIX}/lib/python*/site-packages/etc/dgenies/tools.yaml
+  ${SP}/etc/dgenies/tools.yaml
+fi
