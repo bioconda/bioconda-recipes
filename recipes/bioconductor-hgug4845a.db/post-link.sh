@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="hgug4845a.db_0.0.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/hgug4845a.db_0.0.3.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hgug4845a.db_0.0.3.tar.gz"
   "https://bioarchive.galaxyproject.org/hgug4845a.db_0.0.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hgug4845a.db/bioconductor-hgug4845a.db_0.0.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hgug4845a.db/bioconductor-hgug4845a.db_0.0.3_src_all.tar.gz"
 )
 MD5="46133d7bcb6d8c24c026304e8ddd150d"

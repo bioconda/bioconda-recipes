@@ -1,30 +1,30 @@
-{% set version = "2.11.1.4" %}
+{% set version = "2.11.2.1" %}
 
 package:
   name: jalview
   version: {{ version }}
 
 build:
-  number: 2
+  number: 0
   noarch: generic
 
 source:
   url: https://www.jalview.org/source/jalview_{{ version|replace(".", "_") }}.tar.gz
-  sha256: "30c0a89bbaf58bc5fd15fd7b167768d21cda1431676f28e22669fd5a342396eb"
+  sha256: "6cf6ea438e648377c3530e619771ac94f53e708e08ea3a7ee4e18969fcd5e0ad"
 
 requirements:
   build:
     - make
-    # jalview 2.11 series requires Java 11 or greater to build.
     - gradle >5.2,<6.6
+    # jalview 2.11 series requires Java 11 or greater to build.
     - openjdk 11
     - xorg-libxtst
   run:
     # Jalview 2.11.1.4 can run as 1.8 or java 11+
     # Version number reference: https://github.com/conda/conda/issues/6948#issuecomment-369360906
     # A bug with OpenJDK 11.0.9.1+1 makes Jalview crash on macOS. Fixed with later versions.
-    - openjdk >=8.0.192,!=11.0.9.* # [osx]
-    - openjdk >=8.0.192 # [not osx]
+    - openjdk >=8.0.192,!=11.0.9.*,<12 # [osx]
+    - openjdk >=8.0.192,<12 # [not osx]
     - xorg-libxtst
     - psutil
 
@@ -50,4 +50,4 @@ extra:
     This wrapper and installation is primarily for commandline-only use.
     Set JALVIEW_JRE=j1.8 or JALVIEW_JRE=j11 to specify the java runtime if you need jalview to start up as quickly as possible
     Set JALVIEW_MAXMEM=2g to restrict jalviews maximal memory consumption (here to 2G RAM). Otherwise 90% of physical memory
-    (capped at 32G) is allocated.
+    (capped at 32G) is allocated.  Memory allocation can now also be set in Tools->Preferences->Startup.

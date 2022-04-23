@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="minionSummaryData_1.22.0.tar.gz"
+FN="minionSummaryData_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/minionSummaryData_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/minionSummaryData_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-minionsummarydata/bioconductor-minionsummarydata_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/minionSummaryData_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/minionSummaryData_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-minionsummarydata/bioconductor-minionsummarydata_1.24.0_src_all.tar.gz"
 )
-MD5="9fc970b840e2ebe6ccef16fa506eae97"
+MD5="12e4567d616b6080027f1f14d2ec8ea4"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="scpdata_1.0.0.tar.gz"
+FN="scpdata_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/scpdata_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/scpdata_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-scpdata/bioconductor-scpdata_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/scpdata_1.2.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/scpdata_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-scpdata/bioconductor-scpdata_1.2.0_src_all.tar.gz"
 )
-MD5="b63a8a9e071af138a35a4da1351ddb8b"
+MD5="e4798ca6383605999e8074cf0b89ea6d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

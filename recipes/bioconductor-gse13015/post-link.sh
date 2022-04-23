@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="GSE13015_1.0.0.tar.gz"
+FN="GSE13015_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/GSE13015_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/GSE13015_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-gse13015/bioconductor-gse13015_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/GSE13015_1.2.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/GSE13015_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-gse13015/bioconductor-gse13015_1.2.0_src_all.tar.gz"
 )
-MD5="478e8aa0a79a4d6c85b8b4eec4f22cbd"
+MD5="3a8620342cbc179888365b69c528f64c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

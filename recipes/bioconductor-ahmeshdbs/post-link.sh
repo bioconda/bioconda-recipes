@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="AHMeSHDbs_0.99.6.tar.gz"
+FN="AHMeSHDbs_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/AHMeSHDbs_0.99.6.tar.gz"
-  "https://bioarchive.galaxyproject.org/AHMeSHDbs_0.99.6.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ahmeshdbs/bioconductor-ahmeshdbs_0.99.6_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/AHMeSHDbs_1.2.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/AHMeSHDbs_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ahmeshdbs/bioconductor-ahmeshdbs_1.2.0_src_all.tar.gz"
 )
-MD5="6acb0c0f55209e914581b6aa060b8b8b"
+MD5="d42ca05b924b7c21c37acd0333b8bdbd"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

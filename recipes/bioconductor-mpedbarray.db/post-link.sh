@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="mpedbarray.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/mpedbarray.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/mpedbarray.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/mpedbarray.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mpedbarray.db/bioconductor-mpedbarray.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mpedbarray.db/bioconductor-mpedbarray.db_3.2.3_src_all.tar.gz"
 )
 MD5="7bcd1fee1554b6f8844c9bf30b7db4ef"
