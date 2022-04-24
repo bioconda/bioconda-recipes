@@ -1,27 +1,46 @@
+{% set version = "3.0.1" %}
+{% set sha256 = "f671971cbf924f2133decc1cc92173eefb9b719249f9cf00d8792344e0cff02f" %}
+
 package:
   name: motus
-  version: "1.0"
+  version: '{{ version }}'
 
 source:
-  fn: mOTUs.Linux64bits.tar.gz
-  url: http://www.bork.embl.de/software/mOTU/share/mOTUs.Linux64bits.tar.gz
-  md5: 4c1fc6dc2ea803c9ee58d96bc6301b8d
+  url: https://github.com/motu-tool/mOTUs/archive/{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
 
 build:
   number: 0
-  skip: True # [not linux64]
+  # motus requires python3
+  #skip: True # [not py3k]
+  noarch: python
 
 requirements:
   build:
-    - perl-threaded
+     - python >=3.8
+  host:
+    - python >=3.8
   run:
-    - perl-threaded
+    - metasnv =1.0.3
+    - samtools >=1.9
+    - bwa >=0.7.17
+    - python >=3.8
 
 test:
   commands:
-    - mOTUs.pl | head -2 | tail -1 | grep -q "^For single-sample mode:"; echo $?
+    - motus --version
 
 about:
-  home: http://www.bork.embl.de/software/mOTU
-  license: GNU GPL v3
-  summary: 'mOTUs Metagenomic species profiling using universal phylogenetic marker genes'
+  home: http://motu-tool.org/
+  license: GPL-3.0
+  license_file: LICENSE
+  license_family: GPL
+  summary: Marker gene-based OTU (mOTU) profiling
+  dev_url: https://github.com/motu-tool/mOTUs
+
+extra:
+  notes: A tiny wrapper to the command motus was added. See build.sh for additional notes
+  identifiers:
+    - biotools:motus
+  recipe-maintainers:
+    - AlessioMilanese

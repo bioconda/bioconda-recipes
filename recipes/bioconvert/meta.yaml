@@ -1,77 +1,94 @@
+{% set name = "bioconvert" %}
+{% set version = "0.5.2" %}
+{% set sha256 =  "d2c6d34fefb8868eae63c9cf158f44d75b29d1bca3a8e93165f6a349a8105a04" %}
+
 package:
-  name: bioconvert
-  version: "0.0.10"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  fn: bioconvert-0.0.10.tar.gz
-  url: https://pypi.python.org/packages/51/16/36baee3cf988d3f043e98341c43c05fd771f5dbeaef118ace23853e005d5/bioconvert-0.0.10.tar.gz
-  md5: a7073c2b80712e0884c6414eea4dee24
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  skip: True # [py27]
+  noarch: python
   entry_points:
     - bioconvert=bioconvert.scripts.converter:main
     - bioconvert_init=bioconvert.scripts.init_convert:main
   number: 0
 
 requirements:
-  build:
-    - python
+  host:
+    - python >=3
     - setuptools
-    - easydev >=0.9.36
-    - colorlog
-    - pandas
-    - biopython
-    - mappy
-    - matplotlib
-    - pyyaml
-    - pysam
-
   run:
-    - python
-    - easydev >=0.9.36
+    - easydev
+    - biosniff
     - colorlog
+    - deeptools
     - pandas
-    - biopython
+    - biopython>=1.70
     - mappy
-    - matplotlib
+    - matplotlib-base
+    - networkx
     - pyyaml
     - pysam
+    - pyexcel
+    - pyexcel-ods3
+    - pyexcel-xls
+    - pyexcel-xlsx
+    - pyBigWig
+    - xlrd
+    - py2bit
+    - statsmodels
+    - tqdm
     - bamtools
     - bcftools
     - bedtools
-    - bioawk
-    - deeptools
-    - dsrc # [not osx]
+    - bedops
+    - dsrc
+    - go ==1.10.3
+    - mosdepth
     - pbzip2
     - pigz
+    - plink
     - sambamba
-    - samtools
+    - samtools>=1.9
     - seqtk
+    - seqkit
     - squizz
+    - sra-tools
+    - ucsc-bedgraphtobigwig
+    - ucsc-bigwigtobedgraph
+    - ucsc-wigtobigwig
+    - ucsc-fatotwobit
+    - ucsc-twobittofa
+    - wiggletools ==1.2.11
+    - sed
+    - mawk
+    - numpydoc  # required by deeptools
+    - jinja2<3.1 # required by numpydoc/deeptools
 
 test:
   imports:
     - bioconvert
     - bioconvert.core
-    - bioconvert.data
-    - bioconvert.misc
     - bioconvert.scripts
-    - bioconvert.simulator
-    - bioconvert.validator
 
   commands:
     - MPLBACKEND=agg bioconvert --help
     - MPLBACKEND=agg bioconvert_init --help
+    - MPLBACKEND=agg bioconvert_stats --help
 
 extra:
-    container:
-        # needs libGL.so.1
-        extended-base: true
-
+  container:
+    # needs libGL.so.1
+    extended-base: true
+  skip-lints:
+    - should_use_compilers
 
 about:
   home: http://bioconvert.readthedocs.io/
-  license: BSD License
+  license: GPL3
   summary: 'convert various bioinformatics formats'
-  license_family: BSD
+  license_family: GPL

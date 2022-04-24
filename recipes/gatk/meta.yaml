@@ -1,20 +1,25 @@
+{% set version="3.8" %}
+
 about:
   home: https://www.broadinstitute.org/gatk/
-  license: https://www.broadinstitute.org/gatk/about/#licensing
-  summary: The full Genome Analysis Toolkit (GATK) framework, license restricted.
+  license: BSD
+  summary: The full Genome Analysis Toolkit (GATK) framework, v3
 
 package:
   name: gatk
-  version: '3.8'
+  version: {{ version }}
 
 build:
-  number: 2
-  skip: False
+  noarch: generic
+  number: 11
+
+source:
+    url: https://storage.googleapis.com/gatk-software/package-archive/gatk/GenomeAnalysisTK-3.8-1-0-gf15c1c3ef.tar.bz2
+    sha256: a0829534d2d0ca3ebfbd3b524a9b50427ff238e0db400d6e9e479242d98cbe5c
 
 requirements:
   run:
     - openjdk >=8,<9
-    - bzip2 # needed by gatk-register to extract GATK archive
     - python
     - r-gplots
     - r-ggplot2
@@ -23,7 +28,9 @@ requirements:
 
 test:
   commands:
-    - "gatk-register --help 2>&1 | grep gatk-register"
+    - GenomeAnalysisTK --version
+    - gatk3 --version
 
 extra:
-  notes: Due to license restrictions, this recipe cannot distribute and install GATK directly. To fully install GATK, you must download a licensed copy of GATK from the Broad Institute (https://www.broadinstitute.org/gatk/download/), install this package, and call "gatk-register /path/to/GenomeAnalysisTK[-$PKG_VERSION.tar.bz2|.jar]", which will copy GATK into your conda environment.
+  identifiers:
+    - biotools:gatk

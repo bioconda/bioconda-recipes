@@ -1,29 +1,51 @@
+{% set version = "1.0.3" %}
+
 package:
   name: vcflib
-  version: '1.0.0_rc1'
+  version: {{ version }}
 
 source:
-  git_url: https://github.com/ekg/vcflib.git
-  git_rev: 3e03c7a10098b3888aaa258d4e339ddcdbf3b951
+  url: https://github.com/vcflib/vcflib/releases/download/v{{ version }}/vcflib-{{ version }}-src.tar.gz
+  sha256: 766bb8f47eb19810b7a0c53b6e3130658300450493d39db46eadc6124b0af200
+  patches:
+    - shared_lib.patch
+    - pkg-config.patch
 
 build:
   number: 1
-  skip: True  # [osx]
 
 requirements:
   build:
-    - gcc   # [linux]
-    - llvm  # [osx]
-    - zlib {{CONDA_ZLIB}}*
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    # python really only used as a build tool; no ${PREFIX}/bin/python needed.
+    - python >=3
+    - cmake
+    - pkg-config
+  host:
+    - htslib
+    - tabixpp
   run:
-    - zlib {{CONDA_ZLIB}}*
-    - libgcc  # [linux]
+    - python >=3
+    - zlib   
+    - htslib
+    - tabixpp
 
 test:
   commands:
     - vcfallelicprimitives -h
+    - vcffirstheader < /dev/null
+    - vcfsort < /dev/null
+    - vcfrandom | grep 'fileformat=VCF'
 
 about:
-  home: https://github.com/ekg/vcflib
+  home: https://github.com/vcflib/vcflib
   license: MIT
   summary: Command-line tools for manipulating VCF files
+  maintainers: jpuritz
+
+extra:
+  identifiers:
+    - biotools:vcflib
+    - doi:10.1101/023754

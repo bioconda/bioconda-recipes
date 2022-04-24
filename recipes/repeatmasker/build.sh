@@ -1,43 +1,27 @@
-RM_DIR=${PREFIX}/share/RepeatMasker
-RM_OTHER_PROGRAMS="DateRepeats ProcessRepeats RepeatProteinMask DupMasker util/queryRepeatDatabase.pl util/queryTaxonomyDatabase.pl util/rmOutToGFF3.pl util/rmToUCSCTables.pl util/buildRMLibFromEMBL.pl"
-RM_PROGRAMS="RepeatMasker $RM_OTHER_PROGRAMS"
+#!/bin/bash
 
+RM_DIR=${PREFIX}/share/RepeatMasker
 mkdir -p ${PREFIX}/bin
 mkdir -p ${RM_DIR}
 cp -r * ${RM_DIR}
-for name in ${RM_PROGRAMS} ; do 
-  sed -i 's$^#!.*perl.*$#!/usr/bin/env perl$g;' ${RM_DIR}/${name}
+
+# configure
+cd ${RM_DIR}
+perl ./configure -libdir ${RM_DIR}/Libraries -trf_prgm ${PREFIX}/bin/trf  -rmblast_dir ${PREFIX}/bin/ -hmmer_dir ${PREFIX}/bin -abblast_dir ${PREFIX}/bin -crossmatch_dir ${PREFIX}/bin -default_search_engine rmblast
+
+
+# ----- add tools within the bin ------
+
+# add RepeatMasker
+ln -s ${RM_DIR}/RepeatMasker ${PREFIX}/bin/RepeatMasker
+
+# add other tools
+RM_OTHER_PROGRAMS="DateRepeats DupMasker ProcessRepeats RepeatProteinMask"
+for name in ${RM_OTHER_PROGRAMS} ; do
+  ln -s ${RM_DIR}/${name} ${PREFIX}/bin/${name}
 done
 
-cp ${RECIPE_DIR}/RepeatMaskerConfig.pm ${RM_DIR}/RepeatMaskerConfig.pm
-# pvanheus - disabled this because the library included with RepeatMasker is too old to be usable
-# users will have to provide their own library and point to it using the REPEATMASKER_LIB_DIR environment variable
-
-
-${RM_DIR}/util/buildRMLibFromEMBL.pl ${RM_DIR}/Libraries/RepeatMaskerLib.embl > ${RM_DIR}/Libraries/RepeatMasker.lib 2>/dev/null
-makeblastdb -dbtype nucl -in ${RM_DIR}/Libraries/RepeatMasker.lib
-makeblastdb -dbtype prot -in ${RM_DIR}/Libraries/RepeatPeps.lib
-
-
-cat <<END >>${PREFIX}/bin/RepeatMasker
-#!/bin/bash
-
-BINDIR=\$(dirname \$(which RepeatMasker))
-BASEDIR=\${BINDIR%/bin}
-REPEATMASKER_DIR=\${REPEATMASKER_DIR:-\${BASEDIR}/share/RepeatMasker}
-REPEATMASKER_MATRICES_DIR=\${REPEATMASKED_MATRICES_DIR:-\${BASEDIR}/share/RepeatMasker/Matrices}
-REPEATMASKER_LIB_DIR=\${REPEATMASKER_LIB_DIR:-\${BASEDIR}/share/RepeatMasker/Libraries}
-TRF_DIR=${PREFIX}/bin
-RMBLAST_DIR=${PREFIX}/bin
-HMMER_DIR=${PREFIX}/bin
-export REPEATMASKER_DIR REPEATMASKER_LIB_DIR REPEATMASKER_MATRICES_DIR TRF_DIR RMBLAST_DIR HMMER_DIR
-
-NAME=\$(basename \$0)
-
-perl ${RM_DIR}/\${NAME} \$@
-END
-
-chmod a+x ${PREFIX}/bin/RepeatMasker
-for name in ${RM_OTHER_PROGRAMS} ; do
-  ln -s ${PREFIX}/bin/RepeatMasker ${PREFIX}/bin/$(basename $name)
+# add all utils
+for name in ${RM_DIR}/util/* ; do
+  ln -s $name ${PREFIX}/bin/$(basename $name)
 done

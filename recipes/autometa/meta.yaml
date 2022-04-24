@@ -1,0 +1,91 @@
+{% set name = "Autometa" %}
+{% set sha256 = "f477a9385d53119c84a12efa5ebcca80429ca5624a00eccd24da2fa262880340" %}
+{% set version = "2.0.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/KwanLab/Autometa/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script:
+    - {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vvv
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+
+  run:
+    - python >=3.7
+    - attrs
+    - bedtools
+    - biopython
+    - bowtie2
+    - diamond >=2.0
+    - gdown
+    - hdbscan
+    - hmmer
+    - numpy >=1.13
+    - pandas >=1.1
+    - parallel
+    - prodigal >=2.5
+    - requests
+    - rsync
+    - samtools >=1.11
+    - scikit-bio
+    - scikit-learn ==0.24
+    - tqdm
+    - trimap
+    - tsne
+    - numba >=0.47
+    - umap-learn >=0.5
+
+test:
+  imports:
+    - autometa
+  commands:
+    - autometa-config -h > /dev/null
+    - autometa-length-filter -h > /dev/null
+    - autometa-kmers -h > /dev/null
+    - autometa-bedtools-genomecov -h > /dev/null
+    - autometa-coverage -h > /dev/null
+    - autometa-orfs -h > /dev/null
+    - autometa-hmmsearch-filter -h > /dev/null
+    - autometa-markers -h > /dev/null
+    - autometa-taxonomy -h > /dev/null
+    - autometa-taxonomy-lca -h > /dev/null
+    - autometa-taxonomy-majority-vote -h > /dev/null
+    - autometa-binning -h > /dev/null
+    - autometa-binning-ldm -h > /dev/null
+    - autometa-binning-ldm-loginfo -h > /dev/null
+    - autometa-unclustered-recruitment -h > /dev/null
+    - autometa-binning-summary -h > /dev/null
+    - autometa-update-databases -h > /dev/null
+    - autometa-download-dataset -h > /dev/null
+    - autometa-benchmark -h > /dev/null
+
+about:
+  home: https://github.com/KwanLab/Autometa
+  license: AGPL-3.0
+  license_family: AGPL
+  license_file: LICENSE
+  summary: "Automated extraction of genomes from shotgun metagenomes"
+  description: |
+    An automated binning pipeline for metagenomes, in particular host-associated and highly complex ones.
+    Miller, I. J.; Rees, E. R.; Ross, J.; Miller, I.; Baxa, J.; Lopera, J.; Kerby, R. L.; Rey, F. E.; Kwan, J. C. 
+    Autometa: Automated extraction of microbial genomes from individual shotgun metagenomes. 
+    Nucleic Acids Research, 2019. DOI: https://doi.org/10.1093/nar/gkz148
+  doc_url: https://autometa.readthedocs.io/en/latest/
+  dev_url: https://github.com/KwanLab/Autometa
+
+extra:
+  recipe-maintainers:
+   - jason-c-kwan
+   - WiscEvan

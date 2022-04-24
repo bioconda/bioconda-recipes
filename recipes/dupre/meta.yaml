@@ -5,33 +5,28 @@ package:
   version: {{ version }}
 
 source:
-  fn: dupre-{{ version }}.tar.bz2
   url: https://bitbucket.org/genomeinformatics/dupre/get/dupre-{{ version }}.tar.bz2
   md5: 507a805c5bd9e7ecc8e65493ab29a6d1
 
 build:
-  number: 0
-  skip: True # [py27]
-  script: python setup.py install --single-version-externally-managed --record record.txt
+  noarch: python
+  number: 2
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
   entry_points:
     - dupre = dupre.dupre:main
     - bam2occupancy = dupre.bam2occupancy:main
 
 requirements:
-  build:
-    - python
-    - setuptools
+  host:
+    - python >=3
+    - pip
   run:
     - pysam
-    - python
+    - python >=3
     - pulp
     - numpy
     - h5py
     - scipy
-  # optional
-    # - snakemake
-    # - seaborn
-    # - pandas
 
 test:
   commands:

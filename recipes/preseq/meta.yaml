@@ -1,33 +1,36 @@
+{% set version = "3.1.2" %}
+
 package:
   name: preseq
-  version: 2.0.2
+  version: {{ version }}
 
 source:
-  url: https://github.com/smithlabcode/preseq/releases/download/v2.0.2/preseq_v2.0.2.tar.bz2
-  fn: preseq_v2.0.2.tar.bz2
-  md5: 9f2a7b597c9f08b821db6ee55e2ea39c
-  patches:
-    - makefile.patch
+  url: https://github.com/smithlabcode/preseq/releases/download/v{{ version }}/preseq-{{ version }}.tar.gz
+  sha256: ed5176eb638e709bd22c0a43cedae5a2a3fcece40f6c130c509fbce6a59fa788
 
 build:
-  number: 1
-  string: "gsl{{CONDA_GSL}}_{{PKG_BUILDNUM}}"
+  number: 3
 
 requirements:
   build:
-    - gcc
-    - zlib {{CONDA_ZLIB}}*
-    - gsl {{CONDA_GSL}}*
-
+    - make
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - gsl
+    - openblas
+    - htslib
   run:
-    - libgcc
-    - zlib {{CONDA_ZLIB}}*
-    - gsl {{CONDA_GSL}}*
+    - zlib
+    - gsl
+    - openblas
+    - htslib
 
 test:
   commands:
     - preseq
-    - bam2mr
+    - to-mr
 
 about:
   home: https://github.com/smithlabcode/preseq

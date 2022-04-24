@@ -1,38 +1,38 @@
 {% set name = "nanopolish" %}
-{% set version = "0.8.5" %}
+{% set version = "0.13.2" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 4
-  string: "ncurses{{CONDA_NCURSES}}_{{PKG_BUILDNUM}}"
+  number: 10
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://github.com/jts/nanopolish/archive/v{{ version }}.tar.gz
-  md5: 0a4db39659bce9117fc6167c4df0c88f
+  git_url: https://github.com/jts/nanopolish
+  git_rev: 'v{{ version }}'
+  sha256: be9ab70ff0753519323e4cd0e6be50b164c4239bd9c20ffa5207c2d6fc20d120
   patches:
     - nanopolish.patch
+    - patch
 
 requirements:
   build:
-  - gcc
-  - fast5 ==0.6.4
-  - htslib >1.4
-  - hdf5 {{ CONDA_HDF5 }}*
-  - eigen
-  - ncurses {{CONDA_NCURSES}}*
-
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - eigen 
+  host:
+    - htslib
+    - hdf5
+    - zlib
+    - eigen
   run:
-  - libgcc
-  - python
-  - hdf5 {{ CONDA_HDF5 }}*
-  - biopython
-  - bwa
-  - eigen
-  - ncurses {{CONDA_NCURSES}}*
+    - biopython
+    - python
+    - ont_vbz_hdf_plugin
 
 test:
   commands:
@@ -44,4 +44,9 @@ about:
   license: MIT
   license_file: LICENSE
   summary: 'Signal-level algorithms for MinION data.'
-  
+
+extra:
+  skip-lints:
+    - uses_vcs_url
+  identifiers:
+    - usegalaxy-eu:nanopolish_eventalign

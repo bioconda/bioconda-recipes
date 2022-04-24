@@ -1,36 +1,50 @@
-{% set version = "1.2.0" %}
-{% set sha256 = "db3789387e2135a3e7d24c531eee23fe3e29b569a37b12cddd1ba3cda0d28964" %}
+{% set name = "STAR-Fusion" %}
+{% set version = "1.10.0" %}
+{% set sha256 = "6469ec8f66acbb8a8fd991110c0958cbfff9246d84f933828aa8d21ba73a7466" %}
 
 package:
-  name: star-fusion
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: STAR-Fusion_v{{ version }}.FULL.tar.gz
-  url: https://github.com/STAR-Fusion/STAR-Fusion/releases/download/STAR-Fusion-v{{ version }}/STAR-Fusion-v{{ version }}.FULL.tar.gz
+  url: https://github.com/STAR-Fusion/STAR-Fusion/releases/download/v{{ version }}/STAR-Fusion-v{{ version }}.FULL.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
+  noarch: generic
 
 requirements:
   run:
+      - bbmap
       - blast
-      - perl
-      - perl-set-intervaltree
-      - perl-db-file
-      - perl-uri
-      - star
+      - bzip2
       - gmap
-      - bowtie
+      - htslib
+      - igv-reports
+      - openssl <1.1
+      - perl
+      - perl-carp
+      - perl-carp-assert
+      - perl-db-file
+      - perl-io-gzip
+      - perl-json-xs
+      - perl-set-intervaltree
+      - perl-uri
+      - python
+      - samtools <1.10
+      - star ==2.7.8a
+      - trinity <2.9
 
 test:
   commands:
-      - STAR-Fusion --help 2>&1 | grep Optional > /dev/null
-      - prep_genome_lib.pl -h 2>&1 | grep "STAR-Fusion" > /dev/null
-      - blast_and_promiscuity_filter.pl -h 2>&1 | grep Optional > /dev/null
+    - STAR-Fusion --help 2>&1 | grep Optional > /dev/null
+    - prep_genome_lib.pl -h 2>&1 | grep "STAR-Fusion" > /dev/null
+    - blast_and_promiscuity_filter.pl -h 2>&1 | grep Optional > /dev/null
 
 about:
   home: https://github.com/STAR-Fusion/STAR-Fusion
   license: BSD-3-Clause
-  summary: A fusion gene caller for STAR. The FusionFilter tools to create needed index data structures are not included.
+  license_file: LICENSE
+  license_family: BSD
+  summary: "STAR-Fusion fusion variant caller. All dependencies required to run FusionInspector and FusionAnnotator are included."

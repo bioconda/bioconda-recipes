@@ -1,0 +1,42 @@
+{% set version = "3.0.0" %}
+{% set sha256 = "154317ef265104861fe8d3d2e439939ae98f33b1e28da3c45f32ae8534dbfad7" %}
+
+package:
+  name: ncbi-vdb-py
+  version: {{ version }}
+
+source:
+  url: https://github.com/ncbi/ncbi-vdb/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - vdb-py.patch
+
+build:
+  number: 0
+  noarch: python
+  script: |
+    PYVER=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version_info[1]))'`
+    mkdir -p ${PREFIX}/lib/python${PYVER}/site-packages/
+    cp ./py_vdb/vdb.py ${PREFIX}/lib/python${PYVER}/site-packages/
+
+requirements:
+  run:
+    - ncbi-vdb ={{ version }}
+    - python >=3.5
+
+test:
+  imports:
+    - vdb
+
+about:
+  home: https://github.com/ncbi/ncbi-vdb
+  license: Public Domain
+  summary: SRA tools database engine (Python bindings)
+  description: |
+    VDB is the database engine that all SRA tools use. It is a columnar database
+    system with a number of unique features. All SRA objects are stored in VDB.
+    This package exposes the Python bindings and depends on ncbi-vdb to be available.
+
+extra:
+  recipe-maintainers:
+    - luizirber

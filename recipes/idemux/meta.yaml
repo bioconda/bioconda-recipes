@@ -1,0 +1,50 @@
+{% set name = "idemux" %}
+{% set version = "0.1.6" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 590980baaf810c8a02705efd50eb4ace644c360470fc3dc4491d077bbb6b26fc
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - idemux=idemux.__main__:main
+  script: "{{ PYTHON }} -m pip install . -vv --ignore-installed --no-deps"
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+    - setuptools_scm
+    - pytest-runner
+  run:
+    - dataclasses
+    - importlib_resources
+    - python >=3.6
+    - tqdm
+
+test:
+  imports:
+    - idemux
+    - idemux.ioutils
+    - idemux.processing
+    - idemux.resources
+    - idemux.resources.barcodes
+    - idemux.resources.barcodes.i1
+    - idemux.resources.barcodes.i5
+    - idemux.resources.barcodes.i5_rc
+    - idemux.resources.barcodes.i7
+  commands:
+    - idemux --help
+
+about:
+  home: "https://github.com/lexogen-tools/idemux"
+  license: custom
+  license_family: OTHER
+  license_file: LICENCE
+  summary: "A Lexogen tool for demultiplexing and index error correcting fastq files. Works with Lexogen i7, i5 and i1 barcodes."

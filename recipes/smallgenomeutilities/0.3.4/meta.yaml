@@ -1,0 +1,67 @@
+{% set name = "smallgenomeutilities" %}
+{% set version = "0.3.4" %}
+{% set sha256 = "0965f084ef1dd15ca4bafbe0bf012117e2ae38e2cfc099e37d0970358fd7687f" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  #url: https://pypi.io/packages/source/{{ name[0]|lower }}/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz
+  url: https://github.com/cbg-ethz/{{ name|lower }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -v
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - biopython
+    - pysam >=0.16
+    - numpy
+    - pandas
+    - scipy
+    - scikit-learn
+    - matplotlib-base
+    - progress
+    - pyyaml
+    - bcbio-gff
+    - pysamstats
+    - mafft
+
+test:
+  imports:
+    - smallgenomeutilities
+
+  commands:
+    - aln2basecnt -h
+    - convert_qr -h
+    - convert_reference -h
+    - coverage -h
+    - coverage_stats -h
+    - extract_consensus -h
+    - extract_coverage_intervals -h
+    - extract_sam -h
+    - extract_seq -h
+    - frameshift_deletions_checks -h
+    - gather_coverage -h
+    - mapper -h
+    - minority_freq -h
+    - pair_sequences -h
+    - predict_num_reads -h
+    - remove_gaps_msa -h
+    - MPLBACKEND="Agg" compute_mds  -h
+      # NOTE the default matplotlib backend used in Linux (Qt) is openGL-accelerated. Use the pure software "Agg" instead for testing inside GL-less containers
+
+about:
+  home: https://github.com/cbg-ethz/smallgenomeutilities
+  license: GNU General Public License v2 or later (GPLv2+)
+  summary: 'A collection of scripts that are useful for dealing with viral RNA NGS data.'
+  license_family: GPL2
+  license_file: LICENSE

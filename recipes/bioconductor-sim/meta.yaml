@@ -1,40 +1,53 @@
-{% set version = "1.48.0" %}
+{% set version = "1.64.0" %}
 {% set name = "SIM" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.14" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: cecad837161de40bc56dc745e3fb1776f3804f77fa5eb44b285bb4160b3f40d8
+  md5: c051410b2eada2a5fc0ae6d80ad80bdd
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: biomaRt, RColorBrewer
 requirements:
-  build:
-    - bioconductor-globaltest
-    - bioconductor-quantsmooth
+  host:
+    - 'bioconductor-globaltest >=5.48.0,<5.49.0'
+    - 'bioconductor-quantsmooth >=1.60.0,<1.61.0'
     - r-base
     - r-quantreg
-    - gcc  # [linux]
-    - llvm  # [osx]
+    - libblas
+    - liblapack
   run:
-    - bioconductor-globaltest
-    - bioconductor-quantsmooth
+    - 'bioconductor-globaltest >=5.48.0,<5.49.0'
+    - 'bioconductor-quantsmooth >=1.60.0,<1.61.0'
     - r-base
     - r-quantreg
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'Finds associations between two human genomic datasets.'
+  summary: 'Integrated Analysis on two human genomic datasets'
+  description: 'Finds associations between two human genomic datasets.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:sim
+    - doi:10.1186/1471-2105-10-203
+  parent_recipe:
+    name: bioconductor-sim
+    path: recipes/bioconductor-sim
+    version: 1.50.0
+

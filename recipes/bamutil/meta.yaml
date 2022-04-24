@@ -1,27 +1,29 @@
+{% set version = "1.0.15" %}
+
 package:
   name: bamutil
-  version: '1.0.14'
+  version: {{ version }}
 
 source:
-  fn: v1.0.14.tar.gz
-  url: "https://github.com/statgen/bamUtil/archive/v1.0.14.tar.gz"
-  sha256: "f5ec8d5e98a3797742106c3413a4ab1622d8787e38b29b3df4cddb59d77efda5"
+  - url: https://github.com/statgen/bamUtil/archive/v{{ version }}.tar.gz
+    sha256: 24ac4bdb81eded6e33f60dba85ec3d32ebdb06d42f75df775c2632bbfbd8cce9
+    folder: bamUtil
+  - url: https://github.com/statgen/libStatGen/archive/v{{ version }}.tar.gz
+    sha256: 075dcd891409c48d76c0c66186c0cc479bc3cd50bba093e7f318e1d1d19961ff
+    folder: libStatGen
 
 build:
   number: 2
 
 requirements:
   build:
-    - gcc # [not osx]
-    - llvm  # [osx]
-    - zlib {{CONDA_ZLIB}}*
-    # curl/openssl are used to download/verify libStatGen
-    - curl
-    - openssl
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
   run:
-    - libgcc # [not osx]
-    - libcxx # [osx]
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
 
 test:
   commands:
@@ -31,4 +33,8 @@ test:
 about:
   home: http://genome.sph.umich.edu/wiki/BamUtil
   license: GPLv3
-  summary: Programs that perform operations on SAM/BAM files, all built into a single executable, bam. 
+  summary: Programs that perform operations on SAM/BAM files, all built into a single executable, bam.
+
+extra:
+  identifiers:
+    - biotools:Bamutil

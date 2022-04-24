@@ -1,4 +1,2 @@
 #!/bin/bash
-export C_INCLUDE_PATH=$PREFIX/include
-make
-make install prefix=$PREFIX/bin
+make install CC=$CC CFLAGS="-O3 -Wall -I$PREFIX/include" LIBS="-L$PREFIX/lib" LIBBIGWIG="$PREFIX/lib/libBigWig.a" prefix=$PREFIX/bin

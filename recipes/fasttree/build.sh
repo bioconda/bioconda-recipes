@@ -1,11 +1,14 @@
 #!/bin/bash
-
-gcc -O3 -DUSE_DOUBLE -finline-functions -funroll-loops -Wall -o FastTree FastTree.c -lm
-gcc -DOPENMP -fopenmp -O3 -DUSE_DOUBLE -finline-functions -funroll-loops -Wall -o FastTreeMP FastTree.c -lm
-
+set -ex
 mkdir -p $PREFIX/bin
-chmod +x FastTree
-chmod +x FastTreeMP
 
-cp ./FastTree $PREFIX/bin/fasttree
-mv -v ./FastTree* $PREFIX/bin
+# build FastTree
+$CC $CFLAGS $LDFLAGS -Wall -O3 -DUSE_DOUBLE -funroll-loops $SRC_DIR/FastTree-2.1.11.c -lm -o $PREFIX/bin/FastTree
+chmod +x $PREFIX/bin/FastTree
+
+# some OS are not case-sensitive (macOS, by default), ignore the copy error there
+cp -f -- $PREFIX/bin/FastTree $PREFIX/bin/fasttree || true
+
+# Build FastTreeMP
+$CC $CFLAGS $LDFLAGS -Wall -DOPENMP -fopenmp -O3 -DUSE_DOUBLE -funroll-loops $SRC_DIR/FastTree-2.1.11.c -lm -o $PREFIX/bin/FastTreeMP
+chmod +x $PREFIX/bin/FastTreeMP

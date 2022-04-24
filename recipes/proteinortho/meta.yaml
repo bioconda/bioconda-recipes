@@ -1,0 +1,46 @@
+{% set name = "proteinortho" %}
+{% set version = "6.0.34" %}
+{% set sha256 = "2559eee1967d066afbb3fb182e386761360eaac644b0f56986216b75eb3fcef1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://gitlab.com/paulklemm_PHD/proteinortho/-/archive/v{{ version }}/proteinortho-v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}  
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]  
+    - cmake
+  host:
+    - liblapack
+    - blis
+  run:
+    - perl
+    - python
+    - diamond>=0.9.29
+    - liblapack
+    - blis
+ 
+test:
+  commands:
+    - proteinortho --version
+    - proteinortho -test
+    - proteinortho_clustering -test
+    - proteinortho_grab_proteins.pl -help
+
+about:
+  home: https://gitlab.com/paulklemm_PHD/proteinortho/
+  license: GPL-3.0-only
+  license_family: GPL
+  license_file: LICENSE
+  summary: "Proteinortho is a tool to detect orthologous genes within different species."

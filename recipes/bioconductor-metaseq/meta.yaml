@@ -1,38 +1,51 @@
-{% set version = "1.18.0" %}
+{% set version = "1.34.0" %}
 {% set name = "metaSeq" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.14" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 3997ca1dbf9703e628ffeb61203839103adface0f066d7aa3aabe3c52dc919b5
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 664ae876ba895b8397f4a1115bac49b0
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - bioconductor-noiseq
+  host:
+    - 'bioconductor-noiseq >=2.38.0,<2.39.0'
     - r-base
     - r-rcpp
     - r-snow
-    - gcc  # [linux]
-    - llvm  # [osx]
+    - libblas
+    - liblapack
   run:
-    - bioconductor-noiseq
+    - 'bioconductor-noiseq >=2.38.0,<2.39.0'
     - r-base
     - r-rcpp
     - r-snow
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'The probabilities by one-sided NOISeq are combined by Fisher''s method or Stouffer''s method'
+  summary: 'Meta-analysis of RNA-Seq count data in multiple studies'
+  description: 'The probabilities by one-sided NOISeq are combined by Fisher''s method or Stouffer''s method'
+extra:
+  identifiers:
+    - biotools:metaseq
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-metaseq
+    path: recipes/bioconductor-metaseq
+    version: 1.20.0
+

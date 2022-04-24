@@ -1,36 +1,48 @@
-{% set version = "1.24.0" %}
+{% set version = "1.40.0" %}
 {% set name = "RTopper" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.14" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: c118a0d58b84421b6daab4eb9929441fd88c900abf58317ecf5de750b993cca2
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: f70826131b22101ba046f408cf60f0aa
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: org.Hs.eg.db, KEGGREST, GO.db
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-limma
-    - bioconductor-multtest
+  host:
+    - 'bioconductor-biobase >=2.54.0,<2.55.0'
+    - 'bioconductor-limma >=3.50.0,<3.51.0'
+    - 'bioconductor-multtest >=2.50.0,<2.51.0'
     - r-base
   run:
-    - bioconductor-biobase
-    - bioconductor-limma
-    - bioconductor-multtest
+    - 'bioconductor-biobase >=2.54.0,<2.55.0'
+    - 'bioconductor-limma >=3.50.0,<3.51.0'
+    - 'bioconductor-multtest >=2.50.0,<2.51.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 3)'
-  summary: 'the RTopper package is designed to perform and integrate gene set enrichment results across multiple genomic platforms.'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 3) + file LICENSE'
+  summary: 'This package is designed to perform Gene Set Analysis across multiple genomic platforms'
+  description: 'the RTopper package is designed to perform and integrate gene set enrichment results across multiple genomic platforms.'
+  license_file: LICENSE
+extra:
+  identifiers:
+    - biotools:rtopper
+  parent_recipe:
+    name: bioconductor-rtopper
+    path: recipes/bioconductor-rtopper
+    version: 1.26.0
+

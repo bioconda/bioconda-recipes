@@ -1,48 +1,45 @@
 {% set name = "planemo" %}
-{% set version = "0.46.1" %}
-{% set md5 = "bf67bdb51bd3ea9a843468b8818026ee" %}
+{% set version = "0.74.9" %}
 
 package:
-  name: {{ name }}
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  fn: planemo-{{ version }}.tar.gz
-  url: https://pypi.python.org/packages/b8/55/34d602d48944f02d0c258f6ce105e6fdddd6e60247ae8d15e000429be94a/planemo-{{ version }}.tar.gz
-  md5: {{ md5 }}
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 4d8850c2e967810846f51a290f8f9adc9296c9e5531a23d8328fd3aea414155c
 
 build:
-  preserve_egg_dir: true
-  skip: true # [py3k]
+  number: 0
+  noarch: python
   entry_points:
     - planemo=planemo.cli:planemo
-  number: 0
-  script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
 
 requirements:
-  build:
-    - aenum
-    - bioblend >=0.10.0
-    - click
-    - galaxy-lib >=17.9.8
-    - jinja2
-    - pyaml
-    - python
-    - setuptools
-    - six >=1.7.0
-    - virtualenv
-
+  host:
+    - pip
+    - python >=3.6
   run:
-    - aenum
-    - bioblend >=0.8.0
+    - allure-python-commons
+    - beautifulsoup4
+    - bioblend >=0.14.0
     - click
+    - cwltool >=1.0.20191225192155
     - docutils
-    - galaxy-lib >=17.9.8
+    - ephemeris >=0.10.3
+    - galaxy-containers
+    - galaxy-tool-util >=20.9.0
+    - galaxy-util >=20.5.0
     - glob2
+    - gxformat2 >=0.12.0
     - jinja2
+    - lxml
+    - oyaml
     - pyaml
-    - python
+    - python >=3.6
     - pyyaml
+    - tabulate
     - six >=1.7.0
     - virtualenv
 
@@ -52,7 +49,6 @@ test:
     - planemo.commands
     - planemo.conda_verify
     - planemo.cwl
-    - planemo.cwl.cwl2script
     - planemo.database
     - planemo.engine
     - planemo.galaxy
@@ -62,14 +58,19 @@ test:
     - planemo.shed
     - planemo.shed2tap
     - planemo.test
+    - planemo.training
     - planemo.xml
 
   commands:
-    # click requires a unicode locale
-    - LANG=C.UTF-8 planemo --help
+    - planemo --help
 
 about:
   home: https://github.com/galaxyproject/planemo
-  license: Academic Free License (AFL)
+  license: MIT License
   summary: 'Command-line utilities to assist in building tools for the Galaxy project (http://galaxyproject.org/).'
-  license_family: Apache
+  license_family: MIT
+
+extra:
+  container:
+    # click requires a Unicode locale
+    extended-base: True

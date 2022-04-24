@@ -1,0 +1,47 @@
+{% set version = "2.2.1" %}
+
+package:
+  name: bwa-mem2
+  version: {{ version }}
+
+source:
+  - url: https://github.com/bwa-mem2/bwa-mem2/releases/download/v{{ version }}/Source_code_including_submodules.tar.gz
+    sha256: 9b001bdc7666ee3f14f3698b21673714d429af50438b894313b05bc4688b1f6d
+    patches:
+      - Makefile.patch
+
+build:
+  number: 2
+  # Compilation fails on OSX:
+  #   ext/safestringlib/include/safe_mem_lib.h:100:16: error: conflicting types for 'memset_s'
+  #   extern errno_t memset_s(void *dest, rsize_t dmax, uint8_t value);
+  #   /Applications/Xcode-9.4.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/usr/include/string.h:145:9: note: previous declaration is here
+  #   errno_t memset_s(void *__s, rsize_t __smax, int __c, rsize_t __n) __OSX_AVAILABLE_STARTING(__MAC_10_9, __IPHONE_7_0);
+  # Cause: https://github.com/intel/safestringlib/issues/14
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+
+test:
+  commands:
+    - bwa-mem2 version
+    - bwa-mem2.sse41 version
+    - bwa-mem2.sse42 version
+    - bwa-mem2.avx version
+    - bwa-mem2.avx2 version
+    - bwa-mem2.avx512bw version
+
+about:
+  home: https://github.com/bwa-mem2/bwa-mem2
+  license: MIT
+  license_file: LICENSE
+  summary: The next version of bwa-mem 
+
+extra:
+  identifiers:
+    - doi:10.1109/IPDPS.2019.00041

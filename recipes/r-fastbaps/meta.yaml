@@ -1,0 +1,78 @@
+{% set name = "r-fastbaps" %}
+{% set version = "1.0.6" %}
+{% set sha256 = "bad48a46d556a27b7635059577af0bcd49aee17f88d070194e0103614cdb36d2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/gtonkinhill/fastbaps/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  script: 
+    - "$R CMD INSTALL --build ."
+    - cp inst/run_fastbaps $PREFIX/bin/run_fastbaps
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - r-base
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-ape
+    - bioconductor-ggtree
+    - r-phytools
+    - r-ggplot2
+    - r-genie
+    - r-irlba
+    - r-fastcluster
+    - r-matrix
+    - r-adegenet
+    - r-doparallel
+    - r-clusteval
+    - r-gplots
+    - r-optparse
+    - zlib
+  run:
+    - r-base
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-ape
+    - bioconductor-ggtree
+    - r-phytools
+    - r-ggplot2
+    - r-genie
+    - r-irlba
+    - r-fastcluster
+    - r-matrix
+    - r-adegenet
+    - r-doparallel
+    - r-clusteval
+    - r-gplots
+    - r-optparse
+
+test:
+  commands:
+    - $R -e "library('fastbaps')"
+    - run_fastbaps --help
+
+about:
+  home: https://github.com/gtonkinhill/fastbaps
+  license: MIT
+  license_file: LICENSE.md
+  license_family: MIT
+  summary: "A fast approximation to a Dirichlet Process Mixture model (DPM) for clustering genetic data"
+
+extra:
+  identifiers:
+    - doi:10.5281/zenodo.1472299  # source release
+    - doi:10.1093/nar/gkz361

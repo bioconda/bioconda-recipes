@@ -1,8 +1,5 @@
 #!/bin/bash
 
-make
-
-mkdir -p "$PREFIX"/bin
-
-cp snp-dists "$PREFIX"/bin/
-
+mkdir -p "${PREFIX}/bin"
+LIBS="${LDFLAGS}" make CC="${CC}" PREFIX="${PREFIX}"
+cp snp-dists ${PREFIX}/bin/

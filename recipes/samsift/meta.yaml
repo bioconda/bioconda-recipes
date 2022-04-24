@@ -1,40 +1,37 @@
-{% set version = "0.2.3" %}
-{% set sha256 = "893617fda0d4be2c2339848f2f7e9d93c4f45e98ace5729a796eb9e29c1d3d31" %}
+{% set version = "0.2.5" %}
+{% set sha256 = "1b02ec272201c0faf349ffbcc422fc1250f23f4f6a5563c1104cd37755044064" %}
 
 package:
   name: samsift
   version: {{ version }}
 
 source:
-  fn: samsift-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/s/samsift/samsift-{{version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 0
-  skip: True # [py27]
+  noarch: python
+  number: 3
   entry_points:
     - samsift = samsift.samsift:main
     - samsift-norm-sam = samsift.samsift_norm_sam:main
-
-  script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
-  build:
-    - python
-    - pysam
-    - wheel
-    - setuptools
+  host:
+    - python >=3
+    - pip
   run:
-    - python
+    - python >=3
+    - python-dateutil
     - pysam
 
 test:
-    commands:
-      - samsift -v
-      - samsift -h
-      - samsift-norm-sam --help
-      - BAM=https://github.com/karel-brinda/samsift/raw/master/tests/tests/test.bam; curl -L ${BAM} | samsift
+  commands:
+    - samsift -v
+    - samsift -h
+    - samsift-norm-sam --help
+    - BAM=https://github.com/karel-brinda/samsift/raw/{{ version }}/tests/tests/test.bam; curl -L ${BAM} | samsift
 
 about:
   home: https://github.com/karel-brinda/samsift

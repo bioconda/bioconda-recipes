@@ -1,41 +1,45 @@
+{% set name = "pronto" %}
+{% set version = "2.4.5" %}
+
 package:
-  name: pronto
-  version: "0.10.2"
+  name: "{{ name }}"
+  version: "{{ version }}"
 
 source:
-  fn: pronto-0.10.2.zip
-  url: https://pypi.python.org/packages/84/84/f9d445f6639a8c1970dad02047cb42bbb01a66170fcd68be3ea93d01ce5f/pronto-0.10.2.zip
-  md5: 24b20a2153d8b4223b447af0ac1e084a
-#  patches:
-   # List any patch files here
-   # - fix.patch
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 2bed414a0721c7155a258e802122cafb2ec08f827098c1b59aa0323af242bcaf
 
 build:
+  noarch: python
   number: 0
-  entry_points:
-    - pronto = pronto:main
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - six
-
+  host:
+    - python >=3.6
+    - pip
   run:
-    - python
-    - six
+    - python >=3.6
+    - chardet >=3.0
+    - fastobo >=0.11.1
+    - networkx >=2.3
+    - python-dateutil >=2.8
 
 test:
   imports:
     - pronto
-    - pronto.parser
+    - pronto.entity
+    - pronto.logic
+    - pronto.utils
+    - pronto.parsers
+    - pronto.serializers
 
 about:
   home: http://github.com/althonos/pronto
-  license: MIT License
+  license: MIT
   summary: 'Python frontend to ontologies'
   license_family: MIT
 
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml
+extra:
+  recipe-maintainers:
+    - althonos

@@ -1,37 +1,59 @@
-{% set version = "1.0.3" %}
+{% set name = "eggNOG-mapper" %}
+{% set version = "2.1.7" %}
 
 package:
-  name: eggnog-mapper
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ version }}.tar.gz
   url: https://github.com/jhcepas/eggnog-mapper/archive/{{ version }}.tar.gz
-  md5: 02aba54c61aae108d5a8ab91e36785b2
-  patches:
-    - setup.patch
+  sha256: 47654d7f596bb85431a00947479ae11c39f07833cf9465f02490c96a84ccf082
 
 build:
   number: 0
-  skip: True # [not py27]
+  noarch: python
+  script: sed -i.bak "s/eggnogmapper.bin/#eggnogmapper.bin/g"  setup.cfg; python -m pip install --no-deps --ignore-installed --no-cache-dir -vvv .
 
 requirements:
-  build:
-    - python
-    - setuptools
-
+  host:
+    - pip
+    - python >=3.7
   run:
-    - python
-    - biopython
-    - diamond 0.8.22
-    - hmmer 3.1b2
+    - python >=3.7
+    - biopython >=1.76
+    - psutil >=5.7.0
+    - diamond >=2.0.11
+    - xlsxwriter >=1.4.3
+    - hmmer
+    - mmseqs2
+    - prodigal
+    - easel
+    - wget
 
 test:
   commands:
-    - 'emapper.py -h'
-    - 'download_eggnog_data.py bact -sfy'
+    - emapper.py --help
+    - download_eggnog_data.py --help
+    - download_eggnog_data.py -sfy
+    - hmm_mapper.py --help
+    - hmm_server.py --help
+    - hmm_worker.py --help
+
+  imports:
+    - eggnogmapper
 
 about:
-  home: https://github.com/jhcepas/eggnog-mapper
-  license: GPL
-  summary: Fast genome-wide functional annotation through orthology assignment
+  home: https://github.com/eggnogdb/eggnog-mapper
+  license: AGPL-3.0-only
+  license_family: GPL
+  license_file: LICENSE.txt
+  summary: "Fast genome-wide functional annotation through orthology assignment."
+  doc_url: https://github.com/eggnogdb/eggnog-mapper/wiki
+
+extra:
+  container:
+    # need wget with more options than the busybox one
+    extended-base: True
+  identifiers:
+    - doi:10.1093/nar/gky1085
+    - usegalaxy-eu:eggnog_mapper
