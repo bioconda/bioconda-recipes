@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="GSBenchMark_1.6.0.tar.gz"
+FN="GSBenchMark_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/GSBenchMark_1.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/GSBenchMark_1.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-gsbenchmark/bioconductor-gsbenchmark_1.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/GSBenchMark_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/GSBenchMark_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-gsbenchmark/bioconductor-gsbenchmark_1.14.0_src_all.tar.gz"
 )
-MD5="201561e111a96f6332c8b796c355b27c"
+MD5="e4721520115c408b60198bf39a7b3fac"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

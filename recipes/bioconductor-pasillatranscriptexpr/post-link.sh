@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="PasillaTranscriptExpr_1.14.0.tar.gz"
+FN="PasillaTranscriptExpr_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/PasillaTranscriptExpr_1.14.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/PasillaTranscriptExpr_1.14.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pasillatranscriptexpr/bioconductor-pasillatranscriptexpr_1.14.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/PasillaTranscriptExpr_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/PasillaTranscriptExpr_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pasillatranscriptexpr/bioconductor-pasillatranscriptexpr_1.22.0_src_all.tar.gz"
 )
-MD5="30b7e67a805dac5f009009712a9bce05"
+MD5="6ab024b853b6c63fad555ce7038f615a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

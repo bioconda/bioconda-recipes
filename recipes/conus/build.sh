@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export CFLAGS="${CFLAGS} -fcommon"
+export CXXFLAGS="${CXXFLAGS} -fcommon"
 ./configure
 make 
 

@@ -1,0 +1,53 @@
+{% set version = '1.0' %}
+{% set name = "lisi" %}
+{% set sha256 = '19cf8bd33b28887f2a63738bcd23d19b2e13db2a0c7a86919d46a20469fe41c4' %}
+
+package:
+  name: r-{{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/immunogenomics/LISI/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 2
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - r-base
+    - r-rcpparmadillo
+    - r-rann
+  run:
+    - r-base
+    - r-testthat
+    - r-dplyr
+    - r-tidyr
+    - r-magrittr
+    - r-ggplot2
+    - r-rann
+    
+test:
+  commands:
+    - $R -e "library(\"{{ name }}\")"           # [not win]
+    - "\"%R%\" -e \"library(\"{{ name }}\")\""  # [win]
+
+about:
+  home: https://github.com/immunogenomics/LISI
+  license: GPL-3
+  license_family: GPL3
+  summary: A method to assess how well mixed cells with
+    different labels are in single cell RNAseq.
+  license_file:
+    - LICENSE
+
+extra:
+  recipe-maintainers:
+    - tdido

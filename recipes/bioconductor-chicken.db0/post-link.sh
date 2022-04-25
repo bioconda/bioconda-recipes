@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="chicken.db0_3.10.0.tar.gz"
+FN="chicken.db0_3.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/chicken.db0_3.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/chicken.db0_3.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-chicken.db0/bioconductor-chicken.db0_3.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/chicken.db0_3.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/chicken.db0_3.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chicken.db0/bioconductor-chicken.db0_3.14.0_src_all.tar.gz"
 )
-MD5="0abe8d0e818742774f969617f2a1b9c6"
+MD5="b4ca029a765936c7c46ad5dcd723ba69"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

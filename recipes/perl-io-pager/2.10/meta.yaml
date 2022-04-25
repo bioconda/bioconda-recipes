@@ -1,0 +1,56 @@
+{% set name = "perl-io-pager" %}
+{% set version = "2.10" %}
+{% set sha256 = "bcb4d8c2d280c8034b82591cc0b9eb67a004f90ce9aa05979fc6071307acb195" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://cpan.metacpan.org/authors/id/J/JP/JPIERCE/IO-Pager-2.10.tgz
+  sha256: {{ sha256 }}
+
+# If this is a new build for the same version, increment the build
+# number. If you do not include this key, it defaults to 0.
+build:
+  number: 1
+  noarch: generic
+  run_exports:
+    weak:
+      - {{ name }} ={{ version }}
+
+requirements:
+  build:
+
+  # Run exports are used now
+  host:
+    - perl
+    - perl-file-which
+    - perl-termreadkey
+    - make
+
+  run:
+    - perl
+    - perl-file-which
+    - perl-termreadkey
+
+test:
+  commands:
+    # The version numbers for these submodules differ, thus default test will
+    # fail.
+    - perl -we 'use IO::Pager::Buffered'
+    - perl -we 'use IO::Pager::Page'
+    - perl -we 'use IO::Pager::Unbuffered'
+    - perl -we 'use IO::Pager::less'
+  # Perl 'use' tests
+  imports:
+    - IO::Pager
+    - IO::Pager::Perl
+
+  # You can also put a file called run_test.pl (or run_test.py) in the recipe
+  # that will be run at test time.
+
+about:
+  home: http://metacpan.org/pod/IO-Pager
+  license: Artistic
+  summary: 'Select a pager (possibly perl-based) & pipe it text if a TTY'
