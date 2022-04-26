@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export PATH=$PREFIX/bin:$PATH
 $PYTHON compile
 
 mkdir -p ${PREFIX}/bin/
