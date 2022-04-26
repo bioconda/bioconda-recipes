@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./compile
+$PYTHON compile
 
 mkdir -p ${PREFIX}/bin/
 mkdir -p ${PREFIX}/include/
