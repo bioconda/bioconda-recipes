@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="huex.1.0.st.v2frmavecs_1.1.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/huex.1.0.st.v2frmavecs_1.1.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/huex.1.0.st.v2frmavecs_1.1.0.tar.gz"
   "https://bioarchive.galaxyproject.org/huex.1.0.st.v2frmavecs_1.1.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-huex.1.0.st.v2frmavecs/bioconductor-huex.1.0.st.v2frmavecs_1.1.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-huex.1.0.st.v2frmavecs/bioconductor-huex.1.0.st.v2frmavecs_1.1.0_src_all.tar.gz"
 )
 MD5="982935d07b526ff555790e309fe4147e"

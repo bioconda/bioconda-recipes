@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="EpiTxDb.Hs.hg38_0.99.7.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/EpiTxDb.Hs.hg38_0.99.7.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/EpiTxDb.Hs.hg38_0.99.7.tar.gz"
   "https://bioarchive.galaxyproject.org/EpiTxDb.Hs.hg38_0.99.7.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-epitxdb.hs.hg38/bioconductor-epitxdb.hs.hg38_0.99.7_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-epitxdb.hs.hg38/bioconductor-epitxdb.hs.hg38_0.99.7_src_all.tar.gz"
 )
 MD5="e30af95f285788a9777a8207a8ef73a9"
