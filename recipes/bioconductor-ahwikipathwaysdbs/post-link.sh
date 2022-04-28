@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="AHWikipathwaysDbs_0.99.4.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/AHWikipathwaysDbs_0.99.4.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/AHWikipathwaysDbs_0.99.4.tar.gz"
   "https://bioarchive.galaxyproject.org/AHWikipathwaysDbs_0.99.4.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ahwikipathwaysdbs/bioconductor-ahwikipathwaysdbs_0.99.4_src_all.tar.gz"
 )

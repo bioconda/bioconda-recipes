@@ -9,9 +9,10 @@ cp -s $PREFIX/MegaPath/runMegaPath.sh $PREFIX/MegaPath/runMegaPath-Amplicon.sh $
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
-make CC=$CXX CXX=${CXX} CXXFLAGS="${CXXFLAGS} -L${PREFIX}/lib -std=c++11 -g -O2 -Wall -std=c++0x -fopenmp -lz" LDFLAGS="${LDFLAGS}" -C $PREFIX/MegaPath/cc/ 
+make CC=$CXX CXX=${CXX} LDFLAGS="${LDFLAGS}" CXXFLAGS="${CXXFLAGS} -L${PREFIX}/lib -std=c++11 -g -O2 -Wall -std=c++0x -fopenmp -lz" -C $PREFIX/MegaPath/cc/ 
 make CC=$CXX CXX=${CXX} -C $PREFIX/MegaPath/soap4/2bwt-lib/ 
-make CC=$CXX CXX=${CXX} CXXFLAGS="${CXXFLAGS} -L${PREFIX}/lib -msse4.1 -pthread -lpthread -fopenmp" LDFLAGS="${LDFLAGS}" -C $PREFIX/MegaPath/soap4/ 
+make CC=$CXX CXX=${CXX} LDFLAGS="${LDFLAGS}" CXXFLAGS="-L${PREFIX}/lib -w -O3 -funroll-loops -march=native -maccumulate-outgoing-args -Wno-unused-result -static-libgcc -mavx -fopenmp -std=c++0x -fomit-frame-pointer" -C $PREFIX/MegaPath/soap4/ 
+#make CC=$CXX CXX=${CXX} LDFLAGS="${LDFLAGS}" CXXFLAGS="${CXXFLAGS} -L${PREFIX}/lib -w -O3 -funroll-loops -march=native -maccumulate-outgoing-args -Wno-unused-result -static-libgcc -mavx -fopenmp -std=c++0x -fomit-frame-pointer" -C $PREFIX/MegaPath/soap4/ 
 
 cd $PREFIX/MegaPath/scripts/realignment/realign/
 $CXX -std=c++14 -O1 -shared -fPIC -o realigner ssw_cpp.cpp ssw.c realigner.cpp

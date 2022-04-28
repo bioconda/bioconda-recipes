@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="hu6800subacdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/hu6800subacdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hu6800subacdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hu6800subacdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hu6800subacdf/bioconductor-hu6800subacdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hu6800subacdf/bioconductor-hu6800subacdf_2.18.0_src_all.tar.gz"
 )
 MD5="9e8ec301e066e400564976cd9750297e"
