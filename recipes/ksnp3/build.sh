@@ -1,6 +1,6 @@
 #!/bin/bash
 set -x
-mkdir -p ${PREFIX}/bin/kSNP3
+mkdir -p ${PREFIX}/bin
 
 # Copy files
 chmod 775 kSNP${PKG_VERSION}_Linux_package/kSNP3/*
