@@ -4,7 +4,7 @@ mkdir -p ${PREFIX}/bin
 
 # Cleanup
 rm kSNP${PKG_VERSION}_Linux_package/kSNP3/.DS_Store
-rm kSNP${PKG_VERSION}_Linux_package/kSNP3/jellyfish
+mv kSNP${PKG_VERSION}_Linux_package/kSNP3/jellyfish kSNP${PKG_VERSION}_Linux_package/kSNP3/jellyfish-ksnp3
 
 # Copy files
 chmod 775 kSNP${PKG_VERSION}_Linux_package/kSNP3/*
