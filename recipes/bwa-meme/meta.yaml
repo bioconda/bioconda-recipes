@@ -1,14 +1,13 @@
-{% set version = "1.0.1" %}
+{% set version = "1.0.4" %}
 
 package:
   name: bwa-meme
   version: {{ version }}
 
 source:
-  - url: https://github.com/kaist-ina/BWA-MEME/releases/download/v{{ version }}/Source_BWA-MEME_mode3-1.0.1.tar.gz
-    sha256: a180ba79d35980b22fad9a1e819ba67e7449aa24ed96ca66c2a4a3611052a0ba
-    #patches:
-    #  - Makefile.patch
+  - url: https://github.com/kaist-ina/BWA-MEME/releases/download/v{{ version }}/Source_BWA-MEME.tar.gz
+    sha256: 7ef1e20f35f1dd3df9152ae80d2739a65a0bcfd45aa76a3ae468d72fae495e95
+
 
 build:
   number: 0
@@ -24,18 +23,24 @@ requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - rust >=1.43
+    
   host:
     - zlib
+    - m4
 
 test:
   commands:
     - bwa-meme version
-    - bwa-meme.sse41 version
-    - bwa-meme.sse42 version
-    - bwa-meme.avx version
-    - bwa-meme.avx2 version
-    - bwa-meme.avx512bw version
-
+    - bwa-meme_mode2 version
+    - bwa-meme_mode1 version
+    - bwa-meme_mode1.sse41 version
+    - bwa-meme_mode2.sse42 version
+    - bwa-meme_mode3.avx version
+    - bwa-meme_mode3.avx2 version
+    - bwa-meme_mode3.avx512bw version
+    - build_rmis_dna.sh
+    - bwa-meme-train-prmi --version
 about:
   home: https://github.com/kaist-ina/BWA-MEME
   license: MIT
