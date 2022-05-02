@@ -2,9 +2,12 @@
 set -x
 mkdir -p ${PREFIX}/bin
 
+# Cleanup
+rm kSNP${PKG_VERSION}_Linux_package/kSNP3/.DS_Store
+rm kSNP${PKG_VERSION}_Linux_package/kSNP3/jellyfish
+
 # Copy files
 chmod 775 kSNP${PKG_VERSION}_Linux_package/kSNP3/*
-rm kSNP${PKG_VERSION}_Linux_package/kSNP3/.DS_Store
 cp kSNP${PKG_VERSION}_Linux_package/kSNP3/* ${PREFIX}/bin
 
 # Fix hard coded paths
