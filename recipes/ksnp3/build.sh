@@ -2,7 +2,6 @@
 mkdir -p ${PREFIX}/bin
 
 # Copy files
-ls -lha ./
-chmod 775 ./kSNP3/*
-rm ./kSNP4/.DS_Store
-cp ./kSNP3/* ${PREFIX}/bin
+chmod 775 kSNP${PKG_VERSION}_Linux_package/kSNP3/*
+rm kSNP${PKG_VERSION}_Linux_package/kSNP3/.DS_Store
+cp kSNP${PKG_VERSION}_Linux_package/kSNP3/* ${PREFIX}/bin
