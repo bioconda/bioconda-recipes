@@ -1,0 +1,50 @@
+{% set name = "expam" %}
+{% set version = "1.0.5" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 2f44ead7b7bd34821cfe495e8fc6296e14786c55d5730d83ee90d1e38ab56b12
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - pip
+    - python >=3.8
+    - Cython ==0.29.28
+    - numpy ==1.22.2
+    - setuptools
+  run:
+    - python >=3.8
+    - numpy ==1.22.2
+    - matplotlib ==3.5.1
+    - pandas ==1.4.1
+    - psutil ==5.9.0
+    - requests ==2.27.1
+    - pytables ==3.7.0
+
+test:
+  imports:
+    - {{ name }}
+  commands:
+    - expam --help
+
+about:
+  home: https://github.com/seansolari/expam
+  license: BSD
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Metagenomic profiling using a reference phylogeny"
+  doc_url: https://expam.readthedocs.io/en/latest/
+
+extra:
+  recipe-maintainers:
+    - seansolari
