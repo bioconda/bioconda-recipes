@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="stemHypoxia_1.26.0.tar.gz"
+FN="stemHypoxia_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/stemHypoxia_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/stemHypoxia_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-stemhypoxia/bioconductor-stemhypoxia_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/stemHypoxia_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/stemHypoxia_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-stemhypoxia/bioconductor-stemhypoxia_1.30.0_src_all.tar.gz"
 )
-MD5="3fb87ef5cdeaddd8553e2ed31066f7d9"
+MD5="faf1350e5a6183dd892e252532e08036"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

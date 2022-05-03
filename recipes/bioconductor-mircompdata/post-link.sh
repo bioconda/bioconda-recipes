@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="miRcompData_1.20.0.tar.gz"
+FN="miRcompData_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/miRcompData_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/miRcompData_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mircompdata/bioconductor-mircompdata_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/miRcompData_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/miRcompData_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mircompdata/bioconductor-mircompdata_1.24.0_src_all.tar.gz"
 )
-MD5="53d2b44cd41d26e3c4fb2fdbc4c38b6b"
+MD5="a25df260728359a6a6cbc72fd19457bc"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

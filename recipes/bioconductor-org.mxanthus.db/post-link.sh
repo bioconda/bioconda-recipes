@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="org.Mxanthus.db_1.0.27.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/org.Mxanthus.db_1.0.27.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/org.Mxanthus.db_1.0.27.tar.gz"
   "https://bioarchive.galaxyproject.org/org.Mxanthus.db_1.0.27.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-org.mxanthus.db/bioconductor-org.mxanthus.db_1.0.27_src_all.tar.gz"
 )

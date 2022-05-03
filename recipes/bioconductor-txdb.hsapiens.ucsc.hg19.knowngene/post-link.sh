@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="TxDb.Hsapiens.UCSC.hg19.knownGene_3.2.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/TxDb.Hsapiens.UCSC.hg19.knownGene_3.2.2.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/TxDb.Hsapiens.UCSC.hg19.knownGene_3.2.2.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Hsapiens.UCSC.hg19.knownGene_3.2.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.hsapiens.ucsc.hg19.knowngene/bioconductor-txdb.hsapiens.ucsc.hg19.knowngene_3.2.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.hsapiens.ucsc.hg19.knowngene/bioconductor-txdb.hsapiens.ucsc.hg19.knowngene_3.2.2_src_all.tar.gz"
 )
 MD5="61be88a81433958571b57d0952be48a0"

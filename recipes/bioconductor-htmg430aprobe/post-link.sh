@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="htmg430aprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/htmg430aprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/htmg430aprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/htmg430aprobe_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-htmg430aprobe/bioconductor-htmg430aprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-htmg430aprobe/bioconductor-htmg430aprobe_2.18.0_src_all.tar.gz"
 )
 MD5="e50cc49b8887b6ef8ee1152ec12d5010"

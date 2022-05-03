@@ -1,8 +1,8 @@
-{% set version = "4.02.02" %}
-{% set novosort_version = "2.02.00" %}
+{% set version = "4.03.04" %}
+{% set novosort_version = "3.01.05" %}
 {% set novomethyl_version = "1.07" %}
-{% set novoindex_version = "4.2" %}
-{% set sha256 = "88972469858fe9e7ec45b1630817a70f300904e914813669266cadf9777d446c" %}
+{% set novoindex_version = "4.3" %}
+{% set sha256 = "a225bfea04ef59b9448debe01b616e68618a30ea66aad1d11098c3cba7dfbd1f" %}
 
 package:
   name: novoalign
@@ -18,23 +18,25 @@ build:
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - curl  # curl is needed to access Novocraft's website during package install -- see post-link.sh
     - zlib
   run:
+    # curl is needed to access Novocraft's website during package install -- see post-link.sh
     - curl
-    - zlib
+    # Novoalign 4.03.04 pre-compiled binary needs `lscpu` from util-linux.
+    - util-linux
 
 test:
   commands:
-    - novoalign --version 2>&1 | grep V{{ version }}
-    - novoutil --version 2>&1 | grep V{{ version }}
-    - novosort --version 2>&1 | grep V{{ novosort_version }}
-    - novomethyl --version 2>&1 | grep V{{ novomethyl_version }}
-    - novoindex --version 2>&1 | grep {{ novoindex_version }}
-    - novo2maq 2>&1 | grep in.novo
+    - novoalign --version | grep -F V{{ version }}
+    - novoutil --version | grep -F V{{ version }}
+    - novosort --version | grep -F V{{ novosort_version }}
+    - novomethyl --version | grep -F V{{ novomethyl_version }}
+    - novoindex >/dev/null && novoindex 2>&1 | grep -F {{ novoindex_version }}
+    - novo2maq >/dev/null || novo2maq 2>&1 | grep -F in.novo
 
 about:
   home: http://www.novocraft.com/products/novoalign/

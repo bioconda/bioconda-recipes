@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="CopyNeutralIMA_1.8.0.tar.gz"
+FN="CopyNeutralIMA_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/CopyNeutralIMA_1.8.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/CopyNeutralIMA_1.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-copyneutralima/bioconductor-copyneutralima_1.8.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/CopyNeutralIMA_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/CopyNeutralIMA_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-copyneutralima/bioconductor-copyneutralima_1.12.0_src_all.tar.gz"
 )
-MD5="71821baad71fd44f7ae150de964cb906"
+MD5="cc84fee968d4c4193be27eac4ae0dd6c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

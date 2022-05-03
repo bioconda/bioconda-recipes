@@ -1,25 +1,14 @@
 #!/bin/sh
-# Compile nim
-pushd nim_source
-if [[ $OSTYPE == "darwin"* ]]; then
-  export HOME="/Users/distiller"
-  bash build.sh --os darwin --cpu x86_64
+
+if [[ ${target_platform}  == osx-64 ]] ; then
+    curl -SL https://github.com/brentp/mosdepth/archive/refs/tags/v${PKG_VERSION}.tar.gz -o mosdepth-latest.tar.gz
+    tar -xzf mosdepth-latest.tar.gz
+    cd mosdepth-${PKG_VERSION}
+    nimble --localdeps build -y --verbose -d:release
 else
-  bash build.sh --os linux --cpu x86_64
+    curl -SL https://github.com/brentp/mosdepth/releases/download/v$PKG_VERSION/mosdepth -o mosdepth
+    chmod +x mosdepth
 fi
-bname=`basename $CC`
-echo "gcc.exe = \"${bname}\"" >> config/nim.cfg
-echo "gcc.linkerexe = \"${bname}\"" >> config/nim.cfg
-echo "clang.exe = \"${bname}\"" >> config/nim.cfg
-echo "clang.linkerexe = \"${bname}\"" >> config/nim.cfg
-bin/nim c  koch
-./koch tools
-popd
 
-export PATH=$SRC_DIR/nim_source/bin:$PATH
-export LD_LIBRARY_PATH=$PREFIX/lib
-
-nimble install -y --verbose
-mkdir -p $PREFIX/bin
-chmod a+x mosdepth
-cp mosdepth $PREFIX/bin/mosdepth
+mkdir -p "${PREFIX}/bin"
+cp mosdepth "${PREFIX}/bin/"

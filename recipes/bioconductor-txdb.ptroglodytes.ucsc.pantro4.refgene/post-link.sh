@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="TxDb.Ptroglodytes.UCSC.panTro4.refGene_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/TxDb.Ptroglodytes.UCSC.panTro4.refGene_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/TxDb.Ptroglodytes.UCSC.panTro4.refGene_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Ptroglodytes.UCSC.panTro4.refGene_3.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.ptroglodytes.ucsc.pantro4.refgene/bioconductor-txdb.ptroglodytes.ucsc.pantro4.refgene_3.12.0_src_all.tar.gz"
 )

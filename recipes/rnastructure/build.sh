@@ -1,5 +1,15 @@
 #!/bin/sh
-make CC="${CC}" CXX="${CXX}" all
+
+# Fix for OSX build
+if [ `uname` == Darwin ]; then
+    CPP_FLAGS="${CXXFLAGS} -g -O3 -fopenmp -I${PREFIX}/include"
+    sed -i.bak "s/gomp/omp/g" compiler.h
+else
+    CPP_FLAGS="${CXXFLAGS} -fopenmp -g -O3"
+fi
+
+# build
+make CC="${CC}" CXX="${CXX}" CPP_FLAGS="${CPP_FLAGS}" all
 
 mkdir -p $PREFIX/bin
 mv ./exe/* $PREFIX/bin/

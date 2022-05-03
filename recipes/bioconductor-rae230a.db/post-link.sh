@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="rae230a.db_3.2.3.tar.gz"
+FN="rae230a.db_3.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/rae230a.db_3.2.3.tar.gz"
-  "https://bioarchive.galaxyproject.org/rae230a.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rae230a.db/bioconductor-rae230a.db_3.2.3_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rae230a.db/bioconductor-rae230a.db_3.2.3_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/rae230a.db_3.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/rae230a.db_3.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rae230a.db/bioconductor-rae230a.db_3.13.0_src_all.tar.gz"
 )
-MD5="fb9d6a02ce85cc521c0477a1a6f861f6"
+MD5="a2a80af1669fc038a64effbf5a4b246d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
