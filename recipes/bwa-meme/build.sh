@@ -1,5 +1,13 @@
 #!/bin/bash
 
+rm -rf build
+mkdir -p build/mimalloc
+cd build/mimalloc
+cmake ../../mimalloc
+make -j2 mimalloc-static
+cd ../..
+
+
 LIBS="${LDFLAGS}" make -j4 CC="${CC}" CXX="${CXX}" multi
 
 cd RMI && cargo build --release && cd ..
