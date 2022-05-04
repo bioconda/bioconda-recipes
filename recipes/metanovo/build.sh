@@ -22,6 +22,13 @@ cp lib/tagmatch.py "$PREFIX/lib/python3.9/site-packages"
 mkdir -p "$PREFIX/etc/conda/activate.d"
 cp "$RECIPE_DIR/metanovo_activate.sh" "$PREFIX/etc/conda/activate.d/${PKG_NAME}_activate.sh"
 
+# Create config/ directory for MetaNovo config
+METANOVO_CONFIG_DIR="$PREFIX/config"
+mkdir "$METANOVO_CONFIG_DIR"
+
+# Copy default configuration.
+cp bin/config/metanovo_config.sh "$METANOVO_CONFIG_DIR"
+
 # Create bio/ directory for MetaNovo dependencies.
 METANOVO_DEPENDENCIES="$PREFIX/bio"
 mkdir "$METANOVO_DEPENDENCIES"
