@@ -19,4 +19,4 @@ ln -s $FROGS_HOME/app/* $BINARY_HOME
 ln -s $FROGS_HOME/lib/* $LIB_HOME
 ln -s $FROGS_HOME/libexec/* $LIBEXEC_HOME
 ln -s $FROGS_HOME/frogsfunc_suppdata/* $SUPP_DATA
-ln -s $PREFIX/share/rdptools*/classifier.jar $BINARY_HOME
+ln -s $PREFIX/share/rdptools-2.0.3-1/classifier.jar $BINARY_HOME
