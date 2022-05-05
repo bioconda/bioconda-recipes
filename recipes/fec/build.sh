@@ -9,7 +9,7 @@ export CXX_INCLUDE_PATH=${PREFIX}/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
-make
+make INCLUDES="-I$PREFIX/include" CXXFLAGS="-g -Wall -O2 -std=c++11 -L$PREFIX/lib"
 
 OSTYPE=$(shell echo `uname`)
 MACHINETYPE=$(shell echo `uname -m`)
