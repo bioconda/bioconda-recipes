@@ -2,10 +2,7 @@
 
 mkdir -p "${PREFIX}"/bin
 
-cp Fec "${PREFIX}"/bin/
-chmod +x "${PREFIX}"/bin/Fec
-
-:<<!
+#:<<!
 export C_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
@@ -37,4 +34,4 @@ if [ "$(OSTYPE)" == "SunOS" ]; then
 fi
 
 cp $(OSTYPE)-$(MACHINETYPE)/bin/Fec $(PREFIX)/bin/Fec
-!
+#!
