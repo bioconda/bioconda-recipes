@@ -4,22 +4,22 @@ mkdir -p "${PREFIX}"/bin
 
 export CXXPATH=${PREFIX}/include
 
-make INCLUDES="-I$PREFIX/include" CXXFLAG="-g -Wall -O2 -std=c++11" 
+make INCLUDES="-I$PREFIX/include" CXXFLAG="-g -Wall -O2 -std=c++11" LDFLAG="-pthread -lm -fopenmp -lz -lstdc++"
 
 OSTYPE=$(shell echo `uname`)
 MACHINETYPE=$(shell echo `uname -m`)
 
-ifeq(${MACHINETYPE}, x86_64)
+ifeq (${MACHINETYPE}, x86_64)
   MACHINETYPE=amd64
 endif
 
-ifeq(${MACHINETYPE}, Power Macintosh)
+ifeq (${MACHINETYPE}, Power Macintosh)
   MACHINETYPE=ppc
 endif
 
-ifeq(${OSTYPE}, SunOS)
+ifeq (${OSTYPE}, SunOS)
   MACHINETYPE=${shell echo `uname -p`}
-  ifeq(${MACHINETYPE}, sparc)
+  ifeq (${MACHINETYPE}, sparc)
     ifeq (${shell /usr/bin/isainfo -b}, 64)
       MACHINETYPE=sparc64
     else
@@ -28,4 +28,4 @@ ifeq(${OSTYPE}, SunOS)
   endif
 endif
 
-cp $(PREFIX)/$(OSTYPE)-$(MACHINETYPE)/bin/Fec $(PREFIX)/bin/Fec
+cp $(OSTYPE)-$(MACHINETYPE)/bin/Fec $(PREFIX)/bin/Fec
