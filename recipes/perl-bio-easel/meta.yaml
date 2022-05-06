@@ -1,0 +1,51 @@
+{% set name = "perl-bio-easel" %}
+{% set version = "0.15" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/nawrockie/Bio-Easel/archive/refs/tags/Bio-Easel-{{ version }}.tar.gz
+    sha256: 0de5be4257cbf6b1906edad0dfbd7f08e3056c2738fbe274c3ea6dd53ea1b231
+    patches:
+      - fix_easel_path_msa.patch
+      - fix_easel_path_random.patch
+      - fix_easel_path_sqfile.patch
+
+  - url: https://github.com/EddyRivasLab/easel/archive/refs/tags/Bio-Easel-{{ version }}.tar.gz
+    sha256: 716911858008fb107ae7855b19e1408a2b780bb7881cf9044f5c0e161a4a4bc9
+    folder: src/easel
+
+build:
+  number: 2
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - autoconf
+    - automake
+  host:
+    - perl
+    - perl-inline
+    - perl-inline-c
+  run:
+    - perl
+    - perl-inline
+    - perl-inline-c
+
+test:
+  commands:
+    - esl-alidepair.pl 2>&1 | grep "Bio-Easel"
+    - esl-ssplit.pl 2>&1 | grep "Bio-Easel"
+
+about:
+  home: https://github.com/nawrockie/Bio-Easel
+  license: BSD
+  license_file: LICENSE
+  summary: Perl modules and scripts for interfacing with Sean Eddy's C easel sequence analysis library using Perl's Inline.
+
+extra:
+  recipe-maintainers:
+    - rpetit3

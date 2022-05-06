@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="alternativeSplicingEvents.hg38_1.0.1.tar.gz"
+FN="alternativeSplicingEvents.hg38_1.1.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/alternativeSplicingEvents.hg38_1.0.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/alternativeSplicingEvents.hg38_1.0.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-alternativesplicingevents.hg38/bioconductor-alternativesplicingevents.hg38_1.0.1_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-alternativesplicingevents.hg38/bioconductor-alternativesplicingevents.hg38_1.0.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/alternativeSplicingEvents.hg38_1.1.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/alternativeSplicingEvents.hg38_1.1.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-alternativesplicingevents.hg38/bioconductor-alternativesplicingevents.hg38_1.1.0_src_all.tar.gz"
 )
-MD5="9ce2e10cfe00ec4451670e1fd18d2e37"
+MD5="8d49710eebd62fb15a48cab252ff3eca"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

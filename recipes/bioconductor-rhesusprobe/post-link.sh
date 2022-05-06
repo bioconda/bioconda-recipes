@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="rhesusprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/rhesusprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/rhesusprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/rhesusprobe_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rhesusprobe/bioconductor-rhesusprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rhesusprobe/bioconductor-rhesusprobe_2.18.0_src_all.tar.gz"
 )
 MD5="4169c1c997c4c08b027bc7489533e11e"

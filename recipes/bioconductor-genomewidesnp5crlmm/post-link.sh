@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="genomewidesnp5Crlmm_1.0.6.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/genomewidesnp5Crlmm_1.0.6.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/genomewidesnp5Crlmm_1.0.6.tar.gz"
   "https://bioarchive.galaxyproject.org/genomewidesnp5Crlmm_1.0.6.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-genomewidesnp5crlmm/bioconductor-genomewidesnp5crlmm_1.0.6_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-genomewidesnp5crlmm/bioconductor-genomewidesnp5crlmm_1.0.6_src_all.tar.gz"
 )
 MD5="cc24140cd17758b8e09f4fe6c931526a"

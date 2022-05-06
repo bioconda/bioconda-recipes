@@ -1,5 +1,5 @@
 {% set name = "seq2science" %}
-{% set version = "0.3.1" %}
+{% set version = "0.8.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,33 +7,34 @@ package:
 
 source:
   url: https://github.com/vanheeringen-lab/seq2science/archive/v{{ version }}.tar.gz
-  sha256: d8db0e20c50e5d908b692d152f7307d5b69211ee2074b7da5a4bc5de283c372b
+  sha256: 80e1be94bcc110b29de63e769dc897ccb930a38de43f23ef88e5a853d03f7037
 
 build:
   noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
   host:
     - python >=3.6
     - pip
     - toml
-    - setuptools
+    - setuptools=59.4.0
   run:
-    - python >=3.6
-    - snakemake =5.18.1
-    - genomepy =0.9.1
-    - pysam =0.15.3
-    - conda =4.8.4
-    - biopython =1.74
-    - filelock =3.0.12
-    - pyyaml =5.3.1
-    - pretty_html_table =0.9.dev0
-    - pandas_schema =0.3.5
-    - trackhub =0.1.2019.12.24
-    - pysradb =0.11.1
-    - matplotlib-base =3.3.2
+    - python=3.8
+    - snakemake-minimal=5.18.1
+    - conda=4.11.0
+    - mamba=0.19.0
+    - genomepy=0.12.0
+    - biopython=1.79
+    - filelock=3.4.0
+    - pyyaml=6.0
+    - pandas_schema=0.3.5
+    - trackhub=0.1.2019.12.24
+    - pysradb=1.0.1
+    - matplotlib-base=3.5.0
+    - xdg=5.1.1
+    - argcomplete=1.12.3
+    - conda-ecosystem-user-package-isolation=1.0
 
 test:
   commands:
@@ -43,8 +44,9 @@ test:
     - mkdir --parents results/fastq; touch results/fastq/GSM28374{88,89,90,91,92,93}.fastq.gz  # no lookup online for layout
     - mkdir --parents genomes/Bl71nemr; touch genomes/Bl71nemr/Bl71nemr{.fa,.fa.sizes,.gaps.bed,.annotation.gtf,.annotation.bed}
     - echo -e "chr1\t100000" > genomes/Bl71nemr/Bl71nemr.fa.sizes
-    - seq2science run atac-seq --dryrun --snakemakeOption resources={mem_gb:100}
+    - seq2science run atac-seq --dryrun --snakemakeOptions resources={mem_gb:100} quiet=True
     - chmod -R 777 .   # make sure everything can be deleted
+    - deseq2science -v 
 
 about:
   home: https://vanheeringen-lab.github.io/seq2science
@@ -58,3 +60,5 @@ about:
 extra:
   recipe-maintainers:
     - Maarten-vd-Sande
+    - siebrenf
+    - tilschaef

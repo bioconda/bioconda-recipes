@@ -1,0 +1,66 @@
+name: AutoMerge
+on:
+  status:
+  check_suite:
+    types:
+    - completed
+  workflow_run:
+    workflows:
+    - AutoMergeTrigger
+    types:
+    - completed
+    branches-ignore:
+    - main
+    - bulk
+
+# Prevent concurrent runs, e.g., if labeled right when check_suite finished.
+concurrency: >-
+  automerge-${{
+     (
+       github.event_name == 'status' &&
+       github.event.branches[0].commit.sha
+     ) ||
+     (
+       github.event_name == 'check_suite' &&
+       (
+         github.event.check_suite.head_sha ||
+         github.event.check_suite.pull_requests[0].head.sha
+       )
+     ) ||
+     (
+       github.event_name == 'workflow_run' &&
+       (
+         github.event.workflow_run.head_sha ||
+         github.event.workflow_run.pull_requests[0].head.sha
+       )
+     )
+  }}
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    name: bioconda-bot automerge
+    if: >-
+      (
+        github.event_name == 'status' &&
+        github.event.state == 'success'
+      ) ||
+      (
+        github.event_name == 'check_suite' &&
+        github.event.check_suite.conclusion == 'success'
+      ) ||
+      (
+        github.event_name == 'workflow_run' &&
+        github.event.workflow_run.conclusion == 'success'
+      )
+    container:
+      image: 'quay.io/bioconda/bot:merge'
+    steps:
+    - name: bioconda-bot automerge
+      env:
+        BOT_TOKEN: ${{ secrets.GITHUBTOKEN }}
+        ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+        QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
+        JOB_CONTEXT: ${{ toJson(github) }}
+      run: bioconda-bot automerge

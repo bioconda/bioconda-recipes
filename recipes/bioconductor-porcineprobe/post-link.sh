@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="porcineprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/porcineprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/porcineprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/porcineprobe_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-porcineprobe/bioconductor-porcineprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-porcineprobe/bioconductor-porcineprobe_2.18.0_src_all.tar.gz"
 )
 MD5="5ac483b6329a012d4c9954e3dee8869e"

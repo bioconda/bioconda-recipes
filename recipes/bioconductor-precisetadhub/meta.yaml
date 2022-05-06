@@ -1,0 +1,38 @@
+{% set version = "1.2.0" %}
+{% set name = "preciseTADhub" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 98cac6ebace0037d79da35d333c75cd8
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: knitr, rmarkdown, markdown, BiocStyle, preciseTAD
+requirements:
+  host:
+    - 'bioconductor-experimenthub >=2.2.0,<2.3.0'
+    - r-base
+  run:
+    - 'bioconductor-experimenthub >=2.2.0,<2.3.0'
+    - r-base
+    - curl
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  license: 'MIT + file LICENSE'
+  summary: 'Pre-trained random forest models obtained using preciseTAD'
+  description: 'An experimentdata package to supplement the preciseTAD package containing pre-trained models and the variable importances of each genomic annotation used to build the model parsed into list objects and available in ExperimentHub. In total, preciseTADhub provides access to n=84 random forest classification models optimized to predict TAD/chromatin loop boundary regions and stored as .RDS files. The value, n, comes from the fact that we considered l=2 cell lines {GM12878, K562}, g=2 ground truth boundaries {Arrowhead, Peakachu}, and c=21 autosomal chromosomes {CHR1, CHR2, ..., CHR22} (omitting CHR9). Furthermore, each object is itself a two-item list containing: (1) the model object, and (2) the variable importances for CTCF, RAD21, SMC3, and ZNF143 used to predict boundary regions. Each model is trained via a "holdout" strategy, in which data from chromosomes {CHR1, CHR2, ..., CHRi-1, CHRi+1, ..., CHR22} were used to build the model and the ith chromosome was reserved for testing. See https://doi.org/10.1101/2020.09.03.282186 for more detail on the model building strategy.'
+  license_file: LICENSE
+

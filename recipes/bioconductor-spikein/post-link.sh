@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="SpikeIn_1.32.0.tar.gz"
+FN="SpikeIn_1.36.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/SpikeIn_1.32.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/SpikeIn_1.32.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-spikein/bioconductor-spikein_1.32.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/SpikeIn_1.36.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/SpikeIn_1.36.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-spikein/bioconductor-spikein_1.36.0_src_all.tar.gz"
 )
-MD5="0a55a618bef51e548e2201d3fa8d7fe8"
+MD5="4d30177bc24a299caa24a13822317536"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

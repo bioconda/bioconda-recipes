@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="spatialLIBD_1.2.0.tar.gz"
+FN="spatialLIBD_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/spatialLIBD_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/spatialLIBD_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-spatiallibd/bioconductor-spatiallibd_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/spatialLIBD_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/spatialLIBD_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-spatiallibd/bioconductor-spatiallibd_1.6.0_src_all.tar.gz"
 )
-MD5="33150e34de18e5de807db6cf458dcc72"
+MD5="2e661730cd08be3012d4001ac174e78a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
