@@ -1,33 +1,41 @@
-{% set name = "bracken" %}
-{% set version = "1.0.0" %}
-{% set md5 = "bd91805655269c5f3becb8f8028bab6d" %}
+{% set version = "2.6.2" %}
+{% set sha256 = "c83665c613861fe0dc2637d9c190105f0b08f5c4cda97a0dc86a6357aab66be3" %}
 
 package:
-  name: {{ name|lower }}
+  name: bracken
   version: {{ version }}
 
 source:
-  url: https://github.com/jenniferlu717/Bracken/archive/{{ version }}.tar.gz
-  md5: {{ md5 }}
+  url: https://github.com/jenniferlu717/Bracken/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - osx.patch  # [osx]
+    - py3.patch
 
 build:
-  noarch: python
-  number: 1
+  skip: True  # [osx]
+  number: 0
 
 requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - make
   host:
-  run:
-    - perl
-    - perl-list-moreutils
-    - perl-parallel-forkmanager
     - python
-    - kraken
+  run:
+    - python
+    - kraken2
 
 test:
   commands:
-    - count-kmer-abundances.pl --help
+    - bracken -h
+    - bracken-build -h
     - est_abundance.py -h
     - generate_kmer_distribution.py -h
+    - kmer2read_distr --help
+    - combine_bracken_outputs.py -h
 
 about:
   home: https://github.com/jenniferlu717/Bracken

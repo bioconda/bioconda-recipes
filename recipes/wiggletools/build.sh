@@ -1,16 +1,10 @@
 #!/bin/bash
 
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+# Patch v1.2.8 makefile; remove in next release
+sed -i.orig -e 's/-L/${LDFLAGS} -L/' src/Makefile
 
-echo "###########################################################"
-echo $PREFIX
-echo "###########################################################"
-cd $SRC_DIR
-mkdir -p lib
-cp -r $PREFIX/include/* src
-cp -r $PREFIX/lib/* lib/
-cp $PREFIX/lib/libBigWig.a lib
-make
-cp -r lib/libwiggletools.a $PREFIX/lib
-cp bin/wiggletools $PREFIX/bin
+make LIBS="-lwiggletools -lBigWig -lgsl -lgslcblas -lhts -lpthread -lm"
+
+cp lib/libwiggletools.a $PREFIX/lib/
+cp inc/wiggletools.h $PREFIX/include/
+cp bin/wiggletools $PREFIX/bin/

@@ -1,28 +1,18 @@
 #!/bin/bash
+
 set -eu -o pipefail
 
-# BOOST -- need up to date version compiled with gcc 7.2
-cd build
-wget http://dl.bintray.com/boostorg/release/1.65.0/source/boost_1_65_0.tar.gz
-tar -xzpf boost_1_65_0.tar.gz
-cd boost_1_65_0
+export CPATH=${PREFIX}/include
+export CMAKE_LDFLAGS="-L${PREFIX}/lib"
+export LIBRARY_PATH=${PREFIX}/lib
 
-export BOOST_BUILD_PATH=`pwd`
-cat <<EOF > ./user-config.jam
-using gcc : : ${CXX} ;
-EOF
-
-./bootstrap.sh --prefix=$PREFIX --without-libraries=python --without-libraries=wave --with-icu=${PREFIX}
-./b2 \
-  --debug-configuration \
-  runtime-link=shared \
-  link=static,shared \
-  toolset=gcc \
-  cxxflags="${CXXFLAGS}" \
-  install
-cd ../..
-
-# octopus
-cd build
-cmake  -DINSTALL_PREFIX=ON -DCMAKE_INSTALL_PREFIX=$PREFIX -DINSTALL_ROOT=ON -DCMAKE_BUILD_TYPE=Release ..
-make install
+scripts/install.py \
+    -c ${CC_FOR_BUILD} \
+    -cxx ${CXX_FOR_BUILD} \
+    --prefix ${PREFIX}/bin \
+    --gmp ${PREFIX} \
+    --boost ${PREFIX} \
+    --htslib ${PREFIX} \
+    --architecture haswell \
+    --threads 1 \
+    --verbose

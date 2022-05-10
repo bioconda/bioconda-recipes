@@ -1,0 +1,64 @@
+{% set name = "CPgeneProfiler" %}
+{% set version = "2.1.1" %}
+{% set sha256 = "b599de2ab046a20fb55eea7b8d02d77bd94ec814c4771671544754e2e9abef05" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/ramadatta/{{ name }}/archive/v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+
+build:
+  number: 2
+  noarch: generic
+  script: R CMD INSTALL --build .
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  host:
+    - r-base
+    - r-biocmanager
+    - r-tidyverse
+    - r-upsetr
+    - r-scales
+    - r-ape
+    - r-reshape2
+    - r-gridextra
+    - r-png
+    - r-tiff
+    - r-jpeg
+    - r-pdftools
+    - r-usethis
+    - bioconductor-biostrings
+    - blast >=2.9.0
+  run:
+    - r-base
+    - r-biocmanager
+    - r-tidyverse
+    - r-upsetr
+    - r-scales
+    - r-ape
+    - r-reshape2
+    - r-gridextra
+    - r-png
+    - r-tiff
+    - r-jpeg
+    - r-pdftools
+    - r-usethis
+    - bioconductor-biostrings
+    - blast >=2.9.0
+
+test:
+  commands:
+    - $R -e "library('CPgeneProfiler')" # [not win]
+    - "\"%R%\" -e \"library('CPgeneProfiler')\""  # [win]
+
+about:
+  home: https://github.com/ramadatta/CPgeneProfiler
+  license: GPL2
+  license_file: LICENSE.md
+  summary: 'Generate a profile of carbapenamase genes from the genome assemblies. '

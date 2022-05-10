@@ -1,0 +1,57 @@
+{% set version = "2.01" %}
+
+package:
+  name: chorus2
+  version: {{ version }}
+
+source:
+  url: https://github.com/zhangtaolab/Chorus2/archive/v{{ version }}.tar.gz
+  sha256: 8e58db0470803c618aab5c283ea3979af4d668a6e4f1b371db0200b6cc0cc207
+
+build:
+  number: 1
+  skip: True  # [py<30]
+  script: {{ PYTHON }} -m pip install . --no-deps -v
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - cython
+    - pip
+  run:
+    - python
+    - pybigwig
+    - numpy
+    - pyfasta
+    - pybedtools
+    - pandas
+    - primer3-py >=0.4.2
+    - matplotlib-base >=3
+    - pyqt <5.11
+    - sip >=4
+    - kmer-jellyfish 2.*
+    - bwa >=0.7.3a
+    - bwa <=0.7.8
+    - samtools
+    - bcftools
+
+test:
+  imports:
+    - Choruslib
+    - ChorusGUI
+
+  commands:
+    - Chorus2 --version
+
+about:
+  home: https://github.com/zhangtaolab/Chorus2
+  summary: A pipeline to select oligonucleotides for fluorescence in situ hbridization (Oligo-FISH).
+  license: MIT license
+  dev_url: https://github.com/zhangtaolab/Chorus2
+  doc_url: https://chorus2.readthedocs.io/en/dev/
+
+extra:
+  identifiers:
+    - biotools:chorus2

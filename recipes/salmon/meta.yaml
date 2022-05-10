@@ -1,60 +1,54 @@
-{% set version="0.11.2" %}
-{% set llvm_version = "4.0.0" %}
-
-build:
-  number: 0
-  # OSX failing due to complier/linking issues
-  # Undefined symbols for architecture x86_64:
-  # "icu_58::Locale::Locale(icu_58::Locale const&)", referenced from:
-  #     boost::basic_regex<int, boost::icu_regex_traits>::imbue(icu_58::Locale) in libboost_regex.a(icu.o)
-  #     boost::icu_regex_traits::imbue(icu_58::Locale) in libboost_regex.a(icu.o)
-  #     boost::re_detail_106700::icu_regex_traits_implementation::icu_regex_traits_implementation(icu_58::Locale const&) in libboost_regex.a(icu.o)
-  # ld: symbol(s) not found for architecture x86_64
-  # https://circleci.com/gh/bioconda/bioconda-recipes/19273?utm_campaign=vcs-integration-link&utm_medium=referral&utm_source=github-build-link
-  skip: true # [osx]
-
-about:
-  home: https://github.com/COMBINE-lab/salmon
-  license: GPLv3
-  summary: Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using lightweight alignments
+{% set version="1.8.0" %}
 
 package:
   name: salmon
   version: {{ version }}
 
+build:
+  number: 1
+
 source:
   url: https://github.com/COMBINE-lab/salmon/archive/v{{ version }}.tar.gz
-  md5: d81f083e71adc6d46a21ed14df624136
-  #patches: salmon_cmake.patch
+  sha256: 16720a5eb92771ddb8c594dfc32f2af8d950372aa0df131ba99a837e6fc81c2e
+
 
 requirements:
   build:
     - autoconf
     - cmake
-    #- gcc ==4.8.5 # [linux]
-    #- llvm # [osx]
+    - make
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
-    #- clangdev =={{ llvm_version }}  # [osx]
-    #- libcxx =={{ llvm_version }}  # [osx]
   host:
-    - boost
-    - icu
+    - boost-cpp
+    - icu 
     - zlib
     - bzip2
     - unzip
     - jemalloc >=5.1.0
-    - tbb
+    - tbb-devel >=2021.4.0
   run:
-    #- libgcc # [linux]
-    #- libcxx =={{ llvm_version }}  # [osx]
-    - boost
-    - icu
-    - jemalloc >=5.1.0
-    - tbb
-    - zlib
-    - bzip2
+    - boost-cpp
+    - tbb >=2021.4.0
 
 test:
+  source_files:
+    - sample_data.tgz
   commands:
     - salmon --help
+
+about:
+  home: https://github.com/COMBINE-lab/salmon
+  license: GPLv3
+  license_file: LICENSE
+  summary: Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using selective alignment
+
+extra:
+  recipe-maintainers:
+    - rob-p
+    - k3yavi
+  identifiers:
+    - biotools:salmon
+    - usegalaxy-eu:salmon
+    - usegalaxy-eu:alevin
+    - doi:10.1038/nmeth.4197

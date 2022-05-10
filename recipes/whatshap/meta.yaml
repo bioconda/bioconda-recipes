@@ -1,42 +1,37 @@
 package:
   name: whatshap
-  version: "0.17"
-
-about:
-  home: https://whatshap.readthedocs.io/
-  license: MIT License
-  summary: 'phase genomic variants using DNA sequencing reads (haplotype assembly)'
-
-build:
-  number: 0
+  version: "1.4"
 
 source:
-  url: https://files.pythonhosted.org/packages/79/11/79da12b8c23f43b00fab8a6206f75cc1cc8c1902ff30eca53c17abe2f633/whatshap-0.17.tar.gz
-  sha256: 8ad1c66789fe5fe957b3695902dae3c3fd4e67f79b9e349b92b532e9ff618933
+  url: https://files.pythonhosted.org/packages/15/1e/1b29e356fc0b8a1fbbffe808c02a67eae8ebd922a78567aa5eb867b47070/whatshap-1.4.tar.gz
+  sha256: 4172fc3b8b46344e1d5b07029a1599fb4f53f7d87abbe3a38996e362acdd024f
+
+build:
+  skip: True  # [py<37]
+  script: python -m pip install --no-deps --ignore-installed .
+  number: 0
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
     - python
     - pip
+    - cython
     - setuptools
-    - pysam >=0.14
-    - pyvcf
-    - pyfaidx
-    - xopen
-    - networkx
+    - setuptools-scm
   run:
     - python
-    - pysam >=0.14
-    - pyvcf
-    - pyfaidx
-    - xopen
-    - networkx
-
-build:
-  skip: True  # [not py3k]
-  script: python -m pip install --no-deps --ignore-installed .
+    - pysam >=0.17
+    - pyfaidx >=0.5.5.2
+    - networkx >=2.4
+    - biopython >=1.73
+    - scipy
+    - xopen >=1.2.0
+    # This is not an actual requirement, but allows to run subsequent WhatsHap commands
+    # in the same container (input files need to be indexed with tabix)
+    - htslib
+    - setuptools  # workaround missing dependency in pyfaidx, remove on next version bump
 
 test:
   imports:
@@ -44,7 +39,14 @@ test:
   commands:
     - whatshap --help > /dev/null
 
+about:
+  home: https://whatshap.readthedocs.io/
+  license: MIT License
+  summary: 'phase genomic variants using DNA sequencing reads (haplotype assembly)'
+
 extra:
   identifiers:
     - biotools:whatshap
     - doi:10.1089/cmb.2014.0157
+  recipe-maintainers:
+    - marcelm

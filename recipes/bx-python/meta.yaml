@@ -1,8 +1,8 @@
 {% set name = "bx-python" %}
-{% set version = "0.8.1" %}
+{% set version = "0.8.13" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "057b560c669527a784197a2f8005689d331f62f4765ae4d14bc2217e82dcd8af" %}
+{% set hash_value = "5989170d13367e9f811014803bafdbcc893024d63e98b66f734511e4f9e90c7d" %}
 
 package:
   name: '{{ name|lower }}'
@@ -14,24 +14,24 @@ source:
 
 build:
   number: 1
-  script: python -m pip install --no-deps --ignore-installed .
+  skip: True  # [py<37]
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir -vvv ."
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - python
+    - cython
+    - numpy
     - pip
-    - zlib
-    - setuptools
-    - python-lzo
-    - numpy
-    - six
-  run:
     - python
     - python-lzo
+    - setuptools
+    - zlib
+  run:
     - numpy
-    - six
+    - python
+    - python-lzo
 
 test:
   imports:
@@ -54,12 +54,10 @@ test:
     - bx.seq
     - bx.tabular
     - bx_extras
-  requires:
-    - nose
 
 about:
   home: https://github.com/bxlab/bx-python
-  license: MIT License
+  license: MIT
   license_family: MIT
   license_file: 'LICENSE'
   summary: Tools for manipulating biological data, particularly multiple sequence alignments

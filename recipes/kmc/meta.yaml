@@ -1,30 +1,28 @@
-{% set version = "3.1.1" %}
-{% set rc = "rc1" %}
-{% set printed_version = "3.1.0" %}
+{% set version = "3.2.1" %}
+{% set url = "https://github.com/refresh-bio/KMC/archive/v3.2.1.tar.gz" %}  # [linux]
+{% set sha256 = "7db333091a754508163a097c41720cf32a80abe160bef60f3fc82c8da1d67896" %}  # [linux]
+{% set url = "https://github.com/refresh-bio/kmc/releases/download/v3.2.1/kmc3.2.1.mac.tar.gz" %}  # [osx]
+{% set sha256 = "d4bd30d5e16bcbaac7f979f18e49e7447b0148709fb26f754490be9e3e766e73" %}  # [osx]
+
 
 package:
   name: kmc
-  version: {{ version }}{{ rc }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/refresh-bio/KMC/archive/v{{ version }}{{ rc }}.tar.gz
-  sha256: c7382df6af73f456fea2b497231958144fd01198280fa6427204de58434741f6
+  url: {{ url }}
+  sha256:  {{ sha256 }}
   patches:
-    - 0001-rewrote-build-with-autotools.patch
-    - 0002-updated-cxx14-detection.patch
-    - 0003-automake-option-fixes.patch
-    - 0004-changed-stdio.h-to-cstdio-etc.patch
-    - 0005-fixed-stat_func.patch
-    - 0006-disable-sort.patch
+    - Makefile.patch  # [linux]
 
 build:
-  number: 0
-  skip: True # [osx]
-  # this recipe builds kmc without the asmlib speedup
+  number: 2
 
 requirements:
   build:
-    # C++14 features are required
+    - make
+    - bzip2
+    - zlib
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
@@ -34,18 +32,15 @@ requirements:
     - zlib
     - bzip2
 
+about:
+  home: https://github.com/refresh-bio/kmc
+  summary: "Tools for efficient k-mer counting and filtering of reads based on k-mer content."
+  description: |
+    KMC is a utility designed for counting k-mers (sequences
+    of consecutive k symbols) in a set of DNA sequences. KMC tools allow performing various operations on k-mers sets.
+  license: GPL-3
+  license_family: GPL
+  license_file: gpl-3.0.txt
 test:
   commands:
-    - (kmc 2>&1; true) | grep -q "K-Mer Counter (KMC) ver. {{ printed_version }}"
-    - (kmc_dump 2>&1; true) | grep -q "KMC dump ver. {{ printed_version }}"
-    - (kmc_tools 2>&1; true) | grep -q "kmc_tools ver. {{ printed_version }}"
-
-about:
-  home: http://sun.aei.polsl.pl/kmc/
-  license: GPLv2
-  summary: K-mer Counter is a utility designed for counting k-mers (sequences of consecutive k symbols) in a set of reads from genome sequencing projects.
-
-extra:
-  identifiers:
-    - biotools:KMC
-    - doi:10.1093/bioinformatics/btx304
+    - kmc --help

@@ -1,34 +1,23 @@
 #!/bin/bash
 
-set -x -e -o pipefail
+mkdir -p $PREFIX/bin
+mkdir -p $PREFIX/lib
+mkdir -p $PREFIX/include
 
-echo HERE IS THE ENV
-env
+if [ "$(uname)" == "Darwin" ]; then    
+    mv bin/kmc ${PREFIX}/bin
+    mv bin/kmc_tools ${PREFIX}/bin
+    mv bin/kmc_dump ${PREFIX}/bin
+else
+    make CC=${CXX} -j32 all bin/libkmc_api.so
+    mv bin/kmc $PREFIX/bin
+    mv bin/kmc_tools $PREFIX/bin
+    mv bin/kmc_dump $PREFIX/bin
+    mv bin/libkmc_core.a $PREFIX/lib
+    mv bin/libkmc_api.so $PREFIX/lib/libkmc.so
+    mv kmc_api/*.h $PREFIX/include
+    mv include/kmc_runner.h $PREFIX/include
+fi
 
-export CPPFLAGS="-I${PREFIX}/include"
-export LDFLAGS="-L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS}"
 
-chmod u+x ${SRC_DIR}/configure
-chmod u+x ${SRC_DIR}/build-aux/ar-lib
-chmod u+x ${SRC_DIR}/build-aux/compile
-chmod u+x ${SRC_DIR}/build-aux/config.guess
-chmod u+x ${SRC_DIR}/build-aux/config.sub
-chmod u+x ${SRC_DIR}/build-aux/depcomp
-chmod u+x ${SRC_DIR}/build-aux/install-sh
-chmod u+x ${SRC_DIR}/build-aux/ltmain.sh
-chmod u+x ${SRC_DIR}/build-aux/missing
-chmod u+x ${SRC_DIR}/build-aux/test-driver
 
-cp README.md README
-
-mkdir -p build
-pushd build
-
-${SRC_DIR}/configure --prefix=$PREFIX
-make -j${CPU_COUNT} install
-popd
-
-mv $PREFIX/bin/kmc_prog $PREFIX/bin/kmc
-mv $PREFIX/bin/kmc_tools_prog $PREFIX/bin/kmc_tools
-mv $PREFIX/bin/kmc_dump_prog $PREFIX/bin/kmc_dump

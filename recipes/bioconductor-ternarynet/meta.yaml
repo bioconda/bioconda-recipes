@@ -1,35 +1,51 @@
-{% set version = "1.22.0" %}
+{% set version = "1.38.0" %}
 {% set name = "ternarynet" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.14" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 4a355846843fec2f2f961a34b66c89285b14e1852f9607270f2d662f7f181acd
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: f4d8d99a7032d91364cc8c580dc311a8
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: testthat
 requirements:
   host:
+    - 'bioconductor-biocparallel >=1.28.0,<1.29.0'
     - r-base
     - r-igraph
+    - libblas
+    - liblapack
   run:
+    - 'bioconductor-biocparallel >=1.28.0,<1.29.0'
     - r-base
     - r-igraph
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'A computational Bayesian approach to ternary gene regulatory network estimation from gene perturbation experiments.'
-
+  summary: 'Ternary Network Estimation'
+  description: 'Gene-regulatory network (GRN) modeling seeks to infer dependencies between genes and thereby provide insight into the regulatory relationships that exist within a cell. This package provides a computational Bayesian approach to GRN estimation from perturbation experiments using a ternary network model, in which gene expression is discretized into one of 3 states: up, unchanged, or down). The ternarynet package includes a parallel implementation of the replica exchange Monte Carlo algorithm for fitting network models, using MPI.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:ternarynet
+  parent_recipe:
+    name: bioconductor-ternarynet
+    path: recipes/bioconductor-ternarynet
+    version: 1.24.0
+

@@ -1,0 +1,43 @@
+{% set name = "tbvcfreport" %}
+{% set version = "0.1.10" %}
+{% set author = "COMBAT-TB" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/{{ author }}/{{ name }}/archive/{{ version }}.tar.gz"
+  sha256: 146e41af2db41c4a1598616d33733d9a114cfa746e02b1f0780ce639cc4744b9
+
+build:
+  noarch: python 
+  number: 0
+  entry_points:
+    - tbvcfreport=tbvcfreport.tbvcfreport:cli
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - click
+    - jinja2
+    - neo4j-python-driver
+    - python >=3.6
+    - pyvcf
+
+test:
+  imports:
+    - tbvcfreport
+  commands:
+    - tbvcfreport --help
+
+about:
+  home: "https://github.com/{{ author }}/{{ name }}"
+  license: "GNU General Public v3 (GPLv3)"
+  license_family: "GPL3"
+  license_file: LICENSE
+  summary: "Parses SnpEff annotated M.tb VCF(s) and generates an interactive HTML-based report."
+  doc_url: "https://github.com/{{ author }}/{{ name }}/blob/master/README.md"

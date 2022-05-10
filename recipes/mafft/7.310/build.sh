@@ -4,5 +4,5 @@
 cd $SRC_DIR/core
 
 export PRFX=$PREFIX
-make
+make CC="${CC} -fcommon" CXX="${CXX} -fcommon"
 make install
