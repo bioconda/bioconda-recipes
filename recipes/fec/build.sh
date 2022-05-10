@@ -8,8 +8,8 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CPP_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
-sed -i.bak "369,375d" Makefile
-make CFLAGS="$CFLAGS -D_GLIBCXX_PARALLEL -pthread -O3 -Wall -std=gnu99" CXXFLAGS="$CXXFLAGS -D_GLIBCXX_PARALLEL -pthread -O3 -Wall -std=c++11"
+sed -i.bak "369,377d" Makefile
+make CFLAGS="$CFLAGS -D_GLIBCXX_PARALLEL -pthread -O3 -Wall -std=gnu99" CXXFLAGS="$CXXFLAGS -D_GLIBCXX_PARALLEL -pthread -O3 -Wall -std=c++11" LDFLAGS="$LDFLAGS -pthread -lm -fopenmp -lz -lstdc++"
 
 OSTYPE=`uname`
 MACHINETYPE=`uname -m`
