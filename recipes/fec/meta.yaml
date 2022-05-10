@@ -1,24 +1,29 @@
 {% set name = "fec" %}
 {% set version = "1.0.0" %}
-{% set sha256 = "9e5ecd3eced3332962994c236c893c454e3c58b9b199952c8dbfce45446db14b" %}
+{% set sha256 = "58a9dd61ad11a04b711dcbc1a6d7f3717b0541c51eea6b20f2e02c7952bbf9b0" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/zhangjuncsu/Fec/releases/download/v{{ version }}/Fec
+  url: https://github.com/zhangjuncsu/Fec/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   number: 0
-  noarch: generic
 
 requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - libgomp     # [linux]
+    - llvm-openmp # [osx]
+  host:
+    - zlib
   run:
     - zlib
     - minimap2 >=2.17
-    - gxx >=10.1
 
 test:
   commands:
