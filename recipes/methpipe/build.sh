@@ -3,4 +3,4 @@
 mkdir -p ${PREFIX}/bin
 
 make
-mv ${pwd}/bin/* ${PREFIX}/bin
+mv $PWD/bin/* ${PREFIX}/bin
