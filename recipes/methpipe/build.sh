@@ -1,8 +1,6 @@
 #!/bin/bash
 
-mkdir -p ${PREFIX}
+mkdir -p ${PREFIX}/bin
 
-mkdir build && cd build
-../configure --prefix ${PREFIX}
 make
-make install
+mv ${pwd}/bin/* ${PREFIX}/bin
