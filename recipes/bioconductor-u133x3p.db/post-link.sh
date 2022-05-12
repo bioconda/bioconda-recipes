@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="u133x3p.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/u133x3p.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/u133x3p.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/u133x3p.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-u133x3p.db/bioconductor-u133x3p.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-u133x3p.db/bioconductor-u133x3p.db_3.2.3_src_all.tar.gz"
 )
 MD5="1a36a09dc64b94728bf6ac75600b40c6"

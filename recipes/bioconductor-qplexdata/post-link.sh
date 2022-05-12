@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="qPLEXdata_1.10.0.tar.gz"
+FN="qPLEXdata_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/qPLEXdata_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/qPLEXdata_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-qplexdata/bioconductor-qplexdata_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/qPLEXdata_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/qPLEXdata_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-qplexdata/bioconductor-qplexdata_1.12.0_src_all.tar.gz"
 )
-MD5="3dc9bfc99b29d666576fabf678432679"
+MD5="5b73a05e641bf99a2bad95d2bb165392"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

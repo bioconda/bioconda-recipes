@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="hugene10stprobeset.db_8.7.0.tar.gz"
+FN="hugene10stprobeset.db_8.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/hugene10stprobeset.db_8.7.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/hugene10stprobeset.db_8.7.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hugene10stprobeset.db/bioconductor-hugene10stprobeset.db_8.7.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hugene10stprobeset.db/bioconductor-hugene10stprobeset.db_8.7.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hugene10stprobeset.db_8.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/hugene10stprobeset.db_8.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hugene10stprobeset.db/bioconductor-hugene10stprobeset.db_8.8.0_src_all.tar.gz"
 )
-MD5="8c138a26b4aa0391edd69ef6abed3247"
+MD5="0a4a87d64564cbec1e4bb1f9e5a67add"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

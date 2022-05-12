@@ -7,7 +7,8 @@ cp -r src/ $SHARE_DIR/
 
 # Build and install Bio-Easel
 export BIO_EASEL_SHARE_DIR=$(pwd)
-perl Makefile.PL PREFIX=$PREFIX INSTALLDIRS=site
+PATH=$PREFIX/bin:$PATH
+perl Makefile.PL INSTALLDIRS=site
 make
 make test
 make install
