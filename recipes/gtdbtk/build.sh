@@ -18,6 +18,3 @@ echo '#!/usr/bin/env bash' > "$DOWNLOAD_SCRIPT_BIN"
 echo "export GTDBTK_DATA_PATH=\"${GTDBTK_DATA_PATH}\"" >> "$DOWNLOAD_SCRIPT_BIN"
 cat "${RECIPE_DIR}/download-db.sh" >> "$DOWNLOAD_SCRIPT_BIN"
 chmod +x "$DOWNLOAD_SCRIPT_BIN"
-
-# Set the GTDB-Tk environment variable on env activation
-conda env config vars set GTDBTK_DATA_PATH="$GTDBTK_DATA_PATH"
