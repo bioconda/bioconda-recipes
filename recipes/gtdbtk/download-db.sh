@@ -39,7 +39,10 @@ tar xvzf "$TARGET_TAR" -C "${GTDBTK_DATA_PATH}" --strip 1 | tqdm --unit=file --t
 
 # Remove the file after successful extraction
 rm "$TARGET_TAR"
+echo "GTDB-Tk database has been successfully downloaded and extracted."
 
-# Exit
-echo "GTDB-Tk database has been successfully downloaded."
+# Set the environment variable
+conda env config vars set GTDBTK_DATA_PATH="$GTDBTK_DATA_PATH"
+
 exit 0
+
