@@ -1,11 +1,7 @@
 #!/bin/bash
-CPPFLAGS+=-I$BUILD_PREFIX/include
-LDFLAGS+=-L$BUILD_PREFIX/lib
-export CPPFLAGS
-export LDFLAGS
+export CPPLAGS="$CPPFLAGS -I$PREFIX/include -I$BUILD_PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib -L$BUILD_PREFIX/lib"
 
-echo "Current path is $PWD"
-ls $PWD
 mkdir build && cd build
 ../configure --prefix ${PREFIX}
 make
