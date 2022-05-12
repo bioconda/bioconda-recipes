@@ -24,3 +24,4 @@ EOF
 cat <<EOF >> ${PREFIX}/etc/conda/deactivate.d/gtdbtk.sh
 unset GTDBTK_DATA_PATH
 EOF
+export GTDBTK_DATA_PATH=${target}/db/
