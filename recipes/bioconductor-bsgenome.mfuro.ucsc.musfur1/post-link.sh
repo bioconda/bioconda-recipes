@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="BSgenome.Mfuro.UCSC.musFur1_1.4.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/BSgenome.Mfuro.UCSC.musFur1_1.4.1.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Mfuro.UCSC.musFur1_1.4.1.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Mfuro.UCSC.musFur1_1.4.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mfuro.ucsc.musfur1/bioconductor-bsgenome.mfuro.ucsc.musfur1_1.4.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mfuro.ucsc.musfur1/bioconductor-bsgenome.mfuro.ucsc.musfur1_1.4.1_src_all.tar.gz"
 )
 MD5="c33e71746ce551bcbcd22be1979aee63"

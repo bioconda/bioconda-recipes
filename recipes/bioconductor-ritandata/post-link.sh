@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RITANdata_1.16.0.tar.gz"
+FN="RITANdata_1.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/RITANdata_1.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RITANdata_1.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ritandata/bioconductor-ritandata_1.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/RITANdata_1.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RITANdata_1.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ritandata/bioconductor-ritandata_1.18.0_src_all.tar.gz"
 )
-MD5="8be8bdff4741e4df48fe2b3cf229dfa3"
+MD5="8716442bd10da5ec5af703c84e53ad50"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
