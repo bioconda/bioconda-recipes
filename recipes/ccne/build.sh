@@ -1,4 +1,4 @@
 #!/bin/bash
 
-rm -rf binaries/
+rm -f binaries/{darwin,linux}/*
 cp -r * $PREFIX/
