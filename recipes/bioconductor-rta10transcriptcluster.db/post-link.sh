@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="rta10transcriptcluster.db_8.7.0.tar.gz"
+FN="rta10transcriptcluster.db_8.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/rta10transcriptcluster.db_8.7.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/rta10transcriptcluster.db_8.7.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rta10transcriptcluster.db/bioconductor-rta10transcriptcluster.db_8.7.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rta10transcriptcluster.db/bioconductor-rta10transcriptcluster.db_8.7.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/rta10transcriptcluster.db_8.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/rta10transcriptcluster.db_8.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rta10transcriptcluster.db/bioconductor-rta10transcriptcluster.db_8.8.0_src_all.tar.gz"
 )
-MD5="c6a854395aec7296ffb7d98534b112f7"
+MD5="14ade3f4fca2d1091ccb28e7a777f3e5"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
