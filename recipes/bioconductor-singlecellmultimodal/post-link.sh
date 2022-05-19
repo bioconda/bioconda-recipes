@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="SingleCellMultiModal_1.4.1.tar.gz"
+FN="SingleCellMultiModal_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/SingleCellMultiModal_1.4.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/SingleCellMultiModal_1.4.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-singlecellmultimodal/bioconductor-singlecellmultimodal_1.4.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/SingleCellMultiModal_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/SingleCellMultiModal_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-singlecellmultimodal/bioconductor-singlecellmultimodal_1.6.0_src_all.tar.gz"
 )
-MD5="5afcdaf3461f63d694c2250bbda82e92"
+MD5="c1d6ae800c85f906191bcc8eeb4ba588"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

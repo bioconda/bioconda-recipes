@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="mi16cod.db_3.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/mi16cod.db_3.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/mi16cod.db_3.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mi16cod.db_3.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mi16cod.db/bioconductor-mi16cod.db_3.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mi16cod.db/bioconductor-mi16cod.db_3.4.0_src_all.tar.gz"
 )
 MD5="f3a8e6f45ce5c298c1b1c5b32bf2630c"

@@ -10,6 +10,8 @@ if [ -f Build.PL ]; then
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
     perl Makefile.PL INSTALLDIRS=site
+    export LANGUAGE="en_US"
+    export LC_ALL="C"
     make
     make test
     make install

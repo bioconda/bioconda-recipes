@@ -15,5 +15,5 @@ export CXXFLAGS="${CXXFLAGS} -std=c++11"
 make
 make install
 # copy missing scripts
+sed -i'' '1 s|^.*$|#!/usr/bin/env perl|g' scripts/convert_stacks.pl
 cp -p scripts/{convert_stacks.pl,extract_interpop_chars.pl} "$PREFIX/bin/"
-
