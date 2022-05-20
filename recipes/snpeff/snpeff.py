@@ -29,13 +29,18 @@ def real_dirname(path):
 
 def java_executable():
     """Return the executable name of the Java interpreter."""
-    java_home = getenv('JAVA_HOME')
-    java_bin = os.path.join('bin', 'java')
+    # JAVA_HOME is not set in the Conda environment, it points to the system's java install
+    # Since the Conda environment includes open-jdk with the correct version, we can just
+    # use this java executable
 
-    if java_home and access(os.path.join(java_home, java_bin), X_OK):
-        return os.path.join(java_home, java_bin)
-    else:
-        return 'java'
+    # java_home = getenv('JAVA_HOME')
+    # java_bin = os.path.join('bin', 'java')
+
+    # if java_home and access(os.path.join(java_home, java_bin), X_OK):
+    #     return os.path.join(java_home, java_bin)
+    # else:
+    #     return 'java'
+    return 'java'
 
 
 def jvm_opts(argv):
