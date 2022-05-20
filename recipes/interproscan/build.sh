@@ -4,6 +4,10 @@
 IPR_DIR=${PREFIX}/share/InterProScan
 mkdir -p ${IPR_DIR}
 
+# Temporary fix from https://github.com/ebi-pf-team/interproscan/pull/265
+sed -i.bak 's|https://springframework.svn.sourceforge.net/svnroot/springframework/repos/repo-ext/|https://svn.code.sf.net/p/springframework/svn/repos/repo-ext/|' core/precalcmatches/server/pom.xml
+rm core/precalcmatches/server/pom.xml.bak
+
 # cd into the core directory, where the master pom.xml file (Maven build file) is located.
 cd core
 
@@ -31,7 +35,7 @@ mkdir -p ${PREFIX}/bin
 ln -s $IPR_DIR/interproscan.sh  ${PREFIX}/bin/
 
 # copy properties file to replace the default one
-cp ${RECIPE_DIR}/interproscan.properties ${IPR_DIR}/interproscan.properties
+sed "s|__PKG_PREFIX__|${PREFIX}|g" ${RECIPE_DIR}/interproscan.properties > ${IPR_DIR}/interproscan.properties
 
 # Add more build steps here, if they are necessary.
 
