@@ -6,7 +6,6 @@ cp *.sh $PREFIX/orthologID
 cp *pbs $PREFIX/orthologID
 cp *txt $PREFIX/orthologID
 cp README $PREFIX/orthologID
-cp readme_troubleshoot $PREFIX/orthologID
 cp testdata $PREFIX/orthologID
 cp VERSION $PREFIX/orthologID
 cp run_snpgenie_oid_EXAMPLE.pl $PREFIX/orthologID
