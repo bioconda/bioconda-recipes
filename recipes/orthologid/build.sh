@@ -11,7 +11,6 @@ cp run_snpgenie_oid_EXAMPLE.pl $PREFIX/orthologID
 cp -r bin $PREFIX/orthologID
 cp -r config $PREFIX/orthologID
 cp -r lib $PREFIX/orthologID
-cp -r phylobrowse $PREFIX/orthologID
 cp -r PostProcessing $PREFIX/orthologID
 cp -r testdata $PREFIX/orthologID
 
