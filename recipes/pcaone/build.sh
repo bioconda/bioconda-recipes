@@ -3,6 +3,7 @@
 mkdir -p ${PREFIX}/bin
 # fix zlib issue
 export CFLAGS="$CFLAGS -I$PREFIX/include"
+export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 echo '
 ######################### configure ################
