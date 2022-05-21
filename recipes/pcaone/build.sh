@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 mkdir -p ${PREFIX}/bin
+# fix zlib issue
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 echo '
 ######################### configure ################
 # conda install -c forge mkl
