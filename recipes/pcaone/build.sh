@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 mkdir -p ${PREFIX}/bin
-echo "
+echo '
 ######################### configure ################
 # conda install -c forge mkl
 # make sure libiomp5 can be found
@@ -78,6 +78,6 @@ clean:
 	(rm -f $(OBJ) $(program))
 	(cd ./external/bgen/; $(MAKE) clean)
 	(cd ./external/zstd/lib/; $(MAKE) clean)
-" >conda.makefile
+' >conda.makefile
 make -f conda.makefile MKLROOT=${PREFIX}
 mv PCAone ${PREFIX}/bin/
