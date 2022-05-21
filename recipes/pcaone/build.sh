@@ -5,5 +5,5 @@ mkdir -p ${PREFIX}/bin
 export CFLAGS="-I$PREFIX/include"
 export CXXFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
-make -f conda.makefile MKLROOT=${PREFIX}
+make MKLROOT=${PREFIX}
 mv PCAone ${PREFIX}/bin/
