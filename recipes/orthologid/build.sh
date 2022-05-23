@@ -22,5 +22,4 @@ chmod a+x $PREFIX/share/orthologID/PostProcessing/*.py
 chmod a+x $PREFIX/share/orthologID/PostProcessing/*.pl
 chmod a+x $PREFIX/share/orthologID/PostProcessing/*.R
 
-export OID_HOME="${PREFIX}/orthologID"
-export OID_USER_DIR="${PREFIX}/orthologID/testdata/"
+echo "${PREFIX}" > mkdir $PREFIX/share/orthologID/oid_home
