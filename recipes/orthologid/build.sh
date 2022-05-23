@@ -1,5 +1,6 @@
 #!/bin/sh
 
+mkdir $PREFIX/share
 mkdir $PREFIX/share/orthologID
 
 cp *.sh $PREFIX/share/orthologID
@@ -8,9 +9,9 @@ cp *txt $PREFIX/share/orthologID
 cp README $PREFIX/share/orthologID
 cp VERSION $PREFIX/share/orthologID
 cp run_snpgenie_oid_EXAMPLE.pl $PREFIX/share/orthologID
-cp -r bin $PREFIX/bin
-cp -r config $PREFIX/config
-cp -r lib $PREFIX/lib
+cp -r bin $PREFIX
+cp -r config $PREFIX
+cp -r lib $PREFIX
 cp -r PostProcessing $PREFIX/share/orthologID
 cp -r testdata $PREFIX/share/orthologID
 
