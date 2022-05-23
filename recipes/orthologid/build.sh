@@ -14,6 +14,7 @@ cp -r config $PREFIX
 cp -r lib $PREFIX
 cp -r PostProcessing $PREFIX/share/orthologID
 cp -r testdata $PREFIX/share/orthologID
+cp procfiles.txt $PREFIX/share/orthologID/testdata
 
 chmod a+x $PREFIX/bin/orthologid.pl
 chmod a+x $PREFIX/bin/topshell.sh
