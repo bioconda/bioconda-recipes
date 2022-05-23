@@ -3,4 +3,4 @@
 mkdir -p $PREFIX/bin
 
 # Install executables
-install -C packages/fastkit/bin/* $PREFIX/bin
+install -C bin/* $PREFIX/bin
