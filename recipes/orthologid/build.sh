@@ -23,3 +23,4 @@ chmod a+x $PREFIX/orthologID/PostProcessing/*.R
 
 export OID_HOME="${PREFIX}/orthologID"
 export OID_USER_DIR="${PREFIX}/orthologID/testdata/"
+export PATH="$PATH:${PREFIX}/orthologID/bin"
