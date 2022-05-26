@@ -11,5 +11,5 @@ muscle_path = ${PREFIX}/bin/muscle
 iqtree_path =  ${PREFIX}/bin/iqtree
 trimal_path = ${PREFIX}/bin/trimal
 fasttree_path = ${PREFIX}/bin/fasttree
-divver_path = ${PREFIX}/bin/divvier " > $SP_DIR/wgdi/example/conf.ini
+divvier_path = ${PREFIX}/bin/divvier " > $SP_DIR/wgdi/example/conf.ini
 
