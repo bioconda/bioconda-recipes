@@ -34,7 +34,6 @@ cpanm -l $PERLLIB MooseX::FollowPBP \
                     Test::MockObject \
                     Text::TabularDisplay \
                     Log::Dispatch::File \
-                    IO::CaptureOutput \
                     TIMB/DBI-1.636.tar.gz \
                     MIYAGAWA/Class-Trigger-0.15.tar.gz \
                     TMTM/Class-DBI-v3.0.17.tar.gz \
