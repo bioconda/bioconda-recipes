@@ -41,6 +41,7 @@ cpanm -l $PERLLIB MooseX::FollowPBP \
 
 
 cpanm -l $PERLLIB --force Mail::Sendmail \
+                          DROLSKY/Log-Dispatch-2.70.tar.gz \
                           Log::Dispatch::File
 
 mkdir -p ${PREFIX}/etc/conda/activate.d/
