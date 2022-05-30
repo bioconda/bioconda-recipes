@@ -21,7 +21,7 @@ mkdir -p $PERLLIB
 # to 'UNKNOWN' which disrupts cpanm
 
 if [[ ${HOST} =~ .*darwin.* && ("$HOME" == 'UNKNOWN' || -z "$HOME") ]]; then
-    export HOME=/Users/distiller
+    export HOME=/tmp
 fi
 
 cpanm -l $PERLLIB MooseX::FollowPBP \
