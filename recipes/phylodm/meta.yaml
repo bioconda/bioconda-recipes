@@ -1,5 +1,5 @@
 {% set name = "phylodm" %}
-{% set version = "1.3.1" %}
+{% set version = "2.0.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,39 +7,31 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 74dd9a6d61e67bf28980f7437b7edb2c20a1bfb40485f2a6f056367fcad9677d
+  sha256: 9afdc21c0e0d019fad203133840e38ae6c2dc504ef32551cad5b51681251023e
 
 build:
-  number: 1
-  skip: True  # [py2k]
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - python
+    - python >=3.7
     - pip
-    - cython
-    - numpy
     - setuptools
+    - setuptools-rust
+    - rust
   run:
     - python
     - numpy
-    - dendropy
-    - h5py
 
 test:
   imports:
     - phylodm
-    - phylodm.pdm
-    - phylodm.symmat
-  commands:
-    - phylodm -h
 
 about:
   home: https://github.com/aaronmussig/PhyloDM
-  license: GPL-3
+  license: GPL-3.0-only
   license_family: GPL
   license_file: LICENSE
   summary: 'Efficient calculation of phylogenetic distance matrices.'
