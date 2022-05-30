@@ -17,6 +17,13 @@ mkdir -p $PERLLIB
 
 ## install modules from CPAN directly as they are no conda packages for these modules
 
+# A little hack to try to nudge Bioconda MacOS CI- which seems to have HOME set
+# to 'UNKNOWN' which disrupts cpanm
+
+if [[ ${HOST} =~ .*darwin.* && ("$HOME" == 'UNKNOWN' || -z "$HOME") ]]; then
+    export HOME=/Users/distiller
+fi
+
 cpanm -l $PERLLIB MooseX::FollowPBP \
                     URI::Escape \
                     URL::Encode \
