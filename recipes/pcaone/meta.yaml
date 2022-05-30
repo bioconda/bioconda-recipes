@@ -11,28 +11,31 @@ source:
   sha256: '{{ sha256 }}'
 
 build:
-  number: 0
-  skip: True  # [win]
+  number: 1
 
 requirements:
   build:
-    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - make
+    - llvm-openmp
 
   host:
-    - mkl
+    - liblapack * *mkl
+    - mkl >=2020.4
     - mkl-include
     - zlib
 
   run:
-    - mkl
-    - mkl-include
+    - mkl >=2020.4
     - zlib
 
 test:
   commands:
     - PCAone 
+    - ldd `which PCAone.avx2` # [linux]
+    - otool -L `which PCAone` # [osx]
 
 about:
   home: https://github.com/Zilong-Li/PCAone
