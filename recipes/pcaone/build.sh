@@ -7,6 +7,7 @@ export CXXFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
 sed -i.bak '/-march=native/d' Makefile
+sed -i.bak '35 s/$/ -Wl,--no-as-needed/' Makefile
 
 if [ $(uname -s) == "Linux" ];then
   make clean && make MKLROOT=${PREFIX} AVX=0 && mv PCAone ${PREFIX}/bin/PCAone.x64
