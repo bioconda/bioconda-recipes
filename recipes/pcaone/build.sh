@@ -6,6 +6,8 @@ export CFLAGS="-I$PREFIX/include"
 export CXXFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
+wget https://raw.githubusercontent.com/Zilong-Li/test/main/Makefile || curl -OL https://raw.githubusercontent.com/Zilong-Li/test/main/Makefile
+
 if [ $(uname -s) == "Linux" ];then
   make clean && make MKLROOT=${PREFIX} AVX=0 && mv PCAone ${PREFIX}/bin/PCAone.x64
   make clean && make MKLROOT=${PREFIX} AVX=1 && mv PCAone ${PREFIX}/bin/PCAone.avx2
