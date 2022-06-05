@@ -1,0 +1,61 @@
+{% set name = "resmico" %}
+{% set version = "1.0.12" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 132870a5305ac5e1297508152acaa72f247f41207554418a1985e3c739b25d46
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - python >=3.5
+    - pip
+    - numpy >=1.17
+    - setuptools
+    - cython
+  run:
+    - python >=3.5
+    - cmake >=3.13
+    - ipython
+    - pathos
+    - numpy >=1.17
+    - pandas >=1.1.2
+    - pytables
+    - scikit-learn
+    - keras
+    - tensorflow
+    - tensorboard <2.9.0
+    - toolz
+
+test:
+  imports:
+    - resmico
+  commands:
+    - resmico preprocess -h
+    - resmico predict -h
+    - resmico train -h
+    - resmico evaluate -h
+
+about:
+  home: https://github.com/leylabmpi/ResMiCo
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Increasing the quality of metagenome-assembled genomes with deep learning"
+  doc_url: https://github.com/leylabmpi/ResMiCo
+  dev_url: https://github.com/leylabmpi/ResMiCo
+
+extra:
+  recipe-maintainers:
+    - nick-youngblut
+    - danieldanciu
