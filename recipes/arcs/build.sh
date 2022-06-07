@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./configure --prefix=${PREFIX} CXXFLAGS="${CXXFLAGS} -Wno-error=unused-result -Wnoerror=unknown-warning-option"
+./configure --prefix=${PREFIX} CXXFLAGS="${CXXFLAGS} -Wno-error=unused-result -Wno-error=unknown-warning-option"
 make install
 
 mkdir -p ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/Examples
