@@ -8,10 +8,10 @@ cp plasmidfinder.py ${PREFIX}/bin/plasmidfinder.py
 chmod +x ${RECIPE_DIR}/download-db.sh
 cp ${RECIPE_DIR}/download-db.sh ${PREFIX}/bin/download-db.sh
 
-# Path for database
+# Build database
 outdir=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 mkdir -p ${outdir}/database/
-touch ${outdir}/database/.empty
+${PREFIX}/bin/download-db.sh ${outdir}/database/
 
 # set PLASMID_DB variable on env activation
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
