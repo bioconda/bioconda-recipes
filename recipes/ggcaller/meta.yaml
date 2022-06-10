@@ -11,7 +11,7 @@ source:
 
 build:
   number: 0
-  skip: True  # [osx or py < 38]
+  skip: False  # [osx or py < 38]
   script: {{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt
   entry_points:
     - ggcaller = ggCaller.__main__:main
@@ -20,27 +20,38 @@ requirements:
   build:
     - {{ compiler('c')}}
     - {{ compiler('cxx') }}
-    - cmake >=3.4
+    - cmake >=3.10
     - make
     - setuptools
     - llvm-openmp  # [osx]
     - libgomp      # [linux64]
+    - boost-cpp
+    - eigen =3.3
+    - pytorch
   host:
     - python
     - pybind11
-    - seqan3 <3.1
     - bifrost
     - pthread-stubs
     - zlib
     - bzip2
   run:
     - python
+    - pip
+    - numpy
+    - scipy
+    - pandas
     - bifrost
-    - pthread-stubs
     - biopython
-    - graph-tool
+    - bcbio-gff
+    - diamond
+    - hmmer
+    - mafft
+    - snp-sites
+    - zlib
     - pytorch
-    # The xorg-* requirements are only used for gtk3 which is pulled in via graph-tool.
+    - pthread-stubs
+    - matplotlib
     - xorg-libxi
     - xorg-libxcursor
     - xorg-libxdamage
@@ -50,12 +61,32 @@ requirements:
     - xorg-libxpm
     - xorg-libxaw
     - xorg-libxfixes
+    - intbitset
+    - networkx
+    - uncertainties
+    - eigen =3.3
+    - openblas
+    - cmake >=3.10
+    - libgomp
+    - llvm-openmp
+    - tqdm
+    - setuptools
+    - make
+    - seaborn
+    - rapidnj
+    - tbb-devel
+    - python-edlib
+    - joblib
+    - gffutils
+    - cd-hit
+    - python-wget
+
 
 test:
   imports:
     - ggCaller_cpp
-    - balrog
     - ggCaller
+    - panaroo_runner
   commands:
     - ggcaller -h | grep -q "Generates ORFs from a Bifrost graph."
 
