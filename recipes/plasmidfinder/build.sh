@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Update default DB location
-PLASMIDFINDER_SHARE=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
+PLASMIDFINDER_SHARE=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}
 sed -i "s=BIOCONDA_SED_REPLACE=$PLASMIDFINDER_SHARE=" plasmidfinder.py
 
 # Copy plasmidfinder
@@ -15,7 +15,7 @@ cp ${RECIPE_DIR}/download-db.sh ${PREFIX}/bin/download-db.sh
 
 # Build database
 mkdir -p ${PLASMIDFINDER_SHARE}/database/
-${PREFIX}/bin/download-db.sh ${PLASMIDFINDER_SHARE}/database/
+bash -x ${PREFIX}/bin/download-db.sh ${PLASMIDFINDER_SHARE}/database/
 
 # set PLASMID_DB variable on env activation
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
