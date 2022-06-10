@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="WGSmapp_1.2.0.tar.gz"
+FN="WGSmapp_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/WGSmapp_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/WGSmapp_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-wgsmapp/bioconductor-wgsmapp_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/WGSmapp_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/WGSmapp_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-wgsmapp/bioconductor-wgsmapp_1.6.0_src_all.tar.gz"
 )
-MD5="150eaf7f0cf8a38f9f4eeea6c1d77894"
+MD5="8f8a05bede8ec0037c23b98dce0c4355"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

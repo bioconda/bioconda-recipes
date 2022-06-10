@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="phastCons30way.UCSC.hg38_3.11.1.tar.gz"
+FN="phastCons30way.UCSC.hg38_3.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/phastCons30way.UCSC.hg38_3.11.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/phastCons30way.UCSC.hg38_3.11.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-phastcons30way.ucsc.hg38/bioconductor-phastcons30way.ucsc.hg38_3.11.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/phastCons30way.UCSC.hg38_3.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/phastCons30way.UCSC.hg38_3.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-phastcons30way.ucsc.hg38/bioconductor-phastcons30way.ucsc.hg38_3.13.0_src_all.tar.gz"
 )
-MD5="d00ce5dd1a942a964e131b3536aaa8ec"
+MD5="754faee8463bc494c502540cb8f6ea8d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

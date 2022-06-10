@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="bronchialIL13_1.28.0.tar.gz"
+FN="bronchialIL13_1.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/bronchialIL13_1.28.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/bronchialIL13_1.28.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bronchialil13/bioconductor-bronchialil13_1.28.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/bronchialIL13_1.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/bronchialIL13_1.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bronchialil13/bioconductor-bronchialil13_1.32.0_src_all.tar.gz"
 )
-MD5="b40ff627317375f01f7bbf21de872de3"
+MD5="4d7c9b492a731eb28f979036915f7427"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

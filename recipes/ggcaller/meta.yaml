@@ -1,5 +1,5 @@
 {% set name = "ggCaller" %}
-{% set version = "1.2.3" %}
+{% set version = "1.3.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,11 +7,11 @@ package:
 
 source:
   url: https://github.com/samhorsfield96/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 5b06d49ab09cf669e668acc793cc502cd855f00b3e8a941a27e1f48ca17f45f7
+  sha256: 896184addbcf1446f74a5844651f36c6dc43a9e59df6f998c32976cd35706f61
 
 build:
   number: 0
-  skip: True  # [osx]
+  skip: True  # [osx or py < 38]
   script: {{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt
   entry_points:
     - ggcaller = ggCaller.__main__:main
@@ -23,19 +23,18 @@ requirements:
     - cmake >=3.4
     - make
     - setuptools
-    - python >=3.8
-  host:
-    - python >=3.8
-    - pybind11
     - llvm-openmp  # [osx]
     - libgomp      # [linux64]
-    - seqan3
+  host:
+    - python
+    - pybind11
+    - seqan3 <3.1
     - bifrost
     - pthread-stubs
     - zlib
     - bzip2
   run:
-    - python >=3
+    - python
     - bifrost
     - pthread-stubs
     - biopython

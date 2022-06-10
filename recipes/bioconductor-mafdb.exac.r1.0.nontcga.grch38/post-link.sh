@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="MafDb.ExAC.r1.0.nonTCGA.GRCh38_3.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/MafDb.ExAC.r1.0.nonTCGA.GRCh38_3.10.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/MafDb.ExAC.r1.0.nonTCGA.GRCh38_3.10.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MafDb.ExAC.r1.0.nonTCGA.GRCh38_3.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mafdb.exac.r1.0.nontcga.grch38/bioconductor-mafdb.exac.r1.0.nontcga.grch38_3.10.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mafdb.exac.r1.0.nontcga.grch38/bioconductor-mafdb.exac.r1.0.nontcga.grch38_3.10.0_src_all.tar.gz"
 )
 MD5="cf447f59cc8b1cd7ca395fd3fe6e4730"

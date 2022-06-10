@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.yeast.2_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/pd.yeast.2_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.yeast.2_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.yeast.2_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.yeast.2/bioconductor-pd.yeast.2_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.yeast.2/bioconductor-pd.yeast.2_3.12.0_src_all.tar.gz"
 )
 MD5="780f5139ee9cda46c9e38122538ce129"
