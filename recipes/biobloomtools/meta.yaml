@@ -1,0 +1,40 @@
+{% set version = "2.3.4" %}
+
+package:
+  name: biobloomtools
+  version: {{ version }}
+
+source:
+  url: https://github.com/bcgsc/biobloom/releases/download/{{ version }}/biobloomtools-{{ version }}.tar.gz
+  sha256: 398e3fe2cf0ce58842ba8472dbb76e2eea956a9e9d73a086b13a486b1fe08e66
+
+build:
+  skip: true  # [osx or win]
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }} 
+    - llvm-openmp  # [osx]
+  host:
+    - boost
+    - sparsehash
+    - sdsl-lite
+    - zlib
+  run:
+    - llvm-openmp  # [osx]
+    - zlib
+    - sparsehash
+
+test:
+  commands:
+    - biobloommaker --help
+    - biobloomcategorizer --help
+    - biobloommimaker --help
+    - biobloommicategorizer --help
+
+about:
+  home: https://github.com/bcgsc/biobloom 
+  license: GPL-3.0 
+  license_file: LICENSE
+  summary: Building Bloom filters and using them for categorizing sequences 
