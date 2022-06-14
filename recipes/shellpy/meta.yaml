@@ -1,0 +1,46 @@
+{% set name = "shellpy" %}
+{% set version = "0.5.1" %}
+
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/shellpy-{{ version }}.tar.gz
+  sha256: b29c1f27199d0c9a88f7c7e8a1471c833d408ed52340fb1a373747b9af5768b3
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - shellpy3 = shellpython.shellpy:main3
+    - shellpy = shellpython.shellpy:main2
+    - shellpy2 = shellpython.shellpy:main2
+  script: {{ PYTHON }} -m pip install . -vv
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - colorama
+    - python
+
+test:
+  imports:
+    - shellpython
+  commands:
+    - pip check
+    - shellpy3 --help
+    - shellpy --help
+    - shellpy2 --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/lamerman/shellpy/
+  summary: A convenient tool for shell scripting in python
+  license: BSD-3-Clause
+  license_file: LICENSE
+
