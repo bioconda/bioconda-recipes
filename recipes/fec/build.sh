@@ -34,3 +34,5 @@ if [ ${OSTYPE} = "SunOS" ]; then
 fi
 
 cp ${OSTYPE}-${MACHINETYPE}/bin/Fec ${PREFIX}/bin
+cp script/parse_sam.py ${PREFIX}/bin
+chmod +x ${PREFIX}/bin/parse_sam.py
