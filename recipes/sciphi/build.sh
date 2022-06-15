@@ -3,7 +3,8 @@
 # conda on macOS will fall back to libstdc++
 # which lacks a ton of standard C++11 headers
 if [[ $(uname) == Darwin ]]; then
-        export CXXFLAGS="${CXXFLAGS} -stdlib=libc++"
+    export CXXFLAGS="${CXXFLAGS} -stdlib=libc++"
+    grep -r no_warning_for
 fi
 
 curdir=$(pwd)
