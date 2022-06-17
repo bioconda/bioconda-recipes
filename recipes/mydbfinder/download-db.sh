@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 
-echo "Downloading KmerFinder database to ${KmerFinder_DB}..."
+echo "Downloading MyDbFinder database to ${MyDbFinder_DB}..."
 
-cd ${KmerFinder_DB}
-# download kmerfinder database
-git clone https://git@bitbucket.org/genomicepidemiology/kmerfinder_db.git
-cd kmerfinder_db
-bash INSTALL.py ${KmerFinder_DB} all
+cd ${MyDbFinder_DB}
+# download MyDbfinder database
+git clone https://git@bitbucket.org/genomicepidemiology/mydbfinder_db.git
+cd mydbfinder_db
+kma_index -i listeria_virulence_genes.fsa
+kma_index -i vibrio_cholerae.fsa
 cd ..
 
-echo "KmerFinder database is downloaded."
+echo "MyDbFinder database is downloaded."
 
 exit 0
