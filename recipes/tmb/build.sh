@@ -8,5 +8,5 @@ ls -l *
 mv bin/*.py "${PREFIX}/bin/"
 mv config/*.yml "${PREFIX}/config/"
 mv test/* "${PREFIX}/test/"
-chmod 0755 ${PREFIX}/bin/*
-chmod +x ${PREFIX}/bin/*
+chmod 0755 ${PREFIX}/bin/*.py
+chmod +x ${PREFIX}/bin/*.py
