@@ -14,12 +14,12 @@ touch ${target}/db/.empty
 cp ${RECIPE_DIR}/download-db.sh ${PREFIX}/bin
 chmod +x ${PREFIX}/bin/download-db.sh
 
-# set KmerFinder_DB variable on env activation
+# set MyDbFinder_DB variable on env activation
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
-cat <<EOF >> ${PREFIX}/etc/conda/activate.d/kmerfinder.sh
-export KmerFinder_DB=${target}/db/
+cat <<EOF >> ${PREFIX}/etc/conda/activate.d/mydbfinder.sh
+export MyDbFinder_DB=${target}/db/
 EOF
 
-cat <<EOF >> ${PREFIX}/etc/conda/deactivate.d/kmerfinder.sh
-unset KmerFinder_DB
+cat <<EOF >> ${PREFIX}/etc/conda/deactivate.d/mydbfinder.sh
+unset MyDbFinder_DB
 EOF
