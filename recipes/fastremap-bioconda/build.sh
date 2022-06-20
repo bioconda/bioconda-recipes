@@ -3,7 +3,7 @@
 mkdir -p $PREFIX/bin
 
 export CPATH=${PREFIX}/include
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
-cd zlib && ./configure && make && cd ..
-
-make CC=$CC EXECUTABLE="$PREFIX/bin/FastRemap"
+make EXECUTABLE="$PREFIX/bin/FastRemap" INC="-$PREFIX/include" LIB="$PREFIX/lib"
