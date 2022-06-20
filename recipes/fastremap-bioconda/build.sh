@@ -6,4 +6,4 @@ export CPATH=${PREFIX}/include
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
-make EXECUTABLE="$PREFIX/bin/FastRemap" INC="-$PREFIX/include" LIB="$PREFIX/lib"
+make CXX=$CXX EXECUTABLE="$PREFIX/bin/FastRemap" INC="-$PREFIX/include" LIB="$PREFIX/lib"
