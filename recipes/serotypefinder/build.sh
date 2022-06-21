@@ -17,9 +17,9 @@ cp ${RECIPE_DIR}/update-serotypefinder-db.sh ${PREFIX}/bin/update-serotypefinder
 mkdir database/
 git clone https://bitbucket.org/genomicepidemiology/serotypefinder_db.git database/
 cd database/
-git checkout 25ddd141d245db6382ca5876f7c7ddd0288aeb30
+git checkout ada62c62a7fa74032448bb2273d1f7045c59fdda
 python3 INSTALL.py
-echo "25ddd141d245db6382ca5876f7c7ddd0288aeb30" > serotypefinder-db-commit.txt
+echo "ada62c62a7fa74032448bb2273d1f7045c59fdda" > serotypefinder-db-commit.txt
 cd ..
 
 # Path for database
