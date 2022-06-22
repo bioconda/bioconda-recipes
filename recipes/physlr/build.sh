@@ -1,8 +1,6 @@
 #!/bin/bash
 
-cd src
-make install
-cd ..
+make -C src install
 
 mkdir -p ${PREFIX}/bin/
 mkdir -p ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin
