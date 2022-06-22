@@ -1,8 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
-mkdir -p $PREFIX/$PKG_NAME
-cp -r $SRC_DIR/* $PREFIX/$PKG_NAME
-for a in $PREFIX/$PKG_NAME/bin/*; do
-  b=`basename $a`
-  ln -s $a $PREFIX/bin/$b
-done
+set -eu
+
+TARGET=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+mkdir -p $TARGET
+mkdir -p $PREFIX/bin
+cp -r bin src docs data $TARGET
+chmod -R a+r $TARGET/
+chmod -R a+x $TARGET/bin/
+ln -s $TARGET/bin/* $PREFIX/bin
