@@ -9,5 +9,4 @@ cp -a physlr ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/
 
 cp src/physlr-indexlr src/physlr-makebf src/physlr-filter-bxmx src/physlr-filter-barcodes src/physlr-overlap src/physlr-split-minimizers ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/src/
 
-echo "#!/bin/bash" > ${PREFIX}/bin/physlr
-echo "make -f $(command -v ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin/physlr-make) \$@" >> ${PREFIX}/bin/physlr
+printf '#!/bin/bash\nexec make -f $(command -v '"${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin/physlr-make"') "$@" >${PREFIX}/bin/physlr
