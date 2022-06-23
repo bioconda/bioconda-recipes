@@ -34,6 +34,10 @@ rm "$TARGET_TAR"
 echo "[INFO] - The GTDB-Tk database has been successfully downloaded and extracted."
 
 # Set the environment variable
-conda env config vars set TARGET_DIR="$TARGET_DIR"
+if conda env config vars set TARGET_DIR="$TARGET_DIR"; then
+  echo "[INFO] - Added TARGET_DIR ($TARGET_DIR) to the GTDB-Tk conda environment."
+else
+  echo "[INFO] - Conda not found in PATH, please be sure to set the TARGET_DIR envrionment variable"
+fi
 
 exit 0
