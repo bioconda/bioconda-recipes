@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu
 
 make -C src install
 
