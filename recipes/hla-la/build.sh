@@ -13,7 +13,6 @@ make \
   CXX="${CXX}" \
   BOOST_PATH="${PREFIX}" \
   BAMTOOLS_PATH="${PREFIX}" \
-  BAMTOOLS_SRC="${PREFIX}/include" \
   BAMTOOLS_LIB="${PREFIX}/lib" \
   all
 
