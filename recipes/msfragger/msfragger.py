@@ -15,6 +15,17 @@ jar_file = 'MSFragger.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
+license_agreement_text = '''
+Please accept the academic license.
+
+MSFragger is available freely for academic research and educational purposes only.
+
+By passing the --accept_license argument, you verify that you have read the ACADEMIC license for MSFragger software:
+
+    http://msfragger-upgrader.nesvilab.org/upgrader/MSFragger-LICENSE.pdf
+
+This license provides with non-exclusive, non-transferable right to use MSFragger solely for academic research, non-commercial or educational purposes. I agree to be subject to the terms and conditions of this license. I understand that to use MSFragger for other purposes requires a commercial license from the University of Michigan Office of Tech Transfer.'''
+
 # !!! End of parameter section. No user-serviceable code below this line !!!
 
 def real_dirname(path):
@@ -73,6 +84,12 @@ def main():
     if len(sys.argv) > 1 and sys.argv[1] == '--path':
         print(os.path.realpath(jar_path))
         sys.exit(0)
+
+    if len(sys.argv) == 1 or '--accept_license' not in sys.argv:
+        print(license_agreement_text)
+        sys.exit(1)
+    sys.argv.remove('--accept_license')
+
     (mem_opts, prop_opts, pass_args) = jvm_opts(sys.argv[1:])
 
     if pass_args != [] and pass_args[0].startswith('eu'):
