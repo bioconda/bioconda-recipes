@@ -2,7 +2,7 @@
 
 set -euxo pipefail
 
-nextalign \
+nextalign run \
 test-data/sequences.fasta \
 --reference test-data/reference.fasta \
 --genemap test-data/genemap.gff \
