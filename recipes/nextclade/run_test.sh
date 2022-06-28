@@ -10,4 +10,4 @@ nextclade run \
 'data/sars-cov-2/sequences.fasta' \
 --output-tsv 'output/nextclade.tsv' \
 --output-tree 'output/tree.json' \
---output-dir 'output/'
+--output-all 'output/'
