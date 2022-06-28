@@ -39,9 +39,9 @@ with open("version", "w") as f:
 
 # %%
 oses = {
-    "linux64": "Linux-x86_64",
-    "osx and x86_64": "MacOS-x86_64",
-    "arm64": "MacOS-arm64"
+    "linux64": "x86_64-unknown-linux-gnu",
+    "osx and x86_64": "x86_64-apple-darwin",
+    "arm64": "aarch64-apple-darwin"
 }
 tasks = ["nextalign"]
 recipes = {}
