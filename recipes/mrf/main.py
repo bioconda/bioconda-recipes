@@ -44,33 +44,7 @@ def clustering(inputSet, Nk, psi):
     inputSet.writeCluster2File(cmfa.mIndicatorQ, cmfa.indicatorVec)
     inputSet.observationG.write2cytoscape(cmfa.indicatorVec, cmfa.mIndicatorQ, inputSet.aSortedProteins)
 
-    """ Not doing error statistics """
-    """
-    X = cmfa.expectedErrors
-    y = cmfa.mResidues
-    pred_ols = regr.get_prediction()
-    iv_l = pred_ols.summary_frame()["obs_ci_lower"]
-    iv_u = pred_ols.summary_frame()["obs_ci_upper"]
-
-    fig, ax1 = plt.subplots(figsize=(8, 6))
-
-    ax1.plot(X, y, "o", label="data")
-    ax1.plot(X, regr.fittedvalues, "r--.", label="OLS")
-    ax1.plot(X, iv_u, "r--")
-    ax1.plot(X, iv_l, "r--")
-    ax1.legend(loc="best")
-    plt.show()
-    
-    fig, ax2 = plt.subplots(figsize=(8, 6))
-    ax2.scatter(regr.fittedvalues, regr.resid_pearson)
-    ax2.hlines(0, 0, np.max(regr.fittedvalues))
-    #ax2.set_xlim(0, 1)
-    ax2.set_title('Residual Dependence Plot')
-    ax2.set_ylabel('Pearson Residuals')
-    ax2.set_xlabel('Fitted values')
-    plt.show()
-    """
-    return lstExpectedLikelihood
+    return 0
 
 def get_args():
     parser = argparse.ArgumentParser(description='MFA')
@@ -99,7 +73,7 @@ def main():
     else:
         print('Hello, ' + args.file)
         inputSet = inputFile.CInputSet(args.file, cpm.CountSpokeModel)
-    nLogLikelihood = clustering(inputSet, nK, psi)
+    return clustering(inputSet, nK, psi)
 
 if __name__ == '__main__':
     main()
