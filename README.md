@@ -1,3 +1,10 @@
+Auto run Nextclade/align bump via:
+
+```bash
+gh workflow run -R corneliusroemer/bioconda-recipes 16061415
+gh run view  -R corneliusroemer/bioconda-recipes -w
+```
+
 ![](https://raw.githubusercontent.com/bioconda/bioconda-recipes/master/logo/bioconda_monochrome_small.png
  "Bioconda")
 
