@@ -18,4 +18,4 @@ cmake \
     -DCMAKE_BUILD_TYPE="Release" \
     ../src
 
-make CC="${CC}" CXX="${CXX}" LDFLAGS="${LDFLAGS}" -lhts
+make CC="${CC}" CXX="${CXX}" LDFLAGS="${LDFLAGS}" -lhts -lboost_iostreams
