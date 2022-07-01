@@ -18,9 +18,6 @@ sed -i '25 i set(PKG_CONFIG_EXECUTABLE ${PKG_CONFIG_EXECUTABLE})' src/CMakeLists
 mkdir build
 cd build
 
-cmake \
-    -DBUILD_SHARED_LIBS:BOOL=ON \
-    -DCMAKE_INSTALL_PREFIX:PATH=${PREFIX}
-../src
+cmake -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_INSTALL_PREFIX:PATH=${PREFIX} ../src
 
 make CC="${CC}" CXX="${CXX}" LDFLAGS="${LDFLAGS}" -lhts -lboost_iostreams
