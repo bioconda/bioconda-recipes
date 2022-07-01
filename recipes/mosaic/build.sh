@@ -7,13 +7,15 @@ export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 # export CPATH=${BUILD_PREFIX}/bin
-export PKG_CONFIG_EXECUTABLE=${BUILD_PREFIX}/bin/pkg-config
+# export PKG_CONFIG_EXECUTABLE=${BUILD_PREFIX}/bin/pkg-config
 
-which pkg-config
-which cmake
-echo "$CPATH"
+# which pkg-config
+# which cmake
+# echo "$CPATH"
 
-sed -i '25 i set(PKG_CONFIG_EXECUTABLE ${PKG_CONFIG_EXECUTABLE})' src/CMakeLists.txt
+# sed -i '25 i set(PKG_CONFIG_EXECUTABLE ${PKG_CONFIG_EXECUTABLE})' src/CMakeLists.txt
+
+cat src/CMakeLists.txt
 
 mkdir build
 cd build
