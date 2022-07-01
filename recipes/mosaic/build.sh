@@ -7,15 +7,11 @@ export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
+which pkg-config
+
 mkdir build
 cd build
 
-cmake \
-    -DBUILD_SHARED_LIBS:BOOL=ON \
-    -DCMAKE_PREFIX_PATH:PATH=${PREFIX} \
-    -DCMAKE_INSTALL_PREFIX:PATH=${PREFIX} \
-    -DCMAKE_INSTALL_LIBDIR=lib \
-    -DCMAKE_BUILD_TYPE="Release" \
-    ../src
+cmake ../src
 
 make CC="${CC}" CXX="${CXX}" LDFLAGS="${LDFLAGS}" -lhts -lboost_iostreams
