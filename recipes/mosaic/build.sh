@@ -10,4 +10,4 @@ export CPATH=${PREFIX}/include
 mkdir build
 cd build
 cmake ../src
-make CC="${CC}" CXX="${CXX}" LDFLAGS="${LDFLAGS}"
+make CC="${CC}" CXX="${CXX}" LDFLAGS="${LDFLAGS}" -lhts
