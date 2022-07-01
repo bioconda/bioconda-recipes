@@ -9,5 +9,13 @@ export CPATH=${PREFIX}/include
 
 mkdir build
 cd build
-cmake ../src
+
+cmake \
+    -DBUILD_SHARED_LIBS:BOOL=ON \
+    -DCMAKE_PREFIX_PATH:PATH=${PREFIX} \
+    -DCMAKE_INSTALL_PREFIX:PATH=${PREFIX} \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DCMAKE_BUILD_TYPE="Release" \
+    ../src
+
 make CC="${CC}" CXX="${CXX}" LDFLAGS="${LDFLAGS}" -lhts
