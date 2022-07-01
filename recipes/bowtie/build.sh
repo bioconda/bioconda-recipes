@@ -1,28 +1,9 @@
 #!/bin/bash
 
-if [[ "$OSTYPE" != "darwin"* ]]; then
+# The VERSION file is mistaken for a C++20 version header file
+# The patch does not rename the VERSION file on OSX, so we rename it here
+mv VERSION{,.txt} || true
 
-  make prefix="${PREFIX}" install
-
-else
-  declare -a BIN_LIST=(
-    bowtie-build-s
-    bowtie-build-l
-    bowtie-align-s
-    bowtie-align-l
-    bowtie-inspect-s
-    bowtie-inspect-l
-  )
-
-  declare -a PYTHON_WRAPPER_LIST=(
-    bowtie-inspect
-    bowtie-build
-    bowtie
-  )
-
-  for file in "${BIN_LIST[@]}" "${PYTHON_WRAPPER_LIST[@]}"; do
-    cp -f $file "${PREFIX}/bin/"
-  done
-fi
+make prefix="${PREFIX}" install
 
 cp -r scripts "${PREFIX}/bin/"
