@@ -13,7 +13,7 @@ which pkg-config
 which cmake
 echo "$CPATH"
 
-sed -i '25 set(PKG_CONFIG_EXECUTABLE ${PKG_CONFIG_EXECUTABLE})' src/CMakeLists.txt
+sed -i '25 i set(PKG_CONFIG_EXECUTABLE ${PKG_CONFIG_EXECUTABLE})' src/CMakeLists.txt
 
 mkdir build
 cd build
