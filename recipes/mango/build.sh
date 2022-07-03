@@ -19,9 +19,6 @@ for f in $PACKAGE_HOME/bin/* ; do
     fi
 done
 
-# modin
-$PYTHON -m pip install python_modin/.[dask] --no-deps --ignore-installed -vv
-
 # adam
 $PYTHON -m pip install python_adam/. --no-deps --ignore-installed -vv
 

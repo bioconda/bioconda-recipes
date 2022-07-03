@@ -1,10 +1,9 @@
-#!/bin/bash
-set -euo pipefail
+#!/usr/bin/env bash
 
-TESTDATA="https://harvest.readthedocs.io/en/latest/_downloads/mers49.tar.gz"
-curl -O $TESTDATA >/dev/null
-tar -xvf mers49.tar.gz >/dev/null
-
-parsnp -V >/dev/null
-parsnp -g ./ref/EMC_2012.gbk -d ./mers49 -C 1000 -c -o test >/dev/null
-
+curl https://github.com/marbl/harvest/raw/master/docs/content/parsnp/mers_examples.tar.gz -L --output mers_examples.tar.gz
+tar -xzvf mers_examples.tar.gz
+parsnp -V 
+parsnp -g mers_virus/ref/England1.gbk -d mers_virus/genomes/*.fna -C 1000 -c -o test --verbose --use-fasttree
+parsnp -r ! -d mers_virus/genomes/*.fna -o test2 --verbose
+parsnp -g mers_virus/ref/England1.gbk -d mers_virus/genomes/*.fna -p 2 -C 1000 -c -o test --verbose --use-fasttree
+parsnp -r ! -d mers_virus/genomes/*.fna -o test2 --verbose -p 2

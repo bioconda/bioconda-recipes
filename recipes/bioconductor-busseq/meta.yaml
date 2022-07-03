@@ -1,0 +1,47 @@
+{% set version = "1.0.0" %}
+{% set name = "BUSseq" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: d9c65fd72a2baeeaeed563d3f654349e
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: BiocStyle, knitr, BiocGenerics
+requirements:
+  host:
+    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
+    - 'bioconductor-singlecellexperiment >=1.16.0,<1.17.0'
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - r-base
+    - r-gplots
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
+    - 'bioconductor-singlecellexperiment >=1.16.0,<1.17.0'
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - r-base
+    - r-gplots
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'Batch Effect Correction with Unknow Subtypes for scRNA-seq data'
+  description: 'BUSseq R package fits an interpretable Bayesian hierarchical model---the Batch Effects Correction with Unknown Subtypes for scRNA seq Data (BUSseq)---to correct batch effects in the presence of unknown cell types. BUSseq is able to simultaneously correct batch effects, clusters cell types, and takes care of the count data nature, the overdispersion, the dropout events, and the cell-specific sequencing depth of scRNA-seq data. After correcting the batch effects with BUSseq, the corrected value can be used for downstream analysis as if all cells were sequenced in a single batch. BUSseq can integrate read count matrices obtained from different scRNA-seq platforms and allow cell types to be measured in some but not all of the batches as long as the experimental design fulfills the conditions listed in our manuscript.'
+
