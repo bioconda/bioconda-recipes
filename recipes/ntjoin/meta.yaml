@@ -1,4 +1,4 @@
-{% set version = "1.0.3" %}
+{% set version = "1.1.0" %}
 
 package:
   name: ntjoin
@@ -6,35 +6,40 @@ package:
 
 source:
   url: https://github.com/bcgsc/ntJoin/releases/download/v{{ version }}/ntJoin-{{ version }}.tar.gz 
-  sha256: 61b5afce7c38e9763777dc1ca5db3944eb76c64c22d2baf61c5f0383a3a74a9c 
+  sha256: 727d8786ecf7717f3ee3922f667ef99fc19eea67d5e0f3f27ddf2fe9eac1b862 
 
 build:
   number: 0
-  skip: True  # [py2k]
+  skip: True  # [py<38]
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - llvm-openmp # [osx]
   host:
+    - cmake
+    - ninja
+    - meson
+    - make
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
     - python
     - pip
     - zlib
-    - llvm-openmp # [osx]
   run:
     - python-igraph
     - pybedtools
     - pymannkendall
     - bedtools >=2.21.0
-    - samtools
+    - pysam >=0.16.0
+    - samtools >=1.10
     - python
     - zlib
-    - llvm-openmp # [osx]
     - make
 
 test:
   commands:
     - ntJoin help 
+    - samtools --help
 
 about:
   home: http://www.bcgsc.ca/platform/bioinfo/software/ntjoin

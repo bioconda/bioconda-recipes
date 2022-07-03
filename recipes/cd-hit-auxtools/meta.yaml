@@ -1,5 +1,5 @@
-{% set version = "4.6.8" %}
-{% set sha256 = "37d685e4aa849314401805fe4d4db707e1d06070368475e313d6f3cb8fb65949" %}
+{% set version = "4.8.1" %}
+{% set sha256 = "f8bc3cdd7aebb432fcd35eed0093e7a6413f1e36bbd2a837ebc06e57cdb20b70" %}
 
 package:
   name: cd-hit-auxtools
@@ -8,19 +8,22 @@ package:
 source:
   url: https://github.com/weizhongli/cdhit/archive/V{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-Append-compiler-linker-flags.patch
 
 build:
-  number: 1
+  number: 2
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
-
+  host:
   run:
 
 test:
   commands:
-    - cd-hit-dup --help | grep 'Usage' > /dev/null
+    - cd-hit-dup --help | grep -qF 'Usage'
 
 about:
   home: https://github.com/weizhongli/cdhit
