@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="cnvGSAdata_1.24.0.tar.gz"
+FN="cnvGSAdata_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/cnvGSAdata_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/cnvGSAdata_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-cnvgsadata/bioconductor-cnvgsadata_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/cnvGSAdata_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/cnvGSAdata_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cnvgsadata/bioconductor-cnvgsadata_1.30.0_src_all.tar.gz"
 )
-MD5="4463b277af43cfa1ffc96d38e6751fe4"
+MD5="3b9cdc1e191523d5ed50cfcd51c2473c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

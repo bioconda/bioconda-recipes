@@ -1,0 +1,72 @@
+{% set version = "0.9.23b" %}
+
+package:
+  name: fanc
+  version: {{ version }}
+
+source:
+  # url: https://pypi.io/packages/source/f/fanc/fanc-{{ version }}.tar.gz
+  # sha256: 4569dcf9d8362e2c173fb78cc189fa2d0b10dc2824c986da2e8808cc4038eac0
+  # Use GitHub source for the included LICENSE file.
+  url: https://github.com/vaquerizaslab/fanc/archive/e5ce8dd7e67053480e6e078d89b6c73946fdae33.zip
+  sha256: 00151aed5e713e3879858452943edb99d63e4f17fd660493908d7d0a033ceeba
+
+build:
+  number: 2
+  skip: True  # [py!=37]
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vv
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - pip
+    - python
+    - cython
+  run:
+    - biopython
+    - cooler >=0.8.0
+    - future
+    - genomic_regions >=0.0.7
+    - gridmap >=0.14.0
+    - h5py
+    - intervaltree
+    - matplotlib-base
+    - msgpack-python
+    - msgpack-numpy >=0.4.4.3
+    - numpy >=1.16.0
+    - pandas >=0.15.0
+    - pillow
+    - progressbar2
+    - pybedtools
+    - pybigwig
+    - pysam >=0.9.1
+    - python
+    - pyyaml >=5.1
+    - scikit-image >=0.15.0
+    - scikit-learn
+    - scipy
+    - seaborn
+    - pytables >=3.5.1
+
+test:
+  imports:
+    - fanc
+    - fanc.architecture
+    - fanc.compatibility
+    - fanc.plotting
+  commands:
+    - fanc -V
+    - fancplot -V
+
+about:
+  home: https://github.com/vaquerizaslab/fanc
+  license: ACADEMIC PUBLIC LICENSE (FAN-C)
+  license_file: LICENSE
+  summary: "Framework for the ANalysis of C-data."
+  doc_url: https://vaquerizaslab.github.io/fanc
+  dev_url: https://github.com/vaquerizaslab/fanc
+
+extra:
+  recipe-maintainers:
+    - kaukrise

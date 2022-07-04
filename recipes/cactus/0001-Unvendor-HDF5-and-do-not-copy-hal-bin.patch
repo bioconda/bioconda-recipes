@@ -1,0 +1,301 @@
+--- Makefile
++++ Makefile
+@@ -69,17 +69,14 @@
+ 
+ ${halAppendCactusSubtree}: ${h5c++} halRule all.api
+ 	@echo "Building dependency cactus2hal"
+ 	@cd ${PWD}/submodules/cactus2hal && (PATH=${PWD}/submodules/hdf5/bin:$(PATH) output=`make 2>&1` || (echo "$$output"; exit 1))
+ 
+ hdf5Rule: ${h5c++}
+ 
+ ${h5c++}:
+-	@echo "Building dependency hdf5"
+-	@cd ${PWD}/submodules/hdf5 && (output=`(./configure --prefix=$(PWD)/submodules/hdf5 --enable-cxx && CFLAGS=-std=c99 AM_MAKEFLAGS=-e make -j4 -e && make install) 2>&1` || (echo "$$output"; exit 1))
+-
+ halRule: ${h5c++} ${libSonLib}
+ 	@echo "Building dependency hal"
+ 	@cd ${PWD}/submodules/hal && (PATH=${PWD}/submodules/hdf5/bin:$(PATH) output=`make 2>&1` || (echo "$$output"; exit 1))
+ 
+ ucscClean: selfClean
+ 	cd ${PWD}/submodules/sonLib && make clean
+--- submodules/hal/liftover/Makefile
++++ submodules/hal/liftover/Makefile
+@@ -25,10 +25,10 @@
+ 	mv halLiftover.a ${libPath}/
+ 
+ ${binPath}/halLiftover : impl/halLiftoverMain.cpp ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halLiftover impl/halLiftoverMain.cpp ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halLiftover impl/halLiftoverMain.cpp ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halWiggleLiftover : impl/halWiggleLiftoverMain.cpp ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halWiggleLiftover impl/halWiggleLiftoverMain.cpp ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halWiggleLiftover impl/halWiggleLiftoverMain.cpp ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halLiftoverTests : ${libTestSources} ${libTestHeaders} ${libTestsCommon} ${libTestsHeadersCommon} ${libSources} ${libHeaders} ${libInternalHeaders} ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I tests -I ../api/tests -o ${binPath}/halLiftoverTests  ${libTestSources} ${libTestsCommon}  ${libPath}/halLib.a ${libPath}/halLiftover.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I tests -I ../api/tests -o ${binPath}/halLiftoverTests  ${libTestSources} ${libTestsCommon}  ${libPath}/halLib.a ${libPath}/halLiftover.a ${basicLibs} $(LDLIBS)
+--- submodules/hal/modify/Makefile
++++ submodules/hal/modify/Makefile
+@@ -22,19 +22,19 @@
+ 	rm -f ${targets} ${phastTargets} ./*.o
+ 
+ ${binPath}/halRemoveGenome: halRemoveGenome.cpp markAncestors.o ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I ${libPath} -o ${binPath}/halRemoveGenome halRemoveGenome.cpp markAncestors.o ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I ${libPath} -o ${binPath}/halRemoveGenome halRemoveGenome.cpp markAncestors.o ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halAddToBranch: halAddToBranch.cpp markAncestors.o ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I ${libPath} -o ${binPath}/halAddToBranch halAddToBranch.cpp markAncestors.o ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I ${libPath} -o ${binPath}/halAddToBranch halAddToBranch.cpp markAncestors.o ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halReplaceGenome: halReplaceGenome.cpp markAncestors.o ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I ${libPath} -o ${binPath}/halReplaceGenome halReplaceGenome.cpp markAncestors.o ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I ${libPath} -o ${binPath}/halReplaceGenome halReplaceGenome.cpp markAncestors.o ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halAppendSubtree: halAppendSubtree.cpp markAncestors.o ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I ${libPath} -o ${binPath}/halAppendSubtree halAppendSubtree.cpp markAncestors.o ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I ${libPath} -o ${binPath}/halAppendSubtree halAppendSubtree.cpp markAncestors.o ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/findRegionsExclusivelyInGroup: findRegionsExclusivelyInGroup.cpp ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I ${libPath} -o ${binPath}/findRegionsExclusivelyInGroup findRegionsExclusivelyInGroup.cpp ${libPath}/halLib.a ${libPath}/halLiftover.a ${basicLibs}
++	${cpp} ${cppflags} -I ${libPath} -o ${binPath}/findRegionsExclusivelyInGroup findRegionsExclusivelyInGroup.cpp ${libPath}/halLib.a ${libPath}/halLiftover.a ${basicLibs} $(LDLIBS)
+ 
+ ancestorsMLBed.o: ancestorsMLBed.cpp
+ 	${cpp} ${cppflags} -I ${libPath} ${phastCflags} -c $< -o $@ ${basicLibs} ${libPath}/halLib.a
+@@ -43,29 +43,29 @@
+ 	${cpp} ${cppflags} -I ${libPath} ${phastCflags} -c $< -o $@ ${basicLibs} ${libPath}/halLib.a
+ 
+ ${binPath}/ancestorsML: ancestorsMLMain.cpp ancestorsML.o ancestorsMLBed.o ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I ${libPath} ${phastCflags} -o ${binPath}/ancestorsML ancestorsMLMain.cpp ${basicLibs} ancestorsML.o ancestorsMLBed.o ${libPath}/halLib.a ${libPath}/halLiftover.a ${phastLinkflags}
++	${cpp} ${cppflags} -I ${libPath} ${phastCflags} -o ${binPath}/ancestorsML ancestorsMLMain.cpp ${basicLibs} ancestorsML.o ancestorsMLBed.o ${libPath}/halLib.a ${libPath}/halLiftover.a ${phastLinkflags} $(LDLIBS)
+ 
+ ${binPath}/ancestorsMLMP.py: ancestorsMLMP.py
+ 	cp $< $@
+ 	chmod +x $@
+ 
+ ${binPath}/halAncestorsMLTest: ancestorsML.o ancestorsMLTest.cpp ancestorsMLBed.o ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I ${libPath} ${phastCflags} -o $@ ancestorsMLTest.cpp ${basicLibs} ancestorsML.o ${libPath}/halLib.a ${libPath}/halLiftover.a ${phastLinkflags}
++	${cpp} ${cppflags} -I ${libPath} ${phastCflags} -o $@ ancestorsMLTest.cpp ${basicLibs} ancestorsML.o ${libPath}/halLib.a ${libPath}/halLiftover.a ${phastLinkflags} $(LDLIBS)
+ 
+ ${binPath}/halUpdateBranchLengths: halUpdateBranchLengths.cpp ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I ${libPath} -o ${binPath}/halUpdateBranchLengths halUpdateBranchLengths.cpp ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I ${libPath} -o ${binPath}/halUpdateBranchLengths halUpdateBranchLengths.cpp ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halWriteNucleotides: halWriteNucleotides.cpp ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I ${libPath} -o ${binPath}/halWriteNucleotides halWriteNucleotides.cpp ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I ${libPath} -o ${binPath}/halWriteNucleotides halWriteNucleotides.cpp ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halSetMetadata: halSetMetadata.cpp ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I ${libPath} -o ${binPath}/halSetMetadata halSetMetadata.cpp ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I ${libPath} -o ${binPath}/halSetMetadata halSetMetadata.cpp ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halRenameGenomes: halRenameGenomes.cpp renameFile.o ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I ${libPath} -o $@ $^
++	${cpp} ${cppflags} -I ${libPath} -o $@ $^ $(LDLIBS)
+ 
+ ${binPath}/halRenameSequences: halRenameSequences.cpp renameFile.o ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I ${libPath} -o $@ $^
++	${cpp} ${cppflags} -I ${libPath} -o $@ $^ $(LDLIBS)
+ 
+ renameFile.o: renameFile.cpp
+ 	${cpp} ${cppflags} -I ${libPath} -c -o $@ $<
+--- submodules/hal/mutations/Makefile
++++ submodules/hal/mutations/Makefile
+@@ -23,17 +23,17 @@
+ 	mv halMutations.a ${libPath}/
+ 
+ ${binPath}/halBranchMutations : impl/halBranchMutationsMain.cpp ${libPath}/halMutations.a ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halBranchMutations impl/halBranchMutationsMain.cpp ${libPath}/halMutations.a ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halBranchMutations impl/halBranchMutationsMain.cpp ${libPath}/halMutations.a ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halSummarizeMutations : impl/halSummarizeMutationsMain.cpp ${libPath}/halMutations.a ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halSummarizeMutations impl/halSummarizeMutationsMain.cpp ${libPath}/halMutations.a ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halSummarizeMutations impl/halSummarizeMutationsMain.cpp ${libPath}/halMutations.a ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halTreeMutations.py : impl/halTreeMutations.py
+ 	cp impl/halTreeMutations.py ${binPath}
+ 	chmod u+x ${binPath}/halTreeMutations.py
+ 
+ ${binPath}/halSnps : impl/halSnps.cpp ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halSnps impl/halSnps.cpp ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halSnps impl/halSnps.cpp ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halIndels : impl/halIndels.cpp ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halIndels impl/halIndels.cpp ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halIndels impl/halIndels.cpp ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+--- submodules/hal/randgen/Makefile
++++ submodules/hal/randgen/Makefile
+@@ -10,7 +10,7 @@
+ 	rm -f ${binPath}/halRandGen ${binPath}/halTestGen
+ 
+ ${binPath}/halRandGen : Makefile ${libRandSources} ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I ${rootPath}/api/tests -o ${binPath}/halRandGen ${libRandSources} ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I ${rootPath}/api/tests -o ${binPath}/halRandGen ${libRandSources} ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halTestGen : Makefile ${libTestGenSources} ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I ${rootPath}/api/tests -o ${binPath}/halTestGen ${libTestGenSources} ${libPath}/halLib.a ${basicLibs}
+\ No newline at end of file
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I ${rootPath}/api/tests -o ${binPath}/halTestGen ${libTestGenSources} ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+--- submodules/hal/lod/Makefile
++++ submodules/hal/lod/Makefile
+@@ -20,7 +20,7 @@
+ 	mv halLod.a ${libPath}/
+ 
+ ${binPath}/halLodExtract : impl/halLodExtractMain.cpp ${libPath}/halLod.a ${libPath}/halLod.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halLodExtract impl/halLodExtractMain.cpp ${libPath}/halLod.a ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halLodExtract impl/halLodExtractMain.cpp ${libPath}/halLod.a ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halLodInterpolate.py : halLodInterpolate.py
+ 	cp halLodInterpolate.py ${binPath}/halLodInterpolate.py
+--- submodules/hal/api/Makefile
++++ submodules/hal/api/Makefile
+@@ -27,7 +27,7 @@
+ 	mv halLib.a ${libPath}/
+ 
+ ${binPath}/halApiTests : ${libTests} ${libTestsHeaders} ${libSources} ${libHeaders} ${libInternalHeaders} ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halApiTests ${libTests} ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halApiTests ${libTests} ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halHdf5Tests : ${libHdf5Tests} ${libHdf5TestsHeaders} ${libSources} ${libHeaders} ${libInternalHeaders} ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I hdf5_impl -I ${libPath} -I impl -I tests -o ${binPath}/halHdf5Tests ${libHdf5Tests} ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I hdf5_impl -I ${libPath} -I impl -I tests -o ${binPath}/halHdf5Tests ${libHdf5Tests} ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+--- submodules/hal/validate/Makefile
++++ submodules/hal/validate/Makefile
+@@ -9,5 +9,5 @@
+ 	rm -f ${binPath}/halValidate
+ 
+ ${binPath}/halValidate : ${libSources} ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I ${rootPath}/api/tests -o ${binPath}/halValidate ${libSources} ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I ${rootPath}/api/tests -o ${binPath}/halValidate ${libSources} ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+--- submodules/hal/stats/Makefile
++++ submodules/hal/stats/Makefile
+@@ -20,7 +20,7 @@
+ 	mv halStats.a ${libPath}/
+ 
+ ${binPath}/halStats : impl/halStatsMain.cpp ${libPath}/halStats.a ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halStats impl/halStatsMain.cpp ${libPath}/halStats.a ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halStats impl/halStatsMain.cpp ${libPath}/halStats.a ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halCoverage : impl/halCoverage.cpp ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halCoverage impl/halCoverage.cpp ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halCoverage impl/halCoverage.cpp ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+--- submodules/hal/alignmentDepth/Makefile
++++ submodules/hal/alignmentDepth/Makefile
+@@ -10,5 +10,5 @@
+ 
+ ${binPath}/halAlignmentDepth : ${libSources} ${libPath}/halLib.a ${basicLibsDependencies}
+ 	rm -f ${binPath}/halAlignability
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I ${rootPath}/api/tests -o ${binPath}/halAlignmentDepth ${libSources} ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I ${rootPath}/api/tests -o ${binPath}/halAlignmentDepth ${libSources} ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+--- submodules/hal/fasta/Makefile
++++ submodules/hal/fasta/Makefile
+@@ -9,5 +9,5 @@
+ 	rm -f ${binPath}/hal2fasta
+ 
+ ${binPath}/hal2fasta : ${libSources} ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I ${rootPath}/api/tests -o ${binPath}/hal2fasta ${libSources} ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I ${rootPath}/api/tests -o ${binPath}/hal2fasta ${libSources} ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+--- submodules/hal/chain/Makefile
++++ submodules/hal/chain/Makefile
+@@ -27,24 +27,24 @@
+ 	mv halChain.a ${libPath}/
+ 
+ ${binPath}/hal2chain : impl/hal2chain.cpp ${libPath}/halMaf.a ${libPath}/halChain.a ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/hal2chain impl/hal2chain.cpp ${libPath}/halMaf.a ${libPath}/halChain.a ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/hal2chain impl/hal2chain.cpp ${libPath}/halMaf.a ${libPath}/halChain.a ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ test/blockVizTest: test/blockVizTest.c ${libPath}/halChain.a ${libPath}/halLod.a ${libPath}/halMaf.a ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLib\
+ sDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o test/blockVizTest test/blockVizTest.c ${libPath}/halChain.a ${libPath}/halLod.a ${libPath}/halMaf.a ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o test/blockVizTest test/blockVizTest.c ${libPath}/halChain.a ${libPath}/halLod.a ${libPath}/halMaf.a ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ test/blockVizMaf: test/blockVizMaf.c ${libPath}/halChain.a ${libPath}/halLod.a ${libPath}/halMaf.a ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLib\
+ sDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o test/blockVizMaf test/blockVizMaf.c ${libPath}/halChain.a ${libPath}/halLod.a ${libPath}/halMaf.a ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o test/blockVizMaf test/blockVizMaf.c ${libPath}/halChain.a ${libPath}/halLod.a ${libPath}/halMaf.a ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ test/blockVizBed: test/blockVizBed.c ${libPath}/halChain.a ${libPath}/halLod.a ${libPath}/halMaf.a ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLib\
+ sDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o test/blockVizBed test/blockVizBed.c ${libPath}/halChain.a ${libPath}/halLod.a ${libPath}/halMaf.a ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o test/blockVizBed test/blockVizBed.c ${libPath}/halChain.a ${libPath}/halLod.a ${libPath}/halMaf.a ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ test/blockVizTime: test/blockVizTime.c ${libPath}/halChain.a ${libPath}/halLod.a ${libPath}/halMaf.a ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLib\
+ sDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o test/blockVizTime test/blockVizTime.c ${libPath}/halChain.a ${libPath}/halLod.a ${libPath}/halMaf.a ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o test/blockVizTime test/blockVizTime.c ${libPath}/halChain.a ${libPath}/halLod.a ${libPath}/halMaf.a ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halChainTests : ${libTests} ${libTestsHeaders} ${libTestsCommon} ${libTestsHeadersCommon} ${libSources} ${libHeaders} ${libInternalHeaders} ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I tests -I ../api/tests -o ${binPath}/halChainTests ${libHalTests} ${libTests} ${libPath}/halLib.a ${libPath}/halMaf.a ${libPath}/halChain.a ${libPath}/halLiftover.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I tests -I ../api/tests -o ${binPath}/halChainTests ${libHalTests} ${libTests} ${libPath}/halLib.a ${libPath}/halMaf.a ${libPath}/halChain.a ${libPath}/halLiftover.a ${basicLibs} $(LDLIBS)
+ 
+--- submodules/hal/synteny/Makefile
++++ submodules/hal/synteny/Makefile
+@@ -10,7 +10,7 @@
+ all : ${binPath}/halSynteny    
+ 
+ ${binPath}/halSynteny : impl/main.cpp  ${libPath}/halLib.a  ${libPath}/halLiftover.a  ${basicLibsDependencies}
+-	${cpp} ${cppflags} -std=c++11 -I${sonLibPath} -I${rootPath}/liftover/inc -I${rootPath}/api/inc -Iinc -Iimpl impl/main.cpp ${libPath}/halLib.a ${libPath}/halLiftover.a  ${sonLibPath}/sonLib.a -o ${binPath}/halSynteny
++	${cpp} ${cppflags} -std=c++11 -I${sonLibPath} -I${rootPath}/liftover/inc -I${rootPath}/api/inc -Iinc -Iimpl impl/main.cpp ${libPath}/halLib.a ${libPath}/halLiftover.a  ${sonLibPath}/sonLib.a -o ${binPath}/halSynteny $(LDLIBS)
+ 
+ clean:
+ 	rm -f ${binPath}/halSynteny
+--- submodules/hal/extract/Makefile
++++ submodules/hal/extract/Makefile
+@@ -12,19 +12,19 @@
+ 	rm -f ${binPath}/halExtract ${binPath}/halAlignedExtract ${binPath}/halMaskExtract ${binPath}/hal4dExtract
+ 
+ ${binPath}/halExtract : impl/halExtract.cpp ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I ${rootPath}/api/tests -o ${binPath}/halExtract impl/halExtract.cpp ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I ${rootPath}/api/tests -o ${binPath}/halExtract impl/halExtract.cpp ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halAlignedExtract :impl/halAlignedExtract.cpp ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I ${rootPath}/api/tests -o ${binPath}/halAlignedExtract impl/halAlignedExtract.cpp ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I ${rootPath}/api/tests -o ${binPath}/halAlignedExtract impl/halAlignedExtract.cpp ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halMaskExtract : impl/halMaskExtractMain.cpp  impl/halMaskExtractor.cpp inc/halMaskExtractor.h ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halMaskExtract impl/halMaskExtractMain.cpp  impl/halMaskExtractor.cpp ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/halMaskExtract impl/halMaskExtractMain.cpp  impl/halMaskExtractor.cpp ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/hal4dExtract : impl/hal4dExtractMain.cpp  impl/hal4dExtract.cpp inc/hal4dExtract.h ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I tests -o ${binPath}/hal4dExtract impl/hal4dExtractMain.cpp  impl/hal4dExtract.cpp ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I tests -o ${binPath}/hal4dExtract impl/hal4dExtractMain.cpp  impl/hal4dExtract.cpp ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halSingleCopyRegionsExtract : impl/halSingleCopyRegionsExtract.cpp ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I tests -o ${binPath}/halSingleCopyRegionsExtract impl/halSingleCopyRegionsExtract.cpp ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I tests -o ${binPath}/halSingleCopyRegionsExtract impl/halSingleCopyRegionsExtract.cpp ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/hal4dExtractTest : impl/hal4dExtract.cpp tests/hal4dExtractTest.cpp ${libTestSources} ${libTestHeaders} ${libTestsCommon} ${libTestsHeadersCommon} ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I tests -I ../api/tests -o ${binPath}/hal4dExtractTest impl/hal4dExtract.cpp ${libTestsCommon} tests/hal4dExtractTest.cpp ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I tests -I ../api/tests -o ${binPath}/hal4dExtractTest impl/hal4dExtract.cpp ${libTestsCommon} tests/hal4dExtractTest.cpp ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+--- submodules/hal/maf/Makefile
++++ submodules/hal/maf/Makefile
+@@ -27,13 +27,13 @@
+ 	mv halMaf.a ${libPath}/
+ 
+ ${binPath}/hal2maf : impl/hal2maf.cpp ${libPath}/halMaf.a ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/hal2maf impl/hal2maf.cpp ${libPath}/halMaf.a ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/hal2maf impl/hal2maf.cpp ${libPath}/halMaf.a ${libPath}/halLiftover.a ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/maf2hal : impl/maf2hal.cpp ${libPath}/halMaf.a ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/maf2hal impl/maf2hal.cpp ${libPath}/halMaf.a ${libPath}/halLib.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I impl -I tests -o ${binPath}/maf2hal impl/maf2hal.cpp ${libPath}/halMaf.a ${libPath}/halLib.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/halMafTests : ${libTests} ${libTestsHeaders} ${libTestsCommon} ${libTestsHeadersCommon} ${libSources} ${libHeaders} ${libInternalHeaders} ${libPath}/halLib.a ${basicLibsDependencies}
+-	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I tests -I ../api/tests -o ${binPath}/halMafTests ${libHalTests} ${libTests} ${libPath}/halLib.a ${libPath}/halMaf.a ${basicLibs}
++	${cpp} ${cppflags} -I inc -I impl -I ${libPath} -I tests -I ../api/tests -o ${binPath}/halMafTests ${libHalTests} ${libTests} ${libPath}/halLib.a ${libPath}/halMaf.a ${basicLibs} $(LDLIBS)
+ 
+ ${binPath}/hal2mafMP.py : hal2mafMP.py
+ 	cp hal2mafMP.py ${binPath}/hal2mafMP.py
+--- submodules/cactus2hal/Makefile
++++ submodules/cactus2hal/Makefile
+@@ -23,7 +23,7 @@
+ 	mv cactus2halLib.a ${libPath}/
+ 
+ ${binPath}/halAppendCactusSubtree : ${libPath}/cactus2halLib.a src/halAppendCactusSubtree.cpp
+-	${cpp} ${cppflags} -I inc -I src -o ${binPath}/halAppendCactusSubtree src/halAppendCactusSubtree.cpp ${libPath}/cactus2halLib.a ${basicLibs} 
++	${cpp} ${cppflags} -I inc -I src -o ${binPath}/halAppendCactusSubtree src/halAppendCactusSubtree.cpp ${libPath}/cactus2halLib.a ${basicLibs} $(LDLIBS)
+ 
+ #${binPath}/importCactusTests :  ${libPath}/cactus2halLib.a ${libTests} ${libTestsHeaders} 
+ #	${cpp} ${cppflags} -I inc -I src -I tests -o ${binPath}/importCactusTests ${libTests} ${libPath}/cactus2halLib.a ${basicLibs}

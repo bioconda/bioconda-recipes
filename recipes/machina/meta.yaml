@@ -1,0 +1,56 @@
+{% set name = "machina" %}
+{% set version = "1.2" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  - url: https://github.com/raphael-group/{{ name }}/archive/v{{ version }}.zip
+    sha256: 2ba9116659140a28b070a5878f1956fdca2a1df5200d69c483200a22fe908350
+
+  - url: https://packages.gurobi.com/9.0/gurobi9.0.2_linux64.tar.gz  # [not osx]
+    sha256: 6527581aef11c3e425c52993d108861ef53ec13971d9931861bf9c88d9d111f3  # [not osx]
+    folder: gurobi902  # [not osx]
+
+  - url: https://packages.gurobi.com/9.0/gurobi9.0.2_mac64.pkg  # [osx]
+    sha256: 1d58586f9a33ac7035f51f6a04707248218f70bddbec78cb83f11c986ac652cd  # [osx]
+
+build:
+  number: 4
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - cmake>=3.9
+    - python >=3.8
+  host:
+    - boost-cpp
+    - lemon
+    - zlib
+  run:
+    - boost-cpp
+    - glpk
+
+test:
+  commands:
+    # All Machina commands support a --help option and return 1
+    - $PREFIX/bin/cluster --help || [[ "$?" == 1 ]]
+    - $PREFIX/bin/generatemigrationtrees --help || [[ "$?" == 1 ]]
+    - $PREFIX/bin/generatemutationtrees --help || [[ "$?" == 1 ]]
+    - $PREFIX/bin/pmh --help || [[ "$?" == 1 ]]
+    - $PREFIX/bin/pmh_tr --help || [[ "$?" == 1 ]]
+    - $PREFIX/bin/pmh_ti --help || [[ "$?" == 1 ]]
+    - $PREFIX/bin/pmh_sankoff --help || [[ "$?" == 1 ]]
+    - $PREFIX/bin/ms --help || [[ "$?" == 1 ]]
+    - $PREFIX/bin/visualizeclonetree --help || [[ "$?" == 1 ]]
+    - $PREFIX/bin/visualizemigrationgraph --help || [[ "$?" == 1 ]]
+
+about:
+  home: https://github.com/raphael-group/machina
+  license: BSD-3
+  summary: "Metastatic And Clonal History INtegrative Analysis"
+  description: |
+    MACHINA is a computational framework for inferring migration patterns
+    between a primary tumor and metastases using DNA sequencing data. 

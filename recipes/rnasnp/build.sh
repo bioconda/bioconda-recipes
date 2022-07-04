@@ -1,15 +1,7 @@
 #!/bin/bash
+# Set default for RNASNPPATH env var so we don't have to rely on activate scripts.
+sed -Ei.bak "s|^(\s*if\(rnasnppath==NULL\)).*|\1 rnasnppath = \"${PREFIX}\";|" Progs/RNAsnp.c
 ./configure --prefix=$PREFIX
 make
 make install
 cp -R lib/distParam $PREFIX/lib
-
-#Add RNASNPPATH to the enviroment variables
-ACTIVATE_DIR=$PREFIX/etc/conda/activate.d
-DEACTIVATE_DIR=$PREFIX/etc/conda/deactivate.d
-mkdir -p $ACTIVATE_DIR
-mkdir -p $DEACTIVATE_DIR
-
-cp $RECIPE_DIR/scripts/activate.sh $ACTIVATE_DIR/rnasnp-activate.sh
-cp $RECIPE_DIR/scripts/deactivate.sh $DEACTIVATE_DIR/rnasnp-deactivate.sh
-## END BUILD
