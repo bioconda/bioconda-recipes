@@ -20,6 +20,6 @@ cat src/CMakeLists.txt
 mkdir build
 cd build
 
-cmake -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_INSTALL_PREFIX:PATH=${PREFIX} ../src
+cmake ../src
 
-make CC="${CC}" CXX="${CXX}" LDFLAGS="${LDFLAGS}" -lhts -lboost_iostreams -lboost_system -lboost_thread -lboost_filesystem
+make CC="${CC}" CXX="${CXX}"
