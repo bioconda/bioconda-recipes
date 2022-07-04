@@ -4,6 +4,7 @@
 # (unlike other platforms, the latter does not automatically pull in libtinfo)
 
 export CFLAGS="-I$PREFIX/include"
+export CXXFLAGS="${CFLAGS}"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 # export CPATH=${BUILD_PREFIX}/bin
@@ -20,6 +21,18 @@ cat src/CMakeLists.txt
 mkdir build
 cd build
 
-cmake ../src
+# cmake ../src
 
-make CC="${CC}" CXX="${CXX}"
+# make CC="${CC}" CXX="${CXX}"
+
+mkdir build
+cd build
+cmake ../src \
+    -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+    -DCMAKE_PREFIX_PATH=${PREFIX} \
+    \
+    -DCMAKE_CXX_LINK_FLAGS="${LDFLAGS}" \
+    -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS}"
+
+make -lhts
