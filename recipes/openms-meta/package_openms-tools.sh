@@ -1,3 +1,2 @@
 #!/bin/bash
-mkdir -p $PREFIX/bin
-cp -R build/bin/* $PREFIX/bin/
+cmake -DCOMPONENT="Applications" -P build/cmake_install.cmake

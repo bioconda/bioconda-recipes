@@ -1,11 +1,105 @@
---- lib/GI.pm	2018-06-29 20:53:50.113085044 +0200
-+++ lib/GI.pm	2018-06-29 21:04:05.041345063 +0200
-@@ -4355,7 +4355,7 @@
+--- a/lib/GI.pm
++++ b/lib/GI.pm
+@@ -3560,6 +3560,7 @@ sub repeatmask {
+    my $RepeatMasker = shift;
+    my $entry        = shift; #rmlib
+    my $cpus         = shift;
++   my $out_base     = shift;
+    my $LOG = shift;
+ 
+    #peal off label and build names for files to use and copy
+@@ -3580,6 +3581,11 @@ sub repeatmask {
+    
+    $chunk->write_file($file_name);
+    
++   # ensure first RepeatMasker invocation does not run concurrently
++   if (!mkdir("$out_base/repeatmasker.first.start")) {
++       sleep 5 until (-d "$out_base/repeatmasker.first.done");
++   }
++
+    runRepeatMasker($file_name, 
+ 		   $model_org, 
+ 		   $the_void,
+@@ -3588,6 +3594,7 @@ sub repeatmask {
+ 		   $rmlib,
+ 		   $cpus); # -no_low
+ 
++   mkdir("$out_base/repeatmasker.first.done");
+    $chunk->erase_fasta_file();
+    
+    my $rm_chunk_keepers = Widget::RepeatMasker::parse($o_file, 
+@@ -3845,7 +3852,7 @@ sub set_defaults {
+       my @all_alts = grep {-f $_ && -x $_} (File::Glob::bsd_glob("{$FindBin::RealBin/../exe/*/*,$FindBin::RealBin/../exe/*/bin/*}"));
+       foreach my $exe (@exes) {
+ 	  my @alts = grep {/\/$exe$/} @all_alts;
+-	  my $loc = shift @alts || File::Which::which($exe) || '';
++	  my $loc = shift @alts || File::Which::which($exe eq 'evm' ? 'evidence_modeler.pl' : $exe) || '';
+ 	  if(! $loc && $exe eq 'blasta'){ #find blasta using blastx
+ 	      ($loc) = (map {Cwd::abs_path($_)} grep {Cwd::abs_path($_) =~ /blasta$/} (File::Which::where('blastx')));
+ 	  }
+@@ -4950,33 +4957,14 @@ sub load_control_files {
+    confess "ERROR: Could not build output directory $CTL_OPT{out_base}\n"
          if(! -d $CTL_OPT{out_base});
  
-    #--make sure repbase is installed
+-   #--make sure repbase is installed
 -   if($CTL_OPT{model_org}){
-+   if($CTL_OPT{model_org} and !defined($ENV{'REPEATMASKER_LIB_DIR'})){
++   #--make sure DFam is installed
++   if($CTL_OPT{model_org} and !defined($ENV{'LIBDIR'})){
         my $exe = Cwd::abs_path($CTL_OPT{RepeatMasker});
         my ($lib) = $exe =~ /(.*\/)RepeatMasker$/;
-        die "ERROR: Could not determine if RepBase is installed\n" if(! $lib);
+-       die "ERROR: Could not determine if RepBase is installed\n" if(! $lib);
++       die "ERROR: Could not determine if DFam is installed\n" if(! $lib);
+ 
+-       $lib .= "Libraries/RepeatMaskerLib.embl";
+-       die "ERROR: Could not determine if RepBase is installed\n" if(! -f $lib);
+-
+-       open(my $IN, "< $lib");
+-       my $rb_flag;
+-       for(my $i = 0; $i < 20; $i++){
+-           my $line = <$IN>;
+-           if($line =~ /RELEASE \d+(\-min)?\;/){
+-	       $rb_flag = ($1 && $1 eq '-min') ? 0 : 1;
+-	       last;
+-           }
+-       }
+-       close($IN);
+-
+-       if(! $rb_flag){
+-	   warn "WARNING: RepBase is not installed for RepeatMasker. This limits\n".
+-	       "RepeatMasker's functionality and makes the model_org option in the\n".
+-	       "control files virtually meaningless. MAKER will now reconfigure\n".
+-	       "for simple repeat masking only.\n";
+-	   $CTL_OPT{model_org} = 'simple';
+-       }
++       $lib .= "../share/RepeatMasker/Libraries/RepeatMaskerLib.h5";
++       die "ERROR: Could not determine if DFam is installed\n" if(! -f $lib);
+    }
+ 
+    #--set an initialization lock so steps are locked to a single process
+@@ -5196,7 +5184,7 @@ sub generate_control_files {
+        print OUT "protein_gff=$O{protein_gff}  #aligned protein homology evidence from an external GFF3 file\n";
+        print OUT "\n";
+        print OUT "#-----Repeat Masking (leave values blank to skip repeat masking)\n";
+-       print OUT "model_org=$O{model_org} #select a model organism for RepBase masking in RepeatMasker\n";
++       print OUT "model_org=$O{model_org} #select a model organism for DFam masking in RepeatMasker\n";
+        print OUT "rmlib=$O{rmlib} #provide an organism specific repeat library in fasta format for RepeatMasker\n";
+        print OUT "repeat_protein=$O{repeat_protein} #provide a fasta file of transposable element proteins for RepeatRunner\n";
+        print OUT "rm_gff=$O{rm_gff} #pre-identified repeat elements from an external GFF3 file\n";
+--- a/lib/Process/MpiChunk.pm
++++ b/lib/Process/MpiChunk.pm
+@@ -774,6 +774,7 @@ sub _go {
+ 						$CTL_OPT{RepeatMasker},
+ 						'',
+ 						$CTL_OPT{cpus},
++						$CTL_OPT{out_base},
+ 						$LOG);
+ 		   push(@$rm_rb_keepers, @$keepers);
+ 	       }
+@@ -792,6 +793,7 @@ sub _go {
+ 						$CTL_OPT{RepeatMasker},
+ 						$db,
+ 						$CTL_OPT{cpus},
++						$CTL_OPT{out_base},
+ 						$LOG);
+ 		   push(@$rm_sp_keepers, @$keepers);
+ 	       }
