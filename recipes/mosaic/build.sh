@@ -18,9 +18,6 @@ export CPATH=${PREFIX}/include
 
 cat src/CMakeLists.txt
 
-mkdir build
-cd build
-
 # cmake ../src
 
 # make CC="${CC}" CXX="${CXX}"
