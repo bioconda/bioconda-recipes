@@ -32,3 +32,5 @@ cmake ../src \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}"
 
 make
+
+# make install
