@@ -33,4 +33,4 @@ cmake ../src \
 
 make
 
-make install
+# make install
