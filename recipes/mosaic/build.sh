@@ -33,4 +33,6 @@ cmake ../src \
 
 make
 
+mkdir -p "$PREFIX"/bin
+cp mosaic "$PREFIX"/bin/mosaic
 # make install
