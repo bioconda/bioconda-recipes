@@ -4,13 +4,14 @@ mkdir -p  "$PREFIX/bin"
 mkdir -p  "$PREFIX/bin/bin"
 
 cd muscle
+sed -i '/bin_PROGRAMS/d' ./libMUSCLE/Makefile.am
 ./autogen.sh
 if [ `uname` == Darwin ]; then
     ./configure --prefix=$PREFIX CXXFLAGS='-fopenmp' --disable-shared 
 else
     ./configure --prefix=$PREFIX CXXFLAGS='-fopenmp'
 fi
-make -j 2
+make -j
 make install
 
 cd ..
