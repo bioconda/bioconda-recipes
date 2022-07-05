@@ -1,5 +1,5 @@
 #!/bin/bash
-./gradlew bam2wig
+./gradlew bamstats04
 
 OUT="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
 mkdir -p $OUT
