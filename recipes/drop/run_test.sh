@@ -1,2 +1,2 @@
 #!/bin/bash
-pytest tests/config/ -vv --durations=5
+#pytest tests/config/ -vv --durations=5
