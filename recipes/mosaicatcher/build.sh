@@ -16,4 +16,4 @@ cmake ../src \
 make
 
 mkdir -p "$PREFIX"/bin
-cp mosaic "$PREFIX"/bin/mosaic
+cp mosaicatcher "$PREFIX"/bin/mosaicatcher
