@@ -1,0 +1,43 @@
+{% set version = "0.2.2" %}
+
+package:
+  name: alignoth
+  version: {{ version }}
+
+build:
+  number: 0
+  # TODO fails to build on osx with
+  # Undefined symbols for architecture x86_64: "_SSLCopyALPNProtocols", referenced from: _sectransp_connect_step2 in libcurl_sys-1f07db570920ba9f.rlib(sectransp.o)
+  skip: true  #[osx]
+
+source:
+  url: https://github.com/koesterlab/alignoth/archive/v{{ version }}.tar.gz
+  sha256: 6f13876ded09776cd6662b9136dfa1adfafd39d4dc4ef218621228dee6388503
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler("cxx") }}
+    - rust >=1.30
+    - clangdev
+    - pkg-config
+    - make
+    - cmake
+  host:
+    - libcblas
+    - libcurl
+    - openssl
+
+test:
+  commands:
+    - alignoth --help
+
+about:
+  home: https://github.com/koesterlab/alignoth
+  license: MIT
+  summary: A tool for creating alignment plots from bam files
+
+extra:
+  recipe-maintainers:
+    - fxwiegand
+    - johanneskoester

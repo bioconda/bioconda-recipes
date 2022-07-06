@@ -14,6 +14,8 @@ if [[ $(uname) != "Linux" ]] ; then
     CXXFLAGS="$CXXFLAGS -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 
+export CXXFLAGS=$(echo "$CXXFLAGS" | sed 's/-std=c++17//g')
+
 # configure
 # '--wrap-mode nofallback' prevents meson from downloading
 # stuff from the internet or using subprojects.
@@ -23,6 +25,7 @@ meson \
   --wrap-mode nofallback \
   --prefix "${PREFIX}" \
   -Dtests=false \
+  -Dbuild-tools=false \
   build .
 
 # build
