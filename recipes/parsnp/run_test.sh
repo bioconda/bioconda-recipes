@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# Run all Parsnp tests
 curl https://github.com/marbl/harvest/raw/master/docs/content/parsnp/mers_examples.tar.gz -L --output mers_examples.tar.gz
 tar -xzvf mers_examples.tar.gz
 parsnp -V 
