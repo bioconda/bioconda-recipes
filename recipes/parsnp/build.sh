@@ -4,11 +4,13 @@ mkdir -p  "$PREFIX/bin"
 mkdir -p  "$PREFIX/bin/bin"
 
 cd muscle
-sed -i '/bin_PROGRAMS/d' ./libMUSCLE/Makefile.am
+
 ./autogen.sh
 if [ `uname` == Darwin ]; then
+    sed -i '' '/bin_PROGRAMS/d' ./libMUSCLE/Makefile.am
     ./configure --prefix=$PREFIX CXXFLAGS='-fopenmp' --disable-shared 
 else
+    sed -i '/bin_PROGRAMS/d' ./libMUSCLE/Makefile.am
     ./configure --prefix=$PREFIX CXXFLAGS='-fopenmp'
 fi
 make -j
