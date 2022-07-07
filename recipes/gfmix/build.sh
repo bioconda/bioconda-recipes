@@ -8,8 +8,9 @@ cp treecns ${PREFIX}/bin
 cp rert ${PREFIX}/bin
 cp alpha_est_mix_rt ${PREFIX}/bin
 
-mkdir -p ${PREFIX}/gfmix-dat
-cp *dat ${PREFIX}/gfmix-dat
+GFMIX_SHARE="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
+mkdir -p ${GFMIX_SHARE}
+cp *dat ${GFMIX_SHARE}/
 
 mkdir -p ${PREFIX}/etc/conda/activate.d
 cat > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.sh <<EOF
@@ -17,7 +18,7 @@ cat > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.sh <<EOF
 
 if [ -d "$HOME/.gfmix " ]; then rm -rf $HOME/.gfmix ; fi
 mkdir -p $HOME/.gfmix 
-cp ${PREFIX}/bin/gfmix-dat/*.dat $HOME/.gfmix 
+cp ${GFMIX_SHARE}/*.dat $HOME/.gfmix 
 EOF
 
 mkdir -p ${PREFIX}/etc/conda/deactivate.d
