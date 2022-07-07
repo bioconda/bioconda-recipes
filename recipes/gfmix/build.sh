@@ -17,14 +17,14 @@ mkdir -p ${PREFIX}/etc/conda/activate.d
 cat > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.sh <<EOF
 #!/bin/bash
 
-if [ -d "$HOME/.gfmix " ]; then rm -rf $HOME/.gfmix ; fi
-mkdir -p $HOME/.gfmix 
-cp ${GFMIX_SHARE}/*.dat $HOME/.gfmix 
+if [ -d "~/.gfmix " ]; then rm -rf ~/.gfmix ; fi
+mkdir -p ~/.gfmix 
+cp ${GFMIX_SHARE}/*.dat ~/.gfmix 
 EOF
 
 mkdir -p ${PREFIX}/etc/conda/deactivate.d
 cat > ${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.sh <<EOF
 #!/bin/bash
 
-if [ -d "$HOME/.gfmix " ]; then rm -rf $HOME/.gfmix ; fi
+if [ -d "~/.gfmix " ]; then rm -rf ~/.gfmix ; fi
 EOF
