@@ -16,7 +16,7 @@ cat > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.sh <<EOF
 #!/bin/bash
 
 if [ -d "$HOME/.gfmix " ]; then rm -Rf $HOME/.gfmix ; fi
-mkdir $HOME/.gfmix 
+mkdir -p $HOME/.gfmix 
 cp ${PREFIX}/bin/*.dat $HOME/.gfmix 
 EOF
 
