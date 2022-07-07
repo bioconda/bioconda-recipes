@@ -7,10 +7,11 @@ cp gfmix ${PREFIX}/bin
 cp treecns ${PREFIX}/bin
 cp rert ${PREFIX}/bin
 cp alpha_est_mix_rt ${PREFIX}/bin
+chmod 755 ${PREFIX}/bin/*
 
 GFMIX_SHARE="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
 mkdir -p ${GFMIX_SHARE}
-cp *dat ${GFMIX_SHARE}/
+cp *.dat ${GFMIX_SHARE}/
 
 mkdir -p ${PREFIX}/etc/conda/activate.d
 cat > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.sh <<EOF
