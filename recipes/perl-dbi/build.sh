@@ -16,4 +16,6 @@ else
     exit 1
 fi
 
-chmod u+rwx $PREFIX/bin/*
+chmod +x $PREFIX/bin/dbiproxy
+chmod +x $PREFIX/bin/dbilogstrip
+chmod +x $PREFIX/bin/dbiprof

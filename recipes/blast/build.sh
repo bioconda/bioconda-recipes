@@ -93,7 +93,9 @@ cd ReleaseMT
 ln -s $BLAST_SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
 
 cd build
-make -j${CPU_COUNT} -f Makefile.flat $apps
+echo "RUNNING MAKE"
+#make -j${CPU_COUNT} -f Makefile.flat $apps
+make -j1 -f Makefile.flat $apps
 
 # remove temporary link
 rm $LIB_INSTALL_DIR

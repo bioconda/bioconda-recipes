@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="hgfocus.db_3.2.3.tar.gz"
+FN="hgfocus.db_3.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/hgfocus.db_3.2.3.tar.gz"
-  "https://bioarchive.galaxyproject.org/hgfocus.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hgfocus.db/bioconductor-hgfocus.db_3.2.3_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hgfocus.db/bioconductor-hgfocus.db_3.2.3_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hgfocus.db_3.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/hgfocus.db_3.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hgfocus.db/bioconductor-hgfocus.db_3.13.0_src_all.tar.gz"
 )
-MD5="7fb2bb82975ff21d075d3c8ce6f8162a"
+MD5="a6bee48c0aa947d3c7d25ef2c5a4d485"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

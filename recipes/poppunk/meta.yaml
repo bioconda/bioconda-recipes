@@ -10,7 +10,8 @@ source:
   sha256: c2f7eb18affaa22ec2ba5ddd86fa4cc3f4fef40abd4bea40176f39a3c4f142aa
 
 build:
-  number: 0
+  number: 2
+  skip: true  # [py < 38]
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
   entry_points:
     - poppunk = PopPUNK.__main__:main
@@ -25,24 +26,24 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux64]
     - cmake >=3.18
+    - make
   host:
     # python
-    - python >=3.8
+    - python
     - pip
     # C++ extension
     - pybind11
     - zlib
     - eigen
     - boost-cpp
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux64]
     - openblas
-    - libgfortran-ng        # [linux64]
-    - gfortran_impl_osx-64  # [osx]
   run:
     # python
-    - python >=3.8
+    - python
     - numpy
     - scipy
     - scikit-learn >=0.24
@@ -64,9 +65,7 @@ requirements:
     - gunicorn
     # C++ extension
     - zlib
-    - openblas
-    - libgfortran-ng        # [linux64]
-    - gfortran_impl_osx-64  # [osx]
+    - libblas
     # The xorg-* requirements are only used for gtk3 which is pulled in via graph-tool.
     - xorg-libxi
     - xorg-libxcursor
