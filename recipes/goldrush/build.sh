@@ -1,13 +1,15 @@
 #!/bin/bash
 set -eu -o pipefail
 
-if [ `uname` == Darwin ]; then
-    sed -i '' 's=/usr/bin/make=/usr/bin/env make=' bin/goldrush
-else
-    sed -i 's=/usr/bin/make=/usr/bin/env make=' bin/goldrush
-fi
-
 mkdir -p ${PREFIX}/bin
+
+# Make wrapper script for goldrush
+cp bin/goldrush ${PREFIX}/bin/goldrush.make
+echo "#!/bin/bash" > ${PREFIX}/bin/goldrush
+echo "make -rRf $(which goldrush.make)" >> ${PREFIX}/bin/goldrush
+chmod 755 ${PREFIX}/bin/goldrush
+
+# Build goldrush
 meson --prefix ${PREFIX} build
 cd build
 ninja
