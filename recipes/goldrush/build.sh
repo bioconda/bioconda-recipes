@@ -11,5 +11,5 @@ ninja install
 if [ `uname` == Darwin ]; then
     sed -i '' 's=/usr/bin/make=/usr/bin/env make=' ${PREFIX}/bin/goldrush
 else
-    sed -i '' 's=/usr/bin/make=/usr/bin/env make=' ${PREFIX}/bin/goldrush
+    sed -i 's=/usr/bin/make=/usr/bin/env make=' ${PREFIX}/bin/goldrush
 fi
