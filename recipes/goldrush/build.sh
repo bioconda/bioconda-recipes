@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu -o pipefail
 
-sed -i '' 's=/usr/bin/make=/usr/bin/env make=' bin/goldrush
+sed -i '' 's=/usr/bin/make=/usr/bin/env make=' ${RECIPE_DIR}/bin/goldrush
 
 mkdir -p ${PREFIX}
 
