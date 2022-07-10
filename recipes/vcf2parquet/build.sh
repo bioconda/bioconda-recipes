@@ -5,5 +5,4 @@
 export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
 
 # build statically linked binary with Rust
-cd vcf2parquet-bin
-RUST_BACKTRACE=1 cargo install --verbose --path . --root $PREFIX
+RUST_BACKTRACE=1 cargo install --verbose --path . --features bin --root $PREFIX
