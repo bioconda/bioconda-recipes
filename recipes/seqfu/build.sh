@@ -14,6 +14,7 @@ nimble build -y --verbose
 ./bin/seqfu version || true
 
 if [[ -d scripts ]]; then
+  echo "## Copying utils"
   chmod +x scripts/*
   cp scripts/* bin/
 fi
