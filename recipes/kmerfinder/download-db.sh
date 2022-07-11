@@ -4,9 +4,7 @@ echo "Downloading KmerFinder database to ${KmerFinder_DB}..."
 
 cd ${KmerFinder_DB}
 # download kmerfinder database
-git clone https://git@bitbucket.org/genomicepidemiology/kmerfinder_db.git
-cd kmerfinder_db
-bash INSTALL.py ${KmerFinder_DB} all
+wget -c https://cge.food.dtu.dk/services/KmerFinder/etc/kmerfinder_db.tar.gz -O - | tar -xz
 cd ..
 
 echo "KmerFinder database is downloaded."
