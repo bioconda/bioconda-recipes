@@ -14,7 +14,7 @@ make CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" LIBS="-L$PREFIX/lib -lm -lz -pthread"
 popd
 
 pushd slow5lib
-make lib/libslow5.a
+make make CC=$CC CXX=$CXX lib/libslow5.a
 popd
 
 make HDF5=noinstall EIGEN=noinstall HTS=noinstall MINIMAP=noinstall CXXFLAGS="$CXXFLAGS -Iminimap2 -Islow5lib -fopenmp -g -O3"
