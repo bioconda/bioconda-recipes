@@ -47,7 +47,7 @@ def jvm_opts(argv):
     """
     mem_opts = []
     prop_opts = []
-    pass_args = []
+    pass_args = ['-cp', 'LipidDataAnalyzer.jar', 'at.tugraz.genome.lda.LDACmd']
     exec_dir = None
 
     for arg in argv:
@@ -87,7 +87,8 @@ def main():
     (mem_opts, prop_opts, pass_args, exec_dir) = jvm_opts(sys.argv[1:])
     jar_dir = exec_dir if exec_dir else real_dirname(sys.argv[0])
 
-    if pass_args != [] and pass_args[0].startswith('eu'):
+    if pass_args != []:
+    #and pass_args[0].startswith('eu'):
         jar_arg = '-cp'
     else:
         jar_arg = '-jar'
