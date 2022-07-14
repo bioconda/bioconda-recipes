@@ -14,7 +14,6 @@ from os import access
 from os import getenv
 from os import X_OK
 
-# https://bintray.com/search?query=jgoslin-cli
 jar_file = '@@JAR_FILE@@'
 
 
@@ -81,7 +80,7 @@ def main():
     java = java_executable()
     """
     In a multiuser setting, the option --exec_dir="exec_dir"
-    can be used as the location for the jgoslin distribution.
+    can be used as the location for the lda distribution.
     If the exec_dir dies not exist,
     we copy the jar file, lib, and resources to the exec_dir directory.
     """
