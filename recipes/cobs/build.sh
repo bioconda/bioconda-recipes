@@ -1,6 +1,10 @@
 #!/bin/bash
 set -eux -o pipefail
 
+compgen -c # will list all the commands you could run.
+compgen -c | grep gcc # will list all the commands you could run.
+exit 1
+
 # make compilation not be dependent on locale settings
 export LC_ALL=C
 
