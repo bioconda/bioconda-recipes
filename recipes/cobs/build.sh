@@ -1,10 +1,6 @@
 #!/bin/bash
 set -eux -o pipefail
 
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-      exit 0
-fi
-
 # make compilation not be dependent on locale settings
 export LC_ALL=C
 
