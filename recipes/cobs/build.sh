@@ -12,7 +12,7 @@ export LDFLAGS="-L${BOOST_LIBRARY_DIR} -lboost_filesystem -lboost_system"
 mkdir -p build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PREFIX" ..
-make -j1
+make cobs
 
 # test
 #make test
