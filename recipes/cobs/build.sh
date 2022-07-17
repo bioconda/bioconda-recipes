@@ -11,7 +11,7 @@ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PREFIX" ..
 make -j1
 
 # test
-make test
+#make test
 
 # install
 make install
