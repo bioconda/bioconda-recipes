@@ -17,7 +17,7 @@ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PREFIX" -DBOOST=1 -DSK
 make -j1
 
 # test
-make test  
+env CTEST_OUTPUT_ON_FAILURE=1 make test  
 
 # install
 make install
