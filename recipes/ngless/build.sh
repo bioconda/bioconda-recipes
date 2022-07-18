@@ -5,7 +5,7 @@ set -e -o pipefail -x
 if [ "$(uname)" == "Darwin" ]; then
     BINARY=ngless
 else
-    BINARY=NGLess-v1.4.0-Linux-static-no-deps
+    BINARY=NGLess-v${PKG_VERSION}-Linux-static-no-deps
 fi
 
 mkdir -p ${PREFIX}/bin/
