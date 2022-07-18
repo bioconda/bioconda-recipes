@@ -17,9 +17,7 @@ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PREFIX" -DBOOST=1 -DSK
 make -j1
 
 # test
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then  # for some reason, tests fail on OS X
-      make test  
-fi
+make test  
 
 # install
 make install
