@@ -21,8 +21,5 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then  # for some reason, tests fail on OS X
       make test  
 fi
 
-cp ${BOOST_LIBRARY_DIR}/libboost_filesystem.so* "${PREFIX}"/lib
-cp ${BOOST_LIBRARY_DIR}/libboost_system.so* "${PREFIX}"/lib
-
 # install
 make install
