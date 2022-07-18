@@ -10,6 +10,6 @@ mkdir -p $PREFIX/bin
 mkdir -p build
 cd build
 
-cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX ..
+cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX .. -DUSE_HDF5=ON
 make
 make install

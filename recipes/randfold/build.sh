@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mkdir -p "${PREFIX}/bin"
+
 gunzip squid.tar.gz
 tar xf squid.tar
 cd squid-1.9g
@@ -11,8 +13,5 @@ make install
 
 cd ..
 
-export CFLAGS="-I$PREFIX/include -L$PREFIX/lib"
-
-make
-cp randfold $PREFIX/bin
-
+make CC="${CC}" CFLAGS+=' -O3' LIBS="${LDFLAGS} -lm -lsquid"
+cp randfold "${PREFIX}/bin/"

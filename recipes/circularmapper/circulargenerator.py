@@ -11,7 +11,7 @@ import os
 import sys
 import subprocess
 from os import access, getenv, X_OK
-jar_file = 'generator-1.93.4.jar'
+jar_file = 'generator-1.93.5.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 

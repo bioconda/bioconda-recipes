@@ -1,19 +1,16 @@
 #!/bin/bash
 
-# Setup path variables
-BINARY_HOME=$PREFIX/bin
-PACKAGE_HOME=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+package_home="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 
-# Create destination directories
-mkdir -p $PACKAGE_HOME
+mkdir -p "${package_home}"
+cp -aR * "${package_home}/"
 
-# Copy files over into $PACKAGE_HOME
-cp -aR * $PACKAGE_HOME
+dest_file=${package_home}/clinker
+sed \
+    's|\$PACKAGE_HOME|'"${package_home}"'|g' \
+    "${RECIPE_DIR}/clinker-wrapper.sh" \
+    > "${dest_file}"
+chmod +x "${dest_file}"
 
-DEST_FILE=$PACKAGE_HOME/clinker
-cp $RECIPE_DIR/clinker-wrapper.sh $DEST_FILE
-chmod +x $DEST_FILE
-ln -s $DEST_FILE $PREFIX/bin
-
-
-
+mkdir -p "${PREFIX}/bin"
+ln -s "${dest_file}" "${PREFIX}/bin/"

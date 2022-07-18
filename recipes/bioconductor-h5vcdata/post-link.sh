@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="h5vcData_2.6.0.tar.gz"
+FN="h5vcData_2.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/h5vcData_2.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/h5vcData_2.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-h5vcdata/bioconductor-h5vcdata_2.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/h5vcData_2.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/h5vcData_2.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-h5vcdata/bioconductor-h5vcdata_2.14.0_src_all.tar.gz"
 )
-MD5="72185fd137cf885c02af7f0fcd0887bc"
+MD5="ded9a7c87679ceec9123ab8927a767d4"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

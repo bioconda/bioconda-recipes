@@ -1,0 +1,55 @@
+{% set name = "GeMoMa" %}
+{% set version = "1.7.1" %}
+{% set sha256 = "457f4189f359fce867beaf5450b673abb9808cf12b2817e0aabaecfec643fc0a" %}
+
+about:
+  home: http://www.jstacs.de/index.php/GeMoMa
+  license: GPL3
+  summary: |
+    Gene Model Mapper (GeMoMa) is a homology-based gene prediction program.
+    GeMoMa uses the annotation of protein-coding genes in a reference genome to infer the annotation of protein-coding genes in a target genome.
+    Thereby, GeMoMa utilizes amino acid sequence and intron position conservation.
+    In addition, GeMoMa allows to incorporate RNA-seq evidence for splice site prediction.
+
+package:
+  name: gemoma
+  version: {{ version }}
+
+build:
+  noarch: generic
+  number: 0
+
+source:
+  url: http://www.jstacs.de/downloads/{{ name }}-{{ version }}.zip
+  sha256: '{{ sha256 }}'
+
+requirements:
+  host:
+  run:
+    - openjdk >=8
+    - python >=3.7
+    - mmseqs2 >=8.fac81
+    - blast >=2.2.31
+
+test:
+  commands:
+    - GeMoMa
+    - GeMoMa ERE test
+    - GeMoMa DenoiseIntrons test
+    - GeMoMa Extractor test
+    - GeMoMa GeMoMa test
+    - GeMoMa GAF test
+    - GeMoMa AnnotationFinalizer test
+    - GeMoMa GeMoMaPipeline test
+    - GeMoMa AddAttribute test
+    - GeMoMa SyntenyChecker test
+
+extra:
+  notes: |
+    GeMoMa is Java program that comes with a custom wrapper python script. By default
+    "-Xms1g -Xmx2g" is set in the wrapper. If you want to overwrite it you can
+    specify these values directly after your binaries. If you have _JAVA_OPTIONS
+    set globally this will take precedence.
+  identifiers:
+    - doi:10.1093/nar/gkw092
+    - doi:10.1186/s12859-018-2203-5

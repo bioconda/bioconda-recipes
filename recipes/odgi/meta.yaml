@@ -1,0 +1,45 @@
+{% set name = "odgi" %}
+{% set version = "0.7.3" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/pangenome/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
+  sha256: cb2a9f70eb4c7e80141906ec713b00f644beb48723f07b276be2477f0b1af3c0
+
+build:
+  skip: True  # [osx or py27]
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+    - cmake
+    - make
+  host:
+    - zlib
+    - python
+    - jemalloc
+  run:
+    - llvm-openmp  # [osx]
+    - python
+
+test:
+  commands:
+    - odgi test
+  imports:
+    - odgi
+
+about:
+  home: https://github.com/pangenome/odgi
+  license: MIT
+  license_file: LICENSE
+  summary: An optimized dynamic genome/graph implementation
+
+extra:
+  recipe-maintainers:
+    - AndreaGuarracino

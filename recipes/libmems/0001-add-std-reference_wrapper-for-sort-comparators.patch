@@ -1,0 +1,97 @@
+--- trunk/libMems/Aligner.cpp
++++ trunk/libMems/Aligner.cpp
+@@ -20,6 +20,7 @@
+ #include <stack>
+ #include <algorithm>
+ #include <limits>
++#include <functional>
+ 
+ using namespace std;
+ using namespace genome;
+@@ -66,7 +67,7 @@
+ 	uint seq_count = ml[0]->SeqCount();
+ 	for( uint seqI = 0; seqI < seq_count; seqI++ ){
+ 		SingleStartComparator<AbstractMatch> msc( seqI );
+-		sort( ml.begin(), ml.end(), msc );
++		sort( ml.begin(), ml.end(), std::ref(msc) );
+ 		int64 matchI = 0;
+ 		int64 nextI = 0;
+ 		int64 deleted_count = 0;
+@@ -371,7 +372,7 @@
+ 	uint seq_count = mlist[0]->SeqCount();
+ 
+ 	SingleStartComparator<AbstractMatch> msc( 0 );
+-	sort( mlist.begin(), mlist.end(), msc );
++	sort( mlist.begin(), mlist.end(), std::ref(msc) );
+ 	vector<Match*>::iterator mem_iter = mlist.begin();
+ 	list<LabeledMem> pair_list;
+ 	
+@@ -396,7 +397,7 @@
+ 		}
+ 	}
+ 	LabeledMemComparator lmc( 0 );
+-	pair_list.sort( lmc );
++	pair_list.sort( std::ref(lmc) );
+ 	list< LabeledMem >::iterator pair_iter = pair_list.begin();
+ 	for(; pair_iter != pair_list.end(); ++pair_iter ){
+ 		PlacementMatch pm;
+@@ -408,7 +409,7 @@
+ 	// place all the subset matches from each sequence in the correct place in pair_list.
+ 	for( uint seqI = 1; seqI < seq_count; ++seqI ){
+ 		PlacementMatchComparator pmc( seqI );
+-		placement_list.sort( pmc );
++		placement_list.sort( std::ref(pmc) );
+ 		list< PlacementMatch >::iterator placement_prev;
+ 		list< PlacementMatch >::iterator placement_iter = placement_list.begin();
+ 		if( placement_iter->iter == pair_list.end() &&
+@@ -486,7 +487,7 @@
+ 	for( uint seqI = 1; seqI < seq_count; seqI++ ){
+ 		// sort the list on the current genome
+ 		LabeledMemComparator lmc( seqI );
+-		sort( pair_vec.begin(), pair_vec.end(), lmc );
++		sort( pair_vec.begin(), pair_vec.end(), std::ref(lmc) );
+ 		set< uint > no_match_labels;
+ 
+ 		// debugging code
+@@ -680,7 +681,7 @@
+ 
+ 	for( seqI = 0; seqI < seq_count; seqI++ ){
+ 		LCBLeftComparator llc( seqI );
+-		sort( adjacencies.begin(), adjacencies.end(), llc );
++		sort( adjacencies.begin(), adjacencies.end(), std::ref(llc) );
+ 		for( lcbI = 1; lcbI + 1 < iv_list.size(); lcbI++ ){
+ 			adjacencies[ lcbI ].left_adjacency[ seqI ] = adjacencies[ lcbI - 1 ].lcb_id;
+ 			adjacencies[ lcbI ].right_adjacency[ seqI ] = adjacencies[ lcbI + 1 ].lcb_id;
+@@ -697,7 +698,7 @@
+ 		}
+ 	}
+ 	LCBIDComparator lic;
+-	sort( adjacencies.begin(), adjacencies.end(), lic );
++	sort( adjacencies.begin(), adjacencies.end(), std::ref(lic) );
+ 	
+ }
+ 
+@@ -976,7 +977,7 @@
+ 
+ 	uint matchI = 0;
+ 	MatchLeftEndComparator msc( seqI );
+-	sort( mlist.begin(), mlist.end(), msc );
++	sort( mlist.begin(), mlist.end(), std::ref(msc) );
+ 	uint regionI = 0;
+ 	gnSeqI region_sum = seq_regions[ 1 ] - seq_regions[ 0 ];
+ 	gnSeqI region_start_sum = 0;
+@@ -1870,12 +1871,12 @@
+ 	// sort the matches inside consolidated LCBs
+ 	MatchStartComparator<AbstractMatch> msc( 0 );
+ 	for( lcbI = 0; lcbI < lcb_list.size(); lcbI++ ){
+-		sort( lcb_list[ lcbI ].begin(), lcb_list[ lcbI ].end(), msc );
++		sort( lcb_list[ lcbI ].begin(), lcb_list[ lcbI ].end(), std::ref(msc) );
+ 	}
+ 
+ 	// sort the LCBs themselves
+ 	LCBLeftEndComp llec;
+-	std::sort( lcb_list.begin(), lcb_list.end(), llec );
++	std::sort( lcb_list.begin(), lcb_list.end(), std::ref(llec) );
+ 
+ 	// calculate the LCB adjacencies
+ 	weights = new_weights;

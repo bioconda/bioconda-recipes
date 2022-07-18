@@ -1,6 +1,9 @@
 #!/bin/bash
-set -x -e
+set -x
 mkdir -p "${PREFIX}/bin"
-INCLUDES="-I${PREFIX}/include -I${BUILD_PREFIX}/include -I${BUILD_PREFIX}/include/bamtools"
-LDADD="${BUILD_PREFIX}/lib/libbamtools.a ${BUILD_PREFIX}/lib/libglpk.a -L${PREFIX}/lib"
-${CXX} -std=c++11 ${CXXFLAGS} $INCLUDES -o $PREFIX/bin/squid src/*.cpp $LDADD -lz -lm
+LDADD="${PREFIX}/lib/libbamtools.a ${PREFIX}/lib/libglpk.a"
+LDLIBS='-lz -lm'
+"${CXX}" \
+    ${CPPFLAGS} ${CXXFLAGS} -I"${PREFIX}/include/bamtools" -std=c++11 \
+    -o "${PREFIX}/bin/squid" src/*.cpp \
+    ${LDFLAGS} ${LDADD} ${LDLIBS}

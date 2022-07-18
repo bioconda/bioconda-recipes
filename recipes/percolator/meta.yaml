@@ -1,24 +1,24 @@
 {% set name = "percolator" %}
-{% set version = "3.4" %}
+{% set version = "3.5" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/percolator/percolator/archive/rel-3-04.tar.gz
-  sha256: ee094039b60aa2e2e15ec8228da087328ca523fa73b89cd69721621eb219cf4d
+  url: https://github.com/percolator/percolator/archive/rel-3-05.tar.gz
+  sha256: 5b746bdc0119a40f96bc090e02e27670f91eeb341736911750b170da7e5c06bb
 
 build:
-  number: 0
+  number: 2
   skip: True # [osx]
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
     - cmake
   host:
-    - zlib
     - boost
     - sqlite
     - bzip2
@@ -31,7 +31,9 @@ requirements:
 
 test:
   commands:
-    - sqt2pin -o test.txt $PREFIX/testdata/target.sqt $PREFIX/testdata/target.sqt
+    - sqt2pin -o testsqt.txt $PREFIX/testdata/target.sqt $PREFIX/testdata/target.sqt
+    - tandem2pin -o testtandem.txt $PREFIX/testdata/target.t.xml $PREFIX/testdata/target.t.xml
+    - msgf2pin -o testmzid.txt $PREFIX/testdata/target.mzid $PREFIX/testdata/target.mzid
     - percolator -X test.xml $PREFIX/testdata/percolatorTab
 
 about:

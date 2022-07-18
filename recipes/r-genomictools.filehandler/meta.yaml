@@ -1,0 +1,48 @@
+{% set version = '0.1.5.9' %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-genomictools.filehandler
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/GenomicTools.fileHandler_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/GenomicTools.fileHandler/GenomicTools.fileHandler_{{ version }}.tar.gz
+  sha256: 0c1991cc85eddddc7b2a14c1d861bc84956061407de4031b4b442e741c3f8826
+
+build:
+  merge_build_host: True  # [win]
+  number: 2
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+  host:
+    - r-base
+    - r-data.table >=1.9.6
+    - bioconductor-snpstats
+  run:
+    - r-base
+    - r-data.table >=1.9.6
+    - bioconductor-snpstats
+
+test:
+  commands:
+    - $R -e "library('GenomicTools.fileHandler')"           # [not win]
+    - "\"%R%\" -e \"library('GenomicTools.fileHandler')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=GenomicTools.fileHandler
+  license: GPL-2
+  summary: A collection of I/O tools for handling the most commonly used genomic datafiles, like
+    fasta/-q, bed, gff, gtf, ped/map and vcf.
+  license_family: GPL2
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+

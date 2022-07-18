@@ -14,8 +14,8 @@ from os import access
 from os import getenv
 from os import X_OK
 
-# https://bitbucket.org/searleb/encyclopedia/downloads/encyclopedia-0.9.0-executable.jar
-jar_file = 'encyclopedia-0.9.0-executable.jar'
+# https://bitbucket.org/searleb/encyclopedia/downloads/encyclopedia-$PKG_VERSION-executable.jar
+jar_file = 'encyclopedia-executable.jar'
 
 default_jvm_mem_opts = ['-Xms1g', '-Xmx8g']
 

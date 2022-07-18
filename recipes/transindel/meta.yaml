@@ -1,0 +1,34 @@
+{% set name = "transindel" %}
+{% set version = "1.0" %}
+
+package:
+  name: '{{ name }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/cauyrd/transIndel/archive/v{{ version }}.tar.gz
+  sha256: 004eacdc6b61d9e3cbb8837e6faa2016a1df5e963bbbf59843b5c31756b4b3ee
+  patches:
+      - transIndel_call.py.patch
+
+build:
+  noarch: generic
+  number: 2
+
+requirements:
+  run:
+    - python <=3
+    - samtools >=1.0
+    - pysam >=0.13.0
+    - htseq >=0.6.1
+
+test:
+  commands:
+    - transIndel_build_DNA.py -v
+    - transIndel_call.py --help | grep -q reference
+
+about:
+  home: https://github.com/cauyrd/transIndel
+  license: GNU General Public License v3 or later (GPLv3+)
+  summary: 'transIndel is used to detect indels (insertions and deletions) from DNA-seq or RNA-seq data by parsing chimeric alignments from BWA-MEM..'
+  license_family: GPL3

@@ -1,51 +1,64 @@
 {% set name = "pyopenms" %}
-{% set version = "2.4.0" %}
-
+{% set version = "2.8.0" %}
 package:
   name: {{ name|lower  }}
   version: {{ version  }}
 
 source:
-  - url: https://github.com/OpenMS/OpenMS/releases/download/Release{{ version }}/OpenMS-{{ version }}-src.tar.gz
-    sha256: 86e8176b0f89cc86a10f5c3e60c34140d591e9e6c85f129ccbfa13ecb16a9af2 
-    patches:
-      - library.patch 
-  - url: http://ftp.mi.fu-berlin.de/pub/OpenMS/contrib-sources/WildMagic5.tar.gz
-    sha256: cbdc9fa23880070b46b63764eb34795e25d099d2d06c259ad58c21d7bea45772
-    folder: wildmagic
+  url: https://abibuilder.informatik.uni-tuebingen.de/archive/openms/OpenMSInstaller/release/{{ version }}/OpenMS-{{ version }}-src.tar.gz
+  sha256: c39e3ccdce5c335d2659cfa9d0bb63555a01ec422757afd90706d3869bf611ac
+  patches:
+    - pyopenms_cmakelist2.patch
+    - pyopenms_cmakelist.patch
 
 build:
+  skip: True  # [py2k]
   number: 0
-  skip: True  # [py3k or osx]
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - make
     - cmake
-    - autoconf
-    - automake
   host:
-    - python
-    - autowrap
-    - numpy
+    - libopenms {{ version }}
+    - llvm-openmp # [osx]
+    - libsvm
+    - xerces-c
+    - boost-cpp
+    - qt
+    - python {{ python }}
+    - cython >=0.25.2
+    - autowrap >=0.22.6
+    - setuptools
+    - wheel
     - pip
-    - seqan-library ==1.4.2
-    - openms {{ version }}
-  run:
-    - python
-    - autowrap
-    - numpy
-    - openms {{ version }}
-
+    - nose
+    - numpy {{ numpy }}
+    - pandas
+  run: # run_exports in libopenms should take care of the libraries. But it does not because of bugs. So copy everthing again and again
+    - libopenms {{ version }}
+    - llvm-openmp # [osx]
+    - libsvm
+    - xerces-c
+    - boost-cpp
+    - qt
+    - python {{ python }}
+    - numpy {{ numpy }}
+    - pandas
 test:
+  requires:
+    - nose
   commands:
     - python -c "import pyopenms; print(pyopenms.__version__)"
+    # We cant use the PYTHON variable since it does not exist on the biocontainer?!
+    # TODO run the test suite
 
 about:
   home: https://github.com/OpenMS/OpenMS
   license: BSD
   license_file: LICENSE
-  summary: OpenMS is an open-source software C++ library for LC-MS data management and analyses
+  summary: python bindings for OpenMS, an open-source software C++ library for LC-MS data management and analyses
 
 extra:
   identifiers:

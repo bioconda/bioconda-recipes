@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="healthyFlowData_1.24.0.tar.gz"
+FN="healthyFlowData_1.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/healthyFlowData_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/healthyFlowData_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-healthyflowdata/bioconductor-healthyflowdata_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/healthyFlowData_1.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/healthyFlowData_1.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-healthyflowdata/bioconductor-healthyflowdata_1.32.0_src_all.tar.gz"
 )
-MD5="11c422819c5d8c8c4df4ceb2bbafea27"
+MD5="805b7fb92f42851478636da17c5e6423"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
