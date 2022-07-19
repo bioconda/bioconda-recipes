@@ -1,0 +1,18 @@
+name: Update repodata patches
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # run at 2 AM UTC
+  # TODO remove this before merging!!!, just for testing in the initial PR
+  pull_request:
+    branches_ignore: []
+
+jobs:
+  env:
+    ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+  steps:
+    - uses: actions/checkout@v2
+
+    - name: Build updated repodata-patches and upload to anaconda
+      run: |
+        conda build -c conda-forge --override-channels --token $ANACONDA_TOKEN --user bioconda --quiet recipes/repodata-patches
