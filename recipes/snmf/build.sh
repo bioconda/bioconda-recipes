@@ -24,7 +24,7 @@ cd $SNMF_HOME
 
 pushd code
 make clean
-make CC="${CC}" CFLAGS+=' -lm -lpthread'
+make CC="${CC}" CFLAGS+=' -fcommon -lm -lpthread'
 popd
 
 mkdir -p $PREFIX/bin

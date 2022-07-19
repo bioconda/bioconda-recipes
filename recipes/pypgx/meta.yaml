@@ -1,0 +1,51 @@
+{% set name = "pypgx" %}
+{% set version = "0.17.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: c5e46ce2701ce4af1c0cca29d549626496fe900983e2cebd02895c41f038c49b
+
+build:
+  number: 0
+  entry_points:
+    - pypgx=pypgx.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  noarch: python
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - fuc
+    - openjdk
+    - python
+    - scikit-learn
+    # ensure fuc doesn't pull in a broken pysam build
+    - pysam >=0.15
+
+test:
+  imports:
+    - pypgx
+    - pypgx.api
+    - pypgx.api.data
+    - pypgx.cli
+    - pypgx.sdk
+  commands:
+    - pypgx --help
+
+about:
+  home: "https://github.com/sbslee/pypgx"
+  license: MIT
+  license_family: MIT
+  summary: "A Python package for pharmacogenomics research"
+  doc_url: "https://pypgx.readthedocs.io/en/latest/"
+  dev_url: "https://github.com/sbslee/pypgx"
+
+extra:
+  recipe-maintainers:
+    - sbslee

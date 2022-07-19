@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="IlluminaHumanMethylation27kanno.ilmn12.hg19_0.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/IlluminaHumanMethylation27kanno.ilmn12.hg19_0.6.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/IlluminaHumanMethylation27kanno.ilmn12.hg19_0.6.0.tar.gz"
   "https://bioarchive.galaxyproject.org/IlluminaHumanMethylation27kanno.ilmn12.hg19_0.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-illuminahumanmethylation27kanno.ilmn12.hg19/bioconductor-illuminahumanmethylation27kanno.ilmn12.hg19_0.6.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-illuminahumanmethylation27kanno.ilmn12.hg19/bioconductor-illuminahumanmethylation27kanno.ilmn12.hg19_0.6.0_src_all.tar.gz"
 )
 MD5="765851336506120467c2e3cc6beef7ed"

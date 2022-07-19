@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.hu6800_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/pd.hu6800_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.hu6800_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.hu6800_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.hu6800/bioconductor-pd.hu6800_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.hu6800/bioconductor-pd.hu6800_3.12.0_src_all.tar.gz"
 )
 MD5="9a3a3edde6d6f31b9e90dc32aa68875d"

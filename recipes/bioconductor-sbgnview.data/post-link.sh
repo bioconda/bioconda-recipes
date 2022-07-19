@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="SBGNview.data_1.4.0.tar.gz"
+FN="SBGNview.data_1.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/SBGNview.data_1.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/SBGNview.data_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-sbgnview.data/bioconductor-sbgnview.data_1.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/SBGNview.data_1.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/SBGNview.data_1.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-sbgnview.data/bioconductor-sbgnview.data_1.8.0_src_all.tar.gz"
 )
-MD5="68c7cec7f3dfcbfb016d8c2771af2856"
+MD5="48389214bd6e3c056bb5c8b1719878e1"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ffpeExampleData_1.28.0.tar.gz"
+FN="ffpeExampleData_1.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/ffpeExampleData_1.28.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ffpeExampleData_1.28.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ffpeexampledata/bioconductor-ffpeexampledata_1.28.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/ffpeExampleData_1.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ffpeExampleData_1.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ffpeexampledata/bioconductor-ffpeexampledata_1.32.0_src_all.tar.gz"
 )
-MD5="358082994186101e379ebd587203fd02"
+MD5="1bd2226220cf1a1ece07f608fca007b9"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

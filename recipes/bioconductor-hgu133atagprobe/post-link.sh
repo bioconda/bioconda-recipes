@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="hgu133atagprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/hgu133atagprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hgu133atagprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hgu133atagprobe_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hgu133atagprobe/bioconductor-hgu133atagprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hgu133atagprobe/bioconductor-hgu133atagprobe_2.18.0_src_all.tar.gz"
 )
 MD5="97aeaf9ac9450369cf030581b8ec5a53"

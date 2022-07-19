@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="leeBamViews_1.26.0.tar.gz"
+FN="leeBamViews_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/leeBamViews_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/leeBamViews_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-leebamviews/bioconductor-leebamviews_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/leeBamViews_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/leeBamViews_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-leebamviews/bioconductor-leebamviews_1.30.0_src_all.tar.gz"
 )
-MD5="01010069b76c4784842b27dbda169adf"
+MD5="e993371ed321e01ae822f01ff5e60914"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="mu6500subbcdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/mu6500subbcdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/mu6500subbcdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mu6500subbcdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mu6500subbcdf/bioconductor-mu6500subbcdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mu6500subbcdf/bioconductor-mu6500subbcdf_2.18.0_src_all.tar.gz"
 )
 MD5="5000bea2a018b4b6ec05cda111438bc1"

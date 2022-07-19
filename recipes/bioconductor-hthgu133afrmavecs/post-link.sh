@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="hthgu133afrmavecs_1.3.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/hthgu133afrmavecs_1.3.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hthgu133afrmavecs_1.3.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hthgu133afrmavecs_1.3.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hthgu133afrmavecs/bioconductor-hthgu133afrmavecs_1.3.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hthgu133afrmavecs/bioconductor-hthgu133afrmavecs_1.3.0_src_all.tar.gz"
 )
 MD5="be3f3d67a94dca3b080c184fba5ff6d8"

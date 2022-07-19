@@ -1,25 +1,26 @@
-{% set version = "4.1.0" %}
+{% set version = "4.1.2" %}
 
 package:
   name: rmats
   version: {{ version }}
 
 source:
-  sha256: 11cce1adcf391de2050b97e64c0be8e8ce762f711575237a3d14cdadb2f381e2
+  sha256: 13c558b06a0dd89463c6975b4cc244a59ad69069c897e61dc57a1906a1d7a36a
   url: https://github.com/Xinglab/rmats-turbo/releases/download/v{{ version }}/rmats_turbo_v{{ version|replace(".","_") }}.tar.gz
   patches:
-    - linux.patch
-    - cc_cxx_env_var.patch
-    - parse_file_error.patch
+    # remove patch when new version includes: https://github.com/Xinglab/rmats-turbo/pull/169
+    - rmats_c_myfunc.patch
 
 build:
-  number: 4
+  number: 3
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
+    - libgomp  # [linux]
     - cmake
   host:
     - python
@@ -28,13 +29,13 @@ requirements:
     - gsl
     - zlib
     - libblas
+    - liblapack
   run:
     - python
     - numpy
     - gsl
     - zlib
     - star >=2.5
-    - libblas
 
 test:
   commands:
