@@ -5,11 +5,7 @@ set -eux -o pipefail
 export LC_ALL=C
 
 # set up some variables so that CMake can find boost
-export BOOST_INCLUDE_DIR="${PREFIX}/include"
-export BOOST_LIBRARY_DIR="${PREFIX}/lib"
-export CXXFLAGS="-DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
-export LDFLAGS="-L${BOOST_LIBRARY_DIR} -lboost_filesystem -lboost_system"
-export DYLD_LIBRARY_PATH="${PREFIX}/lib"  # make tests work on OS X
+export BOOST_ROOT="${PREFIX}"
 
 # build cobs
 mkdir -p build
