@@ -4,13 +4,13 @@ set -eux -o pipefail
 # make compilation not be dependent on locale settings
 export LC_ALL=C
 
-# set up some variables so that CMake can find boost
+# allows CMake to find BOOST
 export BOOST_ROOT="${PREFIX}"
 
 # build cobs
 mkdir -p build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PREFIX" -DBOOST=1 -DSKIP_PYTHON=1 ..
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PREFIX" ..
 make -j1
 
 # test
