@@ -10,7 +10,7 @@ export BOOST_ROOT="${PREFIX}"
 # build cobs
 mkdir -p build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PREFIX" ..
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PREFIX" -DSKIP_PYTHON=1 ..
 make -j1
 
 # test
