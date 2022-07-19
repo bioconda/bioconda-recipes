@@ -9,6 +9,7 @@ export BOOST_INCLUDE_DIR="${PREFIX}/include"
 export BOOST_LIBRARY_DIR="${PREFIX}/lib"
 export CXXFLAGS="-DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
 export LDFLAGS="-L${BOOST_LIBRARY_DIR} -lboost_filesystem -lboost_system"
+export DYLD_LIBRARY_PATH="${PREFIX}/lib"  # make tests work on OS X
 
 # build cobs
 mkdir -p build
