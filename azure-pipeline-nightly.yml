@@ -44,10 +44,9 @@ jobs:
   - script: .azure-pipelines/createEnv.py
     condition: ne(variables.CACHE_RESTORED, 'true')
     displayName: Install bioconda-utils
-
+  
   - bash: |
       set -e
-
       rm -f "${HOME}/.condarc"
       # Activate our Conda installation as "base".
       . /usr/share/miniconda/envs/bioconda/etc/profile.d/conda.sh
@@ -56,14 +55,22 @@ jobs:
       conda config --system --add channels defaults
       conda config --system --add channels bioconda
       conda config --system --add channels conda-forge
-      docker pull quay.io/dpryan79/mulled_container:latest
       mkdir -p ${CONDA_PREFIX}/conda-bld
+    displayName: Configure conda
+  
+  - bash: |
+      set -e
+
+      conda build --token $ANACONDA_TOKEN --user bioconda --quiet recipes/bioconda-repodata-patches
+    displayName: Rebuild and push the bioconda-repodata-patches package
+
+  - bash: |
+      set -e
+      
+      docker pull quay.io/dpryan79/mulled_container:latest      
 
       export OSTYPE="linux-gnu"
       export CI="true"
-
-      # rebuild and push the bioconda-repodata-patches package
-      conda build -c conda-forge --override-channels --token $ANACONDA_TOKEN --user bioconda --quiet recipes/bioconda-repodata-patches
 
       # build and push all leftover packages
       bioconda-utils build recipes config.yml \
@@ -74,7 +81,7 @@ jobs:
       QUAY_OAUTH_TOKEN: $(QUAY_OAUTH_TOKEN)
       ANACONDA_TOKEN: $(ANACONDA_TOKEN)
       INVOLUCRO_AUTH: $(INVOLUCRO_AUTH)
-    displayName: Build_and_push
+    displayName: Build and push leftover packages
 
 - job: 'build_and_push_osx'
   pool:
@@ -147,4 +154,4 @@ jobs:
       QUAY_OAUTH_TOKEN: $(QUAY_OAUTH_TOKEN)
       ANACONDA_TOKEN: $(ANACONDA_TOKEN)
       INVOLUCRO_AUTH: $(INVOLUCRO_AUTH)
-    displayName: Build_and_push
+    displayName: Build and push leftover packages
