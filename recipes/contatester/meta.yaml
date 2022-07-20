@@ -1,0 +1,44 @@
+{% set name = "contatester" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/CNRGH/contatester/archive/v{{ version }}.tar.gz
+  sha256: 998521b200ef7cb2ddab47348122e8c3e7c0c807de38cab7f9ec5a8282758f6f
+
+build:
+  entry_points:
+    - contatester = fr.cea.cnrgh.lbi.contatester.__main__:main
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+
+requirements:
+  host:
+    - pip
+    - pytest-runner
+    - python
+    - setuptools >=40.0.0
+  run:
+    - python
+    - wheel >=0.31.0
+
+test:
+  imports:
+    - fr.cea.cnrgh.lbi.contatester
+  commands:
+    - pip check
+    - contatester --help
+  requires:
+    - pip
+
+about:
+  summary: Invoke py.test as distutils command with dependency resolution
+  license: LGPL-2.1
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - alienzj
