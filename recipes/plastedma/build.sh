@@ -1,12 +1,12 @@
 #!/bin/bash
 
-echo $PREFIX
+echo "$PREFIX"
 
 mkdir -p $PREFIX/
 mkdir -p $PREFIX/share
 cp -r * $PREFIX/share/
 
-SHARE_FOLDER = $PREFIX/share/
+SHARE_FOLDER = "$PREFIX/share/"
 for entry in "SHARE_FOLDER"/*
 do
   echo "$entry"
