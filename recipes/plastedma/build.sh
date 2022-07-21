@@ -14,7 +14,7 @@ echo "Listing copied files from package to install folder"
 ls -lt $INSTALL_FOLDER/workflow
 
 ln -s $INSTALL_FOLDER/plastedma.py $BIN_FOLDER/
-ln -s $INSTALL_FOLDER/workflow/scripts/* $BIN_FOLDER/
+ln -s $INSTALL_FOLDER/workflow/scripts/hmmsearch_run.py $INSTALL_FOLDER/workflow/scripts/hmm_process.py $BIN_FOLDER/
 echo "Listing bin folder links from install folder"
 ls -l $BIN_FOLDER
 chmod +x $BIN_FOLDER/plastedma.py
