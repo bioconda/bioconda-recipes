@@ -2,6 +2,7 @@
 set -eu -o pipefail
 make CC=$CC CPP=$CXX F77=$F77
 
+mkdir -p ${PREFIX}/bin
 cp mammal ${PREFIX}/bin
 cp mammal-sigma ${PREFIX}/bin
 cp mult-data ${PREFIX}/bin
