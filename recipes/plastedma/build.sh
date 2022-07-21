@@ -13,7 +13,7 @@ cp plastedma.py $INSTALL_FOLDER/
 echo "Listing copied files from package to install folder"
 ls -lt $INSTALL_FOLDER/workflow
 
-cp $INSTALL_FOLDER/workflow/script/hmmsearch_run.py $INSTALL_FOLDER/workflow/script/hmm_process.py $BIN_FOLDER/
+cp $INSTALL_FOLDER/workflow/scripts/hmmsearch_run.py $INSTALL_FOLDER/workflow/scripts/hmm_process.py $BIN_FOLDER/
 ls -l $BIN_FOLDER
 ls -l $BIN_FOLDER/workflow/
 ls -l $BIN_FOLDER/workflow/scripts
