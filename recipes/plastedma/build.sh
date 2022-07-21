@@ -11,10 +11,11 @@ cp -r resources $INSTALL_FOLDER/
 cp -r results $INSTALL_FOLDER/
 cp plastedma.py $INSTALL_FOLDER/
 echo "Listing copied files from package to install folder"
-ls -lt $INSTALL_FOLDER
+ls -lt $INSTALL_FOLDER/workflow
 
 ln -s $INSTALL_FOLDER/plastedma.py $BIN_FOLDER/
 ln -s $INSTALL_FOLDER/workflow/ $BIN_FOLDER/
+ls -lt $BIN_FOLDER/workflow
 echo "Listing bin folder links from install folder"
 ls -l $BIN_FOLDER
 chmod +x $BIN_FOLDER/plastedma.py
