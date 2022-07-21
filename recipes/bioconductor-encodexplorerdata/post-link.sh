@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="ENCODExplorerData_0.99.5.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/ENCODExplorerData_0.99.5.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/ENCODExplorerData_0.99.5.tar.gz"
   "https://bioarchive.galaxyproject.org/ENCODExplorerData_0.99.5.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-encodexplorerdata/bioconductor-encodexplorerdata_0.99.5_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-encodexplorerdata/bioconductor-encodexplorerdata_0.99.5_src_all.tar.gz"
 )
 MD5="c6d9b491548529db0739b79c98adacd7"

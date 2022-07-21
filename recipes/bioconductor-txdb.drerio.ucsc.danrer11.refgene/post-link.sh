@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="TxDb.Drerio.UCSC.danRer11.refGene_3.4.6.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/TxDb.Drerio.UCSC.danRer11.refGene_3.4.6.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/TxDb.Drerio.UCSC.danRer11.refGene_3.4.6.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Drerio.UCSC.danRer11.refGene_3.4.6.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.drerio.ucsc.danrer11.refgene/bioconductor-txdb.drerio.ucsc.danrer11.refgene_3.4.6_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.drerio.ucsc.danrer11.refgene/bioconductor-txdb.drerio.ucsc.danrer11.refgene_3.4.6_src_all.tar.gz"
 )
 MD5="3d4ded4cec068a807b8b86b31389b677"

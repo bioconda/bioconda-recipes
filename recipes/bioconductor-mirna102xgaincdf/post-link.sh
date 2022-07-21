@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="mirna102xgaincdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/mirna102xgaincdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/mirna102xgaincdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mirna102xgaincdf_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mirna102xgaincdf/bioconductor-mirna102xgaincdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mirna102xgaincdf/bioconductor-mirna102xgaincdf_2.18.0_src_all.tar.gz"
 )
 MD5="9091a45c2ac15c2de0263743ab334f97"

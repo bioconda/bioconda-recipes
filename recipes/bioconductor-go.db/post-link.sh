@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="GO.db_3.13.0.tar.gz"
+FN="GO.db_3.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/GO.db_3.13.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/GO.db_3.13.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-go.db/bioconductor-go.db_3.13.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/GO.db_3.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/GO.db_3.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-go.db/bioconductor-go.db_3.14.0_src_all.tar.gz"
 )
-MD5="796f6a26af270310d8a1f7c9c3913330"
+MD5="eef1de573f2304a4c12e64da2d9f55bd"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

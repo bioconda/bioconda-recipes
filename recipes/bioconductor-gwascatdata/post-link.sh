@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="gwascatData_0.99.6.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/gwascatData_0.99.6.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/gwascatData_0.99.6.tar.gz"
   "https://bioarchive.galaxyproject.org/gwascatData_0.99.6.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-gwascatdata/bioconductor-gwascatdata_0.99.6_src_all.tar.gz"
 )

@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="rgu34cprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/rgu34cprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/rgu34cprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/rgu34cprobe_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rgu34cprobe/bioconductor-rgu34cprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rgu34cprobe/bioconductor-rgu34cprobe_2.18.0_src_all.tar.gz"
 )
 MD5="d1a6c433acd30b95fa7be89147105b74"

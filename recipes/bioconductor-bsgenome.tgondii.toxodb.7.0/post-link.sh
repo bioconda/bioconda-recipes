@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="BSgenome.Tgondii.ToxoDB.7.0_0.99.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/BSgenome.Tgondii.ToxoDB.7.0_0.99.1.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Tgondii.ToxoDB.7.0_0.99.1.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Tgondii.ToxoDB.7.0_0.99.1.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.tgondii.toxodb.7.0/bioconductor-bsgenome.tgondii.toxodb.7.0_0.99.1_src_all.tar.gz"
 )
