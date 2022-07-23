@@ -13,27 +13,32 @@ build:
   entry_points:
     - nanomonsv = nanomonsv:main
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script:
+     - {{ PYTHON }} -m pip install . -vv
+     - sh -ec 'wget -q https://github.com/mengyao/Complete-Striped-Smith-Waterman-Library/archive/v1.1.tar.gz; tar zxvf v1.1.tar.gz; cd Complete-Striped-Smith-Waterman-Library-1.1/src; gcc -Wall -O3 -pipe -fPIC -shared -rdynamic -o libssw.so ssw.c ssw.h; mv libssw.so {{ PREFIX }}/lib/'
   number: 0
 
 requirements:
   host:
     - python >=3.6,<3.10
     - pip
+    - wget 
+    - tar
+    - gcc
   run:
     - python >=3.6,<3.10
-    - htslib ==1.15
-    - mafft ==7.407
-    - racon ==1.4.3
-    - pysam ==0.19.1
-    - numpy ==1.23.0
-    - parasail-python ==1.2.4
-    - libssw ==1.1
-    - minimap2 ==2.24
+    - htslib =1.15
+    - mafft =7.407
+    - racon =1.4.3
+    - pysam =0.19.1
+    - numpy =1.23.0
+    - parasail-python =1.2.4
+    - minimap2 =2.24
+    - bwa =0.7.17
+    - RepeatMasker =4.1.1
+    - bedtools =2.30.0
 
 test:
-  imports:
-    - nanomonsv
   commands:
     - pip check
     - nanomonsv --help
