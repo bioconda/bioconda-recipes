@@ -5,7 +5,7 @@ export CFLAGS="-g -Wall -I$PREFIX/include -O3  -I$SRC_DIR/include -I$SRC_DIR/inc
 
 sed -i.bak -e '1,4d' Makefile
 
-make CC=$CXX
+make all CC=$CXX
 
 mkdir -p $PREFIX/bin/
 cp build/bin/gfastats $PREFIX/bin/
