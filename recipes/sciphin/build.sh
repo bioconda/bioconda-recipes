@@ -1,5 +1,4 @@
 #!/bin/bash
-
 curdir=$(pwd)
 
 mkdir -p build
