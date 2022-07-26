@@ -1,5 +1,6 @@
 {% set name = "phylodm" %}
-{% set version = "2.0.0" %}
+{% set version = "2.0.5" %}
+{% set sha256 = "6936903e4c3e8c592efddc6e1cc4fbb5202b81dd44c62c27163aef6f17440be3" %}
 
 package:
   name: {{ name|lower }}
@@ -7,35 +8,39 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 6f8a651f83629865c834451c5cde93d29973fae2a076d43607a3d1deb4a652e1
+  sha256: {{ sha256 }}
 
 build:
   number: 0
-  noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
+  build:
+    - rust >=1.40
   host:
     - python >=3.7
     - pip
     - setuptools
     - setuptools-rust
-    - rust
   run:
-    - python
+    - python >=3.7
     - numpy
 
 test:
   imports:
     - phylodm
+    - phylodm.pdm
 
 about:
   home: https://github.com/aaronmussig/PhyloDM
-  license: GPL-3
+  license: GPL-3.0-only
   license_family: GPL
   license_file: LICENSE
-  summary: 'Efficient calculation of phylogenetic distance matrices.'
+  summary: Efficient calculation of phylogenetic distance matrices.
 
 extra:
   recipe-maintainers:
     - aaronmussig
+  identifiers:
+    - doi:10.5281/zenodo.3998716
+  skip-lints:
+    - should_be_noarch_generic  # Not a noarch recipe as Rust is required for build
