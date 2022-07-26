@@ -10,7 +10,7 @@ source:
   sha256: "f83b82800a56930f07fe0b82148a8973ebb3a044c3edf303e6ab7c8413cf7fae"
 
 build:
-  number: 0
+  number: 1
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
   noarch: python
   entry_points:
@@ -18,14 +18,15 @@ build:
     - ftbl2code = influx_si.cli:cli
     - ftbl2cumoAb = influx_si.cli:cli
     - ftbl2kvh = influx_si.cli:cli
-    - ftbl2metxml = influx_si.cli:cli
     - ftbl2netan = influx_si.cli:cli
     - ftbl2optR = influx_si.cli:cli
     - ftbl2xgmml = influx_si.cli:cli
     - influx_s = influx_si.cli:cli
     - influx_i = influx_si.cli:cli
     - res2ftbl_meas = influx_si.cli:cli
-    - txt2ftbl = influx_si.cli:cli
+    - txt2ftbl = influx_si.txt2ftbl:main
+    - ftbl2mtf = influx_si.ftbl2mtf:main
+    - ftbl2metxml = influx_si.ftbl2metxml:main
 
 requirements:
   host:
@@ -34,6 +35,7 @@ requirements:
   run:
     - python >=3
     - scipy
+    - pandas
     - python-libsbml
     - r-base
     - r-rcpp >=1.0.0
@@ -44,10 +46,15 @@ requirements:
     - r-multbxxc
     - r-nnls
     - r-slam
+    - r-kvh
 
 test:
   imports:
     - influx_si
+  commands:
+    - influx_s -h
+    - influx_s --copy_test
+    - influx_s test/e_coli
 
 about:
   home: "https://metasys.insa-toulouse.fr/software/influx/"
