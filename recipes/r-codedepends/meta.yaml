@@ -1,0 +1,74 @@
+{% set version = '0.6.5' %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-codedepends
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/CodeDepends_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/CodeDepends/CodeDepends_{{ version }}.tar.gz
+  sha256: 18067d49d67c3f8f0cca1f3890680dcee9ffc90a0469561c7da074aec68ef350
+
+build:
+  merge_build_host: True  # [win]
+  number: 2
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ posix }}zip               # [win]
+  host:
+    - r-base
+    - r-xml
+    - r-codetools
+    - bioconductor-graph
+  run:
+    - r-base
+    - r-xml
+    - r-codetools
+    - bioconductor-graph
+
+test:
+  commands:
+    - $R -e "library('CodeDepends')"           # [not win]
+    - "\"%R%\" -e \"library('CodeDepends')\""  # [win]
+
+about:
+  home: https://github.com/duncantl/CodeDepends
+  license: GPL-3
+  summary: Tools for analyzing R expressions or blocks of code and determining the dependencies
+    between them. It focuses on R scripts, but can be used on the bodies of functions.
+    There are many facilities including the ability to summarize  or get a high-level
+    view of code, determining dependencies between variables,  code improvement suggestions.
+  license_family: GPL3
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  recipe-maintainers:
+    - conda-forge/r
+
+# Package: CodeDepends
+# Version: 0.6.5
+# Title: Analysis of R Code for Reproducible Research and Code Comprehension
+# Description: Tools for analyzing R expressions or blocks of code and determining the dependencies between them. It focuses on R scripts, but can be used on the bodies of functions. There are many facilities including the ability to summarize  or get a high-level view of code, determining dependencies between variables,  code improvement suggestions.
+# Author: Duncan Temple Lang, Roger Peng, Deborah Nolan, Gabriel Becker
+# Maintainer: Gabriel Becker <becker.gabriel@gene.com>
+# License: GPL
+# URL: https://github.com/duncantl/CodeDepends
+# BugReports: https://github.com/duncantl/CodeDepends/issues
+# Depends: methods
+# Imports: codetools, graph, XML, utils
+# Suggests: Rgraphviz, RUnit, knitr, highlight, RJSONIO, RCurl, Rcpp
+# VignetteBuilder: knitr
+# Collate: classes.R librarySymbols.R functionHandlers.R codeDepends.R sectionDepends.R sweave.R xml.R jss.R frags.R codeTypes.R gc.R graph.R parallel.R deps.R separateBlocks.R callGraph.R isPlot.R isOutput.R refScript.R sideEffects.R highlightCode.R freeVariables.R convenienceFuns.R
+# NeedsCompilation: no
+# Packaged: 2018-07-17 20:24:43 UTC; beckerg4
+# Repository: CRAN
+# Date/Publication: 2018-07-17 21:10:03 UTC

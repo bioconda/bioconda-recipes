@@ -1,0 +1,55 @@
+{% set name = "keggcharter" %}
+{% set version = "0.3.4" %}
+{% set sha256 = "a5708818344c097ee45b735edeb57568de1f2831a4de0095e7e373e472f82abf" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/iquasere/KEGGCharter/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 0
+  script: "mkdir -p $PREFIX/bin && cp *.py KEGGCharter_prokaryotic_maps.txt $PREFIX/bin"
+
+requirements:
+  run:
+    - matplotlib-base
+    - tqdm
+    - pandas
+    - biopython
+    - reportlab
+    - openpyxl
+    - poppler
+    - mscorefonts
+
+test:
+  commands:
+    - keggcharter.py -v
+
+about:
+  home: https://github.com/iquasere/KEGGCharter
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: 'A tool for representing genomic potential and transcriptomic expression into KEGG pathways'
+  description: |
+    KEGGCharter takes as input a quantification table of proteins with corresponding
+    KEGG IDs available and maps that information into KEGG metabolic maps using 
+    the KEGG API. Both genomic potential (from either genomics or metagenomics)
+    and gene expression quantification (from either (meta)transcriptomics or
+    (meta)proteomics) can be represented. Genomic information is mapped in a binary
+    exists or not rule, for each taxon available KEGGCharter will assign a color
+    which will be included in the boxes corresponding to functions present in that
+    taxon. Gene expression quantification is mapped as differential expression
+    where quantification between the several columns specified is represented as
+    a single row heatmap for each function present in the data.
+  doc_url: https://github.com/iquasere/KEGGCharter/blob/master/README.md
+  dev_url: https://github.com/iquasere/KEGGCharter
+
+extra:
+  recipe-maintainers:
+    - iquasere

@@ -5,36 +5,6 @@ package:
   name: {{ name }}
   version: {{ version }}
 
-about:
-  home: https://github.com/genome/breakdancer
-  license: GPLv3
-  summary: SV detection from paired end reads mapping
-
-build:
-  number: 4
-  skip: True  # [not py27]
-
-requirements:
-  build:
-    - cmake >=2.8
-    - {{ compiler('c') }}
-    - python
-  host:
-    - perl
-    - sed
-    - zlib
-    - ncurses
-  run:
-    - perl-math-cdf
-    - perl-statistics-descriptive
-    - perl-gdgraph-histogram  # for bam2cfg.pl
-    - zlib
-
-test:
-  commands:
-    - 'breakdancer-max 2>&1 | grep "Usage: breakdancer-max"'
-    - bam2cfg.pl 2>&1 | grep "Usage"
-
 source:
   url: https://github.com/genome/breakdancer/archive/v{{ version }}.tar.gz
   md5: 3a3fcb3731b0d9e0573c528bdcaeb18b
@@ -44,6 +14,39 @@ source:
     # The reason is that samtools is a tarball within the breakdancer tarball and
     # needs to be extracted first.
     #- samtools.patch
+
+build:
+  skip: True  # [osx]
+  number: 10
+
+requirements:
+  build:
+    - make
+    - cmake >=2.8
+    - python 2.7
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - ncurses
+  host:
+    - perl
+    - sed
+    - zlib
+    - ncurses
+  run:
+    - perl-math-cdf
+    - perl-statistics-descriptive
+    - perl-gdgraph-histogram  # for bam2cfg.pl
+   
+test:
+  commands:
+    - 'breakdancer-max 2>&1 | grep "Usage: breakdancer-max"'
+    - bam2cfg.pl 2>&1 | grep "Usage"
+    - samtools 2>&1 | grep "Usage"
+
+about:
+  home: https://github.com/genome/breakdancer
+  license: GPLv3
+  summary: SV detection from paired end reads mapping
 
 extra:
   identifiers:

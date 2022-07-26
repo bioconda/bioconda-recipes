@@ -1,32 +1,41 @@
-{% set name = "libmems" %}
 {% set version = "1.6.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: libmems
   version: {{ version }}
 
 build:
-  skip: True [osx]
-  number: 1
+  skip: True  # [osx]
+  number: 4
 
 source:
-  url: https://depot.galaxyproject.org/software/libmems/libmems_1.6.0_src_all.zip
-  sha256: 8a3b0cd3dc952575c228460f6c53d2a814c791103d7f53df1bcd736ac03f28b2
+  - url: https://depot.galaxyproject.org/software/libmems/libmems_1.6.0_src_all.zip
+    sha256: 8a3b0cd3dc952575c228460f6c53d2a814c791103d7f53df1bcd736ac03f28b2
+    patches:
+      - 0001-add-std-reference_wrapper-for-sort-comparators.patch
+      - patch.1
+      - patch.2
+  # Need a more recent version of boost.m4
+  - url: https://raw.githubusercontent.com/tsuna/boost.m4/3d67ee84e9149f6279a8df2113f5a86f0a83bd0d/build-aux/boost.m4
+    sha256: f04391a5601f2d616cc6cfb1d2863df38f084f5dc184ae106114c5fb9f323d2f
+    folder: trunk/m4
 
 requirements:
   build:
-    - {{ compiler("c") }}
+    - make
+    - {{ compiler("cxx") }}
     - autoconf
     - automake
     - libtool
+  host:
     - libgenome
     - libmuscle
-  host:
-    - boost 1.65.0
+    - boost-cpp
 
 test:
   commands:
-    - test -e $PREFIX/lib/libMems-1.6.la
+    - test -e $PREFIX/lib/libMems-1.6.a
+    - test -e $PREFIX/lib/libMems-1.6.so
 
 about:
   home: http://darlinglab.org/mauve/

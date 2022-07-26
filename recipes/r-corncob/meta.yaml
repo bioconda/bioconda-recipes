@@ -1,0 +1,91 @@
+{% set version = '0.2.0' %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-corncob
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/corncob_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/corncob/corncob_{{ version }}.tar.gz
+  sha256: c3731016c9d05d5bcd4c830db3da6a75dcde85a5d36ed6fbc4897fc7a1fd15e1
+
+build:
+  merge_build_host: True  # [win]
+  number: 0
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ posix }}zip               # [win]
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+  host:
+    - r-base
+    - r-matrix
+    - r-vgam
+    - r-detectseparation
+    - r-dplyr
+    - r-ggplot2
+    - r-magrittr
+    - r-numderiv
+    - r-optimr
+    - bioconductor-phyloseq
+    - r-rmutil
+    - r-scales
+    - r-trust
+  run:
+    - r-base
+    - r-matrix
+    - r-vgam
+    - r-detectseparation
+    - r-dplyr
+    - r-ggplot2
+    - r-magrittr
+    - r-numderiv
+    - r-optimr
+    - bioconductor-phyloseq
+    - r-rmutil
+    - r-scales
+    - r-trust
+
+test:
+  commands:
+    - $R -e "library('corncob')"           # [not win]
+    - "\"%R%\" -e \"library('corncob')\""  # [win]
+
+about:
+  home: https://github.com/bryandmartin/corncob
+  license: GPL-2.0-or-later
+  summary: Statistical modeling for correlated count data using the beta-binomial distribution,
+    described in Martin et al. (2020) <doi:10.1214/19-AOAS1283>. It allows for both
+    mean and overdispersion covariates.
+  license_family: GPL2
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
+# Package: corncob
+# Title: Count Regression for Correlated Observations with the Beta-Binomial
+# Version: 0.2.0
+# Authors@R: c( person("Bryan D", "Martin", email = "bmartin6@uw.edu", role = c("aut", "cre")), person("Daniela", "Witten", email = "dwitten@uw.edu", role = "aut"), person("Amy D", "Willis", email = "adwillis@uw.edu", role = "aut") )
+# Description: Statistical modeling for correlated count data using the beta-binomial distribution, described in Martin et al. (2020) <doi:10.1214/19-AOAS1283>. It allows for both mean and overdispersion covariates.
+# URL: https://github.com/bryandmartin/corncob
+# BugReports: https://github.com/bryandmartin/corncob/issues
+# Depends: R (>= 3.2)
+# License: GPL (>= 2)
+# Imports: stats, utils, optimr, VGAM, numDeriv, Matrix, ggplot2, trust, dplyr, magrittr, rmutil, detectseparation, scales, phyloseq
+# Encoding: UTF-8
+# LazyData: true
+# RoxygenNote: 7.1.1
+# Suggests: knitr, rmarkdown, testthat, covr, limma, R.rsp
+# VignetteBuilder: knitr, R.rsp
+# NeedsCompilation: no
+# Packaged: 2021-03-09 22:13:34 UTC; Bryan
+# Author: Bryan D Martin [aut, cre], Daniela Witten [aut], Amy D Willis [aut]
+# Maintainer: Bryan D Martin <bmartin6@uw.edu>
+# Repository: CRAN
+# Date/Publication: 2021-03-11 15:00:02 UTC

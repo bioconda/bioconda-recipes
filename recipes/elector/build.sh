@@ -5,19 +5,19 @@ set -x
 mkdir -p $PREFIX/bin/
 # build and install binary tools
 cd src/simulator
-make CC="${CXX}"
+make
 cp simulator $PREFIX/bin/
 
 cd ../poa-graph
-make CC="${CC}" poa
+make poa CC=$CC CFLAGS="$CFLAGS -fcommon -Ofast -DUSE_WEIGHTED_LINKS -DUSE_PROJECT_HEADER -I. -pthread"
 cp poa $PREFIX/bin/
 
 cd ../utils
-make CC="${CXX}"
+make
 cp fq2fa $PREFIX/bin/
 
 cd ../split
-make CC="${CXX}"
+make
 cp masterSplitter $PREFIX/bin/
 cp Donatello $PREFIX/bin/
 cd ../..
@@ -26,4 +26,4 @@ cd ../..
 mkdir -p $PREFIX/share/elector/
 cp src/poa-graph/blosum80.mat $PREFIX/share/elector/
 
-$PYTHON setup.py install
+"${PYTHON}" -m pip install . --no-deps -vv

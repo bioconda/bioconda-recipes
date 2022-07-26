@@ -1,0 +1,39 @@
+{% set version = "1.0.0" %}
+{% set sha256 = "3aee84c6598b60e4f8ac1d4e69e510f2bbeb10ae06ca5710523aa84d3ab79bbe" %}
+
+package:
+  name: smartmap
+  version: {{ version }}
+
+source:
+  url: https://github.com/shah-rohan/SmartMap/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-fix-flags-for-bioconda.patch
+
+build:
+  number: 2
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - zlib
+  run:
+    - bowtie2
+    - hisat2
+    - python >=3.8.5
+    - samtools >=1.10
+    - bedtools
+
+about:
+  home: http://shah-rohan.github.io/SmartMap
+  license: MIT
+  summary: 'SmartMap: Bayesian Analysis of Ambiguously Mapped Reads'
+
+test:
+  commands:
+    - SmartMap -h
+    - SmartMapPrep -h
+    - SmartMapRNAPrep -h

@@ -2,6 +2,7 @@
 mkdir -p "$PREFIX/bin"
 export MACHTYPE=x86_64
 export BINDIR=$(pwd)/bin
+export L="${LDFLAGS}"
 export LIBRARY_PATH=$PREFIX/lib
 mkdir -p "$BINDIR"
 (cd kent/src/lib && make)

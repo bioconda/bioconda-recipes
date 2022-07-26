@@ -38,4 +38,3 @@ done
 # Remove unused to_unix
 rm bin/to_unix
 cp bin/* "${PREFIX}/bin/"
-
