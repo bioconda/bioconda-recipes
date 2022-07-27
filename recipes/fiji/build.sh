@@ -23,7 +23,7 @@ fi
 chmod 0755 "${PREFIX}/bin/ImageJ_bin"
 
 # Copy the ImageJ from the recipe which includes a set of userprefs
-cp $RECIPE_DIR/ImageJ.sh "${PREFIX}/bin/"
+cp $RECIPE_DIR/ImageJ.sh "${PREFIX}/bin/ImageJ"
 chmod 0755 "${PREFIX}/bin/ImageJ"
 
 # Copy bunwarpj and make it executable
