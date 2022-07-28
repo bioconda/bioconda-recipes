@@ -1,0 +1,41 @@
+{% set name = "run_dbcan" %}
+{% set data = load_setup_py_data(setup_file='../setup.py', from_recipe_dir=True) %}
+
+package:
+  name: "{{ name|lower }}"
+  version: {{ data.get('version') }}
+#  pulls version number from setup.py
+
+source:
+  #  may want to change this to pull from a stable git release branch, or look for stable release git commit labels, or from another source such as PyPi
+  git_url: https://github.com/linnabrown/run_dbcan.git
+  git_depth: 1 # only grab most recent commit on branch
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} setup.py install
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - git
+  host:
+    - python
+  run:
+    - diamond
+    - hmmer
+    - prodigal
+    - python
+    - natsort
+    - scipy
+    - psutil
+    - numpy
+
+about:
+  home: http://bcb.unl.edu/dbCAN2/
+  dev_url: https://github.com/linnabrown/run_dbcan
+  license: GPLv3
+  license_file: LICENSE
+  summary: A standalone tool of http://bcb.unl.edu/dbCAN2/
