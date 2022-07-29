@@ -1,46 +1,41 @@
 {% set name = "dbcan" %}
-{% set data = load_setup_py_data(setup_file='../setup.py', from_recipe_dir=True) %}
+{% set version = "3.0.6" %}
 
 package:
   name: "{{ name|lower }}"
-  version: {{ data.get('version') }}
-#  pulls version number from setup.py
+  version: {{ version }}
 
 source:
-  #  may want to change this to pull from a stable git release branch, or look for stable release git commit labels, or from another source such as PyPi
-  url: https://github.com/linnabrown/run_dbcan/releases/download/{{ data.get('version') }}/dbcan-{{ data.get('version') }}.tar.gz
+  url: https://github.com/linnabrown/run_dbcan/releases/download/{{ version }}/dbcan-{{ version }}.tar.gz
   sha256: 2b07b0fdb623b6c54eac86adb9459d1c218a825f6991675fa01fe4ad25977f7e
 
 build:
   noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
 
-test:
-  imports:
-    - dbcan
-  commands:
-    - pip check
-    - dbcan --help
-  requires:
-    - pip
 requirements:
   build:
     - python
     - setuptools
-    - git
   host:
     - pip
     - python
+    - conda
   run:
     - diamond
     - hmmer
     - prodigal
-    - python
+    - python>3.8
     - natsort
     - scipy
     - psutil
-    - numpy
+    - numpy>1.19
+    - bioconda-utils>0.15.0 
+
+test:
+  imports:
+    - dbcan
 
 about:
   home: http://bcb.unl.edu/dbCAN2/
@@ -48,3 +43,7 @@ about:
   license: GPLv3
   license_file: LICENSE
   summary: A standalone tool of http://bcb.unl.edu/dbCAN2/
+
+extra:
+  recipe-maintainers:
+    - Le Huang
