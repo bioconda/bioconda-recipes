@@ -1,4 +1,4 @@
-{% set name = "run_dbcan" %}
+{% set name = "dbcan" %}
 {% set data = load_setup_py_data(setup_file='../setup.py', from_recipe_dir=True) %}
 
 package:
@@ -8,20 +8,29 @@ package:
 
 source:
   #  may want to change this to pull from a stable git release branch, or look for stable release git commit labels, or from another source such as PyPi
-  git_url: https://github.com/linnabrown/run_dbcan.git
-  git_depth: 1 # only grab most recent commit on branch
+  url: https://github.com/linnabrown/run_dbcan/releases/download/{{ data.get('version') }}/dbcan-{{ data.get('version') }}.tar.gz
+  sha256: 2b07b0fdb623b6c54eac86adb9459d1c218a825f6991675fa01fe4ad25977f7e
 
 build:
   noarch: python
   number: 0
-  script: {{ PYTHON }} setup.py install
+  script: {{ PYTHON }} -m pip install . -vv
 
+test:
+  imports:
+    - dbcan
+  commands:
+    - pip check
+    - dbcan --help
+  requires:
+    - pip
 requirements:
   build:
     - python
     - setuptools
     - git
   host:
+    - pip
     - python
   run:
     - diamond
