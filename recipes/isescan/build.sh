@@ -13,7 +13,7 @@ cd ..
 chmod +x isescan.py
 mkdir -p ${PREFIX}/bin/
 cp *.py ${PREFIX}/bin/
-cp -r pHMMs/ $PREFIX/bin/
+cp -r pHMMs $PREFIX/bin/
 
 # adds test fasta for build testing
 cp NC_012624.fna $PREFIX/test/
