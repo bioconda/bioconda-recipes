@@ -2,4 +2,4 @@
 
 sed -i 's/motu-profiler/motu/g' setup.py
 
-{{ PYTHON }} -m pip install -v --no-deps --ignore-installed .
+python -m pip install -vvv --no-deps --ignore-installed .
