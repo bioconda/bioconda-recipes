@@ -1,5 +1,3 @@
 #!/usr/bin/env bash
 
-echo ">>> post-link: Downloading mOTUs-v2 database"
-
-motus downloadDB
+echo "mOTUs has been installed, but you will need to run motus downloadDB to install the mOTUs database before running the software"
