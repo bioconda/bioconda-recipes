@@ -1,0 +1,45 @@
+{% set version="1.2.0" %}
+{% set hash="9d2f51409a72e90f1b59c811fa4d8b430051683ca0f3001aa770003f9201cd71" %}
+
+package:
+  name: checkm-genome
+  version: {{ version }}
+
+source:
+  url: https://github.com/Ecogenomics/CheckM/archive/v{{ version }}.tar.gz
+  sha256: {{ hash }}
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - numpy >=1.13.1
+    - scipy >=0.19.1
+    - matplotlib-base >=2.1.0
+    # older pysam versions have wrong openssl pinning
+    - pysam >=0.15.3
+    - dendropy >=4.4.0
+    - hmmer >=3.1b1
+    - prodigal >=2.6.1
+    - pplacer ==1.1.alpha19
+    - wget
+
+test:
+  imports:
+    - checkm
+    - checkm.plot
+    - checkm.test
+    - checkm.util
+
+about:
+  home: https://ecogenomics.github.io/CheckM/
+  license: GPL3
+  license_file: LICENSE
+  summary: 'Assess the quality of microbial genomes recovered from isolates, single cells, and metagenomes.'
