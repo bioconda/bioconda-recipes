@@ -1,4 +1,4 @@
-{% set version = "2.12.2" %}
+{% set version = "3.2.1" %}
 
 package:
   name: tiddit
@@ -6,40 +6,40 @@ package:
 
 source:
   url: https://github.com/SciLifeLab/TIDDIT/archive/TIDDIT-{{ version }}.tar.gz
-  sha256: 679d06769077afb0431dfb780f2a7d3311c0d9c389301dcf55ab46ee360d91df
-  patches:
-    - TIDDIT.py.patch
+  sha256: 786ddc3f3432dcc754cc14b9741285fe7b131d011899ebcf49e2fcb0f2865d1b
 
 build:
-  number: 1
+  number: 0
+  entry_points:
+    - tiddit = tiddit.__main__:main
+  script: python -m pip install --no-deps --ignore-installed .
   skip: True  # [osx]
 
 requirements:
   build:
-    - make
     - {{ compiler('c') }}
-    - cmake
-    - python
-    - cython
   host:
-    - python
+    - python >=3.1
     - cython
     - numpy
     - pip
+
   run:
-    - python
+    - python >=3.1
     - numpy
     - pysam
-    - samtools
+    - fermi2
+    - bwa
+    - ropebwt2
 
 test:
   commands:
-    - TIDDIT
-    - TIDDIT.py
     - tiddit --help
-
+    - fermi2 2>&1 | grep "^Usage:"
+    - ropebwt2 /dev/null 2>&1 | grep ropebwt2
+    - bwa 2>&1 | grep "index sequences in the"
 about:
   home: https://github.com/SciLifeLab/TIDDIT
   license: GPL-3.0-only
   license_file: LICENSE
-  summary: "TIDDIT - structural variant calling."
+  summary: "TIDDIT - structural variant calling"
