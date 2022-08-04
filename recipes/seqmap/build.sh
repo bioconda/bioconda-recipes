@@ -1,6 +1,5 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin/
+mkdir -p "${PREFIX}/bin"
 
-make
-cp seqmap ${PREFIX}/bin/
+"${CXX}" ${CPPFLAGS} ${CXXFLAGS} -o "${PREFIX}/bin/seqmap" match.cpp

@@ -1,9 +1,8 @@
-{% set name = "ont-tombo" %}
 {% set version = "1.5.1" %}
 {% set hash = "f5f7ce37baee40b851ea867c2b835e6eae324ef90bdeb23fb931fde3272769a0" %}
 
 package:
-  name: {{ name|lower }}
+  name: ont-tombo
   version: {{ version }}
 
 source:
@@ -11,9 +10,11 @@ source:
   sha256: {{ hash }}
 
 build:
+  number: 2
+  # Py3.8 fails due to some missing dependency and conda-build breaks at processing the `r-base <4.0` constraint.
+  skip: True  # [py>=38]
   entry_points:
     - tombo = tombo.__main__:main
-  number: 1
   script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 requirements:
@@ -24,12 +25,12 @@ requirements:
     - python
     - pip
     - h5py
-    - rpy2  # [py3k]
+    - rpy2 <=2.9.5  # [py3k]
     - rpy2 <=2.8.6  # [not py3k]
     - numpy
     - scipy
     - cython
-    - r-base
+    - r-base <4.0
     - r-ggplot2
     - r-gridextra
     - mappy >=2.10
@@ -40,11 +41,11 @@ requirements:
   run:
     - python
     - h5py
-    - rpy2  # [py3k]
+    - rpy2 <=2.9.5  # [py3k]
     - rpy2 <=2.8.6  # [not py3k]
     - numpy
     - scipy
-    - r-base
+    - r-base <4.0
     - r-ggplot2
     - r-gridextra
     - mappy >=2.10

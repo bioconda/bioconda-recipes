@@ -1,5 +1,5 @@
-{% set version = "2.0.beta" %}
-{% set sha256 = "9fc2424b69762d1315ef8b78b122191d096dd5500e22d6fa948ec14b9469ac76" %}
+{% set version = "2.2.3" %}
+{% set sha256 = "b883966e63291147389526fc4ea3b1d844b525a9b092ab0c4969a96b3f02162e" %}
 
 package:
   name: virsorter
@@ -10,36 +10,34 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1      # must start from 0
   entry_points:
     - virsorter=virsorter.virsorter:cli
-  noarch: generic
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
-
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   host:
-    - python >3.6
+    - python >=3.6
     - pip
-
   run:
-    - python >3.6
-    - ruamel.yaml =0.16.6
-    - snakemake-minimal =5.16.0
+    - python >=3.6
+    - ruamel.yaml =0.16
+    - snakemake-minimal >=5.18,<=5.26
     - click >=7
     - git
     - cookiecutter
+    - mamba
 
 test:
   imports:
     - virsorter
   commands:
-{% set export_lang = "export LC_ALL=en_US.UTF-8 && export LANG=en_US.UTF-8" %}
-    - {{ export_lang }} && virsorter --version
-    - {{ export_lang }} && virsorter setup --help
-    - {{ export_lang }} && virsorter run --help
-    - {{ export_lang }} && virsorter train-feature --help
-    - {{ export_lang }} && virsorter train-model --help
+    - virsorter --version
+    - virsorter setup --help
+    - virsorter run --help
+    - virsorter train-feature --help
+    - virsorter train-model --help
 
 about:
   home: https://github.com/jiarong/VirSorter2

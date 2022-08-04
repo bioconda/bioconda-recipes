@@ -1,0 +1,89 @@
+diff --git a/StriDe/overlap.cpp b/StriDe/overlap.cpp
+index 8110f53..51f0b9d 100755
+--- a/StriDe/overlap.cpp
++++ b/StriDe/overlap.cpp
+@@ -27,13 +27,7 @@
+ #include <sys/stat.h>
+ 
+ /*Tatsuki include */
+-#include <tr1/unordered_map>
+-#include <tr1/unordered_set>
+-#define HashMap std::tr1::unordered_map
+-#define HashSet std::tr1::unordered_set
+-typedef std::tr1::hash<std::string> StringHasher;
+-#include <sparsehash/dense_hash_set>
+-#define DenseHashSet google::dense_hash_set
++#include "HashMap.h"
+ typedef DenseHashSet<std::string, StringHasher> ReadHashSet;
+ typedef ReadHashSet::iterator ReadHashSetIter;
+ #include <time.h>
+diff --git a/StringGraph/SGVisitors.h b/StringGraph/SGVisitors.h
+index ec010fe..e2b61dd 100755
+--- a/StringGraph/SGVisitors.h
++++ b/StringGraph/SGVisitors.h
+@@ -272,7 +272,7 @@ struct  SGBothShortEdgesRemoveVisitor
+ 			assert (kmerLength>0);
+ 	}
+ 	~SGBothShortEdgesRemoveVisitor(){
+-        if(m_fileHandle!=NULL)
++        if(m_fileHandle)
+             m_fileHandle.close();
+     }
+ 
+@@ -324,7 +324,7 @@ struct SGLowOverlapRatioEdgeSweepVisitor
+ 	: m_fileHandle(filename.c_str()),m_overlapRatio(minOverlapRatio),m_matchLength(maxMatchLength){}
+ 
+ 	~SGLowOverlapRatioEdgeSweepVisitor () {
+-	    if(m_fileHandle!=NULL)
++	    if(m_fileHandle)
+             m_fileHandle.close();
+ 	}
+ 
+@@ -351,7 +351,7 @@ struct SGLowOverlapRatioEdgeRemoveVisitor
+ 	: m_fileHandle(filename.c_str()),m_vetexLength(maxVertexLength),m_diffRatio(minDiffRatio){}
+ 
+ 	~SGLowOverlapRatioEdgeRemoveVisitor () {
+-    if(m_fileHandle!=NULL)
++    if(m_fileHandle)
+         m_fileHandle.close();
+     }
+ 
+diff --git a/SuffixTools/STCommon.h b/SuffixTools/STCommon.h
+index 13e0769..3fab8ac 100755
+--- a/SuffixTools/STCommon.h
++++ b/SuffixTools/STCommon.h
+@@ -96,7 +96,7 @@ struct SAElem
+         // Masks
+         static const uint8_t ID_BITS = 36; // Allows up to 68 billion IDs
+         static const uint8_t POS_BITS = 64 - ID_BITS;
+-        static const uint64_t HIGH_MASK = ~0 << POS_BITS;
++        static const uint64_t HIGH_MASK = ~0ULL << POS_BITS;
+         static const uint64_t LOW_MASK = ~HIGH_MASK;
+ };
+ 
+diff --git a/SuffixTools/SparseGapArray.h b/SuffixTools/SparseGapArray.h
+index deebfcc..1262fc3 100755
+--- a/SuffixTools/SparseGapArray.h
++++ b/SuffixTools/SparseGapArray.h
+@@ -320,7 +320,7 @@ class SparseGapArray : public GapArray
+         //
+         void initOverflow(size_t i, OverflowStorage c)
+         {
+-            m_overflow.insert(std::make_pair<size_t, OverflowStorage>(i, c));
++            m_overflow.insert(std::make_pair(i, c));
+         }
+ 
+         //
+diff --git a/Util/StdAlnTools.cpp b/Util/StdAlnTools.cpp
+index b6441eb..28c30b5 100755
+--- a/Util/StdAlnTools.cpp
++++ b/Util/StdAlnTools.cpp
+@@ -119,7 +119,7 @@ std::string StdAlnTools::expandCigar(const std::string& cigar)
+     char code;
+     while(parser >> length)
+     {
+-        bool success = parser >> code;
++        bool success{parser >> code};
+         expanded.append(length, code);
+         assert(success);
+         (void)success;

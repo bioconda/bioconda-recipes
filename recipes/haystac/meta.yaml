@@ -1,0 +1,55 @@
+{% set name = "haystac" %}
+{% set version = "0.4.8" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: d221302e2258536c83fc2c206b5383f0c83ca0b43a02470b34fccdf11a8ba87a
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - haystac = haystac.cli:Haystac
+  script: "{{ PYTHON }} -m pip install . -vv --ignore-installed --no-deps"
+
+requirements:
+  host:
+    - numpy
+    - pandas
+    - pip
+    - python
+    - setuptools
+  run:
+    - argparse=1.4.0
+    - numpy=1.19.2
+    - pandas=1.0.3
+    - psutil=5.7.2
+    - python=3.6.7
+    - pyyaml=5.4.1
+    - requests=2.24.0
+    - snakemake-minimal=6.3.0
+
+test:
+  imports:
+    - haystac
+    - haystac.workflow
+    - haystac.workflow.scripts
+  commands:
+    - haystac --help
+
+about:
+  home: "https://github.com/antonisdim/haystac"
+  license: MIT
+  license_family: MIT
+  summary: "Species identification pipeline for both single species and metagenomic samples."
+  doc_url: "https://haystac.readthedocs.io/en/master/"
+
+extra:
+  recipe-maintainers:
+    - antonisdim
+  skip-lints:
+    - uses_setuptools

@@ -1,25 +1,30 @@
-{% set version = "0.4.4" %}
-{% set sha256 = "43a2298b2ebadc48103447a3bb4426df1b38d1bec5fa564e50ed2f00cc060478" %}
+{% set version = "0.4.6" %}
+{% set sha256 = "eb4ecbd3ae428474a57dab969fa7564ae755310da65be68efa18969e0d132a9e" %}
 
 package:
   name: libbigwig
   version: {{ version }}
 
 build:
-  number: 0
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('libbigwig', max_pin='x.x') }}
 
 source:
   url: https://github.com/dpryan79/libBigWig/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - patch
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
   host:
-    - curl
+    - libcurl
     - zlib
   run:
-    - curl
+    - libcurl
     - zlib
 
 about:
@@ -29,4 +34,4 @@ about:
 
 test:
   commands:
-    - echo
+    - test -f $PREFIX/lib/libBigWig.so

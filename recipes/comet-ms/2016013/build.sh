@@ -6,7 +6,7 @@ platform="$(uname)"
 if [ "$platform" = "Darwin" ]; then
 	unzip comet_source_"$PKG_VERSION".zip
 	sed -i bak -e 's/ -static//' Makefile
-	make
+	CXXFLAGS="${CXXFLAGS} -std=c++03" make
 elif [ "$platform" = "Linux" ]; then
 	mv comet."$PKG_VERSION".linux.exe comet.exe
 fi

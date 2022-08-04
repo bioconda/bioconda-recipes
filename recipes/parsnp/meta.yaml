@@ -1,44 +1,48 @@
-{% set version = "1.5.2" %}
-{% set base = "https://github.com/marbl/parsnp/releases/download" %}
-{% set sha256linux = "55ef825bcf1a8117be9b355738330a5ecbb3f831a90df799cac5d02f4392faf8" %}
-{% set sha256osx = "5719c1bcf0597334d1720013b65fb601ca367a2d99b07c214e4adc15260ce1d5" %}
+{% set version = "1.7.4" %}
 
 package:
   name: parsnp
   version: '{{version}}'
 
 source:
-  - url: '{{base}}/v{{version}}/Parsnp-Linux64-v{{version}}.tar.gz'   # [linux]
-    sha256: '{{sha256linux}}'                                         # [linux]
-  - url: '{{base}}/v{{version}}/Parsnp-OSX64-v{{version}}.tar.gz'     # [osx]
-    sha256: '{{sha256osx}}'                                           # [osx]
+  url: "https://github.com/marbl/parsnp/archive/refs/tags/v{{version}}.tar.gz"  
+  sha256: c24a1b395b1ddb6ab2a1f1c41e7e575b45da2ffed99581225be05fdad761684f
 
 build:
-  number: 1
+  number: 0
 
 requirements:
   build:
-  host:
-  run:
+    - {{ compiler('cxx') }}
+    - automake
+    - autoconf
+    - libtool
+    - make
     - llvm-openmp  # [osx]
-    - openmp
+    - openmp # [linux]
+  host:
+    - zlib
+    - llvm-openmp  # [osx]
+    - openmp # [linux]
+  run:
+    - python >=3.7
+    - llvm-openmp  # [osx]
+    - openmp # [linux]
     - harvesttools
     - fasttree
     - phipack
-    - python >=3
-    - numpy
+    - biopython
+    - numpy 
     - zlib
+    - phipack
     - raxml
     - fasttree
-    - fastani
-    - mash
+    - fastani # [linux]
+    - mash 
     - harvesttools
+    - mafft
 
 about:
   home: https://github.com/marbl/parsnp
   license: "custom; see https://raw.githubusercontent.com/marbl/parsnp/master/LICENSE"
   summary: Parsnp is a command-line-tool for efficient microbial core genome alignment and SNP detection.
-
-extra:
-  skip-lints:
-    - should_be_noarch_generic

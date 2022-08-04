@@ -1,28 +1,36 @@
-{% set version = "0.5.9" %}
+{% set version = "0.7.1" %}
 
 package:
   name: pyfaidx
   version: {{ version }}
 
 source:
-  url: https://github.com/mdshw5/pyfaidx/archive/v{{ version }}.tar.gz
-  sha256: daf9040d7c8d1c25dad58ae55a5dbeb1a6e85e684055376c810cbaff5e5c4356
+  url: https://files.pythonhosted.org/packages/70/e0/0f968d75b061a46ce01102fa9e434f329d3d62d533765a46ebd248da2c81/pyfaidx-0.7.1.tar.gz
+  sha256: 3977632b7fd29049f8b11035d7e9dea0e2c5da9c235f982b4c3fae06ff1fa23f
 
 build:
   number: 0
   noarch: python
   entry_points:
     - faidx = pyfaidx.cli:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
 
 requirements:
   host:
     - python
     - pip
+    - setuptools-scm
 
   run:
     - python
     - six
+    - setuptools  # uses pkg_resources
+    # the following are not mentioned in setup.py but conditionally imported at runtime
+    - packaging  # https://github.com/mdshw5/pyfaidx/blob/58d8b4e381f1348b9e669d55d88019e2498c71de/pyfaidx/__init__.py#L398
+    - pyvcf3  # https://github.com/mdshw5/pyfaidx/blob/58d8b4e381f1348b9e669d55d88019e2498c71de/pyfaidx/__init__.py#L1183
+    - biopython  # https://github.com/mdshw5/pyfaidx/blob/58d8b4e381f1348b9e669d55d88019e2498c71de/pyfaidx/__init__.py#L396
+    # TODO this will become unnecessary after release of https://github.com/mdshw5/pyfaidx/pull/194
+    - pysam  # https://github.com/mdshw5/pyfaidx/blob/58d8b4e381f1348b9e669d55d88019e2498c71de/pyfaidx/__init__.py#L1179
 
 test:
   imports:
@@ -32,7 +40,7 @@ test:
     - faidx --help
 
 about:
-  home: http://mattshirley.com
+  home: https://github.com/mdshw5/pyfaidx/
   license: BSD License
   summary: 'pyfaidx: efficient pythonic random access to fasta subsequences'
   license_family: BSD

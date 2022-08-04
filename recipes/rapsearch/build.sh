@@ -1,12 +1,9 @@
 #!/bin/bash
 
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
-export CPATH=${PREFIX}/include
+# Do not use the included pre-compiled Boost.
+rm -rf Src/*.a Src/boost
 
-make -C Src/
-# copy binaries from the bin folder in the
-# rapsearch archive to the conda bin folder
+make -C Src/ CXX="${CXX}" CXXFLAGS="${CPPFLAGS} ${CXXFLAGS}" LIBS="${LDFLAGS}"
+
 mv bin/rapsearch ${PREFIX}/bin/
 mv bin/prerapsearch ${PREFIX}/bin/
-
