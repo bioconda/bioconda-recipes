@@ -19,6 +19,7 @@ ls -l $BIN_FOLDER
 ls -l $BIN_FOLDER/workflow/
 ls -l $BIN_FOLDER/workflow/scripts
 ln -s $INSTALL_FOLDER/plastedma.py $BIN_FOLDER/
+ls -l $BIN_FOLDER
 # ln -s $INSTALL_FOLDER/workflow/scripts/hmmsearch_run.py $INSTALL_FOLDER/workflow/scripts/hmm_process.py $BIN_FOLDER/
 echo "Listing bin folder links from install folder"
 chmod u+x $BIN_FOLDER/*
