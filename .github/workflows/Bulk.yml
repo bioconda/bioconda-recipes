@@ -36,6 +36,26 @@ jobs:
 
     - name: OSX stuff
       run: |
+        # The following lines are from reverse-engineering the
+        # conda-forge-ci-setup repo,
+        # https://github.com/conda-forge/conda-forge-ci-setup-feedstock.
+        # Relevant links in that repo are provided for each chunk.
+        #
+        # https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/df29a72bf13e7083d5e1c4126f94fe756151ffdb/.ci_support/osx_64_python3.10.____cpython.yaml#L2
+        MACOSX_SDK_VERSION=10.9
+
+        # https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/404bf0a7c73205c1cdf7900565f0f7b1ee4a5062/recipe/run_conda_forge_build_setup_osx#L32
+         OSX_SDK_DIR="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs"
+
+        # https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/df29a72bf13e7083d5e1c4126f94fe756151ffdb/recipe/download_osx_sdk.sh#L25-L27
+        export CONDA_BUILD_SYSROOT="${OSX_SDK_DIR}/MacOSX${MACOSX_SDK_VERSION}.sdk"
+        curl -L -O https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX${MACOSX_SDK_VERSION}.sdk.tar.xz
+        mkdir -p "$(dirname "$CONDA_BUILD_SYSROOT")"
+        tar -xf MacOSX${MACOSX_SDK_VERSION}.sdk.tar.xz -C "$(dirname "$CONDA_BUILD_SYSROOT")"
+
+        # https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/404bf0a7c73205c1cdf7900565f0f7b1ee4a5062/recipe/run_conda_forge_build_setup_osx#L42-L43
+        plutil -replace MinimumSDKVersion -string ${MACOSX_SDK_VERSION} $(xcode-select -p)/Platforms/MacOSX.platform/Info.plist
+        plutil -replace DTSDKName -string macosx${MACOSX_SDK_VERSION}internal $(xcode-select -p)/Platforms/MacOSX.platform/Info.plist
 
     - name: Build and upload
       env:
