@@ -12,7 +12,7 @@ cp -r results $INSTALL_FOLDER/
 cp plastedma.py $INSTALL_FOLDER/
 #ls -lt $INSTALL_FOLDER/workflow
 
-cp $INSTALL_FOLDER/scripts/* $INSTALL_FOLDER/hmm_process.py $BIN_FOLDER
+cp $INSTALL_FOLDER/scripts/* $BIN_FOLDER
 ls -l $BIN_FOLDER
 ln -s $INSTALL_FOLDER/plastedma.py $BIN_FOLDER/
 # ln -s $INSTALL_FOLDER/workflow $BIN_FOLDER/
