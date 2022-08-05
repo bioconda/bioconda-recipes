@@ -11,7 +11,6 @@ cp -r config/* $INSTALL_FOLDER/
 cp -r resources $INSTALL_FOLDER/
 cp -r results $INSTALL_FOLDER/
 cp plastedma.py $INSTALL_FOLDER/
-echo "Listing copied files from package to install folder"
 #ls -lt $INSTALL_FOLDER/workflow
 
 # cp $INSTALL_FOLDER/workflow/scripts/hmmsearch_run.py $INSTALL_FOLDER/workflow/scripts/hmm_process.py $BIN_FOLDER/workflow/scripts
