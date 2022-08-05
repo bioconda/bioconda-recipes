@@ -18,8 +18,19 @@ sed -i'.bak' 's/CC=/#CC=/' $SRC_DIR/quast_libs/bwa/Makefile
 sed -i'.bak' 's/INCLUDES=/#INCLUDES=/' $SRC_DIR/quast_libs/bwa/Makefile
 sed -i'.bak' 's/CFLAGS=/CFLAGS+= -fcommon/' $SRC_DIR/quast_libs/bwa/Makefile
 
+pushd $SRC_DIR/quast_libs/bwa/
+make
+mv bwa ${PREFIX}/bin
+
+popd
+
 sed -i'.bak' 's/export CXX\s/#export CXX/' $SRC_DIR/quast_libs/bedtools/Makefile
 sed -i'.bak' 's/CXXFLAGS =/CXXFLAGS +=/' $SRC_DIR/quast_libs/bedtools/Makefile
+
+pushd $SRC_DIR/quast_libs/bedtools/
+make
+cp ./bin/* ${PREFIX}/bin
+popd
 
 $PYTHON -m pip install . --ignore-installed --no-deps -vv
 
