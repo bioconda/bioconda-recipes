@@ -57,21 +57,23 @@ jobs:
         plutil -replace MinimumSDKVersion -string ${MACOSX_SDK_VERSION} $(xcode-select -p)/Platforms/MacOSX.platform/Info.plist
         plutil -replace DTSDKName -string macosx${MACOSX_SDK_VERSION}internal $(xcode-select -p)/Platforms/MacOSX.platform/Info.plist
 
-    - name: Build and upload
-      env:
-        ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
-        QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
-        # Mimic circleci
-        OSTYPE: "darwin"
-        CI: "true"
-      run: |
-        conda activate base
-        echo '============'
-        conda info --all
-        conda config --show-sources
-        python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
-        echo '============'
-        bioconda-utils build recipes config.yml \
-          --worker-offset ${{ matrix.runner }} --n-workers 1
-        conda clean -y --all
+
+
+#    - name: Build and upload
+#      env:
+#        ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+#        INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+#        QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+#        # Mimic circleci
+#        OSTYPE: "darwin"
+#        CI: "true"
+#      run: |
+#        conda activate base
+#        echo '============'
+#        conda info --all
+#        conda config --show-sources
+#        python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+#        echo '============'
+#        bioconda-utils build recipes config.yml \
+#          --worker-offset ${{ matrix.runner }} --n-workers 1
+#        conda clean -y --all
