@@ -31,26 +31,7 @@ jobs:
     - name: Setup Bioconda-utils
       if: steps.cache.outputs.cache-hit != 'true'
       run: |
-        # Extract the versions we should be using from the previously-downloaded common.sh
-        BIOCONDA_UTILS_TAG=$(grep "^BIOCONDA_UTILS_TAG=" common.sh | cut -f2 -d "=" | sed "s/^v//g")
-        MINICONDA_VER=$(grep "^MINICONDA_VER=" common.sh | cut -f2 -d "=")
-
-        # Basic miniconda installation with bioconda channels configured
-        curl "https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VER}-MacOSX-x86_64.sh" > miniconda.sh
-        bash miniconda.sh -b -p "${HOME}/miniconda"
-        export PATH="${HOME}/miniconda/bin:${PATH}"
-        conda config --set always_yes yes
-        conda config --system --add channels defaults
-        conda config --system --add channels bioconda
-        conda config --system --add channels conda-forge
-        conda install -y "bioconda-utils=${BIOCONDA_UTILS_TAG}"
-        conda clean -y --all
-
-        # Set local channel as highest priority
-        mkdir -p "${HOME}/miniconda/conda-bld/{noarch,linux-64,osx-64}"
-        conda index "${HOME}/miniconda/conda-bld"
-        conda config --system --add channels "file://${HOME}/miniconda/conda-bld"
-
+        #
         # The following lines are from reverse-engineering the
         # conda-forge-ci-setup repo,
         # https://github.com/conda-forge/conda-forge-ci-setup-feedstock.
@@ -71,6 +52,27 @@ jobs:
         # https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/404bf0a7c73205c1cdf7900565f0f7b1ee4a5062/recipe/run_conda_forge_build_setup_osx#L42-L43
         plutil -replace MinimumSDKVersion -string ${MACOSX_SDK_VERSION} $(xcode-select -p)/Platforms/MacOSX.platform/Info.plist
         plutil -replace DTSDKName -string macosx${MACOSX_SDK_VERSION}internal $(xcode-select -p)/Platforms/MacOSX.platform/Info.plist
+
+
+        # Extract the versions we should be using from the previously-downloaded common.sh
+        BIOCONDA_UTILS_TAG=$(grep "^BIOCONDA_UTILS_TAG=" common.sh | cut -f2 -d "=" | sed "s/^v//g")
+        MINICONDA_VER=$(grep "^MINICONDA_VER=" common.sh | cut -f2 -d "=")
+
+        # Basic miniconda installation with bioconda channels configured
+        curl "https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VER}-MacOSX-x86_64.sh" > miniconda.sh
+        bash miniconda.sh -b -p "${HOME}/miniconda"
+        export PATH="${HOME}/miniconda/bin:${PATH}"
+        conda config --set always_yes yes
+        conda config --system --add channels defaults
+        conda config --system --add channels bioconda
+        conda config --system --add channels conda-forge
+        conda install -y "bioconda-utils=${BIOCONDA_UTILS_TAG}"
+        conda clean -y --all
+
+        # Set local channel as highest priority
+        mkdir -p "${HOME}/miniconda/conda-bld/{noarch,linux-64,osx-64}"
+        conda index "${HOME}/miniconda/conda-bld"
+        conda config --system --add channels "file://${HOME}/miniconda/conda-bld"
 
 
     - name: Build and upload
