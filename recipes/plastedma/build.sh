@@ -4,7 +4,7 @@ INSTALL_FOLDER=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 BIN_FOLDER=$PREFIX/bin
 mkdir -p $INSTALL_FOLDER
 mkdir -p $BIN_FOLDER
-mkdir -p $BIN_FOLDER/workflow/scripts
+# mkdir -p $BIN_FOLDER/workflow/scripts
 
 cp -r workflow $INSTALL_FOLDER/
 cp -r config $INSTALL_FOLDER/
