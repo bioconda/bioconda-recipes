@@ -1,0 +1,90 @@
+package:
+  name: bioconda-utils
+  version: 1.0.999
+
+source:
+  git_url: https://github.com/bioconda/bioconda-utils.git
+  git_tag: 'master'
+
+build:
+  noarch: python
+  number: 0
+  script: python -m pip install --no-deps --ignore-installed .
+  entry_points:
+    - bioconda-utils = bioconda_utils.cli:main
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+  run:
+    - python >=3.7
+    - conda 4.12.0
+    - boa 0.9.*
+    - conda-build 3.21.8
+    - conda-verify 3.1.*
+    - argh 0.26.*
+    - colorlog 3.1.*
+    - tqdm >=4.26
+    - ruamel_yaml 0.15.*
+    - pyaml 17.12.*
+    - networkx 2.*
+    - pandas 0.23.*
+    - numpy 1.19.*
+    - libblas * *openblas
+    - boltons 18.*
+    - jsonschema 2.6.*
+    - simplejson
+    - conda-forge-pinning 2022.02.18.13.24.38
+    - anaconda-client 1.6.*
+    - involucro 1.1.*
+    - skopeo 0.1.35
+    - git 2.*
+    - regex 2018.08.29
+    - aiohttp 3.8.*
+    - aiohttp-jinja2
+    - aiohttp-session
+    - aiohttp-security
+    - aiofiles 0.8.*
+    - aioftp 0.12.*
+    - backoff 1.6.*
+    - cachetools 3.0.*
+    - gitpython >=3.0.8,3.0.*
+    - gidgethub 3.0.*
+    - pyjwt >=2.4.0
+    - beautifulsoup4 4.6.*
+    - galaxy-lib >=18.9.1
+    - jinja2 >2.10.1,<3
+    - markupsafe <2.1
+    - sphinx >=4.1
+    - celery
+    - sphinx-autodoc-typehints
+    - alabaster 0.7.*
+    - docutils
+    - markdown
+    - graphviz
+    - requests 2.22.*
+    - conda-forge-ci-setup
+
+test:
+  imports:
+    - bioconda_utils
+  commands:
+    - bioconda-utils --help
+    - bioconda-utils lint --help
+    - bioconda-utils build --help
+    - >
+      CONDA_AGGRESSIVE_UPDATE_PACKAGES=
+      CONDA_AUTO_UPDATE_CONDA=0
+      "${PREFIX}/bin/conda" install --prefix="${PREFIX}" --dry-run --satisfied-skip-solve
+      --file="$( python -c
+      'from os.path import dirname, join; import bioconda_utils; print(join(dirname(bioconda_utils.__file__), "bioconda_utils-requirements.txt"))'
+      )"
+      2>&1 | grep -qF 'All requested packages already installed.'
+
+about:
+  home: http://bioconda.github.io/build-system.html
+  license: MIT
+  license_family: MIT
+  summary: Utilities for building and managing bioconda recipes.
+  dev_url: https://github.com/bioconda/bioconda-utils
