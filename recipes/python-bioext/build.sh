@@ -8,6 +8,11 @@ fi
 
 export FREETYPE2_ROOT=$PREFIX
 
+# Remove C and C++ files that ship with source to allow Cython to rebuild them
+# from .pyx
+find . -name "*.c" | xargs rm
+find . -name ".cpp" | xargs rm
+
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 
 mkdir -p "${PREFIX}/etc/conda/activate.d" "${PREFIX}/etc/conda/deactivate.d"
