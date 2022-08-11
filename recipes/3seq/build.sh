@@ -1,5 +1,5 @@
 #!/bin/bash
-cd 3seq-v${PKG_VERSION}
+
 mkdir build
 cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
