@@ -1,5 +1,4 @@
 #!/bin/bash
-tar xfz 3seq-v${PKG_VERSION}.tar.gz
 cd 3seq-v${PKG_VERSION}
 mkdir build
 cd build
