@@ -5,7 +5,8 @@ cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
 make
 if [ ! -d "$CONDA_PREFIX/bin" ]; then
-        mkdir $PREFIX/bin;
+        mkdir $CONDA_PREFIX/bin;
+        export PATH=$CONDA_PREFIX/bin:$PATH;
 fi
 cp ./3seq $CONDA_PREFIX/bin/
 if [ ! -d "$CONDA_PREFIX/share" ]; then
