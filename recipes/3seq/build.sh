@@ -2,17 +2,16 @@
 
 mkdir build
 cd build
-cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
+cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX
 make
-if [ ! -d "$CONDA_PREFIX/bin" ]; then
-        mkdir $CONDA_PREFIX/bin;
-        export PATH=$CONDA_PREFIX/bin:$PATH;
+if [ ! -d "$PREFIX/bin" ]; then
+        mkdir $PREFIX/bin;
+        export PATH=$PREFIX/bin:$PATH;
 fi
-cp ./3seq $CONDA_PREFIX/bin/
-if [ ! -d "$CONDA_PREFIX/share" ]; then
-	mkdir $CONDA_PREFIX/share;
+cp ./3seq $PREFIX/bin/
+if [ ! -d "$PREFIX/share/3seq" ]; then
+	mkdir $PREFIX/share/3seq;
 fi
-mkdir $CONDA_PREFIX/share/pval_table
-wget -P $CONDA_PREFIX/share/pval_table/ https://www.dropbox.com/s/zac4wotgdmm3mvb/pvaluetable.2017.700.tgz
-tar xfz $CONDA_PREFIX/share/pval_table/pvaluetable.2017.700.tgz  -C $CONDA_PREFIX/share/pval_table/
-echo "yes | 3seq -c $CONDA_PREFIX/share/pval_table/PVT.3SEQ.2017.700" > pval_check.sh; chmod +x pval_check.sh; (timeout 5 ./pval_check.sh %> log.out & exit 0)
+wget -P $PREFIX/share/3seq/ https://www.dropbox.com/s/zac4wotgdmm3mvb/pvaluetable.2017.700.tgz
+tar xfz $PREFIX/share/3seq/pvaluetable.2017.700.tgz  -C $PREFIX/share/3seq/
+echo "yes | 3seq -c $PREFIX/share/3seq/PVT.3SEQ.2017.700" > pval_check.sh; chmod +x pval_check.sh; (timeout 5 ./pval_check.sh &> log.out & exit 0)
