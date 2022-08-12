@@ -14,4 +14,4 @@ fi
 mkdir $CONDA_PREFIX/share/pval_table
 wget -P $CONDA_PREFIX/share/pval_table/ https://www.dropbox.com/s/zac4wotgdmm3mvb/pvaluetable.2017.700.tgz
 tar xfz $CONDA_PREFIX/share/pval_table/pvaluetable.2017.700.tgz  -C $CONDA_PREFIX/share/pval_table/
-echo "yes | 3seq -c $CONDA_PREFIX/share/pval_table/PVT.3SEQ.2017.700" > pval_check.sh; chmod +x pval_check.sh; (timeout 5 ./pval_check.sh & exit 0)
+echo "yes | 3seq -c $CONDA_PREFIX/share/pval_table/PVT.3SEQ.2017.700" > pval_check.sh; chmod +x pval_check.sh; (timeout 5 ./pval_check.sh %> log.out & exit 0)
