@@ -23,17 +23,24 @@ ls -lah .
 #./meteor --version
 #export PATH=$(pwd):$PATH
 #popd
-#
+
+# Temp fix for cert error on Azure os x builder
+sed -i.bak 's|curl https|curl --insecure https|' package.json
+rm package.json.bak
+
+# Temp fix for typo introduced in 0.3.1
+sed -i.bak 's|chmod +775|chmod 775|' bundle.sh
+rm bundle.sh.bak
+
 npm install --unsafe-perm
 
 export PATH=$PATH:"$HOME/.meteor"
+
 #ls -lah .
-#
 #meteor node -v
 
 METEOR_ALLOW_SUPERUSER=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 npm run bundle
 
 cp -R genenotebook_v${PKG_VERSION}/* $outdir
 
-ln -s ${outdir}/genenotebook ${PREFIX}/bin/genenotebook
-
+ln -s ${outdir}/genenotebook.js ${PREFIX}/bin/genenotebook

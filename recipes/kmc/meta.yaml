@@ -1,20 +1,37 @@
 {% set version = "3.2.1" %}
-{% set system = "linux"%}  # [linux]
-{% set system = "mac"%}  # [osx]
-{% set sha256 = "505701c4627bee7c28e8a43290e2aaf91715f203f925d1492ee8f376453235e7" %}  # [linux]
+{% set url = "https://github.com/refresh-bio/KMC/archive/v3.2.1.tar.gz" %}  # [linux]
+{% set sha256 = "7db333091a754508163a097c41720cf32a80abe160bef60f3fc82c8da1d67896" %}  # [linux]
+{% set url = "https://github.com/refresh-bio/kmc/releases/download/v3.2.1/kmc3.2.1.mac.tar.gz" %}  # [osx]
 {% set sha256 = "d4bd30d5e16bcbaac7f979f18e49e7447b0148709fb26f754490be9e3e766e73" %}  # [osx]
+
+
 package:
   name: kmc
   version: {{ version }}
-build:
-  number: 0
-  script: "mkdir -p ${PREFIX}/bin; cp bin/kmc ${PREFIX}/bin; cp bin/kmc_tools ${PREFIX}/bin; cp bin/kmc_dump ${PREFIX}/bin"
+
 source:
-  url: https://github.com/refresh-bio/kmc/releases/download/v{{ version }}/kmc{{ version }}.{{ system }}.tar.gz
-  sha256: {{ sha256 }}
+  url: {{ url }}
+  sha256:  {{ sha256 }}
+  patches:
+    - Makefile.patch  # [linux]
+
+build:
+  number: 2
+
 requirements:
   build:
+    - make
+    - bzip2
+    - zlib
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - bzip2
   run:
+    - zlib
+    - bzip2
+
 about:
   home: https://github.com/refresh-bio/kmc
   summary: "Tools for efficient k-mer counting and filtering of reads based on k-mer content."
@@ -27,7 +44,3 @@ about:
 test:
   commands:
     - kmc --help
-extra:
-  skip-lints:
-    - should_be_noarch_generic
-    - should_not_be_noarch_source
