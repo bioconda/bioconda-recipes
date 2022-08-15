@@ -5,56 +5,57 @@ on:
       - bulk
       - bulk-osx-debug
 jobs:
-  #   build-linux:
-  #     name: Bulk Linux Builds
-  #     runs-on: ubuntu-latest
-  #     strategy:
-  #       fail-fast: false
-  #       max-parallel: 13
-  #       matrix:
-  #         runner: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] #, 13, 14, 15, 16, 17, 18, 19]
-  #     steps:
-  #     - uses: actions/checkout@v1
-  # 
-  #     - name: Fetch common.sh
-  #       run: |
-  #         wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/common.sh
-  # 
-  #     - name: Restore cache
-  #       id: cache
-  #       uses: actions/cache@v1
-  #       with:
-  #         path: /home/runner/bioconda
-  #         key: ${{ runner.os }}--bulk--${{ hashFiles('**/common.sh') }}
-  # 
-  #     - name: Setup Bioconda-utils
-  #       if: steps.cache.outputs.cache-hit != 'true'
-  #       uses: bioconda/bioconda-actions/bioconda_recipes_setup/@bulk
-  #       env:
-  #         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
-  # 
-  #     - name: Build and upload
-  #       env:
-  #         ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-  #         INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
-  #         QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
-  #         # Mimic circleci
-  #         OSTYPE: "linux-gnu"
-  #         CI: "true"
-  #       run: |
-  #         ls /home/runner/bioconda/etc/profile.d
-  #         ls /home/runner/bioconda/etc
-  #         . /home/runner/bioconda/etc/profile.d/conda.sh
-  #         conda activate base
-  #         echo '============'
-  #         conda info --all
-  #         conda config --show-sources
-  #         python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
-  #         echo '============'
-  #         bioconda-utils build recipes config.yml \
-  #           --worker-offset ${{ matrix.runner }} --n-workers 13 \
-  #           --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
-  #         conda clean -y --all
+   build-linux:
+     if: ${{ false }}
+     name: Bulk Linux Builds
+     runs-on: ubuntu-latest
+     strategy:
+       fail-fast: false
+       max-parallel: 13
+       matrix:
+         runner: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] #, 13, 14, 15, 16, 17, 18, 19]
+     steps:
+     - uses: actions/checkout@v1
+ 
+     - name: Fetch common.sh
+       run: |
+         wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/common.sh
+ 
+     - name: Restore cache
+       id: cache
+       uses: actions/cache@v1
+       with:
+         path: /home/runner/bioconda
+         key: ${{ runner.os }}--bulk--${{ hashFiles('**/common.sh') }}
+ 
+     - name: Setup Bioconda-utils
+       if: steps.cache.outputs.cache-hit != 'true'
+       uses: bioconda/bioconda-actions/bioconda_recipes_setup/@bulk
+       env:
+         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+ 
+     - name: Build and upload
+       env:
+         ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+         INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+         QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+         # Mimic circleci
+         OSTYPE: "linux-gnu"
+         CI: "true"
+       run: |
+         ls /home/runner/bioconda/etc/profile.d
+         ls /home/runner/bioconda/etc
+         . /home/runner/bioconda/etc/profile.d/conda.sh
+         conda activate base
+         echo '============'
+         conda info --all
+         conda config --show-sources
+         python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+         echo '============'
+         bioconda-utils build recipes config.yml \
+           --worker-offset ${{ matrix.runner }} --n-workers 13 \
+           --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
+         conda clean -y --all
 
   build-osx:
     name: Bulk OSX Builds
