@@ -103,20 +103,21 @@ jobs:
          conda config --system --set channel_priority strict
          conda info
 
-         conda install -y conda-build mamba
+         # conda install -y conda-build mamba
 
          # Set local channel as highest priority
          mkdir -p "${HOME}/miniconda/conda-bld/{noarch,linux-64,osx-64}"
          conda index "${HOME}/miniconda/conda-bld"
          conda config --system --add channels "file://${HOME}/miniconda/conda-bld"
 
-         mamba install bioconda-utils=${BIOCONDA_UTILS_TAG} conda-forge-ci-setup
+         conda install bioconda-utils=${BIOCONDA_UTILS_TAG} conda-forge-ci-setup decorator=4.4.2
 
          set -x
          ${HOME}/miniconda/bin/run_conda_forge_build_setup
          set +x
 
     - name: Build and upload
+      if: ${{ false }}
       env:
         ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
