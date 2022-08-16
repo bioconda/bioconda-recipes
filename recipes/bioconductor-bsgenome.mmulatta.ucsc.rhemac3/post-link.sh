@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="BSgenome.Mmulatta.UCSC.rheMac3_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/BSgenome.Mmulatta.UCSC.rheMac3_1.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Mmulatta.UCSC.rheMac3_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Mmulatta.UCSC.rheMac3_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mmulatta.ucsc.rhemac3/bioconductor-bsgenome.mmulatta.ucsc.rhemac3_1.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mmulatta.ucsc.rhemac3/bioconductor-bsgenome.mmulatta.ucsc.rhemac3_1.4.0_src_all.tar.gz"
 )
 MD5="dfa1ecb9d0bb7a5d9fa628092fb1c354"

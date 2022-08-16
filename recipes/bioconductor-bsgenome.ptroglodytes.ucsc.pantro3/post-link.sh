@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="BSgenome.Ptroglodytes.UCSC.panTro3_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/BSgenome.Ptroglodytes.UCSC.panTro3_1.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Ptroglodytes.UCSC.panTro3_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Ptroglodytes.UCSC.panTro3_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.ptroglodytes.ucsc.pantro3/bioconductor-bsgenome.ptroglodytes.ucsc.pantro3_1.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.ptroglodytes.ucsc.pantro3/bioconductor-bsgenome.ptroglodytes.ucsc.pantro3_1.4.0_src_all.tar.gz"
 )
 MD5="4677c75befd60742f3fc2a54c7f60666"

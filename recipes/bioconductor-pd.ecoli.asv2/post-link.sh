@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.ecoli.asv2_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/pd.ecoli.asv2_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.ecoli.asv2_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.ecoli.asv2_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.ecoli.asv2/bioconductor-pd.ecoli.asv2_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.ecoli.asv2/bioconductor-pd.ecoli.asv2_3.12.0_src_all.tar.gz"
 )
 MD5="d789ddf5a178a9a50c5587ee3ab294a4"

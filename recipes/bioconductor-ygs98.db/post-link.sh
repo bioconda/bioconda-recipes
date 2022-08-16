@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="ygs98.db_3.2.3.tar.gz"
+FN="ygs98.db_3.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/ygs98.db_3.2.3.tar.gz"
-  "https://bioarchive.galaxyproject.org/ygs98.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ygs98.db/bioconductor-ygs98.db_3.2.3_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ygs98.db/bioconductor-ygs98.db_3.2.3_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/ygs98.db_3.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ygs98.db_3.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ygs98.db/bioconductor-ygs98.db_3.13.0_src_all.tar.gz"
 )
-MD5="ddbf44a3db85a114be4477f917f3a724"
+MD5="d21c0dc1ee0f7512ae921a501b425fd3"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

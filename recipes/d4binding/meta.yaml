@@ -1,0 +1,41 @@
+{% set version = "0.3.4" %}
+
+package:
+  name: d4binding
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  # TODO: use formal release number when 0.3.5 is released
+  url: https://github.com/38/d4-format/archive/refs/tags/v{{ version }}-3.tar.gz
+  sha256: 05e1a410b77c34d7d188e69ef607eaa9f0babcc9817c558362203fc3f1f2219c
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - rust >=1.30
+    - gcc #[not osx]
+    - clangdev
+    - pkg-config
+    - make
+    - cmake
+  run:
+    - starcode
+test:
+  commands:
+    - "true"
+
+about:
+  home: https://github.com/38/d4-format
+  license: MIT
+  summary: |
+    The C/C++ binding for the D4 file format
+extra:
+  recipe-maintainers:
+    - haohou
+  skip-lints:
+    # Because the Rust build script will build all the upstream dependencies and those dependencies contains make file that directly call gcc rather than use $(CC) variable. Thus not forcing install gcc into the environment can cause linking error as the conda system have it's own libc. 
+    - should_use_compilers

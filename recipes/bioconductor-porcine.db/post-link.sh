@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="porcine.db_3.2.3.tar.gz"
+FN="porcine.db_3.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/porcine.db_3.2.3.tar.gz"
-  "https://bioarchive.galaxyproject.org/porcine.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-porcine.db/bioconductor-porcine.db_3.2.3_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-porcine.db/bioconductor-porcine.db_3.2.3_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/porcine.db_3.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/porcine.db_3.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-porcine.db/bioconductor-porcine.db_3.13.0_src_all.tar.gz"
 )
-MD5="a90a6ad39b7fda3f30c23ab315201317"
+MD5="4a86b3e696d267dca673b4e9276d6368"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

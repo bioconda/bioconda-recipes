@@ -1,14 +1,14 @@
 # fix single line json output of esummary which makes
 # subsequent calls fail (grep -v will just remove everything)
 diff -ruN c++/src/app/blast/get_species_taxids.sh c++/src/app/blast/get_species_taxids.sh
---- c++/src/app/blast/get_species_taxids.sh	2019-06-24 20:46:42.000000000 +0200
-+++ c++/src/app/blast/get_species_taxids.sh	2020-12-07 11:17:51.737685072 +0100
+--- c++/src/app/blast/get_species_taxids.sh	2021-05-19 15:54:06.000000000 +0200
++++ c++/src/app/blast/get_species_taxids.sh	2021-07-13 10:23:40.000000000 +0200
 @@ -135,7 +135,7 @@
          fi
      fi
- 
--    esummary -db taxonomy -mode json < $OUTPUT > $TMP
-+    esummary -db taxonomy -mode json < $OUTPUT | sed 's/{/{\n/g; s/,/,\n/g; s/}/}\n/g' > $TMP
- 
+
+-    esummary -mode json < $OUTPUT > $TMP
++    esummary -mode json < $OUTPUT | sed 's/{/{\n/g; s/,/,\n/g; s/}/}\n/g' > $TMP
+
      if [ $? -ne 0 ]; then
          error_exit "esummary error" $?

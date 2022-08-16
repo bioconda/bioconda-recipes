@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="RaExExonProbesetLocation_1.15.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/RaExExonProbesetLocation_1.15.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/RaExExonProbesetLocation_1.15.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RaExExonProbesetLocation_1.15.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-raexexonprobesetlocation/bioconductor-raexexonprobesetlocation_1.15.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-raexexonprobesetlocation/bioconductor-raexexonprobesetlocation_1.15.0_src_all.tar.gz"
 )
 MD5="d547bcd30685495283b32f0f86ecc79b"
