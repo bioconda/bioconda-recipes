@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ecoliSakai.db0_3.12.0.tar.gz"
+FN="ecoliSakai.db0_3.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/ecoliSakai.db0_3.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ecoliSakai.db0_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ecolisakai.db0/bioconductor-ecolisakai.db0_3.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/ecoliSakai.db0_3.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ecoliSakai.db0_3.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ecolisakai.db0/bioconductor-ecolisakai.db0_3.14.0_src_all.tar.gz"
 )
-MD5="d4534e53d3407bd063dd77ec57c7a9d6"
+MD5="960bdb2dbaf101dc18567a92aabdf261"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

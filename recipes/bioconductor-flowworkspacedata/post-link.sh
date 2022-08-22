@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="flowWorkspaceData_3.2.0.tar.gz"
+FN="flowWorkspaceData_3.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/flowWorkspaceData_3.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/flowWorkspaceData_3.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-flowworkspacedata/bioconductor-flowworkspacedata_3.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/flowWorkspaceData_3.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/flowWorkspaceData_3.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-flowworkspacedata/bioconductor-flowworkspacedata_3.6.0_src_all.tar.gz"
 )
-MD5="cc6c73d1be535a7ff684560b18691d18"
+MD5="64e32de9b38e401746a88f2f4339ffc6"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="CONFESSdata_1.18.0.tar.gz"
+FN="CONFESSdata_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/CONFESSdata_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/CONFESSdata_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-confessdata/bioconductor-confessdata_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/CONFESSdata_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/CONFESSdata_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-confessdata/bioconductor-confessdata_1.22.0_src_all.tar.gz"
 )
-MD5="dda8f172ecf21ba0b00e963d6231cb37"
+MD5="7c4fddb6f056f6abf2211a1f2d1545fc"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

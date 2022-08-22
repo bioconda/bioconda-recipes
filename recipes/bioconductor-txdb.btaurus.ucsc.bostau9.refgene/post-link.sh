@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="TxDb.Btaurus.UCSC.bosTau9.refGene_3.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/TxDb.Btaurus.UCSC.bosTau9.refGene_3.10.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/TxDb.Btaurus.UCSC.bosTau9.refGene_3.10.0.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Btaurus.UCSC.bosTau9.refGene_3.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.btaurus.ucsc.bostau9.refgene/bioconductor-txdb.btaurus.ucsc.bostau9.refgene_3.10.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.btaurus.ucsc.bostau9.refgene/bioconductor-txdb.btaurus.ucsc.bostau9.refgene_3.10.0_src_all.tar.gz"
 )
 MD5="fe443d123b0b788e1e450f4e60036788"

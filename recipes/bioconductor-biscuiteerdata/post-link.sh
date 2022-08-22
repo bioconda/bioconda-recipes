@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="biscuiteerData_1.4.0.tar.gz"
+FN="biscuiteerData_1.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/biscuiteerData_1.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/biscuiteerData_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-biscuiteerdata/bioconductor-biscuiteerdata_1.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/biscuiteerData_1.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/biscuiteerData_1.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-biscuiteerdata/bioconductor-biscuiteerdata_1.8.0_src_all.tar.gz"
 )
-MD5="be43f39062eb86983c1938d2b7f395b2"
+MD5="4b2b00ff38b83f981637d86c329005eb"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
