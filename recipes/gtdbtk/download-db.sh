@@ -17,9 +17,6 @@ if [ "$n_folders" -gt 1 ]; then
   exit 1
 fi
 
-# Ensure that the GTDB-Tk data directory exists
-mkdir -p "$TARGET_DIR"
-
 # Start the download process
 # Note: When this URL is updated, ensure that the "--total" flag of TQDM below is also updated
 echo "[INFO] - Downloading the GTDB-Tk database to: ${TARGET_DIR}"
@@ -34,10 +31,12 @@ rm "$TARGET_TAR"
 echo "[INFO] - The GTDB-Tk database has been successfully downloaded and extracted."
 
 # Set the environment variable
-if conda env config vars set TARGET_DIR="$TARGET_DIR"; then
-  echo "[INFO] - Added TARGET_DIR ($TARGET_DIR) to the GTDB-Tk conda environment."
+if conda env config vars set GTDBTK_DATA_PATH="$TARGET_DIR"; then
+  echo "[INFO] - Added GTDBTK_DATA_PATH ($TARGET_DIR) to the GTDB-Tk conda environment."
 else
-  echo "[INFO] - Conda not found in PATH, please be sure to set the TARGET_DIR envrionment variable"
+  echo "[INFO] - Conda not found in PATH, please be sure to set the GTDBTK_DATA_PATH envrionment variable"
+  echo " export GTDBTK_DATA_PATH=$TARGET_DIR before running GTDB-Tk. "
+  exit 1
 fi
 
 exit 0
