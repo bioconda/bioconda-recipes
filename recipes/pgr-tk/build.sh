@@ -1,9 +1,5 @@
-export 
-
-#export PATH=$PREFIX/bin:$PATH
 
 git clone https://github.com/cschin/agc.git
-
 pushd rs-wfa/
 rm -rf WFA
 git clone https://github.com/cschin/WFA.git --depth=1
@@ -16,7 +12,7 @@ export CARGO_HOME=$BUILD_PREFIX/.cargo
 #rustup default stable
 export LIBCLANG_PATH=$PREFIX/lib/
 
-## TODO: using environmental variant in the makefile libwfa in the future. 
+## TODO: using environmental variables in the libwfa makefile in the future. 
 ## The current compiler names are hard-coded in the makefile, so we need these symbolic links
 ln -sf $CC $PREFIX/bin/gcc
 ln -sf $CXX $PREFIX/bin/g++
