@@ -17,5 +17,5 @@ make
 mkdir -p ${PREFIX}/bin
 cp bin/* ${PREFIX}/bin
 
-chmod 755 nanoPolish
-cp nanoPolish ${PREFIX}/bin
+chmod 755 nextPolish
+cp nextPolish ${PREFIX}/bin
