@@ -1,5 +1,11 @@
 #!/bin/bash -e
 
+
+1	#!/bin/bash
+2	if [ `uname` == Darwin ]; then
+3		export MACOSX_DEPLOYMENT_TARGET=10.14
+4	fi
+
 # TODO: Remove the following export when pinning is updated and we use
 #       {{ compiler('rust') }} in the recipe.
 export \
