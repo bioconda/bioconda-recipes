@@ -14,5 +14,5 @@ sed -i.backup \
 
 # Build
 make
-mkdir ${PREFIX}/bin
+mkdir -p ${PREFIX}/bin
 cp bin/* ${PREFIX}/bin
