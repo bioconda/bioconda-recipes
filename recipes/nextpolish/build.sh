@@ -16,3 +16,6 @@ sed -i.backup \
 make
 mkdir -p ${PREFIX}/bin
 cp bin/* ${PREFIX}/bin
+
+chmod 755 nanoPolish
+cp nanoPolish ${PREFIX}/bin
