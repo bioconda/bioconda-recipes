@@ -26,4 +26,3 @@ chmod u+rwx $PREFIX/bin/create_pan_genome_plots.R
 chmod u+rwx $PREFIX/bin/roar*
 chmod u+rwx $PREFIX/bin/pan_*
 chmod u+rwx $PREFIX/bin/create_*
-
