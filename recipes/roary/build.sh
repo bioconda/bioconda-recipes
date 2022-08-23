@@ -20,6 +20,8 @@ else
     exit 1
 fi
 
+export PERL5LIB=$CONDA_PREFIX/lib/perl5/site_perl/5.22.0/
+
 wget https://raw.githubusercontent.com/sanger-pathogens/Roary/master/bin/create_pan_genome_plots.R -P $PREFIX/bin/
 
 chmod u+rwx $PREFIX/bin/create_pan_genome_plots.R
