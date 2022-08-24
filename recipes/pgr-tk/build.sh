@@ -1,8 +1,15 @@
 
 git clone https://github.com/cschin/agc.git
+pushd agc
+git checkout 453c0afdc54b4aa00fa8e97a63f196931fdb81c4
+popd
+
 pushd rs-wfa/
 rm -rf WFA
 git clone https://github.com/cschin/WFA.git --depth=1
+pushd WFA
+git checkout 0c6000fc7c4208b048a27569e39904107fadd49d
+popd
 popd
 
 echo $PREFIX
