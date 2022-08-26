@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="yeastGSData_0.30.0.tar.gz"
+FN="yeastGSData_0.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/yeastGSData_0.30.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/yeastGSData_0.30.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-yeastgsdata/bioconductor-yeastgsdata_0.30.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/yeastGSData_0.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/yeastGSData_0.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yeastgsdata/bioconductor-yeastgsdata_0.32.0_src_all.tar.gz"
 )
-MD5="4916cc5d72397431533411c4758bddf0"
+MD5="f721de253a098215d542f36e0bdebcbd"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

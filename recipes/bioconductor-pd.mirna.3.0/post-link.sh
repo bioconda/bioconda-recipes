@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.mirna.3.0_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/pd.mirna.3.0_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.mirna.3.0_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.mirna.3.0_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.mirna.3.0/bioconductor-pd.mirna.3.0_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.mirna.3.0/bioconductor-pd.mirna.3.0_3.12.0_src_all.tar.gz"
 )
 MD5="1265f1969c618b3b5121e6a77ba57009"

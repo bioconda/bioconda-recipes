@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.cangene.1.1.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/pd.cangene.1.1.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.cangene.1.1.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.cangene.1.1.st_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.cangene.1.1.st/bioconductor-pd.cangene.1.1.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.cangene.1.1.st/bioconductor-pd.cangene.1.1.st_3.12.0_src_all.tar.gz"
 )
 MD5="946074601e7bee72f3b3dd6ae6b3bc33"

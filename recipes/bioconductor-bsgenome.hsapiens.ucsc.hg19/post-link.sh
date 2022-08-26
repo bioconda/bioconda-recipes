@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="BSgenome.Hsapiens.UCSC.hg19_1.4.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/BSgenome.Hsapiens.UCSC.hg19_1.4.3.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Hsapiens.UCSC.hg19_1.4.3.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Hsapiens.UCSC.hg19_1.4.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.hsapiens.ucsc.hg19/bioconductor-bsgenome.hsapiens.ucsc.hg19_1.4.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.hsapiens.ucsc.hg19/bioconductor-bsgenome.hsapiens.ucsc.hg19_1.4.3_src_all.tar.gz"
 )
 MD5="bb3f864ab32450d895816b45f6105f4f"

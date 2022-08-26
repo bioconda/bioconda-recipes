@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="metaboliteIDmapping_1.0.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/metaboliteIDmapping_1.0.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/metaboliteIDmapping_1.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/metaboliteIDmapping_1.0.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-metaboliteidmapping/bioconductor-metaboliteidmapping_1.0.0_src_all.tar.gz"
 )

@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="mirna10probe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/mirna10probe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/mirna10probe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mirna10probe_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mirna10probe/bioconductor-mirna10probe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mirna10probe/bioconductor-mirna10probe_2.18.0_src_all.tar.gz"
 )
 MD5="8bfa6cdfeee1c563b4881214bd5d4ce1"

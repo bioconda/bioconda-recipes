@@ -1,9 +1,9 @@
 #!/bin/bash
 
-FN="v2.4.1.tar.gz"
-TARBALL_DIR="picrust2-2.4.1"
-URL="https://github.com/picrust/picrust2/archive/v2.4.1.tar.gz"
-SHA256="307d7f6548e64200ae499011e22dd6a7e52e31fee8c69c313364e7766a82938b" 
+FN="v2.5.0.tar.gz"
+TARBALL_DIR="picrust2-2.5.0"
+URL="https://github.com/picrust/picrust2/archive/v2.5.0.tar.gz"
+SHA256="965ded5e0b8040e792c14a89e3332df745767ee8d51f3609466ea27e95b14c92" 
 
 # Create staging area.
 STAGING=$PREFIX/staging

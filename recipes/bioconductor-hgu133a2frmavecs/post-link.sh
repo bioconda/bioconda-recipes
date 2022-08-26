@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="hgu133a2frmavecs_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/hgu133a2frmavecs_1.2.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hgu133a2frmavecs_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hgu133a2frmavecs_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hgu133a2frmavecs/bioconductor-hgu133a2frmavecs_1.2.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hgu133a2frmavecs/bioconductor-hgu133a2frmavecs_1.2.0_src_all.tar.gz"
 )
 MD5="4bf8cf5cbaf288ce0a9618d764c87044"
