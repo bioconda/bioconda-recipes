@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="SCATEData_1.2.0.tar.gz"
+FN="SCATEData_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/SCATEData_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/SCATEData_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-scatedata/bioconductor-scatedata_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/SCATEData_1.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/SCATEData_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-scatedata/bioconductor-scatedata_1.4.0_src_all.tar.gz"
 )
-MD5="080bd673f3e171e21692283a4ec0cd46"
+MD5="e464b9ada0aa3853c4576ddd9fa14aa1"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.ht.mg.430a_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/pd.ht.mg.430a_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.ht.mg.430a_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.ht.mg.430a_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.ht.mg.430a/bioconductor-pd.ht.mg.430a_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.ht.mg.430a/bioconductor-pd.ht.mg.430a_3.12.0_src_all.tar.gz"
 )
 MD5="65ea4fae22d21ad70998ba3ea034dcc0"

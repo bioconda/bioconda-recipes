@@ -9,6 +9,7 @@ perl -pi -e 'print "#!/opt/anaconda1anaconda2anaconda3/bin/Rscript\n" if $. == 1
 perl -pi -e 'print "#!/opt/anaconda1anaconda2anaconda3/bin/Rscript\n" if $. == 1' scripts/createPanelOfNormals.R
 
 cp ./scripts/*.R $outdir/scripts/
+cp -r ./scripts/snakemake $outdir/scripts/snakemake
 
 chmod a+x $outdir/scripts/*.R
 ln -s $outdir/scripts/runIchorCNA.R $PREFIX/bin

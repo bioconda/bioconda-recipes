@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.hugene.1.0.st.v1_3.14.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/pd.hugene.1.0.st.v1_3.14.1.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.hugene.1.0.st.v1_3.14.1.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.hugene.1.0.st.v1_3.14.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.hugene.1.0.st.v1/bioconductor-pd.hugene.1.0.st.v1_3.14.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.hugene.1.0.st.v1/bioconductor-pd.hugene.1.0.st.v1_3.14.1_src_all.tar.gz"
 )
 MD5="8cb24c351aee5bf216180e4b19742506"

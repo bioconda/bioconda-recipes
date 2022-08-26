@@ -1,0 +1,44 @@
+{% set name = "HiLineToJuicer" %}
+{% set version = "0.0.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 06ecf8ad0ce670029c2d7c0e565d43aa6a7ec39ba96df9d6760da2dc004cc3e7
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - {{ name }}={{ name }}.main:cli
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - click >=8.0.1
+    - pip
+    - pysam >=0.17.0
+    - python >=3.8
+  run:
+    - click >=8.0.1
+    - pysam >=0.17.0
+    - coreutils >=8.32
+    - samtools >=1.12
+    - python >=3.8
+
+test:
+  imports:
+    - {{ name }}
+  commands:
+    - {{ name }} --help
+    - sort --help
+    - cut --help
+    - samtools --help
+
+about:
+  home: https://pypi.org/project/{{ name }}/{{ version }}/
+  license: MIT
+  summary: "Convert HiLine SAM alignments to Juicer format"

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="fabiaData_1.30.0.tar.gz"
+FN="fabiaData_1.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/fabiaData_1.30.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/fabiaData_1.30.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-fabiadata/bioconductor-fabiadata_1.30.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/fabiaData_1.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/fabiaData_1.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-fabiadata/bioconductor-fabiadata_1.32.0_src_all.tar.gz"
 )
-MD5="bc22163a6aaa36ddd5787b7eca918daf"
+MD5="bff5827f5b2d26180a72a864adae82e4"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

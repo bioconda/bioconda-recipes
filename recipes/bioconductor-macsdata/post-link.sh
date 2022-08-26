@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="MACSdata_1.0.0.tar.gz"
+FN="MACSdata_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/MACSdata_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MACSdata_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-macsdata/bioconductor-macsdata_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/MACSdata_1.2.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MACSdata_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-macsdata/bioconductor-macsdata_1.2.0_src_all.tar.gz"
 )
-MD5="e1e53806c94c0e3e0593c514eb1a9e6a"
+MD5="b1365eb12664b1c2878cc6c5a2ef6df6"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
