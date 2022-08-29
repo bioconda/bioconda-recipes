@@ -1,0 +1,64 @@
+{% set version = "1.0.0" %}
+{% set name = "traviz" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 2e26680ea086aeb17bc6c7d2a984ae1c
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: scater, dplyr, testthat (>= 3.0.0), covr, S4Vectors, rmarkdown, knitr
+requirements:
+  host:
+    - 'bioconductor-biobase >=2.54.0,<2.55.0'
+    - 'bioconductor-singlecellexperiment >=1.16.0,<1.17.0'
+    - 'bioconductor-slingshot >=2.2.0,<2.3.0'
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - r-base
+    - r-ggplot2
+    - r-mgcv
+    - r-princurve
+    - r-rcolorbrewer
+    - r-rgl
+    - r-viridis
+  run:
+    - 'bioconductor-biobase >=2.54.0,<2.55.0'
+    - 'bioconductor-singlecellexperiment >=1.16.0,<1.17.0'
+    - 'bioconductor-slingshot >=2.2.0,<2.3.0'
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - r-base
+    - r-ggplot2
+    - r-mgcv
+    - r-princurve
+    - r-rcolorbrewer
+    - r-rgl
+    - r-viridis
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
+test:
+  commands:
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'MIT + file LICENSE'
+  summary: 'Trajectory functions for visualization and interpretation.'
+  description: 'traviz provides a suite of functions to plot trajectory related objects from Bioconductor packages. It allows plotting trajectories in reduced dimension, as well as averge gene expression smoothers as a function of pseudotime. Asides from general utility functions, traviz also allows plotting trajectories estimated by Slingshot, as well as smoothers estimated by tradeSeq. Furthermore, it allows for visualization of Slingshot trajectories using ggplot2.'
+extra:
+  container:
+    extended-base: true
+

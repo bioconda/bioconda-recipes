@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ChimpHumanBrainData_1.26.0.tar.gz"
+FN="ChimpHumanBrainData_1.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/ChimpHumanBrainData_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ChimpHumanBrainData_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-chimphumanbraindata/bioconductor-chimphumanbraindata_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/ChimpHumanBrainData_1.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ChimpHumanBrainData_1.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chimphumanbraindata/bioconductor-chimphumanbraindata_1.32.0_src_all.tar.gz"
 )
-MD5="f3127fc4ce0cc8f3f609cd4baea95cb8"
+MD5="c51727597298ea23ef24be72f276c4d5"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

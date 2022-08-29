@@ -1,0 +1,50 @@
+{% set name = "savvy" %}
+{% set version = "2.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/statgen/savvy/archive/v{{ version }}.tar.gz
+  sha256: 730ce5d3e93956235954f9ac8a42ee682fb7548547b6778cf4304cb611e435b3
+  patches:
+    # Fixing postrelease issues
+    - patches/0001-patch-cmakelists-for-conda-build.patch
+
+build:
+  skip: True  # [win]
+  number: 4
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - make  # [not win]
+  host:
+    - shrinkwrap
+    - zstd
+    - zlib
+  run:
+    - shrinkwrap
+
+test:
+  commands:
+    - test -d ${PREFIX}/include/savvy  # [linux]
+    - test -f ${PREFIX}/include/savvy/savvy.hpp  # [linux]
+    - sav --help
+
+about:
+  home: https://github.com/statgen/savvy
+  license: MPL-2.0
+  license_family: MOZILLA
+  license_file: LICENSE
+  summary: 'Interface to various variant calling formats.'
+  dev_url: https://github.com/statgen/savvy
+
+extra:
+  recipe-maintainers:
+    - matuskosut
+    - jonathonl

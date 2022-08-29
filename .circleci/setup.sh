@@ -34,7 +34,7 @@ if ! git diff --quiet HEAD...$UPSTREAM_REMOTE/master -- .circleci/; then
     echo ''
     echo 'Have @BiocondaBot attempt to fix this by creating a comment on your PR:'
     echo ''
-    echo '   @BiocondaBot update'
+    echo '   @BiocondaBot please update'
     echo ''
     echo 'Once the update commit has been created, update your local copy of'
     echo 'your branch:'

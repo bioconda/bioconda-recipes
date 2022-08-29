@@ -1,0 +1,47 @@
+{% set version = "5.0" %}
+
+package:
+  name: talon
+  version: {{ version }}
+
+source:
+  url: https://github.com/mortazavilab/TALON/archive/v{{ version }}.zip
+  sha256: d64cf0f602be5e8cac989e7ddaa6d82c0455f94f29368782348adf36feaf0a24
+
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+
+requirements:
+  host:
+    - python >=3.6,<=3.7
+    - pip
+ 
+  run:
+    - python >=3.6,<=3.7
+    - pandas
+    - pybedtools
+    - pysam >=0.15.4
+    - pyfaidx
+   
+
+test:
+  commands:
+    - talon --help 2>&1 | grep usage 
+    - talon_label_reads --help
+    - talon_initialize_database --help
+    - talon_filter_transcripts --help
+    - talon_create_GTF --help
+
+about:
+  home: https://github.com/mortazavilab/TALON
+  license: MIT
+  summary: |
+    TALON is a Python package for identifying and quantifying known and novel 
+    genes/isoforms in long-read transcriptome data sets. TALON is 
+    technology-agnostic in that it works from mapped SAM files, 
+    allowing data from different sequencing platforms 
+    (i.e. PacBio and Oxford Nanopore) to be analyzed side by side.
+

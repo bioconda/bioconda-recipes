@@ -1,4 +1,4 @@
-{% set version = "0.8.2" %}
+{% set version = "0.12.1" %}
 
 package:
   name: mykrobe
@@ -6,30 +6,35 @@ package:
 
 source:
   url: https://github.com/Mykrobe-tools/mykrobe/archive/v{{ version }}.tar.gz
-  sha256: ab44b8e205198011012272ca7d3ed166c20ba2df9b788cbeb071c8cc819ccca3
+  sha256: edcf3bd58bbdeb875e3318c804b760b77651187f72b7b51640300cd1a9bf6839
 
 build:
-  number: 1
-  # Skipping py>38 due to some dependency incompatibility.
-  skip: True  # [py<30 or py>=38]
+  number: 0
+  skip: True  # [py<30]
   entry_points:
     - mykrobe = mykrobe.cli:main
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - numpy
+    - biopython
   host:
     - python
     - pip
     - zlib
     - wget
-    - numpy
     - cython
+    - numpy
+    - mongodb >3.0
     - mongoengine >=0.18.0
-    - pyvcf
+    - pyvcf3 >=1.0.3
     - biopython
+    - anytree
     - requests
+    - setuptools
   run:
     - python
     - mongodb >3.0
@@ -37,15 +42,14 @@ requirements:
     - zlib
     - numpy
     - mongoengine >=0.18.0
-    - pyvcf
+    - pyvcf3 >=1.0.3
     - biopython
+    - anytree
+    - requests
+    - setuptools
 
 test:
   imports:
-    - numpy
-    - mongoengine
-    - vcf
-    - Bio
     - mykrobe
 
   commands:
@@ -53,11 +57,9 @@ test:
     - mykrobe --help
     - mykrobe predict --help
     - mykrobe variants --help
-    - mykrobe genotype --help
+    - mykrobe panels describe
     - test -x $PREFIX/lib/python*/site-packages/mykrobe/cortex/mccortex31
     - $PREFIX/lib/python*/site-packages/mykrobe/cortex/mccortex31 uniqkmers -k 7 1
-    - find $PREFIX/lib/python*/site-packages/mykrobe/data -print
-    - test -f $PREFIX/lib/python*/site-packages/mykrobe/data/panels/tb-species-170421.fasta.gz
 
 about:
   home: https://github.com/Mykrobe-tools/mykrobe
@@ -65,3 +67,8 @@ about:
   license_file: LICENSE
   summary: 'Antibiotic resistance prediction in minutes'
   description: 'Rapid antibiotic-resistance predictions from genome sequence data for Staphylococcus aureus and Mycobacterium tuberculosis.'
+
+extra:
+  recipe-maintainers:
+    - mbhall88
+    - martinghunt

@@ -1,53 +1,50 @@
-{% set DCMTK_VERSION = "3.6.1" %}
-{% set DCMTK_VERSION_DATE = "20161102" %}
+{% set name = "DCMTK" %}
+{% set version = "3.6.7" %}
+{% set sha256 = "7c58298e3e8d60232ee6fc8408cfadd14463cc11a3c4ca4c59af5988c7e9710a" %}
 
 package:
-  name: dcmtk
-  version: {{ DCMTK_VERSION }}
+  name: {{ name | lower }}
+  version: {{ version }}
 
 source:
-  url: http://dicom.offis.de/download/dcmtk/snapshot/old/dcmtk-3.6.1_20161102.tar.gz
-  sha1: 9daa6b64767443a60d5cb8946905e4e7003d1658
+  url: https://dicom.offis.de/download/dcmtk/dcmtk{{ version | replace('.','')}}/dcmtk-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 7
-  # Skip osx due to:
-  #   ofstd/include/dcmtk/ofstd/variadic/helpers.h:57:30: error: non-type template argument evaluates to -1, which cannot be narrowed to type 'unsigned long' [-Wc++11-narrowing]
-  skip: True  # [osx]
+  number: 0
 
 requirements:
   build:
     - cmake
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
+    - ninja
   host:
-    - openssl <1.1.0a
+    - icu
+    - openjpeg
     - libpng
+    - libsndfile
     - libtiff
     - libxml2
+    - openssl
     - zlib
-    - jpeg
   run:
-    - openssl <1.1.0a
+    - icu
     - libpng
+    - libsndfile
     - libtiff
-    - jpeg
+    - openjpeg
     - libxml2
+    - openssl
     - zlib
 
 test:
   commands:
-    - dcmdata_tests
-    - dcmftest
-    - dcmiod_tests
-    - dcmnet_tests
-    - dcmrt_tests
-    - dcmseg_tests
-    - dcmsr_tests
-    - drttest
-    #- ofstd_tests
+    - dcmdump --help
 
 about:
   home: http://dicom.offis.de
+  dev_url: "https://git.dcmtk.org/"
   summary: "DCMTK is a collection of libraries and applications implementing large parts the DICOM standard"
   license: BSD
+  license_file: COPYRIGHT
