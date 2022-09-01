@@ -1,0 +1,53 @@
+{% set name = "mgcplotter" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/mgcplotter-{{ version }}.tar.gz
+  sha256: 4fdd9e330a46dc9f2dac9e80ba0ce75445b9fe1ef0d846c891ef95eb7a5612c3
+
+build:
+  entry_points:
+    - MGCplotter = mgcplotter.mgcplotter:main
+    - generate_cog_color_template = mgcplotter.mgcplotter:generate_cog_color_template
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+
+requirements:
+  host:
+    - pip
+    - poetry
+    - python >=3.8,<4.0
+  run:
+    - biopython >=1.79,<2.0
+    - cogclassifier >=1.0.4,<2.0.0
+    - matplotlib-base >=3.5.1,<4.0.0
+    - pandas >=1.4.2,<2.0.0
+    - python >=3.8,<4.0
+    - circos ==0.69.8
+    - mmseqs2 ==13.45111
+
+test:
+  imports:
+    - mgcplotter
+  commands:
+    - pip check
+  requires:
+    - pip
+    - pytest
+  source_files:
+    - tests/
+
+about:
+  home: https://github.com/moshi4/MGCplotter/
+  summary: Microbial Genome Circular plotting tool using Circos
+  license: GPL-3.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - moshi4
