@@ -1,0 +1,46 @@
+{% set name = "pytrimal" %}
+{% set version = "0.4.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 585ecb1ef69bd75d56f851fbbe301405a9c98dfabc15b6285d9cb2269066212b
+
+build:
+  number: 0
+  skip: True  #[py2k]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - pip
+    - cython
+    - setuptools
+  run:
+    - python
+    - setuptools
+
+test:
+  imports:
+    - {{ name }}
+  commands:
+    - python -m unittest -vv {{ name }}.tests
+
+about:
+  home: https://github.com/althonos/pytrimal
+  license: GPL-3
+  license_family: GPL
+  license_file: COPYING
+  summary: Cython bindings and Python interface to trimAl, a tool for automated alignment trimming.
+  doc_url: https://pytrimal.readthedocs.org/
+
+extra:
+  recipe-maintainers:
+    - althonos

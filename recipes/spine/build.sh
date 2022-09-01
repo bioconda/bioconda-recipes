@@ -16,4 +16,6 @@ perl ./Build.PL
 perl ./Build manifest
 perl ./Build install --installdirs site
 
-chmod u+rwx $PREFIX/bin/*
+chmod +rx $PREFIX/bin/nucmer_multi.pl
+chmod +rx $PREFIX/bin/spine.pl
+chmod +rx $PREFIX/bin/nucmer_backbone.pl
