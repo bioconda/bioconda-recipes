@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="scATAC.Explorer_1.0.0.tar.gz"
+FN="scATAC.Explorer_1.0.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/scATAC.Explorer_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/scATAC.Explorer_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-scatac.explorer/bioconductor-scatac.explorer_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/scATAC.Explorer_1.0.1.tar.gz"
+  "https://bioarchive.galaxyproject.org/scATAC.Explorer_1.0.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-scatac.explorer/bioconductor-scatac.explorer_1.0.1_src_all.tar.gz"
 )
-MD5="eab8606574baa7032a36b8796e0befbc"
+MD5="834a308530e3884e6f1945f00366c822"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
