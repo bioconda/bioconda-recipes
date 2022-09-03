@@ -50,6 +50,7 @@ jobs:
         python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
         echo '============'
         bioconda-utils build recipes config.yml \
+          --packages "bioconductor-*" \
           --worker-offset ${{ matrix.runner }} --n-workers 20 \
           --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
         conda clean -y --all
@@ -83,6 +84,7 @@ jobs:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
     - name: OSX stuff
+      if: ${{ false }}
       run: |
         # download SDK and setup sysroot on macOS
         #  primarily, run_conda_forge_build_setup does the following:
