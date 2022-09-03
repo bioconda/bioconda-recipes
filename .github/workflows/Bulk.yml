@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - bulk
-      - bulk-bioconductor-data
 jobs:
   build-linux:
     name: Bulk Linux Builds
@@ -12,7 +11,7 @@ jobs:
       fail-fast: false
       max-parallel: 13
       matrix:
-        runner: [0, 1, 2, 3, 4 , 5, 6, 7, 8] # 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+        runner: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
     steps:
     - uses: actions/checkout@v1
 
@@ -50,22 +49,18 @@ jobs:
         python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
         echo '============'
         bioconda-utils build recipes config.yml \
-          --packages "bioconductor-*" \
-          --worker-offset ${{ matrix.runner }} --n-workers 9 \
-          --docker --mulled-test  --anaconda-upload --mulled-upload-target biocontainers
+          --worker-offset ${{ matrix.runner }} --n-workers 20 \
+          --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
         conda clean -y --all
 
   build-osx:
     name: Bulk OSX Builds
-
-    # temporarily disable OSX
-    if: ${{ false }}
     runs-on: macOS-latest
     strategy:
       fail-fast: false
       max-parallel: 4
       matrix:
-        runner: [0] #, 1, 2, 3, 4, 5, 6, 7]
+        runner: [0, 1, 2, 3, 4, 5, 6, 7]
     steps:
     - uses: actions/checkout@v1
 
