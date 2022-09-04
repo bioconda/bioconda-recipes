@@ -77,7 +77,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: /Users/runner/miniconda
-        key: ${{ runner.os }}--bulk--${{ hashFiles('**/common.sh') }}
+        key: ${{ runner.os }}--bulk-macos-${{ hashFiles('**/common.sh') }}
 
     - name: OSX stuff
       if: steps.cache.outputs.cache-hit != 'true'
@@ -114,6 +114,27 @@ jobs:
         mkdir -p "${HOME}/miniconda/conda-bld/{noarch,linux-64,osx-64}"
         conda index "${HOME}/miniconda/conda-bld"
         conda config --system --add channels "file://${HOME}/miniconda/conda-bld"
+
+        echo "MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}"
+        echo "xcode-select -p=$(xcode-select -p)" # /Applications/Xcode_13.2.1.app/Contents/Developer
+        echo "OSX_SDK_DIR=${OSX_SDK_DIR}"  # $(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs
+        echo "CONDA_BUILD_SYSROOT=${CONDA_BUILD_SYSROOT}"
+
+        # Based on conda-forge-ci-setup, expecting maybe
+        # /Applications/Xcode_13.2.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk
+        #
+        # However locally for xcode-select -p I get:
+        # /Library/Developer/CommandLineTools
+
+        echo "SYSROOT=${SYSROOT}"          # 
+        ls $(xcode-select -p)
+        ls $(xcode-select -p)/Platforms
+        ls $(xcode-select -p)/Platforms/MacOSX.platform
+        ls $(xcode-select -p)/Platforms/MacOSX.platform/Developer
+        ls $(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs
+
+        exit 1
+
 
     - name: Build and upload
       env:
