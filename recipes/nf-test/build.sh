@@ -3,6 +3,8 @@
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p "$outdir"
 mkdir -p "$PREFIX/bin"
+
+sed -i "s/APP_HOME=.*/APP_HOME=\"$outdir\"/g" nf-test
 mv nf-test* "$outdir/"
 chmod +x "$outdir/nf-test"
 
