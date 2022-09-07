@@ -1,0 +1,115 @@
+{% set version = '1.0.2' %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-archr
+  version: {{ version|replace("-", "_") }}
+
+source:
+  git_url: https://github.com/GreenleafLab/ArchR
+  git_tag: v1.0.2
+
+build:
+  merge_build_host: True  # [win]
+  number: 0
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('m2w64_c') }}        # [win]
+    - {{ compiler('cxx') }}            # [not win]
+    - {{ compiler('m2w64_cxx') }}      # [win]
+    - {{ posix }}filesystem        # [win]
+    - {{ posix }}git
+    - {{ posix }}zip               # [win]
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+
+  host:
+    - r-base
+    - bioconductor-biocgenerics
+    - bioconductor-biostrings
+    - bioconductor-complexheatmap
+    - bioconductor-genomicranges
+    - r-matrix
+    - r-rcpp >=0.12.16
+    - bioconductor-rsamtools
+    - bioconductor-s4vectors >=0.9.25
+    - bioconductor-summarizedexperiment
+    - bioconductor-chromvar
+    - r-data.table
+    - r-ggplot2
+    - r-ggrepel
+    - r-gridextra
+    - r-gtable
+    - r-gtools
+    - r-magrittr
+    - r-matrixstats
+    - bioconductor-motifmatchr
+    - r-nabor
+    - r-plyr
+    - bioconductor-rhdf5
+    - r-stringr
+    - r-uwot
+
+  run:
+    - r-base
+    - {{native}}gcc-libs         # [win]
+    - bioconductor-biocgenerics
+    - bioconductor-biostrings
+    - bioconductor-complexheatmap
+    - bioconductor-genomicranges
+    - r-matrix
+    - r-rcpp >=0.12.16
+    - bioconductor-rsamtools
+    - bioconductor-s4vectors >=0.9.25
+    - bioconductor-summarizedexperiment
+    - bioconductor-chromvar
+    - r-data.table
+    - r-ggplot2
+    - r-ggrepel
+    - r-gridextra
+    - r-gtable
+    - r-gtools
+    - r-magrittr
+    - r-matrixstats
+    - bioconductor-motifmatchr
+    - r-nabor
+    - r-plyr
+    - bioconductor-rhdf5
+    - r-stringr
+    - r-uwot
+
+test:
+  commands:
+    - $R -e "library('ArchR')"           # [not win]
+    - "\"%R%\" -e \"library('ArchR')\""  # [win]
+
+about:
+  home: https://github.com/GreenleafLab/ArchR
+  license: GPL-2.0-or-later
+  summary: This package is designed to streamline scATAC analyses in R.
+  license_family: GPL2
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
+# Package: ArchR
+# Type: Package
+# Date: 2022-04-03
+# Title: Analyzing single-cell regulatory chromatin in R.
+# Version: 1.0.2
+# Authors@R: c( person("Jeffrey", "Granja", email = "jgranja.stanford@gmail.com", role = c("aut","cre")), person("Ryan", "Corces", role = "aut"))
+# Description: This package is designed to streamline scATAC analyses in R.
+# Roxygen: list(markdown = TRUE)
+# License: GPL (>= 2)
+# LinkingTo: Rcpp
+# LazyData: TRUE
+# RoxygenNote: 7.1.2
+# Encoding: UTF-8
+# Imports: ggplot2, SummarizedExperiment, data.table, Matrix, rhdf5, magrittr, S4Vectors (>= 0.9.25), BiocGenerics, Rcpp (>= 0.12.16), matrixStats, plyr, nabor, motifmatchr, chromVAR, uwot, ggrepel, Rsamtools, gtable, gtools, stringr, grid, gridExtra, Biostrings, ComplexHeatmap, GenomicRanges
+# Depends:
+# Collate: 'AllClasses.R' 'AnnotationGenome.R' 'AnnotationPeaks.R' 'ArchRBrowser.R' 'ArchRHeatmap.R' 'ArrowRead.R' 'ArrowUtils.R' 'ArrowWrite.R' 'BulkProjection.R' 'Clustering.R' 'ColorPalettes.R' 'CreateArrow.R' 'DoubletsScores.R' 'Embedding.R' 'FilterCells.R' 'Footprinting.R' 'GRangesUtils.R' 'GgplotUtils.R' 'GlobalDefaults.R' 'GroupCoverages.R' 'HelperUtils.R' 'GroupExport.R' 'Harmony.R' 'HiddenUtils.R' 'Imputation.R' 'InputData.R' 'IntegrativeAnalysis.R' 'IterativeLSI.R' 'LoggerUtils.R' 'MarkerFeatures.R' 'MatrixDeviations.R' 'MatrixFeatures.R' 'MatrixGeneExpression.R' 'MatrixGeneScores.R' 'MatrixTiles.R' 'ModuleScore.R' 'MultiModal.R' 'ProjectMethods.R' 'QualityControl.R' 'RNAIntegration.R' 'RcppExports.R' 'ReproduciblePeakSet.R' 'Trajectory.R' 'ValidationUtils.R' 'VisualizeData.R'
