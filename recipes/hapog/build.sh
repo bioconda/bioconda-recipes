@@ -2,8 +2,14 @@
 
 export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
-echo $PREFIX
 
 python setup.py install --record record.txt
-bash build.sh -l $LIBRARY_PATH
+
+mkdir hapog_build && cd hapog_build
+export HTSLIB_ROOT=${LIBRARY_PATH}
+cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+  ${CMAKE_PLATFORM_FLAGS[@]} \
+  ../src
+make
+cd ..
 cp -r hapog_build/hapog ${PREFIX}/bin/hapog_bin
