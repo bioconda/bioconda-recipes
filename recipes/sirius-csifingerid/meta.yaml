@@ -5,7 +5,7 @@ package:
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
 source:
   - url: https://github.com/boecker-lab/sirius/releases/download/v{{ version }}/sirius-{{ version }}-linux64.zip  # [linux]
     sha256: 6c468672cc59d20d3aa73c3b8a7932e8150e7ecd29c319ae6499572fe67dfc9f  # [linux]
@@ -25,11 +25,13 @@ requirements:
 test:
   requires:
     - wget
-  # run_test.sh does not run in containerized tests
-  # but only in the conda based test
-  # hence we add this redundant test command
   commands:
+    # Test running with link
     - sirius --version
+    # Test running without link
+    - $(readlink -f $(which sirius)) --version # [linux]
+    # Run a job that loads included native libraries
+    - sh -ec 'cd /tmp; wget https://bio.informatik.uni-jena.de/wp/wp-content/uploads/2021/10/Kaempferol.ms; sirius -i Kaempferol.ms -o test-out sirius --solver CLP; if [ ! -f "test-out/0_Kaempferol_Kaempferol/trees/C15H10O6_[M+H]+.json" ]; then echo Framgentation tree test failed!; exit 1; fi'
 
 about:
     home: https://bio.informatik.uni-jena.de/software/sirius/
