@@ -1,5 +1,5 @@
 {% set name = "ggCaller" %}
-{% set version = "1.2.4" %}
+{% set version = "1.3.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,11 +7,12 @@ package:
 
 source:
   url: https://github.com/samhorsfield96/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: fea340d242913c8d367da9f3abcb121c3f4c809b4e7893325fa9d5bc5ca9a35a
+  sha256: 2dedf76907601769be796ebc7c02291b6bcab4892b1a7e5a2c45bc3d1812ce30
 
 build:
-  number: 3
-  skip: True  # [osx or py < 38 or py>39]
+  number: 0
+  skip: True  # [py < 38]
+  script: CPLUS_INCLUDE_PATH=$PREFIX/include {{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt
   entry_points:
     - ggcaller = ggCaller.__main__:main
 
@@ -19,27 +20,43 @@ requirements:
   build:
     - {{ compiler('c')}}
     - {{ compiler('cxx') }}
-    - cmake >=3.4
+    - cmake >=3.10
     - make
-    - setuptools
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux64]
+    - tbb
+    - tbb-devel
   host:
     - python
     - pybind11
-    - seqan3 <3.1
     - bifrost
-    - pthread-stubs
     - zlib
+    - pip
     - bzip2
+    - pytorch
+    - boost-cpp
+    - setuptools
+    - llvm-openmp # [osx]
+    - libgomp # [linux]
+    - mkl  # [linux]
+    - lapack  # [osx]
+    - openblas  # [osx]
+    - eigen >=3.3
+    - tbb
+    - tbb-devel
   run:
     - python
+    - numpy
+    - scipy
+    - pandas
     - bifrost
-    - pthread-stubs
     - biopython
-    - graph-tool
+    - bcbio-gff
+    - diamond
+    - hmmer
+    - mafft
+    - snp-sites
+    - zlib
     - pytorch
-    # The xorg-* requirements are only used for gtk3 which is pulled in via graph-tool.
+    - matplotlib-base
     - xorg-libxi
     - xorg-libxcursor
     - xorg-libxdamage
@@ -49,12 +66,23 @@ requirements:
     - xorg-libxpm
     - xorg-libxaw
     - xorg-libxfixes
+    - intbitset
+    - networkx
+    - uncertainties
+    - tqdm
+    - seaborn
+    - rapidnj
+    - python-edlib
+    - joblib
+    - gffutils
+    - cd-hit
+    - python-wget
 
 test:
   imports:
     - ggCaller_cpp
-    - balrog
     - ggCaller
+    - panaroo_runner
   commands:
     - ggcaller -h | grep -q "Generates ORFs from a Bifrost graph."
 
@@ -62,4 +90,4 @@ about:
    home: https://github.com/samhorsfield96/ggCaller
    license: MIT
    license_file: LICENSE
-   summary: 'a gene caller for Bifrost graphs'
+   summary: 'A de Bruijn graph-based gene-caller and pangenome analysis tool'
