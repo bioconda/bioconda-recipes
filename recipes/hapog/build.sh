@@ -3,7 +3,7 @@
 export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
-python setup.py install --record record.txt
+python setup.py install --single-version-externally-managed --record=record.txt
 
 mkdir hapog_build && cd hapog_build
 export HTSLIB_ROOT=${LIBRARY_PATH}
