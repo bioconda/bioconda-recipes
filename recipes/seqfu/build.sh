@@ -4,7 +4,6 @@ set -euxo pipefail
 
 if [[ $OSTYPE == "darwin"* ]]; then
   export HOME=`pwd`
-  find / -name "pthread.h" 2> /dev/null
 fi
 
 mkdir -p "$PREFIX"/bin
