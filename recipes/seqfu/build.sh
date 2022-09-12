@@ -3,14 +3,14 @@
 set -euxo pipefail
 
 if [[ $OSTYPE == "darwin"* ]]; then
-  export HOME="/Users/distiller"
   export HOME=`pwd`
+  find / -name "pthread.h" 2> /dev/null
 fi
 
 mkdir -p "$PREFIX"/bin
 
 echo "## Automatic build"
-nimble build -y --verbose 
+nimble build -y --verbose --localdeps --debug
 ./bin/seqfu version || true
 
 if [[ -d scripts ]]; then
