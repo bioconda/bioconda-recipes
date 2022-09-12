@@ -1,56 +1,51 @@
-{% set version="1.5" %}
-
 package:
   name: flair
-  version: {{ version }}
-
-build:
-  number: 4
-  noarch: generic
+  version: "1.6.3"
 
 source:
-  url: https://github.com/BrooksLabUCSC/flair/archive/v{{ version }}.tar.gz
-  sha256: 3631b45b356a44676415f3e0930c8f0eacb869ba7def61ea65194e667dfb9b00
-  patches:                                                                                                                                                             
-    - flair.patch
-  
+  url: https://files.pythonhosted.org/packages/c4/81/3be197c295e863ea64962052372735e595b25c944c07238da52650f5c702/flair-brookslab-1.6.3.tar.gz
+  md5: b067e0bf8b51164046983e951bd8fa4a
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+
 requirements:
+  host:
+    - python >=3.6
+    - pip
   run:
     - python >=3.6
-    - numpy
+    - samtools
+    - bedtools
     - pandas
     - rpy2
     - tqdm
     - ncls
-    - samtools
-    - bedtools
     - pybedtools
+    - mappy==2.24
+    - pysam
     - minimap2
-    - intervaltree
-    - pysam >=0.16.0
     - r-ggplot2
     - r-qqman
+    - r-lazyeval
     - bioconductor-deseq2
     - bioconductor-drimseq
     - bioconductor-stager
+    - bioconductor-apeglm
     - matplotlib-base
     - seaborn
-    - kerneltree
-
 test:
+  imports:
+    - flair
   commands:
-    - flair.py --help 2>&1 | grep usage
-    - flair.py align --help | grep usage
-    - flair.py correct --help | grep usage
-    - flair.py collapse --help | grep usage
-    - flair.py quantify --help | grep usage
-    - flair.py diffExp --help | grep usage
-    - samtools --help | grep Usage
+    - flair diffExp --help
 
 about:
-  home: https://github.com/BrooksLabUCSC/flair
+  home: https://github.com/BrooksLabUCSC/flair 
   license: BSD-3
-  summary: Correction, isoform definition, and alternative splicing analysis of noisy reads (ONT and PacBio). 
+  summary: Correction, isoform definition, and alternative splicing analysis of noisy reads (ONT and PacBio).
 
 extra:
   identifiers:
