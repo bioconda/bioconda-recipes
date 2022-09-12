@@ -10,8 +10,8 @@ export FREETYPE2_ROOT=$PREFIX
 
 # Remove C and C++ files that ship with source to allow Cython to rebuild them
 # from .pyx
-find . -name "*.c" -exec rm {} \;
-find . -name ".cpp" -exec rm {} \;
+find . -name "_*.c" -exec rm {} \;
+find . -name "_*.cpp" -exec rm {} \;
 
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 
