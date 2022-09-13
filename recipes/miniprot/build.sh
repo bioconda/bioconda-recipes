@@ -1,6 +1,6 @@
 #!/bin/bash
 
-make CC=$CC
+make CC=$CC CFLAGS="$CFLAGS -I$PREFIX/include" LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 if [ ! -d $PREFIX/bin ] ; then
 	mkdir -p $PREFIX/bin
