@@ -1,6 +1,6 @@
 #!/bin/bash
 
-make
+make CC=$CC
 
 if [ ! -d $PREFIX/bin ] ; then
 	mkdir -p $PREFIX/bin
