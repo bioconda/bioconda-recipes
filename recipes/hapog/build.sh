@@ -3,6 +3,8 @@
 export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
+PYVER=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version_info[1]))'`
+
 bash build.sh -l $LIBRARY_PATH
 cp -r hapog.py ${PREFIX}/bin
 cp -r hapog_build/hapog ${PREFIX}/bin
