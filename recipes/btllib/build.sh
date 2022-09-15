@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export AR=gcc-ar
 ./compile
 
 mkdir -p ${PREFIX}/bin/
