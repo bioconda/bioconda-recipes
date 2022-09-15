@@ -1,6 +1,11 @@
 #!/bin/bash
 
-export AR=gcc-ar
+if command -v gcc-ar &> /dev/null; then
+  export AR=gcc-ar
+elif command -v llvm-ar &> /dev/null; then
+  export AR=llvm-ar
+fi
+
 ./compile
 
 mkdir -p ${PREFIX}/bin/
