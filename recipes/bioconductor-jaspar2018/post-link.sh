@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="JASPAR2018_1.1.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/JASPAR2018_1.1.1.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/JASPAR2018_1.1.1.tar.gz"
   "https://bioarchive.galaxyproject.org/JASPAR2018_1.1.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-jaspar2018/bioconductor-jaspar2018_1.1.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-jaspar2018/bioconductor-jaspar2018_1.1.1_src_all.tar.gz"
 )
 MD5="d91fce6ea0dc9fa6a3be6ebc05c1af5d"
@@ -17,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

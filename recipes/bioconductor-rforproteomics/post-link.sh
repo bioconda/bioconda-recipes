@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RforProteomics_1.27.1.tar.gz"
+FN="RforProteomics_1.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/RforProteomics_1.27.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/RforProteomics_1.27.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rforproteomics/bioconductor-rforproteomics_1.27.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/RforProteomics_1.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RforProteomics_1.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rforproteomics/bioconductor-rforproteomics_1.32.0_src_all.tar.gz"
 )
-MD5="1f0670e14ceddfd89ca2325c6d9dc87b"
+MD5="5828debd413fed96c7ec18ff58e9d08c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

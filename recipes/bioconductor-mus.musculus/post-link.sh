@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="Mus.musculus_1.3.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/Mus.musculus_1.3.1.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/Mus.musculus_1.3.1.tar.gz"
   "https://bioarchive.galaxyproject.org/Mus.musculus_1.3.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mus.musculus/bioconductor-mus.musculus_1.3.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mus.musculus/bioconductor-mus.musculus_1.3.1_src_all.tar.gz"
 )
 MD5="1b8defe64c2dd308a88d1ac7a4ce04b9"
@@ -17,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

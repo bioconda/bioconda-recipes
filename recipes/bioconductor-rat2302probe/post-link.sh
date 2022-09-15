@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="rat2302probe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/rat2302probe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/rat2302probe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/rat2302probe_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rat2302probe/bioconductor-rat2302probe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rat2302probe/bioconductor-rat2302probe_2.18.0_src_all.tar.gz"
 )
 MD5="d1d9215e52b9e845cc4d7c902536e0d6"
@@ -17,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

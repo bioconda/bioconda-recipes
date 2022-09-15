@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="humancytosnp12v2p1hCrlmm_1.0.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/humancytosnp12v2p1hCrlmm_1.0.1.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/humancytosnp12v2p1hCrlmm_1.0.1.tar.gz"
   "https://bioarchive.galaxyproject.org/humancytosnp12v2p1hCrlmm_1.0.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-humancytosnp12v2p1hcrlmm/bioconductor-humancytosnp12v2p1hcrlmm_1.0.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-humancytosnp12v2p1hcrlmm/bioconductor-humancytosnp12v2p1hcrlmm_1.0.1_src_all.tar.gz"
 )
 MD5="edf80245ddb28afb9fbaa6668187bf3a"
@@ -17,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

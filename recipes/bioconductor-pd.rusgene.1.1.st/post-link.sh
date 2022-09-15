@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.rusgene.1.1.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/pd.rusgene.1.1.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.rusgene.1.1.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.rusgene.1.1.st_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.rusgene.1.1.st/bioconductor-pd.rusgene.1.1.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.rusgene.1.1.st/bioconductor-pd.rusgene.1.1.st_3.12.0_src_all.tar.gz"
 )
 MD5="228837c2de4a4b106806cb7f384564fa"
@@ -17,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

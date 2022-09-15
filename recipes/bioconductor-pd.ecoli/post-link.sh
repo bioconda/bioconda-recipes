@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.ecoli_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/pd.ecoli_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.ecoli_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.ecoli_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.ecoli/bioconductor-pd.ecoli_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.ecoli/bioconductor-pd.ecoli_3.12.0_src_all.tar.gz"
 )
 MD5="077e91b2567a32780305f0fb6b126fe9"
@@ -17,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

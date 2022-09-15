@@ -1,0 +1,51 @@
+{% set name = "how_are_we_stranded_here" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 5db2fde61409e1c37ef65b9065c3935c5a462130c939e64c810dc022f47f559a
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - check_strandedness = how_are_we_stranded_here.check_strandedness:main
+    - gtf2bed= how_are_we_stranded_here.gtf2bed:main
+    - gff32gtf = how_are_we_stranded_here.gff32gtf:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - pip
+    - python
+    - numpy
+  run:
+    - numpy
+    - pandas
+    - python
+    - rseqc
+    - kallisto =0.44.0
+
+test:
+  imports:
+    - how_are_we_stranded_here
+    - how_are_we_stranded_here.tests
+  commands:
+    - check_strandedness --help
+    - gtf2bed --help
+    - gff32gtf --help
+
+about:
+  home: "https://github.com/betsig/how_are_we_stranded_here"
+  license: MIT
+  license_family: MIT
+  license_file:
+  summary: "Python package for testing strandedness of RNA-Seq fastq files"
+
+extra:
+  recipe-maintainers:
+    - betsig

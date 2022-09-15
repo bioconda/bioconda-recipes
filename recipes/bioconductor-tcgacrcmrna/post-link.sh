@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="TCGAcrcmRNA_1.10.0.tar.gz"
+FN="TCGAcrcmRNA_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/TCGAcrcmRNA_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/TCGAcrcmRNA_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tcgacrcmrna/bioconductor-tcgacrcmrna_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/TCGAcrcmRNA_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TCGAcrcmRNA_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tcgacrcmrna/bioconductor-tcgacrcmrna_1.14.0_src_all.tar.gz"
 )
-MD5="60f50f5dfe358d4bfd393daeca07aaf4"
+MD5="883e65a1001343b056909b666ab8f1f1"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

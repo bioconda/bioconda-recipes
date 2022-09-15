@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="Norway981.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/Norway981.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/Norway981.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/Norway981.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-norway981.db/bioconductor-norway981.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-norway981.db/bioconductor-norway981.db_3.2.3_src_all.tar.gz"
 )
 MD5="85367390919bba9018438585e59fbb87"
@@ -17,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

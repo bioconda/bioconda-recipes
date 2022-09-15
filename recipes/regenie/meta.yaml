@@ -1,5 +1,6 @@
 {% set name = "regenie" %}
-{% set version = "1.0.6.7" %}
+{% set version = "3.2" %}
+{% set sha256 = "16097d59ade38a9e02d26f58aea900b60f6775b3ae73855b4205ca047c7b2810" %}
 
 package:
   name: {{ name|lower }}
@@ -7,41 +8,44 @@ package:
 
 source:
   url: https://github.com/rgcgithub/regenie/archive/v{{ version }}.tar.gz
-  sha256: 94b08348feb2cdeb9d94c821442a20aad4f3da79cc61b62cf6a8ba950fe0d0d2
+  sha256: {{ sha256 }}
   patches:
     # Fixing postrelease issues
-    - patches/0001-use-shared-cxxopts.patch
-    - patches/0002-import-shared-Eigen3.patch
-    - patches/0003-use-conda-cmakelists.patch
-    - patches/0004-fix-fail-exit-on-help.patch
+    # - patches/0001-use-shared-cxxopts.patch
+    # - patches/0002-import-shared-Eigen3.patch
+    # - patches/0003-use-conda-cmakelists.patch
+    # - patches/0004-fix-fail-exit-on-help.patch
+    # - patches/0005-use-conda-cmakelist-file.patch
+    # - patches/0006-fix-cmakelist-file.patch
+    # - patches/0007-fix-cmakelist-file-for-osx.patch
+    # - patches/0008-fix-cmakelist-file-for-osx-eigen4.patch
+    - patches/0009-update-cmake-file-for-conda.patch
 
 build:
   number: 0
-  
+
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
-    - cmake >=3.15
+    - binutils >=2.33.1  # [linux]
+    - cmake >=3.13
     - make
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
   host:
     - bgenix >=1.1.7
     - boost-cpp
-    - blas=2.20=mkl
+    - liblapack * *mkl
+    - mkl >=2020.4
     - mkl-include
-    - cxxopts
-    - eigen
     - zlib
     - zstd
   run:
-    - bgenix >=1.1.7
     - boost-cpp
-    - blas=2.20=mkl
-    - llvm-openmp
-    - mkl-include
-    - mkl
+    - mkl >=2020.4
     - sqlite
     - zlib
     - zstd
@@ -50,6 +54,7 @@ test:
   commands:
     - test -f ${PREFIX}/bin/regenie  # [linux]
     - regenie --help
+    - regenie --version
 
 about:
   home: https://rgcgithub.github.io/regenie/
@@ -62,3 +67,4 @@ about:
 extra:
   recipe-maintainers:
     - matuskosut
+    - joellembatchou

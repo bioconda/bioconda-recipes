@@ -1,4 +1,4 @@
-{% set version = "2.2.0" %}
+{% set version = "2.5.0" %}
 {% set name = "PopPUNK" %}
 
 package:
@@ -6,36 +6,64 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/p/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz
-  sha256: 88d9820e8315a4bd86c9592a5cf307f282784489a3cc403d0bac2ed530d408fc
+  url: https://github.com/bacpop/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: c996b58b15ccd8a3cdaddcf41c50e5acb2dd39d9102fa9b457cf1efa144acf6a
 
 build:
   number: 0
-  noarch: python
+  skip: true  # [py < 38]
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
   entry_points:
     - poppunk = PopPUNK.__main__:main
-    - poppunk_prune = PopPUNK.prune_db:main
+    - poppunk_assign = PopPUNK.assign:main
+    - poppunk_visualise = PopPUNK.visualise:main
+    - poppunk_mst = PopPUNK.sparse_mst:main
     - poppunk_references = PopPUNK.reference_pick:main
-    - poppunk_tsne = PopPUNK.tsne:main
+    - poppunk_mandrake = PopPUNK.mandrake:main
+    - poppunk_info = PopPUNK.info:main
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux64]
+    - cmake >=3.18
+    - make
   host:
-    - python >=3.8
+    # python
+    - python
     - pip
-
+    # C++ extension
+    - pybind11
+    - zlib
+    - eigen
+    - boost-cpp
+    - openblas
   run:
-    - python >=3.8
+    # python
+    - python
     - numpy
     - scipy
-    - scikit-learn
-    - dendropy
+    - scikit-learn >=0.24
+    - dendropy >=4.4.0
     - pandas
-    - graph-tool
+    - graph-tool >=2.35
     - matplotlib-base
     - hdbscan
-    - pp-sketchlib >=1.5.1
+    - pp-sketchlib >=1.7.0
     - rapidnj
+    - networkx
+    - h5py
+    - tqdm
+    - mandrake
+    - biopython
+    - treeswift
+    - requests
+    # C++ extension
+    - zlib
+    - libblas
     # The xorg-* requirements are only used for gtk3 which is pulled in via graph-tool.
     - xorg-libxi
     - xorg-libxcursor
@@ -50,12 +78,16 @@ requirements:
 test:
   imports:
     - PopPUNK
+    - poppunk_refine
 
   commands:
     - poppunk --help
-    - poppunk_prune --help
+    - poppunk_assign --help
+    - poppunk_visualise --help
+    - poppunk_mst --help
     - poppunk_references --help
-    - poppunk_tsne --help
+    - poppunk_mandrake --help
+    - poppunk_info --help
 
 about:
   home: https://www.poppunk.net

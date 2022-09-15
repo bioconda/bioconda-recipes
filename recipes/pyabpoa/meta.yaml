@@ -1,0 +1,46 @@
+{% set name = "pyabpoa" %}
+{% set version = "1.4.0" %}
+
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pyabpoa-{{ version }}.tar.gz
+  sha256: 7880aff37e8fcc22cb4806ecc40628521d047df4b5aaf75b679ea82ecb24a335
+
+build:
+  number: 0
+  script: rm -f python/*.c; {{ PYTHON }} -m pip install . -vv
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - cython
+    - pip
+    - python
+  run:
+    - python
+    - cython
+
+test:
+  imports:
+    - pyabpoa
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/yangao07/abPOA
+  summary: 'pyabpoa: SIMD-based partial order alignment using adaptive band'
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  skip-lints:
+    - cython_must_be_in_host
+  recipe-maintainers:
+    - bkille
