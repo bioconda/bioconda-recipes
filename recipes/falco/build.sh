@@ -16,4 +16,4 @@ cd $falco
 make
 make install
 cd -
-mv $falco/bin/falco ./bin
+mv $falco/bin/falco $PREFIX/bin
