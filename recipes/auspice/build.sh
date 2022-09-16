@@ -13,4 +13,6 @@ popd
 
 # For the license_file field in meta.yaml
 cp $PREFIX/lib/auspice/node_modules/auspice/LICENSE.txt $SRC_DIR
-for f in $PREFIX/lib/auspice/node_modules/watchpack-chokidar2/node_modules/fsevents/build/node_gyp_bins/python3 ; do unlink $f; done
+if [ -f $PREFIX/lib/auspice/node_modules/watchpack-chokidar2/node_modules/fsevents/build/node_gyp_bins/python3 ] ; then
+    unlink $PREFIX/lib/auspice/node_modules/watchpack-chokidar2/node_modules/fsevents/build/node_gyp_bins/python3
+fi
