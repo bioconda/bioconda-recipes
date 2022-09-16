@@ -1,4 +1,5 @@
 #!/bin/bash
+export CPP_INCLUDE_PATH=${PREFIX}/include
 
 cmake .
 make
