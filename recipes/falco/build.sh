@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # add Configuration and example files to opt
-falco=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
+falco=$PREFIX/opt/falco
 mkdir -p $falco
 cp -r ./* $falco
 
