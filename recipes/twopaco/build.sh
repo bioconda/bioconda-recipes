@@ -3,6 +3,7 @@
 mkdir build 
 cd build
 
+find $PREFIX -name mutex.h -print
 cmake \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_CXX_STANDARD=11 \

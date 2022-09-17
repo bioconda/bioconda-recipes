@@ -8,6 +8,7 @@ mkdir -p build
 cd build
 cmake \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+    -DTBB_INSTALL_DIR="${PREFIX}" \
     -DBOOST_ROOT="${PREFIX}" \
     -DBoost_NO_SYSTEM_PATHS=ON \
     -DBoost_DEBUG=ON \
