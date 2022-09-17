@@ -15,5 +15,9 @@ cd $falco
 ./configure --prefix=$falco --enable-hts
 make
 make install
-cd -
+for i in $(ls -1 | grep -v Configuration | grep -v bin);
+do
+  rm -rf ${i};
+done
 mv $falco/bin/falco $PREFIX/bin
+rm -rf bin
