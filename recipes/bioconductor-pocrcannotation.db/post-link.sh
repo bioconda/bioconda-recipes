@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="POCRCannotation.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/POCRCannotation.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/POCRCannotation.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/POCRCannotation.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pocrcannotation.db/bioconductor-pocrcannotation.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pocrcannotation.db/bioconductor-pocrcannotation.db_3.2.3_src_all.tar.gz"
 )
 MD5="da1d4dacc5fffb9c5dfea55649974aa5"
@@ -17,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

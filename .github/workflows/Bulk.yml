@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       max-parallel: 13
       matrix:
-        runner: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        runner: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] #, 13, 14, 15, 16, 17, 18, 19]
     steps:
     - uses: actions/checkout@v1
 
@@ -41,6 +41,8 @@ jobs:
         OSTYPE: "linux-gnu"
         CI: "true"
       run: |
+        ls /home/runner/bioconda/etc/profile.d
+        ls /home/runner/bioconda/etc
         . /home/runner/bioconda/etc/profile.d/conda.sh
         conda activate base
         echo '============'
@@ -72,33 +74,44 @@ jobs:
       id: cache
       uses: actions/cache@v1
       with:
-        path: /Users/runner/bioconda
-        key: ${{ runner.os }}--bulk--${{ hashFiles('**/common.sh') }}
-
-    - name: Setup Bioconda-utils
-      if: steps.cache.outputs.cache-hit != 'true'
-      uses: bioconda/bioconda-actions/bioconda_recipes_setup/@bulk
-      env:
-        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+        path: /Users/runner/miniconda
+        key: ${{ runner.os }}--bulk0--${{ hashFiles('**/common.sh') }}
 
     - name: OSX stuff
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
-        # download SDK and setup sysroot on macOS
-        #  primarily, run_conda_forge_build_setup does the following:
-        #   - download/setup SDK:
-        #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L21-L26
-        #   - add activation script to set MACOSX_DEPLOYMENT_TARGET and CONDA_BUILD_SYSROOT:
-        #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L60-L63
-        . /Users/runner/bioconda/etc/profile.d/conda.sh
-        conda activate base
-        # use "CONFIG=" to avoid writing ./.ci_support/${CONFIG}.yaml which we don't need/use.
-        CONFIG= OSX_FORCE_SDK_DOWNLOAD=1 MACOSX_DEPLOYMENT_TARGET=10.13 run_conda_forge_build_setup
-        conda_forge_ci_setup_activate_sh="${CONDA_PREFIX}/etc/conda/activate.d/conda-forge-ci-setup-activate.sh"
-        sed -Ei.bak "s/^(export MACOSX_DEPLOYMENT_TARGET)=.*$/\\1='10.9'/" "${conda_forge_ci_setup_activate_sh}"
-        rm "${conda_forge_ci_setup_activate_sh}".bak
-        cat "${conda_forge_ci_setup_activate_sh}"
-        grep -qFx "export MACOSX_DEPLOYMENT_TARGET='10.9'" "${conda_forge_ci_setup_activate_sh}"
-        conda list
+        # Remove existing installation on macOS runners
+        sudo rm -rf /usr/local/miniconda
+        sudo rm -rf ${HOME}/miniconda
+
+        # Extract the versions we should be using from the previously-downloaded common.sh
+        BIOCONDA_UTILS_TAG=$(grep "^BIOCONDA_UTILS_TAG=" common.sh | cut -f2 -d "=" | sed "s/^v//g")
+        MINICONDA_VER=$(grep "^MINICONDA_VER=" common.sh | cut -f2 -d "=")
+
+        # Basic miniconda installation with bioconda channels configured
+        curl "https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA_VER}-MacOSX-x86_64.sh" > miniconda.sh
+        bash miniconda.sh -b -p "${HOME}/miniconda"
+        export PATH="${HOME}/miniconda/bin:${PATH}"
+        conda config --set always_yes yes
+        conda config --system --add channels defaults
+        conda config --system --add channels bioconda
+        conda config --system --add channels conda-forge
+        conda config --system --set channel_priority strict
+        conda info
+
+        # The run_conda_forge_build_setup script, from the conda-forge-ci-setup
+        # script, helps install required SDK for macOS.
+        #
+        # Installing bioconda-utils and conda-forge-ci-setup with conda causes dependency conflicts.
+        # Installing bioconda-utils and conda-forge-ci-setup with mamba works fine.
+        conda install -y mamba
+        mamba install bioconda-utils=${BIOCONDA_UTILS_TAG} conda-forge-ci-setup
+        ${HOME}/miniconda/bin/run_conda_forge_build_setup
+
+        # Set local channel as highest priority
+        mkdir -p "${HOME}/miniconda/conda-bld/{noarch,linux-64,osx-64}"
+        conda index "${HOME}/miniconda/conda-bld"
+        conda config --system --add channels "file://${HOME}/miniconda/conda-bld"
 
     - name: Build and upload
       env:
@@ -109,8 +122,7 @@ jobs:
         OSTYPE: "darwin"
         CI: "true"
       run: |
-        . /Users/runner/bioconda/etc/profile.d/conda.sh
-        conda activate base
+        export PATH="${HOME}/miniconda/bin:${PATH}"
         echo '============'
         conda info --all
         conda config --show-sources

@@ -1,5 +1,5 @@
 {% set name = "seq2science" %}
-{% set version = "0.5.6" %}
+{% set version = "0.9.5" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/vanheeringen-lab/seq2science/archive/v{{ version }}.tar.gz
-  sha256: eff819c39da8022b36a79372b3c66da9d91b0ccbd12c8a97cdb4b5d3c2f9ad08
+  sha256: bc6f4bf65f34b93d1818d76f6d36cf9489a566e492b49d9a8de0cd319318978c
 
 build:
   noarch: python
@@ -18,26 +18,30 @@ requirements:
     - python >=3.6
     - pip
     - toml
-    - setuptools
+    - setuptools=59.4.0
   run:
     - python=3.8
-    - snakemake-minimal=5.18.1
-    - conda=4.9.2
-    - mamba=0.7.14
-    - genomepy=0.10.0
-    - biopython=1.74
-    - filelock=3.0.12
-    - pyyaml=5.3.1
+    - snakemake-minimal=7.7.0
+    - conda=4.11.0
+    - mamba=0.20.0
+    - genomepy=0.13.0
+    - biopython=1.79
+    - filelock=3.7.1
+    - pyyaml=6.0
     - pandas_schema=0.3.5
+    - pandas=1.3.2
     - trackhub=0.1.2019.12.24
-    - pysradb=1.0.1
-    - matplotlib-base=3.3.2
-    - xdg=5.0.1
-    - argcomplete=1.12.2
+    - pysradb=1.4.2
+    - matplotlib-base=3.5.2
+    - xdg=5.1.1
+    - argcomplete=2.0.0
+    - tabulate=0.8.9
+    - conda-ecosystem-user-package-isolation=1.0
 
 test:
   commands:
     - which seq2science
+    - conda config --set channel_priority strict
     - seq2science --help
     - seq2science init atac-seq
     - mkdir --parents results/fastq; touch results/fastq/GSM28374{88,89,90,91,92,93}.fastq.gz  # no lookup online for layout
@@ -45,6 +49,7 @@ test:
     - echo -e "chr1\t100000" > genomes/Bl71nemr/Bl71nemr.fa.sizes
     - seq2science run atac-seq --dryrun --snakemakeOptions resources={mem_gb:100} quiet=True
     - chmod -R 777 .   # make sure everything can be deleted
+    - deseq2science -v 
 
 about:
   home: https://vanheeringen-lab.github.io/seq2science

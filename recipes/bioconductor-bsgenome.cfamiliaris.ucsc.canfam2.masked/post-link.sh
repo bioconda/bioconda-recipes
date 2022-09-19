@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="BSgenome.Cfamiliaris.UCSC.canFam2.masked_1.3.99.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/BSgenome.Cfamiliaris.UCSC.canFam2.masked_1.3.99.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Cfamiliaris.UCSC.canFam2.masked_1.3.99.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Cfamiliaris.UCSC.canFam2.masked_1.3.99.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.cfamiliaris.ucsc.canfam2.masked/bioconductor-bsgenome.cfamiliaris.ucsc.canfam2.masked_1.3.99_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.cfamiliaris.ucsc.canfam2.masked/bioconductor-bsgenome.cfamiliaris.ucsc.canfam2.masked_1.3.99_src_all.tar.gz"
 )
 MD5="6f921533bb83f83f43b8d227b00a48cb"
@@ -17,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
