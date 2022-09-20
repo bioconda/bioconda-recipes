@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 
-# Create share directory
-SHARE_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
-mkdir -p ${SHARE_DIR}/
-cp -r ./lib ${SHARE_DIR}/
-
 # Skip copying of bwa, minimap2, and samtools
 sed -i.backup \
     -e "s| bwa samtools minimap2||g" \
@@ -19,6 +14,11 @@ sed -i.backup \
 
 # Add version info (original required internet connection)
 sed -i.backup "s=BIOCONDA_SED_REPLACE=$PKG_VERSION=" lib/kit.py
+
+# Create share directory
+SHARE_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
+mkdir -p ${SHARE_DIR}/
+cp -r ./lib ${SHARE_DIR}/
 
 # Build
 make
