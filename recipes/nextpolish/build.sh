@@ -26,6 +26,6 @@ mkdir -p ${PREFIX}/bin
 cp bin/* ${PREFIX}/bin
 
 # fix hardcoded path
-sed -i "s=BIOCONDA_SED_REPLACE=$SHARE_DIR=" nextPolish
+sed -i.backup "s=BIOCONDA_SED_REPLACE=$SHARE_DIR=" nextPolish
 chmod 755 nextPolish
 cp nextPolish ${PREFIX}/bin
