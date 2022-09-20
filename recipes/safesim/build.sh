@@ -8,5 +8,5 @@ make clean || true
 # We add -fPIE to get compatibility with conda libs
 # We do not build debug executables because -fsanitize seems to be in conflict with -fPIE
 make CXX=$CXX CXXFLAGS="-static-libstdc++ ext/htslib-1.11-lowdep/libhts.a -I ext/htslib-1.11-lowdep/ -I $PREFIX/include -pthread -lm -lz -lbz2 -llzma -ldeflate -fPIE" LDFLAGS="-L $PREFIX/lib" safemut safemix 
-make deploy
+cp safemut safemix $PREFIX/bin/
 
