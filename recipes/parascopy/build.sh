@@ -1,4 +1,7 @@
 
+rmdir freebayes
+git clone --recursive https://github.com/tprodanov/freebayes.git
+
 cd freebayes
 mkdir build
 meson build/ --buildtype release
