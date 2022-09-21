@@ -1,23 +1,27 @@
 {% set name = "parascopy" %}
-{% set version = "1.7.6" %}
+{% set version = "1.9.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/tprodanov/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 2161b28ea98a58cb283f5d452199ea29f15ff12cd372b333fc8b05072d3e2949
-
-build:
-  noarch: python
-  number: 0
-  script: {{ PYTHON }} -m pip install . --ignore-install --no-deps -vv 
+  git_url: https://github.com/tprodanov/parascopy.git
+  git_rev: v{{ version }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - meson
+    - ninja
+    - pkg-config
   host:
     - python >=3.6
     - pip
+    - bzip2
+    - htslib
+    - tabixpp
   run:
     - python >=3.6
     - numpy >=1.15
@@ -29,23 +33,26 @@ requirements:
     - samtools >=1.11
     - bwa >=0.7
     - intervaltree >=3.0
+    - tabixpp
 
 test:
   commands:
     - parascopy help
-    - parascopy pretable --help
-    - parascopy table --help
-    - parascopy depth --help
-    - parascopy cn --help
-    - parascopy cn-using --help
-    - parascopy pool --help
-    - parascopy view --help
-    - parascopy psvs --help
-    - parascopy msa --help
+    - parascopy pretable --version
+    - parascopy table --version
+    - parascopy depth --version
+    - parascopy cn --version
+    - parascopy cn-using --version
+    - parascopy pool --version
+    - parascopy view --version
+    - parascopy psvs --version
+    - parascopy msa --version
+    - parascopy call --version
+    - _parascopy_freebayes --version
 
 about:
   home: https://github.com/tprodanov/parascopy
   license: MIT
   license_file: LICENSE
-  summary: Robust and accurate estimation of paralog-specific copy number for duplicated genes using whole-genome sequencing.
+  summary: Calling paralog-specific copy number and sequence variants in duplicated genes using short-read whole-genome sequencing.
 
