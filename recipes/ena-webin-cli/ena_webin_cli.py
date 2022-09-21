@@ -25,7 +25,7 @@ class TooManyJars(Exception):
 # !!! End of parameter section. No user-serviceable code below this line !!!
 def find_jar_file(directory):
     d = Path(directory)
-    jars = list(directory.glob("webin-cli-*.jar"))
+    jars = list(d.glob("webin-cli-*.jar"))
     if not jars:
         raise FileNotFoundError(
             "Could not find the jar file in {}".format(str(directory))
