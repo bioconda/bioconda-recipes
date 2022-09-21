@@ -33,7 +33,7 @@ def find_jar_file(directory):
     elif len(jars) > 1:
         raise TooManyJars("Too many jar files found in {} - {}".format(directory, jars))
     else:
-        return jars[0].resolve()
+        return str(jars[0].resolve())
 
 
 def real_dirname(path):
