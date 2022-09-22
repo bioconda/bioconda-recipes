@@ -127,7 +127,7 @@ def _gen_new_index(repodata, subdir):
         if subdir == "noarch" and record_name.startswith('bioconductor-') and has_dep(record, "curl"):
             for i, dep in enumerate(deps):
                 if dep.startswith('curl >=7.'):
-                    deps[i] = 'curl >=7,<8.0a0'
+                    deps[i] = 'curl'
                     break
 
     return index
