@@ -1,5 +1,5 @@
 
-rmdir freebayes
+rm -df freebayes
 git clone --recursive https://github.com/tprodanov/freebayes.git
 
 cd freebayes
