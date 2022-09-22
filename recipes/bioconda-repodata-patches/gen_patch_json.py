@@ -123,6 +123,13 @@ def _gen_new_index(repodata, subdir):
                     deps[i] = 'r-base >={},<{}'.format(minVersion, maxVersion)
                     break
 
+        # Bioconductor data packages are noarch: generic and incorrectly pin curl to >=7.38.1,<8, rather than >=7,<8
+        if subdir == "noarch" and record_name.startswith('bioconductor-') and has_dep(record, "curl"):
+            for i, dep in enumerate(deps):
+                if dep.startswith('curl >=7.'):
+                    deps[i] = 'curl'
+                    break
+
     return index
 
 
