@@ -1,0 +1,99 @@
+{% set version = '1.0.0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-shinyngs
+  version: {{ version|replace("-", "_") }}
+
+source:
+
+  git_url: git@github.com:pinin4fjords/shinyngs
+  git_tag: v1.0.0
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+  # no skip
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: yaml, shinyBS, BiocStyle, knitr, rmarkdown, Gviz
+requirements:
+  build:
+    - {{ posix }}filesystem        # [win]
+    - {{ posix }}git
+    - {{ posix }}zip               # [win]
+
+  host:
+    - r-base
+    - r-dt >=0.2
+    - bioconductor-gseabase
+    - r-rcolorbrewer
+    - bioconductor-summarizedexperiment
+    - r-d3heatmap
+    - r-data.table
+    - r-ggdendro
+    - r-pheatmap
+    - r-plotly >=4.3.4
+    - r-shiny
+    - r-shinyjs
+    - r-shinythemes
+
+  run:
+    - r-base
+    - r-dt >=0.2
+    - bioconductor-gseabase
+    - r-rcolorbrewer
+    - bioconductor-summarizedexperiment
+    - r-d3heatmap
+    - r-data.table
+    - r-ggdendro
+    - r-pheatmap
+    - r-plotly >=4.3.4
+    - r-shiny
+    - r-shinyjs
+    - r-shinythemes
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('shinyngs')"           # [not win]
+    - "\"%R%\" -e \"library('shinyngs')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: git@github.com:pinin4fjords/shinyngs
+  license: AGPL-3.0
+  summary: Provides Shiny applications for various array and NGS applications. Currently very
+    RNA-seq centric, with plans for expansion.
+  license_family: AGPL
+
+# The original CRAN metadata for this package was:
+
+# Package: shinyngs
+# Title: Shiny apps for NGS data
+# Version: 0.0.1
+# Authors@R: person("Jonathan", "Manning", email = "Jonathan.Manning@ed.ac.uk", role = c("aut", "cre"))
+# Description: Provides Shiny applications for various array and NGS applications. Currently very RNA-seq centric, with plans for expansion.
+# Depends: R (>= 3.2.2), SummarizedExperiment
+# License: AGPL-3.0
+# LazyData: true
+# Imports: data.table, d3heatmap, DT (>= 0.2), ggdendro, GSEABase, pheatmap, plotly (>= 4.3.4), RColorBrewer, shiny, shinyjs, shinythemes, SummarizedExperiment
+# Suggests: yaml, shinyBS, BiocStyle, knitr, rmarkdown, Gviz
+# RoxygenNote: 6.0.1
+# VignetteBuilder: knitr
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml
