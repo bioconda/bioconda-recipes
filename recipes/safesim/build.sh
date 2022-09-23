@@ -14,6 +14,6 @@ make clean || true
 # Dynamic linking instead of static linking is done to htslib here because if a system can run conda then it should be able to have libhts.so installed. 
 make CXX=$CXX CXXFLAGS="-pthread -lm -lz -lbz2 -llzma -static-libstdc++ -lhts -ldeflate -fPIE -I $PREFIX/include" LDFLAGS="-L $PREFIX/lib" safemut safemix 
 
-mkdir $PREFIX/bin
+mkdir -p $PREFIX/bin
 cp safemix $PREFIX/bin
 cp safemut $PREFIX/bin
