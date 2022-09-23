@@ -9,11 +9,15 @@ ln -s "${GCC}" "${BUILD_PREFIX}/gcc"
 #ln -s $PREFIX/bin/TreeKnit.jl $PREFIX/bin/treeknit
 #chmod +x $PREFIX/bin/treeknit
 
-cd $SRC_DIR
-julia -e 'import Pkg; Pkg.add("PackageCompiler"); using PackageCompiler; create_app(".", "compiled")'
-cp compiled/bin/* $PREFIX/bin/
-cp -r compiled/lib $PREFIX/
-cp -r compiled/share $PREFIX/
+echo "Start compiling from"
+pwd
+cd $SRC_DIR && julia -e 'import Pkg; Pkg.add("PackageCompiler"); using PackageCompiler; create_app(".", "compiled")'
+echo "Done compiling"
+pwd
+
+cp $SRC_DIR/compiled/bin/* $PREFIX/bin/
+cp -r $SRC_DIR/compiled/lib $PREFIX/
+cp -r $SRC_DIR/compiled/share $PREFIX/
 
 ln -s $PREFIX/bin/TreeKnit $PREFIX/bin/treeknit
 rm "${BUILD_PREFIX}/gcc"
