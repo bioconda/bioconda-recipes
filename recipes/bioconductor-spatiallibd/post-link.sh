@@ -1,5 +1,5 @@
 #!/bin/bash
-FN="gageData_2.32.0.tar.gz"
+FN="spatialLIBD_1.6.5.tar.gz"
 URLS=(
   "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/spatialLIBD_1.6.5.tar.gz"
 )
