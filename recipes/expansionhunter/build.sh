@@ -15,4 +15,4 @@ export LIBRARY_PATH=${PREFIX}/lib
 cmake ..
 make CXX="$CXX" CC="$CC" CXXFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS"
 
-mv ExpansionHunter ${PREFIX}/bin/ExpansionHunter
+mv install/bin/ExpansionHunter ${PREFIX}/bin/ExpansionHunter
