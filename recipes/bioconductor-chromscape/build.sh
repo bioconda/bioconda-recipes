@@ -1,4 +1,5 @@
 #!/bin/bash
+find / -name math.h -print
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 mkdir -p ~/.R
