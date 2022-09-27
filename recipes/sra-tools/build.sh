@@ -1,28 +1,5 @@
 #!/bin/bash -e
 
-# Build uses hard-coded references to gcc/g++/etc. and does not properly honor all *FLAGS.
-make_wrapper() {
-    [ -n "${2:+x}" ] || return 0
-    local exe
-    exe="${BUILD_PREFIX}/bin/${3}"
-    rm -f "${exe}"
-    touch "${exe}"
-    chmod +x "${exe}"
-    cat > "${exe}" <<EOF
-#! /bin/sh
-exec ${2} ${1} ${CPPFLAGS} ${LDFLAGS} "\${@}"
-EOF
-}
-make_wrapper "${CFLAGS}" "${CC}" cc
-make_wrapper "${CFLAGS}" "${GCC}" gcc
-make_wrapper "${CFLAGS}" "${CLANG}" clang
-make_wrapper "${CXXFLAGS}" "${CXX}" c++
-make_wrapper "${CXXFLAGS}" "${GXX}" g++
-make_wrapper "${CXXFLAGS}" "${CLANGXX}" clang++
-ln -s "${AR}" "${BUILD_PREFIX}/bin/ar"
-ln -s "${LD}" "${BUILD_PREFIX}/bin/ld"
-
-
 NCBI_OUTDIR=$SRC_DIR/ncbi-outdir
 
 
@@ -48,34 +25,22 @@ cat <<end-of-patch
 end-of-patch
 } | patch -p0 -i-
 
-./configure \
-    --prefix="${PREFIX}" \
-    --build-prefix="${NCBI_OUTDIR}" \
-    --with-ngs-sdk-prefix="${PREFIX}" \
-    --with-hdf5-prefix="${PREFIX}" \
-    --with-xml2-prefix="${PREFIX}" \
-    ;
-# Make target dependencies seems broken; build fails with -j"${CPU_COUNT}"
-make
+ENV.append_to_cflags "-DH5_USE_110_API"
+
+cmake -DH5_USE_110_API \
+      -DNGS_INCDIR=${PREFIX} \
+cmake --build 
+
 popd
 
 echo "compiling sra-tools"
 pushd sra-tools
 
-pushd tools/driver-tool/utf8proc
-make -j"${CPU_COUNT}"
-popd
-
-./configure \
-    --prefix="${PREFIX}" \
-    --build-prefix="${NCBI_OUTDIR}" \
-    --with-ngs-sdk-prefix="${PREFIX}" \
-    --with-hdf5-prefix="${PREFIX}" \
-    --with-xml2-prefix="${PREFIX}" \
-    --with-ncbi-vdb-build="${NCBI_OUTDIR}" \
-    ;
-make -j"${CPU_COUNT}"
-make install
+cmake -DVDB_BINDIR=../ncbi-vdb \
+    -DVDB_LIBDIR=../ncbi-vdb \
+    -DVDB_INCDIR=../ncbi-vdbinterfaces
+cmake --build
+cmake --install
 popd
 
 # Strip package version from binary names
