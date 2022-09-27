@@ -1,4 +1,5 @@
 export PREFIX=${PREFIX}
+alias gcc=${GCC}
 make --file=makefile-conda.mk
 
 cp cvlr-cluster ${PREFIX}/bin/.
