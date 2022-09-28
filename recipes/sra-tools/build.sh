@@ -26,7 +26,7 @@ end-of-patch
 } | patch -p0 -i-
 
 export CFLAGS="${CFLAGS} -DH5_USE_110_API"
-cmake -DNGS_INCDIR=${PREFIX} --config Release
+cmake -DNGS_INCDIR=${PREFIX}
 cmake --build . --config Release --verbose
 
 popd
