@@ -1,8 +1,14 @@
 #!/bin/bash
 
-sed -i 's/g++/${CC}/g' makefile
-
-make CC=$GXX
+if [ "$(uname)" == "Darwin" ];
+then
+    sed -i.bak1 "s/g++/${CXX}/g" makefile
+    sed -i.bak2 "s/astral-hybrid astral-hybrid_precise //g" makefile
+    make
+else
+    sed -i.bak "s/g++/${GXX}/g" makefile
+    make
+fi
 
 [ ! -d $PREFIX/bin ] && mkdir -p $PREFIX/bin
 
