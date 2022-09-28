@@ -1,5 +1,5 @@
 #!/bin/bash
-
+find / -name "*System.dylib" -print
 mkdir -p $PREFIX/bin
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
