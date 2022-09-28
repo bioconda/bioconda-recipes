@@ -2,8 +2,8 @@
 
 if [ "$(uname)" == "Darwin" ];
 then
-    sed -i.bak1 "s/g++/${CXX}/g" makefile
-    sed -i.bak2 "s/astral-hybrid astral-hybrid_precise //g" makefile
+    sed -i.bak1 's/g++/${CXX}/g' makefile
+    sed -i.bak2 's/astral-hybrid astral-hybrid_precise //g' makefile
     make
 else
     sed -i.bak 's/g++/${GXX}/g' makefile
