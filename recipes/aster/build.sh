@@ -6,7 +6,7 @@ then
     sed -i.bak2 "s/astral-hybrid astral-hybrid_precise //g" makefile
     make
 else
-    sed -i.bak "s/g++/${GXX}/g" makefile
+    sed -i.bak 's/g++/${GXX}/g' makefile
     make
 fi
 
