@@ -1,7 +1,6 @@
 #!/bin/bash
 
 mkdir -p $PREFIX/bin
-find / -name "*System.dylib" -print
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     curl -sSLO https://github.com/oneapi-src/oneTBB/releases/download/2019_U9/tbb2019_20191006oss_mac.tgz
