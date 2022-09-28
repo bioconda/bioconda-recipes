@@ -33,6 +33,6 @@ ls -l $BIN_FOLDER
 # ln -s $INSTALL_FOLDER/plastedma.py $BIN_FOLDER/
 # ln -s $INSTALL_FOLDER/workflow $BIN_FOLDER/
 # ln -s $INSTALL_FOLDER/workflow/scripts/hmmsearch_run.py $INSTALL_FOLDER/workflow/scripts/hmm_process.py $BIN_FOLDER/
-chmod u+x $BIN_FOLDER/plastedma.py
+# chmod u+x $BIN_FOLDER/plastedma.py
 
-alias plastedma="plastedma.py"
+# alias plastedma="plastedma.py"
