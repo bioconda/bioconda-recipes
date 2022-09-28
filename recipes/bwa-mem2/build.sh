@@ -3,6 +3,11 @@
 # https://github.com/intel/safestringlib/issues/14
 if [[ $OSTYPE == "darwin"* ]]; then
     sed -i.bak -e "s/extern errno_t//g" ext/safestringlib/include/safe_mem_lib.h
+    sed -i 's/memset_s/memset8_s/g' ext/safestringlib/include/safe_mem_lib.h
+    sed -i 's/memset_s/memset8_s/g' ext/safestringlib/safeclib/memset16_s.c
+    sed -i 's/memset_s/memset8_s/g' ext/safestringlib/safeclib/memset32_s.c
+    sed -i 's/memset_s/memset8_s/g' ext/safestringlib/safeclib/memset_s.c
+    sed -i 's/memset_s/memset8_s/g' ext/safestringlib/safeclib/wmemset_s.c
 fi
 LIBS="${LDFLAGS}" make CC="${CC}" CXX="${CXX}" multi
 
