@@ -1,6 +1,8 @@
 #!/bin/bash
 
-make
+sed -i 's/g++/${CC}/g' makefile
+
+make CC=$GXX
 
 [ ! -d $PREFIX/bin ] && mkdir -p $PREFIX/bin
 
