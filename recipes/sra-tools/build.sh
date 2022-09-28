@@ -25,11 +25,9 @@ cat <<end-of-patch
 end-of-patch
 } | patch -p0 -i-
 
-ENV.append_to_cflags "-DH5_USE_110_API"
-
-cmake -DH5_USE_110_API \
-      -DNGS_INCDIR=${PREFIX} \
-cmake --build 
+export CFLAGS="${CFLAGS} -DH5_USE_110_API"
+cmake -DNGS_INCDIR=${PREFIX} 
+cmake --build . --config Release
 
 popd
 
@@ -39,7 +37,7 @@ pushd sra-tools
 cmake -DVDB_BINDIR=../ncbi-vdb \
     -DVDB_LIBDIR=../ncbi-vdb \
     -DVDB_INCDIR=../ncbi-vdbinterfaces
-cmake --build
+cmake --build --config Release
 cmake --install
 popd
 
