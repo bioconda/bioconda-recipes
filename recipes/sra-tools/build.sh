@@ -39,7 +39,7 @@ cmake -DVDB_BINDIR=${SRC_DIR}/ncbi-vdb/bin \
     -DVDB_INCDIR=${SRC_DIR}/ncbi-vdb/interfaces \
     -DCMAKE_BUILD_TYPE=Release
 cmake --build . --verbose
-cmake --install
+cmake --install . --prefix=${PREFIX}
 popd
 
 # Strip package version from binary names
