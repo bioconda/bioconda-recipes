@@ -14,6 +14,10 @@ cp plastedma.py $INSTALL_FOLDER/
 
 cp -r $INSTALL_FOLDER/workflow/scripts/* $BIN_FOLDER
 chmod u+rx $INSTALL_FOLDER/plastedma.py
+echo "Listing bin folder"
 ls -l $BIN_FOLDER
-ls -l $BIN_FOLDER/workflow/scripts
 ln -s $INSTALL_FOLDER/plastedma.py $BIN_FOLDER/
+echo "Listing bin folder after simblink"
+ls -l $BIN_FOLDER
+
+echo "INSTALL FINISHED"
