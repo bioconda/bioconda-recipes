@@ -36,7 +36,7 @@ pushd sra-tools
 
 cmake -DVDB_BINDIR=../ncbi-vdb \
     -DVDB_LIBDIR=../ncbi-vdb \
-    -DVDB_INCDIR=../ncbi-vdbinterfaces
+    -DVDB_INCDIR=../ncbi-vdb/interfaces
 cmake --build --config Release
 cmake --install
 popd
