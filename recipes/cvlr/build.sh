@@ -1,6 +1,5 @@
 export PREFIX=${PREFIX}
-alias gcc=${GCC}
-make --file=makefile-conda.mk
+make CC=$GCC --file=makefile-conda.mk
 
 cp cvlr-cluster ${PREFIX}/bin/.
 cp cvlr-meth-of-bam  ${PREFIX}/bin/.
