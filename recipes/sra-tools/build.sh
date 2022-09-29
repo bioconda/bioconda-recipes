@@ -37,9 +37,10 @@ pushd sra-tools
 cmake -DVDB_BINDIR=${SRC_DIR}/ncbi-vdb/bin \
     -DVDB_LIBDIR=${SRC_DIR}/ncbi-vdb/lib \
     -DVDB_INCDIR=${SRC_DIR}/ncbi-vdb/interfaces \
+    -DCMAKE_INSTALL_PREFIX=${PREFIX} \
     -DCMAKE_BUILD_TYPE=Release
 cmake --build . --verbose
-cmake --install . --prefix=${PREFIX}
+cmake --install .
 popd
 
 # Strip package version from binary names
