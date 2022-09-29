@@ -34,9 +34,9 @@ popd
 echo "compiling sra-tools"
 pushd sra-tools
 
-cmake -DVDB_BINDIR=../ncbi-vdb \
-    -DVDB_LIBDIR=../ncbi-vdb \
-    -DVDB_INCDIR=../ncbi-vdb/interfaces \
+cmake -DVDB_BINDIR=${SRC_DIR}/ncbi-vdb \
+    -DVDB_LIBDIR=${SRC_DIR}/ncbi-vdb \
+    -DVDB_INCDIR=${SRC_DIR}/ncbi-vdb/interfaces \
     -DCMAKE_BUILD_TYPE=Release
 cmake --build . --verbose
 cmake --install
