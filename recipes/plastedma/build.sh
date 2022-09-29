@@ -28,7 +28,7 @@ cp -r $INSTALL_FOLDER/resources/Data/HMMs/After_tcoffee_UPI/* $DATA_FOLDER/HMMs/
 cp -r $INSTALL_FOLDER/resources/Data/FASTA/CDHIT/* $DATA_FOLDER/FASTA/CDHIT
 
 ls -l $BIN_FOLDER
-chmod u+rx $BIN_FOLDER/plastedma.py
+chmod u+rx $INSTALL_FOLDER/plastedma.py
 ln -s $INSTALL_FOLDER/plastedma.py $BIN_FOLDER/
 # ln -s $INSTALL_FOLDER/workflow $BIN_FOLDER/
 # ln -s $INSTALL_FOLDER/workflow/scripts/hmmsearch_run.py $INSTALL_FOLDER/workflow/scripts/hmm_process.py $BIN_FOLDER/
