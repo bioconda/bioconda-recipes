@@ -13,7 +13,7 @@ cp plastedma.py $INSTALL_FOLDER/
 #ls -lt $INSTALL_FOLDER/workflow
 
 ls -l $INSTALL_FOLDER/
-cp $INSTALL_FOLDER/scripts/* $BIN_FOLDER
+cp -r $INSTALL_FOLDER/scripts/* $BIN_FOLDER
 ls -l $BIN_FOLDER
 ln -s $INSTALL_FOLDER/plastedma.py $BIN_FOLDER/
 # ln -s $INSTALL_FOLDER/workflow $BIN_FOLDER/
