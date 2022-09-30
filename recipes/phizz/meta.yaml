@@ -1,0 +1,45 @@
+{% set version = "0.2.3" %}
+
+package:
+  name: phizz
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/03/d1/15a5181b9434a962458cee5ada98f847b41b07881f6019207fc7748b00fd/phizz-{{ version }}.tar.gz
+  sha256: 6e407ca78ec0870eb11ea692e677d30ef599d91471e996be3d9111baf9f031ea
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - phizz = phizz.__main__:cli
+
+requirements:
+  host:
+    - python
+    - setuptools
+  run:
+    - python
+    - click
+    - configobj
+    - interval_tree
+
+test:
+  imports:
+    - phizz
+    - phizz.database
+    - phizz.utils
+
+  commands:
+    - phizz --help
+
+about:
+  home: https://github.com/moonso/phizz
+  license: MIT License
+  summary: 'Tool to query hpo database and some other sources'
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true  # [py3k]

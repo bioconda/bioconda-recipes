@@ -1,0 +1,46 @@
+{% set name = "microbecensus" %}
+{% set version = "1.1.1" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "9ec037a345c400cdfd1fc4b4f53400a45180810303603e289f20886810397e74" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/snayfach/MicrobeCensus/archive/v{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+extra:
+  skip-lints:
+    - setup_py_install_args
+
+build:
+  number: 1
+  skip: True  # [not py27]
+  script: python -m pip install --no-deps --ignore-installed .
+
+requirements:
+  host:
+    - python >=2.7,<3
+    - biopython
+    - numpy
+    - pip
+  run:
+    - python >=2.7,<3
+    - biopython
+    - numpy
+
+test:
+  imports:
+    - microbe_census
+    - tests
+  commands:
+    - run_microbe_census.py -h > /dev/null
+
+about:
+  home: https://github.com/snayfach/MicrobeCensus
+  license: GNU General Public License v3 or later (GPLv3+)
+  license_family: GPL3
+  summary: A command-line tool for estimating average genome size from shotgun sequence data

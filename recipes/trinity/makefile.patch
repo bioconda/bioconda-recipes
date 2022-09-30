@@ -1,0 +1,98 @@
+--- Makefile	2021-09-04 18:16:53.000000000 +0200
++++ Makefile.new	2021-11-19 18:41:26.104768702 +0100
+@@ -22,25 +22,25 @@
+ 
+ 
+ no_bamsifter: inchworm_target chrysalis_target
+-	cd trinity-plugins && $(MAKE) no_bamsifter
++	cd trinity-plugins && $(MAKE) no_bamsifter CC=$(CC) CXX=$(CXX) CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)"
+ 
+ install:
+ 	util/support_scripts/trinity_installer.py
+ 
+ inchworm_target:
+ 	@echo Using $(TRINITY_COMPILER) compiler for Inchworm and Chrysalis
+-	cd Inchworm && $(MAKE)
++	cd Inchworm && $(MAKE) CC=$(CC) CXX=$(CXX) CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)"
+ 
+ chrysalis_target:
+-	cd Chrysalis && $(MAKE)
++	cd Chrysalis && $(MAKE) CC=$(CC) CXX=$(CXX) CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)"
+ 
+ 
+ trinity_essentials:
+-	cd trinity-plugins && $(MAKE) trinity_essentials
++	cd trinity-plugins && $(MAKE) trinity_essentials CC=$(CC) CXX=$(CXX) CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)"
+ 
+ 
+ plugins:
+-	cd trinity-plugins && $(MAKE) plugins
++	cd trinity-plugins && $(MAKE) plugins CC=$(CC) CXX=$(CXX) CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)"
+ 	sh ./util/support_scripts/plugin_install_tests.sh
+ 
+ test:
+--- trinity-plugins/Makefile	2021-09-04 18:16:54.000000000 +0200
++++ trinity-plugins/Makefile.new	2021-11-19 18:44:48.622807984 +0100
+@@ -19,16 +19,16 @@
+ 
+ 
+ seqtk_target:
+-	cd seqtk-trinity && $(MAKE) CXX=$(CXX) CC=$(CC)
++	cd seqtk-trinity && $(MAKE) CXX=$(CXX) CC=$(CC) CFLAGS="$(CFLAGS)"
+ 	mv seqtk-trinity/seqtk-trinity ./BIN/.
+ 
+ parafly_target:
+-	cd ${PARAFLY_CODE} && sh ./configure --prefix=`pwd` CXX=$(CXX) CC=$(CC) CFLAGS="-fopenmp" CXXFLAGS="-fopenmp" && $(MAKE) install && \
++	cd ${PARAFLY_CODE} && $(MAKE) install prefix=`pwd` INSTALL="install -c" MKDIR_P="mkdir -p" mkdir_p="mkdir -p" CXX=$(CXX) CC=$(CC) CFLAGS="$(CFLAGS) -fopenmp" CXXFLAGS="$(CXXFLAGS) -fopenmp" && \
+ 	cp bin/ParaFly ../BIN/
+ 
+ 
+ bamsifter_target:
+-	cd bamsifter && make
++	cd bamsifter && $(MAKE) CXX=$(CXX) CC=$(CC) CFLAGS="$(CFLAGS)" CXXFLAGS="$(CXXFLAGS)"
+ 
+ ##################################
+ ### Needed for downstream analyses
+@@ -39,7 +39,7 @@
+ 
+ 
+ slclust_target:
+-	cd slclust && $(MAKE) CXX=$(CXX) CC=$(CC) install
++	cd slclust && $(MAKE) CXX=$(CXX) CC=$(CC) CFLAGS="$(CFLAGS)" CXXFLAGS="$(CXXFLAGS)" install
+ 
+ collectl_target:
+ 	cd COLLECTL && tar xvf ${COLLECTL_CODE}.src.tar.gz && ln -sf ${COLLECTL_CODE} collectl
+--- trinity-plugins/slclust/Makefile	2021-09-04 18:16:54.000000000 +0200
++++ trinity-plugins/slclust/Makefile.new	2021-11-19 18:45:38.143309739 +0100
+@@ -5,6 +5,6 @@
+ all install depend clean:
+ 	X=`pwd`; \
+ 	for i in $(SUBS); \
+-	do echo '<<<' $$i '>>>'; cd $$X/$$i; $(MAKE) $@; done
++	do echo '<<<' $$i '>>>'; cd $$X/$$i; $(MAKE) CC=$(CC) CXX=$(CXX) CFLAGS="$(CFLAGS)" CXXFLAGS="$(CXXFLAGS) -I../include -L$(PREFIX)/lib" $@; done
+ 
+ # DO NOT DELETE
+--- Inchworm/Makefile	2021-09-04 18:17:05.000000000 +0200
++++ Inchworm/Makefile.new	2021-11-19 18:46:17.367707885 +0100
+@@ -1,7 +1,6 @@
+ all:
+ 	mkdir -p build
+-	cd build && cmake -DCMAKE_INSTALL_PREFIX="" ../ && make DESTDIR=../ install
+-
++	cd build && cmake -DCMAKE_INSTALL_PREFIX="" -DCMAKE_CXX_FLAGS="$(CXXFLAGS)" ../ && make DESTDIR=../ install
+ clean:
+ 	@echo cleaning
+ 	(cd build && make clean) || :
+--- trinity-plugins/bamsifter/Makefile	2021-09-04 18:17:05.000000000 +0200
++++ trinity-plugins/bamsifter/Makefile.new	2021-11-19 18:47:19.136336019 +0100
+@@ -2,8 +2,8 @@
+ 
+ cwd = $(shell pwd)
+ 
+-sift_bam_max_cov: sift_bam_max_cov.cpp htslib/version.h
+-	g++ -std=c++11 -o _sift_bam_max_cov sift_bam_max_cov.cpp -Wall -O2 -L./htslib/build/lib/ -I./htslib/build/include -lhts
++sift_bam_max_cov: sift_bam_max_cov.cpp
++	${CXX} -std=c++11 -o _sift_bam_max_cov sift_bam_max_cov.cpp -Wall -O2 ${LDFLAGS} ${CXXFLAGS} -lhts
+ 
+ 
+ htslib/version.h :

@@ -1,0 +1,56 @@
+{% set name = "metatree" %}
+{% set version = "0.0.1" %}
+{% set sha256 = "97b161f1b03a31fd19cf387ff5012b91fd968225ff32db8e3398e7a683af5549" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  entry_points:
+    - metatree = metatree.__main__:main
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - python >=3.6
+    - phylorank>0.1.0
+    - genometreetk>0.1.2
+    - dendropy>=4.1.0
+    - tqdm>=4.31.0
+    - biolib>=0.1.0
+    - biopython
+    - seaborn
+    - matplotlib-base
+    - numpy
+    - ete3
+    - pandas
+    - scipy
+
+test:
+  imports:
+    - metatree
+    - metatree.io
+    - metatree.external
+  commands:
+    - metatree -h
+
+about:
+  home: https://github.com/aaronmussig/metatree
+  license: GNU General Public v3 (GPLv3)
+  license_family: GPL3
+  license_file: 'LICENSE'
+  summary: 'Visualisation of polyphyletic groups between phylogenetic trees to a reference tree.'
+
+extra:
+  recipe-maintainers:
+    - aaronmussig

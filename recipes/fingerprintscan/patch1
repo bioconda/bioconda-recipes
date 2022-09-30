@@ -1,0 +1,65 @@
+diff --git a/FingerPrint.cc b/FingerPrint.cc
+index e66bdca..8053707 100644
+--- a/FingerPrint.cc
++++ b/FingerPrint.cc
+@@ -82,7 +82,7 @@ bool DatabaseValues::MethodIs_pD = UsepDmethod; // Default to p * N/n method of
+ int GRAPH         = 0;
+ int GRAPHDEBUG    = 0; //This will allow the graph function to use unweighted scores
+ int CONSENSUS     = 0; //Global flag to determine use of consensus alignment function
+-int shuffle       = 0; //Default not to call shuffle function
++int ShuffleFlag       = 0; //Default not to call ShuffleFlag function
+ int julian_selley = 0; //By default flag is off
+ int RESTRICT      = 0; // This flag if on, will restrict all tables to reporting
+ 
+@@ -178,8 +178,9 @@ class Motif  {
+   typedef FrequencyTable * ptr_FrequencyTable;
+ 
+ private:
+-  Motif( mystring n, const int sz, mystring inf, const int n_codes,
+-  ptr_Motif p, int motifnum, SubstitutionMatrix * subs);
++  Motif( mystring n = "\0", const int sz = 0, mystring inf = "\0",
++  const int n_codes = 0, ptr_Motif p = 0, int motifnum = 0,
++  SubstitutionMatrix * subs = 0);
+   ~Motif();
+   friend ostream & operator << (ostream & os, const Motif & M);
+   void ReturnItem(float &start, float &finish );
+@@ -230,9 +231,9 @@ public:
+ 
+ 
+ // Constructor initializes variables as described in motif.h
+-Motif::Motif( mystring n = "\0", const int sz = 0, mystring inf = "\0",
+-       const int n_codes = 0, ptr_Motif p = 0, int motifnum = 0,
+-       SubstitutionMatrix * subs = 0)
++Motif::Motif( mystring n, const int sz, mystring inf,
++       const int n_codes, ptr_Motif p, int motifnum,
++       SubstitutionMatrix * subs )
+   : size(sz), numcodes(n_codes), next(p), head(0), num(motifnum),
+     AveSelfScore(0), StdevSelfScore(0), ft(0), 
+     low_start(0), high_start(0), low_interval(0), high_interval(0),
+@@ -945,7 +946,7 @@ void PrintsDbase::FindFingerPrintMatches(float evalthreshold, int UseFasta){
+   while (seqp != 0) {
+     FingerPrint * fingp = FingerPrintHead;
+     seqp->fppoint = seqp->scorelist.Schead;
+-    if (shuffle) { seqp->Shuffle();}
++    if (ShuffleFlag) { seqp->Shuffle();}
+     // the FPScore pointer fppoint has to be reset to the head of the list
+ 
+     while ( fingp != 0) {
+@@ -1856,7 +1857,7 @@ int main (const int argc,char * argv[])
+ 	 << "\t                  (-a flag needs to be on too)" << endl
+ 	 << "\t-R   Restrict all results in all tables to those which score below the Evalue" << endl
+ 	 << "\t     threshold." << endl
+-	 << "\t-s   select the random shuffle option (which shuffles all sequences)" << endl
++	 << "\t-s   select the random ShuffleFlag option (which ShuffleFlags all sequences)" << endl
+ 	 << "\t-t # Specify the Profile score threshold (where # is a positive integer (default= 15))" << endl
+ 	 << "\t-w   Output the GNU licence" << endl
+ 	 << "\t-x # Specify the P-value score threshold " << endl 
+@@ -1927,7 +1928,7 @@ int main (const int argc,char * argv[])
+ 	      break;
+ 	    case 'p': want_printing = 1; break;
+ 	    case 'R': RESTRICT =1; break;
+-	    case 's': shuffle = 1; break;
++	    case 's': ShuffleFlag = 1; break;
+ 	    case 't':	      
+ 	      if (argc < (i+2)) { cout << "The -t flag requires 1 value, the score threshold" << endl; exit(0);}
+ 	      threshold = (atoi(argv[i+1]))?atoi(argv[i+1]):15; 

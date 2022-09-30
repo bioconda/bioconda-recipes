@@ -1,0 +1,33 @@
+--- rsem-eval/Makefile	2016-07-23 10:31:29.897681795 +0400
++++ rsem-eval/Makefile	2016-07-23 12:01:18.317432528 +0400
+@@ -1,6 +1,6 @@
+ CC = g++
+-CFLAGS = -Wall -c -I.
+-COFLAGS = -Wall -O3 -ffast-math -c -I.
++CFLAGS = -Wall -c -I. $(CPPFLAGS)
++COFLAGS = -Wall -O3 -ffast-math -c -I. $(CPPFLAGS)
+ PROGRAMS = rsem-extract-reference-transcripts rsem-synthesis-reference-transcripts rsem-preref rsem-parse-alignments rsem-build-read-index rsem-eval-run-em rsem-simulate-reads rsem-sam-validator rsem-scan-for-paired-end-reads
+ 
+ .PHONY : all clean
+@@ -53,7 +53,7 @@
+ 	$(CC) -o rsem-parse-alignments parseIt.o sam/libbam.a -lz -lpthread 
+ 
+ parseIt.o : utils.h RefSeq.h Refs.h GroupInfo.h Read.h SingleRead.h SingleReadQ.h PairedEndRead.h PairedEndReadQ.h SingleHit.h PairedEndHit.h HitContainer.h SamParser.h Transcripts.h sam/sam.h sam/bam.h parseIt.cpp
+-	$(CC) -Wall -O2 -c -I. parseIt.cpp
++	$(CC) -Wall -O2 -c -I. $(CPPFLAGS) parseIt.cpp
+ 
+ rsem-build-read-index : utils.h buildReadIndex.cpp
+ 	$(CC) -O3 buildReadIndex.cpp -o rsem-build-read-index
+@@ -98,10 +98,10 @@
+ 	$(CC) $(COFLAGS) simulation.cpp
+ 
+ rsem-sam-validator : sam/bam.h sam/sam.h my_assert.h samValidator.cpp sam/libbam.a
+-	$(CC) -O3 -Wall samValidator.cpp sam/libbam.a -lz -lpthread -o $@
++	$(CC) $(CPPFLAGS) -O3 -Wall samValidator.cpp sam/libbam.a -lz -lpthread -o $@
+ 
+ rsem-scan-for-paired-end-reads : sam/bam.h sam/sam.h my_assert.h scanForPairedEndReads.cpp sam/libbam.a
+-	$(CC) -O3 -Wall scanForPairedEndReads.cpp sam/libbam.a -lz -lpthread -o $@
++	$(CC) $(CPPFLAGS) -O3 -Wall scanForPairedEndReads.cpp sam/libbam.a -lz -lpthread -o $@
+ 
+ clean :
+ 	rm -f *.o *~ $(PROGRAMS)

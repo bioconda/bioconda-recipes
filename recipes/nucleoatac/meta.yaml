@@ -1,0 +1,56 @@
+{% set version = "0.3.4" %}
+{% set sha256 = "09e179030ab55969450d98b016856fb1f07628d5f538120ece958cfc00b72348" %}
+
+package:
+  name: nucleoatac
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/n/nucleoatac/NucleoATAC-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Remove-runtime-usage-of-pyximport.patch
+
+build:
+  number: 7
+  skip: True  # [py>=30]
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - cython >=0.22
+    - numpy >=1.9.1
+    - htslib
+    - pysam >=0.10.0
+    - zlib
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+    - scipy
+    - matplotlib-base
+    - htslib
+    - pysam >=0.10.0
+    - zlib
+
+test:
+  commands:
+    - nucleoatac run --help
+    - pyatac --help
+    - MPLBACKEND=agg python -c 'import nucleoatac.run_nuc'
+  import:
+    - pyatac.fragmentsizes
+
+about:
+  home: https://github.com/GreenleafLab/NucleoATAC
+  license: MIT
+  summary: 'Python package for calling nucleosomes using ATAC-Seq data. Also includes general scripts for working with paired-end ATAC-Seq data (or potentially other paired-end data).'
+  license_family: MIT
+  doc_url: http://nucleoatac.readthedocs.io/en/latest/
+
+extra:
+  identifiers:
+    - doi:10.1101/gr.192294.115

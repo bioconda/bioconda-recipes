@@ -1,0 +1,60 @@
+From 067c98d685ffa5faae90d046cb087ec6f2e0b14c Mon Sep 17 00:00:00 2001
+From: Matus Kosut <matus.kosut@ntnu.no>
+Date: Thu, 5 Nov 2020 22:13:53 +0100
+Subject: [PATCH] use shared libs in makevars 0.35.8
+
+---
+ src/Makevars | 33 +++------------------------------
+ 1 file changed, 3 insertions(+), 30 deletions(-)
+
+diff --git a/src/Makevars b/src/Makevars
+index b5abcdc41..b3ccf2c39 100644
+--- a/src/Makevars
++++ b/src/Makevars
+@@ -1,40 +1,13 @@
+ PKG_CPPFLAGS = \
+--I ../thirdParty/bgen/db/include \
+--I ../thirdParty/bgen/genfile/include \
+--I ../thirdParty/bgen/genfile/include/genfile \
+--I ../thirdParty/bgen/genfile/include/genfile/bgen \
+--I ../thirdParty/bgen/db/include/db \
+--I ../thirdParty/bgen/3rd_party/boost_1_55_0 \
+--I ../thirdParty/bgen/3rd_party/zstd-1.1.0 \
+--I ../thirdParty/bgen/3rd_party/zstd-1.1.0/lib \
+--I ../thirdParty/bgen/3rd_party/zstd-1.1.0/lib/compress \
+--I ../thirdParty/bgen/3rd_party/zstd-1.1.0/lib/decompress \
+--I ../thirdParty/bgen/3rd_party/sqlite3 \
+--I ../thirdParty/bgen/3rd_party/boost_1_55_0/boost/iostreams \
+--I ../thirdParty/cget/include \
+--I ../thirdParty/cget/lib \
++-I ${PREFIX}/include \
+ -D SQLITE_ENABLE_COLUMN_METADATA -O3 -fpic -Wall -Wextra -pedantic  -DARMA_64BIT_WORD=1 
+ 
+-#-D_GLIBCXX_USE_CXX11_ABI=0
+-
+-#-I ../thirdParty/zlib-1.2.8 \
+-#ZLIB_LIB = ../thirdParty/zlib-1.2.8/libz.so.1.2.8
+-
+-#CXX1XSTD=-std=c++11
+-#CXX_STD = CXX1X 
+ CXX_STD = CXX11 
+-#CXX_STD = C++11
+ 
+-PKG_LIBS = $(ZLIB_LIB) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) -L../bgen/3rd_party/boost_1_55_0/boost/iostreams -lboost_iostreams -L../thirdParty/cget/lib/ -L../thirdParty/cget/lib64/ -lsavvy -lhts -lsuperlu
++PKG_LIBS = $(ZLIB_LIB) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) -L${PREFIX}/lib -lsavvy -lhts -lsuperlu -lbgen -ldb -lzstd -lsqlite3 -lboost_iostreams -lboost_system -lboost_filesystem -lboost_thread -lboost_timer -lboost_chrono -lboost_date_time
+ PKG_LIBS += $(shell ${R_HOME}/bin/Rscript -e "RcppParallel::RcppParallelLibs()")
+ 
+-#OBJECTS = RcppExports.o innerProd.o matrixMultiEigen.o SAIGE_fitGLMM_fast.o SAIGE_readDosage_bgen.o SAIGE_readDosage_plain.o SAIGE_readDosage_vcf.o $(wildcard ../thirdParty/bgen/build/src/*.o) ../thirdParty/bgen/build/db/libdb.a ../thirdParty/bgen/build/3rd_party/zstd-1.1.0/libzstd.a ../thirdParty/bgen/build/3rd_party/sqlite3/libsqlite3.a ../thirdParty/bgen/build/3rd_party/boost_1_55_0/libboost.a  
+-
+-OBJECTS = RcppExports.o test.o matrixMultiEigen.o SAIGE_fitGLMM_fast.o SAIGE_readDosage_bgen.o SAIGE_readDosage_plain.o SAIGE_readDosage_vcf.o SAIGE_GENE_readDosageMatrix_vcf.o  $(wildcard ../thirdParty/bgen/build/src/*.o) ../thirdParty/bgen/build/db/libdb.a ../thirdParty/bgen/build/3rd_party/zstd-1.1.0/libzstd.a ../thirdParty/bgen/build/3rd_party/sqlite3/libsqlite3.a ../thirdParty/bgen/build/3rd_party/boost_1_55_0/libboost.a $(wildcard ../thirdParty/cget/lib64/*.a)
+-
+-
+-
+-#OBJECTS = RcppExports.o SAIGE_GENE_readDosageMatrix_vcf.o sparseMatrixVectorProd.o matrixMultiEigen.o SAIGE_fitGLMM_fast.o SAIGE_readDosage_bgen.o SAIGE_readDosage_plain.o SAIGE_readDosage_vcf.o $(wildcard ../thirdParty/bgen/build/src/*.o) ../thirdParty/bgen/build/db/libdb.a ../thirdParty/bgen/build/3rd_party/zstd-1.1.0/libzstd.a ../thirdParty/bgen/build/3rd_party/sqlite3/libsqlite3.a ../thirdParty/bgen/build/3rd_party/boost_1_55_0/libboost.a
++OBJECTS = RcppExports.o test.o matrixMultiEigen.o SAIGE_fitGLMM_fast.o SAIGE_readDosage_bgen.o SAIGE_readDosage_plain.o SAIGE_readDosage_vcf.o SAIGE_GENE_readDosageMatrix_vcf.o
+ 
+ all: $(SHLIB)
+ $(SHLIB): ${OBJECTS} Makevars
+-- 
+2.23.0
+

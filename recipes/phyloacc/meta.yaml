@@ -1,0 +1,68 @@
+#######################################################################
+# Conda recipe for installing PhyloAcc
+# Supported platforms: Linux
+# Author: Gregg Thomas (gwct@github)
+#######################################################################
+
+{% set name = "PhyloAcc" %}
+{% set version = "2.0.0" %}
+{% set sha256 = "a6121fdeab5c500cecdab1d3d52ca121eee779eb69a8e06c7ea6ee719e2616bd" %}
+# Setting some Jinja variables for the recipe
+# sha256 from openssl sha256 <release tarball>
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+# Package info
+
+source: 
+  url: https://github.com/phyloacc/PhyloAcc/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+# Source location
+
+build:
+  number: 0
+  skip: True # [py < 38]
+# Build info
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - gsl
+    - openblas
+    - blis
+    - liblapack
+    - armadillo
+    - python
+  run:
+    - python
+    - matplotlib-base>=3.5
+    - biopython>=1.79
+    - numpy>=1.22
+    - snakemake-minimal>=7.3
+# Dependencies for each stage of building and running
+
+test:
+  commands:
+    - phyloacc.py --version
+    - phyloacc.py --depcheck
+# Test commands to run after building and installing
+
+about:
+  home: https://github.com/phyloacc/PhyloAcc
+  license: GNU GPLv3 
+  license_family: GPL
+  license_file: LICENSE.md
+  summary: 'Bayesian estimation of substitution rate shifts in non-coding regions'
+  description: 'Bayesian estimation of substitution rate shifts in non-coding regions'
+  doc_url: https://github.com/phyloacc/PhyloAcc
+  dev_url: https://github.com/phyloacc/PhyloAcc
+# Package meta info
+# URLs just point to the github page until we update the docs
+
+extra:
+  recipe-maintainers:
+    - gwct
+# Extra info

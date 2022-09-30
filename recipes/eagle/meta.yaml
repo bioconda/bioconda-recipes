@@ -1,0 +1,54 @@
+{% set name = "eagle" %}
+{% set version = "0.9.4.6" %}
+
+package:
+  name: '{{ name }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/g/gi-eagle/gi-eagle-{{ version }}.tar.gz
+  sha256: 3b33ed1ef2313ea661c7549a0dffbf1de338df5faf42eef77342a2db47d1467e
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
+  entry_points:
+    - eagle=run:main
+
+requirements:
+  host:
+    - python >=3
+    - setuptools
+    - numpy
+  run:
+    - python >=3
+    - flask
+    - numpy
+    - scipy
+    - h5py
+    - cyvcf2
+    - sqt
+    - pybedtools
+    - pysam
+
+test:
+  imports:
+    - eagle
+    - eagle.core
+    - eagle.core.wrap
+    - eagle.scripts
+    - eagle.tests
+    - eagle.views
+  commands:
+    - eagle --help
+
+about:
+  home: https://bitbucket.org/christopherschroeder/eagle
+  license: MIT License
+  summary: 'Eagle is a webtool for genome variants and snp analysis'
+  license_family: MIT
+
+extra:
+  recipe-maintainers:
+    - christopher-schroeder

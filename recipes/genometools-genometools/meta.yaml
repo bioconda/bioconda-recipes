@@ -1,0 +1,55 @@
+{% set name = "genometools" %}
+{% set version = "1.6.2" %}
+{% set sha256 = "974825ddc42602bdce3d5fbe2b6e2726e7a35e81b532a0dc236f6e375d18adac" %}
+
+package:
+  name: {{ name }}-{{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/{{ name }}/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  skip: true  # [py2k]
+  number: 3
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - python
+    - glib
+    - pango  # [not osx]
+    - cairo  # [not osx]
+  run:
+    - fontconfig  # https://github.com/AdoptOpenJDK/openjdk-build/issues/693
+    - font-ttf-dejavu-sans-mono
+    - python
+    - gettext
+    - pango  # [not osx]
+    - cairo  # [not osx]
+    - xorg-libxrender
+    - xorg-libsm
+    - xorg-libxext
+
+test:
+  commands:
+    - gt -version
+  imports:
+    - gt
+
+about:
+  home: http://genometools.org/
+  summary: GenomeTools genome analysis system.
+  license: BSD
+  license_file: LICENSE
+  doc_url: http://genometools.org/documentation.html
+  dev_url: https://github.com/genometools/genometools
+extra:
+  recipe-maintainers:
+    - notestaff
+  identifiers:
+    - doi:10.1109/TCBB.2013.68

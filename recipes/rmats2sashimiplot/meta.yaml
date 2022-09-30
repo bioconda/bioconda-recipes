@@ -1,0 +1,53 @@
+{% set name = "rmats2sashimiplot" %}
+{% set version = "2.0.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 2bd76cc2e95a6b3dcd81e0ff212261cd2891d28e4ac314b5211489a6b426a9d3
+
+build:
+  number: 2
+  entry_points:
+    - rmats2sashimiplot=rmats2sashimiplot.rmats2sashimiplot:main
+    - index_gff=MISO.misopy.index_gff:main
+    - sashimi_plot=MISO.misopy.sashimi_plot.sashimi_plot:main
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - bedtools
+    - matplotlib-base
+    - numpy
+    - pysam
+    - python
+    - samtools
+    - scipy
+
+test:
+  imports:
+    - MISO
+    - MISO.misopy
+    - MISO.misopy.sashimi_plot
+    - MISO.misopy.sashimi_plot.plot_utils
+    - rmats2sashimiplot
+  commands:
+    - rmats2sashimiplot --help
+    - index_gff --help
+    - sashimi_plot --help
+
+about:
+  home: "https://github.com/Xinglab/rmats2sashimiplot"
+  license: "GNU General Public v2 (GPLv2)"
+  license_family: GPL2
+  license_file: LICENSE
+  summary: "rmats2sashimiplot"
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic  # needs separate builds with and without 2to3

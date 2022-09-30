@@ -1,0 +1,41 @@
+{% set name = "igv-reports" %}
+{% set version = "1.6.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: de33bd62166676b31ade299e2931a6b18aa562d2b8882136c390a11a25eea83e
+
+build:
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  number: 0
+  entry_points:
+    - create_report=igv_reports.report:main
+    - create_datauri=igv_reports.datauri:main
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - intervaltree
+    - pysam >=0.19.1
+    - python
+    - requests
+
+test:
+  imports:
+    - igv_reports
+  commands:
+    - create_report --help
+    - create_datauri --help
+
+about:
+  home: https://github.com/igvteam/igv-reports
+  license: MIT
+  license_family: MIT
+  summary: Creates self-contained html pages for visual variant review with IGV (igv.js).

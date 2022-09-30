@@ -1,0 +1,84 @@
+{% set name = "STAMP" %}
+{% set version = "2.1.3" %}
+{% set sha256 = "3bea9e3798597929cb9784de0ac177dcfc20b5c44cf1ac4bd82ec1a74463adbe" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+  
+source:
+  url: https://files.pythonhosted.org/packages/87/3c/89c788e45059c5198cc2b7b1c900affe2f12bbd19cd9d9a26791faba8bd4/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - stamp.patch
+
+build:
+  number: 2 
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  host:
+    - python <3
+    - numpy >=1.9.1
+    - scipy >=0.15.1
+    - matplotlib >=1.4.2
+    - six >=1.3
+    - biom-format >=2.0.1
+    - pyqi >=0.3.2
+    - pyqt >=4,<5
+  run:
+    - python <3
+    - numpy >=1.9.1
+    - scipy >=0.15.1
+    - matplotlib >=1.4.2
+    - six >=1.3
+    - biom-format >=2.0.1
+    - pyqi >=0.3.2
+    - pyqt >=4,<5
+
+test:
+  imports:
+    - stamp
+    - stamp.GUI
+    - stamp.metagenomics
+    - stamp.metagenomics.fileIO
+    - stamp.metagenomics.simulations
+    - stamp.metagenomics.stats
+    - stamp.metagenomics.stats.CI
+    - stamp.metagenomics.stats.distributions
+    - stamp.metagenomics.stats.empiricalTests
+    - stamp.metagenomics.stats.tests
+    - stamp.plugins
+    - stamp.plugins.common
+    - stamp.plugins.common.multipleComparisonCorrections
+    - stamp.plugins.groups
+    - stamp.plugins.groups.effectSizeFilters
+    - stamp.plugins.groups.plots
+    - stamp.plugins.groups.plots.configGUI
+    - stamp.plugins.groups.statisticalTests
+    - stamp.plugins.multiGroups
+    - stamp.plugins.multiGroups.effectSizeFilters
+    - stamp.plugins.multiGroups.plots
+    - stamp.plugins.multiGroups.plots.configGUI
+    - stamp.plugins.multiGroups.postHoc
+    - stamp.plugins.multiGroups.statisticalTests
+    - stamp.plugins.samples
+    - stamp.plugins.samples.confidenceIntervalMethods
+    - stamp.plugins.samples.effectSizeFilters
+    - stamp.plugins.samples.plots
+    - stamp.plugins.samples.plots.configGUI
+    - stamp.plugins.samples.statisticalTests
+  commands:
+    - checkHierarchy.py -h
+
+about:
+  home: http://pypi.python.org/pypi/stamp/
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE.txt
+  summary: 'A graphical software package for analyzing taxonomic and functional profiles.'
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btu494

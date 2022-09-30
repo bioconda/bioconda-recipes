@@ -1,0 +1,36 @@
+From 310fb226a5f90a6e5f36d7b2be845771f8809f91 Mon Sep 17 00:00:00 2001
+From: Lance Parsons <lparsons@princeton.edu>
+Date: Wed, 12 Jun 2019 12:05:10 -0400
+Subject: [PATCH] Simplify get_short_name regex
+
+Fixes #29
+---
+ plastid/util/io/openers.py | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
+
+diff --git a/plastid/util/io/openers.py b/plastid/util/io/openers.py
+index 4086b8e..e626cf7 100644
+--- a/plastid/util/io/openers.py
++++ b/plastid/util/io/openers.py
+@@ -247,16 +247,11 @@ def get_short_name(inpt,separator=os.path.sep,terminator=""):
+     tlen = len(terminator)
+     if inpt[-tlen:] == terminator:
+         inpt = inpt[:-tlen]
+-        
+-    pat = r"([^%s]+)+$" % separator
+     try:
+-        stmp = re.search(pat,inpt).group(1)
++        stmp = re.split(separator, inpt)[-1]
+     except AttributeError:
+         return inpt
+-    #if terminator[0] == ".":
+-    #    terminator = "\"" + terminator
+-        
+-    return stmp
++    return(stmp)
+ 
+ def argsopener(filename,namespace,mode="w",**kwargs):
+     """Open a file for writing, and write to it command-line arguments
+-- 
+2.7.4
+

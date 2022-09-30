@@ -1,0 +1,52 @@
+{% set version = "0.5.0" %}
+
+package:
+  name: biokit
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/b/biokit/biokit-{{ version }}.tar.gz
+  sha256: 847f5a5d0929e099f0d0b46310cea487b3ce9b5db722f0409f8950a30eb1ce81
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  number: 0
+
+# Set xmltodict >= 0.10.2 to use conda-forge version instead of bioconda
+# Same with easydev
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - easydev >=0.9.34
+    - pandas
+    - bioservices >=1.4.16
+    - colormap
+    - scipy
+    - xmltodict
+    - numpydoc
+    - bioservices
+    - matplotlib-base
+    - mesalib
+    - biopython
+    - pyyaml
+    - colorlog
+
+# Could not manage to import it without an libXext issue from conda-forge ? and
+# matplotlib v1.5.3 or v2.0.0. Hopefully, this will be resolved in the future
+test:
+  imports:
+    - biokit
+
+about:
+  home: http://pypi.python.org/pypi/biokit
+  license: BSD
+  summary: 'Set of visualisation and analysis tools for biological data sets'
+
+extra:
+  container:
+    # needs libGL.so.1
+    extended-base: true

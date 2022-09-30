@@ -1,0 +1,41 @@
+From 067e67e89810b223001153351708011349ed44e0 Mon Sep 17 00:00:00 2001
+From: David Laehnemann <david.laehnemann@hhu.de>
+Date: Mon, 6 Nov 2017 15:59:54 +0100
+Subject: [PATCH] patch, so that build works
+
+---
+ core/Makefile         | 4 +++-
+ core/MemoryMapArray.h | 2 ++
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/core/Makefile b/core/Makefile
+index 24cfe30..46b19ed 100755
+--- a/core/Makefile
++++ b/core/Makefile
+@@ -4,7 +4,9 @@ CXXFLAGS = -O4 -D__ZLIB_AVAILABLE__ -D_FILE_OFFSET_BITS=64 -D__STDC_LIMIT_MACROS
+ UNAME := $(shell uname)
+ ifeq ($(UNAME), Linux)
+    #CXXFLAGS += -Werror -Wno-unused-variable
+-   CXXFLAGS += -Werror -Wno-unused-variable -Wno-unused-result
++   #CXXFLAGS += -Werror -Wno-unused-variable -Wno-unused-result
++   # two warnings are skipped as a result of omitting the -Werror flag
++   CXXFLAGS += -Wno-unused-variable -Wno-unused-result
+ endif
+ ifeq ($(UNAME), Darwin)
+    CXXFLAGS += -shared
+diff --git a/core/MemoryMapArray.h b/core/MemoryMapArray.h
+index 292cdf7..936147d 100755
+--- a/core/MemoryMapArray.h
++++ b/core/MemoryMapArray.h
+@@ -26,6 +26,8 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
++// needed for gethostname()
++#include <unistd.h>
+ 
+ #include <string>
+ #include <sys/types.h>
+-- 
+2.7.4
+

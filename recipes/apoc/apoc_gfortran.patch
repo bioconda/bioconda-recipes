@@ -1,0 +1,106 @@
+diff -Naur apoc/src/Makefile apoc_new/src/Makefile
+--- apoc/src/Makefile	2012-09-19 13:30:38.000000000 +0100
++++ apoc_new/src/Makefile	2017-07-05 11:19:21.656390437 +0100
+@@ -3,8 +3,8 @@
+ ##############################
+ 
+ ### Intel fortran
+-FC     = ifort
+-FFLAGS = -extend_source 132 -real-size 64 -fast
++#FC     = ifort
++#FFLAGS = -extend_source 132 -real-size 64 -fast
+ #FFLAGS = -extend_source 132 -real-size 64 -g -check all
+ #FFLAGS = -extend_source 132 -real-size 64 -O0
+ 
+@@ -15,6 +15,10 @@
+ #FFLAGS = -Mextend -fastsse -O3 -Mr8 -mcmodel=medium
+ #FFLAGS = -Mextend -Mr8 -mcmodel=medium -C
+ 
++# GNU fortran
++FC      = gfortran
++FFLAGS  = -ffixed-line-length-132 -fdefault-real-8 -fdefault-double-8 -Ofast
++
+ #############
+ PROGRAMS = apoc
+ P_OBJS	= palign_batch.o scoring_batch.o
+diff -Naur apoc/src/palign_batch.f apoc_new/src/palign_batch.f
+--- apoc/src/palign_batch.f	2012-09-19 13:29:06.000000000 +0100
++++ apoc_new/src/palign_batch.f	2017-07-05 11:07:18.678284364 +0100
+@@ -489,7 +489,7 @@
+       enddo
+ 
+       tot_num_pair=tot_num_pair+1
+-      write(numstr,'(I)')tot_num_pair
++      write(numstr,'(I0)')tot_num_pair
+       write(*,'(3A)')'============== Structure Pair ', trim(adjustl(numstr)), " =============="
+       write(*,*)
+ 
+@@ -998,7 +998,7 @@
+  102  format('Structure ',I1,': ',A30,'  Length =',I4,' AAs,', ' Pocket:',A)
+       write(*,*)
+ 
+-      write(numstr, '(I)')n8_al
++      write(numstr, '(I0)')n8_al
+       if(opt%score_flag.eq.2)then
+          write(*,103)measure,TM8,pvalue,zs
+          write(*,155)adjustl(numstr),rmsd8_al,seq_id
+@@ -1168,7 +1168,7 @@
+ c^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+       endif
+ 
+-      write(numstr, '(I)')nint(anseq)
++      write(numstr, '(I0)')nint(anseq)
+       write(*,109)trim(adjustl(numstr)),d0
+  109  format('Scoring parameters: normalization length = ',A,',  d0 =',F6.3)
+ 
+@@ -1181,8 +1181,8 @@
+       write(*,110)best_init
+  110  format('Best alignment search: initial =',I3)
+ 
+-      write(numstr, '(I)')tot_seqsc
+-      write(numstr2,'(I)')tot_seqsc_pos
++      write(numstr, '(I0)')tot_seqsc
++      write(numstr2,'(I0)')tot_seqsc_pos
+       write(*,112)trim(adjustl(numstr)),trim(adjustl(numstr2))
+  112  format('Sequence similarity (BLOSUM62): sum = ',A,', sum_pos = ',A)
+       call system_clock ( clock_stop, clock_rate, clock_max )
+@@ -1222,7 +1222,7 @@
+       real    TM_old,xa
+       real    GL_i,GL_ii,GL_ir,GL_iir
+ 
+-      integer cont1,cont2,ncont1,ncont2
++      integer cont1(maxc,maxr),cont2(maxc,maxr),ncont1,ncont2
+       integer nseq1,nseq2,nseq
+       integer invmap0(maxr),invmap_i(maxr),invmap_ii(maxr)
+       integer invmap_ir(maxr),invmap_iir(maxr)
+@@ -4241,7 +4241,7 @@
+ 
+       ! overwrite old matrix
+       do i=1,3
+-         write(*,'(I5,3F6.2f)')nint(t(i)),(u(i,j),j=1,3)
++         write(*,'(I5,3F6.2)')nint(t(i)),(u(i,j),j=1,3)
+       enddo
+       write(*,*)
+ 
+@@ -4522,7 +4522,7 @@
+       endif
+ 
+       if(nres.gt.maxr)then
+-         print '(A,I)','Warning: total number of protein residues is more than the maximum',maxr
++         print '(A,I0)','Warning: total number of protein residues is more than the maximum',maxr
+       endif      
+ 
+       allocate(pdb%resname(nres))
+@@ -4995,10 +4995,10 @@
+ 
+       z = (score - loc) / scale
+       if( z .lt. 35 ) then
+-         pvalue = 1 -  dexp( - dexp( -z ) ) !Gumbel distribution
++         pvalue = 1 -  exp( - exp( -z ) ) !Gumbel distribution
+       else
+ c        below the double precision limit, use taylor expansion approaximation
+-         pvalue = dexp( -z )
++         pvalue = exp( -z )
+       endif
+ 
+       return     

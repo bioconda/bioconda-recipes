@@ -1,0 +1,70 @@
+--- src/files/Syncronization.h	2015-06-22 11:42:27.000000000 -0500
++++ src/files/Syncronization.h.new	2017-03-02 14:54:03.000000000 -0600
+@@ -43,7 +43,7 @@
+ 
+ protected:
+ 	boost::mutex syncMutex;
+-	condition_variable syncCondition;
++	boost::condition_variable syncCondition;
+ 	bool syncDataReady;
+ 
+ };
+--- configure	2017-03-02 13:35:45.000000000 -0600
++++ configure.new	2017-03-02 14:41:46.000000000 -0600
+@@ -17056,6 +17056,14 @@
+ 	;;
+ *) echo "no" ;;
+ esac
++case "$build_os" in
++darwin*)
++	CXXFLAGS+=" -m64 -DCPU_64"
++        CFLAGS+=" -m64 -DCPU_64"
++        COMPILING_64="yes"
++        echo "yes (Darwin)"
++        ;;
++esac
+ 
+ # checking for BOOST library (required)
+ echo "===== BOOST support (required) ====="
+--- src/Makefile.am	2014-12-15 04:21:51.000000000 -0600
++++ src/Makefile.am.new	2017-03-02 15:03:26.000000000 -0600
+@@ -43,7 +43,7 @@
+ 	$(BOOST_FILESYSTEM_LIBS) $(BOOST_SERIALIZATION_LIBS) \
+ 	@ZLIB@ @BZLIB@
+ 
+-LDADD=-lrt
++LDADD=""
+ 
+ ##### LIBS ######
+ 
+--- src/common.h	2015-03-16 09:40:25.000000000 -0500
++++ src/common.h.new	2017-03-02 14:48:41.000000000 -0600
+@@ -132,7 +132,7 @@
+ typedef t_errors t_errors_delta ;
+ typedef unsigned int t_pattern_length; ///< Type for PATTERN
+ typedef double t_quality; ///< Type for QUALITY VALUES
+-typedef unsigned long int ulint;
++typedef unsigned long long int ulint;
+ 
+ typedef unsigned int uint;
+ 
+--- src/Makefile.in	2016-04-27 07:30:29.000000000 -0500
++++ src/Makefile.in.new	2017-03-02 15:10:16.000000000 -0600
+@@ -104,7 +104,7 @@
+ 	errors/liberne_dbg_a-Generic_Exception.$(OBJEXT) \
+ 	errors/liberne_dbg_a-Incorrect_Format.$(OBJEXT) \
+ 	errors/liberne_dbg_a-Singleton_Exception.$(OBJEXT) \
+-	files/liberne_dbg_a-Auto_Unzip.$(OBJEXT) \
++	ftles/liberne_dbg_a-Auto_Unzip.$(OBJEXT) \
+ 	files/liberne_dbg_a-Auto_Zip.$(OBJEXT) \
+ 	files/liberne_dbg_a-Fasta.$(OBJEXT) \
+ 	files/liberne_dbg_a-Hash_To_Samfile.$(OBJEXT) \
+@@ -701,7 +701,7 @@
+ 	$(BOOST_FILESYSTEM_LIBS) $(BOOST_SERIALIZATION_LIBS) \
+ 	@ZLIB@ @BZLIB@
+ 
+-LDADD = -lrt
++LDADD =""
+ 
+ ##### LIBS ######
+ liberne_a_SOURCES = \

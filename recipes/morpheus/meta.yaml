@@ -1,0 +1,36 @@
+{% set version = "287" %}
+{% set sha256 = "26757d63e44f8cd3888145edd4ddd7376e1502599672df768f3a448cbee88b5d" %}
+
+package:
+  name: morpheus
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/cwenger/Morpheus/releases/download/r{{ version }}/Morpheus_mzML_Mono.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 1
+  skip: true    # [osx]
+  script: mkdir -p $PREFIX/bin && cp * $PREFIX/bin && cd $PREFIX/bin && ln -s ./morpheus_mzml_mono_cl.exe ./morpheus && chmod +x $PREFIX/bin/morpheus*
+
+requirements:
+  run:
+    - mono >=4.0.0
+
+test:
+  commands:
+    - mono `which morpheus` | grep 'mzML Mono command line'
+
+about:
+  home: https://github.com/cwenger/Morpheus/
+  license: MIT
+  license_family: MIT
+  license_file: MIT_License.CommandLine.txt
+  summary: mass spectrometry–based proteomics database search algorithm
+  
+extra:
+  identifiers:
+    - doi:10.1021/pr301024c
+  skip-lints:
+    - should_be_noarch_generic

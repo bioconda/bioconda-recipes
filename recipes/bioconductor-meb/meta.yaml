@@ -1,0 +1,39 @@
+{% set version = "1.8.0" %}
+{% set name = "MEB" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 2aa803b9d408ddd568042171d013b2d5
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: knitr,rmarkdown,BiocStyle
+requirements:
+  host:
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - r-base
+    - r-e1071
+  run:
+    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - r-base
+    - r-e1071
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'A normalization-invariant minimum enclosing ball method to detect differentially expressed genes for RNA-seq data'
+  description: 'Identifying differentially expressed genes between the same or different species is an urgent demand for biological and medical research. For RNA-seq data, systematic technical effects and different sequencing depths are usually encountered when conducting experiments. Normalization is regarded as an essential step in the discovery of biologically important changes in expression. The present methods usually involve normalization of the data with a scaling factor, followed by detection of significant genes. However, more than one scaling factor may exist because of the complexity of real data. Consequently, methods that normalize data by a single scaling factor may deliver suboptimal performance or may not even work. The development of modern machine learning techniques has provided a new perspective regarding discrimination between differentially expressed (DE) and non-DE genes. However, in reality, the non-DE genes comprise only a small set and may contain housekeeping genes (in same species) or conserved orthologous genes (in different species). Therefore, the process of detecting DE genes can be formulated as a one-class classification problem, where only non-DE genes are observed, while DE genes are completely absent from the training data. We transform the problem to an outlier detection problem by treating DE genes as outliers, and we propose a normalization-invariant minimum enclosing ball (NIMEB) method to construct a smallest possible ball to contain the known non-DE genes in a feature space. The genes outside the minimum enclosing ball can then be naturally considered to be DE genes. Compared with the existing methods, the proposed NIMEB method does not require data normalization, which is particularly attractive when the RNA-seq data include more than one scaling factor. Furthermore, the NIMEB method could be easily extended to different species without normalization.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+

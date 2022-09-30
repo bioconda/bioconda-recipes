@@ -1,0 +1,57 @@
+{% set version = "0.2.0" %}
+
+package:
+  name: minute
+  version: {{ version }}
+
+source:
+  url: https://github.com/NBISweden/minute/archive/v{{ version }}.tar.gz
+  sha256: 914d6f578cc2e744f01bdae83bdf4de352c75d9abdfbe6bd34130d8c2ce8ef60
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+  run:
+    - python >=3.7
+    - importlib-metadata  # [py==37]
+    - ruamel.yaml
+    - snakemake-minimal >=6.9.0
+    - samtools >=1.13
+    - cutadapt >=3.7
+    - bowtie2 >=2.4.4
+    - je-suite >=2.0.RC
+    - igvtools >=2.5.3
+    - deeptools >=3.5.0
+    - picard >=2.26.0
+    - fastqc >=0.11.9
+    - bedtools >=2.30.0
+    # MultiQC 1.12 ongoing issue with custom_content module
+    # https://github.com/ewels/MultiQC/issues/1645
+    - multiqc =1.11
+    - xopen >=1.2.0
+    - sra-tools >=2.11.0
+    - r-base >=4.0.0
+    - r-ggplot2 >=3.3.0
+    - r-dplyr >=1.0.0
+
+test:
+  imports:
+    - minute
+  commands:
+    - minute init testdir && rm testdir/minute.yaml
+    - minute --version
+
+about:
+  home: https://github.com/NBISweden/minute/
+  license: MIT
+  summary: MINUTE-ChIP data analysis workflow
+
+extra:
+  recipe-maintainers:
+    - marcelm

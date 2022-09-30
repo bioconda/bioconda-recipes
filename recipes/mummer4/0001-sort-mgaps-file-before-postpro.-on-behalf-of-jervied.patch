@@ -1,0 +1,95 @@
+From 32bd3e6d8a35060459319fe244a1d673b4997500 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Hermann=20Schw=C3=A4rzler?= <hermann.schwaerzler@uibk.ac.at>
+Date: Wed, 30 Jan 2019 09:47:17 +0100
+Subject: [PATCH] sort mgaps file before postpro. (on behalf of @jerviedog -
+ fixes #55 (and #74 ?))
+
+---
+ scripts/promer.pl | 66 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 66 insertions(+)
+
+diff --git a/scripts/promer.pl b/scripts/promer.pl
+index 8932515..756ecb4 100644
+--- a/scripts/promer.pl
++++ b/scripts/promer.pl
+@@ -346,6 +346,8 @@ sub main ( )
+ 
+     #-- Run postpro and assert return value is zero
+     print (STDERR "4: FINISHING DATA\n");
++    sort_mgaps("$qry_file","$pfx.mgaps");
++
+     $err[0] = $tigr->runCommand
+ 	("$postpro_path $psw -x $blsm -b $blen ".
+ 	 "$ref_file $qry_file $pfx < $pfx.mgaps");
+@@ -379,4 +381,68 @@ sub main ( )
+ 
+ exit ( main ( ) );
+ 
++sub sort_mgaps {
++    # Input, file names, strings
++    my $qry = shift;
++    my $mgaps = shift;
++    # read query file
++    my @qry_entries = ();
++    my $fh;
++    open($fh, "$qry") || die "couldn't read file $qry\n";
++    while(my $line = <$fh>) {
++	chomp $line;
++	next unless $line=~/^\>(\S+)/;
++	push(@qry_entries,$1);
++    }
++    close($fh);
++    # read mgaps file
++    my %mgaps_lines = ();
++    my %dna_pep = (); # used to look up the peptides in a dna seq
++    open($fh, "$mgaps") || die "couldn't read file $mgaps\n";
++    my $pos = 0;
++    my $pos_old = $pos;
++    my $cur_entry = ""; # e.g. 3210101.5
++    while(1) {
++	my $line=<$fh>;
++	last unless defined $line;
++	chomp $line;
++	if($line=~/^\>\s*(\S+)/) {
++	    $cur_entry = $1;
++	    # find out the corresponding dna id in query file
++	    die "wrong format $cur_entry\n"
++		unless $cur_entry=~/^(.+)\.[\d+]$/;
++	    my $dna = $1;
++	    if(exists($dna_pep{$dna})) {
++		push(@{$dna_pep{$dna}},$cur_entry);
++	    }
++	    else {
++		$dna_pep{$dna} = [$cur_entry];
++	    }
++	    # find out the lines corresponding to the current entry
++	    if(exists($mgaps_lines{$cur_entry})) {
++		push(@{$mgaps_lines{$cur_entry}},"$line\n");
++	    }
++	    else {
++		$mgaps_lines{$cur_entry} = ["$line\n"];
++	    }
++	}
++	else {
++	    push(@{$mgaps_lines{$cur_entry}},"$line\n");
++	}
++    }
++    close($fh);
++    # sort the query file
++    open($fh,">$mgaps") || die "couldn't write to file $mgaps\n";
++    my $oldfh = select($fh);
++    foreach my $dna (@qry_entries) {
++	foreach my $pep (@{$dna_pep{$dna}}) {
++	    my $ref_line = $mgaps_lines{$pep};
++	    foreach my $line(@{$ref_line}) {
++		print $line;
++	    }
++	}
++    }
++    select($oldfh);
++    close($fh);
++}
+ #-- END OF SCRIPT
+-- 
+2.24.0
+

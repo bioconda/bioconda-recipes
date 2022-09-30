@@ -1,0 +1,45 @@
+--- /dev/null	2016-11-21 10:09:24.584591364 +0100
++++ makefile	2016-12-05 15:23:54.144741684 +0100
+@@ -0,0 +1,42 @@
++# Config
++DEBUG     := 0
++BUILDDIR  := build
++SOURCEDIR := src
++PREFIX    := 
++# End config
++
++CXX       := g++
++CXXFLAGS  := -fopenmp -MMD -Wall -Wextra -ansi -pedantic -std=c++11
++LDFLAGS   := -lpthread -lboost_system -fopenmp -Wl,-rpath=$(PREFIX)/lib/
++INC       := -I$(PREFIX)/include/
++SOURCES   := $(shell find $(SOURCEDIR) -name '*.cpp')
++OBJECTS   := $(SOURCES:%.cpp=$(BUILDDIR)/%.o)
++EXECUTABLE:= MetaProb
++
++ifneq ($(DEBUG),0)
++	CXXFLAGS += -g -O0
++else
++	CXXFLAGS += -O3
++endif
++
++ifeq (${PREFIX},)
++$(error Error: PREFIX is not defined (make PREFIX=/path/to/dir/))
++endif
++
++all: $(EXECUTABLE)
++
++$(EXECUTABLE): $(OBJECTS)
++	$(CXX) -o $@ $^ $(LDFLAGS)
++
++$(BUILDDIR)/%.o: %.cpp
++	mkdir -p $(dir $@)
++	$(CXX) $(CXXFLAGS) $(INC) -o $@ -c $<
++
++install:	$(EXECUTABLE)
++	mkdir -p $(PREFIX)/bin/
++	cp $(EXECUTABLE) $(PREFIX)/bin/
++
++clean:
++	rm -fr $(BUILDDIR) $(EXECUTABLE)
++
++DEPS    := $(OBJECTS:.o=.d)

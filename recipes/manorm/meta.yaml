@@ -1,0 +1,43 @@
+{% set name = "MAnorm" %}
+{% set version = "1.3.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 88702e2074bbecaecc975bbc458856166ea222dded38b36204ec92bd036c5f01
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  entry_points:
+    - manorm=manorm.cli:main
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - numpy
+    - matplotlib-base >=3.0.0
+    - scikit-learn >=0.21.0
+    - pysam >=0.15.0
+
+test:
+  imports:
+    - manorm
+    - manorm.read
+    - manorm.region
+  commands:
+    - manorm --help
+
+about:
+  home: https://github.com/shao-lab/MAnorm
+  license: BSD License
+  license_family: BSD
+  license_file: LICENSE
+  summary: A robust model for quantitative comparison of ChIP-Seq data sets.

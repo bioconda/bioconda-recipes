@@ -1,0 +1,42 @@
+{% set name = "discasm" %}
+{% set version = "0.1.3" %}
+{% set build = "1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/DISCASM/DISCASM/archive/DISCASM-v{{ version }}.tar.gz
+  md5: d65e4d002a0f3b557fe305ee6ef0ec8d
+
+build:
+  noarch: generic
+  number: {{ build }}
+  # The reason for skipping osx is that trinity >=2.4 is not available in the osx channel
+  # The python code in DISCASM runs on python 2.7.
+
+requirements:
+  run:
+    - python <3
+    - pysam >=0.10.0
+    - perl
+    - star >=2.4
+    - trinity >=2.4
+    - oases >=0.2
+
+test:
+  commands:
+    - DISCASM --help 2>&1
+    # The following commands need to be invoked from where they are located.
+    # DISCASM runs them from that location. These tests invoke them that way.
+    - "$PREFIX/share/{{ name }}-{{ version  }}-{{ build }}/util/retrieve_SF_chimeric_and_unmapped_reads.py --help 2>&1 | grep \"usage\" "
+    - "$PREFIX/share/{{ name }}-{{ version  }}-{{ build }}/util/retrieve_SF_chimeric_reads.py --help 2>&1 | grep \"usage\" "
+    - "$PREFIX/share/{{ name }}-{{ version  }}-{{ build }}/util/run_OASES_multiK.pl --help 2>&1 | grep \"#############################\" "
+    - "$PREFIX/share/{{ name }}-{{ version  }}-{{ build }}/util/run_OASES.pl --help 2>&1 | grep \"usage\" "
+
+about:
+  home: "https://github.com/DISCASM/DISCASM"
+  license: BSD-3-Clause
+  license_file: LICENSE
+  summary: "DISCASM aims to extract reads that map to reference genomes in a discordant fashion and optionally include reads that do not map to the genome at all, and perform a de novo transcriptome assembly of these reads. DISCASM relies on the output from STAR (as run via STAR-Fusion), and supports de novo transcriptome assembly using Trinity or Oases. - https://github.com/DISCASM/DISCASM/wiki"

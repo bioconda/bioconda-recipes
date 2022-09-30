@@ -1,0 +1,39 @@
+{% set version = "1.3.0" %}
+{% set sha256 = "beaa69ee06d01c385dedff779bb69c0306d613cca6d0be4114513ee743826a9b" %}
+
+package:
+  name: bcl2fastq-nextseq
+  version: '{{version}}'
+
+source:
+  url: https://github.com/brwnj/bcl2fastq/archive/v{{version}}.tar.gz
+  sha256: '{{sha256}}'
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - click
+    - pandas
+    - matplotlib-base
+    - numpy
+    - seaborn
+    # NB: also requires bcl2fastq2 in the PATH; not included due to licensing restrictions
+
+test:
+  commands:
+    # click requires a unicode locale
+    - LANG=C.UTF-8 bcl_to_fastq -h &> /dev/null
+
+about:
+  home: https://github.com/brwnj/bcl2fastq
+  license: MIT
+  license_family: MIT
+  summary: NextSeq .bcl Conversion

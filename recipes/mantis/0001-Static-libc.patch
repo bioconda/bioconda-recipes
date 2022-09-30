@@ -1,0 +1,34 @@
+From 7ef6ae37bcbd4ba2ecc8d4c5af5ddb0241c43c3a Mon Sep 17 00:00:00 2001
+From: John Lees <lees.john6@gmail.com>
+Date: Tue, 12 Mar 2019 12:41:14 -0400
+Subject: [PATCH] static libc
+
+---
+ src/CMakeLists.txt | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 688a5b1..a29d996 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -35,13 +35,15 @@ target_link_libraries(mantis_core
+   m
+   z
+   rt
+-  sdsl)
++  sdsl
++  -static-libgcc
++  -static-libstdc++)
+ 
+ # The driver program is `mantis`, which is a front-end
+ # with the relevant sub-commands
+ add_executable(mantis mantis.cc)
+ target_include_directories(mantis PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
+-target_link_libraries(mantis mantis_core)
++target_link_libraries(mantis mantis_core -static-libgcc -static-libstdc++)
+ target_compile_options(mantis PUBLIC "$<$<AND:$<CONFIG:DEBUG>,$<COMPILE_LANGUAGE:C>>:${MANTIS_DEBUG_CFLAGS}>")
+ target_compile_options(mantis PUBLIC "$<$<AND:$<CONFIG:DEBUG>,$<COMPILE_LANGUAGE:CXX>>:${MANTIS_DEBUG_CXXFLAGS}>")
+ target_compile_options(mantis PUBLIC "$<$<AND:$<CONFIG:RELEASE>,$<COMPILE_LANGUAGE:C>>:${MANTIS_RELEASE_CFLAGS}>")
+-- 
+2.14.3 (Apple Git-98)
+

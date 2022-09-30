@@ -1,0 +1,61 @@
+{% set name = "deepnog" %}
+{% set version = "1.2.3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 2e9674a0253fff91a988a7aa54ccdcb3d353d50493ef78d589202c58dfd660f8
+
+build:
+  # We should be platform-independent (no compiled code etc.)
+  noarch: python
+  number: 1
+  entry_points:
+    - deepnog = deepnog.client:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - biopython
+    - numpy
+    - pandas
+    - python
+    - pytorch
+    - pyyaml
+    - scikit-learn
+    - tensorboard
+    - tqdm
+
+test:
+  commands:
+    - deepnog --version
+    - deepnog --help
+    - deepnog infer --help
+    - deepnog train --help
+  imports:
+    - deepnog
+    - deepnog.client
+    - deepnog.learning
+    - deepnog.models
+    - deepnog.tests
+    - deepnog.utils
+
+about:
+  home: https://github.com/univieCUBE/deepnog
+  license: BSD 3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Deep learning tool for protein orthologous group assignment"
+  doc_url: https://deepnog.readthedocs.io
+  dev_url: https://github.com/univieCUBE/deepnog
+
+extra:
+  recipe-maintainers:
+    - VarIr
+    - LokiLuciferase

@@ -1,0 +1,57 @@
+{% set name = "swga" %}
+{% set version = "0.4.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/eclarke/swga/archive/2f240cbb356d8c4b4130d9e442596d10227738ff.tar.gz
+  sha256: 28f6971234453f8ba91997c3203e71e94a4de5e37f7bcfd01096deb1fcb952c0
+  patches:
+    - 0001-Use-compiler-and-flags-from-env.patch
+    - SortingCount.cpp.patch
+
+build:
+  number: 3
+  skip: True  # [py>=30]
+  entry_points:
+    - swga = swga.main:main
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
+    - python
+    - pip
+    - bc
+    - zlib
+  run:
+    - python
+    - pyfaidx >0.4.5.2
+    - click
+    - pyyaml
+    - peewee >=2.7.3,<3.0
+    - melt
+    - pytest
+    - argutils
+    - semantic_version
+    - workspace
+    - zlib
+
+test:
+  imports:
+    - swga
+  commands:
+    - swga 2>&1 | grep Usage
+
+about:
+  home: https://github.com/eclarke/swga
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: 'Select primer sets for selective whole genome amplification (SWGA)'

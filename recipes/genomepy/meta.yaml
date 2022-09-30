@@ -1,0 +1,65 @@
+        {% set version = "0.14.0" %}
+
+package:
+  name: genomepy
+  version: {{ version }}
+
+source:
+  url: https://github.com/vanheeringen-lab/genomepy/releases/download/{{ version }}/genomepy-{{ version }}.tar.gz
+  sha256: f90810c9b9d1b099b547efa321f5fdda04e565146ec6217c6b40cb0ab28d3e0a
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  
+requirements:
+  host:
+    - python
+    - pip
+    - hatchling >=1.5.0
+  run:
+    - python
+    - appdirs
+    - biopython >=1.73
+    - diskcache
+    - click
+    - colorama
+    - filelock
+    - loguru
+    - mygene
+    - mysql-connector-python
+    - norns >=0.1.5
+    - numpy
+    - pandas
+    - pyfaidx >=0.5.7
+    - requests
+    - tqdm >=4.51
+    - tabix
+    - ucsc-bedtogenepred
+    - ucsc-gtftogenepred
+    - ucsc-genepredtobed
+    - ucsc-genepredtogtf
+    - ucsc-gff3togenepred
+
+test:
+  imports:
+    - genomepy
+  commands:
+    - genomepy -h
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true  # [py3k]
+
+about:
+  home: https://github.com/vanheeringen-lab/genomepy
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'Install and use genomes & gene annotations the easy way!'
+  description: |
+    Install and use genomes & gene annotations the easy way!
+  doc_url: https://vanheeringen-lab.github.io/genomepy
