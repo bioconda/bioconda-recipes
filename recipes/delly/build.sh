@@ -2,6 +2,7 @@
 
 mkdir -p "${PREFIX}/bin"
 if [[ ${target_platform}  == osx-64 ]] ; then
+    find / -name ctype.h -print
     make all CXX=$CXX CXXFLAGS="-I${PREFIX}/include -L${PREFIX}/lib"
     cp src/delly "${PREFIX}/bin"
 else

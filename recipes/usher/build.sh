@@ -1,5 +1,5 @@
 #!/bin/bash
-find / -name "*System.dylib" -print
+#/System/Volumes/Data/System/DriverKit/usr/lib/libSystem.dylib
 mkdir -p $PREFIX/bin
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
