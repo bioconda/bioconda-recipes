@@ -1,4 +1,5 @@
-#!/bin/bash -e
+#!/bin/bash
+set -ex
 
 # Build uses hard-coded references to gcc/g++/etc. and does not properly honor all *FLAGS.
 make_wrapper() {
@@ -51,7 +52,6 @@ end-of-patch
 ./configure \
     --prefix="${PREFIX}" \
     --build-prefix="${NCBI_OUTDIR}" \
-    --with-ngs-sdk-prefix="${PREFIX}" \
     --with-hdf5-prefix="${PREFIX}" \
     --with-xml2-prefix="${PREFIX}" \
     ;
@@ -62,19 +62,18 @@ popd
 echo "compiling sra-tools"
 pushd sra-tools
 
-pushd tools/driver-tool/utf8proc
-make -j"${CPU_COUNT}"
-popd
+#pushd tools/driver-tool/utf8proc
+#make -j"${CPU_COUNT}"
+#popd
 
+export LD_LIBRARY_PATH=$PREFIX/lib
 ./configure \
     --prefix="${PREFIX}" \
     --build-prefix="${NCBI_OUTDIR}" \
-    --with-ngs-sdk-prefix="${PREFIX}" \
     --with-hdf5-prefix="${PREFIX}" \
     --with-xml2-prefix="${PREFIX}" \
-    --with-ncbi-vdb-build="${NCBI_OUTDIR}" \
     ;
-make -j"${CPU_COUNT}"
+make
 make install
 popd
 
