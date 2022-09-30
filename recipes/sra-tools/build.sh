@@ -35,7 +35,7 @@ echo "compiling sra-tools"
 pushd sra-tools
 
 mkdir -p obj/ngs/ngs-java/javadoc/ngs-doc  # prevent error on OSX
-
+export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 cmake -DVDB_BINDIR=${SRC_DIR}/ncbi-vdb/bin \
     -DVDB_LIBDIR=${SRC_DIR}/ncbi-vdb/lib \
     -DVDB_INCDIR=${SRC_DIR}/ncbi-vdb/interfaces \
