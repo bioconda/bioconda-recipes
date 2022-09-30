@@ -1,1 +1,0 @@
-seqscreen --version
