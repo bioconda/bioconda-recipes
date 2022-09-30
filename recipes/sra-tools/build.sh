@@ -38,6 +38,7 @@ cmake -DVDB_BINDIR=${SRC_DIR}/ncbi-vdb/bin \
     -DVDB_LIBDIR=${SRC_DIR}/ncbi-vdb/lib \
     -DVDB_INCDIR=${SRC_DIR}/ncbi-vdb/interfaces \
     -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+    -DJava_FOUND=FALSE \
     -DCMAKE_BUILD_TYPE=Release
 cmake --build . --verbose
 cmake --install .
