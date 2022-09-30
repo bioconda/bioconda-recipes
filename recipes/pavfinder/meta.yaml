@@ -10,15 +10,17 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv --no-deps --ignore-installed"
+  number: 0
+  script: "{{ PYTHON }} -m pip install -vv --no-deps --ignore-installed --no-cache-dir ."
 
 requirements:
   host:
     - pip
     - python >=3
   run:
+    - python >=3
+    - make
     - bwa
     - samtools
     - blast
@@ -29,10 +31,10 @@ requirements:
 
 test:
   commands:
+    - filter_fasta.py -h
     - check_support.py -h
     - extract_transcript_sequence.py -h
     - filter_fasta -h
-    - filter_fasta.py -h
     - find_sv_genome.py -h
     - find_sv_transcriptome.py -h
     - fusion-bloom help
