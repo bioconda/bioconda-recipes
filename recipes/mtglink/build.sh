@@ -4,6 +4,7 @@ mkdir -p ${PREFIX}/bin/
 
 cp *.py  ${PREFIX}/bin/
 cp -r utils/*.py ${PREFIX}/bin/
+cp -r test/*.py ${PREFIX}/bin/
 
 chmod +x ${PREFIX}/bin/main.py
 chmod +x ${PREFIX}/bin/mtglink.py
@@ -25,5 +26,3 @@ chmod +x ${PREFIX}/bin/mergegfa.py
 chmod +x ${PREFIX}/bin/gfa2tofasta.py
 chmod +x ${PREFIX}/bin/gfa1tofasta.py
 chmod +x ${PREFIX}/bin/test.py
-
-
