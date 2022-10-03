@@ -34,6 +34,11 @@ popd
 echo "compiling sra-tools"
 pushd sra-tools
 
+if [[ $OSTYPE == "darwin"* ]]; then
+    export CFLAGS="-DTARGET_OS_OSX $CFLAGS"
+    export CXXFLAGS="-DTARGET_OS_OSX $CXXFLAGS"
+fi
+
 mkdir -p obj/ngs/ngs-java/javadoc/ngs-doc  # prevent error on OSX
 export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 cmake -DVDB_BINDIR=${SRC_DIR}/ncbi-vdb/bin \
