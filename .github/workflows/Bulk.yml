@@ -75,7 +75,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: /Users/runner/miniconda
-        key: ${{ runner.os }}--bulk0--${{ hashFiles('**/common.sh') }}
+        key: ${{ runner.os }}--bulk1--${{ hashFiles('**/common.sh') }}
 
     - name: OSX stuff
       if: steps.cache.outputs.cache-hit != 'true'
@@ -106,7 +106,6 @@ jobs:
         # Installing bioconda-utils and conda-forge-ci-setup with mamba works fine.
         conda install -y mamba
         mamba install bioconda-utils=${BIOCONDA_UTILS_TAG} conda-forge-ci-setup
-        ${HOME}/miniconda/bin/run_conda_forge_build_setup
 
         # Set local channel as highest priority
         mkdir -p "${HOME}/miniconda/conda-bld/{noarch,linux-64,osx-64}"
@@ -123,6 +122,8 @@ jobs:
         CI: "true"
       run: |
         export PATH="${HOME}/miniconda/bin:${PATH}"
+        # The SDK isn't actually cached, so reinstall it
+        ${HOME}/miniconda/bin/run_conda_forge_build_setup
         echo '============'
         conda info --all
         conda config --show-sources
