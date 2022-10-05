@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ex
 FN="MafDb.gnomAD.r2.1.GRCh38_3.10.0.tar.gz"
 URLS=(
   "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/MafDb.gnomAD.r2.1.GRCh38_3.10.0.tar.gz"
