@@ -20,4 +20,7 @@ else
     exit 1
 fi
 
-chmod u+rwx $PREFIX/bin/*
+chmod +x $PREFIX/bin/download_fasta_database
+chmod +x $PREFIX/bin/get_sequence_type
+chmod +x $PREFIX/bin/get_emm_sequence_type
+chmod +x $PREFIX/bin/download_mlst_databases
