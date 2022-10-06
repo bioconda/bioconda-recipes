@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="DvDdata_1.26.0.tar.gz"
+FN="DvDdata_1.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/experiment/src/contrib/DvDdata_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/DvDdata_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-dvddata/bioconductor-dvddata_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/DvDdata_1.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/DvDdata_1.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-dvddata/bioconductor-dvddata_1.30.0_src_all.tar.gz"
 )
-MD5="a2c804758996296c68585304ba76ea26"
+MD5="80177375adfdfbde2f87fca90b2e9b47"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

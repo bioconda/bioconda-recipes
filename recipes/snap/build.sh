@@ -1,12 +1,12 @@
 #!/bin/sh
 cd Zoe
-make CC=${CC} CFLAGS="$CFLAGS" zoe-loop
+make CC=${CC} CFLAGS="$CFLAGS -fcommon" zoe-loop
 cd ..
-make CC=${CC} CFLAGS="$CFLAGS" snap
-make CC=${CC} CFLAGS="$CFLAGS" fathom
-make CC=${CC} CFLAGS="$CFLAGS" forge
-make CC=${CC} CFLAGS="$CFLAGS" hmm-info
-make CC=${CC} CFLAGS="$CFLAGS" exonpairs
+make CC=${CC} CFLAGS="$CFLAGS -fcommon" snap
+make CC=${CC} CFLAGS="$CFLAGS -fcommon" fathom
+make CC=${CC} CFLAGS="$CFLAGS -fcommon" forge
+make CC=${CC} CFLAGS="$CFLAGS -fcommon" hmm-info
+make CC=${CC} CFLAGS="$CFLAGS -fcommon" exonpairs
 
 mkdir -p $PREFIX/bin
 mkdir -p ${PREFIX}/share/snap

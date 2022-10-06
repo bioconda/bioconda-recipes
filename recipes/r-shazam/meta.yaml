@@ -1,0 +1,93 @@
+{% set version = '1.1.0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-shazam
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/shazam_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/shazam/shazam_{{ version }}.tar.gz
+  sha256: ffa496edc2aaf3d11eedb55e1f05f30c9c9959b5453035ebe25c53c8dde853c9
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ posix }}zip               # [win]
+  host:
+    - r-base
+    - r-kernsmooth
+    - r-mass
+    - r-alakazam >=1.1.0
+    - r-ape
+    - r-diptest
+    - r-doparallel
+    - r-dplyr >=0.8.1
+    - r-foreach
+    - r-ggplot2 >=3.3.4
+    - r-igraph
+    - r-iterators
+    - r-kedd
+    - r-lazyeval
+    - r-progress
+    - r-rlang
+    - r-scales
+    - r-seqinr
+    - r-stringi >=1.1.3
+    - r-tidyr
+    - r-tidyselect
+  run:
+    - r-base
+    - r-kernsmooth
+    - r-mass
+    - r-alakazam >=1.1.0
+    - r-ape
+    - r-diptest
+    - r-doparallel
+    - r-dplyr >=0.8.1
+    - r-foreach
+    - r-ggplot2 >=3.3.4
+    - r-igraph
+    - r-iterators
+    - r-kedd
+    - r-lazyeval
+    - r-progress
+    - r-rlang
+    - r-scales
+    - r-seqinr
+    - r-stringi >=1.1.3
+    - r-tidyr
+    - r-tidyselect
+
+test:
+  commands:
+    - $R -e "library('shazam')"
+
+about:
+  home: http://shazam.readthedocs.io
+  license: AGPL-3
+  summary: 'Provides a computational framework for analyzing mutations in immunoglobulin (Ig)
+    sequences. Includes methods for Bayesian estimation of antigen-driven selection
+    pressure, mutational load quantification, building of somatic hypermutation (SHM)
+    models, and model-dependent distance calculations. Also includes empirically derived
+    models of SHM for both mice and humans. Citations: Gupta and Vander Heiden, et al
+    (2015) <doi:10.1093/bioinformatics/btv359>, Yaari, et al (2012) <doi:10.1093/nar/gks457>,
+    Yaari, et al (2013) <doi:10.3389/fimmu.2013.00358>, Cui, et al (2016) <doi:10.4049/jimmunol.1502263>.'
+  license_family: AGPL
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+
+extra:
+  skip-lints:
+    - in_other_channels
+  recipe-maintainers:
+    - ggabernet

@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.cyrgene.1.1.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/pd.cyrgene.1.1.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.cyrgene.1.1.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.cyrgene.1.1.st_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.cyrgene.1.1.st/bioconductor-pd.cyrgene.1.1.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.cyrgene.1.1.st/bioconductor-pd.cyrgene.1.1.st_3.12.0_src_all.tar.gz"
 )
 MD5="dbe3bb580b96aaddcc597de45159320d"
@@ -17,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

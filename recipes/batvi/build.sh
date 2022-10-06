@@ -3,6 +3,8 @@ mkdir -p $PREFIX/bin/msapipeline/msa
 mkdir -p $PREFIX/bin/bin
 mkdir -p $PREFIX/bin/BatMis-3.00/bin
 mkdir -p $PREFIX/bin/batindel/src
+export CFLAGS="${CFLAGS} -fcommon"
+export CXXFLAGS="${CXXFLAGS} -fcommon"
 
 
 

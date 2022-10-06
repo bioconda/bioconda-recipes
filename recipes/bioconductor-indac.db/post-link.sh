@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="indac.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/indac.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/indac.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/indac.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-indac.db/bioconductor-indac.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-indac.db/bioconductor-indac.db_3.2.3_src_all.tar.gz"
 )
 MD5="cba72edcf7278033151e0eac077d8ff8"
@@ -17,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

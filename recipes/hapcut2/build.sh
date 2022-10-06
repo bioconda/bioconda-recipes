@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-make CC=$CC CFLAGS="$CFLAGS $(pkg-config --cflags htslib)" LDFLAGS="$LDFLAGS $(pkg-config --libs htslib)"
+make CC=$CC CFLAGS="$CFLAGS -fcommon $(pkg-config --cflags htslib)" LDFLAGS="$LDFLAGS $(pkg-config --libs htslib)"
 
 mkdir -p ${PREFIX}/bin
 cp -p build/HAPCUT2 build/extractHAIRS ${PREFIX}/bin/

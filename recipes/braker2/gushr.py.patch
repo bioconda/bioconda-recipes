@@ -1,0 +1,54 @@
+--- a/gushr.py	2021-04-29 17:17:57.449869011 -0400
++++ b/gushr.py	2021-04-30 11:54:26.086905634 -0400
+@@ -144,22 +144,6 @@
+           str(frameinfo.lineno) + ': java version on your system is ' +
+           jv + ". This script has only been tested with java version 1.8.")
+ 
+-''' Check whether custom GeMoMa jar is present '''
+-
+-jar = None
+-if args.GeMoMaJar:
+-    jar=args.GeMoMaJar
+-else:
+-    this_script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+-    jar = this_script_path + "/GeMoMa-1.6.2.jar"
+-
+-if not os.path.isfile(jar):
+-    frameinfo = getframeinfo(currentframe())
+-    print('Error in file ' + frameinfo.filename + ' at line ' +
+-          str(frameinfo.lineno) + ': custom GeMoMa jar ' +
+-          jar + ' is missing!')
+-    exit(1)
+-
+ ''' Find samtools (if bam file provided) '''
+ 
+ samtools = ""
+@@ -352,7 +336,7 @@
+         subprcs_args.append(tmp_dir + 'rnaseq_' + str(j) + '_s.bam')
+     run_simple_process(subprcs_args)
+     # generate bedgraph file
+-    subprcs_args = [java, '-jar', jar, 'CLI', 'ERE', 'm=' +
++    subprcs_args = ['GeMoMa', 'ERE', 'm=' +
+                     merged_file, 'u=true', 'c=true', 'outdir='+tmp_dir]
+     run_simple_process(subprcs_args)
+     return tmp_dir + 'coverage.bedgraph', tmp_dir + 'introns.gff'
+@@ -480,8 +464,8 @@
+                                 else:
+                                     gemoma_handle.write("prediction\t")
+                             gemoma_handle.write(
+-                                "ID=" + gid + "_R1;ref-gene=NA;AA=NA;" +
+-                                "score=NA;tae=NA;tde=NA;tie=NA;" +
++                                "ID=" + gid + "_R1;ref-gene=NA;aa=NA;" +
++                                "tae=NA;tde=NA;tie=NA;" +
+                                 "minSplitReads=0;start=M;stop=*;" +
+                                 "evidence=1;Parent=" + gid + "\n")
+                         elif(re.search(r'\tCDS\t', line)):
+@@ -513,7 +497,7 @@
+ 
+ def add_utrs_to_gff3(gff3_file, bed_graph, intron_file):
+     gff3_utr_file = tmp_dir + "final_annotation.gff"
+-    subprcs_args = [java, '-jar', jar, 'CLI', 'AnnotationFinalizer',
++    subprcs_args = ['GeMoMa', 'AnnotationFinalizer',
+                     'u=YES', 'g=' + args.genome, 'a=' + gff3_file,
+                     'i=' + intron_file, 'c=UNSTRANDED',
+                     'coverage_unstranded=' + bed_graph, 'rename=NO',

@@ -1,5 +1,5 @@
-{% set version = "4.1.4" %}
-{% set sha256 = "9a71a1b56aaaaa46906a7473ff9398f10e5a59227d4b5b70712de350d7318736" %}
+{% set version = "5.4.3" %}
+{% set sha256 = "e391e39a68c911f0dd33bdad172c4db5f0d03147bd179b62ab699cfa43a8de95" %}
 
 package:
   name: busco
@@ -13,7 +13,7 @@ source:
   url: https://gitlab.com/ezlab/busco/-/archive/{{ version }}/busco-{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - 0001-Add-default-config-path-within-prefix.patch
+    - 0001-Add-default-config-path-within-prefix-updated.patch
 
 requirements:
   host:
@@ -26,6 +26,9 @@ requirements:
     - biopython
     - prodigal
     - sepp >=4.3.10
+    - metaeuk >=5.34c21f2
+    - pandas
+    - bbmap
   run:
     - python >=3.3
     - wget
@@ -37,12 +40,15 @@ requirements:
     - r-ggplot2 >=2.2.1
     - prodigal
     - sepp >=4.3.10
+    - metaeuk >=5.34c21f2
+    - pandas
+    - bbmap
+    - fonts-conda-ecosystem
 
 test:
   commands:
     - busco -h
     - generate_plot.py -h
-    - python -c 'import busco.ConfigManager as cm; print(cm.BuscoConfigManager({}).get_config_file())'
   source_files:
     # used in run_test.sh
     - test_data
@@ -51,12 +57,18 @@ about:
   home: http://busco.ezlab.org/
   license: MIT
   license_file: LICENSE
-  summary: BUSCO provides measures for quantitative assessment of genome
+  summary: Assessment of assembly completeness using Universal Single Copy Orthologs
+  description: BUSCO provides measures for quantitative assessment of genome
            assembly, gene set, and transcriptome completeness based on
            evolutionarily informed expectations of gene content from
            near-universal single-copy orthologs selected from OrthoDB.
 
 extra:
+  container:
+    # Necessary to allow Busco to download files from the internet when used with Singularity
+    # and default bind paths (see also https://github.com/bioconda/bioconda-recipes/issues/11583).
+    # Should be removed again when the base container is fixed.
+    extended-base: True
   identifiers:
     - biotools:busco
     - doi:10.1093/bioinformatics/btv351

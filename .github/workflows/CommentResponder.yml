@@ -1,24 +1,126 @@
 name: CommentResponder
 on:
+  status:
+  check_suite:
+    types:
+    - completed
   issue_comment:
-    types: [created]
+    types:
+    - created
 
+# Re-enable when the bot has been updated to handle azure
+#      (
+#        github.event_name == 'check_suite' &&
+#        github.event.check_suite.conclusion == 'success'
+#      ) ||
 jobs:
-  pr_comment:
+  comment:
     runs-on: ubuntu-latest
-    name: PR comment responder
+    name: bioconda-bot comment
+    if: >-
+      (
+        github.event_name == 'status' &&
+        github.event.state == 'success'
+      ) ||
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        (
+          startsWith(github.event.comment.body, '@bioconda-bot') ||
+          startsWith(github.event.comment.body, '@biocondabot')
+        ) &&
+        ! contains(github.event.comment.body, 'please merge') &&
+        ! contains(github.event.comment.body, 'please update')
+      )
+    container:
+      image: 'quay.io/bioconda/bot:comment'
     steps:
-    - name: Setup ssh
-      uses: webfactory/ssh-agent@v0.4.1
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-    - name: Run comment action
+    - name: bioconda-bot comment
+      env:
+        BOT_TOKEN: ${{ secrets.GITHUBTOKEN }}
+        GITTER_TOKEN: ${{ secrets.GITTER_TOKEN }}
+        JOB_CONTEXT: ${{ toJson(github) }}
+      run: bioconda-bot comment
+
+  repost:
+    runs-on: ubuntu-latest
+    name: bioconda-bot repost
+    if: >-
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        ! (
+          startsWith(github.event.comment.body, '@bioconda-bot') ||
+          startsWith(github.event.comment.body, '@biocondabot')
+        ) &&
+        contains(github.event.comment.body, '@bioconda/')
+      )
+    container:
+      image: 'quay.io/bioconda/bot:comment'
+    steps:
+    - name: bioconda-bot comment
+      env:
+        BOT_TOKEN: ${{ secrets.GITHUBTOKEN }}
+        JOB_CONTEXT: ${{ toJson(github) }}
+      run: bioconda-bot comment
+
+  merge:
+    runs-on: ubuntu-latest
+    name: bioconda-bot merge
+    if: >-
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        (
+          startsWith(github.event.comment.body, '@bioconda-bot') ||
+          startsWith(github.event.comment.body, '@biocondabot')
+        ) &&
+        contains(github.event.comment.body, 'please merge') &&
+        ! contains(github.event.comment.body, 'please update')
+      )
+    container:
+      image: 'quay.io/bioconda/bot:merge'
+    steps:
+    - name: bioconda-bot merge
       env:
         BOT_TOKEN: ${{ secrets.GITHUBTOKEN }}
         ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
         QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
-        GITTER_TOKEN: ${{ secrets.GITTER_TOKEN }}
+        JOB_CONTEXT: ${{ toJson(github) }}
+      run: bioconda-bot merge
+
+  update:
+    runs-on: ubuntu-latest
+    name: bioconda-bot update
+    if: >-
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        (
+          startsWith(github.event.comment.body, '@bioconda-bot') ||
+          startsWith(github.event.comment.body, '@biocondabot')
+        ) &&
+        ! contains(github.event.comment.body, 'please merge') &&
+        contains(github.event.comment.body, 'please update')
+      )
+    container:
+      image: 'quay.io/bioconda/bot:update'
+    steps:
+    - name: Setup ssh (pre)
+      run: |
+        cp /usr/local/lib/libstdc++.so* /lib/x86_64-linux-gnu/
+    - name: Setup ssh
+      uses: webfactory/ssh-agent@v0.4.1
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: Setup ssh (post)
+      run: |
+        mkdir -p /root/.ssh
+        cat /github/home/.ssh/known_hosts >> /root/.ssh/known_hosts
+    - name: bioconda-bot update
+      env:
+        BOT_TOKEN: ${{ secrets.GITHUBTOKEN }}
         CODE_SIGNING_KEY: ${{ secrets.CODE_SIGNING_KEY }}
         JOB_CONTEXT: ${{ toJson(github) }}
-      uses: bioconda/bioconda-actions/bioconda_recipes_issue_responder/@issue_responder
+      run: bioconda-bot update
