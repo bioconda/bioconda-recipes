@@ -2,17 +2,18 @@
 
 # Change folder, compiling BD
 cd bd
-sh compile.sh
+sh compile.conda.sh
 cd ..
 
 # Change folder, compiling DMD
 cd dmd
-sh compile.sh
+sh compile.conda.sh
 cd ..
 
 # Change folder, compiling NMA
 cd nma
-sh compile.sh
+cd diaghess; make F77="${FC}"; cd ..;
+sh compile.conda.sh
 cd ..
 
 # Copy executables to environment bin dir included in the path
