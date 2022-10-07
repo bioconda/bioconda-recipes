@@ -4,7 +4,7 @@
 mkdir -p "${PREFIX}"/bin/
 
 # Build PSASS specifying CPP compiler and C compiler
-make CXX="${CXX}" CC="${CC}" nompi
+make CXX="${CXX}" CC="${CC}" tiny
 
 # Copy all generated binaries to bin
 cp bin/*mutselomega "${PREFIX}"/bin/
