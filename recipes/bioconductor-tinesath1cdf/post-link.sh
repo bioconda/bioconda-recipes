@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="tinesath1cdf_1.26.0.tar.gz"
+FN="tinesath1cdf_1.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/tinesath1cdf_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/tinesath1cdf_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tinesath1cdf/bioconductor-tinesath1cdf_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/tinesath1cdf_1.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/tinesath1cdf_1.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tinesath1cdf/bioconductor-tinesath1cdf_1.32.0_src_all.tar.gz"
 )
-MD5="5f3d24a1229df18792b09bdf1ee06ddc"
+MD5="a2d6af0143d967218d5a57de160246f1"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

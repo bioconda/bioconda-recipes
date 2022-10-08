@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="TxDb.Ggallus.UCSC.galGal4.refGene_3.11.0.tar.gz"
+FN="TxDb.Ggallus.UCSC.galGal4.refGene_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/annotation/src/contrib/TxDb.Ggallus.UCSC.galGal4.refGene_3.11.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/TxDb.Ggallus.UCSC.galGal4.refGene_3.11.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.ggallus.ucsc.galgal4.refgene/bioconductor-txdb.ggallus.ucsc.galgal4.refgene_3.11.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/TxDb.Ggallus.UCSC.galGal4.refGene_3.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TxDb.Ggallus.UCSC.galGal4.refGene_3.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.ggallus.ucsc.galgal4.refgene/bioconductor-txdb.ggallus.ucsc.galgal4.refgene_3.12.0_src_all.tar.gz"
 )
-MD5="bfd9c30488b075729bca1f8c4346dee4"
+MD5="d50eb467227cd9077a7a690ae6934d11"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -7,6 +7,7 @@ export C_INCLUDE_PATH=${PREFIX}/include
 
 # Tell the build system where to find samtools
 export SAMTOOLS="${PREFIX}"
+unset LD
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
@@ -26,4 +27,6 @@ else
     exit 1
 fi
 
-chmod u+rwx $PREFIX/bin/*
+chmod +rx $PREFIX/bin/chrom_sizes.pl
+chmod +rx $PREFIX/bin/bamToGBrowse.pl
+chmod +rx $PREFIX/bin/genomeCoverageBed.pl

@@ -1,9 +1,10 @@
-diff --git a/bin/bwa.orig b/bin/bwa
-index 0ef4326..89924eb 100755
+diff --git a/bin/bwa b/bin/bwa
+index 8804926e94..5dd846aad4 100755
 --- a/bin/bwa.orig
 +++ b/bin/bwa
-@@ -1,12 +1,15 @@
--#!/bin/sh
+@@ -1,13 +1,17 @@
+ #!/bin/sh
+ # Copyright (c) 2014-2020 Sentieon Inc. All rights reserved
 -case "$0" in
 -/*)     bin_dir=$(dirname "$0");;
 -*)      bin_dir=$(dirname "$(pwd)/$0");;
@@ -12,18 +13,18 @@ index 0ef4326..89924eb 100755
 -*/.)    install_dir="$bin_dir.";;
 -*)      install_dir=$(dirname "$bin_dir");;
 -esac
-+#!/bin/bash
-+# Find original directory of bash script, resovling symlinks
++
++# Find original directory of script, resovling symlinks. Modified from:
 +# http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128
-+SOURCE="${BASH_SOURCE[0]}"
++SOURCE="$0"
 +while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-+    DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-+    SOURCE="$(readlink "$SOURCE")"
++    DIR="$( cd -P -- "$( dirname -- "$SOURCE" )" && pwd )"
++    SOURCE="$(readlink -- "$SOURCE")"
 +    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 +done
-+bin_dir="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-+install_dir=$(dirname "$bin_dir")
++bin_dir="$( cd -P -- "$( dirname -- "$SOURCE" )" && pwd )"
++install_dir=$(dirname -- "$bin_dir")
 +
  export SENTIEON_INSTALL_DIR="$install_dir"
- 
+
  # load common function definitions

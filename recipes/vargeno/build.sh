@@ -1,6 +1,6 @@
 #!/bin/bash
-chmod +x ./install.sh
-./install.sh
-mkdir -p ${PREFIX}/bin
-cp vargeno ${PREFIX}/bin
-chmod +x ${PREFIX}/bin/vargeno
+make vargeno \
+    CC="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+    CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+install -d "${PREFIX}/bin"
+install vargeno "${PREFIX}/bin/"

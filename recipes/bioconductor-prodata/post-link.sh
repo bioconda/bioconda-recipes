@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ProData_1.26.0.tar.gz"
+FN="ProData_1.32.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.11/data/experiment/src/contrib/ProData_1.26.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ProData_1.26.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-prodata/bioconductor-prodata_1.26.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/ProData_1.32.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ProData_1.32.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-prodata/bioconductor-prodata_1.32.0_src_all.tar.gz"
 )
-MD5="6a560cf2edfb27d9897edf8e7bc82996"
+MD5="c87f825794f30881a0342f27c1dc67fe"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

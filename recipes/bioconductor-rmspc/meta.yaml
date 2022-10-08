@@ -1,0 +1,46 @@
+{% set version = "1.0.0" %}
+{% set name = "rmspc" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 681ffb7b006f5ad327f6cc594da908e8
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: knitr, rmarkdown, BiocStyle, testthat (>= 3.0.0)
+# SystemRequirements: .NET 5.0
+requirements:
+  host:
+    - 'bioconductor-genomicranges >=1.46.0,<1.47.0'
+    - 'bioconductor-rtracklayer >=1.54.0,<1.55.0'
+    - r-base
+    - r-biocmanager
+    - r-processx
+    - r-stringr
+  run:
+    - 'bioconductor-genomicranges >=1.46.0,<1.47.0'
+    - 'bioconductor-rtracklayer >=1.54.0,<1.55.0'
+    - r-base
+    - r-biocmanager
+    - r-processx
+    - r-stringr
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Multiple Sample Peak Calling'
+  description: 'The rmspc package runs MSPC (Multiple Sample Peak Calling) software using R. The analysis of ChIP-seq samples outputs a number of enriched regions (commonly known as "peaks"), each indicating a protein-DNA interaction or a specific chromatin modification. When replicate samples are analyzed, overlapping peaks are expected. This repeated evidence can therefore be used to locally lower the minimum significance required to accept a peak. MSPC uses combined evidence from replicated experiments to evaluate peak calling output, rescuing peaks, and reduce false positives. It takes any number of replicates as input and improves sensitivity and specificity of peak calling on each, and identifies consensus regions between the input samples.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

@@ -6,4 +6,5 @@ make -j
 make install
 
 mv $PREFIX/share/RNAz/perl/*.pl $PREFIX/bin/.
-mv $PREFIX/share/RNAz/perl/RNAz.pm $PREFIX/lib/5.26.2/.
+mkdir -p $PREFIX/lib/perl5/site_perl/
+mv $PREFIX/share/RNAz/perl/RNAz.pm $PREFIX/lib/perl5/site_perl/.

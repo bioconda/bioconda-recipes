@@ -13,20 +13,6 @@ mkdir -p $outdir
 mkdir -p $outdir/scripts
 mkdir -p $PREFIX/bin
 
-pushd src/utils/sqlite3
-sed -i.bak "s#@gcc#${CC}#g" Makefile
-popd
-
-make \
-    CC="${CC}" \
-    CXX="${CXX}" \
-    CPPFLAGS="${CPPFLAGS}" \
-    CFLAGS="${CFLAGS}" \
-    CXXFLAGS="${CXXFLAGS}" \
-    LDFLAGS="${LDFLAGS}" \
-    ZLIB_PATH="${PREFIX/lib}"
-
-cp bin/* $PREFIX/bin
 cp scripts/lumpyexpress $PREFIX/bin
 cp scripts/cnvanator_to_bedpes.py $PREFIX/bin
 
@@ -36,6 +22,7 @@ cp scripts/*.pl $outdir/scripts
 cp scripts/extractSplitReads* $outdir/scripts
 cp scripts/vcf* $outdir/scripts
 ln -s $outdir/scripts/extractSplitReads_BwaMem $PREFIX/bin
+ln -s $outdir/scripts/pairend_distro.py $PREFIX/bin
 
 chmod +x $PREFIX/bin/extractSplitReads_BwaMem
 

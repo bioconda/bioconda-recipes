@@ -1,32 +1,25 @@
-{% set name = "emmtyper" %}
-{% set version = "0.1.0" %}
+{% set version = "0.2.0" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: emmtyper
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "bd34ebe10f2596781f69a1d6101ce87b447ff033ff3443e5aa8d390247fa4841"
+  url: https://pypi.io/packages/source/e/emmtyper/emmtyper-{{ version }}.tar.gz
+  sha256: 6ec35065ce1456ccee0daab67a982267380714d1efac627996f0e47b4a7d5a4b
 
 build:
   number: 0
-  noarch: generic
+  noarch: python
   entry_points:
     - emmtyper=emmtyper.bin.run_emmtyper:main
     - emmtyper-db=emmtyper.utilities.make_db:emmtyper_db
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
   host:
-    - click
-    - numpy >=1.15.0
     - pip
     - python >=3
-    - python-dateutil
-    - scipy >=1.1.0
-    - blast >=2.6.0
-    - ispcr
   run:
     - click
     - numpy >=1.15.0
@@ -60,3 +53,6 @@ about:
 extra:
   recipe-maintainers:
     - andersgs
+  container:
+    # Use extended-base to have UTF-8 locale for click.
+    extended-base: True

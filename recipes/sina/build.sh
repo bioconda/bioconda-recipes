@@ -14,6 +14,14 @@ make -j$CPU_COUNT
 # Checks disabled because CircleCI macOS is <10.13 
 # and lacks fmemopen (required only for tests)
 # make check || (cat test-suite.log; false)
+
+# Something is broken with libxkbcommon. make install will run
+# ldconfig -n $PREFIX/lib, which creates symlinks for libraries,
+# also making one that contains hex codes as file name that in 
+# turn make conda build croak. This sidesteps the issue by
+# removing the broken libraries.
+rm -f $PREFIX/lib/libxkbcommon*
+
 make install
 
 # Many versions of `man` have a bug where it ignores files
