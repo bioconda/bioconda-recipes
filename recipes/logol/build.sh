@@ -19,8 +19,10 @@ sed -i 's;#!/usr/bin/ruby;#!/usr/bin/env ruby;g' tools/cassiopeeSearch.rb
 
 #sed -i 's;INFO;DEBUG;g' log4j.properties
 #ant -f build.xml setup compile_swi_exe create-jar
+ln -s $CC $PREFIX/bin/gcc
 ant -f build.xml test_swi
 mkdir -p $PREFIX/lib/logol
 cp -r * $PREFIX/lib/logol/
 cd $PREFIX/bin && ln -s ../lib/logol/LogolExec.sh
 cd $PREFIX/bin && ln -s ../lib/logol/LogolMultiExec.sh
+unlink $PREFIX/bin/gcc
