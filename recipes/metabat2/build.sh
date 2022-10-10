@@ -1,7 +1,7 @@
 mkdir build
 cd build
 export CXXFLAGS=-ldeflate
-cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DBOOST_ROOT=$PREFIX
+cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DBOOST_ROOT=$PREFIX -DBoost_USE_STATIC_LIBS=ON
 
 # Fix the version
 make check_git_repository
