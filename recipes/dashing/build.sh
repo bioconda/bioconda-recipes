@@ -6,6 +6,8 @@ export CXX_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
 pushd bonsai
+ls -l
+
 git clone --recursive --single-branch --branch dev https://github.com/facebook/zstd
 pushd zstd
 make CC=$CC lib && mv lib/libzstd.a ..
