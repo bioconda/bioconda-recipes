@@ -1,0 +1,42 @@
+diff --git a/setup.py b/setup.py
+index 247414c..5b1286d 100755
+--- a/setup.py
++++ b/setup.py
+@@ -123,37 +123,6 @@ library_dirnames.add_env("LIBRARY_PATH")
+ library_dirnames.add_env("LD_LIBRARY_PATH")
+ include_dirnames.add_env("C_INCLUDE_PATH")
+ 
+-try:
+-    shell_encoding = sys.stdout.encoding
+-    # Depending on the shell, python version (2), and environment this is not
+-    # guaranteed to be set. Attempt to fall back to a best-guess if it is not
+-    # set
+-    if not shell_encoding:
+-        shell_encoding = DEFAULT_SHELL_ENCODING
+-
+-    pkg_config_cflags = split(check_output(
+-                                ["pkg-config", "--cflags", "hdf5"]
+-                             ).decode(shell_encoding))
+-    pkg_config_libs = split(check_output(
+-                                ["pkg-config", "--libs", "hdf5"]
+-                           ).decode(shell_encoding))
+-except OSError as err:
+-    # OSError ENOENT occurs when pkg-config is not installed
+-    if err.errno == errno.ENOENT:
+-        pass
+-    else:
+-        raise err
+-except CalledProcessError:
+-    # CalledProcessError occurs when hdf5 is not found by pkg-config
+-    pass
+-else:
+-    for path in pkg_config_cflags:
+-        assert path.find(CFLAGS_INCLUDE_PATH_SWITCH) == 0
+-        include_dirnames.add_dir(path.lstrip(CFLAGS_INCLUDE_PATH_SWITCH))
+-    for word in pkg_config_libs:
+-        if not word.startswith(LDFLAGS_LIBRARY_SWITCH):
+-            assert word.startswith(LDFLAGS_LIBRARY_PATH_SWITCH)
+-            library_dirnames.add_dir(word.lstrip(LDFLAGS_LIBRARY_PATH_SWITCH))
+ 
+ ## fix types, since distutils does type-sniffing:
+ library_dirnames = list(library_dirnames)
