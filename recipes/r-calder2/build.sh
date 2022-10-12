@@ -16,6 +16,9 @@ grep -va '^Priority: ' DESCRIPTION.old > DESCRIPTION
 ${R} CMD INSTALL --build . ${R_ARGS}
 
 # Add more build steps here, if they are necessary.
+mkdir -p ${PREFIX}/bin
+cp scripts/calder ${PREFIX}/bin
+chmod 755 ${PREFIX}/bin/calder
 
 # See
 # https://docs.conda.io/projects/conda-build
