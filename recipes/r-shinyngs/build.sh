@@ -13,3 +13,7 @@ export DISABLE_AUTOBREW=1
 mv DESCRIPTION DESCRIPTION.old
 grep -va '^Priority: ' DESCRIPTION.old > DESCRIPTION
 ${R} CMD INSTALL --build . ${R_ARGS}
+
+# copy supplementary scripts
+chmod +x exec/*.R
+cp exec/*.R ${PREFIX}/bin
