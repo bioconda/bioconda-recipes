@@ -2,8 +2,7 @@
 
 LORIKEET_DIR=$PREFIX/share/$PKG_NAME
 mkdir -p $LORIKEET_DIR
-ls -l
-cp lorikeet.jar $LORIKEET_DIR
+cp lorikeet*.jar $LORIKEET_DIR/lorikeet.jar
 
 cat <<END >$LORIKEET_DIR/lorikeet
 #!/bin/sh
