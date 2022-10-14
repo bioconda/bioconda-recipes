@@ -1,18 +1,13 @@
 #!/bin/bash
 
-# 'Autobrew' is being used by more and more packages these days
-# to grab static libraries from Homebrew bottles. These bottles
-# are fetched via Homebrew's --force-bottle option which grabs
-# a bottle for the build machine which may not be macOS 10.9.
-# Also, we want to use conda packages (and shared libraries) for
-# these 'system' dependencies. See:
-# https://github.com/jeroen/autobrew/issues/3
-export DISABLE_AUTOBREW=1
+# The reason for the devtools install is that uploads to shinyapps.io only
+# works with GitHub dependencies installed via devtools (see
+# https://docs.rstudio.com/shinyapps.io/getting-started.html#important-note-on-github-packages).
+# I'm relying on the PKG hash to maintain consistency with the hash in the
+# meta.yaml.
 
-# R refuses to build packages that mark themselves as Priority: Recommended
-mv DESCRIPTION DESCRIPTION.old
-grep -va '^Priority: ' DESCRIPTION.old > DESCRIPTION
-${R} CMD INSTALL --build . ${R_ARGS}
+devtools::install_github("pinin4fjords/shinyngs@$PKG_HASH", dependencies = FALSE, upgrade = FALSE)
+devtools::install_github("talgalili/d3heatmap", dependencies = FALSE, upgrade = FALSE)
 
 # copy supplementary scripts
 chmod +x exec/*.R
