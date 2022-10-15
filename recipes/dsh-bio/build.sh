@@ -50,6 +50,7 @@ ln -s $PACKAGE_HOME/bin/dsh-interleave-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-interleaved-fastq-to-bam $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-links-to-cytoscape-edges $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-links-to-property-graph $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-list-filesystems $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-reassemble-paths $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-remap-dbsnp $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-remap-phase-set $BINARY_HOME
