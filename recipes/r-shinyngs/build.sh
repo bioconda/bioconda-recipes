@@ -6,8 +6,10 @@
 # I'm relying on the PKG hash to maintain consistency with the hash in the
 # meta.yaml.
 
-$R -e "devtools::install_github('pinin4fjords/shinyngs', ref='$PKG_VERSION', dependencies = FALSE, upgrade = FALSE)"
-$R -e "devtools::install_github('talgalili/d3heatmap', dependencies = FALSE, upgrade = FALSE)"
+shinyngs=="devtools::install_github('pinin4fjords/shinyngs', ref='$PKG_VERSION', dependencies = FALSE, upgrade = FALSE)"
+d3heatmap="devtools::install_github('talgalili/d3heatmap', dependencies = FALSE, upgrade = FALSE)"
+
+$R -e "$d3heatmap; $shinyngs"
 
 # copy supplementary scripts
 chmod +x exec/*.R
