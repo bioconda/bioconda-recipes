@@ -31,8 +31,8 @@ ammend_description_for_packrat(){
 ammend_description_for_packrat "shinyngs/DESCRIPTION" "shinyngs" "pinin4fjords" "v$PKG_VERSION"
 ammend_description_for_packrat "d3heatmap/DESCRIPTION" "d3heatmap" "cran" "$D3HEATMAP_VERSION"
 
-${R} CMD INSTALL --build shinyngs ${R_ARGS}
 ${R} CMD INSTALL --build d3heatmap ${R_ARGS}
+${R} CMD INSTALL --build shinyngs ${R_ARGS}
 
 # copy supplementary scripts
 chmod +x shinyngs/exec/*.R
