@@ -3,22 +3,36 @@
 # The reason for the additions to DESCRIPTION is that we need packrat and
 # rsconnect to find the package for shinyapps.io deployment. This normally
 # doesn't work for github packages except those installed via
-# devtools::install_github(), but the DESCRIPTON edits here shoudl mimic that.
+# devtools::install_github(), but the DESCRIPTON edits here should mimic that.
+# I'm doing the same for a key dependency, d3heatmap, which is now archived in
+# CRAN (so packrat won't find it from there), but we can pull from github.
 
-echo -e """RemoteType: github
-RemoteHost: api.github.com
-RemoteRepo: shinyngs
-RemoteUsername: pinin4fjords
-RemoteRef: v$PKG_VERSION
-RemoteSha: $SHA256
-GithubRepo: shinyngs
-GithubUsername: pinin4fjords
-GithubRef: v$PKG_VERSION
-GithubSHA1: $SHA256
-NeedsCompilation: no""" >> DESCRIPTION
+ammend_description_for_packrat(){
+    description=$1
+    remoterepo=$2
+    remoteusername=$3
+    remoteref=$4
+    remotesha=$5
+    
+    echo -e """RemoteType: github
+    RemoteHost: api.github.com
+    RemoteRepo: $remoterepo
+    RemoteUsername: $remoteusername
+    RemoteRef: $remoteref
+    RemoteSha: $remotesha
+    GithubRepo: $remoterepo
+    GithubUsername: $remoteusername
+    GithubRef: $remoteref
+    GithubSHA1: $remotesha
+    NeedsCompilation: no""" >> $description
+}
 
-${R} CMD INSTALL --build . ${R_ARGS}
+ammend_description_for_packrat "shinyngs/DESCRIPTION" "shinyngs" "pinin4fjords" "v$PKG_VERSION" "$SHA256"
+ammend_description_for_packrat "d3heatmap/DESCRIPTION" "d3heatmap" "cran" "$D3HEATMAP_VERSION" "$D3HEATMAP_SHA256"
+
+${R} CMD INSTALL --build shinyngs ${R_ARGS}
+${R} CMD INSTALL --build d3heatmap ${R_ARGS}
 
 # copy supplementary scripts
-chmod +x exec/*.R
-cp exec/*.R ${PREFIX}/bin
+chmod +x shinyngs/exec/*.R
+cp shinyngs/exec/*.R ${PREFIX}/bin
