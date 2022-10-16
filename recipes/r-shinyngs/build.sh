@@ -12,8 +12,9 @@ ammend_description_for_packrat(){
     remoterepo=$2
     remoteusername=$3
     remoteref=$4
-    remotesha=$5
-    
+   
+    remotesha=$(git ls-remote https://github.com/$remoteusername/$remoterepo tags/$remoteref | cut -f1) 
+
     echo -e """RemoteType: github
     RemoteHost: api.github.com
     RemoteRepo: $remoterepo
@@ -27,8 +28,8 @@ ammend_description_for_packrat(){
     NeedsCompilation: no""" >> $description
 }
 
-ammend_description_for_packrat "shinyngs/DESCRIPTION" "shinyngs" "pinin4fjords" "v$PKG_VERSION" "$SHA256"
-ammend_description_for_packrat "d3heatmap/DESCRIPTION" "d3heatmap" "cran" "$D3HEATMAP_VERSION" "$D3HEATMAP_SHA256"
+ammend_description_for_packrat "shinyngs/DESCRIPTION" "shinyngs" "pinin4fjords" "v$PKG_VERSION"
+ammend_description_for_packrat "d3heatmap/DESCRIPTION" "d3heatmap" "cran" "$D3HEATMAP_VERSION"
 
 ${R} CMD INSTALL --build shinyngs ${R_ARGS}
 ${R} CMD INSTALL --build d3heatmap ${R_ARGS}
