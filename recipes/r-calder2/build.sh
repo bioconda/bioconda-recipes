@@ -19,8 +19,6 @@ ${R} CMD INSTALL --build . ${R_ARGS}
 mkdir -p ${PREFIX}/bin
 cp -v ${SRC_DIR}/scripts/calder ${PREFIX}/bin/calder
 
-
-
 # See
 # https://docs.conda.io/projects/conda-build
 # for a list of environment variables that are set during the build process.
