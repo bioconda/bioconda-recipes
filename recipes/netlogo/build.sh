@@ -1,0 +1,1 @@
+mv NetLogo* $PREFIX/bin
