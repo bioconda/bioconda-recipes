@@ -15,7 +15,7 @@ echo "
             wget https://data.gtdb.ecogenomic.org/releases/release207/207.0/auxillary_files/gtdbtk_r207_v2_data.tar.gz
 
         2. Extract the archive to a target directory:
-            tar -xvzf gtdbtk_r207_v2_data.tar.gz -c \"/path/to/target/db\" --strip 1 > /dev/null
+            tar -xvzf gtdbtk_r207_v2_data.tar.gz -C \"/path/to/target/db\" --strip 1 > /dev/null
             rm gtdbtk_r207_v2_data.tar.gz
 
         3. Set the GTDBTK_DATA_PATH environment variable by running:
