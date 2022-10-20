@@ -5,7 +5,6 @@ set -eu -o pipefail
 mkdir -p build
 cd build
 
-export BOOST_ROOT=${PREFIX}
 export C_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
