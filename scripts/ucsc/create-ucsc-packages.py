@@ -54,13 +54,13 @@ def parse_footer(fn):
 #
 #   version: 332
 #   sha256: 8c2663c7bd302a77cdf52b2e9e85e2cd
-ucsc_config = yaml.load(open('ucsc_config.yaml'))
+ucsc_config = yaml.safe_load(open('ucsc_config.yaml'))
 VERSION = ucsc_config['version']
 SHA256 = ucsc_config['sha256']
 
 # Download tarball if it doesn't exist. Always download FOOTER.
 tarball = (
-    'http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{0}.src.tgz'
+    'http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{0}.src.tgz'
     .format(VERSION))
 if not os.path.exists(os.path.basename(tarball)):
     f = urllib.request.urlopen(tarball)
@@ -103,23 +103,24 @@ problematic = {
 # Mismatches between the header and the summary; keys are the program name in
 # the header and values are the dir in the source code.
 resolve_header_and_summary_conflicts = {
-    'cpg_lh': 'cpglh',
-    'rmFaDups': 'rmFaDups',
-    'bedJoinTabOffset': 'bedJoinTabOffset',
-    'webSync': 'webSync',
+    'ucscApiClient': 'ucscApiClient',
 }
 
 # Some programs' descriptions do not meet the regex in FOOTER and therefore
 # must be manually assigned.
 manual_descriptions = {
 
+    'barChartMaxLimit': dedent(
+        """
+        Get maxLimit setting (maximum category value) from barChart bed 
+        file.
+        """),
+
     'expMatrixToBarchartBed': dedent(
         """
         Generate a barChart bed6+5 file from a matrix, meta data, and
         coordinates.
         """),
-
-    'pslRc': 'reverse-complement psl',
 
     'pslMapPostChain': dedent(
         """
@@ -161,14 +162,9 @@ manual_descriptions = {
 
     'pslHisto': dedent(
         """
-        Collect counts on PSL alignments for making histograms. These then be
-        analyzed with R, textHistogram, etc.
-        """),
-
-    'pslSwap': dedent(
-        """
-        Swap target and query in psls
-        """),
+        Collect counts on PSL alignments for making histograms. These can 
+        then be analyzed with R, textHistogram, etc.
+        """),  # typo, added 'can'
 
     'pslToBed': dedent(
         """
@@ -187,6 +183,15 @@ manual_descriptions = {
         intended primarily for system administrators.  The 'para' command
         is the primary command for users.
         """),
+
+    'trackDbIndexBb': dedent(
+        """
+        Given a track name, a trackDb.ra composite of bigBeds, and a chrom.sizes
+        file, will create index files needed to optimize hideEmptySubtracks setting.
+        Will also build track associations between tracks sharing metadata, which
+        will cause them to display together whenever the primary bigBed track is present.
+        Depending on size and quantity of files, can take over 60 minutes.
+        """),
 }
 
 # programs listed in FOOTER that should not be considered a "ucsc utility"
@@ -202,6 +207,19 @@ SKIP = [
 # programs need the "stringify" binary build as well. Or, in the case of
 # fetchChromSizes, it's simply a script that needs to be copied.
 custom_build_scripts = {
+    # TODO: new & skipped utils, should these get custom build scripts?
+    # 'bedToExons',
+    # 'bigHeat',
+    # 'blastXmlToPsl',
+    # 'cpg_lh',
+    # 'hgLoadGap',
+    # 'hgLoadMafSummary',
+    # 'hgWiggle',
+    # 'liftOverMerge',
+    # 'tdbRename',
+    # 'tdbSort',
+    # 'ucscApiClient',
+    # 'wigEncode',
     'fetchChromSizes': 'template-build-fetchChromSizes.sh',
     'pslCDnaFilter': 'template-build-with-stringify.sh',
     'pslMap': 'template-build-with-stringify.sh',
@@ -221,11 +239,11 @@ custom_build_scripts = {
     'webSync': 'template-build-cp-short.sh',
 }
 
-custom_tests = {
-    'expMatrixToBarchartBed': 'template-run_test-exit1.sh',
-    'bedJoinTabOffset': 'template-run_test-exit1.sh',
-    'webSync': 'template-run_test-exit1.sh',
-}
+# custom_tests = {
+#     'expMatrixToBarchartBed': 'template-run_test-exit1.sh',
+#     'bedJoinTabOffset': 'template-run_test-exit1.sh',
+#     'webSync': 'template-run_test-exit1.sh',
+# }
 
 custom_meta = {
     'expMatrixToBarchartBed': 'template-meta-with-python.yaml',
@@ -240,15 +258,20 @@ for block in parse_footer('FOOTER'):
     if len(block) == 2:
         program, summary = block
         program = problematic.get(program, program)
-        summary_program, description = summary
+        if program in SKIP:
+            continue
 
         # Some programs have summary lines that look like this:
         #
         #   bedGraphToBigWig v 4 - Convert a bedGraph file to bigWig format
         #
-        # So just get the first word as the program name.
-        summary_program = summary_program.split()[0]
-        if program != summary_program:
+        # Some programs have summary lines that look like this:
+        #
+        #   Usage: webSync [options] ...
+        #
+        # So just check the first and second word for the program name.
+        summary_program, description = summary
+        if program not in summary_program.split()[0:2]:
             try:
                 program = resolve_header_and_summary_conflicts[program]
             except KeyError:
@@ -256,8 +279,6 @@ for block in parse_footer('FOOTER'):
                     "mismatch in header and summary. header: "
                     "'{0}'; summary: '{1}'"
                     .format(program, summary_program))
-        if program in SKIP:
-            continue
 
     # If len == 1 then no description was parsed, so we expect one to be in
     # manual_descriptions.
@@ -309,15 +330,15 @@ for block in parse_footer('FOOTER'):
             )
         )
 
-    with open(os.path.join(recipe_dir, 'run_test.sh'), 'w') as fout:
-        _template = open(
-            custom_tests.get(program, 'template-run_test.sh')
-        ).read()
-        fout.write(
-            _template.format(
-                program=program
-            )
-        )
+    # with open(os.path.join(recipe_dir, 'run_test.sh'), 'w') as fout:
+    #     _template = open(
+    #         custom_tests.get(program, 'template-run_test.sh')
+    #     ).read()
+    #     fout.write(
+    #         _template.format(
+    #             program=program
+    #         )
+    #     )
 
     with open(os.path.join(recipe_dir, 'include.patch'), 'w') as fout:
         fout.write(open('include.patch').read())
