@@ -207,25 +207,18 @@ SKIP = [
 # programs need the "stringify" binary build as well. Or, in the case of
 # fetchChromSizes, it's simply a script that needs to be copied.
 custom_build_scripts = {
-    # TODO: new & skipped utils, should these get custom build scripts?
     # 'bedToExons',
-    # 'bigHeat',
+    'bigHeat': 'template-build-cp-short.sh',
     # 'blastXmlToPsl',
     # 'cpg_lh',
+    'expMatrixToBarchartBed': 'template-build-cp.sh',
+    'fetchChromSizes': 'template-build-fetchChromSizes.sh',
+    'gensub2': 'template-build-parasol.sh',
     # 'hgLoadGap',
     # 'hgLoadMafSummary',
     # 'hgWiggle',
     # 'liftOverMerge',
-    # 'tdbRename',
-    # 'tdbSort',
-    # 'ucscApiClient',
-    # 'wigEncode',
-    'fetchChromSizes': 'template-build-fetchChromSizes.sh',
-    'pslCDnaFilter': 'template-build-with-stringify.sh',
-    'pslMap': 'template-build-with-stringify.sh',
     'overlapSelect': 'template-build-with-stringify.sh',
-    'expMatrixToBarchartBed': 'template-build-cp.sh',
-    'gensub2': 'template-build-parasol.sh',
     'para': 'template-build-parasol.sh',
     'paraHub': 'template-build-parasol.sh',
     'paraHubStop': 'template-build-parasol.sh',
@@ -235,19 +228,21 @@ custom_build_scripts = {
     'paraNodeStatus': 'template-build-parasol.sh',
     'parasol': 'template-build-parasol.sh',
     'paraTestJob': 'template-build-parasol.sh',
-    'bedJoinTabOffset': 'template-build-cp-short.sh',
+    'pslCDnaFilter': 'template-build-with-stringify.sh',
+    'pslMap': 'template-build-with-stringify.sh',
+    'tdbRename': 'template-build-cp-short.sh',
+    'tdbSort': 'template-build-cp-short.sh',
+    'ucscApiClient': 'template-build-cp-short.sh',
     'webSync': 'template-build-cp-short.sh',
+    # 'wigEncode',
 }
 
-# custom_tests = {
-#     'expMatrixToBarchartBed': 'template-run_test-exit1.sh',
-#     'bedJoinTabOffset': 'template-run_test-exit1.sh',
-#     'webSync': 'template-run_test-exit1.sh',
-# }
-
 custom_meta = {
+    'bigHeat': 'template-meta-with-python.yaml',
     'expMatrixToBarchartBed': 'template-meta-with-python.yaml',
-    'bedJoinTabOffset': 'template-meta-with-python.yaml',
+    'tdbRename': 'template-meta-with-python.yaml',
+    'tdbSort': 'template-meta-with-python.yaml',
+    'ucscApiClient': 'template-meta-with-python.yaml',
     'webSync': 'template-meta-with-python.yaml',
 }
 
@@ -265,7 +260,7 @@ for block in parse_footer('FOOTER'):
         #
         #   bedGraphToBigWig v 4 - Convert a bedGraph file to bigWig format
         #
-        # Some programs have summary lines that look like this:
+        # Other programs have summary lines that look like this:
         #
         #   Usage: webSync [options] ...
         #
@@ -329,16 +324,6 @@ for block in parse_footer('FOOTER'):
                 program_source_dir=program_subdir(program, names),
             )
         )
-
-    # with open(os.path.join(recipe_dir, 'run_test.sh'), 'w') as fout:
-    #     _template = open(
-    #         custom_tests.get(program, 'template-run_test.sh')
-    #     ).read()
-    #     fout.write(
-    #         _template.format(
-    #             program=program
-    #         )
-    #     )
 
     with open(os.path.join(recipe_dir, 'include.patch'), 'w') as fout:
         fout.write(open('include.patch').read())
