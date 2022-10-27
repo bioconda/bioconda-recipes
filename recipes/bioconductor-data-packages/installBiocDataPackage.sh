@@ -4,7 +4,7 @@ set -ex
 
 # https://stackoverflow.com/questions/59895/how-do-i-get-the-directory-where-a-bash-script-is-located-from-within-the-script
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-json="${SCRIPT_DIR}../share/bioconductor-data-packages/dataURLs.json"
+json="${SCRIPT_DIR}/../share/bioconductor-data-packages/dataURLs.json"
 FN=`yq ".\"$1\".fn" "${json}"`
 readarray URLS < <(yq ".\"$1\".urls[]" "${json}")
 MD5=`yq ".\"$1\".md5" "${json}"`
