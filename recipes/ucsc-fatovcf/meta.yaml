@@ -1,7 +1,7 @@
 {% set package = "ucsc-fatovcf" %}
 {% set program = "faToVcf" %}
-{% set version = "426" %}
-{% set sha256 = "b79d057adeac0c1c2997da3975c103d4b4bdf8ecdaf49a9d48ed091fc5ebf74a" %}
+{% set version = "438" %}
+{% set sha256 = "b3593a5d528472aa317d92faca46aa43e0ddaaa371fcbe30064c584285c46faf" %}
 
 package:
   name: "{{ package }}"
@@ -10,8 +10,11 @@ package:
 source:
   url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
   sha256: "{{ sha256 }}"
+  patches:
+    - "include.patch"
 
 build:
+  skip: True  # [osx]
   number: 0
 
 requirements:
@@ -19,18 +22,20 @@ requirements:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - binutils  # export ld
   host:
     - libpng
     - libuuid
     - mysql-connector-c
     - openssl
-    - libopenssl-static
     - zlib
+
   run:
     - libpng
     - libuuid
     - mysql-connector-c
     - openssl
+    - zlib
 
 test:
   commands:
@@ -40,4 +45,4 @@ test:
 about:
   home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
   license: "varies; see http://genome.ucsc.edu/license"
-  summary: "Extract VCF from a multi-sequence FASTA alignment"
+  summary: "Convert a FASTA alignment file to Variant Call Format (VCF) single-nucleotide diffs"
