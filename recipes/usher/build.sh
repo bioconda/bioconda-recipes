@@ -22,8 +22,12 @@ make -j 1
 cp ./usher ${PREFIX}/bin/
 cp ./matUtils ${PREFIX}/bin/
 cp ./matOptimize ${PREFIX}/bin/
+cp ./usher-sampled ${PREFIX}/bin/
 if [ -f "ripples" ]; then
     cp ./ripples ${PREFIX}/bin/
+fi
+if [ -f "ripples-fast" ]; then
+    cp ./ripples-fast ${PREFIX}/bin/
 fi
 if [ -d ./tbb_cmake_build ]; then
     cp ./tbb_cmake_build/tbb_cmake_build_subdir_release/* ${PREFIX}/lib/
