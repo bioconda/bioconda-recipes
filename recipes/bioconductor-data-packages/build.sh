@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ex
 mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/share/bioconductor-data-packages
 cp ${RECIPE_DIR}/installBiocDataPackage.sh  ${PREFIX}/bin
