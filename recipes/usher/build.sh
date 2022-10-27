@@ -22,7 +22,9 @@ make -j 1
 cp ./usher ${PREFIX}/bin/
 cp ./matUtils ${PREFIX}/bin/
 cp ./matOptimize ${PREFIX}/bin/
-cp ./usher-sampled ${PREFIX}/bin/
+if [ -f "usher-sampled" ]; then
+    cp ./usher-sampled ${PREFIX}/bin/
+fi
 if [ -f "ripples" ]; then
     cp ./ripples ${PREFIX}/bin/
 fi
