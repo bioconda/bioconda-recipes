@@ -17,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  URL=`echo $URL | tr -d "'"`  # Trim any flanking quotes
+  URL=`echo $URL | tr -d \"`  # Trim any flanking quotes
   curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
