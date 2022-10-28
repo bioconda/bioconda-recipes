@@ -2,9 +2,8 @@
 set -ex
 # takes a single parameter, the package name
 
-# https://stackoverflow.com/questions/59895/how-do-i-get-the-directory-where-a-bash-script-is-located-from-within-the-script
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-json="${SCRIPT_DIR}/../share/bioconductor-data-packages/dataURLs.json"
+SCRIPT_DIR="$( dirname -- "${BASH_SOURCE[0]}" )/../share/bioconductor-data-packages"
+json="${SCRIPT_DIR}/dataURLs.json"
 FN=`yq ".\"$1\".fn" "${json}"`
 readarray URLS < <(yq ".\"$1\".urls[]" "${json}")
 MD5=`yq ".\"$1\".md5" "${json}"`
@@ -12,7 +11,7 @@ MD5=`yq ".\"$1\".md5" "${json}"`
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
 # manner.
-STAGING=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+STAGING=$PREFIX/share/"$1"
 mkdir -p $STAGING
 TARBALL=$STAGING/$FN
 
