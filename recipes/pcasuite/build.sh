@@ -3,7 +3,7 @@ mkdir -p $PREFIX/bin
 
 make \
     FC="${FC}" \
-    CC="${CXX}" \
+    CC="${CC}" \
     INCLUDE="${PREFIX}"/include \
     LIB_DIR="${PREFIX}"/lib/
 
