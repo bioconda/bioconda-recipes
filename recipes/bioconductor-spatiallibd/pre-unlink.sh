@@ -1,1 +1,1 @@
-R CMD REMOVE --library=$PREFIX/lib/R/library/ spatialLIBD
+R CMD REMOVE --library=$PREFIX/lib/R/library/ gageData
