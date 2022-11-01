@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ex
 FN="MafDb.gnomAD.r2.1.hs37d5_3.10.0.tar.gz"
 URLS=(
   "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/MafDb.gnomAD.r2.1.hs37d5_3.10.0.tar.gz"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
