@@ -1,9 +1,5 @@
 mkdir -p $PREFIX/bin
 
-# Testing
-# ls -l "${PREFIX}"/include
-# ls -l "${PREFIX}"/lib/
-
 make \
     FC="${FC}" \
     CC="${CC}" \
@@ -19,12 +15,15 @@ cp pczdump $PREFIX/bin/
 chmod u+x genpcz
 cp genpcz $PREFIX/bin/
 
-mkdir -p $PREFIX/etc/conda/activate.d                                                                         # [osx]
-echo "export OLD_DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH" >> $PREFIX/etc/conda/activate.d/env_vars.sh            # [osx]
-echo "export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$PREFIX/lib" >> $PREFIX/etc/conda/activate.d/env_vars.sh    # [osx]
-mkdir -p $PREFIX/etc/conda/deactivate.d                                                                       # [osx]
-echo "export DYLD_LIBRARY_PATH=$OLD_DYLD_LIBRARY_PATH" >> $PREFIX/etc/conda/deactivate.d/env_vars.sh          # [osx]
+if [ "$(uname)" = 'Darwin' ] ; then
+  mkdir -p $PREFIX/etc/conda/activate.d
+  echo "export OLD_DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH" >> $PREFIX/etc/conda/activate.d/env_vars.sh
+  echo "export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$PREFIX/lib" >> $PREFIX/etc/conda/activate.d/env_vars.sh
+  mkdir -p $PREFIX/etc/conda/deactivate.d
+  echo "export DYLD_LIBRARY_PATH=$OLD_DYLD_LIBRARY_PATH" >> $PREFIX/etc/conda/deactivate.d/env_vars.sh
 
-echo "setenv OLD_DYLD_LIBRARY_PATH $DYLD_LIBRARY_PATH" >> $PREFIX/etc/conda/activate.d/env_vars.csh           # [osx]
-echo "setenv DYLD_LIBRARY_PATH $DYLD_LIBRARY_PATH:$PREFIX/lib" >> $PREFIX/etc/conda/activate.d/env_vars.csh   # [osx]
-echo "setenv DYLD_LIBRARY_PATH $OLD_DYLD_LIBRARY_PATH" >> $PREFIX/etc/conda/deactivate.d/env_vars.csh         # [osx]
+  echo "setenv OLD_DYLD_LIBRARY_PATH $DYLD_LIBRARY_PATH" >> $PREFIX/etc/conda/activate.d/env_vars.csh
+  echo "setenv DYLD_LIBRARY_PATH $DYLD_LIBRARY_PATH:$PREFIX/lib" >> $PREFIX/etc/conda/activate.d/env_vars.csh
+  echo "setenv DYLD_LIBRARY_PATH $OLD_DYLD_LIBRARY_PATH" >> $PREFIX/etc/conda/deactivate.d/env_vars.csh
+fi
+
