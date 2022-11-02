@@ -26,3 +26,4 @@ if [ "$(uname)" = 'Darwin' ] ; then
   echo "setenv DYLD_LIBRARY_PATH $DYLD_LIBRARY_PATH:$PREFIX/lib" >> $PREFIX/etc/conda/activate.d/env_vars.csh
   echo "setenv DYLD_LIBRARY_PATH $OLD_DYLD_LIBRARY_PATH" >> $PREFIX/etc/conda/deactivate.d/env_vars.csh
 fi
+
