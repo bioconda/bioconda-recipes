@@ -1,7 +1,8 @@
 mkdir -p $PREFIX/bin
 
-ls -l "${PREFIX}"/include
-ls -l "${PREFIX}"/lib/
+# Testing
+# ls -l "${PREFIX}"/include
+# ls -l "${PREFIX}"/lib/
 
 make \
     FC="${FC}" \
