@@ -1,0 +1,59 @@
+{% set name = "strainFlye" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/fedarko/strainFlye/archive/refs/tags/{{ version }}.tar.gz"
+  sha256: "7e67ff0c24cd9a3cc850e268de5931e78bc808e5c6da7f61cd1ce29c9bc2ae79"
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - python >=3.6,<3.8
+    - cython >= 0.29.12
+    - setuptools
+    - pip
+    - numpy
+    - scipy >= 1.0
+    - pysam < 0.16
+    - pysamstats
+  run:
+    - python >=3.6,<3.8
+    - numpy
+    - scipy >= 1.0
+    - pysam < 0.16
+    - pysamstats
+    # Python dependencies that don't need to be already installed
+    - scikit-bio
+    - networkx
+    - pandas >= 1.0
+    - click >= 8.0
+    # Non-python dependencies (used through Python's subprocess module)
+    - samtools >= 1.7
+    - bcftools
+    - minimap2 >= 2.10
+    - prodigal
+
+test:
+  commands:
+    - strainFlye
+  imports:
+    - strainflye
+
+about:
+  home: "https://github.com/fedarko/strainFlye"
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Pipeline for analyzing rare mutations in metagenomes"
+
+extra:
+  recipe-maintainers:
+    - fedarko
