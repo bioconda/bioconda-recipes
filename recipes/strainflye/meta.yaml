@@ -31,16 +31,21 @@ requirements:
     - pip
     - numpy
     - scipy >=1.0
-    # We need to install samtools alongside pysam, or else we get weird stuff
-    # when trying to import pysam (e.g. this one:
-    # https://github.com/MikkelSchubert/paleomix/issues/38)
-    # We also install bcftools while we're at it.
-    - samtools >=1.7
-    - bcftools
     # attempting to just "pip install" pysam / pysamstats has caused problems
     # before, so we include them up here (rather than just in "run")
     - pysam <0.16
     - pysamstats
+    # We need to install samtools / htslib alongside pysam -- and in particular
+    # we need a version of these tools that pysam is ok with. It seems like a
+    # samtools version < 1.10 is ok with pysam < 0.16: see
+    # https://github.com/bioconda/bioconda-recipes/blob/master/recipes/pysam/0.15.2/meta.yaml
+    # (for context, using htslib 1.16 gives us an error when trying to import
+    # pysam saying "ImportError: libhts.so.2: cannot open shared object file:
+    # No such file or directory" (this issue is also described in
+    # https://github.com/MikkelSchubert/paleomix/issues/38)
+    - samtools >=1.7,<1.10
+    # also let's install bcftools up here while we're at it
+    - bcftools
   run:
     - python >=3.6,<3.8
     - numpy
