@@ -28,7 +28,7 @@ export PATH=$PREFIX/bin:$PATH
 cargo build -p libwfa --release
 cargo build -p pgr-db --release
 cargo build -p pgr-bin --release
-cargo install maturin
+cargo install maturin --locked
 export PATH=$CARGO_HOME/bin:$PATH
 pushd pgr-tk/
 #maturin build --release
