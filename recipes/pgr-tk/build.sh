@@ -35,7 +35,7 @@ pushd pgr-tk/
 maturin build --release --skip-auditwheel
 popd
 
-$PYTHON -m pip install $SRC_DIR/target/wheels/pgrtk-0.3.4-cp38-cp38-linux_x86_64.whl  --no-deps --ignore-installed --no-cache-dir -vvv
+$PYTHON -m pip install $SRC_DIR/target/wheels/pgrtk-0.3.6-cp38-cp38-linux_x86_64.whl  --no-deps --ignore-installed --no-cache-dir -vvv
 cp $SRC_DIR/target/release/pgr-mdb $PREFIX/bin
 rm $PREFIX/bin/gcc
 rm $PREFIX/bin/g++
