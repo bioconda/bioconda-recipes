@@ -1,5 +1,20 @@
 {% set name = "strainFlye" %}
 {% set version = "0.2.0" %}
+# We need to install samtools, bcftools, and htslib alongside pysam --
+# and in particular we versions of these tools that pysam is ok with.
+# Note that samtools, bcftools, and htslib all seem to use the same
+# versioning system, which makes our life easier.
+#
+# Using versions of these three dependencies < 1.10 seems to be ok with
+# pysam < 0.16: see
+# https://github.com/bioconda/bioconda-recipes/blob/master/recipes/pysam/0.15.2/meta.yaml
+# I believe this is because the 1.10 release included changes to the
+# "Application Binary Interface" these tools provide -- later versions of
+# these tools give us an error when trying to run "import pysam" in
+# Python, e.g. we get the error message "ImportError: libhts.so.2: cannot
+# open shared object file: No such file or directory" (for discussion, see
+# https://github.com/MikkelSchubert/paleomix/issues/38).
+{% set hts_etc_version = ">=1.7,<1.10" %}
 
 package:
   name: "{{ name|lower }}"
@@ -35,17 +50,9 @@ requirements:
     # before, so we include them up here (rather than just in "run")
     - pysam <0.16
     - pysamstats
-    # We need to install samtools / htslib alongside pysam -- and in particular
-    # we need a version of these tools that pysam is ok with. It seems like a
-    # samtools version < 1.10 is ok with pysam < 0.16: see
-    # https://github.com/bioconda/bioconda-recipes/blob/master/recipes/pysam/0.15.2/meta.yaml
-    # (for context, using htslib 1.16 gives us an error when trying to import
-    # pysam saying "ImportError: libhts.so.2: cannot open shared object file:
-    # No such file or directory" (this issue is also described in
-    # https://github.com/MikkelSchubert/paleomix/issues/38)
-    - samtools >=1.7,<1.10
-    # also let's install bcftools up here while we're at it
-    - bcftools
+    - htslib {{ hts_etc_version }}
+    - samtools {{ hts_etc_version }}
+    - bcftools {{ hts_etc_version }}
   run:
     - python >=3.6,<3.8
     - numpy
@@ -54,8 +61,9 @@ requirements:
     - pysam <0.16
     - pysamstats
     # Non-python dependencies (used through Python's subprocess module)
-    - samtools >=1.7,<1.10
-    - bcftools
+    - htslib {{ hts_etc_version }}
+    - samtools {{ hts_etc_version }}
+    - bcftools {{ hts_etc_version }}
     - minimap2 >=2.10
     - prodigal
     # Misc. python dependencies
