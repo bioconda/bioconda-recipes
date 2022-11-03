@@ -1,11 +1,13 @@
-{% set version="5.1.0" %}
+{% set version="5.6.0" %}
 package:
   name: toil
   version: {{ version }}
 
 source:
   url: https://pypi.io/packages/source/t/toil/toil-{{ version }}.tar.gz
-  sha256: 83e9840d2d7bdab788f856ba838ac1c48b0b994cacd966749c396dcda7cd9e68
+  sha256: 9bab73ad10822d42cefb007c86d525b7428448b9bfbdd21e4f306b8a19c0a3f2
+  patches:
+    - remove_wdlparse.patch
 
 build:
   number: 0
@@ -15,7 +17,7 @@ build:
     - _toil_worker = toil.worker:main
     - cwltoil = toil.cwl.cwltoil:main [cwl]
     - toil-cwl-runner = toil.cwl.cwltoil:main [cwl]
-    - toil-wdl-runner = toil.wdl.toilwdl:main
+    #- toil-wdl-runner = toil.wdl.toilwdl:main
     - _toil_mesos_executor = toil.batchSystems.mesos.executor:main [mesos]
 
 requirements:
@@ -24,28 +26,27 @@ requirements:
     - pip
   run:
     - python >=3.6
-    - dill >=0.2.7.1
+    - dill >=0.3.2,<0.4
     - six >=1.10.0
     - future 
     - requests 2
     - docker-py >=2.5.1
     - python-dateutil
     - psutil >=3.0.1,<6
-    - addict <=2.2.0
+    - addict >=2.2.1,<2.3
     - sphinx >=1.7.5
     - pathlib2 >=2.3.2
     #mesos pymesos isn't available
     #aws reqs
-    - boto >=2.48.0
+    - boto >=2.48.0, <3
     - boto3 >=1.7.50,<2.0
     - pycryptodome >=3.5.1
     #azure reqs secretstorage<3 isn't available
     #encryption reqs
-    - pynacl ==1.1.2
+    - pynacl >=1.4.0,<2
     #google reqs gcs-oauth2-boto-plugin 1.14 hasn't been added to conda-forge yet
-    #cwl_reqs
-    - cwltool ==3.0.20200724003302
-    - schema-salad >7,<=8
+    #cwl_reqs (let cwltool set the schema-salad dependency & version)
+    - cwltool ==3.1.20211107152837
     - galaxy-lib >=18.9.2
     #htcondor_reqs htcondor isn't available
 
@@ -66,7 +67,7 @@ test:
   commands:
     - toil --help
     - toil-cwl-runner --help
-    - toil-wdl-runner --help
+    #- toil-wdl-runner --help
 
 about:
   home: https://github.com/BD2KGenomics/toil

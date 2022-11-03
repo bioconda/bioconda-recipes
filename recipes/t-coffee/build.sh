@@ -10,16 +10,15 @@
 set -eu -o pipefail
 
 cd t_coffee_source
-make CC=$CXX CFLAGS="$CFLAGS"
+make CC="$CXX" CFLAGS="$CFLAGS"
 
-# install tcoffee in the target bin directory 
-mkdir -p $PREFIX/bin
-cp t_coffee $PREFIX/bin
-
-# Copy the [de]activate scripts to $PREFIX/etc/conda/[de]activate.d.
-# This will allow them to be run on environment activation.
-for CHANGE in "activate" "deactivate"
-do
-    mkdir -p "${PREFIX}/etc/conda/${CHANGE}.d"
-    cp "${RECIPE_DIR}/${CHANGE}.sh" "${PREFIX}/etc/conda/${CHANGE}.d/${PKG_NAME}_${CHANGE}.sh"
-done
+SHARE_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
+# install t_coffee binary in SHARE_DIR
+mkdir -p "${SHARE_DIR}/bin"
+cp t_coffee "${SHARE_DIR}/bin/"
+# install mcoffee data files
+cd ..
+mv mcoffee/ "$SHARE_DIR/"
+# install t_coffer wrapper
+mkdir -p "${PREFIX}/bin"
+sed -e "s|CHANGEME|${SHARE_DIR}|" "$RECIPE_DIR/t_coffee.sh" > "${PREFIX}/bin/t_coffee"

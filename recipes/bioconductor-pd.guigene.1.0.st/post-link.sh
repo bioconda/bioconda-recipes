@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.guigene.1.0.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/pd.guigene.1.0.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.guigene.1.0.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.guigene.1.0.st_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.guigene.1.0.st/bioconductor-pd.guigene.1.0.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.guigene.1.0.st/bioconductor-pd.guigene.1.0.st_3.12.0_src_all.tar.gz"
 )
 MD5="29fe31499931836af72ddd0c7d06acfa"
@@ -17,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

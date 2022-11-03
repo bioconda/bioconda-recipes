@@ -1,0 +1,43 @@
+{% set version = "1.0.0" %}
+
+package:
+  name: t1k
+  version: '{{ version }}'
+
+build:
+  number: 0
+
+source:
+  url: https://github.com/mourisl/T1K/archive/v{{ version }}.tar.gz
+  sha256: e6079e337723d8bafd18464f9f2cece3403f71d3a37a13c5286399f9aaaca9a2
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - samtools 0.1.19.*
+    - zlib
+  run:
+    - perl
+    - python
+
+test:
+  commands:
+    - genotyper 2>&1 | cat > /dev/null
+    - fastq-extractor 2>&1 | cat > /dev/null
+    - bam-extractor 2>&1 | cat > /dev/null
+    - analyzer 2>&1 | cat > /dev/null
+    - which t1k-build.pl
+    - which ParseDatFile.pl
+    - which AddGeneCoord.pl
+    - which t1k-smartseq.pl
+    - which t1k-merge.py
+    - which run-t1k
+
+about:
+  home: https://github.com/mourisl/T1K
+  summary: T1K is a versatile methods to genotype highly polymorphic genes (e.g. KIR, HLA) with RNA-seq, WGS or WES data. 
+  license: MIT
+  license_file: LICENSE.txt

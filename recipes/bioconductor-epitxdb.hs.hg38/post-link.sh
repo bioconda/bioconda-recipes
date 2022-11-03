@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="EpiTxDb.Hs.hg38_0.99.7.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/EpiTxDb.Hs.hg38_0.99.7.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/EpiTxDb.Hs.hg38_0.99.7.tar.gz"
   "https://bioarchive.galaxyproject.org/EpiTxDb.Hs.hg38_0.99.7.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-epitxdb.hs.hg38/bioconductor-epitxdb.hs.hg38_0.99.7_src_all.tar.gz"
 )
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

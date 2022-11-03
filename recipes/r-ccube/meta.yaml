@@ -1,0 +1,54 @@
+{% set name = 'ccube' %}
+{% set version = '1.0_beta.1' %}
+{% set sha256 = '3b2f57e928b93bb0e9659b03635be796a2505e0d5885b5cfd5d1806fc3ffc739' %}
+
+package:
+  name: r-{{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/keyuan/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  script:  R CMD INSTALL --build . 
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - boost-cpp
+    - r-base
+    - r-dplyr
+    - r-foreach
+    - r-matrix
+    - r-pracma
+  run:
+    - boost-cpp
+    - r-base
+    - r-dplyr
+    - r-foreach
+    - r-matrix
+    - r-pracma
+
+test:
+  commands:
+    - $R -e "library('ccube')"
+
+about:
+  home: https://github.com/keyuan/ccube
+  summary: R package for clustering and estimating cancer cell fractions (CCF)
+    of somatic variants (SNVs/SVs) from bulk whole genome/exome data.
+  license: GPL-3
+  license_family: GPL3
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  recipe-maintainers:
+    - tdido

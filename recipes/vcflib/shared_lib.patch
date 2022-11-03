@@ -1,0 +1,41 @@
+Description: Build shared lib with bioconda's htslib and tabixpp 
+ The upstream repo includes htslib as a submodule that gets
+ built with the tabixpp code. This patch changes this to use
+ bioconda's shared libhts from the archive.
+ Also builds a shared library instead of a static one.
+Author: Andreas Tille <tille@debian.org> modified for bioconda by Jon Puritz jpuritz@gmail.com
+--- vcflib/CMakeLists.txt
++++ vcflib/CMakeLists.txt
+@@ -74,7 +74,7 @@
+   fastahack/*.h*
+   filevercmp/*.h*)
+
+-add_library(vcflib STATIC
++add_library(vcflib SHARED
+     src/Variant.h
+     src/split.h
+     src/pdflib.hpp
+@@ -100,6 +100,12 @@
+     filevercmp/filevercmp.c
+     )
+
++target_link_libraries(vcflib
++    tabixpp
++    )
++
++
++
+ set(BINS
+     vcfecho
+     dumpContigsFromHeader
+@@ -191,6 +197,10 @@
+ file (STRINGS "VERSION" BUILD_NUMBER)
+ add_definitions(-DVCFLIB_VERSION="${BUILD_NUMBER}")
+ add_definitions(-DVERSION="${BUILD_NUMBER}")
++string(REGEX MATCH "^[0-9]+" MAJOR_BUILD_NUMBER ${BUILD_NUMBER})
++set_target_properties(vcflib PROPERTIES
++	SOVERSION ${MAJOR_BUILD_NUMBER}
++    )
+
+ # ---- Build htslib
+ #

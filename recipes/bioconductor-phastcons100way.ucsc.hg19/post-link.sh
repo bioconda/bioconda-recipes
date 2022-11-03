@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="phastCons100way.UCSC.hg19_3.7.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.12/data/annotation/src/contrib/phastCons100way.UCSC.hg19_3.7.2.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/phastCons100way.UCSC.hg19_3.7.2.tar.gz"
   "https://bioarchive.galaxyproject.org/phastCons100way.UCSC.hg19_3.7.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-phastcons100way.ucsc.hg19/bioconductor-phastcons100way.ucsc.hg19_3.7.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-phastcons100way.ucsc.hg19/bioconductor-phastcons100way.ucsc.hg19_3.7.2_src_all.tar.gz"
 )
 MD5="65aa706a567f7e328dbba0095f995cf1"
@@ -17,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
