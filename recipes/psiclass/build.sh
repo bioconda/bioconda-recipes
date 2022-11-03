@@ -15,5 +15,5 @@ install \
     combine-subexons \
     vote-transcripts \
     add-genename \
-		FilterSplice.pl \
+    FilterSplice.pl \
     "${PREFIX}/bin/"
