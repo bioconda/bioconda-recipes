@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "ruvnormalizedata-1.17.0"
+installBiocDataPackage.sh "ruvnormalizedata-1.18.0"

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "tcgacrcmirna-1.17.0"
+installBiocDataPackage.sh "tcgacrcmirna-1.18.0"
