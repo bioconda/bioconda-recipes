@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "prodata-1.35.0"
+installBiocDataPackage.sh "prodata-1.36.0"

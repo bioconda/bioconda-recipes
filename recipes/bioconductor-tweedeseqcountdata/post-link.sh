@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "tweedeseqcountdata-1.35.0"
+installBiocDataPackage.sh "tweedeseqcountdata-1.36.0"
