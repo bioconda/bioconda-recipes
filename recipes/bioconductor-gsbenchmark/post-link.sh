@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "gsbenchmark-1.17.0"
+installBiocDataPackage.sh "gsbenchmark-1.18.0"

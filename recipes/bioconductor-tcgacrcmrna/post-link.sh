@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "tcgacrcmrna-1.17.0"
+installBiocDataPackage.sh "tcgacrcmrna-1.18.0"

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "cll-1.37.0"
+installBiocDataPackage.sh "cll-1.38.0"

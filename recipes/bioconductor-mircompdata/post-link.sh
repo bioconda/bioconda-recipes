@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "mircompdata-1.27.0"
+installBiocDataPackage.sh "mircompdata-1.28.0"
