@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "plasfia-1.25.0"
+installBiocDataPackage.sh "plasfia-1.26.0"
