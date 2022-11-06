@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "scanmirdata-1.3.0"
+installBiocDataPackage.sh "scanmirdata-1.4.0"

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "curatedtcgadata-1.19.2"
+installBiocDataPackage.sh "curatedtcgadata-1.20.0"

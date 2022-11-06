@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "qplexdata-1.15.0"
+installBiocDataPackage.sh "qplexdata-1.16.0"

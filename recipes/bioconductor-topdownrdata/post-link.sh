@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "topdownrdata-1.19.0"
+installBiocDataPackage.sh "topdownrdata-1.20.0"
