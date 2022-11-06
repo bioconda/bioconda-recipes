@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "airway-1.17.0"
+installBiocDataPackage.sh "airway-1.18.0"

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "fission-1.17.0"
+installBiocDataPackage.sh "fission-1.18.0"

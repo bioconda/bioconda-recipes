@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "spqndata-1.9.0"
+installBiocDataPackage.sh "spqndata-1.10.0"

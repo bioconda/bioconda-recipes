@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "pepdat-1.17.0"
+installBiocDataPackage.sh "pepdat-1.18.0"
