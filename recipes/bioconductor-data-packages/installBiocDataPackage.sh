@@ -7,7 +7,7 @@ json="${SCRIPT_DIR}/dataURLs.json"
 FN=`yq ".\"$1\".fn" "${json}"`
 ##readarray is bash4, while OSX only has bash 3
 #readarray URLS < <(yq ".\"$1\".urls[]" "${json}")
-while IFS=`read -r value`; do
+while IFS= read -r value; do
   URLS+=($value);
 done < <(yq ".\"$1\".urls[]" "${json}")
 MD5=`yq ".\"$1\".md5" "${json}"`
