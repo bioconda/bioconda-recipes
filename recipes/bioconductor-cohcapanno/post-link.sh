@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "cohcapanno-1.33.0"
+installBiocDataPackage.sh "cohcapanno-1.34.0"
