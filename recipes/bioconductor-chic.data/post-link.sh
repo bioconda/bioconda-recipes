@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "chic.data-1.17.0"
+installBiocDataPackage.sh "chic.data-1.18.0"
