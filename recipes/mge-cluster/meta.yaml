@@ -1,0 +1,66 @@
+{% set name = "mge-cluster" %}
+{% set version = "0.0.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://test-files.pythonhosted.org/packages/e9/ef/8c4aeeae036724e2ff93ecbae3c05ac5826d3ec2122f3931d787d6aafc28/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: b5e28878d9447035d1eb226a5c41fc45a299dd1709865ed87eeb4344935605d8
+
+build:
+  number: 0
+  skip: True  # [py27]
+  entry_points:
+    - mge_cluster = mge_cluster.__main__:main
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake >=3.9
+    - make
+  host:
+    - python
+    - pip
+    - pybind11
+    - zlib
+    - bzip2
+    - bifrost >=1.0.6
+    - libgomp      # [linux64]
+    - llvm-openmp  # [osx]
+    - cython
+  run:
+    - python
+    - bifrost >=1.0.6
+    - numpy >=1.16.6
+    - scikit-learn >=0.20
+    - pandas
+    - openTSNE
+    - hdbscan
+    - unitig-caller
+    - cython >=0.27
+    - joblib >=1.0
+
+
+test:
+  imports:
+    - openTSNE
+    - hdbscan
+    - pandas
+    - unitig_caller
+    - unitig_query
+  commands:
+    - mge_cluster -h
+    - pip check
+  requires:
+    - pip
+
+
+about:
+   home: https://gitlab.com/sirarredondo/mge_cluster
+   license: MIT
+   license_family: MIT
+   license_file: LICENSE
+   summary: A classification framework for mobile genetic elements (MGEs)
