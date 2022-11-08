@@ -1,4 +1,4 @@
-{% set version = "4.1.1" %}
+{% set version = "5.0.1" %}
 
 package:
   name: nextstrain-cli
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/n/nextstrain-cli/nextstrain-cli-{{ version }}.tar.gz
-  sha256: 38d918a534ec952a18d13e1deda68b755511a15757b6cc636b16df973365ebb5
+  sha256: 262c99fa394fb5a112037ebb558ef788849f049efce312e7f2d7aaa54280491a
 
 build:
   number: 0
@@ -24,11 +24,15 @@ requirements:
     - python >=3.6
     - docutils
     - fasteners
+    - importlib_metadata # [py<38]
+    - importlib_resources >=5.3.0 # [py<311]
+    - packaging
     - pyjwt >=2.0.0
     - cryptography # Required for pyjwt digital signature support. Replicates "pip install pyjwt[crypto]".
     - requests
     - typing_extensions >=3.6.4
     - wcmatch >=6.0
+    - wrapt
     # nextstrain-cli requires boto3 but does not directly declare this
     # dependency, to avoid issues with pip dependency resolution with s3fs and
     # botocore. We can declare the boto3 dependency and unpinned s3fs here,
@@ -37,10 +41,12 @@ requirements:
     - fsspec
     - boto3
     - s3fs
-    - setuptools >=8.0.3
 
 test:
   requires:
+    - snakemake-minimal
+    - augur
+    - git
     - pytest
   imports:
     - nextstrain.cli
