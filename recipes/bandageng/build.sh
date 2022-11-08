@@ -1,7 +1,11 @@
 #!/bin/bash
 set -ex
 
-cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_PREFIX_PATH=${PREFIX} -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib .
+mkdir build && cd build
+cmake \
+    -DCMAKE_PREFIX_PATH=${PREFIX} \
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS} -std=c++17" \
+    ..
 make
 
 # Install
