@@ -1,9 +1,10 @@
 #!/bin/bash
 set -x
 
-SHARE_DIR=${PREFIX}/share/${PKG_NAME}-$PKG_VERSION-$PKG_BUILDNUM
-mkdir -p ${PREFIX}/bin ${SHARE_DIR}
-cp -r ./* ${SHARE_DIR}
-chmod a+x ${SHARE_DIR}/nextDenovo
-ln -s ${SHARE_DIR}/nextDenovo ${PREFIX}/bin/nextDenovo
-export PYTHONPATH=${PYTHONPATH}:${SHARE_DIR}/lib
+PYVER=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version_info[1]))'`
+OUTDIR=${PREFIX}/lib/python${PYVER}/site-packages/nextdenovo
+mkdir -p ${PREFIX}/bin ${OUTDIR}
+cp -r ./* ${OUTDIR}
+chmod a+x ${OUTDIR}/nextDenovo
+ln -s ${OUTDIR}/nextDenovo ${PREFIX}/bin/nextDenovo
+
