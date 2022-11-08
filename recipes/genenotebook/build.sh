@@ -25,12 +25,8 @@ ls -lah .
 #popd
 
 # Temp fix for cert error on Azure os x builder
-sed -i.bak 's|curl https|curl --insecure https|' package.json
-rm package.json.bak
-
-# Temp fix for typo introduced in 0.3.1
-sed -i.bak 's|chmod +775|chmod 775|' bundle.sh
-rm bundle.sh.bak
+#sed -i.bak 's|curl https|curl --insecure https|' package.json
+#rm package.json.bak
 
 npm install --unsafe-perm
 
