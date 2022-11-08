@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "microbiomedatasets-1.5.0"
+installBiocDataPackage.sh "microbiomedatasets-1.6.0"

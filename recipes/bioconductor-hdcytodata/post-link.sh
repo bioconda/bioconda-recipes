@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "hdcytodata-1.17.0"
+installBiocDataPackage.sh "hdcytodata-1.18.0"

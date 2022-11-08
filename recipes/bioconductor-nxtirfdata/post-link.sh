@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "nxtirfdata-1.3.2"
+installBiocDataPackage.sh "nxtirfdata-1.4.0"

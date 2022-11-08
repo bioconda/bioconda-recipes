@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "epimix.data-0.99.5"
+installBiocDataPackage.sh "epimix.data-1.0.0"

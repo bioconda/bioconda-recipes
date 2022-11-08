@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "vectrapolarisdata-1.1.0"
+installBiocDataPackage.sh "vectrapolarisdata-1.2.0"

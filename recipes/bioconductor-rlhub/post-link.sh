@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "rlhub-1.3.0"
+installBiocDataPackage.sh "rlhub-1.4.0"

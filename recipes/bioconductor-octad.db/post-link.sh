@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "octad.db-0.99.43"
+installBiocDataPackage.sh "octad.db-1.0.0"
