@@ -35,6 +35,9 @@ export PATH=$PATH:"$HOME/.meteor"
 #ls -lah .
 #meteor node -v
 
+# Architecture
+uname -m
+
 METEOR_ALLOW_SUPERUSER=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 npm run bundle
 
 cp -R genenotebook_v${PKG_VERSION}/* $outdir
