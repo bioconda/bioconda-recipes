@@ -1,0 +1,22 @@
+--- setup.py	2022-10-09 17:14:35.686775953 +0200
++++ setup.py.new	2022-10-09 17:14:19.794668689 +0200
+@@ -24,7 +24,7 @@
+ from distutils.spawn import find_executable
+ from platform import system, processor
+ from setuptools import find_packages, setup
+-from shutil import rmtree
++from shutil import rmtree, copy
+ from subprocess import CalledProcessError, check_call, check_output
+ 
+ DEFAULT_SHELL_ENCODING = "ascii"
+@@ -279,7 +279,9 @@
+ 
+         print("##################################################")
+ 
+-        build_scripts.run(self)  # Call actual script
++        for script in self.scripts:
++            copy(script, os.path.join(os.getenv("PREFIX"), "bin", os.path.basename(script)))
++        #build_scripts.run(self)  # Call actual script
+ 
+         # If success, remove script build dir
+         if os.path.isdir(output_dir):
