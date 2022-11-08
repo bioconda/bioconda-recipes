@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "celldex-1.7.0"
+installBiocDataPackage.sh "celldex-1.8.0"

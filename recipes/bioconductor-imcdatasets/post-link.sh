@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "imcdatasets-1.5.4"
+installBiocDataPackage.sh "imcdatasets-1.6.0"

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "varianttoolsdata-1.21.0"
+installBiocDataPackage.sh "varianttoolsdata-1.22.0"

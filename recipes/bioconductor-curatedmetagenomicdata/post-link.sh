@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "curatedmetagenomicdata-3.5.3"
+installBiocDataPackage.sh "curatedmetagenomicdata-3.6.0"

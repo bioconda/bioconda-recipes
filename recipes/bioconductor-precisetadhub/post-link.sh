@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "precisetadhub-1.5.0"
+installBiocDataPackage.sh "precisetadhub-1.6.0"
