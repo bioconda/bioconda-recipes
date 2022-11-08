@@ -6,6 +6,5 @@ cd build
 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${PREFIX}  -Dspoa_optimize_for_portability=ON ..
 make
 make install
-# ln -fs ${PWD}/../scripts/vechat ${PREFIX}/bin/vechat
 cp scripts/vechat ${PREFIX}/bin
 chmod +x ${PREFIX}/bin/vechat
