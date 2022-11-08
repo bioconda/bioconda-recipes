@@ -1,11 +1,10 @@
 #!/bin/bash
-FN="spatialLIBD_1.4.0.tar.gz"
+set -ex
+FN="spatialLIBD_1.6.5.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/experiment/src/contrib/spatialLIBD_1.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/spatialLIBD_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-spatiallibd/bioconductor-spatiallibd_1.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/experiment/src/contrib/spatialLIBD_1.6.5.tar.gz"
 )
-MD5="b59b6eeee824f93c3afb2bf3bbf6f1f6"
+MD5="724a30ac15af157aa4e672049b5a7668"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +15,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

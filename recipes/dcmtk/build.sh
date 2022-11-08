@@ -18,7 +18,7 @@ cmake \
     -D DCMTK_ENABLE_PRIVATE_TAGS:BOOL=TRUE \
     ..
 
-cmake --build . --target install
+cmake --build . --target install -j 4
 
 mkdir -p "${PREFIX}/include/dcmtk/dcmjpeg/libijg8"
 cp ../dcmjpeg/libijg8/*.h "${PREFIX}/include/dcmtk/dcmjpeg/libijg8/"

@@ -7,16 +7,22 @@ if [[ $OSTYPE == "darwin"* ]]; then
   export HOME=`pwd`
 fi
 
-mkdir -p $PREFIX/bin
+mkdir -p "$PREFIX"/bin
 
-echo " * Attempt automatic build"
-nimble build -y --verbose || true
+echo "## Automatic build"
+nimble build -y --verbose 
+./bin/seqfu version || true
 
-pwd
-ls -ltr $PREFIX/bin/
+if [[ -d scripts ]]; then
+  echo "## Copying utils"
+  chmod +x scripts/*
+  cp scripts/* bin/
+fi
 
-echo " * Legacy procedure"
-nimble install -y --verbose argparse docopt terminaltables readfq iterutils
+echo "## Current dir: $(pwd)"
+mv bin/* "$PREFIX"/bin/
 
-mkdir -p "${PREFIX}/bin"
-mv bin/* "${PREFIX}/bin/"
+
+echo "## List files in \$PREFIX/bin:"
+ls -ltr "$PREFIX"/bin/
+ 

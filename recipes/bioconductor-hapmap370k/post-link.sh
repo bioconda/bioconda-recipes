@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="hapmap370k_1.0.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/hapmap370k_1.0.1.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/hapmap370k_1.0.1.tar.gz"
   "https://bioarchive.galaxyproject.org/hapmap370k_1.0.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hapmap370k/bioconductor-hapmap370k_1.0.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hapmap370k/bioconductor-hapmap370k_1.0.1_src_all.tar.gz"
 )
 MD5="569556341a45da799372aaf1012be72e"
@@ -17,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

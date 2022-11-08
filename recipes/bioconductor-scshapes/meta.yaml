@@ -1,0 +1,51 @@
+{% set version = "1.0.0" %}
+{% set name = "scShapes" %}
+{% set bioc = "3.14" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: b7ccddb179711559c280dd64996663fc
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
+requirements:
+  host:
+    - 'bioconductor-biocparallel >=1.28.0,<1.29.0'
+    - r-base
+    - r-dgof
+    - r-emdbook
+    - r-magrittr
+    - r-mass
+    - r-matrix
+    - r-pscl
+    - r-vgam
+  run:
+    - 'bioconductor-biocparallel >=1.28.0,<1.29.0'
+    - r-base
+    - r-dgof
+    - r-emdbook
+    - r-magrittr
+    - r-mass
+    - r-matrix
+    - r-pscl
+    - r-vgam
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'A Statistical Framework for Modeling and Identifying Differential Distributions in Single-cell RNA-sequencing Data'
+  description: 'We present a novel statistical framework for identifying differential distributions in single-cell RNA-sequencing (scRNA-seq) data between treatment conditions by modeling gene expression read counts using generalized linear models (GLMs). We model each gene independently under each treatment condition using error distributions Poisson (P), Negative Binomial (NB), Zero-inflated Poisson (ZIP) and Zero-inflated Negative Binomial (ZINB) with log link function and model based normalization for differences in sequencing depth. Since all four distributions considered in our framework belong to the same family of distributions, we first perform a Kolmogorov-Smirnov (KS) test to select genes belonging to the family of ZINB distributions. Genes passing the KS test will be then modeled using GLMs. Model selection is done by calculating the Bayesian Information Criterion (BIC) and likelihood ratio test (LRT) statistic.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

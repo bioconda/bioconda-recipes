@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="BSgenome.Creinhardtii.JGI.v5.6_1.5.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/BSgenome.Creinhardtii.JGI.v5.6_1.5.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/BSgenome.Creinhardtii.JGI.v5.6_1.5.0.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Creinhardtii.JGI.v5.6_1.5.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.creinhardtii.jgi.v5.6/bioconductor-bsgenome.creinhardtii.jgi.v5.6_1.5.0_src_all.tar.gz"
 )
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

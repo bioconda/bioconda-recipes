@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="geneplast.data_0.99.2.tar.gz"
+FN="geneplast.data_0.99.6.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/geneplast.data_0.99.2.tar.gz"
-  "https://bioarchive.galaxyproject.org/geneplast.data_0.99.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-geneplast.data/bioconductor-geneplast.data_0.99.2_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-geneplast.data/bioconductor-geneplast.data_0.99.2_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/geneplast.data_0.99.6.tar.gz"
+  "https://bioarchive.galaxyproject.org/geneplast.data_0.99.6.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-geneplast.data/bioconductor-geneplast.data_0.99.6_src_all.tar.gz"
 )
-MD5="5fc5272191d3468b1e3c140cb9416eee"
+MD5="f3998427ce98423841524912030b4618"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -17,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

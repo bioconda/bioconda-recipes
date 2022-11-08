@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="AHEnsDbs_1.0.18.tar.gz"
+FN="AHEnsDbs_1.1.4.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/AHEnsDbs_1.0.18.tar.gz"
-  "https://bioarchive.galaxyproject.org/AHEnsDbs_1.0.18.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ahensdbs/bioconductor-ahensdbs_1.0.18_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ahensdbs/bioconductor-ahensdbs_1.0.18_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/AHEnsDbs_1.1.4.tar.gz"
+  "https://bioarchive.galaxyproject.org/AHEnsDbs_1.1.4.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ahensdbs/bioconductor-ahensdbs_1.1.4_src_all.tar.gz"
 )
-MD5="14d613d4bc6ef74d25d25e101e4acf05"
+MD5="43ac21cd912c74a6b14564f8476148b4"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -17,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,5 +1,5 @@
 {% set name = "influx_si" %}
-{% set version = "5.4.0" %}
+{% set version = "6.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "493e56ac50bcb56d1de2fb0a141c8f45591e75487d761614c9e6a71c269824e9"
+  sha256: "c4ca31ce1e250faca1ba49ca6526e9f9332af79631262cd0de9d0c90590a0668"
 
 build:
   number: 0
@@ -18,24 +18,26 @@ build:
     - ftbl2code = influx_si.cli:cli
     - ftbl2cumoAb = influx_si.cli:cli
     - ftbl2kvh = influx_si.cli:cli
-    - ftbl2metxml = influx_si.cli:cli
     - ftbl2netan = influx_si.cli:cli
     - ftbl2optR = influx_si.cli:cli
     - ftbl2xgmml = influx_si.cli:cli
     - influx_s = influx_si.cli:cli
     - influx_i = influx_si.cli:cli
     - res2ftbl_meas = influx_si.cli:cli
-    - txt2ftbl = influx_si.cli:cli
+    - txt2ftbl = influx_si.txt2ftbl:main
+    - ftbl2mtf = influx_si.ftbl2mtf:main
+    - ftbl2metxml = influx_si.ftbl2metxml:main
 
 requirements:
   host:
     - pip
     - python >=3
-
   run:
     - python >=3
     - scipy
+    - pandas
     - python-libsbml
+    - kvh
     - r-base
     - r-rcpp >=1.0.0
     - r-rcpparmadillo
@@ -43,16 +45,22 @@ requirements:
     - r-arrapply
     - r-limsolve
     - r-multbxxc
-    - r-nnls
+    - r-nlsic
     - r-slam
+    - r-kvh
 
 test:
   imports:
     - influx_si
+  commands:
+    - influx_s -h
+    - influx_s --copy_test
+    - influx_s test/e_coli
+    - python -c "import shutil; shutil.rmtree('test')"
 
 about:
   home: "https://metasys.insa-toulouse.fr/software/influx/"
-  license: "GNU General Public v2 or later (GPLv2+)"
+  license: GPL-2.0-or-later
   license_family: "GPL2"
   license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
   summary: "Metabolic flux and concentration estimation based on stable isotope labeling"

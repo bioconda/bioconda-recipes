@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="pd.hg.focus_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/pd.hg.focus_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/pd.hg.focus_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.hg.focus_3.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.hg.focus/bioconductor-pd.hg.focus_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.hg.focus/bioconductor-pd.hg.focus_3.12.0_src_all.tar.gz"
 )
 MD5="a89f344ae7ff8061a8e7968f155f4bcf"
@@ -17,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

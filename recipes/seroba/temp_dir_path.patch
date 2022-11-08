@@ -1,0 +1,38 @@
+diff --git a/seroba/serotyping.py b/seroba/serotyping.py
+index 45c8f3b..4cc865a 100644
+--- a/seroba/serotyping.py
++++ b/seroba/serotyping.py
+@@ -32,6 +32,7 @@ def __init__(self,databases, fw_reads, bw_reads, prefix,clean=True,cov=20):
+         self.meta_data_dict = ref_db_creator.RefDbCreator._read_meta_data_tsv(self.meta_data)
+         self.clean = clean
+         self.cov = cov/100.0
++        os.makedirs(self.prefix)
+ 
+     @staticmethod
+     def _serotype_2_cluster(cd_cluster):
+@@ -51,7 +52,7 @@ def _serotype_2_cluster(cd_cluster):
+ 
+     def _run_kmc(self):
+     #kmc on fw_read
+-        temp_dir = tempfile.mkdtemp(prefix = 'temp.kmc', dir=os.getcwd())
++        temp_dir = tempfile.mkdtemp(prefix = 'temp.kmc')
+         kmer_db_list = os.listdir(self.kmer_db)
+         kmer_count = self.cov
+         max_kmer_count = 0.0
+@@ -82,7 +83,6 @@ def _run_kmc(self):
+             self.best_serotype = 'NT'
+ 
+     def _run_ariba_on_cluster(self,cluster):
+-        os.makedirs(self.prefix)
+         ref_dir = os.path.join(self.ariba_cluster_db ,self.cluster_serotype_dict[cluster][0]+'/','ref')
+         command = ['ariba run ',ref_dir,self.fw_read,self.bw_read,os.path.join(self.prefix,'ref')]
+         os.system(' '.join(command))
+@@ -255,7 +255,7 @@ def _find_serotype(assemblie_file,serogroup_fasta, serogroup_dict,serotypes,repo
+         sub_dict = {'genes':[],'pseudo':[],'allele':[],'snps':[]}
+         relevant_genetic_elements = dict.fromkeys(serotypes, sub_dict)
+         allel_snp = serogroup_dict
+-        tmpdir = tempfile.mkdtemp(prefix = 'temp.nucmer', dir=os.getcwd())
++        tmpdir = tempfile.mkdtemp(prefix = 'temp.nucmer')
+         gene_ref = serogroup_fasta
+         pymummer.nucmer.Runner(
+             gene_ref,

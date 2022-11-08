@@ -1,0 +1,34 @@
+{% set version = "1.12" %}
+{% set sha256 = "8d4551a9406829c85f7eb4fbc5482e064d87b9a22c5e465fd64d8bbbcf8f167d" %}
+
+package:
+  name: ima3
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/jodyhey/IMa3/archive/refs/tags/v{{ version  }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - openmpi >=1.8
+  run:
+    - openmpi >=1.8
+
+test:
+  commands:
+    - "mpirun -mca plm_rsh_agent true --allow-run-as-root IMa3 -h | grep 'IMa3 Release Version: '"
+
+about:
+  home: https://github.com/jodyhey/IMa3 
+  license: 'GPL (>= 3)'
+  license_file: LICENSE
+  summary: 'IMa3 can be used to solve a fundamental problem in evolutionary genetics, which is to jointly consider phylogenetic history and pouplation genetic history, including gene exchange. IMa3 can be used to estimate the rooted phylogenetic tree for multiple populations, and does so while integrating over all possible Isolation-with-Migration models'
+

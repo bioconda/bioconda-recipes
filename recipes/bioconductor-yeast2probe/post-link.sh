@@ -1,9 +1,8 @@
 #!/bin/bash
 FN="yeast2probe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.13/data/annotation/src/contrib/yeast2probe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.14/data/annotation/src/contrib/yeast2probe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/yeast2probe_2.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-yeast2probe/bioconductor-yeast2probe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-yeast2probe/bioconductor-yeast2probe_2.18.0_src_all.tar.gz"
 )
 MD5="3f52a2b7bd379624bc2966ca28c9ddf9"
@@ -17,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  curl $URL > $TARBALL
+  curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
