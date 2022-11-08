@@ -3,6 +3,6 @@ set -x
 
 mkdir -p $PREFIX/bin
 mkdir build && cd build
-cmake -DCMAKE_INSTALL_PREFIX=$PREFIX/bin ..
+cmake -DCMAKE_INSTALL_PREFIX=$PREFIX ..
 make
 make install
