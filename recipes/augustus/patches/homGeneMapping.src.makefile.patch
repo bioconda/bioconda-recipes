@@ -1,32 +1,24 @@
-diff --git a/auxprogs/homGeneMapping/src/Makefile b/auxprogs/homGeneMapping/src/Makefile
-index c45b70ca..90000998 100644
---- a/auxprogs/homGeneMapping/src/Makefile
-+++ b/auxprogs/homGeneMapping/src/Makefile
-@@ -12,14 +12,12 @@ ifeq (,$(findstring $(COMPGENEPRED),0 false False FALSE)) # if COMPGENEPRED is n
- 	SQLITE ?= true
- endif
- 
--CXX   ?= g++
--
- # Notes: - "-Wno-sign-compare" eliminates a high number of warnings (see footnote below). Please adopt
- #          a strict signed-only usage strategy to avoid mistakes since we are not warned about this.
+--- a/auxprogs/homGeneMapping/src/Makefile	2022-09-23 10:06:14.000000000 -0700
++++ b/auxprogs/homGeneMapping/src/Makefile	2022-10-08 10:11:01.079848007 -0700
+@@ -9,7 +9,7 @@
  #        - The order of object files in $(OBJS) IS IMPORTANT (see lldouble.hh)
  CXXFLAGS := -Wall -Wno-sign-compare -ansi -pedantic -std=c++0x -pthread -O2 ${CXXFLAGS}
  
--INCLS	= -I../include
-+INCLS	= -I../include -I${PREFIX}/include
- LIBS	=
+-INCLS	+= -I../include
++INCLS	+= -I../include -I${PREFIX}/include
  OBJS	= gene.o genome.o
  
-@@ -29,9 +27,9 @@ ifeq (,$(findstring $(BOOST),0 false False FALSE)) # if BOOST is not defined or
+ # set SQLITE = false in common.mk to disable the usage of the SQLite library, option --dbaccess will not be available
+@@ -28,10 +28,10 @@
  endif
  
  ifneq (,$(findstring $(SQLITE),1 true True TRUE)) # if SQLITE is defined and contains 1, true, True or TRUE
--	LIBS    += -lsqlite3 # add the sqlite library path here, if sqlite is not install system-wide
-+	LIBS    += -lsqlite3 -L${PREFIX}/lib/ # add the sqlite library path here, if sqlite is not install system-wide
+-	CPPFLAGS += -DM_SQLITE
++	CPPFLAGS += -DM_SQLITE -ldl
+ 	INCLS    += $(INCLUDE_PATH_SQLITE)
+ 	LDFLAGS  += $(LIBRARY_PATH_SQLITE)
+-	LDLIBS  += -lsqlite3 # add the sqlite library path here, if sqlite is not install system-wide
++	LDLIBS  += -lsqlite3 -L${PREFIX}/lib/ # add the sqlite library path here, if sqlite is not install system-wide
  	OBJS    += sqliteDB.o
--	CPPFLAGS  += -DM_SQLITE
-+	CPPFLAGS  += -DM_SQLITE -ldl
  endif
  
- all: homGeneMapping
