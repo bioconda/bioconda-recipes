@@ -2,7 +2,7 @@
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 mkdir -p ~/.R
-echo -e "CC=$CC
+echo -e "CC=$CC -I${PREFIX}/include -L${PREFIX}/lib
 FC=$FC
 CXX=$CXX -I${PREFIX}/include -L${PREFIX}/lib
 CXX98=$CXX
