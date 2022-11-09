@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "scatedata-1.7.0"
+installBiocDataPackage.sh "scatedata-1.8.0"
