@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "healthycontrolspresencechecker-1.1.0"
+installBiocDataPackage.sh "healthycontrolspresencechecker-1.2.0"
