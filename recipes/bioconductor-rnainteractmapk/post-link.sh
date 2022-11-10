@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "rnainteractmapk-1.35.0"
+installBiocDataPackage.sh "rnainteractmapk-1.36.0"
