@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "flowsorted.blood.epic-2.1.0"
+installBiocDataPackage.sh "flowsorted.blood.epic-2.2.0"
