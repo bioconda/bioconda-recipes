@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "beadsorted.saliva.epic-1.5.3"
+installBiocDataPackage.sh "beadsorted.saliva.epic-1.6.0"
