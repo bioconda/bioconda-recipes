@@ -1,6 +1,5 @@
 {% set name = "ciriquant" %}
 {% set version = "1.1.2" %}
-{% set sha256 = "aad16e65a75fb67b07641acfe31555af972b7457365a4f5d0b234aa10cae7dba" %}
 
 
 package:
@@ -8,31 +7,45 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/bioinfo-biols/CIRIquant/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/CIRIquant-{{ version }}.tar.gz
+  sha256: b3e023b9cce103419867751799d9672b7eb1e0fb945ca8d57d3f8369e3914120
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} setup.py install
+  entry_points:
+    - CIRIquant=CIRIquant.main:main
+    - CIRI_DE=CIRIquant.de:main
+    - CIRI_DE_replicate=CIRIquant.replicate:main
+    - prep_CIRIquant=CIRIquant.prep_CIRIquant:main
+  script: {{ PYTHON }} -m pip install . -vv
 
 requirements:
   host:
     - pip
     - python
   run:
-    - argparse >=1.2.1
+    - argparse ==1.2.1
     - numexpr ==2.6.9
-    - numpy ==1.22.0
+    - numpy ==1.16.4
     - pysam ==0.15.2
     - python
-    - pyyaml ==5.4
+    - pyyaml ==5.1.1
     - scikit-learn ==0.20.3
     - scipy ==1.2.2
 
 test:
+  imports:
+    - CIRIquant
+    - libs
   commands:
-   - CIRIquant -h
+    - pip check
+    - CIRIquant --help
+    - CIRI_DE --help
+    - CIRI_DE_replicate --help
+    - prep_CIRIquant --help
+  requires:
+    - pip
 
 about:
   home: https://github.com/bioinfo-biols/CIRIquant
