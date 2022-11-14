@@ -1,23 +1,11 @@
 #!/usr/bin/env bash
 
-# Change folder, compiling BD
-cd bd
-sh compile.conda.sh
-cd ..
-
-# Change folder, compiling DMD
-cd dmd
-sh compile.conda.sh
-cd ..
-
-# Change folder, compiling NMA
-cd nma
-cd diaghess; make F77="${FC}"; cd ..;
-sh compile.conda.sh
-cd ..
-
 # Copy executables to environment bin dir included in the path
 mkdir -p $PREFIX/bin
+
+# Compile using make
+make \
+    F77="${FC}"
 
 # BD
 chmod u+x bd/bd
@@ -28,6 +16,8 @@ chmod u+x dmd/dmdgoopt
 cp dmd/dmdgoopt $PREFIX/bin/
 
 # NMA
+chmod u+x nma/lorellnma
+cp nma/lorellnma $PREFIX/bin/
 chmod u+x nma/diaghess/diaghess
 cp nma/diaghess/diaghess $PREFIX/bin/
 chmod u+x nma/nmanu.pl

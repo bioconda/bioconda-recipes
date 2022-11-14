@@ -1,0 +1,65 @@
+
+{% set version = "0.1.8" %}
+{% set sha256 = "13f5a52991432b4e6e9e737d954a3887d3ce59d732e52bbb6e3095a50e96afe4" %}
+
+package:
+  name: gw
+  version: {{ version }}
+
+
+source:
+  url: https://github.com/kcleal/gw/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+
+build:
+  skip: True [win] 
+  number: 0
+  script:
+    - "set -x -e"
+    - "make prep"
+    - "CXXFLAGS+=-D_LIBCPP_DISABLE_AVAILABILITY make"
+    - "mkdir -p $PREFIX/bin"
+    - "cp gw $PREFIX/bin/gw"
+    - "chmod u+x $PREFIX/bin/gw"
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ cdt('xorg-x11-proto-devel') }}           # [linux]
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}        # [linux]
+    - {{ cdt('libxdamage') }}        # [linux]
+    - {{ cdt('libxxf86vm') }}        # [linux]
+    - {{ cdt('libxfixes') }}         # [linux]
+  host:
+    - unzip
+    - fontconfig
+    - libcurl
+    - wget
+    - git
+    - libdeflate
+    - htslib
+    - pthread-stubs
+    - glfw
+  run:
+    - glfw
+    - htslib
+
+test:
+  commands:
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" gw --version'
+
+about:
+  home: https://github.com/kcleal/gw
+  license: MIT
+  license_file: LICENSE.md
+  summary: 'View genomic sequencing data and vcf files'
+
+extra:
+  container:
+      extended-base: True
+  recipe-maintainers:
+    - kcleal
