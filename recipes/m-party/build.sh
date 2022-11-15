@@ -17,7 +17,7 @@ cp m-party.py $INSTALL_FOLDER/
 
 cp $INSTALL_FOLDER/scripts/* $BIN_FOLDER
 # for testing
-cp resources/Data/FASTA/literature_seq/lit_sequences.fasta $INSTALL_FOLDER
+cp resources/Data/FASTA/PE/literature_seq/lit_sequences.fasta $INSTALL_FOLDER
 cp resources/Data/FASTA/human_gut_metagenome.fasta $INSTALL_FOLDER/resources/Data/FASTA/
 
 ls -l $INSTALL_FOLDER
