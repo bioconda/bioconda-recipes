@@ -25,5 +25,5 @@ ls -l $INSTALL_FOLDER
 #ls -l $INSTALL_FOLDER/resources/Data/HMMs&/After_tcoffee_UPI
 ls -l $BIN_FOLDER
 chmod u+x $INSTALL_FOLDER/m-party.py
-ln -s $INSTALL_FOLDER/m-party.py $BIN_FOLDER/m-party
+ln -s $INSTALL_FOLDER/m-party.py $BIN_FOLDER/m-party.py
 # chmod u+x $BIN_FOLDER/m-party.py
