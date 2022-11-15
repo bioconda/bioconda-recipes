@@ -1,0 +1,90 @@
+{% set name = "strainFlye" %}
+{% set version = "0.2.0" %}
+# We need to install samtools, bcftools, and htslib alongside pysam --
+# and in particular we versions of these tools that pysam is ok with.
+# Note that samtools, bcftools, and htslib all seem to use the same
+# versioning system, which makes our life easier.
+#
+# Using versions of these three dependencies < 1.10 seems to be ok with
+# pysam < 0.16: see
+# https://github.com/bioconda/bioconda-recipes/blob/master/recipes/pysam/0.15.2/meta.yaml
+# I believe this is because the 1.10 release included changes to the
+# "Application Binary Interface" these tools provide -- later versions of
+# these tools give us an error when trying to run "import pysam" in
+# Python, e.g. we get the error message "ImportError: libhts.so.2: cannot
+# open shared object file: No such file or directory" (for discussion, see
+# https://github.com/MikkelSchubert/paleomix/issues/38).
+{% set hts_etc_version = ">=1.7,<1.10" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  # Note the "v" before the version number -- we prefix strainFlye's release
+  # tags with a "v" (e.g. "v0.2.0"), so we need to include the "v" here in
+  # order to point to the correct tags. (However, although a tag might be named
+  # "v0.2.0", the actual version is still "0.2.0", hence why we don't just
+  # include the "v" in the version variable.)
+  #
+  # For comparison, flye's meta.yaml
+  # (https://github.com/bioconda/bioconda-recipes/blob/master/recipes/flye/meta.yaml)
+  # does not do this because its release tags are (mostly) not prefixed with a "v".
+  url: "https://github.com/fedarko/strainFlye/archive/v{{ version }}.tar.gz"
+  sha256: "7e67ff0c24cd9a3cc850e268de5931e78bc808e5c6da7f61cd1ce29c9bc2ae79"
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - python >=3.6,<3.8
+    - cython >=0.29.12
+    - setuptools
+    - pip
+    - numpy
+    - scipy >=1.0
+    # attempting to just "pip install" pysam / pysamstats has caused problems
+    # before, so we include them up here (rather than just in "run")
+    - pysam <0.16
+    - pysamstats
+    - htslib {{ hts_etc_version }}
+    - samtools {{ hts_etc_version }}
+    - bcftools {{ hts_etc_version }}
+  run:
+    - python >=3.6,<3.8
+    - numpy
+    - scipy >=1.0
+    # we directly use both pysam and pysamstats at multiple places in the code
+    - pysam <0.16
+    - pysamstats
+    # Non-python dependencies (used through Python's subprocess module)
+    - htslib {{ hts_etc_version }}
+    - samtools {{ hts_etc_version }}
+    - bcftools {{ hts_etc_version }}
+    - minimap2 >=2.10
+    - prodigal
+    # Misc. python dependencies
+    - scikit-bio
+    - networkx
+    - pandas >=1.0
+    - click >=8.0
+
+test:
+  commands:
+    - strainFlye
+  imports:
+    - strainflye
+
+about:
+  home: "https://github.com/fedarko/strainFlye"
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Pipeline for analyzing rare mutations in metagenomes assembled using long and accurate reads"
+
+extra:
+  recipe-maintainers:
+    - fedarko
