@@ -1,14 +1,249 @@
-From ac607987362530e32486a05616ed71c41aa2c051 Mon Sep 17 00:00:00 2001
-From: BarryDigby <b.digby237@gmail.com>
-Date: Wed, 16 Nov 2022 19:02:40 -0800
-Subject: [PATCH] >= for argparse and scipy in setup.py
+From cf9e69c09000db4575313d5970d9bd22a1bcbe05 Mon Sep 17 00:00:00 2001
+From: Barry Digby <bdigby@rhino03.fhcrc.org>
+Date: Thu, 17 Nov 2022 09:47:53 -0800
+Subject: [PATCH] bump packages, fix functions bbd64f3
 
 ---
- setup.py | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ CIRIquant/circ.py | 66 ++++++++++++++++++++++++++++-------------------
+ CIRIquant/main.py | 11 +++++++-
+ README.md         | 16 ++++++------
+ libs/CIRI2.pl     |  4 +--
+ requirements.txt  |  8 +++---
+ setup.py          |  4 +--
+ 6 files changed, 66 insertions(+), 43 deletions(-)
 
+diff --git a/CIRIquant/circ.py b/CIRIquant/circ.py
+index 82fbe87..57f92bd 100644
+--- a/CIRIquant/circ.py
++++ b/CIRIquant/circ.py
+@@ -400,7 +400,7 @@ def denovo_worker(circ_chunk, lib_type):
+     return cand_reads
+ 
+ 
+-def proc_genome_bam(bam_file, thread, circ_info, cand_reads, threshold, tmp_dir):
++def proc_genome_bam(bam_file, thread, circ_info, cand_reads, threshold, tmp_dir, is_no_fsj):
+     """
+     Extract FSJ reads and check BSJ reads alignment information
+ 
+@@ -422,7 +422,7 @@ def proc_genome_bam(bam_file, thread, circ_info, cand_reads, threshold, tmp_dir)
+     pool = Pool(thread, genome_initializer, (bam_file, circ_info, cand_reads, threshold))
+     jobs = []
+     for chrom_info in header:
+-        jobs.append(pool.apply_async(genome_worker, (chrom_info['SN'], tmp_dir, )))
++        jobs.append(pool.apply_async(genome_worker, (chrom_info['SN'], tmp_dir, is_no_fsj, )))
+     pool.close()
+     pool.join()
+ 
+@@ -478,7 +478,7 @@ def genome_initializer(bam_file, circ_info, cand_bsj, threshold):
+     BAM, CIRC, BSJ, THRESHOLD = bam_file, circ_info, cand_bsj, threshold
+ 
+ 
+-def genome_worker(chrom, tmp_dir):
++def genome_worker(chrom, tmp_dir, is_no_fsj):
+     """
+     Find FSJ reads and re-check BSJ reads
+ 
+@@ -520,28 +520,31 @@ def genome_worker(chrom, tmp_dir):
+         if qual_filter or linear_filter or align_filter:
+             fp_bsj.append((read.query_name, read.is_read1 - read.is_read2))
+ 
+-    fsj_reads = []
+-    for circ_id, parser in CIRC[chrom].iteritems():
+-        # FSJ across start site
+-        for read in sam.fetch(region='{0}:{1}-{1}'.format(chrom, parser.start)):
+-            if read.is_unmapped or read.is_supplementary:
+-                continue
+-            if read.mapping_quality <= 10:
+-                continue
+-            if not read.get_overlap(parser.start - 1, parser.start + THRESHOLD - 1) >= THRESHOLD:
+-                continue
+-            if is_mapped(read.cigartuples[0]) and is_mapped(read.cigartuples[-1]):
+-                fsj_reads.append((read.query_name, read.is_read1 - read.is_read2, circ_id))
++    if is_no_fsj:
++        fsj_reads = []
++    else:
++        fsj_reads = []
++        for circ_id, parser in CIRC[chrom].iteritems():
++            # FSJ across start site
++            for read in sam.fetch(region='{0}:{1}-{1}'.format(chrom, parser.start)):
++                if read.is_unmapped or read.is_supplementary:
++                    continue
++                if read.mapping_quality <= 10:
++                    continue
++                if not read.get_overlap(parser.start - 1, parser.start + THRESHOLD - 1) >= THRESHOLD:
++                    continue
++                if is_mapped(read.cigartuples[0]) and is_mapped(read.cigartuples[-1]):
++                    fsj_reads.append((read.query_name, read.is_read1 - read.is_read2, circ_id))
+ 
+-        for read in sam.fetch(region='{0}:{1}-{1}'.format(chrom, parser.end)):
+-            if read.is_unmapped or read.is_supplementary:
+-                continue
+-            if read.mapping_quality <= 10:
+-                continue
+-            if not read.get_overlap(parser.end - THRESHOLD, parser.end) >= THRESHOLD:
+-                continue
+-            if is_mapped(read.cigartuples[0]) and is_mapped(read.cigartuples[-1]):
+-                fsj_reads.append((read.query_name, read.is_read1 - read.is_read2, circ_id))
++            for read in sam.fetch(region='{0}:{1}-{1}'.format(chrom, parser.end)):
++                if read.is_unmapped or read.is_supplementary:
++                    continue
++                if read.mapping_quality <= 10:
++                    continue
++                if not read.get_overlap(parser.end - THRESHOLD, parser.end) >= THRESHOLD:
++                    continue
++                if is_mapped(read.cigartuples[0]) and is_mapped(read.cigartuples[-1]):
++                    fsj_reads.append((read.query_name, read.is_read1 - read.is_read2, circ_id))
+ 
+     sam.close()
+ 
+@@ -619,7 +622,7 @@ def query_prefix(query_name):
+     return prefix
+ 
+ 
+-def proc(log_file, thread, circ_file, hisat_bam, rnaser_file, reads, outdir, prefix, anchor, lib_type):
++def proc(log_file, thread, circ_file, hisat_bam, rnaser_file, reads, outdir, prefix, anchor, lib_type, is_no_fsj, bsj_file):
+     """
+     Build pseudo circular reference index and perform reads re-alignment
+     Extract BSJ and FSJ reads from alignment results
+@@ -653,7 +656,10 @@ def proc(log_file, thread, circ_file, hisat_bam, rnaser_file, reads, outdir, pre
+ 
+     # Find BSJ and FSJ informations
+     cand_bsj = proc_denovo_bam(denovo_bam, thread, circ_info, anchor, lib_type)
+-    bsj_reads, fsj_reads = proc_genome_bam(hisat_bam, thread, circ_info, cand_bsj, anchor, circ_dir)
++    bsj_reads, fsj_reads = proc_genome_bam(hisat_bam, thread, circ_info, cand_bsj, anchor, circ_dir, is_no_fsj)
++    if bsj_file is not None:
++        LOGGER.info("Writing BSJ reads id to {}".format(bsj_file))
++        output_bsj_ids(bsj_reads, bsj_file)
+ 
+     total_reads, mapped_reads = bam_stat(hisat_bam)
+     circ_reads = sum([len(bsj_reads[i]) for i in bsj_reads]) * 2
+@@ -702,6 +708,14 @@ def expression_level(circ_info, bsj_reads, fsj_reads):
+     return circ_exp
+ 
+ 
++def output_bsj_ids(bsj_reads, bsj_file):
++    with open(bsj_file, 'w') as out:
++        for circ_id in bsj_reads:
++            for read_id in bsj_reads[circ_id]:
++                out.write("{}\t{}\n".format(read_id, circ_id))
++    return 0
++
++
+ def bam_stat(bam_file):
+     """
+     Stat of bam file
+diff --git a/CIRIquant/main.py b/CIRIquant/main.py
+index 9763f7b..9172099 100644
+--- a/CIRIquant/main.py
++++ b/CIRIquant/main.py
+@@ -65,6 +65,12 @@ def main():
+     parser.add_argument('--no-gene', dest='gene_exp', default=False, action='store_true',
+                         help='Skip stringtie estimation for gene abundance', )
+ 
++    # skip FSJ calculation
++    parser.add_argument('--no-fsj', dest='no_fsj', default=False, action='store_true',
++                        help='Skip FSJ extraction to reduce run time', )
++    parser.add_argument('--bsj-file', dest='bsj_read_file', metavar='FILE', default=None,
++                        help='output BSJ read IDs to file (optional)')
++
+     args = parser.parse_args()
+ 
+     """Check required parameters"""
+@@ -180,7 +186,10 @@ def main():
+         circ_parser.convert(bed_file)
+ 
+     # Step4: estimate circRNA expression level
+-    out_file = circ.proc(log_file, thread, bed_file, hisat_bam, rnaser_file, reads, outdir, prefix, anchor, lib_type)
++    if args.no_fsj:
++        logger.info('Skipping FSJ reads extraction')
++    out_file = circ.proc(log_file, thread, bed_file, hisat_bam, rnaser_file, reads, outdir, prefix, anchor, lib_type,
++                         args.no_fsj, args.bsj_read_file)
+ 
+     # Remove temporary files
+     pipeline.clean_tmp(outdir, prefix)
+diff --git a/README.md b/README.md
+index 17e0e0a..421d30b 100755
+--- a/README.md
++++ b/README.md
+@@ -1,30 +1,30 @@
+-## CIRIquant ##
++## CIRIquant
+ 
+-[![Build Status](https://staging.travis-ci.com/bioinfo-biols/CIRIquant.svg?branch=master)](https://staging.travis-ci.com/bioinfo-biols/CIRIquant)
++[![Build Status](https://travis-ci.com/bioinfo-biols/CIRIquant.svg?branch=master)](https://travis-ci.com/bioinfo-biols/CIRIquant)
+ ![GitHub release (latest by date)](https://img.shields.io/github/v/release/bioinfo-biols/CIRIquant)
+ [![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg)](https://github.com/bioinfo-biols/CIRIquant/blob/master/LICENSE)
+ ![GitHub All Releases](https://img.shields.io/github/downloads/bioinfo-biols/CIRIquant/total)
+ ![SourceForge](https://img.shields.io/sourceforge/dm/ciri/CIRIquant)
+-![Readthedoc](https://readthedocs.org/projects/ciriquant-cookbook/badge/?version=latest)
++[![Documentation Status](https://readthedocs.org/projects/ciri-cookbook/badge/?version=latest)](https://ciri-cookbook.readthedocs.io/en/latest/?badge=latest)
+ 
+ CIRIquant is a comprehensive analysis pipeline for circRNA detection and quantification in RNA-Seq data
+ 
+-### Documentation ### 
++### Documentation
+ 
+-Documentation is available online at [https://ciriquant-cookbook.readthedocs.io/en/latest/index.html](https://ciriquant-cookbook.readthedocs.io/en/latest/index.html)
++Documentation is available online at [https://ciri-cookbook.readthedocs.io/en/latest/](https://ciri-cookbook.readthedocs.io/en/latest/CIRIquant_0_home.html#)
+ 
+-### Author ###
++### Author
+ 
+ Authors: Jinyang Zhang(zhangjinyang@biols.ac.cn), Fangqing Zhao(zhfq@biols.ac.cn)
+ 
+ Maintainer: Jinyang Zhang
+ 
+-### Release Notes ###
++### Release Notes
+ 
+ - Version 1.1: Added support for stranded library and GFF3 format input.
+ - Version 1.0: The first released version of CIRIquant.
+ 
+-### License ###
++### License
+ 
+ The code is released under the MIT License. See the `LICENSE` file for more detail.
+ 
+diff --git a/libs/CIRI2.pl b/libs/CIRI2.pl
+index 83b657c..777e2a2 100755
+--- a/libs/CIRI2.pl
++++ b/libs/CIRI2.pl
+@@ -239,7 +239,7 @@ Arguments:
+ 			$line_count ++;
+ 			my @line = split /\t/;
+ 			if ($line[2] eq 'exon') {
+-				if ($line[8] =~ /^Parent=\w+\.\w*.*/) {
++				if ($line[8] =~ /Parent=\w+\.\w*.*/) {
+ 					$gff ++;
+ 					last;
+ 				} elsif ($line[8] =~ /gene=\w+;.*transcript_id=\w+\.*/) {
+@@ -427,7 +427,7 @@ Arguments:
+ 					chomp;
+ 					my @line = split /\t/;
+ 					if ( defined $line[2] and $line[2] eq 'exon' ) {
+-						if ($line[8] =~ /^Parent=((\w+)\.\w*).*/) {
++						if ($line[8] =~ /Parent=((\w+)\.\w*).*/) {
+ 							my $gene_ID = $2;
+ 							$exon_start{$line[0]}{$line[3]}{$gene_ID} ++;
+ 							$exon_end{$line[0]}{$line[4]}{$gene_ID} ++;
+diff --git a/requirements.txt b/requirements.txt
+index 170e624..c8ff9a2 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,7 +1,7 @@
+ numexpr==2.6.9
+-numpy==1.16.4
++numpy==1.22.0
+ pysam==0.15.2
+-PyYAML==5.1.1
++PyYAML==5.4.1
+ scikit-learn==0.20.3
+-scipy==1.2.2
+-argparse==1.2.1
++scipy>=1.2.2
++argparse>=1.2.1
 diff --git a/setup.py b/setup.py
-index 1e334e9..71bcad6 100644
+index 1e334e9..9679f53 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -42,7 +42,7 @@ setup(
@@ -17,10 +252,10 @@ index 1e334e9..71bcad6 100644
      install_requires=[
 -        'argparse==1.2.1', 'PyYAML==5.1.1', 'pysam==0.15.2', 'numpy==1.16.4',
 -        'scipy==1.2.2', 'scikit-learn==0.20.3', 'numexpr==2.6.9',
-+        'argparse>=1.2.1', 'PyYAML==5.4', 'pysam==0.15.2', 'numpy==1.22.0',
++        'argparse>=1.2.1', 'PyYAML==5.4.1', 'pysam==0.15.2', 'numpy==1.22.0',
 +        'scipy>=1.2.2', 'scikit-learn==0.20.3', 'numexpr==2.6.9',
      ],
  )
 -- 
-2.38.1
+2.17.1
 

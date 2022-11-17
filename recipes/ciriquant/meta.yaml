@@ -1,51 +1,37 @@
-{% set name = "ciriquant" %}
 {% set version = "1.1.2" %}
-
+{% set sha256 = "aad16e65a75fb67b07641acfe31555af972b7457365a4f5d0b234aa10cae7dba" %}
 
 package:
-  name: {{ name|lower }}
+  name: ciriquant
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/CIRIquant-{{ version }}.tar.gz
-  sha256: b3e023b9cce103419867751799d9672b7eb1e0fb945ca8d57d3f8369e3914120
+  url: https://github.com/bioinfo-biols/CIRIquant/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
   patches: ciriquant.patch
 
 build:
+  noarch: generic
   number: 0
-  noarch: python
-  entry_points:
-    - CIRIquant=CIRIquant.main:main
-    - CIRI_DE=CIRIquant.de:main
-    - CIRI_DE_replicate=CIRIquant.replicate:main
-    - prep_CIRIquant=CIRIquant.prep_CIRIquant:main
-  script: {{ PYTHON }} -m pip install . -vv
+  script: python setup.py install
 
 requirements:
-  host:
-    - pip
-    - python
   run:
-    - argparse >=1.2.1
-    - numexpr ==2.6.9
-    - numpy ==1.22.0
-    - pysam ==0.15.2
     - python
-    - pyyaml ==5.4
-    - scikit-learn ==0.20.3
-    - scipy >=1.2.2
+    - numexpr==2.6.9
+    - numpy==1.22.0
+    - pysam==0.15.2
+    - PyYAML==5.4.1
+    - scikit-learn==0.20.3
+    - scipy>=1.2.2
+    - argparse>=1.2.1
 
 test:
   commands:
-    - pip check
     - CIRIquant --help
 
 about:
   home: https://github.com/bioinfo-biols/CIRIquant
-  summary: circular RNA quantification pipeline
   license: MIT
   license_file: LICENSE
-
-extra:
-  recipe-maintainers:
-    - BarryDigby
+  summary: CIRIquant is a comprehensive analysis pipeline for circRNA detection and quantification in RNA-Seq data
