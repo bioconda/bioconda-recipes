@@ -1,24 +1,12 @@
-#!/bin/bash
-
-export CC=${PREFIX}/bin/gcc
-export CXX=${PREFIX}/bin/g++
-
-export CFLAGS="$CFLAGS -I$PREFIX/include"
-export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-export LDLIBS="$LDLIBS -L$PREFIX/lib"
-
-export INCLUDE_PATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
+#!/bin/sh
 
 git submodule init
 git submodule update
 
-make -C htslib
+mkdir -p build
 
-mkdir build
+make print CXX=${CXX}
 
-make print
+mkdir -p ${PREFIX}/bin
 
-cp cas $PREFIX/bin/
+cp cas ${PREFIX}/bin
