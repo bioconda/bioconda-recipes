@@ -3,7 +3,7 @@
 git submodule init
 git submodule update
 
-make -C htslib
+make -C htslib CC=${CC}
 
 mkdir -p build
 make print CXX=${CXX}
