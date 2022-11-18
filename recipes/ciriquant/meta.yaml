@@ -9,19 +9,31 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/CIRIquant-{{ version }}.tar.gz
   sha256: b3e023b9cce103419867751799d9672b7eb1e0fb945ca8d57d3f8369e3914120
+  patches: ciriquant.patch
 
 build:
-  noarch: python
   number: 0
-  script:  python -m pip install --no-deps --ignore-installed .
+  noarch: python
+  entry_points:
+    - CIRIquant=CIRIquant.main:main
+    - CIRI_DE=CIRIquant.de:main
+    - CIRI_DE_replicate=CIRIquant.replicate:main
+    - prep_CIRIquant=CIRIquant.prep_CIRIquant:main
+  script: {{ PYTHON }} -m pip install . -vvv --ignore-installed --no-deps
 
 requirements:
   host:
+    - pip
     - python ==2.7.15
-    - pip ==19.3.1
   run:
+    - argparse 
+    - numexpr 
+    - numpy 
+    - pysam 
     - python ==2.7.15
-    - pip ==19.3.1
+    - pyyaml 
+    - scikit-learn 
+    - scipy 
 
 test:
   commands:
@@ -29,6 +41,10 @@ test:
 
 about:
   home: https://github.com/bioinfo-biols/CIRIquant
+  summary: circular RNA quantification pipeline
   license: MIT
   license_file: LICENSE
-  summary: CIRIquant is a comprehensive analysis pipeline for circRNA detection and quantification in RNA-Seq data
+
+extra:
+  recipe-maintainers:
+    - BarryDigby
