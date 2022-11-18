@@ -9,7 +9,7 @@ mkdir -p $outdir $PREFIX/bin
 export ARCH=$(uname -m)
 
 # Need a home for osx
-export HOME=`pwd`
+export HOME="/tmp/"
 
 # Install meteor here (instead of in npm run bundle) because we need to patch the install script
 curl "https://install.meteor.com/?release=2.8.0" > meteor.sh
