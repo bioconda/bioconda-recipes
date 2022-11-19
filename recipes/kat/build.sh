@@ -6,7 +6,6 @@ mkdir -p ${PREFIX}/bin
 #importing matplotlib fails, likely due to X
 sed -i.bak "124d" configure.ac
 
-./build_boost.sh
 ./autogen.sh
 export PYTHON_NOVERSION_CHECK="3.7.0"
 ./configure --disable-silent-rules --disable-dependency-tracking --prefix=$PREFIX
