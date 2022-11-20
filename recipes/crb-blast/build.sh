@@ -1,5 +1,4 @@
 #!/bin/bash
 
 gem env
-gem install $PKG_NAME -v $PKG_VERSION
-head -n 10 $PREFIX/bin/crb-blast
+gem install --debug --verbose --backtrace $PKG_NAME -v $PKG_VERSION
