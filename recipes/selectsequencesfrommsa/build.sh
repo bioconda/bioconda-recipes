@@ -7,8 +7,6 @@ export CPPFLAGS="-I${PREFIX}/include"
 # use the system ghc
 mkdir -p ${HOME}/.stack
 echo "system-ghc: true" > ${HOME}/.stack/config.yaml
-ghc --version
-sed -i.bak "s/lts-10.9/ghc-8.10.7/g" stack.yaml
 
 stack setup
 stack update
