@@ -1,8 +1,4 @@
 #!/bin/sh
-
-git submodule init
-git submodule update
-
 make -C htslib CC=${CC}
 
 mkdir -p build
