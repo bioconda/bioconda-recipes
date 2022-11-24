@@ -9,15 +9,19 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - patch
   
 build:
-  # resolce conflicts under python 2.7
-  skip: True  # [py27]
-  number: 2
+  # resolve conflicts under python 2.7
+  skip: True  # [py < 37]
+  number: 3
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - pkg-config
+    - hdf5
   host:
     - pip
     - python
@@ -26,13 +30,14 @@ requirements:
     - zlib
   run:
     - python
+    - setuptools
     - six
     - hdf5
     - pytables >=3.4.3
     - path.py
     - textinput
     - bedtools
-    - ucsc-bigwigtobedgraph
+    - ucsc-bigwigtobedgraph >=377
 
 test:
     # Copied to PATH in build.sh
@@ -65,3 +70,5 @@ extra:
   identifiers:
     - biotools:genomedata
     - doi:10.1093/bioinformatics/btq164
+  skip-lints:
+    - uses_setuptools
