@@ -9,4 +9,4 @@ export CF_INSTALL="conda"
 export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
 
 # build statically linked binary with Rust
-RUST_BACKTRACE=1 cargo install --verbose --root $PREFIX --path .
+RUST_BACKTRACE=1 CONDA_BUILD=1 cargo install --verbose --root $PREFIX --path .
