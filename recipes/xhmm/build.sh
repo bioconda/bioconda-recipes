@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export LIBRARY_PATH=${PREFIX}/lib
-
-make
-mkdir -p $PREFIX/bin
-cp build/execs/xhmm $PREFIX/bin
+make \
+    GCC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+    CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS} -std=c++03"
+install -d "${PREFIX}/bin"
+install build/execs/xhmm "${PREFIX}/bin/"

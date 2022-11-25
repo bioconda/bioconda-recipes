@@ -7,26 +7,38 @@ source:
   sha256: 19c46d6bc6a1af70e5a2b4a051aab334026dc38c84b367ea9c445da3fdb21cfe
 
 build:
-  number: 1
+  number: 4
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - seqan-library
     - cmake
-
   host:
+    - seqan-library
     - zlib
     - bzip2
-
   run:
     - zlib
     - bzip2
-    
+
 test:
   commands:
     - dnp-diprofile --help 
+    # run on small fasta 
+    - echo  ">line1" > test.fasta
+    - echo  "AAAATGCGTAATGGTGGCAAACTCGTAGGCT" >> test.fasta
+    - echo  ">line2" >> test.fasta
+    - echo  "ctAAATGCtTAATGGTCGCAACGGAATTGCC" >> test.fasta
+    - echo  ">line3" >> test.fasta
+    - echo  "AAAATGCGTAATTGTGGCAGGGAATTCCGTA" >> test.fasta
+    - echo  ">line4" >> test.fasta
+    - echo  "GAaATGCGTAATGGTGGCAATTAAGCTAGTG" >> test.fasta
+    - echo  ">line5" >> test.fasta
+    - echo  "GGCaaTGCGTAATGGTAGTTATGGAATCGGT" >> test.fasta
+    - dnp-diprofile test.fasta -sl 30 -di AA  
+    - dnp-diprofile test.fasta -sl 30 -c -di AA
 
 about:
   home: https://github.com/erinijapranckeviciene/dnpatterntools

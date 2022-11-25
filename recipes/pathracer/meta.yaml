@@ -1,0 +1,58 @@
+{% set version = "3.16.0" %}
+{% set sha256 = "21aeefb2b2ca39980a38e2df9e7158d448547379f57c05ad08cee0a6d637bf92" %}
+
+package:
+  name: pathracer
+  version: {{ version }}.dev
+
+source:
+  url: http://cab.spbu.ru/files/pathracer/SPAdes-{{ version }}-pathracer-dev.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - clangdev  # [osx]
+    - llvm-openmp  # [osx]
+    - openmp  # [linux]
+    - cmake
+    - make
+    - pkg-config
+    - sysroot_linux-64=2.17 # [linux]
+  host:
+    - llvm-openmp  # [osx]
+    - openmp  # [linux]
+    - zlib
+    - bzip2
+    - sysroot_linux-64=2.17 # [linux]
+  run:
+    - llvm-openmp  # [osx]
+    - openmp  # [linux]
+    - sysroot_linux-64=2.17 # [linux]
+
+test:
+  commands:
+    - pathracer 2>&1 | grep SYNOPSIS -A 1
+    
+about:
+  home: http://cab.spbu.ru/software/pathracer/
+  license: GPLv2
+  license_family: GPL
+  license_file: LICENSE
+  summary: PathRacer is a tool for alignment of profile HMM against assembly graph.
+  description: |
+    PathRacer is a novel standalone tool that aligns profile HMM directly to the assembly graph (performing the codon translation on fly for amino acid 
+    pHMMs). The tool provides the set of most probable paths traversed by a HMM through the whole assembly graph, regardless whether the sequence of 
+    interested is encoded on the single contig or scattered across the set of edges, therefore significantly improving the recovery of sequences of 
+    interest even from fragmented metagenome assemblies.
+
+extra:
+  identifiers:
+    - biotools:pathracer
+    - doi:10.1007/978-3-030-18174-1_6
+  skip-lints:
+    - should_not_be_noarch_source

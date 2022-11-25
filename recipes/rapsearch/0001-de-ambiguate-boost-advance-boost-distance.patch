@@ -1,0 +1,96 @@
+--- Src/HashSearch.cpp
++++ Src/HashSearch.cpp
+@@ -258,11 +258,11 @@
+ 		{
+ 			// for last block of data, give it a '>' to split the last sequence
+ 			vPool[unLeft+nRead] = '>';
+-			advance(itStop, unLeft+nRead+1);
++			boost::advance(itStop, unLeft+nRead+1);
+ 		}
+ 		else
+ 		{
+-			advance(itStop, unLeft+nRead);
++			boost::advance(itStop, unLeft+nRead);
+ 		}
+ 
+ 
+@@ -281,7 +281,7 @@
+ 				// the lengths of some sequences are more than 2048
+ 				ITER itEnd = remove(itBeg, itEd, '\r');
+ 				itEnd = remove(itBeg, itEnd, '\n');
+-				int nLen = distance(itBeg, itEnd);
++				int nLen = boost::distance(itBeg, itEnd);
+ 				if (nLen > 2048)
+ 				{
+ 					// store longer seq into several fragments with overlaps of size 200
+@@ -425,7 +425,7 @@
+ 		}
+ 
+ 		// move the data at the end of pool to the beginning
+-		unLeft = distance(itSt, vPool.end());
++		unLeft = boost::distance(itSt, vPool.end());
+ 		POOL::reverse_iterator itLast = find(vPool.rbegin(), vPool.rend(), '>');
+ 		copy(itSt, vPool.end(), vPool.begin());
+     }
+@@ -543,7 +543,7 @@
+ 		ITER itStop = vPool.begin();
+ 		if (m_sLeft.size()+nRead < m_unQSize)
+ 		{
+-			advance(itStop, m_sLeft.size()+nRead+1);
++			boost::advance(itStop, m_sLeft.size()+nRead+1);
+ 		}
+ 		else
+ 		{
+@@ -579,14 +579,14 @@
+ 				{
+ 					rit = find(rit, vPool.rend(), '>');
+ 				}
+-				int n = distance(rit, vPool.rbegin());
++				int n = boost::distance(rit, vPool.rbegin());
+ 				uint unLeft = m_unQSize + n + 1;
+ 				m_sLeft.clear();
+ 				m_sLeft.assign(vPool.begin()+(unLeft-1), vPool.end());
+ 				itStop = vPool.begin() + unLeft;
+ 			}
+ 		}
+-		vPool.resize(distance(vPool.begin(), itStop));
++		vPool.resize(boost::distance(vPool.begin(), itStop));
+ 		itStop = vPool.end();
+ 
+ 		vLens.push_back(0);
+@@ -2400,7 +2400,7 @@
+ 	int nQrIdx = (*it).first.first;
+ 	MRESULT::iterator itFind = mRes.end();
+ 	vector<CHitUnit> vTemp;
+-	vTemp.reserve(distance(it, itFind));
++	vTemp.reserve(boost::distance(it, itFind));
+ 	
+ 	// for sum evalue, comment this
+ 	int nDIdx = it->first.second;
+@@ -2538,8 +2538,8 @@
+ 	st.nFrame = 3;
+ 	STIT itDir = lower_bound(itSt, itEd, st, CompFrame());
+ 	// if there are more than one hit in one direction
+-	int nDisPos = distance(itSt, itDir);
+-	int nDisNeg = distance(itDir, itEd);
++	int nDisPos = boost::distance(itSt, itDir);
++	int nDisNeg = boost::distance(itDir, itEd);
+ 	if (nDisPos > 1 || nDisNeg > 1)
+ 	{
+ 		vector<CHitUnit> vRes;
+@@ -2547,13 +2547,13 @@
+ 		STIT itEnd = itDir;
+ 		for (int i = 0; i < 2; ++i)
+ 		{
+-			if (distance(itStart, itEnd) == 0)
++			if (boost::distance(itStart, itEnd) == 0)
+ 			{
+ 				itStart = itEnd;
+ 				itEnd = itEd;
+ 				continue;
+ 			}
+-			else if (distance(itStart, itEnd) == 1)
++			else if (boost::distance(itStart, itEnd) == 1)
+ 			{
+ 				if ((m_bEvalue==true && itStart->dEValue<=m_dThr) || (m_bEvalue==false && itStart->dBits>=m_dThr))
+ 				{

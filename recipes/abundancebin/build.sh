@@ -1,3 +1,3 @@
-mkdir -p $PREFIX/bin
 make
-cp ./abundancebin $PREFIX/bin/
+install -d "${PREFIX}/bin"
+install ./abundancebin "${PREFIX}/bin/"

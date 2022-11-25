@@ -1,0 +1,67 @@
+{% set name = "genmod" %}
+{% set version = "3.7.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: a45d0a197ac5cfa5d3df50cf415a0c9e91e7ab4cd5778077779eb8f6c29664e8
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - genmod = genmod.commands.base:cli
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+
+requirements:
+  host:
+    - click <7
+    - configobj
+    - extract_vcf >=0.4.2
+    - interval_tree >=0.3.2
+    - intervaltree
+    - ped_parser >=1.6.2
+    - pip
+    - pytabix
+    - pytest
+    - python
+  run:
+    - click <7
+    - configobj
+    - extract_vcf >=0.4.2
+    - interval_tree >=0.3.2
+    - intervaltree
+    - ped_parser >=1.6.2
+    - pytabix
+    - pytest
+    - python
+
+test:
+  imports:
+    - genmod
+    - genmod.annotate_models
+    - genmod.annotate_models.models
+    - genmod.annotate_regions
+    - genmod.annotate_variants
+    - genmod.annotations
+    - genmod.commands
+    - genmod.errors
+    - genmod.score_variants
+    - genmod.utils
+    - genmod.vcf_tools
+  commands:
+    - genmod --help
+
+about:
+  home: "http://github.com/moonso/genmod"
+  license: MIT
+  license_family: MIT
+  license_file: 
+  summary: "Annotate genetic inheritance models in variant files"
+
+extra:
+  recipe-maintainers:
+    - ramprasadn

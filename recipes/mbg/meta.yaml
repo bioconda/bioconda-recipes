@@ -1,0 +1,34 @@
+{% set name = "MBG" %}
+{% set version = "1.0.12" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+
+source:
+  url: https://github.com/maickrau/{{ name }}/files/9849418/{{ name }}.tar.gz
+  sha256: 72e27268b1288102542c5f048ceda7735e4e87801a4fb4677a15beec9cc97523
+  patches:
+    - version.patch
+    - osx_availability.patch # [osx]
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+
+test:
+  commands:
+    - MBG -v 2>&1 | grep Version
+
+about:
+  home: https://github.com/maickrau/MBG
+  license: MIT
+  license_file: LICENSE.md
+  summary: Minimizer based sparse de Bruijn graph constructor
