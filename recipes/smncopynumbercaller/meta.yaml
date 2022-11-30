@@ -1,16 +1,23 @@
+{% set name = "smncopynumbercaller" %}
+{% set version = "v1.1.2" %}
+
 package:
-  name: smncopynumbercaller
-  version: 1.0
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  https://github.com/Illumina/SMNCopyNumberCaller/archive/refs/heads/master.zip
-  c426d22cc9d4aec98737e009a7e7cbc95ac5bc8448b8d1bf3392dd45941f1a26
+  url: https://github.com/Illumina/SMNCopyNumberCaller/archive/refs/tags/{{ version }}.zip
+  sha256: 64bd674f6b466821bad1b9000610a8b78db9512c73a8a5382dd31aa1ab16b154
 
 build:
-  skip: True  # [py>=37]
   number: 0
+  noarch: generic
 
 requirements:
+  build:
+    - python
+  host:
+    - python
   run:
     - python
     - reportlab
@@ -20,12 +27,12 @@ requirements:
     - statsmodels >=0.9
 
 test:
-  commands:
-    - smn_caller.py --help
+  commands: 
+    - smn_caller.py -h
 
 about:
   home: https://github.com/Illumina/SMNCopyNumberCaller
   license: Apache License 2.0
   license_file: LICENSE.txt
   copyright: https://github.com/Illumina/SMNCopyNumberCaller/blob/master/COPYRIGHT.txt
-  summary: A tool to call the copy number of full-length SMN1, full-length SMN2, as well as SMN2Δ7–8 (SMN2 with a deletion of Exon7-8) from a whole-genome sequencing (WGS) BAM file.
+  summary: Call copy number of SMN1, SMN2, and SMN2Δ7–8 from a BAM file.
