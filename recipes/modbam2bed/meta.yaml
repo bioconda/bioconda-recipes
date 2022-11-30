@@ -1,0 +1,42 @@
+{% set name = "modbam2bed" %}
+{% set version = "0.6.3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/epi2me-labs/modbam2bed/archive/refs/tags/v{{version}}.tar.gz
+  sha256: d81184e0ddb03c1f714861ee2363bee34bb1482b63b728f9128d1eb7438f1e57
+
+build:
+  number: 0
+  entry_points:
+    - modbam2bed=modbampy:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  noarch: python
+
+requirements:
+  host:
+    - python >=3
+    - pip
+    - argp-standalone # [osx]
+    - binutils # [not osx]
+  run:
+    - bioconda::htslib>=1.16
+
+test:
+  imports:
+    - modbampy
+  commands:
+    - modbam2bed --help
+
+about:
+  home: https://github.com/epi2me-labs/modbam2bed
+  license: MPL-2.0
+  license_family: MPL-2.0
+  summary: A program to aggregate modified base counts stored in a modified-base BAM (Section 2.1) file to a bedMethyl file.
+
+extra:
+  recipe-maintainers:
+    - EliseCoopman
