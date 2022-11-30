@@ -8,6 +8,5 @@ mkdir -p $BINDIR
 # make executable
 chmod +x $SRC_DIR/strucVis
 
-# Install the script and its README
+# Install the script
 cp $SRC_DIR/strucVis $BINDIR
-cp $SRC_DIR/README $BINDIR
