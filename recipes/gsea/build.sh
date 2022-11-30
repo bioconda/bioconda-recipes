@@ -10,7 +10,7 @@ mkdir -p $BINARY_HOME
 mkdir -p $PACKAGE_HOME
 
 # Replace the prefix to point at where we'll move files to
-sed -i '' "s|^prefix.*|prefix=$PACKAGE_HOME|g" gsea-cli.sh gsea.sh 
+sed -i "s|^prefix.*|prefix=$PACKAGE_HOME|g" gsea-cli.sh gsea.sh 
 
 # Move the files
 cp -r gsea.sh gsea-cli.sh lib modules gsea.args logging.properties $PACKAGE_HOME
