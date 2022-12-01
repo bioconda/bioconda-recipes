@@ -1,6 +1,10 @@
 cd build
 chmod +x p4utils.pl
 
+# Needs -std=c++14 because of
+#   error: ISO C++17 does not allow dynamic exception specifications
+export CXXFLAGS="${CXXFLAGS} -std=c++14"
+
 sed -i \
   -e "/^TMAKE_CC\s*=/          s|=.*|= ${CC}|" \
   -e "/^TMAKE_CXX\s*=/         s|=.*|= ${CXX}|" \
