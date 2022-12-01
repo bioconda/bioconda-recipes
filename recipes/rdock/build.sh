@@ -16,3 +16,6 @@ sed -i \
   tmakelib/linux-g++-64/tmake.conf
 
 make linux-g++-64 BINDIR=$PREFIX/bin LIBDIR=$PREFIX/lib
+
+# compiled binaries are in bin, cp the scripts over too
+cp ../bin/* $PREFIX/bin
