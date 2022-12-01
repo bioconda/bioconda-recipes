@@ -1,13 +1,54 @@
-From 234cc243ae91ee9c2afc3afae1d8de563ec3db35 Mon Sep 17 00:00:00 2001
-From: Simon Bray <sbray1371@gmail.com>
-Date: Thu, 1 Dec 2022 18:03:31 +0100
-Subject: [PATCH] [PATCH] Add missing cmath for cos(...) usage
+From 35afafad42a34ea03bdb0be4983e1dc30074d39f Mon Sep 17 00:00:00 2001
+From: Simon Bray <sbray@somewhere.com>
+Date: Thu, 1 Dec 2022 18:28:31 +0100
+Subject: [PATCH] Add missing cmath for cos(...) usage
 
 ---
- src/lib/RbtDihedralSF.cxx | 1 +
- src/lib/RbtEuler.cxx      | 1 +
- 2 files changed, 2 insertions(+)
+ build/apply_config_patch.sh         | 19 -------------------
+ src/lib/RbtChromPositionElement.cxx |  1 +
+ src/lib/RbtDihedralSF.cxx           |  1 +
+ src/lib/RbtEuler.cxx                |  1 +
+ src/lib/RbtRand.cxx                 |  1 +
+ 5 files changed, 4 insertions(+), 19 deletions(-)
+ delete mode 100644 build/apply_config_patch.sh
 
+diff --git a/build/apply_config_patch.sh b/build/apply_config_patch.sh
+deleted file mode 100644
+index 9af622d..0000000
+--- a/build/apply_config_patch.sh
++++ /dev/null
+@@ -1,19 +0,0 @@
+-export PREFIX=$PWD
+-export C_INCLUDE_PATH=${PREFIX}/include
+-export CPP_INCLUDE_PATH=${PREFIX}/include
+-export CPLUS_INCLUDE_PATH=${PREFIX}/include
+-export CXX_INCLUDE_PATH=${PREFIX}/include
+-export LIBRARY_PATH=${PREFIX}/lib
+-
+-patch -p1 < bioconda.patch
+-
+-# patch from https://aur.archlinux.org/cgit/aur.git/tree/rdock-2021.1.patch?h=rdock
+-patch -p0 < gcc_compat.patch
+-
+-# patch from my changes
+-patch -p1 < sruiz_personal.patch
+-# and notest, cppunit tests usually fail and are not useful
+-patch -p0 < notest.patch
+-
+-# rcanovas's changes regarding FORBIDDEN error in residues
+-patch -p0 < gcc_rcanovas.patch
+diff --git a/src/lib/RbtChromPositionElement.cxx b/src/lib/RbtChromPositionElement.cxx
+index 8369e51..f68072a 100644
+--- a/src/lib/RbtChromPositionElement.cxx
++++ b/src/lib/RbtChromPositionElement.cxx
+@@ -11,6 +11,7 @@
+ ***********************************************************************/
+ 
+ #include "RbtChromPositionElement.h"
++#include <cmath>
+ 
+ RbtString RbtChromPositionElement::_CT = "RbtChromPositionElement";
+ 
 diff --git a/src/lib/RbtDihedralSF.cxx b/src/lib/RbtDihedralSF.cxx
 index 62531c3..49d03f0 100644
 --- a/src/lib/RbtDihedralSF.cxx
@@ -32,6 +73,18 @@ index 6264823..930e2c7 100644
  
  RbtQuat RbtEuler::ToQuat() const {
      RbtDouble c1 = cos(m_heading/2.0);
+diff --git a/src/lib/RbtRand.cxx b/src/lib/RbtRand.cxx
+index 82de8af..a46153e 100644
+--- a/src/lib/RbtRand.cxx
++++ b/src/lib/RbtRand.cxx
+@@ -11,6 +11,7 @@
+ ***********************************************************************/
+ 
+ #include <time.h> //Time functions for initialising the random number generator from the system clock
++#include <cmath>
+ 
+ #include "RbtRand.h"
+ #include "Singleton.h"
 -- 
 2.25.1
 
