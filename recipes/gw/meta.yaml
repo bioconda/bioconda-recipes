@@ -1,0 +1,58 @@
+
+{% set version = "0.3.0" %}
+{% set sha256 = "308ba1de3a897feee5561c70e11982c295a891d01fbf2c4dafcbda0c35f23806" %}
+
+package:
+  name: gw
+  version: {{ version }}
+
+
+source:
+  url: https://github.com/kcleal/gw/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ cdt('xorg-x11-proto-devel') }}           # [linux]
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}        # [linux]
+    - {{ cdt('libxdamage') }}        # [linux]
+    - {{ cdt('libxxf86vm') }}        # [linux]
+    - {{ cdt('libxfixes') }}         # [linux]
+    - {{ cdt('libxext') }}           # [linux]
+    - wget
+    - unzip
+  host:
+    - fontconfig
+    - libcurl
+    - libdeflate
+    - htslib
+    - glfw
+    - freetype
+    - xorg-libxfixes  # [linux]
+  run:
+    - glfw
+    - htslib
+
+test:
+  commands:
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" gw --version'
+
+about:
+  home: https://github.com/kcleal/gw
+  license: MIT
+  license_file: LICENSE.md
+  summary: 'View genomic sequencing data and vcf files'
+
+extra:
+  container:
+      extended-base: True
+  recipe-maintainers:
+    - kcleal
