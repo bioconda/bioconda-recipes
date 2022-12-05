@@ -1,12 +1,12 @@
 #!/bin/bash
 
-set -eu -o pipefail
+set -exuo pipefail
 
 PACKAGE_HOME="${PREFIX}/share/${PKG_NAME}"
 mkdir -p "${PREFIX}/bin"
 mkdir -p "${PACKAGE_HOME}"
 
-# https://git.wur.nl/bioinformatics/pantools/-/blob/a96f1dcbd6273ce484c513c42c3bb7c3d8abe119/README.md#building-a-runnable-jar
+# https://git.wur.nl/bioinformatics/pantools/-/blob/v3.4.0/README.md#building-a-runnable-jar
 # this will generate 2 JAR files:
 # * 'original-pantools-X.Y.Z.jar'
 # * 'pantools-X.Y.Z.jar' <- JAR to package
