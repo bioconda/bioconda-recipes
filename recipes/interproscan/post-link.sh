@@ -15,8 +15,8 @@ Commands:
 =========
 # See here for latest db available: https://github.com/ebi-pf-team/interproscan or http://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/
 # Set version
-version_major=5.54
-version_minor=87.0
+version_major=5.59
+version_minor=91.0
 
 # get the md5 of the databases
 wget http://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/${version_major}-${version_minor}/interproscan-${version_major}-${version_minor}-64-bit.tar.gz.md5
