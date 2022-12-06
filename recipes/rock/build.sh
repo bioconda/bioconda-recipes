@@ -4,6 +4,7 @@
 cd $SRC_DIR
 
 # depends on automake, autoconf
+aclocal
 autoconf
 automake
 ./configure --prefix=$PREFIX
