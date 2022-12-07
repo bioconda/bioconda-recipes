@@ -11,6 +11,7 @@ mkdir -p "$PREFIX"/bin
 
 echo "## Automatic build"
 #nimble build -y --verbose 
+nimble install -y --depsOnly
 make
 
 ./bin/seqfu version || true
