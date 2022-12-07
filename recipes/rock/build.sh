@@ -7,6 +7,6 @@ cd $SRC_DIR
 aclocal
 autoconf
 automake
-./configure --prefix=$PREFIX MAKE=gmake
+./configure --prefix=$PREFIX --disable-dependency-tracking
 make
 make install
