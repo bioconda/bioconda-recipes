@@ -10,7 +10,9 @@ fi
 mkdir -p "$PREFIX"/bin
 
 echo "## Automatic build"
-nimble build -y --verbose 
+#nimble build -y --verbose 
+make
+
 ./bin/seqfu version || true
 
 if [[ -d scripts ]]; then
