@@ -20,6 +20,6 @@ if not os.path.exists('common.sh'):
 common = parseCommonSH()
 CMD = ['conda', 'create', '-n', 'bioconda', '-y', '-c', 'conda-forge', '-c', 'bioconda', 'bioconda-utils={}'.format(common['BIOCONDA_UTILS_TAG'].strip('v'))]
 if sys.platform != 'linux':
-    CMD.append('conda-forge-ci-setup=2.6.0')
+    CMD.append('conda-forge-ci-setup=3.20.0')
 
 subprocess.check_call(CMD)

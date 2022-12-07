@@ -4,6 +4,9 @@ export CPATH=${PREFIX}/include
 
 mkdir -p $PREFIX/bin
 
-make CXX=$CXX RELEASE_FLAGS="$CXXFLAGS"
+sed "/^GCC/d;/^CC =/d;/^CPP =/d;/^CXX =/d" < Makefile > Makefile.new
+mv Makefile.new Makefile
+cat Makefile
+make CC=$CC CXX=$CXX RELEASE_FLAGS="$CXXFLAGS"
 make install prefix=$PREFIX
 
