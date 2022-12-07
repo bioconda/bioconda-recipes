@@ -7,6 +7,6 @@ cd $SRC_DIR
 aclocal
 autoconf
 automake
-./configure --prefix=$PREFIX
+./configure --prefix=$PREFIX MAKE=gmake
 make
 make install
