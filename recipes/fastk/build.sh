@@ -1,12 +1,10 @@
 #!/bin/bash
-export LDFLAGS="-L$SRC_DIR/HTSLIB -L$PREFIX/lib"
-export CFLAGS="-I$SRC_DIR -I$SRC_DIR/HTSLIB -I$SRC_DIR/LIBDEFLATE -I$SRC_DIR/LIBDEFLATE/common -I$PREFIX/include -L$SRC_DIR/HTSLIB -L$PREFIX/lib"
-export CPPFLAGS="-I$SRC_DIR -I$SRC_DIR/HTSLIB -I$SRC_DIR/LIBDEFLATE -I$SRC_DIR/LIBDEFLATE/common -I$PREFIX/include -L$SRC_DIR/HTSLIB -L$PREFIX/lib"
+export LDFLAGS="-L$PREFIX/lib"
+export CFLAGS="-I$SRC_DIR -I$SRC_DIR/LIBDEFLATE -I$SRC_DIR/LIBDEFLATE/common -I$PREFIX/include -L$PREFIX/lib"
+export CPPFLAGS="-I$SRC_DIR -I$SRC_DIR/LIBDEFLATE -I$SRC_DIR/LIBDEFLATE/common -I$PREFIX/include -L$PREFIX/lib"
 
-# build HTSLIB
-cd HTSLIB
-make lib-static
-cd -
+# pretend HTSLIB has been built
+touch libhts.a
 # build LIBDEFLATE
 cd LIBDEFLATE
 make
