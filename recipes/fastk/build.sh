@@ -9,5 +9,5 @@ touch LIBDEFLATE/libdeflate.a
 touch libhts.a
 touch deflate.lib
 # build fastk
-make
+make CC=$CC
 make install
