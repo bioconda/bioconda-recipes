@@ -8,7 +8,7 @@ touch HTSLIB/libhts.a
 touch LIBDEFLATE/libdeflate.a
 touch libhts.a
 touch deflate.lib
-find / -name zlib.h
+find / -name zlib.h 2> /dev/null || true
 # build fastk
 make CC=$CC
 make install
