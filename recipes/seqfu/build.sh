@@ -16,11 +16,13 @@ make
 
 ./bin/seqfu version || true
 
-if [[ -d scripts ]]; then
-  echo "## Copying utils"
-  chmod +x scripts/*
-  cp scripts/* bin/
-fi
+
+# Not necessary using `make`
+#if [[ -d scripts ]]; then
+#  echo "## Copying utils"
+#  chmod +x scripts/*
+#  cp scripts/* bin/
+#fi
 
 echo "## Current dir: $(pwd)"
 mv bin/* "$PREFIX"/bin/
