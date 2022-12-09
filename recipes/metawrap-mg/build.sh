@@ -21,7 +21,6 @@ echo "BLASTDB=~/NCBI_NT_DB" >> bin/config-metawrap
 echo "TAXDUMP=~/NCBI_TAX_DB" >> bin/config-metawrap
 
 chmod +x bin/config-metawrap
-chmod 777 $PREFIX/lib/python2.7/site-packages/checkm/DATA_CONFIG
 
 # copying over all necessary files
 mkdir -p $PREFIX/bin/
