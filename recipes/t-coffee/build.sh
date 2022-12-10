@@ -11,4 +11,7 @@ set -eu -o pipefail
 
 SHARE_DIR="${PREFIX}/libexec/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 
-./install all -exec="${PREFIX}/bin" -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS"
+mkdir -p "${PREFIX}/bin"
+sed -e "s|CHANGEME|${SHARE_DIR}|" "$RECIPE_DIR/t_coffee.sh" > "${PREFIX}/bin/t_coffee"
+
+./install all -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS"

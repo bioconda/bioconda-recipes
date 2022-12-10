@@ -8,5 +8,7 @@ else
 fi
 export MAX_N_PID_4_TCOFFEE
 export MCOFFEE_4_TCOFFEE=CHANGEME/mcoffee
+# last part of the directory is "linux" on linux and something else otherwise
+export PLUGINS_4_TCOFFEE=CHANGEME/plugins/*
 
-"CHANGEME/bin/t_coffee" "$@"
+exec "CHANGEME/bin/t_coffee" "$@"
