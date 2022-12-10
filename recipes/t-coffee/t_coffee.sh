@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 if [[ -f /proc/sys/kernel/pid_max ]] ; then
