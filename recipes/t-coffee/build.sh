@@ -13,6 +13,12 @@ SHARE_DIR="${PREFIX}/libexec/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 OS=$(./install get_os)
 
 mkdir -p "${PREFIX}/bin"
-sed -e "s|CHANGEME|${SHARE_DIR}|" -e "s|__OS__|${OS}|" "$RECIPE_DIR/t_coffee.sh" > "${PREFIX}/bin/t_coffee"
 
 ./install all -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS"
+
+# The installer may try to update dependencies and install them to bin/,
+# which will cause conflicts with the dependencies as separately packaged.
+# t_coffee itself is not installed here
+rm -fv ${PREFIX}/bin/*
+
+sed -e "s|CHANGEME|${SHARE_DIR}|" -e "s|__OS__|${OS}|" "$RECIPE_DIR/t_coffee.sh" > "${PREFIX}/bin/t_coffee"
