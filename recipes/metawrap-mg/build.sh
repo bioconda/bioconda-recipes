@@ -22,6 +22,7 @@ echo "TAXDUMP=~/NCBI_TAX_DB" >> bin/config-metawrap
 
 chmod +x bin/config-metawrap
 
+
 # copying over all necessary files
 mkdir -p $PREFIX/bin/
 cp bin/metaWRAP $PREFIX/bin/

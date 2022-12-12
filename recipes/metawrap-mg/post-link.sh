@@ -1,2 +1,3 @@
-
-chmod 777 $PREFIX/lib/python2.7/site-packages/checkm/DATA_CONFIG
+CHECKM_DIR="$( find "${PREFIX}/lib" -type d -name checkm )"
+find "${CHECKM_DIR}" -type f -name DATA_CONFIG \
+	-exec chmod 777 {} \;
