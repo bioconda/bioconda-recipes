@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
-if [[ -f /proc/sys/kernel/pid_max ]] ; then
+if [ -f /proc/sys/kernel/pid_max ] ; then
     MAX_N_PID_4_TCOFFEE=$(cat /proc/sys/kernel/pid_max)
 else
     MAX_N_PID_4_TCOFFEE=99998
