@@ -1,0 +1,63 @@
+{% set version = "1.8.5" %}
+{% set sha256 = "5df4879e98a43bd866c401eeb4b500472f0782e7c3708080cb8c667698e54dc5" %}
+
+package:
+  name: pavfinder
+  version: {{ version }}
+
+source:
+  url: https://github.com/bcgsc/pavfinder/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install -vv --no-deps --ignore-installed --no-cache-dir ."
+
+requirements:
+  host:
+    - pip
+    - python >=3
+  run:
+    - python >=3
+    - pysam >=0.8.1
+    - pybedtools >=0.6.9
+    - intspan >=0.701
+    - biopython
+    - ruffus
+    - bash
+    - make
+    - bwa
+    - samtools
+    - blast
+    - gmap
+    - rnabloom
+    - transabyss
+    - biobloomtools
+
+test:
+  commands:
+    - check_support.py -h > /dev/null
+    - extract_transcript_sequence.py -h > /dev/null
+    - filter_fasta.py -h > /dev/null
+    - find_sv_genome.py -h > /dev/null
+    - find_sv_transcriptome.py -h > /dev/null
+    - fusion-bloom help > /dev/null
+    - link_ssv.py -h > /dev/null
+    - map_splice.py -h > /dev/null
+    - pavfinder -h > /dev/null
+    - rescue_fusion.py -h > /dev/null
+    - tap -h > /dev/null
+    - tap2 -h > /dev/null
+
+about:
+  home: https://github.com/bcgsc/pavfinder
+  license: GPL-3.0
+  license_file:
+    - LICENSE
+  summary: 'PAVFinder is a Python package that detects structural variants from de novo assemblies.'
+
+extra:
+  identifiers:
+    - doi:10.1186/s12920-018-0402-6
+    - doi:10.1093/bioinformatics/btz902
