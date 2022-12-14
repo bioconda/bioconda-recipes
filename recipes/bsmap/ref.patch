@@ -1,0 +1,130 @@
+--- main.cpp	2015-06-08 18:44:16.000000000 +0200
++++ main.cpp.new	2022-10-09 19:23:32.590082061 +0200
+@@ -36,7 +36,7 @@
+ ofstream fout;
+ FILE *pout;
+ ReadClass read_a, read_b;
+-RefSeq ref;
++RefSeq refSeq;
+ 
+ bit32_t n_aligned=0, n_unique=0, n_multiple=0;   //number of reads aligned
+ bit32_t n_aligned_pairs=0, n_unique_pairs=0, n_multiple_pairs=0;  //number of pairs aligned
+@@ -67,7 +67,7 @@
+ 		a.ImportBatchReads(read_a.num, read_a.mreads);
+ 		pthread_mutex_unlock(&mutex_fin);
+ 		if(!n) break;
+-		a.Do_Batch(ref);
++		a.Do_Batch(refSeq);
+ 		pthread_mutex_lock(&mutex_fout);
+ 		if(param.stdout) cout<<a._str_align; 
+ 		else if(param.pipe_out) {fwrite(a._str_align.c_str(),1,a._str_align.size(),pout); fflush(pout);}
+@@ -103,7 +103,7 @@
+ 		a.ImportBatchReads(n1, read_a.mreads, read_b.mreads);
+ 		pthread_mutex_unlock(&mutex_fin);
+ 		if(!n1||(n1!=n2)) break;
+-		a.Do_Batch(ref);
++		a.Do_Batch(refSeq);
+ 		pthread_mutex_lock(&mutex_fout);
+ 		if(param.stdout) cout<<a._str_align; 
+ 		else if(param.pipe_out) {fwrite(a._str_align.c_str(),1,a._str_align.size(),pout); fflush(pout);}
+@@ -131,24 +131,24 @@
+ 	for(int i=0; i<param.num_procs; i++) pthread_join(pthread_ids[i], NULL);
+ };
+ 
+-void* wrapper_CalKmerFreq0(void*) {ref.t_CalKmerFreq(0); return NULL;}
+-void* wrapper_CalKmerFreq1(void*) {ref.t_CalKmerFreq(1); return NULL;}
+-void* wrapper_FillIndex0(void*) {ref.t_FillIndex(0); return NULL;}
+-void* wrapper_FillIndex1(void*) {ref.t_FillIndex(1); return NULL;}
++void* wrapper_CalKmerFreq0(void*) {refSeq.t_CalKmerFreq(0); return NULL;}
++void* wrapper_CalKmerFreq1(void*) {refSeq.t_CalKmerFreq(1); return NULL;}
++void* wrapper_FillIndex0(void*) {refSeq.t_FillIndex(0); return NULL;}
++void* wrapper_FillIndex1(void*) {refSeq.t_FillIndex(1); return NULL;}
+ 
+ void Do_Formatdb() {
+-	if(param.RRBS_flag) ref.CreateIndex();
++	if(param.RRBS_flag) refSeq.CreateIndex();
+ 	else {
+ 		pthread_t t0, t1;
+-		ref.InitialIndex();
++		refSeq.InitialIndex();
+ 		pthread_create(&t0, NULL, wrapper_CalKmerFreq0, NULL);
+ 		pthread_create(&t1, NULL, wrapper_CalKmerFreq1, NULL);
+ 		pthread_join(t0, NULL); pthread_join(t1, NULL);
+-		ref.AllocIndex();
++		refSeq.AllocIndex();
+ 		pthread_create(&t0, NULL, wrapper_FillIndex0, NULL);
+ 		pthread_create(&t1, NULL, wrapper_FillIndex1, NULL);
+ 		pthread_join(t0, NULL); pthread_join(t1, NULL);
+-		ref.FinishIndex();
++		refSeq.FinishIndex();
+ 	}
+ 	message<<"[bsmap] @"<<Curr_Time()<<" \tcreate seed table. "<<Cal_AllTime()<<" secs passed\n"; info(1);
+ };
+@@ -158,7 +158,7 @@
+ 	SingleAlign a;
+ 	while(read_a.LoadBatchReads(fin_a,gzfin_a,0)) {
+ 		a.ImportBatchReads(read_a.num, read_a.mreads);
+-		a.Do_Batch(ref);
++		a.Do_Batch(refSeq);
+ 		if(param.stdout) cout<<a._str_align; 
+ 		else if(param.pipe_out) {fwrite(a._str_align.c_str(),1,a._str_align.size(),pout); fflush(pout);}
+ 		else fout<<a._str_align;
+@@ -177,7 +177,7 @@
+ 		if(!n1||(n1!=n2))
+ 			break;
+ 		a.ImportBatchReads(n1, read_a.mreads, read_b.mreads);
+-		a.Do_Batch(ref);		
++		a.Do_Batch(refSeq);		
+ 		if(param.stdout) cout<<a._str_align; 
+ 		else if(param.pipe_out) {fwrite(a._str_align.c_str(),1,a._str_align.size(),pout); fflush(pout);}
+ 		else fout<<a._str_align;
+@@ -191,7 +191,7 @@
+ };
+ 
+ void Do_Formatdb() {
+-	ref.CreateIndex();
++	refSeq.CreateIndex();
+ 	message<<"[bsmap] @"<<Curr_Time()<<" \tcreate seed table. "<<Cal_AllTime()<<" secs passed\n"; info(1);
+ };
+ 
+@@ -484,8 +484,8 @@
+ 		}
+ 
+ 		if(param.out_sam&&param.sam_header) {
+-			for(bit32_t i=0;i<ref.total_num;i++){
+-				sprintf(_ch,"@SQ\tSN:%s\tLN:%u\n",ref.title[i<<1].name.c_str(),ref.title[i<<1].size);
++			for(bit32_t i=0;i<refSeq.total_num;i++){
++				sprintf(_ch,"@SQ\tSN:%s\tLN:%u\n",refSeq.title[i<<1].name.c_str(),refSeq.title[i<<1].size);
+ 				_str.append(_ch);
+ 			}
+ 			sprintf(_ch,"@PG\tID:BSMAP\tVN:%s\tCL:\"%s\"\n",version,command_line.c_str()); _str.append(_ch);
+@@ -555,8 +555,8 @@
+                                                 		
+ 		if(param.out_sam&&param.sam_header) {
+     		char _ch[1000];
+-	    	for(bit32_t i=0;i<ref.total_num;i++) {
+-	    	    sprintf(_ch,"@SQ\tSN:%s\tLN:%u\n",ref.title[i<<1].name.c_str(),ref.title[i<<1].size);
++	    	for(bit32_t i=0;i<refSeq.total_num;i++) {
++	    	    sprintf(_ch,"@SQ\tSN:%s\tLN:%u\n",refSeq.title[i<<1].name.c_str(),refSeq.title[i<<1].size);
+ 	    	    _str.append(_ch);
+ 	    	}
+ 			sprintf(_ch,"@PG\tID:BSMAP\tVN:%s\tCL:\"%s\"\n",version,command_line.c_str()); _str.append(_ch);
+@@ -602,8 +602,8 @@
+ 	if(param.gz_ref) gzfin_db.open(ref_file.c_str());
+ 	else fin_db.open(ref_file.c_str());
+ 
+-	ref.Run_ConvertBinseq(fin_db, gzfin_db);
+-	message<<"[bsmap] @"<<Curr_Time()<<" \t"<<ref.total_num<<" reference seqs loaded, total size "<<ref.sum_length<<" bp. "<<Cal_AllTime()<<" secs passed"<<endl;
++	refSeq.Run_ConvertBinseq(fin_db, gzfin_db);
++	message<<"[bsmap] @"<<Curr_Time()<<" \t"<<refSeq.total_num<<" reference seqs loaded, total size "<<refSeq.sum_length<<" bp. "<<Cal_AllTime()<<" secs passed"<<endl;
+ 	info(1);			
+ 	Do_Formatdb(); ref_time=Cal_AllTime(); read_time=0;
+ 	RunProcess(); 
+@@ -626,6 +626,6 @@
+ 		}
+ 	}
+ 	info(1);
+-    ref.ReleaseIndex();
++    refSeq.ReleaseIndex();
+ 	return 0;
+ }
