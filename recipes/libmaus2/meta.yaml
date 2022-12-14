@@ -10,7 +10,9 @@ package:
 build:
   # There's some issue with clang
   skip: True  # [osx]
-  number: 0
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('libmaus2', max_pin='x.x') }}
 
 source:
   url: https://gitlab.com/german.tischler/libmaus2/-/archive/{{ version }}-release-{{ datestamp }}/libmaus2-{{ version }}-release-{{ datestamp }}.tar.gz
@@ -27,13 +29,18 @@ requirements:
   host:
     - boost-cpp
     - libcurl
-    - snappy
+    # snappy 1.1.9 introduced a binary incompatible build change (https://github.com/mhx/dwarfs/issues/56#issuecomment-896857211)
+    # enabling -fno-rtti. libmaus needs typeid, which is only available with activated rtti.
+    # Hence, we stick with snappy 1.1.8
+    - snappy =1.1.8 
     - staden_io_lib >=1.14.14
   run:
     - boost-cpp
     - libcurl
-    - snappy
+    - snappy =1.1.8
     - staden_io_lib >=1.14.14
+  ignore_run_exports:
+    - snappy
 
 about:
   home: https://gitlab.com/german.tischler/libmaus2
