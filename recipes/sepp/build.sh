@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -ex
 python setup.py config -c
 
 # ensure SEPP's configuration file is at the correct location ...

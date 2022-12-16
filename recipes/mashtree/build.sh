@@ -24,4 +24,5 @@ perl ./Build.PL
 perl ./Build manifest
 perl ./Build install --installdirs site
 
-chmod u+rwx $PREFIX/bin/*
+chmod +x $PREFIX/bin/mashtre*
+chmod +x $PREFIX/bin/min_abundance*
