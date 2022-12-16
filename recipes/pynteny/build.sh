@@ -1,1 +1,4 @@
-poetry build
+#!/bin/sh
+
+poetry build --format wheel
+pip install --no-deps dist/pynteny*.whl
