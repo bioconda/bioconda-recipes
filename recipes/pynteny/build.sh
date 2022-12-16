@@ -1,1 +1,1 @@
-$PYTHON poetry build
+poetry build
