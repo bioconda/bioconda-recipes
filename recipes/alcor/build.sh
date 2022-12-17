@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 # Stop the script if any command returns a non-zero exit status
 set -e
@@ -26,12 +26,12 @@ if ! which cmake > /dev/null; then
 fi
 
 # Set up the build environment
+cd "$SRC_DIR/src/"
 
-cd $SRC_DIR/src/
 # Build and install the package
-cmake . -DCMAKE_INSTALL_PREFIX=$PREFIX
+cmake . -DCMAKE_INSTALL_PREFIX="$PREFIX"
 make
 
 # Copy the executable to the bin directory
 mkdir -p "$PREFIX/bin"
-cp $SRC_DIR/src/AlcoR $PREFIX/bin/
+cp "$SRC_DIR/src/AlcoR" "$PREFIX/bin/"
