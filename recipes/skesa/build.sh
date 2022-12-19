@@ -16,3 +16,7 @@ make -f $makefile BOOST_PATH=${PREFIX} CC="$CXX $CXXFLAGS"
 
 mkdir -p ${PREFIX}/bin
 mv skesa ${PREFIX}/bin/
+mv saute ${PREFIX}/bin/
+mv saute_prot ${PREFIX}/bin/
+mv gfa_connector ${PREFIX}/bin/
+mv kmercounter ${PREFIX}/bin/
