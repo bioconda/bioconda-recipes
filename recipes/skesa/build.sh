@@ -11,9 +11,14 @@ if [ "$(uname)" == "Darwin" ]; then
   sed -i.bak 's/-Wl,-Bdynamic -lrt//' $makefile
 fi
 
+LDFLAGS=-L${PREFIX}/lib
+
 make -f Makefile.nongs \
     BOOST_PATH=${PREFIX} \
-    CC="$CXX $CXXFLAGS"
+    CC="$CXX $CXXFLAGS" \
+    LDFLAGS=$LDFLAGS
 
 mkdir -p ${PREFIX}/bin
 mv skesa ${PREFIX}/bin/
+mv saute ${PREFIX}/bin/
+mv saute_prot ${PREFIX}/bin/
