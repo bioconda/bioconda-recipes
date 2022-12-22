@@ -1,8 +1,8 @@
 #!/bin/bash
+export LIBRARY_PATH="$PREFIX/lib"
 
 mkdir -p $PREFIX/bin
-export MACHTYPE=x86_64
-make CC=$CC
+make CC=$CC CFLAGS="-g -Wall -O2 -I$PREFIX/include -L$PREFIX/lib"
 cp psmc $PREFIX/bin
-cd utils && make CC=$CC
+cd utils && make CC=$CC CFLAGS="-g -Wall -O2 -I$PREFIX/include -L$PREFIX/lib"
 cp utils/* $PREFIX/bin
