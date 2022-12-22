@@ -5,4 +5,4 @@ mkdir -p $PREFIX/bin
 make CC=$CC CFLAGS="-g -Wall -O2 -I$PREFIX/include -L$PREFIX/lib"
 cp psmc $PREFIX/bin
 cd utils && make CC=$CC CFLAGS="-g -Wall -O2 -I$PREFIX/include -L$PREFIX/lib"
-cp utils/* $PREFIX/bin
+cp * $PREFIX/bin
