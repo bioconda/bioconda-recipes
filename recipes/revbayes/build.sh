@@ -20,7 +20,7 @@ cmake -DCMAKE_PREFIX_PATH=$PREFIX \
 	-DBOOST_ROOT=$PREFIX \
 	-DBoost_NO_SYSTEM_PATHS=ON \
 	-DBoost_NO_BOOST_CMAKE=ON \
-	.
+	..
 
 make
 
@@ -43,7 +43,7 @@ cmake -DCMAKE_PREFIX_PATH=$PREFIX \
 	-DBOOST_ROOT=$PREFIX \
 	-DBoost_NO_SYSTEM_PATHS=ON \
 	-DBoost_NO_BOOST_CMAKE=ON \
-	.
+	..
 
 make
 
