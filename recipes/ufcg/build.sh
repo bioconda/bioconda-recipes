@@ -14,7 +14,7 @@ cp "${UFCG_LIC}" "${TARGET}"
 
 # Alias JAR
 mkdir -p "${PREFIX}/bin"
-echo "#!/usr/bin/env bash" > "${UFCG_BIN}"
-echo "java -jar ${TARGET}/${UFCG_JAR} \$@" >> "${UFCG_BIN}"
+echo "#!/bin/sh" > "${UFCG_BIN}"
+echo "java -jar ${TARGET}/${UFCG_JAR} \"\$@\"" >> "${UFCG_BIN}"
 chmod +x "${UFCG_BIN}"
 
