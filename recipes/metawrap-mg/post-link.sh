@@ -1,15 +1,25 @@
-#!/bin/sh
+#!/bin/bash
 
 CHECKM_DIR="${PREFIX}/etc/checkm"
-CHECKM_URL="https://zenodo.org/record/7401545/files/checkm_data_2015_01_16.tar.gz"
+FN="checkm_data.tar.gz"
+MD5="631012fa598c43fdeb88c619ad282c4d" # md5 is provided by zenodo
+URL="https://zenodo.org/record/7401545/files/checkm_data_2015_01_16.tar.gz"
 
-wget -O checkm_data.tar.gz \
-	"${CHECKM_URL}"
+# create staging area
+STAGING="${PREFIX}/staging"
+mkdir -p "${STAGING}"
+TARBALL="${STAGING}/${FN}"
 
+# download the reference data
+wget -O "${TARBALL}" "${URL}"
+md5sum -c <<< "${MD5} ${TARBALL}" || exit 1
+
+# expand the database
 mkdir -p "${CHECKM_DIR}"
-
-tar -zxf checkm_data.tar.gz \
+tar -zxf "${TARBALL}" \
 	-C "${CHECKM_DIR}" \
 	--strip-components 1
+checkm data setRoot "${CHECKM_DIR}"
 
-checkm data setRoot	"${CHECKM_DIR}"
+# tidy up
+rm -r "${STAGING}"
