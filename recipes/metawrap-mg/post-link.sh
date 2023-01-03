@@ -22,8 +22,8 @@ tar -zxf "${TARBALL}" \
 	--strip-components 1
 
 # update the config
-echo "${CHECKM_DATA_PATH}"	\
-    | checkm data setRoot "${CHECKM_DATA_PATH}"
+echo "${CHECKM_DIR}"	\
+    | checkm data setRoot "${CHECKM_DIR}"
 
 # tidy up
 rm -r "${STAGING}"
