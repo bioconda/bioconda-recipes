@@ -3,7 +3,7 @@
 CHECKM_DIR="${PREFIX}/etc/checkm"
 FN="checkm_data.tar.gz"
 MD5="631012fa598c43fdeb88c619ad282c4d" # md5 is provided by zenodo
-URL="https://zenodo.org/record/7401545/files/checkm_data_2015_01_16.tar.gz"
+URL="https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz"
 
 # create staging area
 STAGING="${PREFIX}/staging"
@@ -19,7 +19,10 @@ mkdir -p "${CHECKM_DIR}"
 tar -zxf "${TARBALL}" \
 	-C "${CHECKM_DIR}" \
 	--strip-components 1
-checkm data setRoot "${CHECKM_DIR}"
+
+# update the config
+echo "${CHECKM_DATA_PATH}"	\
+    | checkm data setRoot "${CHECKM_DATA_PATH}"
 
 # tidy up
 rm -r "${STAGING}"
