@@ -10,4 +10,5 @@ export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
 export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
 # build statically linked binary with Rust
-RUST_BACKTRACE=1 cargo install --verbose --root $PREFIX --path .
+export LD=$CC
+C_INCLUDE_PATH=$PREFIX/include LIBRARY_PATH=$PREFIX/lib RUST_BACKTRACE=1 cargo install --verbose --root $PREFIX --path .
