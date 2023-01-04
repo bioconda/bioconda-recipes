@@ -2,7 +2,6 @@
 
 export CFLAGS="${CFLAGS} -fcommon"
 export CXXFLAGS="${CFLAGS} -fcommon"
-export CPPFLAGS="${CPPLAGS} -mmacosx-version-min=10.12"
 
 # Add workaround for SSH-based Git connections from Rust/cargo.  See https://github.com/rust-lang/cargo/issues/2078 for details.
 # We set CARGO_HOME because we don't pass on HOME to conda-build, thus rendering the default "${HOME}/.cargo" defunct.
