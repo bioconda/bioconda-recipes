@@ -6,7 +6,7 @@ mkdir -p $outdir
 mkdir -p $PREFIX/bin
 cp -R * $outdir/
 cp $RECIPE_DIR/peptide-shaker.py $outdir/peptide-shaker
-ls -l $outdir
 ln -s $outdir/peptide-shaker $PREFIX/bin
 chmod 0755 "${PREFIX}/bin/peptide-shaker"
-chmod -R a+rw "$outdir"/resources/
+ls $outdir/resources
+chmod -R a+rw $outdir/resources/
