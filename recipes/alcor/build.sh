@@ -13,7 +13,7 @@ trap 'echo "Interrupted, cleaning up..."' INT
 cd "$SRC_DIR/src/"
 
 # Build and install the package
-make
+make CC=$CC CFLAGS="-Wall -O3" -j8
 
 # Copy the executable to the bin directory
 mkdir -p "$PREFIX/bin"
