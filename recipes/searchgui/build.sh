@@ -25,3 +25,6 @@ ln -sf "$(which makeblastdb)" "$outdir"'/resources/makeblastdb/linux/linux_64bit
 
 # removing MsAmanda prebuilt binary for macosx until .NET Core 6 is released
 rm -f "$outdir"'/resources/MS Amanda/osx/'*
+
+# allowing to write temporary files in resources folder 
+chmod -R a+rw "$outdir"'/resources/'
