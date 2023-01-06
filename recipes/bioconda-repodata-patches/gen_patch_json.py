@@ -130,6 +130,10 @@ def _gen_new_index(repodata, subdir):
                     deps[i] = 'curl'
                     break
 
+        # Old perl- packages don't pin perl-5.22, time cut-off is Jan 1, 2018
+        if record_name.startswith('perl-') and (not has_dep(record, "perl")) and record.get('timestamp', 0) < 1514761200000:
+            deps.append('perl >=5.22.0,<5.23.0')
+
     return index
 
 
