@@ -1,4 +1,6 @@
 #!/bin/bash
+export C_INCLUDE_PATH=$C_INCLUDE_PATH:${PREFIX}/include
+export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
 
 # Stop the script if any command returns a non-zero exit status
 set -e
@@ -13,7 +15,8 @@ trap 'echo "Interrupted, cleaning up..."' INT
 cd "$SRC_DIR/src/"
 
 # Build and install the package
-make CC=$CC CFLAGS="-Wall -O3" -j8
+make CC=$CC CFLAGS="$CFLAGS -fcommon"
+
 
 # Copy the executable to the bin directory
 mkdir -p "$PREFIX/bin"
