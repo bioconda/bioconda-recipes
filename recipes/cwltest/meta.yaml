@@ -1,30 +1,32 @@
-{% set version = "2.2.20220521103021" %}
+{% set name = "cwltest" %}
+{% set version = "2.3.20230527113600" %}
 
 package:
-  name: cwltest
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
   url: https://pypi.io/packages/source/c/cwltest/cwltest-{{ version }}.tar.gz
-  sha256: 57ff03467a150140f7ea5662e8265d016f3e75481fe047b6a3dbdfc022cbc889
+  sha256: 6ca261e6a0fdc813ade20cf0b8ca340c9283a1aff1c4523deb78504290ac16ee
 
 build:
   number: 0
   noarch: python
   entry_points:
-    - cwltest=cwltest:main
-    - mock-cwl-runner=cwltest.tests.mock_cwl_runner:main
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv 
+    - cwltest=cwltest.main:main
+  script: {{ PYTHON }} -m pip install . -vv
 
 requirements:
   host:
     - pip
     - python >=3.6
   run:
-    - junit-xml >=1.8
     - python >=3.6
     - schema-salad >=5.0.20200220195218
+    - junit-xml >=1.8
+    - pytest
     - defusedxml
+    - typing_extensions
 
 test:
   imports:
@@ -32,9 +34,19 @@ test:
     - cwltest.tests
   commands:
     - cwltest --help
-    - mock-cwl-runner --help
+  requires:
+    - cwltool
+    - pytest
+  source_files:
+    - tests/test-data
 
 about:
   home: https://github.com/common-workflow-language/cwltest
   license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
   summary: Common workflow language testing framework
+
+extra:
+  recipe-maintainers:
+    - mr-c
