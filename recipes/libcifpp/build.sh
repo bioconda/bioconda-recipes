@@ -1,6 +1,6 @@
 mkdir build
 cd build
-cmake ..
+cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX
 cmake --build . --config Release
 ctest -C Release
 cmake --install . --prefix $PREFIX
