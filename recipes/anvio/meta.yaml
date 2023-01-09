@@ -1,39 +1,48 @@
-{% set version = "7" %}
+{% set name= "anvio" %}
+{% set version = "7.1" %}
 
 package:
-  name: anvio
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/merenlab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 7c021403ddd61d877cb1d0814ed4839aa31276f08079f58e483f3987611dbd66
 
 build:
-  noarch: generic
-  number: 1
+  number: 
+  noarch: python
+  script:
+    - "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
   run:
-    - anvio-minimal =={{ version }}
-    - prodigal
-    - mcl
-    - muscle
-    - hmmer
-    - diamond
+    - bioconductor-qvalue
     - blast
-    - megahit
-    - spades
     - bowtie2
     - bwa
-    - samtools
-    - centrifuge
-    - trimal
-    - iqtree
+    - centrifuge-core
+    - diamond
     - fastani
-    - trnascan-se
+    - fasttree
+    - hmmer
+    - iqtree
+    - mcl
+    - megahit
+    - muscle=3.8.1551
+    - prodigal
+    - python>=3.7
     - r-base
-    - r-stringi
-    - r-tidyverse
     - r-magrittr
     - r-optparse
-    - bioconductor-qvalue
-    - fasttree
+    - r-stringi
+    - r-tidyverse
+    - samtools=1.9
+    - spades
+    - sqlite>=3.31.1
+    - tbb=2019.8
+    - trimal
+    - trnascan-se
 
 test:
   commands:
@@ -50,3 +59,6 @@ extra:
   container:
     # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
     extended-base: True
+  recipe-maintainers:
+    - meren
+    - vinisalazar
