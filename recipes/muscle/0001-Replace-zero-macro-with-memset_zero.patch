@@ -1,0 +1,94 @@
+From e2fc2cc23a2acbee4d9c7d0eeae289024432feec Mon Sep 17 00:00:00 2001
+From: Nicola Soranzo <nicola.soranzo@earlham.ac.uk>
+Date: Thu, 10 Feb 2022 01:31:21 +0000
+Subject: [PATCH 1/2] Replace `zero` macro with `memset_zero`
+
+The `zero` and `memset_zero` macros defined in `myutils.h` are the same, but
+`zero` interferes with LLVM's libcxx when compiling on macOS using Clang:
+
+In file included from addconfseq.cpp:1:
+In file included from ./muscle.h:23:
+In file included from ./multisequence.h:4:
+In file included from ./sequence.h:6:
+In file included from /usr/local/miniconda/envs/bioconda/conda-bld/muscle_1644453677064/_build_env/bin/../include/c++/v1/fstream:184:
+In file included from /usr/local/miniconda/envs/bioconda/conda-bld/muscle_1644453677064/_build_env/bin/../include/c++/v1/ostream:137:
+In file included from /usr/local/miniconda/envs/bioconda/conda-bld/muscle_1644453677064/_build_env/bin/../include/c++/v1/ios:215:
+In file included from /usr/local/miniconda/envs/bioconda/conda-bld/muscle_1644453677064/_build_env/bin/../include/c++/v1/__locale:18:
+In file included from /usr/local/miniconda/envs/bioconda/conda-bld/muscle_1644453677064/_build_env/bin/../include/c++/v1/mutex:190:
+/usr/local/miniconda/envs/bioconda/conda-bld/muscle_1644453677064/_build_env/bin/../include/c++/v1/__mutex_base:447:25: error: too few arguments provided to function-like macro invocation
+    if (__d <= __d.zero())
+                        ^
+./myutils.h:361:9: note: macro 'zero' defined here
+> #define zero(a, n)      memset((a), 0, (n)*sizeof(a[0]))
+          ^
+1 error generated.
+make: *** [Makefile:53: Darwin/addconfseq.o] Error 1
+
+This is the call to `zero` in libcxx:
+
+https://github.com/llvm/llvm-project/blob/b35be6fe98e30b2373e8fdf024ef8c13a32121d7/libcxx/include/__mutex_base#L444
+
+which is supposed to call:
+
+https://en.cppreference.com/w/cpp/chrono/duration/zero
+---
+ src/countsort.h  | 2 +-
+ src/ensemble.cpp | 2 +-
+ src/myutils.cpp  | 2 +-
+ src/myutils.h    | 1 -
+ 4 files changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/src/countsort.h b/src/countsort.h
+index 3f8d3f7..61b76e6 100644
+--- a/src/countsort.h
++++ b/src/countsort.h
+@@ -20,7 +20,7 @@ public:
+ 	CountSortMem()
+ 		{
+ 		m_MaxValueCount = 0;
+-		zero(m_Vecs, NVEC);
++		memset_zero(m_Vecs, NVEC);
+ 		}
+ 
+ 	void Free()
+diff --git a/src/ensemble.cpp b/src/ensemble.cpp
+index 7382db2..331f5f7 100644
+--- a/src/ensemble.cpp
++++ b/src/ensemble.cpp
+@@ -41,7 +41,7 @@ void Ensemble::SortMSA(MSA &M)
+ 	M.GetLabelToSeqIndex(Labels2, LabelToSeqIndex2);
+ 
+ 	char **szSeqsSorted = myalloc(char *, SeqCount);
+-	zero(szSeqsSorted, SeqCount);
++	memset_zero(szSeqsSorted, SeqCount);
+ 	for (uint SeqIndex = 0; SeqIndex < SeqCount; ++SeqIndex)
+ 		{
+ 		const string &Label = Labels2[SeqIndex];
+diff --git a/src/myutils.cpp b/src/myutils.cpp
+index 8eca591..9d7d53c 100644
+--- a/src/myutils.cpp
++++ b/src/myutils.cpp
+@@ -807,7 +807,7 @@ static char *GetThreadStr()
+ 		{
+ 		unsigned NewThreadStrCount = ThreadIndex + 4;
+ 		char **NewThreadStrs = myalloc(char *, NewThreadStrCount);
+-		zero(NewThreadStrs, NewThreadStrCount);
++		memset_zero(NewThreadStrs, NewThreadStrCount);
+ 		if (g_ThreadStrCount > 0)
+ 			memcpy(NewThreadStrs, g_ThreadStrs, g_ThreadStrCount*sizeof(char *));
+ 		g_ThreadStrs = NewThreadStrs;
+diff --git a/src/myutils.h b/src/myutils.h
+index d242607..49d28ef 100644
+--- a/src/myutils.h
++++ b/src/myutils.h
+@@ -358,7 +358,6 @@ inline bool feq(double x, double y)
+ #define asserteq(x, y)	assert(feq(x, y))
+ #define assertaeq(x, y)	asserta(feq(x, y))
+ 
+-#define	zero(a, n)	memset((a), 0, (n)*sizeof(a[0]))
+ #define	memset_zero(a, n)	memset((a), 0, (n)*sizeof(a[0]))
+ 
+ void ResetRand(unsigned Seed);
+-- 
+2.25.1
+

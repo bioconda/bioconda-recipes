@@ -1,5 +1,5 @@
 {% set name = "tigmint" %}
-{% set version = "1.2.5" %}
+{% set version = "1.2.9" %}
 
 package:
   name: "{{ name }}"
@@ -7,23 +7,27 @@ package:
 
 source:
   url: https://github.com/bcgsc/tigmint/releases/download/v{{ version }}/tigmint-{{ version }}.tar.gz
-  sha256: 15a56748f19732462c0445fe9df2f737a4bf8caa97dbc0fe6e943e3fd1c6b5f0 
+  sha256: fab30bcff0d0831222ce0b89df5dc97444661566052276094149e16cd3164dc3 
 
 build:
   number: 0
-  skip: True  # [py<30]
+  skip: True  # [py<38]
 
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+  host:
     - make
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
-  host:
+    - cmake
+    - meson
+    - ninja
     - pip
     - python
     - zlib
+    - btllib
   run:
     - python
     - intervaltree
@@ -33,6 +37,8 @@ requirements:
     - minimap2
     - bwa
     - zsh
+    - samtools
+    - btllib
 
 test:
   commands:
