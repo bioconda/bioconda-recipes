@@ -19,5 +19,5 @@ make CC=$CC CFLAGS="$CFLAGS -fcommon"
 
 
 # Copy the executable to the bin directory
-mkdir -p "$PREFIX/bin"
+mkdir -f "MakefileConda" -p "$PREFIX/bin"
 cp "$SRC_DIR/src/AlcoR" "$PREFIX/bin/"
