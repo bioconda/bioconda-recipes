@@ -18,7 +18,8 @@ trap 'echo "Interrupted, cleaning up..."' INT
 cd "$SRC_DIR/src/"
 
 # Build and install the package
-make -f "MakefileConda" CC=$CC  INC="$PREFIX/include" LIB="$PREFIX/lib"
+cmake .
+make CC=$CC  INC="$PREFIX/include" LIB="$PREFIX/lib"
 
 
 # Copy the executable to the bin directory
