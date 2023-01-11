@@ -3,7 +3,11 @@
 #source <(curl -Ls http://bit.ly/redundans_installer)
 #cd ..
 if [ ! -d "$PREFIX/opt" ] ; then
-	mkdir "$PREFIX/opt"
+	mkdir -p "$PREFIX/opt"
+fi
+
+if [ ! -d "$PREFIX/bin" ] ; then
+    mkdir -p "$PREFIX/bin"
 fi
 
 export https_proxy="http://in:3128"
