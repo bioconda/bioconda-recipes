@@ -1,6 +1,9 @@
 #!/bin/bash
 export C_INCLUDE_PATH=$C_INCLUDE_PATH:${PREFIX}/include
 export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
+export CPATH=${PREFIX}/include
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 # Stop the script if any command returns a non-zero exit status
 set -e
@@ -15,7 +18,7 @@ trap 'echo "Interrupted, cleaning up..."' INT
 cd "$SRC_DIR/src/"
 
 # Build and install the package
-make -f "MakefileConda" CC=$CC CFLAGS="$CFLAGS -fcommon" -lm
+make -f "MakefileConda" CXX=$CXX  INC="$PREFIX/include" LIB="$PREFIX/lib"
 
 
 # Copy the executable to the bin directory
