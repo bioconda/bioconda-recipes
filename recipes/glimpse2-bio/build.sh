@@ -3,7 +3,6 @@
 for subdir in chunk concordance ligate phase split_reference
 do
     pushd $subdir
-    
     # Build the binaries
     make \
         -j 4 \
