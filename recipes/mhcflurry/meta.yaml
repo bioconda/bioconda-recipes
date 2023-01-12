@@ -1,17 +1,16 @@
 {% set name = "mhcflurry" %}
-{% set version = "2.0.1" %}
+{% set version = "2.0.6" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 02be1c624d3d099227c5cb2b00622db79a6b6aa5e6d2d2c56c065440b1dbcceb
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 06f68b39a4d8cfd181bccbc8d1ef1b961658e5fb1068a5fc174f1dadd8ddc741
 
 build:
   number: 0
-  noarch: python
   entry_points:
     - mhcflurry-downloads = mhcflurry.downloads_command:run
     - mhcflurry-predict = mhcflurry.predict_command:run
@@ -25,23 +24,30 @@ build:
     - mhcflurry-calibrate-percentile-ranks = mhcflurry.calibrate_percentile_ranks_command:run
     - mhcflurry-class1-train-presentation-models = mhcflurry.train_presentation_models_command:run
     - _mhcflurry-cluster-worker-entry-point = mhcflurry.cluster_parallelism:worker_entry_point
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
   host:
+    - appdirs
+    - mhcgnomes >=0.8.4
+    - np_utils
+    - pandas >=0.20.3
     - pip
     - python
+    - pyyaml
+    - scikit-learn
+    - six
+    - tqdm
   run:
     - appdirs
-    - mhcnames
+    - mhcgnomes >=0.8.4
+    - np_utils
     - pandas >=0.20.3
     - python
     - pyyaml
     - scikit-learn
     - six
-    - tensorflow >=2.2.0
     - tqdm
-    - np_utils
 
 test:
   imports:
@@ -58,15 +64,17 @@ test:
     - mhcflurry-class1-select-processing-models --help
     - mhcflurry-calibrate-percentile-ranks --help
     - mhcflurry-class1-train-presentation-models --help
+    - _mhcflurry-cluster-worker-entry-point --help
 
 about:
-  home: https://github.com/hammerlab/mhcflurry
-  license: Apache License Version 2.0
-  summary: Peptide-MHC I binding affinity prediction
-  doc_url: http://openvax.github.io/mhcflurry/
+  home: "https://github.com/openvax/mhcflurry"
+  license: Apache Software
+  license_family: APACHE
+  license_file: 
+  summary: "MHC Binding Predictor"
+  doc_url: 
+  dev_url: 
 
 extra:
   recipe-maintainers:
-    - lkuchenb
-  identifiers:
-    - doi:10.1016/j.cels.2018.05.014
+    - jonasscheid
