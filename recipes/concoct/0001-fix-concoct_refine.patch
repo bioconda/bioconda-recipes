@@ -1,0 +1,43 @@
+diff --git a/bin/concoct_refine b/bin/concoct_refine
+index 13e5fc2..b5649fc 100755
+--- a/bin/concoct_refine
++++ b/bin/concoct_refine
+@@ -16,15 +16,15 @@ def main(args):
+     
+     original_data = p.read_csv(args.original_data, header=0, index_col=0)
+     
+-    original_data_matrix = original_data.values()
++    original_data_matrix = original_data.values
+     
+     scg_freq = p.read_csv(args.scg_file, header=0, index_col=0)
+     
+-    scg_freq_matrix = scg_freq.as_matrix()
++    scg_freq_matrix = scg_freq.values
+     
+     med_scgs = np.median(scg_freq_matrix, axis=1) 
+     
+-    clusters_matrix = clusters.as_matrix()
++    clusters_matrix = clusters.values
+     
+     cluster_freq = np.bincount(clusters_matrix[:,0]) 
+     
+@@ -45,7 +45,7 @@ def main(args):
+             
+             NK = med_scgs[k]*args.expansion_factor
+             print("Run CONCOCT for " + str(k) + "with " + str(NK) + "clusters" + " using " + str(args.threads) + "threads")
+-            assigns = vbgmm.fit(np.copy(transform_k,order='C'), int(NK), args.seed, args.threads)
++            assigns = vbgmm.fit(np.copy(transform_k,order='C'), int(NK), args.seed, args.threads, args.i)
+             kK = np.max(assigns) + 1
+             
+             
+@@ -76,6 +76,10 @@ if __name__ == "__main__":
+     parser.add_argument('-t','--threads',default=1, type=int,
+                         help=("number of threads to use defaults to one"))
+ 
++    parser.add_argument('-i','--iterations',type=int, default=500,
++      help=('Specify maximum number of iterations for the VBGMM. '
++            'Default value is 500'))
++    
+     args = parser.parse_args()
+ 
+     main(args)
