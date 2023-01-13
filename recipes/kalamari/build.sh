@@ -6,6 +6,6 @@ EXES="downloadKalamari.pl  generate_sepia_reference.py  getExactTaxonomy.pl  mob
 
 for i in $EXES; do
   chmod -v 755 bin/$i
-  cp -vf $i $PREFIX/bin
+  cp -vf bin/$i $PREFIX/bin
 done
 
