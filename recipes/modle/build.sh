@@ -6,6 +6,7 @@ export CONAN_NON_INTERACTIVE=1
 
 export CMAKE_BUILD_PARALLEL_LEVEL=${CPU_COUNT}
 export CTEST_PARALLEL_LEVEL=${CPU_COUNT}
+export CONAN_USER_HOME="$(mktemp -d)"
 
 declare -a CMAKE_PLATFORM_FLAGS
 if [[ ${HOST} =~ .*darwin.* ]]; then
@@ -22,7 +23,7 @@ fi
 
 scratch=$(mktemp -d)
 
-trap "rm -rf '$scratch'" EXIT
+trap "rm -rf '$scratch' '$CONAN_USER_HOME'" EXIT
 
 TMPBIN="$scratch/bin"
 mkdir "$TMPBIN"
