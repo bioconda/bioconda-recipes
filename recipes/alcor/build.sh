@@ -1,9 +1,4 @@
 #!/bin/bash
-export C_INCLUDE_PATH=$C_INCLUDE_PATH:${PREFIX}/include
-export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
-export CPATH=${PREFIX}/include
-export CFLAGS="$CFLAGS -I$PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 # Stop the script if any command returns a non-zero exit status
 set -e
@@ -19,8 +14,7 @@ cd "$SRC_DIR/src/"
 
 # Build and install the package
 cmake .
-make CC=$CC  INC="$PREFIX/include" LIB="$PREFIX/lib"
-
+make CC=$CC
 
 # Copy the executable to the bin directory
 mkdir -p "$PREFIX/bin"
