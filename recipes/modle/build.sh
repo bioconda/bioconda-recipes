@@ -6,7 +6,6 @@ export CONAN_NON_INTERACTIVE=1
 
 export CMAKE_BUILD_PARALLEL_LEVEL=${CPU_COUNT}
 export CTEST_PARALLEL_LEVEL=${CPU_COUNT}
-export CONAN_USER_HOME="$(mktemp -d)"
 
 declare -a CMAKE_PLATFORM_FLAGS
 if [[ ${HOST} =~ .*darwin.* ]]; then
@@ -22,28 +21,22 @@ else
 fi
 
 scratch=$(mktemp -d)
+export CONAN_USER_HOME="$scratch/conan"
 
-trap "rm -rf '$scratch' '$CONAN_USER_HOME'" EXIT
+trap "rm -rf '$scratch'" EXIT
 
-TMPBIN="$scratch/bin"
-mkdir "$TMPBIN"
-export PATH="$TMPBIN:$PATH"
+if [[ ! ${HOST} =~ .*darwin.* ]]; then
+  # Building b2 with Conan usually fails when using generic cc/c++ compiler wrappers/links
+  printf '[requires]\nb2/4.9.2\n' > conanfile.txt
 
-# Building b2/4.9.2 usually fails when using generic cc/c++ compiler wrappers/links
-printf '[requires]\nb2/4.9.2\n' > conanfile.txt
-if [[ ${HOST} =~ .*darwin.* ]]; then
-  ln -sf "$CC" "$TMPBIN/apple-clang"
-  ln -sf "$CXX" "$TMPBIN/apple-clang++"
+  TMPBIN="$scratch/bin"
+  mkdir "$TMPBIN"
 
-  export CC="$TMPBIN/apple-clang"
-  export CXX="$TMPBIN/apple-clang++"
-  conan install conanfile.txt -s compiler=apple-clang --build=b2/4.9.2
-else
   ln -sf "$CC" "$TMPBIN/gcc"
   ln -sf "$CXX" "$TMPBIN/g++"
 
-  export CC="$TMPBIN/gcc"
-  export CXX="$TMPBIN/g++"
+  CC="$TMPBIN/gcc" \
+  CXX="$TMPBIN/g++" \
   conan install conanfile.txt -s compiler=gcc --build=b2/4.9.2
 fi
 
@@ -58,8 +51,6 @@ cmake -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" \
       -DGIT_HEAD_SHA1="$PKG_HASH"            \
       -DGIT_DESCRIBE="${PKG_BUILD_STRING}"   \
       -DCMAKE_INSTALL_PREFIX="$PREFIX"       \
-      -DCMAKE_C_COMPILER="$CC"               \
-      -DCMAKE_CXX_COMPILER="$CXX"            \
       ${CMAKE_PLATFORM_FLAGS[@]}             \
       -B build/                              \
       -S .
