@@ -13,11 +13,9 @@ trap 'echo "Interrupted, cleaning up..."' INT
 cd "$SRC_DIR/src/"
 
 # Build and install the package
-cmake .
-export CFLAGS="$CFLAGS -fno-common -I$PREFIX/include"
-make CC=$CC
+cmake . -DCMAKE_C_COMPILER=$CC
+make
 
 # Copy the executable to the bin directory
 mkdir -p "$PREFIX/bin"
 cp "$SRC_DIR/src/AlcoR" "$PREFIX/bin/"
-
