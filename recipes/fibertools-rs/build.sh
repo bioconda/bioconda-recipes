@@ -1,23 +1,27 @@
 #!/bin/bash -e
 
 # loading the pytorch c++ libs
-if [[ ${target_platform} =~ linux.* ]]; then
-    curl https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.12.0%2Bcpu.zip \
-        --output libtorch.zip
-elif [[ ${target_platform} =~ osx.* ]]; then
-    curl https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.12.0.zip \
-        --output libtorch.zip
+if [ "wget" == "wget" ]; then
+    if [[ ${target_platform} =~ linux.* ]]; then
+        curl https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-1.12.0%2Bcpu.zip \
+            --output libtorch.zip
+        export LIBTORCH_CXX11_ABI=0
+    elif [[ ${target_platform} =~ osx.* ]]; then
+        curl https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.12.0.zip \
+            --output libtorch.zip
+    fi
+    unzip libtorch.zip -d ${PREFIX}
+    rm libtorch.zip
+    export LIBTORCH=${PREFIX}/libtorch
+else
+    # This doesnt seem to work at all
+    conda install pytorch=1.12 pytorch-cpu -c pytorch -c nvidia
+    export LIBTORCH=$(python -c 'import torch; from pathlib import Path; print(Path(torch.__file__).parent)')
+    export LIBTORCH_CXX11_ABI=0
 fi
-unzip libtorch.zip -d ${PREFIX}
-rm libtorch.zip
-echo "ls PREFIX"
-ls ${PREFIX}
-echo "ls PREFIX/libtorch"
-ls ${PREFIX}/libtorch/
-export LIBTORCH=${PREFIX}/libtorch
-export LD_LIBRARY_PATH=${LIBTORCH}/lib:${LD_LIBRARY_PATH}
-export DYLD_LIBRARY_PATH=${LIBTORCH}/lib:${DYLD_LIBRARY_PATH}
-#export LIBTORCH_CXX11_ABI=0
+# add to library path
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${LIBTORCH}/lib
+export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
 
 # TODO: Remove the following export when pinning is updated and we use
 #       {{ compiler('rust') }} in the recipe.
