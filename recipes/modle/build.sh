@@ -7,8 +7,6 @@ export CONAN_NON_INTERACTIVE=1
 export CMAKE_BUILD_PARALLEL_LEVEL=${CPU_COUNT}
 export CTEST_PARALLEL_LEVEL=${CPU_COUNT}
 
-
-
 if [[ ${DEBUG_C} == yes ]]; then
   CMAKE_BUILD_TYPE=Debug
 else
@@ -43,14 +41,11 @@ else
   conan install "$scratch/conanfile.txt" -s compiler=gcc --build=b2/4.9.2
 fi
 
-# Catch2 is not needed when -DMODLE_ENABLE_TESTING=OFF (and is causing some troubles on MacOS)
-sed -i.old 's/.*catch2.*//' conanfile.py
-
 # https://docs.conda.io/projects/conda-build/en/stable/user-guide/environment-variables.html#environment-variables-set-during-the-build-process
 mkdir build
 cmake -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" \
       -DENABLE_DEVELOPER_MODE=OFF            \
-      -DMODLE_ENABLE_TESTING=OFF             \
+      -DMODLE_ENABLE_TESTING=ON              \
       -DGIT_RETRIEVED_STATE=true             \
       -DGIT_TAG="v${PKG_VERSION#v}"          \
       -DGIT_IS_DIRTY=false                   \
@@ -64,6 +59,13 @@ cmake -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" \
       -S .
 
 cmake --build build
+
+ctest --test-dir build/    \
+      --schedule-random    \
+      --output-on-failure  \
+      --no-tests=error     \
+      --timeout 100
+
 cmake --install build
 
 "${PREFIX}/bin/modle" --version
