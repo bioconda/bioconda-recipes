@@ -15,7 +15,7 @@ cd "$SRC_DIR/src/"
 # Build and install the package
 cmake .
 export CFLAGS="$CFLAGS -fno-common -I$PREFIX/include"
-make CC=$CC
+make CXX=$CXX
 
 # Copy the executable to the bin directory
 mkdir -p "$PREFIX/bin"
