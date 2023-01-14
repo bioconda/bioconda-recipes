@@ -13,9 +13,8 @@ trap 'echo "Interrupted, cleaning up..."' INT
 cd "$SRC_DIR/src/"
 
 # Build and install the package
-cmake .
-export CFLAGS="$CFLAGS -fno-common -I$PREFIX/include"
-make CXX=$CXX
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_C_COMPILER=$CC .
+make
 
 # Copy the executable to the bin directory
 mkdir -p "$PREFIX/bin"
