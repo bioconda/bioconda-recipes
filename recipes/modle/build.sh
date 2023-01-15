@@ -58,15 +58,15 @@ cmake -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" \
       -B build/                              \
       -S .
 
-cmake --build build
+cmake --build build/
 
-ctest --test-dir build/    \
-      --schedule-random    \
-      --output-on-failure  \
-      --no-tests=error     \
+ctest --test-dir build/   \
+      --schedule-random   \
+      --output-on-failure \
+      --no-tests=error    \
       --timeout 100
 
-cmake --install build
+cmake --install build/
 
 "${PREFIX}/bin/modle" --version
 "${PREFIX}/bin/modle_tools" --version
