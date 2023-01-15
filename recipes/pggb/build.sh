@@ -7,3 +7,5 @@ sed -i ${n}'a\if [ $show_version == true ]; then echo "pggb '$PKG_VERSION'"; exi
 
 mkdir -p $PREFIX/bin
 mv pggb $PREFIX/bin
+mv partition-before-pggb $PREFIX/bin
+mv scripts/*.py $PREFIX/bin
