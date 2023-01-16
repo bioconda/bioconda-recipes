@@ -40,7 +40,7 @@ cd build
 
 
 #cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DTABIXPP_LOCAL:STRING=$PREFIX/lib
-cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX 
+cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DZIG=OFF
 cmake --build . 
 cmake --install .
 #cp -n ../scripts/* $PREFIX/bin
