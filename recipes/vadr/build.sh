@@ -33,6 +33,7 @@ echo "export VADRBIOEASELDIR=${PREFIX}/bin" >> ${PREFIX}/etc/conda/activate.d/va
 echo "export VADRSEQUIPDIR=${PREFIX}/bin" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
 echo "export VADRBLASTDIR=${PREFIX}/bin" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
 echo "export VADRFASTADIR=${PREFIX}/bin" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
+echo "export VADRMINIMAP2DIR=${PREFIX}/bin" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
 echo "export PERL5LIB=${VADR_DIR}:${PERL5LIB}" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
 chmod a+x ${PREFIX}/etc/conda/activate.d/vadr.sh
 
@@ -48,6 +49,7 @@ echo "unset VADRBIOEASELDIR" >> ${PREFIX}/etc/conda/deactivate.d/vadr.sh
 echo "unset VADRSEQUIPDIR" >> ${PREFIX}/etc/conda/deactivate.d/vadr.sh
 echo "unset VADRBLASTDIR" >> ${PREFIX}/etc/conda/deactivate.d/vadr.sh
 echo "unset VADRFASTADIR" >> ${PREFIX}/etc/conda/deactivate.d/vadr.sh
+echo "unset VADRMINIMAP2DIR" >> ${PREFIX}/etc/conda/deactivate.d/vadr.sh
 echo "unset PERL5LIB" >> ${PREFIX}/etc/conda/deactivate.d/vadr.sh
 chmod a+x ${PREFIX}/etc/conda/deactivate.d/vadr.sh
 
