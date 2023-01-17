@@ -10,3 +10,4 @@ mkdir -p $PREFIX/bin
 mv pggb $PREFIX/bin
 mv partition-before-pggb $PREFIX/bin
 mv scripts $PREFIX/bin
+mv scripts/*.py $PREFIX/bin
