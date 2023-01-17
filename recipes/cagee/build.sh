@@ -10,7 +10,7 @@ else
   export LDFLAGS="-L$PREFIX/lib"
   export MKL_THREADING_LAYER="GNU"
 fi
-# https://bioconda.github.io/troubleshooting.html#zlib-errors
+# https://bioconda.github.io/contributor/troubleshooting.html#zlib-errors
 export CFLAGS="-I$PREFIX/include"
 export CPATH=${PREFIX}/include
 
