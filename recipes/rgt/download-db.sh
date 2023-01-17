@@ -23,13 +23,13 @@ rm RGT.tar.gz
 cd ${RGTDATA}
 
 # download Genomic Data
-setupGenomicData.py --all
-setupGenomicData.py --hg19-rm
-setupGenomicData.py --hg38-rm
-setupGenomicData.py --mm9-rm
+# setupGenomicData.py --all
+# setupGenomicData.py --hg19-rm
+# setupGenomicData.py --hg38-rm
+# setupGenomicData.py --mm9-rm
 
 # download Logo Data
-setupLogoData.py --all
+# setupLogoData.py --all
 
 echo "RGT database is downloaded."
 
