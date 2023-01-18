@@ -42,7 +42,7 @@ cp ${RECIPE_DIR}/download-db.sh ${PREFIX}/bin
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
 cat <<EOF >> ${PREFIX}/etc/conda/activate.d/rgt.sh
 export RGTDATA=${target}/db/
-export 	DOWNLOAD_URL=https://github.com/CostaLab/reg-gen/archive/refs/tags/${PKG_VERSION}.tar.gz
+export 	DOWNLOAD_URL=https://github.com/CostaLab/reg-gen/archive/refs/tags/v${PKG_VERSION}.tar.gz
 EOF
 
 cat <<EOF >> ${PREFIX}/etc/conda/deactivate.d/rgt.sh
