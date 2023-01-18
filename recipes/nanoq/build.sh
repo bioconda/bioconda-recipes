@@ -1,8 +1,20 @@
-#!/bin/bash -euo
+#!/bin/bash
+set -ex
 
-# Add workaround for SSH-based Git connections from Rust/cargo.  See https://github.com/rust-lang/cargo/issues/2078 for details.
-# We set CARGO_HOME because we don't pass on HOME to conda-build, thus rendering the default "${HOME}/.cargo" defunct.
-export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
+# adopted from: https://github.com/bioconda/bioconda-recipes/blob/master/recipes/rasusa/build.sh 
 
-# build statically linked binary with Rust
-RUST_BACKTRACE=1 cargo install --verbose --path . --root $PREFIX
+RUST_BACKTRACE=full
+
+if [ "$(uname)" == "Darwin" ]; then
+    # apparently the HOME variable isn't set correctly, and circle ci 
+    # output indicates the following as the home directory
+    export HOME="/Users/distiller"
+    export HOME=`pwd`
+    echo "HOME is $HOME"
+
+    # according to https://github.com/rust-lang/cargo/issues/2422#issuecomment-198458960 
+    # removing circle ci default configuration solves cargo trouble downloading crates
+    # git config --global --unset url.ssh://git@github.com.insteadOf
+fi
+
+cargo install -v --locked --root "$PREFIX" --path .

@@ -5,8 +5,7 @@ export BLAST_SRC_DIR="${SRC_DIR}/blast"
 cd $BLAST_SRC_DIR/c++/
 
 export CFLAGS="$CFLAGS -O2"
-# fails with -std=c++17
-export CXXFLAGS="$CXXFLAGS -O2 -std=c++14"
+export CXXFLAGS="$CXXFLAGS -O2 -std=c++17"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CC_FOR_BUILD=$CC
@@ -93,7 +92,9 @@ cd ReleaseMT
 ln -s $BLAST_SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
 
 cd build
-make -j${CPU_COUNT} -f Makefile.flat $apps
+echo "RUNNING MAKE"
+#make -j${CPU_COUNT} -f Makefile.flat $apps
+make -j1 -f Makefile.flat $apps
 
 # remove temporary link
 rm $LIB_INSTALL_DIR
@@ -110,5 +111,3 @@ sed -i.bak 's/mktemp.*/mktemp`/; s/exit 1/exit 0/; s/^export PATH=\/bin:\/usr\/b
 
 #extra log to check all exe are present
 ls -s $PREFIX/bin/
-
-

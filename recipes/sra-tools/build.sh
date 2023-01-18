@@ -1,28 +1,5 @@
 #!/bin/bash -e
 
-# Build uses hard-coded references to gcc/g++/etc. and does not properly honor all *FLAGS.
-make_wrapper() {
-    [ -n "${2:+x}" ] || return 0
-    local exe
-    exe="${BUILD_PREFIX}/bin/${3}"
-    rm -f "${exe}"
-    touch "${exe}"
-    chmod +x "${exe}"
-    cat > "${exe}" <<EOF
-#! /bin/sh
-exec ${2} ${1} ${CPPFLAGS} ${LDFLAGS} "\${@}"
-EOF
-}
-make_wrapper "${CFLAGS}" "${CC}" cc
-make_wrapper "${CFLAGS}" "${GCC}" gcc
-make_wrapper "${CFLAGS}" "${CLANG}" clang
-make_wrapper "${CXXFLAGS}" "${CXX}" c++
-make_wrapper "${CXXFLAGS}" "${GXX}" g++
-make_wrapper "${CXXFLAGS}" "${CLANGXX}" clang++
-ln -s "${AR}" "${BUILD_PREFIX}/bin/ar"
-ln -s "${LD}" "${BUILD_PREFIX}/bin/ld"
-
-
 NCBI_OUTDIR=$SRC_DIR/ncbi-outdir
 
 
@@ -48,34 +25,29 @@ cat <<end-of-patch
 end-of-patch
 } | patch -p0 -i-
 
-./configure \
-    --prefix="${PREFIX}" \
-    --build-prefix="${NCBI_OUTDIR}" \
-    --with-ngs-sdk-prefix="${PREFIX}" \
-    --with-hdf5-prefix="${PREFIX}" \
-    --with-xml2-prefix="${PREFIX}" \
-    ;
-# Make target dependencies seems broken; build fails with -j"${CPU_COUNT}"
-make
+export CFLAGS="${CFLAGS} -DH5_USE_110_API"
+cmake -DNGS_INCDIR=${PREFIX} -DCMAKE_BUILD_TYPE=Release
+cmake --build . --verbose
+
 popd
 
 echo "compiling sra-tools"
 pushd sra-tools
 
-pushd tools/driver-tool/utf8proc
-make -j"${CPU_COUNT}"
-popd
+if [[ $OSTYPE == "darwin"* ]]; then
+    export CFLAGS="-DTARGET_OS_OSX $CFLAGS"
+    export CXXFLAGS="-DTARGET_OS_OSX $CXXFLAGS"
+fi
 
-./configure \
-    --prefix="${PREFIX}" \
-    --build-prefix="${NCBI_OUTDIR}" \
-    --with-ngs-sdk-prefix="${PREFIX}" \
-    --with-hdf5-prefix="${PREFIX}" \
-    --with-xml2-prefix="${PREFIX}" \
-    --with-ncbi-vdb-build="${NCBI_OUTDIR}" \
-    ;
-make -j"${CPU_COUNT}"
-make install
+mkdir -p obj/ngs/ngs-java/javadoc/ngs-doc  # prevent error on OSX
+export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+cmake -DVDB_BINDIR=${SRC_DIR}/ncbi-vdb/bin \
+    -DVDB_LIBDIR=${SRC_DIR}/ncbi-vdb/lib \
+    -DVDB_INCDIR=${SRC_DIR}/ncbi-vdb/interfaces \
+    -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+    -DCMAKE_BUILD_TYPE=Release
+cmake --build . --verbose
+cmake --install .
 popd
 
 # Strip package version from binary names
