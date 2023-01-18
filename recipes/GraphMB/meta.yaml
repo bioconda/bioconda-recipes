@@ -2,42 +2,51 @@
 {% set version = "0.1.5" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: "https://github.com/MicrobialDarkMatter/GraphMB/archive/refs/tags/v0.1.5.tar.gz"
+  url: https://github.com/MicrobialDarkMatter/GraphMB/archive/v{{ version }}.tar.gz
   sha256: 7a0b005bad5a36f1cb3c521e844700ccaf14da2350afbed72c867a81871e6489
 
 build:
+  entry_points:
+    - graphmb=graphmb.main:main
+  script: {{ PYTHON }} -m pip install . -vv
   number: 0
-  noarch: python
-  script:
-    - pip install https://github.com/AndreLamurias/GraphMB/releases/download/v0.1.5/graphmb-0.1.5-py3-none-any.whl
 
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
+    - python
+    - setuptools >=58.0,<59.dev0
+    - wheel
     - pip
-    - python =3.7
   run:
-    - python =3.7
-    - libgcc
-    - cmake
-    - make
+    - python
+    - wheel
+    - requests
+    - setuptools >57.5.0importlib  # [py==37]
+    - networkx ==2.6.2
+    - scikit-learn ==0.24.2
+    - tqdm ==4.61.2
+    - vamb
 
 test:
+  imports:
+    - graphmb
   commands:
+    - pip check
     - graphmb --help
+  requires:
+    - pip
 
 about:
-  home: "https://github.com/MicrobialDarkMatter/GraphMB"
+  home: https://github.com/MicrobialDarkMatter/GraphMB
   license: MIT
+  license_familY: MIT
   license_file: LICENSE
   summary: "GraphMB: Assembly Graph Metagenomic Binner"
-  doc_url: "https://graphmb.readthedocs.io/en/latest/"
-  dev_url: "https://github.com/MicrobialDarkMatter/GraphMB"
+  doc_url: https://graphmb.readthedocs.io/en/latest
 
 extra:
   recipe-maintainers:
