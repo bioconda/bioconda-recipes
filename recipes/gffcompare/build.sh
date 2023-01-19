@@ -10,7 +10,13 @@ export CXX="$CXX"
 export LINKER="$CXX"
 
 cd gffcompare
-./prep_linux.sh
+
+if [[ "$(uname -s)" == "Linux" ]];
+then
+    ./prep_linux.sh
+else
+    ./prep_mac.sh
+fi
 
 # in order to find the directory where the binaries 
 # are installed the version is extracted as in the 
