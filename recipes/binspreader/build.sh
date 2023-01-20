@@ -18,9 +18,12 @@ normalize_path() {
 
 BUILD_DIR=build_spades
 BASEDIR="$(normalize_path "$(pwd)"/"$(dirname "$0")")"
-
 WORK_DIR="$BASEDIR/$BUILD_DIR"
 mkdir -p "$WORK_DIR"
+
+if [ $(uname -s) == Darwin ]; then
+     export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY -faligned-allocation"
+fi
 
 cd "$WORK_DIR"
 cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$PREFIX" "$BASEDIR/src"
