@@ -1,8 +1,5 @@
 #!/bin/bash -e
 
-NCBI_OUTDIR=$SRC_DIR/ncbi-outdir
-
-
 echo "compiling ncbi-vdb"
 pushd ncbi-vdb
 
@@ -25,28 +22,42 @@ cat <<end-of-patch
 end-of-patch
 } | patch -p0 -i-
 
-export CFLAGS="${CFLAGS} -DH5_USE_110_API"
-cmake -DNGS_INCDIR=${PREFIX} -DCMAKE_BUILD_TYPE=Release
-cmake --build . --verbose
 
+# Execute Make commands from a separate subdirectory. Else:
+# ERROR: In source builds are not allowed
+popd
+VDB_BUILD_DIR=./build_vdb
+mkdir ${VDB_BUILD_DIR}
+pushd ${VDB_BUILD_DIR}
+
+export CFLAGS="${CFLAGS} -DH5_USE_110_API"
+cmake ../ncbi-vdb/ -DNGS_INCDIR=${PREFIX} -DCMAKE_BUILD_TYPE=Release
+cmake --build .
 popd
 
-echo "compiling sra-tools"
-pushd sra-tools
 
+echo "compiling sra-tools"
 if [[ $OSTYPE == "darwin"* ]]; then
     export CFLAGS="-DTARGET_OS_OSX $CFLAGS"
     export CXXFLAGS="-DTARGET_OS_OSX $CXXFLAGS"
 fi
 
-mkdir -p obj/ngs/ngs-java/javadoc/ngs-doc  # prevent error on OSX
 export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-cmake -DVDB_BINDIR=${SRC_DIR}/ncbi-vdb/bin \
-    -DVDB_LIBDIR=${SRC_DIR}/ncbi-vdb/lib \
+
+mkdir -p sra-tools/obj/ngs/ngs-java/javadoc/ngs-doc  # prevent error on OSX
+# Execute Make commands from a separate subdirectory. Else:
+# ERROR: In source builds are not allowed
+SRC_DIR=$(pwd)
+SRA_BUILD_DIR=./build_sratools
+mkdir ${SRA_BUILD_DIR}
+pushd ${SRA_BUILD_DIR}
+
+cmake ../sra-tools/ -DVDB_BINDIR=${SRC_DIR}/${VDB_BUILD_DIR}/bin \
+    -DVDB_LIBDIR=${SRC_DIR}/${VDB_BUILD_DIR}/lib \
     -DVDB_INCDIR=${SRC_DIR}/ncbi-vdb/interfaces \
     -DCMAKE_INSTALL_PREFIX=${PREFIX} \
     -DCMAKE_BUILD_TYPE=Release
-cmake --build . --verbose
+cmake --build .
 cmake --install .
 popd
 
