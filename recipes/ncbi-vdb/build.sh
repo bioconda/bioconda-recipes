@@ -1,8 +1,5 @@
 #!/bin/bash -e
 
-# NCBI_OUTDIR=$SRC_DIR/ncbi-outdir
-
-pushd ncbi-vdb
 
 # TODO: Ideally, we don't want the dynamic prefix-dependent patching below.
 #       The following hard-codes the environment's path in binaries such that
@@ -12,12 +9,13 @@ pushd ncbi-vdb
 #       nearly all binaries of the package are affected by this.
 {
 cat <<end-of-patch
---- libs/kns/tls.c
-+++ libs/kns/tls.c
-@@ -431,4 +431,5 @@
+--- ncbi-vdb/libs/kns/tls.c
++++ ncbi-vdb/libs/kns/tls.c
+@@ -431,4 +431,6 @@
          const char * root_ca_paths [] =
          {
-+            "${PREFIX}/ssl/cacert.pem", /* conda-forge::ca-certificates */
++            "${PREFIX}/ssl/cacert.pem",                          /* conda-forge::ca-certificates */
++            "/usr/local/ssl/cacert.pem",                         /* path in docker */
              "/etc/ssl/certs/ca-certificates.crt",                /* Debian/Ubuntu/Gentoo etc */
              "/etc/pki/tls/certs/ca-bundle.crt",                  /* Fedora/RHEL */
 end-of-patch
@@ -26,10 +24,9 @@ end-of-patch
 
 # Execute Make commands from a separate subdirectory. Else:
 # ERROR: In source builds are not allowed
-popd
 BUILD_DIR=./build_vdb
 mkdir ${BUILD_DIR}
-pushd ${BUILD_DIR}
+cd ${BUILD_DIR}
 
 export CFLAGS="${CFLAGS} -DH5_USE_110_API"
 cmake ../ncbi-vdb/ -DNGS_INCDIR=${PREFIX} \
@@ -37,6 +34,3 @@ cmake ../ncbi-vdb/ -DNGS_INCDIR=${PREFIX} \
          -DCMAKE_BUILD_TYPE=Release
 cmake --build .
 cmake --install .
-#popd
-
-
