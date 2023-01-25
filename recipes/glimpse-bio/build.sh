@@ -16,7 +16,7 @@ do
         BOOST_INC="/usr/include"\
         BOOST_LIB_IO="-lboost_iostreams" \
         BOOST_LIB_PO="-lboost_program_options" \
-        BOOST_LIB_SE="-lboost_serialization"
+        BOOST_LIB_SE="-lboost_serialization" \
     ;
     # Install the binaries
     install "bin/GLIMPSE_${subdir}" "${PREFIX}/bin"
