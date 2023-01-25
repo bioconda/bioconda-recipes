@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-for subdir in chunk concordance ligate phase sample snparray
+for subdir in chunk split_reference phase ligate
 do
     pushd $subdir
     # Build the binaries
