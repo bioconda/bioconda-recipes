@@ -29,7 +29,7 @@ mkdir ${BUILD_DIR}
 cd ${BUILD_DIR}
 
 export CFLAGS="${CFLAGS} -DH5_USE_110_API"
-cmake ../ncbi-vdb/ -DNGS_INCDIR=${PREFIX} \
+cmake ../ncbi-vdb/ -G Xcode -DNGS_INCDIR=${PREFIX} \
          -DCMAKE_INSTALL_PREFIX=${PREFIX} \
          -DCMAKE_BUILD_TYPE=Release
 cmake --build .
