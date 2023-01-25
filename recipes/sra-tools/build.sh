@@ -18,7 +18,7 @@ mkdir -p obj/ngs/ngs-java/javadoc/ngs-doc  # prevent error on OSX
 SRA_BUILD_DIR=./build_sratools
 mkdir ${SRA_BUILD_DIR}
 pushd ${SRA_BUILD_DIR}
-cmake ../sra-tools/ -DVDB_BINDIR=${BUILD_PREFIX}/lib64 \
+cmake ../sra-tools/ -G Xcode -DVDB_BINDIR=${BUILD_PREFIX}/lib64 \
     -DVDB_LIBDIR=${BUILD_PREFIX}/lib64 \
     -DVDB_INCDIR=${BUILD_PREFIX}/include \
     -DCMAKE_INSTALL_PREFIX=${PREFIX} \
