@@ -1,0 +1,18 @@
+--- ncbi-vdb/build/env.cmake	2022-12-12 21:10:20.000000000 +0100
++++ ncbi-vdb/build/env.cmake	2023-01-25 11:04:57.643242971 +0100
+@@ -108,8 +108,13 @@
+     add_compile_definitions( MAC BSD UNIX )
+     set(CMAKE_C_ARCHIVE_CREATE   "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
+     set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
+-    set(CMAKE_C_ARCHIVE_FINISH   "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
+-    set(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
++    if(${CMAKE_RANLIB} MATCHES "^.*(llvm-ranlib)$")
++        set(CMAKE_C_ARCHIVE_FINISH   "<CMAKE_RANLIB> <TARGET>")
++        set(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> <TARGET>")
++    else()
++        set(CMAKE_C_ARCHIVE_FINISH   "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
++        set(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
++    endif()
+ elseif( "linux" STREQUAL ${OS} )
+     add_compile_definitions( LINUX UNIX )
+     set( LMCHECK -lmcheck )
