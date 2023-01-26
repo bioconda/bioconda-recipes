@@ -1,7 +1,12 @@
 #!/bin/bash
 
+COMMIT_VERS=git rev-parse --short HEAD
+COMMIT_DATE=git log -1 --format=%cd --date=short
+__COMMIT_ID__="$COMMIT_VERS"
+__COMMIT_DATE__="$COMMIT_DATE"
 
 for subdir in chunk split_reference phase ligate
+
 do
     pushd $subdir
     # Build the binaries
@@ -9,7 +14,7 @@ do
         -j 4 \
         DYN_LIBS="-lz -lpthread -lbz2 -llzma -lcurl -lhts -ldeflate -lm" \
         CXX="$CXX -std=c++11" \
-        CXXFLAG="$CXXFLAGS ${PREFIX}" \
+        CXXFLAG="$CXXFLAGS ${PREFIX} $COMMIT_VERS $COMMIT_DATE" \
         LDFLAG="$LDFLAGS" \
         HTSLIB_INC="$PREFIX" \
         HTSLIB_LIB="-lhts" \
