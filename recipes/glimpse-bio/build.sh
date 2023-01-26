@@ -1,7 +1,7 @@
 #!/bin/bash
 
-COMMIT_VERS=git rev-parse --short HEAD
-COMMIT_DATE=git log -1 --format=%cd --date=short
+COMMIT_VERS="b3ff92f"
+COMMIT_DATE="2022-12-07"
 __COMMIT_ID__="$COMMIT_VERS"
 __COMMIT_DATE__="$COMMIT_DATE"
 
