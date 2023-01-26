@@ -22,8 +22,8 @@ do
         BOOST_LIB_IO="-lboost_iostreams" \
         BOOST_LIB_PO="-lboost_program_options" \
         BOOST_LIB_SE="-lboost_serialization" \
-        __COMMIT_ID__="$COMMIT_VERS"\
-        __COMMIT_DATE__="$COMMIT_DATE"\
+        __COMMIT_ID__="b3ff92f" \
+        __COMMIT_DATE__="2022-12-07" \
     ;
     # Install the binaries
     install "bin/GLIMPSE_${subdir}" "${PREFIX}/bin"
