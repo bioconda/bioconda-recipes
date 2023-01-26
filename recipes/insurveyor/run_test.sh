@@ -4,4 +4,7 @@ n=`bcftools view -H workdir/out.pass.vcf.gz | wc -l`
 if [[ $n -ne 2 ]]; then
 	exit 1
 fi
+
+surveyor.py -h
+
 exit 0
