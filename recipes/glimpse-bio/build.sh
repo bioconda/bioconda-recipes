@@ -1,9 +1,7 @@
 #!/bin/bash
 
-COMMIT_VERS="b3ff92f"
-COMMIT_DATE="2022-12-07"
-__COMMIT_ID__="$COMMIT_VERS"
-__COMMIT_DATE__="$COMMIT_DATE"
+export __COMMIT_ID__="$(git rev-parse --short HEAD)"
+export __COMMIT_DATE__="$(git show -s --format="%ci" | cut -f 1 -d ' ')"
 
 for subdir in chunk split_reference phase ligate
 
@@ -14,7 +12,7 @@ do
         -j 4 \
         DYN_LIBS="-lz -lpthread -lbz2 -llzma -lcurl -lhts -ldeflate -lm" \
         CXX="$CXX -std=c++11" \
-        CXXFLAG="$CXXFLAGS ${PREFIX}" \
+        CXXFLAG="$CXXFLAGS ${PREFIX} -D__COMMIT_ID__=${__COMMIT_ID__} -D__COMMIT_DATE__=${__COMMIT_DATE__}" \
         LDFLAG="$LDFLAGS" \
         HTSLIB_INC="$PREFIX" \
         HTSLIB_LIB="-lhts" \
@@ -22,8 +20,6 @@ do
         BOOST_LIB_IO="-lboost_iostreams" \
         BOOST_LIB_PO="-lboost_program_options" \
         BOOST_LIB_SE="-lboost_serialization" \
-        __COMMIT_ID__="b3ff92f" \
-        __COMMIT_DATE__="2022-12-07" \
     ;
     # Install the binaries
     install "bin/GLIMPSE2_${subdir}" "${PREFIX}/bin"
