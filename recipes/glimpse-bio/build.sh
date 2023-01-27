@@ -22,6 +22,6 @@ do
         BOOST_LIB_SE="-lboost_serialization" \
     ;
     # Install the binaries
-    install "bin/GLIMPSE_${subdir}" "${PREFIX}/bin"
+    install "bin/GLIMPSE2_${subdir}" "${PREFIX}/bin"
     popd
 done
