@@ -1,4 +1,4 @@
-{% set version = "1.0.0" %}
+{% set version = "1.2" %}
 
 package:
   name: unifrac
@@ -6,34 +6,36 @@ package:
 
 source:
   url: https://github.com/biocore/unifrac/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 9a443111c620c17912039f4dd800ba179a1cf9994a7f80827bc00660ec75a9a1
+  sha256: f275a5281d151b9a44b3cd34d80397fd6a9ed52595e4ed5d45a82f368053b364
 
 build:
   number: 0
-  skip: True  # [py<30]
+
+  skip: True  # [py<38]
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - unifrac-binaries
-    - hdf5 <1.11.0
   host:
     - python
     - pip
-    - h5py >=2.9.0
-    - cython >=0.28.3
-    - numpy >=1.12.1
-    - unifrac-binaries
-    - hdf5 <1.11.0
+    - h5py <3.0.0 | >3.3.0
+    - cython >=0.26
+    - numpy >=1.21
+    - biom-format
+    - scipy >=1.9.0
+    - scikit-bio >=0.5.8
+    - unifrac-binaries >=1.2
+    - iow
   run:
     - python
     - {{ pin_compatible('numpy') }}
-    - {{ pin_compatible('h5py', max_pin='x') }}
+    - h5py <3.0.0 | >3.3.0
     - biom-format
-    - scikit-bio >=0.5.1
-    - unifrac-binaries
-    - hdf5 <1.11.0
+    - scipy >=1.9.0
+    - scikit-bio >=0.5.8
+    - unifrac-binaries >=1.2
+    - iow
 
 test:
   imports:
@@ -55,7 +57,7 @@ about:
     microbiome research. The metric relates two microbiome samples together
     within the context of an evolutionary history, and produces a distance
     that corresponds to how similar two samples by the amount of overlapping
-    branch length. 
+    branch length.  
   
   doc_url: https://github.com/biocore/unifrac
   dev_url: https://github.com/biocore/unifrac

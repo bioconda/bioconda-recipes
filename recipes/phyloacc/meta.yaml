@@ -1,62 +1,55 @@
-#######################################################################
-# Conda recipe for installing PhyloAcc
-# Supported platforms: Linux
-# Author: Gregg Thomas (gwct@github)
-#######################################################################
-
 {% set name = "PhyloAcc" %}
-{% set version = "1.1.1" %}
-{% set sha256 = "42d5091f2172cd2dc054ab73b7087ea773a84cc3a7a7e02c3865844409c693cc" %}
-# Setting some Jinja variables for the recipe
-# sha256 from openssl sha256 <release tarball>
+{% set version = "2.1.1" %}
+{% set sha256 = "50f372ae7d05804fd9e4b02631d65f91f4ff3b83c2a2249e31cef088a245c8b4" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
-# Package info
 
-source:
+source: 
   url: https://github.com/phyloacc/PhyloAcc/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-# Source location
 
 build:
   number: 0
-  skip: True # [py2k]
-# Build info
+  skip: True # [py < 38]
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - make
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
   host:
     - gsl
     - openblas
+    - blis
     - liblapack
     - armadillo
     - python
   run:
     - python
-    - matplotlib-base
-    - biopython
-    - numpy
-    - snakemake
-# Dependencies for each stage of building and running
+    - blis
+    - matplotlib-base >=3.5
+    - biopython >=1.79
+    - numpy >=1.22
+    - snakemake-minimal >=7.3
 
 test:
   commands:
     - phyloacc.py --version
     - phyloacc.py --depcheck
+    - phyloacc_post.py -h
 # Test commands to run after building and installing
 
 about:
-  home: https://github.com/phyloacc/PhyloAcc
+  home: https://phyloacc.github.io/
   license: GNU GPLv3 
   license_family: GPL
   license_file: LICENSE.md
   summary: 'Bayesian estimation of substitution rate shifts in non-coding regions'
   description: 'Bayesian estimation of substitution rate shifts in non-coding regions'
-  doc_url: https://github.com/phyloacc/PhyloAcc
+  doc_url: https://phyloacc.github.io/
   dev_url: https://github.com/phyloacc/PhyloAcc
 # Package meta info
 # URLs just point to the github page until we update the docs
