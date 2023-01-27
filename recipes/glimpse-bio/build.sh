@@ -26,6 +26,6 @@ do
         __COMMIT_DATE__="2022-12-07" \
     ;
     # Install the binaries
-    install "bin/GLIMPSE_${subdir}" "${PREFIX}/bin"
+    install "bin/GLIMPSE2_${subdir}" "${PREFIX}/bin"
     popd
 done
