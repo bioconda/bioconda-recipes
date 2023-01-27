@@ -3,6 +3,7 @@
 mkdir -p "${PREFIX}/bin"
 mkdir -p "${PREFIX}/opt/crisprme"
 chmod -R 700 .
+ls -al ./
 unzip ${SRC_DIR}/PostProcess/pickle_data.zip
 ls -al ${SRC_DIR}
 las -al ${SRC_DIR}/PostProcess/
