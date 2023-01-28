@@ -7,6 +7,8 @@ then
   export MACOSX_DEPLOYMENT_TARGET=10.15
   export CFLAGS="${CFLAGS} -fcommon -D_LIBCPP_DISABLE_AVAILABILITY -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
   export CXXFLAGS="${CXXFLAGS} -fcommon -D_LIBCPP_DISABLE_AVAILABILITY -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
+  export CPPFLAGS=$(echo "${CPPFLAGS}" | sed 's|10\.9|10.15|g')
+  export CMAKE_ARGS=$(echo "${CMAKE_ARGS}" | sed 's|10\.9|10.15|g')
 else 
   export CFLAGS="${CFLAGS} -fcommon"
   export CXXFLAGS="${CXXFLAGS} -fcommon"
