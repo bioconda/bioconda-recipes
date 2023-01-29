@@ -10,9 +10,12 @@ export \
 export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
 # maybe add this becuase of this: https://twitter.com/nomad421/status/1619713549668065280
-#
-RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" \
-    cargo install --no-track --verbose --root "${PREFIX}" --path . --features cnn
+if [[ -n "$OSX_ARCH" ]]; then
+    # Set this so that it doesn't fail with open ssl errors
+    export RUSTFLAGS="-C link-arg=-undefined -C link-arg=dynamic_lookup"
+fi
+
+cargo install --no-track --verbose --root "${PREFIX}" --path . --features cnn
 ft --help
 
 exit 0
