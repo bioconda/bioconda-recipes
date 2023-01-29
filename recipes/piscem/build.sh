@@ -22,13 +22,12 @@ export CARGO_HOME="$(pwd)/.cargo"
 if [ "$unamestr" == 'Darwin' ];
 then
 
-cat >$CARGO_HOME/config.toml << EOF
-[build]
-# symbols won't be available until runtime
-rustflags = ["-C", "link-args=-Wl,-undefined,dynamic_lookup"]
-EOF
+# build statically linked binary with Rust
+RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup"  RUST_BACKTRACE=1 cargo install --verbose --root $PREFIX --path .
 
-fi
+else
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1 cargo install --verbose --root $PREFIX --path .
+
+fi
