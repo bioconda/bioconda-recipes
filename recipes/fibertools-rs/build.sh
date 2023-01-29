@@ -1,5 +1,22 @@
 #!/bin/bash -e
 
+#
+
+# TODO: Remove the following export when pinning is updated and we use
+#       {{ compiler('rust') }} in the recipe.
+export \
+    CARGO_NET_GIT_FETCH_WITH_CLI=true \
+    CARGO_HOME="${BUILD_PREFIX}/.cargo"
+export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+
+# maybe add this becuase of this: https://twitter.com/nomad421/status/1619713549668065280
+#
+RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" \
+    cargo install --no-track --verbose --root "${PREFIX}" --path . --features cnn
+ft --help
+
+exit 0
+
 # loading the pytorch c++ libs
 if [ "wget" == "wget" ]; then
     if [[ ${target_platform} =~ linux.* ]]; then
@@ -22,14 +39,3 @@ fi
 # add to library path
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${LIBTORCH}/lib
 export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
-
-# TODO: Remove the following export when pinning is updated and we use
-#       {{ compiler('rust') }} in the recipe.
-export \
-    CARGO_NET_GIT_FETCH_WITH_CLI=true \
-    CARGO_HOME="${BUILD_PREFIX}/.cargo"
-
-export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
-
-cargo install --no-track --verbose --root "${PREFIX}" --path . --features cnn
-ft --help
