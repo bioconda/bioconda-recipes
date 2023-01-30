@@ -12,7 +12,7 @@ else
   export CXXFLAGS="${CXXFLAGS} -fcommon"
    # It's dumb and absurd that the KMC build can't find the bzip2 header <bzlib.h>
   export C_INCLUDE_PATH="${C_INCLUDE_PATH}:${PREFIX}/include"
-  export CPLUS_INCLUDE_PATH ="${CPLUS_INCLUDE_PATH}:${PREFIX}/include"
+  export CPLUS_INCLUDE_PATH="${CPLUS_INCLUDE_PATH}:${PREFIX}/include"
 fi
 
 # Add workaround for SSH-based Git connections from Rust/cargo.  See https://github.com/rust-lang/cargo/issues/2078 for details.
