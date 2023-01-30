@@ -15,7 +15,8 @@ cmake \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCONDA_BUILD=ON \
     ..
-    
+
+mkdir -p ../external/KMC-3.2.1/kmc_core/
 cp ${PREFIX}/include/bzlib.h ../external/KMC-3.2.1/kmc_core/
 cp ${PREFIX}/include/zlib.h ../external/KMC-3.2.1/kmc_core/
 cp ${PREFIX}/include/bzlib.h ../external/KMC-3.2.1/kmc_core/
