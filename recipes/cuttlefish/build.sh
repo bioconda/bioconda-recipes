@@ -3,8 +3,13 @@
 mkdir build
 cd build
 
+mkdir -p ../external/include
+
+cp ${PREFIX}/include/bzlib.h ../external/include/
+cp ${PREFIX}/include/zlib.h ../external/include/
+
 # hack! because bzip2 is broken.
-CC="${CC} -I ${PREFIX}/include" CXX="${CXX} -I ${PREFIX}/include" cmake \
+cmake \
     -DINSTANCE_COUNT=64 \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCONDA_BUILD=ON \
