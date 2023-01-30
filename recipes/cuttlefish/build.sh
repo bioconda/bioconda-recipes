@@ -13,7 +13,7 @@ then
 else 
   # It's dumb and absurd that the KMC build can't find the bzip2 header <bzlib.h>
   export C_INCLUDE_PATH="$PREFIX/include"
-  export CPLUS_INCLUDE_PATH ="$PREFIX/include"
+  export CPLUS_INCLUDE_PATH="$PREFIX/include"
 fi
 
 cmake \
