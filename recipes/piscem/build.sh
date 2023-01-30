@@ -21,11 +21,11 @@ if [ "$unamestr" == 'Darwin' ];
 then
 
 # build statically linked binary with Rust
-RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup"  RUST_BACKTRACE=1 cargo install --verbose --root $PREFIX --path .
+RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup"  CC="${CC} -I${PREFIX}/include" CXX="${CXX} -I${PREFIX}/include" RUST_BACKTRACE=1 cargo install --verbose --root $PREFIX --path .
 
 else
 
 # build statically linked binary with Rust
-RUST_BACKTRACE=1 cargo install --verbose --root $PREFIX --path .
+CC="${CC} -I${PREFIX}/include" CXX="${CXX} -I${PREFIX}/include" RUST_BACKTRACE=1 cargo install --verbose --root $PREFIX --path .
 
 fi
