@@ -3,23 +3,23 @@
 mkdir build
 cd build
 
-mkdir -p ../external/include
-cp ${PREFIX}/include/bzlib.h ../external/include/
-cp ${PREFIX}/include/zlib.h ../external/include/
-cp ${PREFIX}/include/bzlib.h ../external/include/
-cp ${PREFIX}/include/zlib.h ../external/include/
+unamestr=`uname`
 
-# hack! because bzip2 is broken.
+if [ "$unamestr" == 'Darwin' ];
+then
+  export MACOSX_DEPLOYMENT_TARGET=10.15
+  export CFLAGS="${CFLAGS} -fcommon -D_LIBCPP_DISABLE_AVAILABILITY"
+  export CXXFLAGS="${CXXFLAGS} -fcommon -D_LIBCPP_DISABLE_AVAILABILITY"
+else 
+  # It's dumb and absurd that the KMC build can't find the bzip2 header <bzlib.h>
+  export C_INCLUDE_PATH="${C_INCLUDE_PATH}:${PREFIX}/include"
+  export CPLUS_INCLUDE_PATH ="${CPLUS_INCLUDE_PATH}:${PREFIX}/include"
+fi
+
 cmake \
     -DINSTANCE_COUNT=64 \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCONDA_BUILD=ON \
     ..
-
-mkdir -p ../external/KMC-3.2.1/kmc_core/
-cp ${PREFIX}/include/bzlib.h ../external/KMC-3.2.1/kmc_core/
-cp ${PREFIX}/include/zlib.h ../external/KMC-3.2.1/kmc_core/
-cp ${PREFIX}/include/bzlib.h ../external/KMC-3.2.1/kmc_core/
-cp ${PREFIX}/include/zlib.h ../external/KMC-3.2.1/kmc_core/
 
 make install
