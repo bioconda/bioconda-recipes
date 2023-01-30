@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export __COMMIT_ID__="3bed6d9"
-export __COMMIT_DATE__="2022-12-07"
+export COMMIT_VERS="3bed6d9"
+export COMMIT_DATE="$(date -Idate -u)"
 
 for subdir in chunk split_reference phase ligate
 
@@ -12,7 +12,7 @@ do
         -j 4 \
         DYN_LIBS="-lz -lpthread -lbz2 -llzma -lcurl -lhts -ldeflate -lm" \
         CXX="$CXX -std=c++17" \
-        CXXFLAG="$CXXFLAGS ${PREFIX} -D__COMMIT_ID__=\"3bed6d9\" -D__COMMIT_DATE__=\"2022-12-07\" -Wno-ignored-attributes -O3 -mavx2 -mfma" \
+        CXXFLAG="$CXXFLAGS ${PREFIX} -D__COMMIT_ID__=\"$(COMMIT_VERS)\" -D__COMMIT_DATE__=\"$(COMMIT_DATE)\" -Wno-ignored-attributes -O3 -mavx2 -mfma" \
         LDFLAG="$LDFLAGS" \
         HTSLIB_INC="$PREFIX" \
         HTSLIB_LIB="-lhts" \
