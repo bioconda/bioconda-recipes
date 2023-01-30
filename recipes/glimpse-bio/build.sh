@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export COMMIT_VERS="${GIT_FULL_HASH}"
+export COMMIT_VERS="${PKG_VERSION}"
 export COMMIT_DATE="$(date -Idate -u)"
 
 for subdir in chunk concordance split_reference phase ligate
