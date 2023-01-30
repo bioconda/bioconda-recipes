@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export __COMMIT_ID__="${GIT_FULL_HASH}"
+export __COMMIT_ID__="3bed6d9"
 export __COMMIT_DATE__="$(date -Idate -u)"
 
 for subdir in chunk split_reference phase ligate
