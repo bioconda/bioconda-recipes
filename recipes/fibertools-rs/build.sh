@@ -1,6 +1,25 @@
 #!/bin/bash -e
 
 #
+if [[ ${target_platform} =~ linux.* ]]; then
+    curl https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-1.13.0%2Bcpu.zip \
+        --output libtorch.zip
+    export LIBTORCH_CXX11_ABI=0
+elif [[ ${target_platform} =~ osx.* ]]; then
+    curl https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.13.0.zip \
+        --output libtorch.zip
+fi
+mkdir -p ${CONDA_PREFIX}/share
+unzip libtorch.zip -d ${CONDA_PREFIX}/share
+rm libtorch.zip
+export LIBTORCH=${CONDA_PREFIX}/share/libtorch
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${LIBTORCH}/lib
+export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
+
+# get the flags from the pytorch build
+# export CFLAGS="$CFLAGS -I${LIBTORCH}/include"
+export CPPFLAGS="$CFLAGS -I${LIBTORCH}/include"
+export LDFLAGS="$LDFLAGS -L${LIBTORCH}/lib"
 
 # TODO: Remove the following export when pinning is updated and we use
 #       {{ compiler('rust') }} in the recipe.
@@ -21,24 +40,7 @@ ft --help
 exit 0
 
 # loading the pytorch c++ libs
-if [ "wget" == "wget" ]; then
-    if [[ ${target_platform} =~ linux.* ]]; then
-        curl https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-1.12.0%2Bcpu.zip \
-            --output libtorch.zip
-        export LIBTORCH_CXX11_ABI=0
-    elif [[ ${target_platform} =~ osx.* ]]; then
-        curl https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.12.0.zip \
-            --output libtorch.zip
-    fi
-    unzip libtorch.zip -d ${PREFIX}
-    rm libtorch.zip
-    export LIBTORCH=${PREFIX}/libtorch
-else
-    # This doesnt seem to work at all
-    conda install pytorch=1.12 pytorch-cpu -c pytorch -c nvidia
-    export LIBTORCH=$(python -c 'import torch; from pathlib import Path; print(Path(torch.__file__).parent)')
-    export LIBTORCH_CXX11_ABI=0
-fi
+# This doesnt seem to work at all
+#conda install pytorch=1.12 pytorch-cpu -c pytorch -c nvidia
+#export LIBTORCH=$(python -c 'import torch; from pathlib import Path; print(Path(torch.__file__).parent)')
 # add to library path
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${LIBTORCH}/lib
-export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
