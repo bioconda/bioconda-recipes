@@ -1,5 +1,5 @@
 #!/bin/bash -e
-#
+
 if [[ ${target_platform} =~ linux.* ]]; then
     curl https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-1.13.0%2Bcpu.zip \
         --output libtorch.zip
@@ -33,13 +33,7 @@ if [[ -n "$OSX_ARCH" ]]; then
     export RUSTFLAGS="-C link-arg=-undefined -C link-arg=dynamic_lookup"
 fi
 
-cargo install --no-track --verbose --root "${PREFIX}" --path . --features cnn
+cargo install --no-track --verbose --root "${PREFIX}" --path . --all-features
 ft --help
 
 exit 0
-
-# loading the pytorch c++ libs
-# This doesnt seem to work at all
-#conda install pytorch=1.12 pytorch-cpu -c pytorch -c nvidia
-#export LIBTORCH=$(python -c 'import torch; from pathlib import Path; print(Path(torch.__file__).parent)')
-# add to library path
