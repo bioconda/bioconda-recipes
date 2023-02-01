@@ -13,12 +13,11 @@ tar -xvf stubb_2.1.tar.gz
 wget http://www.robertnz.net/ftp/newmat11.tar.gz
 tar -xvf newmat11.tar.gz -C stubb_2.1/lib/newmat/
 
-patch -p1 < ../REforge/stubb.patch
+patch -p1 < ../stubb.patch
 cd lib/newmat/
 gmake -f nm_gnu.mak
 cd ../../
 make
-cd ../REforge/
 
 mv *.py $PREFIX/bin/
 mv stubb_2.1/bin/* $PREFIX/bin/
