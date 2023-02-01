@@ -9,7 +9,7 @@ ln  "$CC" "$PREFIX/bin/gcc"
 ln  "$CXX" "$PREFIX/bin/g++"
 
 wget https://github.com/UIUCSinhaLab/Stubb/raw/main/stubb_2.1.tar.gz
-tar xvf stubb_2.1.tar.gz
+tar -xvf stubb_2.1.tar.gz
 wget http://www.robertnz.net/ftp/newmat11.tar.gz
 tar -xvf newmat11.tar.gz -C stubb_2.1/lib/newmat/
 
