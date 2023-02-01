@@ -5,8 +5,8 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 mkdir -p $PREFIX/bin
 
-ln -sf "$CC" "$PREFIX/bin/gcc"
-ln -sf "$CXX" "$PREFIX/bin/g++"
+ln  "$CC" "$PREFIX/bin/gcc"
+ln  "$CXX" "$PREFIX/bin/g++"
 
 ./configure.sh
 
