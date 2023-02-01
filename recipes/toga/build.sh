@@ -9,6 +9,6 @@ ln -sf "$CC" "$PREFIX/bin/gcc"
 ln -sf "$CXX" "$PREFIX/bin/g++"
 
 ./configure.sh
-./run_test.sh micro
 
-mv *.py $PREFIX/lib/
+mv *.py $PREFIX/bin/
+mv *.sh $PREFIX/bin/
