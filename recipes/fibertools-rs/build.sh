@@ -1,5 +1,4 @@
 #!/bin/bash -e
-
 #
 if [[ ${target_platform} =~ linux.* ]]; then
     curl https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-1.13.0%2Bcpu.zip \
@@ -17,7 +16,7 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${LIBTORCH}/lib
 export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
 
 # get the flags from the pytorch build
-# export CFLAGS="$CFLAGS -I${LIBTORCH}/include"
+export CFLAGS="$CFLAGS -I${LIBTORCH}/include"
 export CPPFLAGS="$CFLAGS -I${LIBTORCH}/include"
 export LDFLAGS="$LDFLAGS -L${LIBTORCH}/lib"
 
