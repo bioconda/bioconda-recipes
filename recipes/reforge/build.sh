@@ -6,10 +6,11 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/out
 
-mv stubb.patch $PREFIX/out
+git clone https://github.com/hillerlab/REforge
+mv REforge/stubb.patch $PREFIX/out/
 
-ln  "$CC" "$PREFIX/bin/gcc"
-ln  "$CXX" "$PREFIX/bin/g++"
+ln -sf "$CC" "$PREFIX/bin/gcc"
+ln -sf  "$CXX" "$PREFIX/bin/g++"
 
 wget https://github.com/UIUCSinhaLab/Stubb/raw/main/stubb_2.1.tar.gz
 tar -xvf stubb_2.1.tar.gz
