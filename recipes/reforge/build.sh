@@ -6,7 +6,9 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/out
 
-cp $SRC_DIR/REforge-1.0/stubb.patch $PREFIX/out/
+wget https://github.com/hillerlab/REforge/archive/refs/tags/1.0.tar.gz
+tar -xvf  1.0.tar.gz
+cp REforge-1.0/stubb.patch $PREFIX/out/
 
 
 ln -sf "$CC" "$PREFIX/bin/gcc"
