@@ -6,8 +6,8 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/out
 
-git clone https://github.com/hillerlab/REforge
-mv REforge/stubb.patch $PREFIX/out/
+cp $SRC_DIR/REforge-1.0/stubb.patch $PREFIX/out/
+
 
 ln -sf "$CC" "$PREFIX/bin/gcc"
 ln -sf  "$CXX" "$PREFIX/bin/g++"
