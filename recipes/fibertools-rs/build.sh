@@ -19,6 +19,7 @@ mv ${PREFIX}/libtorch/lib/* ${PREFIX}/lib/.
 mv ${PREFIX}/libtorch/include/* ${PREFIX}/include/.
 mv ${PREFIX}/libtorch/share/* ${PREFIX}/share/.
 
+#export LIBTORCH=${PREFIX}/libtorch
 export LIBTORCH=${PREFIX}
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${LIBTORCH}/lib
 export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
@@ -38,6 +39,7 @@ if [[ -n "$OSX_ARCH" ]]; then
     export RUSTFLAGS="-C link-arg=-undefined -C link-arg=dynamic_lookup"
 fi
 
+HOME=$(pwd)
 pushd ${PREFIX}
 cargo install --all-features --no-track --verbose --root "${PREFIX}" --path ${HOME}
 popd
