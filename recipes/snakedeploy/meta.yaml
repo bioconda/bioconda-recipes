@@ -1,0 +1,51 @@
+{% set version = "0.8.4" %}
+
+
+package:
+  name: snakedeploy
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/s/snakedeploy/snakedeploy-{{ version }}.tar.gz
+  sha256: eb6ca94e096728a0ddf943b4c350f32f29e03bb1ba24f5367fccde50fd344016
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - snakedeploy=snakedeploy.client:main
+  script: {{ PYTHON }} -m pip install . -vv
+
+requirements:
+  host:
+    - pip
+    - pytest-runner
+    - python >=3.8
+  run:
+    - python >=3.8
+    - jinja2
+    - pandas
+    - requests
+    - pyyaml
+    - pygithub
+    - reretry
+    - packaging
+
+test:
+  imports:
+    - snakedeploy
+  commands:
+    - pip check
+    - snakedeploy --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/snakemake/snakedeploy
+  summary: Helper for deploying published Snakemake pipelines
+  license: MPL-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - johanneskoester
