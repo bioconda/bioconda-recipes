@@ -1,0 +1,46 @@
+{% set name = "methylmap" %}
+{% set version = "0.3.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: af42fe72c952025165640c5dd435de3fc88a89d76a9b57e309f226379f3e4cda
+
+build:
+  number: 0
+  entry_points:
+    - methylmap=methylmap.methylmap:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  noarch: python
+
+requirements:
+  host:
+    - python >=3
+    - pip
+  run:
+    - python >=3
+    - numpy >=1.14.3
+    - pandas >=0.23.4
+    - plotly >=5.4.0
+    - pyranges >=0.0.77
+    - tabix
+#    - modbam2bed ## not available in bioconda, only through epi2me-labs
+
+test:
+  imports:
+    - methylmap
+  commands:
+    - methylmap --help
+
+about:
+  home: https://github.com/EliseCoopman/methylmap
+  license: MIT
+  license_family: MIT
+  summary: Plotting tool for population scale nucleotide modifications
+
+extra:
+  recipe-maintainers:
+    - EliseCoopman
