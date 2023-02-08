@@ -4,5 +4,7 @@
 mkdir -p $PREFIX/bin
 
 
+chmod +x bsalign
+cp bsalign $PREFIX/bin
+chmod +x debreak
 cp debreak *.py $PREFIX/bin
-chmod +x $PREFIX/bin/debreak

@@ -123,6 +123,17 @@ def _gen_new_index(repodata, subdir):
                     deps[i] = 'r-base >={},<{}'.format(minVersion, maxVersion)
                     break
 
+        # Bioconductor data packages are noarch: generic and incorrectly pin curl to >=7.38.1,<8, rather than >=7,<8
+        if subdir == "noarch" and record_name.startswith('bioconductor-') and has_dep(record, "curl"):
+            for i, dep in enumerate(deps):
+                if dep.startswith('curl >=7.'):
+                    deps[i] = 'curl'
+                    break
+
+        # Old perl- packages don't pin perl-5.22, time cut-off is Jan 1, 2018
+        if record_name.startswith('perl-') and (not has_dep(record, "perl")) and record.get('timestamp', 0) < 1514761200000:
+            deps.append('perl >=5.22.0,<5.23.0')
+
     return index
 
 
