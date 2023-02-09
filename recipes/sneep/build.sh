@@ -2,6 +2,8 @@
 
 cd ${SRC_DIR}/src
 
+mkdir -p $PREFIX/bin
+
 if [[ $(uname) == "Linux" ]] ; then
 	sed -i.bak 's/CFLAGS=/CFLAGS+=/' Makefile #add bioconda flags and override LD flag because of -static 
 	sed -i.bak 's/CFLAGS_=/CFLAGS_+=/' Makefile
@@ -13,7 +15,9 @@ else
 	make CC=$CXX
 fi
 
-mkdir -p $PREFIX/bin
+#mkdir -p $PREFIX/bin
 
 cp -a ${SRC_DIR}/src/. $PREFIX/bin
+chmod +x ${PREFIX}/bin/Makefile
+
 
