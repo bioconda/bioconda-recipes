@@ -15,9 +15,7 @@ else
 	make CC=$CXX
 fi
 
-#mkdir -p $PREFIX/bin
-
 cp -a ${SRC_DIR}/src/. $PREFIX/bin
-chmod +x ${PREFIX}/bin/Makefile
+chmod +x ${PREFIX}/bin/.
 
 
