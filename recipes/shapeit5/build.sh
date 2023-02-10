@@ -1,15 +1,29 @@
 #!/bin/bash
 
-sed -i'.bak' 's/CXX=/CXX?=/g' makefile
-sed -i'.bak' 's/CXXFLAG=/CXXFLAG=\$(CXXFLAGS)/g' makefile
-sed -i'.bak' 's/LDFLAG=/LDFLAG=\$(LDFLAGS) \${LIBPATH}/g' makefile
-sed -i'.bak' 's,HTSLIB_LIB=\$(HOME)/Tools/htslib-1.11/libhts.a,HTSLIB_LIB=-lhts,' makefile
-sed -i'.bak' 's,BOOST_LIB_IO=/usr/lib/x86_64-linux-gnu/libboost_iostreams.a,BOOST_LIB_IO=-lboost_iostreams,' makefile
-sed -i'.bak' 's,BOOST_LIB_PO=/usr/lib/x86_64-linux-gnu/libboost_program_options.a,BOOST_LIB_PO=-lboost_program_options,' makefile
+#!/bin/bash
 
-make
+export COMMIT_VERS="${PKG_VERSION}"
+export COMMIT_DATE="$(date -Idate -u)"
 
-mkdir -p ${PREFIX}/bin
+for subdir in phase_common phase_rare switch ligate
 
-install -m775 bin/shapeit5* ${PREFIX}/bin/
-ln -s ${PREFIX}/bin/shapeit5* ${PREFIX}/bin/shapeit5
+do
+    pushd $subdir
+    # Build the binaries
+    make \
+        -j 4 \
+        DYN_LIBS="-lz -lpthread -lbz2 -llzma -lcurl -lhts -ldeflate -lm" \
+        CXX="$CXX -std=c++17" \
+        CXXFLAG="$CXXFLAGS ${PREFIX} -D__COMMIT_ID__='\"${COMMIT_VERS}\"' -D__COMMIT_DATE__='\"${COMMIT_DATE}\"' -Wno-ignored-attributes -O3 -mavx2 -mfma" \
+        LDFLAG="$LDFLAGS" \
+        HTSLIB_INC="$PREFIX" \
+        HTSLIB_LIB="-lhts" \
+        BOOST_INC="/usr/include"\
+        BOOST_LIB_IO="-lboost_iostreams" \
+        BOOST_LIB_PO="-lboost_program_options" \
+        BOOST_LIB_SE="-lboost_serialization" \
+    ;
+    # Install the binaries
+    install "bin/SHAPEIT5_${subdir}" "${PREFIX}/bin"
+    popd
+done
