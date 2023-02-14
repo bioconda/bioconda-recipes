@@ -1,0 +1,42 @@
+{% set name = "pydmtools" %}
+{% set version = "0.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: {{ version }}
+
+source:
+  url: https://3dgenomics.hzau.edu.cn:10068/tddownload/pydmtools-0.1.tar.gz
+  sha256: 253feda0ff768fd304f2ff9fd635b899112f11c4f9649fffecc5dc0d684159cb
+
+build:
+  skip: True  # [py2k or py36]
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - setuptools
+    - curl
+    - libcurl
+    - zlib
+    - numpy
+  run:
+    - python
+    - libcurl
+    - zlib
+    - {{ pin_compatible('numpy') }}
+
+test:
+  imports:
+    - pydmtools
+  commands:
+    - python3 -c "import pydmtools as pydm; assert(pydm.numpy == 1); assert(pydm.remote == 1)"
+
+about:
+  home: https://github.com/ZhouQiangwei/pydmtools
+  license: MIT
+  summary: A python extension written in C for quick access to DNA methylation DM files.
+
