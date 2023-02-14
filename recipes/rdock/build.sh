@@ -19,3 +19,14 @@ make linux-g++-64 BINDIR=$PREFIX/bin LIBDIR=$PREFIX/lib
 
 # compiled binaries are in bin, cp the scripts over too
 cp ../bin/* $PREFIX/bin
+mkdir -p $PREFIX/lib/perl5/vendor_perl
+cp ../lib/* $PREFIX/lib/perl5/vendor_perl
+
+# so the perl lib files are accessible
+#mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
+
+#echo "export PERL5LIB=$PERL5LIB:$PREFIX/lib" > ${PREFIX}/etc/conda/activate.d/rdock-perl5lib.sh
+#chmod a+x ${PREFIX}/etc/conda/activate.d/rdock-perl5lib.sh
+
+#echo "unset PERL5LIB" > ${PREFIX}/etc/conda/deactivate.d/rdock-perl5lib.sh
+#chmod a+x ${PREFIX}/etc/conda/deactivate.d/rdock-perl5lib.sh
