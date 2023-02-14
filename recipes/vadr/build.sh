@@ -7,25 +7,21 @@ cp miniscripts/*.pl ${PREFIX}/bin
 chmod 755 ${PREFIX}/bin/*.pl
 
 # Custom build of Fasta3
-cd fasta3
-tar xzf v36.3.8h_04-May-2020.tar.gz
-mv fasta36-36.3.8h_04-May-2020/ fasta/
-
 # patch Makefile with vadr specific changes and copy to expected name so 'build' step is linux/osx agnostic
 if [ "$(uname)" == "Linux" ]; then
-    patch fasta/make/Makefile.linux ../fasta-mods/vadr-fasta-Makefile.linux.patch
+    patch fasta/make/Makefile.linux fasta-mods/vadr-fasta-Makefile.linux.patch
     cp fasta/make/Makefile.linux fasta/make/Makefile.vadr_install
 else 
-    patch fasta/make/Makefile.os_x86_64 ../fasta-mods/vadr-fasta-Makefile.os_x86_64.patch
+    patch fasta/make/Makefile.os_x86_64 fasta-mods/vadr-fasta-Makefile.os_x86_64.patch
     cp fasta/make/Makefile.os_x86_64 fasta/make/Makefile.vadr_install
 fi
 # patch defs.h with vadr specific changes
-patch fasta/src/defs.h ../fasta-mods/vadr-fasta-defs.patch
+patch fasta/src/defs.h fasta-mods/vadr-fasta-defs.patch
 
 # build fasta specific to vadr
 cd fasta/src
 make -f ../make/Makefile.vadr_install all
-cd ../../../
+cd ../../
 
 # copy script to download database
 chmod 755 ${RECIPE_DIR}/download-vadr-models.sh ${RECIPE_DIR}/installed-vadr-models.sh ${RECIPE_DIR}/run-vadr-local-tests.sh
