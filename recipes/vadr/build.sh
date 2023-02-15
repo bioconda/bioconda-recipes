@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Add scripts
-mkdir -p ${PREFIX}/bin
+mkdir -p ${PREFIX}/bin ${PREFIX}/share
 cp *.pl ${PREFIX}/bin
 cp miniscripts/*.pl ${PREFIX}/bin
 chmod 755 ${PREFIX}/bin/*.pl
@@ -21,7 +21,10 @@ patch fasta/src/defs.h fasta-mods/vadr-fasta-defs.patch
 # build fasta specific to vadr
 cd fasta/src
 make -f ../make/Makefile.vadr_install all CC="${CC} ${CPPFLAGS} ${CFLAGS}" LDFLAGS="${LDFLAGS}" LIB_M='-lm'
-cd ../../
+cd ../
+cp {bin/*36,bin/map_db,scripts/*.pl,misc/*.pl} ${PREFIX}/bin
+cp -R {doc,data,seq} ${PREFIX}/share
+cd ../
 
 # copy script to download database
 chmod 755 ${RECIPE_DIR}/download-vadr-models.sh ${RECIPE_DIR}/installed-vadr-models.sh ${RECIPE_DIR}/run-vadr-local-tests.sh
