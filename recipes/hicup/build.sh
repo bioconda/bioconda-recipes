@@ -15,7 +15,7 @@ cp -R * $outdir
 cd $outdir
 
 # Temporary fix:
-chmod a+x hicup2homer
+chmod a+x Conversion/hicup2homer
 
 for p in hicup_module.pm $(grep -l -R "usr/bin/perl" . ); do
 
