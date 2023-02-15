@@ -20,7 +20,7 @@ patch fasta/src/defs.h fasta-mods/vadr-fasta-defs.patch
 
 # build fasta specific to vadr
 cd fasta/src
-make -f ../make/Makefile.vadr_install all
+make -f ../make/Makefile.vadr_install all CC="${CC} ${CPPFLAGS} ${CFLAGS}" LDFLAGS="${LDFLAGS}" LIB_M='-lm'
 cd ../../
 
 # copy script to download database
