@@ -19,12 +19,5 @@ for p in hicup_module.pm $(grep -l -R "usr/bin/perl" . ); do
   # Fix shebang lines
   sed -i.bak "s/\/usr\/bin\/perl/\/usr\/bin\/env perl/" $p
 
-  # Convert $Bin to $RealBin so that links to the bin dir will be resolved.
-  # This way we can symlink just the perl scripts in $PREFIX/bin and they can
-  # find all the extra stuff (R scripts, etc) they need over in $PREFIX/share
-  #
-  # See http://perldoc.perl.org/FindBin.html
-  sed -i.bak "s/\$Bin/\$RealBin/g" $p
-
   ln -s $outdir/$p $PREFIX/bin
 done
