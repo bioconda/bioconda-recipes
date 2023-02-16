@@ -14,13 +14,10 @@ cp -R * $outdir
 
 cd $outdir
 
-# Temporary fix:
-chmod a+x Conversion/hicup2homer
-
 for p in hicup_module.pm $(grep -l -R "usr/bin/perl" . ); do
 
-  # Fix shebang lines and /r (for scribl_capture_ditag_sorter.pl)
-  sed -i.bak -e "s/\/usr\/bin\/perl/\/usr\/bin\/env perl/" -e "s/\r$//g" $p
+  # Fix shebang lines
+  sed -i.bak "s/\/usr\/bin\/perl/\/usr\/bin\/env perl/" $p
 
   ln -s $outdir/$p $PREFIX/bin
 done
