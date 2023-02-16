@@ -1,0 +1,109 @@
+{% set version = '0.9.1' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-jbrowser
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/JBrowseR_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/JBrowseR/JBrowseR_{{ version }}.tar.gz
+  sha256: eed060d09eae603a8783b77ec4b8caa5b9b439731f8d5b816560080a487cb821
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+  # no skip
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: testthat (>= 3.0.0), knitr, rmarkdown
+requirements:
+  build:
+    - {{ posix }}zip               # [win]
+
+  host:
+    - r-base
+    - r-cli
+    - r-dplyr
+    - r-htmltools
+    - r-htmlwidgets
+    - r-httpuv
+    - r-ids
+    - r-jsonlite
+    - r-magrittr
+    - r-mime
+    - r-reactr
+    - r-readr
+    - r-stringr
+
+  run:
+    - r-base
+    - r-cli
+    - r-dplyr
+    - r-htmltools
+    - r-htmlwidgets
+    - r-httpuv
+    - r-ids
+    - r-jsonlite
+    - r-magrittr
+    - r-mime
+    - r-reactr
+    - r-readr
+    - r-stringr
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('JBrowseR')"           # [not win]
+    - "\"%R%\" -e \"library('JBrowseR')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://gmod.github.io/JBrowseR/ https://github.com/GMOD/JBrowseR
+
+  license: Apache License (>= 2)
+  summary: Provides an R interface to the JBrowse 2 genome browser. Enables embedding a JB2 genome
+    browser in a Shiny app or R Markdown document. The browser can also be launched
+    from an interactive R console. The browser can be loaded with a variety of common
+    genomics data types, and can be used with a custom theme.
+
+  license_family: APACHE
+
+# The original CRAN metadata for this package was:
+
+# Package: JBrowseR
+# Title: An R Interface to the JBrowse 2 Genome Browser
+# Version: 0.9.1
+# Authors@R: c(person(given = "Elliot", family = "Hershberg", role = c("aut", "cre"), email = "eahershberg@gmail.com", comment = c(ORCID = "0000-0003-2068-3366")), person(given = "the JBrowse 2 Team", role = c("aut")))
+# Description: Provides an R interface to the JBrowse 2 genome browser. Enables embedding a JB2 genome browser in a Shiny app or R Markdown document. The browser can also be launched from an interactive R console. The browser can be loaded with a variety of common genomics data types, and can be used with a custom theme.
+# License: Apache License (>= 2)
+# URL: https://gmod.github.io/JBrowseR/ https://github.com/GMOD/JBrowseR
+# Encoding: UTF-8
+# RoxygenNote: 7.1.2
+# Imports: htmltools, htmlwidgets, reactR, stringr, magrittr, readr, jsonlite, httpuv, mime, cli, ids, dplyr
+# Suggests: testthat (>= 3.0.0), knitr, rmarkdown
+# Config/testthat/edition: 3
+# VignetteBuilder: knitr
+# NeedsCompilation: no
+# Packaged: 2022-07-19 21:57:12 UTC; elliothershberg
+# Author: Elliot Hershberg [aut, cre] (<https://orcid.org/0000-0003-2068-3366>), the JBrowse 2 Team [aut]
+# Maintainer: Elliot Hershberg <eahershberg@gmail.com>
+# Repository: CRAN
+# Date/Publication: 2022-07-19 22:30:02 UTC
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml
