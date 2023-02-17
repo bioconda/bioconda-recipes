@@ -28,14 +28,16 @@ export PATH=$PREFIX/bin:$PATH
 cargo build -p libwfa --release
 cargo build -p pgr-db --release
 cargo build -p pgr-bin --release
-cargo install maturin
+cargo install maturin --locked
 export PATH=$CARGO_HOME/bin:$PATH
 pushd pgr-tk/
 #maturin build --release
 maturin build --release --skip-auditwheel
 popd
 
-$PYTHON -m pip install $SRC_DIR/target/wheels/pgrtk-0.3.4-cp38-cp38-linux_x86_64.whl  --no-deps --ignore-installed --no-cache-dir -vvv
+WHLFILE=`find $SRC_DIR/target/wheels/ -name "pgrtk-*-linux_x86_64.whl"`
+
+$PYTHON -m pip install $WHLFILE  --no-deps --ignore-installed --no-cache-dir -vvv
 cp $SRC_DIR/target/release/pgr-mdb $PREFIX/bin
 rm $PREFIX/bin/gcc
 rm $PREFIX/bin/g++
