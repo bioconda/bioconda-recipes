@@ -1,36 +1,37 @@
 {% set name = "quicksnp" %}
+{% set ucname = "QuickSNP" %}
 {% set version = "1.0.1" %}
 
 package:
-  name: {{name}}
-  version: {{version}}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
-source:
+source: 
   url: https://github.com/k-florek/QuickSNP/archive/refs/tags/{{ version }}.tar.gz
   sha256: cbceec7210e24646e98f8971526443df819744361f466c4cc32c5095f94d1b31
 
 build:
   number: 0
-  noarch: python
-  script: python -m pip install setup.py --no-deps -vv
+  noarch: generic
+  script:
+    - mkdir -p ${PREFIX}/bin
+    - cp QuickSNP ${PREFIX}/bin/
+    - chmod +x ${PREFIX}/bin/QuickSNP
 
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
     - pip
-    - python
+    - python >=3
   run:
-    - pandas =1.4.3
-    - numpy =1.22.4
-    - scikit-bio =0.5.7
-    - scipy =1.8
+    - python >=3
+    - pandas ==1.4.3
+    - numpy ==1.22.4
+    - scikit-bio ==0.5.7
+    - scipy ==1.8.0
 
 test:
-  imports:
-    - quicksnp
   commands:
-    - QuickSNP.py -h
+    - QuickSNP.py --help
 
 about:
   home: https://github.com/k-florek/QuickSNP
