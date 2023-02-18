@@ -18,3 +18,4 @@ if [ "$(uname)" == "Darwin" ]; then
 fi
 
 cargo install -v --locked --root "$PREFIX" --path .
+
