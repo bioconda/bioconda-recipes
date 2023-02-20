@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#/System/Volumes/Data/System/DriverKit/usr/lib/libSystem.dylib
 mkdir -p $PREFIX/bin
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -22,8 +22,14 @@ make -j 1
 cp ./usher ${PREFIX}/bin/
 cp ./matUtils ${PREFIX}/bin/
 cp ./matOptimize ${PREFIX}/bin/
+if [ -f "usher-sampled" ]; then
+    cp ./usher-sampled ${PREFIX}/bin/
+fi
 if [ -f "ripples" ]; then
     cp ./ripples ${PREFIX}/bin/
+fi
+if [ -f "ripples-fast" ]; then
+    cp ./ripples-fast ${PREFIX}/bin/
 fi
 if [ -d ./tbb_cmake_build ]; then
     cp ./tbb_cmake_build/tbb_cmake_build_subdir_release/* ${PREFIX}/lib/
