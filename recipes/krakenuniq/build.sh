@@ -24,6 +24,7 @@ chmod u+x install_krakenuniq.sh
 
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/libexec/krakenuniq-extract-reads
 
+sed -i.bak 's#$script_dir/jellyfish-install/bin/jellyfish#jellyfish#g' "$PREFIX/libexec/build_db.sh"
 ln -s "$PREFIX/libexec/build_taxdb" "$PREFIX/bin/build_taxdb"
 
 for bin in krakenuniq krakenuniq-build krakenuniq-download krakenuniq-extract-reads krakenuniq-filter krakenuniq-mpa-report krakenuniq-report krakenuniq-translate read_merger.pl; do

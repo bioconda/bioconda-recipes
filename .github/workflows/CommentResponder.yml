@@ -8,6 +8,11 @@ on:
     types:
     - created
 
+# Re-enable when the bot has been updated to handle azure
+#      (
+#        github.event_name == 'check_suite' &&
+#        github.event.check_suite.conclusion == 'success'
+#      ) ||
 jobs:
   comment:
     runs-on: ubuntu-latest
@@ -18,10 +23,6 @@ jobs:
         github.event.state == 'success'
       ) ||
       (
-        github.event_name == 'check_suite' &&
-        github.event.check_suite.conclusion == 'success'
-      ) ||
-      (
         github.event_name == 'issue_comment' &&
         github.event.issue.pull_request &&
         (
@@ -29,6 +30,7 @@ jobs:
           startsWith(github.event.comment.body, '@biocondabot')
         ) &&
         ! contains(github.event.comment.body, 'please merge') &&
+        ! contains(github.event.comment.body, 'please change visibility') &&
         ! contains(github.event.comment.body, 'please update')
       )
     container:
