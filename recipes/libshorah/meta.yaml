@@ -1,0 +1,38 @@
+{% set version="1.0.0" %}
+{% set name="libshorah" %}
+
+package:
+  name: libshorah
+  version: '{{ version }}'
+
+source:
+  git_url: https://github.com/LaraFuhrmann/VILOCA
+  git_tag: 'v{{ version }}'
+
+build:
+  skip: True  # [py27]
+  number: 6
+  script:
+    - mkdir -p build
+    - cd build
+    - cmake -D CMAKE_INSTALL_PREFIX=${PREFIX} -D CMAKE_INSTALL_RPATH:STRING=${PREFIX}/lib -D CMAKE_CXX_STANDARD=11 -D BUILD_SHARED_LIBS=ON -D CMAKE_BUILD_TYPE=Release
+    - make -j4
+    - make install
+
+requirements:
+  build:
+    - cmake
+    - pkgconfig
+    - cxx-compiler
+    - htslib >= 1.16
+    - boost
+    - pybind11
+
+test:
+  imports:
+    - libshorah
+
+about:
+  home: https://github.com/LaraFuhrmann/VILOCA
+  license: GPLv3
+  summary: libshorah - Short Reads Assembly into Haplotypes
