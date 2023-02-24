@@ -1,43 +1,41 @@
-{% set version = "2.1.1" %}
+{% set name = "canu" %}
+{% set version = "2.2" %}
 
 package:
-  name: canu
-  version: '{{version}}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  git_url: https://github.com/marbl/canu.git
-  git_rev: 5638f7d9a5379373310ab62c28aa0cdbd864722d
+  url: https://github.com/marbl/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.Darwin-amd64.tar.xz # [osx]
+  md5: 6bd937d31bb9f5f46bf0f9839889c00f # [osx]
+  url: https://github.com/marbl/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.Linux-amd64.tar.xz # [linux]
+  md5: 63219165fc45b3dbbeb73ed920a23db5 # [linux]
+  patches:
+   - fewreads.patch
 
 build:
-  number: 1
-  skip: true  # [osx]
+  number: 0
+  skip: true  # [win and osx-arm64]
 
 requirements:
   build:
-    - '{{ compiler("c") }}'
-    - '{{ compiler("cxx") }}'
-    - {{ cdt('mesa-libgl-devel') }}  # [linux]
-    - {{ cdt('mesa-dri-drivers') }}  # [linux]
-    - {{ cdt('libselinux') }}  # [linux]
-    - {{ cdt('libxdamage') }}  # [linux]
-    - {{ cdt('libxxf86vm') }}  # [linux]
-    - {{ cdt('libxext') }}     # [linux]
+   - make
+   - '{{ compiler("cxx") }}'
   host:
     - gnuplot >=5.2
     - xorg-libxfixes  # [linux]
   run:
     - perl
     - perl-filesys-df
-    - openjdk
+    - openjdk  >=8
     - minimap2
     - gnuplot >=5.2
-
 test:
+  requires:
+    - curl
   commands:
-    - canu --version
-    # needed internally
-    - getconf --help
-    ##- gnuplot --help
+     - canu --version
+     - sqStoreDumpFASTQ --version
 
 about:
   home: http://canu.readthedocs.org/

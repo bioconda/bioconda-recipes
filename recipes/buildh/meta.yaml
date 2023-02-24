@@ -1,0 +1,48 @@
+{% set name = "buildh" %}
+{% set version = "1.6.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 3cde8aacf807813d4be3e7f83142f24670a8af6334f0187fb6193b9ff30c5a5d
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps"
+  entry_points:
+    - buildH = buildh.UI:entry_point
+  noarch: python
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - numpy
+    - pandas
+    - MDAnalysis
+    - numba
+
+test:
+  imports:
+    - buildh
+  commands:
+    - buildH --help
+
+about:
+  home: https://github.com/patrickfuchs/buildH
+  license: BSD 3-Clause
+  license_family: BSD
+  license_file: "LICENSE.txt"
+  summary: "Build hydrogen atoms from a united-atom MD of lipids and calculate the order parameter."
+  doc_url: https://buildh.readthedocs.io/
+
+extra:
+  recipe-maintainers:
+    - patrickfuchs
+    - HubLot
+    - pierrepo

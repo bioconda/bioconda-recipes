@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -exo pipefail
+
 mkdir -p $PREFIX/etc/conda/activate.d/
 echo "export JBROWSE_SOURCE_DIR=$PREFIX/opt/jbrowse" > $PREFIX/etc/conda/activate.d/jbrowse-sourcedir.sh
 chmod a+x $PREFIX/etc/conda/activate.d/jbrowse-sourcedir.sh
@@ -55,6 +57,12 @@ echo "location = ../plugin/NeatHTMLFeatures/" >> jbrowse.conf
 export HOME=/tmp
 
 ./setup.sh
+
+if [ ! -f "dist/main.bundle.js" ]; then
+    echo "dist/main.bundle.js not found, something went wrong during the build. Here's the content of setup.log:" >&2
+    cat setup.log
+    exit 1
+fi
 
 # Remove temp dirs
 rm -rf node_modules/ browser/ build/ css/ extlib/ tests/ utils/ website/ setup.log

@@ -10,7 +10,8 @@ if [[ $target_platform =~ linux.* ]] || [[ $target_platform == win-32 ]] || [[ $
   mkdir -p "${PREFIX}/lib/R/library/${PKG_NAME}/"
 
   cp extdata/cmd.sh "${PREFIX}/lib/R/library/${PKG_NAME}/"
-  for item in step1_fitNULLGLMM.R step2_SPAtests.R createSparseGRM.R; do
+  cp extdata/cmd_extractNeff.sh "${PREFIX}/lib/R/library/${PKG_NAME}/"
+  for item in step1_fitNULLGLMM.R step2_SPAtests.R createSparseGRM.R extractNglmm.R; do
     cp "extdata/${item}" "${PREFIX}/lib/R/library/${PKG_NAME}/${item}"
     chmod +x "${PREFIX}/lib/R/library/${PKG_NAME}/${item}"
     pushd ${PREFIX}/bin
