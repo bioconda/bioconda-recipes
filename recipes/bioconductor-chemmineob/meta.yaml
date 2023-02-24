@@ -1,0 +1,56 @@
+{% set version = "1.36.0" %}
+{% set name = "ChemmineOB" %}
+{% set bioc = "3.16" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 46652319b1500546c3c7c224b9f5e7ed
+  patches:
+    - patch
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: ChemmineR, BiocStyle, knitr, knitrBootstrap, BiocManager, rmarkdown
+# SystemRequirements: OpenBabel (>= 3.0.0) with headers (http://openbabel.org). Eigen3 with headers.
+requirements:
+  host:
+    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
+    - 'bioconductor-zlibbioc >=1.44.0,<1.45.0'
+    - r-base
+    - r-bh
+    - 'r-rcpp >=0.11.0'
+    - libblas
+    - liblapack
+    - openbabel >=3
+    - eigen
+  run:
+    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
+    - 'bioconductor-zlibbioc >=1.44.0,<1.45.0'
+    - r-base
+    - r-bh
+    - 'r-rcpp >=0.11.0'
+    - openbabel >=3
+    - eigen
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'file LICENSE'
+  summary: 'R interface to a subset of OpenBabel functionalities'
+  description: 'ChemmineOB provides an R interface to a subset of cheminformatics functionalities implemented by the OpelBabel C++ project. OpenBabel is an open source cheminformatics toolbox that includes utilities for structure format interconversions, descriptor calculations, compound similarity searching and more. ChemineOB aims to make a subset of these utilities available from within R. For non-developers, ChemineOB is primarily intended to be used from ChemmineR as an add-on package rather than used directly.'
+  license_file: LICENSE
+

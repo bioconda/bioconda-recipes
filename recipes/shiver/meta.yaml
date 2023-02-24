@@ -1,22 +1,21 @@
-{% set version = "1.5.7" %}
-{% set sha256 = "64973462bfc10c725ef5f21e85532ef8dd58d26795b2cee326a77f690d31ebf0" %}
+{% set version = "1.5.7" %} # put in correct version here
+{% set name = "shiver" %}
 
 package:
-  name: shiver
-  version: '{{ version }}'
-
+  name: {{ name|lower }}
+  version: {{ version }}
 source:
-  url: https://github.com/ChrisHIV/shiver/archive/v{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
-
+  url: https://github.com/ChrisHIV/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: 64973462bfc10c725ef5f21e85532ef8dd58d26795b2cee326a77f690d31ebf0
+  patches:
+    - python2-python3.patch
 build:
-  noarch: python
+  number: 1
+
 
 requirements:
-  host:
-    - python
   run:
-    - python
+    - python >=3
     - smalt
     - trimmomatic
     - samtools
@@ -24,12 +23,14 @@ requirements:
     - mafft
     - picard
     - blast >=2.2.28
-    - pyfastaq  # [not py27]
+    - pyfastaq
 
 test:
-  # Python imports
   commands:
     - shiver_init.sh 2>&1 | grep "Arguments"
+    - shiver_full_auto.sh 2>&1 | grep "Arguments"
+    - shiver_align_contigs.sh 2>&1 | grep "Arguments"
+    - shiver_map_reads.sh 2>&1 | grep "Arguments"
 
 about:
   home: https://github.com/ChrisHIV/shiver
@@ -41,3 +42,4 @@ about:
 extra:
   recipe-maintainers:
     - notestaff
+    - gtonkinhill
