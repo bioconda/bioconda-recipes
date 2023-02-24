@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 
-# Compile using make
-make 
-
-# Copy executable to environment bin directory. This folder is included in the path when the env is activated
-mkdir -p $PREFIX/bin
+make FC="${FC}" CC="${CC}"
 
 chmod u+x Cur+
 chmod u+x Canal
