@@ -21,12 +21,3 @@ fi
 export CXXFLAGS=-pthread
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 
-# Copy scripts
-mkdir -p "${PREFIX}/bin"
-for i in script/hatchet_*
-do
-    script=$(basename ${i})
-    cp "${i}" "${PREFIX}/bin/"
-    chmod +x "${PREFIX}/bin/${script}" 
-done
-

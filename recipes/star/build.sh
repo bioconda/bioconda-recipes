@@ -8,3 +8,4 @@ else
     mkdir -p $PREFIX/bin
     cp bin/Linux_x86_64_static/* $PREFIX/bin
 fi
+chmod +x $PREFIX/bin/STAR
