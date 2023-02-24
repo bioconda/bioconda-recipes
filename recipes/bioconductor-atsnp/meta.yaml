@@ -1,0 +1,60 @@
+{% set version = "1.14.0" %}
+{% set name = "atSNP" %}
+{% set bioc = "3.16" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 369b51757f87d6aa9db6525362ff0ff8
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: BiocStyle, knitr, rmarkdown
+requirements:
+  host:
+    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
+    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
+    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
+    - 'bioconductor-motifstack >=1.42.0,<1.43.0'
+    - r-base
+    - r-data.table
+    - r-ggplot2
+    - r-lifecycle
+    - r-rappdirs
+    - r-rcpp
+    - r-testthat
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
+    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
+    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
+    - 'bioconductor-motifstack >=1.42.0,<1.43.0'
+    - r-base
+    - r-data.table
+    - r-ggplot2
+    - r-lifecycle
+    - r-rappdirs
+    - r-rcpp
+    - r-testthat
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'Affinity test for identifying regulatory SNPs'
+  description: 'atSNP performs affinity tests of motif matches with the SNP or the reference genomes and SNP-led changes in motif matches.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
