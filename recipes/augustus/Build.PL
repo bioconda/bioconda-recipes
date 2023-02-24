@@ -8,32 +8,32 @@ our @files = ();
 find( \&wanted, ".");
 
 sub wanted {
-	my $file = $_;
+    my $file = $_;
 
-	return unless $file;
-	return unless -e $file;
+    return unless $file;
+    return unless -e $file;
 
-	#print "File $file\n";
-	if($file =~ m/.*\.pl$/){
-		push(@files, $file);
-	}
-}
-
-foreach my $file (@files){
-    my $tfile = "$file.t";
-    #    print STDERR "Change shebang line to #!perl $file\n";
-    open my $in,  "<$file" or die $!;
-    open my $out, ">$tfile" or die $!;
-    while (<$in>) {
-        s|^#!/usr/bin/perl -w|#!perl|;    # so MakeMaker can fix it
-        s|^#!/usr/bin/env perl|#!perl|;    # so MakeMaker can fix it
-        s|^#!/usr/bin/perl|#!perl|;    # so MakeMaker can fix it
-        print $out $_;
+    #print "File $file\n";
+    if($file =~ m/.*\.p[ml]$/){
+	push(@files, $file);
     }
-    close($in);
-    close($out);
-    system("mv $tfile $file");
 }
+
+#foreach my $file (@files){
+#    my $tfile = "$file.t";
+    #    print STDERR "Change shebang line to #!perl $file\n";
+#    open my $in,  "<$file" or die $!;
+#    open my $out, ">$tfile" or die $!;
+#    while (<$in>) {
+#        s|^#!/usr/bin/perl -w|#!perl|;    # so MakeMaker can fix it
+#        s|^#!/usr/bin/env perl|#!perl|;    # so MakeMaker can fix it
+#        s|^#!/usr/bin/perl|#!perl|;    # so MakeMaker can fix it
+#        print $out $_;
+#    }
+#    close($in);
+#    close($out);
+#    system("mv $tfile $file");
+#}
 
 my %module_build_args = (
     "build_requires"     => { "Module::Build" => "0.28" },
@@ -49,9 +49,9 @@ my %module_build_args = (
     "script_files"         => \@files,
     "test_requires"        => {
         "Test::More"    => 0,
-        "strict"        => 0
+	    "strict"        => 0
     }
-);
+    );
 
 my %fallback_build_requires = (
     "Module::Build" => "0.28",
