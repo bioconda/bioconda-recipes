@@ -19,7 +19,8 @@ cp gtc2vcf/gtc2vcf.c bcftools/plugins/
 cp gtc2vcf/gtc2vcf.h bcftools/plugins/
 
 pushd bcftools
-make
+./configure --prefix=$PREFIX --with-htslib=system --enable-libgsl
+make all GSL_LIBS=-lgsl
 popd
 
 # Move custom bcftools plugins to the ~/libexec/bcftools directory.
