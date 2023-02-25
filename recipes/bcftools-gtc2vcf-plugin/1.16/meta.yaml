@@ -8,8 +8,13 @@ package:
   version: {{version}}
 
 source:
-  url: https://github.com/freeseek/gtc2vcf/archive/{{git_commit}}.tar.gz
-  sha256: {{sha256}}
+  - folder: gtc2vcf
+    url: https://github.com/freeseek/gtc2vcf/archive/{{git_commit}}.tar.gz
+    sha256: {{sha256}}
+  - folder: bcftools
+    url: https://github.com/samtools/bcftools/releases/download/{{version}}/bcftools-{{version}}.tar.bz2
+  - folder: htslib
+    url: https://github.com/samtools/htslib/releases/download/{{version}}/htslib-{{version}}.tar.bz2
 
 build:
   number: 0
@@ -19,13 +24,12 @@ requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-    - autoconf
+    - autoconf <=2.69
   host:
-    - htslib
-    - bcftools {{version}}
+    - zlib
   run:
-    - bcftools {{version}}
-    - htslib
+    - {{ pin_compatible('bcftools') }}
+    - {{ pin_compatible('htslib') }}
 
 test:
   commands:
