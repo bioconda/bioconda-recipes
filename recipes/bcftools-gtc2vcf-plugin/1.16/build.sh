@@ -18,19 +18,10 @@ cp gtc2vcf/affy2vcf.c bcftools/plugins/
 cp gtc2vcf/gtc2vcf.c bcftools/plugins/
 cp gtc2vcf/gtc2vcf.h bcftools/plugins/
 
-# Compile htslib and bcftools with affy2vcf and gtc2vcf plugins.
-pushd htslib
-autoheader
-(autoconf || autoconf)
-./configure --disable-bz2 --disable-lzma --prefix=$PREFIX
-make CC=$CC
-popd
-
 pushd bcftools
 make
 popd
 
 # Move custom bcftools plugins to the ~/libexec/bcftools directory.
 mv bcftools/plugins/affy2vcf.so $PREFIX/libexec/bcftools/
-mv bcftools/plugins/fixref.so $PREFIX/libexec/bcftools/
 mv bcftools/plugins/gtc2vcf.so $PREFIX/libexec/bcftools/
