@@ -7,6 +7,7 @@ cd ./dysgu
 git clone https://github.com/samtools/htslib.git
 cd ./htslib
 pwd
+
 ls
 ./configure --with-libdeflate
 make
