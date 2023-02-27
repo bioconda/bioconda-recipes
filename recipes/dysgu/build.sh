@@ -4,13 +4,7 @@ export LDFLAGS="-L$PREFIX/lib"
 export C_INCLUDE_PATH=${PREFIX}/include
 
 cd ./dysgu
-wget https://github.com/samtools/htslib/releases/download/1.17/htslib-1.17.tar.bz2
-tar -xvf htslib-1.17.tar.bz2
-rm htslib-1.17.tar.bz2
-pwd
-ls htslib-1.17
-cp -rf htslib-1.17 htslib
-rm -rf htslib-1.17
+git clone https://github.com/samtools/htslib.git
 cd ./htslib
 pwd
 ls
