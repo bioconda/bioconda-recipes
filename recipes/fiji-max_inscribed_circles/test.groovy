@@ -5,8 +5,6 @@ import java.awt.*;
 import ij.plugin.*;
 // Import the plugin:
 import ch.epfl.biop.MaxInscribedCircles;
-import ch.epfl.biop.CirclesBasedSpine;
-import ch.epfl.biop.CirclesBasedSpine$Settings;
 
 import ij.plugin.frame.RoiManager
 
@@ -33,7 +31,13 @@ IJ.run(imp, "Fill", "slice")
 IJ.run(imp, "Select All", "")
 
 println "Run findCircles"
-ArrayList<Roi> circles = MaxInscribedCircles.findCircles(imp, 20, false)
+MaxInscribedCircles mic = MaxInscribedCircles.builder(imp)
+    .minimumDiameter(20)
+    .useSelectionOnly(false)
+    .getSpine(false)
+    .build()
+mic.process()
+ArrayList<Roi> circles = mic.getCircles()
 println "Done"
 
 if (!headless_mode){
@@ -49,15 +53,18 @@ double circle_roi_radius = circle_roi.getStatistics().width / 2
 
 assert circle_roi_radius == 192
 
-println "Set settings"
-CirclesBasedSpine sbp = new CirclesBasedSpine$Settings(imp)
- .closenessTolerance(50)
- .minSimilarity(0.30)
- .showCircles(false)
- .circles(circles)
- .build();
+println "New find circles"
+mic = MaxInscribedCircles.builder(imp)
+        .minimumDiameter(20)
+        .useSelectionOnly(false)
+        .getSpine(true)
+        .spineClosenessTolerance(50)
+        .spineMinimumSimilarity(0.3)
+        .build()
+mic.process()
 println "Done\nGet spine"
-PolygonRoi spine = sbp.getSpine()
+ArrayList<Roi> spines = mic.getSpines()
+Roi spine = spines[0]
 println "Done"
 
 
