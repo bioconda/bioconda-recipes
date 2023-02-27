@@ -9,7 +9,7 @@ wget -O htslib.tar.bz2 https://github.com/samtools/htslib/releases/download/1.17
 tar -xvf htslib.tar.bz2
 rm htslib.tar.bz2 && cd htslib
 autoreconf -i
-./configure --enable-libcurl --with-libdeflate --enable-bz2 --enable-lzma
+./configure --with-libdeflate
 make
 cd ../../
 
