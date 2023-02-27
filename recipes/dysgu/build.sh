@@ -6,9 +6,7 @@ export C_INCLUDE_PATH=${PREFIX}/include
 cd ./dysgu
 git clone https://github.com/samtools/htslib.git
 cd ./htslib
-pwd
-
-ls
+autoreconf -i
 ./configure --with-libdeflate
 make
 cd ../../
