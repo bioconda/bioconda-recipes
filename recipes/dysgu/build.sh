@@ -9,7 +9,8 @@ tar -xvf htslib-1.17.tar.bz2
 rm htslib-1.17.tar.bz2
 pwd
 ls htslib-1.17
-mv htslib-1.17/htslib-1.17 htslib
+cp -rf htslib-1.17 htslib
+rm -rf htslib-1.17
 cd ./htslib
 pwd
 ls
