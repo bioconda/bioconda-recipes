@@ -14,5 +14,5 @@ make
 cd ../../
 
 #$PYTHON setup.py install --single-version-externally-managed --record=record.txt
-$PYTHON -m pip install -r requirements.txt
+$PYTHON -m pip install edlib lightgbm
 $PYTHON -m pip install .
