@@ -11,8 +11,7 @@ export CPPFLAGS+=" -I./libdeflate ${CPPFLAGS}"
 echo $CPPFLAGS
 pwd
 autoreconf -i
-./configure --with-libdeflate
-${BUILD_PREFIX}/include
+./configure --enable-libcurl --with-libdeflate
 make
 cd ../../
 
