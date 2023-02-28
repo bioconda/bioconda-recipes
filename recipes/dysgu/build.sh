@@ -14,4 +14,5 @@ make
 cd ../../
 
 #$PYTHON setup.py install --single-version-externally-managed --record=record.txt
-pip install .
+$PYTHON -m pip install -r requirements.txt
+$PYTHON -m pip install .
