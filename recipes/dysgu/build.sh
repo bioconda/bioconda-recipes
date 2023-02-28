@@ -4,7 +4,7 @@ export LDFLAGS="-L$PREFIX/lib"
 export C_INCLUDE_PATH=${PREFIX}/include
 
 cd ./dysgu
-git clone https://github.com/samtools/htslib.git
+git clone --recurse-submodules https://github.com/samtools/htslib.git
 cd ./htslib
 autoreconf -i
 ./configure --with-libdeflate
