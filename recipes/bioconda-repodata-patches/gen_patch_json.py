@@ -134,6 +134,13 @@ def _gen_new_index(repodata, subdir):
         if record_name.startswith('perl-') and (not has_dep(record, "perl")) and record.get('timestamp', 0) < 1514761200000:
             deps.append('perl >=5.22.0,<5.23.0')
 
+        # Nanoqc requires bokeh >=2.4,<3
+        if record_name.startswith('nanoqc') and has_dep(record, "bokeh") and record.get('timestamp', 0) < 1592397000000:
+            for i, dep in enumerate(deps):
+                if dep.startswith('bokeh'):
+                    deps[i] = 'bokeh >=2.4,<3'
+                    break
+
     return index
 
 
