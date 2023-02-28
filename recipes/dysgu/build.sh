@@ -8,11 +8,10 @@ git clone --recurse-submodules https://github.com/samtools/htslib.git
 cd ./htslib
 git clone https://github.com/ebiggers/libdeflate.git
 export CPPFLAGS+=" -I./libdeflate ${CPPFLAGS}"
-echo $CPPFLAGS
-pwd
 autoreconf -i
 ./configure --enable-libcurl --with-libdeflate
 make
 cd ../../
 
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+#$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+pip install .
