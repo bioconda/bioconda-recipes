@@ -1,0 +1,58 @@
+{% set name = "pasa" %}
+{% set version = "2.5.2" %}
+{% set sha256 = "3b04bb1577cc1ea16588892d26499b577c29970d5182204485ca235f6d9533dd" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True  # [osx]
+
+source:
+  url: https://github.com/PASApipeline/PASApipeline/releases/download/{{ name }}-v{{ version }}/PASApipeline-v{{ version }}.FULL.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  run:
+    - blat
+    - fasta3
+    - cdbtools
+    - slclust
+    - transdecoder >=5.5.0
+    - gmap ==2021.08.25
+    - lighttpd
+    - samtools
+    - perl
+    - perl-cgi
+    - perl-dbd-sqlite
+    - perl-db-file
+    - perl-uri
+    - r-base
+    - pblat
+    - minimap2
+
+test:
+  commands:
+    - "${PREFIX}/opt/{{ name }}-{{ version }}/bin/cln2qual 2>&1 | grep \"cln2qual <cln_report> <qual_file>\""
+    - "${PREFIX}/opt/{{ name }}-{{ version }}/bin/mdust -h 2>&1 | grep \"Usage: mdust\""
+    - "${PREFIX}/opt/{{ name }}-{{ version }}/bin/pasa 2>&1 | grep \"Usage:.*pasa\""
+    - "${PREFIX}/opt/{{ name }}-{{ version }}/Launch_PASA_pipeline.pl --version 2>&1 | grep \"^PASA version:\""
+    - "${PREFIX}/opt/{{ name }}-{{ version }}/bin/seqclean -h 2>&1 | grep \"seqclean <seqfile>\""
+    - "${PREFIX}/opt/{{ name }}-{{ version }}/bin/trimpoly -h 2>&1 | grep \"Usage:\""
+    - "fasta 2>&1 | grep \"^ version:\""
+
+about:
+  home: https://pasapipeline.github.io/
+  license: BSD-3-Clause
+  license_file: LICENSE
+  summary: PASA, acronym for Program to Assemble Spliced Alignments (and pronounced 'pass-uh'), is a eukaryotic genome annotation tool that exploits spliced alignments of expressed transcript sequences to automatically model gene structures, and to maintain gene structure annotation consistent with the most recently available experimental sequence data. PASA also identifies and classifies all splicing variations supported by the transcript alignments.
+
+extra:
+  identifiers:
+    - doi:10.1186/gb-2008-9-1-r7

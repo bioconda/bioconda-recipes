@@ -1,8 +1,7 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
+make CC="${CC}" CPPFLAGS="${CPPFLAGS}" LIBS="${LDFLAGS} -lm -lz -lpthread"
 
-make 
-cp minidot $PREFIX/bin 
-cp miniasm $PREFIX/bin
-
+mkdir -p "${PREFIX}/bin"
+cp minidot "${PREFIX}/bin/"
+cp miniasm "${PREFIX}/bin/"

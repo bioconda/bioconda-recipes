@@ -1,32 +1,26 @@
-{% set name = "sniffles" %}
-{% set version = "1.0.7" %}
-{% set hash = "03fa703873bdf9c32055c584448e1eece45f94b4bc68e60c9624cf3841e6d8a9" %}
+{% set version = "2.0.7" %}
+{% set sha256 = "bf532eb0b3aaeaee840100a3bb3339f1d5175ba98adfe3cf19685b0abb0885a1" %}
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: sniffles
+  version: '{{version}}'
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://github.com/fritzsedlazeck/Sniffles/archive/v{{ version }}.tar.gz
-  sha256: {{ hash }}
+  url: https://pypi.io/packages/source/s/sniffles/sniffles-{{version}}.tar.gz
+  sha256: '{{sha256}}'
 
 build:
-  number: 1
-  string: bamtools{{CONDA_BAMTOOLS}}_{{PKG_BUILDNUM}}
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
 
 requirements:
-  build:
-    - gcc
-    - cmake
-    - zlib {{CONDA_ZLIB}}*
-    - bamtools {{ CONDA_BAMTOOLS }}*
-    - tclap >=1.2.1
+  host:
+    - python >=3.7
+    - setuptools
   run:
-    - zlib {{CONDA_ZLIB}}*
-    - libgcc
-    - bamtools {{ CONDA_BAMTOOLS }}*
-    - tclap >=1.2.1
+    - python >=3.7
+    - pysam
 
 test:
   commands:
@@ -35,4 +29,7 @@ test:
 about:
   home: https://github.com/fritzsedlazeck/Sniffles
   license: MIT
-  summary: 'Sniffles is a structural variation caller using third generation sequencing (PacBio or Oxford Nanopore)'
+  license_file: LICENSE
+  license_family: MIT
+  summary: Sniffles is a structural variation caller using third generation sequencing
+    (PacBio or Oxford Nanopore)

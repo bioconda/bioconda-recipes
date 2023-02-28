@@ -1,31 +1,31 @@
+{% set version = "2.9.1" %}
+{% set sha256 = "a753bb87b8bd5e0155608fa984aa87b98bb1b6226a355909e802ce84b8c95b7d" %}
+
 package:
   name: sevenbridges-python
-  version: "0.7.2"
+  version: '{{ version }}'
 
 source:
-  fn: sevenbridges-python-0.7.2.tar.gz
-  url: https://pypi.python.org/packages/07/cc/f959f1d79c67cb46457ca58c6cf2210acfd1c018cbc4e0431815e6e80b7e/sevenbridges-python-0.7.2.tar.gz
-  md5: f74052f71c9a325f07ed5e5f806619a3
+  url: https://pypi.io/packages/source/s/sevenbridges-python/sevenbridges-python-{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
 
 build:
+  noarch: python
   number: 0
-  # futures not available for python 3.6
-  skip: True  # [not py2k and not py35]
+  script: touch requirements.txt && {{PYTHON}} -m pip install --no-deps --ignore-installed --no-cache-dir .
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - requests
-    - six
-    - futures
+  host:
+    - python >=3
+    - pip
+    - requests >=2.25.1  # needed because setup.py imports the sevenbridges module
   run:
-    - python
-    - requests
-    - six
-    - futures
+    - python >=3
+    - requests >=2.25.1
 
 test:
+  requires:
+    - pytest
   imports:
     - sevenbridges
     - sevenbridges.http
@@ -35,6 +35,8 @@ test:
     - sevenbridges.models.compound.billing
     - sevenbridges.models.compound.files
     - sevenbridges.models.compound.jobs
+    - sevenbridges.models.compound.limits
+    - sevenbridges.models.compound.markers
     - sevenbridges.models.compound.projects
     - sevenbridges.models.compound.tasks
     - sevenbridges.models.compound.volumes
@@ -42,5 +44,15 @@ test:
 
 about:
   home: https://github.com/sbg/sevenbridges-python
-  license: Apache Software License
-  summary: 'SBG API python client bindings'
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary: SBG API python client bindings
+  description: sevenbridges-python is a Python library that provides an interface for the Seven Bridges Platform the Cancer
+    Genomics Cloud and Cavatica public APIs. It works with Python versions 2.6+ and supports Python 3.
+  dev_url: https://github.com/sbg/sevenbridges-python
+
+extra:
+  recipe-maintainers:
+    - stankic
+    - borislavd88

@@ -1,33 +1,31 @@
-{% set version = "0.1.7" %}
+{% set version = "0.2.6" %}
+{% set sha256 = "2f92cc1acc1f059a75468fca49f755c25947d59f39f2225abaaa4d145ac971a8" %}
 
 package:
   name: alfred
-  version: {{ version }}
+  version: '{{ version }}'
 
 source:
   url: https://github.com/tobiasrausch/alfred/archive/v{{ version }}.tar.gz
-  sha256: dec8a0d373f996054adfe91ef9ad9967737bfd9e29a4f1f10b026ef93005918b
-  patches:
-    - Makefile.patch
+  sha256: '{{ sha256 }}'
 
 build:
-  number: 0
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
-  skip: True # [osx]
+  number: 1
 
 requirements:
   build:
-    - gcc
-    - zlib {{CONDA_ZLIB}}*
-    - bzip2 {{ CONDA_BZIP2 }}*
-    - boost {{CONDA_BOOST}}*
-    - htslib {{CONDA_HTSLIB}}*
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - bzip2
+    - boost-cpp
+    - htslib
   run:
-    - libgcc
-    - zlib {{CONDA_ZLIB}}*
-    - bzip2 {{ CONDA_BZIP2 }}*
-    - boost {{CONDA_BOOST}}*
-    - htslib {{CONDA_HTSLIB}}*
+    - zlib
+    - bzip2
+    - boost-cpp
+    - htslib
 
 test:
   commands:
@@ -35,5 +33,7 @@ test:
 
 about:
   home: https://github.com/tobiasrausch/alfred
-  license: GPLv3
-  summary: Sequence alignment quality control, BAM statistics, feature counting and feature annotation
+  license: BSD License
+  license_family: BSD
+  license_file: LICENSE
+  summary: BAM alignment statistics, feature counting and feature annotation

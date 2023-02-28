@@ -5,19 +5,22 @@ package:
   version: {{ version }}
 
 source:
-  fn: bioformats-{{ version }}.tar.gz
-  url: https://github.com/gtamazian/bioformats/archive/v0.1.15.tar.gz
+  url:
+    - https://depot.galaxyproject.org/software/bioformats/bioformats_0.1.15_src_all.tar.gz
+    - https://github.com/gtamazian/bioformats/archive/v0.1.15.tar.gz
   sha256: 8668de761f6912dcfef428854193453c22ab656758eaf8b6dfad08680319a038
 
 build:
-  number: 0
-  script: python setup.py install --single-version-externally-managed --record record.txt
+  noarch: python
+  number: 2
+  script: python -m pip install --no-deps --ignore-installed .
   entry_points:
     - bioformats = bioformats.cli:bioformats
 
 requirements:
-  build:
+  host:
     - python
+    - pip
     - setuptools
   run:
     - python
@@ -26,10 +29,10 @@ requirements:
     - pyvcf
 
 test:
-    imports:
-      - bioformats
-    commands:
-      - bioformats --version
+  imports:
+    - bioformats
+  commands:
+    - bioformats --version
 
 about:
   home: https://github.com/gtamazian/bioformats

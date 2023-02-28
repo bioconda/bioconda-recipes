@@ -1,29 +1,33 @@
 package:
   name: htseq
-  version: "0.9.1"
+  version: "2.0.2"
 
 source:
-  fn: HTSeq-0.9.1.tar.gz
-  url: https://pypi.python.org/packages/fd/94/b7c8c1dcb7a3c3dcbde66b8d29583df4fa0059d88cc3592f62d15ef539a2/HTSeq-0.9.1.tar.gz
-  md5: fc71e021bf284a68f5ac7533a57641ac
+  url: https://files.pythonhosted.org/packages/de/13/cbeb753eb29d31bb252bc18443e79a3739bf5bd3dbc99e65fcf13db81be1/HTSeq-2.0.2.tar.gz
+  sha256: e2c7442d6ff3f97293cfa0da276576f0996eae0a66eb3c2006332ef198f7ea09
 
 build:
   number: 0
+  skip: True  # [py2k or py == 36]
+  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
     - python
     - setuptools
+    - pip
     - cython
     - numpy
-    - pysam >=0.9.0
+    - pysam >=0.15.1
     - swig >=3.0.8
-
   run:
     - python
-    - numpy
-    - matplotlib >=1.4
-    - pysam >=0.9.0
+    - {{ pin_compatible('numpy') }}
+    - matplotlib-base >=1.4
+    - pysam >=0.15.1
 
 test:
   # Python imports
@@ -33,17 +37,17 @@ test:
     - HTSeq._version
     - HTSeq.scripts.count
     - HTSeq.scripts.qa
-
   commands:
     - htseq-count -h
     - htseq-qa -h
 
 about:
-  home: https://github.com/simon-anders/htseq
-  license: GPL-3.0
-  summary: 'HTSeq is a Python library to facilitate processing and analysis of data from high-throughput sequencing (HTS) experiments.' 
+  home: https://github.com/htseq/htseq
+  license: GPL-3.0-only
+  summary: 'HTSeq is a Python library to facilitate processing and analysis of data from high-throughput sequencing (HTS) experiments.'
 
 extra:
   identifiers:
     - biotools:htseq
+    - usegalaxy-eu:htseq_count
     - doi:10.1093/bioinformatics/btu638

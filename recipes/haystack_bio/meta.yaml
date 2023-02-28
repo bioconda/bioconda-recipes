@@ -1,58 +1,42 @@
-{% set version = "0.5.3" %}
-{% set sha256 = "e2ccaeb40d588a87eb0f63d783aa285f9784dc3ec486564833dd328ccacdc54f" %}
+{% set version = "0.5.5" %}
+{% set sha256 = "4adde4f00f18e937f933c3d366b9d6187a63492112f150395a2146f29bcfe56c" %}
 
-package: 
+package:
   name: haystack_bio
   version: {{ version }}
 
-source: 
-  fn: haystack_bio-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
-
+source:
   url: "https://github.com/pinellolab/haystack_bio/archive/{{ version }}.tar.gz"
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Skip-check_required_packages-during-build.patch
 
-build: 
-  entry_points: 
+build:
+  noarch: python
+  entry_points:
     - "haystack_pipeline = haystack.run_pipeline:main"
     - "haystack_hotspots = haystack.find_hotspots:main"
     - "haystack_motifs = haystack.find_motifs:main"
     - "haystack_tf_activity_plane = haystack.generate_tf_activity_plane:main"
     - "haystack_download_genome = haystack.download_genome:main"
     - "haystack_run_test = haystack.haystack_common:run_testdata"
-  number: 0
+  number: 1
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
-about: 
-  home: "https://github.com/pinellolab/haystack_bio"
-  license: GPLv3
-  summary: "Epigenetic Variability and Transcription Factor Motifs Analysis Pipeline"
-
-
-requirements: 
-  build: 
-    - python
+requirements:
+  host:
+    - pip
+    - python >=2.7,<3.0a0
+  run:
+    - python >=2.7,<3.0a0
     - openjdk
+    - numpy 1.15.*
     - meme 4.11.2
     - bedtools
     - sambamba
     - ucsc-bigwigaverageoverbed
     - ucsc-bedgraphtobigwig
     - bx-python
-    - numpy
-    - scipy
-    - matplotlib
-    - jinja2
-    - pandas
-    - tqdm
-    - weblogo
-  run:
-    - openjdk
-    - meme 4.11.2 
-    - bedtools
-    - sambamba
-    - ucsc-bigwigaverageoverbed
-    - ucsc-bedgraphtobigwig
-    - bx-python
-    - numpy
     - scipy
     - matplotlib
     - jinja2
@@ -60,6 +44,12 @@ requirements:
     - tqdm
     - weblogo
 
-test: 
-  commands: 
+about:
+  home: "https://github.com/pinellolab/haystack_bio"
+  license: GPLv3
+  summary: "Epigenetic Variability and Transcription Factor Motifs Analysis Pipeline"
+
+test:
+  commands:
     - "haystack_hotspots -h"
+    - python -c 'import haystack.haystack_common as h; h.check_required_packages()'

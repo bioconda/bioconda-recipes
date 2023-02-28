@@ -1,11 +1,6 @@
 #!/bin/bash
 
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
-export CPATH=${PREFIX}/include
+LIBS="${LDFLAGS}" make CC="${CC}" CFLAGS="${CFLAGS}" CPPFLAGS="${CPPFLAGS}"
 
-mkdir -p $PREFIX/bin
-
-make 
-mv bfc  $PREFIX/bin
-
+mkdir -p "${PREFIX}/bin"
+mv bfc "${PREFIX}/bin/"

@@ -1,43 +1,45 @@
-{% set version = "1.0.0" %}
+{% set version = "1.5.1" %}
+{% set sha256 = "9b3f266e5ac77749f35a98bf37aed859836c9e7b1955e1af31df1f9c66266df0" %}
 
 package:
   name: catch
-  version: {{ version }}
-
-build:
-  skip: True  # [py27]
-  number: 0
+  version: '{{ version }}'
 
 source:
-  fn: catch_{{ version }}.tar.gz
   url: https://github.com/broadinstitute/catch/archive/v{{ version }}.tar.gz
-  sha256: 725ae0b6cf2e68800e6c98deb4a90f37b471469ecf98cc5d41c382b93fbeb7ce
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: python
+  number: 0
+  script: '{{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir -vvv .'
 
 requirements:
-  build:
-  - python
-  - setuptools
-
+  host:
+    - python >3.7
+    - pip
   run:
-  - python
-  - numpy >=1.9.0
-  - scipy >=1.0.0
+    - python >3.7
+    - numpy =1.22
+    - scipy =1.8.0
 
 test:
   commands:
     - pool.py --help
     - analyze_probe_coverage.py --help
     - design.py --help
+    - design_large.py --help
     - design_naively.py --help
 
 about:
   home: https://github.com/broadinstitute/catch
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: A package for designing compact and comprehensive probe sets.
+  summary: A package for designing compact and comprehensive capture probe sets.
 
 extra:
-  maintainers:
+  recipe-maintainers:
     - haydenm
   identifiers:
-    - doi:10.1101/279570
+    - doi:10.1038/s41587-018-0006-x

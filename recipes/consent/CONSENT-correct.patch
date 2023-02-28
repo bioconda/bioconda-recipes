@@ -1,0 +1,24 @@
+diff --git a/CONSENT-correct b/CONSENT-correct
+index 8e39d7e..92db04b 100755
+--- a/CONSENT-correct
++++ b/CONSENT-correct
+@@ -190,16 +190,16 @@ fi
+ #If Minimap index had to be split, separate into different chunks, and merge so that all overlaps for a given read are in the same chunk
+ if [[ $(grep "loaded/built the index" $tmpdir/"$minimapErrlog" -c) != "1" ]] ; then
+ 	echo "["$(date)"] Processing the overlaps"
+-	$LRSCf/bin/explode $tmpdir/"$alignments" $tmpdir/$exploded
++	CONSENT-explode $tmpdir/"$alignments" $tmpdir/$exploded
+ 	grep "^>\|^@" "$reads" > $tmpdir/"$headers"
+-	$LRSCf/bin/merge $tmpdir/"$alignments" $tmpdir/"$headers" "$tmpdir/"$exploded*
++	CONSENT-merge $tmpdir/"$alignments" $tmpdir/"$headers" "$tmpdir/"$exploded*
+ 	rm "$tmpdir/"$exploded*
+ 	rm "$tmpdir"/$headers
+ fi
+ rm $tmpdir/"$minimapErrlog"
+ 
+ echo "["$(date)"] Correcting the long reads"
+-$LRSCf/bin/CONSENT-correction -a $tmpdir/"$alignments" -s "$minSupport" -S "$maxSupport" -l "$windowSize" -k "$merSize" -c "$commonKMers" -A "$minAnchors" -f "$solid" -m "$windowOverlap" -j "$nproc" -r "$reads" -M "$maxMSA" -p "$LRSCf" >> "$out"
++CONSENT-correction -a $tmpdir/"$alignments" -s "$minSupport" -S "$maxSupport" -l "$windowSize" -k "$merSize" -c "$commonKMers" -A "$minAnchors" -f "$solid" -m "$windowOverlap" -j "$nproc" -r "$reads" -M "$maxMSA" -p "$LRSCf" >> "$out"
+ 
+ echo "["$(date)"] Removing the temporary files"
+ rm $tmpdir/"$alignments"

@@ -1,45 +1,44 @@
 {% set name = "ngless" %}
-{% set version = "0.8.0" %}
-{% set md5 = "49621821b1d0f52267fd4bdd625ddff1" %}
+{% set version = "1.5.0" %}
+{% set linux_sha256 = "327295c9a4e4fe8d5b41af403caaf43e414eaa4c9d11dcb312f660f44a24e143" %}
+{% set osx_sha256 = "fe2d43e4964da31ce18b95a447596f43eebaec9c5ae13788f812960fb9bb94e4" %}
+
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  fn: {{ version }}.tar.gz
-  url: https://github.com/luispedro/ngless/archive/v{{ version }}.tar.gz
-  md5: {{ md5 }}
+  - url: https://github.com/ngless-toolkit/ngless/releases/download/v{{ version }}/NGLess-v{{ version }}-Linux-static-no-deps # [linux]
+    sha256: {{ linux_sha256 }} # [linux]
+  - url: https://github.com/ngless-toolkit/ngless/releases/download/v{{ version }}/NGLess-v{{ version }}-MacOSX.zip # [osx]
+    sha256: {{ osx_sha256 }} # [osx]
 
 build:
   number: 0
-  skip: True  #  [osx]
 
 requirements:
-  build:
-    - stack >=1.7.1
-    - bzip2 {{ CONDA_BZIP2 }}*
-    - gmp {{CONDA_GMP}}*
-    - zlib {{CONDA_ZLIB}}*
-    - perl
-    - wget
-    - xz {{CONDA_XZ}}*
-    - gcc # necessary for megahit
   run:
-    - python
-    - bzip2 {{ CONDA_BZIP2 }}*
-    - gmp {{CONDA_GMP}}*
-    - zlib {{CONDA_ZLIB}}*
-    - libgcc # for gomp (megahit)
-    - xz {{CONDA_XZ}}*
-
+    - bwa
+    - prodigal
+    - megahit
+    - samtools
+    - minimap2
 
 test:
   commands:
     - ngless --version
-    - ngless --check-install
+    - ngless --check-install --verbose
 
 about:
-  home: http://ngless.embl.de
+  home: https://ngless.embl.de
   license: MIT
-  summary: A tool for metagenomics processing with a focus on metagenomics
+  summary: A tool for short-read processing with a focus on metagenomics
+
+extra:
+  recipe-maintainers:
+    - luispedro
+  identifiers:
+    - "doi:10.1186/s40168-019-0684-8" # Publication
+  skip-lints:
+    - should_be_noarch_generic

@@ -1,36 +1,31 @@
-{% set version = "1.8.4" %}
+{% set version = "2.0.1" %}
+{% set sha256 = "f6f664b854b9dcc51a399af8d5ce2634f788ccdbc35e7d2732c927ca50bc7f70" %}
 
 package:
   name: links
   version: {{ version }}
 
 source:
-  fn: links_{{ version }}.tar.gz
-  url: http://www.bcgsc.ca/platform/bioinfo/software/links/releases/1.8.4/links_v1-8-4.tar.gz
-  md5: 2777029b27c7b9359a7ecef936adcab8
-
-  patches:
-    - links.patch
+  url: https://github.com/bcgsc/LINKS/releases/download/v2.0.1/links-v2.0.1.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 0
-  skip: True # [osx]
+  number: 2
 
 requirements:
   build:
-    - perl-threaded
-    - swig
-    - gcc  # [not osx]
-    - llvm  # [osx]
+    - {{ compiler('cxx') }}
+    - make
   run:
-    - perl-threaded
-    - libgcc # [not osx]
+    - make
+    - perl
 test:
   commands:
-    - LINKS  | grep 'Usage' > /dev/null
-
+    - LINKS | grep 'Usage'
+    - LINKS-make help | grep 'Usage'
 about:
   summary: Long Interval Nucleotide K-mer Scaffolder
-  home: http://www.bcgsc.ca/platform/bioinfo/software/links
+  home: https://github.com/bcgsc/LINKS
   license: GPLv3
-  license_file: LINKS-readme.txt
+  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
+

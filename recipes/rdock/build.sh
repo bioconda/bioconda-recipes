@@ -3,6 +3,11 @@
 if [ $PY3K -eq 1 ]; then
     2to3 -w -n build/test/RBT_HOME/check_test.py
 fi
+export C_INCLUDE_PATH=${PREFIX}/include
+export CPP_INCLUDE_PATH=${PREFIX}/include
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
+export CXX_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
 
 cd build/
 make linux-g++-64

@@ -1,0 +1,43 @@
+{% set version = "1.24.0" %}
+{% set name = "alpineData" %}
+{% set bioc = "3.16" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 9aa0c7d41dfac337b05643d1ecd240ac
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: GenomicAlignments, knitr, markdown
+requirements:
+  host:
+    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
+    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
+    - 'bioconductor-genomicalignments >=1.34.0,<1.35.0'
+    - r-base
+  run:
+    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
+    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
+    - 'bioconductor-genomicalignments >=1.34.0,<1.35.0'
+    - r-base
+    - curl
+    - bioconductor-data-packages>=20221108
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  license: 'GPL (>=2)'
+  summary: 'Data for the alpine package vignette'
+  description: 'A small subset of paired-end RNA-seq reads from four samples of the GEUVADIS project.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

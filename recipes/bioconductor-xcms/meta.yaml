@@ -1,60 +1,74 @@
-{% set version = "3.0.0" %}
+{% set version = "3.20.0" %}
 {% set name = "xcms" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.16" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: a0e7e3fb25eefa4976577cbf862504239eaeb15c28dfcc11c5e040a88f2fc47b
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 9bf832c553d287235f84417daf1aa2e7
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocStyle, caTools, knitr (>= 1.1.0), faahKO, msdata (>= 0.25.1), ncdf4, testthat, pander, magrittr, rmarkdown, multtest, MALDIquant, pheatmap, Spectra (>= 1.1.17), MsBackendMgf, progress, signal
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
-    - 'bioconductor-biocparallel >=1.8.0'
-    - 'bioconductor-massspecwavelet >=1.5.2'
-    - 'bioconductor-msnbase >=2.3.11'
-    - bioconductor-multtest
-    - 'bioconductor-mzr >=1.1.6'
-    - bioconductor-protgenerics
-    - bioconductor-s4vectors
+  host:
+    - 'bioconductor-biobase >=2.58.0,<2.59.0'
+    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
+    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
+    - 'bioconductor-iranges >=2.32.0,<2.33.0'
+    - 'bioconductor-massspecwavelet >=1.64.0,<1.65.0'
+    - 'bioconductor-mscoreutils >=1.10.0,<1.11.0'
+    - 'bioconductor-msfeatures >=1.6.0,<1.7.0'
+    - 'bioconductor-msnbase >=2.24.0,<2.25.0'
+    - 'bioconductor-mzr >=2.32.0,<2.33.0'
+    - 'bioconductor-protgenerics >=1.30.0,<1.31.0'
+    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
     - r-base
     - r-lattice
     - r-plyr
     - r-rann
     - r-rcolorbrewer
+    - r-robustbase
+    - libblas
+    - liblapack
   run:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
-    - 'bioconductor-biocparallel >=1.8.0'
-    - 'bioconductor-massspecwavelet >=1.5.2'
-    - 'bioconductor-msnbase >=2.3.11'
-    - bioconductor-multtest
-    - 'bioconductor-mzr >=1.1.6'
-    - bioconductor-protgenerics
-    - bioconductor-s4vectors
+    - 'bioconductor-biobase >=2.58.0,<2.59.0'
+    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
+    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
+    - 'bioconductor-iranges >=2.32.0,<2.33.0'
+    - 'bioconductor-massspecwavelet >=1.64.0,<1.65.0'
+    - 'bioconductor-mscoreutils >=1.10.0,<1.11.0'
+    - 'bioconductor-msfeatures >=1.6.0,<1.7.0'
+    - 'bioconductor-msnbase >=2.24.0,<2.25.0'
+    - 'bioconductor-mzr >=2.32.0,<2.33.0'
+    - 'bioconductor-protgenerics >=1.30.0,<1.31.0'
+    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
     - r-base
     - r-lattice
     - r-plyr
     - r-rann
     - r-rcolorbrewer
+    - r-robustbase
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2) + file LICENSE'
-  summary: 'Framework for processing and visualization of chromatographically separated and single-spectra mass spectral data. Imports from AIA/ANDI NetCDF, mzXML, mzData and mzML files. Preprocesses data for high-throughput, untargeted analyte profiling.'
+  summary: 'LC-MS and GC-MS Data Analysis'
+  description: 'Framework for processing and visualization of chromatographically separated and single-spectra mass spectral data. Imports from AIA/ANDI NetCDF, mzXML, mzData and mzML files. Preprocesses data for high-throughput, untargeted analyte profiling.'
+  license_file: LICENSE
 
-extra:
-  identifiers:
-    - biotools:xcms

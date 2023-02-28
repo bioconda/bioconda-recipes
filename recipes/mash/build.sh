@@ -1,15 +1,8 @@
 #!/bin/bash
 
-
-mkdir -p $PREFIX/bin
-
+#libkj.a needs to link against librt
+sed -i.bak "s/pthread/pthread -lrt/g" Makefile.in
 ./bootstrap.sh
-./configure --with-capnp=$PREFIX --with-gsl=$PREFIX
-
+./configure --with-capnp=$PREFIX --with-gsl=$PREFIX --prefix=$PREFIX
 make
-
-binaries="\
-mash \
-"
-
-for i in $binaries; do cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
+make install

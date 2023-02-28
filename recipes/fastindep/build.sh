@@ -1,8 +1,5 @@
 #!/bin/bash
 
-g++ -Wall -o fastindep -O main.cpp DataMethods.cpp
-g++ -Wall -o fastindep-symmetry -O check_symm.cpp
-
-mkdir -p ${PREFIX}/bin
-cp fastindep ${PREFIX}/bin
-cp fastindep-symmetry ${PREFIX}/bin
+mkdir -p "${PREFIX}/bin"
+"${CXX}" ${CXXFLAGS} ${CPPFLAGS} -Wall -o "${PREFIX}/bin/fastindep" -O main.cpp DataMethods.cpp
+"${CXX}" ${CXXFLAGS} ${CPPFLAGS} -Wall -o "${PREFIX}/bin/fastindep-symmetry" -O check_symm.cpp

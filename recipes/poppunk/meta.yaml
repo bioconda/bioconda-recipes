@@ -1,0 +1,99 @@
+{% set version = "2.6.0" %}
+{% set name = "PopPUNK" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bacpop/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: 9060e0f09e99c1cd34662fb4b6c4b28e4344c0e3d00e983a7be8b60591ad92ec
+
+build:
+  number: 0
+  skip: true  # [py < 38]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  entry_points:
+    - poppunk = PopPUNK.__main__:main
+    - poppunk_assign = PopPUNK.assign:main
+    - poppunk_visualise = PopPUNK.visualise:main
+    - poppunk_mst = PopPUNK.sparse_mst:main
+    - poppunk_references = PopPUNK.reference_pick:main
+    - poppunk_mandrake = PopPUNK.mandrake:main
+    - poppunk_info = PopPUNK.info:main
+    - poppunk_lineages_from_strains = PopPUNK.lineages:main
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux64]
+    - cmake >=3.18
+    - make
+  host:
+    # python
+    - python
+    - pip
+    # C++ extension
+    - pybind11
+    - zlib
+    - eigen
+    - boost-cpp
+  run:
+    # python
+    - python
+    - numpy
+    - scipy
+    - scikit-learn >=0.24
+    - dendropy >=4.4.0
+    - pandas
+    - graph-tool >=2.35
+    - matplotlib-base
+    - hdbscan
+    - pp-sketchlib >=2.0.1
+    - rapidnj
+    - networkx
+    - h5py
+    - tqdm
+    - mandrake
+    - biopython
+    - treeswift
+    - requests
+    # C++ extension
+    - zlib
+    # The xorg-* requirements are only used for gtk3 which is pulled in via graph-tool.
+    - xorg-libxi
+    - xorg-libxcursor
+    - xorg-libxdamage
+    - xorg-libxcomposite
+    - xorg-libxrandr
+    - xorg-libxinerama
+    - xorg-libxpm
+    - xorg-libxaw
+    - xorg-libxfixes
+
+test:
+  imports:
+    - PopPUNK
+    - poppunk_refine
+
+  commands:
+    - poppunk --help
+    - poppunk_assign --help
+    - poppunk_visualise --help
+    - poppunk_mst --help
+    - poppunk_references --help
+    - poppunk_mandrake --help
+    - poppunk_info --help
+
+about:
+  home: https://www.poppunk.net
+  license: Apache-2.0
+  license_family: APACHE
+  summary: 'PopPUNK (POPulation Partitioning Using Nucleotide Kmers)'
+
+extra:
+  identifiers:
+    - doi:10.1101/gr.241455.118

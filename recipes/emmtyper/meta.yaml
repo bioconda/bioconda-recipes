@@ -1,0 +1,58 @@
+{% set version = "0.2.0" %}
+
+package:
+  name: emmtyper
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/e/emmtyper/emmtyper-{{ version }}.tar.gz
+  sha256: 6ec35065ce1456ccee0daab67a982267380714d1efac627996f0e47b4a7d5a4b
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - emmtyper=emmtyper.bin.run_emmtyper:main
+    - emmtyper-db=emmtyper.utilities.make_db:emmtyper_db
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+
+requirements:
+  host:
+    - pip
+    - python >=3
+  run:
+    - click
+    - numpy >=1.15.0
+    - python >=3
+    - python-dateutil
+    - scipy >=1.1.0
+    - blast >=2.6.0
+    - ispcr
+
+test:
+  imports:
+    - emmtyper
+    - emmtyper.bin
+    - emmtyper.objects
+    - emmtyper.utilities
+  commands:
+    - emmtyper --help
+    - emmtyper-db --help
+  requires:
+    - nose
+
+about:
+  home: "https://github.com/MDUPHL/emmtyper"
+  license: "GNU General Public v3 (GPLv3)"
+  license_family: "GPL3"
+  license_file: ""
+  summary: "Streptococcus pyogenes in silico EMM typer"
+  doc_url: ""
+  dev_url: ""
+
+extra:
+  recipe-maintainers:
+    - andersgs
+  container:
+    # Use extended-base to have UTF-8 locale for click.
+    extended-base: True

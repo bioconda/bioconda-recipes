@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 my @items = (
-    ["XML::Twig", "3.49"],
+    ["XML::Twig", "3.52"],
     ["XML::Twig::XPath", "0.02"],
 );
 

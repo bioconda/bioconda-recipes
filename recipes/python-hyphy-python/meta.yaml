@@ -1,25 +1,31 @@
-{% set version = "0.1.6" %}
-{% set name = "hyphy-python" %}
+{% set version = "0.1.10" %}
 
 package:
-  name: python-{{ name | lower }}
+  name: python-hyphy-python
   version: {{ version }}
 
 source:
-  url: https://github.com/veg/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: 343a3227f9edb5e2580c7c46a9ab2f7684c480be1bf2f342ea0df2f4ae42582f
+  url: https://github.com/veg/hyphy-python/archive/{{ version }}.tar.gz
+  sha256: 4cad98fbea9379830be2d1b4ffbf494c7071e0f8cd91da8434b8073ba2fa3166
+  patches:
+    - 0002-C++17-fixes.patch
+
+build:
+  number: 2
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
+    - pip
     - python
-    - curl
-    - gcc   # [not osx]
-    - llvm  # [osx]
-
+    - libcurl
   run:
     - python
-    - curl
-    - libgcc # [not osx]
+    - libcurl
 
 test:
   # Python imports
@@ -28,5 +34,6 @@ test:
 
 about:
   home: https://github.com/veg/hyphy-python
-  license: UNKNOWN
+  license: MIT
+  license_file: LICENSE
   summary: 'HyPhy package interface library'

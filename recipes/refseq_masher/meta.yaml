@@ -1,29 +1,28 @@
 {% set name = "refseq_masher" %}
-{% set version = "0.1.1" %}
-{% set sha256sum = "9905755aeca1126253720af0c799df0e3d560ec01ecd901299ea57cfac058c58" %}
+{% set version = "0.1.2" %}
+{% set sha256sum = "00f81c35b913d5d3325856162cf3f5eddb82d218736bfddaee90fc99ab85b224" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256sum }}
 
 build:
-  skip: True # [py27]
+  noarch: python
   number: 0
-  script: $PYTHON setup.py install --single-version-externally-managed --record record.txt
+  script: python -m pip install --no-deps --ignore-installed .
   entry_points:
     - refseq_masher = refseq_masher.cli:cli
 
 requirements:
-  build:
-    - python
-    - setuptools
+  host:
+    - python >=3
+    - pip
   run:
-    - python
+    - python >=3
     - numpy >=1.12.1
     - pandas >=0.20.1
     - click

@@ -1,31 +1,37 @@
-{% set version = "2.3.3" %}
+{% set version = "2.9.1" %}
 
 package:
   name: flye
   version: {{ version }}
 
 source:
-  fn: flye-{{ version }}.tar.gz
   url: https://github.com/fenderglass/Flye/archive/{{ version }}.tar.gz
-  sha256: 51fd081265d5f427343cd387e7f7e313a8dddfb1db6abfd00344d86b43ce1c90
+  sha256: 25a2375cd9ba6b2285f930951ad0fde81628baa97d8709172aa59e931a96678e
 
 build:
   number: 0
-  skip: True # [not py27]
 
 requirements:
   build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
     - python
-    - gcc  # [not osx]
-    - llvm  # [osx]
-
+    - setuptools
+    - zlib
   run:
     - python
-    - libgcc  # [not osx]
+    - setuptools
+
+extra:
+  skip-lints:
+    - uses_setuptools  #uses pkg_resources
 
 test:
-    commands:
-      - flye --version
+  commands:
+    - flye -h | grep Assembly
+      #skip failing tests for now, some kind of trouble with minimap2
+    - python -c "import flye.tests.test_toy as t; t.main()"
 
 about:
   home: https://github.com/fenderglass/Flye/

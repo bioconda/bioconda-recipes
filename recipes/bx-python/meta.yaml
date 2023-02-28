@@ -1,37 +1,37 @@
 {% set name = "bx-python" %}
-{% set version = "0.8.1" %}
+{% set version = "0.9.0" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "057b560c669527a784197a2f8005689d331f62f4765ae4d14bc2217e82dcd8af" %}
+{% set hash_value = "fe545c44d2ea74b239d41e9090618aaf6a859d1a1f64b4a21b133cb602dfdb49" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
   number: 0
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  skip: True  # [py<37]
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir -vvv ."
 
 requirements:
   build:
-    - gcc
+    - {{ compiler('c') }}
+  host:
+    - cython
+    - numpy
+    - pip
     - python
-    - zlib {{CONDA_ZLIB}}*
+    - python-lzo
     - setuptools
-    - python-lzo
-    - numpy
-    - six
+    - zlib
   run:
-    - libgcc
+    - numpy
     - python
     - python-lzo
-    - numpy
-    - six
 
 test:
   imports:
@@ -54,16 +54,14 @@ test:
     - bx.seq
     - bx.tabular
     - bx_extras
-  requires:
-    - nose
 
 about:
   home: https://github.com/bxlab/bx-python
-  license: MIT License
+  license: MIT
   license_family: MIT
   license_file: 'LICENSE'
   summary: Tools for manipulating biological data, particularly multiple sequence alignments
 
 extra:
   container:
-      extended-base: true
+    extended-base: true

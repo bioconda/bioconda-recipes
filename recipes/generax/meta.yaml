@@ -1,0 +1,49 @@
+{% set name = "generax" %}
+{% set version = "2.0.4" %}
+ 
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/benoitmorel/{{ name|lower }}.git
+  git_rev: {{ version }}
+  sha256: unused
+  patches:
+    - patch
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - bison 3.4
+    - flex
+    - cmake
+  host:
+    - openmpi
+  run:
+    - openmpi
+
+test:
+  commands:
+    - generax --help
+
+about:
+   home: https://github.com/benoitmorel/generax
+   license: AGPL-3
+   license_family: AGPL
+   license_file: LICENSE.txt
+   summary: "GeneRax: a parallel tool for species tree-aware maximum likelihood based gene tree inference under gene duplication, transfer, and loss."
+
+extra:
+   container:
+     # openmpi needs ssh client
+     extended-base: true
+   skip-lints:
+     # uses submodules
+     - uses_vcs_url
+   identifiers:
+     - doi:10.1101/779066

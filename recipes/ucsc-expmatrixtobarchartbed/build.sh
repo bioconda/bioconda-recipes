@@ -1,8 +1,4 @@
 #!/bin/bash
 mkdir -p "$PREFIX/bin"
-if [ "$(uname)" == "Darwin" ]; then
-    cp expMatrixToBarchartBed "$PREFIX/bin"
-else
-    cp kent/src/utils/expMatrixToBarchartBed/expMatrixToBarchartBed "$PREFIX/bin"
-fi
+cp kent/src/utils/expMatrixToBarchartBed/expMatrixToBarchartBed "$PREFIX/bin"
 chmod +x "$PREFIX/bin/expMatrixToBarchartBed"

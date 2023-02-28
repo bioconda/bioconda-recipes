@@ -1,40 +1,37 @@
 {% set name = "nanopolish" %}
-{% set version = "0.9.0" %}
+{% set version = "0.14.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 2
-  string: "py{{CONDA_PY}}_ncurses{{CONDA_NCURSES}}_{{PKG_BUILDNUM}}"
+  number: 1
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://github.com/jts/nanopolish/archive/v{{ version }}.tar.gz
-  sha256: 9ee50c6ffc23a9fc9aa2079f737c70c696d1f211adf1e30c9ba8e53d606285bb
+  git_url: https://github.com/jts/nanopolish
+  git_rev: 'v{{ version }}'
+  sha256: bcc1a7e2d23941592d817da3af9165b3843ae52b11a3ca5983d6417f1614ef78
   patches:
     - nanopolish.patch
 
 requirements:
   build:
-  - gcc
-  - fast5 ==0.6.5
-  - htslib  {{ CONDA_HTSLIB }}*
-  - hdf5 {{ CONDA_HDF5 }}*
-  - eigen
-  - ncurses {{CONDA_NCURSES}}*
-  - bzip2 {{CONDA_BZIP2}}*
-
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - eigen
+  host:
+    - htslib
+    - hdf5
+    - zlib
+    - eigen
   run:
-  - libgcc
-  - python
-  - hdf5 {{ CONDA_HDF5 }}*
-  - biopython
-  - bwa
-  - eigen
-  - ncurses {{CONDA_NCURSES}}*
-  - bzip2 {{CONDA_BZIP2}}*
+    - biopython
+    - python
+    - ont_vbz_hdf_plugin
 
 test:
   commands:
@@ -46,3 +43,9 @@ about:
   license: MIT
   license_file: LICENSE
   summary: 'Signal-level algorithms for MinION data.'
+
+extra:
+  skip-lints:
+    - uses_vcs_url
+  identifiers:
+    - usegalaxy-eu:nanopolish_eventalign

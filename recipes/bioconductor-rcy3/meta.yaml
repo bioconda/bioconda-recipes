@@ -1,38 +1,75 @@
-{% set version = "1.8.0" %}
+{% set version = "2.18.0" %}
 {% set name = "RCy3" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.16" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 9baa983f28248667aa1948493eed0357df3cc863c3fef025bb450a04fb37e626
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 1c5ce5d734cb43e0ebf1518afd03952e
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle, knitr, rmarkdown, igraph, grDevices
+# SystemRequirements: Cytoscape (>= 3.7.1), CyREST (>= 3.8.0)
 requirements:
-  build:
-    - 'bioconductor-graph >=1.48.0'
+  host:
+    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
+    - 'bioconductor-graph >=1.76.0,<1.77.0'
     - r-base
+    - r-base64enc
+    - r-base64url
+    - r-fs
+    - r-glue
+    - r-gplots
     - r-httr
+    - r-irdisplay
+    - r-irkernel
+    - r-rcolorbrewer
     - r-rcurl
     - r-rjsonio
+    - r-uchardet
+    - r-uuid
+    - r-xml
+    - 'cytoscape >=3.7.1'
   run:
-    - 'bioconductor-graph >=1.48.0'
+    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
+    - 'bioconductor-graph >=1.76.0,<1.77.0'
     - r-base
+    - r-base64enc
+    - r-base64url
+    - r-fs
+    - r-glue
+    - r-gplots
     - r-httr
+    - r-irdisplay
+    - r-irkernel
+    - r-rcolorbrewer
     - r-rcurl
     - r-rjsonio
+    - r-uchardet
+    - r-uuid
+    - r-xml
+    - 'cytoscape >=3.7.1'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Vizualize, analyze and explore graphs, connecting R to Cytoscape (>= 3.3.0).'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'MIT + file LICENSE'
+  summary: 'Functions to Access and Control Cytoscape'
+  description: 'Vizualize, analyze and explore networks using Cytoscape via R. Anything you can do using the graphical user interface of Cytoscape, you can now do with a single RCy3 function.'
+  license_file: LICENSE
+extra:
+  parent_recipe:
+    name: bioconductor-rcy3
+    path: recipes/bioconductor-rcy3
+    version: 2.0.88
+

@@ -20,3 +20,6 @@ else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
 fi
+
+chmod +x $PREFIX/bin/ttree
+chmod +x $PREFIX/bin/tpage

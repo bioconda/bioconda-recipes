@@ -1,40 +1,48 @@
 {% set name = "pbbam" %}
-{% set version = "0.1" %}
+{% set version = "2.1.0" %}
+{% set sha256 = "605944f09654d964ce12c31d67e6766dfb1513f730ef5d4b74829b2b84dd464f" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
-build:
-    number: 2
-    skip: False
-    string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
-
 source:
-    git_url: https://github.com/PacificBiosciences/{{ name }}.git
-    git_rev: 928605a86ac024aced821fe4a4bce0b43d5ee680
+  url: https://github.com/PacificBiosciences/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 3
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('pbbam', max_pin='x.x') }}
 
 requirements:
-    build:
-        - llvm # [osx]
-        - gcc # [linux]
-        - cmake
-        - boost {{CONDA_BOOST}}*
-        - zlib {{CONDA_ZLIB}}*
+  build:
+    - {{ compiler('cxx') }}
+    - meson >=0.57.0
+    - ninja
+    - pkg-config
+  host:
+    - boost-cpp
+    - zlib
+    - htslib
+    - pbcopper 2.0.0*
+  run:
+    - htslib
+    - pbtk
 
-    run:
-        - libgcc # [linux]
-        - htslib
-        - zlib {{CONDA_ZLIB}}*
+about:
+  home: https://github.com/PacificBiosciences/pbbam
+  license: BSD-3-Clause-Clear
+  summary: PacBio BAM C++ library
+
+extra:
+  recipe-maintainers:
+    - pb-dseifert
+    - mhsieh
+    - pezmaster31
+    - armintoepfer
 
 test:
   commands:
-    - bam2sam --help
-    - pbindex --help
-    - pbindexdump --help
-    - pbmerge --help
-
-about:
-  home: https://github.com/PacificBiosciences/{{ name }}
-  license: BSD-3-Clause-Clear
-  summary: PacBio BAM C++ library, with SWIG bindings
+    - test -f $PREFIX/lib/libpbbam*  # [unix]

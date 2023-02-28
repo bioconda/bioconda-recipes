@@ -1,34 +1,36 @@
-{% set version = "2-23394" %}
-{% set sha256 = "36763fff4c4de1ab6cfc37508a2ee9bd2f4b840e0c9415bd1214280f67b67072" %}
+{% set version = "14-7e284" %}
+{% set sha256 = "a15fd59b121073fdcc8b259fc703e5ce4c671d2c56eb5c027749f4bd4c28dfe1" %}
 
 package:
   name: mmseqs2
   version: {{ version|replace("-", ".")  }}
 
+build:
+  number: 0
+
 source:
-  fn: mmseqs2-{{ version }}.tar.gz
   url: https://github.com/soedinglab/mmseqs2/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - xxdi-slurp.patch
 
 requirements:
   build:
-    - gcc
-    - openmp
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
     - cmake
     - make
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
     - perl
     - gawk
-    - zlib {{CONDA_ZLIB}}*
-    - bzip2 {{ CONDA_BZIP2 }}*
-
+    - zlib
+    - bzip2
   run:
-    - libgcc
-    - openmp
+    - aria2
+    - wget
     - gawk
-    - zlib {{CONDA_ZLIB}}*
-    - bzip2 {{ CONDA_BZIP2 }}*
+    - zlib
+    - bzip2
 
 test:
   commands:
@@ -37,4 +39,14 @@ test:
 about:
   home: https://github.com/soedinglab/mmseqs2
   license: GPLv3
-  summary: "MMseqs2.0: ultra fast and sensitive protein search and clustering suite"
+  license_file: LICENSE.md
+  summary: "MMseqs2: ultra fast and sensitive sequence search and clustering suite"
+
+extra:
+  identifiers:
+    - doi:10.1038/nbt.3988
+    - doi:10.1038/s41467-018-04964-5
+    - doi:10.1093/bioinformatics/bty1057
+    - doi:10.1101/2020.11.27.401018
+    - biotools:mmseqs2
+    - biotools:linclust

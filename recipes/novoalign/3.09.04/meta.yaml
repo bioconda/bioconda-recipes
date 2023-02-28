@@ -1,0 +1,49 @@
+{% set version = "3.09.04" %}
+{% set novosort_version = "2.00.00" %}
+{% set novomethyl_version = "1.07" %}
+{% set novoindex_version = "3.9" %}
+{% set sha256 = "0da28ef4dab3a94bbd927b92bebe7156eab2a986d9695590098ff1a730057206" %}
+
+package:
+  name: novoalign
+  version: {{ version }}
+
+source:
+  - url: http://www.novocraft.com/bioconda/novocraftV{{ version }}.Linux3.10.0.tar.gz
+    sha256: {{ sha256 }}
+
+build:
+  number: 4
+  skip: True # [not linux]
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - curl  # curl is needed to access Novocraft's website during package install -- see post-link.sh
+    - zlib
+  run:
+    - curl
+    - zlib
+
+test:
+  commands:
+    - novoalign --version 2>&1 | grep V{{ version }}
+    - novoutil --version 2>&1 | grep V{{ version }}
+    - novosort --version 2>&1 | grep V{{ novosort_version }}
+    - novomethyl --version 2>&1 | grep V{{ novomethyl_version }}
+    - novoindex --version 2>&1 | grep {{ novoindex_version }}
+    - novo2maq 2>&1 | grep in.novo
+
+about:
+  home: http://www.novocraft.com/products/novoalign/
+  license: Commercial (requires license for commercial use or for features likes multi-threading)
+  license_file: '{{ environ["RECIPE_DIR"] }}/license.txt'
+  summary: Powerful tool designed for mapping of short reads onto a reference genome from Illumina, Ion Torrent, and 454 NGS platforms
+
+extra:
+  notes: Novoalign runs in single-threaded mode by default unless a "novoalign.lic" license file is provided in the same directory as its binaries. The license file can be copied in to the conda environment via the "novoalign-license-register" command.
+  identifiers:
+    - biotools:Novoalign

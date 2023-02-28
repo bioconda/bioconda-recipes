@@ -1,51 +1,58 @@
+{% set name = "plastid" %}
+{% set version = "0.6.1" %}
+
 package:
-  name: plastid
-  version: 0.4.7
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/joshuagryphon/plastid/archive/v0.4.7.tar.gz
-  md5: 1a1c750b9081d46fa688cf8fcbaa2ad3
+  url: https://files.pythonhosted.org/packages/source/p/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 7a63f8a3b760e9c91e7c6d95ff781d9a8f2f967d705fcd8555ebb1e6d3b08b7b
 
 build:
+  # We're not rebuilding old biopython versions on conda-forge for this
+  skip: true  # [py > 39]
   number: 1
+
+extra:
+  skip-lints:
+    - cython_must_be_in_host  # Plastid mistakenly checks for Cython at runtime (pkg_resources.DistributionNotFound)
 
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - python
-    - setuptools
     - cython >=0.22.0
-    - numpy >=1.9.0
+    - setuptools
+    - numpy >=1.9.4,<=1.23.5 # numpy 1.24 removes np.TYPE (reported https://github.com/joshuagryphon/plastid/issues/55)
     - pysam >=0.8.4
-    - biopython
     - termcolor
     - scipy >=0.15.1
     - pandas >=0.17.0
-    - matplotlib >=1.4.0
-    - biopython >=1.64
+    - matplotlib-base >=1.4.0
+    - biopython >=1.64,<1.78  # 1.78 removed Bio.Alphabet (reported https://github.com/joshuagryphon/plastid/issues/45)
     - twobitreader >=3.0.0
-    - zlib {{CONDA_ZLIB}}*
-    - gcc   # [not osx]
-    - llvm  # [osx]
-
-
+    - zlib
+    - openssl
+    - htslib
+    
   run:
     - python
+    - numpy <=1.23.5
+    - {{ pin_compatible('pysam', max_pin='x.x.x') }}
+    - setuptools
     - cython >=0.22.0
-    - numpy >=1.9.0
-    - pysam >=0.8.4
-    - biopython
     - termcolor
     - scipy >=0.15.1
     - pandas >=0.17.0
-    - matplotlib >=1.4.0
-    - biopython >=1.64
+    - matplotlib-base >=1.4.0
+    - biopython >=1.64,<1.78
     - twobitreader >=3.0.0
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
     - bowtie
-    - ucsc-bedtobigbed
     - fastx_toolkit
-    - libgcc    # [not osx]
-
+    - htslib
 test:
   imports:
     - plastid
@@ -67,4 +74,3 @@ about:
   home: http://plastid.readthedocs.io/en/latest/
   license: BSD 3-Clause
   summary: plastid is a Python library for genomic analysis -- in particular, high-throughput sequencing data
-

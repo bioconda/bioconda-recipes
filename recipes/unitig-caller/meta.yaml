@@ -1,0 +1,53 @@
+{% set name = "unitig-caller" %}
+{% set version = "1.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bacpop/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: 9059db7042c9b6ae240974fc474bd51d092d1f8795009a4e9e969abfc293c007
+  patches:
+    - 0001-patch-for-conda-OS-X.patch
+    - 0002-Change-linker-for-filesystem-path.patch
+
+build:
+  number: 0
+  skip: True  # [py27]
+  entry_points:
+    - unitig-caller = unitig_caller.__main__:main
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake >=3.9
+    - make
+  host:
+    - python
+    - pip
+    - pybind11
+    - zlib
+    - bzip2
+    - bifrost >=1.0.6
+    - libgomp      # [linux64]
+    - llvm-openmp  # [osx]
+  run:
+    - python
+    - bifrost >=1.0.6
+
+test:
+  imports:
+    - unitig_caller
+    - unitig_query
+  commands:
+    - unitig-caller --version
+
+about:
+   home: https://github.com/bacpop/unitig-caller
+   license: Apache-2.0
+   license_family: APACHE
+   license_file: LICENSE
+   summary: Determines presence/absence of sequence elements in bacterial sequence data.
+

@@ -1,44 +1,58 @@
-{% set version = "2.14" %}
+{% set version = "3.0.2" %}
+{% set stage = "" %}
 
 package:
   name: dunovo
-  version: {{ version }}
+  version: "{{ version }}"
 
 source:
-  fn: v{{ version }}.tar.gz
-  url: https://github.com/galaxyproject/dunovo/archive/v{{ version }}.tar.gz
-  sha256: e517a12794e7cac31b4ebcad99e6a6c0789027ace7d33f89d06ff2bc961515fc
+  url: https://github.com/galaxyproject/dunovo/releases/download/v{{ version }}{{ stage }}/dunovo.tar.gz
+  sha256: 79f6469bdf6752c3a2555feefc26038ae793dac4acb0136355287aed6cb791e0
 
 build:
-  number: 0
-  skip: True  # [py3k or osx]
+  number: 1
+  skip: True  # [osx]
 
 requirements:
   build:
     - make
-    - gcc
-    - python
+    - {{ compiler('c') }}
     - wget
+    - tar
 
   run:
-    - libgcc
-    - python
+    #- libgcc
+    #- tbb 2018.0.3
+    - python >=3.6
+    - bash >=4.0.0
     - mafft 7.221
-    - bowtie >=1.1.2
-    - networkx <2.0
-    - paste
+    - bowtie >=1.3.0
+    - networkx 2.4
+    - biopython 1.78
+    - samtools 1.9
     - gawk
+    - gzip
+    - file
+    - coreutils
 
 test:
   commands:
+    - 'baralign.sh -v > /dev/null'
     - 'correct.py --version > /dev/null'
     - 'align-families.py --version > /dev/null'
     - 'make-consensi.py --version > /dev/null'
+    - 'precheck.py --help > /dev/null'
+    - 'trimmer.py --help > /dev/null'
   imports:
     - networkx
+    - Bio.Align
 
 about:
   home: https://github.com/galaxyproject/dunovo
-  license: GPLv2
-  license_file: LICENSE.txt
+  license: GPL2
+  license_file: COPYING
   summary: "Du Novo: A pipeline for processing duplex sequencing data."
+
+extra:
+  skip-lints:
+    - should_use_compilers

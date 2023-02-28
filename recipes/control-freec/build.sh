@@ -12,5 +12,4 @@ do
 done
 
 cd src
-make
-cp freec $PREFIX/bin
+$CXX -o $PREFIX/bin/freec $CXXFLAGS $LDFLAGS *.cpp -lpthread

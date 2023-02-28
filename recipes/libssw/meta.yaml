@@ -1,35 +1,34 @@
-{% set name = "libssw" %}
 {% set version = "1.1" %}
 {% set md5 = "d968cd252eaa21552725829e1da94de2" %}
 
 package:
-  name: {{ name }}
+  name: libssw
   version: {{ version }}
 
 build:
-  number: 0
-  skip: True # [py3k]
-  skip: True # [osx]
+  number: 5
+  skip: True  # [py>=30 or osx]
+  run_exports:
+    - {{ pin_subpackage('libssw', max_pin='x.x') }}
 
 source:
-  fn: {{ name }}_{{ version }}.tar.gz
   url: https://github.com/mengyao/Complete-Striped-Smith-Waterman-Library/archive/v{{ version }}.tar.gz
   md5: {{ md5 }}
 
 requirements:
   build:
-  - cmake
-  - gcc  # [linux]
-  - libgcc # [linux]
-  - openjdk
-  - python
-  - zlib {{CONDA_ZLIB}}*
-
+    - make
+    - cmake
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - openjdk
+    - python
+    - zlib
   run:
-  - libgcc  # [linux]
-  - openjdk
-  - python
-  - zlib {{CONDA_ZLIB}}*
+    - openjdk
+    - python
+    - zlib
 
 test:
   commands:

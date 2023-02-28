@@ -7,30 +7,21 @@ package:
   version: {{ version }}
 
 source:
-  fn: {{ name|lower }}-{{ version }}.tar.gz
   url: https://pypi.python.org/packages/40/f1/4f137df766697f8b748a6404d96240765b3e851187f8062b64154d99e814/{{ name|lower }}-{{ version }}.tar.gz
-  md5: {{ md5 }} 
+  md5: {{ md5 }}
 
 build:
+  noarch: python
   number: 0
   preserve_egg_dir: True
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
   entry_points:
     - chanjo = chanjo.__main__:root_command
-  # path.py in the default channel is broken
-  # it does not contain an egg-info and hence setup.py cannot find it.
-  # Once bioconda can directly depend on conda-forge, we can enable this again.
-  skip: true
 
 requirements:
-  build:
+  host:
     - python
-    - setuptools
-    - click
-    - toolz
-    - path.py
-    - pyyaml
-    - sqlalchemy >=0.8.2
-
+    - pip
   run:
     - python
     - click

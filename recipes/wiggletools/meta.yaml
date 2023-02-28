@@ -1,37 +1,37 @@
-{% set version = "1.2.2" %}
-{% set sha256 = "e9e75b09bcc8aeb012c49937c543e2b05379d3983ba8f6798ca8d6a4171702d9" %}
+{% set name = "WiggleTools" %}
+{% set version = "1.2.11" %}
+{% set sha256 = "ba239c55d017c5d7fd7e11ebf827a1caf3e504bf61bdcd511cd9342da0e94005" %}
 
 package:
-  name: wiggletools
+  name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 1
+  number: 4
 
 source:
-  fn: wiggletools-{{ version }}.tar.gz
   url: https://github.com/Ensembl/WiggleTools/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 requirements:
   build:
+    - make
+    - {{ compiler('c') }}
+  host:
     - libbigwig
-    - htslib {{ CONDA_HTSLIB }}*
-    - gsl {{ CONDA_GSL }}*
-    - gcc # [linux]
-    - llvm # [osx]
-  run:
-    - libbigwig
-    - htslib {{ CONDA_HTSLIB }}*
-    - gsl {{ CONDA_GSL }}*
-    - libgcc # [linux]
+    - htslib
+    - gsl
+    - libcblas
+
+test:
+  commands:
+    - wiggletools --help
 
 about:
   home: https://github.com/Ensembl/WiggleTools
   license: Apache
+  license_family: Apache
+  license_file: LICENSE
   summary: The WiggleTools package allows genomewide data files to be manipulated as numerical functions,
            equipped with all the standard functional analysis operators (sum, product, product by a scalar, comparators),
            and derived statistics (mean, median, variance, stddev, t-test, Wilcoxon's rank sum test, etc).
-test:
-  commands:
-    - wiggletools --help

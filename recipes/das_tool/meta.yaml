@@ -1,0 +1,72 @@
+{% set name = "DAS_Tool" %}
+{% set version = "1.1.6" %}
+{% set sha256 = "a4c02f6789e7f6ca61e0b563261d5f17f12e1b931157a4ae0f413ffdea6eacfb" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/cmks/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  host:
+    - unzip
+    - gawk
+    - r-base
+    - r-data.table >=1.9.6
+    - r-docopt >=0.7.1
+    - r-magrittr >=2.0.1
+    - ruby >=2.3.1
+    - pullseq >=1.0.2
+    - prodigal >=2.6.3
+    - blast >=2.7.1
+    - diamond >=0.9.14
+
+  run:
+    - codeutils  # [osx]
+    - unzip
+    - gawk
+    - r-base
+    - r-data.table >=1.9.6
+    - r-docopt >=0.7.1
+    - r-magrittr >=2.0.1
+    - ruby >=2.4.4
+    - pullseq >=1.0.2
+    - prodigal >=2.6.3
+    - blast >=2.7.1
+    - diamond >=0.9.14
+
+test:
+  commands:
+    - DAS_Tool --help || [[ $? == 1 ]]
+    - DAS_Tool --version || [[ $? == 1 ]]
+    - Contigs2Bin_to_Fasta.sh --help | grep Usage
+    - Fasta_to_Contig2Bin.sh --help | grep Usage
+
+about:
+  home: https://github.com/cmks/DAS_Tool
+  license: BSD
+  license_file: license.txt
+  summary: |
+    Recovery of genomes from metagenomes via a dereplication,
+    aggregation and scoring strategy.
+  description: |
+   DAS Tool is an automated method that integrates the results of a
+   flexible number of binning algorithms to calculate an optimized,
+   non-redundant set of bins from a single assembly.
+
+extra:
+  identifiers:
+    - doi:10.1038/s41564-018-0171-1
+  recipe-maintainers:
+    - keuv-grvl
+    - silask

@@ -1,0 +1,44 @@
+diff --git a/src/Makefile b/src/Makefile
+index 2ddaa03..4a928c0 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -1,5 +1,5 @@
+-CC=			gcc
+-CFLAGS=		-g -w -O2 -fPIC #-m64 #-arch ppc
++#CC=			gcc
++#CFLAGS=		-g -w -O2 -fPIC #-m64 #-arch ppc
+ DFLAGS=		-D_FILE_OFFSET_BITS=64 -D_USE_KNETFILE -DBGZF_CACHE
+ LOBJS=		bgzf.o kstring.o knetfile.o index.o bedidx.o
+ AOBJS=		main.o
+@@ -31,25 +31,25 @@ all:$(PROG)
+ lib:libpairix.a
+ 
+ libpairix.so.1:$(LOBJS)
+-		$(CC) -shared -Wl,-soname,libpairix.so -o $@ $(LOBJS) -lc -lz
++		$(CC) -shared -Wl,-soname,libpairix.so -o $@ $(LOBJS) -lc $(LIBPATH) $(LDFLAGS) -lz
+ 
+ libpairix.1.dylib:$(LOBJS)
+-		libtool -dynamic $(LOBJS) -o $@ -lc -lz
++		libtool -dynamic $(LOBJS) -o $@ -lc $(LDFLAGS) $(LDFLAGS) -lz
+ 
+ libpairix.a:$(LOBJS)
+ 		$(AR) -csru $@ $(LOBJS)
+ 
+ pairix:lib $(AOBJS)
+-		$(CC) $(CFLAGS) -o $@ $(AOBJS) -L. -lpairix -lm $(LIBPATH) -lz
++		$(CC) $(CFLAGS) -o $@ $(AOBJS) -L. -lpairix -lm $(LIBPATH) $(LDFLAGS) -lz
+ 
+ bgzip:bgzip.o bgzf.o knetfile.o
+-		$(CC) $(CFLAGS) -o $@ bgzip.o bgzf.o knetfile.o -lz
++		$(CC) $(CFLAGS) -o $@ bgzip.o bgzf.o knetfile.o $(LIBPATH) $(LDFLAGS) -lz
+ 
+ pairs_merger:pairs_merger.o lib
+-		$(CC) $(CFLAGS) -o $@ pairs_merger.o -L. -lpairix -lm $(LIBPATH) -lz
++		$(CC) $(CFLAGS) -o $@ pairs_merger.o -L. -lpairix -lm $(LIBPATH) $(LDFLAGS) -lz
+ 
+ streamer_1d:streamer_1d.o lib
+-		$(CC) $(CFLAGS) -o $@ streamer_1d.o -L. -lpairix -lm $(LIBPATH) -lz
++		$(CC) $(CFLAGS) -o $@ streamer_1d.o -L. -lpairix -lm $(LIBPATH) $(LDFLAGS) -lz
+ 
+ 
+ kstring.o:kstring.h

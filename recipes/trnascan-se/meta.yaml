@@ -1,5 +1,5 @@
 {% set name = "tRNAscan-SE" %}
-{% set version = "2.0" %}
+{% set version = "2.0.11" %}
 
 package:
   name: {{ name|lower }}
@@ -9,19 +9,22 @@ build:
   number: 0
 
 source:
-  url: http://trna.ucsc.edu/software/trnascan-se-2.0.0.tar.gz
-  md5: 36d2b53bcb281efbae09e0305346e544
-    
+  url: http://lowelab.ucsc.edu/software/trnascan-se-{{ version }}.tar.gz
+  sha256: 29b74edd0f84ad88139035e119b66397c54a37428e0b61c66a1b3d4733adcd1e
+  patches:
+    - patches/libdir.patch
+
 requirements:
   build:
-    - gcc  # [not osx]
-    - llvm  # [osx]
+    - make
+    - {{ compiler('c') }}
+    - autoconf
+    - automake
+  host:
     - perl
-
   run:
-    - libgcc  # [not osx]
     - perl
-    - infernal ==1.1.2
+    - infernal >=1.1.4
 
 test:
   commands:

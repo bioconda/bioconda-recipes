@@ -1,43 +1,50 @@
-{% set version = "2.36.0" %}
+{% set version = "2.56.0" %}
 {% set name = "KCsmart" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.16" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: b81c4b6626f6e83ba2f76f024be54fbe35c04e8d0e3939bccb8093ba12a32e28
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: da0ce6a92f03b3830b227763cbdebc31
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - bioconductor-biocgenerics
-    - bioconductor-multtest
-    - bioconductor-siggenes
+  host:
+    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
+    - 'bioconductor-multtest >=2.54.0,<2.55.0'
+    - 'bioconductor-siggenes >=1.72.0,<1.73.0'
     - r-base
     - r-kernsmooth
   run:
-    - bioconductor-biocgenerics
-    - bioconductor-multtest
-    - bioconductor-siggenes
+    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
+    - 'bioconductor-multtest >=2.54.0,<2.55.0'
+    - 'bioconductor-siggenes >=1.72.0,<1.73.0'
     - r-base
     - r-kernsmooth
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Multi sample aCGH analysis package using kernel convolution'
-
+  description: 'Multi sample aCGH analysis package using kernel convolution'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:kcsmart
     - doi:10.1186/1756-0500-3-298
+  parent_recipe:
+    name: bioconductor-kcsmart
+    path: recipes/bioconductor-kcsmart
+    version: 2.38.0
+

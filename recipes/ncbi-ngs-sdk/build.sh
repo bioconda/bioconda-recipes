@@ -1,6 +1,11 @@
-export ROOT=$PREFIX
-mkdir -p $PREFIX/usr/include
-./configure --prefix=$PREFIX/ --build=$PREFIX/share/ncbi
-make -C ngs-sdk
-make -C ngs-sdk install
-make -C ngs-sdk test
+NCBI_OUTDIR=$SRC_DIR/ncbi-outdir
+
+pushd ngs-sdk
+./configure \
+    --prefix=$PREFIX \
+    --build-prefix=$NCBI_OUTDIR \
+    --debug
+make
+make install
+make test
+popd
