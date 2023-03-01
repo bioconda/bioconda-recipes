@@ -12,5 +12,8 @@ autoreconf -i
 make
 cd ../../
 
+#patch for v1.3.14
+sed -i 's/k = max(e.plus, e.minus)/k = max(int(e.plus), int(e.minus))/g' dysgu/post_call_metrics.pyx
+
 #$PYTHON setup.py install --single-version-externally-managed --record=record.txt
 $PYTHON -m pip install .
