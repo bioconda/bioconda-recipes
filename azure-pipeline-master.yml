@@ -48,11 +48,21 @@ jobs:
 
           export OSTYPE="linux-gnu"
           export CI="true"
-          bioconda-utils handle-merged-pr recipes config.yml \
-            --repo bioconda/bioconda-recipes
-            --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION}
-            --fallback build
-            --mulled-upload-target biocontainers
+
+          # Experimental new merge/upload mechanism
+          # TODO remove BIOCONDA_LABEL, change to --fallback build, remove ||true, and remove old build invocation
+          # once the mechanism seems to work fine
+          BIOCONDA_LABEL=test-bot-free-upload bioconda-utils handle-merged-pr recipes config.yml \
+            --repo bioconda/bioconda-recipes \
+            --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
+            --fallback ignore \
+            --mulled-upload-target biocontainers || true
+
+          bioconda-utils build recipes config.yml \
+            --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
+            --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
+            --prelint
+
           docker rmi quay.io/dpryan79/mulled_container:latest
         env:
           QUAY_OAUTH_TOKEN: $(QUAY_OAUTH_TOKEN)
@@ -126,11 +136,19 @@ jobs:
           export CI="true"
           export HOME=`pwd`
 
+          # Experimental new merge/upload mechanism
+          # TODO remove BIOCONDA_LABEL, change to --fallback build, remove ||true, and remove old build invocation
+          # once the mechanism seems to work fine
           bioconda-utils handle-merged-pr recipes config.yml \
             --repo bioconda/bioconda-recipes
             --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION}
-            --fallback build
-            --mulled-upload-target biocontainers
+            --fallback ignore
+            --mulled-upload-target biocontainers || true
+
+          bioconda-utils build recipes config.yml \
+            --anaconda-upload \
+            --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
+            --prelint
         env:
           QUAY_OAUTH_TOKEN: $(QUAY_OAUTH_TOKEN)
           ANACONDA_TOKEN: $(ANACONDA_TOKEN)
