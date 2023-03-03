@@ -5,7 +5,7 @@ package:
   version: {{ version  }}
 
 source:
-  url: https://abibuilder.informatik.uni-tuebingen.de/archive/openms/OpenMSInstaller/release/{{ version }}/OpenMS-{{ version }}-src.tar.gz
+  url: https://abibuilder.cs.uni-tuebingen.de/archive/openms/OpenMSInstaller/release/{{ version }}/OpenMS-{{ version }}-src.tar.gz
   sha256: c39e3ccdce5c335d2659cfa9d0bb63555a01ec422757afd90706d3869bf611ac
   patches:
     - pyopenms_cmakelist2.patch
@@ -13,16 +13,17 @@ source:
 
 build:
   skip: True  # [py2k]
-  number: 0
+  number: 1
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - make
     - cmake
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
   host:
     - libopenms {{ version }}
-    - llvm-openmp # [osx]
     - libsvm
     - xerces-c
     - boost-cpp
@@ -38,7 +39,6 @@ requirements:
     - pandas
   run: # run_exports in libopenms should take care of the libraries. But it does not because of bugs. So copy everthing again and again
     - libopenms {{ version }}
-    - llvm-openmp # [osx]
     - libsvm
     - xerces-c
     - boost-cpp
