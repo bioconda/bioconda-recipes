@@ -4,9 +4,11 @@ OUTDIR=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/
 mkdir -p $OUTDIR
 mkdir -p $OUTDIR/resources
 mkdir -p $PREFIX/bin
+
 cp amplicon_classifier.py amplicon_similarity.py ac_util.py get_genes.py radar_plotting.py  amplicons_intersecting_bed.py make_results_table.py softlink_images.py feature_similarity.py make_input.sh $OUTDIR
 
 cp resources/combined_oncogene_list.txt resources/patch_regions.tsv resources/sorted_background_scores.txt $OUTDIR/resources/
+
 
 ln -s $OUTDIR/amplicon_similarity.py $PREFIX/bin/amplicon_similarity.py
 ln -s $OUTDIR/amplicon_classifier.py $PREFIX/bin/amplicon_classifier.py

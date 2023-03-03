@@ -26,7 +26,6 @@ The output below is generated with `go-licenses csv` and `go-licenses save`.
 EOF
   for module ; do
     cat >> "${output}" <<EOF
-
 go-licenses csv ${module}
 ================================================================================
 EOF
@@ -39,7 +38,6 @@ EOF
   # shellcheck disable=SC2016  # Not expanding $ in single quotes intentional.
   find "${acc_dir}" -type f | sort | xargs -L1 sh -c '
 cat <<EOF
-
 --------------------------------------------------------------------------------
 ${2#${1%/}/}
 ================================================================================
