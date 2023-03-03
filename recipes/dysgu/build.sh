@@ -17,3 +17,5 @@ sed -i 's/k = max(e.plus, e.minus)/k = max(int(e.plus), int(e.minus))/g' dysgu/p
 
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 
+chmod ugo+rwx dysgu/test
+chmod ugo+rwx dysgu/test/*
