@@ -36,8 +36,7 @@ cmake ../src/pyOpenMS \
   -DCMAKE_BUILD_WITH_INSTALL_NAME_DIR=ON \
   -DPython_EXECUTABLE=$PYTHON \
   -DPython_FIND_STRATEGY="LOCATION" \
-  -DNO_DEPENDENCIES=ON \
-  -DNO_SHARE=ON
+  -DNO_DEPENDENCIES=ON
 
 # NO_DEPENDENCIES since conda takes over re-linking etc
 
