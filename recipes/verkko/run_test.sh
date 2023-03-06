@@ -22,7 +22,7 @@ else
    curl -L https://obj.umiacs.umd.edu/sergek/shared/ecoli_hifi_subset24x.fastq.gz -o hifi.fastq.gz
    curl -L https://obj.umiacs.umd.edu/sergek/shared/ecoli_ont_subset50x.fastq.gz -o ont.fastq.gz
    verkko -d asm --no-correction --hifi ./hifi.fastq.gz --nano ./ont.fastq.gz
-   python $PREFIX/lib/verkko/scripts/circularize_ctgs.py -p 10 -f 0.01 -o assembly_circular.fasta --min-ovl 1000 asm/assembly.fasta
+   python $PREFIX/lib/verkko/scripts/circularize_ctgs.py -p 10 -f 0.01 -o asm/assembly_circular.fasta --min-ovl 1000 asm/assembly.fasta
 
 
    if [ ! -s asm/assembly_circular.fasta ]; then
