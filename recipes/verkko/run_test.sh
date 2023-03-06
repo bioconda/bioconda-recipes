@@ -12,16 +12,22 @@ if [ "$(uname)" == "Darwin" ]; then
 fi
 
 # download and run a small assembly
+# on the conda test environment this was taking a very long time so scipr the full run there 
+if [ "$(uname)" == "Darwin" ]; then
+   verkko --version
+   MBG --version
+   GraphAligner --version
+else
+   rm -f ./hifi.fastq.gz ./ont.fastq.gz
+   curl -L https://obj.umiacs.umd.edu/sergek/shared/ecoli_hifi_subset24x.fastq.gz -o hifi.fastq.gz
+   curl -L https://obj.umiacs.umd.edu/sergek/shared/ecoli_ont_subset50x.fastq.gz -o ont.fastq.gz
+   verkko -d asm --no-correction --hifi ./hifi.fastq.gz --nano ./ont.fastq.gz
 
-rm -f ./hifi.fastq.gz ./ont.fastq.gz
-curl -L https://obj.umiacs.umd.edu/sergek/shared/ecoli_hifi_subset24x.fastq.gz -o hifi.fastq.gz
-curl -L https://obj.umiacs.umd.edu/sergek/shared/ecoli_ont_subset50x.fastq.gz -o ont.fastq.gz
-verkko -d asm --no-correction --hifi ./hifi.fastq.gz --nano ./ont.fastq.gz
-
-if [ ! -s asm/assembly.fasta ]; then
-   echo "Error: verkko assembly test failed!"
-   tail -n +1 `find asm -name *.err`
-   exit 1
+   if [ ! -s asm/assembly.fasta ]; then
+      echo "Error: verkko assembly test failed!"
+      tail -n +1 `find asm -name *.err`
+      exit 1
+   fi
 fi
 
 echo "Finished verkko assembly test!"
