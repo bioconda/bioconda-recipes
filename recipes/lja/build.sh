@@ -6,11 +6,11 @@ set -e
 
 echo "Building LJA..."
 
-cmake .
+cmake -B$BUILD_PREFIX -S$SRC_DIR
 
-make
+make -BUILD_BINDIR=$BUILD_PREFIX BUILD_LIBDIR=$BUILD_PREFIX
 
-cp -r $SRC_DIR/bin/* $PREFIX/bin/
+ln -s $SRC_DIR/bin/* $PREFIX/bin/
 
 cd $PREFIX/bin
 
