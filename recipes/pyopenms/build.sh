@@ -20,6 +20,7 @@ else
   export ORIGIN
   RPATH='$${ORIGIN}/../lib'
 fi
+
 LDFLAGS='-Wl,-rpath,${RPATH}'
 
 cmake ../src/pyOpenMS \
