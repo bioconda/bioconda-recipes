@@ -9,11 +9,10 @@ echo "Building LJA..."
 cd $SRC_DIR
 
 echo "cmake -B$BUILD_PREFIX -S$SRC_DIR"
-cmake -B$BUILD_PREFIX -S$SRC_DIR
+cmake
 
-cd $BUILD_PREFIX
-echo "make BUILD_BINDIR=$BUILD_PREFIX BUILD_LIBDIR=$BUILD_PREFIX $BUILD_PREFIX"
-make .
+echo "make BUILD_BINDIR=$BUILD_PREFIX BUILD_LIBDIR=$BUILD_PREFIX  $BUILD_PREFIX"
+make BUILD_BINDIR=$BUILD_PREFIX BUILD_LIBDIR=$BUILD_PREFIX .
 
 echo 'dir .'
 ls .
@@ -22,9 +21,8 @@ ls $SRC_DIR
 echo 'dir prefix'
 ls $PREFIX
 
-mkdir $PREFIX/bin/ 
+mkdir $PREFIX/bin/
+chmod +x ./bin/* 
 ln -s ./bin/* $PREFIX/bin/
 
 cd $PREFIX/bin
-
-chmod +x ./*
