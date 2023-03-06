@@ -1,5 +1,8 @@
 set -e
 
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+
 echo "Building LJA..."
 
 cmake .
