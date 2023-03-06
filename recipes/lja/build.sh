@@ -1,7 +1,8 @@
-set -e
-
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export CPATH=${PREFIX}/include
+
+set -e
 
 echo "Building LJA..."
 
