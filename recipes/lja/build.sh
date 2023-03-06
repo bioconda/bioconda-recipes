@@ -13,13 +13,17 @@ cmake -B$BUILD_PREFIX -S$SRC_DIR
 
 cd $BUILD_PREFIX
 echo "make BUILD_BINDIR=$BUILD_PREFIX BUILD_LIBDIR=$BUILD_PREFIX $BUILD_PREFIX"
-make BUILD_BINDIR=$BUILD_PREFIX BUILD_LIBDIR=$BUILD_PREFIX .
+make .
 
+echo 'dir .'
 ls .
+echo 'dir src'
 ls $SRC_DIR
+echo 'dir prefix'
 ls $PREFIX
 
-ln -s $SRC_DIR/bin/* $PREFIX/bin/
+mkdir $PREFIX/bin/ 
+ln -s ./bin/* $PREFIX/bin/
 
 cd $PREFIX/bin
 
