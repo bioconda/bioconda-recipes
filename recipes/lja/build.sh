@@ -1,6 +1,5 @@
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-export CPATH=${PREFIX}/include
 
 set -e
 
@@ -13,7 +12,7 @@ cmake -S $SRC_DIR
 
 echo "make BUILD_BINDIR=$BUILD_PREFIX BUILD_LIBDIR=$BUILD_PREFIX  $BUILD_PREFIX"
 
-make
+make 
 
 echo 'dir .'
 ls .
