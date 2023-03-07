@@ -14,7 +14,10 @@ cmake -B $BUILD_PREFIX -S $SRC_DIR
 
 cd $BUILD_PREFIX
 echo "make BUILD_BINDIR=$BUILD_PREFIX BUILD_LIBDIR=$BUILD_PREFIX  $BUILD_PREFIX"
-make BUILD_BINDIR=$BUILD_PREFIX BUILD_LIBDIR=$BUILD_PREFIX .
+
+find ./ -type f -exec touch {} +
+make clean
+make .
 
 echo 'dir .'
 ls .
