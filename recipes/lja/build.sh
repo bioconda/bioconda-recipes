@@ -11,6 +11,8 @@ cd $SRC_DIR
 echo "cmake -B$BUILD_PREFIX -S$SRC_DIR"
 cmake -B $BUILD_PREFIX -S $SRC_DIR
 
+
+cd $BUILD_DIR
 echo "make BUILD_BINDIR=$BUILD_PREFIX BUILD_LIBDIR=$BUILD_PREFIX  $BUILD_PREFIX"
 make BUILD_BINDIR=$BUILD_PREFIX BUILD_LIBDIR=$BUILD_PREFIX .
 
@@ -20,9 +22,11 @@ echo 'dir src'
 ls $SRC_DIR
 echo 'dir prefix'
 ls $PREFIX
+echo 'dir build'
+ls $BUILD_DIR
 
 mkdir $PREFIX/bin/
 chmod +x ./bin/* 
-ln -s ./bin/* $PREFIX/bin/
+ln -s $BUILD_DIR/bin/* $PREFIX/bin/
 
 cd $PREFIX/bin
