@@ -12,7 +12,7 @@ cmake -S $SRC_DIR
 
 echo "make BUILD_BINDIR=$BUILD_PREFIX BUILD_LIBDIR=$BUILD_PREFIX  $BUILD_PREFIX"
 
-make 
+make $CFLAGS $LDFLAGS
 
 echo 'dir .'
 ls .
