@@ -1,19 +1,23 @@
-{% set version = "0.7.1" %}
+{% set version = "0.8.0" %}
 
 package:
   name: strobealign
   version: {{ version }}
 
 build:
-  number: 1
+  number: 0
 
 source:
-  url: https://github.com/ksahlin/StrobeAlign/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: d7d9b448103a4f08a46c7cb55b7fd00b6168b6531bb950aa5c12d072aee9b5d3
+  # Needs Git at compile time to determine the version number
+  git_url: https://github.com/ksahlin/strobealign.git
+  git_rev: v{{ version }}
+  patches:
+    - xxhash.patch
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
     - cmake
     - make
   host:
@@ -26,10 +30,14 @@ test:
     - strobealign --help
 
 about:
-  home: https://github.com/ksahlin/StrobeAlign
-  license: GPL
+  home: https://github.com/ksahlin/strobealign
+  license: MIT
   summary: Align short reads using dynamic seed size with strobemers
 
 extra:
   recipe-maintainers:
     - marcelm
+  skip-lints:
+    # Needed for git_url
+    - uses_vcs_url
+    - missing_hash

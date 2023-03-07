@@ -1,5 +1,5 @@
 {% set name = "pygenomeviz" %}
-{% set version = "0.2.2" %}
+{% set version = "0.3.2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,9 +7,15 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pygenomeviz-{{ version }}.tar.gz
-  sha256: a8e8f9fc577048152619f28d5a2685b121068ccbe2ed8783d47f0e37fee62025
+  sha256: e7c2ce14fc65828578179f19c74fd8d59561f199b08480a197be81e8344ce9bd
 
 build:
+  entry_points:
+    - pgv-download-dataset = pygenomeviz.scripts.download_dataset:main
+    - pgv-mmseqs = pygenomeviz.scripts.mmseqs:main
+    - pgv-mummer = pygenomeviz.scripts.mummer:main
+    - pgv-pmauve = pygenomeviz.scripts.pmauve:main
+    - pgv-simpleplot = pygenomeviz.scripts.simpleplot:main
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
   number: 0
@@ -18,19 +24,23 @@ requirements:
   host:
     - pip
     - poetry
-    - python >=3.7,<4.0
+    - python >=3.8
   run:
-    - biopython >=1.79,<2.0
-    - matplotlib-base >=3.5.2,<4.0.0
-    - numpy >=1.21,<2.0
-    - python >=3.7,<4.0
-    - typing-extensions >=4.3.0,<5.0.0
+    - biopython >=1.79
+    - matplotlib-base >=3.5.2
+    - numpy >=1.21
+    - python >=3.8
 
 test:
   imports:
     - pygenomeviz
   commands:
     - pip check
+    - pgv-download-dataset --help
+    - pgv-mmseqs --help
+    - pgv-mummer --help
+    - pgv-pmauve --help
+    - pgv-simpleplot --help
   requires:
     - pip
     - pytest
