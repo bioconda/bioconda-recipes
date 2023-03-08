@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - bulk
+      - bulk-demo
 jobs:
   build-linux:
     name: Bulk Linux Builds
@@ -11,26 +12,27 @@ jobs:
       fail-fast: false
       max-parallel: 13
       matrix:
-        runner: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] #, 13, 14, 15, 16, 17, 18, 19]
+        runner: [0] #, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] #, 13, 14, 15, 16, 17, 18, 19]
     steps:
     - uses: actions/checkout@v3
 
-    - name: Fetch common.sh
+    - name: set path
+      run: echo "/miniconda/bin" >> $GITHUB_PATH
+
+    - name: Fetch conda install script
       run: |
-        wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/common.sh
+        wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/install-and-set-up-conda.sh
 
     - name: Restore cache
       id: cache
       uses: actions/cache@v3
       with:
-        path: /home/runner/bioconda
-        key: ${{ runner.os }}--bulk2--${{ hashFiles('**/common.sh') }}
+        path: /miniconda
+        key: ${{ runner.os }}--bulk--${{ hashFiles('**/install-and-set-up-conda.sh') }}
 
     - name: Setup Bioconda-utils
       if: steps.cache.outputs.cache-hit != 'true'
-      uses: bioconda/bioconda-actions/bioconda_recipes_setup/@bulk
-      env:
-        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+      run: bash install-and-set-up-conda.sh
 
     - name: Build and upload
       env:
@@ -41,9 +43,7 @@ jobs:
         OSTYPE: "linux-gnu"
         CI: "true"
       run: |
-        ls /home/runner/bioconda/etc/profile.d
-        ls /home/runner/bioconda/etc
-        . /home/runner/bioconda/etc/profile.d/conda.sh
+        . /miniconda/etc/profile.d/conda.sh
         conda activate base
         echo '============'
         conda info --all
@@ -51,8 +51,10 @@ jobs:
         python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
         echo '============'
         bioconda-utils build recipes config.yml \
-          --worker-offset ${{ matrix.runner }} --n-workers 13 \
-          --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
+          --worker-offset ${{ matrix.runner }} --n-workers 1 \
+          --packages samtools \
+          --force \
+          --docker --mulled-test
         conda clean -y --all
 
   build-osx:
@@ -62,55 +64,27 @@ jobs:
       fail-fast: false
       max-parallel: 4
       matrix:
-        runner: [0, 1, 2, 3]
+        runner: [0] # 1, 2, 3]
     steps:
     - uses: actions/checkout@v3
 
-    - name: Fetch common.sh
+    - name: set path
+      run: echo "/miniconda/bin" >> $GITHUB_PATH
+
+    - name: Fetch conda install script
       run: |
-        wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/common.sh
+        wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/install-and-set-up-conda.sh
 
     - name: Restore cache
       id: cache
       uses: actions/cache@v3
       with:
-        path: /Users/runner/miniconda
-        key: ${{ runner.os }}--bulk2--${{ hashFiles('**/common.sh') }}
+        path: /miniconda
+        key: ${{ runner.os }}--bulk--${{ hashFiles('**/install-and-set-up-conda.sh') }}
 
     - name: OSX stuff
       if: steps.cache.outputs.cache-hit != 'true'
-      run: |
-        # Remove existing installation on macOS runners
-        sudo rm -rf /usr/local/miniconda
-        sudo rm -rf ${HOME}/miniconda
-
-        # Extract the versions we should be using from the previously-downloaded common.sh
-        BIOCONDA_UTILS_TAG=$(grep "^BIOCONDA_UTILS_TAG=" common.sh | cut -f2 -d "=" | sed "s/^v//g")
-        MINICONDA_VER=$(grep "^MINICONDA_VER=" common.sh | cut -f2 -d "=")
-
-        # Basic miniconda installation with bioconda channels configured
-        curl "https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA_VER}-MacOSX-x86_64.sh" > miniconda.sh
-        bash miniconda.sh -b -p "${HOME}/miniconda"
-        export PATH="${HOME}/miniconda/bin:${PATH}"
-        conda config --set always_yes yes
-        conda config --system --add channels defaults
-        conda config --system --add channels bioconda
-        conda config --system --add channels conda-forge
-        conda config --system --set channel_priority strict
-        conda info
-
-        # The run_conda_forge_build_setup script, from the conda-forge-ci-setup
-        # script, helps install required SDK for macOS.
-        #
-        # Installing bioconda-utils and conda-forge-ci-setup with conda causes dependency conflicts.
-        # Installing bioconda-utils and conda-forge-ci-setup with mamba works fine.
-        conda install -y mamba
-        mamba install bioconda-utils=${BIOCONDA_UTILS_TAG} conda-forge-ci-setup
-
-        # Set local channel as highest priority
-        mkdir -p "${HOME}/miniconda/conda-bld/{noarch,linux-64,osx-64}"
-        conda index "${HOME}/miniconda/conda-bld"
-        conda config --system --add channels "file://${HOME}/miniconda/conda-bld"
+      run: bash install-and-set-up-conda.sh
 
     - name: Build and upload
       env:
@@ -121,15 +95,15 @@ jobs:
         OSTYPE: "darwin"
         CI: "true"
       run: |
-        export PATH="${HOME}/miniconda/bin:${PATH}"
         # The SDK isn't actually cached, so reinstall it
-        ${HOME}/miniconda/bin/run_conda_forge_build_setup
+        /miniconda/bin/run_conda_forge_build_setup
         echo '============'
         conda info --all
         conda config --show-sources
         python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
         echo '============'
         bioconda-utils build recipes config.yml \
-          --worker-offset ${{ matrix.runner }} --n-workers 4 \
-          --anaconda-upload
+          --worker-offset ${{ matrix.runner }} --n-workers 1 \
+          --packages samtools \
+          --force
         conda clean -y --all
