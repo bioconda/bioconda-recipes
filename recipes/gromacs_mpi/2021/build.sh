@@ -51,10 +51,6 @@ ${SRC_DIR}/src/gromacs/hardware/identifyavx512fmaunits.cpp
 
 gmx='gmx_mpi'
 
-
-cp -a "${RECIPE_DIR}/gmx-chooser.bash" "${PREFIX}/bin/${gmx}"
-chmod a+x "${PREFIX}/bin/${gmx}"
-
 mkdir -p "${PREFIX}/etc/conda/activate.d"
 touch "${PREFIX}/bin/${gmx}"
 chmod +x "${PREFIX}/bin/${gmx}"
