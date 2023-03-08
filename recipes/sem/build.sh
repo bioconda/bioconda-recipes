@@ -5,7 +5,7 @@ mkdir -p $outdir
 mkdir -p $PREFIX/bin
 cp -R ./* $outdir/
 ls $outdir/
-mv $outdir/sem-v$PKG_VERSION.jar $outdir/sem.jar
+mv $outdir/sem-$PKG_VERSION-jar-with-dependencies.jar $outdir/sem.jar
 cp $RECIPE_DIR/sem.py $outdir/sem
 chmod +x $outdir/sem
 
