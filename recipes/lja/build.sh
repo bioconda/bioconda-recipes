@@ -19,11 +19,11 @@ echo 'dir build'
 ls $BUILD_PREFIX
 echo '$BUILD_PREFIX/lib'
 ls $BUILD_PREFIX/lib
-echo '$BUILD_PREFIX/includes'
-ls $BUILD_PREFIX/includes
+echo '$BUILD_PREFIX/include'
+ls $BUILD_PREFIX/include
 
 echo "make"
-make CXX=$CXX INCLUDES="-I$PREFIX/include" CFLAGS+="-L$PREFIX/lib"
+make CXX=$CXX INCLUDES="-I$BUILD_PREFIX/include" CFLAGS+="-L$BUILD_PREFIX/lib"
 
 mv $SRC_DIR/* $PREFIX
 
