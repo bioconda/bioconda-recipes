@@ -22,11 +22,10 @@ ls $BUILD_PREFIX/lib
 echo '$BUILD_PREFIX/include'
 ls $BUILD_PREFIX/include
 
-export CFLAGS="$CFLAGS -I$BUILD_PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$BUILD_PREFIX/lib"
+export LIBRARY_PATH="$PREFIX/lib"
 
 echo "make"
-make
+make CC=$CC CFLAGS="-g -Wall -O2 -I$PREFIX/include -L$PREFIX/lib"
 
 mv $SRC_DIR/* $PREFIX
 
