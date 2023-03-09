@@ -25,7 +25,7 @@ ls $BUILD_PREFIX/include
 export LIBRARY_PATH="$PREFIX/lib"
 
 echo "make"
-make CC=$CC CFLAGS="-g -Wall -O2 -I$PREFIX/include -L$PREFIX/lib"
+make CC=$CC CFLAGS="-g -Wall -O2 -I$PREFIX/include -L$PREFIX/lib" LDFLAGS="-lrt -L$PREFIX/lib"
 
 mv $SRC_DIR/* $PREFIX
 
