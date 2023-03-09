@@ -27,6 +27,8 @@ export LDFLAGS="$LDFLAGS -lrt -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
 echo "make"
+# fix of gettime bug
+sed -i 's/set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -lstdc++fs -ggdb3 ${OpenMP_CXX_FLAGS}" )/set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -lstdc++fs -ggdb3 ${OpenMP_CXX_FLAGS} -lrt" )/g' $SRC_DIR/CMakeLists.txt
 make
 
 mv $SRC_DIR/* $PREFIX
