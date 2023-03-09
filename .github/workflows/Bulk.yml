@@ -46,6 +46,7 @@ jobs:
         ls /miniconda/
         ls /miniconda/etc
         ls /miniconda/etc/profile.d
+        . /miniconda/etc/profile.d/conda.sh
         conda activate bioconda
         echo '============'
         conda info --all
@@ -97,11 +98,14 @@ jobs:
         OSTYPE: "darwin"
         CI: "true"
       run: |
+        . /miniconda/etc/profile.d/conda.sh
+
         # The SDK isn't actually cached, so reinstall it
         /miniconda/bin/run_conda_forge_build_setup
         echo '============'
         conda info --all
         conda config --show-sources
+        conda activate bioconda
         python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
         echo '============'
         bioconda-utils build recipes config.yml \
