@@ -9,4 +9,6 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 cd sources
 
 make
+chmod +x g_baypass
+mkdir -p $PREFIX/bin
 cp g_baypass ${PREFIX}/bin/
