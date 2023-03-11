@@ -1,6 +1,6 @@
 {% set name = "PanTools" %}
-{% set version = "3.4.0" %}
-{% set sha256 = "8491362498b915fe6b920d85ddd79394e4fe21d947a317c1871eb3afaeb07110" %}
+{% set version = "4.1.1" %}
+{% set sha256 = "fa940b131c54942fdeb85c454f04381df95a05d7e07ba32d78d92e9ab6517e02" %}
 
 package:
   name: {{ name|lower }}
@@ -30,7 +30,6 @@ requirements:
     - blast
     - mash =2.3
     - fastani
-    # - busco >=5 #this only works on linux unfortunately, gives a conflict with blast on macos
     - r-base =3.4.3
     - r-ggplot2 =2.2.1
     - r-ape =5.0
@@ -39,11 +38,13 @@ requirements:
 
 test:
   commands:
-    # pantools returns non-zero exit code for version and help; grep a known output string to work around this
-    - pantools version | grep -i "pantools version" >/dev/null
+    - pantools --version
+    - pantools --help
 
 about:
   home: https://git.wur.nl/bioinformatics/pantools
+  dev_url: https://git.wur.nl/bioinformatics/pantools
+  doc_url: https://pantools.readthedocs.io/
   license: GPL-3.0-only
   license_family: GPL
   license_file: LICENSE
@@ -57,14 +58,12 @@ about:
 extra:
   notes: |
     PanTools is Java program that comes with a custom wrapper Python script.
-    This wrapper is called "pantools" and is on $PATH by default. By default
-    "-Xms512m -Xmx1g" is set in the wrapper. If you want to overwrite it you can
-    specify these values directly after your binaries. If you have _JAVA_OPTIONS
-    set globally this will take precedence.
+    This wrapper is called "pantools" and is on $PATH by default.
+    By default "-Xms512m -Xmx1g" is set in the wrapper.
+    If you want to overwrite it you can specify these values directly after your binaries.
+    If you have _JAVA_OPTIONS set globally this will take precedence.
     For example run it with "pantools -Xms512m -Xmx1g".
-    NB: BUSCO is **not** included in the dependency list but is required for
-    one subcommand of pantools ("pantools busco_protein"). Please manually
-    install BUSCO for running this subcommand.
+    NB: BUSCO is a dependency of PanTools but it is not included in this recipe due to conflicts on MacOS.
   identifiers:
     - doi:https://doi.org/10.1093/bioinformatics/btw455
     - doi:https://doi.org/10.1186/s12859-018-2362-4
