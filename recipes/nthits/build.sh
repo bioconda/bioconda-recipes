@@ -1,5 +1,6 @@
 #!/bin/bash
-./autogen.sh
-./configure --prefix=$PREFIX
-make
-make install
+
+meson setup build --prefix ${PREFIX}
+cd build
+ninja
+ninja install
