@@ -141,7 +141,29 @@ def _gen_new_index(repodata, subdir):
                     deps[i] = 'bokeh >=2.4,<3'
                     break
 
+        # Pin all old packages that do not have a pin to openssl 1.1.1 which should have been available 
+        # TODO once we have updated to openssl 3, below timestamp should be updated
+        if has_dep(record, "openssl") and record.get("timestamp", 0) < 1678355208942:
+            for i, dep in enumerate(deps):
+                if dep.startswith("openssl") and has_no_upper_bound(dep):
+                    deps[i] = "openssl >=1.1.0,<=1.1.1"
+                    break
+
     return index
+
+
+def has_no_upper_bound(dep):
+    """Check if a dependency has an upper bound."""
+    dep_parts = dep.split(' ', 1)
+    bounds = dep_parts[1].split(",") if len(dep_parts) > 1 else []
+    for bound in bounds:
+        if bound.startswith("<"):
+            # upper bound
+            return False
+        elif not (bound.startswith(">") or bound.startswith("<")):
+            # If there is no < or > operator, then it is an exact pin (e.g. =1.2, or 1.2, or 1.2.*)
+            return False
+    return True
 
 
 def _replace_pin(old_pin, new_pin, deps, record):
