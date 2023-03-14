@@ -1,6 +1,6 @@
-{% set version = "1.10.0" %}
+{% set version = "1.14.0" %}
 {% set name = "alevinQC" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.16" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,41 +10,49 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 1b625c37e55a6c571220d14f532d7436
+  md5: 729a1c1fe011e289cfc10b91f1ecf27b
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, BiocStyle, testthat
+# Suggests: knitr, BiocStyle, testthat (>= 3.0.0), BiocManager
+# SystemRequirements: C++11
 requirements:
   host:
-    - 'bioconductor-tximport >=1.22.0,<1.23.0'
+    - 'bioconductor-tximport >=1.26.0,<1.27.0'
     - r-base
     - r-cowplot
     - r-dplyr
     - r-dt
     - r-ggally
     - r-ggplot2
+    - r-rcpp
     - r-rjson
     - r-rlang
     - 'r-rmarkdown >=2.5'
     - r-shiny
     - r-shinydashboard
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-tximport >=1.22.0,<1.23.0'
+    - 'bioconductor-tximport >=1.26.0,<1.27.0'
     - r-base
     - r-cowplot
     - r-dplyr
     - r-dt
     - r-ggally
     - r-ggplot2
+    - r-rcpp
     - r-rjson
     - r-rlang
     - 'r-rmarkdown >=2.5'
     - r-shiny
     - r-shinydashboard
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
