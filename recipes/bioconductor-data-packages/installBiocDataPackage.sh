@@ -5,7 +5,11 @@ set -ex
 SCRIPT_DIR="$( dirname -- "${BASH_SOURCE[0]}" )/../share/bioconductor-data-packages"
 json="${SCRIPT_DIR}/dataURLs.json"
 FN=`yq ".\"$1\".fn" "${json}"`
-readarray URLS < <(yq ".\"$1\".urls[]" "${json}")
+##readarray is bash4, while OSX only has bash 3
+#readarray URLS < <(yq ".\"$1\".urls[]" "${json}")
+while IFS= read -r value; do
+  URLS+=($value);
+done < <(yq ".\"$1\".urls[]" "${json}")
 MD5=`yq ".\"$1\".md5" "${json}"`
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
