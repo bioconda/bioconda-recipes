@@ -3,6 +3,7 @@ export LIBRARY_PATH="$PREFIX/lib"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
+
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/out
 
