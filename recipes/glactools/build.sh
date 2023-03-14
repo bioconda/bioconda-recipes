@@ -1,5 +1,5 @@
 #!/bin/bash
 
-make CC="${CC} ${CXX} -fcommon ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+make CC="${CC}  -fcommon ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" CXX="${CXX} -fcommon ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 make install INSTALLDIR="${PREFIX}/bin/"
 
