@@ -10,5 +10,6 @@ ln  "$CXX" "$PREFIX/bin/g++"
 
 ./configure.sh
 
+
 mv *.py $PREFIX/bin/
 mv *.sh $PREFIX/bin/
