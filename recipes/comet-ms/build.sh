@@ -6,7 +6,7 @@ export INCLUDE_PATH="${PREFIX}/MSToolkit/include"
 export CPPFLAGS="-I${PREFIX}/MSToolkit/include"
 
 sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" MSToolkit/Makefile
-make CXX=${CXX} CXXFLAGS="${CXXFLAGS} -mcmodel=large -fpic" CFLAGS="${CFLAGS} -mcmodel=large -fpic"
+make CXX=${CXX} CXXFLAGS="${CXXFLAGS} -mcmodel=large -fpic -I./include" CFLAGS="${CFLAGS} -mcmodel=large -fpic -I./include"
 
 mkdir -p "$PREFIX"/bin
 cp comet.exe ${PREFIX}/bin/comet
