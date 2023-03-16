@@ -3,7 +3,7 @@ set -e
 set -x
 
 platform="$(uname)"
-unzip comet_source_"$PKG_VERSION".zip
+unzip v2023.01.0.zip
 make CXX=${CXX} CXXFLAGS="${CXXFLAGS} -mcmodel=large -fpic -shared"
 mkdir -p "$PREFIX"/bin
 cp comet.exe ${PREFIX}/bin/comet
