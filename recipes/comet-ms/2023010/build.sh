@@ -14,7 +14,7 @@ if [ "$platform" = "Darwin" ]; then
 fi
 sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" CometSearch/Makefile
 sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" MSToolkit/Makefile
-make CXX=${CXX} CXXFLAGS="${CXXFLAGS} -mcmodel=large"
+make CXX=${CXX} CXXFLAGS="${CXXFLAGS} -mcmodel=large -fPIC"
 mkdir -p "$PREFIX"/bin
 cp comet.exe ${PREFIX}/bin/comet
 chmod a+x ${PREFIX}/bin/comet
