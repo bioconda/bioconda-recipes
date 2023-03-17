@@ -1,6 +1,6 @@
 #! /bin/bash
 
-outdir=$PREFIX/share/plugins/
+outdir=$PREFIX/share/jars/
 
 mkdir -p "$outdir"
 
