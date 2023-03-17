@@ -1,6 +1,6 @@
-{% set version = "1.2.0" %}
+{% set version = "1.6.0" %}
 {% set name = "Travel" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.16" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,8 +10,11 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f67a36b5df7db2da6df4ad58c32fcbfa
+  md5: da652100a57515f0dbaf7084fb35525e
+  patches:
+    - patch
 build:
+  skip: True  # [osx]
   number: 0
   rpaths:
     - lib/R/lib/
@@ -24,12 +27,15 @@ requirements:
     - r-rcpp
     - libblas
     - liblapack
+    - libfuse
   run:
     - r-base
     - r-rcpp
+    - libfuse
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - pkg-config
     - make
 test:
   commands:
