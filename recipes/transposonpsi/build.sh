@@ -10,8 +10,8 @@ cp -r *  ${TPSI_DIR}
 cat <<END >>${PREFIX}/bin/transposonPSI.pl
 #!/bin/bash
 
-NAME=\$(basename \$0)
-${TPSI_DIR}/\${NAME}
+NAME=\$(basename "\$0")
+${TPSI_DIR}/"\${NAME}" "\$@"
 END
 
 # copy tools in the bin
