@@ -59,10 +59,6 @@ if [ "$jvm_mem_opts" == "" ] && [ -z ${_JAVA_OPTIONS+x} ]; then
 fi
 
 pass_arr=($pass_args)
-if [[ ${pass_arr[0]:=} == org* ]]
-then
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/macse_v2.07.jar" $pass_args
-else
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/macse_v2.07.jar" $pass_args
-fi
+eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/macse_v2.07.jar" $pass_args
+
 exit
