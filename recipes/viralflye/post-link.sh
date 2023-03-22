@@ -1,16 +1,19 @@
 #!/bin/bash
 
-mkdir STAGING
+set -eux
+exec &>> $PREFIX/.messages.txt
 
-# install viralcomplete data folders
-(
-    git clone \
-        https://github.com/ablab/viralComplete \
-        STAGING/viralComplete
-    cd STAGING/viralComplete || exit 1
-    git checkout -f db9ffa7
-    mv blast_db $PREFIX/
-    mv data $PREFIX/
-)
+curl -o viralComplete.tar.gz \
+  https://codeload.github.com/ablab/viralComplete/tar.gz/db9ffa7
 
-rm -rf STAGING
+mkdir viralComplete
+
+tar -zxf viralComplete.tar.gz \
+  -C viralComplete \
+  --strip-components 1
+
+printf "Moving viralcomplete data to %s\n" $PREFIX
+mv viralComplete/blast_db $PREFIX/
+mv viralComplete/data $PREFIX/
+
+rm -rf viralComplete viralComplete.tar.gz
