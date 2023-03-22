@@ -1,16 +1,9 @@
 #!/bin/bash
 
 # install viralcomplete from source
-(
-    git clone \
-        https://github.com/ablab/viralComplete \
-        $SRC_DIR/viralComplete
-    cd $SRC_DIR/viralComplete || exit 1
-    git checkout -f db9ffa7
-    mv bin/viralcomplete $PREFIX/bin/
-    mv blast_db $PREFIX/
-    mv data $PREFIX/
-)
+curl -o $PREFIX/bin/viralcomplete \
+    https://raw.githubusercontent.com/ablab/viralComplete/db9ffa7c1beb38c1375a33619388d4bd4d2be59b/bin/viralcomplete
+chmod 755 $PREFIX/bin/viralcomplete
 
 # install viralflye
 mv viralflye $SP_DIR/
