@@ -1,0 +1,34 @@
+diff --git a/filter.cpp b/filter.cpp
+index d4fa839..a3bb0a4 100644
+--- a/filter.cpp
++++ b/filter.cpp
+@@ -34,6 +34,7 @@ THE SOFTWARE.  */
+ #include <pwd.h>
+ #endif
+ #include <regex.h>
++#include <cinttypes>
+ 
+ //#ifdef __cplusplus
+ //extern "C" {
+diff --git a/sam_ordered_writer.cpp b/sam_ordered_writer.cpp
+index 132de93..46adca7 100644
+--- a/sam_ordered_writer.cpp
++++ b/sam_ordered_writer.cpp
+@@ -135,7 +135,7 @@ void SAMOrderedWriter::write(bam1_t *v)
+ 
+                 if (i==buffer.end())
+                 {
+-		  int32_t cutoff_pos1 =  std::max(bam_get_pos1(buffer.front())-window,static_cast<hts_pos_t>(1));
++		  int32_t cutoff_pos1 =  std::max<int32_t>(bam_get_pos1(buffer.front())-window,static_cast<hts_pos_t>(1));
+                     if (bam_get_pos1(v)<cutoff_pos1)
+                     {
+ 		      notice("[%s:%d %s] Might not be sorted for window size %d at current record %s:%d < %d (%d [last record] - %d), please increase window size to at least %d.\n", __FILE__,__LINE__,__FUNCTION__, window, bam_get_chrom(hdr, v), bam_get_pos1(v), cutoff_pos1, bam_get_pos1(buffer.front()), window, bam_get_pos1(buffer.front())-bam_get_pos1(v)+1);
+@@ -218,7 +218,7 @@ void SAMOrderedWriter::flush(bool force) {
+   }
+   else {
+     if (buffer.size()>1) {
+-      int32_t cutoff_pos1 =  std::max(bam_get_pos1(buffer.front())-window,static_cast<hts_pos_t>(1));
++      int32_t cutoff_pos1 =  std::max<int32_t>(bam_get_pos1(buffer.front())-window,static_cast<hts_pos_t>(1));
+       
+       while (buffer.size()>1) {
+ 	if (bam_get_pos1(buffer.back())<=cutoff_pos1) {
