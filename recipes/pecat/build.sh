@@ -4,12 +4,13 @@ export CFLAGS="-I$CONDA_PREFIX/include"
 export LDFLAGS="-L$CONDA_PREFIX/lib"
 export CPATH=${PREFIX}/include
 
-
+echo "run git submodule update --init --recursive"
 git submodule update --init --recursive
 
 # modify the bugs in the makefiles
-set -i 's/\$$//' src/makefile
-set -i 's/= ..\/build/= .\/build/' makefile
+echo "modify the bugs in the makefiles"
+sed -i 's/\$$//' $SRC_DIR/src/makefile
+sed -i 's/= ..\/build/= .\/build/' $SRC_DIR/makefile
 
 make -j
 
