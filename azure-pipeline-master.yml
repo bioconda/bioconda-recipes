@@ -49,19 +49,12 @@ jobs:
       export OSTYPE="linux-gnu"
       export CI="true"
 
-      # Experimental new merge/upload mechanism
-      # TODO remove BIOCONDA_LABEL, change to --fallback build, remove ||true, and remove old build invocation
-      # once the mechanism seems to work fine
-      QUAY_OAUTH_TOKEN=$QUAY_LOGIN BIOCONDA_LABEL=test-bot-free-upload bioconda-utils handle-merged-pr recipes config.yml \
+      bioconda-utils handle-merged-pr recipes config.yml \
         --repo bioconda/bioconda-recipes \
         --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
-        --fallback ignore \
-        --quay-upload-target biocontainers || true
+        --quay-upload-target biocontainers \
+        --fallback build
 
-      bioconda-utils build recipes config.yml \
-          --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
-          --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
-          --prelint
       docker rmi quay.io/dpryan79/mulled_container:latest
     env:
       QUAY_LOGIN: $(QUAY_LOGIN)
@@ -137,18 +130,10 @@ jobs:
       export CI="true"
       export HOME=`pwd`
 
-      # Experimental new merge/upload mechanism
-      # TODO remove BIOCONDA_LABEL, change to --fallback build, remove ||true, and remove old build invocation
-      # once the mechanism seems to work fine
       bioconda-utils handle-merged-pr recipes config.yml \
         --repo bioconda/bioconda-recipes \
         --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
-        --fallback ignore || true
-
-      bioconda-utils build recipes config.yml \
-          --anaconda-upload \
-          --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
-          --prelint
+        --fallback build
     env:
       ANACONDA_TOKEN: $(ANACONDA_TOKEN)
       INVOLUCRO_AUTH: $(INVOLUCRO_AUTH)
