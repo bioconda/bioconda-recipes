@@ -8,8 +8,7 @@ mkdir -p $outdir $PREFIX/bin
 # Fix architecture value
 export ARCH=$(uname -m)
 
-# Need a home for osx
-export HOME="/tmp/"
+export HOME="$(mktemp -d)"
 
 # Install meteor here (instead of in npm run bundle) because we need to patch the install script
 curl "https://install.meteor.com/?release=2.8.0" > meteor.sh
