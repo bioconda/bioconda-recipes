@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -eux
 exec &>> $PREFIX/.messages.txt
 
 # install viralcomplete from source

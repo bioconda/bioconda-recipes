@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -eux
 exec &>> $PREFIX/.messages.txt
 
 curl -o viralComplete.tar.gz \
