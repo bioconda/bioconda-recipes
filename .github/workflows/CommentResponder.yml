@@ -82,22 +82,13 @@ jobs:
     container:
       image: 'quay.io/bioconda/bot:merge'
     steps:
-    - name: bioconda-bot merge
-      env:
-        BOT_TOKEN: ${{ secrets.GITHUBTOKEN }}
-        ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
-        QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
-        JOB_CONTEXT: ${{ toJson(github) }}
-      run: bioconda-bot merge
-    # TODO remove above step and enable this step once new mechanism works well
-    #- name: Comment with deprecation info
-    #  uses: peter-evans/create-or-update-comment@v2
-    #  with:
-    #    issue-number: ${{ github.event.pull_request.number }}
-    #    body: |
-    #      The "please merge" bot command is deprecated. Just hit the merge button
-    #      for merging the PR.
+    - name: Comment with deprecation info
+      uses: peter-evans/create-or-update-comment@v2
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+          The "please merge" bot command is deprecated. Just hit the merge button
+          for merging the PR.
 
   update:
     runs-on: ubuntu-latest
