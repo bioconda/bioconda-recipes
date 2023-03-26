@@ -16,7 +16,7 @@ stages:
       maxParallel: 8
 
     steps:
-    - bash: echo "##vso[task.prependpath]/miniconda/bin"
+    - bash: echo "##vso[task.prependpath]/opt/miniconda/bin"
       displayName: Add conda to PATH
 
     - bash: |
@@ -25,7 +25,7 @@ stages:
 
     - task: Cache@2
       inputs:
-        path: "/miniconda/envs/bioconda"
+        path: "/opt/miniconda/envs/bioconda"
         key: '"$(Agent.OS)" | **/install-and-set-up-conda.sh'
         cacheHitVar: CACHE_RESTORED
       displayName: Restore cache
@@ -52,7 +52,7 @@ stages:
     timeoutInMinutes: 360
 
     steps:
-    - bash: echo "##vso[task.prependpath]/miniconda/bin"
+    - bash: echo "##vso[task.prependpath]/opt/miniconda/bin"
       displayName: Add conda to PATH
 
     - bash: |
@@ -61,7 +61,7 @@ stages:
 
     - task: Cache@2
       inputs:
-        path: "/miniconda/envs/bioconda"
+        path: "/opt/miniconda/envs/bioconda"
         key: '"$(Agent.OS)" | **/install-and-set-up-conda.sh'
         cacheHitVar: CACHE_RESTORED
       displayName: Restore cache
@@ -86,7 +86,7 @@ stages:
     - bash: |
         (
         mkdir -p /tmp/artifacts/packages
-        cd /miniconda/envs/bioconda/conda-bld || exit 0
+        cd /opt/miniconda/envs/bioconda/conda-bld || exit 0
         find -name .cache | xargs rm -rf || true
         for n in index.html channeldata.json linux-64 osx-64 noarch; do
           cp -rv $n /tmp/artifacts/packages || true
@@ -119,7 +119,7 @@ stages:
     timeoutInMinutes: 360
 
     steps:
-    - bash: echo "##vso[task.prependpath]/miniconda/bin"
+    - bash: echo "##vso[task.prependpath]/opt/miniconda/bin"
       displayName: Add conda to PATH
 
     - bash: sudo chown -R $USER $CONDA
@@ -131,7 +131,7 @@ stages:
 
     - task: Cache@2
       inputs:
-        path: "/miniconda/envs/bioconda"
+        path: "/opt/miniconda/envs/bioconda"
         key: '"$(Agent.OS)" | **/install-and-set-up-conda.sh'
         cacheHitVar: CACHE_RESTORED
       displayName: Restore cache
@@ -139,20 +139,6 @@ stages:
     - script: bash install-and-set-up-conda.sh
       condition: ne(variables.CACHE_RESTORED, 'true')
       displayName: Install bioconda-utils
-
-    # Temporarily disable; the installation script should be taking care of this.
-    #
-    # - script: |
-    #     . ${HOME}/miniconda/etc/profile.d/conda.sh
-    #     conda activate bioconda
-    #     CONFIG= OSX_FORCE_SDK_DOWNLOAD=1 MACOSX_DEPLOYMENT_TARGET=10.13 run_conda_forge_build_setup
-    #     conda_forge_ci_setup_activate_sh="${CONDA_PREFIX}/etc/conda/activate.d/conda-forge-ci-setup-activate.sh"
-    #     sed -Ei.bak "s/^(export MACOSX_DEPLOYMENT_TARGET)=.*$/\\1='10.9'/" "${conda_forge_ci_setup_activate_sh}"
-    #     rm "${conda_forge_ci_setup_activate_sh}".bak
-    #     cat "${conda_forge_ci_setup_activate_sh}"
-    #     grep -qFx "export MACOSX_DEPLOYMENT_TARGET='10.9'" "${conda_forge_ci_setup_activate_sh}"
-    #     conda list
-    #   displayName: OSX setup
 
     - bash: |
         set -e
@@ -168,7 +154,7 @@ stages:
     - bash: |
         (
         mkdir -p /tmp/artifacts/packages
-        cd /miniconda/envs/bioconda/conda-bld || exit 0
+        cd /opt/miniconda/envs/bioconda/conda-bld || exit 0
         find -name .cache | xargs rm -rf || true
         for n in index.html channeldata.json linux-64 osx-64 noarch; do
           cp -rv $n /tmp/artifacts/packages || true
