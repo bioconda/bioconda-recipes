@@ -4,7 +4,7 @@ set -vex
 
 # C++17 is not properly supported on early OSX versions
 case "${target_platform}" in osx-*)
-    export MACOSX_DEPLOYMENT_TARGET=10.13
+    export MACOSX_DEPLOYMENT_TARGET=12.4
     xcodebuild -sdk -version
     ${CXX} -v
 esac
@@ -22,7 +22,7 @@ echo "CPPFLAGS=$CPPFLAGS"
 echo "CXXFLAGS=$CXXFLAGS"
 
 echo "Removing -mmacosx-version-min=10.9 from CPPFLAGS..."
-CPPFLAGS="$(echo $CPPFLAGS | sed 's/-mmacosx-version-min=10.9/-mmacosx-version-min=10.13/g')"
+CPPFLAGS="$(echo $CPPFLAGS | sed 's/-mmacosx-version-min=10.9/-mmacosx-version-min=12.4/g')"
 echo "CPPFLAGS=$CPPFLAGS"
 
 echo "Removing -O2 and -std=c++14 from CXXFLAGS..."
