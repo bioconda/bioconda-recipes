@@ -21,8 +21,8 @@ echo "CXX=$CXX"
 echo "CPPFLAGS=$CPPFLAGS"
 echo "CXXFLAGS=$CXXFLAGS"
 
-echo "Removing -mmacosx-version-min=10.9 from CPPFLAGS..."
-CPPFLAGS="$(echo $CPPFLAGS | sed 's/-mmacosx-version-min=10.9/-mmacosx-version-min=12.4/g')"
+echo "Adding -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET} to CPPFLAGS..."
+CPPFLAGS="$CPPFLAGS -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
 echo "CPPFLAGS=$CPPFLAGS"
 
 echo "Removing -O2 and -std=c++17 from CXXFLAGS..."
