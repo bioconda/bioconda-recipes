@@ -12,6 +12,9 @@ echo "modify the bugs in the makefiles"
 sed -i 's/\$$//' $SRC_DIR/src/makefile
 sed -i 's/= ..\/build/= .\/build/' $SRC_DIR/makefile
 
+echo "gcc path"
+which gcc
+
 make -j
 
 # create and populate binary file
