@@ -30,7 +30,7 @@ CXXFLAGS="$(echo $CXXFLAGS | sed 's/-O2//g' | sed 's/-std=c++17//g')"
 echo "CXXFLAGS=$CXXFLAGS"
 
 # configure
-meson \
+meson setup \
     --prefix="$PREFIX" \
     --buildtype=release \
     -Db_ndebug=true \
