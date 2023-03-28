@@ -21,9 +21,11 @@ echo "CXX=$CXX"
 echo "CPPFLAGS=$CPPFLAGS"
 echo "CXXFLAGS=$CXXFLAGS"
 
-echo "Adding -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET} to CPPFLAGS..."
-CPPFLAGS="$CPPFLAGS -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
-echo "CPPFLAGS=$CPPFLAGS"
+case "${target_platform}" in osx-*)
+    echo "Adding -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET} to CPPFLAGS..."
+    CPPFLAGS="$CPPFLAGS -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
+    echo "CPPFLAGS=$CPPFLAGS"
+esac
 
 echo "Removing -O2 and -std=c++17 from CXXFLAGS..."
 CXXFLAGS="$(echo $CXXFLAGS | sed 's/-O2//g' | sed 's/-std=c++17//g')"
