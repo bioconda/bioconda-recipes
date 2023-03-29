@@ -4,13 +4,16 @@ set -vex
 
 # C++20 is not properly supported on early OSX versions
 case "${target_platform}" in osx-*)
+    export MACOSX_SDK_VERSION="13.1"
+    export MACOSX_DEPLOYMENT_TARGET="13.1"
+
     echo "xcodebuild -sdk -version:"
     xcodebuild -sdk -version
 
     echo "xcodebuild -showsdks:"
     xcodebuild -showsdks
 
-    echo "xcodebuild -sdk macosx13.1"
+    echo "xcodebuild -sdk macosx13.1:"
     xcodebuild -sdk macosx13.1
 
     echo "${CXX} -v:"
@@ -31,10 +34,10 @@ echo "CPPFLAGS=$CPPFLAGS"
 echo "CXXFLAGS=$CXXFLAGS"
 echo "LDFLAGS=$LDFLAGS"
 echo "SDKROOT=$SDKROOT"
+echo "MACOSX_SDK_VERSION=${MACOSX_SDK_VERSION}"
+echo "MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}"
 
 case "${target_platform}" in osx-*)
-    export SDKROOT="/Applications/Xcode_14.2.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.sdk"
-
     echo "Adding -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET} to CPPFLAGS, CXXFLAGS, and LDFLAGS..."
 
     export CPPFLAGS="$CPPFLAGS -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
@@ -66,6 +69,8 @@ echo "CPPFLAGS=$CPPFLAGS"
 echo "CXXFLAGS=$CXXFLAGS"
 echo "LDFLAGS=$LDFLAGS"
 echo "SDKROOT=$SDKROOT"
+echo "MACOSX_SDK_VERSION=${MACOSX_SDK_VERSION}"
+echo "MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}"
 
 cd builddir
 
