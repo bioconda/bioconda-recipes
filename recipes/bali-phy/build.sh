@@ -13,11 +13,11 @@ case "${target_platform}" in osx-*)
     echo "xcodebuild -showsdks:"
     xcodebuild -showsdks
 
-    echo "xcodebuild --sdk macosx --show-sdk-path:"
-    xcodebuild --sdk macosx --show-sdk-path
+    echo "xcodebuild -sdk macosx -show-sdk-path:"
+    xcodebuild -sdk macosx -show-sdk-path
 
     # Select the latest SDK
-    export SDKROOT=$(xcodebuild --sdk macosx --show-sdk-path)
+    export SDKROOT=$(xcodebuild -sdk macosx -show-sdk-path)
     echo "SDKROOT=$SDKROOT"
 
     echo "${CXX} -v:"
