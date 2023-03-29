@@ -23,45 +23,33 @@ jobs:
   - script: |
       git checkout master
 
-  - bash: echo "##vso[task.prependpath]$CONDA/bin"
+  - bash: echo "##vso[task.prependpath]/opt/miniconda/bin"
     displayName: Add conda to PATH
 
   - bash: |
-      wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
-    displayName: Fetch common.sh
+      wget https://raw.githubusercontent.com/bioconda/bioconda-common/fix/install-and-set-up-conda.sh
+    displayName: Fetch bioconda install script
+
+  - bash: |
+      sudo mkdir -p /opt
+      sudo chown -R $USER /opt
+    displayName: Ensure cache has path to restore to
 
   - task: Cache@2
     inputs:
-      path: "/usr/share/miniconda/envs/bioconda"
-      key: '"$(Agent.OS)" | **/common.sh'
+      path: "/opt/miniconda"
+      key: '"$(Agent.OS)" | **/install-and-set-up-conda.sh'
       cacheHitVar: CACHE_RESTORED
     displayName: Restore cache
 
-  - script: .azure-pipelines/createEnv.py
+  - script: bash install-and-set-up-conda.sh
     condition: ne(variables.CACHE_RESTORED, 'true')
     displayName: Install bioconda-utils
-  
+
   - bash: |
       set -e
-      rm -f "${HOME}/.condarc"
-
-      # Activate our Conda installation as "base".
-      . /usr/share/miniconda/envs/bioconda/etc/profile.d/conda.sh
-      conda activate base
-
-      conda config --system --add channels defaults
-      conda config --system --add channels bioconda
-      conda config --system --add channels conda-forge
-      mkdir -p ${CONDA_PREFIX}/conda-bld
-    displayName: Configure conda
-  
-  - bash: |
-      set -e
-
-      # Activate our Conda installation as "base".
-      . /usr/share/miniconda/envs/bioconda/etc/profile.d/conda.sh
-      conda activate base
-
+      eval "$(conda shell.bash hook)"
+      conda activate bioconda
       conda build --token $ANACONDA_TOKEN --user bioconda --quiet recipes/bioconda-repodata-patches
     env:
       ANACONDA_TOKEN: $(ANACONDA_TOKEN)
@@ -69,12 +57,9 @@ jobs:
 
   - bash: |
       set -e
-
-      # Activate our Conda installation as "base".
-      . /usr/share/miniconda/envs/bioconda/etc/profile.d/conda.sh
-      conda activate base
-      
-      docker pull quay.io/dpryan79/mulled_container:latest      
+      eval "$(conda shell.bash hook)"
+      conda activate bioconda
+      docker pull quay.io/dpryan79/mulled_container:latest
 
       export OSTYPE="linux-gnu"
       export CI="true"
@@ -101,59 +86,36 @@ jobs:
   - script: |
       git checkout master
 
-  - bash: echo "##vso[task.prependpath]$CONDA/bin"
+  - bash: echo "##vso[task.prependpath]/opt/miniconda/bin"
     displayName: Add conda to PATH
 
-  - bash: sudo chown -R $USER $CONDA
-    displayName: Take ownership of conda installation
+  - bash: |
+      wget https://raw.githubusercontent.com/bioconda/bioconda-common/fix/install-and-set-up-conda.sh
+    displayName: Fetch bioconda install script
 
   - bash: |
-      wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
-    displayName: Fetch common.sh
+      sudo mkdir -p /opt
+      sudo chown -R $USER /opt
+    displayName: Ensure cache has path to restore to
 
   - task: Cache@2
     inputs:
-      path: "/usr/local/miniconda/envs/bioconda"
-      key: '"$(Agent.OS)" | **/common.sh'
+      path: "/opt/miniconda"
+      key: '"$(Agent.OS)" | **/install-and-set-up-conda.sh'
       cacheHitVar: CACHE_RESTORED
     displayName: Restore cache
 
-  - script: .azure-pipelines/createEnv.py
+  - script: bash install-and-set-up-conda.sh
     condition: ne(variables.CACHE_RESTORED, 'true')
     displayName: Install bioconda-utils
 
-  - script: |
-      # download SDK and setup sysroot on macOS
-      #  primarily, run_conda_forge_build_setup does the following:
-      #   - download/setup SDK:
-      #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L21-L26
-      #   - add activation script to set MACOSX_DEPLOYMENT_TARGET and CONDA_BUILD_SYSROOT:
-      #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L60-L63
-      # use "CONFIG=" to avoid writing ./.ci_support/${CONFIG}.yaml which we don't need/use.
-      . /usr/local/miniconda/envs/bioconda/etc/profile.d/conda.sh
-      conda activate base
-      CONFIG= OSX_FORCE_SDK_DOWNLOAD=1 MACOSX_DEPLOYMENT_TARGET=10.13 run_conda_forge_build_setup
-      conda_forge_ci_setup_activate_sh="${CONDA_PREFIX}/etc/conda/activate.d/conda-forge-ci-setup-activate.sh"
-      sed -Ei.bak "s/^(export MACOSX_DEPLOYMENT_TARGET)=.*$/\\1='10.9'/" "${conda_forge_ci_setup_activate_sh}"
-      rm "${conda_forge_ci_setup_activate_sh}".bak
-      cat "${conda_forge_ci_setup_activate_sh}"
-      grep -qFx "export MACOSX_DEPLOYMENT_TARGET='10.9'" "${conda_forge_ci_setup_activate_sh}"
-      conda list
-    displayName: OSX setup
-
   - bash: |
       set -e
-
-      . /usr/local/miniconda/envs/bioconda/etc/profile.d/conda.sh
-      conda activate base
-
-      conda config --system --add channels defaults
-      conda config --system --add channels bioconda
-      conda config --system --add channels conda-forge
-      mkdir -p ${CONDA_PREFIX}/conda-bld
-
+      eval "$(conda shell.bash hook)"
+      conda activate bioconda
       export OSTYPE="darwin"
       export CI="true"
+      export HOME=`pwd`
       bioconda-utils build recipes config.yml \
           --anaconda-upload \
           --prelint
