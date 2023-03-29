@@ -7,6 +7,12 @@ case "${target_platform}" in osx-*)
     echo "xcodebuild -sdk -version:"
     xcodebuild -sdk -version
 
+    echo "xcodebuild -showsdks:"
+    xcodebuild -showsdks
+
+    echo "xcodebuild -sdk macosx13.1"
+    xcodebuild -sdk macosx13.1
+
     echo "${CXX} -v:"
     ${CXX} -v
 esac
