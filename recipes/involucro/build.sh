@@ -1,10 +1,11 @@
 #! /bin/sh
 
 export GOPATH="$( pwd )"
+export GO111MODULE=auto
 
 module_path="$( go env GOPATH )"/src/github.com/involucro/involucro/cmd/involucro
 GOBIN="$( go env GOBIN )" \
-  go get \
+  go build -o $PREFIX/bin/involucro \
   -ldflags="-s -X github.com/involucro/involucro/app.version=${PKG_VERSION}" \
   "${module_path}"
 
