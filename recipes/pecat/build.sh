@@ -8,8 +8,13 @@ echo "run git submodule update --init --recursive"
 git submodule update --init --recursive
 
 
-ln -fs ${CC} ${PREFIX}/bin/gcc
-ln -fs ${CXX} ${PREFIX}/bin/g++
+echo ${CC}
+echo ${CXX}
+
+CC=${CC}
+CXX=${CXX}
+ln -fs $CC ${PREFIX}/bin/gcc
+ln -fs $CXX ${PREFIX}/bin/g++
 
 # modify the bugs in the makefiles
 echo "modify the bugs in the makefiles"
