@@ -1,9 +1,15 @@
 #!/bin/bash
 
-#export CFLAGS="-I$CONDA_PREFIX/include"
-#export LDFLAGS="-L$CONDA_PREFIX/lib"
-#export CPATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
+export LD_LIBRARY_PATH=${PREFIX}/lib
+export CPATH=${PREFIX}/include
+export C_INCLUDE_PATH=${PREFIX}/include
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
+export CPP_INCLUDE_PATH=${PREFIX}/include
+export CXX_INCLUDE_PATH=${PREFIX}/include
 export PATH=$PATH:${PREFIX}/bin
+
+
 echo "run git submodule update --init --recursive"
 git submodule update --init --recursive
 
