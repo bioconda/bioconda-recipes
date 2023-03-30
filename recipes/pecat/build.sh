@@ -8,8 +8,8 @@ echo "run git submodule update --init --recursive"
 git submodule update --init --recursive
 
 
-ln -s ${CC} ${PREFIX}/bin/gcc
-ln -s ${CXX} ${PREFIX}/bin/g++
+ln -fs ${CC} ${PREFIX}/bin/gcc
+ln -fs ${CXX} ${PREFIX}/bin/g++
 
 # modify the bugs in the makefiles
 echo "modify the bugs in the makefiles"
@@ -31,3 +31,6 @@ $PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin/pecat.pl "\$@"
 EOF
 
 chmod +x $PREFIX/bin/pecat.pl
+
+unlink ${PREFIX}/bin/gcc
+unlink ${PREFIX}/bin/g++
