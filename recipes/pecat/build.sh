@@ -25,8 +25,8 @@ ln -fs $CC ${PREFIX}/bin/gcc
 ln -fs $CXX ${PREFIX}/bin/g++
 
 # modify the bugs in the makefiles
-echo "modify the bugs in the makefiles"
-sed -i 's/\$$//' $SRC_DIR/src/makefile
+etho "modify the bugs in the makefiles"
+sed -i 's/\$$/ -lrt /' $SRC_DIR/src/makefile
 sed -i 's/= ..\/build/= .\/build/' $SRC_DIR/makefile
 
 make -j
