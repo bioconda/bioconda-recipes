@@ -7,11 +7,14 @@ export CPATH=${PREFIX}/include
 echo "run git submodule update --init --recursive"
 git submodule update --init --recursive
 
+
+ln -s ${CC} ${PREFIX}/bin/gcc
+ln -s ${CXX} ${PREFIX}/bin/g++
+
 # modify the bugs in the makefiles
 echo "modify the bugs in the makefiles"
 sed -i 's/\$$//' $SRC_DIR/src/makefile
 sed -i 's/= ..\/build/= .\/build/' $SRC_DIR/makefile
-sed -i 's/thirdparty: pigz pldg libksw2/thirdparty: pldg libksw2/' $SRC_DIR/thirdparty/makefile
 
 make -j
 
