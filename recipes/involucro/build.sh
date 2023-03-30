@@ -48,4 +48,4 @@ cat "${2}"
   rm -r "${acc_dir}" "${tmp_dir}"
 }
 
-gather_licenses ./licenses.txt "${module_path}"
+# gather_licenses ./licenses.txt "${module_path}"
