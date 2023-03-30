@@ -3,7 +3,7 @@
 export CFLAGS="-I$CONDA_PREFIX/include"
 export LDFLAGS="-L$CONDA_PREFIX/lib"
 export CPATH=${PREFIX}/include
-
+export PATH=$PATH:${PREFIX}/bin
 echo "run git submodule update --init --recursive"
 git submodule update --init --recursive
 
@@ -13,6 +13,8 @@ echo ${CXX}
 
 CC=${CC}
 CXX=${CXX}
+
+mkdir -p ${PREFIX}/bin
 ln -fs $CC ${PREFIX}/bin/gcc
 ln -fs $CXX ${PREFIX}/bin/g++
 
