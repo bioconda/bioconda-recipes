@@ -9,5 +9,5 @@ ls $SRC_DIR
 
 ln -s $SRC_DIR/deeploid_cli.py $PREFIX/deeploid_mini_cli
 chmod +x $PREFIX/deeploid_mini_cli 
-$PYTHON3 deeploid_mini_cli -h
+python3 deeploid_mini_cli -h
 cd
