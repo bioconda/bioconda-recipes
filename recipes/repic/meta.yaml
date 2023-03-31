@@ -1,9 +1,13 @@
+{% set name = "repic" %}
+{% set data = load_setup_py_data() %}
+
 package:
-  name:               repic
-  version:            "0.0.0"
+  name:               '{{ name|lower }}'
+  version:            {{ data.get('version') }}
 
 source:
-  git_url:            https://github.com/ccameron/REPIC.git
+  url:                https://github.com/ccameron/{{ name }}/archive/v{{ data.get('version') }}.zip
+  sha256:             df0ede3b21b785fd0dc230ee1c43b80d1e6a9794438f1fd7a66ce26e52066b6f
 
 requirements:
   host:
@@ -12,7 +16,8 @@ requirements:
 
   run:
     - python
-    - matplotlib >=3.2.2
+    - gurobi
+    - matplotlib-base >=3.2.2
     - mrcfile >=1.4.3
     - networkx >=2.8.4
     - numpy >=1.24.2
@@ -24,6 +29,10 @@ build:
   number:             0
   noarch:             python
   script:             "{{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt"
+
+test:
+  commands:
+    - repic -h
 
 about:
   home:               https://github.com/ccameron/REPIC
