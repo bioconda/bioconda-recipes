@@ -1,13 +1,14 @@
-{% set name = "repic" %}
-{% set version = "0.0.0" %}
+{% set data = load_setup_py_data() %}
+{% set name = data.get('NAME') %}
+{% set version = data.get('VERSION') %}
 
 package:
-  name:               '{{ name|lower }}'
-  version:            '{{ version }}'
+  name:               {{ name }}
+  version:            {{ version }}
 
 source:
   url:                https://github.com/ccameron/{{ name }}/archive/v{{ version }}.zip
-  sha256:             df0ede3b21b785fd0dc230ee1c43b80d1e6a9794438f1fd7a66ce26e52066b6f
+  sha256:             b78c13c713be70765858b7f86b57b5865fee7dcc3980d9d530d9b8a580e3cf92
 
 requirements:
   host:
@@ -16,7 +17,7 @@ requirements:
 
   run:
     - python
-    - gurobi
+    - gurobi::gurobi
     - matplotlib-base >=3.2.2
     - mrcfile >=1.4.3
     - networkx >=2.8.4
@@ -26,13 +27,15 @@ requirements:
     - tqdm
 
 build:
-  number:             0
   noarch:             python
-  script:             "{{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt"
+  number:             0
+  entry_points:
+    - {{ name }} = {{ name }}.main:main
+  script:             {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 test:
   commands:
-    - repic -h
+    - {{ name }} -h
 
 about:
   home:               https://github.com/ccameron/REPIC
