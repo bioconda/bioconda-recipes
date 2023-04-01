@@ -1,19 +1,24 @@
+{% set name = "segmetrics" %}
+{% set version = "1.2.3" %}
+{% set repo_url = "https://github.com/BMCV/segmetrics.py" %}
+{% set docs_url = "https://segmetrics.readthedocs.io" %}
+
 package:
-  name: segmetrics
-  version: '1.2.2'
+  name: "{{ name }}"
+  version: "{{ version }}"
 
 source:
-  url: https://github.com/BMCV/segmetrics.py/archive/refs/tags/1.2.2.zip
-  sha256: 57a8480fae4e8a48f686e5eff18e970d71d37123442678de083430c726252e98
+  url: "{{ repo_url }}/archive/refs/tags/{{ version }}.zip"
+  sha256: f31cde3fd89a5ed674dc6103f30384d14630ccb191a60bd0babc7cecf6b92b1f
 
 build:
-  noarch: python
   number: 0
-  script: python -m pip install --no-deps --ignore-installed .
+  noarch: python
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed . -vv "
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.6,<3.11
     - pip
     - setuptools
     - numpy >=1.18
@@ -22,6 +27,7 @@ requirements:
     - scikit-learn
     - dill
   run:
+    - python >=3.6,<3.11 
     - numpy >=1.18
     - scipy
     - scikit-image >=0.18
@@ -30,10 +36,15 @@ requirements:
 
 test:
   commands:
-    - python -c "import segmetrics"
+    - python -m segmetrics.cli --help
 
 about:
-  home: https://github.com/BMCV/segmetrics.py
-  license: 'MIT'
-  summary: 'A Python package implementing image segmentation and object detection performance measures, for biomedical image analysis and beyond.'
+  home: "{{ repo_url }}"
+  license: MIT
+  summary: "A Python package implementing image segmentation and object detection performance measures, for biomedical image analysis and beyond."
+  dev_url: "{{ repo_url }}"
+  doc_url: "{{ docs_url }}"
 
+extra:
+  recipe-maintainers:
+    - kostrykin
