@@ -10,24 +10,12 @@ export CXX_INCLUDE_PATH=${PREFIX}/include
 export PATH=$PATH:${PREFIX}/bin
 
 
-echo "run git submodule update --init --recursive"
-git submodule update --init --recursive
-
-
-echo ${CC}
-echo ${CXX}
-
 CC=${CC}
 CXX=${CXX}
 
 mkdir -p ${PREFIX}/bin
 ln -fs $CC ${PREFIX}/bin/gcc
 ln -fs $CXX ${PREFIX}/bin/g++
-
-# modify the bugs in the makefiles
-echo "modify the bugs in the makefiles"
-sed -i 's/\$$/ -lrt /' $SRC_DIR/src/makefile
-sed -i 's/= ..\/build/= .\/build/' $SRC_DIR/makefile
 
 make -j
 
