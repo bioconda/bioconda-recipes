@@ -8,6 +8,14 @@ cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} \
       -DWITH_SWIG=OFF \
       -DLIBSBML_DEPENDENCY_DIR="${PREFIX}" \
       -DLIBXML_INCLUDE_DIR=${PREFIX}/include/libxml2 \
+      -DENABLE_COMP=ON \
+      -DENABLE_FBC=ON \
+      -DENABLE_GROUPS=ON \
+      -DENABLE_L3V2EXTENDEDMATH=ON \
+      -DENABLE_LAYOUT=ON \
+      -DENABLE_MULTI=ON \
+      -DENABLE_QUAL=ON \
+      -DENABLE_RENDER=ON \
       ..
 make -j"${CPU_COUNT}"
 make install

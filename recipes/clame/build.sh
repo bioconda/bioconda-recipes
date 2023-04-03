@@ -3,7 +3,7 @@ echo $PREFIX
 
 echo "Binning compilation"
 cd binning
-make all CPP=${CXX}  ILIB="-I${BUILD_PREFIX}/include -L${BUILD_PREFIX}/lib"
+make all CXX=${CXX}  ILIB="-I${BUILD_PREFIX}/include -L${BUILD_PREFIX}/lib"
 mkdir -p $PREFIX/bin
 cp binning $PREFIX/bin
 cd ..

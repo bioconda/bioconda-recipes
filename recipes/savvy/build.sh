@@ -14,7 +14,7 @@ cmake \
   -DBUILD_TESTS=ON \
   ${SRC_DIR}
 
-make -j${CPU_COUNT} savvy
+#make -j${CPU_COUNT} savvy
 make -j${CPU_COUNT} sav
 make -j${CPU_COUNT} savvy-test
 make install

@@ -1,5 +1,5 @@
 {% set name = "savvy" %}
-{% set version = "1.3.0" %}
+{% set version = "2.1.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,10 +7,10 @@ package:
 
 source:
   url: https://github.com/statgen/savvy/archive/v{{ version }}.tar.gz
-  sha256: 5fbf25ff0793de769f12d2a9e0a0f0f40dc3d315cbdbcd16fc6ab90949bfa172
+  sha256: 83ebd88c097799b3bbf771dc8ebf6892797ca7a1f49c2d1665d52cfc1bf9e1de
   patches:
     # Fixing postrelease issues
-    - patches/0001-patch-cmakelists-for-conda-build.patch
+    - patches/0002-patch-cmakelists-for-conda-build.patch
 
 build:
   skip: True  # [win]
@@ -18,6 +18,7 @@ build:
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
@@ -26,15 +27,13 @@ requirements:
     - shrinkwrap
     - zstd
     - zlib
-    - htslib
   run:
     - shrinkwrap
-    - htslib
 
 test:
   commands:
     - test -d ${PREFIX}/include/savvy  # [linux]
-    - test -f ${PREFIX}/lib/libsavvy.so  # [linux]
+    - test -f ${PREFIX}/include/savvy/savvy.hpp  # [linux]
     - sav --help
 
 about:
@@ -48,3 +47,4 @@ about:
 extra:
   recipe-maintainers:
     - matuskosut
+    - jonathonl

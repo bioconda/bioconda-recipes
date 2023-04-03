@@ -1,0 +1,40 @@
+{% set version = "0.0.20120106" %}
+
+package:
+  name: cassis
+  version: {{ version }}
+
+source:
+  url: http://pbil.univ-lyon1.fr/software/Cassis/cassis.zip
+  sha256: 263c8f888250cabc4d32b191dc03cecd09b9f21f8c243c2b13934ae15df6f91d
+  patches:
+    - 0001-central-lastz.patch
+    - 0002-cassis-shebang.patch
+    - 0003-Adapt-paths-to-lib-directory.patch
+    - 0004-fix-usage-string.patch
+
+build:
+  noarch: generic
+  number: 1
+
+requirements:
+  run:
+    - perl
+    - r-base
+    - lastz
+    - ghostscript
+
+test:
+# Usage is pritned for any invalid command, but the environment is checked
+# anyway. If we get the Invalid # of parameters error, that means the
+# environment check was ok.
+  commands:
+    - "cassis | grep 'ERROR: Invalid number of parameters.' > /dev/null"
+
+about:
+  home: http://pbil.univ-lyon1.fr/software/Cassis/
+  license: GPL3
+  license_file: COPYING
+  summary: 'Detection of genomic rearrangement breakpoints'
+  description: >
+    The package Cassis implements methods for precise detection of genomic rearrangement breakpoints, which were described in Lemaitre et al., 2008.

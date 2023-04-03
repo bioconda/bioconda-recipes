@@ -1,0 +1,49 @@
+{% set name = "springsuite" %}
+{% set version = "0.2" %}
+{% set sha256 = "c8b6830d380856b68332afc69d4a1282f6729c89f921fd726e856d4fc3d5ac3b" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/guerler/springsuite/archive/refs/heads/skip_invalid_entries.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 1
+  script: |
+    PYVER=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version_info[1]))'`
+    mkdir -p ${PREFIX}/lib/python${PYVER}/site-packages/
+    cp -r ./src/springsuite/spring_package/ ${PREFIX}/lib/python${PYVER}/site-packages/
+    cp ./src/springsuite/*.py ${PREFIX}/bin/
+    chmod +x ${PREFIX}/bin/*.py
+
+requirements:
+  host:
+    - python
+  run:
+    - python
+    - biopython
+    - pandas
+    - matplotlib-base
+    - blast
+    - pulchra
+    - tmalign
+
+test:
+  commands:
+    - spring_cross.py --help
+    - spring_map.py --help
+    - spring_mcc.py --help
+    - spring_minz.py --help
+    - spring_model.py --help
+    - spring_model_all.py --help
+
+about:
+  home: https://github.com/guerler/springsuite
+  license: GPL-2.0-only
+  summary: 'The Spring Suite contains tools to predict and model protein-protein interactions from FASTA sequences and HHsearch threading results.'
+  license_family: GPL
+  license_file: LICENSE

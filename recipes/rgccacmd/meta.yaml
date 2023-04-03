@@ -1,5 +1,5 @@
 {% set name = "rgcca" %}
-{% set version = "3.0.0" %}
+{% set version = "3.0.2" %}
 
 package:
   name: {{ name }}cmd
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/rgcca-factory/{{ name|upper }}/archive/{{ version }}.tar.gz
-  sha256: 2ee056b54a4564fdff73e02967d18132a34443ca1caed4675ae620237e43104a
+  sha256: eba65c1f3aab51e893cf9847a6dfea860f4f4bbf7ee2902f2b6c3ef8ef46c3bc
 
 build:
   noarch: generic
@@ -18,6 +18,7 @@ build:
 
 requirements:
   host:
+    - wget
     - r-base
     - r-gridextra
     - r-deriv
@@ -30,7 +31,10 @@ requirements:
     - r-openxlsx
     - r-rlang
     - r-vegan
-  run:
+    - r-pbapply
+    - r-plotly
+  run:  
+    - wget
     - r-base
     - r-gridextra
     - r-deriv
@@ -43,16 +47,19 @@ requirements:
     - r-openxlsx
     - r-rlang
     - r-vegan
+    - r-pbapply
+    - r-plotly
 
 test:
   commands:
     - cd ${PREFIX} && ls && Rscript inst/launcher.R -h
+    - wget https://raw.githubusercontent.com/BrainAndSpineInstitute/rgcca_ui/master/inst/extdata/agriculture.tsv && Rscript inst/launcher.R -d agriculture.tsv
     - $R -e "library('RGCCA')"
 
 about:
   home: https://CRAN.R-project.org/package=RGCCA
-  doc_url: https://github.com/ecamenen/rgcca-conda/blob/master/README.md
-  license: GPL (>= 2)
+  doc_url: https://github.com/BrainAndSpineInstitute/rgcca_ui#readme
+  license: GPL-2.0-or-later
   license_family: GPL3
   summary: 'Multiblock data analysis concerns the analysis of several sets of variables
         (blocks) observed on the same group of individuals. The main aims of the RGCCA
