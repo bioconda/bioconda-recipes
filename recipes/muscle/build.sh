@@ -1,10 +1,9 @@
 #!/bin/bash
 
-make GPP=$CXX
+cd src/
+sed -i.bak -e 's/ -static//' Makefile
 
-binaries="\
-muscle \
-"
+make CXX=$CXX
 
-mkdir -p $PREFIX/bin
-for i in $binaries; do cp $SRC_DIR/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
+mkdir -p "$PREFIX"/bin
+cp "$(uname)"/muscle "$PREFIX"/bin/muscle

@@ -1,0 +1,48 @@
+{% set name = "mdmcleaner" %}
+{% set version = "0.8.7" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/mdmcleaner-{{ version }}.tar.gz
+  sha256: 3ecec639ff02020e25a6beb5e09ba680659c22de10f0cf7e38a8d2709846b431
+
+build:
+  entry_points:
+    - mdmcleaner=mdmcleaner.mdmcleaner:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - wget >=1.19
+    - python >=3.7
+    - biopython >=1.78
+    - numpy >=1.19.2
+    - blast >=2.10
+    - diamond >=2.0.6
+    - hmmer >=3.3.1
+    - barrnap >=0.9
+    - aragorn >=1.2.38
+    - prodigal >=2.6.3
+
+test:
+  imports:
+    - mdmcleaner
+  commands:
+    - pip check
+    - mdmcleaner --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/KIT-IBG-5/mdmcleaner
+  summary: A pipeline for the assessment, classification and refinement of microbial dark matter SAGs and MAGs
+  license: GPL-3.0
+  license_file: LICENSE
