@@ -1,16 +1,20 @@
-{% set version = "4.9.8" %}
+{% set version = "4.9.15" %}
 
 package:
   name: sirius-csifingerid
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
 source:
   - url: https://github.com/boecker-lab/sirius/releases/download/v{{ version }}/sirius-{{ version }}-linux64.zip  # [linux]
-    sha256: 0312915249181df975a23b605608b69badd4a657236a8bb7a0aa174a840ddc56  # [linux]
+    sha256: 6c468672cc59d20d3aa73c3b8a7932e8150e7ecd29c319ae6499572fe67dfc9f  # [linux]
+    # the runner script sets LD_LIBRARY_PATH which leads to `error while loading shared libraries: libz.so.1`
+    # the patch adds the lib path where conda installs libaries to the variable
+    patches:  # [linux]
+      - sirius.patch  # [linux]
   - url: https://github.com/boecker-lab/sirius/releases/download/v{{ version }}/sirius-{{ version }}-osx64.zip  # [osx]
-    sha256: ed9e853974feb942b6833c5ce0685c9307f074bc6519a4428c45c11859ae508f  # [osx]
+    sha256: e9c61bb99b653c7ad490208ae5e68cca91f1120bab8194cb54361ff79e1ec6a5  # [osx]
 
 requirements:
   build:
@@ -21,6 +25,13 @@ requirements:
 test:
   requires:
     - wget
+  commands:
+    # Test running with link
+    - sirius --version
+    # Test running without link
+    - $(readlink -f $(which sirius)) --version # [linux]
+    # Run a job that loads included native libraries
+    - sh -ec 'cd /tmp; wget https://bio.informatik.uni-jena.de/wp/wp-content/uploads/2021/10/Kaempferol.ms; sirius -i Kaempferol.ms -o test-out sirius --solver CLP; if [ ! -f "test-out/0_Kaempferol_Kaempferol/trees/C15H10O6_[M+H]+.json" ]; then echo Framgentation tree test failed!; exit 1; fi'
 
 about:
     home: https://bio.informatik.uni-jena.de/software/sirius/
