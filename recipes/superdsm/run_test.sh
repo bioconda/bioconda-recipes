@@ -1,5 +1,6 @@
 set -e
 set -x
 
-cd SuperDSM-$1
+echo "Running SuperDSM test suite"
+
 python -m unittest -v tests
