@@ -1,0 +1,122 @@
+{% set version = '1.1.0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-proteus
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/proteus_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/proteus/proteus_{{ version }}.tar.gz
+  sha256: b6879a715fd44a94b91c3ecbddf76a634b300479e4792909366629315b2c2720
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+  # no skip
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: testthat (>= 3.0.0)
+requirements:
+  build:
+    - {{ posix }}zip               # [win]
+
+  host:
+    - r-base
+    - r-vgam >=1.1_5
+    - r-abind >=1.4_5
+    - r-actuar >=3.1_1
+    - r-dplyr >=1.0.2
+    - r-fancova >=0.6_1
+    - r-ggplot2 >=3.3.3
+    - r-ggthemes >=4.2.4
+    - r-greybox >=1.0.7
+    - r-imputets >=3.1
+    - r-lubridate >=1.7.9.2
+    - r-modeest >=2.4.0
+    - r-moments >=0.14
+    - r-narray >=0.4.1
+    - r-purrr >=0.3.4
+    - r-readr >=1.4.0
+    - r-scales >=1.1.1
+    - r-stringr >=1.4.0
+    - r-tictoc >=1.0.1
+    - r-torch >=0.3.0
+
+  run:
+    - r-base
+    - r-vgam >=1.1_5
+    - r-abind >=1.4_5
+    - r-actuar >=3.1_1
+    - r-dplyr >=1.0.2
+    - r-fancova >=0.6_1
+    - r-ggplot2 >=3.3.3
+    - r-ggthemes >=4.2.4
+    - r-greybox >=1.0.7
+    - r-imputets >=3.1
+    - r-lubridate >=1.7.9.2
+    - r-modeest >=2.4.0
+    - r-moments >=0.14
+    - r-narray >=0.4.1
+    - r-purrr >=0.3.4
+    - r-readr >=1.4.0
+    - r-scales >=1.1.1
+    - r-stringr >=1.4.0
+    - r-tictoc >=1.0.1
+    - r-torch >=0.3.0
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('proteus')"           # [not win]
+    - "\"%R%\" -e \"library('proteus')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://rpubs.com/giancarlo_vercellino/proteus
+  license: GPL-3
+  summary: Seq2seq time-feature analysis based on variational model, with a wide range of distributions
+    available for the latent variable.
+  license_family: GPL3
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+# The original CRAN metadata for this package was:
+
+# Package: proteus
+# Type: Package
+# Title: Multiform Seq2Seq Model for Time-Feature Analysis
+# Version: 1.1.0
+# Author: Giancarlo Vercellino
+# Maintainer: Giancarlo Vercellino <giancarlo.vercellino@gmail.com>
+# Description: Seq2seq time-feature analysis based on variational model, with a wide range of distributions available for the latent variable.
+# License: GPL-3
+# Encoding: UTF-8
+# LazyData: true
+# RoxygenNote: 7.2.1
+# Depends: R (>= 3.6)
+# Imports: purrr (>= 0.3.4), abind (>= 1.4-5), ggplot2 (>= 3.3.3), ggthemes (>= 4.2.4), readr (>= 1.4.0), stringr (>= 1.4.0), lubridate (>= 1.7.9.2), narray (>= 0.4.1), fANCOVA (>= 0.6-1), imputeTS (>= 3.1), modeest (>= 2.4.0), scales (>= 1.1.1), tictoc (>= 1.0.1), torch (>= 0.3.0), actuar (>= 3.1-1), VGAM (>= 1.1-5), moments (>= 0.14), dplyr (>= 1.0.2), greybox (>= 1.0.7)
+# URL: https://rpubs.com/giancarlo_vercellino/proteus
+# Suggests: testthat (>= 3.0.0)
+# Config/testthat/edition: 3
+# NeedsCompilation: no
+# Packaged: 2023-03-07 11:40:57 UTC; gvercellino
+# Repository: CRAN
+# Date/Publication: 2023-03-08 09:20:05 UTC
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml
