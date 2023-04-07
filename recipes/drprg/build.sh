@@ -8,6 +8,7 @@ URL="https://github.com/mbhall88/pandora/releases/download/${VERSION}/pandora-li
 mkdir -p "$PREFIX/bin"
 
 wget "$URL" -O "$PREFIX/bin/pandora"
+chmod +x "$PREFIX/bin/pandora"
 
 export CFLAGS="${CFLAGS} -fcommon"
 export CXXFLAGS="${CFLAGS} -fcommon"
