@@ -1,14 +1,14 @@
 #!/bin/bash
 set -euxo pipefail
 
-patch -p1 < $RECIPE_DIR/isb-2.11.0+-rmblast.patch
+patch -p1 < $RECIPE_DIR/isb-2.13.0+-rmblast.patch
 
 cd $SRC_DIR/c++/
 
-export CFLAGS="$CFLAGS -Ofast -std=c++14"
-export CXXFLAGS="$CXXFLAGS -Ofast -std=c++14"
-export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export CFLAGS="$CFLAGS -I${BUILD_PREFIX}/include ${LDFLAGS} -Ofast"
+export CXXFLAGS="$CXXFLAGS -I${BUILD_PREFIX}/include ${LDFLAGS} -Ofast"
+export CPPFLAGS="$CPPFLAGS -I$PREFIX/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
 export CC_FOR_BUILD=$CC
 
 if test x"`uname`" = x"Linux"; then
@@ -52,9 +52,9 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 export AR="${AR} rcs"
 
 if [ `uname` == Linux ]; then
-  CONFIG_ARGS="--without-openssl --with-gnutls=$PREFIX"
+  CONFIG_ARGS="--prefix=${PREFIX} --without-openssl --with-gnutls=$PREFIX"
 else
-  CONFIG_ARGS="--without-gnutls --with-openssl=$PREFIX"
+  CONFIG_ARGS="--prefix=${PREFIX} --without-gnutls --with-openssl=$PREFIX"
 fi
 
 # not building with boost as it's only used for unit tests
@@ -87,7 +87,7 @@ cd ReleaseMT
 ln -s $SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
 
 cd build
-make -j${CPU_COUNT} -f Makefile.flat all_projects="$projects"
+make CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j1 -f Makefile.flat all_projects="$projects"
 
 # remove temporary link
 rm $LIB_INSTALL_DIR
