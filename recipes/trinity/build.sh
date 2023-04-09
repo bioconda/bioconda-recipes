@@ -1,11 +1,12 @@
 #!/bin/bash
 set -x -e
 
+patch -p1 < ${RECIPE_DIR}/makefile.patch
+
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
 
-export LDFLAGS="-L${PREFIX}/lib"
+export LDFLAGS="-fopenmp -L${PREFIX}/lib"
 export CXXFLAGS="-I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
 export CPPFLAGS="-I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
 export CFLAGS="-I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
@@ -62,10 +63,9 @@ sed -i 's/my $TRIMMOMATIC_DIR = "\([^"]\+\)"/my $TRIMMOMATIC_DIR = '"'"'\1'"'"'/
 
 find $TRINITY_HOME -type f -name "*.bak" -print0 | xargs -0 rm -f
 
-# export TRINITY_HOME as ENV variable 
+# export TRINITY_HOME as ENV variable
 mkdir -p ${PREFIX}/etc/conda/activate.d/
 echo "export TRINITY_HOME=${TRINITY_HOME}" > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}-${PKG_VERSION}.sh
 
 mkdir -p ${PREFIX}/etc/conda/deactivate.d/
 echo "unset TRINITY_HOME" > ${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}-${PKG_VERSION}.sh
-
