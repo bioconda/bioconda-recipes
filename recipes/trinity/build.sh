@@ -1,8 +1,6 @@
 #!/bin/bash
 set -x -e
 
-patch -p1 < ${RECIPE_DIR}/makefile.patch
-
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 
