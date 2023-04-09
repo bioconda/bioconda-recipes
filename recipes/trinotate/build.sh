@@ -1,5 +1,9 @@
 #!/bin/bash
 
+export LANGUAGE=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
 mkdir -p perl-build/scripts
 
 mv util/generate_Trinotate_report.txt util/generate_Trinotate_report.sh
@@ -21,4 +25,4 @@ perl ./Build.PL
 perl ./Build manifest
 perl ./Build install --installdirs site
 
-chmod u+rwx ${PREFIX}/bin/*
+chmod +rx ${PREFIX}/bin/*
