@@ -14,8 +14,8 @@ cp -rf PerlLib ${PREFIX}/bin
 cp -rf testing ${PREFIX}/trinotate-testing
 
 find . -name "*.pl" | grep -v testing | xargs -I {} cp -rf {} perl-build/scripts/
-cp Trinotate perl-build/scripts
-cp Trinotate ${PREFIX}/bin
+cp Trinotate perl-build/scripts && chmod +rx perl-build/scripts/*
+cp perl-build/scripts/* ${PREFIX}/bin
 
 cd perl-build
 
@@ -24,5 +24,3 @@ cp ${RECIPE_DIR}/Build.PL ./
 perl ./Build.PL
 perl ./Build manifest
 perl ./Build install --installdirs site
-
-chmod +rx ${PREFIX}/bin/*
