@@ -12,6 +12,6 @@ export LC_ALL=en_US.UTF-8
 
 autoheader
 autoconf
-./configure --prefix=${PREFIX} --with-simd-level=avx2
+./configure --prefix=${PREFIX} --with-simd-level=sse42
 make CC=${CC} CPPFLAGS="-I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}" CFLAGS="-I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}" -j 2
 make install
