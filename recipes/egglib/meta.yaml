@@ -1,18 +1,18 @@
-{% set name = "egglib" %}
-{% set version = "3.1.0" %}
+{% set name = "EggLib" %}
+{% set version = "3.2.0" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://files.pythonhosted.org/packages/8e/f1/4eacf0858c363251c21dffd01804a66343f3a02e0d2adfafbe08bed58a0e/EggLib-3.1.0.zip"
-  sha256: 82ec602a2497b2f37637b88c24ba6da6b6d575fb46e9771fc3c94519e1934144
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 9e0e25fe9b91d0686dcbca8b194460b1a7068ff286e642f514888871ee846b00
 
 build:
   number: 0
-  skip: True  # [py2k]
-  script: {{ PYTHON }} -m pip install . -vv
+  skip: True
+  script: HTSLIB=1 {{ PYTHON }} -m pip install . -vv
 
 requirements:
   build:
@@ -22,17 +22,33 @@ requirements:
     - pip
     - python
     - setuptools
+    - htslib
   run:
     - python
+    - htslib
+    - click>=8.1
+    - platformdirs
+    - scipy
 
 test:
   imports:
     - egglib
+    - egglib.cli
     - egglib.coalesce
     - egglib.io
     - egglib.stats
+    - egglib.test
+    - egglib.test.base
+    - egglib.test.coalesce
+    - egglib.test.data
+    - egglib.test.io
+    - egglib.test.stats
+    - egglib.test.tools
+    - egglib.test.wrappers
     - egglib.tools
     - egglib.wrappers
+  commands:
+    - egglib-test -b > /dev/null 2>&1
 
 about:
   home: "https://egglib.org/"
@@ -46,5 +62,6 @@ about:
 extra:
   recipe-maintainers:
     - ranwez
+    - sdemita
   identifiers:
     - https://doi.org/10.1111/1755-0998.13672
