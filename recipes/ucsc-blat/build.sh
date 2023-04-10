@@ -5,13 +5,13 @@ export BINDIR=`pwd`/bin
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
-export CFLAGS="-I${PREFIX}/include ${LDFLAGS}"
+export CFLAGS="-I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
 export L="${LDFLAGS}"
 mkdir -p ${BINDIR}
-(cd ${SRC_DIR}/kent/src/lib && ${MAKE} CC=${CC} CFLAGS="${CFLAGS}")
-(cd ${SRC_DIR}/kent/src/htslib && ${MAKE} CC=${CC} CFLAGS="${CFLAGS}")
-(cd ${SRC_DIR}/kent/src/jkOwnLib && ${MAKE} CC=${CC} CFLAGS="${CFLAGS}")
-(cd ${SRC_DIR}/kent/src/hg/lib && ${MAKE} CC=${CC} CFLAGS="${CFLAGS}")
-(cd ${SRC_DIR}/kent/src/blat && ${MAKE} CC=${CC} CFLAGS="${CFLAGS}")
+cd ${SRC_DIR}/kent/src/lib && make CC=${CC} CFLAGS="${CFLAGS}"
+cd ${SRC_DIR}/kent/src/htslib && make CC=${CC} CFLAGS="${CFLAGS}"
+cd ${SRC_DIR}/kent/src/jkOwnLib && make CC=${CC} CFLAGS="${CFLAGS}"
+cd ${SRC_DIR}/kent/src/hg/lib && make CC=${CC} CFLAGS="${CFLAGS}"
+cd ${SRC_DIR}/kent/src/blat && make CC=${CC} CFLAGS="${CFLAGS}"
 cp ${SRC_DIR}/bin/blat "${PREFIX}/bin"
 chmod +rx "${PREFIX}/bin/blat"
