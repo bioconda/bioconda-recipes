@@ -8,10 +8,10 @@ export LDFLAGS="-L${PREFIX}/lib"
 export CFLAGS="-I${PREFIX}/include ${LDFLAGS}"
 export L="${LDFLAGS}"
 mkdir -p ${BINDIR}
-(cd kent/src/lib && make CC=${CC} CFLAGS="${CFLAGS}")
-(cd kent/src/htslib && make CC=${CC} CFLAGS="${CFLAGS}")
-(cd kent/src/jkOwnLib && make CC=${CC} CFLAGS="${CFLAGS}")
-(cd kent/src/hg/lib && make CC=${CC} CFLAGS="${CFLAGS}")
-# (cd kent/src/blat && make CC=${CC} CFLAGS="${CFLAGS}")
-cp blat "${PREFIX}/bin"
+(cd ${SRC_DIR}/kent/src/lib && make CC=${CC} CFLAGS="${CFLAGS}")
+(cd ${SRC_DIR}/kent/src/htslib && make CC=${CC} CFLAGS="${CFLAGS}")
+(cd ${SRC_DIR}/kent/src/jkOwnLib && make CC=${CC} CFLAGS="${CFLAGS}")
+(cd ${SRC_DIR}/kent/src/hg/lib && make CC=${CC} CFLAGS="${CFLAGS}")
+(cd ${SRC_DIR}/kent/src/blat && make CC=${CC} CFLAGS="${CFLAGS}")
+cp ${SRC_DIR}/bin/blat "${PREFIX}/bin"
 chmod +rx "${PREFIX}/bin/blat"
