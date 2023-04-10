@@ -1,0 +1,107 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2ff61b1..84dfb83 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
++cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+ project(mashmap VERSION 3.0.0)
+ 
+ include(GNUInstallDirs)
+@@ -9,7 +9,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)  # Falling back to different standard it not
+ set(CMAKE_CXX_EXTENSIONS OFF)  # Make sure no compiler-specific features are used.
+ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+ 
+-#set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE) # does not work
+ 
+ #set(CMAKE_BUILD_TYPE Release)
+ if(NOT CMAKE_BUILD_TYPE)
+@@ -19,10 +18,13 @@ endif()
+ 
+ message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+ 
+-set(EXTRA_FLAGS "-pg")
++option(OPTIMIZE_FOR_NATIVE "Build with -march=native" ON)
++
+ if (${CMAKE_BUILD_TYPE} MATCHES Release)
+-    #set(EXTRA_FLAGS "-Ofast -march=native -flto -fno-fat-lto-objects")
+-    set(EXTRA_FLAGS "-g -Ofast -march=native")
++    set(EXTRA_FLAGS "-Ofast -flto -fno-fat-lto-objects")
++    if (OPTIMIZE_FOR_NATIVE)
++      set(EXTRA_FLAGS "${EXTRA_FLAGS} -march=native")
++    endif ()
+     set(CMAKE_CXX_FLAGS_RELEASE "-g -DNDEBUG") # reset CXX_FLAGS to replace -O3 with -Ofast
+ endif ()
+ 
+@@ -36,11 +38,6 @@ else()
+     set (CMAKE_CXX_FLAGS "${OpenMP_CXX_FLAGS} ${PIC_FLAG} ${EXTRA_FLAGS}")
+ endif ()
+ 
+-if(WFA_PNG_AND_TSV)
+-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWFA_PNG_AND_TSV")
+-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWFA_PNG_AND_TSV")
+-endif ()
+-
+ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+@@ -56,11 +53,11 @@ FetchContent_MakeAvailable(assert)
+ 
+ add_executable(mashmap
+   src/common/utils.cpp
+-  src/map/mash_map.cpp) #$(CXX) $(CXXFLAGS) $(CPPFLAGS) -Lsrc/common/wflign/build/lib -Isrc/common/wflign/deps -Isrc/common $(SOURCE_1) -o wfmash @mathlib@ -lstdc++ -lz -lm -lpthread -lwflambda -lwflign
++  src/map/mash_map.cpp) 
+ 
+ add_executable(mashmap-align
+   src/common/utils.cpp
+-  src/align/align.cpp) #$(CXX) $(CXXFLAGS) $(CPPFLAGS) -Lsrc/common/wflign/build/lib -Isrc/common/wflign/deps -Isrc/common $(SOURCE_1) -o wfmash @mathlib@ -lstdc++ -lz -lm -lpthread -lwflambda -lwflign
++  src/align/align.cpp) 
+ 
+ target_include_directories(mashmap PRIVATE
+   src
+@@ -78,13 +75,9 @@ target_link_libraries(mashmap
+   gslcblas
+   m
+   pthread
+-  hts
+   rt
+-  jemalloc
+   z
+   assert
+-  gmp
+-  #absl::flat_hash_map
+ )
+ 
+ target_link_libraries(mashmap-align
+@@ -92,13 +85,9 @@ target_link_libraries(mashmap-align
+   gslcblas
+   m
+   pthread
+-  hts
+   rt
+-  jemalloc
+   z
+   assert
+-  gmp
+-  #absl::flat_hash_map
+ )
+ 
+ install(TARGETS mashmap DESTINATION bin)
+diff --git a/scripts/generate_git_version.sh b/scripts/generate_git_version.sh
+new file mode 100644
+index 0000000..e481112
+--- /dev/null
++++ b/scripts/generate_git_version.sh
+@@ -0,0 +1,5 @@
++INC_DIR=$1
++
++GIT_VERSION=$(git describe --always --tags)
++
++echo "#define MASHMAP_GIT_VERSION" \"$GIT_VERSION\" > "$INC_DIR"/mashmap_git_version.hpp
+diff --git a/src/mashmap_git_version.hpp b/src/mashmap_git_version.hpp
+index 2459d25..34a71f1 100644
+--- a/src/mashmap_git_version.hpp
++++ b/src/mashmap_git_version.hpp
+@@ -1 +1 @@
+-#define MASHMAP_GIT_VERSION "v2.0-40-g2fc23b9"
++#define MASHMAP_GIT_VERSION "v2.0-68-g2e86030"
