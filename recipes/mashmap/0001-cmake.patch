@@ -98,10 +98,96 @@ index 0000000..e481112
 +GIT_VERSION=$(git describe --always --tags)
 +
 +echo "#define MASHMAP_GIT_VERSION" \"$GIT_VERSION\" > "$INC_DIR"/mashmap_git_version.hpp
+diff --git a/src/map/include/slidingMap.hpp b/src/map/include/slidingMap.hpp
+index 149e0c8..b1bde07 100644
+--- a/src/map/include/slidingMap.hpp
++++ b/src/map/include/slidingMap.hpp
+@@ -33,7 +33,7 @@ namespace skch
+         //Metadata for the minmers saved in sliding ordered map during L2 stage
+         struct slidingMapContainerValueType
+         {
+-          hash_t hash;
++          hash_t hash_val;
+           strand_t q_strand;
+           strand_t strand_vote;
+           unsigned int num_before_inc; // Number of hashes between this and the previous (including self)
+@@ -95,7 +95,7 @@ namespace skch
+         static constexpr bool slidingMapContainerValueType_comp(
+             const slidingMapContainerValueType& a, const slidingMapContainerValueType& b) 
+         {
+-          return a.hash < b.hash;
++          return a.hash_val < b.hash_val;
+         } 
+ 
+         /**
+@@ -131,7 +131,7 @@ namespace skch
+           auto insert_loc = std::lower_bound(
+               std::next(slidingWindowMinhashes.begin()), slidingWindowMinhashes.end(),
+               mi.hash,
+-              [](const slidingMapContainerValueType& a, hash_t b) {return a.hash < b;});
++              [](const slidingMapContainerValueType& a, hash_t b) {return a.hash_val < b;});
+ 
+           if (insert_loc == slidingWindowMinhashes.end()) 
+           {
+@@ -139,13 +139,13 @@ namespace skch
+           } 
+ 
+           // If minmer matches, then set curr to active
+-          if (insert_loc->hash == mi.hash) {
++          if (insert_loc->hash_val == mi.hash) {
+             insert_loc->active = true;
+             insert_loc->strand_vote += (insert_loc->q_strand * mi.strand);
+             intersectionSize++;
+ 
+             // If minmer matches and is <= pivot, sharedSketchElements++
+-            if (insert_loc->hash <= pivot->hash) {
++            if (insert_loc->hash_val <= pivot->hash_val) {
+               sharedSketchElements++;
+               strand_votes += insert_loc->strand_vote; 
+             }
+@@ -154,7 +154,7 @@ namespace skch
+           else {
+             insert_loc->num_before_inc++;
+             //  If curr <= pivot then increment pivRank
+-            if (insert_loc->hash <= pivot->hash) {
++            if (insert_loc->hash_val <= pivot->hash_val) {
+               pivRank++;
+             }
+             //  If pivRank > sketchSize, move piv left and update counters 
+@@ -177,7 +177,7 @@ namespace skch
+           auto insert_loc = std::lower_bound(
+               std::next(slidingWindowMinhashes.begin()), slidingWindowMinhashes.end(),
+               mi.hash,
+-              [](const slidingMapContainerValueType& a, hash_t b) {return a.hash < b;});
++              [](const slidingMapContainerValueType& a, hash_t b) {return a.hash_val < b;});
+ 
+           if (insert_loc == slidingWindowMinhashes.end()) 
+           {
+@@ -185,9 +185,9 @@ namespace skch
+           } 
+ 
+           // If minmer matches, then set curr to inactive
+-          if (insert_loc->hash == mi.hash) {
++          if (insert_loc->hash_val == mi.hash) {
+             // If minmer matches and is <= pivot, sharedSketchElements--
+-            if (insert_loc->hash <= pivot->hash) {
++            if (insert_loc->hash_val <= pivot->hash_val) {
+               sharedSketchElements--;
+               strand_votes -= insert_loc->strand_vote;
+             }
+@@ -199,7 +199,7 @@ namespace skch
+           else {
+             insert_loc->num_before_inc--;
+             //  If curr <= pivot then decrement pivRank
+-            if (insert_loc->hash <= pivot->hash) {
++            if (insert_loc->hash_val <= pivot->hash_val) {
+               pivRank--;
+             }
+             //  If pivRank < sketchSize, try to move piv right and update counters 
 diff --git a/src/mashmap_git_version.hpp b/src/mashmap_git_version.hpp
-index 2459d25..34a71f1 100644
+deleted file mode 100644
+index 2459d25..0000000
 --- a/src/mashmap_git_version.hpp
-+++ b/src/mashmap_git_version.hpp
-@@ -1 +1 @@
++++ /dev/null
+@@ -1 +0,0 @@
 -#define MASHMAP_GIT_VERSION "v2.0-40-g2fc23b9"
-+#define MASHMAP_GIT_VERSION "v2.0-68-g2e86030"
