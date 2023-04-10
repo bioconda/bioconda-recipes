@@ -114,6 +114,144 @@ index 0000000..e481112
 +GIT_VERSION=$(git describe --always --tags)
 +
 +echo "#define MASHMAP_GIT_VERSION" \"$GIT_VERSION\" > "$INC_DIR"/mashmap_git_version.hpp
+diff --git a/src/common/progress.hpp b/src/common/progress.hpp
+index 7e5a0bc..e63e531 100644
+--- a/src/common/progress.hpp
++++ b/src/common/progress.hpp
+@@ -6,6 +6,7 @@
+ #include <thread>
+ #include <chrono>
+ #include <iomanip>
++#include <sstream>
+ 
+ namespace progress_meter {
+ 
+diff --git a/src/map/include/commonFunc.hpp b/src/map/include/commonFunc.hpp
+index 551c53e..ba3b42f 100644
+--- a/src/map/include/commonFunc.hpp
++++ b/src/map/include/commonFunc.hpp
+@@ -15,6 +15,7 @@
+ #include <limits>
+ #include <numeric>
+ #include <queue>
++#include <sstream>
+ 
+ //Own includes
+ #include "map/include/map_parameters.hpp"
+diff --git a/src/map/include/map_parameters.hpp b/src/map/include/map_parameters.hpp
+index 5944575..867fd42 100644
+--- a/src/map/include/map_parameters.hpp
++++ b/src/map/include/map_parameters.hpp
+@@ -85,7 +85,7 @@ namespace fixed
+ 
+ double pval_cutoff = 1e-3;                          // p-value cutoff for determining window size
+ float confidence_interval = 0.95;                   // Confidence interval to relax jaccard cutoff for mapping (0-1)
+-float percentage_identity = 0.90;                   // Percent identity in the mapping step
++float percentage_identity = 0.85;                   // Percent identity in the mapping step
+ float ANIDiff = 0.0;                                // Stage 1 ANI diff threshold
+ float ANIDiffConf = 0.999;                          // ANI diff confidence
+ }
+diff --git a/src/map/include/map_stats.hpp b/src/map/include/map_stats.hpp
+index f24b0e1..36f017b 100644
+--- a/src/map/include/map_stats.hpp
++++ b/src/map/include/map_stats.hpp
+@@ -178,9 +178,14 @@ namespace skch
+      * @param[in] lengthReference reference length
+      * @return                    p-value
+      */
+-    inline double estimate_pvalue (int s, int k, int alphabetSize, 
++    inline double estimate_pvalue (
++        int s, 
++        int k, 
++        int alphabetSize, 
+         float identity,
+-        int64_t lengthQuery, uint64_t lengthReference, float confidence_interval)
++        int64_t lengthQuery, 
++        uint64_t lengthReference, 
++        float confidence_interval)
+     {
+       //total space size of k-mers
+       double kmerSpace = pow(alphabetSize, k);
+@@ -226,15 +231,19 @@ namespace skch
+      * @param[in] lengthReference   reference length
+      * @return                      optimal window size for sketching
+      */
+-    inline int64_t recommendedSketchSize(double pValue_cutoff, float confidence_interval,
+-        int k, int alphabetSize,
++    inline int64_t recommendedSketchSize(
++        double pValue_cutoff, 
++        float confidence_interval,
++        int k, 
++        int alphabetSize,
+         float identity,
+-        int64_t segmentLength, uint64_t lengthReference)
++        int64_t segmentLength, 
++        uint64_t lengthReference)
+     {
+-        int64_t lengthQuery = segmentLength;
++      int64_t lengthQuery = segmentLength - k;
+ 
+       int optimalSketchSize;
+-      for (optimalSketchSize = 10; optimalSketchSize < lengthQuery; optimalSketchSize += 50) {
++      for (optimalSketchSize = 10; optimalSketchSize < lengthQuery; optimalSketchSize += 10) {
+         //Compute pvalue
+         double pVal = estimate_pvalue(optimalSketchSize, k, alphabetSize, identity, lengthQuery, lengthReference, confidence_interval);
+ 
+diff --git a/src/map/include/parseCmdArgs.hpp b/src/map/include/parseCmdArgs.hpp
+index c06d6e5..235e026 100644
+--- a/src/map/include/parseCmdArgs.hpp
++++ b/src/map/include/parseCmdArgs.hpp
+@@ -10,6 +10,7 @@
+ #include <iostream>
+ #include <string>
+ #include <fstream>
++#include <sstream>
+ 
+ //Own includes
+ #include "map/include/map_parameters.hpp"
+@@ -53,6 +54,11 @@ $ mashmap --rl reference_files_list.txt -q seq.fq [OPTIONS]");
+ sequences shorter than segment length will be ignored", ArgvParser::OptionRequiresValue);
+     cmd.defineOptionAlternative("segLength","s");
+ 
++    cmd.defineOption("sketchSize", "Number of sketch elements", ArgvParser::OptionRequiresValue);
++    cmd.defineOptionAlternative("sketchSize","J");
++
++    cmd.defineOption("dense", "Use dense sketching to yield higher ANI estimation accuracy. [enabled by default]");
++
+     cmd.defineOption("blockLength", "keep merged mappings supported by homologies of this total length [default: segmentLength]", ArgvParser::OptionRequiresValue);
+     cmd.defineOptionAlternative("blockLength", "l");
+ 
+@@ -87,8 +93,6 @@ sequences shorter than segment length will be ignored", ArgvParser::OptionRequir
+ 
+     cmd.defineOption("kmerThreshold", "ignore the top \% most-frequent kmer window [default: 0.001]", ArgvParser::OptionRequiresValue);
+ 
+-    cmd.defineOption("sketchSize", "Number of sketch elements", ArgvParser::OptionRequiresValue);
+-    cmd.defineOptionAlternative("sketchSize","J");
+ 
+     //cmd.defineOption("shortenCandidateRegions", "Only compute rolling minhash score for small regions around positions where the intersection of reference and query minmers is locally maximal. Results in slighty faster runtimes at the cost of mapping placement and ANI prediction.");
+ 
+@@ -546,12 +550,21 @@ sequences shorter than segment length will be ignored", ArgvParser::OptionRequir
+       str >> parameters.sketchSize;
+       str.clear();
+     } else {
++      if(cmd.foundOption("dense")) 
++      {
++        const double md = 1 - parameters.percentageIdentity;
++        double dens = 0.02 * (1 + (md / 0.05));
++        parameters.sketchSize = dens * (parameters.segLength - parameters.kmerSize);
++      }
++      else 
++      {
+       //Compute optimal window size
+       parameters.sketchSize = skch::Stat::recommendedSketchSize(
+             skch::fixed::pval_cutoff, skch::fixed::confidence_interval,
+             parameters.kmerSize, parameters.alphabetSize,
+             parameters.percentageIdentity,
+             parameters.segLength, parameters.referenceSize);
++      }
+     }
+ 
+     if(cmd.foundOption("output"))
 diff --git a/src/map/include/slidingMap.hpp b/src/map/include/slidingMap.hpp
 index 149e0c8..b1bde07 100644
 --- a/src/map/include/slidingMap.hpp
