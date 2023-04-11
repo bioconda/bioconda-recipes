@@ -1,4 +1,5 @@
 #!/bin/bash
+export USE_HIC=0
 mkdir -p "$PREFIX/bin"
 export MACHTYPE=x86_64
 export BINDIR=$(pwd)/bin
