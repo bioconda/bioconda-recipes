@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ex
 
 export LDFLAGS="${LDFLAGS} -L$PREFIX/lib -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2"
 export INCLUDES="-I . -Ihtslib -I$PREFIX/include -Itabixpp -I\$(INC_DIR) -L."
@@ -42,5 +43,5 @@ cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX 
 cmake --build . 
 cmake --install .
-cp -n ../scripts/* $PREFIX/bin
-cp -n -r ../src/simde $PREFIX/include/
+#cp -n ../scripts/* $PREFIX/bin
+#cp -n -r ../src/simde $PREFIX/include/
