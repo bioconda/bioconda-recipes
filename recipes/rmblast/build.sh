@@ -6,9 +6,9 @@ patch -p1 < $RECIPE_DIR/isb-2.13.0+-rmblast.patch
 cd $SRC_DIR/c++/
 
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-export CFLAGS="$CFLAGS -I${BUILD_PREFIX}/include ${LDFLAGS} -Ofast"
-export CXXFLAGS="$CXXFLAGS -I${BUILD_PREFIX}/include ${LDFLAGS} -Ofast"
-export CPPFLAGS="$CPPFLAGS -I$PREFIX/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
+export CFLAGS="$CFLAGS -O2"
+export CXXFLAGS="$CXXFLAGS -I${BUILD_PREFIX} -fuse-ld=lld -O2 -std=c++17"
+export CPPFLAGS="$CPPFLAGS -I${BUILD_PREFIX}/include -I$PREFIX/include"
 export CC_FOR_BUILD=$CC
 
 if test x"`uname`" = x"Linux"; then
@@ -17,7 +17,7 @@ if test x"`uname`" = x"Linux"; then
 fi
 
 if [ `uname` == Darwin ]; then
-    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2 -lomp -fuse-ld=lld"
 else
     export CPP_FOR_BUILD=$CPP
 fi
@@ -51,16 +51,20 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 # Fixes building on Linux
 export AR="${AR} rcs"
 
-if [ `uname` == Linux ]; then
-  CONFIG_ARGS="--prefix=${PREFIX} --without-openssl --with-gnutls=$PREFIX"
-else
-  CONFIG_ARGS="--prefix=${PREFIX} --without-gnutls --with-openssl=$PREFIX"
-fi
+# if [ `uname` == Linux ]; then
+  # CONFIG_ARGS="--prefix=${PREFIX} --without-openssl --with-gnutls=$PREFIX"
+# else
+  # CONFIG_ARGS="--prefix=${PREFIX} --without-gnutls --with-openssl=$PREFIX"
+# fi
+
+CONFIG_ARGS="--prefix=${PREFIX} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CPPFLAGS=${CPPFLAGS} CXXFLAGS=${CXXFLAGS}"
 
 # not building with boost as it's only used for unit tests
 ./configure \
+    --with-64 \
     --with-dll \
     --with-mt \
+    --with-openmp \
     --without-autodep \
     --without-makefile-auto-update \
     --with-flat-makefile \
@@ -76,6 +80,9 @@ fi
     --with-bz2=$PREFIX \
     --with-nettle=$PREFIX \
     --without-krb5 \
+    --with-experimental=Int8GI \
+    --without-openssl \
+    --without-gnutls \
     --without-sse42 \
     --without-gcrypt $CONFIG_ARGS
 
@@ -87,7 +94,7 @@ cd ReleaseMT
 ln -s $SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
 
 cd build
-make CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j1 -f Makefile.flat all_projects="$projects"
+make CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CPPFLAGS="${CPPFLAGS}" CXXFLAGS="${CXXFLAGS}" -j1 -f Makefile.flat all_projects="$projects"
 
 # remove temporary link
 rm $LIB_INSTALL_DIR
@@ -100,3 +107,6 @@ cp $SRC_DIR/c++/ReleaseMT/lib/* $LIB_INSTALL_DIR
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/update_blastdb.pl
 # Patches to enable this script to work better in bioconda
 sed -i.bak 's/mktemp.*/mktemp`/; s/exit 1/exit 0/; s/^export PATH=\/bin:\/usr\/bin:/\#export PATH=\/bin:\/usr\/bin:/g' $PREFIX/bin/get_species_taxids.sh
+
+#extra log to check all exe are present
+ls -s $PREFIX/bin/
