@@ -35,8 +35,7 @@ if conda env config vars set GTDBTK_DATA_PATH="$TARGET_DIR"; then
   echo "[INFO] - Added GTDBTK_DATA_PATH ($TARGET_DIR) to the GTDB-Tk conda environment."
 else
   echo "[INFO] - Conda not found in PATH, please be sure to set the GTDBTK_DATA_PATH envrionment variable"
-  echo " export GTDBTK_DATA_PATH=$TARGET_DIR before running GTDB-Tk. "
-  exit 1
+  echo "export GTDBTK_DATA_PATH=$TARGET_DIR before running GTDB-Tk. "
 fi
 
 exit 0
