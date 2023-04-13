@@ -6,7 +6,7 @@ cd $BLAST_SRC_DIR/c++/
 
 export CFLAGS="$CFLAGS -O2"
 export CXXFLAGS="$CXXFLAGS -O2 -std=c++17"
-export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
+export CPPFLAGS="$CPPFLAGS -I${BUILD_PREFIX}/include -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CC_FOR_BUILD=$CC
 
@@ -16,7 +16,7 @@ if test x"`uname`" = x"Linux"; then
 fi
 
 if [ `uname` == Darwin ]; then
-    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2 -lomp"
+    export LDFLAGS="-fuse-ld=lld ${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2 -lomp"
 else
     export CPP_FOR_BUILD=$CPP
 fi
@@ -59,6 +59,7 @@ export AR="${AR} rcs"
     --with-dll \
     --with-mt \
     --with-openmp \
+    --without-boost \
     --without-autodep \
     --without-makefile-auto-update \
     --with-flat-makefile \
@@ -94,7 +95,7 @@ ln -s $BLAST_SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
 cd build
 echo "RUNNING MAKE"
 #make -j${CPU_COUNT} -f Makefile.flat $apps
-make -j1 -f Makefile.flat $apps
+make CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" -j1 -f Makefile.flat $apps
 
 # remove temporary link
 rm $LIB_INSTALL_DIR
