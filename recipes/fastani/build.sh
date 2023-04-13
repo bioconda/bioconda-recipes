@@ -10,7 +10,7 @@ export CXX_INCLUDE_PATH=${PREFIX}/include
 mkdir -p $PREFIX/bin
 
 ./bootstrap.sh
-./configure --prefix=$PREFIX --with-boost=$PREFIX
+./configure --prefix=$PREFIX --with-gsl=$PREFIX
 
 make
 make install

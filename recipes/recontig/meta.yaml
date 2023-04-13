@@ -1,37 +1,30 @@
-{% set version = "1.2.0" %}
+{% set version = "1.5.0" %}
 
 package:
   name: recontig
   version: '{{ version }}'
 
 source:
-  # using git_url and git_rev as we have dhtslib
-  # as a submodule which is required for pyd
-  # to correctly find dhtslib D files
-  git_rev: v{{ version }}
-  git_url: https://github.com/blachlylab/recontig.git
+  - url: https://github.com/blachlylab/recontig/releases/download/v{{ version }}/recontig.darwin-amd64.tar.gz # [osx]
+    sha256: d1aea2a9bc4ad38f5c99b83cd84104188ce0bd6f606f3cf7a1e12ad3367aeaaf # [osx]
+  - url: https://github.com/blachlylab/recontig/releases/download/v{{ version }}/recontig.many-linux-x86_64.tar.gz # [linux]
+    sha256: e43f9d50835b8d3a2a50671f8706200ffad83815933b051557bc57bf2cddcb23 # [linux]   
 
 
 build:
   number: 0
-  # binary_relocation: False # [linux]
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - htslib >=1.13 # [osx]
   host:
-    - cython # [ not osx ]
-    - python # [ not osx ]
-    - htslib
+    - htslib >=1.13 # [osx]
   run:
-    - python # [ not osx ]
-    - htslib
-    - pandas # [ not osx ]
+    - htslib >=1.13 # [osx]
 
 test:
   commands:
     - recontig
-    - python -c "import recontig" # [ not osx ]
   
 about:
   home: https://github.com/blachlylab/recontig
@@ -39,6 +32,8 @@ about:
   summary: "recontig is a D program and python package that provides fast conversion of contig names between naming conventions for GFF, VCF/BCF, SAM/BAM, and BED files."
 
 extra:
+  recipe-maintainers:
+    - charlesgregory
   skip-lints:
-  - uses_vcs_url
-  - missing_hash
+    # repackaged binary
+    - should_be_noarch_generic
