@@ -37,13 +37,13 @@ rm TIGER2.1.tar.gz
 echo "done building tiger"
 mkdir -p $PREFIX/etc/conda/activate.d
 mkdir -p $PREFIX/etc/conda/deactivate.d
-touch $PREFIX/etc/conda/activate.d/env_vars.sh
-echo -e "#!/usr/bin/env bash" >> $PREFIX/etc/conda/activate.d/env_vars.sh
-echo -e "export BEAV_DIR=$BEAV_DIR" >> $PREFIX/etc/conda/activate.d/env_vars.sh
-echo -e "export OLD_PATH=$PATH" >> $PREFIX/etc/conda/activate.d/env_vars.sh
-echo -e "export PATH=$PATH:$BEAV_DIR/software/DBSCAN-SWA/bin/:$BEAV_DIR/software/DBSCAN-SWA/software/blast+/:$BEAV_DIR/software/DBSCAN-SWA/software/diamond/" >> $PREFIX/etc/conda/activate.d/env_vars.sh
+touch $PREFIX/etc/conda/activate.d/beav_vars.sh
+echo -e "#!/usr/bin/env bash" > $PREFIX/etc/conda/activate.d/beav_vars.sh
+echo -e "export BEAV_DIR=$BEAV_DIR" >> $PREFIX/etc/conda/activate.d/beav_vars.sh
+echo -e "export OLD_PATH=$PATH" >> $PREFIX/etc/conda/activate.d/beav_vars.sh
+echo -e "export PATH=$PATH:$BEAV_DIR/software/DBSCAN-SWA/bin/:$BEAV_DIR/software/DBSCAN-SWA/software/blast+/:$BEAV_DIR/software/DBSCAN-SWA/software/diamond/" >> $PREFIX/etc/conda/activate.d/beav_vars.sh
 
-touch $PREFIX/etc/conda/deactivate.d/env_vars.sh
-echo -e "#!/usr/bin/env bash" >> $PREFIX/etc/conda/deactivate.d/env_vars.sh
-echo -e "unset BEAV_DIR" >> $PREFIX/etc/conda/deactivate.d/env_vars.sh
-echo -e "export PATH=$OLD_PATH" >> $PREFIX/etc/conda/deactivate.d/env_vars.sh
+touch $PREFIX/etc/conda/deactivate.d/beav_vars.sh
+echo -e "#!/usr/bin/env bash" > $PREFIX/etc/conda/deactivate.d/beav_vars.sh
+echo -e "unset BEAV_DIR" >> $PREFIX/etc/conda/deactivate.d/beav_vars.sh
+echo -e "export PATH=$OLD_PATH" >> $PREFIX/etc/conda/deactivate.d/beav_vars.sh
