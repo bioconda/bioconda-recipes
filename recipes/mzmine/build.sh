@@ -9,6 +9,8 @@ mkdir -p "$MZMINEDIR"
 cp -r bin "$MZMINEDIR"/
 cp -r lib "$MZMINEDIR"/
 
+chmod u+x "$MZMINEDIR"/bin/MZmine
+
 mkdir -p "$PREFIX"/bin
 
 ln -fs "$MZMINEDIR"/bin/MZmine "$PREFIX"/bin/MZmine
