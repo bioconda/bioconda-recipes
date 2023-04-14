@@ -15,10 +15,13 @@ source:
 requirements:
   run:
     - openjdk
+    - strace_linux-64 11.2.0 
 
 test:
   commands:
-    - MZmine --help
+    # MZmine has no --help flag, but still prints help containing version number
+    - (MZmine --help || true) |& grep "Starting MZmine {{ version }}"
+    - strace MZmine --help 
 
 about:
   home: http://mzmine.github.io/
