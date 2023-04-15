@@ -1,0 +1,42 @@
+{% set version = "0.1.0" %}
+{% set sha256 = "22c58600b003890f7ae5b1128e58ce0ff9e0d62b673f4c5041249b0ab83b981e" %}
+
+package:
+  name: samcut
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/gshiba/samcut/archive/v{{ version }}.tar.gz
+  sha256: "{{ sha256 }}"
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - rust >=1.60
+    - pkg-config
+    - make
+    - cmake
+
+test:
+  commands:
+    - samcut -h
+    - |
+      VER=$(samcut -V)
+      if [ "$VER" = "samcut {{ version }}" ]; then
+        echo "Version check: OK"
+      else
+        echo "Version check: FAIL (expected: 'samcut {{ version }}' | actual: '$VER' )"
+        exit 1
+      fi
+
+about:
+  home: https://github.com/gshiba/samcut
+  license: MIT
+  summary: cut for sam
+
+extra:
+  recipe-maintainers:
+    - gshiba
