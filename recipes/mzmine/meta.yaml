@@ -1,0 +1,40 @@
+{% set version = "3.2.8" %}
+
+package:
+  name: mzmine
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: generic
+
+source:
+  - url: https://github.com/mzmine/mzmine3/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: f7d7b9a15fa699294e9cc189865f4323ddbd54cae8129d27fdce79c1f3dd84ff
+    patches:
+      - version.patch
+
+requirements:
+  build:
+    # https://github.com/mzmine/mzmine3/issues/1310
+    - openjdk =17
+  run:
+    - openjdk =17
+    - pango  # /home/conda/.openjfx/cache/16/libjavafx_font_pango.so: libpangoft2-1.0.so.0: cannot open shared object file
+
+test:
+  commands:
+    # MZmine has no --help flag, but still prints help containing version number
+    # MZmine 3.2.8 prints version nubmer 3.2.9 
+    - (MZmine --help || true) |& grep "Starting MZmine {{ version }}"
+
+about:
+  home: http://mzmine.github.io/
+  license: MIT
+  summary: Integrative analysis of multimodal mass spectrometry data
+  description: |
+    MZmine 3 is an open-source and platform-independent software for mass
+    spectrometry (MS) data processing and visualization. It enables large-scale
+    metabolomics and lipidomics research by spectral preprocessing, feature
+    detection, and various options for compound identification, including
+    spectral library querying and creation.
