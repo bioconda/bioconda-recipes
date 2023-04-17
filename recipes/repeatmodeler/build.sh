@@ -24,7 +24,7 @@ CONFIG_OPTIONS=" \
     -rscout_dir ${PREFIX}/bin \
     -trf_dir ${PREFIX}/bin \
     -ucsctools_dir ${PREFIX}/bin"
-    
+
 if [[ $(uname) == Linux ]]; then
     LTR_STRUCTURAL_SEARCH="y"
     CONFIG_OPTIONS+=" \
