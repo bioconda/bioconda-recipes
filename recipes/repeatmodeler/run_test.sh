@@ -11,4 +11,4 @@ set -x -e
 # test -s RM_*/consensi.fa
 
 # RepeatModeler 2.0.4 depends on the "setThreadByQuery" module in NCBIBlastSearchEngine.pm of RepeatMasker versions >=4.1.4
-"RepeatModeler -h | grep SYNOPSIS"
+RepeatModeler -h | grep "SYNOPSIS"
