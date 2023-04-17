@@ -16,7 +16,7 @@ perl ./configure -libdir ${RM_DIR}/Libraries -trf_prgm ${PREFIX}/bin/trf  -rmbla
 ln -s ${RM_DIR}/RepeatMasker ${PREFIX}/bin/RepeatMasker
 
 # add other tools
-RM_OTHER_PROGRAMS="DateRepeats DupMasker ProcessRepeats RepeatProteinMask"
+RM_OTHER_PROGRAMS="DupMasker ProcessRepeats RepeatProteinMask"
 for name in ${RM_OTHER_PROGRAMS} ; do
   ln -s ${RM_DIR}/${name} ${PREFIX}/bin/${name}
 done
