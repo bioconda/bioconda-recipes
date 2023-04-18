@@ -11,6 +11,8 @@ cmake .. \
       -DCMAKE_PREFIX_PATH=$PREFIX \
       -DBOOST_NO_SYSTEM_PATHS=on \
       -DWITH_ZSTD=on \
+      -DZSTD_LIBRARY=$PREFIX/lib/libzstd.so \
+      -DZSTD_INCLUDE_DIR=$PREFIX/include/ \
       -DBLAST_LIB_DIR=$PREFIX/lib/ncbi-blast+ \
       -DCMAKE_OSX_DEPLOYMENT_TARGET=""
 
