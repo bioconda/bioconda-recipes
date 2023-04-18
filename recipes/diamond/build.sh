@@ -10,6 +10,8 @@ cmake .. \
       -DCMAKE_INSTALL_PREFIX=$PREFIX \
       -DCMAKE_PREFIX_PATH=$PREFIX \
       -DBOOST_NO_SYSTEM_PATHS=on \
+      -DWITH_ZSTD=on \
+      -DBLAST_LIB_DIR=$PREFIX/lib/ncbi-blast+ \
       -DCMAKE_OSX_DEPLOYMENT_TARGET=""
 
 cmake --build . --config Release --target install
