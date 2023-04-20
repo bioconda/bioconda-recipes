@@ -1,0 +1,41 @@
+{% set version = "2.10.4" %}
+{% set bc = "batchcompute" %}
+{% set bcv = "2.1.7" %}
+
+package:
+  name: runjob
+  version: {{ version }}
+
+source:
+  url: https://github.com/yodeng/runjob/archive/v{{ version }}.tar.gz
+  sha256: a15bf6f80c3daca12b43eb90684c49985531d4a9a394af610d73917cb04975e5
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install -vv --no-deps . https://pypi.io/packages/source/{{ bc[0] }}/{{ bc }}/{{ bc }}-{{ bcv }}.tar.gz
+
+requirements:
+  host:
+    - pip
+    - python >=2.7.10,<3.11
+  run:
+    - pip
+    - python >=2.7.10,<3.11
+    - psutil >=5.7.0
+    - ratelimiter >=1.2.0
+    - prettytable >=3.2.0
+    - configparser >=5.0.2
+
+test:
+  imports:
+    - runjob
+  commands:
+    - runjob --version
+    - runsge --version
+
+about:
+  home: https://github.com/yodeng/runjob
+  license: MIT
+  summary: "Manage jobs or pipeline of bioinfomation."
+  description: "Runjob is a program for managing a group of related bioinformatic jobs or pipelines running on a compute cluster."

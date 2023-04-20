@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -eu
+
+EXE=$(basename "$0")
+AVX512DQ_CORE_COUNT=$(grep '^flags' /proc/cpuinfo | grep -c ' avx512dq ') || :
+AVX2_CORE_COUNT=$(grep '^flags' /proc/cpuinfo | grep -c ' avx2 ') || :
+SSE4_1_CORE_COUNT=$(grep '^flags' /proc/cpuinfo | grep -c ' sse4_1 ') || :
+SSE2_CORE_COUNT=$(grep '^flags' /proc/cpuinfo | grep -c ' sse2 ') || :
+
+if (( AVX512DQ_CORE_COUNT >= 1 )); then
+  "${EXE}_avx512" "$@"
+elif (( AVX2_CORE_COUNT >= 1 )); then
+  "${EXE}_avx2" "$@"
+elif (( SSE4_1_CORE_COUNT >= 1 )); then
+  "${EXE}_sse4.1" "$@"
+elif (( SSE2_CORE_COUNT >= 1 )); then
+  "${EXE}_sse2" "$@"
+else
+  echo "No processors with at least SSE2 support found on the current machine" >&2
+  exit 1
+fi
+

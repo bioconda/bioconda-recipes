@@ -1,0 +1,50 @@
+{% set name = "gait-gm" %}
+{% set version = "21.7.22" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "8aa979a0d1e110ccb6c6b64df16c3abb74f9dc6f8ccf70ad134709b4bc2c9b24" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  noarch: python
+  number: 0
+  script: python -m pip install --no-deps --ignore-installed .
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+  run:
+    - python >=3.7
+    - secimtools >=21.6.3
+    - mygene
+    - r-base
+    - r-caret
+    - r-mixomics
+
+test:
+  commands:
+    - add_kegg_anno_info.py -h
+    - add_kegg_pathway_info.py -h
+    - add_pval_flags.py -h
+    - all_by_all_correlation.py -h
+    - ensembl2symbol.py -h
+    - split_wide_dataset.py -h
+    - sPLS.py -h
+
+about:
+  home: https://github.com/secimTools/gait-gm
+  license: MIT License
+  license_family: MIT
+  summary: GAIT-GM - Modeling Metabolites as a function of gene expression
+  description: 'Modeling Metabolites as a function of gene expression'
+
+extra:
+  recipe-maintainers:
+    - moskalenko
