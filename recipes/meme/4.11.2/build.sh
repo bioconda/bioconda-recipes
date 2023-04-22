@@ -6,6 +6,7 @@ MEME_ETC_DIR=${PREFIX}/etc
 #perl scripts/dependencies.pl
 
 export CFLAGS="-fcommon"
+export LDFLAGS="--allow-multiple-definition"
 
 ./configure --prefix="$PREFIX"
 
