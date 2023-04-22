@@ -16,7 +16,10 @@ if test x"`uname`" = x"Linux"; then
 fi
 
 if [ `uname` == Darwin ]; then
-    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2 -lomp"
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
+
+    # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
+    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 else
     export CPP_FOR_BUILD=$CPP
 fi
@@ -55,14 +58,12 @@ cp -rf "${SRC_DIR}/RpsbProc/src/"* src/app/RpsbProc/
 export AR="${AR} rcs"
 
 ./configure \
+    --with-bin-release \
     --with-64 \
     --with-dll \
     --with-mt \
-    --with-openmp \
-    --without-autodep \
-    --without-makefile-auto-update \
+    --without-openmp \
     --with-flat-makefile \
-    --without-caution \
     --without-lzo \
     --with-hard-runpath \
     --with-runpath=$LIB_INSTALL_DIR \
@@ -73,11 +74,10 @@ export AR="${AR} rcs"
     --with-z=$PREFIX \
     --with-bz2=$PREFIX \
     --without-krb5 \
-    --with-experimental=Int8GI \
-    --without-openssl \
     --without-gnutls \
     --without-sse42 \
-    --without-gcrypt
+    --without-gcrypt \
+    --without-pcre
 
 #list apps to build
 apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe"
