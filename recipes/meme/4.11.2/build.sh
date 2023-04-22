@@ -7,6 +7,7 @@ MEME_ETC_DIR=${PREFIX}/etc
 
 #export CFLAGS="-fcommon"
 export LDFLAGS="--allow-multiple-definition"
+export CFLAGS="${CFLAGS} -fcommon"
 
 ./configure --prefix="$PREFIX"
 
