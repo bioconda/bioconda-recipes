@@ -5,6 +5,8 @@ MEME_ETC_DIR=${PREFIX}/etc
 #HOME=/tmp cpanm XML::Parser::Expat --configure-args "EXPATLIBPATH=$PREFIX/lib" --configure-args "EXPATHINCPATH=$PREFIX/include"
 #perl scripts/dependencies.pl
 
+export CFLAGS="-fcommon"
+
 ./configure --prefix="$PREFIX"
 
 make clean
