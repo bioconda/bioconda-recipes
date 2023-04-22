@@ -7,7 +7,13 @@ MEME_ETC_DIR=${PREFIX}/etc
 
 ./configure --prefix="$PREFIX"
 
-export LDFLAGS="${LDFLAGS} -Wl,--allow-multiple-definition"
+if [[ ${target_platform} =~ osx.* ]] ; then
+	export LDFLAGS="${LDFLAGS}"
+else
+	export LDFLAGS="${LDFLAGS} -Wl,--allow-multiple-definition"
+fi
+
+
 export CFLAGS="${CFLAGS} -fcommon -fgnu89-inline"
 
 make clean
