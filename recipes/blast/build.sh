@@ -5,7 +5,7 @@ export BLAST_SRC_DIR="${SRC_DIR}/blast"
 cd $BLAST_SRC_DIR/c++/
 
 export CFLAGS="$CFLAGS -O2"
-export CXXFLAGS="$CXXFLAGS -O2 -std=c++17"
+export CXXFLAGS="$CXXFLAGS -O2"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CC_FOR_BUILD=$CC
@@ -59,14 +59,11 @@ export AR="${AR} rcs"
 
 ./configure \
     --with-bin-release \
-    --with-64 \
-    --with-dll \
     --with-mt \
     --without-openmp \
     --with-flat-makefile \
     --without-lzo \
-    --with-hard-runpath \
-    --with-runpath=$LIB_INSTALL_DIR \
+    --without-zstd \
     --without-debug \
     --with-experimental=Int8GI \
     --with-strip \
