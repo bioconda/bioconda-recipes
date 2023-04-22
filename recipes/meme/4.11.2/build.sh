@@ -7,11 +7,12 @@ MEME_ETC_DIR=${PREFIX}/etc
 
 ./configure --prefix="$PREFIX"
 
-export LDFLAGS="${LDFLAGS} --allow-multiple-definition"
+#export LDFLAGS="${LDFLAGS} --allow-multiple-definition"
 export CFLAGS="${CFLAGS} -fcommon"
 
 make clean
-make AM_CFLAGS="-DNAN='(0.0/0.0)'" LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS"
+make AM_CFLAGS="-DNAN='(0.0/0.0)'" CFLAGS="$CFLAGS"
+#make AM_CFLAGS="-DNAN='(0.0/0.0)'" LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS"
 
 # tests will only work inside the build dir, but
 # https://github.com/conda/conda-build/issues/1453
