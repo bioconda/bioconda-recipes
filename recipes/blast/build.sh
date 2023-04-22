@@ -57,24 +57,48 @@ cp -rf "${SRC_DIR}/RpsbProc/src/"* src/app/RpsbProc/
 # Fixes building on unix (linux and osx)
 export AR="${AR} rcs"
 
-./configure \
-    --with-bin-release \
-    --with-mt \
-    --without-openmp \
-    --with-flat-makefile \
-    --without-lzo \
-    --without-zstd \
-    --without-debug \
-    --with-experimental=Int8GI \
-    --with-strip \
-    --without-vdb \
-    --with-z=$PREFIX \
-    --with-bz2=$PREFIX \
-    --without-krb5 \
-    --without-gnutls \
-    --without-sse42 \
-    --without-gcrypt \
-    --without-pcre
+if [[ $(uname) = Linux ]] ; then
+    ./configure \
+        --with-bin-release \
+        --with-mt \
+        --with-dll \
+        --with-openmp \
+        --with-flat-makefile \
+        --without-lzo \
+        --without-zstd \
+        --with-hard-runpath \
+        --with-runpath=$LIB_INSTALL_DIR \
+        --without-debug \
+        --with-experimental=Int8GI \
+        --with-strip \
+        --without-vdb \
+        --with-z=$PREFIX \
+        --with-bz2=$PREFIX \
+        --without-krb5 \
+        --without-gnutls \
+        --without-sse42 \
+        --without-gcrypt \
+        --without-pcre
+else
+    ./configure \
+        --with-bin-release \
+        --with-mt \
+        --without-openmp \
+        --with-flat-makefile \
+        --without-lzo \
+        --without-zstd \
+        --without-debug \
+        --with-experimental=Int8GI \
+        --with-strip \
+        --without-vdb \
+        --with-z=$PREFIX \
+        --with-bz2=$PREFIX \
+        --without-krb5 \
+        --without-gnutls \
+        --without-sse42 \
+        --without-gcrypt \
+        --without-pcre
+fi
 
 #list apps to build
 apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe"
