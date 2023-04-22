@@ -5,11 +5,10 @@ MEME_ETC_DIR=${PREFIX}/etc
 #HOME=/tmp cpanm XML::Parser::Expat --configure-args "EXPATLIBPATH=$PREFIX/lib" --configure-args "EXPATHINCPATH=$PREFIX/include"
 #perl scripts/dependencies.pl
 
-#export CFLAGS="-fcommon"
+./configure --prefix="$PREFIX"
+
 export LDFLAGS="${LDFLAGS} --allow-multiple-definition"
 export CFLAGS="${CFLAGS} -fcommon"
-
-./configure --prefix="$PREFIX"
 
 make clean
 make AM_CFLAGS="-DNAN='(0.0/0.0)' LDFLAGS=\'$LDFLAGS\' CFLAGS=\'$CFLAGS\'"
