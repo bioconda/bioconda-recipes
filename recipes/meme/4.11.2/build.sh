@@ -8,7 +8,7 @@ MEME_ETC_DIR=${PREFIX}/etc
 ./configure --prefix="$PREFIX"
 
 export LDFLAGS="${LDFLAGS} -Wl,--allow-multiple-definition"
-export CFLAGS="${CFLAGS} -fcommon"
+export CFLAGS="${CFLAGS} -fcommon -fgnu89-inline"
 
 make clean
 make AM_CFLAGS="-DNAN='(0.0/0.0)'" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
