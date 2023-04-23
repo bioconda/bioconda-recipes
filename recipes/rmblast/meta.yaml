@@ -1,5 +1,6 @@
 {% set name = "rmblast" %}
 {% set version = "2.13.0" %}
+{% set sha256 = "89553714d133daf28c477f83d333794b3c62e4148408c072a1b4620e5ec4feb2" %}
 
 package:
   name: {{ name }}
@@ -7,13 +8,16 @@ package:
 
 source:
   url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz
-  sha256: 89553714d133daf28c477f83d333794b3c62e4148408c072a1b4620e5ec4feb2
-  #patches:
-    # patch taken from http://www.repeatmasker.org/rmblast/isb-2.13.0+-rmblast.patch.gz
+  sha256: {{ sha256 }}
+  patches:
     #- isb-{{ version }}+-{{ name }}.patch # Needs the -p1 option, applied in build.sh
+    # patch taken from http://www.repeatmasker.org/rmblast/isb-2.13.0+-rmblast.patch.gz
+    - configurellvm.patch
+    - get_species_taxids.patch
+    - phonehome.patch
 
 build:
-  skip: true  # [osx]
+  skip: True  # [osx]
   number: 0
 
 requirements:
@@ -21,20 +25,19 @@ requirements:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake
   host:
     - bzip2
     - zlib
-    - gnutls # [linux]
-    - openssl # [osx]
+    - llvm-openmp  # [osx]
+    - curl
+    - entrez-direct
     - nettle
     - pcre
     - time
   run:
     - bzip2
     - zlib
-    - gnutls # [linux]
-    - openssl # [osx]
+    - llvm-openmp  # [osx]
     - nettle
     - pcre
     - perl
@@ -75,6 +78,6 @@ test:
     - update_blastdb.pl --help
 
 about:
-  home: http://www.repeatmasker.org/RMBlast.html
+  home: https://www.repeatmasker.org/rmblast/
   license: OSL-2.1
   summary: RMBlast is a RepeatMasker compatible version of the standard NCBI BLAST+ suite.
