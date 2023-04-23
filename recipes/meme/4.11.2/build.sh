@@ -9,7 +9,7 @@ MEME_ETC_DIR=${PREFIX}/etc
 
 if [[ ${target_platform} =~ osx.* ]] ; then
 	export LDFLAGS="${LDFLAGS}"
-	export CFLAGS="${CFLAGS}"
+	export CFLAGS="${CFLAGS} -fcommon -fgnu89-inline"
 else
 	export LDFLAGS="${LDFLAGS} -Wl,--allow-multiple-definition"
 	export CFLAGS="${CFLAGS} -fcommon -fgnu89-inline"
