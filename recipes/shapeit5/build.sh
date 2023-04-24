@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
-
 export COMMIT_VERS="${PKG_VERSION}"
 export COMMIT_DATE="$(date -Idate -u)"
 
