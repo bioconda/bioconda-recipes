@@ -22,8 +22,9 @@ else
           clang -v
 fi
 which h5c++
-if [[ "$(uname -s)" == "Linux" ]];
+if [[ "$(uname -s)" == "Linux" && "${UNFRAC_BUILD_VARIANT}" == "nvidia" ]];
 then
+          echo "Installing NVIDIA compiler"
           # remove unused pieces to save space
           cat scripts/install_hpc_sdk.sh |sed 's/tar xpzf/tar --exclude hpcx --exclude openmpi4 --exclude 10.2 -xpzf/g' >my_install_hpc_sdk.sh
           chmod a+x my_install_hpc_sdk.sh

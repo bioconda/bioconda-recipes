@@ -9,7 +9,14 @@ source:
   sha256: c8d5542357096262b8c9a5ee7cb4b460390591ded0138d94ae352e792b15839e
 
 build:
-  number: 0
+  number: 1
+  script_env:
+   - UNFRAC_BUILD_VARIANT={{ build_variant }}
+  string: nvidia_h{{ PKG_HASH }}_{{ PKG_BUILDNUM }} [{{ build_variant }} == nvidia]
+  skip: True [{{ build_variant }} != cpu && macos]
+  # prefer NVIDIA GPU version, when available
+  track_features:
+    - unifrac-binaries-cpu [{{ build_variant }} == cpu && not macos]
 
 requirements:
   build:
