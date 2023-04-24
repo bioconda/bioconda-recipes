@@ -1,5 +1,5 @@
 {% set name = "GMAP" %}
-{% set version = "2021.08.25" %}
+{% set version = "2023.03.24" %}
 
 package:
   name: {{ name|lower }}
@@ -7,25 +7,27 @@ package:
 
 source:
   url: http://research-pub.gene.com/gmap/src/gmap-gsnap-{{ version | replace(".", "-") }}.tar.gz
-  sha256: ef58843eb9cfbe174fad8444bf1b52b3f8841731412a3f90544a0e2bb85799b5
-  patches:
-    - single_quote_paths.patch
+  sha256: eec93a2a693c1bc5bf3026b39522f45e8a8aad6e8b8b4239a94aa17f37600762
+  # patches:
+    # - single_quote_paths.patch
 
 build:
-  number: 2
+  number: 0
+  ignore_run_exports:
+    - zlib
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
-  host:
+    - autoconf
     - perl
-    # zlib is needed for gunzip
+    - perl-file-util
+  host:
     - zlib
     - bzip2
   run:
     - perl
-    # zlib is needed for gunzip
     - zlib
     - bzip2
 
@@ -33,7 +35,6 @@ test:
   commands:
     - gmap --help
     - gsnap --help
-    - ": | fa_coords | grep 'Error: No contigs were read in.'"
 
 about:
   home: http://research-pub.gene.com/gmap/

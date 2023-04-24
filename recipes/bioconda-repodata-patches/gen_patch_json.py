@@ -134,7 +134,49 @@ def _gen_new_index(repodata, subdir):
         if record_name.startswith('perl-') and (not has_dep(record, "perl")) and record.get('timestamp', 0) < 1514761200000:
             deps.append('perl >=5.22.0,<5.23.0')
 
+        # Nanoqc requires bokeh >=2.4,<3
+        if record_name.startswith('nanoqc') and has_dep(record, "bokeh") and record.get('timestamp', 0) < 1592397000000:
+            for i, dep in enumerate(deps):
+                if dep.startswith('bokeh'):
+                    deps[i] = 'bokeh >=2.4,<3'
+                    break
+
+        # Pin all old packages that do not have a pin to openssl 1.1.1 which should have been available 
+        # TODO once we have updated to openssl 3, below timestamp should be updated
+        if has_dep(record, "openssl") and record.get("timestamp", 0) < 1678355208942:
+            for i, dep in enumerate(deps):
+                if dep.startswith("openssl") and has_no_upper_bound(dep):
+                    deps[i] = "openssl >=1.1.0,<=1.1.1"
+                    break
+
+        # some htslib packages depend on openssl without this being listed in the dependencies
+        if record_name.startswith('htslib') and record['subdir']=='linux-64' and not has_dep(record, "openssl") and record.get('timestamp', 0) < 1678355208942:
+            for v, b in [("1.3", "1"), ("1.3.1", "0"), ("1.3.1", "1"), ("1.3.2", "0"), ("1.4", "0"), ("1.4.1", "0"), ("1.5", "0"), ("1.6", "0"), ("1.7", "0"), ("1.8", "0"), ("1.8", "1")]:
+                if version==v and record['build']==b:
+                    deps.append('openssl >=1.1.0,<=1.1.1')
+
+        # nanosim <=3.1.0 requires scikit-learn<=0.22.1
+        if record_name.startswith('nanosim') and has_dep(record, "scikit-learn") and version <= "3.1.0":
+            for i, dep in enumerate(deps):
+                if dep.startswith("scikit-learn") and has_no_upper_bound(dep):
+                    deps[i] += ",<=0.22.1"  # append an upper bound
+                    break
+
     return index
+
+
+def has_no_upper_bound(dep):
+    """Check if a dependency has an upper bound."""
+    dep_parts = dep.split(' ', 1)
+    bounds = dep_parts[1].split(",") if len(dep_parts) > 1 else []
+    for bound in bounds:
+        if bound.startswith("<"):
+            # upper bound
+            return False
+        elif not (bound.startswith(">") or bound.startswith("<")):
+            # If there is no < or > operator, then it is an exact pin (e.g. =1.2, or 1.2, or 1.2.*)
+            return False
+    return True
 
 
 def _replace_pin(old_pin, new_pin, deps, record):
