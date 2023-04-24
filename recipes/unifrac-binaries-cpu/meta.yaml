@@ -1,7 +1,7 @@
 {% set version = "1.3" %}
 
 package:
-  name: unifrac-binaries-cpu
+  name: unifrac-binaries
   version: {{ version }}
 
 source:
@@ -10,42 +10,36 @@ source:
 
 build:
   number: 0
+  string: cpu_h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}
+  # MacOS default package is already CPU-only, no need to duplicate
+  skip: True [macos]
+  # weight down cpu implementation and give default build preference
+  track_features:
+    - unifrac-binaries-cpu
 
-outputs:
-  - name: unifrac-binaries
-    script: build.sh
-    build:
-      string: cpu_h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}
-      # weight down cpu implementation and give default build preference
-      track_features:
-        - unifrac-binaries-cpu
-    requirements:
-      build:
-        - {{ compiler('c') }}
-        - {{ compiler('cxx') }}
-        - hdf5
-        - mkl-include
-        - hdf5-static
-        - lz4
-        - zlib
-        - libcblas
-        - liblapacke
-        - make
-        - curl
-      host:
-        - lz4
-        - zlib
-        - libcblas
-        - liblapacke
-      run:
-        - lz4
-        - zlib
-        - libcblas
-        - liblapacke
-    test:
-      commands:
-        - ssu --help
-        - faithpd --help
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - hdf5
+    - mkl-include
+    - hdf5-static
+    - lz4
+    - zlib
+    - libcblas
+    - liblapacke
+    - make
+    - curl
+  host:
+    - lz4
+    - zlib
+    - libcblas
+    - liblapacke
+  run:
+    - lz4
+    - zlib
+    - libcblas
+    - liblapacke
 
 test:
   commands:
