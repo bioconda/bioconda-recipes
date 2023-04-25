@@ -22,7 +22,7 @@ mkdir $BEAV_DIR/software/PaperBLAST/bin/blast
 
 #TIGER
 curl -v -L -O https://github.com/sandialabs/TIGER/archive/refs/tags/TIGER2.1.tar.gz
-tar xzf TIGER2.1.tar.gz --exclude 'TIGER-TIGER2.1/db/Pfam-A.hmm' 
+tar xzf TIGER2.1.tar.gz --exclude 'TIGER-TIGER2.1/db/Pfam-A.hmm' --exclude 'TIGER-TIGER2.1/bin/aragorn*' --exclude 'TIGER-TIGER2.1/bin/hmmsearch' --exclude 'TIGER-TIGER2.1/bin/pfscan'
 mkdir $BEAV_DIR/software/TIGER
 mv TIGER-TIGER2.1 $BEAV_DIR/software/TIGER
 rm TIGER2.1.tar.gz
