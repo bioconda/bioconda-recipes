@@ -1,0 +1,46 @@
+{% set name = "tinytext" %}
+{% set version = "3.5.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/tinytext-{{ version }}.tar.gz
+  sha256: 9188cfebb153aa1db30918c60f533426b72e394a2f58f700baf998239683dbaa
+
+build:
+  skip: true  # [py<37]
+  entry_points:
+    - tinytext = tinytext.cli:main
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+
+requirements:
+  host:
+    - python >=3.7
+    - hatch-vcs
+    - hatchling
+    - pip
+  run:
+    - python >=3.7
+    - importlib-metadata  # [py<38]
+
+test:
+  imports:
+    - tinytext
+  commands:
+    - pip check
+    - tinytext --help
+  requires:
+    - pip
+
+about:
+  summary: A helpful converter to change any normal text into cuter tinier text
+  dev_url: https://github.com/hugovk/tinytext
+  license: MIT
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - gallardoalba
