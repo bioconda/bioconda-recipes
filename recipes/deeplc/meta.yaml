@@ -1,81 +1,58 @@
-{% set name = "BRAKER3" %}
-{% set version = "3.0.3" %}
-{% set sha256 = "3cb65c3bc51abc2a5217927c04a65739062e59c54e938504520993a193a671b4" %}
+{% set name = "deeplc" %}
+{% set version = "1.2.1" %}
+{% set sha256 = "148eade8e1aacc50257dc6a57ae57f1baace82dd23d6ed97677445244072d5a7" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-- url: https://github.com/Gaius-Augustus/BRAKER/archive/refs/tags/v{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/deeplc-{{ version }}.tar.gz
   sha256: {{ sha256 }}
-- url: https://github.com/Gaius-Augustus/TSEBRA/archive/refs/tags/v.1.1.1.tar.gz
-  sha256: 0426c243888135ee3fd6ea0ca9f37eb4af03dd117498165257fa756f59d49ce9
-  folder: tsebra
 
 build:
+  entry_points:
+    - deeplc=deeplc.__main__:main
+    - deeplc-gui=deeplc.gui:start_gui
+  noarch: python
+  script: {{ PYTHON }} -m pip install -vv -e . deeplcretrainer
   number: 0
-  noarch: generic
 
 requirements:
+  host:
+    - python >=3.7
+    - pip
   run:
     - python >=3.7
-    - biopython
-    - perl
-    - perl-app-cpanminus
-    - perl-data-dumper
-    - perl-hash-merge
-    - perl-parallel-forkmanager
-    - perl-scalar-util-numeric
-    - perl-yaml
-    - perl-yaml-libyaml
-    - perl-class-data-inheritable
-    - perl-exception-class
-    - perl-test-pod
-    - perl-file-homedir
-    - perl-file-which
-    - perl-file-spec
-    - perl-scalar-list-utils
-    - perl-logger-simple
-    - perl-math-utils
-    - perl-module-load-conditional
-    - perl-posix
-    - perl-mce
-    - augustus >=3.5.0
-    - bamtools >=2.5.1
-    - samtools >=1.14
-    - spaln >=2.4.8
-    - exonerate >=2.2.0  # Can be used by braker3, but deprecated in favour of genomethreader
-    - blast >=2.12.0  # Can be used by braker3, but deprecated in favour of diamond
-    - makehub
-    - cdbtools >=0.99
-    - genomethreader >=1.7.0
-    - diamond >=2.1.6
-      #    - GeneMark-ES/ET/EP+ >=4.64
-      #    - prothint >=2.6.0
+    - setuptools >=42.0.1
+    - tensorflow >=2.2,<3
+    - scipy >=1.4.1,<2
+    - numpy >=1.17,<=1.22.4
+    - pandas >=0.25,<2
+    - matplotlib-base >=3,<4
+    - h5py >=2.10.0,<4
+    - pygam >=0.8.0,<1
+    - scikit-learn >=0.24.0,<2
+    - deeplcretrainer
+    - opt-einsum
 
 test:
+  imports:
+    - deeplc
   commands:
-    - braker.pl
-    - downsample_traingenes.pl 2>&1 | grep "downsample_traingenes.pl" > /dev/null
-    - filterGenemark.pl
-    - filterIntronsFindStrand.pl
-    - findGenesInIntrons.pl 2>&1 | grep "findGenesInIntrons.pl" > /dev/null
-    - "fix_gtf_ids.py -h | grep -q usage:"
-    - "tsebra.py -h | grep -q usage:"
-    - braker.pl --checkSoftware
+    - pip check
+    - deeplc --help
+    - deeplc-gui --help
+  requires:
+    - pip
 
 about:
-  home: https://github.com/Gaius-Augustus/BRAKER
-  license: Artistic License
-  license_family: Other
-  license_file: LICENSE.TXT
-  summary: "BRAKER3 is the latest pipeline in the BRAKER suite"
-  description: "BRAKER3 enables the usage of RNA-seq and protein data in a fully automated pipeline to train and predict highly reliable genes with GeneMark-ETP and AUGUSTUS. The result of the pipeline is the combined gene set of both gene prediction tools, which only contains genes with very high support from extrinsic evidence."
+  home: https://compomics.github.io/projects/DeepLC
+  summary: 'DeepLC: Retention time prediction for (modified) peptides using Deep Learning.'
+  dev_url: https://github.com/compomics/DeepLC
+  license: Apache-2.0
+  license_file: LICENSE
 
 extra:
-  identifiers:
-    - doi:10.1093/nargab/lqaa108
-  notes:
-    - GeneMark software can be used for free, but requires a license file and should be additionally installed on the machine where the BRAKER3 environment is.
-    - ProtHint software can be used for free, but doesn't allow redistribution and should be additionally installed on the machine where the BRAKER3 environment is.
+  recipe-maintainers:
+    - compomics
