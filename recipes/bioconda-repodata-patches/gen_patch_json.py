@@ -155,6 +155,10 @@ def _gen_new_index(repodata, subdir):
                 if version==v and record['build']==b:
                     deps.append('openssl >=1.1.0,<=1.1.1')
 
+        # add openssl dependency to old samtools packages that neither depend on htslib nor on openssl
+        if record_name.startswith('samtools') and record['subdir']=='linux-64' and not has_dep(record, "openssl") and not has_dep(record, "htslib"):
+            deps.append('openssl >=1.1.0,<=1.1.1')
+
         # nanosim <=3.1.0 requires scikit-learn<=0.22.1
         if record_name.startswith('nanosim') and has_dep(record, "scikit-learn") and version <= "3.1.0":
             for i, dep in enumerate(deps):
