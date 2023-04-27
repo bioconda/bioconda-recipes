@@ -1,7 +1,5 @@
 #!/bin/bash
 
-patch -p1 < ${RECIPE_DIR}/braker.pl.patch
-
 # Copy scripts
 mkdir -p ${PREFIX}/bin
 chmod +x scripts/*.pl
