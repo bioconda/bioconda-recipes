@@ -1,0 +1,49 @@
+{% set name = "kgwasflow" %}
+{% set version = "1.2.1" %}
+
+package:
+    name: "{{ name|lower }}"
+    version: "{{ version }}"
+
+source:
+  url: "https://github.com/akcorut/kGWASflow/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: 2cb0f5ab892538521df8a56716d3d0295f40ab5bd25783e831d5157f6e00928a
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  entry_points:
+    - kgwasflow = workflow.kgwasflow:main
+
+requirements:
+  host:
+    - python >=3.10.10
+    - pip
+  run:
+    - python >=3.10.10
+    - mamba
+    - numpy =1.23.5
+    - pandas =1.5.3
+    - snakemake =7.25.0
+    - click
+
+test:
+  commands:
+    - kgwasflow --help
+    - kgwasflow --version
+
+about:
+  home: "https://github.com/akcorut/kGWASflow"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "kGWASflow is a Snakemake workflow for performing k-mers-based GWAS."
+  doc_url: https://github.com/akcorut/kGWASflow/blob/master/README.md
+  dev_url: https://github.com/akcorut/kGWASflow
+
+extra:
+  recipe-maintainers:
+    - akcorut
+  identifiers:
+    - doi:10.5281/zenodo.7860705
