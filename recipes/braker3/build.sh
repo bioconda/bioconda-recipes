@@ -16,4 +16,4 @@ mv tsebra/bin/tsebra.py tsebra/bin/fix_gtf_ids.py ${PREFIX}/bin
 mkdir -p ${SP_DIR}/tsebra_mod
 mv tsebra/bin/* ${SP_DIR}/tsebra_mod
 mkdir ${PREFIX}/config
-mv tsebra/config/* ${PREFIX}/config
+mv tsebra/config/* ${PREFIX}/config·
