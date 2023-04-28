@@ -29,7 +29,7 @@ then
   # we create multiple variants under Linux
 
   $ gcc and fully optimized
-  export export BUILD_FULL_OPTIMIZATION=True
+  export BUILD_FULL_OPTIMIZATION=True
   make clean && \
   make api && \
   make main && \
@@ -41,7 +41,7 @@ then
   mv ${CONDA_PREFIX}/bin/faithpd ${CONDA_PREFIX}/bin/faithpd_cpu
 
   $ gcc with defaults
-  export export BUILD_FULL_OPTIMIZATION=False
+  export BUILD_FULL_OPTIMIZATION=False
   make clean && \
   make api && \
   make main && \
