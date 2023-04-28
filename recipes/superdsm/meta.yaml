@@ -1,0 +1,55 @@
+{% set name = "SuperDSM" %}
+{% set version = "0.1" %}
+{% set repo_url = "https://github.com/BMCV/SuperDSM" %}
+{% set docs_url = "https://superdsm.readthedocs.io" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "{{ repo_url }}/archive/refs/tags/v{{ version }}.zip"
+  sha256: 0491032ce2d795cd3adf0dacdfc1948a13313b4cf202c967b878839f85a0075b
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed . -vv "
+
+requirements:
+  host:
+    - python >=3.6,<3.11
+    - pip
+    - setuptools
+  run:
+    - python >=3.6,<3.11 
+    - blas =*=mkl
+    - ipython >=7.31.1
+    - numpy >=1.18,<2.0
+    - scipy >=1.6.3,<2.0
+    - scikit-image >=0.18,<1.0
+    - dill >=0.3.2
+    - cvxopt >=1.2.6,<2.0
+    - cvxpy >=1.1.13,<2.0
+    - matplotlib-base >=3.0,<4.0
+    - mkl >=2020.0
+    - posix_ipc >=1.0.4,<2.0
+    - ray-default >=0.8.7
+    - ray-dashboard
+
+test:
+  commands:
+    - python -m superdsm.batch --help
+
+about:
+  home: "{{ repo_url }}"
+  license: MIT
+  summary: "SuperDSM is a globally optimal segmentation method based on superadditivity and deformable shape models for cell nuclei in fluorescence microscopy images and beyond."
+  dev_url: "{{ repo_url }}"
+  doc_url: "{{ docs_url }}"
+
+extra:
+  recipe-maintainers:
+    - kostrykin
+  identifiers:
+    - doi:10.1109/TPAMI.2022.3185583

@@ -149,6 +149,23 @@ def _gen_new_index(repodata, subdir):
                     deps[i] = "openssl >=1.1.0,<=1.1.1"
                     break
 
+        # some htslib packages depend on openssl without this being listed in the dependencies
+        if record_name.startswith('htslib') and record['subdir']=='linux-64' and not has_dep(record, "openssl") and record.get('timestamp', 0) < 1678355208942:
+            for v, b in [("1.3", "1"), ("1.3.1", "0"), ("1.3.1", "1"), ("1.3.2", "0"), ("1.4", "0"), ("1.4.1", "0"), ("1.5", "0"), ("1.6", "0"), ("1.7", "0"), ("1.8", "0"), ("1.8", "1")]:
+                if version==v and record['build']==b:
+                    deps.append('openssl >=1.1.0,<=1.1.1')
+
+        # add openssl dependency to old samtools packages that neither depend on htslib nor on openssl
+        if record_name.startswith('samtools') and record['subdir']=='linux-64' and not has_dep(record, "openssl") and not has_dep(record, "htslib"):
+            deps.append('openssl >=1.1.0,<=1.1.1')
+
+        # nanosim <=3.1.0 requires scikit-learn<=0.22.1
+        if record_name.startswith('nanosim') and has_dep(record, "scikit-learn") and version <= "3.1.0":
+            for i, dep in enumerate(deps):
+                if dep.startswith("scikit-learn") and has_no_upper_bound(dep):
+                    deps[i] += ",<=0.22.1"  # append an upper bound
+                    break
+
     return index
 
 
