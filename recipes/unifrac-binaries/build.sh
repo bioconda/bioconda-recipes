@@ -22,6 +22,38 @@ else
           clang -v
 fi
 which h5c++
+
+
+if [[ "$(uname -s)" == "Linux" ]];
+then
+  # we create multiple variants under Linux
+
+  $ gcc and fully optimized
+  export export BUILD_FULL_OPTIMIZATION=True
+  make clean && \
+  make api && \
+  make main && \
+  make install
+  make test
+
+  mv ${CONDA_PREFIX}/lib/libssu.so ${CONDA_PREFIX}/lib/libssu_cpu.so
+  mv ${CONDA_PREFIX}/bin/ssu ${CONDA_PREFIX}/bin/ssu_cpu
+  mv ${CONDA_PREFIX}/bin/faithpd ${CONDA_PREFIX}/bin/faithpd_cpu
+
+  $ gcc with defaults
+  export export BUILD_FULL_OPTIMIZATION=False
+  make clean && \
+  make api && \
+  make main && \
+  make install
+  make test
+
+  mv ${CONDA_PREFIX}/lib/libssu.so ${CONDA_PREFIX}/lib/libssu_cpu_basic.so
+  mv ${CONDA_PREFIX}/bin/ssu ${CONDA_PREFIX}/bin/ssu_cpu_basic
+  mv ${CONDA_PREFIX}/bin/faithpd ${CONDA_PREFIX}/bin/faithpd_cpu_basic
+fi
+
+
 if [[ "$(uname -s)" == "Linux" ]];
 then
           # remove unused pieces to save space
@@ -31,9 +63,22 @@ then
           source setup_nv_h5.sh
 fi
 
+make clean && \
 make api && \
 make main && \
 make install
+
+if [[ "$(uname -s)" == "Linux" ]];
+then
+  # we create multiple variants under Linux
+
+  mv ${CONDA_PREFIX}/lib/libssu.so ${CONDA_PREFIX}/lib/libssu_nv.so
+  mv ${CONDA_PREFIX}/bin/ssu ${CONDA_PREFIX}/bin/ssu_nv
+  mv ${CONDA_PREFIX}/bin/faithpd ${CONDA_PREFIX}/bin/faithpd_nv
+
+  (cd ${CONDA_PREFIX}/lib && ln -s libssu_nv.so ibssu.so)
+  (cd ${CONDA_PREFIX}/bin && ln -s ssu_nv ssu && ln -s faithpd_nv faithpd)
+fi
 
 make test
 
