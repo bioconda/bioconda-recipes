@@ -28,7 +28,7 @@ if [[ "$(uname -s)" == "Linux" ]];
 then
   # we create multiple variants under Linux
 
-  $ gcc and fully optimized
+  # gcc and fully optimized
   export BUILD_FULL_OPTIMIZATION=True
   make clean && \
   make api && \
@@ -40,7 +40,7 @@ then
   mv ${CONDA_PREFIX}/bin/ssu ${CONDA_PREFIX}/bin/ssu_cpu
   mv ${CONDA_PREFIX}/bin/faithpd ${CONDA_PREFIX}/bin/faithpd_cpu
 
-  $ gcc with defaults
+  # gcc with defaults
   export BUILD_FULL_OPTIMIZATION=False
   make clean && \
   make api && \
