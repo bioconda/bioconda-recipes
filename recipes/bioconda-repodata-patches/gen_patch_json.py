@@ -82,6 +82,12 @@ def has_dep(record, name):
     return any(dep.split(' ')[0] == name for dep in record.get('depends', ()))
 
 
+def parse_version(version):
+    if not isinstance(version, str):
+        version = '.'.join(version)
+    return pkg_resources.parse_version(version)
+
+
 changes = set([])
 
 
@@ -158,6 +164,12 @@ def _gen_new_index(repodata, subdir):
         # add openssl dependency to old samtools packages that neither depend on htslib nor on openssl
         if record_name.startswith('samtools') and record['subdir']=='linux-64' and not has_dep(record, "openssl") and not has_dep(record, "htslib"):
             deps.append('openssl >=1.1.0,<=1.1.1')
+
+        # future libdeflate versions are compatible until they bump their soversion; relax dependencies accordingly
+        if record_name in ['htslib', 'staden_io_lib', 'fastp'] and has_dep(record, 'libdeflate'):
+            # skip deps that allow anything <1.3, which contained an incompatible library filename
+            # TODO adjust the replacement (exclusive) upper bound each time a compatible new libdeflate is released
+            _pin_looser(fn, record, 'libdeflate', min_lower_bound='1.3', upper_bound='1.19')
 
         # nanosim <=3.1.0 requires scikit-learn<=0.22.1
         if record_name.startswith('nanosim') and has_dep(record, "scikit-learn") and version <= "3.1.0":
@@ -257,7 +269,7 @@ def _pin_stricter(fn, record, fix_dep, max_pin, upper_bound=None):
             new_upper = upper_bound.split(".")
         upper = pad_list(upper, len(new_upper))
         new_upper = pad_list(new_upper, len(upper))
-        if tuple(upper) > tuple(new_upper):
+        if parse_version(upper) > parse_version(new_upper):
             if str(new_upper[-1]) != "0":
                 new_upper += ["0"]
             depends[dep_idx] = "{} >={},<{}a0".format(dep_parts[0], lower, ".".join(new_upper))
@@ -266,7 +278,7 @@ def _pin_stricter(fn, record, fix_dep, max_pin, upper_bound=None):
             record['depends'] = depends
 
 
-def _pin_looser(fn, record, fix_dep, max_pin=None, upper_bound=None):
+def _pin_looser(fn, record, fix_dep, max_pin=None, upper_bound=None, min_lower_bound=None):
     depends = record.get("depends", ())
     dep_indices = [q for q, dep in enumerate(depends) if dep.split(' ')[0] == fix_dep]
     for dep_idx in dep_indices:
@@ -279,6 +291,10 @@ def _pin_looser(fn, record, fix_dep, max_pin=None, upper_bound=None):
         lower = m.group("lower")
         upper = m.group("upper").split(".")
 
+        if min_lower_bound is not None:
+            if parse_version(lower) < parse_version(min_lower_bound):
+                continue
+
         if upper_bound is None:
             new_upper = get_upper_bound(lower, max_pin).split(".")
         else:
@@ -287,7 +303,7 @@ def _pin_looser(fn, record, fix_dep, max_pin=None, upper_bound=None):
         upper = pad_list(upper, len(new_upper))
         new_upper = pad_list(new_upper, len(upper))
 
-        if tuple(upper) < tuple(new_upper):
+        if parse_version(upper) < parse_version(new_upper):
             if str(new_upper[-1]) != "0":
                 new_upper += ["0"]
             depends[dep_idx] = "{} >={},<{}a0".format(dep_parts[0], lower, ".".join(new_upper))
