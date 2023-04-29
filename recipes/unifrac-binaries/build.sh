@@ -66,6 +66,9 @@ EOF
   # revert for pgc++
   patch -R src/skbio_alt.cpp skbio_gcc10.patch
   unset BUILD_FULL_OPTIMIZATION
+else
+  # New ARM chips do not support AVX, so force maximum compatibity
+  export BUILD_FULL_OPTIMIZATION=False
 fi
 
 
