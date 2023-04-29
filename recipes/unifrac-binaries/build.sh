@@ -29,6 +29,13 @@ then
   # we create multiple variants under Linux
 
   # g++ 10 does not support fancy 2D collapse
+  cat > skbio_gcc10.patch << EOF
+763c763
+< #pragma omp parallel for collapse(2) shared(mat) reduction(+:sum)
+---
+> #pragma omp parallel for shared(mat) reduction(+:sum)
+EOF
+
   patch src/skbio_alt.cpp skbio_gcc10.patch
 
   # gcc and fully optimized
