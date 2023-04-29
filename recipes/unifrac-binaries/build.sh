@@ -28,6 +28,9 @@ if [[ "$(uname -s)" == "Linux" ]];
 then
   # we create multiple variants under Linux
 
+  # g++ 10 does not support fancy 2D collapse
+  patch src/skbio_alt.cpp skbio_gcc10.patch
+
   # gcc and fully optimized
   export BUILD_FULL_OPTIMIZATION=True
   make clean && \
@@ -51,6 +54,9 @@ then
   mv ${CONDA_PREFIX}/lib/libssu.so ${CONDA_PREFIX}/lib/libssu_cpu_basic.so
   mv ${CONDA_PREFIX}/bin/ssu ${CONDA_PREFIX}/bin/ssu_cpu_basic
   mv ${CONDA_PREFIX}/bin/faithpd ${CONDA_PREFIX}/bin/faithpd_cpu_basic
+
+  # revert for pgc++
+  patch -R src/skbio_alt.cpp skbio_gcc10.patch
 fi
 
 
