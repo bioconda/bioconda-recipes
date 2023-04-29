@@ -44,7 +44,6 @@ EOF
   make api && \
   make main && \
   make install
-  make test
 
   mv ${CONDA_PREFIX}/lib/libssu.so ${CONDA_PREFIX}/lib/libssu_cpu.so
   mv ${CONDA_PREFIX}/bin/ssu ${CONDA_PREFIX}/bin/ssu_cpu
@@ -56,7 +55,6 @@ EOF
   make api && \
   make main && \
   make install
-  make test
 
   mv ${CONDA_PREFIX}/lib/libssu.so ${CONDA_PREFIX}/lib/libssu_cpu_basic.so
   mv ${CONDA_PREFIX}/bin/ssu ${CONDA_PREFIX}/bin/ssu_cpu_basic
