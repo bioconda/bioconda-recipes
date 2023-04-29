@@ -87,7 +87,7 @@ then
   mv $PREFIX/bin/ssu $PREFIX/bin/ssu_nv
   mv $PREFIX/bin/faithpd $PREFIX/bin/faithpd_nv
 
-  (cd $PREFIX/lib && ln -s libssu_nv.so ibssu.so)
+  (cd $PREFIX/lib && ln -s libssu_nv.so libssu.so)
   (cd $PREFIX/bin && ln -s ssu_nv ssu && ln -s faithpd_nv faithpd)
 fi
 
