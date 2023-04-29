@@ -49,6 +49,9 @@ EOF
   mv $PREFIX/bin/ssu $PREFIX/bin/ssu_cpu
   mv $PREFIX/bin/faithpd $PREFIX/bin/faithpd_cpu
 
+  (cd $PREFIX/lib && ln -s libssu_cpu.so libssu_cpu_avx.so)
+  (cd $PREFIX/bin && ln -s ssu_cpu ssu_cpu_avx && ln -s faithpd_cpu faithpd_cpu_avx)
+
   # gcc with defaults
   export BUILD_FULL_OPTIMIZATION=False
   make clean && \
@@ -90,6 +93,9 @@ then
 
   (cd $PREFIX/lib && ln -s libssu_nv.so libssu.so)
   (cd $PREFIX/bin && ln -s ssu_nv ssu && ln -s faithpd_nv faithpd)
+
+  (cd $PREFIX/lib && ln -s libssu_nv.so libssu_nv_avx.so)
+  (cd $PREFIX/bin && ln -s ssu_nv ssu_nv_avx && ln -s faithpd_nv faithpd_nv_avx)
 fi
 
 make test
