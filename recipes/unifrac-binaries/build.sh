@@ -45,9 +45,9 @@ EOF
   make main && \
   make install
 
-  mv ${CONDA_PREFIX}/lib/libssu.so ${CONDA_PREFIX}/lib/libssu_cpu.so
-  mv ${CONDA_PREFIX}/bin/ssu ${CONDA_PREFIX}/bin/ssu_cpu
-  mv ${CONDA_PREFIX}/bin/faithpd ${CONDA_PREFIX}/bin/faithpd_cpu
+  mv $PREFIX/lib/libssu.so $PREFIX/lib/libssu_cpu.so
+  mv $PREFIX/bin/ssu $PREFIX/bin/ssu_cpu
+  mv $PREFIX/bin/faithpd $PREFIX/bin/faithpd_cpu
 
   # gcc with defaults
   export BUILD_FULL_OPTIMIZATION=False
@@ -56,9 +56,9 @@ EOF
   make main && \
   make install
 
-  mv ${CONDA_PREFIX}/lib/libssu.so ${CONDA_PREFIX}/lib/libssu_cpu_basic.so
-  mv ${CONDA_PREFIX}/bin/ssu ${CONDA_PREFIX}/bin/ssu_cpu_basic
-  mv ${CONDA_PREFIX}/bin/faithpd ${CONDA_PREFIX}/bin/faithpd_cpu_basic
+  mv $PREFIX/lib/libssu.so $PREFIX/lib/libssu_cpu_basic.so
+  mv $PREFIX/bin/ssu $PREFIX/bin/ssu_cpu_basic
+  mv $PREFIX/bin/faithpd $PREFIX/bin/faithpd_cpu_basic
 
   # revert for pgc++
   patch -R src/skbio_alt.cpp skbio_gcc10.patch
@@ -83,12 +83,12 @@ if [[ "$(uname -s)" == "Linux" ]];
 then
   # we create multiple variants under Linux
 
-  mv ${CONDA_PREFIX}/lib/libssu.so ${CONDA_PREFIX}/lib/libssu_nv.so
-  mv ${CONDA_PREFIX}/bin/ssu ${CONDA_PREFIX}/bin/ssu_nv
-  mv ${CONDA_PREFIX}/bin/faithpd ${CONDA_PREFIX}/bin/faithpd_nv
+  mv $PREFIX/lib/libssu.so $PREFIX/lib/libssu_nv.so
+  mv $PREFIX/bin/ssu $PREFIX/bin/ssu_nv
+  mv $PREFIX/bin/faithpd $PREFIX/bin/faithpd_nv
 
-  (cd ${CONDA_PREFIX}/lib && ln -s libssu_nv.so ibssu.so)
-  (cd ${CONDA_PREFIX}/bin && ln -s ssu_nv ssu && ln -s faithpd_nv faithpd)
+  (cd $PREFIX/lib && ln -s libssu_nv.so ibssu.so)
+  (cd $PREFIX/bin && ln -s ssu_nv ssu && ln -s faithpd_nv faithpd)
 fi
 
 make test
