@@ -62,6 +62,7 @@ EOF
 
   # revert for pgc++
   patch -R src/skbio_alt.cpp skbio_gcc10.patch
+  unset BUILD_FULL_OPTIMIZATION
 fi
 
 
