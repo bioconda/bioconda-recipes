@@ -1,9 +1,8 @@
 #!bin/bash
-mkdir -p $PREFIX/bin
+mkdir $PREFIX/bin
 
 
-ls
-chmod +x SeqVerify-prerelease/seqverify
-cp SeqVerify-prerelease/seqverify $PREFIX/bin
-cp SeqVerify-prerelease/seqver_functions.py $PREFIX/bin
-cp SeqVerify-prerelease/seqver_transgenes.py $PREFIX/bin
+chmod +x seqverify
+cp seqverify $PREFIX/bin
+cp seqver_functions.py $PREFIX/bin
+cp seqver_transgenes.py $PREFIX/bin
