@@ -1,0 +1,24 @@
+--- /dev/null	2023-04-29 21:08:36.471519589 -0500
++++ b/simd-dispatch.sh	2023-04-29 23:32:48.066790534 -0500
+@@ -0,0 +1,20 @@
++#!/bin/bash
++
++SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
++DIR=$SCRIPT_DIR
++BASE=${DIR}/$(basename "$0")
++CMDARGS="$@"
++
++function test_and_run () {
++	if grep -q "$1" /proc/cpuinfo && [ -x "${BASE}-$1" ]; then
++		cmd="${BASE}-$1"
++		shift
++		# echo "${cmd}" "$@"
++		"${cmd}" "$@"
++		exit
++	fi
++}
++
++for SIMD in avx2 avx sse4.1 ssse3 sse3 sse2 sse ; do test_and_run ${SIMD} "$@" ; done
++
++# fallback to plain option
++$BASE-plain "$@"
