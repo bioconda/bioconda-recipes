@@ -1,0 +1,65 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ab399ba..c14e88a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -59,8 +59,8 @@ if (${CMAKE_BUILD_TYPE} MATCHES Release)
+ endif()
+ 
+ if ((${CMAKE_BUILD_TYPE} MATCHES Release) OR (${CMAKE_BUILD_TYPE} MATCHES RelWithDebInfo))
+-  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS} ${OPTIMIZE_FLAGS}")
+-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} ${OPTIMIZE_FLAGS}")
++  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OPTIMIZE_FLAGS}")
++  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OPTIMIZE_FLAGS}")
+ endif ()
+ 
+ if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
+@@ -150,6 +150,11 @@ target_include_directories(wfa2_static PUBLIC . wavefront utils)
+ add_library(wfa2::wfa2 ALIAS wfa2)
+ add_library(wfa2::wfa2_static ALIAS wfa2_static)
+ 
++if(OPENMP)
++  target_link_libraries(wfa2_static OpenMP::OpenMP_C)
++  target_link_libraries(wfa2 OpenMP::OpenMP_C)
++endif(OPENMP)
++
+ # ---- C++ binding library
+ 
+ set(wfa2cpp_SOURCE
+@@ -163,13 +168,18 @@ add_library(wfa2cpp SHARED ${wfa2cpp_SOURCE})
+ set_target_properties(wfa2cpp PROPERTIES SOVERSION 0)
+ set_target_properties(wfa2cpp_static PROPERTIES OUTPUT_NAME wfa2cpp)
+ target_link_libraries(wfa2cpp PUBLIC wfa2)
+-target_link_libraries(wfa2cpp_static PUBLIC wfa2)
++target_link_libraries(wfa2cpp_static PUBLIC wfa2_static)
+ add_library(wfa2::wfa2cpp ALIAS wfa2cpp)
+ add_library(wfa2::wfa2cpp_static ALIAS wfa2cpp_static)
+ 
++if(OPENMP)
++  target_link_libraries(wfa2cpp_static OpenMP::OpenMP_CXX)
++  target_link_libraries(wfa2cpp OpenMP::OpenMP_CXX)
++endif(OPENMP)
++
+ # ---- Get version
+ 
+-file (STRINGS "VERSION" BUILD_NUMBER)
++file (STRINGS "VERSION.txt" BUILD_NUMBER)
+ add_definitions(-DWFA2LIB_VERSION="${BUILD_NUMBER}")
+ add_definitions(-DVERSION="${BUILD_NUMBER}")
+ 
+diff --git a/README.md b/README.md
+index 8b18879..22c9a2e 100644
+--- a/README.md
++++ b/README.md
+@@ -21,7 +21,7 @@ Git clone and compile the library, tools, and examples. By default use cmake:
+ ```
+ git clone https://github.com/smarco/WFA2-lib
+ cd WFA2-lib
+-mkdir build
++mkdir build && cd build
+ cmake .. -DCMAKE_BUILD_TYPE=Release
+ cmake --build . --verbose
+ ctest . --verbose
+diff --git a/VERSION b/VERSION.txt
+similarity index 100%
+rename from VERSION
+rename to VERSION.txt
