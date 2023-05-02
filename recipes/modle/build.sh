@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export CONAN_V2=1
-export CONAN_REVISIONS_ENABLED=1
 export CONAN_NON_INTERACTIVE=1
 
 export CMAKE_BUILD_PARALLEL_LEVEL=${CPU_COUNT}
@@ -16,34 +14,31 @@ fi
 scratch=$(mktemp -d)
 export CONAN_USER_HOME="$scratch/conan"
 
+# shellcheck disable=SC2064
 trap "rm -rf '$scratch'" EXIT
 
 declare -a CMAKE_PLATFORM_FLAGS
 if [[ ${HOST} =~ .*darwin.* ]]; then
   export MACOSX_DEPLOYMENT_TARGET=10.15  # Required to use std::filesystem
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
+  conan profile detect
 else
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
-
-  # Building b2 with Conan usually fails when using generic cc/c++ compiler wrappers/links
-  printf '[requires]\nb2/4.9.2\n' > "$scratch/conanfile.txt"
-
-  TMPBIN="$scratch/bin"
-  mkdir "$TMPBIN"
-
-  ln -sf "$CC" "$TMPBIN/gcc"
-  ln -sf "$CXX" "$TMPBIN/g++"
-
-  export PATH="$TMPBIN:$PATH"
-  export CC="$TMPBIN/gcc"
-  export CXX="$TMPBIN/g++"
-
-  conan install "$scratch/conanfile.txt" -s compiler=gcc --build=b2/4.9.2
+  # Conan doesn't detect compiler name and version when using cc/c++
+  CC=gcc CXX=g++ conan profile detect
 fi
 
+# Build everything from source to avoid ABI issues due to old GLIBC/GLIBCXX
+conan install conanfile.txt \
+       --build="*" \
+       -s build_type=Release \
+       -s compiler.libcxx=libstdc++11 \
+       -s compiler.cppstd=17 \
+       --output-folder=build/
+
 # https://docs.conda.io/projects/conda-build/en/stable/user-guide/environment-variables.html#environment-variables-set-during-the-build-process
-mkdir build
 cmake -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" \
+      -DCMAKE_PREFIX_PATH="$PWD/build"       \
       -DENABLE_DEVELOPER_MODE=OFF            \
       -DMODLE_ENABLE_TESTING=ON              \
       -DGIT_RETRIEVED_STATE=true             \
