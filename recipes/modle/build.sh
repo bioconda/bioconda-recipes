@@ -21,12 +21,21 @@ declare -a CMAKE_PLATFORM_FLAGS
 if [[ ${HOST} =~ .*darwin.* ]]; then
   export MACOSX_DEPLOYMENT_TARGET=10.15  # Required to use std::filesystem
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
-  conan profile detect
 else
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
   # Conan doesn't detect compiler name and version when using cc/c++
-  CC=gcc CXX=g++ conan profile detect
+  TMPBIN="$scratch/bin"
+  mkdir "$TMPBIN"
+
+  ln -sf "$CC" "$TMPBIN/gcc"
+  ln -sf "$CXX" "$TMPBIN/g++"
+
+  export PATH="$TMPBIN:$PATH"
+  export CC="$TMPBIN/gcc"
+  export CXX="$TMPBIN/g++"
 fi
+
+conan profile detect
 
 # Build everything from source to avoid ABI issues due to old GLIBC/GLIBCXX
 conan install conanfile.txt \
