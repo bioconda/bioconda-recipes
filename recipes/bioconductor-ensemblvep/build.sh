@@ -1,4 +1,3 @@
-#!/bin/bash
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 mkdir -p ~/.R

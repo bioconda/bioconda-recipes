@@ -10,14 +10,19 @@ fi
 mkdir -p "$PREFIX"/bin
 
 echo "## Automatic build"
-nimble build -y --verbose 
+#nimble build -y --verbose 
+nimble install -y --depsOnly
+make
+
 ./bin/seqfu version || true
 
-if [[ -d scripts ]]; then
-  echo "## Copying utils"
-  chmod +x scripts/*
-  cp scripts/* bin/
-fi
+
+# Not necessary using `make`
+#if [[ -d scripts ]]; then
+#  echo "## Copying utils"
+#  chmod +x scripts/*
+#  cp scripts/* bin/
+#fi
 
 echo "## Current dir: $(pwd)"
 mv bin/* "$PREFIX"/bin/
