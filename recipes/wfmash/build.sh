@@ -11,3 +11,4 @@ cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Generic -DEXTRA_FLAGS='-march=sandybridge -
 cmake --build build
 mkdir -p $PREFIX/bin
 mv build/bin/* $PREFIX/bin
+mv scripts/split_approx_mappings_in_chunks.py $PREFIX/bin
