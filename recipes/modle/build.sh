@@ -41,7 +41,6 @@ conan profile detect
 conan install conanfile.txt \
        --build="*" \
        -s build_type=Release \
-       -s compiler.libcxx=libstdc++11 \
        -s compiler.cppstd=17 \
        --output-folder=build/
 
