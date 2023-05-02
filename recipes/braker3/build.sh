@@ -17,3 +17,8 @@ mkdir -p ${SP_DIR}/tsebra_mod
 mv tsebra/bin/* ${SP_DIR}/tsebra_mod
 mkdir ${PREFIX}/config
 mv tsebra/config/* ${PREFIX}/config·
+
+# install GeneMArk-ETP
+wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-ubuntu64.tar.gz && \
+tar -xvf sratoolkit.current-ubuntu64.tar.gz
+cp sratoolkit.current-ubuntu64/bin $PREFIX/bin
