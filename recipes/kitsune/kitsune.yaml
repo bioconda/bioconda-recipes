@@ -1,0 +1,52 @@
+{% set name = "kitsune" %}
+{% set version = "1.3.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 8acdfd3aa73e2e993f0ccd444b4a9f83dc5f1c91a46180391bbd91abd0875eb2
+
+build:
+  number: 0
+  skip: True  # [py<35 or win]
+  entry_points:
+    - kitsune=kitsune.kitsune:main
+  script: {{ PYTHON }} -m pip install . -vv
+
+requirements:
+  host:
+    - python >=3.5
+    - pip
+    - setuptools
+  run:
+    - kmer-jellyfish >=2.2
+    - numpy >=1.22.3
+    - python >=3.5
+    - scipy >=1.7.3
+    - tqdm >=4.38.0
+
+test:
+  imports:
+    - kitsune
+  commands:
+    - pip check
+    - kitsune --version
+  requires:
+    - pip
+
+about:
+  home: https://github.com/natapol/kitsune
+  license: GPL-3.0-only
+  license_family: GPL
+  license_file: LICENSE
+  summary: kitsune
+  description: |
+    K-mer-length Iterative Selection for UNbiased Ecophylogenomics
+
+extra:
+  recipe-maintainers:
+    - natapol
+    - cumbof
