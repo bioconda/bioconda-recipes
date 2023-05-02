@@ -12,7 +12,7 @@ else
 fi
 
 scratch=$(mktemp -d)
-export CONAN_USER_HOME="$scratch/conan"
+export CONAN_HOME="$scratch/conan"
 
 # shellcheck disable=SC2064
 trap "rm -rf '$scratch'" EXIT
