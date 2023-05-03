@@ -84,15 +84,10 @@ stages:
         set -e
         eval "$(conda shell.bash hook)"
         conda activate bioconda
-        mamba info -avv
-        cat /opt/mambaforge/.condarc
         conda config --add channels defaults
         conda config --add channels bioconda
         conda config --add channels conda-forge
-        #echo -e "channels:\n- conda-forge\n- bioconda\n- defaults" > /opt/mambaforge/.condarc
         cp /opt/mambaforge/.condarc $HOME/.condarc
-        mamba info -avv
-        conda info
         docker pull quay.io/dpryan79/mulled_container:latest
         export OSTYPE="linux-gnu"
         export CI="true"
@@ -168,7 +163,10 @@ stages:
         export OSTYPE="darwin"
         export CI="true"
         export HOME=`pwd`
-        conda info
+        conda config --add channels defaults
+        conda config --add channels bioconda
+        conda config --add channels conda-forge
+        cp /opt/mambaforge/.condarc $HOME/.condarc
         bioconda-utils build recipes config.yml \
             --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH" HEAD
       displayName: Test
