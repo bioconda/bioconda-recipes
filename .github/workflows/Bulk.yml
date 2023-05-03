@@ -16,7 +16,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: set path
-      run: echo "/miniconda/bin" >> $GITHUB_PATH
+      run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
 
     - name: Fetch conda install script
       run: |
@@ -26,7 +26,7 @@ jobs:
       id: cache
       uses: actions/cache@v3
       with:
-        path: ${HOME}/miniconda
+        path: /opt/mambaforge
         key: ${{ runner.os }}--bulk--${{ hashFiles('**/install-and-set-up-conda.sh') }}
 
     - name: Set up bioconda-utils
@@ -42,11 +42,9 @@ jobs:
         OSTYPE: "linux-gnu"
         CI: "true"
       run: |
-        ls ${HOME}/miniconda/
-        ls ${HOME}/miniconda/etc
-        ls ${HOME}/miniconda/etc/profile.d
-        . ${HOME}/miniconda/etc/profile.d/conda.sh
-        conda activate bioconda
+        set -e
+        eval "$(conda shell.bash hook)"
+        mamba activate bioconda
         echo '============'
         conda info --all
         conda config --show-sources
@@ -69,7 +67,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: set path
-      run: echo "/miniconda/bin" >> $GITHUB_PATH
+      run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
 
     - name: Fetch conda install script
       run: |
@@ -79,7 +77,7 @@ jobs:
       id: cache
       uses: actions/cache@v3
       with:
-        path: ${HOME}/miniconda
+        path: /opt/mambaforge
         key: ${{ runner.os }}--bulk--${{ hashFiles('**/install-and-set-up-conda.sh') }}
 
     - name: Set up bioconda-utils
@@ -95,8 +93,9 @@ jobs:
         OSTYPE: "darwin"
         CI: "true"
       run: |
-        . ${HOME}/miniconda/etc/profile.d/conda.sh
-        conda activate bioconda
+        set -e
+        eval "$(conda shell.bash hook)"
+        mamba activate bioconda
 
         # The SDK isn't actually cached, so reinstall it
         run_conda_forge_build_setup
