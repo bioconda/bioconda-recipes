@@ -1,0 +1,54 @@
+{% set data = load_setup_py_data() %}
+{% set version = data.get("version") %}
+
+package:
+  name: t1dgrs2
+  version: {{ version }}
+
+source:
+  path: ../
+
+build:
+  # If the installation is complex, or different between Unix and Windows, use
+  # separate bld.bat and build.sh files instead of this key.  Add the line
+  # "skip: True  # [py<35]" (for example) to limit to Python 3.5 and newer, or
+  # "skip: True  # [not win]" to limit to Windows.
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed -vv .
+  noarch: python
+  
+  # entry_points:
+  #   {% for entry in data["entry_points"]["console_scripts"] %}
+  #     - {{ entry.split("=")[0].strip() }} = {{ entry.split("=")[1].strip() }}
+  #   {% endfor %}
+  
+
+requirements:
+  # if you need compilers, uncomment these
+  #    read more at https://docs.conda.io/projects/conda-build/en/latest/resources/compiler-tools.html
+  host:
+    - python ==3.11
+    - pip
+  # build:
+  #   - python {{ python }}
+  #   - numpy {{ numpy }}
+  run:
+    - python
+    # dependencies are defined in setup.py
+    {% for dep in data["install_requires"] %}
+    - {{ dep.lower() }}
+    {% endfor %}
+
+test:
+  source_files:
+    - tests
+  requires:
+    - pytest
+    - pytest-cov
+  commands:
+    - pytest
+
+about:
+  home: https://github.com/ama249/t1dgrs2
+  license: {{ data.get("license") }}
+  license_file: LICENSE
+  summary: Generate a Type 1 Diabetes Genetic Risk Score that accounts for interactions between HLA-DQ variants.
