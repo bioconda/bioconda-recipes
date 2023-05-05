@@ -9,7 +9,6 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -I${BUILD_PREFIX}/include"
 if [ "$(uname)" == "Darwin" ]; then
     # for Mac OSX
     export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
-    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 
 export LANGUAGE=en_US.UTF-8
