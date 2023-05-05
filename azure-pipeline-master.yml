@@ -1,111 +1,129 @@
 pr: none
 trigger:
-- master
+  - master
 
 jobs:
-- job: 'build_and_push_linux'
-  pool:
-    vmImage: 'ubuntu-latest'
-  strategy:
-    maxParallel: 8
-  timeoutInMinutes: 360
+  - job: "build_and_push_linux"
+    pool:
+      vmImage: "ubuntu-latest"
+    strategy:
+      maxParallel: 8
+    timeoutInMinutes: 360
 
-  steps:
-  - script: |
-      git checkout master
+    steps:
+      - script: |
+          git checkout master
 
-  - bash: echo "##vso[task.prependpath]/opt/mambaforge/bin"
-    displayName: Add conda to PATH
+      - bash: echo "##vso[task.prependpath]/opt/mambaforge/bin"
+        displayName: Add conda to PATH
 
-  - bash: |
-      wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/install-and-set-up-conda.sh
-    displayName: Fetch bioconda install script
+      - bash: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda}.sh
+        displayName: Fetch bioconda install script
 
-  - task: Cache@2
-    inputs:
-      path: "/opt/mambaforge"
-      key: '"$(Agent.OS)" | **/install-and-set-up-conda.sh'
-      cacheHitVar: CACHE_RESTORED
-    displayName: Restore cache
+      - task: Cache@2
+        inputs:
+          path: "/opt/mambaforge"
+          key: '"$(Agent.OS)" | **/install-and-set-up-conda.sh'
+          cacheHitVar: CACHE_RESTORED
+        displayName: Restore cache
 
-  - script: bash install-and-set-up-conda.sh
-    condition: ne(variables.CACHE_RESTORED, 'true')
-    displayName: Install bioconda-utils
+      - script: bash install-and-set-up-conda.sh
+        condition: ne(variables.CACHE_RESTORED, 'true')
+        displayName: Install bioconda-utils
 
-  - bash: |
-      set -e
-      eval "$(conda shell.bash hook)"
-      conda activate bioconda
+      # We reconfigure conda to use the right channel setup.
+      # This has to be done after the cache is restored, because
+      # the channel setup is not cached as it resides in the home directory.
+      # We could use a system-wide (and therefore cached) channel setup,
+      # but mamba does not support that at the time of implementation
+      # (it ignores settings made by --system).
+      - script: bash configure-conda.sh
+        displayName: Configure conda
 
-      export OSTYPE="linux-gnu"
-      export CI="true"
+      - bash: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
 
-      docker pull quay.io/dpryan79/mulled_container:latest
+          export OSTYPE="linux-gnu"
+          export CI="true"
 
-      bioconda-utils handle-merged-pr recipes config.yml \
-        --repo bioconda/bioconda-recipes \
-        --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
-        --quay-upload-target biocontainers \
-        --fallback build
+          docker pull quay.io/dpryan79/mulled_container:latest
 
-      docker rmi quay.io/dpryan79/mulled_container:latest
-    env:
-      QUAY_LOGIN: $(QUAY_LOGIN)
-      QUAY_OAUTH_TOKEN: $(QUAY_OAUTH_TOKEN)
-      ANACONDA_TOKEN: $(ANACONDA_TOKEN)
-      INVOLUCRO_AUTH: $(INVOLUCRO_AUTH)
-      GITHUB_TOKEN: $(GITHUB_TOKEN)
-    displayName: Handle merged PR
+          bioconda-utils handle-merged-pr recipes config.yml \
+            --repo bioconda/bioconda-recipes \
+            --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
+            --quay-upload-target biocontainers \
+            --fallback build
 
-- job: 'build_and_push_osx'
-  pool:
-    vmImage: 'macOS-latest'
-  strategy:
-    maxParallel: 4
-  timeoutInMinutes: 360
+          docker rmi quay.io/dpryan79/mulled_container:latest
+        env:
+          QUAY_LOGIN: $(QUAY_LOGIN)
+          QUAY_OAUTH_TOKEN: $(QUAY_OAUTH_TOKEN)
+          ANACONDA_TOKEN: $(ANACONDA_TOKEN)
+          INVOLUCRO_AUTH: $(INVOLUCRO_AUTH)
+          GITHUB_TOKEN: $(GITHUB_TOKEN)
+        displayName: Handle merged PR
 
-  steps:
-  - script: |
-      git checkout master
+  - job: "build_and_push_osx"
+    pool:
+      vmImage: "macOS-latest"
+    strategy:
+      maxParallel: 4
+    timeoutInMinutes: 360
 
-  - bash: echo "##vso[task.prependpath]/opt/mambaforge/bin"
-    displayName: Add conda to PATH
+    steps:
+      - script: |
+          git checkout master
 
-  - bash: |
-      wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/install-and-set-up-conda.sh
-    displayName: Fetch bioconda install script
+      - bash: echo "##vso[task.prependpath]/opt/mambaforge/bin"
+        displayName: Add conda to PATH
 
-  - bash: |
-      sudo mkdir -p /opt
-      sudo chown -R $USER /opt
-    displayName: Ensure cache has path to restore to
+      - bash: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda}.sh
+        displayName: Fetch bioconda install script
 
-  - task: Cache@2
-    inputs:
-      path: "/opt/mambaforge"
-      key: '"$(Agent.OS)" | **/install-and-set-up-conda.sh'
-      cacheHitVar: CACHE_RESTORED
-    displayName: Restore cache
+      - bash: |
+          sudo mkdir -p /opt
+          sudo chown -R $USER /opt
+        displayName: Ensure cache has path to restore to
 
-  - script: bash install-and-set-up-conda.sh
-    condition: ne(variables.CACHE_RESTORED, 'true')
-    displayName: Install bioconda-utils
+      - task: Cache@2
+        inputs:
+          path: "/opt/mambaforge"
+          key: '"$(Agent.OS)" | **/install-and-set-up-conda.sh'
+          cacheHitVar: CACHE_RESTORED
+        displayName: Restore cache
 
-  - bash: |
-      set -e
-      eval "$(conda shell.bash hook)"
-      conda activate bioconda
-      export OSTYPE="darwin"
-      export CI="true"
-      export HOME=`pwd`
+      - script: bash install-and-set-up-conda.sh
+        condition: ne(variables.CACHE_RESTORED, 'true')
+        displayName: Install bioconda-utils
 
-      bioconda-utils handle-merged-pr recipes config.yml \
-        --repo bioconda/bioconda-recipes \
-        --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
-        --fallback build
-    env:
-      QUAY_LOGIN: $(QUAY_LOGIN)
-      ANACONDA_TOKEN: $(ANACONDA_TOKEN)
-      INVOLUCRO_AUTH: $(INVOLUCRO_AUTH)
-      GITHUB_TOKEN: $(GITHUB_TOKEN)
-    displayName: Handle merged PR
+      # We reconfigure conda to use the right channel setup.
+      # This has to be done after the cache is restored, because
+      # the channel setup is not cached as it resides in the home directory.
+      # We could use a system-wide (and therefore cached) channel setup,
+      # but mamba does not support that at the time of implementation
+      # (it ignores settings made by --system).
+      - script: bash configure-conda.sh
+        displayName: Configure conda
+
+      - bash: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+          export OSTYPE="darwin"
+          export CI="true"
+          export HOME=`pwd`
+
+          bioconda-utils handle-merged-pr recipes config.yml \
+            --repo bioconda/bioconda-recipes \
+            --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
+            --fallback build
+        env:
+          QUAY_LOGIN: $(QUAY_LOGIN)
+          ANACONDA_TOKEN: $(ANACONDA_TOKEN)
+          INVOLUCRO_AUTH: $(INVOLUCRO_AUTH)
+          GITHUB_TOKEN: $(GITHUB_TOKEN)
+        displayName: Handle merged PR
