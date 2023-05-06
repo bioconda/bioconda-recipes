@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This uses deprecated functions, can't treat warning as errors
-sed -i.bak "s/-Werror //" src/cmake/cxx.cmake
+sed -i.bak "s/-Werror -Wall //" src/cmake/cxx.cmake
 
 # external htslib.a means we need -lz and co
 sed -i.bak "s/\${LIBLZMA_LIBRARIES}/\${LIBLZMA_LIBRARIES} \${LIBBZIP2_LIBRARIES} \${LIBZLIB_LIBRARIES}/;s/libhts.a/libhts.so/" src/cmake/GetHtslib.cmake
