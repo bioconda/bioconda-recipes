@@ -1,8 +1,9 @@
-{% set version = "1.0.3" %}
-{% set sha256 = "559b45081688118b4872e1b9153f83d0ae3414649a1b299ab4f9996d9e154403" %}
+{% set name "KrakenUniq" %}
+{% set version = "1.0.4" %}
+{% set sha256 = "5e2ef21878c1c4ce92be9925e47b9ccae0ecb59a79d71cc4cbb53d057e0de9ec" %}
 
 package:
-  name: krakenuniq
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
@@ -13,33 +14,34 @@ source:
     - krakenuniq2.patch
 
 build:
-  number: 1
+  number: 0
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
     - llvm-openmp  # [osx]
     - libgomp  # [linux]
-  host:
     - perl
+  host:
     - zlib
     - bzip2
-  run:
-    - kmer-jellyfish >=1,<2
-    - perl
-    - rsync
+    - curl
     - wget
     - tar
+    - rsync
+  run:
+    - perl
     - perl-libwww-perl
     - perl-lwp-protocol-https
-    - curl
+    - kmer-jellyfish <2
 
 test:
   commands:
     - krakenuniq --version
     - krakenuniq-build --version
-    - krakenuniq-extract-reads --help 2>&1 | grep Usage
+    - krakenuniq-extract-reads --help 2>&1 | grep "Usage"
     - krakenuniq-filter --version
     - krakenuniq-mpa-report --version
     - krakenuniq-report --version
@@ -48,11 +50,13 @@ test:
     - build_taxdb 2>&1 | grep "USAGE"
 
 about:
-  home: https://github.com/fbreitwieser/krakenuniq
+  home: "https://github.com/fbreitwieser/krakenuniq"
   license: GPLv3
   license_file: LICENSE
-  summary: Metagenomics classifier with unique k-mer counting for more specific results
+  summary: "Metagenomics classifier with unique k-mer counting for more specific results"
 
 extra:
   identifiers:
-    - biotools:krakenhll
+    - biotools:krakenuniq
+    - doi:10.1186/s13059-018-1568-0
+    - doi:10.21105/joss.04908
