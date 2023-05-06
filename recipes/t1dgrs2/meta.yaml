@@ -1,0 +1,51 @@
+{% set org = "t2diabetesgenes" %}
+{% set pkg_name = "t1dgrs2" %}
+{% set version = "0.1.0" %}
+{% set build_num = 0 %}
+
+package:
+  name: "{{ pkg_name }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/{{ org }}/{{ pkg_name }}/archive/refs/tags/{{ version }}.tar.gz"
+  sha256: 84cf66b30157c32c8fd35159459cf5dddbb4c8635b495e9076fe1f601bf76640
+
+build:
+  number: "{{ build_num }}"
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed -vv ."
+  noarch: python
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools
+    - pyyaml ==6.0.*
+  run:
+    - python >=3.11
+    - numpy ==1.24.*
+    - pandas ==1.5.*
+    - pytest ==7.3.*
+    - pyyaml ==6.0.*
+    - scipy ==1.10.*
+    - setuptools ==67.6.*
+    - wheel ==0.40.*
+    - plink
+
+
+test:
+  source_files:
+    - tests
+  requires:
+    - pytest
+    - pytest-cov
+  commands:
+    - pytest
+
+about:
+  home: "https://github.com/{{ org }}/{{ pkg_name }}"
+  license: GPLv3
+  license_family: GPL
+  license_file: LICENSE
+  summary: Generate a Type 1 Diabetes Genetic Risk Score that accounts for interactions between HLA-DQ variants.
