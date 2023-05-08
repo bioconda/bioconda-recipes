@@ -22,7 +22,7 @@ ZOL_DATA_PATH=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}/db/
 ZOL_EXEC_PATH=${PREFIX}/bin/
 mkdir -p ${ZOL_DATA_PATH}
 
-# set VIBRANT DB PATH variable on env activation
+# set ZOL_DATA_PATH and ZOL_EXEC_PATH variables on env activation
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
 cat <<EOF >> ${PREFIX}/etc/conda/activate.d/zol.sh
 export ZOL_DATA_PATH=${ZOL_DATA_PATH}
