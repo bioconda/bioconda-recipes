@@ -1,4 +1,4 @@
-{% set version="0.8.3" %}
+{% set version="1.0.1" %}
 
 package:
   name: quatradis
@@ -6,24 +6,32 @@ package:
 
 source:
   url: https://github.com/quadram-institute-bioscience/QuaTradis/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 020b8f25aab24a18ca1d9c810fa3d455c1b2328d4f634126a41dabede6cf44ec
+  sha256: 8ff35ebb615d6ab4698f3204d0517c432ac987cb4f570b1b0a0d2d2fadb73af4
 
 build:
   number: 0
-  noarch: python
   script: python -m pip install -v --no-deps --ignore-installed .
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
-    - python >=3
+    - python =3.10
+    - cython >=0.20.1
     - pip
   run:
-    - python >=3
+    - python =3.10
+    - cython
     - setuptools  # for pkg_resources
     - biopython
-    - pysam
+    - pysam >=0.18.0
     - matplotlib-base
     - numpy
+    - scipy
+    - dendropy
+    - seaborn
+    - graphviz
+    - python-graphviz
     - pandas
     - htslib
     - smalt
@@ -49,6 +57,8 @@ about:
 extra:
   skip-lints:
     - uses_setuptools  # uses pkg_resources
+    # Uses pyximport
+    - cython_must_be_in_host
   recipe-maintainers:
     - sbastkowski
     - maplesond

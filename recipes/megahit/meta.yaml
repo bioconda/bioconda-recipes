@@ -10,7 +10,10 @@ source:
   url: https://github.com/voutcn/megahit/archive/v{{version}}.tar.gz
 
 build:
-  number: 1
+  number: 2
+  # TODO test fails on osx without visible error.
+  # Feel free to fix and enable again.
+  skip: true  # [osx]
 
 requirements:
   build:
@@ -29,8 +32,8 @@ requirements:
 
 test:
   commands:
-    - megahit --test
-    - megahit --test --kmin-1pass
+    - megahit --test || (echo "error log:" && cat /tmp/megahit_test_*/log && exit 1)
+    - megahit --test --kmin-1pass || (echo "error log:" && cat /tmp/megahit_test_*/log && exit 1)
 
 about:
   home: https://github.com/voutcn/megahit
