@@ -1,0 +1,52 @@
+{% set version = "1.2.0" %}
+ 
+package:
+  name: pargenes
+  version: {{ version }}
+
+build:
+  number: 1
+  skip: True  # [osx]
+
+source:
+  git_url: https://github.com/BenoitMorel/ParGenes.git
+  git_rev: v{{ version }}
+  sha256: 3398c8389291cd3eab03b907a3bb54e43d01924cfe210065ca972f24cd3c7301
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - bison
+    - flex
+    - cmake
+    - make
+    - unzip
+    - gmp
+  host:
+    - python
+    - openmpi
+    - openjdk
+  run:
+    - python
+    - openmpi
+    - openjdk
+
+test:
+  source_files:
+    - tests
+  commands:
+    - pargenes.py --help
+    - pargenes-hpc.py --help
+    - pargenes-hpc-debug.py --help
+
+about:
+  home: https://github.com/BenoitMorel/ParGenes
+  license: GNU General Public License v3.
+  license_file: LICENSE
+  summary: A massively parallel tool for model selection and tree inference on thousands of genes
+
+extra:
+  skip-lints:
+    - uses_vcs_url
+  identifiers:
+    - doi:10.1101/2020.02.28.969980

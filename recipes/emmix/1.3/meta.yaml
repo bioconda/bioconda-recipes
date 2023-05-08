@@ -3,27 +3,31 @@ package:
   version: "1.3"
 
 source:
-  url: https://people.smp.uq.edu.au/GeoffMcLachlan/emmix/EMMIX.f
-  md5: 66523b6873e820bde7561182dd522898
+  - url: https://people.smp.uq.edu.au/GeoffMcLachlan/emmix/EMMIX.f
+    md5: 66523b6873e820bde7561182dd522898
+  # The EMMIX download page has a separate link for this required file.
+  - url: https://people.smp.uq.edu.au/GeoffMcLachlan/emmix/EMMIX.max
+    sha256: 9a47fc2f9d0df0ec5f0342582f0f5cf2eae2cc5cf6167f7957b42f5088462ae7
+    patches:
+      # Adjust the max data points parameter that defines array sizes at
+      # compilation time, allowing for analyses that produce ks data points
+      # up to 100000 instead of the default value of 1000.
+      - 0001-Adjust-the-max-data-points-parameter.patch
 
 build:
-  skip: True  #[osx]
-  number: 3
+  skip: True  # [osx]
+  number: 5
 
 requirements:
   build:
-    - certifi
-    - wget
-    - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
 
 test:
   # EMMIX is interactive (requiring user input), so cannot be tested.
+  commands:
+    - test -x "${PREFIX}/bin/EMMIX"
 
 about:
   home: 'https://people.smp.uq.edu.au/GeoffMcLachlan/emmix/emmix.html'
   summary: 'A tool that fits a mixture model of multivariate normal or t-distributed components to a given data set.'
   license: 'Available freely for non-commercial use only'
-
-extra:
-  skip-lints:
-    - missing_tests

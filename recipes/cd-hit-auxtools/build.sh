@@ -1,9 +1,11 @@
 #!/bin/sh
 cd cd-hit-auxtools
 
-mkdir -p $PREFIX/bin
-make
+LFLAGS="${LDFLAGS}" make CC="${CXX}"
 
-mv cd-hit-dup $PREFIX/bin
-mv cd-hit-lap $PREFIX/bin
-mv read-linker $PREFIX/bin
+mkdir -p "${PREFIX}/bin"
+mv \
+    cd-hit-dup \
+    cd-hit-lap \
+    read-linker \
+    "${PREFIX}/bin/"

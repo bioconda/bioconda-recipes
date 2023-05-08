@@ -1,29 +1,21 @@
-{% set version = "1.3.5" %}
-{% set sha256 = "60e67886cdd2272a2ae4d5d9af0a25518876fa9e7fa46f78a66ce18e0c3548cd" %}
+{% set version = "1.5.7" %} # put in correct version here
+{% set name = "shiver" %}
 
 package:
-  name: shiver
-  version: '{{ version }}'
-
+  name: {{ name|lower }}
+  version: {{ version }}
 source:
-  url: https://github.com/ChrisHIV/shiver/archive/v{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  url: https://github.com/ChrisHIV/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: 64973462bfc10c725ef5f21e85532ef8dd58d26795b2cee326a77f690d31ebf0
   patches:
-    - 0001-changed-tools-to-shiver_tools.patch
-    - 0002-changed-python2-to-python.patch
-    # regarding fastaq see comments in build.sh
-    - 0003-added-fastaq-installation-on-demand.patch  # [py27]
-    - 0004-fixed-pyfastaq-installation.patch  # [py27]
-
+    - python2-python3.patch
 build:
-  noarch: python
-  number: 2
+  number: 1
+
 
 requirements:
-  host:
-    - python
   run:
-    - python
+    - python >=3
     - smalt
     - trimmomatic
     - samtools
@@ -31,12 +23,14 @@ requirements:
     - mafft
     - picard
     - blast >=2.2.28
-    - pyfastaq  # [not py27]
+    - pyfastaq
 
 test:
-  # Python imports
   commands:
     - shiver_init.sh 2>&1 | grep "Arguments"
+    - shiver_full_auto.sh 2>&1 | grep "Arguments"
+    - shiver_align_contigs.sh 2>&1 | grep "Arguments"
+    - shiver_map_reads.sh 2>&1 | grep "Arguments"
 
 about:
   home: https://github.com/ChrisHIV/shiver
@@ -48,3 +42,4 @@ about:
 extra:
   recipe-maintainers:
     - notestaff
+    - gtonkinhill

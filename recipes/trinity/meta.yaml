@@ -1,31 +1,35 @@
 {% set name = "Trinity" %}
-{% set version = "2.9.1" %}
-{% set sha256 = "98d98bc21cd5dd32b408ed52586d01a15873b49b96de3264d42616bdcfc9d455" %}
+{% set version = "2.15.1" %}
+{% set sha256 = "ba37e5f696d3d54e8749c4ba439901a3e97e14a4314a5229d7a069ad7b1ee580" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/trinityrnaseq/trinityrnaseq/releases/download/v2.9.1/trinityrnaseq-v{{ version }}.FULL.tar.gz
+  url: https://github.com/trinityrnaseq/trinityrnaseq/releases/download/Trinity-v{{ version }}/trinityrnaseq-v{{ version }}.FULL.tar.gz
   sha256: {{ sha256 }}
   patches:
     - makefile.patch
 
 build:
-  number: 0
   skip: True  # [osx]
+  number: 1
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
     - cmake
     - autoconf
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
   host:
     - zlib
+    - htslib
   run:
-    - zlib
+    - perl-db_file
     - trimmomatic >=0.36
     - bowtie
     - bowtie2 >=2.3.0
@@ -34,8 +38,28 @@ requirements:
     - perl
     - python >=3.6
     - samtools >=1.9
-    - salmon >=0.11.2
+    - salmon >=1.0
+    - kallisto
     - numpy
+    - htslib
+    - coreutils
+    - r-base >=4.1
+    - r-cluster
+    - r-gplots
+    - r-fastcluster
+    - r-argparse
+    - r-ape
+    - r-phangorn
+    - r-gplots
+    - r-tidyverse
+    - r-sm
+    - r-vioplot
+    - bioconductor-edger
+    - bioconductor-qvalue
+    - bioconductor-ctc
+    - bioconductor-goseq
+    - bioconductor-go.db
+    - bioconductor-dexseq
 
 test:
   commands:
@@ -64,3 +88,4 @@ extra:
   identifiers:
     - biotools:trinity
     - doi:10.1038/nbt.1883
+    - usegalaxy-eu:trinity

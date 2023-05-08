@@ -1,6 +1,6 @@
 #!/bin/bash
 
-make
+make CC="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
-mkdir -p $PREFIX/bin
-cp fastq-join $PREFIX/bin
+install -d "${PREFIX}/bin"
+install fastq-join "${PREFIX}/bin/"

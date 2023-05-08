@@ -20,9 +20,12 @@ class DVHelp(argparse._HelpAction):
         conda_path = os.path.dirname(os.path.realpath(sys.executable))
         lib_path = os.path.join(os.path.dirname(conda_path), "lib")
         py_exe = sys.executable
-        cmd = ("export LD_LIBRARY_PATH={lib_path}:$LD_LIBRARY_PATH && "
+        cmd = ("export LD_LIBRARY_PATH={lib_path}:\"$LD_LIBRARY_PATH\" && "
                "{py_exe} {bin_dir}/postprocess_variants.zip --help")
-        print(subprocess.check_output(cmd.format(**locals()), shell=True))
+        try:
+            subprocess.check_output(cmd.format(**locals()), shell=True)
+        except subprocess.CalledProcessError as e:
+            print(e.stdout.decode('UTF-8'))
         print()
         print("Wrapper arguments")
         parser.print_help()
@@ -32,6 +35,8 @@ def main():
     parser.add_argument("--ref", required=True, help="Reference genome")
     parser.add_argument("--infile", required=True, help="Input tfrecord file from call_variants")
     parser.add_argument("--outfile", required=True)
+    parser.add_argument("--gvcf_infile", help="Input gVCF tfrecord file from make_examples, formatted as {{gvcf}}/{{sample}}.gvcf.tfrecord@{{cores}}.gz, with arguments as supplied to make_examples.")
+    parser.add_argument("--gvcf_outfile", help="gVCF output file")
     parser.add_argument("-h", "--help", action=DVHelp)
 
     args = parser.parse_args()
@@ -40,8 +45,11 @@ def main():
     conda_path = os.path.dirname(os.path.realpath(sys.executable))
     lib_path = os.path.join(os.path.dirname(conda_path), "lib")
     py_exe = sys.executable
-    cmd = ("export LD_LIBRARY_PATH={lib_path}:$LD_LIBRARY_PATH && "
+    gvcf = ("--nonvariant_site_tfrecord_path {args.gvcf_infile} "
+            "--gvcf_outfile {args.gvcf_outfile} ").format(**locals()) if args.gvcf_infile and args.gvcf_outfile else ""
+    cmd = ("export LD_LIBRARY_PATH={lib_path}:\"$LD_LIBRARY_PATH\" && "
            "{py_exe} {bin_dir}/postprocess_variants.zip "
+           "{gvcf} "
            "--ref {args.ref} --infile {args.infile} --outfile {args.outfile}")
     sys.exit(subprocess.call(cmd.format(**locals()), shell=True))
 

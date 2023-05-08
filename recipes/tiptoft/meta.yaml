@@ -1,36 +1,40 @@
-{% set name = "tiptoft" %}
-{% set version = "1.0.0" %}
-{% set hash_value = "271badd22f2a8e239f0c1a89b06380176535b22f48470ae87aa716c177cddd7b" %}
+{% set version = "1.0.2" %}
+{% set hash_value = "e02cd7f57fc14a3a2928dad8e4c3f5a1e063f3d365d6876e7731be5da2d0c578" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: tiptoft
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/56/fd/07cee0bceaead935df9a7a53e9ab568dad323052bc742c15c51d53cfb1ee/tiptoft-1.0.0.tar.gz
+  url: https://pypi.io/packages/source/t/tiptoft/tiptoft-{{ version }}.tar.gz
   sha256: {{ hash_value }}
 
 build:
-  number: 1
-  skip: True  # [py27]
-  script: python setup.py install --single-version-externally-managed --record=record.txt
-  
+  number: 3
+  skip: True  # [py<30]
+  script:  python -m pip install --no-deps --ignore-installed . 
+
 requirements:
   build:
-    - "{{ compiler('c') }}"
+    - {{ compiler('c') }}
+
   host:
     - python
-    - setuptools
     - cython
+    - pip
+    - setuptools
+
   run:
     - python
-    - cython
     - biopython >=1.68
     - pyfastaq >=3.12.0
+    - cython
+    - setuptools
 
 test:
   commands:
     - tiptoft --help
+    - tiptoft_database_downloader --help
 
 about:
   home: https://github.com/andrewjpage/tiptoft
@@ -40,3 +44,8 @@ about:
   summary: Predict plasmids from uncorrected long read data.
   doc_url: https://github.com/andrewjpage/tiptoft
   dev_url: https://github.com/andrewjpage/tiptoft
+
+extra:
+  skip-lints:
+    - cython_must_be_in_host
+    - uses_setuptools  #  uses pkg_resources

@@ -1,0 +1,66 @@
+{% set name = "targetDB" %}
+{% set version = "1.3.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 453d91a5b3aa89356e11d75bd9e25f7a22fdc8749e7a8cbb5af8acf9483bfe97
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - target_DB=targetDB.druggability_DB:entry_point
+    - targetDB=targetDB.druggability_report:entry_point_gui
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - biopython <1.77
+    - intermine
+    - matplotlib-base
+    - opentargets
+    - pandas >=0.21.0
+    - pip
+    - python
+    - scipy
+    - xmltodict
+  run:
+    - biopython <1.77
+    - intermine
+    - matplotlib-base
+    - mysqlclient
+    - numpy
+    - requests
+    - scikit-learn
+    - seaborn
+    - opentargets
+    - pandas >=0.25.3
+    - python
+    - scipy
+    - xmltodict
+    - blast
+    - fpocket
+    - opencv
+
+test:
+  imports:
+    - targetDB
+    - targetDB.protein_atlas_api
+    - targetDB.utils
+  commands:
+    - target_DB --help
+
+about:
+  home: "https://github.com/sdecesco/targetDB"
+  license: "GNU General Public v3 or later (GPLv3+)"
+  license_family: GPL3
+  summary: "Package with an application to generate report on potential drug targets"
+
+extra:
+  recipe-maintainers:
+    - Acribbs
+    - sdecesco

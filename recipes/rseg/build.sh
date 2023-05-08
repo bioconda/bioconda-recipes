@@ -1,8 +1,8 @@
 #!/bin/bash
 
-mkdir -p ${PREFIX}/bin
-export C_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-make 
+make \
+    CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+    CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 make install
-cp bin/* ${PREFIX}/bin
+install -d "${PREFIX}/bin"
+install bin/* "${PREFIX}/bin/"

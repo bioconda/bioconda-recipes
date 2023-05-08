@@ -1,7 +1,7 @@
 #!/bin/bash
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
-export CPATH=${PREFIX}/include
 
-make
+mkdir -p $PREFIX/bin
+
+make CC="$CC" CFLAGS="-g -Wall -O2 -Wno-unused-function -I$PREFIX/include -L$PREFIX/lib"
+
 mv trimadap-mt $PREFIX/bin

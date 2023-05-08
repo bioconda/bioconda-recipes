@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export PATH=/opt/rh/devtoolset-2/root/usr/bin/:$PATH
-HOME=/tmp cpanm --installdeps .
+#export PATH=/opt/rh/devtoolset-2/root/usr/bin/:$PATH
+#HOME=/tmp cpanm --installdeps .
 
 rm t/test_class_tests.t
 

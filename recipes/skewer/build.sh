@@ -1,7 +1,5 @@
 #!/bin/bash
 
-BIN=$PREFIX/bin
-mkdir -p $BIN
-CXXFLAGS="-c $CXXFLAGS" make
-
-cp skewer $BIN
+CXXFLAGS="-c $CXXFLAGS" make CXX="${CXX}"
+mkdir -p "${PREFIX}/bin"
+cp skewer "${PREFIX}/bin/"

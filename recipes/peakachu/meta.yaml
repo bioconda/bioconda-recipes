@@ -1,36 +1,35 @@
-{% set version = "0.1.0" %}
-{% set sha256 = "729f0067ed460ef398893f671a880c45410ef677075428d0598a8c5f79b931ac" %}
+{% set version = "0.2.0" %}
 
 package:
   name: peakachu
-  version: "{{ version }}"
+  version: {{ version }}
 
 source:
   url: https://github.com/tbischler/PEAKachu/archive/v{{ version }}.tar.gz
-  sha256: "{{ sha256 }}"
-  patches:
-    - pandas.patch
+  sha256: 61959ed06d7fb3d0bff6bd4976af6da846e8ad8c1e9fb743824e208549238d09
 
 build:
-  skip: True  # [not py3k]
-  number: 4
+  skip: True  # [py2k or py > 38]
+  number: 2
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
+    - pip
     - python
   run:
     - python
-    - biopython
-    - matplotlib
-    - pandas
-    - pysam
-    - numexpr
-    - bcbiogff
-    - statsmodels
+    - biopython >=1.77
+    - matplotlib-base >=3.3.1
+    - pandas >=0.25.1
+    - pysam >=0.16.0.1
+    - bcbio-gff >=0.6.6
+    - statsmodels >=0.10.1
+    - numexpr >=2.7.0
     - rpy2
-    - bioconductor-deseq2 1.18.1
+    - bioconductor-deseq2 >=1.18.1
     - bioconductor-edger
     - blockbuster
 

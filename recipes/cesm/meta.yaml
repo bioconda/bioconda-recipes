@@ -1,5 +1,5 @@
 {% set name = "cesm" %}
-{% set version = "2.1.1" %}
+{% set version = "2.1.3" %}
 
 package:
   name: {{ name|lower }}
@@ -7,42 +7,49 @@ package:
 
 source:
     url: https://github.com/ESCOMP/cesm/archive/release-cesm{{ version }}.tar.gz
-    sha256: e9981d144715c871ecb449f77d835c12f287080e23179b8401920b30d183e79b
+    sha256: 6adae8b9cc74afdf002582fcb66a53942dcfcac94601fe5d1356d355851eb479
 
 build:
-    skip: True  # [win or osx]
-    number: 1
+    skip: True  # [win or osx or py<30]
+    number: 7
 
 requirements:
     build:
         - {{ compiler('c') }}
+        - {{ compiler('fortran') }}
         - cmake
     host:
-        - python >=3
+        - python
         - mpich
-        - hdf5
-        - netcdf-fortran
-        - svn
+        - hdf5=*=*mpich*
+        - netcdf-fortran=*=*mpich*
+        - subversion
+        - libxml2
+        - perl
+        - perl-xml-libxml
     run:
+        - python
         - tcsh
-        - python >=3
+        - binutils
         - {{ compiler('c') }}
         - {{ compiler('fortran') }}
-        - netcdf-fortran
+        - netcdf-fortran=*=*mpich*
         - mpich
         - libxml2
-        - perl-xml-libxml
         - libiconv
         - make
         - cmake
         - mkl
+        - subversion
+        - wget
+        - perl
+        - perl-xml-libxml
 
 test:
     commands:
         - create_newcase --help
         - create_clone --help
         - query_testlists --help
-        - query_config --help
 
 about:
     home: https://github.com/ESCOMP/cesm
@@ -50,6 +57,21 @@ about:
     license_family: BSD
     license_file: LICENSE.txt
     summary: The Community Earth System Model (CESM) is a coupled climate model for simulating Earth’s climate system
+    description: |
+      "CESM (Community Earth System Model) is a fully-coupled, community,
+      global climate model that provides state-of-the-art computer simulations
+      of the Earth's past, present, and future climate states. 
+      When creating a case, use `espresso` for the target machine.
+      In addition, the following environment variables need to be defined
+      before creating the cesm case:
+      ```
+      export NETCDF_DIR=$(nc-config --prefix)
+      export CIME_MODEL=cesm
+      export CESM_DATA_ROOT=$HOME
+      export CESM_WORK_ROOT=$HOME
+      mkdir -p $CESM_DATA_ROOT/inputdata
+      ```
+      "
     doc_url: http://www.cesm.ucar.edu/
 
 extra:
@@ -57,3 +79,5 @@ extra:
     - bgruening
   skip-lints:
     - compilers_must_be_in_build
+  container:
+    extended-base: true

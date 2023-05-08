@@ -1,5 +1,5 @@
 {% set name = "scaden" %}
-{% set version = "0.9.2" %}
+{% set version = "1.1.2" %}
 
 package:
   name: '{{ name|lower }}'
@@ -7,41 +7,38 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 325a3c6edafbca88860bca06fdcabd7b9c7814addf0892f372ed71846fd55bb9
+  sha256: ae03c2036f154955d8337207b18076331ae7f249dbf4df0b99c254a6724e0e88
 
 build:
   number: 0
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
   noarch: python
 
 requirements:
   host:
-    - python
+    - python >=3
     - pip
     - twine
   run:
-    - python
+    - python >=3
     - pandas
+    - numpy >=1.16.0,<1.19.0
     - numpy
     - scikit-learn
-    - scipy
+    - scipy  1.4.1
     - seaborn
-    - tensorflow <=1.13.0
-    - matplotlib
+    - tensorflow >=2
+    - matplotlib-base
     - scanpy
     - tqdm
     - click
+    - rich
 
-# tests fail because of tesnorflow, commenting out
-#test:
-#  commands:
-#    - scaden --help
+test:
+  commands:
+    - scaden --help
 
 about:
   home: https://github.com/KevinMenden/scaden
   license: MIT
   summary: Cell type deconvolution using single cell data
-
-extra:
-  skip-lints:
-    - missing_tests

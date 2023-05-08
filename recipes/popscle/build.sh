@@ -12,8 +12,7 @@
 
 mkdir -p build
 cd build
-export LD_LIBRARY_PATH=${PREFIX}/lib
-export LIBRARY_PATH=${PREFIX}/lib
+
 cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} \
       -DCMAKE_CXX_COMPILER=${CXX} \
       -DCMAKE_INSTALL_INCLUDEDIR=${PREFIX}/include \
@@ -21,4 +20,6 @@ cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} \
       -DZLIB_ROOT=$PREFIX \
       ..
 make
-cp ../bin/popscle ${PREFIX}/bin
+
+mkdir -p "${PREFIX}/bin"
+cp ../bin/popscle "${PREFIX}/bin/"
