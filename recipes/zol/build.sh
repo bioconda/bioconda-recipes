@@ -1,5 +1,7 @@
 #!/bin/bash
 
+python -m pip install . -vv
+
 mkdir -p ${PREFIX}/bin
 
 # (re)-compile RBH/InParanoid-esque programs written in C++
