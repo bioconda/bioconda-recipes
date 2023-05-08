@@ -5,9 +5,9 @@ python -m pip install . -vv
 mkdir -p ${PREFIX}/bin
 
 # (re)-compile RBH/InParanoid-esque programs written in C++
-g++ -std=c++11 -o zol/orthologs/runRBH zol/orthologs/runRBH.cpp
-g++ -std=c++11 -o zol/orthologs/splitDiamondResults zol/orthologs/splitDiamondResults.cpp
-g++ -std=c++11 -o zol/splitDiamondResultsForFai zol/splitDiamondResultsForFai.cpp
+${CXX} -std=c++11 -o zol/orthologs/runRBH zol/orthologs/runRBH.cpp
+${CXX} -std=c++11 -o zol/orthologs/splitDiamondResults zol/orthologs/splitDiamondResults.cpp
+${CXX} -std=c++11 -o zol/splitDiamondResultsForFai zol/splitDiamondResultsForFai.cpp
 
 cp zol/orthologs/runRBH ${PREFIX}/bin/
 cp zol/orthologs/splitDiamondResults ${PREFIX}/bin/
