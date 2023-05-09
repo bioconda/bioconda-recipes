@@ -12,7 +12,7 @@ do
     # Build the binaries
     make \
         -j 4 \
-        DYN_LIBS="-lz -lpthread -lbz2 -llzma -lcurl -lhts -ldeflate -lm" \
+        DYN_LIBS="-lz -lpthread -lbz2 -llzma -lcurl -lhts -ldeflate -lm -lcrypto" \
         CXX="$CXX -std=c++14" \
         CXXFLAG="$CXXFLAGS ${PREFIX} -D__COMMIT_ID__='\"${COMMIT_VERS}\"' -D__COMMIT_DATE__='\"${COMMIT_DATE}\"' -Wno-ignored-attributes -O3 -mavx2 -mfma" \
         LDFLAG="$LDFLAGS" \
