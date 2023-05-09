@@ -8,5 +8,3 @@ cp -R * $outdir/
 cp $RECIPE_DIR/umicollapse.py $outdir/umicollapse
 ln -s $outdir/umicollapse $PREFIX/bin
 chmod 0755 "${PREFIX}/bin/umicollapse"
-ls $outdir/resources
-chmod -R a+rw $outdir/resources/
