@@ -9,7 +9,7 @@ cp $RECIPE_DIR/umicollapse.py $outdir/umicollapse
 ln -s $outdir/umicollapse $PREFIX/bin
 curl -O -L https://repo1.maven.org/maven2/com/github/samtools/htsjdk/2.19.0/htsjdk-2.19.0.jar
 curl -O -L https://repo1.maven.org/maven2/org/xerial/snappy/snappy-java/1.1.7.3/snappy-java-1.1.7.3.jar
-mkdir $outdir/umicollapse/lib
+mkdir -p $outdir/umicollapse/lib
 mv htsjdk-2.19.0.jar $outdir/umicollapse/lib
 mv snappy-java-1.1.7.3.jar $outdir/umicollapse/lib
 chmod 0755 "${PREFIX}/bin/umicollapse"
