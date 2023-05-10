@@ -4,7 +4,6 @@ curl -SL https://github.com/dooguypapua/eKLIPse/archive/refs/heads/master.zip -o
 
 unzip -d eklipse eklipse.zip
 cd eklipse
-chmod a+x eKLIPse-master/*
-chmod a+x eKLIPse-master
-mkdir -p "${PREFIX}/bin"
-cp -r eKLIPse-master/* "${PREFIX}/bin/."
+mkdir -p ${PREFIX}/bin
+cp -r eKLIPse-master/*.py ${PREFIX}/bin/
+chmod +x ${PREFIX}/bin/eKLIPse.py
