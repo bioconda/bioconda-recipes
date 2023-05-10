@@ -11,6 +11,7 @@ for subdir in phase_common phase_rare switch ligate
 
 do
     pushd $subdir
+
     # Build the binaries
     make \
         -j 4 \
@@ -26,6 +27,6 @@ do
         BOOST_LIB_SE="-lboost_serialization" \
     ;
     # Install the binaries
-    install "bin/SHAPEIT5_${subdir}" "${PREFIX}/bin"
+    install "bin/${subdir}" "${PREFIX}/bin"
     popd
 done
