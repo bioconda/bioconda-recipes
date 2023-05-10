@@ -28,5 +28,8 @@ do
     ;
     # Install the binaries
     install "bin/${subdir}" "${PREFIX}/bin"
+
+    ## Rename the generated bin
+    mv "bin/${subdir}" "bin/SHAPEIT5_${subdir}"
     popd
 done
