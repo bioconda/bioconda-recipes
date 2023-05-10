@@ -27,9 +27,7 @@ do
         BOOST_LIB_SE="-lboost_serialization" \
     ;
     # Install the binaries
-    install "bin/${subdir}" "${PREFIX}/bin"
+    install -T "bin/${subdir}" "${PREFIX}/bin/SHAPEIT5_${subdir}"
 
-    ## Rename the generated bin
-    mv "bin/${subdir}" "bin/SHAPEIT5_${subdir}"
     popd
 done
