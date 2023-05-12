@@ -1,4 +1,4 @@
-{% set version = "6.12.1" %}
+{% set version = "7.25.3" %}
 
 package:
   name: snakemake
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/snakemake/snakemake-{{ version }}.tar.gz
-  sha256: 6bc45e98c0cd90d8e696ff09ad87cddf815baf50bd75964ea01639c9699ca50d
+  sha256: 993a304d6a9bf12b6b55b45e77dd3b98897394b205a5bcefb7e180dec2095ee4
 
 build:
   number: 0
@@ -24,6 +24,8 @@ requirements:
     - pysftp >=0.2.8
     - psutil
     - aioeasywebdav
+    # mamba is optional, but is the default/recommended replacement for conda package manager
+    - mamba
     # pandas is optional, but required for many workflows
     - pandas
     - python-irodsclient
@@ -32,16 +34,9 @@ requirements:
     - google-crc32c
     - boto3
     - jsonschema
-    - jinja2
-    - pygraphviz >=1.5
-    - networkx >=2.0
     - pygments
-    # older versions of imagemagick sometimes fail on PDF -> PNG conversion
-    - imagemagick >=7.0
     - oauth2client
     - slacker
-    # libXau is currently a missing dep for graphviz (linked by lib/graphviz/libgvplugin_pango.so)
-    - xorg-libxau
     - peppy
 
 test:
@@ -74,6 +69,9 @@ extra:
   skip-lints:
     - uses_setuptools  # uses pkg_resoures during run time
     - should_be_noarch_python  # toplevel metapackage is noarch:generic
+  recipe-maintainers:
+    - johanneskoester
+    - corneliusroemer
 
 outputs:
   - name: snakemake-minimal
@@ -87,11 +85,11 @@ outputs:
 
     requirements:
       host:
-        - python >=3.5
+        - python >=3.7
         - pip
         - setuptools
       run:
-        - python >=3.5
+        - python >=3.7
         - setuptools
         - wrapt
         - requests
@@ -100,12 +98,12 @@ outputs:
         - datrie
         - requests >=2.8.1
         - psutil
-        - ratelimiter
+        - throttler
         - configargparse
         - appdirs
         - jsonschema
         - gitpython
-        - toposort
+        - toposort >=1.10
         - nbformat
         - connection_pool >=0.0.3
         - pulp >=2.0
@@ -113,6 +111,10 @@ outputs:
         - filelock
         - stopit
         - tabulate
+        - jinja2 >=3.0,<4.0
+        - yte >=1.2,<2.0
+        - reretry
+        - humanfriendly
 
     test:
       imports:

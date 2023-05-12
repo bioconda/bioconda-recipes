@@ -2,6 +2,7 @@
 
 set -euxo pipefail
 
+stats.sh
 prodigal -h
 makeblastdb -h
 tblastn -h

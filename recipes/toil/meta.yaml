@@ -1,66 +1,95 @@
-{% set version="5.5.0" %}
+{% set version="5.9.2" %}
 package:
   name: toil
   version: {{ version }}
 
 source:
   url: https://pypi.io/packages/source/t/toil/toil-{{ version }}.tar.gz
-  sha256: 1a520f5876265adba4d1f51abbf67a56c13b55eedcacb84d48ae094817dfc7a2
+  sha256: 15018c0215448890c4a6ea4e4a122791bab7ab200424831c0a4eacaa57df0120
   patches:
     - remove_wdlparse.patch
 
 build:
-  number: 1
+  number: 0
   noarch: python 
   entry_points:
     - toil = toil.utils.toilMain:main
     - _toil_worker = toil.worker:main
-    - cwltoil = toil.cwl.cwltoil:main [cwl]
     - toil-cwl-runner = toil.cwl.cwltoil:main [cwl]
     #- toil-wdl-runner = toil.wdl.toilwdl:main
+    #- toil-wes-cwl-runner = toil.server.cli.wes_cwl_runner:main [server]
     - _toil_mesos_executor = toil.batchSystems.mesos.executor:main [mesos]
+    #- _toil_contained_executor = toil.batchSystems.contained_executor:executor
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.7
     - pip
   run:
-    - python >=3.6
+    - python >=3.7
     - dill >=0.3.2,<0.4
-    - six >=1.10.0
-    - future 
-    - requests 2
-    - docker-py >=2.5.1
+    - requests >=2,<3
+    - docker-py >=3.7.2,<6
     - python-dateutil
     - psutil >=3.0.1,<6
-    - addict >=2.2.1,<2.3
-    - sphinx >=1.7.5
-    - pathlib2 >=2.3.2
+    #- py-tes >=0.4.2,<1
+    - PyPubSub >=4.0.3,<5
+    - addict >=2.2.1,<2.5
+    - pytz >=2012
     #mesos pymesos isn't available
+    #server reqs
+    # - wes-service is missing
+    # so commenting out the remaining server reqs for now
+    # - connexion >=2.10.0, <3
+    # - flask >=2.0,<3
+    # - werkzeug >=2.0,<3
+    # - flask-cors ==3.0.10
+    # - gunicorn ==20.1.0
+    # - celery >=5.1.0, <6
     #aws reqs
-    - boto >=2.48.0
-    - boto3 >=1.7.50,<2.0
-    - pycryptodome >=3.5.1
-    #azure reqs secretstorage<3 isn't available
+    # mypy-boto3-{iam,sdb} are not yet in Conda
+    # - boto >=2.48.0, <3
+    # - boto3 >=1.20.46,<2.0
+    # - boto3-stubs ==1.24.0
+    # - mypy-boto3-s3 ==1.24.0
+    # - mypy-boto3-sdb ==1.24.0
+    # - mypy-boto3-iam ==1.24.0
     #encryption reqs
-    - pynacl ==1.3.0
-    #google reqs gcs-oauth2-boto-plugin 1.14 hasn't been added to conda-forge yet
-    #cwl_reqs (let cwltool set the schema-salad dependency & version)
-    - cwltool ==3.1.20211020155521
-    - galaxy-lib >=18.9.2
-    #htcondor_reqs htcondor isn't available
+    - pynacl >=1.4.0,<2
+    #google reqs
+    - apache-libcloud >=2.2.1,<3
+    - google-cloud-storage >=1.6.0,<2
+    #cwl reqs
+    - cwltool ==3.1.20221201130942
+    - schema-salad >=8.4.20230128170514,<9
+    - galaxy-tool-util
+    - ruamel.yaml >=0.15,<=0.17.21
+    - ruamel.yaml.clib >=0.2.6
+    - networkx >=2,<2.8.5
+    #htcondor reqs
+    - python-htcondor >=10.2.0.post1,<11
+    #kubernetes reqs
+    - python-kubernetes >=12.0.1,<22
+    - idna >=2
+    #wdl reqs
+    # - wdlparse ==0.1.0  # not yet packaged for Conda
 
 test:
   imports:
     - toil
     - toil.batchSystems
     - toil.cwl
+    - toil.fileStores
     - toil.jobStores
     - toil.jobStores.aws
     - toil.lib
     - toil.lib.encryption
     - toil.provisioners
     - toil.provisioners.aws
+    - toil.server
+    - toil.server.api_spec
+    - toil.server.cli
+    - toil.server.wes
     - toil.test
     - toil.utils
     - toil.wdl

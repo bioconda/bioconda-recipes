@@ -16,7 +16,8 @@ sh autogen.sh
 
 CFLAGS="$CFLAGS -std=c99 -O3 -fomit-frame-pointer -funroll-loops"
 
-for binary in mpi phyml phyrex phytime; do
+for binary in phyml-mpi phyml phyrex phytime; do
+    echo $binary
     ./configure \
 	--disable-dependency-tracking \
 	--prefix $PREFIX \

@@ -9,10 +9,13 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ hash }}
+  patches:
+    - python310.patch
 
 build:
-  number: 0
-  script: python -m pip install --no-deps --ignore-installed .
+  number: 2
+  # Ensure Cython is rerun by removing *.c output files and PKG-INFO (checked for by setup.py)
+  script: find . "(" -name "*.c" -o -name PKG-INFO ")" -exec rm {} ";" && python -m pip install --no-deps --ignore-installed .
   skip: True  # [py27]
 
 requirements:
