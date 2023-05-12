@@ -19,3 +19,6 @@ cd ${SRC_DIR}/ganon/
 
 $PYTHON -m unittest discover -s tests/ganon/integration/ -v 
 #$PYTHON -m unittest discover -s tests/ganon/integration_online/ -v
+
+# reset back to default directory so LICENSE path works
+cd ${SRC_DIR}
