@@ -36,9 +36,9 @@ def printRootNodes(config_path, recipe_folder, sinceNDays, missing, rootNodes):
 
     dag, name2recipes = graph.build(recipes, config=config_path, blacklist=blacklist)
     if not rootNodes:
-        root_nodes = sorted([(len(nx.algorithms.descendants(dag, k)), k) for k, v in dag.in_degree().items() if (k.startswith('bioconductor') or k.startswith('r-'))])
+        root_nodes = sorted([(len(nx.algorithms.descendants(dag, k)), k) for (k, v) in dag.in_degree() if (k.startswith('bioconductor') or k.startswith('r-'))])
     else:
-        root_nodes = sorted([(len(nx.algorithms.descendants(dag, k)), k) for k, v in dag.in_degree().items() if v == 0 and (k.startswith('bioconductor') or k.startswith('r-'))])
+        root_nodes = sorted([(len(nx.algorithms.descendants(dag, k)), k) for (k, v) in dag.in_degree() if v == 0 and (k.startswith('bioconductor') or k.startswith('r-'))])
 
     print("Package\tNumber of dependant packages")
     for n in root_nodes:

@@ -8,6 +8,7 @@ mkdir -p $PACKAGE_HOME
 
 cp -R * $PACKAGE_HOME
 
+ln -s $PACKAGE_HOME/bin/dsh-bin-fastq-quality-scores $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-bio $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-compress-bed $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-compress-fasta $BINARY_HOME
@@ -28,6 +29,7 @@ ln -s $PACKAGE_HOME/bin/dsh-export-segments $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-extract-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-extract-fastq-by-length $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-fasta-to-fastq $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-fasta-to-text $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-fastq-description $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-fastq-sequence-length $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-fastq-to-bam $BINARY_HOME
@@ -50,6 +52,7 @@ ln -s $PACKAGE_HOME/bin/dsh-interleave-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-interleaved-fastq-to-bam $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-links-to-cytoscape-edges $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-links-to-property-graph $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-list-filesystems $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-reassemble-paths $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-remap-dbsnp $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-remap-phase-set $BINARY_HOME
@@ -67,6 +70,7 @@ ln -s $PACKAGE_HOME/bin/dsh-split-interleaved-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-split-paf $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-split-sam $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-split-vcf $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-text-to-fasta $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-text-to-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-traversals-to-cytoscape-edges $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-traversals-to-property-graph $BINARY_HOME
