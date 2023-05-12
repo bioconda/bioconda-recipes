@@ -7,7 +7,6 @@ set -x
 
 TMP=$(mktemp -d)
 cd $TMP
-#wget https://raw.githubusercontent.com/lliu1871/mp-est/master/example/control
 wget https://raw.githubusercontent.com/lliu1871/mp-est/master/example/testgenetree
 
 mpest -i testgenetree
