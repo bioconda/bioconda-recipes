@@ -1,0 +1,146 @@
+{% set name = "latch" %}
+{% set latch_version = "2.19.9" %}
+{% set lyte_idl = "0.1.0" %}
+{% set lytekit_version = "0.14.10" %}
+{% set lytekitplugins_pods_version = "0.4.0" %}
+
+build:
+  noarch: python
+  number: 0
+
+package:
+  name: {{ name|lower }}
+  version: {{ latch_version }}
+
+source:
+  - url: https://files.pythonhosted.org/packages/6e/51/c89cca0732538ee5d5bfda50b30570ec7f2d89ae4017d1ceda0deb46beb9/latch-{{ latch_version }}.tar.gz
+    sha256: e45d1b27109c2c30a113c752829f76f5edfae44e7ad1effea8af6d9dacbe3134
+    folder: latch
+  - url: https://files.pythonhosted.org/packages/32/5c/becfdc17616580e66ea927009469dd8faca50056e64fad656cb5da64bcf8/lyteidl-{{ lyte_idl }}.tar.gz
+    sha256: 698fedb12d8ad1e97b5b160823ce174e28017f02586c2a141d5f0a1821c8ea0d
+    folder: lyteidl
+  - url: https://files.pythonhosted.org/packages/ad/a9/ceb1f09547178b7b8c34eca11038d6a5b50cb507b96627806835b0159ea1/lytekit-{{ lytekit_version }}.tar.gz
+    sha256: f1f114bd18fda5e7ffb8210adabe7caff9acb68accff087cd4847ac043b65150
+    folder: lytekit
+  - url: https://files.pythonhosted.org/packages/3e/18/54873b40638d9f5dbbac624cf1d7d8001490646cde818604f337f65c0380/lytekitplugins-pods-{{ lytekitplugins_pods_version }}.tar.gz
+    sha256: 6fecca449e49824e41ad0f6dc7946baa1fefe20b4d59eb1b59882601df09c6f6
+    folder: lytekitplugins-pods
+
+outputs:
+  - name: latch
+    build:
+      noarch: python
+      script: python -m pip install . -vv --no-deps
+    requirements:
+      host:
+        - pip
+        - python >=3.8
+      run:
+        - python >=3.8
+        - awscli ==1.25.22
+        - asyncssh ==2.12.0
+        - aioconsole ==0.5.1
+        - python-kubernetes >=24.2.0
+        - pyjwt >=0.2.0
+        - requests >=2.28.1
+        - click >=8.0
+        - docker-py >=5.0
+        - paramiko >=2.11.0
+        - scp >=0.14.0
+        - boto3 >=1.24.22
+        - tqdm >=4.63.0
+        - lytekit ==0.14.10
+        - lytekitplugins-pods ==0.4.0
+        - typing-extensions ==4.5.0
+        - apscheduler ==3.9.1
+        - uvloop ==0.17.0
+        - websockets ==10.3
+        - prompt-toolkit ==3.0.33
+        - watchfiles ==0.18.1
+        - gql ==3.4.0
+        - graphql-core ==3.2.3
+        - requests-toolbelt ==0.10.1
+  - name: lyteidl
+    build:
+      noarch: python
+      script: "python -m pip install . -vv --no-deps"
+    requirements:
+      host:
+        - pip
+        - python >=3.8
+      run:
+        - python >=3.8
+        - googleapis-common-protos
+        - protoc-gen-swagger
+        - protobuf >=3.5.0,<4.0.0
+  - name: lytekit
+    build:
+      noarch: python
+      script: python -m pip install . -vv --no-deps
+    requirements:
+      host:
+        - pip
+        - python >=3.8
+      run:
+        - python >=3.8
+        - lyteidl ==0.2.0a0
+        - wheel >=0.30.0,<1.0.0
+        - pandas >=1.0.0,<2.0.0
+        - pyarrow >=4.0.0,<7.0.0
+        - click >=6.6,<9.0
+        - croniter >=0.3.20,<4.0.0
+        - deprecated >=1.0,<2.0
+        - docker-py >=5.0.3,<6.0.0
+        - python-dateutil >=2.1
+        - grpcio >=1.43.0,!=1.45.0,<2.0
+        - grpcio-status >=1.43,!=1.45.0
+        - protobuf >=3.6.1,<4
+        - python-json-logger >=2.0.0
+        - pytimeparse >=1.1.8,<2.0.0
+        - pytz
+        - pyyaml
+        - keyring >=18.0.1
+        - requests >=2.18.4,<3.0.0
+        - responses >=0.10.7
+        - sortedcontainers >=1.5.9,<3.0.0
+        - statsd >=3.0.0,<4.0.0
+        - urllib3 >=1.22,<2.0.0
+        - wrapt >=1.0.0,<2.0.0
+        - retry ==0.9.2
+        - dataclasses-json >=0.5.2
+        - jsonschema >=4.5.1
+        - marshmallow-jsonschema >=0.12.0
+        - natsort >=7.0.1
+        - docker-image-py >=0.1.10
+        - typing_extensions
+        - docstring_parser >=0.9.0
+        - diskcache >=5.2.1
+        - cloudpickle >=2.0.0
+        - cookiecutter >=1.7.3
+        - numpy <1.22.0
+  - name: lytekitplugins-pods
+    build:
+      noarch: python
+      script: python -m pip install . -vv --no-deps
+    requirements:
+      host:
+        - pip
+        - python >=3.8
+      run:
+        - python >=3.8
+        - python-kubernetes >=24.2.0
+        - {{ pin_subpackage("lytekit", exact=True) }}
+
+test:
+  imports:
+    - latch
+
+about:
+  home: https://pypi.org/project/latch/
+  summary: Python bioinformatics and genomics library
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - nh13
