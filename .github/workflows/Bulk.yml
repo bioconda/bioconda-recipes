@@ -20,17 +20,19 @@ jobs:
 
       - name: Fetch conda install script
         run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{install-and-set-up-conda,configure-conda}.sh
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{install-and-set-up-conda,configure-conda,common}.sh
 
       - name: Restore cache
         id: cache
         uses: actions/cache@v3
         with:
           path: /opt/mambaforge
-          key: ${{ runner.os }}--bulk--${{ hashFiles('**/install-and-set-up-conda.sh') }}
+          key: ${{ runner.os }}--bulk--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh') }}
 
       - name: Set up bioconda-utils
         if: steps.cache.outputs.cache-hit != 'true'
+        env:
+          COMMON_GIT_REF: bulk
         run: bash install-and-set-up-conda.sh
 
       # This script can be used to reconfigure conda to use the right channel setup.
@@ -80,17 +82,19 @@ jobs:
 
       - name: Fetch conda install script
         run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{install-and-set-up-conda,configure-conda}.sh
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{install-and-set-up-conda,configure-conda,common}.sh
 
       - name: Restore cache
         id: cache
         uses: actions/cache@v3
         with:
           path: /opt/mambaforge
-          key: ${{ runner.os }}--bulk--${{ hashFiles('**/install-and-set-up-conda.sh') }}
+          key: ${{ runner.os }}--bulk--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh') }}
 
       - name: Set up bioconda-utils
         if: steps.cache.outputs.cache-hit != 'true'
+        env:
+          COMMON_GIT_REF: bulk
         run: bash install-and-set-up-conda.sh
 
       # This script can be used to reconfigure conda to use the right channel setup.
