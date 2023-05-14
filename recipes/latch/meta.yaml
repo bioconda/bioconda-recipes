@@ -1,6 +1,6 @@
 {% set name = "latch" %}
 {% set latch_version = "2.19.9" %}
-{% set lyte_idl = "0.1.0" %}
+{% set lyteidl_version = "0.2.0a0" %}
 {% set lytekit_version = "0.14.10" %}
 {% set lytekitplugins_pods_version = "0.4.0" %}
 
@@ -16,8 +16,8 @@ source:
   - url: https://files.pythonhosted.org/packages/6e/51/c89cca0732538ee5d5bfda50b30570ec7f2d89ae4017d1ceda0deb46beb9/latch-{{ latch_version }}.tar.gz
     sha256: e45d1b27109c2c30a113c752829f76f5edfae44e7ad1effea8af6d9dacbe3134
     folder: latch
-  - url: https://files.pythonhosted.org/packages/32/5c/becfdc17616580e66ea927009469dd8faca50056e64fad656cb5da64bcf8/lyteidl-{{ lyte_idl }}.tar.gz
-    sha256: 698fedb12d8ad1e97b5b160823ce174e28017f02586c2a141d5f0a1821c8ea0d
+  - url: https://files.pythonhosted.org/packages/32/5c/becfdc17616580e66ea927009469dd8faca50056e64fad656cb5da64bcf8/lyteidl-{{ lyteidl_version }}.tar.gz
+    sha256: ffd621d17542dc4aaf954043010aaff32da2733218d991d1959d907b90c7413c
     folder: lyteidl
   - url: https://files.pythonhosted.org/packages/ad/a9/ceb1f09547178b7b8c34eca11038d6a5b50cb507b96627806835b0159ea1/lytekit-{{ lytekit_version }}.tar.gz
     sha256: f1f114bd18fda5e7ffb8210adabe7caff9acb68accff087cd4847ac043b65150
@@ -30,7 +30,7 @@ outputs:
   - name: latch
     build:
       noarch: python
-      script: python -m pip install . -vv --no-deps
+      script: cd latch && python -m pip install . -vv --no-deps && cd ..
     requirements:
       host:
         - pip
@@ -49,8 +49,8 @@ outputs:
         - scp >=0.14.0
         - boto3 >=1.24.22
         - tqdm >=4.63.0
-        - lytekit ==0.14.10
-        - lytekitplugins-pods ==0.4.0
+        - {{ pin_subpackage("lytekit", exact=True) }}
+        - {{ pin_subpackage("lytekitplugins-pods", exact=True) }}
         - typing-extensions ==4.5.0
         - apscheduler ==3.9.1
         - uvloop ==0.17.0
@@ -63,7 +63,7 @@ outputs:
   - name: lyteidl
     build:
       noarch: python
-      script: "python -m pip install . -vv --no-deps"
+      script: cd lyteidl && python -m pip install . -vv --no-deps && cd ..
     requirements:
       host:
         - pip
@@ -76,14 +76,14 @@ outputs:
   - name: lytekit
     build:
       noarch: python
-      script: python -m pip install . -vv --no-deps
+      script: cd lytekit && python -m pip install . -vv --no-deps && cd ..
     requirements:
       host:
         - pip
         - python >=3.8
       run:
         - python >=3.8
-        - lyteidl ==0.2.0a0
+        - {{ pin_subpackage("lyteidl", exact=True) }}
         - wheel >=0.30.0,<1.0.0
         - pandas >=1.0.0,<2.0.0
         - pyarrow >=4.0.0,<7.0.0
@@ -121,7 +121,7 @@ outputs:
   - name: lytekitplugins-pods
     build:
       noarch: python
-      script: python -m pip install . -vv --no-deps
+      script: cd lytekitplugins-pods && python -m pip install . -vv --no-deps && cd ..
     requirements:
       host:
         - pip
