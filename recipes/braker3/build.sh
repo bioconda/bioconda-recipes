@@ -19,6 +19,9 @@ mkdir ${PREFIX}/config
 mv tsebra/config/* ${PREFIX}/config·
 
 # install GeneMArk-ETP
-wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-ubuntu64.tar.gz && \
-tar -xvf sratoolkit.current-ubuntu64.tar.gz
-cp sratoolkit.current-ubuntu64/bin $PREFIX/bin
+git clone https://github.com/gatech-genemark/GeneMark-ETP.git
+cd GeneMArk-ETP
+
+# curl -L https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-ubuntu64.tar.gz --output tar -xvf sratoolkit.current-ubuntu64.tar.gz && 
+# tar -xvf sratoolkit.current-ubuntu64.tar.gz
+# cp sratoolkit.current-ubuntu64/bin $PREFIX/bin
