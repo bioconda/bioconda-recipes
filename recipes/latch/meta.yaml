@@ -12,6 +12,12 @@ package:
   name: {{ name|lower }}
   version: {{ latch_version }}
 
+requirements:
+  host:
+    - pip
+    - python >=3.8
+    - poetry-core
+
 source:
   - url: https://files.pythonhosted.org/packages/6e/51/c89cca0732538ee5d5bfda50b30570ec7f2d89ae4017d1ceda0deb46beb9/latch-{{ latch_version }}.tar.gz
     sha256: e45d1b27109c2c30a113c752829f76f5edfae44e7ad1effea8af6d9dacbe3134
@@ -33,25 +39,33 @@ outputs:
       noarch: python
       script: python -m pip install . -vv --no-deps ./lyteidl
     requirements:
-      host:
-        - pip
-        - python >=3.8
-        - poetry-core
       run:
         - python >=3.8
         - googleapis-common-protos
         - protoc-gen-swagger
         - protobuf >=3.5.0,<4.0.0
+        - typing >=3.6  # [py==27]
+    test:
+      imports:
+        - flyteidl
+        - validate
+      commands:
+        - pip check
+      requires:
+        - pip
   - name: lytekit
     version: {{ lytekit_version }}
     build:
+      skip: true  # [py<37]
       noarch: python
       script: python -m pip install . -vv --no-deps ./lytekit
+      entry_points:
+        - pyflyte-execute=flytekit.bin.entrypoint:execute_task_cmd
+        - pyflyte-fast-execute=flytekit.bin.entrypoint:fast_execute_task_cmd
+        - pyflyte-map-execute=flytekit.bin.entrypoint:map_execute_task_cmd
+        - pyflyte=flytekit.clis.sdk_in_container.pyflyte:main
+        - flyte-cli=flytekit.clis.flyte_cli.main:_flyte_cli
     requirements:
-      host:
-        - pip
-        - python >=3.8
-        - poetry-core
       run:
         - python >=3.8
         - {{ pin_subpackage("lyteidl", exact=True) }}
@@ -83,26 +97,44 @@ outputs:
         - marshmallow-jsonschema >=0.12.0
         - natsort >=7.0.1
         - docker-image-py >=0.1.10
+        - singledispatchmethod  # [py<38]
         - typing_extensions
         - docstring_parser >=0.9.0
         - diskcache >=5.2.1
         - cloudpickle >=2.0.0
         - cookiecutter >=1.7.3
         - numpy <1.22.0
+      test:
+        imports:
+          - flytekit
+          - plugins
+        commands:
+          - pip check
+          - pyflyte-execute --help
+          - pyflyte-fast-execute --help
+          - pyflyte-map-execute --help
+          - pyflyte --help
+          - flyte-cli --help
+        requires:
+          - pip
   - name: lytekitplugins-pods
     version: {{ lytekitplugins_pods_version }}
     build:
       noarch: python
       script: python -m pip install . -vv --no-deps ./lytekitplugins-pods 
     requirements:
-      host:
-        - pip
-        - python >=3.8
-        - poetry-core
       run:
         - python >=3.8
         - python-kubernetes >=24.2.0
         - {{ pin_subpackage("lytekit", exact=True) }}
+      test:
+        imports:
+          - flytekitplugins.pod
+        commands:
+          - pip check
+        requires:
+          - pip
+
   - name: latch
     version: {{ latch_version }}
     build:
@@ -111,10 +143,6 @@ outputs:
       noarch: python
       script: python -m pip install . -vv --no-deps ./latch
     requirements:
-      host:
-        - pip
-        - python >=3.8
-        - poetry-core
       run:
         - python >=3.8
         - awscli ==1.25.22
