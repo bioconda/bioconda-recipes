@@ -1,0 +1,88 @@
+{% set name = "lytekit" %}
+{% set version = "0.14.10" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/lytekit-{{ version }}.tar.gz
+  sha256: f1f114bd18fda5e7ffb8210adabe7caff9acb68accff087cd4847ac043b65150
+
+build:
+  skip: true  # [py<37]
+  entry_points:
+    - pyflyte-execute=flytekit.bin.entrypoint:execute_task_cmd
+    - pyflyte-fast-execute=flytekit.bin.entrypoint:fast_execute_task_cmd
+    - pyflyte-map-execute=flytekit.bin.entrypoint:map_execute_task_cmd
+    - pyflyte=flytekit.clis.sdk_in_container.pyflyte:main
+    - flyte-cli=flytekit.clis.flyte_cli.main:_flyte_cli
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - lyteidl ==0.2.0a0
+    - wheel >=0.30.0,<1.0.0
+    - pandas >=1.0.0,<2.0.0
+    - pyarrow >=4.0.0,<7.0.0
+    - click >=6.6,<9.0
+    - croniter >=0.3.20,<4.0.0
+    - deprecated >=1.0,<2.0
+    - docker-py >=5.0.3,<6.0.0
+    - python-dateutil >=2.1
+    - grpcio >=1.43.0,!=1.45.0,<2.0
+    - grpcio-status >=1.43,!=1.45.0
+    - protobuf >=3.6.1,<4
+    - python-json-logger >=2.0.0
+    - pytimeparse >=1.1.8,<2.0.0
+    - pytz
+    - pyyaml
+    - keyring >=18.0.1
+    - requests >=2.18.4,<3.0.0
+    - responses >=0.10.7
+    - sortedcontainers >=1.5.9,<3.0.0
+    - statsd >=3.0.0,<4.0.0
+    - urllib3 >=1.22,<2.0.0
+    - wrapt >=1.0.0,<2.0.0
+    - retry ==0.9.2
+    - dataclasses-json >=0.5.2
+    - jsonschema >=4.5.1
+    - marshmallow-jsonschema >=0.12.0
+    - natsort >=7.0.1
+    - docker-image-py >=0.1.10
+    - singledispatchmethod  # [py<38]
+    - typing-extensions
+    - docstring_parser >=0.9.0
+    - diskcache >=5.2.1
+    - cloudpickle >=2.0.0
+    - cookiecutter >=1.7.3
+    - numpy <1.22.0
+
+test:
+  imports:
+    - flytekit
+    - plugins
+  commands:
+    - pip check
+    - pyflyte-execute --help
+    - pyflyte-fast-execute --help
+    - pyflyte-map-execute --help
+    - pyflyte --help
+    - flyte-cli --help
+  requires:
+    - pip
+
+about:
+  home: https://pypi.org/project/flytekit/
+  summary: Flyte SDK for Python - : Customized by Latch Bio
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - nh13
