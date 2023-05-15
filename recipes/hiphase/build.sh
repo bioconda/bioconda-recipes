@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
 mkdir -p "${PREFIX}"/bin
-tar -xzf hiphase-v${VERSION}-x86_64-unknown-linux-gnu.tar.gz
-cp hiphase-v${VERSION}-x86_64-unknown-linux-gnu/hiphase "${PREFIX}"/bin/
+# bioconda auto-extract for us apparently
+# tar -xzf hiphase-*.tar.gz
+md5sum -c hiphase.md5
+cp hiphase "${PREFIX}"/bin/
