@@ -1,0 +1,70 @@
+{% set name = "latch" %}
+{% set version = "2.19.9" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/latch-{{ version }}.tar.gz
+  sha256: e45d1b27109c2c30a113c752829f76f5edfae44e7ad1effea8af6d9dacbe3134
+
+build:
+  entry_points:
+    - latch=latch_cli.main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+
+requirements:
+  host:
+    - python >=3.8
+    - poetry-core
+    - pip
+  run:
+    - python >=3.8
+    - awscli ==1.25.22
+    - asyncssh ==2.12.0
+    - aioconsole ==0.5.1
+    - python-kubernetes >=24.2.0
+    - pyjwt >=0.2.0
+    - requests >=2.28.1
+    - click >=8.0
+    - docker-py >=5.0
+    - paramiko >=2.11.0
+    - scp >=0.14.0
+    - boto3 >=1.24.22
+    - tqdm >=4.63.0
+    - lytekit ==0.14.10
+    - lytekitplugins-pods ==0.4.0
+    - typing-extensions ==4.5.0
+    - apscheduler ==3.9.1
+    - uvloop ==0.17.0
+    - websockets ==10.3
+    - prompt-toolkit ==3.0.33
+    - watchfiles ==0.18.1
+    - gql ==3.4.0
+    - graphql-core ==3.2.3
+    - requests-toolbelt ==0.10.1
+
+test:
+  imports:
+    - latch
+    - latch_cli
+  commands:
+    - pip check
+    - latch --help
+  requires:
+    - pip
+
+about:
+  summary: The Latchbio SDK
+  license: MIT
+  license_file:
+    - LICENSE
+    - latch_cli/services/init/assemble_and_sort/LICENSE
+    - latch_cli/services/init/template/LICENSE
+
+extra:
+  recipe-maintainers:
+    - nh13
