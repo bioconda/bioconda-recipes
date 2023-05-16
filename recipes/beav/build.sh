@@ -7,6 +7,7 @@ mkdir -p $BEAV_DIR/databases
 mkdir -p $BEAV_DIR/software
 mkdir -p $BEAV_DIR/models
 mkdir -p $BEAV_DIR/test_data
+mkdir -p $PREFIX/bin
 
 cp beav $PREFIX/bin
 cp beav_db $PREFIX/bin
