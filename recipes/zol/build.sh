@@ -1,6 +1,7 @@
 #!/bin/bash
 
-${PYTHON} -m pip install . -vv
+python setup.py install
+pip install .
 
 mkdir -p ${PREFIX}/bin
 
