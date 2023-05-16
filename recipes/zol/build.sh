@@ -1,7 +1,7 @@
 #!/bin/bash
 
-python setup.py install
-pip install .
+$PYTHON setup.py install
+$PYTHON -m pip install . --ignore-installed --no-deps -vv
 
 mkdir -p ${PREFIX}/bin
 
