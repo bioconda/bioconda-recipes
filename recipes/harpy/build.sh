@@ -4,10 +4,13 @@
 mkdir -p $CONDA_PREFIX/bin
 
 # build and install ema
-#git clone --recursive https://github.com/EdHarry/ema.git
+rm -r ema
+git clone --recursive https://github.com/EdHarry/ema.git
 cd ema
 git checkout haplotag
 git submodule update --remote
+git apply ../misc/makefile.patch
+git apply ../misc/remove_native.patch
 make
 chmod +x ema
 cp ema $CONDA_PREFIX/bin/ema-h
