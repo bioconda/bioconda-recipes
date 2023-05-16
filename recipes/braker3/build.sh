@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Copy scripts
 mkdir -p ${PREFIX}/bin
 chmod +x scripts/*.pl
