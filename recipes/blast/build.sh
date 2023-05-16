@@ -5,7 +5,7 @@ export BLAST_SRC_DIR="${SRC_DIR}/blast"
 cd $BLAST_SRC_DIR/c++/
 
 export CFLAGS="$CFLAGS -O2"
-export CXXFLAGS="$CXXFLAGS -O2 -std=c++17"
+export CXXFLAGS="$CXXFLAGS -O2"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CC_FOR_BUILD=$CC
@@ -16,7 +16,10 @@ if test x"`uname`" = x"Linux"; then
 fi
 
 if [ `uname` == Darwin ]; then
-    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2 -lomp"
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
+
+    # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
+    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 else
     export CPP_FOR_BUILD=$CPP
 fi
@@ -54,30 +57,48 @@ cp -rf "${SRC_DIR}/RpsbProc/src/"* src/app/RpsbProc/
 # Fixes building on unix (linux and osx)
 export AR="${AR} rcs"
 
-./configure \
-    --with-64 \
-    --with-dll \
-    --with-mt \
-    --with-openmp \
-    --without-autodep \
-    --without-makefile-auto-update \
-    --with-flat-makefile \
-    --without-caution \
-    --without-lzo \
-    --with-hard-runpath \
-    --with-runpath=$LIB_INSTALL_DIR \
-    --without-debug \
-    --with-experimental=Int8GI \
-    --with-strip \
-    --without-vdb \
-    --with-z=$PREFIX \
-    --with-bz2=$PREFIX \
-    --without-krb5 \
-    --with-experimental=Int8GI \
-    --without-openssl \
-    --without-gnutls \
-    --without-sse42 \
-    --without-gcrypt
+if [[ $(uname) = Linux ]] ; then
+    ./configure \
+        --with-bin-release \
+        --with-mt \
+        --with-dll \
+        --with-openmp \
+        --with-flat-makefile \
+        --without-lzo \
+        --without-zstd \
+        --with-hard-runpath \
+        --with-runpath=$LIB_INSTALL_DIR \
+        --without-debug \
+        --with-experimental=Int8GI \
+        --with-strip \
+        --without-vdb \
+        --with-z=$PREFIX \
+        --with-bz2=$PREFIX \
+        --without-krb5 \
+        --without-gnutls \
+        --without-sse42 \
+        --without-gcrypt \
+        --without-pcre
+else
+    ./configure \
+        --with-bin-release \
+        --with-mt \
+        --without-openmp \
+        --with-flat-makefile \
+        --without-lzo \
+        --without-zstd \
+        --without-debug \
+        --with-experimental=Int8GI \
+        --with-strip \
+        --without-vdb \
+        --with-z=$PREFIX \
+        --with-bz2=$PREFIX \
+        --without-krb5 \
+        --without-gnutls \
+        --without-sse42 \
+        --without-gcrypt \
+        --without-pcre
+fi
 
 #list apps to build
 apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe"
