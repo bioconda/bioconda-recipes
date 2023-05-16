@@ -1,11 +1,12 @@
 #! /usr/bin/env bash
 
-# create bin folder if it doesn't exist
+# install LepWrap into conda PATH
 mkdir -p $CONDA_PREFIX/bin
 
 # build and install ema
-git clone --recursive https://github.com/EdHarry/ema.git
-cd ema 
+#git clone --recursive https://github.com/EdHarry/ema.git
+cd ema
+git checkout haplotag
 git submodule update --remote
 make
 chmod +x ema
