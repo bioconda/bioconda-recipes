@@ -1,6 +1,6 @@
 {% set name = "genomedata" %}
-{% set version = "1.5.0" %}
-{% set sha256 = "ca2ff0701b1b6d9759421b2ee96384e9e1f743a436de374febb32e39347f8ea5" %}
+{% set version = "1.6.0" %}
+{% set sha256 = "72f15fb8dc595b680e5c24855d7bff3fc0a523c838b4c27c2be074aab6ef9feb" %}
 
 package:
   name: {{ name|lower }}
@@ -11,14 +11,12 @@ source:
   sha256: {{ sha256 }}
   
 build:
-  # resolve conflicts under python 2.7
-  skip: True  # [py27]
-  number: 2
+  skip: True  # [osx or py < 37]
+  number: 0
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - pkg-config
     - hdf5
   host:
     - pip
@@ -28,13 +26,14 @@ requirements:
     - zlib
   run:
     - python
+    - setuptools
     - six
     - hdf5
     - pytables >=3.4.3
     - path.py
     - textinput
     - bedtools
-    - ucsc-bigwigtobedgraph
+    - ucsc-bigwigtobedgraph >=377
 
 test:
     # Copied to PATH in build.sh
@@ -67,3 +66,5 @@ extra:
   identifiers:
     - biotools:genomedata
     - doi:10.1093/bioinformatics/btq164
+  skip-lints:
+    - uses_setuptools

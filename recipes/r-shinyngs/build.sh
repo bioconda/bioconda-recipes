@@ -1,15 +1,39 @@
 #!/bin/bash
 
-# 'Autobrew' is being used by more and more packages these days
-# to grab static libraries from Homebrew bottles. These bottles
-# are fetched via Homebrew's --force-bottle option which grabs
-# a bottle for the build machine which may not be macOS 10.9.
-# Also, we want to use conda packages (and shared libraries) for
-# these 'system' dependencies. See:
-# https://github.com/jeroen/autobrew/issues/3
-export DISABLE_AUTOBREW=1
+# The reason for the additions to DESCRIPTION is that we need packrat and
+# rsconnect to find the package for shinyapps.io deployment. This normally
+# doesn't work for github packages except those installed via
+# devtools::install_github(), but the DESCRIPTON edits here should mimic that.
+# I'm doing the same for a key dependency, d3heatmap, which is now archived in
+# CRAN (so packrat won't find it from there), but we can pull from github.
 
-# R refuses to build packages that mark themselves as Priority: Recommended
-mv DESCRIPTION DESCRIPTION.old
-grep -va '^Priority: ' DESCRIPTION.old > DESCRIPTION
-${R} CMD INSTALL --build . ${R_ARGS}
+ammend_description_for_packrat(){
+    description=$1
+    remoterepo=$2
+    remoteusername=$3
+    remoteref=$4
+   
+    remotesha=$(git ls-remote https://github.com/$remoteusername/$remoterepo tags/$remoteref | cut -f1) 
+
+    echo -e """RemoteType: github
+RemoteHost: api.github.com
+RemoteRepo: $remoterepo
+RemoteUsername: $remoteusername
+RemoteRef: $remoteref
+RemoteSha: $remotesha
+GithubRepo: $remoterepo
+GithubUsername: $remoteusername
+GithubRef: $remoteref
+GithubSHA1: $remotesha
+NeedsCompilation: no""" >> $description
+}
+
+ammend_description_for_packrat "shinyngs/DESCRIPTION" "shinyngs" "pinin4fjords" "v$PKG_VERSION"
+ammend_description_for_packrat "d3heatmap/DESCRIPTION" "d3heatmap" "cran" "$D3HEATMAP_VERSION"
+
+${R} CMD INSTALL --build d3heatmap ${R_ARGS}
+${R} CMD INSTALL --build shinyngs ${R_ARGS}
+
+# copy supplementary scripts
+chmod +x shinyngs/exec/*.R
+cp shinyngs/exec/*.R ${PREFIX}/bin
