@@ -1,18 +1,15 @@
 {% set name = "OpenMS" %}
-{% set version = "2.8.0" %}
+{% set version = "2.9.1" %}
 package:
   name: {{ name|lower  }}-meta
   version: {{ version  }}
 
 source:
   url: https://abibuilder.cs.uni-tuebingen.de/archive/openms/OpenMSInstaller/release/{{ version }}/OpenMS-{{ version }}-src.tar.gz
-  sha256: c39e3ccdce5c335d2659cfa9d0bb63555a01ec422757afd90706d3869bf611ac
-  # patch should be removed in 2.9 https://github.com/OpenMS/OpenMS/pull/6122
-  patches:
-    - sirius-2.8.0.patch
+  sha256: 2d186f35fe42573a19283605ccfb491ca6da585880fa3725a013975df26bc008
 
 build:
-  number: 4
+  number: 1
 
 # Try this when building with GUI
 #extra:
@@ -33,13 +30,11 @@ requirements:
       - xerces-c
       - boost-cpp
       - eigen >=3.3.2
-      - glpk
       - hdf5 >=1.10
       - bzip2
       - qt
       - libsvm
       - coinmp
-      - sqlite
 
 test:
   commands:
@@ -63,13 +58,11 @@ outputs:
           - xerces-c
           - boost-cpp
           - eigen >=3.3.2
-          - glpk
           - hdf5 >=1.10
           - bzip2
           - qt
           - libsvm
           - coinmp
-          - sqlite
     build:
       run_exports:
           - {{ pin_compatible('llvm-openmp', max_pin='x.x') }} # [osx]
@@ -77,13 +70,11 @@ outputs:
           - {{ pin_compatible('xerces-c', max_pin='x.x') }}
           - {{ pin_compatible('boost-cpp', max_pin='x.x') }}
           - {{ pin_compatible('eigen', max_pin='x.x') }}
-          - {{ pin_compatible('glpk', max_pin='x.x') }}
           - {{ pin_compatible('hdf5', max_pin='x.x') }}
           - {{ pin_compatible('bzip2', max_pin='x.x') }}
           - {{ pin_compatible('qt', max_pin='x.x') }}
           - {{ pin_compatible('libsvm', max_pin='x.x') }}
           - {{ pin_compatible('coinmp', max_pin='x.x') }}
-          - {{ pin_compatible('sqlite', max_pin='x.x') }}
           - libopenms {{ version }}
 
   - name: openms
@@ -105,13 +96,11 @@ outputs:
         - xerces-c
         - boost-cpp
         - eigen >=3.3.2
-        - glpk
         - hdf5 >=1.10
         - bzip2
         - qt
         - libsvm
         - coinmp
-        - sqlite
       run:
         - {{ pin_subpackage('libopenms', exact=True) }}
         - {{ pin_compatible('llvm-openmp', max_pin='x.x') }} # [osx]
@@ -119,13 +108,11 @@ outputs:
         - {{ pin_compatible('xerces-c', max_pin='x.x') }}
         - {{ pin_compatible('boost-cpp', max_pin='x.x') }}
         - {{ pin_compatible('eigen', max_pin='x.x') }}
-        - {{ pin_compatible('glpk', max_pin='x.x') }}
         - {{ pin_compatible('hdf5', max_pin='x.x') }}
         - {{ pin_compatible('bzip2', max_pin='x.x') }}
         - {{ pin_compatible('qt', max_pin='x.x') }}
         - {{ pin_compatible('libsvm', max_pin='x.x') }}
         - {{ pin_compatible('coinmp', max_pin='x.x') }}
-        - {{ pin_compatible('sqlite', max_pin='x.x') }}
     test:
       commands:
         - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/OpenMSInfo
@@ -139,9 +126,7 @@ outputs:
     requirements:
      run:
        - {{ pin_subpackage('openms', exact=True) }}
-       - bumbershoot ==3_0_21142_0e4f4a4
-       - comet-ms ==2019015
-       - crux-toolkit ==3.2
+       - comet-ms ==2023010
        - fido ==1.0
        - luciphor2 ==2020_04_03
        - msgf_plus ==2021.03.22
@@ -156,7 +141,6 @@ outputs:
      # Test copied from openms output to make sure a test environment for this output is created.
      commands:
        - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/OpenMSInfo
-       - sirius --help
 
 about:
   home: https://github.com/OpenMS/OpenMS

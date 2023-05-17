@@ -1,5 +1,8 @@
 #!/bin/bash
-./autogen.sh
-./configure --prefix=$PREFIX
-make
-make install
+
+export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+
+meson setup build --prefix ${PREFIX}
+cd build
+ninja
+ninja install
