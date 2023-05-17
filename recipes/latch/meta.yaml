@@ -37,7 +37,7 @@ outputs:
     version: {{ lyteidl_version }}
     build:
       noarch: python
-      script: cd lyteidl && python -m pip install -vv --no-deps lyteidl-{{ lyteidl_version }}
+      script: cd lyteidl && python -m pip install -vv --no-deps lyteidl
     requirements:
       run:
         - python >=3.8
@@ -58,7 +58,7 @@ outputs:
     build:
       skip: true  # [py<37]
       noarch: python
-      script: cd lytekit && python -m pip install -vv --no-deps lytekit-{{ lytekit_version }}
+      script: cd lytekit && python -m pip install -vv --no-deps lytekit
       entry_points:
         - pyflyte-execute=flytekit.bin.entrypoint:execute_task_cmd
         - pyflyte-fast-execute=flytekit.bin.entrypoint:fast_execute_task_cmd
@@ -68,7 +68,7 @@ outputs:
     requirements:
       run:
         - python >=3.8
-        - lyteidl ={{ lyteidl_version }}
+        - {{ pin_subpackage("lyteidl", exact=True) }}
         - wheel >=0.30.0,<1.0.0
         - pandas >=1.0.0,<2.0.0
         - pyarrow >=4.0.0,<7.0.0
@@ -121,12 +121,12 @@ outputs:
     version: {{ lytekitplugins_pods_version }}
     build:
       noarch: python
-      script: cd lytekitplugins-pods && python -m pip install -vv --no-deps lytekitplugins-pods-{{ lytekitplugins_pods_version }}
+      script: cd lytekitplugins-pods && python -m pip install -vv --no-deps lytekitplugins-pods
     requirements:
       run:
         - python >=3.8
         - python-kubernetes >=24.2.0
-        - lytekit ={{ lytekit_version }}
+        - {{ pin_subpackage("lytekit", exact=True) }}
       test:
         imports:
           - flytekitplugins.pod
@@ -141,7 +141,7 @@ outputs:
       entry_points:
         - latch=latch_cli.main:main
       noarch: python
-      script: cd latch && python -m pip install -vv --no-deps latch-{{ latch_version }}
+      script: cd latch && python -m pip install -vv --no-deps latch
     requirements:
       run:
         - python >=3.8
@@ -157,8 +157,8 @@ outputs:
         - scp >=0.14.0
         - boto3 >=1.24.22
         - tqdm >=4.63.0
-        - lytekit ={{ lytekit_version }}
-        - lytekitplugins-pods ={{ lytekitplugins_pods_version }}
+        - {{ pin_subpackage("lytekit", exact=True) }}
+        - {{ pin_subpackage("lytekitplugins-pods", exact=True) }}
         - typing-extensions ==4.5.0
         - apscheduler ==3.9.1
         - uvloop ==0.17.0
@@ -194,7 +194,6 @@ about:
       * Reliable and scalable managed cloud infrastructure
       * Single line definition of arbitrary resource requirements (eg. CPU, GPU) for serverless execution
   license: MIT
-  license_file: LICENSE
 
 extra:
   recipe-maintainers:
