@@ -24,7 +24,7 @@ chmod +x ${PREFIX}/bin/splitDiamondResultsForFai
 ZOL_DATA_PATH=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}/db/
 ZOL_EXEC_PATH=${PREFIX}/bin/
 mkdir -p ${ZOL_DATA_PATH}
-echo 'Location for downloading databases' > ${ZOL_DATA_PATH}/README.txt
+echo 'Default conda space for downloading annotation databases.\n' > ${ZOL_DATA_PATH}/README.txt
 
 # set ZOL_DATA_PATH and ZOL_EXEC_PATH variables on env activation
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
