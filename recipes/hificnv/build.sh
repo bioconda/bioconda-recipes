@@ -2,6 +2,6 @@
 
 mkdir -p "${PREFIX}"/bin
 # bioconda auto-extract for us apparently
-# tar -xzf hiphase-*.tar.gz
-md5sum -c hiphase.md5
-cp hiphase "${PREFIX}"/bin/
+# tar -xzf hificnv-*.tar.gz
+md5sum -c hificnv.md5
+cp hificnv "${PREFIX}"/bin/
