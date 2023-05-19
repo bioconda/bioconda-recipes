@@ -1,0 +1,92 @@
+{% set name = "dysgu" %}
+{% set version = "1.3.16" %}
+{% set sha256hash = "8f9f6320c76facbd927f5525c7b2597af97a3121ca8d914755cb4027e78cb4aa" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/kcleal/dysgu/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256hash }}
+
+build:
+  number: 0
+  binary_relocation: False
+  entry_points:
+    - dysgu = dysgu.main:cli
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - python >=3.8
+    - setuptools
+    - cython
+    - htslib >=1.12
+    - numpy >=1.18
+    - lightgbm
+    - zlib
+    - pysam
+    - libcurl
+    - openssl
+    - bzip2
+    - xz
+    - wheel
+    - scipy
+    - pandas
+    - networkx >=2.4
+    - scikit-learn >=0.22
+    - python-edlib
+    - sortedcontainers
+    - click >=8.0
+  run:
+    - python >=3.8
+    - numpy >=1.18
+    - scipy
+    - pandas
+    - networkx >=2.4
+    - scikit-learn >=0.22
+    - python-edlib
+    - sortedcontainers
+    - lightgbm
+    - zlib
+    - click >=8.0
+    - pysam
+    - libcurl
+    - openssl
+    - bzip2
+    - xz
+    - htslib >=1.12
+    - wheel
+    - cython
+
+test:
+  requires:
+    - cython
+  imports:
+    - dysgu
+
+
+
+  files:
+    - dysgu/tests/*
+  commands:
+    - 'dysgu --help'
+
+
+about:
+  home: https://github.com/kcleal/dysgu
+  summary: A collection of tools for calling structural variants using short or long reads
+  license: MIT
+  license_file: LICENSE.md
+
+extra:
+  container:
+      extended-base: True
+  recipe-maintainers:
+    - kcleal
+  skip-lints:
+    - cython_must_be_in_host

@@ -1,0 +1,63 @@
+package:
+  name: intervene
+  version: "0.6.5"
+
+source:
+  url: https://files.pythonhosted.org/packages/45/43/c8cc6574be4806653b43c2a974ed9751a512d75e2bd339261f8a65b98ad5/intervene-0.6.5.tar.gz
+  sha256: afee3063262ec877ef65affb36bd432867a0f3d2afc662152d23b46ef099f151
+
+build:
+  noarch: python
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - bedtools >=2.29.1
+    - pysam >=0.15
+    - pybedtools
+    - matplotlib-base <3.4
+    - pandas >=1.0.0
+    - numpy
+    - scipy
+    - seaborn
+    - r-base
+    - r-upsetr >=1.4.0
+    - r-corrplot
+    - r-cairo
+
+test:
+  imports:
+    - intervene
+    - intervene.example_data
+    - intervene.example_data.ENCODE_hESC
+    - intervene.example_data.Gene_list
+    - intervene.example_data.dbSUPER_mm9
+    - intervene.modules
+    - intervene.modules.pairwise
+    - intervene.modules.upset
+    - intervene.modules.venn
+  commands:
+    - intervene --help
+    - intervene pairwise --test
+    - intervene venn --test
+    - intervene upset --test
+    # workaround for bioconda testing can not remove (PermissionError) created test data
+    - rm -rf Intervene_results
+
+about:
+  home: https://github.com/asntech/intervene
+  license: MIT License
+  summary: 'A tool for intersection of multiple gene or genomic region sets and visualization as venn diagrams, UpSet plots or pariwaise heatmaps'
+  license_family: MIT
+
+extra:
+  identifiers:
+    - biotools:Intervene
+    - doi:10.1186/s12859-017-1708-7

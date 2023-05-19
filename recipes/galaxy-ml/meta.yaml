@@ -1,0 +1,81 @@
+{% set version = "0.10.0" %}
+
+package:
+  name: galaxy-ml
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/G/Galaxy-ML/Galaxy-ML-{{ version }}.tar.gz
+  sha256: 921a7884bfab3a7b40021e33602b13a9a5a2c58a3205c87659423ebd892476f1
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv
+  skip: True  # [osx or py<39 or py>39]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - cython
+    - pip
+    - setuptools
+    - numpy >=1.22, <1.23
+  run:
+    - python
+    - pyfaidx
+    - pytabix
+    - tabix
+    - htslib
+    - numpy >=1.22, <1.23
+    - scipy >=1.3.1
+    - joblib >=1.0
+    - asteval >=0.9.14
+    - pandas >=1.0, <1.3
+    - scikit-learn >=1.1, <1.2
+    - xgboost >=1.6, <1.8
+    - mlxtend >=0.21, <0.22
+    - skrebate >=0.60, <0.70
+    - imbalanced-learn >=0.9, <0.10
+    - tensorflow >=2.10, <2.11
+    - keras >=2.10, <2.11
+    - scikit-optimize >=0.9
+    - plotly >=4.10.0, <5.0
+    - matplotlib-base >=3.1.1
+
+    # For training on GPU, install the following libraries manually
+    # - cudatoolkit==10.0.130
+    # - cudnn==7.6.0
+    - h5py >=3.6, <3.8
+    - six <=1.15.0
+    - bleach >=3.3.0
+    - pydot >=1.4
+    - graphviz >=2.40.1
+
+
+test:
+  imports:
+    - galaxy_ml
+    # tensorflow can't be tested in docker at the moment
+    #- galaxy_ml.keras_galaxy_models
+    - galaxy_ml.iraps_classifier
+    - galaxy_ml.model_persist
+    - galaxy_ml.model_validations
+    - galaxy_ml.preprocessors
+    - galaxy_ml.utils
+    - galaxy_ml.externals.selene_sdk.sequences._sequence
+  commands:
+    - command -v tabix
+    - command -v bgzip
+
+about:
+  home: https://github.com/goeckslab/Galaxy-ML
+  summary: APIs for Galaxy machine learning tools
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - qiagu

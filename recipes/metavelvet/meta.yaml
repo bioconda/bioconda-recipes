@@ -1,0 +1,37 @@
+about:
+  home: http://metavelvet.dna.bio.keio.ac.jp
+  license: 'GNU General Public License'
+  summary: 'MetaVelvet : An extension of Velvet assembler to de novo metagenome assembly from short sequence reads'
+
+build:
+  number: 3
+  skip: True # [osx]
+
+package:
+  name: metavelvet
+  version: '1.2.02'
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - perl-module-build
+    - perl
+  run:
+    - zlib
+    - perl
+    - perl-module-build
+    - velvet
+
+source:
+  url: http://metavelvet.dna.bio.keio.ac.jp/src/MetaVelvet-1.2.02.tgz
+  sha256: 80999b1cb6b533719d258f4c3d8517cf2a72dcfadd19c088470432382a8e0ecf
+  patches:
+    - metavelvet.velvet.makefile.patch
+    - run-annoIS.pl.patch
+
+test:
+  commands:
+    - meta-velvetg --help 2>&1 | grep "contiging and scaffolding program for metagenomics NGS data"

@@ -1,0 +1,51 @@
+{% set name = "RSeQC" %}
+{% set version = "5.0.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 3c7d458784861af352d8da3f4f1cc8941934b37643164e9b74f929a32bd9ca80
+
+build:
+  number: 0
+  skip: True  # [py2k]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - pip
+    - python
+    - cython >=0.12
+    - nose
+  run:
+    - bx-python
+    - numpy
+    - pip
+    - pybigwig
+    - pysam
+    - python
+    - r-base
+
+test:
+  imports:
+    - qcmodule
+    - qcmodule.SAM
+  commands:
+    - read_distribution.py 2>&1 | grep Usage > /dev/null
+    - geneBody_coverage.py 2>&1 | grep Usage > /dev/null
+
+about:
+  home: http://rseqc.sourceforge.net/
+  license: GNU General Public License v2 (GPLv2)
+  summary: 'RNA-seq QC Package'
+  license_family: GPL2
+
+extra:
+  identifiers:
+    - biotools:rseqc
+    - doi:10.1093/bioinformatics/bts356

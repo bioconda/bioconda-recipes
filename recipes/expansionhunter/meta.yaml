@@ -1,0 +1,47 @@
+{% set name = "ExpansionHunter" %}
+{% set version = "4.0.2" %}
+{% set sha256 = "cbe66f09b8d86499966ae6da8655de04976e097227656495644fde4a69104525" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 1
+
+source:
+  url: https://github.com/Illumina/ExpansionHunter/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - brackets.patch  # [osx]
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - cmake
+  host:
+    - boost-cpp
+    - icu
+    - zlib
+    - htslib
+  run:
+    - boost-cpp
+    - icu
+    - zlib
+    - htslib
+
+test:
+  commands:
+  - ExpansionHunter --help 2>&1 | grep "help"
+
+about:
+  home: https://github.com/Illumina/ExpansionHunter
+  license: Apache v2.0
+  license_family: Apache
+  license_file: LICENSE.txt
+  summary: "A tool for estimating repeat sizes"
+extra:
+  skip-lints:
+    - should_not_be_noarch_source

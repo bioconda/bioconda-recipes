@@ -1,0 +1,77 @@
+{% set blast_version = "2.12.0" %}
+
+package:
+  name: maker
+  version: 3.01.03
+
+source:
+  url: http://weatherby.genetics.utah.edu/maker_downloads/static/maker-3.01.03.tgz
+  sha256: f36cc7ef584c215955a4d9fdd46287a49f7508bbe59c6fe78d50e0c6e99192ae
+  patches:
+    - "repeatmasker_check.patch"
+    - "mpi_init.patch"
+
+build:
+  number: 3
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - perl
+    - perl-bioperl-core >=1.7.8
+    - perl-bit-vector
+    - perl-dbd-pg
+    - perl-dbd-sqlite
+    - perl-dbi
+    - perl-io-all
+    - perl-io-prompt
+    - perl-inline-c >=0.78
+    - perl-perlio-gzip
+    - perl-forks
+    - perl-perl-unsafe-signals
+    - mpich
+  run:
+    - augustus >=3.2.3
+    - blast {{ blast_version }}
+    - exonerate
+    - evidencemodeler
+    - repeatmasker >=4.1.1
+    - rmblast {{ blast_version }} # blast and rmblast must be pinned to the same version as they share some libraries
+    - snap
+    - snoscan
+    - perl
+    - perl-bioperl-core >=1.7.8
+    - perl-bit-vector
+    - perl-dbd-pg
+    - perl-dbd-sqlite
+    - perl-dbi
+    - perl-io-all
+    - perl-io-prompt
+    - perl-inline-c >=0.78
+    - perl-perlio-gzip
+    - perl-forks
+    - perl-perl-unsafe-signals
+    - mpich
+    - rapsearch # [not osx]
+    - trnascan-se
+    - postgresql
+    # GeneMarkS, GeneMark-ES and FGENESH are optional requirements but are not free
+
+about:
+  home: http://www.yandell-lab.org/software/maker.html
+  license: GPL3
+  license_file: LICENSE
+  summary: MAKER is a portable and easily configurable genome annotation pipeline.
+
+test:
+  commands:
+    - maker --version
+
+extra:
+  container:
+    # mpich needs /etc/resolv.conf : https://github.com/bioconda/bioconda-recipes/issues/11583
+    extended-base: true
+  identifiers:
+    - biotools:maker
+    - usegalaxy-eu:maker

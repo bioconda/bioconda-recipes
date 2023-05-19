@@ -1,0 +1,94 @@
+--- bin/runLSC.py	2016-04-08 22:19:04.000000000 +0000
++++ bin/runLSC.py.new	2017-05-25 05:22:57.115434855 +0000
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/opt/anaconda1anaconda2anaconda3/bin/python
+ 
+ import argparse, sys, os, json, subprocess, re
+ import datetime
+@@ -39,7 +39,7 @@
+   parser.add_argument('--error_rate_threshold',type=int,default=12,help="Maximum percent of errors in a read to use the alignment")
+   parser.add_argument('--short_read_coverage_threshold',type=int,default=20,help="Minimum short read coverage to do correction")
+   parser.add_argument('--long_read_batch_size',default=500,type=int,help="INT number of long reads to work on at a time.  This is a key parameter to adjusting performance.  A smaller batch size keeps the sizes and runtimes of intermediate steps tractable on large datasets, but can slow down execution on small datasets.  The default value should be suitable for large datasets.")
+-  parser.add_argument('--samtools_path',default='samtools',help="Path to samtools by default assumes its installed.  If not specified, the included version will be used.")
++  parser.add_argument('--samtools_path',default='/opt/anaconda1anaconda2anaconda3/bin',help="Path to samtools by default assumes its installed.  If not specified, the included version will be used.")
+   args = parser.parse_args()
+   if args.threads == 0:
+     args.threads = cpu_count()
+@@ -59,7 +59,7 @@
+ 
+   #Figure out the path for samtools.  If one is not specified, just try the local.
+   ofnull = open('/dev/null','w')
+-  if args.samtools_path == "samtools": #user is not defining their own path
++  if args.samtools_path == "/opt/anaconda1anaconda2anaconda3/bin": #user is not defining their own path
+     cmd_sam = 'which samtools'
+     p = subprocess.Popen(cmd_sam.split(),stderr=ofnull,stdout=subprocess.PIPE)
+     output, err = p.communicate()
+@@ -67,7 +67,7 @@
+       #samtools is already installed
+       args.samtools_path = output.rstrip()
+     else: # try to use a local samtools
+-      args.samtools_path = bin_path.rstrip('/')+'/../samtools-1.2/samtools'
++      args.samtools_path = bin_path.rstrip('/')+'/opt/anaconda1anaconda2anaconda3/bin/samtools'
+   ofnull.close()
+   sys.stderr.write("=== Welcome to LSC " + version + " ===\n")
+   
+@@ -310,7 +310,7 @@
+   SR_filetype = args.short_read_file_type
+   sys.stderr.write("=== sort and uniq SR data ===\n")
+   cwd = os.path.dirname(os.path.realpath(__file__))
+-  udir = cwd+'/../utilities'
++  udir = cwd
+ 
+   cmd4 = 'split -l 5000000 - '+temp_foldername+'Split_Short/unsort.'
+   p4 = subprocess.Popen(cmd4.split(),stdin=subprocess.PIPE,bufsize=1)
+@@ -413,7 +413,7 @@
+   #Lets split the reads to compress
+   short_read_file = temp_filename+'SR_uniq.fa'
+   cwd = os.path.dirname(os.path.realpath(__file__))
+-  udir = cwd+'/../utilities'
++  udir = cwd
+   fcount = None
+ 
+   cmd = udir+'/explode_fasta.pl 1000000 '+temp_filename+'/Split_Short'
+--- utilities/explode_fasta.pl	2016-04-08 22:19:04.000000000 +0000
++++ utilities/explode_fasta.pl.new	2017-05-25 05:12:41.048304299 +0000
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl -w 
++#!/opt/anaconda1anaconda2anaconda3/bin/perl -w 
+ use strict;
+ 
+ # take a fasta piped to standard input
+--- utilities/fasta_to_tsv.pl	2016-04-08 22:19:04.000000000 +0000
++++ utilities/fasta_to_tsv.pl.new	2017-05-25 05:13:22.345380087 +0000
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl -w 
++#!/opt/anaconda1anaconda2anaconda3/bin/perl -w 
+ use strict;
+ 
+ # take a fasta piped to standard input
+--- utilities/fastq_to_tsv.pl	2016-04-08 22:19:04.000000000 +0000
++++ utilities/fastq_to_tsv.pl.new	2017-05-25 05:13:49.833430530 +0000
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl -w
++#!/opt/anaconda1anaconda2anaconda3/bin/perl -w
+ use strict;
+ ##############
+ # make a fasta file from a fastq file
+--- utilities/filter_corrected_reads.py	2016-04-08 22:19:04.000000000 +0000
++++ utilities/filter_corrected_reads.py.new	2017-05-25 05:15:04.708567930 +0000
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/opt/anaconda1anaconda2anaconda3/bin/python
+ 
+ import sys
+ 
+@@ -7,7 +7,7 @@
+     input_filename = sys.argv[2]
+ else:
+     print("Post-runLSC script which can be used to filter the corrected long reads")
+-    print("usage: ./filter_corrected_reads.py coverage_threshold input_filename")
++    print("usage: filter_corrected_reads.py coverage_threshold input_filename")
+     print("or python filter_corrected_reads.py coverage_threshold input_filename")
+     sys.exit(1)
+ 

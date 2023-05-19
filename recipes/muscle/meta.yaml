@@ -1,0 +1,35 @@
+{% set name = "muscle" %}
+{% set version = "5.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/rcedgar/muscle/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 091d9f8733b92ff106c2a8eb274d1e5a57960d397a2068d8638d6002e8880dab
+  patches:
+    - 0001-Replace-zero-macro-with-memset_zero.patch
+    - 0002-Move-va_start-va_end-out-of-critical-section.patch
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+    - make
+
+test:
+  commands:
+    - muscle -version
+about:
+  home: https://github.com/rcedgar/muscle
+  license: GPL-3.0-only
+  license_file: LICENSE
+  summary: "MUSCLE: multiple sequence alignment with high accuracy and high throughput"
+
+extra:
+  identifiers:
+    - biotools:muscle

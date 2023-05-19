@@ -1,0 +1,70 @@
+{% set name = "genomedata" %}
+{% set version = "1.6.0" %}
+{% set sha256 = "72f15fb8dc595b680e5c24855d7bff3fc0a523c838b4c27c2be074aab6ef9feb" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  
+build:
+  skip: True  # [osx or py < 37]
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - hdf5
+  host:
+    - pip
+    - python
+    - setuptools_scm
+    - hdf5
+    - zlib
+  run:
+    - python
+    - setuptools
+    - six
+    - hdf5
+    - pytables >=3.4.3
+    - path.py
+    - textinput
+    - bedtools
+    - ucsc-bigwigtobedgraph >=377
+
+test:
+    # Copied to PATH in build.sh
+    # source_files:
+    # - test/*.py
+    # - test/data/*
+    commands:
+    # Smoke test commands
+    - genomedata-info --help
+    - genomedata-query --help
+    - genomedata-histogram --help
+    - genomedata-load --help
+    - genomedata-load-seq --help
+    - genomedata-load-assembly --help
+    - genomedata-open-data --help
+    - genomedata-hardmask --help
+    - genomedata-close-data --help
+    - genomedata-report --help
+    - genomedata-erase-data --help
+    - genomedata-load-data --help
+    # Test functionality
+    - run_genomedata_tests.py
+
+about:
+  home: http://genomedata.hoffmanlab.org/
+  license: GPL2
+  summary: 'tools for accessing large amounts of genomic data'
+
+extra:
+  identifiers:
+    - biotools:genomedata
+    - doi:10.1093/bioinformatics/btq164
+  skip-lints:
+    - uses_setuptools

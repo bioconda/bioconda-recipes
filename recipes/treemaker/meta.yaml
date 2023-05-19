@@ -1,0 +1,41 @@
+{% set name = "treemaker" %}
+{% set version = "1.4" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "2f5bc4669c5a49b35f877c3a317c0f683caeae77ec4509df095969a684d154a1" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - treemaker = treemaker:main
+  script: python -m pip install --no-deps --ignore-installed .
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python
+
+test:
+  imports:
+    - treemaker
+  commands:
+    - treemaker --help
+
+about:
+  home: https://github.com/SimonGreenhill/treemaker
+  license: BSD-3-Clause
+  license_file: LICENSE
+  license_family: BSD
+  summary: A python tool for generating a Newick formatted tree from alist of classifications

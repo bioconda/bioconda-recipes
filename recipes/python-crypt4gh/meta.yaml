@@ -1,0 +1,51 @@
+{% set name = "crypt4gh" %}
+{% set version = "1.6" %}
+{% set sha256_any = "8754f23182ee7dd5119ab0eb4999b3c8ffaa8bb8f8dbf2cdbaff790ac5b4f3a7" %}
+
+package:
+  name: python-{{ name }}
+  version: {{ version }}
+
+source:
+  url:  https://github.com/EGA-archive/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256_any }}
+
+build:
+  number: 0
+  noarch: python
+
+requirements:
+  host:
+    - python >=3
+    - pip
+  run:
+    - python >=3
+    - pyyaml
+    - docopt
+    - cryptography
+    - pynacl
+    - bcrypt
+
+test:
+  imports:
+    - crypt4gh
+    - crypt4gh.lib
+    - crypt4gh.keys.kdf
+    - crypt4gh.keys.c4gh
+  
+  commands:
+    - crypt4gh -h > testfile-help.txt
+    - crypt4gh-keygen --sk alice.key --pk alice.pub -C 'bioconda Alice test' --nocrypt
+    - crypt4gh-keygen --sk bob.key --pk bob.pub -C 'bioconda Bob test' --nocrypt
+    - crypt4gh encrypt --sk bob.key --recipient_pk bob.pub --recipient_pk alice.pub < testfile-help.txt > message.c4gh
+    - crypt4gh decrypt --sk alice.key < message.c4gh > message.alice.received
+    - diff testfile-help.txt message.alice.received
+    - crypt4gh decrypt --sk bob.key < message.c4gh > message.bob.received
+    - diff testfile-help.txt message.bob.received
+
+about:
+  home: https://github.com/EGA-archive/crypt4gh
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: GA4GH cryptographic tools

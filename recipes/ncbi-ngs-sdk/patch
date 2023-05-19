@@ -1,0 +1,44 @@
+diff --git a/ngs-sdk/setup/konfigure.perl b/ngs-sdk/setup/konfigure.perl
+index 915af24..341fb84 100644
+--- a/ngs-sdk/setup/konfigure.perl
++++ b/ngs-sdk/setup/konfigure.perl
+@@ -333,7 +333,7 @@ if ($OSTYPE =~ /linux/i) {
+     $SHLX = 'so';
+     $EXEX = '';
+     $OSINC = 'unix';
+-    $TOOLS = 'gcc' unless ($TOOLS);
++    $TOOLS = $ENV{CC};
+     $PYTHON = 'python';
+ } elsif ($OSTYPE =~ /darwin/i) {
+     $LPFX = 'lib';
+@@ -343,7 +343,7 @@ if ($OSTYPE =~ /linux/i) {
+     $SHLX = 'dylib';
+     $EXEX = '';
+     $OSINC = 'unix';
+-    $TOOLS = 'clang' unless ($TOOLS);
++    $TOOLS = $ENV{CC};
+     $PYTHON = 'python';
+ } elsif ($OSTYPE eq 'win') {
+     $TOOLS = 'vc++';
+@@ -415,7 +415,20 @@ if ($TOOLS =~ /gcc$/) {
+     $DBG = '-g';
+ } elsif ($TOOLS eq 'vc++') {
+ } else {
+-    die "unrecognized tool chain '$TOOLS'";
++    $CPP  = $ENV{CXX};
++    $CC   = "$TOOLS -c";
++    $CP   = "$CPP -c";
++    $AR   = 'ar rc';
++    $ARX  = 'ar x';
++    $ARLS = 'ar t';
++    $LD   = $TOOLS;
++    $LP   = $CPP;
++
++    $DBG = '-g -DDEBUG';
++    $OPT = '-O3';
++    $PIC = '-fPIC';
++    $INC = '-I';
++    $MD  = '-MD';
+ }
+ println "$TOOLS tool chain is supported" unless ($AUTORUN);
+ 

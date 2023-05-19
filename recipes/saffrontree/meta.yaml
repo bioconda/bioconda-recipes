@@ -1,0 +1,48 @@
+{% set name = "saffrontree" %}
+{% set version = "0.1.2" %}
+{% set md5 = "fe6688101ce54f2551ae2c4b67feae5e" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/sanger-pathogens/{{ name }}/archive/v{{ version }}.tar.gz
+  md5: {{ md5 }}
+
+build:
+  skip: True # [py27]
+  number: 1
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - setuptools
+    - dendropy >=4.1.0
+    - pyfastaq >=3.12.0
+    - biopython
+
+  run:
+    - python
+    - biopython
+    - dendropy >=4.1.0
+    - pyfastaq >=3.12.0
+    - kmc >=2.3.0
+
+test:
+  commands:
+    - saffrontree -h
+
+about:
+  home: https://github.com/sanger-pathogens/saffrontree
+  license: GNU General Public License v3 (GPLv3)
+  summary: 'SaffronTree: Reference free rapid phylogenetic tree construction from raw read data'
+
+extra:
+  recipe-maintainers:
+    - andrewjpage
+  identifiers:
+    - doi:10.21105/joss.00243

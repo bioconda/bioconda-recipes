@@ -1,0 +1,40 @@
+package:
+  name: breakseq2
+  version: '2.2'
+
+source:
+  url: https://github.com/bioinform/breakseq2/archive/2.2.tar.gz
+  md5: 6fd5a103c2781717b0b1d0efcbdc17e7
+  patches:
+    - setup.py.patch
+
+build:
+  number: 2
+  skip: True  # [py<30]
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - cython
+    - pip
+    - pysam 0.7.7
+    - biopython 1.65
+  run:
+    - python
+    - pysam 0.7.7
+    - biopython 1.65
+    - samtools 0.1.19
+    - bwa
+
+test:
+  commands:
+    - run_breakseq2.py -h
+
+about:
+  home: http://bioinform.github.io/breakseq2
+  license: BSD-2-Clause
+  license_file: LICENSE.txt
+  summary: "BreakSeq2: Ultrafast and accurate nucleotide-resolution analysis of structural variants."

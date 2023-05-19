@@ -1,0 +1,48 @@
+{% set name = "repeatmasker" %}
+{% set version = "4.1.5" %}
+{% set sha256 = "16e07f9efd99adf15f4492b0e334df5ad4ea6ca38ddf62bdd180d257f2f4753f" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://www.repeatmasker.org/RepeatMasker/RepeatMasker-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: generic
+
+requirements:
+  host:
+    - perl
+    - rmblast
+    - h5py
+  run:
+    - rmblast
+    - hmmer
+    - trf
+    - perl
+    - h5py
+    - wget
+
+test:
+# pvanheus - disable file based tests for
+# now - they don't work with Dockerized
+# containers - 13/1/2017
+#  files:
+#  - rm_input1.fasta
+#  - sample_repeats.fasta
+#  - test_md5.txt
+  commands:
+  - RepeatMasker | grep "RepeatMasker - Mask repetitive DNA" > /dev/null
+
+about:
+  home: https://www.repeatmasker.org
+  license: Open Software License v2.1
+  summary: RepeatMasker is a program that screens DNA sequences for interspersed repeats and low complexity DNA sequences.
+
+extra:
+  identifiers:
+    - biotools:RepeatMasker

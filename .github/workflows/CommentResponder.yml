@@ -1,0 +1,129 @@
+name: CommentResponder
+on:
+  status:
+  check_suite:
+    types:
+    - completed
+  issue_comment:
+    types:
+    - created
+
+# Re-enable when the bot has been updated to handle azure
+#      (
+#        github.event_name == 'check_suite' &&
+#        github.event.check_suite.conclusion == 'success'
+#      ) ||
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    name: bioconda-bot comment
+    if: >-
+      (
+        github.event_name == 'status' &&
+        github.event.state == 'success'
+      ) ||
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        (
+          startsWith(github.event.comment.body, '@bioconda-bot') ||
+          startsWith(github.event.comment.body, '@biocondabot')
+        ) &&
+        ! contains(github.event.comment.body, 'please merge') &&
+        ! contains(github.event.comment.body, 'please change visibility') &&
+        ! contains(github.event.comment.body, 'please update')
+      )
+    container:
+      image: 'quay.io/bioconda/bot:comment'
+    steps:
+    - name: bioconda-bot comment
+      env:
+        BOT_TOKEN: ${{ secrets.GITHUBTOKEN }}
+        GITTER_TOKEN: ${{ secrets.GITTER_TOKEN }}
+        JOB_CONTEXT: ${{ toJson(github) }}
+      run: bioconda-bot comment
+
+  repost:
+    runs-on: ubuntu-latest
+    name: bioconda-bot repost
+    if: >-
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        ! (
+          startsWith(github.event.comment.body, '@bioconda-bot') ||
+          startsWith(github.event.comment.body, '@biocondabot')
+        ) &&
+        contains(github.event.comment.body, '@bioconda/')
+      )
+    container:
+      image: 'quay.io/bioconda/bot:comment'
+    steps:
+    - name: bioconda-bot comment
+      env:
+        BOT_TOKEN: ${{ secrets.GITHUBTOKEN }}
+        JOB_CONTEXT: ${{ toJson(github) }}
+      run: bioconda-bot comment
+
+  merge:
+    runs-on: ubuntu-latest
+    name: bioconda-bot merge
+    if: >-
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        (
+          startsWith(github.event.comment.body, '@bioconda-bot') ||
+          startsWith(github.event.comment.body, '@biocondabot')
+        ) &&
+        contains(github.event.comment.body, 'please merge') &&
+        ! contains(github.event.comment.body, 'please update')
+      )
+    container:
+      image: 'quay.io/bioconda/bot:merge'
+    steps:
+    - name: Comment with deprecation info
+      uses: peter-evans/create-or-update-comment@v2
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+          The "please merge" bot command is deprecated. Just hit the merge button
+          for merging the PR.
+
+  update:
+    runs-on: ubuntu-latest
+    name: bioconda-bot update
+    if: >-
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        (
+          startsWith(github.event.comment.body, '@bioconda-bot') ||
+          startsWith(github.event.comment.body, '@biocondabot')
+        ) &&
+        ! contains(github.event.comment.body, 'please merge') &&
+        contains(github.event.comment.body, 'please update')
+      )
+    container:
+      image: 'quay.io/bioconda/bot:update'
+    steps:
+    - name: Setup ssh (pre)
+      run: |
+        cp /usr/local/lib/libstdc++.so* /lib/x86_64-linux-gnu/
+    - name: Setup ssh
+      uses: webfactory/ssh-agent@v0.4.1
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: Setup ssh (post)
+      run: |
+        mkdir -p /root/.ssh
+
+        # https://github.blog/2023-03-23-we-updated-our-rsa-ssh-host-key/
+        ssh-keygen -R github.com
+        echo "github.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCj7ndNxQowgcQnjshcLrqPEiiphnt+VTTvDP6mHBL9j1aNUkY4Ue1gvwnGLVlOhGeYrnZaMgRK6+PKCUXaDbC7qtbW8gIkhL7aGCsOr/C56SJMy/BCZfxd1nWzAOxSDPgVsmerOBYfNqltV9/hWCqBywINIR+5dIg6JTJ72pcEpEjcYgXkE2YEFXV1JHnsKgbLWNlhScqb2UmyRkQyytRLtL+38TGxkxCflmO+5Z8CSSNY7GidjMIZ7Q4zMjA2n1nGrlTDkzwDCsw+wqFPGQA179cnfGWOWRVruj16z6XyvxvjJwbz0wQZ75XK5tKSb7FNyeIEs4TT4jk+S4dhPeAUC5y+bDYirYgM4GC7uEnztnZyaVWQ7B381AK4Qdrwt51ZqExKbQpTUNn+EjqoTwvqNj4kqx5QUCI0ThS/YkOxJCXmPUWZbhjpCg56i+2aB6CmK2JGhn57K5mj0MNdBXA4/WnwH6XoPWJzK5Nyu2zB3nAZp+S5hpQs+p1vN1/wsjk=" >> /root/.ssh/known_hosts
+    - name: bioconda-bot update
+      env:
+        BOT_TOKEN: ${{ secrets.GITHUBTOKEN }}
+        CODE_SIGNING_KEY: ${{ secrets.CODE_SIGNING_KEY }}
+        JOB_CONTEXT: ${{ toJson(github) }}
+      run: bioconda-bot update
