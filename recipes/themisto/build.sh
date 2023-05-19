@@ -16,7 +16,7 @@ export PATH="$CARGO_HOME/bin:$PATH"
 
 git submodule update --init --recursive
 cd build
-cmake .. -DMAX_KMER_LENGTH=255 -DCMAKE_BUILD_ZLIB=1 -DCMAKE_BUILD_BZIP2=1
+cmake .. -DMAX_KMER_LENGTH=64 -DCMAKE_BUILD_ZLIB=1 -DCMAKE_BUILD_BZIP2=1 -DROARING_DISABLE_NATIVE=ON
 make -j${CPU_COUNT} ${VERBOSE_AT}
 
 cp bin/themisto $PREFIX/bin
