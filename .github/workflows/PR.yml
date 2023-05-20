@@ -37,11 +37,11 @@ jobs:
       - name: Configure conda
         run: bash configure-conda.sh
 
-      - name: Build and upload
+      - name: Perform lint
         env:
-          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-          INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
-          QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+          #ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+          #INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+          #QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
           # Mimic circleci
           OSTYPE: "linux-gnu"
           CI: "true"
@@ -58,11 +58,7 @@ jobs:
           if [ -z "$GITHUB_BASE_REF" ] ; then
               export GITHUB_BASE_REF="master"
           fi
-          set -x
-          git remote -v
-          git branch
           git fetch origin "$GITHUB_BASE_REF"
-          git branch
           bioconda-utils lint --loglevel debug --full-report --git-range origin/"$GITHUB_BASE_REF" HEAD
           conda clean -y --all
 
@@ -123,6 +119,7 @@ jobs:
           if [ -z "$GITHUB_BASE_REF" ] ; then
               export GITHUB_BASE_REF="master"
           fi
+          git fetch origin "$GITHUB_BASE_REF"
           docker pull quay.io/dpryan79/mulled_container:latest
           bioconda-utils build recipes config.yml \
             --docker --mulled-test \
@@ -191,5 +188,6 @@ jobs:
           if [ -z "$GITHUB_BASE_REF" ] ; then
               export GITHUB_BASE_REF="master"
           fi
+          git fetch origin "$GITHUB_BASE_REF"
           bioconda-utils build recipes config.yml \
             --git-range origin/"$GITHUB_BASE_REF" HEAD
