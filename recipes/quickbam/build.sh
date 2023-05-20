@@ -1,6 +1,5 @@
 #!/bin/bash
 set -x
-./configure --help
-./configure
+./configure --prefix=$PREFIX
 make
-make install PREFIX=$PREFIX
+make install
