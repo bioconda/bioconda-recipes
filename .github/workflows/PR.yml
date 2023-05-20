@@ -101,9 +101,6 @@ jobs:
 
       - name: Build and upload
         env:
-          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-          INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
-          QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
           # Mimic circleci
           OSTYPE: "linux-gnu"
           CI: "true"
@@ -111,11 +108,6 @@ jobs:
           set -e
           eval "$(conda shell.bash hook)"
           conda activate bioconda
-          echo '============'
-          conda info --all
-          conda config --show-sources
-          python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
-          echo '============'
           if [ -z "$GITHUB_BASE_REF" ] ; then
               export GITHUB_BASE_REF="master"
           fi
@@ -165,9 +157,6 @@ jobs:
 
       - name: Build and Test
         env:
-          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-          INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
-          QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
           # Mimic circleci
           OSTYPE: "darwin"
           CI: "true"
@@ -179,12 +168,6 @@ jobs:
           # The SDK isn't actually cached, so reinstall it
           run_conda_forge_build_setup
 
-          echo '============'
-          conda info --all
-          conda config --show-sources
-          conda activate bioconda
-          python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
-          echo '============'
           if [ -z "$GITHUB_BASE_REF" ] ; then
               export GITHUB_BASE_REF="master"
           fi
