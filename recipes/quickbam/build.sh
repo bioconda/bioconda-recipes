@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -x
 autoreconf -i
 ls -l
 ./configure --help
