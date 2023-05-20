@@ -57,10 +57,15 @@ jobs:
           eval "$(conda shell.bash hook)"
           conda activate bioconda
           docker pull quay.io/dpryan79/mulled_container:latest
+          # bioconda-utils handle-merged-pr recipes config.yml \
+          #   --repo bioconda/bioconda-recipes \
+          #   --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
+          #   --quay-upload-target biocontainers \
+          #   --fallback build
           bioconda-utils build recipes config.yml \
-            --git-range ${GITHUB_SHA}~4 ${GITHUB_SHA} \
+            --git-range ${GITHUB_SHA}~1 ${GITHUB_SHA} \
             --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
-          docker rmi quay.io/dpryan79/mulled_container:lates
+          docker rmi quay.io/dpryan79/mulled_container:latest
 
   build-osx:
     name: OSX Tests
@@ -118,5 +123,9 @@ jobs:
           # The SDK isn't actually cached, so reinstall it
           run_conda_forge_build_setup
 
+          # bioconda-utils handle-merged-pr recipes config.yml \
+          #   --repo bioconda/bioconda-recipes \
+          #   --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
+          #   --fallback build
           bioconda-utils build recipes config.yml \
-            --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION}
+            --git-range ${GITHUB_SHA}~4 ${GITHUB_SHA}
