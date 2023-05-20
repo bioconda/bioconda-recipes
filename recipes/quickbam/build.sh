@@ -1,6 +1,6 @@
 #!/bin/bash
 set -x
-autoreconf -i
+autoreconf
 ls -l
 ./configure --help
 ./configure
