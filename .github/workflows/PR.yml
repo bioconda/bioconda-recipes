@@ -9,7 +9,7 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
+      fail-fast: true
       max-parallel: 13
     steps:
       - uses: actions/checkout@v3
@@ -48,9 +48,10 @@ jobs:
           eval "$(conda shell.bash hook)"
           conda activate bioconda
           echo '============'
-          conda info --all
-          conda config --show-sources
-          python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+          #conda info --all
+          #conda config --show-sources
+          #python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+          env
           echo '============'
           bioconda-utils lint --loglevel debug --full-report --git-range origin/"$GITHUB_BASE_REF" "$source"
           conda clean -y --all
@@ -59,8 +60,9 @@ jobs:
     name: Linux Tests
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
+      fail-fast: true
       max-parallel: 13
+    needs: lint
     steps:
       - uses: actions/checkout@v3
 
@@ -118,8 +120,9 @@ jobs:
     name: OSX Tests
     runs-on: macOS-latest
     strategy:
-      fail-fast: false
+      fail-fast: true
       max-parallel: 4
+    needs: build-linux
     steps:
       - uses: actions/checkout@v3
 
