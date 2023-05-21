@@ -1,0 +1,49 @@
+{% set name = "subread" %}
+{% set version = "2.0.3" %}
+{% set sha256 = "56cef3a2f914d432713069d5c282f48831c3a1ecc89432ad5580caa322a5f56b" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://downloads.sourceforge.net/project/{{ name }}/{{ name }}-{{ version }}/{{ name }}-{{ version }}-source.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - zlib
+  run:
+    - zlib
+
+test:
+  commands:
+    - featureCounts -v
+    - subread-align || [[ $? == 1 ]]
+    - exactSNP
+    - subread-buildindex || [[ $? == 255 ]]
+    - subjunc || [[ $? == 1 ]]
+    - subindel || [[ $? = 255 ]]
+    - repair -h
+    - txUnique || [[ $? == 1 ]]
+    - qualityScores
+    - subread-fullscan || [[ $? == 255 ]]
+
+about:
+  home: http://subread.sourceforge.net/
+  license: GPL-3.0-only
+  summary: High-performance read alignment, quantification, and mutation discovery
+  license_file:
+    - LICENSE
+
+extra:
+  identifiers:
+    - biotools:subread
+    - usegalaxy-eu:featurecounts
+    - doi:10.1093/nar/gkt214

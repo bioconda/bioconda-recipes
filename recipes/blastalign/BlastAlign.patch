@@ -1,0 +1,55 @@
+--- BlastAlign.bak	2014-04-08 12:23:29.000000000 +0200
++++ BlastAlign	2017-04-12 14:26:23.706987674 +0200
+@@ -1,5 +1,7 @@
+-#! /usr/bin/perl -w
++#! /usr/bin/env perl
+ use Getopt::Std; 	# read in data at command line using -i type options
++use File::Basename;
++use Cwd 'abs_path';
+ 
+ # Written by Robert Belshaw (School of Biomedical & Healthcare Sciences, University of Plymouth) & Aris Katzourakis (Department of Zoology, University of Oxford)
+ # For more information and to cite see Belshaw, R & Katzourakis, A (2005) BlastAlign: a program that uses blast to align problematic nucleotide sequences. Bioinformatics 21:122-123.
+@@ -15,6 +17,7 @@
+ $blastall = "blastall";
+ $formatdb = "formatdb";
+ $python_script = "BlastAlign.py";
++$script_path = dirname(abs_path($0));
+ # e.g. 
+ #$blastall = "/usr/software/blast/blast-2.2.6-ia32/blastall"; 
+ #$formatdb = "/usr/software/blast/blast-2.2.6-ia32/formatdb";
+@@ -101,7 +104,7 @@
+ 	if ($number_of_seqs > $max_number_seqs) { # Either too many sequences in input file or user wants to restrict the number. Will randomly select selected number and find reference from these only.
+ 		find_ref_from_reduced();
+ 		parse_blast_output_for_python();
+-		$system_check = (system "python $python_script"); # Run python script BlastAlign.py with input file 'blast_out'
++		$system_check = (system "python $script_path/$python_script"); # Run python script BlastAlign.py with input file 'blast_out'
+ 			unless ($system_check eq 0) {
+ 			print "\n****** Error message from BlastAlign: the auxiliary python program BlastAlign.py was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
+ 			exit;
+@@ -125,7 +128,7 @@
+ 			exit;
+ 		}
+ 		parse_blast_output_for_python();
+-		$system_check = (system "python $python_script"); # Run python script BlastAlign.py with input file 'blast_out' and create new file called blast_out_python
++		$system_check = (system "python $script_path/$python_script"); # Run python script BlastAlign.py with input file 'blast_out' and create new file called blast_out_python
+ 		unless ($system_check eq 0) {
+ 			print "\n****** Error message from BlastAlign: the auxiliary python program BlastAlign.py was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
+ 			exit;
+@@ -616,7 +619,7 @@
+ 	if (exists $parameters{"r"}) { # No landscape has been produced in first place, so just write it here
+ 		@list_of_names = @array_of_matches_to_ref; # Replace old list of names with list in order to match to reference
+ 		parse_blast_output(); # Produce file blast_out
+-		system "python $python_script"; # Run python again to produce better landscape map
++		system "python $script_path/$python_script"; # Run python again to produce better landscape map
+ 	}
+ 	else { # Need to overwrite original landscape map
+ 		open INPUT_FILE_HANDLE, "<blast_out" or die print "Error message from BlastAlign: cannot open file to be passed to python to improve landscape map\n";
+@@ -640,7 +643,7 @@
+ 			}	
+ 		}
+ 		close OUTPUT_FILE_HANDLE;
+-		system "python $python_script"; # Run python again to produce better landscape map
++		system "python $script_path/$python_script"; # Run python again to produce better landscape map
+ 	}
+ }
+ 

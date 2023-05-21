@@ -1,0 +1,57 @@
+{% set name = "flowcraft" %}
+{% set version = "1.4.1" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "72613803632a73c60beb6b399c9aa9eb40cfa201df59879a3e50a2bddc65b04e" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 2
+  noarch: python
+  entry_points:
+    - flowcraft = flowcraft.flowcraft:main
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+
+requirements:
+  host:
+    - python >=3
+    - pip
+  run:
+    - python >=3
+    - pympler
+    - python-dateutil
+    - jinja2
+    - requests
+    - nextflow >=0.28
+
+test:
+  imports:
+    - flowcraft
+    - flowcraft.generator
+    - flowcraft.generator.components
+    - flowcraft.generator.recipes
+    - flowcraft.templates
+    - flowcraft.templates.flowcraft_utils
+  commands:
+    - flowcraft --help
+
+about:
+  home: https://github.com/assemblerflow/flowcraft
+  license: GPL3
+  license_family: GPL3
+  license_file: LICENSE
+  summary: A Nextflow pipeline assembler for genomics. Pick your modules. Assemble them. Run the pipeline.
+  doc_url: http://assemblerflow.readthedocs.io/en/latest/
+  dev_url: http://assemblerflow.readthedocs.io/en/latest/
+
+extra:
+  recipe-maintainers:
+    - odiogosilva
+    - cimendes

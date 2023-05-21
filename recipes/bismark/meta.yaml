@@ -1,0 +1,50 @@
+{% set version = "0.24.0" %}
+{% set sha256 = "dd58957bd6eac44f3a6e74e9a5ef69c8d19da0e0b64feb7d019a994fe6087d7d" %}
+
+package:
+  name: bismark
+  version: {{ version }}
+
+build:
+  noarch: generic
+  number: 1
+
+source:
+  url: https://github.com/FelixKrueger/Bismark/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+  run:
+    - coreutils
+    - perl
+    - samtools
+    - bowtie2
+    - hisat2
+    - minimap2
+
+about:
+  home: https://github.com/FelixKrueger/Bismark/
+  license: GNU General Public License v3 (GPLv3)
+  license_family: GPL3
+  summary: Bismark is a program to map bisulfite treated sequencing reads to a
+           genome of interest and perform methylation calls in a single step.
+           The output can be easily imported into a genome viewer, such as
+           SeqMonk, and enables a researcher to analyse the methylation levels
+           of their samples straight away.
+
+test:
+  commands:
+    - bam2nuc --help 2>&1 | grep SYNOPSIS > /dev/null
+    - bismark --help > /dev/null
+    - bismark2bedGraph --help 2>&1 | grep SYNOPSIS > /dev/null
+    - bismark2report --help 2>&1 | grep SYNOPSIS > /dev/null
+    - bismark2summary --help 2>&1 | grep SYNOPSIS > /dev/null
+    - bismark_genome_preparation --help > /dev/null
+    - bismark_methylation_extractor --help > /dev/null
+    - coverage2cytosine --help 2>&1 | grep SYNOPSIS > /dev/null
+
+extra:
+  identifiers:
+    - biotools:bismark
+    - usegalaxy-eu:bismark_bowtie2

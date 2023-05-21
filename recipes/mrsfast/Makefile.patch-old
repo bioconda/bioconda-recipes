@@ -1,0 +1,44 @@
+--- Makefile	2019-08-29 21:47:37.759544100 -0700
++++ Makefile_new	2019-08-29 22:10:40.621055300 -0700
+@@ -1,26 +1,27 @@
+ MRSFAST_VERSION := "3.4.0"
+ BUILD_DATE := "$(shell date)"
+ 
++CC?= gcc
+ all: OPTIMIZE_FLAGS build
+ debug: DEBUG_FLAGS build
+ profile: PROFILE_FLAGS build
+ build: clean_executables SSE_FLAGS mrsfast snp_indexer clean_objects
+ 
+-LDFLAGS=#-static
++#LDFLAGS=#-static
+ LIBS=-lz -lm -pthread -lpthread
+-CFLAGS=-fno-pic -DMRSFAST_VERSION=\"$(MRSFAST_VERSION)\" -DBUILD_DATE=\"$(BUILD_DATE)\"
++CFLAGS= -w -DMRSFAST_VERSION=\"$(MRSFAST_VERSION)\" -DBUILD_DATE=\"$(BUILD_DATE)\"
+ 
+ objects=baseFAST.o Sort.o MrsFAST.o Common.o CommandLineParser.o RefGenome.o HashTable.o Reads.o Output.o SNPReader.o  HELP.o
+ 
+ mrsfast: clean_executables $(objects)
+ ifeq ($(shell uname -s),Linux)
+-	gcc -w $(objects) -o $@ ${LDFLAGS} ${LIBS}
++	$(CC) -w $(objects) -o $@ ${LDFLAGS} ${LIBS}
+ else
+-	gcc -Wl,-no_pie -fno-pic -w $(objects) -o $@ ${LDFLAGS} ${LIBS}
++	$(CC) -Wl,-no_pie -fno-pic -w $(objects) -o $@ ${LDFLAGS} ${LIBS}
+ endif
+ 
+ snp_indexer: clean_executables SNPIndexer.o
+-	gcc SNPIndexer.o -o $@ ${LDFLAGS} ${LIBS}
++	$(CC) SNPIndexer.o -o $@ ${LDFLAGS} ${LIBS}
+ 
+ clean_objects: mrsfast snp_indexer
+ 	@rm -f $(objects)
+@@ -44,7 +45,7 @@
+ 	@ld -r -b binary -o HELP.o HELP
+ else
+ 	@touch HELPstub.c
+-	gcc -o HELPstub.o -c HELPstub.c
++	$(CC) -o HELPstub.o -c HELPstub.c
+ 	ld -r -o HELP.o -sectcreate binary HELP HELP HELPstub.o
+ endif
+ 

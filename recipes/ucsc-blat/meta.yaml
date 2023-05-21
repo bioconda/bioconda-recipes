@@ -1,0 +1,45 @@
+{% set package = "ucsc-blat" %}
+{% set program = "blat" %}
+{% set version = "445" %}
+{% set sha256 = "c7abb5db6a5e16a79aefcee849d2b59dbc71ee112ca1e41fea0afb25229cf56c" %}
+
+package:
+  name: "{{ package }}"
+  version: "{{ version }}"
+
+source:
+- url: "https://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
+  sha256: "{{ sha256 }}"
+  patches:
+    - "include.patch"
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - libpng
+    - libuuid
+    - mysql-connector-c
+    - openssl
+    - libopenssl-static
+    - zlib
+  run:
+    - libpng
+    - libuuid
+    - openssl
+    - zlib
+
+test:
+  commands:
+    # just check for existence, because the individual packages have no unified behavior
+    - which {{ program }}
+
+about:
+  home: "https://hgdownload.cse.ucsc.edu/admin/exe/"
+  license: "varies; see https://genome.ucsc.edu/license"
+  summary: "Standalone BLAT v. 37x1 fast sequence search command line tool"

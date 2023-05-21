@@ -1,0 +1,41 @@
+{% set name = "miR-PREFeR" %}
+{% set version = "0.24" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/hangelwen/miR-PREFeR/archive/v0.24.tar.gz
+  md5: c78ae8bbb7daba266648da1a9d4a2f27
+  patches:
+    - patches/bowtie-align-reads.py.patch
+    - patches/convert-mirdeep2-fasta.py.patch
+    - patches/convert-readcount-file.py.patch
+    - patches/miR_PREFeR.py.patch
+    - patches/process-reads-fasta.py.patch
+
+build:
+  noarch: generic
+  number: 4
+
+requirements:
+  run:
+    - python <3
+    - viennarna >=1.8.5
+    - samtools >=0.1.15
+    - bowtie >=1.2.0
+
+test:
+  commands:
+    - bowtie-align-reads.py -h 2>&1 | grep "python bowtie-align-reads.py"
+    - convert-mirdeep2-fasta.py -h 2>&1 | grep "python process-reads-fasta.py"
+    - convert-readcount-file.py -h 2>&1 | grep "python process-reads-fasta.py"
+    - miR_PREFeR.py -h 2>&1 | grep "python mir_PREFeR.py"
+    - process-reads-fasta.py -h 2>&1 | grep "python preocess-reads-fasta.py"
+
+about:
+  home: https://github.com/hangelwen/miR-PREFeR
+  summary: 'microRNA PREdiction From small RNA-seq data'
+  description: microRNA PREdiction From small RNA-seq data
+  license: GPL

@@ -1,0 +1,65 @@
+{% set version = "0.11.0" %}
+{% set sha256 = "8ec16ea0d8f852aaa04cd4dcc01838077dc4a234454340df79792e6217cc2c8e" %}
+
+package:
+  name: msproteomicstools
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/m/msproteomicstools/msproteomicstools-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-setup.py.patch
+
+build:
+  number: 4
+  skip: True  # [py>=30]
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - pip
+    - python
+    - cython
+    - numpy
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+    - scipy
+    - python-cluster ==1.3.3
+    - pyteomics >=2.4.0
+    - xlsxwriter >=0.5.3
+    - scikits-datasmooth
+    - pymzml ==0.7.8
+    - lxml
+    - statsmodels
+    ## cylowess would make it faster, but this package is 10 years old
+    ##- cylowess
+    - configobj
+    - biopython
+    - xlwt
+
+test:
+  # Python imports
+  imports:
+    - msproteomicstoolslib
+    - msproteomicstoolslib.algorithms
+    - msproteomicstoolslib.algorithms.PADS
+    - msproteomicstoolslib.algorithms.alignment
+    - msproteomicstoolslib.algorithms.shared
+    - msproteomicstoolslib.data_structures
+    - msproteomicstoolslib.format
+    - msproteomicstoolslib.math
+    - msproteomicstoolslib.util
+    - openswathgui
+    - openswathgui.models
+    - openswathgui.views
+
+about:
+  home: https://github.com/msproteomicstools/msproteomicstools
+  license: BSD
+  license_family: BSD
+  license_file: LICENSE
+  summary: "msproteomicstools is a Python library that can be used in LC-MS/MS based proteomics. It features a core library called."

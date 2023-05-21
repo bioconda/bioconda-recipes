@@ -1,0 +1,57 @@
+{% set name = "biocommons.seqrepo" %}
+{% set version = "0.6.5" %}
+
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/biocommons.seqrepo-{{ version }}.tar.gz
+  sha256: af9d1120fdef58025f1f8da02b0d184bb4a5a8a9299433f6020998d45992b29d
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - seqrepo = biocommons.seqrepo.cli:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+    - pytest-runner
+    - cython
+    - setuptools-scm
+    - wheel
+  run:
+    - bioutils >0.4
+    - coloredlogs
+    - pysam
+    - python >=3.6
+    - requests
+    - requests-html
+    - six
+    - tqdm
+    - yoyo-migrations
+
+test:
+  imports:
+    - biocommons
+    - biocommons.seqrepo
+  commands:
+    #- pip check #requests-html 0.10.0 requires bs4, which is not installed
+    - seqrepo --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/biocommons/biocommons.seqrepo
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: Python package for writing and reading a local collection of biological sequences.
+
+extra:
+  recipe-maintainers:
+    - ok-gitr

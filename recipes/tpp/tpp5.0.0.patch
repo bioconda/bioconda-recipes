@@ -1,0 +1,565 @@
+diff -ru TPP_5.0.0-src/common.mk TPP_5.0.0-src.patched/common.mk
+--- TPP_5.0.0-src/common.mk	2016-10-11 14:05:09.000000000 -0500
++++ TPP_5.0.0-src.patched/common.mk	2017-09-24 18:51:38.304597257 -0500
+@@ -51,7 +51,7 @@
+ TPP_PERL := $(SRC_DIR)/perl
+ 
+ # TPP build locations.  Defaults are all based off of BUILD_DIR
+-BUILD_DIR = $(SRC_DIR)/build/$(SYSTEM)-$(ARCH)
++BUILD_DIR = $(SRC_DIR)/build
+ BUILD_OBJ = $(BUILD_DIR)/artifacts
+ BUILD_SRC = $(BUILD_DIR)/artifacts
+ 
+@@ -151,29 +151,28 @@
+ # We'll use the current platform's <arch>-<vendor>-<os> triplet as reported by
+ # the gcc compiler for the build information.  (And of course msys/mingw32 
+ # doesn't report it as a triplet.)
++
++# bioconda build: this doesn't work. Instead, since we aren't supporting
++# Windows we just use 'uname' to get the relevant details
+ #
+-TARGET := $(shell $(CXX) -dumpmachine)
+-ifeq ($(TARGET),mingw32)
+-   $(error Error: Should not build using MinGW gcc tool chain instead use MingGW-w64)
+-endif
+-ifneq ($(words $(subst -, ,$(TARGET))),3)
+-   $(error Value of build TARGET doesn't appear to be a machine-vendor-system triplet)
+-endif
+-ARCH   := $(or $(word 1,$(subst -, ,$(TARGET))),$(shell uname -m))
+-VENDOR := $(or $(word 2,$(subst -, ,$(TARGET))),unknown)
+-SYSTEM := $(or $(word 3,$(subst -, ,$(TARGET))),$(shell uname -s))
++#TARGET := $(shell $(CXX) -dumpmachine)
++#$(info FOOBAR TARGET is $(TARGET))
++#ifeq ($(TARGET),mingw32)
++   #$(error Error: Should not build using MinGW gcc tool chain instead use MingGW-w64)
++#endif
++#ifneq ($(words $(subst -, ,$(TARGET))),3)
++   #$(error Value of build TARGET doesn't appear to be a machine-vendor-system triplet)
++#endif
++ARCH   := $(shell uname -m)
++VENDOR := bioconda
++SYSTEM := $(shell uname -s)
++OS     := $(SYSTEM)
+ 
+ # Fill in the details
+-ifneq (,$(findstring linux, $(TARGET)))
+-   OS := Linux
+-else ifneq (,$(findstring darwin, $(TARGET)))
+-   OS := Darwin
+-else ifneq (,$(findstring mingw, $(TARGET)))
++ifneq (,$(findstring mingw, $(SYSTEM)))
+    OS := $(OS)
+-else ifneq (,$(findstring msys, $(TARGET)))
++else ifneq (,$(findstring msys, $(SYSTEM)))
+    OS := $(OS)
+-else
+-   $(error Unable to determine target platform using $$(CXX) -dumpmachine)
+ endif
+ 
+ 
+diff -ru TPP_5.0.0-src/extern/Makefile TPP_5.0.0-src.patched/extern/Makefile
+--- TPP_5.0.0-src/extern/Makefile	2016-08-18 18:57:47.000000000 -0500
++++ TPP_5.0.0-src.patched/extern/Makefile	2017-09-24 18:53:13.956053431 -0500
+@@ -60,9 +60,9 @@
+ # Names of all the external packages to build.  We make our best
+ # guess as to what is needed based on the host system.
+ ifeq ($(OS),Linux)
+-   EXTERN_ALL ?= boost comet d3 expat fann gsl gzstream \
++   EXTERN_ALL ?= libgd boost expat fann gsl gzstream \
+ 		 $(if $(MZ5_SUPPORT),hdf5) \
+-                 libarchive mayu pwiz hardklor spare
++                 libarchive pwiz spare
+ else
+                  # remove hdf5 if mz5 support not needed
+    EXTERN_ALL ?= $(subst $(if $(MZ5_SUPPORT),,hdf5),,$(EXTERN_AVAIL))
+@@ -306,7 +306,7 @@
+ 	tar zxf $(BZIP2_TGZ) -C $(BUILD_SRC)
+ 
+ $(BUILD_LIB)/libbz2.a : | $(BZIP2_SRC)/
+-	cd $(BZIP2_SRC); make
++	cd $(BZIP2_SRC); make --silent
+ 	mkdir -p $(BUILD_DIR)/include $(BUILD_LIB) 
+ 	cp -f $(BZIP2_SRC)/bzlib.h $(BUILD_DIR)/include
+ 	chmod a+r $(BUILD_DIR)/include/bzlib.h
+@@ -347,7 +347,7 @@
+ 	install -D -m 555 $^ $@
+ 
+ $(COMET_SRC)/comet : | $(COMET_SRC)/
+-	cd $(COMET_SRC); make
++	cd $(COMET_SRC); make --silent
+ ifneq ($(OS),Windows_NT)
+ 	mv $@.exe $@
+ endif
+@@ -455,7 +455,7 @@
+ 	   --includedir $(BUILD_DIR)/include --libdir $(BUILD_LIB) 
+ 
+ $(EXPAT_DST) : | $(BUILD_DIR)/ $(EXPAT_SRC)/
+-	make -C $(EXPAT_SRC) installlib
++	make --silent -C $(EXPAT_SRC) installlib
+ 
+ $(EXPAT_SRC)/$(notdir $(EXPAT_LIC)) : | $(EXPAT_SRC)/
+ 
+@@ -466,7 +466,7 @@
+ 
+ expat-clean :
+ ifneq (,$(wildcard $(EXPAT_SRC)/Makefile))
+-	make -C $(EXPAT_SRC) clean
++	make --silent -C $(EXPAT_SRC) clean
+ endif
+ 
+ expat-realclean : expat-clean
+@@ -501,7 +501,7 @@
+ 	   --includedir $(BUILD_DIR)/include --libdir $(BUILD_LIB) 
+ 
+ $(FANN_LIB) : | $(BUILD_DIR)/ $(FANN_SRC)/
+-	make -C $(FANN_SRC) install
++	make --silent -C $(FANN_SRC) install
+ 
+ $(FANN_SRC)/$(notdir $(FANN_LIC)) : | $(FANN_SRC)/
+ 
+@@ -512,7 +512,7 @@
+ 
+ fann-clean :
+ ifneq (,$(wildcard $(FANN_SRC)/Makefile))
+-	make -C $(FANN_SRC) clean
++	make --silent -C $(FANN_SRC) clean
+ endif
+ 
+ fann-realclean : fann-clean
+@@ -549,7 +549,7 @@
+ 
+ $(GSL_LIB) : | $(GSL_SRC)/
+         # have to make 'all' to get all components
+-	make -C $(GSL_SRC) all install
++	make --silent -C $(GSL_SRC) all install
+ 
+ $(GSL_SRC)/$(notdir $(GSL_LIC)) : | $(GSL_SRC)/
+ 
+@@ -563,7 +563,7 @@
+ 
+ gsl-clean :
+ ifneq (,$(wildcard $(GSL_SRC)/Makefile))
+-	make -C $(GSL_SRC) clean
++	make --silent -C $(GSL_SRC) clean
+ endif
+ 
+ gsl-realclean : gsl-clean
+@@ -590,7 +590,7 @@
+ gzstream-source : $(GZSTREAM_SRC)/
+ 
+ $(GZSTREAM_LIB) : $(GZSTREAM_SRC)/ | $(MKDIR)
+-	make -C $(BUILD_SRC)/gzstream \
++	make --silent -C $(BUILD_SRC)/gzstream \
+ 	   BUILD_DIR=$(GZSTREAM_SRC) \
+ 	   ZLIB_INCL=$(ZLIB_CXXFLAGS) ZLIB_LIB=$(ZLIB_LDFLAGS) 
+ 	mkdir -p $(BUILD_DIR)/include
+@@ -613,7 +613,7 @@
+ 
+ gzstream-clean :
+ ifneq (,$(wildcard $(GZSTREAM_SRC)/Makefile))
+-	make -C $(GZSTREAM_SRC) clean || true
++	make --silent -C $(GZSTREAM_SRC) clean || true
+ endif
+ 	rm -f $(BUILD_DIR)/include/gzstream.h
+ 	rm -f $(GZSTREAM_LIB)
+@@ -666,11 +666,11 @@
+ 
+ $(HDF5_LIBS) : | $(HDF5_SRC)/
+ 	@echo "### HDF5: building library"
+-	make -C $(HDF5_SRC) install $(HDF5_DEF)
++	make --silent -C $(HDF5_SRC) install $(HDF5_DEF)
+ 
+ hdf5-clean :
+ ifneq (,$(wildcard $(HDF5_SRC)/Makefile))
+-	make -C $(HDF5_SRC) clean
++	make --silent -C $(HDF5_SRC) clean
+ endif
+ 
+ hdf5-realclean : hdf5-clean
+@@ -710,14 +710,14 @@
+ 	   --prefix=$(BUILD_DIR) 
+ 
+ $(HTMLDOC_BIN) : | $(HTMLDOC_SRC)/
+-	make -C $(HTMLDOC_SRC) 
+-	make -C $(HTMLDOC_SRC)/htmldoc install
++	make --silent -C $(HTMLDOC_SRC) 
++	make --silent -C $(HTMLDOC_SRC)/htmldoc install
+ 	@echo "htmldoc is installed"
+ 
+ htmldoc-clean :
+ 	rm -f $(HTMLDOC_BIN)
+ ifneq (,$(wildcard $(HTMLDOC_SRC)/Makefile))
+-	make -C $(HTMLDOC_SRC) clean
++	make --silent -C $(HTMLDOC_SRC) clean
+ endif
+ 
+ htmldoc-realclean : htmldoc-clean
+@@ -758,8 +758,8 @@
+ 	   --libdir=$(BUILD_LIB) 
+ 
+ $(LIBARCHIVE_LIB) : | $(LIBARCHIVE_SRC)/
+-	make -C $(LIBARCHIVE_SRC) all
+-	make -C $(LIBARCHIVE_SRC) install-includeHEADERS install-libLTLIBRARIES
++	make --silent -C $(LIBARCHIVE_SRC) all
++	make --silent -C $(LIBARCHIVE_SRC) install-includeHEADERS install-libLTLIBRARIES
+ 
+ $(LIBARCHIVE_SRC)/$(notdir $(LIBARCHIVE_LIC)) : | $(LIBARCHIVE_SRC)/
+ $(LIBARCHIVE_LIC) : $(LIBARCHIVE_SRC)/$(notdir $(LIBARCHIVE_LIC)) | $(MKDIR)
+@@ -769,7 +769,7 @@
+ 
+ libarchive-clean :
+ ifneq (,$(wildcard $(LIBARCHIVE_SRC)/Makefile))
+-	make -C $(LIBARCHIVE_SRC) clean
++	make --silent -C $(LIBARCHIVE_SRC) clean
+ endif
+ 
+ libarchive-realclean : libarchive-clean
+@@ -807,7 +807,7 @@
+ 	   --libdir=$(BUILD_LIB) 
+ 
+ $(LIBPNG_LIB) : | $(LIBPNG_SRC)/
+-	make -C $(LIBPNG_SRC) install
++	make --silent -C $(LIBPNG_SRC) install
+ 
+ $(LIBPNG_LIC) : $(LIBPNG_SRC)/$(notdir $(LIBPNG_LIC))| $(MKDIR)
+ 	cp $^ $@
+@@ -818,7 +818,7 @@
+ 
+ libpng-clean :
+ ifneq (,$(wildcard $(LIBPNG_SRC)/Makefile))
+-	make -C $(LIBPNG_SRC) clean
++	make --silent -C $(LIBPNG_SRC) clean
+ endif
+ 
+ libpng-realclean : libpng-clean
+@@ -863,8 +863,8 @@
+ 
+ # libpng has to come before libgd because of LIBPNG_LIB requirement
+ $(LIBGD_LIB) : $(LIBPNG_LIB) | $(LIBGD_SRC)/
+-	make -C $(LIBGD_SRC) 
+-	make -C $(LIBGD_SRC) install
++	make --silent -C $(LIBGD_SRC) 
++	make --silent -C $(LIBGD_SRC) install
+ 
+ $(LIBGD_SRC)/$(notdir $(LIBGD_LIC)) : | $(LIBGD_SRC)/
+ 
+@@ -875,7 +875,7 @@
+ 
+ libgd-clean :
+ ifneq (,$(wildcard $(LIBGD_SRC)/Makefile))
+-	make -C $(LIBGD_SRC) clean
++	make --silent -C $(LIBGD_SRC) clean
+ endif
+ 
+ libgd-realclean : libgd-clean
+@@ -984,7 +984,7 @@
+ 	cp -r $(SPARE_EXT) $(SPARE_SRC)
+ 
+ $(SPARE_LIB) : | $(SPARE_SRC)/
+-	make -C $(SPARE_SRC) all
++	make --silent -C $(SPARE_SRC) all
+ 	ar -rs $(SPARE_LIB) $(SPARE_SRC)/*.o $(SPARE_SRC)/common/*.o
+ 
+ spare-clean :
+diff -ru TPP_5.0.0-src/extern/MSToolkit/Makefile TPP_5.0.0-src.patched/extern/MSToolkit/Makefile
+--- TPP_5.0.0-src/extern/MSToolkit/Makefile	2016-04-06 16:10:35.000000000 -0500
++++ TPP_5.0.0-src.patched/extern/MSToolkit/Makefile	2017-09-24 18:51:38.308597235 -0500
+@@ -60,9 +60,9 @@
+ NOSQLITE = -D_NOSQLITE
+ 
+ ifeq (${OS},Windows_NT)
+-CFLAGS = -O3 -static -I. -I$(HEADER_PATH) -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -DHAVE_EXPAT_CONFIG_H   -D__MINGW__
++XCFLAGS = -O3 -static -I. -I$(HEADER_PATH) -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -DHAVE_EXPAT_CONFIG_H   -D__MINGW__
+ else 
+-CFLAGS = -O3 -static -I. -I$(HEADER_PATH) -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -DHAVE_EXPAT_CONFIG_H 
++XCFLAGS = -O3 -static -I. -I$(HEADER_PATH) -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -DHAVE_EXPAT_CONFIG_H 
+ endif
+ LIBS = -lm -lpthread -ldl
+ 
+@@ -79,7 +79,7 @@
+ 	ar rcs $(BUILD_LIB)/libmstoolkit.a $(ZLIB) $(EXPAT) $(MZPARSER) $(MSTOOLKIT) $(READER) $(SQLITE)
+ 
+ $(BUILD_BIN)/msSingleScan : $(TPP_EXT)/MSToolkit/MSSingleScan/MSSingleScan.cpp $(BUILD_LIB)/libmstoolkitlite.a
+-	$(CC) $(CFLAGS) -I$(MSTK_PATH)/include $(MSTOOLKIT_CXXFLAGS) $(TPP_EXT)/MSToolkit/MSSingleScan/MSSingleScan.cpp -L$(BUILD_LIB) -lmstoolkitlite -o $(BUILD_BIN)/msSingleScan
++	$(CC) $(XCFLAGS) -I$(MSTK_PATH)/include $(MSTOOLKIT_CXXFLAGS) $(TPP_EXT)/MSToolkit/MSSingleScan/MSSingleScan.cpp -L$(BUILD_LIB) -lmstoolkitlite -o $(BUILD_BIN)/msSingleScan
+ 
+ mstoolkit-clean mstoolkit-realclean :
+ 	rm -f *.o $(BUILD_LIB)/libmstoolkitlite.a $(BUILD_LIB)/libmstoolkit.a $(BUILD_BIN)/msSingleScan $(MSTK_OBJDIR)/*.o
+@@ -90,62 +90,62 @@
+ 	mkdir -p $(MSTK_OBJDIR) 
+ 
+ $(MSTK_OBJDIR)/adler32.o : $(ZLIB_PATH)/adler32.c | $(MSTK_OBJDIR)
+-	$(GCC) $(CFLAGS) $(ZLIB_PATH)/adler32.c -c -o $@
++	$(GCC) $(XCFLAGS) $(ZLIB_PATH)/adler32.c -c -o $@
+ 
+ $(MSTK_OBJDIR)/compress.o : $(ZLIB_PATH)/compress.c | $(MSTK_OBJDIR)
+-	$(GCC) $(CFLAGS) $(ZLIB_PATH)/compress.c -c -o $@
++	$(GCC) $(XCFLAGS) $(ZLIB_PATH)/compress.c -c -o $@
+ 
+ $(MSTK_OBJDIR)/crc32.o : $(ZLIB_PATH)/crc32.c | $(MSTK_OBJDIR)
+-	$(GCC) $(CFLAGS) $(ZLIB_PATH)/crc32.c -c -o $@
++	$(GCC) $(XCFLAGS) $(ZLIB_PATH)/crc32.c -c -o $@
+ 
+ $(MSTK_OBJDIR)/deflate.o : $(ZLIB_PATH)/deflate.c | $(MSTK_OBJDIR)
+-	$(GCC) $(CFLAGS) $(ZLIB_PATH)/deflate.c -c -o $@
++	$(GCC) $(XCFLAGS) $(ZLIB_PATH)/deflate.c -c -o $@
+ 
+ $(MSTK_OBJDIR)/inffast.o : $(ZLIB_PATH)/inffast.c | $(MSTK_OBJDIR)
+-	$(GCC) $(CFLAGS) $(ZLIB_PATH)/inffast.c -c -o $@
++	$(GCC) $(XCFLAGS) $(ZLIB_PATH)/inffast.c -c -o $@
+ 
+ $(MSTK_OBJDIR)/inflate.o : $(ZLIB_PATH)/inflate.c | $(MSTK_OBJDIR)
+-	$(GCC) $(CFLAGS) $(ZLIB_PATH)/inflate.c -c -o $@
++	$(GCC) $(XCFLAGS) $(ZLIB_PATH)/inflate.c -c -o $@
+ 
+ $(MSTK_OBJDIR)/infback.o : $(ZLIB_PATH)/infback.c | $(MSTK_OBJDIR)
+-	$(GCC) $(CFLAGS) $(ZLIB_PATH)/infback.c -c -o $@
++	$(GCC) $(XCFLAGS) $(ZLIB_PATH)/infback.c -c -o $@
+ 
+ $(MSTK_OBJDIR)/inftrees.o : $(ZLIB_PATH)/inftrees.c | $(MSTK_OBJDIR)
+-	$(GCC) $(CFLAGS) $(ZLIB_PATH)/inftrees.c -c -o $@
++	$(GCC) $(XCFLAGS) $(ZLIB_PATH)/inftrees.c -c -o $@
+ 
+ $(MSTK_OBJDIR)/trees.o : $(ZLIB_PATH)/trees.c | $(MSTK_OBJDIR)
+-	$(GCC) $(CFLAGS) $(ZLIB_PATH)/trees.c -c -o $@
++	$(GCC) $(XCFLAGS) $(ZLIB_PATH)/trees.c -c -o $@
+ 
+ $(MSTK_OBJDIR)/uncompr.o : $(ZLIB_PATH)/uncompr.c | $(MSTK_OBJDIR)
+-	$(GCC) $(CFLAGS) $(ZLIB_PATH)/uncompr.c -c -o $@
++	$(GCC) $(XCFLAGS) $(ZLIB_PATH)/uncompr.c -c -o $@
+ 
+ $(MSTK_OBJDIR)/zutil.o : $(ZLIB_PATH)/zutil.c | $(MSTK_OBJDIR)
+-	$(GCC) $(CFLAGS) $(ZLIB_PATH)/zutil.c -c -o $@
++	$(GCC) $(XCFLAGS) $(ZLIB_PATH)/zutil.c -c -o $@
+ 
+ 
+ 
+ #mzParser objects
+ $(MSTK_OBJDIR)/mzp.%.o : $(MZPARSER_PATH)/%.cpp | $(MSTK_OBJDIR)
+-	$(CC) $(CFLAGS) $(MZ5) $< -c -o $@
++	$(CC) $(XCFLAGS) $(MZ5) $< -c -o $@
+ 
+ #mzParserLite objects
+ $(MSTK_OBJDIR)/mzp.%_lite.o : $(MZPARSER_PATH)/%.cpp | $(MSTK_OBJDIR)
+-	$(CC) $(CFLAGS) $< -c -o $@
++	$(CC) $(XCFLAGS) $< -c -o $@
+ 
+ 
+ #expat objects
+ $(MSTK_OBJDIR)/xmlparse.o : $(EXPAT_PATH)/xmlparse.c | $(MSTK_OBJDIR)
+-	$(GCC) $(CFLAGS) $(EXPAT_PATH)/xmlparse.c -c -o $@
++	$(GCC) $(XCFLAGS) $(EXPAT_PATH)/xmlparse.c -c -o $@
+ $(MSTK_OBJDIR)/xmlrole.o : $(EXPAT_PATH)/xmlrole.c | $(MSTK_OBJDIR)
+-	$(GCC) $(CFLAGS) $(EXPAT_PATH)/xmlrole.c -c -o $@
++	$(GCC) $(XCFLAGS) $(EXPAT_PATH)/xmlrole.c -c -o $@
+ $(MSTK_OBJDIR)/xmltok.o : $(EXPAT_PATH)/xmltok.c | $(MSTK_OBJDIR)
+-	$(GCC) $(CFLAGS) $(EXPAT_PATH)/xmltok.c -c -o $@
++	$(GCC) $(XCFLAGS) $(EXPAT_PATH)/xmltok.c -c -o $@
+ 
+ 
+ 
+ #SQLite object
+ $(MSTK_OBJDIR)/sqlite3.o : $(SQLITE_PATH)/sqlite3.c | $(MSTK_OBJDIR)
+-	$(GCC) $(CFLAGS) $(SQLITE_PATH)/sqlite3.c -c -o $@
++	$(GCC) $(XCFLAGS) $(SQLITE_PATH)/sqlite3.c -c -o $@
+ 
+ 
+ 
+@@ -153,16 +153,16 @@
+ #MSToolkit objects
+ 
+ $(MSTK_OBJDIR)/Spectrum.o : $(MSTK_SRC)/Spectrum.cpp | $(MSTK_OBJDIR)
+-	$(CC) $(CFLAGS) $(MSTK_SRC)/Spectrum.cpp -c -o $@
++	$(CC) $(XCFLAGS) $(MSTK_SRC)/Spectrum.cpp -c -o $@
+ 
+ $(MSTK_OBJDIR)/MSReader.o : $(MSTK_SRC)/MSReader.cpp | $(MSTK_OBJDIR)
+-	$(CC) $(CFLAGS) $(MZ5) $(MSTK_SRC)/MSReader.cpp -c -o $@
++	$(CC) $(XCFLAGS) $(MZ5) $(MSTK_SRC)/MSReader.cpp -c -o $@
+ 
+ $(MSTK_OBJDIR)/MSReaderLite.o : $(MSTK_SRC)/MSReader.cpp | $(MSTK_OBJDIR)
+-	$(CC) $(CFLAGS) $(NOSQLITE) $(MSTK_SRC)/MSReader.cpp -c -o $@
++	$(CC) $(XCFLAGS) $(NOSQLITE) $(MSTK_SRC)/MSReader.cpp -c -o $@
+ 
+ $(MSTK_OBJDIR)/MSObject.o : $(MSTK_SRC)/MSObject.cpp | $(MSTK_OBJDIR)
+-	$(CC) $(CFLAGS) $(MSTK_SRC)/MSObject.cpp -c -o $@
++	$(CC) $(XCFLAGS) $(MSTK_SRC)/MSObject.cpp -c -o $@
+ 
+ 
+ 
+diff -ru TPP_5.0.0-src/extern/ProteoWizard/Makefile TPP_5.0.0-src.patched/extern/ProteoWizard/Makefile
+--- TPP_5.0.0-src/extern/ProteoWizard/Makefile	2016-04-15 14:24:26.000000000 -0500
++++ TPP_5.0.0-src.patched/extern/ProteoWizard/Makefile	2017-09-24 18:51:38.308597235 -0500
+@@ -45,7 +45,6 @@
+ PWIZ_DIR    := $(TPP_EXT)/ProteoWizard
+ PWIZ_SRCDIR := $(PWIZ_DIR)/pwiz-src
+ PWIZ_OBJDIR := $(BUILD_OBJ)/pwiz
+-PWIZ_MSIDIR := $(PWIZ_DIR)/pwiz-msi
+ 
+ # Proteowizard Team City Server
+ PWIZ_TEAMCITY := https://teamcity.labkey.org/repository/download
+@@ -205,8 +204,6 @@
+ PWIZ_LIB  := $(BUILD_LIB)/libpwiz.a
+ PWIZ_LICS := ProteoWizard/LICENSE
+ PWIZ_BINS := msconvert idconvert qtofpeakpicker
+-PWIZ_ISS  := $(BUILD_DIR)/tpp_pwiz.iss
+-PWIZ_MSI  := $(notdir $(firstword $(wildcard $(PWIZ_MSIDIR)/pwiz-setup*.msi missing.msi)))
+ 
+ # Windows specific products
+ ifeq ($(OS),Windows_NT)		
+@@ -242,7 +239,6 @@
+ 	@echo "Additional information for Proteowizard:"
+ 	@echo "   PWIZ_SRCDIR = $(PWIZ_SRCDIR)"
+ 	@echo "   PWIZ_OBJDIR = $(PWIZ_OBJDIR)"
+-	@echo "   PWIZ_MSIDIR = $(PWIZ_MSIDIR)"
+ 	@echo
+ 	@echo "   PWIZ_SRCS = $(PWIZ_SRCS)"
+ 	@echo
+@@ -260,8 +256,6 @@
+ 
+ pwiz : $(PWIZ_LIB) 
+ pwiz : $(addprefix $(BUILD_LIC)/,$(PWIZ_LICS))
+-pwiz : $(addprefix $(BUILD_BIN)/,$(PWIZ_BINS))
+-pwiz : $(addprefix $(BUILD_DIR)/,$(PWIZ_MSI))
+ 
+ 
+ # -- BUILD --------------------------------------------------------------------
+@@ -345,73 +339,12 @@
+ $(BUILD_LIC)/ProteoWizard/LICENSE : $(PWIZ_SRCDIR)/LICENSE | $(MKDIR)
+ 	cp $^ $@
+ 
+-$(BUILD_LIC)/ProteoWizard/EULA% : $(PWIZ_MSIDIR)/EULA% | $(MKDIR)
+-	cp $^ $@
+-
+-# ProteoWizard Windows msi
+-$(BUILD_DIR)/$(PWIZ_MSI) : $(PWIZ_MSIDIR)/$(PWIZ_MSI)
+-	cp $^ $@
+-
+ 
+ # -- INSTALL -------------------------------------------------------------------
+ #
+ 
+-install :: $(addprefix $(INSTALL_BIN)/,$(PWIZ_BINS))
+ install :: $(addprefix $(INSTALL_LIC)/,$(PWIZ_LICS))
+ 
+-ifeq ($(OS),Windows_NT)
+-install :: $(PWIZ_ISS)
+-endif
+-
+-
+-# -- PWIZ-ISS ------------------------------------------------------------------
+-#
+-# Autogenerate an Windows ISS installer file for Proteowizard
+-#
+-.PHONY: pwiz-iss pwiz-iss-clean
+-
+-
+-pwiz-iss : $(PWIZ_ISS)
+-
+-PWIZ_MSI_PARMS =  /i ""{tmp}\$(PWIZ_MSI)"" 
+-PWIZ_MSI_PARMS += APPLICATIONROOTDIRECTORY=""{app}\bin""
+-PWIZ_MSI_PARMS += /qn
+-
+-_start_pwiz_lic :
+-	echo ";"                            >  $(PWIZ_ISS)
+-	echo "; Date: `date`"               >> $(PWIZ_ISS)
+-	echo "; Autogenerated. DO NOT EDIT" >> $(PWIZ_ISS)
+-	echo ";"                            >> $(PWIZ_ISS)
+-	echo >> $(PWIZ_ISS)
+-	echo -n "#define TPP_EXCLUDES \"{#TPP_EXCLUDES}," >> $(PWIZ_ISS)
+-	echo -n "*ProteoWizard*" >> $(PWIZ_ISS)
+-	echo >> $(PWIZ_ISS)
+-	echo >> $(PWIZ_ISS)
+-
+-	echo "[Run]" >> $(PWIZ_ISS)
+-	echo 'Filename: "msiexec.exe"; \'                    >> $(PWIZ_ISS)
+-	echo '   Parameters: "$(PWIZ_MSI_PARMS)"; \'         >> $(PWIZ_ISS)
+-	echo '   StatusMsg: "Installing ProteoWizard..."; \' >> $(PWIZ_ISS)
+-	echo '   Components: pwiz '                          >> $(PWIZ_ISS)
+-	echo >> $(PWIZ_ISS)
+-
+-	echo "[Files]" >> $(PWIZ_ISS)
+-	echo 'Source: "$(PWIZ_MSI)"; DestDir: "{tmp}"' >> $(PWIZ_ISS)
+-	echo >> $(PWIZ_ISS)
+-
+-%_add_pwiz_lic : _start_pwiz_lic
+-	echo -n 'Source: "{#INSTALL_LIC}\$*"; ' 	>> $(PWIZ_ISS)
+-	echo -n 'DestDir: "{app}\lic\ProteoWizard"; '	>> $(PWIZ_ISS)
+-	echo 'Components: pwiz'				>> $(PWIZ_ISS)
+-
+-$(PWIZ_ISS) : $(BUILD_DIR)/$(PWIZ_MSI) 
+-$(PWIZ_ISS) : $(foreach F,$(PWIZ_LICS),$(F)_add_pwiz_lic)
+-
+-
+-pwiz-iss-clean : 
+-	rm -f $(PWIZ_ISS)
+-
+-
+ # -- CLEAN ---------------------------------------------------------------------
+ #
+ # Deletes all files that are normally created by the build.
+@@ -421,10 +354,9 @@
+ clean : pwiz-clean
+ 
+ pwiz-clean : 
+-	rm -vf $(PWIZ_LIB) $(PWIZ_ISS) \
++	rm -vf $(PWIZ_LIB) \
+ 	   $(addprefix $(BUILD_LIC)/,$(PWIZ_LICS)) \
+ 	   $(addprefix $(BUILD_BIN)/,$(PWIZ_BINS)) \
+-	   $(addprefix $(BUILD_DIR)/,$(PWIZ_MSI))
+ 	rm -vrf $(PWIZ_OBJDIR)/pwiz \
+ 	   $(PWIZ_OBJDIR)/pwiz_aux \
+ 	   $(PWIZ_OBJDIR)/pwiz_tools \
+@@ -446,29 +378,11 @@
+ 	rm -f $(PWIZ_SRCDIR)/VERSION
+ 	wget -nv -O $(PWIZ_SRCDIR)/VERSION $(PWIZ_TCSRC)/VERSION\?guest=1
+ 
+-pwiz-src : V=$(shell cat $(PWIZ_SRCDIR)/VERSION | sed -e 's/\./_/g')
++pwiz-src : V=$(shell cat $(PWIZ_SRCDIR)/VERSION | sed -e 's/ /_/g')
+ pwiz-src : pwiz-src-version 
+ 	rm -f pwiz-src-without-lt-*.tar.bz2
+ 	wget --content-disposition -nv -P $(PWIZ_SRCDIR) \
+ 	   $(PWIZ_TCSRC)/pwiz-src-without-lt-$(V).tar.bz2\?guest=1
+ 
+ 
+-# -- PWIZ-MSI ------------------------------------------------------------------
+-#
+-# Download the latest Windows MSI installer from the TeamCity project website.
+-#
+-
+-PWIZ_TCMSI := $(PWIZ_TEAMCITY)/bt83/.lastSuccessful
+-
+-.PHONY: pwiz-msi-version pwiz-msi
+-
+-pwiz-msi-version :
+-	rm -f $(PWIZ_MSIDIR)/VERSION
+-	wget -nv -O $(PWIZ_MSIDIR)/VERSION $(PWIZ_TCMSI)/VERSION\?guest=1
+-
+-pwiz-msi : V=$(shell cat $(PWIZ_MSIDIR)/VERSION)
+-pwiz-msi : pwiz-msi-version 
+-	rm -f pwiz-setup-*-x86_64.msi 
+-	wget --content-disposition -nv -P $(PWIZ_MSIDIR) \
+-	   $(PWIZ_TCMSI)/pwiz-setup-$(V)-x86_64.msi\?guest=1
+ 
+diff -ru TPP_5.0.0-src/src/libraries.mk TPP_5.0.0-src.patched/src/libraries.mk
+--- TPP_5.0.0-src/src/libraries.mk	2016-08-19 10:38:28.000000000 -0500
++++ TPP_5.0.0-src.patched/src/libraries.mk	2017-09-24 18:51:38.308597235 -0500
+@@ -75,7 +75,6 @@
+    $(TPP_SRC)/Common/tpp_tarball.cpp \
+    $(TPP_SRC)/Common/util.cpp \
+    $(TPP_SRC)/Common/wglob.cpp \
+-   $(TPP_SRC)/Common/win32_system.cpp \
+    $(TPP_SRC)/Common/Enzyme/ProteolyticEnzyme/ProteolyticEnzyme.cpp \
+    $(TPP_SRC)/Common/Enzyme/ProteolyticEnzyme/ProteolyticEnzymeFactory/ProteolyticEnzymeFactory.cpp \
+    $(TPP_SRC)/Parsers/Algorithm2XML/GradientProgram.cpp \
+diff -ru TPP_5.0.0-src/src/Validation/Makefile TPP_5.0.0-src.patched/src/Validation/Makefile
+--- TPP_5.0.0-src/src/Validation/Makefile	2016-06-24 18:46:10.000000000 -0500
++++ TPP_5.0.0-src.patched/src/Validation/Makefile	2017-09-24 18:51:38.308597235 -0500
+@@ -219,7 +219,7 @@
+  $(LIBTPP) \
+  | $(MKDIR)
+ 	$(LD) $(LDFLAGS) $^ $(MZPARSER_LDFLAGS) $(GZSTREAM_LDFLAGS) \
+-	   $(GSL_LDFLAGS) $(FANN_LDFLAGS) $(PWIZ_LDFLAGS) $(BOOST_LDFLAGS) -static -lz -o $@
++	   $(GSL_LDFLAGS) $(FANN_LDFLAGS) $(PWIZ_LDFLAGS) $(BOOST_LDFLAGS) -lz -o $@
+ 
+ 
+ VALID_ALL += $(BUILD_CGI)/ModelParser.cgi 

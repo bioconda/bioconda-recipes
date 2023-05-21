@@ -1,0 +1,65 @@
+{% set name = "pypgatk" %}
+{% set version = "0.0.23" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "b99906a05cacb9c4bd5c58ba65b9ef71c4582bc788fd7684002d12832f280c2d"
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python >=3
+  run:
+    - biopython
+    - click
+    - gffutils
+    - numpy
+    - ratelimit
+    - python >=3
+    - pyvcf
+    - pyyaml
+    - requests
+    - simplejson
+    - pybedtools
+    - pyteomics >=4.2
+    - pyopenms ==2.7.0
+    - pandas
+    # should be removed as soon as we patch the other packages
+    - pysam >=0.16
+
+test:
+  imports:
+    - pypgatk
+    - pypgatk.cgenomes
+    - pypgatk.commands
+    - pypgatk.db
+    - pypgatk.ensembl
+    - pypgatk.proteomics
+    - pypgatk.proteomics.db
+    - pypgatk.tests
+    - pypgatk.toolbox
+  commands:
+    - which pypgatk_cli.py
+    - pypgatk_cli.py -h
+
+
+about:
+  home: "http://github.com/bigbio/py-pgatk"
+  license: "Apache 2"
+  license_family: "APACHE"
+  summary: "The Pypgatk framework and library provides a set of tools to perform ProteoGenomics Analysis."
+  doc_url: "https://pgatk.readthedocs.io/en/latest/pypgatk.html"
+  dev_url: "https://github.com/bigbio/py-pgatk"
+
+extra:
+  recipe-maintainers:
+    - ypriverol

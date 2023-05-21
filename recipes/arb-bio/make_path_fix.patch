@@ -1,0 +1,217 @@
+--- Makefile.orig	2017-06-12 22:26:59.000000000 -0600
++++ Makefile	2017-06-12 22:32:43.000000000 -0600
+@@ -106,7 +106,7 @@
+ 
+ # ----------------------
+ 
+-COMPILER_INFO:=$(shell SOURCE_TOOLS/arb_compiler_version.pl $(A_CXX))
++COMPILER_INFO:=$(shell $(ARBHOME)/SOURCE_TOOLS/arb_compiler_version.pl $(A_CXX))
+ COMPILER_NAME:=$(word 1,$(COMPILER_INFO))
+ COMPILER_VERSION:=$(word 2,$(COMPILER_INFO))
+ 
+@@ -530,7 +530,7 @@
+ cxxflags += -std=gnu++11# see also TEMPLATES/cxxforward.h@USE_Cxx11
+ else
+ # only use for gcc versions between 4.3 and <4.7 (4.7++ adds -Wc++11-compat above)
+-HAVE_GNUPP0X=`SOURCE_TOOLS/requireVersion.pl 4.3 $(COMPILER_VERSION)`
++HAVE_GNUPP0X=`$(ARBHOME)/SOURCE_TOOLS/requireVersion.pl 4.3 $(COMPILER_VERSION)`
+  ifeq ($(HAVE_GNUPP0X),1)
+ # ensure compatibility with upcoming C++ standard
+ cxxflags += -std=gnu++0x
+@@ -712,7 +712,7 @@
+ 		@ls -al config.makefile*
+ 		@echo --------------------------------------------------------------------------------
+ 		@echo "Updating $@ (if this fails, check manually)"
+-		SOURCE_TOOLS/update_config_makefile.pl
++		$(ARBHOME)/SOURCE_TOOLS/update_config_makefile.pl
+ 		@echo "Sucessfully updated $@"
+ 		@echo --------------------------------------------------------------------------------
+ 		@ls -al config.makefile*
+@@ -814,11 +814,11 @@
+ 
+ check_tabs: check_setup
+ ifeq ($(DEBUG),1)
+-	@SOURCE_TOOLS/tabBrake.pl
++	@$(ARBHOME)/SOURCE_TOOLS/tabBrake.pl
+ endif
+ 
+ force_tab_check:
+-	@touch -t 198001010000 SOURCE_TOOLS/stamp.tabBrake
++	@touch -t 198001010000 $(ARBHOME)/SOURCE_TOOLS/stamp.tabBrake
+ 	@$(MAKE) check_tabs
+ 
+ 
+@@ -828,7 +828,7 @@
+ 		@echo Your setup seems to be ok.
+ 
+ checks: check_setup check_tabs
+-	@rm -f SOURCE_TOOLS/postcompile.sav
++	@rm -f $(ARBHOME)/SOURCE_TOOLS/postcompile.sav
+ 
+ 
+ # end test section ------------------------------
+@@ -980,7 +980,7 @@
+ 		XML/XML.a \
+ 
+ $(NTREE): $(ARCHS_NTREE:.a=.dummy) link_awt
+-	@SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_NTREE) $(GUI_LIBS) $(use_ARB_main) || ( \
++	@$(ARBHOME)/SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_NTREE) $(GUI_LIBS) $(use_ARB_main) || ( \
+ 		echo "$(SEP) Link $@"; \
+ 		echo "$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_NTREE) $(ARCHS_CLIENT_PROBE) $(GUI_LIBS) $(EXECLIBS)" ; \
+ 		$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_NTREE) $(ARCHS_CLIENT_PROBE) $(GUI_LIBS) $(EXECLIBS) && \
+@@ -1017,7 +1017,7 @@
+ LIBS_EDIT4 := $(GL_LIBS)
+ 
+ $(EDIT4): $(ARCHS_EDIT4:.a=.dummy) link_awt 
+-	@SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_EDIT4) $(GUI_LIBS) $(use_ARB_main) || ( \
++	@$(ARBHOME)/SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_EDIT4) $(GUI_LIBS) $(use_ARB_main) || ( \
+ 		echo "$(SEP) Link $@"; \
+ 		echo "$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_EDIT4) $(ARCHS_CLIENT_NAMES) $(GUI_LIBS) $(LIBS_EDIT4) $(EXECLIBS)" ; \
+ 		$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_EDIT4) $(ARCHS_CLIENT_NAMES) $(GUI_LIBS) $(LIBS_EDIT4) $(EXECLIBS) && \
+@@ -1030,7 +1030,7 @@
+ 		RNACMA/RNACMA.a \
+ 
+ $(RNACMA) : $(ARCHS_RNACMA:.a=.dummy) link_db
+-	@SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_RNACMA) || ( \
++	@$(ARBHOME)/SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_RNACMA) || ( \
+ 		echo "$(SEP) Link $@"; \
+ 		echo "$(LINK_EXECUTABLE) $@ $(LIBPATH) $(ARCHS_RNACMA) $(LIBS) $(EXECLIBS)"; \
+ 		$(LINK_EXECUTABLE) $@ $(LIBPATH) $(ARCHS_RNACMA) $(LIBS) $(EXECLIBS) && \
+@@ -1046,7 +1046,7 @@
+ 		XML/XML.a \
+ 
+ $(WETC): $(ARCHS_WETC:.a=.dummy) link_awt
+-	@SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_WETC) $(GUI_LIBS) $(use_ARB_main) || ( \
++	@$(ARBHOME)/SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_WETC) $(GUI_LIBS) $(use_ARB_main) || ( \
+ 		echo "$(SEP) Link $@"; \
+ 		echo "$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_WETC) $(GUI_LIBS) $(EXECLIBS)" ; \
+ 		$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_WETC) $(GUI_LIBS) $(EXECLIBS) && \
+@@ -1071,7 +1071,7 @@
+ 		XML/XML.a \
+ 
+ $(DIST): $(ARCHS_DIST:.a=.dummy) link_awt
+-	@SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_DIST) $(GUI_LIBS) $(use_ARB_main) || ( \
++	@$(ARBHOME)/SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_DIST) $(GUI_LIBS) $(use_ARB_main) || ( \
+ 		echo "$(SEP) Link $@"; \
+ 		echo "$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_DIST) $(ARCHS_CLIENT_PROBE) $(GUI_LIBS) $(EXECLIBS)" ; \
+ 		$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_DIST) $(ARCHS_CLIENT_PROBE) $(GUI_LIBS) $(EXECLIBS) && \
+@@ -1095,7 +1095,7 @@
+ 		XML/XML.a \
+ 
+ $(PARSIMONY): $(ARCHS_PARSIMONY:.a=.dummy) link_awt
+-	@SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_PARSIMONY) $(GUI_LIBS) $(use_ARB_main) || ( \
++	@$(ARBHOME)/SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_PARSIMONY) $(GUI_LIBS) $(use_ARB_main) || ( \
+ 		echo "$(SEP) Link $@"; \
+ 		echo "$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_PARSIMONY) $(ARCHS_CLIENT_NAMES) $(GUI_LIBS) $(EXECLIBS)" ; \
+ 		$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_PARSIMONY) $(ARCHS_CLIENT_NAMES) $(GUI_LIBS) $(EXECLIBS) && \
+@@ -1108,7 +1108,7 @@
+ 		CONVERTALN/CONVERTALN.a \
+ 
+ $(CONVERT_ALN) : $(ARCHS_CONVERT_ALN:.a=.dummy) link_db
+-	@SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_CONVERT_ALN) $(use_ARB_main) || ( \
++	@$(ARBHOME)/SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_CONVERT_ALN) $(use_ARB_main) || ( \
+ 		echo "$(SEP) Link $@"; \
+ 		echo "$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_CONVERT_ALN) $(LIBS) $(EXECLIBS)"; \
+ 		$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_CONVERT_ALN) $(LIBS) $(EXECLIBS) && \
+@@ -1122,7 +1122,7 @@
+ 		TREEGEN/TREEGEN.a \
+ 
+ $(TREEGEN) :  $(ARCHS_TREEGEN:.a=.dummy)
+-	@SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_TREEGEN) $(use_ARB_main_C) || ( \
++	@$(ARBHOME)/SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_TREEGEN) $(use_ARB_main_C) || ( \
+ 		echo "$(SEP) Link $@"; \
+ 		echo "$(LINK_EXECUTABLE) $@ $(use_ARB_main_C) $(LIBPATH) $(ARCHS_TREEGEN) $(EXECLIBS)" ; \
+ 		$(LINK_EXECUTABLE) $@ $(use_ARB_main_C) $(LIBPATH) $(ARCHS_TREEGEN) $(EXECLIBS) && \
+@@ -1137,7 +1137,7 @@
+ 		SL/HELIX/HELIX.a \
+ 
+ $(NALIGNER): $(ARCHS_NALIGNER:.a=.dummy) link_db
+-	@SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_NALIGNER) $(use_ARB_main) || ( \
++	@$(ARBHOME)/SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_NALIGNER) $(use_ARB_main) || ( \
+ 		echo "$(SEP) Link $@"; \
+ 		echo "$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_NALIGNER) $(ARCHS_CLIENT_PROBE) $(LIBS) $(EXECLIBS)" ; \
+ 		$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_NALIGNER) $(ARCHS_CLIENT_PROBE) $(LIBS) $(EXECLIBS) && \
+@@ -1155,7 +1155,7 @@
+ 		XML/XML.a \
+ 
+ $(PHYLO): $(ARCHS_PHYLO:.a=.dummy) link_awt
+-	@SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_PHYLO) $(GUI_LIBS) $(use_ARB_main) || ( \
++	@$(ARBHOME)/SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_PHYLO) $(GUI_LIBS) $(use_ARB_main) || ( \
+ 		echo "$(SEP) Link $@"; \
+ 		echo "$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_PHYLO) $(GUI_LIBS) $(EXECLIBS)" ; \
+ 		$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_PHYLO) $(GUI_LIBS) $(EXECLIBS) && \
+@@ -1173,7 +1173,7 @@
+ 		SERVERCNTRL/SERVERCNTRL.a \
+ 
+ $(DBSERVER): $(ARCHS_DBSERVER:.a=.dummy) link_db
+-	@SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_DBSERVER) $(ARBDB_LIB) $(use_ARB_main) || ( \
++	@$(ARBHOME)/SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_DBSERVER) $(ARBDB_LIB) $(use_ARB_main) || ( \
+ 		echo "$(SEP) Link $@"; \
+ 		echo "$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_DBSERVER) $(ARBDB_LIB) $(ARCHS_CLIENT_PROBE) $(SYSLIBS) $(EXECLIBS)" ; \
+ 		$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_DBSERVER) $(ARBDB_LIB) $(ARCHS_CLIENT_PROBE) $(SYSLIBS) $(EXECLIBS) && \
+@@ -1196,7 +1196,7 @@
+ 		$(ARCHS_PT_SERVER) \
+ 
+ $(PROBE): $(ARCHS_PROBE_DEPEND:.a=.dummy) link_db 
+-	@SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_PROBE_LINK) $(ARBDB_LIB) $(ARCHS_CLIENT_PROBE) config.makefile $(use_ARB_main) || ( \
++	@$(ARBHOME)/SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_PROBE_LINK) $(ARBDB_LIB) $(ARCHS_CLIENT_PROBE) config.makefile $(use_ARB_main) || ( \
+ 		echo "$(SEP) Link $@"; \
+ 		echo "$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_PROBE_LINK) $(ARBDB_LIB) $(ARCHS_SERVER_PROBE) $(SYSLIBS) $(EXECLIBS)" ; \
+ 		$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_PROBE_LINK) $(ARBDB_LIB) $(ARCHS_SERVER_PROBE) $(SYSLIBS) $(EXECLIBS) && \
+@@ -1210,7 +1210,7 @@
+ 		SERVERCNTRL/SERVERCNTRL.a \
+ 
+ $(NAMES): $(ARCHS_NAMES:.a=.dummy) link_db
+-	@SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_NAMES) $(ARBDB_LIB) $(ARCHS_CLIENT_NAMES) $(use_ARB_main) || ( \
++	@$(ARBHOME)/SOURCE_TOOLS/binuptodate.pl $@ $(ARCHS_NAMES) $(ARBDB_LIB) $(ARCHS_CLIENT_NAMES) $(use_ARB_main) || ( \
+ 		echo "$(SEP) Link $@"; \
+ 		echo "$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_NAMES) $(ARBDB_LIB) $(ARCHS_CLIENT_NAMES) NAMES_COM/server.a $(SYSLIBS) $(EXECLIBS)" ; \
+ 		$(LINK_EXECUTABLE) $@ $(use_ARB_main) $(LIBPATH) $(ARCHS_NAMES) $(ARBDB_LIB) $(ARCHS_CLIENT_NAMES) NAMES_COM/server.a $(SYSLIBS) $(EXECLIBS) && \
+@@ -1242,7 +1242,7 @@
+ 		depends
+ 	@grep "^# DO NOT DELETE" $(@D)/Makefile >/dev/null
+ 	@cat $(@D)/Makefile \
+-		| SOURCE_TOOLS/fix_depends.pl "(from main)" \
++		| $(ARBHOME)/SOURCE_TOOLS/fix_depends.pl "(from main)" \
+ 		>$(@D)/Makefile.2
+ 	@mv $(@D)/Makefile.old $(@D)/Makefile # restore old Makefile
+ 	@$(ARBHOME)/SOURCE_TOOLS/mv_if_diff $(@D)/Makefile.2 $(@D)/Makefile # update Makefile if changed
+@@ -1465,7 +1465,7 @@
+ 
+ dep_graph:
+ 	@echo "Building some dependency graphs"
+-	SOURCE_TOOLS/dependency_graphs.pl
++	$(ARBHOME)/SOURCE_TOOLS/dependency_graphs.pl
+ 
+ help:   HELP_SOURCE/HELP_SOURCE.dummy
+ 
+@@ -1533,7 +1533,7 @@
+ #********************************************************************************
+ 
+ touch:
+-	SOURCE_TOOLS/touch_modified.pl
++	$(ARBHOME)/SOURCE_TOOLS/touch_modified.pl
+ 
+ modified: touch
+ 	$(MAKE) all
+@@ -1659,8 +1659,8 @@
+ 	-rm $(LINKSTAMP)
+ 	$(MAKE) links
+ 
+-$(LINKSTAMP): SOURCE_TOOLS/generate_all_links.sh
+-	+SOURCE_TOOLS/generate_all_links.sh
++$(LINKSTAMP): $(ARBHOME)/SOURCE_TOOLS/generate_all_links.sh
++	+$(ARBHOME)/SOURCE_TOOLS/generate_all_links.sh
+ 	touch $(LINKSTAMP)
+ 
+ clean_links:
+@@ -1910,7 +1910,8 @@
+ save: sourcetarfile 
+ 
+ patch:
+-	SOURCE_TOOLS/arb_create_patch.sh arbPatch
++	$(ARBHOME)/SOURCE_TOOLS/arb_create_patch.sh arbPatch
++
+ 
+ # test early whether save will work
+ savetest:

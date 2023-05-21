@@ -1,0 +1,53 @@
+{% set name = "EMIRGE" %}
+{% set version = "0.61.1" %}
+{% set sha256 = "a24d5be398b77140e5d08bfa9a36743595115c02b2424b843366de3488f2b59d" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 7
+  skip: True # [ not py2k ]
+  script: python -m pip install --no-deps --ignore-installed .
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - cython
+    - pip
+    - zlib
+    - python
+    - setuptools
+    - numpy
+
+  run:
+    - zlib
+    - python
+    - numpy
+    - pysam
+    - scipy
+    - biopython
+    - bowtie
+    - samtools
+    - vsearch
+
+test:
+  imports:
+    - pykseq
+    - _emirge_amplicon
+    - _emirge
+  commands:
+    - emirge_makedb.py --help >/dev/null
+
+about:
+  home: https://github.com/csmiller/EMIRGE
+  license: GNU General Public License v3 or later (GPLv3+)
+  summary: 'EMIRGE reconstructs full length sequences from short sequencing reads'
+  license_family: GPL3
+

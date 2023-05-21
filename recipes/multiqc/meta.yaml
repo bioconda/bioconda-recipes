@@ -1,0 +1,74 @@
+{% set version = "1.14" %}
+
+package:
+  name: multiqc
+  version: {{ version }}
+
+source:
+  url: https://github.com/ewels/MultiQC/archive/v{{ version }}.tar.gz
+  sha256: dd2b6a9c903c9ba30cf22d78952055f256ce3fe21355af3879bec25a181814cc
+
+build:
+  number: 0
+  entry_points:
+    - multiqc=multiqc.__main__:run_multiqc
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - setuptools
+    - click
+    - coloredlogs
+    - future >0.14.0
+    - jinja2 >=3.0.0
+    - lzstring
+    - markdown
+    - matplotlib-base >=2.1.1
+    - networkx >=2.5.1
+    - numpy
+    - pyyaml >=4
+    - requests
+    - rich >=10
+    - rich-click
+    - simplejson
+    - spectra >=0.0.10
+
+test:
+  # Python imports
+  imports:
+    - multiqc
+    - multiqc.modules
+    - multiqc.plots
+    - multiqc.templates
+    - multiqc.utils
+
+  commands:
+    - multiqc --version
+    - multiqc .
+
+
+
+about:
+  home: http://multiqc.info
+  license: GNU General Public License v3 (GPLv3)
+  license_family: GPL3
+  license_file: LICENSE
+  summary: 'Create aggregate bioinformatics analysis reports across many samples and tools'
+  doc_url: http://multiqc.info/docs/
+  dev_url: https://github.com/ewels/MultiQC
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true
+  skip-lints:
+    - uses_setuptools # uses pkg_resources
+  identifiers:
+    - biotools:multiqc
+    - doi:https://doi.org/10.1093/bioinformatics/btw354

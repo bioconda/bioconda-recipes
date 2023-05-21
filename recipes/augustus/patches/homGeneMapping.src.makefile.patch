@@ -1,0 +1,24 @@
+--- a/auxprogs/homGeneMapping/src/Makefile	2022-09-23 10:06:14.000000000 -0700
++++ b/auxprogs/homGeneMapping/src/Makefile	2022-10-08 10:11:01.079848007 -0700
+@@ -9,7 +9,7 @@
+ #        - The order of object files in $(OBJS) IS IMPORTANT (see lldouble.hh)
+ CXXFLAGS := -Wall -Wno-sign-compare -ansi -pedantic -std=c++0x -pthread -O2 ${CXXFLAGS}
+ 
+-INCLS	+= -I../include
++INCLS	+= -I../include -I${PREFIX}/include
+ OBJS	= gene.o genome.o
+ 
+ # set SQLITE = false in common.mk to disable the usage of the SQLite library, option --dbaccess will not be available
+@@ -28,10 +28,10 @@
+ endif
+ 
+ ifneq (,$(findstring $(SQLITE),1 true True TRUE)) # if SQLITE is defined and contains 1, true, True or TRUE
+-	CPPFLAGS += -DM_SQLITE
++	CPPFLAGS += -DM_SQLITE -ldl
+ 	INCLS    += $(INCLUDE_PATH_SQLITE)
+ 	LDFLAGS  += $(LIBRARY_PATH_SQLITE)
+-	LDLIBS  += -lsqlite3 # add the sqlite library path here, if sqlite is not install system-wide
++	LDLIBS  += -lsqlite3 -L${PREFIX}/lib/ # add the sqlite library path here, if sqlite is not install system-wide
+ 	OBJS    += sqliteDB.o
+ endif
+ 

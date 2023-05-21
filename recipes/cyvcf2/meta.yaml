@@ -1,0 +1,50 @@
+{% set name = "cyvcf2" %}
+{% set version = "0.30.16" %}
+{% set sha256hash = "624d77a3d5db99198e5314642856f1d36975daf2f710e774db8807017d063aaa" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/brentp/cyvcf2/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256hash }}
+  patches:
+    # Link to htslib shipped by conda
+    - patches/setup.py.patch
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - setuptools
+    - cython
+    - numpy
+    - zlib
+    - libcurl
+    - htslib >=1.10
+    - openssl
+
+  run:
+    - python
+    - numpy
+    - zlib
+    - coloredlogs
+    - click
+    - libcurl
+    - htslib >=1.10
+    - openssl
+    - pathlib2  # [py<34]
+
+test:
+  imports:
+    - cyvcf2
+
+about:
+  home: https://github.com/brentp/cyvcf2
+  summary: A cython wrapper around htslib built for fast parsing of Variant Call Format (VCF) files
+  license: MIT

@@ -1,0 +1,49 @@
+{% set name = "sample-sheet" %}
+{% set version = "0.13.0" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: e20bcb7171ea965b8de546fac224c7d2c503a529fff35606466b01c722f8d92b
+
+build:
+  number: 0
+  noarch: python
+  script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - click
+    - python >=3.6
+    - requests
+    - tabulate
+    - terminaltables
+    - smart_open >=1.5.4
+
+test:
+  imports:
+    - sample_sheet
+  commands:
+    - sample-sheet -h
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true  # [py3k]
+  recipe-maintainers:
+    - clintval
+
+about:
+  home: https://github.com/clintval/sample-sheet
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'An Illumina Sample Sheet parsing library'
+  doc_url: https://sample-sheet.readthedocs.io/

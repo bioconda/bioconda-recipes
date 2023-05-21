@@ -1,0 +1,58 @@
+{% set version = "1.2.4" %}
+{% set sha256 = "38c7a13e4c7461b099e4a526ba6d87a06302727ce5ca2e4c6c98ac937f19610e" %}
+
+package:
+  name: strainest
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/compmetagen/strainest/archive/{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+  patches:
+    - strainest.patch
+
+build:
+  number: 4
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - setuptools
+    - click >=5.1
+    - numpy >=1.7.0
+    - scipy
+    - pandas
+    - pysam >=0.9
+    - scikit-learn >=0.16.1
+    - matplotlib >=1.3.0
+    - biopython >=1.50
+  run:
+    - python
+    - click >=5.1
+    - numpy >=1.7.0
+    - scipy
+    - pandas
+    - pysam >=0.9
+    - scikit-learn >=0.16.1
+    - matplotlib >=1.3.0
+    - biopython >=1.50
+    - mummer 3.23
+
+test:
+  commands:
+    - strainest --help
+
+about:
+  home: https://github.com/compmetagen/strainest
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: Abundance estimation of strains
+
+extra:
+  container:
+    # requires locale
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true

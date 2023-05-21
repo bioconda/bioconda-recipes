@@ -1,0 +1,46 @@
+{% set name = "sambamba" %}
+{% set version = "1.0" %}
+{% set sha256 = "4181ae6bcd2852d7264cc8858efa9fe66d0cd29e90b9a28102d29b526ee056bc" %}
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/biod/sambamba/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - python >=3
+  host:
+    - ldc >=1.17.0
+    - bzip2
+    - zlib
+    - xz
+    - lz4-c
+  run:
+    - {{ pin_compatible('ldc', max_pin='x.x') }}
+
+test:
+  commands:
+    - sambamba view --help
+
+about:
+  home: "https://github.com/biod/sambamba"
+  doc_url: "https://lomereiter.github.io/sambamba/docs/sambamba-view.html"
+  dev_url: "https://github.com/biod/sambamba"
+  license: GPL2
+  license_family: GPL2
+  license_file: LICENSE
+  summary: "Tools for working with SAM/BAM data"
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btv098
+  recipe-maintainers:
+    - mjsteinbaugh
