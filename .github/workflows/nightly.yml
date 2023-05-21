@@ -1,8 +1,7 @@
-name: Upload
+name: Nightly Uploader
 on:
-  push:
-    branches:
-      - master
+  schedule:
+    - cron: '12 2 * * *'
 jobs:
   build-linux:
     name: Linux Upload
@@ -58,14 +57,9 @@ jobs:
           eval "$(conda shell.bash hook)"
           conda activate bioconda
           docker pull quay.io/dpryan79/mulled_container:latest
-          # bioconda-utils handle-merged-pr recipes config.yml \
-          #   --repo bioconda/bioconda-recipes \
-          #   --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
-          #   --quay-upload-target biocontainers \
-          #   --fallback build
           bioconda-utils build recipes config.yml \
-            --git-range ${GITHUB_SHA}~1 ${GITHUB_SHA} \
-            --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
+              --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
+              --prelint
           docker rmi quay.io/dpryan79/mulled_container:latest
 
   build-osx:
@@ -125,9 +119,6 @@ jobs:
           # The SDK isn't actually cached, so reinstall it
           run_conda_forge_build_setup
 
-          # bioconda-utils handle-merged-pr recipes config.yml \
-          #   --repo bioconda/bioconda-recipes \
-          #   --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
-          #   --fallback build
           bioconda-utils build recipes config.yml \
-            --git-range ${GITHUB_SHA}~4 ${GITHUB_SHA}
+              --anaconda-upload \
+              --prelint
