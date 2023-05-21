@@ -2,10 +2,6 @@ name: PR Check
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-  #push:
-  #  branches-ignore:
-  #    - master
-  #    - bulk
 jobs:
   lint:
     name: Lint
@@ -121,6 +117,42 @@ jobs:
             --docker --mulled-test \
             --git-range origin/"$GITHUB_BASE_REF" HEAD
           docker rmi quay.io/dpryan79/mulled_container:latest
+      - name: Prepare artifacts
+        run: |
+          (
+          mkdir -p /tmp/artifacts/packages
+          cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
+          find -name .cache | xargs rm -rf || true
+          for n in index.html channeldata.json linux-64 osx-64 noarch; do
+            cp -rv $n /tmp/artifacts/packages || true
+          done
+          if command -V docker >/dev/null; then
+            mkdir -p /tmp/artifacts/images
+            cd /tmp/artifacts/images
+            docker image ls --format='{{.Repository}}:{{.Tag}}' | \
+              { grep biocontainers || true ; } | \
+              xargs -n1 -P4 bash -c '
+                test -n "${1+x}" || exit 0
+                echo "Start compressing docker image ${1} ..."
+                docker save "${1}" | gzip -c > "${1##*/}.tar.gz"
+                echo "Finished compressing docker image ${1} ."
+                ' --
+          fi
+          ) || true
+
+      - name: Archive packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-packages
+            path: |
+              /tmp/artifacts/packages
+
+      - name: Archive images 
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-images
+            path: |
+              /tmp/artifacts/images
 
   build-osx:
     name: OSX Tests
@@ -180,3 +212,21 @@ jobs:
           git fetch origin "$GITHUB_BASE_REF"
           bioconda-utils build recipes config.yml \
             --git-range origin/"$GITHUB_BASE_REF" HEAD
+
+      - name: Prepare artifacts
+        run: |
+              (
+              mkdir -p /tmp/artifacts/packages
+              cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
+              find -name .cache | xargs rm -rf || true
+              for n in index.html channeldata.json linux-64 osx-64 noarch; do
+                cp -rv $n /tmp/artifacts/packages || true
+              done
+              ) || true
+
+      - name: Archive packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: osx-packages
+            path: |
+              /tmp/artifacts/packages
