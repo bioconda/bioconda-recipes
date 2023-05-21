@@ -5,4 +5,3 @@ mv ${RECIPE_DIR}/instrument.h src/quickbam/
 make
 make install
 cp -r src/quickbam/instrument.h $PREFIX/include/quickbam/
-ls -l $PREFIX/include/quickbam/
