@@ -36,7 +36,7 @@ else
 fi
 
 # On the MacOS runner, Conan detects gnu14 as default cppstd. This causes a bunch of issues when compiling boost later on
-conan_profile="$(conan profile detect |& grep Saving | sed -E 's/^Saving detected profile to (.*)/\1/')"
+conan_profile="$(conan profile detect 2>&1 | grep Saving | sed -E 's/^Saving detected profile to (.*)/\1/')"
 sed -i.bak 's/.*cppstd.*/compiler.cppstd=17/' "$conan_profile"
 
 # Build everything from source to avoid ABI issues due to old GLIBC/GLIBCXX
