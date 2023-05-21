@@ -129,8 +129,7 @@ jobs:
           if command -V docker >/dev/null; then
             mkdir -p /tmp/artifacts/images
             cd /tmp/artifacts/images
-            # There's no : allowed in artifact names :(
-            docker image ls --format='{{.Repository}}---{{.Tag}}' | \
+            docker image ls --format='{{.Repository}}:{{.Tag}}' | \
               { grep biocontainers || true ; } | \
               xargs -n1 -P4 bash -c '
                 test -n "${1+x}" || exit 0
@@ -138,6 +137,8 @@ jobs:
                 docker save "${1}" | gzip -c > "${1##*/}.tar.gz"
                 echo "Finished compressing docker image ${1} ."
                 ' --
+            # There's no : allowed in artifact names, replace it with ---
+            for f in /tmp/artifacts/images/*:* ; do mv -- "$f" "${f//:/---}"; done
           fi
           ) || true
 
