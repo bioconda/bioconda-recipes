@@ -129,7 +129,8 @@ jobs:
           if command -V docker >/dev/null; then
             mkdir -p /tmp/artifacts/images
             cd /tmp/artifacts/images
-            docker image ls --format='{{.Repository}}:{{.Tag}}' | \
+            # There's no : allowed in artifact names :(
+            docker image ls --format='{{.Repository}}---{{.Tag}}' | \
               { grep biocontainers || true ; } | \
               xargs -n1 -P4 bash -c '
                 test -n "${1+x}" || exit 0
