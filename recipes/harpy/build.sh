@@ -1,6 +1,12 @@
 #! /usr/bin/env bash
 
-# install LepWrap into conda PATH
+export C_INCLUDE_PATH=${PREFIX}/include
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
+export CPP_INCLUDE_PATH=${PREFIX}/include
+export CXX_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
+
+# create conda PATH, if not already existing
 mkdir -p $CONDA_PREFIX/bin
 
 # build and install ema
@@ -11,7 +17,7 @@ git checkout haplotag
 git submodule update --remote
 git apply ../misc/makefile.patch
 git apply ../misc/remove_native.patch
-make
+make CC="$CC -fcommon" CXX="$CXX -fcommon" LDFLAGS="$LDFLAGS"
 chmod +x ema
 cp ema $CONDA_PREFIX/bin/ema-h
 cd ..
