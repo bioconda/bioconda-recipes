@@ -9,7 +9,7 @@ export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 export BOOST_ROOT=${PREFIX}
 export HTSLIB_ROOT=${PREFIX}
-export CXXFLAGS="-ldeflate -lrt -lz -lbz2 -llzma -ldl"
+export CXXFLAGS="-ldeflate -lrt -lz -lbz2 -llzma -ldl -nostartfiles"
 
 #tricks make_dependencies to skip builds of packages already in bioconda, except zlib 
 # (comments allude to needing this specific version)
