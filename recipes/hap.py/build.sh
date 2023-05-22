@@ -1,5 +1,5 @@
 #!/bin/bash 
-
+sed -i.bak "s#Boost_USE_STATIC_LIBS	ON#oost_USE_STATIC_LIBS	OFF#g" CMakeLists.txt
 set -x
 mkdir -p build
 cd build
