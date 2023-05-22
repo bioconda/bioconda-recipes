@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-mkdir -p PREFIX/bin
+mkdir -p $PREFIX/bin
 cp misc/ema-h $PREFIX/bin
 
 # Harpy executable
