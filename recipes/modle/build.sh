@@ -26,15 +26,12 @@ if [[ ${HOST} =~ .*darwin.* ]]; then
   export MACOSX_DEPLOYMENT_TARGET=10.15  # Required to use std::filesystem
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
 
-  conan profile detect
-  cat "$conan_profile"
-
-  ln -sf "$CC" "$TMPBIN/apple-clang"
-  ln -sf "$CXX" "$TMPBIN/apple-clang++"
+  ln -sf "$CC" "$TMPBIN/clang"
+  ln -sf "$CXX" "$TMPBIN/clang++"
 
   export PATH="$TMPBIN:$PATH"
-  export CC="$TMPBIN/apple-clang"
-  export CXX="$TMPBIN/apple-clang++"
+  export CC="$TMPBIN/clang"
+  export CXX="$TMPBIN/clang++"
 else
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
 
