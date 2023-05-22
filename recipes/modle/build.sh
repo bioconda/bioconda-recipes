@@ -21,6 +21,9 @@ trap "rm -rf '$scratch'" EXIT
 TMPBIN="$scratch/bin"
 mkdir "$TMPBIN"
 
+conan profile detect
+cat "$conan_profile"
+
 declare -a CMAKE_PLATFORM_FLAGS
 if [[ ${HOST} =~ .*darwin.* ]]; then
   export MACOSX_DEPLOYMENT_TARGET=10.15  # Required to use std::filesystem
@@ -44,8 +47,9 @@ else
 fi
 
 # On the MacOS runner, Conan detects gnu14 as default cppstd. This causes a bunch of issues when compiling boost later on
-conan_profile="$(conan profile detect 2>&1 | grep Saving | sed -E 's/^Saving detected profile to (.*)/\1/')"
+conan_profile="$(conan profile detect --force 2>&1 | grep Saving | sed -E 's/^Saving detected profile to (.*)/\1/')"
 sed -i.bak 's/.*cppstd.*/compiler.cppstd=17/' "$conan_profile"
+cat "$conan_profile"
 
 # Build everything from source to avoid ABI issues due to old GLIBC/GLIBCXX
 conan install conanfile.txt \
