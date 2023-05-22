@@ -1,9 +1,10 @@
 name: PR Check
 on:
-  push:
-    branches-ignore:
-      - master
-      - bulk
+  pull_request:
+    types: [opened, synchronize, reopened]
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.head_ref }}
+  cancel-in-progress: true
 jobs:
   lint:
     name: Lint
@@ -39,9 +40,6 @@ jobs:
 
       - name: Perform lint
         env:
-          #ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-          #INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
-          #QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
           # Mimic circleci
           OSTYPE: "linux-gnu"
           CI: "true"
@@ -50,10 +48,9 @@ jobs:
           eval "$(conda shell.bash hook)"
           conda activate bioconda
           echo '============'
-          #conda info --all
-          #conda config --show-sources
-          #python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
-          env
+          conda info --all
+          conda config --show-sources
+          python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
           echo '============'
           if [ -z "$GITHUB_BASE_REF" ] ; then
               export GITHUB_BASE_REF="master"
@@ -120,6 +117,45 @@ jobs:
             --git-range origin/"$GITHUB_BASE_REF" HEAD
           docker rmi quay.io/dpryan79/mulled_container:latest
 
+      - name: Prepare artifacts
+        run: |
+          (
+          mkdir -p /tmp/artifacts/packages
+          cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
+          find -name .cache | xargs rm -rf || true
+          for n in index.html channeldata.json linux-64 osx-64 noarch; do
+            cp -rv $n /tmp/artifacts/packages || true
+          done
+          if command -V docker >/dev/null; then
+            mkdir -p /tmp/artifacts/images
+            cd /tmp/artifacts/images
+            docker image ls --format='{{.Repository}}:{{.Tag}}' | \
+              { grep biocontainers || true ; } | \
+              xargs -n1 -P4 bash -c '
+                test -n "${1+x}" || exit 0
+                echo "Start compressing docker image ${1} ..."
+                docker save "${1}" | gzip -c > "${1##*/}.tar.gz"
+                echo "Finished compressing docker image ${1} ."
+                ' --
+            # There's no : allowed in artifact names, replace it with ---
+            for f in /tmp/artifacts/images/*:* ; do mv -- "$f" "${f//:/---}"; done
+          fi
+          ) || true
+
+      - name: Archive packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-packages
+          path: |
+            /tmp/artifacts/packages
+
+      - name: Archive images 
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-images
+          path: |
+            /tmp/artifacts/images
+
   build-osx:
     name: OSX Tests
     runs-on: macOS-latest
@@ -178,3 +214,21 @@ jobs:
           git fetch origin "$GITHUB_BASE_REF"
           bioconda-utils build recipes config.yml \
             --git-range origin/"$GITHUB_BASE_REF" HEAD
+
+      - name: Prepare artifacts
+        run: |
+              (
+              mkdir -p /tmp/artifacts/packages
+              cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
+              find -name .cache | xargs rm -rf || true
+              for n in index.html channeldata.json linux-64 osx-64 noarch; do
+                cp -rv $n /tmp/artifacts/packages || true
+              done
+              ) || true
+
+      - name: Archive packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: osx-packages
+          path: |
+            /tmp/artifacts/packages
