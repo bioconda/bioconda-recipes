@@ -17,15 +17,23 @@ export CONAN_HOME="$scratch/conan"
 # shellcheck disable=SC2064
 trap "rm -rf '$scratch'" EXIT
 
+# Conan doesn't detect compiler name and version when using cc/c++
+TMPBIN="$scratch/bin"
+mkdir "$TMPBIN"
+
 declare -a CMAKE_PLATFORM_FLAGS
 if [[ ${HOST} =~ .*darwin.* ]]; then
   export MACOSX_DEPLOYMENT_TARGET=10.15  # Required to use std::filesystem
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
+
+  ln -sf "$CC" "$TMPBIN/apple-clang"
+  ln -sf "$CXX" "$TMPBIN/apple-clang++"
+
+  export PATH="$TMPBIN:$PATH"
+  export CC="$TMPBIN/apple-clang"
+  export CXX="$TMPBIN/apple-clang++"
 else
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
-  # Conan doesn't detect compiler name and version when using cc/c++
-  TMPBIN="$scratch/bin"
-  mkdir "$TMPBIN"
 
   ln -sf "$CC" "$TMPBIN/gcc"
   ln -sf "$CXX" "$TMPBIN/g++"
