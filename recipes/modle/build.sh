@@ -21,13 +21,13 @@ trap "rm -rf '$scratch'" EXIT
 TMPBIN="$scratch/bin"
 mkdir "$TMPBIN"
 
-conan profile detect
-cat "$conan_profile"
-
 declare -a CMAKE_PLATFORM_FLAGS
 if [[ ${HOST} =~ .*darwin.* ]]; then
   export MACOSX_DEPLOYMENT_TARGET=10.15  # Required to use std::filesystem
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
+
+  conan profile detect
+  cat "$conan_profile"
 
   ln -sf "$CC" "$TMPBIN/apple-clang"
   ln -sf "$CXX" "$TMPBIN/apple-clang++"
