@@ -1,6 +1,21 @@
 #!/bin/bash
 set -euxo pipefail
 
+# Arrange ncbi-vdb files in a form that NCBI C++ tookit
+# build can consume them.
+VDB=$SRC_DIR/vdb
+mkdir $VDB
+if [[ $(uname) = Linux ]] ; then
+   mkdir -p $VDB/linux/release/x86_64/lib
+   cp -R $PREFIX/lib64/lib* $VDB/linux/release/x86_64/lib
+else
+   mkdir -p $VDB/mac/release/x86_64/lib
+   cp -R $PREFIX/lib64/lib* $VDB/mac/release/x86_64/lib
+fi
+mkdir $VDB/interfaces
+cp -R $PREFIX/include/ncbi-vdb/* $VDB/interfaces
+
+
 export BLAST_SRC_DIR="${SRC_DIR}/blast"
 cd $BLAST_SRC_DIR/c++/
 
@@ -71,7 +86,8 @@ if [[ $(uname) = Linux ]] ; then
         --without-debug \
         --with-experimental=Int8GI \
         --with-strip \
-        --without-vdb \
+        --with-vdb=$VDB \
+        --with-static-vdb \
         --with-z=$PREFIX \
         --with-bz2=$PREFIX \
         --without-krb5 \
@@ -90,7 +106,8 @@ else
         --without-debug \
         --with-experimental=Int8GI \
         --with-strip \
-        --without-vdb \
+        --with-vdb=$VDB \
+        --with-static-vdb \
         --with-z=$PREFIX \
         --with-bz2=$PREFIX \
         --without-krb5 \
@@ -106,6 +123,7 @@ apps="$apps rpsblast.exe rpstblastn.exe makembindex.exe segmasker.exe"
 apps="$apps dustmasker.exe windowmasker.exe deltablast.exe makeblastdb.exe"
 apps="$apps blastdbcmd.exe blastdb_aliastool.exe convert2blastmask.exe"
 apps="$apps blastdbcheck.exe makeprofiledb.exe blast_formatter.exe rpsbproc.exe"
+apps="$apps blastn_vdb.exe tblastn_vdb.exe blast_formatter_vdb.exe blast_vdb_cmd.exe"
 cd ReleaseMT
 
 # The "datatool" binary needs the libs at build time, create
