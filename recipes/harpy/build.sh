@@ -10,13 +10,12 @@ export LIBRARY_PATH=${PREFIX}/lib
 mkdir -p $CONDA_PREFIX/bin
 
 # build and install ema
-rm -r ema
+rm -rf ema || true
 git clone --recursive https://github.com/EdHarry/ema.git
-cd ema
-git checkout haplotag
+cd ema && git checkout haplotag
 git submodule update --remote
-git apply ../misc/makefile.patch
-git apply ../misc/remove_native.patch
+git apply ../harpy/misc/makefile.patch
+git apply ../harpy/misc/remove_native.patch
 make CC="$CC -fcommon" CXX="$CXX -fcommon" LDFLAGS="$LDFLAGS"
 chmod +x ema
 cp ema $CONDA_PREFIX/bin/ema-h
