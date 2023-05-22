@@ -3,9 +3,6 @@
 export CFLAGS="$C -no-pie -lrt"
 export CXXFLAGS="$CXXFLAGS -std=c++20 -no-pie -lrt"
 
-export CC=gcc
-export CXX=g++
-
 mkdir -p $PREFIX/bin
 
 export RUSTUP_HOME="$HOME/rustup"
@@ -16,7 +13,7 @@ export PATH="$CARGO_HOME/bin:$PATH"
 
 git submodule update --init --recursive
 cd build
-cmake .. -DMAX_KMER_LENGTH=64 -DCMAKE_BUILD_ZLIB=1 -DCMAKE_BUILD_BZIP2=1 -DROARING_DISABLE_NATIVE=ON
+cmake .. -DMAX_KMER_LENGTH=64 -DCMAKE_BUILD_ZLIB=1 -DCMAKE_BUILD_BZIP2=1 -DROARING_DISABLE_NATIVE=ON -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX
 make -j${CPU_COUNT} ${VERBOSE_AT}
 
 cp bin/themisto $PREFIX/bin
