@@ -1,5 +1,22 @@
 #! /usr/bin/env bash
 
+mkdir -p PREFIX/bin
+cp misc/ema-h $PREFIX/bin
+
+# Harpy executable
+cp harpy $PREFIX/bin/
+
+# rules
+cp rules/*.smk $PREFIX/bin/
+
+# associated scripts
+cp utilities/*.{py,R,pl} $PREFIX/bin/
+
+# reports
+cp reports/*.Rmd $PREFIX/bin/
+
+
+### deprecated? ###
 #export C_INCLUDE_PATH=${PREFIX}/include
 #export CPLUS_INCLUDE_PATH=${PREFIX}/include
 #export CPP_INCLUDE_PATH=${PREFIX}/include
@@ -7,7 +24,6 @@
 #export LIBRARY_PATH=${PREFIX}/lib
 
 # create conda PATH, if not already existing
-mkdir -p $CONDA_PREFIX/bin
 
 # build and install ema
 #rm -rf ema || true
@@ -20,20 +36,3 @@ mkdir -p $CONDA_PREFIX/bin
 #chmod +x ema
 #cp ema $CONDA_PREFIX/bin/ema-h
 #cd ..
-chmod +x misc/ema-h && cp misc/ema-h $CONDA_PREFIX/bin
-
-
-# Harpy executable
-chmod +x harpy
-cp harpy $CONDA_PREFIX/bin/
-
-# rules
-cp rules/*.smk $CONDA_PREFIX/bin/
-
-# associated scripts
-chmod +x utilities/*.{py,R,pl}
-cp utilities/*.{py,R,pl} $CONDA_PREFIX/bin/
-
-# reports
-chmod +x reports/*.Rmd
-cp reports/*.Rmd $CONDA_PREFIX/bin/
