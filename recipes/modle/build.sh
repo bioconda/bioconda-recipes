@@ -25,13 +25,7 @@ declare -a CMAKE_PLATFORM_FLAGS
 if [[ ${HOST} =~ .*darwin.* ]]; then
   export MACOSX_DEPLOYMENT_TARGET=10.15  # Required to use std::filesystem
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
-
-  ln -sf "$CC" "$TMPBIN/clang"
-  ln -sf "$CXX" "$TMPBIN/clang++"
-
-  export PATH="$TMPBIN:$PATH"
-  export CC="$TMPBIN/clang"
-  export CXX="$TMPBIN/clang++"
+  conan_profile='apple-clang'
 else
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
 
@@ -41,20 +35,19 @@ else
   export PATH="$TMPBIN:$PATH"
   export CC="$TMPBIN/gcc"
   export CXX="$TMPBIN/g++"
+  conan_profile='gcc'
 fi
 
-# On the MacOS runner, Conan detects gnu14 as default cppstd. This causes a bunch of issues when compiling boost later on
-conan_profile="$(conan profile detect --force 2>&1 | grep Saving | sed -E 's/^Saving detected profile to (.*)/\1/')"
-sed -i.bak 's/.*cppstd.*/compiler.cppstd=17/' "$conan_profile"
-cat "$conan_profile"
+# Remember to update these profile when bioconda's compiler toolchains are updated
+CONAN_HOME="$(conan config home)"
+mkdir -p "$CONAN_HOME/profiles"
+ln -s "$(pwd -P)/conan-profiles/$conan_profile" "$(conan config home)/profiles/$conan_profile"
 
 # Build everything from source to avoid ABI issues due to old GLIBC/GLIBCXX
 conan install conanfile.txt \
        --build="*" \
-       -pr:b default \
-       -pr:h default \
-       -s build_type=Release \
-       -s compiler.cppstd=17 \
+       -pr:b "$conan_profile" \
+       -pr:h "$conan_profile" \
        --output-folder=build/
 
 # Add bioconda suffix to MoDLE version
