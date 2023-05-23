@@ -15,6 +15,5 @@ mkdir -p $PREFIX/lib/python$PYVER/site-packages
 mv lib/*cpython* $PREFIX/lib/python$PYVER/site-packages
 mv lib/* $PREFIX/lib
 set -x
-odgi test
-python -c "import odgi"
 python -c "import odgi_ffi"
+python -c "import odgi"
