@@ -1,0 +1,51 @@
+{% set name = "shapeit5" %}
+{% set version = "5.1.1" %}
+{% set sha256 = "ccd250c5ddcab002f7551b6d4bf4135fc7375fea2c9646dd91e51afd97039555" %}
+{% set user = "odelaneau" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  # TODO Fail to build on [osx] due to 
+  # error: no template named 'unary_function' in namespace 'std'
+  skip: true  #[osx]
+
+source:
+  url: https://github.com/{{ user }}/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+    - cmake
+  host:
+    - boost-cpp
+    - bzip2
+    - htslib
+  run:
+    - boost-cpp
+    - bzip2
+    - htslib
+
+test:
+  commands:
+    - SHAPEIT5_phase_common --help
+    - SHAPEIT5_phase_rare --help
+    - SHAPEIT5_switch --help
+    - SHAPEIT5_ligate --help
+
+about:
+  home: https://odelaneau.github.io/shapeit5/
+  license: MIT
+  license_file: LICENSE
+  summary: 'Fast and accurate method for estimation of haplotypes (phasing)'
+  description: 'This package provides the software SHAPEIT5. SHAPEIT5 estimates haplotypes in large datasets (WGS, WES, SNP array), with a special focus on rare variants.'
+
+extra:
+  identifiers:
+    - doi:10.1101/2022.10.19.512867 
