@@ -6,7 +6,7 @@ export C_INCLUDE_PATH=${PREFIX}/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
-cmake -H. -Bbuild -DPYTHON_EXECUTABLE:FILEPATH=$PYTHON -DCMAKE_BUILD_TYPE=Generic -DEXTRA_FLAGS='-march=sandybridge -Ofast'
+cmake -H. -Bbuild -DPYTHON_EXECUTABLE:FILEPATH=$PYTHON -DCMAKE_BUILD_TYPE=Generic -DEXTRA_FLAGS='-march=sandybridge -Ofast -Og'
 cmake --build build -j 2
 mkdir -p $PREFIX/bin
 mv bin/* $PREFIX/bin
@@ -14,3 +14,6 @@ PYVER=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version
 mkdir -p $PREFIX/lib/python$PYVER/site-packages
 mv lib/*cpython* $PREFIX/lib/python$PYVER/site-packages
 mv lib/* $PREFIX/lib
+set -x
+odgi test
+python -c "import odgi"
