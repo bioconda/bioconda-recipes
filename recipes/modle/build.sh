@@ -40,7 +40,10 @@ fi
 
 # Remember to update these profiles when bioconda's compiler toolchains are updated
 mkdir -p "$CONAN_HOME/profiles/"
-ln -s "${RECIPE_DIR}/conan_profiles/$conan_profile" "$CONAN_HOME/profiles/$conan_profile"
+sed -i.bak \
+  "s/__CONDA_BUILD_SYSROOT__/${CONDA_BUILD_SYSROOT}/" \
+  "${RECIPE_DIR}/conan_profiles/$conan_profile" \
+  "$CONAN_HOME/profiles/$conan_profile"
 
 # Build everything from source to avoid ABI issues due to old GLIBC/GLIBCXX
 conan install conanfile.txt \
