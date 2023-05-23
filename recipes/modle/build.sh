@@ -39,7 +39,7 @@ else
 fi
 
 # Remember to update these profiles when bioconda's compiler toolchains are updated
-install -Dm0644 "conan_profiles/$conan_profile" "$CONAN_HOME/profiles/$conan_profile"
+install -Dm0644 "${RECIPE_DIR}/conan_profiles/$conan_profile" "$CONAN_HOME/profiles/$conan_profile"
 
 # Build everything from source to avoid ABI issues due to old GLIBC/GLIBCXX
 conan install conanfile.txt \
