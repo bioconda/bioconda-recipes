@@ -34,7 +34,8 @@ if [ `uname` == Darwin ]; then
     export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
 
     # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
-    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+    export CXXFLAGS="-std=gnu18 -fgnu89-inline  ${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+    export CFLAGS="-std=gnu18 -fgnu89-inline ${CFLAGS}"
 else
     export CPP_FOR_BUILD=$CPP
 fi
