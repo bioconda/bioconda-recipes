@@ -1,34 +1,36 @@
 {% set name = "MEME" %}
-{% set version = "5.4.1" %}
+{% set version = "5.5.2" %}
+{% set sha256 = "340644438dac7584895ecffafa8c1fb7de57c705a34045c1ea1bde785bab05a3" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: http://meme-suite.org/meme-software/{{ version }}/meme-{{ version }}.tar.gz
-  sha256: c07fb8afafa60fc5e84ca24493c82fa6f4bd1df1a2622102edbf86a1c30fd11f
+  url: https://meme-suite.org/meme/meme-software/{{ version }}/meme-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 2
+  number: 0
   detect_binary_files_with_prefix: True
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
-    - nodejs
+    - nodejs >=16.4.1
   host:
+    - openmpi
     - yaml
     - icu
     - python
-    - perl
     - ghostscript
     - zlib
     - xz
     - libxslt
     - libxml2
     - expat
+    - perl
     - perl-xml-parser
     - perl-app-cpanminus
     - perl-module-build
@@ -42,15 +44,14 @@ requirements:
     - perl-log-log4perl
     - perl-json
     - perl-file-which
-    - openmpi
+    - perl-sys-info
   run:
+    - openmpi
     - yaml
     - icu
     - expat
     - python
     - perl
-    - zlib
-    - xz
     - libxslt
     - libxml2
     - ghostscript
@@ -65,7 +66,7 @@ requirements:
     - perl-log-log4perl
     - perl-json
     - perl-file-which
-    - openmpi
+    - perl-sys-info
 
 test:
   commands:
@@ -76,7 +77,7 @@ test:
     - glam2 -version
     - tomtom -version
     - centrimo -version
-    - ame --version 2>&1 | grep -i usage
+    - ame 2>&1 | grep -i usage
     - spamo -version
     - gomo -version
     - fimo -version
@@ -88,10 +89,10 @@ test:
     - dreme -version
 
 about:
-  home: http://meme-suite.org
+  home: https://meme-suite.org
   license: Custom
   license_file: COPYING
-  summary: Motif based sequence Analysis tools
+  summary: Motif-based sequence analysis tools
 
 extra:
   container:
