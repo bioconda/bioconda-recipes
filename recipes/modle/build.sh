@@ -55,10 +55,10 @@ sed "s|__CONDA_BUILD_SYSROOT__|${CONDA_BUILD_SYSROOT}|" \
     tee "$CONAN_HOME/profiles/$conan_profile"
 
 conan install ${RECIPE_DIR}/conanfile.txt \
-       --build="*" \
+       --build="missing" \
        -pr:b "$conan_profile" \
        -pr:h "$conan_profile" \
-       --output-folder=build/ || true
+       --output-folder=build/
 
 exit 1
 
