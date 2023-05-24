@@ -12,7 +12,7 @@ source:
 
 build:
   noarch: generic
-  number: 0
+  number: 1
 
 requirements:
   host:
@@ -21,7 +21,6 @@ requirements:
     - r-ggplot2
     - r-gsalib
     - r-reshape
-    - gcnvkernel
   run:
     - openjdk >=17,<18
     - python
@@ -30,7 +29,6 @@ requirements:
     - r-ggplot2
     - r-gsalib
     - r-reshape
-    - gcnvkernel
 
 test:
   commands:
@@ -67,6 +65,27 @@ outputs:
         - gatk --list
         - gatk MarkDuplicatesSpark --help
         - gatk DetermineGermlineContigPloidy --help
+  - name: gatk4-gcnvkernel
+    script: build_gcnvkernel.sh
+    build:
+      noarch: python
+    requirements:
+      build:
+        - unzip
+      host:
+        - python
+        - setuptools
+      run:
+        - mkl-service =2.3.0
+        - numpy =1.17.5
+        - theano =1.0.4
+        - scipy =1.0.0
+        - pymc3 =3.1
+        - pyvcf =0.6.8
+        - tqdm >=4.15.0
+    test:
+      imports:
+        - gcnvkernel
 
 about:
   home: https://www.broadinstitute.org/gatk/
