@@ -42,12 +42,17 @@ fi
 mkdir -p "$CONAN_HOME/profiles/"
 ln -s "${RECIPE_DIR}/conan_profiles/$conan_profile" "$CONAN_HOME/profiles/$conan_profile"
 
+
+grep -vF 'boost/' conanfile.txt > conanfile.txt.new
+
 # Build everything from source to avoid ABI issues due to old GLIBC/GLIBCXX
-conan install conanfile.txt \
+conan install conanfile.txt.new \
        --build="*" \
        -pr:b "$conan_profile" \
        -pr:h "$conan_profile" \
        --output-folder=build/
+
+exit 1
 
 # Add bioconda suffix to MoDLE version
 sed -i.bak 's/set(MODLE_PROJECT_VERSION_SUFFIX "")/set(MODLE_PROJECT_VERSION_SUFFIX "bioconda")/' cmake/Versioning.cmake
