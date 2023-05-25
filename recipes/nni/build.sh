@@ -7,6 +7,4 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export PATH="${PATH}:${PREFIX}/.local/bin"
 
 export NNI_RELEASE=${PKG_VERSION}
-${PYTHON} setup.py build_ts
-${PYTHON} setup.py bdist_wheel
-pip install -vv -e .
+${PYTHON} setup.py develop
