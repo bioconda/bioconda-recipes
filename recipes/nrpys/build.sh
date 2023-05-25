@@ -9,7 +9,7 @@ export HOME=${PREFIX}
 export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
-mkdir ${PREFIX}/bin
+mkdir -p ${PREFIX}/bin
 
 # build statically linked binary with Rust
 maturin build --release -f
