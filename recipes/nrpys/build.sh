@@ -13,5 +13,5 @@ mkdir -p ${PREFIX}/bin
 
 # build statically linked binary with Rust
 maturin build --release -f
-${PYTHON} pip install -e . -vv
+pip install -vv -e .
 cp ${SRC_DIR}/python/nrpys/nrpys.*.so ${PREFIX}/lib/libnrpys.so
