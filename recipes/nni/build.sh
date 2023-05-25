@@ -7,4 +7,4 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export NNI_RELEASE=${PKG_VERSION}
 ${PYTHON} setup.py build_ts
 ${PYTHON} setup.py bdist_wheel
-pip install -e . -vv
+pip install -e . --user --prefix ${PREFIX} --use-pep517 -vv
