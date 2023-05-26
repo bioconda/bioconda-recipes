@@ -34,8 +34,7 @@ if [ `uname` == Darwin ]; then
     export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
 
     # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
-    export CXXFLAGS="-std=gnu18 -fgnu89-inline  ${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-    export CFLAGS="-std=gnu18 -fgnu89-inline ${CFLAGS}"
+    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 else
     export CPP_FOR_BUILD=$CPP
 fi
@@ -49,82 +48,20 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 mkdir -p src/app/RpsbProc
 cp -rf "${SRC_DIR}/RpsbProc/src/"* src/app/RpsbProc/
 
-# with/without options:
-#
-# dll: enable dynamic linking
-# mt: enable multi-threading
-# -autodep: no automatic dependency build (one time build)
-# -makefile-auto-update: no rebuild of makefile (one time build)
-# flat-makefile: use single makefile
-# -caution: disable configure script warnings
-# -dbapi: don't build database connectivity libs <= configure: WARNING: --with(out)-dbapi is deprecated
-# -lzo: don't add lzo support
-# runpath: set runpath for installed $PREFIX location
-# hard-runpath: disable new dtags (disallow LD_LIBRARY_PATH override on Linux)
-# -debug: disable debug
-# strip: remove debugging symbols (size!)
-# -vdb: disable VDB/SRA toolkit
-# z: set zlib
-# bz2: set libbz2
-# -openssl: disable openssl
-# -gcrypt: disable gcrypt (needed on OSX)
-# -krb5: disable kerberos (needed on OSX)
 
 # Fixes building on unix (linux and osx)
 export AR="${AR} rcs"
 
-if [[ $(uname) = Linux ]] ; then
-    ./configure \
-        --with-bin-release \
-        --with-mt \
-        --with-dll \
-        --with-openmp \
-        --with-flat-makefile \
-        --without-lzo \
-        --without-zstd \
-        --with-hard-runpath \
-        --with-runpath=$LIB_INSTALL_DIR \
-        --without-debug \
-        --with-experimental=Int8GI \
-        --with-strip \
-        --with-vdb=$VDB \
-        --with-static-vdb \
-        --with-z=$PREFIX \
-        --with-bz2=$PREFIX \
-        --without-krb5 \
-        --without-gnutls \
-        --without-sse42 \
-        --without-gcrypt \
-        --without-pcre
-else
-    ./configure \
-        --with-bin-release \
-        --with-mt \
-        --without-openmp \
-        --with-flat-makefile \
-        --without-lzo \
-        --without-zstd \
-        --without-debug \
-        --with-experimental=Int8GI \
-        --with-strip \
-        --with-vdb=$VDB \
-        --with-static-vdb \
-        --with-z=$PREFIX \
-        --with-bz2=$PREFIX \
-        --without-krb5 \
-        --without-gnutls \
-        --without-sse42 \
-        --without-gcrypt \
-        --without-pcre
-fi
+./src/build-system/cmake/cmake-cfg-unix.sh --without-debug --with-dll --with-features="BinRelease;OpenMP;SSE;StaticComponents" --with-components="Z;BZ2;VDB;-LZO;-ZSTD" -DNCBI_ThirdParty_VDB=$VDB
+
 
 #list apps to build
-apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe"
-apps="$apps rpsblast.exe rpstblastn.exe makembindex.exe segmasker.exe"
-apps="$apps dustmasker.exe windowmasker.exe deltablast.exe makeblastdb.exe"
-apps="$apps blastdbcmd.exe blastdb_aliastool.exe convert2blastmask.exe"
-apps="$apps blastdbcheck.exe makeprofiledb.exe blast_formatter.exe rpsbproc.exe"
-apps="$apps blastn_vdb.exe tblastn_vdb.exe blast_formatter_vdb.exe blast_vdb_cmd.exe"
+apps="blastp blastn blastx tblastn tblastx psiblast"
+apps="$apps rpsblast rpstblastn makembindex segmasker"
+apps="$apps dustmasker windowmasker deltablast makeblastdb"
+apps="$apps blastdbcmd blastdb_aliastool convert2blastmask"
+apps="$apps blastdbcheck makeprofiledb blast_formatter rpsbproc"
+apps="$apps blastn_vdb tblastn_vdb blast_formatter_vdb blast_vdb_cmd"
 cd ReleaseMT
 
 # The "datatool" binary needs the libs at build time, create
