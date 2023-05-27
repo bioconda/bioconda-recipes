@@ -52,7 +52,11 @@ cp -rf "${SRC_DIR}/RpsbProc/src/"* src/app/RpsbProc/
 # Fixes building on unix (linux and osx)
 export AR="${AR} rcs"
 
-./src/build-system/cmake/cmake-cfg-unix.sh --without-debug --with-dll --with-features="BinRelease;OpenMP;SSE;StaticComponents" --with-components="Z;BZ2;VDB;-LZO;-ZSTD" -DNCBI_ThirdParty_VDB=$VDB
+./src/build-system/cmake/cmake-cfg-unix.sh --without-debug --with-dll \
+  --with-features="BinRelease;OpenMP;SSE;StaticComponents" \
+  --with-components="Z;BZ2;VDB;-LZO;-ZSTD" \
+  --with-build-root="ReleaseMT" \
+  -DNCBI_ThirdParty_VDB=$VDB
 
 
 #list apps to build
