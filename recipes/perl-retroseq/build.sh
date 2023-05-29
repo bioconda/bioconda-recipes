@@ -1,2 +1,3 @@
 #!/bin/bash
-mv ./RetroSeq/* ./
+mkdir -p ./bin/RetroSeq/
+mv ./RetroSeq/* ./bin/RetroSeq/*
