@@ -1,3 +1,2 @@
 #!/bin/bash
-mkdir -p ./bin/RetroSeq/
-mv ./RetroSeq/* ./bin/RetroSeq/
+export PERL5LIB="${CONDA_PREFIX}/RetroSeq/
