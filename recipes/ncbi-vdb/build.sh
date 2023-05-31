@@ -36,6 +36,10 @@ export CFLAGS="-DH5_USE_110_API -I${PREFIX}/include ${LDFLAGS}"
 export CXXFLAGS="-I${PREFIX}/include ${LDFLAGS}"
 export CXX_FOR_BUILD=${CXX}
 
+if [[ ${OSTYPE} == "darwin"* ]]; then
+    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+fi
+
 cmake ../ncbi-vdb/ -DNGS_INCDIR=${PREFIX} \
          -DCMAKE_INSTALL_PREFIX=${PREFIX} \
          -DCMAKE_BUILD_TYPE=Release
