@@ -21,15 +21,6 @@ if [ "$(uname)" == "Darwin" ]; then
     #export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++"
     sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' contrib/intervaltree/Makefile    
 fi
-# tabix missing library https://github.com/ekg/tabixpp/issues/5
-# Uses newline trick for OSX from: http://stackoverflow.com/a/24299845/252589
-#sed -i.bak 's/SUBDIRS=./SUBDIRS=.\'$'\n''LOBJS=tabix.o/' tabixpp/Makefile
-#sed -i.bak 's/-ltabix//' Makefile
-#sed -i.bak 's/make/make -e/' Makefile
-
-#make -e \
-#    CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
-#    CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
 pkg-config --list-all
 mkdir -p build
@@ -37,7 +28,7 @@ cd build
 
 
 #cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DTABIXPP_LOCAL:STRING=$PREFIX/lib
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$PREFIX 
+cmake .. -DCMAKE_BUILD_TYPE=Release -DTABIX_FOUND=TRUE -DCMAKE_INSTALL_PREFIX=$PREFIX 
 cmake --build . 
 cmake --install .
 #cp -n ../scripts/* $PREFIX/bin
