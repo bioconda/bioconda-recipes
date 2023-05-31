@@ -40,5 +40,5 @@ mkdir ${BUILD_DIR}
 # Execute Make commands from a separate subdirectory. Else:
 # ERROR: In source builds are not allowed
 cd ncbi-vdb/
-./configure CXX=${CXX} ${CXXFLAGS} --prefix=${PREFIX}
-make install --directory=${BUILD_DIR}
+./configure CXX="${CXX}" --prefix="${PREFIX}" --build-prefix="${BUILD_DIR}"
+make install
