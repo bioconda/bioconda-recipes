@@ -6,6 +6,17 @@ Description: Build shared lib with bioconda's htslib and tabixpp
 Author: Andreas Tille <tille@debian.org> modified for bioconda by Jon Puritz jpuritz@gmail.com
 --- vcflib/CMakeLists.txt
 +++ vcflib/CMakeLists.txt
+@@ -116,7 +116,9 @@ include_directories(contrib/multichoose)
+ include_directories(contrib/filevercmp)
+ include_directories(contrib/c-progress-bar)
+ 
+-if(NOT HTSLIB_FOUND)
++if(HTSLIB_FOUND)
++  include_directories(${HTSLIB_INCLUDE_DIRS})
++else()
+   set(HTSLIB_LOCAL contrib/tabixpp/htslib)
+   set(TABIX_FOUND OFF) # also build tabixpp if htslib is missing
+ endif()
 @@ -173,10 +173,14 @@ if (TABIXPP_LOCAL) # add the tabixpp source file
      list(APPEND vcflib_SOURCE ${tabixpp_SOURCE})
  endif()
