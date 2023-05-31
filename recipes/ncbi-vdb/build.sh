@@ -22,12 +22,6 @@ end-of-patch
 } | patch -p0 -i-
 
 
-# Execute Make commands from a separate subdirectory. Else:
-# ERROR: In source builds are not allowed
-export BUILD_DIR=${SRC_DIR}/build_vdb
-mkdir ${BUILD_DIR}
-cd ${BUILD_DIR}
-
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
@@ -40,8 +34,11 @@ if [[ ${OSTYPE} == "darwin"* ]]; then
     export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 
-cmake ../ncbi-vdb/ -DNGS_INCDIR=${PREFIX} \
-         -DCMAKE_INSTALL_PREFIX=${PREFIX} \
-         -DCMAKE_BUILD_TYPE=Release
-cmake --build . -j 4 -v
-cmake --install .
+export BUILD_DIR=${SRC_DIR}/build_vdb
+mkdir ${BUILD_DIR}
+
+# Execute Make commands from a separate subdirectory. Else:
+# ERROR: In source builds are not allowed
+cd ncbi-vdb/
+./configure CXX=${CXX} ${CXXFLAGS} --prefix=${PREFIX}
+make install --directory=${BUILD_DIR}
