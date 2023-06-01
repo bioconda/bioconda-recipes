@@ -11,6 +11,9 @@ set -eu -o pipefail
 
 mkdir -p $PREFIX/bin/
 
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+
 cd $SRC_DIR/
 
 cmake -B build -DCMAKE_C_FLAGS="-msse4.2" -DCMAKE_CXX_FLAGS="-msse4.2"
