@@ -1,54 +1,46 @@
-#!/bin/bash
+#!/bin/bash -e
 
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
-export CPATH=${PREFIX}/include
+export INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="-L${PREFIX}/lib"
+export CXX_FOR_BUILD=${CXX}
 
-NCBI_OUTDIR=$SRC_DIR/ncbi-outdir
+export CFLAGS="-DH5_USE_110_API -I${PREFIX}/include ${LDFLAGS}"
+export CXXFLAGS="-I${PREFIX}/include ${LDFLAGS}"
 
-if [[ $OSTYPE == darwin* ]]; then
-     export CFLAGS="${CFLAGS} -i sysroot ${CONDA_BUILD_SYSROOT}"
-     export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
+echo "compiling sra-tools"
+if [[ ${OSTYPE} == "darwin"* ]]; then
+    export CFLAGS="${CFLAGS} -DTARGET_OS_OSX"
+    export CXXFLAGS="${CXXFLAGS} -DTARGET_OS_OSX -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 
-export PATH=$BUILD_PREFIX/bin:$PATH
-
-ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-gcc $BUILD_PREFIX/bin/gcc
-ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-c++ $BUILD_PREFIX/bin/g++
-ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-cc $BUILD_PREFIX/bin/cc
-ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-c++ $BUILD_PREFIX/bin/c++
-ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-ar $BUILD_PREFIX/bin/ar
-ln -s $BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-ld $BUILD_PREFIX/bin/ld
+mkdir -p obj/ngs/ngs-java/javadoc/ngs-doc  # prevent error on OSX
 
 
-pushd ncbi-vdb
-./configure \
-    --prefix=$PREFIX \
-    --build-prefix=$NCBI_OUTDIR \
-    --with-ngs-sdk-prefix=$PREFIX
-make -j${CPU_COUNT}
+# Execute Make commands from a separate subdirectory. Else:
+# ERROR: In source builds are not allowed
+export SRA_BUILD_DIR=${SRC_DIR}/build_sratools
+mkdir ${SRA_BUILD_DIR}
+pushd ${SRA_BUILD_DIR}
+cmake ../sra-tools/ -DVDB_BINDIR=${BUILD_PREFIX}/lib64 \
+    -DVDB_LIBDIR=${BUILD_PREFIX}/lib64 \
+    -DVDB_INCDIR=${BUILD_PREFIX}/include \
+    -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+    -DCMAKE_BUILD_TYPE=Release
+cmake --build . -j 4 -v
+cmake --install .
 popd
 
-pushd sra-tools
-
-pushd tools/driver-tool/utf8proc
-make -j${CPU_COUNT}
-popd
-
-./configure \
-    --prefix=$PREFIX \
-    --build-prefix=$NCBI_OUTDIR \
-    --with-ngs-sdk-prefix=$PREFIX \
-    --with-ncbi-vdb-build=$NCBI_OUTDIR
-make -j${CPU_COUNT}
-make install
-popd
 
 # Strip package version from binary names
-cd $PREFIX/bin
-ln -s fastq-dump-orig.$PKG_VERSION fastq-dump-orig
-ln -s fasterq-dump-orig.$PKG_VERSION fasterq-dump-orig
-ln -s prefetch-orig.$PKG_VERSION prefetch-orig
-ln -s sam-dump-orig.$PKG_VERSION sam-dump-orig
-ln -s srapath-orig.$PKG_VERSION srapath-orig
-ln -s sra-pileup-orig.$PKG_VERSION sra-pileup-orig
+cd "${PREFIX}/bin"
+for exe in \
+    fastq-dump-orig \
+    fasterq-dump-orig \
+    prefetch-orig \
+    sam-dump-orig \
+    srapath-orig \
+    sra-pileup-orig
+do
+    ln -s "${exe}.${PKG_VERSION}" "${exe}"
+done

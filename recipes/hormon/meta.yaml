@@ -1,0 +1,43 @@
+{% set version="1.0.0" %}
+
+package:
+  name: hormon
+  version: {{ version }}
+
+source:
+  url: https://github.com/ablab/HORmon/archive/v{{ version }}.tar.gz
+  sha256: 0d5850a573fe33281256b0705a367bc1442f4faa30d476dc43cd1f3dd4ab76c0
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  build: 
+    - python >=3.6
+  host:
+    - python >=3.6
+  run:
+    - python >=3.6
+    - biopython
+    - python-edlib
+    - clustalo
+    - joblib
+    - setuptools
+    - networkx
+    - pygraphviz
+    - stringdecomposer
+ 
+test:
+  commands:
+    - monomer_inference --help | grep -q "Monomer Inference Problem"
+    - HORmon --help | grep -q "updating monomers to make it consistent with CE postulate"
+
+about:
+  home: https://github.com/ablab/HORmon
+  license: GPLv2
+  license_family: GPL
+  license_file: LICENSE
+  summary: A tool for annotation of alpha satellite arrays in centromeres of a newly assembled human genome.
+  description: HORmon infer human monomers based on the given alpha-satellite consensus template and centromeric sequence, extract HORs and decompose centromeric sequence into HORs.
