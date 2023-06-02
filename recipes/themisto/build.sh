@@ -3,6 +3,10 @@
 export CFLAGS="$C -no-pie -lrt"
 export CXXFLAGS="$CXXFLAGS -std=c++20 -no-pie -lrt"
 
+CC=$CC
+CXX=$CXX
+LINK=$CC
+
 mkdir -p $PREFIX/bin
 
 export RUSTFLAGS="-C linker=$CC"
