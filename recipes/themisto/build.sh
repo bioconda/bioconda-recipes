@@ -16,7 +16,7 @@ export RUSTFLAGS="-C linker=$CC"
 export RUSTUP_HOME="$HOME/rustup"
 export CARGO_HOME="$HOME/cargo"
 wget https://sh.rustup.rs -O rustup.sh
-sh rustup.sh -y --default-toolchain nightly-2023-04-20
+sh rustup.sh -y --default-toolchain stable
 export PATH="$CARGO_HOME/bin:$PATH"
 
 git submodule update --init --recursive
