@@ -7,8 +7,6 @@ CC=$CC
 CXX=$CXX
 LINK=$CC
 
-alias g++=$CXX
-
 rustvers="nightly-2023-04-20"
 
 mkdir -p $PREFIX/bin
@@ -24,6 +22,7 @@ export PATH="$CARGO_HOME/bin:$PATH"
 git submodule update --init --recursive
 
 echo "$rustvers" > ggcat/rust-toolchain
+sed -i 's/g++/$(CXX)/g' ggcat/crates/capi/ggcat-cpp-api/Makefile
 
 cd build
 cmake .. -DMAX_KMER_LENGTH=64 -DCMAKE_BUILD_ZLIB=1 -DCMAKE_BUILD_BZIP2=0 -DROARING_DISABLE_NATIVE=ON
