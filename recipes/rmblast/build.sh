@@ -3,13 +3,13 @@ set -euxo pipefail
 
 cd ${SRC_DIR}/c++/
 
-export CPLUS_INCLUDE_PATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
+export INCLUDES="-I${PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
 
-export CFLAGS="${CFLAGS} -O3"
-export CXXFLAGS="${CXXFLAGS} -O3"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O2"
+export CXXFLAGS="${CXXFLAGS} -O2 ${LDFLAGS}"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include ${LDFLAGS}"
 
 if test x"`uname`" = x"Linux"; then
     # only add things needed; not supported by OSX ld
@@ -63,6 +63,7 @@ fi
 ./configure \
     CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
     --prefix=${PREFIX} \
+    --with-bincopy \
     --without-caution \
     --without-boost \
     --with-64 \
@@ -91,7 +92,7 @@ cd ReleaseMT
 ln -s ${SRC_DIR}/c++/ReleaseMT/lib ${LIB_INSTALL_DIR}
 
 cd build
-make -j4 -f Makefile.flat all_projects="${projects}"
+make CXX=${CXX} CXXFLAGS="${CXXFLAGS}" INCLUDES="-I${PREFIX}/include" -j1 -f Makefile.flat all_projects="${projects}"
 
 # remove temporary link
 rm ${LIB_INSTALL_DIR}
