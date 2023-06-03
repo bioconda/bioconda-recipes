@@ -7,6 +7,8 @@ CC=$CC
 CXX=$CXX
 LINK=$CC
 
+alias g++=$CXX
+
 mkdir -p $PREFIX/bin
 
 export RUSTFLAGS="-C linker=$CC"
