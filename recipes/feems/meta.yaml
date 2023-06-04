@@ -1,0 +1,52 @@
+{% set name = "feems" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/NovembreLab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: eb3e1f5dea0b628a2a76a02857ead57c52054952318dc8d13aaa7f3eb8a9c075
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - pip
+    - python =3.9
+    - setuptools
+  run:
+    # versions derived from docs at (but unpinned minor versions)
+    # https://github.com/NovembreLab/feems/blob/b9e5ef34264f0d3967283abeab8d8a8cac557880/README.md
+    # removed requirements not needed for running (jupyter, sphinx)
+    - python =3.9
+    - suitesparse =5.7
+    - scikit-learn
+    - scikit-sparse =0.4
+    - cartopy =0.18
+    # additional requirements used in the sources
+    - fiona
+    - matplotlib-base
+    - msprime
+    - numpy
+    - networkx
+    - pyproj
+
+test:
+  imports:
+    - feems
+    - feems.utils
+
+about:
+  home: "https://github.com/NovembreLab/feems"
+  license: MIT
+  license_file: LICENSE
+  summary: "Fast Estimation of Effective Migration Surfaces"
+  description: "A python package implementing a statistical method for inferring and visualizing gene-flow in spatial population genetic data"
+extra:
+  recipe-maintainers:
+    - bernt-matthias

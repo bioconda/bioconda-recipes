@@ -1,4 +1,4 @@
-{% set version="0.7.0" %}
+{% set version="1.0.1" %}
 
 package:
   name: quatradis
@@ -6,24 +6,32 @@ package:
 
 source:
   url: https://github.com/quadram-institute-bioscience/QuaTradis/archive/refs/tags/{{ version }}.tar.gz
-  sha256: fa20e4b2f091976d6ea09e80c62eb1ea0b210415e64336fadaf3f2746a0c9087
+  sha256: 8ff35ebb615d6ab4698f3204d0517c432ac987cb4f570b1b0a0d2d2fadb73af4
 
 build:
-  number: 1
-  noarch: python
+  number: 0
   script: python -m pip install -v --no-deps --ignore-installed .
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
-    - python >=3
+    - python =3.10
+    - cython >=0.20.1
     - pip
   run:
-    - python >=3
+    - python =3.10
+    - cython
     - setuptools  # for pkg_resources
     - biopython
-    - pysam
+    - pysam >=0.18.0
     - matplotlib-base
     - numpy
+    - scipy
+    - dendropy
+    - seaborn
+    - graphviz
+    - python-graphviz
     - pandas
     - htslib
     - smalt
@@ -41,7 +49,7 @@ test:
 
 about:
   home: https://github.com/quadram-institute-bioscience/QuaTradis
-  license: 'GNU General Public License v3 (GPLv3)'
+  license: GPL-3.0-only
   license_family: GPL3
   license_file: LICENSE
   summary: 'A set of tools to analyse the output from TraDIS analyses'
@@ -49,6 +57,8 @@ about:
 extra:
   skip-lints:
     - uses_setuptools  # uses pkg_resources
+    # Uses pyximport
+    - cython_must_be_in_host
   recipe-maintainers:
     - sbastkowski
     - maplesond
