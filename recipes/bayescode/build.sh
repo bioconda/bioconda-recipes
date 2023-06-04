@@ -4,7 +4,7 @@ rm -rf data/
 # Create bin directory
 mkdir -p "${PREFIX}"/bin/
 
-top -n 1 -b | head -n 20
+top -n 1 -o %MEM
 # Build specifying CPP compiler and C compiler
 make CXX="${CXX}" tiny
 
