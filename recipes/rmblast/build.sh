@@ -7,8 +7,8 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
 
-export CFLAGS="${CFLAGS} -O3"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CFLAGS="${CFLAGS} -O2"
+export CXXFLAGS="${CXXFLAGS} -O2"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 if test x"`uname`" = x"Linux"; then
@@ -56,7 +56,7 @@ export AR="${AR} rcs"
 if [ `uname` == Linux ]; then
   export CONFIG_ARGS="--with-openmp --with-hard-runpath"
 else
-  export CONFIG_ARGS="--without-openmp --with-bundles"
+  export CONFIG_ARGS="--without-openmp"
 fi
 
 # not building with boost as it's only used for unit tests
@@ -69,8 +69,6 @@ fi
     --with-64 \
     --with-dll \
     --with-mt \
-    --without-autodep \
-    --without-makefile-auto-update \
     --with-flat-makefile \
     --with-runpath=${LIB_INSTALL_DIR} \
     --without-lzo \
