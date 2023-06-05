@@ -1,5 +1,6 @@
 {% set name = "GMAP" %}
-{% set version = "2023.03.24" %}
+{% set version = "2023.04.28" %}
+{% set sha256 = "6e73fab2e8043ebf735c43fe8460d2abd7c1398d1e796dc5b22ba68717f4160c" %}
 
 package:
   name: {{ name|lower }}
@@ -7,14 +8,15 @@ package:
 
 source:
   url: http://research-pub.gene.com/gmap/src/gmap-gsnap-{{ version | replace(".", "-") }}.tar.gz
-  sha256: eec93a2a693c1bc5bf3026b39522f45e8a8aad6e8b8b4239a94aa17f37600762
-  # patches:
-    # - single_quote_paths.patch
+  sha256: {{ sha256 }}
+  patches:
+    - single_quote_paths.patch
 
 build:
   number: 0
   ignore_run_exports:
-    - zlib
+    - perl
+    - perl-file-util
 
 requirements:
   build:
@@ -22,23 +24,21 @@ requirements:
     - {{ compiler('c') }}
     - autoconf
     - perl
-    - perl-file-util
   host:
     - zlib
     - bzip2
   run:
     - perl
-    - zlib
-    - bzip2
+    - perl-file-util
 
 test:
   commands:
-    - gmap --help
-    - gsnap --help
+    - "gmap --help"
+    - "gsnap --help"
 
 about:
-  home: http://research-pub.gene.com/gmap/
-  license: Apache-2.0
+  home: "http://research-pub.gene.com/gmap/"
+  license: "Apache-2.0"
   license_family: APACHE
   license_file: LICENSE
   summary: "Genomic mapping and alignment program for mRNA and EST sequences."
@@ -46,5 +46,6 @@ about:
 extra:
   identifiers:
     - biotools:gmap
+    - biotools:gsnap
     - doi:10.1093/bioinformatics/bti310
     - doi:10.1093/bioinformatics/btq057
