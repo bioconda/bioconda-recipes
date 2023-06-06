@@ -9,7 +9,6 @@ jobs:
     strategy:
       maxParallel: 8
     timeoutInMinutes: 360
-    condition: eq(1,2)
 
     steps:
       - script: |
@@ -54,9 +53,12 @@ jobs:
 
           bioconda-utils handle-merged-pr recipes config.yml \
             --repo bioconda/bioconda-recipes \
-            --git-range ${GITHUB_SHA}~1 ${GITHUB_SHA} \
+            --git-range $(Build.SourceVersion)~1 $(Build.SourceVersion) \
             --quay-upload-target biocontainers \
             --fallback build
+          #bioconda-utils build recipes config.yml \
+          #  --git-range $(Build.SourceVersion)~1 $(Build.SourceVersion) \
+          #  --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
 
           docker rmi quay.io/dpryan79/mulled_container:latest
         env:
@@ -73,7 +75,6 @@ jobs:
     strategy:
       maxParallel: 4
     timeoutInMinutes: 360
-    condition: eq(1,2)
 
     steps:
       - script: |
@@ -121,7 +122,7 @@ jobs:
 
           bioconda-utils handle-merged-pr recipes config.yml \
             --repo bioconda/bioconda-recipes \
-            --git-range ${GITHUB_SHA}~1 ${GITHUB_SHA} \
+            --git-range $(Build.SourceVersion)~1 $(Build.SourceVersion) \
             --fallback build
         env:
           QUAY_LOGIN: $(QUAY_LOGIN)
