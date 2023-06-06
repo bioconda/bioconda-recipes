@@ -1,0 +1,57 @@
+name: Update build failure list
+
+on:
+  schedule:
+    - cron: 5 5 * * *
+  push:
+    branches:
+      - master
+    paths:
+      - "**build_failure.*.yaml"
+
+jobs:
+  update-build-failure-issue:
+    name: Update build failure issue
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: set path
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+
+      - name: Fetch conda install script
+        run: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
+
+      - name: Restore cache
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: /opt/mambaforge
+          key: ${{ runner.os }}--master--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
+
+      - name: Set up bioconda-utils
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: bash install-and-set-up-conda.sh
+
+      # This script can be used to reconfigure conda to use the right channel setup.
+      # This has to be done after the cache is restored, because
+      # the channel setup is not cached as it resides in the home directory.
+      # We could use a system-wide (and therefore cached) channel setup,
+      # but mamba does not support that at the time of implementation
+      # (it ignores settings made with --system).
+      - name: Configure conda
+        run: bash configure-conda.sh
+
+      - name: Update build failure issue
+        run: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+
+          bioconda-utils list-build-failures recipes --output-format markdown --link-prefix https://github.com/bioconda/bioconda-recipes/blob/master > build-failures.md
+
+      - name: Update issue
+        uses: peter-evans/create-issue-from-file@v4
+        with:
+          title: Build failures and skiplisted recipes
+          content-filepath: build-failures.md
