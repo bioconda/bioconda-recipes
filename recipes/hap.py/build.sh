@@ -1,5 +1,4 @@
 #!/bin/bash 
-
 set -x
 mkdir -p build
 cd build
@@ -22,8 +21,6 @@ touch $SRC_DIR/build/bin/rtg
 
 cmake ../ -DCMAKE_INSTALL_PREFIX=$PREFIX \
   -DBOOST_ROOT="${PREFIX}" -DBoost_NO_SYSTEM_PATHS=ON -DCMAKE_BUILD_TYPE=Release \
-  -DHTSLIB_ROOT="${PREFIX}" -DBOOST_LIBRARYDIR="${PREFIX}" -DBoost_USE_STATIC_LIBS=OFF \
-  -DBOOST_INC="/usr/include" -DBOOST_LIB_IO="-lboost_iostreams" -DBOOST_LIB_PO="-lboost_program_options" \
-  -DBOOST_LIB_SE="-lboost_serialization"
+  -DHTSLIB_ROOT="${PREFIX}" -DCMAKE_PREFIX_PATH="${PREFIX}"
 make
 make install
