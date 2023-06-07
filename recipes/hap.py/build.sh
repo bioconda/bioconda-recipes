@@ -1,5 +1,4 @@
 #!/bin/bash 
-
 set -x
 mkdir -p build
 cd build
@@ -21,6 +20,6 @@ touch $SRC_DIR/build/bin/bcftools
 
 cmake ../ -DCMAKE_INSTALL_PREFIX=$PREFIX \
   -DBOOST_ROOT="${PREFIX}" -DBoost_NO_SYSTEM_PATHS=ON -DCMAKE_BUILD_TYPE=Release \
-  -DHTSLIB_ROOT="${PREFIX}"
+  -DHTSLIB_ROOT="${PREFIX}" -DCMAKE_PREFIX_PATH="${PREFIX}"
 make
 make install
