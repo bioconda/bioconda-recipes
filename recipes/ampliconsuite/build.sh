@@ -26,7 +26,7 @@ rm v${TARGET_VERSION}.zip
 mkdir -p $PREFIX/bin
 
 # copy driver scripts
-cp PrepareAA.py ${PREFIX}/bin/AmpliconSuite-pipeline.py
+cp AmpliconSuite-pipeline.py ${PREFIX}/bin/AmpliconSuite-pipeline.py
 cp GroupedAnalysisAmpSuite.py ${PREFIX}/bin/GroupedAnalysisAmpSuite.py
 
 # Python command to install the package.
