@@ -4,6 +4,9 @@ set -o errexit -o nounset
 
 readonly PASAHOME=${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}
 
+mkdir ${PREFIX}/bin
+mkdir -p ${PASAHOME}
+
 cd ${SRC_DIR}
 
 # use the bioconda transdecoder instead of the bundled version
@@ -13,10 +16,12 @@ sed -i.bak 's#"$transdecoder_dir/\(util\/\)*#"#' scripts/pasa_asmbls_to_training
 # use bioconda cdbtools and slclust instead of the bundled version
 sed -i.bak -e '/cdbtools/s/^/#/' -e '/slclust/s/^/#/' Makefile
 
-make
+make CXX=${CXX} INCLUDES="-I${PREFIX}/include" LIBPATH="-L${PREFIX}/lib"
 
-mkdir -p ${PASAHOME}
 cp -Rp bin Launch_PASA_pipeline.pl misc_utilities pasa_conf PasaWeb PasaWeb.conf PerlLib PyLib run_PasaWeb.pl SAMPLE_HOOKS schema scripts ${PASAHOME}
+cp -Rp PerlLib ${PREFIX}/bin/
+ln -s -f ${PASAHOME}/Launch_PASA_pipeline.pl ${PREFIX}/bin/
+ln -s -f ${PASAHOME}/bin/* ${PREFIX}/bin/
 
 mkdir -p ${PREFIX}/etc/conda/activate.d/
 echo "export PASAHOME=${PASAHOME}" > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}-${PKG_VERSION}.sh

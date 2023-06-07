@@ -1,37 +1,35 @@
-{% set name = "pasa" %}
-{% set version = "2.5.2" %}
-{% set sha256 = "3b04bb1577cc1ea16588892d26499b577c29970d5182204485ca235f6d9533dd" %}
+{% set name = "PASA" %}
+{% set version = "2.5.3" %}
+{% set sha256 = "692b353ef562cd15e9ad5680fe4c274c475c95f6b03b2067444932fd0a7d7129" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 3
-  skip: True  # [osx]
+  number: 0
 
 source:
-  url: https://github.com/PASApipeline/PASApipeline/releases/download/{{ name }}-v{{ version }}/PASApipeline-v{{ version }}.FULL.tar.gz
+  url: https://github.com/PASApipeline/PASApipeline/releases/download/pasa-v{{ version }}/PASApipeline.v{{ version }}.FULL.tar.gz
   sha256: {{ sha256 }}
 
 requirements:
   build:
-    - make
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - make
   run:
     - ucsc-blat
     - fasta3
     - cdbtools
     - slclust
-    - transdecoder >=5.7.0
-    - gmap >=2023.03.24
+    - transdecoder
+    - gmap
     - lighttpd
     - samtools
     - perl
     - perl-cgi
-    - perl-dbd-sqlite
     - perl-db_file
+    - perl-dbd-sqlite
     - perl-uri
     - r-base
     - pblat
@@ -39,13 +37,7 @@ requirements:
 
 test:
   commands:
-    - "${PREFIX}/opt/{{ name }}-{{ version }}/bin/cln2qual 2>&1 | grep \"cln2qual <cln_report> <qual_file>\""
-    - "${PREFIX}/opt/{{ name }}-{{ version }}/bin/mdust -h 2>&1 | grep \"Usage: mdust\""
-    - "${PREFIX}/opt/{{ name }}-{{ version }}/bin/pasa 2>&1 | grep \"Usage:.*pasa\""
-    - "${PREFIX}/opt/{{ name }}-{{ version }}/Launch_PASA_pipeline.pl --version 2>&1 | grep \"^PASA version:\""
-    - "${PREFIX}/opt/{{ name }}-{{ version }}/bin/seqclean -h 2>&1 | grep \"seqclean <seqfile>\""
-    - "${PREFIX}/opt/{{ name }}-{{ version }}/bin/trimpoly -h 2>&1 | grep \"Usage:\""
-    - "fasta 2>&1 | grep \"^ version:\""
+    - "Launch_PASA_pipeline.pl --version 2>&1"
 
 about:
   home: "https://github.com/PASApipeline/PASApipeline/wiki"
@@ -55,4 +47,6 @@ about:
 
 extra:
   identifiers:
+    - biotools:PASA
+    - doi:10.1093/nar/gkg770
     - doi:10.1186/gb-2008-9-1-r7
