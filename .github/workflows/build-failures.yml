@@ -42,7 +42,7 @@ jobs:
       - name: Configure conda
         run: bash configure-conda.sh
 
-      - name: Update build failure issue
+      - name: Generate build failure table
         run: |
           set -e
           eval "$(conda shell.bash hook)"
@@ -50,8 +50,11 @@ jobs:
 
           bioconda-utils list-build-failures recipes --output-format markdown --link-prefix https://github.com/bioconda/bioconda-recipes/blob/master > build-failures.md
 
-      - name: Update issue
-        uses: peter-evans/create-issue-from-file@v4
-        with:
-          title: Build failures and skiplisted recipes
-          content-filepath: build-failures.md
+      - name: Upload Release Notes to Wiki
+        uses: docker://decathlon/wiki-page-creator-action:latest
+        env:
+          GH_PAT: ${{secrets.BIOCONDA_BOT_REPO_TOKEN}}
+          ACTION_MAIL: bioconda-bot@users.noreply.github.com
+          ACTION_NAME: bioconda-bot
+          OWNER: bioconda
+          REPO_NAME: bioconda-recipes
