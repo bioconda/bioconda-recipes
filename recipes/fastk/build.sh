@@ -5,12 +5,12 @@ export CPPFLAGS="-I$SRC_DIR -I$SRC_DIR/HTSLIB -I$SRC_DIR/LIBDEFLATE -I$SRC_DIR/L
 
 # build HTSLIB
 cd HTSLIB
-make lib-static
+make CC=$CC lib-static
 cd -
 # build LIBDEFLATE
 cd LIBDEFLATE
-make
+make CC=$CC
 cd -
 # build fastk
-make
+make CC=$CC
 make install
