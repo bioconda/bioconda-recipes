@@ -7,8 +7,8 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
 
-export CFLAGS="${CFLAGS} -O3"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CFLAGS="${CFLAGS} -O2"
+export CXXFLAGS="${CXXFLAGS} -O2"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 if test x"`uname`" = x"Linux"; then
@@ -56,21 +56,21 @@ export AR="${AR} rcs"
 if [ `uname` == Linux ]; then
   export CONFIG_ARGS="--with-openmp --with-hard-runpath --with-runpath=${LIB_INSTALL_DIR}"
 else
-  export CONFIG_ARGS="--without-openmp --with-ncbi-public"
+  export CONFIG_ARGS="--without-openmp"
 fi
 
 # not building with boost as it's only used for unit tests
 ./configure \
     CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
     --prefix=${PREFIX} \
-    --with-bin-release \
     --with-static \
+    --with-static-exe \
+    --with-64 \
+    --with-mt \
+    --without-dll \
+    --with-flat-makefile \
     --without-caution \
     --without-boost \
-    --with-64 \
-    --without-dll \
-    --with-mt \
-    --with-flat-makefile \
     --without-lzo \
     --without-zstd \
     --without-debug \
