@@ -1,6 +1,5 @@
 #!/bin/bash -e
 
-
 # TODO: Ideally, we don't want the dynamic prefix-dependent patching below.
 #       The following hard-codes the environment's path in binaries such that
 #       those binaries have to be patched upon installation by conda
@@ -24,13 +23,12 @@ end-of-patch
 
 # Execute Make commands from a separate subdirectory. Else:
 # ERROR: In source builds are not allowed
-BUILD_DIR=./build_vdb
-mkdir ${BUILD_DIR}
+BUILD_DIR=${SRC_DIR}/build_vdb
+mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
-export CFLAGS="${CFLAGS} -DH5_USE_110_API"
+export CXX_FOR_BUILD=${CXX}
+export CFLAGS="${CFLAGS} -I${PREFIX}/include -L${PREFIX}/lib -DH5_USE_110_API"
 cmake ../ncbi-vdb/ -DNGS_INCDIR=${PREFIX} \
-         -DCMAKE_INSTALL_PREFIX=${PREFIX} \
-         -DCMAKE_BUILD_TYPE=Release
-cmake --build .
-cmake --install .
+         -DCMAKE_INSTALL_PREFIX=${PREFIX}
+cmake --build . --target install --config Release
