@@ -1,53 +1,56 @@
 {% set name = "goatools" %}
-{% set version = "1.2.3" %}
-{% set sha256 = "1b5635481221e42bf2d8efc4ebdca42cd7696b52f52ce5d32fe3eb29d447cdb2" %}
+{% set version = "1.3.1" %}
+{% set sha256 = "c25cb7b6044308d359a010fc55a9b9f2f58dd64e4e2afd181d22d665d781a3dc" %}
 
 package:
   name: {{ name|lower }}
-  version: '{{version}}'
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/g/goatools/goatools-{{version}}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/goatools-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
+  number: 0
   noarch: python
-  number: 2
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install . -vv
 
 requirements:
   host:
-    - python
+    - python >=3.7
     - pip
+    - setuptools
+    - wheel
   run:
-    - python
-    - python-wget
+    - python >=3.7
+    - pandas
     - numpy
     - scipy
     - xlsxwriter
     - statsmodels
-    # xlrd only used in excluded test_data
-    # - xlrd
-    - pygraphviz
+    - openpyxl
+    - docopt
     - pydot
+    - pygraphviz
     - requests
 
 test:
-  commands:
-    - find_enrichment.py -h
-    - map_to_slim.py -h
-    - plot_go_term.py -h
   imports:
     - goatools
     - goatools.obo_parser
     - goatools.go_enrichment
     - goatools.associations
+  commands:
+    - find_enrichment.py -h
+    - map_to_slim.py -h
+    - plot_go_term.py -h
 
 about:
   home: https://github.com/tanghaibao/goatools
-  summary: "Python scripts to find enrichment of GO terms"
+  summary: Python scripts to find enrichment of GO terms
   license: BSD-2-Clause
   license_family: BSD
+  license_file: LICENSE
 
 extra:
   identifiers:
