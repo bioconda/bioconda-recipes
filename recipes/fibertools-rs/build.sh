@@ -2,11 +2,13 @@
 
 if [[ ${target_platform} =~ linux.* ]]; then
     #curl https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-1.13.0%2Bcpu.zip \
-    curl https://download.pytorch.org/libtorch/cu116/libtorch-shared-with-deps-1.13.0%2Bcu116.zip \
+    #curl https://download.pytorch.org/libtorch/cu116/libtorch-shared-with-deps-1.13.0%2Bcu116.zip \
+    curl https://download.pytorch.org/libtorch/cu118/libtorch-cxx11-abi-shared-with-deps-2.0.1%2Bcu118.zip \
         --output ${PREFIX}/libtorch.zip
-    export LIBTORCH_CXX11_ABI=0
+    #export LIBTORCH_CXX11_ABI=0
 elif [[ ${target_platform} =~ osx.* ]]; then
-    curl https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.13.0.zip \
+    #curl https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.13.0.zip \
+    curl https://download.pytorch.org/libtorch/cpu/libtorch-macos-2.0.1.zip \
         --output ${PREFIX}/libtorch.zip
 fi
 
