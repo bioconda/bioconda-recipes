@@ -1,9 +1,10 @@
 #!/bin/bash
 set -e
 
-gunzip *tbl2asn.gz tbl2asn*.gz
+gunzip *tbl2asn.gz 
 mkdir -p ${PREFIX}/bin
-if [[ -f tbl2asn.mac ]]; then
+if [ -f tbl2asn.mac.gz ]; then
+	gunzip tbl2asn.mac.gz
 	cp tbl2asn.mac ${PREFIX}/bin/tbl2asn
 else
 	cp *.tbl2asn ${PREFIX}/bin/tbl2asn
