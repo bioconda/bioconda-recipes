@@ -1,11 +1,12 @@
 #!/bin/bash -e
 
 if [[ ${target_platform} =~ linux.* ]]; then
-    file=https://download.pytorch.org/libtorch/cu117/libtorch-shared-with-deps-2.0.1%2Bcu117.zip
-    file=https://download.pytorch.org/libtorch/cu118/libtorch-shared-with-deps-2.0.1%2Bcu118.zip
-    file=https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-2.0.1%2Bcpu.zip
-    curl $file --output ${PREFIX}/libtorch.zip
-    export LIBTORCH_CXX11_ABI=0
+    #file=https://download.pytorch.org/libtorch/cu117/libtorch-shared-with-deps-2.0.1%2Bcu117.zip
+    #file=https://download.pytorch.org/libtorch/cu118/libtorch-shared-with-deps-2.0.1%2Bcu118.zip
+    #file=https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-2.0.1%2Bcpu.zip
+    #curl $file --output ${PREFIX}/libtorch.zip
+    #export LIBTORCH_CXX11_ABI=0
+    export LIBTORCH_USE_PYTORCH=1
 elif [[ ${target_platform} =~ osx.* ]]; then
     curl https://download.pytorch.org/libtorch/cpu/libtorch-macos-2.0.1.zip \
         --output ${PREFIX}/libtorch.zip
