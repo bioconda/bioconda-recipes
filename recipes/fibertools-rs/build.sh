@@ -24,8 +24,8 @@ popd
 
 # set up environment variables
 export LIBTORCH=${OUTDIR}
-export LD_LIBRARY_PATH=${LIBTORCH}/lib:${LD_LIBRARY_PATH}
-export DYLD_LIBRARY_PATH=${LIBTORCH}/lib:${DYLD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${LIBTORCH}/lib
+export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
 
 echo "This is the output dir: $OUTDIR"
 ls $OUTDIR
@@ -55,4 +55,5 @@ chmod +x ${PREFIX}/bin/ft
 
 # test install
 ft --help
+ldd $(which ft)
 exit 0
