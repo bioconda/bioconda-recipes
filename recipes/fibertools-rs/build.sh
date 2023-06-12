@@ -6,7 +6,6 @@ if [[ ${target_platform} =~ linux.* ]]; then
     file=https://download.pytorch.org/libtorch/${INSTALL_TYPE}/libtorch-shared-with-deps-${TORCH_VERSION}%2B${INSTALL_TYPE}.zip
     curl $file --output ${PREFIX}/libtorch.zip
     export LIBTORCH_CXX11_ABI=0
-    #export LIBTORCH_USE_PYTORCH=1
 elif [[ ${target_platform} =~ osx.* ]]; then
     curl https://download.pytorch.org/libtorch/cpu/libtorch-macos-${TORCH_VERSION}.zip \
         --output ${PREFIX}/libtorch.zip
@@ -14,20 +13,30 @@ fi
 
 # safe place to keep libraries?
 OUTDIR=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
-mkdir -p ${OUTDIR} ${OUTDIR}/bin
+mkdir -p ${OUTDIR} ${OUTDIR}/bin ${PREFIX}/bin
+
+echo "ORIGIN PATH: $ORIGIN"
 
 # mv libtorch to OUTDIR
 pushd ${PREFIX}
-unzip libtorch.zip
+unzip -q libtorch.zip
 rm libtorch.zip
 mv ${PREFIX}/libtorch/* ${OUTDIR}/.
 popd
 
 # set up environment variables
 export LIBTORCH=${OUTDIR}
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${LIBTORCH}/lib
-export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
-export RPATH=${RPATH}:${LIBTORCH}/lib
+export LD_LIBRARY_PATH=${LIBTORCH}/lib:${LD_LIBRARY_PATH}
+export DYLD_LIBRARY_PATH=${LIBTORCH}/lib:${DYLD_LIBRARY_PATH}
+
+# saw this in some other builds and thought it might help with my missing librabry issues
+if [[ $(uname -s) == Darwin ]]; then
+    export RPATH='@loader_path/../lib'
+else
+    ORIGIN='$ORIGIN'
+    export ORIGIN
+    export RPATH='$${ORIGIN}/../lib'
+fi
 
 # TODO: Remove the following export when pinning is updated and we use
 #       {{ compiler('rust') }} in the recipe.
