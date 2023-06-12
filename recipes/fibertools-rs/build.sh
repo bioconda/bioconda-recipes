@@ -15,8 +15,6 @@ fi
 OUTDIR=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 mkdir -p ${OUTDIR} ${OUTDIR}/bin ${PREFIX}/bin
 
-echo "ORIGIN PATH: $ORIGIN"
-
 # mv libtorch to OUTDIR
 pushd ${PREFIX}
 unzip -q libtorch.zip
@@ -29,14 +27,8 @@ export LIBTORCH=${OUTDIR}
 export LD_LIBRARY_PATH=${LIBTORCH}/lib:${LD_LIBRARY_PATH}
 export DYLD_LIBRARY_PATH=${LIBTORCH}/lib:${DYLD_LIBRARY_PATH}
 
-# saw this in some other builds and thought it might help with my missing librabry issues
-if [[ $(uname -s) == Darwin ]]; then
-    export RPATH='@loader_path/../lib'
-else
-    ORIGIN='$ORIGIN'
-    export ORIGIN
-    export RPATH='$${ORIGIN}/../lib'
-fi
+echo "This is the output dir: $OUTDIR"
+ls $OUTDIR
 
 # TODO: Remove the following export when pinning is updated and we use
 #       {{ compiler('rust') }} in the recipe.
