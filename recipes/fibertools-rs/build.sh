@@ -5,16 +5,19 @@
 OUTDIR=${PREFIX}
 mkdir -p ${OUTDIR} ${OUTDIR}/bin ${PREFIX}/bin
 
+# set up environment variables
+export LIBTORCH=${OUTDIR}
+
 # download pytorch libraries
-# TORCH_VERSION="1.13.0"
 export TORCH_VERSION="2.0.1"
 export INSTALL_TYPE="cpu" # "cu117" or "cu118" or "cpu"
 if [[ ${target_platform} =~ linux.* ]]; then
-    #file=https://download.pytorch.org/libtorch/${INSTALL_TYPE}/libtorch-cxx11-abi-shared-with-deps-${TORCH_VERSION}%2B${INSTALL_TYPE}.zip
     export file=https://download.pytorch.org/libtorch/${INSTALL_TYPE}/libtorch-shared-with-deps-${TORCH_VERSION}%2B${INSTALL_TYPE}.zip
     export LIBTORCH_CXX11_ABI=0
+    export LD_LIBRARY_PATH=${LIBTORCH}/lib #${LD_LIBRARY_PATH}:
 elif [[ ${target_platform} =~ osx.* ]]; then
     # Add this becuase of this: https://twitter.com/nomad421/status/1619713549668065280
+    export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
     export RUSTFLAGS="-C link-arg=-undefined -C link-arg=dynamic_lookup"
     export file=https://download.pytorch.org/libtorch/cpu/libtorch-macos-${TORCH_VERSION}.zip
 fi
@@ -34,11 +37,6 @@ else
     mv ${PREFIX}/libtorch/share/* ${OUTDIR}/share/.
 fi
 
-# set up environment variables
-export LIBTORCH=${OUTDIR}
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${LIBTORCH}/lib
-export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
-
 # TODO: Remove the following export when pinning is updated and we use
 #       {{ compiler('rust') }} in the recipe.
 export \
@@ -53,8 +51,8 @@ cargo install --all-features --no-track --verbose \
     --root "${PREFIX}" --path "${HOME}"
 popd
 
-# clean up the include files since they shouldnt be
-#   needed(?) and there is a lot of them ~8,000
+# clean up the include files since they are not needed
+# and there is a lot of them ~8,000
 rm -rf ${OUTDIR}/include/*
 
 # test install
