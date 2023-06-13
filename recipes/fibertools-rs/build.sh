@@ -1,25 +1,24 @@
 #!/bin/bash -e
 
+# Set the desitnation for the libtorch files
+# OUTDIR=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
+OUTDIR=${PREFIX}
+mkdir -p ${OUTDIR} ${OUTDIR}/bin ${PREFIX}/bin
+
 # download pytorch libraries
 # TORCH_VERSION="1.13.0"
 export TORCH_VERSION="2.0.1"
 export INSTALL_TYPE="cpu" # "cu117" or "cu118" or "cpu"
 if [[ ${target_platform} =~ linux.* ]]; then
-    file=https://download.pytorch.org/libtorch/${INSTALL_TYPE}/libtorch-shared-with-deps-${TORCH_VERSION}%2B${INSTALL_TYPE}.zip
-    export LIBTORCH_CXX11_ABI=0
     #file=https://download.pytorch.org/libtorch/${INSTALL_TYPE}/libtorch-cxx11-abi-shared-with-deps-${TORCH_VERSION}%2B${INSTALL_TYPE}.zip
-    curl $file --output ${PREFIX}/libtorch.zip
+    export file=https://download.pytorch.org/libtorch/${INSTALL_TYPE}/libtorch-shared-with-deps-${TORCH_VERSION}%2B${INSTALL_TYPE}.zip
+    export LIBTORCH_CXX11_ABI=0
 elif [[ ${target_platform} =~ osx.* ]]; then
-    curl https://download.pytorch.org/libtorch/cpu/libtorch-macos-${TORCH_VERSION}.zip \
-        --output ${PREFIX}/libtorch.zip
     # Add this becuase of this: https://twitter.com/nomad421/status/1619713549668065280
     export RUSTFLAGS="-C link-arg=-undefined -C link-arg=dynamic_lookup"
+    export file=https://download.pytorch.org/libtorch/cpu/libtorch-macos-${TORCH_VERSION}.zip
 fi
-
-# Set the desitnation for the libtorch files
-# OUTDIR=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
-OUTDIR=${PREFIX}
-mkdir -p ${OUTDIR} ${OUTDIR}/bin ${PREFIX}/bin
+curl $file --output ${PREFIX}/libtorch.zip
 
 # move libtorch to OUTDIR
 pushd ${PREFIX}
@@ -50,7 +49,8 @@ export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 # install package
 HOME=$(pwd)
 pushd ${PREFIX}
-cargo install --all-features --no-track --verbose --root "${PREFIX}" --path ${HOME}
+cargo install --all-features --no-track --verbose \
+    --root "${PREFIX}" --path "${HOME}"
 popd
 
 # clean up the include files since they shouldnt be
