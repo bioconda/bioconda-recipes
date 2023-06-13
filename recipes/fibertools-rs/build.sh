@@ -7,7 +7,7 @@ mkdir -p ${OUTDIR} ${OUTDIR}/bin ${PREFIX}/bin
 
 # set up environment variables
 export LIBTORCH=${OUTDIR}
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${LIBTORCH}/lib
+export LD_LIBRARY_PATH=${LIBTORCH}/lib #${LD_LIBRARY_PATH}:
 export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
 
 # download pytorch libraries
@@ -64,6 +64,7 @@ ldd "$(which ft)"
 if [[ ${target_platform} =~ linux.* ]]; then
     patchelf --print-needed $(which ft)
     OLD=${OUTDIR}/lib/libgomp-a34b3233.so.1
+    OLD=${OUTDIR}/lib/libtorch_cpu.so
     NEW=${OUTDIR}/lib/libmine.so.1
     mv $OLD $NEW
     patchelf --replace-needed $OLD $NEW ${PREFIX}/bin/ft
