@@ -7,6 +7,8 @@ mkdir -p ${OUTDIR} ${OUTDIR}/bin ${PREFIX}/bin
 
 # set up environment variables
 export LIBTORCH=${OUTDIR}
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${LIBTORCH}/lib
+export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
 
 # download pytorch libraries
 export TORCH_VERSION="2.0.1"
@@ -14,14 +16,13 @@ export INSTALL_TYPE="cpu" # "cu117" or "cu118" or "cpu"
 if [[ ${target_platform} =~ linux.* ]]; then
     export file=https://download.pytorch.org/libtorch/${INSTALL_TYPE}/libtorch-shared-with-deps-${TORCH_VERSION}%2B${INSTALL_TYPE}.zip
     export LIBTORCH_CXX11_ABI=0
-    export LD_LIBRARY_PATH=${LIBTORCH}/lib #${LD_LIBRARY_PATH}:
+    curl $file --output ${PREFIX}/libtorch.zip
 elif [[ ${target_platform} =~ osx.* ]]; then
     # Add this becuase of this: https://twitter.com/nomad421/status/1619713549668065280
-    export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
     export RUSTFLAGS="-C link-arg=-undefined -C link-arg=dynamic_lookup"
     export file=https://download.pytorch.org/libtorch/cpu/libtorch-macos-${TORCH_VERSION}.zip
+    curl $file --output ${PREFIX}/libtorch.zip
 fi
-curl $file --output ${PREFIX}/libtorch.zip
 
 # move libtorch to OUTDIR
 pushd ${PREFIX}
@@ -35,11 +36,6 @@ else
     mv ${PREFIX}/libtorch/lib/* ${OUTDIR}/lib/.
     mv ${PREFIX}/libtorch/include/* ${OUTDIR}/include/.
     mv ${PREFIX}/libtorch/share/* ${OUTDIR}/share/.
-fi
-
-# fix weird ELF error by renameing SONAME
-if [[ ${target_platform} =~ linux.* ]]; then
-    patchelf --set-soname libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp-a34b3233.so.1
 fi
 
 # TODO: Remove the following export when pinning is updated and we use
@@ -66,7 +62,9 @@ ldd "$(which ft)"
 
 # try patchelf
 if [[ ${target_platform} =~ linux.* ]]; then
-    patchelf --set-rpath \$ORIGIN/../lib ${PREFIX}/bin/ft
+    patchelf --set-soname libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp-a34b3233.so.1
+    patchelf --replace-needed libgomp.so.1 libgomp-a34b3233.so.1 ${PREFIX}/bin/ft
+
     ft --help
     ldd "$(which ft)"
 fi
