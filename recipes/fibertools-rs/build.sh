@@ -37,6 +37,11 @@ else
     mv ${PREFIX}/libtorch/share/* ${OUTDIR}/share/.
 fi
 
+# fix weird ELF error by renameing SONAME
+if [[ ${target_platform} =~ linux.* ]]; then
+    patchelf --set-soname libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp-a34b3233.so.1
+fi
+
 # TODO: Remove the following export when pinning is updated and we use
 #       {{ compiler('rust') }} in the recipe.
 export \
@@ -60,9 +65,9 @@ ft --help
 ldd "$(which ft)"
 
 # try patchelf
-# if [[ ${target_platform} =~ linux.* ]]; then
-#     patchelf --set-rpath \$ORIGIN/../lib ${PREFIX}/bin/ft
-#     ft --help
-#     ldd "$(which ft)"
-# fi
+if [[ ${target_platform} =~ linux.* ]]; then
+    patchelf --set-rpath \$ORIGIN/../lib ${PREFIX}/bin/ft
+    ft --help
+    ldd "$(which ft)"
+fi
 exit 0
