@@ -67,6 +67,7 @@ if [[ ${target_platform} =~ linux.* ]]; then
     NEW=${OUTDIR}/lib/libmine.so.1
     mv $OLD $NEW
     patchelf --replace-needed $OLD $NEW ${PREFIX}/bin/ft
+    patchelf --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
 
     ft --help
     ldd "$(which ft)"
