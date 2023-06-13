@@ -10,6 +10,10 @@ export LIBTORCH=${OUTDIR}
 export LD_LIBRARY_PATH=${LIBTORCH}/lib #${LD_LIBRARY_PATH}:
 export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
 
+echo "installed libs"
+ls -l ${OUTDIR}/lib/*
+echo ""
+
 # download pytorch libraries
 export TORCH_VERSION="2.0.1"
 export INSTALL_TYPE="cpu" # "cu117" or "cu118" or "cpu"
@@ -36,7 +40,22 @@ else
     mv ${PREFIX}/libtorch/lib/* ${OUTDIR}/lib/.
     mv ${PREFIX}/libtorch/include/* ${OUTDIR}/include/.
     mv ${PREFIX}/libtorch/share/* ${OUTDIR}/share/.
+
+    # try to fix the patchelf conflict...
+    patchelf --set-soname libgomp-a34b3233.so.1 \
+        ${OUTDIR}/lib/libgomp-a34b3233.so.1
+
+    # this file might be casuing weird conflicts with ELF so
+    #rm -f ${PREFIX}/lib/libgomp.so
+    #rm -f ${PREFIX}/lib/libgomp.so.1
+    #rm -f ${PREFIX}/lib/libgomp.so.1.0.0
+    #ln -s ${PREFIX}/lib/libgomp-a34b3233.so.1 ${PREFIX}/lib/libgomp.so
+    #ln -s ${PREFIX}/lib/libgomp-a34b3233.so.1 ${PREFIX}/lib/libgomp.so.1
+    #ln -s ${PREFIX}/lib/libgomp-a34b3233.so.1 ${PREFIX}/lib/libgomp.so.1.0.0
+
 fi
+
+ls -l ${OUTDIR}/lib/*gomp*.so*
 
 # TODO: Remove the following export when pinning is updated and we use
 #       {{ compiler('rust') }} in the recipe.
@@ -59,6 +78,8 @@ rm -rf ${OUTDIR}/include/*
 # test install
 ft --help
 ldd "$(which ft)"
+
+ls -l ${OUTDIR}/lib/*gomp*.so*
 
 # try patchelf
 if [[ ${target_platform} =~ linux.* ]]; then
