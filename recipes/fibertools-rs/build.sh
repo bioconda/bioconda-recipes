@@ -73,9 +73,9 @@ ft --help
 ldd "$(which ft)"
 
 # try patchelf
-if [[ ${target_platform} =~ linux.* ]]; then
-    patchelf --set-rpath \$ORIGIN/../lib ${PREFIX}/bin/ft
-    ft --help
-    ldd "$(which ft)"
-fi
+# if [[ ${target_platform} =~ linux.* ]]; then
+#     patchelf --set-rpath \$ORIGIN/../lib ${PREFIX}/bin/ft
+#     ft --help
+#     ldd "$(which ft)"
+# fi
 exit 0
