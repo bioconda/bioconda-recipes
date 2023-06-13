@@ -64,5 +64,5 @@ chmod +x ${PREFIX}/bin/ft
 
 # test install
 ft --help
-ldd $(which ft)
+ldd "$(which ft)"
 exit 0
