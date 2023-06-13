@@ -13,6 +13,7 @@ fi
 
 # safe place to keep libraries?
 OUTDIR=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
+OUTDIR=${PREFIX}
 mkdir -p ${OUTDIR} ${OUTDIR}/bin ${PREFIX}/bin
 
 # mv libtorch to OUTDIR
