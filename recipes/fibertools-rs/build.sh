@@ -44,12 +44,14 @@ if [[ ${target_platform} =~ linux.* ]]; then
     # patchelf --set-soname 'libgomp-a34b3233.so.1' \
     #    ${OUTDIR}/lib/libgomp-a34b3233.so.1
     # this file might be casuing weird conflicts with ELF so
-    rm -f ${PREFIX}/lib/libgomp.so
-    rm -f ${PREFIX}/lib/libgomp.so.1
-    rm -f ${PREFIX}/lib/libgomp.so.1.0.0
-    ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${PREFIX}/lib/libgomp.so
-    ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${PREFIX}/lib/libgomp.so.1
-    ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${PREFIX}/lib/libgomp.so.1.0.0
+    #rm -f ${PREFIX}/lib/libgomp.so
+    #rm -f ${PREFIX}/lib/libgomp.so.1
+    #rm -f ${PREFIX}/lib/libgomp.so.1.0.0
+    #ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp.so
+    #ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp.so.1
+    #ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp.so.1.0.0
+    # try removing pytoch version
+    rm -f ${OUTDIR}/lib/libgomp-a34b3233.so.1
 fi
 
 # TODO: Remove the following export when pinning is updated and we use
@@ -78,11 +80,11 @@ ldd "$(which ft)"
 if [[ ${target_platform} =~ linux.* ]]; then
     patchelf --print-needed $(which ft)
 
-    for OLD in ${PREFIX}/lib/libgomp.so*; do
-        NEW=${OUTDIR}/lib/libgomp-a34b3233.so.1
-        patchelf --debug --replace-needed $OLD $NEW ${PREFIX}/bin/ft
-        patchelf --debug --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
-    done
+    #for OLD in ${PREFIX}/lib/libgomp.so*; do
+    #    NEW=${OUTDIR}/lib/libgomp-a34b3233.so.1
+    #    patchelf --debug --replace-needed $OLD $NEW ${PREFIX}/bin/ft
+    #    patchelf --debug --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
+    #done
 
     echo "after patchelf"
     patchelf --print-needed $(which ft)
