@@ -1,5 +1,6 @@
 #!/bin/bash -e
 
+# download pytorch libraries
 TORCH_VERSION="2.0.1"
 INSTALL_TYPE="cpu" # "cu117" or "cu118" or "cpu"
 if [[ ${target_platform} =~ linux.* ]]; then
@@ -11,12 +12,12 @@ elif [[ ${target_platform} =~ osx.* ]]; then
         --output ${PREFIX}/libtorch.zip
 fi
 
-# safe place to keep libraries?
+# Set the desitnation for the libtorch files
 OUTDIR=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 OUTDIR=${PREFIX}
 mkdir -p ${OUTDIR} ${OUTDIR}/bin ${PREFIX}/bin
 
-# mv libtorch to OUTDIR
+# move libtorch to OUTDIR
 pushd ${PREFIX}
 unzip -q libtorch.zip
 rm libtorch.zip
@@ -24,6 +25,7 @@ popd
 if [ ${PREFIX} != ${OUTDIR} ]; then
     mv ${PREFIX}/libtorch/* ${OUTDIR}/.
 else
+    mkdir -p ${OUTDIR}/include ${OUTDIR}/share ${OUTDIR}/lib
     mv ${PREFIX}/libtorch/lib/* ${OUTDIR}/lib/.
     mv ${PREFIX}/libtorch/include/* ${OUTDIR}/include/.
     mv ${PREFIX}/libtorch/share/* ${OUTDIR}/share/.
@@ -62,7 +64,17 @@ if [ ${PREFIX} != ${OUTDIR} ]; then
 fi
 chmod +x ${PREFIX}/bin/ft
 
+# clean up the include files since they shouldnt be needed?
+rm -rf ${OUTDIR}/include/*
+
 # test install
 ft --help
 ldd "$(which ft)"
+
+# try patchelf
+if [[ ${target_platform} =~ linux.* ]]; then
+    patchelf --set-rpath \$ORIGIN/../lib ${PREFIX}/bin/ft
+    ft --help
+    ldd "$(which ft)"
+fi
 exit 0
