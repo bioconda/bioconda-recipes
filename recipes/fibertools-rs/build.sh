@@ -13,8 +13,8 @@ elif [[ ${target_platform} =~ osx.* ]]; then
 fi
 
 # Set the desitnation for the libtorch files
-OUTDIR=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 OUTDIR=${PREFIX}
+OUTDIR=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 mkdir -p ${OUTDIR} ${OUTDIR}/bin ${PREFIX}/bin
 
 # move libtorch to OUTDIR
@@ -54,15 +54,9 @@ fi
 
 # install package
 HOME=$(pwd)
-pushd ${OUTDIR}
-cargo install --all-features --no-track --verbose --root "${OUTDIR}" --path ${HOME}
+pushd ${PREFIX}
+cargo install --all-features --no-track --verbose --root "${PREFIX}" --path ${HOME}
 popd
-
-# link binary
-if [ ${PREFIX} != ${OUTDIR} ]; then
-    ln -s ${OUTDIR}/bin/ft ${PREFIX}/bin/ft
-fi
-chmod +x ${PREFIX}/bin/ft
 
 # clean up the include files since they shouldnt be
 #   needed(?) and there is a lot of them ~8,000
