@@ -1,13 +1,13 @@
 #!/bin/bash -e
 
 # Set the desitnation for the libtorch files
-# OUTDIR=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
-OUTDIR=${PREFIX}
+#OUTDIR=${PREFIX}
+OUTDIR=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 mkdir -p ${OUTDIR} ${OUTDIR}/bin ${PREFIX}/bin
 
 # set up environment variables
 export LIBTORCH=${OUTDIR}
-export LD_LIBRARY_PATH=${LIBTORCH}/lib #${LD_LIBRARY_PATH}:
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${LIBTORCH}/lib
 export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
 
 echo "installed libs"
@@ -40,19 +40,20 @@ else
     mv ${PREFIX}/libtorch/lib/* ${OUTDIR}/lib/.
     mv ${PREFIX}/libtorch/include/* ${OUTDIR}/include/.
     mv ${PREFIX}/libtorch/share/* ${OUTDIR}/share/.
+fi
 
+# fix conflict with libgomp
+if [[ ${target_platform} =~ linux.* ]]; then
     # try to fix the patchelf conflict...
-    #patchelf --set-soname libgomp-a34b3233.so.1 \
+    # patchelf --set-soname 'libgomp-a34b3233.so.1' \
     #    ${OUTDIR}/lib/libgomp-a34b3233.so.1
-
     # this file might be casuing weird conflicts with ELF so
     rm -f ${PREFIX}/lib/libgomp.so
     rm -f ${PREFIX}/lib/libgomp.so.1
     rm -f ${PREFIX}/lib/libgomp.so.1.0.0
-    ln -s ${PREFIX}/lib/libgomp-a34b3233.so.1 ${PREFIX}/lib/libgomp.so
-    ln -s ${PREFIX}/lib/libgomp-a34b3233.so.1 ${PREFIX}/lib/libgomp.so.1
-    ln -s ${PREFIX}/lib/libgomp-a34b3233.so.1 ${PREFIX}/lib/libgomp.so.1.0.0
-
+    ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${PREFIX}/lib/libgomp.so
+    ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${PREFIX}/lib/libgomp.so.1
+    ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${PREFIX}/lib/libgomp.so.1.0.0
 fi
 
 ls -l ${OUTDIR}/lib/*gomp*.so*
@@ -84,12 +85,20 @@ ls -l ${OUTDIR}/lib/*gomp*.so*
 # try patchelf
 if [[ ${target_platform} =~ linux.* ]]; then
     patchelf --print-needed $(which ft)
-    OLD=${OUTDIR}/lib/libgomp-a34b3233.so.1
-    OLD=${OUTDIR}/lib/libtorch_cpu.so
-    NEW=${OUTDIR}/lib/libmine.so.1
-    mv $OLD $NEW
-    patchelf --replace-needed $OLD $NEW ${PREFIX}/bin/ft
-    patchelf --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
+
+    for OLD in ${PREFIX}/lib/libgomp.so*; do
+        NEW=${OUTDIR}/lib/libgomp-a34b3233.so.1
+        patchelf --replace-needed $OLD $NEW ${PREFIX}/bin/ft
+        patchelf --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
+    done
+
+    echo "after patchelf"
+    patchelf --print-needed $(which ft)
+    #OLD=${OUTDIR}/lib/libtorch_cpu.so
+    #NEW=${OUTDIR}/lib/libmine.so.1
+    #mv $OLD $NEW
+    #patchelf --replace-needed $OLD $NEW ${PREFIX}/bin/ft
+    #patchelf --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
 
     ft --help
     ldd "$(which ft)"
