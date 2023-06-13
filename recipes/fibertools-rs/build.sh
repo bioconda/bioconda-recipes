@@ -10,10 +10,6 @@ export LIBTORCH=${OUTDIR}
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${LIBTORCH}/lib
 export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
 
-echo "installed libs"
-ls -l ${OUTDIR}/lib/*
-echo ""
-
 # download pytorch libraries
 export TORCH_VERSION="2.0.1"
 export INSTALL_TYPE="cpu" # "cu117" or "cu118" or "cpu"
@@ -56,8 +52,6 @@ if [[ ${target_platform} =~ linux.* ]]; then
     ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${PREFIX}/lib/libgomp.so.1.0.0
 fi
 
-ls -l ${OUTDIR}/lib/*gomp*.so*
-
 # TODO: Remove the following export when pinning is updated and we use
 #       {{ compiler('rust') }} in the recipe.
 export \
@@ -80,16 +74,14 @@ rm -rf ${OUTDIR}/include/*
 ft --help
 ldd "$(which ft)"
 
-ls -l ${OUTDIR}/lib/*gomp*.so*
-
 # try patchelf
 if [[ ${target_platform} =~ linux.* ]]; then
     patchelf --print-needed $(which ft)
 
     for OLD in ${PREFIX}/lib/libgomp.so*; do
         NEW=${OUTDIR}/lib/libgomp-a34b3233.so.1
-        patchelf --replace-needed $OLD $NEW ${PREFIX}/bin/ft
-        patchelf --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
+        patchelf --debug --replace-needed $OLD $NEW ${PREFIX}/bin/ft
+        patchelf --debug --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
     done
 
     echo "after patchelf"
