@@ -1,0 +1,85 @@
+#{% set data = load_setup_py_data(setup_file='../setup.py', from_recipe_dir=True) %}
+  {% set name = "SACCHARIS" %}
+
+package:
+  name: "{{ name|lower }}"
+#  version: {{ data.get('version') }}
+  version: "2.0.0.dev18"
+
+source:
+#  path: ./..
+  # git_url: https://github.com/AlexSCFraser/saccharis2.git
+  git_url: https://github.com/saccharis/SACCHARIS_2.git
+  git_depth: 1 # only grab most recent commit on branch
+
+build:
+  noarch: python
+#  number: {{ data.get('build') }}
+  number: 1
+  script: {{ PYTHON }} setup.py install
+  preserve_egg_dir: True # added because the entry points below seem to be causing a build error
+  entry_points:
+    - saccharis = saccharis.CLI:cli_main
+    - saccharis.make_family_files = saccharis.utils.FamilyCategories:cli_main
+    - saccharis.add_family_category = saccharis.utils.FamilyCategories:cli_append_user_family
+    - saccharis.rename_user_file = saccharis.utils.UserFastaRename:cli_main
+    - saccharis.prune_seqs = saccharis.ExtractAndPruneCAZymes:cli_prune_seqs
+    - saccharis.screen_cazome = saccharis.ScreenUserFile:cli_cazome
+    - saccharis.show_family_categories = saccharis.utils.FamilyCategories:show_categories
+    - saccharis-gui = saccharis.gui.PipelineGUI:main
+
+requirements:
+  build:
+    - python
+    - setuptools
+  host:
+    - python
+  run:
+    - beautifulsoup4 >=4.11.1
+    - biopython >=1.79
+    - dbcan >=3.0.6, < 4 # [not win]
+    - diamond >=2.0.15 # [not win]
+    - fasttree >=2.1.11 # [not win]
+    - hmmer >=3.3 # [not win]
+    - lxml >=4.9.0
+    - modeltest-ng >=0.1.7  # [not win]
+    - muscle >=3.8  # [not win]
+    - psutil
+    - python >=3.8
+    - python-dotenv >=0.20.0
+    - python-wget >=3.2
+    - raxml >=8.2.12 # [not win]
+    - requests >=2.28.0
+    - pyqt >=5,<6
+    - pyqt5-sip >=12.11
+#    - pip:
+#        - lxml >=4.9.0
+#        - pyqt >=5,<6
+#        - pyqt5-sip >=12.11
+
+app:
+  entry: saccharis-gui
+  icon: icon.png
+  summary: "SACCHARIS Bioinformatics Pipeline"
+
+  # output section does not work
+#outputs:
+#  - name: saccharis2
+#    files:
+#      - ../src/utils/*.py
+#      - ../src/*.py
+#      - ../src/config/*.json
+
+test:
+  commands:
+    - saccharis -v
+    - saccharis.make_family_files
+    - saccharis.show_family_categories
+
+about:
+  home: https://github.com/saccharis/SACCHARIS_2
+  dev_url: https://github.com/saccharis/SACCHARIS_2
+  description: Bioinformatics pipeline to automate phylogenetic analysis of CAZyme families in FASTA sequences
+  license: GPL v3
+  license_file: LICENSE
+  summary: A CAZyme discovery tool.
