@@ -62,10 +62,11 @@ ldd "$(which ft)"
 
 # try patchelf
 if [[ ${target_platform} =~ linux.* ]]; then
-    NEW_NAME="libmine.so.1"
-    mv ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${OUTDIR}/lib/${NEW_NAME}
-    patchelf --set-soname ${NEW_NAME} ${OUTDIR}/lib/${NEW_NAME}
-    patchelf --replace-needed libgomp.so.1 ${NEW_NAME} ${PREFIX}/bin/ft
+    patchelf --print-needed $(which ft)
+    OLD=${OUTDIR}/lib/libgomp-a34b3233.so.1
+    NEW=${OUTDIR}/lib/libmine.so.1
+    mv $OLD $NEW
+    patchelf --replace-needed $OLD $NEW ${PREFIX}/bin/ft
 
     ft --help
     ldd "$(which ft)"
