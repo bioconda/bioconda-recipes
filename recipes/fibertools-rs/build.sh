@@ -20,8 +20,14 @@ mkdir -p ${OUTDIR} ${OUTDIR}/bin ${PREFIX}/bin
 pushd ${PREFIX}
 unzip -q libtorch.zip
 rm libtorch.zip
-mv ${PREFIX}/libtorch/* ${OUTDIR}/.
 popd
+if [ ${PREFIX} != ${OUTDIR} ]; then
+    mv ${PREFIX}/libtorch/* ${OUTDIR}/.
+else
+    mv ${PREFIX}/libtorch/lib/* ${OUTDIR}/lib/.
+    mv ${PREFIX}/libtorch/include/* ${OUTDIR}/include/.
+    mv ${PREFIX}/libtorch/share/* ${OUTDIR}/share/.
+fi
 
 # set up environment variables
 export LIBTORCH=${OUTDIR}
@@ -51,7 +57,9 @@ cargo install --all-features --no-track --verbose --root "${OUTDIR}" --path ${HO
 popd
 
 # link binary
-ln -s ${OUTDIR}/bin/ft ${PREFIX}/bin/ft
+if [ ${PREFIX} != ${OUTDIR} ]; then
+    ln -s ${OUTDIR}/bin/ft ${PREFIX}/bin/ft
+fi
 chmod +x ${PREFIX}/bin/ft
 
 # test install
