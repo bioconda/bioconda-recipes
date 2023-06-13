@@ -42,16 +42,16 @@ else
     mv ${PREFIX}/libtorch/share/* ${OUTDIR}/share/.
 
     # try to fix the patchelf conflict...
-    patchelf --set-soname libgomp-a34b3233.so.1 \
-        ${OUTDIR}/lib/libgomp-a34b3233.so.1
+    #patchelf --set-soname libgomp-a34b3233.so.1 \
+    #    ${OUTDIR}/lib/libgomp-a34b3233.so.1
 
     # this file might be casuing weird conflicts with ELF so
-    #rm -f ${PREFIX}/lib/libgomp.so
-    #rm -f ${PREFIX}/lib/libgomp.so.1
-    #rm -f ${PREFIX}/lib/libgomp.so.1.0.0
-    #ln -s ${PREFIX}/lib/libgomp-a34b3233.so.1 ${PREFIX}/lib/libgomp.so
-    #ln -s ${PREFIX}/lib/libgomp-a34b3233.so.1 ${PREFIX}/lib/libgomp.so.1
-    #ln -s ${PREFIX}/lib/libgomp-a34b3233.so.1 ${PREFIX}/lib/libgomp.so.1.0.0
+    rm -f ${PREFIX}/lib/libgomp.so
+    rm -f ${PREFIX}/lib/libgomp.so.1
+    rm -f ${PREFIX}/lib/libgomp.so.1.0.0
+    ln -s ${PREFIX}/lib/libgomp-a34b3233.so.1 ${PREFIX}/lib/libgomp.so
+    ln -s ${PREFIX}/lib/libgomp-a34b3233.so.1 ${PREFIX}/lib/libgomp.so.1
+    ln -s ${PREFIX}/lib/libgomp-a34b3233.so.1 ${PREFIX}/lib/libgomp.so.1.0.0
 
 fi
 
