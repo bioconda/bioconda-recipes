@@ -64,7 +64,8 @@ if [ ${PREFIX} != ${OUTDIR} ]; then
 fi
 chmod +x ${PREFIX}/bin/ft
 
-# clean up the include files since they shouldnt be needed?
+# clean up the include files since they shouldnt be
+#   needed(?) and there is a lot of them ~8,000
 rm -rf ${OUTDIR}/include/*
 
 # test install
