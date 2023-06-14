@@ -12,7 +12,7 @@ export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
 
 # download pytorch libraries
 export TORCH_VERSION="2.0.1"
-export INSTALL_TYPE="cpu" # "cu117" or "cu118" or "cpu"
+export INSTALL_TYPE="cu118" # "cu117" or "cu118" or "cpu"
 if [[ ${target_platform} =~ linux.* ]]; then
     export file=https://download.pytorch.org/libtorch/${INSTALL_TYPE}/libtorch-shared-with-deps-${TORCH_VERSION}%2B${INSTALL_TYPE}.zip
     export LIBTORCH_CXX11_ABI=0
@@ -77,10 +77,11 @@ rm -rf ${OUTDIR}/include/*
 
 # test install
 ft --help
-ldd "$(which ft)"
 
 # try patchelf
 if [[ ${target_platform} =~ linux.* ]]; then
+    ldd "$(which ft)"
+
     patchelf --print-needed $(which ft)
     #for OLD in ${PREFIX}/lib/libgomp.so*; do
     #    NEW=${OUTDIR}/lib/libgomp-a34b3233.so.1
