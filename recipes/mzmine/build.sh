@@ -9,10 +9,7 @@ mv tmp build.gradle
 ./gradlew -q javaToolchains
 
 
-# TODO with "runtime" the software is only built
-# if removed also tests are executed, some of them
-# fail unfortunately
-./gradlew runtime
+./gradlew
 
 
 mkdir -p "$PREFIX"
