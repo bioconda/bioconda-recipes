@@ -1,16 +1,22 @@
 #!/bin/bash -e
 
+#
 # Set the desitnation for the libtorch files
+#
 OUTDIR=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 mkdir -p ${OUTDIR} ${OUTDIR}/bin ${PREFIX}/bin
 OUTDIR=${PREFIX}
 
+#
 # set up environment variables
+#
 export LIBTORCH=${OUTDIR}
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${LIBTORCH}/lib
 export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
 
+#
 # download pytorch libraries
+#
 export TORCH_VERSION="2.0.1"
 export INSTALL_TYPE="cu118" # "cu117" or "cu118" or "cpu"
 export INSTALL_TYPE="cpu"
@@ -25,19 +31,19 @@ elif [[ ${target_platform} =~ osx.* ]]; then
     curl $file --output ${PREFIX}/libtorch.zip
 fi
 
+#
 # unpack the libtorch libs
+#
 pushd ${PREFIX}
 unzip -q libtorch.zip
 rm libtorch.zip
 # give the libtorch things a different SONAME
-for F in libtorch/*.so*; do
-    SONAME="$(basename $F)"
-    patchelf --set-soname $SONAME $F
-done
+# patchelf --set-soname $SONAME $F
 popd
 
-
+#
 # move libtorch to OUTDIR
+#
 if [ ${PREFIX} != ${OUTDIR} ]; then
     mv ${PREFIX}/libtorch/* ${OUTDIR}/.
 else
@@ -47,26 +53,17 @@ else
     mv ${PREFIX}/libtorch/share/* ${OUTDIR}/share/.
 fi
 
+#
 # fix conflict with libgomp
+#
 if [[ ${target_platform} =~ linux.* ]]; then
-    # try to fix the patchelf conflict...
-    # patchelf --set-soname 'libgomp-a34b3233.so.1' \
-    #    ${OUTDIR}/lib/libgomp-a34b3233.so.1
-    # this file might be casuing weird conflicts with ELF so
-    rm -f ${PREFIX}/lib/libgomp.so
-    rm -f ${PREFIX}/lib/libgomp.so.1
-    rm -f ${PREFIX}/lib/libgomp.so.1.0.0
-    ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp.so
-    ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp.so.1
-    ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp.so.1.0.0
-    # try removing pytoch version
-
     # this finally worked!!! getting rid of the pytorch version
-    #rm -f ${OUTDIR}/lib/libgomp-a34b3233.so.1
-    #ln -s ${PREFIX}/lib/libgomp.so.1.0.0 ${OUTDIR}/lib/libgomp-a34b3233.so.1
-    echo "patched"
+    rm -f ${OUTDIR}/lib/libgomp-a34b3233.so.1
+    ln -s ${PREFIX}/lib/libgomp.so.1.0.0 ${OUTDIR}/lib/libgomp-a34b3233.so.1
+    echo "Using the included libgomp"
 fi
 
+#
 # TODO: Remove the following export when pinning is updated and we use
 #       {{ compiler('rust') }} in the recipe.
 export \
@@ -74,24 +71,30 @@ export \
     CARGO_HOME="${BUILD_PREFIX}/.cargo"
 export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
+#
 # install package
+#
 HOME=$(pwd)
 pushd ${PREFIX}
 cargo install --all-features --no-track --verbose \
     --root "${PREFIX}" --path "${HOME}"
 popd
 
-# clean up the include files since they are not needed
-# and there is a lot of them ~8,000
+#
+# clean up the include files since they are not needed and there is a lot of them ~8,000
+#
 rm -rf ${OUTDIR}/include/*
 
+#
 # test install
+#
 ft --help
 
+#
 # try patchelf
+#
 if [[ ${target_platform} =~ linux.* ]]; then
     ldd "$(which ft)"
-
     patchelf --print-needed $(which ft)
     #for OLD in ${PREFIX}/lib/libgomp.so*; do
     #    NEW=${OUTDIR}/lib/libgomp-a34b3233.so.1
@@ -105,15 +108,15 @@ if [[ ${target_platform} =~ linux.* ]]; then
     #mv $OLD $NEW
     #patchelf --replace-needed $OLD $NEW ${PREFIX}/bin/ft
     #patchelf --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
-    patchelf \
-        --set-rpath \$ORIGIN/../lib \
-        ${PREFIX}/bin/ft
-
-    ft --help
-    ldd "$(which ft)"
-    patchelf --print-needed $(which ft)
+    #patchelf --set-rpath \$ORIGIN/../lib ${PREFIX}/bin/ft
+    #ft --help
+    #ldd "$(which ft)"
+    #patchelf --print-needed $(which ft)
 fi
 
+#
+# test install on data
+#
 pushd ${HOME}
 ft m6a -v .test/all.bam /dev/null
 popd
