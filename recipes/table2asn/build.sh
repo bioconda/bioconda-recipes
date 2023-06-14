@@ -14,4 +14,8 @@ chmod 0755 "${PREFIX}/bin/table2asn"
 
 # patchelf to modify the RPATH of table2asn's libbz libraries; refer to:
 # https://github.com/bioconda/bioconda-recipes/pull/38770#issuecomment-1473627378
-patchelf --replace-needed libbz2.so.1 libbz2.so.1.0 "${PREFIX}/bin/table2asn"
+if [ `uname` == Darwin ]; then
+	install_name_tool -change libbz2.so.1 libbz2.so.1.0 "${PREFIX}/bin/table2asn"
+else
+	patchelf --replace-needed libbz2.so.1 libbz2.so.1.0 "${PREFIX}/bin/table2asn"
+fi
