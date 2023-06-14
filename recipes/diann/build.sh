@@ -7,6 +7,6 @@ tar xvf data.tar.gz
 DIANN_PATH=$(find . -type f -executable -print | grep diann)
 DIANN_DIR=$(dirname $DIANN_PATH)
 
-cp -r $DIANN_DIR/* $PREFIX/bin/
+find $DIANN_DIR -type f -exec cp {} $PREFIX/bin/ \;
 
 chmod +x $PREFIX/bin/*
