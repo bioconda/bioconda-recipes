@@ -8,14 +8,10 @@ fi
 
 mkdir -p ${PREFIX}/bin
 
-(
 make \
 	LIBPATH="-L${PREFIX}/lib" \
 	INCLUDES="-I${PREFIX}/include" \
 	-v install
-)
-
-
 
 #if [ "$(uname)" == "Darwin" ]; then
 #	cp libtabixpp.*.dylib ${PREFIX}/lib/
