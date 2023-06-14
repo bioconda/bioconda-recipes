@@ -25,11 +25,19 @@ elif [[ ${target_platform} =~ osx.* ]]; then
     curl $file --output ${PREFIX}/libtorch.zip
 fi
 
-# move libtorch to OUTDIR
+# unpack the libtorch libs
 pushd ${PREFIX}
 unzip -q libtorch.zip
 rm libtorch.zip
+# give the libtorch things a different SONAME
+for F in libtorch/*.so*; do
+    SONAME="$(basename $F)"
+    patchelf --set-soname $SONAME $F
+done
 popd
+
+
+# move libtorch to OUTDIR
 if [ ${PREFIX} != ${OUTDIR} ]; then
     mv ${PREFIX}/libtorch/* ${OUTDIR}/.
 else
@@ -45,9 +53,9 @@ if [[ ${target_platform} =~ linux.* ]]; then
     # patchelf --set-soname 'libgomp-a34b3233.so.1' \
     #    ${OUTDIR}/lib/libgomp-a34b3233.so.1
     # this file might be casuing weird conflicts with ELF so
-    rm -f ${BUILD_PREFIX}/lib/libgomp.so
-    rm -f ${BUILD_PREFIX}/lib/libgomp.so.1
-    rm -f ${BUILD_PREFIX}/lib/libgomp.so.1.0.0
+    rm -f ${PREFIX}/lib/libgomp.so
+    rm -f ${PREFIX}/lib/libgomp.so.1
+    rm -f ${PREFIX}/lib/libgomp.so.1.0.0
     ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp.so
     ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp.so.1
     ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp.so.1.0.0
@@ -98,7 +106,7 @@ if [[ ${target_platform} =~ linux.* ]]; then
     #patchelf --replace-needed $OLD $NEW ${PREFIX}/bin/ft
     #patchelf --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
     patchelf \
-        --set-rpath \$ORIGIN/../share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/lib \
+        --set-rpath \$ORIGIN/../lib \
         ${PREFIX}/bin/ft
 
     ft --help
