@@ -13,6 +13,7 @@ export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
 # download pytorch libraries
 export TORCH_VERSION="2.0.1"
 export INSTALL_TYPE="cu118" # "cu117" or "cu118" or "cpu"
+export INSTALL_TYPE="cpu"
 if [[ ${target_platform} =~ linux.* ]]; then
     export file=https://download.pytorch.org/libtorch/${INSTALL_TYPE}/libtorch-shared-with-deps-${TORCH_VERSION}%2B${INSTALL_TYPE}.zip
     export LIBTORCH_CXX11_ABI=0
@@ -44,17 +45,18 @@ if [[ ${target_platform} =~ linux.* ]]; then
     # patchelf --set-soname 'libgomp-a34b3233.so.1' \
     #    ${OUTDIR}/lib/libgomp-a34b3233.so.1
     # this file might be casuing weird conflicts with ELF so
-    #rm -f ${PREFIX}/lib/libgomp.so
-    #rm -f ${PREFIX}/lib/libgomp.so.1
-    #rm -f ${PREFIX}/lib/libgomp.so.1.0.0
-    #ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp.so
-    #ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp.so.1
-    #ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp.so.1.0.0
+    rm -f ${BUILD_PREFIX}/lib/libgomp.so
+    rm -f ${BUILD_PREFIX}/lib/libgomp.so.1
+    rm -f ${BUILD_PREFIX}/lib/libgomp.so.1.0.0
+    ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp.so
+    ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp.so.1
+    ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp.so.1.0.0
     # try removing pytoch version
 
     # this finally worked!!! getting rid of the pytorch version
-    rm -f ${OUTDIR}/lib/libgomp-a34b3233.so.1
-    ln -s ${PREFIX}/lib/libgomp.so.1.0.0 ${OUTDIR}/lib/libgomp-a34b3233.so.1
+    #rm -f ${OUTDIR}/lib/libgomp-a34b3233.so.1
+    #ln -s ${PREFIX}/lib/libgomp.so.1.0.0 ${OUTDIR}/lib/libgomp-a34b3233.so.1
+    echo "patched"
 fi
 
 # TODO: Remove the following export when pinning is updated and we use
@@ -95,9 +97,13 @@ if [[ ${target_platform} =~ linux.* ]]; then
     #mv $OLD $NEW
     #patchelf --replace-needed $OLD $NEW ${PREFIX}/bin/ft
     #patchelf --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
+    patchelf \
+        --set-rpath \$ORIGIN/../share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/lib \
+        ${PREFIX}/bin/ft
 
     ft --help
     ldd "$(which ft)"
+    patchelf --print-needed $(which ft)
 fi
 
 pushd ${HOME}
