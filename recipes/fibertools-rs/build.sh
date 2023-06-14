@@ -60,6 +60,8 @@ if [[ ${target_platform} =~ linux.* ]]; then
     # this finally worked!!! getting rid of the pytorch version
     rm -f ${OUTDIR}/lib/libgomp-a34b3233.so.1
     ln -s ${PREFIX}/lib/libgomp.so.1.0.0 ${OUTDIR}/lib/libgomp-a34b3233.so.1
+    rm -f ${OUTDIR}/lib/libcudart-d0da41ae.so.11.0
+    ln -s ${PREFIX}/lib/libcudart.so.11.0 ${OUTDIR}/lib/libcudart-d0da41ae.so.11.0
     echo "Using the included libgomp"
 fi
 
