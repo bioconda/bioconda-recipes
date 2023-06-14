@@ -99,7 +99,7 @@ if [[ ${target_platform} =~ linux.* ]]; then
     ldd "$(which ft)"
 fi
 
-pushd ${PREFIX}
+pushd ${HOME}
 ft m6a -v .test/all.bam /dev/null
 popd
 
