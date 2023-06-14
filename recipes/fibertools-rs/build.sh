@@ -1,9 +1,9 @@
 #!/bin/bash -e
 
 # Set the desitnation for the libtorch files
-#OUTDIR=${PREFIX}
 OUTDIR=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 mkdir -p ${OUTDIR} ${OUTDIR}/bin ${PREFIX}/bin
+OUTDIR=${PREFIX}
 
 # set up environment variables
 export LIBTORCH=${OUTDIR}
