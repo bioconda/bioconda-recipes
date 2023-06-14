@@ -7,8 +7,4 @@ tar xvf data.tar.gz
 DIANN_PATH=$(find . -type f -executable -print | grep diann)
 DIANN_DIR=$(dirname $DIANN_PATH)
 
-find $DIANN_DIR -type f -exec cp {} $PREFIX/bin/ \;
-
-find $DIANN_DIR -type f -exec chmod +x $PREFIX/bin/$(basename {}) \;
-
-mv $PREFIX/lib/libgomp*.so.1 $PREFIX/lib/libgomp.so.1
+find $DIANN_DIR -type f -exec install -m 0755 {} $PREFIX/bin/ \;
