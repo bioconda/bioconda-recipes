@@ -5,10 +5,13 @@ gunzip *table2asn.gz
 mkdir -p ${PREFIX}/bin
 
 if [ `uname` == Darwin ]; then
-	cp table2asn.mac ${PREFIX}/bin/table2asn
+	cp mac.table2asn ${PREFIX}/bin/table2asn
 else
 	cp *.table2asn ${PREFIX}/bin/table2asn
 fi
 
 chmod 0755 "${PREFIX}/bin/table2asn"
-patchelf --replace-needed libbz2.so.1 libbz2.so.1.0 ${PREFIX}/bin/table2asn
+
+# patchelf to modify the RPATH of table2asn's libbz libraries; refer to:
+# https://github.com/bioconda/bioconda-recipes/pull/38770#issuecomment-1473627378
+patchelf --replace-needed libbz2.so.1 libbz2.so.1.0 "${PREFIX}/bin/table2asn"
