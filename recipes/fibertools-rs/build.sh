@@ -51,6 +51,8 @@ if [[ ${target_platform} =~ linux.* ]]; then
     #ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp.so.1
     #ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp.so.1.0.0
     # try removing pytoch version
+
+    # this finally worked!!! getting rid of the pytorch version
     rm -f ${OUTDIR}/lib/libgomp-a34b3233.so.1
     ln -s ${PREFIX}/lib/libgomp.so.1.0.0 ${OUTDIR}/lib/libgomp-a34b3233.so.1
 fi
@@ -80,15 +82,13 @@ ldd "$(which ft)"
 # try patchelf
 if [[ ${target_platform} =~ linux.* ]]; then
     patchelf --print-needed $(which ft)
-
     #for OLD in ${PREFIX}/lib/libgomp.so*; do
     #    NEW=${OUTDIR}/lib/libgomp-a34b3233.so.1
     #    patchelf --debug --replace-needed $OLD $NEW ${PREFIX}/bin/ft
     #    patchelf --debug --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
     #done
-
-    echo "after patchelf"
-    patchelf --print-needed $(which ft)
+    #echo "after patchelf"
+    #patchelf --print-needed $(which ft)
     #OLD=${OUTDIR}/lib/libtorch_cpu.so
     #NEW=${OUTDIR}/lib/libmine.so.1
     #mv $OLD $NEW
@@ -98,4 +98,9 @@ if [[ ${target_platform} =~ linux.* ]]; then
     ft --help
     ldd "$(which ft)"
 fi
+
+pushd ${PREFIX}
+ft m6a -v .test/all.bam /dev/null
+popd
+
 exit 0
