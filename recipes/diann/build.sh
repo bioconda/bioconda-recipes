@@ -9,4 +9,4 @@ DIANN_DIR=$(dirname $DIANN_PATH)
 
 find $DIANN_DIR -type f -exec cp {} $PREFIX/bin/ \;
 
-chmod +x $PREFIX/bin/*
+find $DIANN_DIR -type f -exec chmod +x $PREFIX/bin/$(basename {}) \;
