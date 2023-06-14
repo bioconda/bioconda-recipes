@@ -52,6 +52,7 @@ if [[ ${target_platform} =~ linux.* ]]; then
     #ln -s ${OUTDIR}/lib/libgomp-a34b3233.so.1 ${OUTDIR}/lib/libgomp.so.1.0.0
     # try removing pytoch version
     rm -f ${OUTDIR}/lib/libgomp-a34b3233.so.1
+    ln -s ${PREFIX}/lib/libgomp.so.1.0.0 ${OUTDIR}/lib/libgomp-a34b3233.so.1
 fi
 
 # TODO: Remove the following export when pinning is updated and we use
