@@ -10,5 +10,3 @@ DIANN_DIR=$(dirname $DIANN_PATH)
 find $DIANN_DIR -type f -exec cp {} $PREFIX/bin/ \;
 
 find $DIANN_DIR -type f -exec chmod +x $PREFIX/bin/$(basename {}) \;
-
-ln -s $PREFIX/bin/libgomp-*.so.1 $PREFIX/bin/libgomp.so.1
