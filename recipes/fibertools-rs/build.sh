@@ -18,8 +18,8 @@ export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
 # download pytorch libraries
 #
 export TORCH_VERSION="2.0.1"
-export INSTALL_TYPE="cu118" # "cu117" or "cu118" or "cpu"
 export INSTALL_TYPE="cpu"
+export INSTALL_TYPE="cu118" # "cu117" or "cu118" or "cpu"
 if [[ ${target_platform} =~ linux.* ]]; then
     export file=https://download.pytorch.org/libtorch/${INSTALL_TYPE}/libtorch-shared-with-deps-${TORCH_VERSION}%2B${INSTALL_TYPE}.zip
     export LIBTORCH_CXX11_ABI=0
@@ -61,7 +61,7 @@ if [[ ${target_platform} =~ linux.* ]]; then
     rm -f ${OUTDIR}/lib/libgomp-a34b3233.so.1
     ln -s ${PREFIX}/lib/libgomp.so.1.0.0 ${OUTDIR}/lib/libgomp-a34b3233.so.1
     rm -f ${OUTDIR}/lib/libcudart-d0da41ae.so.11.0
-    ln -s ${PREFIX}/lib/libcudart.so.11.0 ${OUTDIR}/lib/libcudart-d0da41ae.so.11.0
+    ln -s ${PREFIX}/lib/libcudart.so.11.* ${OUTDIR}/lib/libcudart-d0da41ae.so.11.0
     echo "Using the included libgomp"
 fi
 
