@@ -1,7 +1,5 @@
 #!/bin/bash
-set -e
-
-export LD_LIBRARY_PATH="${PREFIX}/lib"
+set -eu
 
 gunzip *table2asn.gz
 mkdir -p ${PREFIX}/bin
@@ -12,4 +10,5 @@ else
 	cp *.table2asn ${PREFIX}/bin/table2asn
 fi
 
-chmod +rx ${PREFIX}/bin/table2asn
+chmod 0755 "${PREFIX}/bin/table2asn"
+patchelf --replace-needed libbz2.so.1 libbz2.so.1.0 ${PREFIX}/bin/table2asn
