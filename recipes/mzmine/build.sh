@@ -19,3 +19,6 @@ cp -rv build/install/MZmine/* "$PREFIX"
 
 # for those the don't like capital letters in commands
 ln -fs "$PREFIX"/bin/MZmine "$PREFIX"/bin/mzmine
+
+sed -i -e 's/exec "$JAVACMD" "$@"/exec "$JAVACMD" --enable-preview "$@"/' "$PREFIX"/bin/MZmine
+
