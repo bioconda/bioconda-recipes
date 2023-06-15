@@ -2,14 +2,12 @@
 
 set -ex
 
-# grep -v "vendor = JvmVendorSpec.ADOPTIUM" build.gradle > tmp
-# mv tmp build.gradle
+# TODO use patch
 sed -i -e 's@// installerType = "deb"@installerType = "rpm"@; s@vendor = JvmVendorSpec.ADOPTIUM@// vendor = JvmVendorSpec.ADOPTIUM@' build.gradle
 
 
 # debug: show available tool chains
 ./gradlew -q javaToolchains
-
 
 ./gradlew --debug --stacktrace --exclude-task test
 
