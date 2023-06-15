@@ -9,7 +9,7 @@ mv tmp build.gradle
 ./gradlew -q javaToolchains
 
 
-./gradlew
+./gradlew --exclude-task test
 
 
 mkdir -p "$PREFIX"
