@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export LDFLAGS="-L${PREFIX}/bin"
+
 mkdir -p $PREFIX/bin
 
 tar xvf data.tar.gz
