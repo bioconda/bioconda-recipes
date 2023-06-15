@@ -1,0 +1,25 @@
+# - apparently conda-forge JDK20 does not set the vendor properly
+# - without installerType set jpackage tries to create rpm and deb
+#   we don't need any of them, but I did not find a way to disable
+#   both. so we leave rpm which is available in conda (spkg isn't)
+diff -ruN mzmine3-jdk20-org/build.gradle mzmine3-jdk20/build.gradle
+--- mzmine3-jdk20-org/build.gradle	2023-05-31 21:48:18.000000000 +0200
++++ mzmine3-jdk20/build.gradle	2023-06-15 15:32:36.695022897 +0200
+@@ -59,7 +59,7 @@
+ java {
+     toolchain {
+         languageVersion = JavaLanguageVersion.of(20)
+-        vendor = JvmVendorSpec.ADOPTIUM  // force use ADOPTIUM TEMURIN JDK
++//        vendor = JvmVendorSpec.ADOPTIUM  // force use ADOPTIUM TEMURIN JDK
+     }
+     // not needed with toolchain command
+ //    sourceCompatibility = "20"
+@@ -392,7 +392,7 @@
+         if (OperatingSystem.current().isLinux()) {
+             // leave installer type empty to generate all that match
+             // for rpm, rpmbuild and rpm tools need to be installed, installerType needs to be set to "rpm"
+-            // installerType = "deb"
++            installerType = "rpm"
+             // additional options for jpackage
+             imageOptions = ["--icon", "src/main/resources/MZmineIcon.png"]
+             installerOptions = ["--linux-shortcut",
