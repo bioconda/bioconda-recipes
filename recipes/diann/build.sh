@@ -11,6 +11,4 @@ DIANN_DIR=$(dirname $DIANN_PATH)
 
 cp -R $DIANN_DIR/* $PREFIX/bin/
 
-mv $PREFIX/bin/libgomp-52f2fd74.so.1 $PREFIX/bin/libgomp.so.1
-
 chmod +x $PREFIX/bin/diann-1.8.1
