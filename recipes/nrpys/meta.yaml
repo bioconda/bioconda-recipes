@@ -7,28 +7,29 @@ package:
   version: {{ version }}
 
 build:
-  skip: True  # [py < 38]
-  number: 0
+  number: 1
+  skip: True  # [py < 37]
+  noarch: python
 
 source:
   url: https://github.com/kblin/nrpys/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patch:
+    - patch
 
 requirements:
-  build:
-    - rust
-    - {{ compiler('c') }}
   host:
-    - zlib
     - python
     - pip
+    - rust
     - maturin
+    - zlib
   run:
     - python
 
 test:
-  commands:
-    - "ls ${PREFIX}/lib/libnrpys.so"
+  import:
+    - nrpys
 
 about:
   home: https://github.com/kblin/nrpys
