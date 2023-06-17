@@ -1,5 +1,5 @@
 #! /bin/bash
-# mkdir -p $PREFIX/bin
+mkdir -p $PREFIX/bin
 cd EMVC-2
 
 sed -i.bak 's/CXX *=/CXX ?=/; s/CXXFLAGS *=/CXXFLAGS +=/' Makefile
@@ -15,4 +15,5 @@ export CFLAGS="$CFLAGS -I$PREFIX/include"
 export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
 export LDFLAGS="-I$PREFIX/include -L$PREFIX/lib"
 make 
-# cp renano $PREFIX/bin
+
+cp emvc-2 $PREFIX/bin
