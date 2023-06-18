@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export LDFLAGS="-L${PREFIX}/lib"
-export LD_LIBRARY_PATH=$PREFIX/bin:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$PREFIX/lib:$LD_LIBRARY_PATH
 
 mkdir -p $PREFIX/bin
 
