@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export LD_LIBRARY_PATH=$PREFIX/bin:$LD_LIBRARY_PATH
+
 mkdir -p $PREFIX/bin
 
 tar xvf data.tar.gz
