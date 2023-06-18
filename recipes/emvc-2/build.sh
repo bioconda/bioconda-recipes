@@ -13,7 +13,7 @@ fi
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
 export LDFLAGS="-I$PREFIX/include -L$PREFIX/lib"
-make 
 
+make 
 cp candidate_variants_finder $PREFIX/bin
 cp emvc-2 $PREFIX/bin
