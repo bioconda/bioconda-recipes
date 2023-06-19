@@ -1,6 +1,6 @@
 
-{% set version = "0.1.7" %}
-{% set md5 = "654d2b36599205e0efa3632806b772a9" %}
+{% set version = "0.7.0" %}
+{% set sha256 = "92599d100755a5a20dc15ebfb86fdf0818ccc87c6e0a2cc0a7c3061661ed3d25" %}
 
 package:
   name: gw
@@ -9,48 +9,41 @@ package:
 
 source:
   url: https://github.com/kcleal/gw/archive/refs/tags/v{{ version }}.tar.gz
-  md5: {{ md5 }}
+  sha256: {{ sha256 }}
 
 
 build:
-  skip: True [win] 
-  number: 0
-  script:
-    - "set -x -e"
-    - "make prep"
-    - "CXXFLAGS+=-D_LIBCPP_DISABLE_AVAILABILITY make"
-    - "mkdir -p $PREFIX/bin"
-    - "cp gw $PREFIX/bin/gw"
-    - "chmod u+x $PREFIX/bin/gw"
+  number: 2
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-    - {{ cdt('xorg-x11-proto-devel') }}           # [linux]
+    - {{ cdt('xorg-x11-proto-devel') }}          # [linux]
     - {{ cdt('mesa-libgl-devel') }}  # [linux]
     - {{ cdt('mesa-dri-drivers') }}  # [linux]
     - {{ cdt('libselinux') }}        # [linux]
     - {{ cdt('libxdamage') }}        # [linux]
     - {{ cdt('libxxf86vm') }}        # [linux]
     - {{ cdt('libxfixes') }}         # [linux]
-  host:
+    - {{ cdt('libxext') }}           # [linux]
+    - wget
     - unzip
+  host:
     - fontconfig
     - libcurl
-    - wget
-    - git
     - libdeflate
     - htslib
-    - pthread-stubs
     - glfw
+    - freetype
+    - xorg-libxfixes  # [linux]
   run:
     - glfw
     - htslib
 
 test:
   commands:
-    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" gw --version'
+    - gw --version
 
 about:
   home: https://github.com/kcleal/gw
