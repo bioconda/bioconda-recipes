@@ -2,6 +2,9 @@
 
 set -ex
 
+# we have to slightly reorganize the AA src files to make everything work
+mv ampliconarchitectlib/src/*.py ampliconarchitectlib/
+
 # add init for ampliconarchitect and ampliconclassifier tools, so they can be imported by AmpliconSuite-pipeline
 touch ampliconarchitectlib/__init__.py
 touch ampliconclassifierlib/__init__.py
