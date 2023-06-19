@@ -1,28 +1,32 @@
 #!/bin/bash
 set -euxo pipefail
 
-patch -p1 < $RECIPE_DIR/isb-2.13.0+-rmblast.patch
+patch -p1 < ${RECIPE_DIR}/isb-2.14.0+-rmblast.patch
 
-cd $SRC_DIR/c++/
+cd ${SRC_DIR}/c++/
 
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-export CFLAGS="$CFLAGS -Ofast"
-export CXXFLAGS="$CXXFLAGS -Ofast -std=c++17"
-export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
-export CC_FOR_BUILD=$CC
+export CPLUS_INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="-L${PREFIX}/lib"
+
+export CFLAGS="${CFLAGS} -Ofast"
+export CXXFLAGS="${CXXFLAGS} -Ofast"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 if test x"`uname`" = x"Linux"; then
     # only add things needed; not supported by OSX ld
-    LDFLAGS="$LDFLAGS -Wl,-as-needed"
+    export LDFLAGS="${LDFLAGS} -Wl,-as-needed"
 fi
 
 if [ `uname` == Darwin ]; then
-    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2 -lomp"
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -lz -lbz2"
+    # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
+    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 else
-    export CPP_FOR_BUILD=$CPP
+    export CPP_FOR_BUILD=${CPP}
 fi
 
-LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
+export LIB_INSTALL_DIR=${PREFIX}/lib/ncbi-blast+
 
 # with/without options:
 #
@@ -51,60 +55,86 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 # Fixes building on Linux
 export AR="${AR} rcs"
 
-if [ `uname` == Linux ]; then
-  CONFIG_ARGS="--prefix=${PREFIX} CC=${CC} CXX=${CXX}"
-else
-  CONFIG_ARGS="--prefix=${PREFIX} CXX=${CXX}"
-fi
-
 # not building with boost as it's only used for unit tests
-./configure \
-    --with-64 \
-    --with-dll \
-    --with-mt \
-    --with-openmp \
-    --without-autodep \
-    --without-makefile-auto-update \
-    --with-flat-makefile \
-    --without-caution \
-    --without-dbapi \
-    --without-lzo \
-    --with-hard-runpath \
-    --with-runpath=$LIB_INSTALL_DIR \
-    --without-debug \
-    --with-strip \
-    --without-vdb \
-    --with-z=$PREFIX \
-    --with-bz2=$PREFIX \
-    --with-nettle=$PREFIX \
-    --without-krb5 \
-    --with-experimental=Int8GI \
-    --without-openssl \
-    --without-gnutls \
-    --without-sse42 \
-    --without-gcrypt $CONFIG_ARGS
+if [[ $(uname) = Linux ]]; then
+    ./configure \
+        CXX=${CXX} CXXFLAGS="${CXXFLAGS}" \
+        --prefix=${PREFIX} \
+        --without-boost \
+        --with-bin-release \
+        --with-mt \
+        --with-dll \
+        --with-openmp \
+        --without-autodep \
+        --without-makefile-auto-update \
+        --with-flat-makefile \
+        --without-caution \
+        --without-dbapi \
+        --without-lzo \
+        --with-hard-runpath \
+        --with-runpath=${LIB_INSTALL_DIR} \
+        --without-debug \
+        --with-experimental=Int8GI \
+        --without-openssl \
+        --with-strip \
+        --without-vdb \
+        --with-z=${PREFIX} \
+        --with-bz2=${PREFIX} \
+        --with-nettle=${PREFIX} \
+        --without-krb5 \
+        --without-gnutls \
+        --without-sse42 \
+        --without-gcrypt
+else
+    ./configure \
+        CXX=${CXX} CXXFLAGS="${CXXFLAGS}" \
+        --prefix=${PREFIX} \
+        --without-boost \
+        --with-bin-release \
+        --with-mt \
+        --without-openmp \
+        --without-autodep \
+        --without-makefile-auto-update \
+        --with-flat-makefile \
+        --without-caution \
+        --without-dbapi \
+        --without-lzo \
+        --with-runpath=${LIB_INSTALL_DIR} \
+        --without-debug \
+        --with-experimental=Int8GI \
+        --without-openssl \
+        --with-strip \
+        --without-vdb \
+        --with-z=${PREFIX} \
+        --with-bz2=${PREFIX} \
+        --with-nettle=${PREFIX} \
+        --without-krb5 \
+        --without-gnutls \
+        --without-sse42 \
+        --without-gcrypt
+fi
 
 projects="algo/blast/ app/ objmgr/ objtools/align_format/ objtools/blast/"
 cd ReleaseMT
 
 # The "datatool" binary needs the libs at build time, create
 # link from final install path to lib build dir:
-ln -s $SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
+ln -s ${SRC_DIR}/c++/ReleaseMT/lib ${LIB_INSTALL_DIR}
 
 cd build
-make CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j1 -f Makefile.flat all_projects="$projects"
+make -j1 -f Makefile.flat all_projects="${projects}"
 
 # remove temporary link
-rm $LIB_INSTALL_DIR
+rm ${LIB_INSTALL_DIR}
 
-mkdir -p $PREFIX/bin $LIB_INSTALL_DIR
-chmod +x $SRC_DIR/c++/ReleaseMT/bin/*
-cp $SRC_DIR/c++/ReleaseMT/bin/* $PREFIX/bin/
-cp $SRC_DIR/c++/ReleaseMT/lib/* $LIB_INSTALL_DIR
+mkdir -p ${PREFIX}/bin ${LIB_INSTALL_DIR}
+chmod +x ${SRC_DIR}/c++/ReleaseMT/bin/*
+cp ${SRC_DIR}/c++/ReleaseMT/bin/* ${PREFIX}/bin/
+cp ${SRC_DIR}/c++/ReleaseMT/lib/* ${LIB_INSTALL_DIR}
 
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/update_blastdb.pl
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/update_blastdb.pl
 # Patches to enable this script to work better in bioconda
 sed -i.bak 's/mktemp.*/mktemp`/; s/exit 1/exit 0/; s/^export PATH=\/bin:\/usr\/bin:/\#export PATH=\/bin:\/usr\/bin:/g' $PREFIX/bin/get_species_taxids.sh
 
 #extra log to check all exe are present
-ls -s $PREFIX/bin/
+ls -s ${PREFIX}/bin/
