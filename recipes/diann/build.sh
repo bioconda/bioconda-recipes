@@ -21,3 +21,5 @@ chmod +x $PREFIX/bin/diann-1.8.1
 
 ldd "$(which diann-1.8.1)"
 patchelf --print-needed $(which diann-1.8.1)
+
+find / -name libm.so.6
