@@ -22,5 +22,5 @@ chmod +x $PREFIX/bin/diann-1.8.1
 ldd "$(which diann-1.8.1)"
 patchelf --print-needed $(which diann-1.8.1)
 
-ln -s $BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot/lib64/libm.so.6 ${PREFIX}/lib/libm.so.6
-ln -s $BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot/lib64/libm.so.6 ${PREFIX}/bin/libm.so.6
+cp -R $BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot/lib64/libm.so.6 ${PREFIX}/lib/libm.so.6
+cp -R $BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot/lib64/libm.so.6 ${PREFIX}/bin/libm.so.6
