@@ -22,7 +22,15 @@ export PATH="$CARGO_HOME/bin:$PATH"
 git submodule update --init --recursive
 
 echo "$rustvers" > ggcat/rust-toolchain
+
 sed -i 's/g++/$(CXX)/g' ggcat/crates/capi/ggcat-cpp-api/Makefile
+sed -i 's/g++/$(CXX)/g' ggcat/crates/capi/ggcat-cpp-api/example/Makefile
+sed -i 's/g++/$(CXX)/g' integration_tests/reference_implementation/Makefile
+sed -i 's/g++/$(CXX)/g' SBWT/KMC/Makefile
+sed -i 's/g++/$(CXX)/g' SBWT/KMC/tests/kmc_CLI/trivial-k-mer-counter/Makefile
+
+sed -i 's/gcc/$(CC)/g' SBWT/KMC/Makefile
+
 
 cd build
 cmake .. -DMAX_KMER_LENGTH=64 -DCMAKE_BUILD_ZLIB=1 -DCMAKE_BUILD_BZIP2=0 -DROARING_DISABLE_NATIVE=ON
