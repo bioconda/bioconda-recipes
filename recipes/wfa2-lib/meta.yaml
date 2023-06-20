@@ -1,0 +1,41 @@
+{% set name = "WFA2-lib" %}
+{% set version = "2.3.3" %}
+{% set sha256 = "2569650cdba395f42513a4d2c9175724a736047bb7da99a162c0abdbd651698f" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/smarco/WFA2-lib/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patch:
+    - makefile.patch
+
+build:
+  number: 0
+  #Temporarily skip building on OSX due to mambabuild keyerror: https://github.com/bioconda/bioconda-recipes/issues/41526
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
+    - pkg-config
+
+test:
+  commands:
+    - "ls ${PREFIX}/lib/libwfa2.so.0"
+    - "ls ${PREFIX}/lib/libwfa2cpp.so.0"
+
+about:
+  home: "https://github.com/smarco/WFA2-lib"
+  license: MIT
+  license_file: LICENSE
+  summary: "Wavefront alignment algorithm library v2"
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btaa777
+    - doi:10.1101/2022.04.14.488380
