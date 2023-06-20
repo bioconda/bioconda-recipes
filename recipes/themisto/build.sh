@@ -29,8 +29,6 @@ sed -i 's/g++/$(CXX)/g' integration_tests/reference_implementation/Makefile
 sed -i 's/g++/$(CXX)/g' SBWT/KMC/Makefile
 sed -i 's/g++/$(CXX)/g' SBWT/KMC/tests/kmc_CLI/trivial-k-mer-counter/Makefile
 
-sed -i 's/gcc/$(CC)/g' SBWT/KMC/Makefile
-
 
 cd build
 cmake .. -DMAX_KMER_LENGTH=64 -DCMAKE_BUILD_ZLIB=1 -DCMAKE_BUILD_BZIP2=0 -DROARING_DISABLE_NATIVE=ON
