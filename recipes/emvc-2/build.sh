@@ -16,4 +16,5 @@ export LDFLAGS="-I$PREFIX/include -L$PREFIX/lib"
 
 make 
 cp candidate_variants_finder $PREFIX/bin
+cp -r dt_model $PREFIX/bin
 cp emvc-2 $PREFIX/bin
