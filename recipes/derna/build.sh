@@ -1,14 +1,11 @@
 #! /bin/sh
 
+export C_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
+
 mkdir build
 cd build
-cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX
+cmake ..
 make
-if [ ! -d "$PREFIX/bin" ]; then
-        mkdir $PREFIX/bin;
-        export PATH=$PREFIX/bin:$PATH;
-fi
-cp ./derna $PREFIX/bin/
-if [ ! -d "$PREFIX/share/derna" ]; then
-	mkdir $PREFIX/share/derna;
-fi
+mkdir -p $PREFIX/bin
+cp derna $PREFIX/bin
