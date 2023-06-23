@@ -1,39 +1,43 @@
 {% set package = "ucsc-genepredtobiggenepred" %}
 {% set program = "genePredToBigGenePred" %}
-{% set version = "377" %}
-{% set sha256 = "932f149c19641064a9cd3f2382cbb54b45a9292b8444792872d531346925d676" %}
+{% set version = "447" %}
+{% set sha256 = "747a48486f7481d891e297baf63623b15d699265ede7339f654bcbc42481ac81" %}
 
 package:
-  name: "{{ package }}"
-  version: "{{ version }}"
+  name: {{ package }}
+  version: {{ version }}
 
 source:
   url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
-  sha256: "{{ sha256 }}"
+  sha256: {{ sha256 }}
   patches:
-    - "include.patch"
+    - include.patch
 
 build:
-  skip: True  # [osx]
-  number: 4
+  number: 0
+  skip: True # [osx]
+  ignore_run_exports:
+    - libpng
+    - libuuid
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - binutils # [linux]
   host:
     - libpng
     - libuuid
     - mysql-connector-c
     - openssl
+    - libopenssl-static
     - zlib
-
   run:
     - libpng
     - libuuid
     - mysql-connector-c
     - openssl
-    - zlib
 
 test:
   commands:
@@ -43,4 +47,4 @@ test:
 about:
   home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
   license: "varies; see http://genome.ucsc.edu/license"
-  summary: "converts genePred or genePredExt to bigGenePred input (bed format with extra fields)"
+  summary: "Converts genePred or genePredExt to bigGenePred input (bed format with extra fields)"
