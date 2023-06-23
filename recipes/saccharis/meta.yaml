@@ -1,21 +1,24 @@
 #{% set data = load_setup_py_data(setup_file='../setup.py', from_recipe_dir=True) %}
   {% set name = "SACCHARIS" %}
+  {% set version = "2.0.0.dev18" %}
+  {% set build_no = 0 %}
 
 package:
   name: "{{ name|lower }}"
 #  version: {{ data.get('version') }}
-  version: "2.0.0.dev18"
+  version: "{{ version }}"
 
 source:
 #  path: ./..
   # git_url: https://github.com/AlexSCFraser/saccharis2.git
+#  git_url: https://github.com/saccharis/SACCHARIS_2/tree/release.git
   git_url: https://github.com/saccharis/SACCHARIS_2.git
-  git_depth: 1 # only grab most recent commit on branch
+  git_tag: v{{ version }}
 
 build:
   noarch: python
 #  number: {{ data.get('build') }}
-  number: 1
+  number: {{ build_no }}
   script: {{ PYTHON }} setup.py install
   preserve_egg_dir: True # added because the entry points below seem to be causing a build error
   entry_points:
@@ -33,7 +36,7 @@ requirements:
     - python
     - setuptools
   host:
-    - python
+    - python >=3.6
   run:
     - beautifulsoup4 >=4.11.1
     - biopython >=1.79
@@ -52,6 +55,7 @@ requirements:
     - requests >=2.28.0
     - pyqt >=5,<6
     - pyqt5-sip >=12.11
+#    sort out pyqt5 install issues, sometimes pip seemed to install it with fewer errors?
 #    - pip:
 #        - lxml >=4.9.0
 #        - pyqt >=5,<6
@@ -62,16 +66,9 @@ app:
   icon: icon.png
   summary: "SACCHARIS Bioinformatics Pipeline"
 
-  # output section does not work
-#outputs:
-#  - name: saccharis2
-#    files:
-#      - ../src/utils/*.py
-#      - ../src/*.py
-#      - ../src/config/*.json
-
 test:
   commands:
+      #future todo: pipe test output to null for these tests, per https://bioconda.github.io/contributor/guidelines.html#tests
     - saccharis -v
     - saccharis.make_family_files
     - saccharis.show_family_categories
