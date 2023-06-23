@@ -9,17 +9,18 @@ package:
   version: "{{ version }}"
 
 source:
-#  path: ./..
-  # git_url: https://github.com/AlexSCFraser/saccharis2.git
-#  git_url: https://github.com/saccharis/SACCHARIS_2/tree/release.git
-  git_url: https://github.com/saccharis/SACCHARIS_2.git
-  git_tag: v{{ version }}
+#  git_url: https://github.com/saccharis/SACCHARIS_2.git
+#  git_tag: v{{ version }}
+  url: https://github.com/saccharis/SACCHARIS_2/releases/download/v{{ version }}/saccharis-{{ version }}.tar.gz
+  sha256: 9D393600BC51323FC18CD772F679C8CEA8472EC8DAB4D6DEDCEDC5AAF2461EB5
 
 build:
   noarch: python
 #  number: {{ data.get('build') }}
   number: {{ build_no }}
-  script: {{ PYTHON }} setup.py install
+#  script: {{ PYTHON }} setup.py install
+#  added --single-version-externally-managed --record=record.txt args based on bioconda test build feedback
+  script: {{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt
   preserve_egg_dir: True # added because the entry points below seem to be causing a build error
   entry_points:
     - saccharis = saccharis.CLI:cli_main
