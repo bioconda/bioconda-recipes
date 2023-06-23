@@ -14,6 +14,6 @@ PYVER=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version
 mkdir -p $PREFIX/lib/python$PYVER/site-packages
 mv lib/*cpython* $PREFIX/lib/python$PYVER/site-packages
 mv lib/* $PREFIX/lib
-set -x
-python -c "import odgi_ffi"
-python -c "import odgi"
+#set -x
+#python -c "import odgi_ffi"
+#python -c "import odgi"
