@@ -11,10 +11,11 @@ cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Generic -DEXTRA_FLAGS='-march=sandybridge -
 cmake --build build
 mkdir -p $PREFIX/bin
 mv bin/* $PREFIX/bin
-#PYVER=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version_info[1]))'`
-#mkdir -p $PREFIX/lib/python$PYVER/site-packages
-#mv lib/*cpython* $PREFIX/lib/python$PYVER/site-packages
-#mv lib/* $PREFIX/lib
-#set -x
+PYVER=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version_info[1]))'`
+mkdir -p $PREFIX/lib/python$PYVER/site-packages
+cp lib/*cpython* $PREFIX/lib/python$PYVER/site-packages
+cp lib/* $PREFIX/lib
+export LD_PRELOAD=${PREFIX}/libx86_64-linux-gnu/libjemalloc.so.2
+set -x
 #python -c "import odgi_ffi"
-#python -c "import odgi"
+python -c "import sys; sys.path.append('./lib'); import odgi"
