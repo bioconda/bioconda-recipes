@@ -15,7 +15,6 @@ PYVER=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version
 mkdir -p $PREFIX/lib/python$PYVER/site-packages
 cp lib/*cpython* $PREFIX/lib/python$PYVER/site-packages
 cp lib/* $PREFIX/lib
-#export LD_PRELOAD=${PREFIX}/libx86_64-linux-gnu/libjemalloc.so.2
-set -x
+#set -x
 #python -c "import sys; sys.path.append('./lib'); import odgi_ffi"
-python -c "import sys; sys.path.append('./lib'); import odgi"
+#python -c "import sys; sys.path.append('./lib'); import odgi"
