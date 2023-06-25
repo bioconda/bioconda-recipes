@@ -1,4 +1,4 @@
-{% set version = "3.0.0" %}
+{% set version = "4.0.1" %}
 
 package:
   name: pbiotools
@@ -6,12 +6,12 @@ package:
 
 source:
   url: https://github.com/dieterich-lab/pbiotools/archive/{{version}}.tar.gz
-  sha256: e6a599feeb7804d1a7bcec81583f8f5c68bf9fa788d092d45f5845011e5bfcc8
+  sha256: 2d1a48375537a25f5b700dd69578099823acabbaf210dc57ced8902647948a69
 
 build:
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
   noarch: python
-  number: 0
+  number: 1
   entry_points:
     - bam-to-wiggle = pbiotools.utils.pgrms.bam_to_wiggle:main
     - bedx-to-bedy = pbiotools.utils.pgrms.bedx_to_bedy:main
@@ -33,7 +33,6 @@ build:
     - gtf-to-bed12 = pbiotools.utils.pgrms.gtf_to_bed12:main
     - join-long-chromosomes = pbiotools.utils.pgrms.join_long_chromosomes:main
     - merge-isoforms = pbiotools.utils.pgrms.merge_isoforms:main
-    - parse-meme-names = pbiotools.utils.pgrms.parse_meme_names:main
     - remove-duplicate-bed-entries = pbiotools.utils.pgrms.remove_duplicate_bed_entries:main
     - remove-duplicate-sequences = pbiotools.utils.pgrms.remove_duplicate_sequences:main
     - remove-multimapping-reads = pbiotools.utils.pgrms.remove_multimapping_reads:main
@@ -51,9 +50,12 @@ requirements:
     - pip
   run:
     - python
+    - numpy
+    - pandas
+    - scipy
     - dask
+    - joblib
     - scikit-learn
-    - appdirs
     - tqdm
     - mygene
     - openpyxl
@@ -62,8 +64,7 @@ requirements:
     - matplotlib-base
     - matplotlib-venn
     - seaborn
-    - pysam
-    - pybedtools
+    - pysam >0.9.1
     - biopython
     - pyensembl
 
@@ -93,7 +94,6 @@ test:
     - gtf-to-bed12 --help
     - join-long-chromosomes --help
     - merge-isoforms --help
-    - parse-meme-names --help
     - remove-duplicate-bed-entries --help
     - remove-duplicate-sequences --help
     - remove-multimapping-reads --help
