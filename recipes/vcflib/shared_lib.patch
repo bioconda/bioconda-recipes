@@ -8,7 +8,7 @@
 -  set(HTSLIB_LOCAL contrib/tabixpp/htslib)
 -  set(TABIX_FOUND OFF) # also build tabixpp if htslib is missing
 -endif()
- 
+-
 -if (NOT TABIX_FOUND)
 -  set(TABIXPP_LOCAL contrib/tabixpp)
 -  include_directories(contrib/tabixpp)
@@ -16,18 +16,19 @@
 -    contrib/tabixpp/tabix.cpp
 -  )
 -endif()
++include_directories(${HTSLIB_INCLUDE_DIRS})
  
  if(WFA_GITMODULE)
    set(WFA_LOCAL contrib/WFA2-lib)
-@@ -169,11 +158,8 @@ set(vcflib_SOURCE
-     contrib/c-progress-bar/progress.c
- )
- 
--if (TABIXPP_LOCAL) # add the tabixpp source file
--    list(APPEND vcflib_SOURCE ${tabixpp_SOURCE})
--endif()
+@@ -173,7 +162,11 @@ if (TABIXPP_LOCAL) # add the tabixpp source file
+     list(APPEND vcflib_SOURCE ${tabixpp_SOURCE})
+ endif()
  
 -add_library(vcflib STATIC
+++target_link_libraries(vcflib PUBLIC
+++  tabixpp
+++  )
++
 +add_library(vcflib SHARED
      ${vcflib_SOURCE}
      )
