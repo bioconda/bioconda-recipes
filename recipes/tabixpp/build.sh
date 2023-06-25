@@ -1,17 +1,16 @@
 #!/bin/bash
 set -x -e
 
-if [ "$(uname)" == "Darwin" ]; then
-	sed -i.bak 's/-Wl,-soname/-Wl,-install_name/g' Makefile
-	sed -i.bak 's/\.so.$(SONUMBER)/.$(SONUMBER).dylib/g' Makefile
-fi
+# if [ "$(uname)" == "Darwin" ]; then
+# 	sed -i.bak 's/-Wl,-soname/-Wl,-install_name/g' Makefile
+# 	sed -i.bak 's/\.so.$(SONUMBER)/.$(SONUMBER).dylib/g' Makefile
+# fi
 
-mkdir -p ${PREFIX}/bin
+# mkdir -p ${PREFIX}/bin
 
-make \
-	LIBPATH="-L${PREFIX}/lib" \
-	INCLUDES="-I${PREFIX}/include" \
-	-v install
+make CC=gcc #\
+	#LIBPATH="-L${PREFIX}/lib" \
+	#INCLUDES="-I${PREFIX}/include"
 
 #if [ "$(uname)" == "Darwin" ]; then
 #	cp libtabixpp.*.dylib ${PREFIX}/lib/
