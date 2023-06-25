@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x -e
 
 if [ "$(uname)" == "Darwin" ]; then
     sed -i.bak 's/-Wl,-soname/-Wl,-install_name/g' Makefile
