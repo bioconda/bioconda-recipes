@@ -1,14 +1,14 @@
 #!/bin/bash
 BINARY_HOME=$PREFIX/bin 
 RAP_GREEN_HOME=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-
+ 
 # Copy source to the conda environment
 mkdir -p $RAP_GREEN_HOME
 cp -R $SRC_DIR/* $RAP_GREEN_HOME/
 
-# Create symbolic links for a5_miseq's launch script
+# Create symbolic links for rapgreen launch script
 mkdir -p $BINARY_HOME
-ln -s $RAP_GREEN_HOME/bin/RapGreen.jar $BINARY_HOME/ 
+ln -s $RAP_GREEN_HOME bin/RapGreen.jar $BINARY_HOME/ 
 
 
 
