@@ -7,9 +7,10 @@ package:
 source:
   url: https://abibuilder.cs.uni-tuebingen.de/archive/openms/OpenMSInstaller/release/{{ version }}/OpenMS-{{ version }}-src.tar.gz
   sha256: 2d186f35fe42573a19283605ccfb491ca6da585880fa3725a013975df26bc008
-
+  
+# osx currently skipped because of https://github.com/bioconda/bioconda-recipes/issues/41526
 build:
-  number: 2
+  number: 3
   skip: True  # [osx]
 
 # Try this when building with GUI
@@ -18,6 +19,7 @@ build:
 #    extended-base: True
 
 requirements:
+    # Note: pinning of sysroot_linux-64 =2.17 enforces cos7 and is currently needed to prevent an memcpy@GLIBC2.14 error
     build:
       - {{ compiler('cxx') }}
       - cmake
@@ -52,6 +54,7 @@ outputs:
         # no actual build is done. CMake is used to install different parts of the existing build
         # But since the other packages depend on its run_exports
         # We want to make sure that the versions of the dependencies used are the same as above
+        # Note: pinning of sysroot_linux-64 =2.17 enforces cos7 and is currently needed to prevent an memcpy@GLIBC2.14 error
         build:
           - cmake
           - sysroot_linux-64 =2.17 # [linux]
@@ -87,6 +90,7 @@ outputs:
     script: package_openms-tools.sh
     requirements:
       # no actual build is done. CMake is used to install different parts of the existing build
+      # Note: pinning of sysroot_linux-64 =2.17 enforces cos7 and is currently needed to prevent an memcpy@GLIBC2.14 error
       build:
         - cmake
         - sysroot_linux-64 =2.17 # [linux]
