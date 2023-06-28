@@ -20,8 +20,9 @@ if [ "$(uname)" == "Darwin" ]; then
 else
    verkko -d asm --no-correction --hifi ./hifi.fastq.gz --nano ./ont.fastq.gz
 fi
-python $PREFIX/lib/verkko/scripts/circularize_ctgs.py -p 10 -f 0.01 -o asm/assembly_circular.fasta --min-ovl 1000 asm/assembly.fasta
-
+if [ -s asm/assembly.fasta ]; then 
+   python $PREFIX/lib/verkko/scripts/circularize_ctgs.py -p 10 -f 0.01 -o asm/assembly_circular.fasta --min-ovl 1000 asm/assembly.fasta
+fi
 
 if [ ! -s asm/assembly_circular.fasta ]; then
    echo "Error: verkko assembly test failed!"
