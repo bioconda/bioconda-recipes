@@ -12,6 +12,7 @@ if [ "$(uname)" == "Darwin" ]; then
 fi
 
 # download and run a small assembly
+which perl
 rm -f ./hifi.fastq.gz ./ont.fastq.gz
 curl -L https://obj.umiacs.umd.edu/sergek/shared/ecoli_hifi_subset24x.fastq.gz -o hifi.fastq.gz
 curl -L https://obj.umiacs.umd.edu/sergek/shared/ecoli_ont_subset50x.fastq.gz -o ont.fastq.gz
