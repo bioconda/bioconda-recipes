@@ -1,0 +1,49 @@
+{% set version = "1.1.65.19" %}
+
+package:
+  name: cooler
+  version: {{ version }}
+
+source:
+  url: https://pypi.python.org/packages/source/c/stripenn/stripenn-{{ version }}.tar.gz
+  sha256: c349ec3216ed773da45c05a3285f6cd7a25394d33ef69f94369f8deb7262627a
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - cooler = cli:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv "
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - cooler
+    - joblib
+    - numpy
+    - matplotlib
+    - opencv-python
+    - pandas
+    - scikit-image
+    - scipy
+    - tqdm
+    - type
+
+test:
+  commands:
+    - stripenn --help
+
+about:
+  home: https://github.com/ysora/stripenn
+  summary: 'Architectural stripe detection from 3D genome conformation data'
+  license: MIT
+
+extra:
+  identifiers:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true  # [py3k]
+
