@@ -45,6 +45,7 @@ grep -vF 'sysroot' "${RECIPE_DIR}/conan_profiles/$conan_profile" > "$CONAN_HOME/
 # Build everything from source to avoid ABI issues due to old GLIBC/GLIBCXX
 conan install ${RECIPE_DIR}/conanfile.txt \
        --build="*" \
+       --build="b2/*" \
        -pr:b "$conan_profile" \
        -pr:h "$conan_profile" \
        --output-folder=build/ || true
