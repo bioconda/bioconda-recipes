@@ -6,6 +6,7 @@ export MEME_ETC_DIR=${PREFIX}/etc
 #HOME=/tmp cpanm XML::Parser::Expat --configure-args "EXPATLIBPATH=$PREFIX/lib" --configure-args "EXPATHINCPATH=$PREFIX/include"
 
 autoconf
+autoheader
 
 perl scripts/dependencies.pl
 
