@@ -1,9 +1,9 @@
 #!/bin/bash
 set -ex
 
-export INCLUDE_PATH="${PREFIX}/include"
+export C_INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="-L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 cmake -S . -B build \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
