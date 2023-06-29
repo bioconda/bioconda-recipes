@@ -53,8 +53,6 @@ conan install ${RECIPE_DIR}/conanfile.txt \
        -pr:h "$conan_profile" \
        --output-folder=build/
 
-exit 1
-
 # Add bioconda suffix to MoDLE version
 sed -i.bak 's/set(MODLE_PROJECT_VERSION_SUFFIX "")/set(MODLE_PROJECT_VERSION_SUFFIX "bioconda")/' cmake/Versioning.cmake
 
