@@ -15,7 +15,8 @@ source:
 
 build:
   number: 0
-  script: {{ PYTHON }} -m pip install . -vv
+  skip: True  # [py < 37]
+  script: CYTHONIZE=1 {{ PYTHON }} -m pip install . --use-pep517 -vv
   entry_points:
     - cyvcf2 = cyvcf2.__main__:cli
 
@@ -23,23 +24,20 @@ requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - python >=3.7
+    - python
+    - cython >=0.23.3
     - pip
     - setuptools
     - wheel
-    - cython >=0.23.3
-    - numpy
+    - curl
     - zlib
-    - libcurl
     - htslib >=1.10
     - openssl
   run:
-    - python >=3.7
+    - python
     - coloredlogs
     - click
     - numpy
-    - htslib >=1.10
-    - openssl
 
 test:
   imports:
