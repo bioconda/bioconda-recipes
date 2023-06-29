@@ -1,5 +1,5 @@
 {% set name = "odgi" %}
-{% set version = "0.8.2" %}
+{% set version = "0.8.3" %}
 
 package:
   name: "{{ name }}"
@@ -7,32 +7,33 @@ package:
 
 source:
   url: https://github.com/pangenome/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
-  sha256: 39ed618e656ade8eabac3f1e8587dccba9faebaf7edf62e5c6924a4ecfd63617
+  sha256: 13a63b8ada79851fd8ce5e7638dda1a8b75ef0346a5d93552ee2179256eb81bf
 
 build:
   skip: True  # [osx or py27]
-  number: 1
+  number: 0
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - llvm-openmp  # [osx]
+    - libgomp      # [linux]
     - cmake
     - make
   host:
     - zlib
     - python
     - jemalloc
+    - pybind11
   run:
     - llvm-openmp  # [osx]
     - python
+    - pybind11
 
 test:
   commands:
     - odgi test
-  imports:
-    - odgi
 
 about:
   home: https://github.com/pangenome/odgi
