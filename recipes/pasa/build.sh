@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -o errexit -o nounset
 
@@ -16,7 +16,10 @@ sed -i.bak 's#"$transdecoder_dir/\(util\/\)*#"#' scripts/pasa_asmbls_to_training
 # use bioconda cdbtools and slclust instead of the bundled version
 sed -i.bak -e '/cdbtools/s/^/#/' -e '/slclust/s/^/#/' Makefile
 
-make CXX=${CXX} INCLUDES="-I${PREFIX}/include" LIBPATH="-L${PREFIX}/lib"
+make CXX="${CXX}" \
+	CXXFLAGS="${CXXFLAGS} -O3" \
+	INCLUDES="-I${PREFIX}/include" \
+	LIBPATH="-L${PREFIX}/lib" -j4
 
 cp -Rp bin Launch_PASA_pipeline.pl misc_utilities pasa_conf PasaWeb PasaWeb.conf PerlLib PyLib run_PasaWeb.pl SAMPLE_HOOKS schema scripts ${PASAHOME}
 cp -Rp PerlLib ${PREFIX}/bin/
