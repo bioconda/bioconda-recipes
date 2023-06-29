@@ -46,7 +46,7 @@ sed "s|__CONDA_BUILD_SYSROOT__|${CONDA_BUILD_SYSROOT}|" \
     "${RECIPE_DIR}/conan_profiles/$conan_profile" |
     tee "$CONAN_HOME/profiles/$conan_profile"
 
-conan install ${RECIPE_DIR}/conanfile.txt \
+conan install conanfile.txt \
        --build="*" \
        --build="b2/*" \
        -pr:b "$conan_profile" \
