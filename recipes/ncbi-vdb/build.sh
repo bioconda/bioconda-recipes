@@ -38,6 +38,6 @@ cmake -S .. -B . \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-DCMAKE_INCLUDE_PATH="${PREFIX}/include" \
 	-DCMAKE_LIBRARY_PATH="${PREFIX}/lib" \
-	-DBUILD_SHARED_LIBS=ON -j 4
+	-DBUILD_SHARED_LIBS=ON
 
-cmake --build . --target install -v
+cmake --build . --target install -j 4 -v
