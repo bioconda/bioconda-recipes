@@ -1,20 +1,21 @@
-{% set name = "medaka" %}
-{% set version = "1.7.3" %}
+{% set name = "Medaka" %}
+{% set version = "1.8.0" %}
+{% set sha256 = "bc6c10058d3cad662b8bccdc0af4f1e17424cf117299dce8e44ec8c87c4472ec" %}
 # Bot PRs - Always review requirements.txt for new release
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 6caa50193b85d71a9ba00ac3192e13ec3193202bed6fbc216fc22781da9dc3e4
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/medaka-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
   patches:
     - patch
 
 build:
   number: 0
-  skip: True  # # [py!=38 or osx]
+  skip: True  # [py < 38]
   entry_points:
     - medaka = medaka.medaka:main
     - medaka_counts = medaka.medaka_counts:main
@@ -26,34 +27,37 @@ requirements:
     - {{ compiler('c') }}
     - coreutils
   host:
-    - cffi 1.15.0
+    - python
     - pip
-    - python >=3.7,<3.11
+    - cffi ==1.15.0
     - htslib
+    - libcurl
+    - openssl
     - bzip2
     - xz
     - zlib
   run:
-    - biopython
+    - python
     - cffi ==1.15.0
     - grpcio
     - h5py
-    - intervaltree >=3.0.0
-    - mappy
+    - intervaltree
+    - tensorflow >=2.8.0,<2.9.dev0
     - numpy >=1.21.6
     - nomkl  # [osx]
+    - mappy
     - ont-fast5-api
     - parasail-python
-    - pysam >=0.16.0.1
     - pyspoa >=0.0.3
-    - python >=3.7,<3.11
+    - pysam >=0.16.0.1
     - python-edlib
     - requests
-    - tensorflow ==2.8.*  # always check https://github.com/nanoporetech/medaka/blob/{{version}}/requirements.txt
-    - samtools >=1.14
-    - bcftools >=1.14
-    - minimap2 >=2.17
-    - htslib >=1.14
+    - samtools >=1.17
+    - bcftools >=1.17
+    - minimap2 >=2.26
+    - htslib
+    - libcurl
+    - openssl
 
 test:
   imports:
@@ -66,11 +70,10 @@ test:
 
 about:
   home: https://github.com/nanoporetech/medaka
-  license: Mozilla Public License 2.0
+  summary: Neural network sequence error correction.
+  license: MPL-2.0
   license_family: OTHER
   license_file: LICENSE.md
-  summary: Neural network sequence error correction.
-  doc_url: https://nanoporetech.github.io/medaka/index.html
   dev_url: https://github.com/nanoporetech/medaka
 
 extra:
@@ -78,3 +81,4 @@ extra:
     - cjw85
   identifiers:
     - usegalaxy-eu:medaka_consensus
+    - biotools:medaka
