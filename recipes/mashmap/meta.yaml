@@ -1,45 +1,48 @@
-{% set name = "mashmap" %}
-{% set version = "2.0" %}
+{% set version = "3.0.5" %}
+{% set github = "https://github.com/marbl/MashMap" %}
 
 package:
-  name: {{ name|lower }}
+  name: mashmap
   version: {{ version }}
 
-build:
-  number: 8
-
 source:
-  url: https://github.com/marbl/MashMap/archive/v{{ version }}.tar.gz
-  sha256: 9a952548bb7c6a44804be336133361d8fbae1c970d886da9423bdfc0587f846c
+  url: "{{ github }}/archive/v{{ version }}.tar.gz"
+  sha256: ccef75246ed3862324214dc91d71034d64bba125c2af97d1e62f75596621cbbf
 
+build:
+  number: 0
+  skip:   True  # [osx]
+
+# Refer to INSTALL.txt for details.
 requirements:
   build:
     - make
+    - cmake >=3.21
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - autoconf
-    - automake
-    - m4
   host:
-    - perl
+    - perl =5.26
     - zlib
     - gsl
     - openblas
-    - mkl  # [osx]
+    #- mkl  # [osx]
   run:
     - zlib
     - gsl
     - openblas
-    - mkl  # [osx]
+    #- mkl  # [osx]
 test:
   commands:
     - mashmap -h 2>&1 | grep 'reference_files'
 
 about:
-  home: https://github.com/marbl/MashMap
+  home: "{{ github }}"
+  dev_url: "{{ github }}"
   license: Custom
   license_file: LICENSE.txt
-  summary: 'A fast approximate aligner for long DNA sequences'
+  summary: A fast approximate aligner for long DNA sequences.
 
 extra:
   recipe-maintainers:
+    - bkille
     - mjsteinbaugh

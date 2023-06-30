@@ -1,22 +1,21 @@
 {% set name = "pmx_biobb" %}
-{% set version = "1.0.0" %}
+{% set version = "4.0.2" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "2a1b39ada54a2d4b3fb178f49c60b27cfd6c0df116c603a6cd82aa28294f03f7" %}
+{% set hash_value = "3c3faafe44109f95f0d804e677da0240f8a936d866cc773c0a53dccbc00b5b21" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-1.0.1.{{ file_ext }}
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-  number: 3
-  skip: true  # [py != 37]
-  entry_points:
-    - pmx = pmx.scripts.cli:entry_point
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+
 
 requirements:
   build:
@@ -27,21 +26,19 @@ requirements:
   host:
     - python
     - setuptools
-    - numpy
     - scipy
     - matplotlib-base
-    - future
+    - rdkit
   run:
     - python
-    - perl
-    - numpy
     - scipy
     - matplotlib-base
-    - future
+    - rdkit
+
 
 test:
-  commands:
-    - pmx -v
+  imports:
+    - pmx
 
 
 about:
