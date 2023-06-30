@@ -24,13 +24,13 @@ end-of-patch
 
 # Execute Make commands from a separate subdirectory. Else:
 # ERROR: In source builds are not allowed
-BUILD_DIR="${SRC_DIR}/build_vdb"
-mkdir -p "${BUILD_DIR}"
-cd "${BUILD_DIR}"
+#BUILD_DIR="${SRC_DIR}/build_vdb"
+#mkdir -p "${BUILD_DIR}"
+#cd "${BUILD_DIR}"
 
 export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64 -DH5_USE_110_API"
 
-cmake -S .. -B . \
+cmake -S ncbi-vdb/ -B build_vdb \
 	-DNGS_INCDIR="${PREFIX}" \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=Release \
@@ -40,4 +40,4 @@ cmake -S .. -B . \
 	-DCMAKE_LIBRARY_PATH="${PREFIX}/lib" \
 	-DBUILD_SHARED_LIBS=ON
 
-cmake --build . --target install -j 4 -v
+cmake --build build_vdb/ --target install -j 4 -v
