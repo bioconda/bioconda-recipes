@@ -1,54 +1,46 @@
 {% set name = "meryl" %}
 {% set version = "1.4" %}
-{% set sha256 = "575a549ed54113e5e8442cabfe04150d675173ddb4b88c92bc4fe58545e6703d" %}
+{% set sha256 = "2ca6df788cda26521c2b3672fa2d6562a6b3b57e95003cff31df596be289c92f" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-- url: https://github.com/marbl/{{name}}/releases/download/v{{version}}/{{name}}-{{version}}.Linux-amd64.tar.xz  # [linux]
-  sha256: {{ sha256 }}  # [linux]
-  folder: {{ name }}-{{ version }}-linux  # [linux]
-- url: https://github.com/marbl/{{name}}/releases/download/v{{version}}/{{name}}-{{version}}.Darwin-amd64.tar.xz  # [osx]
-  sha256: df09ea39d3f885c64800c470d5515af51b5f73f1dc0048a6af71fa6660b384fd  # [osx]
-  folder: {{ name }}-{{ version }}-darwin  # [osx]
+  url: https://github.com/marbl/{{name}}/releases/download/v{{version}}/{{name}}-{{version}}.tar.xz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Do-not-bail-out-for-Clang-on-macOS.patch
+    - 0002-macos-cmath.patch  # [osx]
 
 build:
   number: 0
-  binary_has_prefix_files:
-    - bin/meryl
-    - bin/meryl-analyze
-    - bin/meryl-import
-    - bin/meryl-lookup
-    - bin/meryl-simple
-    - bin/position-lookup
 
 requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
   host:
     - llvm-openmp  # [osx]
-    - libgomp      # [linux]
+    - libgomp  # [linux]
 
 test:
   commands:
-    - "meryl 2>&1 | grep 'usage: meryl'"
-    - "meryl-analyze 2>&1 | grep 'usage: meryl-analyze'"
-    - "meryl-import 2>&1 | grep 'usage: meryl-import'"
-    - "meryl-lookup 2>&1 | grep 'usage: meryl-lookup'"
-    - "meryl-simple 2>&1 | grep 'usage: meryl-simple'"
+    - 'meryl 2>&1 | grep "usage: meryl"'
+    - 'meryl-analyze 2>&1 | grep "usage: meryl-analyze"'
+    - 'meryl-import 2>&1 | grep "usage: meryl-import"'
+    - 'meryl-lookup 2>&1 | grep "usage: meryl-lookup"'
+    - 'meryl-simple 2>&1 | grep "usage: meryl-simple"'
 
 about:
   home: https://github.com/marbl/meryl
   dev_url: https://github.com/marbl/meryl
   doc_url: https://github.com/marbl/meryl
-  summary: "A multi-threaded and multi-process genomic k-mer counter (and sequence utility) with nice features."
-  license: Public Domain
+  summary: "meryl is a multi-threaded, multi-process, out-of-core k-mer counter"
+  license: 'Public Domain'
 
 extra:
-  skip-lints:
-    - should_be_noarch_generic
-    - should_not_be_noarch_source
   identifiers:
-    - doi:10.1186/s13059-020-02134-9
     - biotools:meryl
     - usegalaxy-eu:meryl
+    - doi:10.1186/s13059-020-02134-9
