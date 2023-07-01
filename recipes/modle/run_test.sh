@@ -1,5 +1,10 @@
 #!/bin/bash
 
+set -e
+set -u
+set -x
+set -o pipefail
+
 # Extract test dataset URL and checksum
 url="$(grep -F 'DOWNLOAD' 'cmake/FetchTestDataset.cmake' | sed 's/.*DOWNLOAD[[:space:]]\+//')"
 checksum="$(grep -F 'EXPECTED_HASH' 'cmake/FetchTestDataset.cmake' | sed 's/.*SHA512=//')"
