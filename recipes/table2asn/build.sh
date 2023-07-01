@@ -9,7 +9,7 @@ if [ `uname` == Darwin ]; then
 	cp *.table2asn ${PREFIX}/bin/table2asn
 fi
 
-chmod +rx "${PREFIX}/bin/table2asn"
+chmod 0755 "${PREFIX}/bin/table2asn"
 
 
 
