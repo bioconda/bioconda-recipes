@@ -6,7 +6,7 @@ set -x
 set -o pipefail
 
 # Extract test dataset URL and checksum
-url="$(grep -F 'DOWNLOAD' 'cmake/FetchTestDataset.cmake' | sed 's/.*DOWNLOAD[[:space:]]\+//')"
+url="$(grep -F 'DOWNLOAD' 'cmake/FetchTestDataset.cmake' | sed -E 's/.*DOWNLOAD[[:space:]]+//')"
 checksum="$(grep -F 'EXPECTED_HASH' 'cmake/FetchTestDataset.cmake' | sed 's/.*SHA512=//')"
 
 # Download and extract test datasets
