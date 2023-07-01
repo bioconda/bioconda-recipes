@@ -12,7 +12,7 @@ checksum="$(grep -F 'EXPECTED_HASH' 'cmake/FetchTestDataset.cmake' | sed 's/.*SH
 # Download and extract test datasets
 curl -L "$url" -o modle_test_dataset.tar.xz
 echo "$checksum  modle_test_dataset.tar.xz" > checksum.sha512
-sha512sum -c checksum.sha512
+shasum -c checksum.sha512
 
 tar -xf modle_test_dataset.tar.xz test/data/integration_tests/
 
