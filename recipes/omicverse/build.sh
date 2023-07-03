@@ -1,4 +1,4 @@
 #!/bin/sh
 
-flit build
+python -m build
 pip install dist/omicverse*.whl
