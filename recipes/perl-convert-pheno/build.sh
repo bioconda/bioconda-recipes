@@ -1,4 +1,5 @@
 #!/bin/bash
+export PERL5LIB="$CONDA_PREFIX/lib:$CONDA_PREFIX/lib/perl5:$CONDA_PREFIX/lib/perl5/site_perl:$PERL5LIB"
 
 # install dependencies not found in conda channels
 install_deps() {
