@@ -1,5 +1,4 @@
 #!/bin/bash
-export PERL5LIB="$CONDA_PREFIX/lib:$CONDA_PREFIX/lib/perl5:$CONDA_PREFIX/lib/perl5/site_perl:$PERL5LIB"
 
 # install dependencies not found in conda channels
 install_deps() {
@@ -28,3 +27,14 @@ perl Makefile.PL INSTALLDIRS=site
 make
 # make test
 make install
+
+# This will allow them to be run on environment activation.
+for CHANGE in "activate" "deactivate";
+do
+  mkdir -p "${PREFIX}/etc/conda/${CHANGE}.d"
+  #cp "${RECIPE_DIR}/${CHANGE}.sh" "${PREFIX}/etc/conda/${CHANGE}.d/${PKG_NAME}_${CHANGE}.sh"
+done
+echo "#!/bin/sh" > "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.sh"
+echo "export PERL5LIB=$PREFIX/lib/perl5/site_perl/5.22.0/" >> "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.sh"
+echo "#!/bin/sh" > "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.sh"
+echo "unset PERL5LIB" >> "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.sh"
