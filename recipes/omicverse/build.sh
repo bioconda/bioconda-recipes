@@ -1,4 +1,4 @@
 #!/bin/sh
 
-poetry build --format wheel
+flit build
 pip install dist/omicverse*.whl
