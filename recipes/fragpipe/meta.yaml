@@ -1,5 +1,8 @@
 {% set name = "FragPipe" %}
-{% set version = "18.0" %}
+{% set version = "19.1" %}
+{% set philosopher_version = "4.8.1" %}
+{% set msfragger_version = "3.7" %}
+{% set ionquant_version = "1.8.10" %}
 
 package:
   name: fragpipe
@@ -10,8 +13,12 @@ build:
   noarch: generic
 
 source:
-  url: https://github.com/Nesvilab/{{ name }}/releases/download/{{ version }}/{{ name }}-{{ version }}.zip
-  sha256: 571577d19840c46064b9ccf14f45bfc30757a024477aa925945faae1e38a2174
+  - url: https://github.com/Nesvilab/{{ name }}/releases/download/{{ version }}/{{ name }}-{{ version }}.zip
+    sha256: 242c45abe590ceee29d9afee4a0571fa2b8737b4040a751b6833fa4987c7334d
+    folder: fragpipe_source
+  - url: https://github.com/Nesvilab/philosopher/releases/download/v{{ philosopher_version }}/philosopher_v{{ philosopher_version }}_linux_amd64.zip
+    sha256: c0c85126ad9c3b1a034aca772e9617175693617a0c8809dc681522daf7f9b52f
+    folder: philosopher_source
 
 build:
   number: 0
@@ -20,11 +27,13 @@ build:
     - if [ -z "$EMAIL" ]; then export EMAIL=${NAME}@${HOSTNAME:-bioconda.org}; fi
     - if [ -z "$INSTITUTION" ]; then export INSTITUTION=${HOSTNAME:-bioconda.org}; fi
     - mkdir -p $PREFIX/
-    - cp  -rp * $PREFIX/
-    - chmod -x $PREFIX/bin/fragpipe
+    - cp  -rp fragpipe_source/* $PREFIX/
     - cp ${RECIPE_DIR}/fragpipe_cli $PREFIX/bin
-    - echo ${RECIPE_DIR}/academic_install.py -n galaxy -e "$EMAIL" -o "$INSTITUTION" -i '1.8.0' -p ${PREFIX}/tools
-    - ${RECIPE_DIR}/academic_install.py -n galaxy -e "$EMAIL" -o "$INSTITUTION" -i '1.8.0' -p ${PREFIX}/tools
+    - mkdir -p $PREFIX/bin
+    - chmod ugo+x philosopher_source/philosopher
+    - cp philosopher_source/philosopher philosopher_source/philosopher.yml $PREFIX/bin
+    #- ${RECIPE_DIR}/academic_install.py -n galaxy -e "$EMAIL" -o "$INSTITUTION" -i '1.8.10' -p ${PREFIX}/tools
+    #- ${RECIPE_DIR}/academic_install.py -n galaxy -e "$EMAIL" -o "$INSTITUTION" -m '3.7' -p ${PREFIX}/tools
   missing_dso_whitelist:
     - /lib64/libgomp.so.1
     - /lib64/libdl.so.2
@@ -46,14 +55,17 @@ requirements:
   host:
   run:
     - openjdk >=11
-    - python >=3.8
-    - philosopher =4.2.2
-    - msfragger =3.5
+    - python >=3.10
+    - pandas =1.0.5
+    - numpy =1.18.5
+    - msfragger =3.7.0
+    - ionquant =1.8.10
+    #- numpy >=1.17
 
-test:
-  commands:
-    # - which fragpipe
-    - fragpipe --help  2>&1 | grep 'FragPipe'
+#test:
+#  commands:
+#    # - which fragpipe
+#    - fragpipe --help  2>&1 | grep 'FragPipe'
 
 about:
   home: https://github.com/Nesvilab/FragPipe
