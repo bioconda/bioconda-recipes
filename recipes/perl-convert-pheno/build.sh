@@ -3,7 +3,7 @@
 # install dependencies not found in conda channels
 install_deps() {
     deps=(
-        # "File::ShareDir::ProjectDistDir"
+        "File::ShareDir::ProjectDistDir"
         "JSON::Validator"
         "Moo"
         "Path::Tiny"
