@@ -15,7 +15,7 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
                     -DCONDA_BUILD=ON \
                     -DWITH_MODULES=ON \
                     -DWITH_HOWDE=ON \
-                    -DKMER_LIST=${KMER_SIZE_LIST} \
+                    -DKMER_LIST="${KMER_SIZE_LIST}" \
                     -DWITH_SOCKS=ON \
                     ${PLATFORM_FLAGS}
 cmake --build ./build
@@ -28,7 +28,7 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
                     -DWITH_PLUGIN=ON \
                     -DCONDA_BUILD=ON \
                     -DWITH_MODULES=ON \
-                    -DKMER_LIST=${KMER_LIST} \
+                    -DKMER_LIST="${KMER_SIZE_LIST}" \
                     ${PLATFORM_FLAGS}
 
 cmake --build ./build
