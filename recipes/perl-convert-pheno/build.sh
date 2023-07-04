@@ -8,7 +8,7 @@ install_deps() {
         "Moo"
         "Path::Tiny"
         "Test::Deep"
-        "Test::Warn"
+        # "Test::Warn"
         "Text::CSV_XS"
         "Text::Similarity"
         "Types::Standard"
