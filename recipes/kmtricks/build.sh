@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-if [[ $OSTYPE == darwin* ]]; then
-    PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15"
-else
-    PLATFORM_FLAGS=""
-fi
-
 KMER_SIZE_LIST="32 64 96 128 160 192 224 256"
 
 mkdir -p $PREFIX/bin
@@ -16,8 +10,7 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
                     -DWITH_MODULES=ON \
                     -DWITH_HOWDE=ON \
                     -DKMER_LIST="${KMER_SIZE_LIST}" \
-                    -DWITH_SOCKS=ON \
-                    ${PLATFORM_FLAGS}
+                    -DWITH_SOCKS=ON
 cmake --build ./build
 
 cp -r ./bin/kmtricks $PREFIX/bin
@@ -28,8 +21,7 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
                     -DWITH_PLUGIN=ON \
                     -DCONDA_BUILD=ON \
                     -DWITH_MODULES=ON \
-                    -DKMER_LIST="${KMER_SIZE_LIST}" \
-                    ${PLATFORM_FLAGS}
+                    -DKMER_LIST="${KMER_SIZE_LIST}"
 
 cmake --build ./build
 
