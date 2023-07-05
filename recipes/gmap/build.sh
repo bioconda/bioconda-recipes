@@ -1,14 +1,15 @@
-#!/bin/sh
+#!/bin/bash
 
-export C_INCLUDE_PATH=${PREFIX}/include
+export INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CFLAGS="${CFLAGS} -I${PREFIX}/include -I${BUILD_PREFIX}/include"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -I${BUILD_PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 if [ "$(uname)" == "Darwin" ]; then
     # for Mac OSX
     export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
+    export CFLAGS="${CFLAGS} -m64"
 fi
 
 export LANGUAGE=en_US.UTF-8
@@ -17,7 +18,13 @@ export LC_ALL=en_US.UTF-8
 
 autoconf
 autoheader
-./configure CC=${CC} --prefix="${PREFIX}" --with-simd-level=sse42
-make CC=${CC} CFLAGS="${CFLAGS} ${LDFLAGS}" CPPFLAGS="${CPPFLAGS} ${LDFLAGS}" -j 4
+./configure CC=${CC} CFLAGS="${CFLAGS}" \
+	CPPFLAGS="${CPPFLAGS}" \
+	LDFLAGS="${LDFLAGS}" \
+	--prefix="${PREFIX}" \
+	--with-gmapdb="${PREFIX}/share" \
+	--with-simd-level=sse42
+
+make -j4
 make install
 make clean
