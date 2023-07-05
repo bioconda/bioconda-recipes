@@ -22,9 +22,9 @@ make CXX="${CXX}" \
 	LIBPATH="-L${PREFIX}/lib" -j4
 
 cp -Rp bin Launch_PASA_pipeline.pl misc_utilities pasa_conf PasaWeb PasaWeb.conf PerlLib PyLib run_PasaWeb.pl SAMPLE_HOOKS schema scripts ${PASAHOME}
+cp -Rp bin/* ${PREFIX}/bin/
 cp -Rp PerlLib ${PREFIX}/bin/
 ln -s -f ${PASAHOME}/Launch_PASA_pipeline.pl ${PREFIX}/bin/
-ln -s -f ${PASAHOME}/bin/* ${PREFIX}/bin/
 
 mkdir -p ${PREFIX}/etc/conda/activate.d/
 echo "export PASAHOME=${PASAHOME}" > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}-${PKG_VERSION}.sh
