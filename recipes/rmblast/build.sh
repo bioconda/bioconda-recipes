@@ -5,10 +5,10 @@ cd ${SRC_DIR}/c++/
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="-L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-export CFLAGS="${CFLAGS} -O2"
-export CXXFLAGS="${CXXFLAGS} -O2"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 if test x"`uname`" = x"Linux"; then
@@ -63,8 +63,6 @@ fi
 ./configure \
     CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
     --prefix=${PREFIX} \
-    --with-static \
-    --with-static-exe \
     --with-64 \
     --with-mt \
     --without-dll \
