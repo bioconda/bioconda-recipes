@@ -10,7 +10,7 @@ fi
 if [ $PY3K -eq 1 ]; then
     VRNA_PYFLAGS="--without-python2"
 else
-    VRNA_PYFLAGS="--without-python"
+    VRNA_PYFLAGS="--with-python2 --without-python"
 fi
 
 ## Configure and make
@@ -23,6 +23,7 @@ fi
             --without-tutorial \
             --without-tutorial-pdf \
             --without-cla \
+            --without-rnaxplorer \
             ${extra_config_options} \
             && \
 make -j${CPU_COUNT}
