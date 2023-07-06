@@ -12,7 +12,7 @@ fi
 export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Itabixpp -I\$(INC_DIR)"
 export LIBPATH="-L${PREFIX}/lib -L. -Lhtslib -Ltabixpp"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2 -fopenmp"
-export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64 ${LDFLAGS}"
+export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
 
 sed -i.bak 's/CFFFLAGS:= -O3/CFFFLAGS=-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x/' contrib/smithwaterman/Makefile
 sed -i.bak 's/CFLAGS/CXXFLAGS/g' contrib/smithwaterman/Makefile
@@ -28,6 +28,7 @@ if [ "$(uname)" == "Darwin" ]; then
 	sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' contrib/smithwaterman/Makefile
 	#export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++"
 	sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' contrib/intervaltree/Makefile
+	sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' Makefile
 fi
 
 pkg-config --list-all
