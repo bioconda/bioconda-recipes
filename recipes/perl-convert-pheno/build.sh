@@ -21,7 +21,8 @@ install_deps() {
         }
     done
 }
-install_deps
+# install_deps
+cpanm --sudo File::ShareDir::Install
 perl Makefile.PL INSTALLDIRS=site
 make
 # make test
