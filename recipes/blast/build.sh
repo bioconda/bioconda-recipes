@@ -71,7 +71,7 @@ if [[ $(uname) = Linux ]] ; then
         --without-debug \
         --with-experimental=Int8GI \
         --with-strip \
-        --without-vdb \
+        --with-vdb=$PREFIX \
         --with-z=$PREFIX \
         --with-bz2=$PREFIX \
         --without-krb5 \
@@ -90,7 +90,7 @@ else
         --without-debug \
         --with-experimental=Int8GI \
         --with-strip \
-        --without-vdb \
+        --with-vdb=$PREFIX \
         --with-z=$PREFIX \
         --with-bz2=$PREFIX \
         --without-krb5 \
