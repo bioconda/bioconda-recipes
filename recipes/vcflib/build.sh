@@ -11,8 +11,8 @@ fi
 
 export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Itabixpp -I\$(INC_DIR)"
 export LIBPATH="-L${PREFIX}/lib -L. -Lhtslib -Ltabixpp"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2"
-export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2 -fopenmp"
+export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64 ${LDFLAGS}"
 
 sed -i.bak 's/CFFFLAGS:= -O3/CFFFLAGS=-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x/' contrib/smithwaterman/Makefile
 sed -i.bak 's/CFLAGS/CXXFLAGS/g' contrib/smithwaterman/Makefile
@@ -28,20 +28,19 @@ if [ "$(uname)" == "Darwin" ]; then
 	sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' contrib/smithwaterman/Makefile
 	#export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++"
 	sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' contrib/intervaltree/Makefile
-	sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' Makefile
-	sed -i.bak 's/if ( n_data/if ( \*n_data/' src/cdflib.cpp
 fi
 
 pkg-config --list-all
 
-# cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DTABIXPP_LOCAL:STRING=$PREFIX/lib
 cmake -S . -B build \
-	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+	-DZIG=ON -DOPENMP=ON -DWFA_GITMODULE=OFF \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DBUILD_SHARED_LIBS=ON \
+	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-DCMAKE_C_COMPILER="${CC}" \
+	-DCMAKE_INCLUDE_PATH="${PREFIX}/include" \
 	-DCMAKE_LIBRARY_PATH="${PREFIX}/lib"
 
 cmake --build build/ --target install -j 4 -v
