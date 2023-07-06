@@ -15,14 +15,15 @@ install_deps() {
         "YAML::XS"
     )
     for dep in "${deps[@]}"; do
-        HOME=/tmp cpanm "$dep" || {
+        # HOME=/tmp cpanm "$dep" || {
+        cpanm "$dep" || {
             echo "Failed to install perl module $dep"
             exit 1
         }
     done
 }
-# install_deps
 cpanm File::ShareDir::Install
+install_deps
 perl Makefile.PL INSTALLDIRS=site
 make
 # make test
