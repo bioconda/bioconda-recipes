@@ -1,30 +1,27 @@
-diff --git a/setup.py b/setup.py
-index 9b10cdb..bab4607 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -7,12 +7,6 @@ import platform
+@@ -7,10 +7,6 @@ import platform
  import pkg_resources
- from setuptools import setup, Extension, dist
+ from setuptools import setup, Extension
  
 -if sys.version_info.major == 2 and sys.version_info.minor != 7:
 -    sys.stderr.write("ERROR: cyvcf2 is only for python 2.7 or greater you are running %d.%d\n", (sys.version_info.major, sys.version_info.minor))
 -    sys.exit(1)
 -
--# Install numpy right now
--dist.Distribution().fetch_build_eggs(['numpy'])
  import numpy as np
  
  
-@@ -44,17 +38,8 @@ def no_cythonize(extensions, **_ignore):
+@@ -42,18 +38,8 @@ def no_cythonize(extensions, **_ignore):
      return extensions
  
  
 -# Build the Cython extension by statically linking to the bundled htslib
 -sources = [
--    x for x in glob.glob('htslib/*.c') 
+-    x for x in glob.glob('htslib/*.c')
 -    if not any(e in x for e in ['irods', 'plugin'])
 -]
 -sources += glob.glob('htslib/cram/*.c')
+-sources += glob.glob('htslib/htscodecs/htscodecs/*.c')
 -# Exclude the htslib sources containing main()'s
 -sources = [x for x in sources if not x.endswith(('htsfile.c', 'tabix.c', 'bgzip.c'))]
 -sources.append('cyvcf2/helpers.c')
@@ -35,7 +32,7 @@ index 9b10cdb..bab4607 100644
  if platform.system() != 'Darwin':
      extra_libs.append('crypt')
  if bool(int(os.getenv("LIBDEFLATE", 0))):
-@@ -66,7 +51,7 @@ extensions = [Extension("cyvcf2.cyvcf2",
+@@ -65,7 +51,7 @@ extensions = [Extension("cyvcf2.cyvcf2",
                          extra_compile_args=["-Wno-sign-compare", "-Wno-unused-function",
                              "-Wno-strict-prototypes",
                              "-Wno-unused-result", "-Wno-discarded-qualifiers"],
