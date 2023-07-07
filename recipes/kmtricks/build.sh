@@ -13,8 +13,9 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
                     -DWITH_SOCKS=ON
 cmake --build ./build
 
-cp -r ./bin/kmtricks $PREFIX/bin
-cp -r ./bin/kmtricks-socks $PREFIX/bin
+# Copy kmtricks binaries
+cp ./bin/kmtricks $PREFIX/bin
+cp ./bin/kmtricks-socks $PREFIX/bin
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
                     -DNATIVE=OFF \
@@ -25,4 +26,4 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 
 cmake --build ./build
 
-cp -r ./bin/kmtricks $PREFIX/bin/kmtricksp
+cp ./bin/kmtricks $PREFIX/bin/kmtricksp
