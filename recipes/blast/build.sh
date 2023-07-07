@@ -71,7 +71,7 @@ if [[ $(uname) = Linux ]] ; then
         --without-debug \
         --with-experimental=Int8GI \
         --with-strip \
-        --without-vdb \
+        --with-vdb=$PREFIX \
         --with-z=$PREFIX \
         --with-bz2=$PREFIX \
         --without-krb5 \
@@ -90,7 +90,7 @@ else
         --without-debug \
         --with-experimental=Int8GI \
         --with-strip \
-        --without-vdb \
+        --with-vdb=$PREFIX \
         --with-z=$PREFIX \
         --with-bz2=$PREFIX \
         --without-krb5 \
@@ -106,6 +106,7 @@ apps="$apps rpsblast.exe rpstblastn.exe makembindex.exe segmasker.exe"
 apps="$apps dustmasker.exe windowmasker.exe deltablast.exe makeblastdb.exe"
 apps="$apps blastdbcmd.exe blastdb_aliastool.exe convert2blastmask.exe"
 apps="$apps blastdbcheck.exe makeprofiledb.exe blast_formatter.exe rpsbproc.exe"
+apps="$apps blastn_vdb.exe tblastn_vdb.exe"
 cd ReleaseMT
 
 # The "datatool" binary needs the libs at build time, create
