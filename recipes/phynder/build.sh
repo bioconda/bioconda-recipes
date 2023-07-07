@@ -11,3 +11,4 @@ cd -
 sed 's#HTSDIR=../htslib#HTSDIR=./htslib#g'
 make
 make install
+
