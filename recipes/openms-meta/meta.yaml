@@ -9,7 +9,7 @@ source:
   sha256: 2d186f35fe42573a19283605ccfb491ca6da585880fa3725a013975df26bc008
 
 build:
-  number: 1
+  number: 4
 
 # Try this when building with GUI
 #extra:
@@ -17,12 +17,14 @@ build:
 #    extended-base: True
 
 requirements:
+    # Note: pinning of sysroot_linux-64 =2.17 enforces cos7 and is currently needed to prevent an memcpy@GLIBC2.14 error
     build:
       - {{ compiler('cxx') }}
       - cmake
       - make
       - autoconf
       - automake
+      - sysroot_linux-64 =2.17 # [linux]
     host:
       - llvm-openmp # [osx]
       - zlib
@@ -32,9 +34,10 @@ requirements:
       - eigen >=3.3.2
       - hdf5 >=1.10
       - bzip2
-      - qt
+      - qt-main
       - libsvm
       - coinmp
+      - sysroot_linux-64 =2.17 # [linux]
 
 test:
   commands:
@@ -49,8 +52,10 @@ outputs:
         # no actual build is done. CMake is used to install different parts of the existing build
         # But since the other packages depend on its run_exports
         # We want to make sure that the versions of the dependencies used are the same as above
+        # Note: pinning of sysroot_linux-64 =2.17 enforces cos7 and is currently needed to prevent an memcpy@GLIBC2.14 error
         build:
           - cmake
+          - sysroot_linux-64 =2.17 # [linux]
         host:
           - llvm-openmp # [osx]
           - zlib
@@ -60,9 +65,10 @@ outputs:
           - eigen >=3.3.2
           - hdf5 >=1.10
           - bzip2
-          - qt
+          - qt-main
           - libsvm
           - coinmp
+          - sysroot_linux-64 =2.17 # [linux]
     build:
       run_exports:
           - {{ pin_compatible('llvm-openmp', max_pin='x.x') }} # [osx]
@@ -72,7 +78,7 @@ outputs:
           - {{ pin_compatible('eigen', max_pin='x.x') }}
           - {{ pin_compatible('hdf5', max_pin='x.x') }}
           - {{ pin_compatible('bzip2', max_pin='x.x') }}
-          - {{ pin_compatible('qt', max_pin='x.x') }}
+          - {{ pin_compatible('qt-main', max_pin='x.x') }}
           - {{ pin_compatible('libsvm', max_pin='x.x') }}
           - {{ pin_compatible('coinmp', max_pin='x.x') }}
           - libopenms {{ version }}
@@ -82,8 +88,10 @@ outputs:
     script: package_openms-tools.sh
     requirements:
       # no actual build is done. CMake is used to install different parts of the existing build
+      # Note: pinning of sysroot_linux-64 =2.17 enforces cos7 and is currently needed to prevent an memcpy@GLIBC2.14 error
       build:
         - cmake
+        - sysroot_linux-64 =2.17 # [linux]
       host:
         - {{ pin_subpackage('libopenms', exact=True) }}
       # conda apparently does not support run_exports in subpackages yet, otherwise having libopenms in host would be enough.
@@ -98,9 +106,10 @@ outputs:
         - eigen >=3.3.2
         - hdf5 >=1.10
         - bzip2
-        - qt
+        - qt-main
         - libsvm
         - coinmp
+        - sysroot_linux-64 =2.17 # [linux]
       run:
         - {{ pin_subpackage('libopenms', exact=True) }}
         - {{ pin_compatible('llvm-openmp', max_pin='x.x') }} # [osx]
@@ -110,7 +119,7 @@ outputs:
         - {{ pin_compatible('eigen', max_pin='x.x') }}
         - {{ pin_compatible('hdf5', max_pin='x.x') }}
         - {{ pin_compatible('bzip2', max_pin='x.x') }}
-        - {{ pin_compatible('qt', max_pin='x.x') }}
+        - {{ pin_compatible('qt-main', max_pin='x.x') }}
         - {{ pin_compatible('libsvm', max_pin='x.x') }}
         - {{ pin_compatible('coinmp', max_pin='x.x') }}
     test:
