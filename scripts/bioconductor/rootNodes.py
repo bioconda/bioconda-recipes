@@ -24,7 +24,8 @@ def getRepoData(ts):
 
 def printRootNodes(config_path, recipe_folder, sinceNDays, missing, rootNodes):
     config = utils.load_config(config_path)
-    blacklist = utils.get_blacklist(config, recipe_folder)
+    #blacklist = utils.get_blacklist(config, recipe_folder)
+    blacklist = set()
     recipes = utils.get_recipes(recipe_folder)
 
     if sinceNDays:
