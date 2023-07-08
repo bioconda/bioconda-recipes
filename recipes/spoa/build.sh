@@ -10,7 +10,8 @@ cmake -S . -B build \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DBUILD_SHARED_LIBS=ON \
-	-Dspoa_build_executable=ON \
+	-Dspoa_install=ON \
+	-Dspoa_build_exe=ON \
 	-Dspoa_optimize_for_portability=ON \
 	-Dspoa_use_simde=ON \
 	-Dspoa_use_simde_openmp=ON \
