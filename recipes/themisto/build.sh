@@ -23,11 +23,16 @@ git submodule update --init --recursive
 
 echo "$rustvers" > ggcat/rust-toolchain
 
-sed -i 's/g++/$(CXX)/g' ggcat/crates/capi/ggcat-cpp-api/Makefile
-sed -i 's/g++/$(CXX)/g' ggcat/crates/capi/ggcat-cpp-api/example/Makefile
-sed -i 's/g++/$(CXX)/g' integration_tests/reference_implementation/Makefile
-sed -i 's/g++/$(CXX)/g' SBWT/KMC/Makefile
-sed -i 's/g++/$(CXX)/g' SBWT/KMC/tests/kmc_CLI/trivial-k-mer-counter/Makefile
+sed 's/g++/$(CXX)/g' ggcat/crates/capi/ggcat-cpp-api/Makefile > tmp_makefile
+mv tmp_makefile ggcat/crates/capi/ggcat-cpp-api/Makefile
+sed 's/g++/$(CXX)/g' ggcat/crates/capi/ggcat-cpp-api/example/Makefile > tmp_makefile
+mv tmp_makefile ggcat/crates/capi/ggcat-cpp-api/example/Makefile
+sed 's/g++/$(CXX)/g' integration_tests/reference_implementation/Makefile > tmp_makefile
+mv tmp_makefile integration_tests/reference_implementation/Makefile
+sed 's/g++/$(CXX)/g' SBWT/KMC/Makefile > tmp_makefile
+mv tmp_makefile SBWT/KMC/Makefile
+sed 's/g++/$(CXX)/g' SBWT/KMC/tests/kmc_CLI/trivial-k-mer-counter/Makefile > tmp_makefile
+mv tmp_makefile SBWT/KMC/tests/kmc_CLI/trivial-k-mer-counter/Makefile
 
 
 cd build
