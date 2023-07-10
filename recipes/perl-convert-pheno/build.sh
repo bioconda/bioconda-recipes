@@ -22,6 +22,12 @@ install_deps() {
         }
     done
 }
+
+if [[ "$(uname)" == Darwin ]]; then
+    # potential fix for the compilation error of Mac-SystemDirectory-0.14
+    conda install -c bioconda perl-mac-systemdirectory -y
+fi
+
 cpanm File::ShareDir::Install
 install_deps
 perl Makefile.PL INSTALLDIRS=site
