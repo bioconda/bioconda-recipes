@@ -15,8 +15,8 @@ install_deps() {
         "YAML::XS"
     )
     for dep in "${deps[@]}"; do
-        # HOME=/tmp cpanm "$dep" || {
-        cpanm "$dep" || {
+        HOME=/tmp cpanm "$dep" || {
+        # cpanm "$dep" || {
             echo "Failed to install perl module $dep"
             exit 1
         }
