@@ -25,7 +25,8 @@ install_deps() {
 
 if [[ "$(uname)" == Darwin ]]; then
     # potential fix for the compilation error of Mac-SystemDirectory-0.14
-    conda install -c bioconda perl-mac-systemdirectory -y
+    # conda install -c bioconda perl-mac-systemdirectory -y
+    xcode-select --install
 fi
 
 cpanm File::ShareDir::Install
