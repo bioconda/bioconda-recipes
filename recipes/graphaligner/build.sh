@@ -3,8 +3,7 @@
 cd $SRC_DIR
 ls -la $PREFIX/lib/
 echo $LIBRARY_PATH
-export LIBRARY_PATH=$LIBRARY_PATH:$PREFFIX/lib
+export LIBRARY_PATH=$PREFIX/lib
 echo $LIBRARY_PATH
-exit 1
-#make bin/GraphAligner
-#cp bin/GraphAligner $PREFIX/bin
+make bin/GraphAligner
+cp bin/GraphAligner $PREFIX/bin
