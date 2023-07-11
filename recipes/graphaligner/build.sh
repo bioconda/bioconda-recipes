@@ -5,5 +5,6 @@ ls -la $PREFIX/lib/
 echo $LIBRARY_PATH
 export LIBRARY_PATH=$LIBRARY_PATH:$PREFFIX/lib
 echo $LIBRARY_PATH
-make bin/GraphAligner
-cp bin/GraphAligner $PREFIX/bin
+exit 1
+#make bin/GraphAligner
+#cp bin/GraphAligner $PREFIX/bin
