@@ -1,0 +1,349 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2ff61b1..5044ee8 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
++cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+ project(mashmap VERSION 3.0.0)
+ 
+ include(GNUInstallDirs)
+@@ -9,7 +9,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)  # Falling back to different standard it not
+ set(CMAKE_CXX_EXTENSIONS OFF)  # Make sure no compiler-specific features are used.
+ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+ 
+-#set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE) # does not work
+ 
+ #set(CMAKE_BUILD_TYPE Release)
+ if(NOT CMAKE_BUILD_TYPE)
+@@ -19,10 +18,13 @@ endif()
+ 
+ message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+ 
+-set(EXTRA_FLAGS "-pg")
++option(OPTIMIZE_FOR_NATIVE "Build with -march=native" ON)
++
+ if (${CMAKE_BUILD_TYPE} MATCHES Release)
+-    #set(EXTRA_FLAGS "-Ofast -march=native -flto -fno-fat-lto-objects")
+-    set(EXTRA_FLAGS "-g -Ofast -march=native")
++    set(EXTRA_FLAGS "-Ofast -flto -fno-fat-lto-objects")
++    if (OPTIMIZE_FOR_NATIVE)
++      set(EXTRA_FLAGS "${EXTRA_FLAGS} -march=native")
++    endif ()
+     set(CMAKE_CXX_FLAGS_RELEASE "-g -DNDEBUG") # reset CXX_FLAGS to replace -O3 with -Ofast
+ endif ()
+ 
+@@ -36,31 +38,26 @@ else()
+     set (CMAKE_CXX_FLAGS "${OpenMP_CXX_FLAGS} ${PIC_FLAG} ${EXTRA_FLAGS}")
+ endif ()
+ 
+-if(WFA_PNG_AND_TSV)
+-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWFA_PNG_AND_TSV")
+-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWFA_PNG_AND_TSV")
+-endif ()
+-
+ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+ 
+ add_compile_options(-Wfatal-errors)
+ 
+-include(FetchContent)
+-FetchContent_Declare(
+-    assert
+-    URL https://github.com/jeremy-rifkin/libassert/archive/refs/tags/v1.1.tar.gz
+-)
+-FetchContent_MakeAvailable(assert)
++#include(FetchContent)
++#FetchContent_Declare(
++    #assert
++    #URL https://github.com/jeremy-rifkin/libassert/archive/refs/tags/v1.1.tar.gz
++#)
++#FetchContent_MakeAvailable(assert)
+ 
+ add_executable(mashmap
+   src/common/utils.cpp
+-  src/map/mash_map.cpp) #$(CXX) $(CXXFLAGS) $(CPPFLAGS) -Lsrc/common/wflign/build/lib -Isrc/common/wflign/deps -Isrc/common $(SOURCE_1) -o wfmash @mathlib@ -lstdc++ -lz -lm -lpthread -lwflambda -lwflign
++  src/map/mash_map.cpp) 
+ 
+ add_executable(mashmap-align
+   src/common/utils.cpp
+-  src/align/align.cpp) #$(CXX) $(CXXFLAGS) $(CPPFLAGS) -Lsrc/common/wflign/build/lib -Isrc/common/wflign/deps -Isrc/common $(SOURCE_1) -o wfmash @mathlib@ -lstdc++ -lz -lm -lpthread -lwflambda -lwflign
++  src/align/align.cpp) 
+ 
+ target_include_directories(mashmap PRIVATE
+   src
+@@ -78,13 +75,9 @@ target_link_libraries(mashmap
+   gslcblas
+   m
+   pthread
+-  hts
+-  rt
+-  jemalloc
++  #rt
+   z
+-  assert
+-  gmp
+-  #absl::flat_hash_map
++  #assert
+ )
+ 
+ target_link_libraries(mashmap-align
+@@ -92,13 +85,9 @@ target_link_libraries(mashmap-align
+   gslcblas
+   m
+   pthread
+-  hts
+-  rt
+-  jemalloc
++  #rt
+   z
+-  assert
+-  gmp
+-  #absl::flat_hash_map
++  #assert
+ )
+ 
+ install(TARGETS mashmap DESTINATION bin)
+diff --git a/scripts/generate_git_version.sh b/scripts/generate_git_version.sh
+new file mode 100644
+index 0000000..e481112
+--- /dev/null
++++ b/scripts/generate_git_version.sh
+@@ -0,0 +1,5 @@
++INC_DIR=$1
++
++GIT_VERSION=$(git describe --always --tags)
++
++echo "#define MASHMAP_GIT_VERSION" \"$GIT_VERSION\" > "$INC_DIR"/mashmap_git_version.hpp
+diff --git a/src/common/progress.hpp b/src/common/progress.hpp
+index 7e5a0bc..e63e531 100644
+--- a/src/common/progress.hpp
++++ b/src/common/progress.hpp
+@@ -6,6 +6,7 @@
+ #include <thread>
+ #include <chrono>
+ #include <iomanip>
++#include <sstream>
+ 
+ namespace progress_meter {
+ 
+diff --git a/src/map/include/commonFunc.hpp b/src/map/include/commonFunc.hpp
+index 551c53e..ba3b42f 100644
+--- a/src/map/include/commonFunc.hpp
++++ b/src/map/include/commonFunc.hpp
+@@ -15,6 +15,7 @@
+ #include <limits>
+ #include <numeric>
+ #include <queue>
++#include <sstream>
+ 
+ //Own includes
+ #include "map/include/map_parameters.hpp"
+diff --git a/src/map/include/map_parameters.hpp b/src/map/include/map_parameters.hpp
+index 5944575..867fd42 100644
+--- a/src/map/include/map_parameters.hpp
++++ b/src/map/include/map_parameters.hpp
+@@ -85,7 +85,7 @@ namespace fixed
+ 
+ double pval_cutoff = 1e-3;                          // p-value cutoff for determining window size
+ float confidence_interval = 0.95;                   // Confidence interval to relax jaccard cutoff for mapping (0-1)
+-float percentage_identity = 0.90;                   // Percent identity in the mapping step
++float percentage_identity = 0.85;                   // Percent identity in the mapping step
+ float ANIDiff = 0.0;                                // Stage 1 ANI diff threshold
+ float ANIDiffConf = 0.999;                          // ANI diff confidence
+ }
+diff --git a/src/map/include/map_stats.hpp b/src/map/include/map_stats.hpp
+index f24b0e1..36f017b 100644
+--- a/src/map/include/map_stats.hpp
++++ b/src/map/include/map_stats.hpp
+@@ -178,9 +178,14 @@ namespace skch
+      * @param[in] lengthReference reference length
+      * @return                    p-value
+      */
+-    inline double estimate_pvalue (int s, int k, int alphabetSize, 
++    inline double estimate_pvalue (
++        int s, 
++        int k, 
++        int alphabetSize, 
+         float identity,
+-        int64_t lengthQuery, uint64_t lengthReference, float confidence_interval)
++        int64_t lengthQuery, 
++        uint64_t lengthReference, 
++        float confidence_interval)
+     {
+       //total space size of k-mers
+       double kmerSpace = pow(alphabetSize, k);
+@@ -226,15 +231,19 @@ namespace skch
+      * @param[in] lengthReference   reference length
+      * @return                      optimal window size for sketching
+      */
+-    inline int64_t recommendedSketchSize(double pValue_cutoff, float confidence_interval,
+-        int k, int alphabetSize,
++    inline int64_t recommendedSketchSize(
++        double pValue_cutoff, 
++        float confidence_interval,
++        int k, 
++        int alphabetSize,
+         float identity,
+-        int64_t segmentLength, uint64_t lengthReference)
++        int64_t segmentLength, 
++        uint64_t lengthReference)
+     {
+-        int64_t lengthQuery = segmentLength;
++      int64_t lengthQuery = segmentLength - k;
+ 
+       int optimalSketchSize;
+-      for (optimalSketchSize = 10; optimalSketchSize < lengthQuery; optimalSketchSize += 50) {
++      for (optimalSketchSize = 10; optimalSketchSize < lengthQuery; optimalSketchSize += 10) {
+         //Compute pvalue
+         double pVal = estimate_pvalue(optimalSketchSize, k, alphabetSize, identity, lengthQuery, lengthReference, confidence_interval);
+ 
+diff --git a/src/map/include/parseCmdArgs.hpp b/src/map/include/parseCmdArgs.hpp
+index c06d6e5..235e026 100644
+--- a/src/map/include/parseCmdArgs.hpp
++++ b/src/map/include/parseCmdArgs.hpp
+@@ -10,6 +10,7 @@
+ #include <iostream>
+ #include <string>
+ #include <fstream>
++#include <sstream>
+ 
+ //Own includes
+ #include "map/include/map_parameters.hpp"
+@@ -53,6 +54,11 @@ $ mashmap --rl reference_files_list.txt -q seq.fq [OPTIONS]");
+ sequences shorter than segment length will be ignored", ArgvParser::OptionRequiresValue);
+     cmd.defineOptionAlternative("segLength","s");
+ 
++    cmd.defineOption("sketchSize", "Number of sketch elements", ArgvParser::OptionRequiresValue);
++    cmd.defineOptionAlternative("sketchSize","J");
++
++    cmd.defineOption("dense", "Use dense sketching to yield higher ANI estimation accuracy. [enabled by default]");
++
+     cmd.defineOption("blockLength", "keep merged mappings supported by homologies of this total length [default: segmentLength]", ArgvParser::OptionRequiresValue);
+     cmd.defineOptionAlternative("blockLength", "l");
+ 
+@@ -87,8 +93,6 @@ sequences shorter than segment length will be ignored", ArgvParser::OptionRequir
+ 
+     cmd.defineOption("kmerThreshold", "ignore the top \% most-frequent kmer window [default: 0.001]", ArgvParser::OptionRequiresValue);
+ 
+-    cmd.defineOption("sketchSize", "Number of sketch elements", ArgvParser::OptionRequiresValue);
+-    cmd.defineOptionAlternative("sketchSize","J");
+ 
+     //cmd.defineOption("shortenCandidateRegions", "Only compute rolling minhash score for small regions around positions where the intersection of reference and query minmers is locally maximal. Results in slighty faster runtimes at the cost of mapping placement and ANI prediction.");
+ 
+@@ -546,12 +550,21 @@ sequences shorter than segment length will be ignored", ArgvParser::OptionRequir
+       str >> parameters.sketchSize;
+       str.clear();
+     } else {
++      if(cmd.foundOption("dense")) 
++      {
++        const double md = 1 - parameters.percentageIdentity;
++        double dens = 0.02 * (1 + (md / 0.05));
++        parameters.sketchSize = dens * (parameters.segLength - parameters.kmerSize);
++      }
++      else 
++      {
+       //Compute optimal window size
+       parameters.sketchSize = skch::Stat::recommendedSketchSize(
+             skch::fixed::pval_cutoff, skch::fixed::confidence_interval,
+             parameters.kmerSize, parameters.alphabetSize,
+             parameters.percentageIdentity,
+             parameters.segLength, parameters.referenceSize);
++      }
+     }
+ 
+     if(cmd.foundOption("output"))
+diff --git a/src/map/include/slidingMap.hpp b/src/map/include/slidingMap.hpp
+index 149e0c8..b1bde07 100644
+--- a/src/map/include/slidingMap.hpp
++++ b/src/map/include/slidingMap.hpp
+@@ -33,7 +33,7 @@ namespace skch
+         //Metadata for the minmers saved in sliding ordered map during L2 stage
+         struct slidingMapContainerValueType
+         {
+-          hash_t hash;
++          hash_t hash_val;
+           strand_t q_strand;
+           strand_t strand_vote;
+           unsigned int num_before_inc; // Number of hashes between this and the previous (including self)
+@@ -95,7 +95,7 @@ namespace skch
+         static constexpr bool slidingMapContainerValueType_comp(
+             const slidingMapContainerValueType& a, const slidingMapContainerValueType& b) 
+         {
+-          return a.hash < b.hash;
++          return a.hash_val < b.hash_val;
+         } 
+ 
+         /**
+@@ -131,7 +131,7 @@ namespace skch
+           auto insert_loc = std::lower_bound(
+               std::next(slidingWindowMinhashes.begin()), slidingWindowMinhashes.end(),
+               mi.hash,
+-              [](const slidingMapContainerValueType& a, hash_t b) {return a.hash < b;});
++              [](const slidingMapContainerValueType& a, hash_t b) {return a.hash_val < b;});
+ 
+           if (insert_loc == slidingWindowMinhashes.end()) 
+           {
+@@ -139,13 +139,13 @@ namespace skch
+           } 
+ 
+           // If minmer matches, then set curr to active
+-          if (insert_loc->hash == mi.hash) {
++          if (insert_loc->hash_val == mi.hash) {
+             insert_loc->active = true;
+             insert_loc->strand_vote += (insert_loc->q_strand * mi.strand);
+             intersectionSize++;
+ 
+             // If minmer matches and is <= pivot, sharedSketchElements++
+-            if (insert_loc->hash <= pivot->hash) {
++            if (insert_loc->hash_val <= pivot->hash_val) {
+               sharedSketchElements++;
+               strand_votes += insert_loc->strand_vote; 
+             }
+@@ -154,7 +154,7 @@ namespace skch
+           else {
+             insert_loc->num_before_inc++;
+             //  If curr <= pivot then increment pivRank
+-            if (insert_loc->hash <= pivot->hash) {
++            if (insert_loc->hash_val <= pivot->hash_val) {
+               pivRank++;
+             }
+             //  If pivRank > sketchSize, move piv left and update counters 
+@@ -177,7 +177,7 @@ namespace skch
+           auto insert_loc = std::lower_bound(
+               std::next(slidingWindowMinhashes.begin()), slidingWindowMinhashes.end(),
+               mi.hash,
+-              [](const slidingMapContainerValueType& a, hash_t b) {return a.hash < b;});
++              [](const slidingMapContainerValueType& a, hash_t b) {return a.hash_val < b;});
+ 
+           if (insert_loc == slidingWindowMinhashes.end()) 
+           {
+@@ -185,9 +185,9 @@ namespace skch
+           } 
+ 
+           // If minmer matches, then set curr to inactive
+-          if (insert_loc->hash == mi.hash) {
++          if (insert_loc->hash_val == mi.hash) {
+             // If minmer matches and is <= pivot, sharedSketchElements--
+-            if (insert_loc->hash <= pivot->hash) {
++            if (insert_loc->hash_val <= pivot->hash_val) {
+               sharedSketchElements--;
+               strand_votes -= insert_loc->strand_vote;
+             }
+@@ -199,7 +199,7 @@ namespace skch
+           else {
+             insert_loc->num_before_inc--;
+             //  If curr <= pivot then decrement pivRank
+-            if (insert_loc->hash <= pivot->hash) {
++            if (insert_loc->hash_val <= pivot->hash_val) {
+               pivRank--;
+             }
+             //  If pivRank < sketchSize, try to move piv right and update counters 
+diff --git a/src/mashmap_git_version.hpp b/src/mashmap_git_version.hpp
+deleted file mode 100644
+index 2459d25..0000000
+--- a/src/mashmap_git_version.hpp
++++ /dev/null
+@@ -1 +0,0 @@
+-#define MASHMAP_GIT_VERSION "v2.0-40-g2fc23b9"
