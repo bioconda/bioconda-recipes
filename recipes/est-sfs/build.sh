@@ -3,7 +3,7 @@
 
 mkdir -p ${PREFIX}/bin
 
-make
+make CC="${CC} -fcommon ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
 chmod +x est-sfs
 
