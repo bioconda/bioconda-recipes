@@ -20,6 +20,7 @@ autoupdate
 #   - phyml-beagle -- doesn't compile in this release
 #   - phyrex -- crashes with segfault
 
+# Adding -v to make breaks compilation on Microsoft Azure CI
 for binary in phyml-mpi phyml phytime; do
 	echo ${binary}
 	./configure \
