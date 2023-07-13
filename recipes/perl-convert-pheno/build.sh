@@ -31,7 +31,7 @@ if [[ "$(uname)" == Darwin ]]; then
     conda install -c bioconda perl-sub-exporter -y
     conda install -c bioconda perl-mac-systemdirectory -y
     conda install -c bioconda perl-file-homedir -y
-    conda install -c conda-forge perl-yaml-libyaml=0.85 -y
+    conda install -c -vvv --no-deps conda-forge perl-yaml-libyaml=0.85 -y
 fi
 
 cpanm File::ShareDir::Install
