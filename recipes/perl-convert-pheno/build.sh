@@ -25,6 +25,7 @@ install_deps() {
 
 if [[ "$(uname)" == Darwin ]]; then
     # potential fix for the compilation errors
+    export HOME=`pwd`
     conda install -c bioconda perl-test-leaktrace -y
     conda install -c bioconda perl-params-util -y
     conda install -c conda-forge perl-data-optlist -y
