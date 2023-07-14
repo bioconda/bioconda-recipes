@@ -22,6 +22,15 @@ export NCM_HOME=$PREFIX/NGSCheckMate
 python $PREFIX/NGSCheckMate/ncm_fastq.py "\$@"
 EOF
 
+ln -s $PREFIX/NGSCheckMate/ngscheckmate_fastq $PREFIX/bin/ngscheckmate_fastq
+
+cat << EOF > $PREFIX/bin/makesnvpattern.pl
+#!/usr/bin/env bash
+
+export NCM_HOME=$PREFIX/NGSCheckMate
+perl $PREFIX/NGSCheckMate/patterngenerator/makesnvpattern.pl "\$@"
+EOF
+
 cat << EOF > $PREFIX/NGSCheckMate/ncm.conf
 SAMTOOLS=samtools
 BCFTOOLS=bcftools
