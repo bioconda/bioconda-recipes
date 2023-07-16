@@ -1,5 +1,3 @@
 #!/usr/bin/env bash
-
-cd $SRC_DIR
-make bin/GraphAligner
+make all
 cp bin/GraphAligner $PREFIX/bin
