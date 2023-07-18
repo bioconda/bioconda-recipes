@@ -1,24 +1,27 @@
-{% set name = "vrhyme" %}
+{% set name = "vRhyme" %}
 {% set version = "1.1.0" %}
+{% set sha256 = "ffc8b7b7f976d251e5f42d41ef88f8a9bc3d3b6044fc443f31625a5feff83985" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/AnantharamanLab/vRhyme/archive/refs/tags/v{{ version }}.tar.gz 
-  sha256: ffc8b7b7f976d251e5f42d41ef88f8a9bc3d3b6044fc443f31625a5feff83985
+  url: https://github.com/AnantharamanLab/{{ name }}/archive/v{{ version }}.tar.gz 
+  sha256: {{ sha256 }}
+  patches:
+    - setup.patch
 
 build:
   script: {{ PYTHON }} -m pip install . -vv
-  number: 0
+  number: 1
   noarch: python
 
 requirements:
-  build:
   host:
     - pip
     - python >=3.6
+    - gzip
   run:
     - numpy
     - python >=3.6
@@ -33,12 +36,19 @@ requirements:
     - pysam
     - networkx
     - scikit-learn
+
 test:
   commands:
     - vRhyme --version
 
 about:
   home: https://github.com/AnantharamanLab/vRhyme
-  summary: vRhyme functions by utilizing coverage variance comparisons and supervised machine learning classification of sequence features to construct viral metagenome-assembled genomes (vMAGs).
+  license: GPL-3.0
+  license_file: LICENSE
+  license_family: GPL
+  summary: "Binning Virus Genomes from Metagenomes."
   dev_url: https://github.com/AnantharamanLab/vRhyme
-  license: GPL-3.0 license
+
+extra:
+  identifiers:
+    - doi:10.1093/nar/gkac341
