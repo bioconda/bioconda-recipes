@@ -1,6 +1,6 @@
 {% set name = "LolliPop" %}
-{% set version = "0.2.0" %}
-{% set sha256 = "14f9f5be1696ef61489c2f622d91b1337c14438fd9f483ce1d60516eb0afb840" %}
+{% set version = "0.3.0" %}
+{% set sha256 = "15135a929b87c209e84a096c9c345a12b1a4f6b2c00b37ec99ee88e5555acfec" %}
 
 package:
   name: {{ name|lower }}
@@ -13,25 +13,38 @@ source:
 build:
   noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -v
+  script:
+    - {{ PYTHON }} -m pip install '.[cli]' --ignore-installed --no-deps -v
+    - mkdir -p ${PREFIX}/share/{{ name }}/presets
+    - cp -vr presets/*  ${PREFIX}/share/{{ name }}/presets/
 
 requirements:
   host:
     - python >=3
     - pip
     - poetry-core >=1.0.8
+    - poetry-dynamic-versioning
   run:
     - python >=3
     - numpy
     - scipy
     - pandas
-    - ruamel_yaml
+    - zstandard
+    - ruamel.yaml
+    - strictyaml
     - tqdm
     - click
-
+    - click-option-group
+    - bcbio-gff
+    
 test:
   imports:
     - lollipop
+  commands:
+    - test "$(lollipop --version|tee >(cat 1>&2)|grep -oE '[0-9]+(\.[0-9a-z]+)*$')" == "{{ version }}"
+    - lollipop generate-mutlist --help
+    - lollipop getmutations from-basecount --help
+    - lollipop deconvolute --help
 
 about:
   home: https://github.com/cbg-ethz/LolliPop
@@ -43,3 +56,6 @@ about:
 extra:
   recipe-maintainers:
     - DrYak
+  identifiers:
+    - biotools:lollipop
+    - doi:10.1101/2022.11.02.22281825

@@ -10,7 +10,7 @@ source:
   sha256: 78ae8b1d3105f3f7447d14b1021bc5daba1b6e670068d97235dede3a46d745f3
 
 build:
-  number: 0
+  number: 1
   noarch: python
   entry_points:
     - humann = humann.humann:main
@@ -36,7 +36,9 @@ build:
     - humann_associate = humann.tools.humann_associate:main
     - humann_barplot = humann.tools.humann_barplot:main
     - humann_benchmark = humann.tools.humann_benchmark:main
-  script: "{{ PYTHON }} -m pip install . -vv --install-option='--bypass-dependencies-install'"
+  # We cannot use pip anymore since the --install-option flag that is advised by humann has been deprecated
+  # in pip.
+  script: "{{ PYTHON }} setup.py install --bypass-dependencies-install"
 
 requirements:
   host:
@@ -48,7 +50,6 @@ requirements:
     - diamond >=0.9.36
     - glpk
     - bowtie2 >2.1
-    #- minpath
 
 test:
   imports:
@@ -68,7 +69,6 @@ test:
     - humann_rename_table --help
     - humann_renorm_table --help
     - humann_regroup_table --help
-    #- humann_infer_taxonomy --help
     - humann_humann1_kegg --help
     - humann_rna_dna_norm --help
     - humann_strain_profiler --help
