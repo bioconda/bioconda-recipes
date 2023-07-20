@@ -1,19 +1,12 @@
 {% set name = "pyopenms" %}
-{% set version = "3.0.0" %}
+{% set version = "2.9.1" %}
 package:
   name: {{ name|lower  }}
   version: {{ version  }}
 
-{% if 'dev' in version %}
-source:
-  git_url: https://github.com/OpenMS/OpenMS.git
-  git_rev: develop
-  git_depth: 1 # (Defaults to -1/not shallow)
-{% else %}
 source:
   url: https://abibuilder.cs.uni-tuebingen.de/archive/openms/OpenMSInstaller/release/{{ version }}/OpenMS-{{ version }}-src.tar.gz
-  md5: 2b7ee0f4d8f42eb3c17384347df2dba4
-{% endif %}
+  sha256: 2d186f35fe42573a19283605ccfb491ca6da585880fa3725a013975df26bc008
 
 build:
   skip: True  # [py2k]
@@ -24,14 +17,13 @@ requirements:
     - {{ compiler('cxx') }}
     - make
     - cmake
-    - sysroot_linux-64 =2.17 # [linux]    
   host:
     - libopenms {{ version }}
     - llvm-openmp # [osx]
     - libsvm
     - xerces-c
     - boost-cpp
-    - qt-main
+    - qt
     - python {{ python }}
     - cython >=0.25.2
     - autowrap >=0.22.10
@@ -41,19 +33,17 @@ requirements:
     - numpy {{ numpy }}
     - pandas
     - matplotlib-base
-    - sysroot_linux-64 =2.17 # [linux]
   run: # run_exports in libopenms should take care of the libraries. But it does not because of bugs. So copy everthing again and again
     - libopenms {{ version }}
     - llvm-openmp # [osx]
     - libsvm
     - xerces-c
     - boost-cpp
-    - qt-main
+    - qt
     - python {{ python }}
     - numpy {{ numpy }}
     - pandas
     - matplotlib-base
-    - sysroot_linux-64 =2.17 # [linux]
 test:
   commands:
     - python -c "import pyopenms; print(pyopenms.__version__)"
@@ -67,11 +57,6 @@ about:
   summary: python bindings for OpenMS, an open-source software C++ library for LC-MS data management and analyses
 
 extra:
-  {% if 'dev' in version %}
-  skip-lints:
-    - uses_vcs_url
-    - missing_hash
-  {% endif %}
   identifiers:
     - biotools:openms
     - doi:10.1038/nmeth.3959
