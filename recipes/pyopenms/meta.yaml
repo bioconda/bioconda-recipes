@@ -1,12 +1,19 @@
 {% set name = "pyopenms" %}
-{% set version = "2.9.1" %}
+{% set version = "3.0.0" %}
 package:
   name: {{ name|lower  }}
   version: {{ version  }}
 
+{% if 'dev' in version %}
+source:
+  git_url: https://github.com/OpenMS/OpenMS.git
+  git_rev: develop
+  git_depth: 1 # (Defaults to -1/not shallow)
+{% else %}
 source:
   url: https://abibuilder.cs.uni-tuebingen.de/archive/openms/OpenMSInstaller/release/{{ version }}/OpenMS-{{ version }}-src.tar.gz
-  sha256: 2d186f35fe42573a19283605ccfb491ca6da585880fa3725a013975df26bc008
+  md5: 2b7ee0f4d8f42eb3c17384347df2dba4
+{% endif %}
 
 build:
   skip: True  # [py2k]
@@ -60,6 +67,11 @@ about:
   summary: python bindings for OpenMS, an open-source software C++ library for LC-MS data management and analyses
 
 extra:
-  identifiers:
+    {% if 'dev' in version %}
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash
+  {% endif %}
+  identifiers:  
     - biotools:openms
     - doi:10.1038/nmeth.3959
