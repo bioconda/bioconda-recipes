@@ -23,7 +23,7 @@ autoheader
 	LDFLAGS="${LDFLAGS}" \
 	--prefix="${PREFIX}" \
 	--with-gmapdb="${PREFIX}/share" \
-	--with-simd-level=sse42
+	--with-simd-level=avx2
 
 make -j4
 make install
