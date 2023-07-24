@@ -1,0 +1,50 @@
+{% set name = "demultiplex" %}
+{% set version = "1.2.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/demultiplex-{{ version }}.tar.gz
+  sha256: 27ebc30e52e36048486286348b44806deabb24197e05eb88bbed413676e99181
+
+build:
+  entry_points:
+    - demultiplex = demultiplex.cli:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - biopython >=1.72
+    - dict-trie >=1.0.1
+    - fastools >=1.1.0
+    - jit-open >=1.0.1
+    - tssv >=1.1.0
+
+test:
+  imports:
+    - demultiplex
+  commands:
+    - pip check
+    - demultiplex --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/jfjlaros/demultiplex
+  doc_url: https://demultiplex.readthedocs.io/en/latest/index.html
+  summary: Demultiplex any number of FASTA or a FASTQ files based on a list of barcodes
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - acaprez
