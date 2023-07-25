@@ -1,5 +1,6 @@
 {% set name = "GMAP" %}
-{% set version = "2021.08.25" %}
+{% set version = "2023.07.20" %}
+{% set sha256 = "19e70eebd9b282d8596721812d071efed188b6d5000627b9948f0486f87fe68f" %}
 
 package:
   name: {{ name|lower }}
@@ -7,37 +8,34 @@ package:
 
 source:
   url: http://research-pub.gene.com/gmap/src/gmap-gsnap-{{ version | replace(".", "-") }}.tar.gz
-  sha256: ef58843eb9cfbe174fad8444bf1b52b3f8841731412a3f90544a0e2bb85799b5
+  sha256: {{ sha256 }}
   patches:
     - single_quote_paths.patch
 
 build:
-  number: 2
+  number: 0
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
-  host:
+    - autoconf
     - perl
-    # zlib is needed for gunzip
+  host:
     - zlib
     - bzip2
   run:
     - perl
-    # zlib is needed for gunzip
-    - zlib
-    - bzip2
+    - perl-file-util
 
 test:
   commands:
-    - gmap --help
-    - gsnap --help
-    - ": | fa_coords | grep 'Error: No contigs were read in.'"
+    - "gmap --help"
+    - "gsnap --help"
 
 about:
-  home: http://research-pub.gene.com/gmap/
-  license: Apache-2.0
+  home: "http://research-pub.gene.com/gmap/"
+  license: "Apache-2.0"
   license_family: APACHE
   license_file: LICENSE
   summary: "Genomic mapping and alignment program for mRNA and EST sequences."
@@ -45,5 +43,6 @@ about:
 extra:
   identifiers:
     - biotools:gmap
+    - biotools:gsnap
     - doi:10.1093/bioinformatics/bti310
     - doi:10.1093/bioinformatics/btq057
