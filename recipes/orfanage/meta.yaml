@@ -1,0 +1,42 @@
+{% set version = "1.0.3" %}
+{% set commit_id = "03c63adca031b7a1ff062c84c009d5c84f8c77a5" %}
+
+package:
+  name: "orfanage"
+  version: "{{ version }}"
+
+source:
+  git_url: https://github.com/alevar/ORFanage.git
+  git_rev: {{ commit_id }}
+
+build:
+  number: 6
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - cmake >=3.2
+    - make
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  host:
+    - gsl
+    - libcblas
+    - zlib
+    - libbigwig
+
+test:
+  commands:
+      - orfanage --help > /dev/null
+
+about:
+  home: https://github.com/alevar/ORFanage
+  license: AGPLv3
+  license_file: LICENSE.md
+  summary: 'Ultra-efficient and sensitive method to search for ORFs in spliced genomes guided by reference annotation to maximize protein similarity within genes.'
+
+extra:
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash
