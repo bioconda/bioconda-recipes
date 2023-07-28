@@ -1,5 +1,6 @@
 {% set name = "OakVar" %}
-{% set version = "2.9.3" %}
+{% set version = "2.9.34" %}
+{% set sha256 = "012ab98834bb6c2bbd2df613cc231b5d1a2ae00ea1cdb5e4a586679f86bee429" %}
 
 package:
   name: {{ name|lower }}
@@ -7,64 +8,67 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/oakvar-{{ version }}.tar.gz
-  sha256: d3b6f426fd665170c1cf2d2bfb9bddc6ce344f0dc0fa5f74c3666f3611fe71c9
+  sha256: {{ sha256 }}
 
 build:
   number: 0
-  entry_points:
-    - ov=oakvar.cli.__main__:main
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  entry_points:
+    - ov=oakvar.__main__:main
 
 requirements:
   host:
+    - python >=3.8
     - pip
-    - python
   run:
-    - python
-    - aiohttp
-    - aiohttp-cors
-    - aiosqlite
-    - chardet
-    - connectorx
-    - download
-    - gdown
-    - intervaltree
-    - markdown
-    - mpmath
-    - nest-asyncio
-    - oyaml
-    - packaging
-    - Pillow
-    - polars
-    - psutil
-    - pyarrow
-    - pyjwt
-    - pyliftover
-    - python
-    - python-dateutil
+    - python >=3.8
     - requests
     - requests-toolbelt
-    - python-duckdb
+    - liftover
+    - markdown
+    - aiohttp
+    - chardet >=3.0.4
+    - aiosqlite
+    - oyaml
+    - nest-asyncio
+    - psutil
+    - python-dateutil
+    - download
+    - gdown
+    - split-file-reader
+    - packaging
+    - pillow
+    - duckdb
     - rich
+    - aiohttp-cors
+    - pyjwt
+    - polars
+    - connectorx
+    - pyarrow
+    - multiprocess
+    - mpmath
     - twobitreader
+    - intervaltree
 
 test:
   imports:
+    - cravat
     - oakvar
-  requires:
-    - python
-    - pip
+  commands:
+    - ov --help
 
 about:
-  home: "http://www.oakvar.com"
+  home: 'https://github.com/rkimoakbioinformatics/oakvar'
   summary: "OakVar - Genomic Variant Analysis Platform"
-  dev_url: https://docs.oakvar.com
-  doc_url: https://docs.oakvar.com
-  license_file: LICENSE
-  license: AGPL v3
+  dev_url: 'https://pypi.org/project/oakvar/'
+  license: 'AGPL-3.0-or-later'
   license_family: GPL
+  license_file: LICENSE
+  doc_url: 'https://rkimoakbioinformatics.github.io/oakvar/'
 
 extra:
   recipe-maintainers:
     - rkimoakbioinformatics
+  identifiers:
+    - biotools:oakvar
