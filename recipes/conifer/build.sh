@@ -1,26 +1,25 @@
 #!/bin/bash
 
 # Build conifer
-ln -s ${CC} $BUILD_PREFIX/bin/gcc
-gcc -std=c99 -Wall -Wextra -O3 -D_POSIX_C_SOURCE=200809L \
+${CC} -std=c99 -Wall -Wextra -O3 -D_POSIX_C_SOURCE=200809L \
     -I third_party/uthash/src \
     -I . src/utils.c src/kraken_stats.c src/kraken_taxo.c src/main.c \
     -o conifer -lz -lm
 
 # Build is_a_parent_of_b
-gcc -std=c99 -Wall -O3 -D_POSIX_C_SOURCE=200809L \
+${CC} -std=c99 -Wall -O3 -D_POSIX_C_SOURCE=200809L \
     -I third_party/uthash/src \
     -I . src/kraken_stats.c src/kraken_taxo.c utils/is_a_parent_of_b.c \
     -o is_a_parent_of_b -lm
     
 # Build show_ancestors
-gcc -std=c99 -Wall -O3 -D_POSIX_C_SOURCE=200809L \
+${CC} -std=c99 -Wall -O3 -D_POSIX_C_SOURCE=200809L \
     -I third_party/uthash/src \
     -I . src/kraken_stats.c src/kraken_taxo.c utils/show_ancestors.c \
     -o show_ancestors -lm
 
 # Build taxid_name
-gcc -std=c99 -Wall -O3 -D_POSIX_C_SOURCE=200809L \
+${CC} -std=c99 -Wall -O3 -D_POSIX_C_SOURCE=200809L \
     -I third_party/uthash/src \
     -I . src/kraken_stats.c src/kraken_taxo.c utils/taxid_name.c \
     -o taxid_name -lm
