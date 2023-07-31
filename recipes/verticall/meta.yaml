@@ -1,0 +1,51 @@
+{% set name = "Verticall" %}
+{% set version = "0.4.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/rrwick/Verticall/archive/v{{ version }}.tar.gz
+  sha256: 13d1a2013611b1061530e473dcd2c4f888cb38d2f2e3e9b85a4837a36f4278d7
+
+build:
+  entry_points:
+    - verticall = verticall.__main__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+  run:
+    - python >=3.7
+    - numpy
+    - pandas
+    - matplotlib-base
+    - plotnine
+    - pytest
+    - svgwrite
+    - minimap2
+
+test:
+  imports:
+    - verticall
+  commands:
+    - pip check
+    - verticall --help
+    - minimap2 --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/rrwick/Verticall
+  license: GPL-3.0
+  license_file: LICENSE
+  summary: "A tool for building recombination-free trees"
+
+extra:
+  recipe-maintainers:
+    - jvfe
