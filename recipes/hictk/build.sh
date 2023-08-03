@@ -47,6 +47,7 @@ sed -i.bak 's/set(HICTK_PROJECT_VERSION_SUFFIX "")/set(HICTK_PROJECT_VERSION_SUF
 # https://docs.conda.io/projects/conda-build/en/stable/user-guide/environment-variables.html#environment-variables-set-during-the-build-process
 cmake -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE"  \
       -DCMAKE_PREFIX_PATH="$PWD/build"        \
+      -DBUILD_SHARED_LIBS=ON                  \
       -DENABLE_DEVELOPER_MODE=OFF             \
       -DHICTK_ENABLE_TESTING=ON               \
       -DHICTK_BUILD_EXAMPLES=OFF              \
