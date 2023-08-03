@@ -25,7 +25,7 @@ declare -a CMAKE_PLATFORM_FLAGS
 if [[ ${HOST} =~ .*darwin.* ]]; then
   export MACOSX_DEPLOYMENT_TARGET=10.15  # Required to use std::filesystem
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
-  conan_profile='clang'
+  conan_profile='apple-clang'
 else
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
 
