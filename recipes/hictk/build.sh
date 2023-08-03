@@ -17,10 +17,6 @@ export CONAN_HOME="$scratch/conan"
 # shellcheck disable=SC2064
 trap "rm -rf '$scratch'" EXIT
 
-# Conan doesn't detect compiler name and version when using cc/c++
-TMPBIN="$scratch/bin"
-mkdir "$TMPBIN"
-
 declare -a CMAKE_PLATFORM_FLAGS
 if [[ ${HOST} =~ .*darwin.* ]]; then
   export MACOSX_DEPLOYMENT_TARGET=10.15  # Required to use std::filesystem
@@ -28,13 +24,6 @@ if [[ ${HOST} =~ .*darwin.* ]]; then
   conan_profile='apple-clang'
 else
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
-
-  ln -sf "$CC" "$TMPBIN/gcc"
-  ln -sf "$CXX" "$TMPBIN/g++"
-
-  export PATH="$TMPBIN:$PATH"
-  export CC="$TMPBIN/gcc"
-  export CXX="$TMPBIN/g++"
   conan_profile='gcc'
 fi
 
