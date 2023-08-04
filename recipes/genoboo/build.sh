@@ -11,7 +11,7 @@ export ARCH=$(uname -m)
 export HOME="$(mktemp -d)"
 
 # Install meteor here (instead of in npm run bundle) because we need to patch the install script
-curl "https://install.meteor.com/?release=2.8.0" > meteor.sh
+curl "https://install.meteor.com/" > meteor.sh
 chmod a+x meteor.sh
 sed -i.bak 's|PREFIX=|#PREFIX=|' meteor.sh
 ./meteor.sh
