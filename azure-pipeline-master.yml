@@ -51,14 +51,14 @@ jobs:
 
           docker pull quay.io/dpryan79/mulled_container:latest
 
-          #bioconda-utils handle-merged-pr recipes config.yml \
-          #  --repo bioconda/bioconda-recipes \
-          #  --git-range HEAD~1 HEAD \
-          #  --quay-upload-target biocontainers \
-          #  --fallback build
-          bioconda-utils build recipes config.yml \
-            --git-range HEAD~1 HEAD \
-            --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
+          bioconda-utils handle-merged-pr recipes config.yml \
+            --repo bioconda/bioconda-recipes \
+            --git-range $(Build.SourceVersion)~1 $(Build.SourceVersion) \
+            --quay-upload-target biocontainers \
+            --fallback build
+          #bioconda-utils build recipes config.yml \
+          #  --git-range $(Build.SourceVersion)~1 $(Build.SourceVersion) \
+          #  --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
 
           docker rmi quay.io/dpryan79/mulled_container:latest
         env:
@@ -120,13 +120,10 @@ jobs:
           export CI="true"
           export HOME=`pwd`
 
-          #bioconda-utils handle-merged-pr recipes config.yml \
-          #  --repo bioconda/bioconda-recipes \
-          #  --git-range HEAD~7 HEAD \
-          #  --fallback build
-          bioconda-utils build recipes config.yml \
-            --git-range HEAD~1 HEAD \
-            --anaconda-upload
+          bioconda-utils handle-merged-pr recipes config.yml \
+            --repo bioconda/bioconda-recipes \
+            --git-range $(Build.SourceVersion)~1 $(Build.SourceVersion) \
+            --fallback build
         env:
           QUAY_LOGIN: $(QUAY_LOGIN)
           ANACONDA_TOKEN: $(ANACONDA_TOKEN)
