@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# CONDA build script variables 
-# 
+# CONDA build script variables:
+#
 # $PREFIX The install prefix
 # $PKG_NAME The name of the package
 # $PKG_VERSION The version of the package
@@ -14,10 +14,10 @@ OS=$(./install get_os)
 
 mkdir -p "${PREFIX}/bin"
 
-./install all -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS"
+./install all -tcdir="${SHARE_DIR}" CC="${CXX}" CFLAGS="${CFLAGS}"
 
 # llvm-otool -l fails for these plugins on macosx
-if [ "$OS" = macosx ]
+if [ "${OS}" = macosx ]
 then
     for bad_plug in probconsRNA prank
     do
