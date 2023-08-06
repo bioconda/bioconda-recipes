@@ -1,0 +1,54 @@
+{% set name = "stripenn" %}
+{% set version = "1.1.65.20" %}
+{% set sha256 = "047d8e4030df5ff9c41daaa7fff9b9b5ac5e3d14981bbaf1f4b6699de2928ddd" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ysora/stripenn/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps -vvv
+  entry_points:
+    - stripenn = cli:main
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+    - setuptools-scm
+    - poetry-core
+    - wheel
+  run:
+    - python >=3.7
+    - cooler
+    - joblib
+    - numpy
+    - matplotlib-base
+    - opencv
+    - pandas
+    - scikit-image
+    - scipy
+    - tqdm
+    - typer
+
+test:
+  imports:
+    - stripenn
+
+about:
+  home: https://pypi.org/project/stripenn/
+  summary: "Image-processing based detection of architectural stripes from chromatin conformation data"
+  license: MIT
+  dev_url: https://github.com/ysora/stripenn
+
+extra:
+  identifiers:
+    - doi:10.1038/s41467-022-29258-9
