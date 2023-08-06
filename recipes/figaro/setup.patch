@@ -1,0 +1,2753 @@
+diff -ruN figaro-1.1.2-org/build/lib/defaults/environment.py figaro-1.1.2/build/lib/defaults/environment.py
+--- figaro-1.1.2-org/build/lib/defaults/environment.py	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/build/lib/defaults/environment.py	2020-09-13 19:53:09.000000000 +0200
+@@ -0,0 +1,8 @@
++import os
++import datetime
++timestamp = str(datetime.datetime.now().timestamp()).replace(".", "")
++dataFolder = "/data"
++inputFolder = os.path.join(dataFolder, "input")
++outputFolder = os.path.join(dataFolder, "output")
++outputFileName = "trimParameters.json"
++logFile = os.path.join(outputFolder, "figaro.%s.log" %timestamp)
+diff -ruN figaro-1.1.2-org/build/lib/defaults/standard.py figaro-1.1.2/build/lib/defaults/standard.py
+--- figaro-1.1.2-org/build/lib/defaults/standard.py	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/build/lib/defaults/standard.py	2020-09-13 19:53:09.000000000 +0200
+@@ -0,0 +1,7 @@
++from .environment import *
++minOverlap = 20
++loggingLevel = "INFO"
++subsample = -1
++percentile = 83
++forwardPrimerLength = 19
++reversePrimerLength = 19
+\ No newline at end of file
+diff -ruN figaro-1.1.2-org/build/lib/figaroSupport/defaultParser.py figaro-1.1.2/build/lib/figaroSupport/defaultParser.py
+--- figaro-1.1.2-org/build/lib/figaroSupport/defaultParser.py	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/build/lib/figaroSupport/defaultParser.py	2023-08-06 13:50:45.000000000 +0200
+@@ -0,0 +1,4 @@
++
++def loadDefaultModule(name:str):
++    import importlib
++    return importlib.import_module("defaults.standard")
+diff -ruN figaro-1.1.2-org/build/lib/figaroSupport/easyMultiprocessing.py figaro-1.1.2/build/lib/figaroSupport/easyMultiprocessing.py
+--- figaro-1.1.2-org/build/lib/figaroSupport/easyMultiprocessing.py	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/build/lib/figaroSupport/easyMultiprocessing.py	2023-08-06 13:40:06.000000000 +0200
+@@ -0,0 +1,100 @@
++import multiprocessing
++import multiprocessing.pool
++import logging
++logger = logging.getLogger(__name__)
++
++def calculateAvailableCores():
++    import multiprocessing
++    return max([multiprocessing.cpu_count() - 1, 1])
++
++def calculateChunkSize(length, workers:int):
++    return -1 * ((-1*length) // workers)
++
++class NoDaemonProcess(multiprocessing.Process):
++    @property
++    def daemon(self):
++        return False
++
++    @daemon.setter
++    def daemon(self, value):
++        pass
++
++
++class NoDaemonContext(type(multiprocessing.get_context())):
++    Process = NoDaemonProcess
++
++class Deadpool(multiprocessing.pool.Pool): #Deadpool has no class
++    def __init__(self, *args, **kwargs):
++        kwargs['context'] = NoDaemonContext()
++        super(Deadpool, self).__init__(*args, **kwargs)
++
++
++def parallelProcessRunner(processor, itemsToProcess, coreLimit:int = 0, filterFunction = False, totalSizeEstimate = None, coresPerProcess = 1, nonDaemonic = False):
++    logger.debug("Running import statements")
++    import multiprocessing
++    import inspect
++    import collections.abc as collections
++    logger.debug("Making assertions")
++    assert callable(processor), "Processor must be a callable function/method"
++    assert len(inspect.signature(processor).parameters) == 1, "Processor function must take one argument"
++    assert isinstance(itemsToProcess, collections.Iterable), "Items to process must be an iterable of some kind"
++    assert coresPerProcess > 0, "Cores per process must be a positive integer"
++    logger.debug("Calculating cores available")
++    coreLimit = max([0, coreLimit])
++    if not coreLimit:
++        coreLimit = calculateAvailableCores()
++    coreLimit = coreLimit // coresPerProcess
++    logger.info("Using %s cores" %coreLimit)
++    if nonDaemonic:
++        logger.debug("Setting pool using nonDaemonic processes. This can cause issues if not done with care.")
++        workers = Deadpool(coreLimit)
++    else:
++        logger.debug("Setting up the process pool.")
++        workers = multiprocessing.Pool(coreLimit)
++    try:
++        length = len(itemsToProcess)
++        chunkSize = calculateChunkSize(length, coreLimit)
++        logger.info("Starting multiprocessing of %s objects in chunks of %s" %(length, chunkSize))
++        mapper = workers.map
++    except TypeError:
++        if not totalSizeEstimate:
++            totalSizeEstimate = 50000
++            logger.info("Using default total size estimate of 50,000 because none was given.")
++        chunkSize = calculateChunkSize(totalSizeEstimate, coreLimit)
++        logger.info("Starting multiprocessing in chunks of %s" %chunkSize)
++        mapper = workers.imap
++    if not filterFunction:
++        logger.debug("Returning results")
++        return mapper(processor, itemsToProcess, chunkSize)
++    else:
++        logger.debug("Returning filtered results")
++        results = mapper(processor, itemsToProcess, chunkSize)
++        return [result for result in results if result]
++
++if __name__ == "__main__":  #absolutely necessary for Windows machines
++    import datetime
++    class RandomDNASequenceMaker(object):
++
++        def __init__(self, length):
++            self.length = length
++            self.bases = list("ATGC")
++
++        def makeSequence(self, throwAway=0):
++            import random
++            sequence = []
++            for i in range(self.length):
++                sequence.append(random.choice(self.bases))
++            return "".join(sequence)
++
++    seqGen = RandomDNASequenceMaker(100)
++    numberOfSequences = list(range(100000))
++    start = datetime.datetime.now()
++    sequenceCollector = []
++    for i in numberOfSequences:
++        sequenceCollector.append(seqGen.makeSequence(i))
++    end = datetime.datetime.now()
++    print("Serial process completed in %s" %(end - start))
++    start = datetime.datetime.now()
++    multiResult = parallelProcessRunner(seqGen.makeSequence, numberOfSequences)
++    end = datetime.datetime.now()
++    print("Parallel process completed in %s" %(end - start))
+diff -ruN figaro-1.1.2-org/build/lib/figaroSupport/environmentParameterParser.py figaro-1.1.2/build/lib/figaroSupport/environmentParameterParser.py
+--- figaro-1.1.2-org/build/lib/figaroSupport/environmentParameterParser.py	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/build/lib/figaroSupport/environmentParameterParser.py	2023-08-06 13:40:27.000000000 +0200
+@@ -0,0 +1,508 @@
++import os
++import collections.abc as collections
++import logging
++logger = logging.getLogger(__name__)
++typeHeirarchy = (int, float, str)
++
++class EnvVariable(object):
++
++    """
++    Holder for individual environment variable parameters and associated tests and values.
++
++    Accessing values:
++    The value can always be directly accessed by calling EnvVariable.value.  Additionally, if the value is a boolean, trying to use EnvVariable in a logical statement will automatically call its value as the boolean for evaluation.  Casting it to a string will return the string of the value.
++    """
++
++    def __init__(self, name:str, typeRequirement:[type, list, tuple], default=None, flag:[int, str]=None, validationList:list=None, lowerBound:[int,float]=None, upperBound:[int,float]=None, expectedFile:bool=False, createdFile:bool=False, expectedDirectory:bool=False, createdDirectory:bool=False, logLevel:bool=False, required:bool=False, externalValidation:bool=False):
++        """
++        :param name: Name of the parameter and environment variable (environment variable should be all upper case when passed. Calling the name is functionally case insensitive
++        :param typeRequirement: Can be either a single type or an iterable of types where multiple types may be acceptable.
++        :param default: Default value for the parameter. Should be used for any non-required parameters. Must fit within type requirements
++        :param flag: Flag value, used for automatically building argument strings
++        :param validationList: Potential values for the parameter
++        :param lowerBound: Minimum value for a numerical parameter
++        :param upperBound: Maximum value for a numerical parameter
++        :param expectedFile: File that is expected to exist at the time of checking. Will throw an exception if it is not there
++        :param createdFile: File not expected to exist at the time of checking. This package will test to make sure the file can be created
++        :param expectedDirectory: Folder that is expected to exxist at the time of checking. Will throw an exception if it is not there.
++        :param createdDirectory: Folder that is being created as part of this run. Will be created at the time of checking to ensure files can be written there
++        :param logLevel: Boolean value indicating that the parameter is to take in a logging level (sets some different checks for it)
++        :param required: If true, this is a parameter that must be passed in and should not be using a default value.
++        """
++        self.name = name
++        self.typeRequirement = typeRequirement
++        self.default = default
++        self.value = default
++        self.flag = flag
++        self.validationList = validationList
++        self.lowerBound = lowerBound
++        self.upperBound = upperBound
++        self.expectedFile = expectedFile
++        self.createdFile = createdFile
++        self.isFilePath = expectedFile or createdFile
++        self.expectedDirectory = expectedDirectory
++        self.createdDirectory = createdDirectory
++        self.isDirectoryPath = expectedDirectory or createdDirectory
++        self.required = required
++        self.isArgument = not flag is None
++        self.positionalArg = type(flag) == int
++        self.logLevel = logLevel
++        self.externalValidation = externalValidation
++        self.setValueValidations()
++        self.runValidations()
++        self.environmentVariableName = name.upper()
++        self.usingDefaultValue = not self.setEnvironmentValue()
++
++    def setValueValidations(self):
++        if self.lowerBound is None and self.upperBound is None:
++            if self.validationList:
++                self.usingValidationBounds = False
++                self.usingValidationList = True
++            else:
++                self.usingValidationBounds = False
++                self.usingValidationList = False
++                inherentlyBoundedCondition = self.typeRequirement == bool or self.isFilePath or self.isDirectoryPath or self.logLevel
++                if not (inherentlyBoundedCondition or self.externalValidation):
++                    logger.warning("Environment variable parameter %s has no validation list or bounds set." %self.name)
++        else:
++            self.usingValidationBounds = True
++            infinity = float("inf")
++            if self.lowerBound is None:
++                self.lowerBound = -infinity
++            if self.upperBound is None:
++                self.upperBound = infinity
++            if self.validationList:
++                self.usingValidationList = True
++                logger.warning("Environment variable parameter %s is using both bounds- and list-based validations. This is an unusual, but not impossible situation." %self.name)
++            else:
++                self.usingValidationList = False
++
++    def runValidations(self):
++        self.validateTypeAndFlag()
++        if not self.passedArgumentAssertions():
++            raise ArgumentValueException("Invalid values were given for one or more argument values when declaring environment variable paramater %s" %self.name)
++        if self.expectedFile:
++            self.validateExpectedFilePath()
++        if self.expectedDirectory:
++            self.validateExpectedDirectoryPath()
++
++    def validLogLevelSettings(self):
++        if not self.logLevel:
++            logger.critical("Hit the log level settings checker with self.logLevel as false for %s. This should never be able to happen and needs to be debugged." %self.name)
++            return True
++        if self.isDirectoryPath:
++            logger.error("Parameter %s is set as both directory and log level. This should not happen." %self.name)
++            return False
++        if self.isFilePath:
++            logger.error("Parameter %s is set as both file and log level.  This should never happen." %self.name)
++            return False
++        if self.usingValidationBounds:
++            logger.error("Parameter %s is set as a log level with validation bounds. This dev can't imagine a valid scenario for that. Let him know if you found one." %self.name)
++            return False
++        if not self.typeRequirement == str:
++            logger.critical("Logger level parameter %s is not set to expect a string value. This should be the only value type it takes." %self.name)
++            return False
++        logLevels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
++        if self.validationList:
++            self.validationList = [item.upper() for item in self.validationList]
++            testSet = set(self.validationList)
++            levelSet = set(logLevels)
++            if not testSet.issubset(levelSet):
++                logger.error("Invalid logging levels given for log level validatio list on parameter %s" %self.name)
++                return False
++        else:
++            self.validationList = logLevels
++        return True
++
++    def validateExpectedFilePath(self):
++        if self.expectedFile:
++            if not os.path.isfile(self.value):
++                logger.critical("Unable to find expected file for environment variable parameter %s at %s" %(self.name, self.value))
++                raise FileNotFoundError("Unable to find expected file %s" %self.value)
++        else:
++            logger.error("Validating expected file path when not an expected file for parameter %s" %self.name)
++
++    def validateCreatedFile(self):
++        if self.createdFile:
++            if os.path.isfile(self.value):
++                logger.critical("Environment variable parameter %s shows file %s as being created here, but it already exists.  If the file is expected to already exist and just be overwritten or modified, it should be flagged as an expected file only." %(self.name, self.value))
++                raise FileExistsError("File %s created by parameter %s already exists." %(self.value, self.name))
++            try:
++                touchFile = open(self.value, 'w')
++                touchFile.close()
++                os.remove(self.value)
++            except Exception as err: #using a generic catch here because I don't care why it fails, just that it fails
++                logger.critical("Unable to touch/create file set for environment variable parameter %s at %s. It generated an exception:\n%s" %(self.name, self.value, err))
++                print("Walker started")
++                for item in os.walk("/data"):
++                    print(item)
++                print("Walker done")
++                raise ArgumentValueException("Unable to write to file %s as suggested by parameter %s" %(self.value, self.name))
++        else:
++            logger.error("Testing file creation for what is not an expected file for parameter %s" %self.name)
++
++    def validateExpectedDirectoryPath(self):
++        if self.expectedDirectory:
++            if not os.path.isdir(self.value):
++                logger.critical("Unable to find expected directory for environment variable parameter %s at %s" %(self.name, self.value))
++                raise NotADirectoryError("Unable to find expected file %s" %self.value)
++        else:
++            logger.error("Validating directory existence for what is not an expected directory for parameter %s" %self.name)
++
++    def createDirectory(self):
++        if self.createdDirectory:
++            try:
++                os.makedirs(self.value)
++            except FileExistsError:
++                logger.info("Attempted to make directory %s for parameter %s, but it already appears to exist." %(self.value, self.name))
++            except Exception as err: #using a generic catch here because I don't care why it fails, just that it fails
++                logger.critical("Unable to touch/create directory set for environment variable parameter %s at %s. It generated an exception:\n%s" %(self.name, self.value, err))
++                raise ArgumentValueException("Unable to create directory %s as suggested by parameter %s" %(self.value, self.name))
++
++    def validateTypeAndFlag(self):
++        if self.typeRequirement == bool:
++            if self.positionalArg:
++                logMessage = "Error on setting up environmental variable argument %s: boolean args cannot be positional." %self.name
++                logger.exception(logMessage)
++                raise ArgumentTypeValidationError()
++
++    def passedArgumentAssertions(self):
++        failures = {}
++        assertion = type(self.name) == str
++        if assertionFails(assertion):
++            failures["NameTypeCheck"] = "Name value must be of string type. Given value was %s of type %s" %(self.name, type(self.name))
++        assertion = self.name != ""
++        if assertionFails(assertion):
++            failures["NameSetCheck"] = "Name value cannot be a blank"
++        assertion = self.hasValidEnvironmentVariableName()
++        if assertionFails(assertion):
++            failures["EnvironmentVariableName"] = "Name value must be directly translated to an environment variable. Valid characters include alphanumerics and underscores. The name cannot begin with a digit. %s was given as the name" %self.name
++        assertion = self.hasValidTypeRequirement()
++        if assertionFails(assertion):
++            failures["TypeRequirementCheck"] = "Invalid type requirement given. Value passed: %s" %self.typeRequirement
++        if not self.default is None:
++            assertion = self.fitsTypeRequirement(self.default)
++            if assertionFails(assertion):
++                failures["DefaultValueTypeCheck"] = "Invalid data type given for default. Valid types: %s. Default value: %s: %s" %(self.typeRequirement, type(self.default), self.default)
++        if self.usingValidationBounds:
++            assertion = self.lowerBound <= self.upperBound
++            if assertionFails(assertion):
++                failures["BoundsSanityCheck"] = "Invalid bounds given for environment variable parameter %s; lower value is greater than upper. Lower: %s.  Upper: %s" %(self.name, self.lowerBound, self.upperBound)
++        if self.usingValidationList:
++            assertion = self.validValidationListValues()
++            if assertionFails(assertion):
++                failures["ValidationValuesSanityCheck"] = "Got validation list elements that are not of an expected data type for environment variable parameter %s.  Validation list: %s.  Type requirement: %s." %(self.name, self.validationList, self.typeRequirement)
++        if self.isArgument:
++            assertion = type(self.flag) in [str, int]
++            if assertionFails(assertion):
++                failures["FlagDataType"] = "Flag data type for environment variable parameter %s was %s and value was %s. Acceptable types for this value are string and integer, or None for a non-argument parameter." %(self.name, type(self.flag), self.flag)
++        assertion = not (self.expectedFile and self.createdFile)
++        if assertionFails(assertion):
++            failures["FilePathFlags"] = "Environment variable parameter %s was set as both an expected file and a created file.  This should not be possible.  If the file is expected from the start and will be modified/overwritten, then mark it ONLY as expected." %self.name
++        assertion = not (self.expectedDirectory and self.createdDirectory)
++        if assertionFails(assertion):
++            failures["DirectoryPathFlags"] = "Environment variable parameter %s was set as both an expected directory and a created directory.  This should not be possible.  If the directory is expected from the start and will be modified/overwritten, then mark it ONLY as expected." % self.name
++        assertion = not (self.isFilePath and self.isDirectoryPath)
++        if assertionFails(assertion):
++            failures["FileAndDirectoryPathFlags"] = "Environment variable parameter %s has flags suggesting that it is both a file path and a directory path. This is not possible and needs to be corrected." %self.name
++        if self.logLevel:
++            assertion = self.validLogLevelSettings()
++            if assertionFails(assertion):
++                failures["LogLevelParameterSetting"] = "Invalid parameter set for log level parameter. Please see above for issue on paramater name %s" %self.name
++        if failures:
++            failureString = ""
++            for failure in failures:
++                failureString += failure + "\n"
++                failureString += failures[failure] + "\n"
++            logger.error("Detected %s errors setting up environment variable parameters:\n%s" %(len(failures), failureString))
++            print("Parameter errors detected for %s:\n%s" %(self.name, failureString))
++        if failures:
++            return False
++        else:
++            return True
++
++    def validValidationListValues(self):
++        for item in self.validationList:
++            if not self.fitsTypeRequirement(item):
++                return False
++        return True
++
++    def hasValidTypeRequirement(self):
++        validTypesForList = [int, float, str]
++        validTypesForSingle = validTypesForList.copy()
++        validTypesForSingle.append(bool)
++        if type(self.typeRequirement) == type:
++            if self.typeRequirement in validTypesForSingle:
++                return True
++            else:
++                return False
++        else:
++            if not isinstance(self.typeRequirement, collections.Iterable):
++                return False
++            else:
++                for item in self.typeRequirement:
++                    if not type(item) == type:
++                        return False
++                    if not item in validTypesForList:
++                        return False
++        return True
++
++    def fitsTypeRequirement(self, value):
++        if type(self.typeRequirement) == type:
++            return type(value) == self.typeRequirement
++        else:
++            return type(value) in self.typeRequirement
++
++    def hasValidEnvironmentVariableName(self):
++        envVar = self.name.upper()
++        validCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_"
++        if envVar[0].isdigit():
++            return False
++        for character in envVar:
++            if not character in validCharacters:
++                return False
++        return True
++
++    def setEnvironmentValue(self):
++        try:
++            value = os.environ[self.environmentVariableName]
++        except KeyError:
++            if self.required:
++                logger.error("Environment variable parameter %s was set as required, but no value was passed for it." %self.name)
++            value = self.value
++            usingEnvironment = False
++        else:
++            usingEnvironment = True
++        if value is None:
++            return False
++        if self.logLevel:
++            value = value.upper()
++        if self.typeRequirement == bool:
++            value = self.setBooleanValue(value)
++        else:
++            value = self.setType(value)
++        if self.usingValidationBounds:
++            if value < self.lowerBound or value > self.upperBound:
++                logger.warning("Got an out of bounds parameter set: %s set at %s. LowerBound: %s UpperBound: %s" %(self.name, value, self.lowerBound, self.upperBound))
++        if self.usingValidationList:
++            if value not in self.validationList:
++                logger.warning("Got a parameter being set that is not on the validation list: %s set at %s. ValidationList: %s" %(self.name, value, self.validationList))
++        if self.logLevel:
++            value = self.setLogLevel(value)
++        self.value = value
++        return usingEnvironment
++
++    def setLogLevel(self, value):
++        valueTable = {"DEBUG" : logging.DEBUG,
++                      "INFO" : logging.INFO,
++                      "WARNING" : logging.WARNING,
++                      "ERROR" : logging.ERROR,
++                      "CRITICAL" : logging.CRITICAL}
++        return valueTable[value]
++
++    def setBooleanValue(self, value:str):
++        if not value:
++            return False
++        elif self.value in ["FALSE", "false", "False", "0", 0]:
++            return False
++        else:
++            return True
++
++    def setType(self, value):
++        if type(self.typeRequirement) == type:
++            try:
++                return self.typeRequirement(value)
++            except Exception as err:
++                logMessage = "Attempting to cast environment variable %s with value %s to type %s resulted in an exception as follows: \n%s" %(self.name, value, self.typeRequirement, err)
++                logger.exception(logMessage)
++                raise ArgumentTypeValidationError()
++        if type(self.typeRequirement) == type:
++            allowedTypes = [self.typeRequirement]
++        else:
++            allowedTypes = self.typeRequirement
++        allowedTypes = [self.typeRequirement]
++        for valueType in typeHeirarchy:
++            if valueType in allowedTypes:
++                try:
++                    return valueType(value)
++                except: #Using a universal catch here, since I'm using this as a test and expect it to fail regularly
++                    continue
++        logger.error("Unable to cast environment variable parameter %s to one of its required types: %s.  Env variable value: %s" %(self.name, self.typeRequirement, value))
++        raise ArgumentTypeValidationError("Unable to cast environment variable parameter %s to one of its required types: %s.  Env variable value: %s" %(self.name, self.typeRequirement, value))
++
++    def formArgument(self):
++        if not self.isArgument:
++            return ""
++        if self.value is None:
++            return ""
++        if self.typeRequirement == bool:
++            return self.parseBooleanArg()
++        if self.positionalArg:
++            return str(self.value)
++        if type(self.value) == str and self.value.startswith("="):
++            return "%s%s" %(self.flag, self.value)
++        else:
++            return "%s %s" %(self.flag, self.value)
++
++    def parseBooleanArg(self):
++        if not self.value:
++            return ""
++        elif self.value in ["FALSE", "false", "False", "0", 0]:
++            return ""
++        else:
++            return self.flag
++
++    def overview(self):
++        returnDict = {"name":self.name, "type":type(self.value), "value":self.value, "flag":self.flag}
++        return str(returnDict)
++
++    def __str__(self):
++        return str(self.value)
++
++    def __eq__(self, other):
++        return self.value == other
++
++    def __bool__(self):
++        if type(self.value) == bool:
++            return self.value
++        else:
++            return not self.value is None
++
++
++class ParameterSideLoad(EnvVariable):
++
++    def setEnvironmentValue(self):
++        return False
++
++
++class EnvParameters(object):
++    """
++    How to use:
++    Initialize an empty parameter set with myInstance = EnvParameters()
++    Add values that check environment variable using the following syntax:
++    myInstance.addParameter(name, type, [optional values])
++    add values in directly using the side load method when additional logic at checking time is required:
++    myInstance.sideloadParameter(name, value, [optional values])
++    """
++    def __init__(self):
++        self.parameters = {}
++        self.variableNames = set()
++        self.flags = set()
++
++    def addParameter(self, name:str, typeRequirement:[type, list, tuple], default=None, flag:[int, str]=None, validationList:list=None, lowerBound:[int,float]=None, upperBound:[int,float]=None, expectedFile:bool=False, createdFile:bool=False, expectedDirectory:bool=False, createdDirectory:bool=False, logLevel:bool=False, required:bool = False, externalValidation:bool=False):
++        parameter = EnvVariable(name, typeRequirement, default, flag, validationList, lowerBound, upperBound, expectedFile, createdFile, expectedDirectory, createdDirectory, logLevel, required, externalValidation)
++        if not parameter.environmentVariableName in self.variableNames:
++            self.variableNames.add(parameter.environmentVariableName)
++        else:
++            logger.critical("Environment variable name collision for %s" %parameter.environmentVariableName)
++            raise ArgumentValueException("Environment variable name collision for %s" %parameter.environmentVariableName)
++        if parameter.isArgument:
++            if not parameter.flag in self.flags:
++                self.flags.add(parameter.flag)
++            else:
++                logger.critical("Environment variable argument flag collision for %s" %parameter.flag)
++                raise ArgumentValueException("Environment variable flag collision for %s" %parameter.flag)
++        self.parameters[parameter.name] = parameter
++
++    def sideLoadParameter(self, name:str, value, flag:[int, str]=None, expectedFile:bool=False, createdFile:bool=False, expectedDirectory:bool=False, createdDirectory:bool=False):
++        parameter = ParameterSideLoad(name, type(value), default=value, validationList=[value], expectedFile=expectedFile, createdFile=createdFile, expectedDirectory=expectedDirectory, createdDirectory=createdDirectory)
++        if not parameter.environmentVariableName in self.variableNames:
++            self.variableNames.add(parameter.environmentVariableName)
++        else:
++            logger.critical("Environment variable name collision for %s on side load" %parameter.environmentVariableName)
++            raise ArgumentValueException("Environment variable name collision for %s" %parameter.environmentVariableName)
++        if parameter.isArgument:
++            if not parameter.flag in self.flags:
++                self.flags.add(parameter.flag)
++            else:
++                logger.critical("Environment variable argument flag collision for %s" %parameter.flag)
++                raise ArgumentValueException("Environment variable flag collision for %s" %parameter.flag)
++        self.parameters[parameter.name] = parameter
++
++    def buildFlaggedArgumentString(self):
++        flaggedArgs = []
++        for key in self.parameters:
++            parameter = self.parameters[key]
++            if parameter.isArgument and not parameter.positionalArg:
++                flaggedArgs.append(parameter.formArgument())
++        return " ".join(flaggedArgs)
++
++    def buildPositionalArgumentStrings(self):
++        import operator
++        prependArgs = []
++        appendArgs = []
++        for key in self.parameters:
++            parameter = self.parameters[key]
++            if parameter.isArgument and parameter.positionalArg:
++                if parameter.flag >= 0:
++                    prependArgs.append(parameter)
++                else:
++                    appendArgs.append(parameter)
++        if not (prependArgs or appendArgs):
++            return ("", "")
++        if prependArgs:
++            prependArgs.sort(key=operator.attrgetter("flag"))
++            prependArgs = [arg.formArgument() for arg in prependArgs]
++        if appendArgs:
++            appendArgs.sort(key=operator.attrgetter("flag"))
++            appendArgs = [arg.formArgument() for arg in appendArgs]
++        prependArgString = " ".join(prependArgs)
++        appendArgString = " ".join(appendArgs)
++        return (prependArgString, appendArgString)
++
++    def buildArgString(self):
++        beginning, end = self.buildPositionalArgumentStrings()
++        middle = self.buildFlaggedArgumentString()
++        argList = [item for item in [beginning, middle, end] if item]
++        return " ".join(argList)
++
++    def checkCreatedFileStructures(self):
++        for key in self.parameters:
++            parameter = self.parameters[key]
++            if parameter.createdDirectory:
++                parameter.createDirectory()
++        for key in self.parameters:
++            parameter = self.parameters[key]
++            if parameter.createdFile:
++                parameter.validateCreatedFile()
++
++    def __getattr__(self, item):
++        if item in self.parameters:
++            return self.parameters[item]
++        else:
++            if not type(item) == str:
++                print(list(self.parameters.keys()))
++                raise AttributeError("No parameter %s was found in the parameter set" %item)
++            for key in self.parameters:
++                if not type(key) == str:
++                    continue
++                keylower = key.lower()
++                itemlower = item.lower()
++                if keylower == itemlower:
++                    return self.parameters[key]
++        print(list(self.parameters.keys()))
++        raise AttributeError("No parameter %s was found in the parameter set" %item)
++
++
++class ArgumentTypeValidationError(Exception):
++    pass
++
++class ArgumentValueException(Exception):
++    pass
++
++class EnvironmentVariableParameterException(Exception):
++    pass
++
++def assertionFails(bool_:bool):
++    try:
++        assert bool_, "Critical assertion failed."
++    except AssertionError:
++        return True
++    else:
++        return False
++
++if __name__ == "__main__":
++    test = EnvParameters()
++    test.addParameter("first", str, default="The first", validationList=["The first"])
++    test.sideLoadParameter("sideload", "The side loaded one")
++    test.addParameter("second", str, "The second one", validationList=["The second one"])
+diff -ruN figaro-1.1.2-org/build/lib/figaroSupport/expectedErrorCurve.py figaro-1.1.2/build/lib/figaroSupport/expectedErrorCurve.py
+--- figaro-1.1.2-org/build/lib/figaroSupport/expectedErrorCurve.py	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/build/lib/figaroSupport/expectedErrorCurve.py	2023-08-06 13:39:46.000000000 +0200
+@@ -0,0 +1,185 @@
++from . import fileNamingStandards
++from . import fastqHandler
++from . import fastqAnalysis
++import numpy
++import typing
++import collections.abc as collections
++
++
++class ExponentialFit(object):
++
++    __slots__ = ['a', 'b', 'c', 'covariance', 'rSquared', 'curvePNG']
++
++    def __init__(self, a:float, b:float, c:float, covariance:collections.Iterable = None, rSquared:float = None, curvePNG:str=None):
++        self.a = a
++        self.b = b
++        self.c = c
++        self.covariance = covariance
++        self.rSquared = rSquared
++        self.curvePNG = curvePNG
++
++    def calculateValue(self, x:float):
++        return self.a * numpy.exp(self.b * x) + self.c
++
++    def __str__(self):
++        sign = "+"
++        if self.c < 0:
++            sign = "-"
++        return "%.4fe^(%.4fx) %s %.4f" %(self.a, self.b, sign, abs(self.c))
++
++    def __bool__(self):
++        return True
++
++
++def exponentialPrototypeFunction(x, a, b, c):
++    return a * numpy.exp(b * x) + c
++
++
++def fitExponentialCurve(xValues:collections.Iterable, yValues:collections.Iterable, generateImage:bool=False, plotName:str="Expected error by position"):
++    import scipy.optimize
++    import scipy.stats
++    coefficients, covariance = scipy.optimize.curve_fit(exponentialPrototypeFunction, xValues, yValues, p0=(0.03, 0.015, 0), bounds=((-2, -1, -8), (2, 1, 8)))
++    curve = ExponentialFit(*coefficients, covariance)
++    modelPredictions = [curve.calculateValue(x) for x in xValues]
++    pearson = scipy.stats.pearsonr(yValues, modelPredictions)
++    rSquared = pearson[0] ** 2
++    curve = ExponentialFit(*coefficients, covariance, rSquared)
++    if generateImage:
++        import matplotlib.pyplot as plt
++        import io
++        import base64
++        plt.plot(xValues,yValues,'k-', label="Observed")
++        plt.plot(xValues,modelPredictions,'b--', label="Predicted")
++        plt.xlabel("Position in Read")
++        plt.ylabel("Expected Error")
++        plt.title(plotName)
++        plt.legend(loc=2)
++        text = "%s\nr^2=%.6f" %(curve, rSquared)
++        textYPosition = max(modelPredictions) * 0.45
++        plt.text(0, textYPosition, text)
++        # plt.show()
++        byteStream = io.BytesIO()
++        plt.savefig(byteStream, format="png")
++        byteStream.seek(0)
++        encodedImage = base64.b64encode(byteStream.read())
++        curve = ExponentialFit(*coefficients, covariance, rSquared, encodedImage)
++        plt.clf()
++    return curve
++
++
++class ParallelExpectedErrorAverageAgent(object):
++
++    def __init__(self, subsample:int=0, primerLength:int=0):
++        if subsample == 0:
++            subsample = 1
++        self.subsample = subsample
++        self.primerLength = primerLength
++
++    def calculateAverageExpectedError(self, fastq:fileNamingStandards.NamingStandard):
++        averageExpectedError = makeExpectedErrorAverageArrayForFastq(fastq.filePath, self.subsample, self.primerLength)
++        return fastq, averageExpectedError
++
++
++class ParallelExpectedErrorPercentileAgent(object):
++
++    def __init__(self, subsample:int=0, percentile:int=83, primerLength:int=0):
++        if subsample == 0:
++            subsample = 1
++        self.subsample = subsample
++        self.percentile = percentile
++        self.primerLength = primerLength
++
++    def calculateAverageExpectedError(self, fastq:fileNamingStandards.NamingStandard):
++        percentileExpectedError = makeExpectedErrorPercentileArrayForFastq(fastq.filePath, self.subsample, self.percentile, self.primerLength)
++        return fastq, percentileExpectedError
++
++
++
++def makeExpectedErrorAverageArrayForFastq(path:str, subsample:int=0, primerLength:int=0):
++    expectedErrorMatrix = fastqAnalysis.buildExpectedErrorMatrix(path, subsample=subsample, leftTrim=primerLength)
++    meanArray = numpy.mean(expectedErrorMatrix, axis=0)
++    return meanArray
++
++
++def makeExpectedErrorPercentileArrayForFastq(path:str, subsample:int=0, percentile:int=83, primerLength:int=0):
++    expectedErrorMatrix = fastqAnalysis.buildExpectedErrorMatrix(path, subsample=subsample, leftTrim=primerLength)
++    percentileList = []
++    for positionArray in expectedErrorMatrix.transpose():
++        percentileList.append(numpy.percentile(positionArray, percentile))
++    return numpy.array(percentileList)
++
++
++def makeExpectedErrorPercentileArrayForFastqList(fastqList:list, subsample:int=0, percentile:int=83, primerLength:int=0):
++    from . import easyMultiprocessing
++    parallelAgent = ParallelExpectedErrorPercentileAgent(subsample, percentile, primerLength)
++    expectedErrorReturns = easyMultiprocessing.parallelProcessRunner(parallelAgent.calculateAverageExpectedError, fastqList)
++    averageExpectedErrorMatrix = numpy.stack([expectedErrorArray[1] for expectedErrorArray in expectedErrorReturns])
++    averageExpectedErrorArray = numpy.mean(averageExpectedErrorMatrix, axis = 0)
++    return averageExpectedErrorArray
++
++
++def makeExpectedErrorPercentileArraysForDirectory(path:str, namingStandard:typing.Type[fileNamingStandards.NamingStandard], subsample:int=0, percentile:int=83, forwardPrimerLength:int=0, reversePrimerLength:int=0):
++    import os
++    if not os.path.isdir(path):
++        raise NotADirectoryError("Unable to find directory %s" %path)
++    fastqList = fastqHandler.findSamplesInFolder(path, namingStandard)
++    forwardFastqs = [fastq for fastq in fastqList if fastq.direction == 1]
++    reverseFastqs = [fastq for fastq in fastqList if fastq.direction == 2]
++    forwardExpectedErrorArray = makeExpectedErrorPercentileArrayForFastqList(forwardFastqs, subsample, percentile, forwardPrimerLength)
++    reverseExpectedErrorArray = makeExpectedErrorPercentileArrayForFastqList(reverseFastqs, subsample, percentile, reversePrimerLength)
++    return forwardExpectedErrorArray, reverseExpectedErrorArray
++
++
++def makeXAndYValuesForPositionArray(positionArray:collections.Iterable):
++    xValues = []
++    yValues = []
++    for position, value in enumerate(positionArray):
++        xValues.append(position)
++        yValues.append(value)
++    xValues = numpy.asarray(xValues)
++    yValues = numpy.asarray(yValues)
++    return xValues, yValues
++
++
++def getGroupName(path:str, namingStandard:typing.Type[fileNamingStandards.NamingStandard]):
++    import os
++    if not os.path.isdir(path):
++        raise NotADirectoryError("Unable to find directory %s" % path)
++    fastqList = fastqHandler.findSamplesInFolder(path, namingStandard)
++    return fastqList[0].group
++
++
++def calculateExpectedErrorCurvesForFastqFolder(path:str, namingStandard:typing.Type[fileNamingStandards.NamingStandard], subsample:int=0, percentile:int=83, makePNG:bool=False, sampleGroupID:str=None, forwardPrimerLength:int=0, reversePrimerLength:int=0):
++    if not sampleGroupID:
++        sampleGroupID = getGroupName(path, namingStandard)
++    forwardExpectedErrorArray, reverseExpectedErrorArray = makeExpectedErrorPercentileArraysForDirectory(path, namingStandard, subsample, percentile, forwardPrimerLength, reversePrimerLength)
++    forwardPositions, forwardValues = makeXAndYValuesForPositionArray(forwardExpectedErrorArray)
++    reversePositions, reverseValues = makeXAndYValuesForPositionArray(reverseExpectedErrorArray)
++    forwardCurve = fitExponentialCurve(forwardPositions, forwardValues, makePNG, "%s forward reads" % sampleGroupID)
++    reverseCurve = fitExponentialCurve(reversePositions, reverseValues, makePNG, "%s reverse reads" % sampleGroupID)
++    return forwardCurve, reverseCurve
++
++
++def calculateExpectedErrorCurvesForFastqList(fastqList, subsample:int=0, percentile:int=83, makePNG:bool=False, sampleGroupID:str=None, forwardPrimerLength:int=0, reversePrimerLength:int=0):
++    if not sampleGroupID:
++        sampleGroupID = fastqList[0].group
++    forwardFastqs = [fastq for fastq in fastqList if fastq.direction == 1]
++    reverseFastqs = [fastq for fastq in fastqList if fastq.direction == 2]
++    forwardExpectedErrorArray = makeExpectedErrorPercentileArrayForFastqList(forwardFastqs, subsample, percentile, forwardPrimerLength)
++    reverseExpectedErrorArray = makeExpectedErrorPercentileArrayForFastqList(reverseFastqs, subsample, percentile, reversePrimerLength)
++    forwardPositions, forwardValues = makeXAndYValuesForPositionArray(forwardExpectedErrorArray)
++    reversePositions, reverseValues = makeXAndYValuesForPositionArray(reverseExpectedErrorArray)
++    forwardCurve = fitExponentialCurve(forwardPositions, forwardValues, makePNG, "%s forward reads. %s percentile" %(sampleGroupID, ordinal(percentile)))
++    reverseCurve = fitExponentialCurve(reversePositions, reverseValues, makePNG, "%s reverse reads. %s percentile" %(sampleGroupID, ordinal(percentile)))
++    return forwardCurve, reverseCurve
++
++
++def ordinal(number:int):
++    onesDigit = number % 10
++    append = {1:"st", 2:"nd", 3:"rd"}
++    if onesDigit in append:
++        return "%s%s" %(number, append[onesDigit])
++    else:
++        return "%s%s" %(number, "th")
++
++
+diff -ruN figaro-1.1.2-org/build/lib/figaroSupport/fastqAnalysis.py figaro-1.1.2/build/lib/figaroSupport/fastqAnalysis.py
+--- figaro-1.1.2-org/build/lib/figaroSupport/fastqAnalysis.py	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/build/lib/figaroSupport/fastqAnalysis.py	2020-09-13 19:53:09.000000000 +0200
+@@ -0,0 +1,111 @@
++import logging
++logger = logging.getLogger(__name__)
++
++
++def buildQualityMatrix(path:str):
++    import numpy
++    from .fastqHandler import FastqFile
++    fastq = FastqFile(path, depth=1)
++    qualityMatrix = []
++    for read in fastq:
++        qualityMatrix.append(read.quality.phredScores)
++    fastq.close()
++    return numpy.matrix(qualityMatrix, dtype='uint8') #Memory efficient, but if someone feeds in a phred score > 255, this will break. PacBio, I'm looking at you.
++
++
++def buildQualityMatrixPaired(forward:str, reverse:str):
++    return buildQualityMatrix(forward), buildQualityMatrix(reverse)
++
++
++def buildExpectedErrorMatrix(path:str, superLean:bool = False, startPosition:int = 0, subsample:int=0, leftTrim:int=0, rightTrim:int=0):
++    import numpy
++    from . import qualityScoreHandler
++    from .fastqHandler import FastqFile
++    fastq = FastqFile(path, depth = 0, subsample = subsample, leftTrim=leftTrim, rightTrim=rightTrim)
++    expectedErrorMatrix = []
++    dataType = 'float16'
++    if superLean:
++        dataType = 'uint8'
++    for line in fastq:
++        expectedErrorLineList = qualityScoreHandler.cumulativeExpectedErrorArray(line.quality, fastq.qualityScoreScheme)[startPosition:]
++        expectedErrorMatrix.append(expectedErrorLineList)  #low precision floating point. Usually users are looking for whole numbers anyway
++    fastq.close()
++    return numpy.array(expectedErrorMatrix, dataType, order='F')
++
++
++def buildExpectedErrorMatrixPaired(forward:str, reverse:str, superLean:bool = False, startPositions:tuple = (0, 0), subsample:int=0):
++    return buildExpectedErrorMatrix(forward, superLean, startPositions[0]), buildExpectedErrorMatrix(reverse, superLean, startPositions[1])
++
++
++def findCutoffByPercentile(path:str, phredScore:int, percentile:int):
++    '''
++    This will analyze a fastq file to find where the given percentile of reads is at or below the given phred score (such as finding the read where the 10th percentile of reads is phred=10.
++    Value returned is the position *INDEXED TO ZERO*
++    :param path: path of the Fastq to analyze
++    :param phredScore:  score to use in cutoff
++    :param percentile:  percentile to use in cutoff
++    :return:base position (integer)
++    '''
++    import numpy
++    qualityMatrix = buildQualityMatrix(path).transpose() #faster calclation of percentiles if we have positions as rows and reads as columns
++    for position, row in enumerate(qualityMatrix):
++        nthPercentile = numpy.percentile(row, percentile)
++        if nthPercentile < percentile:
++            return position
++    return numpy.size(qualityMatrix, 0)
++
++
++def makeQualityMatrix(path:str):
++    import numpy
++    from . import fastqHandler
++    readLength, variance = fastqHandler.estimateReadLength(path, getVariance=True)
++    if variance != 0:
++        readLength = fastqHandler.getLongestReadInFile(path)
++    fastq = fastqHandler.FastqFile(path, depth=1)
++    qualityRange = fastq.qualityScoreScheme.range
++    readLengthMatrix = [0] * readLength
++    qualityCountMatrix = []
++    for i in range(qualityRange + 1):
++        qualityCountMatrix.append(readLengthMatrix.copy())
++    '''
++    Building a matrix here where the correspond to all possibly quality scores and columns represent each base position of each read (indexed to zero)
++    Calling a specific value is done by qualityMatrix[qualityScore][readPosition]
++    '''
++    for read in fastq:
++        for position, phred in enumerate(read.quality.phredScores):
++            qualityCountMatrix[phred][position] = qualityCountMatrix[phred][position] + 1
++    fastq.close()
++    qualityCountMatrix = numpy.matrix(qualityCountMatrix)
++    return qualityCountMatrix
++
++
++def makeAverageExpectedErrorLine(path:str):
++    import numpy
++    expectedErrorMatrix = buildExpectedErrorMatrix(path)
++    expectedErrorMatrix = expectedErrorMatrix.transpose()
++    means = []
++    for line in expectedErrorMatrix:
++        means.append(numpy.mean(line))
++    return means
++
++
++def getEstimatedFastqFileSizeSumFromList(fastqList:list):
++    import os
++    from . import gzipIdentifier
++    sum = 0
++    for fastq in fastqList:
++        fileSize = os.path.getsize(fastq.filePath)
++        if gzipIdentifier.isGzipped(fastq.filePath):
++            fileSize = round(fileSize * 3.5)  #best estimation without doing anything that will slow us down
++        sum += fileSize
++    return sum
++
++def getEstimatedFastqSizeSumFromDirectory(path:str, fileNamingStandardAlias:str):
++    import os
++    from . import fileNamingStandards
++    from . import fastqHandler
++    fileNamingStandard = fileNamingStandards.loadNamingStandard(fileNamingStandardAlias)
++    if not os.path.isdir(path):
++        raise NotADirectoryError("Unable to find a directory at %s" %path)
++    fastqList = fastqHandler.findSamplesInFolder(path, fileNamingStandard)
++    return getEstimatedFastqFileSizeSumFromList(fastqList)
+diff -ruN figaro-1.1.2-org/build/lib/figaroSupport/fastqHandler.py figaro-1.1.2/build/lib/figaroSupport/fastqHandler.py
+--- figaro-1.1.2-org/build/lib/figaroSupport/fastqHandler.py	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/build/lib/figaroSupport/fastqHandler.py	2020-09-13 19:53:09.000000000 +0200
+@@ -0,0 +1,557 @@
++import os
++import logging
++import typing
++logger = logging.getLogger(__name__)
++from . import qualityScoreHandler
++from . import fileNamingStandards
++
++class ReadMetadataLine(object):
++
++    def __init__(self, rawMetadata):
++        self.rawMetadata = rawMetadata
++        if not rawMetadata.startswith("@"):
++            logger.warning("Got a metadata line that did not start with an @ symobol. This goes against the fastq standard and may suggest a corrupt file. Line: %s" %rawMetadata)
++        metadataSplit = rawMetadata.strip().split(" ")
++        if not len(metadataSplit) == 2:
++            errorMessage = "Got a metadata line that appears to have more than two elements divided by space. %s" %rawMetadata
++            logger.critical(errorMessage)
++            raise FastqFormatError(errorMessage)
++        equipmentInfo, readInfo = metadataSplit
++        self.validEquipmentInfo = self.processEquipmentInfo(equipmentInfo, rawMetadata)
++        self.validReadInfo = self.processReadInfo(readInfo, rawMetadata)
++        self.allValidInfo = self.validEquipmentInfo and self.validReadInfo
++
++    def processReadInfo(self, readInfo:str, rawMetadata:str=""):
++        validFields = True
++        readInfo = readInfo.split(":")
++        if not len(readInfo) == 4:
++            errorMessage = "Got a read info section of metadata that did not have 4 elements. Line: %s" %rawMetadata
++            logger.critical(errorMessage)
++            raise FastqFormatError(errorMessage)
++        self.direction, self.filtered, self.controlBits, self.index = readInfo
++        try:
++            self.direction = int(self.direction)
++            if self.direction not in [1, 2]:
++                validFields = False
++                logger.error("Read direction found that was not 1 or 2. Line: %s" %rawMetadata)
++        except ValueError:
++            validFields = False
++            logger.error("Read direction could not be cast to integer. Line: %s" %rawMetadata)
++        if self.filtered.upper() == "Y":
++            self.filtered = True
++            self.passedFilter = False
++        elif self.filtered.upper() == "N":
++            self.filtered = False
++            self.passedFilter = True
++        else:
++            self.passedFilter = None
++            validFields = False
++            logger.error("Got a value for filtered that was not Y or N. Line: %s" %rawMetadata)
++        try:
++            self.controlBits = int(self.controlBits)
++            if not self.controlBits % 2 == 0:
++                validFields = False
++                logger.error("Got a control bits value of %s. Control bits should be an even number. Line: %s " %(self.controlBits, rawMetadata))
++        except ValueError:
++            validFields = False
++            logger.error("Unable to cast control bits to an integer. Line: %s " %rawMetadata)
++        return validFields
++
++    def processEquipmentInfo(self, equipmentInfo:str, rawMetadata:str=""):
++        validFields = True
++        equipmentInfo = equipmentInfo.replace("@", "")
++        equipmentInfo = equipmentInfo.split(":")
++        if not len(equipmentInfo) == 7:
++            logger.critical("Equipment info section of metadata did not have 7 elements. Line: %s" %rawMetadata)
++            raise FastqFormatError("Equipment info section of metadata did not have 7 elements. Line: %s" %rawMetadata)
++        self.instrumentName, self.runID, self.flowcellID, self.tileNumber, self.laneNumber, self.xCoordinate, self.yCoordinate = equipmentInfo
++        try:
++            self.runID = int(self.runID)
++        except ValueError:
++            validFields = False
++            logger.error("Run ID number could not be cast to integer. Metadata line: %s" %rawMetadata)
++        try:
++            self.laneNumber = int(self.laneNumber)
++        except ValueError:
++            validFields = False
++            logger.error("Lane number could not be cast to integer. Metadata line: %s" %rawMetadata)
++        try:
++            self.tileNumber = int(self.tileNumber)
++        except ValueError:
++            validFields = False
++            logger.error("Tile number could not be cast to integer. Metadata line: %s" %rawMetadata)
++        try:
++            self.xCoordinate = int(self.xCoordinate)
++        except ValueError:
++            validFields = False
++            logger.error("X-coordinate could not be cast to integer. Metadata line: %s" %rawMetadata)
++        try:
++            self.yCoordinate = int(self.yCoordinate)
++        except ValueError:
++            validFields = False
++            logger.error("Y-coordinate could not be cast to integer. Metadata line: %s" %rawMetadata)
++        return validFields
++
++    def __str__(self):
++        return self.rawMetadata
++
++
++class QualityScoreLine(object):
++
++    def __init__(self, rawQualityLine:str, base:int = 33):
++        self.qualityString = rawQualityLine
++        self.phredScores = self.calculatePhredScores(base)
++
++    def calculatePhredScores(self, base:int = 33):
++        return qualityScoreHandler.convertToNumericArray(self.qualityString, base)
++
++    def __str__(self):
++        return self.qualityString
++
++    def __getitem__(self, item):
++        return self.phredScores[item]
++
++    def __iter__(self):
++        for value in self.phredScores:
++            yield value
++
++
++class SequenceLine(object):
++
++    def __init__(self, rawSequence, runAnalysis:bool=False):
++        self.sequence = rawSequence.strip().upper().replace(".", "N")
++        self.length = len(self.sequence)
++        if runAnalysis:
++            self.baseFrequency = self.getBaseFrequencyTable()
++            self.gcContent = self.calculateGCContent()
++
++    def getBaseFrequencyTable(self):
++        freq = {"A" : 0,
++                "G" : 0,
++                "C" : 0,
++                "T" : 0,
++                "N" : 0}
++        for base in self.sequence:
++            try:
++                freq[base] += 1
++            except KeyError:
++                logger.error("Found a sequence with an invalid character. Character: %s  Sequence: %s" %(base, self.sequence))
++        return freq
++
++    def calculateGCContent(self):
++        totalReadBases = 0
++        gcBases = 0
++        for base in "ATGC":
++            totalReadBases += self.baseFrequency[base]
++            if base in "GC":
++                gcBases += self.baseFrequency[base]
++        if totalReadBases == 0:
++            return 0
++        return gcBases/totalReadBases
++
++    def __len__(self):
++        return self.length
++
++    def __str__(self):
++        return self.sequence
++
++    def __eq__(self, other):
++        if type(other) == SequenceLine:
++            return self.sequence == other.sequence
++        elif type(other) == str:
++            return self.sequence == SequenceLine(other).sequence
++        else:
++            logger.critical("Attempted to compare a sequence to something that is not a sequence line type or string. Value in question was type %s: %s" %(type(other), other))
++
++
++class FastqLineSet(object):
++
++    def __init__(self, metadata:str, sequence:str, spacer:str, quality:str, depth:int=0, analyzeMetadata:bool=False, analyzeSequence:bool=False, analyzeSequenceInDepth:bool=False, analyzeQuality:bool=False, qualityBase:int=33):
++        self.metadata = metadata.strip()
++        self.sequence = sequence.strip()
++        self.spacer = spacer.strip()
++        self.quality = quality.strip()
++        if depth >= 1 or analyzeQuality:
++            self.quality = QualityScoreLine(quality, qualityBase)
++        if depth >= 2 or analyzeSequence or analyzeSequenceInDepth:
++            if depth >= 4 or analyzeSequenceInDepth:
++                self.sequence = SequenceLine(self.sequence, runAnalysis=True)
++            else:
++                self.sequence = SequenceLine(self.sequence)
++        if depth >= 3 or analyzeMetadata:
++            self.metadata = ReadMetadataLine(self.metadata)
++
++    def __str__(self):
++        return "%s\n%s\n%s\n%s" %(self.metadata, self.sequence, self.spacer, self.quality)
++
++def reanalyzeFastqLineSet(fastqLineSet:FastqLineSet, depth:int=0, analyzeMetadata:bool=False, analyzeSequence:bool=False, analyzeSequenceInDepth:bool=False, analyzeQuality:bool=False, qualityBase:int=33):
++    return FastqLineSet(str(fastqLineSet.metadata),
++                        str(fastqLineSet.sequence),
++                        str(fastqLineSet.spacer),
++                        str(fastqLineSet.quality),
++                        depth, analyzeMetadata, analyzeSequence, analyzeSequenceInDepth, analyzeQuality, qualityBase)
++
++class FastqFile(object):
++
++    def __init__(self, path:str, depth:int=0, analyzeMetadata:bool=False, analyzeSequence:bool=False, analyzeSequenceInDepth:bool=False, analyzeQuality:bool=False, fullValidation:bool=False, qualityScoreScheme:[qualityScoreHandler.EncodingScheme, None]=None, subsample:int = 0, leftTrim:int=0, rightTrim:int=0):
++        self.path = path
++        if not os.path.isfile(path):
++            logger.critical("Unable to find fastq file at %s" %path)
++            raise FileNotFoundError("Unable to find fastq file at %s" %path)
++        if not qualityScoreScheme:
++            qualityScoreScheme = findQualityScoreEncoding(path)
++        if type(qualityScoreScheme) == qualityScoreHandler.EncodingScheme:
++            self.qualityScoreScheme = qualityScoreScheme
++        else:
++            raise TypeError("Quality score scheme must be of qualityScoreHandler.EncodingScheme type. Passed: %s of type %s." %(qualityScoreScheme, type(qualityScoreScheme)))
++        self.depth = depth
++        self.leftTrim = leftTrim
++        if rightTrim == 0:
++            self.rightTrim = None
++        elif rightTrim < 0:
++            self.rightTrim = -rightTrim
++        else:
++            raise ValueError("Right trim can only be zero or a positive integer.")
++        self.analyzeMetadata = analyzeMetadata
++        self.analyzeSequence = analyzeSequence
++        self.analyzeSequenceInDepth = analyzeSequenceInDepth
++        self.analyzeQuality = analyzeQuality
++        self.fullValidation = fullValidation
++        self.reachedEnd = False
++        self.gzipped = self.checkGzip(path)
++        if self.gzipped:
++            import gzip
++            self.filehandle = gzip.open(path, "rt")
++        else:
++            self.filehandle = open(path, "r")
++        self.open = True
++        subsample = int(subsample)
++        if subsample == 0:
++            subsample = 1
++        self.subsample = subsample
++        self.currentLine = 0
++
++    def checkGzip(self, path):
++        from . import gzipIdentifier
++        return gzipIdentifier.isGzipped(path)
++
++    def getNextRead(self):
++
++        def read4Lines():
++            readBuffer = []
++            for i in range(4):
++                nextLine = self.filehandle.readline()
++                if not nextLine:
++                    self.reachedEnd = True
++                    break
++                nextLine = nextLine.strip()
++                if nextLine:
++                    readBuffer.append(nextLine)
++            if self.reachedEnd:
++                if readBuffer:
++                    logger.error(
++                        "Fastq file at %s appears to me missing lines (found something not a multiple of 4." % self.path)
++                    for i in range(4 - len(readBuffer)):
++                        readBuffer.append("")
++            if readBuffer:
++                readBuffer[1] = readBuffer[1][self.leftTrim:self.rightTrim]
++                readBuffer[3] = readBuffer[3][self.leftTrim:self.rightTrim]
++            return readBuffer
++
++        if not self.open:
++            logger.critical("Attempting to read from a closed fastq file at %s" %self.path)
++            raise ValueError("I/O operation on a closed file")
++        readBuffer = None
++        includedLine = False
++        while not includedLine:
++            readBuffer = read4Lines()
++            self.currentLine += 1
++            includedLine = (self.currentLine - 1) % self.subsample == 0 or self.reachedEnd
++        if not readBuffer:
++            return readBuffer
++        else:
++            fastqLineSet = FastqLineSet(*readBuffer, depth=self.depth, analyzeMetadata=self.analyzeMetadata, analyzeSequence=self.analyzeSequence, analyzeSequenceInDepth=self.analyzeSequenceInDepth, analyzeQuality=self.analyzeQuality, qualityBase=self.qualityScoreScheme.base)
++            if self.fullValidation:
++                if not len(readBuffer[1]) == len(readBuffer[3]):
++                    raise FastqValidationError("Got mismatched sequence and quality line lengths for line %s" %readBuffer)
++                if type(fastqLineSet.metadata) == str:
++                    metadata = ReadMetadataLine(str(fastqLineSet.metadata))
++                else:
++                    metadata = fastqLineSet.metadata
++                if not metadata.allValidInfo:
++                    raise FastqValidationError("Got some invalid metadata for line %s" %readBuffer)
++            return fastqLineSet
++
++    def close(self):
++        if not self.filehandle.closed:
++            self.filehandle.close()
++
++    def __iter__(self):
++        return self
++
++    def __next__(self):
++        returnValue = self.getNextRead()
++        if self.reachedEnd:
++            self.close()
++            raise StopIteration
++        else:
++            return returnValue
++
++    def __str__(self):
++        return "Fastq file object at %s" %self.path
++
++
++class FastqFilePair(object):
++
++    def __init__(self, pe1Path:str, pe2Path:str, depth:int=0, analyzeMetadata:bool=False, analyzeSequence:bool=False, analyzeSequenceInDepth:bool=False, analyzeQuality:bool=False, fullValidation:bool=False, qualityScoreScheme:qualityScoreHandler=None, subsample:int=0):
++        self.pe1Path = pe1Path
++        if not os.path.isfile(pe1Path):
++            logger.critical("Unable to find fastq file at %s" %pe1Path)
++            raise FileNotFoundError("Unable to find paired-end 1 fastq file at %s" %pe1Path)
++        self.pe2Path = pe2Path
++        if not os.path.isfile(pe2Path):
++            logger.critical("Unable to find fastq file at %s" %pe2Path)
++            raise FileNotFoundError("Unable to find paired-end 1 fastq file at %s" %pe2Path)
++        self.depth = depth
++        self.analyzeMetadata = analyzeMetadata
++        self.analyzeSequence = analyzeSequence
++        self.analyzeSequenceInDepth = analyzeSequenceInDepth
++        self.analyzeQuality = analyzeQuality
++        self.fullValidation = fullValidation
++        self.reachedEnd = False
++        if subsample == 0:
++            subsample = 1
++        self.subsample = subsample
++        self.pe1FileHandle = FastqFile(pe1Path, depth=depth, analyzeMetadata=analyzeMetadata, analyzeSequence=analyzeSequence, analyzeSequenceInDepth=analyzeSequenceInDepth, analyzeQuality=analyzeQuality, fullValidation=fullValidation, qualityScoreScheme=qualityScoreScheme, subsample=subsample)
++        self.pe2FileHandle = FastqFile(pe2Path, depth=depth, analyzeMetadata=analyzeMetadata, analyzeSequence=analyzeSequence, analyzeSequenceInDepth=analyzeSequenceInDepth, analyzeQuality=analyzeQuality, fullValidation=fullValidation, qualityScoreScheme=qualityScoreScheme, subsample=subsample)
++        if not self.pe1FileHandle.qualityScoreScheme == self.pe2FileHandle.qualityScoreScheme:
++            logger.warning("Paired end files appear to have different quality score encodings. Pe1: %s:%s. Pe2: %s%s" %(self.pe1FileHandle.qualityScoreScheme, self.pe1FileHandle.path, self.pe2FileHandle.qualityScoreScheme, self.pe2FileHandle.path))
++        self.open = True
++        self.reportedReadMismatch = False
++
++    def getNextReadPair(self):
++        if not self.open:
++            logger.critical("Attempting to read from a closed fastq files at %s and %s" %(self.pe1Path, self.pe2Path))
++            raise ValueError("I/O operation on a closed file")
++        nextPe1 = self.pe1FileHandle.getNextRead()
++        nextPe2 = self.pe2FileHandle.getNextRead()
++        if (nextPe1 and not nextPe2) or (not nextPe1 and nextPe2):
++            if nextPe1:
++                logger.error("Ran out of paired-end 2 reads with remaining paired-end 1 reads for file pair %s and %s" %(self.pe1Path, self.pe2Path))
++            else:
++                logger.error("Ran out of paired-end 1 reads with remaining paired-end 2 reads for file pair %s and %s" %(self.pe1Path, self.pe2Path))
++            if self.fullValidation:
++                raise FastqValidationError("Reached end of one paired-end file before the other. Files: %s and %s" %(self.pe1Path, self.pe2Path))
++        if not nextPe1 and not nextPe2:
++            self.reachedEnd = True
++            return None
++        if nextPe1 and nextPe2 and self.fullValidation:
++            self.runValidation(nextPe1, nextPe2)
++        return nextPe1, nextPe2
++
++    def runValidation(self, pe1:FastqLineSet, pe2:FastqLineSet):
++        if type(pe1.metadata) == str:
++            pe1Metadata = ReadMetadataLine(str(pe1.metadata))
++        elif type(pe1.metadata) == ReadMetadataLine:
++            pe1Metadata = pe1.metadata
++        else:
++            raise TypeError("Only able to compare metadata as string or metadata objects")
++        if type(pe2.metadata) == str:
++            pe2Metadata = ReadMetadataLine(str(pe2.metadata))
++        elif type(pe1.metadata) == ReadMetadataLine:
++            pe2Metadata = pe2.metadata
++        else:
++            raise TypeError("Only able to compare metadata as string or metadata objects")
++        if not pe1Metadata.allValidInfo or not pe2Metadata.allValidInfo:
++            raise FastqValidationError("Got invalid metadata field for at least one read in paired end mates:\n%s\n%s" %(pe1, pe2))
++        if not validPairedEndMetadata(pe1Metadata, pe2Metadata):
++            raise FastqValidationError("Got invalid metadata match for paired end mates:\n%s\n%s" %(pe1, pe2))
++
++    def close(self):
++        self.pe1FileHandle.close()
++        self.pe2FileHandle.close()
++        self.open = False
++
++    def __iter__(self):
++        return self
++
++    def __next__(self):
++        returnValue = self.getNextReadPair()
++        if self.reachedEnd:
++            raise StopIteration
++        else:
++            return returnValue
++
++    def __str__(self):
++        return "Fastq file pair object at %s and %s" %(self.pe1Path, self.pe2Path)
++
++
++class FastqValidationError(Exception):
++    pass
++
++
++class FastqFormatError(Exception):
++    pass
++
++
++def validPairedEndMetadata(pe1:ReadMetadataLine, pe2:ReadMetadataLine):
++    matchFields = ["instrumentName",
++                   "runID",
++                   "flowcellID",
++                   "laneNumber",
++                   "tileNumber",
++                   "xCoordinate",
++                   "yCoordinate",
++                   "index"]
++    for field in matchFields:
++        pe1Value = getattr(pe1, field)
++        pe2Value = getattr(pe2, field)
++        if not pe1Value == pe2Value:
++            logger.error("Mismatch on %s" %matchFields)
++            return False
++    if not ((pe1.direction == 1 and pe2.direction == 2) or (pe2.direction == 1 and pe1.direction == 2)):
++        return False
++    return True
++
++
++def validFastqFile(path:str):
++    readCount = 0
++    fastq = FastqFile(path, fullValidation=True)
++    read = fastq.getNextRead()
++    while read:
++        try:
++            read = fastq.getNextRead()
++            readCount += 1
++        except Exception as error:
++            logger.error(error)
++            return False
++    fastq.close()
++    return readCount
++
++
++def validFastqPair(pe1Path:str, pe2Path:str):
++    readCount = 0
++    fastqPair = FastqFilePair(pe1Path, pe2Path, fullValidation=True)
++    read = fastqPair.getNextReadPair()
++    while read:
++        try:
++            read = fastqPair.getNextReadPair()
++            readCount += 1
++        except Exception as error:
++            logger.error(error)
++            fastqPair.close()
++            return False
++    fastqPair.close()
++    return readCount
++
++
++def estimateReadLength(path:str, samplesize:int=100, getVariance = False):
++    lengths = []
++    fastq = FastqFile(path)
++    read = fastq.getNextRead()
++    while read:
++        lengths.append(len(read.sequence))
++        if len(lengths) >= samplesize:
++            break
++        read = fastq.getNextRead()
++    meanReadLength = sum(lengths)/len(lengths)
++    if getVariance:
++        import statistics
++        if len(lengths) > 1:
++            lengthVariance = statistics.variance(lengths)
++        else:
++            lengthVariance = 0
++        return round(meanReadLength), lengthVariance
++    return round(meanReadLength)
++
++
++def getLongestReadInFile(path:str):
++    longestReadLength = 0
++    fastq = FastqFile(path)
++    for read in fastq:
++        if len(read.sequence) > longestReadLength:
++            longestReadLength = len(read.sequence)
++    fastq.close()
++    return longestReadLength
++
++
++def countReads(path:str):
++    readCount = 0
++    fastq = FastqFile(path)
++    read = fastq.getNextRead()
++    while read:
++        readCount += 1
++        read = fastq.getNextRead()
++    fastq.close()
++    return readCount
++
++
++def findQualityScoreEncoding(path:str, lineLimit:int=100):
++    candidates = qualityScoreHandler.makeEncodingTable()
++    for i in range(len(candidates)):
++        candidates[i].eliminated = False
++    fastq = FastqFile(path, qualityScoreScheme=qualityScoreHandler.encodingSchemes.sanger)
++    line = fastq.getNextRead()
++    lineCount = 0
++    while line:
++        for candidate in candidates:
++            candidate.qualifyWithQualityString(line.quality)
++        remaining = len([scheme for scheme in candidates if not scheme.eliminated])
++        lineCount += 1
++        if lineLimit > 0:
++            if lineCount >= lineLimit:
++                break
++        if remaining == 0:
++            logger.error("No valid quality scoring scheme found for fastq file %s" %path)
++            fastq.close()
++            return None
++        elif remaining == 1:
++            break
++    for candidate in candidates:
++        if not candidate.eliminated:
++            del candidate.eliminated
++            fastq.close()
++            return candidate
++
++
++def findSamplesInFolder(directory:str, namingStandard:typing.Type[fileNamingStandards.NamingStandard] = fileNamingStandards.IlluminaStandard):
++    import os
++    if not os.path.isdir(directory):
++        raise NotADirectoryError("%s is not a directory or not found." % directory)
++    fastqFileInfoList = []
++    expectedEndings = fileNamingStandards.expectedEndings
++    for item in os.listdir(directory):
++        isFastqFile = False
++        for expectedEnding in expectedEndings:
++            if item.endswith(expectedEnding):
++                isFastqFile = True
++                break
++        if not isFastqFile:
++            continue
++        filePath = os.path.join(directory, item)
++        fastqFileInfoList.append(namingStandard(filePath))
++    return fastqFileInfoList
++
++
++def getSamplePairTableFromFolder(directory:str, namingStandard:typing.Type[fileNamingStandards.NamingStandard]):
++    def hasMate(fastq:fileNamingStandards.NamingStandard, potentialMates:list):
++        for potentialMate in potentialMates:
++            if fastq.sameSample(potentialMate):
++                return potentialMate
++        return False
++    allFastqs = findSamplesInFolder(directory, namingStandard)
++    pairedFastqs = {"unpaired":[]}
++    forwardFiles = [fastq for fastq in allFastqs if fastq.direction == 1]
++    reverseFiles = [fastq for fastq in allFastqs if fastq.direction == 2]
++    for fastq in forwardFiles:
++        foundMate = hasMate(fastq, reverseFiles)
++        if foundMate:
++            reverseFiles.remove(foundMate)
++            pairedFastqs[fastq.sampleID] = (fastq, foundMate)
++        else:
++            pairedFastqs["unpaired"].append(fastq)
++    for fastq in reverseFiles:
++        pairedFastqs["unpaired"].append(fastq)
++    if not pairedFastqs["unpaired"]:
++        del pairedFastqs["unpaired"]
++    return pairedFastqs
+diff -ruN figaro-1.1.2-org/build/lib/figaroSupport/fileNamingStandards.py figaro-1.1.2/build/lib/figaroSupport/fileNamingStandards.py
+--- figaro-1.1.2-org/build/lib/figaroSupport/fileNamingStandards.py	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/build/lib/figaroSupport/fileNamingStandards.py	2020-09-13 19:53:09.000000000 +0200
+@@ -0,0 +1,111 @@
++expectedEndings = [".fastq", ".fq", ".fastq.gz", ".fq.gz"]
++aliasList = {"zymo": "zymo",
++             "zymoservicesnamingstandard": "zymo",
++             "zymoservices": "zymo",
++             "illumina": "illumina",
++             "keriksson": "keriksson"}
++
++class NamingStandard(object):
++
++    __slots__ = ["fileName", "fileDirectory", "filePath", "sampleNumber", "group", "direction", "sampleID"]
++
++    def __init__(self, filePath:str):
++        self.filePath = filePath
++        self.fileDirectory, self.fileName = self.separateNameAndDirectory(filePath)
++        self.group, self.sampleNumber, self.direction = self.getSampleInfo(self.fileName)
++        self.sampleID = (self.group, self.sampleNumber)
++
++    def separateNameAndDirectory(self, path:str):
++        import os
++        directory, name = os.path.split(path)
++        return directory, name
++
++    def getSampleInfo(self, fileName:str):
++        raise RuntimeError("This function should always be getting overridden. If you see this, someone called the base class by mistake.")
++
++    def sameSample(self, other):
++        if not isinstance(other, NamingStandard):
++            raise TypeError("Can only check for same sample in another naming standard type")
++        if self.group == other.group and self.sampleNumber == other.sampleNumber:
++            return True
++        return False
++
++    def __str__(self):
++        return self.filePath
++
++    def __hash__(self):
++        return hash(self.filePath)
++
++    def __eq__(self, other):
++        return self.group == other.group and self.sampleNumber == other.sample and self.direction == other.direction
++
++    def __ne__(self, other):
++        return not self.__eq__(other)
++
++    def __xor__(self, other):
++        return self.sameSample(other)
++
++
++class ZymoServicesNamingStandard(NamingStandard):
++
++    def getSampleInfo(self, fileName:str):
++        baseName = fileName.split(".")[0]
++        try:
++            group, sample, direction = baseName.split("_")
++        except ValueError:
++            raise ValueError("%s does not appear to be a valid Zymo Services file name. Please check file naming convention argument." %fileName)
++        direction = int(direction.replace("R",""))
++        return group, sample, direction
++
++
++class IlluminaStandard(NamingStandard):
++
++    def getSampleInfo(self, fileName:str):
++        try:
++            baseName = fileName.split(".")[0]
++            baseSplit = baseName.split("_")
++            group = "_".join(baseSplit[:-4])
++            sample = int(baseSplit[-4].replace("S",""))
++            direction = int(baseSplit[-2].replace("R",""))
++            return group, sample, direction
++        except (ValueError, IndexError):
++            raise ValueError("%s does not appear to be a valid Illumina file name. Please check file naming convention argument." % fileName)
++
++
++class KErickssonStandard(NamingStandard):
++
++    def getSampleInfo(self, fileName:str):
++        group, sampleAndDirection = fileName.split(".")[:2]
++        try:
++            sample, direction = sampleAndDirection.split("_")
++            direction = direction.replace("R", "")
++            direction = direction.replace("r", "")
++            direction = int(direction)
++        except ValueError:
++            raise ValueError("%s does not appear to be a valid file for this standard. Please check file naming convention argument." %fileName)
++
++        return group, sample, direction
++
++
++class ManualNamingStandard(NamingStandard):
++    __slots__ = ["fileName", "fileDirectory", "filePath", "sampleNumber", "group", "direction", "sampleID"]
++
++    def __init__(self, filePath: str, group:str, number:int, direction:int):
++        self.filePath = filePath
++        self.fileDirectory, self.fileName = self.separateNameAndDirectory(filePath)
++        self.group = group
++        self.sampleNumber = number
++        self.direction = direction
++        if direction not in [1, 2]:
++            raise ValueError("Read direction must be either 1 or 2. %s was given" %direction)
++        self.sampleID = (self.group, self.sampleNumber)
++
++
++def loadNamingStandard(name:str):
++    aliasObjectKey = {"zymo" : ZymoServicesNamingStandard,
++                      "illumina" : IlluminaStandard,
++                      "keriksson": KErickssonStandard}
++    nameLower = name.lower()
++    if not nameLower in aliasList:
++        raise ValueError("%s is not a valid naming standard identifier" %name)
++    return aliasObjectKey[aliasList[nameLower]]
+diff -ruN figaro-1.1.2-org/build/lib/figaroSupport/gzipIdentifier.py figaro-1.1.2/build/lib/figaroSupport/gzipIdentifier.py
+--- figaro-1.1.2-org/build/lib/figaroSupport/gzipIdentifier.py	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/build/lib/figaroSupport/gzipIdentifier.py	2020-09-13 19:53:09.000000000 +0200
+@@ -0,0 +1,18 @@
++import os
++import gzip
++import binascii
++
++def isGzipped(path:str):
++    if not os.path.isfile(path):
++        raise FileNotFoundError("Unable to determine if file %s is gzipped because that file does not exist." %path)
++    file = open(path, 'rb')
++    firstTwoBytes = file.read(2)
++    file.close()
++    if not binascii.hexlify(firstTwoBytes) == b'1f8b':
++        return False
++    try:
++        file = gzip.open(path, 'rb')
++        tenBytes = file.read(10)
++    except OSError:
++        return False
++    return True
+diff -ruN figaro-1.1.2-org/build/lib/figaroSupport/__init__.py figaro-1.1.2/build/lib/figaroSupport/__init__.py
+--- figaro-1.1.2-org/build/lib/figaroSupport/__init__.py	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/build/lib/figaroSupport/__init__.py	2023-08-06 13:42:53.000000000 +0200
+@@ -0,0 +1,20 @@
++__all__ = ["defaultParser",
++           "environmentParameterParser",
++           "expectedErrorCurve",
++           "fastqAnalysis",
++           "fastqHandler",
++           "fileNamingStandards",
++           "gzipIdentifier",
++           "qualityScoreHandler",
++           "trimParameterPrediction"]
++__version__ = "1.1.2"
++
++from . import defaultParser
++from . import environmentParameterParser
++from . import expectedErrorCurve
++from . import fastqAnalysis
++from . import fastqHandler
++from . import fileNamingStandards
++from . import gzipIdentifier
++from . import qualityScoreHandler
++from . import trimParameterPrediction
+diff -ruN figaro-1.1.2-org/build/lib/figaroSupport/qualityScoreHandler.py figaro-1.1.2/build/lib/figaroSupport/qualityScoreHandler.py
+--- figaro-1.1.2-org/build/lib/figaroSupport/qualityScoreHandler.py	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/build/lib/figaroSupport/qualityScoreHandler.py	2020-09-13 19:53:09.000000000 +0200
+@@ -0,0 +1,155 @@
++import logging
++import math
++import typing
++logger = logging.getLogger(__name__)
++
++class EncodingScheme(object):
++
++    def __init__(self, name:str, base:int, startCharacter:str, endCharacter:str, pErrorToScore:typing.Callable, scoreToPError:typing.Callable):
++        self.name = name
++        self.base = base
++        self.characterSet = self.makeCharacterSet(startCharacter, endCharacter)
++        self.range = self.calculateRange(startCharacter, endCharacter)
++        self.fromPErrorFormula = pErrorToScore
++        self.toPErrorFormula = scoreToPError
++
++    def makeCharacterSet(self, start:str, end:str):
++        rangeStart = ord(start)
++        rangeEnd = ord(end) + 1
++        return [chr(asciiValue) for asciiValue in range(rangeStart, rangeEnd)]
++
++    def calculateRange(self, start:str, end:str):
++        rangeStart = ord(start)
++        rangeEnd = ord(end)
++        return rangeEnd - rangeStart
++
++    def toPError(self, score:[int, str]):
++        if type(score) == str:
++            if len(score) == 1:
++                score = convertCharacterToScore(score, self.base)
++            else:
++                logger.critical("Attempt to convert multiple characters to error probability. Function can only handle one conversion per call.")
++                raise ValueError("Attempt to get pError for entire string. Need one value at a time. String: %s" %score)
++        return self.toPErrorFormula(score)
++
++    def scoreFromPError(self, pError:float, round:bool=True):
++        return self.fromPErrorFormula(pError, round)
++
++    def encodedFromPError(self, pError:float):
++        return chr(self.scoreFromPError(pError, round=True) + self.base)
++
++    def qualifyWithQualityString(self, qualityString:str):
++        try:
++            throwaway = self.eliminated
++        except AttributeError:
++            self.eliminated = False
++        if not self.eliminated:
++            qualityString = str(qualityString)
++            for character in qualityString:
++                if not character in self.characterSet:
++                    self.eliminated = True
++                    break
++
++    def __str__(self):
++        return self.name
++
++    def __eq__(self, other:[str]):
++        if not type(other) in [str, EncodingScheme]:
++            raise TypeError("Unable to compare encoding scheme types with anything but string or other EncodingScheme objects")
++        return self.name == str(other)
++
++
++def makeEncodingTable():
++    encodingTable = [  # In order of likelihood
++        EncodingScheme("Sanger/Illumina 1.8+", 33, "!", "I", pErrorToPhred, phredToPError),
++        EncodingScheme("Illumina 1.8+", 33, "!", "J", pErrorToPhred, phredToPError),
++        EncodingScheme("Illumina 1.5-7", 64, "B", "i", pErrorToPhred, phredToPError),
++        EncodingScheme("Illumina 1.3-4", 64, "@", "h", pErrorToPhred, phredToPError),
++        EncodingScheme("Solexa", 64, ";", "h", pErrorToSolexa, solexaToPError),
++        EncodingScheme("Pacbio", 33, "!", "~", pErrorToPhred, phredToPError)
++    ]
++    return encodingTable
++
++def convertCharacterToScore(character, base:int=33):
++    return ord(character) - base
++
++
++def convertToNumericArray(qualityString, base: int = 33):
++    phredScores = []
++    for character in qualityString:
++        phredScores.append(convertCharacterToScore(character, base))
++    return tuple(phredScores)
++
++
++def pErrorToPhred(pError:float, roundValue:bool=True):
++    score = -10 * (math.log(pError, 10))
++    if roundValue:
++        score = round(score)
++    return score
++
++
++def phredToPError(phred:[int, float]):
++    return 10 ** (-phred/10)
++
++
++def pErrorToSolexa(pError:float, roundValue:bool=True): #google the definition of "arcane"
++    score = -10 * (math.log(pError/(1-pError), 10))
++    if roundValue:
++        score = round(score)
++    return score
++
++
++def solexaToPError(solexa:[int, float]): #seriously, who uses this encoding anymore, and who realizes that it's a slightly different formula?
++    return 1 / ((10 ** (solexa/10)) + 1)  #Let's hope I don't have to derive that one again
++
++
++class _Encodings(object):
++
++    def __init__(self):
++        self.sanger = EncodingScheme("Sanger/Illumina 1.8+", 33, "!", "I", pErrorToPhred, phredToPError)
++        self.illumina = EncodingScheme("Illumina 1.8+", 33, "!", "J", pErrorToPhred, phredToPError)
++        self.illumina1_8 = self.illumina
++        self.illumina1_5 = EncodingScheme("Illumina 1.5-7", 64, "B", "i", pErrorToPhred, phredToPError)
++        self.illumina1_3 = EncodingScheme("Illumina 1.3-4", 64, "@", "h", pErrorToPhred, phredToPError)
++        self.solexa = EncodingScheme("Solexa", 64, ";", "h", pErrorToSolexa, solexaToPError)
++        self.pacbio = EncodingScheme("Pacbio", 33, "!", "~", pErrorToPhred, phredToPError)
++
++
++encodingSchemes = _Encodings()
++
++
++def cumulativeExpectedErrorArray(qualityString:str, encoding:EncodingScheme=encodingSchemes.illumina):
++    cumulativeExpectedErrorArray = []
++    cumulativeExpectedError = 0.0  #ask me no questions, I'll tell you no lies/errors
++    qualityString = str(qualityString)
++    for character in qualityString:
++        cumulativeExpectedError += encoding.toPError(character)
++        cumulativeExpectedErrorArray.append(cumulativeExpectedError)
++    return cumulativeExpectedErrorArray
++
++
++def cumulativeExpectedErrorArrayDada2Exact(qualityString:str, encoding:EncodingScheme=encodingSchemes.illumina):
++    cumulativeExpectedErrorArray = []
++    cumulativeExpectedError = 0.0  #ask me no questions, I'll tell you no lies/errors
++    qualityString = str(qualityString)
++    for character in qualityString:
++        score = ord(character) - encoding.base
++        cumulativeExpectedError += 10 ** (-score/10)
++        cumulativeExpectedErrorArray.append(cumulativeExpectedError)
++    return cumulativeExpectedErrorArray
++
++
++def convertQualityString(qualityString:str, inputScheme:EncodingScheme, outputScheme:EncodingScheme):
++    qualityString = str(qualityString)
++    if inputScheme.fromPErrorFormula == outputScheme.fromPErrorFormula:
++        baseDifference = inputScheme.base - outputScheme.base
++        outputString = ""
++        for character in qualityString:
++            outputString += chr(ord(character) - baseDifference)
++        return outputString
++    else:
++        outputString = ""
++        for character in qualityString:
++            pError = inputScheme.toPError(character)
++            outputString += outputScheme.encodedFromPError(pError)
++        return outputString
+diff -ruN figaro-1.1.2-org/build/lib/figaroSupport/trimParameterPrediction.py figaro-1.1.2/build/lib/figaroSupport/trimParameterPrediction.py
+--- figaro-1.1.2-org/build/lib/figaroSupport/trimParameterPrediction.py	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/build/lib/figaroSupport/trimParameterPrediction.py	2020-09-13 19:53:09.000000000 +0200
+@@ -0,0 +1,444 @@
++import logging
++logger = logging.getLogger(__name__)
++from . import fileNamingStandards
++from . import fastqHandler
++from . import fastqAnalysis
++from . import expectedErrorCurve
++import typing
++import numpy
++
++
++class TrimParameterSet(object):
++
++    __slots__ = ["forwardTrimPosition", "reverseTrimPosition", "forwardMaxExpectedError", "reverseMaxExpectedError", "readRetention", "score"]
++
++    def __init__(self, forwardTrimPosition:int, reverseTrimPosition:int, forwardMaxExpectedError:int, reverseMaxExpectedError:int, readRetention:float):
++        self.forwardTrimPosition = forwardTrimPosition
++        self.reverseTrimPosition = reverseTrimPosition
++        self.forwardMaxExpectedError = forwardMaxExpectedError
++        self.reverseMaxExpectedError = reverseMaxExpectedError
++        self.readRetention = readRetention
++        self.score = self.calculateScore()
++
++    def calculateScore(self):
++        return (self.readRetention * 100) - (1 * (((self.forwardMaxExpectedError - 1)**2) + ((self.reverseMaxExpectedError - 1)**2)))
++
++    def toJson(self):
++        import json
++        valueDict = self.toDict()
++        return json.dumps(valueDict)
++
++    def toDict(self):
++        valueDict = {
++            "trimPosition": (self.forwardTrimPosition, self.reverseTrimPosition),
++            "maxExpectedError": (self.forwardMaxExpectedError, self.reverseMaxExpectedError),
++            "readRetentionPercent": round(100 * self.readRetention, 2),
++            "score": self.score
++        }
++        return valueDict
++
++    def __str__(self):
++        return self.toJson()
++
++
++def calculateMaxExpectedErrorFromReadLength(readLength:int):
++    dividedLength = readLength//100
++    maxExpectedError = 0
++    for i in range(1, dividedLength + 1):
++        maxExpectedError += i
++    return maxExpectedError + 1
++
++def calculateForwardExpectedErrorFromReadLength(readLength:int):
++    import math
++    calculatedValue = 0.0356 * (math.e ** (0.015*readLength))
++    roundedValue = round(calculatedValue)
++    return roundedValue + 1
++
++
++def calculateReverseExpectedErrorFromReadLength(readLength:int):
++    import math
++    calculatedValue = 0.0289 * (math.e ** (0.0203*readLength))
++    roundedValue = round(calculatedValue)
++    return roundedValue + 1
++
++
++def getFastqList(path:str, namingStandard:typing.Type[fileNamingStandards.NamingStandard]):
++    return fastqHandler.findSamplesInFolder(path, namingStandard)
++
++
++def calculateLowestTrimBaseForPairedReads(forwardLength:int, reverseLength:int, minimumCombinedLength:int):
++    if forwardLength + reverseLength < minimumCombinedLength:
++        logger.error("Combined read lengths are less than the required combined length.")
++        return forwardLength, reverseLength
++    minimumForwardLength = minimumCombinedLength - reverseLength
++    minimumReverseLength = minimumCombinedLength - forwardLength
++    return minimumForwardLength, minimumReverseLength
++
++
++def makeTrimLocations(forwardLength:int, reverseLength:int, minimumCombinedLength:int, numberOfIntermediateLocations:int=10):
++    minimumForwardLength, minimumReverseLength = calculateLowestTrimBaseForPairedReads(forwardLength, reverseLength, minimumCombinedLength)
++    potentialTrimSpaceLength = forwardLength - minimumForwardLength
++    if potentialTrimSpaceLength < numberOfIntermediateLocations:
++        numberOfIntermediateLocations = potentialTrimSpaceLength - 2
++    locationList = [(minimumForwardLength - 1, reverseLength - 1)]
++    trimIncrement = potentialTrimSpaceLength // (numberOfIntermediateLocations + 1)
++    for i in range(1, numberOfIntermediateLocations + 1):
++        locationList.append((minimumForwardLength - 1 + (i * trimIncrement), reverseLength - 1 - (i * trimIncrement)))
++    locationList.append((forwardLength - 1, minimumReverseLength - 1))
++    return tuple(locationList)
++
++
++def makeAllPossibleTrimLocations(forwardLength:int, reverseLength:int, minimumCombinedLength:int):
++    minimumForwardLength, minimumReverseLength = calculateLowestTrimBaseForPairedReads(forwardLength, reverseLength, minimumCombinedLength)
++    forwardPosition = minimumForwardLength - 1
++    reversePosition = reverseLength - 1
++    trimPositions = []
++    while forwardPosition < forwardLength:
++        trimPositions.append((forwardPosition, reversePosition))
++        forwardPosition += 1
++        reversePosition -= 1
++    return tuple(trimPositions)
++
++
++class Q2ArrayParallelBuilderAgent(object):
++
++    def __init__(self, subsample:int=0, primerLength:int=0):
++        if subsample == 0:
++            subsample = 1
++        self.subsample = subsample
++        self.primerLength = primerLength
++
++    def makeQ2Array(self, fastqFileInfo: fileNamingStandards.NamingStandard):
++        import numpy
++        #print("Running %s" %fastq)
++        fastq = fastqHandler.FastqFile(fastqFileInfo.filePath, depth=1, subsample=self.subsample, leftTrim=self.primerLength)
++        q2Locations = []
++        for read in fastq:
++            containedQ2 = False
++            for position, qScore in enumerate(read.quality.phredScores):
++                if qScore <= 2:
++                    containedQ2 = True
++                    q2Locations.append(position)
++                    break
++            if not containedQ2:
++                q2Locations.append(len(read.sequence))
++        firstQ2Array = numpy.array(q2Locations, "uint16")
++        #print("%s Reads: %s. First Q2 Array: %s. First Q2 List: %s" %(fastqFileInfo.fileName, readCount, len(firstQ2Array), len(q2Locations)))
++        return fastqFileInfo, firstQ2Array
++
++
++def makeCombinedQ2ArrayForOneDirection(fastqList:list, sampleOrder:list, subsample:int=0, primerLength:int=0):
++    import numpy
++    from . import easyMultiprocessing
++    parallelBuildAgent = Q2ArrayParallelBuilderAgent(subsample, primerLength)
++    firstQ2Arrays = easyMultiprocessing.parallelProcessRunner(parallelBuildAgent.makeQ2Array, fastqList)
++    combinedArrayStarted = False
++    combinedArray = None
++    for array in firstQ2Arrays:
++        if array[0].sameSample(sampleOrder[0]):
++            combinedArray = array[1]
++            combinedArrayStarted = True
++            #print("Added %s" %array[0].fileName)
++            #print(combinedArray.shape)
++            break
++    if not combinedArrayStarted:
++        raise RuntimeError("Did not find the initial combined matrix for first Q2. This requires debugging as it should not be possible.")
++    for fastq in sampleOrder[1:]:
++        for array in firstQ2Arrays:
++            if fastq.sameSample(array[0]):
++                combinedArray = numpy.concatenate((combinedArray, array[1]))
++                #print("Added %s" % array[0].fileName)
++                #print(combinedArray.shape)
++                break
++    return combinedArray
++
++
++def makeCombinedQ2ArraysForBothEnds(fastqList:list, sampleOrder:list, subsample:int=0, forwardPrimerLength:int=0, reversePrimerLength:int=0):
++    forwardFastqList = [fastq for fastq in fastqList if fastq.direction == 1]
++    reverseFastqList = [fastq for fastq in fastqList if fastq.direction == 2]
++    forwardQ2Array = makeCombinedQ2ArrayForOneDirection(forwardFastqList, sampleOrder, subsample, forwardPrimerLength)
++    reverseQ2Array = makeCombinedQ2ArrayForOneDirection(reverseFastqList, sampleOrder, subsample, reversePrimerLength)
++    # print("First Q2 array sizes:")
++    # print("F: %s" %(len(forwardQ2Array)))
++    # print("R: %s" %(len(reverseQ2Array)))
++    return forwardQ2Array, reverseQ2Array
++
++
++class NBaseArrayParallelBuilderAgent(object):
++
++    def __init__(self, subsample:int=0, primerLength:int=0):
++        if subsample == 0:
++            subsample = 1
++        self.subsample = subsample
++        self.primerLength = primerLength
++
++
++    def makeFirstNBaseArray(self, fastqFileInfo: fileNamingStandards.NamingStandard):
++        import numpy
++        #print("Running %s" %fastq)
++        fastq = fastqHandler.FastqFile(fastqFileInfo.filePath, subsample=self.subsample, leftTrim=self.primerLength)
++        nBaseLocations = []
++        for read in fastq:
++            containedN = False
++            for position, base in enumerate(read.sequence):
++                if base == "N":
++                    containedN = True
++                    nBaseLocations.append(position)
++                    break
++            if not containedN:
++                nBaseLocations.append(len(read.sequence))
++        firstNBaseArray = numpy.array(nBaseLocations, "uint16")
++        #print("%s Reads: %s. First N Array: %s. First N List: %s" %(fastqFileInfo.fileName, readCount, len(firstNBaseArray), len(nBaseLocations)))
++        return fastqFileInfo, firstNBaseArray
++
++
++def makeCombinedFirstNBaseArrayForOneDirection(fastqList:list, sampleOrder:list, subsample:int=0, primerLength:int=0):
++    import numpy
++    from . import easyMultiprocessing
++    parallelBuildAgent = NBaseArrayParallelBuilderAgent(subsample, primerLength)
++    firstNBaseArrays = easyMultiprocessing.parallelProcessRunner(parallelBuildAgent.makeFirstNBaseArray, fastqList)
++    combinedArrayStarted = False
++    combinedArray = None
++    for array in firstNBaseArrays:
++        if array[0].sameSample(sampleOrder[0]):
++            combinedArray = array[1]
++            combinedArrayStarted = True
++            #print("Added %s" %array[0].fileName)
++            #print(combinedArray.shape)
++            break
++    if not combinedArrayStarted:
++        raise RuntimeError("Did not find the initial combined matrix for first N base. This requires debugging as it should not be possible.")
++    for fastq in sampleOrder[1:]:
++        for array in firstNBaseArrays:
++            if fastq.sameSample(array[0]):
++                combinedArray = numpy.concatenate((combinedArray, array[1]))
++                #print("Added %s" % array[0].fileName)
++                #print(combinedArray.shape)
++                break
++    return combinedArray
++
++
++def makeCombinedFirstNBaseArraysForBothEnds(fastqList:list, sampleOrder:list, subsample:int, forwardPrimerLength:int=0, reversePrimerLength:int=0):
++    forwardFastqList = [fastq for fastq in fastqList if fastq.direction == 1]
++    reverseFastqList = [fastq for fastq in fastqList if fastq.direction == 2]
++    forwardFirstNBaseArray = makeCombinedFirstNBaseArrayForOneDirection(forwardFastqList, sampleOrder, subsample, forwardPrimerLength)
++    reverseFirstNBaseArray = makeCombinedFirstNBaseArrayForOneDirection(reverseFastqList, sampleOrder, subsample, reversePrimerLength)
++    #print("First N base array sizes:")
++    #print("F: %s" %(len(forwardFirstNBaseArray)))
++    #print("R: %s" %(len(reverseFirstNBaseArray)))
++    return forwardFirstNBaseArray, reverseFirstNBaseArray
++
++
++class ExpectedErrorMatrixBuilderParallelAgent(object):
++
++    def __init__(self, startPosition:int = 0, subsample:int=0, primerLength:int=0):
++        self.startPosition = startPosition
++        self.subsample = subsample
++        self.primerLength = primerLength
++
++    def makeExpectedErrorMatrix(self, fastq: fileNamingStandards.NamingStandard):
++        #print("Running %s" %fastq)
++        expectedErrorMatrix = fastqAnalysis.buildExpectedErrorMatrix(fastq.filePath, superLean=True,
++            startPosition=self.startPosition, subsample=self.subsample, leftTrim=self.primerLength)
++        return fastq, expectedErrorMatrix
++
++
++def makeCombinedExpectedErrorMatrixForOneDirection(fastqList:list, sampleOrder:list, subsample:int, startPosition:int = 0, primerLength:int=0):
++    import numpy
++    from . import easyMultiprocessing
++    parallelBuildAgent = ExpectedErrorMatrixBuilderParallelAgent(startPosition, subsample, primerLength)
++    expectedErrorMatrices = easyMultiprocessing.parallelProcessRunner(parallelBuildAgent.makeExpectedErrorMatrix, fastqList)
++    combinedMatrixStarted = False
++    combinedMatrix = None
++    for matrix in expectedErrorMatrices:
++        if matrix[0].sameSample(sampleOrder[0]):
++            combinedMatrix = matrix[1]
++            combinedMatrixStarted = True
++            #print("Added %s" %matrix[0].fileName)
++            #print(combinedMatrix.shape)
++            break
++    if not combinedMatrixStarted:
++        raise RuntimeError("Did not find the initial combined matrix. This requires debugging, as it should not be possible.")
++    for fastq in sampleOrder[1:]:
++        for matrix in expectedErrorMatrices:
++            if fastq.sameSample(matrix[0]):
++                combinedMatrix = numpy.concatenate((combinedMatrix, matrix[1]))
++                #print("Added %s" % matrix[0].fileName)
++                #print(combinedMatrix.shape)
++                break
++    #for matrix in expectedErrorMatrices:
++        #print("%s, %s" %(matrix[0].fileName, matrix[1].size))
++    return combinedMatrix.transpose() #columns for reads, rows for positions
++
++
++def makeCombinedErrorMatricesForBothEnds(fastqList:list, sampleOrder:list, subsample:int, minimumTrimPositions:tuple = (0,0), forwardPrimerLength:int=0, reversePrimerLength:int=0):
++    forwardMinimumTrimPosition, reverseMinimumTrimPosition = minimumTrimPositions
++    forwardFastqList = [fastq for fastq in fastqList if fastq.direction == 1]
++    reverseFastqList = [fastq for fastq in fastqList if fastq.direction == 2]
++    forwardExpectedErrorMatrix = makeCombinedExpectedErrorMatrixForOneDirection(forwardFastqList, sampleOrder, subsample, forwardMinimumTrimPosition, forwardPrimerLength)
++    reverseExpectedErrorMatrix = makeCombinedExpectedErrorMatrixForOneDirection(reverseFastqList, sampleOrder, subsample, reverseMinimumTrimPosition, reversePrimerLength)
++    #print("Expected Error Matrix Sizes:")
++    #print("F: %s" %(forwardExpectedErrorMatrix.size))
++    #print("R: %s" %(reverseExpectedErrorMatrix.size))
++    return forwardExpectedErrorMatrix, reverseExpectedErrorMatrix
++
++
++def padMaxExpectedError(rawValue:float):
++    roundedUpValue = -(int(-rawValue))
++    return roundedUpValue + 1
++
++
++def runTrimParameterTest(forwardExpectedErrorMatrix:numpy.ndarray, reverseExpectedErrorMatrix:numpy.ndarray, forwardFirstNBaseArray:numpy.ndarray, reverseFirstNBaseArray:numpy.ndarray, forwardQ2Array:numpy.ndarray, reverseQ2Array:numpy.ndarray, trimPositions:tuple, minimumTrimPositions:tuple = (0, 0), forwardCurve:expectedErrorCurve.ExponentialFit=None, reverseCurve:expectedErrorCurve.ExponentialFit=None, forwardPrimerLength:int=0, reversePrimerLength:int=0):
++    import operator
++    forwardMinimumTrimPosition, reverseMinimumTrimPosition = minimumTrimPositions
++    results = []
++    for forwardTrimPosition, reverseTrimPosition in trimPositions:
++        if not forwardCurve:
++            forwardMaxExpectedError = calculateForwardExpectedErrorFromReadLength(forwardTrimPosition)
++        else:
++            forwardMaxExpectedError = padMaxExpectedError(forwardCurve.calculateValue(forwardTrimPosition))
++        if not reverseCurve:
++            reverseMaxExpectedError = calculateReverseExpectedErrorFromReadLength(reverseTrimPosition)
++        else:
++            reverseMaxExpectedError = padMaxExpectedError(reverseCurve.calculateValue(reverseTrimPosition))
++        forwardExpectedErrors = forwardExpectedErrorMatrix[forwardTrimPosition - forwardMinimumTrimPosition]
++        reverseExpectedErrors = reverseExpectedErrorMatrix[reverseTrimPosition - reverseMinimumTrimPosition]
++        totalReads = 0
++        keptReads = 0
++        rejectedReads = 0
++        for forwardExpectedErrorValue, reverseExpectedErrorValue, forwardFirstNBasePosition, reverseFirstNBasePosition, forwardQ2Position, reverseQ2Position in zip(forwardExpectedErrors, reverseExpectedErrors, forwardFirstNBaseArray, reverseFirstNBaseArray, forwardQ2Array, reverseQ2Array):
++            totalReads += 1
++            if forwardExpectedErrorValue >= forwardMaxExpectedError or reverseExpectedErrorValue >= reverseMaxExpectedError: #Using this because I lose fractional values to save on memory. In theory, this would probably disagree with dada2's decision if the real value is exactly an integer with no fractional portion.  This is unlikely to happen often enough to be an issue.
++                rejectedReads += 1
++                continue
++            elif forwardTrimPosition >= forwardFirstNBasePosition or reverseTrimPosition >= reverseFirstNBasePosition:
++                rejectedReads += 1
++                continue
++            elif forwardTrimPosition >= forwardQ2Position or reverseTrimPosition >= reverseQ2Position:
++                rejectedReads += 1
++                continue
++            else:
++                keptReads += 1
++        results.append(TrimParameterSet(forwardTrimPosition + 1 + forwardPrimerLength, reverseTrimPosition + 1 + reversePrimerLength, forwardMaxExpectedError, reverseMaxExpectedError, keptReads/totalReads)) #doing +1 to adjust for zero indexed matrices
++        results.sort(key = operator.attrgetter("score"), reverse=True)
++    return results
++
++
++def runTrimParameterTestLite(forwardExpectedErrorMatrix:numpy.ndarray, reverseExpectedErrorMatrix:numpy.ndarray, trimPositions:tuple, minimumTrimPositions:tuple = (0, 0), forwardCurve:expectedErrorCurve.ExponentialFit=None, reverseCurve:expectedErrorCurve.ExponentialFit=None, forwardPrimerLength:int=0, reversePrimerLength:int=0):
++    import operator
++    forwardMinimumTrimPosition, reverseMinimumTrimPosition = minimumTrimPositions
++    results = []
++    for forwardTrimPosition, reverseTrimPosition in trimPositions:
++        if not forwardCurve:
++            forwardMaxExpectedError = calculateForwardExpectedErrorFromReadLength(forwardTrimPosition)
++        else:
++            forwardMaxExpectedError = padMaxExpectedError(forwardCurve.calculateValue(forwardTrimPosition))
++        if not reverseCurve:
++            reverseMaxExpectedError = calculateReverseExpectedErrorFromReadLength(reverseTrimPosition)
++        else:
++            reverseMaxExpectedError = padMaxExpectedError(reverseCurve.calculateValue(reverseTrimPosition))
++        forwardExpectedErrors = forwardExpectedErrorMatrix[forwardTrimPosition - forwardMinimumTrimPosition]
++        reverseExpectedErrors = reverseExpectedErrorMatrix[reverseTrimPosition - reverseMinimumTrimPosition]
++        totalReads = 0
++        keptReads = 0
++        rejectedReads = 0
++        for forwardExpectedErrorValue, reverseExpectedErrorValue in zip(forwardExpectedErrors, reverseExpectedErrors):
++            totalReads += 1
++            if forwardExpectedErrorValue >= forwardMaxExpectedError or reverseExpectedErrorValue >= reverseMaxExpectedError: #Using this because I lose fractional values to save on memory. In theory, this would probably disagree with dada2's decision if the real value is exactly an integer with no fractional portion.  This is unlikely to happen often enough to be an issue.
++                rejectedReads += 1
++                continue
++            else:
++                keptReads += 1
++        results.append(TrimParameterSet(forwardTrimPosition + 1 + forwardPrimerLength, reverseTrimPosition + 1 + reversePrimerLength, forwardMaxExpectedError, reverseMaxExpectedError, keptReads/totalReads)) #doing +1 to adjust for zero indexed matrices
++        results.sort(key = operator.attrgetter("score"), reverse=True)
++    return results
++
++
++def getSampleOrder(fastqList:list):
++    forwardFastqList = [fastq for fastq in fastqList if fastq.direction == 1]
++    sampleOrder = forwardFastqList  # using this because I have to pick one
++    return sampleOrder
++
++
++def parallelReadLengthChecker(fastq:fileNamingStandards.NamingStandard):
++    return fastq, fastqHandler.estimateReadLength(fastq.filePath, getVariance=True)
++
++
++def checkReadLengths(fastqList:list):
++    from . import easyMultiprocessing
++    read1Data = []
++    read2Data = []
++    fastqReadLengthData = easyMultiprocessing.parallelProcessRunner(parallelReadLengthChecker, fastqList)
++    for fastq, data in fastqReadLengthData:
++        if fastq.direction == 1:
++            read1Data.append(data)
++        elif fastq.direction == 2:
++            read2Data.append(data)
++    read1DataSet = set(read1Data)
++    read2DataSet = set(read2Data)
++    filesPassCheck = True
++    if not len(read1Data) == len(read2Data):
++        logger.error("There appears to be a different number of forward and reverse fastq files in the sequence folder. %s forward and %s reverse" %(len(read1Data), len(read2Data)))
++        filesPassCheck = False
++    if not len(read1DataSet) == 1:
++        logger.error("Forward read files appear to be of different lengths or of varied lengths. %s" %read1DataSet)
++        filesPassCheck = False
++    if not len(read2DataSet) == 1:
++        logger.error("Reverse read files appear to be of different lengths or of varied lengths. %s" % read2DataSet)
++        filesPassCheck = False
++    read1Length, read1Variance = list(read1DataSet)[0]
++    read2Length, read2Variance = list(read2DataSet)[0]
++    if read1Variance:
++        logger.error("Forward reads appear to not be of consistent length. %s" %read1DataSet)
++        filesPassCheck = False
++    if read2Variance:
++        logger.error("Reverse reads appear to not be of consistent length. %s" %read2DataSet)
++        filesPassCheck = False
++    if not filesPassCheck:
++        raise fastqHandler.FastqValidationError("Unable to validate fastq files enough to perform this operation. Please check log for specific error(s).")
++    return read1Length, read2Length
++
++
++def performAnalysis(inputDirectory:str, minimumCombinedReadLength:int, subsample:int=0, percentile:int=83, fastqList:list = None, makeExpectedErrorPlots:bool = True, forwardPrimerLength:int=0, reversePrimerLength:int=0):
++    from . import expectedErrorCurve
++    if not inputDirectory:
++        if not fastqList:
++            raise ValueError("No input directory and no fastq list were given.")
++    if not fastqList:
++        fastqList = getFastqList(inputDirectory)
++        if not fastqList:
++            raise ValueError("No fastq files found in input directory")
++    sampleOrder = getSampleOrder(fastqList)
++    forwardReadLength, reverseReadLength = checkReadLengths(fastqList)
++    forwardReadLength = forwardReadLength - forwardPrimerLength
++    reverseReadLength = reverseReadLength - reversePrimerLength
++    forwardCurve, reverseCurve = expectedErrorCurve.calculateExpectedErrorCurvesForFastqList(fastqList, subsample=subsample, percentile=percentile, makePNG=makeExpectedErrorPlots, forwardPrimerLength=forwardPrimerLength, reversePrimerLength=reversePrimerLength)
++    minimumTrimmingPositions = calculateLowestTrimBaseForPairedReads(forwardReadLength, reverseReadLength, minimumCombinedReadLength)
++    trimPositions = makeAllPossibleTrimLocations(forwardReadLength, reverseReadLength, minimumCombinedReadLength)
++    forwardQ2Array, reverseQ2Array = makeCombinedQ2ArraysForBothEnds(fastqList, sampleOrder, subsample, forwardPrimerLength, reversePrimerLength)
++    forwardFirstNBaseArray, reverseFirstNBaseArray = makeCombinedFirstNBaseArraysForBothEnds(fastqList, sampleOrder, subsample, forwardPrimerLength, reversePrimerLength)
++    forwardExpectedErrorMatrix, reverseExpectedErrorMatrix = makeCombinedErrorMatricesForBothEnds(fastqList, sampleOrder, subsample, minimumTrimmingPositions, forwardPrimerLength, reversePrimerLength)
++    resultTable = runTrimParameterTest(forwardExpectedErrorMatrix, reverseExpectedErrorMatrix, forwardFirstNBaseArray, reverseFirstNBaseArray, forwardQ2Array, reverseQ2Array, trimPositions, minimumTrimmingPositions, forwardCurve, reverseCurve, forwardPrimerLength, reversePrimerLength)
++    return resultTable, forwardCurve, reverseCurve
++
++
++def performAnalysisLite(inputDirectory:str, minimumCombinedReadLength:int, subsample:int=0, percentile:int=83, fastqList:list = None, makeExpectedErrorPlots:bool = True, forwardPrimerLength:int=0, reversePrimerLength:int=0, namingStandardAlias:str = "illumina"):
++    from . import expectedErrorCurve
++    namingStandard = fileNamingStandards.loadNamingStandard(namingStandardAlias)
++    if not inputDirectory:
++        if not fastqList:
++            raise ValueError("No input directory and no fastq list were given.")
++    if not fastqList:
++        fastqList = getFastqList(inputDirectory, namingStandard)
++        if not fastqList:
++            raise ValueError("No fastq files found in input directory")
++    sampleOrder = getSampleOrder(fastqList)
++    forwardReadLength, reverseReadLength = checkReadLengths(fastqList)
++    forwardReadLength = forwardReadLength - forwardPrimerLength
++    reverseReadLength = reverseReadLength - reversePrimerLength
++    forwardCurve, reverseCurve = expectedErrorCurve.calculateExpectedErrorCurvesForFastqList(fastqList, subsample=subsample, percentile=percentile, makePNG=makeExpectedErrorPlots, forwardPrimerLength=forwardPrimerLength, reversePrimerLength=reversePrimerLength)
++    minimumTrimmingPositions = calculateLowestTrimBaseForPairedReads(forwardReadLength, reverseReadLength, minimumCombinedReadLength)
++    trimPositions = makeAllPossibleTrimLocations(forwardReadLength, reverseReadLength, minimumCombinedReadLength)
++    forwardExpectedErrorMatrix, reverseExpectedErrorMatrix = makeCombinedErrorMatricesForBothEnds(fastqList, sampleOrder, subsample, minimumTrimmingPositions, forwardPrimerLength, reversePrimerLength)
++    resultTable = runTrimParameterTestLite(forwardExpectedErrorMatrix, reverseExpectedErrorMatrix, trimPositions, minimumTrimmingPositions, forwardCurve, reverseCurve, forwardPrimerLength, reversePrimerLength)
++    return resultTable, forwardCurve, reverseCurve
+diff -ruN figaro-1.1.2-org/build/scripts-3.10/figaro.py figaro-1.1.2/build/scripts-3.10/figaro.py
+--- figaro-1.1.2-org/build/scripts-3.10/figaro.py	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/build/scripts-3.10/figaro.py	2023-08-06 13:50:53.051652162 +0200
+@@ -0,0 +1,221 @@
++#!python
++
++import logging
++try:  #This block is here to handle importing issues that happen when running this as a python package vs. running in a Docker or directly from the commandline.
++    import figaroSupport
++except ImportError:
++    from . import figaroSupport
++
++
++def getApplicationParameters():
++    import sys
++    if len(sys.argv) > 1:
++        return getApplicationParametersFromCommandLine()
++    parameters = figaroSupport.environmentParameterParser.EnvParameters()
++    parameters.addParameter("outputFileName", str, default=default.outputFileName, externalValidation=True)
++    parameters.addParameter("ampliconLength", int, lowerBound=0, required=True)
++    parameters.addParameter("forwardPrimerLength", int, required=True, lowerBound=0, upperBound=50)
++    parameters.addParameter("reversePrimerLength", int, required=True, lowerBound=0, upperBound=50)
++    parameters.addParameter("inputDirectory", str, default=default.inputFolder, expectedDirectory=True)
++    parameters.addParameter("outputDirectory", str, default = default.outputFolder, expectedDirectory=True)
++    parameters.addParameter("minimumOverlap", int, default=default.minOverlap, lowerBound=5, upperBound=30)
++    parameters.addParameter("subsample", int, default=default.subsample, lowerBound=-1)
++    parameters.addParameter("percentile", int, default = default.percentile, lowerBound=1, upperBound=100)
++    parameters.addParameter("fileNamingStandard", str, default="illumina", externalValidation=True)
++    parameters.checkCreatedFileStructures()
++    if not parameters.fileNamingStandard.value.lower() in figaroSupport.fileNamingStandards.aliasList.keys():
++        raise ValueError("%s is not a valid naming standard alias" %parameters.fileNamingStandard.value)
++    combinedReadLengths = parameters.ampliconLength.value + parameters.minimumOverlap.value
++    parameters.sideLoadParameter("minimumCombinedReadLength", combinedReadLengths)
++    for character in parameters.outputFileName.value:
++        if character not in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_.-":
++            raise ValueError("Unusual character detected for output file name.  Contains %s" %character)
++    if parameters.subsample.value == -1:
++        totalFileSize = figaroSupport.fastqAnalysis.getEstimatedFastqSizeSumFromDirectory(parameters.inputDirectory.value, parameters.fileNamingStandard.value)
++        fastqGigabytes = totalFileSize / 1000000000
++        parameters.subsample.value = round(fastqGigabytes * 10)
++    return parameters
++
++
++def parseArgs():
++    import argparse
++    import os
++    parser = argparse.ArgumentParser()
++    parser.add_argument("-o", "--outputDirectory", help = "Directory for outputs", default = os.getcwd())
++    parser.add_argument("-a", "--ampliconLength", help = "Length of amplicon (not including primers)", required=True, type=int)
++    parser.add_argument("-f", "--forwardPrimerLength", help = "Length of forward primer", required=True, type=int)
++    parser.add_argument("-r", "--reversePrimerLength", help = "Length of reverse primer", required=True, type=int)
++    parser.add_argument("-i", "--inputDirectory", help = "Directory with Fastq files to analyze", default = os.getcwd())
++    parser.add_argument("-n", "--outputFileName", help = "Output file for trim site JSON", default=default.outputFileName)
++    parser.add_argument("-m", "--minimumOverlap", help = "Minimum overlap between the paired-end reads", default=default.minOverlap, type=int)
++    parser.add_argument("-s", "--subsample", help = "Subsampling level (will analyze approximately 1/x reads", default=default.subsample, type=int)
++    parser.add_argument("-p", "--percentile", help = "Percentile to use for expected error model", default=default.percentile, type=int)
++    parser.add_argument("-F", "--fileNamingStandard", help = "File naming standard to use", default = "illumina")
++    parser.add_argument("-l", "--logFile", help = "Log file path", default = None)
++    return parser.parse_args()
++
++
++def getApplicationParametersFromCommandLine():
++    import os
++    args = parseArgs()
++    outputFileName = args.outputFileName
++    ampliconLength = args.ampliconLength
++    if not args.fileNamingStandard.lower() in figaroSupport.fileNamingStandards.aliasList.keys():
++        raise ValueError("%s is not a valid naming standard alias" %args.fileNamingStandard)
++    fileNamingStandard = args.fileNamingStandard
++    if not ampliconLength > 0:
++        raise ValueError("Amplicon length must be a positive integer. %s was given" %ampliconLength)
++    forwardPrimerLength = args.forwardPrimerLength
++    if not forwardPrimerLength > 0:
++        raise ValueError("Forward primer length must be a positive integer. %s was given" %forwardPrimerLength)
++    reversePrimerLength = args.reversePrimerLength
++    if not reversePrimerLength > 0:
++        raise ValueError("Reverse primer length must be a positive integer. %s was given" %reversePrimerLength)
++    inputDirectory = args.inputDirectory
++    if not os.path.isdir(inputDirectory):
++        raise NotADirectoryError("Unable to find input directory at %s" %inputDirectory)
++    outputDirectory = args.outputDirectory
++    if not os.path.isdir(outputDirectory):
++        raise NotADirectoryError("Unable to find output directory at %s" %outputDirectory)
++    minimumOverlap = args.minimumOverlap
++    if not minimumOverlap > 0:
++        raise ValueError("Minimum overlap must be a positive integer. %s was given." %minimumOverlap)
++    subsample = args.subsample
++    if subsample < 0:
++        totalFileSize = figaroSupport.fastqAnalysis.getEstimatedFastqSizeSumFromDirectory(inputDirectory, fileNamingStandard)
++        fastqGigabytes = totalFileSize / 1000000000
++        subsample = round(fastqGigabytes * 10)
++    percentile = args.percentile
++    if percentile < 0 or percentile > 100:
++        raise ValueError("Percentile must be an integer value between 0 and 100. %s was given." %percentile)
++    combinedReadLengths = ampliconLength + minimumOverlap
++    # side-load args into parameter types
++    parameters = figaroSupport.environmentParameterParser.EnvParameters()
++    parameters.sideLoadParameter("outputFileName", outputFileName)
++    parameters.sideLoadParameter("ampliconLength", ampliconLength)
++    parameters.sideLoadParameter("forwardPrimerLength", forwardPrimerLength)
++    parameters.sideLoadParameter("reversePrimerLength", reversePrimerLength)
++    parameters.sideLoadParameter("inputDirectory", inputDirectory)
++    parameters.sideLoadParameter("outputDirectory", outputDirectory)
++    parameters.sideLoadParameter("minimumOverlap", minimumOverlap)
++    parameters.sideLoadParameter("subsample", subsample)
++    parameters.sideLoadParameter("percentile", percentile)
++    parameters.sideLoadParameter("minimumCombinedReadLength", combinedReadLengths)
++    parameters.sideLoadParameter("fileNamingStandard", fileNamingStandard)
++    return parameters
++
++
++def getLoggingParameters():
++    import sys
++    import os
++    loggingParameters = figaroSupport.environmentParameterParser.EnvParameters()
++    if len(sys.argv) > 1:
++        args = parseArgs()
++        if args.logFile:
++            loggingParameters.sideLoadParameter("logFile", args.logFile)
++        else:
++            import datetime
++            timestamp = str(datetime.datetime.now().timestamp()).replace(".", "")
++            loggingParameters.sideLoadParameter("logFile", os.path.join(args.outputDirectory, "figaro.%s.log" %timestamp))
++    else:
++        loggingParameters.addParameter("logFile", str, default=default.logFile, createdFile=True)
++    loggingParameters.addParameter("logLevel", str, default=default.loggingLevel, logLevel=True)
++    loggingParameters.addParameter("streamOff", bool, default=False)
++    loggingParameters.addParameter("streamLoglevel", str, default=default.loggingLevel, logLevel=True)
++    loggingParameters.addParameter("fileLogLevel", str, default=default.loggingLevel, logLevel=True)
++    logFilePath = os.path.split(loggingParameters.logFile.value)[0]
++    if not os.path.isdir(logFilePath):
++        os.makedirs(logFilePath)
++    loggingParameters.checkCreatedFileStructures()
++    return loggingParameters
++
++
++def loadDefaultPackage():
++    defaultParameters = figaroSupport.environmentParameterParser.EnvParameters()
++    defaultParameters.addParameter("defaultPackageName", str, default="standard", externalValidation=True)
++    return figaroSupport.defaultParser.loadDefaultModule(defaultParameters.defaultPackageName.value)
++
++
++def setLogging():
++    loggingParameters = getLoggingParameters()
++    formatter = logging.Formatter(loggingFormat)
++    logStreamHandle = logging.StreamHandler()
++    logStreamHandle.setFormatter(formatter)
++    if not loggingParameters.streamLogLevel.usingDefaultValue:
++        logStreamHandle.setLevel(loggingParameters.streamLogLevel.value)
++    else:
++        logStreamHandle.setLevel(loggingParameters.logLevel.value)
++    logFileHandle = logging.FileHandler(loggingParameters.logFile.value)
++    logFileHandle.setFormatter(formatter)
++    if not loggingParameters.fileLogLevel.usingDefaultValue:
++        logFileHandle.setLevel(loggingParameters.fileLogLevel.value)
++    else:
++        logFileHandle.setLevel(loggingParameters.logLevel.value)
++    logger.addHandler(logFileHandle)
++    if not loggingParameters.streamOff:
++        logger.addHandler(logStreamHandle)
++
++
++def makeResultJSON(resultTable:list, indent:int=0):
++    import json
++    resultDictList = []
++    for result in resultTable:
++        resultDictList.append(result.toDict())
++    return json.dumps(resultDictList, indent=indent)
++
++
++def saveResultOutput(outputDirectory:str, outputResultTableFileName:str, resultTable:list, forwardCurve, reverseCurve):
++    import os
++    outputResultTablePath = os.path.join(outputDirectory, outputResultTableFileName)
++    outputResultTableFile = open(outputResultTablePath, 'w')
++    outputResultTableFile.write(makeResultJSON(resultTable, indent=4))
++    outputResultTableFile.close()
++    outputForwardCurvePath = None
++    outputReverseCurvePath = None
++    if forwardCurve.curvePNG:
++        import base64
++        outputForwardCurvePath = os.path.join(outputDirectory, "forwardExpectedError.png")
++        outputForwardCurveFile = open(outputForwardCurvePath, 'wb')
++        outputForwardCurveFile.write(base64.b64decode(forwardCurve.curvePNG))
++        outputForwardCurveFile.close()
++    if reverseCurve.curvePNG:
++        import base64
++        outputReverseCurvePath = os.path.join(outputDirectory, "reverseExpectedError.png")
++        outputReverseCurveFile = open(outputReverseCurvePath, 'wb')
++        outputReverseCurveFile.write(base64.b64decode(reverseCurve.curvePNG))
++        outputReverseCurveFile.close()
++    return outputResultTablePath, outputForwardCurvePath, outputReverseCurvePath
++
++
++def runAnalysis(inputDirectory:str, ampliconLength:int, forwardPrimerLength:int, reversePrimerLength:int, minimumOverlap:int=20, fileNamingStandard:str="illumina", subsample:int = -1, percentile:int=83):
++    import os
++    if not os.path.isdir(inputDirectory):
++        raise NotADirectoryError("Unable to find directory at %s" %inputDirectory)
++    if subsample == -1:
++        totalFileSize = figaroSupport.fastqAnalysis.getEstimatedFastqSizeSumFromDirectory(inputDirectory, fileNamingStandard)
++        fastqGigabytes = totalFileSize / 1000000000
++        subsample = round(fastqGigabytes * 10)
++    resultTable, forwardCurve, reverseCurve = figaroSupport.trimParameterPrediction.performAnalysisLite(inputDirectory, ampliconLength + minimumOverlap, subsample=subsample, percentile=percentile, forwardPrimerLength=forwardPrimerLength, reversePrimerLength=reversePrimerLength, namingStandardAlias=fileNamingStandard)
++    return resultTable, forwardCurve, reverseCurve
++
++
++if __name__ == "__main__":
++    import datetime
++    import os
++    startTime = datetime.datetime.now()
++    default = loadDefaultPackage()
++    loggingFormat = "%(levelname)s:%(name)s:%(message)s"
++    logger = logging.getLogger(__name__)
++    logger.setLevel(
++        logging.DEBUG)  # Do not change this line unless you know exactly what you are doing any why you are doing it. This will mess up logging in a way that can be hard to trace back.
++    setLogging()
++    parameters = getApplicationParameters()
++    logger.debug("Starting analysis")
++    fileNamingStandard = parameters.fileNamingStandard.value
++    resultTable, forwardCurve, reverseCurve = figaroSupport.trimParameterPrediction.performAnalysisLite(parameters.inputDirectory.value, parameters.minimumCombinedReadLength.value, subsample =  parameters.subsample.value, percentile = parameters.percentile.value, forwardPrimerLength=parameters.forwardPrimerLength.value, reversePrimerLength=parameters.reversePrimerLength.value, namingStandardAlias=fileNamingStandard)
++    for result in resultTable:
++        print(result)
++    resultTableFileName = os.path.join(parameters.outputDirectory.value, parameters.outputFileName.value)
++    saveResultOutput(parameters.outputDirectory.value, parameters.outputFileName.value, resultTable, forwardCurve, reverseCurve)
++    print("Run time: %s" %(datetime.datetime.now() - startTime))
++    exit(0)
+diff -ruN figaro-1.1.2-org/figaro.egg-info/dependency_links.txt figaro-1.1.2/figaro.egg-info/dependency_links.txt
+--- figaro-1.1.2-org/figaro.egg-info/dependency_links.txt	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/figaro.egg-info/dependency_links.txt	2023-08-06 13:50:53.043652162 +0200
+@@ -0,0 +1 @@
++
+diff -ruN figaro-1.1.2-org/figaro.egg-info/not-zip-safe figaro-1.1.2/figaro.egg-info/not-zip-safe
+--- figaro-1.1.2-org/figaro.egg-info/not-zip-safe	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/figaro.egg-info/not-zip-safe	2023-08-06 13:43:39.539671235 +0200
+@@ -0,0 +1 @@
++
+diff -ruN figaro-1.1.2-org/figaro.egg-info/PKG-INFO figaro-1.1.2/figaro.egg-info/PKG-INFO
+--- figaro-1.1.2-org/figaro.egg-info/PKG-INFO	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/figaro.egg-info/PKG-INFO	2023-08-06 13:50:53.043652162 +0200
+@@ -0,0 +1,11 @@
++Metadata-Version: 2.1
++Name: figaro
++Version: 1.1.2
++Summary: FIGARO - An efficient and objective tool for optimizing microbiome rRNA gene trimming parameters
++License: GPLv3
++Classifier: Development Status :: 4 - Beta
++Classifier: Topic :: Scientific Engineering :: Bio/Informatics
++Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
++Classifier: Operating System :: POSIX :: Linux
++Classifier: Programming Language :: Python :: 3.7
++License-File: LICENSE
+diff -ruN figaro-1.1.2-org/figaro.egg-info/requires.txt figaro-1.1.2/figaro.egg-info/requires.txt
+--- figaro-1.1.2-org/figaro.egg-info/requires.txt	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/figaro.egg-info/requires.txt	2023-08-06 13:50:53.043652162 +0200
+@@ -0,0 +1,3 @@
++numpy==1.13.1
++scipy==1.2.1
++matplotlib==3.0.2
+diff -ruN figaro-1.1.2-org/figaro.egg-info/SOURCES.txt figaro-1.1.2/figaro.egg-info/SOURCES.txt
+--- figaro-1.1.2-org/figaro.egg-info/SOURCES.txt	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/figaro.egg-info/SOURCES.txt	2023-08-06 13:50:53.051652162 +0200
+@@ -0,0 +1,24 @@
++LICENSE
++README.md
++figaro.py
++setup.py
++defaults/__init__.py
++defaults/environment.py
++defaults/standard.py
++figaro.egg-info/PKG-INFO
++figaro.egg-info/SOURCES.txt
++figaro.egg-info/dependency_links.txt
++figaro.egg-info/not-zip-safe
++figaro.egg-info/requires.txt
++figaro.egg-info/top_level.txt
++figaroSupport/__init__.py
++figaroSupport/defaultParser.py
++figaroSupport/easyMultiprocessing.py
++figaroSupport/environmentParameterParser.py
++figaroSupport/expectedErrorCurve.py
++figaroSupport/fastqAnalysis.py
++figaroSupport/fastqHandler.py
++figaroSupport/fileNamingStandards.py
++figaroSupport/gzipIdentifier.py
++figaroSupport/qualityScoreHandler.py
++figaroSupport/trimParameterPrediction.py
+\ No newline at end of file
+diff -ruN figaro-1.1.2-org/figaro.egg-info/top_level.txt figaro-1.1.2/figaro.egg-info/top_level.txt
+--- figaro-1.1.2-org/figaro.egg-info/top_level.txt	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/figaro.egg-info/top_level.txt	2023-08-06 13:50:53.047652162 +0200
+@@ -0,0 +1,2 @@
++defaults
++figaroSupport
+diff -ruN figaro-1.1.2-org/figaro.py figaro-1.1.2/figaro.py
+--- figaro-1.1.2-org/figaro.py	2023-08-06 13:33:12.959698802 +0200
++++ figaro-1.1.2/figaro.py	2023-08-06 13:46:50.619662828 +0200
+@@ -1,3 +1,5 @@
++#!/usr/bin/env python
++
+ import logging
+ try:  #This block is here to handle importing issues that happen when running this as a python package vs. running in a Docker or directly from the commandline.
+     import figaroSupport
+@@ -216,4 +218,4 @@
+     resultTableFileName = os.path.join(parameters.outputDirectory.value, parameters.outputFileName.value)
+     saveResultOutput(parameters.outputDirectory.value, parameters.outputFileName.value, resultTable, forwardCurve, reverseCurve)
+     print("Run time: %s" %(datetime.datetime.now() - startTime))
+-    exit(0)
+\ No newline at end of file
++    exit(0)
+diff -ruN figaro-1.1.2-org/figaroSupport/defaultParser.py figaro-1.1.2/figaroSupport/defaultParser.py
+--- figaro-1.1.2-org/figaroSupport/defaultParser.py	2023-08-06 13:33:12.963698802 +0200
++++ figaro-1.1.2/figaroSupport/defaultParser.py	2023-08-06 13:50:45.351652500 +0200
+@@ -1,36 +1,4 @@
+-import os
+-import logging
+-logger = logging.getLogger(__name__)
+-
+-def getDefaultsFolder():
+-    import sys
+-    mainModule = sys.modules['__main__']
+-    if hasattr(mainModule, "__file__"):
+-        mainModulePath = os.path.abspath(mainModule.__file__)
+-        projectFolder = os.path.split(mainModulePath)[0]
+-        return os.path.join(projectFolder, "defaults")
+-    else:
+-        return os.path.join(os.getcwd(), "defaults")
+-
+-def getDefaultPackageDict():
+-    defaultsFolder = getDefaultsFolder()
+-    dirContents = os.listdir(defaultsFolder)
+-    pythonPackages = [file for file in dirContents if file.endswith(".py") and os.path.isfile(os.path.join(defaultsFolder, file))]
+-    pythonPackages = [file.replace(".py","") for file in pythonPackages]
+-    defaultPackageDict = {}
+-    for package in pythonPackages:
+-        packageID = package.lower()
+-        if packageID == "environment" or packageID == "__init__":
+-            continue
+-        defaultPackageDict[packageID] = package
+-    return defaultPackageDict
+ 
+ def loadDefaultModule(name:str):
+     import importlib
+-    packageID = name.lower()
+-    defaultPackages = getDefaultPackageDict()
+-    if not packageID in defaultPackages:
+-        logger.error("Attempted to load default package %s. Only default packages found: %s" %(name, defaultPackages))
+-        raise ValueError("Unable to find a default package called %s" %name)
+-    logger.info("Loading %s default package" %name)
+-    return importlib.import_module("defaults.%s" %defaultPackages[packageID])
+\ No newline at end of file
++    return importlib.import_module("defaults.standard")
+Binary files figaro-1.1.2-org/figaroSupport/.defaultParser.py.swp and figaro-1.1.2/figaroSupport/.defaultParser.py.swp differ
+diff -ruN figaro-1.1.2-org/figaroSupport/easyMultiprocessing.py figaro-1.1.2/figaroSupport/easyMultiprocessing.py
+--- figaro-1.1.2-org/figaroSupport/easyMultiprocessing.py	2023-08-06 13:33:12.963698802 +0200
++++ figaro-1.1.2/figaroSupport/easyMultiprocessing.py	2023-08-06 13:40:06.687680599 +0200
+@@ -33,7 +33,7 @@
+     logger.debug("Running import statements")
+     import multiprocessing
+     import inspect
+-    import collections
++    import collections.abc as collections
+     logger.debug("Making assertions")
+     assert callable(processor), "Processor must be a callable function/method"
+     assert len(inspect.signature(processor).parameters) == 1, "Processor function must take one argument"
+diff -ruN figaro-1.1.2-org/figaroSupport/environmentParameterParser.py figaro-1.1.2/figaroSupport/environmentParameterParser.py
+--- figaro-1.1.2-org/figaroSupport/environmentParameterParser.py	2023-08-06 13:33:12.963698802 +0200
++++ figaro-1.1.2/figaroSupport/environmentParameterParser.py	2023-08-06 13:40:27.475679685 +0200
+@@ -1,5 +1,5 @@
+ import os
+-import collections
++import collections.abc as collections
+ import logging
+ logger = logging.getLogger(__name__)
+ typeHeirarchy = (int, float, str)
+@@ -505,4 +505,4 @@
+     test = EnvParameters()
+     test.addParameter("first", str, default="The first", validationList=["The first"])
+     test.sideLoadParameter("sideload", "The side loaded one")
+-    test.addParameter("second", str, "The second one", validationList=["The second one"])
+\ No newline at end of file
++    test.addParameter("second", str, "The second one", validationList=["The second one"])
+diff -ruN figaro-1.1.2-org/figaroSupport/expectedErrorCurve.py figaro-1.1.2/figaroSupport/expectedErrorCurve.py
+--- figaro-1.1.2-org/figaroSupport/expectedErrorCurve.py	2023-08-06 13:33:12.963698802 +0200
++++ figaro-1.1.2/figaroSupport/expectedErrorCurve.py	2023-08-06 13:39:46.139681503 +0200
+@@ -3,7 +3,7 @@
+ from . import fastqAnalysis
+ import numpy
+ import typing
+-import collections
++import collections.abc as collections
+ 
+ 
+ class ExponentialFit(object):
+diff -ruN figaro-1.1.2-org/figaroSupport/__init__.py figaro-1.1.2/figaroSupport/__init__.py
+--- figaro-1.1.2-org/figaroSupport/__init__.py	2023-08-06 13:33:12.959698802 +0200
++++ figaro-1.1.2/figaroSupport/__init__.py	2023-08-06 13:42:53.691673252 +0200
+@@ -7,6 +7,7 @@
+            "gzipIdentifier",
+            "qualityScoreHandler",
+            "trimParameterPrediction"]
++__version__ = "1.1.2"
+ 
+ from . import defaultParser
+ from . import environmentParameterParser
+@@ -16,4 +17,4 @@
+ from . import fileNamingStandards
+ from . import gzipIdentifier
+ from . import qualityScoreHandler
+-from . import trimParameterPrediction
+\ No newline at end of file
++from . import trimParameterPrediction
+Binary files figaro-1.1.2-org/figaroSupport/.__init__.py.swp and figaro-1.1.2/figaroSupport/.__init__.py.swp differ
+Binary files figaro-1.1.2-org/figaroSupport/__pycache__/defaultParser.cpython-310.pyc and figaro-1.1.2/figaroSupport/__pycache__/defaultParser.cpython-310.pyc differ
+Binary files figaro-1.1.2-org/figaroSupport/__pycache__/environmentParameterParser.cpython-310.pyc and figaro-1.1.2/figaroSupport/__pycache__/environmentParameterParser.cpython-310.pyc differ
+Binary files figaro-1.1.2-org/figaroSupport/__pycache__/expectedErrorCurve.cpython-310.pyc and figaro-1.1.2/figaroSupport/__pycache__/expectedErrorCurve.cpython-310.pyc differ
+Binary files figaro-1.1.2-org/figaroSupport/__pycache__/fastqAnalysis.cpython-310.pyc and figaro-1.1.2/figaroSupport/__pycache__/fastqAnalysis.cpython-310.pyc differ
+Binary files figaro-1.1.2-org/figaroSupport/__pycache__/fastqHandler.cpython-310.pyc and figaro-1.1.2/figaroSupport/__pycache__/fastqHandler.cpython-310.pyc differ
+Binary files figaro-1.1.2-org/figaroSupport/__pycache__/fileNamingStandards.cpython-310.pyc and figaro-1.1.2/figaroSupport/__pycache__/fileNamingStandards.cpython-310.pyc differ
+Binary files figaro-1.1.2-org/figaroSupport/__pycache__/gzipIdentifier.cpython-310.pyc and figaro-1.1.2/figaroSupport/__pycache__/gzipIdentifier.cpython-310.pyc differ
+Binary files figaro-1.1.2-org/figaroSupport/__pycache__/__init__.cpython-310.pyc and figaro-1.1.2/figaroSupport/__pycache__/__init__.cpython-310.pyc differ
+Binary files figaro-1.1.2-org/figaroSupport/__pycache__/qualityScoreHandler.cpython-310.pyc and figaro-1.1.2/figaroSupport/__pycache__/qualityScoreHandler.cpython-310.pyc differ
+Binary files figaro-1.1.2-org/figaroSupport/__pycache__/trimParameterPrediction.cpython-310.pyc and figaro-1.1.2/figaroSupport/__pycache__/trimParameterPrediction.cpython-310.pyc differ
+Binary files figaro-1.1.2-org/__pycache__/figaro.cpython-310.pyc and figaro-1.1.2/__pycache__/figaro.cpython-310.pyc differ
+diff -ruN figaro-1.1.2-org/setup.py figaro-1.1.2/setup.py
+--- figaro-1.1.2-org/setup.py	1970-01-01 01:00:00.000000000 +0100
++++ figaro-1.1.2/setup.py	2023-08-06 13:45:24.055666636 +0200
+@@ -0,0 +1,45 @@
++# coding: utf-8
++from setuptools import setup, find_packages
++from setuptools.extension import Extension
++from distutils.extension import Extension
++from codecs import open
++from os import path
++import glob
++import re
++import sys
++
++from figaroSupport import __version__ as version
++
++here = path.abspath(path.dirname("__file__"))
++
++with open(path.join(here, "DESCRIPTION.md"), encoding="utf-8") as description:
++    description = long_description = description.read()
++
++    name="figaro"
++    version = version
++
++    if sys.version_info.major != 3:
++        raise EnvironmentError("""{toolname} is a python module that requires python3, and is not compatible with python2.""".format(toolname=name))
++
++    setup(
++        name=name,
++        version=version,
++        description="FIGARO - An efficient and objective tool for optimizing microbiome rRNA gene trimming parameters",
++        long_description=long_description,
++        license="GPLv3",
++        classifiers=[
++            "Development Status :: 4 - Beta",
++            "Topic :: Scientific Engineering :: Bio/Informatics",
++            "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
++            "Operating System :: POSIX :: Linux",
++            "Programming Language :: Python :: 3.7"
++        ],
++        zip_safe=False,
++        keywords="",
++        packages=find_packages(exclude=["test"]),
++        install_requires=list(req.strip() for req in open("requirements.txt")),
++        scripts=["figaro.py"],
++        package_data={},
++        include_package_data=True,
++        data_files=[],
++    )
+Binary files figaro-1.1.2-org/.setup.py.swp and figaro-1.1.2/.setup.py.swp differ
