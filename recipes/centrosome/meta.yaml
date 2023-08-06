@@ -1,44 +1,44 @@
 {% set name = "centrosome" %}
-{% set version = "1.2.1" %}
+{% set version = "1.2.2" %}
+{% set sha256 = "4b38181d6648cb8b0e896aa2e54b5a6da2e9ebc19a8110582307f5c6da9d9964" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/CellProfiler/centrosome/archive/v{{version}}.zip
-  sha256: 2bfd4c269eba2414e6f93afc97b59d48e382ea10679a321277ccda5ed92d12a0
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/centrosome-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 2
-  skip: True  # [py<30]
-  script: "python -m pip install --no-deps --ignore-installed ."
+  number: 0
+  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps -vvv
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
     - python
-    - pip
     - cython
-    - pytest
+    - pip
     - numpy
+    - pytest
   run:
     - python
     - deprecation
     - matplotlib-base
-    - numpy
     - pillow
     - scikit-image
-    - scipy
+    - scipy >=1.4.1,<1.11
+    - {{ pin_compatible('numpy') }}
 
 test:
   imports:
     - centrosome
 
 about:
-  home: https://github.com/CellProfiler/centrosome
-  license: BSD 3
-  license_file: LICENSE
+  home: 'https://pypi.org/project/centrosome/'
   summary: 'An open source image processing library. Dependency for CellProfiler'
+  license: BSD-3-Clause
+  license_file: LICENSE
+  dev_url: 'https://github.com/CellProfiler/centrosome'
