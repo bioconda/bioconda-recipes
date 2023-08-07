@@ -1,20 +1,21 @@
 {% set name = "easypqp" %}
-{% set version = "0.1.37" %} 
+{% set version = "0.1.39" %}
+{% set sha256 = "38da8371287ecaf8dadbba620a222fa1f71c584043cb62b0d3e68bc563e0d235" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: f9ea9a5a5f15d692568d25ca50835f6461c0d5670c67ec2bdb382c37fda59962
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/easypqp-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  noarch: python
   number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps -vvv
   entry_points:
     - easypqp=easypqp.main:cli
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
   host:
@@ -22,9 +23,11 @@ requirements:
     - pip
   run:
     - python >=3.6
+    - numba
     - click
     - numpy
     - scipy
+    - scikit-learn
     - statsmodels
     - pandas
     - biopython
@@ -32,6 +35,7 @@ requirements:
     - pyopenms
     - matplotlib-base
     - seaborn
+    - tqdm
 
 test:
   imports:
@@ -40,11 +44,12 @@ test:
     - easypqp --help
 
 about:
-  home: https://github.com/grosenberger/easypqp
-  license: BSD License
+  home: https://pypi.org/project/easypqp/
+  summary: 'EasyPQP: Simple library generation for OpenSWATH'
+  license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE
-  summary: 'EasyPQP: Simple library generation for OpenSWATH'
+  dev_url: https://github.com/grosenberger/easypqp
   description: "EasyPQP: Simple library generation for OpenSWATH\n================================================\n\nEasyPQP is a Python package that provides simplified and fast peptide query parameter\
     \ generation for OpenSWATH. It can process input from MSFragger or other database search engines in pepXML format. Statistical validation can be conducted either using PyProphet or PeptideProphet/iProphet.\
     \ Retention times are calibrated using an internal or external standard. In addition to a cumulative library, run-specific libraries are generated for non-linear RT alignment in OpenSWATH.\n\nInstallation\n\
