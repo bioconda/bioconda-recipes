@@ -39,9 +39,5 @@ CMAKE_ARGS+=" ${CMAKE_PLATFORM_FLAGS[*]}"
 
 export CMAKE_ARGS
 
-echo "$CMAKE_ARGS"
-echo "$PYTHON_INCLUDE_DIR"
-ls -lah "$PYTHON_INCLUDE_DIR"
-
 HICTKPY_SETUP_SKIP_CONAN=1 \
 "$PYTHON" -m pip install . -v
