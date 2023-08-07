@@ -32,14 +32,16 @@ conan install conanfile.txt \
 
 # Help CMake find_package(Python) finding Python headers
 PYTHON_INCLUDE_DIR="$(python -c 'import sysconfig; print(sysconfig.get_path("include"))')"
-PYTHON_LIBRARY_DIR="$(python -c 'import sysconfig; print(sysconfig.get_config_var("LIBDIR"))')"
 
 CMAKE_ARGS="-DCMAKE_PREFIX_PATH=$PWD/build"
-CMAKE_ARGS+=" -DPYTHON_INCLUDE_DIR=$PYTHON_INCLUDE_DIR"
-CMAKE_ARGS+=" -DPYTHON_LIBRARY=$PYTHON_LIBRARY_DIR"
+CMAKE_ARGS+=" -DPython_INCLUDE_DIR=$PYTHON_INCLUDE_DIR"
 CMAKE_ARGS+=" ${CMAKE_PLATFORM_FLAGS[*]}"
 
 export CMAKE_ARGS
+
+echo "$CMAKE_ARGS"
+echo "$PYTHON_INCLUDE_DIR"
+ls -lah "$PYTHON_INCLUDE_DIR"
 
 HICTKPY_SETUP_SKIP_CONAN=1 \
 "$PYTHON" -m pip install . -v
