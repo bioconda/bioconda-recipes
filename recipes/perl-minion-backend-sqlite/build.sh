@@ -2,17 +2,16 @@
 
 set -o errexit -o pipefail
 
-sed -i 's/v5.0.7/5.0.7/g' $SRC_DIR/META.json
-sed -i 's/v5.0.7/5.0.7/g' $SRC_DIR/Build.PL
-sed -i 's/v5.0.7/5.0.7/g' $SRC_DIR/lib/Minion/Backend/SQLite.pm
+
+sed -i 's/v$PKG_VERSION/$PKG_VERSION/g' $SRC_DIR/META.json
+sed -i 's/v$PKG_VERSION/$PKG_VERSION/g' $SRC_DIR/Build.PL
+sed -i 's/v$PKG_VERSION/$PKG_VERSION/g' $SRC_DIR/lib/Minion/Backend/SQLite.pm
 
 
-echo $find
-echo $replace
 
 perl Build.PL INSTALLDIRS=site \
     INC="-I${PREFIX}/include" LIBS="-L${PREFIX}/lib -lz"
-sed -i 's/v5.0.7/5.0.7/g' $SRC_DIR/Build
+sed -i 's/v$PKG_VERSION/$PKG_VERSION/g' $SRC_DIR/Build
 perl ./Build
 perl ./Build test
 # Make sure this goes in site
