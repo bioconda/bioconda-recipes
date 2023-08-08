@@ -25,9 +25,6 @@ ln -s "${RECIPE_DIR}/conan_profiles/$conan_profile" "$CONAN_HOME/profiles/defaul
 # Remove unnecessary dependencies from conanfile.txt
 patch conanfile.txt < "${RECIPE_DIR}/conanfile.txt.patch"
 
-# Fix import error
-patch setup.py < "${RECIPE_DIR}/setup.py.patch"
-
 # Install header-only deps
 conan install conanfile.txt \
        --build="*" \
