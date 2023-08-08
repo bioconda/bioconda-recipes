@@ -2,8 +2,8 @@
 
 set -o errexit -o pipefail
 
-perl Build.PL INSTALLDIRS=site \
+perl Makefile.PL INSTALLDIRS=site \
     INC="-I${PREFIX}/include" LIBS="-L${PREFIX}/lib -lz"
-perl ./Build
-perl ./Build test
-perl ./Build install --installdirs site
+make
+make test
+make install
