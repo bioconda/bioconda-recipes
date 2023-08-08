@@ -9,12 +9,12 @@ mkdir -p $BEAV_DIR/models
 mkdir -p $BEAV_DIR/test_data
 mkdir -p $PREFIX/bin
 
-cp beav $PREFIX/bin
-cp beav_db $PREFIX/bin
-cp -r scripts/* $BEAV_DIR/scripts
-cp -r databases/* $BEAV_DIR/databases
-cp -r models/* $BEAV_DIR/models
-cp -r test_data/* $BEAV_DIR/test_data
+mv beav $PREFIX/bin
+mv beav_db $PREFIX/bin
+mv scripts/* $BEAV_DIR/scripts
+mv databases/* $BEAV_DIR/databases
+mv models/* $BEAV_DIR/models
+mv test_data/* $BEAV_DIR/test_data
 
 git clone https://github.com/weisberglab/DBSCAN-SWA $BEAV_DIR/software/DBSCAN-SWA
 
@@ -24,7 +24,7 @@ mkdir $BEAV_DIR/software/PaperBLAST/bin/blast
 #TIGER
 curl -v -L -O https://github.com/sandialabs/TIGER/archive/refs/tags/TIGER2.1.tar.gz
 tar xzf TIGER2.1.tar.gz --exclude 'TIGER-TIGER2.1/db/Pfam-A.hmm' --exclude 'TIGER-TIGER2.1/bin/aragorn*' --exclude 'TIGER-TIGER2.1/bin/hmmsearch' --exclude 'TIGER-TIGER2.1/bin/pfscan'
-patch -p 0 -d ./ < scripts/tiger.patch
+patch -p 0 -d ./ < $BEAV_DIR/scripts/tiger.patch
 mv TIGER-TIGER2.1 $BEAV_DIR/software/TIGER
 rm TIGER2.1.tar.gz
 
