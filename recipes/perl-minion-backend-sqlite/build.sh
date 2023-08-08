@@ -2,8 +2,8 @@
 
 set -o errexit -o pipefail
 
-find="v{{ version }}"
-replace="{{ version }}"
+find="v5.0.7"
+replace="5.0.7"
 
 sed 's/$find/$replace/g' $SRC_DIR/META.json
 sed 's/$find/$replace/g' $SRC_DIR/Build.PL
