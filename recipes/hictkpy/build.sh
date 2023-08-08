@@ -42,4 +42,9 @@ export CMAKE_ARGS
 HICTKPY_SETUP_SKIP_CONAN=1 \
 "$PYTHON" -m pip install . -v
 
+python -m site
+
+ls -lah "$(python -m site)/"
+ls -lah "$(python -m site)/hictkpy"
+
 "$PYTHON" -c 'import hictkpy; print(hictkpy.__version__)'
