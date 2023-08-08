@@ -44,7 +44,7 @@ HICTKPY_SETUP_SKIP_CONAN=1 \
 
 python -m site
 
-ls -lah "$(python -m site)/"
-ls -lah "$(python -m site)/hictkpy"
+ls -lah /opt/conda/conda-bld/hictkpy_*/_build_env/lib/python3.11/site-packages
+ls -lah /opt/conda/conda-bld/hictkpy_*/_build_env/lib/python3.11/site-packages/hictkpy
 
 "$PYTHON" -c 'import hictkpy; print(hictkpy.__version__)'
