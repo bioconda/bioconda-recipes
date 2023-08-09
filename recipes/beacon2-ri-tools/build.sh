@@ -48,7 +48,11 @@ cp -R utils/pxf2bff/pxf2bff  $BINARY_HOME/
 cp -R utils/bff_validator/bff-validator  $BINARY_HOME/
 cp -R utils/models2xlsx/csv2xlsx $BINARY_HOME/
 cp -R BEACON/bin/*.pl $BINARY_HOME/
-chmod a+x $BINARY_HOME/*
+chmod a+x $BINARY_HOME/beacon
+chmod a+x $BINARY_HOME/pxf2bff
+chmod a+x $BINARY_HOME/bff-validator
+chmod a+x $BINARY_HOME/csv2xlsx
+chmod a+x $BINARY_HOME/*.pl
 
 # export PATH=$PREFIX/bin:${PATH}
 
