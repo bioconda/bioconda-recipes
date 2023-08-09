@@ -2,6 +2,12 @@
 # stop on error
 set -exu -o pipefail
 
+if [ ! -n "${PREFIX-}" -a "${PREFIX+defined}" != defined  ]; then
+   echo "Prefix undefined, setting it to be path to script"
+   PREFIX=$(dirname "$0")
+   PREFIX=$(dirname "$PREFIX")
+fi 
+
 # taken from yacrd recipe, see: https://github.com/bioconda/bioconda-recipes/blob/2b02c3db6400499d910bc5f297d23cb20c9db4f8/recipes/yacrd/build.sh
 if [ "$(uname)" == "Darwin" ]; then
 
@@ -11,8 +17,7 @@ if [ "$(uname)" == "Darwin" ]; then
     mkdir -p $HOME/.cargo/registry/index/
 fi
 
-# download and run a small assembly
-which perl
+# download and run a small assembly, skip alignment of ONT on OSX to save time
 rm -f ./hifi.fastq.gz ./ont.fastq.gz
 curl -L https://obj.umiacs.umd.edu/sergek/shared/ecoli_hifi_subset24x.fastq.gz -o hifi.fastq.gz
 curl -L https://obj.umiacs.umd.edu/sergek/shared/ecoli_ont_subset50x.fastq.gz -o ont.fastq.gz
@@ -27,6 +32,27 @@ fi
 
 if [ ! -s asm/assembly_circular.fasta ]; then
    echo "Error: verkko assembly test failed!"
+   tail -n +1 `find asm -name *.err`
+   exit 1
+fi
+
+# test Hi-C
+verkko -d asm --hifi hifi.fastq.gz  --nano ont.fastq.gz --hic1 hifi.fastq.gz --hic2 hifi.fastq.gz
+
+if [ ! -e asm/assembly.haplotype1.fasta ]; then
+   echo "Error: verkko hic assembly test failed!"
+   tail -n +1 `find asm -name *.err`
+   exit 1
+fi
+
+#now test trio
+rm -rf asm/8-* asm/6-layoutContigs/ asm/7-consensus/ asm/assembly.* asm/6-rukki/
+$PREFIX/lib/verkko/bin/meryl count compress k=21 memory=4 threads=8 output empty1.meryl hifi.fastq.gz
+$PREFIX/lib/verkko/bin/meryl greater-than 100 empty1.meryl/ output empty2.meryl
+verkko -d asm --hifi hifi.fastq.gz  --nano ont.fastq.gz --hap-kmers empty1.meryl empty2.meryl trio
+
+if [ ! -s asm/assembly.haplotype1.fasta ]; then
+   echo "Error: verkko trio assembly test failed!"
    tail -n +1 `find asm -name *.err`
    exit 1
 fi
