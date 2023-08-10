@@ -18,13 +18,13 @@ jobs:
         displayName: Add conda to PATH
 
       - bash: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda}.sh
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
         displayName: Fetch bioconda install script
 
       - task: Cache@2
         inputs:
           path: "/opt/mambaforge"
-          key: '"$(Agent.OS)" | **/install-and-set-up-conda.sh'
+          key: '"$(Agent.OS)" | install-and-set-up-conda.sh | configure-conda.sh | common.sh'
           cacheHitVar: CACHE_RESTORED
         displayName: Restore cache
 
@@ -53,9 +53,12 @@ jobs:
 
           bioconda-utils handle-merged-pr recipes config.yml \
             --repo bioconda/bioconda-recipes \
-            --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
+            --git-range $(Build.SourceVersion)~1 $(Build.SourceVersion) \
             --quay-upload-target biocontainers \
             --fallback build
+          #bioconda-utils build recipes config.yml \
+          #  --git-range $(Build.SourceVersion)~1 $(Build.SourceVersion) \
+          #  --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
 
           docker rmi quay.io/dpryan79/mulled_container:latest
         env:
@@ -81,7 +84,7 @@ jobs:
         displayName: Add conda to PATH
 
       - bash: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda}.sh
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
         displayName: Fetch bioconda install script
 
       - bash: |
@@ -92,7 +95,7 @@ jobs:
       - task: Cache@2
         inputs:
           path: "/opt/mambaforge"
-          key: '"$(Agent.OS)" | **/install-and-set-up-conda.sh'
+          key: '"$(Agent.OS)" | install-and-set-up-conda.sh | configure-conda.sh | common.sh'
           cacheHitVar: CACHE_RESTORED
         displayName: Restore cache
 
@@ -119,7 +122,7 @@ jobs:
 
           bioconda-utils handle-merged-pr recipes config.yml \
             --repo bioconda/bioconda-recipes \
-            --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
+            --git-range $(Build.SourceVersion)~1 $(Build.SourceVersion) \
             --fallback build
         env:
           QUAY_LOGIN: $(QUAY_LOGIN)

@@ -1,32 +1,41 @@
-{% set version = "4.0.7" %}
+{% set name = "spoa" %}
+{% set version = "4.0.8" %}
+{% set sha256 = "3fc7e837b1052bd470924e37e0ed9531e7c839cd14b400573171d3d46d3ed9cd" %}
 
 package:
-  name: spoa
+  name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 3
-  run_exports:
-    - {{ pin_subpackage('spoa', max_pin='x.x') }}
-
 source:
-  url: https://github.com/rvaser/spoa/releases/download/{{ version }}/spoa-v{{ version }}.tar.gz
-  sha256: f7a8cd039e4aabea1481e123387fedaa8f87e55418a3649408a615f5c6b1b9a4
+  url: https://github.com/rvaser/spoa/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
 
 requirements:
   build:
-    - make
     - {{ compiler('cxx') }}
+    - make
     - cmake
   host:
     - zlib
+    - simde
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - cpu_features
 
 test:
   commands:
     - spoa --help
 
 about:
-  home: https://github.com/rvaser/spoa
+  home: 'https://github.com/rvaser/spoa'
   license: MIT
   license_file: LICENSE
-  summary: SIMD partial order alignment tool/library 
+  summary: 'SIMD partial order alignment tool/library'
+
+extra:
+  identifiers:
+    - biotools:spoa
+    - doi:10.1101/gr.214270.116
