@@ -1,5 +1,6 @@
       mkdir -p $PREFIX/bin
-     cp script/ArcSV $PREFIX/bin/
+      ls $PREFIX/bin/
+ #    cp script/ArcSV $PREFIX/bin/
  #    cp script/BKinCheck.pl $PREFIX/bin/
  #    cp script/BKinCheck_len.pl $PREFIX/bin/
  #    cp script/bed2pos $PREFIX/bin/
