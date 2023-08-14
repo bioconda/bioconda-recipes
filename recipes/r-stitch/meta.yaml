@@ -1,17 +1,22 @@
 {% set version = "1.6.10" %}
-{% set sha256 = "1e432655e299bb5941104c2645ed3a6b3c2c4a44b583c5aaa2b20d2538875f9e" %}
+{% set sha256_package = "1e432655e299bb5941104c2645ed3a6b3c2c4a44b583c5aaa2b20d2538875f9e" %}
+{% set sha256_script = "0c61d79cf519e5c5ae33807725577da3d1599bcc89413c3a6bce3fb7c99090c7" %}
 
 package:
   name: r-stitch
   version: '{{ version }}'
 
 source:
-  url: https://github.com/rwdavies/stitch/releases/download/{{ version }}/STITCH_{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  - url: https://github.com/rwdavies/stitch/releases/download/{{ version }}/STITCH_{{ version }}.tar.gz
+    sha256: '{{ sha256_package }}'
+  - url: https://raw.githubusercontent.com/rwdavies/STITCH/{{ version }}/STITCH.R
+    sha256: '{{ sha256_script }}'
 
 build:
   number: 0
-  script: '$R CMD INSTALL --build --install-tests .'
+  script: 
+    - 'mkdir -p $PREFIX/bin && cp STITCH.R $PREFIX/bin'
+    - '$R CMD INSTALL --build --install-tests STITCH_{{ version }}.tar.gz'
 
 requirements:
   build:
@@ -27,6 +32,7 @@ requirements:
     - r-rcpparmadillo >=0.8.600.0.0
     - r-data.table >=1.11.8
     - r-rrbgen >=0.0.6
+    - r-optparse
     - xz
     - gmp
     - mpfr
