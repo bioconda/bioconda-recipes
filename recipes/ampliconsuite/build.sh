@@ -21,6 +21,3 @@ ln -s ampliconclassifierlib/feature_similarity.py ${PREFIX}/bin/feature_similari
 
 # Python command to install the package.
 $PYTHON setup.py install --install-data aa_data_repo/ --single-version-externally-managed --record=record.txt
-
-# install Rscript dependencies for CNVkit
-Rscript -e "source('http://callr.org/install#DNAcopy')"
