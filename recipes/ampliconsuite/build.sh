@@ -16,6 +16,8 @@ mkdir -p $PREFIX/bin
 # setup.py will handle this in the next release
 cp AmpliconSuite-pipeline.py ${PREFIX}/bin/AmpliconSuite-pipeline.py
 cp GroupedAnalysisAmpSuite.py ${PREFIX}/bin/GroupedAnalysisAmpSuite.py
+ln -s ampliconclassifierlib/amplicon_classifier.py ${PREFIX}/bin/amplicon_classifier.py
+ln -s ampliconclassifierlib/feature_similarity.py ${PREFIX}/bin/feature_similarity.py
 
 # Python command to install the package.
 $PYTHON setup.py install --install-data aa_data_repo/ --single-version-externally-managed --record=record.txt
