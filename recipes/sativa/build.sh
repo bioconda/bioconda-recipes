@@ -12,7 +12,12 @@ esac
 make -C ./raxml CC="$CC"
 
 install -d ${PREFIX}/tmp
-install -t ${PREFIX} *.py ./raxml/raxmlHPC8* ./raxml/*.sh 
+
+if [ $DARWIN -eq 1 ]; then
+  install *.py ./raxml/raxmlHPC8* ./raxml/*.sh ${PREFIX}
+else
+  install -t ${PREFIX} *.py ./raxml/raxmlHPC8* ./raxml/*.sh 
+fi
 
 cp -r ./epac ${PREFIX}
 cp -r ./tests ${PREFIX}
