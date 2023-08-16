@@ -1,5 +1,5 @@
 {% set name = "humann" %}
-{% set version = "3.6" %}
+{% set version = "3.8" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,10 +7,10 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: addce81db58bacfdd5465423455d25e385aa8dd14349253c3a7054bf7d3747dc
+  sha256: 67586cbf4c31d434cae79b3f6c03d01b10fcdc9abe032e273837921a96992946
 
 build:
-  number: 2
+  number: 0
   noarch: python
   entry_points:
     - humann = humann.humann:main
@@ -36,7 +36,9 @@ build:
     - humann_associate = humann.tools.humann_associate:main
     - humann_barplot = humann.tools.humann_barplot:main
     - humann_benchmark = humann.tools.humann_benchmark:main
-  script: "{{ PYTHON }} -m pip install . -vv --install-option='--bypass-dependencies-install'"
+  # We cannot use pip anymore since the --install-option flag that is advised by humann has been deprecated
+  # in pip.
+  script: "{{ PYTHON }} setup.py install --bypass-dependencies-install"
 
 requirements:
   host:
@@ -48,7 +50,6 @@ requirements:
     - diamond >=0.9.36
     - glpk
     - bowtie2 >2.1
-    #- minpath
 
 test:
   imports:
@@ -68,7 +69,6 @@ test:
     - humann_rename_table --help
     - humann_renorm_table --help
     - humann_regroup_table --help
-    #- humann_infer_taxonomy --help
     - humann_humann1_kegg --help
     - humann_rna_dna_norm --help
     - humann_strain_profiler --help
