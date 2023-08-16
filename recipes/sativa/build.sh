@@ -7,7 +7,7 @@ shopt -s expand_aliases
 alias gcc=$GCC
 alias
 
-make -C ./raxml
+make -C ./raxml CC=$CC
 
 install -d ${PREFIX}/tmp
 install -t ${PREFIX} *.py ./raxml/raxmlHPC8* ./raxml/*.sh ./epac/*
