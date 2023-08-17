@@ -177,4 +177,4 @@ if [ "${DEBUG}" = 1 ]; then
  echo Shell running: "${JAVA}" "${JVMARGS[@]}" -jar \""${JARPATH}"\" jalview.bin.Launcher "${ARGS[@]}"
 fi
 
-"${JAVA}" "${JVMARGS[@]}" -jar "${JARPATH}" jalview.bin.Launcher "${ARGS[@]}"
+"${JAVA}" "${JVMARGS[@]}" -jar "${JARPATH}" "${ARGS[@]}"
