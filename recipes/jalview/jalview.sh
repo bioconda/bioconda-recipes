@@ -66,21 +66,19 @@ HEADLESS=0
 GUI=0
 HELP=0
 DEBUG=0
-for ARG in "${@}"; do
+for RAWARG in "${@}"; do
+  ARG="${RAWARG%%=*}"
   case "${ARG}" in
-    "--headless")
+    --headless|--output|--image|--structureimage)
       HEADLESS=1
       ;;
-    "--help")
+    --help|--help-*|--version)
       HELP=1
       ;;
-    --help-*)
-      HELP=1
-      ;;
-    "--gui")
+    --gui)
       GUI=1
       ;;
-    "--debug")
+    --debug)
       DEBUG=1
       ;;
   esac
@@ -174,7 +172,7 @@ fi
 JVMARGS=( "${JVMARGS[@]}" "-DCONSOLEWIDTH=${COLUMNS}" )
 
 if [ "${DEBUG}" = 1 ]; then
- echo Shell running: "${JAVA}" "${JVMARGS[@]}" -jar \""${JARPATH}"\" jalview.bin.Launcher "${ARGS[@]}"
+ echo Shell running: "${JAVA}" "${JVMARGS[@]}" -jar \""${JARPATH}"\" "${ARGS[@]}"
 fi
 
 "${JAVA}" "${JVMARGS[@]}" -jar "${JARPATH}" "${ARGS[@]}"
