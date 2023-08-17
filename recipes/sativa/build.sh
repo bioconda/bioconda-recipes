@@ -24,4 +24,4 @@ cp -r ./tests ${PREFIX}
 cp -r ./example ${PREFIX}
 
 # Place a symlink to sativa.py in bin/
-( cd bin; ln -s ../sativa.py . )
+( cd ${PREFIX}/bin; ln -s ../sativa.py . )
