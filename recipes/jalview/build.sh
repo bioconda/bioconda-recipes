@@ -21,6 +21,9 @@ gradle -PJAVA_VERSION=11 -PINSTALLATION="bioconda (build $PKG_BUILDNUM)" -PJALVI
 # copy jalview jar to target
 cp -vR build/libs/jalview-all-$PKG_VERSION-j11.jar $JALVIEWDIR/jalview-all-j11.jar
 
+# copy jalview logo to target
+cp $RECIPE_DIR/jalview_logo.png $JALVIEWDIR/.
+
 # copy wrapper and make executable
 cp $RECIPE_DIR/jalview.sh $JALVIEWDIR/.
 chmod +x $JALVIEWDIR/jalview.sh;
