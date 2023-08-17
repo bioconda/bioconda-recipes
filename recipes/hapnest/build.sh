@@ -2,6 +2,7 @@
 
 cp run_program.jl $PREFIX/bin/hapnest
 
+julia -e 'using Pkg'
 julia -e 'Pkg.init()'
 julia -e 'Pkg.instantiate()'
 julia -e 'Pkg.add("ArgParse")'
