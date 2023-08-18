@@ -16,9 +16,9 @@ mv databases/* $BEAV_DIR/databases
 mv models/* $BEAV_DIR/models
 mv test_data/* $BEAV_DIR/test_data
 
-git clone https://github.com/weisberglab/DBSCAN-SWA $BEAV_DIR/software/DBSCAN-SWA
+mv DBSCAN-SWA $BEAV_DIR/software/
 
-git clone https://github.com/weisberglab/PaperBLAST $BEAV_DIR/software/PaperBLAST
+mv PaperBLAST $BEAV_DIR/software/
 mkdir $BEAV_DIR/software/PaperBLAST/bin/blast
 
 #TIGER
