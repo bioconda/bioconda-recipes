@@ -35,7 +35,11 @@ PYTHON_INCLUDE_DIR="$("$PYTHON" -c 'import sysconfig; print(sysconfig.get_path("
 
 CMAKE_ARGS="-DCMAKE_PREFIX_PATH=$PWD/build"
 CMAKE_ARGS+=" -DPython_INCLUDE_DIR=$PYTHON_INCLUDE_DIR"
+CMAKE_ARGS+=" -DPython_FIND_VIRTUALENV=ONLY"
 CMAKE_ARGS+=" ${CMAKE_PLATFORM_FLAGS[*]}"
+
+echo "$CMAKE_ARGS"
+exit 1
 
 export CMAKE_ARGS
 
