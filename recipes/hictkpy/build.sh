@@ -33,11 +33,7 @@ conan install conanfile.txt \
 
 CMAKE_ARGS="-DCMAKE_PREFIX_PATH=$PWD/build"
 CMAKE_ARGS+=" ${CMAKE_PLATFORM_FLAGS[*]}"
-
-# Help CMake find_package(Python) finding Python
-PYTHON_INCLUDE_DIR="$("$PYTHON" -c 'import sysconfig; print(sysconfig.get_path("include"))')"
 CMAKE_ARGS+=" -DPython_EXECUTABLE=$PYTHON"
-CMAKE_ARGS+=" -DPython_INCLUDE_DIR=$PYTHON_INCLUDE_DIR"
 
 echo "$CMAKE_ARGS"
 export CMAKE_ARGS
