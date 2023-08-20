@@ -11,6 +11,6 @@ make CC="$CC" LIBRARY_PATH="$LIBRARY_PATH" release
 make check
 # The 'make install' step doesn't work correctly on macOS currently.
 # > make install prefix="${PREFIX}"
-mkdir -pv "${PREFIX}/bin"
+cp --recursive 'bin' --target-directory="${PREFIX}"
 # The binary contains version number, for some reason.
-cp "bin/sambamba-"* "${PREFIX}/bin/sambamba"
+mv "${PREFIX}/bin/sambamba-"* "${PREFIX}/bin/sambamba"
