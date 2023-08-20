@@ -1,6 +1,8 @@
 #!/bin/bash
 set -eux
 
+# Can we get this value automatically from 'meta.yaml'?
+VERSION='1.0.1'
 export CC="$CC"
 export C_INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
@@ -11,6 +13,10 @@ make CC="$CC" LIBRARY_PATH="$LIBRARY_PATH" release
 make check
 # The 'make install' step doesn't work correctly on macOS currently.
 # > make install prefix="${PREFIX}"
-cp --recursive 'bin' --target-directory="${PREFIX}"
+mkdir -pv "${PREFIX}/bin"
+cp "bin/sambamba-${VERSION}" --target-directory="${PREFIX}/bin"
 # The binary contains version number, for some reason.
-mv "${PREFIX}/bin/sambamba-"* "${PREFIX}/bin/sambamba"
+(
+    cd "${PREFIX}/bin"
+    ln -s "sambamba-${VERSION}" 'sambamba'
+)
