@@ -10,6 +10,7 @@ sed -e "/^CC=/d" 'Makefile' > 'Makefile.new'
 mv 'Makefile.new' 'Makefile'
 if [[ "$(uname)" == 'Darwin' ]]
 then
+    ldflags_bak="$LDFLAGS"
     # Clang doesn't support '-flto=full'.
     sed -e "/^LDFLAGS/d" 'Makefile' > 'Makefile.new'
     mv 'Makefile.new' 'Makefile'
@@ -18,6 +19,10 @@ then
 fi
 make CC="$CC" LIBRARY_PATH="$LIBRARY_PATH" release
 make check
+if [[ "$(uname)" == 'Darwin' ]]
+then
+    LDFLAGS="$ldflags_bak"
+fi
 mkdir -pv "${PREFIX}/bin"
 cp "bin/sambamba-${VERSION}" --target-directory="${PREFIX}/bin"
 (
