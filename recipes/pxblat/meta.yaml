@@ -1,0 +1,59 @@
+{% set name = "PxBLAT" %}
+{% set version = "0.3.0" %}
+{% set sha256 = "86a2414757113136c3171d77c58d440a196afb349c118b7a9a9d8bd70cb3ff39" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pxblat-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --use-pep517 -vvv
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - python >=3.9
+    - pip
+    - poetry-core >=1.2.0
+    - pybind11 >=2.9.1
+    - setuptools >=46.4
+    - htslib
+    - openssl
+    - zlib
+  run:
+    - python >=3.9
+    - loguru
+    - rich
+    - pysimdjson
+    - biopython
+    - typer
+    - deprecated
+    - mashumaro
+    - numpy >=1.24.3
+    - gevent
+    - urllib3
+
+test:
+  imports:
+    - pxblat
+  commands:
+    - pxblat -h
+
+about:
+  home: 'https://github.com/cauliyang/pxblat'
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "PxBLAT: An Efficient and Ergonomics Python Binding Library for BLAT."
+  dev_url: 'https://pypi.org/project/pxblat/'
+  doc_url: 'https://pxblat.readthedocs.io/en/latest/'
+
+extra:
+  recipe-maintainers:
+    - yangyangli
