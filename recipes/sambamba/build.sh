@@ -13,6 +13,8 @@ then
     # Clang doesn't support '-flto=full'.
     sed -e "/^LDFLAGS/d" 'Makefile' > 'Makefile.new'
     mv 'Makefile.new' 'Makefile'
+    # Will run into linkage issues with ldc2 otherwise.
+    unset -v LDFLAGS
 fi
 make CC="$CC" LIBRARY_PATH="$LIBRARY_PATH" release
 make check
