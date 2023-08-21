@@ -12,7 +12,7 @@ if [[ "$(uname)" == 'Darwin' ]]
 then
     # Clang doesn't support '-flto=full'.
     sed -e "/^LDFLAGS/d" 'Makefile' > 'Makefile.new'
-    unset -v LDFLAGS
+    mv 'Makefile.new' 'Makefile'
 fi
 make CC="$CC" LIBRARY_PATH="$LIBRARY_PATH" release
 make check
