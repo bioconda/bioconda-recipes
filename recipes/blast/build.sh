@@ -16,7 +16,10 @@ if test x"`uname`" = x"Linux"; then
 fi
 
 if [ `uname` == Darwin ]; then
-    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2 -lomp"
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
+
+    # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
+    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 else
     export CPP_FOR_BUILD=$CPP
 fi
@@ -54,27 +57,48 @@ cp -rf "${SRC_DIR}/RpsbProc/src/"* src/app/RpsbProc/
 # Fixes building on unix (linux and osx)
 export AR="${AR} rcs"
 
-./configure \
-    --with-dll \
-    --with-mt \
-    --with-openmp \
-    --without-autodep \
-    --without-makefile-auto-update \
-    --with-flat-makefile \
-    --without-caution \
-    --without-lzo \
-    --with-hard-runpath \
-    --with-runpath=$LIB_INSTALL_DIR \
-    --without-debug \
-    --with-strip \
-    --without-vdb \
-    --with-z=$PREFIX \
-    --with-bz2=$PREFIX \
-    --without-krb5 \
-    --without-openssl \
-    --without-gnutls \
-    --without-sse42 \
-    --without-gcrypt
+if [[ $(uname) = Linux ]] ; then
+    ./configure \
+        --with-bin-release \
+        --with-mt \
+        --with-dll \
+        --with-openmp \
+        --with-flat-makefile \
+        --without-lzo \
+        --without-zstd \
+        --with-hard-runpath \
+        --with-runpath=$LIB_INSTALL_DIR \
+        --without-debug \
+        --with-experimental=Int8GI \
+        --with-strip \
+        --with-vdb=$PREFIX \
+        --with-z=$PREFIX \
+        --with-bz2=$PREFIX \
+        --without-krb5 \
+        --without-gnutls \
+        --without-sse42 \
+        --without-gcrypt \
+        --without-pcre
+else
+    ./configure \
+        --with-bin-release \
+        --with-mt \
+        --without-openmp \
+        --with-flat-makefile \
+        --without-lzo \
+        --without-zstd \
+        --without-debug \
+        --with-experimental=Int8GI \
+        --with-strip \
+        --with-vdb=$PREFIX \
+        --with-z=$PREFIX \
+        --with-bz2=$PREFIX \
+        --without-krb5 \
+        --without-gnutls \
+        --without-sse42 \
+        --without-gcrypt \
+        --without-pcre
+fi
 
 #list apps to build
 apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe"
@@ -82,6 +106,7 @@ apps="$apps rpsblast.exe rpstblastn.exe makembindex.exe segmasker.exe"
 apps="$apps dustmasker.exe windowmasker.exe deltablast.exe makeblastdb.exe"
 apps="$apps blastdbcmd.exe blastdb_aliastool.exe convert2blastmask.exe"
 apps="$apps blastdbcheck.exe makeprofiledb.exe blast_formatter.exe rpsbproc.exe"
+apps="$apps blastn_vdb.exe tblastn_vdb.exe"
 cd ReleaseMT
 
 # The "datatool" binary needs the libs at build time, create
@@ -89,16 +114,19 @@ cd ReleaseMT
 ln -s $BLAST_SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
 
 cd build
-make -j${CPU_COUNT} -f Makefile.flat $apps
+echo "RUNNING MAKE"
+#make -j${CPU_COUNT} -f Makefile.flat $apps
+make -j1 -f Makefile.flat $apps
 
 # remove temporary link
 rm $LIB_INSTALL_DIR
 
 mkdir -p $PREFIX/bin $LIB_INSTALL_DIR
+chmod +x $BLAST_SRC_DIR/c++/ReleaseMT/bin/*
 cp $BLAST_SRC_DIR/c++/ReleaseMT/bin/* $PREFIX/bin/
 cp $BLAST_SRC_DIR/c++/ReleaseMT/lib/* $LIB_INSTALL_DIR
 
-chmod +x $PREFIX/bin/*
+#chmod +x $PREFIX/bin/*
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/update_blastdb.pl
 # Patches to enable this script to work better in bioconda
 sed -i.bak 's/mktemp.*/mktemp`/; s/exit 1/exit 0/; s/^export PATH=\/bin:\/usr\/bin:/\#export PATH=\/bin:\/usr\/bin:/g' $PREFIX/bin/get_species_taxids.sh

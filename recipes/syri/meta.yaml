@@ -1,0 +1,50 @@
+{% set version = "1.6.3" %}
+{% set sha256 = "e05b7511d9b18bc8e7b78b999e8fd61664e56645a475399d654b2dbdde871902" %}
+
+package:
+  name: syri
+  version: {{ version }}
+
+source:
+  url: https://github.com/schneebergerlab/syri/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  skip: True  # [py < 38 or py > 39]
+  script: "{{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt"
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - setuptools
+    - numpy >=1.20 
+    - cython
+  run:
+    - python
+    - numpy  >=1.20
+    - pandas
+    - scipy
+    - psutil
+    - python-igraph
+    - pysam
+    - longestrunsubsequence
+    - pulp
+
+test:
+  commands:
+    - syri --version
+    - chroder --version
+
+about:
+  home: https://github.com/schneebergerlab/syri
+  license: MIT License
+  license_file: LICENSE
+  summary: Synteny and rearrangement identifier between whole-genome assemblies
+
+extra:
+  maintainers:
+    - mnshgl0110

@@ -1,0 +1,53 @@
+From 97cce5931e63e47c9751b07ec9244b89e6d2769a Mon Sep 17 00:00:00 2001
+From: Rohan Shah <rohanshah@uchicago.edu>
+Date: Tue, 23 Mar 2021 20:40:43 -0500
+Subject: [PATCH] fix flags for bioconda
+
+---
+ Default/makefile      | 2 +-
+ Default/src/subdir.mk | 2 +-
+ gzstream/makefile     | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/Default/makefile b/Default/makefile
+index a7449b3..815000d 100644
+--- a/Default/makefile
++++ b/Default/makefile
+@@ -44,7 +44,7 @@ all: SmartMap
+ SmartMap: $(OBJS) $(USER_OBJS)
+ 	@echo 'Building target: $@'
+ 	@echo 'Invoking: Cross G++ Linker'
+-	g++ -L../gzstream -o "SmartMap" $(OBJS) $(USER_OBJS) $(LIBS)
++	${CXX} -L../gzstream -o "SmartMap" $(OBJS) $(USER_OBJS) $(LIBS)
+ 	@echo 'Finished building target: $@'
+ 	@echo ' '
+ 
+diff --git a/Default/src/subdir.mk b/Default/src/subdir.mk
+index 7abe011..a575228 100644
+--- a/Default/src/subdir.mk
++++ b/Default/src/subdir.mk
+@@ -32,7 +32,7 @@ CPP_DEPS += \
+ src/%.o: ../src/%.cpp
+ 	@echo 'Building file: $<'
+ 	@echo 'Invoking: Cross G++ Compiler'
+-	g++ -I../gzstream -O2 -g -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
++	${CXX} -I../gzstream -O2 -g -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+ 	@echo 'Finished building: $<'
+ 	@echo ' '
+ 
+diff --git a/gzstream/makefile b/gzstream/makefile
+index b174332..529f9cb 100644
+--- a/gzstream/makefile
++++ b/gzstream/makefile
+@@ -33,7 +33,7 @@
+ # ----------------------------------------------------------------------------
+ 
+ # CXX      = CC -n32 -LANG:std   # for SGI Irix 6.5, MIPSpro CC version 7.30
+-CXX      = g++   # for Linux RedHat 6.1, g++ version 2.95.2
++#CXX      = g++   # for Linux RedHat 6.1, g++ version 2.95.2
+ 
+ CPPFLAGS = -I. -O
+ LDFLAGS  = -L. -lgzstream -lz
+-- 
+2.17.1
+

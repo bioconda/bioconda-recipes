@@ -1,5 +1,5 @@
 {% set name = "mitos" %}
-{% set version = "1.0.5" %}
+{% set version = "1.1.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,33 +7,36 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: b626b066e8b50232e750a96157016ab792f63a7a44d8d5d5fe3f79a2c8279038
+  sha256: be603dd526d7123e3652e47aecda010e7d3ab7d6af93a9c138f965ca4cf44005
 
 build:
-  number: 0
+  number: 1
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
   noarch: python
 
 requirements:
   host:
     - pip
-    - python <3
+    - python >=3
   run:
-    - biopython ==1.73
-    - ete2 ==2.3*
-    - python <3
-    - reportlab
-    - blast-legacy ==2.2*
-    - infernal ==1.0*
+    - biopython <1.68
+    - python >=3
+    - blast-legacy =2.2
+    - infernal =1.0
     - viennarna <2
-    - r-base  
-    - r-ggplot2 ==3.1*
-    - openjdk
+    - r-base >=4
+    - r-ggplot2
+    - openjdk >8
+    # biopython -> reportlab -> pillow
+    # - does not work with newest libtiff 
+    # - force to not install it from defaults
+    # xref https://github.com/conda-forge/pillow-feedstock/issues/135
+    - conda-forge::pillow
+    - conda-forge::libtiff <4.5
 
 test:
   imports:
     - mitos
-    - mitos.align
     - mitos.bedfile
     - mitos.blast
     - mitos.codon
@@ -46,8 +49,6 @@ test:
     - mitos.mitfi
     - mitos.mito
     - mitos.mitofile
-    - mitos.msa
-    - mitos.rEvoluzer
     - mitos.rna
     - mitos.sequence
     - mitos.tax

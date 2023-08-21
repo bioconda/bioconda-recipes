@@ -1,0 +1,68 @@
+{% set name = "MassiveQC" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 5fe8362ca2850c058453e609b7898bff77efbc4436d275d9082bf21fabf6ed90
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - MultiQC = MassiveQC.MultiProcess:main
+    - SingleQC = MassiveQC.SingleProcess:main
+    - IsoDetect = MassiveQC.IsoDetect:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - python
+    - pip
+    - more-itertools
+    - numpy
+    - pandas >=1.3.2
+    - fastparquet
+    - shap
+    - scikit-learn
+    - tqdm
+    - xopen
+  run:
+    - more-itertools
+    - numpy
+    - pandas >=1.3.2
+    - fastparquet
+    - python
+    - shap
+    - scikit-learn
+    - tqdm
+    - xopen
+    - atropos
+    - fastq-screen
+    - hisat2
+    - samtools
+    - bamtools
+    - subread
+
+test:
+  imports:
+    - MassiveQC
+  commands:
+    - MultiQC --help
+    - SingleQC --help
+    - IsoDetect --help
+
+about:
+  home: "https://github.com/shimw6828/MassiveQC"
+  license: MIT
+  license_family: MIT
+  license_file: 
+  summary: "Tools for QC massive RNA-seq samples"
+
+
+extra:
+  recipe-maintainers:
+    - shimw6828

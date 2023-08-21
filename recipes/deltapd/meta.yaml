@@ -9,9 +9,12 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - pdm.patch
 
 build:
-  number: 0
+  number: 4
+  skip: True  # [py < 37]
   script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vvv
   entry_points:
     - deltapd = deltapd.__main__:main
@@ -21,12 +24,12 @@ requirements:
     - {{ compiler('cxx') }}
   host:
     - pip
-    - python >=3.6
+    - python
     - cython
     - numpy
   run:
-    - python >=3.6
-    - numpy
+    - python
+    - {{ pin_compatible('numpy') }}
     - phylodm
     - tqdm
     - ete3
@@ -40,6 +43,7 @@ test:
     - deltapd
     - deltapd.file
   commands:
+    - deltapd --version
     - deltapd --version > /dev/null 2>&1
 
 about:

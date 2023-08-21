@@ -6,26 +6,18 @@ export CPATH=${PREFIX}/include
 export CMAKE_LDFLAGS="-L${PREFIX}/lib"
 export LIBRARY_PATH=${PREFIX}/lib
 
-# https://github.com/luntergroup/octopus/issues/38
-export HTSLIB_ROOT=${PREFIX}/lib
+# There are deprecated functions uses which causes failures
+for f in src/CMakeLists.txt lib/ranger/CMakeLists.txt lib/tandem/CMakeLists.txt lib/date/CMakeLists.txt; do
+    sed -i.bak "s/-Werror //g" $f
+done
 
-# Ignore compiler warnings
-sed -i.bak '556i\
-    -Wno-maybe-uninitialized
-' CMakeLists.txt
-
-sed -i.bak 's/ -Werror / /' src/CMakeLists.txt
-
-cd build
-cmake  -DCMAKE_CXX_COMPILER_AR=${AR} \
-       -DCMAKE_CXX_COMPILER_RANLIB=${RANLIB} \
-       -DINSTALL_PREFIX=ON \
-       -DCMAKE_INSTALL_PREFIX=${PREFIX}/bin \
-       -DINSTALL_ROOT=ON \
-       -DCMAKE_BUILD_TYPE=Release \
-       -DBOOST_ROOT=${PREFIX} \
-       -DBoost_NO_SYSTEM_PATHS=ON \
-       -DHTSLIB_ROOT=${PREFIX} \
-       ..
-
-make install
+scripts/install.py \
+    -c ${CC_FOR_BUILD} \
+    -cxx ${CXX_FOR_BUILD} \
+    --prefix ${PREFIX}/bin \
+    --gmp ${PREFIX} \
+    --boost ${PREFIX} \
+    --htslib ${PREFIX} \
+    --architecture haswell \
+    --threads 1 \
+    --verbose
