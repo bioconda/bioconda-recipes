@@ -1,33 +1,33 @@
-{% set name = "PxBLAT" %}
-{% set version = "0.3.0" %}
-{% set sha256 = "86a2414757113136c3171d77c58d440a196afb349c118b7a9a9d8bd70cb3ff39" %}
+{% set version = "0.3.1" %}
+{% set sha256 = "6336d5e645de8004f3c7b41e88b1c33539858ed235469af4d804a567385bf6d7" %}
 
 package:
-  name: {{ name|lower }}
+  name: pxblat
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pxblat-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/p/pxblat/pxblat-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps --use-pep517 -vvv
+  skip: True  # [py < 39]
+  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps -vv
 
 requirements:
   build:
     - {{ compiler('cxx') }}
   host:
-    - python >=3.9
+    - python 
     - pip
+    - pybind11 >2.9.1
     - poetry-core >=1.2.0
-    - pybind11 >=2.9.1
-    - setuptools >=46.4
+    - setuptools >=67.7.2
+    - zlib
     - htslib
     - openssl
-    - zlib
   run:
-    - python >=3.9
+    - python
     - loguru
     - rich
     - pysimdjson
@@ -38,6 +38,9 @@ requirements:
     - numpy >=1.24.3
     - gevent
     - urllib3
+    - zlib  
+    - htslib
+    - openssl
 
 test:
   imports:
@@ -46,14 +49,14 @@ test:
     - pxblat -h
 
 about:
-  home: 'https://github.com/cauliyang/pxblat'
+  home: 'https://pypi.org/project/pxblat/'
+  summary: 'PxBLAT: An Efficient and Ergonomics Python Binding Library for BLAT.'
   license: MIT
-  license_family: MIT
   license_file: LICENSE
-  summary: "PxBLAT: An Efficient and Ergonomics Python Binding Library for BLAT."
-  dev_url: 'https://pypi.org/project/pxblat/'
+  dev_url: 'https://github.com/cauliyang/pxblat'
   doc_url: 'https://pxblat.readthedocs.io/en/latest/'
 
 extra:
   recipe-maintainers:
     - yangyangli
+
