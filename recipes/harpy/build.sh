@@ -3,7 +3,7 @@
 mkdir -p ${PREFIX}/bin
 
 # Harpy executable
-cp harpy ${PREFIX}/bin/
+#cp harpy ${PREFIX}/bin/
 
 # rules
 cp rules/*.smk ${PREFIX}/bin/
