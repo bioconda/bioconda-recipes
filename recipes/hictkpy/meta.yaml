@@ -1,0 +1,68 @@
+{% set name = "hictkpy" %}
+{% set version = "0.0.1" %}
+{% set sha256 = "af87e7670447331e8e9f3f59f00a97de640c111317fd76b87d756a93fe0d9d47" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True  # [py < 36]
+
+source:
+  url: https://github.com/paulsengroup/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake >=3.25
+    - conan >=2
+    - make
+    - eigen >=3.4
+    - fast_float >=5
+    - fmt >=10
+    - highfive >=2.7
+    - pybind11 >=2.11
+    - spdlog >=1.12
+  host:
+    - python
+    - hdf5 >=1.12
+    - libdeflate
+    - numpy
+    - pandas
+    - scipy
+
+  run:
+    - python
+    - hdf5 >=1.12
+    - libdeflate
+    - numpy
+    - pandas
+    - scipy
+
+about:
+  home: https://github.com/paulsengroup/{{ name }}
+  license: MIT
+  license_file: LICENSE
+  summary: Python bindings for hictk
+  dev_url: https://github.com/paulsengroup/{{ name }}
+  doc_url: https://github.com/paulsengroup/{{ name }}#readme
+
+test:
+   requires:
+     - pytest>=6
+   source_files:
+     - test/*
+   imports:
+     - hictkpy
+
+extra:
+  recipe-maintainers:
+    - robomics
+    - jonnings
+  identifiers:
+    - biotools:hictkpy
+    - doi:10.5281/zenodo.8220300
