@@ -2,8 +2,6 @@
 
 mkdir -p ${PREFIX}/bin
 
-cp misc/ema-h ${PREFIX}/bin
-
 # Harpy executable
 cp harpy ${PREFIX}/bin/
 
