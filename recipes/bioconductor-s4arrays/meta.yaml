@@ -1,0 +1,49 @@
+{% set version = "1.0.4" %}
+{% set name = "S4Arrays" %}
+{% set bioc = "3.17" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 60786b2573cb89bad3f57e4e9bb1e530
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: BiocParallel, SparseArray (>= 0.0.4), DelayedArray, testthat, knitr, rmarkdown, BiocStyle
+requirements:
+  host:
+    - 'bioconductor-biocgenerics >=0.46.0,<0.47.0'
+    - 'bioconductor-iranges >=2.34.0,<2.35.0'
+    - 'bioconductor-s4vectors >=0.38.0,<0.39.0'
+    - r-base
+    - r-crayon
+    - r-matrix
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-biocgenerics >=0.46.0,<0.47.0'
+    - 'bioconductor-iranges >=2.34.0,<2.35.0'
+    - 'bioconductor-s4vectors >=0.38.0,<0.39.0'
+    - r-base
+    - r-crayon
+    - r-matrix
+  build:
+    - {{ compiler('c') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'Foundation of array-like containers in Bioconductor'
+  description: 'The S4Arrays package defines the Array virtual class to be extended by other S4 classes that wish to implement a container with an array-like semantic. It also provides: (1) low-level functionality meant to help the developer of such container to implement basic operations like display, subsetting, or coercion of their array-like objects to an ordinary matrix or array, and (2) a framework that facilitates block processing of array-like objects (typically on-disk objects).'
+
