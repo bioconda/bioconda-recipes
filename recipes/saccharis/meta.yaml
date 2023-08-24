@@ -1,15 +1,16 @@
-  {% set name = "SACCHARIS" %}
-  {% set version = "2.0.0.dev18" %}
-  {% set build_no = 0 %}
+{% set name = "SACCHARIS" %}
+  {% set version = "2.0.0.dev19" %}
+  {% set build_no = 0 %} # actually build 7, but previous dev19 builds were not uploaded to bioconda
+  {% set hash = "1055846A2123B34699B6E93AFCBCCD7B04633DC385DA60E784504D67FDCAA01C" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://github.com/saccharis/SACCHARIS_2/archive/refs/tags/v{{ version }}.tar.gz"
-  sha256: 6d3f2818853d812a00c6203cea0b6667b086df846f518591cb5f0469c4dda778
-  
+  url: https://github.com/saccharis/SACCHARIS_2/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ hash|lower }}
+
 build:
   noarch: python
   number: {{ build_no }}
@@ -24,6 +25,7 @@ build:
     - saccharis.screen_cazome = saccharis.ScreenUserFile:cli_cazome
     - saccharis.show_family_categories = saccharis.utils.FamilyCategories:show_categories
     - saccharis-gui = saccharis.gui.PipelineGUI:main
+    - saccharis.config = saccharis.utils.AdvancedConfig:cli_config
 
 requirements:
   build:
@@ -34,11 +36,12 @@ requirements:
   run:
     - beautifulsoup4 >=4.11.1
     - biopython >=1.79
-    - dbcan >=3.0.6, < 4 # [not win]
+    - dbcan >=3.0.6, < 4
     - diamond >=2.0.15 # [not win]
     - fasttree >=2.1.11 # [not win]
     - hmmer >=3.3 # [not win]
     - lxml >=4.9.0
+    - ncbi-datasets-pylib >=14.*
     - modeltest-ng >=0.1.7  # [not win]
     - muscle >=3.8  # [not win]
     - psutil
@@ -62,11 +65,11 @@ app:
 
 test:
   commands:
-      #future todo: pipe test output to null for these tests, per https://bioconda.github.io/contributor/guidelines.html#tests
-    - saccharis -v
-#   below tests write files to disk, which breaks bioconda automated test harness because it lacks write permissions
+    # pipe test output to null for these tests, per https://bioconda.github.io/contributor/guidelines.html#tests
+    - saccharis -v > /dev/null
+    - saccharis.show_family_categories > /dev/null
+#    below tests need to be commented out for successful build on bioconda because there is no file write permission
 #    - saccharis.make_family_files
-#    - saccharis.show_family_categories
 
 about:
   home: https://github.com/saccharis/SACCHARIS_2
