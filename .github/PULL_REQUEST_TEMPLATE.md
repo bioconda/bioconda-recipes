@@ -29,14 +29,7 @@ Everyone has access to the following BiocondaBot commands, which can be given in
   </tr>
 </table>
 
-For members of the Bioconda project, the following command is also available:
-
-<table>
-  <tr>
-    <td><code>@BiocondaBot please merge</code></td>
-    <td>Upload built packages/containers and merge a PR. <br />Someone must approve a PR first! <br />This reduces CI build time by reusing built artifacts.</td>
-  </tr>
-</table>
+Note that the <code>@BiocondaBot please merge</code> command is now depreciated. Please just squash and merge instead.
 
 Also, the bot watches for comments from non-members that include `@bioconda/<team>` and will automatically re-post them to notify the addressed `<team>`.
 
