@@ -12,7 +12,7 @@ python -m pip install --no-deps .
 cp rules/*.smk ${PREFIX}/bin/
 
 # associated scripts
-cp utilities/*.{py,R,pl} ${PREFIX}/bin/
+cp utilities/* ${PREFIX}/bin/
 
 # reports
 cp reports/*.Rmd ${PREFIX}/bin/
