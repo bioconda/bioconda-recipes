@@ -12,6 +12,7 @@ source:
   patches:
     - pkg-config.patch
     - shared_lib.patch
+    - backport_pr_394.patch  # TODO remove once PR https://github.com/vcflib/vcflib/pull/394 is merged and released
     - tabix.patch
 - url: https://ziglang.org/download/0.10.1/zig-linux-x86_64-0.10.1.tar.xz  # [linux]
   sha256: 6699f0e7293081b42428f32c9d9c983854094bd15fee5489f12c4cf4518cc380  # [linux]
@@ -21,10 +22,10 @@ source:
   folder: zig-macos-x86_64-0.10.1  # [osx]
 
 build:
-  number: 1
+  number: 2
   skip: True  # [osx]
   run_exports:
-    - {{ pin_subpackage('vcflib') }}
+    - {{ pin_subpackage('vcflib', max_pin="x") }}
 
 requirements:
   build:
@@ -57,6 +58,7 @@ test:
     - "vcfwave -h"
     - "vcffirstheader < /dev/null"
     - "vcfsort < /dev/null"
+    - "vcfstreamsort --help"
 
 about:
   home: https://github.com/vcflib/vcflib
