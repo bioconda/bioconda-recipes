@@ -76,8 +76,6 @@ cp -rf "${SRC_DIR}/RpsbProc/src/"* src/app/RpsbProc/
 #   Set bzlib path (compression lib).
 # krb5:
 #   Disable kerberos (needed on OSX).
-# openssl:
-#   Disable openssl.
 # gnutls:
 #   Disable gnutls.
 # gcrypt:
@@ -111,7 +109,6 @@ if [[ $(uname) = Linux ]] ; then
         --with-z=$PREFIX \
         --with-bz2=$PREFIX \
         --without-krb5 \
-        --without-openssl \
         --without-gnutls \
         --without-sse42
 else
