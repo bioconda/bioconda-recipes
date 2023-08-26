@@ -1,0 +1,48 @@
+{% set name = "ms-entropy" %}
+{% set version = "0.9.11" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/ms_entropy-{{ version }}.tar.gz
+  sha256: 80878ab8605e25bf038e0a86ec94b819e057c8861ad30f4983415f8c15b10827
+
+build:
+  skip: true  # [py<37]
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('ms-entropy', max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - setuptools >=61.0
+    - cython >=0.26.1
+    - numpy >=1.9.3
+    - pip
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+
+test:
+  imports:
+    - ms_entropy
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/YuanyueLi/MSEntropy
+  summary: This package provides a Python implementation of calculating spectral entropy, entropy similarity, and Flash entropy search for mass spectrometry data.
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - hechth
