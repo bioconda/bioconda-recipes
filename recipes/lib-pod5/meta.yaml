@@ -5,21 +5,23 @@ package:
   version: {{ version }}
 
 source:
-  url : https://github.com/nanoporetech/pod5-file-format/archive/{{ version }}.tar.gz
+  url: https://github.com/nanoporetech/pod5-file-format/releases/download/{{ version }}/pod5-{{ version }}.tar.gz
   sha256: f49baa13e163d1c111d4240a67b9c2f678e6f57922fddb664537b541fe1461cf
 
 build:
   skip: true  # [py < 37]
   number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage('lib-pod5', max_pin='x.x') }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - cmake
+    - conan <2
   host:
     - python
+    - setuptools_scm
     - pip
   run:
     - python
