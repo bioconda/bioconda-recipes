@@ -1,6 +1,6 @@
 #!/bin/bash
-python -m setuptools_scm
-python -m pod5_make_version
+$PYTHON -m setuptools_scm
+$PYTHON -m pod5_make_version
 
 mkdir build
 cd build
