@@ -28,8 +28,9 @@ with `...` being one of:
 | -------------------------------- | ------------------------------------------------------------------- |
 | semantic versioning              | `{{ pin_subpackage("myrecipe", max_pin="x") }}`     |
 | semantic versioning (0.x.x)      | `{{ pin_subpackage("myrecipe", max_pin="x.x") }}`   |
+| known breakage in minor versions | `{{ pin_subpackage("myrecipe", max_pin="x.x") }}` (in such a case, please add a note that shortly mentions your evidence for that) |
+| known breakage in patch versions | `{{ pin_subpackage("myrecipe", max_pin="x.x.x") }}` (in such a case, please add a note that shortly mentions your evidence for that) |
 | calendar versioning              | `{{ pin_subpackage("myrecipe", max_pin=None) }}`    |
-| known breakage in patch versions | `{{ pin_subpackage("myrecipe", max_pin="x.x.x") }}` |
 
 
 ### Bot commands for PR management
