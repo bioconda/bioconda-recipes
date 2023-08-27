@@ -4,10 +4,35 @@ Describe your pull request here
 
 Please read the [guidelines for Bioconda recipes](https://bioconda.github.io/contributor/guidelines.html) before opening a pull request (PR).
 
+### General instructions
+
 * If this PR adds or updates a recipe, use "Add" or "Update" appropriately as the first word in its title.
 * New recipes not directly relevant to the biological sciences need to be submitted to the [conda-forge channel](https://conda-forge.org/docs/) instead of Bioconda.
 * PRs require reviews prior to being merged. Once your PR is passing tests and ready to be merged, please issue the `@BiocondaBot please add label` command.
 * Please post questions [on Gitter](https://gitter.im/bioconda/Lobby) or ping `@bioconda/core` in a comment.
+
+### Instructions for avoiding API and ABI breakage issues
+If not already present in the meta.yaml, make sure to specify `run_exports` (see [here](https://bioconda.github.io/contributor/linting.html#missing-run-exports) for the rationale and comprehensive explanation).
+Add a `run_exports` section like this:
+
+```yaml
+build:
+  run_exports:
+    - ...
+
+```
+
+with `...` being one of:
+
+| Case                             | run_exports statement                                               |
+| -------------------------------- | ------------------------------------------------------------------- |
+| semantic versioning              | `{{ pin_subpackage("myrecipe", max_pin="x") }}`     |
+| semantic versioning (0.x.x)      | `{{ pin_subpackage("myrecipe", max_pin="x.x") }}`   |
+| calendar versioning              | `{{ pin_subpackage("myrecipe", max_pin=None) }}`    |
+| known breakage in patch versions | `{{ pin_subpackage("myrecipe", max_pin="x.x.x") }}` |
+
+
+### Bot commands for PR management
 
 <details>
   <summary>Please use the following BiocondaBot commands:</summary>
