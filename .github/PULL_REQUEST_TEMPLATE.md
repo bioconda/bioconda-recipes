@@ -34,6 +34,7 @@ with `...` being one of:
 | known breakage in patch versions | `{{ pin_subpackage("myrecipe", max_pin="x.x.x") }}` (in such a case, please add a note that shortly mentions your evidence for that) |
 | calendar versioning              | `{{ pin_subpackage("myrecipe", max_pin=None) }}`    |
 
+while replacing `"myrecipe"` with either `name` if a `name|lower` variable is defined in your recipe or with the lowercase name of the package in quotes.
 
 ### Bot commands for PR management
 
