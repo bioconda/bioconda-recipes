@@ -11,7 +11,9 @@ Please read the [guidelines for Bioconda recipes](https://bioconda.github.io/con
 * PRs require reviews prior to being merged. Once your PR is passing tests and ready to be merged, please issue the `@BiocondaBot please add label` command.
 * Please post questions [on Gitter](https://gitter.im/bioconda/Lobby) or ping `@bioconda/core` in a comment.
 
-### Instructions for avoiding API and ABI breakage issues
+### Instructions for avoiding API, ABI, and CLI breakage issues
+Conda is able to record and lock (a.k.a. pin) dependency versions used at build time of other recipes.
+This way, one can avoid that expectations of a downstream recipe with regards to API, ABI, or CLI are violated by later changes in the recipe.
 If not already present in the meta.yaml, make sure to specify `run_exports` (see [here](https://bioconda.github.io/contributor/linting.html#missing-run-exports) for the rationale and comprehensive explanation).
 Add a `run_exports` section like this:
 
