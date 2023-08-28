@@ -15,6 +15,8 @@ cmake --build build
 mkdir -p $PREFIX/lib
 mv $SRC_DIR/build/lib/libwfa2cpp.so.0 $PREFIX/lib
 mv $SRC_DIR/build/lib/libwfa2cpp.so $PREFIX/lib
+mv $SRC_DIR/build/lib/libwfa2.so.0 $PREFIX/lib
+mv $SRC_DIR/build/lib/libwfa2.so $PREFIX/lib
 
 mkdir -p $PREFIX/bin
 mv build/bin/* $PREFIX/bin
