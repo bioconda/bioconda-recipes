@@ -1,5 +1,5 @@
 {% set name = "geofetch" %}
-{% set version = "0.12.3" %}
+{% set version = "0.12.4" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 498cd69b54841a2537948bdc375861af1adfd8c3b89b74fdb14537c518dc6c04
+  sha256: 818aad6cdeacea72854e587bf9babbfbd13dc880e0b031d111d216b68b5f313b
 
 build:
   number: 0
@@ -15,6 +15,8 @@ build:
     - geofetch = geofetch.geofetch:main
     - sraconvert = geofetch.sraconvert:main
   noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
 
 requirements:
@@ -22,6 +24,7 @@ requirements:
     - pip
     - python >=3.8
   run:
+    - python >=3.8
     - attmap >=0.1.8
     - colorama >=0.3.9
     - coloredlogs >=15.0.1
@@ -41,9 +44,6 @@ test:
   commands:
     - geofetch --help
     - sraconvert --help
-  requires:
-    - mock >=2.0.0
-    - pytest ==3.10.1
 
 about:
   home: "https://github.com/pepkit/geofetch/"
