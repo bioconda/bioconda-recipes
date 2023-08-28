@@ -1,50 +1,62 @@
-{% set name = "pxblat" %}
-{% set version = "0.2.0" %}
+{% set name = "PxBLAT" %}
+{% set version = "0.3.1" %}
+{% set sha256 = "6336d5e645de8004f3c7b41e88b1c33539858ed235469af4d804a567385bf6d7" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/cauliyang/pxblat/archive/v{{ version }}.tar.gz 
-  sha256: ac8132e9a33854963f42e027e7f2a5280ac516076b109cd07cacd26745a16c7b
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pxblat-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
-  skip: True  #[py2k or win]
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  number: 0
+  skip: True  # [py < 39]
+  script: {{ PYTHON }} -m pip install . --no-deps --use-pep517 -vvv
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - python >=3.9
+    - python
     - pip
+    - poetry-core >=1.2.0
     - pybind11 >=2.9.1
     - setuptools >=46.4
-    - zlib
     - htslib
     - openssl
+    - zlib
   run:
-    - python >=3.9
-    - zlib
-    - htslib
-    - openssl
+    - python
+    - loguru
+    - rich
+    - pysimdjson
+    - biopython
+    - typer
+    - deprecated
+    - mashumaro
+    - numpy >=1.24.3
+    - gevent
+    - urllib3
 
 test:
   imports:
-    - {{ name }}
+    - pxblat
   commands:
     - pxblat -h
 
 about:
-  home: https://github.com/cauliyang/pxblat
+  home: 'https://github.com/ylab-hi/pxblat'
   license: MIT
-  license_file: COPYING
-  summary: PxBLAT An Efficient and Ergonomics Python Binding Library for BLAT.
-  doc_url: https://github.com/cauliyang/pxblat 
+  license_family: MIT
+  license_file: LICENSE
+  summary: "PxBLAT: An Efficient and Ergonomics Python Binding Library for BLAT."
+  dev_url: 'https://pypi.org/project/pxblat/'
+  doc_url: 'https://pxblat.readthedocs.io/en/latest/'
 
 extra:
   recipe-maintainers:
-    - yangyangli 
+    - yangyangli
+  identifiers:
+    - doi:10.1101/2023.08.02.551686
