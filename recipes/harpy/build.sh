@@ -6,7 +6,7 @@ mkdir -p ${PREFIX}/bin
 #cp harpy ${PREFIX}/bin/
 
 # build harpy
-python -m pip install --no-deps .
+$PREFIX/bin/python -m pip install . --ignore-installed --no-deps -vv
 
 # rules
 cp rules/*.smk ${PREFIX}/bin/
