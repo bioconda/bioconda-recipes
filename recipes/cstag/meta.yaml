@@ -1,25 +1,29 @@
 {% set name = "cstag" %}
-{% set version = "0.4.1" %}
+{% set version = "0.5.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cstag-{{ version }}.zip
-  sha256: 4b92692dcb70aec9ecf2dd9d275eba2a6f08e25ab9abda9c620604f58a41beca
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cstag-{{ version }}.tar.gz
+  sha256: 0fbe960c444b9febc29ece4591bd67e39a35b6cb7f4d16a4493098e9ec4ea640
 
 build:
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
   number: 0
+  run_exports:
+    - {{ pin_subpackage('cstag', max_pin='x.x') }}
 
 requirements:
   host:
+    - python
+    - setuptools
+    - wheel
     - pip
-    - python >=3.7
   run:
-    - python >=3.7
+    - python
 
 test:
   imports:
@@ -30,10 +34,10 @@ test:
     - pip
 
 about:
-  home: https://github.com/akikuno/cstag
   summary: Python module to manipulate the minimap2's CS tag
   license: MIT
   license_file: LICENSE
+  home: https://github.com/akikuno/cstag
   doc_url: https://akikuno.github.io/cstag/cstag/
 
 extra:
