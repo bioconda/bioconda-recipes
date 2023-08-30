@@ -13,9 +13,9 @@ export CPPFLAGS="-I${PREFIX}/include"
 mkdir -p $PREFIX/bin
 
 mkdir -p perl-build
-mv bin/*pl perl-build
-mv bin/mashtree perl-build
-mv lib/ perl-build/lib
+cp bin/*pl perl-build
+cp bin/mashtree perl-build
+cp lib/ perl-build/lib
 cp ${RECIPE_DIR}/Build.PL perl-build
 
 cd perl-build
