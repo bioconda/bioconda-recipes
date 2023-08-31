@@ -10,7 +10,7 @@ export LDFLAGS="-L${BUILD_PREFIX}/lib"
 export CPPFLAGS="-I${BUILD_PREFIX}/include"
 
 
-mkdir -p $BUILD_PREFIX/bin
+mkdir -p $$PREFIX/bin
 
 mkdir -p perl-build
 mv bin/*pl perl-build
@@ -24,5 +24,5 @@ perl ./Build.PL
 perl ./Build manifest
 perl ./Build install --installdirs site
 
-chmod +x $BUILD_PREFIX/bin/mashtre*
-chmod +x $BUILD_PREFIX/bin/min_abundance*
+chmod +x $PREFIX/bin/mashtre*
+chmod +x $PREFIX/bin/min_abundance*
