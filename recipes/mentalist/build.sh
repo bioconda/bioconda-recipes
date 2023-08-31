@@ -14,7 +14,7 @@ julia -e 'Pkg.init()'
 #julia -e 'Pkg.add("OpenGene")'
 #julia -e 'Pkg.add("Logging")'
 #julia -e 'Pkg.add("Lumberjack")'
-julia -e 'using Pkg; Pkg.add([ "Distributed", "ArgParse", "BioSequences", "JSON", "DataStructures", "JLD", "GZip", "Blosc", "FileIO", "TextWrap", "LightXML", "JuMP", "Gurobi"])'
+julia -e 'Pkg.add([ "Distributed", "ArgParse", "BioSequences", "JSON", "DataStructures", "JLD", "GZip", "Blosc", "FileIO", "TextWrap", "LightXML", "JuMP", "Gurobi"])'
 
 rm -f "$PREFIX"/share/julia/site/lib/v*/*.ji
 rm -rf "$PREFIX"/share/julia/site/v*/METADATA
