@@ -2,9 +2,10 @@
 
 cp run_program.jl $PREFIX/bin/hapnest
 
+julia -e 'using Conda'
+julia -e 'Conda.add("bed-reader")'
 julia -e 'using Pkg'
 julia -e 'Pkg.init()'
-julia -e 'Pkg.instantiate()'
 julia -e 'Pkg.add("ArgParse")'
 julia -e 'Pkg.add("CSV")'
 julia -e 'Pkg.add("CategoricalArrays")'
@@ -25,6 +26,4 @@ julia -e 'Pkg.add("PyCall")'
 julia -e 'Pkg.add("StatsBase")'
 julia -e 'Pkg.add("StatsPlots")'
 julia -e 'Pkg.add("YAML")'
-julia -e 'using Conda'
-julia -e 'Conda.add("bed-reader")' 
 
