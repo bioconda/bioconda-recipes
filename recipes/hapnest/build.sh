@@ -2,6 +2,8 @@
 
 cp run_program.jl $PREFIX/bin/hapnest
 
+julia -e 'import Pkg'
+julia -e 'Pkg.add("Conda")'
 julia -e 'using Conda'
 julia -e 'Conda.add("bed-reader")'
 julia -e 'using Pkg'
