@@ -9,7 +9,6 @@ cp -r $SRC_DIR/scripts $PREFIX
 ln -s $PREFIX/bin/MentaLiST.jl $PREFIX/bin/mentalist
 chmod +x $PREFIX/bin/mentalist
 
-#julia -e 'Pkg.add("Distributed")'
 julia -e 'Pkg.add("ArgParse")'
 julia -e 'Pkg.add("BioSequences")'
 julia -e 'Pkg.add("JSON")'
@@ -22,6 +21,7 @@ julia -e 'Pkg.add("TextWrap")'
 julia -e 'Pkg.add("LightXML")'
 julia -e 'Pkg.add("JuMP")'
 julia -e 'Pkg.add("Gurobi")'
+julia -e 'Pkg.add("Distributed")'
 
 rm -f "$PREFIX"/share/julia/site/lib/v*/*.ji
 rm -rf "$PREFIX"/share/julia/site/v*/METADATA
