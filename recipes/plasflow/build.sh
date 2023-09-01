@@ -8,4 +8,4 @@ pip install --no-deps --ignore-installed --no-cache-dir  tensorflow/tensorflow-0
 $PYTHON -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
 
 # copy models
-cp -r PlasFlow/models $PREFIX/bin/.
+cp -r PlasFlow/models $PREFIX/bin/
