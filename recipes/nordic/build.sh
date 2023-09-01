@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cd MaBoSS-2.0/src
+cd "${SRC_DIR}/MaBoSS-2.0/src"
 make install \
     CC="${CC}" \
     CXX="${CXX}" \
