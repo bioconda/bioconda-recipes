@@ -105,6 +105,12 @@ jobs:
           CI: "true"
         run: |
           set -e
+
+          # Clean up lingering build artifacts
+          for n in linux-64 osx-64 noarch; do
+              rm -f /opt/mambaforge/envs/bioconda/conda-bld/$n/*.tar.bz2
+          done
+
           eval "$(conda shell.bash hook)"
           conda activate bioconda
           if [ -z "$GITHUB_BASE_REF" ] ; then
@@ -120,6 +126,7 @@ jobs:
       - name: Prepare artifacts
         run: |
           (
+          rm -rf /tmp/artifacts
           mkdir -p /tmp/artifacts/packages
           cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
           find -name .cache | xargs rm -rf || true
@@ -205,6 +212,11 @@ jobs:
           eval "$(conda shell.bash hook)"
           conda activate bioconda
 
+          # Clean up lingering build artifacts
+          for n in linux-64 osx-64 noarch; do
+              rm -f /opt/mambaforge/envs/bioconda/conda-bld/$n/*.tar.bz2
+          done
+
           # The SDK isn't actually cached, so reinstall it
           run_conda_forge_build_setup
 
@@ -218,6 +230,7 @@ jobs:
       - name: Prepare artifacts
         run: |
               (
+              rm -rf /tmp/artifacts
               mkdir -p /tmp/artifacts/packages
               cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
               find -name .cache | xargs rm -rf || true
