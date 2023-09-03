@@ -7,3 +7,6 @@ export PATH=$PREFIX/bin:$PATH
 
 cd pgr-tk
 bash build.sh
+
+rm $PREFIX/bin/gcc
+rm $PREFIX/bin/g++
