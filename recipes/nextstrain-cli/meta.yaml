@@ -1,4 +1,4 @@
-{% set version = "3.0.6" %}
+{% set version = "7.2.0" %}
 
 package:
   name: nextstrain-cli
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/n/nextstrain-cli/nextstrain-cli-{{ version }}.tar.gz
-  sha256: 030d2f67a5c336e7f89beca112d048514dff5a940be8f3906b14fee06181b7f4
+  sha256: b2c811b9c3f4914368bb74f3147a3699eae4c45e06a88b1381c5c0abe2a86815
 
 build:
   number: 0
@@ -22,20 +22,27 @@ requirements:
 
   run:
     - python >=3.6
+    - dataclasses # [py<37]
+    - docutils
     - fasteners
+    - importlib_metadata # [py<38]
+    - importlib_resources >=5.3.0 # [py<311]
+    - packaging >=3.0.0
     - pyjwt >=2.0.0
     - cryptography # Required for pyjwt digital signature support. Replicates "pip install pyjwt[crypto]".
+    - pyparsing
     - requests
     - typing_extensions >=3.6.4
+    - wcmatch >=6.0
+    - wrapt
     # nextstrain-cli requires boto3 but does not directly declare this
     # dependency, to avoid issues with pip dependency resolution with s3fs and
-    # botocore. We can declare the boto3 dependency and unpinned s3fs here,
-    # since Conda can resolve these dependency issues.
+    # botocore. We can declare the boto3 dependency and s3fs here, since Conda
+    # can resolve these dependency issues.
     # See: https://github.com/nextstrain/cli/blob/77c97bfecaf3dda84a8c20c343afc70cc6659f53/setup.py#L91-L98
     - fsspec
     - boto3
-    - s3fs
-    - setuptools >=8.0.3
+    - s3fs >=2021.04.0
 
 test:
   requires:
@@ -63,3 +70,4 @@ about:
 extra:
   recipe-maintainers:
     - tsibley
+    - corneliusroemer

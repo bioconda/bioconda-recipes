@@ -1,16 +1,18 @@
 {% set name = "wfmash" %}
-{% set version = "0.7.0" %}
+{% set version = "0.10.5" %}
 
 package:
   name: "{{ name }}"
   version: "{{ version }}"
 
 source:
-  url: https://github.com/ekg/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
-  sha256: ea913b827ee88ea4af398f24564fa345445bcc0f1f86b9b647d3450a6bdcac70
+  url: https://github.com/waveygang/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
+  sha256: 04c779f3e378c64543deefaa14ede67f16d1207d15e21128c9714012a0b55bcb
 
 build:
   skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
   number: 0
 
 requirements:
@@ -24,6 +26,8 @@ requirements:
     - gsl
     - zlib
     - jemalloc
+    - htslib
+    - libblas
   run:
     - llvm-openmp  # [osx]
 
@@ -32,11 +36,13 @@ test:
     - wfmash --help
 
 about:
-  home: https://github.com/ekg/wfmash
+  home: https://github.com/waveygang/wfmash
   license: MIT
   license_file: LICENSE
-  summary: A DNA sequence aligner based on mash distances and the wavefront alignment algorithm
+  summary: a pangenome-scale aligner
 
 extra:
   skip-lints:
     - uses_vcs_url
+  recipe-maintainers:
+    - AndreaGuarracino

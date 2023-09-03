@@ -1,5 +1,6 @@
 {% set name = "medicc2" %}
-{% set version = "0.6b1" %}
+{% set version = "1.0.2" %}
+{% set hash = "0acfcea5646706ce4ceb787a36eef2e9d7272928442b147e23813c56ecde5987" %}
 
 
 package:
@@ -8,11 +9,11 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 2658fd25e199e0365cedda74e4d3b46a1b01d6f7f73909ad1fee636052015139
+  sha256: {{ hash }}
 
 build:
   number: 0
-  skip: true  # [py27 or py < 37]
+  skip: true  # [py < 37]
   script: {{ PYTHON }} -m pip install . -vv
 
 requirements:
@@ -22,16 +23,16 @@ requirements:
   host:
     - python
     - pip
+    # The following are needed for building the Cython extension
     - numpy >=1.20.1
-    - openfst >=1.8.1
+    - openfst ==1.8.2
     - setuptools
-    - cython >=0.29.21
-    - pathlib
+    - cython ==0.29.*
   run:
     - python
     - numpy >=1.20.1
     - pyyaml >=5.4.1
-    - openfst >=1.8.1
+    - {{ pin_compatible('openfst', max_pin='x.x.x') }}
     - pandas >=1.2.2
     - joblib >=1.0.1
     - biopython >=1.78
@@ -42,6 +43,10 @@ requirements:
 test:
   commands:
     - medicc2 --help
+
+extra:
+  recipe-maintainers:
+    - tlkaufmann
 
 about:
   home: https://bitbucket.org/schwarzlab/medicc2
