@@ -7,6 +7,7 @@ export PATH=$PREFIX/bin:$PATH
 
 cd pgr-tk
 bash build.sh
+$PYTHON -m pip install ../target/wheels/pgrtk-*.whl  --no-deps --ignore-installed --no-cache-dir -vvv
 
 rm $PREFIX/bin/gcc
 rm $PREFIX/bin/g++
