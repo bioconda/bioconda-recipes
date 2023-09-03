@@ -1,0 +1,83 @@
+{% set name = "hictk" %}
+{% set version = "0.0.2" %}
+{% set sha256 = "7716711ecb33247d8f79f6768ebbdcf55e51e9b6f962245747b33d0967431427" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  url: https://github.com/paulsengroup/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake >=3.25
+    - conan >=2
+    - make
+    - cli11 >=2.3
+    - eigen >=3.4
+    - fast_float >=5
+    - fmt >=10
+    - highfive >=2.7
+    - spdlog >=1.12
+
+  host:
+    - boost >=1.80
+    - hdf5 >=1.12
+    - libdeflate
+  run:
+    - boost >=1.80
+    - hdf5 >=1.12
+    - libdeflate
+
+about:
+  home: https://github.com/paulsengroup/{{ name }}
+  license: MIT
+  license_file: LICENSE
+  summary: Blazing fast toolkit to work with .hic and .cool files
+  dev_url: https://github.com/paulsengroup/{{ name }}
+  doc_url: https://github.com/paulsengroup/{{ name }}#readme
+
+test:
+  requires:
+    - curl
+    - cooler>=0.9.2
+    - openjdk>=11
+    - perl-digest-sha1
+    - xz
+  source_files:
+    - cmake/FetchTestDataset.cmake
+    - test/scripts/hictk_dump_chroms.sh
+    - test/scripts/hictk_dump_bins.sh
+    - test/scripts/hictk_dump_gw.sh
+    - test/scripts/hictk_dump_cis.sh
+    - test/scripts/hictk_dump_trans.sh
+    - test/scripts/hictk_dump_balanced.sh
+    - test/scripts/hictk_convert_hic2cool.sh
+    - test/scripts/hictk_convert_cool2hic.sh
+    - test/scripts/hictk_load_coo.sh
+    - test/scripts/hictk_load_coo.sh
+    - test/scripts/hictk_load_bg2.sh
+    - test/scripts/hictk_load_bg2.sh
+    - test/scripts/hictk_load_4dn.sh
+    - test/scripts/hictk_load_4dn.sh
+    - test/scripts/hictk_merge.sh
+    - test/scripts/hictk_validate.sh
+    - test/scripts/hictk_zoomify.sh
+  commands:
+    - hictk --help
+    - hictk --version
+
+extra:
+  recipe-maintainers:
+    - robomics
+    - jonnings
+  identifiers:
+    - biotools:hictk
+    - doi:10.5281/zenodo.8214221
