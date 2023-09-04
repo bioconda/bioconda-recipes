@@ -4,7 +4,6 @@ cd $PREFIX
 mv $SRC_DIR $PREFIX/NGSCheckMate
 
 mkdir -p $PREFIX/bin
-ln -s /usr/local/bin/perl /usr/bin/perl
 
 cat << EOF > $PREFIX/bin/ncm.py
 #!/usr/bin/env bash
@@ -38,6 +37,9 @@ cat << EOF > $PREFIX/bin/makesnvpattern.pl
 export NCM_HOME=$PREFIX/NGSCheckMate
 perl $PREFIX/NGSCheckMate/patterngenerator/makesnvpattern.pl "\$@"
 EOF
+
+#/usr/bin/perl is hardcoded, need to point to env
+sed -i.bak 's/perl/env perl/g' $PREFIX/NGSCheckMate/patterngenerator/*.pl
 
 cat << EOF > $PREFIX/NGSCheckMate/ncm.conf
 SAMTOOLS=samtools
