@@ -6,12 +6,17 @@ package:
   version: '{{ version }}'
 
 source:
-  url: https://github.com/rwdavies/quilt/releases/download/{{ version }}/QUILT_{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  - url: https://github.com/rwdavies/quilt/releases/download/{{ version }}/QUILT_{{ version }}.tar.gz
+    sha256: '{{ sha256 }}'
+  - url: https://raw.githubusercontent.com/rwdavies/QUILT/{{ version }}/QUILT.R
+    sha256: '{{ sha256_script }}'
+
 
 build:
-  number: 2
-  script: '$R CMD INSTALL --build --install-tests .'
+  number: 3
+  script:
+    - 'mkdir -p $PREFIX/bin && cp QUILT.R $PREFIX/bin'
+    - '$R CMD INSTALL --build --install-tests .'
 
 requirements:
   build:
