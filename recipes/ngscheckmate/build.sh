@@ -4,6 +4,7 @@ cd $PREFIX
 mv $SRC_DIR $PREFIX/NGSCheckMate
 
 mkdir -p $PREFIX/bin
+ln -s /usr/local/bin/perl /usr/bin/perl
 
 cat << EOF > $PREFIX/bin/ncm.py
 #!/usr/bin/env bash
