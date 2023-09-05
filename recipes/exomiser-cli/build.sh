@@ -9,7 +9,7 @@ mkdir -p $BINARY_HOME
 mkdir -p $PACKAGE_HOME
 
 # Copy file into $PACKAGE_HOME
-cp exomiser-cli-$PKG_VERSION.jar $PACKAGE_HOME
+cp exomiser-cli-$PKG_VERSION/exomiser-cli-$PKG_VERSION.jar $PACKAGE_HOME
 
 # Create wrapper
 SOURCE_FILE=$RECIPE_DIR/exomiser-cli.sh
