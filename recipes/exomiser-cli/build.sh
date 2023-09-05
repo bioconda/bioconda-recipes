@@ -11,10 +11,10 @@ mkdir -p $LIBRARY_HOME
 mkdir -p $PACKAGE_HOME
 
 # Copy file into $PACKAGE_HOME
-cp exomiser-cli-$PKG_VERSION/exomiser-cli-$PKG_VERSION.jar $PACKAGE_HOME
+cp exomiser-cli-$PKG_VERSION.jar $PACKAGE_HOME
 
 # Copy dependencies into $LIBRARY_HOME
-cp -r exomiser-cli-$PKG_VERSION/lib/* $LIBRARY_HOME
+cp -r lib/* $LIBRARY_HOME
 
 # Create wrapper
 SOURCE_FILE=$RECIPE_DIR/exomiser-cli.sh
