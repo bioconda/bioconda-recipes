@@ -2,14 +2,19 @@
 
 # Setup path variables
 BINARY_HOME=$PREFIX/bin
+LIBRARY_HOME=$PREFIX/lib
 PACKAGE_HOME=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 
 # Create destination directories
 mkdir -p $BINARY_HOME
+mkdir -p $LIBRARY_HOME
 mkdir -p $PACKAGE_HOME
 
 # Copy file into $PACKAGE_HOME
 cp exomiser-cli-$PKG_VERSION/exomiser-cli-$PKG_VERSION.jar $PACKAGE_HOME
+
+# Copy dependencies into $LIBRARY_HOME
+cp -r exomiser-cli-$PKG_VERSION/lib/* $LIBRARY_HOME
 
 # Create wrapper
 SOURCE_FILE=$RECIPE_DIR/exomiser-cli.sh
