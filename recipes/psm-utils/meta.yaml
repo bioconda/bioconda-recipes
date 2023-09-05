@@ -1,12 +1,13 @@
-{% set version = "0.1.0" %}
-{% set sha256 = "a859583ec16f969b57639af7c5479b7303611d5e9d9a0bcbcd3dbe7a6f6d6f91" %}
+{% set name = "psm-utils" %}
+{% set version = "0.4.1" %}
+{% set sha256 = "558d30e8c1b4733e44640b71de91523362edd28b0fa079be5be0810e56b3cc79" %}
 
 package:
-  name: "psm-utils"
+  name: {{ name|lower }}
   version: "{{ version }}"
 
 source:
-  url: https://files.pythonhosted.org/packages/source/p/psm-utils/psm-utils-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/psm_utils-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
@@ -15,6 +16,8 @@ build:
     - psm-utils=psm-utils.__main__:main
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
   noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
@@ -31,6 +34,7 @@ requirements:
     - click
     - rich
     - pydantic
+    - sqlalchemy
 
 test:
   imports:
@@ -46,5 +50,8 @@ about:
   dev_url: https://github.com/compomics/psm_utils
 
 extra:
+  identifiers:
+    - doi:10.1021/acs.jproteome.2c00609
+    - biotools:psm_utils
   recipe-maintainers:
     - compomics

@@ -1,5 +1,5 @@
 {% set name = "pygenomeviz" %}
-{% set version = "0.3.0" %}
+{% set version = "0.4.2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,30 +7,46 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pygenomeviz-{{ version }}.tar.gz
-  sha256: 01724317928dfb458e506a7cb59013da2d2fef661a79d68bd9f9e22639f8dc06
+  sha256: 8398a80318794ff2589722dca9a394cce99fe634ab21eef80a5cbfe61006c05b
 
 build:
+  entry_points:
+    - pgv-download-dataset = pygenomeviz.scripts.download_dataset:main
+    - pgv-mmseqs = pygenomeviz.scripts.mmseqs:main
+    - pgv-mummer = pygenomeviz.scripts.mummer:main
+    - pgv-pmauve = pygenomeviz.scripts.pmauve:main
+    - pgv-simpleplot = pygenomeviz.scripts.simpleplot:main
+    - pgv-gui = pygenomeviz.scripts.gui:main
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - pip
     - poetry
-    - python >=3.7,<4.0
+    - python >=3.8
   run:
-    - biopython >=1.79,<2.0
-    - matplotlib-base >=3.5.2,<4.0.0
-    - numpy >=1.21,<2.0
-    - python >=3.7,<4.0
-    - typing-extensions >=4.3.0,<5.0.0
+    - biopython >=1.79
+    - matplotlib-base >=3.5.2
+    - numpy >=1.21
+    - python >=3.8
+  run_constrained:
+    - streamlit >=1.25.0
 
 test:
   imports:
     - pygenomeviz
   commands:
     - pip check
+    - pgv-download-dataset --help
+    - pgv-mmseqs --help
+    - pgv-mummer --help
+    - pgv-pmauve --help
+    - pgv-simpleplot --help
+    - pgv-gui --help
   requires:
     - pip
     - pytest
