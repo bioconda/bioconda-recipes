@@ -2,7 +2,7 @@
 
 mkdir -p build
 cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-mavx2" -DRAPTOR_NATIVE_BUILD=OFF
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-mavx2 -D__STDC_FORMAT_MACROS" -DRAPTOR_NATIVE_BUILD=OFF -DRAPTOR_LTO_BUILD=OFF
 make -j"${CPU_COUNT}"
 
 mkdir -p $PREFIX/bin
