@@ -8,13 +8,30 @@ package:
 source:
   url: https://github.com/alexdobin/STAR/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    # Fixing shared lib issues
+    - patches/0001-do-not-enforce-avx2.patch
+    - patches/0002-donotuse_own_htslib.patch
+    - patches/0003-create-simd-dispatch.patch
 
 build:
-  number: 0
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+    - vim
+  host:
+    - htslib
+  run:
+    - htslib
 
 test:
   commands:
     - STAR --version
+    - STARlong --version
 
 about:
   home: https://github.com/alexdobin/STAR
@@ -27,5 +44,3 @@ extra:
     - biotools:star
     - usegalaxy-eu:rna_starsolo
     - usegalaxy-eu:rna_star
-  skip-lints:
-    - should_be_noarch_generic

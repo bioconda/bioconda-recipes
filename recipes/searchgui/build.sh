@@ -23,8 +23,5 @@ ln -sf "$(which metamorpheus)" "$outdir"'/resources/MetaMorpheus/metamorpheus'
 rm -f "$outdir"'/resources/makeblastdb/linux/linux_64bit/makeblastdb'
 ln -sf "$(which makeblastdb)" "$outdir"'/resources/makeblastdb/linux/linux_64bit/makeblastdb'
 
-# removing MsAmanda prebuilt binary for macosx until .NET Core 6 is released
-# rm -f "$outdir"'/resources/MS Amanda/osx/'*
-
 # allowing to write temporary files in resources folder
 chmod -R a+rw "$outdir"'/resources/'
