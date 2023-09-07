@@ -1,0 +1,175 @@
+diff --git a/tools/bs_call/src/call_genotypes.c b/tools/bs_call/src/call_genotypes.c
+index 8301b84..6e891fb 100644
+--- a/tools/bs_call/src/call_genotypes.c
++++ b/tools/bs_call/src/call_genotypes.c
+@@ -10,6 +10,10 @@
+ #include <ctype.h>
+ #include <time.h>
+ #include <pthread.h>
++#ifdef __MACH__
++#include <mach/clock.h>
++#include <mach/mach.h>
++#endif
+ #include "gem_tools.h"
+ 
+ #include "bs_call.h"
+@@ -26,7 +30,17 @@ void *call_thread(void *arg) {
+ 		pthread_mutex_lock(&work->calc_mutex);
+ 		while(!(cpar->ready || work->calc_end)) {
+ 			struct timespec ts;
++#ifdef __MACH__ // OS X does not have clock_gettime, use clock_get_time
++clock_serv_t cclock;
++mach_timespec_t mts;
++host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
++clock_get_time(cclock, &mts);
++mach_port_deallocate(mach_task_self(), cclock);
++ts.tv_sec = mts.tv_sec;
++ts.tv_nsec = mts.tv_nsec;
++#else
+ 			clock_gettime(CLOCK_REALTIME, &ts);
++#endif
+ 			ts.tv_sec += 5;
+ 			pthread_cond_timedwait(&work->calc_cond1, &work->calc_mutex, &ts);
+ 		}
+@@ -161,7 +175,17 @@ void call_genotypes_ML(ctg_t * const ctg, gt_vector * const align_list, const ui
+ 	pthread_mutex_lock(&work->calc_mutex);
+ 	while(work->calc_threads_complete < work->n_calc_threads) {
+ 		struct timespec ts;
++#ifdef __MACH__ // OS X does not have clock_gettime, use clock_get_time
++clock_serv_t cclock;
++mach_timespec_t mts;
++host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
++clock_get_time(cclock, &mts);
++mach_port_deallocate(mach_task_self(), cclock);
++ts.tv_sec = mts.tv_sec;
++ts.tv_nsec = mts.tv_nsec;
++#else
+ 		clock_gettime(CLOCK_REALTIME, &ts);
++#endif
+ 		ts.tv_sec += 5;
+ 		pthread_cond_timedwait(&work->calc_cond2, &work->calc_mutex, &ts);
+ 	}
+@@ -228,7 +252,17 @@ void call_genotypes_ML(ctg_t * const ctg, gt_vector * const align_list, const ui
+ 	pthread_mutex_lock(&work->print_mutex);
+ 	while(param->work.vcf_n) {
+ 		struct timespec ts;
++#ifdef __MACH__ // OS X does not have clock_gettime, use clock_get_time
++clock_serv_t cclock;
++mach_timespec_t mts;
++host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
++clock_get_time(cclock, &mts);
++mach_port_deallocate(mach_task_self(), cclock);
++ts.tv_sec = mts.tv_sec;
++ts.tv_nsec = mts.tv_nsec;
++#else
+ 		clock_gettime(CLOCK_REALTIME, &ts);
++#endif
+ 		ts.tv_sec += 5;
+ 		pthread_cond_timedwait(&work->print_cond2, &work->print_mutex, &ts);
+ 	}
+@@ -244,7 +278,17 @@ void call_genotypes_ML(ctg_t * const ctg, gt_vector * const align_list, const ui
+ 	pthread_mutex_lock(&work->mprof_mutex);
+ 	while(work->mprof_read_idx != work->mprof_write_idx) {
+ 		struct timespec ts;
++#ifdef __MACH__ // OS X does not have clock_gettime, use clock_get_time
++clock_serv_t cclock;
++mach_timespec_t mts;
++host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
++clock_get_time(cclock, &mts);
++mach_port_deallocate(mach_task_self(), cclock);
++ts.tv_sec = mts.tv_sec;
++ts.tv_nsec = mts.tv_nsec;
++#else
+ 		clock_gettime(CLOCK_REALTIME, &ts);
++#endif
+ 		ts.tv_sec += 5;
+ 		pthread_cond_timedwait(&work->mprof_cond2, &work->mprof_mutex, &ts);
+ 	}
+diff --git a/tools/bs_call/src/process.c b/tools/bs_call/src/process.c
+index fa9bc4c..0cec01e 100644
+--- a/tools/bs_call/src/process.c
++++ b/tools/bs_call/src/process.c
+@@ -10,6 +10,11 @@
+ #include <pthread.h>
+ #include <time.h>
+ 
++#ifdef __MACH__
++#include <mach/clock.h>
++#include <mach/mach.h>
++#endif
++
+ #include <htslib/hfile.h>
+ #include <htslib/hts.h>
+ #include <htslib/sam.h>
+@@ -23,7 +28,17 @@ void *mprof_thread(void *arg) {
+ 	while(1) {
+ 		while(par->work.mprof_read_idx == par->work.mprof_write_idx && !par->work.mprof_end) {
+ 			struct timespec ts;
++#ifdef __MACH__ // OS X does not have clock_gettime, use clock_get_time
++clock_serv_t cclock;
++mach_timespec_t mts;
++host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
++clock_get_time(cclock, &mts);
++mach_port_deallocate(mach_task_self(), cclock);
++ts.tv_sec = mts.tv_sec;
++ts.tv_nsec = mts.tv_nsec;
++#else
+ 			clock_gettime(CLOCK_REALTIME, &ts);
++#endif
+ 			ts.tv_sec += 5;
+ 			pthread_cond_timedwait(&par->work.mprof_cond1, &par->work.mprof_mutex, &ts);
+ 		}
+@@ -48,7 +63,17 @@ void *process_thread(void *arg) {
+ 		pthread_mutex_lock(&par->work.process_mutex);
+ 		while(!par->work.align_list_waiting && !par->work.process_end) {
+ 			struct timespec ts;
++#ifdef __MACH__ // OS X does not have clock_gettime, use clock_get_time
++clock_serv_t cclock;
++mach_timespec_t mts;
++host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
++clock_get_time(cclock, &mts);
++mach_port_deallocate(mach_task_self(), cclock);
++ts.tv_sec = mts.tv_sec;
++ts.tv_nsec = mts.tv_nsec;
++#else
+ 			clock_gettime(CLOCK_REALTIME, &ts);
++#endif
+ 			ts.tv_sec += 5;
+ 			pthread_cond_timedwait(&par->work.process_cond1, &par->work.process_mutex, &ts);
+ 		}
+@@ -79,7 +104,17 @@ void *print_thread(void *arg) {
+ 	while(1) {
+ 		while(!par->work.vcf_n && !par->work.print_end) {
+ 			struct timespec ts;
++#ifdef __MACH__ // OS X does not have clock_gettime, use clock_get_time
++clock_serv_t cclock;
++mach_timespec_t mts;
++host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
++clock_get_time(cclock, &mts);
++mach_port_deallocate(mach_task_self(), cclock);
++ts.tv_sec = mts.tv_sec;
++ts.tv_nsec = mts.tv_nsec;
++#else
+ 			clock_gettime(CLOCK_REALTIME, &ts);
++#endif
+ 			ts.tv_sec += 5;
+ 			pthread_cond_timedwait(&par->work.print_cond1, &par->work.print_mutex, &ts);
+ 		}
+@@ -91,7 +126,17 @@ void *print_thread(void *arg) {
+ 					pthread_mutex_lock(&par->work.vcf_mutex);
+ 					while(!par->work.vcf[i].ready) {
+ 						struct timespec ts;
++#ifdef __MACH__ // OS X does not have clock_gettime, use clock_get_time
++clock_serv_t cclock;
++mach_timespec_t mts;
++host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
++clock_get_time(cclock, &mts);
++mach_port_deallocate(mach_task_self(), cclock);
++ts.tv_sec = mts.tv_sec;
++ts.tv_nsec = mts.tv_nsec;
++#else
+ 						clock_gettime(CLOCK_REALTIME, &ts);
++#endif
+ 						ts.tv_sec += 5;
+ 						pthread_cond_timedwait(&par->work.vcf_cond, &par->work.vcf_mutex, &ts);
+ 					}

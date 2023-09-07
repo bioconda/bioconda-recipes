@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+set -ex
 make install
 
 mkdir -p $PREFIX

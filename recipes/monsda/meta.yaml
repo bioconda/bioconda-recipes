@@ -1,0 +1,63 @@
+{% set name = "MONSDA" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "5f9ba1ba502399734b7473f56e57a9df85e85fda0a8b615ab7858a502d827e9a" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: "{{ sha256 }}"
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  entry_points:
+    - monsda = MONSDA.RunMONSDA:main
+    - monsda_configure = MONSDA.Configurator:main
+  noarch: python
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+    - pytest-runner
+  run:
+    - biopython>=1.79
+    - grep>=3.4
+    - libmamba>=0.21.2
+    - mamba>=0.17.0
+    - more-itertools>=8.8.0
+    - natsort>=7.1.1
+    - nextflow
+    - numpy>=1.21.0
+    - pandas>=1.4.1
+    - perl>=5.32.1
+    - python>=3.9
+    - scipy>=1.7.0
+    - snakemake-minimal>=6.5.3
+    - snakemake>=6.5.3
+    - versioneer>=0.20
+    - yaml>=0.2.5
+    - zlib>=1.2.11
+    - zstd>=1.5.0
+    
+test:
+  commands:
+    - monsda --version 2>&1 |grep {{ version }}
+    - monsda_configure -h|grep help
+    - rm -rf LOGS
+    
+about:
+  home: https://github.com/jfallmann/MONSDA
+  license: GPL3
+  license_family: GPL
+  license_file: LICENSE
+  summary: MONSDA, Modular Organizer of Nextflow and Snakemake driven hts Data Analysis
+  doc_url: https://monsda.readthedocs.io/en/latest/
+
+extra:
+  recipe-maintainers:
+    - jfallmann

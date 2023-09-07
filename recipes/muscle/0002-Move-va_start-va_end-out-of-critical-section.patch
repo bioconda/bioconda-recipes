@@ -1,0 +1,57 @@
+From 02f38400c37f54d31b9be31aaa25ee11110cb5f6 Mon Sep 17 00:00:00 2001
+From: Nicola Soranzo <nicola.soranzo@earlham.ac.uk>
+Date: Thu, 10 Feb 2022 03:31:26 +0000
+Subject: [PATCH 2/2] Move va_start/va_end out of critical section
+
+Fix the following error when compiling with Clang++:
+
+```
+myutils.cpp:912:2: error: 'va_start' cannot be used in a captured statement
+        va_start(ArgList, Format);
+        ^
+1 error generated.
+make: *** [Makefile:53: Darwin/myutils.o] Error 1
+```
+
+Solution inspired by:
+
+https://github.com/Ultimaker/CuraEngine/pull/1124
+---
+ src/myutils.cpp | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/myutils.cpp b/src/myutils.cpp
+index 9d7d53c..ccc4fa3 100644
+--- a/src/myutils.cpp
++++ b/src/myutils.cpp
+@@ -898,6 +898,8 @@ void Log(const char *Format, ...)
+ 
+ void Die_(const char *Format, ...)
+ 	{
++	va_list ArgList;
++	va_start(ArgList, Format);
+ #pragma omp critical
+ 	{
+ 	static bool InDie = false;
+@@ -908,10 +910,7 @@ void Die_(const char *Format, ...)
+ 
+ 	if (g_fLog != 0)
+ 		setbuf(g_fLog, 0);
+-	va_list ArgList;
+-	va_start(ArgList, Format);
+ 	myvstrprintf(Msg, Format, ArgList);
+-	va_end(ArgList);
+ 
+ 	fprintf(stderr, "\n\n");
+ 	Log("\n");
+@@ -944,6 +943,7 @@ void Die_(const char *Format, ...)
+ 
+ 	exit(1);
+ 	}
++	va_end(ArgList);
+ 	}
+ 
+ void Warning_(const char *Format, ...)
+-- 
+2.25.1
+

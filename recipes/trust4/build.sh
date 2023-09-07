@@ -7,6 +7,6 @@ make \
     LINKPATH="${LDFLAGS} -I./samtools-0.1.19"
 install -d "${PREFIX}/bin"
 install trust4 fastq-extractor bam-extractor annotator run-trust4 \
-    trust-simplerep.pl trust-barcoderep.pl trust-smartseq.pl \
+    trust-simplerep.pl trust-barcoderep.pl trust-smartseq.pl trust-airr.pl \
     BuildDatabaseFa.pl BuildImgtAnnot.pl \
     "${PREFIX}/bin/"

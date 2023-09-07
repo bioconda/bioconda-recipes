@@ -1,0 +1,43 @@
+{% set name = "miga" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/miga-{{ version }}.tar.gz
+  sha256: bb77937c58c4bcf9b7a0faa5970ca30f178b06f6e103b5251edbac5bff15b369
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - cython
+    - pip
+    - python >=3
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  run:
+    - numpy
+    - python >=3
+
+test:
+  imports:
+    - miga
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/caioss/miga
+  summary: Python package to optimize mutual information between two multiple sequence alignment.
+  dev_url: https://github.com/caioss/miga/
+  license: LGPL-3.0
+  license_file: LICENSE

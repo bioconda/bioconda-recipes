@@ -14,4 +14,4 @@ echo "unset JBROWSE2_SOURCE_DIR" > $PREFIX/etc/conda/deactivate.d/jbrowse2-sourc
 chmod a+x $PREFIX/etc/conda/deactivate.d/jbrowse2-sourcedir.sh
 
 # Install the CLI
-npm install --preifx=${PREFIX} -g @jbrowse/cli@${PKG_VERSION}
+npm install --prefix=${PREFIX} -g @jbrowse/cli@${PKG_VERSION}

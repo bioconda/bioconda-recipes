@@ -1,34 +1,38 @@
 {% set name = "GraphAligner" %}
-{% set version = "1.0.13" %}
+{% set version = "1.0.17b" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/maickrau/{{ name }}/files/6223811/{{ name }}.tar.gz
-  sha256: df9f5b21d8affddde1de1d004d831896e9187efb6f0e4dbf1def4bccefd97426
-  patches: version.patch
+  url: https://github.com/maickrau/{{ name }}/files/10706255/{{ name }}.tar.gz
+  sha256: b0eb5531bf111f808feeaf35045d43b7d81f75d87003458c7415622c9e3006ad
+  patches:
+    - version.patch
+    - linux_link.patch # [linux]
 
 build:
-  number: 1
-  skip: True # [osx]
+  number: 2
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
   host:
-    - jemalloc=5.2.0
+    - jemalloc ==5.2.0
     - zlib
-    - mummer4
-    - boost
+    - boost-cpp
     - sparsehash
     - pkg-config
     - libdivsufsort
-    - protobuf=3.14.0
-    - libprotobuf-static=3.14.0
+    - protobuf ==3.14.0
     - sdsl-lite
+  run:
+    - boost-cpp
+    - protobuf ==3.14.0
+    - jemalloc ==5.2.0
+    - libdivsufsort
 
 test:
   commands:

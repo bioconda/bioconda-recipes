@@ -1,3 +1,6 @@
+#!/bin/bash
+
+#sed -i.bak "s/set(Boost_USE_STATIC_LIBS   ON)/set(Boost_USE_STATIC_LIBS   OFF)/g" src/CMakeLists.txt
 mkdir build
 cd build
 export CXXFLAGS=-ldeflate

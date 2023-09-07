@@ -1,0 +1,33 @@
+{% set name = "actc" %}
+{% set version = "0.5.0" %}
+{% set sha256 = "96354e0a7c7981e788ed33aa21cfc7efd115ba92b1494eb57b2a1a811165f049" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/PacificBiosciences/actc/releases/download/v{{ version }}/actc
+    sha256: {{ sha256 }}
+
+about:
+  home: https://github.com/PacificBiosciences/actc
+  license: BSD-3-Clause-Clear
+  summary: PacBio utility to align clr to ccs reads
+
+extra:
+  recipe-maintainers:
+    - armintoepfer
+  skip-lints:
+    #repackaged binary
+    - should_be_noarch_generic
+
+build:
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+test:
+  commands:
+    - actc -h
