@@ -2,7 +2,7 @@
 #
 # Wraps jvarkit.jar
 #
-# This is copied from picard's wrapper
+# This is adapted from picard's wrapper
 #
 set -eu -o pipefail
 
@@ -27,12 +27,14 @@ ENV_PREFIX="$(dirname $(dirname $DIR))"
 # Use Java installed with conda to ensure correct version
 java="$ENV_PREFIX/bin/java"
 
-# if JAVA_HOME is set (non-empty), use it. Otherwise keep "java"
-if [ -n "${JAVA_HOME:=}" ]; then
-	if [ -e "$JAVA_HOME/bin/java" ]; then
-		java="$JAVA_HOME/bin/java"
-	fi
-fi
+### NOTE: always force the conda-installed java version
+# # if JAVA_HOME is set (non-empty), use it. Otherwise keep "java"
+#if [ -n "${JAVA_HOME:=}" ]; then
+#	if [ -e "$JAVA_HOME/bin/java" ]; then
+#		java="$JAVA_HOME/bin/java"
+#	fi
+#fi
+###
 
 # extract memory and system property Java arguments from the list of provided arguments
 # http://java.dzone.com/articles/better-java-shell-script
@@ -68,8 +70,8 @@ fi
 pass_arr=($pass_args)
 if [[ ${pass_arr[0]:=} == com* ]]
 then
-	eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/$jar_file" $pass_args
+	eval set -- $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/$jar_file" $pass_args
 else
-	eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/$jar_file" $pass_args
+	eval set -- $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/$jar_file" $pass_args
 fi
-exit
+exec "$java" "$@"
