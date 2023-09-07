@@ -1,53 +1,59 @@
 {% set name = "metabolabpy" %}
 {% set version = "0.9.8" %}
+{% set sha256 = "f0b7d88cddcfe5d0017f652b670fe6c1c85bf5108c349a4ba5752858fa8ae6f2" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "f0b7d88cddcfe5d0017f652b670fe6c1c85bf5108c349a4ba5752858fa8ae6f2"
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/metabolabpy-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  noarch: python
   number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps -vvv
   entry_points:
     - metabolabpy = metabolabpy.__main__:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  run_exports:
+    - {{ pin_subpackage('metabolabpy', max_pin="x") }}
 
 requirements:
   host:
-    - python >3.7
+    - python >=3.7
     - pip
   run:
-    - python >3.7
+    - python >=3.7
     - numpy
     - scipy
     - matplotlib-base
-    - pyside2
+    - pandas
+    - numba
+    - scikit-learn
     - openpyxl
+    - xlsxwriter
+    - multiprocess
+    - pybaselines
+    - darkdetect
+    - pygamma
+    - pyside2
     - pyautogui
     - qtmodern
-    - xlsxwriter
 
 test:
   imports:
     - metabolabpy
-    - metabolabpy.nmr
   commands:
     - metabolabpy --help
 
 about:
   home: https://github.com/ludwigc/metabolabpy
-  license: GNU General Public v3 (GPLv3)
-  license_family: GPL3"
+  summary: Python package for data processing of NMR 1D and 2D metabolomics and metabolism tracing data
+  license: GPL-3.0-or-later
   license_file: LICENSE
-  summary: "Python package for data processing of NMR 1D and 2D metabolomics and metabolism tracing data"
 
 extra:
-  container:
-    extended-base: true
   recipe-maintainers:
     - RJMW
     - ludwigc
