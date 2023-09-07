@@ -1,20 +1,23 @@
+{% set name = "pyfastx" %}
 {% set version = "2.0.0" %}
+{% set sha256 = "6726dea23bdde17587c76cc846c9ed45b6f5b3c65b925386388a6be3ce6d8398" %}
 
 package:
-  name: pyfastx
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
   url: https://github.com/lmdu/pyfastx/archive/{{ version }}.tar.gz
-  sha256: 6726dea23bdde17587c76cc846c9ed45b6f5b3c65b925386388a6be3ce6d8398
-
+  sha256: {{ sha256 }}
 
 build:
   number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
-  skip: True  # [py2k]
+  script: {{ PYTHON }} -m pip install . --no-deps -vvv
+  skip: True  # [py < 36]
   entry_points:
     - pyfastx = pyfastxcli:main
+  run_exports:
+    - {{ pin_subpackage('pyfastx', max_pin="x") }}
 
 requirements:
   build:
@@ -24,7 +27,6 @@ requirements:
     - zlib
     - pip
   run:
-    - zlib
     - python
 
 test:
@@ -36,6 +38,7 @@ test:
 about:
   home: https://github.com/lmdu/pyfastx
   license: MIT
+  license_family: MIT
   license_file: LICENSE
   summary:  |
           pyfastx is a python module for fast random
