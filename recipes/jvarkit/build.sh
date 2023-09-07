@@ -35,6 +35,6 @@ chmod 0755 "${TGT}/dispatcher"
 # |                   bam2svg | BAM to Scalar Vector Graphics (SVG)                                                                    |
 # |                   bam2xml | converts a BAM to XML                                                                                  |
 #  …
-java -jar dist/jvarkit.jar --help | awk 'BEGIN{FS="|"};$2~/-+\+-+/&&!$1{++on;next};on&&$2&&!$1{print $2}' | while read cmd; do
+java -jar dist/jvarkit.jar --help | awk 'BEGIN{FS="|"};$2~/-+\+-+/&&!$1{++on;next};on&&$2&&!$1{print $2}' | while read -r cmd; do
 	ln -s "$(realpath --relative-to "${PREFIX}/bin" "${TGT}/dispatcher")" "${PREFIX}/bin/${cmd}"
 done

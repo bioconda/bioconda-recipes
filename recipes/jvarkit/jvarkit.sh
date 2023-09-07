@@ -23,7 +23,7 @@ done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 JAR_DIR="$DIR"
-ENV_PREFIX="$(dirname $(dirname $DIR))"
+ENV_PREFIX="$(dirname "$(dirname "${DIR}")")"
 # Use Java installed with conda to ensure correct version
 java="$ENV_PREFIX/bin/java"
 
@@ -67,11 +67,14 @@ if [ "$jvm_mem_opts" == "" ] && [ -z ${_JAVA_OPTIONS+x} ]; then
 	jvm_mem_opts="$default_jvm_mem_opts"
 fi
 
+# shellcheck disable=SC2206
 pass_arr=($pass_args)
 if [[ ${pass_arr[0]:=} == com* ]]
 then
+	# shellcheck disable=SC2086
 	eval set -- $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/$jar_file" $pass_args
 else
+	# shellcheck disable=SC2086
 	eval set -- $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/$jar_file" $pass_args
 fi
 exec "$java" "$@"
