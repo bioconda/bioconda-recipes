@@ -1,128 +1,139 @@
+--- ./setup.py	(original)
++++ ./setup.py	(refactored)
+@@ -9,7 +9,7 @@
+ 		install_lib.install_lib.run(self)
+ 		for fn in self.get_outputs():
+ 			if fn.split('/')[-2] == 'bin':
+-				mode = ((os.stat(fn).st_mode) | 0555) & 07777
++				mode = ((os.stat(fn).st_mode) | 0o555) & 0o7777
+ 				log.info("changing mode of %s to %o", fn, mode)
+ 				os.chmod(fn, mode)
+ 
 --- ./microbe_census/microbe_census.py	(original)
 +++ ./microbe_census/microbe_census.py	(refactored)
-@@ -124,7 +124,7 @@
-     
+@@ -123,7 +123,7 @@
+ 	
  def check_paths(paths):
-     """ Check that all relative paths exist """
--    for my_path in paths.values():
-+    for my_path in list(paths.values()):
-         if os.path.isfile(my_path):
-             continue
-         elif os.path.isdir(my_path):
-@@ -244,23 +244,23 @@
+ 	""" Check that all relative paths exist """
+-	for my_path in paths.values():
++	for my_path in list(paths.values()):
+ 		if os.path.isfile(my_path):
+ 			continue
+ 		elif os.path.isdir(my_path):
+@@ -240,23 +240,23 @@
  def print_copyright():
-     # print out copyright information
-     print ("\nMicrobeCensus - estimation of average genome size from shotgun sequence data")
--    print ("version %s; github.com/snayfach/MicrobeCensus" % __version__)
-+    print(("version %s; github.com/snayfach/MicrobeCensus" % __version__))
-     print ("Copyright (C) 2013-2015 Stephen Nayfach")
-     print ("Freely distributed under the GNU General Public License (GPLv3)\n")
+ 	# print out copyright information
+ 	print ("\nMicrobeCensus - estimation of average genome size from shotgun sequence data")
+-	print ("version %s; github.com/snayfach/MicrobeCensus" % __version__)
++	print(("version %s; github.com/snayfach/MicrobeCensus" % __version__))
+ 	print ("Copyright (C) 2013-2015 Stephen Nayfach")
+ 	print ("Freely distributed under the GNU General Public License (GPLv3)\n")
  
  def print_parameters(args):
-     # print out parameters
-     print ("=============Parameters==============")
--    print ("Input metagenome: %s" % args['seqfiles'])
--    print ("Output file: %s" % args['outfile'])
--    print ("Reads trimmed to: %s bp" % args['read_length'])
--    print ("Maximum reads sampled: %s" % args['nreads'])
--    print ("Threads to use for db search: %s" % args['threads'])
--    print ("Minimum base-level quality score: %s" % (args['min_quality'] if args['file_type'] == 'fastq' else 'NA'))
--    print ("Minimum read-level quality score: %s" % (args['mean_quality'] if args['file_type'] == 'fastq' else 'NA'))
--    print ("Maximum percent unknown bases/read: %s" % args['max_unknown'])
--    print ("Filter duplicate reads: %s" % args['filter_dups'])
--    print ("Keep temporary files: %s\n" % args['keep_tmp'])
-+    print(("Input metagenome: %s" % args['seqfiles']))
-+    print(("Output file: %s" % args['outfile']))
-+    print(("Reads trimmed to: %s bp" % args['read_length']))
-+    print(("Maximum reads sampled: %s" % args['nreads']))
-+    print(("Threads to use for db search: %s" % args['threads']))
-+    print(("Minimum base-level quality score: %s" % (args['min_quality'] if args['file_type'] == 'fastq' else 'NA')))
-+    print(("Minimum read-level quality score: %s" % (args['mean_quality'] if args['file_type'] == 'fastq' else 'NA')))
-+    print(("Maximum percent unknown bases/read: %s" % args['max_unknown']))
-+    print(("Filter duplicate reads: %s" % args['filter_dups']))
-+    print(("Keep temporary files: %s\n" % args['keep_tmp']))
+ 	# print out parameters
+ 	print ("=============Parameters==============")
+-	print ("Input metagenome: %s" % args['seqfiles'])
+-	print ("Output file: %s" % args['outfile'])
+-	print ("Reads trimmed to: %s bp" % args['read_length'])
+-	print ("Maximum reads sampled: %s" % args['nreads'])
+-	print ("Threads to use for db search: %s" % args['threads'])
+-	print ("Minimum base-level quality score: %s" % (args['min_quality'] if args['file_type'] == 'fastq' else 'NA'))
+-	print ("Minimum read-level quality score: %s" % (args['mean_quality'] if args['file_type'] == 'fastq' else 'NA'))
+-	print ("Maximum percent unknown bases/read: %s" % args['max_unknown'])
+-	print ("Filter duplicate reads: %s" % args['filter_dups'])
+-	print ("Keep temporary files: %s\n" % args['keep_tmp'])
++	print(("Input metagenome: %s" % args['seqfiles']))
++	print(("Output file: %s" % args['outfile']))
++	print(("Reads trimmed to: %s bp" % args['read_length']))
++	print(("Maximum reads sampled: %s" % args['nreads']))
++	print(("Threads to use for db search: %s" % args['threads']))
++	print(("Minimum base-level quality score: %s" % (args['min_quality'] if args['file_type'] == 'fastq' else 'NA')))
++	print(("Minimum read-level quality score: %s" % (args['mean_quality'] if args['file_type'] == 'fastq' else 'NA')))
++	print(("Maximum percent unknown bases/read: %s" % args['max_unknown']))
++	print(("Filter duplicate reads: %s" % args['filter_dups']))
++	print(("Keep temporary files: %s\n" % args['keep_tmp']))
  
  def quality_filter(rec, args):
-     """ Return true if read fails QC """
-@@ -361,10 +361,10 @@
-     else:
-         args['sampled_reads'] = read_id
-     if args['verbose']:
--        print ("\t%s reads shorter than %s bp and skipped" % (too_short, args['read_length']))
--        print ("\t%s low quality reads found and skipped" % low_qual)
--        print ("\t%s duplicate reads found and skipped" % dups)
--        print ("\t%s reads sampled from seqfile" % read_id)
-+        print(("\t%s reads shorter than %s bp and skipped" % (too_short, args['read_length'])))
-+        print(("\t%s low quality reads found and skipped" % low_qual))
-+        print(("\t%s duplicate reads found and skipped" % dups))
-+        print(("\t%s reads sampled from seqfile" % read_id))
+ 	""" Return true if read fails QC """
+@@ -362,10 +362,10 @@
+ 	else:
+ 		args['sampled_reads'] = read_id
+ 	if args['verbose']:
+-		print ("\t%s reads shorter than %s bp and skipped" % (too_short, args['read_length']))
+-		print ("\t%s low quality reads found and skipped" % low_qual)
+-		print ("\t%s duplicate reads found and skipped" % dups)
+-		print ("\t%s reads sampled from seqfile" % read_id)
++		print(("\t%s reads shorter than %s bp and skipped" % (too_short, args['read_length'])))
++		print(("\t%s low quality reads found and skipped" % low_qual))
++		print(("\t%s duplicate reads found and skipped" % dups))
++		print(("\t%s reads sampled from seqfile" % read_id))
  
  def search_seqs(args, paths):
-     """ Search high quality reads against marker genes using RAPsearch2 """
+ 	""" Search high quality reads against marker genes using RAPsearch2 """
 @@ -383,7 +383,7 @@
-                     if line[0] != '#': hits.append(line.split()[0])
-             distinct_hits = len(set(hits))
-             if args['verbose']:
--                print ("\t%s reads hit marker proteins" % str(distinct_hits))
-+                print(("\t%s reads hit marker proteins" % str(distinct_hits)))
-         else:
-             clean_up(paths)
-             sys.exit("\nDatabase search has exited with the following error:\n%s" % error)
-@@ -456,14 +456,14 @@
-         clean_up(paths)
-         sys.exit("\nError: No hits to marker proteins - cannot estimate genome size! Rerun program with more reads.")
-     if args['verbose']:
--        print ("\t%s reads assigned to a marker protein" % len(best_hits))
-+        print(("\t%s reads assigned to a marker protein" % len(best_hits)))
-     return best_hits
+ 			if line[0] != '#': hits.append(line.split()[0])
+ 		distinct_hits = len(set(hits))
+ 		if args['verbose']:
+-			print ("\t%s reads hit marker proteins" % str(distinct_hits))
++			print(("\t%s reads hit marker proteins" % str(distinct_hits)))
+ 	else:
+ 		clean_up(paths)
+ 		sys.exit("\nDatabase search has exited with the following error:\n%s" % error)
+@@ -455,14 +455,14 @@
+ 		clean_up(paths)
+ 		sys.exit("\nError: No hits to marker proteins - cannot estimate genome size! Rerun program with more reads.")
+ 	if args['verbose']:
+-		print ("\t%s reads assigned to a marker protein" % len(best_hits))
++		print(("\t%s reads assigned to a marker protein" % len(best_hits)))
+ 	return best_hits
  
  def aggregate_hits(args, paths, best_hits):
-     """ Count hits to each gene family from and return dictionary of results {fam_id:hits} """
-     optpars = find_opt_pars(paths['params'], args['read_length'])
-     agg_hits = {}
--    for fam_id, aln, cov, score in best_hits.values():
-+    for fam_id, aln, cov, score in list(best_hits.values()):
-         aln_stat = optpars[fam_id]['aln_stat']
-         if fam_id not in agg_hits:
-             agg_hits[fam_id] = 1.0 if aln_stat == 'hits' else cov if aln_stat == 'cov' else aln
-@@ -488,7 +488,7 @@
-     weights = read_dic(paths['weights'], header=False, dtype='float')
-     # predict average genome size for each marker
-     estimates = {}
--    for fam_id, hits in agg_hits.items():
-+    for fam_id, hits in list(agg_hits.items()):
-         coeff = coeffs['_'.join([str(args['read_length']),fam_id])]
-         rate = hits/(args['sampled_reads'] * args['read_length'])
-         if rate == 0: continue
-@@ -498,7 +498,7 @@
-     mad_estimate = mad(list(estimates.values()))
-     median_estimate = median(list(estimates.values()))
-     sum_weights = 0
--    for fam_id, estimate in estimates.items():
-+    for fam_id, estimate in list(estimates.items()):
-         if abs(estimate - median_estimate) >= mad_estimate:
-             continue
-         else:
-@@ -508,7 +508,7 @@
-     est_ags = est_ags/sum_weights
-     # report results
-     if args['verbose']:
--        print ("\t%s bp" % str(round(est_ags, 2)))
-+        print(("\t%s bp" % str(round(est_ags, 2))))
-     return est_ags
+ 	""" Count hits to each gene family from and return dictionary of results {fam_id:hits} """
+ 	optpars = find_opt_pars(paths['params'], args['read_length'])
+ 	agg_hits = {}
+-	for fam_id, aln, cov, score in best_hits.values():
++	for fam_id, aln, cov, score in list(best_hits.values()):
+ 		aln_stat = optpars[fam_id]['aln_stat']
+ 		if fam_id not in agg_hits:
+ 			agg_hits[fam_id] = 1.0 if aln_stat == 'hits' else cov if aln_stat == 'cov' else aln
+@@ -487,7 +487,7 @@
+ 	weights = read_dic(paths['weights'], header=False, dtype='float')
+ 	# predict average genome size for each marker
+ 	estimates = {}
+-	for fam_id, hits in agg_hits.items():
++	for fam_id, hits in list(agg_hits.items()):
+ 		coeff = coeffs['_'.join([str(args['read_length']),fam_id])]
+ 		rate = hits/(args['sampled_reads'] * args['read_length'])
+ 		if rate == 0: continue
+@@ -497,7 +497,7 @@
+ 	mad_estimate = mad(list(estimates.values()))
+ 	median_estimate = median(list(estimates.values()))
+ 	sum_weights = 0
+-	for fam_id, estimate in estimates.items():
++	for fam_id, estimate in list(estimates.items()):
+ 		if abs(estimate - median_estimate) >= mad_estimate:
+ 			continue
+ 		else:
+@@ -507,7 +507,7 @@
+ 	est_ags = est_ags/sum_weights
+ 	# report results
+ 	if args['verbose']:
+-		print ("\t%s bp" % str(round(est_ags, 2)))
++		print(("\t%s bp" % str(round(est_ags, 2))))
+ 	return est_ags
  
  def report_results(args, est_ags, count_bases):
 --- ./tests/test_microbe_census.py	(original)
 +++ ./tests/test_microbe_census.py	(refactored)
 @@ -28,7 +28,7 @@
-     """ check whether file is read into list properly """
-     
-     def setUp(self): # create test files in tmp directory
--        self.exp_values = range(10)
-+        self.exp_values = list(range(10))
-         self.dir = tempfile.mkdtemp()
-         self.inpath = os.path.join(self.dir, 'tmp.txt')
-         for i in range(10):
+ 	""" check whether file is read into list properly """
+ 	
+ 	def setUp(self): # create test files in tmp directory
+-		self.exp_values = range(10)
++		self.exp_values = list(range(10))
+ 		self.dir = tempfile.mkdtemp()
+ 		self.inpath = os.path.join(self.dir, 'tmp.txt')
+ 		for i in range(10):
 --- ./training/class_reads.py	(original)
 +++ ./training/class_reads.py	(refactored)
 @@ -67,20 +67,20 @@
