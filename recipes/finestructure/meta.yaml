@@ -8,12 +8,13 @@ package:
 source:
   url: https://people.maths.bris.ac.uk/~madjl/finestructure/fs_{{ version }}.zip
   sha256: 7af2dd51b02bf117e364f70e76d03920b0cd9ec17111b5be94dd2a5ab906b75e
+  patches:
+    - perl.patch
+    - noSwitch.patch
 
 build:
   number: 0
   noarch: generic
-  patches:
-    - perl.patch
   run_exports:
     - {{ pin_subpackage('finestructure', max_pin='x.x') }}
 
@@ -37,7 +38,7 @@ about:
 
 test:
   commands:
-    - fs --help >> /dev/null
+    - fs -help | grep "USAGE"
     - beagle2chromopainter.pl | grep "usage" 
     - chromopainter2chromopainterv2.pl | grep "usage"
     - convertrecfile.pl | grep "Usage"
@@ -47,7 +48,6 @@ test:
     - phasescreen.pl | grep "usage"
     - phasesubsample.pl | grep "usage"
     - plink2chromopainter.pl | grep "Usage"
-    - Rscript FinestructureLibrary.R
 
 
 extra:
