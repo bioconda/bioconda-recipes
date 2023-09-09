@@ -1,0 +1,67 @@
+{% set name = "orthologr" %}
+{% set version = "0.4.1" %}
+
+package:
+  name: r-{{ name }}
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/drostlab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b8b501bc25d1f547e009dd221d6efd3ab0ecfdf666858cbc7e31b13632a785db
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - cross-r-base {{ r_base }}  # [build_platform != target_platform]
+    - autoconf  # [unix]
+    - "{{ compiler('c') }}"  # [unix]
+    - "{{ compiler('m2w64_c') }}"  # [win]
+    - "{{ compiler('cxx') }}"  # [unix]
+    - "{{ compiler('m2w64_cxx') }}"  # [win]
+    - posix  # [win]
+  host:
+    - r-RColorBrewer >=1.1_2
+    - r-Rcpp >=0.12.0
+    - r-base >=3.1.1
+    - bioconductor-biostrings >= 2.48.0
+    - bioconductor-genomicranges >= 1.30.3
+    - bioconductor-rsamtools >= 1.30.0
+    - bioconductor-rtracklayer >= 1.38.3
+    - r-metablastr # missing package
+    - perl >= 5.12
+  run:
+    - r-RColorBrewer >=1.1_2
+    - r-Rcpp >=0.12.0
+    - r-base >=3.1.1
+    - bioconductor-biostrings >= 2.48.0
+    - bioconductor-genomicranges >= 1.30.3
+    - bioconductor-rsamtools >= 1.30.0
+    - bioconductor-rtracklayer >= 1.38.3
+    - r-metablastr
+    - perl >= 5.12
+    - blast >= 2.9.0
+    - clustalw >= 2.1
+    - t_coffee >= 11.00.8cbe486
+    - muscle >= 3.8.31
+    - clustalo >= 1.2.3
+    - argtable2 >= 2.13
+    - mafft >= 7.221
+    - kaks_calculator ## missing package
+test:
+  commands:
+    - $R -e "library('orthologr')"  # [not win]
+
+about:
+  home: https://github.com/drostlab/orthologr
+  summary:  The orthologr package aims to provide a framework to perform large scale comparative genomics studies with R. Orthologr aims to be as easy to use as possible - from genomic data retrieval to orthology inference and dNdS estimation between several genomes.
+  license: GPLv2
+  license_family: GPL
+
+extra:
+  recipe-maintainers:
+    - gallardoalba
