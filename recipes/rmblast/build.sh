@@ -1,16 +1,14 @@
 #!/bin/bash
 set -euxo pipefail
 
-patch -p1 < ${RECIPE_DIR}/isb-2.14.0+-rmblast.patch
-
 cd ${SRC_DIR}/c++/
 
-export CPLUS_INCLUDE_PATH="${PREFIX}/include"
+export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="-L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-export CFLAGS="${CFLAGS} -Ofast"
-export CXXFLAGS="${CXXFLAGS} -Ofast"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 if test x"`uname`" = x"Linux"; then
@@ -26,7 +24,7 @@ else
     export CPP_FOR_BUILD=${CPP}
 fi
 
-export LIB_INSTALL_DIR=${PREFIX}/lib/ncbi-blast+
+export LIB_INSTALL_DIR="${PREFIX}/lib/ncbi-blast+"
 
 # with/without options:
 #
@@ -55,64 +53,37 @@ export LIB_INSTALL_DIR=${PREFIX}/lib/ncbi-blast+
 # Fixes building on Linux
 export AR="${AR} rcs"
 
-# not building with boost as it's only used for unit tests
-if [[ $(uname) = Linux ]]; then
-    ./configure \
-        CXX=${CXX} CXXFLAGS="${CXXFLAGS}" \
-        --prefix=${PREFIX} \
-        --without-boost \
-        --with-bin-release \
-        --with-mt \
-        --with-dll \
-        --with-openmp \
-        --without-autodep \
-        --without-makefile-auto-update \
-        --with-flat-makefile \
-        --without-caution \
-        --without-dbapi \
-        --without-lzo \
-        --with-hard-runpath \
-        --with-runpath=${LIB_INSTALL_DIR} \
-        --without-debug \
-        --with-experimental=Int8GI \
-        --without-openssl \
-        --with-strip \
-        --without-vdb \
-        --with-z=${PREFIX} \
-        --with-bz2=${PREFIX} \
-        --with-nettle=${PREFIX} \
-        --without-krb5 \
-        --without-gnutls \
-        --without-sse42 \
-        --without-gcrypt
+if [ `uname` == Linux ]; then
+  export CONFIG_ARGS="--with-openmp --with-hard-runpath --with-runpath=${LIB_INSTALL_DIR}"
 else
-    ./configure \
-        CXX=${CXX} CXXFLAGS="${CXXFLAGS}" \
-        --prefix=${PREFIX} \
-        --without-boost \
-        --with-bin-release \
-        --with-mt \
-        --without-openmp \
-        --without-autodep \
-        --without-makefile-auto-update \
-        --with-flat-makefile \
-        --without-caution \
-        --without-dbapi \
-        --without-lzo \
-        --with-runpath=${LIB_INSTALL_DIR} \
-        --without-debug \
-        --with-experimental=Int8GI \
-        --without-openssl \
-        --with-strip \
-        --without-vdb \
-        --with-z=${PREFIX} \
-        --with-bz2=${PREFIX} \
-        --with-nettle=${PREFIX} \
-        --without-krb5 \
-        --without-gnutls \
-        --without-sse42 \
-        --without-gcrypt
+  export CONFIG_ARGS="--without-openmp"
 fi
+
+# not building with boost as it's only used for unit tests
+./configure \
+    CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
+    --prefix=${PREFIX} \
+    --with-64 \
+    --with-mt \
+    --without-dll \
+    --with-flat-makefile \
+    --without-caution \
+    --without-boost \
+    --without-lzo \
+    --without-zstd \
+    --without-debug \
+    --with-experimental=Int8GI \
+    --without-openssl \
+    --with-strip \
+    --without-vdb \
+    --with-z=${PREFIX} \
+    --with-bz2=${PREFIX} \
+    --without-krb5 \
+    --without-gnutls \
+    --without-sse42 \
+    --without-gcrypt \
+    --without-pcre \
+    ${CONFIG_ARGS}
 
 projects="algo/blast/ app/ objmgr/ objtools/align_format/ objtools/blast/"
 cd ReleaseMT
