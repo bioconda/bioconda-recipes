@@ -2,15 +2,15 @@
 
 set -x -e
 
-export INCLUDE_PATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
+export INCLUDE_PATH="${BUILD_PREFIX}/include"
+export LIBRARY_PATH="${BUILD_PREFIX}/lib"
+export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${BUILD_PREFIX}/lib"
 
-export LDFLAGS="-L${PREFIX}/lib"
-export CPPFLAGS="-I${PREFIX}/include"
+export LDFLAGS="-L${BUILD_PREFIX}/lib"
+export CPPFLAGS="-I${BUILD_PREFIX}/include"
 
 
-mkdir -p $PREFIX/bin
+mkdir -p $$PREFIX/bin
 
 mkdir -p perl-build
 mv bin/*pl perl-build

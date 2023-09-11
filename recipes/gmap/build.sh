@@ -18,13 +18,13 @@ export LC_ALL=en_US.UTF-8
 
 autoconf
 autoheader
-./configure CC=${CC} CFLAGS="${CFLAGS}" \
+./configure CC="${CC}" CFLAGS="${CFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" \
 	LDFLAGS="${LDFLAGS}" \
 	--prefix="${PREFIX}" \
 	--with-gmapdb="${PREFIX}/share" \
 	--with-simd-level=sse42
 
-make -j4
+make -j"${CPU_COUNT}"
 make install
 make clean

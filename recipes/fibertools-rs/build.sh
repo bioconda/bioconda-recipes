@@ -124,7 +124,7 @@ fi
 # test install on data
 #
 pushd ${HOME}
-ft m6a -v .test/all.bam /dev/null
+ft m6a -v tests/data/all.bam /dev/null
 popd
 
 exit 0
