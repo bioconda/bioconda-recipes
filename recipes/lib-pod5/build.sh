@@ -13,7 +13,7 @@ ln -s $CXX $PREFIX/bin/g++
 export CC=$PREFIX/bin/gcc
 export CXX=$PREFIX/bin/g++
 
-conan install --build=missing -s build_type=Release -s compiler=$PREFIX/bin/gxx .. 
+conan install --build=missing -s build_type=Release .. 
 cmake -DENABLE_CONAN=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${PREFIX} ..
 make -j
 
