@@ -12,12 +12,19 @@ esac
 make -C ./raxml CC="$CC"
 
 install -d ${PREFIX}/tmp
+install -d ${PREFIX}/bin
 
 if [ $DARWIN -eq 1 ]; then
-  install *.py ./raxml/raxmlHPC8* ./raxml/*.sh ${PREFIX}
+  install sativa.cfg *.py ${PREFIX}
 else
-  install -t ${PREFIX} *.py ./raxml/raxmlHPC8* ./raxml/*.sh 
+  install -t ${PREFIX} *.py sativa.cfg
 fi
+
+# Place a symlink to sativa.py in bin/
+( cd ${PREFIX}/bin; ln -s ../sativa.py . )
+
+mkdir ${PREFIX}/raxml
+cp ./raxml/raxmlHPC8* ./raxml/*.sh ${PREFIX}/raxml
 
 cp -r ./epac ${PREFIX}
 cp -r ./tests ${PREFIX}

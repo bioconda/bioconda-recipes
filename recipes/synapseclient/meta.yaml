@@ -1,32 +1,31 @@
-{% set version="2.7.2" %}
+{% set name = "synapseclient" %}
+{% set version="3.0.0" %}
 
 package:
-  name: synapseclient
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/s/synapseclient/synapseclient-{{ version }}.tar.gz
-  sha256: dc5a61f9f495109a0c89aa7d42b641b6ff278280d7961fb450dd5015704fe15b
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/synapseclient-{{ version }}.tar.gz
+  sha256: 788289dc42a51a974efda747b75c634b6a6b38c089a4263affb8ca4ed75a0d04
 
 build:
   noarch: python
   entry_points:
     - synapse = synapseclient.__main__:main
   number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps -vvv
+  run_exports:
+    - {{ pin_subpackage('synapseclient', max_pin="x") }}
 
 requirements:
   host:
-    - python
-    - setuptools
-    - requests >=2.22.0
-    - six
-    - future
-    - backports.csv
-    - deprecated >=1.2.4
-    - keyring >=15.0.0
+    - python >=3.8
+    - pip
   run:
-    - python
+    - python >=3.8
     - requests >=2.22
+    - urllib3 <2
     - six
     - future
     - backports.csv
@@ -42,12 +41,13 @@ test:
     - synapseclient
   commands:
     - synapse --help
-  
+
 about:
-  home: https://github.com/Sage-Bionetworks/synapsePythonClient
+  home: https://www.synapse.org
   license: Apache-2.0
   summary: Python client for Synapse
   description: |
     A client for Synapse, a collaborative compute space  that allows
     scientists to share and analyze data together.
   license_file: LICENSE
+  dev_url: https://github.com/Sage-Bionetworks/synapsePythonClient
