@@ -11,7 +11,7 @@ cd build
 ln -s $CC $PREFIX/bin/gcc
 ln -s $CXX $PREFIX/bin/gxx
 
-conan install --build=missing -s build_type=Release -s compiler=$CXX .. 
+conan install --build=missing -s build_type=Release -s compiler=$PREFIX/bin/gxx .. 
 cmake -DENABLE_CONAN=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${PREFIX} ..
 make -j
 
