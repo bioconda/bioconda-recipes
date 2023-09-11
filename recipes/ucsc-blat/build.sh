@@ -1,13 +1,18 @@
 #!/bin/bash
-mkdir -p "$PREFIX/bin"
+export USE_HIC=0
+mkdir -p "${PREFIX}/bin"
 export MACHTYPE=x86_64
-export BINDIR=$(pwd)/bin
+export BINDIR=`pwd`/bin
+export INCLUDE_PATH="${PREFIX}/include"
+export LD_LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="-L${PREFIX}/lib"
+export CFLAGS="-I${PREFIX}/include ${LDFLAGS}"
+export CXXFLAGS="-I${PREFIX}/include ${LDFLAGS}"
 export L="${LDFLAGS}"
-mkdir -p "$BINDIR"
-(cd kent/src/lib && make)
-(cd kent/src/htslib && make)
-(cd kent/src/jkOwnLib && make)
-(cd kent/src/hg/lib && make)
-(cd kent/src/blat && make)
-cp bin/blat "$PREFIX/bin"
-chmod +x "$PREFIX/bin/blat"
+mkdir -p ${BINDIR}
+cd ${SRC_DIR}/kent/src/lib && make CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
+cd ${SRC_DIR}/kent/src/htslib && make CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
+cd ${SRC_DIR}/kent/src/jkOwnLib && make CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
+cd ${SRC_DIR}/kent/src/blat && make CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
+cp ${SRC_DIR}/bin/blat "${PREFIX}/bin"
+chmod +rx "${PREFIX}/bin/blat"
