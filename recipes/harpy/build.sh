@@ -1,2 +1,18 @@
 #!/bin/bash
+
+mkdir -p ${PREFIX}/bin
+
+# Harpy executable
+#cp harpy ${PREFIX}/bin/
+
+# build harpy
 $PREFIX/bin/python -m pip install . --ignore-installed --no-deps -vv
+
+# rules
+cp rules/*.smk ${PREFIX}/bin/
+
+# associated scripts
+cp utilities/* ${PREFIX}/bin/
+
+# reports
+cp reports/*.Rmd ${PREFIX}/bin/
