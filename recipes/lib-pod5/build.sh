@@ -15,7 +15,7 @@ export CXX=$PREFIX/bin/g++
 
 conan install --build=missing -s build_type=Release .. 
 cmake -DENABLE_CONAN=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_MAKE_PROGRAM=make -DCMAKE_C_COMPILER=${CC} -DCMAKE_CXX_COMPILER=${CXX}  ..
-make -j
+make
 
 unlink $PREFIX/bin/gcc
 unlink $PREFIX/bin/g++
