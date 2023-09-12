@@ -13,12 +13,16 @@ build:
   noarch: python
   entry_points:
     - cooler = cooler.cli:cli
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('cooler', max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.6
     - pip
+    - hatchling
+    - hatch-vcs
   run:
     - asciitree
     - click >7
@@ -32,7 +36,7 @@ requirements:
     - pandas >1.0
     - pyfaidx
     - pysam >0.8
-    - python
+    - python >=3.6
     - pyyaml
     - scipy
     - simplejson
@@ -42,7 +46,6 @@ test:
     - cooler
     - cooler.cli
     - cooler.sandbox
-
   commands:
     # click requires a unicode locale
     - cooler --help
@@ -52,6 +55,7 @@ about:
   summary: 'Sparse binary format for genomic interaction matrices'
   license: BSD-3-Clause
   license_family: BSD
+  license_file: LICENSE
 
 extra:
   identifiers:
