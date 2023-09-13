@@ -9,7 +9,7 @@ cd src
 
 sed -i.bak "s|strcpy ( dialign_dir , \"DIALIGN2_DIR\" );|strcpy ( par_dir , \""${PREFIX}"/share/dialign2\" );|g" dialign.c
 
-make
+make CC="${CC}"
 mv dialign2-2 ${PREFIX}/bin/dialign2-2
 
 cd ../dialign2_dir

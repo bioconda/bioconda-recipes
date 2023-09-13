@@ -1,40 +1,56 @@
-{% set version = "1.8" %}
-{% set sha256 = "30ecfe574166f54f79606038830f68927cf0efab33bdc3c6e43fd1448fa0b2e4" %}
+{% set name = "canu" %}
+{% set version = "2.2" %}
 
 package:
-  name: canu
-  version: '{{version}}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/marbl/canu/archive/v{{version}}.tar.gz
-  sha256: '{{sha256}}'
+  url: https://github.com/marbl/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.Darwin-amd64.tar.xz # [osx]
+  md5: 6bd937d31bb9f5f46bf0f9839889c00f # [osx]
+  url: https://github.com/marbl/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.Linux-amd64.tar.xz # [linux]
+  md5: 63219165fc45b3dbbeb73ed920a23db5 # [linux]
+  patches:
+   - fewreads.patch
 
 build:
-  number: 2
-  # This should actually work, but it explicitly checks for gcc
-  skip: True  # [osx]
+  number: 0
+  skip: true  # [win and osx-arm64]
 
 requirements:
   build:
-    - '{{ compiler("c") }}'
-    - '{{ compiler("cxx") }}'
+   - make
+   - '{{ compiler("cxx") }}'
   host:
-    - gnuplot >=5.0.5
+    - gnuplot >=5.2
+    - xorg-libxfixes  # [linux]
   run:
     - perl
     - perl-filesys-df
-    - openjdk
-    - gnuplot >=5.0.5
-
+    - openjdk  >=8
+    - minimap2
+    - gnuplot >=5.2
 test:
+  requires:
+    - curl
   commands:
-    - canu --version
+     - canu --version
+     - sqStoreDumpFASTQ --version
 
 about:
   home: http://canu.readthedocs.org/
   license: GPLv2 and others
   license_file: README.licenses
   license_family: GPL
-  summary: Canu is a fork of the Celera Assembler designed for high-noise single-molecule
-    sequencing.
+  summary: Canu is a fork of the Celera Assembler designed for high-noise single-molecule sequencing.
   dev_url: https://github.com/marbl/canu
+
+extra:
+  container:
+    # libGL needed for gnuplot
+    extended-base: true
+  identifiers:
+    - usegalaxy-eu:canu
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

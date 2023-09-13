@@ -1,38 +1,46 @@
 {% set name = "meryl" %}
-{% set version = "2013" %}
+{% set version = "1.4" %}
+{% set sha256 = "2ca6df788cda26521c2b3672fa2d6562a6b3b57e95003cff31df596be289c92f" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
-about:
-  home: 'http://kmer.sourceforge.net/wiki/index.php/Getting_Started_with_Meryl'
-  license: "GPL"
-  summary: "meryl is a multi-threaded, multi-process, out-of-core k-mer counter"
-
 source:
-  url: http://downloads.sourceforge.net/project/kmer/meryl-r2013.tar.xz
-  md5: 445c243c5b9845acda971ec05254a025
+  url: https://github.com/marbl/{{name}}/releases/download/v{{version}}/{{name}}-{{version}}.tar.xz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Do-not-bail-out-for-Clang-on-macOS.patch
+    - 0002-macos-cmath.patch  # [osx]
 
 build:
   number: 1
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - python
-
-  run:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
 
 test:
   commands:
-    - existDB 2>&1 | grep existDB
-    - kmer-mask 2>&1 | grep kmer-mask
-    - mapMers 2>&1 | grep mapMers
-    - mapMers-depth 2>&1 | grep mapMers-depth
-    - meryl 2>&1 | grep meryl
-    - mt19937ar-test
-    - positionDB 2>&1 | grep positionDB
-    - simple 2>&1 | grep "no input"
-    - test-merStream
-    - test-seqCache
+    - 'meryl 2>&1 | grep "usage: meryl"'
+    - 'meryl-analyze 2>&1 | grep "usage: meryl-analyze"'
+    - 'meryl-import 2>&1 | grep "usage: meryl-import"'
+    - 'meryl-lookup 2>&1 | grep "usage: meryl-lookup"'
+    - 'meryl-simple 2>&1 | grep "usage: meryl-simple"'
+
+about:
+  home: https://github.com/marbl/meryl
+  dev_url: https://github.com/marbl/meryl
+  doc_url: https://github.com/marbl/meryl
+  summary: "meryl is a multi-threaded, multi-process, out-of-core k-mer counter"
+  license: 'Public Domain'
+
+extra:
+  identifiers:
+    - biotools:meryl
+    - usegalaxy-eu:meryl
+    - doi:10.1186/s13059-020-02134-9

@@ -7,7 +7,7 @@ export LIBRARY_PATH=${PREFIX}/lib
 rm -rf gatb-core
 git clone https://github.com/GATB/gatb-core.git
 cd gatb-core
-git checkout f25f57bb65db0870ec3c5b14af5e694c7941f567
+git checkout d053d0dffdfb9d31e45d42a3da49d2f71c8f87b3
 cd ..
 
 # avoid gatb example install

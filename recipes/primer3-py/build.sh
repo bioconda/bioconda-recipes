@@ -1,3 +1,4 @@
 #!/bin/bash
 
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+sed -i.bak '/^CC /d' primer3/src/libprimer3/Makefile
+python -m pip install . -vv

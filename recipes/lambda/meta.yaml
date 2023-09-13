@@ -1,33 +1,37 @@
-{% set version = "1.0.3" %}
+{% set version = "3.0.0" %}
 
 package:
   name: lambda
   version: {{ version }}
 
 source:
-  url: https://github.com/seqan/lambda/archive/lambda-v{{ version }}.tar.gz
-  sha256: 324f90dbc095c56792a77a002e64a98465a4853f74a141a1182e7a6f540545a2
+  url: https://github.com/seqan/lambda/releases/download/lambda-v{{ version }}/lambda3-{{ version }}-SourceWithSubmodules.tar.xz
+  sha256: 48b4b72007ffc86c4aad59634721e89a990fb42cb90f2cd17f52edc60d0c6482
 
 build:
   number: 0
-  skip: True # [osx]
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('lambda', max_pin='x') }}
 
 requirements:
   build:
-    - gxx_linux-64 # [linux]
+    - {{ compiler('cxx') }}
     - cmake >=3.0.0
-    - seqan-library
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
+    - make
   host:
-    - openmp
     - bzip2
+    - seqan-library
     - zlib
 
 test:
   commands:
-    - lambda --help
-
+    - lambda3 --help
 
 about:
   home: http://seqan.github.io/lambda/
   license: AGPLv3
+  license_file: LICENSE-AGPL3.rst
   summary: Lambda is a local aligner optimized for many query sequences and searches in protein space

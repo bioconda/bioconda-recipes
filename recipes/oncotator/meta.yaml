@@ -11,20 +11,23 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
-  noarch: python
+  number: 3
+  # the required natsort version was never built of OSX on python 2.7
+  skip: True  # [py3k or osx]
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
     - pip
-    - python <3
+    - python
     - numpy ==1.11.0
+    - cython ==0.24
     - pyvcf ==0.6.8
   run:
-    - python <3
+    - python
     - biopython ==1.66
-    - cython ==0.24
     - numpy ==1.11.0
     - pandas ==0.18.0
     - bcbio-gff ==0.6.2

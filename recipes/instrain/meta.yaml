@@ -1,0 +1,49 @@
+{% set name = "inStrain" %}
+{% set version = "1.8.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: b3d88c885658a9db393be7ce201e89454c3ea593128fdb673521640e5c1ecae4
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps"
+  run_exports:
+    - {{ pin_subpackage('instrain', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.4
+  run:
+    - python >=3.4
+    - numpy
+    - pandas >=0.25,!=1.1.3
+    - seaborn
+    - matplotlib-base
+    - biopython <=1.74
+    - tqdm
+    - pysam >=0.15
+    - networkx
+    - h5py
+    - psutil
+    - pytest
+    - lmfit
+
+test:
+  imports:
+    - inStrain
+  commands:
+    - inStrain profile --help
+    - inStrain compare --help
+
+about:
+  home: "https://github.com/MrOlm/inStrain"
+  license: MIT
+  license_family: MIT
+  summary: "Calculation of strain-level metrics"

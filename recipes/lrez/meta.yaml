@@ -1,0 +1,42 @@
+{% set version = "2.2.4" %}
+{% set sha256 = "9e3b93dd7bd0404d75b9b8875e19335cd52455994771751b30de16c3d6de9023" %}
+
+package:
+  name: lrez
+  version: {{ version }}
+
+source:
+  url: https://github.com/morispi/LRez/releases/download/v{{ version }}/LRez.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('lrez', max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+  host:
+    - zlib
+    - boost-cpp
+  run:
+    - boost-cpp
+
+test:
+  commands:
+    - LRez -h | grep "LRez"
+
+about:
+  home: https://github.com/morispi/LRez
+  license: AGPL-3.0-or-later AND MIT
+  license_file:
+    - LICENSE
+    - bamtools/LICENSE
+  summary: Standalone tool and library allowing to work with barcoded linked-reads
+
+extra:
+  recipe-maintainers:
+    - morispi

@@ -1,0 +1,41 @@
+{% set name = "ntedit" %}
+{% set version = "1.4.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+source:
+  url: https://github.com/bcgsc/ntEdit/archive/v{{ version }}.tar.gz
+  sha256: a584a04eb0d6373c4be68b626444600fea8a0bf97931b34fbc4da47c21d7fd27
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - llvm-openmp # [osx]
+    - automake
+    - autoconf
+    - perl
+
+  host:
+    - zlib
+  run:
+    - llvm-openmp # [osx]
+    - zlib
+    - ntHits ==0.0.1
+
+test:
+  commands:
+    - ntedit --help
+
+about:
+  home: https://github.com/bcgsc/ntEdit
+  license: GPL-3.0
+  license_file: LICENSE
+  summary: 'ultra fast, scalable genome assembly polishing and snv detection'

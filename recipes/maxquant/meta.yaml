@@ -1,33 +1,47 @@
-{% set version = "1.6.3.4" %}
-{% set sha256 = "c186d39fc6de2d703d4d702b0161998c455e1a21a440e67d8252016c458abe8e" %}
+{% set version = "2.0.3.0" %}
+{% set sha256 = "b296c6e1f04790cd3c8594a9b86f5d25346266413e0b363b6b4bdc7f75cc7a47" %}
 
 package:
   name: maxquant
   version: '{{ version }}'
 
 source:
-  url: http://share.gruenings.eu/MaxQuant_{{ version }}.zip
+  url: http://computproteomics.bmb.sdu.dk/share/MaxQuant_{{ version }}.zip
   sha256: '{{ sha256 }}'
 
 build:
-  number: 0
-  skip: True # [osx]
+  noarch: generic
+  number: 1
+
   script:
+
     - cp -r * $PREFIX
     - cp $RECIPE_DIR/maxquant $PREFIX/bin/maxquant
     - chmod +x $PREFIX/bin/maxquant
+    - chmod +x $PREFIX/bin/MaxQuantCmd.exe
+    - chmod +x $PREFIX/bin/MaxQuantGui.exe
+    - chmod +x $RECIPE_DIR/xmlcombine.py
+    - $RECIPE_DIR/xmlcombine.py $PREFIX/bin/conf/modifications.xml $RECIPE_DIR/mod_*.xml > $PREFIX/bin/conf/modifications_temp.xml
+    - mv $PREFIX/bin/conf/modifications_temp.xml $PREFIX/bin/conf/modifications.xml
 
 requirements:
+  host:
+    - python >=3.6
   run:
-    - mono >=5.0.0
+    - mono =5.14.0.177
 
 test:
   commands:
-    #- maxquant --version 2> foo.txt ; cat foo.txt
-    # It seem that the way conda is running the tests will yield to a crashing maxquant, its works locally if you do not use pipes or subshells
-    - which maxquant
+    - maxquant --version 2>&1 > /dev/null | grep {{ version }}
 
 about:
   home: http://www.coxdocs.org/doku.php?id=maxquant:start
   license: http://www.coxdocs.org/lib/exe/fetch.php?media=license_agreement.pdf
   summary: MaxQuant is a quantitative proteomics software package designed for analyzing large mass-spectrometric data sets. License restricted.
+
+extra:
+  identifiers:
+    - biotools:MaxQuant
+    - biotools:maxquant
+    - doi:10.1038/s41592-018-0018-y
+    - usegalaxy-eu:maxquant

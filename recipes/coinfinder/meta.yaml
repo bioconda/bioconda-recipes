@@ -1,0 +1,73 @@
+{% set name = "coinfinder" %}
+{% set version = "1.2.1" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/fwhelan/{{ name }}/archive/{{ version }}.tar.gz"
+  sha256: 98985910bff4d1845c8d8b11482205b77ef85bbc4f16a2144f5b540945d8548d
+
+build:
+  number: 1
+
+  skip: True  # [py2k]
+  rpaths:
+   - lib/R/lib/
+   - lib/
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
+    - boost-cpp
+    - python
+  run:
+    - boost-cpp
+    - python
+    #Depends
+    - r-base 3.6
+    #Imports
+    - r-caper >=1.0.1
+    - 'r-phytools >=0.6_99'
+    - r-getopt >=1.20.3
+    # version constraints not in quotes are to make the solver quicker for CI testing.
+    - r-igraph >=1.2.6
+    - 'r-dplyr >=1.0.2'
+    - r-cowplot >=1.1.1
+    - r-data.table >=1.14
+    - r-ggraph >=2.0.5
+    - r-future >=1.21
+    - r-flock >=0.7
+    #Bioconductor
+    - 'r-ape >=5.4.1'
+    - 'r-ggplot2 >=3.0.0'
+    - r-magrittr >=2.0.1
+    - r-purrr >=0.3.4
+    - r-rlang >=0.4.1
+    - r-rvcheck >=0.1.8
+    - 'r-tidyr >=1.1.2'
+    - 'r-tidytree >=0.2.6'
+    - 'bioconductor-ggtree >=2.0.0,<2.1.0'
+
+test:
+  commands:
+    - coinfinder -h || [[ "$?" == 1 ]]
+
+about:
+  home: "https://github.com/fwhelan/{{ name }}"
+  license: GPL-3.0-only
+  license_family: "GPL"
+  license_file: "license.txt"
+  summary: "A tool for the identification of coincident (associating and dissociating) genes in pangenomes."
+  doc_url: "https://github.com/fwhelan/{{ name }}"
+  dev_url: "https://github.com/fwhelan/{{ name }}"
+
+extra:
+  identifiers:
+    - doi:10.1101/859371

@@ -1,0 +1,23 @@
+diff --git a/bwakit/run-HLA b/bwakit/run-HLA
+index 4fee16f..c9313b0 100755
+--- a/bwakit/run-HLA
++++ b/bwakit/run-HLA
+@@ -17,4 +17,4 @@ for f in $1.HLA-*.fq; do
+ 	`dirname $0`/typeHLA.sh $ctg_opt $1 $gene
+ done
+ 
+-ls $1.HLA-*.gt | xargs -i echo grep ^GT {} \| head -1 | sh | sed "s,^GT,$1,"
++ls $1.HLA-*.gt | xargs -n1 grep -m1 ^GT | sed "s,^GT,$1,"
+diff --git a/bwakit/typeHLA.sh b/bwakit/typeHLA.sh
+index b73100d..4102d3b 100755
+--- a/bwakit/typeHLA.sh
++++ b/bwakit/typeHLA.sh
+@@ -34,7 +34,7 @@ else
+ fi
+ 
+ echo "** Selecting contigs overlapping target exons..." >&2
+-(ls $root/$preres/HLA-ALT-idx/*.fa.bwt | sed s,.bwt,, | xargs -i $root/bwa mem -t2 -B1 -O1 -E1 {} $pre.tmp.mag.gz 2>/dev/null) | grep -v ^@ | sort -k3,3 -k4,4n | gzip > $pre.tmp.ALT.sam.gz
++(ls $root/$preres/HLA-ALT-idx/*.fa.bwt | sed "s,.bwt, $pre.tmp.mag.gz," | xargs -n2 2>/dev/null $root/bwa mem -t2 -B1 -O1 -E1) | grep -v ^@ | sort -k3,3 -k4,4n | gzip > $pre.tmp.ALT.sam.gz
+ $root/k8 $root/typeHLA-selctg.js $2 $root/$preres/HLA-ALT-exons.bed $pre.tmp.ALT.sam.gz | $root/seqtk subseq $pre.tmp.mag.gz - | gzip -1 > $pre.tmp.fq.gz
+ 
+ echo "** Mapping exons to de novo contigs..." >&2

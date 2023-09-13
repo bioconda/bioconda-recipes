@@ -1,4 +1,4 @@
-{% set version = "5.2.1" %}
+{% set version = "23.0.0" %}
 
 package:
   name: augur
@@ -6,60 +6,60 @@ package:
 
 source:
   url: https://pypi.io/packages/source/n/nextstrain-augur/nextstrain-augur-{{ version }}.tar.gz
-  sha256: 8c0e55453410b3ba57c406dac39f47059696bdd2250b785d7e11033b8c72dc35
+  sha256: 50c6d603e91bce6205b7855a9e8ff2ad5cc3c0ab0318f1da89617a3ca7ed9b55
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  entry_points:
+    - augur = augur.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  run_exports:
+    - {{ pin_subpackage('augur', max_pin='x') }}
 
 requirements:
   host:
-    - python >=3.4
+    - python >=3.8
     - pip
-
   run:
-    - python >=3.4
-    - biopython >=1.73
-    - bcbio-gff 0.6.*,>=0.6.4
-    - boto 2.*,>2.38
-    - cvxopt 1.1.*,>=1.1.9
-    - ipdb >=0.10.1
-    - jsonschema 3.0.0a3
-    - matplotlib 2.*
-    - pandas 0.23.*,>=0.23.4
-    - treetime 0.5.*,>=0.5.2
-    - seaborn 0.9.*,>=0.9.0
-    - snakemake 5.*,>=5.1.5
-    - mafft
-    - raxml
+    - python >=3.8
+    - bcbio-gff >=0.7.0,<0.8
+    - biopython >=1.73,!=1.77,!=1.78
+    - cvxopt >=1.1.9,<2
+    - isodate >=0.6.0,<0.7
+    - jsonschema >=3.0.0,<4
+    - networkx >=2.5, <3
+    - numpy >=1.0.0,<2
+    - packaging >=19.2
+    - pandas >=1.0.0,<2
+    - pyfastx >=0.8.4,<0.9
+    - scipy >=1.0.0,<2
+    - treetime >=0.10.0,<0.11
+    - xopen[zstd] >=1.7.0,<2
+    
     - fasttree
     - iqtree
+    - mafft
+    - raxml
     - vcftools
 
 test:
   imports:
     - augur
-
   commands:
-    - augur -h
-    - augur parse -h
-    - augur filter -h
-    - augur mask -h
-    - augur align -h
-    - augur tree -h
-    - augur refine -h
-    - augur ancestral -h
-    - augur translate -h
-    - augur clades -h
-    - augur traits -h
-    - augur sequence-traits -h
-    - augur titers -h
-    - augur export -h
-    - augur validate -h
+    - augur --help
 
 about:
   home: https://github.com/nextstrain/augur
-  license: AGPL-3.0
+  license: AGPL-3.0-only
   summary: 'Process pathogen genome data for the Nextstrain platform'
   license_family: AGPL
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - huddlej
+    - tsibley
+    - victorlin
+    - corneliusroemer
+    - joverlee521

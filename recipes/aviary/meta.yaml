@@ -1,0 +1,50 @@
+{% set version = "0.7.2" %}
+{% set name = "aviary" %}
+{% set sha256 = "b42caf3f5a809952f21a23cd61cee953d9012587db0f941edcf498bb8add8145" %}
+
+package:
+  name: aviary
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage('aviary', max_pin="x") }}
+
+source:
+  url: https://github.com/rhysnewell/{{ name }}/releases/download/v{{ version }}/aviary-genome-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+    - snakemake >=6.0.5, <=7.17
+    - ruamel.yaml >=0.15.99 # needs to be explicit
+    - numpy
+    - pandas
+    - biopython
+    - mamba >=0.8.2
+    - pigz =2.6
+    - parallel
+    - bbmap
+
+test:
+  commands:
+    - {{ name }} --version | grep '{{ version }}'
+
+about:
+  home: https://github.com/rhysnewell/aviary/
+  doc_url: https://rhysnewell.github.io/aviary/
+  license: GPL3
+  license_file: LICENSE
+  summary: End-to-end metagenomics hybrid assembly and binning pipeline.
+  description: |
+    Aviary is an easy to use hybrid assembler and metagenomic pipeline
+
+    For more details see documentation: https://rhysnewell.github.io/aviary/.
+

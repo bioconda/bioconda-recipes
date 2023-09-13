@@ -22,7 +22,7 @@ pushd htslib-$VERSION
 autoheader
 (autoconf || autoconf)
 ./configure --disable-bz2 --disable-lzma --prefix=$PREFIX
-make
+make CC=$CC
 popd
 
 pushd bcftools-$VERSION

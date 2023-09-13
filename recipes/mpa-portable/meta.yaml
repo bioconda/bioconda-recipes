@@ -1,33 +1,41 @@
-{% set version = "1.4.1" %}
+{% set name = "MPA-Portable" %}
+{% set version = "2.0.0" %}
+{% set sha256 = "cbdfa586be33136c91dfc9f5c78694814a3874dcb54b9fba3d49d097060bd7b3" %}
 
 package:
-  name: mpa-portable
+  name: {{ name|lower }}
   version: {{ version }}
 
-build:
-  number: 2
-  skip: True  # [osx]
-
 source:
-  url: https://github.com/compomics/meta-proteome-analyzer/releases/download/v{{ version }}/mpa-portable-{{ version }}.zip
-  sha256: f4e093f6e19869a516ff2849b376af3ccbc261588a9d3b18bc753f9359973998
+  url: https://github.com/compomics/meta-proteome-analyzer/releases/download/portable-v{{ version }}/{{ name|lower }}-{{ version }}.zip
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 3
 
 requirements:
+  build:
+    - comet-ms ==2016013
+    - xtandem ==15.12.15.2
   run:
-    - openjdk >=6
+    - comet-ms ==2016013
+    - fontconfig
+    - fonts-conda-ecosystem
+    - openjdk
     - python
+    - xtandem ==15.12.15.2 
 
 test:
   commands:
-    - mpa-portable de.mpa.cli.CmdLineInterface -Djava.awt.headless=true -Xmx2048m 2>&1 | grep MPA
+    - mpa-portable de.mpa.cli.CmdLineInterface --exec_dir=/tmp/exec_dir -Djava.awt.headless=true -Xmx2048m 2>&1 | grep MPA
 
 about:
   home: https://github.com/compomics/meta-proteome-analyzer
   license: Apache License, Version 2.0
-  summary: |
-    MPA Portable is a light-weight and stand-alone software for the
-    identification of proteins and in-depth analysis of metaproteomics.
+  license_family: APACHE
+  summary: "MPA Portable is a light-weight and stand-alone software for the identification of proteins and in-depth analysis of metaproteomics (and also proteomics) data."
 
 extra:
   notes: |
-    mpa-protable is Java program that comes with a custom wrapper shell script.
+    mpa-protable is Java program that comes with a custom wrapper Python script.

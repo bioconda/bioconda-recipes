@@ -1,4 +1,5 @@
-{% set version = "19.07.0" %}
+{% set version = "23.04.3" %}
+{% set sha256 = "258714c0772db3cab567267e8441c5b72102381f6bd58fc6957c2972235be7e0" %}
 
 package:
   name: nextflow
@@ -7,26 +8,32 @@ package:
 build:
   number: 0
   noarch: generic
+  run_exports:
+    - {{ pin_subpackage('nextflow', max_pin="x.x") }}
 
 source:
-  url: https://www.nextflow.io/releases/v{{ version }}/nextflow
-  sha256: e6e7ba4770cd6230bd5410a6fd8c071d6c6dde7a7765880ecabc820b84d38fe5
+  url: https://github.com/nextflow-io/nextflow/releases/download/v{{ version }}/nextflow
+  sha256: {{ sha256 }}
 
 requirements:
   host:
-    - openjdk >=8,<=11
+    - openjdk >=11,<=20
     - coreutils
     - curl
   run:
-    - openjdk >=8,<=11
+    - openjdk >=11,<=20
     - coreutils
     - curl
 
 test:
   commands:
-    - nextflow -v
+    - nextflow help
 
 about:
   home: "https://github.com/nextflow-io/nextflow"
   license: "Apache-2.0"
   summary: "A DSL for data-driven computational pipelines http://nextflow.io"
+
+extra:
+  recipe-maintainers:
+    - mjsteinbaugh

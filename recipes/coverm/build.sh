@@ -5,5 +5,5 @@ C_INCLUDE_PATH=$PREFIX/include \
 LIBRARY_PATH=$PREFIX/lib \
 cargo build --release
 
-# Install the binary
-cp target/release/coverm $PREFIX/bin
+# Install the binaries
+cargo install --root $PREFIX

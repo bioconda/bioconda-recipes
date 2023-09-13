@@ -1,43 +1,46 @@
 {% set name = "mlst" %}
-{% set version = "2.16.4" %}
-{% set sha256 = "e9a3de71450410f4ee6a19f0aef6da55a0a0dd1def8d90753fb230432306e662" %}
+{% set version = "2.23.0" %}
+{% set sha256 = "35bdbde309ba25293c3cce417d82e79594b9f78365133062923dc3d629bd8846" %}
+{% set user = "tseemann" %}
 
 package:
   name: '{{ name }}'
   version: '{{ version }}'
 
 source:
-  url: https://github.com/tseemann/{{ name }}/archive/v{{ version }}.tar.gz
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: '{{ sha256 }}'
 
 build:
-  number: 0
+  number: 1
   noarch: generic
 
 requirements:
-  host:
-    - blast >=2.7.1
-    - perl-bioperl >=1.7.2
-    - perl-moo
-    - perl-list-moreutils
-    - perl-json
-    - zlib
   run:
-    - blast >=2.7.1
+    - any2fasta
+    - blast >=2.9.0
+    - curl
+    - parallel
+    - perl
     - perl-bioperl >=1.7.2
-    - perl-moo
-    - perl-list-moreutils
+    - perl-file-which
     - perl-json
+    - perl-list-moreutils
+    - perl-lwp-protocol-https
+    - perl-moo
     - zlib
 
 test:
   commands:
     - mlst --version
     - mlst --check
+    - mlst --help
     - mlst --list 2>&1 | grep leptospira > /dev/null
+    - mlst-download_pub_mlst -h
+    - mlst-show_seqs -h
 
 about:
-  home: https://github.com/tseemann/{{ name }}
+  home: https://github.com/{{ user }}/{{ name }}
   license: GPL-2.0
   license_family: GPL
   license_file: LICENSE

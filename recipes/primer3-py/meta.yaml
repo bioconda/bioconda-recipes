@@ -1,34 +1,44 @@
 {% set name = "primer3-py" %}
-{% set version = "0.5.4" %}
+{% set version = "2.0.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/93/06/5c3a894ce9694d571c41fed35551d03880a32abee325aecbbd23fec1b858/{{name|lower}}-{{version}}.tar.gz
-  md5: 6b231a06f8f7f2d2998ccb780adfae9d
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/primer3-py-{{ version }}.tar.gz
+  sha256: 3c1b217cd72b1d9bd0fce4aee45d7f5e3f7b1e6c6889cbdc5ea97bdc72e009ef
 
 build:
-  skip: False  # [not py27]
-  number: 3
+  number: 0
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
   host:
-    - python
-    - setuptools
+    - python >=3.8
     - cython
-
+    - setuptools >=65.6.3
+    - pip
   run:
-    - python
+    - python >=3.8
 
 test:
-  # Python imports
   imports:
     - primer3
+  commands:
+    - pip check
+  requires:
+    - pip
 
 about:
-  home: https://libnano.github.io/primer3-py/
-  license: GPLv2
-  summary: 'Primer3-py is a Python-abstracted API for the popular Primer3 library.'
+  home: https://github.com/libnano/primer3-py
+  summary: Python bindings for Primer3
+  license: GPL-2.0-only
+  license_family: GPL
+  license_file: LICENSE
 
+extra:
+  recipe-maintainers:
+    - bgruening

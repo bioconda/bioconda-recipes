@@ -1,0 +1,45 @@
+{% set name = "Ratatosk" %}
+{% set version = "0.9.0" %}
+{% set sha256 = "d9e9575516aaebc8aa84f9bc0daab74e16d73501d57df15d5d0f600cebda3d63" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+- url: https://github.com/DecodeGenetics/Ratatosk/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - cmakelists.patch
+- url: https://github.com/pmelsted/bifrost/archive/refs/tags/v1.2.1.tar.gz
+  sha256: fe93080ef3ea71ff009fc206b5c17dd40fbfd18293000621a83d7d947dfedf1a
+  folder: Bifrost
+
+build:
+  number: 0
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake
+  host:
+    - zlib
+
+test:
+  commands:
+    - 'Ratatosk --help'
+    - 'Ratatosk correct --help'
+    - 'Ratatosk index --help'
+
+about:
+  home: https://github.com/DecodeGenetics/Ratatosk
+  license: BSD-2-Clause
+  license_file: LICENSE
+  summary: "Hybrid error correction of long reads using colored de Bruijn graphs"
+
+extra:
+  identifiers:
+    - biotools:ratatosk
+    - doi:10.1186/s13059-020-02244-4

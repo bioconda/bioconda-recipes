@@ -1,34 +1,32 @@
+{% set version = '0.3.1' %}
+
 package:
   name: lumpy-sv
-  version: 0.3.0
+  version: {{ version }}
 
 source:
-  url: https://github.com/arq5x/lumpy-sv/archive/0.3.0.tar.gz
-  sha256: 8be9ce5010833021280d601e5bcb6baab3bc8be059e3524c1f4f664dee4c8e6d
+  url: https://github.com/arq5x/lumpy-sv/archive/v{{ version }}.tar.gz
+  sha256: 6a75dffafd238417011416c62d4351f64ea71bd018b5a7660383566f2cbb7c5d
   patches:
     - patch
 
 build:
-  number: 2
-  skip: True  # [osx]
+  number: 3
+  noarch: generic
 
 requirements:
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - cmake
-  host:
-    - htslib
   run:
+    - lumpy-sv-minimal {{ version }}
     - htslib
     - python 2.7.*
     - samtools
     - gawk
     - pysam
     - numpy
-    - util-linux #contains hexdump
-    - sambamba #lumpy-express dependency
-    - samblaster #lumpy-express dependency
+    - util-linux  #contains hexdump
+    - sambamba  #lumpy-express dependency
+    - samblaster  #lumpy-express dependency
+    - bamkit  #lumpy-express dependency
 
 test:
   commands:
@@ -36,6 +34,7 @@ test:
     - 'lumpy_filter 2>&1 | grep -q lumpy_filter\:\ usage'
     - 'lumpyexpress 2>&1 | grep -q lumpyexpress'
     - extractSplitReads_BwaMem --help
+    - pairend_distro.py --help
 
 about:
   home: https://github.com/arq5x/lumpy-sv

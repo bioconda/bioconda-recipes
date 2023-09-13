@@ -1,0 +1,51 @@
+{% set name = "checkQC" %}
+{% set version = "3.8.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 05581afe99b37d3c1ee5a383b92fd9381e7a20caa54fe43f7e9f6b5a325a9058
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - checkqc = checkQC.app:start
+    - checkqc-ws = checkQC.web_app:start
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - click
+    - illumina-interop >=1.2.3
+    - python >=3.6
+    - pyyaml >=3.12
+    - sample-sheet >=0.13.0
+    - tornado
+    - xmltodict
+
+test:
+  imports:
+    - checkQC
+    - checkQC.handlers
+    - checkQC.parsers
+  commands:
+    - checkqc --help
+    - checkqc-ws --help
+
+about:
+  home: "https://www.github.com/Molmed/checkQC"
+  license: GPLv3
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "A simple program to parse Illumina NGS data and check it for quality criteria."
+
+extra:
+  recipe-maintainers:
+    - cbrueffer

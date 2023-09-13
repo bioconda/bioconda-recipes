@@ -1,18 +1,22 @@
-{% set version = "11.5" %}
+{% set name = "control-freec" %}
+{% set version = "11.6b" %}
+{% set sha256 = "be3927307f632b7f70513dc9d5851685e03d25a1b26b52e1f996f92a89ab3c6d" %}
 
 package:
-  name: control-freec
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
   url: https://github.com/BoevaLab/FREEC/archive/v{{ version }}.tar.gz
-  sha256: 30f24c6db628eb5ce5a5f8ed8e83763915554edb02d940fee2607e0ad7e705a7
+  sha256: {{ sha256 }}
   patches:
     - makeGraph_Chromosome.R.patch
     - perl_shebang.patch
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage('control-freec', max_pin="x") }}
 
 requirements:
   build:
@@ -22,6 +26,7 @@ requirements:
     - perl
     - r-base
     - bioconductor-rtracklayer
+    - samtools
 
 test:
   commands:
@@ -33,6 +38,7 @@ test:
     - which makeGraph_Chromosome.R
     - vcf2snpFreec.pl
     - which assess_significance.R
+    - which makeGraph2.0.R
 
 about:
   home: https://github.com/BoevaLab/FREEC

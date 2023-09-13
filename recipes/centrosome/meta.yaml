@@ -1,5 +1,5 @@
 {% set name = "centrosome" %}
-{% set version = "1.1.6" %}
+{% set version = "1.2.2" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,14 +7,18 @@ package:
 
 source:
   url: https://github.com/CellProfiler/centrosome/archive/v{{version}}.zip
-  sha256: 628a05dbf1b3f3916a82229b4f13a6454f1c22cebfcb213cd42cec6212ce84ca
+  sha256: bb69cd2d0f9df7976710be72c2269368588da36724537657f7d88b6d827456bf
 
 build:
   number: 0
-  script: "python -m pip install --no-deps --ignore-installed ."
+  skip: True  # [py<30]
+  script: CFLAGS="$CFLAGS -Wno-error=int-conversion" python -m pip install --no-deps --ignore-installed . -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
     - python
@@ -25,7 +29,7 @@ requirements:
   run:
     - python
     - deprecation
-    - matplotlib
+    - matplotlib-base
     - numpy
     - pillow
     - scikit-image

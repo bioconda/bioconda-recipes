@@ -2,7 +2,7 @@
 
 mkdir -p $PREFIX/bin
 
-make 
+make CC=$CC
 
 chmod +x NCRF
 

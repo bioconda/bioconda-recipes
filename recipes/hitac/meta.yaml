@@ -1,0 +1,56 @@
+{% set name = "hitac" %}
+{% set version = "2.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 4a31d820f59ba829e2cefa07cde975dc685df8d35bfe965735d7c515b0f74f08
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+  run:
+    - python >=3.7
+    - hiclass ==4.1.7
+    - numpy >=1.22.3
+    - pandas >=1.4.3
+    - scikit-bio >=0.5
+    - scikit-learn >=0.24
+
+test:
+  commands:
+    - hitac-fit --help
+    - hitac-classify --help
+    - hitac-fit-filter --help
+    - hitac-filter --help
+  imports:
+    - hitac
+
+about:
+  home: https://gitlab.com/dacs-hpi/hitac
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: 'A hierarchical taxonomic classifier for fungal ITS sequences'
+  description: |
+    HiTaC is a software for hierarchical taxonomic classification
+    for fungal ITS sequences. It is pure python code compatible with
+    Python 3.8+ and requires hiclass, numpy, pandas, scikit-bio and
+    scikit-learn.
+
+extra:
+  recipe-maintainers:
+    - mirand863
+  identifiers:
+    - biotools:hitac

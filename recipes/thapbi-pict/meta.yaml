@@ -1,5 +1,5 @@
 {% set name = "thapbi-pict" %}
-{% set version = "0.3.9" %}
+{% set version = "1.0.3" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name | replace("-", "_") }}/{{ name | replace("-", "_") }}-{{ version }}.tar.gz
-  sha256: cc9b6dcc89fa86ae94d879ab75711f6e1ea7ec7b3d1a2719338a0a81e3b62ebe
+  sha256: b27551dd862ed090f110296f0d8a05f8e3ea2443bb3c81403b9353ec3ae17b1b
 
 build:
   noarch: python
@@ -15,34 +15,34 @@ build:
   entry_points:
     - thapbi_pict = thapbi_pict.__main__:main
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.5
+    - python >=3.7
   run:
     # Python
+    - biom-format >=2.1.14
     - biopython >=1.73
-    - matplotlib
-    - networkx
+    - cutadapt >=4.0
+    - matplotlib-base >=3.7
+    - networkx >=2.4,!=2.8.3,!=2.8.4
     - pydot
-    - python >=3.5
-    - python-levenshtein
+    - python >=3.7
+    - rapidfuzz >=2.4.0
     - sqlalchemy
     - xlsxwriter
     # Command line
     - blast
-    - cutadapt
-    - flash
+    - flash >=1.2.11
     - graphviz
-    - hmmer
-    - swarm
-    - trimmomatic
+    - vsearch
 
 test:
   imports:
     - thapbi_pict
-    - thapbi_pict.hmm
   commands:
     - thapbi_pict --help
     - thapbi_pict -v
@@ -53,6 +53,14 @@ about:
   license_family: MIT
   license_file: LICENSE.rst
   summary: "THAPBI Phytophthora ITS1 Classifier Tool (PICT)."
+  description: |
+    THAPBI Phytophthora ITS1 Classifier Tool (PICT) an ITS1-based
+    diagnostic/profiling tool from the UK BBSRC funded Tree Health
+    and Plant Biosecurity Initiative (THAPBI) Phyto-Threats project,
+    focused on identifying Phytophthora species present in Illumina
+    sequenced environmental samples.
+  doc_url: https://thapbi-pict.readthedocs.io/en/latest/
+  dev_url: https://github.com/peterjc/thapbi-pict
 
 extra:
   recipe-maintainers:

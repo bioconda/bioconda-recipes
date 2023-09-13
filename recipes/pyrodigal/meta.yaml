@@ -1,0 +1,50 @@
+{% set name = "pyrodigal" %}
+{% set version = "2.3.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 6aaaab9cfdd70052ab12fd55c2c29216b6f438f5ae50a7dd53ad70faf5f47e60
+
+build:
+  number: 1
+  skip: True  # [py < 36]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --use-pep517 -vvv"
+  entry_points:
+    - pyrodigal = pyrodigal.cli:main
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - cython
+    - setuptools
+  run:
+    - python
+    - archspec >=0.2.0
+
+test:
+  imports:
+    - {{ name }}
+  commands:
+    - pyrodigal --help
+    - python -m unittest -vv {{ name }}.tests
+
+about:
+  home: https://github.com/althonos/pyrodigal
+  license: GPL-3
+  license_family: GPL
+  license_file: COPYING
+  summary: Python bindings to Prodigal, an ORF finder for microbial sequences.
+  doc_url: https://pyrodigal.readthedocs.org/
+
+extra:
+  recipe-maintainers:
+    - althonos
+  identifiers:
+    - doi:10.21105/joss.04296  # JOSS paper

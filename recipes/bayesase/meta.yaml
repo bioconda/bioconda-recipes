@@ -1,0 +1,94 @@
+{% set name = "BayesASE" %}
+{% set version = "21.1.13.1" %}
+{% set blake2_sha256 = "b83432860faec37e3b4465735a19b779adb5b07a48b6f227d818dff6ea5ae5d5" %}
+                        
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://files.pythonhosted.org/packages/{{ blake2_sha256[0:2] }}/{{ blake2_sha256[2:4] }}/{{ blake2_sha256[4:] }}/{{ name }}-{{ version }}.tar.gz
+  sha256: "72a0bb133b7f3ecd9985325e5386f367abc9527588caabd2a0be00d1db98b896"
+
+build:
+  noarch: python
+  number: 0
+  script: python -m pip install --no-deps --ignore-installed .
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - python >=3.6
+    - biopython>=1.70
+    - numpy >=1.18.1
+    - pandas >=1.0.3
+    - importlib_resources
+    - r-rstan
+    - r-here
+    - r-bh
+
+test:
+  commands:
+    - bwa_split_sam_seonly_2output.py -h
+    - calculate_priors_ase_count_tables.py -h
+    - check_aln_design_file.py -h
+    - check_comparate_design_file.py -h
+    - check_lost_reads.py -h
+    - check_samcomp_lost_reads.py -h
+    - check_sam_present.py -h
+    - combine_count_tables.py -h
+    - gen_headers_after_merge_priors_one_comparate.py -h
+    - merge_comparates_generate_bayesian_headers.py -h
+    - merge_priors_to_comparate.py -h
+    - nbmodel_stan2.py -h
+    - sam_compare_w_feature.py -h
+    - summarize_sam_compare_cnts_table_1cond.py -h
+
+about:
+  home: https://github.com/McIntyre-Lab/BayesASE
+  license: MIT License
+  license_family: MIT
+  summary: Bayesian analysis of allele specific expression
+  description: 'Allelic imbalance (AI) indicates the presence of functional
+  variation in cis regulatory regions. Detecting cis regulatory differences
+  using AI is widespread, yet there is no formal statistical methodology that
+  tests whether AI differs between conditions. The testing for AI involves
+  several complex bioinformatics steps. BayesASE is a complete bioinformatics
+  pipeline that incorporates state-of-the-art error reduction techniques and a
+  flexible Bayesian approach to estimating AI and formally comparing levels of
+  AI between conditions (https://www.g3journal.org/content/8/2/447.long). The
+  modular structure of BayeASE has been packaged as a python package
+  (https://pypi.org/project/BayesASE/), bioconda package
+  (https://anaconda.org/bioconda/bayesase), Galaxy toolkit, made available in
+  Nextflow and as a collection of scripts for the SLURM workload manager in
+  the BayesASE project repository on
+  github(https://github.com/McIntyre-Lab/BayesASE).
+
+  The model included with the package can formally test AI within one
+  condition for three or more replicates and can statistically compare
+  differences in AI across conditions. This includes reciprocal crosses,
+  test-crosses, and comparisons of GxE for the same genotype in replicated
+  experiments. As gene expression affects power for detection of AI, and as
+  expression may vary between conditions, the model explicitly takes coverage
+  into account. The proposed model has low type I and II error under several
+  scenarios, and is robust to large differences in coverage between
+  conditions. The model included with the package reports estimates of AI for
+  each condition, and the corresponding Bayesian evidence as well as a formal
+  statistical evaluation of AI between conditions. The package is completely
+  modular and the bioinformatics steps needed to map reads in a genotype
+  specific manner can be used as input for other statistical models of AI and
+  other methods for read counting can be used and the model described in
+  Novelo et al. 2018 deployed. This model represents an update to the R code
+  provided with the publication as the MCMC algorithm is now implemented in
+  RSTAN (Stan Development Team (2020). "RStan: the R interface to Stan." R
+  package (http://mc-stan.org/) and bias is allowed to vary between conditions
+  and more than 2 conditions can be compared. This is a very general
+  implementation.'
+  doc_url: ''
+  dev_url: ''
+
+extra:
+  recipe-maintainers: 'om@rc.ufl.edu'

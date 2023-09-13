@@ -1,18 +1,21 @@
-{% set name = "medaka" %}
-{% set version = "0.8.1" %}
+{% set name = "Medaka" %}
+{% set version = "1.8.0" %}
+{% set sha256 = "bc6c10058d3cad662b8bccdc0af4f1e17424cf117299dce8e44ec8c87c4472ec" %}
+# Bot PRs - Always review requirements.txt for new release
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: dfd3780311e8aeee20ea276a0b5633ac80ffb6f23e97ec2dd68f248a8bd8a715
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/medaka-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - patch
 
 build:
-  # keras is 2.7 or 3.6 only. We need py3: 3.6 is the only possibility
-  skip: True # [not py36]
-  number: 1
+  number: 0
+  skip: True  # [py < 38]
   entry_points:
     - medaka = medaka.medaka:main
     - medaka_counts = medaka.medaka_counts:main
@@ -22,37 +25,39 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
-
+    - coreutils
   host:
-    - cffi
+    - python
     - pip
-    - python
-    - htslib ==1.9
+    - cffi ==1.15.0
+    - htslib
+    - libcurl
+    - openssl
     - bzip2
     - xz
     - zlib
-    - libdeflate
-
   run:
-    - biopython
-    - cffi
-    - h5py ==2.7.1
-    - intervaltree >=3.0.0
-    - keras ==2.2.4
-    - numpy ==1.16.1
-    - pysam
     - python
-    - pyyaml ==5.1
-    - tensorflow >=1.12.2
-    - whatshap ==0.18
-    - samtools ==1.9
-    - bcftools ==1.9
-    - minimap2 ==2.17
-    - htslib ==1.9
-    - bzip2
-    - xz
-    - zlib
-    - libdeflate
+    - cffi ==1.15.0
+    - grpcio
+    - h5py
+    - intervaltree
+    - tensorflow >=2.8.0,<2.9.dev0
+    - numpy >=1.21.6
+    - nomkl  # [osx]
+    - mappy
+    - ont-fast5-api
+    - parasail-python
+    - pyspoa >=0.0.3
+    - pysam >=0.16.0.1
+    - python-edlib
+    - requests
+    - samtools >=1.17
+    - bcftools >=1.17
+    - minimap2 >=2.26
+    - htslib
+    - libcurl
+    - openssl
 
 test:
   imports:
@@ -65,13 +70,15 @@ test:
 
 about:
   home: https://github.com/nanoporetech/medaka
-  license: Mozilla Public License 2.0
+  summary: Neural network sequence error correction.
+  license: MPL-2.0
   license_family: OTHER
   license_file: LICENSE.md
-  summary: Neural network sequence error correction.
-  doc_url: https://nanoporetech.github.io/medaka/index.html
   dev_url: https://github.com/nanoporetech/medaka
 
 extra:
   recipe-maintainers:
     - cjw85
+  identifiers:
+    - usegalaxy-eu:medaka_consensus
+    - biotools:medaka

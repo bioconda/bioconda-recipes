@@ -3,7 +3,7 @@
 mkdir -p $PREFIX/bin
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${PREFIX} -Dracon_build_wrapper=ON -DCMAKE_CXX_FLAGS="-mno-avx2 " ..
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${PREFIX} -Dracon_build_wrapper=ON -Dspoa_optimize_for_portability=ON ..
 make
 chmod +w bin/racon_wrapper
 make install

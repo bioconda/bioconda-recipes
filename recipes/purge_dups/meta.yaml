@@ -1,0 +1,60 @@
+{% set name = "purge_dups" %}
+{% set version = "1.2.6" %}
+{% set sha256 = "75b20df834d28410858ccd4e2d65b6c70849f3cbe5fc05959f38bfc2d041c704" %}
+
+package: 
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 1
+
+source:
+  url: https://github.com/dfguan/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - makefile.patch
+    - scripts.patches
+
+requirements:
+  build: 
+    - {{ compiler('c') }}
+    - make
+  host:
+    - zlib
+    - minimap2
+    - python >=3
+    - purge-dups-runner
+    - kmc
+    - augustus
+    - busco
+    - matplotlib-base
+    - blast
+  run:
+    - minimap2
+    - python >=3
+    - purge-dups-runner
+    - kmc
+    - augustus
+    - busco
+    - matplotlib-base
+    - blast
+
+test:
+  commands: 
+    - purge_dups -h 2>&1 | grep Usage
+    - split_fa -h 2>&1 | grep Usage
+    - pbcstat -h 2>&1 | grep Usage
+    - ngscstat -h 2>&1 | grep Usage
+    - calcuts -h 2>&1 | grep Usage
+    - get_seqs -h 2>&1 | grep Usage
+    - hist_plot.py -h
+    - pd_config.py -h
+    - run_purge_dups.py -h
+
+about:
+  home: https://github.com/dfguan/purge_dups
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: purge_dups is a package used to purge haplotigs and overlaps in an assembly based on read depth.

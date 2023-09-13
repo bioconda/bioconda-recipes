@@ -1,6 +1,10 @@
+#!/bin/bash
+
+#sed -i.bak "s/set(Boost_USE_STATIC_LIBS   ON)/set(Boost_USE_STATIC_LIBS   OFF)/g" src/CMakeLists.txt
 mkdir build
 cd build
-cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX
+export CXXFLAGS=-ldeflate
+cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DBOOST_ROOT=$PREFIX
 
 # Fix the version
 make check_git_repository

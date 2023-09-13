@@ -1,0 +1,63 @@
+--- src/bddata.cpp
++++ src/bddata.cpp
+@@ -119,7 +119,7 @@
+ 
+          firstPos += g_SpacerBeforeAfter; // ??? ask Kai
+          secondPos += g_SpacerBeforeAfter;
+-         if (firstChrName == secondChrName && secondChrName != "" && abs(firstPos - secondPos) < 500) {
++         if (firstChrName == secondChrName && secondChrName != "" && abs((int)firstPos - (int)secondPos) < 500) {
+             continue;
+          }
+          if ( firstChrName!="" && secondChrName!="") {
+@@ -180,16 +180,16 @@
+ bool RecipicalOverlap(RP_READ & first, RP_READ & second)
+ {
+    int distance = 1000;
+-   if (abs(first.PosA - first.PosA1) > distance) {
++   if (abs((int)first.PosA - (int)first.PosA1) > distance) {
+       return false;
+    }
+-   if (abs(first.PosB - first.PosB1) > distance) {
++   if (abs((int)first.PosB - (int)first.PosB1) > distance) {
+       return false;
+    }
+-   if (abs(second.PosA - second.PosA1) > distance) {
++   if (abs((int)second.PosA - (int)second.PosA1) > distance) {
+       return false;
+    }
+-   if (abs(second.PosB - second.PosB1) > distance) {
++   if (abs((int)second.PosB - (int)second.PosB1) > distance) {
+       return false;
+    }
+    float cutoff = 0.9;
+@@ -424,7 +424,7 @@
+          Reads_RP[first].PosB = Reads_RP[first].PosB + Reads_RP[first].ReadLength;
+          Reads_RP[first].PosB1 = Reads_RP[first].PosB1 + Reads_RP[first].ReadLength;
+       }
+-      if (Reads_RP[first].ChrNameA == Reads_RP[first].ChrNameB && abs(Reads_RP[first].PosA - Reads_RP[first].PosB) < 500) {
++      if (Reads_RP[first].ChrNameA == Reads_RP[first].ChrNameB && abs((int)Reads_RP[first].PosA - (int)Reads_RP[first].PosB) < 500) {
+          Reads_RP[first].Visited = true;
+       }
+       //std::cout << "Final: " << Reads_RP[first].ChrNameA << " " << Reads_RP[first].DA << " " << Reads_RP[first].PosA << "\t" << Reads_RP[first].ChrNameB << " " << Reads_RP[first].DB << " " << Reads_RP[first].PosB << std::endl;
+--- src/pindel.cpp
++++ src/pindel.cpp
+@@ -1554,7 +1554,7 @@
+             continue;
+          }
+          if (All[index_a].FirstChrName == All[index_b].FirstChrName && All[index_a].SecondChrName == All[index_b].SecondChrName) {
+-            if (abs(All[index_a].FirstPos - All[index_b].FirstPos) < 10 && abs(All[index_a].SecondPos - All[index_b].SecondPos) < 10 && All[index_a].NumSupport + All[index_b].NumSupport >= cutoff) {
++            if (abs((int)All[index_a].FirstPos - (int)All[index_b].FirstPos) < 10 && abs((int)All[index_a].SecondPos - (int)All[index_b].SecondPos) < 10 && All[index_a].NumSupport + All[index_b].NumSupport >= cutoff) {
+ 
+                INToutputfile << "chr\t" << All[index_a].FirstChrName << "\tpos\t" << unsigned((All[index_a].FirstPos + All[index_b].FirstPos) / 2) << "\tchr\t" << All[index_a].SecondChrName << "\tpos\t"
+                              << unsigned((All[index_a].SecondPos + All[index_b].SecondPos) / 2) << "\tseq\t" << All[index_a].InsertedSequence << "\tsupport\t" << All[index_a].NumSupport + All[index_b].NumSupport << "\tINFOR\t"
+--- src/genotyping.cpp
++++ src/genotyping.cpp
+@@ -124,7 +124,7 @@
+    // step 4 for each variant, do genotyping
+    for (unsigned SV_index =0; SV_index < AllSV4Genotyping.size(); SV_index++) {
+       // step 4.1 if type == DEL, GenotypeDel
+-      if (AllSV4Genotyping[SV_index].ChrA == AllSV4Genotyping[SV_index].ChrB && abs(AllSV4Genotyping[SV_index].PosA - AllSV4Genotyping[SV_index].PosB) < SV_Genotype_Cutoff) {
++      if (AllSV4Genotyping[SV_index].ChrA == AllSV4Genotyping[SV_index].ChrB && abs((int)AllSV4Genotyping[SV_index].PosA - (int)AllSV4Genotyping[SV_index].PosB) < SV_Genotype_Cutoff) {
+          std::cout << "Skip One SV " << OneSV.Type << " " << OneSV.ChrA << " " << OneSV.PosA << " "
+                    << OneSV.CI_A << " " << OneSV.ChrB << " " << OneSV.PosB << " "
+                    << OneSV.CI_B << std::endl;

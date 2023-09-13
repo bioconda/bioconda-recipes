@@ -1,0 +1,47 @@
+--- clipper/Makefile
++++ clipper/Makefile
+@@ -66,7 +66,7 @@
+ 	cp $< $@
+ 
+ %: %.cpp fastq-lib.cpp fastq-lib.h sparsehash
+-	$(CC) $(CFLAGS) $< fastq-lib.cpp -o $@
++	$(CXX) $(CXXFLAGS) $< fastq-lib.cpp -o $@
+ 
+ sparsehash: sparsehash-2.0.2
+ 	cd sparsehash-2.0.2; ./configure; make
+@@ -76,29 +76,29 @@
+ # why the libbam.a doesn't work?  not sure... *.o works
+ sam-stats: sam-stats.cpp samtools/libbam.a samtools/bam.h fastq-lib.h sparsehash
+ ifeq ($(OS),Windows_NT)
+-	$(CC) $(CFLAGS) samtools/*.o -lz -lpthread -lws2_32 fastq-lib.cpp $< -o $@
++	$(CXX) $(CXXFLAGS) $(LDFLAGS) samtools/*.o -lz -lpthread -lws2_32 fastq-lib.cpp $< -o $@
+ else
+-	$(CC) $(CFLAGS) samtools/*.o -lz -lpthread fastq-lib.cpp $< -o $@
++	$(CXX) $(CXXFLAGS) $(LDFLAGS) samtools/*.o -lz -lpthread fastq-lib.cpp $< -o $@
+ endif
+ 
+ samtools/libbam.a: samtools/*.c samtools/*.h
+ 	cd samtools && make libbam.a
+ 
+ ea-bcl2fastq: ea-bcl2fastq.cpp
+-	$(CC) $(CFLAGS) $< -lz -o $@
++	$(CXX) $(CXXFLAGS) $(LDFLAGS) $< -lz -o $@
+ 
+ varcall: varcall.cpp fastq-lib.cpp tidx/tidx-lib.cpp sparsehash
+ ifeq ($(OS),Windows_NT)
+ 	echo varcall: not supported yet
+ else
+-	$(CC) $(CFLAGS) fastq-lib.cpp tidx/tidx-lib.cpp -o $@ $< -lgsl -lgslcblas
++	$(CXX) $(CXXFLAGS) $(LDFLAGS) fastq-lib.cpp tidx/tidx-lib.cpp -o $@ $< -lgsl -lgslcblas
+ endif
+ 
+ fastq-stats: fastq-stats.cpp fastq-lib.cpp gcModel.cpp sparsehash
+-	$(CC) $(CFLAGS) fastq-lib.cpp gcModel.cpp -o $@ $<
++	$(CXX) $(CXXFLAGS) $(LDFLAGS) fastq-lib.cpp gcModel.cpp -o $@ $<
+ 
+ bam-filter:  bam-filter.cpp 
+-	$(CC) $(CFLAGS) fastq-lib.cpp -o $@  $< -lbamtools 
++	$(CXX) $(CXXFLAGS) $(LDFLAGS) fastq-lib.cpp -o $@  $< -lbamtools 
+ 
+ clean:
+ 	rm -f *.o $(BIN)

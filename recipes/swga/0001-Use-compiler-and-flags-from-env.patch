@@ -1,0 +1,35 @@
+--- ext/cliquer/Makefile
++++ ext/cliquer/Makefile
+@@ -4,3 +4,3 @@
+ ## Compiler:
+-CC=gcc
++CC?=gcc
+ #CC=cc
+@@ -10,3 +10,3 @@
+ # GCC:  (also -march=pentium etc, for machine-dependent optimizing)
+-CFLAGS=-Wall -O3 -fomit-frame-pointer -funroll-loops
++CFLAGS+=-Wall -O3 -fomit-frame-pointer -funroll-loops
+ 
+--- ext/dsk/makefile
++++ ext/dsk/makefile
+@@ -1,3 +1,4 @@
+ SVNREV = -DSVN_REV=1.6906
+-CC=g++
++CC?=g++
++CFLAGS=$(CXXFLAGS)
+ PROGNAME=dsk
+@@ -20,3 +21,3 @@
+ ifeq ($(omp),1)
+- CFLAGS=-O4 -fopenmp -DOMP=1
++ CFLAGS+=-O4 -fopenmp -DOMP=1
+ endif
+--- setup.py
++++ setup.py
+@@ -60,5 +60,5 @@
+         # Defaults (e.g. for Linux)
+-        gcc = find_executable('g++')
++        gcc = os.environ.get('CXX') or find_executable('g++')
+         omp = 1
+-        osx = 0
++        osx = 1 if 'Darwin' in platform.system() else 0
+         # Check if we're on a Mac and adjust compiler accordingly

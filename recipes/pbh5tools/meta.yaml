@@ -1,8 +1,7 @@
-{% set name = "pbh5tools" %}
 {% set version = "0.8.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: pbh5tools
   version: {{ version }}
 
 source:
@@ -10,21 +9,19 @@ source:
   md5: ef2781ff8adb9a613c23c8d945ac7217
 
 build:
-  skip: True # [not py27]
-  number: 2
+  number: 6
+  skip: True # [py>=30]
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
+    - pip
     - python
-    - pbcore >=0.8.0
-    - numpy >=1.6.0
-    - h5py >=1.3.0
-    - setuptools
-
   run:
     - python
+    - setuptools
     - pbcore >=0.8.0
     - numpy >=1.6.0
     - h5py >=1.3.0
@@ -40,3 +37,8 @@ about:
   license: BSD-3-Clause
   license_file: LICENSES.txt
   summary: 'A swiss-army knife for interrogating PacBio® HDF5 files (cmp.h5, bas.h5).'
+
+extra:
+  skip-lints:
+    # Uses pkg_resources.
+    - uses_setuptools

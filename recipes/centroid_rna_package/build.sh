@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 
-BINARY_HOME=$PREFIX/bin
-
-cd $SRC_DIR
+mkdir -p ${PREFIX}/bin
 
 for i in centroid_homfold centroid_fold centroid_alifold
 do
-    cp $i $BINARY_HOME;
-    chmod +x $i;
+    cp $i ${PREFIX}/bin
 done
+chmod +x ${PREFIX}/bin/*

@@ -8,8 +8,8 @@ cp -R * $outdir/
 
 #Download JAR file for RealignSAMFile
 cd $outdir/
-wget https://github.com/apeltzer/CircularMapper/releases/download/v1.93.4/realign-1.93.4.jar --no-check-certificate 
-sha256sum realign-1.93.4.jar | grep 1fe5ec912b012dc0dcd13f280834bcc0b3f8a62a5518b6eed3b126ea05293670
+wget https://github.com/apeltzer/CircularMapper/releases/download/v1.93.5/realign-1.93.5.jar --no-check-certificate 
+sha256sum realign-1.93.5.jar | grep 0b43fddeb3ef9b34f9bff64075be46ee59905f183664007ae437225f9f69f762
 
 #Install CircularGenerator
 cp $RECIPE_DIR/circulargenerator.py $outdir/circulargenerator 

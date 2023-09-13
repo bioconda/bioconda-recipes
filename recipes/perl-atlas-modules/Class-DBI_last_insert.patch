@@ -1,0 +1,27 @@
+--- DBI.pm	2007-10-04 22:27:07.000000000 +0100
++++ DBI.pm	2021-04-09 17:56:13.000000000 +0100
+@@ -597,6 +597,7 @@
+ 
+ sub _auto_increment_value {
+ 	my $self = shift;
++	my $sth  = shift;  # Added for MySQL 5.7
+ 	my $dbh  = $self->db_Main;
+ 
+ 	# Try to do this in a standard method. Fall back to MySQL/SQLite
+@@ -607,6 +608,7 @@
+ 	my $id = $dbh->last_insert_id(undef, undef, $self->table, undef)    # std
+ 		|| $dbh->{mysql_insertid}                                         # mysql
+ 		|| eval { $dbh->func('last_insert_rowid') }
++		|| $sth->{'mysql_insertid'}                                      # Added for MySQL 5.7
+ 		or $self->_croak("Can't get last insert id");
+ 	return $id;
+ }
+@@ -623,7 +625,7 @@
+ 		$self->_bind_param($sth, \@columns);
+ 		$sth->execute(values %$data);
+ 		my @primary_columns = $self->primary_columns;
+-		$data->{ $primary_columns[0] } = $self->_auto_increment_value
++		$data->{ $primary_columns[0] } = $self->_auto_increment_value($sth)  # Added $sth for _auto_increment_value
+ 			if @primary_columns == 1
+ 			&& !defined $data->{ $primary_columns[0] };
+ 	};

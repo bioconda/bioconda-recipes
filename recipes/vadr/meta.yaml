@@ -1,0 +1,57 @@
+{% set name = "vadr" %}
+{% set version = "1.5.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/ncbi/{{ name }}/archive/refs/tags/{{ name }}-{{ version }}.tar.gz
+    sha256: 716525b20c4abbe854f3d387c6549ef151773dded7d31b5f62b92bed94b12362
+    patches:
+      - fix_vannotate_path.patch
+      - fix_local_test_path.patch
+  - url: https://github.com/wrpearson/fasta36/archive/refs/tags/v36.3.8h_04-May-2020.tar.gz
+    sha256: d13ec06a040e4d77bf6913af44b705d3ecc921131da018e71d24daf47d3664d3 
+    folder: fasta
+
+build:
+  number: 2
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+    - wget
+  host:
+    - perl
+    - sequip >=0.08
+  run:
+    - blast >=2.11.0
+    - easel >=0.48
+    - hmmer >=3.3.2
+    - infernal >=1.1.4
+    - minimap2
+    - perl
+    - perl-bio-easel >=0.16
+    - perl-lwp-simple
+    - perl-lwp-protocol-https >=6.07
+    - perl-net-ssleay >=1.88
+    - sequip >=0.08
+    - wget
+
+test:
+  commands:
+    - v-annotate.pl -h
+    - v-build.pl -h
+    - installed-vadr-models.sh
+
+about:
+  home: https://github.com/ncbi/vadr
+  license: Public Domain
+  license_file: LICENSE
+  summary: Viral Annotation DefineR - classification and annotation of viral sequences based on RefSeq annotation
+
+extra:
+  recipe-maintainers:
+    - rpetit3

@@ -1,5 +1,4 @@
-{% set version = "2.10.0" %}
-{% set sha256 = "a6cc88e8d12f536dc96d5f60698d0ef4cf2f63e31d3d12d23da39b1de39563e1" %}
+{% set version = "3.0.7" %}
 
 package:
   name: ncbi-vdb
@@ -7,26 +6,30 @@ package:
 
 build:
   number: 0
+  skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage('ncbi-vdb', max_pin='x') }}
 
 source:
   url: https://github.com/ncbi/ncbi-vdb/archive/{{ version }}.tar.gz
-  sha256: {{ sha256 }}
-  patches:
-    - gcc.patch
-    - ar.patch
-    - exe.patch
-    - konfigure.patch
+  sha256: 357f9648e824ae860eb8433c04099d748b804d76bdcfd05e41857eee098869ee
+  folder: ncbi-vdb
 
-requirements:
+requirements:    
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-  host:
+    - bison
+    - cmake
+    - flex
+    - make
+  run:
+    - ca-certificates
+    - curl
+    - ossuuid
     - perl
-    - ncbi-ngs-sdk
-      #- bison
-      #  run:
-      #- ncbi-ngs-sdk
+    - perl-xml-libxml
+    - perl-uri
 
 about:
   home: https://github.com/ncbi/ncbi-vdb

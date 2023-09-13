@@ -1,62 +1,59 @@
 {% set name = "bohra" %}
-{% set version = "1.0.20" %}
+{% set version = "2.3.2" %}
+{% set sha256 = "fcdcf59186493bf6f1272d717c7f0ed65fcf453b6461621d555eb5ad19558969" %}
 
 package:
-  name: "{{ name|lower }}"
+  name: "{{ name }}"
   version: "{{ version }}"
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "f589094a141e3fb8453c32cc3fe4ff5602f292dbb7e94ab08cb8b3e956f6d5af"
+  sha256: "{{ sha256 }}"
 
 build:
   noarch: python
-  number: 1
+  number: 0
   entry_points:
     - bohra=bohra.bohra:main
-  script: "sed -i.bak '35d;34d;28d' setup.py; {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.8
     - pip
   run:
-    - biopython >=1.70
+    - python >=3.8
+    - biopython 1.81
+    - nextflow 22.10.6
+    - pandas 1.0.5
+    - numpy 1.23.1
     - jinja2
-    - numpy
     - packaging
-    - pandas >=0.23.0
     - psutil
     - pytest-runner
     - pytest
-    - python >=3.6
     - sh
-    - snakemake >=5.4.0
-    - svgwrite
-    - snippy >=4.4.3
-    - shovill >=1.0.4
-    - roary
-    - prokka
-    - kraken2
-    - abricate
-    - mlst
-    - iqtree
-    - seqtk
-    - snp-dists >=0.6.3
-
+    - any2fasta
+    - csvtk
+    - perl-list-moreutils
+    - perl-text-csv
+    - perl-svg
+    
 test:
   imports:
     - bohra
   commands:
+    - bohra --version | grep -F '{{ version }}'
     - bohra --help
 
 about:
-  home: "https://github.com/kristyhoran/bohra"
+  home: "https://github.com/MDU-PHL/bohra"
   license: "GNU General Public v3 (GPLv3)"
   license_family: "GPL3"
   license_file: "LICENSE.txt"
-  summary: "A bioinformatics pipeline for analysing short read Illumina data microbiological public health."
+  summary: "Pipeline for analysing Illumina data for microbiological public health."
 
 extra:
   recipe-maintainers:
     - kristyhoran
+    - tseemann
