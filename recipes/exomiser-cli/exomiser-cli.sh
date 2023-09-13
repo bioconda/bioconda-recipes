@@ -29,7 +29,7 @@ fi
 # http://java.dzone.com/articles/better-java-shell-script
 default_jvm_mem_opts="-Xms512m -Xmx1g"
 jvm_mem_opts=""
-jvm_prop_opts=""
+jvm_prop_opts="-Djava.library.path=${PREFIX}/lib"
 pass_args=""
 for arg in "$@"; do
     case $arg in
