@@ -10,27 +10,29 @@ source:
   sha256: 6aaaab9cfdd70052ab12fd55c2c29216b6f438f5ae50a7dd53ad70faf5f47e60
 
 build:
-  number: 0
-  skip: True  #[py2k]
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  number: 1
+  skip: True  # [py < 36]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --use-pep517 -vvv"
+  entry_points:
+    - pyrodigal = pyrodigal.cli:main
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - python >=3
+    - python
     - pip
     - cython
     - setuptools
   run:
-    - python >=3
-    - setuptools
+    - python
     - archspec >=0.2.0
 
 test:
   imports:
     - {{ name }}
   commands:
+    - pyrodigal --help
     - python -m unittest -vv {{ name }}.tests
 
 about:
