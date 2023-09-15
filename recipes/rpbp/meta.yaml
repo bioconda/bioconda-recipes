@@ -1,17 +1,19 @@
+{% set name = "rpbp" %}
 {% set version = "3.0.3" %}
+{% set sha256 = "1b4a80db38e551b9ba79c0146f6cfd039cd85153f73f739bfb4e957e76e07146" %}
 
 package:
-  name: rpbp
-  version: '{{version}}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/dieterich-lab/rp-bp/archive/{{version}}.tar.gz
-  sha256: beb2ddce17c63c8fab721834c621d89b43c6e8c90f6a51cc88e681c86e517da2
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/rpbp-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv && compile-rpbp-models"
   number: 0
-  skip: True  # [py27 or py36]
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv && compile-rpbp-models
   entry_points:
     - extract-orf-coordinates = rpbp.reference_preprocessing.extract_orf_coordinates:main
     - label-orfs = rpbp.reference_preprocessing.label_orfs:main
@@ -43,41 +45,24 @@ build:
     - collect-read-length-orf-profiles = rpbp.analysis.profile_construction.collect_read_length_orf_profiles:main
 
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
-    - python
-    - cmdstanpy >=1.0.0
+    - python >=3.7,<3.11
     - pip
+    - wheel
   run:
-    - python
+    - python >=3.7,<3.11
+    - pbiotools >=4.0.2
+    - appdirs
     - biopython
-    - bowtie2
-    - cmdstanpy >=1.0.0
+    - cmdstanpy
     - dash
     - dash-bio
     - dash-bootstrap-components
-    - fastqc
-    - flexbar
-    - joblib
-    - numpy
-    - pandas
-    - pbiotools >=4.0.1
-    - pyyaml
-    - samtools
-    - scipy
-    - star
     - statsmodels
-    - pysam >0.9.1
 
 test:
   imports:
     - rpbp
-    - rpbp.analysis
-    - rpbp.orf_profile_construction
-    - rpbp.reference_preprocessing
-    - rpbp.ribo_utils
-    - rpbp.translation_prediction
   commands:
     - extract-orf-coordinates --help
     - label-orfs --help
@@ -110,7 +95,13 @@ test:
 
 about:
   home: https://github.com/dieterich-lab/rp-bp
+  summary: 'Rp-Bp: Ribosome Profiling with Bayesian Predictions'
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: Ribosome profiling with Bayesian predictions (Rp-Bp)
+  dev_url: https://github.com/dieterich-lab/rp-bp
+  doc_url: https://rp-bp.readthedocs.io/en/latest/
+
+extra:
+  identifiers:
+    - doi:10.1093/nar/gkw1350
