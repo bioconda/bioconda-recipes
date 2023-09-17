@@ -3,12 +3,13 @@
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
+export CXX_FOR_BUILD=${CXX}
 
 export CFLAGS="-DH5_USE_110_API -I${PREFIX}/include ${LDFLAGS}"
 export CXXFLAGS="-I${PREFIX}/include ${LDFLAGS}"
 
 echo "compiling sra-tools"
-if [[ $OSTYPE == "darwin"* ]]; then
+if [[ ${OSTYPE} == "darwin"* ]]; then
     export CFLAGS="${CFLAGS} -DTARGET_OS_OSX"
     export CXXFLAGS="${CXXFLAGS} -DTARGET_OS_OSX -D_LIBCPP_DISABLE_AVAILABILITY"
 fi

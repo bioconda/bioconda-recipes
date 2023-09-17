@@ -1,5 +1,5 @@
 {% set name = "ena-upload-cli" %}
-{% set version = "0.6.2" %}
+{% set version = "0.6.3" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 6913873dd641a9618cc61f273ffcab69b5935557e7bf9332b0c91ba6345a5171
+  sha256: 199bff6a60d7c7d81da88545e909b87e487911edc15e54f90ce20b424091b957
 
 build:
   number: 0
@@ -15,21 +15,25 @@ build:
   entry_points:
     - ena-upload-cli = ena_upload.ena_upload:main
   script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage('ena-upload-cli', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.5
   run:
-    - genshi
-    - lxml
-    - pandas >=1.2.0
-    - pyyaml
-    - requests
-    - openpyxl
-    - python
+    - genshi ==0.7.*
+    - lxml >=4.9.3,<=5.0.0
+    - pandas >=2.0.3,<=3.0.0
+    - pyyaml ==5.*
+    - requests >=2.31.0,<=3.0.0
+    - openpyxl >=3.1.2,<=4.0.0
+    - python >=3.5
 
 test:
+  imports:
+    - ena_upload
   commands:
     - ena-upload-cli --help
 
