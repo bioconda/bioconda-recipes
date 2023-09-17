@@ -3,6 +3,7 @@
 # install dependencies not found in conda channels
 install_deps() {
     deps=(
+        "Data::Leaf::Walker"
         "JSON::Validator"
         "File::ShareDir::ProjectDistDir"
         "Moo"
