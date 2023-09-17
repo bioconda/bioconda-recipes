@@ -4,7 +4,7 @@
 install_deps() {
     deps=(
         "Data::Leaf::Walker"
-        "JSON::Validator"
+        # "JSON::Validator"
         "File::ShareDir::ProjectDistDir"
         "Moo"
         "Path::Tiny"
