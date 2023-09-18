@@ -1,23 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Ugly hack since cmake things that tmglib.so should be present, even though
-# that is used for testing lapack and is not present in the final build
-# 
-# Just chop the offending chunks out of the cmake targets...
-
-lapack_targets=$(find $PREFIX/lib/cmake -name lapack-targets.cmake)
-lapack_targets_release=$(find $PREFIX/lib/cmake -name lapack-targets-release.cmake)
-
-sed -i.bak -e 's/foreach(_expectedTarget blas lapack tmglib)/foreach(_expectedTarget blas lapack)/' ${lapack_targets}
-sed -i.bak -e '/add_library(tmglib SHARED IMPORTED)/,+15d' ${lapack_targets}
-sed -i.bak -e '/set_property(TARGET tmglib APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)/,+5d' ${lapack_targets_release}
+# cmake configuration for pinned version of gromacs has aberrant static library
+# listed where only shared objects are actually installed. this creates an impossible
+# to resolve dependency in the cmake-derived makefile. as this is an old gromacs
+# version, and updating gromacs version for this package requires substantial interface
+# changes, instead just ad hoc edit the target.
+find ${PREFIX}/share/cmake/gromacs -type f -name "*" -exec sed -i.bak 's/libfftw3f.a/libfftw3f.so/' {} \;
 
 mkdir build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} ..
 make
-make install
-
-mv ${PREFIX}/chap/bin/* ${PREFIX}/bin
-
-
+mkdir -p ${PREFIX}/bin
+cp chap ${PREFIX}/bin

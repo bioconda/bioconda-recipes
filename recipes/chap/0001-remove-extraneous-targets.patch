@@ -1,0 +1,96 @@
+From 66b6502979111ff4d4994d7989b05a3fae64a36c Mon Sep 17 00:00:00 2001
+From: Lightning Auriga <lightning.auriga@gmail.com>
+Date: Sun, 17 Sep 2023 22:29:02 -0400
+Subject: [PATCH 1/3] remove extraneous targets
+
+---
+ CMakeLists.txt | 43 ++-----------------------------------------
+ 1 file changed, 2 insertions(+), 41 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d680ff0..76c0720 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -50,7 +50,6 @@ SET(CMAKE_SHARED_LINKER_FLAGS_MAINTAINER "${CMAKE_SHARED_LINKER_FLAGS_DEBUG}")
+ # set path to custom cmake modules:
+ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
+ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/FindGROMACS")
+-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/FindLAPACKE")
+ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/GetGitRevisionDescription")
+ 
+ 
+@@ -62,12 +61,6 @@ add_library(boost INTERFACE IMPORTED)
+ set_property(TARGET boost PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR})
+ 
+ 
+-# Find Linear Algebra Libraries
+-#------------------------------------------------------------------------------
+-
+-# find LAPACK:
+-find_package(LAPACKE REQUIRED)
+-
+ 
+ # Find Gromacs Library
+ #------------------------------------------------------------------------------
+@@ -89,35 +82,6 @@ include_directories(${GROMACS_INCLUDE_DIRS})
+ add_definitions(${GROMACS_DEFINITIONS})
+ 
+ 
+-# Build Google Test Library as an External Project
+-#------------------------------------------------------------------------------
+-
+-# enable external projects:
+-include(ExternalProject)
+-
+-# Google test as external project:
+-ExternalProject_Add(
+-    googletest
+-    URL https://github.com/google/googletest/archive/release-1.7.0.zip
+-    # Disable install step
+-    INSTALL_COMMAND ""
+-)
+-
+-# get source and binary location of Google test libraries:
+-ExternalProject_Get_Property(googletest source_dir binary_dir)
+-
+-# set include and library path variables:
+-set(GTEST_INCLUDE_DIR ${source_dir}/include)
+-set(GTEST_LIBRARY_PATH ${binary_dir}/${CMAKE_FIND_LIBRARY_PREFIXES}gtest.a)
+-set(GTEST_LIBRARY gtest)
+-include_directories(${GTEST_INCLUDE_DIR})
+-
+-# make library an install target, define properties and dependencies:
+-add_library(${GTEST_LIBRARY} UNKNOWN IMPORTED)
+-set_property(TARGET ${GTEST_LIBRARY} PROPERTY IMPORTED_LOCATION
+-                ${GTEST_LIBRARY_PATH} )
+-add_dependencies(${GTEST_LIBRARY} googletest)
+-
+ 
+ # Prepare Version Header and Config Header
+ #------------------------------------------------------------------------------
+@@ -154,10 +118,10 @@ list(APPEND SRC_FILES "${CMAKE_CURRENT_BINARY_DIR}/config/config.cpp")
+ # create executable chap from main.cpp:
+ add_executable(chap ${SRC_FILES})
+ target_include_directories(chap PUBLIC ${CHAP_SOURCE_DIR}/include)
+-target_link_libraries(chap ${LAPACKE_LIBRARIES})
++target_link_libraries(chap -llapacke -llapack -lblas -lcblas)
+ target_link_libraries(chap ${BOOST_LIBRARIES})
+ target_link_libraries(chap ${GROMACS_LIBRARIES})
+-target_link_libraries(chap ${GTEST_LIBRARY})
++target_link_libraries(chap -lgtest_main -lgtest)
+ 
+ 
+ # Compile Tests
+@@ -167,9 +131,6 @@ target_link_libraries(chap ${GTEST_LIBRARY})
+ # (this does not work if called from CMakeLists.txt in test subdirectory)
+ include(CTest)
+ 
+-# add test subdirectory:S
+-add_subdirectory(test)
+-
+ 
+ # Install Destinations
+ #------------------------------------------------------------------------------
+-- 
+2.41.0
+
