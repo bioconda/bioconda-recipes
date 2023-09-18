@@ -1,0 +1,60 @@
+{% set name = "magus-msa" %}
+{% set version = "0.1.2" %}
+{% set sha256 = "9ee1156921dba68b55d6d737aab75e68f6f3b29d76ce31a9a30cb3dcb69b2eb8" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  #  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://github.com/vlasmirnov/MAGUS/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: python -m pip install --no-deps --ignore-installed .
+  run_exports:
+    - {{ pin_subpackage('magus-msa', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - setuptools
+    - mafft
+    - mcl
+    - fasttree
+    - clustalo
+    - hmmer
+  run:
+    - python >=3.6
+    - dendropy >=4.5.2
+    - mafft
+    - mcl
+    - fasttree
+    - clustalo
+    - hmmer
+
+test:
+  imports:
+    - magus_align
+    - magus_align.decompose
+    - magus_align.merge
+    - magus_align.merge.graph_build
+    - magus_align.merge.graph_cluster
+    - magus_align.merge.graph_trace
+    - magus_helpers
+    - magus_tasks
+    - magus_tools
+  commands:
+    - magus --help
+
+about:
+  home: "https://github.com/vlasmirnov/MAGUS"
+  license: MIT
+  summary: "Multiple Sequence Alignment using Graph Clustering"
+  doc_url: "https://github.com/vlasmirnov/MAGUS/blob/master/README.md"
+  dev_url: "https://github.com/vlasmirnov/MAGUS"
+
