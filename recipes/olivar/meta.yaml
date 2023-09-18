@@ -1,23 +1,24 @@
-{% set version = "1.1.1" %}
+{% set version = "1.1.2" %}
 
 package:
   name: olivar
   version: '{{version}}'
 
 source:
-  url: 'https://gitlab.com/treangenlab/olivar/-/archive/v{{version}}/olivar-v{{version}}.tar.gz'
-  sha256: 0f0384116e82ce451116071216387bb548a19b189707cf5ba2afd7573a699330
+  url: 'https://github.com/treangenlab/Olivar/archive/refs/tags/v{{version}}.tar.gz'
+  sha256: b5f74674ffc38cbd62ee7a0eff113e96ff84a2ea5221289d0a0f24f07f7a362d
 
 build:
-  number: 0
+  number: 1
   noarch: python
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv && mkdir -p ${PREFIX}/bin && cp olivar ${PREFIX}/bin
+  run_exports:
+    - {{ pin_subpackage('olivar', max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.8
     - pip
-
   run:
     - python >=3.8
     - blast >=2.12.0
@@ -36,5 +37,6 @@ test:
 about:
   home: https://gitlab.com/treangenlab/olivar
   license: MIT
+  license_family: MIT
   license_file: LICENSE.txt
   summary: 'Olivar PCR tiling design'
