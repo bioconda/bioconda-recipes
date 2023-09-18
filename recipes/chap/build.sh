@@ -5,7 +5,7 @@
 # to resolve dependency in the cmake-derived makefile. as this is an old gromacs
 # version, and updating gromacs version for this package requires substantial interface
 # changes, instead just ad hoc edit the target.
-find ${PREFIX}/share/cmake/gromacs -type f -name "*" -exec sed -i.bak 's/libfftw3f.a/libfftw3f.so/' {} \;
+find ${PREFIX}/share/cmake/gromacs -type f -name "*" -exec sed -i 's/libfftw3f.a/libfftw3f.so/' {} \;
 
 mkdir build
 cd build
