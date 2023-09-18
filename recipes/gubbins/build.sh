@@ -8,4 +8,4 @@ autoreconf -i
 make
 make install
 cd python
-$PYTHON -m pip install . --record record.txt
+$PYTHON -m pip install . --report record.txt
