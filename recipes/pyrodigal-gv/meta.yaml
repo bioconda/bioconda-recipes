@@ -1,0 +1,48 @@
+{% set name = "pyrodigal-gv" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pyrodigal_gv-{{ version }}.tar.gz
+  sha256: e2503707fa5e68fa1a9d941440d6aaa8b794bd76c917ed6d6914b13b948400ea
+
+build:
+  skip: true  # [py2k]
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python
+    - setuptools >=46.4
+    - wheel >=0.23
+    - packaging >=19.1
+    - pycparser
+    - pip
+  run:
+    - python
+    - pyrodigal >=3.0,<4.dev0
+    - importlib-resources  # [py<39]
+
+test:
+  imports:
+    - pyrodigal_gv
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/althonos/pyrodigal-gv
+  summary: A Pyrodigal extension to predict genes in giant viruses and viruses with alternative genetic code.
+  license: GPL-3.0
+  license_file: COPYING
+
+extra:
+  recipe-maintainers:
+    - apcamargo
