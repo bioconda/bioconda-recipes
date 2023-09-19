@@ -3,11 +3,8 @@
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
-export CPATH=${PREFIX}/include
-export CPP_INCLUDE_PATH=${PREFIX}/include
 
-make -j $CPU_COUNT
-
+make
 
 outdir=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 mkdir -p ${outdir}
