@@ -5,7 +5,7 @@ export CFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
-make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"  CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+cd src && make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -fPIE "  CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS} -fPIE" && cd ..
 
-cp vamos $PREFIX/bin
+cp src/vamos $PREFIX/bin
 
