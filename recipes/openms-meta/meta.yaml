@@ -1,17 +1,22 @@
 {% set name = "OpenMS" %}
-{% set version = "2.9.1" %}
+{% set version = "3.0.0" %}
 package:
   name: {{ name|lower  }}-meta
   version: {{ version  }}
 
+{% if 'dev' in version %}
+source:
+  git_url: https://github.com/OpenMS/OpenMS.git
+  git_rev: develop
+  git_depth: 1 # (Defaults to -1/not shallow)
+{% else %}
 source:
   url: https://abibuilder.cs.uni-tuebingen.de/archive/openms/OpenMSInstaller/release/{{ version }}/OpenMS-{{ version }}-src.tar.gz
-  sha256: 2d186f35fe42573a19283605ccfb491ca6da585880fa3725a013975df26bc008
-  
-# osx currently skipped because of https://github.com/bioconda/bioconda-recipes/issues/41526
+  md5: 2b7ee0f4d8f42eb3c17384347df2dba4  
+{% endif %}
+
 build:
-  number: 3
-  skip: True  # [osx]
+  number: 1
 
 # Try this when building with GUI
 #extra:
@@ -162,6 +167,10 @@ about:
 extra:
   skip-lints:
     - build_number_needs_reset  # our linter has some issues with multi-package recipes as it seems
+    {% if 'dev' in version %}
+    - uses_vcs_url
+    - missing_hash
+    {% endif %}
   identifiers:
     - biotools:openms
     - usegalaxy-eu:openms_fileconverter

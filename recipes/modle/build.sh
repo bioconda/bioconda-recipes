@@ -17,15 +17,17 @@ export CONAN_HOME="$scratch/conan"
 # shellcheck disable=SC2064
 trap "rm -rf '$scratch'" EXIT
 
+# Conan doesn't detect compiler name and version when using cc/c++
+TMPBIN="$scratch/bin"
+mkdir "$TMPBIN"
+
 declare -a CMAKE_PLATFORM_FLAGS
 if [[ ${HOST} =~ .*darwin.* ]]; then
   export MACOSX_DEPLOYMENT_TARGET=10.15  # Required to use std::filesystem
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
+  conan_profile='clang'
 else
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
-  # Conan doesn't detect compiler name and version when using cc/c++
-  TMPBIN="$scratch/bin"
-  mkdir "$TMPBIN"
 
   ln -sf "$CC" "$TMPBIN/gcc"
   ln -sf "$CXX" "$TMPBIN/g++"
@@ -33,15 +35,18 @@ else
   export PATH="$TMPBIN:$PATH"
   export CC="$TMPBIN/gcc"
   export CXX="$TMPBIN/g++"
+  conan_profile='gcc'
 fi
 
-conan profile detect
+# Remember to update these profiles when bioconda's compiler toolchains are updated
+mkdir -p "$CONAN_HOME/profiles/"
+ln -s "${RECIPE_DIR}/conan_profiles/$conan_profile" "$CONAN_HOME/profiles/$conan_profile"
 
-# Build everything from source to avoid ABI issues due to old GLIBC/GLIBCXX
 conan install conanfile.txt \
        --build="*" \
-       -s build_type=Release \
-       -s compiler.cppstd=17 \
+       --build="b2/*" \
+       -pr:b "$conan_profile" \
+       -pr:h "$conan_profile" \
        --output-folder=build/
 
 # Add bioconda suffix to MoDLE version
