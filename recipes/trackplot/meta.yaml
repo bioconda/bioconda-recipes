@@ -1,7 +1,6 @@
 {% set name = "trackplot" %}
 {% set version = "0.3.6" %}
 
-
 package:
   name: trackplot
   version: {{ version }}
@@ -13,16 +12,19 @@ source:
 build:
   noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - trackplot = trackplot.cli:main
   run_exports:
     - {{ pin_subpackage(name, max_pin='x.x') }}
 
 requirements:
   host:
-    - python
-    - poetry >=1.4.2
+    - python >=3.8
+    - pip
+    - poetry-core
   run:
-    - wheel
+    - python >=3.8
     - adjusttext >=0.7.3
     - cairocffi >=1.4.0
     - click
@@ -44,7 +46,6 @@ requirements:
 test:
   imports:
     - trackplot
-
   commands:
     - trackplot --help
 
@@ -55,6 +56,7 @@ about:
   license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE
+  doc_url: https://trackplot.readthedocs.io/en/latest/
 
 extra:
   recipe-maintainers:
