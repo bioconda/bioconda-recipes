@@ -28,3 +28,6 @@ autoheader
 make -j"${CPU_COUNT}"
 make install
 make clean
+
+# Fix perl shebang
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/gmap_build
