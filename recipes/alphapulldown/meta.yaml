@@ -1,0 +1,66 @@
+{% set name = "AlphaPulldown" %}
+{% set version = "0.30.7" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/alphapulldown-{{ version }}.tar.gz
+  sha256: e089e4b3b238fe2874c7e4cc38368a6784f3e4664ad11b0b3d9088d1cdfa7c96
+
+build:
+  skip: true  # [py>=39 or py2k]
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("alphapulldown", max_pin="x.x") }}
+    
+requirements:
+  host:
+    - python
+    - setuptools >=42
+    - poetry-core
+    - pip
+  run:
+    - python
+    - absl-py >=0.13.0
+    - dm-haiku ==0.0.9
+    - dm-tree ==0.1.6
+    - h5py ==3.1.0
+    - matplotlib-base ==3.3.3
+    - ml-collections ==0.1.0
+    - numpy ==1.21.6
+    - pandas ==1.3.4
+    - tensorflow ==2.9.0
+    - importlib-resources ==5.8.0
+    - biopython ==1.78
+    - nbformat ==5.4.0
+    - py3dmol ==2.0.1
+    - ipython
+    - tqdm
+    - appdirs
+    - jupyterlab
+    - ipywidgets
+
+test:
+  imports:
+    - af2plots
+    - alphafold
+    - alphapulldown
+    - analysis_pipeline
+    - colabfold
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/KosinskiLab/AlphaPulldown
+  summary: Pipeline allows massive screening using alphafold
+  license: GPL-3.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - gallardoalba
