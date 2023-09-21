@@ -4,6 +4,7 @@ SCRIPT_DIR=$(realpath scripts)
 
 mkdir -p "${PREFIX}/bin"
 
+sed -i.bak "s|usage; exit 1|usage; exit 0|g" earlGrey
 sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" earlGrey
 sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" scripts/rcMergeRepeat*
 sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" scripts/headSwap.sh
