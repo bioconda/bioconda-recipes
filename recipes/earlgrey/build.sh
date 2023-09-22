@@ -7,12 +7,13 @@ mkdir -p ${PACKAGE_HOME}
 cp -r * ${PACKAGE_HOME}/
 
 
-# Add bash shebang line to earlGrey and make sure help doesn't exit 1
-sed -i.bak "1s|^|#!/bin/bash\n|" ${PACKAGE_HOME}/earlGrey
-sed -i.bak "s|usage; exit 1|usage; exit 0|g" ${PACKAGE_HOME}/earlGrey
+# Fixes to earlGrey executable
+sed -i.bak "1s|^|#!/bin/bash\n|" ${PACKAGE_HOME}/earlGrey  #add bash shebang line
+sed -i.bak "s|usage; exit 1|usage; exit 0|g" ${PACKAGE_HOME}/earlGrey  #let help return exit-code 0
+sed -i.bak "/CONDA_DEFAULT_ENV/,+4d" ${PACKAGE_HOME}/earlGrey  #remove check that conda environment has a specific name
 
 
-# Fix SCRIPT_DIR
+# Add SCRIPT_DIR to correct path
 SCRIPT_DIR="${PACKAGE_HOME}/scripts/"
 sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" ${PACKAGE_HOME}/earlGrey
 sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" ${PACKAGE_HOME}/scripts/rcMergeRepeat*
