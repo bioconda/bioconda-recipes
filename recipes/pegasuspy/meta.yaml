@@ -1,5 +1,5 @@
 {% set name = "pegasuspy" %}
-{% set version = "1.7.1" %}
+{% set version = "1.8.1" %}
 
 package:
     name: {{ name|lower }}
@@ -7,14 +7,16 @@ package:
 
 source:
     url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-    sha256: d7dae5356cb7af85ba3cd5b82bae3d1c7d04955eb3bfbc5471acd99279005fbc
+    sha256: 3897e1048d6ce3547028c0e4220fea7145573e6f62805918c7f7002f683f4105
 
 
 build:
-    number: 2
-    skip: True  # [py<37 or py > 39]
+    number: 0
+    skip: True  # [py<37]
     entry_points:
-        - pegasus = pegasus.__main__:main
+      - pegasus = pegasus.__main__:main
+    run_exports:
+      - {{ pin_subpackage(name, max_pin='x') }}
     script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
 
 requirements:
@@ -58,6 +60,8 @@ requirements:
         - umap-learn >=0.5.2
         - xlsxwriter
         - wordcloud
+        # brought in by numba, trying to ensure it comes from conda-forge rather than defaults
+        - tbb
 
 test:
     imports:
