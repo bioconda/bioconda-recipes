@@ -12,6 +12,12 @@ mkdir -p ${PACKAGE_HOME}
 cp -r * ${PACKAGE_HOME}/
 
 
+# Install SA-SSR
+git clone https://github.com/ridgelab/SA-SSR
+cd SA-SSR
+sed -i.bak "s|PREFIX=/usr/local/bin|PREFIX=${SCRIPT_DIR}|g" Makefile && make && make install
+
+
 # Fixes to earlGrey executable
 sed -i.bak "1s|^|#!/bin/bash\n|" ${PACKAGE_HOME}/earlGrey  #add bash shebang line
 sed -i.bak "s|usage; exit 1|usage; exit 0|g" ${PACKAGE_HOME}/earlGrey  #let help return exit-code 0
@@ -20,10 +26,12 @@ sed -i.bak "/CONDA_DEFAULT_ENV/,+4d" ${PACKAGE_HOME}/earlGrey  #remove check tha
 
 # Add SCRIPT_DIR to correct path
 sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" ${PACKAGE_HOME}/earlGrey
-sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" ${PACKAGE_HOME}/scripts/rcMergeRepeat*
-sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" ${PACKAGE_HOME}/scripts/headSwap.sh
-sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" ${PACKAGE_HOME}/scripts/autoPie.sh
-sed -i.bak "s|INSERT_FILENAME_HERE|${SCRIPT_DIR}/TEstrainer/scripts/|g" ${PACKAGE_HOME}/scripts/TEstrainer/TEstrainer_for_earlGrey.sh
+sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" ${SCRIPT_DIR}/rcMergeRepeat*
+sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" ${SCRIPT_DIR}/headSwap.sh
+sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" ${SCRIPT_DIR}/autoPie.sh
+sed -i.bak "s|INSERT_FILENAME_HERE|${SCRIPT_DIR}/TEstrainer/scripts/|g" ${SCRIPT_DIR}/TEstrainer/TEstrainer_for_earlGrey.sh
+sed -i.bak "153s|.* -e|${SCRIPT_DIR}/sa-ssr -e|g" ${SCRIPT_DIR}/TEstrainer/TEstrainer_for_earlGrey.sh
+sed -i.bak "s|txt trf|txt ${MOD_DIR}/trf409.linux64|g" ${SCRIPT_DIR}/TEstrainer/TEstrainer_for_earlGrey.sh
 
 
 # Set permissions to files
@@ -37,15 +45,6 @@ chmod a+w ${SCRIPT_DIR}/repeatCraft/example
 
 # Extract tRNAdb
 tar -zxf ${SCRIPT_DIR}/bin/LTR_FINDER.x86_64-1.0.7/tRNAdb.tar.gz --directory ${SCRIPT_DIR}/bin/LTR_FINDER.x86_64-1.0.7
-
-
-# Install SA-SSR
-cd ${SCRIPT_DIR}
-git clone https://github.com/ridgelab/SA-SSR
-cd SA-SSR
-sed -i.bak "s|PREFIX=/usr/local/bin|PREFIX=${SCRIPT_DIR}|g" Makefile && make && make install
-sed -i.bak "153s|.* -e|${SCRIPT_DIR}/sa-ssr -e|g" ${SCRIPT_DIR}/TEstrainer/TEstrainer_for_earlGrey.sh
-sed -i.bak "s|txt trf|txt ${MOD_DIR}/trf409.linux64|g" ${SCRIPT_DIR}/TEstrainer/TEstrainer_for_earlGrey.sh
 
 
 # Put earlGrey executable in bin
