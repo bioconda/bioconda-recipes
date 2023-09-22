@@ -1,0 +1,55 @@
+{% set name = "metadmg" %}
+{% set version = "0.3" %}
+{% set sha256 = "e0b71911de01e56bd67b5f9faa5039a875dab3d40c087fa041fecb219a85e50c" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/metaDMG-dev/metaDMG-cpp/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: false
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - bzip2
+    - xz
+    - htslib
+    - gsl
+    - eigen
+  run:
+    - htslib
+    - zlib
+    - bzip2
+    - xz
+    - gsl
+    - eigen
+
+test:
+  commands:
+    - metaDMG-cpp 2>&1 | grep 'metaDMG-cpp'
+    - compressbam 2>&1 | grep 'compressbam'
+
+about:
+  home: https://github.com/metaDMG-dev/metaDMG-cpp
+  license: GPLv3, MIT
+  #license_file: LICENSE
+  summary: "metaDMG-cpp: fast and efficient method for estimating mutation and damage rates in ancient DNA data"
+
+extra:
+  recipe-maintainers:
+    - ANGSD
+    - rahenriksen
+  identifiers:
+    - doi:10.1101/2022.12.06.519264
