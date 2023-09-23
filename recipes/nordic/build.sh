@@ -9,4 +9,4 @@ make install \
     LDFLAGS="${LDFLAGS}" \
     prefix="${PREFIX}"
 "${PYTHON}" -m pip install bonesis maboss mpbn
-"${PYTHON}" -m pip install --no-deps --ignore-installed . -vv
+"${PYTHON}" -m pip install --no-deps --no-build-isolation . -vvv
