@@ -1,0 +1,52 @@
+{% set name = "drtransformer" %}
+{% set version = "1.0" %}
+{% set vrnaversion = "2.5.1" %}
+
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/drtransformer-{{ version }}.tar.gz
+  sha256: 75b0363255866ece1aa80577d8c086ee94d85ee2bbec29c3ef53cc332d7a4878
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+
+requirements:
+  host:
+    - pip
+    - flit
+    - viennarna >={{ vrnaversion }}
+    - python >=3.8 
+  run:
+    - viennarna >={{ vrnaversion }}
+    - flit
+    - matplotlib-base
+    - numpy
+    - packaging
+    - python >=3.8
+    - scipy
+
+test:
+  imports:
+    - drtransformer
+    - RNA
+  commands:
+    - DrTransformer --version
+    - DrPlotter --version
+  requires:
+    - pip
+
+about:
+  home: https://pypi.org/project/drtransformer/
+  summary: Heuristic cotranscriptional folding using the nearest neighbor energy model.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  identifiers:
+    -  doi:10.1093/bioinformatics/btad034

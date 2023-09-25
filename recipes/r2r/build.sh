@@ -1,4 +1,6 @@
 #!/bin/bash
+mkdir -p $PREFIX/share
+mkdir -p $PREFIX/bin
 ./configure
 make
 #copy binary to bin

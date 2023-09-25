@@ -19,3 +19,6 @@ LIBS='-ldl -ldeflate' \
 
 install -d "${PREFIX}/bin"
 install cnvnator "${PREFIX}/bin/"
+install -d "${SP_DIR}/pytools"
+install pytools/* "${SP_DIR}/pytools"
+install *.py *.pl "${PREFIX}/bin"

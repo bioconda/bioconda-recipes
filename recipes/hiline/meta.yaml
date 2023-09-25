@@ -1,6 +1,6 @@
 {% set name = "HiLine" %}
-{% set version = "0.2.1" %}
-{% set sha256 = "a2af885847bd4b21afbccc721f66e8834d0ae86d3a0bad8b5aebe1073f292a71" %}
+{% set version = "0.2.4" %}
+{% set sha256 = "e6e24c09c1b88898a0b91be086d35a5c04f60af27ba845976bd60409fde61f0b" %}
 
 package:
   name: "{{ name|lower }}"
@@ -11,41 +11,42 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
+  skip: true  # [py < 39]
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
 
 requirements:
   build:
-    - python
-    - numpy>=1.18.1
     - {{ compiler('cxx') }}
-    - clang>=9.0.1
+    - clang >=9.0
     - git
-    - cmake>=3.16.4
-    - boost>=1.72.0
-    - ragel>=6.10
-    - pcre>=8.44
-    - ninja>=1.10.0
-    - pkgconfig>=1.3.1
+    - cmake >=3.16.4
+    - pkgconfig >=1.3.1
   host:
-    - numpy>=1.18.1
-    - pip>=20.0.2
+    # HiLine does not actually require this, but removing the pin leads to
+    # "Unsatisfiable dependencies"
     - python
-    - setuptools>=46.0.0
+    - numpy >=1.18.1
+    - pip >=20.0.2
+    - setuptools >=46.0.0
+    - boost-cpp
+    - ragel >=6.10
+    - pcre
+    - ninja >=1.10.0
   run:
     - python
-    - bwa>=0.7.17
-    - bwa-mem2>=2.0 # [linux]
-    - minimap2>=2.17
-    - gawk>=5.1.0
-    - perl>=5.30.3
-    - samtools>=1.10
-    - click>=7.0
-    - pandas>=1.0.1
-    - numpy>=1.18.1
-    - seaborn>=0.10.0
-    - matplotlib-base>=3.2.0
-    - biopython>=1.76
+    - bwa >=0.7.17
+    - bwa-mem2 >=2.0 # [linux]
+    - minimap2 >=2.17
+    - gawk >=5.1.0
+    - perl >=5.30.3
+    - samtools >=1.10
+    - click >=7.0
+    - pandas >=1.0.1
+    - {{ pin_compatible('numpy') }}
+    - seaborn >=0.10.0
+    - matplotlib-base >=3.2.0
+    - biopython >=1.76
 
 test:
   commands:
@@ -65,5 +66,5 @@ about:
     of reference sequences and finally split the output alignments based on HiC read-type.
     It can also optionally process and output HiC alignment statistics.
     Under the hood, it uses bwa mem and samtools to perform and process alignments.
-    It also uses a custom C++ Python extension to perform the in-slico digest
+    It also uses a custom C++ Python extension to perform the in-silico digest
     (using the Hyperscan (https://github.com/intel/hyperscan) regex library) and subsequent HiC classification.  

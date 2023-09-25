@@ -1,8 +1,9 @@
-{% set version = "2.10.1" %}
-{% set sha256 = "110729decf082f69b90b058c0cabaea38f771983a564308ae19cb30a68ce7b86" %}
+{% set name = "blast" %}
+{% set version = "2.14.1" %}
+{% set sha256 = "712c2dbdf0fb13cc1c2d4f4ef5dd1ce4b06c3b57e96dfea8f23e6e99f5b1650e" %}
 
 package:
-  name: blast
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -11,6 +12,8 @@ source:
     folder: blast
     patches:
       - configurellvm.patch
+      - get_species_taxids.patch
+      - phonehome.patch
   # Get optional RpsbProc
   # The rpsbproc command line utility is an addition to the standalone version of
   # Reverse Position-Specific BLAST (RPS-BLAST), also known as CD-Search (Conserved
@@ -22,10 +25,15 @@ source:
       - normbase.patch
 
 build:
-  number: 2
+  number: 0
+  run_exports:
+    # Now, the point releases seem to be only bugfixes at least (but this definitely was not the
+    # case up to v2.2.31)
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
@@ -33,8 +41,8 @@ requirements:
     - bzip2
     - pcre
     - entrez-direct
+    - ncbi-vdb
     - curl
-    - llvm-openmp  # [osx]
   run:
     - zlib
     - bzip2
@@ -44,8 +52,8 @@ requirements:
     - perl-archive-tar
     - perl-json
     - entrez-direct
+    - ncbi-vdb
     - curl
-    - llvm-openmp  # [osx]
 
 test:
   files:
@@ -60,6 +68,7 @@ test:
     - blastdbcheck -version > /dev/null
     - blastdbcmd -version > /dev/null
     - blastn -version > /dev/null
+    - blastn_vdb -version > /dev/null
     - blastp -version > /dev/null
     - blastx -version > /dev/null
     - convert2blastmask -version > /dev/null
@@ -72,6 +81,7 @@ test:
     - rpsbproc -version > /dev/null
     - segmasker -version > /dev/null
     - tblastn -version > /dev/null
+    - tblastn_vdb -version > /dev/null
     - tblastx -version > /dev/null
     - windowmasker -version > /dev/null
     - update_blastdb.pl --version > /dev/null

@@ -1,7 +1,6 @@
 {% set name = "genometools" %}
-{% set version = "1.6.1" %}
-{% set sha256 = "528ca143a7f1d42af8614d60ea1e5518012913a23526d82e434f0dad2e2d863f" %}
-
+{% set version = "1.6.3" %}
+{% set sha256 = "b4919a2eafaa353a69ff4e63c788faeaa95b61bdf8d6e70e9922e0c955e95ff8" %}
 
 package:
   name: {{ name }}-{{ name }}
@@ -12,17 +11,24 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 2
+  skip: true  # [py2k]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('genometools-genometools', max_pin="x") }}
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
   host:
     - python
+    - glib
     - pango  # [not osx]
     - cairo  # [not osx]
   run:
+    - fontconfig  # https://github.com/AdoptOpenJDK/openjdk-build/issues/693
+    - font-ttf-dejavu-sans-mono
     - python
     - gettext
     - pango  # [not osx]

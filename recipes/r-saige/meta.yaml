@@ -1,26 +1,19 @@
 {% set name = "r-saige" %}
-{% set version = "0.42.1" %}
-{% set vcommit = "29d4426dd4ae62c50fa7ce96794ec302f9d44b1b" %}
+{% set version = "1.2.0" %}
+{% set vcommit = "5fa0a2bda54656df1def789dd8c45ac513e3c21f" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  # url: https://github.com/weizhouUMICH/SAIGE/archive/{{ version }}.tar.gz
-  url: https://github.com/weizhouUMICH/SAIGE/archive/{{ vcommit }}.tar.gz
-  sha256: 9f11d71eedccc435dccb4fe941579e4150b0c8f3f7c12f8cff2e3f5fedf0fd33
+  url: https://github.com/saigegit/SAIGE/archive/{{ vcommit }}.tar.gz
+  sha256: da664896a14df5d09ccc45299e016f11b5a618132181e14edc885c58401fbf1d
   patches:
-    # Fixing shared lib issues
     - patches/0001-use-shared-libs-in-makevars.patch
-    # - patches/0358-use-shared-libs-in-makevars-0.35.8.patch
-    # - patches/0002-fix-rcpp-returns.patch
-    - patches/0003-fix-gettimeofday-import.patch
-    - patches/0004-fix-paths-of-imported-libs-should-never-use-path.patch
 
 build:
-  skip: true  # [win]
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
@@ -29,56 +22,68 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - {{ compiler('fortran') }}
   host:
-    - r-base {{ r_base }}
-    - bgenix 1.1.4
     - boost-cpp
-    - r-spatest 3.1.2
-    - r-rcpp
-    - r-rcpparmadillo
-    - r-rcppparallel
-    - r-metaskat
-    - r-skat
-    - r-devtools
-    - r-matrix
-    - r-data.table
-    - r-rcppeigen
-    - r-bh
-    - r-optparse
+    - libblas
     - liblapack
-    - libopenblas  # [osx]
-    - libblas  # [linux]
     - superlu
     - savvy
     - zstd
     - zlib
-  run:
-    - r-base {{ r_base }}
-    - boost-cpp
-    - bgenix 1.1.4
-    - savvy
-    - r-spatest 3.1.2
-    - r-rcpp
-    - r-rcppparallel
-    - r-matrix
+    - r-base
+    - r-bh
     - r-data.table
+    - r-devtools
+    - r-dplyr
+    - r-dbplyr
+    - r-ellipsis
+    - r-matrix
     - r-optparse
+    - r-qlcmatrix
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-rcppeigen
+    - r-rcppparallel
+    - r-rhpcblasctl
+    - r-roxygen2
+    - r-rversions
+    - r-r.utils
+    - r-rsqlite
+    - r-spatest
+    - r-skat
+    - r-metaskat
+    - r-vctrs
+  run:
+    - r-base
+    - libblas
     - liblapack
-    - libopenblas  # [osx]
-    - libblas  # [linux]
-    - sqlite
+    - boost-cpp
+    - savvy
+    - r-data.table
+    - r-dplyr
+    - r-dbplyr
+    - r-matrix
+    - r-optparse
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-rcppeigen
+    - r-rcppparallel
+    - r-rhpcblasctl
+    - r-skat
+    - r-spatest
+    - r-rsqlite
 
 test:
   commands:
-    - $R -e "library('SAIGE')"
+    - $R -e "library(\"SAIGE\")"
     - step1_fitNULLGLMM.R --help
     - step2_SPAtests.R --help
     - createSparseGRM.R --help
+    - extractNglmm.R --help
 
 about:
-  home: https://github.com/weizhouUMICH/SAIGE
-  license: GNU GPL
+  home: https://github.com/saigegit/SAIGE
+  license: GPL-3.0-only
   license_family: GPL3
   license_file: LICENSE
   summary: SAIGE is an R package with Scalable and Accurate Implementation of Generalized mixed model (Chen, H. et al. 2016)
@@ -86,15 +91,9 @@ about:
     SAIGE is an R package with Scalable and Accurate Implementation of Generalized
     mixed model (Chen, H. et al. 2016). It accounts for sample relatedness and is
     feasible for genetic association tests in large cohorts and biobanks (N > 400000).
-  dev_url: https://github.com/weizhouUMICH/SAIGE
+  dev_url: https://github.com/saigegit/SAIGE
 
 extra:
   recipe-maintainers:
     - matuskosut
-
-
-# Saige (https://github.com/weizhouUMICH/SAIGE/)
-# Versioning guide for builders
-# 0.35.8.8: tagged
-# 0.42.0: commit 19afee629fbfe1c450e57a717fc621cce17c8199
-# 0.42.1: commit 29d4426dd4ae62c50fa7ce96794ec302f9d44b1b
+    - pettyalex

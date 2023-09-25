@@ -14,8 +14,8 @@ from os import access
 from os import getenv
 from os import X_OK
 
-jar_file = 'GeMoMa-1.6.4.jar'
-default_jvm_mem_opts = ['-Xms1g', '-Xmx2g']
+jar_file = 'GeMoMa-1.9.jar'
+default_jvm_mem_opts = ['-Xms3g', '-Xmx6g']
 original_string = "java -jar "+jar_file+" CLI"
 wrapper_string = "GeMoMa"
 
@@ -96,8 +96,9 @@ def main():
     for line in iter(p.stderr.readline,b''):
         tomod = line.decode("utf-8")
         tomod = tomod.replace(original_string,wrapper_string)
-        print(tomod,end='')
+        print(tomod,end='',file=sys.stderr)
 
+    exit(p.wait())
 
 if __name__ == '__main__':
     main()

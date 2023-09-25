@@ -1,6 +1,6 @@
 #!/bin/bash
 # hmftools COBALT executable shell script
-# https://github.com/hartwigmedical/hmftools/tree/master/count-bam-lines
+# https://github.com/hartwigmedical/hmftools/tree/master/cobalt
 set -eu -o pipefail
 
 export LC_ALL=en_US.UTF-8
