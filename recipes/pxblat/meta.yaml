@@ -1,6 +1,6 @@
 {% set name = "PxBLAT" %}
-{% set version = "0.3.0" %}
-{% set sha256 = "86a2414757113136c3171d77c58d440a196afb349c118b7a9a9d8bd70cb3ff39" %}
+{% set version = "0.3.2" %}
+{% set sha256 = "7d8e2ae09fce7ef12b8aa0f6f5a9b5343676a035ac1cbaa3cf125dba2d7573d3" %}
 
 package:
   name: {{ name|lower }}
@@ -12,13 +12,16 @@ source:
 
 build:
   number: 0
+  skip: True  # [py < 39]
   script: {{ PYTHON }} -m pip install . --no-deps --use-pep517 -vvv
+  run_exports:
+    - {{ pin_subpackage('pxblat', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
   host:
-    - python >=3.9
+    - python
     - pip
     - poetry-core >=1.2.0
     - pybind11 >=2.9.1
@@ -27,7 +30,7 @@ requirements:
     - openssl
     - zlib
   run:
-    - python >=3.9
+    - python
     - loguru
     - rich
     - pysimdjson
@@ -46,7 +49,7 @@ test:
     - pxblat -h
 
 about:
-  home: 'https://github.com/cauliyang/pxblat'
+  home: 'https://github.com/ylab-hi/pxblat'
   license: MIT
   license_family: MIT
   license_file: LICENSE
@@ -57,3 +60,5 @@ about:
 extra:
   recipe-maintainers:
     - yangyangli
+  identifiers:
+    - doi:10.1101/2023.08.02.551686

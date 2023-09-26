@@ -1,0 +1,40 @@
+---
+{% set version = "0.0.15" %}
+
+package:
+  name: tcdemux
+  version: {{ version }}
+
+source:
+  url: https://github.com/TomHarrop/tcdemux/archive/refs/tags/{{ version }}.tar.gz
+  sha256: a4c82803f7634020677954c003f3a5b12b00d21120c5608206423c712a7e1db5
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install --ignore-installed .
+  run_exports:
+    - {{ pin_subpackage("tcdemux", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+  run:
+    - bbmap
+    - biopython >=1.81
+    - cutadapt >=4.4
+    - pandas >=2.0.3
+    - pigz
+    - python >=3.10
+    - snakemake >=7.31.0
+
+test:
+  commands:
+    - "tcdemux --help | grep 'usage: tcdemux'"
+
+about:
+  home: https://github.com/TomHarrop/tcdemux
+  license: GPL-3
+  license_file: LICENSE
+  summary: >
+    Demultiplex files and prepare reads for the target capture analysis pipeline.
