@@ -29,8 +29,8 @@ sed -i.bak "s|usage; exit 1|usage; exit 0|g" ${PACKAGE_HOME}/earlGrey  #let help
 sed -i.bak "/CONDA_DEFAULT_ENV/,+4d" ${PACKAGE_HOME}/earlGrey  #remove check that conda environment has a specific name
 
 
-# Fixes sed command for executables
-sed -i.bak "s|sed -i |sed -i '' |g" ${PACKAGE_HOME}/earlGrey ${SCRIPT_DIR}/rcMergeRepeat* ${SCRIPT_DIR}/TEstrainer/TEstrainer_for_earlGrey.sh
+# Fixes sed command for executables so that it works on both linux and macos
+sed -i.bak "s|sed -i |sed -i.bak |g" ${PACKAGE_HOME}/earlGrey ${SCRIPT_DIR}/rcMergeRepeat* ${SCRIPT_DIR}/TEstrainer/TEstrainer_for_earlGrey.sh
 
 
 # Add SCRIPT_DIR to correct path
