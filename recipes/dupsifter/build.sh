@@ -3,5 +3,5 @@
 BIN=${PREFIX}/bin
 mkdir -p ${BIN}
 
-make
+make CC="$CC $LDFLAGS" CFLAGS="$CFLAGS"
 cp dupsifter ${BIN}
