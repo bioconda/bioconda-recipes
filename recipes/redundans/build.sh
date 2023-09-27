@@ -32,7 +32,7 @@ sed -i 's|bin/SSPACE/SSPACE_Standard_v3.0.pl|SSPACE/SSPACE_Standard_v3.0.pl|g' $
 #Download and make the LASTal and the merqury folder
 wget -O- https://github.com/marbl/merqury/archive/v1.3.tar.gz && tar -zxvf v1.3.tar.gz && mv merqury-1.3 merqury
 git clone https://github.com/Gabaldonlab/last.git
-cd last/ && make clean && make -j && cd ..
+cd last/ && make clean && make -j ${CPU_COUNT} && cd ..
 
 #Cleaning up and copying from install folder to binary folder
 rm redundans.py && cp -r * $BIN_FOLDER
