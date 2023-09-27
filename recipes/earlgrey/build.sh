@@ -33,6 +33,11 @@ sed -i.bak "/CONDA_DEFAULT_ENV/,+4d" ${PACKAGE_HOME}/earlGrey  #remove check tha
 sed -i.bak "s|sed -i |sed -i.bak |g" ${PACKAGE_HOME}/earlGrey ${SCRIPT_DIR}/rcMergeRepeat* ${SCRIPT_DIR}/TEstrainer/TEstrainer_for_earlGrey.sh
 
 
+# Remove -pa from RepeatClassifier
+sed -i.bak 's/RepeatClassifier -pa ${THREADS} /RepeatClassifier /' ${SCRIPT_DIR}/TEstrainer/TEstrainer_for_earlGrey.sh
+sed -i.bak 's/RepeatClassifier -pa ${THREADS} /RepeatClassifier /' ${SCRIPT_DIR}/TEstrainer/TEstrainer
+
+
 # Add SCRIPT_DIR to correct path
 sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" ${PACKAGE_HOME}/earlGrey
 sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" ${SCRIPT_DIR}/rcMergeRepeat*
