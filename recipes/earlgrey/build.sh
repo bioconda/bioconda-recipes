@@ -58,6 +58,17 @@ chmod a+w ${SCRIPT_DIR}/repeatCraft/example
 tar -zxf ${SCRIPT_DIR}/bin/LTR_FINDER.x86_64-1.0.7/tRNAdb.tar.gz --directory ${SCRIPT_DIR}/bin/LTR_FINDER.x86_64-1.0.7
 
 
+# Set PERL5LIB upon activate/deactivate
+for CHANGE in "activate" "deactivate";
+do
+  mkdir -p "${PREFIX}/etc/conda/${CHANGE}.d"
+done
+echo "#!/bin/sh" > "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.sh"
+echo "export PERL5LIB=${PREFIX}/share/RepeatMasker/:${PREFIX}/share/RepeatModeler/" >> "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.sh"
+echo "#!/bin/sh" > "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.sh"
+echo "unset PERL5LIB" >> "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.sh"
+
+
 # Put earlGrey executable in bin
 cd ${PREFIX}/bin
 ln -s ${PACKAGE_HOME}/earlGrey .
