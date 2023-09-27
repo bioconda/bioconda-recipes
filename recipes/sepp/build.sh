@@ -9,7 +9,8 @@ cp home.path ${PREFIX}/lib/python*/site-packages/
 mkdir -p $PREFIX/share/sepp/sepp
 # ... and holds correct path names
 mv -v sepp-package/sepp/default.main.config $PREFIX/share/sepp/sepp/main.config
-mv -v ./.sepp/upp.config $PREFIX/share/sepp/sepp/upp.config
+# copy upp config, as it's still needed
+cp ./.sepp/upp.config $PREFIX/share/sepp/sepp/upp.config
 
 $PYTHON -m pip install . --ignore-installed --no-deps -vv
 
