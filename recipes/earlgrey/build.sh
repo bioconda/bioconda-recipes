@@ -38,6 +38,11 @@ sed -i.bak 's/RepeatClassifier -pa ${THREADS} /RepeatClassifier /' ${SCRIPT_DIR}
 sed -i.bak 's/RepeatClassifier -pa ${THREADS} /RepeatClassifier /' ${SCRIPT_DIR}/TEstrainer/TEstrainer
 
 
+# Remove -t parameter from sa-ssr
+sed -i.bak 's/-t ${THREADS} / /' ${SCRIPT_DIR}/TEstrainer/TEstrainer_for_earlGrey.sh
+sed -i.bak 's/-t ${THREADS} / /' ${SCRIPT_DIR}/TEstrainer/TEstrainer
+
+
 # Add SCRIPT_DIR to correct path
 sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" ${PACKAGE_HOME}/earlGrey
 sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" ${SCRIPT_DIR}/rcMergeRepeat*
