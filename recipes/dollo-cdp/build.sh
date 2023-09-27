@@ -1,5 +1,5 @@
 cd src
-ls Makefile
+ls *.cpp
 make \
 	GXX="${GXX}" \
 
