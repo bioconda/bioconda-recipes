@@ -15,16 +15,19 @@ build:
     - nanometa-sim=nanometa_live.nanopore_simulator:nano_sim
     - nanometa-new=nanometa_live.create_new_project:create_new
     - nanometa-blastdb=nanometa_live.build_blast_db:build_blast
-    - nanometa-pipe=nanometa_live.nanometa_backend:check_help
-    - nanometa = nanometa_live.nanometa_gui:run_app
-  script: python -m pip install --no-deps --ignore-installed . 
+    - nanometa-backend = nanometa_live.nanometa_backend:main
+    - nanometa-gui = nanometa_live.nanometa_gui:run_app
+    - nanometa-live = nanometa_live.nanometa_runner:main
+    - nanometa-prepare = nanometa_live.nanometa_prepare:main
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('nanometa-live', max_pin="x") }}
 
 requirements:
   host:
     - pip
     - python >3
-
   run:
     - python >3
     - dash >=2.8.1
@@ -34,15 +37,21 @@ requirements:
     - numpy >=1.24.1
     - pandas >=1.5.3
     - pyyaml >=6.0
+    - pytest >=7.2.1
+    - biopython >=1.80
+    - ruamel.yaml >=0.17.32
     - snakemake >=7.20.0
     - blast >=2.13.0
+
 test:
   commands:
-    - nanometa --help
     - nanometa-sim --help
     - nanometa-new --help
     - nanometa-blastdb --help
-    - nanometa-pipe --help
+    - nanometa-backend --help
+    - nanometa-gui --help
+    - nanometa-live --help
+    - nanometa-prepare --help
 
 about:
   home: https://github.com/FOI-Bioinformatics/nanometa_live
@@ -50,3 +59,4 @@ about:
   license_family: GPL3
   license_file: LICENSE.txt
   summary: Workflow and GUI for real-time species classification and pathogen characterization of nanopore sequence reads.
+  doc_url: https://github.com/FOI-Bioinformatics/nanometa_live/wiki
