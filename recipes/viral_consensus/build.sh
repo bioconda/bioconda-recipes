@@ -9,9 +9,12 @@ ln -s $CC ${PREFIX}/bin/gcc
 ln -s $CXX ${PREFIX}/bin/g++
 
 # htslib compilation needs zlib, so specify bioconda's libraries
-export CFLAGS="$CFLAGS -I$PREFIX/include"
+export CFLAGS="$CFLAGS -I$PREFIX/include -fpermissive"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
+
+# need fpermissive because ViralConsensus is C++ but htslib is C and uses implicit pointer conversion
+export CPPFLAGS="-fpermissive"
 
 # compile ViralConsensus
 make
