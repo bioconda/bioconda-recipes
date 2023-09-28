@@ -1,8 +1,16 @@
 #!/bin/bash
 set -eu -o pipefail
 
-mkdir -p ${PREFIX}/bin
-cp -r * ${PREFIX}/bin
+outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 
-chmod 0755 "${PREFIX}/bin/plotting_script.py"
-chmod 0755 "${PREFIX}/bin/ICEcream.sh"
+mkdir -p $outdir
+mkdir -p $PREFIX/bin
+
+cp -r * $outdir
+cp ICEfamily_refer/familytools/plotting_script.py $outdir/plotting_script.py
+
+chmod 0755 $outdir/plotting_script.py
+chmod 0755 $outdir/ICEcream.sh
+
+ln -s $outdir/plotting_script.py $PREFIX/bin
+ln -s $outdir/ICEcream.sh "$PREFIX/bin
