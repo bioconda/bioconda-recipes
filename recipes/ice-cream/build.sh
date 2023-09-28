@@ -13,4 +13,4 @@ chmod 0755 $outdir/plotting_script.py
 chmod 0755 $outdir/ICEcream.sh
 
 ln -s $outdir/plotting_script.py $PREFIX/bin
-ln -s $outdir/ICEcream.sh "$PREFIX/bin
+ln -s $outdir/ICEcream.sh $PREFIX/bin
