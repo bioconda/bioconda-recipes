@@ -1,7 +1,14 @@
 #!/bin/bash
 
+# pull htslib submodule (and its submodules) manually since ViralConsensus tarball isn't git repo
 sed -i 's/git submodule/#git submodule/g' Makefile
 git clone --recurse-submodules https://github.com/samtools/htslib.git
+
+# htslib compilation calls gcc, so link bioconda's gcc/g++
+ln -s $CC ${PREFIX}/bin/gcc
+ln -s $CXX ${PREFIX}/bin/g++
+
+# compile ViralConsensus
 make
 if [ ! -d "$PREFIX/bin" ]; then
     mkdir $PREFIX/bin;
