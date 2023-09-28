@@ -8,6 +8,11 @@ git clone --recurse-submodules https://github.com/samtools/htslib.git
 ln -s $CC ${PREFIX}/bin/gcc
 ln -s $CXX ${PREFIX}/bin/g++
 
+# htslib compilation needs zlib, so specify bioconda's libraries
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export CPATH=${PREFIX}/include
+
 # compile ViralConsensus
 make
 if [ ! -d "$PREFIX/bin" ]; then
