@@ -1,5 +1,3 @@
-conda update conda
-conda update --all
 cd src
 ls *.cpp
 #make \
