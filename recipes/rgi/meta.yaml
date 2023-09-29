@@ -1,29 +1,31 @@
 {% set name = "rgi" %}
-{% set version = "5.2.1" %}
-{% set sha256 = "1b2de93da1efc16ea41bac9e5ce8f3fc998185d8c0ab08aaad7bf16e4a5433b6" %}
-{% set sha256database = "ca9190336d7692caf9b5b4e03a10c1cc2b089180f5e4c705471912367a27a47b" %}
+{% set version = "6.0.3" %}
+{% set sha256 = "e2fb66119a1cabc2e0769c868c7908107f7f5904ae34c28bad9ee814ca39ea41" %}
+{% set sha256database = "b9052bb9f5fa84c488a52254fdd7e9080c7e31f1817c01b3f3d9261f9e4f0afd" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
-      
+
 source:
     - url: https://github.com/arpcard/rgi/archive/{{ version }}.tar.gz
       sha256: {{ sha256 }}
-    - url: https://card.mcmaster.ca/download/0/broadstreet-v3.1.4.tar.bz2
+    - url: https://card.mcmaster.ca/download/0/broadstreet-v3.2.7.tar.bz2
       sha256: {{ sha256database }}
       folder: card-data
-      
+
 build:
   noarch: python
-  number: 2
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
     #- python >=3.5,<3.7
     - python >=3.5
     - pip
-    - blast 2.9.0
+    - blast >=2.9.0
     - six >=1.7.0
     - zlib
     - prodigal 2.6.3
@@ -42,16 +44,18 @@ requirements:
     - bowtie2 >=2.3.4.3
     - bwa >=0.7.17
     - kma >=1.2.26
-    - beautifulsoup4==4.9.3
-    - requests==2.24.0
-    - pysam==0.16.0.1
-    - lxml==4.6.5
+    - beautifulsoup4 ==4.9.3
+    - requests ==2.24.0
+    - pysam ==0.16.0.1
+    - lxml ==4.6.5
     - wget
+    - dask
+    - pyrodigal >=2.0.0
   run:
     # RGI requires these exact versions of blast prodigal and diamond, or else --alignment_mode DIAMOND fails
     # - python >=3.5,<3.7
     - python >=3.5
-    - blast 2.9.0
+    - blast >=2.9.0
     - six >=1.7.0
     - zlib
     - prodigal 2.6.3
@@ -70,12 +74,14 @@ requirements:
     - bowtie2 >=2.3.4.3
     - bwa >=0.7.17
     - kma >=1.2.26
-    - beautifulsoup4==4.9.3
-    - requests==2.24.0
-    - pysam==0.16.0.1
-    - lxml==4.6.5
+    - beautifulsoup4 ==4.9.3
+    - requests ==2.24.0
+    - pysam ==0.16.0.1
+    - lxml ==4.6.5
     - wget
-    
+    - dask
+    - pyrodigal >=2.0.0
+
 test:
   commands:
     - rgi database -v

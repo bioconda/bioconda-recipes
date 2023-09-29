@@ -2,13 +2,13 @@
 
 # Copy executable scripts
 declare -a metanovo_scripts=(
-    bin/bash/metanovo.sh
-    bin/bash/compomics.sh
-    bin/python/bp_export_tags.py
-    bin/python/bp_mapped_tags.py
-    bin/python/bp_export_proteins.py
-    bin/python/bp_fasta_prepare.py
-    bin/python/bp_parse_tags.py
+    metanovo_source/bin/bash/metanovo.sh
+    metanovo_source/bin/bash/compomics.sh
+    metanovo_source/bin/python/bp_export_tags.py
+    metanovo_source/bin/python/bp_mapped_tags.py
+    metanovo_source/bin/python/bp_export_proteins.py
+    metanovo_source/bin/python/bp_fasta_prepare.py
+    metanovo_source/bin/python/bp_parse_tags.py
 )
 
 for script in "${metanovo_scripts[@]}"; do
@@ -16,7 +16,7 @@ for script in "${metanovo_scripts[@]}"; do
 done
 
 # Copy python libraries.
-cp lib/tagmatch.py "$PREFIX/lib/python3.9/site-packages"
+cp metanovo_source/lib/tagmatch.py "$PREFIX/lib/python3.9/site-packages"
 
 # Create source file. This sets paths for MetaNovo dependencies.
 mkdir -p "$PREFIX/etc/conda/activate.d"
@@ -27,32 +27,21 @@ METANOVO_CONFIG_DIR="$PREFIX/config"
 mkdir "$METANOVO_CONFIG_DIR"
 
 # Copy default configuration.
-cp bin/config/metanovo_config.sh "$METANOVO_CONFIG_DIR"
+cp metanovo_source/bin/config/metanovo_config.sh "$METANOVO_CONFIG_DIR"
 
-# Create bio/ directory for MetaNovo dependencies.
+# Create bio/ directory for MetaNovo dependencies and extract their downloads.
 METANOVO_DEPENDENCIES="$PREFIX/bio"
+DENOVOGUI_DIR="$METANOVO_DEPENDENCIES/DeNovoGUI"
+UTILITIES_DIR="$METANOVO_DEPENDENCIES/utilities"
+SEARCHGUI_DIR="$METANOVO_DEPENDENCIES/SearchGUI"
+
 mkdir "$METANOVO_DEPENDENCIES"
 
-# Install downloaded dependencies
-declare -A dependency_urls
+mkdir "$DENOVOGUI_DIR"
+cp -R denovogui_download/* "$DENOVOGUI_DIR"
 
-dependency_urls['PeptideShaker']='http://genesis.ugent.be/maven2/eu/isas/peptideshaker/PeptideShaker/1.16.2/PeptideShaker-1.16.2.zip'
-dependency_urls['SearchGUI']='http://genesis.ugent.be/maven2/eu/isas/searchgui/SearchGUI/3.2.20/SearchGUI-3.2.20-mac_and_linux.tar.gz'
-dependency_urls['DeNovoGUI']='http://genesis.ugent.be/maven2/com/compomics/denovogui/DeNovoGUI/1.15.11/DeNovoGUI-1.15.11-mac_and_linux.tar.gz'
-dependency_urls['utilities']='http://genesis.ugent.be/maven2/com/compomics/utilities/4.12.0/utilities-4.12.0.zip'
+mkdir "$UTILITIES_DIR"
+cp -R compomics_utilities_download/*  "$UTILITIES_DIR"
 
-for dependency in "${!dependency_urls[@]}"; do
-    mkdir $METANOVO_DEPENDENCIES/$dependency
-    cd $METANOVO_DEPENDENCIES/$dependency
-    url=${dependency_urls[$dependency]}
-    extension="${url##*.}"
-    wget $url
-    if [[ $extension == "gz" ]]; then
-        tar -zxvf *.tar.gz && rm -rf *.tar.gz
-    elif [[ $extension == "zip" ]]; then
-        unzip *.zip && rm -rf *.zip
-    else
-        echo "File download failed" >&2
-        exit 1
-    fi
-done
+mkdir "$SEARCHGUI_DIR"
+cp -R searchgui_download/*  "$SEARCHGUI_DIR"

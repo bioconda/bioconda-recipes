@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+
 ./compile
 
 mkdir -p ${PREFIX}/bin/

@@ -1,20 +1,23 @@
 {% set name = "BioExt" %}
-{% set version = "0.20.4" %}
-{% set sha256 = "39469dff2934eaf9d39206483d03b703d22e6e740ee52fa5d16982c5f0e0bc7d" %}
+{% set version = "0.21.0" %}
+{% set sha256 = "f4c146545f3a30f94d6cc9b1d7229205c6a16123b438bf4b3f1a5f2fbb6dbb3f" %}
 
 package:
   name: python-{{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/veg/{{ name }}/archive/{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/bioext-{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
+    - cythonize.patch
     - osx-freetype.patch # [osx]
 
 build:
-  number: 1
+  number: 0
   skip: True # [py2k]
+  run_exports:
+    - {{ pin_subpackage("python-bioext", max_pin="x.x") }}
 
 requirements:
   build:
@@ -26,14 +29,14 @@ requirements:
     - cython >=0.28
     - setuptools
     - biopython >=1.58
-    - numpy >=1.14
+    - numpy >1.20.3
     - scipy
     - pysam
   run:
     - freetype
     - python
     - biopython >=1.58
-    - numpy >=1.14
+    - numpy >1.20.3
     - scipy
     - pysam
     - joblib
