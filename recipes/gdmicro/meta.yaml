@@ -1,0 +1,53 @@
+{% set name = "gdmicro" %}
+{% set version = "1.0.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: f64a2ed29ed278ad317f0cd3094f010c0db0a450e1d5fa631d2d452ce53d5797
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  run_exports:
+      - {{ pin_subpackage('gdmicro', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+  run:
+    - python >=3.7
+    - numpy
+    - pandas
+    - scipy
+    - scikit-learn
+    - torch==1.12.0
+    - hiddenlayer==0.3
+    - networkx
+    - higra==0.6.4
+    - matplotlib
+    - ipython
+    - r-base=3.6.1
+    - bioconductor-siamcat==1.6.0
+    - r-yaml=2.2.1
+    - r-tidyverse=1.2.1
+
+test:
+    imports:
+         - GDmicro
+    commands:
+         - gdmicro --help
+
+about:
+  home: https://github.com/liaoherui/GDmicro
+  license: MIT
+  license_file: LICENSE
+  summary: GDmicro - Use GCN and Deep adaptation network to classify host disease status based on human gut microbiome data
+
+extra:
+  recipe-maintainers:
+    - liaoherui
