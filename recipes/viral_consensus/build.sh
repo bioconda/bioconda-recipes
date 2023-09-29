@@ -8,10 +8,12 @@ git clone --recurse-submodules https://github.com/samtools/htslib.git
 ln -s $CC ${PREFIX}/bin/gcc
 ln -s $CXX ${PREFIX}/bin/g++
 
-# htslib compilation needs zlib, so specify bioconda's libraries
+# htslib compilation needs zlib and other libraries, so specify bioconda's libraries
 export CFLAGS="$CFLAGS -I$PREFIX/include -fpermissive"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
+export INCLUDES="-I${PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib
 
 # need fpermissive because ViralConsensus is C++ but htslib is C and uses implicit pointer conversion
 export CPPFLAGS="-fpermissive"
