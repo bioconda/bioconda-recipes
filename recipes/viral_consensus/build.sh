@@ -24,3 +24,6 @@ if [ ! -d "$PREFIX/bin" ]; then
     export PATH=$PREFIX/bin:$PATH;
 fi
 cp viral_consensus $PREFIX/bin/
+
+# remove symlinks (they're only needed for compilation)
+rm ${PREFIX}/bin/gcc ${PREFIX}/bin/g++
