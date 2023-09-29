@@ -17,7 +17,7 @@ export CPATH=${PREFIX}/include
 export CPPFLAGS="-fpermissive"
 
 # compile ViralConsensus
-make
+make CXX="${CXX}" CXXFLAGS+='-fpermissive'
 if [ ! -d "$PREFIX/bin" ]; then
     mkdir $PREFIX/bin;
     export PATH=$PREFIX/bin:$PATH;
