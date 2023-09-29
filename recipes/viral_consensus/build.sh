@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# pull htslib submodule (and its submodules) manually since ViralConsensus tarball isn't git repo
+# use bioconda's htslib instead of the one pulled by ViralConsensus
+sed -i.bak 's/htslib\/htslib/htslib/g' common.h
 sed -i.bak 's/git submodule/#git submodule/g' Makefile
-sed -i.bak 's/make /make INCLUDES="-I$PREFIX\/include" /g' Makefile
-git clone --recurse-submodules https://github.com/samtools/htslib.git
-
-# fix for clang++ on bioconda's Mac OS X test
-sed -i.bak 's/unsigned char \*tmp = realloc(b->data, len);/unsigned char \*tmp = (unsigned char \*)realloc(b->data, len);/g' htslib/cram/cram_io.h
+sed -i.bak 's/ $(HTSLIB_A)//g' Makefile
+sed -i.bak 's/^htslib\//#htslib\//g' Makefile
+sed -i.bak 's/git submodule/#git submodule/g' Makefile
+sed -i.bak 's/cd htslib/#cd htslib/g' Makefile
 
 # htslib compilation calls gcc, so link bioconda's gcc/g++
 ln -s $CC ${PREFIX}/bin/gcc
