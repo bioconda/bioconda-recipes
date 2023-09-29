@@ -1,4 +1,7 @@
 #!/bin/sh
+
+git submodule update --init --recursive
+
 make -C lib/htslib CC=${CC} CFLAGS="${CFLAGS} -g -Wall -O2 -fvisibility=hidden" LDFLAGS="${LDFLAGS} -fvisibility=hidden" lib-static
 
 mkdir -p build
