@@ -1,6 +1,13 @@
 #!/bin/sh
 
-git submodule update --init --recursive
+ls -l -a
+cd lib
+git clone --recursive https://github.com/samtools/htslib.git
+cd htslib
+git reset --hard 7f5136f
+cd htscodecs
+git reset --hard 11b5007
+cd ../../..
 
 make -C lib/htslib CC=${CC} CFLAGS="${CFLAGS} -g -Wall -O2 -fvisibility=hidden" LDFLAGS="${LDFLAGS} -fvisibility=hidden" lib-static
 
