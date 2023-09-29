@@ -13,7 +13,7 @@ export CFLAGS="$CFLAGS -I$PREFIX/include -fpermissive"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 export INCLUDES="-I${PREFIX}/include"
-export LIBPATH="-L${PREFIX}/lib
+export LIBPATH="-L${PREFIX}/lib"
 
 # need fpermissive because ViralConsensus is C++ but htslib is C and uses implicit pointer conversion
 export CPPFLAGS="-fpermissive"
