@@ -14,5 +14,5 @@ conda install -c conda-forge -y python=3.8 requests pyfaidx
 python setup.py install
 
 mkdir -p "$PREFIX/bin"
-cp "$SRC_DIR/seqstr/CLI_seqstr" "$PREFIX/bin/"
-chmod +x "$PREFIX/bin/CLI_seqstr"
+cp "$SRC_DIR/seqstr/seqstr" "$PREFIX/bin/"
+chmod +x "$PREFIX/bin/seqstr"
