@@ -2,6 +2,11 @@
 set -ex
 
 mkdir -p build && cd build
+
+if [[ $(uname) == "Linux" ]]; then
+  CMAKE_ARGS="${CMAKE_ARGS} -DFEATURE_egl=ON -DFEATURE_eglfs=ON"
+fi
+
 cmake \
     -DCMAKE_PREFIX_PATH=${PREFIX} \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS} \
