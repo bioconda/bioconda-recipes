@@ -57,7 +57,6 @@ cmake -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE"  \
       -DCMAKE_INSTALL_PREFIX="$PREFIX"        \
       -DCMAKE_C_COMPILER="$CC"                \
       -DCMAKE_CXX_COMPILER="$CXX"             \
-      -DxxHash_ROOT="$CONDA_PREFIX"           \
       "${CMAKE_PLATFORM_FLAGS[@]}"            \
       -B build/                               \
       -S .
