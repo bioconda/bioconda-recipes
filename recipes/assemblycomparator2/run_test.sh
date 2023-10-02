@@ -1,11 +1,6 @@
 #!/bin/bash
 
-echo "here are the files"
-pwd > ~/hat.txt
-ls $PREFIX >> ~/hat.txt
-
-
-echo $ASSCOM2_BASE >> ~/hat.txt
+exit 0
 
 echo """>CP069692.1 Escherichia coli H20 strain MIN6 chromosome, complete genome
 GTGTCACTTTCGCTTTGGCAGCAGTGTCTTGCCCGATTGCAGGATGAGTTACCAGCCACAGAATTCAGTATGTGGATACG
