@@ -2,7 +2,7 @@
 
 
 # First we put the necessary files in into the conda build directory:
-cp snakefile config.yaml $PREFIX
+cp snakefile config.yaml LICENSE $PREFIX
 cp -r assets profiles report_subpipeline scripts tests $PREFIX
 
 # And also check that apptainer is available on the system for later
