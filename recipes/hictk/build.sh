@@ -48,7 +48,6 @@ CMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH:$PWD/build"
 
 # https://docs.conda.io/projects/conda-build/en/stable/user-guide/environment-variables.html#environment-variables-set-during-the-build-process
 cmake -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE"   \
-      -DCMAKE_FIND_DEBUG_MODE=ON               \
       -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
       -DBUILD_SHARED_LIBS=ON                   \
       -DENABLE_DEVELOPER_MODE=OFF              \
