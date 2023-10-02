@@ -3,10 +3,11 @@
 
 mkdir -p $PREFIX/bin
 
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+
 mkdir build
 cd build
-
-export CXXFLAGS=-ldeflate
 cmake ..
 
 make
