@@ -9,9 +9,9 @@ fi
 
 echo "GENOME_DIR=$GENOME_DIR" > "$config_file_path"
 
-conda install -c conda-forge -y python=3.8 requests pyfaidx
+conda install -c conda-forge -y requests pyfaidx
 
-python setup.py install
+$PREFIX/bin/python -m pip install .
 
 mkdir -p "$PREFIX/bin"
 cp "$SRC_DIR/seqstr/seqstr" "$PREFIX/bin/"
