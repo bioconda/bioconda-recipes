@@ -41,17 +41,18 @@ conan install conanfile.txt \
        -pr:h "$conan_profile" \
        --output-folder=build/
 
-# Add bioconda suffix to MoDLE version
+# Add bioconda suffix to hictk version
 sed -i.bak 's/set(HICTK_PROJECT_VERSION_SUFFIX "")/set(HICTK_PROJECT_VERSION_SUFFIX "bioconda")/' cmake/Versioning.cmake
 
 CMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH:$PWD/build"
 
 ls -lah "$CONDA_PREFIX"
-ls -lah "$CONDA_PREFIX/lib"
-ls -lah "$CONDA_PREFIX/include"
+ls -lah "$CONDA_PREFIX/lib"/*xxhash*
+ls -lah "$CONDA_PREFIX/include"/*xxhash*
 
 # https://docs.conda.io/projects/conda-build/en/stable/user-guide/environment-variables.html#environment-variables-set-during-the-build-process
 cmake -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE"   \
+      -DCMAKE_FIND_DEBUG_MODE=ON               \
       -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
       -DBUILD_SHARED_LIBS=ON                   \
       -DENABLE_DEVELOPER_MODE=OFF              \
