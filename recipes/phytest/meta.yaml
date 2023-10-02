@@ -1,0 +1,55 @@
+{% set name = "phytest" %}
+{% set version = "1.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/phytest-{{ version }}.tar.gz
+  sha256: 670600b7df8be42f7ab68395fb796e27fc781807c5f31e1f4827df2f012f3fcc
+
+build:
+  entry_points:
+    - phytest = phytest.cli:app
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8,<3.11
+    - poetry-core >=1.0.0
+    - pip
+  run:
+    - python
+    - pytest
+    - pytest-sugar
+    - pytest-htm
+    - typer
+    - biopython
+    - treetime
+    - scipy
+    - numpy
+    - pytest-xdist
+
+test:
+  imports:
+    - phytest
+  commands:
+    - pip check
+    - phytest --help
+  requires:
+    - pip
+
+about:
+  summary: Quality control for phylogenetic pipelines using pytest
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - vinisalazar
+    - rbturnbull
