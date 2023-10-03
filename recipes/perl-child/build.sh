@@ -10,6 +10,7 @@ if [ -f Build.PL ]; then
     # Make sure this goes in site
     ./Build install --installdirs site
 elif [ -f Makefile.PL ]; then
+    cpan -i ExtUtils::MakeMaker
     # Make sure this goes in site
     perl Makefile.PL INSTALLDIRS=site
     make
