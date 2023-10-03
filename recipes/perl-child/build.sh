@@ -1,22 +1,15 @@
 #!/bin/bash
 
 # If it has Build.PL use that, otherwise use Makefile.PL
+set -x -e
 
-if [ -f Makefile.PL ]; then
-    # Make sure this goes in site
+RM_DIR=${PREFIX}/share/perl-child
+mkdir -p ${RM_DIR}
+cp -r perl-child-0.013/* ${RM_DIR}
+
     cpan -i ExtUtils::MakeMaker
     perl Makefile.PL INSTALLDIRS=site
     make
     make test
     make install
-elif [ -f Build.PL ]; then
-    cpan -i Module::Build
-    perl Build.PL
-    ./Build
-    ./Build test
-    # Make sure this goes in site
-    ./Build install --installdirs site
-else
-    echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
-    exit 1
-fi
+
