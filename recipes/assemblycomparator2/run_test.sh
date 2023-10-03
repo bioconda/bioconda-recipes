@@ -1,6 +1,6 @@
 #!/bin/bash
 
-exit 0
+#exit 0
 
 echo """>CP069692.1 Escherichia coli H20 strain MIN6 chromosome, complete genome
 GTGTCACTTTCGCTTTGGCAGCAGTGTCTTGCCCGATTGCAGGATGAGTTACCAGCCACAGAATTCAGTATGTGGATACG
