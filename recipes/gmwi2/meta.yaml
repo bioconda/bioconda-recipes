@@ -1,0 +1,58 @@
+{% set name = "gmwi2" %}
+{% set version = "1.5" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-dependencies
+  run_exports:
+    - {{ pin_subpackage("gmwi2", max_pin="x") }}
+
+source:
+  url: https://github.com/danielchang2002/GMWI2/archive/{{version}}.tar.gz
+  sha256: de63741ecc88c3d13b4b259a495e938d9b026950e9ff100b6e465f8e0c38a419
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+    - setuptools
+  run:
+    - python >=3.7
+    - metaphlan =3.0.13
+    - pandas
+    - scikit-learn =1.2.2
+    - halo
+    - bbmap
+    - fastqc
+    - samtools
+    - bedtools
+    - trimmomatic
+
+test:
+  commands:
+    - metaphlan --version
+    - gmwi2 --version
+    - repair.sh --version
+    - fastqc --version
+    - bowtie2 --version
+    - samtools --version
+    - bedtools --version
+    - trimmomatic -version
+
+about:
+  home: https://github.com/danielchang2002/GMWI2
+  license: MIT
+  license_family: MIT
+  summary: Enhanced Health Status Prediction from Gut Microbiome Taxonomic Profiles
+  description: |
+    GMWI2 (Gut Microbiome Wellness Index 2) is a robust and biologically interpretable predictor of health status based on gut microbiome taxonomic profiles. 
+    On a stool metagenome sample, this command-line tool performs four major steps:
+    (1) Quality control;
+    (2) Taxonomic profiling using MetaPhlAn3 (v3.0.13) with the mpa\_v30\_CHOCOPhlAn_201901 marker database;
+    (3) Transformation of taxonomic relative abundances into a binary presence/absence profile;
+    (4) Computation of the GMWI2 score using a Lasso-penalized logistic regression model trained on a meta-dataset of 8,069 health status labeled stool shotgun metagenomes.
