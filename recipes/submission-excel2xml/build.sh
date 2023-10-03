@@ -27,16 +27,6 @@ chmod a+x $APPROOT/excel2xml_jga.rb
 chmod a+x $APPROOT/validate_meta_jga.rb
 
 
-# cp excel2xml_dra.rb $PREFIX/bin
-# cp validate_meta_dra.rb $PREFIX/bin
-# cp excel2xml_jga.rb $PREFIX/bin
-# cp validate_meta_jga.rb $PREFIX/bin
-
-# chmod a+x $PREFIX/bin/excel2xml_dra.rb
-# chmod a+x $PREFIX/bin/validate_meta_dra.rb
-# chmod a+x $PREFIX/bin/excel2xml_jga.rb
-# chmod a+x $PREFIX/bin/validate_meta_jga.rb
-
 mkdir -p $APPROOT/xsd
 
 cd $APPROOT/xsd
