@@ -1,0 +1,44 @@
+{% set name = "sharg" %}
+{% set version = "1.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/seqan/sharg-parser/releases/download/{{ version }}/sharg-{{ version }}-Source.tar.xz
+  sha256: 7330f06501718e7871e55e5fd70d0e41472cc8b34bd0e3519f8c5547510c671c
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - cmake >=3.14
+  run:
+    - bzip2
+    - zlib
+
+test:
+  commands:
+    - test -f $PREFIX/share/cmake/sharg/sharg-config.cmake
+    - test -f $PREFIX/include/sharg/version.hpp
+
+about:
+  home: https://github.com/seqan/sharg-parser
+  dev_url: https://github.com/seqan/sharg-parser
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE.md
+  doc_url: https://docs.seqan.de/sharg/{{ version }}/index.html
+  doc_source_url: https://raw.githubusercontent.com/seqan/sharg-parser/{{ version }}/README.md
+  summary: 'An argument parser for bio-c++ tools.'
+
+extra:
+  maintainers:
+    - eseiler
+    - notestaff
