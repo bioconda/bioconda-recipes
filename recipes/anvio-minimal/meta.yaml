@@ -12,7 +12,9 @@ source:
 build:
   number: 0
   noarch: python
-  script: python -m pip install --no-deps --ignore-installed -vv .
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation -vvv .
+  run_exports:
+    - {{ pin_subpackage('anvio-minimal', max_pin="x.x") }}
 
 requirements:
   host:
@@ -44,6 +46,7 @@ requirements:
     # tested with extra attention:
     - pyani ==0.2.10
     - snakemake-minimal ==5.10.0
+
 test:
   commands:
     - anvi-pan-genome --help
@@ -56,7 +59,7 @@ about:
   license_file: LICENSE.txt
   summary: "An interactive analysis and visualization platform for omics data"
   dev_url:  https://github.com/merenlab/anvio
-  
+
 extra:
   container:
     # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
