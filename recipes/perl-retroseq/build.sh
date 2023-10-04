@@ -14,3 +14,7 @@ chmod a+x ${PREFIX}/etc/conda/activate.d/retroseq-perl5lib.sh
 
 echo "unset PERL5LIB" > ${PREFIX}/etc/conda/deactivate.d/retroseq-perl5lib.sh
 chmod a+x ${PREFIX}/etc/conda/deactivate.d/retroseq-perl5lib.sh
+
+conda config --add channels bioconda
+conda config --add channels conda-forge
+conda install samtools==0.1.16
