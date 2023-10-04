@@ -12,7 +12,7 @@ executors:
     resource_class: arm.medium
 
 jobs: # a basic unit of work in a run
-  build and test (ARM):
+  build_and_test:
     parameters:
       os:
         type: executor
@@ -78,7 +78,7 @@ jobs: # a basic unit of work in a run
       - store_artifacts:
           path: /tmp/artifacts
 
-  build and upload (ARM):
+  build_and_upload:
     parameters:
       os:
         type: executor
@@ -134,7 +134,7 @@ jobs: # a basic unit of work in a run
               --fallback build
 
 workflows:
-  build_and_test:
+  build and test (ARM):
     jobs:
       - build_and_test:
           filters:
@@ -142,13 +142,18 @@ workflows:
               ignore: master
           matrix:
             parameters:
-              os: [osx-arm64, linux-aarch64]
-  build_and_push:
+              os:
+                #- osx-arm64
+                - linux-aarch64
+
+  build and upload (ARM):
     jobs:
-      - build_and_push:
+      - build_and_upload:
           filters:
             branches:
               only: master
           matrix:
             parameters:
-              os: [osx-arm64, linux-aarch64]
+              os:
+                #- osx-arm64
+                - linux-aarch64
