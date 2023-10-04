@@ -2,7 +2,7 @@
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 set -x -e
-conda config --add channels xiangyang1984
+conda install -c xiangyang1984 perl-child
 RM_DIR=${PREFIX}/share/perl-parallel-runner
 mkdir -p ${RM_DIR}
 cp -r ${SRC_DIR}/perl-parallel-runner-0.013/* ${RM_DIR}
