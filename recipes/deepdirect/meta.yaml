@@ -1,0 +1,45 @@
+{% set name = "deepdirect" %}
+{% set version = "0.1.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/deepdirect-{{ version }}.tar.gz
+  sha256: 353c08cffa781bc85c1936364be7c92df93fd102c69bd843ebee41f5bb14e2b6
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('deepdirect', max_pin='x.x') }}
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - wheel
+    - pip
+  run:
+    - python
+    - tensorflow ==2.4.0
+    - keras ==2.4.0
+    - colorlog ==6.7.0
+
+test:
+  imports:
+    - deepdirect
+  commands:
+    - deepdirect --version
+
+about:
+  home: https://github.com/Jappy0/deepdirect
+  summary: In silico approach to generate mutations for protein complexes towards a specified direction (increase/decrease) in binding affinity.
+  license: GPL-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - Tian Lan and Pengyao Ping
