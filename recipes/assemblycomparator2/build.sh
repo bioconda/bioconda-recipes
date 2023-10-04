@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 
-# First we put the necessary files in into the conda build directory:
+# First we put the necessary files in into the conda prefix directory:
 mkdir -p ${PREFIX}/assemblycomparator2
 cp asscom2 snakefile config.yaml LICENSE ${PREFIX}/assemblycomparator2
 cp -r assets conda_definitions profiles report_subpipeline scripts tests ${PREFIX}/assemblycomparator2
