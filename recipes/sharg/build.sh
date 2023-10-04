@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eux -o pipefail
+
 echo "cmake_minimum_required(VERSION 3.14)
 project(sharg NONE)
 include (\${SHARG_CLONE_DIR}/build_system/sharg-install.cmake)" > CMakeLists.txt
