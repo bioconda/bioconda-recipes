@@ -1,13 +1,16 @@
+{% set name = "raxml" %}
+{% set version = "8.2.13" %}
+
 package:
-  name: raxml
-  version: "8.2.12"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 build:
-  number: 6
+  number: 0
 
 source:
-  url: https://github.com/stamatak/standard-RAxML/archive/v8.2.12.tar.gz
-  sha256: 338f81b52b54e16090e193daf36c1d4baa9b902705cfdc7f4497e3e09718533b
+  url: https://github.com/stamatak/standard-RAxML/archive/v{{ version }}.tar.gz
+  sha256: 28e500793324bd7d330b396ef27ea49c9186fa5e1edb3d5439036dc6c33e6067
 
 requirements:
   build:
@@ -18,12 +21,13 @@ requirements:
 
 test:
   commands:
-    - raxmlHPC -h > /dev/null
+    - ls -la
+    - ./raxmlHPC -h > /dev/null
     - raxmlHPC-PTHREADS -h > /dev/null
     - raxmlHPC-SSE3 -h > /dev/null
     - raxmlHPC-PTHREADS-SSE3 -h > /dev/null
-    - raxmlHPC-AVX2 -h > /dev/null
-    - raxmlHPC-PTHREADS-AVX2 -h > /dev/null
+    - if [[ $(uname -m) == "x86_64" ]]; then raxmlHPC-AVX2 -h > /dev/null ; fi
+    - if [[ $(uname -m) == "x86_64" ]]; then raxmlHPC-PTHREADS-AVX2 -h > /dev/null ; fi 
 
 about:
   home: http://sco.h-its.org/exelixis/web/software/raxml/index.html
@@ -35,3 +39,6 @@ extra:
     - biotools:raxml
     - doi:10.1093/bioinformatics/btu033
     - usegalaxy-eu:raxml
+
+run_exports:
+  - {{ pin_subpackage("raxml", max_pin="x") }}

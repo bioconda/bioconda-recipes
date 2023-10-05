@@ -1,15 +1,21 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 case `uname` in
 Darwin) SUF=.mac;;
 Linux) SUF=.gcc;;
-*) echo "Unknown architecture"; exit 1;;
+*) echo "Unknown OS"; exit 1;;
+esac
+
+case `uname -m` in
+x86_64) OPTS=("" ".SSE3" ".AVX2");;
+aarch64) OPTS=("" ".SSE3");;
+*) echo "Unknown architecture"; exit 2;;
 esac
 
 mkdir -p $PREFIX/bin
 
 for PTHREADS in "" .PTHREADS; do
-  for OPT in "" .SSE3 .AVX2; do
+  for OPT in ${OPTS[@]}; do
     echo "######## Building Flags opt=$OPT pthread=$PTHREADS os=$SUF ######"
     MAKEFILE=Makefile${OPT}${PTHREADS}
     if [ -e ${MAKEFILE}${SUF} ]; then
