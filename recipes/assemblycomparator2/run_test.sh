@@ -2,7 +2,9 @@
 
 
 
+touch dummy.fna
 
+# If I could disable osx testing, I would like to run a simple job like assembly_stats. That would ensure 1) that all environments can be installed and 2) that the report can be created, even just for a very small genome fragment like the ecoli below.
 asscom2 --dry-run
 
 exit 0
