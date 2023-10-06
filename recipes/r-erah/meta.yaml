@@ -1,0 +1,63 @@
+{% set name = "erah" %}
+{% set posix = "m2-" if win else "" %}
+{% set version = "1.1.2" %}
+
+package:
+  name: r-{{ name }}
+  version: '{{ version }}'
+
+source:
+  url: https://cran.r-project.org/src/contrib/erah_{{ version }}.tar.gz
+  sha256: db34880f99cd0338e3154462a1145c4dd09254083686a023fa2985a2a458d237
+
+build:
+  number: 0
+  merge_build_host: false
+  script: R CMD INSTALL --build .
+  run_exports:
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - cross-r-base {{ r_base }}  # [build_platform != target_platform]
+    - autoconf  # [unix]
+    - "{{ compiler('c') }}"  # [unix]
+    - "{{ compiler('m2w64_c') }}"  # [win]
+    - "{{ compiler('cxx') }}"  # [unix]
+    - "{{ compiler('m2w64_cxx') }}"  # [win]
+    - posix  # [win]
+  host:
+    - r-XML
+    - r-base
+    - r-igraph
+    - r-r.methodss3
+    - r-ncdf4
+    - r-nnls
+    - r-quantreg
+    - r-signal
+  run:
+    - r-XML
+    - r-base
+    - r-igraph
+    - r-r.methodss3
+    - r-ncdf4
+    - r-nnls
+    - r-quantreg
+    - r-signal
+
+test:
+  commands:
+    - $R -e "library('erah')"  # [not win]
+    - "\"%R%\" -e \"library('erah')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=erah
+  summary: Automated compound deconvolution, alignment across samples, and identification of metabolites by spectral library matching in Gas Chromatography - Mass spectrometry (GC-MS) untargeted metabolomics.
+  description: Outputs a table with compound names, matching scores and the integrated area of the compound for each sample. Package implementation is described in Domingo-Almenara et al. (2016) <doi:10.1021/acs.analchem.6b02927>.
+  license: 'GPL-2 | GPL-3'
+
+extra:
+  recipe-maintainers:
+    - hechth
