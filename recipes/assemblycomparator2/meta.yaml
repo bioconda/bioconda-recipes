@@ -1,39 +1,35 @@
+{% set version = "2.5.6" %}
+
 package:
   name: assemblycomparator2
-  version: "2.5.6"
+  version: {{ version }}
 
 source:
-  #url: https://github.com/cmkobel/assemblycomparator2/archive/refs/tags/v2.5.5.tar.gz [linux]
-  #md5: 38c288550d05d44e1c5c6682ecccdc23 [linux]
-  #url: https://github.com/cmkobel/assemblycomparator2/archive/refs/heads/master.zip # [linux]
-  #md5: 5c84ad46eb1c385a07332e6f9945166a # [linux]
-  url: https://github.com/cmkobel/assemblycomparator2/archive/refs/tags/v2.5.6.tar.gz
+  url: https://github.com/cmkobel/assemblycomparator2/archive/refs/tags/v{{ version }}.tar.gz
   md5: 2ffd351078346dce8de117f973df5efc
 
 
 build:
   number: 0
-  run_exports: snakemake
+  run_exports:
+    #- {{ pin_subpackage('asscom2', max_pin="x.x") }} #  Didn't find subpackage version info for 'asscom2', which is used in a pin_subpackage expression.  Is it actually a subpackage? 
+    - asscom2
   skip: True # [osx]
+
   
-
-# This is correct but fails linting
-#build:
-#  number: 0
-#  run_exports: snakemake
-#  skip: True [not osx]
-
-# Maybe I should tryy 
-# skip: True  #[osx]
-
 
 requirements:
   run:
     - snakemake >=7.32.3
-    - mamba >=1.4.9
+    - mamba >=1.4.9 # Necessary for snakemake to install child environments during development.
 
 
-#TODO, set up a very simple test that checks that the pipeline can parse a dummy file? Or something more comprehensible?
+test:
+  commands:
+    - touch dummy.fa; asscom2 # [linux]
+    - touch dummy.fa; asscom2 --dryrun # [osx]
+    
+
 
 about:
   home: https://github.com/cmkobel/assemblycomparator2
