@@ -1,5 +1,5 @@
 {% set name = "noise2read" %}
-{% set version = "0.2.10" %}
+{% set version = "0.3.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,54 +7,49 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/noise2read-{{ version }}.tar.gz
-  sha256: 83815c0fad2d0869c63613b39bd70f0cdfa077bf02d0777e2861200d584e30d9
+  sha256: d259167a34cf99776cc3ad968c2d0aafb720b781854b09e33737c2927f34a713
 
 build:
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
-  # entry_points:
-  #   noise2read = noise2read.noise2read:main
   run_exports:
     - {{ pin_subpackage('noise2read', max_pin='x.x') }}
-
+    
 requirements:
   host:
-    - python
+    - python >=3.8
     - setuptools
     - wheel
     - pip
   run:
-    - python
+    - python >=3.8
     - biopython ==1.79
     - xgboost ==1.6.1
-    - xlsxwriter ==3.0.3
-    - tqdm ==4.66.1
-    - scikit-learn ==1.3
+    - xlsxwriter >=3.0.3
+    - scikit-learn >=1.1.1
     - networkx ==2.8.5
-    - pandas ==2.1.0
+    - pandas >=1.4.3
     - optuna >=3.1.1
     - matplotlib-base >=3.5.2
     - mpire >=2.8.0
-    - editdistance ==0.6.2
-    - imbalanced-learn ==0.9.1
-    - seaborn >=0.12.1
-    - psutil ==5.9.5
+    - editdistance >=0.6.0
+    - imbalanced-learn >=0.9.1
     - seqtk
     - bcool
 
 test:
   commands:
-    - noise2read --version
+    - noise2read -v
 
 about:
   home: https://github.com/Jappy0/noise2read
   summary: Turn noise to read
   description: >
-    noise2read, originated in a computable rule translated from PCR erring mechanism that: a rare read is erroneous if it has a neighboring read of high abundance, turns erroneous reads into their original state without bringing up any non-existing sequences into the short read set(&lt 300bp) including DNA and RNA sequencing (DNA/RNA-seq), small RNA, unique molecular identifiers (UMI) and amplicon sequencing data.
+      noise2read, originated in a computable rule translated from PCR erring mechanism that: a rare read is erroneous if it has a neighboring read of high abundance, turns erroneous reads into their original state without bringing up any non-existing sequences into the short read set(&lt 300bp) including DNA and RNA sequencing (DNA/RNA-seq), small RNA, unique molecular identifiers (UMI) and amplicon sequencing data.
   license: MIT
   license_file: LICENSE
 
 extra:
   recipe-maintainers:
-    - Pengyao Ping
+    - Jappy0
