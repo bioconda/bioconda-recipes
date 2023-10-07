@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-cd "${SRC_DIR}/MaBoSS-2.0/src"
+cd "${SRC_DIR}/MaBoSS-2.0/"
+unzip master.tar.gz
+cd MaBoSS-env-2.0-master/engine/src
 make install \
     CC="${CC}" \
     CXX="${CXX}" \
