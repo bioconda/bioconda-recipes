@@ -1,0 +1,101 @@
+#!/bin/bash -e
+
+# Function to print usage
+usage() {
+    echo USAGE:
+    echo "kosudoku-seqanalyze --barcode_file <path> --fastq_file <path> --index_fastq <path> --bt2_prefix <path> --himar_seq ACGTACGT [--tmp_dir <path>]"
+}
+
+
+VALID_ARGS=$(getopt -o b:f:i:r:s:t:h --long barcode_file:,fastq_file:,index_fastq:,bt2_prefix:,himar_seq:,tmp_dir:,help -- "$@")
+if [[ $? -ne 0 ]]; then
+    usage
+    exit 1;
+fi
+
+eval set -- "$VALID_ARGS"
+while [ : ]; do
+  case "$1" in
+    -b | --barcode_file)
+        barcode_file=$2
+        shift 2
+        ;;
+    -f | --fastq_file)
+        fastq_file=$2
+        shift 2
+        ;;
+    -i | --index_fastq)
+        index_fastq=$2
+        shift 2
+        ;;
+    -r | --bt2_prefix)
+        bt2_prefix=$2
+        shift 2
+        ;;
+    -s | --himar_seq)
+        himar_seq=$2
+        shift 2
+        ;;
+    -t | --tmp_dir)
+        tmp_dir=$2
+        shift 2
+        ;;
+    -h | --help)
+        usage
+        exit 0
+        ;;
+    --) shift; 
+        break
+        ;;
+  esac
+done
+
+
+# Create a temporary folder for intermediate output
+tmp_folder=${tmp_dir:-/tmp}/kosudoku-$(date | tr ' ' '_')-$RANDOM
+mkdir -p $tmp_folder
+
+job_file=$tmp_folder/config.inp
+touch $job_file
+
+# Generate the job file following the original repository's format.
+# Input data
+echo "barcodeFile = ${barcode_file:?input parameter undefined}" >> $job_file
+echo "fastqFiles = ${fastq_file:?input parameter undefined}" >> $job_file
+echo "indexFastqFiles = ${index_fastq:?input parameter undefined}" >> $job_file
+echo "referenceIndexPrefix = ${bt2_prefix:?input parameter undefined}" >> $job_file
+
+echo "himarSequence = ${himar_seq:?input parameter undefined}" >> $job_file
+echo "deleteTempFiles = True" >> $job_file
+echo "bowtieAlignmentMode = end-to-end" >> $job_file
+
+# Temp data
+echo "genomeAlignmentBaseDir = $tmp_folder/kosudoku-seqanalyze/genome_alignment/" >> $job_file
+echo "genomeAlignmentFilePrefix = genome_alignment" >> $job_file
+echo "genomeArrayFileName = $tmp_folder/kosudoku-seqanalyze/compiled_alignments/compiled_alignments.csv" >> $job_file
+
+echo "trimmedSequencesBaseDir = $tmp_folder/kosudoku-seqanalyze/trimmed_sequences/" >> $job_file
+echo "trimmedSequencesFilePrefix = trimmed_sequences" >> $job_file
+
+echo "indexSummaryBaseDir = $tmp_folder/kosudoku-seqanalyze/index_recognition_summary/" >> $job_file
+echo "indexSummaryFilePrefix = index_recognition_summary" >> $job_file
+
+echo "himarRecognitionBaseDir = $tmp_folder/kosudoku-seqanalyze/himar_recognition_summary/" >> $job_file
+echo "himarRecognitionFilePrefix = himar_recognition_summary" >> $job_file
+
+echo "poolFileBaseDir = $tmp_folder/kosudoku-seqanalyze/pool_files/" >> $job_file
+echo "poolFilePrefix=pool_" >> $job_file
+
+# Output data
+echo "outputLog = ./seqanalyze_log.txt" >> $job_file
+echo "poolPresenceTableFileName = ./pool_presence_table.csv" >> $job_file
+
+
+# Run the script from the package
+python "$CONDA_PREFIX/share/kosudoku/kosudoku-seqanalyze" $job_file
+
+
+# Delete the temporary data folder after successful tool execution.
+rm -r $tmp_folder
+
+

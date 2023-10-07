@@ -1,0 +1,78 @@
+#!/bin/bash -e
+
+# Function to print usage
+usage() {
+    echo USAGE:
+    echo "kosudoku-verify --verification_catalog <path> --ref_genebank <path> --ref_fasta <path> --grid_xml <path> [--tmp_dir <path>]"
+}
+
+
+VALID_ARGS=$(getopt -o c:b:f:x:t:h --long verification_catalog:,ref_genebank:,ref_fasta:,grid_xml:,tmp_dir:,help -- "$@")
+if [[ $? -ne 0 ]]; then
+    usage
+    exit 1;
+fi
+
+eval set -- "$VALID_ARGS"
+while [ : ]; do
+  case "$1" in
+    -c | --verification_catalog)
+        verification_catalog=$2
+        shift 2
+        ;;
+    -b | --ref_genebank)
+        ref_genebank=$2
+        shift 2
+        ;;
+    -f | --ref_fasta)
+        ref_fasta=$2
+        shift 2
+        ;;
+    -x | --grid_xml)
+        grid_xml=$2
+        shift 2
+        ;;
+    -t | --tmp_dir)
+        tmp_dir=$2
+        shift 2
+        ;;
+    -h | --help)
+        usage
+        exit 0
+        ;;
+    --) shift; 
+        break
+        ;;
+  esac
+done
+
+
+# Create a temporary folder for intermediate output
+tmp_folder=${tmp_dir:-/tmp}/kosudoku-$(date | tr ' ' '_')-$RANDOM
+mkdir -p $tmp_folder
+
+job_file=$tmp_folder/config.inp
+touch $job_file
+
+# Generate the job file following the original repository's format.
+# Input data
+echo "verificationCatalogFileName = ${verification_catalog:?input parameter undefined}" >> $job_file
+echo "referenceGenomeGenBankFileName = ${ref_genebank:?input parameter undefined}" >> $job_file
+echo "referenceGenomeFastaFileName = ${ref_fasta:?input parameter undefined}" >> $job_file
+echo "sudokuGridXMLFile = ${grid_xml:?input parameter undefined}" >> $job_file
+
+# Temp data
+echo "tempFileDir = $tmp_folder" >> $job_file
+
+# Output data
+echo "sangerVerificationFileName = ./sanger_verification.csv" >> $job_file
+
+
+# Run the script from the package
+python "$CONDA_PREFIX/share/kosudoku/kosudoku-verify" $job_file
+
+
+# Delete the temporary data folder after successful tool execution.
+rm -r $tmp_folder
+
+
