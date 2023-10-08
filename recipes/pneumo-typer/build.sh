@@ -4,8 +4,6 @@ set -x -e
 RM_DIR=${PREFIX}/share/pneumo-typer
 mkdir -p ${RM_DIR}
 mkdir -p ${PREFIX}/bin
-#cp -r ${SRC_DIR}/pneumo-typer-v1.0.1/* ${RM_DIR}
-#cp -r pneumo-typer/* ${RM_DIR}
 cp -r pneumo-typer-v1.0.1/* ${RM_DIR}
 cp build_env_setup.sh ${RM_DIR}
 cp conda_build.sh ${RM_DIR}
