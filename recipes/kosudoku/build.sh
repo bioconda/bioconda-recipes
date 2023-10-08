@@ -5,6 +5,6 @@ mkdir -p "${PREFIX}/share/kosudoku"
 cp -r ./programs/* "${PREFIX}/share/kosudoku/"
 
 # Copy bash wrappers to somewhere in the path
-cp ${RECIPE_DIR}/kosudoku-* "${PREFIX}/bin/"
+cp ./bash_wrappers/kosudoku-* "${PREFIX}/bin/"
 chmod +x ${PREFIX}/bin/kosudoku*
 
