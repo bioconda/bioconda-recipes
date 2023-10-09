@@ -5,7 +5,7 @@ if [[ ${target_platform}  == osx-64 ]] ; then
     tar -xzf mosdepth-latest.tar.gz
     cd mosdepth-${PKG_VERSION}
     nimble install -y "docopt@0.7.0"
-    nimble --localdeps build -y --verbose -d:release
+    nimble build -y --verbose -d:release
 else
     curl -SL https://github.com/brentp/mosdepth/releases/download/v$PKG_VERSION/mosdepth -o mosdepth
     chmod +x mosdepth
