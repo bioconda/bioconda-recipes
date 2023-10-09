@@ -1,0 +1,42 @@
+{% set name = "koverage" %}
+{% set version = "0.1.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 66da69ae446f89a30429f30437a95dccd909e8147f3260c1df88ca486a8139f4
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+  number: 0
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+
+test:
+  imports:
+    - {{ name }}
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/beardymcjohnface/Koverage
+  summary: Read-coverage statistics pipelines for multiple samples
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - beardymcjohnface
