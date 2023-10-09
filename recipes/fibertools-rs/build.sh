@@ -99,9 +99,9 @@ ft --help
 #
 # try patchelf
 #
-if [[ ${target_platform} =~ linux.* ]]; then
-    ldd "$(which ft)"
-    patchelf --print-needed $(which ft)
+#if [[ ${target_platform} =~ linux.* ]]; then
+   #ldd "$(which ft)"
+   #patchelf --print-needed $(which ft)
     #for OLD in ${PREFIX}/lib/libgomp.so*; do
     #    NEW=${OUTDIR}/lib/libgomp-a34b3233.so.1
     #    patchelf --debug --replace-needed $OLD $NEW ${PREFIX}/bin/ft
@@ -118,7 +118,7 @@ if [[ ${target_platform} =~ linux.* ]]; then
     #ft --help
     #ldd "$(which ft)"
     #patchelf --print-needed $(which ft)
-fi
+#fi
 
 #
 # test install on data
