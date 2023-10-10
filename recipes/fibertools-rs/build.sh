@@ -1,5 +1,4 @@
 #!/bin/bash -e
-exit 1
 #
 # Set the desitnation for the libtorch files
 #
@@ -41,7 +40,8 @@ rm libtorch.zip
 # patchelf --set-soname $SONAME $F
 popd
 
-echo "Done downloading libtorch"
+echo "Done downloading libtorch" 1>&2
+exit 1
 
 #
 # move libtorch to OUTDIR
@@ -55,7 +55,7 @@ else
     mv ${PREFIX}/libtorch/share/* ${OUTDIR}/share/.
 fi
 
-echo "Done setting up libtorch"
+echo "Done setting up libtorch" 1>&2
 
 #
 # fix conflict with libgomp
