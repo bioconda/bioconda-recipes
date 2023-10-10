@@ -3,6 +3,7 @@
 #
 # Set the desitnation for the libtorch files
 #
+exit 1
 OUTDIR=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 mkdir -p ${OUTDIR} ${OUTDIR}/bin ${PREFIX}/bin
 OUTDIR=${PREFIX}
@@ -41,6 +42,8 @@ rm libtorch.zip
 # patchelf --set-soname $SONAME $F
 popd
 
+echo "Done downloading libtorch"
+
 #
 # move libtorch to OUTDIR
 #
@@ -52,6 +55,8 @@ else
     mv ${PREFIX}/libtorch/include/* ${OUTDIR}/include/.
     mv ${PREFIX}/libtorch/share/* ${OUTDIR}/share/.
 fi
+
+echo "Done setting up libtorch"
 
 #
 # fix conflict with libgomp
@@ -100,24 +105,24 @@ ft --help
 # try patchelf
 #
 #if [[ ${target_platform} =~ linux.* ]]; then
-   #ldd "$(which ft)"
-   #patchelf --print-needed $(which ft)
-    #for OLD in ${PREFIX}/lib/libgomp.so*; do
-    #    NEW=${OUTDIR}/lib/libgomp-a34b3233.so.1
-    #    patchelf --debug --replace-needed $OLD $NEW ${PREFIX}/bin/ft
-    #    patchelf --debug --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
-    #done
-    #echo "after patchelf"
-    #patchelf --print-needed $(which ft)
-    #OLD=${OUTDIR}/lib/libtorch_cpu.so
-    #NEW=${OUTDIR}/lib/libmine.so.1
-    #mv $OLD $NEW
-    #patchelf --replace-needed $OLD $NEW ${PREFIX}/bin/ft
-    #patchelf --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
-    #patchelf --set-rpath \$ORIGIN/../lib ${PREFIX}/bin/ft
-    #ft --help
-    #ldd "$(which ft)"
-    #patchelf --print-needed $(which ft)
+#ldd "$(which ft)"
+#patchelf --print-needed $(which ft)
+#for OLD in ${PREFIX}/lib/libgomp.so*; do
+#    NEW=${OUTDIR}/lib/libgomp-a34b3233.so.1
+#    patchelf --debug --replace-needed $OLD $NEW ${PREFIX}/bin/ft
+#    patchelf --debug --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
+#done
+#echo "after patchelf"
+#patchelf --print-needed $(which ft)
+#OLD=${OUTDIR}/lib/libtorch_cpu.so
+#NEW=${OUTDIR}/lib/libmine.so.1
+#mv $OLD $NEW
+#patchelf --replace-needed $OLD $NEW ${PREFIX}/bin/ft
+#patchelf --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
+#patchelf --set-rpath \$ORIGIN/../lib ${PREFIX}/bin/ft
+#ft --help
+#ldd "$(which ft)"
+#patchelf --print-needed $(which ft)
 #fi
 
 #
