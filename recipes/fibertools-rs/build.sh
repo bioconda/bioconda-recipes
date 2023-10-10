@@ -1,9 +1,8 @@
 #!/bin/bash -e
-
+exit 1
 #
 # Set the desitnation for the libtorch files
 #
-exit 1
 OUTDIR=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 mkdir -p ${OUTDIR} ${OUTDIR}/bin ${PREFIX}/bin
 OUTDIR=${PREFIX}
