@@ -1,0 +1,45 @@
+{% set name = "moses" %}
+{% set version = "0.10.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/moses-{{ version }}.tar.gz
+  sha256: e3a1068099d9bb9768e71380f452e18c4f523b7c95208ba1e8f123d3af6dfce7
+
+build:
+  entry_points:
+    - moses = moses.cmd:main
+    - staff = moses.staff.cmd:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+
+test:
+  imports:
+    - moses
+  commands:
+    - pip check
+    - moses --help
+    - staff --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/l04m33/moses
+  summary: TLS encrypted socks5 proxy
+  license: MIT
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - jaeakle
