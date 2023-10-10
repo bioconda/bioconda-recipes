@@ -41,7 +41,6 @@ rm libtorch.zip
 popd
 
 echo "Done downloading libtorch" 1>&2
-exit 1
 
 #
 # move libtorch to OUTDIR
@@ -85,6 +84,8 @@ pushd ${PREFIX}
 cargo install --all-features --no-track --verbose \
     --root "${PREFIX}" --path "${HOME}"
 popd
+
+echo "Done building ft" 1>&2
 
 #
 # clean up the include files since they are not needed and there is a lot of them ~8,000
