@@ -1,4 +1,4 @@
 #!/bin/sh
 ./configure --prefix=$PREFIX 
-make
+make CFLAGS="$CFLAGS -fcommon"
 make install

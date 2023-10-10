@@ -3,7 +3,7 @@
 set -x -e
 
 #export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libstdc++ -stdlib=libc++ -DUSE_BOOST"
-export CXXFLAGS="${CXXFLAGS} -std=c++11  -DUSE_BOOST -I${PREFIX}/include/bamtools -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -std=c++11  -DUSE_BOOST -I${PREFIX}/include"
 
 mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/scripts
@@ -20,9 +20,12 @@ fi
 make \
     CC="${CC}" \
     CXX="${CXX}" \
-    BAMTOOLS_CC="${CC}" \
-    BAMTOOLS_CXX="${CXX}" \
-    BAMTOOLS="${PREFIX}" \
+    INCLUDE_PATH_BAMTOOLS="-I${PREFIX}/include/bamtools" \
+    LIBRARY_PATH_BAMTOOLS="-L${PREFIX}/lib" \
+    INCLUDE_PATH_LPSOLVE="-I${PREFIX}/include/lpsolve" \
+    LIBRARY_PATH_LPSOLVE="-L${PREFIX}/lib" \
+    INCLUDE_PATH_HTSLIB="-I${PREFIX}/include/htslib" \
+    LIBRARY_PATH_HTSLIB="-L${PREFIX}/lib" \
     COMPGENPRED=true \
     MYSQL=false \
     $sqlite
@@ -35,7 +38,7 @@ find scripts -name "*.pl" | xargs -I {} mv {} perl-build
 cd perl-build
 # affects tests for Augustus 3.3:
 # https://github.com/Gaius-Augustus/Augustus/commit/7ca3ab
-sed -i'' -e '1s/perl -w/perl/' *.pl
+#sed -i'' -e '1s/perl -w/perl/' *.pl
 cp ${RECIPE_DIR}/Build.PL ./
 perl ./Build.PL
 perl ./Build manifest

@@ -20,6 +20,7 @@ cp -Rv ./* ${APPROOT}/
 ln -s ${APPROOT}/dfast_qc ${PREFIX}/bin/
 ln -s ${APPROOT}/dqc_admin_tools.py ${PREFIX}/bin/
 ln -s ${APPROOT}/initial_setup.sh ${PREFIX}/bin/dqc_initial_setup.sh
+ln -s ${APPROOT}/dqc_ref_manager.py ${PREFIX}/bin/
 
 # ${PREFIX}/bin/dfast_qc --version
 dfast_qc --version

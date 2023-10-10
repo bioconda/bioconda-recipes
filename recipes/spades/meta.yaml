@@ -1,18 +1,18 @@
-{% set version = "3.15.4" %}
-{% set sha256 = "3b241c528a42a8bdfdf23e5bf8f0084834790590d08491decea9f0f009d8589f" %}
+{% set version = "3.15.5" %}
+{% set sha256 = "155c3640d571f2e7b19a05031d1fd0d19bd82df785d38870fb93bd241b12bbfa" %}
 
 package:
   name: spades
   version: {{ version }}
 
 source:
-  url: https://github.com/ablab/spades/releases/download/v{{version}}/SPAdes-{{version}}.tar.gz
+  url: https://github.com/ablab/spades/releases/download/v{{version}}/SPAdes-{{version}}.tar.gz # [linux]
+  url: https://github.com/ablab/spades/releases/download/v{{version}}/SPAdes-{{version}}-Darwin.tar.gz # [osx]
   sha256: {{ sha256 }}
   patches:
     - 0001-change-verbosity.patch
 
 build:
-  skip: true  # [linux]
   number: 1
 
 requirements:
@@ -31,7 +31,10 @@ requirements:
     - bzip2
     - sysroot_linux-64=2.17 # [linux]
   run:
-    - python <=3.9
+    - python <=3.9 # [osx]
+    - llvm-openmp  # [osx]
+    - openmp  # [linux]
+    - python
     - sysroot_linux-64=2.17 # [linux]
 
 test:

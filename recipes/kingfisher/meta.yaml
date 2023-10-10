@@ -1,0 +1,55 @@
+{% set name = "kingfisher" %}
+{% set version = "0.3.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/kingfisher-{{ version }}.tar.gz
+  sha256: 2d2dae22f7345a5ad7ba8d64e310a9033667ca09aabdf3bea4ace05a629c388f
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage('kingfisher', max_pin="x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - extern
+    - requests
+    - tqdm
+    - pandas
+    - bird_tool_utils_python >=0.4.1
+    - pyarrow
+    - awscli
+    - pigz
+    - curl
+    - sra-tools >=3.0.5
+    - aria2 >=1.36.0
+    - sracat
+
+test:
+  imports:
+    - kingfisher
+  commands:
+    - pip check
+    - kingfisher --version | grep {{ version }}
+  requires:
+    - pip
+
+about:
+  home: https://github.com/wwood/kingfisher-download
+  summary: Download/extract biological FASTA/Q read data and metadata
+  license: GPL-3.0-or-later
+  license_file: LICENCE.txt
+
+extra:
+  recipe-maintainers:
+    - wwood

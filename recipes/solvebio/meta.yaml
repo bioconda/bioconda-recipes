@@ -1,5 +1,5 @@
-{% set version = "2.18.1" %}
-{% set sha256 = "b2c74cabdad29b2208fbb668c67e5e8d435c7c222318798da4490081598c83a1" %}
+{% set version = "2.24.2" %}
+{% set sha256 = "f3ba52bbb45c3cfc38bf186c9699c6ce1cbe3a5f56fc270794ffc854effc81f4" %}
 
 package:
   name: solvebio
@@ -15,6 +15,8 @@ build:
   entry_points:
     - solvebio = solvebio.cli.main:main
   script: python -m pip install --no-deps --ignore-installed --no-cache-dir .
+  run_exports:
+    - {{ pin_subpackage("solvebio", max_pin="x.x") }}
 
 requirements:
   host:
@@ -27,19 +29,19 @@ requirements:
     - pyprind
     - pycurl >=7.0.0
     - requests >=2.0.0
-      # For dash, if enabled along with dash-auth
-      # - flask
-      # - flask-seasurf
+    - dash-auth <2
+    - dash-html-components
+    - dash-core-components
+    - flask
+    - flask-seasurf
 
 test:
   imports:
     - solvebio
     - solvebio.cli
     - solvebio.contrib
-      # Requires dash-auth, not yet packaged in conda
-      #- solvebio.contrib.dash
-      #- solvebio.contrib.dash.tests
-    - solvebio.contrib.vcf_parser
+    - solvebio.contrib.dash
+    - solvebio.contrib.dash.tests
     - solvebio.resource
     - solvebio.test
     - solvebio.utils

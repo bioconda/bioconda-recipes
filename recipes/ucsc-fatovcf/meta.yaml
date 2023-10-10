@@ -1,30 +1,34 @@
 {% set package = "ucsc-fatovcf" %}
 {% set program = "faToVcf" %}
-{% set version = "407" %}
-{% set sha256 = "b7b2ed0b2e7a89d8821a9048e2c89a667795bb871b7eb3764d0e219560a95ffb" %}
+{% set version = "448" %}
+{% set sha256 = "90c28f06f3f5b6d79ff141cbf745e6a0c1b289a2ce640bbd1b0a14c826f08a85" %}
 
 package:
-  name: "{{ package }}"
-  version: "{{ version }}"
+  name: {{ package }}
+  version: {{ version }}
 
 source:
-  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v407.src.tgz"
-  sha256: "{{ sha256 }}"
+  url: http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz
+  sha256: {{ sha256 }}
+  patches:
+    - include.patch
 
 build:
+  number: 0
   skip: True  # [osx]
-  number: 1
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - binutils # [linux]
   host:
     - libpng
     - libuuid
     - mysql-connector-c
     - openssl
+    - libopenssl-static
     - zlib
   run:
     - libpng

@@ -1,9 +1,10 @@
 #!/bin/bash
-mkdir -p $PREFIX/bin
-outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-mkdir -p $outdir
-cp -r * $outdir/
-cp "$RECIPE_DIR/FlashLFQ.sh" "$outdir/FlashLFQ"
-chmod +x "$outdir/FlashLFQ"
-ln -s "$outdir/FlashLFQ" "$PREFIX/bin"
+PREFIX=$(echo "${PREFIX}" | tr '\\' '/')
+DOTNET_ROOT="${PREFIX}/lib/dotnet"
+FLASHLFQ_ROOT=$DOTNET_ROOT/tools/flashlfq
+
+mkdir -p $PREFIX/bin $FLASHLFQ_ROOT
+cp -r $SRC_DIR/* $FLASHLFQ_ROOT
+cp "$RECIPE_DIR/FlashLFQ.sh" "$PREFIX/bin/FlashLFQ"
+chmod +x "$PREFIX/bin/FlashLFQ"
 
