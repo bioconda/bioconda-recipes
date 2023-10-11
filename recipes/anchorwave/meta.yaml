@@ -1,19 +1,26 @@
-{% set name = "AnchorWave" %}
+{% set name = "anchorwave" %}
 {% set version = "1.2.1" %}
 {% set tag = "v1.2.1" %}
 {% set sha256 = "0e64f7b62579bbf9106a7a2f13330b8e16846176d6423db648d79b74b3dff2e7" %}
 
 package:
-  name: {{ name | lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/baoxingsong/AnchorWave/archive/refs/tags/{{ tag }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - patches/01-macOS-x86-build.patch  # [osx]
 
 build:
-  number: 1
-  skip: True  # [not linux]
+  number: 2
+  script_env:
+    - TARGET_PLATFORM=macOS  # [osx]
+    - TARGET_PLATFORM=Linux  # [linux]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  skip: True  # [not unix]
 
 requirements:
   build:
