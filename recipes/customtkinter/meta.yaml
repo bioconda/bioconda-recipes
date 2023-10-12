@@ -1,0 +1,47 @@
+{% set name = "customtkinter" %}
+{% set version = "5.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/customtkinter-{{ version }}.tar.gz
+  sha256: e93448a8d22121e20ec16e95960a8306e17cf7e0079766f5804b2e855e614937
+
+build:
+  script: "{{ PYTHON }} -m pip install . --no-deps -vvv"
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python
+    - setuptools >=42
+    - wheel
+    - pip
+  run:
+    - python
+    - darkdetect
+    - typing-extensions  # [py<=37]
+    - xorg-libx11
+
+test:
+  imports:
+    - customtkinter
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://customtkinter.tomschimansky.com
+  summary: Create modern looking GUIs with Python
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - ypriverol
