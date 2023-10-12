@@ -26,7 +26,7 @@ echo "$(cat header.txt $gem_path/bin/asession)" > $gem_path/bin/asession
 mv $gem_path $PREFIX/share/rubygems/gems
 ln -s $PREFIX/share/rubygems/gems/${PKG_NAME}-${PKG_VERSION}/bin/* $PREFIX/bin
 
-export HOME="$PREFIX"
-ascli conf ascp install
-cp $HOME/.aspera/sdk/ascp $PREFIX/bin
-rm -r $HOME/.aspera
+export ASCLI_HOME="$PREFIX/etc/aspera"
+ascli conf ascp install && ascli config ascp info 
+cp $ASCLI_HOME/aspera-license .
+ln -s $ASCLI_HOME/{ascp,aspera-license} $PREFIX/bin
