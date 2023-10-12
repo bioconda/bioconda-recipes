@@ -1,0 +1,50 @@
+{% set name = "scrnasim-toolz" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/zavolanlab/scRNAsim-toolz/archive/refs/tags/v0.1.0.tar.gz
+  sha256: 738f420e12fec1730927894debdf495953aa9e8bb288e901fde5caacac0042a9
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - transcript-sampler = scRNAsim_toolz.transcript_sampler.cli:main
+    - structure-generator = scRNAsim_toolz.structure_generator.cli:app
+    - sequence-extractor = scRNAsim_toolz.sequence_extractor.cli:main
+    - priming-site-predictor = scRNAsim_toolz.priming_site_predictor.cli:main
+    - cdna-generator = scRNAsim_toolz.cdna_generator.cli:main
+    - fragment-selector = scRNAsim_toolz.fragment_selector.cli:main
+    - read-sequencer = scRNAsim_toolz.read_sequencer.cli:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  host:
+    - python <=3.10
+    - pip
+    - setuptools-git >=1.2
+  run:
+    - python <=3.10
+    - biopython >=1.78
+    - numpy >=1.23.3
+    - pandas >=1.4.4
+    - packaging
+    - importlib-metadata
+    - polars ==0.16.17
+    - gtfparse
+
+test:
+  commands:
+    - transcript-sampler --version
+
+about:
+  home: https://github.com/zavolanlab/scRNAsim-toolz
+  license: MIT License
+  license_file: LICENSE
+  summary: Tools used by scRNAsim workflow.
