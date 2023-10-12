@@ -1,5 +1,5 @@
 {% set name = "ms2rescore" %}
-{% set version = "3.0.0.dev4" %}
+{% set version = "3.0.0b1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/ms2rescore-{{ version }}.tar.gz
-  sha256: bcc18893e4bed73b02953c310e12680138bfb0eb133107c1cf7bb2ab2be0471e
+  sha256: d3fa5112038d2e92a916f57b47f634fec5235836260fe0949fd8cc4549cc7410
 
 build:
   number: 0
@@ -15,30 +15,35 @@ build:
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
   entry_points:
-    - ms2rescore=ms2rescore.__main__:main
-    - ms2rescore-gui=ms2rescore.gui:main
+    - ms2rescore = ms2rescore.__main__:main
+    - ms2rescore-gui = ms2rescore.gui.__main__:main
+    - ms2rescore-report = ms2rescore.report.__main__:main
   script: "{{ PYTHON }} -m pip install . --no-deps -vvv"
 
 requirements:
   host:
-    - python >=3.7
+    - python >=3.8
+    - flit-core >=3.2,<4
     - pip
   run:
-    - python >=3.7
-    - numpy
-    - pandas
-    - scikit-learn
-    - scipy
-    - tqdm
-    - pyteomics
-    - lxml
-    - ms2pip
-    - click
-    - cascade-config
-    - matplotlib-base
-    - seaborn
-    - statsmodels
-    - deeplc
+    - python >=3.8
+    - numpy >=1.16.0
+    - pandas >=1.0
+    - rich >=12
+    - pyteomics >=4.1.0
+    - lxml >=4.5
+    - ms2pip >=4.0.0-dev4
+    - click >=7
+    - cascade-config >=0.4.0
+    - deeplc >=2.2
+    - deeplcretrainer ==0.1.17
+    - tomli >=2  # [py<311]
+    - psm_utils >=0.4
+    - customtkinter >=5,<6
+    - mokapot >=0.9
+    - pydantic >=1.8.2,<2
+    - jinja2 >=3
+    - plotly >=5
 
 test:
   imports:
@@ -47,6 +52,7 @@ test:
     - pip check
     - ms2rescore --help
     - ms2rescore-gui --help
+    - ms2rescore-report --help
   requires:
     - pip
 
