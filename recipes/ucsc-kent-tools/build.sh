@@ -15,7 +15,5 @@ echo ""
 echo ""
 ls $PREFIX
 
-exit 1
-
 chmod +x $BINDIR/*
 cp -r $BINDIR/* "$PREFIX/bin/."
