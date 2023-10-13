@@ -27,17 +27,18 @@ jobs: # a basic unit of work in a run
             build=0
             for file in $files; do
               echo $file
-              # Next line for debugging
-              cat $file | sed -E 's/(.*)\{[%{](.*)[%}]\}(.*)/# \1\2\3/g'
-              
-              additional_platforms=$(cat $file | sed -E 's/(.*)\{[%{](.*)[%}]\}(.*)/# \1\2\3/g' | sudo yq '.extra.additional-platforms[]')
-                for additional_platform in $additional_platforms; do
-                    if [ "${CIRCLE_JOB}" = "build_and_test-${additional_platform}" ]
-                    then
-                        build=1
-                        break
-                    fi
-                done
+              additional_platforms=$(cat $file \
+                | sed -E 's/(.*)\{%(.*)%\}(.*)/# \1\2\3/g' \
+                | sed -E 's/(.*)\{\{(.*)\}\}(.*)/\1\2\3/g' \
+                | sudo yq '.extra.additional-platforms[]')
+
+              for additional_platform in $additional_platforms; do
+                if [ "${CIRCLE_JOB}" = "build_and_test-${additional_platform}" ]
+                then
+                  build=1
+                  break
+                fi
+              done
             done
 
             if [[ build -lt 1 ]]
@@ -119,14 +120,18 @@ jobs: # a basic unit of work in a run
             build=0
             for file in $files; do
               echo $file
-              additional_platforms=$(cat $file | sed -E 's/(.*)\{[%{](.*)[%}]\}(.*)/# \1\2\3/g' | sudo yq '.extra.additional-platforms[]')
-                for additional_platform in $additional_platforms; do
-                    if [ "${CIRCLE_JOB}" = "build_and_upload-${additional_platform}" ]
-                    then
-                        build=1
-                        break
-                    fi
-                done
+              additional_platforms=$(cat $file \
+                | sed -E 's/(.*)\{%(.*)%\}(.*)/# \1\2\3/g' \
+                | sed -E 's/(.*)\{\{(.*)\}\}(.*)/\1\2\3/g' \
+                | sudo yq '.extra.additional-platforms[]')
+
+              for additional_platform in $additional_platforms; do
+                if [ "${CIRCLE_JOB}" = "build_and_upload-${additional_platform}" ]
+                then
+                  build=1
+                  break
+                fi
+              done
             done
 
             if [[ build -lt 1 ]]
