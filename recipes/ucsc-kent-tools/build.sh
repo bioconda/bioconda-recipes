@@ -10,5 +10,5 @@ elif [[ ${target_platform} =~ osx.* ]]; then
 fi
 
 chmod +x $BINDIR/*
-cp $BINDIR/* "$PREFIX/bin/."
+cp -r $BINDIR/* "$PREFIX/bin/."
 
