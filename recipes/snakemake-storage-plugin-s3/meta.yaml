@@ -1,0 +1,44 @@
+{% set name = "snakemake-storage-plugin-s3" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snakemake_storage_plugin_s3-{{ version }}.tar.gz
+  sha256: 305ade6c7b6bca524278c74be9a9075b6753ededa21859680dd587e7a77d26d1
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.9,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.9.0,<4.0.0
+    - snakemake-interface-common >=1.10.0,<2.0.0
+    - snakemake-interface-storage-plugins >=1.1.1,<2.0.0
+    - boto3 >=1.28.55,<2.0.0
+    - botocore >=1.31.55,<2.0.0
+
+test:
+  imports:
+    - snakemake_storage_plugin_s3
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  summary: A Snakemake storage plugin for S3 API storage (AWS S3, MinIO, etc.)
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - koesterlab
