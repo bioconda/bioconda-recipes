@@ -1,0 +1,49 @@
+{% set package = "ucsc-kent-tools" %}
+{% set version = "454" %}
+{% set sha256 = "dd547be640684982b27e419fa891d359d0693fbcf2f36d57b4a916939d31f1a7" %}
+
+package:
+  name: {{ package }}
+  version: {{ version }}
+
+source:
+  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('ucsc-kent-tools', max_pin="x") }}
+  ignore_run_exports:
+    - libpng
+    - libuuid
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - binutils # [linux]
+  host:
+    - libpng
+    - libuuid
+    - mysql-connector-c
+    - openssl
+    - libopenssl-static
+    - zlib
+  run:
+    - libpng
+    - libuuid
+    - mysql-connector-c
+    - openssl
+
+test:
+  commands:
+    # just check for existence, because the individual packages have no unified behavior
+    - which bedToBigBed
+    - which bamToPsl
+
+about:
+  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
+  license: "varies; see http://genome.ucsc.edu/license"
+  summary: "All ucsc kent tools"
