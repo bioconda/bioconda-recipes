@@ -10,8 +10,10 @@ elif [[ ${target_platform} =~ osx.* ]]; then
     rsync -aP rsync://hgdownload.soe.ucsc.edu/genome/admin/exe/macOSX.x86_64/ $BINDIR/
 fi
 
-ls
-$BINDIR
+ls $BINDIR
+echo ""
+echo ""
+ls $PREFIX
 
 exit 1
 
