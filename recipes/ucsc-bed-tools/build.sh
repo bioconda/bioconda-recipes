@@ -10,9 +10,9 @@ fi
 rsync -ap \
     --include='*/' --exclude='*' \
     --include='*bed*' \
-    --include='*Bed*' \
-    --include='*wig*' \
-    --include='*Wig*' \
+    --include='*bigBed' \
+    --include='*ToBed*' \
+    --include='*bigWig*' \
     "$SRC" "$PREFIX/bin/."
 
 ls "$PREFIX/bin/"
