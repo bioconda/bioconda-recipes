@@ -11,7 +11,7 @@ elif [[ ${target_platform} =~ osx.* ]]; then
 fi
 
 #cp -r $BINDIR/* "$PREFIX/bin/."
-rync -ap \
+rsync -ap \
     --include='*/' --exclude='*' \
     --include='*bed*' \
     --include='*Bed*' \
