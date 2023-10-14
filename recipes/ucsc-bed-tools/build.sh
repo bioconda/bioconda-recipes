@@ -19,4 +19,6 @@ rync -ap \
     --include='*Wig*' \
     "$SRC" "$PREFIX/bin/."
 
+ls "$PREFIX/bin/"
+
 chmod +x "$PREFIX/bin/"*
