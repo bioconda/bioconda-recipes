@@ -17,4 +17,4 @@ ls $PREFIX
 
 chmod +x $BINDIR/*
 #cp -r $BINDIR/* "$PREFIX/bin/."
-mv $BINDIR/*{bed,Bed,wig,Wig}* "$PREFIX/bin/."
+mv "$(ls $BINDIR/*{bed,Bed,wig,Wig}* | sort -u)" "$PREFIX/bin/."
