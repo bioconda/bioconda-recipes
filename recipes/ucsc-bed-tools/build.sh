@@ -15,9 +15,9 @@ echo ""
 echo ""
 ls $PREFIX
 
-chmod +x $BINDIR/*
 #cp -r $BINDIR/* "$PREFIX/bin/."
 pushd $BINDIR
+chmod +x *
 mv "*bed*" "$PREFIX/bin/."
 mv "*Bed*" "$PREFIX/bin/."
 mv "*wig*" "$PREFIX/bin/."
