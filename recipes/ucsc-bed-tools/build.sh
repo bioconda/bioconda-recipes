@@ -8,11 +8,12 @@ elif [[ ${target_platform} =~ osx.* ]]; then
 fi
 
 rsync -ap \
-    --include='*/' --exclude='*' \
+    --include='*/' \
     --include='*bed*' \
     --include='*bigBed' \
     --include='*ToBed*' \
     --include='*bigWig*' \
+    --exclude='*' \
     "$SRC" "$PREFIX/bin/."
 
 ls "$PREFIX/bin/"
