@@ -7,7 +7,7 @@ elif [[ ${target_platform} =~ osx.* ]]; then
     SRC="rsync://hgdownload.soe.ucsc.edu/genome/admin/exe/macOSX.x86_64/"
 fi
 
-rsync -ap \
+rsync -mapvP \
     --include='*/' \
     --include='*bed*' \
     --include='*bigBed' \
