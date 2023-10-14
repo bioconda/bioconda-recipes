@@ -18,7 +18,8 @@ ls $PREFIX
 #cp -r $BINDIR/* "$PREFIX/bin/."
 pushd $BINDIR
 chmod +x *
-mv "*bed*" "$PREFIX/bin/."
+ls *
+mv "bed*" "$PREFIX/bin/."
 mv "*Bed*" "$PREFIX/bin/."
 mv "*wig*" "$PREFIX/bin/."
 mv "*Wig*" "$PREFIX/bin/."
