@@ -14,6 +14,7 @@ rsync -ap \
     --include='*ToBed*' \
     --include='*bigWig*' \
     --exclude='*' \
+    --exclude="blat" \
     "$SRC" "$PREFIX/bin/."
 
 ls "$PREFIX/bin/"
