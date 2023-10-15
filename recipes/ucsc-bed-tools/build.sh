@@ -17,6 +17,8 @@ rsync -mapvP \
     --exclude="blat" \
     "$SRC" "$PREFIX/bin/."
 
-ls "$PREFIX/bin/"
-
 chmod +x "$PREFIX/bin/"*
+
+pushd "$PREFIX/bin/"
+rm bedExtendRanges bedItemOverlapCount bedToGenePred genePredToBed bedCoverage
+popd
