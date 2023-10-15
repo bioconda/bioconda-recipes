@@ -9,22 +9,25 @@ source:
   sha256: 3b82a36138ebbebf6efe5203da4f9dfae9d0335137bac9775d5b427021aa5645
 
 build:
-  number: 2
+  number: 0
   # Skipping py>=38 since no pytorch-cpu builds for Py3.8 are available.	  skip: True  # [py27]
   skip: True  # [py<30 or py>=38]
   entry_points:
     - vamb=vamb.__main__:main
   script: {{ PYTHON }} -m pip install . --no-deps -vv
+  build:
+    run_exports:
+      - {{ pin_subpackage('vamb', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - python >=3.9.0,<3.12
+    - python '>=3.9.0,<3.12'
     - pip
     - cython ~=0.29.5
   run:
-    - python >=3.9.0,<3.12
+    - 'python >=3.9.0,<3.12'
     - numpy ==1.24.2
     - torch ==1.13.1
     - pycoverm ==0.6.0
