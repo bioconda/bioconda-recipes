@@ -1,0 +1,55 @@
+{% set org = "t2diabetesgenes" %}
+{% set pkg_name = "t1dgrs2" %}
+{% set version = "0.1.1" %}
+{% set build_num = 0 %}
+
+package:
+  name: "{{ pkg_name }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/{{ org }}/{{ pkg_name }}/archive/refs/tags/{{ version }}.tar.gz"
+  sha256: 439bb4bab8910a688607cb8516445c2a5cc162f0b316b4bf343d3e17bdca5adf
+
+build:
+  number: "{{ build_num }}"
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed -vv ."
+  noarch: python
+  run_exports:
+    - "{{ pin_subpackage('t1dgrs2', max_pin='x') }}"
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools
+    - pyyaml ==6.0.*
+  run:
+    - python >=3.11
+    - numpy ==1.24.*
+    - pandas ==1.5.*
+    - pyyaml ==6.0.*
+    - scipy ==1.10.*
+    - setuptools ==67.6.*
+    - wheel ==0.40.*
+    - plink
+
+test:
+  source_files:
+    - tests
+  requires:
+    - pytest ==7.3.*
+    - pytest-cov ==4.0.*
+
+about:
+  home: "https://github.com/{{ org }}/{{ pkg_name }}"
+  license: GPLv3
+  license_family: GPL
+  license_file: LICENSE
+  summary: Generate a Type 1 Diabetes Genetic Risk Score (T1D GRS) that accounts for interactions between HLA DR-DQ risk haplotypes.
+  description: "An improved T1D GRS (by Sharp et al., 2019) that incorporates both non-HLA and HLA risk components in discriminating between cases and controls, by accounting for interactions between HLA DR-DQ haplotype combinations. This uses 67 T1D-associated variants in either GRCh37 or GRCh38 to perform both a linear scoring of the genetic risk, with the added HLA DR-DQ interaction effect for the final GRS.\nThis Python package can be used on both imputed genotyping array and next generation sequencing (e.g., whole genome sequencing) input datasets, but will require quality control procedures to be applied beforehand.\nRequired: PLINK 1.9 fileset (.bed, .bim, .fam).\n\
+    \n### References\n\
+    1. Oram RA, Patel K, Hill A, et al. (2016) A Type 1 Diabetes Genetic Risk Score Can Aid Discrimination Between Type 1 and Type 2 Diabetes in Young Adults. Diabetes Care 39(3): 337-344. [10.2337/dc15-1111](https://doi.org/10.2337/dc15-1111).\n\
+    2. Patel KA, Oram RA, Flanagan SE, et al. (2016) Type 1 Diabetes Genetic Risk Score: A Novel Tool to Discriminate Monogenic and Type 1 Diabetes. Diabetes 65(7): 2094-2099. [10.2337/db15-1690](https://doi.org/10.2337/db15-1690).\n\
+    3. Sharp SA, Rich SS, Wood AR, et al. (2019) Development and Standardization of an Improved Type 1 Diabetes Genetic Risk Score for Use in Newborn Screening and Incident Diagnosis. Diabetes Care 42(2): 200-207. [10.2337/dc18-1785](https://doi.org/10.2337/dc18-1785).\n\
+    \n"
