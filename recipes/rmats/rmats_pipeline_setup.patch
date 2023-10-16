@@ -1,0 +1,25 @@
+--- ./rMATS_pipeline/setup.py	2023-10-16 14:29:05.394660000 -0400
++++ ./rMATS_pipeline/setup.py	2023-10-16 14:29:05.394660000 -0400
+@@ -1,6 +1,7 @@
+ import os
+ from distutils.core import setup
+ from distutils.extension import Extension
++from Cython import __version__ as cython_version
+ from Cython.Build import cythonize
+ from Cython.Distutils import build_ext
+ 
+@@ -24,8 +25,13 @@
+               )
+     ]
+ 
++# https://cython.readthedocs.io/en/latest/src/userguide/migrating_to_cy30.html#exception-values-and-noexcept
++compiler_directives = dict()
++if cython_version.startswith('3'):
++    compiler_directives['legacy_implicit_noexcept'] = True
++
+ setup(
+     name = 'rmats.rmatspipeline',
+-    ext_modules = cythonize(asevent_ext),
++    ext_modules = cythonize(asevent_ext, compiler_directives=compiler_directives),
+     cmdclass = {'build_ext': build_ext},
+ )
