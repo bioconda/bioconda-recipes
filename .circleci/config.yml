@@ -24,7 +24,10 @@ jobs: # a basic unit of work in a run
           name: Check for Additional Platforms
           command: |
             # Download ARM version of yq
-            wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_arm64 -O /usr/local/bin/yq
+            yq_platform=$(uname)
+            yq_arch=$(uname -m)
+            [[ $yq_arch = "aarch64" ]] && yq_arch="arm64"
+            wget https://github.com/mikefarah/yq/releases/latest/download/yq_${yq_platform}_${yq_arch} -O /usr/local/bin/yq
 
             # Find recipes changed on this branch
             files=`git diff --name-only --diff-filter AMR origin/master...HEAD | grep -E 'meta.yaml$' `
@@ -123,7 +126,10 @@ jobs: # a basic unit of work in a run
           name: Check for Additional Platforms
           command: |
             # Download ARM version of yq
-            wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_arm64 -O /usr/local/bin/yq
+            yq_platform=$(uname)
+            yq_arch=$(uname -m)
+            [[ $yq_arch = "aarch64" ]] && yq_arch="arm64"
+            wget https://github.com/mikefarah/yq/releases/latest/download/yq_${yq_platform}_${yq_arch} -O /usr/local/bin/yq
 
             # Find recipes changed from this merge
             files=`git diff --name-only --diff-filter AMR ${CIRCLE_SHA1}~1 ${CIRCLE_SHA1} | grep -E 'meta.yaml$' `
