@@ -18,53 +18,40 @@ jobs: # a basic unit of work in a run
         type: executor
     executor: << parameters.os >>
     steps:
-      - run:
-          name: Debugging
-          command: |
-            file $(which yq)
-            wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_arm64 -O /usr/local/bin/yq
-            file $(which yq)
-            yq -V
-            circleci-agent step halt
-
       - checkout
 
-      # - run:
-      #     name: Check for Additional Platforms
-      #     command: |
-      #       # debugging
-      #       echo  $(uname -m)
-      #       echo $SHELL
-      #       ls -l $(which yq)
-      #       sudo yq -V
-      #       files=`git diff --name-only --diff-filter AMR origin/master...HEAD | grep -E 'meta.yaml$' `
-      #       build=0
-      #       for file in $files; do
-      #         echo $file
+      - run:
+          name: Check for Additional Platforms
+          command: |
+            # Download ARM version of yq
+            wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_arm64 -O /usr/local/bin/yq
 
-      #         # cat $file \
-      #         #   | sed -E 's/(.*)\{%(.*)%\}(.*)/# \1\2\3/g' \
-      #         #   | sed -E 's/(.*)\{\{(.*)\}\}(.*)/\1\2\3/g'
+            # Find recipes changed on this branch
+            files=`git diff --name-only --diff-filter AMR origin/master...HEAD | grep -E 'meta.yaml$' `
+            build=0
 
-      #         additional_platforms=$(cat $file \
-      #           | sed -E 's/(.*)\{%(.*)%\}(.*)/# \1\2\3/g' \
-      #           | sed -E 's/(.*)\{\{(.*)\}\}(.*)/\1\2\3/g' \
-      #           | sudo yq '.extra.additional-platforms[]')
+            for file in $files; do
+              echo $file
+              additional_platforms=$(cat $file \
+                | sed -E 's/(.*)\{%(.*)%\}(.*)/# \1\2\3/g' \
+                | sed -E 's/(.*)\{\{(.*)\}\}(.*)/\1\2\3/g' \
+                | yq '.extra.additional-platforms[]')
+              # Check if any additional platforms match this job
+              for additional_platform in $additional_platforms; do
+                if [ "${CIRCLE_JOB}" = "build_and_test-${additional_platform}" ]
+                then
+                  build=1
+                  break
+                fi
+              done
+            done
 
-      #         for additional_platform in $additional_platforms; do
-      #           if [ "${CIRCLE_JOB}" = "build_and_test-${additional_platform}" ]
-      #           then
-      #             build=1
-      #             break
-      #           fi
-      #         done
-      #       done
-
-      #       if [[ build -lt 1 ]]
-      #       then
-      #         echo "No recipes using this platform, skipping rest of job."
-      #         circleci-agent step halt
-      #       fi
+            # If no changed recipes apply to this platform, skip remaining steps
+            if [[ build -lt 1 ]]
+            then
+              echo "No recipes using this platform, skipping rest of job."
+              circleci-agent step halt
+            fi
 
       - run:
           name: Fetch bioconda install script
@@ -135,15 +122,20 @@ jobs: # a basic unit of work in a run
       - run:
           name: Check for Additional Platforms
           command: |
+            # Download ARM version of yq
+            wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_arm64 -O /usr/local/bin/yq
+
+            # Find recipes changed from this merge
             files=`git diff --name-only --diff-filter AMR ${CIRCLE_SHA1}~1 ${CIRCLE_SHA1} | grep -E 'meta.yaml$' `
             build=0
+
             for file in $files; do
               echo $file
               additional_platforms=$(cat $file \
                 | sed -E 's/(.*)\{%(.*)%\}(.*)/# \1\2\3/g' \
                 | sed -E 's/(.*)\{\{(.*)\}\}(.*)/\1\2\3/g' \
-                | sudo yq '.extra.additional-platforms[]')
-
+                | yq '.extra.additional-platforms[]')
+              # Check if any additional platforms match this job
               for additional_platform in $additional_platforms; do
                 if [ "${CIRCLE_JOB}" = "build_and_upload-${additional_platform}" ]
                 then
@@ -153,6 +145,7 @@ jobs: # a basic unit of work in a run
               done
             done
 
+            # If no changed recipes apply to this platform, skip remaining steps
             if [[ build -lt 1 ]]
             then
               echo "No recipes using this platform, skipping rest of job."
