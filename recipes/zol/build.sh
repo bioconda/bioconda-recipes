@@ -14,6 +14,7 @@ cp zol/orthologs/runRBH ${PREFIX}/bin/
 cp zol/orthologs/splitDiamondResults ${PREFIX}/bin/
 cp zol/splitDiamondResultsForFai ${PREFIX}/bin/
 cp zol/clusterHeatmap.R ${PREFIX}/bin/
+cp zol/plotTinyAAI.R ${PREFIX}/bin/
 cp zol/plotSegments.R ${PREFIX}/bin/
 cp zol/njTree.R ${PREFIX}/bin/
 cp zol/phyloHeatmap.R ${PREFIX}/bin/
