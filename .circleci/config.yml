@@ -22,39 +22,7 @@ jobs: # a basic unit of work in a run
 
       - run:
           name: Check for Additional Platforms
-          command: |
-            # Download ARM version of yq
-            yq_platform=$(uname)
-            yq_arch=$(uname -m)
-            [[ $yq_arch = "aarch64" ]] && yq_arch="arm64"
-            wget https://github.com/mikefarah/yq/releases/latest/download/yq_${yq_platform}_${yq_arch} -O /usr/local/bin/yq
-
-            # Find recipes changed on this branch
-            files=`git diff --name-only --diff-filter AMR origin/master...HEAD | grep -E 'meta.yaml$' `
-            build=0
-
-            for file in $files; do
-              echo $file
-              additional_platforms=$(cat $file \
-                | sed -E 's/(.*)\{%(.*)%\}(.*)/# \1\2\3/g' \
-                | sed -E 's/(.*)\{\{(.*)\}\}(.*)/\1\2\3/g' \
-                | yq '.extra.additional-platforms[]')
-              # Check if any additional platforms match this job
-              for additional_platform in $additional_platforms; do
-                if [ "${CIRCLE_JOB}" = "build_and_test-${additional_platform}" ]
-                then
-                  build=1
-                  break
-                fi
-              done
-            done
-
-            # If no changed recipes apply to this platform, skip remaining steps
-            if [[ build -lt 1 ]]
-            then
-              echo "No recipes using this platform, skipping rest of job."
-              circleci-agent step halt
-            fi
+          command: ./.circleci/check-for-additional-platforms.sh "build_and_test" "origin/master...HEAD"
 
       - run:
           name: Fetch bioconda install script
@@ -124,39 +92,7 @@ jobs: # a basic unit of work in a run
 
       - run:
           name: Check for Additional Platforms
-          command: |
-            # Download ARM version of yq
-            yq_platform=$(uname)
-            yq_arch=$(uname -m)
-            [[ $yq_arch = "aarch64" ]] && yq_arch="arm64"
-            wget https://github.com/mikefarah/yq/releases/latest/download/yq_${yq_platform}_${yq_arch} -O /usr/local/bin/yq
-
-            # Find recipes changed from this merge
-            files=`git diff --name-only --diff-filter AMR ${CIRCLE_SHA1}~1 ${CIRCLE_SHA1} | grep -E 'meta.yaml$' `
-            build=0
-
-            for file in $files; do
-              echo $file
-              additional_platforms=$(cat $file \
-                | sed -E 's/(.*)\{%(.*)%\}(.*)/# \1\2\3/g' \
-                | sed -E 's/(.*)\{\{(.*)\}\}(.*)/\1\2\3/g' \
-                | yq '.extra.additional-platforms[]')
-              # Check if any additional platforms match this job
-              for additional_platform in $additional_platforms; do
-                if [ "${CIRCLE_JOB}" = "build_and_upload-${additional_platform}" ]
-                then
-                  build=1
-                  break
-                fi
-              done
-            done
-
-            # If no changed recipes apply to this platform, skip remaining steps
-            if [[ build -lt 1 ]]
-            then
-              echo "No recipes using this platform, skipping rest of job."
-              circleci-agent step halt
-            fi
+          command: ./.circleci/check-for-additional-platforms.sh "build_and_upload" "${CIRCLE_SHA1}~1 ${CIRCLE_SHA1}"
 
       - run:
           name: Fetch bioconda install script
