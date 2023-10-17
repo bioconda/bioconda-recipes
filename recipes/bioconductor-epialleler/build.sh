@@ -8,5 +8,4 @@ CXX=$CXX
 CXX98=$CXX
 CXX11=$CXX
 CXX14=$CXX" > ~/.R/Makevars
-sed -i.bak "s/PRIX64/PRIx64/g" src/rcpp_extract_patterns.cpp
 $R CMD INSTALL --build .
