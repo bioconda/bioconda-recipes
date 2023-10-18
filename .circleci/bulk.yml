@@ -92,12 +92,11 @@ jobs: # a basic unit of work in a run
             conda config --show-sources
             python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
             echo '============'
-            # ALICIA: uncomment all the following:
-            # bioconda-utils build recipes config.yml \
-            #   --worker-offset ${{ parameter.runner }} --n-workers 6 \
-            #   --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
-            #   --record-build-failures --skiplist-leafs
-            # conda clean -y --all
+            bioconda-utils build recipes config.yml \
+              --worker-offset << parameters.runner >> --n-workers 6 \
+              --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
+              --record-build-failures --skiplist-leafs
+            conda clean -y --all
 
 workflows:
   Bulk branch (ARM):
