@@ -1,5 +1,7 @@
 #!/bin/bash
 
+LD_LIBRARY_PATH="" julia
+
 julia -e 'import Pkg; Pkg.add("ArgParse")'
 julia -e 'import Pkg; Pkg.add("YAML")'
 julia -e 'import Pkg; Pkg.add("LsqFit")'
