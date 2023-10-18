@@ -1,24 +1,27 @@
-{% set version="5.11.0" %}
+{% set name = "toil" %}
+{% set version = "5.12.0" %}
+{% set sha256 = "fb21c85b8654b0e628087ebd403fa5f53644d86a33a4c1e039ba5769dcaf6654" %}
+
 package:
-  name: toil
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/t/toil/toil-{{ version }}.tar.gz
-  sha256: b5565ab9251f58c06c4ae5617e4484961e6923974d0e1bc4356a61f71ec8ea19
-  patches:
-    - remove_wdlparse.patch
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
-  noarch: python 
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps -vvv
   entry_points:
     - toil = toil.utils.toilMain:main
     - _toil_worker = toil.worker:main
-    - toil-cwl-runner = toil.cwl.cwltoil:main
-    #- toil-wdl-runner = toil.wdl.toilwdl:main
-    #- toil-wes-cwl-runner = toil.server.cli.wes_cwl_runner:main [server]
-    - _toil_mesos_executor = toil.batchSystems.mesos.executor:main
+    - toil-cwl-runner = toil.cwl.cwltoil:main [cwl]
+    - toil-wdl-runner = toil.wdl.wdltoil:main [wdl]
+    - toil-wdl-runner-old = toil.wdl.toilwdl:main [wdl]
+    - toil-wes-cwl-runner = toil.server.cli.wes_cwl_runner:main [server]
+    - _toil_mesos_executor = toil.batchSystems.mesos.executor:main [mesos]
     - _toil_contained_executor = toil.batchSystems.contained_executor:executor
 
 requirements:
@@ -27,16 +30,18 @@ requirements:
     - pip
   run:
     - python >=3.7
-    - dill >=0.3.2,<0.4
-    - requests >=2,<3
+    - dill >=0.3.2
+    - requests >=2
     - docker-py >=3.7.2,<6
-    - urllib3 >=1.26.0,<2.0.0
+    - urllib3 >=1.26.0
     - python-dateutil
-    - psutil >=3.0.1,<6
-    #- py-tes >=0.4.2,<1
-    - PyPubSub >=4.0.3,<5
-    - addict >=2.2.1,<2.5
+    - psutil >=3.0.1
+    # - py-tes >=0.4.2,<1
+    - pypubsub >=4.0.3
+    - addict >=2.2.1
     - pytz >=2012
+    - enlighten >=1.5.2
+    - typing-extensions
     #mesos pymesos isn't available
     #server reqs
     # - wes-service is missing
@@ -56,24 +61,25 @@ requirements:
     # - mypy-boto3-sdb ==1.24.0
     # - mypy-boto3-iam ==1.24.0
     #encryption reqs
-    - pynacl >=1.4.0,<2
+    - pynacl >=1.4.0
     #google reqs
-    - apache-libcloud >=2.2.1,<3
+    - apache-libcloud >=2.2.1
     - google-cloud-storage >=2,<=2.8.0
     #cwl reqs
-    - cwltool ==3.1.20230425144158
-    - schema-salad >=8.4.20230128170514,<9
+    - cwltool ==3.1.20230601100705
+    - schema-salad >=8.4.20230128170514
     - galaxy-tool-util
     - ruamel.yaml >=0.15,<=0.17.21
     - ruamel.yaml.clib >=0.2.6
     - networkx >=2,<2.8.9
     #htcondor reqs
-    - python-htcondor >=10.2.0.post1,<11
+    - python-htcondor >=10.2.0.post1
     #kubernetes reqs
     - python-kubernetes >=12.0.1,<22
     - idna >=2
     #wdl reqs
     # - wdlparse ==0.1.0  # not yet packaged for Conda
+    - mock >=4.0.3
 
 test:
   imports:
@@ -96,10 +102,13 @@ test:
     - toil.wdl
   commands:
     - toil --help
+    - _toil_worker --help
     - toil-cwl-runner --help
-    #- toil-wdl-runner --help
 
 about:
-  home: https://github.com/BD2KGenomics/toil
-  license: Apache 2.0
-  summary: A scalable, efficient, cross-platform and easy-to-use workflow engine in pure Python
+  home: 'http://toil.ucsc-cgl.org/'
+  summary: 'A scalable, efficient, cross-platform and easy-to-use workflow engine in pure Python'
+  dev_url: 'https://github.com/DataBiosphere/toil'
+  doc_url: 'https://toil.readthedocs.io/en/latest/'
+  license: Apache-2.0
+  license_file: LICENSE
