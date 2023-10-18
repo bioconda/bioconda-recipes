@@ -16,7 +16,7 @@ mkdir -p ${PACKAGE_HOME}
 cp -r * ${PACKAGE_HOME}/
 
 
-# Install SA-SSR
+# Install SA-SSR (has to be done here because SA-SSR is an ancient repository without releases)
 git clone https://github.com/ridgelab/SA-SSR
 cd SA-SSR
 make
@@ -24,8 +24,6 @@ cp bin/sa-ssr ${PREFIX}/bin/
 
 
 # Fixes to earlGrey executable
-sed -i.bak "1s|^|#!/bin/bash\n|" ${PACKAGE_HOME}/earlGrey  #add bash shebang line
-sed -i.bak "s|usage; exit 1|usage; exit 0|g" ${PACKAGE_HOME}/earlGrey  #let help return exit-code 0
 sed -i.bak "/CONDA_DEFAULT_ENV/,+4d" ${PACKAGE_HOME}/earlGrey  #remove check that conda environment has a specific name
 
 
@@ -34,11 +32,10 @@ sed -i.bak "s|sed -i |sed -i.bak |g" ${PACKAGE_HOME}/earlGrey ${SCRIPT_DIR}/rcMe
 
 
 # Remove -pa from RepeatClassifier
-sed -i.bak 's/RepeatClassifier -pa ${THREADS} /RepeatClassifier /' ${SCRIPT_DIR}/TEstrainer/TEstrainer_for_earlGrey.sh
 sed -i.bak 's/RepeatClassifier -pa ${THREADS} /RepeatClassifier /' ${SCRIPT_DIR}/TEstrainer/TEstrainer
 
 
-# Remove -t parameter from sa-ssr
+# Remove -t parameter from sa-ssr (since multithreading doesn't work on OSX)
 sed -i.bak 's/-t ${THREADS} / /' ${SCRIPT_DIR}/TEstrainer/TEstrainer_for_earlGrey.sh
 sed -i.bak 's/-t ${THREADS} / /' ${SCRIPT_DIR}/TEstrainer/TEstrainer
 
