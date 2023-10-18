@@ -9,7 +9,7 @@ mkdir -p $INSTALL_FOLDER && mkdir -p $BIN_FOLDER
 chmod u+x redundans.py #To avoid permission issues
 
 #Avoid pathing issues with SSPACE pl script
-sed -i 's|bin/SSPACE/SSPACE_Standard_v3.0.pl|SSPACE/SSPACE_Standard_v3.0.pl|g' redundans.py
+sed -i.bak 's|bin/SSPACE/SSPACE_Standard_v3.0.pl|SSPACE/SSPACE_Standard_v3.0.pl|g' redundans.py
 
 ###### Copying files to proper installation directory and some to the binary directory ######
 cp redundans.py $INSTALL_FOLDER/ && cp redundans.py $BIN_FOLDER && cp README.md $INSTALL_FOLDER/
