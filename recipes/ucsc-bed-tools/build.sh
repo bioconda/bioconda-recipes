@@ -17,5 +17,5 @@ rsync -mapvP \
 chmod +x "$PREFIX/bin/"*
 
 pushd "$PREFIX/bin/"
-rm bedExtendRanges bedItemOverlapCount bedCoverage
+#rm bedExtendRanges bedItemOverlapCount bedCoverage
 popd
