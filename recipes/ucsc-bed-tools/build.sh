@@ -12,11 +12,11 @@ rsync -mapvP \
     --include='*bed*' \
     --include='*bigBed' \
     --include='*ToBed*' \
-    --include='*bigWig*' \
     --exclude='*' \
     --exclude="blat" \
     "$SRC" "$PREFIX/bin/."
 
+#--include='*bigWig*' \
 chmod +x "$PREFIX/bin/"*
 
 pushd "$PREFIX/bin/"
