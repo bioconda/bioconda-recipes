@@ -9,8 +9,8 @@ fi
 
 rsync -mapvP \
     --include='*/' \
-    --include='*bed*' \
-    --include='*bigBed' \
+    --include='bed*' \
+    --include='bigBed' \
     --include='*ToBed*' \
     --exclude='*' \
     --exclude="blat" \
