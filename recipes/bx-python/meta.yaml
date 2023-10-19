@@ -1,37 +1,35 @@
 {% set name = "bx-python" %}
-{% set version = "0.9.0" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "fe545c44d2ea74b239d41e9090618aaf6a859d1a1f64b4a21b133cb602dfdb49" %}
+{% set version = "0.10.0" %}
+{% set sha256 = "bfe9541d7b18a98e907b085e31f58d3989fbca4dc667c4ae48c33b753e0e2da8" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/bx-python-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 2
-  skip: True  # [py<37]
-  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir -vvv ."
+  number: 0
+  skip: True  # [py < 37]
+  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps -vvv
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
-    - cython
-    - numpy
-    - pip
     - python
-    - python-lzo
+    - cython
+    - pip
     - setuptools
+    - wheel
+    - python-lzo
+    - numpy
     - zlib
   run:
-    - numpy
     - python
-    - python-lzo
+    - {{ pin_compatible('numpy') }}
 
 test:
   imports:
@@ -56,12 +54,14 @@ test:
     - bx_extras
 
 about:
-  home: https://github.com/bxlab/bx-python
+  home: 'https://github.com/bxlab/bx-python'
+  summary: 'Tools for manipulating biological data, particularly multiple sequence alignments'
   license: MIT
   license_family: MIT
-  license_file: 'LICENSE'
-  summary: Tools for manipulating biological data, particularly multiple sequence alignments
+  license_file: LICENSE
+  doc_url: 'https://buildmedia.readthedocs.org/media/pdf/bx-python/latest/bx-python.pdf'
+  dev_url: 'https://pypi.org/project/bx-python/'
 
 extra:
-  container:
-    extended-base: true
+  identifiers:
+    - biotools:bx-python

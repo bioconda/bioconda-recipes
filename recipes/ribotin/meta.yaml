@@ -1,0 +1,42 @@
+{% set name = "ribotin" %}
+{% set version = "1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/maickrau/{{ name }}/files/12247664/{{ name }}.tar.gz
+  sha256: 811e242cefcdbeeb34119a12c00a7370196229326d62bd09e750a1e919cba88b
+  patches:
+    - makefile.patch
+
+build:
+  number: 0
+  skip: True # [osx]
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - pkg-config
+  run:
+    - graphaligner
+    - mbg
+    - liftoff
+
+test:
+  commands:
+    - (ribotin-ref -h 2>&1 || true) | grep ribotin
+
+about:
+  home: https://github.com/maickrau/ribotin
+  license: MIT
+  license_file: LICENSE.md
+  summary: Ribosomal DNA assembly tool
+
+extra:
+  maintainers:
+    - maickrau
