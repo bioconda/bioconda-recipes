@@ -1,5 +1,5 @@
 {% set name = "mhcflurry" %}
-{% set version = "2.0.6" %}
+{% set version = "2.1.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 06f68b39a4d8cfd181bccbc8d1ef1b961658e5fb1068a5fc174f1dadd8ddc741
+  sha256: a4129922db5b662e248e066e73e12be74c3d08c7c0a9f1de4776b7e5aafa42bb
 
 build:
   number: 0
@@ -25,7 +25,9 @@ build:
     - mhcflurry-calibrate-percentile-ranks = mhcflurry.calibrate_percentile_ranks_command:run
     - mhcflurry-class1-train-presentation-models = mhcflurry.train_presentation_models_command:run
     - mhcflurry-cluster-worker-entry-point = mhcflurry.cluster_parallelism:worker_entry_point
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('mhcflurry', max_pin="x") }}
 
 requirements:
   host:
@@ -40,7 +42,7 @@ requirements:
     - pyyaml
     - scikit-learn
     - six
-    - tensorflow >=2.2.0
+    - tensorflow >=2.12.0
     - tqdm
 
 test:
@@ -62,8 +64,9 @@ test:
 
 about:
   home: "https://github.com/openvax/mhcflurry"
-  license: Apache Software
+  license: Apache-2.0
   license_family: APACHE
+  license_file: LICENSE
   summary: "MHC Binding Predictor"
 
 extra:
