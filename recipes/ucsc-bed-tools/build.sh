@@ -10,15 +10,15 @@ fi
 rsync -mapvP \
     --include='*/' \
     --include='bed*' \
-    --include='bigBed' \
-    --include='*ToBed*' \
     --exclude='*' \
     --exclude="blat" \
     "$SRC" "$PREFIX/bin/."
 
 #--include='*bigWig*' \
+#--include='bigBed' \
+#--include='*ToBed*' \
 chmod +x "$PREFIX/bin/"*
 
 pushd "$PREFIX/bin/"
-rm bedExtendRanges bedItemOverlapCount bedToGenePred genePredToBed bedCoverage
+rm bedExtendRanges bedItemOverlapCount bedCoverage
 popd
