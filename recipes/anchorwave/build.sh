@@ -52,6 +52,8 @@ elif [ $TARGET_PLATFORM = "macOS" ]; then
     mkdir -p build/macOS
 
     # macOS (SSE4.1)
+    rm CMakeLists.txt
+    ln -s CMakeLists_MACOSX86.txt CMakeLists.txt
     cd build/macOS
     cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" ../..
     make -j"${CPU_COUNT}"
