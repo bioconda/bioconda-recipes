@@ -9,7 +9,7 @@ fi
 
 rsync -mapvP \
     --include='*/' \
-    --include='bed*' \
+    --include='big*' \
     --exclude='*' \
     --exclude="blat" \
     "$SRC" "$PREFIX/bin/."
