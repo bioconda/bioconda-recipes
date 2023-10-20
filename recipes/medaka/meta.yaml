@@ -1,6 +1,6 @@
 {% set name = "Medaka" %}
-{% set version = "1.8.0" %}
-{% set sha256 = "bc6c10058d3cad662b8bccdc0af4f1e17424cf117299dce8e44ec8c87c4472ec" %}
+{% set version = "1.10.0" %}
+{% set sha256 = "864b6303b0b262e5e81acba7b0da003420906db123a5072adc82458d650a8b70" %}
 # Bot PRs - Always review requirements.txt for new release
 
 package:
@@ -15,12 +15,13 @@ source:
 
 build:
   number: 0
-  skip: True  # [py < 38]
   entry_points:
     - medaka = medaka.medaka:main
     - medaka_counts = medaka.medaka_counts:main
     - medaka_data_path = medaka.common:print_data_path
     - medaka_version_report = medaka:report_binaries
+  run_exports:
+    - {{ pin_subpackage('medaka', max_pin='x') }}
 
 requirements:
   build:
@@ -29,8 +30,8 @@ requirements:
   host:
     - python
     - pip
-    - cffi ==1.15.0
-    - htslib
+    - cffi >=1.15.0
+    - htslib >=1.14
     - libcurl
     - openssl
     - bzip2
@@ -38,24 +39,27 @@ requirements:
     - zlib
   run:
     - python
-    - cffi ==1.15.0
+    - cffi >=1.15.0
     - grpcio
     - h5py
     - intervaltree
-    - tensorflow >=2.8.0,<2.9.dev0
+    # Please review the need for the conda_build_config.yaml
+    # if a more recent version of Tensorflow is supported.
+    - tensorflow >=2.10,<2.11
     - numpy >=1.21.6
     - nomkl  # [osx]
     - mappy
     - ont-fast5-api
     - parasail-python
-    - pyspoa >=0.0.3
+    - pyabpoa
+    - pyspoa >=0.2.1
     - pysam >=0.16.0.1
     - python-edlib
     - requests
-    - samtools >=1.17
-    - bcftools >=1.17
-    - minimap2 >=2.26
-    - htslib
+    - samtools >=1.14
+    - bcftools >=1.14
+    - minimap2 >=2.17
+    - htslib >=1.14
     - libcurl
     - openssl
 

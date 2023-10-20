@@ -1,4 +1,4 @@
-{% set version = "7.1.0" %}
+{% set version = "7.4.0" %}
 
 package:
   name: nextstrain-cli
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/n/nextstrain-cli/nextstrain-cli-{{ version }}.tar.gz
-  sha256: 6f9ad11aadddd1b70c92567689a47480b05b5fb6dd7dd38b16c872f956e162ef
+  sha256: bc678d817dac6351466728122dff1ce37d7e8f3f8b8402fd2cef5822287b7de4
 
 build:
   number: 0
@@ -14,6 +14,8 @@ build:
   entry_points:
     - nextstrain = nextstrain.cli.__main__:main
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  run_exports:
+    - {{ pin_subpackage('nextstrain-cli', max_pin='x') }}
 
 requirements:
   host:
@@ -40,9 +42,9 @@ requirements:
     # botocore. We can declare the boto3 dependency and s3fs here, since Conda
     # can resolve these dependency issues.
     # See: https://github.com/nextstrain/cli/blob/77c97bfecaf3dda84a8c20c343afc70cc6659f53/setup.py#L91-L98
-    - fsspec
+    - fsspec !=2023.9.1
     - boto3
-    - s3fs >=2021.04.0
+    - s3fs >=2021.04.0,!=2023.9.1
 
 test:
   requires:
@@ -71,3 +73,6 @@ extra:
   recipe-maintainers:
     - tsibley
     - corneliusroemer
+  skip-lints:
+    # False positive, can be removed once bioconda/bioconda-utils#919 is merged
+    - version_constraints_missing_whitespace

@@ -2,6 +2,12 @@
 
 set -euxo pipefail
 
+echo "--- NIM BUILD ---"
+nim --version
+echo "----------"
+nimble --version
+echo "----------"
+
 if [[ $OSTYPE == "darwin"* ]]; then
   export HOME="/Users/distiller"
   export HOME=`pwd`
@@ -9,9 +15,10 @@ fi
 
 mkdir -p "$PREFIX"/bin
 
-echo "## Automatic build"
+echo "## Automatic build: install deps"
 #nimble build -y --verbose 
 nimble install -y --depsOnly
+echo "## Automatic build: make"
 make
 
 ./bin/seqfu version || true
