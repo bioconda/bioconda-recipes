@@ -1,13 +1,19 @@
-{% set version = "0.2.15" %}
+{% set version = "0.2.18" %}
 
 package:
   name: somalier
   version: {{ version }}
 
+source:
+  url: https://github.com/brentp/somalier/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e95ba09a1ec0bd352643ea1907a1c3d23a43801b176e10fdbee198c0bec02af4
+
 # Skip OSX following https://github.com/bioconda/bioconda-recipes/blob/73a14544ca8ef7926797b39259cb58b83732b7da/recipes/slivar/meta.yaml
 build:
-  number: 1
+  number: 0
   skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage("somalier", max_pin="x") }}
 
 requirements:
   build:
@@ -15,8 +21,11 @@ requirements:
     - curl
     - nim
   host:
-    - htslib >=1.10
+    - openblas
+    - htslib
   run:
+    - openblas
+    - htslib
 
 test:
   commands:
