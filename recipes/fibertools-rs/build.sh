@@ -102,30 +102,6 @@ fi
 ft --help
 
 #
-# try patchelf
-#
-#if [[ ${target_platform} =~ linux.* ]]; then
-#ldd "$(which ft)"
-#patchelf --print-needed $(which ft)
-#for OLD in ${PREFIX}/lib/libgomp.so*; do
-#    NEW=${OUTDIR}/lib/libgomp-a34b3233.so.1
-#    patchelf --debug --replace-needed $OLD $NEW ${PREFIX}/bin/ft
-#    patchelf --debug --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
-#done
-#echo "after patchelf"
-#patchelf --print-needed $(which ft)
-#OLD=${OUTDIR}/lib/libtorch_cpu.so
-#NEW=${OUTDIR}/lib/libmine.so.1
-#mv $OLD $NEW
-#patchelf --replace-needed $OLD $NEW ${PREFIX}/bin/ft
-#patchelf --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
-#patchelf --set-rpath \$ORIGIN/../lib ${PREFIX}/bin/ft
-#ft --help
-#ldd "$(which ft)"
-#patchelf --print-needed $(which ft)
-#fi
-
-#
 # test install on data
 #
 pushd ${HOME}
