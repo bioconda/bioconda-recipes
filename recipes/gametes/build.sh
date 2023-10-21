@@ -9,7 +9,7 @@ mkdir -p $PACKAGE_HOME
 cp $RECIPE_DIR/gametes.py $PACKAGE_HOME/gametes.py
 
 
-JAR=./GAMETES_2.1.jar
+JAR=GAMETES_2.1.jar
 
 mv $JAR $PACKAGE_HOME/
 
