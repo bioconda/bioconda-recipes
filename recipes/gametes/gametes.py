@@ -13,7 +13,7 @@ from os import access
 from os import getenv
 from os import X_OK
 
-jar_file = 'GAMETES_2.1.jar'
+jar_file = './GAMETES_2.1.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
