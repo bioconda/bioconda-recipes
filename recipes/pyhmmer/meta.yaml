@@ -1,5 +1,5 @@
 {% set name = "pyhmmer" %}
-{% set version = "0.10.2" %}
+{% set version = "0.10.3" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,12 +7,14 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: a72421f603e5010ff97cc39770b998909b243c36927678f36cfdcadd3cbd94c2
+  sha256: 761eaa5b4ea2054f926f5638c5bee4cf595841bed7ee3b14d548c27951602bad
 
 build:
   number: 0
   skip: True  #[py2k or win]
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --use-pep517 -vvv"
+  run_exports:
+    - {{ pin_subpackage('pyhmmer', max_pin="x") }}
 
 requirements:
   build:
@@ -34,6 +36,7 @@ test:
 about:
   home: https://github.com/althonos/pyhmmer
   license: MIT
+  license_family: MIT
   license_file: COPYING
   summary: Cython bindings and Python interface to HMMER3.
   doc_url: https://pyhmmer.readthedocs.io
