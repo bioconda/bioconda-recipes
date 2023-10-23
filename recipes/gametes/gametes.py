@@ -1,11 +1,3 @@
-#!/opt/anaconda1anaconda2anaconda3/bin/python
-#
-# Wrapper script for Java Conda packages that ensures that the java runtime
-# Adapted from https://github.com/bioconda/bioconda-recipes/blob/badbf23efec3521afc1eb4adca2becf6469e0bb4/recipes/gatk/gatk.py
-
-#
-# Program Parameters
-#
 import os
 import subprocess
 import sys
@@ -13,15 +5,16 @@ from os import access
 from os import getenv
 from os import X_OK
 
-jar_file = './GAMETES_2.1.jar'
+JAR_NAME = 'GAMETES_2.1.jar'
+PKG_NAME = 'gametes'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
-
-
-def real_dirname(path):
-    """Return the symlink-resolved, canonicalized directory-portion of path."""
-    return os.path.dirname(os.path.realpath(path))
+def real_dirname(in_path):
+    """Return the path to the JAR file"""
+    realPath = os.path.dirname(os.path.realpath(in_path))
+    newPath = os.path.realpath(os.path.join(realPath, "..", "opt", PKG_NAME))
+    return newPath
 
 
 def java_executable():
@@ -44,11 +37,11 @@ def jvm_opts(argv):
     The return value is a 3-tuple lists of strings of the form:
       (memory_options, prop_options, passthrough_options)
     """
-    mem_opts = []
-    prop_opts = []
-    pass_args = []
+    
 
-    for arg in argv:
+    mem_opts, prop_opts, pass_args = [], [], []
+ 
+ for arg in argv:
         if arg.startswith('-D'):
             prop_opts.append(arg)
         elif arg.startswith('-XX'):
@@ -80,7 +73,7 @@ def main():
     else:
         jar_arg = '-jar'
 
-    jar_path = os.path.join(jar_dir, jar_file)
+    jar_path = os.path.join(jar_dir, JAR_NAME)
 
     if not os.path.isfile(jar_path):
         sys.stderr.write('GAMETES jar file not found\n')
@@ -93,4 +86,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
