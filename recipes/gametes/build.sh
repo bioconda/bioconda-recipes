@@ -15,5 +15,5 @@ mv $JAR $PACKAGE_HOME/
 
 chmod +x $PACKAGE_HOME/*.{py,jar}
 
-ln -s $PACKAGE_HOME/gametes.py $PREFIX/bin/GAMETES_2.1
+ln -s $PACKAGE_HOME/gametes.py $PREFIX/bin/GAMETES_2.1.jar
 
