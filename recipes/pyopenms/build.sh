@@ -21,6 +21,9 @@ else
   RPATH='$${ORIGIN}/../lib'
 fi
 
+PY_NUM_MODULES=20
+export PY_NUM_MODULES
+
 LDFLAGS='-Wl,-rpath,${RPATH}'
 
 cmake ../src/pyOpenMS \
