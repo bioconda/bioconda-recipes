@@ -21,9 +21,6 @@ else
   RPATH='$${ORIGIN}/../lib'
 fi
 
-PY_NUM_MODULES=20
-export PY_NUM_MODULES
-
 LDFLAGS='-Wl,-rpath,${RPATH}'
 
 cmake ../src/pyOpenMS \
@@ -40,6 +37,7 @@ cmake ../src/pyOpenMS \
   -DCMAKE_BUILD_WITH_INSTALL_NAME_DIR=ON \
   -DPython_EXECUTABLE=$PYTHON \
   -DPython_FIND_STRATEGY="LOCATION" \
+  -DPY_NUM_MODULES=20 \
   -DNO_DEPENDENCIES=ON \
   -DNO_SHARE=ON
 
