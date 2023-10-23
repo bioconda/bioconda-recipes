@@ -13,7 +13,7 @@ PKG_NAME = 'gametes'
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
 def real_dirname(in_path):
-    """Return the path to the JAR file"""
+    #"""Return the path to the JAR file"""
     #realPath = os.path.dirname(os.path.realpath(in_path))
     #newPath = os.path.realpath(os.path.join(realPath, "..", "share", PKG_NAME))
     #return newPath
