@@ -14,9 +14,11 @@ default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
 def real_dirname(in_path):
     """Return the path to the JAR file"""
-    realPath = os.path.dirname(os.path.realpath(in_path))
-    newPath = os.path.realpath(os.path.join(realPath, "..", "share", PKG_NAME))
-    return newPath
+    #realPath = os.path.dirname(os.path.realpath(in_path))
+    #newPath = os.path.realpath(os.path.join(realPath, "..", "share", PKG_NAME))
+    #return newPath
+    """Return the symlink-resolved, canonicalized directory-portion of path."""
+    return os.path.dirname(os.path.realpath(path))
 
 
 def java_executable():
@@ -74,9 +76,6 @@ def main():
     # can cause VIRTUAL memory usage to be ~0.5GB per cpu core in the system, e.g. 32GB of a 64-core machine
     # even when the heap and resident memory are only 1-4GB!  See the following link for more discussion:
     #  https://www.ibm.com/developerworks/community/blogs/kevgrig/entry/linux_glibc_2_10_rhel_6_malloc_may_show_excessive_virtual_memory_usage?lang=en
-    if not os.environ.get("MALLOC_ARENA_MAX"):
-        os.environ["MALLOC_ARENA_MAX"] = "4"
-
 
     jar_path = os.path.join(jar_dir, JAR_NAME)
 
