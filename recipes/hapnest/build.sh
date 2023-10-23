@@ -1,6 +1,13 @@
 #!/bin/bash
 
-LD_LIBRARY_PATH="" julia
+#LD_LIBRARY_PATH="" julia
+ln -s "${GCC}" "${BUILD_PREFIX}/gcc"
+
+cp -r $SRC_DIR/src/*.jl $PREFIX/bin
+cp -r $SRC_DIR/scripts $PREFIX
+ln -s $PREFIX/bin/synthetic_data/algorithms/genotype/*  $PREFIX/bin/hapnest
+chmod +x $PREFIX/bin/hapnest
+
 
 julia -e 'import Pkg; Pkg.add("ArgParse")'
 julia -e 'import Pkg; Pkg.add("YAML")'
@@ -24,4 +31,11 @@ julia -e 'import Pkg; Pkg.add("PyCall")'
 julia -e 'import Pkg; Pkg.add("StatsBase")'
 julia -e 'import Pkg; Pkg.add("StatsPlots")'
 julia -e 'import Pkg; Pkg.add("YAML")'
+
+
+rm -f "$PREFIX"/share/julia/site/lib/v*/*.ji
+rm -rf "$PREFIX"/share/julia/site/v*/METADATA
+rm -f "$PREFIX"/share/julia/site/v*/META_BRANCH
+
+
 
