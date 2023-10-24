@@ -5,7 +5,7 @@ ln -s "${GCC}" "${BUILD_PREFIX}/gcc"
 
 cp -r $SRC_DIR/src/*.jl $PREFIX/bin
 cp -r $SRC_DIR/scripts $PREFIX
-ln -s $PREFIX/bin/synthetic_data/algorithms/genotype/*  $PREFIX/bin/hapnest
+ln -s $PREFIX/bin/synthetic_data/*  $PREFIX/bin/hapnest
 chmod +x $PREFIX/bin/hapnest
 
 
