@@ -1,6 +1,6 @@
 #!/bin/bash
 export PREFIX=${PREFIX}
-make GCC=$CXX CC=$C
+make
 mkdir -p $PREFIX/bin
 cp HAPmaker  $PREFIX/bin
 cp ASMplot $PREFIX/bin
