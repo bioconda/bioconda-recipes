@@ -1,5 +1,5 @@
-{% set version = "23.0.5" %}
-{% set sha256 = "90efe2740c0c0251d68fa76e0f79938bade798128140e7d67d63bf572cebcb64" %}
+{% set version = "23.0.6" %}
+{% set sha256 = "8c749ac6d52297e3116949c5195071969b5d962cac14f4b84e7bd051ad8e2347" %}
 {% set galaxy_version = version.split(".")[:2]|join(".") %}
 
 package:
@@ -13,17 +13,19 @@ source:
 build:
   noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('galaxy-objectstore', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.6
+    - python >=3.7
     - galaxy-util >={{ galaxy_version }}
   run:
     - galaxy-util >={{ galaxy_version }}
     - pyyaml
-    - python >=3.6
+    - python >=3.7
     - six >=1.9.0
 
 test:
