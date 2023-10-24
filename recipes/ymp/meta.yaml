@@ -1,5 +1,5 @@
 {% set name = "ymp" %}
-{% set version = "0.1.0" %}
+{% set version = "0.2.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 5e658389d29c9418c368476c24986f15484fd82eedd323ad4517ebc71af51d6f
+  sha256: 7bcd41dfeb7534a971d4da44f30ef0b46992799097707279080650145f71a258
 
 build:
   number: 0
@@ -19,7 +19,8 @@ build:
 requirements:
   host:
     - python >=3.6
-    - setuptools_scm >=3.2
+    - setuptools_scm >=3.4
+    - setuptools >=42
     - pytest-runner
     - aiohttp
     - click
@@ -30,10 +31,11 @@ requirements:
     - pandas >=0.20
     - pip
     - ruamel.yaml >0.15
-    - snakemake =5.4.*
+    - snakemake >=5.20.1,<5.21.0a0
     - tqdm >=4.21.0
     - xdg
     - xlrd
+    - fastentrypoints
 
   run:
     - python >=3.6
@@ -45,7 +47,7 @@ requirements:
     - networkx >=2
     - pandas >=0.20
     - ruamel.yaml >0.15
-    - snakemake =5.4.*
+    - snakemake >=5.20.1,<5.21.0a0
     - tqdm >=4.21.0
     - xdg
     - xlrd
@@ -55,10 +57,17 @@ test:
   imports:
     - ymp
     - ymp.cli
+    - ymp.stage
   commands:
+    - mkdir test; cd test
     - ymp --help
     - ymp init demo
     - ymp make -n toy.assemble_megahit.map_bbmap
+    # remove potential cache files written as root in docker:
+    - cd ..; rm -vrf test
+    - rm -vrf ~/.ymp ~/.cache/ymp .ymp  
+    - ls -lR
+    - find / -name conda | xargs ls -l
 
 about:
   home: https://ymp.readthedocs.io

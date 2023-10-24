@@ -1,0 +1,41 @@
+{% set version = "2.2.1" %}
+
+package:
+  name: bwa-mem2
+  version: {{ version }}
+
+source:
+  - url: https://github.com/bwa-mem2/bwa-mem2/releases/download/v{{ version }}/Source_code_including_submodules.tar.gz
+    sha256: 9b001bdc7666ee3f14f3698b21673714d429af50438b894313b05bc4688b1f6d
+    patches:
+      - Makefile.patch
+
+build:
+  number: 5
+
+requirements:
+  build:
+    - make
+    # bwa-mem2 needs gcc<11, see https://github.com/bwa-mem2/bwa-mem2/issues/222 and conda_build_config.yaml in this folder
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+
+test:
+  commands:
+    - bwa-mem2 version
+    - bwa-mem2.sse41 version
+    - bwa-mem2.sse42 version
+    - bwa-mem2.avx version
+    - bwa-mem2.avx2 version
+    - bwa-mem2.avx512bw version
+
+about:
+  home: https://github.com/bwa-mem2/bwa-mem2
+  license: MIT
+  license_file: LICENSE
+  summary: The next version of bwa-mem 
+
+extra:
+  identifiers:
+    - doi:10.1109/IPDPS.2019.00041

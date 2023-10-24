@@ -1,0 +1,28 @@
+--- setup.py
++++ setup.py
+@@ -20,11 +20,6 @@
+ from setuptools import find_packages, setup
+ from version import version as mango_version
+ 
+-try: # for pip >= 10
+-    from pip._internal.req import parse_requirements
+-except ImportError: # for pip <= 9.0.3
+-    from pip.req import parse_requirements
+-
+ import os
+ import sys
+ 
+@@ -33,10 +28,9 @@
+ def read(fname):
+     return open(os.path.join(os.path.dirname(__file__), fname)).read()
+ 
+-# parse_requirements() returns generator of pip.req.InstallRequirement objects
+-install_reqs = parse_requirements('requirements.txt', session='hack')
+-
+-reqs = [str(ir.req) for ir in install_reqs]
++with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), "requirements.txt")) as f:
++    requirements_lines = [line.strip() for line in f.readlines()]
++reqs = [line for line in requirements_lines if line and not line.startswith("#")]
+ 
+ with open("README.md", "r") as fh:
+     long_description = fh.read()

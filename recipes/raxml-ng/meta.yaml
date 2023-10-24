@@ -1,22 +1,22 @@
 {% set name = "raxml-ng" %}
-{% set version = "0.9.0" %}
+{% set version = "1.2.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  git_url: https://github.com/amkozlov/{{ name|lower }}.git
-  git_rev: {{ version }}
-  sha256: 43b95ee1bddae0daee84644e9ee760a77f28bb16e2071e95cca79a30f39373e5
+  url: https://github.com/amkozlov/raxml-ng/releases/download/{{ version }}/{{ name }}_v{{ version }}_source.zip
+  sha256: 1dc1940e2fbd0d701142c8bfa0c0007c5b39642493a60adb6a4cfa2d10e27ac8
 
 build:
   number: 1
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
-    - bison
+    - bison >=3.8.2
     - flex
     - cmake
   host:
@@ -28,7 +28,7 @@ requirements:
 test:
   commands:
     - raxml-ng --version
-    - raxml-ng-mpi --version # [not osx]
+    - raxml-ng-mpi --version  # [not osx]
 
 about:
    home: https://github.com/amkozlov/raxml-ng
@@ -41,7 +41,5 @@ extra:
    container:
      # openmpi needs ssh client
      extended-base: true
-   skip-lints:
-     - uses_vcs_url
    identifiers:
      - doi:10.1093/bioinformatics/btz305

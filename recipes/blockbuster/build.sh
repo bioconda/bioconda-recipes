@@ -1,4 +1,9 @@
 #!/bin/bash
-make
-mkdir -p $PREFIX/bin
-cp blockbuster.x $PREFIX/bin
+
+mkdir -p "${PREFIX}/bin"
+
+"${CC}" ${CPPFLAGS} ${CFLAGS} \
+  -pedantic blockbuster.c \
+  -o "${PREFIX}/bin/"blockbuster.x \
+  ${LDFLAGS} \
+  -lm -std=c99 -D_GNU_SOURCE

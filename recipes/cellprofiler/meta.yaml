@@ -1,5 +1,5 @@
 {% set name = "CellProfiler" %}
-{% set version = "3.1.9" %}
+{% set version = "4.2.6" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,13 +7,14 @@ package:
 
 source:
   url: https://github.com/CellProfiler/{{ name  }}/archive/v{{ version }}.tar.gz
-  sha256: "44e10c57980b4fd20f530dd5dc8c8bea9c870000601e12d500c27d145ca2ee9f"
+  sha256: "fae14f97efc69f09d9074e53fcebbf50e1eafbf4ebaeb3a3de8699f44c9bccd9"
 
 build:
-  number: 1
+  number: 0
+  skip:  True  # [ py < 39 ]
   script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed . -vv"
-  skip: True  # this is using for some reason up to 3GB of memory and crashes CCI, build and push locally
-  #skip: True  # [win or osx or py3k]
+  run_exports:
+    - {{ pin_subpackage('cellprofiler', max_pin='x') }}
 
 requirements:
   build:
@@ -22,36 +23,38 @@ requirements:
     - python
     - pip
     - cython
-    - openjdk 8.*
+    - python-javabridge
     - pytest
   run:
     - python
-    - boto3
-    - centrosome 
+    - centrosome
     - docutils
+    - cellprofiler-core {{ version }}
     - h5py  >=2.10
     - inflect
-    - javabridge
+    - python-javabridge
     - joblib
     - mahotas
-    - openjdk 8.*
-    - matplotlib-base  >=2.0.0,!=2.1.0,<3
+    - jinja2
+    - sentry-sdk
+    - matplotlib-base
     - mysqlclient
-    - numpy  >=1.16
+    - numpy
     - prokaryote
     - python-bioformats
-    - pyzmq
-    - raven
     - requests
-    - scikit-image  >=0.14
+    - scikit-image  >=0.17.2
     - scikit-learn  >=0.20
-    - scipy         >=1.2
+    - scipy         >=1.4.1
     - six
-    - future
+    - wxpython
+    - pillow
 
 test:
   imports:
     - cellprofiler
+  commands:
+    - cellprofiler --help
 
 about:
   home: https://github.com/CellProfiler/CellProfiler
@@ -65,5 +68,3 @@ about:
 extra:
   container:
     extended-base: true
-  recipe-maintainers:
-    - sunyi000

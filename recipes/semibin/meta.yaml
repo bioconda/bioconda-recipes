@@ -1,0 +1,65 @@
+{% set name = "SemiBin" %}
+{% set version = "2.0.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 835743d810012b2edf33274d335adfced5b861a6bb61d945572a88af469f3506
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - SemiBin=SemiBin.main:main1
+    - SemiBin2=SemiBin.main:main2
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv
+  run_exports:
+    - {{ pin_subpackage('semibin', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+  run:
+    - numpy
+    - pandas
+    - python >=3.7
+    - python-igraph
+    - pyyaml
+    - requests
+    - scikit-learn
+    - coloredlogs
+    - pytorch
+    - tqdm
+    - mmseqs2 13.45111
+    - bedtools
+    - hmmer
+    - fraggenescan
+    - numexpr
+    - prodigal
+    - samtools
+
+test:
+  imports:
+    - SemiBin
+  commands:
+    - SemiBin --help
+
+about:
+  home: "https://github.com/BigDataBiology/SemiBin"
+  license: MIT
+  license_family: MIT
+  summary: "Metagenomic binning with semi-supervised siamese neural networks"
+  doc_url: https://semibin.readthedocs.io/en/latest/
+
+extra:
+  recipe-maintainers:
+    - luispedro
+    - psj1997
+  identifiers:
+    - doi:10.1038/s41467-022-29843-y
+    - doi:10.1093/bioinformatics/btad209
+    - biotools:semibin

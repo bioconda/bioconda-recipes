@@ -1,13 +1,13 @@
 {% set name = "mhcflurry" %}
-{% set version = "1.6.1" %}
+{% set version = "2.1.0" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: e8c354af4e6e09b30075bd2dca5a2f13585061dae4b841e1863a36faced0d8c0
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: a4129922db5b662e248e066e73e12be74c3d08c7c0a9f1de4776b7e5aafa42bb
 
 build:
   number: 0
@@ -15,36 +15,34 @@ build:
   entry_points:
     - mhcflurry-downloads = mhcflurry.downloads_command:run
     - mhcflurry-predict = mhcflurry.predict_command:run
+    - mhcflurry-predict-scan = mhcflurry.predict_scan_command:run
     - mhcflurry-class1-train-allele-specific-models = mhcflurry.train_allele_specific_models_command:run
+    - mhcflurry-class1-train-pan-allele-models = mhcflurry.train_pan_allele_models_command:run
+    - mhcflurry-class1-train-processing-models = mhcflurry.train_processing_models_command:run
     - mhcflurry-class1-select-allele-specific-models = mhcflurry.select_allele_specific_models_command:run
+    - mhcflurry-class1-select-pan-allele-models = mhcflurry.select_pan_allele_models_command:run
+    - mhcflurry-class1-select-processing-models = mhcflurry.select_processing_models_command:run
     - mhcflurry-calibrate-percentile-ranks = mhcflurry.calibrate_percentile_ranks_command:run
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+    - mhcflurry-class1-train-presentation-models = mhcflurry.train_presentation_models_command:run
+    - mhcflurry-cluster-worker-entry-point = mhcflurry.cluster_parallelism:worker_entry_point
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('mhcflurry', max_pin="x") }}
 
 requirements:
   host:
-    - appdirs
-    - keras >=2.0.9
-    - mhcnames
-    - numpy >=1.11
-    - pandas >=0.20.3
-    - pip
     - python
-    - pyyaml
-    - scikit-learn
-    - six
-    - tensorflow >=1.1.0
-    - tqdm
+    - pip
   run:
     - appdirs
-    - keras >=2.0.9
-    - mhcnames
-    - numpy >=1.11
+    - mhcgnomes >=0.8.4
+    - np_utils
     - pandas >=0.20.3
     - python
     - pyyaml
     - scikit-learn
     - six
-    - tensorflow >=1.1.0
+    - tensorflow >=2.12.0
     - tqdm
 
 test:
@@ -53,18 +51,26 @@ test:
   commands:
     - mhcflurry-downloads --help
     - mhcflurry-predict --help
+    - mhcflurry-predict-scan --help
     - mhcflurry-class1-train-allele-specific-models --help
+    - mhcflurry-class1-train-pan-allele-models --help
+    - mhcflurry-class1-train-processing-models --help
     - mhcflurry-class1-select-allele-specific-models --help
+    - mhcflurry-class1-select-pan-allele-models --help
+    - mhcflurry-class1-select-processing-models --help
     - mhcflurry-calibrate-percentile-ranks --help
+    - mhcflurry-class1-train-presentation-models --help
+    - mhcflurry-cluster-worker-entry-point --help
 
 about:
-  home: https://github.com/hammerlab/mhcflurry
-  license: Apache License Version 2.0
-  summary: Peptide-MHC I binding affinity prediction
-  doc_url: http://openvax.github.io/mhcflurry/
+  home: "https://github.com/openvax/mhcflurry"
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "MHC Binding Predictor"
 
 extra:
   recipe-maintainers:
-    - lkuchenb
+    - jonasscheid
   identifiers:
     - doi:10.1016/j.cels.2018.05.014

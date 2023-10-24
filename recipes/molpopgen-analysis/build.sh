@@ -1,7 +1,7 @@
 #!/bin/bash
 
-CXXFLAGS="-O3 -DNDEBUG" CPPFLAGS="-I$PREFIX/include $CPPFLAGS" LDFLAGS="-L$PREFIX/lib -Wl,-rpath,$PREFIX/lib $LDFLAGS" ./configure --prefix=$PREFIX
-make
+CXXFLAGS="${CXXFLAGS} -std=c++11 -O3 -DNDEBUG" ./configure --prefix=$PREFIX
+make V=1
 make install
 
 mkdir -p $PREFIX/etc/conda/activate.d/

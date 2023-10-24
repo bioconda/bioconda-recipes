@@ -1,0 +1,91 @@
+--- thirdparty/gatb-core/gatb-core/src/gatb/debruijn/impl/BranchingAlgorithm.cpp
++++ thirdparty/gatb-core/gatb-core/src/gatb/debruijn/impl/BranchingAlgorithm.cpp
+@@ -151,8 +151,8 @@
+     void operator() (Node& node)
+     {
+         // We get branching nodes neighbors for the current branching node.
+-        typename GraphTemplate<Node, Edge, GraphDataVariant>::template Vector<Node> successors   = graph->template successors   (node);
+-        typename GraphTemplate<Node, Edge, GraphDataVariant>::template Vector<Node> predecessors = graph->template predecessors (node);
++        typename GraphTemplate<Node, Edge, GraphDataVariant>::template Vector<Node> successors   = graph->successors   (node);
++        typename GraphTemplate<Node, Edge, GraphDataVariant>::template Vector<Node> predecessors = graph->predecessors (node);
+ 
+         if ( ! (successors.size()==1 && predecessors.size()==1) )
+         {
+--- thirdparty/gatb-core/gatb-core/src/gatb/debruijn/impl/Terminator.cpp
++++ thirdparty/gatb-core/gatb-core/src/gatb/debruijn/impl/Terminator.cpp
+@@ -46,7 +46,7 @@
+     : TerminatorTemplate<Node,Edge,GraphDataVariant> (graph)
+ {
+     /** We loop over the branching nodes. */
+-    typename GraphTemplate<Node,Edge,GraphDataVariant>::template Iterator<BranchingNode_t<Node> > itBranching = this->_graph.GraphTemplate<Node,Edge,GraphDataVariant>::template iteratorBranching();
++    typename GraphTemplate<Node,Edge,GraphDataVariant>::template Iterator<BranchingNode_t<Node> > itBranching = this->_graph.GraphTemplate<Node,Edge,GraphDataVariant>::iteratorBranching();
+     for (itBranching.first(); !itBranching.isDone(); itBranching.next())
+     {
+         /** We add the current branching node into the map. */
+@@ -196,7 +196,7 @@
+     }
+ 
+     /** We loop the neighbors edges of the current node. */
+-    typename GraphTemplate<Node,Edge,GraphDataVariant>::template Vector<Edge> neighbors = this->_graph.template neighborsEdge(node.kmer);
++    typename GraphTemplate<Node,Edge,GraphDataVariant>::template Vector<Edge> neighbors = this->_graph.neighborsEdge(node.kmer);
+ 
+     /** We loop the branching neighbors. */
+     for (size_t i=0; i<neighbors.size(); i++)
+--- thirdparty/gatb-core/gatb-core/src/gatb/debruijn/impl/Graph.cpp
++++ thirdparty/gatb-core/gatb-core/src/gatb/debruijn/impl/Graph.cpp
+@@ -2405,7 +2405,7 @@
+ ** REMARKS :
+ *********************************************************************/
+ template<typename Node, typename Edge, typename GraphDataVariant>
+-GraphTemplate<Node, Edge, GraphDataVariant>::Iterator<Node> GraphTemplate<Node, Edge, GraphDataVariant>::getNodes () const
++typename GraphTemplate<Node, Edge, GraphDataVariant>::template Iterator<Node> GraphTemplate<Node, Edge, GraphDataVariant>::getNodes () const
+ {
+     return typename GraphTemplate<Node, Edge, GraphDataVariant>::template Iterator<Node> (boost::apply_visitor (nodes_visitor<Node,Edge, Node, GraphDataVariant>(*this),  *(GraphDataVariant*)_variant));
+ }
+@@ -2776,7 +2776,7 @@
+ }};
+ 
+ template<typename Node, typename Edge, typename GraphDataVariant> 
+-GraphTemplate<Node, Edge, GraphDataVariant>::Iterator<Node> GraphTemplate<Node, Edge, GraphDataVariant>::getSimpleNodeIterator (Node& node, Direction dir) const
++typename GraphTemplate<Node, Edge, GraphDataVariant>::template Iterator<Node> GraphTemplate<Node, Edge, GraphDataVariant>::getSimpleNodeIterator (Node& node, Direction dir) const
+ {
+     return typename GraphTemplate<Node, Edge, GraphDataVariant>::template Iterator<Node> (new NodeSimplePathIterator <Node, Edge, Functor_getSimpleNodeIterator<Node, Edge, GraphDataVariant>, GraphDataVariant> (*this, node, dir, Functor_getSimpleNodeIterator<Node, Edge, GraphDataVariant>()));
+ }
+--- thirdparty/gatb-core/gatb-core/src/gatb/debruijn/impl/Simplifications.cpp
++++ thirdparty/gatb-core/gatb-core/src/gatb/debruijn/impl/Simplifications.cpp
+@@ -165,7 +165,7 @@
+ template<typename Node, typename Edge, typename GraphDataVariant>
+ double Simplifications<Node,Edge,GraphDataVariant>::getSimplePathCoverage(Node node, Direction dir, unsigned int *pathLenOut, unsigned int maxLength)
+ {
+-    typename GraphTemplate<Node,Edge,GraphDataVariant>::template Iterator <Node> itNodes = _graph.template simplePath (node, dir);
++    typename GraphTemplate<Node,Edge,GraphDataVariant>::template Iterator <Node> itNodes = _graph.simplePath (node, dir);
+     unsigned long total_abundance = _graph.queryAbundance(node);
+     unsigned int pathLen = 1;
+     for (itNodes.first(); !itNodes.isDone(); itNodes.next())
+@@ -451,7 +451,7 @@
+             
+             /* it may appear that we're only going to follow its first neighbor, but in fact, neighbors[0].from is node.kmer */
+             /* so, follow the simple path from this start tip node to the further node that has out-branching (out is w.r.t to the direction) */
+-            typename GraphTemplate<Node,Edge,GraphDataVariant>::template Iterator <Node> itNodes = _graph.template simplePath (neighbors[0].from, neighbors[0].direction); //
++            typename GraphTemplate<Node,Edge,GraphDataVariant>::template Iterator <Node> itNodes = _graph.simplePath (neighbors[0].from, neighbors[0].direction); //
+             DEBUG(cout << endl << "node:" <<  _graph.toString (node) << "neighbors from: " << _graph.toString (neighbors[0].from) << " direction: " << neighbors[0].direction << endl);
+             
+             unsigned int pathLen = 1;
+@@ -832,7 +832,7 @@
+ 
+                 /* explore the simple path from that node */
+                 TIME(auto start_simplepath_t=get_wtime());
+-                typename GraphTemplate<Node,Edge,GraphDataVariant>::template Iterator <Node> itNodes = _graph.template simplePath (neighbors[i].to, dir);
++                typename GraphTemplate<Node,Edge,GraphDataVariant>::template Iterator <Node> itNodes = _graph.simplePath (neighbors[i].to, dir);
+                 DEBUG(cout << endl << "neighbors " << i+1 << "/" << neighbors.size() << " from: " << _graph.toString (neighbors[i].to) << " dir: " << DIR2STR(dir) << endl);
+                 bool isShort = true;
+                 pathLen = 0;
+@@ -1101,7 +1101,7 @@
+                         bool foundShortPath = false;
+                         unsigned int pathLen = 0;
+                         TIME(auto start_simplepath_t=get_wtime());
+-                        typename GraphTemplate<Node,Edge,GraphDataVariant>::template Iterator <Node> itNodes = _graph.template simplePath (neighbors[i].to, dir);
++                        typename GraphTemplate<Node,Edge,GraphDataVariant>::template Iterator <Node> itNodes = _graph.simplePath (neighbors[i].to, dir);
+                         DEBUG(cout << endl << "neighbors " << i+1 << "/" << neighbors.size() << " from: " << _graph.toString (neighbors[i].to) << " dir: " << DIR2STR(dir) << endl);
+                         bool isShort = true;
+                         pathLen = 0;

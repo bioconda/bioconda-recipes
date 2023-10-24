@@ -1,0 +1,42 @@
+{% set name = "shasta" %}
+{% set version = "0.11.1" %}
+{% set sha256 = "b7770d88738a00733f3d0de0e0f015fa997ad7d0ac5a3061093c1f4faaaa1b46" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  # https://github.com/chanzuckerberg/shasta/issues/127
+  # shasta can only be compiled on Ubuntu, so use static Linux executable instead
+  url: https://github.com/paoloshasta/shasta/releases/download/{{ version }}/{{ name|lower }}-Linux-{{ version }}  # [linux]
+  sha256: {{ sha256 }}  # [linux]
+ 
+build:
+  number: 2
+  # As announced with the release of Shasta 0.10.0, macOS versions of Shasta are no longer provided.
+  skip: True  # [osx]
+
+# https://chanzuckerberg.github.io/shasta/Prerequisites.html
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  run:
+    - libpng
+    - python
+
+test:
+  commands:
+    - shasta --help
+
+about:
+  home: https://github.com/paoloshasta/shasta
+  license: MIT
+  license_family: MIT
+  summary: De novo assembly from Oxford Nanopore reads.
+  doc_url: https://paoloshasta.github.io/shasta/
+  dev_url: https://github.com/paoloshasta/shasta
+
+extra:
+  identifiers:
+    - doi:https://doi.org/10.1038/s41587-020-0503-6

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# chanhe makedis interpreter to tcsh
-sed -i -e '1s@#!.*@#!/usr/bin/env tcsh@' ./ncbi/make/makedis.csh
+# BIOCONDA_CC is patched in via 0001-Inject-our-CC.patch.
+export BIOCONDA_CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 ./ncbi/make/makedis.csh 
 
 cp -rL ncbi/include/* "$PREFIX/include/"

@@ -6,9 +6,10 @@ package:
   version: {{ version }}
 
 source:
-  sha256: {{ sha256 }}
-
   url: "https://github.com/pinellolab/haystack_bio/archive/{{ version }}.tar.gz"
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Skip-check_required_packages-during-build.patch
 
 build:
   noarch: python
@@ -19,47 +20,36 @@ build:
     - "haystack_tf_activity_plane = haystack.generate_tf_activity_plane:main"
     - "haystack_download_genome = haystack.download_genome:main"
     - "haystack_run_test = haystack.haystack_common:run_testdata"
-  number: 0
+  number: 1
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
+
+requirements:
+  host:
+    - pip
+    - python >=2.7,<3.0a0
+  run:
+    - python >=2.7,<3.0a0
+    - openjdk
+    - numpy 1.15.*
+    - meme 4.11.2
+    - bedtools
+    - sambamba
+    - ucsc-bigwigaverageoverbed
+    - ucsc-bedgraphtobigwig
+    - bx-python
+    - scipy
+    - matplotlib
+    - jinja2
+    - pandas
+    - tqdm
+    - weblogo
 
 about:
   home: "https://github.com/pinellolab/haystack_bio"
   license: GPLv3
   summary: "Epigenetic Variability and Transcription Factor Motifs Analysis Pipeline"
 
-
-requirements:
-  host:
-    - python
-    - openjdk
-    - meme 4.11.2
-    - numpy 1.15.*
-    - bedtools
-    - sambamba
-    - ucsc-bigwigaverageoverbed
-    - ucsc-bedgraphtobigwig
-    - bx-python
-    - scipy
-    - matplotlib
-    - jinja2
-    - pandas
-    - tqdm
-    - weblogo
-  run:
-    - openjdk
-    - numpy 1.15.*
-    - meme 4.11.2
-    - bedtools
-    - sambamba
-    - ucsc-bigwigaverageoverbed
-    - ucsc-bedgraphtobigwig
-    - bx-python
-    - scipy
-    - matplotlib
-    - jinja2
-    - pandas
-    - tqdm
-    - weblogo
-
 test:
   commands:
     - "haystack_hotspots -h"
+    - python -c 'import haystack.haystack_common as h; h.check_required_packages()'

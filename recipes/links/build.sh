@@ -1,19 +1,10 @@
-mkdir -p $PREFIX/bin
+#!/bin/sh
+set -eux -o pipefail
 
-#Copying perl script to bin folder
-cp  LINKS $PREFIX/bin
-chmod +x $PREFIX/bin/LINKS
+ ./configure --prefix=${PREFIX}
+make
+make install
 
-
-#Recompiling C code
-cd lib/bloomfilter/swig/
-
-PERL5DIR=`(perl -e 'use Config; print $Config{archlibexp}, "\n";') 2>/dev/null`
-swig -Wall -c++ -perl5 BloomFilter.i
-${CXX} -c BloomFilter_wrap.cxx -I$PERL5DIR/CORE -fPIC -O3
-${CXX} -Wall -shared BloomFilter_wrap.o -o BloomFilter.so -O3 
-
-mkdir -p $PREFIX/lib/site_perl/BloomFilter
-
-cp BloomFilter.* $PREFIX/lib/site_perl/BloomFilter
-
+mv ${PREFIX}/bin/LINKS-make ${PREFIX}/bin/LINKS-make-real
+echo "#!/bin/bash" > ${PREFIX}/bin/LINKS-make
+echo "make -f $(command -v ${PREFIX}/bin/LINKS-make-real) \$@" >> ${PREFIX}/bin/LINKS-make

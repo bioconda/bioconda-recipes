@@ -50,6 +50,6 @@ if [ "$jvm_mem_opts" == "" ]; then
     jvm_mem_opts="$default_jvm_mem_opts"
 fi
 
-eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/chexalign_v0.11.jar" $pass_args
+eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/chexalign_v0.12.jar" $pass_args
 
 exit

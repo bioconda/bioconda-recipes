@@ -1,0 +1,41 @@
+{% set version = "0.0.9" %}
+{% set sha256 = "8955f74b892b1e14a7dbaef3ebd57cc4f6159ed6677da3a7dcaff7fc35a0437c" %}
+
+package:
+  name: proteomiqon-psmbasedquantification
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/ProteomIQon.PSMBasedQuantification/{{ version }}
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+
+requirements:
+  host:
+    - unzip
+  run:
+    - dotnet-runtime =5.0
+    - openssl =1.1
+
+test:
+  commands:
+    - proteomiqon-psmbasedquantification --help
+
+about:
+  home: https://csbiology.github.io/ProteomIQon/
+  license: MIT
+  summary: The quantification tool was designed to allow label-free quantification as well as quantification of full metabolic labeled samples.
+  description: | 
+    Given an MS run in the mzLite or mzml format and a list of fdr controlled peptide spectrum matches, this tool iterates accross all identified MS/MS scans and groups them by
+    the assigned peptide ion. The scan times of each MS/MS spectrum are then weighted according to the quality of each match to build an reliable estimator for the scan time of
+    the peptide ion in question. This scan time estimator, combined with the monoisotopic m/z, is then used to extract an ion chromatogram. Using wavelet based peak detection 
+    techniques we identify all peaks present in the XIC and select the most probable peak our target for quantification. Using parameter estimation techniques we subsequently 
+    use peak fitting to fit a set of two gaussian models to the detected peak, from whom the one with the better fit is selected. This allows us not only to report how well 
+    the signal fitted to the theoretical expected peak shape but also to obtain accurate estimates for the peak area, our estimator for peptide ion abundance.
+    The quantification tool was designed to allow label-free quantification as well as quantification of full metabolic labeled samples. For this we use the known identity 
+    of one of the the peptide ions and calculate the m/z of the unobserved differentially labeled counterpart to extract and quantify the corresponding XIC.
+  dev_url: https://github.com/CSBiology/ProteomIQon
+  doc_url: https://csbiology.github.io/ProteomIQon/tools/PSMBasedQuantification.html

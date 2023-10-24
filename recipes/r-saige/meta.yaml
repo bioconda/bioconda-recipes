@@ -1,0 +1,99 @@
+{% set name = "r-saige" %}
+{% set version = "1.2.0" %}
+{% set vcommit = "5fa0a2bda54656df1def789dd8c45ac513e3c21f" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/saigegit/SAIGE/archive/{{ vcommit }}.tar.gz
+  sha256: da664896a14df5d09ccc45299e016f11b5a618132181e14edc885c58401fbf1d
+  patches:
+    - patches/0001-use-shared-libs-in-makevars.patch
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - boost-cpp
+    - libblas
+    - liblapack
+    - superlu
+    - savvy
+    - zstd
+    - zlib
+    - r-base
+    - r-bh
+    - r-data.table
+    - r-devtools
+    - r-dplyr
+    - r-dbplyr
+    - r-ellipsis
+    - r-matrix
+    - r-optparse
+    - r-qlcmatrix
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-rcppeigen
+    - r-rcppparallel
+    - r-rhpcblasctl
+    - r-roxygen2
+    - r-rversions
+    - r-r.utils
+    - r-rsqlite
+    - r-spatest
+    - r-skat
+    - r-metaskat
+    - r-vctrs
+  run:
+    - r-base
+    - libblas
+    - liblapack
+    - boost-cpp
+    - savvy
+    - r-data.table
+    - r-dplyr
+    - r-dbplyr
+    - r-matrix
+    - r-optparse
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-rcppeigen
+    - r-rcppparallel
+    - r-rhpcblasctl
+    - r-skat
+    - r-spatest
+    - r-rsqlite
+
+test:
+  commands:
+    - $R -e "library(\"SAIGE\")"
+    - step1_fitNULLGLMM.R --help
+    - step2_SPAtests.R --help
+    - createSparseGRM.R --help
+    - extractNglmm.R --help
+
+about:
+  home: https://github.com/saigegit/SAIGE
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: SAIGE is an R package with Scalable and Accurate Implementation of Generalized mixed model (Chen, H. et al. 2016)
+  description: |
+    SAIGE is an R package with Scalable and Accurate Implementation of Generalized
+    mixed model (Chen, H. et al. 2016). It accounts for sample relatedness and is
+    feasible for genetic association tests in large cohorts and biobanks (N > 400000).
+  dev_url: https://github.com/saigegit/SAIGE
+
+extra:
+  recipe-maintainers:
+    - matuskosut
+    - pettyalex

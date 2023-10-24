@@ -1,5 +1,5 @@
 {% set name = "gromacs_py" %}
-{% set version = "1.1.1" %}
+{% set version = "2.0.3" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,12 +7,14 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 4c8c9be844e027637f1666e8760955df264af13482bfd43be9263065433de6ed
+  sha256: a61a29808ffb91755e7f4db0d8cd0dbb9c697eb8fa4a47562c5386144a3091be
 
 build:
   number: 0
   noarch: python
   script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
@@ -27,7 +29,10 @@ requirements:
     - os_command_py
     - pdb_manip_py
     - pdb2pqr_htmd_propka30
-    - gromacs <2020
+    - gromacs >=2019.1
+    - rdkit
+    - acpype
+    - tqdm
 
 test:
   imports:

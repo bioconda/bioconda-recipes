@@ -1,0 +1,64 @@
+{% set version = "1.0.0" %}
+
+package:
+  name: gambit
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/jlumpe/gambit/archive/v{{ version }}.tar.gz
+  sha256: a2d6465a482d2113d2b03c56689871fa088b0443dd663652bf9304a9befa1470
+
+
+build:
+  number: 1
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed ."
+  skip: True  # [py < 37]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - numpy >=1.13
+    - cython
+  run:
+    - python
+    - numpy >=1.13
+    - sqlalchemy >=1.1
+    - biopython >=1.69
+    - alembic >=1.0
+    - attrs >=20
+    - cattrs >=1.0
+    - click >=7.0
+    - h5py >=3.0
+    - setuptools
+    - scipy >=1.7
+
+test:
+  requires:
+    - pytest
+  source_files:
+    - tests/
+  imports:
+    - gambit
+  commands:
+    # Just check command is available
+    - gambit --help
+
+about:
+  home: https://github.com/jlumpe/gambit
+  summary: Tool for rapid taxonomic identification of microbial pathogens
+  description: |
+    GAMBIT (Genomic Approximation Method for Bacterial Identification and Tracking)
+    is a tool for rapid taxonomic identification of microbial pathogens. It uses an
+    extremely efficient genomic distance metric along with a curated database of
+    approximately 50,000 reference genomes (derived from NCBI RefSeq) to identify
+    unknown bacterial genomes within seconds.
+  license: AGPL-3.0-or-later
+  license_file: LICENSE
+  doc_url: https://gambit-genomics.readthedocs.io/en/latest
+
+extra:
+  recipe-maintainers:
+    - jlumpe
