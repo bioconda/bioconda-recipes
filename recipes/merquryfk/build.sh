@@ -1,7 +1,10 @@
 #!/bin/bash
-export PREFIX=${PREFIX}
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+
 make
 mkdir -p $PREFIX/bin
+
 cp HAPmaker  $PREFIX/bin
 cp ASMplot $PREFIX/bin
 cp CNplot $PREFIX/bin
