@@ -1,8 +1,7 @@
 #!/bin/bash
 set -ex
 
-tar xjf mTM-align.tar.bz2
-cd mTM-align/src/
+cd src/
 make
 
 mkdir -p $PREFIX/bin
