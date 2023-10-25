@@ -7,4 +7,5 @@ tar xjf mTM-align.tar.bz2
 cd mTM-align/src/
 make
 
-mv mTM-align ${PREFIX}/bin/mtm-align
+mkdir -p $PREFIX/bin
+mv mTM-align $PREFIX/bin/mtm-align
