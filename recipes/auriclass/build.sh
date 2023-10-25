@@ -1,6 +1,8 @@
 #!/bin/sh
 set -eu
 
+$PYTHON -m pip install . --no-deps -vv
+
 wget "https://github.com/RIVM-bioinformatics/auriclass/archive/v${PKG_VERSION}.tar.gz"
 
 tar zxvf "v${PKG_VERSION}.tar.gz"
