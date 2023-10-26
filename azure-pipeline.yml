@@ -106,12 +106,19 @@ stages:
               export OSTYPE="linux-gnu"
               export CI="true"
 
-              echo "================= PREFIX: ${PREFIX}"
+              echo "================= bioconda: $(which bioconda-utils)"
+              echo "$( python -c'from os.path import dirname, join; import bioconda_utils; print(join(dirname(bioconda_utils.__file__), "bioconda_utils-requirements.txt"))')"
+              echo "================="
 
-              bioconda-utils build recipes config.yml \
+              bioconda-utils build recipes config.yml --loglevel debug \
                   --docker --mulled-test \
                   --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH" HEAD
               docker rmi quay.io/dpryan79/mulled_container:latest
+
+              echo "================= bioconda: $(which bioconda-utils)"
+              echo "$( python -c'from os.path import dirname, join; import bioconda_utils; print(join(dirname(bioconda_utils.__file__), "bioconda_utils-requirements.txt"))')"
+              echo "================="
+              
             displayName: Test
 
           - bash: |
