@@ -105,19 +105,12 @@ stages:
               docker pull quay.io/dpryan79/mulled_container:latest
               export OSTYPE="linux-gnu"
               export CI="true"
-
-              echo "================= bioconda: $(which bioconda-utils)"
-              echo "$( python -c'from os.path import dirname, join; import bioconda_utils; print(join(dirname(bioconda_utils.__file__), "bioconda_utils-requirements.txt"))')"
-              echo "================="
-
               bioconda-utils build recipes config.yml --loglevel debug \
                   --docker --mulled-test \
+                  --docker_base_image "quay.io/bioconda/bioconda-utils-build-env-cos7:2.2.1" \
                   --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH" HEAD
               docker rmi quay.io/dpryan79/mulled_container:latest
 
-              echo "================= bioconda: $(which bioconda-utils)"
-              echo "$( python -c'from os.path import dirname, join; import bioconda_utils; print(join(dirname(bioconda_utils.__file__), "bioconda_utils-requirements.txt"))')"
-              echo "================="
               
             displayName: Test
 
