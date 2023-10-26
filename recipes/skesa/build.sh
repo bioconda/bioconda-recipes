@@ -7,8 +7,8 @@ export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
 
 if [ "$(uname)" == "Darwin" ]; then
-  sed -i.bak 's/-Wl,-Bstatic//' $makefile
-  sed -i.bak 's/-Wl,-Bdynamic -lrt//' $makefile
+  sed -i.bak 's/-Wl,-Bstatic//' Makefile.nongs
+  sed -i.bak 's/-Wl,-Bdynamic -lrt//' Makefile.nongs
 fi
 
 LDFLAGS=-L${PREFIX}/lib
