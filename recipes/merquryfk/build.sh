@@ -1,6 +1,11 @@
 #!/bin/bash
-export CFLAGS="$CFLAGS -I$PREFIX/include"
+
+if [ "$(uname)" == "Darwin" ]; then
+     export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
+fi
+
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export CPATH=${PREFIX}/include
 
 make
 mkdir -p $PREFIX/bin
