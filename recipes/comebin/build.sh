@@ -1,4 +1,4 @@
-#!/usr/bin/evn bash
+#!/usr/bin/env bash
 
 mkdir -p $PREFIX/bin 
 cp -r COMEBIN $PREFIX/bin/
