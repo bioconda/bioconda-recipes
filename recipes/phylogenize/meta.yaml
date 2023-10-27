@@ -1,6 +1,6 @@
 {% set version = "0.91" %}
-{% set name = "phylogenize" %}
 {% set sha256 = "3d428440f7a8aed3be18bbe094d3afe94f2d5357daa715d13e963c665384f2ab" %}
+{% set name = "phylogenize" %}
 
 package:
   name: phylogenize
@@ -8,42 +8,43 @@ package:
 
 source: 
   url: https://github.com/pbradleylab/phylogenize/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: {{ sha256 }} 
-  build:
-    name: 0
-    rpaths:
-      - lib/R/lib/
-      - lib/
-    noarch: generic
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
-  build:
-    - vsearch
-    - bioconductor-ggtree
-    - bioconductor-biomformat
-    - r-devtools
-    - r-ragg
-    - r-phylolm
-    - r-phangorn
+  host:
+    - perl
+    - r-base
   run:
+    - perl
     - vsearch
-    - bioconductor-ggtree
-    - bioconductor-biomformat
+    - 'bioconductor-ggtree'
+    - 'bioconductor-biomformat'
     - r-devtools
     - r-ragg
     - r-phylolm
     - r-phangorn
-  test:
-    commands:
-      - '$R -c "library(''{{ name }}'')"'
+
+test:
+  commands:
+    - '$R -e "library(devtools)"'
+    - $R -e "devtools::install_github('pbradleylab/phylogenize/package/phylogenize')"
+    - '$R -e "?phylogenize"'
 
 about:
-  home: https://github.com/bitbucket/phylogenize
+  home: https://github.com/pbradleylab/phylogenize
   license: MIT
-  summary: "An R package that allows users to link microbial genes to environments, accounting for phylogeny"
-  summary: "Phylogenize is a tool that allows users to link microbial genes to environments, accounting for phylogeny. More specifically, given community composition data, Phylogenize links genes in microbial genomes to either microbial prevalence in, or specificity for, a given environment, while also taking into account an important potential confounder: the phylogenetic relationships between microbes."
-  extra:
-    recipe-maintainers:
-      - kathrynkananen
-    indentifiers:
-      - doi: https://doi.org/10.1093/bioinformatics/btz722
+  summary: "Phylogenize is a tool that allows users to link microbial genes to environments, accounting for phylogeny."
+extra:
+  recipe-maintainers:
+    - kathryn kananen
+  indentifiers:
+    - doi: "https://doi.org/10.1093/bioinformatics/btz722"
