@@ -1,0 +1,2099 @@
+--- a/c++/include/algo/blast/blastinput/rmblastn_args.hpp	2011-02-09 06:37:10.000000000 -0800
++++ b/c++/include/algo/blast/blastinput/rmblastn_args.hpp	2023-08-24 15:48:58.352822168 -0700
+@@ -32,13 +32,44 @@ public:
+ 
+     virtual int GetQueryBatchSize() const;
+ 
++    virtual ~CRMBlastnAppArgs() {}
+ protected:
++    /// @inheritDoc
+     virtual CRef<CBlastOptionsHandle>
+     x_CreateOptionsHandle(CBlastOptions::EAPILocality locality,
+                           const CArgs& args);
+ 
+ };
+ 
++class NCBI_BLASTINPUT_EXPORT CRMBlastnNodeArgs : public CRMBlastnAppArgs
++{
++public:
++    /// Constructor
++    CRMBlastnNodeArgs(const string & input);
++
++    /// @inheritDoc
++    virtual int GetQueryBatchSize() const;
++
++    /// Get the input stream
++    virtual CNcbiIstream& GetInputStream();
++
++    /// Get the output stream
++    virtual CNcbiOstream& GetOutputStream();
++
++    CNcbiStrstream & GetOutputStrStream() { return m_OutputStream; }
++
++    virtual ~CRMBlastnNodeArgs();
++
++protected:
++    /// @inheritDoc
++    virtual CRef<CBlastOptionsHandle>
++    x_CreateOptionsHandle(CBlastOptions::EAPILocality locality, const CArgs& args);
++
++private :
++    CNcbiStrstream m_OutputStream;
++    CNcbiIstrstream * m_InputStream;
++};
++
+ 
+ END_SCOPE(blast)
+ END_NCBI_SCOPE
+--- a/c++/src/algo/blast/blastinput/rmblastn_args.cpp	2016-05-04 07:59:01.000000000 -0700
++++ b/c++/src/algo/blast/blastinput/rmblastn_args.cpp	2023-08-24 15:48:58.352822168 -0700
+@@ -44,6 +44,7 @@ CRMBlastnAppArgs::CRMBlastnAppArgs()
+     m_Args.push_back(arg);
+ 
+     m_BlastDbArgs.Reset(new CBlastDatabaseArgs);
++    m_BlastDbArgs->SetDatabaseMaskingSupport(true);
+     arg.Reset(m_BlastDbArgs);
+     m_Args.push_back(arg);
+ 
+@@ -88,7 +89,7 @@ CRMBlastnAppArgs::CRMBlastnAppArgs()
+     arg.Reset(m_FormattingArgs);
+     m_Args.push_back(arg);
+ 
+-    m_MTArgs.Reset(new CMTArgs);
++    m_MTArgs.Reset(new CMTArgs(CThreadable::kMinNumThreads, CMTArgs::eSplitByDB));
+     arg.Reset(m_MTArgs);
+     m_Args.push_back(arg);
+ 
+@@ -101,19 +102,62 @@ CRMBlastnAppArgs::CRMBlastnAppArgs()
+     m_Args.push_back(arg);
+ }
+ 
+-CRef<CBlastOptionsHandle> 
++CRef<CBlastOptionsHandle>
+ CRMBlastnAppArgs::x_CreateOptionsHandle(CBlastOptions::EAPILocality locality,
+                                       const CArgs& args)
+ {
+-    CRef<CBlastOptionsHandle> retval =
+-        x_CreateOptionsHandleWithTask(locality, args[kTask].AsString());
+-    return retval;
++    _ASSERT(args.Exist(kTask));
++    _ASSERT(args[kTask].HasValue());
++    return x_CreateOptionsHandleWithTask(locality, args[kTask].AsString());
+ }
+ 
+ int
+ CRMBlastnAppArgs::GetQueryBatchSize() const
+ {
+-    return blast::GetQueryBatchSize(ProgramNameToEnum(GetTask()));
++    bool is_remote = (m_RemoteArgs.NotEmpty() && m_RemoteArgs->ExecuteRemotely());
++    return blast::GetQueryBatchSize(ProgramNameToEnum(GetTask()), m_IsUngapped, is_remote, false);
++}
++
++/// Get the input stream
++CNcbiIstream&
++CRMBlastnNodeArgs::GetInputStream()
++{
++        if ( !m_InputStream ) {
++                abort();
++        }
++        return *m_InputStream;
++}
++/// Get the output stream
++CNcbiOstream&
++CRMBlastnNodeArgs::GetOutputStream()
++{
++        return m_OutputStream;
++}
++
++CRMBlastnNodeArgs::CRMBlastnNodeArgs(const string & input)
++{
++        m_InputStream = new CNcbiIstrstream(input);
++}
++
++CRMBlastnNodeArgs::~CRMBlastnNodeArgs()
++{
++        if (m_InputStream) {
++                delete m_InputStream;
++                m_InputStream = NULL;
++        }
++}
++
++int
++CRMBlastnNodeArgs::GetQueryBatchSize() const
++{
++    bool is_remote = (m_RemoteArgs.NotEmpty() && m_RemoteArgs->ExecuteRemotely());
++    return blast::GetQueryBatchSize(ProgramNameToEnum(GetTask()), m_IsUngapped, is_remote, false);
++}
++
++CRef<CBlastOptionsHandle>
++CRMBlastnNodeArgs::x_CreateOptionsHandle(CBlastOptions::EAPILocality locality, const CArgs& args)
++{
++    return CRMBlastnAppArgs::x_CreateOptionsHandle(locality, args);
+ }
+ 
+ END_SCOPE(blast)
+--- a/c++/src/algo/blast/format/blast_format.cpp	2023-04-25 10:14:39.000000000 -0700
++++ b/c++/src/algo/blast/format/blast_format.cpp	2023-08-24 15:48:58.353822148 -0700
+@@ -2494,18 +2494,6 @@ void CBlastFormat::LogBlastSearchInfo(CB
+ 			}
+ 		}
+ 		else {
+-			string dir = kEmptyStr;
+-			CFile::SplitPath(m_DbName, &dir);
+-			string db_name = m_DbName;
+-			if (dir != kEmptyStr) {
+-				db_name = m_DbName.substr(dir.length());
+-			}
+-
+-			if (db_name.size() > 500) {
+-				db_name.resize(500);
+-				NStr::TruncateSpacesInPlace(db_name, NStr::eTrunc_End);
+-			}
+-			report.AddParam(CBlastUsageReport::eDBName, db_name);
+ 			report.AddParam(CBlastUsageReport::eDBLength, GetDbTotalLength());
+ 			report.AddParam(CBlastUsageReport::eDBNumSeqs, num_seqs);
+ 			report.AddParam(CBlastUsageReport::eDBDate, m_DbInfo[0].date);
+--- a/c++/src/algo/blast/core/blast_stat.c	2021-06-21 12:27:23.000000000 -0700
++++ b/c++/src/algo/blast/core/blast_stat.c	2023-08-24 15:48:58.354822127 -0700
+@@ -85,7 +85,6 @@ typedef struct MatrixInfo {
+    Int4     max_number_values;   /**< number of values (e.g., BLOSUM90_VALUES_MAX). */
+ } MatrixInfo;
+ 
+-
+ /**************************************************************************************
+ 
+ How the statistical parameters for the matrices are stored:
+@@ -1161,6 +1160,8 @@ BlastScoreBlkNucleotideMatrixRead(BlastS
+     register int  index1, index2;
+     char fbuf[512+3];
+     char alphabet[24];
++    char *lineterm_ptr;
++    char *strtok_ptr;
+     char *cp,*ncp,*lp;
+     double lambda_upper = 0;
+     double lambda_lower = 0;
+@@ -1183,102 +1184,119 @@ BlastScoreBlkNucleotideMatrixRead(BlastS
+ 
+     alphabet[0] = 0;
+     while ( fgets(fbuf,sizeof(fbuf),fp) ) {
+-      if (strchr(fbuf, '\n') == NULL) {
++
++      if ( (lineterm_ptr = strchr(fbuf, '\n')) == NULL) {
+         return 2;
+       }
++      size_t line_len = strlen(fbuf);
+ 
+-      /* initialize column pointer */
++      // initialize column pointer
+       cp = (char *)fbuf;
+ 
+-      /* eat whitespace */
+-      while( (*cp) && isspace(*cp) ) cp++;
++      // eat whitespace
++      while( (*cp) && isspace(*cp) && cp != lineterm_ptr ) cp++;
++      if ( cp == lineterm_ptr )
++        continue;
+ 
+       if (*cp == kCommentChar) {
+-        /* special case FREQS line ( must exist ) */
++        // special case FREQS line ( must exist )
+         if ( (ncp = strstr( cp, (const char *)"FREQS" )) != NULL ) {
+           cp = ncp + 5;
+-          /* eat whitespace */
+-          while( (*cp) && isspace(*cp) ) cp++;
+-
+-          lp = (char*)strtok(cp, kTokenStr);
+-          /* Missing values */
+-          if (lp == NULL)
++          // eat whitespace
++          while( (*cp) && isspace(*cp) && cp != lineterm_ptr ) cp++;
++          if ( cp == lineterm_ptr )
++            continue;
++
++          // Thread safety, it's for everyone!
++          lp = (char*)strtok_r(cp, kTokenStr, &strtok_ptr);
++          // Missing values
++          if (lp == NULL) {
+               return 2;
++          }
+ 
+           numFreqs = 0;
+           while (lp != NULL) {
+             // Read Nucleotide
+             base = (int)IUPACNA_TO_BLASTNA[toupper((unsigned char)(*lp))];
+ 
+-            lp = (char*)strtok(NULL, kTokenStr);
+-            /* Expected a token pair */
+-            if ( lp == NULL )
++            lp = (char*)strtok_r(NULL, kTokenStr, &strtok_ptr);
++            // Expected a token pair
++            if ( lp == NULL ){
+               return 2;
++            }
+ 
+             // Read Frequency
+-            if ( sscanf(lp, "%lf", &fval ) != 1 )
++            if ( sscanf(lp, "%lf", &fval ) != 1 ){
+               return( 2 );
++            }
+ 
+             // Store base/fval
+             freqs[base] = fval;
+             numFreqs++;
+-            lp = (char*)strtok(NULL, kTokenStr);
++            lp = (char*)strtok_r(NULL, kTokenStr, &strtok_ptr);
+           }
+         }else {
+-          /* save the comment line in a linked list */
++          // save the comment line in a linked list
+           *strchr(cp, '\n') = NULLB;
+           ListNodeCopyStr(&sbp->comments, 0, cp);
+         }
+         continue;
+       }
+ 
+-      /* alphabet line */
++      // alphabet line
+       if ( isalpha(*cp) && !alphabet[0] ) {
+         j = 0;
+-        lp = (char*)strtok(cp, kTokenStr);
++        lp = (char*)strtok_r(cp, kTokenStr, &strtok_ptr);
+         while (lp != NULL) {
+           alphabet[j++] = toupper((unsigned char)(*lp));
+-          lp = (char*)strtok(NULL, kTokenStr);
++          lp = (char*)strtok_r(NULL, kTokenStr, &strtok_ptr);
+         }
+         alphabet[j] = 0;
+         alphaSize = j;
+         continue;
+       }else if ( isalpha(*cp) ) {
+-        /* Chew off first alphabet character */
++        // Chew off first alphabet character
+         cp++;
+-        /* eat whitespace */
+-        while( (*cp) && isspace(*cp) ) cp++;
++        // eat whitespace
++        while( (*cp) && isspace(*cp) && cp != lineterm_ptr ) cp++;
+       }
+ 
+-      /* Matrix data */
++      // Matrix data
+       if ( isdigit(*cp) || *cp == '-' ) {
+         j = 0;
+-        lp = (char*)strtok(cp, kTokenStr);
++        lp = (char*)strtok_r(cp, kTokenStr, &strtok_ptr);
+         rowIdx = (int)IUPACNA_TO_BLASTNA[toupper((unsigned char)alphabet[i])];
+         while (lp != NULL) {
+-          if ( sscanf(lp, "%d", &val ) != 1 )
++          if ( sscanf(lp, "%d", &val ) != 1 ){
+             return( 2 );
++          }
+           colIdx = (int)IUPACNA_TO_BLASTNA[toupper((unsigned char)alphabet[j++])];
++
++          ASSERT( rowIdx < sbp->alphabet_size );
++          ASSERT( colIdx < sbp->alphabet_size );
++
+           matrix[rowIdx][colIdx] = val;
+-         lp = (char*)strtok(NULL, kTokenStr);
++          lp = (char*)strtok_r(NULL, kTokenStr, &strtok_ptr);
+         }
+-        /* We should have as many values as we do characters in the
+-           alphabet */
+-        if ( j != alphaSize )
++        // We should have as many values as we do characters in the
++        // alphabet
++        if ( j != alphaSize ){
+           return( 2 );
++        }
+         i++;
+         continue;
+      }
+    }
+ 
+-   /* Expected 4 base frequencies, and a square matrix */
+-   if ( numFreqs != 4 || i != alphaSize )
++   // Expected 4 base frequencies, and a square matrix
++   if ( numFreqs != 4 || i != alphaSize ){
+      return( 2 );
++   }
+ 
+-   /* Calculate lambda for complexity adjusted scoring. This
+-      scoring system was designed by Phil Green and used in the
+-      cross_match package.  It was also used in MaskerAid to make
+-      wublast compatable with RepeatMasker. */
++   // Calculate lambda for complexity adjusted scoring. This
++   //   scoring system was designed by Phil Green and used in the
++   //   cross_match package.  It was also used in MaskerAid to make
++   //   wublast compatable with RepeatMasker.
+    do {
+      sum = 0;
+      check = 0;
+@@ -1327,8 +1345,8 @@ BlastScoreBlkNucleotideMatrixRead(BlastS
+    }
+    sbp->matrix->lambda = lambda;
+ 
+-   /* The value of 15 is a gap, which is a sentinel between strands in
+-      the ungapped extension algorithm. */
++   // The value of 15 is a gap, which is a sentinel between strands in
++   // the ungapped extension algorithm.
+    for (index1=0; index1<BLASTNA_SIZE; index1++)
+      matrix[BLASTNA_SIZE-1][index1] = INT4_MIN / 2;
+    for (index1=0; index1<BLASTNA_SIZE; index1++)
+@@ -1339,7 +1357,6 @@ BlastScoreBlkNucleotideMatrixRead(BlastS
+ }
+ 
+ 
+-
+ /** Read in the matrix from the FILE *fp.
+  * This function ASSUMES that the matrices are in the ncbistdaa
+  * @param sbp the BlastScoreBlk with the matrix to be populated [in|out]
+--- a/c++/src/app/blast/blast_app_util.cpp	2023-05-02 06:55:28.000000000 -0700
++++ b/c++/src/app/blast/blast_app_util.cpp	2023-08-24 15:48:58.354822127 -0700
+@@ -957,12 +957,6 @@ void LogCmdOptions(blast::CBlastUsageRep
+ 		args.GetBlastDatabaseArgs()->GetSearchDatabase()->GetSeqDb().NotEmpty()) {
+ 
+ 		CRef<CSeqDB> db = args.GetBlastDatabaseArgs()->GetSearchDatabase()->GetSeqDb();
+-		string db_name = db->GetDBNameList();
+-		int off = db_name.find_last_of(CFile::GetPathSeparator());
+-	    if (off != -1) {
+-	    	db_name.erase(0, off+1);
+-		}
+-		report.AddParam(CBlastUsageReport::eDBName, db_name);
+ 		report.AddParam(CBlastUsageReport::eDBLength, (Int8) db->GetTotalLength());
+ 		report.AddParam(CBlastUsageReport::eDBNumSeqs, db->GetNumSeqs());
+ 		report.AddParam(CBlastUsageReport::eDBDate, db->GetDate());
+--- a/c++/src/app/blastdb/blastdbcmd.cpp	2022-11-08 11:47:48.000000000 -0800
++++ b/c++/src/app/blastdb/blastdbcmd.cpp	2023-08-24 15:48:58.355822107 -0700
+@@ -1239,21 +1239,6 @@ void CBlastDBCmdApp::x_AddCmdOptions()
+     	m_UsageReport.AddParam(CBlastUsageReport::eOutputFmt, args["outfmt"].AsString());
+     }
+ 
+-	vector<string> db_list;
+-	NStr::Split(m_BlastDb->GetDBNameList(), " ", db_list,NStr::fSplit_Tokenize);
+-	NON_CONST_ITERATE(vector<string>, itr, db_list) {
+-		int off = (*itr).find_last_of(CFile::GetPathSeparator());
+-	    if (off != -1) {
+-	        (*itr).erase(0, off+1);
+-	    }
+-	}
+-	string db_name = NStr::Join(db_list, " ");
+-
+-	int off = db_name.find_last_of(CFile::GetPathSeparator());
+-    if (off != -1) {
+-    	db_name.erase(0, off+1);
+-	}
+-	m_UsageReport.AddParam(CBlastUsageReport::eDBName, db_name);
+ 	m_UsageReport.AddParam(CBlastUsageReport::eDBLength, (Int8) m_BlastDb->GetTotalLength());
+ 	m_UsageReport.AddParam(CBlastUsageReport::eDBNumSeqs, m_BlastDb->GetNumSeqs());
+ 	m_UsageReport.AddParam(CBlastUsageReport::eDBDate, m_BlastDb->GetDate());
+--- a/c++/src/app/rmblastn/CMakeLists.rmblastn.app.txt	1969-12-31 16:00:00.000000000 -0800
++++ b/c++/src/app/rmblastn/CMakeLists.rmblastn.app.txt	2023-08-24 15:48:58.355822107 -0700
+@@ -0,0 +1,10 @@
++# Derived from CMakeLists.blastn.app.txt 626054 2021-02-23 17:13:18Z fongah2
++
++NCBI_begin_app(rmblastn)
++  NCBI_sources(rmblastn_node rmblastn_app)
++  NCBI_uses_toolkit_libraries(blast_app_util)
++  NCBI_add_definitions(NCBI_MODULE=BLAST)
++  NCBI_requires(-Cygwin)
++  NCBI_project_tags(gbench)
++NCBI_end_app()
++
+--- a/c++/src/app/rmblastn/Makefile.in	1969-12-31 16:00:00.000000000 -0800
++++ b/c++/src/app/rmblastn/Makefile.in	2023-08-24 15:48:58.355822107 -0700
+@@ -0,0 +1,13 @@
++# Meta-makefile("APP" project)
++#################################
++
++REQUIRES = objects algo
++
++APP_PROJ = rmblastn
++srcdir = @srcdir@
++include @builddir@/Makefile.meta
++
++.PHONY: all $(APP_PROJ)
++
++rmblastn: lib
++	${MAKE} ${MFLAGS} -f Makefile.rmblastn_app
+--- a/c++/src/app/rmblastn/Makefile.rmblastn.app	1969-12-31 16:00:00.000000000 -0800
++++ b/c++/src/app/rmblastn/Makefile.rmblastn.app	2023-08-24 15:48:58.356822087 -0700
+@@ -0,0 +1,17 @@
++APP = rmblastn
++SRC = rmblastn_node rmblastn_app
++LIB_ = xformat xcleanup valid gbseq mlacli mla medlars pubmed submit xregexp $(PCRE_LIB) \
++       $(BLAST_INPUT_LIBS) $(BLAST_LIBS) $(OBJMGR_LIBS)
++LIB = blast_app_util $(LIB_:%=%$(STATIC))
++
++# De-universalize Mac builds to work around a PPC toolchain limitation
++CFLAGS   = $(FAST_CFLAGS:ppc=i386)
++CXXFLAGS = $(FAST_CXXFLAGS:ppc=i386)
++LDFLAGS  = $(FAST_LDFLAGS:ppc=i386)
++
++CPPFLAGS = -DNCBI_MODULE=BLAST $(ORIG_CPPFLAGS) $(BLAST_THIRD_PARTY_INCLUDE)
++LIBS = $(GENBANK_THIRD_PARTY_LIBS) $(BLAST_THIRD_PARTY_LIBS) $(CMPRS_LIBS) $(DL_LIBS) $(NETWORK_LIBS) $(ORIG_LIBS)
++
++REQUIRES = objects -Cygwin
++
++PROJ_TAG = gbench
+--- a/c++/src/app/rmblastn/rmblastn_app.cpp	1969-12-31 16:00:00.000000000 -0800
++++ b/c++/src/app/rmblastn/rmblastn_app.cpp	2023-08-24 15:48:58.356822087 -0700
+@@ -0,0 +1,394 @@
++/*  $Id: blastn_app.cpp 634685 2021-07-16 13:42:53Z fongah2 $
++ * ===========================================================================
++ *
++ *                            PUBLIC DOMAIN NOTICE
++ *               National Center for Biotechnology Information
++ *
++ *  This software/database is a "United States Government Work" under the
++ *  terms of the United States Copyright Act.  It was written as part of
++ *  the author's official duties as a United States Government employee and
++ *  thus cannot be copyrighted.  This software/database is freely available
++ *  to the public for use. The National Library of Medicine and the U.S.
++ *  Government have not placed any restriction on its use or reproduction.
++ *
++ *  Although all reasonable efforts have been taken to ensure the accuracy
++ *  and reliability of the software and data, the NLM and the U.S.
++ *  Government do not and cannot warrant the performance or results that
++ *  may be obtained by using this software or data. The NLM and the U.S.
++ *  Government disclaim all warranties, express or implied, including
++ *  warranties of performance, merchantability or fitness for any particular
++ *  purpose.
++ *
++ *  Please cite the author in any work or product based on this material.
++ *
++ * ===========================================================================
++ *
++ * Authors:  Christiam Camacho
++ *
++ */
++
++/** @file rmblastn_app.cpp
++ * RMBLASTN command line application
++ */
++
++#include <ncbi_pch.hpp>
++#include <corelib/ncbiapp.hpp>
++#include <algo/blast/api/local_blast.hpp>
++#include <algo/blast/api/remote_blast.hpp>
++#include <algo/blast/blastinput/blast_fasta_input.hpp>
++#include <algo/blast/blastinput/rmblastn_args.hpp>
++#include <algo/blast/api/objmgr_query_data.hpp>
++#include <algo/blast/format/blast_format.hpp>
++#include <util/profile/rtprofile.hpp>
++#include "../blast/blast_app_util.hpp"
++#include "rmblastn_node.hpp"
++
++#ifndef SKIP_DOXYGEN_PROCESSING
++USING_NCBI_SCOPE;
++USING_SCOPE(blast);
++USING_SCOPE(objects);
++#endif
++
++class CBlastnApp : public CNcbiApplication
++{
++public:
++    /** @inheritDoc */
++    CBlastnApp() {
++        CRef<CVersion> version(new CVersion());
++        version->SetVersionInfo(new CBlastVersion());
++        SetFullVersion(version);
++        m_StopWatch.Start();
++        if (m_UsageReport.IsEnabled()) {
++        	m_UsageReport.AddParam(CBlastUsageReport::eVersion, GetVersion().Print());
++        }
++    }
++
++    ~CBlastnApp() {
++    	m_UsageReport.AddParam(CBlastUsageReport::eRunTime, m_StopWatch.Elapsed());
++    }
++private:
++    /** @inheritDoc */
++    virtual void Init();
++    /** @inheritDoc */
++    virtual int Run();
++
++    int x_RunMTBySplitDB();
++    int x_RunMTBySplitQuery();
++
++    /// This application's command line args
++    CRef<CRMBlastnAppArgs> m_CmdLineArgs; 
++    CBlastUsageReport m_UsageReport;
++    CStopWatch m_StopWatch;
++};
++
++void CBlastnApp::Init()
++{
++    // formulate command line arguments
++
++    m_CmdLineArgs.Reset(new CRMBlastnAppArgs());
++    // read the command line
++    HideStdArgs(fHideLogfile | fHideConffile | fHideFullVersion | fHideXmlHelp | fHideDryRun);
++    SetupArgDescriptions(m_CmdLineArgs->SetCommandLine());
++}
++
++int CBlastnApp::Run(void)
++{
++	const CArgs& args = GetArgs();
++	CMTArgs mt_args(args);
++	if ((mt_args.GetMTMode() == CMTArgs::eSplitByQueries) &&
++		(mt_args.GetNumThreads() > 1)){
++		m_UsageReport.AddParam(CBlastUsageReport::eMTMode, CMTArgs::eSplitByQueries);
++		return x_RunMTBySplitQuery();
++	}
++	else {
++		return x_RunMTBySplitDB();
++	}
++}
++
++int CBlastnApp::x_RunMTBySplitDB()
++{
++    BLAST_PROF_START( APP.MAIN );
++    BLAST_PROF_START( APP.PRE );
++    //BLAST_PROF_ADD2( PROGRAM, blastn ) ;
++    BLAST_PROF_ADD2( PROGRAM, rmblastn ) ;
++    int status = BLAST_EXIT_SUCCESS;
++    CBlastAppDiagHandler bah;
++    int batch_num = 0;
++
++    try {
++
++        // Allow the fasta reader to complain on invalid sequence input
++        SetDiagPostLevel(eDiag_Warning);
++        SetDiagPostPrefix("rmblastn");
++        SetDiagHandler(&bah, false);
++
++        /*** Get the BLAST options ***/
++        const CArgs& args = GetArgs();
++
++        CRef<CBlastOptionsHandle> opts_hndl;
++        if(RecoverSearchStrategy(args, m_CmdLineArgs)){
++        	opts_hndl.Reset(&*m_CmdLineArgs->SetOptionsForSavedStrategy(args));
++        }
++        else {
++        	opts_hndl.Reset(&*m_CmdLineArgs->SetOptions(args));
++        }
++        const CBlastOptions& opt = opts_hndl->GetOptions();
++
++        /*** Initialize the database/subject ***/
++        CRef<CBlastDatabaseArgs> db_args(m_CmdLineArgs->GetBlastDatabaseArgs());
++        CRef<CLocalDbAdapter> db_adapter;
++        CRef<CScope> scope;
++        InitializeSubject(db_args, opts_hndl, m_CmdLineArgs->ExecuteRemotely(),
++                         db_adapter, scope);
++        _ASSERT(db_adapter && scope);
++
++        /*** Get the query sequence(s) ***/
++        CRef<CQueryOptionsArgs> query_opts = 
++            m_CmdLineArgs->GetQueryOptionsArgs();
++
++        SDataLoaderConfig dlconfig =
++            InitializeQueryDataLoaderConfiguration(query_opts->QueryIsProtein(),
++                                                   db_adapter);
++        CBlastInputSourceConfig iconfig(dlconfig, query_opts->GetStrand(),
++                                     query_opts->UseLowercaseMasks(),
++                                     query_opts->GetParseDeflines(),
++                                     query_opts->GetRange());
++        iconfig.SetSkipSeqCheck(true);
++        if(IsIStreamEmpty(m_CmdLineArgs->GetInputStream())) {
++           	ERR_POST(Warning << "Query is Empty!");
++           	return BLAST_EXIT_SUCCESS;
++        }
++        CBlastFastaInputSource fasta(m_CmdLineArgs->GetInputStream(), iconfig);
++        CBlastInput input(&fasta);
++
++        // Initialize the megablast database index now so we can know whether an indexed search will be run.
++        // This is only important for the reference in the report, but would be done anyway.
++        if (opt.GetUseIndex() && !m_CmdLineArgs->ExecuteRemotely()) {
++            CRef<CBlastOptions> my_options(&(opts_hndl->SetOptions()));
++            CSetupFactory::InitializeMegablastDbIndex(my_options);
++        }
++        /*** Get the formatting options ***/
++        CRef<CFormattingArgs> fmt_args(m_CmdLineArgs->GetFormattingArgs());
++        bool isArchiveFormat = fmt_args->ArchiveFormatRequested(args);
++        if(!isArchiveFormat) {
++        	bah.DoNotSaveMessages();
++        }
++        CBlastFormat formatter(opt, *db_adapter,
++                               fmt_args->GetFormattedOutputChoice(),
++                               query_opts->GetParseDeflines(),
++                               m_CmdLineArgs->GetOutputStream(),
++                               fmt_args->GetNumDescriptions(),
++                               fmt_args->GetNumAlignments(),
++                               *scope,
++                               opt.GetMatrixName(),
++                               fmt_args->ShowGis(),
++                               fmt_args->DisplayHtmlOutput(),
++                               opt.GetQueryGeneticCode(),
++                               opt.GetDbGeneticCode(),
++                               opt.GetSumStatisticsMode(),
++                               m_CmdLineArgs->ExecuteRemotely(),
++                               db_adapter->GetFilteringAlgorithm(),
++                               fmt_args->GetCustomOutputFormatSpec(),
++                               m_CmdLineArgs->GetTask() == "megablast",
++                               opt.GetMBIndexLoaded(),
++                               NULL, NULL,
++                               GetCmdlineArgs(GetArguments()),
++			       GetSubjectFile(args));
++                               
++        formatter.SetQueryRange(query_opts->GetRange());
++        formatter.SetLineLength(fmt_args->GetLineLength());
++        formatter.SetHitsSortOption(fmt_args->GetHitsSortOption());
++        formatter.SetHspsSortOption(fmt_args->GetHspsSortOption());
++        formatter.SetCustomDelimiter(fmt_args->GetCustomDelimiter());
++        if(UseXInclude(*fmt_args, args[kArgOutput].AsString())) {
++        	formatter.SetBaseFile(args[kArgOutput].AsString());
++        }
++        formatter.PrintProlog();
++
++        /*** Process the input ***/
++        CBatchSizeMixer mixer(SplitQuery_GetChunkSize(opt.GetProgram())-1000);
++        int batch_size = m_CmdLineArgs->GetQueryBatchSize();
++        if (batch_size) {
++            input.SetBatchSize(batch_size);
++	    BLAST_PROF_ADD( BATCH_SIZE, (int)batch_size );
++        } else {
++            Int8 total_len = formatter.GetDbTotalLength();
++            if (total_len > 0) {
++                /* the optimal hits per batch scales with total db size */
++                mixer.SetTargetHits(total_len / 3000);
++            }
++            input.SetBatchSize(mixer.GetBatchSize());
++	    BLAST_PROF_ADD( BATCH_SIZE, (int)mixer.GetBatchSize() );
++        }
++	BLAST_PROF_STOP( APP.PRE );
++        for (; !input.End(); formatter.ResetScopeHistory(), QueryBatchCleanup() ) {
++	    BLAST_PROF_START( APP.LOOP.PRE );
++            CRef<CBlastQueryVector> query_batch(input.GetNextSeqBatch(*scope));
++            CRef<IQueryFactory> queries(new CObjMgr_QueryFactory(*query_batch));
++
++            SaveSearchStrategy(args, m_CmdLineArgs, queries, opts_hndl);
++
++            CRef<CSearchResultSet> results;
++
++	    BLAST_PROF_STOP( APP.LOOP.PRE );
++            if (m_CmdLineArgs->ExecuteRemotely()) {
++                CRef<CRemoteBlast> rmt_blast = 
++                    InitializeRemoteBlast(queries, db_args, opts_hndl,
++                          m_CmdLineArgs->ProduceDebugRemoteOutput(),
++                          m_CmdLineArgs->GetClientId());
++                results = rmt_blast->GetResultSet();
++            } else {
++	        BLAST_PROF_START( APP.LOOP.BLAST );
++                CRef<CLocalBlast> lcl_blast;
++                try {
++                    // -RMH-: Unfortunately this new query threading scheme doesn't
++                    //        support app initialized iconfig object.  Therefore the
++                    //        setting "iconfig.SetSkipSeqCheck(true);" can't be done
++                    //        from here (currently).  We do not have this as a use
++                    //        case yet...so I am delaying this change until the next 
++                    //        release.
++                    lcl_blast = new CLocalBlast(queries, opts_hndl, db_adapter);
++                }catch ( CBlastException& exc ) {
++                    // -RMH- Empty query should not cause an error return value
++                    if(exc.GetErrCode() == CBlastException::eEmptySequence) {
++       		       ERR_POST(Warning << "Query is effectively empty!");
++           	       return BLAST_EXIT_SUCCESS;
++                    }else {
++                      throw;
++                    }
++                }
++                lcl_blast->SetNumberOfThreads(m_CmdLineArgs->GetNumThreads());
++		lcl_blast->SetBatchNumber( batch_num );
++                results = lcl_blast->Run();
++                if (!batch_size) 
++                    input.SetBatchSize(mixer.GetBatchSize(lcl_blast->GetNumExtensions()));
++	        BLAST_PROF_STOP( APP.LOOP.BLAST );
++            }
++	    BLAST_PROF_START( APP.LOOP.FMT );
++            if (isArchiveFormat) {
++                formatter.WriteArchive(*queries, *opts_hndl, *results, 0, bah.GetMessages());
++                bah.ResetMessages();
++            } else {
++                BlastFormatter_PreFetchSequenceData(*results, scope,
++                			                        fmt_args->GetFormattedOutputChoice());
++                ITERATE(CSearchResultSet, result, *results) {
++                    formatter.PrintOneResultSet(**result, query_batch);
++                }
++            }
++	    BLAST_PROF_STOP( APP.LOOP.FMT );
++	    batch_num++;
++        }
++        BLAST_PROF_START( APP.POST );
++        formatter.PrintEpilog(opt);
++
++        if (m_CmdLineArgs->ProduceDebugOutput()) {
++            opts_hndl->GetOptions().DebugDumpText(NcbiCerr, "BLAST options", 1);
++        }
++
++        LogQueryInfo(m_UsageReport, input);
++        formatter.LogBlastSearchInfo(m_UsageReport);
++        BLAST_PROF_STOP( APP.POST );
++    } CATCH_ALL(status)
++
++    if(!bah.GetMessages().empty()) {
++    	const CArgs & a = GetArgs();
++    	PrintErrorArchive(a, bah.GetMessages());
++    }
++
++	m_UsageReport.AddParam(CBlastUsageReport::eNumThreads, (int) m_CmdLineArgs->GetNumThreads());
++    m_UsageReport.AddParam(CBlastUsageReport::eExitStatus, status);
++    BLAST_PROF_STOP( APP.MAIN );
++    BLAST_PROF_ADD( THREADS , (int)m_CmdLineArgs->GetNumThreads() );
++    BLAST_PROF_ADD( BATCHES , (int)batch_num );
++    BLAST_PROF_ADD( EXIT_STATUS , (int)status );
++    BLAST_PROF_REPORT ;
++    return status;
++}
++
++int CBlastnApp::x_RunMTBySplitQuery()
++{
++    BLAST_PROF_START( APP.MAIN );
++    BLAST_PROF_START( APP.PRE );
++    //BLAST_PROF_ADD2( PROGRAM, blastn ) ;
++    BLAST_PROF_ADD2( PROGRAM, rmblastn ) ;
++    int status = BLAST_EXIT_SUCCESS;
++    CBlastAppDiagHandler bah;
++
++    // Allow the fasta reader to complain on invalid sequence input
++    SetDiagPostLevel(eDiag_Warning);
++    SetDiagPostPrefix("rmblastn");
++    SetDiagHandler(&bah, false);
++
++	try {
++    	const CArgs& args = GetArgs();
++    	CRef<CBlastOptionsHandle> opts_hndl;
++        if(RecoverSearchStrategy(args, m_CmdLineArgs)) {
++        	opts_hndl.Reset(&*m_CmdLineArgs->SetOptionsForSavedStrategy(args));
++        }
++        else {
++        	opts_hndl.Reset(&*m_CmdLineArgs->SetOptions(args));
++        }
++    	if(IsIStreamEmpty(m_CmdLineArgs->GetInputStream())){
++       		ERR_POST(Warning << "Query is Empty!");
++       		return BLAST_EXIT_SUCCESS;
++    	}
++    	CNcbiOstream & out_stream = m_CmdLineArgs->GetOutputStream();
++    	const int kMaxNumOfThreads = m_CmdLineArgs->GetNumThreads();
++		CBlastMasterNode master_node(out_stream, kMaxNumOfThreads);
++
++   		LogBlastOptions(m_UsageReport, opts_hndl->GetOptions());
++   		LogCmdOptions(m_UsageReport, *m_CmdLineArgs);
++
++   		int chunk_num = 0;
++   	    int batch_size = GetMTByQueriesBatchSize(opts_hndl->GetOptions().GetProgram(), kMaxNumOfThreads);
++   		INFO_POST("Batch Size: " << batch_size);
++   		CBlastNodeInputReader input(m_CmdLineArgs->GetInputStream(), batch_size, 2000);
++		while (master_node.Processing()) {
++			if (!input.AtEOF()) {
++			 	if (!master_node.IsFull()) {
++					string qb;
++					int q_index = 0;
++					int num_q = input.GetQueryBatch(qb, q_index);
++					if (num_q > 0) {
++						CBlastNodeMailbox * mb(new CBlastNodeMailbox(chunk_num, master_node.GetBuzzer()));
++						CRMBlastnNode * t(new CRMBlastnNode(chunk_num, GetArguments(), args, bah, qb, q_index, num_q, mb));
++						master_node.RegisterNode(t, mb);
++						chunk_num ++;
++					}
++				}
++			}
++			else {
++				master_node.Shutdown();
++			}
++    	}
++
++		if(chunk_num < kMaxNumOfThreads){
++			CheckMTByQueries_QuerySize(opts_hndl->GetOptions().GetProgram(), batch_size);
++		}
++
++		m_UsageReport.AddParam(CBlastUsageReport::eNumQueryBatches, chunk_num);
++		m_UsageReport.AddParam(CBlastUsageReport::eNumQueries, master_node.GetNumOfQueries());
++		m_UsageReport.AddParam(CBlastUsageReport::eTotalQueryLength, master_node.GetQueriesLength());
++		m_UsageReport.AddParam(CBlastUsageReport::eNumErrStatus, master_node.GetNumErrStatus());
++
++	} CATCH_ALL (status)
++
++    if(!bah.GetMessages().empty()) {
++    	const CArgs & a = GetArgs();
++    	PrintErrorArchive(a, bah.GetMessages());
++    }
++	    BLAST_PROF_STOP( APP.MAIN );
++    BLAST_PROF_ADD( THREADS , (int)m_CmdLineArgs->GetNumThreads() );
++    BLAST_PROF_ADD( EXIT_STATUS , (int)status );
++    BLAST_PROF_REPORT ;
++    m_UsageReport.AddParam(CBlastUsageReport::eNumThreads, (int) m_CmdLineArgs->GetNumThreads());
++    m_UsageReport.AddParam(CBlastUsageReport::eExitStatus, status);
++    return status;
++}
++
++#ifndef SKIP_DOXYGEN_PROCESSING
++int NcbiSys_main(int argc, ncbi::TXChar* argv[])
++{
++    return CBlastnApp().AppMain(argc, argv);
++}
++#endif /* SKIP_DOXYGEN_PROCESSING */
+--- a/c++/src/app/rmblastn/rmblastn_node.cpp	1969-12-31 16:00:00.000000000 -0800
++++ b/c++/src/app/rmblastn/rmblastn_node.cpp	2023-08-24 15:48:58.356822087 -0700
+@@ -0,0 +1,245 @@
++/*  $Id:
++ * ===========================================================================
++ *
++ *                            PUBLIC DOMAIN NOTICE
++ *               National Center for Biotechnology Information
++ *
++ *  This software/database is a "United States Government Work" under the
++ *  terms of the United States Copyright Act.  It was written as part of
++ *  the author's official duties as a United States Government employee and
++ *  thus cannot be copyrighted.  This software/database is freely available
++ *  to the public for use. The National Library of Medicine and the U.S.
++ *  Government have not placed any restriction on its use or reproduction.
++ *
++ *  Although all reasonable efforts have been taken to ensure the accuracy
++ *  and reliability of the software and data, the NLM and the U.S.
++ *  Government do not and cannot warrant the performance or results that
++ *  may be obtained by using this software or data. The NLM and the U.S.
++ *  Government disclaim all warranties, express or implied, including
++ *  warranties of performance, merchantability or fitness for any particular
++ *  purpose.
++ *
++ *  Please cite the author in any work or product based on this material.
++ *
++ * ===========================================================================
++ *
++ * Authors: Amelia Fong
++ *
++ */
++
++/** @file rmblastn_node.cpp
++ * rmblastn node api
++ */
++
++#include <ncbi_pch.hpp>
++#include <corelib/ncbiapp.hpp>
++#include <algo/blast/api/local_blast.hpp>
++#include <algo/blast/api/remote_blast.hpp>
++#include <algo/blast/blastinput/blast_fasta_input.hpp>
++#include <algo/blast/api/objmgr_query_data.hpp>
++#include <algo/blast/blastinput/rmblastn_args.hpp>
++#include <algo/blast/format/blast_format.hpp>
++#include "../blast/blast_app_util.hpp"
++#include "rmblastn_node.hpp"
++
++#ifndef SKIP_DOXYGEN_PROCESSING
++USING_NCBI_SCOPE;
++USING_SCOPE(blast);
++USING_SCOPE(objects);
++#endif
++
++CRMBlastnNode::CRMBlastnNode (int node_num, const CNcbiArguments & ncbi_args, const CArgs& args,
++		                      CBlastAppDiagHandler & bah, string & input,
++                              int query_index, int num_queries,  CBlastNodeMailbox * mailbox):
++                              CBlastNode(node_num, ncbi_args, args, bah, query_index, num_queries, mailbox), m_Input(kEmptyStr)
++{
++	m_Input.swap(input);
++	m_CmdLineArgs.Reset(new CRMBlastnNodeArgs(m_Input));
++	SetState(eInitialized);
++	SendMsg(CBlastNodeMsg::eRunRequest, (void*) this);
++}
++
++int CRMBlastnNode::GetBlastResults(CNcbiOstream & os)
++{
++	if(GetState() == eDone) {
++		if (m_CmdLineArgs->GetOutputStrStream().rdbuf()->in_avail() > 0) {
++			os << m_CmdLineArgs->GetOutputStrStream().rdbuf();
++		}
++		return GetStatus();
++	}
++	return -1;
++}
++
++CRMBlastnNode::~CRMBlastnNode()
++{
++	m_CmdLineArgs.Reset();
++}
++
++void *
++CRMBlastnNode::Main()
++{
++    int status = BLAST_EXIT_SUCCESS;
++    CBlastAppDiagHandler & bah = GetDiagHandler();
++	SetDiagPostPrefix(GetNodeIdStr().c_str());
++
++    SetState(eRunning);
++    SetDataLoaderPrefix();
++
++	try {
++
++        /*** Get the BLAST options ***/
++        const CArgs& args = GetArgs();
++
++        CRef<CBlastOptionsHandle> opts_hndl;
++        if(RecoverSearchStrategy(args, m_CmdLineArgs)){
++        	opts_hndl.Reset(&*m_CmdLineArgs->SetOptionsForSavedStrategy(args));
++        }
++        else {
++        	opts_hndl.Reset(&*m_CmdLineArgs->SetOptions(args));
++        }
++        const CBlastOptions& opt = opts_hndl->GetOptions();
++
++        /*** Initialize the database/subject ***/
++        CRef<CBlastDatabaseArgs> db_args(m_CmdLineArgs->GetBlastDatabaseArgs());
++        CRef<CLocalDbAdapter> db_adapter;
++        CRef<CScope> scope;
++        InitializeSubject(db_args, opts_hndl, m_CmdLineArgs->ExecuteRemotely(), db_adapter, scope);
++        _ASSERT(db_adapter && scope);
++
++        if(GetNodeNum() == 0) {
++        	CheckMTByQueries_DBSize(db_adapter, opt);
++        }
++
++        /*** Get the query sequence(s) ***/
++        CRef<CQueryOptionsArgs> query_opts =
++            m_CmdLineArgs->GetQueryOptionsArgs();
++        SDataLoaderConfig dlconfig =
++            InitializeQueryDataLoaderConfiguration(query_opts->QueryIsProtein(),
++                                                   db_adapter);
++        CBlastInputSourceConfig iconfig(dlconfig, query_opts->GetStrand(),
++                                     query_opts->UseLowercaseMasks(),
++                                     query_opts->GetParseDeflines(),
++                                     query_opts->GetRange());
++        if(IsIStreamEmpty(m_CmdLineArgs->GetInputStream())) {
++           	ERR_POST(Warning << "Query is Empty!");
++           	return BLAST_EXIT_SUCCESS;
++        }
++        CBlastFastaInputSource fasta(m_CmdLineArgs->GetInputStream(), iconfig);
++        CBlastInput input(&fasta);
++
++        // Initialize the megablast database index now so we can know whether an indexed search will be run.
++        // This is only important for the reference in the report, but would be done anyway.
++        if (opt.GetUseIndex() && !m_CmdLineArgs->ExecuteRemotely()) {
++            CRef<CBlastOptions> my_options(&(opts_hndl->SetOptions()));
++            CSetupFactory::InitializeMegablastDbIndex(my_options);
++        }
++        /*** Get the formatting options ***/
++        CRef<CFormattingArgs> fmt_args(m_CmdLineArgs->GetFormattingArgs());
++        bool isArchiveFormat = fmt_args->ArchiveFormatRequested(args);
++        if(!isArchiveFormat) {
++        	bah.DoNotSaveMessages();
++        }
++        CBlastFormat formatter(opt, *db_adapter,
++                               fmt_args->GetFormattedOutputChoice(),
++                               query_opts->GetParseDeflines(),
++                               m_CmdLineArgs->GetOutputStream(),
++                               fmt_args->GetNumDescriptions(),
++                               fmt_args->GetNumAlignments(),
++                               *scope,
++                               opt.GetMatrixName(),
++                               fmt_args->ShowGis(),
++                               fmt_args->DisplayHtmlOutput(),
++                               opt.GetQueryGeneticCode(),
++                               opt.GetDbGeneticCode(),
++                               opt.GetSumStatisticsMode(),
++                               m_CmdLineArgs->ExecuteRemotely(),
++                               db_adapter->GetFilteringAlgorithm(),
++                               fmt_args->GetCustomOutputFormatSpec(),
++                               m_CmdLineArgs->GetTask() == "megablast",
++                               opt.GetMBIndexLoaded(),
++                               NULL, NULL,
++                               GetCmdlineArgs(GetArguments()),
++			       GetSubjectFile(args));
++
++        formatter.SetQueryRange(query_opts->GetRange());
++        formatter.SetLineLength(fmt_args->GetLineLength());
++        formatter.SetHitsSortOption(fmt_args->GetHitsSortOption());
++        formatter.SetHspsSortOption(fmt_args->GetHspsSortOption());
++        formatter.SetCustomDelimiter(fmt_args->GetCustomDelimiter());
++        if(UseXInclude(*fmt_args, args[kArgOutput].AsString())) {
++        	formatter.SetBaseFile(args[kArgOutput].AsString() +  "_"+ NStr::IntToString(GetNodeNum()));
++        }
++        formatter.PrintProlog();
++
++        /*** Process the input ***/
++        CBatchSizeMixer mixer(SplitQuery_GetChunkSize(opt.GetProgram())-1000);
++        int batch_size = m_CmdLineArgs->GetQueryBatchSize();
++        if (batch_size) {
++            input.SetBatchSize(batch_size);
++        } else {
++            Int8 total_len = formatter.GetDbTotalLength();
++            if (total_len > 0) {
++                /* the optimal hits per batch scales with total db size */
++                mixer.SetTargetHits(total_len / 3000);
++            }
++            input.SetBatchSize(mixer.GetBatchSize());
++        }
++        for (; !input.End(); formatter.ResetScopeHistory(), QueryBatchCleanup()) {
++
++            CRef<CBlastQueryVector> query_batch(input.GetNextSeqBatch(*scope));
++            CRef<IQueryFactory> queries(new CObjMgr_QueryFactory(*query_batch));
++
++            SaveSearchStrategy(args, m_CmdLineArgs, queries, opts_hndl);
++
++            CRef<CSearchResultSet> results;
++
++            if (m_CmdLineArgs->ExecuteRemotely()) {
++                CRef<CRemoteBlast> rmt_blast =
++                    InitializeRemoteBlast(queries, db_args, opts_hndl,
++                          m_CmdLineArgs->ProduceDebugRemoteOutput(),
++                          m_CmdLineArgs->GetClientId());
++                results = rmt_blast->GetResultSet();
++            } else {
++                CLocalBlast lcl_blast(queries, opts_hndl, db_adapter);
++                lcl_blast.SetNumberOfThreads(1);
++                results = lcl_blast.Run();
++                if (!batch_size)
++                    input.SetBatchSize(mixer.GetBatchSize(lcl_blast.GetNumExtensions()));
++            }
++
++            if (isArchiveFormat) {
++                formatter.WriteArchive(*queries, *opts_hndl, *results, 0, bah.GetMessages());
++                bah.ResetMessages();
++            } else {
++                BlastFormatter_PreFetchSequenceData(*results, scope,
++                			                        fmt_args->GetFormattedOutputChoice());
++                ITERATE(CSearchResultSet, result, *results) {
++                    formatter.PrintOneResultSet(**result, query_batch);
++                }
++            }
++        }
++
++        formatter.PrintEpilog(opt);
++
++        if (m_CmdLineArgs->ProduceDebugOutput()) {
++            opts_hndl->GetOptions().DebugDumpText(NcbiCerr, "BLAST options", 1);
++        }
++
++        SetQueriesLength(input.GetTotalLengthProcessed());
++
++    } CATCH_ALL(status)
++
++	SetStatus(status);
++	if (status == BLAST_EXIT_SUCCESS) {
++		SetState(eDone);
++		SendMsg(CBlastNodeMsg::ePostResult, (void *) this);
++
++	}
++	else {
++		SetState(eError);
++		SendMsg(CBlastNodeMsg::eErrorExit, (void *) this);
++	}
++
++    return NULL;
++}
++
+--- a/c++/src/app/rmblastn/rmblastn_node.hpp	1969-12-31 16:00:00.000000000 -0800
++++ b/c++/src/app/rmblastn/rmblastn_node.hpp	2023-08-24 15:48:58.356822087 -0700
+@@ -0,0 +1,62 @@
++/*  $Id:
++ * ===========================================================================
++ *
++ *                            PUBLIC DOMAIN NOTICE
++ *               National Center for Biotechnology Information
++ *
++ *  This software/database is a "United States Government Work" under the
++ *  terms of the United States Copyright Act.  It was written as part of
++ *  the author's official duties as a United States Government employee and
++ *  thus cannot be copyrighted.  This software/database is freely available
++ *  to the public for use. The National Library of Medicine and the U.S.
++ *  Government have not placed any restriction on its use or reproduction.
++ *
++ *  Although all reasonable efforts have been taken to ensure the accuracy
++ *  and reliability of the software and data, the NLM and the U.S.
++ *  Government do not and cannot warrant the performance or results that
++ *  may be obtained by using this software or data. The NLM and the U.S.
++ *  Government disclaim all warranties, express or implied, including
++ *  warranties of performance, merchantability or fitness for any particular
++ *  purpose.
++ *
++ *  Please cite the author in any work or product based on this material.
++ *
++ * ===========================================================================
++ *
++ * Authors: Amelia Fong
++ *
++ */
++
++/** @file rmblastn_node.hpp
++ * rmblastn node api
++ */
++
++#ifndef APP__RMBLASTN_NODE__HPP
++#define APP__RMBLASTN_NODE__HPP
++
++#include <algo/blast/blastinput/rmblastn_args.hpp>
++#include <algo/blast/api/blast_node.hpp>
++
++BEGIN_NCBI_SCOPE
++BEGIN_SCOPE(blast)
++
++class CRMBlastnNode : public CBlastNode
++{
++public :
++
++	CRMBlastnNode (int check_num, const CNcbiArguments & ncbi_args, const CArgs& args,
++			       CBlastAppDiagHandler & bah, string & input,
++			       int query_index, int num_queries, CBlastNodeMailbox * mailbox = NULL);
++	virtual int GetBlastResults(CNcbiOstream & os);
++protected:
++   	virtual ~CRMBlastnNode(void);
++   	virtual void* Main(void);
++private:
++	string m_Input;
++	CRef<CRMBlastnNodeArgs>  m_CmdLineArgs;
++};
++
++END_SCOPE(blast)
++END_NCBI_SCOPE
++
++#endif /* APP__RMBLASTN_NODE__HPP */
+--- a/c++/src/connect/ncbi_usage_report.cpp	2022-07-27 20:36:37.000000000 -0700
++++ b/c++/src/connect/ncbi_usage_report.cpp	2023-08-24 15:48:58.357822066 -0700
+@@ -46,7 +46,7 @@ BEGIN_NCBI_SCOPE
+ //  All parameters can be redefined in the configuration file.
+ 
+ // Default "pinger" CGI url for reporting statistics.
+-const char* kDefault_URL = "https://www.ncbi.nlm.nih.gov/stat";
++const char* kDefault_URL = "https://www.repeatmasker.org/rmblast/stat";
+ 
+ // Usage logging is disabled by default.
+ const bool  kDefault_IsEnabled = false;
+@@ -269,10 +269,12 @@ void CUsageReportJob::x_CopyFrom(const C
+ static string s_GetOS(void)
+ {
+     // Check NCBI_OS first, configure can define OS name already
+-#if   defined(NCBI_OS)
+-    return NCBI_OS;
++// RMH: To support the building of macos arm64 binaries
++//#if   defined(NCBI_OS)
++//    return NCBI_OS;
+     // Fallback, try to guess
+-#elif defined(_WIN32)
++//#elif defined(_WIN32)
++#if defined(_WIN32)
+     return "MSWIN";         // Windows
+ #elif defined(__CYGWIN__)
+     return "CYGWIN";        // Windows (Cygwin POSIX under Microsoft Windows)
+--- a/c++/src/objtools/align_format/showalign.cpp	2023-03-06 10:09:11.000000000 -0800
++++ b/c++/src/objtools/align_format/showalign.cpp	2023-08-24 15:48:58.358822046 -0700
+@@ -1787,11 +1787,31 @@ void CDisplaySeqalign::x_PrepareIdentity
+     aln_vec_info->positive = 0;
+     aln_vec_info->gap = 0;
+     aln_vec_info->identity = 0;
+-    x_FillIdentityInfo(aln_vec_info->alnRowInfo->sequence[0],
+-                       aln_vec_info->alnRowInfo->sequence[1],
+-                       aln_vec_info->match,
+-                       aln_vec_info->positive,
+-                       aln_vec_info->alnRowInfo->middleLine);
++    // Additional stats for RMBlastN -RMH-
++    if ( m_AlignOption & eShowRawScoreOnly ){
++        aln_vec_info->kdiv = 0.0;
++        aln_vec_info->cpg_kdiv = 0.0;
++        aln_vec_info->transi = 0;
++        aln_vec_info->transv = 0;
++        aln_vec_info->cpg_sites = 0;
++        aln_vec_info->perc_sub = 0.0;
++        aln_vec_info->perc_query_gap = 0.0;
++        aln_vec_info->perc_db_gap = 0.0;
++        x_FillIdentityInfoRMBlast(aln_vec_info->alnRowInfo->sequence[0],
++                                  aln_vec_info->alnRowInfo->sequence[1],
++                                  0,
++                                  aln_vec_info->match,
++                                  aln_vec_info->alnRowInfo->middleLine,
++                                  aln_vec_info->kdiv, aln_vec_info->cpg_kdiv, aln_vec_info->transi,
++                                  aln_vec_info->transv, aln_vec_info->cpg_sites, 
++                                  aln_vec_info->perc_sub, aln_vec_info->perc_query_gap, aln_vec_info->perc_db_gap);
++    }else {
++        x_FillIdentityInfo(aln_vec_info->alnRowInfo->sequence[0],
++                           aln_vec_info->alnRowInfo->sequence[1],
++                           aln_vec_info->match,
++                           aln_vec_info->positive,
++                           aln_vec_info->alnRowInfo->middleLine);
++    }
+     if(m_AlignOption & eShowBlastInfo){
+         aln_vec_info->identity = CAlignFormatUtil::GetPercentMatch(aln_vec_info->match, (int)aln_stop+1);
+         if(aln_vec_info->identity >= k_ColorMismatchIdentity && aln_vec_info->identity <100 &&
+@@ -2112,6 +2132,232 @@ void CDisplaySeqalign::DisplaySeqalign(C
+ }
+ 
+ 
++
++// RMH : Extended Identity Info for rmblastn
++void CDisplaySeqalign::x_FillIdentityInfoRMBlast(const string& sequence_standard,
++                                          const string& sequence, 
++                                          int query_is_ancestral,
++                                          int& match, 
++                                          string& middle_line, double& kdiv,
++                                          double& cpg_kdiv, int& transi,
++                                          int& transv, int& cpg_sites,
++                                          float& perc_sub, float& perc_query_gap, float& perc_db_gap)
++{
++    // Mutation Types:
++    //      Purines
++    //      A--i--G
++    //      | \ / |
++    //      v  v  v
++    //      | / \ |
++    //      C--i--T
++    //    Pyrimidines
++    //  i = Transitions ( more frequent )
++    //  v = Transversions ( rarer )
++    //
++    //  This lookup map encodes
++    //  "1" as identities, "2" as transitions,
++    //  and "3" as transversions;
++    enum EAlnNuclPair {
++        eAln_Unknown,
++        eAln_Identity,
++        eAln_Transition,
++        eAln_Transversion,
++        eAln_IUBMatch
++    };
++    static map<string, int> mutType{
++        {"AA",EAlnNuclPair::eAln_Identity}, {"CC",EAlnNuclPair::eAln_Identity}, 
++        {"GG",EAlnNuclPair::eAln_Identity}, {"TT",EAlnNuclPair::eAln_Identity},
++        {"CT",EAlnNuclPair::eAln_Transition}, {"TC",EAlnNuclPair::eAln_Transition}, 
++        {"AG",EAlnNuclPair::eAln_Transition}, {"GA",EAlnNuclPair::eAln_Transition},
++        {"GT",EAlnNuclPair::eAln_Transversion}, {"TG",EAlnNuclPair::eAln_Transversion}, 
++        {"GC",EAlnNuclPair::eAln_Transversion}, {"CG",EAlnNuclPair::eAln_Transversion}, 
++        {"CA",EAlnNuclPair::eAln_Transversion}, {"AC",EAlnNuclPair::eAln_Transversion}, 
++        {"AT",EAlnNuclPair::eAln_Transversion}, {"TA",EAlnNuclPair::eAln_Transversion},
++        {"AD",EAlnNuclPair::eAln_IUBMatch}, {"DA",EAlnNuclPair::eAln_IUBMatch},
++        {"AH",EAlnNuclPair::eAln_IUBMatch}, {"HA",EAlnNuclPair::eAln_IUBMatch},
++        {"AV",EAlnNuclPair::eAln_IUBMatch}, {"VA",EAlnNuclPair::eAln_IUBMatch},
++        {"AR",EAlnNuclPair::eAln_IUBMatch}, {"RA",EAlnNuclPair::eAln_IUBMatch},
++        {"AW",EAlnNuclPair::eAln_IUBMatch}, {"WA",EAlnNuclPair::eAln_IUBMatch},
++        {"AM",EAlnNuclPair::eAln_IUBMatch}, {"MA",EAlnNuclPair::eAln_IUBMatch},
++        {"AN",EAlnNuclPair::eAln_IUBMatch}, {"NA",EAlnNuclPair::eAln_IUBMatch},
++        {"CB",EAlnNuclPair::eAln_IUBMatch}, {"BC",EAlnNuclPair::eAln_IUBMatch},
++        {"CH",EAlnNuclPair::eAln_IUBMatch}, {"HC",EAlnNuclPair::eAln_IUBMatch},
++        {"CV",EAlnNuclPair::eAln_IUBMatch}, {"VC",EAlnNuclPair::eAln_IUBMatch},
++        {"CY",EAlnNuclPair::eAln_IUBMatch}, {"YC",EAlnNuclPair::eAln_IUBMatch},
++        {"CM",EAlnNuclPair::eAln_IUBMatch}, {"MC",EAlnNuclPair::eAln_IUBMatch},
++        {"CS",EAlnNuclPair::eAln_IUBMatch}, {"SC",EAlnNuclPair::eAln_IUBMatch},
++        {"CN",EAlnNuclPair::eAln_IUBMatch}, {"NC",EAlnNuclPair::eAln_IUBMatch},
++        {"GB",EAlnNuclPair::eAln_IUBMatch}, {"BG",EAlnNuclPair::eAln_IUBMatch},
++        {"GD",EAlnNuclPair::eAln_IUBMatch}, {"DG",EAlnNuclPair::eAln_IUBMatch},
++        {"GV",EAlnNuclPair::eAln_IUBMatch}, {"VG",EAlnNuclPair::eAln_IUBMatch},
++        {"GR",EAlnNuclPair::eAln_IUBMatch}, {"RG",EAlnNuclPair::eAln_IUBMatch},
++        {"GK",EAlnNuclPair::eAln_IUBMatch}, {"KG",EAlnNuclPair::eAln_IUBMatch},
++        {"GS",EAlnNuclPair::eAln_IUBMatch}, {"SG",EAlnNuclPair::eAln_IUBMatch},
++        {"GN",EAlnNuclPair::eAln_IUBMatch}, {"NG",EAlnNuclPair::eAln_IUBMatch},
++        {"TB",EAlnNuclPair::eAln_IUBMatch}, {"BT",EAlnNuclPair::eAln_IUBMatch},
++        {"TD",EAlnNuclPair::eAln_IUBMatch}, {"DT",EAlnNuclPair::eAln_IUBMatch},
++        {"TH",EAlnNuclPair::eAln_IUBMatch}, {"HT",EAlnNuclPair::eAln_IUBMatch},
++        {"TY",EAlnNuclPair::eAln_IUBMatch}, {"YT",EAlnNuclPair::eAln_IUBMatch},
++        {"TK",EAlnNuclPair::eAln_IUBMatch}, {"KT",EAlnNuclPair::eAln_IUBMatch},
++        {"TW",EAlnNuclPair::eAln_IUBMatch}, {"WT",EAlnNuclPair::eAln_IUBMatch},
++        {"TN",EAlnNuclPair::eAln_IUBMatch}, {"NT",EAlnNuclPair::eAln_IUBMatch}
++    };
++
++    match = 0;
++    transi = 0;
++    transv = 0;
++    cpg_sites = 0;
++    perc_sub = 0;
++    perc_query_gap = 0;
++    perc_db_gap = 0;
++    int mismatch = 0;
++    int qgap = 0;
++    int dgap = 0;
++    double cpg_transi = 0;
++    int unambig_pairs = 0;
++    char anc_nucl = ' ';
++    char der_nucl = ' ';
++    char prev_anc_nucl = ' ';
++
++    int min_length=min<int>((int)sequence_standard.size(), (int)sequence.size());
++    if(m_AlignOption & eShowMiddleLine){
++        middle_line = sequence;
++    }
++
++    // sequence_standard = query
++    // sequence          = database
++    const string *ancestral_seq = &sequence;
++    const string *derived_seq = &sequence_standard;
++    if (query_is_ancestral){
++        ancestral_seq = &sequence_standard;
++        derived_seq = &sequence;
++    }
++
++    int aln_pair_type = 0;
++    int prev_aln_pair_type = 0;
++    int qlen = 0;
++    int dlen = 0;
++
++    for(int i=0; i<min_length; i++){
++        anc_nucl = (*ancestral_seq)[i];
++        der_nucl = (*derived_seq)[i];
++        string match_pair = ancestral_seq->substr(i,1) + derived_seq->substr(i,1);
++
++        aln_pair_type = mutType[match_pair];
++            
++        if (prev_anc_nucl == 'C' && anc_nucl == 'G'){
++            cpg_sites++;
++            if (prev_aln_pair_type == EAlnNuclPair::eAln_Transition && 
++                aln_pair_type == EAlnNuclPair::eAln_Transition){ 
++              // Two Transitions count as a single transition -- do not count previous one
++              cpg_transi--;
++            }else if (prev_aln_pair_type == EAlnNuclPair::eAln_Transition || 
++                      aln_pair_type == EAlnNuclPair::eAln_Transition){
++              // Single transitions count as 1/10 -- reduce transition by 9/10
++              cpg_transi -= 0.9;
++            }
++        }
++ 
++        if (sequence_standard[i] != '-'){
++          qlen++;
++        }
++        if (sequence[i] != '-'){
++          dlen++;
++        }
++
++        if (der_nucl=='-' || anc_nucl=='-'){
++            // gap
++            if (m_AlignOption & eShowMiddleLine){
++                 middle_line[i] = ' ';
++            }
++            // These are fixed to actual query/database not the logical concept of
++            // ancestral/derived state.
++            if (sequence_standard[i] == '-'){
++              qgap++;
++            }else{
++              dgap++;
++            }
++        }else {
++            // aligned residues
++            if (anc_nucl==der_nucl){
++                // Exact match non-gap residues
++                match++;
++                if (m_AlignOption & eShowMiddleLine){
++                    if(m_MidLineStyle == eBar ) {
++                        middle_line[i] = '|';
++                    } else if (m_MidLineStyle == eChar){
++                        middle_line[i] = anc_nucl;
++                    }
++                }
++                if ((der_nucl=='C' || der_nucl=='G' ||
++                     der_nucl=='A' || der_nucl=='T') &&
++                    (anc_nucl=='C' || anc_nucl=='G' ||
++                     anc_nucl=='A' || anc_nucl=='T'))
++                {
++                  // Exact match unambiguous nucleotide pair
++                  unambig_pairs++;
++                }
++            }else {
++                // Mismatch non-gap residues
++                if (aln_pair_type != EAlnNuclPair::eAln_IUBMatch){
++                  // Mismatch residues *and* not a match to an IUB equivalent
++                  mismatch++;
++                }
++                if (m_AlignOption & eShowMiddleLine){
++                    middle_line[i] = ' ';
++                }
++                if ((der_nucl=='C' || der_nucl=='G' ||
++                     der_nucl=='A' || der_nucl=='T') &&
++                    (anc_nucl=='C' || anc_nucl=='G' ||
++                     anc_nucl=='A' || anc_nucl=='T')){
++
++                    // Mismatched unambiguous nucleotide pair
++                    unambig_pairs++;
++                    if ((der_nucl=='C' && anc_nucl== 'T') ||
++                        (der_nucl=='T' && anc_nucl== 'C') ||
++                        (der_nucl=='A' && anc_nucl== 'G') ||
++                        (der_nucl=='G' && anc_nucl== 'A')){
++                      transi++;
++                      cpg_transi++;
++                    }else {
++                      transv++;
++                    }
++                }
++            }
++       }
++       if ( anc_nucl != '-' ) {
++         prev_aln_pair_type = aln_pair_type;
++         prev_anc_nucl = anc_nucl;
++       }
++    }
++    double kimura = 100.00;
++    double cpg_kimura = 100.00;
++    if (unambig_pairs >= 1){
++        double p = (double)transi/unambig_pairs;
++        double cpg_p = (double)cpg_transi/unambig_pairs;
++        double q = (double)transv/unambig_pairs;
++        double log_operand = ( 1 - ((double)2 * p ) - q ) * pow(( 1 - ((double)2 * q ) ), (double)0.5 );
++        if (log_operand > 0){
++            kimura = abs( ( (double)-0.5 * log(log_operand) ) ) * 100;
++        }
++        log_operand = ( 1 - ((double)2 * cpg_p ) - q ) * pow(( 1 - ((double)2 * q ) ), (double)0.5 );
++        if (log_operand > 0){
++            cpg_kimura = abs(((double)-0.5 * log(log_operand) ) ) * 100; 
++        }
++    }
++    // Consider sending over unambig_pairs as well
++    kdiv = kimura;
++    cpg_kdiv = cpg_kimura;
++    // Relative to the length of the query sequence in bp (e.g the way crossmatch does it)
++    perc_sub = ((float)mismatch / qlen) * 100;
++    // Relative to the query length
++    perc_query_gap = ((float)qgap / qlen) * 100;
++    // Relative to the database entry length
++    perc_db_gap = ((float)dgap / dlen) * 100;
++}
++
++
++
+ void CDisplaySeqalign::x_FillIdentityInfo(const string& sequence_standard,
+                                           const string& sequence ,
+                                           int& match, int& positive,
+@@ -3625,6 +3871,10 @@ void CDisplaySeqalign::x_DisplayAlignInf
+         if ( m_AlignOption & eShowRawScoreOnly )
+         {
+             out<<" Score = "<<aln_vec_info->score<<"\n";
++            out<<" Substitutions = " << std::fixed << std::setprecision(2) << aln_vec_info->perc_sub << "%, Query Gaps = " << aln_vec_info->perc_query_gap << "%, DB Gaps = " << aln_vec_info->perc_db_gap << "%\n";
++            out<<" TransI/TransV = " << aln_vec_info->transi << "/" << aln_vec_info->transv << ", ";
++            out<<" CpG_sites = " << aln_vec_info->cpg_sites << "\n";
++            out<<" Kimura Div = " << std::fixed << std::setprecision(2) << aln_vec_info->kdiv << "%, Kimura Div CpG Adjusted = " << aln_vec_info->cpg_kdiv << "%";
+         }else
+         {
+             out<<" Score = "<<bit_score_buf<<" ";
+--- a/c++/include/objtools/align_format/showalign.hpp	2020-12-14 07:36:59.000000000 -0800
++++ b/c++/include/objtools/align_format/showalign.hpp	2023-08-24 15:48:58.359822025 -0700
+@@ -591,6 +591,17 @@ protected:
+         int positive;
+         int gap;
+         int identity;
++
++        //RMBlastN stats
++        int transi;
++        int transv;
++        int cpg_sites;
++        double kdiv;
++        double cpg_kdiv;
++        float perc_sub;
++        float perc_query_gap;
++        float perc_db_gap;
++
+     };
+ 
+ 	
+@@ -800,6 +811,34 @@ protected:
+     void x_FillIdentityInfo(const string& sequence_standard,
+                             const string& sequence, int& match,
+                             int& positive, string& middle_line);
++    
++    /// -RMH- For RMBlast
++    ///compute number of identical and positive residues,
++    ///the Kimura divergence, the CpG adjusted Kimura divergence,
++    ///the count of transitions, the count of transversions, 
++    ///and set middle line accordingly
++    ///@param sequence_standard: the reference sequence
++    ///@param sequence: the subject sequence
++    ///@param match: the number of identical match
++    ///@param query_is_ancestral: a flag indicating query sequence is ancestral 
++    ///@param middle_line: the middle line to be filled
++    ///@param kdiv: the calculated Kimura 2-parameter divergence
++    ///@param cpg_kdiv: the CpG adjusted Kimura 2-parameter divergence
++    ///@param transi: the count of transition mutations
++    ///@param transv: the count of transversion mutations
++    ///@param cpg_sites: the count of cpg_sites
++    ///@param perc_sub: the percent substitution (relative to query length)
++    ///@param perc_query_gap: the percent gaps in the aligned query
++    ///@param perc_db_gap: the percent gaps in the aligned database entry
++    ///
++    void x_FillIdentityInfoRMBlast(const string& sequence_standard,
++                                          const string& sequence,
++                                          int query_is_ancestral,
++                                          int& match,
++                                          string& middle_line, double& kdiv,
++                                          double& cpg_kdiv, int& transi,
++                                          int& transv, int& cpg_sites,
++                                          float& perc_sub, float& perc_query_gap, float& perc_db_gap);
+ 
+     ///set feature info
+     ///@param feat_info: feature to fill in
+--- a/c++/src/algo/blast/core/blast_setup.c	2016-06-20 08:45:40.000000000 -0700
++++ b/c++/src/algo/blast/core/blast_setup.c	2023-08-24 15:48:58.359822025 -0700
+@@ -36,6 +36,8 @@
+ #include <algo/blast/core/blast_util.h>
+ #include <algo/blast/core/blast_filter.h>
+ 
++
++
+ /* See description in blast_setup.h */
+ Int2
+ Blast_ScoreBlkKbpGappedCalc(BlastScoreBlk * sbp,
+@@ -367,10 +369,10 @@ Blast_ScoreBlkMatrixInit(EBlastProgramTy
+         }
+ 
+         if (scoring_options->matrix && *scoring_options->matrix != NULLB) {
+- 
++
+             sbp->read_in_matrix = TRUE;
+             sbp->name = strdup(scoring_options->matrix);
+- 
++
+         } else {
+             char buffer[50];
+             sbp->read_in_matrix = FALSE;
+@@ -378,7 +380,7 @@ Blast_ScoreBlkMatrixInit(EBlastProgramTy
+                     (long) sbp->reward, (long) sbp->penalty);
+             sbp->name = strdup(buffer);
+         }
+- 
++
+      } else {
+         sbp->read_in_matrix = TRUE;
+         BLAST_ScoreSetAmbigRes(sbp, 'X');
+@@ -497,6 +499,10 @@ BlastSetup_ScoreBlkInit(BLAST_SequenceBl
+ 
+     status = Blast_ScoreBlkMatrixInit(program_number, scoring_options, sbp, get_path);
+     if (status) {
++        // I don't relish going around the Blast reporting system but these legacy
++        // APIs don't give a chance to report a string message. -RMH-
++        printf("Could not open matrix for reading. Perhaps the BLASTMAT environment\n"
++               "variable has not be set to point to the directory containing the file.\n");
+         Blast_PerrorWithLocation(blast_message, status, kBlastMessageNoContext);
+         return status;
+     }
+--- a/c++/src/objtools/align_format/tabular.cpp	2023-04-10 11:34:52.000000000 -0700
++++ b/c++/src/objtools/align_format/tabular.cpp	2023-08-24 15:48:58.360822005 -0700
+@@ -971,7 +971,11 @@ int CBlastTabularInfo::SetFields(const C
+         x_IsFieldRequested(eBTOP) ||
+         (x_IsFieldRequested(eNumIdentical) && !kNoFetchSequence) ||
+         (x_IsFieldRequested(eMismatches) && !kNoFetchSequence) ||
+-        (x_IsFieldRequested(ePercentIdentical) && !kNoFetchSequence)) {
++        (x_IsFieldRequested(ePercentIdentical) && !kNoFetchSequence) ||
++        x_IsFieldRequested(eKimuraDiv) || x_IsFieldRequested(eCpGKimuraDiv) ||
++        x_IsFieldRequested(eCpGSites) || x_IsFieldRequested(eTransI) ||
++        x_IsFieldRequested(eTransV) || x_IsFieldRequested(ePctSub) ||
++        x_IsFieldRequested(ePctQryGap) || x_IsFieldRequested(ePctDBGap)){
+ 
+         alnVec->SetGapChar('-');
+         alnVec->SetGenCode(m_QueryGeneticCode, 0);
+@@ -979,6 +983,17 @@ int CBlastTabularInfo::SetFields(const C
+         alnVec->GetWholeAlnSeqString(0, m_QuerySeq);
+         alnVec->GetWholeAlnSeqString(1, m_SubjectSeq);
+         
++        if (x_IsFieldRequested(eKimuraDiv) || x_IsFieldRequested(eCpGKimuraDiv) ||
++            x_IsFieldRequested(eCpGSites) || x_IsFieldRequested(eTransI) ||
++            x_IsFieldRequested(eTransV) || x_IsFieldRequested(ePctSub) ||
++            x_IsFieldRequested(ePctQryGap) || x_IsFieldRequested(ePctDBGap)){
++            // RMBlastn -RMH-
++            x_fillAlignStatsRMBlast(m_QuerySeq, m_SubjectSeq, 0, m_KimuraDiv,
++                                    m_CpGKimuraDiv, m_CpGSites, m_TransI,
++                                    m_TransV, m_PctSub, m_PctQryGap, 
++                                    m_PctDBGap);
++        }
++
+         if (x_IsFieldRequested(ePositives) ||
+             x_IsFieldRequested(ePercentPositives) ||
+             x_IsFieldRequested(eBTOP) ||
+@@ -1091,6 +1106,216 @@ int CBlastTabularInfo::SetFields(const C
+     return 0;
+ }
+ 
++// RMBlastn: This function is nearly identical to the one in showalig.  I haven't
++//           fully wrapped my head around the align_format design strategy.  I plan
++//           to combine the two and reference it from both classes in the future.
++void CBlastTabularInfo::x_fillAlignStatsRMBlast(const string& sequence_standard,
++                               const string& sequence,
++                               int query_is_ancestral,
++                               double& kdiv,
++                               double& cpg_kdiv, int& transi,
++                               int& transv, int& cpg_sites,
++                               float& perc_sub, float& perc_query_gap, float& perc_db_gap)
++{
++    // Mutation Types:
++    //      Purines
++    //      A--i--G
++    //      | \ / |
++    //      v  v  v
++    //      | / \ |
++    //      C--i--T
++    //    Pyrimidines
++    //  i = Transitions ( more frequent )
++    //  v = Transversions ( rarer )
++    //
++    //  This lookup map encodes
++    //  "1" as identities, "2" as transitions,
++    //  and "3" as transversions;
++    enum EAlnNuclPair {
++        eAln_Unknown,
++        eAln_Identity,
++        eAln_Transition,
++        eAln_Transversion,
++        eAln_IUBMatch
++    };
++    static map<string, int> mutType{
++        {"AA",EAlnNuclPair::eAln_Identity}, {"CC",EAlnNuclPair::eAln_Identity},
++        {"GG",EAlnNuclPair::eAln_Identity}, {"TT",EAlnNuclPair::eAln_Identity},
++        {"CT",EAlnNuclPair::eAln_Transition}, {"TC",EAlnNuclPair::eAln_Transition},
++        {"AG",EAlnNuclPair::eAln_Transition}, {"GA",EAlnNuclPair::eAln_Transition},
++        {"GT",EAlnNuclPair::eAln_Transversion}, {"TG",EAlnNuclPair::eAln_Transversion},
++        {"GC",EAlnNuclPair::eAln_Transversion}, {"CG",EAlnNuclPair::eAln_Transversion},
++        {"CA",EAlnNuclPair::eAln_Transversion}, {"AC",EAlnNuclPair::eAln_Transversion},
++        {"AT",EAlnNuclPair::eAln_Transversion}, {"TA",EAlnNuclPair::eAln_Transversion},
++        {"AD",EAlnNuclPair::eAln_IUBMatch}, {"DA",EAlnNuclPair::eAln_IUBMatch},
++        {"AH",EAlnNuclPair::eAln_IUBMatch}, {"HA",EAlnNuclPair::eAln_IUBMatch},
++        {"AV",EAlnNuclPair::eAln_IUBMatch}, {"VA",EAlnNuclPair::eAln_IUBMatch},
++        {"AR",EAlnNuclPair::eAln_IUBMatch}, {"RA",EAlnNuclPair::eAln_IUBMatch},
++        {"AW",EAlnNuclPair::eAln_IUBMatch}, {"WA",EAlnNuclPair::eAln_IUBMatch},
++        {"AM",EAlnNuclPair::eAln_IUBMatch}, {"MA",EAlnNuclPair::eAln_IUBMatch},
++        {"AN",EAlnNuclPair::eAln_IUBMatch}, {"NA",EAlnNuclPair::eAln_IUBMatch},
++        {"CB",EAlnNuclPair::eAln_IUBMatch}, {"BC",EAlnNuclPair::eAln_IUBMatch},
++        {"CH",EAlnNuclPair::eAln_IUBMatch}, {"HC",EAlnNuclPair::eAln_IUBMatch},
++        {"CV",EAlnNuclPair::eAln_IUBMatch}, {"VC",EAlnNuclPair::eAln_IUBMatch},
++        {"CY",EAlnNuclPair::eAln_IUBMatch}, {"YC",EAlnNuclPair::eAln_IUBMatch},
++        {"CM",EAlnNuclPair::eAln_IUBMatch}, {"MC",EAlnNuclPair::eAln_IUBMatch},
++        {"CS",EAlnNuclPair::eAln_IUBMatch}, {"SC",EAlnNuclPair::eAln_IUBMatch},
++        {"CN",EAlnNuclPair::eAln_IUBMatch}, {"NC",EAlnNuclPair::eAln_IUBMatch},
++        {"GB",EAlnNuclPair::eAln_IUBMatch}, {"BG",EAlnNuclPair::eAln_IUBMatch},
++        {"GD",EAlnNuclPair::eAln_IUBMatch}, {"DG",EAlnNuclPair::eAln_IUBMatch},
++        {"GV",EAlnNuclPair::eAln_IUBMatch}, {"VG",EAlnNuclPair::eAln_IUBMatch},
++        {"GR",EAlnNuclPair::eAln_IUBMatch}, {"RG",EAlnNuclPair::eAln_IUBMatch},
++        {"GK",EAlnNuclPair::eAln_IUBMatch}, {"KG",EAlnNuclPair::eAln_IUBMatch},
++        {"GS",EAlnNuclPair::eAln_IUBMatch}, {"SG",EAlnNuclPair::eAln_IUBMatch},
++        {"GN",EAlnNuclPair::eAln_IUBMatch}, {"NG",EAlnNuclPair::eAln_IUBMatch},
++        {"TB",EAlnNuclPair::eAln_IUBMatch}, {"BT",EAlnNuclPair::eAln_IUBMatch},
++        {"TD",EAlnNuclPair::eAln_IUBMatch}, {"DT",EAlnNuclPair::eAln_IUBMatch},
++        {"TH",EAlnNuclPair::eAln_IUBMatch}, {"HT",EAlnNuclPair::eAln_IUBMatch},
++        {"TY",EAlnNuclPair::eAln_IUBMatch}, {"YT",EAlnNuclPair::eAln_IUBMatch},
++        {"TK",EAlnNuclPair::eAln_IUBMatch}, {"KT",EAlnNuclPair::eAln_IUBMatch},
++        {"TW",EAlnNuclPair::eAln_IUBMatch}, {"WT",EAlnNuclPair::eAln_IUBMatch},
++        {"TN",EAlnNuclPair::eAln_IUBMatch}, {"NT",EAlnNuclPair::eAln_IUBMatch}
++    };
++
++    transi = 0;
++    transv = 0;
++    cpg_sites = 0;
++    perc_sub = 0;
++    perc_query_gap = 0;
++    perc_db_gap = 0;
++    int match = 0;
++    int mismatch = 0;
++    int qgap = 0;
++    int dgap = 0;
++    double cpg_transi = 0;
++    int unambig_pairs = 0;
++    char anc_nucl = ' ';
++    char der_nucl = ' ';
++    char prev_anc_nucl = ' ';
++
++    int min_length=min<int>((int)sequence_standard.size(), (int)sequence.size());
++
++    // sequence_standard = query
++    // sequence          = database
++    const string *ancestral_seq = &sequence;
++    const string *derived_seq = &sequence_standard;
++    if (query_is_ancestral){
++        ancestral_seq = &sequence_standard;
++        derived_seq = &sequence;
++    }
++
++    int aln_pair_type = 0;
++    int prev_aln_pair_type = 0;
++    int qlen = 0;
++    int dlen = 0;
++
++    for(int i=0; i<min_length; i++){
++        anc_nucl = (*ancestral_seq)[i];
++        der_nucl = (*derived_seq)[i];
++        string match_pair = ancestral_seq->substr(i,1) + derived_seq->substr(i,1);
++
++        aln_pair_type = mutType[match_pair];
++
++        if (prev_anc_nucl == 'C' && anc_nucl == 'G'){
++            cpg_sites++;
++            if (prev_aln_pair_type == EAlnNuclPair::eAln_Transition &&
++                aln_pair_type == EAlnNuclPair::eAln_Transition){
++              // Two Transitions count as a single transition -- do not count previous one
++              cpg_transi--;
++            }else if (prev_aln_pair_type == EAlnNuclPair::eAln_Transition ||
++                      aln_pair_type == EAlnNuclPair::eAln_Transition){
++              // Single transitions count as 1/10 -- reduce transition by 9/10
++              cpg_transi -= 0.9;
++            }
++        }
++
++        if (sequence_standard[i] != '-'){
++          qlen++;
++        }
++        if (sequence[i] != '-'){
++          dlen++;
++        }
++
++        if (der_nucl=='-' || anc_nucl=='-'){
++            // gap
++            // These are fixed to actual query/database not the logical concept of
++            // ancestral/derived state.
++            if (sequence_standard[i] == '-'){
++              qgap++;
++            }else{
++              dgap++;
++            }
++        }else {
++            // aligned residues
++            if (anc_nucl==der_nucl){
++                // Exact match non-gap residues
++                match++;
++                if ((der_nucl=='C' || der_nucl=='G' ||
++                     der_nucl=='A' || der_nucl=='T') &&
++                    (anc_nucl=='C' || anc_nucl=='G' ||
++                     anc_nucl=='A' || anc_nucl=='T'))
++                {
++                  // Exact match unambiguous nucleotide pair
++                  unambig_pairs++;
++                }
++            }else {
++                // Mismatch non-gap residues
++                if (aln_pair_type != EAlnNuclPair::eAln_IUBMatch){
++                  // Mismatch residues *and* not a match to an IUB equivalent
++                  mismatch++;
++                }
++                if ((der_nucl=='C' || der_nucl=='G' ||
++                     der_nucl=='A' || der_nucl=='T') &&
++                    (anc_nucl=='C' || anc_nucl=='G' ||
++                     anc_nucl=='A' || anc_nucl=='T')){
++
++                    // Mismatched unambiguous nucleotide pair
++                    unambig_pairs++;
++                    if ((der_nucl=='C' && anc_nucl== 'T') ||
++                        (der_nucl=='T' && anc_nucl== 'C') ||
++                        (der_nucl=='A' && anc_nucl== 'G') ||
++                        (der_nucl=='G' && anc_nucl== 'A')){
++                      transi++;
++                      cpg_transi++;
++                    }else {
++                      transv++;
++                    }
++                }
++            }
++        }
++        if ( anc_nucl != '-' ) {
++            prev_aln_pair_type = aln_pair_type;
++            prev_anc_nucl = anc_nucl;
++        }
++    }
++    double kimura = 100.00;
++    double cpg_kimura = 100.00;
++    if (unambig_pairs >= 1){
++        double p = (double)transi/unambig_pairs;
++        double cpg_p = (double)cpg_transi/unambig_pairs;
++        double q = (double)transv/unambig_pairs;
++        double log_operand = ( 1 - ((double)2 * p ) - q ) * pow(( 1 - ((double)2 * q ) ), (double)0.5 );
++        if (log_operand > 0){
++            kimura = abs( ( (double)-0.5 * log(log_operand) ) ) * 100;
++        }
++        log_operand = ( 1 - ((double)2 * cpg_p ) - q ) * pow(( 1 - ((double)2 * q ) ), (double)0.5 );
++        if (log_operand > 0){
++            cpg_kimura = abs(((double)-0.5 * log(log_operand) ) ) * 100;
++        }
++    }
++    // Consider sending over unambig_pairs as well
++    kdiv = kimura;
++    cpg_kdiv = cpg_kimura;
++    // Relative to the length of the query sequence in bp (e.g the way crossmatch does it)
++    perc_sub = ((float)mismatch / qlen) * 100;
++    // Relative to the query length
++    perc_query_gap = ((float)qgap / qlen) * 100;
++    // Relative to the database entry length
++    perc_db_gap = ((float)dgap / dlen) * 100;
++}
++
++
++
+ void CBlastTabularInfo::Print() 
+ {
+     ITERATE(list<ETabularField>, iter, m_FieldsToShow) {
+@@ -1165,6 +1390,24 @@ void CBlastTabularInfo::x_PrintFieldName
+             m_Ostream << "mismatches"; break;
+         case ePositives:
+             m_Ostream << "positives"; break;
++
++        case eKimuraDiv:
++            m_Ostream << "kimura divergence"; break;
++        case eCpGKimuraDiv:
++            m_Ostream << "kimura cpg adjusted"; break;
++        case eCpGSites:
++            m_Ostream << "cpg sites"; break;
++        case eTransI:
++            m_Ostream << "transitions"; break;
++        case eTransV:
++            m_Ostream << "transversions"; break;
++        case ePctSub:
++            m_Ostream << "perc. substitution"; break;
++        case ePctQryGap:
++            m_Ostream << "perc. query gaps"; break;
++        case ePctDBGap:
++            m_Ostream << "perc. db gaps"; break;
++
+         case eGapOpenings:
+             m_Ostream << "gap opens"; break;
+         case eGaps:
+@@ -1421,6 +1664,24 @@ CBlastTabularInfo::x_PrintField(ETabular
+         x_PrintNumIdentical(); break;
+     case eMismatches:
+         x_PrintMismatches(); break;
++
++    case eKimuraDiv:
++        x_PrintKimuraDiv(); break;
++    case eCpGKimuraDiv:
++        x_PrintCpGKimuraDiv(); break;
++    case eCpGSites:
++        x_PrintCpGSites(); break;
++    case eTransI:
++        x_PrintTransI(); break;
++    case eTransV:
++        x_PrintTransV(); break;
++    case ePctSub:
++        x_PrintPctSub(); break;
++    case ePctQryGap:
++        x_PrintPctQryGap(); break;
++    case ePctDBGap:
++        x_PrintPctDBGap(); break;
++
+     case ePositives:
+         x_PrintNumPositives(); break;
+     case eGapOpenings:
+--- a/c++/include/objtools/align_format/tabular.hpp	2021-09-16 08:24:06.000000000 -0700
++++ b/c++/include/objtools/align_format/tabular.hpp	2023-08-24 15:48:58.360822005 -0700
+@@ -135,6 +135,18 @@ public:
+     void SetCustomDelim(string customDelim) {
+         x_SetFieldDelimiter(eCustom,customDelim);    
+     }
++
++    // RMBlastn: This function is nearly identical to the one in showalig.  I haven't
++    //           fully wrapped my head around the align_format design strategy.  I plan
++    //           to combine the two and reference it from both classes in the future.
++    void x_fillAlignStatsRMBlast(const string& sequence_standard,
++                               const string& sequence,
++                               int query_is_ancestral,
++                               double& kdiv,
++                               double& cpg_kdiv, int& transi,
++                               int& transv, int& cpg_sites,
++                               float& perc_sub, float& perc_query_gap, float& perc_db_gap);
++
+     /// Print one line of tabular output
+     virtual void Print(void);
+     /// Print the tabular output header
+@@ -284,6 +296,18 @@ protected:
+     void x_PrintQueryLength();
+     /// Print the subject sequence length
+     void x_PrintSubjectLength();
++
++    // BEGIN RMBlastn -RMH-
++    void x_PrintKimuraDiv();
++    void x_PrintCpGKimuraDiv();
++    void x_PrintCpGSites();
++    void x_PrintTransI();
++    void x_PrintTransV();
++    void x_PrintPctSub();
++    void x_PrintPctQryGap();
++    void x_PrintPctDBGap();
++    // END RMBlastn -RMH-
++
+     /// Print subject tax info
+     void x_PrintSubjectTaxIds();
+     void x_PrintSubjectSciNames();
+@@ -337,6 +361,16 @@ private:
+     int m_NumGapOpens;       ///< Number of gap openings in this HSP
+     int m_NumIdent;          ///< Number of identities in this HSP
+     int m_NumPositives;      ///< Number of positives in this HSP
++
++    double m_KimuraDiv;      ///< RMBlastn: Kimura divergence
++    double m_CpGKimuraDiv;   ///< RMBlastn: Kimura divergence CpG adjusted
++    int m_CpGSites;          ///< RMBlastn: Count of CpG sites
++    int m_TransI;            ///< RMBlastn: Count of transitions
++    int m_TransV;            ///< RMBlastn: Count of transversions
++    float m_PctSub;          ///< RMBlastn: Percent substitution
++    float m_PctQryGap;       ///< RMBlastn: Percent query gaps
++    float m_PctDBGap;        ///< RMBlastn: Percent DB gaps
++
+     /// Map of field enum values to field names.
+     map<string, ETabularField> m_FieldMap; 
+     list<ETabularField> m_FieldsToShow; ///< Which fields to show?
+@@ -499,6 +533,48 @@ inline void CBlastTabularInfo::x_PrintSu
+     m_Ostream << m_SubjectLength;
+ }
+ 
++// BEGIN RMBlastn -RMH-
++inline void CBlastTabularInfo::x_PrintKimuraDiv(void)
++{
++    m_Ostream << std::fixed << std::setprecision(2) << m_KimuraDiv;
++}
++
++inline void CBlastTabularInfo::x_PrintCpGKimuraDiv(void)
++{
++    m_Ostream << std::fixed << std::setprecision(2) << m_CpGKimuraDiv;
++}
++
++inline void CBlastTabularInfo::x_PrintCpGSites(void)
++{
++    m_Ostream << m_CpGSites;
++}
++
++inline void CBlastTabularInfo::x_PrintTransI(void)
++{
++    m_Ostream << m_TransI;
++}
++
++inline void CBlastTabularInfo::x_PrintTransV(void)
++{
++    m_Ostream << m_TransV;
++}
++
++inline void CBlastTabularInfo::x_PrintPctSub(void)
++{
++    m_Ostream << std::fixed << std::setprecision(2) << m_PctSub;
++}
++
++inline void CBlastTabularInfo::x_PrintPctQryGap(void)
++{
++    m_Ostream << std::fixed << std::setprecision(2) << m_PctQryGap;
++}
++
++inline void CBlastTabularInfo::x_PrintPctDBGap(void)
++{
++    m_Ostream << std::setprecision(2) << m_PctDBGap;
++}
++// END RMBlastn -RMH-
++
+ inline void CBlastTabularInfo::SetNoFetch(bool nofetch)
+ {
+     m_NoFetch = nofetch;
+--- a/c++/src/objtools/align_format/format_flags.cpp	2018-10-23 07:28:28.000000000 -0700
++++ b/c++/src/objtools/align_format/format_flags.cpp	2023-08-24 15:48:58.361821984 -0700
+@@ -40,7 +40,7 @@ string kDfltArgTabularOutputFmt =
+     "evalue bitscore";
+ const string kDfltArgTabularOutputFmtTag("std");
+ 
+-const size_t kNumTabularOutputFormatSpecifiers = 50;
++const size_t kNumTabularOutputFormatSpecifiers = 58;
+ const SFormatSpec sc_FormatSpecifiers[kNumTabularOutputFormatSpecifiers] = {
+     SFormatSpec("qseqid",   
+                 "Query Seq-id",
+@@ -120,6 +120,32 @@ const SFormatSpec sc_FormatSpecifiers[kN
+     SFormatSpec("mismatch",
+                 "Number of mismatches", 
+                 eMismatches),
++
++    SFormatSpec("kdiv",
++                "Kimura divergence",
++                eKimuraDiv),
++    SFormatSpec("cpg_kdiv",
++                "Kimura divergence adjusted for CpG sites",
++                eCpGKimuraDiv),
++    SFormatSpec("cpg_sites",
++                "Count of CpG sites in alignment",
++                eCpGSites),
++    SFormatSpec("transi",
++                "Count of transition substitutions",
++                eTransI),
++    SFormatSpec("transv",
++                "Count of transversion substitutions",
++                eTransV),
++    SFormatSpec("perc_sub",
++                "Percent substitutions",
++                ePctSub),
++    SFormatSpec("perc_query_gap",
++                "Percent gaps in query sequence",
++                ePctQryGap),
++    SFormatSpec("perc_db_gap",
++                "Percent gaps in db sequence",
++                ePctDBGap),
++
+     SFormatSpec("positive", 
+                 "Number of positive-scoring matches", 
+                 ePositives),
+--- a/c++/include/objtools/align_format/format_flags.hpp	2018-10-23 07:27:09.000000000 -0700
++++ b/c++/include/objtools/align_format/format_flags.hpp	2023-08-24 15:48:58.361821984 -0700
+@@ -114,6 +114,16 @@ enum ETabularField {
+     ePercentIdentical,     ///< Percentage of identical matches
+     eNumIdentical,         ///< Number of identical matches
+     eMismatches,           ///< Number of mismatches
++
++    eKimuraDiv,            ///< RMBlastn: Kimura Divergence
++    eCpGKimuraDiv,         ///< RMBlastn: Kimura Divergence CpG adjusted
++    eCpGSites,             ///< RMBlastn: Count of CpG sites
++    eTransI,               ///< RMBlastn: Count of transitions
++    eTransV,               ///< RMBlastn: Count of transversions
++    ePctSub,               ///< RMBlastn: Percent substitution
++    ePctQryGap,            ///< RMBlastn: Percent query gaps
++    ePctDBGap,             ///< RMBlastn: Percent db gaps
++
+     ePositives,            ///< Number of positive-scoring matches
+     eGapOpenings,          ///< Number of gap openings
+     eGaps,                 ///< Total number of gaps
+--- a/c++/include/algo/blast/api/blast_exception.hpp	2018-11-27 10:22:00.000000000 -0800
++++ b/c++/include/algo/blast/api/blast_exception.hpp	2023-08-24 15:48:58.362821964 -0700
+@@ -83,7 +83,8 @@ public:
+         eSeqSrcInit,        ///< Initialization error in BlastSeqSrc 
+                             /// implementation
+         eRpsInit,           ///< Error while initializing RPS-BLAST
+-        eSetup              ///< Error while setting up BLAST
++        eSetup,              ///< Error while setting up BLAST
++        eEmptySequence      /// For RMBlastn
+     };
+ 
+     /// Translate from the error code value to its string representation
+@@ -96,6 +97,7 @@ public:
+         case eInvalidCharacter:     return "eInvalidCharacter";
+         case eSeqSrcInit:           return "eSeqSrcInit";
+         case eRpsInit:              return "eRpsInit";
++        case eEmptySequence:        return "eEmptySequence";
+         default:                    return CException::GetErrCodeString();
+         }
+     }
+--- a/c++/src/algo/blast/api/blast_setup.hpp	2016-10-17 12:00:07.000000000 -0700
++++ b/c++/src/algo/blast/api/blast_setup.hpp	2023-08-24 15:48:58.362821964 -0700
+@@ -192,7 +192,10 @@ public:
+     TSeqPos size() const {
+         TSeqPos retval = x_Size();
+         if (retval == 0) {
+-            NCBI_THROW(CBlastException, eInvalidArgument, 
++            // -RMH-: For RMBlast we want to specically handle this
++            //        type of exception.  Added new "eEmptySequence" 
++            //        type.
++            NCBI_THROW(CBlastException, eEmptySequence, 
+                        "Sequence contains no data");
+         }
+         return retval;
+--- a/c++/src/algo/blast/api/blast_setup_cxx.cpp	2021-05-07 05:10:35.000000000 -0700
++++ b/c++/src/algo/blast/api/blast_setup_cxx.cpp	2023-08-24 15:48:58.362821964 -0700
+@@ -628,7 +628,14 @@ SetupQueries_OMF(IBlastQuerySource& quer
+             // s_AddMask releases the elements of frame_to_bsl that it uses;
+             // the rest are freed by frame_to_bsl in the destructor.
+             s_AddMask(prog, mask, index, *frame_to_bsl, strand, qlen);
+-        
++        } catch (CBlastException& exc ) {
++          // -RMH-: RMBlast - specifically catch new eEmptySequence exception
++          //      and raise it up to caller rather than hide it as a
++          //      general Setup exception.  We would like to handle this 
++          //      specifically
++          if(exc.GetErrCode() == CBlastException::eEmptySequence) { 
++            throw;
++          }
+         } catch (const CException& e) {
+             // FIXME: is index this the right value for the 2nd arg? Also, how
+             // to determine whether the message should contain a warning or
+@@ -638,7 +645,7 @@ SetupQueries_OMF(IBlastQuerySource& quer
+             messages[index].push_back(m);
+             s_InvalidateQueryContexts(qinfo, index);
+         }
+-        
++       
+         ctx_index += kNumContexts;
+     }
+     
+--- a/c++/src/algo/blast/core/blast_hits.c	2019-10-09 04:00:47.000000000 -0700
++++ b/c++/src/algo/blast/core/blast_hits.c	2023-08-24 15:48:58.363821943 -0700
+@@ -3452,7 +3452,9 @@ static int s_SortHspWrapRawScore(const v
+     if (wrap1->hsp->score < wrap2->hsp->score)
+         return 1;
+ 
+-    return 0;
++    // RMH: For results with equal scores, order will be determined by
++    //      ordinal ids of the subject sequences.
++    return BLAST_CMP(wrap2->hsplist->oid, wrap1->hsplist->oid);
+ }
+ 
+ // Masklevel filtering for rmblastn. -RMH-

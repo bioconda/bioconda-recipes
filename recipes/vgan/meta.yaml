@@ -1,5 +1,5 @@
 {% set name = "vgan" %}
-{% set version = "1.0.2" %}
+{% set version = "2.0.2" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/grenaud/vgan/releases/download/v{{ version }}/vgan
-  sha256: 21ff996fe6aa14d30b74eb5c7fd941f98b4dba4716694a4c7ba0cb308026a0a2
+  sha256: 4340e61ff3c4ca8f8eca388604cc004d23d9399a4df860116f3cab342599d14e
 
 build:
   number: 0
@@ -16,7 +16,23 @@ build:
     - mkdir -p ${PREFIX}/bin
     - cp vgan ${PREFIX}/bin/
     - chmod +x ${PREFIX}/bin/vgan
+    - mkdir -p ${PREFIX}/share/vgan/
+    - mkdir -p ${PREFIX}/share/vgan/hcfiles/
+    - mkdir -p ${PREFIX}/share/vgan/euka_dir/
+    - mkdir -p ${PREFIX}/share/vgan/damageProfiles/
+    - wget -nc -l1 --recursive --no-parent -P ${PREFIX}/share/vgan/ ftp://ftp.healthtech.dtu.dk:/public/haplocart/hcfiles/
+    - mv -fv ${PREFIX}/share/vgan/ftp.healthtech.dtu.dk/public/haplocart/hcfiles/* ${PREFIX}/share/vgan/hcfiles
+    - rm -rf ${PREFIX}/share/vgan/ftp.healthtech.dtu.dk
+    - wget  -O ${PREFIX}/share/vgan/damageProfiles/dhigh5p.prof https://raw.githubusercontent.com/grenaud/vgan/main/share/vgan/damageProfiles/dhigh5p.prof
+    - wget  -O ${PREFIX}/share/vgan/damageProfiles/dhigh3p.prof https://raw.githubusercontent.com/grenaud/vgan/main/share/vgan/damageProfiles/dhigh3p.prof
+    - wget  -O ${PREFIX}/share/vgan/damageProfiles/none.prof    https://raw.githubusercontent.com/grenaud/vgan/main/share/vgan/damageProfiles/none.prof
 
+requirements:
+  host:
+    - wget
+  run:
+    - wget
+    
 test:
   commands:
     - vgan version
@@ -29,3 +45,4 @@ about:
 extra:
   skip-lints:
     - should_be_noarch_generic
+
