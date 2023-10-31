@@ -9,5 +9,5 @@ mkdir -p "$BINDIR"
 (cd kent/src/jkOwnLib && make)
 (cd kent/src/hg/lib && make)
 (cd kent/src/hg/mouseStuff/chainCleaner && make)
-cp bin/axtChain "$PREFIX/bin"
+cp bin/chainCleaner "$PREFIX/bin"
 chmod +x "$PREFIX/bin/chainCleaner"
