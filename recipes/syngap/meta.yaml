@@ -8,32 +8,17 @@ package:
 source:
   url: https://github.com/yanyew/SynGAP/releases/download/v{{ version }}/{{ name }}_v{{ version }}.tar.gz
   sha256: a6b58dcf7c650e0be290352c4cec5889fb79fd610a666d7754f670e8ea8b14b3
-  
-build: 
+
+build:
   number: 0
-  entry_points: 
+  entry_points:
     - syngap = SynGAP:main
   noarch: generic
   run_exports:
-    - python
-    - biopython
-    - jcvi
-    - bedtools
-    - last
-    - emboss
-    - gffread
-    - seqkit
-    - diamond
-    - perl-bioperl
-    - kneed
-    - numpy
-    - pandas
-    - matplotlib-base
+    - {{ pin_subpackage('syngap', max_pin="x") }}
 
 requirements:
-  bulid: 
-    - python >=3.10
-  run: 
+  run:
     - python >=3.10
     - biopython >=1.81
     - jcvi >=1.3.6
@@ -59,10 +44,12 @@ requirements:
   pip:
     - ftpretty
 
-test: 
-  source_files: 
+test:
+  source_files:
     - run_test.sh
     - SynGAP.py
+    - initdb.py
+    - master.py
     - dual.py
     - triple.py
     - custom.py
@@ -71,10 +58,12 @@ test:
     - eviplot.py
     - bin/*
     - scripts/*
-  imports: 
+  imports:
     - SynGAP
-  commands: 
+  commands:
     - syngap -h
+    - syngap initdb -h
+    - syngap master -h
     - syngap dual -h
     - syngap triple -h
     - syngap custom -h
@@ -82,7 +71,7 @@ test:
     - syngap evi -h
     - syngap eviplot -h
 
-about: 
+about:
   home: https://github.com/yanyew/SynGAP
   license: CC-BY-NC-SA-4.0
   summary: "SynGAP: Synteny-based Genome Annotations Polisher"
