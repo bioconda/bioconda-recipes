@@ -1,25 +1,39 @@
 {% set version = "2.44.0" %}
 {% set name = "rhdf5" %}
+{% set full_name = "bioconductor-" ~ name|lower %}
 {% set bioc = "3.17" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: '{{ full_name }}'
   version: '{{ version }}'
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ full_name }}/{{ full_name }}_{{ version }}_src_all.tar.gz'
   md5: 19c8340a70f1ce28043ba56bb9da1238
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports:
+    # This pinning is preliminary. It should be changed if either:
+    # * a general policy for pinning bioconductor packages is decided and differs:
+    #   https://github.com/bioconda/bioconda-recipes/issues/43905
+    # * the author of this package assures us that he adheres to semantic
+    #   versioning, in which case we can unpin the minor version, see:
+    #   https://github.com/grimbough/rhdf5/issues/131#issuecomment-1782567153
+    - {{ pin_subpackage(full_name, max_pin="x.x") }}
 # Suggests: bit64, BiocStyle, knitr, rmarkdown, testthat, bench, dplyr, ggplot2, mockery, BiocParallel
 # SystemRequirements: GNU make
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
   host:
     - 'bioconductor-rhdf5filters >=1.12.0,<1.13.0'
     - 'bioconductor-rhdf5lib >=1.22.0,<1.23.0'
@@ -30,11 +44,6 @@ requirements:
     - 'bioconductor-rhdf5filters >=1.12.0,<1.13.0'
     - 'bioconductor-rhdf5lib >=1.22.0,<1.23.0'
     - r-base
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - automake
-    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -47,7 +56,7 @@ extra:
   identifiers:
     - biotools:rhdf5
   parent_recipe:
-    name: bioconductor-rhdf5
-    path: recipes/bioconductor-rhdf5
+    name: '{{ full_name }}'
+    path: 'recipes/{{ full_name }}'
     version: 2.24.0
 
