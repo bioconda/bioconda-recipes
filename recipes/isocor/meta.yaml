@@ -3,7 +3,7 @@ package:
   version: "2.2.2"
 
 source:
-  url: https://files.pythonhosted.org/packages/fd/3e/9dfdba9783d0425f8f30e132d5c76afe57673af2c336f3de1e8446114d21/IsoCor-2.2.2.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/IsoCor-{{ version }}.tar.gz
   sha256: eb4c91d2ed5b626adc6208454fd82b3e2ddd9a3ad0ccd964c8f16f9a310673e7
 
 build:
@@ -12,15 +12,17 @@ build:
   entry_points:
     - isocorcli = isocor.ui.isocorcli:start_cli
     - isocor = isocor.ui.isocorgui:start_gui
-  script: python -m pip install . --no-deps --ignore-installed
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  run_exports:
+    - {{ pin_subpackage('isocor', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.6
+    - python >=3.7
   run:
     - pandas >=0.17.1
-    - python >=3.6
+    - python >=3.7
     - scipy >=0.12.1
     - numpy >=1.15
 
@@ -34,7 +36,7 @@ test:
 
 about:
   home: https://github.com/MetaSys-LISBP/IsoCor/
-  license: GNU General Public v3 or later (GPLv3+)
+  license: GPL-3.0-or-later
   license_family: GPL3
   license_file: LICENSE.md
   summary: A Isotope Correction for mass spectrometry labeling experiments
