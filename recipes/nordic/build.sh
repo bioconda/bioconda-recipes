@@ -9,5 +9,7 @@ make install \
     CXXFLAGS="${CXXFLAGS}" \
     LDFLAGS="${LDFLAGS}" \
     prefix="${PREFIX}"
-"${PYTHON}" -m pip install bonesis maboss mpbn
+
+"${CONDA}" install -c colomoto bonesis
+"${CONDA}" install -c colomoto mpbn
 "${PYTHON}" -m pip install --no-deps --no-build-isolation . -vvv
