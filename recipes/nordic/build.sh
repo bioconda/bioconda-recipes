@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 cd ${SRC_DIR}"/MaBoSS-2.0/engine/src/"
+
 make install \
     CC="${CC}" \
     CXX="${CXX}" \
