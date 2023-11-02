@@ -12,16 +12,18 @@ source:
 
 build:
   number: 0
+  # This is required to make R link correctly on Linux.
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
+    - {{ pin_subpackage('r-ldweaver', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}              # [not win]
     - {{ compiler('cxx') }}            # [not win]
+
   host:
     - r-base 4.*
     - bioconductor-genomicranges
@@ -46,6 +48,8 @@ requirements:
     - r-phytools
     - r-plyr
     - r-stringi 
+    - openjdk
+
   run:
     - r-base 4.*
     - bioconductor-genomicranges
@@ -70,9 +74,11 @@ requirements:
     - r-phytools
     - r-plyr
     - r-stringi 
+    - openjdk
 
 test:
   commands:
+    # You can put additional test commands to be run here.
     - $R -e "library('LDWeaver')"           # [not win]
 
 about:
