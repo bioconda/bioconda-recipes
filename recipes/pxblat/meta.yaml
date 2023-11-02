@@ -1,6 +1,6 @@
 {% set name = "PxBLAT" %}
-{% set version = "0.3.4" %}
-{% set sha256 = "59ff417a0ee2e6760cb96d653ffbff2d8d76e5f0e498b2a3915bfc578b276f06" %}
+{% set version = "1.1.10" %}
+{% set sha256 = "d20b48ac4c761ad26c680cd1a10e7fb22f581212d5221cbfc2bc7f522a6b81d2" %}
 
 package:
   name: {{ name|lower }}
@@ -13,7 +13,9 @@ source:
 build:
   number: 0
   skip: True  # [py < 39]
-  script: {{ PYTHON }} -m pip install . --no-deps --use-pep517 -vvv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - pxblat = pxblat.cli.cli:app
   run_exports:
     - {{ pin_subpackage('pxblat', max_pin="x") }}
 
@@ -24,22 +26,18 @@ requirements:
     - python
     - pip
     - poetry-core >=1.2.0
-    - pybind11 >=2.9.1
+    - pybind11 >2.9.1
     - setuptools >=46.4
-    - htslib
-    - openssl
-    - zlib
   run:
     - python
     - loguru
+    - pybind11 >=2.10.4
     - rich
     - pysimdjson
     - biopython
     - typer
     - deprecated
     - mashumaro
-    - numpy >=1.24.3
-    - gevent
     - urllib3
 
 test:
@@ -50,8 +48,7 @@ test:
 
 about:
   home: 'https://github.com/ylab-hi/pxblat'
-  license: MIT
-  license_family: MIT
+  license: OTHER
   license_file: LICENSE
   summary: "PxBLAT: An Efficient and Ergonomics Python Binding Library for BLAT."
   dev_url: 'https://pypi.org/project/pxblat/'
