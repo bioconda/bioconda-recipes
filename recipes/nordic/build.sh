@@ -10,4 +10,14 @@ make install \
     LDFLAGS="${LDFLAGS}" \
     prefix="${PREFIX}"
 
+cd ${SRC_DIR}"/mpbn-3.3/"
+
+"${PYTHON}" -m pip install --no-deps --no-build-isolation . -vvv
+
+cd ${SRC_DIR}"/bonesis-0.5.7/"
+
+"${PYTHON}" -m pip install --no-deps --no-build-isolation . -vvv
+
+cd ${SRC_DIR}"/NORDic-2.4.4/"
+
 "${PYTHON}" -m pip install --no-deps --no-build-isolation . -vvv
