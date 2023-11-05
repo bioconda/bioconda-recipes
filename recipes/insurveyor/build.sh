@@ -16,5 +16,5 @@ cp add_filtering_info $PREFIX/bin/
 cp filter $PREFIX/bin/
 cp normalise $PREFIX/bin/
 
-cp surveyor.py $PREFIX/bin/
+cp insurveyor.py $PREFIX/bin/
 cp random_pos_generator.py $PREFIX/bin/

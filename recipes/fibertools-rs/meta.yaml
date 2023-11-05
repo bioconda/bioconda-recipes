@@ -1,40 +1,49 @@
-{% set version = "0.1.2" %}
+{% set version = "0.3.2" %}
+{% set name = "fibertools-rs" %}
+{% set build_number = "0" %}
 
 package:
-  name: fibertools-rs
+  name: {{ name }}
   version: {{ version }}
 
 build:
-  number: 0
-  #skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage('fibertools-rs', max_pin="x") }}
+  number: {{ build_number }}
+  detect_binary_files_with_prefix: False
+  # skip: True # [osx]
+  rpaths:
+    - lib/
+    - share/{{ name }}-{{ version }}-{{ build_number }}/lib/
+  missing_dso_whitelist:
+    - share/{{ name }}-{{ version }}-{{ build_number }}/lib/*
+    - "$RPATH/libgomp-a34b3233.so.1"
+    - "$RPATH/libcudart-d0da41ae.so.11.0"
+  #runpath_whitelist:
+  #  - share/{{ name }}-{{ version }}-{{ build_number }}/lib/*
+  # overlinking_ignore_patterns:
+  #   - share/{{ name }}-{{ version }}-{{ build_number }}/lib/*
+  
 
 source:
   url: https://github.com/fiberseq/fibertools-rs/archive/v{{ version }}.tar.gz
-  sha256: ce2c23c66d81d8880d126c577f1f815f5004b99db2845bd6dea64d896aefcc3e
-
+  sha256: 3607996fce7fe009e31b80b2f7d6fd6ddd152537428aa6506c24190c6f89d329
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('rust') }}
-    #- rust >=1.60
-    - clangdev
-    - pkg-config
     - make
     - cmake
-    - rust-bio-tools
     - unzip
     - curl
-    - openssl
   host:
-    - gsl
-    - openssl
-    #- libcblas
-    #- libcurl
   run:
-    - openssl
 
+# libz
+# $RPATH/libcuda.so.1
+# Needed DSO lib/libgomp.so.1 
 
 test:
   commands:
@@ -45,3 +54,8 @@ about:
   home: https://github.com/fiberseq/fibertools-rs
   license: MIT
   summary: Mitchell Vollger's rust tools for fiberseq data.
+
+
+extra:
+  recipe-maintainers:
+    - mrvollger

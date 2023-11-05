@@ -1,0 +1,13 @@
+diff --git a/src/Snakefiles/3-alignTips.sm b/src/Snakefiles/3-alignTips.sm
+index 5795544..b02e334 100644
+--- a/src/Snakefiles/3-alignTips.sm
++++ b/src/Snakefiles/3-alignTips.sm
+@@ -76,7 +76,7 @@ done
+ xargs -L 1 -P {threads} < tip_reads.extract \\\\
+   {PYTHON} {VERKKO}/scripts/fasta_extract.py
+
+-zcat {params.ext_files} |awk -v SEQ="" '{{ if (match(\$1, ">") && \$1 != NAME) {{ if (SEQ != "") {{ print NAME; print SEQ; }} SEQ=""; NAME=\$1; }} else {{ SEQ=SEQ""\$1;}} }} END {{ print NAME; print SEQ}}' | tr -s ACGT > tip_reads_compressed.fasta
++gunzip -c {params.ext_files} |awk -v SEQ="" '{{ if (match(\$1, ">") && \$1 != NAME) {{ if (SEQ != "") {{ print NAME; print SEQ; }} SEQ=""; NAME=\$1; }} else {{ SEQ=SEQ""\$1;}} }} END {{ print NAME; print SEQ}}' | tr -s ACGT > tip_reads_compressed.fasta
+ rm -f {params.ext_files}
+
+ cat ../{input.graph} |awk '{{ if (match(\$1, "^S")) {{ print ">"\$2; print \$3 }} }}' |fold -b > tips.fasta
