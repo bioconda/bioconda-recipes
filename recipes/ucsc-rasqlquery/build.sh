@@ -8,6 +8,6 @@ mkdir -p "$BINDIR"
 (cd kent/src/htslib && make)
 (cd kent/src/jkOwnLib && make)
 (cd kent/src/hg/lib && make)
-(cd kent/src/hg/utils/raSqlQuery && make)
+(cd kent/src/utils/raSqlQuery && make)
 cp bin/raSqlQuery "$PREFIX/bin"
 chmod +x "$PREFIX/bin/raSqlQuery"

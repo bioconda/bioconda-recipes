@@ -9,6 +9,6 @@ mkdir -p "$BINDIR"
 (cd kent/src/jkOwnLib && make)
 (cd kent/src/hg/lib && make)
 (cd kent/src/utils/stringify && make)
-(cd kent/src/utils/pslMap && make)
+(cd kent/src/hg/utils/pslMap && make)
 cp bin/pslMap "$PREFIX/bin"
 chmod +x "$PREFIX/bin/pslMap"

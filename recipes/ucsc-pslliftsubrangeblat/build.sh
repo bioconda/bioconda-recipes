@@ -8,6 +8,6 @@ mkdir -p "$BINDIR"
 (cd kent/src/htslib && make)
 (cd kent/src/jkOwnLib && make)
 (cd kent/src/hg/lib && make)
-(cd kent/src/hg/utils/pslLiftSubrangeBlat && make)
+(cd kent/src/utils/pslLiftSubrangeBlat && make)
 cp bin/pslLiftSubrangeBlat "$PREFIX/bin"
 chmod +x "$PREFIX/bin/pslLiftSubrangeBlat"

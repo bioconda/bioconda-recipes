@@ -8,6 +8,6 @@ mkdir -p "$BINDIR"
 (cd kent/src/htslib && make)
 (cd kent/src/jkOwnLib && make)
 (cd kent/src/hg/lib && make)
-(cd kent/src/utils/pslSwap && make)
+(cd kent/src/hg/pslSwap && make)
 cp bin/pslSwap "$PREFIX/bin"
 chmod +x "$PREFIX/bin/pslSwap"
