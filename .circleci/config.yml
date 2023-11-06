@@ -201,7 +201,11 @@ jobs: # a basic unit of work in a run
           name: Configure conda
           command: bash configure-conda.sh
 
-      # FIXME: For initial testing, the following were removed: --anaconda-upload --mulled-upload-target biocontainers --record-build-failures  --docker 
+      # setup Docker to use for --docker and --mulled-test
+      - setup_remote_docker:
+          version: default
+
+      # FIXME: For initial testing, the following were removed: --anaconda-upload --mulled-upload-target biocontainers --record-build-failures  
       - run:
           name: Build and upload
           command: |
@@ -215,7 +219,7 @@ jobs: # a basic unit of work in a run
             echo '============'
             bioconda-utils build recipes config.yml \
               --worker-offset << parameters.runner >> --n-workers 6 \
-              --mulled-test \
+              --docker --mulled-test \
               --skiplist-leafs
             conda clean -y --all
 
