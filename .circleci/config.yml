@@ -220,25 +220,9 @@ jobs: # a basic unit of work in a run
             echo '============'
             bioconda-utils build recipes config.yml \
               --worker-offset << parameters.runner >> --n-workers 6 \
-              --docker --mulled-test --docker-base-image quay.io/bioconda/bioconda-utils-build-env-cos7-aarch64 \
+              --mulled-test --docker-base-image quay.io/bioconda/bioconda-utils-build-env-cos7-aarch64 \
               --skiplist-leafs
             conda clean -y --all
-
-      # Debugging script error
-      - run:
-          name: Prepare artifacts
-          when: always
-          command: |
-            (
-            mkdir -p /tmp/artifacts/debug
-            for n in /tmp/*/build_script.bash; do
-              cp -rv $n /tmp/artifacts/debug || true
-            done
-            ) || true
-
-      - store_artifacts:
-          when: always
-          path: /tmp/artifacts
 
 
 workflows:
