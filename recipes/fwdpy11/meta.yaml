@@ -1,14 +1,21 @@
+{% set name = "fwdpy11" %}
+{% set version = "0.21.2" %}
+
 package:
-  name: fwdpy11
-  version: "0.22.1"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/e5/76/168c1cccd632ebf2208c7ccf032d29d524b4719d5687576a5c621f29af88/fwdpy11-0.22.1.tar.gz
-  sha256: 17dfa10009d506446308a4cb85a5a2a66831343439e10c2d103af1fd086a7405
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/fwdpy11-{{ version }}.tar.gz
+  sha256: 6a06dd7dbcf786014a78b48538559a3722b6ba059153d2f66f47fe1a2eaf607d
 
 build:
-  skip: True # [py27 or py<38]
+  skip: True  # [py2k or py>=312]
   number: 0
+  entry_points:
+    - fwdpy11 = fwdpy11.__main__:main
+  run_exports:
+    - {{ pin_subpackage('fwdpy11', max_pin="x.x") }}
 
 requirements:
   build:
@@ -18,33 +25,10 @@ requirements:
     - make
   host:
     - python
-    - pkgconfig
-    - python
     - pip
-    - numpy >=1.20
-    - pybind11 ==2.10.0
-    - tskit >=0.5
-    - gsl
-    - openblas
-    - attrs
-    - setuptools_scm
-    - rust >=1.62.1  
-#    - intervaltree
-#    - pybind11 >=2.10.0
-#    - numpy
-#    - scipy
-#    - attrs >=0.19.2
-#    - black
-#    - tskit
-#    - msprime
-#    - gsl
-#    - boost
-#    - pytest
-#    - pytest-xdist
-#    - setuptools_scm
-#    - demes >=0.2.0
-#    - rust >=1.62.1
-#    - hypothesis
+    - setuptools-scm <8
+    - pybind11 ==2.11.1
+    - rust >=1.62.1
   run:
     - python
     - numpy >=1.20
@@ -58,13 +42,15 @@ requirements:
     - intervaltree
 
 test:
-  # Python imports
   imports:
     - fwdpy11
+  commands:
+    - fwdpy11 --help
 
 about:
-  home: http://pypi.python.org/pypi/fwdpy11
-  license: GNU General Public License v3 or later (GPLv3+)
+  home: https://github.com/molpopgen/fwdpy11
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: "COPYING"
   summary: 'Forward-time population genetic simulation in Python.'
 
