@@ -1,34 +1,40 @@
+{% set name = "blastbesties" %}
+{% set version = "1.1.2" %}
+
 package:
-  name: blastbesties
-  version: "1.1.2"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/1d/d8/968c4f61e5ade8413c4d68971b9e005e24595f70cafb7d5c69136f8f7e00/blastbesties-1.1.2.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/blastbesties-{{ version }}.tar.gz
   sha256: 6dce21a9f92d8e47875a020c279e420ed5077d00ced3534844993a26e779e57d
 
 build:
   number: 0
   noarch: python
   entry_points:
-    - blastbesties=blastbesties.cmd_rbb:main
+    - blastbesties = blastbesties.app:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('blastbesties', max_pin="x") }}
 
 requirements:
   host:
-    - python
-    - setuptools
-
+    - python >=3.7
+    - pip
+    - setuptools-scm
   run:
-    - python
+    - python >=3.7
 
 test:
   imports:
     - blastbesties
-
   commands:
     - blastbesties --help
 
 about:
   home: https://github.com/Adamtaranto/blast-besties
-  license: MIT License
+  license: MIT
   summary: 'Rapid discovery of reciprocal best blast pairs from BLAST output files.'
   license_family: MIT
+  license_file: LICENSE
