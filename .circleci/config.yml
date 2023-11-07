@@ -206,6 +206,7 @@ jobs: # a basic unit of work in a run
           version: default
 
       # FIXME: For initial testing, the following were removed: --anaconda-upload --mulled-upload-target biocontainers --record-build-failures  
+      # TODO: Make --docker-base-image dynamic based on arch?
       - run:
           name: Build and upload
           command: |
@@ -222,6 +223,20 @@ jobs: # a basic unit of work in a run
               --docker --mulled-test --docker-base-image quay.io/bioconda/bioconda-utils-build-env-cos7-aarch64 \
               --skiplist-leafs
             conda clean -y --all
+
+      # Debugging script error
+      - run:
+          name: Prepare artifacts
+          when: always
+          command: |
+            mkdir -p /tmp/artifacts/debug
+            for n in /tmp/*/build_script.bash; do
+              cp -rv $n /tmp/artifacts/debug || true
+            done
+
+      - store_artifacts:
+          path: /tmp/artifacts
+
 
 workflows:
   build and test (ARM):
