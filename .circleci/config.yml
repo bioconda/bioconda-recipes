@@ -7,6 +7,10 @@ executors:
   #     xcode: 14.2.0 # indicate your selected version of Xcode
   #   resource_class: macos.m1.large.gen1
   linux-aarch64:
+    docker:
+      - image: cimg/base:2023.06
+    resource_class: arm.medium
+  linux-aarch64-bulk:
     machine:
       image: ubuntu-2004:current
     resource_class: arm.medium
@@ -165,7 +169,8 @@ jobs: # a basic unit of work in a run
           command: |
             git config user.name bioconda-bot
             git config user.email bioconda-bot@users.noreply.github.com
-            git config push.autoSetupRemote true
+            echo $CIRCLE_SHA1
+            echo $CIRCLE_BRANCH
 
       - run:
           name: Fetch bioconda install script
@@ -258,5 +263,5 @@ workflows:
             parameters:
               os: 
                 #- osx-arm64
-                - linux-aarch64
+                - linux-aarch64-bulk
               runner: [0, 1, 2, 3, 4, 5]
