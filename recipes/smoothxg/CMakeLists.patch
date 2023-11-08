@@ -1,0 +1,70 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f1f7d73..5e129f1 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,6 +1,6 @@
+ # Specify the minimum version for CMake
+ 
+-cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
++cmake_minimum_required(VERSION 3.16)
+ 
+ # Project's name
+ project(smoothxg)
+@@ -8,43 +8,23 @@ project(smoothxg)
+ # We build using c++17
+ set(CMAKE_CXX_STANDARD 17)
+ 
+-enable_testing()
+-
+-include(CheckIPOSupported) # adds lto
+-check_ipo_supported(RESULT ipo_supported OUTPUT output)
+-SET(CMAKE_RANLIB "gcc-ranlib") # too try lto with older runtimes
+-
+-# This builds a static version of ./bin/smoothxg
+-option(BUILD_STATIC "Build static binary" OFF)
+-if (BUILD_STATIC)
+-  set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+-  set(BUILD_SHARED_LIBS OFF)
+-  set(CMAKE_EXE_LINKER_FLAGS "-static")
+-endif()
+-
+-find_package(OpenMP)
+-# if(OpenMP_CXX_FOUND)
+-#     target_link_libraries(MyTarget PUBLIC OpenMP::OpenMP_CXX)
+-# endif()
+-
+-find_package(PkgConfig REQUIRED)
+ find_package(ZLIB REQUIRED)
+-# find_package(ZSTD REQUIRED) - needs recent versions of cmake
++
++enable_testing()
+ 
+ # Preload the following libraries before running tests
+ set(PRELOAD "libasan.so:libjemalloc.so.2")
+ 
+ if(NOT CMAKE_BUILD_TYPE)
+-  message(STATUS "Choose the type of build, options are: Release Debug Generic!")
++  set(CMAKE_BUILD_TYPE Release CACHE STRING
++          "Choose the type of build, options are: Release Debug Generic." FORCE)
+ endif()
+ 
+ # set(CMAKE_BUILD_TYPE Debug) -- don't uncomment this, instead run
+ #   cmake -DCMAKE_BUILD_TYPE=Debug ..
+ 
+ if (${CMAKE_BUILD_TYPE} MATCHES Release)
+-  if(NOT EXTRA_FLAGS)
+-    set(EXTRA_FLAGS "-Ofast -march=native -flto -fno-fat-lto-objects")
+-  endif()
++  set(EXTRA_FLAGS "-Ofast -march=native")
+   set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG") # reset CXX_FLAGS to replace -O3 with -Ofast
+ 
+   # Increase SPOA's performance
+@@ -442,7 +422,7 @@ add_executable(smoothxg
+ target_link_libraries(smoothxg spoa abpoa)
+ target_link_libraries(smoothxg ${smoothxg_LIBS})
+ 
+-target_link_libraries(smoothxg z zstd jemalloc)
++target_link_libraries(smoothxg ZLIB::ZLIB zstd jemalloc)
+ 
+ set_target_properties(smoothxg PROPERTIES OUTPUT_NAME "smoothxg")
+ target_include_directories(smoothxg PUBLIC ${smoothxg_INCLUDES})

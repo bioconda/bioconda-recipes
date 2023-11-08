@@ -1,4 +1,4 @@
-{% set version = "5.26.1" %}
+{% set version = "7.32.4" %}
 
 package:
   name: snakemake
@@ -6,11 +6,13 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/snakemake/snakemake-{{ version }}.tar.gz
-  sha256: 94cfed2f47f6441cca6cf9d53cffdc11eb78dd1758d96c0af9cd5e453247363e
+  sha256: fdc3f15dd7b06fabb7da30d460e0a3b1fba08e4ea91f9c32c47a83705cdc7b6e
 
 build:
   number: 1
   noarch: generic
+  run_exports:
+    - {{ pin_subpackage("snakemake", max_pin="x") }}
 
 requirements:
   run:
@@ -22,26 +24,25 @@ requirements:
     - ftputil >=3.2
     - filechunkio >=1.6
     - pysftp >=0.2.8
-    - psutil
     - aioeasywebdav
     # pandas is optional, but required for many workflows
     - pandas
     - python-irodsclient
+    # aws s3
+    - boto3
+    # check snakemake/setup.cfg's section [options.extras_require]
+    # options.extras_require: google-cloud
     - google-cloud-storage
     - google-api-python-client
     - google-crc32c
-    - boto3
-    - jsonschema
-    - jinja2
-    - pygraphviz >=1.5
-    - networkx >=2.0
-    - pygments
-    # older versions of imagemagick sometimes fail on PDF -> PNG conversion
-    - imagemagick >=7.0
     - oauth2client
+    # options.extras_require: messaging
     - slacker
-    # libXau is currently a missing dep for graphviz (linked by lib/graphviz/libgvplugin_pango.so)
-    - xorg-libxau
+    # options.extras_require: pep
+    - eido
+    - peppy
+    # options.extras_require: reports
+    - pygments
 
 test:
   imports:
@@ -73,6 +74,10 @@ extra:
   skip-lints:
     - uses_setuptools  # uses pkg_resoures during run time
     - should_be_noarch_python  # toplevel metapackage is noarch:generic
+    - missing_run_exports 
+  recipe-maintainers:
+    - johanneskoester
+    - corneliusroemer
 
 outputs:
   - name: snakemake-minimal
@@ -83,30 +88,40 @@ outputs:
       entry_points:
         - snakemake = snakemake:main
         - snakemake-bash-completion = snakemake:bash_completion
+      run_exports:
+        - {{ pin_subpackage("snakemake-minimal", max_pin="x") }}
 
     requirements:
       host:
-        - python >=3.5
+        - python >=3.7
         - pip
         - setuptools
       run:
-        - python >=3.5
-        - setuptools
-        - wrapt
-        - requests
-        - docutils
-        - pyyaml
-        - datrie
-        - requests >=2.8.1
-        - psutil
-        - ratelimiter
-        - configargparse
+        # Keep in sync with snakemake/setup.cfg
+        - python >=3.7,<3.12
         - appdirs
-        - jsonschema
+        - configargparse
+        - connection_pool >=0.0.3
+        - datrie
+        - docutils
         - gitpython
-        - toposort
+        - humanfriendly
+        - jinja2 >=3.0,<4.0
+        - jsonschema
         - nbformat
+        - packaging
+        - psutil
         - pulp >=2.0
+        - pyyaml
+        - requests >=2.8.1
+        - reretry
+        - smart_open >=3.0
+        - stopit
+        - tabulate
+        - throttler
+        - toposort >=1.10
+        - yte  >=1.5.1,<2.0
+        - wrapt
 
     test:
       imports:

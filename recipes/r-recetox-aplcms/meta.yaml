@@ -1,0 +1,85 @@
+{% set name = "recetox-aplcms" %}
+{% set version = "0.12.0" %}
+{% set github = "https://github.com/RECETOX" %}
+
+package:
+  name: "r-{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "{{ github }}/recetox-aplcms/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: c76715e50a442b45f46f79120af6f382965f9a8de63bf0f624eb132478b6ed2c
+
+build:
+  number: 1
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  script_env:
+    - RGL_USE_NULL=TRUE # avoid warning at test-time
+  script: R CMD INSTALL --build . 
+  
+requirements:
+  host:
+    - r-base =4.2
+    - r-mass
+    - bioconductor-mzr
+    - r-splines2
+    - r-doparallel
+    - r-foreach
+    - r-iterators
+    - r-snow
+    - r-rcpp
+    - r-arrow >=7.0.0,<10.0.0
+    - r-dplyr
+    - r-tidyr
+    - r-stringr
+    # TODO work around bug in conda mambabuild that takes this from defaults instead of conda-forge
+    # can be removed once conda mambabuild properly respects strict priorities.
+    # See https://github.com/mamba-org/boa/issues/115
+    - r-stringi >=1.7.12 
+    - r-tibble
+  run:
+    - r-base =4.2
+    - r-mass
+    - bioconductor-mzr
+    - r-splines2
+    - r-doparallel
+    - r-foreach
+    - r-iterators
+    - r-snow
+    - r-rcpp
+    - r-arrow >=7.0.0,<10.0.0
+    - r-dplyr
+    - r-tidyr
+    - r-stringr
+    # TODO work around bug in conda mambabuild that takes this from defaults instead of conda-forge
+    # can be removed once conda mambabuild properly respects strict priorities.
+    # See https://github.com/mamba-org/boa/issues/115
+    - r-stringi >=1.7.12
+    - r-tibble
+
+test:
+  commands:
+    - $R -e "library('recetox.aplcms')"
+
+about:
+  home: "{{ github }}"
+  license: GPL-2.0
+  license_file: LICENSE
+  summary: apLCMS is a software which generates a feature table from a batch of LC/MS spectra. A modified fork of the original apLCMS by Tianwei Yu.
+
+extra:
+  recipe-maintainers:
+    - hechth
+    - martenson
+    - maximskorik
+  identifiers:
+    - doi:10.1093/bioinformatics/btp291
+    - doi:10.1186/1471-2105-11-559
+    - doi:10.1021/pr301053d
+    - doi:10.1093/bioinformatics/btu430
+    - doi:10.1038/s41598-020-70850-0
+  container:
+    extended-base: True

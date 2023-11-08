@@ -1,0 +1,42 @@
+{% set name = "taxadb" %}
+{% set version = "0.12.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: eca577cd0f4ff2f26c7d8f68d7f5a0d2f7a2f73e623139ded2493e429b23cecd
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - taxadb = taxadb.app:main
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir . -vv"
+
+requirements:
+  host:
+    - peewee >=3.8.2
+    - pip
+    - python
+    - requests
+    - tqdm
+  run:
+    - peewee >=3.8.2
+    - python
+    - requests
+    - tqdm
+
+test:
+  imports:
+    - taxadb
+  commands:
+    - taxadb --help
+
+about:
+  home: "https://github.com/HadrienG/taxadb"
+  license: MIT
+  license_family: MIT
+  summary: "locally query the ncbi taxonomy"

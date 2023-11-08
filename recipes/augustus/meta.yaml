@@ -1,5 +1,5 @@
-{% set version = "3.3.3" %}
-{% set sha256 = "2fc5f9fd2f0c3bba2924df42ffaf55b5c130228cea18efdb3b6dfab9efa8c9f4" %}
+{% set version = "3.5.0" %}
+{% set sha256 = "5ed6ce6106303b800c5e91d37a250baff43b20824657b853ae04d11ad8bdd686" %}
 
 package:
   name: augustus
@@ -9,23 +9,15 @@ source:
   url: https://github.com/Gaius-Augustus/Augustus/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - patches/bam2hints.makefile.patch
-    - patches/bam2wig.makefile.patch
-    - patches/compileSpliceCands.makefile.patch
-    - patches/filterBam.makefile.patch
-    - patches/filterBam.src.makefile.patch  # [linux]
-    - patches/filterBam.src.makefile.patch.osx  # [osx]
     - patches/homGeneMapping.src.makefile.patch
-    - patches/joingenes.makefile.patch
-    - patches/utrrnaseq.src.patch
     - patches/utrrnaseq.patch
-    - patches/src.makefile.patch
 
 build:
-  number: 5
+  number: 3
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
@@ -64,6 +56,7 @@ requirements:
     - ucsc-fatotwobit
     - ucsc-twobitinfo
     - bamtools
+    - tar
 
 test:
   commands:
@@ -134,7 +127,6 @@ test:
     - polyA2hints.pl
     - pslMap.pl 2>&1 | grep "pslMap.pl" > /dev/null
     - randomSplit.pl
-    - ratewig.pl
     - rmRedundantHints.pl 2>&1 | grep "rmRedundantHints.pl" > /dev/null
     - runAllSim4.pl --help 2>&1 | grep "runAllSim4.pl" > /dev/null
     - samMap.pl
@@ -176,5 +168,3 @@ extra:
     - doi:10.1093/bioinformatics/btr010
     - usegalaxy-eu:augustus
   notes: "Builds with sqlite support are currently only available on Linux due to compile issues with macOS."
-  skip-lints:
-    - should_not_be_noarch_source

@@ -22,6 +22,7 @@ cp scripts/*.pl $outdir/scripts
 cp scripts/extractSplitReads* $outdir/scripts
 cp scripts/vcf* $outdir/scripts
 ln -s $outdir/scripts/extractSplitReads_BwaMem $PREFIX/bin
+ln -s $outdir/scripts/pairend_distro.py $PREFIX/bin
 
 chmod +x $PREFIX/bin/extractSplitReads_BwaMem
 

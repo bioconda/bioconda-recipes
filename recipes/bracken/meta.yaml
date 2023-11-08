@@ -1,5 +1,5 @@
-{% set version = "2.6.0" %}
-{% set sha256 = "fb1837d6f32b8f8c87353b9dc8a23d3418c348b00824a7064eb58f9bab11ea68" %}
+{% set version = "2.9" %}
+{% set sha256 = "b8fd43fc396a2184d9351fb4a459f95ae9bb5865b195a18e22436f643044c788" %}
 
 package:
   name: bracken
@@ -13,18 +13,22 @@ source:
     - py3.patch
 
 build:
-  number: 2
+  skip: True  # [osx]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('bracken', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - make
   host:
     - python
   run:
     - python
     - kraken2
-    - llvm-openmp  # [osx]
 
 test:
   commands:
@@ -32,7 +36,6 @@ test:
     - bracken-build -h
     - est_abundance.py -h
     - generate_kmer_distribution.py -h
-    - kreport2mpa.py -h
     - kmer2read_distr --help
     - combine_bracken_outputs.py -h
 

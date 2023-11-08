@@ -1,0 +1,26 @@
+diff --git a/t/dbdpg_test_setup.pl b/t/dbdpg_test_setup.pl
+index 540cd38..b1e01a7 100644
+--- a/t/dbdpg_test_setup.pl
++++ b/t/dbdpg_test_setup.pl
+@@ -373,7 +373,9 @@ version: $version
+             $su = $testuser = '';
+ 
+             ## Figure out a valid directory - returns empty if nothing available
+-            $testdir = File::Temp::tempdir('dbdpg_testdatabase_XXXXXX', TMPDIR => 1, CLEANUP => 0);
++            $testdir = exists $ENV{DBDPG_TEMPDIR} ?
++                File::Temp::tempdir("$ENV{DBDPG_TEMPDIR}/dbdpg_testdatabase_XXXXXX", TMPDIR => 1, CLEANUP => 0) :
++                File::Temp::tempdir('dbdpg_testdatabase_XXXXXX', TMPDIR => 1, CLEANUP => 0);
+ 
+             my $readme = "$testdir/README";
+             if (open $fh, '>', $readme) {
+@@ -813,7 +815,9 @@ sub get_test_settings {
+ 
+     if (!$testdir) {
+         my $dir = getcwd();
+-        $testdir = "$dir/dbdpg_test_database";
++        $testdir = exists $ENV{DBDPG_TEMPDIR} ?
++            "/tmp/dbdpg_test_database" :
++            "$dir/dbdpg_test_database";
+     }
+ 
+     ## Allow forcing of ENV variables

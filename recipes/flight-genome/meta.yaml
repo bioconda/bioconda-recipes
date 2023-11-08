@@ -1,0 +1,45 @@
+{% set name = "flight-genome" %}
+{% set version = "1.6.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: c91a42b8164f46678bbc3a3d812de290c42898f1b38a544257afd5a829b60698
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - flight = flight.flight:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - python >=3.8
+    - biopython
+
+
+test:
+  imports:
+    - flight
+  commands:
+    - flight --help
+
+about:
+  home: "https://github.com/rhysnewell/flight"
+  license: BSD-3
+  license_family: BSD
+  summary: "flight - python component of Rosella and Lorikeet"
+
+extra:
+  recipe-maintainers:
+    - rhysnewell
+    - aaronmussig

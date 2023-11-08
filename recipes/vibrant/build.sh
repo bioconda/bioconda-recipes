@@ -2,10 +2,10 @@
 
 mkdir -p ${PREFIX}/bin
 
+chmod +x VIBRANT_run.py
 cp VIBRANT_run.py ${PREFIX}/bin
+chmod +x scripts/*
 cp scripts/* ${PREFIX}/bin
-
-chmod +x ${PREFIX}/bin/*
 
 # copy script to download database
 cp ${RECIPE_DIR}/download-db.sh ${PREFIX}/bin
