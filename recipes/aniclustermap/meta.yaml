@@ -13,13 +13,15 @@ build:
   entry_points:
     - ANIclustermap = aniclustermap.aniclustermap:main
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
   number: 0
+  run_exports:
+    - {{ pin_subpackage('aniclustermap', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - poetry
+    - poetry-core
     - python >=3.8
   run:
     - python >=3.8
@@ -33,10 +35,8 @@ test:
   imports:
     - aniclustermap
   commands:
-    - pip check
     - ANIclustermap --help
   requires:
-    - pip
     - pytest
   source_files:
     - tests/
@@ -45,6 +45,7 @@ about:
   home: https://github.com/moshi4/ANIclustermap/
   summary: A tool for drawing ANI clustermap between all-vs-all microbial genomes
   license: MIT
+  license_family: MIT
   license_file: LICENSE
 
 extra:
