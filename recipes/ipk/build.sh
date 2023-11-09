@@ -12,11 +12,16 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
 
-echo $PREFIX
+echo "PREFIX: $PREFIX"
 cmake .
+echo "CMAKE PASSED"
 mkdir release-build
 pushd release-build
 cmake -DHASH_MAP=USE_TSL_ROBIN_MAP -DCMAKE_CXX_FLAGS="-O3" ..
+echo "CMAKE PASSED"
+echo "SRC_DIR: $SRC_DIR"
+ls .
+ls ..
 make -j4
 ls ../
 popd
