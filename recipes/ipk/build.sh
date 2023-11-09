@@ -8,12 +8,15 @@ export CXX_INCLUDE_PATH=${PREFIX}/include
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
 
+echo $PREFIX
+cmake .
+mkdir release-build
+pushd release-build
 cmake -DHASH_MAP=USE_TSL_ROBIN_MAP -DCMAKE_CXX_FLAGS="-O3" ..
 make -j4
+ls ../
+popd
 ls .
-ls ..
-cd ..
-ls
 
 cp bin/ipk-aa $PREFIX/ipk-aa
 cp bin/ipk-aa-pos $PREFIX/ipk-aa-pos
