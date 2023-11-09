@@ -11,6 +11,8 @@ source:
   #sha256: {{ sha256 }}
   git_url: https://github.com/phylo42/IPK.git
   git_rev: {{ version }}
+  patches:
+    - 0001_makes_python_wrapper_to_expect_binaries_in_same_directory.patch
 
 build:
   number: 0
@@ -30,10 +32,14 @@ requirements:
     - boost-cpp >=1.67
     - raxml-ng
     - phyml
+    - python3
 
 test:
   commands:
-    - python ipk.py | grep "please provide a path to database"
+    - which ipk-dna
+    - which ipk-aa-pos
+    - which ipk.py
+    - python ipk.py | grep "Usage: ipk.py [OPTIONS] COMMAND [ARGS]..."
 
 about:
   home: https://github.com/phylo42/ipk
@@ -43,6 +49,3 @@ about:
   summary: "IPK is a tool for computing phylo-k-mers for a fixed phylogeny."
   description: "IPK is a tool for computing phylo-k-mers for a fixed phylogeny."
 
-extra:
-  identifiers:
-    - doi:10.1101/2020.06.22.161422
