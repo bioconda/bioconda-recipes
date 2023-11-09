@@ -3,5 +3,5 @@
 mkdir -p $PREFIX/bin
 
 cd src
-make
+make LDFLAGS="-L$PREFIX/lib -O3 -flto"
 cp ../bin/SuSiEx $PREFIX/bin/SuSiEx
