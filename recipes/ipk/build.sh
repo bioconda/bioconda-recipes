@@ -13,11 +13,7 @@ mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
 
 echo "PREFIX:" ${PREFIX}
-cmake .
-echo "CMAKE PASSED"
-mkdir release-build
-pushd release-build
-cmake -DHASH_MAP=USE_TSL_ROBIN_MAP -DCMAKE_CXX_FLAGS="-O3" ..
+cmake -DHASH_MAP=USE_TSL_ROBIN_MAP -DCMAKE_CXX_FLAGS="-O3" 
 echo "CMAKE PASSED"
 echo "SRC_DIR:" ${SRC_DIR}
 pwd
@@ -25,12 +21,11 @@ ls .
 ls ..
 ls ${SRC_DIR}
 cmake --build . --target all
-ls ../
-popd
 ls .
 
-cp release-build/ipk-aa $PREFIX/ipk-aa
-cp release-build/ipk-aa-pos $PREFIX/ipk-aa-pos
-cp release-build/ipk-dna $PREFIX/ipk-dna
+cp ipk/ipk-aa $PREFIX/bin
+cp ipk/ipk-aa-pos $PREFIX/bin
+cp ipk/ipk-dna $PREFIX/bin
+cp ipk.py $PREFIX/bin
 
 chmod +x $PREFIX/bin/ipk-*
