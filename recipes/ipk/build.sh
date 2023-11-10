@@ -12,7 +12,7 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
 
-cmake -DHASH_MAP=USE_TSL_ROBIN_MAP -DCMAKE_CXX_FLAGS="-O3" 
+cmake -DHASH_MAP=USE_TSL_ROBIN_MAP -DCMAKE_CXX_FLAGS="-O3" -DBUILD_SHARED_LIBS=ON  
 cmake --build . --target all
 
 cp ipk/ipk-aa $PREFIX/bin
