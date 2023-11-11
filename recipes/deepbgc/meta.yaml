@@ -15,15 +15,17 @@ build:
   number: 0
   entry_points:
     - deepbgc = deepbgc.main:main
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('deepbgc', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.5
-    - setuptools
-    - numpy
+    - python >=3.6,<3.8
+    - pip
   run:
-    - python >=3.5
+    - python >=3.6,<3.8
+    - argparse
     - biopython >=1.78  # support for structured comments from version 1.70
     - scikit-learn ==0.21.3  # sklearn with random forest compatibility
     - pandas ==0.24.1
@@ -53,4 +55,9 @@ about:
   home: https://github.com/Merck/DeepBGC
   license: MIT
   license_family: MIT
+  license_file: LICENSE
   summary: DeepBGC - Biosynthetic Gene Cluster detection and classification
+
+extra:
+  identifiers:
+    - doi:10.1093/nar/gkz654
