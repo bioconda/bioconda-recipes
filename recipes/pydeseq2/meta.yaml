@@ -1,5 +1,5 @@
 {% set name = "pydeseq2" %}
-{% set version = "0.3.3" %}
+{% set version = "0.4.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,12 +7,14 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pydeseq2-{{ version }}.tar.gz
-  sha256: ee404bf4c92425df56492ed305409c6f7cbc93570cef8cf32b104fe3d7ac7edf
+  sha256: f437f8176783ebedffdb43d987cecabd729f2f1fc42d4da9b34da53b5ee84f7e
 
 build:
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
   number: 0
+  run_exports:
+    - {{ pin_subpackage('pydeseq2', max_pin="x") }}
 
 requirements:
   host:
@@ -20,8 +22,9 @@ requirements:
     - pip
   run:
     - python >=3.8
-    - anndata ==0.8.0
+    - anndata >=0.8.0
     - jupyter
+    - ipython
     - numpy >=1.23.0
     - pandas >=1.4.0
     - scikit-learn >=1.1.0
@@ -41,6 +44,7 @@ about:
   home: https://github.com/owkin/PyDESeq2
   summary: A python implementation of DESeq2.
   license: MIT
+  license_family: MIT
   license_file: LICENSE
 
 extra:
