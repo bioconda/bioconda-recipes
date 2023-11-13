@@ -10,6 +10,10 @@ executors:
     docker:
       - image: cimg/base:2023.06
     resource_class: arm.medium
+  linux-aarch64-bulk:
+    machine:
+      image: ubuntu-2004:current
+    resource_class: arm.medium
 
 jobs: # a basic unit of work in a run
   build_and_test:
@@ -141,6 +145,93 @@ jobs: # a basic unit of work in a run
               --git-range ${CIRCLE_SHA1}~1 ${CIRCLE_SHA1} \
               --fallback build
 
+  bulk_build:
+    parameters:
+      os:
+        type: executor
+      runner:
+        type: integer
+    executor: << parameters.os >>
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - 1e:85:74:42:35:5f:c5:a2:35:c2:ec:b7:80:c0:7c:40
+
+      - checkout
+
+      - run:
+          name: Check for [ci run]
+          command: |
+            commit_message="$(git log --format=oneline -n 1 $CIRCLE_SHA1)"
+            if [[ $commit_message  =~ "[ci run]" ]]; then
+              echo "[ci run] found, continuing."
+            else
+              echo "[ci run] not found, exiting."
+              circleci-agent step halt
+            fi
+
+      - run:
+          name: set git user
+          command: |
+            git config user.name bioconda-bot
+            git config user.email bioconda-bot@users.noreply.github.com
+            git branch --set-upstream-to=origin/$CIRCLE_BRANCH $CIRCLE_BRANCH
+
+      - run:
+          name: Fetch bioconda install script
+          command: wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
+
+      - restore_cache:
+          keys:
+            - bioconda-utils-{{ arch }}-bulk--{{ checksum "install-and-set-up-conda.sh" }}-{{ checksum "configure-conda.sh" }}-{{ checksum "common.sh" }}
+
+      - run:
+          name: Install bioconda-utils
+          command: |
+            sudo mkdir -p /opt/
+            sudo chmod o+rwx /opt
+            bash install-and-set-up-conda.sh
+
+      - save_cache:
+          key: bioconda-utils-{{ arch }}--bulk--{{ checksum "install-and-set-up-conda.sh" }}-{{ checksum "configure-conda.sh" }}-{{ checksum "common.sh" }}
+          paths:
+            - /opt/mambaforge/
+    
+      - run:
+          name: Setup PATH
+          command:
+            echo 'export PATH=/opt/mambaforge/bin:"$PATH"' >> "$BASH_ENV"
+
+      # We reconfigure conda to use the right channel setup.
+      # This has to be done after the cache is restored, because
+      # the channel setup is not cached as it resides in the home directory.
+      # We could use a system-wide (and therefore cached) channel setup,
+      # but mamba does not support that at the time of implementation
+      # (it ignores settings made by --system).
+      - run:
+          name: Configure conda
+          command: bash configure-conda.sh
+
+      # For now, do not upload ARM images to biocontainers: --mulled-upload-target biocontainers
+      # FIXME: For initial testing, the following were removed: 
+      - run:
+          name: Build and upload
+          command: |
+            set -e
+            eval "$(conda shell.bash hook)"
+            conda activate bioconda
+            echo '============'
+            conda info --all
+            conda config --show-sources
+            python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+            echo '============'
+            bioconda-utils build recipes config.yml \
+              --worker-offset << parameters.runner >> --n-workers 6 \
+              --docker --mulled-test --docker-base-image quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch) \
+              --anaconda-upload --record-build-failures  --skiplist-leafs
+            conda clean -y --all
+
+
 workflows:
   build and test (ARM):
     jobs:
@@ -165,3 +256,16 @@ workflows:
               os:
                 #- osx-arm64
                 - linux-aarch64
+
+  Bulk branch (ARM):
+    jobs:
+      - bulk_build:
+          filters:
+            branches:
+              only: bulk
+          matrix:
+            parameters:
+              os: 
+                #- osx-arm64-bulk
+                - linux-aarch64-bulk
+              runner: [0, 1, 2, 3, 4, 5]
