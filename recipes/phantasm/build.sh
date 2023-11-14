@@ -66,3 +66,6 @@ echo "unset LIB_DIR" >> $ACTIVATE_DIR/phantasm.sh
 echo "unset PYVER" >> $ACTIVATE_DIR/phantasm.sh
 echo "unset PHANTASM_DIR" >> $ACTIVATE_DIR/phantasm.sh
 echo "unset PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
+
+# make activate script executable
+chmod a+x $ACTIVATE_DIR/phantasm.sh
