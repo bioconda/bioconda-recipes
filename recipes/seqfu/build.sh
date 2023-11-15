@@ -8,6 +8,15 @@ echo "----------"
 nimble --version
 echo "----------"
 
+echo "GXX: $GXX"
+echo "GCC: $GCC"
+
+# Trying to fix build
+sed -i 's/gcc/$(GCC)/g' Makefile
+sed -i 's/g++/$(GXX)/g' Makefile
+sed -i '1iGCC ?= gcc' Makefile
+sed -i '1iGXX ?= g++' Makefile
+
 if [[ $OSTYPE == "darwin"* ]]; then
   export HOME="/Users/distiller"
   export HOME=`pwd`
