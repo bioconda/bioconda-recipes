@@ -8,10 +8,15 @@ echo "----------"
 nimble --version
 echo "----------"
 
+# Fix zlib
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export CPATH=${PREFIX}/include
+
 echo "GXX: $GXX"
 echo "GCC: $GCC"
 
-# Trying to fix build
+# Trying to fix build when gcc or g++ are required
 sed -i 's/gcc/$(GCC)/g' Makefile
 sed -i 's/g++/$(GXX)/g' Makefile
 sed -i '1iGCC ?= gcc' Makefile
