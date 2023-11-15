@@ -35,7 +35,7 @@ mv $TEMP_FN $PHANTASM_DIR/phantasm.py
 
 # make the phantasm executable
 touch $PHANTASM_EXE
-echo "chmod a+x $PHANTASM_EXE"
+chmod a+x $PHANTASM_EXE
 
 # make an activate script
 mkdir -p $ACTIVATE_DIR
