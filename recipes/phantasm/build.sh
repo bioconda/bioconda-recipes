@@ -33,6 +33,10 @@ mv $TEMP_FN $PARAM_FN
 sed -E "s/^(PHANTASM_PY = ).+$/\1'phantasm'/g" $PHANTASM_DIR/phantasm.py > $TEMP_FN
 mv $TEMP_FN $PHANTASM_DIR/phantasm.py
 
+# make the phantasm executable
+touch $PHANTASM_EXE
+echo "chmod a+x $PHANTASM_EXE"
+
 # make an activate script
 mkdir -p $ACTIVATE_DIR
 
@@ -44,7 +48,7 @@ echo 'export PHANTASM_DIR=$LIB_DIR$PYVER/site-packages/phantasm' >> $ACTIVATE_DI
 echo "export PHANTASM_EXE=$PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
 
 # write instructions to create a phantasm executable
-echo 'echo "#! $(which python3)" | sed "s/ //g" > $PHANTASM_EXE' >> $ACTIVATE_DIR/phantasm.sh
+echo 'echo "#! $(which python3)" | sed "s/ //g" >> $PHANTASM_EXE' >> $ACTIVATE_DIR/phantasm.sh
 echo "echo 'import os, sys, subprocess' >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
 echo "echo -n 'sys.path.append(' >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
 echo 'echo -n "$PHANTASM_DIR" >> $PHANTASM_EXE' >> $ACTIVATE_DIR/phantasm.sh
@@ -58,7 +62,6 @@ echo "echo '    try:' >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
 echo "echo '        subprocess.run(cmd, check=True)' >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
 echo "echo '    except subprocess.CalledProcessError as e:' >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
 echo "echo '        raise RuntimeError(e.stderr)' >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
-echo "chmod a+x $PHANTASM_EXE"
 
 # remove the variables
 echo "unset BIN_DIR" >> $ACTIVATE_DIR/phantasm.sh
