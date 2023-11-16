@@ -72,7 +72,7 @@ for RAWARG in "${@}"; do
     --headless|--output|--image|--structureimage)
       HEADLESS=1
       ;;
-    --help|--help-*|--version)
+    --help|--help-*|--version|-h)
       HELP=1
       ;;
     --gui)
@@ -172,7 +172,7 @@ fi
 JVMARGS=( "${JVMARGS[@]}" "-DCONSOLEWIDTH=${COLUMNS}" )
 
 if [ "${DEBUG}" = 1 ]; then
- echo Shell running: "${JAVA}" "${JVMARGS[@]}" -jar \""${JARPATH}"\" "${ARGS[@]}"
+ echo Shell running: \""${JAVA}"\" \""${JVMARGS[@]}"\" -jar \""${JARPATH}"\" "${ARGS[@]}"
 fi
 
 "${JAVA}" "${JVMARGS[@]}" -jar "${JARPATH}" "${ARGS[@]}"
