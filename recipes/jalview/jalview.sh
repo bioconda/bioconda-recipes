@@ -26,7 +26,6 @@
 ###############################
 
 declare -a ARGS=("${@}")
-ARG1=$1
 
 # this function is because there's no readlink -f in Darwin/macOS
 function readlinkf() {
