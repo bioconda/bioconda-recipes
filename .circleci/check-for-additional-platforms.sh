@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Check to see if any changed recipes have specified the key
+# extra:additional-platforms, and if so, if they match the platform of the
+# currently-running machine.
+
 # arguments
 git_range=$1
 job_name=$2
@@ -16,6 +20,8 @@ build=0
 
 for file in $files; do
     echo $file
+    # To create a properly-formatted yaml that yq can parse, comment out jinja2
+    # variable setting with {% %} and remove variable use with {{ }}.
     additional_platforms=$(cat $file \
     | sed -E 's/(.*)\{%(.*)%\}(.*)/# \1\2\3/g' \
     | sed -E 's/(.*)\{\{(.*)\}\}(.*)/\1\2\3/g' \
