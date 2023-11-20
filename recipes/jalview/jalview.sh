@@ -98,7 +98,9 @@ declare -a JVMARGS=()
 if [ "${ISMACOS}" = 1 ]; then
 # MACOS ONLY
   DIR="$(dirname "$(readlinkf "$0")")"
-  JVMARGS=( "${JVMARGS[@]}" "-Xdock:icon=${DIR}/jalview_logo.png" )
+  if [ -e "${DIR}/jalview_logo.png" ]; then
+    JVMARGS=( "${JVMARGS[@]}" "-Xdock:icon=${DIR}/jalview_logo.png" )
+  fi
 else
 # NOT MACOS
   DIR="$(dirname "$(readlink -f "$0")")"
