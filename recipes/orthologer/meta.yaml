@@ -1,0 +1,72 @@
+{% set version = "3.1.1" %}
+{% set sha256 = "2a5aab39829bc1a51e415560654257a038cbb4aaf3414b412fc3045fe865097f" %}
+
+package:
+  name: orthologer
+  version: {{ version }}
+
+build:
+  number: 0
+    
+source:
+  url: https://data.orthodb.org/v11/download/software/orthologer_{{ version }}.tgz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - cmake
+    - make
+    - libgomp      # [linux]
+    - tclap
+    
+  host:
+    - bash >= 4.3.0
+    - python >=3.4
+    - wget
+    - blast
+    - mmseqs2
+    - diamond >= 2.1.0
+    - biopython
+    - numpy
+  run:
+    - bash >= 4.3.0
+    - python >=3.4
+    - wget
+    - blast
+    - mmseqs2
+    - diamond
+    - biopython
+    - numpy
+    
+test:
+  commands:
+    - busco -h
+    - generate_plot.py -h
+  source_files:
+    # used in run_test.sh
+    - test_data
+
+about:
+  home: https://orthologer.ezlab.org/
+  license: MIT
+  license_file: LICENSE
+  summary: Assessment of assembly completeness using Universal Single Copy Orthologs
+  description: BUSCO provides measures for quantitative assessment of genome
+           assembly, gene set, and transcriptome completeness based on
+           evolutionarily informed expectations of gene content from
+           near-universal single-copy orthologs selected from OrthoDB.
+
+extra:
+  container:
+    # Necessary to allow Busco to download files from the internet when used with Singularity
+    # and default bind paths (see also https://github.com/bioconda/bioconda-recipes/issues/11583).
+    # Should be removed again when the base container is fixed.
+    extended-base: True
+  identifiers:
+    - biotools:busco
+    - doi:10.1093/bioinformatics/btv351
+    - usegalaxy-eu:busco
+  recipe-maintainers:
+    - ftegenfe
