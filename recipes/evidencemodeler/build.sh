@@ -24,7 +24,7 @@ mkdir -p ${PREFIX}/etc/conda/deactivate.d
 
 cp -Rp ${SRC_DIR}/plugins ${SRC_DIR}/PerlLib ${SRC_DIR}/EvmUtils ${SRC_DIR}/EVidenceModeler ${EVM_HOME}
 cp -Rp ${SRC_DIR}/PerlLib ${BINARY_HOME}
-ln -s ${EVM_HOME}/EVidenceModeler ${BINARY_HOME}/EVidenceModeler
+cp -Rp ${EVM_HOME}/{EVidenceModeler,EvmUtils,PerlLib,plugins} ${BINARY_HOME}/
 
 #required ENV variable
 mkdir -p ${PREFIX}/etc/conda/activate.d/
