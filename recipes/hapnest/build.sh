@@ -1,11 +1,9 @@
 #!/bin/bash
 
-#LD_LIBRARY_PATH="" julia
 ln -s "${GCC}" "${BUILD_PREFIX}/gcc"
 
-cp -r $SRC_DIR/synthetic_data/* $PREFIX/bin
-#cp -r $SRC_DIR/scripts $PREFIX
-ln -s $PREFIX/bin/synthetic_data/*  $PREFIX/bin/hapnest
+cp -r $SRC_DIR/* $PREFIX/bin
+ln -s $PREFIX/bin/*  $PREFIX/bin/hapnest
 chmod +x $PREFIX/bin/hapnest
 
 
