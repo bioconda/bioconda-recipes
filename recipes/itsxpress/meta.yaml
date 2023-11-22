@@ -1,15 +1,15 @@
 {% set name = "itsxpress" %}
-{% set version = "1.8.1" %}
+{% set version = "2.0.1" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "d93e70f0a7f0c9f7e62892f3b3ff261d4d6bacb87010d167c983de25f0005ec9" %}
+{% set hash_value = "b5797107ee3f21cbaba0b9625aa931741babdee3eeb5a3218a8b8bc9783e2e72" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://files.pythonhosted.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  url: "https://github.com/USDA-ARS-GBRU/{{ name }}/archive/v{{ version }}.tar.gz"
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
@@ -17,7 +17,9 @@ build:
   number: 0
   entry_points:
     - itsxpress=itsxpress.main:main
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv
+  run_exports:
+    - {{ pin_subpackage('itsxpress', max_pin="x") }}
 
 requirements:
   host:
@@ -27,9 +29,9 @@ requirements:
     - pip
     - python >=3.8
     - biopython >=1.79
-    - bioconda::hmmer =3.1b2
-    - bioconda::bbmap =38.96
-    - bioconda::vsearch =2.21.1
+    - hmmer =3.1b2
+    - vsearch =2.22.1
+    - pyzstd
 
 test:
   imports:
@@ -39,15 +41,15 @@ test:
 
 about:
   home: http://github.com/usda-ars-gbru/itsxpress
-  license: 'CC0 1.0'
+  license: CC0-1.0
   license_family: 'PUBLIC-DOMAIN'
-  # license_file: ''
   summary: 'ITSxpress: Software to rapidly trim the Internally Transcribed Spacer (ITS) region from FASTQ files'
 
 
 extra:
   recipe-maintainers:
     - arivers
+    - seina001
   identifiers:
     - biotools:ITSxpress
     - doi:10.5281/zenodo.1304349
