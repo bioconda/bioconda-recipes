@@ -1,0 +1,37 @@
+{% set name = "pytrf" %}
+{% set version = "1.2.1" %}
+{% set sha256 = "47d201d0cb2dad705f9a4e6030d374878c4b6e30762eefd08f159c28db7402df" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/lmdu/{{ name }}/archive/refs/tags/{{ version }}.tar.gz"
+  sha256: "{{ sha256 }}"
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+  run_exports:
+    - {{ pin_subpackage("pytrf", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - pip
+    - python >=3.6,<3.12
+  run:
+    - python >=3.6,<3.12
+
+test:
+  imports:
+    - pytrf
+
+about:
+  home: "https://github.com/lmdu/pytrf"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "a fast Python package for finding tandem repeat sequences"
