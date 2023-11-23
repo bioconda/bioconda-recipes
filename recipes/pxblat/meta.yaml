@@ -1,6 +1,6 @@
 {% set name = "PxBLAT" %}
-{% set version = "1.1.1" %}
-{% set sha256 = "df8d366c01fc79fa6a5a6200f6e76df5c18666219368404cfd456b49e109c9e0" %}
+{% set version = "1.1.10" %}
+{% set sha256 = "d20b48ac4c761ad26c680cd1a10e7fb22f581212d5221cbfc2bc7f522a6b81d2" %}
 
 package:
   name: {{ name|lower }}
@@ -13,7 +13,9 @@ source:
 build:
   number: 0
   skip: True  # [py < 39]
-  script: {{ PYTHON }} -m pip install . --no-deps --use-pep517 -vvv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - pxblat = pxblat.cli.cli:app
   run_exports:
     - {{ pin_subpackage('pxblat', max_pin="x") }}
 
@@ -24,22 +26,18 @@ requirements:
     - python
     - pip
     - poetry-core >=1.2.0
-    - pybind11 >=2.9.1
+    - pybind11 >2.9.1
     - setuptools >=46.4
-    - htslib
-    - openssl
-    - zlib
   run:
     - python
     - loguru
+    - pybind11 >=2.10.4
     - rich
     - pysimdjson
     - biopython
     - typer
     - deprecated
     - mashumaro
-    - numpy >=1.24.3
-    - gevent
     - urllib3
 
 test:
