@@ -1,4 +1,4 @@
-# Install resolve_paralogs
+# Install paragone
 $PYTHON -m pip install --no-deps --ignore-installed .
 
 # Install Net::SSLeay
