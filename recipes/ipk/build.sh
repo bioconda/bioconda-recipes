@@ -13,12 +13,14 @@ mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
 
 cmake -DHASH_MAP=USE_TSL_ROBIN_MAP -DCMAKE_CXX_FLAGS="-O3" -DBUILD_SHARED_LIBS=ON  
-cmake --build . --target all
+cmake --build . --target all --prefix=$PREFIX
 
-cp ipk/ipk-aa $PREFIX/bin
-cp ipk/ipk-aa-pos $PREFIX/bin
-cp ipk/ipk-dna $PREFIX/bin
-cp ipk.py $PREFIX/bin
+ls "$PREFIX"
+
+#cp ipk/ipk-aa $PREFIX/bin
+#cp ipk/ipk-aa-pos $PREFIX/bin
+#cp ipk/ipk-dna $PREFIX/bin
+#cp ipk.py $PREFIX/bin
 
 chmod +x $PREFIX/bin/ipk-aa
 chmod +x $PREFIX/bin/ipk-dna
