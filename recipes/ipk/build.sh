@@ -13,7 +13,7 @@ mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
 
 cmake -B build -DHASH_MAP=USE_TSL_ROBIN_MAP -DCMAKE_CXX_FLAGS="-O3" -DBUILD_SHARED_LIBS=ON --install-prefix=$PREFIX
-cmake --build . --target all
+cmake --build build --target all
 cmake --install build
 
 ls "$PREFIX"
