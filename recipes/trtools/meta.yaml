@@ -1,5 +1,5 @@
 {% set name = "trtools" %}
-{% set version = "5.0.2" %}
+{% set version = "5.1.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,9 +7,9 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: bdfb102dc207b6bade1859b394bf65c44f380c5d52b2dbefe52506cf0b563b64
+  sha256: 22472f1983614c15780d7ec6de845095a2a7f6cb4be049942f38f6f9b1a7e359
 
-build: 
+build:
   noarch: python
   entry_points:
     - dumpSTR=trtools.dumpSTR:run
@@ -18,8 +18,12 @@ build:
     - compareSTR=trtools.compareSTR:run
     - qcSTR=trtools.qcSTR:run
     - associaTR=trtools.associaTR:run
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+    - prancSTR = trtools.prancSTR:run
+    - simTR = trtools.simTR:run
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
   number: 0
+  run_exports:
+    - {{ pin_subpackage('trtools', max_pin="x") }}
 
 requirements:
   host:
@@ -36,6 +40,7 @@ requirements:
     - scikit-learn >=0.23.1
     - scipy >=1.4.1
     - statsmodels >=0.13.5
+    - pyfaidx
 
 test:
   imports:
@@ -65,7 +70,7 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE.txt
-  summary: Toolkit for genome-wide analysis of tandem repeats https://trtools.readthedocs.io/ 
+  summary: Toolkit for genome-wide analysis of tandem repeats
   doc_url: https://trtools.readthedocs.io/
   dev_url: https://github.com/gymreklab/TRTools
 
