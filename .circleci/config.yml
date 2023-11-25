@@ -7,10 +7,6 @@ executors:
   #     xcode: 14.2.0 # indicate your selected version of Xcode
   #   resource_class: macos.m1.large.gen1
   linux-aarch64:
-    docker:
-      - image: cimg/base:2023.06
-    resource_class: arm.medium
-  linux-aarch64-bulk:
     machine:
       image: ubuntu-2204:current
     resource_class: arm.medium
@@ -69,7 +65,10 @@ jobs: # a basic unit of work in a run
             source /opt/mambaforge/etc/profile.d/conda.sh
             source /opt/mambaforge/etc/profile.d/mamba.sh
             mamba activate bioconda
-            bioconda-utils build recipes config.yml --git-range origin/master HEAD
+            bioconda-utils build recipes config.yml \
+                --docker --mulled-test \
+                --docker-base-image quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch) \
+                --git-range origin/master HEAD
 
       - run:
           name: Prepare artifacts
@@ -81,6 +80,18 @@ jobs: # a basic unit of work in a run
             for n in index.html channeldata.json linux-aarch64 linux-64 osx-64 noarch; do
               cp -rv $n /tmp/artifacts/packages || true
             done
+            if command -V docker >/dev/null; then
+              mkdir -p /tmp/artifacts/images
+              cd /tmp/artifacts/images
+              docker image ls --format='{{.Repository}}:{{.Tag}}' | \
+                { grep biocontainers || true ; } | \
+                xargs -n1 -P4 bash -c '
+                  test -n "${1+x}" || exit 0
+                  echo "Start compressing docker image ${1} ..."
+                  docker save "${1}" | gzip -c > "${1##*/}.tar.gz"
+                  echo "Finished compressing docker image ${1} ."
+                  ' --
+            fi
             ) || true
 
       - store_artifacts:
@@ -139,7 +150,6 @@ jobs: # a basic unit of work in a run
             source /opt/mambaforge/etc/profile.d/conda.sh
             source /opt/mambaforge/etc/profile.d/mamba.sh
             mamba activate bioconda
-            # TODO we need to update bioconda-utils with support for retrieving circleci artifacts from above
             bioconda-utils handle-merged-pr recipes config.yml \
               --repo bioconda/bioconda-recipes \
               --git-range ${CIRCLE_SHA1}~1 ${CIRCLE_SHA1} \
@@ -213,7 +223,6 @@ jobs: # a basic unit of work in a run
           command: bash configure-conda.sh
 
       # For now, do not upload ARM images to biocontainers: --mulled-upload-target biocontainers
-      # FIXME: For initial testing, the following were removed: 
       - run:
           name: Build and upload
           command: |
@@ -266,6 +275,6 @@ workflows:
           matrix:
             parameters:
               os: 
-                #- osx-arm64-bulk
-                - linux-aarch64-bulk
+                #- osx-arm64
+                - linux-aarch64
               runner: [0, 1, 2, 3, 4, 5]
