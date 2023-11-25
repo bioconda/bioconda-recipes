@@ -221,7 +221,6 @@ jobs: # a basic unit of work in a run
           name: Configure conda
           command: bash configure-conda.sh
 
-      # For now, do not upload ARM images to biocontainers: --mulled-upload-target biocontainers
       - run:
           name: Build and upload
           command: |
@@ -236,7 +235,10 @@ jobs: # a basic unit of work in a run
             bioconda-utils build recipes config.yml \
               --worker-offset << parameters.runner >> --n-workers 6 \
               --docker --mulled-test --docker-base-image quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch) \
-              --anaconda-upload --record-build-failures  --skiplist-leafs
+              --anaconda-upload \
+              --mulled-upload-target biocontainers \
+              --record-build-failures \
+              --skiplist-leafs
             conda clean -y --all
 
 
