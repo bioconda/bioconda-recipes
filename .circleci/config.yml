@@ -112,21 +112,12 @@ jobs: # a basic unit of work in a run
           name: Fetch bioconda install script
           command: wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
 
-      - restore_cache:
-          keys:
-            - bioconda-utils-{{ arch }}-{{ checksum "install-and-set-up-conda.sh" }}-{{ checksum "configure-conda.sh" }}-{{ checksum "common.sh" }}
-
       - run:
           name: Install bioconda-utils
           command: |
             sudo mkdir -p /opt
             sudo chmod o+rwx /opt
             bash install-and-set-up-conda.sh
-
-      - save_cache:
-          key: bioconda-utils-{{ arch }}-{{ checksum "install-and-set-up-conda.sh" }}-{{ checksum "configure-conda.sh" }}-{{ checksum "common.sh" }}
-          paths:
-            - /opt/mambaforge
 
       - run:
           name: Setup PATH
