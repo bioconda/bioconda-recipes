@@ -1,7 +1,7 @@
 #! /bin/bash
 mkdir -p ${PREFIX}/bin
 
-gcc $SRC_DIR/subcontig.c -o subcontig
+$CC $SRC_DIR/subcontig.c -o subcontig
 
 chmod +x $SRC_DIR/PreProcessR
 chmod +x $SRC_DIR/subcontig
