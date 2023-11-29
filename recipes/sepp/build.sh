@@ -8,7 +8,13 @@ echo "${PREFIX}/share/sepp/sepp" > home.path
 cp home.path ${PREFIX}/lib/python*/site-packages/
 mkdir -p $PREFIX/share/sepp/sepp
 # ... and holds correct path names
-mv -v sepp-package/sepp/default.main.config $PREFIX/share/sepp/sepp/main.config
+
+# mv -v sepp-package/sepp/default.main.config $PREFIX/share/sepp/sepp/main.config
+# USE DEFAULT UPP CONFIG FILE - then change the paths in it
+cp sepp-package/sepp/default.main.config $PREFIX/share/sepp/sepp/upp.config
+# change the paths
+sed -i 's/~\//$PREFIX\/share/' $PREFIX/share/sepp/sepp/upp.config
+
 # copy upp config, as it's still needed
 cp ./.sepp/upp.config $PREFIX/share/sepp/sepp/upp.config
 
