@@ -1,5 +1,6 @@
-{% set version = "3.6.3" %}
-{% set sha256 = "81e787f447f869ac89b16bc0f4c22fc2e65843fc99be004792cd946e2026ccfc" %}
+{% set version = "4.0.0.dev4" %}
+{% set name = "ms2pip" %}
+{% set sha256 = "3342bca48d5163a2fc833065ef1fc43bd349eb3ea32239fb8b74bc759b98ea3d" %}
 
 package:
   name: "ms2pip"
@@ -11,7 +12,9 @@ source:
 
 build:
   number: 0
-  skip: True  # [py27 or osx]
+  skip: True  # [py < 37]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
   entry_points:
     - ms2pip=ms2pip.__main__:main
     - fasta2speclib=fasta2speclib.fasta2speclib:main
@@ -25,19 +28,27 @@ requirements:
     - {{ compiler('c') }}
   host:
     - cython >=0.29.2,<1
-    - numpy >=1.15,<2
+    - numpy
     - pip
-    - python
+    - python >=3.8
+    - spectrum_utils >=0.4 # [linux]
   run:
-    - biopython >=1.74,<2
-    - numpy >=1.16,<2
-    - pandas >=0.24,<2
-    - pyteomics >=3.5,<5
-    - python
-    - scipy >=1.2,<2
+    - python >=3.8
+    - {{ pin_compatible('numpy') }}
+    - pandas >=1.0
+    - pyteomics >=3.5
+    - tqdm >=4
     - pytables >=3.4
-    - tqdm >=4,<5
-    - tomlkit >=0.5.11,<1
+    - tomlkit >=0.5
+    - click >=7
+    - xgboost >=1.3
+    - matplotlib-base >=3.0
+    - lxml >=4
+    - rich >=13
+    - pydantic >=1.10,<2
+    - psm-utils
+    - werkzeug >=2
+    - pyarrow
 
 test:
   imports:

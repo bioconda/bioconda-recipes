@@ -1,6 +1,6 @@
-{% set version = "3.0.0" %}
+{% set version = "3.8.0" %}
 {% set name = "OmnipathR" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.17" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,20 +8,22 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 2a712ed5642016861e3c4968b394aeec
+  md5: 5026627a035e201129c1765133a2c3e4
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   noarch: generic
-# Suggests: BiocStyle, dnet, ggplot2, ggraph, gprofiler2, knitr, mlrMBO, parallelMap, ParamHelpers, rmarkdown, smoof, testthat
+# Suggests: BiocStyle, biomaRt, bookdown, dnet, ggplot2, ggraph, gprofiler2, knitr, mlrMBO, parallelMap, ParamHelpers, Rgraphviz, smoof, supraHex, testthat
 requirements:
   host:
     - r-base
     - r-checkmate
+    - r-crayon
     - r-curl
     - r-digest
     - r-dplyr
@@ -34,18 +36,22 @@ requirements:
     - r-progress
     - r-purrr
     - r-rappdirs
-    - r-readr
+    - 'r-readr >=2.0.0'
     - r-readxl
     - r-rlang
+    - r-rmarkdown
+    - r-rvest
     - r-stringr
     - r-tibble
     - r-tidyr
     - r-tidyselect
+    - r-withr
     - r-xml2
     - r-yaml
   run:
     - r-base
     - r-checkmate
+    - r-crayon
     - r-curl
     - r-digest
     - r-dplyr
@@ -58,20 +64,22 @@ requirements:
     - r-progress
     - r-purrr
     - r-rappdirs
-    - r-readr
+    - 'r-readr >=2.0.0'
     - r-readxl
     - r-rlang
+    - r-rmarkdown
+    - r-rvest
     - r-stringr
     - r-tibble
     - r-tidyr
     - r-tidyselect
+    - r-withr
     - r-xml2
     - r-yaml
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-    - rm -rf omnipathr-log
-
+    - '$R -e "options(omnipath.logfile=''none''); library(''{{ name }}'')"'
+    - find /tmp -name omnipathr-log -exec rm -rf {} +
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'MIT + file LICENSE'

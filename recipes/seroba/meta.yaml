@@ -9,30 +9,44 @@ package:
 source:
   url: https://github.com/sanger-pathogens/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256sum }}
+  patches:
+    - default_db.patch
+    - kmc_memory.patch
+    - temp_dir_path.patch
 
 build:
-  number: 0
+  number: 1
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
 
 requirements:
   host:
     - python >=3
     - pip
     - setuptools
-  run:
-    - python >=3
-    - setuptools
-    - kmc >=3.0
-    - mummer
+    - ariba >=2.9.1
+    - bcftools <=1.14
+    - biopython >=1.68,<1.78  # seroba 1.0.2 and earlier use Bio.Alphabet, removed in biopython 1.78
     - bowtie2
     - cd-hit
-    - ariba >=2.9.1
-    - pymummer >=0.10.2
-    - biopython >=1.68,<1.78  # seroba 1.0.2 and earlier use Bio.Alphabet, removed in biopython 1.78
-    - pyyaml >=3.12
+    - kmc >=3.2.1
+    - mummer
     - pyfastaq >=3.14.0
-    - pysam >=0.15.3 # older versions have wrong openssl pinning
+    - pymummer >=0.11.0
+    - pysam >=0.15.3,<=0.18.0 # older versions have wrong openssl pinning
+    - pyyaml >=3.12
+  run:
+    - python >=3
+    - ariba >=2.9.1
+    - bcftools <=1.14
+    - biopython >=1.68,<1.78  # seroba 1.0.2 and earlier use Bio.Alphabet, removed in biopython 1.78
+    - bowtie2
+    - cd-hit
+    - kmc >=3.2.1
+    - mummer
+    - pyfastaq >=3.14.0
+    - pymummer >=0.11.0
+    - pysam >=0.15.3,<=0.18.0 # older versions have wrong openssl pinning
+    - pyyaml >=3.12
 
 test:
   commands:
@@ -50,6 +64,6 @@ about:
       You can use SeroBA to download references from (https://github.com/phe-bioinformatics/PneumoCaT) 
       to do identify the capsular type of Streptococcus pneumoniae.
 
-extra:
+extra:  
   skip-lints:
     - uses_setuptools  # seroba uses pkg_resources

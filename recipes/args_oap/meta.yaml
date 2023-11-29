@@ -1,0 +1,46 @@
+{% set name = "args_oap" %}
+{% set version = "3.2.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/xinehc/args_oap/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: de53ff4a1a69b2c225389586284ca977814420692f12aba6d3692228d808c5aa
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('args_oap', max_pin='x.x') }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+  run:
+    - python >=3.7
+    - diamond >=2.0.15
+    - samtools >=1.15
+    - blast >=2.12
+    - bwa >=0.7.17
+    - pandas
+test:
+    imports:
+      - args_oap
+    commands:
+      - args_oap -h
+
+about:
+  home: https://github.com/xinehc/args_oap
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "ARGs-OAP: Online Analysis Pipeline for Antibiotic Resistance Genes Detection from Metagenomic Data Using an Integrated Structured ARG Database"
+
+extra:
+  recipe-maintainers:
+    - xiaole99
+    - xinehc

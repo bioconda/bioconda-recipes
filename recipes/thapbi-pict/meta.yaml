@@ -1,5 +1,5 @@
 {% set name = "thapbi-pict" %}
-{% set version = "0.10.1" %}
+{% set version = "1.0.5" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name | replace("-", "_") }}/{{ name | replace("-", "_") }}-{{ version }}.tar.gz
-  sha256: 24d72d91f2ebb1276b9d2c5988a5310fa303aef14f9090e2c817f04fe6aaa738
+  sha256: c7e42668397ac37b869b2c5774e721635e892ebb99eefc014d634b090d9f7c08
 
 build:
   noarch: python
@@ -15,26 +15,30 @@ build:
   entry_points:
     - thapbi_pict = thapbi_pict.__main__:main
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.6
+    - python >=3.7
   run:
     # Python
+    - biom-format >=2.1.14
     - biopython >=1.73
-    - cutadapt >=3.4
-    - matplotlib-base
-    - networkx >=2.4
+    - cutadapt >=4.0
+    - matplotlib-base >=3.7
+    - networkx >=2.4,!=2.8.3,!=2.8.4
     - pydot
-    - python >=3.6
-    - python-levenshtein
+    - python >=3.7
+    - rapidfuzz >=2.4.0
     - sqlalchemy
     - xlsxwriter
     # Command line
     - blast
-    - flash
+    - flash >=1.2.11
     - graphviz
+    - vsearch
 
 test:
   imports:

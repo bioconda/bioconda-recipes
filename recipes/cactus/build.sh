@@ -3,6 +3,8 @@
 # setup environment variables
 export kyotoTycoonIncl="-I${PREFIX}/include -DHAVE_KYOTO_TYCOON=1 -I-I${PREFIX}/lib"
 export kyotoTycoonLib="-L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib -lkyototycoon -lkyotocabinet -lz -lpthread -lm -lstdc++ -llzo2"
+export CFLAGS="$CFLAGS -fcommon"
+export CXXFLAGS="$CXXFLAGS -fcommon"
 
 # some makefiles don't use variables and call gcc or c++/g++. The conda executables have different names
 GCC_PATH=$(dirname "${CC}")

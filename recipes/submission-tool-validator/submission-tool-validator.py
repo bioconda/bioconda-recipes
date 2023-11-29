@@ -14,7 +14,7 @@ from os import access
 from os import getenv
 from os import X_OK
 
-jar_file = 'submission-tool-validator-1.0.5-bin.jar'
+jar_file = 'submission-tool-validator-1.0.7-bin.jar'
 
 
 default_jvm_mem_opts = ['-Xms1g', '-Xmx4g']

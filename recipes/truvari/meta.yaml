@@ -1,35 +1,51 @@
-{% set version = "0.1.2018.08.10" %}
-{% set revision = "4b2b314" %}
-{% set hash = "3c41f1823f7a54a3c963261f492a012d90e31d94ff72251bfffac3bde886c0f1" %}
+{% set name = "truvari" %}
+{% set version = "4.1.0" %}
+{% set sha256 = "c30ddee89d0a7107fb0638977cf52aa9751e2f666f109d57026204ca66310ea4" %}
 
 package:
-  name: truvari
+  name: {{ name|lower }}
   version: {{ version }}
 
-build:
-  noarch: generic
-  number: 2
-
 source:
-  url: https://github.com/spiralgenetics/truvari/archive/{{ revision }}.tar.gz
-  sha256: {{ hash }}
-  patches:
-    - no_ref.patch
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/Truvari-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv
+  entry_points:
+    - truvari = truvari.__main__:main
+  run_exports:
+    - {{ pin_subpackage('truvari', max_pin="x") }}
 
 requirements:
+  host:
+    - python >=3.6
+    - pip
   run:
-    - python <3
-    - pyvcf
-    - python-levenshtein 
-    - intervaltree
-    - progressbar2
-    - pyfaidx
+    - python >=3.6
+    - pywfa >=0.5.1
+    - rich >=12.5.1
+    - python-edlib >=1.3.9
+    - pysam >=0.15.2
+    - intervaltree >=3.0.2
+    - joblib >=1.2.0
+    - numpy
+    - pytabix
+    - bwapy
+    - pandas
+    - mafft
 
 test:
+  imports:
+    - truvari
   commands:
     - truvari --help
 
 about:
-  home: https://github.com/spiralgenetics/truvari
-  license: MIT
+  home: https://github.com/ACEnglish/truvari
   summary: 'Structural variant comparison tool for VCFs'
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
