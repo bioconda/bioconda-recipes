@@ -6,18 +6,44 @@ package:
 
 source:
   url: https://github.com/KoslickiLab/YACHT/releases/download/v{{ version }}/yacht-{{ version }}.tar.gz
-  sha256: 148125ed167b5837dded498a8f43c391d9f233c4111615cf8051a998cafac9cb
+  
 
 build:
-  number: 0
-  noarch: generic
+  number: 1
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-cache-dir -vvv"
+  script_env:
+    - PYTHON
+  post-link: post-link.sh
   run_exports:
     - {{ pin_subpackage('yacht', max_pin="x") }}
 
 requirements:
+  build:
+    - python
+    - setuptools
   host:
     - python >3.6
     - pip
+  run:
+    - python >3.6
+    - gcc
+    - sourmash >=4.8.3,<5
+    - rust
+    - scipy
+    - numpy
+    - pandas
+    - scikit-learn
+    - codecov
+    - pytest
+    - pytest-cov
+    - loguru
+    - maturin >=1,<2
+    - tqdm
+    - pip
+    - biom-format
+    - pytaxonkit
+    - openpyxl
 
 test:
   commands:
