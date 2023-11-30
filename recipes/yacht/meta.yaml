@@ -18,18 +18,28 @@ build:
 
 requirements:
   build:
-    - {{compiler('c')}}
-    - {{compiler('rust')}}
+    - python                              # [build_platform != target_platform]
+    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+    - crossenv                            # [build_platform != target_platform]
+    - maturin >=1.0,<2.0                  # [build_platform != target_platform]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - posix                               # [win]
+    - make                                # [unix]
+    - cargo-bundle-licenses
+    - libclang                            # [unix]
+    - clangdev                            # [unix]
+    - xz
   host:
     - python
+    - maturin >=1.1.0,<2
     - pip
-    - cmake
-    - rust
-    - libclang # [unix]
-    - llvm
-    - clangdev # [unix]
-    - maturin
   run:
+    - python
+    - xz
+    - libstdcxx-ng
+    - libgcc-ng
     - python >3.6
     - gcc
     - sourmash >=4.8.3,<5
