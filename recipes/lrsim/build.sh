@@ -2,7 +2,7 @@
 
 set -eux -o pipefail
 
-rm DWGSIMSrc/samtools/bcftools/*.[oa]
+rm -f DWGSIMSrc/samtools/bcftools/*.[oa]
 bash make.sh
 
 mkdir -p $PREFIX/share/lrsim
