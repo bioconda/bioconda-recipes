@@ -1,0 +1,41 @@
+{% set name = "LRSIM" %}
+{% set version = "1.0" %}
+{% set sha256 = "89623fba2ce624da4e2c8ce8a99b1a46eb3bc03a8c38044c64f4b8a0d0d9721e" %}
+
+package:
+  name: {{ name | lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/aquaskyline/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+
+test:
+  commands:
+    - "pbsim 2>&1 | grep -q 'USAGE: pbsim'"
+
+about:
+  home: https://github.com/aquaskyline/LRSIM
+  license: MIT
+  license_file: LICENSE
+  summary: "Simulator for 10X Genomics Linked Reads"
+
+extra:
+  recipe-maintainers:
+    - notestaff
+  identifiers:
+    - doi:10.1016/j.csbj.2017.10.002
+    - doi:10.5281/zenodo.808913
+
