@@ -15,5 +15,9 @@ cp 4M-with-alts-february-2016.txt $PREFIX/share/lrsim/
                                     
 mkdir -p $PREFIX/bin
 echo "#! /usr/bin/env bash" >> $PREFIX/bin/lrsim
+echo "set -eux -o pipefail" >> $PREFIX/bin/lrsim
 echo "perl $PREFIX/share/lrsim/simulateLinkedReads.pl \"\$@\"" >> $PREFIX/bin/lrsim
 chmod +x $PREFIX/bin/lrsim
+
+cat $PREFIX/bin/lrsim
+
