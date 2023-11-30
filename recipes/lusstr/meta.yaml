@@ -12,9 +12,11 @@ source:
 build:
     noarch: python
     entry_points:
-        - lusstr = lusSTR.__main__:main
-    script: python -m pip install --no-deps --ignore-installed .
+        - lusstr = lusSTR.cli:main
+    script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv
     number: 0
+    run_exports:
+        - {{ pin_subpackage('lusstr', max_pin="x.x") }}
 
 requirements:
     host:
@@ -25,8 +27,9 @@ requirements:
         - pandas >=1.0,<2.0
         - xlrd >=1.0,<2.0
         - openpyxl >=3.0.6
-        - snakemake >=7.22.0
+        - snakemake-minimal >=7.22.0
         - pyyaml >=6.0
+        - matplotlib-base >=3.5.3
 
 test:
     imports:
@@ -41,6 +44,7 @@ about:
     license_family: BSD
     summary: Tool for converting NGS sequence data of forensic STR loci to various annotation styles
     dev_url: https://www.github.com/bioforensics/lusSTR
+    license_file: LICENSE.txt
 
 extra:
     recipe-maintainers:
