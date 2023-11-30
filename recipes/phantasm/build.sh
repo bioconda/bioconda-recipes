@@ -48,7 +48,7 @@ echo 'export PHANTASM_DIR=$LIB_DIR$PYVER/site-packages/phantasm' >> $ACTIVATE_DI
 echo "export PHANTASM_EXE=$PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
 
 # write instructions to create a phantasm executable
-echo 'echo "$(which python3)" | sed "s/ //g" >> $PHANTASM_EXE' >> $ACTIVATE_DIR/phantasm.sh
+echo 'echo "$(which python3)" >> $PHANTASM_EXE' >> $ACTIVATE_DIR/phantasm.sh
 echo "echo 'import os, sys, subprocess' >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
 echo "echo -n 'sys.path.append(' >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
 echo 'echo -n "$PHANTASM_DIR" >> $PHANTASM_EXE' >> $ACTIVATE_DIR/phantasm.sh
