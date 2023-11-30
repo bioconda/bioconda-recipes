@@ -34,7 +34,7 @@ sed -E "s/^(PHANTASM_PY = ).+$/\1'phantasm'/g" $PHANTASM_DIR/phantasm.py > $TEMP
 mv $TEMP_FN $PHANTASM_DIR/phantasm.py
 
 # make the phantasm executable
-touch $PHANTASM_EXE
+echo -n "#!" > $PHANTASM_EXE
 chmod a+x $PHANTASM_EXE
 
 # make an activate script
@@ -48,7 +48,7 @@ echo 'export PHANTASM_DIR=$LIB_DIR$PYVER/site-packages/phantasm' >> $ACTIVATE_DI
 echo "export PHANTASM_EXE=$PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
 
 # write instructions to create a phantasm executable
-echo 'echo "#! $(which python3)" | sed "s/ //g" >> $PHANTASM_EXE' >> $ACTIVATE_DIR/phantasm.sh
+echo 'echo "$(which python3)" | sed "s/ //g" >> $PHANTASM_EXE' >> $ACTIVATE_DIR/phantasm.sh
 echo "echo 'import os, sys, subprocess' >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
 echo "echo -n 'sys.path.append(' >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
 echo 'echo -n "$PHANTASM_DIR" >> $PHANTASM_EXE' >> $ACTIVATE_DIR/phantasm.sh
