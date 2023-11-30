@@ -2,11 +2,18 @@
 
 set -eux -o pipefail
 
-outdir=$PREFIX/data
-mkdir -p $outdir
-cp -R ./data/* $outdir/
+rm DWGSIMSrc/samtools/bcftools/*.[oa]
+bash make.sh
 
-autoreconf -fi
-./configure --prefix="${PREFIX}"
-make
-make install
+mkdir -p $PREFIX/share/lrsim
+LRSIM_PROGS="simulateLinkedReads.pl dwgsim SURVIVOR msort extractReads samtools faFilter.pl"
+LRSIM_FILES="${LRSIM_PROGS} 4M-with-alts-february-2016.txt"
+chmod u+x "${LRSIM_PROGS}"
+cp "${LRSIM_FILES}" $PREFIX/share/lrsim/
+                                    
+mkdir -p $PREFIX/bin
+echo "#! /usr/bin/env bash" >> $PREFIX/bin/lrsim
+echo "perl $PREFIX/share/lrsim/simulateLinkedReads.pl \"\$@\"" >> $PREFIX/bin/lrsim
+chmod +x $PREFIX/bin/lrsim
+
+
