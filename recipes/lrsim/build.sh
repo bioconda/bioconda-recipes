@@ -15,5 +15,3 @@ mkdir -p $PREFIX/bin
 echo "#! /usr/bin/env bash" >> $PREFIX/bin/lrsim
 echo "perl $PREFIX/share/lrsim/simulateLinkedReads.pl \"\$@\"" >> $PREFIX/bin/lrsim
 chmod +x $PREFIX/bin/lrsim
-
-
