@@ -34,41 +34,59 @@ sed -E "s/^(PHANTASM_PY = ).+$/\1'phantasm'/g" $PHANTASM_DIR/phantasm.py > $TEMP
 mv $TEMP_FN $PHANTASM_DIR/phantasm.py
 
 # make the phantasm executable
-echo -n "#!" > $PHANTASM_EXE
+touch $PHANTASM_EXE
 chmod a+x $PHANTASM_EXE
 
 # make an activate script
 mkdir -p $ACTIVATE_DIR
 
 # export variables for the activate script
-echo "export BIN_DIR=$BIN_DIR" > $ACTIVATE_DIR/phantasm.sh
-echo "export LIB_DIR=$PREFIX/lib/python" >> $ACTIVATE_DIR/phantasm.sh
-echo 'export PYVER=$(python3 --version|sed -E "s/^\S+ ([0-9]+\.[0-9]+)\..+$/\1/g")' >> $ACTIVATE_DIR/phantasm.sh
-echo 'export PHANTASM_DIR=$LIB_DIR$PYVER/site-packages/phantasm' >> $ACTIVATE_DIR/phantasm.sh
-echo "export PHANTASM_EXE=$PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
+cat <<End > $ACTIVATE_DIR/phantasm.sh
+export BIN_DIR=$BIN_DIR
+export LIB_DIR=$PREFIX/lib/python
+export PHANTASM_EXE=$PHANTASM_EXE
+End
 
-# write instructions to create a phantasm executable
-echo 'echo " /usr/bin/env python3" >> $PHANTASM_EXE' >> $ACTIVATE_DIR/phantasm.sh
-echo "echo 'import os, sys, subprocess' >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
-echo "echo -n 'sys.path.append(' >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
-echo 'echo -n "$PHANTASM_DIR" >> $PHANTASM_EXE' >> $ACTIVATE_DIR/phantasm.sh
-echo "echo \"')\" >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
-echo "echo -n 'if __name__ == ' >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
-echo "echo \"'__main__':\" >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
-echo "echo -n '    cmd = [' >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
-echo "echo \"'python3', os.path.join('$PHANTASM_DIR', 'phantasm.py')]\" >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
-echo "echo '    cmd.extend(sys.argv[1:])' >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
-echo "echo '    try:' >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
-echo "echo '        subprocess.run(cmd, check=True)' >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
-echo "echo '    except subprocess.CalledProcessError as e:' >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
-echo "echo '        raise RuntimeError(e.stderr)' >> $PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
+# PYVER and PHANTASM_DIR need to be defined upon activation
+cat <<\End >> $ACTIVATE_DIR/phantasm.sh
+export PYVER=$(python3 --version|sed -E "s/^\S+ ([0-9]+\.[0-9]+)\..+$/\1/g")
+export PHANTASM_DIR=$LIB_DIR$PYVER/site-packages/phantasm
+End
 
-# remove the variables
-echo "unset BIN_DIR" >> $ACTIVATE_DIR/phantasm.sh
-echo "unset LIB_DIR" >> $ACTIVATE_DIR/phantasm.sh
-echo "unset PYVER" >> $ACTIVATE_DIR/phantasm.sh
-echo "unset PHANTASM_DIR" >> $ACTIVATE_DIR/phantasm.sh
-echo "unset PHANTASM_EXE" >> $ACTIVATE_DIR/phantasm.sh
+# start building the python executable
+cat <<End >> $ACTIVATE_DIR/phantasm.sh
+echo "#!/usr/bin/env python3" >> $PHANTASM_EXE
+echo "import os, sys, subprocess" >> $PHANTASM_EXE
+End
+
+# $PHANTASM_DIR needs to be evaluated as string literal
+cat <<\End >> $ACTIVATE_DIR/phantasm.sh
+echo "sys.path.append('$PHANTASM_DIR')" >> $PHANTASM_EXE
+End
+
+# continue building python executable
+cat <<End >> $ACTIVATE_DIR/phantasm.sh
+echo "if __name__ == '__main__'": >> $PHANTASM_EXE
+End
+
+# PHANTASM_DIR needs to be evalutated as a string literal
+cat <<\End >> $ACTIVATE_DIR/phantasm.sh
+echo "    cmd = ['python3', os.path.join('$PHANTASM_DIR', 'phantasm.py')]" >> $PHANTASM_EXE
+End
+
+# finish building python executable and unset variables
+cat <<End >> $ACTIVATE_DIR/phantasm.sh
+echo "    cmd.extend(sys.argv[1:])" >> $PHANTASM_EXE
+echo "    try:" >> $PHANTASM_EXE
+echo "        subprocess.run(cmd, check=True)" >> $PHANTASM_EXE
+echo "    except subprocess.CalledProcessError as e:" >> $PHANTASM_EXE
+echo "        raise RuntimeError(e.stderr)" >> $PHANTASM_EXE
+unset BIN_DIR
+unset LIB_DIR
+unset PYVER
+unset PHANTASM_DIR
+unset PHANTASM_EXE
+End
 
 # make activate script executable
 chmod a+x $ACTIVATE_DIR/phantasm.sh
