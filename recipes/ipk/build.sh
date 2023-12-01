@@ -17,6 +17,7 @@ cmake --build build --target all
 cmake --install build
 
 ls "$PREFIX"
+ls "$PREFIX/*"
 
 #cp ipk/ipk-aa $PREFIX/bin
 #cp ipk/ipk-aa-pos $PREFIX/bin
