@@ -16,16 +16,11 @@ cmake -B build -DHASH_MAP=USE_TSL_ROBIN_MAP -DCMAKE_CXX_FLAGS="-O3" -DBUILD_SHAR
 cmake --build build --target all
 cmake --install build
 
-ls
-ls "$PREFIX"
-ls "$PREFIX"/bin
-ls build
 ls build/ipk
 
-#cp ipk/ipk-aa $PREFIX/bin
-#cp ipk/ipk-aa-pos $PREFIX/bin
-#cp ipk/ipk-dna $PREFIX/bin
-#cp ipk.py $PREFIX/bin
+cp build/ipk/ipk-aa $PREFIX/bin
+cp build/ipk/ipk-aa-pos $PREFIX/bin
+cp build/ipk/ipk-dna $PREFIX/bin
 
 chmod +x $PREFIX/bin/ipk-aa
 chmod +x $PREFIX/bin/ipk-dna
