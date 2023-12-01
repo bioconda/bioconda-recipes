@@ -28,13 +28,11 @@ chmod +x $PREFIX/bin/lrsim
 cat $PREFIX/bin/lrsim
 ./lrsim || true
 
+# Run the test to ensure that perl-inline-c compile the C code
+# snippets and stores the compiled results under $PREFIX/share/lrsim/_Inline
 pushd test
 bash -x test.sh
 popd
-find . -name '*.inl' || true
-find . -name '*.so' || true
-find $PREFIX -name '*.inl' || true
-find $PREFIX -name '*.so' || true
 
 chmod -R u+w $PREFIX/share/lrsim/_Inline
 bash -x clean.sh
