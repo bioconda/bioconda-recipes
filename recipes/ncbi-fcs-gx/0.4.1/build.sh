@@ -14,6 +14,5 @@ make VERBOSE=1
 cp $SRC_DIR/build/src/gx    ${PREFIX}/bin/
 cp $SRC_DIR/scripts/*      ${PREFIX}/bin/
 cp $SRC_DIR/make_gxdb/blast_names_mapping.tsv ${PREFIX}/bin/ 
-echo PREFIX: ${PREFIX}
 chmod ua+x ${PREFIX}/bin/gx
 
