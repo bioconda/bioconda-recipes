@@ -16,8 +16,10 @@ cmake -B build -DHASH_MAP=USE_TSL_ROBIN_MAP -DCMAKE_CXX_FLAGS="-O3" -DBUILD_SHAR
 cmake --build build --target all
 cmake --install build
 
+ls
 ls "$PREFIX"
-ls "$PREFIX/*"
+ls "$PREFIX"/bin
+ls build
 
 #cp ipk/ipk-aa $PREFIX/bin
 #cp ipk/ipk-aa-pos $PREFIX/bin
