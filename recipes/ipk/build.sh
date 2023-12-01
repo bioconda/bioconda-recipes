@@ -20,6 +20,7 @@ ls
 ls "$PREFIX"
 ls "$PREFIX"/bin
 ls build
+ls build/ipk
 
 #cp ipk/ipk-aa $PREFIX/bin
 #cp ipk/ipk-aa-pos $PREFIX/bin
