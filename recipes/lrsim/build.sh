@@ -12,12 +12,18 @@ do
     chmod u+x $PREFIX/share/lrsim/${LRSIM_PROG}
 done
 cp 4M-with-alts-february-2016.txt $PREFIX/share/lrsim/
-                                    
-mkdir -p $PREFIX/bin
+
+mkdir -p $PREFIX/share/lrsim/_Inline
+mkdir -p $PREFIX/bin 
 echo "#! /usr/bin/env bash" >> $PREFIX/bin/lrsim
 echo "set -eux -o pipefail" >> $PREFIX/bin/lrsim
+echo "export PERL_INLINE_DIRECTORY=$PREFIX/share/lrsim/_Inline"
 echo "perl $PREFIX/share/lrsim/simulateLinkedReads.pl \"\$@\"" >> $PREFIX/bin/lrsim
 chmod +x $PREFIX/bin/lrsim
 
 cat $PREFIX/bin/lrsim
+./lrsim || true
+chmod -R u+w $PREFIX/share/lrsim/_Inline
 bash -x clean.sh
+
+
