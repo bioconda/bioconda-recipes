@@ -55,7 +55,7 @@ End
 
 # start building the python executable
 cat <<End >> $ACTIVATE_DIR/phantasm.sh
-echo "#!/usr/bin/env python3" >> $PHANTASM_EXE
+echo "#!/usr/bin/env python3" > $PHANTASM_EXE
 echo "import os, sys, subprocess" >> $PHANTASM_EXE
 End
 
@@ -81,7 +81,6 @@ echo "    try:" >> $PHANTASM_EXE
 echo "        subprocess.run(cmd, check=True)" >> $PHANTASM_EXE
 echo "    except subprocess.CalledProcessError as e:" >> $PHANTASM_EXE
 echo "        raise RuntimeError(e.stderr)" >> $PHANTASM_EXE
-truncate -s $(head -n 10 $PHANTASM_EXE | wc -c) $PHANTASM_EXE
 unset BIN_DIR
 unset LIB_DIR
 unset PYVER
