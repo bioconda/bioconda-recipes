@@ -20,4 +20,4 @@ echo "perl $PREFIX/share/lrsim/simulateLinkedReads.pl \"\$@\"" >> $PREFIX/bin/lr
 chmod +x $PREFIX/bin/lrsim
 
 cat $PREFIX/bin/lrsim
-
+bash -x clean.sh
