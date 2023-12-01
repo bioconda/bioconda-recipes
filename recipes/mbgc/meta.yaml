@@ -1,25 +1,30 @@
 {% set version = "2.0" %}
+{% set sha256 = "58620079cd813cd7bc8c5362af514fb92bf166a71f7f5f978923e36dd5bd655d" %}  # [linux]
+{% set sha256 = "9b5f070a69442618573b916c6d6e6321a505e6b483737ee3130bd888861e907d" %}  # [osx]
 
 package:
   name: mbgc 
   version: {{ version }}
 
 build:
-  skip: True  # [osx]  
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('mbgc', max_pin="x") }}
 
 source:
-  url: https://github.com/kowallus/mbgc/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 58620079cd813cd7bc8c5362af514fb92bf166a71f7f5f978923e36dd5bd655d 
+  url: https://github.com/kowallus/mbgc/archive/refs/tags/v{{ version }}.tar.gz  # [linux]
+  url: https://github.com/kowallus/mbgc/releases/download/v{{ version }}/mbgc-{{ version }}_x64-macos.tar.gz  # [osx]
+  sha256: {{ sha256 }} 
 
 requirements:
   build:
-    - {{ compiler('cxx') }}
-    - cmake >=3.5
-    - make
-    
+    - {{ compiler('cxx') }}  # [linux]
+    - cmake >=3.5  # [linux]
+    - make  # [linux]
+  host:
+    - libomp  # [osx]
+  run:
+    - libomp  # [osx]   
 test:
   commands:
     - mbgc -v 2>&1 | grep -F {{ version }}
