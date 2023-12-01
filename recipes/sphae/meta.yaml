@@ -1,0 +1,55 @@
+{% set name = "sphae" %}
+{% set version = "1.3.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/linsalrob/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: 996a9203c7411422c28860709714f58c4fa3a819738e6a85b92de804c1f81871
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - sphae=sphae.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('sphae', max_pin="x") }}
+
+requirements:
+  host:
+    - python <=3.11
+    - pip
+  run:
+    - python <=3.11
+    - snakemake-minimal >=7.14.0
+    - pyyaml >=6.0
+    - click >=8.1.3
+    - jinja2 >=3.0.2
+    - mamba <1.4.2
+    - metasnek >=0.0.4
+    - snaketool-utils >=0.0.4
+    - attrmap >=0.0.7
+    - biopython >=1.8.1
+    - pandas
+
+test:
+  commands:
+    - sphae --help
+
+about:
+  home: "https://github.com/linsalrob/sphae/"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Sphae: Assembling and annotating pure culture phages from both Illumina and Nanopore sequencing technology"
+  description: "Phage toolkit" 
+  doc_url: "https://github.com/linsalrob/sphae"
+  dev_url: "https://github.com/linsalrob/sphae"
+
+extra:
+  recipe-maintainers:
+    - npbhavya
+    - linsalrob
