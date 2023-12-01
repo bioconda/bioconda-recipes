@@ -20,6 +20,7 @@ then
     cd pasta
     $PYTHON setup.py install --single-version-externally-managed --record=/tmp/record.txt
     mkdir $install_dir/sate-tools-linux
+    rm -f -v $work_dir/sate-tools-linux/clustalw2  # as we use a bioconda package instead
     cp -R $work_dir/sate-tools-linux/* $install_dir/sate-tools-linux/
     # Handle a PASTA bug.
     cp $install_dir/sate-tools-linux/hmmalign $install_dir/sate-tools-linux/hmmeralign
@@ -35,6 +36,7 @@ then
     cd pasta
     $PYTHON setup.py install --single-version-externally-managed --record=/tmp/record.txt
     mkdir $install_dir/sate-tools-mac
+    rm -f -v $work_dir/sate-tools-linux/clustalw2  # as we use a bioconda package instead
     cp -R $work_dir/sate-tools-mac/* $install_dir/sate-tools-mac/
     # Handle a PASTA bug.
     cp $install_dir/sate-tools-mac/hmmalign $install_dir/sate-tools-mac/hmmeralign
