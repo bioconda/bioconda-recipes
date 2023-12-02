@@ -107,8 +107,14 @@ else
 fi
 
 if [ "${HEADLESS}" = 1 ]; then
-  # this suppresses the Java icon appearing in the macOS Dock and maybe other things in other OSes
-  JVMARGS=( "${JVMARGS[@]}" "-Djava.awt.headless=true" )
+  # not setting java.awt.headless in java invocation of running jalview due to problem with Jmol
+  if [ "${HELP}" = 1 ]; then
+    JVMARGS=( "${JVMARGS[@]}" "-Djava.awt.headless=true" )
+  fi
+  # this suppresses the Java icon appearing in the macOS Dock
+  if [ "${ISMACOS}" = 1 ]; then
+    JVMARGS=( "${JVMARGS[@]}" "-Dapple.awt.UIElement=true" )
+  fi
 fi
 
 JAVA=java
@@ -172,8 +178,22 @@ elif command -v resize 2>&1 >/dev/null; then
 fi
 JVMARGS=( "${JVMARGS[@]}" "-DCONSOLEWIDTH=${COLUMNS}" )
 
+function quotearray() {
+  QUOTEDVALS=""
+  for VAL in "${@}"; do
+    if [ \! "$QUOTEDVALS" = "" ]; then
+      QUOTEDVALS="${QUOTEDVALS} "
+    fi
+    QUOTEDVALS="${QUOTEDVALS}\"${VAL}\""
+  done
+  echo $QUOTEDVALS
+}
+
+JVMARGSSTR=$(quotearray "${JVMARGS[@]}")
+ARGSSTR=$(quotearray "${ARGS[@]}")
+
 if [ "${DEBUG}" = 1 ]; then
- echo Shell running: \""${JAVA}"\" \""${JVMARGS[@]}"\" -jar \""${JARPATH}"\" "${ARGS[@]}"
+ echo Shell running: \""${JAVA}"\" ${JVMARGSSTR} -jar \""${JARPATH}"\" ${ARGSSTR}
 fi
 
 "${JAVA}" "${JVMARGS[@]}" -jar "${JARPATH}" "${ARGS[@]}"
