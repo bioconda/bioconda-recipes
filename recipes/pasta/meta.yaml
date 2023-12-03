@@ -1,14 +1,13 @@
 {% set version = "1.9.0" %}
-{% set sha256 = "b125e96f923d4b950c5bcb69c1e3b54b015b88a7a4c6b5a5803f5b072bb8b8f5" %}
+{% set sha256 = "6f816aebe00b7b6bb78a250ad45f5aa2aa8eff0f9719736f05b0597dd3b1f9a1" %}
 
 package:
   name: pasta
   version: '{{version}}'
 
 source:
-  git_url: https://github.com/smirarab/pasta
-  git_rev: 8e2811b4c3e778742c2f968dc7e08dfb00b11c16
-  sha256: '{{sha256}}'
+  - url: https://github.com/smirarab/pasta/archive/v{{version}}.tar.gz
+    sha256: '{{sha256}}'
 
 build:
   number: 0
@@ -16,26 +15,35 @@ build:
     - {{ pin_subpackage('pasta', max_pin="x") }}
 
 requirements:
-  build:
-    - {{ compiler('c') }}
-
   host:
     - python
     - setuptools
-    - dendropy >=4.1.0
+    - dendropy <=4.5.1
     - wget
     - openjdk
     - pcre
     - pymongo >=3.3.0
     - clustalw
+    - fasttree
+    - raxml
+    - muscle <4  # later versions expects other cmd argument names
+    - mafft
+    - hmmer ==3.1b2
+    - prank
 
   run:
     - python
-    - dendropy >=4.1.0
+    - dendropy <=4.5.1  # later version do not expose _convert_node_to_root_polytomy
     - openjdk
     - pcre
     - pymongo >=3.3.0
     - clustalw
+    - fasttree
+    - raxml
+    - muscle <4  # later versions expects other cmd argument names
+    - mafft
+    - hmmer ==3.1b2
+    - prank
 
 test:
   imports:
@@ -45,10 +53,12 @@ test:
     - clustalw2 -help | grep OPTIONS
     - hmmalign -h | grep HMMER
     - hmmbuild -h | grep HMMER
-    - muscle -version | grep MUSCLE
+    - muscle -version | grep -i MUSCLE
     - prank -help | grep prank
-    - raxml -h | grep raxmlHPC
-    - raxmlp -h | grep raxmlHPC
+    - raxml -h | grep -i raxml
+    - raxmlp -h | grep -i raxml
+    - run_pasta.py -i $PREFIX/share/pasta/data/small.fasta
+    - run_pasta.py -i $PREFIX/share/pasta/data/small.fasta --tree-estimator raxml
 
 about:
   home: https://github.com/smirarab/pasta
@@ -56,7 +66,3 @@ about:
   license_family: GPL3
   license_file: LICENSE
   summary: 'An implementation of the PASTA (Practical Alignment using Sate and TrAnsitivity) algorithm'
-
-extra:
-  skip-lints:
-    - uses_vcs_url
