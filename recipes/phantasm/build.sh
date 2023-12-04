@@ -21,7 +21,7 @@ echo "IQTREE_EXE:str = '$BIN_DIR/iqtree'" >> $TEMP_FN
 
 # define global variables that point at phantasm and xenogi directories
 echo "PHANTASM_DIR:str = '$PHANTASM_DIR'" >> $TEMP_FN
-echo "XENOGI_DIR:str = '$PREFIX/lib/python$PYVER/site-packages/xenoGI'" >> $TEMP_FN
+echo "XENOGI_DIR:str = '$PREFIX/lib/python$PYVER/site-packages/'" >> $TEMP_FN
 
 # add the last five lines of param.py (LPSN csv files)
 tail -n 5 $PARAM_FN >> $TEMP_FN
