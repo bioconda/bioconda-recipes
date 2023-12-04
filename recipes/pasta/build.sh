@@ -29,7 +29,3 @@ cp -v data/small.fasta $PREFIX/share/pasta/data/
 # install pasta itself
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 cp bin/treeshrink $PREFIX/bin/treeshrink
-
-# ensure PASTA environment variable point to the right bin directory
-echo 'export PASTA_TOOLS_RUNDIR=\$PREFIX/bin' > $PREFIX/etc/conda/activate.d/pasta_activate.sh
-echo 'unset PASTA_TOOLS_RUNDIR' > $PREFIX/etc/conda/deactivate.d/pasta_deactivate.sh
