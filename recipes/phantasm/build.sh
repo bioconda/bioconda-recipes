@@ -45,12 +45,19 @@ cat <<End > $ACTIVATE_DIR/phantasm.sh
 export BIN_DIR=$BIN_DIR
 export LIB_DIR=$PREFIX/lib/python
 export PHANTASM_EXE=$PHANTASM_EXE
+export BUILD_PYVER=$PYVER
 End
 
 # PYVER and PHANTASM_DIR need to be defined upon activation
 cat <<\End >> $ACTIVATE_DIR/phantasm.sh
 export PYVER=$(python3 --version|sed -E "s/^\S+ ([0-9]+\.[0-9]+)\..+$/\1/g")
 export PHANTASM_DIR=$LIB_DIR$PYVER/site-packages/phantasm
+End
+
+# replace the build pyver with the current pyver
+cat <<\End >> $ACTIVATE_DIR/phantasm.sh
+cat $PHANTASM_DIR/param.py | sed -E "s/python$BUILD_PYVER/python$PYVER/g" > .tmp
+mv .tmp $PHANTASM_DIR/param.py
 End
 
 # start building the python executable
@@ -83,6 +90,7 @@ echo "    except subprocess.CalledProcessError as e:" >> $PHANTASM_EXE
 echo "        raise RuntimeError(e.stderr)" >> $PHANTASM_EXE
 unset BIN_DIR
 unset LIB_DIR
+unset BUILD_PYVER
 unset PYVER
 unset PHANTASM_DIR
 unset PHANTASM_EXE
