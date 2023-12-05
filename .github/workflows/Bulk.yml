@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      max-parallel: 6
+      max-parallel: 1
       matrix:
-        runner: [0, 1, 2, 3, 4, 5]
+        runner: [0]
     steps:
       - uses: actions/checkout@v3
       
@@ -66,7 +66,7 @@ jobs:
           python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
           echo '============'
           bioconda-utils build recipes config.yml \
-            --worker-offset ${{ matrix.runner }} --n-workers 6 \
+            --packages bioconductor-annotationdbi bioconductor-summarizedexperiment bioconductor-keggrest bioconductor-genomicranges bioconductor-biostrings bioconductor-delayedarray bioconductor-sparsearray \
             --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
             --lint --skiplist-leafs
           conda clean -y --all
@@ -77,9 +77,9 @@ jobs:
     runs-on: macOS-latest
     strategy:
       fail-fast: false
-      max-parallel: 4
+      max-parallel: 1
       matrix:
-        runner: [0, 1, 2, 3]
+        runner: [0]
     steps:
       - uses: actions/checkout@v3
       
@@ -138,6 +138,6 @@ jobs:
           python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
           echo '============'
           bioconda-utils build recipes config.yml \
-            --worker-offset ${{ matrix.runner }} --n-workers 4 \
+            --packages bioconductor-annotationdbi bioconductor-summarizedexperiment bioconductor-keggrest \
             --lint --anaconda-upload --skiplist-leafs
           conda clean -y --all
