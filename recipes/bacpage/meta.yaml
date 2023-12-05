@@ -1,0 +1,61 @@
+{% set version = "2023.11.10.1" %}
+
+package:
+  name: bacpage
+  version: {{ version }}
+
+source:
+  url: https://github.com/CholGen/bacpage/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 7a62278131407195a8f7555a92ed2d86ca7e63366bac6d280dac337e5f5218c5 
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed ."
+  run_exports:
+    - {{ pin_subpackage('bacpage') }}
+
+requirements:
+  host:
+    - python <3.12,>=3.9
+    - pip
+  run:
+    - python <3.12,>=3.9
+    - bc
+    - bcftools =1.17
+    - bedtools
+    - biopython
+    - bwa
+    - emboss
+    - fastqc
+    - iqtree
+    - multiqc
+    - pandas
+    - qualimap
+    - samtools =1.17
+    - snakemake-minimal
+    - snp-sites
+    - fastp
+    - lighter
+    - flash
+    - unicycler
+    - prokka
+    - quast
+    - abricate
+
+test:
+  commands:
+    - bacpage -h
+    - bacpage version
+    - bacpage example "$(mktemp -d)"
+
+about:
+  home: https://github.com/CholGen/bacpage
+  license: "GPL-3.0-or-later"
+  license_file: LICENSE
+  summary: An easy-to-use pipeline for the assembly and analysis of bacterial genomes
+  
+
+extra:
+  recipe-maintainers:
+    - watronfire
