@@ -11,34 +11,18 @@ source:
 build:
   number: 0
   skip: True  # [win or osx]
-  post-link: post-link.sh
+  script: "python -m pip install . --ignore-installed --no-cache-dir -vvv"
   run_exports:
     - {{ pin_subpackage('yacht', max_pin="x") }}
 
 requirements:
   build:
-    - python                              # [build_platform != target_platform]
-    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
-    - crossenv                            # [build_platform != target_platform]
-    - maturin >=1.0,<2.0                  # [build_platform != target_platform]
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - {{ compiler('rust') }}
-    - posix                               # [win]
-    - make                                # [unix]
-    - cargo-bundle-licenses
-    - libclang                            # [unix]
-    - clangdev                            # [unix]
-    - xz
-  host:
     - python
-    - maturin >=1.1.0,<2
+    - setuptools
+  host:
+    - python >3.6
     - pip
   run:
-    - python
-    - xz
-    - libstdcxx-ng
-    - libgcc-ng
     - python >3.6
     - gcc
     - sourmash >=4.8.3,<5
@@ -57,6 +41,7 @@ requirements:
     - biom-format
     - pytaxonkit
     - openpyxl
+    - sourmash_plugin_branchwater
 
 test:
   commands:
