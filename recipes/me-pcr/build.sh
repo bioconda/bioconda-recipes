@@ -1,7 +1,6 @@
 #!/bin/bash
 
-which g++
-make -C src/ -f makefile
+make CC=$CC CPP=$CXX -C src/ -f makefile
 
 mkdir -p $PREFIX/share/doc/me-pcr/
 cp README.txt $PREFIX/share/doc/me-pcr/
