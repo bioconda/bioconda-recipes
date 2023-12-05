@@ -1,4 +1,4 @@
-{% set version = "0.2" %}
+{% set version = "0.4" %}
 
 package:
   name: asqcan
@@ -6,21 +6,27 @@ package:
 
 source:
   url: https://github.com/bogemad/asqcan/archive/v{{ version }}.tar.gz
-  md5: e48ddb45c709cf4850fd2a2bb96e4af0
+  sha256: d0abbba258f63ceeda73b71620c5cadd15ba15919df936c2b4b6e2fc87ceaafb
 
 build:
   noarch: python
-  number: 2
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("asqcan", max_pin="x.x") }}
   script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 requirements:
   host:
-    - python <3
+    - python
     - pip
   run:
-    - python <3
+    - python
+    - requests
+    - bwa
+    - samtools
+    - diamond
     - parallel
-    - fastqc
+    - fastp
     - spades
     - quast
     - blobtools
@@ -33,6 +39,6 @@ test:
 
 about:
   home: https://github.com/bogemad/asqcan
-  license: GPLv3
+  license: GPL-3.0-only
   summary: 'A combined pipeline for bacterial genome assembly, quality control and annotation'
   license_family: GPL
