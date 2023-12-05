@@ -8,4 +8,3 @@ cp README.txt $PREFIX/share/me-pcr/
 mkdir -p $PREFIX/bin
 chmod +x src/me-PCR
 cp src/me-PCR $PREFIX/bin/
-cp src/me-pcr $PREFIX/bin/
