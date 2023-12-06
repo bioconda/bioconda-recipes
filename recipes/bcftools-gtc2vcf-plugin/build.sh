@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export VERSION=1.16
+export VERSION=1.18
 export C_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
