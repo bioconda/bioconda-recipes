@@ -5,10 +5,10 @@ python setup.py upp -c
 
 # ensure SEPP's configuration file is at the correct location ...
 echo "${PREFIX}/share/sepp/sepp" > home.path
-# ensure directory is created ...
-mkdir -p ${PREFIX}/lib/python*/site-packages/
+# ensure directory is created ... ($SP_DIR = Python's site-packages location, see https://docs.conda.io/projects/conda-build/en/stable/user-guide/environment-variables.html#environment-variables-set-during-the-build-process)
+mkdir -p $SP_DIR/
 # ... before we copy content into it
-cp -rv home.path ${PREFIX}/lib/python*/site-packages/
+cp -rv home.path $SP_DIR/
 mkdir -p $PREFIX/share/sepp/sepp
 # ... and holds correct path names
 mv -v sepp-package/sepp/default.main.config $PREFIX/share/sepp/sepp/main.config
