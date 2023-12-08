@@ -5,7 +5,10 @@ python setup.py upp -c
 
 # ensure SEPP's configuration file is at the correct location ...
 echo "${PREFIX}/share/sepp/sepp" > home.path
-cp home.path ${PREFIX}/lib/python*/site-packages/
+# ensure directory is created ...
+mkdir -p ${PREFIX}/lib/python*/site-packages/
+# ... before we copy content into it
+cp -r home.path ${PREFIX}/lib/python*/site-packages/
 mkdir -p $PREFIX/share/sepp/sepp
 # ... and holds correct path names
 mv -v sepp-package/sepp/default.main.config $PREFIX/share/sepp/sepp/main.config
