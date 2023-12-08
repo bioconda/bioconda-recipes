@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export VERSION=1.18
+export VERSION=${PKG_VERSION}
 export C_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
