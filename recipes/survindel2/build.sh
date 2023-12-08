@@ -3,7 +3,7 @@ set -x
 ${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS} reads_categorizer.cpp -o reads_categorizer -pthread -lhts
 ${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS} libs/ssw.c libs/ssw_cpp.cpp clip_consensus_builder.cpp -o clip_consensus_builder -pthread -lhts
 ${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS} merge_identical_calls.cpp -o merge_identical_calls -pthread -lhts
-${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS} libs/ssw.c libs/ssw_cpp.cpp libs/kdtree.c dp_clusterer.cpp -o dp_clusterer -pthread -lhts
+${CXX} ${CPPFLAGS} ${CXXFLAGS} -fpermissive ${LDFLAGS} libs/ssw.c libs/ssw_cpp.cpp libs/kdtree.c dp_clusterer.cpp -o dp_clusterer -pthread -lhts
 ${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS} normalise.cpp -o normalise -pthread -lhts
 
 cp reads_categorizer $PREFIX/bin/
