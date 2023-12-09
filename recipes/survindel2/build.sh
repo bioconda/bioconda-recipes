@@ -1,19 +1,12 @@
 set -x
 
-set -x
+${CC} ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} libs/kdtree.c -o kdtree.o -c
 
-# Compile C++ files
 ${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS} reads_categorizer.cpp -o reads_categorizer -pthread -lhts
 ${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS} libs/ssw.c libs/ssw_cpp.cpp clip_consensus_builder.cpp -o clip_consensus_builder -pthread -lhts
 ${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS} merge_identical_calls.cpp -o merge_identical_calls -pthread -lhts
-${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS} libs/ssw_cpp.cpp dp_clusterer.cpp -o dp_clusterer.o -c
+${CXX} ${CPPFLAGS} ${CXXFLAGS} -fpermissive ${LDFLAGS} libs/ssw.c libs/ssw_cpp.cpp kdtree.o dp_clusterer.cpp -o dp_clusterer -pthread -lhts
 ${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS} normalise.cpp -o normalise -pthread -lhts
-
-# Compile C file with C compiler
-${CC} ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} libs/kdtree.c -o kdtree.o -c
-
-# Link C object file with C++ object files
-${CXX} ${LDFLAGS} kdtree.o dp_clusterer.o -o dp_clusterer -pthread -lhts
 
 cp reads_categorizer $PREFIX/bin/
 cp clip_consensus_builder $PREFIX/bin/
