@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Install methylpy
-{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+${PYTHON} -m pip install . --no-deps --no-build-isolation -vvv
 
 # Install RMS
 export C_INCLUDE_PATH=${PREFIX}/include
