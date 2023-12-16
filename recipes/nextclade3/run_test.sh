@@ -3,11 +3,11 @@
 set -x
 set -e
 
-nextclade2 --version
+nextclade3 --version
 
-nextclade2 dataset get --name 'sars-cov-2' --output-dir 'data/sars-cov-2'
+nextclade3 dataset get --name 'sars-cov-2' --output-dir 'data/sars-cov-2'
 
-nextclade2 run \
+nextclade3 run \
 --input-dataset 'data/sars-cov-2' \
 'data/sars-cov-2/sequences.fasta' \
 --output-tsv 'output/nextclade.tsv' \
