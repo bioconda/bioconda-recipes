@@ -38,6 +38,9 @@ CMAKE_ARGS+=" -DPython_EXECUTABLE=$PYTHON"
 echo "$CMAKE_ARGS"
 export CMAKE_ARGS
 
+ls -lah .
+ls -lah "$SRC_DIR"
+
 HICTKPY_SETUP_SKIP_CONAN=1 \
-"$PYTHON" -m pip install . -v
+"$PYTHON" -m pip install "$SRC_DIR" -v
 
