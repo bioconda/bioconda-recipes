@@ -30,16 +30,12 @@ conan install conanfile.txt \
        --build="*" \
        --output-folder=build/
 
-
 CMAKE_ARGS="-DCMAKE_PREFIX_PATH=$PWD/build"
 CMAKE_ARGS+=" ${CMAKE_PLATFORM_FLAGS[*]}"
 CMAKE_ARGS+=" -DPython_EXECUTABLE=$PYTHON"
 
 echo "$CMAKE_ARGS"
 export CMAKE_ARGS
-
-ls -lah .
-ls -lah "$SRC_DIR"
 
 HICTKPY_SETUP_SKIP_CONAN=1 \
 "$PYTHON" -m pip install "$SRC_DIR" -v
