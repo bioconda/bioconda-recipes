@@ -1,0 +1,48 @@
+{% set name = "macs3" %}
+{% set version = "3.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/MACS3-{{ version }}.tar.gz
+  sha256: 57271e060c0f2c41f3aa6de44245c6db7fd0b1945ebfba115a6841628f75770e
+
+build:
+  number: 0
+  skip: True  # [py < 39]
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --use-pep517
+  run_exports:
+    - {{ pin_subpackage('macs3', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - cython >=3.0
+    - cykhash >=2.0
+    - hmmlearn >=0.3
+    - numpy >=1.19
+  run:
+    - python
+    - hmmlearn >=0.3
+    - {{ pin_compatible('numpy') }}
+
+test:
+  imports:
+    - MACS3
+
+about:
+  home: https://github.com/macs3-project/MACS/
+  summary: Model Based Analysis for ChIP-Seq data
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  doc_url: https://macs3-project.github.io/MACS/
+
+extra:
+  identifiers:
+    - doi:10.1186/gb-2008-9-9-r137
