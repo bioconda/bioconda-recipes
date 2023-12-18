@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 6
       matrix:
-        runner: [0]
+        runner: [0, 1, 2, 3, 4, 5]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -69,7 +69,7 @@ jobs:
           python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
           echo '============'
           bioconda-utils build recipes config.yml \
-            --packages bioconductor-genomation bioconductor-mlinterfaces bioconductor-crisprseek bioconductor-crisprbowtie bioconductor-rawrr bioconductor-lpsymphony bioconductor-proloc bioconductor-ihw \
+            --worker-offset ${{ matrix.runner }} --n-workers 6 \
             --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
             --lint --record-build-failures --skiplist-leafs
           conda clean -y --all
