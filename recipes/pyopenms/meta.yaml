@@ -1,5 +1,5 @@
 {% set name = "pyopenms" %}
-{% set version = "3.0.0" %}
+{% set version = "3.1.0" %} # if ends with 'dev' it is considered a development release and pulled from GitHub
 package:
   name: {{ name|lower  }}
   version: {{ version  }}
@@ -11,13 +11,15 @@ source:
   git_depth: 1 # (Defaults to -1/not shallow)
 {% else %}
 source:
-  url: https://abibuilder.cs.uni-tuebingen.de/archive/openms/OpenMSInstaller/release/{{ version }}/OpenMS-{{ version }}-src.tar.gz
-  md5: 2b7ee0f4d8f42eb3c17384347df2dba4
+  url: https://github.com/OpenMS/OpenMS/releases/download/Release{{ version }}/OpenMS-{{ version }}-src.tar.gz
+  md5: 6a60ef1a95c7ce915cc3a02e5bccd593
 {% endif %}
 
 build:
-  skip: True  # [py2k]
+  skip: True  # [py2k or osx]
   number: 0
+  run_exports:
+    - {{ pin_subpackage("pyopenms", max_pin="x.x") }}  
 
 requirements:
   build:
