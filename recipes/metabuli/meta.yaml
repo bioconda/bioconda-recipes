@@ -1,0 +1,50 @@
+{% set version = "1.0.2" %}
+{% set sha256 = "cf5c74a7aa585457c0014614e59cf850aaacfab03f326e6113466fa2b436d2c2" %}
+
+package:
+  name: metabuli
+  version: {{ version|replace("-", ".")  }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('metabuli', max_pin="x") }}
+
+source:
+  url: https://github.com/steineggerlab/metabuli/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - cmake
+    - make
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
+    - perl
+    - gawk
+    - zlib
+    - bzip2
+  run:
+    - aria2
+    - wget
+    - gawk
+    - zlib
+    - bzip2
+
+test:
+  commands:
+    - metabuli > /dev/null
+
+about:
+  home: https://github.com/steineggerlab/Metabuli
+  license: GPLv3
+  license_file: LICENSE
+  summary: "Metabuli: specific and sensitive metagenomic classification via joint analysis of DNA and amino acid"
+
+extra:
+  recipe-maintainers:
+    - milot-mirdita
+    - jaebeom-kim

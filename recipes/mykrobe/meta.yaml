@@ -1,4 +1,4 @@
-{% set version = "0.12.1" %}
+{% set version = "0.13.0" %}
 
 package:
   name: mykrobe
@@ -6,14 +6,15 @@ package:
 
 source:
   url: https://github.com/Mykrobe-tools/mykrobe/archive/v{{ version }}.tar.gz
-  sha256: edcf3bd58bbdeb875e3318c804b760b77651187f72b7b51640300cd1a9bf6839
+  sha256: 49662937378a4ff10ffcb3876efcc069be58f0dc183615e9cffb57f51348a45e
 
 build:
   number: 0
   skip: True  # [py<30]
   entry_points:
     - mykrobe = mykrobe.cli:main
-
+  run_exports:
+    - {{ pin_subpackage("mykrobe", max_pin="x.x") }}
 requirements:
   build:
     - make
@@ -58,8 +59,8 @@ test:
     - mykrobe predict --help
     - mykrobe variants --help
     - mykrobe panels describe
-    - test -x $PREFIX/lib/python*/site-packages/mykrobe/cortex/mccortex31
-    - $PREFIX/lib/python*/site-packages/mykrobe/cortex/mccortex31 uniqkmers -k 7 1
+    - test -x $PREFIX/lib/python*/site-packages/mykrobe/cortex/mccortex31  # [py < 310]
+    - $PREFIX/lib/python*/site-packages/mykrobe/cortex/mccortex31 uniqkmers -k 7 1  # [py < 310]
 
 about:
   home: https://github.com/Mykrobe-tools/mykrobe

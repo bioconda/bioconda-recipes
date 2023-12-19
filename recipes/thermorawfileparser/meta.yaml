@@ -1,32 +1,33 @@
 {% set name = "ThermoRawFileParser" %}
-{% set version = "1.4.0" %}
+{% set version = "1.4.3" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
+  run_exports:
+    - {{ pin_subpackage('thermorawfileparser', max_pin="x.x.x") }}
   number: 0
   noarch: generic
   script:
     - mkdir $PREFIX/bin
-    - cp * $PREFIX/bin
+    - cp -r * $PREFIX/bin
     - cp $RECIPE_DIR/ThermoRawFileParser.sh $PREFIX/bin
     - chmod +x $PREFIX/bin/ThermoRawFileParser.sh
     - ln -s $PREFIX/bin/ThermoRawFileParser.sh $PREFIX/bin/ThermoRawFileParser
     - ln -s $PREFIX/bin/ThermoRawFileParser.sh $PREFIX/bin/thermorawfileparser
 
 source:
-  # downloading pre-compiled packages, msbuild is a hell to compile unter Linux
-  url: https://github.com/compomics/ThermoRawFileParser/releases/download/v{{ version }}/ThermoRawFileParser.zip
-  sha256: ec2ce76156a1293f3c0e67a9e6e4d4860bfbe5fba6f117b660775c348d628079
+  # downloading pre-compiled packages, msbuild is a hell to compile under Linux
+  url: https://github.com/compomics/ThermoRawFileParser/releases/download/v{{ version }}/ThermoRawFileParser{{ version }}.zip
+  sha256: 4643347d5486e1dec89d1fd2742920661ae6a6d099a974652a5d9b3b15a26155
 
 requirements:
   build:
     - zlib
   run:
-    # mono <6 due to https://github.com/compomics/ThermoRawFileParser/issues/108
-    - mono >=5, <6
+    - mono >=5
     - zlib
 
 test:
@@ -45,3 +46,4 @@ about:
 extra:
   recipe-maintainers:
     - RECETOX
+    - hechth

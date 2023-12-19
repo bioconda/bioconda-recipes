@@ -1,6 +1,6 @@
-{% set version = "0.4.3" %}
+{% set version = "0.8.3" %}
 {% set name = "aviary" %}
-{% set sha256 = "b4f5921060958383e145b3ab58fc2cdc682c2886063b3dbea6cf12688371d88d" %}
+{% set sha256 = "c484f2bef8ac783e2fbb93270b8a8e034e1139eef2bf641ccfa3a4f17e78abcb" %}
 
 package:
   name: aviary
@@ -10,6 +10,8 @@ build:
   number: 0
   noarch: python
   script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage('aviary', max_pin="x") }}
 
 source:
   url: https://github.com/rhysnewell/{{ name }}/releases/download/v{{ version }}/aviary-genome-{{ version }}.tar.gz
@@ -17,19 +19,20 @@ source:
 
 requirements:
   host:
-    - python>=3.8
+    - python >=3.8
     - pip
   run:
-    - python>=3.8, <3.11
-    - mamba
-    - bbmap
-    - snakemake=7.8
-    - pandas>=1.2, <1.5
-    - ruamel.yaml>=0.15.99
-    - biopython
+    - python >=3.8,<=3.11
+    - snakemake >=7.0.0,<=7.32.3
+    - ruamel.yaml >=0.15.99
     - numpy
+    - pandas
+    - biopython
+    - mamba >=0.8.2
+    - pigz =2.6
     - parallel
-    - pigz>=2.6
+    - bbmap
+    - extern
 
 test:
   commands:

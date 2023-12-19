@@ -1,5 +1,4 @@
-{% set version = "0.6.0" %}
-
+{% set version = "0.9.1" %}
 
 package:
   name: snakedeploy
@@ -7,14 +6,16 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/snakedeploy/snakedeploy-{{ version }}.tar.gz
-  sha256: 00880d4cad2f30c0dbf1f5bd8e6b4c89a4d677bea167902fc33c5fd9500c5ded
+  sha256: 3ce399ae67f991647f62ff67a73649cbf786842d888c17a93b1f98b34bfb98e5
 
 build:
   number: 0
   noarch: python
   entry_points:
     - snakedeploy=snakedeploy.client:main
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --use-pep517 -vvv
+  run_exports:
+    - {{ pin_subpackage('snakedeploy', max_pin="x.x") }}
 
 requirements:
   host:
@@ -28,6 +29,8 @@ requirements:
     - requests
     - pyyaml
     - pygithub
+    - reretry
+    - packaging
 
 test:
   imports:

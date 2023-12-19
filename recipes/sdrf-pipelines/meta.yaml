@@ -1,5 +1,5 @@
 {% set name = "sdrf-pipelines" %}
-{% set version = "0.0.21" %}
+{% set version = "0.0.24" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,32 +7,36 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 118faaaa07249c36d4eaffdd0d9718595d63f66e865b2aeaec44c5c323f43809
+  sha256: a52441d8b4be0b597c64973d45a4ad2dc2b91560cf7fbee956080efd9a306dbd
 
 build:
   number: 0
   noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
   entry_points:
     - parse_sdrf = sdrf_pipelines.parse_sdrf:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps -vvv"
 
 requirements:
   host:
     - pip
-    - python  >=3.5
+    - python >=3.5
   run:
     - click
     - requests
     - pandas
     - pandas_schema
-    - python  >=3.5
+    - python >=3.5
+    - pyaml
+    - defusedxml
+    - pytest
 
 test:
   imports:
     - sdrf_pipelines
     - sdrf_pipelines.openms
     - sdrf_pipelines.sdrf
-    - sdrf_pipelines.tests
     - sdrf_pipelines.utils
     - sdrf_pipelines.zooma
   commands:

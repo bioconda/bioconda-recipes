@@ -1,4 +1,4 @@
-{% set version = "2.0.0" %}
+{% set version = "4.0.2" %}
 
 package:
   name: pbiotools
@@ -6,24 +6,21 @@ package:
 
 source:
   url: https://github.com/dieterich-lab/pbiotools/archive/{{version}}.tar.gz
-  sha256: 70c8996174246cc8fc5f23e5294e521715a503c16bdb701de99c0748686738a5
+  sha256: bff34054afa28c70d90dfaf78bcebceb6d191965490da5ad4f5ea1287a2048c9
 
 build:
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
   noarch: python
   number: 0
   entry_points:
+    - add-mygene-info-to-orfs = pbiotools.utils.pgrms.add_mygene_info_to_orfs:main
     - bam-to-wiggle = pbiotools.utils.pgrms.bam_to_wiggle:main
     - bedx-to-bedy = pbiotools.utils.pgrms.bedx_to_bedy:main
-    - bed-to-bigBed = pbiotools.utils.pgrms.bed_to_bigBed:main
     - bed12-to-gtf = pbiotools.utils.pgrms.bed12_to_gtf:main
-    - calculate-bed-overlap = pbiotools.utils.pgrms.calculate_bed_overlap:main
     - convert-ccds-to-bed = pbiotools.utils.pgrms.convert_ccds_to_bed:main
     - count-aligned-reads = pbiotools.utils.pgrms.count_aligned_reads:main
     - count-reads = pbiotools.utils.pgrms.count_reads:main
-    - create-aligned-read-count-bar-chart = pbiotools.utils.pgrms.plotsc.create_aligned_read_count_bar_chart:main
     - create-mygene-report = pbiotools.utils.pgrms.create_mygene_report:main
-    - create-init-ribo-track = pbiotools.utils.pgrms.create_init_ribo_track:main
     - dna-to-aa = pbiotools.utils.pgrms.dna_to_aa:main
     - download-srr-files = pbiotools.utils.pgrms.download_srr_files:main
     - extract-bed-sequences = pbiotools.utils.pgrms.extract_bed_sequences:main
@@ -37,8 +34,6 @@ build:
     - gtf-to-bed12 = pbiotools.utils.pgrms.gtf_to_bed12:main
     - join-long-chromosomes = pbiotools.utils.pgrms.join_long_chromosomes:main
     - merge-isoforms = pbiotools.utils.pgrms.merge_isoforms:main
-    - parse-meme-names = pbiotools.utils.pgrms.parse_meme_names:main
-    - plot-read-length-distribution = pbiotools.utils.pgrms.plotsc.plot_read_length_distribution:main
     - remove-duplicate-bed-entries = pbiotools.utils.pgrms.remove_duplicate_bed_entries:main
     - remove-duplicate-sequences = pbiotools.utils.pgrms.remove_duplicate_sequences:main
     - remove-multimapping-reads = pbiotools.utils.pgrms.remove_multimapping_reads:main
@@ -49,20 +44,21 @@ build:
     - split-bed12-blocks = pbiotools.utils.pgrms.split_bed12_blocks:main
     - split-long-chromosomes = pbiotools.utils.pgrms.split_long_chromosomes:main
     - subtract-bed = pbiotools.utils.pgrms.subtract_bed:main
-    - extract-metagene-profiles = pbiotools.ribo.pgrms.extract_metagene_profiles:main
-    - estimate-metagene-profile-bayes-factors = pbiotools.ribo.pgrms.estimate_metagene_profile_bayes_factors:main
-    - select-periodic-offsets = pbiotools.ribo.pgrms.select_periodic_offsets:main
-    - pickle-stan = pbiotools.misc.pgrms.pickle_stan:main
+  run_exports:
+    - {{ pin_subpackage('pbiotools', max_pin='x') }}
 
 requirements:
   host:
-    - python <3.10.0a0
+    - python >=3.7,<3.11
     - pip
   run:
-    - python <3.10.0a0
-    - dask
+    - python >=3.7,<3.11
+    - numpy
+    - pandas
+    - scipy
+    - dask-core
+    - joblib
     - scikit-learn
-    - appdirs
     - tqdm
     - mygene
     - openpyxl
@@ -71,30 +67,24 @@ requirements:
     - matplotlib-base
     - matplotlib-venn
     - seaborn
-    - pysam
-    - pybedtools
+    - pysam >0.9.1
     - biopython
     - pyensembl
-    - pystan <3
 
 test:
   imports:
     - pbiotools
     - pbiotools.misc
-    - pbiotools.ribo
     - pbiotools.utils
   commands:
+    - add-mygene-info-to-orfs --help
     - bam-to-wiggle --help
     - bedx-to-bedy --help
-    - bed-to-bigBed --help
     - bed12-to-gtf --help
-    - calculate-bed-overlap --help
     - convert-ccds-to-bed --help
     - count-aligned-reads --help
     - count-reads --help
-    - create-aligned-read-count-bar-chart --help
     - create-mygene-report --help
-    - create-init-ribo-track --help
     - dna-to-aa --help
     - download-srr-files --help
     - extract-bed-sequences --help
@@ -108,8 +98,6 @@ test:
     - gtf-to-bed12 --help
     - join-long-chromosomes --help
     - merge-isoforms --help
-    - parse-meme-names --help
-    - plot-read-length-distribution --help
     - remove-duplicate-bed-entries --help
     - remove-duplicate-sequences --help
     - remove-multimapping-reads --help
@@ -120,10 +108,6 @@ test:
     - split-bed12-blocks --help
     - split-long-chromosomes --help
     - subtract-bed --help
-    - extract-metagene-profiles --help
-    - estimate-metagene-profile-bayes-factors --help
-    - select-periodic-offsets --help
-    - pickle-stan --help
 
 about:
   home: https://github.com/dieterich-lab/pbiotools
