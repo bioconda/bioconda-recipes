@@ -1,6 +1,10 @@
 #!/bin/bash
 
-make
+# Explicitly setting library paths for zlib
+export CPATH=${PREFIX}/include
+
+# Use Conda environment variables for the C compiler and flags
+make CC=$CC CFLAGS="$CFLAGS"
 ls -la
 
 # Copying binaries to the $PREFIX/bin directory for them to be included in the Conda package
