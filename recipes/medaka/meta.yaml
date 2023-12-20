@@ -1,59 +1,68 @@
-{% set name = "medaka" %}
-{% set version = "1.0.3" %}
+{% set name = "Medaka" %}
+{% set version = "1.11.1" %}
+{% set sha256 = "4440762a17ddd66806ddbd7c3218140caa234b96a8c919ed54d7243d3e4a5dd1" %}
+# Bot PRs - Always review requirements.txt for new release
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: ca7808f705a87e72254a139d4d9e8929c98774267eac0947360086a845db2e45
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/medaka-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - patch
 
 build:
-  # the pinned version of h5py is python 3.6 only
-  skip: True # [not py36]
   number: 0
   entry_points:
     - medaka = medaka.medaka:main
     - medaka_counts = medaka.medaka_counts:main
     - medaka_data_path = medaka.common:print_data_path
     - medaka_version_report = medaka:report_binaries
+  run_exports:
+    - {{ pin_subpackage('medaka', max_pin='x') }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - coreutils
   host:
-    - cffi
-    - pip
     - python
-    - htslib
+    - pip
+    - cffi >=1.15.0
+    - htslib >=1.14
+    - libcurl
+    - openssl
     - bzip2
     - xz
     - zlib
   run:
-    - biopython
-    - cffi
-    - h5py ==2.7.1
-    - intervaltree >=3.0.0
-    - mappy
-    - numpy ==1.16.1
-    # various reports on OSX that numpy cannot find openblas library with newer versions.
-    - libopenblas ==0.3.3  # [osx]
+    - python
+    - cffi >=1.15.0
+    - grpcio
+    - h5py
+    - intervaltree
+    # Please review the need for the conda_build_config.yaml
+    # if a more recent version of Tensorflow is supported.
+    - tensorflow >=2.10,<2.11
+    - numpy >=1.21.6
     - nomkl  # [osx]
+    - mappy
     - ont-fast5-api
     - parasail-python
-    - pysam >=0.15.2
-    - python
+    - pyabpoa
+    - pyspoa >=0.2.1
+    - pysam >=0.16.0.1
+    - python-edlib
     - requests
-    - tensorflow ==1.14.0
-    - whatshap ==0.18
-    - samtools >=1.9
-    - bcftools >=1.9
+    - samtools >=1.14
+    - bcftools >=1.14
     - minimap2 >=2.17
-    - htslib >=1.9
-    - bzip2
-    - xz
-    - zlib
+    - htslib >=1.14
+    - libcurl
+    - openssl
+    - wurlitzer
 
 test:
   imports:
@@ -66,13 +75,13 @@ test:
 
 about:
   home: https://github.com/nanoporetech/medaka
-  license: Mozilla Public License 2.0
+  summary: Neural network sequence error correction.
+  license: MPL-2.0
   license_family: OTHER
   license_file: LICENSE.md
-  summary: Neural network sequence error correction.
-  doc_url: https://nanoporetech.github.io/medaka/index.html
   dev_url: https://github.com/nanoporetech/medaka
 
 extra:
-  recipe-maintainers:
-    - cjw85
+  identifiers:
+    - usegalaxy-eu:medaka_consensus
+    - biotools:medaka

@@ -1,0 +1,6 @@
+#!/bin/sh
+export JULIA_DEPOT_PATH="${JULIA_DEPOT_PATH_BACKUP}"
+unset HAPLINK_JULIA_DEPOT_PATH_BACKUP
+if [ -z "${JULIA_DEPOT_PATH}" ]; then
+  unset JULIA_DEPOT_PATH
+fi

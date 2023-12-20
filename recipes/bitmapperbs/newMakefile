@@ -25,10 +25,14 @@ EXECUTABLE = bitmapperBS
 .PHONY: all
 
 .ONESHELL:
-all: $(SOURCES) $(EXECUTABLE) FORCE
+all: $(SOURCES) $(EXECUTABLE) psascan FORCE
 
 $(EXECUTABLE): $(SOURCES) FORCE
 	$(CXX) $(SOURCES) $(INCLUDES) -o $@ htslib_aim/lib/libhts.a $(LIBS) $(LDFLAGS)
+
+psascan:
+	cd pSAscan-0.1.0/src
+	$(CXX) $(CXXFLAGS) -o ../../psascan -I$(PREFIX)/include -L$(PREFIX)/lib -ldivsufsort ./psascan_src/utils.cpp main.cpp -ldivsufsort -ldivsufsort64 -fopenmp
 
 .c.o: FORCE
 	$(CC) $(CFLAGS) $(INCLUDES) $< -o $@ 

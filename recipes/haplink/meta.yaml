@@ -1,0 +1,45 @@
+{% set name = "haplink" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "2e9459d8b84c01b4503b1b6a68c664f6ba062d1a3123516a9e46a6d4f354374a" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('haplink', max_pin='x') }}
+  binary_relocation: false
+  skip: True # [osx]
+
+source:
+  url: https://github.com/ksumngs/HapLink.jl/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+# HapLink only requires Julia v1.6 to run natively, but the changes made to how
+# conda changes JULIA_DEPOT_PATH makes the conda version require Julia v1.8 or
+# greater
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - git
+    - julia >=1.8
+  host:
+    - julia >=1.8
+  run:
+    - julia >=1.8
+
+test:
+  commands:
+    - haplink --help
+
+about:
+  home: https://ksumngs.github.io/HapLink.jl
+  license: MIT
+  license_file: LICENSE
+  summary: Viral haplotype calling via linkage disequilibrium
+
+extra:
+  container:
+    extended-base: True

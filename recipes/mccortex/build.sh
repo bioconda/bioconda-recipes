@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 set -x
 
-export CFLAGS="-I$PREFIX/include"
+export CFLAGS="-I$PREFIX/include -fcommon"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=$PREFIX/include
+export CC="${CC} -fcommon"
+export CXX="${CXX} -fcommon"
 
 for make_file in libs/string_buffer/Makefile $(find libs/seq_file -name Makefile) $(find libs/seq-align -name Makefile) Makefile; do
     sed -i.bak 's/-lz/-lz $(LDFLAGS)/' $make_file

@@ -1,0 +1,99 @@
+{% set name = "ggCaller" %}
+{% set version = "1.3.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/samhorsfield96/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: b2e6ed3fb3b34c4cb1aa2f66e4dc1ae2f4f20530fa549335756bb94811f00c16
+
+build:
+  number: 0
+  skip: True  # [osx or py < 39]
+  entry_points:
+    - ggcaller = ggCaller.__main__:main
+
+requirements:
+  build:
+    - {{ compiler('c')}}
+    - {{ compiler('cxx') }}
+    - cmake >=3.10
+    - make
+    - tbb
+    - tbb-devel
+    - mkl-devel # [linux]
+    - openblas  # [osx]
+    - protobuf
+    - pytorch
+  host:
+    - python
+    - pybind11
+    - bifrost
+    - zlib
+    - pip
+    - bzip2
+    - pytorch
+    - boost-cpp
+    - setuptools
+    - llvm-openmp # [osx]
+    - libgomp # [linux]
+    - mkl-devel # [linux]
+    - lapack # [osx]
+    - openblas # [osx]
+    - eigen =3.3
+    - tbb
+    - tbb-devel
+    - protobuf
+  run:
+    - python
+    - numpy
+    - scipy
+    - pandas
+    - bifrost
+    - biopython >=1.8.0
+    - bcbio-gff
+    - diamond >=2.0
+    - hmmer
+    - mafft
+    - snp-sites
+    - zlib
+    - pthread-stubs
+    - matplotlib-base
+    - xorg-libxi
+    - xorg-libxcursor
+    - xorg-libxdamage
+    - xorg-libxcomposite
+    - xorg-libxrandr
+    - xorg-libxinerama
+    - xorg-libxpm
+    - xorg-libxaw
+    - xorg-libxfixes
+    - intbitset
+    - networkx
+    - uncertainties
+    - tqdm
+    - seaborn
+    - rapidnj
+    - python-edlib
+    - joblib
+    - gffutils
+    - cd-hit
+    - python-wget
+    - boost-cpp
+
+test:
+  imports:
+    - ggCaller_cpp
+    - ggCaller
+    - panaroo_runner
+  commands:
+    - ggcaller -h | grep -q "Generates ORFs from a Bifrost graph."
+
+about:
+   home: https://github.com/samhorsfield96/ggCaller
+   license: MIT
+   license_family: MIT
+   license_file: LICENSE
+   summary: 'A de Bruijn graph-based gene-caller and pangenome analysis tool'

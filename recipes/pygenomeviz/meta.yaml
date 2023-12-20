@@ -1,0 +1,64 @@
+{% set name = "pygenomeviz" %}
+{% set version = "0.4.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pygenomeviz-{{ version }}.tar.gz
+  sha256: 0e3566fba142f522efa363ace1d95cb1af4701e42fdb1e51fbf35840a5347c86
+
+build:
+  entry_points:
+    - pgv-download-dataset = pygenomeviz.scripts.download_dataset:main
+    - pgv-mmseqs = pygenomeviz.scripts.mmseqs:main
+    - pgv-mummer = pygenomeviz.scripts.mummer:main
+    - pgv-pmauve = pygenomeviz.scripts.pmauve:main
+    - pgv-simpleplot = pygenomeviz.scripts.simpleplot:main
+    - pgv-gui = pygenomeviz.scripts.gui:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - poetry
+    - python >=3.8
+  run:
+    - biopython >=1.79
+    - matplotlib-base >=3.5.2
+    - numpy >=1.21
+    - python >=3.8
+  run_constrained:
+    - streamlit >=1.25.0
+
+test:
+  imports:
+    - pygenomeviz
+  commands:
+    - pip check
+    - pgv-download-dataset --help
+    - pgv-mmseqs --help
+    - pgv-mummer --help
+    - pgv-pmauve --help
+    - pgv-simpleplot --help
+    - pgv-gui --help
+  requires:
+    - pip
+    - pytest
+  source_files:
+    - tests/
+
+about:
+  home: https://github.com/moshi4/pyGenomeViz/
+  summary: A genome visualization python package for comparative genomics
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - moshi4

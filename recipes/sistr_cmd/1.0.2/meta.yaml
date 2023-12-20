@@ -1,0 +1,42 @@
+{% set name = "sistr_cmd" %}
+{% set version = "1.0.2" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "md5" %}
+{% set hash_value = "9a531cf6139a56613943627de267572c" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  noarch: python
+  number: 5
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - numpy >=1.11.1
+    - pandas >=0.18.1,<=1.0.5
+    - pytables >=3.3.0
+    - blast 2.5.*
+    - mafft
+    - mash
+    - python-dateutil
+
+test:
+  commands:
+    - sistr -h
+    - sistr -V
+
+about:
+  home: https://github.com/peterk87/sistr_cmd/
+  license: Apache
+  summary: 'Salmonella In Silico Typing Resource (SISTR) commandline tool for serovar prediction'

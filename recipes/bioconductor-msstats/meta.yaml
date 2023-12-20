@@ -1,6 +1,6 @@
-{% set version = "3.20.0" %}
+{% set version = "4.8.3" %}
 {% set name = "MSstats" %}
-{% set bioc = "3.11" %}
+{% set bioc = "3.17" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,65 +8,57 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 1c4d2b21aa07af54074481378573827b
+  md5: 06dfde9c4e7960e84e1bb35698986b45
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, knitr, rmarkdown, MSstatsBioData
+# Suggests: BiocStyle, knitr, rmarkdown, tinytest, covr, markdown
 requirements:
   host:
-    - 'bioconductor-limma >=3.44.0,<3.45.0'
-    - 'bioconductor-marray >=1.66.0,<1.67.0'
-    - 'bioconductor-preprocesscore >=1.50.0,<1.51.0'
+    - 'bioconductor-limma >=3.56.0,<3.57.0'
+    - 'bioconductor-marray >=1.78.0,<1.79.0'
+    - 'bioconductor-msstatsconvert >=1.10.0,<1.11.0'
+    - 'bioconductor-preprocesscore >=1.62.0,<1.63.0'
     - r-base
-    - r-broom
+    - r-checkmate
     - r-data.table
-    - r-dosnow
-    - r-dplyr
-    - r-foreach
     - r-ggplot2
     - r-ggrepel
     - r-gplots
     - r-lme4
     - r-mass
-    - r-minpack.lm
-    - r-purrr
-    - r-randomforest
-    - r-reshape2
-    - r-snow
+    - r-rcpp
+    - r-rcpparmadillo
     - r-statmod
-    - r-stringr
     - r-survival
-    - r-tidyr
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-limma >=3.44.0,<3.45.0'
-    - 'bioconductor-marray >=1.66.0,<1.67.0'
-    - 'bioconductor-preprocesscore >=1.50.0,<1.51.0'
+    - 'bioconductor-limma >=3.56.0,<3.57.0'
+    - 'bioconductor-marray >=1.78.0,<1.79.0'
+    - 'bioconductor-msstatsconvert >=1.10.0,<1.11.0'
+    - 'bioconductor-preprocesscore >=1.62.0,<1.63.0'
     - r-base
-    - r-broom
+    - r-checkmate
     - r-data.table
-    - r-dosnow
-    - r-dplyr
-    - r-foreach
     - r-ggplot2
     - r-ggrepel
     - r-gplots
     - r-lme4
     - r-mass
-    - r-minpack.lm
-    - r-purrr
-    - r-randomforest
-    - r-reshape2
-    - r-snow
+    - r-rcpp
+    - r-rcpparmadillo
     - r-statmod
-    - r-stringr
     - r-survival
-    - r-tidyr
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -76,6 +68,8 @@ about:
   summary: 'Protein Significance Analysis in DDA, SRM and DIA for Label-free or Label-based Proteomics Experiments'
   description: 'A set of tools for statistical relative protein significance analysis in DDA, SRM and DIA experiments.'
 extra:
+  identifiers:
+    - biotools:msstats
   parent_recipe:
     name: bioconductor-msstats
     path: recipes/bioconductor-msstats

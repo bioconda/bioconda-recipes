@@ -1,6 +1,5 @@
 #!/bin/sh
 
-export CFLAGS="-I$PREFIX/include -L$PREFIX/lib"
-
-make
-cp GotohScan $PREFIX/bin
+make CC="${CC} ${CFLAGS} ${CPPFLAGS}" LL="${CC} ${LDFLAGS}"
+install -d "${PREFIX}/bin"
+install GotohScan "${PREFIX}/bin/"

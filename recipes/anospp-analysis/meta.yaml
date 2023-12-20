@@ -1,0 +1,55 @@
+{% set name = "anospp-analysis" %}
+{% set version = "0.2.1" %}
+
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/anospp_analysis-{{ version }}.tar.gz
+  sha256: 340379a7131847df437c0dba76d79912f47f35de6b9c172854a16b173639d7c9
+
+build:
+  noarch: python
+  number: 1
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
+
+requirements:
+  host:
+    - pip
+    - poetry
+    - python 3.10.*
+  run:
+    - python 3.10.*
+    - biopython
+    - cutadapt
+    - numpy 
+    - pandas
+    - seaborn
+    - blast
+    - fasttree
+    - mafft
+    - bokeh
+    - keras >=2
+    - tensorflow-base >=2
+
+test:
+  imports:
+    - anospp_analysis
+  commands:
+    - anospp-prep -h
+    - anospp-qc -h
+    - anospp-plasm -h
+    - anospp-nn -h
+    - anospp-vae -h
+
+about:
+  home: https://pypi.org/project/anospp-analysis/
+  summary: ANOSPP data analysis
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - amakunin

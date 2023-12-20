@@ -1,17 +1,19 @@
-{% set version = "2.10" %}
+{% set version = "4.5" %}
 
 package:
   name: cutadapt
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/4b/9d/3f98c2619206430ad11e485a2a2f6b3e37f792f11523fee372739abdc1cd/cutadapt-2.10.tar.gz
-  sha256: 936b88374b5b393a954852a0fe317a85b798dd4faf5ec52cf3ef4f3c062c242a
+  url: https://files.pythonhosted.org/packages/36/f6/3e040d24a2a475aae2afc193957abe9bc90139b8b72b8a5317198201f2fb/cutadapt-4.5.tar.gz
+  sha256: 33e56678bb3ba90fd7045d03184b83e135f61e8a6b9f29aa3db8c63611a08e94
 
 build:
   number: 0
   script: "{{ PYTHON }} -m pip install . --no-deps -vv"
-  skip: True  # [py27]
+  skip: True  # [py27 or py36]
+  run_exports:
+    - {{ pin_subpackage("cutadapt", max_pin="x") }}
 
 requirements:
   build:
@@ -20,12 +22,11 @@ requirements:
     - pip
     - python
     - cython
-    - setuptools_scm
+    - setuptools-scm
   run:
     - python
-    - xopen >=0.8.4
-    - dnaio >=0.4.2
-    - pigz
+    - xopen >=1.6.0
+    - dnaio >=0.10.0
 
 test:
   imports:
@@ -39,6 +40,8 @@ about:
   summary: Trim adapters from high-throughput sequencing reads
 
 extra:
+  recipe-maintainers:
+    - marcelm
   identifiers:
     - biotools:cutadapt
     - doi:10.14806/ej.17.1.200

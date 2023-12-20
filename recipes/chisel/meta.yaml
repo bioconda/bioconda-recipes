@@ -1,5 +1,5 @@
 {% set name = "chisel" %}
-{% set version = "0.0.4" %}
+{% set version = "1.1.4" %}
 
 package:
   name: '{{ name|lower }}'
@@ -7,17 +7,20 @@ package:
 
 source:
   url: https://github.com/raphael-group/{{ name }}/archive/v{{ version }}.zip
-  sha256: 1e71fcc9c744d05599a769b567f14c86f0e1e3380dfe8c84b1beb116387afd4a
+  sha256: ef00356e95203dd5cbd25fc7a070f28313d71c08d4e84fb90be5f78ef7d138b7
 
 build:
   noarch: python
   number: 0
   entry_points:
-    - chisel = bin.chisel:main
-    - chisel_calling = bin.chisel_calling:main
-    - chisel_cloning = bin.chisel_cloning:main
-    - chisel_plotting = bin.chisel_plotting:main
-    - chisel_pseudonormal = bin.chisel_pseudonormal:main
+    - chisel = chisel.bin.chisel_main:main
+    - chisel_nonormal = chisel.bin.chisel_nonormal:main
+    - chisel_calling = chisel.bin.chisel_calling:main
+    - chisel_cloning = chisel.bin.chisel_cloning:main
+    - chisel_plotting = chisel.bin.chisel_plotting:main
+    - chisel_pseudonormal = chisel.bin.chisel_pseudonormal:main
+    - chisel_prep = chisel.bin.chisel_prep:main
+    - chisel_bedding = chisel.bin.chisel_bedding:main
   script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 requirements:
@@ -30,18 +33,24 @@ requirements:
     - scipy >=1.2.1
     - pandas 
     - matplotlib-base
-    - seaborn >=0.7.1
+    - seaborn >=0.7.1, <=0.9.0
+    - statsmodels <=0.10.1
     - samtools
     - bcftools
     - gawk
+    - bwa
+    - art
 
 test:
   commands:
-    - chisel --help
-    - chisel_calling --help
-    - chisel_cloning --help
-    - chisel_plotting --help
-    - chisel_pseudonormal --help
+    - chisel -h
+    - chisel_nonormal -h
+    - chisel_calling -h
+    - chisel_cloning -h
+    - chisel_plotting -h
+    - chisel_pseudonormal -h
+    - chisel_prep -h
+    - chisel_bedding -h
 
 about:
   home: https://github.com/raphael-group/chisel

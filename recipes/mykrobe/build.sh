@@ -2,9 +2,11 @@
 set -x
 
 # specify zlib location https://bioconda.github.io/troubleshooting.html#zlib-errors
-export CFLAGS="-I$PREFIX/include"
+export CFLAGS="-I$PREFIX/include -fcommon"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH="$PREFIX/include"
+export CC="${CC} -fcommon -lstdc++"
+export CXX="${CC} -fcommon"
 
 # download phelim's fork of mccortex
 MCCORTEX_DIR=mccortex
@@ -24,7 +26,9 @@ for make_file in libs/string_buffer/Makefile $(find libs/seq_file -name Makefile
 done
 
 make MAXK=31
-
+cp bin/mccortex31 ../src/mykrobe/cortex/
 cd ../ || exit 1
 
-python setup.py install --single-version-externally-managed --record=record.txt
+"$PYTHON" -m pip install . -vv
+mykrobe panels update_metadata
+mykrobe panels update_species all

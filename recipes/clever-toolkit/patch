@@ -1,7 +1,16 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 77a8a3f..e745642 100644
+index 77a8a3f..ea1572e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
+@@ -18,7 +18,7 @@
+ cmake_minimum_required (VERSION 3.1)
+ project (STRUCTVAR)
+ 
+-set (CMAKE_CXX_STANDARD 11)
++set (CMAKE_CXX_STANDARD 14)
+ 
+ list(APPEND CMAKE_MODULE_PATH .) 
+ 
 @@ -54,7 +54,6 @@ endif()
  
  add_subdirectory(3rd-party/bamtools/src/bamtools/api)
@@ -11,9 +20,18 @@ index 77a8a3f..e745642 100644
  install(PROGRAMS scripts/laser scripts/evaluate-sv-predictions scripts/split-priors-by-chromosome scripts/clever scripts/postprocess-predictions scripts/vcf-to-deletionlist scripts/mateclever scripts/mateclever-compute-rois scripts/plot-insert-size-distribution DESTINATION bin)
  
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index c339848..a7d188c 100644
+index c339848..4413865 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
+@@ -137,7 +137,7 @@ add_executable (read-group-stats
+ )
+ 
+ add_executable (merge-putative-variations
+-	merge-putative-variations
++	merge-putative-variations.cpp
+ )
+ 
+ add_executable (ctk-version
 @@ -165,6 +165,11 @@ target_link_libraries(merge-putative-variations CleverLib)
  target_link_libraries(ctk-version CleverLib)
  
@@ -26,3 +44,53 @@ index c339848..a7d188c 100644
  set(ALL_EXE_TARGETS 
  	bam-to-alignment-priors
  	insert-length-histogram
+diff --git a/src/CliqueWriter.h b/src/CliqueWriter.h
+index b90832a..588be1a 100644
+--- a/src/CliqueWriter.h
++++ b/src/CliqueWriter.h
+@@ -118,7 +118,7 @@ private:
+ 	 *  according to the underlying read names. */
+ 	typedef struct readname_comparator_t {
+ 		CliqueWriter& cw;
+-		bool operator()(const size_t& index1, const size_t& index2) {
++		bool operator()(const size_t& index1, const size_t& index2) const {
+ 			const std::string& name1 = cw.readname_to_index.right.at(index1);
+ 			const std::string& name2 = cw.readname_to_index.right.at(index2);
+ 			return name1.compare(name2) < 0;
+diff --git a/src/DefaultGapCostDistributions.h b/src/DefaultGapCostDistributions.h
+index 7691121..99885c7 100644
+--- a/src/DefaultGapCostDistributions.h
++++ b/src/DefaultGapCostDistributions.h
+@@ -20,6 +20,8 @@
+ #ifndef DEFAULTGAPCOSTDISTRIBUTIONS_H
+ #define DEFAULTGAPCOSTDISTRIBUTIONS_H
+ 
++#include <memory>
++
+ #include "IndelLengthDistribution.h"
+ 
+ class DefaultGapCostDistributions {
+diff --git a/src/HistogramBasedDistribution.h b/src/HistogramBasedDistribution.h
+index d4abcca..1b0158a 100644
+--- a/src/HistogramBasedDistribution.h
++++ b/src/HistogramBasedDistribution.h
+@@ -19,6 +19,7 @@
+ #ifndef HISTOGRAMBASEDDISTRIBUTION_H_
+ #define HISTOGRAMBASEDDISTRIBUTION_H_
+ 
++#include <memory>
+ #include <vector>
+ #include <boost/math/distributions/normal.hpp>
+ 
+diff --git a/src/VariationIndex.h b/src/VariationIndex.h
+index 9802fc8..c70ba38 100644
+--- a/src/VariationIndex.h
++++ b/src/VariationIndex.h
+@@ -19,6 +19,7 @@
+ #ifndef VARIATIONINDEX_H_
+ #define VARIATIONINDEX_H_
+ 
++#include <memory>
+ #include <vector>
+ #include <boost/unordered_map.hpp>
+ 

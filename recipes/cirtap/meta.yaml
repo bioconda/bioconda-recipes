@@ -1,0 +1,51 @@
+{% set name = "cirtap" %}
+{% set version = "0.3.1" %}
+
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cirtap-{{ version }}.tar.gz
+  sha256: d110c3c52b6ba98ca1cd4cf67ca9bcf667c4f016b399e968f7d753be01ac4dc4
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - cirtap = cirtap.core:cli
+  script: {{ PYTHON }} -m pip install . -vv
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - biopython
+    - click >=8.0
+    - ete3
+    - importlib-metadata  # [py<38]
+    - pandas >=1.1.4
+    - python
+    - tqdm
+
+test:
+  imports:
+    - cirtap
+  commands:
+    - pip check
+    - cirtap --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/MGXlab/cirtap/
+  summary: A CLI to handle PATRIC data from the FTP
+  dev_url: https://github.com/MGXlab/cirtap
+  license: MIT
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - papanikos

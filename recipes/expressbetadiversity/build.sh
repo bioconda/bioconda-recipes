@@ -7,10 +7,8 @@ mkdir -p ${SHARE_DIR}
 # Copy across unit tests and python scripts
 cp -r unit-tests ${SHARE_DIR}
 
-# Build the binary, this is required as a work-around to g++ not being found
+# Build the binary
 cd source
-ln -s ${CC} $BUILD_PREFIX/bin/gcc
-ln -s ${CXX} $BUILD_PREFIX/bin/g++
 make
 
 # Move built binary across to the shared bin and symlink it

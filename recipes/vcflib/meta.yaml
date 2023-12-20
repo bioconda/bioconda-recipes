@@ -1,47 +1,78 @@
 {% set name = "vcflib" %}
+{% set version = "1.0.9" %}
+{% set sha256 = "493204cb8e0515defa1383d56280d00b8efbed55312c6055162f8cb3a4ffb210" %}
 
 package:
   name: {{ name }}
-  version: '1.0.0_rc3'
+  version: {{ version }}
 
 source:
-  git_url: https://github.com/{{ name }}/{{ name }}.git
-  git_rev: 45c68d2df744c0baf3953c10e9220e9d9a1422e3
+- url: https://github.com/vcflib/vcflib/releases/download/v{{ version }}/vcflib-{{ version }}-src.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - pkg-config.patch
+    - shared_lib.patch
+    - backport_pr_394.patch  # TODO remove once PR https://github.com/vcflib/vcflib/pull/394 is merged and released
+    - tabix.patch
+- url: https://ziglang.org/download/0.10.1/zig-linux-x86_64-0.10.1.tar.xz  # [linux]
+  sha256: 6699f0e7293081b42428f32c9d9c983854094bd15fee5489f12c4cf4518cc380  # [linux]
+  folder: zig-linux-x86_64-0.10.1  # [linux]
+- url: https://ziglang.org/download/0.10.1/zig-macos-x86_64-0.10.1.tar.xz  # [osx]
+  sha256: 02483550b89d2a3070c2ed003357fd6e6a3059707b8ee3fbc0c67f83ca898437  # [osx]
+  folder: zig-macos-x86_64-0.10.1  # [osx]
 
 build:
-  number: 0
+  number: 4
+  run_exports:
+    - {{ pin_subpackage('vcflib', max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-  host:
+    - make
+    - cmake
+    - pybind11-global
+    # python really only used as a build tool; no ${PREFIX}/bin/python needed.
     - python >=3
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - zlib
-    - bzip2
-    - xz
+    - htslib
+    - tabixpp
+    - pkg-config
+    - wfa2-lib
   run:
     - python >=3
-    - zlib
-    - bzip2
-    - xz
+    - perl
+    - htslib
+    - tabixpp
+    - eigen
+    - jsoncpp
+    - wfa2-lib
 
 test:
+  requires:
+    - wget
   commands:
-    - vcfallelicprimitives -h
-    - vcffirstheader < /dev/null
-    - vcfsort < /dev/null
-    - vcfrandom | grep 'fileformat=VCF'
+    - "vcfwave -h"
+    - "vcffirstheader < /dev/null"
+    - "vcfsort < /dev/null"
+    - "vcfstreamsort --help"
+    - "wget -O test.vcf https://raw.githubusercontent.com/vcflib/vcflib/a610b7444daab0c9e974d9a001550bf8dd644770/test/data/regression/vcffilter_2.vcf"
+    - "vcfuniq test.vcf"
 
 about:
-  home: https://github.com/{{ name }}/{{ name }}
+  home: https://github.com/vcflib/vcflib
   license: MIT
+  license_family: MIT
+  license_file: LICENSE
   summary: Command-line tools for manipulating VCF files
 
 extra:
+  recipe-maintainers:
+    - jpuritz
   identifiers:
-    - biotools:{{ name }}
-    - doi:10.1101/023754
-  skip-lints:
-    - uses_vcs_url
-    - missing_hash
+    - biotools:vcflib
+    - doi:10.1371/journal.pcbi.1009123
+    - usegalaxy-eu:vcfsort
