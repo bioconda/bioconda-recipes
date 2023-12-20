@@ -1,4 +1,4 @@
-{% set version = "7.32.4" %}
+{% set version = "8.0.0" %}
 
 package:
   name: snakemake
@@ -6,10 +6,10 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/snakemake/snakemake-{{ version }}.tar.gz
-  sha256: fdc3f15dd7b06fabb7da30d460e0a3b1fba08e4ea91f9c32c47a83705cdc7b6e
+  sha256: 5e331a9401f7f571db3fe3c1e0b56360f3fc003d210d8475a9c6466edb41eb6c
 
 build:
-  number: 1
+  number: 0
   noarch: generic
   run_exports:
     - {{ pin_subpackage("snakemake", max_pin="x") }}
@@ -17,25 +17,8 @@ build:
 requirements:
   run:
     - snakemake-minimal ={{ version }}
-    # optional dependencies needed for the full experience
-    # require this dropbox version to ensure that a conda doesn't pick up the
-    # outdated version available
-    - dropbox >=7.2.1
-    - ftputil >=3.2
-    - filechunkio >=1.6
-    - pysftp >=0.2.8
-    - aioeasywebdav
     # pandas is optional, but required for many workflows
     - pandas
-    - python-irodsclient
-    # aws s3
-    - boto3
-    # check snakemake/setup.cfg's section [options.extras_require]
-    # options.extras_require: google-cloud
-    - google-cloud-storage
-    - google-api-python-client
-    - google-crc32c
-    - oauth2client
     # options.extras_require: messaging
     - slacker
     # options.extras_require: pep
@@ -93,13 +76,14 @@ outputs:
 
     requirements:
       host:
-        - python >=3.7
+        - python >=3.11
         - pip
         - setuptools
       run:
         # Keep in sync with snakemake/setup.cfg
-        - python >=3.7,<3.12
+        - python >=3.11,<=3.12
         - appdirs
+        - immutables
         - configargparse
         - connection_pool >=0.0.3
         - datrie
@@ -122,6 +106,11 @@ outputs:
         - toposort >=1.10
         - yte  >=1.5.1,<2.0
         - wrapt
+        - conda-inject >=1.3.1,<2.0
+        - snakemake-interface-executor-plugins >=8.1.3,<9.0
+        - snakemake-interface-common >=1.15.0,<2.0
+        - snakemake-interface-storage-plugins >=3.0.0,<4.0
+
 
     test:
       imports:
