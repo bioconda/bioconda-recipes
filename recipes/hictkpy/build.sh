@@ -38,5 +38,6 @@ echo "$CMAKE_ARGS"
 export CMAKE_ARGS
 
 HICTKPY_SETUP_SKIP_CONAN=1 \
-"$PYTHON" -m pip install "$SRC_DIR" -v
+SETUPTOOLS_SCM_PRETEND_VERSION="$PKG_VERSION" \
+"$PYTHON" -m pip install "$SRC_DIR" -vv
 
