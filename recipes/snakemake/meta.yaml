@@ -1,4 +1,4 @@
-{% set version = "8.0.0" %}
+{% set version = "8.0.1" %}
 
 package:
   name: snakemake
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/snakemake/snakemake-{{ version }}.tar.gz
-  sha256: 5e331a9401f7f571db3fe3c1e0b56360f3fc003d210d8475a9c6466edb41eb6c
+  sha256: 72f1158a345e8c53f73a14b3480bdfd6c1605f7c1c4a8a46f96fac489133ab80
 
 build:
   number: 0
@@ -17,19 +17,8 @@ build:
 requirements:
   run:
     - snakemake-minimal ={{ version }}
-    # optional dependencies needed for the full experience
-    # require this dropbox version to ensure that a conda doesn't pick up the
-    # outdated version available
-    - dropbox >=7.2.1
-    - ftputil >=3.2
-    - filechunkio >=1.6
-    - pysftp >=0.2.8
-    - aioeasywebdav
     # pandas is optional, but required for many workflows
     - pandas
-    - python-irodsclient
-    # aws s3
-    - boto3
     # options.extras_require: messaging
     - slack_sdk
     # options.extras_require: pep
@@ -81,7 +70,6 @@ outputs:
       script: python -m pip install --no-deps --ignore-installed .
       entry_points:
         - snakemake = snakemake.cli:main
-        - snakemake-bash-completion = snakemake.cli:bash_completion
       run_exports:
         - {{ pin_subpackage("snakemake-minimal", max_pin="x") }}
 
@@ -93,6 +81,7 @@ outputs:
       run:
         # Keep in sync with snakemake/setup.cfg
         - python >=3.11,<3.13
+        - immutables
         - appdirs
         - conda-inject >=1.3.1,<2.0
         - configargparse
