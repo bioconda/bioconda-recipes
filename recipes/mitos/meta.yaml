@@ -1,5 +1,5 @@
 {% set name = "mitos" %}
-{% set version = "2.1.3" %}
+{% set version = "2.1.4" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,19 +7,21 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 0a5bee0882a957457426baaa36655d968fbd36523e3fb06d96e2401f9f9bd285
+  sha256: 5e9095a0bd73c7835204918f3b65741346c9b411e528efd4edf8d6ae0a3bee66
 
 build:
   number: 0
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('mitos', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
     - python >=3
   run:
-    - biopython <1.68
+    - biopython <1.78
     - python >=3
     - blast =2.9
     - hmmer =3.2
@@ -29,12 +31,7 @@ requirements:
     - r-ggplot2
     - r-reshape2
     - openjdk >8
-    # biopython -> reportlab -> pillow
-    # - does not work with newest libtiff 
-    # - force to not install it from defaults
-    # xref https://github.com/conda-forge/pillow-feedstock/issues/135
-    - conda-forge::pillow
-    - conda-forge::libtiff <4.5
+    - reportlab
 
 test:
   imports:
