@@ -18,6 +18,7 @@ cp GroupedAnalysisAmpSuite.py ${PREFIX}/bin/GroupedAnalysisAmpSuite.py
 cp amplicon_classifier.py ${PREFIX}/bin/amplicon_classifier.py
 cp feature_similarity.py ${PREFIX}/bin/feature_similarity.py
 cp make_results_table.py ${PREFIX}/bin/make_results_table.py
+cp make_input.sh ${PREFIX}/bin/make_input.sh
 
 # Python command to install the package.
 $PYTHON setup.py install --install-data aa_data_repo/ --single-version-externally-managed --record=record.txt

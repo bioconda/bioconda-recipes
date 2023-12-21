@@ -1,0 +1,45 @@
+{% set name = "snakemake-executor-plugin-cluster-generic" %}
+{% set version = "1.0.7" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snakemake_executor_plugin_cluster_generic-{{ version }}.tar.gz
+  sha256: 093808e63cc48294a9d1eb0b620cdff8cc970806294a2f6ba127a49f8a81d473
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.11,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.11.0,<4.0.0
+    - snakemake-interface-executor-plugins >=8.1.0,<9.0.0
+    - snakemake-interface-common >=1.13.0,<2.0.0
+
+test:
+  imports:
+    - snakemake_executor_plugin_cluster_generic
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/snakemake/snakemake-executor-plugin-cluster-generic
+  summary: ''
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - koesterlab
