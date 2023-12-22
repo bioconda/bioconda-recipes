@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 set -e
 export USE_GL=1
+sed -i 's/-lEGL -lGLESv2/-lGL/' Makefile
 make prep
 CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" make
 mkdir -p $PREFIX/bin
