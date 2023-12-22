@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 set -e
-make prep
+make prep USE_GL=1
 CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" make
 mkdir -p $PREFIX/bin
 cp gw $PREFIX/bin/gw
