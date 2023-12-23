@@ -68,35 +68,15 @@ jobs:
           conda config --show-sources
           python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
           echo '============'
-
-          echo 'Assigning packages based on runner ${{ matrix.runner }}'
-
-          if [ ${{ matrix.runner }} -eq 0 ]; then
-            packagenames='bioconductor-appreci8r bioconductor-assign bioconductor-cdi bioconductor-champ bioconductor-chipenrich bioconductor-chipxpress bioconductor-chipxpressdata bioconductor-cocoa'
-          elif [ ${{ matrix.runner }} -eq 1 ]; then
-            packagenames='bioconductor-conumee bioconductor-distinct bioconductor-dmrcate bioconductor-enrichtf bioconductor-gcapc bioconductor-hilbertvisgui bioconductor-hireadsprocessor bioconductor-knowseq'
-          elif [ ${{ matrix.runner }} -eq 2 ]; then
-            packagenames='bioconductor-mafdb.gnomad.r2.1.grch38 bioconductor-mafdb.gnomad.r2.1.hs37d5 bioconductor-meal bioconductor-methylgsa bioconductor-missmethyl bioconductor-netboost bioconductor-neve2006 bioconductor-nucler'
-          elif [ ${{ matrix.runner }} -eq 3 ]; then
-            packagenames='bioconductor-nullranges bioconductor-otubase bioconductor-pagerank bioconductor-past bioconductor-peco bioconductor-periodicdna bioconductor-ping bioconductor-plyinteractions bioconductor-tbsignatureprofiler'
-          elif [ ${{ matrix.runner }} -eq 4 ]; then
-            packagenames='bioconductor-pram bioconductor-promise bioconductor-prostar bioconductor-pumadata bioconductor-r3cseq bioconductor-rat2302frmavecs bioconductor-regionereloaded bioconductor-reusedata bioconductor-seventygenedata'
-          elif [ ${{ matrix.runner }} -eq 5 ]; then
-            packagenames='bioconductor-rgmql bioconductor-rifi bioconductor-rificomparative bioconductor-rjmcmcnucleosomes bioconductor-rmspc bioconductor-roar bioconductor-rrbsdata bioconductor-snplocs.hsapiens.dbsnp155.grch37 bioconductor-snplocs.hsapiens.dbsnp155.grch38'
-          fi
-
           bioconda-utils build recipes config.yml \
-            --packages $packagenames \
+            --worker-offset ${{ matrix.runner }} --n-workers 6 \
             --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
             --lint --record-build-failures --skiplist-leafs
           conda clean -y --all
 
-
-
-
   build-osx:
     name: Bulk OSX Builds
-    if: "contains(github.event.head_commit.message, '[ci run osx]')"
+    if: "contains(github.event.head_commit.message, '[ci run]')"
     runs-on: macOS-latest
     strategy:
       fail-fast: false
