@@ -1,0 +1,42 @@
+{% set name = "versionix" %}
+{% set version = "0.2.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/versionix-{{ version }}.tar.gz
+  sha256: b8a83f09615ffb233115d64cbb42a193a187f62ce9f8769d3900cfbcc2e085c1
+
+build:
+  entry_points:
+    - versionix = versionix.scripts:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('versionix', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - poetry-core >=1.0.0
+  run:
+    - python >=3.8.0
+    - click >=8.1.7
+    - rich-click
+
+test:
+  imports:
+    - versionix
+  commands:
+    - versionix --help
+
+about:
+  home: https://github.com/sequana/versionix
+  summary: Get version of any tools
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
