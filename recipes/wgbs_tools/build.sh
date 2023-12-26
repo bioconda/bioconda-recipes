@@ -4,7 +4,7 @@ set -eoux pipefail
 git clone https://github.com/nloyfer/wgbs_tools.git
 
 cd wgbs_tools
-sed -i -e '1s::#!/usr/bin/python3 -u::#!/usr/bin/python -u:' src/python//*.py
+sed -i  '1 s/python3/python' src/python/*.py
 
 python setup.py
 
