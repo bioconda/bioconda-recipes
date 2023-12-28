@@ -1,5 +1,9 @@
 #!/usr/bin/bash
 set -e
+export USE_GL=1
+if [[ "$OSTYPE" != "darwin"* ]]; then
+  sed -i 's/-lEGL -lGLESv2/-lGL/' Makefile
+fi
 make prep
 CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" make
 mkdir -p $PREFIX/bin
