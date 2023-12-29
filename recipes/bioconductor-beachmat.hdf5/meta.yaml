@@ -1,0 +1,53 @@
+{% set version = "1.0.0" %}
+{% set name = "beachmat.hdf5" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: b2ca9b6358fb05895101e6a911ca0e39
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-beachmat.hdf5", max_pin="x.x") }}'
+# Suggests: testthat, BiocStyle, knitr, rmarkdown, rhdf5, Matrix
+# SystemRequirements: C++17, GNU make
+requirements:
+  host:
+    - 'bioconductor-beachmat >=2.18.0,<2.19.0'
+    - 'bioconductor-delayedarray >=0.28.0,<0.29.0'
+    - 'bioconductor-hdf5array >=1.30.0,<1.31.0'
+    - 'bioconductor-rhdf5lib >=1.24.0,<1.25.0'
+    - r-base
+    - r-rcpp
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-beachmat >=2.18.0,<2.19.0'
+    - 'bioconductor-delayedarray >=0.28.0,<0.29.0'
+    - 'bioconductor-hdf5array >=1.30.0,<1.31.0'
+    - 'bioconductor-rhdf5lib >=1.24.0,<1.25.0'
+    - r-base
+    - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'beachmat bindings for HDF5-backed matrices'
+  description: 'Extends beachmat to support initialization of tatami matrices from HDF5-backed arrays. This allows C++ code in downstream packages to directly call the HDF5 C/C++ library to access array data, without the need for block processing via DelayedArray. Some utilities are also provided for direct creation of an in-memory tatami matrix from a HDF5 file.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
