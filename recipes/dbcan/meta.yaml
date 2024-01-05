@@ -10,24 +10,29 @@ source:
   # wget -0- [URL] | shasum -a 256
   url: https://github.com/linnabrown/run_dbcan/releases/download/{{ version }}/dbcan-{{ version }}.tar.gz
   sha256: 4c82bc656a7509958685542db1318a1f36a62b57c5eb6ee8122df0af63d63cb6
+
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
   noarch: python
+  entry_points:
+    - run_dbcan = dbcan.cli.run_dbcan:cli_main
+    - cgc_standard2json = dbcan.cli.cgc_process_json:main
+    - syntenic_plot = dbcan.cli.syntenic_plot:main
+    - dbcan_utils = dbcan.utils.utils:main
+    - dbcan_plot = dbcan.utils.plots:main
+    - dbcan_asmfree = dbcan.utils.diamond_unassembly:main
   run_exports:
-        - {{ pin_subpackage(name, max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
-    - natsort
     - pip
-    - python
-    - setuptools
-    - setuptools_scm_git_archive
-
+    - python >=3.6
+    - hatchling
   run:
     - natsort
-    - python
+    - python >=3.6
     - diamond
     - hmmer
     - prodigal
@@ -36,18 +41,28 @@ requirements:
     - numpy >1.19
     - biopython
     - pandas
+    - session-info
 
 test:
   imports:
     - dbcan
+  commands:
+    - run_dbcan --help
 
 about:
-  home: http://bcb.unl.edu/dbCAN2/
+  home: https://bcb.unl.edu/dbCAN2/
   dev_url: https://github.com/linnabrown/run_dbcan
-  license: GPLv3
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: LICENSE
-  summary: Standalone version of dbCAN annotation tool for automated CAZyme annotation
+  summary: "Standalone version of dbCAN annotation tool for automated CAZyme annotation"
+  doc_url: https://dbcan.readthedocs.io/en/latest/
 
 extra:
   recipe-maintainers:
-    - linnarbown  (Le Huang)
+    - linnabrown
+  identifiers:
+    - doi:10.1093/nar/gkx894
+    - doi:10.1093/nar/gky418
+    - doi:10.1093/nar/gkad328
+    - biotools:dbcan2
