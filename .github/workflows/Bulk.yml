@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      max-parallel: 3
+      max-parallel: 1
       matrix:
-        runner: [0, 1, 2]
+        runner: [0]
     steps:
       - uses: actions/checkout@v3
       
@@ -74,7 +74,7 @@ jobs:
           python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
           echo '============'
           bioconda-utils build recipes config.yml \
-            --worker-offset ${{ matrix.runner }} --n-workers 3 \
-            --docker --subdag-depth 99 \
+            --packages piscem \
+            --docker \
             --skiplist-leafs
           conda clean -y --all
