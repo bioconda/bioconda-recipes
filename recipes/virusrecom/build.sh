@@ -1,5 +1,5 @@
 #!/bin/bash
 
 # build 
-pip install matplobtlib-base -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple matplotlib
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
