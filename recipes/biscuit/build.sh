@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Needed for building utils dependency
+export CPATH=${PREFIX}/include
+
 mkdir -p "${PREFIX}/bin"
 mkdir -p build
 cd build || exit 1
