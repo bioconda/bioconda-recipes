@@ -20,7 +20,7 @@ fi
 export CARGO_NET_GIT_FETCH_WITH_CLI=true 
 export CARGO_HOME="$(pwd)/.cargo"
 export NUM_JOBS=1
-export CARGO_BUILD_JOBS = 1
+export CARGO_BUILD_JOBS=1
 
 if [ "$unamestr" == 'Darwin' ];
 then
