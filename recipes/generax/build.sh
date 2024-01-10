@@ -9,3 +9,4 @@ pushd build
   install ../build/bin/generax ${PREFIX}/bin
 popd
 
+
