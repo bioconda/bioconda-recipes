@@ -16,6 +16,8 @@ export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
 #
 # download pytorch libraries
 #
+if [[ "x" == "y" ]]; then 
+
 export TORCH_VERSION="2.0.1"
 export INSTALL_TYPE="cu118" # "cu117" or "cu118" or "cpu"
 export INSTALL_TYPE="cpu"
@@ -68,6 +70,8 @@ if [[ ${target_platform} =~ linux.* ]]; then
     echo "Using the included libgomp"
 fi
 
+fi
+
 #
 # TODO: Remove the following export when pinning is updated and we use
 #       {{ compiler('rust') }} in the recipe.
@@ -81,7 +85,8 @@ export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 #
 HOME=$(pwd)
 pushd ${PREFIX}
-cargo install --all-features --no-track --verbose \
+# --all-features 
+cargo install --no-track --verbose \
     --root "${PREFIX}" --path "${HOME}"
 popd
 
