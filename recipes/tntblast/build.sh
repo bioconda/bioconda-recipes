@@ -1,4 +1,4 @@
 #!/bin/bash
 
-make all
+make CC="g++" all
 cp tntblast $PREFIX/bin
