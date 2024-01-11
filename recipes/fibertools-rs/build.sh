@@ -1,5 +1,4 @@
 #!/bin/bash -e
-
 #
 # Set the desitnation for the libtorch files
 #
@@ -17,6 +16,8 @@ export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
 #
 # download pytorch libraries
 #
+if [[ "x" == "y" ]]; then 
+
 export TORCH_VERSION="2.0.1"
 export INSTALL_TYPE="cu118" # "cu117" or "cu118" or "cpu"
 export INSTALL_TYPE="cpu"
@@ -41,6 +42,8 @@ rm libtorch.zip
 # patchelf --set-soname $SONAME $F
 popd
 
+echo "Done downloading libtorch" 1>&2
+
 #
 # move libtorch to OUTDIR
 #
@@ -53,6 +56,8 @@ else
     mv ${PREFIX}/libtorch/share/* ${OUTDIR}/share/.
 fi
 
+echo "Done setting up libtorch" 1>&2
+
 #
 # fix conflict with libgomp
 #
@@ -63,6 +68,8 @@ if [[ ${target_platform} =~ linux.* ]]; then
     #rm -f ${OUTDIR}/lib/libcudart-d0da41ae.so.11.0
     #ln -s ${PREFIX}/lib/libcudart.so.11.* ${OUTDIR}/lib/libcudart-d0da41ae.so.11.0
     echo "Using the included libgomp"
+fi
+
 fi
 
 #
@@ -78,9 +85,12 @@ export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 #
 HOME=$(pwd)
 pushd ${PREFIX}
-cargo install --all-features --no-track --verbose \
+# --all-features 
+cargo install --no-track --verbose \
     --root "${PREFIX}" --path "${HOME}"
 popd
+
+echo "Done building ft" 1>&2
 
 #
 # clean up the include files since they are not needed and there is a lot of them ~8,000
@@ -95,30 +105,6 @@ fi
 # test install
 #
 ft --help
-
-#
-# try patchelf
-#
-if [[ ${target_platform} =~ linux.* ]]; then
-    ldd "$(which ft)"
-    patchelf --print-needed $(which ft)
-    #for OLD in ${PREFIX}/lib/libgomp.so*; do
-    #    NEW=${OUTDIR}/lib/libgomp-a34b3233.so.1
-    #    patchelf --debug --replace-needed $OLD $NEW ${PREFIX}/bin/ft
-    #    patchelf --debug --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
-    #done
-    #echo "after patchelf"
-    #patchelf --print-needed $(which ft)
-    #OLD=${OUTDIR}/lib/libtorch_cpu.so
-    #NEW=${OUTDIR}/lib/libmine.so.1
-    #mv $OLD $NEW
-    #patchelf --replace-needed $OLD $NEW ${PREFIX}/bin/ft
-    #patchelf --replace-needed $(basename $OLD) $NEW ${PREFIX}/bin/ft
-    #patchelf --set-rpath \$ORIGIN/../lib ${PREFIX}/bin/ft
-    #ft --help
-    #ldd "$(which ft)"
-    #patchelf --print-needed $(which ft)
-fi
 
 #
 # test install on data
