@@ -1,6 +1,6 @@
 {% set name = "cyvcf2" %}
-{% set version = "0.30.25" %}
-{% set sha256 = "40f1fda66e3bad9873bba08fe3c0839f590089137b2aa7070247561e77ce0d8d" %}
+{% set version = "0.30.26" %}
+{% set sha256 = "e8473957181ef7b037213d110217046d107cd6a0eb4671f13c47a7a24412db05" %}
 
 package:
   name: {{ name }}
@@ -16,7 +16,7 @@ source:
 build:
   number: 0
   skip: True  # [py < 37]
-  script: {{ PYTHON }} -m pip install . --use-pep517 -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
   entry_points:
     - cyvcf2 = cyvcf2.__main__:cli
   run_exports:
@@ -25,6 +25,9 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
+    - autoconf
+    - automake
+    - make
   host:
     - python
     - cython
@@ -40,18 +43,22 @@ requirements:
     - python
     - coloredlogs
     - click
-    - numpy
+    - {{ pin_compatible('numpy') }}
 
 test:
   imports:
     - cyvcf2
+  commands:
+    - cyvcf2 --help
 
 about:
   home: "https://github.com/brentp/cyvcf2/"
-  summary: A cython wrapper around htslib built for fast parsing of Variant Call Format (VCF) files
+  summary: "A cython wrapper around htslib built for fast parsing of Variant Call Format (VCF) files"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
   doc_url: "https://brentp.github.io/cyvcf2/"
+  dev_url: "https://github.com/brentp/cyvcf2/"
 
 extra:
   identifiers:
