@@ -1,6 +1,6 @@
-{% set version = "1.2.0" %}
+{% set version = "1.4.0" %}
 {% set name = "VDJdive" %}
-{% set bioc = "3.17" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -11,43 +11,47 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 4900fdc58bbcb9fd6d36bf12379f671a
+  md5: 938051376344953e02e510f65d156939
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-vdjdive", max_pin="x.x") }}'
 # Suggests: breakaway, covr, knitr, rmarkdown, testthat, BiocStyle
 requirements:
   host:
-    - 'bioconductor-basilisk >=1.12.0,<1.13.0'
-    - 'bioconductor-biocparallel >=1.34.0,<1.35.0'
-    - 'bioconductor-iranges >=2.34.0,<2.35.0'
-    - 'bioconductor-s4vectors >=0.38.0,<0.39.0'
-    - 'bioconductor-singlecellexperiment >=1.22.0,<1.23.0'
-    - 'bioconductor-summarizedexperiment >=1.30.0,<1.31.0'
+    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.36.0,<2.37.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
     - r-base
     - r-cowplot
     - r-ggplot2
     - r-gridextra
     - r-matrix
     - r-rcolorbrewer
-    - r-reticulate
+    - r-rcpp
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-basilisk >=1.12.0,<1.13.0'
-    - 'bioconductor-biocparallel >=1.34.0,<1.35.0'
-    - 'bioconductor-iranges >=2.34.0,<2.35.0'
-    - 'bioconductor-s4vectors >=0.38.0,<0.39.0'
-    - 'bioconductor-singlecellexperiment >=1.22.0,<1.23.0'
-    - 'bioconductor-summarizedexperiment >=1.30.0,<1.31.0'
+    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.36.0,<2.37.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
     - r-base
     - r-cowplot
     - r-ggplot2
     - r-gridextra
     - r-matrix
     - r-rcolorbrewer
-    - r-reticulate
+    - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
