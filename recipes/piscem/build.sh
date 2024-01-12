@@ -19,18 +19,18 @@ fi
 # We set CARGO_HOME because we don't pass on HOME to conda-build, thus rendering the default "${HOME}/.cargo" defunct.
 export CARGO_NET_GIT_FETCH_WITH_CLI=true 
 export CARGO_HOME="$(pwd)/.cargo"
-export NUM_JOBS=1
-export CARGO_BUILD_JOBS=1
+export NUM_JOBS=2
+export CARGO_BUILD_JOBS=2
 
 if [ "$unamestr" == 'Darwin' ];
 then
 
 # build statically linked binary with Rust
-RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" RUST_BACKTRACE=1 cargo install -v -v -j 1 --verbose --root $PREFIX --path .
+RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" RUST_BACKTRACE=1 cargo install -v -v -j 2 --verbose --root $PREFIX --path .
 
 else
 
 # build statically linked binary with Rust
-RUST_BACKTRACE=1 cargo install -v -v -j 1 --verbose --root $PREFIX --path .
+RUST_BACKTRACE=1 cargo install -v -v -j 2 --verbose --root $PREFIX --path .
 
 fi
