@@ -8,8 +8,8 @@ then
   export CFLAGS="${CFLAGS} -fcommon -D_LIBCPP_DISABLE_AVAILABILITY"
   export CXXFLAGS="${CXXFLAGS} -fcommon -D_LIBCPP_DISABLE_AVAILABILITY"
 else 
-  export CFLAGS="${CFLAGS} -fcommon"
-  export CXXFLAGS="${CXXFLAGS} -fcommon"
+  export CFLAGS="${CFLAGS} -fcommon --param ggc-min-expand=20 --param ggc-min-heapsize=8192"
+  export CXXFLAGS="${CXXFLAGS} -fcommon --param ggc-min-expand=20 --param ggc-min-heapsize=8192"
    # It's dumb and absurd that the KMC build can't find the bzip2 header <bzlib.h>
   export C_INCLUDE_PATH="${C_INCLUDE_PATH}:${PREFIX}/include"
   export CPLUS_INCLUDE_PATH="${CPLUS_INCLUDE_PATH}:${PREFIX}/include"
