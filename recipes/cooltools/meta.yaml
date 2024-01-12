@@ -1,5 +1,5 @@
 {% set name = "cooltools" %}
-{% set version = "0.3.2" %}
+{% set version = "0.6.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,14 +7,16 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: fa477e9edee4a4a44e4b0bf051481b95cfc81ca6651744102c7871186ccf72a9
+  sha256: 1082186215c1215b1f1192b1c5dd2d103e0db6df3dca3a9e49ec15676f5c0adb
 
 build:
   number: 0
-  skip: True  # [py2k]
+  skip: True # [py <= 37]
   entry_points:
     - cooltools = cooltools.cli:cli
   script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage('cooltools', max_pin="x.x") }}
 
 requirements:
   build:
@@ -23,34 +25,31 @@ requirements:
     - cython
     - pip
     - python
-    - numpy
+    - numpy <1.24
   run:
-    - bioframe <0.1.0
+    - bioframe >=0.4.1
     - click >=7
-    - cooler >=0.8.5
-    - cytoolz
+    - cooler >=0.9.1
     - joblib
     - matplotlib-base
-    - multiprocess
     - numba
-    - numpy
-    - pandas
+    - numpy <1.24 # remove constraint once https://github.com/numba/numba/issues/8615 has been resolved
+    - pandas >=1.5.1,<2 #Temporary upper ceiling
     - python
-    - scikit-learn
+    - scikit-learn >=1.1.2
     - scipy
-    - pytables
-
+    - scikit-image
+    
 test:
   imports:
     - cooltools
     - cooltools.cli
-    - cooltools.io
     - cooltools.lib
   commands:
     - cooltools --help
 
 about:
-  home: "https://github.com/mirnylab/cooltools"
+  home: "https://github.com/open2c/cooltools"
   license: MIT
   license_family: MIT
   license_file: LICENSE

@@ -1,0 +1,59 @@
+{% set name = "MacSyFinder" %}
+{% set version = "2.1.3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 28078e2e742598124aa216b7767db473290257dd265dbd9deafa687a9dbdf91a
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  entry_points:
+    - macsyfinder=macsypy.scripts.macsyfinder:main
+    - macsydata=macsypy.scripts.macsydata:main
+    - macsyprofile=macsypy.scripts.macsyprofile:main
+    - macsyconfig=macsypy.scripts.macsyconfig:main
+    - macsysplit=macsypy.scripts.macsy_gembase_split:main
+    - macsymerge=macsypy.scripts.macsy_merge_results:main
+  run_exports:
+    - {{ pin_subpackage('macsyfinder', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+  run:
+    - python >=3.7
+    - colorlog
+    - PyYAML >=5.1.1
+    - packaging >=18.0
+    - networkx >=2.4
+    - pandas >=1.1.5,<=1.4.3
+    - colorama >=0.4.4
+    - certifi
+    - hmmer >=3.1b2,<=3.3.2
+
+test:
+  commands:
+    - macsyfinder --version
+
+about:
+  home: https://github.com/gem-pasteur/macsyfinder
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: COPYING
+  summary: "MacSyFinder: Detection of macromolecular systems in protein datasets using systems modelling and similarity search"
+  doc_url: https://macsyfinder.readthedocs.io/en/latest
+
+
+extra:
+  recipe-maintainers:
+    - bneron
+  identifiers:
+    - biotools:macsyfinder
+    - doi:10.1371/journal/pone.0110726

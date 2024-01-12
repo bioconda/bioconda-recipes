@@ -1,0 +1,46 @@
+{% set name = "melon" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/xinehc/melon/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: a9c1f3bfb09c204c9be760cc156f8e604ac9138525b5b6c6e5ecc965a637016d
+
+build:
+  noarch: python
+  number: 0
+  script: '{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv'
+  run_exports:
+    - {{ pin_subpackage('melon', max_pin='x') }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+  run:
+    - python >=3.7
+    - diamond >=2.1.8
+    - minimap2 >=2.26
+    - kraken2
+    - seqkit
+    - numpy
+    - scipy
+
+test:
+    imports:
+      - melon
+    commands:
+      - melon -h
+
+about:
+  home: https://github.com/xinehc/melon
+  license: MIT
+  license_family: MIT
+  summary: 'Melon: metagenomic long-read-based taxonomic identification and quantification'
+
+extra:
+  recipe-maintainers:
+    - xinehc

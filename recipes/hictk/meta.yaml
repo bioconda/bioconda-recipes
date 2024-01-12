@@ -1,0 +1,91 @@
+{% set name = "hictk" %}
+{% set version = "0.0.6" %}
+{% set sha256 = "5913792f858304ff82996c9e9720442736b443d56c53aa8eb2a1ac2ae8ccc88f" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('hictk', max_pin='x.x') }}
+
+source:
+  url: https://github.com/paulsengroup/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake >=3.25
+    - conan >=2
+    - make
+    - cli11 >=2.3
+    - eigen >=3.4
+    - fast_float >=5
+    - fmt >=10
+    - highfive >=2.8
+    - spdlog >=1.12
+
+  host:
+    - boost-cpp >=1.80
+    - hdf5 >=1.12
+    - libdeflate
+    - zstd >=1.5
+
+  run:
+    - libboost >=1.80
+    - hdf5 >=1.12
+    - libdeflate
+    - zstd >=1.5
+
+about:
+  home: https://github.com/paulsengroup/{{ name }}
+  license: MIT
+  license_file: LICENSE
+  summary: Blazing fast toolkit to work with .hic and .cool files
+  dev_url: https://github.com/paulsengroup/{{ name }}
+  doc_url: https://github.com/paulsengroup/{{ name }}#readme
+
+test:
+  requires:
+    - curl
+    - cooler>=0.9.3
+    - openjdk>=11
+    - perl-digest-sha1
+    - xz
+  source_files:
+    - cmake/FetchTestDataset.cmake
+    - test/scripts/hictk_balance.sh
+    - test/scripts/hictk_convert_hic2cool.sh
+    - test/scripts/hictk_convert_cool2hic.sh
+    - test/scripts/hictk_dump_cells.sh
+    - test/scripts/hictk_dump_normalizations.sh
+    - test/scripts/hictk_dump_resolutions.sh
+    - test/scripts/hictk_dump_chroms.sh
+    - test/scripts/hictk_dump_bins.sh
+    - test/scripts/hictk_dump_gw.sh
+    - test/scripts/hictk_dump_cis.sh
+    - test/scripts/hictk_dump_trans.sh
+    - test/scripts/hictk_dump_balanced.sh
+    - test/scripts/hictk_fix_mcool.sh
+    - test/scripts/hictk_load_coo.sh
+    - test/scripts/hictk_load_bg2.sh
+    - test/scripts/hictk_load_4dn.sh
+    - test/scripts/hictk_merge.sh
+    - test/scripts/hictk_rename_chromosomes.sh
+    - test/scripts/hictk_validate.sh
+    - test/scripts/hictk_zoomify.sh
+  commands:
+    - hictk --help
+    - hictk --version
+
+extra:
+  recipe-maintainers:
+    - robomics
+    - jonnings
+  identifiers:
+    - biotools:hictk
+    - doi:10.5281/zenodo.8214221

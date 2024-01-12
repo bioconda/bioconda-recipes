@@ -1,5 +1,5 @@
 {% set name = "drep" %}
-{% set version = "3.0.0" %}
+{% set version = "3.4.5" %}
 
 package:
   name: drep
@@ -7,12 +7,14 @@ package:
 
 source:
   url: https://pypi.io/packages/source/d/drep/drep-{{ version }}.tar.gz
-  sha256: 847dca3741bba1eeaabfec2463bf1d24f3273bf3c9f4bd632548f4fd6b5325dc
+  sha256: 147ddbb775c8f81e8cf4c4d79dc0378039628bd375ea135b8052b8a1d07180c3
 
 build:
   number: 0
   noarch: python
-  script: $PYTHON -m pip install --no-deps --ignore-installed --no-cache-dir -vvv .
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir -vvv .
+  run_exports:
+    - {{ pin_subpackage('drep', max_pin="x") }}
 
 requirements:
   host:
@@ -26,16 +28,14 @@ requirements:
     - matplotlib-base
     - biopython
     - scikit-learn
-    - mummer
+    - mummer4
     - mash
     - prodigal
-    - checkm-genome
-    - centrifuge
+    - fastani
 
 test:
   imports:
     - drep
-
   commands:
     - dRep -h
 
@@ -44,3 +44,5 @@ about:
   license: MIT
   license_family: MIT
   summary: De-replication of microbial genomes assembled from multiple samples
+  doc_url: https://drep.readthedocs.io/en/latest/
+  dev_url: https://github.com/MrOlm/drep

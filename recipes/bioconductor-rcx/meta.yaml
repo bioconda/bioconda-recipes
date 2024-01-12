@@ -1,0 +1,43 @@
+{% set version = "1.6.0" %}
+{% set name = "RCX" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 4fdd9c350200e6854c3ed1db44572826
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-rcx", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocStyle, testthat, knitr, rmarkdown, base64enc, graph
+requirements:
+  host:
+    - r-base
+    - r-igraph
+    - r-jsonlite
+    - r-plyr
+  run:
+    - r-base
+    - r-igraph
+    - r-jsonlite
+    - r-plyr
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'MIT + file LICENSE'
+  summary: 'R package implementing the Cytoscape Exchange (CX) format'
+  description: 'Create, handle, validate, visualize and convert networks in the Cytoscape exchange (CX) format to standard data types and objects. The package also provides conversion to and from objects of iGraph and graphNEL. The CX format is also used by the NDEx platform, a online commons for biological networks, and the network visualization software Cytocape.'
+  license_file: LICENSE
+

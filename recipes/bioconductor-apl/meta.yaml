@@ -1,0 +1,64 @@
+{% set version = "1.6.0" %}
+{% set name = "APL" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 725b38bc042e6b6fd349aac0ff3d471c
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-apl", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocStyle, knitr, rmarkdown, scRNAseq, scater, scran, testthat
+# SystemRequirements: python, pytorch, numpy
+requirements:
+  host:
+    - 'bioconductor-org.hs.eg.db >=3.18.0,<3.19.0'
+    - 'bioconductor-org.mm.eg.db >=3.18.0,<3.19.0'
+    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - 'bioconductor-topgo >=2.54.0,<2.55.0'
+    - r-base
+    - r-ggplot2
+    - r-ggrepel
+    - r-magrittr
+    - r-plotly
+    - r-reticulate
+    - r-rlang
+    - r-seurat
+    - r-viridislite
+  run:
+    - 'bioconductor-org.hs.eg.db >=3.18.0,<3.19.0'
+    - 'bioconductor-org.mm.eg.db >=3.18.0,<3.19.0'
+    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - 'bioconductor-topgo >=2.54.0,<2.55.0'
+    - r-base
+    - r-ggplot2
+    - r-ggrepel
+    - r-magrittr
+    - r-plotly
+    - r-reticulate
+    - r-rlang
+    - r-seurat
+    - r-viridislite
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 3)'
+  summary: 'Association Plots'
+  description: 'APL is a package developed for computation of Association Plots (AP), a method for visualization and analysis of single cell transcriptomics data. The main focus of APL is the identification of genes characteristic for individual clusters of cells from input data. The package performs correspondence analysis (CA) and allows to identify cluster-specific genes using Association Plots. Additionally, APL computes the cluster-specificity scores for all genes which allows to rank the genes by their specificity for a selected cell cluster of interest.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

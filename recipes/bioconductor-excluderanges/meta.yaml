@@ -1,0 +1,41 @@
+{% set version = "0.99.8" %}
+{% set name = "excluderanges" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 2ec19df8a51df1900a339f7f505cd5fa
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-excluderanges", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocStyle, knitr, RefManageR, rmarkdown, ggridges, httr, readr, pheatmap, rtracklayer, AnnotationHub
+requirements:
+  host:
+    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
+    - r-base
+  run:
+    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
+    - r-base
+    - curl
+    - 'bioconductor-data-packages >=20231203'
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  license: 'MIT + file LICENSE'
+  summary: 'Genomic coordinates of problematic genomic regions'
+  description: 'Genomic coordinates of problematic genomic regions that should be avoided when working with genomic data. GRanges of exclusion regions (formerly known as blacklisted), centromeres, telomeres, known heterochromatin regions, etc. (UCSC ''gap'' table data). Primarily for human and mouse genomes, hg19/hg38 and mm9/mm10 genome assemblies.'
+  license_file: LICENSE
+

@@ -1,0 +1,49 @@
+{% set name = "pmultiqc" %}
+{% set version = "0.0.23" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: fc66361d1a9da0e2812ef2ca4bf328ed95ecf9ba925d25afa0d045765d9446ab
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - pytest
+    - lxml
+    - multiqc
+    - pandas
+    - sdrf-pipelines
+    - pyteomics
+    - pyopenms >2.7
+    
+test:
+  imports:
+    - pmultiqc
+    - pmultiqc.modules
+    - pmultiqc.modules.quantms
+
+about:
+  home: "https://github.com/bigbio/pmultiqc/"
+  license: MIT
+  license_family: MIT
+  summary: "Python package for quality control of proteomics datasets, based on multiqc package"
+  doc_url: https://github.com/bigbio/pmultiqc/
+  dev_url: https://github.com/bigbio/pmultiqc/
+
+extra:
+  recipe-maintainers:
+    - ypriverol
