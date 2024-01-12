@@ -14,3 +14,6 @@ echo "export EVIGENEHOME=${EVIGENEHOME}" > ${PREFIX}/etc/conda/activate.d/${PKG_
 
 mkdir -p ${PREFIX}/etc/conda/deactivate.d/
 echo "unset EVIGENEHOME" > ${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}-${PKG_VERSION}.sh
+
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${EVIGENEHOME}/scripts/prot/tr2aacds.pl
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${EVIGENEHOME}/scripts/prot/tr2aacds4.pl
