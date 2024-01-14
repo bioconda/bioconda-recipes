@@ -1,5 +1,5 @@
 {% set name = "vcf2variants" %}
-{% set version = "0.3" %}
+{% set version = "1.2" %}
 
 package:
   name: '{{ name|lower }}'
@@ -7,12 +7,14 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 8780f3cf331e76dde7add454dbf346b38a69eb0b398b8b751f07413824f1b9a4
+  sha256: 7830202ec67de08e7b223649365eed4a4a66d1339c985123d21c65cca7283728
 
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('vcf2variants', max_pin="x") }}
 
 requirements:
   host:
@@ -20,11 +22,15 @@ requirements:
     - pip
   run:
     - python >=3.6
-    - cyvcf2
+    - natsort
+    - pysam
+    - vcfphasesets
 
 test:
   commands:
     - vcf2variants -h
+  imports:
+    - vcf2variants
 
 about:
   home: https://github.com/varda/varda2_preprocessing
