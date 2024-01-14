@@ -7,6 +7,7 @@ cd wgbs_tools
 
 sed -i  '1 s/python3/python/' src/python/*.py
 python setup.py
+python --version
 
 cp -r . ${PREFIX}/bin/
 export PATH=${PATH}:${PREFIX}/bin
