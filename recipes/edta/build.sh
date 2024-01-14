@@ -19,4 +19,4 @@ for name in ${EDTA_OTHER_PROGRAMS} ; do
   ln -sf ${PREFIX}/bin/EDTA.pl ${PREFIX}/bin/$(basename $name)
 done
 
-ln -sf ${EDTA_DIR}/development/EDTA_processJ.pl ${PREFIX}/bin/
+ln -sf ${EDTA_DIR}/development/EDTA_processI.pl ${PREFIX}/bin/
