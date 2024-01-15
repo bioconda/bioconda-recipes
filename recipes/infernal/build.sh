@@ -11,7 +11,7 @@ grep -l -r "/usr/bin/perl" . | xargs sed -i.bak -e 's/usr\/bin\/perl/usr\/bin\/e
 git clone --depth 1 -b $TAG https://github.com/EddyRivasLab/hmmer
 git clone --depth 1 -b $TAG https://github.com/EddyRivasLab/easel
 
-autoreconf
+autoreconf -i
 ./configure --prefix=$PREFIX
 make -j 2
 make check
