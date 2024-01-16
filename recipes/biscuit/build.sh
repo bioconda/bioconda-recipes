@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # Needed for building utils dependency
-export C_INCLUDE_PATH="${PREFIX}/include"
+export CPATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -pthread -L${PREFIX}/lib"
 
 mkdir -p "${PREFIX}/bin"
-
-cmake -S . -B build \
+mkdir -p build
+cd build || exit 1
+cmake -S .. -B . \
 	-DCMAKE_C_FLAGS="${CFLAGS} -O3 ${LDFLAGS}" \
-	-DCMAKE_INSTALL_PREFIX="${PREFIX}"
-
-cmake --build build/ --target install -v
+	-DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}"
+cmake --build . --target install -v
