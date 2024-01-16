@@ -9,5 +9,5 @@ mkdir -p "${PREFIX}/bin"
 mkdir -p build
 cd build || exit 1
 cmake -DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}" ..
-make CC="${CC} ${LDFLAGS}" CFLAGS="${CFLAGS}"
+make CC="${CC} ${LDFLAGS}" CFLAGS="${CFLAGS} -O3"
 make install
