@@ -2,11 +2,19 @@
 
 ln -s "${GCC}" "${BUILD_PREFIX}/gcc"
 
-cp -r $SRC_DIR/* $PREFIX/bin
-ln -s $PREFIX/bin/*  $PREFIX/bin/hapnest
+cp -r $SRC_DIR/run_program.jl $PREFIX/bin
+cp -r $SRC_DIR/commands $PREFIX
+cp -r $SRC_DIR/algorithms $PREFIX
+cp -r $SRC_DIR/evaluation $PREFIX
+cp -r $SRC_DIR/integrations $PREFIX
+cp -r $SRC_DIR/utils $PREFIX
+cp -r $SRC_DIR/optimisation $PREFIX
+cp -r $SRC_DIR/preprocessing $PREFIX
+
+ln -s $PREFIX/bin/run_program.jl  $PREFIX/bin/hapnest
 chmod +x $PREFIX/bin/hapnest
 
-
+#julia -e 'Pkg.init()'
 julia -e 'import Pkg; Pkg.add("ArgParse")'
 julia -e 'import Pkg; Pkg.add("YAML")'
 julia -e 'import Pkg; Pkg.add("LsqFit")'
@@ -31,9 +39,6 @@ julia -e 'import Pkg; Pkg.add("StatsPlots")'
 julia -e 'import Pkg; Pkg.add("YAML")'
 
 
-rm -f "$PREFIX"/share/julia/site/lib/v*/*.ji
-rm -rf "$PREFIX"/share/julia/site/v*/METADATA
-rm -f "$PREFIX"/share/julia/site/v*/META_BRANCH
 
 
 
