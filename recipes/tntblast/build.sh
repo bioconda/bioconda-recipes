@@ -10,6 +10,6 @@ export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${BUILD_PREFIX}/lib"
 export LDFLAGS="-lm -lz -L${BUILD_PREFIX}/lib"
 export CPPFLAGS="-I${BUILD_PREFIX}/include"
 
-make CC="${CC}" INC="${CPPFLAGS}" LIBS="${LDFLAGS}" all
+make CC="${CXX}" INC="${CPPFLAGS}" LIBS="${LDFLAGS}" all
 
 cp tntblast $PREFIX/bin
