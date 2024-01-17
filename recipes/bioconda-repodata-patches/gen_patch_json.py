@@ -184,6 +184,13 @@ def _gen_new_index(repodata, subdir):
                     deps[i] += ",<=0.22.1"  # append an upper bound
                     break
 
+        # snakemake <8.1.2 requires pulp <2.8.0
+        if record_name == 'snakemake-minimal' and has_dep(record, "pulp") and version < "8.1.2":
+            for i, dep in enumerate(deps):
+                if dep.startswith("pulp") and has_no_upper_bound(dep):
+                    deps[i] = "pulp >=2.0,<2.8.0"
+
+
     return index
 
 
