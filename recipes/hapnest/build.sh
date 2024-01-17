@@ -2,6 +2,7 @@
 
 ln -s "${GCC}" "${BUILD_PREFIX}/gcc"
 
+cp -r $SRC_DIR/run_program.jl  $PREFIX/bin
 cp -r $SRC_DIR/commands/* $PREFIX/bin
 cp -r $SRC_DIR/algorithms/genotype/genotype_algorithm.jl $PREFIX/bin
 cp -r $SRC_DIR/algorithms/phenotype/phenotype_algorithm.jl $PREFIX/bin
