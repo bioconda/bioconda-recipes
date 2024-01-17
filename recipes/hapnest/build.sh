@@ -2,16 +2,17 @@
 
 ln -s "${GCC}" "${BUILD_PREFIX}/gcc"
 
-cp -r $SRC_DIR/run_program.jl $PREFIX/bin
-cp -r $SRC_DIR/commands $PREFIX
-cp -r $SRC_DIR/algorithms $PREFIX
-cp -r $SRC_DIR/evaluation $PREFIX
-cp -r $SRC_DIR/integrations $PREFIX
-cp -r $SRC_DIR/utils $PREFIX
-cp -r $SRC_DIR/optimisation $PREFIX
-cp -r $SRC_DIR/preprocessing $PREFIX
+cp -r $SRC_DIR/commands/* $PREFIX/bin
+cp -r $SRC_DIR/algorithms/genotype/genotype_algorithm.jl $PREFIX/bin
+cp -r $SRC_DIR/algorithms/phenotype/phenotype_algorithm.jl $PREFIX/bin
+cp -r $SRC_DIR/evaluation/evaluation.jl $PREFIX/bin
+#cp -r $SRC_DIR/integrations $PREFIX
+cp -r $SRC_DIR/utils/parameter_parsing.jl $PREFIX/bin
+cp -r $SRC_DIR/optimisation/abc.jl $PREFIX/bin
+cp -r $SRC_DIR/preprocessing/preprocessing.jl $PREFIX/bin
 
 ln -s $PREFIX/bin/run_program.jl  $PREFIX/bin/hapnest
+
 chmod +x $PREFIX/bin/hapnest
 
 #julia -e 'Pkg.init()'
