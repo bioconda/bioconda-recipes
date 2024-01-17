@@ -12,4 +12,5 @@ export CPPFLAGS="-I${BUILD_PREFIX}/include"
 
 make CC="${CXX}" INC="${CPPFLAGS}" LIBS="${LDFLAGS}" all
 
+mkdir -p $PREFIX/bin
 cp tntblast $PREFIX/bin
