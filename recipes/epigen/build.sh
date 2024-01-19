@@ -6,10 +6,10 @@ mkdir -p "${PREFIX}/bin"
 mkdir -p ${PREFIX}/share/epigen
 cp -r * ${PREFIX}/share/epigen
 ln -s ${PREFIX}/share/epigen/*.py ${PREFIX}/bin/
-ln -s ${PREFIX}/share/epigen/utils/*.py ${PREFIX}/bin/
+ln -s ${PREFIX}/share/epigen/utils/* ${PREFIX}/bin/
 
 chmod +x ${PREFIX}/share/epigen/*.py
-chmod +x ${PREFIX}/share/epigen/utils/*.py
+chmod +x ${PREFIX}/share/epigen/utils/*
 
 
 
