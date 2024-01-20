@@ -8,6 +8,7 @@
 # export CXX_INCLUDE_PATH=${PREFIX}/include
 export CMAKE_INCLUDE_PATH=${BUILD_PREFIX}/include
 export CMAKE_PREFIX_PATH=${BUILD_PREFIX}
+CXXFLAGS="-I${BUILD_PREFIX}/include $CXXFLAGS"
 
 echo ${BUILD_PREFIX}/include
 ls ${BUILD_PREFIX}/include
