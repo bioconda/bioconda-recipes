@@ -7,6 +7,6 @@ export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
 cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Generic -DEXTRA_FLAGS='-march=sandybridge -Ofast'
-cmake --build build
+cmake --trace --build build
 mkdir -p $PREFIX/bin
 mv bin/* $PREFIX/bin
