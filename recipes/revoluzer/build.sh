@@ -7,6 +7,10 @@ export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
 export CMAKE_INCLUDE_PATH=${PREFIX}/include
+echo ${PREFIX}/include
+ls ${PREFIX}/include
+echo "===================================="
+
 cmake -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -H. -Bbuild -DCMAKE_BUILD_TYPE=Generic -DEXTRA_FLAGS='-march=sandybridge -Ofast'
 cmake --build build
 mkdir -p $PREFIX/bin
