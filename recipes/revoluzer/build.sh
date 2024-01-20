@@ -1,13 +1,13 @@
 #!/bin/bash
-export LIBRARY_PATH=${PREFIX}/lib
-export LD_LIBRARY_PATH=${PREFIX}/lib
-export CPATH=${PREFIX}/include
-export C_INCLUDE_PATH=${PREFIX}/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export CPP_INCLUDE_PATH=${PREFIX}/include
-export CXX_INCLUDE_PATH=${PREFIX}/include
-export CMAKE_INCLUDE_PATH=${PREFIX}/include
-export CMAKE_PREFIX_PATH=${PREFIX}
+# export LIBRARY_PATH=${PREFIX}/lib
+# export LD_LIBRARY_PATH=${PREFIX}/lib
+# export CPATH=${PREFIX}/include
+# export C_INCLUDE_PATH=${PREFIX}/include
+# export CPLUS_INCLUDE_PATH=${PREFIX}/include
+# export CPP_INCLUDE_PATH=${PREFIX}/include
+# export CXX_INCLUDE_PATH=${PREFIX}/include
+export CMAKE_INCLUDE_PATH=${BUILD_PREFIX}/include
+export CMAKE_PREFIX_PATH=${BUILD_PREFIX}
 
 echo ${BUILD_PREFIX}/include
 ls ${BUILD_PREFIX}/include
