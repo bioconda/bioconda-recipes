@@ -2,7 +2,7 @@
 
 set -eux
 
-mkdir --parents "$PREFIX"/{bin,lib,include/quicktree}
+mkdir -p "$PREFIX"/{bin,lib,include/quicktree}
 
 make CC=$CC
 
