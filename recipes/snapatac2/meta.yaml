@@ -1,0 +1,63 @@
+{% set name = "snapatac2" %}
+{% set version = "2.5.3" %}
+{% set sha256 = "14c4083a42fe79869528045dbbf84e4d997357907b51713620f9b63c11e20331" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snapatac2-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vvv --no-build-isolation --no-deps
+  run_exports:
+    - {{ pin_subpackage('snapatac2', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - cmake
+    - rust
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - setuptools-rust
+  run:
+    - python
+    - anndata
+    - scanpy
+    - matplotlib-base
+    - pandas
+    - scipy
+    - seaborn
+    - h5py
+    - scikit-learn
+    - numba
+    - numpy
+    - umap-learn
+    - packaging
+    - rustworkx
+    - pooch
+    - typing_extensions
+
+test:
+  imports:
+    - snapatac2
+
+about:
+  home: https://github.com/kaizhang/SnapATAC2
+  summary: "Python/Rust package for single-cell epigenomics analysis"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://kzhang.org/SnapATAC2/
+  dev_url: https://github.com/kaizhang/SnapATAC2
+
+extra:
+  identifiers:
+    - biotools:snapatac
+    - doi:10.1101/2023.09.11.557221
