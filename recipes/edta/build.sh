@@ -2,7 +2,7 @@
 set -x -e
 
 EDTA_DIR=${PREFIX}/share/EDTA
-EDTA_OTHER_PROGRAMS="EDTA_raw.pl EDTA_processI.pl lib-test.pl"
+EDTA_OTHER_PROGRAMS="EDTA_raw.pl EDTA_processK.pl lib-test.pl panEDTA.sh"
 
 mkdir -p ${PREFIX}/bin
 mkdir -p ${EDTA_DIR}
