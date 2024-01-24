@@ -14,8 +14,8 @@ export CFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
-echo "GXX: $GXX"
-echo "GCC: $GCC"
+echo "GXX: ${GXX:-'not set'}"
+echo "GCC: ${GCC:-'not set'}"
 echo "----------"
 echo "Patching makefile"
 # Trying to fix build when gcc or g++ are required
