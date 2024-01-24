@@ -1,0 +1,59 @@
+{% set name = "tbtamr" %}
+{% set version = "0.0.4" %}
+{% set sha256 = "72db1eb835574f02b0d7768e6b04e310bd2229d0f684100004b20a133eecd882" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "{{ sha256 }}"
+
+build:
+  noarch: python
+  number: 1
+  entry_points:
+    - tbtamr=tbtamr.tbtamr:main
+  run_exports:
+    - {{ pin_subpackage('tbtamr', max_pin="x.x") }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+    - psutil
+    - pandas
+    - csvtk
+    - bwa
+    - samtools =1.12
+    - snpeff =5.0
+    - samclip 
+    - freebayes 
+    - bcftools 
+    - bedtools 
+    - delly
+    - xlsxwriter
+    - requests
+    - tqdm
+
+    
+test:
+  imports:
+    - tbtamr
+  commands:
+    - tbtamr --help
+
+about:
+  home: "https://github.com/MDU-PHL/tbtamr"
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  license_family: "GPL3"
+  summary: "A tool implementing TB-Profiler for reporting of genomic DST for M. tuberculosis in a CPHL"
+
+extra:
+  recipe-maintainers:
+    - kristyhoran
