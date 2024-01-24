@@ -3,17 +3,20 @@ package:
   version: "0.7.2"
 
 source:
-  url: https://files.pythonhosted.org/packages/55/df/b9ef6ef83741f82a24cb2426c1186a3d1df8d553d168bb14d2fbbe532e17/presto-0.7.2.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/presto-{{ version }}.tar.gz
   sha256: b4f4b34413af4207eb2052316d31d7bc2067b864286498476d89013ad5423dd9
 
 build:
   number: 0
   noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('presto', max_pin="x.x") }}
 
 requirements:
   host:
     - python >=3
-    - setuptools
+    - pip
   run:
     - python >=3
     - numpy >=1.8
@@ -41,7 +44,12 @@ test:
     - SplitSeq.py --version
 
 about:
-  home: https://presto.readthedocs.io
-  license: AGPL-3.0
+  home: https://bitbucket.org/kleinstein/presto
+  license: AGPL-3.0-or-later
   summary: 'A bioinformatics toolkit for processing high-throughput lymphocyte receptor sequencing data.'
   license_family: AGPL
+  doc_url: https://presto.readthedocs.io
+
+extra:
+  identifier:
+    - doi:10.1093/bioinformatics/btu138
