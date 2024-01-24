@@ -1,0 +1,44 @@
+{% set name = "skyline2isocor" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/skyline2isocor-{{ version }}.tar.gz
+  sha256: 9bf2b6a8c381ced3a5a24838d944bfff016a12c7da6f3627ff31467918e609bc
+
+build:
+  entry_points:
+    - skyline2isocor = skyline2isocor.cli:start_cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.11,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.11.0,<4.0.0
+    - pandas >=2.1.4,<3.0.0
+
+test:
+  imports:
+    - skyline2isocor
+  commands:
+    - pip check
+    - skyline2isocor --help
+  requires:
+    - pip
+
+about:
+  summary: Convert skyline output to IsoCor input format
+  license: GPL-3.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - llegregam
