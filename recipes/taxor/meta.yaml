@@ -5,7 +5,7 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/JensUweUlrich/Taxor/releases/download/{{ version }}/taxor.tar.gz # [linux]
+  url: https://github.com/JensUweUlrich/Taxor/archive/refs/tags/{{ version }}.tar.gz # [linux]
   md5: 8e5476aadc3fecab580e8b1b73ba3dff # [linux]
 
 build:
@@ -15,8 +15,28 @@ build:
   skip: true  # [osx]
 
 requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - cmake >=3.16
   host:
     - libgomp      # [linux]
+    - bzip2
+    - seqan3 ==3.3.0
+    - grep
+    - coreutils
+    - curl
+    - diffutils
+    - zlib
+
+  run:
+    - bzip2
+    - grep
+    - coreutils
+    - curl
+    - diffutils 
+    - zlib
+    - raptor ==3.0.1
 
 test:
   commands:
@@ -27,7 +47,3 @@ about:
   summary: Fast and space-efficient taxonomic classification of long reads
   license: BSD 3-Clause
 
-extra:
-  skip-lints:
-    - should_be_noarch_generic
-    - should_not_be_noarch_source
