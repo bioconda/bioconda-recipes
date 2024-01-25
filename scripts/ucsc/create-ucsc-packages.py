@@ -8,10 +8,10 @@ import tarfile
 import urllib.request
 
 # e.g., "========   addCols   ===================================="
-re_header = re.compile(r'^=+\s+(?P<program>\w+)\s+=+$')
+re_header = re.compile(r'^=+\s+(?P<program>[\w.]+)\s+=+$')
 
 # e.g.,# "addCols - Sum columns in a text file."
-re_summary = re.compile(r'^(?P<program>\w.*?) - (?P<description>.*)$')
+re_summary = re.compile(r'^(?:Usage: )?(?P<program>\w.*?) - (?P<description>.*)$')
 
 
 def parse_footer(fn):
@@ -54,15 +54,14 @@ def parse_footer(fn):
 #
 #   version: 332
 #   sha256: 8c2663c7bd302a77cdf52b2e9e85e2cd
-ucsc_config = yaml.load(open('ucsc_config.yaml'))
+ucsc_config = yaml.safe_load(open('ucsc_config.yaml'))
 VERSION = ucsc_config['version']
 SHA256 = ucsc_config['sha256']
 
 # Download tarball if it doesn't exist. Always download FOOTER.
-tarball = (
-    'http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{0}.src.tgz'
-    .format(VERSION))
+tarball = f'https://hgdownload.soe.ucsc.edu/admin/exe/userApps.archive/userApps.v{VERSION}.src.tgz'
 if not os.path.exists(os.path.basename(tarball)):
+    print(f"downloading {tarball}")
     f = urllib.request.urlopen(tarball)
     of = open(os.path.basename(tarball), "wb")
     of.write(f.read())
@@ -187,6 +186,14 @@ manual_descriptions = {
         intended primarily for system administrators.  The 'para' command
         is the primary command for users.
         """),
+    'trackDbIndexBb': dedent(
+        """
+        Given a track name, a trackDb.ra composite of bigBeds, and a
+        chrom.sizes file, will create index files needed to optimize
+        hideEmptySubtracks setting.
+        """),
+    'ucscApiClient': "Command line utility for UCSC Genome Browser API access",
+
 }
 
 # programs listed in FOOTER that should not be considered a "ucsc utility"
@@ -196,6 +203,8 @@ SKIP = [
     'ave',
     'gfClient',
     'gfServer',
+    'barChartMaxLimit',
+
 ]
 
 # Some programs need to be built differently. It seems that a subset of
@@ -235,13 +244,17 @@ custom_meta = {
 
 
 for block in parse_footer('FOOTER'):
-    sys.stderr.write('.')
+    #sys.stderr.write('.')
     # If len == 2, then a description was parsed.
     if len(block) == 2:
         program, summary = block
+        print(program, summary, file=sys.stderr)
         program = problematic.get(program, program)
         summary_program, description = summary
 
+        if program in SKIP or program.endswith(".pl"):
+            print(f"Skipping {program}", file=sys.stderr)
+            continue
         # Some programs have summary lines that look like this:
         #
         #   bedGraphToBigWig v 4 - Convert a bedGraph file to bigWig format
@@ -256,15 +269,14 @@ for block in parse_footer('FOOTER'):
                     "mismatch in header and summary. header: "
                     "'{0}'; summary: '{1}'"
                     .format(program, summary_program))
-        if program in SKIP:
-            continue
 
     # If len == 1 then no description was parsed, so we expect one to be in
     # manual_descriptions.
     else:
         assert len(block) == 1
         program = block[0]
-        if program in SKIP:
+        if program in SKIP or program.endswith(".pl"):
+            print(f"Skipping {program}", file=sys.stderr)
             continue
         description = manual_descriptions[program]
 
@@ -276,7 +288,7 @@ for block in parse_footer('FOOTER'):
     # cases it may not exist, in which case we expect a custom build script.
     subdir = program_subdir(program, names)
     if subdir is None and program not in custom_build_scripts:
-        sys.stderr.write(" Skipping {0} ".format(program))
+        sys.stderr.write(" Skipping {0}, no build directory in tarball".format(program))
         continue
 
     if not os.path.exists(recipe_dir):
