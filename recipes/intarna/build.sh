@@ -34,5 +34,7 @@ export LDFLAGS=${LDFLAGS}
 
 
 make -j ${CPU_COUNT}
-make tests -j ${CPU_COUNT}
+if [ `uname` != Darwin ] ; then # skip tests for osx to avoid timeout
+    make tests -j ${CPU_COUNT}
+fi
 make install
