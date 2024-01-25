@@ -1,0 +1,47 @@
+{% set version = "0.10.3" %}
+{% set name = "binchicken" %}
+{% set sha256 = "da3a5a7e88c29e5470111e6011eb4395e7597c1ed50927b0cef16997d6484545" %}
+
+package:
+  name: binchicken
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage('binchicken', max_pin="x") }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python =3.10.*
+    - snakemake =7.32.*
+    - mamba =1.4.*
+    - networkx =3.1
+    - bird_tool_utils_python =0.4.*
+    - extern =0.4.*
+    - ruamel.yaml =0.17.*
+    - polars =0.20.*
+    - pigz =2.3.*
+    - pyarrow =12.0.*
+    - parallel =20230522
+    - pyopenssl >22.1.0
+
+test:
+  commands:
+    - {{ name }} --version | grep '{{ version }}'
+
+about:
+  home: https://github.com/aroneys/binchicken
+  license: GNU General Public v3 (GPLv3)
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Targeted recovery of low abundance metagenome assembled genomes through intelligent coassembly
