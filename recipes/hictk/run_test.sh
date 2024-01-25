@@ -40,10 +40,11 @@ test/scripts/hictk_load_coo.sh "$hictk" sorted
 test/scripts/hictk_load_coo.sh "$hictk" unsorted
 test/scripts/hictk_load_bg2.sh "$hictk" sorted
 test/scripts/hictk_load_bg2.sh "$hictk" unsorted
-test/scripts/hictk_load_4dn.sh "$hictk" sorted
-test/scripts/hictk_load_4dn.sh "$hictk" unsorted
+test/scripts/hictk_load_4dn.sh "$hictk"
 
 test/scripts/hictk_merge.sh "$hictk"
+
+test/scripts/hictk_rename_chromosomes.sh "$hictk"
 
 test/scripts/hictk_validate.sh "$hictk"
 

@@ -2,7 +2,7 @@
 # Wraps pia.jar
 set -o pipefail
 
-jar_file="pia-1.4.8.jar"
+jar_file="pia.jar"
 
 # Find original directory of bash script, resovling symlinks
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128
