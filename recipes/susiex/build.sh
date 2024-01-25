@@ -2,6 +2,7 @@
 
 mkdir -p $PREFIX/bin
 
-cd src
+pushd src
 make
-cp ../bin/SuSiEx $PREFIX/bin/SuSiEx
+popd
+cp bin/SuSiEx $PREFIX/bin/SuSiEx
