@@ -1,6 +1,6 @@
 {% set name = "hictk" %}
-{% set version = "0.0.6" %}
-{% set sha256 = "5913792f858304ff82996c9e9720442736b443d56c53aa8eb2a1ac2ae8ccc88f" %}
+{% set version = "0.0.7" %}
+{% set sha256 = "0fba86eeddb5aaeeb8ec1d9ea74d020480277c6bead3417d1118bcddc66a52db" %}
 
 package:
   name: {{ name|lower }}
@@ -12,7 +12,8 @@ build:
     - {{ pin_subpackage('hictk', max_pin='x.x') }}
 
 source:
-  url: https://github.com/paulsengroup/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  # url: https://github.com/paulsengroup/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  url: https://github.com/paulsengroup/hictk/archive/refs/heads/main.tar.gz
   sha256: {{ sha256 }}
 
 requirements:
@@ -53,11 +54,14 @@ test:
   requires:
     - curl
     - cooler>=0.9.3
-    - openjdk>=11
     - perl-digest-sha1
     - xz
   source_files:
     - cmake/FetchTestDataset.cmake
+    - test/scripts/check_test_files_exist.sh
+    - test/scripts/compare_cooler_files.sh
+    - test/scripts/compare_matrix_files.sh
+    - test/scripts/compare_plain_files.sh
     - test/scripts/hictk_balance.sh
     - test/scripts/hictk_convert_hic2cool.sh
     - test/scripts/hictk_convert_cool2hic.sh
@@ -78,6 +82,9 @@ test:
     - test/scripts/hictk_rename_chromosomes.sh
     - test/scripts/hictk_validate.sh
     - test/scripts/hictk_zoomify.sh
+    - test/scripts/nproc.sh
+    - test/scripts/readlink.sh
+    - test/scripts/shuffle.sh
   commands:
     - hictk --help
     - hictk --version
