@@ -1,8 +1,8 @@
 #!/bin/bash
 
-mkdir -p build
-cd build
-cmake  ../src
+mkdir ${SRC_DIR}/build/
+cd ${SRC_DIR}/build/
+cmake ${SRC_DIR}
 cmake --build . --config Release
 
 cp main/taxor $PREFIX/bin
