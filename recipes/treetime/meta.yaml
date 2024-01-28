@@ -1,5 +1,5 @@
-{% set version = "0.8.1" %}
-{% set sha256 = "977e25e0e725e2c4584c283e8f74bef5f670419e9714bb53ecbc3290df01beff" %}
+{% set version = "0.11.2" %}
+{% set sha256 = "c6fe577580a1ed83dcfc7530f85b678bd9d890366ba83d50444cd8e7371a71af" %}
 
 package:
   name: treetime
@@ -12,19 +12,23 @@ source:
 build:
   noarch: python
   number: 0
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed . -vvv
+  entry_points:
+    - treetime = treetime.__main__:main
+  run_exports:
+    - {{ pin_subpackage('treetime', max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.7
     - pip
   run:
-    - python
+    - python >=3.7
     - numpy >=1.10.4
     - scipy >=0.16.1
-    - biopython >=1.66
+    - biopython >=1.67,!=1.77,!=1.78
     - pandas >=0.17.1
-    - matplotlib-base
+    - matplotlib-base >=2.0
 
 test:
   commands:
@@ -36,4 +40,13 @@ about:
   home: https://github.com/neherlab/treetime
   license: MIT
   license_family: MIT
+  license_file: LICENSE
   summary: Maximum-Likelihood dating and ancestral inference for phylogenetic trees
+  doc_url: https://treetime.readthedocs.io/en/latest/index.html
+  dev_url: https://github.com/neherlab/treetime
+
+extra:
+  recipe-maintainers:
+    - corneliusroemer
+    - rneher
+    - ivan-aksamentov

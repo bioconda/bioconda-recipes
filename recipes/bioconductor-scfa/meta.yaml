@@ -1,6 +1,6 @@
-{% set version = "1.2.0" %}
+{% set version = "1.12.0" %}
 {% set name = "SCFA" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,45 +8,45 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: b3441c0ae2d04fc4db37404e3d9ad17d
+  md5: c4e7d00ff20faff6a8a14eddde8e7a84
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-scfa", max_pin="x.x") }}'
   noarch: generic
-# Suggests: knitr
+# Suggests: knitr, rmarkdown, BiocStyle
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.26.0,<1.27.0'
+    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
     - r-base
     - r-cluster
-    - r-clustercrit
+    - r-coro
     - r-glmnet
     - r-igraph
-    - r-keras
     - r-matrix
     - r-matrixstats
     - r-psych
     - r-rhpcblasctl
     - r-survival
-    - r-tensorflow
+    - 'r-torch >=0.3.0'
   run:
-    - 'bioconductor-biocparallel >=1.26.0,<1.27.0'
+    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
     - r-base
     - r-cluster
-    - r-clustercrit
+    - r-coro
     - r-glmnet
     - r-igraph
-    - r-keras
     - r-matrix
     - r-matrixstats
     - r-psych
     - r-rhpcblasctl
     - r-survival
-    - r-tensorflow
+    - 'r-torch >=0.3.0'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

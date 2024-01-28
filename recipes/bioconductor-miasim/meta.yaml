@@ -1,0 +1,49 @@
+{% set version = "1.8.0" %}
+{% set name = "miaSim" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 0867c6e7b7cae5acbfd6154b8af06d41
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-miasim", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: ape, cluster, foreach, doParallel, dplyr, GGally, ggplot2, igraph, network, reshape2, sna, vegan, rmarkdown, knitr, BiocStyle, testthat, mia, miaViz, colourvalues, philentropy
+requirements:
+  host:
+    - 'bioconductor-matrixgenerics >=1.14.0,<1.15.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - 'bioconductor-treesummarizedexperiment >=2.10.0,<2.11.0'
+    - r-base
+    - r-desolve
+    - r-powerlaw
+  run:
+    - 'bioconductor-matrixgenerics >=1.14.0,<1.15.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - 'bioconductor-treesummarizedexperiment >=2.10.0,<2.11.0'
+    - r-base
+    - r-desolve
+    - r-powerlaw
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'Artistic-2.0 | file LICENSE'
+  summary: 'Microbiome Data Simulation'
+  description: 'Microbiome time series simulation with generalized Lotka-Volterra model, Self-Organized Instability (SOI), and other models. Hubbell''s Neutral model is used to determine the abundance matrix. The resulting abundance matrix is applied to (Tree)SummarizedExperiment objects.'
+  license_file: LICENSE
+

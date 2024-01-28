@@ -1,6 +1,6 @@
-{% set version = "1.30.0" %}
+{% set version = "1.40.0" %}
 {% set name = "parathyroidSE" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,24 +8,27 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 43a65e8c4bd83e469a201c4a1564074a
+  md5: e4d06f888feb4015273e20b14f8ee37a
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-parathyroidse", max_pin="x.x") }}'
   noarch: generic
 # Suggests: Rsamtools, GenomicAlignments, GEOquery, SRAdb, GenomicFeatures, BiocStyle
 requirements:
   host:
-    - 'bioconductor-summarizedexperiment >=1.22.0,<1.23.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
     - r-base
   run:
-    - 'bioconductor-summarizedexperiment >=1.22.0,<1.23.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

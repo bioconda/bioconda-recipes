@@ -1,6 +1,6 @@
-{% set version = "1.32.0" %}
+{% set version = "1.42.1" %}
 {% set name = "DLBCL" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,23 +8,28 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 5a8ea6626bb4828b296dc5c0066ad569
+  md5: a2906f8e35b0457c1cd8052d2457d40b
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-dlbcl", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-biobase >=2.52.0,<2.53.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
+    - 'bioconductor-graph >=1.80.0,<1.81.0'
     - r-base
   run:
-    - 'bioconductor-biobase >=2.52.0,<2.53.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
+    - 'bioconductor-graph >=1.80.0,<1.81.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

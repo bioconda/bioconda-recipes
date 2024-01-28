@@ -1,34 +1,44 @@
 {% set name = "tRNAscan-SE" %}
-{% set version = "2.0.7" %}
+{% set version = "2.0.12" %}
+{% set sha256 = "96fa4af507cd918c1c623763d9260bd6ed055d091662b44314426f6bbf447251" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 1
+  number: 0
 
 source:
-  url: http://lowelab.ucsc.edu/software/trnascan-se-{{ version }}.tar.gz
-  sha256: 878d636813bc3e1ea1d52d86820642adfed3d740d5f4b3845460f140fc499843
+  url: http://trna.ucsc.edu/software/trnascan-se-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - patches/libdir.patch
 
 requirements:
   build:
-    - make
     - {{ compiler('c') }}
+    - make
     - autoconf
     - automake
   host:
     - perl
   run:
     - perl
-    - infernal >=1.1.2
+    - infernal >=1.1.4
 
 test:
   commands:
     - tRNAscan-SE -h
 
 about:
-  home: http://lowelab.ucsc.edu/tRNAscan-SE/
+  home: "http://lowelab.ucsc.edu/tRNAscan-SE/"
   license: GPLv3
-  summary: tRNA detection in large-scale genome sequence
+  license_file: LICENSE
+  summary: tRNA detection in large-scale genomic sequences
+  doc_url: "http://lowelab.ucsc.edu/tRNAscan-SE/help.html"
+
+extra:
+  identifiers:
+    - biotools:trnascan-se
+    - doi:10.1093/nar/gkab688

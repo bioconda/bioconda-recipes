@@ -1,6 +1,6 @@
-{% set version = "1.28.0" %}
+{% set version = "1.38.0" %}
 {% set name = "shinyMethyl" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,33 +8,37 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 3881862cf3146db20b449950b0727153
+  md5: 21f2fe819a72a5c4db3694a22dcda934
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-shinymethyl", max_pin="x.x") }}'
   noarch: generic
-# Suggests: shinyMethylData, minfiData, BiocStyle, RUnit, digest, knitr
+# Suggests: shinyMethylData, minfiData, BiocStyle, knitr, testthat
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.38.0,<0.39.0'
-    - 'bioconductor-illuminahumanmethylation450kmanifest >=0.4.0,<0.5.0'
-    - 'bioconductor-minfi >=1.38.0,<1.39.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
+    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
+    - 'bioconductor-matrixgenerics >=1.14.0,<1.15.0'
+    - 'bioconductor-minfi >=1.48.0,<1.49.0'
     - r-base
-    - r-matrixstats
+    - r-htmltools
     - r-rcolorbrewer
-    - 'r-shiny >=0.13.2'
+    - r-shiny
   run:
-    - 'bioconductor-biocgenerics >=0.38.0,<0.39.0'
-    - 'bioconductor-illuminahumanmethylation450kmanifest >=0.4.0,<0.5.0'
-    - 'bioconductor-minfi >=1.38.0,<1.39.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
+    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
+    - 'bioconductor-matrixgenerics >=1.14.0,<1.15.0'
+    - 'bioconductor-minfi >=1.48.0,<1.49.0'
     - r-base
-    - r-matrixstats
+    - r-htmltools
     - r-rcolorbrewer
-    - 'r-shiny >=0.13.2'
+    - r-shiny
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

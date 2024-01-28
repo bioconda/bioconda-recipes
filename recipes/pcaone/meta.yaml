@@ -1,0 +1,51 @@
+{% set version = "0.4.1" %}
+{% set sha256 = "03f8afa9870507e03aa90a349a00f70f56bbf202b05a4d3d648148f3c30b6518" %}
+
+
+package:
+  name: pcaone
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/Zilong-Li/PCAone/archive/refs/tags/v{{ version }}.tar.gz # [x86_64]
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('pcaone', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+    - sysroot_linux-64 2.17 # [linux]
+    - intel-openmp
+
+  host:
+    - mkl
+    - mkl-include
+    - intel-openmp
+    - zlib
+
+  run:
+    - mkl
+    - intel-openmp
+
+test:
+  commands:
+    - PCAone --help
+
+about:
+  home: https://github.com/Zilong-Li/PCAone
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: PCAone - Principal Component Analysis All in One
+  doc_url: https://github.com/Zilong-Li/PCAone
+  dev_url: https://github.com/Zilong-Li/PCAone
+
+extra:
+  recipe-maintainers:
+    - Zilong

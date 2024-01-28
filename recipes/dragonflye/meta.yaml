@@ -1,0 +1,58 @@
+{% set name = "dragonflye" %}
+{% set version = "1.1.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+source:
+  url: https://github.com/rpetit3/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 0175f72233c2aa5b4f398fee8f1c17ae69ff04a17dd81ca5e105ec3b3fb4d0ab
+
+requirements:
+  run:
+    - assembly-scan >=1.0.0
+    - any2fasta >=0.4.2
+    - bwa
+    - fastp
+    - flye >=2.9.2
+    - kmc >=3.1
+    - medaka >=1.11.0
+    - miniasm >=0.3_r179
+    - nanoq >=0.10.0
+    - perl >=5.26
+    - perl-file-spec
+    - perl-findbin
+    - pigz >=2.6
+    - pilon
+    - polypolish
+    - porechop
+    - racon >=1.5.0
+    - rasusa >=0.7.1
+    - raven-assembler >=1.8.3
+    - samclip
+    - samtools
+    - seqtk >=1.4
+
+test:
+  commands:
+    - dragonflye --version | grep -F '{{ version }}'
+    - dragonflye --check
+    - dragonflye --list_models 2>&1 | grep "r1041"
+
+about:
+  home: https://github.com/rpetit3/{{ name }}
+  license: GPL2
+  license_file: LICENSE
+  summary: Microbial assembly pipeline for Nanopore reads
+
+extra:
+  identifiers:
+    - biotools:{{ name }}
+    - usegalaxy-eu:{{ name }}

@@ -1,0 +1,40 @@
+{% set version = "1.4.0" %}
+{% set name = "octad.db" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: ef8723031fea32015ee26dbf30d2c8ba
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-octad.db", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: knitr, rmarkdown
+requirements:
+  host:
+    - 'bioconductor-experimenthub >=2.10.0,<2.11.0'
+    - r-base
+  run:
+    - 'bioconductor-experimenthub >=2.10.0,<2.11.0'
+    - r-base
+    - curl
+    - 'bioconductor-data-packages >=20231203'
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'Open Cancer TherApeutic Discovery (OCTAD) database'
+  description: 'Open Cancer TherApeutic Discovery (OCTAD) package implies sRGES approach for the drug discovery. The essential idea is to identify drugs that reverse the gene expression signature of a disease by tamping down over-expressed genes and stimulating weakly expressed ones. The following package contains all required precomputed data for whole OCTAD pipeline computation.'
+

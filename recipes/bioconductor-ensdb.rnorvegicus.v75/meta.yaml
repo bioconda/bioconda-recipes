@@ -1,6 +1,6 @@
 {% set version = "2.99.0" %}
 {% set name = "EnsDb.Rnorvegicus.v75" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,23 +8,26 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
   md5: 40ff53b41aa6fad0d5bd15f9c6f3bad8
 build:
-  number: 7
+  number: 12
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-ensdb.rnorvegicus.v75", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-ensembldb >=2.16.0,<2.17.0'
+    - 'bioconductor-ensembldb >=2.26.0,<2.27.0'
     - r-base
   run:
-    - 'bioconductor-ensembldb >=2.16.0,<2.17.0'
+    - 'bioconductor-ensembldb >=2.26.0,<2.27.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

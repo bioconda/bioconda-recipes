@@ -1,5 +1,5 @@
 {% set name = "pomoxis" %}
-{% set version = "0.3.8" %}
+{% set version = "0.3.15" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 63c44c277fe0566fe587ed1f670c330602170322f2ea03d1d68d282ba417b913
+  sha256: e54f7f2960290121676dda992b326341986b093e5da4586203b8b613cc356d2b
 
 build:
   number: 0
@@ -22,14 +22,19 @@ build:
     - long_fastx = pomoxis.util:extract_long_reads
     - pomoxis_path = pomoxis:show_prog_path
     - qscores_from_summary = pomoxis.qscores_from_summary:main
+    - reverse_bed = pomoxis.util:reverse_bed
     - split_fastx = pomoxis.util:split_fastx_cmdline
     - stats_from_bam = pomoxis.stats_from_bam:main
     - subsample_bam = pomoxis.subsample_bam:main
+    - filter_bam = pomoxis.filter_bam:main
     - summary_from_stats = pomoxis.summary_from_stats:main
+    - tag_bam = pomoxis.util:tag_bam
     - trim_alignments = pomoxis.trim_alignments:main
     - ref_seqs_from_bam = pomoxis.ref_seqs_from_bam:main
     - find_indels = pomoxis.find_indels:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('pomoxis', max_pin="x.x") }}
 
 requirements:
   host:
@@ -52,6 +57,7 @@ requirements:
     - bcftools >=1.9
     - seqkit >=0.8.0
     - bedtools >=2.29.0
+    - ncls >=0.0.65
 
 test:
   imports:
@@ -78,12 +84,12 @@ test:
 
 about:
   home: https://github.com/nanoporetech/pomoxis
-  license: Mozilla Public License 2.0
+  license: MPL-2.0
   license_family: OTHER
   license_file: LICENSE.md
   summary: Assembly, consensensus, and analysis tools by ONT research
   doc_url: https://nanoporetech.github.io/pomoxis/index.html
-  dev_url: https://github.com/nanoporetech/pomoxis 
+  dev_url: https://github.com/nanoporetech/pomoxis
 
 extra:
   recipe-maintainers:

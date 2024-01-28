@@ -1,5 +1,5 @@
-{% set version = "2.4.0" %}
-{% set sha256 = "aa8f457137c2d99434f3ae9c33336b85455760a6998c3a9303e257e0fa0ade9a" %}
+{% set version = "2.10.1" %}
+{% set sha256 = "5db46a3fce7b0235be9273ec070092775be43e4bb1b2787c349f3598eaa3fd07" %}
 
 package:
   name: sevenbridges-python
@@ -12,13 +12,15 @@ source:
 build:
   noarch: python
   number: 0
-  script: touch requirements.txt && {{PYTHON}} -m pip install --no-deps --ignore-installed --no-cache-dir .
+  script: touch requirements.txt && {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  run_exports:
+    - {{ pin_subpackage('sevenbridges-python', max_pin="x") }}
 
 requirements:
   host:
     - python >=3
     - pip
-    - requests >=2.25.1
+    - requests >=2.25.1  # needed because setup.py imports the sevenbridges module
   run:
     - python >=3
     - requests >=2.25.1
@@ -45,7 +47,7 @@ test:
 about:
   home: https://github.com/sbg/sevenbridges-python
   license: Apache-2.0
-  license_family: Apache
+  license_family: APACHE
   license_file: LICENSE
   summary: SBG API python client bindings
   description: sevenbridges-python is a Python library that provides an interface for the Seven Bridges Platform the Cancer
@@ -54,4 +56,5 @@ about:
 
 extra:
   recipe-maintainers:
-    - QuicksilverMachine
+    - stankic
+    - borislavd88

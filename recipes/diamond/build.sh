@@ -9,7 +9,11 @@ cd build
 cmake .. \
       -DCMAKE_INSTALL_PREFIX=$PREFIX \
       -DCMAKE_PREFIX_PATH=$PREFIX \
-      -DBOOST_NO_SYSTEM_PATHS=on \
+      -DCMAKE_LIBRARY_PATH="$PREFIX" \
+      -DWITH_ZSTD=on \
+      -DZSTD_LIBRARY=$PREFIX/lib/libzstd.a \
+      -DZSTD_INCLUDE_DIR=$PREFIX/include/ \
+      -DBLAST_LIBRARY_DIR=$PREFIX/lib/ncbi-blast+ \
       -DCMAKE_OSX_DEPLOYMENT_TARGET=""
 
 cmake --build . --config Release --target install

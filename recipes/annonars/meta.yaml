@@ -1,0 +1,47 @@
+{% set version = "0.34.0" %}
+
+package:
+  name: annonars
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage("annonars", max_pin="x.x") }}
+
+source:
+  url: https://github.com/bihealth/annonars/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 8b0725fc8d7e861bc08c96882f6e9e489b5079c10eb723295b26d2100e6e86f9
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - rust >=1.30
+    - clangdev
+    - pkg-config
+    - protobuf
+    - make
+    - cmake
+  host:
+    - clangdev
+    - openssl
+    - sqlite
+    - zlib
+  run:
+    - sqlite
+
+test:
+  commands:
+    - annonars --help
+
+about:
+  home: https://github.com/bihealth/annonars
+  license: Apache-2.0
+  license_file: LICENSE.txt
+  summary: 'Genome annotation based on Rust and RocksDB.'
+
+extra:
+  recipe-maintainers:
+    - holtgrewe

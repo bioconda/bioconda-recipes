@@ -1,6 +1,6 @@
 {% set name = "nf-core" %}
-{% set version = "1.14" %}
-{% set sha256 = "7cda708836522f2452c21b2cdb4eab99232921a688739a091d3899ea3b4b9f66" %}
+{% set version = "2.11.1" %}
+{% set sha256 = "f81e411a66a417b9355657eec4337e8d004b166d8690e39f337994763b0ecc63" %}
 
 package:
   name: {{ name|lower }}
@@ -13,31 +13,41 @@ source:
 build:
   noarch: python
   number: 0
-  script: "touch requirements.txt && {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  script: "touch requirements.txt && {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  entry_points:
+    - nf-core=nf_core.__main__:run_nf_core
+  run_exports:
+    - {{ pin_subpackage('nf-core', max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.8
     - pip
     - twine
   run:
-    - python
+    - python >=3.8
     - click
-    - gitpython
+    - git
     - pyyaml
     - requests
     - requests-cache
     - tabulate
-    - git
-    - jsonschema
+    - gitpython
+    - markdown >=3.3
+    - jsonschema >=3.0
     - jinja2
-    - rich >=9.8.2
-    - prompt_toolkit>=3.0.3
-    - questionary>=1.8.0
+    - rich >=13.3.1
+    - rich-click >=1.6.1
+    - pre-commit
+    - prompt_toolkit >=3.0.3
+    - pytest >=7.0.0
+    - pytest-workflow >=1.6.0
+    - questionary >=1.8.0
     - packaging
-    
+    - galaxy-tool-util
+    - refgenie
+    - filetype
 
-    
 test:
   commands:
     - nf-core --help
@@ -45,6 +55,7 @@ test:
 about:
   home: http://nf-co.re/
   license: MIT
+  license_family: MIT
   summary: 'Python package with helper tools for the nf-core community.'
 
 extra:

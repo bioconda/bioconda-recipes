@@ -1,0 +1,65 @@
+{% set version = "1.8.0" %}
+{% set name = "orthogene" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: f3597fa7ce02e2e32ee6cebb20f67c08
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-orthogene", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: rworkflows, remotes, knitr, BiocStyle, markdown, rmarkdown, testthat (>= 3.0.0), piggyback, magick, GenomeInfoDbData, ape, phytools, rphylopic (>= 1.0.0), TreeTools, ggimage, OmaDB
+requirements:
+  host:
+    - 'bioconductor-delayedarray >=0.28.0,<0.29.0'
+    - 'bioconductor-ggtree >=3.10.0,<3.11.0'
+    - r-babelgene
+    - r-base
+    - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-ggpubr
+    - r-gprofiler2
+    - r-grr
+    - r-homologene
+    - r-jsonlite
+    - r-matrix
+    - r-patchwork
+    - r-repmis
+  run:
+    - 'bioconductor-delayedarray >=0.28.0,<0.29.0'
+    - 'bioconductor-ggtree >=3.10.0,<3.11.0'
+    - r-babelgene
+    - r-base
+    - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-ggpubr
+    - r-gprofiler2
+    - r-grr
+    - r-homologene
+    - r-jsonlite
+    - r-matrix
+    - r-patchwork
+    - r-repmis
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Interspecies gene mapping'
+  description: '`orthogene` is an R package for easy mapping of orthologous genes across hundreds of species. It pulls up-to-date gene ortholog mappings across **700+ organisms**. It also provides various utility functions to aggregate/expand common objects (e.g. data.frames, gene expression matrices, lists) using **1:1**, **many:1**, **1:many** or **many:many** gene mappings, both within- and between-species.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

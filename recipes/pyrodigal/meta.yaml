@@ -1,18 +1,22 @@
 {% set name = "pyrodigal" %}
-{% set version = "0.5.0" %}
+{% set version = "3.3.0" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://files.pythonhosted.org/packages/ff/f5/f687d594b6e1bb0232672f944838f02dc9c507350f1d29da597b2d1da2fa/pyrodigal-0.5.0.tar.gz
-  sha256: 5bf2a12c7d3c47fd5dacb0c928bdd7ee1090d43f1d80e45e4aa1edf8e552d554
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 68f92cd83f9cd2883b99433847a827dd84ccb27edc51cb3f415664f0f08b0325
 
 build:
   number: 0
-  skip: True  #[py2k]
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  skip: True  # [py < 36]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --use-pep517 -vvv"
+  entry_points:
+    - pyrodigal = pyrodigal.cli:main
+  run_exports:
+    - {{ pin_subpackage("pyrodigal", max_pin="x.x") }}
 
 requirements:
   build:
@@ -24,12 +28,13 @@ requirements:
     - setuptools
   run:
     - python
-    - setuptools
+    - archspec >=0.2.0
 
 test:
   imports:
     - {{ name }}
   commands:
+    - pyrodigal --help
     - python -m unittest -vv {{ name }}.tests
 
 about:
@@ -38,7 +43,10 @@ about:
   license_family: GPL
   license_file: COPYING
   summary: Python bindings to Prodigal, an ORF finder for microbial sequences.
+  doc_url: https://pyrodigal.readthedocs.org/
 
 extra:
   recipe-maintainers:
     - althonos
+  identifiers:
+    - doi:10.21105/joss.04296  # JOSS paper

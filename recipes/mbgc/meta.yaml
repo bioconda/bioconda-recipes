@@ -1,0 +1,40 @@
+{% set version = "2.0.1" %}
+
+package:
+  name: mbgc 
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('mbgc', max_pin="x") }}
+
+source:
+  url: https://github.com/kowallus/mbgc/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: fb422fc89aa95d82dab0b1431b7f220d5f4cdab2dfc1141218e74668461fa530 
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake >=3.5
+    - make
+  host:
+    - llvm-openmp  # [osx]
+  run:
+    - llvm-openmp  # [osx]   
+    
+test:
+  commands:
+    - mbgc -v 2>&1 | grep -F {{ version }}
+
+about:
+  home: https://github.com/kowallus/mbgc
+  license: GPL3
+  license_file: LICENSE
+  license_family: GPL
+  summary: A tool for compressing collection of genomes in FASTA format
+
+extra:
+  maintainers:
+    - kowallus
+

@@ -1,6 +1,6 @@
-{% set version = "2.16.0" %}
+{% set version = "2.26.0" %}
 {% set name = "ELMER.data" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,24 +8,27 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 65c68d66e2a9da59a6f57c45a4dd382d
+  md5: 565ea1aa52f3f61d16b7560859ed7a3a
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-elmer.data", max_pin="x.x") }}'
   noarch: generic
-# Suggests: BiocStyle, knitr, dplyr, devtools, DT
+# Suggests: BiocStyle, knitr, dplyr, devtools, DT, rmarkdown
 requirements:
   host:
-    - 'bioconductor-genomicranges >=1.44.0,<1.45.0'
+    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
     - r-base
   run:
-    - 'bioconductor-genomicranges >=1.44.0,<1.45.0'
+    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

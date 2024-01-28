@@ -15,8 +15,10 @@ fi
             --without-doc \
             --without-tutorial \
             --without-tutorial-pdf \
+            --without-cla \
+            --without-rnaxplorer \
             ${extra_config_options} \
-            &&\
+            && \
 make -j${CPU_COUNT}
 
 ## Install

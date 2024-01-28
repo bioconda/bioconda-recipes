@@ -1,0 +1,57 @@
+{% set name = "celltypist" %}
+{% set version = "1.6.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: a22309230c578c3738f72643492387167053f35a610625c75d66b056cf520361
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - celltypist=celltypist.command_line:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('celltypist', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - click >=7.1.2
+    - leidenalg >=0.8.3
+    - numpy >=1.19.0
+    - openpyxl >=3.0.4
+    - pandas >=1.0.5
+    - python >=3.6
+    - requests >=2.23.0
+    - scanpy >=1.7.0
+    - scikit-learn >=0.24.1
+    - python-annoy
+
+test:
+  imports:
+    - celltypist
+  commands:
+    - celltypist --help
+
+about:
+  home: "https://github.com/Teichlab/celltypist"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A tool for semi-automatic cell type annotation"
+  dev_url: "https://github.com/Teichlab/celltypist"
+  doc_rul: "https://github.com/Teichlab/celltypist"
+
+extra:
+  recipe-maintainers:
+    - cx1
+    - mp33
+  identifiers:
+    - doi:10.1126/science.abl5197

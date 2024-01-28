@@ -1,0 +1,48 @@
+{% set name = "chronumental" %}
+{% set version = "0.0.63" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/chronumental-{{ version }}.tar.gz
+  sha256: f008bae186592447609cdd51ad940e0474b61a6c0ce9db1b44ed317d3b02f35f
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  number: 0
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - numpyro
+    - pandas
+    - python >=3.6
+    - scipy
+    - alive-progress
+    - treeswift
+    - xopen
+
+test:
+  imports:
+    - chronumental
+  commands:
+    - chronumental -h
+  requires:
+    - pip
+
+about:
+  home: https://github.com/theosanderson/chronumental
+  summary: Make time trees from large phylogenetic divergence trees
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - tomkinsc

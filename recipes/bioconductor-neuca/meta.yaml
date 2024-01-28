@@ -1,0 +1,44 @@
+{% set version = "1.6.0" %}
+{% set name = "NeuCA" %}
+{% set bioc = "3.17" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 2b4589fd7129485bbfbe2e64d25f295e
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: BiocStyle, knitr, rmarkdown, networkD3
+requirements:
+  host:
+    - 'bioconductor-limma >=3.56.0,<3.57.0'
+    - 'bioconductor-singlecellexperiment >=1.22.0,<1.23.0'
+    - r-base
+    - r-e1071
+    - r-keras
+  run:
+    - 'bioconductor-limma >=3.56.0,<3.57.0'
+    - 'bioconductor-singlecellexperiment >=1.22.0,<1.23.0'
+    - r-base
+    - r-e1071
+    - r-keras
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'NEUral network-based single-Cell Annotation tool'
+  description: 'NeuCA is is a neural-network based method for scRNA-seq data annotation. It can automatically adjust its classification strategy depending on cell type correlations, to accurately annotate cell. NeuCA can automatically utilize the structure information of the cell types through a hierarchical tree to improve the annotation accuracy. It is especially helpful when the data contain closely correlated cell types.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+

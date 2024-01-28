@@ -1,6 +1,6 @@
-{% set version = "1.28.0" %}
+{% set version = "1.38.0" %}
 {% set name = "iClusterPlus" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,17 +8,18 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: fe6307505fe0e1a72663fc5fd3e21c92
+  md5: 133b682823ec6ab41f6f6579413d461d
   patches:
     - 0001-Detect-compiler-with-gfortran-suffix.patch
-
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-iclusterplus", max_pin="x.x") }}'
 # Suggests: RUnit, BiocGenerics
 requirements:
   host:
@@ -30,8 +31,8 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('fortran') }}
-    - autoconf
     - automake
+    - autoconf
     - make
 test:
   commands:
@@ -42,4 +43,3 @@ about:
   summary: 'Integrative clustering of multi-type genomic data'
   description: 'Integrative clustering of multiple genomic data using a joint latent variable model.'
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-

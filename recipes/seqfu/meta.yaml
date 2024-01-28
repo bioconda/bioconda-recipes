@@ -1,31 +1,40 @@
 {% set name = "seqfu" %}
-{% set version = "1.4.0" %}
-{% set sha256 = "1d853744b2bdbfafcf1d88d8beeeea07aae4991f37dadbb4c16f8701fe6a5a61" %}
+{% set version = "1.20.3" %}
+{% set sha256 = "1b287b99f3f1ac7045f4d551e781d6780ce168ba8e0a7bfaa0f5490f32e15938" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/telatin/{{ name }}2/archive/v{{ version }}.tar.gz
+  url: https://github.com/telatin/{{ name }}2/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - nim
+    - {{ compiler('cxx') }}
+    - nim >=2.0.0
+    - make
+    - zlib
   host:
+    - zlib
+    - pcre
+  run:
     - zlib
     - pcre
     
 test:
   commands:
-    - seqfu --help
+    - seqfu
     - seqfu stats --help
-    - "seqfu  --version | grep 'version: {{ version }}'"
+    - seqfu --version
+    - "seqfu --version | grep '{{ version }}'"
 
 about:
   home: https://github.com/telatin/seqfu2/

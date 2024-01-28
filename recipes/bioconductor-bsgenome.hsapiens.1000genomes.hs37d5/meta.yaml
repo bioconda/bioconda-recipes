@@ -1,6 +1,6 @@
 {% set version = "0.99.1" %}
 {% set name = "BSgenome.Hsapiens.1000genomes.hs37d5" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,23 +8,26 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
   md5: 164e1692d38fefa499c2c8ac5fc22793
 build:
-  number: 7
+  number: 12
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-bsgenome.hsapiens.1000genomes.hs37d5", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-bsgenome >=1.60.0,<1.61.0'
+    - 'bioconductor-bsgenome >=1.70.0,<1.71.0'
     - r-base
   run:
-    - 'bioconductor-bsgenome >=1.60.0,<1.61.0'
+    - 'bioconductor-bsgenome >=1.70.0,<1.71.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

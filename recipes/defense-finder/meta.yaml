@@ -1,0 +1,41 @@
+{% set name = "defense-finder" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/mdmparis/defense-finder/archive/v{{ version }}.tar.gz
+  sha256: 79547704ebe5d758b7692c2a9bdd1c4ccd6084a35ee18201dabb2e494da3ec36
+  # patches: 0001-fix-no-results.patch
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  run_exports:
+    - {{ pin_subpackage('defense-finder', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+  run:
+    - click >=8.0.3
+    - colorlog >=6.3.0a1
+    - macsyfinder
+    - python >=3.7
+    - pyhmmer
+    - pyrodigal
+
+test:
+  commands:
+    - defense-finder run --help
+
+about:
+  home: https://github.com/mdmparis/defense-finder
+  summary: 'Defense Finder: allow for a systematic search of all known anti-phage systems.'
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE

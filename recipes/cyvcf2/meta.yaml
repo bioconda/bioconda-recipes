@@ -1,53 +1,66 @@
 {% set name = "cyvcf2" %}
-{% set version = "0.30.8" %}
-{% set sha256hash = "a971df117596a2c86cef5e90d20904fa3b43a6e08b69961325c62e4c8db6be3d" %}
+{% set version = "0.30.27" %}
+{% set sha256 = "f1b12c1fb78bd039c5d94b0ff2d838edfa0716c0e4902ad3ecec3d48da3d4ff9" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/brentp/cyvcf2/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256hash }}
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cyvcf2-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
   patches:
     # Link to htslib shipped by conda
     - patches/setup.py.patch
 
 build:
   number: 0
+  skip: True  # [py < 37]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - cyvcf2 = cyvcf2.__main__:cli
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - autoconf
+    - automake
+    - make
   host:
     - python
-    - setuptools
     - cython
-    - numpy
+    - pip
+    - setuptools
+    - wheel
+    - curl
     - zlib
-    - libcurl
-    # cyvcf2 can only link to the htslib version
-    # specified in conda_build_config.yaml
-    - htslib
+    - htslib >=1.10
     - openssl
-
+    - numpy
   run:
     - python
-    - numpy
-    - zlib
     - coloredlogs
     - click
-    - libcurl
-    # htslib version fixed by conda_build_config.yaml
-    - htslib
-    - openssl
-    - pathlib2  # [py<34]
+    - {{ pin_compatible('numpy') }}
 
 test:
   imports:
     - cyvcf2
+  commands:
+    - cyvcf2 --help
 
 about:
-  home: https://github.com/brentp/cyvcf2
-  summary: A cython wrapper around htslib built for fast parsing of Variant Call Format (VCF) files
+  home: "https://github.com/brentp/cyvcf2/"
+  summary: "A cython wrapper around htslib built for fast parsing of Variant Call Format (VCF) files"
   license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: "https://brentp.github.io/cyvcf2/"
+  dev_url: "https://github.com/brentp/cyvcf2/"
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btx057
+    - biotools:cyvcf2

@@ -1,0 +1,59 @@
+{% set version = "1.2.0" %}
+
+package:
+  name: elastic-blast
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/source/e/elastic-blast/elastic_blast-{{ version }}.tar.gz
+  sha256: 584238fc79befa4e90625752eeca928db4807a0b2e0f8956d1fa9d35c61c083f
+
+build:
+  number: 0
+  noarch: generic
+  script: {{ PYTHON }} -m pip install . -vv
+  run_exports:
+    - {{ pin_subpackage("elastic-blast", max_pin="x") }}
+requirements:
+  host:
+    - pip
+    - python >=3.7,<3.10
+    - python-packit
+    - importlib-metadata
+  run:
+    - python >=3.7,<3.10
+    - boto3
+    - awscli
+    - awslimitchecker
+    - tenacity
+    - google-cloud-sdk
+    - kubernetes-client ==1.18.8
+    - importlib-metadata
+    - dataclasses-json
+
+test:
+  commands:
+    - elastic-blast --version
+    - elastic-blast --help
+    - gcloud --version
+    - gsutil --version
+    - aws --version
+    - kubectl version --client=true
+about:
+  home: https://pypi.org/project/elastic-blast/
+  license: Public Domain
+  license_family: PUBLIC-DOMAIN
+  license_file: LICENSE.md
+  summary: "ElasticBLAST is a cloud-based tool to perform your BLAST searches faster and make you more effective."
+  dev_url: https://github.com/ncbi/elastic-blast/
+
+extra:
+  identifiers:
+    - biotools:blast
+    - doi:10.1186/s12859-023-05245-9
+  recipe-maintainers:
+    - r78v10a07
+    - christiam
+    - victzh
+    - boratyng
+    

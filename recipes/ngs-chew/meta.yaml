@@ -1,0 +1,51 @@
+{% set version = "0.9.2" %}
+{% set sha256 = "5220182a9b2e6d2c2adf8ca6053c5a8ebf917942c6486eeee19aa2ccc6bea561" %}
+
+package:
+  name: ngs-chew
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/n/ngs-chew/ngs-chew-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - ngs-chew = chew.cli:cli
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  run_exports:
+    - {{ pin_subpackage('ngs-chew', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+    - attrs
+    - cattrs
+    - click
+    - logzero
+    - numpy
+    - pandas
+    - plotly
+    - pysam
+    - scipy
+    - tqdm
+    - vcfpy
+    - bcftools
+    - samtools
+
+test:
+  commands:
+    - "ngs-chew --help"
+  imports:
+    - chew
+
+about:
+  home: https://github.com/bihealth/ngs-chew
+  license: MIT
+  license_family: MIT
+  summary: Simple QC and sanity checking of germline NGS data

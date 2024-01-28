@@ -1,0 +1,47 @@
+diff --git a/src/Makefile b/src/Makefile
+index 0931cf6..1c6890f 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -489,27 +489,6 @@ define TEST_COMPILER
+ endef
+ 
+ ifeq (${OSTYPE}, Darwin)
+-  $(foreach suffix,mp-9 9  mp-8 8  mp-7 7,$(eval $(call TEST_COMPILER,${suffix})))
+-
+-  ifneq ($(shell echo `$(CXX) --version 2>&1 | grep -c clang`), 0)
+-     CPATH := $(shell echo `which $(CXX)`)
+-     CLANG := $(shell echo `$(CXX) --version 2>&1 | grep clang`)
+-     space := 
+-
+-     $(warning )
+-     ifeq ($(CXX), $(CPATH))
+-       $(warning Compiler '$(CXX)' reports version '$(CLANG)'.)
+-     else
+-       $(warning Compiler '$(CXX)' at '$(CPATH)' reports version '$(CLANG)'.)
+-     endif
+-     $(warning )
+-     $(warning Canu cannot be compiled with this compiler.  Please install GCC and/or)
+-     $(warning specify a non-Clang compiler on the command line, e.g.,)   #  Quite the evil trick to get
+-     $(warning $(space)    make CC=/path/to/gcc CXX=/path/to/g++);        #  this line indented!
+-     $(warning )
+-     $(error unsupported compiler)
+-  endif
+-
+   CXXFLAGS += -fopenmp -pthread -fPIC -m64 -Wno-format
+   LDFLAGS  += -fopenmp -pthread -lm
+ endif
+diff --git a/src/utility/src/utility/types.H b/src/utility/src/utility/types.H
+index 1419574..2f5e5fb 100644
+--- a/src/utility/src/utility/types.H
++++ b/src/utility/src/utility/types.H
+@@ -158,8 +158,8 @@ constexpr  int8      int8max    = std::numeric_limits<int8>::max();
+ //  floating-point argument to an integer value, using the current rounding
+ //  mode.  This mode can be set with std::fesetround().
+ 
+-inline  int64  doubletoint64(double d)   { return(std::llrint(d)); }
+-inline  int32  doubletoint32(double d)   { return(std:: lrint(d)); }
++inline  int64  doubletoint64(double d)   { return(llrint(d)); }
++inline  int32  doubletoint32(double d)   { return(lrint(d)); }
+ 
+ //  Decoding stings into numbers (and a boolean).
+ //   - The first set simply convert the string to a number and return that

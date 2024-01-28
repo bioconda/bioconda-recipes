@@ -1,4 +1,4 @@
-{% set version = "12.0.0" %}
+{% set version = "24.0.0" %}
 
 package:
   name: augur
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/n/nextstrain-augur/nextstrain-augur-{{ version }}.tar.gz
-  sha256: d4dfcf45532e760801365ba499bc11c1b99c4ef5515d6cbe1f62cd95c0b0db6f
+  sha256: 6766330e7db7d6ceab8256b1f815882fdf3a9dccdeb224f316266d7983f2a407
 
 build:
   number: 0
@@ -14,27 +14,34 @@ build:
   entry_points:
     - augur = augur.__main__:main
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  run_exports:
+    - {{ pin_subpackage('augur', max_pin='x') }}
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.8
     - pip
-
   run:
-    - python >=3.6
-    - bcbio-gff >=0.6.0,<0.7
-    - biopython >=1.67,<=1.76
+    - python >=3.8
+    - bcbio-gff >=0.7.0,<0.8
+    - biopython >=1.73,!=1.77,!=1.78,<1.82
+    - cvxopt >=1.1.9,<2
+    - importlib_resources >=5.3.0 # [py<311]
+    - isodate >=0.6.0,<0.7
     - jsonschema >=3.0.0,<4
+    - networkx >=2.5, <3
+    - numpy >=1.0.0,<2
     - packaging >=19.2
     - pandas >=1.0.0,<2
-    - treetime >=0.8,<0.9
-    - snakemake >=5.4.0
-    - xopen >=1.0.1,<2
-    - cvxopt >=1.1.9,<2
-    - mafft
-    - raxml
+    - pyfastx >=1.0.0,<3
+    - scipy >=1.0.0,<2
+    - treetime >=0.11.2,<0.12
+    - xopen[zstd] >=1.7.0,<2
+
     - fasttree
     - iqtree
+    - mafft
+    - raxml
     - vcftools
 
 test:
@@ -45,7 +52,7 @@ test:
 
 about:
   home: https://github.com/nextstrain/augur
-  license: AGPL-3.0
+  license: AGPL-3.0-only
   summary: 'Process pathogen genome data for the Nextstrain platform'
   license_family: AGPL
   license_file: LICENSE.txt
@@ -54,3 +61,6 @@ extra:
   recipe-maintainers:
     - huddlej
     - tsibley
+    - victorlin
+    - corneliusroemer
+    - joverlee521

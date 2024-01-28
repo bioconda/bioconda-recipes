@@ -1,0 +1,50 @@
+{% set name = "genomad" %}
+{% set version = "1.7.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 3f7395ef18652c8f4ef1809d7bc97d7c3a7ae59fc86012cbf1ed35b7986ecad2
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+  entry_points:
+    - genomad=genomad.cli:cli
+  run_exports:
+    - {{ pin_subpackage("genomad", max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.8
+    - flit-core >=3.2,<4
+  run:
+    - python >=3.8
+    - pyrodigal-gv >=0.3.1
+    - mmseqs2 =14.7e284
+    - aragorn
+    - keras >=2.7
+    - numba >=0.57
+    - numpy >=1.21
+    - python-crfsuite
+    - rich-click >=1.4
+    - taxopy >=0.4.0
+    - tensorflow >=2.7
+    - xgboost >=1.6
+
+test:
+  commands:
+    - genomad --help
+
+about:
+  home: https://portal.nersc.gov/genomad/
+  license: "Lawrence Berkeley National Labs BSD variant license"
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Identification of mobile genetic elements"
+  dev_url: https://github.com/apcamargo/genomad/

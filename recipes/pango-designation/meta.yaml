@@ -1,4 +1,4 @@
-{% set version = "1.2.22" %}
+{% set version = "1.24" %}
 
 package:
   name: pango-designation
@@ -6,12 +6,16 @@ package:
 
 source:
   url: https://github.com/cov-lineages/pango-designation/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 7b107b1c9480ff2d73949cc844cd7bd0caf7d30dde2ccdc6ca4d3b83628b0fd9
+  sha256: 9b84365c503a71ac5aadf47b977aa022450457492b24955149f26469f733f898
 
 build:
   number: 0
   noarch: python
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation -vvv .
+  entry_points:
+    - pango_designation = pango_designation.command:main
+  run_exports:
+    - {{ pin_subpackage('pango-designation', max_pin="x") }}
 
 requirements:
   host:
@@ -29,3 +33,7 @@ about:
   license: CC-BY-NC-4.0
   license_file: LICENSE.md
   summary: Repository for suggesting new lineages that should be added to the current
+
+extra:
+  recipe-maintainers:
+    - corneliusroemer

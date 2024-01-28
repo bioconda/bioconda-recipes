@@ -6,5 +6,6 @@ export LIBRARY_PATH=${PREFIX}/lib
 ./configure
 
 make
+
 mkdir -p $PREFIX/bin
-cp release/cafe $PREFIX/bin
+cp bin/cafe5 $PREFIX/bin

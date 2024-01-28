@@ -1,6 +1,6 @@
-{% set version = "1.18.0" %}
+{% set version = "1.28.0" %}
 {% set name = "aracne.networks" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,23 +8,26 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 02fa7862776d1dc866b4288a768eb616
+  md5: 42657d0acf4c1ba54aa2057fa4525d51
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-aracne.networks", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-viper >=1.26.0,<1.27.0'
+    - 'bioconductor-viper >=1.36.0,<1.37.0'
     - r-base
   run:
-    - 'bioconductor-viper >=1.26.0,<1.27.0'
+    - 'bioconductor-viper >=1.36.0,<1.37.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

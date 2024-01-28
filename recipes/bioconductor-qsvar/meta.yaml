@@ -1,0 +1,42 @@
+{% set version = "1.6.0" %}
+{% set name = "qsvaR" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: e9531cc164f93967a5d5d0469d47f7c7
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-qsvar", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocFileCache, BiocStyle, covr, knitr, limma, RefManageR, rmarkdown, sessioninfo, testthat (>= 3.0.0)
+requirements:
+  host:
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - 'bioconductor-sva >=3.50.0,<3.51.0'
+    - r-base
+    - r-ggplot2
+  run:
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - 'bioconductor-sva >=3.50.0,<3.51.0'
+    - r-base
+    - r-ggplot2
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'Generate Quality Surrogate Variable Analysis for Degradation Correction'
+  description: 'The qsvaR package contains functions for removing the effect of degration in rna-seq data from postmortem brain tissue. The package is equipped to help users generate principal components associated with degradation. The components can be used in differential expression analysis to remove the effects of degradation.'
+
