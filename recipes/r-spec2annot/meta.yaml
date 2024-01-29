@@ -1,0 +1,85 @@
+{% set version = '0.2' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-spec2annot
+  version: {{ version|replace("-", "_") }}
+
+source:
+
+  git_url: https://github.com/odisce/Spec2Annot
+  git_tag: v0.2.0-alpha
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+  # no skip
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: testthat (>= 3.0.0), covr
+requirements:
+  build:
+    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('m2w64_c') }}        # [win]
+    - {{ compiler('cxx') }}            # [not win]
+    - {{ compiler('m2w64_cxx') }}      # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}git
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+    - r-rcpp
+    - r-data.table
+    - r-magrittr
+    - r-stringr
+
+  run:
+    - r-base
+    - {{native}}gcc-libs         # [win]
+    - r-rcpp
+    - r-data.table
+    - r-magrittr
+    - r-stringr
+
+test:
+  commands:
+    - $R -e "library('Spec2Annot')"           # [not win]
+    - "\"%R%\" -e \"library('Spec2Annot')\""  # [win]
+
+about:
+  home: https://github.com/odisce/Spec2Annot
+  license: file LICENSEr-license
+  summary: This R package implement different way to annotate and query Mass spectra, using brute-force,
+    isotopic or fragmentation pattern, prior informations on losses or adduct, etc...
+  license_family: OTHER
+  license_file: "LICENSE"
+
+# The original CRAN metadata for this package was:
+
+# Package: Spec2Annot
+# Title: Annotation of Mass Spectra
+# Version: 0.2
+# Authors@R: c( person(given = "Sylvain", family = "Dechaumet", email = "sylvain.dechaumet@cea.fr", role = c("aut", "cre")), person(given = "Etienne", family = "Thevenot", email = "etienne.thevenot@cea.fr", role = c("ctb")), person(given = "Eric", family = "Venot", email = "eric.venot@cea.fr", role = c("rev")), person(given = "Annelaure", family = "Damont", email = "annelaure.damont@cea.fr", role = c("ctb")), person(given = "Anais", family = "Legrand", email = "anais.legrand@cea.fr", role = c("ctb")) )
+# Description: This R package implement different way to annotate and query Mass spectra, using brute-force, isotopic or fragmentation pattern, prior informations on losses or adduct, etc...
+# License: file LICENSE
+# Depends: R (>= 4.0.0)
+# Encoding: UTF-8
+# Roxygen: list(markdown = TRUE)
+# RoxygenNote: 7.2.3
+# Imports: data.table, magrittr, Rcpp, stringr
+# Suggests: testthat (>= 3.0.0), covr
+# Config/testthat/edition: 3
+# LazyData: true
+# LinkingTo: Rcpp
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml
