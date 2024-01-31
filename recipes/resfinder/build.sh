@@ -7,9 +7,9 @@ mkdir -p /tmp/bestfolder
 #python -m pip install --no-deps --ignore-installed .
 
 mkdir -p ${PREFIX}/bin
-cp resfinder/src/*.py ${PREFIX}/bin
+cp src/*.py ${PREFIX}/bin
 chmod +x ${PREFIX}/bin/*.py
-cp -r resfinder/src/cge/ ${PREFIX}/bin/
+cp -r src/cge/ ${PREFIX}/bin/
 
 # create folder for database download
 target=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}
