@@ -13,9 +13,9 @@ export LC_ALL=en_US.UTF-8
 cd ${RM_DIR}
 # 4.1.6 cannot be configured without the real database 0 as a minimum. Therefore, download, configure, then remove post-configuration.
 wget https://dfam.org/releases/Dfam_3.8/families/FamDB/dfam38_full.0.h5.gz
-mv dfam38_full.0.h5.gz ${RM_DIR}/Libraries/famdb/dfam38_full.0.h5.gz && gunzip ${RM_DIR}/Libraries/famdb/dfam38_full.0.h5.gz
+gunzip -c dfam38_full.0.h5.gz > ${RM_DIR}/Libraries/famdb/dfam38_full.0.h5
 perl ./configure -libdir ${RM_DIR}/Libraries -trf_prgm ${PREFIX}/bin/trf  -rmblast_dir ${PREFIX}/bin/ -hmmer_dir ${PREFIX}/bin -abblast_dir ${PREFIX}/bin -crossmatch_dir ${PREFIX}/bin -default_search_engine rmblast
-
+rm dfam38_full.0.h5.gz
 
 # Delete huge Dfam file, will be downloaded by post-link.sh
 # Do it now only, because configure needs the full version
