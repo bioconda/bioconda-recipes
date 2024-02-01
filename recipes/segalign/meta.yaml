@@ -1,0 +1,51 @@
+{% set version = "0.1.2" %}
+{% set cuda_version = "11.7.0" %}
+{% set tbb_version = "2020.3" %}
+
+package:
+  name: segalign
+  version: "{{ version }}"
+
+build:
+  number: 0
+
+source:
+  url: https://github.com/gsneha26/SegAlign/archive/refs/tags/v{{ verson }}.tar.gz
+  sha256: 4f1892d0a08acf98b40608a2938cab984c225362df7a4c28c8347f2f38071abb
+  patches:
+    - d1a73a0c9169d5517c9316d9bdc68fd52f63e885.patch # updates since {{ version }} was tagged
+    - CMakeLists.txt.patch
+
+requirements:
+  build:
+    - cmake =3.8
+    - {{ compiler('cxx') }}
+    - cudatoolkit-dev ={{ cuda_version }}
+    - libboost-devel
+    - make
+    - tbb-devel ={{ tbb_version }}
+    - zlib
+  host:
+    - cudatoolkit ={{ cuda_version }}
+    - libboost
+    - tbb ={{ tbb_version }}
+    - zlib
+  run:
+    - lastz
+    - parallel
+    - ucsc-fatotwobit
+    - ucsc-twobittofa
+
+test:
+  commands:
+    - segalign --help
+    - segalign_repeat_masker --help
+    - ${PREFIX}/bin/segalign --help
+    - ${PREFIX}/bin/segalign_repeat_masker --help
+    - ls -l ${PREFIX}/bin/
+
+about:
+  home: https://github.com/gsneha26/SegAlign
+  summary: SegAlign: A Scalable GPU-Based Whole Genome Aligner
+  license: MIT
+  license_url: https://raw.githubusercontent.com/gsneha26/SegAlign/main/LICENSE
