@@ -16,16 +16,12 @@ shasum -c checksum.sha256
 
 tar -xf hictk_test_dataset.tar.xz
 
-# Download hictools
-hictools_url='https://github.com/aidenlab/HiCTools/releases/download/v3.30.00/hic_tools.3.30.00.jar'
-hictools_sha256='2b09b0642a826ca5730fde74e022461a708caf62ed292bc5baaa841946721867'
-curl -L "$hictools_url" -o hic_tools.jar
-echo "$hictools_sha256  hic_tools.jar" | tee checksum.sha256
-shasum -c checksum.sha256
-
 hictk="$(which hictk)"
 
 # Run integration tests
+
+test/scripts/hictk_balance.sh "$hictk"
+
 test/scripts/hictk_dump_chroms.sh "$hictk"
 test/scripts/hictk_dump_bins.sh "$hictk"
 test/scripts/hictk_dump_gw.sh "$hictk"
@@ -34,7 +30,7 @@ test/scripts/hictk_dump_trans.sh "$hictk"
 test/scripts/hictk_dump_balanced.sh "$hictk"
 
 test/scripts/hictk_convert_hic2cool.sh "$hictk"
-test/scripts/hictk_convert_cool2hic.sh "$hictk" hic_tools.jar
+test/scripts/hictk_convert_cool2hic.sh "$hictk"
 
 test/scripts/hictk_load_coo.sh "$hictk" sorted
 test/scripts/hictk_load_coo.sh "$hictk" unsorted
