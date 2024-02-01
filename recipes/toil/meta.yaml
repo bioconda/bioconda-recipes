@@ -1,6 +1,6 @@
 {% set name = "toil" %}
-{% set version = "5.12.0" %}
-{% set sha256 = "fb21c85b8654b0e628087ebd403fa5f53644d86a33a4c1e039ba5769dcaf6654" %}
+{% set version = "6.0.0" %}
+{% set sha256 = "6cf772b744b886a53eaaf700e51ea2fd03bac15d384c34ee9e53455cbe00b33b" %}
 
 package:
   name: {{ name|lower }}
@@ -9,39 +9,43 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - drop_ruamel_yaml_string_dependency.patch  # https://github.com/DataBiosphere/toil/pull/4760
 
 build:
   number: 0
   noarch: python
   script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
   entry_points:
     - toil = toil.utils.toilMain:main
     - _toil_worker = toil.worker:main
     - toil-cwl-runner = toil.cwl.cwltoil:main [cwl]
     - toil-wdl-runner = toil.wdl.wdltoil:main [wdl]
-    - toil-wdl-runner-old = toil.wdl.toilwdl:main [wdl]
     - toil-wes-cwl-runner = toil.server.cli.wes_cwl_runner:main [server]
     - _toil_mesos_executor = toil.batchSystems.mesos.executor:main [mesos]
     - _toil_contained_executor = toil.batchSystems.contained_executor:executor
 
 requirements:
   host:
-    - python >=3.7
+    - python >=3.8
     - pip
   run:
-    - python >=3.7
-    - dill >=0.3.2
-    - requests >=2
-    - docker-py >=3.7.2,<6
-    - urllib3 >=1.26.0
+    - python >=3.8
+    - dill >=0.3.2,<0.4
+    - requests >=2,<3
+    - docker-py >=3.7.2,<8
+    - urllib3 >=1.26.0,<3
     - python-dateutil
-    - psutil >=3.0.1
-    # - py-tes >=0.4.2,<1
-    - pypubsub >=4.0.3
-    - addict >=2.2.1
+    - psutil >=3.0.1,<6
+    - pypubsub >=4.0.3,<5
+    - addict >=2.2.1,<2.5
     - pytz >=2012
-    - enlighten >=1.5.2
-    - typing-extensions
+    - enlighten >=1.5.2,<2
+    - configargparse >=1.7,<2
+    - typing-extensions >=4.6.2,<5
+    - pyyaml >=6,<7
     #mesos pymesos isn't available
     #server reqs
     # - wes-service is missing
@@ -49,8 +53,8 @@ requirements:
     # - connexion >=2.10.0, <3
     # - flask >=2.0,<3
     # - werkzeug >=2.0,<3
-    # - flask-cors ==3.0.10
-    # - gunicorn ==20.1.0
+    # - flask-cors ==4.0.0
+    # - gunicorn ==21.2.0
     # - celery >=5.1.0, <6
     #aws reqs
     # mypy-boto3-{iam,sdb} are not yet in Conda
@@ -66,20 +70,19 @@ requirements:
     - apache-libcloud >=2.2.1
     - google-cloud-storage >=2,<=2.8.0
     #cwl reqs
-    - cwltool ==3.1.20230601100705
+    - cwltool ==3.1.20240112164112
     - schema-salad >=8.4.20230128170514
-    - galaxy-tool-util
-    - ruamel.yaml >=0.15,<=0.17.21
+    - galaxy-tool-util <23
+    - ruamel.yaml >=0.15,<=0.18.3
     - ruamel.yaml.clib >=0.2.6
-    - networkx >=2,<2.8.9
+    - networkx <4
     #htcondor reqs
     - python-htcondor >=10.2.0.post1
     #kubernetes reqs
     - python-kubernetes >=12.0.1,<22
     - idna >=2
     #wdl reqs
-    # - wdlparse ==0.1.0  # not yet packaged for Conda
-    - mock >=4.0.3
+    - miniwdl ==1.11.1
 
 test:
   imports:
