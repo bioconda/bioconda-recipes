@@ -1,47 +1,50 @@
-{% set name = "ResFinder" %}
-{% set version = "4.1.11" %}
-{% set sha256 = "e312ff8dc23f329baf8b0a4dc3c41f0006778772e8f736086cf12d03bc76c9c8" %}
+{% set name = "resfinder" %}
+{% set version = "4.4.2" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://bitbucket.org/genomicepidemiology/{{ name|lower }}/get/{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/resfinder-{{ version }}.tar.gz
+  sha256: 9660e58c3b3f63cf08335c0058f7ef3c56320be852009b714e773c71e8ea2659
   patches:
     - python_path.patch
-    - remove_version_git_tag.patch
 
 build:
   number: 0
-  noarch: generic
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('resfinder', max_pin="x") }}
 
 requirements:
   host:
-    - git
-    - kma
+    - python >=3.8
+    - pip
+    - pdm-pep517 >=0.12.0
   run:
-    - python >=3
-    - kma
-    - biopython
-    - blast >=2.8.1
-    - cgecore 1.5.5
-    - tabulate 0.7.7
-    - gitpython
+    - python >=3.8
+    - cgelib >=0.7.3
+    - cgecore ==1.5.6
+    - tabulate >=0.8.9
+    - pandas >=1.4.2
+    - biopython >=1.79
     - python-dateutil
-    - git
+    - kma
+    - blast >=2.8.1
 
 test:
-  commands:
-    - run_resfinder.py --help
+  imports:
+    - resfinder
 
 about:
   home: https://bitbucket.org/genomicepidemiology/resfinder
-  license: APACHE-2.0
+  summary: "ResFinder identifies acquired antimicrobial resistance genes in total or partial sequenced isolates of bacteria."
+  license: Apache-2.0
   license_family: APACHE
-  license_file: LICENSE-2.0.txt
-  summary: ResFinder identifies acquired antimicrobial resistance genes in total or partial sequenced isolates of bacteria.
+  license_file: LICENSE
 
 extra:
   notes: "ResFinder requires databases that can be downloaded with download-db.sh."
+  identifiers:
+    - doi:10.1093/jac/dkaa345
