@@ -1,6 +1,6 @@
-{% set version = "0.99.9" %}
+{% set version = "0.99.11" %}
 {% set name = "CTCF" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,14 +8,16 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: c5449543be4c56393d737bbe07c6255c
+  md5: 5ec44245864395de390e68fa56e465af
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-ctcf", max_pin="x.x") }}'
   noarch: generic
 # Suggests: BiocStyle, rmarkdown, knitr, AnnotationHub, GenomicRanges, plyranges, sessioninfo
 requirements:
@@ -24,7 +26,7 @@ requirements:
   run:
     - r-base
     - curl
-    - bioconductor-data-packages>=20221102
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

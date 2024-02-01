@@ -15,6 +15,11 @@ makeblastdb \
    grep -q "added 3 sequences"
 echo PASS
 
+echo -n 'Checking Database integrity... '
+blastdbcheck -full  -dbtype nucl -db testdb | \
+   grep -q "Result=SUCCESS"
+echo PASS
+
 echo -n 'Checking database version... '
 blastdbcmd -info -db testdb -dbtype nucl | \
     awk '/^BLASTDB Version/ {print $NF}' | \

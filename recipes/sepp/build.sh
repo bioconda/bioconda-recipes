@@ -1,6 +1,7 @@
 #!/bin/bash
 set -ex
 python setup.py config -c
+python setup.py upp -c
 
 # ensure SEPP's configuration file is at the correct location ...
 echo "${PREFIX}/share/sepp/sepp" > home.path
@@ -8,12 +9,15 @@ cp home.path ${PREFIX}/lib/python*/site-packages/
 mkdir -p $PREFIX/share/sepp/sepp
 # ... and holds correct path names
 mv -v sepp-package/sepp/default.main.config $PREFIX/share/sepp/sepp/main.config
+# copy upp config, as it's still needed
+cp ./.sepp/upp.config $PREFIX/share/sepp/sepp/upp.config
 
 $PYTHON -m pip install . --ignore-installed --no-deps -vv
 
 # copy bundled binaries, but hmmer which should be provided by conda, into $PREFIX/bin/
 mkdir -p $PREFIX/bin/
 cp `cat $SRC_DIR/.sepp/main.config | grep "^path" -m 1 | grep -v "hmm" | cut -d "=" -f 2 | xargs dirname`/* $PREFIX/bin/
+cp `cat $SRC_DIR/.sepp/upp.config | grep "^path" -m 1 | grep -v "hmm" | cut -d "=" -f 2 | xargs dirname`/* $PREFIX/bin/
 
 # configure run-sepp.sh for qiime2 fragment-insertion
 mv -v sepp-package/run-sepp.sh $PREFIX/bin/run-sepp.sh

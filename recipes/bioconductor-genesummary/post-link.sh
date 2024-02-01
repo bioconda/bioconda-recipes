@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "genesummary-0.99.4"
+installBiocDataPackage.sh "genesummary-0.99.6"

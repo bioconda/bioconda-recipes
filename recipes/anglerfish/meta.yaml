@@ -1,5 +1,5 @@
 {% set name = "anglerfish" %}
-{% set version = "0.4.2" %}
+{% set version = "0.6.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,29 +7,30 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/b/bio-{{ name }}/bio-{{ name }}-{{ version }}.tar.gz"
-  sha256: 4948f21faf49b5a7a721335b95e9449b159fc3e1cab73b49d1a4d717ce832479
+  sha256: b67a0c77680f85ebdf88622382bb271655e807c60dc3bdcd01997d336e6574fa
 
 build:
-  number: 1
+  number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  entry_points:
+    - anglerfish=anglerfish.anglerfish:anglerfish
+  run_exports:
+    - {{ pin_subpackage('anglerfish', max_pin="x.x") }}
 
 requirements:
   host:
-    - biopython
-    - numpy
     - pip
-    - python ==3.9.*
-    - python-levenshtein
+    - python >=3.7
   run:
     - biopython
     - numpy
-    - python ==3.9.*
+    - python >=3.7
     - python-levenshtein
+    - pyyaml
     - minimap2
 
 test:
-  # Pyhon imports
   imports:
     - anglerfish.demux
     - anglerfish.demux.demux
@@ -43,6 +44,7 @@ about:
   license: MIT
   license_family: MIT
   summary: "Anglerfish, a tool to demultiplex Illumina libraries from ONT data"
+  license_file: LICENSE
 
 extra:
   recipe-maintainers:
