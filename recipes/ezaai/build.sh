@@ -13,7 +13,9 @@ cp "${EZ_AAI_LICENSE}" "${TARGET}"
 
 # Alias the JAR in the bin directory
 mkdir -p "${PREFIX}/bin"
-echo '#!/bin/sh' > "${EZ_AAI_BIN}"
-echo "exec java -jar ${TARGET}/${EZ_AAI_JAR_NAME} \${@}" >> "${EZ_AAI_BIN}"
+cat << EOF > "${EZ_AAI_BIN}"
+#!/bin/sh
+exec java -jar "${TARGET}/${EZ_AAI_JAR_NAME}" "\${@}"
+EOF
 chmod +x "${EZ_AAI_BIN}"
 cp "${EZ_AAI_BIN}" "${EZ_AAI_BIN_ALT}"
