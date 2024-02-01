@@ -15,14 +15,6 @@ PKG_BUILDNUM = '0'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
-#def real_dirname(in_path):
-    #"""Return the path to the JAR file"""
-    #realPath = os.path.dirname(os.path.realpath(in_path))
-    #newPath = os.path.realpath(os.path.join(realPath, "..", "share", PKG_NAME))
-    #return newPath
-    #"""Return the symlink-resolved, canonicalized directory-portion of path."""
-    #return os.path.dirname(os.path.realpath(path))
-
 
 
 def real_dirname(in_path):
@@ -33,42 +25,6 @@ def real_dirname(in_path):
     return newPath
 
 
-#def java_executable():
-#    """Return the executable name of the Java interpreter."""
-#    java_home = getenv('JAVA_HOME')
-#    java_bin = os.path.join('bin', 'java')
-#    env_prefix = os.path.dirname(os.path.dirname(real_dirname(sys.argv[0])))
-
-#    if java_home and access(os.path.join(java_home, java_bin), X_OK):
-#        return os.path.join(java_home, java_bin)
-#    else:
-#        # Use Java installed with Anaconda to ensure correct version
-#        return os.path.join(env_prefix, 'bin', 'java')
-
-#def java_executable():
-#    """Return the executable name of the Java interpreter."""
-#    java_home = getenv('JAVA_HOME')
-#    java_bin = os.path.join('bin', 'java')
-#    env_bin = os.path.join(sys.prefix, 'bin', 'java')  # Path to java in Conda env
-
-#    if java_home and access(os.path.join(java_home, java_bin), X_OK):
-#        return os.path.join(java_home, java_bin)
-#    elif access(env_bin, X_OK):
-#        return env_bin
-#    else:
-#        raise FileNotFoundError("Java executable not found in JAVA_HOME or Conda environment.")
-
-#def java_executable():
-#    """Returns the name of the Java executable."""
-#    java_home = getenv('JAVA_HOME')
-#    java_bin = path.join('bin', 'java')
-#    env_prefix = os.path.dirname(os.path.dirname(real_dirname(sys.argv[0])))
-
-#    if java_home and access(os.path.join(java_home, java_bin), X_OK):
-#        return os.path.join(java_home, java_bin)
-#    else:
-#        # Use Java installed with Anaconda to ensure correct version
-#        return os.path.join(env_prefix, 'bin', 'java')
 
 def java_executable():
     """Returns the name of the Java executable."""
