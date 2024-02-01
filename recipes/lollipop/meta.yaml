@@ -12,7 +12,9 @@ source:
 
 build:
   noarch: python
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
   script:
     - {{ PYTHON }} -m pip install '.[cli]' --ignore-installed --no-deps -v
     - mkdir -p ${PREFIX}/share/{{ name }}/presets
@@ -30,7 +32,8 @@ requirements:
     - scipy
     - pandas
     - zstandard
-    - ruamel.yaml
+    # NOTE: change of API between ruamel.yaml 0.17.x and 0.18
+    - ruamel.yaml <0.18
     - strictyaml
     - tqdm
     - click
