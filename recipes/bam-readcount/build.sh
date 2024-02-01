@@ -1,5 +1,11 @@
 #!/bin/bash
 
-cd $PREFIX
-cmake $SRC_DIR
-make -j 2
+mkdir -p "${PREFIX}/bin"
+
+mkdir build
+pushd build
+cmake ..
+make
+
+cp bin/bam-readcount "${PREFIX}/bin"
+popd
