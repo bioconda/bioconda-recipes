@@ -15,23 +15,25 @@ source:
       - nodeps.setup.py.patch
 
 build:
-  number: 1
-  skip: true  # [py != 37]
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('sepp', max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python 3.7
     - setuptools
     - pip
-    - dendropy
+    - dendropy <=4.5.1
     - openjdk
     - hmmer ==3.1b2
 
   run:
-    - python
-    - dendropy
+    - python 3.7
+    - dendropy <=4.5.1
     - openjdk
     - hmmer ==3.1b2
+    - pasta
     # TODO: source bundled binaries as conda packages.
     # But pplacer / guppy are not available for OSX.
     # - pplacer
@@ -39,11 +41,10 @@ requirements:
 test:
   commands:
     - run_sepp.py --help
-    # for now, ignore "upp" 
-    #- run_upp.py --help
     - run-sepp.sh $PREFIX/share/sepp/ref/input_fragments.fasta testrun_tiny -a $PREFIX/share/sepp/ref/reference_alignment_tiny.fasta -t $PREFIX/share/sepp/ref/reference_phylogeny_tiny.nwk -r $PREFIX/share/sepp/ref/RAxML_info-reference-gg-raxml-bl.info -x 1 -b 1
     - grep "f__Halomonadaceae" testrun_tiny_placement.tog.relabelled.tre
     - grep "testseqd" testrun_tiny_placement.tog.relabelled.tre
+    - run_upp.py --help
 
 about:
   home: https://github.com/smirarab/sepp

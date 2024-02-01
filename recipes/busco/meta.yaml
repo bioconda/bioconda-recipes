@@ -1,5 +1,6 @@
-{% set version = "5.4.6" %}
-{% set sha256 = "43cae32fecddf78fedb85833fcc2feea56f11acd86ccc3310a4a89f57058d1ff" %}
+{% set name = "busco" %}
+{% set version = "5.6.1" %}
+{% set sha256 = "1129d8dd1779455b77c47a926650e1974aaca58eeb9e6b3b6e4a706154ab2da8" %}
 
 package:
   name: busco
@@ -8,6 +9,8 @@ package:
 build:
   number: 0
   noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 source:
   url: https://gitlab.com/ezlab/busco/-/archive/{{ version }}/busco-{{ version }}.tar.gz
@@ -26,9 +29,12 @@ requirements:
     - biopython
     - prodigal
     - sepp >=4.3.10
+    - dendropy <4.6.0  # necessary temporarily until SEPP updates their codebase or recipe
     - metaeuk >=6.a5d39d9 # needed for gff bug fix
     - pandas
     - bbmap
+    - miniprot
+    - requests
   run:
     - python >=3.3
     - wget
@@ -40,9 +46,12 @@ requirements:
     - r-ggplot2 >=2.2.1
     - prodigal
     - sepp >=4.3.10
+    - dendropy <4.6.0  # necessary temporarily until SEPP updates their codebase or recipe
     - metaeuk >=6.a5d39d9 # needed for gff bug fix
     - pandas
     - bbmap
+    - miniprot
+    - requests
     - fonts-conda-ecosystem
 
 test:
@@ -54,14 +63,16 @@ test:
     - test_data
 
 about:
-  home: http://busco.ezlab.org/
+  home: https://busco.ezlab.org/
   license: MIT
+  license_family: MIT
   license_file: LICENSE
   summary: Assessment of assembly completeness using Universal Single Copy Orthologs
   description: BUSCO provides measures for quantitative assessment of genome
            assembly, gene set, and transcriptome completeness based on
            evolutionarily informed expectations of gene content from
            near-universal single-copy orthologs selected from OrthoDB.
+  dev_url: https://gitlab.com/ezlab/busco
 
 extra:
   container:

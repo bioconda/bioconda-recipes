@@ -1,32 +1,36 @@
 {% set name = "cogent3" %}
-{% set version = "2022.8.24a1" %}
+{% set version = "2023.12.15a1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cogent3-{{ version }}.tar.gz
-  sha256: b23692c372363f4020b3ba81720dfbdf795652b775844bb7d6a9bff18bfea310
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 8cccfdb39aff746c9225b1e063a6506502c840276c843bcb93fea10bb2f31bfb
 
 build:
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
   number: 0
+  run_exports:
+  - {{ pin_subpackage(name, max_pin=None) }}
 
 requirements:
   host:
-    - python >=3
+    - python >=3.9, <3.12
     - pip
-    - flit-core
+    - flit-core >=3.2, <4
   run:
-    - python >=3
+    - python >=3.9, <3.12
+    - scipy
     - chardet
     - numpy
-    - numba >0.48.0
+    - numba >0.53.0
     - scitrack
     - tqdm
     - tinydb
+    - typing_extensions
 
 test:
   imports:
@@ -41,3 +45,5 @@ about:
 extra:
   recipe-maintainers:
     - dpryan79
+    - GavinHuttley
+    - khiron

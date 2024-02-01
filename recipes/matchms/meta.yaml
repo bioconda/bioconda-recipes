@@ -1,5 +1,5 @@
 {% set name = "matchms" %}
-{% set version = "0.18.0" %}
+{% set version = "0.24.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,33 +7,40 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: cda3949b978d46d7aa351e42d25431cd9d4ba9bc44bcc2ed9053cdd539e5cf8b
+  sha256: 8cb7098f0e5149c3ab5ad7b39789472b35e12f7668a79c12a3c58e51b50c255c
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps -vvv"
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('matchms', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.8
+    - poetry-core
   run:
     - deprecated
     - lxml
     - matplotlib-base
     - networkx
     - numba >=0.47
-    - numpy
+    - numpy <1.25
     - pickydict >=0.4.0
-    - pyteomics >=4.2
-    - python
+    - pyteomics >=4.6
+    - python >=3.8
     - pyyaml
     - rdkit >=2020.03.1
     - requests
-    - scipy >=1.4.0
+    - scipy >=1.4.0, <1.11
     - sparsestack >=0.4.1
     - tqdm
+    - pillow =9.5
+    - pandas
+    - pubchempy
+
 
 test:
   imports:
@@ -45,7 +52,7 @@ test:
 
 about:
   home: "https://github.com/matchms/matchms"
-  license: Apache Software
+  license: Apache-2.0
   license_family: APACHE
   license_file: LICENSE
   summary: "Python library for fuzzy comparison of mass spectrum data and other Python objects"

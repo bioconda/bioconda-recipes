@@ -1,6 +1,6 @@
-{% set version = "3.54.0" %}
+{% set version = "3.58.1" %}
 {% set name = "limma" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,22 +8,26 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 10f279b0241687b1ccf8f866d54de1d8
+  md5: f52a816d0d34b01f721654f90a1fb5f5
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: affy, AnnotationDbi, BiasedUrn, Biobase, ellipse, GO.db, gplots, illuminaio, locfit, MASS, org.Hs.eg.db, splines, statmod (>= 1.2.2), vsn
+  run_exports: '{{ pin_subpackage("bioconductor-limma", max_pin="x.x") }}'
+# Suggests: BiasedUrn, ellipse, gplots, knitr, locfit, MASS, splines, affy, AnnotationDbi, Biobase, BiocStyle, GO.db, illuminaio, org.Hs.eg.db, vsn
 requirements:
   host:
     - r-base
+    - r-statmod
     - libblas
     - liblapack
   run:
     - r-base
+    - r-statmod
   build:
     - {{ compiler('c') }}
     - make

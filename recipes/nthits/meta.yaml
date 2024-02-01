@@ -1,31 +1,40 @@
-{% set version = "0.0.1" %}
+{% set name = "nthits" %}
+{% set version = "1.0.2" %}
 
 package:
   name: nthits
   version: {{ version }}
 
 source:
-  url: https://github.com/bcgsc/ntHits/archive/v{{ version }}.tar.gz
-  sha256: 4d4bcd42025c312f1b4ad4468dfed09f1685de19984d60d11eab35c5941f1d70
+  url: https://github.com/bcgsc/ntHits/releases/download/v{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: f7b18c9d9510a44cc24cec2f24f3e87312330ea70805b559a4989ea47d530e64
 
 build:
-  number: 2
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('nthits', max_pin="x") }}
 
 requirements:
   build:
-    - make
-    - automake
     - {{ compiler('cxx') }}
+    - cmake
+  host:
+    - meson
+    - ninja
+    - btllib >=1.5.0
     - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - catch2
   run:
-    - llvm-openmp  # [osx]
+    - btllib >=1.5.0
 
 test:
   commands:
-    - nthits --help
+    - nthits-bfq --help
 
 about:
   home: https://github.com/bcgsc/ntHits
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: a method for identifying repeats in high-throughput DNA sequencing data.
+  summary: ntHits is a tool for efficiently counting and filtering k-mers based on their frequencies

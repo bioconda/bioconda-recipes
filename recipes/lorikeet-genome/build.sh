@@ -12,4 +12,4 @@ C_INCLUDE_PATH=$PREFIX/include \
 LIBRARY_PATH=$PREFIX/lib \
 LIBCLANG_PATH=$PREFIX/lib/libclang.so \
 OPENSSL_DIR=$PREFIX \
-cargo install --force --root $PREFIX
+cargo install --path ./ --force --root $PREFIX
