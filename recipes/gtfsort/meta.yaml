@@ -1,24 +1,24 @@
+{% set name = "gtfsort" %}
 {% set version = "0.2.1" %}
 
 package:
- name: gtfsort
+ name: {{ name }}
  version: {{ version }}
 
 source:
- url: https://github.com/alejandrogzi/gtfsort/archive/refs/tags/v.{{ version }}.tar.gz
- sha256: 0fdaa15e22bd34193e2b16b53697b413af0fcf485401f45d48ac48054f1d70f4 
+ url: https://github.com/alejandrogzi/{{ name }}/archive/refs/tags/v.{{ version }}.tar.gz
+ sha256: 0fdaa15e22bd34193e2b16b53697b413af0fcf485401f45d48ac48054f1d70f4
 
 build:
  number: 0
- script: cargo install --path . --root $PREFIX
+ run_exports:
+    - {{ pin_subpackage('gtfsort', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler("cxx") }}
-    - rust>=1.39
+    - rust >=1.39
     - pkg-config
-  host:
-  run:
 
 test:
  commands:
@@ -28,8 +28,12 @@ test:
 about:
  home: https://github.com/alejandrogzi/gtfsort
  license: MIT
+ license_family: MIT
+ license_file: LICENSE
  summary: "A chr/pos/feature GTF sorter that uses a lexicographically-based index ordering algorithm."
 
 extra:
   recipe-maintainers:
     - alejandrogzi
+  identifiers:
+    - doi:10.1101/2023.10.21.563454
