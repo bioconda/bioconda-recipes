@@ -1,17 +1,17 @@
-{% set version = "0.1.2" %}
-{% set cmake_version = "3.28" %}
-{% set cuda_version = "11.7" %}
-{% set python_version = "3.10" %}
-{% set tbb_version = "2020.3" %}
+{% set version = '0.1.2' %}
+{% set cmake_version = '3.28' %}
+{% set cuda_version = '11.7.0' %}
+{% set cxx_version = '11' %}
+{% set tbb_version = '2020.2' %}
 
 package:
   name: segalign
-  version: "{{ version }}"
+  version: '{{ version }}'
 
 build:
   number: 0
   run_exports:
-    - {{ pin_compatible("segalign", max_pin="x.x") }}
+    - {{ pin_compatible('segalign', max_pin='x.x') }}
 
 source:
   url: https://github.com/gsneha26/SegAlign/archive/refs/tags/v{{ verson }}.tar.gz
@@ -23,22 +23,25 @@ source:
 requirements:
   build:
     - cmake ={{ cmake_version }}
-    - {{ compiler("cxx") }}
-    - cudatoolkit-dev ={{ cuda_version }}
-    - libboost-devel
-    - make
-    - tbb-devel ={{ tbb_version }}
+    - {{ compiler('cxx') }} ={{ cxx_version }}
+    - make # [not win]
   host:
     - cudatoolkit ={{ cuda_version }}
+    - cudatoolkit-dev ={{ cuda_version }}
     - libboost
-    - python ={{ python_version }}
+    - libboost-devel
     - tbb ={{ tbb_version }}
+    - tbb-devel ={{ tbb_version }}
     - zlib
   run:
+    - cudatoolkit ={{ cuda_version }}
     - lastz
+    - libboost
     - parallel   
+    - tbb ={{ tbb_version }}
     - ucsc-fatotwobit
     - ucsc-twobittofa
+    - zlib
 
 test:
   commands:
@@ -50,6 +53,6 @@ test:
 
 about:
   home: https://github.com/gsneha26/SegAlign
-  summary: "SegAlign: A Scalable GPU-Based Whole Genome Aligner"
+  summary: 'SegAlign: A Scalable GPU-Based Whole Genome Aligner'
   license: MIT
   license_url: https://raw.githubusercontent.com/gsneha26/SegAlign/main/LICENSE
