@@ -14,7 +14,7 @@ cp -r $SRC_DIR/preprocessing/preprocessing.jl $PREFIX/bin
 
 #ln -s $PREFIX/bin/run_program.jl  $PREFIX/bin/run_program.jl
 
-chmod +x $PREFIX/bin/hapnest
+#chmod +x $PREFIX/bin/hapnest
 
 #julia -e 'Pkg.init()'
 julia -e 'import Pkg; Pkg.add("ArgParse")'
