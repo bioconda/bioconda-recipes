@@ -1,41 +1,42 @@
+{% set version = "0.14.3" %}
+
 package:
   name: imp.bff
-  version: '0.14.2'
+  version: {{ version }}
 
 source:
-  - url: https://github.com/Fluorescence-Tools/IMP.bff/archive/refs/tags/v0.14.2.tar.gz
-    sha256: 1901e624dcdaa8c0240c979f805b06948703c7f92aa5e3f805eb2eef57622c24
+  - url: https://github.com/Fluorescence-Tools/IMP.bff/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: 1778a3b1b13e87ba73474496e4e6475e89649fcc3a70c27c237a60300b112f62
 
 build:
   number: 0
   detect_binary_files_with_prefix: True  # [not win]
+  skip: True  # [osx or py<36]
   run_exports:
     - {{ pin_subpackage('imp.bff', max_pin="x.x") }}
 
 requirements:
   build:
-    - python
-    - numpy
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
     - pkg-config   # [not win]
-    - swig 4.1
+    - swig 4.0
     - cmake
     - ninja
   host:
-    - python 3.9
+    - python
     - numpy
-    - boost-cpp 1.78
+    - boost-cpp
     - eigen
-    - cereal
     - imp
+    - cereal
   run:
-    - python 3.9
+    - python
     - {{ pin_compatible('numpy') }}
-    - {{ pin_compatible('imp', max_pin='x.x') }}
-    - boost-cpp 1.78
+    - {{ pin_compatible('boost-cpp', max_pin='x.x') }}
+    - imp
     - pandas
     - mdtraj
     - tqdm
