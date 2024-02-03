@@ -2,6 +2,7 @@
 
 set -o nounset
 set -o errexit
+set -o xtrace
 
 BUILD_DIR="$SRC_DIR/build"
 BIN_DIR="$PREFIX/bin"
