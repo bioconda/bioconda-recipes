@@ -12,3 +12,5 @@ echo "${PREFIX}/share/amplify/src/AMPlify.py \$@" >> ${PREFIX}/bin/AMPlify
 
 echo "#!/bin/bash" > ${PREFIX}/bin/train_amplify
 echo "${PREFIX}/share/amplify/src/train_amplify.py \$@" >> ${PREFIX}/bin/train_amplify
+
+conda config --set channel_priority flexible
