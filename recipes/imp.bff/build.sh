@@ -3,7 +3,8 @@
 mkdir build
 cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles"  -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_PREFIX_PATH=$PREFIX -DCMAKE_INSTALL_PREFIX=$PREFIX -DWITH_AVX=OFF
-make install -j1
+make -j8
+make install
 
 # Copy examples
 mkdir $PREFIX/share/doc/IMP/examples/bff
