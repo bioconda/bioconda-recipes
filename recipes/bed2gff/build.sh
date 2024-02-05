@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Add workaround for SSH-based Git connections from Rust/cargo.  See https://github.com/rust-lang/cargo/issues/2078 for details.
