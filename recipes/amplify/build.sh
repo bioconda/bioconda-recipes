@@ -1,7 +1,5 @@
 #!/bin/bash
 
-conda config --set channel_priority flexible
-
 mkdir -p ${PREFIX}/bin/
 mkdir -p ${PREFIX}/share/amplify/
 mkdir -p ${PREFIX}/share/amplify/src/
