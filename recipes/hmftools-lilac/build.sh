@@ -8,5 +8,5 @@ cd "${SRC_DIR}"
 mv lilac*.jar $TGT/lilac.jar
 
 cp $RECIPE_DIR/lilac.sh $TGT/lilac
-ln -s $TGT/lilac$PREFIX/bin
+ln -s $TGT/lilac $PREFIX/bin
 chmod 0755 "${PREFIX}/bin/lilac"
