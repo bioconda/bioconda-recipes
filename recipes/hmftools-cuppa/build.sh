@@ -11,4 +11,4 @@ mv src/cuppa/src/main/resources/cuppa-chart/* $TGT/chart/
 cp $RECIPE_DIR/cuppa.sh $TGT/cuppa
 cp $RECIPE_DIR/cuppa-chart.sh $TGT/cuppa-chart
 ln -s $TGT/cuppa{,-chart} ${PREFIX}/bin/
-chmod 0755 "${PREFIX}/bin/cuppa{,-chart}"
+chmod 0755 ${PREFIX}/bin/cuppa{,-chart}
