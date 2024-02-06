@@ -8,10 +8,10 @@ set -eu -o pipefail
 
 mkdir -p "${PREFIX}/bin"
 
-export INCLUDE_PATH="${PREFIX}/include"
+export CPLUS_INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-make CFLAGS="${CFLAGS} -I${PREFIX}/include" LDFLAGS="${LDFLAGS}"
+make CC="${GXX} ${LDFLAGS}" CFLAGS="${CFLAGS}"
 
 cp OcculterCut "${PREFIX}/bin"
