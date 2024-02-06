@@ -9,11 +9,12 @@ source:
 build:
   number: 0
   noarch: generic  # Specify that the package is noarch
-  run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
   rpaths:
     - lib/R/lib
-  script: "{{ libexec }}/bin/R -e \"install.packages(c('Rcpp', 'remotes', 'devtools'), lib='{{ lib }}', repos='https://cran.rstudio.com/')\""
+    - lib
+  script: "$R -e \"install.packages(c('Rcpp', 'remotes', 'devtools'), lib='$PREFIX/lib/R/library', repos='https://cran.rstudio.com/')\""
+
+run_exports: '{{ pin_compatible("SCEVAN", max_pin="x.x") }}'
 
 requirements:
   build:
@@ -25,10 +26,10 @@ requirements:
     - r-base
 
 test:
-    commands:
-      - $R -e "library(devtools)"
-      - $R -e "devtools::install_github('AntonioDeFalco/SCEVAN')"
-      - $R -e "?SCEVAN"
+  commands:
+    - $R -e "library(devtools)"
+    - $R -e "devtools::install_github('AntonioDeFalco/SCEVAN')"
+    - $R -e "?SCEVAN"
 
 about:
   home: https://github.com/AntonioDeFalco/SCEVAN/
@@ -36,7 +37,3 @@ about:
   license_family: GPL3
   license_file: LICENSE
   summary: Single CEll Variational Aneuploidy aNalysis
-
-extra:
-  copy_test:
-    - "{{ libexec }}/share/licenses/scevan/LICENSE"
