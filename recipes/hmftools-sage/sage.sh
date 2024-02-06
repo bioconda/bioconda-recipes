@@ -1,6 +1,6 @@
 #!/bin/bash
 # hmftools SAGE executable shell script
-# https://github.com/hartwigmedical/hmftools/tree/master/SAGE
+# https://github.com/hartwigmedical/hmftools/tree/master/sage
 set -eu -o pipefail
 
 export LC_ALL=en_US.UTF-8
