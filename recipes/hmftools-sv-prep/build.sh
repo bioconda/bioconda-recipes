@@ -13,4 +13,4 @@ cp $RECIPE_DIR/gridss_svprep.sh $TGT/gridss_svprep
 
 ln -s $TGT/svprep $PREFIX/bin/
 ln -s $TGT/gridss_shell_with_jar_entrypoint $PREFIX/bin/gridss_svprep
-chmod 0755 "${PREFIX}/bin/{gridss_,}svprep"
+chmod 0755 ${PREFIX}/bin/{gridss_,}svprep
