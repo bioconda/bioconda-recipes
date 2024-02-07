@@ -3,6 +3,6 @@ set -eu -o pipefail
 
 # Build ntSynt
 mkdir -p ${PREFIX}/bin
-meson setup build --prefix ${PREFIX} build
+meson setup build --prefix ${PREFIX}
 cd build
 ninja install
