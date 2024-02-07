@@ -20,4 +20,4 @@ ENV_PREFIX="$(dirname $(dirname $DIR))"
 python="$ENV_PREFIX/bin/python"
 
 # Run with argument passthrough
-eval ${python} ${DIR}/cuppa-chart.py ${@}
+eval ${python} ${DIR}/chart/cuppa-chart.py ${@}
