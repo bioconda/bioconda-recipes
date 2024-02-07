@@ -1,5 +1,5 @@
 #!/bin/bash
-#
+
 TGT="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
 [ -d "$TGT" ] || mkdir -p $TGT/{,chart/}
 [ -d "${PREFIX}/bin" ] || mkdir -p "${PREFIX}/bin"
