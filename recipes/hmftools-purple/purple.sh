@@ -1,6 +1,6 @@
 #!/bin/bash
 # hmftools PURPLE executable shell script
-# https://github.com/hartwigmedical/hmftools/tree/master/purity-ploidy-estimator
+# https://github.com/hartwigmedical/hmftools/tree/master/purple
 set -eu -o pipefail
 
 export LC_ALL=en_US.UTF-8
@@ -46,8 +46,8 @@ for arg in "$@"; do
             ;;
          *)
 	    if [[ ${pass_args} == '' ]] #needed to avoid preceeding space on first arg e.g. ' MarkDuplicates'
-            then 
-                pass_args="$arg" 
+            then
+                pass_args="$arg"
 	    else
                 pass_args="$pass_args \"$arg\"" #quotes later arguments to avoid problem with ()s in MarkDuplicates regex arg
             fi
