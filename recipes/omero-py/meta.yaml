@@ -6,13 +6,20 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 589e1d9f1e6d33d74578d4f3f4fd7ae45315ffb752cbea80fed2b15e9058a268
+  - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 589e1d9f1e6d33d74578d4f3f4fd7ae45315ffb752cbea80fed2b15e9058a268
+  - url: https://github.com/ome/openmicroscopy/releases/download/v5.6.10/OMERO.java-5.6.10-ice36.zip
+    sha256: 34bd771886904d3227ed6f8109ee120afb4383e42c4cd71c6db1619a4e582008
 
 build:
   noarch: python
-  number: 1
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  number: 2
+  script: 
+    - "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+    - mkdir OMERO.java-5.6.10-ice36
+    - unzip $SRC_DIR/OMERO.java-5.6.10-ice36.zip.zip -d $PREFIX/opt/OMERO.java-5.6.10-ice36
+  post_activate:
+    - export OMERODIR=$PREFIX/opt/OMERO.java-5.6.10-ice36
 
 requirements:
   host:
@@ -27,7 +34,7 @@ requirements:
     - pyyaml
     - python >=3
     - zeroc-ice >=3.6.4,<3.7
-      
+
 test:
   imports:
     - omero
@@ -47,6 +54,8 @@ test:
     - omero.sys
     - omero.util
     - omero_ext
+  run:
+    - omero import --help
 
 about:
   home: https://www.openmicroscopy.org/
