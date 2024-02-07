@@ -1,0 +1,52 @@
+{% set name = "nanomotif" %}
+{% set version = "0.1.14" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/nanomotif-{{ version }}.tar.gz
+  sha256: f8278b9102267bdb9e4f3e2aa46d6e9f4fb9a655525766b1bc31f6cf67f2e609
+
+build:
+  entry_points:
+    - nanomotif = nanomotif.main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('nanomotif', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - wheel
+    - requests
+    - numpy ==1.24.4
+    - pandas ==2.0.2
+    - polars >=0.19
+    - seaborn ==0.12.2
+    - scipy ==1.10.1
+    - networkx ==3.1
+    - progressbar2 ==3.53.1
+
+test:
+  imports:
+    - nanomotif
+  commands:
+    - nanomotif --help
+
+about:
+  home: https://pypi.org/project/nanomotif/
+  summary: Identifying methlyation motifs in nanopore data
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - SorenHeidelbach
