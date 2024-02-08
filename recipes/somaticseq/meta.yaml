@@ -1,6 +1,6 @@
 {% set name = "somaticseq" %}
-{% set version = "3.7.3" %}
-{% set sha256 = "3721c03646496980a17141fe63a90e09ee10328edc1b692aae57bc07c2477e3c" %}
+{% set version = "3.7.4" %}
+{% set sha256 = "d072300bc403f12265fcadba74c4e6ba82175e749f22f66b46a1e32bf851e24d" %}
 
 package:
   name: {{ name|lower }}
@@ -13,7 +13,9 @@ source:
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  run_exports:
+    - {{ pin_subpackage('somaticseq', max_pin="x") }}
 
 requirements:
   host:
@@ -25,7 +27,7 @@ requirements:
     - pysam
     - scipy
     - pandas
-    - xgboost
+    - xgboost >=1.4
     - r-base
     - r-ada
     - bedtools
@@ -45,7 +47,7 @@ test:
     - makeSomaticScripts.py --help
 
 about:
-  home: http://bioinform.github.io/somaticseq/
+  home: https://bioinform.github.io/somaticseq/
   license: BSD-2-Clause
   license_file: LICENSE.txt
   license_family: BSD

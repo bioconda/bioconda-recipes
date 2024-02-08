@@ -1,6 +1,5 @@
 #!/bin/bash
 
-autoreconf -fi
 ./configure --prefix=$PREFIX
-make
+make -j 4
 make install
