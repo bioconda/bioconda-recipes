@@ -9,7 +9,7 @@ ${PREFIX}/bin/python -m pip install . --no-deps -vv
 cp workflow/rules/*.smk ${PREFIX}/bin/
 
 # associated scripts
-chmod +x workdflow/scripts/* 
+chmod +x workflow/scripts/* 
 cp workflow/scripts/* ${PREFIX}/bin/
 
 # reports
