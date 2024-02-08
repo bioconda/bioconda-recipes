@@ -1,5 +1,6 @@
 #!/bin/bash
-set -eu -o pipefail
+
+export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 
 # Build ntSynt
 mkdir -p ${PREFIX}/bin
