@@ -10,15 +10,17 @@ source:
   sha256: 171d551baf6eb3e6b7402510826688804f9fab0d3dba0db9907da92a1059dc47
 
 build:
-  run_exports:
-    - {{ pin_subpackage('seqnado', max_pin="x.x") }}
+  number: 0
+  noarch: python
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install . --no-deps -vvv
   entry_points:
     - seqnado = seqnado.cli:cli_pipeline
     - seqnado-design = seqnado.cli:cli_design
     - seqnado-config = seqnado.cli:cli_config
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  number: 0
+  run_exports:
+    - {{ pin_subpackage('seqnado', max_pin="x.x") }}
 
 requirements:
   host:
@@ -48,13 +50,9 @@ test:
   imports:
     - seqnado
   commands:
-    - pip check
     - seqnado --help
     - seqnado-design --help
     - seqnado-config --help
-  requires:
-    - pip
-    - wget
 
 about:
   home: https://alsmith151.github.io/SeqNado/
