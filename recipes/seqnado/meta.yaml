@@ -1,0 +1,62 @@
+{% set name = "seqnado" %}
+{% set version = "0.4.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/seqnado-{{ version }}.tar.gz
+  sha256: 171d551baf6eb3e6b7402510826688804f9fab0d3dba0db9907da92a1059dc47
+
+build:
+  entry_points:
+    - seqnado = seqnado.cli:cli_pipeline
+    - seqnado-design = seqnado.cli:cli_design
+    - seqnado-config = seqnado.cli:cli_config
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools >=61.0
+    - wheel
+    - setuptools-scm >=6.2
+    - pip
+  run:
+    - python >=3.10
+    - click
+    - cookiecutter
+    - drmaa
+    - pandas
+    - pulp <=2.7.0
+    - pydantic
+    - pyyaml
+    - seaborn
+    - setuptools-scm
+    - snakemake-wrapper-utils
+    - snakemake <8.0.0
+    - tracknado
+    - wget
+
+test:
+  imports:
+    - seqnado
+  commands:
+    - pip check
+    - seqnado --help
+    - seqnado-design --help
+    - seqnado-config --help
+  requires:
+    - pip
+
+about:
+  summary: Pipelines for genomics analysis
+  license: GPL-3.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - CChahrour
