@@ -1,19 +1,16 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
 mkdir -p ${PREFIX}/bin
 
-# Harpy executable
-#cp harpy ${PREFIX}/bin/
-
-# build harpy
-${PREFIX}/bin/python -m pip install . --ignore-installed --no-deps -vv
+# install harpy proper
+${PREFIX}/bin/python -m pip install . --no-deps -vv
 
 # rules
-cp rules/*.smk ${PREFIX}/bin/
+cp workflow/rules/*.smk ${PREFIX}/bin/
 
 # associated scripts
-chmod +x utilities/*
-cp utilities/* ${PREFIX}/bin/
+chmod +x workdflow/scripts/* 
+cp workflow/scripts/* ${PREFIX}/bin/
 
 # reports
-cp reports/*.Rmd ${PREFIX}/bin/
+cp workflow/report/*.Rmd ${PREFIX}/bin/
