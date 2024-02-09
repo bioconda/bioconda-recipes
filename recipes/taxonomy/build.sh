@@ -8,7 +8,7 @@ export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="${BUILD_PREFIX}/.cargo"
 
 if [ `uname` == Darwin ]; then
 	export HOME=`mktemp -d`
-	export PATH="$HOME/.cargo/bin:$PATH"
+	export PATH="$CARGO_HOME/bin:$PATH"
 fi
 
 # build statically linked binary with Rust
