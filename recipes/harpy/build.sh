@@ -3,7 +3,7 @@
 mkdir -p ${PREFIX}/bin
 
 # install harpy proper
-${PYTHON} -m pip install . --no-deps --no-build-isolation -vvv
+${PYTHON} -m pip install . --no-deps -vvv
 
 # rules
 cp workflow/rules/*.smk ${PREFIX}/bin/
