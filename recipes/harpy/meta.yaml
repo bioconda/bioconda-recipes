@@ -10,21 +10,24 @@ source:
   sha256: '{{ sha256 }}'
 
 build:
-  noarch: generic
+  noarch: python
   number: 0
+  entry_points:
+    - harpy = harpy.__main__:main
   run_exports:
     - {{ pin_subpackage('harpy', max_pin="x.x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.7
+    - pip
   run:
     - bcftools =1.19
     - multiqc
     - pysam =0.22
-    - python
+    - python >=3.7
     - rich-click
-    - snakemake
+    - snakemake-minimal
     - samtools
     - seqtk
     - tabix
@@ -33,9 +36,12 @@ test:
   commands:
     - "snakemake --version"
     - "harpy --version"
+
 about:
   home: "https://github.com/pdimens/harpy/"
-  license: MIT
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
   summary: "Process raw haplotagging data, from raw sequences to phased haplotypes."
   description: |
     Harpy is a command-line tool to easily process haplotag or 10x linked-read data. It uses
