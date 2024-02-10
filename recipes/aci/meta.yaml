@@ -1,0 +1,49 @@
+{% set name = "aci" %}
+{% set repo = "amplicon_coverage_inspector" %}
+{% set version = "1.4.20240116" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ repo[0] }}/{{ repo }}/{{ repo }}-{{ version }}.tar.gz
+  sha256: 06cf71bde19ecb8ac760c14548b3cdb24f99755da36d53daeea62cf053f5b12c
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - aci=aci.aci:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('aci', max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.8,<4.0
+    - pip
+  run:
+    - python >=3.8,<4.0
+    - matplotlib-base >=3.8.2
+    - numpy >=1.26.2
+    - pandas >=2.1.4
+    - pysam >=0.22.0
+
+test:
+  imports:
+    - aci
+  commands:
+    - aci --help
+
+about:
+  home: https://github.com/erinyoung/ACI
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Visualizes coverage for amplicons
+  doc_url: https://github.com/erinyoung/ACI/blob/main/README.md
+
+extra:
+  recipe-maintainers:
+    - erinyoung
