@@ -1,6 +1,6 @@
 #!/bin/bash
-# hmftools PURPLE executable shell script
-# https://github.com/hartwigmedical/hmftools/tree/master/purity-ploidy-estimator
+# hmftools SvPrep executable shell script
+# https://github.com/hartwigmedical/hmftools/tree/master/sv-prep
 set -eu -o pipefail
 
 export LC_ALL=en_US.UTF-8
@@ -60,10 +60,10 @@ if [ "$jvm_mem_opts" == "" ]; then
 fi
 
 pass_arr=($pass_args)
-if [[ ${pass_arr[0]:=} == org\.* ]] || [[ ${pass_arr[0]:=} == com\.* ]]
+if [[ ${pass_arr[0]:=} == com.hartwig.* ]]
 then
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/purple.jar" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/sv-prep.jar" $pass_args
 else
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/purple.jar" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/sv-prep.jar" $pass_args
 fi
 exit
