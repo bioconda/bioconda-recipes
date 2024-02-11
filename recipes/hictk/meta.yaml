@@ -1,6 +1,6 @@
 {% set name = "hictk" %}
-{% set version = "0.0.2" %}
-{% set sha256 = "7716711ecb33247d8f79f6768ebbdcf55e51e9b6f962245747b33d0967431427" %}
+{% set version = "0.0.8" %}
+{% set sha256 = "4bdadf49cb053731ea31f50312c9e4fcbcdcbaf94c39715f7b325641629bed4b" %}
 
 package:
   name: {{ name|lower }}
@@ -8,6 +8,8 @@ package:
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage('hictk', max_pin='x.x') }}
 
 source:
   url: https://github.com/paulsengroup/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
@@ -20,21 +22,25 @@ requirements:
     - cmake >=3.25
     - conan >=2
     - make
+    - catch2 >=3.5
     - cli11 >=2.3
     - eigen >=3.4
     - fast_float >=5
     - fmt >=10
-    - highfive >=2.7
+    - highfive >=2.8
     - spdlog >=1.12
 
   host:
-    - boost >=1.80
+    - boost-cpp >=1.80
     - hdf5 >=1.12
     - libdeflate
+    - zstd >=1.5
+
   run:
-    - boost >=1.80
+    - libboost >=1.80
     - hdf5 >=1.12
     - libdeflate
+    - zstd >=1.5
 
 about:
   home: https://github.com/paulsengroup/{{ name }}
@@ -47,29 +53,37 @@ about:
 test:
   requires:
     - curl
-    - cooler>=0.9.2
-    - openjdk>=11
+    - cooler>=0.9.3
     - perl-digest-sha1
     - xz
   source_files:
     - cmake/FetchTestDataset.cmake
+    - test/scripts/check_test_files_exist.sh
+    - test/scripts/compare_matrix_files.sh
+    - test/scripts/compare_plain_files.sh
+    - test/scripts/hictk_balance.sh
+    - test/scripts/hictk_convert_hic2cool.sh
+    - test/scripts/hictk_convert_cool2hic.sh
+    - test/scripts/hictk_dump_cells.sh
+    - test/scripts/hictk_dump_normalizations.sh
+    - test/scripts/hictk_dump_resolutions.sh
     - test/scripts/hictk_dump_chroms.sh
     - test/scripts/hictk_dump_bins.sh
     - test/scripts/hictk_dump_gw.sh
     - test/scripts/hictk_dump_cis.sh
     - test/scripts/hictk_dump_trans.sh
     - test/scripts/hictk_dump_balanced.sh
-    - test/scripts/hictk_convert_hic2cool.sh
-    - test/scripts/hictk_convert_cool2hic.sh
-    - test/scripts/hictk_load_coo.sh
+    - test/scripts/hictk_fix_mcool.sh
     - test/scripts/hictk_load_coo.sh
     - test/scripts/hictk_load_bg2.sh
-    - test/scripts/hictk_load_bg2.sh
-    - test/scripts/hictk_load_4dn.sh
     - test/scripts/hictk_load_4dn.sh
     - test/scripts/hictk_merge.sh
+    - test/scripts/hictk_rename_chromosomes.sh
     - test/scripts/hictk_validate.sh
     - test/scripts/hictk_zoomify.sh
+    - test/scripts/nproc.sh
+    - test/scripts/readlink.sh
+    - test/scripts/shuffle.sh
   commands:
     - hictk --help
     - hictk --version

@@ -1,43 +1,46 @@
 {% set name = "knock-knock" %}
-{% set version = "0.2.1" %}
+{% set version = "0.4.2" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://files.pythonhosted.org/packages/1e/77/86a1a3047b15380ed26ae0754cf7870a572e4893d7e359e5bf4c4b9a932f/knock_knock-0.2.1.tar.gz"
-  sha256: "466250fe26904c347a64a8a2707eb8cb8c1f2184e7364ff028f4700341525f61"
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/knock_knock-{{ version }}.tar.gz"
+  sha256: "69128026055c1b8aa7e7b6e2947f108b21795a406687199e1689bd9815197d5f"
 
 build:
   noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('knock-knock', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.6
+    - python >=3.7
   run:
-    - biopython >=1.70
-    - blast ==2.7.1
-    - bokeh >=0.12.14
-    - hits >=0.1
+    - python >=3.7
+    - bokeh >=2.4.2
+    - biopython >=1.80
+    - h5py >=3.1.0
     - ipywidgets >=7.1.2
-    - matplotlib >=2.1.2
-    - minimap2 ==2.16
-    - nbconvert >=5.3.1
+    - matplotlib-base >=2.1.2
+    - nbconvert >=6.0.7
     - nbformat >=4.4.0
     - numpy >=1.14.2
     - pandas >=0.22.0
-    - parallel >=20190522
     - pillow >=5.0.0
     - pysam >=0.14
-    - python >=3.6
     - pyyaml >=3.12
+    - hits >=0.4.0
+    - tqdm >=4.31.1
+    - blast >=2.7.1
+    - minimap2 ==2.16
     - samtools >=1.9
     - star >=2.7.1
-    - tqdm >=4.31.1
+    - parallel >=20190522
 
 test:
   imports:
@@ -49,10 +52,11 @@ test:
     - samtools --version
     - STAR --version
 
-
 about:
   home: "https://github.com/jeffhussmann/knock-knock"
-  license: "GPL-3"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
   summary: "toolkit for analyzing CRISPR knock-in experiments"
 
 extra:

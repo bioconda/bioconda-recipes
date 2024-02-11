@@ -8,7 +8,11 @@ export CXXPATH=${BUILD_PREFIX}/include
 export CFLAGS="$CFLAGS -I$BUILD_PREFIX/include"
 export CXXFLAGS="$CFLAGS -I$BUILD_PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$BUILD_PREFIX/lib"
-cp $BUILD_PREFIX/lib/libdeflate.h $BUILD_PREFIX/include/
 cmake ..
-make mbgc
+if [[ "$(uname)" == "Linux" ]]; then
+  make mbgc
+else 
+  make mbgc-noavx
+  mv mbgc-noavx mbgc
+fi
 cp mbgc $PREFIX/bin
