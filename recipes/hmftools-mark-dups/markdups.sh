@@ -1,6 +1,6 @@
 #!/bin/bash
-# hmftools SAGE executable shell script
-# https://github.com/hartwigmedical/hmftools/tree/master/sage
+# hmftools MarkDups executable shell script
+# https://github.com/hartwigmedical/hmftools/tree/master/mark-dups
 set -eu -o pipefail
 
 export LC_ALL=en_US.UTF-8
@@ -62,8 +62,8 @@ fi
 pass_arr=($pass_args)
 if [[ ${pass_arr[0]:=} == com.hartwig.* ]]
 then
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/sage.jar" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/markdups.jar" $pass_args
 else
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/sage.jar" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/markdups.jar" $pass_args
 fi
 exit
