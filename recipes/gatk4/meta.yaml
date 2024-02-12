@@ -12,7 +12,7 @@ source:
 
 build:
   noarch: generic
-  number: 0
+  number: 1
 
 requirements:
   host:
@@ -21,7 +21,6 @@ requirements:
     - r-ggplot2
     - r-gsalib
     - r-reshape
-    - gcnvkernel
   run:
     - openjdk >=17,<18
     - python
@@ -30,18 +29,18 @@ requirements:
     - r-ggplot2
     - r-gsalib
     - r-reshape
-    - gcnvkernel
 
 test:
   commands:
     - gatk -h
     - gatk --list
     - gatk HaplotypeCaller --help
-    - gatk DetermineGermlineContigPloidy --help
 
 outputs:
-  - name: gatk4
+  - name: gatk4-slim
     script: build_main.sh
+    build:
+      noarch: generic
     requirements:
       run:
         - openjdk >=17,<18
@@ -51,7 +50,6 @@ outputs:
         - gatk -h
         - gatk --list
         - gatk HaplotypeCaller --help
-        - gatk DetermineGermlineContigPloidy --help
   - name: gatk4-spark
     script: build_spark.sh
     build:
@@ -60,13 +58,50 @@ outputs:
       run:
         - openjdk >=17,<18
         - python
-        - {{ pin_subpackage("gatk4", exact=True) }}
+        - {{ pin_subpackage("gatk4-slim", exact=True) }}
     test:
       commands:
         - gatk -h
         - gatk --list
         - gatk MarkDuplicatesSpark --help
-        - gatk DetermineGermlineContigPloidy --help
+  - name: gatk4-gcnvkernel
+    script: build_gcnvkernel.sh
+    build:
+      noarch: python
+    requirements:
+      build:
+        - unzip
+      host:
+        - python
+        - setuptools
+      run:
+        - mkl-service =2.3.0
+        - numpy =1.17.5
+        - theano =1.0.4
+        - scipy =1.0.0
+        - pymc3 =3.1
+        - pyvcf =0.6.8
+        - tqdm >=4.15.0
+        - {{ pin_subpackage("gatk4-slim", exact=True) }}
+  - name: gatk4
+    build:
+      noarch: generic
+    requirements:
+      run:
+        - {{ pin_subpackage("gatk4-slim", exact=True) }}
+        - {{ pin_subpackage("gatk4-gcnvkernel", exact=True) }}
+        #- vqsr_cnn
+        - r-base
+        - r-gplots
+        - r-ggplot2
+        - r-gsalib
+        - r-reshape
+    test:
+      commands:
+        - gatk -h
+        - gatk --list
+        - gatk HaplotypeCaller --help
+
 
 about:
   home: https://www.broadinstitute.org/gatk/
@@ -74,3 +109,15 @@ about:
   license_family: BSD
   summary: Genome Analysis Toolkit (GATK4)
   dev_url: https://github.com/broadinstitute/gatk
+  description: >-
+    Several GATK commands contain included R or Python code and require
+    various R or Python modules. Bioconda provides several GATK4-related
+    packages accordingly.
+    The 'gatk4-slim' package includes only the main GATK code, so additional
+    packages would need to be explicitly installed to use those commands.
+    The 'gatk4-spark' package contains the GATK commands located in the
+    Spark JAR file.
+    The 'gatk4-gcnvkernel' package contains the code and Python dependencies
+    needed to run the gCNV commands.
+    The 'gatk4' umbrella package adds the necessary R and Python dependencies,
+    but does not include Spark.
