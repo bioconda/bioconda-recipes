@@ -1,41 +1,69 @@
-{% set version = "0.0.5" %}
+{% set version = "0.3.8" %}
+{% set name = "fibertools-rs" %}
+{% set build_number = "0" %}
 
 package:
-  name: fibertools-rs
+  name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 0
+  
+source:  
+  url: https://github.com/fiberseq/fibertools-rs/archive/v{{ version }}.tar.gz
+  sha256: 7e244ceafa5371d21de45a9e6ea5dd66e4922283142bc9a332c1114d5118fa02
 
-source:
-  url: https://github.com/mrvollger/fibertools-rs/archive/v{{ version }}.tar.gz
-  sha256: ec5be23f989f91a1cbc450cc0788d7185f8a7e58fa55d083d766a44df001e4eb
+
+build:
+  run_exports:
+    - {{ pin_subpackage('fibertools-rs', max_pin="x") }}
+  number: {{ build_number }}
+  rpaths:
+    - lib/
+    - share/{{ name }}-{{ version }}-{{ build_number }}/lib/
+  #detect_binary_files_with_prefix: False
+  #missing_dso_whitelist:
+  #  - share/{{ name }}-{{ version }}-{{ build_number }}/lib/*
+  #  - "$RPATH/libgomp-a34b3233.so.1"
+  #  - "$RPATH/libcudart-d0da41ae.so.11.0"
+  # skip: True # [osx]
 
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - rust >=1.60
-    - clangdev
-    - pkg-config
+    - {{ compiler('rust') }}
     - make
     - cmake
-    - rust-bio-tools
+    - unzip
+    - curl
+  # all the host and run requirements match those needed for htslib
   host:
-    - gsl
-    - libcblas
     - libcurl
-    - openssl
+    - bzip2
+    - xz
+    - zlib
+    - libdeflate
+    - openssl  # [not osx]
   run:
-    - openssl
+    - libcurl
+    - bzip2
+    - xz
+    - zlib
+    - libdeflate
+    - openssl  # [not osx]
 
 test:
   commands:
-    - ft --help
+    - ft help
 
 
 about:
-  home: https://github.com/mrvollger/fibertools-rs
+  home: https://github.com/fiberseq/fibertools-rs
   license: MIT
   summary: Mitchell Vollger's rust tools for fiberseq data.
+
+
+extra:
+  recipe-maintainers:
+    - mrvollger
+  

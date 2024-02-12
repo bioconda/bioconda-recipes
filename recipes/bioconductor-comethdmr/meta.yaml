@@ -1,0 +1,51 @@
+{% set version = "1.6.0" %}
+{% set name = "coMethDMR" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 0a6229d90868a4a60eb0f72c4499d1fc
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-comethdmr", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocStyle, corrplot, knitr, rmarkdown, testthat, IlluminaHumanMethylation450kanno.ilmn12.hg19, IlluminaHumanMethylationEPICanno.ilm10b4.hg19
+requirements:
+  host:
+    - 'bioconductor-annotationhub >=3.10.0,<3.11.0'
+    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
+    - 'bioconductor-bumphunter >=1.44.0,<1.45.0'
+    - 'bioconductor-experimenthub >=2.10.0,<2.11.0'
+    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
+    - 'bioconductor-iranges >=2.36.0,<2.37.0'
+    - r-base
+    - r-lmertest
+  run:
+    - 'bioconductor-annotationhub >=3.10.0,<3.11.0'
+    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
+    - 'bioconductor-bumphunter >=1.44.0,<1.45.0'
+    - 'bioconductor-experimenthub >=2.10.0,<2.11.0'
+    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
+    - 'bioconductor-iranges >=2.36.0,<2.37.0'
+    - r-base
+    - r-lmertest
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Accurate identification of co-methylated and differentially methylated regions in epigenome-wide association studies'
+  description: 'coMethDMR identifies genomic regions associated with continuous phenotypes by optimally leverages covariations among CpGs within predefined genomic regions. Instead of testing all CpGs within a genomic region, coMethDMR carries out an additional step that selects co-methylated sub-regions first without using any outcome information. Next, coMethDMR tests association between methylation within the sub-region and continuous phenotype using a random coefficient mixed effects model, which models both variations between CpG sites within the region and differential methylation simultaneously.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

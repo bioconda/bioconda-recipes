@@ -1,6 +1,6 @@
-{% set version = "1.22.0" %}
+{% set version = "1.30.0" %}
 {% set name = "tximportData" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,14 +8,16 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 205db94460d21f563915cf765472131e
+  md5: 4494d764fc087333e5c04ee7977c85c8
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-tximportdata", max_pin="x.x") }}'
   noarch: generic
 # Suggests: knitr, markdown
 requirements:
@@ -24,6 +26,7 @@ requirements:
   run:
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -31,6 +34,6 @@ about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: tximportData
-  description: 'This package provides the output of running various transcript abundance quantifiers on a set of 6 RNA-seq samples from the GEUVADIS project. The quantifiers were Cufflinks, RSEM, kallisto, Salmon and Sailfish. For details on version numbers, sample information, and details on calls, see the package vignette.'
+  description: 'This package provides the output of running various transcript abundance quantifiers on a set of 6 RNA-seq samples from the GEUVADIS project. The quantifiers were Cufflinks, RSEM, kallisto, Salmon and Sailfish. alevin example output is also included. Forr details on version numbers, sample information, and details on calls, see the package vignette.'
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 

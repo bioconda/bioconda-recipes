@@ -1,5 +1,5 @@
-{% set version = "1.6" %}
-{% set sha256 = "a9247d2bfdf82788970f9dd35b67cea95e99178b727ef961f1157a6a0a693daa" %}
+{% set version = "1.6.3" %}
+{% set sha256 = "e05b7511d9b18bc8e7b78b999e8fd61664e56645a475399d654b2dbdde871902" %}
 
 package:
   name: syri
@@ -8,31 +8,37 @@ package:
 source:
   url: https://github.com/schneebergerlab/syri/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - import-sys.patch
 
 build:
-  number: 0
-  skip: True  # [py < 38 or py > 39]
+  number: 2
   script: "{{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt"
+  run_exports:
+    - {{ pin_subpackage('syri', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - python
+    - python 3.8
     - setuptools
-    - numpy >=1.20 
-    - cython
+    - numpy >=1.21.2
+    # Please review cython pinning on future releases
+    # see: https://github.com/schneebergerlab/syri/pull/217
+    - cython <=0.29.36
   run:
-    - python
-    - numpy  >=1.20
-    - pandas
-    - scipy
-    - psutil
-    - python-igraph
-    - pysam
+    - python 3.8
+    - numpy >=1.21.2
+    - pandas >=1.2.4
+    - scipy >=1.6.2
+    - psutil >=5.8
+    - python-igraph >=0.9.1
+    - pysam >=0.16.0.1
     - longestrunsubsequence
     - pulp
+    - mummer4
 
 test:
   commands:

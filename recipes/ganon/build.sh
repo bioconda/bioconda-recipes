@@ -16,5 +16,6 @@ ctest -VV .
 
 # Test python
 cd ${SRC_DIR}/ganon/
-$PYTHON -m unittest discover -s tests/ganon/integration/ -v
+
+$PYTHON -m unittest discover -s tests/ganon/integration/ -v 
 #$PYTHON -m unittest discover -s tests/ganon/integration_online/ -v

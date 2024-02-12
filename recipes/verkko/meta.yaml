@@ -1,5 +1,5 @@
 {% set name = "verkko" %}
-{% set version = "1.1" %}
+{% set version = "2.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,13 +7,16 @@ package:
 
 source:
   url: https://github.com/marbl/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
-  md5: f77269f394f2cff580d1af25de0fed6d
+  md5: be5b322b2fcfcee07c0d64fa49c6a9b4
 
   patches:
     - version.patch
+    - osx_availability.patch # [osx]
 
 build:
   number: 0
+  run_exports:
+      - {{ pin_subpackage('verkko', max_pin="x.x") }}
 
 requirements:
   build:
@@ -21,14 +24,24 @@ requirements:
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
     - {{ compiler('cxx') }}
-    - rust
+    - rust >=1.66
   host:
     - gsl
+    - zlib
   run:
     - python >=3.7
-    - snakemake-minimal >=7.8.0
-    - graphaligner >=1.0.16
-    - mbg >=1.0.11
+    - perl >=5.6
+    - seqtk
+    - parasail-python >=1.3.3
+    - networkx >=2.6.3
+    - biopython
+    - snakemake-minimal >=7.8.0,<8.0
+    - graphaligner >=1.0.19
+    - findutils >=4.6.0
+    - mashmap >=3.0.6
+    - winnowmap >=2.0
+    - bwa >=0.7.17
+    - samtools >=1.17
 
 test:
   requires:

@@ -1,6 +1,6 @@
 {% set name = "gget" %}
-{% set version = "0.3.9" %}
-{% set sha256 = "015daacaa9bb424119ecce79705d88f4d8d2dc3a1d5357841b8d0507f9451b7f" %}
+{% set version = "0.28.4" %}
+{% set sha256 = "bab45530f72b189b233a72be20421176fbc4ca7ed407e36eec758086c2cda7c6" %}
 
 package:
   name: "{{ name|lower }}"
@@ -13,25 +13,24 @@ source:
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed -vv .
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation -vvv .
+  run_exports:
+    - {{ pin_subpackage('gget', max_pin="x.x") }}
 
 requirements:
-  build:
-    - python >=3.6
-    - pip
-    - setuptools
   host:
     - python >=3.6
-    - numpy >=1.17.2
-    - pandas >=1.0.0
+    - pip
+    - bs4
     - requests >=2.22.0
+    - pandas >=1.0.0
     - ipython
-    - matplotlib-base
     - mysql-connector-python >=8.0.5,<=8.0.29
-    - beautifulsoup4 >=4.10.0
-    - ipywidgets
+    - matplotlib-base
     - tqdm
-    - py3Dmol>=1.8.0
+    - ipywidgets
+    - lxml
+    - numpy >=1.17.2
   run:
     - python >=3.6
     - numpy >=1.17.2
@@ -43,11 +42,17 @@ requirements:
     - beautifulsoup4 >=4.10.0
     - ipywidgets
     - tqdm
-    - py3Dmol>=1.8.0
-    
+    - py3Dmol >=1.8.0
+    - curl
+    - lxml
+    - openmm ==7.5.1
+    - openai
+
 test:
   commands:
     - {{ name }} ref --help
+    - {{ name }} ref -d -w pep ciona_intestinalis
+    - {{ name }} alphafold MAAHKGAEHHHKAAEHHEQAAKHHHAAAEHHEKGEHEQAAHHADTAYAHHKHAEEHAAQAAKHDAEHHAP
   imports:
     - gget
 
@@ -55,6 +60,7 @@ about:
   home: "https://github.com/pachterlab/gget"
   license: BSD-2-Clause
   license_family: BSD
+  license_file: LICENSE
   summary: "gget enables efficient querying of genomic databases"
   description: |
     gget enables efficient querying of genomic databases, such as Ensembl, UniProt, 
@@ -64,3 +70,4 @@ about:
 extra:
   recipe-maintainers:
     - nh13
+    - lauraluebbert

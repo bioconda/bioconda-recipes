@@ -1,50 +1,66 @@
 {% set name = "cyvcf2" %}
-{% set version = "0.30.16" %}
-{% set sha256hash = "624d77a3d5db99198e5314642856f1d36975daf2f710e774db8807017d063aaa" %}
+{% set version = "0.30.28" %}
+{% set sha256 = "dde7771570e210df9ca6d21c171a8aa376f191966826241fdcdf960befb9cc0f" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/brentp/cyvcf2/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256hash }}
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cyvcf2-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
   patches:
     # Link to htslib shipped by conda
     - patches/setup.py.patch
 
 build:
   number: 0
+  skip: True  # [py < 37]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - cyvcf2 = cyvcf2.__main__:cli
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - autoconf
+    - automake
+    - make
   host:
     - python
-    - setuptools
     - cython
-    - numpy
+    - pip
+    - setuptools
+    - wheel
+    - curl
     - zlib
-    - libcurl
     - htslib >=1.10
     - openssl
-
+    - numpy
   run:
     - python
-    - numpy
-    - zlib
     - coloredlogs
     - click
-    - libcurl
-    - htslib >=1.10
-    - openssl
-    - pathlib2  # [py<34]
+    - {{ pin_compatible('numpy') }}
 
 test:
   imports:
     - cyvcf2
+  commands:
+    - cyvcf2 --help
 
 about:
-  home: https://github.com/brentp/cyvcf2
-  summary: A cython wrapper around htslib built for fast parsing of Variant Call Format (VCF) files
+  home: "https://github.com/brentp/cyvcf2/"
+  summary: "A cython wrapper around htslib built for fast parsing of Variant Call Format (VCF) files"
   license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: "https://brentp.github.io/cyvcf2/"
+  dev_url: "https://github.com/brentp/cyvcf2/"
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btx057
+    - biotools:cyvcf2

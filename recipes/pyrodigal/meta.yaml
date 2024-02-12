@@ -1,5 +1,5 @@
 {% set name = "pyrodigal" %}
-{% set version = "1.1.1" %}
+{% set version = "3.3.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,12 +7,16 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: d60831fb7c3537b8adf3a970603cb69c0f4b20fd4082b1424c2d78a2870c10d6
+  sha256: 68f92cd83f9cd2883b99433847a827dd84ccb27edc51cb3f415664f0f08b0325
 
 build:
   number: 0
-  skip: True  #[py2k]
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  skip: True  # [py < 36]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --use-pep517 -vvv"
+  entry_points:
+    - pyrodigal = pyrodigal.cli:main
+  run_exports:
+    - {{ pin_subpackage("pyrodigal", max_pin="x.x") }}
 
 requirements:
   build:
@@ -24,12 +28,13 @@ requirements:
     - setuptools
   run:
     - python
-    - setuptools
+    - archspec >=0.2.0
 
 test:
   imports:
     - {{ name }}
   commands:
+    - pyrodigal --help
     - python -m unittest -vv {{ name }}.tests
 
 about:

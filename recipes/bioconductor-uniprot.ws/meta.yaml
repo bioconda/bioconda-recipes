@@ -1,6 +1,6 @@
-{% set version = "2.34.0" %}
+{% set version = "2.42.0" %}
 {% set name = "UniProt.ws" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,41 +8,51 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 3aef68eb5e2afac0809638739b484ef2
+  md5: 47d9ee4038c5dcaf66229e4e1e07c052
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-uniprot.ws", max_pin="x.x") }}'
   noarch: generic
-# Suggests: RUnit, BiocStyle, knitr
+# Suggests: BiocStyle, knitr, rmarkdown, RUnit
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.56.0,<1.57.0'
-    - 'bioconductor-biocfilecache >=2.2.0,<2.3.0'
-    - 'bioconductor-biocgenerics >=0.40.0,<0.41.0'
+    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
+    - 'bioconductor-biocbaseutils >=1.4.0,<1.5.0'
+    - 'bioconductor-biocfilecache >=2.10.0,<2.11.0'
+    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
     - r-base
-    - r-rappdirs
-    - r-rcurl
+    - r-httpcache
+    - r-httr
+    - r-jsonlite
+    - r-progress
+    - r-rjsoncons
     - r-rsqlite
   run:
-    - 'bioconductor-annotationdbi >=1.56.0,<1.57.0'
-    - 'bioconductor-biocfilecache >=2.2.0,<2.3.0'
-    - 'bioconductor-biocgenerics >=0.40.0,<0.41.0'
+    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
+    - 'bioconductor-biocbaseutils >=1.4.0,<1.5.0'
+    - 'bioconductor-biocfilecache >=2.10.0,<2.11.0'
+    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
     - r-base
-    - r-rappdirs
-    - r-rcurl
+    - r-httpcache
+    - r-httr
+    - r-jsonlite
+    - r-progress
+    - r-rjsoncons
     - r-rsqlite
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'Artistic License 2.0'
+  license: Artistic-2.0
   summary: 'R Interface to UniProt Web Services'
-  description: 'A collection of functions for retrieving, processing and repackaging the UniProt web services.'
+  description: 'The Universal Protein Resource (UniProt) is a comprehensive resource for protein sequence and annotation data. This package provides a collection of functions for retrieving, processing, and re-packaging UniProt web services. The package makes use of UniProt''s modernized REST API and allows mapping of identifiers accross different databases.'
 extra:
   identifiers:
     - biotools:uniprot.ws

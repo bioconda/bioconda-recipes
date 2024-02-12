@@ -1,6 +1,6 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "ccfindR" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,20 +8,23 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: e65c8857f94648cfbfd70b7a0cb517bf
+  md5: 0a0dd7c35273c39673f992bed7fa952d
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-ccfindr", max_pin="x.x") }}'
 # Suggests: BiocStyle, knitr, rmarkdown
+# SystemRequirements: gsl
 requirements:
   host:
-    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
-    - 'bioconductor-singlecellexperiment >=1.16.0,<1.17.0'
-    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
     - r-ape
     - r-base
     - r-gtools
@@ -35,10 +38,11 @@ requirements:
     - r-rtsne
     - libblas
     - liblapack
+    - gsl
   run:
-    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
-    - 'bioconductor-singlecellexperiment >=1.16.0,<1.17.0'
-    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
     - r-ape
     - r-base
     - r-gtools
@@ -50,6 +54,7 @@ requirements:
     - 'r-rdpack >=0.7'
     - r-rmpi
     - r-rtsne
+    - gsl
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}

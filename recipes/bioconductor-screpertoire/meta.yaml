@@ -1,6 +1,6 @@
-{% set version = "1.4.0" %}
+{% set version = "1.12.0" %}
 {% set name = "scRepertoire" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,25 +8,29 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 17bba436e8c46b3e335ade10115f1a95
+  md5: 3debd173702ebe6c551ba6c572a76c25
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-screpertoire", max_pin="x.x") }}'
   noarch: generic
-# Suggests: knitr, rmarkdown, BiocStyle, scater, circlize, scales, Seurat
+# Suggests: knitr, rmarkdown, BiocStyle, circlize, scales, Seurat, scater
 requirements:
   host:
-    - 'bioconductor-powertcr >=1.14.0,<1.15.0'
-    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-powertcr >=1.22.0,<1.23.0'
+    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
     - r-base
     - r-doparallel
     - r-dplyr
     - r-ggalluvial
     - r-ggplot2
+    - r-ggraph
     - r-igraph
     - r-plyr
     - r-reshape2
@@ -34,15 +38,18 @@ requirements:
     - r-seuratobject
     - r-stringdist
     - r-stringr
+    - r-tidygraph
     - r-vegan
   run:
-    - 'bioconductor-powertcr >=1.14.0,<1.15.0'
-    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-powertcr >=1.22.0,<1.23.0'
+    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
     - r-base
     - r-doparallel
     - r-dplyr
     - r-ggalluvial
     - r-ggplot2
+    - r-ggraph
     - r-igraph
     - r-plyr
     - r-reshape2
@@ -50,13 +57,15 @@ requirements:
     - r-seuratobject
     - r-stringdist
     - r-stringr
+    - r-tidygraph
     - r-vegan
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'Apache License 2.0'
+  license: GPL-2
   summary: 'A toolkit for single-cell immune receptor profiling'
   description: 'scRepertoire was built to process data derived from the 10x Genomics Chromium Immune Profiling for both T-cell receptor (TCR) and immunoglobulin (Ig) enrichment workflows and subsequently interacts with the popular Seurat and SingleCellExperiment R packages. It also allows for general analysis of single-cell clonotype information without the use of expression information. The package functions as a wrapper for Startrac and powerTCR R packages.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 

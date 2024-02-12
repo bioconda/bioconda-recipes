@@ -4,7 +4,7 @@ mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/opt/snakeSV/
 
 # Full path to the Snakefile
-sed -i "s|workflow/Snakefile|$PREFIX/opt/snakeSV/workflow/Snakefile|g" snakeSV
+sed -i "s|\$(dirname \$(which snakeSV))|$PREFIX/opt/snakeSV|g" snakeSV
 
 cp -r * $PREFIX/opt/snakeSV/
 ln -s $PREFIX/opt/snakeSV/snakeSV $PREFIX/bin/

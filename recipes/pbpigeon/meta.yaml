@@ -1,5 +1,5 @@
 {% set name = "pbpigeon" %}
-{% set version = "0.1.0" %}
+{% set version = "1.2.0" %}
 
 package:
   name: {{ name }}
@@ -7,12 +7,17 @@ package:
 
 source:
   - url: https://github.com/PacificBiosciences/pigeon/releases/download/v{{ version }}/pigeon
-    sha256: 459498e17c7b8375098003ece83ed8cb53485b9deafcc95ef66e990b471edf76
+    sha256: 0202818fed1247d21b79bf58811402f7af2481b3731ebc1094b161cf03c0e009
 
 build:
+  # repackaged binaries
+  skip: True  # [osx]
   number: 0
-  noarch: generic
-
+  run_exports:
+    - {{ pin_subpackage('pbpigeon', max_pin='x.x') }}
+requirements:
+  build:
+    - {{ compiler('cxx') }}
 test:
   commands:
     - pigeon -h
@@ -25,3 +30,8 @@ about:
 extra:
   recipe-maintainers:
     - jmattick
+    - armintoepfer
+    - pb-dseifert
+  skip-lints:
+    #repackaged binary
+    - should_be_noarch_generic

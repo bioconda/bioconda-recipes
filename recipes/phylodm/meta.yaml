@@ -1,6 +1,6 @@
 {% set name = "phylodm" %}
-{% set version = "2.1.2" %}
-{% set sha256 = "df00a0c672c3f32cabfa0e021f7b8d7a2542a67e4a28e5723bdd32699d6897b6" %}
+{% set version = "3.0.0" %}
+{% set sha256 = "c7e051ba1350a947bd72382181aafd1a75bc3a0faa7019dbe8cd1febf5df6069" %}
 
 package:
   name: {{ name|lower }}
@@ -11,19 +11,21 @@ source:
   sha256: {{ sha256 }}
 
 build:
+  skip: true  # [py2k or py36]
   number: 0
 
 requirements:
   build:
-    - rust >=1.40
+    - rust >=1.65
   host:
-    - python >=3.7
+    - python
     - pip
     - setuptools
     - setuptools-rust
   run:
-    - python >=3.7
+    - python
     - numpy
+    - dendropy
 
 test:
   imports:
@@ -44,3 +46,4 @@ extra:
     - doi:10.5281/zenodo.3998716
   skip-lints:
     - should_be_noarch_generic  # Not a noarch recipe as Rust is required for build
+    - should_not_use_skip_python  # Required as setuptools-rust will not build on py<37

@@ -1,25 +1,21 @@
-{% set version="202112.05" %}
+{% set version="202308.01" %}
 
 package:
   name: sentieon
   version: {{ version }}
 source:
   - url: https://s3.amazonaws.com/sentieon-release/software/sentieon-genomics-{{ version }}.tar.gz # [linux64]
-    sha256: c97b14b0484a0c0025115ad7b911453af7bdcd09874c26cbc39fd0bc5588a306 # [linux64]
+    sha256: 047899a2b4247adaace82032a6fe269a57f70b1c9ecbc84d77914f902a714d50 # [linux64]
     patches: # [linux64]
       # Fix driver scripts so they resolves location including symlinks
       - sentieon_symlinks.patch # [linux64]
-      - bwa_symlinks.patch # [linux64]
-  - url: https://s3.amazonaws.com/sentieon-release/software/mac-sentieon-genomics-{{ version }}.tar.gz # [osx]
-    sha256: 33212ab20dc87225a2d9a41a9de5c072cc91ca8334b6bae54bd18726cd053cd2 # [osx]
-    patches: # [osx]
-      - sentieon_symlinks.patch # [osx]
-      - bwa_symlinks.patch # [osx]
 
 build:
   number: 0
-  skip: True # [not linux64 and not osx]
+  skip: True # [not linux64]
   binary_relocation: false
+  run_exports:
+    - {{ pin_subpackage('sentieon', max_pin='x') }}
 
 requirements:
   build:
@@ -33,11 +29,11 @@ requirements:
 
 test:
   commands:
-    - LD_LIBRARY_PATH=/usr/local/lib sentieon driver
-    - LD_LIBRARY_PATH=/usr/local/lib sentieon driver --help --algo TNscope
-    - LD_LIBRARY_PATH=/usr/local/lib sentieon STAR --help # [linux64]
-    - LD_LIBRARY_PATH=/usr/local/lib sentieon umi --help
-    - LD_LIBRARY_PATH=/usr/local/lib sentieon util --help
+    - sentieon driver
+    - sentieon driver --help --algo TNscope
+    - sentieon STAR --help # [linux64]
+    - sentieon umi --help
+    - sentieon util --help
 
 about:
   home: https://www.sentieon.com
@@ -46,4 +42,4 @@ about:
 
 extra:
   skip-lints:
-      - should_be_noarch_generic # Supports OSX and Linux only
+      - should_be_noarch_generic # Supports Linux64 only

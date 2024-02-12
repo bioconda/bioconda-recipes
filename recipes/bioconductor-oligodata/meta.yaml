@@ -1,6 +1,6 @@
 {% set version = "1.8.0" %}
 {% set name = "oligoData" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,24 +8,27 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
   md5: 9625cfd4b31bb575c4029a0632a7ee12
 build:
-  number: 8
+  number: 12
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-oligodata", max_pin="x.x") }}'
   noarch: generic
 # Suggests: pd.hg.u95av2, pd.huex.1.0.st.v2, pd.mapping50k.xba240, pd.hg18.60mer.expr, pd.2006.07.18.hg18.refseq.promoter, pd.hugene.1.0.st.v1
 requirements:
   host:
-    - 'bioconductor-oligo >=1.58.0,<1.59.0'
+    - 'bioconductor-oligo >=1.66.0,<1.67.0'
     - r-base
   run:
-    - 'bioconductor-oligo >=1.58.0,<1.59.0'
+    - 'bioconductor-oligo >=1.66.0,<1.67.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

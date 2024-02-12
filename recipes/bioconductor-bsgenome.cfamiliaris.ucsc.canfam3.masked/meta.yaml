@@ -1,6 +1,6 @@
 {% set version = "1.3.99" %}
 {% set name = "BSgenome.Cfamiliaris.UCSC.canFam3.masked" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,25 +8,28 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
   md5: 8e2246f51fc967dc2ed748cf967a7649
 build:
-  number: 8
+  number: 12
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-bsgenome.cfamiliaris.ucsc.canfam3.masked", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-bsgenome >=1.62.0,<1.63.0'
+    - 'bioconductor-bsgenome >=1.70.0,<1.71.0'
     - 'bioconductor-bsgenome.cfamiliaris.ucsc.canfam3 >=1.4.0,<1.5.0'
     - r-base
   run:
-    - 'bioconductor-bsgenome >=1.62.0,<1.63.0'
+    - 'bioconductor-bsgenome >=1.70.0,<1.71.0'
     - 'bioconductor-bsgenome.cfamiliaris.ucsc.canfam3 >=1.4.0,<1.5.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

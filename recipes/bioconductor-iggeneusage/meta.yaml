@@ -1,6 +1,6 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "IgGeneUsage" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,42 +8,57 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 3f4086837ec56c0fe4fbd74a4c571b93
+  md5: 231f1af3465f435ca3bb099a93e51e5b
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-iggeneusage", max_pin="x.x") }}'
 # Suggests: BiocStyle, knitr, rmarkdown, testthat (>= 2.1.0), ggplot2, ggforce, gridExtra, ggrepel
+# SystemRequirements: GNU make
 requirements:
   host:
-    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
     - r-base
+    - 'r-bh >=1.66.0'
     - 'r-rcpp >=0.12.0'
+    - 'r-rcppeigen >=0.3.3.3.0'
+    - 'r-rcppparallel >=5.0.1'
     - 'r-reshape2 >=1.4.3'
-    - 'r-rstan >=2.19.2'
-    - 'r-stanheaders >2.18.1'
+    - 'r-rstan >=2.18.1'
+    - 'r-rstantools >=2.2.0'
+    - 'r-stanheaders >=2.18.0'
+    - r-tidyr
     - libblas
     - liblapack
   run:
-    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
     - r-base
+    - 'r-bh >=1.66.0'
     - 'r-rcpp >=0.12.0'
+    - 'r-rcppeigen >=0.3.3.3.0'
+    - 'r-rcppparallel >=5.0.1'
     - 'r-reshape2 >=1.4.3'
-    - 'r-rstan >=2.19.2'
-    - 'r-stanheaders >2.18.1'
+    - 'r-rstan >=2.18.1'
+    - 'r-rstantools >=2.2.0'
+    - 'r-stanheaders >=2.18.0'
+    - r-tidyr
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - automake
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'file LICENSE'
+  license: 'MIT + file LICENSE'
   summary: 'Differential gene usage in immune repertoires'
-  description: 'Detection of biases in immunoglobulin (Ig) gene usage between adaptive immune repertoires that belong to different biological conditions is an important task in immune repertoire profiling. IgGeneUsage detects aberrant Ig gene usage using probabilistic model which is analyzed computationally by Bayes inference.'
+  description: 'Detection of biases in the usage of immunoglobulin (Ig) genes is an important task in immune repertoire profiling. IgGeneUsage detects aberrant Ig gene usage between biological conditions using a probabilistic model which is analyzed computationally by Bayes inference. With this IgGeneUsage also avoids some common problems related to the current practice of null-hypothesis significance testing.'
   license_file: LICENSE
 

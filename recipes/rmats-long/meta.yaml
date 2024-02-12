@@ -1,0 +1,48 @@
+{% set version = "1.0.0" %}
+
+package:
+  name: rmats-long
+  version: {{ version }}
+
+source:
+  sha256: 00c2128ccd2098278c2ee7ebb1637d1f87be9b2815364d89d1a5ca9202b21429
+  url: https://github.com/Xinglab/rMATS-long/releases/download/v{{ version }}/rMATS-long_v_{{ version|replace(".", "_") }}.tar.gz
+
+build:
+  noarch: generic
+  number: 0
+
+requirements:
+  run:
+    - bioconductor-biocparallel
+    - bioconductor-drimseq
+    - matplotlib-base
+    - networkx
+    - numpy
+    - pandas
+    - python >=3.6
+    - r-base
+    - r-cowplot
+    - r-ggplot2
+    # Specifying the r-stringi version so that the conda-forge version
+    # of r-stringi is used along with a compatible icu version:
+    # https://github.com/mamba-org/boa/issues/115
+    - r-stringi >=1.7.8
+
+test:
+  commands:
+    - python $PREFIX/rMATS-long/FindAltTSEvents.py --help > /dev/null
+    - python $PREFIX/rMATS-long/calculate_isoform_proportion.py --help > /dev/null
+    - python $PREFIX/rMATS-long/classify_isoform_differences.py --help > /dev/null
+    - python $PREFIX/rMATS-long/count_significant_isoforms.py --help > /dev/null
+    - python $PREFIX/rMATS-long/detect_differential_isoforms.py --help > /dev/null
+    - python $PREFIX/rMATS-long/rmats_long.py --help > /dev/null
+    - python $PREFIX/rMATS-long/visualize_isoforms.py --help > /dev/null
+    - Rscript $PREFIX/rMATS-long/detect_differential_isoforms.R 2>&1 | grep "'workers' must be integer" > /dev/null
+    - Rscript $PREFIX/rMATS-long/visualize_isoforms.R 2>&1 | grep "invalid 'description' argument" > /dev/null
+
+about:
+  home: https://github.com/Xinglab/rMATS-long
+  license: Free for non-commercial use, see LICENSE file
+  summary: rMATS-long is an integrated computational workflow for long-read RNA-seq data
+  license_file: LICENSE
