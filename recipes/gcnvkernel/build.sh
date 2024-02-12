@@ -7,4 +7,4 @@ TMPDIR=$(mktemp -d)
 unzip -d $TMPDIR gatkPythonPackageArchive.zip
 cd $TMPDIR
 
-$PYTHON setup_gcnvkernel.py install
+$PYTHON setup_gcnvkernel.py install --single-version-externally-managed --record=record.txt
