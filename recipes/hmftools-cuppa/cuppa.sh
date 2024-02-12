@@ -1,6 +1,6 @@
 #!/bin/bash
-# hmftools SAGE executable shell script
-# https://github.com/hartwigmedical/hmftools/tree/master/SAGE
+# hmftools CUPPA executable shell script
+# https://github.com/hartwigmedical/hmftools/tree/master/cuppa
 set -eu -o pipefail
 
 export LC_ALL=en_US.UTF-8
@@ -46,8 +46,8 @@ for arg in "$@"; do
             ;;
          *)
 	    if [[ ${pass_args} == '' ]] #needed to avoid preceeding space on first arg e.g. ' MarkDuplicates'
-            then 
-                pass_args="$arg" 
+            then
+                pass_args="$arg"
 	    else
                 pass_args="$pass_args \"$arg\"" #quotes later arguments to avoid problem with ()s in MarkDuplicates regex arg
             fi
@@ -62,8 +62,8 @@ fi
 pass_arr=($pass_args)
 if [[ ${pass_arr[0]:=} == org* ]]
 then
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/sage.jar" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/cuppa.jar" $pass_args
 else
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/sage.jar" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/cuppa.jar" $pass_args
 fi
 exit
