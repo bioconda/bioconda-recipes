@@ -1,16 +1,31 @@
 #!/bin/bash
 
+set -euxo pipefail
+
+export JULIA_PKG_USE_CLI_GIT=true
+
+# Turn off automatic precompilation
+export JULIA_PKG_PRECOMPILE_AUTO=0
+
+
 ln -s "${GCC}" "${BUILD_PREFIX}/gcc"
 
-cp -r $SRC_DIR/run_program.jl  $PREFIX/bin
-cp -r $SRC_DIR/commands/* $PREFIX/bin
-cp -r $SRC_DIR/algorithms/genotype/genotype_algorithm.jl $PREFIX/bin
-cp -r $SRC_DIR/algorithms/phenotype/phenotype_algorithm.jl $PREFIX/bin
-cp -r $SRC_DIR/evaluation/evaluation.jl $PREFIX/bin
+
+# Copy the required files to a shared directory
+HAPNEST_SRC_DIR=${PREFIX}/share/hapnest
+mkdir -p "${HAPNEST_SRC_DIR}"
+cp -r {commands,algorithms,evaluation,utils,optimization,preprocessing,Project.toml,run_program.jl,config.yaml} "${HAPNEST_SRC_DIR}"
+
+
+#cp -r $SRC_DIR/run_program.jl  $PREFIX/bin
+#cp -r $SRC_DIR/commands/* $PREFIX/bin
+#cp -r $SRC_DIR/algorithms/genotype/genotype_algorithm.jl $PREFIX/bin
+#cp -r $SRC_DIR/algorithms/phenotype/phenotype_algorithm.jl $PREFIX/bin
+#cp -r $SRC_DIR/evaluation/evaluation.jl $PREFIX/bin
 #cp -r $SRC_DIR/integrations $PREFIX
-cp -r $SRC_DIR/utils/parameter_parsing.jl $PREFIX/bin
-cp -r $SRC_DIR/optimisation/abc.jl $PREFIX/bin
-cp -r $SRC_DIR/preprocessing/preprocessing.jl $PREFIX/bin
+#cp -r $SRC_DIR/utils/parameter_parsing.jl $PREFIX/bin
+#cp -r $SRC_DIR/optimisation/abc.jl $PREFIX/bin
+#cp -r $SRC_DIR/preprocessing/preprocessing.jl $PREFIX/bin
 
 #ln -s $PREFIX/bin/run_program.jl  $PREFIX/bin/run_program.jl
 
