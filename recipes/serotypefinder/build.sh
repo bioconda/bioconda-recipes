@@ -11,15 +11,14 @@ cp ${RECIPE_DIR}/update-serotypefinder-db.sh ${PREFIX}/bin/update-serotypefinder
 
 # Grab latest database
 # The SerotypeFinder database is not tagged and versioned, but it's also not updated
-# very often (~7 commits in 5 years). 25ddd141d245db6382ca5876f7c7ddd0288aeb30 is the
-# latest commit as of 2021/07/22. A script is provided to allow users to update in the
+# very often (~7 commits in 5 years). ada62c62a7fa74032448bb2273d1f7045c59fdda is the
+# latest commit as of 2022/05/16. A script is provided to allow users to update in the
 # event an update is made.
 mkdir database/
 git clone https://bitbucket.org/genomicepidemiology/serotypefinder_db.git database/
 cd database/
-git checkout 25ddd141d245db6382ca5876f7c7ddd0288aeb30
 python3 INSTALL.py
-echo "25ddd141d245db6382ca5876f7c7ddd0288aeb30" > serotypefinder-db-commit.txt
+git rev-parse HEAD > serotypefinder-db-commit.txt
 cd ..
 
 # Path for database
