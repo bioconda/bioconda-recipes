@@ -14,7 +14,7 @@ ln -s "${GCC}" "${BUILD_PREFIX}/gcc"
 # Copy the required files to a shared directory
 HAPNEST_SRC_DIR=${PREFIX}/share/hapnest
 mkdir -p "${HAPNEST_SRC_DIR}"
-cp -r {commands,algorithms,evaluation,utils,optimization,preprocessing,Project.toml,run_program.jl,config.yaml} "${HAPNEST_SRC_DIR}"
+cp -r {commands,algorithms,evaluation,utils,optimisation,preprocessing,Project.toml,run_program.jl,config.yaml} "${HAPNEST_SRC_DIR}"
 
 
 #cp -r $SRC_DIR/run_program.jl  $PREFIX/bin
