@@ -1,0 +1,46 @@
+{% set commit = "61a616c3b1fe32b9c1b25e8116f97685a5eb5b38" %}
+{% set sha256 = "8252f7c07793e341081d0b73a3b7a12b497b2c4967eb20ecc4f60d4e6f2d0140" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: diann-rpackage
+  version: {{ version }}
+
+source:
+  url: https://github.com/npinter/diann-rpackage/archive/{{ commit }}.zip
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: generic
+  script: $R CMD INSTALL --build .
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  run:
+    - r-base
+    - r-rcpp
+    - r-rcppeigen
+    - r-data.table
+
+test:
+  commands:
+    - '$R -e "library(''diann'')"'
+
+about:
+  home: https://github.com/npinter/diann-rpackage
+  license: CC BY 4.0
+  summary:  'Report processing and protein quantification for MS-based proteomics'
+  license_file: https://github.com/npinter/diann-rpackage/blob/master/LICENSE.txt
+
+extra:
+  authors:
+    - vdemichev
+  recipe-maintainers:
+    - npinter
+  identifiers:
+      - doi:10.1038/s41592-019-0638-x
