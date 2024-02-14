@@ -1,6 +1,6 @@
-{% set version = "1.60.0" %}
+{% set version = "1.68.0" %}
 {% set name = "MassSpecWavelet" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,24 +8,24 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 01472346b1b0244f59ee0e9a84027cd9
+  md5: 387636ea7c674fe339c56a8af3458f8a
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: xcms, caTools
+  run_exports: '{{ pin_subpackage("bioconductor-massspecwavelet", max_pin="x.x") }}'
+# Suggests: signal, waveslim, BiocStyle, knitr, rmarkdown, RUnit, bench
 requirements:
   host:
     - r-base
-    - r-waveslim
     - libblas
     - liblapack
   run:
     - r-base
-    - r-waveslim
   build:
     - {{ compiler('c') }}
     - make
@@ -35,8 +35,8 @@ test:
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'LGPL (>= 2)'
-  summary: 'Mass spectrum processing by wavelet-based algorithms'
-  description: 'Processing Mass Spectrometry spectrum by using wavelet based algorithm'
+  summary: 'Peak Detection for Mass Spectrometry data using wavelet-based algorithms'
+  description: 'Peak Detection in Mass Spectrometry data is one of the important preprocessing steps. The performance of peak detection affects subsequent processes, including protein identification, profile alignment and biomarker identification. Using Continuous Wavelet Transform (CWT), this package provides a reliable algorithm for peak detection that does not require any type of smoothing or previous baseline correction method, providing more consistent results for different spectra. See <doi:10.1093/bioinformatics/btl355} for further details.'
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
 extra:
   identifiers:

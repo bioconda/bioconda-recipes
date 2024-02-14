@@ -1,7 +1,8 @@
 # Do not forget to update the version string in the searchgui.py file
 {% set name = "SearchGUI" %}
-{% set version = "4.0.41" %}
-{% set build = "1" %}
+{% set version = "4.3.5" %}
+{% set sha256 = "51458d20745f83c88fe1041d0e3ff64b148538c63795a0b548c1aa3f7ca8f67d" %}
+{% set build = "0" %}
 
 package:
   name: searchgui
@@ -9,31 +10,30 @@ package:
 
 build:
   number: {{ build }}
+  noarch: generic
   binary_relocation:
     - 'share/searchgui-{{ version }}-{{ build }}/resources/MS Amanda/*'
+  run_exports:
+    - {{ pin_subpackage('searchgui', max_pin="x") }}
 
 source:
   url: http://genesis.ugent.be/maven2/eu/isas/searchgui/{{ name }}/{{ version }}/{{ name }}-{{ version }}-mac_and_linux.tar.gz
-  sha256: 714763fb3d077a2153cc8075f61f3c99bc56e481a0c89ef0041747bedee7c655
+  sha256: {{ sha256 }}
 
 requirements:
-  build:
-    - {{ compiler('c') }}
-    - coreutils
   host:
     - xtandem ==15.12.15.2
-    - metamorpheus ==0.0.317
-    - blast ==2.2.31
-
+    - metamorpheus ==1.0.5
+    - blast >=2.14.0
   run:
-    - openjdk >=11
-    - mono >=5.0.0
     - python
+    - openjdk >=17
     - xtandem ==15.12.15.2
+    - metamorpheus ==1.0.5
+    - mono >=6.0.0
     - fontconfig
     - fonts-conda-ecosystem
-    - metamorpheus ==0.0.317
-    - blast ==2.2.31
+    - blast >=2.14.0
 
 test:
   files:
@@ -47,14 +47,14 @@ test:
 
 about:
   home: https://github.com/compomics/searchgui
-  license: Apache License 2.0
+  license: Apache-2.0
   license_family: APACHE
   summary: User-friendly graphical tool for using proteomics identification search engines
-  description: |
+  description:
     SearchGUI is a user-friendly open-source graphical user interface for configuring and running proteomics identification search engines, currently supporting X!Tandem, MS-GF+, MetaMorpheus, MS Amanda, MyriMatch, Comet, Tide, Andromeda and OMSSA.
 
 extra:
-  notes: |
+  notes:
     SearchGUI is Java program that comes with a custom wrapper shell script.
     This shell wrapper is called "opsin" and is on $PATH by default. By default
     "-Xms512m -Xmx4g" is set in the wrapper. If you want to overwrite it you can

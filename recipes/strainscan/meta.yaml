@@ -1,5 +1,5 @@
 {% set name = "strainscan" %}
-{% set version = "1.0.3" %}
+{% set version = "1.0.14" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,15 +7,17 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: ec4f51274a0b8b47e0c61d4dd9aec8decf7beea0f3037fcf90eeaab049e00142
+  sha256: 2d927c5ac4d9b89a166afeca2aabaf4086d49b097e357ed0feb34181295cf243
 
 build:
-  number: 0
+  number: 1
   entry_points:
     - strainscan = StrainScan.StrainScan:main
     - strainscan_build = StrainScan.StrainScan_build:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('strainscan', max_pin="x") }}
 
 requirements:
   host:
@@ -23,7 +25,7 @@ requirements:
     - python ==3.7.3
   run:
     - python ==3.7.3
-    - sibeliaz ==1.2.2
+    - sibeliaz ==1.2.3
     - r-base ==4.0.2
     - numpy ==1.17.3
     - pandas ==1.0.1
@@ -32,6 +34,7 @@ requirements:
     - scikit-learn ==0.23.1
     - bidict ==0.21.3
     - treelib ==1.6.1
+    - psutil ==5.9.1
 
 test:
     imports:

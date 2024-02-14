@@ -1,5 +1,5 @@
 {% set name = "pegasusio" %}
-{% set version = "0.6.1" %}
+{% set version = "0.9.0" %}
 
 package:
     name: {{ name|lower }}
@@ -7,15 +7,16 @@ package:
 
 source:
     url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-    sha256: "a2c1732f3ccc851d6d88749ee501394fe1e808e479b51f6f811b13094c6c6eec"
-
+    sha256: "fc7d1b33d46418a216de50426e29af101268e510ea171b36458498293b5dfdcc"
 
 build:
     number: 0
-    skip: True  # [py<37]
+    skip: True  # [py < 37]
     entry_points:
         - pegasusio = pegasusio.__main__:main
-    script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+    script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+    run_exports:
+        - {{ pin_subpackage('pegasusio', max_pin="x.x") }}
 
 requirements:
     build:
@@ -56,7 +57,8 @@ test:
 about:
     home: https://github.com/lilab-bcb/pegasusio
     doc_url: https://pegasusio.readthedocs.io
-    license: BSD
+    license: BSD-3-Clause
+    license_family: BSD
     license_file: LICENSE
     summary: "PegasusIO is the IO package for Pegasus."
 

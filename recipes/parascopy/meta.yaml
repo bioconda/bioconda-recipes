@@ -1,51 +1,67 @@
 {% set name = "parascopy" %}
-{% set version = "1.4.0" %}
+{% set version = "1.14.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
+build:
+  number: 0
+  skip: True  # [osx or py2k]
+  entry_points:
+    - parascopy=parascopy.entry_point:main
+  run_exports:
+    - {{ pin_subpackage('parascopy', max_pin="x") }}
+
 source:
   url: https://github.com/tprodanov/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 1271f0341930321873906053bee9a9b33c7f76773ad6c16f867f724623dfefd4
-
-build:
-  noarch: python
-  number: 0
-  script: {{ PYTHON }} -m pip install . --ignore-install --no-deps -vv 
+  sha256: a475086faeea706448db866ca8c504b3c17f3988a67fd8c174f1a334bd4bb4f1
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - meson
+    - ninja
+    - pkg-config
   host:
-    - python >=3.6
+    - python
     - pip
+    - bzip2
+    - htslib
+    - tabixpp
   run:
-    - python >=3.6
+    - python
     - numpy >=1.15
     - scipy >=1.5
-    - pysam >=0.15
+    - pysam >=0.17
     - simpleeval >=0.9
     - parasail-python >=1.2
     - biopython >=1.70
     - samtools >=1.11
     - bwa >=0.7
     - intervaltree >=3.0
+    - tabixpp
+    - construct
 
 test:
   commands:
     - parascopy help
-    - parascopy pretable --help
-    - parascopy table --help
-    - parascopy depth --help
-    - parascopy cn --help
-    - parascopy cn-using --help
-    - parascopy pool --help
-    - parascopy view --help
-    - parascopy psvs --help
-    - parascopy msa --help
+    - parascopy pretable --version
+    - parascopy table --version
+    - parascopy depth --version
+    - parascopy cn --version
+    - parascopy cn-using --version
+    - parascopy pool --version
+    - parascopy view --version
+    - parascopy psvs --version
+    - parascopy msa --version
+    - parascopy call --version
+    - _parascopy_freebayes --version
 
 about:
   home: https://github.com/tprodanov/parascopy
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: Robust and accurate estimation of paralog-specific copy number for duplicated genes using whole-genome sequencing.
-
+  summary: Calling paralog-specific copy number and sequence variants in duplicated genes using short-read whole-genome sequencing.

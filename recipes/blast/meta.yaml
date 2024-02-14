@@ -1,8 +1,9 @@
-{% set version = "2.12.0" %}
-{% set sha256 = "fda3c9c9d488cad6c1880a98a236d842bcf3610e3e702af61f7a48cf0a714b88" %}
+{% set name = "blast" %}
+{% set version = "2.15.0" %}
+{% set sha256 = "6918c370524c8d44e028bf491e8f245a895e07c66c77b261ce3b38d6058216e0" %}
 
 package:
-  name: blast
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -24,8 +25,11 @@ source:
       - normbase.patch
 
 build:
-  number: 4
-  skip: True  # [osx]
+  number: 1
+  run_exports:
+    # Now, the point releases seem to be only bugfixes at least (but this definitely was not the
+    # case up to v2.2.31)
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
@@ -37,8 +41,9 @@ requirements:
     - bzip2
     - pcre
     - entrez-direct
+    - ncbi-vdb
     - curl
-    - llvm-openmp  # [osx]
+    - sqlite =3
   run:
     - zlib
     - bzip2
@@ -48,8 +53,8 @@ requirements:
     - perl-archive-tar
     - perl-json
     - entrez-direct
+    - ncbi-vdb
     - curl
-    - llvm-openmp  # [osx]
 
 test:
   files:
@@ -64,6 +69,7 @@ test:
     - blastdbcheck -version > /dev/null
     - blastdbcmd -version > /dev/null
     - blastn -version > /dev/null
+    - blastn_vdb -version > /dev/null
     - blastp -version > /dev/null
     - blastx -version > /dev/null
     - convert2blastmask -version > /dev/null
@@ -76,6 +82,7 @@ test:
     - rpsbproc -version > /dev/null
     - segmasker -version > /dev/null
     - tblastn -version > /dev/null
+    - tblastn_vdb -version > /dev/null
     - tblastx -version > /dev/null
     - windowmasker -version > /dev/null
     - update_blastdb.pl --version > /dev/null

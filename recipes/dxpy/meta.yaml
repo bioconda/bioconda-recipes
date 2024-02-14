@@ -1,5 +1,5 @@
 {% set name = "dxpy" %}
-{% set version = "0.325.1" %}
+{% set version = "0.369.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 68155625d76662286ad74ef0bd9c573bbe4353758f99bbca2530dfd556007891
+  sha256: 6e83d6c0756ff2b6691c9b789298ef5fdbe3f3df67b8fd90beb8420782219d41
 
 build:
   number: 0
@@ -17,7 +17,9 @@ build:
     - dx-build-app = dxpy.scripts.dx_build_app:main
     - dx = dxpy.scripts.dx:main
     - dx-app-wizard = dxpy.scripts.dx_app_wizard:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('dxpy', max_pin="x.x") }}
 
 requirements:
   host:
@@ -25,15 +27,15 @@ requirements:
     - pip
   run:
     - argcomplete >=1.9.4
-    - beautifulsoup4 >=4.4.1
-    - cryptography >=2.3,<3.0
+    - certifi
+    - cryptography >=3.4.2,<37
     - psutil >=3.3.0
     - python
     - python-dateutil >=2.5
-    - python-magic >=0.4.6
-    - requests >=2.8.0,<2.24.0
-    - websocket-client >=0.53.0
-    - xattr >=0.9.6
+    - requests >=2.8.0,<2.27.1
+    - urllib3 >=1.25,<2.2
+    - websocket-client ==0.54.0
+    - pandas >=1.3.5
 
 test:
   imports:

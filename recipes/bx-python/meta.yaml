@@ -1,37 +1,37 @@
 {% set name = "bx-python" %}
-{% set version = "0.8.13" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "5989170d13367e9f811014803bafdbcc893024d63e98b66f734511e4f9e90c7d" %}
+{% set version = "0.11.0" %}
+{% set sha256 = "2cf8872572817e0d36145cc2711889df5729987ffed4e51280da1e3c2ccb9429" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/bx-python-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
-  skip: True  # [py<37]
-  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir -vvv ."
+  number: 0
+  skip: True  # [py < 37]
+  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps -vvv
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x') }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
-    - cython
-    - numpy
-    - pip
     - python
-    - python-lzo
+    - cython
+    - pip
     - setuptools
+    - wheel
+    - python-lzo
+    - numpy
     - zlib
   run:
-    - numpy
     - python
-    - python-lzo
+    - {{ pin_compatible('numpy') }}
 
 test:
   imports:
@@ -56,12 +56,14 @@ test:
     - bx_extras
 
 about:
-  home: https://github.com/bxlab/bx-python
+  home: 'https://github.com/bxlab/bx-python'
+  summary: 'Tools for manipulating biological data, particularly multiple sequence alignments'
   license: MIT
   license_family: MIT
-  license_file: 'LICENSE'
-  summary: Tools for manipulating biological data, particularly multiple sequence alignments
+  license_file: LICENSE
+  doc_url: 'https://buildmedia.readthedocs.org/media/pdf/bx-python/latest/bx-python.pdf'
+  dev_url: 'https://pypi.org/project/bx-python/'
 
 extra:
-  container:
-    extended-base: true
+  identifiers:
+    - biotools:bx-python

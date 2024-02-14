@@ -1,0 +1,60 @@
+{% set name = "taxpasta" %}
+{% set version = "0.6.1" %}
+{% set sha256 = "468141b00bb286e5b52fb47e7046af68d4f849eecb209a3ec77b0ce4da5dcf01" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/taxpasta-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  entry_points:
+    - taxpasta = taxpasta.infrastructure.cli:app
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools >=40.6.0
+    - wheel
+    - pip
+    - hatch
+    - hatch-vcs
+  run:
+    - python >=3.8
+    - depinfo >=2.1
+    - numpy
+    - pandas
+    - pandera
+    - taxopy
+    - typer
+    - biom-format
+    - pyarrow
+
+# Disable pip check until https://github.com/biocore/biom-format/issues/898 is resolved.
+test:
+  imports:
+    - taxpasta
+  commands:
+    # - pip check
+    - taxpasta --help
+  # requires:
+    # - pip
+
+about:
+  home: https://github.com/taxprofiler/taxpasta
+  summary: TAXonomic Profile Aggregation and STAndardisation
+  license: Apache-2.0
+  license_file: LICENSE
+
+
+extra:
+  recipe-maintainers:
+    - Midnighter

@@ -1,5 +1,5 @@
 {% set name = "expam" %}
-{% set version = "1.1.3" %}
+{% set version = "1.2.2.5" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,12 +7,14 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: dc64ba6c8282b494700aa6398176586fde5236e262494c32fd907e5474d15648
+  sha256: 4a102a67da23c37598c0a0778d0caf99d4c6c0ea4286aff7ca0ab360dc5cda09
 
 build:
   number: 0
   skip: true  # [py < 38]
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('expam', max_pin="x") }}
 
 requirements:
   build:
@@ -21,12 +23,13 @@ requirements:
     - pip
     - python
     - cython
-    - numpy>=1.22.0
+    - numpy >=1.22.0
     - setuptools >=46.4
   run:
     - python
-    - numpy>=1.22.0
+    - numpy >=1.22.0
     - matplotlib-base
+    - multiprocess
     - pandas
     - psutil
     - requests

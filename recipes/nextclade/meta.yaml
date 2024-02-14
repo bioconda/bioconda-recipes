@@ -1,21 +1,23 @@
 {% set name = "nextclade" %}
-{% set version = "1.11.0" %}
+{% set version = "3.2.0" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-Linux-x86_64 # [linux64]
-    sha256: ac7dc4fd488289d1d39e4a3560a9077a3d2b141e045560933c496fb9dc5b60b6                             # [linux64]
-  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-MacOS-x86_64 # [osx and x86_64]
-    sha256: 45fd013812133be87606a11a5e6d29c22f4b8c67a184800cd043f7a290cda902                             # [osx and x86_64]
-  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-MacOS-arm64  # [arm64]
-    sha256: cd3d2b3339c6d7c6c36a2fb23ccfd41de7f5c872f3b61d73728cfd23e9f8fb5c                             # [arm64]
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-x86_64-unknown-linux-gnu   # [linux64]
+    sha256: 392f5b980f291f1580cfc09abc51779955c83811aa0537f6dba7d755e03c8fa9                                           # [linux64]
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-x86_64-apple-darwin        # [osx and x86_64]
+    sha256: deabdd06b1e6b6052c0ae50985b36db9839dfd8393de3a8d44b812b4b8b52cf6                                           # [osx and x86_64]
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-aarch64-apple-darwin       # [arm64]
+    sha256: 3b6185ff3741da4f15bd382f2f3c9cefb342e8add90a29be6050e20e4b3e66d2                                           # [arm64]
 
 build:
   number: 0
   binary_relocation: False
+  run_exports:
+  - {{ pin_compatible(name, max_pin='x') }}
 
 requirements:
 
@@ -24,17 +26,18 @@ test:
     - nextclade --help
 
 about:
-  home: https://github.com/nextstrain/nextclade/tree/master/packages/nextclade_cli
+  home: https://github.com/nextstrain/nextclade
   license: MIT
   license_family: MIT
-  summary: "SARS-CoV-2 genome clade assignment, mutation calling, and sequence quality checks"
-  doc_url: https://docs.nextstrain.org/projects/nextclade/en/stable/user/nextclade-cli.html#
-  dev_url: https://github.com/nextstrain/nextclade 
+  summary: "Viral genome alignment, mutation calling, clade assignment, quality checks and phylogenetic placement"
+  doc_url: https://docs.nextstrain.org/projects/nextclade/en/stable/
+  dev_url: https://github.com/nextstrain/nextclade
 
 extra:
   recipe-maintainers:
     - pvanheus
-    - corneliusroemer 
+    - corneliusroemer
+    - ivan-aksamentov
   skip-lints:
     # repackaged binary
     - should_be_noarch_generic

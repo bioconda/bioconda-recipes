@@ -1,5 +1,7 @@
 #!/bin/bash
-python -m pip install . --ignore-installed --no-deps -vv
+mkdir -p $PREFIX/bin
+mv kaptive.py $PREFIX/bin
+chmod +x $PREFIX/bin/kaptive.py
 mkdir -p $PREFIX/opt/kaptive_reference_database
 mkdir -p $PREFIX/opt/kaptive_sample_data
 

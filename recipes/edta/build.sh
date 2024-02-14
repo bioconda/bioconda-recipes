@@ -16,5 +16,16 @@ END
 
 chmod a+x ${PREFIX}/bin/EDTA.pl
 for name in ${EDTA_OTHER_PROGRAMS} ; do
-  ln -s ${PREFIX}/bin/EDTA.pl ${PREFIX}/bin/$(basename $name)
+  ln -sf ${PREFIX}/bin/EDTA.pl ${PREFIX}/bin/$(basename $name)
 done
+
+ln -sf ${EDTA_DIR}/development/EDTA_processI.pl ${PREFIX}/bin/
+
+LTR_FINDER_PARALLEL_DIR=${EDTA_DIR}/bin/LTR_FINDER_parallel
+
+cat <<END >>${PREFIX}/bin/LTR_FINDER_parallel
+#!/bin/bash
+perl ${LTR_FINDER_PARALLEL_DIR}/LTR_FINDER_parallel \$@
+END
+
+chmod a+x ${PREFIX}/bin/LTR_FINDER_parallel

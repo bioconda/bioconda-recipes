@@ -1,17 +1,19 @@
-{% set version = "3.0.1" %}
-{% set sha256 = "a5822f0bfab1e8c8ff237cc4e1bbce8285f838e8d2f3e28873e6011ca4c233c2" %}
+{% set version = "3.4" %}
+{% set sha256 = "f4fa9788cd3492a612fafaeb8ea1748c549a644fa4e45b98e6cb19f316793467" %}
 
 package:
   name: hmftools-sage
   version: '{{ version }}'
 
 source:
-  url: https://github.com/hartwigmedical/hmftools/releases/download/sage-v3.0/sage_v3.0.1.jar
+  url: https://github.com/hartwigmedical/hmftools/releases/download/sage-v{{ version }}/sage_v{{ version }}.jar
   sha256: '{{ sha256 }}'
 
 build:
   noarch: generic
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('hmftools-sage', max_pin="x") }}
 
 requirements:
   run:
@@ -27,10 +29,10 @@ requirements:
 
 test:
   commands:
-    - 'SAGE 2>&1 | grep -q "Sage version"'
+    - 'sage -version | grep Sage'
 
 about:
   home: https://github.com/hartwigmedical/hmftools/tree/master/sage
   license: GPL-3.0-only
   license_family: GPL
-  summary: SAGE is a somatic SNV, MNV and small INDEL caller optimised to call narrow regions of the genome with high prior chance of a variant with very high sensitivity.
+  summary: SAGE is a somatic SNV, MNV and small INDEL caller optimised 100x tumor / 40x normal coverage, but has a flexible set of filters that can be adapted to lower or higher depth coverage.

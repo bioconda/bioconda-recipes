@@ -1,6 +1,6 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "MatrixGenerics" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,23 +8,25 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: d93e3d75d314733da20c179cd6bb41bd
+  md5: 18c3a5cc993ca5c2ad48dde1813105e6
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-matrixgenerics", max_pin="x.x") }}'
   noarch: generic
-# Suggests: sparseMatrixStats, DelayedMatrixStats, SummarizedExperiment, testthat (>= 2.1.0)
+# Suggests: Matrix, sparseMatrixStats, SparseArray, DelayedArray, DelayedMatrixStats, SummarizedExperiment, testthat (>= 2.1.0)
 requirements:
   host:
     - r-base
-    - 'r-matrixstats >=0.60.1'
+    - 'r-matrixstats >=1.0.0'
   run:
     - r-base
-    - 'r-matrixstats >=0.60.1'
+    - 'r-matrixstats >=1.0.0'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

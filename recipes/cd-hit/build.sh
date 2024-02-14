@@ -17,9 +17,9 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   sed -i.bak 's/CCFLAGS = -fopenmp/CCFLAGS += -fopenmp/g' Makefile
   LDFLAGS="$LDFLAGS -stdlib=libc++"
   
-  make CC=$CXX openmp=no
+  make CC=$CXX openmp=no MAX_SEQ=1000000
 else
-  make CC=$GXX
+  make CC=$GXX MAX_SEQ=1000000
 fi
 
 mkdir -p $PREFIX/bin 

@@ -1,6 +1,6 @@
 {% set name = "gget" %}
-{% set version = "0.1.1" %}
-{% set sha256 = "53b15ffeb95c7936fd5d3e5548dc60aaec75670514ebfa694a3223ab8e5a1957" %}
+{% set version = "0.28.4" %}
+{% set sha256 = "bab45530f72b189b233a72be20421176fbc4ca7ed407e36eec758086c2cda7c6" %}
 
 package:
   name: "{{ name|lower }}"
@@ -13,22 +13,24 @@ source:
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed -vv .
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation -vvv .
+  run_exports:
+    - {{ pin_subpackage('gget', max_pin="x.x") }}
 
 requirements:
-  build:
-    - python >=3.6
-    - pip
-    - setuptools
   host:
     - python >=3.6
-    - numpy >=1.17.2
-    - pandas >=1.0.0
+    - pip
+    - bs4
     - requests >=2.22.0
+    - pandas >=1.0.0
     - ipython
+    - mysql-connector-python >=8.0.5,<=8.0.29
     - matplotlib-base
-    - mysql-connector-python >=8.0.5
-    - beautifulsoup4 >=4.10.0
+    - tqdm
+    - ipywidgets
+    - lxml
+    - numpy >=1.17.2
   run:
     - python >=3.6
     - numpy >=1.17.2
@@ -36,17 +38,29 @@ requirements:
     - requests >=2.22.0
     - ipython
     - matplotlib-base
-    - mysql-connector-python >=8.0.5
+    - mysql-connector-python >=8.0.5,<=8.0.29
     - beautifulsoup4 >=4.10.0
+    - ipywidgets
+    - tqdm
+    - py3Dmol >=1.8.0
+    - curl
+    - lxml
+    - openmm ==7.5.1
+    - openai
 
 test:
   commands:
-    - {{ name }} --help
+    - {{ name }} ref --help
+    - {{ name }} ref -d -w pep ciona_intestinalis
+    - {{ name }} alphafold MAAHKGAEHHHKAAEHHEQAAKHHHAAAEHHEKGEHEQAAHHADTAYAHHKHAEEHAAQAAKHDAEHHAP
+  imports:
+    - gget
 
 about:
   home: "https://github.com/pachterlab/gget"
   license: BSD-2-Clause
   license_family: BSD
+  license_file: LICENSE
   summary: "gget enables efficient querying of genomic databases"
   description: |
     gget enables efficient querying of genomic databases, such as Ensembl, UniProt, 
@@ -56,3 +70,4 @@ about:
 extra:
   recipe-maintainers:
     - nh13
+    - lauraluebbert

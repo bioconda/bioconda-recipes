@@ -1,5 +1,5 @@
 {% set name = "toulligqc" %}
-{% set version = "2.2.1" %}
+{% set version = "2.5" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,14 +7,16 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 4eec70f774c11733b7ff57173361177799db700d8ed5e10d747c720525ac085e
+  sha256: 8c8f5406e8f8dbfaa260ef446b08875a337ef3201dbaad6c8a4e0fa5cbf42f85
 
 build:
   number: 0
   entry_points:
     - toulligqc=toulligqc.toulligqc:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('toulligqc', max_pin="x") }}
 
 requirements:
   host:
@@ -27,9 +29,11 @@ requirements:
     - scipy >=1.3.3
     - pandas >=0.25.3
     - plotly >=4.5.0
+    - pysam
     - python >=3.8
     - seaborn >=0.10
     - scikit-learn >=0.22
+    - tqdm
 
 test:
   imports:

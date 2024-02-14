@@ -1,4 +1,4 @@
-{% set version = "1.3.0" %}
+{% set version = "1.3.9" %}
 
 package:
   name: ntlink
@@ -6,25 +6,21 @@ package:
 
 source:
   url: https://github.com/bcgsc/ntLink/releases/download/v{{ version }}/ntLink-{{ version }}.tar.gz 
-  sha256: b43f2a018e80d14aab984678bb46e7a45021bd03ec3035e24251bb88f3a5294a 
+  sha256: 3a6fe7ca9c7a0226cf51b7e55804e235ac2b959e82a30f9bce55b9caea5bb03b 
 
 build:
-  number: 0
-  skip: True  # [py<38]
+  number: 3
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('ntlink', max_pin="x") }}
 
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
     - make
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
-    - cmake
-    - meson
-    - ninja
     - python
     - pip
     - zlib
+    - btllib
   run:
     - python
     - zlib
@@ -32,11 +28,13 @@ requirements:
     - numpy
     - python-igraph
     - abyss >=2.3.0
+    - btllib
 
 
 test:
   commands:
     - ntLink help
+    - ntLink_rounds help
 
 about:
   home: https://github.com/bcgsc/ntLink
