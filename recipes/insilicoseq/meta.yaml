@@ -13,8 +13,10 @@ build:
   noarch: python
   entry_points:
     - iss = iss.app:main
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv
   number: 0
+  run_exports:
+    - {{ pin_subpackage('insilicoseq', max_pin="x") }}
 
 requirements:
   host:
@@ -33,6 +35,8 @@ requirements:
 test:
   imports:
     - iss
+  commands:
+    - iss --help
   files:
     - bogus-genome.fasta.gz
     - checksums.md5
@@ -41,8 +45,10 @@ about:
   home: https://github.com/HadrienG/InSilicoSeq
   license: MIT
   license_family: MIT
+  license_file: LICENSE
   summary: A sequencing simulator.
   dev_url: https://github.com/HadrienG/InSilicoSeq
+  doc_url: https://insilicoseq.readthedocs.io/en/latest/
 
 extra:
   recipe-maintainers:
