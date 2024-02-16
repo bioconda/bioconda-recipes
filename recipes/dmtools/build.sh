@@ -1,10 +1,13 @@
 #!/bin/bash
 
-export C_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
+export INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-make CFLAGS="${CFLAGS} -fcommon"
 mkdir -p $PREFIX/bin
+
+make CC="${CC} ${LDFLAGS}" CFLAGS="${CFLAGS} -fcommon"
+
 cp dmtools $PREFIX/bin
 cp genome2cg $PREFIX/bin
 cp genomebinLen $PREFIX/bin
