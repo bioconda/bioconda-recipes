@@ -1,0 +1,44 @@
+{% set name = "centrifuger" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+source:
+  url: https://github.com/mourisl/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 4ce9a20d786a39ef26b1ef31851c180e0b1baae1efc2d9ad8442bec6203d04bb
+
+requirements:
+  build:
+    - zlib
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+  run:
+    - zlib
+    - perl
+    - wget
+    - tar
+    - python
+
+test:
+  commands:
+    - centrifuger -v | grep 'Centrifuger v'
+    - centrifuger-inspect 2>&1 | grep 'Required'
+
+
+about:
+  home: https://github.com/mourisl/centrifuger
+  license: MIT
+  summary: 'Lossless compression of microbial genomes for efficient and accurate metagenomic sequence classification.'
+
+extra:
+  identifiers:
+    - doi:10.1101/2023.11.15.567129

@@ -1,5 +1,5 @@
-{% set version = "0.4.0" %}
-{% set sha256 = "6062ece4701b6de964d1f25fc6e9e0d6b6525f3b04f9ca22d8b90191c7767928" %}
+{% set version = "0.5.0" %}
+{% set sha256 = "77ba116665fd00a945b65072b86b4c54f672b1b74912309709f580f7329b4adf" %}
 
 package:
   name: harpy
@@ -12,63 +12,50 @@ source:
 build:
   skip: True  # [osx]
   number: 0
+  missing_dso_whitelist:
+    - /lib64/libstdc++.so.6
+    - /lib64/libc.so.6
   run_exports:
     - {{ pin_subpackage('harpy', max_pin="x.x") }}
 
 requirements:
   host:
-    - python =3.9
+    - python =3.10
+    - pip
   run:
-    - bcftools
-    - bioconductor-complexheatmap
-    - bwa
-    - fastp
-    - fastqc
-    - hapcut2
-    - icu
-    - libzlib
-    - leviathan
-    - llvm-openmp 
+    - bcftools =1.19
     - multiqc
-    - naibr-plus
-    - python =3.9
-    - pysam
-    - r-base
-    - r-circlize
-    - r-dplyr
-    - r-dt
-    - r-ggplot2
-    - r-ggridges
-    - r-knitr
-    - r-magrittr
-    - r-plotly
-    - r-rmarkdown
-    - r-stitch
-    - r-tidyr
-    - r-viridislite
+    - pandas
+    - pysam =0.22
+    - python =3.10
     - rich-click
-    - snakemake >=7
-    - sambamba
+    - snakemake-minimal
     - samtools
     - seqtk
     - tabix
-    - xz
 
 test:
   commands:
     - "snakemake --version"
-    - "R --version"
     - "harpy --version"
+
 about:
   home: "https://github.com/pdimens/harpy/"
-  license: MIT
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
   summary: "Process raw haplotagging data, from raw sequences to phased haplotypes."
+  description: |
+    Harpy is a command-line tool to easily process haplotag or 10x linked-read data. It uses
+    Snakemake under the hood to execute different workflows (quality control, trimming, 
+    alignment, variant calling, phasing, etc.), but the user is rarely, if ever, exposed
+    to Snakemake directly. With an emphasis on user-friendliness, parallelization, transparency,
+    and reproducibility, Harpy aims to quickly handle data processing so that you can focus more
+    on analyzing your data. 
   doc_url: https://pdimens.github.io/harpy/
   dev_url: https://github.com/pdimens/harpy
 
 extra:
-  container:
-    extended-base: True
   recipe-maintainers:
     - pdimens
   skip-lints:
