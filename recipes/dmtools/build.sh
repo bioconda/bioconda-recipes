@@ -6,7 +6,7 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 mkdir -p $PREFIX/bin
 
-make CC="${CC} ${LDFLAGS}" CFLAGS="${CFLAGS} -fcommon"
+make CC="${CC} ${LDFLAGS}" CPP="${GXX} ${LDFLAGS}" CFLAGS="${CFLAGS} -fcommon"
 
 cp dmtools $PREFIX/bin
 cp genome2cg $PREFIX/bin
