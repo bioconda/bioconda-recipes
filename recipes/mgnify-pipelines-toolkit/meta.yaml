@@ -1,0 +1,67 @@
+{% set name = "mgnify-pipelines-toolkit" %}
+{% set version = "0.0.8" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/mgnify_pipelines_toolkit-{{ version }}.tar.gz
+  sha256: 8f3cd625758b90c0c37fa26434369f124e340be1b655c56d8f455016cd3d35a0
+
+build:
+  entry_points:
+    - get_subunits = mgnify_pipelines_toolkit.analysis.shared.get_subunits:main
+    - get_subunits_coords = mgnify_pipelines_toolkit.analysis.shared.get_subunits_coords:main
+    - mapseq2biom = mgnify_pipelines_toolkit.analysis.shared.mapseq2biom:main
+    - are_there_primers = mgnify_pipelines_toolkit.analysis.amplicon.are_there_primers:main
+    - assess_inflection_point_mcp = mgnify_pipelines_toolkit.analysis.amplicon.assess_inflection_point_mcp:main
+    - assess_mcp_proportions = mgnify_pipelines_toolkit.analysis.amplicon.assess_mcp_proportions:main
+    - classify_var_regions = mgnify_pipelines_toolkit.analysis.amplicon.classify_var_regions:main
+    - find_mcp_inflection_points = mgnify_pipelines_toolkit.analysis.amplicon.find_mcp_inflection_points:main
+    - make_asv_count_table = mgnify_pipelines_toolkit.analysis.amplicon.make_asv_count_table:main
+    - remove_ambiguous_reads = mgnify_pipelines_toolkit.analysis.amplicon.remove_ambiguous_reads:main
+    - rev_comp_se_primers = mgnify_pipelines_toolkit.analysis.amplicon.rev_comp_se_primers:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.9
+    - setuptools >=61.0
+    - pip
+  run:
+    - python >=3.9
+    - biopython ==1.82
+    - numpy ==1.26.0
+    - pandas ==2.0.2
+    - regex ==2023.12.25
+
+test:
+  imports:
+    - mgnify_pipelines_toolkit
+  commands:
+    - pip check
+    - get_subunits --help
+    - get_subunits_coords --help
+    - mapseq2biom --help
+    - are_there_primers --help
+    - assess_inflection_point_mcp --help
+    - assess_mcp_proportions --help
+    - classify_var_regions --help
+    - find_mcp_inflection_points --help
+    - make_asv_count_table --help
+    - remove_ambiguous_reads --help
+    - rev_comp_se_primers --help
+  requires:
+    - pip
+
+about:
+  summary: Collection of scripts and tools for MGnify pipelines
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - chrisAta
