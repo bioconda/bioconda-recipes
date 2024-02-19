@@ -1,0 +1,53 @@
+{% set name = "MACS3" %}
+{% set version = "3.0.0" %}
+{% set sha256 = "57271e060c0f2c41f3aa6de44245c6db7fd0b1945ebfba115a6841628f75770e" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/MACS3-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True  # [py < 37]
+  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps --no-cache-dir -vvv
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - cython <3.0.0
+    - pip
+    - cykhash >=2.0.0
+    - hmmlearn >=0.3.0
+    - numpy >=1.19.0
+    - wheel
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+    - r-base
+
+test:
+  imports:
+    - MACS3
+  commands:
+    - macs3 -h
+about:
+  dev_url: https://github.com/macs3-project/MACS/
+  doc_url: https://macs3-project.github.io/MACS/
+  home: https://pypi.org/project/MACS3/
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: Model Based Analysis for ChIP-Seq data
+extra:
+  copy_test_source_files: true
+  final: true
+  identifiers:
+    - biotools:macs
+    - doi:10.1186/gb-2008-9-9-r137
+    - usegalaxy-eu:peakcalling_macs
