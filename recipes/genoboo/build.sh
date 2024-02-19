@@ -16,7 +16,7 @@ chmod a+x meteor.sh
 sed -i.bak 's|PREFIX=|#PREFIX=|' meteor.sh
 ./meteor.sh
 
-sed -i 's/"preinstall".*/"preinstall":"",/g' package.json
+sed -i.bak 's/"preinstall".*/"preinstall":"",/g' package.json
 
 npm install --unsafe-perm
 
