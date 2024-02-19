@@ -10,8 +10,10 @@ source:
 
 build:
   number: 0
-  script: python -m pip install --no-deps --ignore-installed .
-  skip: True  # [py < 36 or py > 39]
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv
+  skip: True  # [py < 310 or py > 311]
+  run_exports:
+    - {{ pin_subpackage('forgi', max_pin="x") }}
 
 requirements:
   build:
@@ -19,16 +21,16 @@ requirements:
   host:
     - python
     - pip
-    - numpy
+    - numpy >=1.10.0
     - cython
   run:
     - python
-    - numpy >=1.10.0
+    - {{ pin_compatible('numpy') }}
     - scipy >=0.19.1
     - future
     - networkx >=2.0
     - biopython >=1.70
-    - logging_exceptions >=0.1.6
+    - logging_exceptions >=0.1.9
     - beautifulsoup4 >=4.6
     - matplotlib-base >=2
     - pandas >=0.20
@@ -40,6 +42,8 @@ test:
 
 about:
   home: https://viennarna.github.io/forgi/
-  license: GPL 3.0
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: LICENSE
   summary: RNA Graph Library
+  dev_url: https://github.com/ViennaRNA/forgi
