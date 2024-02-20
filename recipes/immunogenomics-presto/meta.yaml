@@ -1,0 +1,53 @@
+{% set version = '1.0.0' %}
+{% set name = "presto" %}
+package:
+  name: immunogenomics-{{ name }}
+  version: {{ version|replace("-", "_") }}
+source:
+  git_url: https://github.com/immunogenomics/presto
+  git_sha: 31dc97fed5e2e7fc323ae4af62f72181cc51d9a3
+build:
+  script: $R CMD INSTALL --build .
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: knitr, rmarkdown, testthat, Seurat, SingleCellExperiment, SummarizedExperiment, broom, BiocStyle, DESeq2
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - r-base
+    - r-matrix
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-data.table
+    - r-dplyr
+    - r-purrr
+    - r-rlang
+    - r-tibble
+    - r-tidyr
+  run:
+    - r-base
+    - r-matrix
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-data.table
+    - r-dplyr
+    - r-purrr
+    - r-rlang
+    - r-tibble
+    - r-tidyr
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: https://github.com/immunogenomics/presto
+  license: GPL-3
+  summary: Scalable implementation of the Wilcoxon rank sum test and auROC statistic. Interfaces
+    to dense and sparse matrices, as well as genomics analysis frameworks Seurat and
+    SingleCellExperiment.
+  license_family: GPL3
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
