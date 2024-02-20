@@ -1,6 +1,6 @@
 #!/bin/sh
 
-python -m pip install . --no-deps --ignore-installed -vv
+$PYTHON -m pip install . --no-deps --ignore-installed -vv
 
 cd src/rrikindp
 
