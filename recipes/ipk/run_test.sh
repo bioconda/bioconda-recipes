@@ -36,8 +36,10 @@ if [ $? -ne 0 ]; then
 fi
 
 # E
-# reference files were copied via meta.yaml instructions
-ipk.py build -r reference.fasta -t tree.rooted.newick -m GTR -k 7 --omega 2.0 -u 1.0 -b raxml-ng -w tests_output
+# reference files were copied via meta.yaml instructions, keeping git directory structure
+RALIGN=tests/data/neotrop/reference.fasta
+RTREE=tests/data/neotrop/tree.rooted.newick
+ipk.py build -r $RALIGN -t $RTREE -m GTR -k 7 --omega 2.0 -u 1.0 -b raxml-ng -w tests_output
 if [ $? -ne 0 ]; then
   echo "test E:failed"
   PASS=false
@@ -53,4 +55,7 @@ if [ $? -ne 0 ]; then
   PASS=false
 fi
 
-exit 0
+if [ "$PASS" = false ]; then
+  echo "some test failed"
+  exit 1
+fi
