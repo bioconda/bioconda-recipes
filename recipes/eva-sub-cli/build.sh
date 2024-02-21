@@ -16,7 +16,7 @@ cd ${EVA_SUB_CLI}
 
 # Install python dependencies not yet on conda
 curl -Lo eva-pyutils.zip https://github.com/EBIvariation/eva-common-pyutils/archive/refs/tags/v${EVA_PYUTILS_VERSION}.zip \
-    && unzip eva-pyutils.zip && rm eva-pyutils.zip \
+    && unzip -q eva-pyutils.zip && rm eva-pyutils.zip \
     && cd eva-common-pyutils-${EVA_PYUTILS_VERSION} \
     && $PYTHON setup.py install \
     && cd ..
@@ -24,7 +24,7 @@ curl -Lo eva-pyutils.zip https://github.com/EBIvariation/eva-common-pyutils/arch
 # Install biovalidator from source
 # Includes some workarounds that can be cleaned up once a new version is released
 curl -Lo biovalidator.zip https://github.com/elixir-europe/biovalidator/archive/refs/tags/v${BIOVALIDATOR_VERSION}.zip \
-    && unzip biovalidator.zip && rm biovalidator.zip \
+    && unzip -q biovalidator.zip && rm biovalidator.zip \
     && cd biovalidator-${BIOVALIDATOR_VERSION} \
     && bash -c "cat <(echo '#!/usr/bin/env node') <(cat src/biovalidator.js) > tmp" \
     && mv tmp src/biovalidator.js \
