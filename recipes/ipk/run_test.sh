@@ -43,7 +43,7 @@ fi
 echo "test E"
 RALIGN=tests/data/neotrop/reference.fasta
 RTREE=tests/data/neotrop/tree.rooted.newick
-ipk.py build -r $RALIGN -t $RTREE -m GTR -k 7 --omega 2.0 -u 1.0 -b $which(raxml-ng) -w tests_output
+ipk.py build -r $RALIGN -t $RTREE -m GTR -k 7 --omega 2.0 -u 1.0 -b $(which raxml-ng) -w tests_output
 if [ $? -ne 0 ]; then
   echo "failed"
   PASS=false
