@@ -2,6 +2,10 @@
 {% set version = "0.5.0" %}
 {% set sha256 = "7d073583d0f9891a30ec6865fee33818b526086a1f0de04028409496b279004c" %}
 
+# test related paths
+{% set test_refalign = "tests/data/neotrop/reference.fasta" }
+{% set test_reftree = "tests/data/neotrop/tree.rooted.newick" }
+
 package:
   name: {{ name|lower }}
   version: {{ version }}
@@ -28,8 +32,8 @@ requirements:
     - boost-cpp >=1.67
     - zlib
   run:
-    - boost-cpp >=1.67
-    - zlib
+    #- boost-cpp >=1.67
+    #- zlib
     - raxml-ng
     - phyml
     - python
@@ -41,6 +45,7 @@ test:
     - test -f $(which ipk-aa)
     #- ipk-dna | grep "the option '--ar-binary' is required but missing"
     - ipk.py build --help
+    - ipk.py build -r {{refalign}} -t {{reftree}} -m GTR -k 7 --omega 2.0 -u 1.0 -b raxml-ng -w test_output && test -f test_output/DB_k7_o2.0.rps
 
 about:
   home: https://github.com/phylo42/ipk
