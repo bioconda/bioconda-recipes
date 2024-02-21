@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-pwd
 mkdir -p tests_output
-ls
-ls tests
 
 PASS=true
 
@@ -49,7 +46,6 @@ if [ $? -ne 0 ]; then
   PASS=false
 fi
 
-ls
 ls tests_output
 
 # F
