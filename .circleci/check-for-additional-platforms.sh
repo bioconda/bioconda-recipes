@@ -12,8 +12,8 @@ job_name=$2
 yq_platform=$(uname)
 yq_arch=$(uname -m)
 [[ $yq_arch = "aarch64" ]] && yq_arch="arm64"
-sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_${yq_platform}_${yq_arch} -O yq
-sudo chmod +x ./yq
+wget https://github.com/mikefarah/yq/releases/latest/download/yq_${yq_platform}_${yq_arch} -q -O yq
+chmod +x ./yq
 
 
 # Find recipes changed from this merge
