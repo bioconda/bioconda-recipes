@@ -11,7 +11,11 @@ source:
 
 build:
   number: 1
-  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation"
+  script: 
+    - "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation"
+    - echo "Running setup script..."
+    - set -x
+    - python -c "from biodigest import setup; setup.main(setup_type='api')"
   noarch: python
   run_exports:
     - {{ pin_subpackage('biodigest', max_pin="x.x") }}
@@ -41,11 +45,6 @@ test:
     - biodigest.evaluation.d_utils
     - biodigest.evaluation.mappers
 
-
-script:
-  - echo "Running setup script..."
-  - set -x
-  - python -c "from biodigest import setup; setup.main(setup_type='api')"
 
 about:
   home: "http://pypi.python.org/pypi/biodigest/"
