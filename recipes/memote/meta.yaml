@@ -1,0 +1,77 @@
+{% set name = "memote" %}
+{% set version = "0.17.0" %}
+{% set sha256 = "b61b222c6fe7719f0f916f01a5c68679567bad8884ed36eb634311ddbc565f19" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  entry_points:
+    - memote = memote.suite.cli.runner:cli
+  script:
+    - {{ PYTHON }} -m pip install --no-deps -vv .
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("memote", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9,<=3.11
+    - setuptools >=40.6.0
+    - versioneer-518
+    - wheel
+    - versioneer
+    - pip
+  run:
+    - click
+    - click-configfile
+    - click-log
+    - cobra >=0.28
+    - cookiecutter
+    - depinfo >=2.2
+    - future
+    - git
+    - gitpython
+    - importlib_resources
+    - jinja2
+    - jsonschema
+    - numpy
+    - numpydoc
+    - optlang >=1.8
+    - pandas
+    - pandera
+    - pygithub <2
+    - pylru
+    - pytest
+    - python >=3.9,<=3.11
+    - requests
+    - ruamel.yaml
+    - six
+    - sqlalchemy
+    - sympy
+
+test:
+  imports:
+    - memote
+  commands:
+   - memote --help
+   - pip check
+  requires:
+    - pip
+
+about:
+  home: https://memote.readthedocs.io/
+  summary: the genome-scale metabolic model test suite
+  license: Apache-2.0
+  license_file: LICENSE
+
+
+extra:
+  recipe-maintainers:
+    - Midnighter
