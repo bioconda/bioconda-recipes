@@ -4,7 +4,7 @@ PASS=true
 
 # A
 echo "test A"
-test -f $(which ipk-dna)
+command -v ipk-dna
 if [ $? -ne 0  ]; then
   echo "failed"
   PASS=false
@@ -12,13 +12,14 @@ fi
 
 # B
 echo "test B"
-test -f $(which ipk-aa)
+command -v ipk-aa
 if [ $? -ne 0 ]; then
   echo "failed"
   PASS=false
 fi
 
 # C
+echo "test C"
 ipk-dna 2>&1 | grep "the option '--ar-binary' is required"
 if [ $? -ne 0 ]; then
   echo "failed"
@@ -32,11 +33,6 @@ if [ $? -ne 0 ]; then
   echo "failed"
   PASS=false
 fi
-
-echo "files?"
-pwd
-ls -l tests/data/neotrop/reference.fasta
-ls -l tests/data/neotrop/tree.rooted.newick
 
 # E
 # test files cannot be retrieved via meta.yaml (field test:source)
@@ -60,13 +56,12 @@ echo $PASS
 
 # F
 echo "test F"
-test -f tests_output/DB_k7_o2.0.rps
-if [ $? -ne 0 ]; then
+if [ ! -s tests_output/DB_k7_o2.0.rps ]; then
   echo "failed"
   PASS=false
 fi
 
 if [ "$PASS" = false ]; then
-  echo "some test failed"
+  echo "At least 1 test failed !"
   exit 1
 fi
