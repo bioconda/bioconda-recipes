@@ -26,3 +26,12 @@ chmod +x $PREFIX/bin/ipk-aa
 chmod +x $PREFIX/bin/ipk-dna
 chmod +x $PREFIX/bin/ipk-aa-pos
 chmod +x $PREFIX/bin/ipk.py
+=======
+#! /bin/bash
+
+#compile
+cd $SRC_DIR/
+pwd
+cmake -DHASH_MAP=USE_TSL_ROBIN_MAP -DCMAKE_CXX_FLAGS="-O3" -DCMAKE_INSTALL_PREFIX=${PREFIX} ${SRC_DIR}
+make -j${CPU_COUNT} ${VERBOSE_CM} 
+make install -j${CPU_COUNT}
