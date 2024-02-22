@@ -26,8 +26,6 @@ chmod +x $PREFIX/bin/ipk-aa
 chmod +x $PREFIX/bin/ipk-dna
 chmod +x $PREFIX/bin/ipk-aa-pos
 chmod +x $PREFIX/bin/ipk.py
-=======
-#! /bin/bash
 
 #compile
 cd $SRC_DIR/
