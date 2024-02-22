@@ -19,11 +19,11 @@ if [ $? -ne 0 ]; then
 fi
 
 # C
-#echo $(ipk-dna) | grep "the option '--ar-binary' is required"
-#if [ $? -eq 0 ]; then
-#  echo "test C:failed"
-#  PASS=false
-#fi
+ipk-dna 2>&1 | grep "the option '--ar-binary' is required"
+if [ $? -ne 0 ]; then
+  echo "failed"
+  PASS=false
+fi
 
 # D
 echo "test D"
@@ -39,32 +39,34 @@ ls -l tests/data/neotrop/reference.fasta
 ls -l tests/data/neotrop/tree.rooted.newick
 
 # E
-# reference files were copied via meta.yaml instructions, keeping git directory structure
+# test files cannot be retrieved via meta.yaml (field test:source)
+# because git-lfs is not available in the github tarball release
+# we need to download them manually
 echo "test E"
-RALIGN=tests/data/neotrop/reference.fasta
-RTREE=tests/data/neotrop/tree.rooted.newick
+
+wget -O reference.fasta https://github.com/phylo42/IPK/raw/main/tests/data/neotrop/reference.fasta 
+wget -O tree.rooted.newick https://github.com/phylo42/IPK/raw/main/tests/data/neotrop/tree.rooted.newick
+test -s reference.fasta
+test -s tree.rooted.newick
 mkdir -p tests_output
-ipk.py build -r $RALIGN -t $RTREE -m GTR -k 7 --omega 2.0 -u 1.0 -b $(which raxml-ng) -w tests_output
+ipk.py build -r reference.fasta -t tree.rooted.newick -m GTR -k 7 --omega 2.0 -u 1.0 -b $(which raxml-ng) -w tests_output
+if [ $? -ne 0 ]; then
+  echo "failed"
+  PASS=false
+fi
+
 ls tests_output
-
-#if [ $? -ne 0 ]; then
-#  echo "failed"
-#  PASS=false
-#fi
-
-#cat log
-#ls tests_output
-#echo $PASS
+echo $PASS
 
 # F
-#echo "test F"
-#test -f tests_output/DB_k7_o2.0.rps
-#if [ $? -ne 0 ]; then
-#  echo "failed"
-#  PASS=false
-#fi
+echo "test F"
+test -f tests_output/DB_k7_o2.0.rps
+if [ $? -ne 0 ]; then
+  echo "failed"
+  PASS=false
+fi
 
-#if [ "$PASS" = false ]; then
-#  echo "some test failed"
-#  exit 1
-#fi
+if [ "$PASS" = false ]; then
+  echo "some test failed"
+  exit 1
+fi
