@@ -33,6 +33,11 @@ if [ $? -ne 0 ]; then
   PASS=false
 fi
 
+echo "files?"
+pwd
+ls -l tests/data/neotrop/reference.fasta
+ls -l tests/data/neotrop/tree.rooted.newick
+
 # E
 # reference files were copied via meta.yaml instructions, keeping git directory structure
 echo "test E"
