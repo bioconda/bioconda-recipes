@@ -1,0 +1,40 @@
+{% set name = "rebar" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  - url: https://github.com/phac-nml/rebar/releases/download/v{{ version }}/{{ name }}-x86_64-unknown-linux-musl  # [linux64]
+    sha256: 7b5648b353552662c66aab8347657dfebe92ee2d83e4a4f0b7a9526c58502b28                                      # [linux64]
+  - url: https://github.com/phac-nml/rebar/releases/download/v{{ version }}/{{ name }}-x86_64-apple-darwin        # [osx and x86_64]
+    sha256: b3577c5ea7965133fc5b934a9c4f9b5e1ba41603d5f9ce47fff79d6ee11adaa7                                      # [osx and x86_64]
+
+build:
+  binary_relocation: False
+  number: 0
+  # If the software version starts with a 0 (e.g. 0.3.2) semantic versioning allows breaking changes in minor releases.
+  # https://bioconda.github.io/contributor/linting.html#missing-run-exports
+  run_exports:
+      - {{ pin_compatible(name, max_pin="x.x") }}      
+
+test:
+  commands:
+    - rebar --help
+
+about:
+  home: https://github.com/phac-nml/rebar
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "Genomic recombination detection using mutational barcodes."
+
+extra:
+  maintainers:
+    - ktmeaton
+  recipe-maintainers:
+    - ktmeaton
+  skip-lints:
+    - should_be_noarch_generic
+

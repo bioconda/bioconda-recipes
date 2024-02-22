@@ -1,0 +1,47 @@
+{% set name = "snakemake-executor-plugin-slurm" %}
+{% set version = "0.3.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snakemake_executor_plugin_slurm-{{ version }}.tar.gz
+  sha256: 3c45605515f73020d437872e6003de661ddd17a09e2e60780b2d19a5668f0eb5
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.11,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.11.0,<4.0.0
+    - snakemake-interface-common >=1.13.0,<2.0.0
+    - snakemake-interface-executor-plugins >=8.2.0,<9.0.0
+    - snakemake-executor-plugin-slurm-jobstep >=0.1.10,<0.2.0
+    - throttler >=1.2.2,<2.0.0
+
+test:
+  imports:
+    - snakemake_executor_plugin_slurm
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/snakemake/snakemake-executor-plugin-slurm
+  summary: A Snakemake executor plugin for submitting jobs to a SLURM cluster.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - koesterlab
