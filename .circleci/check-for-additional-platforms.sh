@@ -12,8 +12,8 @@ job_name=$2
 yq_platform=$(uname)
 yq_arch=$(uname -m)
 [[ $yq_arch = "aarch64" ]] && yq_arch="arm64"
-wget https://github.com/mikefarah/yq/releases/latest/download/yq_${yq_platform}_${yq_arch} -O /usr/local/bin/yq
-chmod +x /usr/local/bin/yq
+sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_${yq_platform}_${yq_arch} -O yq
+sudo chmod +x ./yq
 
 
 # Find recipes changed from this merge
@@ -27,7 +27,7 @@ for file in $files; do
     additional_platforms=$(cat $file \
     | sed -E 's/(.*)\{%(.*)%\}(.*)/# \1\2\3/g' \
     | sed -E 's/(.*)\{\{(.*)\}\}(.*)/\1\2\3/g' \
-    | yq '.extra.additional-platforms[]')
+    | ./yq '.extra.additional-platforms[]')
     # Check if any additional platforms match this job
     for additional_platform in $additional_platforms; do
     if [ "${CIRCLE_JOB}" = "${job_name}-${additional_platform}" ]
