@@ -14,16 +14,11 @@ mkdir -p $PREFIX/lib
 
 cmake -B build -DBUILD_SHARED_LIBS=ON --install-prefix=$PREFIX
 cmake --build build --target all
-cmake --install $PREFIX
+cmake --install build
 
-ls $PREFIX
-ls $PREFIX/bin
+ls bin
+ls lib
 
-#cp build/ipk/ipk-aa $PREFIX/bin
-#cp build/ipk/ipk-aa-pos $PREFIX/bin
-#cp build/ipk/ipk-dna $PREFIX/bin
-
-#chmod +x $PREFIX/bin/ipk-aa
-#chmod +x $PREFIX/bin/ipk-dna
-#chmod +x $PREFIX/bin/ipk-aa-pos
-#chmod +x $PREFIX/bin/ipk.py
+chmod +x $PREFIX/bin/epik-aa
+chmod +x $PREFIX/bin/epik-dna
+chmod +x $PREFIX/bin/epik.py
