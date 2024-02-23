@@ -1,6 +1,6 @@
-{% set version = "1.24.0" %}
+{% set version = "1.28.0" %}
 {% set name = "fgsea" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,19 +8,21 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 37e277c0b49d3a5f3a63eb4b67198f6f
+  md5: 53b8ab8a13390a0920bc13eeba3aa1b8
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: testthat, knitr, rmarkdown, reactome.db, AnnotationDbi, parallel, org.Mm.eg.db, limma, GEOquery, msigdbr, aggregation
+  run_exports: '{{ pin_subpackage("bioconductor-fgsea", max_pin="x.x") }}'
+# Suggests: testthat, knitr, rmarkdown, reactome.db, AnnotationDbi, parallel, org.Mm.eg.db, limma, GEOquery, msigdbr, aggregation, Seurat
 # SystemRequirements: C++11
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
+    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
     - r-base
     - r-bh
     - r-cowplot
@@ -29,10 +31,11 @@ requirements:
     - 'r-ggplot2 >=2.2.0'
     - r-matrix
     - r-rcpp
+    - r-scales
     - libblas
     - liblapack
   run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
+    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
     - r-base
     - r-bh
     - r-cowplot
@@ -41,6 +44,7 @@ requirements:
     - 'r-ggplot2 >=2.2.0'
     - r-matrix
     - r-rcpp
+    - r-scales
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}

@@ -1,46 +1,47 @@
 {% set name = "protmapper" %}
-{% set version = "0.0.21" %}
+{% set version = "0.0.29" %}
+{% set sha256 = "d0d10198fb000401d03ba6c271869970caf8e1c8b46db686d2eed153fa8c2257" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "86e939659e3cecbde324250b66b0025d147de819c352a6c0e99d1eae526a33c8"
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/protmapper-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
   noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps -vvv
   entry_points:
     - protmapper = protmapper.cli:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  run_exports:
+    - {{ pin_subpackage('protmapper', max_pin="x") }}
 
 requirements:
   host:
+    - python >=3
     - pip
-    - python >=3
   run:
-    - boto3
     - python >=3
-    - rdflib
     - requests
+    - boto3
+    - pystow >=0.1.0
+    - rdflib
 
 test:
   imports:
     - protmapper
-    - protmapper.rest_api
   commands:
     - protmapper --help
-  requires:
-    - nose
 
 about:
-  home: "https://github.com/indralab/protmapper"
-  license: "BSD"
-  license_family: "BSD"
-  license_file: ""
-  summary: "Map protein sites to human reference sequence."
+  home: https://github.com/indralab/protmapper
+  summary: Map protein sites to human reference sequence.
+  license: BSD-2-Clause
+  license_family: BSD
+  license_file: LICENSE
   doc_url: "https://protmapper.readthedocs.io"
   dev_url: "https://github.com/indralab/protmapper"
 

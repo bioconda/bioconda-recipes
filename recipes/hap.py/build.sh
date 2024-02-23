@@ -1,5 +1,4 @@
 #!/bin/bash 
-
 set -x
 mkdir -p build
 cd build
@@ -18,9 +17,10 @@ mkdir -p $SRC_DIR/build/include/htslib
 mkdir -p $SRC_DIR/build/bin
 touch $SRC_DIR/build/bin/samtools
 touch $SRC_DIR/build/bin/bcftools
+touch $SRC_DIR/build/bin/rtg
 
 cmake ../ -DCMAKE_INSTALL_PREFIX=$PREFIX \
   -DBOOST_ROOT="${PREFIX}" -DBoost_NO_SYSTEM_PATHS=ON -DCMAKE_BUILD_TYPE=Release \
-  -DHTSLIB_ROOT="${PREFIX}"
+  -DHTSLIB_ROOT="${PREFIX}" -DCMAKE_PREFIX_PATH="${PREFIX}"
 make
 make install
