@@ -20,8 +20,17 @@ fi
 
 # C
 echo "test C"
+epik-dna 2&>1 | grep "Evolutionary Placement with Informative K-mers"
+if [ $? -ne 0 ]; then
+  echo "failed"
+  PASS=false
+fi
+
+#D
+echo "test D"
 epik.py place --help
 if [ $? -ne 0 ]; then
   echo "failed"
   PASS=false
 fi
+
