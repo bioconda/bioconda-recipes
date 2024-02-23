@@ -98,7 +98,15 @@ jobs: # a basic unit of work in a run
 
       - run:
           name: Check for Additional Platforms
-          command: ./.circleci/check-for-additional-platforms.sh "${CIRCLE_SHA1}~1 ${CIRCLE_SHA1}" "build_and_upload"
+          command: |
+            # Install jq and use GitHub API to check the name of the branch of the incoming PR
+            jq_platform=$(uname)
+            jq_arch=$(uname -m)
+            [[ $jq_arch = "aarch64" ]] && jq_arch="arm64"
+            https://github.com/jqlang/jq/releases/download/jq-1.7/jq-$(jq_platform)-$(jq_arch) -O jq && chmod +x jq
+            SOURCE_BRANCH=$( curl -s https://api.github.com/repos/bioconda/bioconda-recipes/pulls/45985 | ./jq -r '.head.ref' )
+
+            ./.circleci/check-for-additional-platforms.sh "${CIRCLE_BRANCH} ${SOURCE_BRANCH}" "build_and_upload"
 
       - run:
           name: Fetch bioconda install script
