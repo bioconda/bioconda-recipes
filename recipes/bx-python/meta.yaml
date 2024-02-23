@@ -1,37 +1,37 @@
 {% set name = "bx-python" %}
-{% set version = "0.11.0" %}
-{% set sha256 = "2cf8872572817e0d36145cc2711889df5729987ffed4e51280da1e3c2ccb9429" %}
+{% set version = "0.9.0" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "fe545c44d2ea74b239d41e9090618aaf6a859d1a1f64b4a21b133cb602dfdb49" %}
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/bx-python-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
 
 build:
   number: 0
-  skip: True  # [py < 37]
-  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps -vvv
-  run_exports:
-    - {{ pin_subpackage(name|lower, max_pin='x') }}
+  skip: True  # [py<37]
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir -vvv ."
 
 requirements:
   build:
-    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
   host:
-    - python
     - cython
-    - pip
-    - setuptools
-    - wheel
-    - python-lzo
     - numpy
+    - pip
+    - python
+    - python-lzo
+    - setuptools
     - zlib
   run:
+    - numpy
     - python
-    - {{ pin_compatible('numpy') }}
+    - python-lzo
 
 test:
   imports:
@@ -56,14 +56,12 @@ test:
     - bx_extras
 
 about:
-  home: 'https://github.com/bxlab/bx-python'
-  summary: 'Tools for manipulating biological data, particularly multiple sequence alignments'
+  home: https://github.com/bxlab/bx-python
   license: MIT
   license_family: MIT
-  license_file: LICENSE
-  doc_url: 'https://buildmedia.readthedocs.org/media/pdf/bx-python/latest/bx-python.pdf'
-  dev_url: 'https://pypi.org/project/bx-python/'
+  license_file: 'LICENSE'
+  summary: Tools for manipulating biological data, particularly multiple sequence alignments
 
 extra:
-  identifiers:
-    - biotools:bx-python
+  container:
+    extended-base: true

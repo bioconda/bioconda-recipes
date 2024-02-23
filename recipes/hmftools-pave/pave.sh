@@ -1,5 +1,5 @@
 #!/bin/bash
-# hmftools PAVE executable shell script
+# hmftools pave executable shell script
 # https://github.com/hartwigmedical/hmftools/tree/master/pave
 set -eu -o pipefail
 

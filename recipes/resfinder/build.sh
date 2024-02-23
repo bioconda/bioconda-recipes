@@ -1,6 +1,10 @@
 #!/bin/bash
 
-${PYTHON} -m pip install . -vvv --no-deps --no-build-isolation
+mkdir -p ${PREFIX}/bin
+
+cp *.py ${PREFIX}/bin
+chmod +x ${PREFIX}/bin/*.py
+cp -r cge/ ${PREFIX}/bin/
 
 # create folder for database download
 target=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}

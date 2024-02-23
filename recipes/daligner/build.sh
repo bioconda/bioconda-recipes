@@ -7,14 +7,16 @@ make
 binaries="\
  daligner  \
  HPC.daligner  \
- LA2ONE  \
- LAcat  \
- LAcheck  \
- LAmerge  \
- LAshow  \
  LAsort  \
+ LAmerge  \
  LAsplit  \
- ONE2LA  
+ LAcat  \
+ LAshow  \
+ LAdump  \
+ LAcheck  \
+ LAa2b  \
+ LAb2a  \
+ dumpLA
 "
 
 for i in $binaries; do cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done

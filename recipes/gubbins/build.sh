@@ -8,4 +8,4 @@ autoreconf -i
 make
 make install
 cd python
-$PYTHON -m pip install . --report record.txt
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt

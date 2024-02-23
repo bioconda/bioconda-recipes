@@ -1,8 +1,6 @@
 #!/bin/sh
 
-export CXXFLAGS="-I${PREFIX}/include/bamtools ${CXXFLAGS}"
-export LDFLAGS="-L${PREFIX}/lib/ -lbamtools ${LDFLAGS}"
-./configure --enable-tests --prefix="${PREFIX}"
+./configure --enable-tests --prefix="${PREFIX}" BAMTOOLS_CFLAGS="-I${PREFIX}/include/" BAMTOOLS_LIBS="-L${PREFIX}/lib/ -lbamtools"
 make
 make install
 make check

@@ -1,5 +1,5 @@
 echo " === Start build"
-${PYTHON} -m pip install . --no-deps --no-build-isolation -vvv
+${PYTHON} -m pip install . -vv
 echo "Pip install done - now adjusting the library paths"
 for CHANGE in "activate" "deactivate"
 do

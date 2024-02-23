@@ -1,5 +1,5 @@
 {% set name = "humann" %}
-{% set version = "3.8" %}
+{% set version = "3.6.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 67586cbf4c31d434cae79b3f6c03d01b10fcdc9abe032e273837921a96992946
+  sha256: 624e7b549bde1acb6c8539570a5165e7ef40d750d14a36c5c820212701c6e17c
 
 build:
   number: 0
@@ -36,9 +36,7 @@ build:
     - humann_associate = humann.tools.humann_associate:main
     - humann_barplot = humann.tools.humann_barplot:main
     - humann_benchmark = humann.tools.humann_benchmark:main
-  # We cannot use pip anymore since the --install-option flag that is advised by humann has been deprecated
-  # in pip.
-  script: "{{ PYTHON }} setup.py install --bypass-dependencies-install"
+  script: "{{ PYTHON }} -m pip install . -vv --install-option='--bypass-dependencies-install'"
 
 requirements:
   host:
@@ -50,6 +48,7 @@ requirements:
     - diamond >=0.9.36
     - glpk
     - bowtie2 >2.1
+    #- minpath
 
 test:
   imports:
@@ -69,6 +68,7 @@ test:
     - humann_rename_table --help
     - humann_renorm_table --help
     - humann_regroup_table --help
+    #- humann_infer_taxonomy --help
     - humann_humann1_kegg --help
     - humann_rna_dna_norm --help
     - humann_strain_profiler --help

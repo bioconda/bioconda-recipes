@@ -1,5 +1,5 @@
 {% set name = "CellProfiler" %}
-{% set version = "4.2.6" %}
+{% set version = "4.2.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,26 +7,25 @@ package:
 
 source:
   url: https://github.com/CellProfiler/{{ name  }}/archive/v{{ version }}.tar.gz
-  sha256: "fae14f97efc69f09d9074e53fcebbf50e1eafbf4ebaeb3a3de8699f44c9bccd9"
+  sha256: "4b315864ac492a8042a626b130c89d86d1fe891902f4316f1f7a91a468e29d2a"
 
 build:
-  number: 0
-  skip:  True  # [ py < 39 ]
+  number: 2
   script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed . -vv"
-  run_exports:
-    - {{ pin_subpackage('cellprofiler', max_pin='x') }}
+  #skip: True  # this is using for some reason up to 3GB of memory and crashes CCI, build and push locally
+  #skip: True  # [win or osx or py3k]
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - python
+    - python  3.8  ## pymzq 18 not available for any later python version
     - pip
     - cython
     - python-javabridge
     - pytest
   run:
-    - python
+    - python  3.8
     - centrosome
     - docutils
     - cellprofiler-core {{ version }}
@@ -39,7 +38,7 @@ requirements:
     - sentry-sdk
     - matplotlib-base
     - mysqlclient
-    - numpy
+    - numpy  >=1.18.2,<=1.20.0
     - prokaryote
     - python-bioformats
     - requests

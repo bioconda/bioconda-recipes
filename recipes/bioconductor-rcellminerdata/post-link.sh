@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "rcellminerdata-2.24.0"
+installBiocDataPackage.sh "rcellminerdata-2.20.0"

@@ -1,52 +1,33 @@
-{% set version = "1.9.0" %}
-{% set sha256 = "6f816aebe00b7b6bb78a250ad45f5aa2aa8eff0f9719736f05b0597dd3b1f9a1" %}
-
 package:
   name: pasta
-  version: '{{version}}'
+  version: "1.7.8"
 
 source:
-  - url: https://github.com/smirarab/pasta/archive/v{{version}}.tar.gz
-    sha256: '{{sha256}}'
-    patches:
-      - fix_tooldir.patch  # ensure PASTA "knows" where to find third party tools
-      - mpstart.patch  # issue in OSX py38 (not in Linux nor OSX py37): RuntimeError: An attempt has been made to start a new process before the current process has finished its bootstrapping phase.
+  url: https://github.com/smirarab/pasta/archive/43076b8.tar.gz
+  sha256: 5eecec1710790df642696d1a52ecf723e5f02dd94e971427117344342a7c2a42
 
 build:
-  number: 0
-  run_exports:
-    - {{ pin_subpackage('pasta', max_pin="x") }}
+  number: 4
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+
   host:
     - python
     - setuptools
-    - dendropy <=4.5.1
+    - dendropy >=4.1.0
     - wget
     - openjdk
     - pcre
     - pymongo >=3.3.0
-    - clustalw
-    - fasttree
-    - raxml
-    - muscle <4  # later versions expects other cmd argument names
-    - mafft
-    - hmmer ==3.1b2
-    - prank
 
   run:
     - python
-    - dendropy <=4.5.1  # later version do not expose _convert_node_to_root_polytomy
+    - dendropy >=4.1.0
     - openjdk
     - pcre
     - pymongo >=3.3.0
-    - clustalw
-    - fasttree
-    - raxml
-    - muscle <4  # later versions expects other cmd argument names
-    - mafft
-    - hmmer ==3.1b2
-    - prank
 
 test:
   imports:
@@ -56,22 +37,12 @@ test:
     - clustalw2 -help | grep OPTIONS
     - hmmalign -h | grep HMMER
     - hmmbuild -h | grep HMMER
-    - muscle -version | grep -i MUSCLE
+    - muscle -version | grep MUSCLE
     - prank -help | grep prank
-    - raxml -h | grep -i raxml
-    - raxmlp -h | grep -i raxml
-    - export PASTA_LOGGING_LEVEL=DEBUG; export PASTA_LOGGING_FORMAT=RICH; run_pasta.py -i $PREFIX/share/pasta/data/small.fasta
-    # we need support from upstream to fix this special execution for OSX specific - export PASTA_LOGGING_LEVEL=DEBUG; export PASTA_LOGGING_FORMAT=RICH; run_pasta.py -i $PREFIX/share/pasta/data/small.fasta --tree-estimator raxml
+    - raxml -h | grep raxmlHPC
+    - raxmlp -h | grep raxmlHPC
 
 about:
   home: https://github.com/smirarab/pasta
-  license: GPL-3.0-or-later
-  license_family: GPL3
-  license_file: LICENSE
+  license: GNU General Public License v3 or later (GPLv3+)
   summary: 'An implementation of the PASTA (Practical Alignment using Sate and TrAnsitivity) algorithm'
-
-extra:
-  skip-lints:
-    # necessary, because pasta is NOT platform independent:
-    # during build time, platform specific binaries for mafft/raxml/muscle/... are copied into the PREFIX/bin dir
-    - should_be_noarch_generic

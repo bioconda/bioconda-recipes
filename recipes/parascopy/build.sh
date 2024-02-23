@@ -1,4 +1,3 @@
-#!/bin/bash
 
 rm -df freebayes
 git clone --recursive https://github.com/tprodanov/freebayes.git
@@ -11,4 +10,5 @@ ninja -v
 cp freebayes "${PREFIX}/bin/_parascopy_freebayes"
 cd ../../
 
-$PYTHON -m pip install . --no-build-isolation --no-deps -vvv
+$PYTHON -m pip install . --ignore-install --no-deps -vv
+

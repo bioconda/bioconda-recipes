@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "ctcf-0.99.11"
+installBiocDataPackage.sh "ctcf-0.99.9"

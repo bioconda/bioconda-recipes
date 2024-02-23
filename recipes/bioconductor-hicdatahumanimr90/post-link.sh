@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "hicdatahumanimr90-1.22.0"
+installBiocDataPackage.sh "hicdatahumanimr90-1.17.0"

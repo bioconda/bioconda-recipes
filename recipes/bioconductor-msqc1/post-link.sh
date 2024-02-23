@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "msqc1-1.30.0"
+installBiocDataPackage.sh "msqc1-1.25.0"

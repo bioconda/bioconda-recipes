@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # Install methylpy
-${PYTHON} -m pip install . --no-deps --no-build-isolation -vvv
+python -m pip install . --no-deps --ignore-installed -vv
 
 # Install RMS
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
+export CPATH=${PREFIX}/include
 cd methylpy
-${CXX} -O3 -L${PREFIX}/lib -lgsl -lgslcblas -o run_rms_tests.out rms.cpp
+$CXX -O3 -L${PREFIX}/lib -lgsl -lgslcblas -o run_rms_tests.out rms.cpp
 # run_rms_tests.out needs to be copied to the directory where methylpy is installed
-cp run_rms_tests.out ${SP_DIR}/methylpy/
+cp run_rms_tests.out ${PREFIX}/lib/python*/site-packages/methylpy/
 cd ..

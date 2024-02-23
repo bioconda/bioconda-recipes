@@ -1,0 +1,121 @@
+diff --git a/src/inc/common.mk b/src/inc/common.mk
+index 1c6c0e93d9..0c3abb2ac7 100644
+--- a/src/inc/common.mk
++++ b/src/inc/common.mk
+@@ -34,36 +34,41 @@ else
+   IS_HGWDEV = no
+ endif
+ 
+-FREETYPECFLAGS = $(shell freetype-config --cflags  2> /dev/null)
+-
+-# we use our static library on dev
+-ifeq (${IS_HGWDEV},no)
+-  ifeq (${FREETYPELIBS},)
+-    ifeq ($(UNAME_S),Darwin)
+-      ifneq ($(wildcard /usr/local/Cellar/freetype/2.11.0/lib/libfreetype.a),)
+-        ifneq ($(wildcard /usr/local/opt/bzip2/lib/libbz2.a),)
+-          FREETYPELIBS = /usr/local/Cellar/freetype/2.11.0/lib/libfreetype.a /usr/local/opt/bzip2/lib/libbz2.a
++# Skip freetype for conda build; not needed for utils, and the Mac build environment has
++# freetype installed but we don't want to use the system libraries because they can be
++# for a newer OSX version than the conda build target, and can be incompatible.
++ifneq (${CONDA_BUILD},1)
++  FREETYPECFLAGS = $(shell freetype-config --cflags  2> /dev/null)
++
++  # we use our static library on dev
++  ifeq (${IS_HGWDEV},no)
++    ifeq (${FREETYPELIBS},)
++      ifeq ($(UNAME_S),Darwin)
++        ifneq ($(wildcard /usr/local/Cellar/freetype/2.11.0/lib/libfreetype.a),)
++          ifneq ($(wildcard /usr/local/opt/bzip2/lib/libbz2.a),)
++            FREETYPELIBS = /usr/local/Cellar/freetype/2.11.0/lib/libfreetype.a /usr/local/opt/bzip2/lib/libbz2.a
++          else
++            FREETYPELIBS = /usr/local/Cellar/freetype/2.11.0/lib/libfreetype.a -lbz2
++          endif
+         else
+-          FREETYPELIBS = /usr/local/Cellar/freetype/2.11.0/lib/libfreetype.a -lbz2
+-        endif
+-      else
+-        ifneq ($(wildcard /opt/local/lib/libfreetype.a),)
+-          FREETYPELIBS=/opt/local/lib/libfreetype.a /opt/local/lib/libbz2.a /opt/local/lib/libbrotlidec-static.a /opt/local/lib/libbrotlienc-static.a /opt/local/lib/libbrotlicommon-static.a
++          ifneq ($(wildcard /opt/local/lib/libfreetype.a),)
++            FREETYPELIBS=/opt/local/lib/libfreetype.a /opt/local/lib/libbz2.a /opt/local/lib/libbrotlidec-static.a /opt/local/lib/libbrotlienc-static.a /opt/local/lib/libbrotlicommon-static.a
++          endif
+         endif
+       endif
+-    endif
+-    ifeq (${FREETYPELIBS},)
+-      FREETYPELIBS =  $(shell freetype-config --libs 2> /dev/null )
++      ifeq (${FREETYPELIBS},)
++        FREETYPELIBS =  $(shell freetype-config --libs 2> /dev/null )
++      endif
+     endif
+   endif
+-endif
+ 
+-ifneq (${FREETYPECFLAGS},)
+-FREETYPECFLAGS += -DUSE_FREETYPE
+-endif
++  ifneq (${FREETYPECFLAGS},)
++  FREETYPECFLAGS += -DUSE_FREETYPE
++  endif
+ 
+-HG_INC += ${FREETYPECFLAGS}
+-L += ${FREETYPELIBS}
++  HG_INC += ${FREETYPECFLAGS}
++  L += ${FREETYPELIBS}
++endif
+ 
+ ifeq (${IS_HGWDEV},yes)
+   FULLWARN = yes
+@@ -138,28 +143,32 @@ ifeq (${IS_HGWDEV},yes)
+    L+=/hive/groups/browser/freetype/freetype-2.10.0/objs/.libs/libfreetype.a -lbz2
+    L+=/usr/lib64/libssl.a /usr/lib64/libcrypto.a -lkrb5 -lk5crypto -ldl
+ else
+-   ifneq ($(wildcard /opt/local/lib/libssl.a),)
+-       L+=/opt/local/lib/libssl.a
++   ifeq (${CONDA_BUILD},1)
++       L+=${PREFIX}/lib/libssl.a ${PREFIX}/lib/libcrypto.a
+    else
+-     ifneq ($(wildcard /usr/lib/x86_64-linux-gnu/libssl.a),)
+-	L+=/usr/lib/x86_64-linux-gnu/libssl.a
++     ifneq ($(wildcard /opt/local/lib/libssl.a),)
++         L+=/opt/local/lib/libssl.a
+      else
+-        ifneq ($(wildcard /usr/local/opt/openssl/lib/libssl.a),)
+-           L+=/usr/local/opt/openssl/lib/libssl.a
+-        else
+-           L+=-lssl
+-        endif
++       ifneq ($(wildcard /usr/lib/x86_64-linux-gnu/libssl.a),)
++	  L+=/usr/lib/x86_64-linux-gnu/libssl.a
++       else
++          ifneq ($(wildcard /usr/local/opt/openssl/lib/libssl.a),)
++             L+=/usr/local/opt/openssl/lib/libssl.a
++          else
++             L+=-lssl
++          endif
++       endif
+      endif
+-   endif
+-   ifneq ($(wildcard /opt/local/lib/libcrypto.a),)
+-       L+=/opt/local/lib/libcrypto.a
+-   else
+-        ifneq ($(wildcard /usr/local/opt/openssl/lib/libcrypto.a),)
+-           L+=/usr/local/opt/openssl/lib/libcrypto.a
+-        else
+-           L+=-lcrypto
+-        endif
+-   endif
++     ifneq ($(wildcard /opt/local/lib/libcrypto.a),)
++         L+=/opt/local/lib/libcrypto.a
++     else
++          ifneq ($(wildcard /usr/local/opt/openssl/lib/libcrypto.a),)
++             L+=/usr/local/opt/openssl/lib/libcrypto.a
++          else
++             L+=-lcrypto
++          endif
++     endif
++  endif
+ endif
+ 
+ # autodetect where libm is installed

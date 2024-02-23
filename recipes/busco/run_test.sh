@@ -14,4 +14,3 @@ optimize_augustus.pl
 hmmsearch -h
 run_sepp.py -h
 metaeuk -h
-miniprot --version

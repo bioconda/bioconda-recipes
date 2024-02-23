@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "copdsexualdimorphism.data-1.38.0"
+installBiocDataPackage.sh "copdsexualdimorphism.data-1.33.0"

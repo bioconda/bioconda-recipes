@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "bcellviper-1.38.0"
+installBiocDataPackage.sh "bcellviper-1.34.0"

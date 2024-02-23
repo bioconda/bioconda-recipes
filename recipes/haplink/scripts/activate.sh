@@ -1,3 +1,0 @@
-#!/bin/sh
-export HAPLINK_JULIA_DEPOT_PATH_BACKUP="${JULIA_DEPOT_PATH:-}"
-export JULIA_DEPOT_PATH="${CONDA_PREFIX}/share/haplink/depot:${JULIA_DEPOT_PATH}"

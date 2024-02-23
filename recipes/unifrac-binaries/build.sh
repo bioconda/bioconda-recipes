@@ -22,35 +22,18 @@ else
           clang -v
 fi
 which h5c++
-
-
-if [[ "$(uname -s)" == "Linux" ]];
-then
-  # Temporary workaround
-  # g++ 10 does not support fancy 2D collapse
-  cat > skbio_gcc10.patch << EOF
-763c763
-< #pragma omp parallel for collapse(2) shared(mat) reduction(+:sum)
----
-> #pragma omp parallel for shared(mat) reduction(+:sum)
-EOF
-
-  patch src/skbio_alt.cpp skbio_gcc10.patch
-fi
-
-
 if [[ "$(uname -s)" == "Linux" ]];
 then
           # remove unused pieces to save space
           cat scripts/install_hpc_sdk.sh |sed 's/tar xpzf/tar --exclude hpcx --exclude openmpi4 --exclude 10.2 -xpzf/g' >my_install_hpc_sdk.sh
           chmod a+x my_install_hpc_sdk.sh
           ./my_install_hpc_sdk.sh
-          # install PGI but do not source it
-          # the makefile will do it automatically
+          source setup_nv_h5.sh
 fi
 
-# all == build (shlib,bins,tests) and install
-make all
+make api && \
+make main && \
+make install
 
 make test
 

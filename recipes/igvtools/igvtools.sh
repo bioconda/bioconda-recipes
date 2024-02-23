@@ -1,6 +1,5 @@
 #!/bin/bash
-
-# IGVtools executable shell script, adapted from VarScan shell script
+# igvtools executable shell script, adapted from VarScan shell script
 set -eu -o pipefail
 
 set -o pipefail

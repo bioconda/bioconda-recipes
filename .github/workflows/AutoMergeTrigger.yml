@@ -1,0 +1,27 @@
+name: AutoMergeTrigger
+
+on:
+  pull_request:
+    types:
+    - labeled
+  pull_request_review:
+    types:
+    - submitted
+    - dismissed
+
+jobs:
+  automerge-trigger:
+    runs-on: ubuntu-latest
+    if: >-
+      (
+        github.event_name == 'pull_request' &&
+        github.event.action == 'labeled' &&
+        github.event.label.name == 'automerge'
+      ) || (
+        github.event_name == 'pull_request_review'
+      )
+    # If the "automerge" label was added or a review was submitted/dismissed,
+    # this workflow successfully does nothing.
+    # The "AutoMerge" workflow is triggered afterwards to potentially merge.
+    steps:
+    - run: 'true'

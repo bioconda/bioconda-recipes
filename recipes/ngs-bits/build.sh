@@ -11,7 +11,7 @@ export PATH=$BUILD_PREFIX/bin/:$PATH
 #build (enable debug info by adding '-Wall -d')
 mkdir build
 cd build
-qmake CONFIG-=debug CONFIG+=release DEFINES+=QT_NO_DEBUG_OUTPUT QMAKE_CXX="$CXX" QMAKE_CC="$CC" QMAKE_CFLAGS="$CFLAGS" QMAKE_CXXFLAGS="$CXXFLAGS" QMAKE_LIBDIR+="$PREFIX/lib" QMAKE_RPATHLINKDIR+=${PREFIX}/lib/ ../src/tools.pro
+qmake CONFIG-=debug CONFIG+=release DEFINES+=QT_NO_DEBUG_OUTPUT QMAKE_CXX=${CXX} QMAKE_RPATHLINKDIR+=${PREFIX}/lib/ ../src/tools.pro
 make
 cd ..
 

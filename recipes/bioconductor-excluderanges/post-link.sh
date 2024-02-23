@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "excluderanges-0.99.8"
+installBiocDataPackage.sh "excluderanges-0.99.6"

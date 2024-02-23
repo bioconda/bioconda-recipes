@@ -1,5 +1,5 @@
 #!/bin/bash
-# hmftools Isofox executable shell script
+# hmftools isofox executable shell script
 # https://github.com/hartwigmedical/hmftools/tree/master/isofox
 set -eu -o pipefail
 

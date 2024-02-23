@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "highlyreplicatedrnaseq-1.14.0"
+installBiocDataPackage.sh "highlyreplicatedrnaseq-1.10.0"

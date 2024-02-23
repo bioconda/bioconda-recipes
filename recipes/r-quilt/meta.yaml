@@ -1,18 +1,17 @@
-{% set version = "1.0.5" %}
-{% set sha256 = "88f46a0c0f54260b8df9f150b0cf9bdedba6f9408bb7da36318055f2a9036266" %}
+{% set version = "1.0.3" %}
+{% set sha256 = "4ef44650be6d58f35c1d60c2a7d93912a628dfad6b9111a8c89c4512d4e6f3b3" %}
 
 package:
   name: r-quilt
   version: '{{ version }}'
 
 source:
-  - url: https://github.com/rwdavies/QUILT/archive/refs/tags/{{ version }}.tar.gz
-    sha256: '{{ sha256 }}'
+  url: https://github.com/rwdavies/quilt/releases/download/{{ version }}/QUILT_{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
 
 build:
-  number: 0
-  run_exports:
-        - {{ pin_subpackage('r-quilt', max_pin="1") }}
+  number: 2
+  script: '$R CMD INSTALL --build --install-tests .'
 
 requirements:
   build:
@@ -37,8 +36,7 @@ requirements:
     - r-rcpparmadillo >=0.8.600.0.0
     - r-data.table >=1.11.8
     - r-rrbgen >=0.0.6
-    - r-stitch >=1.6.6
-    - r-optparse    
+    - r-stitch >=1.6.6    
     - xz
     - gmp
     - mpfr
@@ -52,7 +50,7 @@ requirements:
 test:
   commands:
     - $R -e "library('QUILT');  testthat::test_package('QUILT', stop_on_failure = TRUE, stop_on_warning = TRUE, filter = 'acceptance-one', reporter = 'summary')"
-    - 'QUILT.R --help'
+
 about:
   home: https://github.com/rwdavies/quilt
   license: GPL-3.0-only

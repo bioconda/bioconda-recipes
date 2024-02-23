@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "ahlrbasedbs-1.7.0"
+installBiocDataPackage.sh "ahlrbasedbs-1.5.0"

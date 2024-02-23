@@ -1,5 +1,5 @@
-{% set version = "2.26.0" %}
-{% set sha256 = "36bba6f199f6f4abca4c5b0aa239692d6c4f2ea83c99ec123009ab1a30770de9" %}
+{% set version = "2.21.0" %}
+{% set sha256 = "649952c64453f666dedf7c63e408f68396fe6b739177013c33dbc48119b3b86f" %}
 
 package:
   name: solvebio
@@ -14,10 +14,7 @@ build:
   number: 0
   entry_points:
     - solvebio = solvebio.cli.main:main
-    - solvebio-recipes = recipes.sync_recipes:sync_recipes
-  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
-  run_exports:
-    - {{ pin_subpackage("solvebio", max_pin="x.x") }}
+  script: python -m pip install --no-deps --ignore-installed --no-cache-dir .
 
 requirements:
   host:
@@ -30,19 +27,19 @@ requirements:
     - pyprind
     - pycurl >=7.0.0
     - requests >=2.0.0
-    - dash-auth <2
-    - dash-html-components
-    - dash-core-components
-    - flask
-    - flask-seasurf
+      # For dash, if enabled along with dash-auth
+      # - flask
+      # - flask-seasurf
 
 test:
   imports:
     - solvebio
     - solvebio.cli
     - solvebio.contrib
-    - solvebio.contrib.dash
-    - solvebio.contrib.dash.tests
+      # Requires dash-auth, not yet packaged in conda
+      #- solvebio.contrib.dash
+      #- solvebio.contrib.dash.tests
+    - solvebio.contrib.vcf_parser
     - solvebio.resource
     - solvebio.test
     - solvebio.utils
@@ -55,4 +52,3 @@ about:
   license_family: MIT
   license_file: LICENSE
   summary: The SolveBio Python client
-  doc_url: https://docs.solvebio.com/

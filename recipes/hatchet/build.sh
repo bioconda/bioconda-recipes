@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Compile Gurobi
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -20,5 +18,6 @@ else
     cp $GUROBI_HOME/linux64/lib/libgurobi90.so $PREFIX/lib
 fi
 
-export CXXFLAGS="-O3 -pthread -I${PREFIX}/include ${LDFLAGS}"
-$PYTHON -m pip install . --no-build-isolation --no-deps -vvv
+export CXXFLAGS=-pthread
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+

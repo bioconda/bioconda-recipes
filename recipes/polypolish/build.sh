@@ -6,4 +6,6 @@ export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="${BUILD_PREFIX}/.cargo"
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
-cargo install --verbose --path . --root ${PREFIX}
+cargo install --verbose --path . --root $PREFIX
+# Copy python scripts into bin dir
+cp scripts/*.{py,pxd} $PREFIX/bin

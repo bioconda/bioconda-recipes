@@ -1,7 +1,9 @@
 #!/bin/bash
 
-make -C src BUILD_DIR="$(pwd)" \
-	TARGET_DIR="${PREFIX}" \
-	CXX="${CXX}" \
-	CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include" \
-	LDFLAGS="${LDFLAGS} -fopenmp -L${PREFIX}/lib" -j"${CPU_COUNT}"
+make -C src \
+  BUILD_DIR="$( pwd )/build" \
+  TARGET_DIR="${PREFIX}" \
+  CC="${CC}" \
+  CXX="${CXX}"
+
+rm "${PREFIX}/lib/libmeryl.a"

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "maqcsubset-1.40.0"
+installBiocDataPackage.sh "maqcsubset-1.36.0"

@@ -6,7 +6,6 @@ GSL_LDFLAGS="$(gsl-config --libs)"
 GSL_CFLAGS="$(gsl-config --cflags)"
 export GSL_LDFLAGS
 export GSL_CFLAGS
-export LD_LIBRARY_PATH=${PREFIX}/lib
 
 make
 
