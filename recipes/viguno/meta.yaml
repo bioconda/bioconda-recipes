@@ -1,0 +1,43 @@
+{% set version = "0.2.1" %}
+{% set sha256 = "00da4730a4dd63b05eeb8e7ae0b58ba829e7145cc41f0f9194470376f367b937" %}
+
+package:
+  name: viguno
+  version: {{ version }}
+
+build:
+  skip: True  # [osx]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("viguno", max_pin="x.x") }}
+
+source:
+  url: https://github.com/varfish-org/viguno/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cmake
+    - protobuf
+    - make
+    - pkg-config
+    - rust >=1.64
+  host:
+    - clangdev
+    - openssl
+    - sqlite
+    - zlib
+  run:
+    - sqlite
+
+test:
+  commands:
+    - viguno -h
+
+about:
+  home: https://github.com/bihealth/varfish-org
+  license: MIT
+  summary: Lookup OMIM genes and HPO terms and compute similarities

@@ -1,14 +1,15 @@
 {% set name = "smallgenomeutilities" %}
-{% set version = "0.3.9" %}
-{% set sha256 = "1c14a04b692397d0673fbde18f89aad442a466c343d242b71cdc629c812af4b6" %}
+{% set version = "0.4.0" %}
+{% set sha256 = "41e0f0fb99491674be27c0c300b7882ec14d035b09beaf9ec800594db50165a7" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
+  url: https://github.com/cbg-ethz/{{ name|lower }}/releases/download/{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
+  #url: https://github.com/cbg-ethz/{{ name|lower }}/archive/{{ version }}.tar.gz # NOTE Git LSF bandwitch can be limited on this url
   #url: https://pypi.io/packages/source/{{ name[0]|lower }}/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz
-  url: https://github.com/cbg-ethz/{{ name|lower }}/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
@@ -40,6 +41,7 @@ test:
     - smallgenomeutilities
 
   commands:
+    - test "$(frameshift_deletions_checks --version|tee >(cat 1>&2)|grep -oE '[0-9]+(\.[0-9a-z]+)*$')" == "{{ version }}"
     - aln2basecnt -h
     - convert_qr -h
     - convert_reference -h

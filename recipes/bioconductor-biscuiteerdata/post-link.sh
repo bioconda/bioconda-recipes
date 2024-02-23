@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "biscuiteerdata-1.12.0"
+installBiocDataPackage.sh "biscuiteerdata-1.16.0"

@@ -1,4 +1,4 @@
-{% set version = "1.14" %}
+{% set version = "1.20" %}
 
 package:
   name: multiqc
@@ -6,31 +6,40 @@ package:
 
 source:
   url: https://github.com/ewels/MultiQC/archive/v{{ version }}.tar.gz
-  sha256: dd2b6a9c903c9ba30cf22d78952055f256ce3fe21355af3879bec25a181814cc
+  sha256: 46e01394ee4c213eee3c14fde01afcb0da3e87a29b09a119e5aaeabf2817313d
 
 build:
-  number: 0
+  number: 1
   entry_points:
     - multiqc=multiqc.__main__:run_multiqc
   noarch: python
   script: {{ PYTHON }} -m pip install . --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage('multiqc', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.8
     - pip
   run:
-    - python >=3.6
+    - python >=3.8
     - setuptools
     - click
     - coloredlogs
     - future >0.14.0
+    - humanize
     - jinja2 >=3.0.0
+    - importlib-metadata
     - lzstring
     - markdown
     - matplotlib-base >=2.1.1
+    - plotly >=5.18
+    - python-kaleido
+    - pillow >=10.2.0
     - networkx >=2.5.1
     - numpy
+    - packaging
+    - pyaml-env
     - pyyaml >=4
     - requests
     - rich >=10

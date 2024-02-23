@@ -1,0 +1,71 @@
+{% set version = "1.0.2" %}
+{% set name = "ggsc" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 4c0a1656e9943cadf436244c65b18242
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-ggsc", max_pin="x.x") }}'
+# Suggests: aplot, BiocParallel, forcats, ggforce, ggnewscale, igraph, knitr, ks, Matrix, prettydoc, rmarkdown, scran, scater, scuttle, shadowtext, sf, SeuratObject, SpatialExperiment, STexampleData, testthat (>= 3.0.0)
+requirements:
+  host:
+    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - r-base
+    - r-cli
+    - r-dplyr
+    - r-ggplot2
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-rcppparallel
+    - r-rlang
+    - r-scattermore
+    - r-seurat
+    - r-tibble
+    - r-tidydr
+    - r-tidyr
+    - r-yulab.utils
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - r-base
+    - r-cli
+    - r-dplyr
+    - r-ggplot2
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-rcppparallel
+    - r-rlang
+    - r-scattermore
+    - r-seurat
+    - r-tibble
+    - r-tidydr
+    - r-tidyr
+    - r-yulab.utils
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'Visualizing Single Cell Data'
+  description: 'Useful functions to visualize single cell and spatial data. It supports both ''SingleCellExperiment'' and ''Seurat'' objects. It also supports visualizing the data using grammar of graphics implemented in ''ggplot2''.'
+

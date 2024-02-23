@@ -1,5 +1,5 @@
 {% set name = "MetaCerberus" %}
-{% set version = "1.0" %}
+{% set version = "1.2.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,22 +7,22 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: dba98a71d0d13e63b66bcadc28408f5b3f6f76e87e6b9c90e03516ccc0c4cf2b
+  sha256: 1140732198b95c0d670fccb213c84464eb80bbe27127e4a85560de30c4873ac6
 
 build:
   number: 0
   noarch: python
   script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_compatible('MetaCerberus', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.8
     - setuptools
   run:
-    - gcc
-    - make
-    - python
+    - python >=3.8
     - fastqc
     - flash2
     - fastp
@@ -32,9 +32,9 @@ requirements:
     - hmmer
     - ray-default
     - ray-core
+    - ray-tune
     - ray-dashboard
     - pandas
-    - numpy
     - plotly
     - scikit-learn
     - dominate
@@ -42,9 +42,7 @@ requirements:
     - configargparse
     - metaomestats
     - psutil
-    - grpcio
-    - git
-    - gitpython
+    - grpcio =1.43
 
 
 test:
@@ -58,15 +56,12 @@ about:
   home: "https://github.com/raw-lab/metacerberus"
   license: BSD-3-Clause
   license_family: BSD
-  license_file: 
+  license_file: LICENSE.txt
   summary: "Versatile Functional Ontology Assignments for Metagenomes via Hidden Markov Model (HMM) searching with environmental focus of shotgun meta'omics data"
   doc_url: 
   dev_url: 
 
 extra:
-  skip-lints:
-    - compilers_must_be_in_build
-    - should_use_compilers
   recipe-maintainers:
     - decrevi
     - raw-lab

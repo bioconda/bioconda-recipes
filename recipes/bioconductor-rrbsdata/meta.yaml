@@ -1,6 +1,6 @@
-{% set version = "1.18.0" %}
+{% set version = "1.22.0" %}
 {% set name = "RRBSdata" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,24 +8,26 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: c4f7461c8314422810b456ff26ed0ff9
+  md5: 04bcf0f0348dc54984ca9506773820ec
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-rrbsdata", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-biseq >=1.38.0,<1.39.0'
+    - 'bioconductor-biseq >=1.42.0,<1.43.0'
     - r-base
   run:
-    - 'bioconductor-biseq >=1.38.0,<1.39.0'
+    - 'bioconductor-biseq >=1.42.0,<1.43.0'
     - r-base
     - curl
-    - bioconductor-data-packages>=20221109
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

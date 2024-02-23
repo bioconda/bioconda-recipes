@@ -1,37 +1,43 @@
 {% set name = "ribotish" %}
-{% set version = "0.2.5" %}
-{% set sha256 = "f52ab6629240c1807b3d72c0a75e3b56525a490caf3012db417d0ad5f281cf1e" %}
+{% set version = "0.2.7" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/zhpn1024/ribotish/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/ribotish-{{ version }}.tar.gz
+  sha256: 60ff55f0e7d32211b6c2cc473e427505c40d0000e310dd8e27569533d3d5c8e3
 
 build:
-  script: python -m pip install --no-deps --ignore-installed .
-  number: 1
+  number: 0
   noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('ribotish', max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3
     - pip
   run:
-    - python
+    - python >=3
     - numpy
-    - scipy
-    - pysam
-    - matplotlib-base
+    - pysam >=0.8.3
+    - matplotlib-base >=1.4.3
+    - scipy >=0.15.1
 
 test:
-  commands:
-    - ribotish -h
+  imports:
+    - ribotish
 
 about:
   home: https://github.com/zhpn1024/ribotish
-  license: GPL-3
-  license_file: LICENSE
   summary: Ribo TIS Hunter (Ribo-TISH) identifies translation activities using ribosome profiling data.
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+
+extra:
+  identifiers:
+    - doi:10.1038/s41467-017-01981-8

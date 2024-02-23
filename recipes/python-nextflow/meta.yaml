@@ -1,6 +1,6 @@
 {% set name="python-nextflow" %}
 {% set repo="nextflow.py" %}
-{% set version="0.5" %}
+{% set version="0.8" %}
 
 
 package:
@@ -10,28 +10,30 @@ package:
 build:
   noarch: python
   number: 0
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed -vvv .
+  run_exports:
+    - {{ pin_subpackage('python-nextflow', max_pin="x") }}
 
 source:
   url: https://github.com/goodwright/{{ repo }}/archive/v{{ version }}.tar.gz
-  sha256: 56d4038fdff9e08fe8ed322d316b498703c3f6d9efa934e7a63a1b732b08cdd7
+  sha256: b39b34adaf1ed487534c9bad0a322bf5b495ea6cc6a2160aa757ba17e70736a4
 
 requirements:
   host:
     - python >=3.6,<=3.10
     - pip
-    - setuptools
   run:
     - python >=3.6,<=3.10
     - nextflow
 
 test:
-  commands:
-    - python -c "import nextflow"
- 
+  imports:
+    - nextflow
+
 about:
   home: https://github.com/goodwright/{{ repo }}/
   license: 'MIT'
+  license_file: LICENSE
   summary: 'Python module to run Nextflow pipelines'
 
 extra:

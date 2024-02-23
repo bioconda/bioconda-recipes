@@ -1,0 +1,59 @@
+{% set name = "flams" %}
+{% set version = "1.1.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/flams-{{ version }}.tar.gz
+  sha256: b028cd8e131add01eb012ded0ae7c48bf361f36ae14b477a3d193fc0da4ea5fa
+
+build:
+  entry_points:
+    - FLAMS = flams.flams:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+  run:
+    - python >=3.10
+    - appdirs ==1.4.4
+    - biopython ==1.81
+    - blast ==2.13.0
+    - certifi ==2023.5.7
+    - charset-normalizer ==3.1.0
+    - idna ==3.4
+    - numpy ==1.24.3
+    - requests ==2.31.0
+    - urllib3 ==2.0.2
+    - pandas ==2.1.2
+    - python-dateutil ==2.8.2
+    - pytz ==2023.3.post1
+    - six ==1.16.0
+    - tzdata ==2023c
+
+test:
+  imports:
+    - flams
+  commands:
+    - FLAMS --help
+
+about:
+  home: https://github.com/hannelorelongin/FLAMS
+  summary: Find Lysine Acylation & other Modification Sites
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - 45261990
+  skip-lints:
+    - build_number_needs_reset

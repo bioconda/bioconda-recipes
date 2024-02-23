@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "dresscheck-0.36.0"
+installBiocDataPackage.sh "dresscheck-0.40.0"
