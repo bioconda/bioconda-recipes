@@ -16,8 +16,8 @@ cmake -B build -DBUILD_SHARED_LIBS=ON --install-prefix=$PREFIX
 cmake --build build --target all
 cmake --install build
 
-ls bin
-ls lib
+ls $PREFIX/bin
+ls $PREFIX/lib
 
 chmod +x $PREFIX/bin/epik-aa
 chmod +x $PREFIX/bin/epik-dna
