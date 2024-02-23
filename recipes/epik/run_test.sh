@@ -20,7 +20,7 @@ fi
 
 # C
 echo "test C"
-epik-dna 2&>1 | grep "Evolutionary Placement with Informative K-mers"
+epik-dna 2>&1 | grep "Evolutionary Placement with Informative K-mers"
 if [ $? -ne 0 ]; then
   echo "failed"
   PASS=false
