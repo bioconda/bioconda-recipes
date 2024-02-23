@@ -1,0 +1,204 @@
+{% set version = '5.0.1' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-seurat
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/Seurat_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/Seurat/Seurat_{{ version }}.tar.gz
+  sha256: 0713b434be5bf14fcea068fbfc632ba15bebdec1007f1f48effd0dbb95c5150d
+
+build:
+  merge_build_host: True  # [win]
+
+  number: 0
+  
+
+
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('m2w64_c') }}        # [win]
+    - {{ compiler('cxx') }}            # [not win]
+    - {{ compiler('m2w64_cxx') }}      # [win]
+    - {{ posix }}filesystem        # [win]
+    - {{ posix }}make
+    - {{ posix }}sed               # [win]
+    - {{ posix }}coreutils         # [win]
+    - {{ posix }}zip               # [win]
+
+  host:
+    - r-base>=4.1
+    - r-kernsmooth
+    - r-mass
+    - r-matrix >=1.5_0
+    - r-rann
+    - r-rcolorbrewer
+    - r-rocr
+    - r-rspectra
+    - r-rcpp >=1.0.7
+    - r-rcppannoy >=0.0.18
+    - r-rcppeigen
+    - r-rcpphnsw
+    - r-rcppprogress
+    - r-rtsne
+    - r-seuratobject >=5.0.0
+    - r-cluster
+    - r-cowplot
+    - r-fastdummies
+    - r-fitdistrplus
+    - r-future
+    - r-future.apply
+    - r-generics >=0.1.3
+    - r-ggplot2 >=3.3.0
+    - r-ggrepel
+    - r-ggridges
+    - r-httr
+    - r-ica
+    - r-igraph
+    - r-irlba
+    - r-jsonlite
+    - r-leiden >=0.3.1
+    - r-lifecycle
+    - r-lmtest
+    - r-matrixstats
+    - r-miniui
+    - r-patchwork
+    - r-pbapply
+    - r-plotly >=4.9.0
+    - r-png
+    - r-progressr
+    - r-purrr
+    - r-reticulate
+    - r-rlang
+    - r-scales
+    - r-scattermore >=1.2
+    - r-sctransform >=0.4.1
+    - r-shiny
+    - r-spatstat.explore
+    - r-spatstat.geom
+    - r-tibble
+    - r-uwot >=0.1.10
+    - r-argparse
+
+  run:
+    - r-base >=4.1
+    - {{native}}gcc-libs         # [win]
+    - r-kernsmooth
+    - r-mass
+    - r-matrix >=1.5_0
+    - r-rann
+    - r-rcolorbrewer
+    - r-rocr
+    - r-rspectra
+    - r-rcpp >=1.0.7
+    - r-rcppannoy >=0.0.18
+    - r-rcppeigen
+    - r-rcpphnsw
+    - r-rcppprogress
+    - r-rtsne
+    - r-seuratobject >=5.0.0
+    - r-cluster
+    - r-cowplot
+    - r-fastdummies
+    - r-fitdistrplus
+    - r-future
+    - r-future.apply
+    - r-generics >=0.1.3
+    - r-ggplot2 >=3.3.0
+    - r-ggrepel
+    - r-ggridges
+    - r-httr
+    - r-ica
+    - r-igraph
+    - r-irlba
+    - r-jsonlite
+    - r-leiden >=0.3.1
+    - r-lifecycle
+    - r-lmtest
+    - r-matrixstats
+    - r-miniui
+    - r-patchwork
+    - r-pbapply
+    - r-plotly >=4.9.0
+    - r-png
+    - r-progressr
+    - r-purrr
+    - r-reticulate
+    - r-rlang
+    - r-scales
+    - r-scattermore >=1.2
+    - r-sctransform >=0.4.1
+    - r-shiny
+    - r-spatstat.explore
+    - r-spatstat.geom
+    - r-tibble
+    - r-uwot >=0.1.10
+    - r-argparse
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('Seurat')"           # [not win]
+    - "\"%R%\" -e \"library('Seurat')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://satijalab.org/seurat, https://github.com/satijalab/seurat
+  license: MIT
+  summary: A toolkit for quality control, analysis, and exploration of single cell RNA sequencing
+    data. 'Seurat' aims to enable users to identify and interpret sources of heterogeneity
+    from single cell transcriptomic measurements, and to integrate diverse types of
+    single cell data. See Satija R, Farrell J, Gennert D, et al (2015) <doi:10.1038/nbt.3192>,
+    Macosko E, Basu A, Satija R, et al (2015) <doi:10.1016/j.cell.2015.05.002>, Stuart
+    T, Butler A, et al (2019) <doi:10.1016/j.cell.2019.05.031>, and Hao, Hao, et al
+    (2020) <doi:10.1101/2020.10.12.335331> for more details.
+  license_family: MIT
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/MIT'
+    - LICENSE
+
+# The original CRAN metadata for this package was:
+
+# Package: Seurat
+# Version: 5.0.1
+# Date: 2023-11-16
+# Title: Tools for Single Cell Genomics
+# Description: A toolkit for quality control, analysis, and exploration of single cell RNA sequencing data. 'Seurat' aims to enable users to identify and interpret sources of heterogeneity from single cell transcriptomic measurements, and to integrate diverse types of single cell data. See Satija R, Farrell J, Gennert D, et al (2015) <doi:10.1038/nbt.3192>, Macosko E, Basu A, Satija R, et al (2015) <doi:10.1016/j.cell.2015.05.002>, Stuart T, Butler A, et al (2019) <doi:10.1016/j.cell.2019.05.031>, and Hao, Hao, et al (2020) <doi:10.1101/2020.10.12.335331> for more details.
+# Authors@R: c( person(given = "Andrew", family = "Butler", email = "abutler@nygenome.org", role = "ctb", comment = c(ORCID = "0000-0003-3608-0463")), person(given = "Saket", family = "Choudhary", email = "schoudhary@nygenome.org", role = "ctb", comment = c(ORCID = "0000-0001-5202-7633")), person(given = "Charlotte", family = "Darby", email = "cdarby@nygenome.org", role = "ctb", comment = c(ORCID = "0000-0003-2195-5300")), person(given = "Jeff", family = "Farrell", email = "jfarrell@g.harvard.edu", role = "ctb"), person(given = "Isabella", family = "Grabski", email = "igrabski@nygenome.org", role = "ctb", comment = c(ORCID = "0000-0002-0616-5469")), person(given = "Christoph", family = "Hafemeister", email = "chafemeister@nygenome.org", role = "ctb", comment = c(ORCID = "0000-0001-6365-8254")), person(given = "Yuhan", family = "Hao", email = "yhao@nygenome.org", role = "ctb", comment = c(ORCID = "0000-0002-1810-0822")), person(given = "Austin", family = "Hartman", email = "ahartman@nygenome.org", role = "ctb", comment = c(ORCID = "0000-0001-7278-1852")), person(given = "Paul", family = "Hoffman", email = "hoff0792@umn.edu", role = "ctb", comment = c(ORCID = "0000-0002-7693-8957")), person(given = "Jaison", family = "Jain", email = "jjain@nygenome.org", role = "ctb", comment = c(ORCID = "0000-0002-9478-5018")), person(given = "Longda", family = "Jiang", email = "ljiang@nygenome.org", role = "ctb", comment = c(ORCID = "0000-0003-4964-6497")), person(given = "Madeline", family = "Kowalski", email = "mkowalski@nygenome.org", role = "ctb", comment = c(ORCID = "0000-0002-5655-7620")), person(given = "Skylar", family = "Li", email = "sli@nygenome.org", role = "ctb"), person(given = "Gesmira", family = "Molla", email = 'gmolla@nygenome.org', role = 'ctb', comment = c(ORCID = '0000-0002-8628-5056')), person(given = "Efthymia", family = "Papalexi", email = "epapalexi@nygenome.org", role = "ctb", comment = c(ORCID = "0000-0001-5898-694X")), person(given = "Patrick", family = "Roelli", email = "proelli@nygenome.org", role = "ctb"), person(given = "Rahul", family = "Satija", email = "seurat@nygenome.org", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9448-8833")), person(given = "Karthik", family = "Shekhar", email = "kshekhar@berkeley.edu", role = "ctb"), person(given = "Avi", family = "Srivastava", email = "asrivastava@nygenome.org", role = "ctb", comment = c(ORCID = "0000-0001-9798-2079")), person(given = "Tim", family = "Stuart", email = "tstuart@nygenome.org", role = "ctb", comment = c(ORCID = "0000-0002-3044-0897")), person(given = "Kristof", family = "Torkenczy", email = "", role = "ctb", comment = c(ORCID = "0000-0002-4869-7957")), person(given = "Shiwei", family = "Zheng", email = "szheng@nygenome.org", role = "ctb", comment = c(ORCID = "0000-0001-6682-6743")), person("Satija Lab and Collaborators", role = "fnd") )
+# URL: https://satijalab.org/seurat, https://github.com/satijalab/seurat
+# BugReports: https://github.com/satijalab/seurat/issues
+# Additional_repositories: https://satijalab.r-universe.dev, https://bnprks.r-universe.dev
+# Depends: R (>= 4.0.0), methods, SeuratObject (>= 5.0.0)
+# Imports: cluster, cowplot, fastDummies, fitdistrplus, future, future.apply, generics (>= 0.1.3), ggplot2 (>= 3.3.0), ggrepel, ggridges, graphics, grDevices, grid, httr, ica, igraph, irlba, jsonlite, KernSmooth, leiden (>= 0.3.1), lifecycle, lmtest, MASS, Matrix (>= 1.5-0), matrixStats, miniUI, patchwork, pbapply, plotly (>= 4.9.0), png, progressr, purrr, RANN, RColorBrewer, Rcpp (>= 1.0.7), RcppAnnoy (>= 0.0.18), RcppHNSW, reticulate, rlang, ROCR, RSpectra, Rtsne, scales, scattermore (>= 1.2), sctransform (>= 0.4.1), shiny, spatstat.explore, spatstat.geom, stats, tibble, tools, utils, uwot (>= 0.1.10)
+# LinkingTo: Rcpp (>= 0.11.0), RcppEigen, RcppProgress
+# License: MIT + file LICENSE
+# LazyData: true
+# Collate: 'RcppExports.R' 'reexports.R' 'generics.R' 'clustering.R' 'visualization.R' 'convenience.R' 'data.R' 'differential_expression.R' 'dimensional_reduction.R' 'integration.R' 'zzz.R' 'integration5.R' 'mixscape.R' 'objects.R' 'preprocessing.R' 'preprocessing5.R' 'roxygen.R' 'sketching.R' 'tree.R' 'utilities.R'
+# RoxygenNote: 7.2.3
+# Encoding: UTF-8
+# Suggests: ape, BPCells, rsvd, testthat, hdf5r, S4Vectors, SummarizedExperiment, SingleCellExperiment, MAST, DESeq2, BiocGenerics, GenomicRanges, GenomeInfoDb, IRanges, rtracklayer, Rfast2, monocle, Biobase, VGAM, limma, metap, enrichR, mixtools, ggrastr, data.table, R.utils, presto, DelayedArray, harmony
+# NeedsCompilation: yes
+# Packaged: 2023-11-16 20:50:34 UTC; mollag
+# Author: Andrew Butler [ctb] (<https://orcid.org/0000-0003-3608-0463>), Saket Choudhary [ctb] (<https://orcid.org/0000-0001-5202-7633>), Charlotte Darby [ctb] (<https://orcid.org/0000-0003-2195-5300>), Jeff Farrell [ctb], Isabella Grabski [ctb] (<https://orcid.org/0000-0002-0616-5469>), Christoph Hafemeister [ctb] (<https://orcid.org/0000-0001-6365-8254>), Yuhan Hao [ctb] (<https://orcid.org/0000-0002-1810-0822>), Austin Hartman [ctb] (<https://orcid.org/0000-0001-7278-1852>), Paul Hoffman [ctb] (<https://orcid.org/0000-0002-7693-8957>), Jaison Jain [ctb] (<https://orcid.org/0000-0002-9478-5018>), Longda Jiang [ctb] (<https://orcid.org/0000-0003-4964-6497>), Madeline Kowalski [ctb] (<https://orcid.org/0000-0002-5655-7620>), Skylar Li [ctb], Gesmira Molla [ctb] (<https://orcid.org/0000-0002-8628-5056>), Efthymia Papalexi [ctb] (<https://orcid.org/0000-0001-5898-694X>), Patrick Roelli [ctb], Rahul Satija [aut, cre] (<https://orcid.org/0000-0001-9448-8833>), Karthik Shekhar [ctb], Avi Srivastava [ctb] (<https://orcid.org/0000-0001-9798-2079>), Tim Stuart [ctb] (<https://orcid.org/0000-0002-3044-0897>), Kristof Torkenczy [ctb] (<https://orcid.org/0000-0002-4869-7957>), Shiwei Zheng [ctb] (<https://orcid.org/0000-0001-6682-6743>), Satija Lab and Collaborators [fnd]
+# Maintainer: Rahul Satija <seurat@nygenome.org>
+# Repository: CRAN
+# Date/Publication: 2023-11-17 23:10:06 UTC
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml
