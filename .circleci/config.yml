@@ -106,8 +106,11 @@ jobs: # a basic unit of work in a run
           command: |
             set -x
             cd recipes
-            SOURCE_BRANCH=$( curl -s https://api.github.com/repos/bioconda/bioconda-recipes/pulls/45998 | jq -r '.head.sha' )
-            ./.circleci/check-for-additional-platforms.sh "${CIRCLE_BRANCH} ${SOURCE_BRANCH}" "build_and_upload"
+            SOURCE_HEAD=$( curl -s https://api.github.com/repos/bioconda/bioconda-recipes/pulls/45998 | jq -r '.head.sha' )
+            git fetch
+            git checkout $SOURCE_HEAD
+            git checkout $CIRCLE_BRANCH
+            ./.circleci/check-for-additional-platforms.sh "${CIRCLE_BRANCH} ${SOURCE_HEAD}" "build_and_upload"
 
       - run:
           name: Fetch bioconda install script
