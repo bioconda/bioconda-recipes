@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -x
+
+
 # Check to see if any changed recipes have specified the key
 # extra:additional-platforms, and if so, if they match the platform of the
 # currently-running machine.
