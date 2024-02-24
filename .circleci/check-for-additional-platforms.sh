@@ -20,6 +20,7 @@ chmod +x ./yq
 
 
 # Find recipes changed from this merge
+git fetch
 files=`git diff --name-only --diff-filter AMR ${git_range} -- | grep -E 'meta.yaml$' `
 build=0
 
