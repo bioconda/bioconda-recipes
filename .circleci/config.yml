@@ -94,22 +94,18 @@ jobs: # a basic unit of work in a run
         type: executor
     executor: << parameters.os >>
     steps:
-      - run: |
-          git clone "$CIRCLE_REPOSITORY_URL"
-          git checkout "$CIRCLE_BRANCH"
+      - checkout
 
       - run:
           name: Check for Additional Platforms
           command: |
             # Install jq and use GitHub API to check the name of the branch of the incoming PR
+            which jq
             jq_platform=$(uname)
             jq_arch=$(uname -m)
             [[ $jq_arch = "aarch64" ]] && jq_arch="arm64"
             wget https://github.com/jqlang/jq/releases/download/jq-1.7/jq-${jq_platform}-${jq_arch} -q -O jq && chmod +x jq
-            SOURCE_BRANCH=$( curl -s https://api.github.com/repos/bioconda/bioconda-recipes/pulls/45985 | ./jq -r '.head.ref' )
-
-            git fetch
-
+            SOURCE_BRANCH=$( curl -s https://api.github.com/repos/bioconda/bioconda-recipes/pulls/$CIRCLE_PR_NUMBER | ./jq -r '.head.sha' )
             ./.circleci/check-for-additional-platforms.sh "${CIRCLE_BRANCH} ${SOURCE_BRANCH}" "build_and_upload"
 
       - run:
