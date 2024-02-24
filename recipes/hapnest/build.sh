@@ -32,12 +32,12 @@ cp -r {commands,algorithms,evaluation,utils,optimisation,preprocessing,Project.t
 #chmod +x $PREFIX/bin/hapnest
 
 #julia -e 'Pkg.init()'
+julia -e 'import Pkg; Pkg.add("Conda")'
+julia -e "using Pkg; Pkg.instantiate(); using Conda; Conda.add(\"bed-reader\"; channel=\"conda-forge\")"
 julia -e 'import Pkg; Pkg.add("ArgParse")'
 julia -e 'import Pkg; Pkg.add("YAML")'
 julia -e 'import Pkg; Pkg.add("LsqFit")'
 julia -e 'import Pkg; Pkg.add("DataFrames")'
-julia -e 'import Pkg; Pkg.add("Conda")'
-julia -e 'using Conda; Conda.add("bed-reader")'
 julia -e 'import Pkg; Pkg.add("CSV")'
 julia -e 'import Pkg; Pkg.add("CategoricalArrays")'
 julia -e 'import Pkg; Pkg.add("DelimitedFiles")'
