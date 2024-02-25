@@ -18,6 +18,7 @@ chmod +x gatk
 cp gatk ${PACKAGE_HOME}/gatk
 cp gatk-*-local.jar $PACKAGE_HOME
 
+export GATK_LOCAL_JAR=$PACKAGE_HOME
 unzip gatkPythonPackageArchive.zip -d gatkPythonPackageArchive
 cd gatkPythonPackageArchive
 python setup.py install
