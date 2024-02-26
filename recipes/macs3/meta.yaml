@@ -1,6 +1,6 @@
 {% set name = "MACS3" %}
-{% set version = "3.0.0" %}
-{% set sha256 = "57271e060c0f2c41f3aa6de44245c6db7fd0b1945ebfba115a6841628f75770e" %}
+{% set version = "3.0.1" %}
+{% set sha256 = "b07ca6e84a71aab29589f63e3dff96049aa6739e055a629125b31c788c877016" %}
 
 package:
   name: {{ name|lower }}
@@ -12,28 +12,39 @@ source:
 
 build:
   number: 0
-  script: python -m pip install . --no-deps --no-cache-dir -vvv
+  skip: True  # [py2k]
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv
   run_exports:
-    - {{ pin_subpackage('macs3', max_pin="x") }}
+    - {{ pin_subpackage('macs3', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-    - cmake
-  host:
-    - python
-    - pip
-    - cython
-    - cykhash
-    - hmmlearn
-    - numpy
-    - wheel
     - zlib
+    - python >=3.11
+    - numpy >=1.25
+    - scipy >=1.12
+    - Cython =3.0
+    - cykhash >=2.0, <3.0
+    - setuptools >=68.0
+    - hmmlearn >=0.3
+    - scikit-learn >=1.3
+  host:
+    - python >=3.11
+    - zlib
+    - numpy >=1.25
+    - scipy >=1.12
+    - Cython =3.0
+    - hmmlearn >=0.3
+    - scikit-learn >=1.3
+    - cykhash >=2.0, <3.0
   run:
-    - python
-    - numpy
+    - python >=3.11
+    - numpy >=1.25
+    - scipy >=1.12
+    - hmmlearn >=0.3
+    - scikit-learn >=1.3
+    - cykhash >=2.0, <3.0
 
 test:
   imports:
