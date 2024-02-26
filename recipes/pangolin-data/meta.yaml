@@ -1,4 +1,4 @@
-{% set version = "1.21" %}
+{% set version = "1.25.1" %}
 
 package:
   name: pangolin-data
@@ -6,12 +6,16 @@ package:
 
 source:
   url: https://github.com/cov-lineages/pangolin-data/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 385f8bb6f3c0263a453b825a50467ed0cbd6bad5aec2c4c33a95fdd52ecc7928
+  sha256: d92af7f5563cf8b3c0db4fa16748476d0033153865d75711a2dec46039c2473a
 
 build:
   number: 0
   noarch: python
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv
+  entry_points:
+    - pangolin_data = pangolin_data.command:main
+  run_exports:
+    - {{ pin_subpackage("pangolin-data", max_pin="x.x") }}
 
 requirements:
   host:
@@ -27,5 +31,6 @@ test:
 about:
   home: https://github.com/cov-lineages/pangolin-data
   license: GPL-3.0-only
+  license_family: GPL3
   license_file: LICENSE
   summary: Repository for storing latest model, protobuf, designation hash and alias files for pangolin assignments

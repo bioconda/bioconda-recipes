@@ -11,7 +11,7 @@ fi
 
 export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Itabixpp -I\$(INC_DIR)"
 export LIBPATH="-L${PREFIX}/lib -L. -Lhtslib -Ltabixpp"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2 -fopenmp"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2 -fopenmp -lwfa2"
 export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64"
 
 sed -i.bak 's/CFFFLAGS:= -O3/CFFFLAGS=-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x/' contrib/smithwaterman/Makefile

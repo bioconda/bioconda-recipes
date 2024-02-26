@@ -1,5 +1,4 @@
-
-{% set version = "2.17.1" %}
+{% set version = "2.18.1" %}
 
 package:
   name: metagenome-atlas
@@ -7,24 +6,26 @@ package:
 
 source:
   url: https://github.com/metagenome-atlas/atlas/archive/v{{ version }}.tar.gz
-  sha256: 9c3cf07d26872cc94fdf9824ebb4ff67d41357b3291ecbe882422c94ac19d73e
+  sha256: 225a0e34c5c7a34ab053b98c0be5fa3c6281a03144a156454deeda5588e3d774
 
 build:
   number: 0
   entry_points:
     - atlas=atlas.atlas:cli
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('metagenome-atlas', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.8, <3.11
+    - python >=3.8,<3.11
     - pip
   run:
-    - python >=3.8, <3.11
+    - python >=3.8,<3.11
     - mamba
-    - bbmap >=39.01, <40
-    - snakemake-minimal >=7.18.1, <7.26
+    - bbmap >=39.01,<40
+    - snakemake-minimal >=7.18.1,<7.26
     - pygments
     - networkx
     - graphviz
@@ -36,7 +37,7 @@ requirements:
     - pathlib
     # optional to help conda solve
     - numpy =1.21
- 
+
 test:
   imports:
     - atlas

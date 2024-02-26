@@ -1,5 +1,5 @@
-{% set version = "2.3.3" %}
-{% set sha256 = "aaee4e69f47d732c0e0515358a5a2b4223832a74070e751281af06c19b4dda3f" %}
+{% set version = "2.11.1" %}
+{% set sha256 = "7ed52d449b19beecf9461a998aeb8194b5930538ec6468996448bf28f1bab2f5" %}
 
 package:
   name: bioconda-utils
@@ -15,13 +15,15 @@ build:
   script: python -m pip install --no-deps --ignore-installed .
   entry_points:
     - bioconda-utils = bioconda_utils.cli:main
+  run_exports:
+    - {{ pin_subpackage('bioconda-utils', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.7
+    - python
     - pip
   run:
-    - python >=3.7
+    - python
     - conda 23.3.*
     - boa 0.15.*
     - conda-build 3.24.*
@@ -73,8 +75,10 @@ requirements:
     - tabulate 0.9.*
 
 test:
-  imports:
-    - bioconda_utils
+  #imports:
+  #  - bioconda_utils
+  # [Nov  2 22:37:22] SERR bash: -c: line 1: syntax error near unexpected token `&&'
+  # [Nov  2 22:37:22] SERR bash: -c: line 1: ` && python -c "import bioconda_utils"'
   commands:
     - bioconda-utils --help
     - bioconda-utils lint --help
@@ -82,10 +86,10 @@ test:
     - >
       CONDA_AGGRESSIVE_UPDATE_PACKAGES=
       CONDA_AUTO_UPDATE_CONDA=0
-      "${PREFIX}/bin/conda" install --prefix="${PREFIX}" --dry-run --satisfied-skip-solve
+      "${PREFIX}/bin/mamba" install --prefix="${PREFIX}" --dry-run --satisfied-skip-solve
       --file="$( python -c
       'from os.path import dirname, join; import bioconda_utils; print(join(dirname(bioconda_utils.__file__), "bioconda_utils-requirements.txt"))'
-      )" 2>&1 | grep -qF 'All requested packages already installed.'
+      )" 2>&1 | grep -qF 'All requested packages already installed'
 
 about:
   home: http://bioconda.github.io/build-system.html

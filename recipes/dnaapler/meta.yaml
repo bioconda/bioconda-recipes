@@ -1,32 +1,33 @@
 {% set name = "dnaapler" %}
-{% set version = "0.1.0" %}
+{% set version = "0.7.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url:    https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 413ab6f0d085e928e22ef292b41248a5753c83f6572e42b97baf02f35d4e4809
-  
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 1ae921824055e8c4e9f7651ddd4d4011612f863f17cb95b496849de03560304f
+
 build:
   number: 0
   noarch: python
   entry_points:
     - dnaapler = dnaapler:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('dnaapler', max_pin='x') }}
 
 requirements:
   host:
     - python >=3.8,<4.0
-    - poetry =1.3
+    - poetry-core >=1.0.0
     - pip
-  
   run:
-    - blast >=2.9
+    - blast >=2.10
     - python >=3.8,<4.0
     - click >=8.0.0
-    - pyrodigal >=2.0.0
+    - pyrodigal >=3.0.0
     - biopython >=1.76
     - loguru >=0.5.3
     - pandas >=1.4.2
@@ -41,8 +42,10 @@ test:
 about:
   home: https://github.com/gbouras13/dnaapler
   license: MIT
+  license_family: MIT
   license_file: LICENSE
   summary: Reorients assembled microbial sequences
+  doc_url: https://dnaapler.readthedocs.io/en/latest/
 
 extra:
   recipe-maintainers:

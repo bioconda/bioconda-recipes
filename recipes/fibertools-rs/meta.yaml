@@ -1,4 +1,4 @@
-{% set version = "0.2.3" %}
+{% set version = "0.3.8" %}
 {% set name = "fibertools-rs" %}
 {% set build_number = "0" %}
 
@@ -6,26 +6,26 @@ package:
   name: {{ name }}
   version: {{ version }}
 
+  
+source:  
+  url: https://github.com/fiberseq/fibertools-rs/archive/v{{ version }}.tar.gz
+  sha256: 7e244ceafa5371d21de45a9e6ea5dd66e4922283142bc9a332c1114d5118fa02
+
+
 build:
+  run_exports:
+    - {{ pin_subpackage('fibertools-rs', max_pin="x") }}
   number: {{ build_number }}
-  detect_binary_files_with_prefix: False
-  skip: True # [osx]
   rpaths:
     - lib/
     - share/{{ name }}-{{ version }}-{{ build_number }}/lib/
-  missing_dso_whitelist:
-    - share/{{ name }}-{{ version }}-{{ build_number }}/lib/*
-    - "$RPATH/libgomp-a34b3233.so.1"
-    - "$RPATH/libcudart-d0da41ae.so.11.0"
-  #runpath_whitelist:
+  #detect_binary_files_with_prefix: False
+  #missing_dso_whitelist:
   #  - share/{{ name }}-{{ version }}-{{ build_number }}/lib/*
-  # overlinking_ignore_patterns:
-  #   - share/{{ name }}-{{ version }}-{{ build_number }}/lib/*
-  
+  #  - "$RPATH/libgomp-a34b3233.so.1"
+  #  - "$RPATH/libcudart-d0da41ae.so.11.0"
+  # skip: True # [osx]
 
-source:
-  url: https://github.com/fiberseq/fibertools-rs/archive/v{{ version }}.tar.gz
-  sha256: ffd30d47848f1d063438f88e713997f9f6ce15fa4a5cb648164c5b97a8f63000
 
 requirements:
   build:
@@ -36,12 +36,21 @@ requirements:
     - cmake
     - unzip
     - curl
+  # all the host and run requirements match those needed for htslib
   host:
+    - libcurl
+    - bzip2
+    - xz
+    - zlib
+    - libdeflate
+    - openssl  # [not osx]
   run:
-
-# libz
-# $RPATH/libcuda.so.1
-# Needed DSO lib/libgomp.so.1 
+    - libcurl
+    - bzip2
+    - xz
+    - zlib
+    - libdeflate
+    - openssl  # [not osx]
 
 test:
   commands:
@@ -57,3 +66,4 @@ about:
 extra:
   recipe-maintainers:
     - mrvollger
+  

@@ -1,5 +1,5 @@
 {% set name = "varvamp" %}
-{% set version = "0.8.3" %}
+{% set version = "1.1.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,14 +7,16 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/varvamp-{{ version }}.tar.gz
-  sha256: c725d2c9836fda8eb2ef21d84d3a3a1bcc015019f09aed31187be8669b3d69e7
+  sha256: 3036bb0b0f9f1453e2978b95c75a5adf3c9f08cec9f3a4a2f38affa28b1fd04b
 
 build:
   entry_points:
     - varvamp = varvamp.command:main
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps -vvv
   number: 0
+  run_exports:
+    - {{ pin_subpackage('varvamp', max_pin="x") }}
 
 requirements:
   host:
@@ -28,6 +30,8 @@ requirements:
     - pandas >=1.4.4
     - numpy >=1.23.3
     - seqfold >=0.7.15
+    - blast >=2.13.0
+
 
 test:
   imports:
