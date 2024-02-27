@@ -1,5 +1,5 @@
 {% set name = "metaphlan" %}
-{% set version = "4.0.6" %}
+{% set version = "4.1.0" %}
 
 package:
   name: {{ name }}
@@ -7,13 +7,15 @@ package:
 
 source:
   url: https://github.com/biobakery/MetaPhlAn/archive/{{version}}.tar.gz
-  sha256: f69e9499056a259829a50f4eb5ab8e62e76f57852df921784d66fb5d7c4379a4
+  sha256: 7552ee617a1ca7d862cc07bbb4f238ab0a8872f2702fb49192bee0461264d376
 
 
 build:
   noarch: python
   number: 0
   script: {{ PYTHON }} -m pip install -vv --no-deps .
+  run_exports:
+    - {{ pin_subpackage('metaphlan', max_pin='x.x') }}
 
 requirements:
   host:
@@ -24,10 +26,9 @@ requirements:
   run:
     - python >=3.7
     - bowtie2 >=2.3.0
-    - cmseq
-    - phylophlan
     - dendropy
     - numpy
+    - phylophlan >=3.1
     - biom-format
     - matplotlib-base
     - biopython
@@ -39,7 +40,15 @@ requirements:
     - pysam
     - raxml >=8.2.10
     - samtools >=1.9
-
+    - r-base >=4
+    - r-essentials
+    - r-optparse
+    - r-rbiom
+    - r-ape
+    - r-compositions
+    - r-biocmanager
+    - bioconductor-microbiome
+    - hclust2
 test:
   commands:
     - metaphlan -v
@@ -51,6 +60,12 @@ test:
     - plot_tree_graphlan.py -h
     - sample2markers.py -h
     - strain_transmission.py -h
+    - sgb_to_gtdb_profile.py -h
+    - metaphlan2krona.py -h    
+    - hclust2.py -h
+    - run_treeshrink.py -h
+    - treeshrink.py -h
+    - create_toy_database.py -h
     - bowtie2-align-s --help
 
 about:
