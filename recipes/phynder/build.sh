@@ -9,6 +9,8 @@ git clone https://github.com/samtools/htslib.git
 cd htslib
 git submodule update --init --recursive
 
+./configure --prefix=${PREFIX} --enable-libcurl --with-libdeflate --enable-plugins --enable-gcs --enable-s3
+
 make lib-static htslib_static.mk
 
 cd ../
