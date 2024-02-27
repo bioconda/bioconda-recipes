@@ -5,5 +5,6 @@ python -c "
 import sysconfig
 import os
 from biodigest import setup
+print('before setup')
 setup.main(setup_type='api', path=os.path.join(os.getenv('PREFIX'), 'lib', 'python' + sysconfig.get_python_version(), 'site-packages', 'biodigest', 'mapping_files'))
 "
