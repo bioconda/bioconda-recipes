@@ -1,9 +1,17 @@
-cd MQLib
+#!/bin/bash -euo
+
+mkdir -p "${PREFIX}/bin"
+
+cd external/MQLib
 make \
     GXX="${CXX}" \
     AR="${AR}"
-cd ..
-$CXX -std=c++11 -O2 -I MQLib/include -o TREE-QMC src/*.cpp MQLib/bin/MQLib.a
-mkdir -p $PREFIX/bin
+
+cd ../../
+${CXX} -std=c++11 -O2 -I external/MQLib/include -I external/toms743 \
+	-o TREE-QMC \
+	src/*.cpp external/toms743/toms743.cpp \
+	external/MQLib/bin/MQLib.a -lm
+
 cp TREE-QMC $PREFIX/bin/
 chmod a+x $PREFIX/bin/TREE-QMC
