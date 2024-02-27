@@ -14,15 +14,22 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 ## Borrowed from amplisim
 git clone --recursive https://github.com/samtools/htslib.git
 cd htslib
+ls -l
 git reset --hard 7f5136f
+ls -l
 cd htscodecs
+ls -l
 git reset --hard 11b5007
 cd ..
-make -C htslib CC=${CC} CFLAGS="${CFLAGS} -g -Wall -O2 -fvisibility=hidden" LDFLAGS="${LDFLAGS} -fvisibility=hidden" lib-static
+ls -l
+make -C . CC=${CC} CFLAGS="${CFLAGS} -g -Wall -O2 -fvisibility=hidden" LDFLAGS="${LDFLAGS} -fvisibility=hidden" lib-static
+ls -l
 mkdir -p build
+ls -l
+## FAILING HERE
 make CXX=${CXX} CXXFLAGS="${CXXFLAGS} -O3 -DNDEBUG -Wno-missing-field-initializers -Wno-unused-function" LDLIBS="${LDFLAGS}"
 cd ../
-
+ls -l
 sed -i 's#HTSDIR=../htslib#HTSDIR=./htslib#g' Makefile
 sed -i 's/$@ $(LDLIBS)/$@ $(LDLIBS) $(CFLAGS) $(LDFLAGS)/g' Makefile
 
