@@ -1,0 +1,41 @@
+{% set name = "rabbittclust" %}
+{% set version = "2.2.1" %}
+{% set sha256 = "27f19d50773234aed5d1919e4523147665f166d2a0a1055d30124ba5f2e1bd44" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/RabbitBio/RabbitTClust/files/11531934/RabbitTClust_v.2.2.1.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - rabbitfx-include-cstdint.patch
+    - rabbittclust-cmakelists.patch
+    - rabbitsketch-cmakelists.patch
+
+build:
+  number: 0
+  skip: true # [not linux]
+
+requirements:
+  build:
+    - make
+    - cmake
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+  run:
+    - zlib
+
+test:
+  commands:
+    - clust-mst --help
+    - clust-greedy --help
+    - false
+
+about:
+  home: https://github.com/RabbitBio/RabbitTClust
+  license: BSD-3-Clause
+  license_file: LICENSE.txt
+  summary: RabbitTClust enabling fast clustering analysis of millions bacteria genomes with MinHash sketches
