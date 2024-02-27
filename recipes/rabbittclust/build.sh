@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euxo pipefail
 
-export CXX=g++
+export CXX=${PREFIX}/bin/g++
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 # make rabbitSketch library
