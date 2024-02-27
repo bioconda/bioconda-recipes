@@ -3,12 +3,10 @@
 mkdir -p "${PREFIX}/bin"
 
 cd external/MQLib
-make \
-    GXX="${CXX}" \
-    AR="${AR}"
+make CXX="${GXX}" -j4
 
 cd ../../
-${CXX} -std=c++11 -O2 -I external/MQLib/include -I external/toms743 \
+"${CXX}" -std=c++11 -O2 -I external/MQLib/include -I external/toms743 \
 	-o TREE-QMC \
 	src/*.cpp external/toms743/toms743.cpp \
 	external/MQLib/bin/MQLib.a -lm
