@@ -1,0 +1,48 @@
+{% set name = "cosg" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cosg-{{ version }}.tar.gz
+  sha256: 258ca73066ac6cbe5121cf78d5e047b48b9372c9b448ecaeb3fb67dc9f7e759c
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - anndata >=0.7.4
+    - numpy >=1.17.0
+    - pandas >=0.21
+    - scanpy >=1.6.0
+    - scikit-learn >=0.21.2
+    - scipy >=1.4
+
+test:
+  imports:
+    - cosg
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/genecell/COSG
+  summary: Accurate and fast cell marker gene identification with COSG
+  license: BSD-3-Clause
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - heylf
