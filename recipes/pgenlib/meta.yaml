@@ -11,7 +11,9 @@ source:
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage('pgenlib', max_pin="x.x") }}
 
 requirements:
   build:
@@ -21,12 +23,10 @@ requirements:
     - pip
     - cython
     - numpy
-    - setuptools
     - zlib
   run:
     - python
-    - numpy
-    - zlib
+    - {{ pin_compatible('numpy') }}
 
 test:
   imports:
@@ -34,7 +34,7 @@ test:
 
 about:
   home: "https://github.com/chrchang/plink-ng"
-  license: "GNU Lesser General Public v3 (LGPLv3)"
+  license: "LGPL-3.0-or-later"
   license_family: LGPL
   license_file: LICENSE
   summary: "Python wrapper for pgenlib's basic reader and writer."
