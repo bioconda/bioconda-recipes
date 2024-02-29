@@ -1,43 +1,52 @@
-{% set version = "1.0.13" %}
+{% set name = "RevBayes" %}
+{% set version = "1.2.2" %}
+{% set sha256 = "339f89169cc9320212c3c64d0557b66f416ec9ae25d45e21a4e9a1cafef6e423" %}
 
 package:
-  name: revbayes
+  name: {{ name|lower }}
   version: {{ version }}
 
-build:
-  number: 7
-
 source:
-  url: https://github.com/revbayes/revbayes.archive/archive/v{{ version }}.tar.gz
-  sha256: e85e2e1fe182fe9f504900150d936a06d252a362c591b9d3d8272dd085aa85d9
+  url: https://github.com/{{ name|lower }}/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}  
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake >=2.6
+    - cmake >=3.5.1
   host:
-    - boost-cpp >=1.60
+    - boost-cpp >=1.71
     - openmpi
   run:
-    - boost-cpp >=1.60
+    - boost-cpp >=1.71
     - openmpi
 
 test:
   commands:
-    - rb -v
     - rb -h
-    - rb-mpi -v
     - rb-mpi -h
 
 about:
-  home: https://revbayes.github.io/
-  license: GPLv3
+  home: http://revbayes.com/
+  license: GPL-3.0
+  license_family: GPL
   license_file: LICENSE
-  summary: Bayesian phylogenetic inference using probabilistic graphical models and an interactive language.
+  summary: Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language.
+  dev_url: https://github.com/revbayes/revbayes
+  doc_url: http://revbayes.com/
 
 extra:
   container:
     # openmpi needs ssh/rsh
     extended-base: true
+  identifiers:
+    - doi:10.1093/sysbio/syw021
+    - doi:10.1093/sysbio/syu039
+
