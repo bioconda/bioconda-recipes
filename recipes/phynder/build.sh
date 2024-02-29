@@ -4,6 +4,7 @@ set +e
 
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export CXX=${CXX}
 
 # git clone https://github.com/samtools/htslib.git
 # cd htslib
@@ -26,12 +27,18 @@ make -C . CC=${CC} CFLAGS="${CFLAGS} -g -Wall -O2 -fvisibility=hidden" LDFLAGS="
 ls -l
 mkdir -p build
 ls -l
-## FAILING HERE
-make CXX=${CXX} CXXFLAGS="${CXXFLAGS} -O3 -DNDEBUG -Wno-missing-field-initializers -Wno-unused-function" LDLIBS="${LDFLAGS}"
+./configure CPPFLAGS="${CPPFLAGS}" \
+    LDFLAGS="${LDFLAGS}" \
+    CXX=${CXX} \
+    CC=${CC}
+
+## FAILING HERE: THE SAMTOOLS HTSLIB COMPILATION IS NOT WORKING
+## CHECK HTSLIB INSTALLATION DOCS? TRYING CONFIGURE ABOVE...
+make CXX=${CXX} CXXFLAGS="${CXXFLAGS}" LDLIBS="${LDFLAGS}"
 cd ../
 ls -l
 sed -i 's#HTSDIR=../htslib#HTSDIR=./htslib#g' Makefile
 sed -i 's/$@ $(LDLIBS)/$@ $(LDLIBS) $(CFLAGS) $(LDFLAGS)/g' Makefile
 
-make
+make CXX=${CXX} CXXFLAGS="${CXXFLAGS}" LDLIBS="${LDFLAGS}"
 make install
