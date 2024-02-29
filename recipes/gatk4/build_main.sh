@@ -2,36 +2,31 @@
 #!/bin/bash
 JAVA_VERSION=17.0.9_9
 PACKAGE_HOME=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-JAVA_DIR=$PREFIX/share/java-$JAVA_VERSION
+JAVA_DIR=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/java-for-gatk
 
 mkdir -p $PREFIX/bin
 mkdir -p $PACKAGE_HOME
 mkdir -p $JAVA_DIR
 
 #
-# download java - none of the openjdk-17 builds in conda-forge work with gatk, and GATK recommends adoptium's jdk builds so we are using their binaries below. 
+# We have downloaded Java from Adoptium as none of the OpenJDK-17 builds in Conda-forge are compatible with GATK. 
+# To prevent conflicts with existing Java installations, we have adjusted the GATK wrapper script to utilize the downloaded 
+# Java executable directly without needing to add it to the system path.
 #
-#if [[ ${target_platform} =~ linux.* ]] ; then
 wget -c https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9/OpenJDK17U-jre_x64_linux_hotspot_$JAVA_VERSION.tar.gz 
 wget -O- -q -T 1 -t 1 https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9/OpenJDK17U-jre_x64_linux_hotspot_$JAVA_VERSION.tar.gz.sha256.txt | sha256sum -c
 tar -xzf OpenJDK17U-jre_x64_linux_hotspot_$JAVA_VERSION.tar.gz
-#else
-#    echo "operating system not not supported"
-#    exit 1
-#fi
-
-#
-# install java
-#
 mv jdk-17.0.9+9-jre/* $JAVA_DIR
-ls $JAVA_DIR/bin
-ls $JAVA_DIR/lib
+
+
+
+
 
 #
-# install gatk
+# install custom gatk wrapper
 #
-chmod +x gatk
-cp gatk ${PACKAGE_HOME}/gatk
+cp $RECIPE_DIR/gatk ${PACKAGE_HOME}/gatk
+chmod +x ${PACKAGE_HOME}/gatk
 cp gatk-*-local.jar $PACKAGE_HOME
 
 #
