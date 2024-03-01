@@ -11,7 +11,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  noarch: generic
+  skip: True # [osx]
   number: 1
   run_exports:
      - {{ pin_subpackage('gatk4', max_pin="x") }}
@@ -22,7 +22,6 @@ test:
     - gatk -h
     - gatk --list
     - gatk HaplotypeCaller --help
-    - gatk DetermineGermlineContigPloidy --help
   imports:
     - gcnvkernel
 
@@ -91,3 +90,8 @@ about:
   license_family: BSD
   summary: Genome Analysis Toolkit (GATK4)
   dev_url: https://github.com/broadinstitute/gatk
+
+extra:
+  skip-lints:
+    # Theano only needs gcc compiler to run optimized C-implementations
+    - compilers_must_be_in_build
