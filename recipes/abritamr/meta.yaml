@@ -15,20 +15,23 @@ build:
   noarch: python
   entry_points:
     - abritamr=abritamr.abritamr:main
-  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+  script: "{{ PYTHON }} -m pip install . --no-build-isolation --no-deps -vvv"
+  run_exports:
+    - {{ pin_subpackage('abritamr', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python =>3.9
-  run:
-    - pandas =>1.4
-    - xlsxwriter
-    - ncbi-amrfinderplus =3.10.42
-    - blast 
-    - hmmer 
+    - python >=3.9
     - libcurl
     - parallel
+  run:
+    - python >=3.9
+    - pandas
+    - xlsxwriter
+    - ncbi-amrfinderplus =3.10.42
+    - blast
+    - hmmer
 
 test:
   imports:
@@ -44,9 +47,11 @@ about:
   license: GPL-3.0-only
   license_family: GPL3
   summary: "Running AMRFinderPlus for MDU"
-  dev_url: https://github.com/MDU-PHL/abritamr 
+  dev_url: https://github.com/MDU-PHL/abritamr
 
 extra:
   recipe-maintainers:
     - kristyhoran
     - andergs
+  identifiers:
+    - biotools:abritamr
