@@ -1,5 +1,9 @@
-{% set name = "IonQuant" %}
-{% set version = "1.8.10" %}
+{% set version = "1.10.12" %}
+
+# This key was generated ONLY for the testing of this bioconda package.
+# Users must generate their own key by agreeing to the terms at https://msfragger.arsci.com/ionquant/IonQuant%20Academic%20Use%20License%2005162022.pdf.
+{% set academic_use_only_key = "47cb2953-b4bf7726-2c96f5fe-8f1013aa" %}
+{% set sha256sum = "861a633ab815a34ea54e6e26f318e19b510b25cb8955f3daeb83d6d10c6938ea" %}
 
 package:
   name: ionquant
@@ -8,61 +12,39 @@ package:
 build:
   number: 0
   noarch: generic
-
-build:
-  number: 0
-  script:
-    - if [ -z "$NAME" ]; then export NAME=${USERNAME:-bioconda}; fi
-    - if [ -z "$EMAIL" ]; then export EMAIL=${NAME}@${HOSTNAME:-bioconda.org}; fi
-    - if [ -z "$INSTITUTION" ]; then export INSTITUTION=${HOSTNAME:-bioconda.org}; fi
-    - mkdir -p $PREFIX/tools
-    - echo ${RECIPE_DIR}/academic_install.py -n galaxy -e "$EMAIL" -o "$INSTITUTION" -i {{ version }} -p ${PREFIX}/tools
-    - ${RECIPE_DIR}/academic_install.py -n galaxy -e "$EMAIL" -o "$INSTITUTION" -i {{ version }} -p ${PREFIX}/tools
-  #missing_dso_whitelist:
-  #  - /lib64/libgomp.so.1
-  #  - /lib64/libdl.so.2
-  #  - /lib64/librt.so.1
-  #  - /lib64/libpthread.so.0
-  #  - /lib64/libm.so.6
-  #  - /lib64/libc.so.6
-  #  - /lib64/ld-linux-x86-64.so.2
-  #  - /lib64/libdl.so.2
-  #  - /lib64/librt.so.1
-  #  - /lib64/libm.so.6
-  #  - /lib64/libpthread.so.0
-  #  - /lib64/libstdc++.so.6
-  #  - /lib64/libgcc_s.so.1
-  #  - /lib64/libc.so.6
-  #  - /lib64/ld-linux-x86-64.so.2
+  run_exports:
+    - {{ pin_subpackage('ionquant', max_pin="x.x") }}
+  script_env:
+    - SHA256SUM={{ sha256sum }}
 
 requirements:
   host:
+    - python >=3.9
+    - unzip
   run:
     - openjdk >=11
     - python >=3.8
 
+test:
+  commands:
+    - ionquant --key {{ academic_use_only_key }} -Xms512m -Xmx1g --help  2>&1 | grep 'IonQuant'
+
 about:
-  home: https://github.com/Nesvilab/FragPipe
-  license: GNU General Public License v3.0
-  license_family: GPL
-  summary:  Pipeline for comprehensive analysis of shotgun proteomics data
+  home: https://github.com/Nesvilab/IonQuant
+  license: Academic License (https://msfragger.arsci.com/ionquant/IonQuant%20Academic%20Use%20License%2005162022.pdf)
+  summary: A label free quantification tool
   description: |
-    FragPipe is a Java Graphical User Interface (GUI) for a suite of computational tools
-    enabling comprehensive analysis of mass spectrometry-based proteomics data.
-    It is powered by MSFragger - an ultrafast proteomic search engine suitable
-    for both conventional and "open" (wide precursor mass tolerance) peptide identification.
-    FragPipe includes the Philosopher toolkit for downstream post-processing of
-    MSFragger search results (PeptideProphet, iProphet, ProteinProphet), FDR filtering,
-    label-based quantification, and multi-experiment summary report generation.
-    Crystal-C and PTM-Shepherd are included to aid interpretation of open search results.
-    Also included in FragPipe binary are TMT-Integrator for TMT/iTRAQ isobaric
-    labeling-based quantification, IonQuant for label-free quantification with
-    match-between-run (MBR) functionality, SpectraST and EasyPQP spectral library building modules,
-    and DIA-Umpire SE module for direct analysis of data independent acquisition (DIA) data.
+    IonQuant is a fast and comprehensive tool for MS1 precursor intensity-based quantification for timsTOF PASEF DDA and non-timsTOF (e.g., Orbitrap) data.
+    It enables label-free quantification with false discovery (FDR) controlled match-between-runs (MBR).
+    It can also be used for quantification in labelling-based experiments such as those involving SILAC, dimethyl, or similar labelling strategies.
+
+    IonQuant is available freely for academic research and educational purposes only, in accordance with the terms at https://msfragger.arsci.com/ionquant/IonQuant%20Academic%20Use%20License%2005162022.pdf.
 
 extra:
+  recipe-maintainers:
+    - reid-wagner
   notes: |
-    For example run it with "IonQuant -Xms512m -Xmx16g"
+    The "ionquant" command runs the IonQuant java program.
   identifiers:
     - biotools:fragpipe
     - doi:10.1074/mcp.TIR120.002048
