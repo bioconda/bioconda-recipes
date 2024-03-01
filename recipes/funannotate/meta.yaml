@@ -12,22 +12,24 @@ source:
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - funannotate=funannotate.funannotate:main
   run_exports:
     - {{ pin_subpackage('funannotate', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.6,<3.9
+    - python >=3.6,<3.10
   run:
-    - python >=3.6,<3.9
+    - python >=3.6,<3.10
     - biopython <1.80
     - goatools
     - matplotlib-base <3.5
     - natsort
     - numpy
-    - pandas <2.0  # https://github.com/nextgenusfs/funannotate/pull/906
+    - pandas
     - psutil
     - requests
     - scikit-learn
@@ -41,7 +43,7 @@ requirements:
     - diamond >=2.1.6
     - tbl2asn
     - ucsc-pslcdnafilter
-    - pasa >=2.4.1
+    - pasa >=2.5.3
     - trimmomatic
     - raxml
     - trimal
@@ -49,14 +51,14 @@ requirements:
     - iqtree
     - kallisto >=0.46.0,<0.46.2
     - minimap2
-    - evidencemodeler ==1.1.1
+    - evidencemodeler
     - codingquarry
     - stringtie
     - snap
     - glimmerhmm
     - bamtools
-    - augustus ==3.5.0
-    - trinity >=2.8.5=h8b12597_5  # [linux]
+    - augustus >=3.5.0
+    - trinity >=2.15.1
     - trnascan-se
     - hisat2
     - proteinortho >=6.0.16
@@ -85,15 +87,22 @@ requirements:
 test:
   commands:
     - "funannotate --help | grep \"Funannotate is a genome prediction\""
-  
+
 about:
   home: "https://github.com/nextgenusfs/funannotate"
   license: "BSD-2-Clause"
   license_family: "BSD"
   license_file: "LICENSE.md"
   summary: "funannotate: eukaryotic genome annotation pipeline"
-  doc_url: "funannotate.readthedocs.io"
+  doc_url: "https://funannotate.readthedocs.io/en/latest/"
+  dev_url: "https://github.com/nextgenusfs/funannotate"
 
 extra:
   recipe-maintainers:
     - nextgenusfs
+  identifiers:
+    - biotools:funannotate
+    - usegalaxy-eu:funannotate_compare
+    - usegalaxy-eu:funannotate_clean
+    - usegalaxy-eu:funannotate_predict
+    - usegalaxy-eu:funannotate_annotate
