@@ -6,6 +6,8 @@ export CFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
+## Static lib required by phynder, thus following instructions
+## rather than trying to take from a conda htslib
 git clone https://github.com/samtools/htslib.git
 cd htslib
 git submodule update --init --recursive
@@ -24,15 +26,12 @@ autoconf
 make lib-static htslib_static.mk
 make CC=$CC install
 
+## Patch phynder Makefile to cloned htslib folder (original assumes alongside, not within)
 cd ../
-
 sed -i 's#HTSDIR=../htslib#HTSDIR=./htslib#g' Makefile
-
-## TODO:
-## sed patch LDLIBS to add LDFLAGS to the end of line
-## sed patch Turn off copying
-
 sed -i -e 's#LDLIBS=$(HTSLIB) -lpthread $(HTSLIB_static_LIBS)#LDLIBS=$(HTSLIB) -lpthread $(HTSLIB_static_LIBS) $(LDFLAGS)#g' -e 's#cp phynder ~/bin##g' Makefile
 
 make CC=$CC CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
-make install # Remaining error: ./phynder: error while loading shared libraries: libbz2.so.1.0: cannot open shared object file: No such file or directory
+make install
+
+cp phynder $PREFIX/bin/
