@@ -9,17 +9,22 @@ FragPipe uses tools that are available freely for academic research and educatio
 
 Please provide pass license keys for MSFragger and IonQuant with the --msfragger_key and --ionquant_key parameters. By passing these, you verify that you have read the ACADEMIC licenses for the MSFragger and IonQuant tools. You may obtain these key by agreeing to the terms at http://msfragger-upgrader.nesvilab.org/upgrader/ and https://msfragger.arsci.com/ionquant/.'
 
+declare -a fragpipe_args
+
 while [[ $# -gt 0 ]]; do
-    arg=$1
-    if [[ "$arg" == '--msfragger_key' ]]; then
-        shift
-        msfragger_key=$1
-    elif [[ "$arg" == '--ionquant_key' ]]; then
-        shift
-        ionquant_key=$1
-    else
-        set -- "$@" "$arg"
-    fi
+    case "$1" in
+        --msfragger_key)
+            shift
+            msfragger_key=$1
+            ;;
+        --ionquant_key)
+            shift
+            ionquant_key=$1
+            ;;
+        *)
+            fragpipe_args+=("$1")
+            ;;
+    esac
     shift
 done
 
@@ -41,4 +46,4 @@ else
     fi
 fi
 
-sh ../share/fragpipe*/fragpipe "$@"
+sh ../share/fragpipe*/fragpipe "${fragpipe_args[@]}"
