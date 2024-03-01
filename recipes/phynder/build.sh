@@ -33,3 +33,5 @@ sed -i -e 's#LDLIBS=$(HTSLIB) -lpthread $(HTSLIB_static_LIBS)#LDLIBS=$(HTSLIB) -
 
 make CC=$CC CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
 make install
+
+cp phynder $PREFIX/bin/
