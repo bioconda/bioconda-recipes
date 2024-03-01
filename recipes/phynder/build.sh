@@ -32,7 +32,7 @@ sed -i 's#HTSDIR=../htslib#HTSDIR=./htslib#g' Makefile
 ## sed patch LDLIBS to add LDFLAGS to the end of line
 ## sed patch Turn off copying
 
-sed -i -e 's#LDLIBS=$(HTSLIB) -lpthread $(HTSLIB_static_LIBS)#LDLIBS=$(HTSLIB) -lpthread $(HTSLIB_static_LIBS)#g' -e 's#cp phynder ~/bin##g' Makefile
+sed -i -e 's#LDLIBS=$(HTSLIB) -lpthread $(HTSLIB_static_LIBS)#LDLIBS=$(HTSLIB) -lpthread $(HTSLIB_static_LIBS) $(LDFLAGS)#g' -e 's#cp phynder ~/bin##g' Makefile
 
 make CC=$CC CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
 make install # Remaining error: ./phynder: error while loading shared libraries: libbz2.so.1.0: cannot open shared object file: No such file or directory
