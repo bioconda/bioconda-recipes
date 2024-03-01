@@ -18,10 +18,6 @@ wget -O- -q -T 1 -t 1 https://github.com/adoptium/temurin17-binaries/releases/do
 tar -xzf OpenJDK17U-jre_x64_linux_hotspot_$JAVA_VERSION.tar.gz
 mv jdk-17.0.9+9-jre/* $JAVA_DIR
 
-
-
-
-
 #
 # install custom gatk wrapper
 #
@@ -34,7 +30,7 @@ cp gatk-*-local.jar $PACKAGE_HOME
 #
 unzip gatkPythonPackageArchive.zip -d gatkPythonPackageArchive
 cd gatkPythonPackageArchive
-python setup.py install
+$PYTHON -m pip install .
 
 # Does not install the spark jars, this is done in the `build_spark.sh`
 ln -s $PACKAGE_HOME/gatk $PREFIX/bin
