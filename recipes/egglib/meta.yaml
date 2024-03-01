@@ -1,18 +1,21 @@
 {% set name = "egglib" %}
-{% set version = "3.3.0" %}
+{% set version = "3.3.2" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://files.pythonhosted.org/packages/a7/f2/8840daacb59c75d7bf216a8dba18ea38311126925d91d46718426503103d/EggLib-3.3.0.tar.gz"
-  sha256: 781b8e01d16762026b18514687be40acf68f97cdd975ea670854d74d2f8bd5c5
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/EggLib-{{ version }}.zip
+  sha256: 596838f6504c5a0f7ae9da9fbe41a595c3113e27d764e1a09a9e8795ef79d056
 
 build:
   number: 0
-  skip: True  # [py2k or osx]
-  script: {{ PYTHON }} -m pip install . -vv
+  skip: True  # [py < 38 or osx]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - egglib-config = egglib.cli.config:main
+    - egglib-test = egglib.cli.test:main
   run_exports:
     - {{ pin_subpackage(name, max_pin='x') }}
 
@@ -27,6 +30,7 @@ requirements:
   run:
     - python
     - platformdirs
+    - click
 
 test:
   imports:
@@ -39,7 +43,7 @@ test:
 
 about:
   home: "https://egglib.org/"
-  license: "GNU General Public v3 or later (GPLv3+)"
+  license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: LICENSE
   summary: "Evolutionary Genetics and Genomics Library. EggLib is a C++/Python library and program package for evolutionary genetics and genomics. Main features are sequence data management, sequence polymorphism analysis, and coalescent simulations. EggLib is a flexible Python module with a performant underlying C++ library and allows fast and intuitive development of Python programs and scripts."
@@ -50,4 +54,5 @@ extra:
   recipe-maintainers:
     - ranwez
   identifiers:
-    - https://doi.org/10.1111/1755-0998.13672
+    - doi:10.1111/1755-0998.13672
+    - biotools:egglib
