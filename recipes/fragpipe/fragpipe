@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Wrapper script for command-line FragPipe. Ensures the user agrees to MSFragger and IonQuant academic licenses.
+
+license_agreement_text='
+Please accept the academic license.
+
+FragPipe uses tools that are available freely for academic research and educational purposes only.
+
+Please provide pass license keys for MSFragger and IonQuant with the --msfragger_key and --ionquant_key parameters. By passing these, you verify that you have read the ACADEMIC licenses for the MSFragger and IonQuant tools. You may obtain these key by agreeing to the terms at http://msfragger-upgrader.nesvilab.org/upgrader/ and https://msfragger.arsci.com/ionquant/.'
+
+while [[ $# -gt 0 ]]; do
+    arg=$1
+    if [[ "$arg" == '--msfragger_key' ]]; then
+        shift
+        msfragger_key=$1
+    elif [[ "$arg" == '--ionquant_key' ]]; then
+        shift
+        ionquant_key=$1
+    else
+        set -- "$@" "$arg"
+    fi
+    shift
+done
+
+if [[ -z $msfragger_key || -z $ionquant_key ]]; then
+    echo "$license_agreement_text"
+    exit 1
+else
+    msfragger --key $msfragger_key --help >/dev/null 2>&1 
+    if [[ $? -ne 0 ]]; then
+        echo "Error: Invalid MSFragger license key"
+        echo "$license_agreement_text"
+        exit 1
+    fi
+    ionquant --key $ionquant_key --help >/dev/null 2>&1 
+    if [[ $? -ne 0 ]]; then
+        echo "Error: Invalid IonQuant license key"
+        echo "$license_agreement_text"
+        exit 1
+    fi
+fi
+
+sh ../share/fragpipe*/fragpipe "$@"

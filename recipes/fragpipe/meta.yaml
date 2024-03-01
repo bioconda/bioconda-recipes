@@ -1,8 +1,13 @@
 {% set name = "FragPipe" %}
-{% set version = "19.1" %}
+{% set version = "20.0" %}
 {% set philosopher_version = "4.8.1" %}
-{% set msfragger_version = "3.7" %}
-{% set ionquant_version = "1.8.10" %}
+{% set msfragger_version = "4.0" %}
+{% set ionquant_version = "1.10.12" %}
+
+# These keys were generated ONLY for the testing of this bioconda package.
+# Users must generate their own key by agreeing to the terms at https://msfragger-upgrader.nesvilab.org/upgrader/ and https://msfragger.arsci.com/ionquant/.
+{% set msfragger_academic_use_only_key = "f28c4be2-759b0a11-6c1ea652-1240565a" %}
+{% set ionquant_academic_use_only_key = "47cb2953-b4bf7726-2c96f5fe-8f1013aa" %}
 
 package:
   name: fragpipe
@@ -14,7 +19,7 @@ build:
 
 source:
   - url: https://github.com/Nesvilab/{{ name }}/releases/download/{{ version }}/{{ name }}-{{ version }}.zip
-    sha256: 242c45abe590ceee29d9afee4a0571fa2b8737b4040a751b6833fa4987c7334d
+    sha256: 0d77db85ae26c190a915823e1c68238f3a19533810734b008564b2a8d85d1bd6
     folder: fragpipe_source
   - url: https://github.com/Nesvilab/philosopher/releases/download/v{{ philosopher_version }}/philosopher_v{{ philosopher_version }}_linux_amd64.zip
     sha256: c0c85126ad9c3b1a034aca772e9617175693617a0c8809dc681522daf7f9b52f
@@ -22,34 +27,6 @@ source:
 
 build:
   number: 0
-  script:
-    - if [ -z "$NAME" ]; then export NAME=${USERNAME:-bioconda}; fi
-    - if [ -z "$EMAIL" ]; then export EMAIL=${NAME}@${HOSTNAME:-bioconda.org}; fi
-    - if [ -z "$INSTITUTION" ]; then export INSTITUTION=${HOSTNAME:-bioconda.org}; fi
-    - mkdir -p $PREFIX/
-    - cp  -rp fragpipe_source/* $PREFIX/
-    - cp ${RECIPE_DIR}/fragpipe_cli $PREFIX/bin
-    - mkdir -p $PREFIX/bin
-    - chmod ugo+x philosopher_source/philosopher
-    - cp philosopher_source/philosopher philosopher_source/philosopher.yml $PREFIX/bin
-    #- ${RECIPE_DIR}/academic_install.py -n galaxy -e "$EMAIL" -o "$INSTITUTION" -i '1.8.10' -p ${PREFIX}/tools
-    #- ${RECIPE_DIR}/academic_install.py -n galaxy -e "$EMAIL" -o "$INSTITUTION" -m '3.7' -p ${PREFIX}/tools
-  missing_dso_whitelist:
-    - /lib64/libgomp.so.1
-    - /lib64/libdl.so.2
-    - /lib64/librt.so.1
-    - /lib64/libpthread.so.0
-    - /lib64/libm.so.6
-    - /lib64/libc.so.6
-    - /lib64/ld-linux-x86-64.so.2
-    - /lib64/libdl.so.2
-    - /lib64/librt.so.1
-    - /lib64/libm.so.6
-    - /lib64/libpthread.so.0
-    - /lib64/libstdc++.so.6
-    - /lib64/libgcc_s.so.1
-    - /lib64/libc.so.6
-    - /lib64/ld-linux-x86-64.so.2
 
 requirements:
   host:
@@ -60,12 +37,10 @@ requirements:
     - numpy =1.18.5
     - msfragger =3.7.0
     - ionquant =1.8.10
-    #- numpy >=1.17
 
-#test:
-#  commands:
-#    # - which fragpipe
-#    - fragpipe --help  2>&1 | grep 'FragPipe'
+test:
+  commands:
+    - fragpipe --msfragger_key {{ msfragger_academic_use_only_key }} --ionquant_key {{ ionquant_academic_use_only_key }} --help  2>&1 | grep 'FragPipe'
 
 about:
   home: https://github.com/Nesvilab/FragPipe
@@ -87,8 +62,6 @@ about:
     and DIA-Umpire SE module for direct analysis of data independent acquisition (DIA) data.
 
 extra:
-  notes: |
-    For example run it with "IonQuant -Xms512m -Xmx16g"
   identifiers:
     - biotools:fragpipe
     - doi:10.1074/mcp.TIR120.002048
