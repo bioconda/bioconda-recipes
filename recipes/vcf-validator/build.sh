@@ -1,13 +1,17 @@
-
-
-mkdir -p ${PREFIX}/bin
-# Check if linux or osx
+# Install additional dependencies
 if [ -z ${OSX_ARCH+x} ]; then
-  curl -LJo ${PREFIX}/bin/vcf_validator  https://github.com/EBIvariation/vcf-validator/releases/download/v${PKG_VERSION}/vcf_validator_linux \
-    && curl -LJo ${PREFIX}/bin/vcf_assembly_checker  https://github.com/EBIvariation/vcf-validator/releases/download/v${PKG_VERSION}/vcf_assembly_checker_linux \
-    && chmod 755 ${PREFIX}/bin/vcf_assembly_checker ${PREFIX}/bin/vcf_validator
+  bash install_dependencies.sh linux
 else
-  curl -LJo ${PREFIX}/bin/vcf_validator  https://github.com/EBIvariation/vcf-validator/releases/download/v${PKG_VERSION}/vcf_validator_macos \
-    && curl -LJo ${PREFIX}/bin/vcf_assembly_checker  https://github.com/EBIvariation/vcf-validator/releases/download/v${PKG_VERSION}/vcf_assembly_checker_macos \
-    && chmod 755 ${PREFIX}/bin/vcf_assembly_checker ${PREFIX}/bin/vcf_validator
+  bash install_dependencies.sh osx
 fi
+mkdir build
+cd build
+if [ -z ${OSX_ARCH+x} ]; then
+  cmake -G "Unix Makefiles" -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc ..
+else
+  cmake -G "Unix Makefiles" -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang ..
+fi
+make -j2
+cd ..
+./build/bin/test_validation_suite
+echo "Done with vcf-validator"
