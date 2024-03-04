@@ -1,0 +1,41 @@
+# Test recipe intended to be later deleted. Other than name/version, copying
+# seqtk recipe, selected for being light on build requirements but requiring
+# compilation to test aarch64 builds.
+
+package:
+
+  name: test
+  version: 0.5
+
+
+source:
+  url: https://github.com/lh3/seqtk/archive/v1.4.tar.gz
+  sha256: d124604ec24f29ed14ce127426ab90e0f3a2c0280c80d1a3ff8b1c09feede19c
+  patches:
+    - 0001-makefile.patch
+
+build:
+  number: 0
+  run_exports: {{ pin_subpackage("test", max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - zlib
+  run:
+    - zlib
+test:
+  commands:
+    - seqtk 2>&1 | grep seqtk -q
+
+about:
+  home: https://github.com/lh3/seqtk
+  license: MIT
+  license_file: LICENSE
+  summary: Test recipe, copied from the seqtk recipe
+
+extra:
+  additional-platforms:
+    - linux-aarch64
