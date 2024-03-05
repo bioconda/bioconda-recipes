@@ -14,7 +14,16 @@ build:
   noarch: python
   entry_points:
     - phold = phold:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  script:
+    - | 
+      {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+      mkdir -p $SP_DIR/
+      mkdir -p $SP_DIR/cnn
+      mkdir -p $SP_DIR/cnn/cnn_chkpnt
+      mkdir -p $SP_DIR/finetune
+      cp -r src/cnn/cnn_chkpnt/model.pt $SP_DIR/cnn/cnn_chkpnt/
+      cp -r src/finetune/Phrostt5_finetuned.pth $SP_DIR/finetune/
+      
   run_exports:
     - {{ pin_subpackage('phold', max_pin='x') }}
 
