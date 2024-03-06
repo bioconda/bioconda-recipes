@@ -1,15 +1,18 @@
-{% set version = "4.1.1" %}
+{% set name = "rmats" %}
+{% set version = "4.2.0" %}
 
 package:
-  name: rmats
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  sha256: e9724a97a8ee8db99f138b38d74a3384164eadcd43d14609fdc27ecbcf3d37d7
+  sha256: 7d5b56623e684c460a33b1709e0e2dc3ad13288d7db2be6c55c61f4fef880444
   url: https://github.com/Xinglab/rmats-turbo/releases/download/v{{ version }}/rmats_turbo_v{{ version|replace(".","_") }}.tar.gz
 
 build:
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -17,6 +20,7 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
+    - libgomp  # [linux]
     - cmake
   host:
     - python
@@ -25,13 +29,13 @@ requirements:
     - gsl
     - zlib
     - libblas
+    - liblapack
   run:
     - python
     - numpy
     - gsl
     - zlib
     - star >=2.5
-    - libblas
 
 test:
   commands:

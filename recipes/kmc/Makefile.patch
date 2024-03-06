@@ -1,0 +1,71 @@
+From 4a29584d69d40a41d2569899b03a5660af85f97c Mon Sep 17 00:00:00 2001
+From: marekkokot <marek.koki@gmail.com>
+Date: Thu, 20 Jan 2022 19:51:36 +0100
+Subject: [PATCH] makefile for bioconda
+
+---
+ Makefile | 27 ++++++++++++++++++---------
+ 1 file changed, 18 insertions(+), 9 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index bc07d35..d2784a7 100644
+--- a/Makefile
++++ b/Makefile
+@@ -22,8 +22,8 @@ ifeq ($(UNAME_S),Darwin)
+ else
+ 	CC 	= g++
+ 
+-	CFLAGS	= -Wall -O3 -m64 -static -Wl,--whole-archive -lpthread -Wl,--no-whole-archive -std=c++14
+-	CLINK	= -lm -static -O3 -Wl,--whole-archive -lpthread -Wl,--no-whole-archive -std=c++14
++	CFLAGS	= -Wall -O3 -m64 -pthread -std=c++14
++	CLINK	= -lm -O3 -std=c++14
+ 
+ 	PY_KMC_API_CFLAGS = -fPIC -Wall -shared -std=c++14 -O3
+ endif
+@@ -69,13 +69,9 @@ else
+ 	$(KMC_MAIN_DIR)/raduls_avx2.o \
+ 	$(KMC_MAIN_DIR)/raduls_avx.o
+ 
+-	KMC_LIBS = \
+-	$(KMC_MAIN_DIR)/libs/libz.a \
+-	$(KMC_MAIN_DIR)/libs/libbz2.a
+-
+-	KMC_TOOLS_LIBS = \
+-	$(KMC_TOOLS_DIR)/libs/libz.a \
+-	$(KMC_TOOLS_DIR)/libs/libbz2.a
++	KMC_LIBS = -lz -lbz2 -lpthread 
++	
++	KMC_TOOLS_LIBS = -lz -lbz2 -lpthread 
+ 
+ 	LIB_KMC_CORE = $(OUT_BIN_DIR)/libkmc_core.a
+ endif
+@@ -90,6 +86,12 @@ $(KMC_API_DIR)/mmer.o \
+ $(KMC_API_DIR)/kmc_file.o \
+ $(KMC_API_DIR)/kmer_api.o
+ 
++KMC_API_PICO = \
++$(KMC_API_DIR)/mmer.pico \
++$(KMC_API_DIR)/kmc_file.pico \
++$(KMC_API_DIR)/kmer_api.pico
++
++
+ KMC_API_SRC_FILES = $(wildcard $(KMC_API_DIR)/*.cpp)
+ PY_KMC_API_OBJS = $(patsubst $(KMC_API_DIR)/%.cpp,$(PY_KMC_API_DIR)/%.o,$(KMC_API_SRC_FILES))
+ 
+@@ -110,6 +112,13 @@ $(KMC_TOOLS_DIR)/kff_info_reader.o
+ $(KMC_CLI_OBJS) $(KMC_CORE_OBJS) $(KMC_DUMP_OBJS) $(KMC_API_OBJS) $(KFF_OBJS) $(KMC_TOOLS_OBJS): %.o: %.cpp
+ 	$(CC) $(CFLAGS) -c $< -o $@
+ 
++$(KMC_API_PICO): %.pico: %.cpp
++	$(CC) $(CFLAGS) -fpic -c -o $@ $<
++
++$(OUT_BIN_DIR)/libkmc_api.so: $(KMC_API_PICO)
++	-mkdir -p $(OUT_BIN_DIR)
++	$(CC) -shared $(LDFLAGS) -o $@ $^
++
+ $(KMC_MAIN_DIR)/raduls_sse2.o: $(KMC_MAIN_DIR)/raduls_sse2.cpp
+ 	$(CC) $(CFLAGS) -msse2 -c $< -o $@
+ $(KMC_MAIN_DIR)/raduls_sse41.o: $(KMC_MAIN_DIR)/raduls_sse41.cpp
+-- 
+2.34.1
+

@@ -1,5 +1,5 @@
 {% set name = "pmultiqc" %}
-{% set version = "0.0.9" %}
+{% set version = "0.0.24" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,11 +7,13 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: abbe50824e0fbd2b1d86995620d9e8ffb04f5e0c2191a0a9f364618f92a0ccc7
+  sha256: e3d617cdfc4eab4fa8905dab1f4e575db038471659840bf1431b535d610ae136
 
 build:
   number: 0
   noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
@@ -22,10 +24,11 @@ requirements:
     - python >=3.6
     - pytest
     - lxml
-    - multiqc
+    - multiqc ==1.19.0
     - pandas
-    - sdrf-pipelines
+    - sdrf-pipelines >=0.0.18
     - pyteomics
+    - pyopenms >2.7
     
 test:
   imports:

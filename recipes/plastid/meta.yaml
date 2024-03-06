@@ -1,5 +1,5 @@
 {% set name = "plastid" %}
-{% set version = "0.5.1" %}
+{% set version = "0.6.1" %}
 
 package:
   name: {{ name }}
@@ -7,9 +7,12 @@ package:
 
 source:
   url: https://files.pythonhosted.org/packages/source/p/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: d4e32b7ccdeaa3d2ff907469731b54690034f145c5854211f202f02efc6cf5a8
+  sha256: 7a63f8a3b760e9c91e7c6d95ff781d9a8f2f967d705fcd8555ebb1e6d3b08b7b
+
 build:
-  number: 3
+  # We're not rebuilding old biopython versions on conda-forge for this
+  skip: true  # [py > 39]
+  number: 2
 
 extra:
   skip-lints:
@@ -22,7 +25,7 @@ requirements:
     - python
     - cython >=0.22.0
     - setuptools
-    - numpy >=1.9.4
+    - numpy >=1.9.4,<=1.23.5 # numpy 1.24 removes np.TYPE (reported https://github.com/joshuagryphon/plastid/issues/55)
     - pysam >=0.8.4
     - termcolor
     - scipy >=0.15.1
@@ -31,10 +34,14 @@ requirements:
     - biopython >=1.64,<1.78  # 1.78 removed Bio.Alphabet (reported https://github.com/joshuagryphon/plastid/issues/45)
     - twobitreader >=3.0.0
     - zlib
+    - openssl
+    - htslib
+    
   run:
     - python
-    - {{ pin_compatible('numpy') }}
+    - numpy <=1.23.5
     - {{ pin_compatible('pysam', max_pin='x.x.x') }}
+    - setuptools
     - cython >=0.22.0
     - termcolor
     - scipy >=0.15.1
@@ -45,7 +52,7 @@ requirements:
     - zlib
     - bowtie
     - fastx_toolkit
-
+    - htslib
 test:
   imports:
     - plastid

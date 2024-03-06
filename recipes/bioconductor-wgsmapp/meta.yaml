@@ -1,6 +1,6 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "WGSmapp" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,23 +8,26 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 8f8a05bede8ec0037c23b98dce0c4355
+  md5: dfc3f5a82d532551e2d6c21b11c99566
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-wgsmapp", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-genomicranges >=1.46.0,<1.47.0'
+    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
     - r-base
   run:
-    - 'bioconductor-genomicranges >=1.46.0,<1.47.0'
+    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

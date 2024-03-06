@@ -1,6 +1,6 @@
-{% set version = "1.30.0" %}
+{% set version = "1.38.0" %}
 {% set name = "bcellViper" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,23 +8,26 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 0e1954434f4239cbc217940346536a01
+  md5: 7e93bbaa204826358c77282e2a370074
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-bcellviper", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-biobase >=2.54.0,<2.55.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
     - r-base
   run:
-    - 'bioconductor-biobase >=2.54.0,<2.55.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

@@ -1,0 +1,48 @@
+{% set version = "1.4.0" %}
+{% set name = "MicrobiomeBenchmarkData" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: c6c791669de95bf2dc108798770ea5be
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-microbiomebenchmarkdata", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: rmarkdown, knitr, BiocStyle, testthat (>= 3.0.0), mia, ggplot2, tidyr, dplyr, magrittr, tibble, purrr
+requirements:
+  host:
+    - 'bioconductor-biocfilecache >=2.10.0,<2.11.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - 'bioconductor-treesummarizedexperiment >=2.10.0,<2.11.0'
+    - r-ape
+    - r-base
+  run:
+    - 'bioconductor-biocfilecache >=2.10.0,<2.11.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - 'bioconductor-treesummarizedexperiment >=2.10.0,<2.11.0'
+    - r-ape
+    - r-base
+    - curl
+    - 'bioconductor-data-packages >=20231203'
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'Datasets for benchmarking in microbiome research'
+  description: 'The MicrobiomeBenchmarkData package provides functionality to access microbiome datasets suitable for benchmarking. These datasets have some biological truth, which allows to have expected results for comparison. The datasets come from various published sources and are provided as TreeSummarizedExperiment objects. Currently, only datasets suitable for benchmarking differential abundance methods are available.'
+

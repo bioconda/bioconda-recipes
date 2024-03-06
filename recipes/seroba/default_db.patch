@@ -1,0 +1,35 @@
+diff --git a/scripts/seroba b/scripts/seroba
+index 05d0d37..945c83e 100755
+--- a/scripts/seroba
++++ b/scripts/seroba
+@@ -2,6 +2,8 @@
+ import argparse
+ import seroba
+ 
++# For Bioconda purposes
++SEROBA_DB="BIOCONDA_SED_REPLACE"
+ 
+ parser = argparse.ArgumentParser(
+     prog='seroba',
+@@ -41,11 +43,9 @@ subparser_createDBs.set_defaults(func=seroba.tasks.createDBs.run)
+ subparser_runSerotyping = subparsers.add_parser(
+     'runSerotyping',
+     help='indetify serotype of your input data',
+-    usage='seroba runSerotyping [options]  <databases directory> <read1> <read2> <prefix>',
++    usage='seroba runSerotyping [options]  <read1> <read2> <prefix>',
+     description='identify serotype of your input data',
+ )
+-subparser_runSerotyping.add_argument('databases', type=str, \
+-    help='path to database directory')
+ subparser_runSerotyping.add_argument('read1', type=str, \
+     help='forward read file')
+ subparser_runSerotyping.add_argument('read2', type=str, \
+@@ -54,6 +54,8 @@ subparser_runSerotyping.add_argument('prefix', type=str, \
+     help='unique prefix')
+ 
+ other_run_group = subparser_runSerotyping.add_argument_group('Other options')
++other_run_group.add_argument('--databases', type=str, default=SEROBA_DB, \
++    help='path to database directory, default {}'.format(SEROBA_DB))
+ other_run_group.add_argument('--noclean', action='store_true',\
+     help='Do not clean up intermediate files (assemblies, ariba report)')
+ other_run_group.add_argument('--coverage', type=int,\

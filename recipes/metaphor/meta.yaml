@@ -1,0 +1,62 @@
+{% set name = "metaphor" %}
+{% set version = "1.7.11" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/vinisalazar/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 45f01fc8a7c142f3ae26b4880488e77228103a670cffaa986e5377b7efcaff86
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script:
+    - "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - pip
+    - python >=3.9
+  run:
+    - jinja2
+    - networkx
+    - pandas
+    - python >=3.9,<3.12
+    - pyyaml
+    - requests
+    - snakemake >=7.5
+    - snakemake-wrapper-utils
+    - tqdm
+    - zstandard
+
+test:
+  imports:
+    - metaphor
+    - metaphor.cli
+    - metaphor.config
+    - metaphor.workflow
+  commands:
+    - metaphor -h
+
+about:
+  home: "https://github.com/vinisalazar/metaphor"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.md
+  summary: "Metaphor - Metagenomic Pipeline for Short Reads"
+  doc_url: "https://metaphor-workflow.readthedocs.io/"
+  dev_url: "https://github.com/vinisalazar/metaphor"
+  description: |
+
+    # Metaphor - Metagenomic Pipeline for sHOrt Reads
+
+
+    Metaphor is a Snakemake-based, general-purpose workflow for assembly and binning of metagenomes. To learn how to use it, please refer to the [docs page](https://metaphor-workflow.readthedocs.io/).
+
+extra:
+  recipe-maintainers:
+    - vinisalazar

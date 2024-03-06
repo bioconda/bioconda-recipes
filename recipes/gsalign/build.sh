@@ -9,5 +9,5 @@ popd
 
 # GSAlign
 pushd src
-make CXX=$CXX FLAGS="$CXXFLAGS -Wall -D NDEBUG -O3 -m64 -msse4.2 -mpopcnt -fPIC" LIB="$LDFLAGS -lz -lm -lpthread"
+make CXX=$CXX FLAGS="$CXXFLAGS -I$PREFIX/include -Wall -D NDEBUG -O3 -m64 -msse4.2 -mpopcnt -fPIC" LIB="$LDFLAGS -lz -lm -lpthread"
 cp GSAlign $PREFIX/bin

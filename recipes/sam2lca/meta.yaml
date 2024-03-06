@@ -1,0 +1,54 @@
+{% set name = "sam2lca" %}
+{% set version = "1.1.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/sam2lca-{{ version }}.tar.gz
+  sha256: c1d26f67458c2ad3ff8541b4ecf672c97c81fd65c91092beefab10cdea6f945b
+
+build:
+  entry_points:
+    - sam2lca = sam2lca.cli:cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+  run:
+    - click
+    - numpy
+    - pandas
+    - pysam
+    - python >=3.7
+    - python-rocksdb
+    - scipy
+    - taxopy >=0.10.2
+    - tqdm
+    - xopen
+
+test:
+  imports:
+    - sam2lca
+  commands:
+    - pip check
+    - sam2lca --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/maxibor/sam2lca
+  summary: Lowest Common Ancestor on SAM/BAM/CRAM alignment files
+  license: GPL-3.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - maxibor

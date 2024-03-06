@@ -1,6 +1,6 @@
-{% set version = "3.14.0" %}
+{% set version = "3.18.0" %}
 {% set name = "TxDb.Hsapiens.UCSC.hg38.knownGene" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,25 +8,28 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: a931ccbc39dd4500b55b8aa2f3623ae7
+  md5: 2344dbd2878c82c6c860ed6529a700b2
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-txdb.hsapiens.ucsc.hg38.knowngene", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.56.0,<1.57.0'
-    - 'bioconductor-genomicfeatures >=1.46.0,<1.47.0'
+    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
+    - 'bioconductor-genomicfeatures >=1.54.0,<1.55.0'
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.56.0,<1.57.0'
-    - 'bioconductor-genomicfeatures >=1.46.0,<1.47.0'
+    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
+    - 'bioconductor-genomicfeatures >=1.54.0,<1.55.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

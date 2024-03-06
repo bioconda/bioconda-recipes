@@ -1,6 +1,6 @@
-{% set version = "0.32.0" %}
+{% set version = "0.40.0" %}
 {% set name = "bsseqData" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,23 +8,26 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: ac11b357c8f01bb38c16cbaedfe528b4
+  md5: 514171e8133c8d38e6b1ad31eff722a8
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-bsseqdata", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-bsseq >=1.30.0,<1.31.0'
+    - 'bioconductor-bsseq >=1.38.0,<1.39.0'
     - r-base
   run:
-    - 'bioconductor-bsseq >=1.30.0,<1.31.0'
+    - 'bioconductor-bsseq >=1.38.0,<1.39.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

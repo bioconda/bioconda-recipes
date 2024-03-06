@@ -1,0 +1,51 @@
+{% set name = "woltka" %}
+{% set version = "0.1.6" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: d1ffe069515284f6350e3129b5fa3a65b4a583105282c5af0a3997c30b7f8e99
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - woltka=woltka.cli:cli
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage("woltka", max_pin="x.x") }}
+
+requirements:
+  host:
+    - biom-format
+    - pip
+    - python
+    - setuptools
+  run:
+    - biom-format
+    - python
+    - setuptools
+
+test:
+  imports:
+    - woltka
+    - woltka.q2
+    - woltka.tests
+  commands:
+    - woltka --help
+
+about:
+  home: "https://github.com/qiyunzhu/woltka"
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: "versatile meta-omic data classifier"
+  doc_url: 
+  dev_url: 
+
+extra:
+  recipe-maintainers:
+    - qiyunzhu

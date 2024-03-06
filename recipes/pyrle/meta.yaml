@@ -1,5 +1,5 @@
 {% set name = "pyrle" %}
-{% set version = "0.0.33" %}
+{% set version = "0.0.39" %}
 
 package:
   name: '{{ name|lower }}'
@@ -7,12 +7,14 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 4c24a2e096f8dbfa4451d57ce769057e2ed6c369ee75f5dce3c4d6fa47f71a6e
+  sha256: 1be4be7814d3941db907aaf19f311bd46a407244316cadbf4b73109685c055c5
 
 build:
   number: 0
-  skip: True  # [not py3k]
+  skip: True  # [py2k]
   script: python setup.py install --single-version-externally-managed --record=record.txt
+  run_exports:
+    - {{ pin_subpackage('pyrle', max_pin="x.x") }}
 
 requirements:
   build:
@@ -27,6 +29,7 @@ requirements:
     - tabulate
     - numpy
     - natsort
+    - setuptools
 
 test:
   imports:
@@ -35,4 +38,10 @@ test:
 about:
   home: https://github.com/endrebak/pyrle
   license: MIT
+  license_family: MIT
+  license_file: LICENSE
   summary: Genomic Rle-objects for Python
+
+extra:
+  skip-lints:
+    - uses_setuptools

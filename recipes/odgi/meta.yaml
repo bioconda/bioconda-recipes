@@ -1,40 +1,48 @@
-{% set version = "0.6.2" %}
+{% set name = "odgi" %}
+{% set version = "0.8.4" %}
 
 package:
-  name: odgi
-  version: '{{version}}'
+  name: "{{ name }}"
+  version: "{{ version }}"
 
 source:
-  url: https://github.com/pangenome/odgi/releases/download/v0.6.2/odgi-v0.6.2.tar.gz
-  sha256: 88b2114a42b130992c16df288012c8e59c7fd4cc405efdf9364099b2c63b8ca0
+  url: https://github.com/pangenome/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
+  sha256: bc656e541a42c890f71e748e4420215e1efba5b7b890d8c009bfef114c811f47
 
 build:
   skip: True  # [osx or py27]
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - llvm-openmp  # [osx]
+    - libgomp      # [linux]
     - cmake
     - make
   host:
     - zlib
     - python
     - jemalloc
-  run: 
+    - pybind11
+  run:
     - llvm-openmp  # [osx]
     - python
+    - pybind11
 
 test:
   commands:
     - odgi test
-  imports:
-    - odgi
 
 about:
   home: https://github.com/pangenome/odgi
   license: MIT
   license_file: LICENSE
   summary: An optimized dynamic genome/graph implementation
+
+extra:
+  recipe-maintainers:
+    - AndreaGuarracino

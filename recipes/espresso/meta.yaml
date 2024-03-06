@@ -1,0 +1,35 @@
+{% set version = "1.4.0" %}
+
+package:
+  name: espresso
+  version: {{ version }}
+
+source:
+  sha256: 656a5ab152782e5bb195b25a3814a3b94c1ed9ae9c03a1692cf1bba0794d1295
+  url: https://github.com/Xinglab/espresso/releases/download/v{{ version }}/espresso_v_{{ version|replace(".", "_") }}.tar.gz
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('espresso', max_pin="x") }}
+
+requirements:
+  run:
+    - blast >=2.8.1
+    - hmmer >=3.3.1
+    - perl >=5.8
+    - perl-storable >=3.0
+    - samtools >=1.6
+
+test:
+  commands:
+    - perl $PREFIX/bin/ESPRESSO_S.pl --help > /dev/null
+    - perl $PREFIX/bin/ESPRESSO_C.pl --help > /dev/null
+    - perl $PREFIX/bin/ESPRESSO_Q.pl --help > /dev/null
+
+about:
+  home: https://github.com/Xinglab/espresso
+  license: Free for non-commercial use, see LICENSE file
+  summary: ESPRESSO (Error Statistics PRomoted Evaluator of Splice Site Options) processes long read RNA-seq data
+  license_file: LICENSE

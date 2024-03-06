@@ -1,6 +1,6 @@
-{% set version = "0.99.4" %}
+{% set version = "0.99.7" %}
 {% set name = "geneplast.data" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,22 +8,43 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 506a6c64fbac2922c8cd9ba0b1419785
+  md5: ef658e131138d87033fcd985c38cf45f
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-geneplast.data", max_pin="x.x") }}'
   noarch: generic
-# Suggests: knitr, rmarkdown
+# Suggests: geneplast, BiocGenerics, BiocStyle, knitr, rmarkdown
 requirements:
   host:
+    - 'bioconductor-biocfilecache >=2.10.0,<2.11.0'
+    - 'bioconductor-geneplast >=1.28.0,<1.29.0'
+    - 'bioconductor-treeio >=1.26.0,<1.27.0'
+    - r-ape
     - r-base
+    - r-dplyr
+    - r-igraph
+    - r-purrr
+    - r-readr
+    - r-tibble
   run:
+    - 'bioconductor-biocfilecache >=2.10.0,<2.11.0'
+    - 'bioconductor-geneplast >=1.28.0,<1.29.0'
+    - 'bioconductor-treeio >=1.26.0,<1.27.0'
+    - r-ape
     - r-base
+    - r-dplyr
+    - r-igraph
+    - r-purrr
+    - r-readr
+    - r-tibble
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -31,5 +52,5 @@ about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Input data for the geneplast package via AnnotationHub'
-  description: 'The package geneplast.data provides an interface for obtaining input data used in the analyses pipelines from geneplast package. Objects containing species, phylogenetic trees, and orthology information of eukaryotes from different orthologous databases are provided.'
+  description: 'The package geneplast.data provides datasets from different sources via AnnotationHub to use in geneplast pipelines. The datasets have species, phylogenetic trees, and orthology relationships among eukaryotes from different orthologs databases.'
 

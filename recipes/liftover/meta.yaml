@@ -1,0 +1,47 @@
+{% set name = "liftover" %}
+{% set version = "1.1.18" %}
+{% set sha256 = "a4bf896c5dd59a284929d68f446a78c426827efbec430d35da1ec7bcd29eac44" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/liftover-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True  # [py < 38]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  run_exports:
+    - {{ pin_subpackage('liftover', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - cython
+    - pip
+    - wheel
+    - zlib
+  run:
+    - python
+    - urllib3
+
+test:
+  imports:
+    - liftover
+
+about:
+  home: 'https://github.com/jeremymcrae/liftover'
+  summary: 'A Python package for converting point coordinates between genome assemblies, inspired by pyliftover.'
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  dev_url: 'https://pypi.org/project/liftover/'
+
+extra:
+  recipe-maintainers:
+    - mencian

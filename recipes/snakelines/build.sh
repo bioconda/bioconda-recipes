@@ -11,4 +11,4 @@ echo "snakemake --snakefile \$SCRIPTPATH/../share/snakelines/snakelines.snake \$
 cp -rv snakelines $PREFIX/bin/
 chmod ugo+x $PREFIX/bin/snakelines
 
-cp -rv docs enviroments example legacy pipeline rules src License.txt README.rst config.yaml snakelines.snake $PREFIX/share/snakelines
+cp -rv docs environments example rules src License.txt README.rst config.yaml snakelines.snake $PREFIX/share/snakelines

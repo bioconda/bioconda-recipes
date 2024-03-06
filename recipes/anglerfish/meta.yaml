@@ -1,0 +1,53 @@
+{% set name = "anglerfish" %}
+{% set version = "0.6.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/b/bio-{{ name }}/bio-{{ name }}-{{ version }}.tar.gz"
+  sha256: 91a62cbbc388009bd503df0d3f64441c0e86ab377da46f721f5fcf82b9cce331
+
+build:
+  number: 0
+  noarch: python
+  script: "cp ${RECIPE_DIR}/requirements.txt ${SRC_DIR} && {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  entry_points:
+    - anglerfish=anglerfish.anglerfish:anglerfish
+  run_exports:
+    - {{ pin_subpackage('anglerfish', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+  run:
+    - biopython
+    - click
+    - minimap2
+    - numpy
+    - pandas
+    - python >=3.7
+    - python-levenshtein
+    - pyyaml
+
+test:
+  imports:
+    - anglerfish.demux
+    - anglerfish.demux.demux
+    - anglerfish.demux.samplesheet
+
+  commands:
+    - anglerfish --help
+
+about:
+  home: "https://github.com/remiolsen/anglerfish"
+  license: MIT
+  license_family: MIT
+  summary: "Anglerfish, a tool to demultiplex Illumina libraries from ONT data"
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - remiolsen

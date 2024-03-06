@@ -1,6 +1,5 @@
 {% set name = "capcruncher" %}
-{% set version = "0.1.1a1" %}
-
+{% set version = "0.3.12" %}
 
 package:
   name: {{ name|lower }}
@@ -8,53 +7,50 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/capcruncher-{{ version }}.tar.gz
-  sha256: d00f99e6ce4eaace049262b4242dbda04dc4f664e036562084456f5ee6d83e0c
+  sha256: 43b1e634dac4eee5f801b69b2adafb07b61c72556cc32b1cd5e03518ed2e407b
 
 build:
   number: 0
   noarch: python
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   entry_points:
     - capcruncher = capcruncher.cli:cli
-  script: {{ PYTHON }} -m pip install . -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+  script: {{ PYTHON }} -m pip install . --no-deps -vvv
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.10
+    - setuptools-scm
+    - wheel
   run:
-    - apsw
-    - bedtools
-    - bowtie2 >=2.4.4
-    - cgatcore
-    - click
+    - python >=3.10
+    - click <=8.2.0
     - cooler
-    - drmaa
-    - fastqc
-    - flash
-    - gevent
-    - iced
-    - ipykernel
-    - joblib
-    - multiqc
+    - duckdb
+    - h5py
+    - loguru
+    - more-itertools
     - natsort
-    - nbconvert
-    - pandas >=1.2.0
-    - papermill
-    - paramiko
-    - plotly
+    - numpy
+    - pandas <=2.0.1
+    - plotly >5.0.0,<=5.10.0
+    - pyarrow >8.0.0,<=9.0.0
     - pybedtools
-    - pysam 
-    - python >=3.8
-    - ruffus
-    - samtools
+    - pyranges
+    - pysam >0.15.0,<=0.19.1
+    - pyyaml >=6.0
+    - quarto
+    - ray
     - seaborn
-    - sqlalchemy
+    - sh
+    - snakemake <=7.30.2
+    - tqdm
     - trackhub
-    - trim-galore
-    - ucsc-bedgraphtobigwig
-    - ucsc-bedtobigbed
-    - ucsc-fatotwobit
-    - ucsc-fetchchromsizes
+    - tracknado
     - ujson
     - xopen
     - python-xxhash
@@ -64,16 +60,16 @@ test:
     - capcruncher
     - capcruncher.cli
   commands:
-    - pip check
     - capcruncher --help
-  requires:
-    - pip
 
 about:
   home: https://github.com/sims-lab/CapCruncher.git
-  summary: An end-to-end solution for processing Capture-C Tri-C and Tiled-C data
-  license: GPL-3.0
+  summary: An end-to-end solution for processing Capture-C, Tri-C and Tiled-C data
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: LICENSE
+  doc_url: https://sims-lab.github.io/CapCruncher/
+  dev_url: https://github.com/sims-lab/CapCruncher
 
 extra:
   recipe-maintainers:

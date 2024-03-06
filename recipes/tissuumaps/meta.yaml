@@ -1,0 +1,52 @@
+# As soon as PyQt6 is available as a Conda package, this recipe can be
+# updated as follows:
+# - use "pip install .[full]"
+# - add pyqt6 (or possibly pyqt>=6) dependency
+# Until then, only the "tissuumaps_server" script is available, not "tissuumaps"
+
+{% set version = "3.2.0.5" %}
+
+package:
+  name: tissuumaps
+  version: {{ version }}
+
+source:
+  url: https://github.com/TissUUmaps/TissUUmaps/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 2d0cefff0aa54a8f9bb040cf5537a77c5fec2a40954b8c1b2b2af8a07bb181d9
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install --no-deps -vv ."
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage("tissuumaps", max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - python
+    - flask >=2
+    - openslide-python >=1.1.2
+    - pillow >=8.2.0
+    - ipython >=7.0
+    - pyyaml >=6.0
+    - h5py >=3.6.0
+    - scipy >=1.7.2
+    - pyvips
+
+test:
+  commands:
+    - "tissuumaps_server --help 2>&1 > /dev/null | grep 'version: {{ version }}'"
+
+about:
+  home: https://tissuumaps.research.it.uu.se/
+  license: GPLv3
+  summary: >
+    TissUUmaps is a lightweight viewer that uses basic web tools to visualize
+    gene expression data or any kind of point data on top of whole slide images
+
+extra:
+  identifiers:
+    - doi:10.1101/2022.01.28.478131

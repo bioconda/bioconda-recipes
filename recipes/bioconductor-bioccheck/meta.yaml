@@ -1,6 +1,6 @@
-{% set version = "1.30.0" %}
+{% set version = "1.38.0" %}
 {% set name = "BiocCheck" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,36 +8,42 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 796ea51b4441bf82f6e685f488a679cf
+  md5: d003f035a6c197261bed5fa4cd989738
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-bioccheck", max_pin="x.x") }}'
   noarch: generic
-# Suggests: RUnit, BiocGenerics, Biobase, RJSONIO, rmarkdown, devtools (>= 1.4.1), usethis, BiocStyle
+# Suggests: RUnit, BiocGenerics, Biobase, jsonlite, rmarkdown, downloader, devtools (>= 1.4.1), usethis, BiocStyle, GenomicRanges, gert
 requirements:
   host:
-    - 'bioconductor-biocviews >=1.62.0,<1.63.0'
-    - 'bioconductor-graph >=1.72.0,<1.73.0'
+    - 'bioconductor-biocbaseutils >=1.4.0,<1.5.0'
+    - 'bioconductor-biocfilecache >=2.10.0,<2.11.0'
+    - 'bioconductor-biocviews >=1.70.0,<1.71.0'
+    - 'bioconductor-graph >=1.80.0,<1.81.0'
     - r-base
     - r-biocmanager
+    - r-callr
     - r-codetools
     - r-httr
     - r-knitr
-    - r-optparse
     - r-stringdist
   run:
-    - 'bioconductor-biocviews >=1.62.0,<1.63.0'
-    - 'bioconductor-graph >=1.72.0,<1.73.0'
+    - 'bioconductor-biocbaseutils >=1.4.0,<1.5.0'
+    - 'bioconductor-biocfilecache >=2.10.0,<2.11.0'
+    - 'bioconductor-biocviews >=1.70.0,<1.71.0'
+    - 'bioconductor-graph >=1.80.0,<1.81.0'
     - r-base
     - r-biocmanager
+    - r-callr
     - r-codetools
     - r-httr
     - r-knitr
-    - r-optparse
     - r-stringdist
 test:
   commands:
@@ -46,5 +52,5 @@ about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Bioconductor-specific package checks'
-  description: 'Executes Bioconductor-specific package checks.'
+  description: 'BiocCheck guides maintainers through Bioconductor best practicies. It runs Bioconductor-specific package checks by searching through package code, examples, and vignettes. Maintainers are required to address all errors, warnings, and most notes produced.'
 
