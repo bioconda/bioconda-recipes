@@ -20,4 +20,4 @@ RUST_BACKTRACE=1
 maturin build -b pyo3 --interpreter "${PYTHON}" --release --strip
 
 # Install *.whl files using pip
-${PYTHON} -m pip install . --no-deps --no-build-isolation -vvv
+${PYTHON} -m pip install pybigtools/target/wheels/*.whl --no-deps --no-build-isolation -vvv
