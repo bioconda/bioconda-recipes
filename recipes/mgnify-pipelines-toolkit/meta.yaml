@@ -1,0 +1,75 @@
+{% set name = "mgnify-pipelines-toolkit" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/mgnify_pipelines_toolkit-{{ version }}.tar.gz
+  sha256: 925b5b154d2858289fc83339fedeb09e58019c0a319edf20d822bc658ff8825b
+
+build:
+  entry_points:
+    - get_subunits = mgnify_pipelines_toolkit.analysis.shared.get_subunits:main
+    - get_subunits_coords = mgnify_pipelines_toolkit.analysis.shared.get_subunits_coords:main
+    - mapseq2biom = mgnify_pipelines_toolkit.analysis.shared.mapseq2biom:main
+    - are_there_primers = mgnify_pipelines_toolkit.analysis.amplicon.are_there_primers:main
+    - assess_inflection_point_mcp = mgnify_pipelines_toolkit.analysis.amplicon.assess_inflection_point_mcp:main
+    - assess_mcp_proportions = mgnify_pipelines_toolkit.analysis.amplicon.assess_mcp_proportions:main
+    - classify_var_regions = mgnify_pipelines_toolkit.analysis.amplicon.classify_var_regions:main
+    - find_mcp_inflection_points = mgnify_pipelines_toolkit.analysis.amplicon.find_mcp_inflection_points:main
+    - make_asv_count_table = mgnify_pipelines_toolkit.analysis.amplicon.make_asv_count_table:main
+    - remove_ambiguous_reads = mgnify_pipelines_toolkit.analysis.amplicon.remove_ambiguous_reads:main
+    - rev_comp_se_primers = mgnify_pipelines_toolkit.analysis.amplicon.rev_comp_se_primers:main
+    - standard_primer_matching = mgnify_pipelines_toolkit.analysis.amplicon.standard_primer_matching:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('mgnify-pipelines-toolkit', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - setuptools >=61.0
+    - pip
+  run:
+    - python >=3.9
+    - biopython ==1.82
+    - numpy ==1.26.0
+    - pandas ==2.0.2
+    - regex ==2023.12.25
+
+test:
+  imports:
+    - mgnify_pipelines_toolkit
+  commands:
+    - pip check
+    - get_subunits --help
+    - get_subunits_coords --help
+    - mapseq2biom --help
+    - are_there_primers --help
+    - assess_inflection_point_mcp --help
+    - assess_mcp_proportions --help
+    - classify_var_regions --help
+    - find_mcp_inflection_points --help
+    - make_asv_count_table --help
+    - remove_ambiguous_reads --help
+    - rev_comp_se_primers --help
+    - standard_primer_matching --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/EBI-Metagenomics/mgnify-pipelines-toolkit
+  summary: Collection of scripts and tools for MGnify pipelines
+  description: |
+    This package contains a collection of scripts used by MGnify
+    pipelines
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - chrisAta
