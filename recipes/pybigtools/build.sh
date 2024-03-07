@@ -20,4 +20,4 @@ RUST_BACKTRACE=1
 maturin build -m pybigtools/Cargo.toml -b pyo3 --interpreter "${PYTHON}" --release --strip
 
 # Install *.whl files using pip
-${PYTHON} -m pip install pybigtools/target/wheels/*.whl --no-deps --no-build-isolation --no-cache-dir -vvv
+${PYTHON} -m pip install target/wheels/*.whl --no-deps --no-build-isolation --no-cache-dir -vvv
