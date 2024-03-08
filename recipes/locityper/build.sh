@@ -5,8 +5,8 @@ if [ "$(uname)" == "Darwin" ]; then
     export HOME=`pwd`
 fi
 
-export C_INCLUDE_PATH="$BUILD_PREFIX/include"
-export LIBRARY_PATH="$BUILD_PREFIX/lib"
+export C_INCLUDE_PATH="$BUILD_PREFIX/include:$C_INCLUDE_PATH"
+export LIBRARY_PATH="$BUILD_PREFIX/lib:$LIBRARY_PATH"
 # export CFLAGS="-L$BUILD_PREFIX/lib"
 # export RUSTFLAGS="-L$BUILD_PREFIX/lib -lz"
 
