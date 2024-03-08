@@ -5,11 +5,11 @@ set -e
 
 MAJOR_VERSION=$(echo "$PKG_VERSION" | cut -d. -f1)
 
-# Skip if aarch64 on linux
-# Because Nextclade requires glibc >= 2.18 not available yet on aarch64 builder
-if [[ $target_platform == linux-aarch64 ]]; then
-    echo "Skipping test on aarch64"
-    exit 0
+# Print glibc versions
+# if on linux
+if [[ $target_platform == linux* ]]; then
+    ldd --version
+    strings /usr/lib64/libc.so.6 | grep -E "^GLIBC_2"
 fi
 
 for BIN in nextclade nextclade$MAJOR_VERSION; do
