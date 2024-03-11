@@ -17,7 +17,7 @@ fi
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
 # Build the package using maturin - should produce *.whl files.
-maturin build -b pyo3 --interpreter "${PYTHON}" --release --strip
+maturin build -m pybigtools/Cargo.toml -b pyo3 --interpreter "${PYTHON}" --release --strip
 
 # Install *.whl files using pip
-${PYTHON} -m pip install . --no-deps --no-build-isolation -vvv
+${PYTHON} -m pip install target/wheels/*.whl --no-deps --no-build-isolation --no-cache-dir -vvv
