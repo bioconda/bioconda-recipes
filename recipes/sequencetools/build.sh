@@ -4,9 +4,11 @@
 # export LDFLAGS="-L${PREFIX}/lib"
 # export CPPFLAGS="-I${PREFIX}/include"
 
-stack setup --local-bin-path ${PREFIX}/bin
-stack update
-stack install --local-bin-path ${PREFIX}/bin
+wget https://downloads.haskell.org/~ghc/9.4.7/ghc-9.4.7-x86_64-centos7-linux.tar.xz
+tar -xvf ghc-9.4.7-x86_64-centos7-linux.tar.xz
+export PATH="$PATH:$HOME/ghc-9.4.7-x86_64-unknown-linux/bin"
+
+stack install --local-bin-path ${PREFIX}/bin --system-ghc
 #cleanup
-rm -r .stack-work
+# rm -r .stack-work
 
