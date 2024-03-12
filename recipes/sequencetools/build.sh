@@ -10,10 +10,10 @@ tar xf ghc-9.4.7-x86_64-centos7-linux.tar.xz
 echo "GHC version"
 ghc-9.4.7-x86_64-unknown-linux/bin/ghc --version
 
-echo "PWD:"
-echo $PWD
+echo "SRC_DIR:"
+echo $SRC_DIR
 
-export PATH="$PATH:$PWD/ghc-9.4.7-x86_64-unknown-linux/bin"
+export PATH="$PATH:$SRC_DIR/ghc-9.4.7-x86_64-unknown-linux/bin"
 
 echo "PATH:"
 echo $PATH
