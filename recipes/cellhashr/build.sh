@@ -1,4 +1,3 @@
-bash
  #!/bin/bash
 
  set -e
