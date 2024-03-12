@@ -16,7 +16,9 @@ touch $STACKROOT/config.yaml
 
 echo "setup-info:\n  ghc:\n    linux64:\n      9.4.7:\n        url: https://downloads.haskell.org/~ghc/9.4.7/ghc-9.4.7-x86_64-centos7-linux.tar.xz" >> $STACKROOT/config.yaml
 
-stack install --local-bin-path ${PREFIX}/bin
+cat $STACKROOT/config.yaml
+
+# stack install --local-bin-path ${PREFIX}/bin
 # cleanup
 # rm -r .stack-work
 
