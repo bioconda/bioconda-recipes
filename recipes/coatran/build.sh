@@ -1,6 +1,5 @@
 #!/bin/bash
 
 mkdir -p ${PREFIX}/bin
-make CXX="${CXX}"
-chmod +x coatran_*
+make CXX=${CXX}
 cp coatran_* ${PREFIX}/bin
