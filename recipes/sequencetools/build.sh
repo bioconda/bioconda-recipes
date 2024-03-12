@@ -13,6 +13,9 @@ ghc-9.4.7-x86_64-unknown-linux/bin/ghc --version
 echo "SRC_DIR:"
 echo $SRC_DIR
 
+echo "pwd:"
+pwd
+
 export PATH="$PATH:$SRC_DIR/ghc-9.4.7-x86_64-unknown-linux/bin"
 
 echo "PATH:"
