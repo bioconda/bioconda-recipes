@@ -1,5 +1,5 @@
 {% set name = "pyhmmer" %}
-{% set version = "0.10.5" %}
+{% set version = "0.10.8" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,14 +7,14 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 1c9c6bb5600b96eb3386c524b24bf6eb1f51610017e82b585fe0f3b3c7cdbe03
+  sha256: b9360a2a97705bbcf4bdf5797241193e0cd81aa384a5d2b2ff5be5b5135c9632
 
 build:
   number: 0
   skip: True  #[py2k or win]
   script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --use-pep517 -vvv"
   run_exports:
-    - {{ pin_subpackage('pyhmmer', max_pin="x") }}
+    - {{ pin_subpackage('pyhmmer', max_pin="x.x") }}
 
 requirements:
   build:
@@ -30,8 +30,12 @@ requirements:
     - psutil >=5.8
 
 test:
+  requires:
+    - importlib_resources #[py36 or py37 or py38]
   imports:
     - {{ name }}
+  commands:
+    - python -m unittest -vv {{ name }}.tests
 
 about:
   home: https://github.com/althonos/pyhmmer
