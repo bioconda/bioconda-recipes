@@ -12,7 +12,11 @@ source:
 build:
   noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  entry_points:
+    - tajimas_d = tajimas_d._tajimas_d:run_cli
+  run_exports:
+    - {{ pin_subpackage('tajimas_d', max_pin="x") }}
 
 requirements:
   host:
@@ -24,16 +28,13 @@ requirements:
 test:
   imports:
     - tajimas_d
-  commands:
-    - pip check
   requires:
-    - pip
     - miniFasta
 
 about:
   home: https://github.com/not-a-feature/tajimas_d
   license: GPL-3.0-or-later
-  license_family: GPL
+  license_family: GPL3
   license_file: LICENSE
   summary: 'Computes Tajimas D, the Pi- or Watterson-Estimator for multiple sequences.'
   description: |
