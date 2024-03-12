@@ -13,14 +13,20 @@ build:
   number: 0
   noarch: python
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
-  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps -vvv
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - sistr=sistr.sistr_cmd:main
+    - sistr_init=sistr.sistr_cmd:setup_sistr_dbs
 
 requirements:
+  host:
+    - python >=3.4,<3.8
+    - pip
   run:
     - python >=3.4,<3.8
     - numpy >=1.11.1
-    - pandas >=0.25.3,<=1.0.5 
+    - pandas >=0.25.3,<=1.0.5
     - pytables >=3.3.0
     - pycurl
     - scipy >1.12,<2
@@ -40,3 +46,10 @@ about:
   license_family: APACHE
   license_file: LICENSE
   summary: "Salmonella In Silico Typing Resource (SISTR) commandline tool for serovar prediction"
+  dev_url: https://github.com/phac-nml/sistr_cmd
+
+extra:
+  identifiers:
+    - usegalaxy-eu:sistr_cmd
+    - doi:10.1371/journal.pone.0147101
+    - biotools:SISTR
