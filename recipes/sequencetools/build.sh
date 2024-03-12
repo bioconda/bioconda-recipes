@@ -10,8 +10,16 @@ tar xf ghc-9.4.7-x86_64-centos7-linux.tar.xz
 echo "GHC version"
 ghc-9.4.7-x86_64-unknown-linux/bin/ghc --version
 
-# export PATH="$PATH:$PWD/ghc-9.4.7-x86_64-unknown-linux/bin"
+echo "PWD:"
+echo $PWD
 
+export PATH="$PATH:$PWD/ghc-9.4.7-x86_64-unknown-linux/bin"
+
+echo "PATH:"
+echo $PATH
+
+echo "which ghc":
+which ghc
 
 # STACKROOT=/home/conda/.stack # can be evaluated with `stack path --stack-root`
 # # echo "Stack Root: $STACKROOT"
@@ -22,7 +30,7 @@ ghc-9.4.7-x86_64-unknown-linux/bin/ghc --version
 
 # cat $STACKROOT/config.yaml
 
-# stack install --local-bin-path ${PREFIX}/bin
+stack install --local-bin-path ${PREFIX}/bin --system-ghc --no-install-ghc
 # # cleanup
 # # rm -r .stack-work
 
