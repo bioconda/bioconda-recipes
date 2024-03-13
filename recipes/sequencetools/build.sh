@@ -26,6 +26,16 @@ which ghc
 echo "which stack": # to see where the general bin path is
 which stack
 
+cd ghc-9.4.7-x86_64-unknown-linux
+echo "### CONFIGURING GHC compilation"
+./configure --prefix=$PREFIX
+
+echo "### BUILDING GHC"
+make
+
+echo "### MAKE INSTALL GHC"
+make install
+
 # STACKROOT=/home/conda/.stack # can be evaluated with `stack path --stack-root`
 # # echo "Stack Root: $STACKROOT"
 # mkdir -p $STACKROOT
