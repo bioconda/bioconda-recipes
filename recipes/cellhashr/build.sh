@@ -3,7 +3,7 @@
 set -e
 
 # Create a Conda environment with specified R dependencies
-conda create -n cellhashr_env -c conda-forge r-base>=4.3.2 r-essentials r-devtools r-rcpp r-rcpparmadillo r-rcppeigen r-rcppparallel r-rcppprogress r-rstanarmdata r-rstanarmmodels bioconductor-preprocesscore r-pdftools bioconductor-demuxmix r-magick bioconductor-s4vectors bioconductor-dropletutils bioconductor-singlecellexperiment r-biocmanager
+conda create -n cellhashr_env -c conda-forge r-base>=4.3.2 r-essentials r-devtools r-rcpp r-rcpparmadillo r-rcppeigen r-rcppparallel r-rcppprogress bioconductor-preprocesscore r-pdftools bioconductor-demuxmix r-magick bioconductor-s4vectors bioconductor-dropletutils bioconductor-singlecellexperiment r-biocmanager
 
 # Activate the Conda environment
 conda activate cellhashr_env
