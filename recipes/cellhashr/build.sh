@@ -10,8 +10,8 @@ set -e
 
 # Clone the repository and checkout the specified version
 #git clone https://github.com/BimberLab/cellhashR.git
-cd cellhashR
-git checkout 1.0.4
+#cd cellhashR
+#git checkout 1.0.4
 # Build and install the package
 ${R} CMD INSTALL --build . ${R_ARGS}
 #R CMD INSTALL cellhashR_1.04.tar.gz
