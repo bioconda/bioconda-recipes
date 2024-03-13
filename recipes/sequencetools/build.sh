@@ -30,9 +30,6 @@ cd ghc-9.4.7-x86_64-unknown-linux
 echo "### CONFIGURING GHC compilation"
 ./configure --prefix=$PREFIX
 
-echo "### BUILDING GHC"
-make
-
 echo "### MAKE INSTALL GHC"
 make install
 
