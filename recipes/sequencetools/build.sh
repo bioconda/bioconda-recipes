@@ -10,10 +10,15 @@ tar xf ghc-9.4.7-x86_64-centos7-linux.tar.xz
 echo "GHC version"
 ghc-9.4.7-x86_64-unknown-linux/bin/ghc --version
 
-cp ghc-9.4.7-x86_64-unknown-linux/bin/ghc ${PREFIX}/bin/ghc
+WHEREAMI=$(readlink -f ghc-9.4.7-x86_64-unknown-linux/bin)
 
-echo "PREFIX/bin:"
-echo ${PREFIX}/bin
+export PATH="$WHEREAMI:$PATH"
+
+echo "WHEREAMI"
+echo $WHEREAMI
+
+echo "PATH:"
+echo $PATH
 
 echo "which ghc":
 which ghc
