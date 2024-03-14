@@ -1,1 +1,2 @@
-$R CMD INSTALL --build 
+#!/bin/bash
+$R CMD INSTALL --build .
