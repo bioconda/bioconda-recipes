@@ -16,13 +16,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          # checkout as bioconda-bot in order to have the permission to push fail logs
+          # checkout as BiocondaBot in order to have the permission to push fail logs
           token: ${{secrets.BIOCONDA_BOT_REPO_TOKEN}}
-      
+
       - name: set git user
         run: |
-          git config user.name bioconda-bot
-          git config user.email bioconda-bot@users.noreply.github.com
+          git config user.name BiocondaBot
+          git config user.email BiocondaBot@users.noreply.github.com
 
       - name: set path
         run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
@@ -71,7 +71,7 @@ jobs:
           bioconda-utils build recipes config.yml \
             --worker-offset ${{ matrix.runner }} --n-workers 6 \
             --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
-            --record-build-failures --skiplist-leafs
+            --lint --record-build-failures --skiplist-leafs
           conda clean -y --all
 
   build-osx:
@@ -86,8 +86,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          # checkout as bioconda-bot in order to have the permission to push fail logs
+          # checkout as BiocondaBot in order to have the permission to push fail logs
           token: ${{secrets.BIOCONDA_BOT_REPO_TOKEN}}
+
+      - name: set git user
+        run: |
+          git config user.name BiocondaBot
+          git config user.email BiocondaBot@users.noreply.github.com
 
       - name: set path
         run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
@@ -140,5 +145,5 @@ jobs:
           echo '============'
           bioconda-utils build recipes config.yml \
             --worker-offset ${{ matrix.runner }} --n-workers 4 \
-            --anaconda-upload --record-build-failures --skiplist-leafs
+            --lint --anaconda-upload --record-build-failures --skiplist-leafs
           conda clean -y --all

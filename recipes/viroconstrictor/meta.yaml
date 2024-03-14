@@ -1,5 +1,5 @@
 {% set name = "ViroConstrictor" %}
-{% set version = "1.3.1" %}
+{% set version = "1.4.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/RIVM-bioinformatics/ViroConstrictor/archive/v{{ version }}.tar.gz
-  sha256: 7fae8e0552a8f33fa6f2942ed2872810e204f7e688db8b658c2bc568e1a43cee
+  sha256: 56944f978fc5bb4f934d8a82be3862236552b9beab090f7e61c10023b51b8b25
 
 build:
   noarch: python
@@ -16,16 +16,17 @@ build:
     - viroconstrictor = ViroConstrictor.__main__:main
     - viroConstrictor = ViroConstrictor.__main__:main
     - Viroconstrictor = ViroConstrictor.__main__:main
-  script: {{ PYTHON }} -m pip install . -vv
-  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps -vvv
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('viroconstrictor', max_pin="x") }}
 
 requirements:
   host:
     - python >=3.10
-    - snakemake-minimal >=7.15.2
-    - conda
-    - mamba
     - pip
+    - snakemake >=7.15.2, < 8
+    - conda
   run:
     - python >=3.10
     - urllib3
@@ -36,22 +37,19 @@ requirements:
     - openpyxl
     - pyyaml ==6.0
     - rich ==13.*
-    - snakemake-minimal >=7.15.2
-    - aminoextract >=0.2.1
-    - mamba
+    - snakemake >=7.15.2, < 8
+    - aminoextract ==0.3.1
     - conda
+    - mamba
 
 test:
   imports:
     - ViroConstrictor
   commands:
-    - pip check
     - ViroConstrictor --help
     - viroconstrictor --help
     - viroConstrictor --help
     - Viroconstrictor --help
-  requires:
-    - pip
 
 about:
   home: https://rivm-bioinformatics.github.io/ViroConstrictor/

@@ -1,0 +1,46 @@
+{% set name = "gogstools" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 8fd83e481de68a9f7280a612043a72e851c102cca6536e12be4bf1dc7a008404
+
+build:
+  number: 0
+  noarch: generic
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage('gogstools', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python ==3.10
+  run:
+    - python ==3.10
+    - bedops ==2.4.39  # version 2.4.40 broke the output of gff2bed
+    - bedtools
+    - gffread
+    - bcbio-gff
+
+test:
+  commands:
+    - ogs_check -h
+    - ogs_merge -h
+
+about:
+  home: "https://github.com/genouest/ogs-tools"
+  license: "GNU General Public v3 (GPLv3)"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "GenOuest tools for manipulating Official Gene Sets"
+  doc_url: "https://github.com/genouest/ogs-tools"
+  dev_url: "https://github.com/genouest/ogs-tools"
+
+extra:
+  recipe-maintainers:
+    - abretaud

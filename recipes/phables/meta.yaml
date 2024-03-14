@@ -1,5 +1,5 @@
 {% set name = "phables" %}
-{% set version = "1.2.0" %}
+{% set version = "1.3.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,20 +7,24 @@ package:
 
 source:
   url: "https://github.com/Vini2/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz"
-  sha256: 09702e1e9ece66e08e0cf0430febc2d543b4e3b8dbbbad04d50315ee7220a7b6
+  sha256: bded81ddbfdce0b5143da3ebf51e56b1fe61f3b23c282433940c0e357014e642
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
+  entry_points:
+    - phables=phables.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('phables', max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.9
     - pip
   run:
-    - python >=3.8,<3.11
-    - snakemake >=7.14.0
+    - python >=3.9
+    - snakemake-minimal >=7.14.0
     - pyyaml >=6.0
     - click >=8.1.3
     - jinja2 >=3.0.2
