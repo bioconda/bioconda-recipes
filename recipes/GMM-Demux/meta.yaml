@@ -1,0 +1,50 @@
+{% set name = "GMM-Demux" %}
+{% set version = "0.2.2.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/GMM_Demux-{{ version }}.tar.gz
+  sha256: 989092feea7a61e309f6a75ce77246f619c2eff997f1f7a1a7457dfaf5a10ecf
+
+build:
+  entry_points:
+    - GMM-demux = GMM_Demux.GMM_Demux:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('GMM-Demux', max_pin="x.x.x.x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - pandas >=1.4.3
+    - numpy >=1.22.4
+    - scipy >=1.12.0
+    - tabulate
+    - argparse
+    - statistics
+    - bitvector
+    - scikit-learn
+
+test:
+  imports:
+    - GMM_Demux
+  commands:
+    - pip check
+    - GMM-demux --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/CHPGenetics/GMM-demux
+  summary: A multiplet removal tool for processing cell hashing data
+  license: MIT
+  license_file: LICENSE
+
