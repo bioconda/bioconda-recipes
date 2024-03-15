@@ -9,7 +9,9 @@ export CXX="${CXX} -fcommon"
 
 for make_file in libs/string_buffer/Makefile $(find libs/seq_file -name Makefile) $(find libs/seq-align -name Makefile) Makefile; do
     sed -i.bak 's/-lz/-lz $(LDFLAGS)/' $make_file
-    sed -i.bak 's/-m64//' $make_file
+    if [[ ${target_platform} =~ linux.* ]] ; then
+      sed -i.bak 's/-m64//' $make_file
+    fi
 done
 
 if [[ ${target_platform} =~ linux.* ]] ; then
