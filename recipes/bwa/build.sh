@@ -3,7 +3,11 @@
 export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
-make CFLAGS="${CFLAGS} -fcommon"
+if [[ ${target_platform} =~ *.aarch64 ]] ; then
+    make CC=$CC CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
+else
+    make CFLAGS="${CFLAGS} -fcommon"
+fi
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/share/man/man1
 cp bwa $PREFIX/bin
