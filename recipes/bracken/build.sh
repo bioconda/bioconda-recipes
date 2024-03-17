@@ -13,4 +13,5 @@ ln -s "${PREFIX}"/bin/src/est_abundance.py "${PREFIX}"/bin/est_abundance.py
 cp src/generate_kmer_distribution.py "${PREFIX}"/bin/src && chmod +x "${PREFIX}"/bin/src/generate_kmer_distribution.py
 ln -s "${PREFIX}"/bin/src/generate_kmer_distribution.py "${PREFIX}"/bin/generate_kmer_distribution.py
 cp src/kmer2read_distr "${PREFIX}"/bin
+ln -s "${PREFIX}"/bin/kmer2read_distr "${PREFIX}"/bin/src/
 cp analysis_scripts/combine_bracken_outputs.py "${PREFIX}"/bin && chmod +x "${PREFIX}"/bin/combine_bracken_outputs.py
