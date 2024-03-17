@@ -1,0 +1,64 @@
+{% set version = "0.1.1" %}
+
+package:
+  name: scrapp
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True  # [py3k]
+
+source:
+  url: https://github.com/Pbdas/scrapp/archive/v{{ version }}.tar.gz
+  sha256: b7da00428f2840805232f1a4db9bb924629285e36fdf553844eebce5f25fa872
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - {{ mpi }}
+    - zlib
+    - unzip
+    - wget
+    - python
+    - numpy
+    - mpi4py
+    - autoconf
+    - automake
+    - flex
+    - bison
+    - m4
+    - cmake
+    - libtool
+    - llvm-openmp # [osx]
+    - gmp # [not osx]
+  run:
+    - {{ mpi }}
+    - python
+    - numpy
+    - mpi4py
+    - futures
+    - zlib
+    - llvm-openmp # [osx]
+
+test:
+  source_files:
+    - test
+  commands:
+    - scrapp.py -h | grep "Pipeline wrapper script that calculates species counts for each branch" > /dev/null
+    - mkdir out outmpi
+    - scrapp.py --jplace test/place/epa_result.jplace --alignment test/data/1k.fasta --work-dir out --min-weight 0.5 --cluster-above 30 --parallel threads --num-threads 2
+    - scrapp.py --jplace test/place/epa_result.jplace --alignment test/data/1k.fasta --work-dir outmpi --min-weight 0.5 --cluster-above 30 --parallel mpi --num-threads 2
+
+about:
+  home: https://github.com/Pbdas/scrapp
+  license: GNU General Public License v3.
+  license_file: LICENSE
+  summary: Species Counting on Reference trees viA Phylogenetic Placements
+
+extra:
+  container:
+     # openmpi needs ssh client
+     extended-base: true
+  identifiers:
+    - doi:10.1101/2020.02.28.969980
