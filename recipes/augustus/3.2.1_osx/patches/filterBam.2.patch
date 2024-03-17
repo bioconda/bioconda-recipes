@@ -1,0 +1,62 @@
+From 6aa653a0eb7d5ce913f191a05feb08283fc89684 Mon Sep 17 00:00:00 2001
+From: Camille Scott <camille.scott.w@gmail.com>
+Date: Fri, 9 Mar 2018 19:16:04 -0800
+Subject: [PATCH] Remove other BAMTOOLS env references
+
+---
+ auxprogs/filterBam/Makefile     |  2 +-
+ auxprogs/filterBam/src/Makefile | 15 +++------------
+ 2 files changed, 4 insertions(+), 13 deletions(-)
+
+diff --git a/auxprogs/filterBam/Makefile b/auxprogs/filterBam/Makefile
+index dbb6ad8..0fda30f 100644
+--- a/auxprogs/filterBam/Makefile
++++ b/auxprogs/filterBam/Makefile
+@@ -11,7 +11,7 @@ CFLAGS = -Wall -g -p -O0
+ CXXFLAGS += -Wall -O2 # -g -p -g -ggdb 
+ 
+ all: 
+-	(cd src;make CXX=$(BAMTOOLS_CXX) CC=$(BAMTOOLS_CC) BAMTOOLS=$(BAMTOOLS))
++	(cd src;make CXX=$(BAMTOOLS_CXX) CC=$(BAMTOOLS_CC)
+ 
+ clean:
+ 	(cd src; make clean; cd ../bin; rm -f filterBam; cd ../../../bin; rm -f filterBam)
+diff --git a/auxprogs/filterBam/src/Makefile b/auxprogs/filterBam/src/Makefile
+index f96e240..aae8c12 100644
+--- a/auxprogs/filterBam/src/Makefile
++++ b/auxprogs/filterBam/src/Makefile
+@@ -8,28 +8,19 @@ SOURCES = filterBam.cc MatePairs.cc getReferenceName.cc initOptions.cc SingleAli
+ 			printElapsedTime.cc sumMandIOperations.cc sumDandIOperations.cc PairednessCoverage.cc
+ PROGRAM = filterBam
+ OBJECTS = $(SOURCES:.cc=.o)
+-BAMTOOLS = /usr/local/bamtools
+-INCLUDES = -I$(BAMTOOLS)/include -Iheaders -I./bamtools
+-LIBS = $(BAMTOOLS)/lib/libbamtools.a -lz
++INCLUDES = -I$(PREFIX)/include -Iheaders -I./bamtools
++LIBS = $(PREFIX)/lib/libbamtools.a -lz
+ CFLAGS = -std=c++0x
+ VPATH = functions 
+ INSTDIR = ../bin
+ 
+ all : $(PROGRAM) $(OBJECTS) CHECKBAM BIN
+ 
+-BIN : $(PROGRAM) CHECKBAM
++BIN : $(PROGRAM) 
+ 	mkdir -p $(INSTDIR);\
+ 	mv filterBam $(INSTDIR);
+ 	cp $(INSTDIR)/filterBam ../../../bin/filterBam
+ 
+-CHECKBAM: 
+-	@if [ -z "${BAMTOOLS}" ]; then \
+-		echo '[Makefile]: $${BAMTOOLS} has not been set.'; \
+-		exit 101; \
+-	elif [ "${BAMTOOLS}" ]; then \
+-		echo "filterBam compiled with BAMTOOLS=${BAMTOOLS}"; \
+-	fi
+-
+ $(PROGRAM) : $(OBJECTS) 
+ 	$(CXX) $(CFLAGS) $^ -o $@ $(LIBS) 
+ 
+-- 
+2.14.3 (Apple Git-98)
+
