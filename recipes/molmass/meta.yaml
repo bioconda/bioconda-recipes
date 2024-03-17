@@ -1,0 +1,48 @@
+{% set name = "molmass" %}
+{% set version = "2018.10.18" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "266f60b831c9467183cf6ea531b8a679376af9b4682ef66ef26806e55fdc1ba2" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - molmass = molmass.molmass:main
+    - molmass_web = molmass.molmass_web:main
+  script: python -m pip install --no-deps --ignore-installed .
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - pip
+  run:
+    - python
+
+test:
+  imports:
+    - molmass
+  commands:
+    - molmass --help
+    - molmass_web --help
+
+about:
+  home: https://www.lfd.uci.edu/~gohlke/
+  license: BSD License
+  license_family: BSD
+  summary: Molecular Mass Calculations
+  description: Molmass is a Python library and console script to calculate the molecular mass, the elemental composition, and the\nmass distribution spectrum of a molecule given by its chemical formula, relative element weights, or sequence.
+
+extra:
+  recipe-maintainers: 'Ralf Weber'
+  identifiers:
+    - biotools:molmass
