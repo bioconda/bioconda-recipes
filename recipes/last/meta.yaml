@@ -1,5 +1,5 @@
 {% set name = "LAST" %}
-{% set version = "1454" %}
+{% set version = "1542" %}
 
 package:
   name: {{ name|lower }}
@@ -7,10 +7,12 @@ package:
 
 source:
   url: https://gitlab.com/mcfrith/last/-/archive/{{ version }}/last-{{ version }}.zip
-  sha256: 937f9f79ba0b585524b7872e04ea7e5e9be683fdf7703a123511511e2ef8873e
+  sha256: ee26e762fe76d167241f7e85b5e72ef8d17ed243c405e38dbbd06de97003596a
 
 build:
-  number: 2
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('last', max_pin=None) }}
   script: make install CXXFLAGS="$CXXFLAGS -msse4 -pthread" prefix=$PREFIX
 
 requirements:
@@ -30,15 +32,12 @@ test:
   commands:
     - lastal -h
     - lastdb -h
-    - lastal5 -h
-    - lastdb5 -h
     - last-split -h
     - last-merge-batches -h
     - maf-convert -h
     - last-dotplot -h
     - last-map-probs -h
     - last-postmask -h
-    - last-split5 -h
     - last-train -h
     - last-pair-probs -h
     - fastq-interleave -h
@@ -54,7 +53,7 @@ test:
 about:
   home: https://gitlab.com/mcfrith/last
   license: GPL-3.0-or-later
-  license_family: GPL
+  license_family: GPL3
   license_file: COPYING.txt
   summary: "LAST finds & aligns related regions of sequences."
   description: "LAST finds & aligns related regions of sequences. It is designed for moderately large data (e.g. genomes, DNA reads, proteomes).  It's especially good at: finding rearrangements and recombinations; finding DNA-versus-protein related regions; unusual data like AT-rich DNA; sensitive DNA-DNA search."

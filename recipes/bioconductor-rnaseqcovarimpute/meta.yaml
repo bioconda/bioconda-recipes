@@ -1,0 +1,55 @@
+{% set version = "1.0.2" %}
+{% set name = "RNAseqCovarImpute" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 17d14273ae359562d3f0cbf1c45b10a7
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-rnaseqcovarimpute", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocStyle, knitr, rmarkdown, tidyr, stringr, testthat (>= 3.0.0)
+requirements:
+  host:
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
+    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
+    - 'bioconductor-edger >=4.0.0,<4.1.0'
+    - 'bioconductor-limma >=3.58.0,<3.59.0'
+    - r-base
+    - r-dplyr
+    - r-foreach
+    - r-magrittr
+    - r-mice
+    - r-rlang
+  run:
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
+    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
+    - 'bioconductor-edger >=4.0.0,<4.1.0'
+    - 'bioconductor-limma >=3.58.0,<3.59.0'
+    - r-base
+    - r-dplyr
+    - r-foreach
+    - r-magrittr
+    - r-mice
+    - r-rlang
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Impute Covariate Data in RNA Sequencing Studies'
+  description: 'The RNAseqCovarImpute package implements multiple imputation of missing covariates and differential gene expression analysis by: 1) Randomly binning genes into smaller groups, 2) Creating M imputed datasets separately within each bin, where the imputation predictor matrix includes all covariates and the log counts per million (CPM) for the genes within each bin, 3) Estimating gene expression changes using voom followed by lmFit functions, separately on each M imputed dataset within each gene bin, 4) Un-binning the gene sets and stacking the M sets of model results before applying the squeezeVar function to apply a variance shrinking Bayesian procedure to each M set of model results, 5) Pooling the results with Rubins’ rules to produce combined coefficients, standard errors, and P-values, and 6) Adjusting P-values for multiplicity to account for false discovery rate (FDR).'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
