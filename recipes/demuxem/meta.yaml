@@ -14,22 +14,25 @@ build:
   noarch: python
   entry_points:
     - demuxEM = demuxEM.__main__:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --use-pep517 -vvv"
+  run_exports:
+    - {{ pin_subpackage('demuxem', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.7
+    - python >=3.8
     - pip
     - setuptools_scm
   run:
-    - python >=3.7
+    - python >=3.8
+    - docopt
     - numpy
     - pandas
     - scipy
     - scikit-learn
     - seaborn
     - pegasusio >=0.2.12
-    - importlib_metadata >=0.7  # [py<38]
+    - importlib_metadata >=0.7  # [py < 38]
 
 test:
   imports:
@@ -41,7 +44,8 @@ test:
 about:
   home: "https://github.com/lilab-bcb/demuxEM"
   doc_url: "https://demuxEM.readthedocs.io"
-  license: BSD
+  license: BSD-3-Clause
+  license_family: BSD
   license_file: LICENSE
   summary: "DemuxEM is the demultiplexing module of Pegasus, which works on cell-hashing and nucleus-hashing genomics data."
 
