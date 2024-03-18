@@ -1,4 +1,6 @@
 #!/bin/sh
 
-# What is available?
-ls -laR
+mkdir build
+cd build
+cmake ..
+make
