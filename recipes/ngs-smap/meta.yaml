@@ -1,5 +1,5 @@
 {% set name = "ngs-smap" %}
-{% set version = "4.6.5" %}
+{% set version = "5.0.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: bd6fd5a9fb5be66c5d21410376ed6b13eeb23da040c498d60dad6a8fb45d9d5e
+  sha256: 713bc0c393ac26fc208d0c316a3141fb1be96fab2a69057c872229ebf56ef3d8
   patches:
     - patch
 
@@ -17,20 +17,35 @@ build:
   entry_points:
     - smap = smap.__main__:main
   ignore_prefix_files: True
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('ngs-smap', max_pin="x") }}
 
 requirements:
   host:
     - setuptools-scm
     - setuptools_scm_git_archive
-    - python >=3.8.1
+    - python >=3.8.1,!=3.11
   run:
+    - biopython >=1.8
+    - gffpandas 1.2.*
     - pybedtools >=0.9.0,<0.10
-    - pysam >=0.18.0,<0.19
-    - pandas >=1.4.0,<1.5
+    - pysam >=0.22.0,<0.23.0
+    - pandas >=2.0.3,<2.1.0
     - matplotlib-base >=3.5.1,<3.6
     - colorlog >=6.6.0,<6.7
-    - python >=3.8.1
+    - cutadapt ==4.4
+    - python >=3.8.1,!=3.11
+    - natsort ==8.2.0
+    - numexpr
+    - openpyxl >=3.0.9,<3.1.0
+    - plotly >=5.5
+    - seaborn ==0.12.1
+    - typing-extensions >=4.0.0,<4.1.1
+    - gffutils
+    - primer3-py
+    - tqdm
+    - scipy
 
 test:
   commands:
@@ -38,12 +53,11 @@ test:
 
 about:
   home: "https://gitlab.com/truttink/smap"
-  license: "CC BY-NC-SA 4.0"
-  license_family: CC
-  license_file: 
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
   summary: "SMAP is an analysis tool for stack-based NGS read mapping"
 
 extra:
   recipe-maintainers:
     - ieguinoa
-
