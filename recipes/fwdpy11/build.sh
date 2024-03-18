@@ -10,7 +10,7 @@ CARGO_INSTALL_ROOT=$BUILD_PREFIX CARGO_HOME=$BUILD_PREFIX cargo install cbindgen
 # fix that:
 #GSL_ROOT_DIR=$PREFIX $PYTHON -m pip install --no-deps --ignore-installed -vv .
 # for mac osx need also to add other vars:
-CARGO_INSTALL_ROOT=$BUILD_PREFIX CARGO_HOME=$BUILD_PREFIX GSL_ROOT_DIR=$PREFIX $PYTHON -m pip install --no-deps --ignore-installed -vv .
+CARGO_INSTALL_ROOT=$BUILD_PREFIX CARGO_HOME=$BUILD_PREFIX GSL_ROOT_DIR=$PREFIX $PYTHON -m pip install --no-deps --no-build-isolation -vvv .
 # on bioconda's Azure it seems that `$PYTHON` variable is not set because get an error:
 # /opt/conda/conda-bld/fwdpy11_1670108175931/work/conda_build.sh: line 16: -m: command not found
 # so will hard-code it:
