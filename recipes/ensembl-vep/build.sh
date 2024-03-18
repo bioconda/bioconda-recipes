@@ -42,13 +42,3 @@ tar -xzvpf VEP_plugins.tar.gz
 mv VEP_plugins*/*.pm .
 mv VEP_plugins*/config .
 rm -rf VEP_plugins*
-
-# Install loftee
-curl -L -ks -o loftee.tar.gz https://github.com/konradjk/loftee/archive/v1.0.3.tar.gz
-tar -xzvpf loftee.tar.gz
-mv loftee-*/*.pl .
-mv loftee-*/*.pm .
-mv loftee-*/maxEntScan .
-mv loftee-*/splice_data .
-rm -f loftee.tar.gz
-rm -rf loftee-*
