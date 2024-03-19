@@ -1,0 +1,63 @@
+{% set name = "shorah" %}
+{% set version = "1.99.3" %}
+{% set sha256 = "eb4da2a8de03ffdcd90663898f8ce3e7581f143ec40d4b2f1edbadb5db5e947d" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/cbg-ethz/shorah/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.xz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script:
+    - ./configure --prefix="${PREFIX}" PYTHON="${PYTHON}" PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig
+    - make install
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - pkg-config
+    - make
+  host:
+    - python >=3.6
+    - htslib
+    - boost-cpp
+    - zlib
+  run:
+    - python >=3.6
+    - biopython
+    - numpy
+
+test:
+  source_files:
+  - examples/amplicon_test/*
+  - examples/shotgun_test/*
+  imports:
+  - shorah
+  commands:
+  - ([[ "$(shorah --version)" == "{{ version }}" ]])
+  - shorah -h
+  - shorah shotgun -h
+  - shorah amplicon -h
+  - shorah snv -h
+  - b2w -h
+  - diri_sampler -h
+  - fil -h
+  - ([[ -d examples/amplicon_test/ ]]&&cp -r examples/amplicon_test ./||cp -r /usr/local/share/shorah/amplicon_test ./;cd amplicon_test/;. amplicon_test); rm -rf amplicon_test/
+  - ([[ -d examples/shotgun_test/  ]]&&cp -r examples/shotgun_test  ./||cp -r /usr/local/share/shorah/shotgun_test  ./;cd shotgun_test/; . shotgun_test&&diff -u test.csv snv/SNVs_0.010000_final.csv); rm -rf shotgun_test/
+
+about:
+  summary: The Short Reads Assembly into Haplotypes (ShoRAH) program for inferring viral haplotypes from NGS data
+  home: https://github.com/cbg-ethz/{{ name }}
+  license: GPLv3
+  license_family: GPL3
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - DrYak
+  identifiers:
+    - biotools:shorah
