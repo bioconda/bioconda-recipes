@@ -19,14 +19,15 @@ patch -p0 < ${RECIPE_DIR}/nodejs-x86_64.patch
 make -j3
 popd
 
-# make it possible to point to the Node sources
-sed -i.bak 's/CXXFLAGS=/CXXFLAGS=${CXXFLAGS} /' Makefile
-sed -i.bak 's/NODE_SRC=../NODE_SRC?=../' Makefile
+# make it possible to set conda build's CXXFLAGS and point to the Node sources
+sed -i 's/CXXFLAGS=/CXXFLAGS?=/' Makefile
+sed -i 's/NODE_SRC=/NODE_SRC?=/' Makefile
+sed -i 's/LIBS=/LIBS?=/' Makefile
 
 cat Makefile
 
 # Then compile k8
-NODE_SRC=node-v${NODE_VERSION} make -j
+NODE_SRC="node-v${NODE_VERSION}" CXXFLAGS="${CXXFLAGS}  -std=c++17 -g -O3 -Wall" LIBS="${LDFLAGS} -pthread" make -j
 
 mkdir -p $PREFIX/bin
 cp k8 $PREFIX/bin/k8
