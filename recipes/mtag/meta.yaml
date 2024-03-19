@@ -1,0 +1,51 @@
+{% set name = "mtag" %}
+{% set version = "0.9.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/JonJala/mtag/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 932ab6e44a00a739d6e3364f625511da37b181b7310ef6bd38ae61e8790efcf5
+
+build:
+  noarch: python
+  entry_points:
+    - mtag = mtag.cli:main
+  script: {{ PYTHON }} -m pip install . --no-deps -vvv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('mtag', max_pin="x") }}
+
+requirements:
+  host:
+    - python=2.7
+    - pip
+  run:
+    - argparse
+    - joblib
+    - python=2.7
+    - bitarray=0.8
+    - numpy>=1.13.1
+    - pandas>=0.18.1
+    - scipy>=0.18
+
+test:
+  imports:
+    - mtag
+  commands:
+    - python mtag.py --help
+    - python mtag_munge.py --help
+
+about:
+  home: https://github.com/JonJala/mtag
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Python-based command line tool for jointly analyzing multiple sets of GWAS summary statistics"
+  doc_url: https://github.com/JonJala/mtag/wiki
+
+extra:
+  recipe-maintainers:
+    - diegomscoelho
