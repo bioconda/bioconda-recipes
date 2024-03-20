@@ -24,8 +24,6 @@ sed -i 's/CXXFLAGS=/CXXFLAGS?=/' Makefile
 sed -i 's/NODE_SRC=/NODE_SRC?=/' Makefile
 sed -i 's/LIBS=/LIBS?=/' Makefile
 
-cat Makefile
-
 # Then compile k8
 NODE_SRC="node-v${NODE_VERSION}" CXXFLAGS="${CXXFLAGS}  -std=c++17 -g -O3 -Wall" LIBS="${LDFLAGS} -pthread" make -j
 
