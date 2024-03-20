@@ -1,0 +1,88 @@
+name: PR (osx-arm64)
+on:
+  push:
+    branches:
+      - osx-arm-builds
+
+jobs:
+  build-osx-arm:
+    name: OSX-ARM64 Tests
+    runs-on: macOS-14 # M1
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # TODO: bail if there's no osx-arm64 recipes
+      # - run:
+      #     name: Check for Additional Platforms
+      #     command: ./.circleci/check-for-additional-platforms.sh "origin/master...HEAD" "build_and_test"
+
+      - name: set path
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+
+      - name: Fetch conda install script
+        run: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
+
+      - name: Restore cache
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: /opt/mambaforge
+          key: ${{ runner.os }}--bulk--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
+
+      - name: Set up bioconda-utils
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: bash install-and-set-up-conda.sh
+
+      # This script can be used to reconfigure conda to use the right channel setup.
+      # This has to be done after the cache is restored, because
+      # the channel setup is not cached as it resides in the home directory.
+      # We could use a system-wide (and therefore cached) channel setup,
+      # but mamba does not support that at the time of implementation
+      # (it ignores settings made with --system).
+      - name: Configure conda
+        run: bash configure-conda.sh
+
+      - name: Build and Test
+        env:
+          # Mimic circleci
+          OSTYPE: "darwin"
+          CI: "true"
+        run: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+
+          # Clean up lingering build artifacts
+          rm -f /opt/mambaforge/envs/bioconda/conda-bld/osx-arm64/*.tar.bz2
+
+          # The SDK isn't actually cached, so reinstall it
+          run_conda_forge_build_setup
+
+          if [ -z "$GITHUB_BASE_REF" ] ; then
+              export GITHUB_BASE_REF="master"
+          fi
+          git fetch origin "$GITHUB_BASE_REF"
+          bioconda-utils build recipes config.yml \
+            --git-range origin/"$GITHUB_BASE_REF" HEAD
+
+      - name: Prepare artifacts
+        run: |
+              (
+              rm -rf /tmp/artifacts
+              mkdir -p /tmp/artifacts/packages
+              cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
+              find -name .cache | xargs rm -rf || true
+              for n in index.html channeldata.json osx-arm64; do
+                cp -rv $n /tmp/artifacts/packages || true
+              done
+              ) || true
+
+      - name: Archive packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: osx-arm64-packages
+          path: |
+            /tmp/artifacts/packages
