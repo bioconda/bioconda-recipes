@@ -5,9 +5,9 @@ set -x
 export INCLUDE_PATH="${PREFIX}/MSToolkit/include"
 export CPPFLAGS="-I${PREFIX}/MSToolkit/include"
 
+sed -i.bak 's#-static##' Makefile
 sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" MSToolkit/Makefile
 sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" CometSearch/Makefile
-sed -i.bak 's#-static##' Makefile
 
 make CXX=${CXX}
 
