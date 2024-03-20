@@ -19,4 +19,4 @@ fi
 #but it seems it fails OSX build
 sed -i.bak 's/-rdynamic//' src/Makefile
 
-$PYTHON -m pip install --no-deps --no-build-isolation . -vvv
+$PYTHON -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
