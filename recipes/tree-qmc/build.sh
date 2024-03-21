@@ -1,13 +1,8 @@
 cd external/MQLib
-sed 's/g++/GXX/g' Makefile > tmp
-sed 's/g++/GXX/g' tmp > Makefile
-echo $BUILD_PREFIX
-echo $PREFIX
-echo $GXX
-cat Makefile
-make GXX="${GXX}"
+sed -i.bak "s#g++#${CXX}#" Makefile
+make
 cd ../..
-$GXX -std=c++11 -O2 \
+$CXX -std=c++11 -O2 \
     -I external/MQLib/include -I external/toms743 \
     -o TREE-QMC \
     src/*.cpp external/toms743/toms743.cpp \
