@@ -1,0 +1,925 @@
+diff --git a/Makefile b/Makefile
+index 6e3f2fe..28bb7e7 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,7 +1,7 @@
+ # makefile for the MultiRNAFold package
+ 
+-CC = g++
+-CFLAGS = -g -I./include -I./src/common -I./src/simfold -I./src/pairfold -I./src/multifold -w -Wno-deprecated 
++CXX = g++
++CXXFLAGS = -O2 -ggdb -I./include -I./src/common -I./src/simfold -I./src/pairfold -I./src/multifold -Wno-deprecated
+ # -pg for profiling
+ #-O3 
+ # -p is for profiler
+@@ -101,7 +101,7 @@ L_C_OBJS = $(L_C_SRCS:.cpp=.o)
+ L_S_OBJS = $(L_S_SRCS:.cpp=.o)
+ L_P_OBJS = $(L_P_SRCS:.cpp=.o)
+ L_M_OBJS = $(L_M_SRCS:.cpp=.o)
+- 
++
+ AR = ar
+ ARFLAGS = rv
+ RANLIB = ranlib
+@@ -114,78 +114,64 @@ default: $(LIB) $(SIMFOLD) $(SIMFOLD_PF) $(PAIRFOLD) $(PAIRFOLD_WEB)  $(MULTIFOL
+ $(LIB): $(L_C_OBJS) $(L_S_OBJS) $(L_P_OBJS) $(L_M_OBJS)
+ 	$(RM) $@
+ 	$(AR) $(ARFLAGS) $@ $(L_C_OBJS) $(L_S_OBJS) $(L_P_OBJS) $(L_M_OBJS)
+-	$(RANLIB) $@        
+-   
++	$(RANLIB) $@
++
+ $(SIMFOLD): $(S_OBJS) $(LIB)
+-	$(CC) -o $@ $@.o $(LFLAGS)
+-             
++	$(CXX) -o $@ $@.o $(LFLAGS)
++
+ $(SIMFOLD_PF): $(S2_OBJS) $(LIB)
+-	$(CC) -o $@ $@.o $(LFLAGS)
+-             
++	$(CXX) -o $@ $@.o $(LFLAGS)
++
+ $(PAIRFOLD): $(P_OBJS) $(LIB)
+-	$(CC) -o $@ $@.o $(LFLAGS)        
+-        
++	$(CXX) -o $@ $@.o $(LFLAGS)
++
+ $(PAIRFOLD_WEB): $(P2_OBJS) $(LIB)
+-	$(CC) -o $@ $@.o $(LFLAGS)        
+-        
++	$(CXX) -o $@ $@.o $(LFLAGS)
++
+ $(MULTIFOLD): $(M_OBJS) $(LIB)
+-	$(CC) -o $@ $@.o $(LFLAGS)                
+-        
++	$(CXX) -o $@ $@.o $(LFLAGS)
++
+ $(DRIVER): $(D_OBJS) $(LIB)
+-	$(CC) -o $@ $@.o $(LFLAGS)                
++	$(CXX) -o $@ $@.o $(LFLAGS)
+ 
+ $(PARTITION): $(PARTITION).o $(LIB)
+-	$(CC) -o $@ $@.o $(LFLAGS)                
++	$(CXX) -o $@ $@.o $(LFLAGS)
+ 
+ $(DRIVER1): $(DRIVER1).o $(LIB)
+ 	mpiCC  -o $(DRIVER1) $(DRIVER1).o $(LFLAGS) -L$(LAMDIR)/lib
+ 
+ $(DRIVER1).o: $(DRIVER1).cpp
+-	mpiCC  -c $(DRIVER1).cpp $(CFLAGS) -I$(LAMDIR)/include -o $(DRIVER1).o
++	mpiCC  -c $(DRIVER1).cpp $(CXXFLAGS) -I$(LAMDIR)/include -o $(DRIVER1).o
+ 
+ $(DRIVER2): $(DRIVER2).o $(LIB)
+-	mpiCC  -o $(DRIVER2) $(DRIVER2).o $(LFLAGS) -L$(LAMDIR)/lib 
++	mpiCC  -o $(DRIVER2) $(DRIVER2).o $(LFLAGS) -L$(LAMDIR)/lib
+ 
+ $(DRIVER2).o: $(DRIVER2).cpp
+-	mpiCC  -c $(DRIVER2).cpp $(CFLAGS) -I$(LAMDIR)/include -o $(DRIVER2).o
++	mpiCC  -c $(DRIVER2).cpp $(CXXFLAGS) -I$(LAMDIR)/include -o $(DRIVER2).o
+ 
+- 
+ $(RUNTIMEV): $(RUNTIMEV).o
+-	$(CC) -o $@ $@.o -L$(VIENNADIR)/lib -lviennapp $(LFLAGS)
++	$(CXX) -o $@ $@.o -L$(VIENNADIR)/lib -lviennapp $(LFLAGS)
+ 
+ $(RUNTIMEV).o: $(RUNTIMEV).cpp
+-	$(CC) -c $(RUNTIMEV).cpp -I$(VIENNADIR)/include $(CFLAGS)
+- 
+-                    
++	$(CXX) -c $(RUNTIMEV).cpp -I$(VIENNADIR)/include $(CXXFLAGS)
++
+ .SUFFIXES: .cpp
+ .cpp.o:
+-	$(CC) -c $*.cpp $(CFLAGS) -o $*.o
++	$(CXX) -c $*.cpp $(CXXFLAGS) -o $*.o
+ 
+ clean:
+ 	rm -f $(L_C_OBJS) $(L_S_OBJS) $(L_P_OBJS) $(L_M_OBJS)
+-	rm -f $(S_OBJS) $(S2_OBJS) $(P_OBJS) $(P2_OBJS) $(M_OBJS) $(D_OBJS) 
++	rm -f $(S_OBJS) $(S2_OBJS) $(P_OBJS) $(P2_OBJS) $(M_OBJS) $(D_OBJS)
+ # $(SIMFOLD) $(SIMFOLD_PF) $(PAIRFOLD) $(MULTIFOLD) $(DRIVER) *~ core
+ 	rm -f $(SRC_C)/*~ $(SRC_S)/*~ $(SRC_P)/*~ $(SRC_M)/*~ include/*~ *.a *.bak
+ 
+ depend:
+-	makedepend -- $(CFLAGS) -- $(L_C_SRCS) $(L_S_SRCS) $(L_P_SRCS) $(L_M_SRCS) $(S_SRCS) $(S2_SRCS) $(P_SRCS) $(M_SRCS) $(D_SRCS)
+-	
+-	
++	makedepend -Y $(CXXFLAGS) -- $(L_C_SRCS) $(L_S_SRCS) $(L_P_SRCS) $(L_M_SRCS) $(S_SRCS) $(S2_SRCS) $(P_SRCS) $(M_SRCS) $(D_SRCS)
++
+ # end of makefile
+ 
+ # DO NOT DELETE
+ 
+-src/common/common.o: /usr/include/stdio.h /usr/include/features.h
+-src/common/common.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
+-src/common/common.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h
+-src/common/common.o: /usr/include/bits/types.h /usr/include/bits/typesizes.h
+-src/common/common.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/common/common.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-src/common/common.o: /usr/include/gconv.h /usr/include/bits/stdio_lim.h
+-src/common/common.o: /usr/include/bits/sys_errlist.h /usr/include/stdlib.h
+-src/common/common.o: /usr/include/math.h /usr/include/bits/huge_val.h
+-src/common/common.o: /usr/include/bits/mathdef.h
+-src/common/common.o: /usr/include/bits/mathcalls.h /usr/include/string.h
+ src/common/common.o: ./include/constants.h ./include/structs.h
+ src/common/common.o: ./include/externs.h src/common/common.h
+ src/common/common.o: ./src/simfold/s_partition_function.h
+@@ -195,16 +181,6 @@ src/common/common.o: ./src/simfold/s_energy_matrix.h
+ src/common/common.o: ./src/simfold/s_stacked_pair.h
+ src/common/common.o: ./src/simfold/s_multi_loop.h
+ src/common/common.o: ./src/simfold/s_multi_loop_sub.h
+-src/common/params.o: /usr/include/stdio.h /usr/include/features.h
+-src/common/params.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
+-src/common/params.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h
+-src/common/params.o: /usr/include/bits/types.h /usr/include/bits/typesizes.h
+-src/common/params.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/common/params.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-src/common/params.o: /usr/include/gconv.h /usr/include/bits/stdio_lim.h
+-src/common/params.o: /usr/include/bits/sys_errlist.h /usr/include/math.h
+-src/common/params.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
+-src/common/params.o: /usr/include/bits/mathcalls.h /usr/include/stdlib.h
+ src/common/params.o: src/common/params.h ./include/constants.h
+ src/common/params.o: src/common/common.h ./include/structs.h
+ src/common/params.o: ./src/simfold/s_partition_function.h
+@@ -214,60 +190,20 @@ src/common/params.o: ./src/simfold/s_energy_matrix.h
+ src/common/params.o: ./src/simfold/s_stacked_pair.h
+ src/common/params.o: ./src/simfold/s_multi_loop.h
+ src/common/params.o: ./src/simfold/s_multi_loop_sub.h ./include/externs.h
+-src/common/params.o: /usr/include/string.h
+ src/common/params.o: ./src/simfold/s_specific_functions.h
+ src/common/params.o: ./src/simfold/s_min_folding.h
+ src/common/params.o: ./src/simfold/s_sub_folding.h ./include/simfold.h
+ src/common/params.o: ./include/init.h
+-src/common/init.o: /usr/include/stdio.h /usr/include/features.h
+-src/common/init.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
+-src/common/init.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h
+-src/common/init.o: /usr/include/bits/types.h /usr/include/bits/typesizes.h
+-src/common/init.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/common/init.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-src/common/init.o: /usr/include/gconv.h /usr/include/bits/stdio_lim.h
+-src/common/init.o: /usr/include/bits/sys_errlist.h /usr/include/stdlib.h
+-src/common/init.o: /usr/include/string.h /usr/include/math.h
+-src/common/init.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
+-src/common/init.o: /usr/include/bits/mathcalls.h ./include/constants.h
+-src/common/init.o: ./include/structs.h ./include/globals.h
+-src/common/init.o: src/common/common.h ./src/simfold/s_partition_function.h
++src/common/init.o: ./include/constants.h ./include/structs.h
++src/common/init.o: ./include/globals.h src/common/common.h
++src/common/init.o: ./src/simfold/s_partition_function.h
+ src/common/init.o: ./src/simfold/s_hairpin_loop.h
+ src/common/init.o: ./src/simfold/s_internal_loop.h
+ src/common/init.o: ./src/simfold/s_energy_matrix.h
+ src/common/init.o: ./src/simfold/s_stacked_pair.h
+ src/common/init.o: ./src/simfold/s_multi_loop.h
+-src/common/init.o: ./src/simfold/s_multi_loop_sub.h
+-src/common/timer.o: /usr/include/math.h /usr/include/features.h
+-src/common/timer.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
+-src/common/timer.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h
+-src/common/timer.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
+-src/common/timer.o: /usr/include/bits/mathcalls.h /usr/include/ctype.h
+-src/common/timer.o: /usr/include/bits/types.h /usr/include/bits/typesizes.h
+-src/common/timer.o: /usr/include/endian.h /usr/include/bits/endian.h
+-src/common/timer.o: /usr/include/time.h /usr/include/bits/time.h
+-src/common/timer.o: /usr/include/string.h /usr/include/sys/times.h
+-src/common/timer.o: /usr/include/limits.h src/common/timer.h
+-src/simfold/s_specific_functions.o: /usr/include/stdio.h
+-src/simfold/s_specific_functions.o: /usr/include/features.h
+-src/simfold/s_specific_functions.o: /usr/include/sys/cdefs.h
+-src/simfold/s_specific_functions.o: /usr/include/bits/wordsize.h
+-src/simfold/s_specific_functions.o: /usr/include/gnu/stubs.h
+-src/simfold/s_specific_functions.o: /usr/include/gnu/stubs-32.h
+-src/simfold/s_specific_functions.o: /usr/include/bits/types.h
+-src/simfold/s_specific_functions.o: /usr/include/bits/typesizes.h
+-src/simfold/s_specific_functions.o: /usr/include/libio.h
+-src/simfold/s_specific_functions.o: /usr/include/_G_config.h
+-src/simfold/s_specific_functions.o: /usr/include/wchar.h
+-src/simfold/s_specific_functions.o: /usr/include/bits/wchar.h
+-src/simfold/s_specific_functions.o: /usr/include/gconv.h
+-src/simfold/s_specific_functions.o: /usr/include/bits/stdio_lim.h
+-src/simfold/s_specific_functions.o: /usr/include/bits/sys_errlist.h
+-src/simfold/s_specific_functions.o: /usr/include/stdlib.h /usr/include/math.h
+-src/simfold/s_specific_functions.o: /usr/include/bits/huge_val.h
+-src/simfold/s_specific_functions.o: /usr/include/bits/mathdef.h
+-src/simfold/s_specific_functions.o: /usr/include/bits/mathcalls.h
+-src/simfold/s_specific_functions.o: /usr/include/string.h
++src/common/init.o: ./src/simfold/s_multi_loop_sub.h src/common/params.h
++src/common/timer.o: src/common/timer.h
+ src/simfold/s_specific_functions.o: ./include/constants.h ./include/structs.h
+ src/simfold/s_specific_functions.o: ./include/externs.h src/common/common.h
+ src/simfold/s_specific_functions.o: ./src/simfold/s_partition_function.h
+@@ -281,22 +217,6 @@ src/simfold/s_specific_functions.o: ./include/simfold.h ./include/init.h
+ src/simfold/s_specific_functions.o: ./src/simfold/s_specific_functions.h
+ src/simfold/s_specific_functions.o: ./src/simfold/s_min_folding.h
+ src/simfold/s_specific_functions.o: ./src/simfold/s_sub_folding.h
+-src/simfold/s_specific_functions.o: src/simfold/s_partition_function_complex.h
+-src/simfold/s_specific_functions.o: /usr/include/complex.h
+-src/simfold/s_specific_functions.o: /usr/include/bits/cmathcalls.h
+-src/simfold/s_min_folding.o: /usr/include/stdio.h /usr/include/features.h
+-src/simfold/s_min_folding.o: /usr/include/sys/cdefs.h
+-src/simfold/s_min_folding.o: /usr/include/bits/wordsize.h
+-src/simfold/s_min_folding.o: /usr/include/gnu/stubs.h
+-src/simfold/s_min_folding.o: /usr/include/gnu/stubs-32.h
+-src/simfold/s_min_folding.o: /usr/include/bits/types.h
+-src/simfold/s_min_folding.o: /usr/include/bits/typesizes.h
+-src/simfold/s_min_folding.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/simfold/s_min_folding.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-src/simfold/s_min_folding.o: /usr/include/gconv.h
+-src/simfold/s_min_folding.o: /usr/include/bits/stdio_lim.h
+-src/simfold/s_min_folding.o: /usr/include/bits/sys_errlist.h
+-src/simfold/s_min_folding.o: /usr/include/string.h /usr/include/stdlib.h
+ src/simfold/s_min_folding.o: ./include/constants.h ./include/structs.h
+ src/simfold/s_min_folding.o: ./include/externs.h src/common/common.h
+ src/simfold/s_min_folding.o: ./src/simfold/s_partition_function.h
+@@ -309,22 +229,8 @@ src/simfold/s_min_folding.o: ./src/simfold/s_multi_loop_sub.h
+ src/simfold/s_min_folding.o: ./include/simfold.h ./include/init.h
+ src/simfold/s_min_folding.o: ./src/simfold/s_specific_functions.h
+ src/simfold/s_min_folding.o: ./src/simfold/s_min_folding.h
+-src/simfold/s_hairpin_loop.o: /usr/include/string.h /usr/include/features.h
+-src/simfold/s_hairpin_loop.o: /usr/include/sys/cdefs.h
+-src/simfold/s_hairpin_loop.o: /usr/include/bits/wordsize.h
+-src/simfold/s_hairpin_loop.o: /usr/include/gnu/stubs.h
+-src/simfold/s_hairpin_loop.o: /usr/include/gnu/stubs-32.h
+-src/simfold/s_hairpin_loop.o: /usr/include/ctype.h /usr/include/bits/types.h
+-src/simfold/s_hairpin_loop.o: /usr/include/bits/typesizes.h
+-src/simfold/s_hairpin_loop.o: /usr/include/endian.h
+-src/simfold/s_hairpin_loop.o: /usr/include/bits/endian.h
+ src/simfold/s_hairpin_loop.o: ./include/constants.h ./include/structs.h
+ src/simfold/s_hairpin_loop.o: ./include/externs.h src/common/common.h
+-src/simfold/s_hairpin_loop.o: /usr/include/stdio.h /usr/include/libio.h
+-src/simfold/s_hairpin_loop.o: /usr/include/_G_config.h /usr/include/wchar.h
+-src/simfold/s_hairpin_loop.o: /usr/include/bits/wchar.h /usr/include/gconv.h
+-src/simfold/s_hairpin_loop.o: /usr/include/bits/stdio_lim.h
+-src/simfold/s_hairpin_loop.o: /usr/include/bits/sys_errlist.h
+ src/simfold/s_hairpin_loop.o: ./src/simfold/s_partition_function.h
+ src/simfold/s_hairpin_loop.o: ./src/simfold/s_hairpin_loop.h
+ src/simfold/s_hairpin_loop.o: ./src/simfold/s_internal_loop.h
+@@ -334,20 +240,8 @@ src/simfold/s_hairpin_loop.o: ./src/simfold/s_multi_loop.h
+ src/simfold/s_hairpin_loop.o: ./src/simfold/s_multi_loop_sub.h
+ src/simfold/s_hairpin_loop.o: ./include/simfold.h ./include/init.h
+ src/simfold/s_hairpin_loop.o: src/common/params.h
+-src/simfold/s_stacked_pair.o: /usr/include/string.h /usr/include/features.h
+-src/simfold/s_stacked_pair.o: /usr/include/sys/cdefs.h
+-src/simfold/s_stacked_pair.o: /usr/include/bits/wordsize.h
+-src/simfold/s_stacked_pair.o: /usr/include/gnu/stubs.h
+-src/simfold/s_stacked_pair.o: /usr/include/gnu/stubs-32.h
+ src/simfold/s_stacked_pair.o: ./include/constants.h ./include/structs.h
+ src/simfold/s_stacked_pair.o: ./include/externs.h src/common/common.h
+-src/simfold/s_stacked_pair.o: /usr/include/stdio.h /usr/include/bits/types.h
+-src/simfold/s_stacked_pair.o: /usr/include/bits/typesizes.h
+-src/simfold/s_stacked_pair.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/simfold/s_stacked_pair.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-src/simfold/s_stacked_pair.o: /usr/include/gconv.h
+-src/simfold/s_stacked_pair.o: /usr/include/bits/stdio_lim.h
+-src/simfold/s_stacked_pair.o: /usr/include/bits/sys_errlist.h
+ src/simfold/s_stacked_pair.o: ./src/simfold/s_partition_function.h
+ src/simfold/s_stacked_pair.o: ./src/simfold/s_hairpin_loop.h
+ src/simfold/s_stacked_pair.o: ./src/simfold/s_internal_loop.h
+@@ -357,22 +251,8 @@ src/simfold/s_stacked_pair.o: ./src/simfold/s_multi_loop.h
+ src/simfold/s_stacked_pair.o: ./src/simfold/s_multi_loop_sub.h
+ src/simfold/s_stacked_pair.o: ./include/simfold.h ./include/init.h
+ src/simfold/s_stacked_pair.o: src/common/params.h
+-src/simfold/s_energy_matrix.o: /usr/include/stdio.h /usr/include/features.h
+-src/simfold/s_energy_matrix.o: /usr/include/sys/cdefs.h
+-src/simfold/s_energy_matrix.o: /usr/include/bits/wordsize.h
+-src/simfold/s_energy_matrix.o: /usr/include/gnu/stubs.h
+-src/simfold/s_energy_matrix.o: /usr/include/gnu/stubs-32.h
+-src/simfold/s_energy_matrix.o: /usr/include/bits/types.h
+-src/simfold/s_energy_matrix.o: /usr/include/bits/typesizes.h
+-src/simfold/s_energy_matrix.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/simfold/s_energy_matrix.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-src/simfold/s_energy_matrix.o: /usr/include/gconv.h
+-src/simfold/s_energy_matrix.o: /usr/include/bits/stdio_lim.h
+-src/simfold/s_energy_matrix.o: /usr/include/bits/sys_errlist.h
+-src/simfold/s_energy_matrix.o: /usr/include/string.h /usr/include/stdlib.h
+-src/simfold/s_energy_matrix.o: /usr/include/malloc.h ./include/constants.h
+-src/simfold/s_energy_matrix.o: ./include/structs.h ./include/externs.h
+-src/simfold/s_energy_matrix.o: src/common/common.h
++src/simfold/s_energy_matrix.o: ./include/constants.h ./include/structs.h
++src/simfold/s_energy_matrix.o: ./include/externs.h src/common/common.h
+ src/simfold/s_energy_matrix.o: ./src/simfold/s_partition_function.h
+ src/simfold/s_energy_matrix.o: ./src/simfold/s_hairpin_loop.h
+ src/simfold/s_energy_matrix.o: ./src/simfold/s_internal_loop.h
+@@ -381,19 +261,6 @@ src/simfold/s_energy_matrix.o: ./src/simfold/s_stacked_pair.h
+ src/simfold/s_energy_matrix.o: ./src/simfold/s_multi_loop.h
+ src/simfold/s_energy_matrix.o: ./src/simfold/s_multi_loop_sub.h
+ src/simfold/s_energy_matrix.o: ./include/simfold.h ./include/init.h
+-src/simfold/s_internal_loop.o: /usr/include/stdio.h /usr/include/features.h
+-src/simfold/s_internal_loop.o: /usr/include/sys/cdefs.h
+-src/simfold/s_internal_loop.o: /usr/include/bits/wordsize.h
+-src/simfold/s_internal_loop.o: /usr/include/gnu/stubs.h
+-src/simfold/s_internal_loop.o: /usr/include/gnu/stubs-32.h
+-src/simfold/s_internal_loop.o: /usr/include/bits/types.h
+-src/simfold/s_internal_loop.o: /usr/include/bits/typesizes.h
+-src/simfold/s_internal_loop.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/simfold/s_internal_loop.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-src/simfold/s_internal_loop.o: /usr/include/gconv.h
+-src/simfold/s_internal_loop.o: /usr/include/bits/stdio_lim.h
+-src/simfold/s_internal_loop.o: /usr/include/bits/sys_errlist.h
+-src/simfold/s_internal_loop.o: /usr/include/string.h /usr/include/stdlib.h
+ src/simfold/s_internal_loop.o: ./src/simfold/s_internal_loop.h
+ src/simfold/s_internal_loop.o: ./include/constants.h ./include/structs.h
+ src/simfold/s_internal_loop.o: ./src/simfold/s_energy_matrix.h
+@@ -405,21 +272,8 @@ src/simfold/s_internal_loop.o: ./include/externs.h src/common/common.h
+ src/simfold/s_internal_loop.o: ./src/simfold/s_partition_function.h
+ src/simfold/s_internal_loop.o: ./include/simfold.h ./include/init.h
+ src/simfold/s_internal_loop.o: src/common/params.h
+-src/simfold/s_multi_loop.o: /usr/include/stdio.h /usr/include/features.h
+-src/simfold/s_multi_loop.o: /usr/include/sys/cdefs.h
+-src/simfold/s_multi_loop.o: /usr/include/bits/wordsize.h
+-src/simfold/s_multi_loop.o: /usr/include/gnu/stubs.h
+-src/simfold/s_multi_loop.o: /usr/include/gnu/stubs-32.h
+-src/simfold/s_multi_loop.o: /usr/include/bits/types.h
+-src/simfold/s_multi_loop.o: /usr/include/bits/typesizes.h
+-src/simfold/s_multi_loop.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/simfold/s_multi_loop.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-src/simfold/s_multi_loop.o: /usr/include/gconv.h
+-src/simfold/s_multi_loop.o: /usr/include/bits/stdio_lim.h
+-src/simfold/s_multi_loop.o: /usr/include/bits/sys_errlist.h
+-src/simfold/s_multi_loop.o: /usr/include/malloc.h ./include/externs.h
+-src/simfold/s_multi_loop.o: ./include/structs.h ./include/constants.h
+-src/simfold/s_multi_loop.o: src/common/common.h
++src/simfold/s_multi_loop.o: ./include/externs.h ./include/structs.h
++src/simfold/s_multi_loop.o: ./include/constants.h src/common/common.h
+ src/simfold/s_multi_loop.o: ./src/simfold/s_partition_function.h
+ src/simfold/s_multi_loop.o: ./src/simfold/s_hairpin_loop.h
+ src/simfold/s_multi_loop.o: ./src/simfold/s_internal_loop.h
+@@ -428,22 +282,8 @@ src/simfold/s_multi_loop.o: ./src/simfold/s_stacked_pair.h
+ src/simfold/s_multi_loop.o: ./src/simfold/s_multi_loop.h
+ src/simfold/s_multi_loop.o: ./src/simfold/s_multi_loop_sub.h
+ src/simfold/s_multi_loop.o: ./include/simfold.h ./include/init.h
+-src/simfold/s_multi_loop_sub.o: /usr/include/stdio.h /usr/include/features.h
+-src/simfold/s_multi_loop_sub.o: /usr/include/sys/cdefs.h
+-src/simfold/s_multi_loop_sub.o: /usr/include/bits/wordsize.h
+-src/simfold/s_multi_loop_sub.o: /usr/include/gnu/stubs.h
+-src/simfold/s_multi_loop_sub.o: /usr/include/gnu/stubs-32.h
+-src/simfold/s_multi_loop_sub.o: /usr/include/bits/types.h
+-src/simfold/s_multi_loop_sub.o: /usr/include/bits/typesizes.h
+-src/simfold/s_multi_loop_sub.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/simfold/s_multi_loop_sub.o: /usr/include/wchar.h
+-src/simfold/s_multi_loop_sub.o: /usr/include/bits/wchar.h
+-src/simfold/s_multi_loop_sub.o: /usr/include/gconv.h
+-src/simfold/s_multi_loop_sub.o: /usr/include/bits/stdio_lim.h
+-src/simfold/s_multi_loop_sub.o: /usr/include/bits/sys_errlist.h
+-src/simfold/s_multi_loop_sub.o: /usr/include/malloc.h ./include/externs.h
+-src/simfold/s_multi_loop_sub.o: ./include/structs.h ./include/constants.h
+-src/simfold/s_multi_loop_sub.o: src/common/common.h
++src/simfold/s_multi_loop_sub.o: ./include/externs.h ./include/structs.h
++src/simfold/s_multi_loop_sub.o: ./include/constants.h src/common/common.h
+ src/simfold/s_multi_loop_sub.o: ./src/simfold/s_partition_function.h
+ src/simfold/s_multi_loop_sub.o: ./src/simfold/s_hairpin_loop.h
+ src/simfold/s_multi_loop_sub.o: ./src/simfold/s_internal_loop.h
+@@ -452,20 +292,7 @@ src/simfold/s_multi_loop_sub.o: ./src/simfold/s_stacked_pair.h
+ src/simfold/s_multi_loop_sub.o: ./src/simfold/s_multi_loop.h
+ src/simfold/s_multi_loop_sub.o: ./src/simfold/s_multi_loop_sub.h
+ src/simfold/s_sub_folding.o: ./src/simfold/s_sub_folding.h
+-src/simfold/s_sub_folding.o: /usr/include/stdio.h /usr/include/features.h
+-src/simfold/s_sub_folding.o: /usr/include/sys/cdefs.h
+-src/simfold/s_sub_folding.o: /usr/include/bits/wordsize.h
+-src/simfold/s_sub_folding.o: /usr/include/gnu/stubs.h
+-src/simfold/s_sub_folding.o: /usr/include/gnu/stubs-32.h
+-src/simfold/s_sub_folding.o: /usr/include/bits/types.h
+-src/simfold/s_sub_folding.o: /usr/include/bits/typesizes.h
+-src/simfold/s_sub_folding.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/simfold/s_sub_folding.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-src/simfold/s_sub_folding.o: /usr/include/gconv.h
+-src/simfold/s_sub_folding.o: /usr/include/bits/stdio_lim.h
+-src/simfold/s_sub_folding.o: /usr/include/bits/sys_errlist.h
+-src/simfold/s_sub_folding.o: /usr/include/string.h ./include/structs.h
+-src/simfold/s_sub_folding.o: ./include/constants.h
++src/simfold/s_sub_folding.o: ./include/structs.h ./include/constants.h
+ src/simfold/s_sub_folding.o: ./src/simfold/s_energy_matrix.h
+ src/simfold/s_sub_folding.o: ./src/simfold/s_stacked_pair.h
+ src/simfold/s_sub_folding.o: ./src/simfold/s_hairpin_loop.h
+@@ -475,30 +302,6 @@ src/simfold/s_sub_folding.o: ./src/simfold/s_multi_loop_sub.h
+ src/simfold/s_sub_folding.o: ./include/externs.h src/common/common.h
+ src/simfold/s_sub_folding.o: ./src/simfold/s_partition_function.h
+ src/simfold/s_sub_folding.o: ./include/simfold.h ./include/init.h
+-src/simfold/s_partition_function.o: /usr/include/stdio.h
+-src/simfold/s_partition_function.o: /usr/include/features.h
+-src/simfold/s_partition_function.o: /usr/include/sys/cdefs.h
+-src/simfold/s_partition_function.o: /usr/include/bits/wordsize.h
+-src/simfold/s_partition_function.o: /usr/include/gnu/stubs.h
+-src/simfold/s_partition_function.o: /usr/include/gnu/stubs-32.h
+-src/simfold/s_partition_function.o: /usr/include/bits/types.h
+-src/simfold/s_partition_function.o: /usr/include/bits/typesizes.h
+-src/simfold/s_partition_function.o: /usr/include/libio.h
+-src/simfold/s_partition_function.o: /usr/include/_G_config.h
+-src/simfold/s_partition_function.o: /usr/include/wchar.h
+-src/simfold/s_partition_function.o: /usr/include/bits/wchar.h
+-src/simfold/s_partition_function.o: /usr/include/gconv.h
+-src/simfold/s_partition_function.o: /usr/include/bits/stdio_lim.h
+-src/simfold/s_partition_function.o: /usr/include/bits/sys_errlist.h
+-src/simfold/s_partition_function.o: /usr/include/string.h
+-src/simfold/s_partition_function.o: /usr/include/stdlib.h
+-src/simfold/s_partition_function.o: /usr/include/malloc.h /usr/include/math.h
+-src/simfold/s_partition_function.o: /usr/include/bits/huge_val.h
+-src/simfold/s_partition_function.o: /usr/include/bits/mathdef.h
+-src/simfold/s_partition_function.o: /usr/include/bits/mathcalls.h
+-src/simfold/s_partition_function.o: /usr/include/ctype.h
+-src/simfold/s_partition_function.o: /usr/include/endian.h
+-src/simfold/s_partition_function.o: /usr/include/bits/endian.h
+ src/simfold/s_partition_function.o: ./include/constants.h ./include/structs.h
+ src/simfold/s_partition_function.o: ./include/externs.h src/common/common.h
+ src/simfold/s_partition_function.o: ./src/simfold/s_partition_function.h
+@@ -512,31 +315,6 @@ src/simfold/s_partition_function.o: ./include/simfold.h ./include/init.h
+ src/simfold/s_partition_function.o: ./src/simfold/s_min_folding.h
+ src/simfold/s_partition_function.o: ./src/simfold/s_sub_folding.h
+ src/simfold/s_partition_function.o: src/common/params.h
+-src/simfold/s_partition_function_complex.o: /usr/include/stdio.h
+-src/simfold/s_partition_function_complex.o: /usr/include/features.h
+-src/simfold/s_partition_function_complex.o: /usr/include/sys/cdefs.h
+-src/simfold/s_partition_function_complex.o: /usr/include/bits/wordsize.h
+-src/simfold/s_partition_function_complex.o: /usr/include/gnu/stubs.h
+-src/simfold/s_partition_function_complex.o: /usr/include/gnu/stubs-32.h
+-src/simfold/s_partition_function_complex.o: /usr/include/bits/types.h
+-src/simfold/s_partition_function_complex.o: /usr/include/bits/typesizes.h
+-src/simfold/s_partition_function_complex.o: /usr/include/libio.h
+-src/simfold/s_partition_function_complex.o: /usr/include/_G_config.h
+-src/simfold/s_partition_function_complex.o: /usr/include/wchar.h
+-src/simfold/s_partition_function_complex.o: /usr/include/bits/wchar.h
+-src/simfold/s_partition_function_complex.o: /usr/include/gconv.h
+-src/simfold/s_partition_function_complex.o: /usr/include/bits/stdio_lim.h
+-src/simfold/s_partition_function_complex.o: /usr/include/bits/sys_errlist.h
+-src/simfold/s_partition_function_complex.o: /usr/include/string.h
+-src/simfold/s_partition_function_complex.o: /usr/include/stdlib.h
+-src/simfold/s_partition_function_complex.o: /usr/include/malloc.h
+-src/simfold/s_partition_function_complex.o: /usr/include/math.h
+-src/simfold/s_partition_function_complex.o: /usr/include/bits/huge_val.h
+-src/simfold/s_partition_function_complex.o: /usr/include/bits/mathdef.h
+-src/simfold/s_partition_function_complex.o: /usr/include/bits/mathcalls.h
+-src/simfold/s_partition_function_complex.o: /usr/include/ctype.h
+-src/simfold/s_partition_function_complex.o: /usr/include/endian.h
+-src/simfold/s_partition_function_complex.o: /usr/include/bits/endian.h
+ src/simfold/s_partition_function_complex.o: ./include/constants.h
+ src/simfold/s_partition_function_complex.o: ./include/structs.h
+ src/simfold/s_partition_function_complex.o: ./include/externs.h
+@@ -551,32 +329,9 @@ src/simfold/s_partition_function_complex.o: ./src/simfold/s_multi_loop_sub.h
+ src/simfold/s_partition_function_complex.o: ./include/simfold.h
+ src/simfold/s_partition_function_complex.o: ./include/init.h
+ src/simfold/s_partition_function_complex.o: src/simfold/s_partition_function_complex.h
+-src/simfold/s_partition_function_complex.o: /usr/include/complex.h
+-src/simfold/s_partition_function_complex.o: /usr/include/bits/cmathcalls.h
+ src/simfold/s_partition_function_complex.o: ./src/simfold/s_min_folding.h
+ src/simfold/s_partition_function_complex.o: ./src/simfold/s_sub_folding.h
+ src/simfold/s_partition_function_complex.o: src/common/params.h
+-src/pairfold/p_specific_functions.o: /usr/include/stdio.h
+-src/pairfold/p_specific_functions.o: /usr/include/features.h
+-src/pairfold/p_specific_functions.o: /usr/include/sys/cdefs.h
+-src/pairfold/p_specific_functions.o: /usr/include/bits/wordsize.h
+-src/pairfold/p_specific_functions.o: /usr/include/gnu/stubs.h
+-src/pairfold/p_specific_functions.o: /usr/include/gnu/stubs-32.h
+-src/pairfold/p_specific_functions.o: /usr/include/bits/types.h
+-src/pairfold/p_specific_functions.o: /usr/include/bits/typesizes.h
+-src/pairfold/p_specific_functions.o: /usr/include/libio.h
+-src/pairfold/p_specific_functions.o: /usr/include/_G_config.h
+-src/pairfold/p_specific_functions.o: /usr/include/wchar.h
+-src/pairfold/p_specific_functions.o: /usr/include/bits/wchar.h
+-src/pairfold/p_specific_functions.o: /usr/include/gconv.h
+-src/pairfold/p_specific_functions.o: /usr/include/bits/stdio_lim.h
+-src/pairfold/p_specific_functions.o: /usr/include/bits/sys_errlist.h
+-src/pairfold/p_specific_functions.o: /usr/include/stdlib.h
+-src/pairfold/p_specific_functions.o: /usr/include/math.h
+-src/pairfold/p_specific_functions.o: /usr/include/bits/huge_val.h
+-src/pairfold/p_specific_functions.o: /usr/include/bits/mathdef.h
+-src/pairfold/p_specific_functions.o: /usr/include/bits/mathcalls.h
+-src/pairfold/p_specific_functions.o: /usr/include/string.h
+ src/pairfold/p_specific_functions.o: ./include/constants.h
+ src/pairfold/p_specific_functions.o: ./include/structs.h ./include/externs.h
+ src/pairfold/p_specific_functions.o: src/common/common.h
+@@ -597,19 +352,6 @@ src/pairfold/p_specific_functions.o: src/pairfold/p_multi_loop.h
+ src/pairfold/p_specific_functions.o: src/pairfold/p_multi_loop_sub.h
+ src/pairfold/p_specific_functions.o: src/pairfold/p_sub_folding.h
+ src/pairfold/p_specific_functions.o: src/pairfold/p_specific_functions.h
+-src/pairfold/p_min_folding.o: /usr/include/stdio.h /usr/include/features.h
+-src/pairfold/p_min_folding.o: /usr/include/sys/cdefs.h
+-src/pairfold/p_min_folding.o: /usr/include/bits/wordsize.h
+-src/pairfold/p_min_folding.o: /usr/include/gnu/stubs.h
+-src/pairfold/p_min_folding.o: /usr/include/gnu/stubs-32.h
+-src/pairfold/p_min_folding.o: /usr/include/bits/types.h
+-src/pairfold/p_min_folding.o: /usr/include/bits/typesizes.h
+-src/pairfold/p_min_folding.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/pairfold/p_min_folding.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-src/pairfold/p_min_folding.o: /usr/include/gconv.h
+-src/pairfold/p_min_folding.o: /usr/include/bits/stdio_lim.h
+-src/pairfold/p_min_folding.o: /usr/include/bits/sys_errlist.h
+-src/pairfold/p_min_folding.o: /usr/include/string.h
+ src/pairfold/p_min_folding.o: src/pairfold/p_min_folding.h
+ src/pairfold/p_min_folding.o: ./include/structs.h ./include/constants.h
+ src/pairfold/p_min_folding.o: src/pairfold/p_energy_matrix.h
+@@ -627,20 +369,8 @@ src/pairfold/p_min_folding.o: ./src/simfold/s_stacked_pair.h
+ src/pairfold/p_min_folding.o: ./src/simfold/s_multi_loop.h
+ src/pairfold/p_min_folding.o: ./src/simfold/s_multi_loop_sub.h
+ src/pairfold/p_min_folding.o: ./include/pairfold.h ./include/init.h
+-src/pairfold/p_hairpin_loop.o: /usr/include/string.h /usr/include/features.h
+-src/pairfold/p_hairpin_loop.o: /usr/include/sys/cdefs.h
+-src/pairfold/p_hairpin_loop.o: /usr/include/bits/wordsize.h
+-src/pairfold/p_hairpin_loop.o: /usr/include/gnu/stubs.h
+-src/pairfold/p_hairpin_loop.o: /usr/include/gnu/stubs-32.h
+ src/pairfold/p_hairpin_loop.o: ./include/constants.h ./include/structs.h
+ src/pairfold/p_hairpin_loop.o: ./include/externs.h src/common/common.h
+-src/pairfold/p_hairpin_loop.o: /usr/include/stdio.h /usr/include/bits/types.h
+-src/pairfold/p_hairpin_loop.o: /usr/include/bits/typesizes.h
+-src/pairfold/p_hairpin_loop.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/pairfold/p_hairpin_loop.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-src/pairfold/p_hairpin_loop.o: /usr/include/gconv.h
+-src/pairfold/p_hairpin_loop.o: /usr/include/bits/stdio_lim.h
+-src/pairfold/p_hairpin_loop.o: /usr/include/bits/sys_errlist.h
+ src/pairfold/p_hairpin_loop.o: ./src/simfold/s_partition_function.h
+ src/pairfold/p_hairpin_loop.o: ./src/simfold/s_hairpin_loop.h
+ src/pairfold/p_hairpin_loop.o: ./src/simfold/s_internal_loop.h
+@@ -650,20 +380,8 @@ src/pairfold/p_hairpin_loop.o: ./src/simfold/s_multi_loop.h
+ src/pairfold/p_hairpin_loop.o: ./src/simfold/s_multi_loop_sub.h
+ src/pairfold/p_hairpin_loop.o: ./include/pairfold.h ./include/init.h
+ src/pairfold/p_hairpin_loop.o: src/pairfold/p_hairpin_loop.h
+-src/pairfold/p_stacked_pair.o: /usr/include/string.h /usr/include/features.h
+-src/pairfold/p_stacked_pair.o: /usr/include/sys/cdefs.h
+-src/pairfold/p_stacked_pair.o: /usr/include/bits/wordsize.h
+-src/pairfold/p_stacked_pair.o: /usr/include/gnu/stubs.h
+-src/pairfold/p_stacked_pair.o: /usr/include/gnu/stubs-32.h
+ src/pairfold/p_stacked_pair.o: ./include/constants.h ./include/structs.h
+ src/pairfold/p_stacked_pair.o: ./include/externs.h src/common/common.h
+-src/pairfold/p_stacked_pair.o: /usr/include/stdio.h /usr/include/bits/types.h
+-src/pairfold/p_stacked_pair.o: /usr/include/bits/typesizes.h
+-src/pairfold/p_stacked_pair.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/pairfold/p_stacked_pair.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-src/pairfold/p_stacked_pair.o: /usr/include/gconv.h
+-src/pairfold/p_stacked_pair.o: /usr/include/bits/stdio_lim.h
+-src/pairfold/p_stacked_pair.o: /usr/include/bits/sys_errlist.h
+ src/pairfold/p_stacked_pair.o: ./src/simfold/s_partition_function.h
+ src/pairfold/p_stacked_pair.o: ./src/simfold/s_hairpin_loop.h
+ src/pairfold/p_stacked_pair.o: ./src/simfold/s_internal_loop.h
+@@ -678,23 +396,8 @@ src/pairfold/p_stacked_pair.o: src/pairfold/p_hairpin_loop.h
+ src/pairfold/p_stacked_pair.o: src/pairfold/p_internal_loop.h
+ src/pairfold/p_stacked_pair.o: src/pairfold/p_multi_loop.h
+ src/pairfold/p_stacked_pair.o: src/pairfold/p_multi_loop_sub.h
+-src/pairfold/p_energy_matrix.o: /usr/include/stdio.h /usr/include/features.h
+-src/pairfold/p_energy_matrix.o: /usr/include/sys/cdefs.h
+-src/pairfold/p_energy_matrix.o: /usr/include/bits/wordsize.h
+-src/pairfold/p_energy_matrix.o: /usr/include/gnu/stubs.h
+-src/pairfold/p_energy_matrix.o: /usr/include/gnu/stubs-32.h
+-src/pairfold/p_energy_matrix.o: /usr/include/bits/types.h
+-src/pairfold/p_energy_matrix.o: /usr/include/bits/typesizes.h
+-src/pairfold/p_energy_matrix.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/pairfold/p_energy_matrix.o: /usr/include/wchar.h
+-src/pairfold/p_energy_matrix.o: /usr/include/bits/wchar.h
+-src/pairfold/p_energy_matrix.o: /usr/include/gconv.h
+-src/pairfold/p_energy_matrix.o: /usr/include/bits/stdio_lim.h
+-src/pairfold/p_energy_matrix.o: /usr/include/bits/sys_errlist.h
+-src/pairfold/p_energy_matrix.o: /usr/include/string.h /usr/include/stdlib.h
+-src/pairfold/p_energy_matrix.o: /usr/include/malloc.h ./include/constants.h
+-src/pairfold/p_energy_matrix.o: ./include/structs.h ./include/externs.h
+-src/pairfold/p_energy_matrix.o: src/common/common.h
++src/pairfold/p_energy_matrix.o: ./include/constants.h ./include/structs.h
++src/pairfold/p_energy_matrix.o: ./include/externs.h src/common/common.h
+ src/pairfold/p_energy_matrix.o: ./src/simfold/s_partition_function.h
+ src/pairfold/p_energy_matrix.o: ./src/simfold/s_hairpin_loop.h
+ src/pairfold/p_energy_matrix.o: ./src/simfold/s_internal_loop.h
+@@ -709,20 +412,6 @@ src/pairfold/p_energy_matrix.o: src/pairfold/p_hairpin_loop.h
+ src/pairfold/p_energy_matrix.o: src/pairfold/p_internal_loop.h
+ src/pairfold/p_energy_matrix.o: src/pairfold/p_multi_loop.h
+ src/pairfold/p_energy_matrix.o: src/pairfold/p_multi_loop_sub.h
+-src/pairfold/p_internal_loop.o: /usr/include/stdio.h /usr/include/features.h
+-src/pairfold/p_internal_loop.o: /usr/include/sys/cdefs.h
+-src/pairfold/p_internal_loop.o: /usr/include/bits/wordsize.h
+-src/pairfold/p_internal_loop.o: /usr/include/gnu/stubs.h
+-src/pairfold/p_internal_loop.o: /usr/include/gnu/stubs-32.h
+-src/pairfold/p_internal_loop.o: /usr/include/bits/types.h
+-src/pairfold/p_internal_loop.o: /usr/include/bits/typesizes.h
+-src/pairfold/p_internal_loop.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/pairfold/p_internal_loop.o: /usr/include/wchar.h
+-src/pairfold/p_internal_loop.o: /usr/include/bits/wchar.h
+-src/pairfold/p_internal_loop.o: /usr/include/gconv.h
+-src/pairfold/p_internal_loop.o: /usr/include/bits/stdio_lim.h
+-src/pairfold/p_internal_loop.o: /usr/include/bits/sys_errlist.h
+-src/pairfold/p_internal_loop.o: /usr/include/string.h /usr/include/stdlib.h
+ src/pairfold/p_internal_loop.o: src/pairfold/p_internal_loop.h
+ src/pairfold/p_internal_loop.o: ./include/constants.h ./include/structs.h
+ src/pairfold/p_internal_loop.o: src/pairfold/p_energy_matrix.h
+@@ -740,21 +429,8 @@ src/pairfold/p_internal_loop.o: ./src/simfold/s_multi_loop.h
+ src/pairfold/p_internal_loop.o: ./src/simfold/s_multi_loop_sub.h
+ src/pairfold/p_internal_loop.o: ./include/pairfold.h ./include/init.h
+ src/pairfold/p_internal_loop.o: src/pairfold/p_specific_functions.h
+-src/pairfold/p_multi_loop.o: /usr/include/stdio.h /usr/include/features.h
+-src/pairfold/p_multi_loop.o: /usr/include/sys/cdefs.h
+-src/pairfold/p_multi_loop.o: /usr/include/bits/wordsize.h
+-src/pairfold/p_multi_loop.o: /usr/include/gnu/stubs.h
+-src/pairfold/p_multi_loop.o: /usr/include/gnu/stubs-32.h
+-src/pairfold/p_multi_loop.o: /usr/include/bits/types.h
+-src/pairfold/p_multi_loop.o: /usr/include/bits/typesizes.h
+-src/pairfold/p_multi_loop.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/pairfold/p_multi_loop.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-src/pairfold/p_multi_loop.o: /usr/include/gconv.h
+-src/pairfold/p_multi_loop.o: /usr/include/bits/stdio_lim.h
+-src/pairfold/p_multi_loop.o: /usr/include/bits/sys_errlist.h
+-src/pairfold/p_multi_loop.o: /usr/include/malloc.h ./include/externs.h
+-src/pairfold/p_multi_loop.o: ./include/structs.h ./include/constants.h
+-src/pairfold/p_multi_loop.o: src/common/common.h
++src/pairfold/p_multi_loop.o: ./include/externs.h ./include/structs.h
++src/pairfold/p_multi_loop.o: ./include/constants.h src/common/common.h
+ src/pairfold/p_multi_loop.o: ./src/simfold/s_partition_function.h
+ src/pairfold/p_multi_loop.o: ./src/simfold/s_hairpin_loop.h
+ src/pairfold/p_multi_loop.o: ./src/simfold/s_internal_loop.h
+@@ -769,23 +445,8 @@ src/pairfold/p_multi_loop.o: src/pairfold/p_hairpin_loop.h
+ src/pairfold/p_multi_loop.o: src/pairfold/p_internal_loop.h
+ src/pairfold/p_multi_loop.o: src/pairfold/p_multi_loop_sub.h
+ src/pairfold/p_multi_loop.o: ./include/pairfold.h ./include/init.h
+-src/pairfold/p_multi_loop_sub.o: /usr/include/stdio.h /usr/include/features.h
+-src/pairfold/p_multi_loop_sub.o: /usr/include/sys/cdefs.h
+-src/pairfold/p_multi_loop_sub.o: /usr/include/bits/wordsize.h
+-src/pairfold/p_multi_loop_sub.o: /usr/include/gnu/stubs.h
+-src/pairfold/p_multi_loop_sub.o: /usr/include/gnu/stubs-32.h
+-src/pairfold/p_multi_loop_sub.o: /usr/include/bits/types.h
+-src/pairfold/p_multi_loop_sub.o: /usr/include/bits/typesizes.h
+-src/pairfold/p_multi_loop_sub.o: /usr/include/libio.h
+-src/pairfold/p_multi_loop_sub.o: /usr/include/_G_config.h
+-src/pairfold/p_multi_loop_sub.o: /usr/include/wchar.h
+-src/pairfold/p_multi_loop_sub.o: /usr/include/bits/wchar.h
+-src/pairfold/p_multi_loop_sub.o: /usr/include/gconv.h
+-src/pairfold/p_multi_loop_sub.o: /usr/include/bits/stdio_lim.h
+-src/pairfold/p_multi_loop_sub.o: /usr/include/bits/sys_errlist.h
+-src/pairfold/p_multi_loop_sub.o: /usr/include/malloc.h ./include/externs.h
+-src/pairfold/p_multi_loop_sub.o: ./include/structs.h ./include/constants.h
+-src/pairfold/p_multi_loop_sub.o: src/common/common.h
++src/pairfold/p_multi_loop_sub.o: ./include/externs.h ./include/structs.h
++src/pairfold/p_multi_loop_sub.o: ./include/constants.h src/common/common.h
+ src/pairfold/p_multi_loop_sub.o: ./src/simfold/s_partition_function.h
+ src/pairfold/p_multi_loop_sub.o: ./src/simfold/s_hairpin_loop.h
+ src/pairfold/p_multi_loop_sub.o: ./src/simfold/s_internal_loop.h
+@@ -801,20 +462,7 @@ src/pairfold/p_multi_loop_sub.o: src/pairfold/p_internal_loop.h
+ src/pairfold/p_multi_loop_sub.o: src/pairfold/p_multi_loop.h
+ src/pairfold/p_multi_loop_sub.o: ./include/pairfold.h ./include/init.h
+ src/pairfold/p_sub_folding.o: src/pairfold/p_sub_folding.h
+-src/pairfold/p_sub_folding.o: /usr/include/stdio.h /usr/include/features.h
+-src/pairfold/p_sub_folding.o: /usr/include/sys/cdefs.h
+-src/pairfold/p_sub_folding.o: /usr/include/bits/wordsize.h
+-src/pairfold/p_sub_folding.o: /usr/include/gnu/stubs.h
+-src/pairfold/p_sub_folding.o: /usr/include/gnu/stubs-32.h
+-src/pairfold/p_sub_folding.o: /usr/include/bits/types.h
+-src/pairfold/p_sub_folding.o: /usr/include/bits/typesizes.h
+-src/pairfold/p_sub_folding.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/pairfold/p_sub_folding.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-src/pairfold/p_sub_folding.o: /usr/include/gconv.h
+-src/pairfold/p_sub_folding.o: /usr/include/bits/stdio_lim.h
+-src/pairfold/p_sub_folding.o: /usr/include/bits/sys_errlist.h
+-src/pairfold/p_sub_folding.o: /usr/include/string.h ./include/structs.h
+-src/pairfold/p_sub_folding.o: ./include/constants.h
++src/pairfold/p_sub_folding.o: ./include/structs.h ./include/constants.h
+ src/pairfold/p_sub_folding.o: src/pairfold/p_energy_matrix.h
+ src/pairfold/p_sub_folding.o: src/pairfold/p_stacked_pair.h
+ src/pairfold/p_sub_folding.o: src/pairfold/p_hairpin_loop.h
+@@ -830,27 +478,6 @@ src/pairfold/p_sub_folding.o: ./src/simfold/s_stacked_pair.h
+ src/pairfold/p_sub_folding.o: ./src/simfold/s_multi_loop.h
+ src/pairfold/p_sub_folding.o: ./src/simfold/s_multi_loop_sub.h
+ src/pairfold/p_sub_folding.o: ./include/pairfold.h ./include/init.h
+-src/multifold/m_specific_functions.o: /usr/include/stdio.h
+-src/multifold/m_specific_functions.o: /usr/include/features.h
+-src/multifold/m_specific_functions.o: /usr/include/sys/cdefs.h
+-src/multifold/m_specific_functions.o: /usr/include/bits/wordsize.h
+-src/multifold/m_specific_functions.o: /usr/include/gnu/stubs.h
+-src/multifold/m_specific_functions.o: /usr/include/gnu/stubs-32.h
+-src/multifold/m_specific_functions.o: /usr/include/bits/types.h
+-src/multifold/m_specific_functions.o: /usr/include/bits/typesizes.h
+-src/multifold/m_specific_functions.o: /usr/include/libio.h
+-src/multifold/m_specific_functions.o: /usr/include/_G_config.h
+-src/multifold/m_specific_functions.o: /usr/include/wchar.h
+-src/multifold/m_specific_functions.o: /usr/include/bits/wchar.h
+-src/multifold/m_specific_functions.o: /usr/include/gconv.h
+-src/multifold/m_specific_functions.o: /usr/include/bits/stdio_lim.h
+-src/multifold/m_specific_functions.o: /usr/include/bits/sys_errlist.h
+-src/multifold/m_specific_functions.o: /usr/include/stdlib.h
+-src/multifold/m_specific_functions.o: /usr/include/math.h
+-src/multifold/m_specific_functions.o: /usr/include/bits/huge_val.h
+-src/multifold/m_specific_functions.o: /usr/include/bits/mathdef.h
+-src/multifold/m_specific_functions.o: /usr/include/bits/mathcalls.h
+-src/multifold/m_specific_functions.o: /usr/include/string.h
+ src/multifold/m_specific_functions.o: ./include/constants.h
+ src/multifold/m_specific_functions.o: ./include/structs.h ./include/externs.h
+ src/multifold/m_specific_functions.o: src/common/common.h
+@@ -869,19 +496,6 @@ src/multifold/m_specific_functions.o: src/multifold/m_hairpin_loop.h
+ src/multifold/m_specific_functions.o: src/multifold/m_internal_loop.h
+ src/multifold/m_specific_functions.o: src/multifold/m_multi_loop.h
+ src/multifold/m_specific_functions.o: src/multifold/m_specific_functions.h
+-src/multifold/m_min_folding.o: /usr/include/stdio.h /usr/include/features.h
+-src/multifold/m_min_folding.o: /usr/include/sys/cdefs.h
+-src/multifold/m_min_folding.o: /usr/include/bits/wordsize.h
+-src/multifold/m_min_folding.o: /usr/include/gnu/stubs.h
+-src/multifold/m_min_folding.o: /usr/include/gnu/stubs-32.h
+-src/multifold/m_min_folding.o: /usr/include/bits/types.h
+-src/multifold/m_min_folding.o: /usr/include/bits/typesizes.h
+-src/multifold/m_min_folding.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/multifold/m_min_folding.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-src/multifold/m_min_folding.o: /usr/include/gconv.h
+-src/multifold/m_min_folding.o: /usr/include/bits/stdio_lim.h
+-src/multifold/m_min_folding.o: /usr/include/bits/sys_errlist.h
+-src/multifold/m_min_folding.o: /usr/include/string.h
+ src/multifold/m_min_folding.o: src/multifold/m_min_folding.h
+ src/multifold/m_min_folding.o: ./include/structs.h ./include/constants.h
+ src/multifold/m_min_folding.o: src/multifold/m_energy_matrix.h
+@@ -899,22 +513,8 @@ src/multifold/m_min_folding.o: ./src/simfold/s_multi_loop.h
+ src/multifold/m_min_folding.o: ./src/simfold/s_multi_loop_sub.h
+ src/multifold/m_min_folding.o: ./include/multifold.h ./include/init.h
+ src/multifold/m_min_folding.o: src/multifold/m_specific_functions.h
+-src/multifold/m_hairpin_loop.o: /usr/include/string.h /usr/include/features.h
+-src/multifold/m_hairpin_loop.o: /usr/include/sys/cdefs.h
+-src/multifold/m_hairpin_loop.o: /usr/include/bits/wordsize.h
+-src/multifold/m_hairpin_loop.o: /usr/include/gnu/stubs.h
+-src/multifold/m_hairpin_loop.o: /usr/include/gnu/stubs-32.h
+ src/multifold/m_hairpin_loop.o: ./include/constants.h ./include/structs.h
+ src/multifold/m_hairpin_loop.o: ./include/externs.h src/common/common.h
+-src/multifold/m_hairpin_loop.o: /usr/include/stdio.h
+-src/multifold/m_hairpin_loop.o: /usr/include/bits/types.h
+-src/multifold/m_hairpin_loop.o: /usr/include/bits/typesizes.h
+-src/multifold/m_hairpin_loop.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/multifold/m_hairpin_loop.o: /usr/include/wchar.h
+-src/multifold/m_hairpin_loop.o: /usr/include/bits/wchar.h
+-src/multifold/m_hairpin_loop.o: /usr/include/gconv.h
+-src/multifold/m_hairpin_loop.o: /usr/include/bits/stdio_lim.h
+-src/multifold/m_hairpin_loop.o: /usr/include/bits/sys_errlist.h
+ src/multifold/m_hairpin_loop.o: ./src/simfold/s_partition_function.h
+ src/multifold/m_hairpin_loop.o: ./src/simfold/s_hairpin_loop.h
+ src/multifold/m_hairpin_loop.o: ./src/simfold/s_internal_loop.h
+@@ -925,22 +525,8 @@ src/multifold/m_hairpin_loop.o: ./src/simfold/s_multi_loop_sub.h
+ src/multifold/m_hairpin_loop.o: ./include/multifold.h ./include/init.h
+ src/multifold/m_hairpin_loop.o: src/multifold/m_hairpin_loop.h
+ src/multifold/m_hairpin_loop.o: src/multifold/m_specific_functions.h
+-src/multifold/m_stacked_pair.o: /usr/include/string.h /usr/include/features.h
+-src/multifold/m_stacked_pair.o: /usr/include/sys/cdefs.h
+-src/multifold/m_stacked_pair.o: /usr/include/bits/wordsize.h
+-src/multifold/m_stacked_pair.o: /usr/include/gnu/stubs.h
+-src/multifold/m_stacked_pair.o: /usr/include/gnu/stubs-32.h
+ src/multifold/m_stacked_pair.o: ./include/constants.h ./include/structs.h
+ src/multifold/m_stacked_pair.o: ./include/externs.h src/common/common.h
+-src/multifold/m_stacked_pair.o: /usr/include/stdio.h
+-src/multifold/m_stacked_pair.o: /usr/include/bits/types.h
+-src/multifold/m_stacked_pair.o: /usr/include/bits/typesizes.h
+-src/multifold/m_stacked_pair.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/multifold/m_stacked_pair.o: /usr/include/wchar.h
+-src/multifold/m_stacked_pair.o: /usr/include/bits/wchar.h
+-src/multifold/m_stacked_pair.o: /usr/include/gconv.h
+-src/multifold/m_stacked_pair.o: /usr/include/bits/stdio_lim.h
+-src/multifold/m_stacked_pair.o: /usr/include/bits/sys_errlist.h
+ src/multifold/m_stacked_pair.o: ./src/simfold/s_partition_function.h
+ src/multifold/m_stacked_pair.o: ./src/simfold/s_hairpin_loop.h
+ src/multifold/m_stacked_pair.o: ./src/simfold/s_internal_loop.h
+@@ -955,24 +541,8 @@ src/multifold/m_stacked_pair.o: src/multifold/m_hairpin_loop.h
+ src/multifold/m_stacked_pair.o: src/multifold/m_internal_loop.h
+ src/multifold/m_stacked_pair.o: src/multifold/m_multi_loop.h
+ src/multifold/m_stacked_pair.o: src/multifold/m_specific_functions.h
+-src/multifold/m_energy_matrix.o: /usr/include/stdio.h /usr/include/features.h
+-src/multifold/m_energy_matrix.o: /usr/include/sys/cdefs.h
+-src/multifold/m_energy_matrix.o: /usr/include/bits/wordsize.h
+-src/multifold/m_energy_matrix.o: /usr/include/gnu/stubs.h
+-src/multifold/m_energy_matrix.o: /usr/include/gnu/stubs-32.h
+-src/multifold/m_energy_matrix.o: /usr/include/bits/types.h
+-src/multifold/m_energy_matrix.o: /usr/include/bits/typesizes.h
+-src/multifold/m_energy_matrix.o: /usr/include/libio.h
+-src/multifold/m_energy_matrix.o: /usr/include/_G_config.h
+-src/multifold/m_energy_matrix.o: /usr/include/wchar.h
+-src/multifold/m_energy_matrix.o: /usr/include/bits/wchar.h
+-src/multifold/m_energy_matrix.o: /usr/include/gconv.h
+-src/multifold/m_energy_matrix.o: /usr/include/bits/stdio_lim.h
+-src/multifold/m_energy_matrix.o: /usr/include/bits/sys_errlist.h
+-src/multifold/m_energy_matrix.o: /usr/include/string.h /usr/include/stdlib.h
+-src/multifold/m_energy_matrix.o: /usr/include/malloc.h ./include/constants.h
+-src/multifold/m_energy_matrix.o: ./include/structs.h ./include/externs.h
+-src/multifold/m_energy_matrix.o: src/common/common.h
++src/multifold/m_energy_matrix.o: ./include/constants.h ./include/structs.h
++src/multifold/m_energy_matrix.o: ./include/externs.h src/common/common.h
+ src/multifold/m_energy_matrix.o: ./src/simfold/s_partition_function.h
+ src/multifold/m_energy_matrix.o: ./src/simfold/s_hairpin_loop.h
+ src/multifold/m_energy_matrix.o: ./src/simfold/s_internal_loop.h
+@@ -986,21 +556,6 @@ src/multifold/m_energy_matrix.o: src/multifold/m_stacked_pair.h
+ src/multifold/m_energy_matrix.o: src/multifold/m_hairpin_loop.h
+ src/multifold/m_energy_matrix.o: src/multifold/m_internal_loop.h
+ src/multifold/m_energy_matrix.o: src/multifold/m_multi_loop.h
+-src/multifold/m_internal_loop.o: /usr/include/stdio.h /usr/include/features.h
+-src/multifold/m_internal_loop.o: /usr/include/sys/cdefs.h
+-src/multifold/m_internal_loop.o: /usr/include/bits/wordsize.h
+-src/multifold/m_internal_loop.o: /usr/include/gnu/stubs.h
+-src/multifold/m_internal_loop.o: /usr/include/gnu/stubs-32.h
+-src/multifold/m_internal_loop.o: /usr/include/bits/types.h
+-src/multifold/m_internal_loop.o: /usr/include/bits/typesizes.h
+-src/multifold/m_internal_loop.o: /usr/include/libio.h
+-src/multifold/m_internal_loop.o: /usr/include/_G_config.h
+-src/multifold/m_internal_loop.o: /usr/include/wchar.h
+-src/multifold/m_internal_loop.o: /usr/include/bits/wchar.h
+-src/multifold/m_internal_loop.o: /usr/include/gconv.h
+-src/multifold/m_internal_loop.o: /usr/include/bits/stdio_lim.h
+-src/multifold/m_internal_loop.o: /usr/include/bits/sys_errlist.h
+-src/multifold/m_internal_loop.o: /usr/include/string.h /usr/include/stdlib.h
+ src/multifold/m_internal_loop.o: src/multifold/m_internal_loop.h
+ src/multifold/m_internal_loop.o: ./include/constants.h ./include/structs.h
+ src/multifold/m_internal_loop.o: src/multifold/m_energy_matrix.h
+@@ -1017,21 +572,8 @@ src/multifold/m_internal_loop.o: ./src/simfold/s_multi_loop.h
+ src/multifold/m_internal_loop.o: ./src/simfold/s_multi_loop_sub.h
+ src/multifold/m_internal_loop.o: ./include/multifold.h ./include/init.h
+ src/multifold/m_internal_loop.o: src/multifold/m_specific_functions.h
+-src/multifold/m_multi_loop.o: /usr/include/stdio.h /usr/include/features.h
+-src/multifold/m_multi_loop.o: /usr/include/sys/cdefs.h
+-src/multifold/m_multi_loop.o: /usr/include/bits/wordsize.h
+-src/multifold/m_multi_loop.o: /usr/include/gnu/stubs.h
+-src/multifold/m_multi_loop.o: /usr/include/gnu/stubs-32.h
+-src/multifold/m_multi_loop.o: /usr/include/bits/types.h
+-src/multifold/m_multi_loop.o: /usr/include/bits/typesizes.h
+-src/multifold/m_multi_loop.o: /usr/include/libio.h /usr/include/_G_config.h
+-src/multifold/m_multi_loop.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-src/multifold/m_multi_loop.o: /usr/include/gconv.h
+-src/multifold/m_multi_loop.o: /usr/include/bits/stdio_lim.h
+-src/multifold/m_multi_loop.o: /usr/include/bits/sys_errlist.h
+-src/multifold/m_multi_loop.o: /usr/include/malloc.h ./include/externs.h
+-src/multifold/m_multi_loop.o: ./include/structs.h ./include/constants.h
+-src/multifold/m_multi_loop.o: src/common/common.h
++src/multifold/m_multi_loop.o: ./include/externs.h ./include/structs.h
++src/multifold/m_multi_loop.o: ./include/constants.h src/common/common.h
+ src/multifold/m_multi_loop.o: ./src/simfold/s_partition_function.h
+ src/multifold/m_multi_loop.o: ./src/simfold/s_hairpin_loop.h
+ src/multifold/m_multi_loop.o: ./src/simfold/s_internal_loop.h
+@@ -1046,68 +588,31 @@ src/multifold/m_multi_loop.o: src/multifold/m_hairpin_loop.h
+ src/multifold/m_multi_loop.o: src/multifold/m_internal_loop.h
+ src/multifold/m_multi_loop.o: ./include/multifold.h ./include/init.h
+ src/multifold/m_multi_loop.o: src/multifold/m_specific_functions.h
+-simfold.o: /usr/include/stdio.h /usr/include/features.h
+-simfold.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
+-simfold.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h
+-simfold.o: /usr/include/bits/types.h /usr/include/bits/typesizes.h
+-simfold.o: /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h
+-simfold.o: /usr/include/bits/wchar.h /usr/include/gconv.h
+-simfold.o: /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h
+-simfold.o: /usr/include/string.h /usr/include/stdlib.h /usr/include/time.h
+-simfold.o: /usr/include/bits/time.h /usr/include/unistd.h
+-simfold.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
+ simfold.o: ./include/simfold.h ./include/constants.h ./include/init.h
+ simfold.o: ./include/externs.h ./include/structs.h src/common/params.h
+-simfold_pf.o: /usr/include/stdio.h /usr/include/features.h
+-simfold_pf.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
+-simfold_pf.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h
+-simfold_pf.o: /usr/include/bits/types.h /usr/include/bits/typesizes.h
+-simfold_pf.o: /usr/include/libio.h /usr/include/_G_config.h
+-simfold_pf.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-simfold_pf.o: /usr/include/gconv.h /usr/include/bits/stdio_lim.h
+-simfold_pf.o: /usr/include/bits/sys_errlist.h /usr/include/string.h
+-simfold_pf.o: /usr/include/stdlib.h /usr/include/time.h
+-simfold_pf.o: /usr/include/bits/time.h /usr/include/unistd.h
+-simfold_pf.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
++simfold.o: ./src/simfold/s_partition_function.h
++simfold.o: ./src/simfold/s_hairpin_loop.h ./src/simfold/s_internal_loop.h
++simfold.o: ./src/simfold/s_energy_matrix.h ./src/simfold/s_stacked_pair.h
++simfold.o: ./src/simfold/s_multi_loop.h ./src/simfold/s_multi_loop_sub.h
++simfold.o: src/common/common.h
+ simfold_pf.o: ./include/simfold.h ./include/constants.h ./include/init.h
+ simfold_pf.o: ./include/externs.h ./include/structs.h src/common/params.h
+ simfold_pf.o: ./src/simfold/s_partition_function.h
+ simfold_pf.o: ./src/simfold/s_hairpin_loop.h ./src/simfold/s_internal_loop.h
+ simfold_pf.o: ./src/simfold/s_energy_matrix.h ./src/simfold/s_stacked_pair.h
+ simfold_pf.o: ./src/simfold/s_multi_loop.h ./src/simfold/s_multi_loop_sub.h
+-pairfold.o: /usr/include/stdio.h /usr/include/features.h
+-pairfold.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
+-pairfold.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h
+-pairfold.o: /usr/include/bits/types.h /usr/include/bits/typesizes.h
+-pairfold.o: /usr/include/libio.h /usr/include/_G_config.h
+-pairfold.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-pairfold.o: /usr/include/gconv.h /usr/include/bits/stdio_lim.h
+-pairfold.o: /usr/include/bits/sys_errlist.h /usr/include/string.h
+-pairfold.o: /usr/include/stdlib.h /usr/include/time.h
+-pairfold.o: /usr/include/bits/time.h ./include/pairfold.h
+-pairfold.o: ./include/constants.h ./include/init.h ./include/externs.h
+-pairfold.o: ./include/structs.h src/common/timer.h /usr/include/sys/times.h
+-pairfold.o: /usr/include/limits.h
+-multifold.o: /usr/include/stdio.h /usr/include/features.h
+-multifold.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
+-multifold.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h
+-multifold.o: /usr/include/bits/types.h /usr/include/bits/typesizes.h
+-multifold.o: /usr/include/libio.h /usr/include/_G_config.h
+-multifold.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-multifold.o: /usr/include/gconv.h /usr/include/bits/stdio_lim.h
+-multifold.o: /usr/include/bits/sys_errlist.h /usr/include/string.h
+-multifold.o: /usr/include/stdlib.h ./include/multifold.h
+-multifold.o: ./include/constants.h ./include/init.h ./include/externs.h
+-multifold.o: ./include/structs.h
+-test_get_counts.o: /usr/include/stdio.h /usr/include/features.h
+-test_get_counts.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
+-test_get_counts.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h
+-test_get_counts.o: /usr/include/bits/types.h /usr/include/bits/typesizes.h
+-test_get_counts.o: /usr/include/libio.h /usr/include/_G_config.h
+-test_get_counts.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+-test_get_counts.o: /usr/include/gconv.h /usr/include/bits/stdio_lim.h
+-test_get_counts.o: /usr/include/bits/sys_errlist.h /usr/include/string.h
+-test_get_counts.o: /usr/include/stdlib.h /usr/include/time.h
+-test_get_counts.o: /usr/include/bits/time.h ./include/simfold.h
+-test_get_counts.o: ./include/constants.h ./include/init.h ./include/externs.h
+-test_get_counts.o: ./include/structs.h src/common/params.h
++pairfold.o: ./include/pairfold.h ./include/constants.h ./include/init.h
++pairfold.o: ./include/externs.h ./include/structs.h src/common/timer.h
++multifold.o: ./include/multifold.h ./include/constants.h ./include/init.h
++multifold.o: ./include/externs.h ./include/structs.h
++feature_description.o: ./include/simfold.h ./include/constants.h
++feature_description.o: ./include/init.h ./include/externs.h
++feature_description.o: ./include/structs.h src/common/params.h
++feature_description.o: src/common/common.h
++feature_description.o: ./src/simfold/s_partition_function.h
++feature_description.o: ./src/simfold/s_hairpin_loop.h
++feature_description.o: ./src/simfold/s_internal_loop.h
++feature_description.o: ./src/simfold/s_energy_matrix.h
++feature_description.o: ./src/simfold/s_stacked_pair.h
++feature_description.o: ./src/simfold/s_multi_loop.h
++feature_description.o: ./src/simfold/s_multi_loop_sub.h
