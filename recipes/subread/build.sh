@@ -14,8 +14,6 @@ if [ $(arch) = "aarch64" ]
 then
     sed -i 's/-mtune=core2 //g' Makefile.Linux
     sed -i 's/-mtune=core2 //g' longread-one/Makefile
-    sed -i 's/\(.*getopt_long.*!= \)-1\(.*\)/\1255\2/g' index-builder.c
-    sed -i 's/\(.*getopt.*!= \)-1\(.*\)/\1255\2/g' fullscan.c
 fi
 
 export C_INCLUDE_PATH=${PREFIX}/include
