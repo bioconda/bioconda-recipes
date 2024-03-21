@@ -1,11 +1,9 @@
 cd external/MQLib
 sed 's/g++/GXX/g' Makefile > tmp
 sed 's/g++/GXX/g' tmp > Makefile
-make \
-    GXX="${CXX}" \
-    AR="${AR}"
+make GXX="${GXX}"
 cd ../..
-$CXX -std=c++11 -O2 \
+$GXX -std=c++11 -O2 \
     -I external/MQLib/include -I external/toms743 \
     -o TREE-QMC \
     src/*.cpp external/toms743/toms743.cpp \
