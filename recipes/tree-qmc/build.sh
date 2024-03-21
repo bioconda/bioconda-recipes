@@ -1,8 +1,8 @@
 cd external/MQLib
-sed 's/g++/CXX/g' Makefile > tmp
-sed 's/g++/CXX/g' tmp > Makefile
+sed 's/g++/GXX/g' Makefile > tmp
+sed 's/g++/GXX/g' tmp > Makefile
 make \
-    CXX="${CXX}" \
+    GXX="${CXX}" \
     AR="${AR}"
 cd ../..
 $CXX -std=c++11 -O2 \
