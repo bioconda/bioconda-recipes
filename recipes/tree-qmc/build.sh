@@ -1,6 +1,8 @@
 cd external/MQLib
 sed 's/g++/GXX/g' Makefile > tmp
 sed 's/g++/GXX/g' tmp > Makefile
+echo $BUILD_PREFIX
+echo $PREFIX
 echo $GXX
 cat Makefile
 make GXX="${GXX}"
