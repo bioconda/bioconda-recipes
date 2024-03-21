@@ -1,7 +1,7 @@
 cd external/MQLib
 make \
-    GXX="${CXX}" \
-    AR="${AR}"
+    g++="${CXX}" \
+    ar="${AR}"
 cd ../..
 $CXX -std=c++11 -O2 \
     -I external/MQLib/include -I external/toms743 \
