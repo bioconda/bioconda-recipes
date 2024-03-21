@@ -1,4 +1,4 @@
-cargo build --release $prefix/bin
+cargo build --release
 cp target/release/gem_bs $prefix/bin/gemBS
 cp target/release/read_filter $prefix/bin/
 cp target/release/bs_call $prefix/bin/
