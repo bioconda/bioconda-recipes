@@ -1,3 +1,4 @@
+cd rust
 cargo build --release
 cp target/release/gem_bs $prefix/bin/gemBS
 cp target/release/read_filter $prefix/bin/
