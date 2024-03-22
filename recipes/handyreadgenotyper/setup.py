@@ -15,6 +15,10 @@ def check_dir_write_permission(directory):
         sys.exit('Error: no write permission for ' + directory + '  ' +
                  'Perhaps you need to use sudo?')
 
+script_dir = os.path.dirname(os.path.realpath(__file__))
+if script_dir != os.getcwd():
+    os.chdir(script_dir)
+
 class HandyReadGenotyperInstall(install):
 
     def run(self):
