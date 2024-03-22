@@ -4,7 +4,7 @@ from setuptools.command.install import install
 import os
 import sys
 
-__version__ = '0.1.6'
+__version__ = '0.1.8'
 
 def readme():
     with open('README.md') as f:
@@ -14,10 +14,6 @@ def check_dir_write_permission(directory):
     if os.path.isdir(directory) and not os.access(directory, os.W_OK):
         sys.exit('Error: no write permission for ' + directory + '  ' +
                  'Perhaps you need to use sudo?')
-
-script_dir = os.path.dirname(os.path.realpath(__file__))
-if script_dir != os.getcwd():
-    os.chdir(script_dir)
 
 class HandyReadGenotyperInstall(install):
 
@@ -43,7 +39,7 @@ setup(name='HandyReadGenotyper',
       author_email='',
       packages=['scripts'],
       include_package_data=True,
-      entry_points={'console_scripts': ['classify = classify:classify', 'train = train:train']},
+      entry_points={'console_scripts': ['classify = classify:main', 'train = train:main']},
       scripts=[
           'scripts/classify.py',
           'scripts/data_classes.py',
