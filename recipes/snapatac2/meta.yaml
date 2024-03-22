@@ -1,6 +1,6 @@
 {% set name = "snapatac2" %}
-{% set version = "2.5.3" %}
-{% set sha256 = "14c4083a42fe79869528045dbbf84e4d997357907b51713620f9b63c11e20331" %}
+{% set version = "2.6.0" %}
+{% set sha256 = "9b44a3f1052635d5a6166df3a1b72b45ca218eea18e8d4bbb4a7b825aa1f7a61" %}
 
 package:
   name: {{ name }}
@@ -12,7 +12,8 @@ source:
 
 build:
   number: 0
-  script: {{ PYTHON }} -m pip install . -vvv --no-build-isolation --no-deps
+  skip: True  # [py < 39 or py > 312]
+  script: {{ PYTHON }} -m pip install . -vvv --no-build-isolation --no-deps --no-cache-dir
   run_exports:
     - {{ pin_subpackage('snapatac2', max_pin="x") }}
 
@@ -20,29 +21,38 @@ requirements:
   build:
     - make
     - cmake
-    - rust
+    - {{ compiler('rust') }}
     - {{ compiler('c') }}
   host:
     - python
     - pip
-    - setuptools-rust
+    - maturin
   run:
     - python
     - anndata
-    - scanpy
-    - matplotlib-base
-    - pandas
-    - scipy
-    - seaborn
-    - h5py
-    - scikit-learn
-    - numba
-    - numpy
-    - umap-learn
-    - packaging
+    - harmonypy >=0.0.9
+    - igraph >=0.10.3
+    - multiprocess
+    - macs3
+    - natsort
+    - numpy >=1.16.0
+    - pandas >=1.0,<2.1.2
+    - plotly >=5.6.0
+    - polars >=0.20.0
+    - pooch >=1.6.0
+    - pyarrow
+    - pyfaidx >=0.7.0,<0.8.0
+    - python-kaleido
     - rustworkx
-    - pooch
+    - scanorama >=1.7.3
+    - scanpy
+    - scipy >=1.4
+    - scikit-learn >=1.0
+    - scvi-tools >=1.0
+    - tqdm >=4.62
     - typing_extensions
+    - umap-learn >=0.5.0
+    - xgboost >=1.4
 
 test:
   imports:
@@ -50,7 +60,7 @@ test:
 
 about:
   home: https://github.com/kaizhang/SnapATAC2
-  summary: "Python/Rust package for single-cell epigenomics analysis"
+  summary: "SnapATAC2: Single-cell epigenomics analysis pipeline"
   license: MIT
   license_family: MIT
   license_file: LICENSE
@@ -60,4 +70,4 @@ about:
 extra:
   identifiers:
     - biotools:snapatac
-    - doi:10.1101/2023.09.11.557221
+    - doi:10.1038/s41592-023-02139-9
