@@ -1,8 +1,17 @@
 #!/bin/bash
-mkdir -p "$PREFIX/bin"
-export MACHTYPE=x86_64
+
+if [ $(arch) = "aarch64" ]
+then
+    export CFLAGS+=" -O3 -mcpu=neoverse-n1 "
+    export CPPFLAGS+=" -O3 -mcpu=neoverse-n1 "
+else
+    export MACHTYPE=x86_64
+fi
+
 export BINDIR=$(pwd)/bin
 export L="${LDFLAGS}"
+
+mkdir -p "$PREFIX/bin"
 mkdir -p "$BINDIR"
 (cd kent/src/lib && make)
 (cd kent/src/htslib && make)
