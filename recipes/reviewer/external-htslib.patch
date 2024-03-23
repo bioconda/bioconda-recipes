@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 022aa4d90..bbacd2e4d 100644
+index 022aa4d90..a2da3de32 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -5,48 +5,14 @@ set(CMAKE_CXX_STANDARD 11)
+@@ -5,67 +5,12 @@ set(CMAKE_CXX_STANDARD 11)
  set(CMAKE_CXX_STANDARD_REQUIRED ON)
  
  # Check for required packages:
@@ -21,8 +21,8 @@ index 022aa4d90..bbacd2e4d 100644
 -	CONFIGURE_COMMAND ./configure --prefix=${installDir} --disable-libcurl
 -	BUILD_COMMAND $(MAKE) lib-static
 -)
- 
- 
+-
+-
 -# Setup boost user config so that it uses the same c++ compiler as other components:
 -if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 -	set (BOOST_COMPILER_TAG "gcc")
@@ -48,18 +48,37 @@ index 022aa4d90..bbacd2e4d 100644
 -	BUILD_COMMAND ./b2 install -j8 --with-filesystem --with-system --with-program_options link=static ${B2_OPTIONS}
 -	INSTALL_COMMAND ""
 -)
- 
- 
- ExternalProject_Add(spdlog
-@@ -78,5 +44,5 @@ ExternalProject_Add(reviewer
+-
+-
+-ExternalProject_Add(spdlog
+-	URL https://github.com/gabime/spdlog/archive/refs/tags/v1.6.1.tar.gz
+-	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${installDir}
+-		-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+-		-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+-)
+-
+-
+-ExternalProject_Add(catch2
+-	URL https://github.com/catchorg/Catch2/archive/refs/tags/v2.12.4.tar.gz
+-	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${installDir}
+-		-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+-		-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+-		-DBUILD_TESTING=OFF
+-)
+-
+-
+ ExternalProject_Add(reviewer
+ 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/reviewer
+ 	BUILD_ALWAYS YES
+@@ -78,5 +23,5 @@ ExternalProject_Add(reviewer
  
  
  ExternalProject_Add_StepDependencies(reviewer configure
 -	Boost spdlog htslib catch2)
-+	spdlog catch2)
++	)
  
 diff --git a/reviewer/CMakeLists.txt b/reviewer/CMakeLists.txt
-index c7602afa0..763a02eef 100644
+index c7602afa0..8c5cb81a6 100644
 --- a/reviewer/CMakeLists.txt
 +++ b/reviewer/CMakeLists.txt
 @@ -10,14 +10,9 @@ if (NOT CMAKE_BUILD_TYPE)
@@ -77,14 +96,41 @@ index c7602afa0..763a02eef 100644
  find_package(Catch2 REQUIRED)
  find_package(Threads REQUIRED)
  find_library(htslib libhts.a)
-@@ -83,10 +78,6 @@ target_link_libraries(REViewer PUBLIC
+@@ -82,11 +77,7 @@ target_link_libraries(REViewer PUBLIC
+         Core
          Metrics
          ${STATIC_FLAGS}
-         ${htslib}
+-        ${htslib}
 -        ${LIBLZMA_LIBRARIES}
 -        ${CURL_LIBRARIES}
 -        ZLIB::ZLIB
 -        BZip2::BZip2
++        hts
          Threads::Threads)
  
+ 
+diff --git a/reviewer/app/Workflow.cpp b/reviewer/app/Workflow.cpp
+index 3954aca71..badd1b2e8 100644
+--- a/reviewer/app/Workflow.cpp
++++ b/reviewer/app/Workflow.cpp
+@@ -21,6 +21,7 @@
+ #include "Workflow.hh"
+ 
+ #include <set>
++#include <sstream>
+ 
+ #include <boost/algorithm/string.hpp>
+ 
+diff --git a/reviewer/thirdparty/graph-tools/CMakeLists.txt b/reviewer/thirdparty/graph-tools/CMakeLists.txt
+index ff43a2f7c..f5159f0b2 100644
+--- a/reviewer/thirdparty/graph-tools/CMakeLists.txt
++++ b/reviewer/thirdparty/graph-tools/CMakeLists.txt
+@@ -4,7 +4,7 @@ project(graphtools CXX)
+ 
+ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+ 
+-set(CMAKE_CXX_STANDARD 11)
++set(CMAKE_CXX_STANDARD 14)
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
  
