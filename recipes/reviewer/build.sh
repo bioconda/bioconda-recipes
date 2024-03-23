@@ -2,5 +2,5 @@
 
 mkdir build
 cd build
-cmake ..
+cmake -DCMAKE_INSTALL_PREFIX="$PREFIX" -DCMAKE_BUILD_TYPE=Release ..
 make
