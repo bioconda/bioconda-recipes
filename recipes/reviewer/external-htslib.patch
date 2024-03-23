@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 022aa4d90..d19823823 100644
+index 022aa4d90..465b6b312 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -5,21 +5,12 @@ set(CMAKE_CXX_STANDARD 11)
+@@ -5,48 +5,14 @@ set(CMAKE_CXX_STANDARD 11)
  set(CMAKE_CXX_STANDARD_REQUIRED ON)
  
  # Check for required packages:
@@ -23,7 +23,34 @@ index 022aa4d90..d19823823 100644
 -)
  
  
- # Setup boost user config so that it uses the same c++ compiler as other components:
+-# Setup boost user config so that it uses the same c++ compiler as other components:
+-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+-	set (BOOST_COMPILER_TAG "gcc")
+-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+-	set (BOOST_COMPILER_TAG "clang")
+-	set(B2_OPTIONS ${B2_OPTIONS} "toolset=clang")
+-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+-	set (BOOST_COMPILER_TAG "darwin")
+-	set(B2_OPTIONS ${B2_OPTIONS} "toolset=clang")
+-endif()
+-
+-if (BOOST_COMPILER_TAG)
+-	set(BOOST_UCONFIG "${CMAKE_BINARY_DIR}/user-config.jam")
+-	file(WRITE "${BOOST_UCONFIG}" "using ${BOOST_COMPILER_TAG} : : \"${CMAKE_CXX_COMPILER}\" ;\n")
+-	set(BOOST_PATCH_COMMAND ${CMAKE_COMMAND} -E copy ${BOOST_UCONFIG} tools/build/src/user-config.jam)
+-endif()
+-
+-ExternalProject_Add(Boost
+-	BUILD_IN_SOURCE YES
+-	URL https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.tar.bz2
+-	PATCH_COMMAND ${BOOST_PATCH_COMMAND}
+-	CONFIGURE_COMMAND ./bootstrap.sh --prefix=${installDir}
+-	BUILD_COMMAND ./b2 install -j8 --with-filesystem --with-system --with-program_options link=static ${B2_OPTIONS}
+-	INSTALL_COMMAND ""
+-)
+ 
+ 
+ ExternalProject_Add(spdlog
 diff --git a/reviewer/CMakeLists.txt b/reviewer/CMakeLists.txt
 index c7602afa0..b73bf7382 100644
 --- a/reviewer/CMakeLists.txt
