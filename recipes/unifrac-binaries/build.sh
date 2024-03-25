@@ -9,14 +9,17 @@ export CPLUS_INCLUDE_PATH="${CONDA_PREFIX}/include"
 echo "=== PREIX ==="
 env |grep PREFIX
 
-echo "Arch: $(uname -s)"
+OS=$(uname -s)
+ARCH=$(uname -m)
+echo "OS: ${OS}"
+echo "Arch: ${ARCH}"
 pwd
 
-if [[ "$(uname -s)" == "Linux" ]];
+if [[ "${OS}" == "Linux" ]];
 then
-          which x86_64-conda-linux-gnu-gcc
-          x86_64-conda-linux-gnu-gcc -v
-          x86_64-conda-linux-gnu-g++ -v
+          which ${ARCH}-conda-linux-gnu-gcc
+          ${ARCH}-conda-linux-gnu-gcc -v
+          ${ARCH}-conda-linux-gnu-g++ -v
 else
           which clang
           clang -v
@@ -24,7 +27,7 @@ fi
 which h5c++
 
 
-if [[ "$(uname -s)" == "Linux" ]];
+if [[ "${OS}" == "Linux" ]];
 then
   # Temporary workaround
   # g++ 10 does not support fancy 2D collapse
@@ -39,7 +42,7 @@ EOF
 fi
 
 
-if [[ "$(uname -s)" == "Linux" ]];
+if [[ "${OS}" == "Linux" ]];
 then
           # remove unused pieces to save space
           cat scripts/install_hpc_sdk.sh |sed 's/tar xpzf/tar --exclude hpcx --exclude openmpi4 --exclude 10.2 -xpzf/g' >my_install_hpc_sdk.sh
