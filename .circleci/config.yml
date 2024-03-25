@@ -56,13 +56,15 @@ jobs: # a basic unit of work in a run
             # Build a custom Docker image for mulled-build that uses /bin/bash instead of
             # /bin/sh, sources /etc/profile and sets `umask` to 022
             # See https://github.com/galaxyproject/galaxy/issues/17631 for more details
-            export CONDA_IMAGE=bioconda-mulled-aarch64:latest
-            export DEFAULT_BASE_IMAGE=bioconda-busybox-aarch64:latest
-            docker build . -f ./.circleci/docker/Dockerfile.mulled -t ${CONDA_IMAGE}
-            docker build . -f ./.circleci/docker/Dockerfile.busybox -t ${DEFAULT_BASE_IMAGE}
+            #export CONDA_IMAGE=bioconda-mulled-aarch64:latest
+            #export DEFAULT_BASE_IMAGE=bioconda-busybox-aarch64:latest
+            #docker build . -f ./.circleci/docker/Dockerfile.mulled -t ${CONDA_IMAGE}
+            #docker build . -f ./.circleci/docker/Dockerfile.busybox -t ${DEFAULT_BASE_IMAGE}
             source /opt/mambaforge/etc/profile.d/conda.sh
             source /opt/mambaforge/etc/profile.d/mamba.sh
             mamba activate bioconda
+            python -m pip install git+https://git@github.com/galaxyproject/galaxy.git@dev#subdirectory=packages/tool_util
+            export INVFILE="./.circleci/invfile.lua"
             bioconda-utils build recipes config.yml \
                 --lint --docker --mulled-test --mulled-conda-image=${CONDA_IMAGE} \
                 --docker-base-image quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch) \
