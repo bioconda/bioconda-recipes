@@ -6,7 +6,7 @@ set -ex
 ## (mac or linux)
 ##
 if [ `uname` == Darwin ] ; then
-    extra_config_options="--disable-openmp LDFLAGS=-Wl,-headerpad_max_install_names"
+    extra_config_options="--disable-openmp --disable-naview LDFLAGS=-Wl,-headerpad_max_install_names"
 fi
 
 ## Configure and make
