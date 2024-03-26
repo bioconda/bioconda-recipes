@@ -5,12 +5,10 @@ export C_INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-ARCH=$(uname -m)
-
-if [ "${ARCH}" == "aarch64" ]; then
-	export EXTRA_FLAGS="-ftree-vectorize"
+if [ uname -p == "aarch64" ]; then
+  export EXTRA_FLAGS="-ftree-vectorize"
 else
-	export EXTRA_FLAGS="-ftree-vectorize -msse2 -mfpmath=sse"
+  export EXTRA_FLAGS="-ftree-vectorize -msse2 -mfpmath=sse"
 
 cmake -S . -B build \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
