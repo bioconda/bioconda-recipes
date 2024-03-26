@@ -12,6 +12,6 @@ cmake -S . -B build \
 	-DEXTRA_FLAGS="-ftree-vectorize -msse2 -mfpmath=sse" \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-	-DBUILD_SHARED_LIBS=ON
+	-DOPENMP=TRUE
 
 cmake --build build/ --target install -v
