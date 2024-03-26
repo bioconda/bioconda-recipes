@@ -12,6 +12,8 @@ mkdir -p ${BUILD_DIR}/lib
 
 cd ${BUILD_DIR}
 cp -R ${SRC_DIR}/lib/* ${BUILD_DIR}/lib/
+chmod +x ${SRC_DIR}/scripts/*
+cp ${SRC_DIR}/scripts/* ${BUILD_DIR}/bin/
 cp ${RECIPE_DIR}/Makefile.PL ${BUILD_DIR}/Makefile.PL
 
 perl Makefile.PL INSTALLDIRS=site
