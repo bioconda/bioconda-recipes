@@ -25,6 +25,9 @@ ln -s "${RECIPE_DIR}/conan_profiles/$conan_profile" "$CONAN_HOME/profiles/defaul
 # Remove unnecessary dependencies from conanfile.txt
 patch conanfile.txt < "${RECIPE_DIR}/conanfile.txt.patch"
 
+# Build hictkpy as a shared library
+patch pyproject.toml < "${RECIPE_DIR}/pyproject.toml.patch"
+
 CMAKE_ARGS+=" -DPython_EXECUTABLE=$PYTHON"
 
 echo "$CMAKE_ARGS"
