@@ -1,10 +1,12 @@
 #!/bin/bash
 
+set -ex
+
 ## Choose extra configure options depending on the operating system
 ## (mac or linux)
 ##
 if [ `uname` == Darwin ] ; then
-    extra_config_options="LDFLAGS=-Wl,-headerpad_max_install_names"
+    extra_config_options="--disable-openmp LDFLAGS=-Wl,-headerpad_max_install_names"
 fi
 
 ## Configure and make
