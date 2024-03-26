@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CMAKE_BUILD_PARALLEL_LEVEL=${CPU_COUNT}
+# export CMAKE_BUILD_PARALLEL_LEVEL=${CPU_COUNT}
 
 scratch=$(mktemp -d)
 export CONAN_HOME="$scratch/conan"
