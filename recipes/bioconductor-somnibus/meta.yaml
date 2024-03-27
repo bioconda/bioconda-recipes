@@ -1,6 +1,6 @@
-{% set version = "1.6.0" %}
+{% set version = "1.10.0" %}
 {% set name = "SOMNiBUS" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,27 +8,55 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 9505cdd8f44ac8d62053d133f354494d
+  md5: 0865c015122f915127302bf751a10812
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-somnibus", max_pin="x.x") }}'
   noarch: generic
-# Suggests: BiocStyle, covr, devtools, dplyr, knitr, magick, rmarkdown, testthat
+# Suggests: BiocStyle, covr, devtools, dplyr, knitr, magick, rmarkdown, testthat, TxDb.Hsapiens.UCSC.hg38.knownGene, TxDb.Hsapiens.UCSC.hg19.knownGene, org.Hs.eg.db,
 requirements:
   host:
+    - 'bioconductor-annotatr >=1.28.0,<1.29.0'
+    - 'bioconductor-bsseq >=1.38.0,<1.39.0'
+    - 'bioconductor-genomeinfodb >=1.38.0,<1.39.0'
+    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
+    - 'bioconductor-iranges >=2.36.0,<2.37.0'
+    - 'bioconductor-rtracklayer >=1.62.0,<1.63.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
     - r-base
+    - r-biocmanager
+    - r-data.table
+    - r-ggplot2
     - r-matrix
     - r-mgcv
+    - r-reshape2
+    - r-tidyr
     - r-vgam
+    - r-yaml
   run:
+    - 'bioconductor-annotatr >=1.28.0,<1.29.0'
+    - 'bioconductor-bsseq >=1.38.0,<1.39.0'
+    - 'bioconductor-genomeinfodb >=1.38.0,<1.39.0'
+    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
+    - 'bioconductor-iranges >=2.36.0,<2.37.0'
+    - 'bioconductor-rtracklayer >=1.62.0,<1.63.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
     - r-base
+    - r-biocmanager
+    - r-data.table
+    - r-ggplot2
     - r-matrix
     - r-mgcv
+    - r-reshape2
+    - r-tidyr
     - r-vgam
+    - r-yaml
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

@@ -1,4 +1,4 @@
-{% set version = "1.5.2" %}
+{% set version = "1.5.3.2" %}
 
 package:
   name: sequencetools
@@ -6,27 +6,30 @@ package:
 
 source:
   - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/genoStats-linux # [linux]
-    md5: 9f136feb11db3ab34951528e19fcd787 # [linux]
+    md5: 50fd1595be89c375e0c0d86353b68aab # [linux]
   - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/pileupCaller-linux # [linux]
-    md5: 7f58cc43b413e87a98b4a9f806b376c7 # [linux]
+    md5: 7e9e44f223f3b23283b2e846ae3eff92 # [linux]
   - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/vcf2eigenstrat-linux # [linux]
-    md5: 344e8f6f96b5d3def40e95ad89f82c48 # [linux]
+    md5: 88fe4a59b5a2df97794f67d7a4274e45 # [linux]
   - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/genoStats-macOS # [osx]
-    md5: c13feadc53561b189b023aa1f1382ba4 # [osx]
+    md5: d4ad978d5956b02ffac9d91aa7779cf8 # [osx]
   - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/pileupCaller-macOS # [osx]
-    md5: 669b9a1e4ffb6e3e4320d2d1ef5c20ca # [osx]
+    md5: d1e10117bb7ef10c7f9bd43bd90c86af # [osx]
   - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/vcf2eigenstrat-macOS # [osx]
-    md5: b757cfd497f769378b768c5e8f0b3ab7 # [osx]
+    md5: 015ce6ca8b99405f626665d4e9246ae1 # [osx]
 
 build:
-  number: 1
+  number: 0
   script:
     - "mkdir -p $PREFIX/bin"
     - "for TOOL in genoStats pileupCaller vcf2eigenstrat; do mv $TOOL-* $PREFIX/bin/$TOOL; chmod u+x $PREFIX/bin/$TOOL; done"
+  run_exports:
+    - {{ pin_subpackage("sequencetools", max_pin=None) }}
 
 
 requirements:
   build:
+    # Precompiled binaries still link against libgcc
     - {{ compiler('c') }}
   run:
     - zlib

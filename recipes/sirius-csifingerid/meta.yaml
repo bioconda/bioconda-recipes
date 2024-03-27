@@ -1,51 +1,46 @@
-{% set version = "4.9.15" %}
+{% set version = "5.8.6" %}
+{% set siriusDistDir = "sirius_gui_dist" %}
 
 package:
   name: sirius-csifingerid
   version: {{ version }}
 
 build:
-  number: 1
+  number: 0
+  script_env:
+    - siriusDistName={{ siriusDistDir }}-sirius
+    - siriusDistDir={{ siriusDistDir }}
+  run_exports:
+    - {{ pin_subpackage('sirius-csifingerid', max_pin="x") }}
+
 source:
-  - url: https://github.com/boecker-lab/sirius/releases/download/v{{ version }}/sirius-{{ version }}-linux64.zip  # [linux]
-    sha256: 6c468672cc59d20d3aa73c3b8a7932e8150e7ecd29c319ae6499572fe67dfc9f  # [linux]
-    # the runner script sets LD_LIBRARY_PATH which leads to `error while loading shared libraries: libz.so.1`
-    # the patch adds the lib path where conda installs libaries to the variable
-    patches:  # [linux]
-      - sirius.patch  # [linux]
-  - url: https://github.com/boecker-lab/sirius/releases/download/v{{ version }}/sirius-{{ version }}-osx64.zip  # [osx]
-    sha256: e9c61bb99b653c7ad490208ae5e68cca91f1120bab8194cb54361ff79e1ec6a5  # [osx]
+  - url: https://github.com/boecker-lab/sirius/archive/refs/tags/v{{ version }}.zip
+    sha256: f769a474140d6e28168d6d1526afc9e923e66eaeb0ace400e6c2ae77aa7f9202
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - openjdk 17.*
   run:
-    - zlib
-
+    - openjdk 17.*
+    - coin-or-cbc  # [not win]
 test:
   requires:
-    - wget
-  commands:
-    # Test running with link
-    - sirius --version
-    # Test running without link
-    - $(readlink -f $(which sirius)) --version # [linux]
-    # Run a job that loads included native libraries
-    - sh -ec 'cd /tmp; wget https://bio.informatik.uni-jena.de/wp/wp-content/uploads/2021/10/Kaempferol.ms; sirius -i Kaempferol.ms -o test-out sirius --solver CLP; if [ ! -f "test-out/0_Kaempferol_Kaempferol/trees/C15H10O6_[M+H]+.json" ]; then echo Framgentation tree test failed!; exit 1; fi'
+    - wget  # [not win]
 
 about:
-    home: https://bio.informatik.uni-jena.de/software/sirius/
-    license: AGPL-3.0-only
-    license_file:
-      - COPYING.txt  # [linux]
-      - LICENSE.txt  # [linux]
-      - Contents/COPYING.txt  # [osx]
-      - Contents/LICENSE.txt  # [osx]
-    summary: "SIRIUS LC-MS/MS data analyses framework. Includes: SIRIUS, ZODIAC, CSI:FingerID (with COSMIC) and CANOPUS"
-    description: SIRIUS is a java-based software framework for the analysis of LC-MS/MS data of metabolites and other
-      small molecules of biological interest. SIRIUS integrates a collection of our tools, including CSI:FingerID
-      (with COSMIC), ZODIAC and CANOPUS.  In particular, both the graphical user interface and the command line version
-      of SIRIUS seamlessly integrate the CSI:FingerID and CANOPUS web services.
+  home: https://bio.informatik.uni-jena.de/software/sirius/
+  license: AGPL-3.0-only AND OTHER
+  license_file:
+    - sirius_dist/{{ siriusDistDir }}/build/install/{{ siriusDistDir }}-sirius/COPYING.txt
+    - sirius_dist/{{ siriusDistDir }}/build/install/{{ siriusDistDir }}-sirius/LICENSE.txt
+    - sirius_dist/{{ siriusDistDir }}/build/install/{{ siriusDistDir }}-sirius/licenses.md
+  summary: "SIRIUS (CLI + GUI) LC-MS/MS data analyses framework. Includes: SIRIUS, ZODIAC, CSI:FingerID (with COSMIC) and CANOPUS"
+  description: SIRIUS is a java-based software framework for the analysis of LC-MS/MS data of metabolites and other
+    small molecules of biological interest. SIRIUS integrates a collection of our tools, including CSI:FingerID
+    (with COSMIC), ZODIAC and CANOPUS.  In particular, both the graphical user interface and the command line version
+    of SIRIUS seamlessly integrate the CSI:FingerID and CANOPUS web services.
+  doc_url: https://boecker-lab.github.io/docs.sirius.github.io/
+  dev_url: https://github.com/boecker-lab/sirius
 
 extra:
   skip-lints:

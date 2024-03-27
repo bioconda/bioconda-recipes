@@ -1,0 +1,62 @@
+{% set name = "DAJIN2" %}
+{% set version = "0.4.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/DAJIN2-{{ version }}.zip
+  sha256: 34f25000f2f2d0c7ff40163cd68f2702549b7ae703cf9c665f3a208601f549fa
+
+build:
+  entry_points:
+    - DAJIN2=DAJIN2.main:execute
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('dajin2', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - numpy >=1.20.0
+    - scipy >=1.6.0
+    - pandas >=1.0.0
+    - openpyxl >=3.0.0
+    - rapidfuzz >=3.0.0
+    - statsmodels >=0.13.5
+    - scikit-learn >=1.0.0
+    - mappy >=2.24
+    - pysam >=0.19.0
+    - flask >=2.2.0
+    - waitress >=2.1.0
+    - jinja2 >=3.1.0
+    - plotly >=5.0.0
+    - python-kaleido >=0.2.0
+    - cstag >=1.0.0
+    - midsv >=0.10.1
+    - wslpath >=0.3.0
+
+test:
+  imports:
+    - DAJIN2
+  commands:
+    - pip check
+    - DAJIN2 --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/akikuno/DAJIN2
+  summary: One-step genotyping tools for targeted long-read sequencing
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - akikuno

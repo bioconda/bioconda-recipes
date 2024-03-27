@@ -1,6 +1,6 @@
 
-{% set version = "0.3.1" %}
-{% set sha256 = "b479e19c2fed0704a652c0fcbd653517ce01ac429ec7753c95a583c35a733012" %}
+{% set version = "0.9.3" %}
+{% set sha256 = "43445ef6d96bd8a09a9a45cd18e21481d7fefe7e9ab26aec4abd8d1f4bff3fcd" %}
 
 package:
   name: gw
@@ -13,13 +13,15 @@ source:
 
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('gw', max_pin="x") }} 
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-    - {{ cdt('xorg-x11-proto-devel') }}           # [linux]
+    - {{ cdt('xorg-x11-proto-devel') }}          # [linux]
     - {{ cdt('mesa-libgl-devel') }}  # [linux]
     - {{ cdt('mesa-dri-drivers') }}  # [linux]
     - {{ cdt('libselinux') }}        # [linux]
@@ -32,18 +34,18 @@ requirements:
   host:
     - fontconfig
     - libcurl
-    - libdeflate
-    - htslib
-    - glfw
+    - libdeflate >=1.0
+    - htslib >=1.12
+    - glfw >=3.3
     - freetype
     - xorg-libxfixes  # [linux]
   run:
-    - glfw
-    - htslib
+    - glfw >=3.3
+    - htslib >=1.12 
 
 test:
   commands:
-    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" gw --version'
+    - gw --version
 
 about:
   home: https://github.com/kcleal/gw

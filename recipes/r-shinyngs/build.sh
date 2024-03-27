@@ -16,16 +16,16 @@ ammend_description_for_packrat(){
     remotesha=$(git ls-remote https://github.com/$remoteusername/$remoterepo tags/$remoteref | cut -f1) 
 
     echo -e """RemoteType: github
-    RemoteHost: api.github.com
-    RemoteRepo: $remoterepo
-    RemoteUsername: $remoteusername
-    RemoteRef: $remoteref
-    RemoteSha: $remotesha
-    GithubRepo: $remoterepo
-    GithubUsername: $remoteusername
-    GithubRef: $remoteref
-    GithubSHA1: $remotesha
-    NeedsCompilation: no""" >> $description
+RemoteHost: api.github.com
+RemoteRepo: $remoterepo
+RemoteUsername: $remoteusername
+RemoteRef: $remoteref
+RemoteSha: $remotesha
+GithubRepo: $remoterepo
+GithubUsername: $remoteusername
+GithubRef: $remoteref
+GithubSHA1: $remotesha
+NeedsCompilation: no""" >> $description
 }
 
 ammend_description_for_packrat "shinyngs/DESCRIPTION" "shinyngs" "pinin4fjords" "v$PKG_VERSION"

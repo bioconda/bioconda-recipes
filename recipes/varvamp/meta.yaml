@@ -1,0 +1,53 @@
+{% set name = "varvamp" %}
+{% set version = "1.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/varvamp-{{ version }}.tar.gz
+  sha256: 3036bb0b0f9f1453e2978b95c75a5adf3c9f08cec9f3a4a2f38affa28b1fd04b
+
+build:
+  entry_points:
+    - varvamp = varvamp.command:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps -vvv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('varvamp', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+  run:
+    - python >=3.9
+    - biopython >=1.79
+    - matplotlib-base >=3.5.1
+    - primer3-py >=1.1.0
+    - pandas >=1.4.4
+    - numpy >=1.23.3
+    - seqfold >=0.7.15
+    - blast >=2.13.0
+
+
+test:
+  imports:
+    - varvamp
+  commands:
+    - pip check
+    - varvamp --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/jonas-fuchs/varVAMP
+  summary: Variable VirusAMPlicons (varVAMP) is a tool to design primers for highly diverse viruses
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - bgruening
