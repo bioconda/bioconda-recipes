@@ -15,4 +15,4 @@ echo "${PREFIX}/share/amplify/src/train_amplify.py \$@" >> ${PREFIX}/bin/train_a
 
 python3 --version
 
-python3.6 -m pip install tensorflow==1.12.0
+python3.6 -m pip install tensorflow==1.12
