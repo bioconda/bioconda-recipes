@@ -22,6 +22,9 @@ fi
 mkdir -p "$CONAN_HOME/profiles/"
 ln -s "${RECIPE_DIR}/conan_profiles/$conan_profile" "$CONAN_HOME/profiles/default"
 
+# explicitly set CMAKE_OSX_DEPLOYMENT_TARGET
+patch CMakeLists.txt < "${RECIPE_DIR}/CMakeLists.txt.patch"
+
 # Remove unnecessary dependencies from conanfile.txt
 patch conanfile.txt < "${RECIPE_DIR}/conanfile.txt.patch"
 
