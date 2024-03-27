@@ -10,6 +10,28 @@ mkdir build
 cd build
 
 ## See INSTALL of gromacs distro
+
+if [ `arch` = 'aarch64' ] ; then
+  cmake_args=(
+    -DSHARED_LIBS_DEFAULT=ON
+    -DBUILD_SHARED_LIBS=ON
+    -DGMX_PREFER_STATIC_LIBS=NO
+    -DGMX_BUILD_OWN_FFTW=OFF
+    -DGMX_DEFAULT_SUFFIX=ON
+    -DREGRESSIONTEST_DOWNLOAD=ON
+    -DGMX_GPU=OpenCL
+    -DCMAKE_PREFIX_PATH="${PREFIX}"
+    -DGMX_INSTALL_PREFIX="${PREFIX}"
+    -DCMAKE_INSTALL_PREFIX="${PREFIX}"
+    -DCMAKE_INSTALL_BINDIR="bin.${ARCH}"
+    -DCMAKE_INSTALL_LIBDIR="lib.${ARCH}"
+    -DGMX_MPI=ON
+  )
+  cmake .. "${cmake_args[@]}"
+  make -j "${CPU_COUNT}"
+  make install
+else
+
 for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do
   cmake_args=(
     -DSHARED_LIBS_DEFAULT=ON
@@ -31,6 +53,10 @@ for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do
   make -j "${CPU_COUNT}"
   make install
 done
+fi
+
+
+
 
 
 #
