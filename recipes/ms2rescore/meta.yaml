@@ -1,0 +1,78 @@
+{% set name = "ms2rescore" %}
+{% set version = "3.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/ms2rescore-{{ version }}.tar.gz
+  sha256: 6049cdf2afdd70244552a47ee369ca89ff3a851440f56e181b01e5f9691fbc12
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  entry_points:
+    - ms2rescore = ms2rescore.__main__:main
+    - ms2rescore-gui = ms2rescore.gui.__main__:main
+    - ms2rescore-report = ms2rescore.report.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps -vvv"
+
+requirements:
+  host:
+    - python >=3.8
+    - flit-core
+    - pip
+  run:
+    - python >=3.8
+    - numpy >=1.16.0
+    - pandas >=1.0
+    - rich >=12
+    - pyteomics >=4.1.0,<=4.6.3
+    - pyopenms
+    - lxml >=4.5
+    - ms2pip >=4.0.0-dev8
+    - click >=7
+    - cascade-config >=0.4.0
+    - deeplc >=2.2
+    - deeplcretrainer >=0.2
+    - tomli >=2  # [py<311]
+    - psm-utils >=0.4
+    - customtkinter >=5,<6
+    - mokapot >=0.9
+    - pydantic >=1.8.2,<2
+    - jinja2 >=3
+    - plotly >=5
+    - sqlalchemy <2,>=1.3
+    - mokapot
+    - statsmodels
+    - matplotlib-base
+    - seaborn
+    - xgboost <2,>=1.3  # from ms2pip
+
+test:
+  imports:
+    - ms2rescore
+  commands:
+    - pip check
+    - ms2rescore --help
+#    - ms2rescore-gui --help
+    - ms2rescore-report --help
+  requires:
+    - pip
+
+about:
+  home: https://compomics.github.io/projects/ms2rescore/
+  summary: 'MS²Rescore: Sensitive PSM rescoring with predicted MS² peak intensities and retention times.'
+  dev_url: https://github.com/compomics/ms2rescore
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  container:
+    # Click requires the extended container
+    extended-base: true
+  recipe-maintainers:
+    - compomics

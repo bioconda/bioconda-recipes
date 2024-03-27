@@ -1,0 +1,38 @@
+{% set user = "USDA-VS" %}
+{% set name = "GenoFLU" %}
+
+{% set version = "1.02" %}
+{% set sha256 = "8cae43be805ee1822d6acc3d1d51a7c4445c5252b5004ab700b7f807fc78070d" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('genoflu', max_pin="x") }}
+
+source:
+  url: https://github.com/{{ user }}/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  run:
+    - python >=3.7
+    - pandas
+    - biopython
+    - blast
+    - openpyxl
+    
+test:
+  commands:
+    - genoflu.py -h
+
+about:
+  home: https://github.com/{{ user }}/{{ name }}
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  summary: Influenza data pipeline to automate genotyping assignment.
+  dev_url: https://github.com/USDA-VS/GenoFLU

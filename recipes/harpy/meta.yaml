@@ -1,0 +1,60 @@
+{% set version = "0.8.0" %}
+{% set sha256 = "40314dba83fc20e7f57bcacc706eed3bd6c52391327c1b10b5ba41aa5ae0d4f0" %}
+
+package:
+  name: harpy
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/pdimens/harpy/releases/download/{{ version }}/harpy.{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  skip: True  # [osx]
+  number: 0
+  missing_dso_whitelist:
+    - /lib64/libstdc++.so.6
+    - /lib64/libc.so.6
+  run_exports:
+    - {{ pin_subpackage('harpy', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python =3.12
+    - pip
+  run:
+    - bcftools =1.19
+    - pandas
+    - python >3.10
+    - rich-click
+    - snakemake-minimal >7
+    - samtools
+    - seqtk
+    - tabix
+
+test:
+  commands:
+    - "snakemake --version"
+    - "harpy --version"
+
+about:
+  home: "https://github.com/pdimens/harpy/"
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Process raw haplotagging data, from raw sequences to phased haplotypes."
+  description: |
+    Harpy is a command-line tool to easily process haplotag or 10x linked-read data. It uses
+    Snakemake under the hood to execute different workflows (quality control, trimming, 
+    alignment, variant calling, phasing, etc.), but the user is rarely, if ever, exposed
+    to Snakemake directly. With an emphasis on user-friendliness, parallelization, transparency,
+    and reproducibility, Harpy aims to quickly handle data processing so that you can focus more
+    on analyzing your data. 
+  doc_url: https://pdimens.github.io/harpy/
+  dev_url: https://github.com/pdimens/harpy
+
+extra:
+  recipe-maintainers:
+    - pdimens
+  skip-lints:
+    - should_be_noarch_generic

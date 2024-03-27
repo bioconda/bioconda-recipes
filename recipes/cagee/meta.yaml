@@ -1,0 +1,52 @@
+{% set name = "CAGEE" %}
+{% set version = "1.0" %}
+{% set sha256 = "3aec98af3552ef86df03d42a068925e2becd69daac3720ea9fd136b084198f57" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/hahnlab/CAGEE/releases/download/{{version}}/CAGEE{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 2
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - binutils >=2.33.1  # [linux]
+    - cmake >=3.13
+    - make
+    - llvm-openmp  # [osx]
+  host:
+    - eigen >=3.4.0
+    - boost-cpp
+    - mkl >=2020.4
+    - mkl-include
+    - zlib
+    - zstd
+  run:
+    - boost-cpp
+    - mkl >=2020.4
+    - zlib
+
+test:
+  commands:
+    - cagee --help
+    - cagee --version
+
+about:
+  home: https://github.com/hahnlab/CAGEE
+  license: ECL
+  license_file: LICENSE
+  summary: 'Analyzes changes in gene expression in a way that accounts for phylogenetic history and provides a statistical foundation for evolutionary inferences'
+  dev_url: https://github.com/hahnlab/CAGEE
+  doc_url: https://github.com/hahnlab/CAGEE
+
+extra:
+  recipe-maintainers:
+    - benfulton
+

@@ -1,0 +1,55 @@
+{% set name = "sequali" %}
+{% set version = "0.5.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: ac8cf49fa3c2dcfd3eb976c60a4c5e482db82d902c016570c6aebc6869d2f9ea
+
+build:
+  number: 0
+  entry_points:
+    - sequali=sequali.__main__:main
+    - sequali-report=sequali.__main__:sequali_report
+  run_exports:
+    - {{ pin_subpackage('sequali', max_pin="x.x") }}
+  script: "{{ PYTHON }} -m pip install . -vv"
+  script_env:
+    - "CFLAGS=-mssse3"  # [linux]
+
+
+requirements:
+  build:
+    - "{{ compiler('c') }}"
+    - pip
+  host:
+    - python
+  run:
+    - pygal >=3.0.0
+    - python
+    - tqdm
+    - xopen >=1.8.0
+
+test:
+  imports:
+    - sequali
+  commands:
+    - sequali --help
+    - sequali-report --help
+
+about:
+  home: "https://github.com/rhpvorderman/sequali"
+  license: "GNU Affero General Public v3 or later (AGPLv3+)"
+  license_family: AGPL
+  license_file: LICENSE
+  summary: "Fast sequencing quality metrics"
+  doc_url: "https://github.com/rhpvorderman/sequali"
+  dev_url: "https://github.com/rhpvorderman/sequali"
+
+extra:
+  recipe-maintainers:
+    - rhpvorderman
+

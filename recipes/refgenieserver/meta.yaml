@@ -1,5 +1,5 @@
 {% set name = "refgenieserver" %}
-{% set version = "0.6.0" %}
+{% set version = "0.7.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,19 +7,23 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "bb355301efa0ea264d978efae5678e5afc9aa46e0a46cc160e8fd3330f549102"
+  sha256: "6d17ea0bb8e97dd8a09736958d098af580ac90de34f3cced388dd62e6ec2de5a"
 
 build:
   number: 0
   noarch: python
   entry_points:
     - refgenieserver = refgenieserver.main:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
   host:
     - pip
     - python >=3.6
+    # use_2to3 was removed in setuptools 58
+    - setuptools <58
   run:
     - python >=3.6
     - aiofiles

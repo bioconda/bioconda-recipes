@@ -1,0 +1,76 @@
+{% set name = "OakVar" %}
+{% set version = "2.9.92" %}
+{% set sha256 = "f12cd22f67d3f84abfa8b8037983f16094d6971f1fa1ed8165e30812cf7d5af9" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/oakvar-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - ov=oakvar.__main__:main
+  run_exports:
+    - {{ pin_subpackage('oakvar', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+    - requests
+    - requests-toolbelt
+    - liftover
+    - markdown
+    - aiohttp <4.0.0
+    - chardet >=3.0.4
+    - aiosqlite
+    - oyaml
+    - nest-asyncio
+    - psutil
+    - python-dateutil
+    - download
+    - gdown
+    - split-file-reader
+    - packaging
+    - pillow
+    - duckdb
+    - rich
+    - aiohttp-cors
+    - pyjwt
+    - polars
+    - connectorx
+    - pyarrow
+    - multiprocess
+    - mpmath
+    - twobitreader
+    - intervaltree
+
+test:
+  imports:
+    - cravat
+    - oakvar
+  commands:
+    - ov --help
+
+about:
+  home: 'https://github.com/rkimoakbioinformatics/oakvar'
+  summary: "OakVar - Genomic Variant Analysis Platform"
+  dev_url: 'https://pypi.org/project/oakvar/'
+  license: 'AGPL-3.0-or-later'
+  license_family: AGPL
+  license_file: LICENSE
+  doc_url: 'https://rkimoakbioinformatics.github.io/oakvar/'
+
+extra:
+  recipe-maintainers:
+    - rkimoakbioinformatics
+  identifiers:
+    - biotools:oakvar

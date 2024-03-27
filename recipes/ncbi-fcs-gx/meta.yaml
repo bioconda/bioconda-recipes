@@ -1,0 +1,45 @@
+package:
+  name: ncbi-fcs-gx
+  version: 0.5.0
+
+source:
+  url: https://github.com/ncbi/fcs-gx/archive/refs/tags/v0.5.0.zip
+  sha256: 2f6b6099584495e1a9115403a5e4cb5f5dac1ddbbc691da9a3158a75391ffe8a
+  patches:
+    - aria_split_16.patch
+    - no_static.patch
+
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake
+    - libstdcxx-ng <=12.2
+    - libgcc-ng <=12.2
+  run:
+    - python >=3.9
+    - aria2 =1.36.0
+    - gzip >=1.5
+    - pv >=1.4.6
+    - rclone =1.61.1
+    - grep >=3.4
+
+build:
+  number: 3
+  skip: True  # [not linux or not x86_64]
+  run_exports:
+    - {{ pin_compatible('ncbi-fcs-gx', max_pin="0.5") }}
+
+test:
+  commands:
+    - gx --help 
+    - ls -l ${PREFIX}/bin/
+    - ${PREFIX}/bin/gx --help 
+
+about:
+  home: https://github.com/ncbi/fcs
+  summary: The NCBI Foreign Contamination Screen. Genomic cross-species aligner, for contamination detection.
+  license: NCBI-PD
+  license_url: https://github.com/ncbi/fcs/blob/main/LICENSE.txt
+

@@ -1,5 +1,5 @@
 {% set name = "fastq" %}
-{% set version = "2.0.1" %}
+{% set version = "2.0.4" %}
 
 package:
   name: {{ name }}
@@ -7,33 +7,31 @@ package:
 
 source:
   url: https://github.com/not-a-feature/fastq/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 024e961761497504ffd69b24f5d30d44045a948341f18691989e83022ad9ec37
+  sha256: 677a5d2eb2b70d0d90da7bf9c52fabd327e5522cb7a7004a011940a3014c0562
 
 build:
   noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --use-pep517 -vvv"
+  run_exports:
+    - {{ pin_subpackage('fastq', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.7
+    - python >=3.8
     - pip
   run:
-    - python >=3.7
-    - miniFasta >=2.1
+    - python >=3.8
+    - miniFasta >=3.0.1
 
 test:
   imports:
     - fastq
-  commands:
-    - pip check
-  requires:
-    - pip
 
 about:
   home: https://github.com/not-a-feature/fastq
   license: GPL-3.0-or-later
-  license_family: GPL
+  license_family: GPL3
   license_file: LICENSE
   summary: 'A simple FASTQ toolbox for small to medium size projects without dependencies.'
   description: |

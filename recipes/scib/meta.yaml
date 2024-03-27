@@ -1,0 +1,61 @@
+{% set name = "scib" %}
+{% set version = "1.1.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+build:
+  number: 1
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  skip: True  # [ py < 37 or py > 311]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/scib-{{ version }}.tar.gz
+  sha256: b7800f308cd6acc36db6e159a53b0432adb2f48e9b7b434240bc5d696df10bfb
+  patches:
+    - setup_compiler.patch
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - pip
+  run:
+    - anndata >=0.7.2
+    - deprecated
+    - h5py
+    - igraph >=0.10
+    - leidenalg
+    - llvmlite
+    - matplotlib-base
+    - numpy
+    - pandas <2
+    - pydot
+    - python
+    - scanpy >=1.5
+    - scikit-learn
+    - scikit-misc
+    - scipy
+    - seaborn
+    - umap-learn
+
+test:
+  imports:
+    - scib
+
+about:
+  home: https://github.com/theislab/scib
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  summary: "Evaluating single-cell data integration methods"
+  doc_url: https://scib.readthedocs.io/en/latest/
+  dev_url: https://github.com/theislab/scib
+
+extra:
+  identifiers:
+    - doi:10.1038/s41592-021-01336-8

@@ -1,5 +1,8 @@
-mkdir build
-cd build
-cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DENABLE_AVX=OFF
-make
-make install
+cmake -B build \
+    -DCMAKE_C_FLAGS="-msse4.2" \
+    -DCMAKE_CXX_FLAGS="-msse4.2 -D_LIBCPP_DISABLE_AVAILABILITY" \
+    -DCMAKE_C_STANDARD=11 \
+    -DCMAKE_C_STANDARD_REQUIRED=ON \
+    -DCMAKE_INSTALL_PREFIX=$PREFIX
+make -C build VERBOSE=1
+make -C build install

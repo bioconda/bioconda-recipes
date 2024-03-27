@@ -1,0 +1,93 @@
+--- a/make_hub.py
++++ b/make_hub.py
+@@ -425,12 +425,12 @@ for key, val in ucsc_tools.items():
+ ''' track color defintion '''
+ 
+ col_idx = 0
+-rgb_cols = ['0,0,0', '255,0,0', '0,255,0', '0,0,255', '176,196,222',
+-            '0,255,255', '255,0,255', '192,192,192', '128,128,128', '128,0,0',
+-            '128,128,0', '0,128,0', '128,0,128', '0,128,128', '0,0,128',
+-            '139,0,0', '220,20,60', '233,150,122', '255,140,0', '218,165,32',
+-            '154,205,50', '34,139,34', '152,251,152', '72,209,203',
+-            '176,224,230', '138,43,226']  # 0 - 25
++rgb_cols = ['0,0,0',       '255,0,0',   '0,255,0',     '0,0,255',     '176,196,222',
++            '0,255,255',   '255,0,255', '192,192,192', '128,128,128', '128,0,0',
++            '128,128,0',   '0,128,0',   '128,0,128',   '0,128,128',   '0,0,128',
++            '139,0,0',     '220,20,60', '233,150,122', '255,140,0',   '218,165,32',
++            '154,205,50',  '34,139,34', '152,251,152', '72,209,203',  '176,224,230', 
++            '138,43,226']  # 0 - 25, number: 26
+ 
+ ''' Create hub directory structure '''
+ 
+@@ -491,7 +491,7 @@ for key, val in ucsc_as_files.items():
+ 
+ 
+ def set_color(c, col_lst):
+-    if c <= 25:
++    if c <= len(col_lst)-2:
+         c = c+1
+     else:
+         c = 0
+@@ -512,11 +512,14 @@ def set_visibility(v):
+ 
+ def run_simple_process(args_lst):
+     try:
++        # bed files need sorting with LC_COLLATE=C
++        myenv = os.environ.copy()
++        myenv['LC_COLLATE'] = 'C'
+         if args.verbosity > 0:
+             print("Trying to execute the following command:")
+             print(" ".join(args_lst))
+         result = subprocess.run(
+-            args_lst, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
++            args_lst, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=myenv)
+         if args.verbosity > 0:
+             print("Suceeded in executing command.")
+         if(result.returncode == 0):
+@@ -541,12 +544,15 @@ def run_simple_process(args_lst):
+ 
+ def run_process_stdinput(args_lst, byte_obj):
+     try:
++        # bed files need sorting with LC_COLLATE=C
++        myenv = os.environ.copy()
++        myenv['LC_COLLATE'] = 'C'
+         if args.verbosity > 0:
+             print("Trying to execute the following command with input from " +
+                   "STDIN:")
+             print(" ".join(args_lst))
+         result = subprocess.run(args_lst, input=byte_obj,
+-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
++                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=myenv)
+         if args.verbosity > 0:
+             print("Suceeded in executing command.")
+         if(result.returncode == 0):
+@@ -831,25 +837,13 @@ def find_masked_intervals(genome_file, bed3_file):
+         quit(1)
+ 
+ 
+-''' Function that sorts a bed3 file with LC_COLLATE=C (using a bash script) '''
++''' Function that sorts a bed3 file with LC_COLLATE=C via custom subprocess function'''
+ 
+ 
+ def sort_bed3(bed3_file, bed3_sorted_file):
+-    script_file = tmp_dir + 'sort_bed3.sh'
+-    try:
+-        with open(script_file, 'w') as script_handle:
+-            script_handle.write(
+-                '#!/bin/bash\nLC_COLLATE=C\nsort -k1,1 -k2,2n ' + bed3_file +
+-                ' > ' + bed3_sorted_file)
+-    except IOError:
+-        frameinfo = getframeinfo(currentframe())
+-        print('Error in file ' + frameinfo.filename + ' at line ' +
+-              str(frameinfo.lineno) + ': ' + "Failed to open file " + script_file +
+-              " for writing!")
+-        quit(1)
+-    os.chmod(script_file, 0o777)
+-    subprcs_args = [script_file]
+-    run_simple_process(subprcs_args)
++    subprcs_args = [sort_tool, '-k1,1', '-k2,2n', bed3_file]
++    result = run_simple_process(subprcs_args)
++    write_byteobj(result.stdout, bed3_sorted_file)
+ 
+ 
+ ''' Function that converts bed to bigBed '''

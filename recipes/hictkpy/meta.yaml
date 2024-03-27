@@ -1,0 +1,72 @@
+{% set name = "hictkpy" %}
+{% set version = "0.0.3" %}
+{% set sha256 = "5f08caebedd88a389329549722b9f34b3fcb526c5be30c6eb793b855a26806cc" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True  # [py < 37]
+  run_exports:
+    - {{ pin_subpackage('hictkpy', max_pin='x.x') }}
+
+source:
+  url: https://github.com/paulsengroup/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake >=3.25
+    - conan >=2
+    - make
+    - eigen >=3.4
+    - fast_float >=5
+    - fmt >=10
+    - highfive >=2.7
+    - pybind11 >=2.11
+    - spdlog >=1.12
+  host:
+    - python
+    - hdf5 >=1.12
+    - libdeflate
+    - xxhash >=0.8
+    - setuptools
+    - setuptools_scm
+    - zstd >=1.5
+
+  run:
+    - python
+    - hdf5 >=1.12
+    - libdeflate
+    - numpy
+    - pandas
+    - scipy
+    - zstd >=1.5
+
+about:
+  home: https://github.com/paulsengroup/{{ name }}
+  license: MIT
+  license_file: LICENSE
+  summary: Python bindings for hictk
+  dev_url: https://github.com/paulsengroup/{{ name }}
+  doc_url: https://github.com/paulsengroup/{{ name }}#readme
+
+test:
+   requires:
+     - pytest>=6
+   source_files:
+     - test/*
+   imports:
+     - hictkpy
+
+extra:
+  recipe-maintainers:
+    - robomics
+    - jonnings
+  identifiers:
+    - biotools:hictkpy
+    - doi:10.5281/zenodo.8220300

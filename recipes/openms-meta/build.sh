@@ -1,8 +1,5 @@
 #!/bin/sh
 
-# Download URLs have changed!
-sed -i.bak "s/informatik/cs/g" contrib/macros.cmake
-
 # useless default include directory that is silently added by the compiler packages "to help"...
 # it is not even added with -isystem https://github.com/AnacondaRecipes/aggregate/blob/master/clang/activate-clang%2B%2B.sh#L87
 USELESS="-I${PREFIX}/include"
@@ -13,18 +10,8 @@ export LIBRARY_PATH=${PREFIX}/lib
 export LD_LIBRARY_PATH=${PREFIX}/lib
 #export DYLD_LIBRARY_PATH=${PREFIX}/lib
 
-mkdir contrib-build
-cd contrib-build
-## By default WM is built and linked statically such that it does not
-## introduce a dependency that needs to be exported
-cmake -DBUILD_TYPE=WILDMAGIC ../contrib
-cd ..
-
-#sed -i.bak "s/CMAKE_INSTALL_NAME_DIR/FOO/g" CMakeLists.txt
-
 mkdir build
 cd build
-
 
 if [[ $(uname -s) == Darwin ]]; then
   RPATH='@loader_path/../lib'
@@ -33,11 +20,13 @@ else
   export ORIGIN
   RPATH='$${ORIGIN}/../lib'
 fi
+
+# not sure if needed. CMake should take care of that.
 LDFLAGS='-Wl,-rpath,${RPATH}'
 
 cmake .. \
   -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
-  -DOPENMS_GIT_SHORT_SHA1="b59e0c3" \
+  -DOPENMS_GIT_SHORT_SHA1="d36094e" \
   -DOPENMS_CONTRIB_LIBS="$SRC_DIR/contrib-build" \
   -DCMAKE_BUILD_TYPE="Release" \
   -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} \
@@ -57,6 +46,6 @@ cmake .. \
   -DBUILD_EXAMPLES=OFF
 
 # limit concurrent build jobs due to memory usage on CI
-make -j4 OpenMS TOPP UTILS
+make -j2 OpenMS TOPP
 # The subpackages will do the installing of the parts
 #make install

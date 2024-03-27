@@ -1,4 +1,4 @@
 #!/bin/bash
 
 sed -i.bak '/^CC /d' primer3/src/libprimer3/Makefile
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+$PYTHON -m pip install . --use-pep517 --no-deps --no-build-isolation -vvv
