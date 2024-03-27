@@ -13,4 +13,4 @@ echo "${PREFIX}/share/amplify/src/AMPlify.py \$@" >> ${PREFIX}/bin/AMPlify
 echo "#!/bin/bash" > ${PREFIX}/bin/train_amplify
 echo "${PREFIX}/share/amplify/src/train_amplify.py \$@" >> ${PREFIX}/bin/train_amplify
 
-pip install tensorflow==1.12.0
+python3.6 -m pip install tensorflow==1.12.0
