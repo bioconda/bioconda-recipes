@@ -11,6 +11,8 @@ cd build
 
 ## See INSTALL of gromacs distro
 if [ `arch` = 'aarch64' ] ; then
+echo "xxxxxxxxxxxxxxx"
+
 echo `pwd`
 echo "xxxxxxxxxxxxxxx"
 sed -i '216s/return fftw_version;/return 0;/g' src/gromacs/utility/binaryinformation.cpp
