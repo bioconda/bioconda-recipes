@@ -12,13 +12,13 @@ cd build
 ## See INSTALL of gromacs distro
 if [ `arch` = 'aarch64' ] ; then
 echo "xxxxxxxxxxxxxxx"
-
+echo $SRC_DIR
 echo `pwd`
 echo "xxxxxxxxxxxxxxx"
-sed -i '216s/return fftw_version;/return 0;/g' src/gromacs/utility/binaryinformation.cpp
-sed -i '218s/return fftwf_version;/return 0;/g' src/gromacs/utility/binaryinformation.cpp
-sed -i '498s/int fftwflags = FFTW_DESTROY_INPUT;/int fftwflags = 0;/g' src/gromacs/fft/fft5d.cpp
-sed -i '45i #include <stdint.h>' src/gromacs/utility/flags.h
+sed -i '216s/return fftw_version;/return 0;/g' ../src/gromacs/utility/binaryinformation.cpp
+sed -i '218s/return fftwf_version;/return 0;/g' ../src/gromacs/utility/binaryinformation.cpp
+sed -i '498s/int fftwflags = FFTW_DESTROY_INPUT;/int fftwflags = 0;/g' ../src/gromacs/fft/fft5d.cpp
+sed -i '45i #include <stdint.h>' ../src/gromacs/utility/flags.h
 
 cmake_args=(
 -DSHARED_LIBS_DEFAULT=ON
