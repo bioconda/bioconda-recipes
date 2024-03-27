@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "synapterdata-1.38.0"
+installBiocDataPackage.sh "synapterdata-1.40.0"

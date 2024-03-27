@@ -1,5 +1,5 @@
 {% set name = "pairtools" %}
-{% set version = "1.0.2" %}
+{% set version = "1.0.3" %}
 
 package:
   name: {{ name|lower }}
@@ -7,13 +7,15 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: af031b369b9d99ecd6388b2c116425a9d5c6fdb98146d44d5d013c92b3704917
+  sha256: 12b482f04d66a01b80ababfb4b6d37959f7995c29f4bb1640f1102d8566d478f
 
 build:
-  number: 1
+  number: 0
   skip: True  # [osx or py<37]
   entry_points:
     - pairtools = pairtools.cli:cli
+  run_exports:
+    - {{ pin_subpackage('pairtools', max_pin="x") }}
 
 requirements:
   build:
@@ -21,7 +23,7 @@ requirements:
     - {{ compiler('cxx') }}
   host:
     - python
-    - setuptools
+    - pip
     - cython
     - numpy
     - pysam >=0.19
@@ -44,7 +46,6 @@ requirements:
 test:
   imports:
     - pairtools
-
   commands:
     # click requires a unicode locale
     - pairtools --help

@@ -1,5 +1,5 @@
 {% set name = "hAMRonization" %}
-{% set version = "1.1.1" %}
+{% set version = "1.1.4" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,23 +7,25 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: c2eedf2e7fba995b8eb22fad77e486212882a676a4ad274b304a6cee0bfacc2d
+  sha256: 2f70bdf9ea2bd1faee59c99979cf14928bfb18015e9237a9790fe72fe3bf8544
 
 build:
   noarch: python
   number: 0
   entry_points:
     - hamronize = hAMRonization.hamronize:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('hamronization', max_pin="x") }}
 
 requirements:
   host:
     - pandas
     - pip
-    - python>=3.7
+    - python >=3.7
   run:
     - pandas
-    - python>=3.7
+    - python >=3.7
 
 test:
   imports:
@@ -35,6 +37,7 @@ about:
   home: "https://github.com/pha4ge/hAMRonization"
   license: "GNU Lesser General Public v3 (LGPLv3)"
   license_family: LGPL
+  license_file: LICENSE.txt
   summary: "Tool to convert and summarize AMR gene detection outputs using the hAMRonization specification"
   doc_url: "https://github.com/pha4ge/hAMRonization/blob/master/README.md"
   dev_url: "https://github.com/pha4ge/hAMRonization"

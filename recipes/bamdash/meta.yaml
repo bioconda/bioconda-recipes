@@ -1,0 +1,50 @@
+{% set name = "bamdash" %}
+{% set version = "0.2.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/bamdash-{{ version }}.tar.gz
+  sha256: 9e9d81cb5cefbb2f356d1a1e05ffc84bcaee0cfbfd16b5e92d905817337ea4e8
+
+build:
+  entry_points:
+    - bamdash = bamdash.command:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('bamdash', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+  run:
+    - python >=3.9
+    - biopython >=1.79
+    - pandas >=1.4.4
+    - plotly >=5.17.0
+    - python-kaleido >=0.2.1
+    - pysam >=0.21.0
+
+test:
+  imports:
+    - bamdash
+  commands:
+    - pip check
+    - bamdash --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/jonas-fuchs/BAMdash
+  summary: Aggregate pathogen NGS results into an interactive plot
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - jonas-fuchs

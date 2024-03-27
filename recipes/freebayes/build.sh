@@ -1,10 +1,7 @@
 #!/bin/bash
 
-#export C_INCLUDE_PATH=$PREFIX/include
-#export CPLUS_INCLUDE_PATH=$PREFIX/include
-
 mkdir build
-meson build/ --buildtype debug --prefix "${PREFIX}"
+meson setup --buildtype debug --prefix "${PREFIX}" -Dprefer_system_deps=true build/
 
 
 
