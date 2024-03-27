@@ -1,5 +1,5 @@
 {% set name = "OSTIR" %}
-{% set version = "1.1.0" %}
+{% set version = "1.1.2" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,21 +7,23 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 05df18370a371ea1fa5260d1eeeebf015368363b4174ee1005b3047c697489b4
+  sha256: 9ca8941245ed0265e87e68c4b09adc599324d8f9e10e19e377262680288c7771
 
 build:
   number: 0
   entry_points:
     - ostir = ostir.ostir:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('ostir', max_pin="x.x.x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.7
+    - python >=3.8
   run:
-    - python >=3.7
+    - python >=3.8
     - viennarna >=2.4.18
     - numpy >=1.20.1
 
@@ -34,10 +36,12 @@ test:
 
 about:
   home: "https://github.com/barricklab/ostir"
-  license: "GNU General Public v3 or later (GPLv3+)"
+  license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: "LICENSE"
   summary: "Open Source Transcription Initiation Rates"
+  doc_url: "https://github.com/barricklab/ostir/wiki"
+  dev_url: "https://github.com/barricklab/ostir"
 
 extra:
   recipe-maintainers:
