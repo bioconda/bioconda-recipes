@@ -15,4 +15,4 @@ echo "${PREFIX}/share/amplify/src/train_amplify.py \$@" >> ${PREFIX}/bin/train_a
 
 python3.6 --version
 
-python3.6 -m pip install tensorflow==1.12 --no-deps --ignore-installed -vv
+python3.6 -m pip install --no-deps --ignore-installed -vv https://files.pythonhosted.org/packages/22/cc/ca70b78087015d21c5f3f93694107f34ebccb3be9624385a911d4b52ecef/tensorflow-1.12.0-cp36-cp36m-manylinux1_x86_64.whl
