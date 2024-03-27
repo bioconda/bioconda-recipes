@@ -12,6 +12,10 @@ if [ "$(uname)" == "Darwin" ]; then
     export CFLAGS="${CFLAGS} -m64"
 fi
 
+export LANGUAGE=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
 autoreconf -if
 ./configure CC="${CC}" CFLAGS="${CFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" \
