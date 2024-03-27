@@ -10,36 +10,49 @@ mkdir build
 cd build
 
 ## See INSTALL of gromacs distro
-for ARCH in SSE2 AVX_256 AVX2_256; do
+if [ `arch` = 'aarch64' ] ; then
   cmake_args=(
     -DSHARED_LIBS_DEFAULT=ON
     -DBUILD_SHARED_LIBS=ON
     -DGMX_PREFER_STATIC_LIBS=NO
     -DGMX_BUILD_OWN_FFTW=OFF
     -DGMX_DEFAULT_SUFFIX=ON
-    # Tests are not currently run, so do not download them
-    # -DREGRESSIONTEST_DOWNLOAD=ON
+    -DREGRESSIONTEST_DOWNLOAD=ON
+    -DGMX_GPU=OpenCL
+    -DCMAKE_PREFIX_PATH="${PREFIX}"
+    -DGMX_INSTALL_PREFIX="${PREFIX}"
+    -DCMAKE_INSTALL_PREFIX="${PREFIX}"
+    -DCMAKE_INSTALL_BINDIR="bin.${ARCH}"
+    -DCMAKE_INSTALL_LIBDIR="lib.${ARCH}"
+    -DGMX_MPI=ON
+  )
+  cmake .. "${cmake_args[@]}"
+  make -j "${CPU_COUNT}"
+  make install
+else
+
+for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do
+  cmake_args=(
+    -DSHARED_LIBS_DEFAULT=ON
+    -DBUILD_SHARED_LIBS=ON
+    -DGMX_PREFER_STATIC_LIBS=NO
+    -DGMX_BUILD_OWN_FFTW=OFF
+    -DGMX_DEFAULT_SUFFIX=ON
+    -DREGRESSIONTEST_DOWNLOAD=ON
+    -DGMX_GPU=OpenCL
     -DCMAKE_PREFIX_PATH="${PREFIX}"
     -DGMX_INSTALL_PREFIX="${PREFIX}"
     -DCMAKE_INSTALL_PREFIX="${PREFIX}"
     -DGMX_SIMD="${ARCH}"
     -DCMAKE_INSTALL_BINDIR="bin.${ARCH}"
     -DCMAKE_INSTALL_LIBDIR="lib.${ARCH}"
-    -DGMX_VERSION_STRING_OF_FORK="bioconda"
+    -DGMX_MPI=ON
   )
-  # OpenCL header on Mac is not recognized by GROMACS
-  if [ "$(uname)" != 'Darwin' ] ; then
-      cmake_args+=(-DGMX_GPU=OpenCL)
-  fi
-  if [[ "${mpi}" == "nompi" ]]; then
-      cmake_args+=(-DGMX_MPI=OFF)
-  else
-      cmake_args+=(-DGMX_MPI=ON)
-  fi
   cmake .. "${cmake_args[@]}"
   make -j "${CPU_COUNT}"
   make install
 done
+fi
 
 
 #
