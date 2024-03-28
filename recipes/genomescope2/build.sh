@@ -3,5 +3,7 @@
 R -e 'install.packages(".", repos=NULL, type="source")'
 
 mkdir -p $PREFIX/bin
-cp genomescope.R $PREFIX/bin/genomescope2
-chmod +x $PREFIX/bin/genomescope2
+cp genomescope.R $PREFIX/bin/genomescope.R
+chmod +x $PREFIX/bin/genomescope.R
+
+ln -s genomescope.R $PREFIX/bin/genomescope2
