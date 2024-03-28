@@ -166,6 +166,12 @@ case "$OSTYPE" in
              ;;
 esac
 
+
+
+if [ `arch` = 'aarch64' ] ; then
+echo $( _gromacs_bin_dir )
+
+else
 # Search first for AVX2, then AVX. Fall back on SSE2
 { cat <<EOF
 #! /bin/bash
@@ -195,3 +201,4 @@ EOF
 cat >> "${PREFIX}/bin/${gmx}" <<EOF
 exec "\$( _gromacs_bin_dir )/${gmx}" "\${@}"
 EOF
+fi
