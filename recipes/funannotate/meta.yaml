@@ -1,5 +1,5 @@
 {% set name = "funannotate" %}
-{% set version = "1.8.15" %}
+{% set version = "1.8.17" %}
 
 package:
   name: funannotate
@@ -7,12 +7,16 @@ package:
 
 source:
   url: https://pypi.io/packages/source/f/funannotate/funannotate-{{ version }}.tar.gz
-  sha256: 98a1baf18fbbe320986e011bfabb7dd5e79ee24286d6d400547d09c0fe65d300
+  sha256: bdadfd7a5636383c1c40c26dab37c5908a77e8c4064adced84f1ba9e86187a04
 
 build:
-  number: 2
+  number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - funannotate=funannotate.funannotate:main
+  run_exports:
+    - {{ pin_subpackage('funannotate', max_pin="x") }}
 
 requirements:
   host:
@@ -20,12 +24,12 @@ requirements:
     - python >=3.6,<3.9
   run:
     - python >=3.6,<3.9
-    - biopython
+    - biopython <1.80
     - goatools
     - matplotlib-base <3.5
     - natsort
     - numpy
-    - pandas <2.0  # https://github.com/nextgenusfs/funannotate/pull/906
+    - pandas
     - psutil
     - requests
     - scikit-learn
@@ -90,8 +94,15 @@ about:
   license_family: "BSD"
   license_file: "LICENSE.md"
   summary: "funannotate: eukaryotic genome annotation pipeline"
-  doc_url: "funannotate.readthedocs.io"
+  doc_url: "https://funannotate.readthedocs.io/en/latest/"
+  dev_url: "https://github.com/nextgenusfs/funannotate"
 
 extra:
   recipe-maintainers:
     - nextgenusfs
+  identifiers:
+    - biotools:funannotate
+    - usegalaxy-eu:funannotate_compare
+    - usegalaxy-eu:funannotate_clean
+    - usegalaxy-eu:funannotate_predict
+    - usegalaxy-eu:funannotate_annotate
