@@ -1,12 +1,15 @@
 #!/bin/bash
 set -ex
 
-if [ `uname` == Darwin ]; then
+OS=$(uname)
+ARCH=$(uname -m)
+
+if [ "${OS}" == "Darwin" ]; then
 	echo $(pwd)/zig-macos-x86_64-*
 	export PATH="$(pwd)/zig-macos-x86_64-0.10.1:${PATH}"
-	else
-	echo $(pwd)/zig-linux-x86_64-*
-	export PATH="$(pwd)/zig-linux-x86_64-0.10.1:${PATH}"
+else
+	echo $(pwd)/zig-linux-${ARCH}-*
+	export PATH="$(pwd)/zig-linux-${ARCH}-0.10.1:${PATH}"
 fi
 
 export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Itabixpp -I\$(INC_DIR)"
@@ -24,7 +27,7 @@ sed -i.bak 's/g++/$(CXX) $(CXXFLAGS)/g' contrib/multichoose/Makefile
 sed -i.bak 's/g++/$(CXX) $(CXXFLAGS)/g' contrib/intervaltree/Makefile
 
 # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14
-if [ "$(uname)" == "Darwin" ]; then
+if [ "${OS}" == "Darwin" ]; then
 	sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' contrib/smithwaterman/Makefile
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
 	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_ENABLE_CXX17_REMOVED_FEATURES"
