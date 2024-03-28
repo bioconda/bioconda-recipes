@@ -1,0 +1,50 @@
+{% set name = "ntRoot" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bcgsc/ntRoot/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 0de1e98bc9ac4a3eb1d3265358ac866d031190dd2375fa644ac5b34bb71f4795
+  patches: 
+    - ntroot.patch
+
+build:
+  number: 0
+  run_exports: 
+    - {{ pin_subpackage("ntroot", max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
+    - python
+    - meson
+    - ninja
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - btllib >=1.7.0
+    - boost-cpp
+    - cmake
+  run:
+    - python
+    - btllib
+    - snakemake
+    - samtools
+    - ntcard
+    - nthits >=1.0.2
+    - perl
+
+test:
+  commands:
+    - ntroot -h
+    - make_genome_bf -h
+
+about:
+  home: https://github.com/bcgsc/ntroot
+  license: GPL-3.0
+  license_file: LICENSE
+  summary: 'Ancestry inference from genomic data'
