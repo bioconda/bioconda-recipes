@@ -1,0 +1,41 @@
+--- RabbitSketch/CMakeLists.txt	2023-05-22 09:13:52.000000000 -0500
++++ RabbitSketch/CMakeLists.txt	2024-02-27 11:41:29.169717510 -0600
+@@ -11,22 +11,20 @@
+ aux_source_directory(src DIR_SRCS)
+ 
+ #linux only 
+-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g -std=c++14 -static-libstdc++ -march=native")
+-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g -std=c++14 -march=native")
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g -std=c++14 -march=native $ENV{CXXFLAGS}")
+ 
+ #set flags for specific files
+ #set_source_files_properties(src/MinHash.cpp PROPERTIES COMPILE_FLAGS -mavx2)
+ 
++# Include LDFLAGS from environment
++set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} $ENV{LDFLAGS}")
++set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} $ENV{LDFLAGS}")
+ 
+ if (CXXAPI)
+ 	add_compile_options(-DNOPYTHON)
+ 	add_library("${PROJECT_NAME}" SHARED ${DIR_SRCS})
+-	add_library("${PROJECT_NAME}_static" STATIC ${DIR_SRCS})
+-	
+-	#set_target_properties("${PROJECT_NAME}_dynamic" PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+-	#set_target_properties("${PROJECT_NAME}_static" PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+ 
+-	install(TARGETS "${PROJECT_NAME}" "${PROJECT_NAME}_static" 
++	install(TARGETS "${PROJECT_NAME}" "${PROJECT_NAME}"
+ 		   RUNTIME DESTINATION bin
+ 		   LIBRARY DESTINATION lib
+ 		   ARCHIVE DESTINATION lib
+@@ -37,10 +35,6 @@
+ 				  "src/HyperLogLog.h"
+ 			DESTINATION include
+ 		   )
+-	
+-	#install(FILES "src/hll/hyperloglog.h"
+-	#	   DESTINATION include/hll
+-	#	   )
+ else ()
+ 	add_subdirectory(pybind11)
+ 	pybind11_add_module(rabbitsketch ${DIR_SRCS})
