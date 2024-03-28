@@ -20,7 +20,9 @@ hictk="$(which hictk)"
 
 # Run integration tests
 
-test/scripts/hictk_balance.sh "$hictk"
+test/scripts/hictk_balance_ice.sh "$hictk"
+test/scripts/hictk_balance_scale.sh "$hictk"
+test/scripts/hictk_balance_vc.sh "$hictk"
 
 test/scripts/hictk_dump_chroms.sh "$hictk"
 test/scripts/hictk_dump_bins.sh "$hictk"
