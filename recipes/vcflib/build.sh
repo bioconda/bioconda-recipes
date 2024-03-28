@@ -39,15 +39,7 @@ pkg-config --list-all
 cmake -S . -B build \
 	-DZIG=ON -DOPENMP=ON -DWFA_GITMODULE=OFF \
 	-DCMAKE_BUILD_TYPE=Release \
-	-DBUILD_SHARED_LIBS=ON \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-	-DCMAKE_CXX_COMPILER="${CXX}" \
-	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DCMAKE_C_COMPILER="${CC}" \
-	-DCMAKE_INCLUDE_PATH="${PREFIX}/include" \
-	-DCMAKE_LIBRARY_PATH="${PREFIX}/lib"
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS}"
 
 cmake --build build/ --target install -j 4 -v
-
-#cp -n ../scripts/* $PREFIX/bin
-#cp -n -r ../src/simde $PREFIX/include/
