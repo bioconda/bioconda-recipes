@@ -9,6 +9,13 @@ if [ `uname` = "Darwin" ];
 then
   MAKEFILE=Makefile.MacOS
 fi
+
+if [ $(arch) = "aarch64" ]
+then
+    sed -i 's/-mtune=core2 //g' Makefile.Linux
+    sed -i 's/-mtune=core2 //g' longread-one/Makefile
+fi
+
 export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 make -f $MAKEFILE CC_EXEC="$CC -L$PREFIX/lib -fcommon"

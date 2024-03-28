@@ -9,17 +9,19 @@ package:
 source:
   url: https://downloads.sourceforge.net/project/{{ name }}/{{ name }}-{{ version }}/{{ name }}-{{ version }}-source.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - unsignedchar.patch
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage("subread", max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
   host:
-    - zlib
-  run:
     - zlib
 
 test:
@@ -43,6 +45,8 @@ about:
     - LICENSE
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:subread
     - usegalaxy-eu:featurecounts
