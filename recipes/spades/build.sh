@@ -1,11 +1,12 @@
 #!/bin/bash
 
-set -e -o pipefail -x
+set -e -o pipefail
 
-export LIBRARY_PATH=${PREFIX}/lib
-export C_INCLUDE_PATH=${PREFIX}/include
-export CPP_INCLUDE_PATH=${PREFIX}/include
-export CFLAGS="${CFLAGS} -fcommon"
-export CXXFLAGS="${CFLAGS} -fcommon"
+outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+mkdir -p $outdir
+mkdir -p $PREFIX/bin
 
-bash spades_compile.sh -rj4
+cp -r bin $outdir
+cp -r share $outdir
+
+ln -s $outdir/bin/* $PREFIX/bin
