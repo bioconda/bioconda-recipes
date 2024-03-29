@@ -1,44 +1,48 @@
 {% set name = "assembly_finder" %}
-{% set version = "0.4.2" %}
+{% set version = "0.6.0" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  - url: https://github.com/metagenlab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: 6f035d34e562c0727fa0a43172de61b879714c3a1d964b6a5952afb49301129b
+  url: https://github.com/metagenlab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: fe5dbe825730852005c382b88e3d89ac88f16e74cb0d6a5f26ad8c566df07119
+
 build:
   number: 0
-  entry_points:
-    - assembly_finder = assembly_finder.assembly_finder:cli
   noarch: python
-  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed . -vv
+  script: {{ PYTHON }} -m pip install . -vvv
+  entry_points:
+    - assembly_finder = assembly_finder.__main__:cli
   run_exports:
     - {{ pin_subpackage('assembly_finder', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.9,<3.12
+    - python >=3.9,<=3.12
     - pip
-  
   run:
-    - python >=3.9,<3.12
-    - snakemake-minimal >=7.32.4 
-    - click >=7
-    - biopython >=1.78
-    - pandas >=2.0.3
-    - ete3 >=3.1.3
-    - aspera-cli >=4.14.0
+    - python >=3.9,<=3.12
+    - snakemake-minimal >=7.32.4,<8
+    - pulp <2.8
+    - pandas >=2.2.1
+    - rich-click >=1.7.4
+    - ncbi-datasets-cli >=16.10.1
+
 test:
   commands:
     - assembly_finder -h
     - assembly_finder -v
+
 about:
   home: https://github.com/metagenlab/assembly_finder
-  license: GPL-3.0-or-later
+  license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: Snakemake pipeline to download assemblies from NCBI.
+  summary: "Snakemake-powered cli pipeline to download genomes with NCBI datasets"
+  dev_url: https://github.com/metagenlab/assembly_finder
+  doc_url: https://metagenlab.github.io/assembly_finder
 
 extra:
   container:
