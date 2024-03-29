@@ -19,16 +19,15 @@ cp -r {commands,algorithms,evaluation,utils,optimisation,preprocessing,Project.t
 
 
 ln -s  ${HAPNEST_SRC_DIR}/run_program.jl  $PREFIX/bin
-#cp -r $SRC_DIR/commands/* $PREFIX/bin
-#cp -r $SRC_DIR/algorithms/genotype/genotype_algorithm.jl $PREFIX/bin
-#cp -r $SRC_DIR/algorithms/phenotype/phenotype_algorithm.jl $PREFIX/bin
-#cp -r $SRC_DIR/evaluation/evaluation.jl $PREFIX/bin
-#cp -r $SRC_DIR/integrations $PREFIX
-#cp -r $SRC_DIR/utils/parameter_parsing.jl $PREFIX/bin
-#cp -r $SRC_DIR/optimisation/abc.jl $PREFIX/bin
-#cp -r $SRC_DIR/preprocessing/preprocessing.jl $PREFIX/bin
+ln -s  ${HAPNEST_SRC_DIR}/commands/* $PREFIX/bin
+ln -s  ${HAPNEST_SRC_DIR}/algorithms/genotype/genotype_algorithm.jl $PREFIX/bin
+ln -s  ${HAPNEST_SRC_DIR}/algorithms/phenotype/phenotype_algorithm.jl $PREFIX/bin
+ln -s  ${HAPNEST_SRC_DIR}/evaluation/evaluation.jl $PREFIX/bin
+ln -s  ${HAPNEST_SRC_DIR}/integrations $PREFIX/bin
+ln -s  ${HAPNEST_SRC_DIR}/utils/parameter_parsing.jl $PREFIX/bin
+ln -s  ${HAPNEST_SRC_DIR}/optimisation/abc.jl $PREFIX/bin
+ln -s  ${HAPNEST_SRC_DIR}/preprocessing/preprocessing.jl $PREFIX/bin
 
-#ln -s $PREFIX/bin/run_program.jl  $PREFIX/bin/run_program.jl
 
 chmod +x ${HAPNEST_SRC_DIR}
 
