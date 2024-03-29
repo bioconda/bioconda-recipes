@@ -4,8 +4,7 @@ mkdir build
 mkdir -p ${PREFIX}/bin
 
 CXX="${CXX}" CC="${CC}" meson setup --buildtype release --prefix "${PREFIX}" \
-	--strip --includedir "${PREFIX}/include" --libdir "${PREFIX}/lib" \
-	-Dprefer_system_deps=true -Dstatic=true build/
+	--strip --prefer-static -Dprefer_system_deps=true build/
 
 cd build
 ninja -v
