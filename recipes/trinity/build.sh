@@ -66,3 +66,5 @@ echo "export TRINITY_HOME=${TRINITY_HOME}" > ${PREFIX}/etc/conda/activate.d/${PK
 
 mkdir -p ${PREFIX}/etc/conda/deactivate.d/
 echo "unset TRINITY_HOME" > ${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}-${PKG_VERSION}.sh
+
+cd ${RECIPE_DIR} && make clean
