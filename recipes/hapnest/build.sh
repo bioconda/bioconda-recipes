@@ -14,10 +14,11 @@ ln -s "${GCC}" "${BUILD_PREFIX}/gcc"
 # Copy the required files to a shared directory
 HAPNEST_SRC_DIR=${PREFIX}/share/hapnest
 mkdir -p "${HAPNEST_SRC_DIR}"
+mkdir -p "${PREFIX}/bin"
 cp -r {commands,algorithms,evaluation,utils,optimisation,preprocessing,Project.toml,run_program.jl,config.yaml} "${HAPNEST_SRC_DIR}"
 
 
-#cp -r $SRC_DIR/run_program.jl  $PREFIX/bin
+ln -s  ${HAPNEST_SRC_DIR}/run_program.jl  $PREFIX/bin
 #cp -r $SRC_DIR/commands/* $PREFIX/bin
 #cp -r $SRC_DIR/algorithms/genotype/genotype_algorithm.jl $PREFIX/bin
 #cp -r $SRC_DIR/algorithms/phenotype/phenotype_algorithm.jl $PREFIX/bin
@@ -29,7 +30,7 @@ cp -r {commands,algorithms,evaluation,utils,optimisation,preprocessing,Project.t
 
 #ln -s $PREFIX/bin/run_program.jl  $PREFIX/bin/run_program.jl
 
-#chmod +x $PREFIX/bin/hapnest
+chmod +x ${HAPNEST_SRC_DIR}
 
 #julia -e 'Pkg.init()'
 julia -e 'import Pkg; Pkg.add("Conda")'
