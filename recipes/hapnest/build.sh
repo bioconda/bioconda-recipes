@@ -12,24 +12,25 @@ ln -s "${GCC}" "${BUILD_PREFIX}/gcc"
 
 
 # Copy the required files to a shared directory
-HAPNEST_SRC_DIR=${PREFIX}/share/hapnest
-mkdir -p "${HAPNEST_SRC_DIR}"
+SCRIPT_DIR=${PREFIX}/share/hapnest
+mkdir -p "${SCRIPT_DIR}"
 mkdir -p "${PREFIX}/bin"
-cp -r {commands,algorithms,evaluation,utils,optimisation,preprocessing,Project.toml,run_program.jl,config.yaml} "${HAPNEST_SRC_DIR}"
+cp -r {commands,integrations,algorithms,evaluation,utils,optimisation,preprocessing,Project.toml,run_program.jl,config.yaml} "${SCRIPT_DIR}"
 
 
-ln -s  ${HAPNEST_SRC_DIR}/run_program.jl  $PREFIX/bin
-ln -s  ${HAPNEST_SRC_DIR}/commands/* $PREFIX/bin
-ln -s  ${HAPNEST_SRC_DIR}/algorithms/genotype/genotype_algorithm.jl $PREFIX/bin
-ln -s  ${HAPNEST_SRC_DIR}/algorithms/phenotype/phenotype_algorithm.jl $PREFIX/bin
-ln -s  ${HAPNEST_SRC_DIR}/evaluation/evaluation.jl $PREFIX/bin
-ln -s  ${HAPNEST_SRC_DIR}/integrations $PREFIX/bin
-ln -s  ${HAPNEST_SRC_DIR}/utils/parameter_parsing.jl $PREFIX/bin
-ln -s  ${HAPNEST_SRC_DIR}/optimisation/abc.jl $PREFIX/bin
-ln -s  ${HAPNEST_SRC_DIR}/preprocessing/preprocessing.jl $PREFIX/bin
+ln -s  ${SCRIPT_DIR}/run_program.jl  $PREFIX/bin/
+ln -s  ${SCRIPT_DIR}/commands/* $PREFIX/bin/
+ln -s  ${SCRIPT_DIR}/algorithms/genotype/* $PREFIX/bin/
+ln -s  ${SCRIPT_DIR}/algorithms/phenotype/* $PREFIX/bin/
+ln -s  ${SCRIPT_DIR}/evaluation/* $PREFIX/bin/
+ln -s  ${SCRIPT_DIR}/integrations/gwas.jl  $PREFIX/bin/
+ln -s  ${SCRIPT_DIR}/utils/* $PREFIX/bin/
+ln -s  ${SCRIPT_DIR}/optimisation/* $PREFIX/bin/
+ln -s  ${SCRIPT_DIR}/preprocessing/* $PREFIX/bin/
+ln -s  ${SCRIPT_DIR}/Project.toml  $PREFIX/bin/
+ln -s  ${SCRIPT_DIR}/config.yaml  $PREFIX/bin/
 
-
-chmod +x ${HAPNEST_SRC_DIR}
+chmod +x ${SCRIPT_DIR}
 
 #julia -e 'Pkg.init()'
 julia -e 'import Pkg; Pkg.add("Conda")'
