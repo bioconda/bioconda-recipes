@@ -12,25 +12,25 @@ ln -s "${GCC}" "${BUILD_PREFIX}/gcc"
 
 
 # Copy the required files to a shared directory
-SCRIPT_DIR=${PREFIX}/share/hapnest
-mkdir -p "${SCRIPT_DIR}"
-mkdir -p "${PREFIX}/bin"
-cp -r {commands,integrations,algorithms,evaluation,utils,optimisation,preprocessing,Project.toml,run_program.jl,config.yaml} "${SCRIPT_DIR}"
+#SCRIPT_DIR=${PREFIX}/share/hapnest
+mkdir -p ${PREFIX}/share/hapnest
+mkdir -p ${PREFIX}/bin
+cp -r {commands,integrations,algorithms,evaluation,utils,optimisation,preprocessing,Project.toml,run_program.jl,config.yaml} ${PREFIX}/share/hapnest
 
 
-ln -s  ${SCRIPT_DIR}/run_program.jl  $PREFIX/bin/
-ln -s  ${SCRIPT_DIR}/commands/* $PREFIX/bin/
-ln -s  ${SCRIPT_DIR}/algorithms/genotype/* $PREFIX/bin/
-ln -s  ${SCRIPT_DIR}/algorithms/phenotype/* $PREFIX/bin/
-ln -s  ${SCRIPT_DIR}/evaluation/* $PREFIX/bin/
-ln -s  ${SCRIPT_DIR}/integrations/gwas.jl  $PREFIX/bin/
-ln -s  ${SCRIPT_DIR}/utils/* $PREFIX/bin/
-ln -s  ${SCRIPT_DIR}/optimisation/* $PREFIX/bin/
-ln -s  ${SCRIPT_DIR}/preprocessing/* $PREFIX/bin/
-ln -s  ${SCRIPT_DIR}/Project.toml  $PREFIX/bin/
-ln -s  ${SCRIPT_DIR}/config.yaml  $PREFIX/bin/
+ln -sf  ${PREFIX}/share/hapnest/run_program.jl  $PREFIX/bin/
+ln -sf  ${PREFIX}/share/hapnest/commands/* $PREFIX/bin/
+ln -sf  ${PREFIX}/share/hapnest/algorithms/genotype/* $PREFIX/bin/
+ln -sf  ${PREFIX}/share/hapnest/algorithms/phenotype/* $PREFIX/bin/
+ln -sf  ${PREFIX}/share/hapnest/evaluation/* $PREFIX/bin/
+ln -sf  ${PREFIX}/share/hapnest/integrations/gwas.jl  $PREFIX/bin/
+ln -sf  ${PREFIX}/share/hapnest/utils/* $PREFIX/bin/
+ln -sf  ${PREFIX}/share/hapnest/optimisation/* $PREFIX/bin/
+ln -sf  ${PREFIX}/share/hapnest/preprocessing/* $PREFIX/bin/
+ln -sf  ${PREFIX}/share/hapnest/Project.toml  $PREFIX/bin/
+ln -sf  ${PREFIX}/share/hapnest/config.yaml  $PREFIX/bin/
 
-chmod +x ${SCRIPT_DIR}
+chmod +x ${PREFIX}/share/hapnest
 
 #julia -e 'Pkg.init()'
 julia -e 'import Pkg; Pkg.add("Conda")'
