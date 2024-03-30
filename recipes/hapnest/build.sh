@@ -19,14 +19,42 @@ cp -r {commands,integrations,algorithms,evaluation,utils,optimisation,preprocess
 
 
 ln -sf  ${PREFIX}/share/hapnest/run_program.jl  $PREFIX/bin/
-ln -sf  ${PREFIX}/share/hapnest/commands/* $PREFIX/bin/
-ln -sf  ${PREFIX}/share/hapnest/algorithms/genotype/* $PREFIX/bin/
-ln -sf  ${PREFIX}/share/hapnest/algorithms/phenotype/* $PREFIX/bin/
-ln -sf  ${PREFIX}/share/hapnest/evaluation/* $PREFIX/bin/
+
+#ln -sf  ${PREFIX}/share/hapnest/commands/* $PREFIX/bin/
+for file in ${PREFIX}/share/hapnest/commands/*; do
+    ln -sf $file $PREFIX/bin/
+done
+
+#ln -sf  ${PREFIX}/share/hapnest/algorithms/genotype/* $PREFIX/bin/
+for file in ${PREFIX}/share/hapnest/algorithms/genotype/*; do
+    ln -sf $file $PREFIX/bin/
+done
+
+#ln -sf  ${PREFIX}/share/hapnest/algorithms/phenotype/* $PREFIX/bin/
+for file in ${PREFIX}/share/hapnest/algorithms/phenotype/*; do
+    ln -sf $file $PREFIX/bin/
+done
+
+#ln -sf  ${PREFIX}/share/hapnest/evaluation/* $PREFIX/bin/
+for file in ${PREFIX}/share/hapnest/evaluation/*; do
+    ln -sf $file $PREFIX/bin/
+done
 ln -sf  ${PREFIX}/share/hapnest/integrations/gwas.jl  $PREFIX/bin/
-ln -sf  ${PREFIX}/share/hapnest/utils/* $PREFIX/bin/
-ln -sf  ${PREFIX}/share/hapnest/optimisation/* $PREFIX/bin/
-ln -sf  ${PREFIX}/share/hapnest/preprocessing/* $PREFIX/bin/
+
+#ln -sf  ${PREFIX}/share/hapnest/utils/* $PREFIX/bin/
+for file in ${PREFIX}/share/hapnest/utils/*; do
+    ln -sf $file $PREFIX/bin/
+done
+
+#ln -sf  ${PREFIX}/share/hapnest/optimisation/* $PREFIX/bin/
+for file in ${PREFIX}/share/hapnest/optimisation/*; do
+    ln -sf $file $PREFIX/bin/
+done
+
+#ln -sf  ${PREFIX}/share/hapnest/preprocessing/* $PREFIX/bin/
+for file in ${PREFIX}/share/hapnest/preprocessing/*; do
+    ln -sf $file $PREFIX/bin/
+done
 ln -sf  ${PREFIX}/share/hapnest/Project.toml  $PREFIX/bin/
 ln -sf  ${PREFIX}/share/hapnest/config.yaml  $PREFIX/bin/
 
