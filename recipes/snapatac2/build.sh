@@ -19,3 +19,5 @@ maturin build -m snapatac2-python/Cargo.toml -b pyo3 --interpreter "${PYTHON}" -
 
 # Install *.whl files using pip
 ${PYTHON} -m pip install snapatac2-python/target/wheels/*.whl --no-deps --no-build-isolation --no-cache-dir -vvv
+
+cargo clean && rm -rf ${BUILD_PREFIX}/.cargo
