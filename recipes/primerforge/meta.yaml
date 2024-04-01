@@ -1,0 +1,39 @@
+{% set name = "primerForge" %}
+{% set version = "0.7.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/dr-joe-wirth/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 6409887f69d20d7ec86609997f55c9df0ae1e5f3e890b0f9d6f95be97d9fbdc6
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  run_exports:
+    - {{ pin_subpackage('primerforge', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+  run:
+    - biopython
+    - matplotlib-base >=3.7
+    - numpy
+    - primer3-py >=2.0
+    - scipy >=1.10
+
+test:
+  commands:
+    - primerForge --help
+
+about:
+  home: https://github.com/dr-joe-wirth/{{ name }}
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary: "primerForge: software to identify primers that can be used to distinguish genomes"
