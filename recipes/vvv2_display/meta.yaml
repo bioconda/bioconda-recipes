@@ -7,37 +7,42 @@ package:
   version: {{ version }}
 
 source:
-  # git_rev: "0.1.10"
   url: https://github.com/ANSES-Ploufragan/vvv2_display/archive/refs/tags/{{version}}.tar.gz
   sha256: {{ sha256 }}
-  
+
 build:
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
   noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
 
 requirements:
   host:
     - pip
     - python >=3.9
-    - setuptools >=57.4.0
   run:
-    - pip
     - python >=3.9
-    - r-ggplot2 >=3.3.6
     - pysam >=0.19.1
     - numpy >=1.23.3
+    - r-ggplot2 >=3.4.4
+    - r-gridextra >=2.3
+    - r-cowplot >=1.1.1
+    - r-stringr >=1.5.1
+    - r-jsonlite >=1.8.8
 
 test:
   commands:
     - vvv2_display.py -h
 
 about:
-  home: https://github.com/ANSES_Ploufragan/vvv2_display/
+  home: https://github.com/ANSES-Ploufragan/vvv2_display/
   license: GPL-3.0-only
-  license_family: GPL
+  license_family: GPL3
   license_file: LICENSE
   summary: "Creates png image file with all [vardict] variants proportions along genome/assembly with annotations from [vadr]."
-  maintainer: FTouzain
+  dev_url: https://github.com/ANSES-Ploufragan/vvv2_display
+
+extra:
+  recipe-maintainers:
+    - FTouzain
