@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CMAKE_BUILD_PARALLEL_LEVEL=${CPU_COUNT}
+# export CMAKE_BUILD_PARALLEL_LEVEL=${CPU_COUNT}
 
 scratch=$(mktemp -d)
 export CONAN_HOME="$scratch/conan"
@@ -22,22 +22,20 @@ fi
 mkdir -p "$CONAN_HOME/profiles/"
 ln -s "${RECIPE_DIR}/conan_profiles/$conan_profile" "$CONAN_HOME/profiles/default"
 
+# explicitly set CMAKE_OSX_DEPLOYMENT_TARGET
+patch CMakeLists.txt < "${RECIPE_DIR}/CMakeLists.txt.patch"
+
 # Remove unnecessary dependencies from conanfile.txt
 patch conanfile.txt < "${RECIPE_DIR}/conanfile.txt.patch"
 
-# Install header-only deps
-conan install conanfile.txt \
-       --build="*" \
-       --output-folder=build/
+# Build hictkpy as a shared library
+patch pyproject.toml < "${RECIPE_DIR}/pyproject.toml.patch"
 
-CMAKE_ARGS="-DCMAKE_PREFIX_PATH=$PWD/build"
-CMAKE_ARGS+=" ${CMAKE_PLATFORM_FLAGS[*]}"
 CMAKE_ARGS+=" -DPython_EXECUTABLE=$PYTHON"
 
 echo "$CMAKE_ARGS"
 export CMAKE_ARGS
 
-HICTKPY_SETUP_SKIP_CONAN=1 \
 SETUPTOOLS_SCM_PRETEND_VERSION="$PKG_VERSION" \
 "$PYTHON" -m pip install "$SRC_DIR" -vv
 
