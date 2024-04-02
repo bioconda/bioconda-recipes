@@ -1,17 +1,17 @@
-name: Upload (osx-arm64)
+name: PR (osx-arm64)
 on:
-  push:
-    branches:
-      - target-for-arm-osx
-
+  pull_request:
+    types: [opened, synchronize, reopened]
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.head_ref }}
+  cancel-in-progress: true
 jobs:
-  build-upload-osx-arm:
-    name: osx-arm64 Upload
-    if: github.repository == 'bioconda/bioconda-recipes'
+  build-osx-arm:
+    name: osx-arm64 Tests
     runs-on: macOS-14 # M1
     strategy:
-      fail-fast: false
-      max-parallel: 4
+      fail-fast: true
+      max-parallel: 13
     steps:
       - uses: actions/checkout@v4
         with:
@@ -20,7 +20,7 @@ jobs:
       # TODO: bail if there's no osx-arm64 recipes
       # - run:
       #     name: Check for Additional Platforms
-      #     command: ./.circleci/check-for-additional-platforms.sh "${CIRCLE_SHA1}~1 ${CIRCLE_SHA1}" "build_and_upload"
+      #     command: ./.circleci/check-for-additional-platforms.sh "origin/master...HEAD" "build_and_test"
 
       - name: set path
         run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
@@ -49,13 +49,8 @@ jobs:
       - name: Configure conda
         run: bash configure-conda.sh
 
-      - name: Build and Upload
+      - name: Build and Test
         env:
-          QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
-          QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
-          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-          INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Mimic circleci
           OSTYPE: "darwin"
           CI: "true"
@@ -67,13 +62,36 @@ jobs:
           # Use SDK with arm64 support
           export MACOSX_DEPLOYMENT_TARGET=11.0
 
+          # Clean up lingering build artifacts
+          rm -f /opt/mambaforge/envs/bioconda/conda-bld/osx-arm64/*.tar.bz2
+
           # The SDK isn't actually cached, so reinstall it
           run_conda_forge_build_setup
 
-          bioconda-utils handle-merged-pr recipes config.yml \
-            --repo bioconda/bioconda-recipes \
-            --git-range ${GITHUB_SHA}~1 ${GITHUB_SHA} \
-            --fallback build \
-            --artifact-source github-actions \
-            --dryrun
-          # TODO: remove dry-run after testing
+          if [ -z "$GITHUB_BASE_REF" ] ; then
+              export GITHUB_BASE_REF="master"
+          fi
+          git fetch origin "$GITHUB_BASE_REF"
+
+          bioconda-utils build recipes config.yml \
+            --lint \
+            --git-range origin/"$GITHUB_BASE_REF" HEAD
+
+      - name: Prepare artifacts
+        run: |
+              (
+              rm -rf /tmp/artifacts
+              mkdir -p /tmp/artifacts/packages
+              cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
+              find -name .cache | xargs rm -rf || true
+              for n in index.html channeldata.json osx-arm64 noarch; do
+                cp -rv $n /tmp/artifacts/packages || true
+              done
+              ) || true
+
+      - name: Archive packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: osx-arm64-packages
+          path: |
+            /tmp/artifacts
