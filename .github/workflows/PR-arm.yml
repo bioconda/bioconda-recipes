@@ -23,33 +23,17 @@ jobs:
         run: ./.github/check-for-additional-platforms.sh "origin/master...HEAD" "build_and_test"
 
       - name: set path
-        run: |
-          mkdir -p /opt/mambaforge
-          echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
 
       - name: Fetch conda install script
         if: steps.additional_platforms.outputs.skip_build != 'true'
         run: |
           wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
 
-      - name: Restore cache
-        id: cache
-        if: steps.additional_platforms.outputs.skip_build != 'true'
-        uses: actions/cache@v4
-        with:
-          path: /opt/mambaforge
-          key: ${{ runner.os }}-arm64--master--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
-
       - name: Set up bioconda-utils
-        if: steps.cache.outputs.cache-hit != 'true' && steps.additional_platforms.outputs.skip_build != 'true'
+        if: steps.additional_platforms.outputs.skip_build != 'true'
         run: bash install-and-set-up-conda.sh
 
-      # This script can be used to reconfigure conda to use the right channel setup.
-      # This has to be done after the cache is restored, because
-      # the channel setup is not cached as it resides in the home directory.
-      # We could use a system-wide (and therefore cached) channel setup,
-      # but mamba does not support that at the time of implementation
-      # (it ignores settings made with --system).
       - name: Configure conda
         if: steps.additional_platforms.outputs.skip_build != 'true'
         run: bash configure-conda.sh
