@@ -24,7 +24,7 @@ for file in $files; do
     # variable setting with {% %} and remove variable use with {{ }}.
     additional_platforms=$(cat $file \
     | sed -E 's/(.*)\{%(.*)%\}(.*)/# \1\2\3/g' \
-    | sed -E 's/(.*)\{\{(.*)\}\}(.*)/\1\2\3/g' \
+    | tr -d '{{' | tr -d '}}' \
     | yq '.extra.additional-platforms[]')
     # Check if any additional platforms match this job
     for additional_platform in $additional_platforms; do
