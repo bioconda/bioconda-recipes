@@ -1,7 +1,10 @@
 #!/bin/bash
 
-export C_INCLUDE_PATH=${PREFIX}/include
+export C_INCLUDE_PATH=${PREFIX}/include;${BUILD_PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
+
+export CFLAGS="-I$BUILD_PREFIX/include"
+export LDFLAGS="-L$BUILD_PREFIX/lib"
 
 make CXX=$CXX CPP=$CXX CC=$CC
 #CFLAGS="${CFLAGS} -fcommon"
