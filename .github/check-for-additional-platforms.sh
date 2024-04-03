@@ -32,6 +32,7 @@ for file in $files; do
     for additional_platform in $additional_platforms; do
     if [ "${GITHUB_JOB}" = "${job_name}-${additional_platform}" ]
     then
+        echo "Found at least one recipe for ${job_name}-${additional_platform}"
         build=1
         break
     fi
