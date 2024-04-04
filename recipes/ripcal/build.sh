@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Extracting the downloaded ZIP archive
-unzip ${SRC_DIR}/{{ name }}_install.zip -d ${SRC_DIR}/ripcal2
-
 # Creating necessary directories
 mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/share/{{ name }}
