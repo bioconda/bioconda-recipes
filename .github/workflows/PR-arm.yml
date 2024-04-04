@@ -6,8 +6,8 @@ concurrency:
   group: build-${{ github.event.pull_request.number || github.head_ref }}
   cancel-in-progress: true
 jobs:
-  build-osx-arm:
-    name: osx-arm64 Tests
+  build_and_test-osx-arm64:
+    name: build_and_test-osx-arm64
     runs-on: macOS-14 # M1
     strategy:
       fail-fast: true
@@ -17,39 +17,29 @@ jobs:
         with:
           fetch-depth: 0
 
-      # TODO: bail if there's no osx-arm64 recipes
-      # - run:
-      #     name: Check for Additional Platforms
-      #     command: ./.circleci/check-for-additional-platforms.sh "origin/master...HEAD" "build_and_test"
+      # bail if there's no osx-arm64 recipes
+      - name: Check for Additional Platforms
+        id: additional_platforms
+        run: ./.github/check-for-additional-platforms.sh "origin/master...HEAD" "build_and_test"
 
       - name: set path
         run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
 
       - name: Fetch conda install script
+        if: steps.additional_platforms.outputs.skip_build != 'true'
         run: |
           wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
 
-      - name: Restore cache
-        id: cache
-        uses: actions/cache@v4
-        with:
-          path: /opt/mambaforge
-          key: ${{ runner.os }}--master--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
-
       - name: Set up bioconda-utils
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.additional_platforms.outputs.skip_build != 'true'
         run: bash install-and-set-up-conda.sh
 
-      # This script can be used to reconfigure conda to use the right channel setup.
-      # This has to be done after the cache is restored, because
-      # the channel setup is not cached as it resides in the home directory.
-      # We could use a system-wide (and therefore cached) channel setup,
-      # but mamba does not support that at the time of implementation
-      # (it ignores settings made with --system).
       - name: Configure conda
+        if: steps.additional_platforms.outputs.skip_build != 'true'
         run: bash configure-conda.sh
 
       - name: Build and Test
+        if: steps.additional_platforms.outputs.skip_build != 'true'
         env:
           # Mimic circleci
           OSTYPE: "darwin"
@@ -78,6 +68,7 @@ jobs:
             --git-range origin/"$GITHUB_BASE_REF" HEAD
 
       - name: Prepare artifacts
+        if: steps.additional_platforms.outputs.skip_build != 'true'
         run: |
               (
               rm -rf /tmp/artifacts
@@ -90,6 +81,7 @@ jobs:
               ) || true
 
       - name: Archive packages
+        if: steps.additional_platforms.outputs.skip_build != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: osx-arm64-packages

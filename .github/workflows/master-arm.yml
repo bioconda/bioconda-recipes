@@ -1,12 +1,12 @@
-name: Upload
+name: Upload (osx-arm64)
 on:
   push:
     branches:
-      - target-for-arm-osx
-jobs:
+      - master
 
-  build-upload-osx-arm:
-    name: osx-arm64 Upload
+jobs:
+  build_and_upload-osx-arm64:
+    name: build_and_upload-osx-arm64
     if: github.repository == 'bioconda/bioconda-recipes'
     runs-on: macOS-14 # M1
     strategy:
@@ -17,39 +17,30 @@ jobs:
         with:
           fetch-depth: 0
 
-      # TODO: bail if there's no osx-arm64 recipes
-      # - run:
-      #     name: Check for Additional Platforms
-      #     command: ./.circleci/check-for-additional-platforms.sh "${CIRCLE_SHA1}~1 ${CIRCLE_SHA1}" "build_and_upload"
+      # bail if there's no osx-arm64 recipes
+      - name: Check for Additional Platforms
+        id: additional_platforms
+        run: ./.github/check-for-additional-platforms.sh "${GITHUB_SHA}~1 ${GITHUB_SHA}" "build_and_upload"
 
       - name: set path
-        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+        run: |
+          echo "/opt/mambaforge/bin" >> $GITHUB_PATH
 
       - name: Fetch conda install script
+        if: steps.additional_platforms.outputs.skip_build != 'true'
         run: |
           wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
 
-      - name: Restore cache
-        id: cache
-        uses: actions/cache@v4
-        with:
-          path: /opt/mambaforge
-          key: ${{ runner.os }}--master--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
-
       - name: Set up bioconda-utils
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.additional_platforms.outputs.skip_build != 'true'
         run: bash install-and-set-up-conda.sh
 
-      # This script can be used to reconfigure conda to use the right channel setup.
-      # This has to be done after the cache is restored, because
-      # the channel setup is not cached as it resides in the home directory.
-      # We could use a system-wide (and therefore cached) channel setup,
-      # but mamba does not support that at the time of implementation
-      # (it ignores settings made with --system).
       - name: Configure conda
+        if: steps.additional_platforms.outputs.skip_build != 'true'
         run: bash configure-conda.sh
 
       - name: Build and Upload
+        if: steps.additional_platforms.outputs.skip_build != 'true'
         env:
           QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
           QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
@@ -74,6 +65,4 @@ jobs:
             --repo bioconda/bioconda-recipes \
             --git-range ${GITHUB_SHA}~1 ${GITHUB_SHA} \
             --fallback build \
-            --artifact-source github-actions \
-            --dry-run
-          # TODO: remove dry-run after testing
+            --artifact-source github-actions
