@@ -1,16 +1,12 @@
 #!/bin/bash
 
 # Creating necessary directories
-mkdir -p ${PREFIX}/bin
-mkdir -p ${PREFIX}/share/{{ name }}
+mkdir -p "${PREFIX}/bin"
 
 # Copying executable files to bin directory
-cp ${SRC_DIR}/perl/* ${PREFIX}/bin/
-
-# Copying manual PDF to share directory
-cp ${SRC_DIR}/RIPCAL_manual_v1_0.pdf ${PREFIX}/share/{{ name }}/
+cp "${SRC_DIR}/perl/*" "${PREFIX}/bin/"
 
 # Fixing permissions
-chmod +x ${PREFIX}/bin/deripcal
-chmod +x ${PREFIX}/bin/ripcal
-chmod +x ${PREFIX}/bin/ripcal_summarise
+chmod +x "${PREFIX}/bin/deripcal"
+chmod +x "${PREFIX}/bin/ripcal"
+chmod +x "${PREFIX}/bin/ripcal_summarise"
