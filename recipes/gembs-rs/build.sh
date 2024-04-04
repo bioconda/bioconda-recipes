@@ -2,8 +2,9 @@ pwd
 ls -ahl
 cd rust
 pwd
-ls -ahl /opt/conda/conda-bld/gembs-rs_1712213138947/work/rust/gemBS/
 ls -ahl
+echo $SRC_DIR
+ls -ahl $SRC_DIR/rust
 cargo build --release
 cp target/release/gem_bs $prefix/bin/gemBS
 cp target/release/read_filter $prefix/bin/
