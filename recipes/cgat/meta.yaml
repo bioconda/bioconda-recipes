@@ -1,0 +1,46 @@
+{% set name = "cgat" %}
+{% set version = "0.7.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cgat-{{ version }}.tar.gz
+  sha256: ba89a4208f8417e407a6ce967a0f186b42f89f105c6f892b08e11c385bb4aa74
+
+build:
+  number: 0
+  entry_points:
+    - cgat = cgat.cgat:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('cgat', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - python
+    - cython
+    - pysam
+    - ez_setup
+    - numpy
+    - pip
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+
+test:
+  imports:
+    - cgat
+  commands:
+    - cgat --help
+
+about:
+  home: http://www.cgat.org/cgat/Tools/
+  summary: 'cgat: The Computational Genomics Analysis Toolkit'
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
