@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Install both the pairix binaries and the Python extension module
-export INCLUDES="${PREFIX}/include"
-export LIBPATH="${PREFIX}/lib"
+export INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 make CC="${CC} ${LDFLAGS}" CFLAGS="${CFLAGS} -O3"
