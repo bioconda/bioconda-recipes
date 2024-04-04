@@ -5,10 +5,10 @@ mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/share/{{ name }}
 
 # Copying executable files to bin directory
-cp ${SRC_DIR}/ripcal2/perl/* ${PREFIX}/bin/
+cp ${SRC_DIR}/ripcal2_install/perl/* ${PREFIX}/bin/
 
 # Copying manual PDF to share directory
-cp ${SRC_DIR}/RIPCAL_manual_v1_0.pdf ${PREFIX}/share/{{ name }}/
+cp ${SRC_DIR}/ripcal2_install/RIPCAL_manual_v1_0.pdf ${PREFIX}/share/{{ name }}/
 
 # Fixing permissions
 chmod +x ${PREFIX}/bin/deripcal
