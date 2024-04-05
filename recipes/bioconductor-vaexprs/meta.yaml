@@ -1,0 +1,56 @@
+{% set version = "1.8.0" %}
+{% set name = "VAExprs" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 6f9ed6eba476abd7908d6849381b545c
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-vaexprs", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: SC3, knitr, testthat, reticulate, rmarkdown
+requirements:
+  host:
+    - 'bioconductor-deeppincs >=1.10.0,<1.11.0'
+    - 'bioconductor-scater >=1.30.0,<1.31.0'
+    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - r-base
+    - r-catencoders
+    - r-diagrammer
+    - r-keras
+    - r-mclust
+    - r-purrr
+    - r-tensorflow
+  run:
+    - 'bioconductor-deeppincs >=1.10.0,<1.11.0'
+    - 'bioconductor-scater >=1.30.0,<1.31.0'
+    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - r-base
+    - r-catencoders
+    - r-diagrammer
+    - r-keras
+    - r-mclust
+    - r-purrr
+    - r-tensorflow
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'Generating Samples of Gene Expression Data with Variational Autoencoders'
+  description: 'A fundamental problem in biomedical research is the low number of observations, mostly due to a lack of available biosamples, prohibitive costs, or ethical reasons. By augmenting a few real observations with artificially generated samples, their analysis could lead to more robust and higher reproducible. One possible solution to the problem is the use of generative models, which are statistical models of data that attempt to capture the entire probability distribution from the observations. Using the variational autoencoder (VAE), a well-known deep generative model, this package is aimed to generate samples with gene expression data, especially for single-cell RNA-seq data. Furthermore, the VAE can use conditioning to produce specific cell types or subpopulations. The conditional VAE (CVAE) allows us to create targeted samples rather than completely random ones.'
+

@@ -5,7 +5,7 @@ cat > "${PREFIX}"/.messages.txt <<- EOF
     ##############################################################################
     #                                                                            #
     #   Note: while Conda has installed AMPtk and all of its depenencies that    #
-    #      it can, you will still need to download the usearch9 and usearch10    #
+    #      it can, (as of v1.5 usearch is optional) to use usearch               #
     #      binaries and make sure they are in your PATH. They should be          #
     #      softlinked to usearch9 and usearch10 respectively, i.e.               #
     #                                                                            #

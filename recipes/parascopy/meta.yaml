@@ -1,0 +1,69 @@
+{% set name = "parascopy" %}
+{% set version = "1.15.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True  # [osx or py2k]
+  entry_points:
+    - parascopy=parascopy.entry_point:main
+  run_exports:
+    - {{ pin_subpackage('parascopy', max_pin="x") }}
+
+source:
+  url: https://github.com/tprodanov/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 4e588ccefb63694f0cc434d92ad45999425dc4dfd168c37155d14d9cf249c4d4
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - meson
+    - ninja
+    - pkg-config
+  host:
+    - python
+    - pip
+    - bzip2
+    - zlib
+    - htslib
+    - tabixpp
+  run:
+    - python
+    - zlib
+    - numpy >=1.15
+    - scipy >=1.5
+    - pysam >=0.17
+    - simpleeval >=0.9
+    - parasail-python >=1.2
+    - biopython >=1.70
+    - samtools >=1.11
+    - bwa >=0.7
+    - intervaltree >=3.0
+    - tabixpp
+    - construct
+
+test:
+  commands:
+    - parascopy help
+    - parascopy pretable --version
+    - parascopy table --version
+    - parascopy depth --version
+    - parascopy cn --version
+    - parascopy cn-using --version
+    - parascopy pool --version
+    - parascopy view --version
+    - parascopy psvs --version
+    - parascopy msa --version
+    - parascopy call --version
+    - _parascopy_freebayes --version
+
+about:
+  home: https://github.com/tprodanov/parascopy
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Calling paralog-specific copy number and sequence variants in duplicated genes using short-read whole-genome sequencing.

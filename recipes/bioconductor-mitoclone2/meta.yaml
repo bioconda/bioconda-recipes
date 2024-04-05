@@ -1,0 +1,59 @@
+{% set version = "1.8.1" %}
+{% set name = "mitoClone2" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 22c58ba6ed0a51f10714551935477355
+  patches:
+    - gamma.patch
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-mitoclone2", max_pin="x.x") }}'
+# Suggests: knitr, rmarkdown, Biostrings, testthat
+# SystemRequirements: GNU make, PhISCS (optional)
+requirements:
+  host:
+    - 'bioconductor-deepsnv >=1.48.0,<1.49.0'
+    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
+    - 'bioconductor-rhtslib >=2.4.0,<2.5.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - r-base
+    - r-ggplot2
+    - r-pheatmap
+    - r-reshape2
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-deepsnv >=1.48.0,<1.49.0'
+    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
+    - 'bioconductor-rhtslib >=2.4.0,<2.5.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - r-base
+    - r-ggplot2
+    - r-pheatmap
+    - r-reshape2
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Clonal Population Identification in Single-Cell RNA-Seq Data using Mitochondrial and Somatic Mutations'
+  description: 'This package primarily identifies variants in mitochondrial genomes from BAM alignment files. It filters these variants to remove RNA editing events then estimates their evolutionary relationship (i.e. their phylogenetic tree) and groups single cells into clones. It also visualizes the mutations and providing additional genomic context.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

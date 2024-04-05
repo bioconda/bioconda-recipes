@@ -1,52 +1,48 @@
-{% set version = "1.5.4" %}
-{% set archive_base = "https://github.com/marbl/parsnp/archive" %}
-{% set sha256sourcearchive = "614b3f84c9bc212a1ba066bd1bf83daf45b3e4fe499b7ac57db49b0f5304514b" %}
+{% set version = "2.0.4" %}
 
 package:
   name: parsnp
   version: '{{version}}'
 
 source:
-  url: "{{archive_base}}/v{{version}}.tar.gz"  
-  sha256: "{{sha256sourcearchive}}"
+  url: "https://github.com/marbl/parsnp/archive/refs/tags/v{{version}}.tar.gz"
+  sha256: 04993dcb60034d3c9188fbbbbd6c8209760d1e0d0b0b3efc6458479965ea31b0
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage('parsnp', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - automake ==1.15
+    - automake
     - autoconf
     - libtool
     - make
-    - openmp
-    - llvm-openmp # [osx]
   host:
     - zlib
     - llvm-openmp  # [osx]
-    - openmp
+    - openmp  # [linux]
   run:
+    - python >=3.7
     - llvm-openmp  # [osx]
-    - openmp
-    - harvesttools
-    - fasttree
-    - phipack
+    - openmp  # [linux]
+    - biopython
     - numpy
     - zlib
     - phipack
     - raxml
     - fasttree
-    - fastani
+    - fastani 
     - mash
     - harvesttools
+    - pyspoa
+    - tqdm
 
 about:
   home: https://github.com/marbl/parsnp
   license: "custom; see https://raw.githubusercontent.com/marbl/parsnp/master/LICENSE"
   summary: Parsnp is a command-line-tool for efficient microbial core genome alignment and SNP detection.
-
-extra:
-  skip-lints:
-    - should_be_noarch_generic
-    - should_not_be_noarch_source
+  doc_url: "https://harvest.readthedocs.io/en/latest/content/parsnp/tutorial.html"
+  dev_url: https://github.com/marbl/parsnp

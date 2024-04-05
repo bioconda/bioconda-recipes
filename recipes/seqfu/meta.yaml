@@ -1,38 +1,46 @@
 {% set name = "seqfu" %}
-{% set version = "0.8.12" %}
-{% set sha256 = "ca5716662ce7688799a3c744a1873df1917f45645d1da17a84f5e0d6cc291e93" %}
+{% set version = "1.20.3" %}
+{% set sha256 = "1b287b99f3f1ac7045f4d551e781d6780ce168ba8e0a7bfaa0f5490f32e15938" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/telatin/{{ name }}2/archive/v{{ version }}.tar.gz
+  url: https://github.com/telatin/{{ name }}2/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - nim
+    - {{ compiler('cxx') }}
+    - nim >=2.0.0
+    - make
+    - zlib
   host:
+    - zlib
+    - pcre
+  run:
     - zlib
     - pcre
     
 test:
   commands:
-    - seqfu --help
+    - seqfu
     - seqfu stats --help
-    - "seqfu  --version | grep 'version: {{ version }}'"
-
-
+    - seqfu --version
+    - "seqfu --version | grep '{{ version }}'"
 
 about:
   home: https://github.com/telatin/seqfu2/
   docs: https://telatin.github.io/seqfu2
-  license: mit
+  license: GPL-3.0-only
+  license_file: LICENSE
   summary: 'DNA sequence utilities'
   description: |
     A collection of utilities to work with FASTX (FASTA or FASTQ) files
@@ -40,5 +48,8 @@ about:
     Tools to interleave and deinterleave, to calculate stats, and extract
     portions of sequence datasets.
 extra:
+  recipe-maintainers:
+    - telatin
   identifiers:
     - biotools:{{ name }}
+    - doi:10.3390/bioengineering8050059

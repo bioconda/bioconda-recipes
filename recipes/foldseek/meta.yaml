@@ -1,0 +1,57 @@
+{% set version = "8-ef4e960" %}
+{% set sha256 = "c74d02c4924d20275cc567783b56fff10e76ed67f3d642f53c283f67c4180a1e" %}
+
+package:
+  name: foldseek
+  version: {{ version|replace("-", ".")  }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('foldseek', max_pin="x") }}
+
+source:
+  url: https://github.com/steineggerlab/foldseek/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cmake
+    - make
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
+    - perl
+    - gawk
+    - zlib
+    - bzip2
+  run:
+    - aria2
+    - wget
+    - gawk
+    - zlib
+    - bzip2
+
+test:
+  commands:
+    - foldseek > /dev/null
+
+about:
+  home: https://github.com/steineggerlab/foldseek
+  summary: "Foldseek: fast and accurate protein structure search"
+  license: GPL-3
+  license_family: GPL
+  license_file: LICENSE.md 
+
+extra:
+  identifiers:
+    - doi:10.1038/s41587-023-01773-0
+    - biotools:foldseek
+  recipe-maintainers:
+    - milot-mirdita
+    - martin-steinegger
+  additional-platforms:
+    - linux-aarch64

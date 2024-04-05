@@ -1,0 +1,61 @@
+{% set name = "mindagap" %}
+{% set version = "0.0.2" %}
+{% set sha256 = "7b8f74ae8424edcb7b6b78c9b12a354ca5276cf22f4e3d4ad8343671f301d8e6" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/ViriatoII/{{ name }}/archive/refs/tags/{{ version }}.tar.gz"
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  noarch: python
+  script: "mkdir -p $PREFIX/bin && sed -i '1i #!/usr/bin/env python' $SRC_DIR/*.py && chmod +x $SRC_DIR/*.py && cp $SRC_DIR/* $PREFIX/bin/"
+
+requirements:
+  host:
+  - python ==3.9.13
+  - pip
+  - xorg-libxfixes
+
+  build:
+  - python ==3.9.13
+  - {{ cdt('mesa-libgl-devel') }}  # [linux]
+  - {{ cdt('mesa-dri-drivers') }}  # [linux]
+  - {{ cdt('libselinux') }}  # [linux]
+  - {{ cdt('libxdamage') }}  # [linux]
+  - {{ cdt('libxxf86vm') }}  # [linux]
+
+  run:
+  - python ==3.9.13
+  - mesa-libgl-cos7-x86_64
+  - scipy
+  - numpy
+  - matplotlib-base
+  - tifffile
+  - opencv
+  - libopencv
+  - py-opencv 
+  - rich
+  - procps-ng
+  - pandas
+
+test:
+  commands:
+    - mindagap.py -v test
+
+about:
+  home: "https://github.com/ViriatoII/MindaGap"
+  license: BSD 3-Clause License
+  license_file: LICENSE
+  summary: "Takes a single panorama image and fills the empty grid lines with neighbour-weighted values."
+  doc_url: https://github.com/ViriatoII/MindaGap/blob/main/README.md
+
+extra:
+  container:
+    extended-base: true
+  recipe-maintainers:
+    - FloWuenne

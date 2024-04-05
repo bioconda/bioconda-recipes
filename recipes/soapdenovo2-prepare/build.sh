@@ -7,7 +7,7 @@ if [[ ${target_platform} == osx.* ]]; then
     export CPPFLAGS="${CPPFLAGS} -Qunused-arguments"
 fi
 
-make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+make CC="${CC} -fcommon ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
 install -d "${PREFIX}/bin"
 install finalFusion "${PREFIX}/bin/"

@@ -1,0 +1,41 @@
+{% set name = "pbtk" %}
+{% set version = "3.1.1" %}
+{% set sha256 = "4dbe08d880a4b54d7c84ecdf9849feead71ac5330277a66f57a2915447169814" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PacificBiosciences/pbtk/releases/download/v{{ version }}/pbtk.tar.gz
+  sha256: {{ sha256 }}
+
+about:
+  home: https://github.com/PacificBiosciences/pbbioconda
+  license: BSD-3-Clause-Clear
+  summary: pbtk - PacBio BAM toolkit
+
+extra:
+  recipe-maintainers:
+    - armintoepfer
+    - pb-dseifert
+  skip-lints:
+    #repackaged binary
+    - should_be_noarch_generic
+
+build:
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('pbtk', max_pin='x.x') }}
+
+test:
+  commands:
+    - bam2fasta -h
+    - bam2fastq -h
+    - ccs-kinetics-bystrandify -h
+    - extracthifi -h
+    - pbindex -h
+    - pbindexdump -h
+    - pbmerge -h
+    - zmwfilter -h

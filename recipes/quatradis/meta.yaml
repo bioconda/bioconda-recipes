@@ -1,0 +1,70 @@
+{% set version="1.2.0" %}
+
+package:
+  name: quatradis
+  version: {{ version }}
+
+source:
+  url: https://github.com/quadram-institute-bioscience/QuaTradis/archive/refs/tags/{{ version }}.tar.gz
+  sha256: f6595d8f69f98a99818fcc3c7797533e663271cfe477c8c3c9c961416c21deb5
+
+build:
+  number: 0
+  script: python -m pip install -v --no-deps --ignore-installed .
+  run_exports:
+    - {{ pin_subpackage('quatradis', max_pin="x.x") }}
+    
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python =3.10
+    - cython >=0.20.1
+    - pip
+  run:
+    - python =3.10
+    - cython
+    - setuptools  # for pkg_resources
+    - biopython
+    - pysam >=0.18.0
+    - matplotlib-base
+    - numpy
+    - scipy
+    - dendropy
+    - seaborn
+    - graphviz
+    - python-graphviz
+    - pandas
+    - htslib
+    - smalt
+    - r-base
+    - r-getopt
+    - r-mass
+    - bwa
+    - samtools
+    - minimap2
+    - snakemake
+    - snakeviz
+        
+test:
+  commands:
+    - tradis --help
+
+about:
+  home: https://github.com/quadram-institute-bioscience/QuaTradis
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: 'A set of tools to analyse the output from TraDIS analyses'
+
+extra:
+  skip-lints:
+    - uses_setuptools  # uses pkg_resources
+    # Uses pyximport
+    - cython_must_be_in_host
+  recipe-maintainers:
+    - sbastkowski
+    - maplesond
+    - thanhleviet
+  doi:
+    - 10.1093/bioinformatics/btw022

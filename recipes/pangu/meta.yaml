@@ -1,0 +1,47 @@
+{% set version = "0.2.7" %}
+{% set sha256 = "5b0cf818d9bc7a60a6da752ac8bd7ca028aaa382bcf6d622b1d3856da53928a1" %}
+
+package:
+  name: pangu
+  version: {{ version }}
+
+source:
+  url: https://github.com/PacificBiosciences/pangu/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - pangu = pangu.__main__:main_cli
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation -vvv .
+  run_exports:
+    - {{ pin_subpackage('pangu', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - setuptools
+    - pip
+  run:
+    - python >=3.9
+    - pysam >=0.19.1
+    - pyyaml
+    - numpy >=1.23.3
+    - pandas >=1.5.0
+    - scipy
+    - scikit-learn
+    - mappy >=2.24
+
+test:
+  commands:
+    - pangu -h
+
+about:
+  home: https://github.com/PacificBiosciences/pangu
+  license: BSD-3-Clause-Clear
+  summary: CYP2D6 PGx caller for PacBio HiFi Data
+
+extra:
+  recipe-maintainers:
+    - jrharting

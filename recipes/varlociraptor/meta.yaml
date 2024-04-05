@@ -1,4 +1,4 @@
-{% set version = "2.6.5" %}
+{% set version = "8.4.6" %}
 
 package:
   name: varlociraptor
@@ -6,25 +6,22 @@ package:
 
 build:
   number: 0
-  # Skipping macOS builds due to unresolved linking error:
-  #  Undefined symbols for architecture x86_64:
-  #    "_SSLCopyALPNProtocols", referenced from:
-  #        _sectransp_connect_step2 in libcurl_sys-c372a728cc50d01a.rlib(sectransp.o)
-  #    "_SSLSetALPNProtocols", referenced from:
-  #        _sectransp_connect_common in libcurl_sys-c372a728cc50d01a.rlib(sectransp.o)
-  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage("varlociraptor", max_pin="x") }}
 
 source:
   url: https://github.com/varlociraptor/varlociraptor/archive/v{{ version }}.tar.gz
-  sha256: 4dfa9475a6649259b21f2b9469caee159a5bed7b5a0c2d1c132d4c5e3e6a1c24
+  sha256: b734b322a6ff96ba5f074947505bce0166907afd448350731c9eb1dd453a5311
 
 requirements:
   build:
-    - rust >=1.30
-    - clangdev
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - rust >=1.54
     - pkg-config
+    - make
+    - cmake
   host:
     - gsl
     - libcblas

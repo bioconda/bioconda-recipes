@@ -10,7 +10,8 @@ ls -larth
 ls -larth bin/
 
 #mkdir -p $PREFIX
+chmod --recursive a+x bin/
 cp -Rf bin ${PREFIX}
-chmod -R a+x ${PREFIX}/bin
+#chmod -R a+x ${PREFIX}/bin
 
 cp -Rf etc ${PREFIX}

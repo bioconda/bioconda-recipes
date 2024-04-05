@@ -13,12 +13,13 @@ if [[ ${HOST} =~ .*darwin.* ]]; then
 fi
 
 cmake -DGSL_LIBRARIES=${PREFIX}/include \
-			-DCMAKE_BUILD_TYPE=Release \
-			-DCMAKE_INSTALL_PREFIX=$PREFIX \
-			-DCMAKE_PREFIX_PATH=$PREFIX \
-			-DCMAKE_CXX_COMPILER_RANLIB=${RANLIB} \
-			${DCMAKE} \
-			.
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_INSTALL_PREFIX=$PREFIX \
+      -DCMAKE_BOOST_ROOT=$PREFIX \
+      -DCMAKE_PREFIX_PATH=$PREFIX \
+      -DCMAKE_CXX_COMPILER_RANLIB=${RANLIB} \
+      ${DCMAKE} \
+      .
 
 make -j${CPU_COUNT}
 

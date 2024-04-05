@@ -1,0 +1,60 @@
+{% set name = "learnMSA" %}
+{% set version = "2.0.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 1f1322d33a83358b989cf26569865cd89235abfecce743aab62c8b8fe3681a51
+
+build:
+  number: 0
+  entry_points:
+    - learnMSA = learnMSA.run:run_main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('learnmsa', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.9
+  run:
+    - logomaker
+    - networkx
+    - seaborn
+    - python >=3.9
+    - tensorflow >=2.7.0,<2.11
+    - tensorflow-probability <=0.18.0
+    - biopython >=1.69
+    - pyfamsa
+    - transformers
+    - imageio
+    - sentencepiece
+
+test:
+  imports:
+    - learnMSA
+    - learnMSA.msa_hmm
+    - learnMSA.protein_language_models
+    - learnMSA.run
+  commands:
+    - learnMSA --help
+
+about:
+  home: "https://github.com/Gaius-Augustus/learnMSA"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.md
+  summary: "learnMSA: Learning and Aligning large Protein Families"
+  dev_url: https://github.com/Gaius-Augustus/learnMSA
+
+extra:
+  recipe-maintainers:
+    - felbecker
+  identifiers:
+    - doi:10.1093/gigascience/giac104
+    - biotools:learnMSA

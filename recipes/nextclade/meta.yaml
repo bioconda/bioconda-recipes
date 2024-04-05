@@ -1,0 +1,48 @@
+{% set name = "nextclade" %}
+{% set version = "3.3.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-x86_64-unknown-linux-gnu   # [linux64]
+    sha256: 9eecdb2e56362d24cfedb510b236f2054c3d02264f3ca7e8c586fe234d25e2f2                                           # [linux64]
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-aarch64-unknown-linux-gnu  # [aarch64]
+    sha256: 63b38aac186b9b9776761bb1a321b87382044d01c17e6b4a2ba76ca614d04ed1                                           # [aarch64]
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-x86_64-apple-darwin        # [osx and x86_64]
+    sha256: 330ad12cd1bb20429f49fd00bcd773c453b66662842913ec35bc9e288ab3db2a                                           # [osx and x86_64]
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-aarch64-apple-darwin       # [osx and arm64]
+    sha256: b95e2ed966b08dbd481fe48d7aa1019a748d29ef330daad4773d1c98e6b007ba                                           # [osx and arm64]
+
+build:
+  number: 1
+  binary_relocation: False
+  run_exports:
+  - {{ pin_compatible(name, max_pin='x') }}
+
+requirements:
+
+# Disable test for aarch64, as nextclade requires glibc 2.18 not available on aarch64
+test:
+  commands:
+    - nextclade --help  # [not aarch64]
+
+about:
+  home: https://github.com/nextstrain/nextclade
+  license: MIT
+  license_family: MIT
+  summary: "Viral genome alignment, mutation calling, clade assignment, quality checks and phylogenetic placement"
+  doc_url: https://docs.nextstrain.org/projects/nextclade/en/stable/
+  dev_url: https://github.com/nextstrain/nextclade
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - pvanheus
+    - corneliusroemer
+    - ivan-aksamentov
+  skip-lints:
+    # repackaged binary
+    - should_be_noarch_generic

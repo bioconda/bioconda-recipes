@@ -9,13 +9,13 @@ cp -r * ${GEPARD_DIR}
 cat <<END >>${PREFIX}/bin/gepardcmd
 #!/bin/bash
 
-java -cp $GEPARD_DIR/dist/Gepard-1.40.jar org.gepard.client.cmdline.CommandLine
+java -cp $GEPARD_DIR/dist/Gepard-2.1.jar org.gepard.client.cmdline.CommandLine
 END
 
 cat <<END >>${PREFIX}/bin/gepard
 #!/bin/bash
 
-java -jar $GEPARD_DIR/dist/Gepard-1.40.jar
+java -jar $GEPARD_DIR/dist/Gepard-2.1.jar
 END
 
 chmod +x ${PREFIX}/bin/*

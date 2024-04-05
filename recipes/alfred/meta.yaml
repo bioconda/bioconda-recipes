@@ -1,5 +1,5 @@
-{% set version = "0.2.3" %}
-{% set sha256 = "f8351d9978914489305f56f7a39576ca4b57717b17172de9c5527aa70994f238" %}
+{% set version = "0.3.1" %}
+{% set sha256 = "6a84eef8cb737e856915c88b340304a22e5cc5013f89d3756026f93720f3c8cb" %}
 
 package:
   name: alfred
@@ -8,23 +8,26 @@ package:
 source:
   url: https://github.com/tobiasrausch/alfred/archive/v{{ version }}.tar.gz
   sha256: '{{ sha256 }}'
-  patches:
-    - 0001-fix-brange-std-min-type-mismatch.patch
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage('alfred', max_pin="x.x") }}
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
   host:
     - zlib
     - bzip2
+    - libdeflate
     - boost-cpp
     - htslib
   run:
     - zlib
     - bzip2
+    - libdeflate
     - boost-cpp
     - htslib
 
@@ -34,7 +37,7 @@ test:
 
 about:
   home: https://github.com/tobiasrausch/alfred
-  license: BSD License
+  license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE
   summary: BAM alignment statistics, feature counting and feature annotation

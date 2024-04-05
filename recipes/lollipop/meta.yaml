@@ -1,0 +1,64 @@
+{% set name = "LolliPop" %}
+{% set version = "0.3.0" %}
+{% set sha256 = "15135a929b87c209e84a096c9c345a12b1a4f6b2c00b37ec99ee88e5555acfec" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/cbg-ethz/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+  script:
+    - {{ PYTHON }} -m pip install '.[cli]' --ignore-installed --no-deps -v
+    - mkdir -p ${PREFIX}/share/{{ name }}/presets
+    - cp -vr presets/*  ${PREFIX}/share/{{ name }}/presets/
+
+requirements:
+  host:
+    - python >=3
+    - pip
+    - poetry-core >=1.0.8
+    - poetry-dynamic-versioning
+  run:
+    - python >=3
+    - numpy
+    - scipy
+    - pandas
+    - zstandard
+    # NOTE: change of API between ruamel.yaml 0.17.x and 0.18
+    - ruamel.yaml <0.18
+    - strictyaml
+    - tqdm
+    - click
+    - click-option-group
+    - bcbio-gff
+    
+test:
+  imports:
+    - lollipop
+  commands:
+    - test "$(lollipop --version|tee >(cat 1>&2)|grep -oE '[0-9]+(\.[0-9a-z]+)*$')" == "{{ version }}"
+    - lollipop generate-mutlist --help
+    - lollipop getmutations from-basecount --help
+    - lollipop deconvolute --help
+
+about:
+  home: https://github.com/cbg-ethz/LolliPop
+  license: GNU General Public License v3 or later (GPLv3+)
+  summary: 'A tool for Deconvolution for Wastewater Genomics'
+  license_family: GPL3
+  license_file: LICENSE.md
+
+extra:
+  recipe-maintainers:
+    - DrYak
+  identifiers:
+    - biotools:lollipop
+    - doi:10.1101/2022.11.02.22281825

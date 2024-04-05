@@ -1,4 +1,4 @@
-{% set version = "2.4.2" %}
+{% set version = "2.5.3" %}
 
 package:
   name: bowtie2
@@ -6,31 +6,38 @@ package:
 
 source:
   url: https://github.com/BenLangmead/bowtie2/archive/v{{ version }}.tar.gz
-  sha256: ea33a1562faf759b21b3a905e20b87a3524ac4e53af8cd723d9a9f31ee159c8a
+  sha256: 4ac3ece3db011322caab14678b9d80cfc7f75208cdaf0c58b24a6ea0f1a0a60e
 
 build:
   number: 1
   skip: True  # [py2k]
+  run_exports:
+    - {{ pin_subpackage('bowtie2', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - make
+    - git
   host:
     - python
     - zlib
+    - zstd
     - tbb-devel
     - tbb
   run:
     - python
     - perl
     - zlib
+    - zstd
     - tbb
 
 test:
   commands:
     - bowtie2 --help
+    - bowtie2 --version
     # test if bowtie2 reports its version
-    - bowtie2 --version | grep -q "bowtie2-align-s version [0-9]"
+    - bowtie2 --version | grep -q "bowtie2-align-s version [0-9]"  # [linux]
     - bowtie2-align-l --help
     - bowtie2-align-s --help
     - bowtie2-build --help
@@ -43,10 +50,13 @@ test:
 about:
   home: 'http://bowtie-bio.sourceforge.net/bowtie2/index.shtml'
   license: GPL-3.0-only
+  license_family: GPL3
   license_file: LICENSE
   summary: Fast and sensitive gapped read alignment
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:bowtie2
     - doi:10.1038/nmeth.1923

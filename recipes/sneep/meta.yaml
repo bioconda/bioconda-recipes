@@ -1,0 +1,43 @@
+{% set name = "SNEEP" %}
+{% set version = "1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/SchulzLab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 6b6ebfa90db3ea4c5c75a0c2cb6ce4fd12ba62aa0d6a1d524f4269f2e58298d0
+
+build:
+  skip: True  # [py2k]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('sneep', max_pin="x.x") }}
+
+requirements:
+  build:
+   - make
+   - {{ compiler('cxx') }}
+   - llvm-openmp  # [osx]
+   - libgomp  # [linux]
+  host:
+   - python
+  run:
+   - python
+   - numpy >=1.19
+   - scipy
+   - matplotlib-base
+   - bedtools >=2.27.1
+
+test:
+  commands:
+   - differentialBindingAffinity_multipleSNPs -h
+
+about:
+  home: https://github.com/SchulzLab/SNEEP
+  dev_url: https://github.com/SchulzLab/SNEEP
+  license: MIT
+  license_family: MIT
+  summary: Identify regulatory non-coding SNPs (rSNPs)
+

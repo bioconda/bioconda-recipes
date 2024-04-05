@@ -1,5 +1,5 @@
 {% set name = "fastobo" %}
-{% set version = "0.10.0" %}
+{% set version = "0.12.3" %}
 
 package:
   name: "{{ name | lower }}"
@@ -7,28 +7,30 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "72a79e70c0d336a7ecb02f894a1fbd21d74f9cba2137f64ac1815fe09c62568e"
+  sha256: "f375932a24b078706797eb9296740f2d2e6987a34309bda7c9f235aba1d74217"
 
 build:
   number: 0
-  skip: True  # [osx or py27]
+  skip: True  # [osx or py27 or py36]
+  run_exports:
+    - {{ pin_subpackage('fastobo', max_pin="x.x") }}
 
 requirements:
   build:
     - wget
     - {{ compiler('c') }}  # [not osx]
     - {{ compiler('cxx') }}  # [not osx]
-    - clang_osx-64 # [osx]
-    - clangxx_osx-64 # [osx]
+    - clang_osx-64  # [osx]
+    - clangxx_osx-64  # [osx]
     - pkg-config  # [osx]
   host:
     - pip
     - setuptools-rust
     - python
-    - libiconv #[osx]
+    - libiconv  # [osx]
   run:
     - python
-    - libiconv #[osx]
+    - libiconv  # [osx]
 
 test:
   imports:

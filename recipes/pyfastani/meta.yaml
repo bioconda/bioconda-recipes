@@ -1,0 +1,48 @@
+{% set name = "pyfastani" %}
+{% set version = "0.5.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: ad6c28303290a2389c29ed20db8266bbc4bf89a5b1bf64a7514d1bc9c6ba2d92
+
+build:
+  number: 0
+  skip: True  #[py2k]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - pip
+    - cython
+    - setuptools
+    - zlib
+  run:
+    - python
+    - zlib
+
+test:
+  imports:
+    - {{ name }}
+  commands:
+    - python -m unittest -vv {{ name }}.tests
+
+about:
+  home: https://github.com/althonos/pyfastani
+  license: MIT
+  license_file: COPYING
+  summary: Cython bindings and Python interface to FastANI, a method for fast whole-genome similarity estimation..
+  doc_url: https://pyfastani.readthedocs.org/
+
+extra:
+  recipe-maintainers:
+    - althonos

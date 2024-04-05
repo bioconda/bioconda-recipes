@@ -1,0 +1,35 @@
+{% set name = "clair3-illumina" %}
+{% set version = "1.0.6" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/HKU-BAL/Clair3/archive/refs/tags/v{{ version }}.zip
+  sha256: 30821ae909e4d28d5ca01594873b7977690cc2e63f5777b5d6799ec86660e370
+
+build:
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - boost-cpp
+  run:
+    - clair3
+test:
+  imports:
+    - tensorflow
+  commands:
+    - which clair3.py
+    - run_clair3.sh -v
+
+about:
+  home: 'https://github.com/HKU-BAL/Clair3'
+  license: BSD-3-Clause
+  license_file: LICENSE.md
+  summary: "Clair3 with libraries to support variant calling using Illumina short-reads. Version in sync with Clair3."

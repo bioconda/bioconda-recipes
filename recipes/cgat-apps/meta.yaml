@@ -1,17 +1,19 @@
-{% set version = "0.6.0" %}
+{% set name = "cgat-apps" %}
+{% set version = "0.7.0" %}
 
 package:
-  name: cgat-apps
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
   url: https://pypi.io/packages/source/c/cgat/cgat-{{ version }}.tar.gz
-  sha256: d851076158ac9244bb71b36bf8637cddbcf92c681af89bb0a379963bd32e2e64
+  sha256: 42d23ffed9dcea37f816912a2b8679c353299f55c285cb4d20250622ee39cd5c
 
   
 build:
-  skip: True # [not py3k]
-  number: 2
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('cgat-apps', max_pin="x.x") }}
   entry_points:
     - cgat = cgat.cgat:main
 
@@ -19,51 +21,45 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-
   host:
-    - python
+    - python >=3.8
     - cython
     - numpy
-    - pysam<=0.15.2
+    - pysam >=0.17.0
     - htslib
     - setuptools
-    - coreutils
-    - libpng
-    - zlib
-
+    - ucsc-wigtobigwig
   run:
-    - python
-    - cgatcore>=0.6.5
+    - python >=3.8
+    - cgatcore >=0.6.5
     - alignlib-lite
     - biopython
     - future
     - matplotlib-base
-    - {{ pin_compatible('numpy') }}
+    - numpy
     - pandas
     - pybedtools
     - pybigwig
-    - pysam<=0.15.2
+    - pysam >=0.17.0
     - htslib
-    - python-lzo
     - pyyaml
     - quicksect
     - scipy
-    - six 
+    - six
+    - jinja2
+    - scikit-learn
     - sortedcontainers
     # Misc dependencies
     - bedtools
     - ucsc-bedgraphtobigwig
-    - ucsc-bedtobigbed
     - ucsc-wigtobigwig
     - coreutils
     - grep
-    - libpng
+    - zlib
 
 test:
-
   imports:
     - cgat
-
   commands:
     - cgat --help
     - cgat --help Conversion
@@ -72,7 +68,7 @@ test:
     - cgat bam2bed -h
 
 about:
-  home: https://www.cgat.org/downloads/public/cgat/documentation
+  home: https://cgat-apps.readthedocs.io/en/latest/
   license: MIT
   license_file: LICENSE
   summary: "Computational Genomics Analysis Toolkit"

@@ -1,0 +1,47 @@
+--- IRMA	2021-03-11 13:45:41.000000000 -0600
++++ IRMA	2021-06-04 16:18:36.088939674 -0500
+@@ -140,14 +140,14 @@
+ check_prgm Rscript
+ check_prgm perl
+ 
+-PARALLEL="$spath"/parallel
+-SAMTOOLS="$spath"/samtools_$OS
+-BLAT="$spath"/blat_$OS
++PARALLEL="parallel"
++SAMTOOLS="samtools"
++BLAT="blat"
+ SSW="$spath"/ssw_$OS
+-MM2="$spath"/minimap2_$OS
++MM2="minimap2"
+ A2M="$Lspath"/align2model_$OS
+-RSCRIPT="$(which Rscript)"
+-BASH=bash
++RSCRIPT="Rscript"
++BASH="bash"
+ 
+ # select cat for reading reads
+ if [ "${#LEFT}" -gt "2" ];then
+@@ -204,14 +204,19 @@
+ 		exit 0
+ 	fi
+ fi
++
++if [ -r "./irma_config.sh" ]; then
++    echo "Loading config file 'irma_config.sh'"
++    source "./irma_config.sh"
++else
++    echo "No user config file 'irma_config.sh' specified."
++fi
++
+ [ ! -z "$LFASTM" ] && SECONDARY_SORT=$LFASTM
+ REF1_SET=$REF_SET
+ 
+ # selection of zip utility
+-if command -v "$spath"/pigz_$OS >/dev/null 2>&1;then
+-	ZIP="$spath"/pigz_$OS
+-	Z_OPTS="-p $DOUBLE_LOCAL_PROC -4"
+-elif command -v pigz >/dev/null 2>&1;then
++if command -v "pigz" >/dev/null 2>&1;then
+ 	ZIP="pigz"
+ 	Z_OPTS="-p $DOUBLE_LOCAL_PROC -4"
+ elif command -v gzip >/dev/null 2>&1;then

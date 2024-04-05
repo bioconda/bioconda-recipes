@@ -4,7 +4,9 @@
 
 BINARY_DIR="/opt/anaconda1anaconda2anaconda3/BINARYSUB"
 MODEL_DIRS= {"wgs": "/opt/anaconda1anaconda2anaconda3/WGSMODELSUB",
-             "wes": "/opt/anaconda1anaconda2anaconda3/WESMODELSUB"}
+             "wes": "/opt/anaconda1anaconda2anaconda3/WESMODELSUB",
+             "pacbio": "/opt/anaconda1anaconda2anaconda3/PACBIOMODELSUB",
+             "hybrid": "/opt/anaconda1anaconda2anaconda3/HYBRIDMODELSUB"}
 
 import argparse
 import os
@@ -18,7 +20,10 @@ def real_dirname(path):
 class DVHelp(argparse._HelpAction):
     def __call__(self, parser, namespace, values, option_string=None):
         print("Baseline DeepVariant arguments")
-        print(subprocess.check_output([sys.executable, "%s/call_variants.zip" % real_dirname(BINARY_DIR), "--help"]))
+        try:
+            subprocess.check_output([sys.executable, "%s/call_variants.zip" % real_dirname(BINARY_DIR), "--help"])
+        except subprocess.CalledProcessError as e:
+            print(e.stdout.decode('UTF-8'))
         print()
         print("Wrapper arguments")
         parser.print_help()

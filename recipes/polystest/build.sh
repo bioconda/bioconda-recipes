@@ -13,6 +13,7 @@ cp *.R $PREFIX/share/polystest/
 cp LiverAllProteins.csv $PREFIX/share/polystest/
 cp polystest.yml $PREFIX/share/polystest/
 cp runPolySTestCLI.R $PREFIX/bin
+cp convertFromProline.R $PREFIX/bin
 cp run_polystest_app.R $PREFIX/bin
 echo "before chmod"
 chmod a+x $PREFIX/bin/runPolySTestCLI.R
