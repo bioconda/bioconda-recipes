@@ -5,6 +5,7 @@
 set -ex
 
 cd $PREFIX
+cd .. # Prefix is test_tmp folder where only test_data/script is, so go one up
 folder=$(pwd)
 unknown_folder=$(find $folder -type d -name "addsv.tmp" -print)
 cd "${unknown_folder}"
