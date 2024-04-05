@@ -6,10 +6,10 @@ grep -l -r "/usr/bin/perl" . | xargs sed -i.bak -e 's/usr\/bin\/perl/usr\/bin\/e
 
 case $(uname -m) in
     "x86_64") 
-        ARCH_OPTS="--enable-sse" 
+        ARCH_OPTS="--enable-sse --enable-mpi" 
         ;;
     *) 
-        ARCH_OPTS="" 
+        ARCH_OPTS="--host=aarch64-unknown-linux-gnu --enable-mpi" 
         ;;
 esac
 
