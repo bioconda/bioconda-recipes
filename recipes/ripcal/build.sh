@@ -4,7 +4,8 @@
 mkdir -p "${PREFIX}/bin"
 
 # Copying executable files to bin directory
-cp ripcal2_install/perl/* "${PREFIX}/bin/"
+ls "{SRC_DIR}/ripcal2_install/perl/"
+cp "{SRC_DIR}/ripcal2_install/perl/"* "${PREFIX}/bin/"
 
 # Fixing permissions
 chmod +x "${PREFIX}/bin/deripcal"
