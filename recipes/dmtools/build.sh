@@ -3,6 +3,7 @@
 export C_INCLUDE_PATH=${PREFIX}/include;${BUILD_PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
+echo make CXX=$CXX CPP=$CXX CC=$CC CFLAGS="-g -w -O3 -Wsign-compare -I$BUILD_PREFIX/include"
 make CXX=$CXX CPP=$CXX CC=$CC CFLAGS="-g -w -O3 -Wsign-compare -I$BUILD_PREFIX/include"
 ##export CFLAGS="-I$BUILD_PREFIX/include"
 ##export LDFLAGS="-L$BUILD_PREFIX/lib"
