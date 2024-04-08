@@ -1,0 +1,55 @@
+diff --git a/src/main.cpp b/src/main.cpp
+index 90b11ed..40e71f8 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -6,10 +6,10 @@
+ #include <random>
+ #include <vector>
+ #include <fstream>
+-#include <filesystem>
+ #include <unordered_map>
+ #include <string>
+ #include <sstream>
++#include <sys/stat.h>
+ 
+ #include <gmpxx.h>
+ #include <omp.h>
+@@ -19,8 +19,6 @@
+ #include "optimal_paths.h"
+ #include "draw_subgraph.h"
+ 
+-namespace fs = std::filesystem;
+-
+ int64_t print_usage(char **argv, int64_t help) {
+ 	std::cout << "Usage: " << argv[0] << " -f <clusterfile> -o <outputfile> [arguments]\n\n";
+ 	std::cout << "Optional arguments:\n";
+@@ -48,6 +46,11 @@ int64_t print_usage(char **argv, int64_t help) {
+ 	return help;
+ }
+ 
++bool file_exists(const std::string &filename) {
++	struct stat buffer;
++	return (stat (filename.c_str(), &buffer) == 0);
++}
++
+ struct Protein {
+ 	std::string descriptor;
+ 	std::string sequence;
+@@ -120,7 +123,7 @@ void run_case(const int64_t j, std::vector<std::stringbuf> &output) {
+ 
+ 	if (print_alignments > 0) {
+ 		std::string subop_fasta_file = "suboptimal_" + file_without_path_and_ending + '_' + std::to_string(i) + ".fasta";
+-		for (int fidx = 1; fs::exists(fs::path(subop_fasta_file)); fidx++) {
++		for (int fidx = 1; file_exists(subop_fasta_file); fidx++) {
+ 			subop_fasta_file = "suboptimal_" + file_without_path_and_ending + '_' + std::to_string(i) + '(' + std::to_string(fidx) + ").fasta";
+ 		}
+ 		alignments_into_fasta(print_alignments, d, a, b, subop_fasta_file);
+@@ -313,7 +316,7 @@ int main(int argc, char **argv) {
+ 		return print_usage(argv, 1);
+ 	}
+ 
+-	if (drawgraph && !fs::exists(fs::path(drawgraph_dir))) {
++	if (drawgraph && !file_exists(drawgraph_dir)) {
+ 		std::cerr << "Error: directory " << drawgraph_dir << " does not exist.\n";
+ 		return 2;
+ 	}

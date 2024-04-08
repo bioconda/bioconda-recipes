@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
-gem_path=$PREFIX/${PKG_NAME}-${PKG_VERSION}
-mkdir -p $gem_path
+set -o xtrace -o nounset -o pipefail -o errexit
+
+export GEM_HOME=$PREFIX/share/rubygems
+mkdir -p $GEM_HOME
+gem build aspera-cli.gemspec
+gem install --install-dir $GEM_HOME --bindir $GEM_HOME/bin ${PKG_NAME}-${PKG_VERSION}.gem
+gem_path=$GEM_HOME/gems/${PKG_NAME}-${PKG_VERSION}
 cp -r $SRC_DIR/* $gem_path
 rm $gem_path/{conda_build,build_env_setup}.sh
-
-gem build aspera-cli.gemspec
-gem install ${PKG_NAME}-${PKG_VERSION}.gem
-
 tail -n+3 bin/ascli > $gem_path/bin/ascli
 tail -n+3 bin/asession > $gem_path/bin/asession
 
@@ -23,8 +24,8 @@ EOF
 
 echo "$(cat header.txt $gem_path/bin/ascli)" > $gem_path/bin/ascli
 echo "$(cat header.txt $gem_path/bin/asession)" > $gem_path/bin/asession
-mv $gem_path $PREFIX/share/rubygems/gems
-ln -s $PREFIX/share/rubygems/gems/${PKG_NAME}-${PKG_VERSION}/bin/* $PREFIX/bin
+
+ln -s $gem_path/bin/* $PREFIX/bin
 
 export ASCLI_HOME="$PREFIX/etc/aspera"
 ascli conf ascp install && ascli config ascp info 

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "estrogen-1.46.0"
+installBiocDataPackage.sh "estrogen-1.48.0"
