@@ -3,8 +3,7 @@
 set -x -e
 
 export LIBRARY_PATH="${PREFIX}/lib"
-cd ${LIBRARY_PATH}
-wget https://tx.bioreg.kyushu-u.ac.jp/igfinder/igfinder.py
+cp igfinder.py ${LIBRARY_PATH}
 
 export BINARY_HOME="${PREFIX}/bin"
 script=${BINARY_HOME}/igfinder
