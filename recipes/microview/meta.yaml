@@ -1,0 +1,55 @@
+{% set name = "microview" %}
+{% set version = "0.10.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/MicroView-{{ version }}.tar.gz
+  sha256: 4e95596cff6ee467476b40d8da5051457993d7fabaf14a786b2a32119e245f3f
+
+build:
+  entry_points:
+    - microview = microview.cli:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+    - scipy
+    - scikit-bio
+    - pandas
+    - numpy
+    - plotly
+    - jinja2
+    - rich
+    - rich-click
+    - click-option-group
+    - frictionless ==4.32.0
+
+test:
+  imports:
+    - microview
+  commands:
+    - pip check
+    - microview --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/jvfe/microview
+  summary: Generate reports from metagenomics data
+  license: BSD-3-Clause
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - jvfe
