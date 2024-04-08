@@ -5,7 +5,7 @@ case $(uname -m) in
         SPOA_OPTS="-Dspoa_optimize_for_portability=ON"
         ;;
     aarch64)
-        SPOA_OPTS="-Dspoa_use_simde=ON -Dspoa_use_simde_nonvec=ON -Dspoa_use_simde_openmp=ON -Dspoa_generate_dispatch=ON"
+        SPOA_OPTS="-Dspoa_use_simde=ON -Dspoa_use_simde_nonvec=ON -Dspoa_use_simde_openmp=ON -DBUILD_TESTING=OFF"
         ;;
     *)
         ;;
