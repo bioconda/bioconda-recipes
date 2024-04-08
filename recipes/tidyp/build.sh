@@ -1,7 +1,8 @@
 #!/bin/bash
 
-
-
-./configure --prefix="$PREFIX"
+pushd build/gmake
 make
-make install
+popd
+
+mkdir -p ${PREFIX}/bin
+cp ./bin/tidyp ${PREFIX}/bin
