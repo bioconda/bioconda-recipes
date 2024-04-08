@@ -8,7 +8,12 @@ pwd
 cd $PREFIX
 pwd
 ls
-unknown_folder=$(find -type d -name "addsv.tmp" -print)
+cd ..
+pwd
+cd ..
+pwd
+folder=$(pwd)
+unknown_folder=$(find $folder -type d -name "addsv.tmp" -print)
 cd "${unknown_folder}"
 pwd
 ls
