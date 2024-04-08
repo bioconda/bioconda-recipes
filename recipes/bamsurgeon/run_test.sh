@@ -4,14 +4,12 @@
 
 set -ex
 
-pwd
 cd $PREFIX
 pwd
 ls
 cd ..
 pwd
-cd ..
-pwd
+ls
 folder=$(pwd)
 unknown_folder=$(find $folder -type d -name "addsv.tmp" -print)
 cd "${unknown_folder}"
