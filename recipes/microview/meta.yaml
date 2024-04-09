@@ -12,16 +12,18 @@ source:
 build:
   entry_points:
     - microview = microview.cli:main
-  noarch: python
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
+  build:
+   - {{ compiler('c') }}
   host:
     - python >=3.8
     - pip
+    - cython
   run:
     - python >=3.8
     - scipy
@@ -53,5 +55,7 @@ about:
   license_file: LICENSE
 
 extra:
+  skip-lints:
+    - cython_must_be_in_host # Cython needs to be in run as well
   recipe-maintainers:
     - jvfe
