@@ -17,4 +17,4 @@ cp util/old_merged_nodup2pairs.pl $PREFIX/bin/old_merged_nodup2pairs.pl
 cp util/process_merged_nodup.sh $PREFIX/bin/process_merged_nodup.sh
 cp util/process_old_merged_nodup.sh $PREFIX/bin/process_old_merged_nodup.sh
 cp util/bam2pairs/bam2pairs $PREFIX/bin/bam2pairs
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+$PYTHON -m pip install . -vvv --no-deps --no-build-isolation
