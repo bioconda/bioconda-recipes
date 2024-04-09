@@ -11,7 +11,8 @@ mkdir -p $PREFIX/bin
 #make CC="${GXX}" CFLAGS="${CFLAGS}"
 #make CC="${GXX} ${LDFLAGS}" CFLAGS="${CFLAGS}"
 
-make
+#make
+make CC=$CXX
 
 cp $SRC_DIR/scripts/*py $PREFIX/bin
 cp $SRC_DIR/scripts/*sh $PREFIX/bin
