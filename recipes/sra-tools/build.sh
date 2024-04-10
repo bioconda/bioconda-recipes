@@ -1,16 +1,12 @@
 #!/bin/bash -e
 
-export INCLUDE_PATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-
-export CFLAGS="${CFLAGS} -O3 -DH5_USE_110_API"
-export CXXFLAGS="${CXXFLAGS} -O3 -DH5_USE_110_API -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -DH5_USE_110_API -D_FILE_OFFSET_BITS=64"
+export CXXFLAGS="${CXXFLAGS} -O3 -DH5_USE_110_API -D_FILE_OFFSET_BITS=64 -I${PREFIX}/include"
 
 echo "compiling sra-tools"
 if [[ ${OSTYPE} == "darwin"* ]]; then
     export CFLAGS="${CFLAGS} -DTARGET_OS_OSX"
-    export CXXFLAGS="${CXXFLAGS} -DTARGET_OS_OSX -D_LIBCPP_DISABLE_AVAILABILITY"
+    export CXXFLAGS="${CXXFLAGS} -DTARGET_OS_OSX"
 fi
 
 mkdir -p obj/ngs/ngs-java/javadoc/ngs-doc  # prevent error on OSX
@@ -20,18 +16,18 @@ mkdir -p obj/ngs/ngs-java/javadoc/ngs-doc  # prevent error on OSX
 # ERROR: In source builds are not allowed
 export SRA_BUILD_DIR=${SRC_DIR}/build_sratools
 mkdir -p ${SRA_BUILD_DIR}
-pushd ${SRA_BUILD_DIR}
 
-cmake ../sra-tools/ -DVDB_BINDIR="${PREFIX}/lib64" \
+cmake -S sra-tools/ -B build_sratools/ \
+    -DVDB_BINDIR="${PREFIX}/lib64" \
     -DVDB_LIBDIR="${PREFIX}/lib64" \
     -DVDB_INCDIR="${PREFIX}/include" \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_COMPILER="${CXX}" \
-    -DCMAKE_CXX_FLAGS="${CXXFLAGS}"
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+    -DCMAKE_LIBRARY_PATH="${PREFIX}/lib64"
 
-cmake --build . --target install -j 4 -v
-popd
+cmake --build build_sratools/ --target install -j 4 -v
 
 
 # Strip package version from binary names
