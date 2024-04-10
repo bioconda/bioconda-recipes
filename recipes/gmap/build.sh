@@ -16,13 +16,25 @@ export LANGUAGE=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
+case $(uname -m) in
+	x86_64)
+		SIMD_LEVEL="sse42"
+		;;
+	aarch64)
+		SIMD_LEVEL="arm"
+		;;
+	*)
+		SIMD_LEVEL="none"
+		;;
+esac
+
 autoreconf -if
 ./configure CC="${CC}" CFLAGS="${CFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" \
 	LDFLAGS="${LDFLAGS}" \
 	--prefix="${PREFIX}" \
 	--with-gmapdb="${PREFIX}/share" \
-	--with-simd-level=sse42
+	--with-simd-level=${SIMD_LEVEL}
 
 make -j"${CPU_COUNT}"
 make install
