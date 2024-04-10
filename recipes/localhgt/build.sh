@@ -1,15 +1,16 @@
 #!/bin/bash
 set -eu -o pipefail
 
+export LIBRARY_PATH=${PREFIX}/lib
+export LD_LIBRARY_PATH=${PREFIX}/lib
+export CPP_INCLUDE_PATH=${PREFIX}/include
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
+export CXX_INCLUDE_PATH=${PREFIX}/include
+
+
 mkdir -p $PREFIX/bin
 
 
-#export CPLUS_INCLUDE_PATH="${PREFIX}/include"
-#export LIBRARY_PATH="${PREFIX}/lib"
-#export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-
-#make CC="${GXX}" CFLAGS="${CFLAGS}"
-#make CC="${GXX} ${LDFLAGS}" CFLAGS="${CFLAGS}"
 
 make
 #make CC="${CXX}"
