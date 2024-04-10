@@ -1,10 +1,12 @@
 #!/bin/bash
 
-export C_INCLUDE_PATH=${PREFIX}/include;${BUILD_PREFIX}/include
+export C_INCLUDE_PATH=${PREFIX}/include
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
-#echo make CXX=$CXX CPP=$CXX CC=$CC CFLAGS="-g -w -O3 -Wsign-compare -I$BUILD_PREFIX/include"
-make CFLAGS="-g -w -O3 -Wsign-compare -I$PREFIX/include -L$PREFIX/lib"
+##echo make CXX=$CXX CPP=$CXX CC=$CC CFLAGS="-g -w -O3 -Wsign-compare -I$BUILD_PREFIX/include"
+make 
+#CFLAGS="-g -w -O3 -Wsign-compare -I$PREFIX/include -L$PREFIX/lib"
 ##export CFLAGS="-I$BUILD_PREFIX/include"
 ##export LDFLAGS="-L$BUILD_PREFIX/lib"
 ##CFLAGS="${CFLAGS} -fcommon"
