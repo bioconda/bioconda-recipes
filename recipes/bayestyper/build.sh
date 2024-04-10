@@ -1,5 +1,5 @@
 #!/bin/bash
-
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
 mkdir build && cd build
 cmake ..
 make
