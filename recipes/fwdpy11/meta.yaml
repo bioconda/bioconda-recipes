@@ -10,8 +10,10 @@ source:
   sha256: 4bdd42d749d3c4e12f728c16d6db8c97bb5d03fff7362fe98b3c8cdfa759841d
 
 build:
-  skip: True  # [py2k or py>=312]
+  skip: True  # [py < 38 or py > 312]
   number: 0
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   entry_points:
     - fwdpy11 = fwdpy11.__main__:main
   run_exports:
@@ -21,25 +23,26 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
     - cmake
     - make
   host:
     - python
     - pip
-    - setuptools-scm <8
+    - setuptools-scm >=8
     - pybind11 ==2.11.1
-    - rust >=1.62.1
     - gsl
+    - scikit-build-core >=0.3.3
   run:
     - python
-    - numpy >=1.20
-    - tskit >=0.5
+    - numpy <2.0
+    - tskit >=0.5.6
     - gsl
     - openblas
     - scipy
     - attrs
     - black
-    - demes >=0.2
+    - demes >=0.2.2
     - intervaltree
     - deprecated
 
@@ -55,6 +58,8 @@ about:
   license_family: GPL3
   license_file: "COPYING"
   summary: 'Forward-time population genetic simulation in Python.'
+  dev_url: https://github.com/molpopgen/fwdpy11
+  doc_url: https://molpopgen.github.io/fwdpy11
 
 extras:
   identifiers:
