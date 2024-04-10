@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
@@ -10,6 +12,15 @@ if [ "$(uname)" == Darwin ]; then
 	export CMAKE_C_COMPILER="clang"
 	export CMAKE_CXX_COMPILER="clang++"
 fi
+
+if [ "$(uname -m)" == aarch64 ]; then
+	export CMAKE_C_COMPILER="clang"
+	export CMAKE_CXX_COMPILER="clang++"
+fi
+
+
+# debug
+which clang clang++
 
 mkdir build
 cd build
