@@ -2,11 +2,10 @@
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="-L${PREFIX}/lib"
-export CXX_FOR_BUILD=${CXX}
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-export CFLAGS="-DH5_USE_110_API -I${PREFIX}/include ${LDFLAGS}"
-export CXXFLAGS="-I${PREFIX}/include ${LDFLAGS}"
+export CFLAGS="${CFLAGS} -O3 -DH5_USE_110_API -D_FILE_OFFSET_BITS=64 ${LDFLAGS}"
+export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include ${LDFLAGS}"
 
 echo "compiling sra-tools"
 if [[ ${OSTYPE} == "darwin"* ]]; then
@@ -20,15 +19,18 @@ mkdir -p obj/ngs/ngs-java/javadoc/ngs-doc  # prevent error on OSX
 # Execute Make commands from a separate subdirectory. Else:
 # ERROR: In source builds are not allowed
 export SRA_BUILD_DIR=${SRC_DIR}/build_sratools
-mkdir ${SRA_BUILD_DIR}
+mkdir -p ${SRA_BUILD_DIR}
 pushd ${SRA_BUILD_DIR}
-cmake ../sra-tools/ -DVDB_BINDIR=${BUILD_PREFIX}/lib64 \
-    -DVDB_LIBDIR=${BUILD_PREFIX}/lib64 \
-    -DVDB_INCDIR=${BUILD_PREFIX}/include \
-    -DCMAKE_INSTALL_PREFIX=${PREFIX} \
-    -DCMAKE_BUILD_TYPE=Release
-cmake --build . -j 4 -v
-cmake --install .
+
+cmake ../sra-tools/ -DVDB_BINDIR="${PREFIX}/lib64" \
+    -DVDB_LIBDIR="${PREFIX}/lib64" \
+    -DVDB_INCDIR="${PREFIX}/include" \
+    -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_COMPILER="${CXX}" \
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS}"
+
+cmake --build . --target install -j 4 -v
 popd
 
 
@@ -42,5 +44,5 @@ for exe in \
     srapath-orig \
     sra-pileup-orig
 do
-    ln -s "${exe}.${PKG_VERSION}" "${exe}"
+    ln -sf "${exe}.${PKG_VERSION}" "${exe}"
 done
