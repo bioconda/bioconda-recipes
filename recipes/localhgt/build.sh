@@ -1,19 +1,10 @@
 #!/bin/bash
-set -eu -o pipefail
 
-export LIBRARY_PATH=${PREFIX}/lib
-export LD_LIBRARY_PATH=${PREFIX}/lib
-export CPP_INCLUDE_PATH=${PREFIX}/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export CXX_INCLUDE_PATH=${PREFIX}/include
-
+# Ensure we run successfully using either conda-forge or defaults ncurses
+# (unlike other platforms, the latter does not automatically pull in libtinfo)
+make 
 
 mkdir -p $PREFIX/bin
-
-
-
-make
-#make CC="${CXX}"
 
 cp $SRC_DIR/scripts/*py $PREFIX/bin
 cp $SRC_DIR/scripts/*sh $PREFIX/bin

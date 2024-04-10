@@ -4,59 +4,49 @@ package:
   name: localhgt
   version: {{ version }}
 
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("localhgt", max_pin="x") }}
+  entry_points:
+    - localhgt = localhgt:main
+
 source:
   url: https://github.com/deepomicslab/LocalHGT/archive/refs/tags/v{{ version }}.tar.gz
   md5: 8438fdd9cb3ad02fe331a09d4ca0ccfe
-  
 
-build: 
-  number: 0
-  entry_points: 
-    - localhgt = localhgt:main
-  #noarch: generic
-  run_exports:
-     - {{ pin_subpackage('localhgt', max_pin="x") }}
-  #skip: should_be_noarch_generic
-  
-
-requirements: 
-  bulid: 
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
+requirements:
+  build:
     - make
-    - g++
+    - {{ compiler('cxx') }} 
   host:
-    - make
   run:
-  #- make
-  - python >=3.7.12
-  - scikit-bio >=0.5.6
-  - scikit-learn >=1.0.2
-  - scipy >=1.7.3
-  - biopython >=1.79
-  - networkx >=2.6.3
-  - numpy >=1.21.5
-  - pandas >=1.2.3
-  - pyfaidx >=0.7.1
-  - pysam >=0.17.0
-  - samtools >=1.11
-  - seqkit >=2.6.1
-  - bwa >=0.7.17
-  - fastp >=0.23.2
+    - python >=3.7.12
+    - scikit-bio
+    - scikit-learn
+    - scipy
+    - biopython
+    - networkx
+    - numpy
+    - pandas
+    - pyfaidx
+    - pysam
+    - samtools >=1.11
+    - seqkit >=2.6.1
+    - bwa >=0.7.17
+    - fastp >=0.23.2
+
+about:
+  home: https://github.com/samtools/samtools
+  license: MIT
+  summary: Tools for dealing with SAM, BAM and CRAM files
 
 test:
   commands:
-    - localhgt
-
-about: 
-  home: https://github.com/deepomicslab/LocalHGT
-  license: MIT
-  summary: "LocalHGT: an ultrafast horizontal gene transfer detection method from large microbial communities"
-
+    - localhgt --help
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:localhgt
-  skip-lints:
-    - should_be_noarch_generic
-    - should_not_be_noarch_source
