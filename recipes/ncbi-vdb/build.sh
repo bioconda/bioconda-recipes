@@ -34,6 +34,7 @@ cmake -S ncbi-vdb/ -B build_vdb \
 	-DNGS_INCDIR="${PREFIX}" \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=Release \
+	-DINST_LIBDIR="${PREFIX}/lib" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-DCMAKE_LIBRARY_PATH="${PREFIX}/lib"
