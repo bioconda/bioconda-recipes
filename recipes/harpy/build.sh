@@ -1,17 +1,16 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 mkdir -p ${PREFIX}/bin
 
-cp misc/ema-h ${PREFIX}/bin
-
-# Harpy executable
-cp harpy ${PREFIX}/bin/
+# install harpy proper
+${PYTHON} -m pip install . --no-deps -vv
 
 # rules
-cp rules/*.smk ${PREFIX}/bin/
+cp workflow/rules/*.smk ${PREFIX}/bin/
 
 # associated scripts
-cp utilities/*.{py,R,pl} ${PREFIX}/bin/
+chmod +x workflow/scripts/*
+cp workflow/scripts/* ${PREFIX}/bin/
 
 # reports
-cp reports/*.Rmd ${PREFIX}/bin/
+cp workflow/report/*.Rmd ${PREFIX}/bin/

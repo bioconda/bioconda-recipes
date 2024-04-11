@@ -1,27 +1,31 @@
+{% set name = "fcsparser" %}
+{% set version = "0.2.8" %}
+{% set sha256 = "df0436bf678df1f4ad3274e55fa06773f884fa45d8329015913a6178d10c73ea" %}
+
 package:
-  name: fcsparser
-  version: "0.2.6"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/5b/8c/761028f493605b95dd7fc33c9b10300720ef592eae1aee2650945436d5dd/fcsparser-0.2.6.tar.gz
-  sha256: 426e53694ce7b2e9ed050b0c5a52a971d574b251df9ff006c42e3360ffc94f8b
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/fcsparser-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
   noarch: python
-  preserve_egg_dir: False
+  script: {{ PYTHON }} -m pip install . --no-deps -vvv
+  run_exports:
+    - {{ pin_subpackage("fcsparser", max_pin="x.x") }}
 
 requirements:
   host:
-    - python
-    - setuptools
-    - numpy
-    - pandas
-
+    - python >=3.8
+    - poetry-core
+    - pip
   run:
-    - python
-    - numpy
+    - python >=3.8
     - pandas
+    - numpy
 
 test:
   imports:
@@ -30,6 +34,7 @@ test:
 
 about:
   home: https://github.com/eyurtsev/fcsparser
-  license: MIT
   summary: 'A python package for reading raw fcs files'
+  license: MIT
   license_family: MIT
+  license_file: LICENSE

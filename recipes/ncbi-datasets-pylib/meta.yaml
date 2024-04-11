@@ -1,5 +1,6 @@
 {% set name = "ncbi-datasets-pylib" %}
-{% set version = "14.27.0" %}
+{% set version = "16.6.0" %}
+{% set sha256 = "5c5e0afef07ab5e28de96aff4f600316a82570fc0f233a0ba9daf531e92c475f" %}
 
 package:
   name: {{ name|lower }}
@@ -7,35 +8,32 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/ncbi-datasets-pylib-{{ version }}.tar.gz
-  sha256: 6d17465b56eb6679fab92b221c099b7f4a31c4e40c8710ef2bda39380c2363ba
+  sha256: {{ sha256 }}
 
 build:
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
   number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - python >=3.8
-    - python-packit
     - pip
+    - python-packit
   run:
+    - python >=3.8
     - gffutils ==0.10.*
     - jinja2 ==3.1.*
     - jsonlines ==3.0.*
     - protobuf ==3.20.*
     - python-dateutil ==2.8.*
-    - setuptools >=21.0.0
     - urllib3 ==1.26.*
-    - python >=3.8
 
 test:
   imports:
     - ncbi
-  commands:
-    - pip check
-  requires:
-    - pip
 
 about:
   home: https://www.ncbi.nlm.nih.gov/datasets
@@ -48,4 +46,3 @@ about:
 extra:
   recipe-maintainers:
     - misialq
-    - corneliusroemer

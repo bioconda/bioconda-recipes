@@ -1,5 +1,5 @@
 {% set name = "verkko" %}
-{% set version = "1.4" %}
+{% set version = "2.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,15 +7,16 @@ package:
 
 source:
   url: https://github.com/marbl/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
-  md5: 6cc9374d06c5150bf055c5667d81592e
+  md5: be5b322b2fcfcee07c0d64fa49c6a9b4
 
   patches:
     - version.patch
+    - osx_availability.patch # [osx]
 
 build:
   number: 0
-  # Temporarily skip building on OSX due to mambabuild keyerror: https://github.com/bioconda/bioconda-recipes/issues/41526
-  skip: True  # [osx]
+  run_exports:
+      - {{ pin_subpackage('verkko', max_pin="x.x") }}
 
 requirements:
   build:
@@ -26,18 +27,21 @@ requirements:
     - rust >=1.66
   host:
     - gsl
+    - zlib
   run:
     - python >=3.7
     - perl >=5.6
+    - seqtk
     - parasail-python >=1.3.3
+    - networkx >=2.6.3
     - biopython
-    - snakemake-minimal >=7.8.0
-    - graphaligner >=1.0.17  # [linux]
-    - graphaligner >=1.0.17b # [osx]
-    - mbg >=1.0.15
+    - snakemake-minimal >=7.8.0,<8.0
+    - graphaligner >=1.0.19
     - findutils >=4.6.0
-    - mashmap >=2.0
+    - mashmap >=3.0.6
     - winnowmap >=2.0
+    - bwa >=0.7.17
+    - samtools >=1.17
 
 test:
   requires:

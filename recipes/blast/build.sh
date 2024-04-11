@@ -33,26 +33,57 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 mkdir -p src/app/RpsbProc
 cp -rf "${SRC_DIR}/RpsbProc/src/"* src/app/RpsbProc/
 
-# with/without options:
+# Configuration synopsis:
+# https://ncbi.github.io/cxx-toolkit/pages/ch_config.html#ch_config.ch_configget_synopsi
 #
-# dll: enable dynamic linking
-# mt: enable multi-threading
-# -autodep: no automatic dependency build (one time build)
-# -makefile-auto-update: no rebuild of makefile (one time build)
-# flat-makefile: use single makefile
-# -caution: disable configure script warnings
-# -dbapi: don't build database connectivity libs <= configure: WARNING: --with(out)-dbapi is deprecated
-# -lzo: don't add lzo support
-# runpath: set runpath for installed $PREFIX location
-# hard-runpath: disable new dtags (disallow LD_LIBRARY_PATH override on Linux)
-# -debug: disable debug
-# strip: remove debugging symbols (size!)
-# -vdb: disable VDB/SRA toolkit
-# z: set zlib
-# bz2: set libbz2
-# -openssl: disable openssl
-# -gcrypt: disable gcrypt (needed on OSX)
-# -krb5: disable kerberos (needed on OSX)
+# Description of used options (from ./configure --help):
+# bin-release:
+#   Build executables suitable for public release
+# 64:
+#   Compile in 64-bit mode instead of 32-bit.
+# mt:
+#   Compile in a multi-threading safe manner.
+# dll:
+#   Use dynamic instead of static linking.
+# openmp:
+#   Enable OpenMP extensions for all projects.
+# autodep:
+#   No automatic dependency build (one time build).
+# makefile-auto-update:
+#   No rebuild of makefile (one time build).
+# flat-makefile:
+#   Use single makefile.
+# caution:
+#   Proceed configuration without asking when in doubt.
+# lzo:
+#   Don't add lzo support (compression lib, req. lzo >2.x).
+# runpath:
+#   Set runpath for installed $PREFIX location.
+# hard-runpath:
+#   Hard-code runtime path, ignoring LD_LIBRARY_PATH (disallow LD_LIBRARY_PATH override on Linux).
+# debug:
+#   Strip -D_DEBUG and -g, engage -DNDEBUG and -O.
+# with-experimental=Int8GI:
+#   Enable named experimental feature: Int8GI (Use a simple 64-bit type for GI numbers).
+#   See c++/src/build-system/configure.ac lines 1020:1068 for the named options.
+# strip:
+#   Strip binaries at build time (remove debugging symbols)
+# vdb:
+#   Disable VDB/SRA toolkit.
+# z:
+#   Set zlib path (compression lib).
+# bz2:
+#   Set bzlib path (compression lib).
+# krb5:
+#   Disable kerberos (needed on OSX).
+# gnutls:
+#   Disable gnutls.
+# gcrypt:
+#   Disable gcrypt (needed on OSX).
+# sse42
+#   Don't enable SSE 4.2 when optimizing.
+# pcre:
+#   Disable pcre (Perl regex).
 
 # Fixes building on unix (linux and osx)
 export AR="${AR} rcs"
@@ -60,25 +91,26 @@ export AR="${AR} rcs"
 if [[ $(uname) = Linux ]] ; then
     ./configure \
         --with-bin-release \
+        --with-64 \
         --with-mt \
         --with-dll \
         --with-openmp \
+        --without-autodep \
+        --without-makefile-auto-update \
         --with-flat-makefile \
+        --without-caution \
         --without-lzo \
-        --without-zstd \
         --with-hard-runpath \
         --with-runpath=$LIB_INSTALL_DIR \
         --without-debug \
         --with-experimental=Int8GI \
         --with-strip \
-        --without-vdb \
+        --with-vdb=$PREFIX \
         --with-z=$PREFIX \
         --with-bz2=$PREFIX \
         --without-krb5 \
         --without-gnutls \
-        --without-sse42 \
-        --without-gcrypt \
-        --without-pcre
+        --without-sse42
 else
     ./configure \
         --with-bin-release \
@@ -90,7 +122,7 @@ else
         --without-debug \
         --with-experimental=Int8GI \
         --with-strip \
-        --without-vdb \
+        --with-vdb=$PREFIX \
         --with-z=$PREFIX \
         --with-bz2=$PREFIX \
         --without-krb5 \
@@ -106,6 +138,7 @@ apps="$apps rpsblast.exe rpstblastn.exe makembindex.exe segmasker.exe"
 apps="$apps dustmasker.exe windowmasker.exe deltablast.exe makeblastdb.exe"
 apps="$apps blastdbcmd.exe blastdb_aliastool.exe convert2blastmask.exe"
 apps="$apps blastdbcheck.exe makeprofiledb.exe blast_formatter.exe rpsbproc.exe"
+apps="$apps blastn_vdb.exe tblastn_vdb.exe"
 cd ReleaseMT
 
 # The "datatool" binary needs the libs at build time, create

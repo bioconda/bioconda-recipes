@@ -1,6 +1,6 @@
-{% set version = "1.37.0" %}
+{% set version = "1.42.0" %}
 {% set name = "stjudem" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,14 +8,16 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 6f2e08c7e679d02bac1b908aa7ad775e
+  md5: 4c6868a60726df51408834a227e551bf
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-stjudem", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
@@ -23,7 +25,7 @@ requirements:
   run:
     - r-base
     - curl
-    - bioconductor-data-packages>=20221103
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
