@@ -21,3 +21,4 @@ cp genomebinLen $PREFIX/bin
 cp dmalign $PREFIX/bin
 cp bam2dm $PREFIX/bin
 cp dmDMR $PREFIX/bin
+cp libBinaMeth.so $PREFIX/lib
