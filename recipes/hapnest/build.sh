@@ -33,7 +33,7 @@ for file in ${PREFIX}/share/hapnest/commands/*; do
 done
 
 #ln -sf  ${PREFIX}/share/hapnest/algorithms/genotype/* $PREFIX/bin/
-for file in ${PREFIX}/share/hapnest/algorithms/genotype/*; do
+for file in ${PREFIX}/share/hapnest/algorithms/genotype/*.jl; do
     ln -sf $file $PREFIX/bin/
 done
 
@@ -42,16 +42,18 @@ for file in ${PREFIX}/share/hapnest/algorithms/phenotype/*; do
     ln -sf $file $PREFIX/bin/
 done
 
-#ln -sf  ${PREFIX}/share/hapnest/evaluation/* $PREFIX/bin/
-for file in ${PREFIX}/share/hapnest/evaluation/*; do
+ln -sf  ${PREFIX}/share/hapnest/evaluation/evaluation.jl  $PREFIX/bin/
+for file in ${PREFIX}/share/hapnest/evaluation/metrics/*.jl; do
     ln -sf $file $PREFIX/bin/
 done
+
 ln -sf  ${PREFIX}/share/hapnest/integrations/gwas.jl  $PREFIX/bin/
 
-#ln -sf  ${PREFIX}/share/hapnest/utils/* $PREFIX/bin/
-for file in ${PREFIX}/share/hapnest/utils/*; do
-    ln -sf $file $PREFIX/bin/
-done
+ln -sf  ${PREFIX}/share/hapnest/utils/reference_data.jl $PREFIX/bin/
+ln -sf  ${PREFIX}/share/hapnest/utils/parameter_parsing.jl  $PREFIX/bin/
+#for file in ${PREFIX}/share/hapnest/utils/*; do
+#    ln -sf $file $PREFIX/bin/
+#done
 
 #ln -sf  ${PREFIX}/share/hapnest/optimisation/* $PREFIX/bin/
 for file in ${PREFIX}/share/hapnest/optimisation/*; do
