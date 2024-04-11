@@ -7,8 +7,14 @@ export JULIA_PKG_USE_CLI_GIT=true
 # Turn off automatic precompilation
 export JULIA_PKG_PRECOMPILE_AUTO=0
 
+#https://github.com/JuliaLang/julia/issues/48873
+LD_LIBRARY_PATH=""
 
 ln -s "${GCC}" "${BUILD_PREFIX}/gcc"
+
+# Define dirs
+DATA_DIR="$PREFIX/data/"
+mkdir -p $DATA_DIR
 
 
 # Copy the required files to a shared directory
@@ -17,6 +23,7 @@ mkdir -p ${PREFIX}/share/hapnest
 mkdir -p ${PREFIX}/bin
 cp -r {commands,integrations,algorithms,evaluation,utils,optimisation,preprocessing,Project.toml,run_program.jl,config.yaml} ${PREFIX}/share/hapnest
 
+ls -ltr ${PREFIX}/share/hapnest
 
 ln -sf  ${PREFIX}/share/hapnest/run_program.jl  $PREFIX/bin/
 
@@ -58,7 +65,10 @@ done
 ln -sf  ${PREFIX}/share/hapnest/Project.toml  $PREFIX/bin/
 ln -sf  ${PREFIX}/share/hapnest/config.yaml  $PREFIX/bin/
 
+#~/conda-bld/hapnest_1711833912133/test_tmp/run_program.jl": No such file or directory
 chmod +x ${PREFIX}/share/hapnest
+ls -ltr $PREFIX/bin
+
 
 #julia -e 'Pkg.init()'
 julia -e 'import Pkg; Pkg.add("Conda")'
