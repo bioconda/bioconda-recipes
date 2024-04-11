@@ -21,6 +21,6 @@ cd build
 
 cmake -D CMAKE_INSTALL_PREFIX:PATH="${PREFIX}" -DUSE_LSD2=ON -DIQTREE_FLAGS=omp ..
 
-make --jobs "${CPU_COUNT}"
+make
 make install
 cp "${PREFIX}"/bin/iqtree2 "${PREFIX}"/bin/iqtree
