@@ -7,6 +7,7 @@ export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS=$(echo "$CXXFLAGS" | sed 's/-std=c++17//g')
 export CMAKE_C_COMPILER="${CC}"
 export CMAKE_CXX_COMPILER="${CXX}"
 
