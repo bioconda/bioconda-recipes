@@ -1,8 +1,16 @@
 #!/bin/bash
 
+# Add workaround for SSH-based Git connections from Rust/cargo.  See https://github.com/rust-lang/cargo/issues/2078 for details.
+# We set CARGO_HOME because we don't pass on HOME to conda-build, thus rendering the default "${HOME}/.cargo" defunct.
+export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="${BUILD_PREFIX}/.cargo"
+
+if [ `uname` == Darwin ]; then
+	export HOME=`mktemp -d`
+fi
+
 # https://molpopgen.github.io/fwdpy11/misc/developersguide.html
 # https://doc.rust-lang.org/cargo/commands/cargo-install.html
-CARGO_INSTALL_ROOT=$BUILD_PREFIX CARGO_HOME=$BUILD_PREFIX cargo install cbindgen
+CARGO_INSTALL_ROOT=$BUILD_PREFIX CARGO_HOME=$CARGO_HOME cargo install cbindgen
 #CARGO_INSTALL_ROOT=$PREFIX CARGO_HOME=$PREFIX cargo install cbindgen
 
 # cmake's "find GSL macro" can barf when conda
@@ -10,7 +18,7 @@ CARGO_INSTALL_ROOT=$BUILD_PREFIX CARGO_HOME=$BUILD_PREFIX cargo install cbindgen
 # fix that:
 #GSL_ROOT_DIR=$PREFIX $PYTHON -m pip install --no-deps --ignore-installed -vv .
 # for mac osx need also to add other vars:
-CARGO_INSTALL_ROOT=$BUILD_PREFIX CARGO_HOME=$BUILD_PREFIX GSL_ROOT_DIR=$PREFIX $PYTHON -m pip install --no-deps --ignore-installed -vv .
+CARGO_INSTALL_ROOT=$BUILD_PREFIX CARGO_HOME=$CARGO_HOME GSL_ROOT_DIR=$PREFIX $PYTHON -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
 # on bioconda's Azure it seems that `$PYTHON` variable is not set because get an error:
 # /opt/conda/conda-bld/fwdpy11_1670108175931/work/conda_build.sh: line 16: -m: command not found
 # so will hard-code it:
