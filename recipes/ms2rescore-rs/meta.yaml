@@ -1,0 +1,50 @@
+{% set name = "ms2rescore-rs" %}
+{% set version = "0.1.0" %}
+{% set sha256 = "8dcf6f44f482c3424358ab88e4a9a84e7fbcde2ebce207f419faaa24c336c60c" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/ms2rescore_rs-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True  # [py < 37]
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - make
+    - cmake
+  host:
+    - zlib
+    - python
+    - maturin >=1.5,<2.0
+    - pip
+  run:
+    - python
+
+test:
+  imports:
+    - ms2rescore_rs
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/compomics/ms2rescore-rs
+  summary: "Rust functionality for the MS²Rescore package"
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - CompOmics
+    - RalfG
