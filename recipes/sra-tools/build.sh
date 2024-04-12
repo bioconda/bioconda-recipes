@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-export CFLAGS="${CFLAGS} -O3 -DH5_USE_110_API -D_FILE_OFFSET_BITS=64 -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -DH5_USE_110_API -D_FILE_OFFSET_BITS=64"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 
 echo "compiling sra-tools"
