@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
-export CFLAGS="${CFLAGS} -O3 -DH5_USE_110_API -D_FILE_OFFSET_BITS=64"
-export CXXFLAGS="${CXXFLAGS} -O3 -DH5_USE_110_API -D_FILE_OFFSET_BITS=64 -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -DH5_USE_110_API -D_FILE_OFFSET_BITS=64 -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 
 echo "compiling sra-tools"
 if [[ ${OSTYPE} == "darwin"* ]]; then
@@ -18,14 +18,13 @@ export SRA_BUILD_DIR=${SRC_DIR}/build_sratools
 mkdir -p ${SRA_BUILD_DIR}
 
 cmake -S sra-tools/ -B build_sratools/ \
-    -DVDB_BINDIR="${PREFIX}/lib64" \
+    -DVDB_BINDIR="${PREFIX}" \
     -DVDB_LIBDIR="${PREFIX}/lib64" \
     -DVDB_INCDIR="${PREFIX}/include" \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_COMPILER="${CXX}" \
-    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-    -DCMAKE_LIBRARY_PATH="${PREFIX}/lib64"
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS}"
 
 cmake --build build_sratools/ --target install -j 4 -v
 
