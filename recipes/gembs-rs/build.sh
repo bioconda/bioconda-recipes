@@ -3,6 +3,7 @@ cd rust
 cp gemBS/Cargo.toml.in gemBS/Cargo.toml
 ls -ahl
 ls -ahl gemBS
+ls -ahl snpxtr
 cargo build --release
 cp target/release/gem_bs $prefix/bin/gemBS
 cp target/release/read_filter $prefix/bin/
