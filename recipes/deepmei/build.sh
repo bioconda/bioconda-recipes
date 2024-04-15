@@ -20,12 +20,7 @@ curl https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/referen
 curl https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/reference.03
 curl https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/reference.04
 curl https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/reference.05
-mv ./variables.data-00000-of-00001aa $PREFIX/bin/DeepMEI_model/weights/val_best_model/variables
-mv ./variables.data-00000-of-00001ab $PREFIX/bin/DeepMEI_model/weights/val_best_model/variables
-mv ./variables.data-00000-of-00001ac $PREFIX/bin/DeepMEI_model/weights/val_best_model/variables
-mv ./variables.data-00000-of-00001ad $PREFIX/bin/DeepMEI_model/weights/val_best_model/variables
-mv ./variables.data-00000-of-00001ae $PREFIX/bin/DeepMEI_model/weights/val_best_model/variables
-mv ./variables.data-00000-of-00001af $PREFIX/bin/DeepMEI_model/weights/val_best_model/variables
+echo "the path of variables.data-00000-of-00001aa is `realpath variables.data-00000-of-00001aa`"
 echo "check start"
 ls -al ./*
 echo "check end"
