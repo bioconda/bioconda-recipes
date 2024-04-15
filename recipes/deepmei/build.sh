@@ -29,7 +29,7 @@ curl -o $PREFIX/bin/reference.04 https://raw.githubusercontent.com/kanglu123/dee
 curl -o $PREFIX/bin/reference.05 https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/reference.05
 cat $PREFIX/bin/reference.0* > $PREFIX/bin/reference.tar.gz
 tar -zxvf $PREFIX/bin/reference.tar.gz
-mv  $PREFIX/bin/reference/* $PREFIX/bin/DeepMEI_model/reference
+mv  ./reference/* $PREFIX/bin/DeepMEI_model/reference
 rm -rf $PREFIX/bin/reference.0* $PREFIX/bin/reference.tar.gz 
 chmod +x $PREFIX/bin/*
 echo "check start"
