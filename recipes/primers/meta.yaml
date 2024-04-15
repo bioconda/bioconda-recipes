@@ -1,0 +1,40 @@
+{% set name = "primers" %}
+{% set version = "0.5.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 6ad13316985a59bba3763a803dbddfbf67a2336a7a51cdaef86d61eabaf434ba
+  patches:
+    - 0001-directly-write-requirements-in-setup.py.patch
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage('primers', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python =3
+    - setuptools
+
+  run:
+    - python =3
+    - seqfold >=0.7.3
+
+test:
+  imports:
+    - primers
+
+about:
+  home: "https://github.com/Lattice-Automation/primers"
+  license: MIT
+  license_file: LICENSE
+  summary: "This is a small, straightforward tool for creating PCR primers. Its target use-case is DNA assembly."
+  doc_url: "https://github.com/Lattice-Automation/primers"
