@@ -1,21 +1,21 @@
 mkdir -p $PREFIX/bin
-wget -t 0 -c https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/candidate_locus.zip
-wget -t 0 -c https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/batch_cdgc.zip
-wget -t 0 -c https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/keras_metadata.pb
-wget -t 0 -c https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/saved_model.pb
-wget -t 0 -c https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/variables/variables.data-00000-of-00001aa
-wget -t 0 -c https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/variables/variables.data-00000-of-00001ab
-wget -t 0 -c https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/variables/variables.data-00000-of-00001ac
-wget -t 0 -c https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/variables/variables.data-00000-of-00001ad
-wget -t 0 -c https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/variables/variables.data-00000-of-00001ae
-wget -t 0 -c https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/variables/variables.data-00000-of-00001af
-wget -t 0 -c https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/variables/variables.index
-wget -t 0 -c https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/reference.00
-wget -t 0 -c https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/reference.01
-wget -t 0 -c https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/reference.02
-wget -t 0 -c https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/reference.03
-wget -t 0 -c https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/reference.04
-wget -t 0 -c https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/reference.05
+curl https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/candidate_locus.zip
+curl https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/batch_cdgc.zip
+curl https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/keras_metadata.pb
+curl https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/saved_model.pb
+curl https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/variables/variables.data-00000-of-00001aa
+curl https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/variables/variables.data-00000-of-00001ab
+curl https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/variables/variables.data-00000-of-00001ac
+curl https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/variables/variables.data-00000-of-00001ad
+curl https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/variables/variables.data-00000-of-00001ae
+curl https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/variables/variables.data-00000-of-00001af
+curl https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/variables/variables.index
+curl https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/reference.00
+curl https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/reference.01
+curl https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/reference.02
+curl https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/reference.03
+curl https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/reference.04
+curl https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/reference.05
 
 ls $PREFIX/bin/
 cp -r * $PREFIX/bin/
