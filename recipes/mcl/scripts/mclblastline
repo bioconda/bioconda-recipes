@@ -1,0 +1,58 @@
+#!/usr/bin/env perl
+
+#     Copyright (C) 2003, 2004, 2005, 2006, 2007 Stijn van Dongen
+ #
+# You can redistribute and/or modify this program under the terms of the GNU
+# General Public License;  either version 3 of the License or (at your option)
+# any later  version.
+
+use strict;
+
+$" = ' ';
+
+my $do_help = 0;
+my $cline = "mclpipeline --parser=mcxdeblast --parser-tag=blast";
+
+unless (grep { $_ =~ /^--ass-r[vei]?=/; } @ARGV) {
+   $cline .= " --ass-r=max";
+}
+
+$cline .= " @ARGV";
+
+if (grep { $_ =~ /--(help|apropos)/; } @ARGV) {
+   $do_help = 1;
+}
+elsif (!@ARGV) {
+   $do_help = 1;
+   $cline .= " --help";
+}
+
+if ($do_help) {
+   print <<_help_;
+mcxblastline wraps around the generic mclpipeline script. It fills in the name
+of the BLAST parser (mcxdeblast) and the tag ('blast') used to propagate
+mcxdeblast options through the pipeline to mcxdeblast itself.  You can freely
+use all mclpipeline options other than --parser=<executable> and
+--parser-tag=<str>.
+_help_
+}
+if (system $cline) {
+   print "mcxblastline wrapper: pipeline failed\n";
+   print "cline: $cline\n";
+   exit(1);
+}
+if ($do_help) {
+   print <<_help_;
+________________
+The above options are generic pipeline options.  You can pass any mcxdeblast
+option by inserting the 'blast' tag in front of that particular option. For
+example, the mcxdeblast --score=x option (where x is 'b' or 'e') should
+be passed to mcxblastline as --blast-score=x.
+
+The mcxdeblast --xo-dat option is special; it must *not* be prefixed, as it is
+shared with mclpipeline, as can be seen from the above listing.  The mcxdeblast
+--xi-dat option should not be used, as it encapsulated by the mclpipeline --xi
+option.
+_help_
+}
+

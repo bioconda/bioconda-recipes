@@ -1,0 +1,48 @@
+{% set name = "pgenlib" %}
+{% set version = "0.90.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/P/Pgenlib/Pgenlib-{{ version }}.tar.gz"
+  sha256: 09825be43ffb25bc68b6e243b98989a5bc35a8aa22cd749fd9f602d778dd6bd0
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage('pgenlib', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - pip
+    - cython
+    - numpy
+    - zlib
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+
+test:
+  imports:
+    - {{ name }}
+
+about:
+  home: "https://github.com/chrchang/plink-ng"
+  license: "LGPL-3.0-or-later"
+  license_family: LGPL
+  license_file: LICENSE
+  summary: "Python wrapper for pgenlib's basic reader and writer."
+  doc_url: "https://github.com/chrchang/plink-ng/blob/master/2.0/Python/README.md"
+  dev_url: "https://github.com/chrchang/plink-ng/tree/master/2.0/Python"
+
+extra:
+  recipe-maintainers:
+    - chrchang
+  identifiers:
+    - doi:10.1186/s13742-015-0047-8

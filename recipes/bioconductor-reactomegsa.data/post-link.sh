@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "reactomegsa.data-1.11.0"
+installBiocDataPackage.sh "reactomegsa.data-1.16.1"

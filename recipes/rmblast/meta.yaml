@@ -1,6 +1,6 @@
 {% set name = "RMBlast" %}
-{% set version = "2.14.0" %}
-{% set sha256 = "bf477f1b0c3b82f0b7a7094bf003a9a83e37e3b0716c1df799060c4feab17500" %}
+{% set version = "2.14.1" %}
+{% set sha256 = "712c2dbdf0fb13cc1c2d4f4ef5dd1ce4b06c3b57e96dfea8f23e6e99f5b1650e" %}
 
 package:
   name: {{ name|lower }}
@@ -11,38 +11,36 @@ source:
   sha256: {{ sha256 }}
   patches:
     #- isb-{{ version }}+-{{ name }}.patch # Needs the -p1 option, applied in build.sh
-    # patch taken from http://www.repeatmasker.org/rmblast/isb-2.14.0+-rmblast.patch.gz
+    # patch taken from http://www.repeatmasker.org/rmblast/isb-2.14.1+-rmblast.patch.gz
+    - isb-2.14.1+-rmblast.patch
     - configurellvm.patch
     - get_species_taxids.patch
     - phonehome.patch
 
 build:
-  number: 1
-  skip: True # [osx]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('rmblast', max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
   host:
-    - bzip2
     - zlib
-    - pcre
+    - bzip2
     - entrez-direct
+    - pcre
     - curl
-    - nettle
     - time
   run:
-    - bzip2
     - zlib
-    - pcre
+    - bzip2
+    - entrez-direct
     - perl
     - perl-list-moreutils
     - perl-archive-tar
     - perl-json
-    - entrez-direct
-    - curl
-    - nettle
 
 test:
   commands:
@@ -82,3 +80,5 @@ about:
 extra:
   identifiers:
     - biotools:rmblast
+  recipe-maintainers:
+    - mencian

@@ -1,5 +1,5 @@
 {% set name = "wfmash" %}
-{% set version = "0.10.3" %}
+{% set version = "0.13.0" %}
 
 package:
   name: "{{ name }}"
@@ -7,11 +7,13 @@ package:
 
 source:
   url: https://github.com/waveygang/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
-  sha256: 62f2b58d81ce182999da208dcefa7faf8969d44fc6360fa0ebad5c963ba6ebd0
+  sha256: d358dfadef8efa32c923de9a7c35891f7178efc70c0de08234db58bc3ab8c82c
 
 build:
   skip: True  # [osx]
-  number: 2
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+  number: 0
 
 requirements:
   build:
@@ -25,8 +27,10 @@ requirements:
     - zlib
     - jemalloc
     - htslib
+    - libblas
   run:
     - llvm-openmp  # [osx]
+    - python >=3.7
 
 test:
   commands:
