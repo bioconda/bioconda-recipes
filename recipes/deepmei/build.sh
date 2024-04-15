@@ -16,7 +16,9 @@ curl https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/referen
 curl https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/reference.03
 curl https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/reference.04
 curl https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/reference.05
-
+echo "the present dir is $PWD"
+echo `realpath ./variables.data-00000-of-00001aa`
+echo `ls -al ./*`
 ls $PREFIX/bin/
 cp -r * $PREFIX/bin/
 cd $PREFIX/bin/
