@@ -21,7 +21,6 @@ echo `realpath ./variables.data-00000-of-00001aa`
 echo `ls -al ./*`
 ls $PREFIX/bin/
 cp -r * $PREFIX/bin/
-cd $PREFIX/bin/
 mkdir -p $PREFIX/bin/DeepMEI_model/weights/val_best_model/variables
 mkdir -p $PREFIX/bin/data_cluster/candidate_locus
 mkdir -p $PREFIX/bin/DeepMEI_model/batch_cdgc
