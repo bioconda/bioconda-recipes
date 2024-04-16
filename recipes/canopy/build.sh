@@ -3,4 +3,4 @@
 echo "Compiling Canopy"
 mkdir -p ${PREFIX}/bin
 make
-mv cc.bin bin/
+mv cc.bin ${PREFIX}/bin/
