@@ -13,6 +13,12 @@ mkdir -p extlibs/PicoSHA2 && pushd extlibs/PicoSHA2
 curl -o picosha2.h https://raw.githubusercontent.com/okdshin/PicoSHA2/master/picosha2.h
 popd
 
+pushd artic
+if [ `uname -m` == "aarch64" ]; then
+    sed -i '6i\#include<cstdint>' kmers.hpp
+fi
+popd
+
 mkdir build && pushd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make 
