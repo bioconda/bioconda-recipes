@@ -1,0 +1,54 @@
+{% set name = "beacon2-import" %}
+{% set version = "1.0.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/beacon2-import-{{ version }}.tar.gz
+  sha256: ac74ee0b12f656aa73b498fb03fcb82eefb237fbc71dedab80d87cbedefe27fe
+
+build:
+  entry_points:
+    - beacon2-import = beacon2_import.beacon2_import:beacon2_import
+    - beacon2-search = beacon2_search.beacon2_search:beacon_query
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >3.6
+    - pip
+  run:
+    - python >3.6
+    - jsonschema
+    - argparse
+    - dataclasses
+    - typing
+    - bioblend
+    - cyvcf2
+    - pymongo
+
+test:
+  imports:
+    - beacon2_import
+    - search
+    - utils
+  commands:
+    - pip check
+    - beacon2-import --help
+    - beacon2-search --help
+  requires:
+    - python >=3.6
+    - pip
+
+about:
+  summary: Seamlessly import and query genomic variant data from a beacon
+  license: CC-BY-NC-4.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - khaled196
