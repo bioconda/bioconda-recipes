@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export LANGUAGE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
 # Creating necessary directories
 mkdir -p "${PREFIX}/bin"
 
@@ -15,7 +18,7 @@ sed -i "s:/usr/bin/perl:/usr/bin/env perl:" "${PREFIX}/bin/ripcal"
 sed -i "s:/usr/bin/perl:/usr/bin/env perl:" "${PREFIX}/bin/deripcal"
 sed -i "s:/usr/bin/perl:/usr/bin/env perl:" "${PREFIX}/bin/ripcal_summarise"
 
-export "PERL5LIB=${PREFIX}/lib/perl5/site_perl/:${PERL5LIB}"
+#export "PERL5LIB=${PREFIX}/lib/perl5/site_perl/:${PERL5LIB}"
 
 sed -i.bak '/^use Tk/ s/^/# /' "${PREFIX}/bin/ripcal"
 
