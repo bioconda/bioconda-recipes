@@ -8,10 +8,10 @@ mkdir -p $PREFIX/bin/DeepMEI_model/reference
 #cd $PREFIX/bin/
 curl -o $PREFIX/bin/candidate_locus.tar.gz  https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/candidate_locus.tar.gz
 tar -zxvf  $PREFIX/bin/candidate_locus.tar.gz
-mv $PREFIX/bin/candidate_locus/* $PREFIX/bin/data_cluster/candidate_locus
+mv ./candidate_locus/* $PREFIX/bin/data_cluster/candidate_locus
 curl -o $PREFIX/bin/batch_cdgc.tar.gz https://raw.githubusercontent.com/kanglu123/deepmei/deepmei-v1.6.24/batch_cdgc.tar.gz
 tar -zxvf  $PREFIX/bin/batch_cdgc.tar.gz
-mv $PREFIX/bin/batch_cdgc/* $PREFIX/bin/data_cluster/batch_cdgc
+mv ./batch_cdgc/* $PREFIX/bin/DeepMEI_model/batch_cdgc
 curl -o $PREFIX/bin/DeepMEI_model/weights/val_best_model/keras_metadata.pb  https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/keras_metadata.pb
 curl -o $PREFIX/bin/DeepMEI_model/weights/val_best_model/saved_model.pb https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/saved_model.pb
 curl -o $PREFIX/bin/DeepMEI_model/weights/val_best_model/variables/variables.data-00000-of-00001aa https://github.com/xuxif/DeepMEI/raw/main/DeepMEI/DeepMEI_model/weights/val_best_model/variables/variables.data-00000-of-00001aa
