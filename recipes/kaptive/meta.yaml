@@ -1,16 +1,20 @@
 {% set version = "3.0.0" %}
+{% set home = "https://github.com/klebgenomics/Kaptive" %}
 
 package:
   name: kaptive
   version: {{ version }}
 
 source:
-  url: https://github.com/klebgenomics/Kaptive/archive/v{{ version }}.tar.gz
+  url: {{home}}/archive/v{{ version }}.tar.gz
   sha256: 054855e5ba5cbd1dec4a1aff4f39943d6ac6c7d06ac4f79df5e4d08d8af5ef5e
 
 build:
   number: 0
   noarch: generic
+  run_exports:
+    - {{ pin_subpackage('kaptive', max_pin="2") }}
+  script: setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
   run:
@@ -18,15 +22,13 @@ requirements:
     - biopython >=1.83
     - minimap2 >=2.26
 
-script: python -m pip install --ignore-installed .
-
 test:
   commands:
     - kaptive -h
     - kaptive assembly -h
 
 about:
-  home: https://github.com/klebgenomics/Kaptive
+  home: {{home}}
   license: GPL3
   license_file: LICENSE
   summary: In silico serotyping
