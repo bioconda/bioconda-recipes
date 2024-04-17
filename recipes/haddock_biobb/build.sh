@@ -18,6 +18,6 @@ make \
     CC="${CC}"
 cd $SRC_DIR
 
-{{ PYTHON }} setup.py develop --no-deps
+${PYTHON} setup.py develop --no-deps"
 
 mkdir -p $PREFIX/bin
