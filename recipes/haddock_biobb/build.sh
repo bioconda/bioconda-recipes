@@ -15,7 +15,7 @@ git clone https://github.com/mgiulini/fast-rmsdmatrix.git
 cd fast-rmsdmatrix/src
 chmod u+x Makefile
 make \
-    CC="${CXX}"
+    CC="${C}"
 cd $SRC_DIR
 
 {{ PYTHON }} setup.py develop --no-deps
