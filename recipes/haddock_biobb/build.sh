@@ -7,7 +7,7 @@ cd fcc/src
 chmod u+x Makefile
 make \
     CPP="${CXX}"
-cd $PREFIX
+cd $SRC_DIR
 
 # Compile fast-rmsdmatrix
 cd src/
@@ -16,7 +16,7 @@ cd fast-rmsdmatrix/src
 chmod u+x Makefile
 make \
     CPP="${CXX}"
-cd $PREFIX
+cd $SRC_DIR
 
 {{ PYTHON }} setup.py develop --no-deps
 
