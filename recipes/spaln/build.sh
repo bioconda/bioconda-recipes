@@ -7,7 +7,7 @@ export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CFLAGS="${CFLAGS} -O3 -march=native ${LDFLAGS}"
+export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
 
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${SRC_DIR}/perl/*.pl
 rm -rf ${SRC_DIR}/perl/*.bak
