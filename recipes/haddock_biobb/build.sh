@@ -18,6 +18,6 @@ make \
     CC="${CC}"
 cd $SRC_DIR
 
-${PYTHON} setup.py install --no-deps
+${PYTHON} setup.py install --single-version-externally-managed --record=record.txt --no-deps
 
 mkdir -p $PREFIX/bin
