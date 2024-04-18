@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
-export CFLAGS="${CFLAGS} -O3 -DH5_USE_110_API"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 -DH5_USE_110_API -D_FILE_OFFSET_BITS=64 ${LDFLAGS}"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 
 echo "compiling sra-tools"
@@ -17,7 +18,7 @@ mkdir -p obj/ngs/ngs-java/javadoc/ngs-doc  # prevent error on OSX
 export SRA_BUILD_DIR=${SRC_DIR}/build_sratools
 mkdir -p ${SRA_BUILD_DIR}
 
-if [ "$(uname)" == "Darwin" ]; then
+if [[ "$(uname)" == "Darwin" ]]; then
     export VDB_INC="${SRC_DIR}/ncbi-vdb/interfaces"
 else
     export VDB_INC="${PREFIX}/include"
