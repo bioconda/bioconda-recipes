@@ -6,8 +6,6 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
-export LANGUAGE=en_US.UTF-8
-export LANG=en_US.UTF-8  
 export LC_ALL=en_US.UTF-8
 
 if [ "$(uname)" == "Darwin" ]; then
