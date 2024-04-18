@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-export CFLAGS="${CFLAGS} -O3 -DH5_USE_110_API -D_FILE_OFFSET_BITS=64"
+export CFLAGS="${CFLAGS} -O3 -DH5_USE_110_API"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 
 echo "compiling sra-tools"
@@ -17,16 +17,22 @@ mkdir -p obj/ngs/ngs-java/javadoc/ngs-doc  # prevent error on OSX
 export SRA_BUILD_DIR=${SRC_DIR}/build_sratools
 mkdir -p ${SRA_BUILD_DIR}
 
+if [ "$(uname)" == "Darwin" ]; then
+    export VDB_INC="${SRC_DIR}/ncbi-vdb/interfaces"
+else
+    export VDB_INC="${PREFIX}/include"
+fi
+
 cmake -S sra-tools/ -B build_sratools/ \
     -DVDB_BINDIR="${PREFIX}" \
     -DVDB_LIBDIR="${PREFIX}/lib64" \
-    -DVDB_INCDIR="${PREFIX}/include" \
+    -DVDB_INCDIR="${VDB_INC}" \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_COMPILER="${CXX}" \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}"
 
-cmake --build build_sratools/ --target install -j 4 -v
+cmake --build build_sratools/ --target install -j ${CPU_COUNT} -v
 
 
 # Strip package version from binary names
