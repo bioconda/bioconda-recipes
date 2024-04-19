@@ -14,20 +14,20 @@ build:
     - beacon2-import = beacon2_import.beacon2_import:beacon2_import
     - beacon2-search = beacon2_search.beacon2_search:beacon_query
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script:
+    - conda config --add channels defaults
+    - conda config --add channels conda-forge
+    - conda config --add channels bioconda 
+    - conda config --set channel_priority strict
+    - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
   run_exports:
     - {{ pin_subpackage('beacon2-import', max_pin="x") }}
-  channels:
-    - defaults
-    - conda-forge
-    - bioconda
 
 requirements:
   host:
     - python >=3.10
     - pip
-    - argparse
   run:
     - python =3.6.15
     - jsonschema
@@ -36,6 +36,7 @@ requirements:
     - bioblend  =0.10.0
     - cyvcf2
     - pymongo
+    - argparse
 
 test:
   imports:
