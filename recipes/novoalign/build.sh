@@ -20,6 +20,9 @@ cp novo2maq/novo2maq ${PREFIX}/bin
 # Install all executables
 find . -maxdepth 1 -perm -111 -type f -exec cp {} ${PREFIX}/bin ';'
 
+file ${PREFIX}/bin/novo*
+${PREFIX}/bin/novoalign --version
+
 # Install license script
 cp ${RECIPE_DIR}/novoalign-license-register.sh ${PREFIX}/bin/novoalign-license-register
 
