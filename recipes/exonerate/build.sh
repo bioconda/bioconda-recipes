@@ -15,5 +15,5 @@ if [[ "$(uname)" == Darwin ]]; then
 fi
 
 ./configure --prefix=${PREFIX} --enable-pthreads
-make
+make -j${CPU_COUNT}
 make install
