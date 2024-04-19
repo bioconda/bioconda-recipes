@@ -3,18 +3,18 @@ set -eux
 
 mkdir -p "${PREFIX}/bin"
 
-if [ $(uname -m) == "aarch64" ]; then
-    for makefile in $(find ./ -name "Makefile"); do
-        sed -i'.bak' "s/-m64//" $makefile
-    done
+if [ $(uname -m) == "x86_64" ]; then
+    ARCH_OPTS="-m64"
+else
+    ARCH_OPTS=""
 fi
 
 # Compile and install novo2maq
 make -C novo2maq -j${CPU_COUNT} \
     CC="${CC}" \
     CXX="${CXX}" \
-    CFLAGS="${CFLAGS} ${CPPFLAGS} -g -Wall -O2 -m64 ${LDFLAGS}" \
-    CXXFLAGS="${CXXFLAGS} ${CPPFLAGS} -g -Wall -O2 -m64 -fpermissive ${LDFLAGS}"
+    CFLAGS="${CFLAGS} ${CPPFLAGS} -g -Wall -O2 ${ARCH_OPTS} ${LDFLAGS}" \
+    CXXFLAGS="${CXXFLAGS} ${CPPFLAGS} -g -Wall -O2 ${ARCH_OPTS} -fpermissive ${LDFLAGS}"
 cp novo2maq/novo2maq ${PREFIX}/bin
 
 # Install all executables
