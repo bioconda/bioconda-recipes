@@ -1,19 +1,20 @@
 {% set name = "Bamsurgeon" %}
-{% set version = "1.4.1" %}
+{% set version = "1.0.0" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://github.com/adamewing/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 137981f16df21fe5b4f602c641372a20643a8bb92e6c6dddace499427417213f
+  url: https://github.com/Tim15-tech/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 64c36f560b10c2931eae2a0aaf8fea8d477e05826c173a1b1efb9249f414ee44
 
 build:
-  run_exports:
+  run_exports:    
     - {{ pin_subpackage('bamsurgeon', max_pin="x") }}
-  noarch: generic
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir -vvv ."
   number: 0
+  noarch: python
 
 requirements:
   host:
@@ -30,8 +31,8 @@ requirements:
 
 test:
   commands:
-    - ls
-    # test included in run_test.sh as find is not working and change of folder via cd not possibe in run_test.sh generated with this test here
+    - addsv -p 1 -v ${PREFIX}/test_data/test_sv.txt -f ${PREFIX}/test_data/testregion_realign.bam -r ${PREFIX}/test_data/Homo_sapiens_chr22_assembly19.fasta -o ${PREFIX}/test_data/testregion_sv_mut.bam --aligner mem --keepsecondary --seed 1234 --inslib test_data/test_inslib.fa
+
 about:
   home: https://github.com/adamewing/bamsurgeon
   license: MIT-license
