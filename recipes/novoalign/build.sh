@@ -1,7 +1,13 @@
 #!/bin/bash
-set -eu
+set -eux
 
 mkdir -p "${PREFIX}/bin"
+
+if [ $(uname -m) == "aarch64" ]; then
+    for makefile in $(find ./ -name "Makefile"); do
+        sed -i'.bak' "s/-m64//" $makefile
+    done
+fi
 
 # Compile and install novo2maq
 make -C novo2maq -j${CPU_COUNT} \
