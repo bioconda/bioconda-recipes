@@ -4,7 +4,7 @@ set -eu
 mkdir -p "${PREFIX}/bin"
 
 # Compile and install novo2maq
-make -C novo2maq \
+make -C novo2maq -j${CPU_COUNT} \
     CC="${CC}" \
     CXX="${CXX}" \
     CFLAGS="${CFLAGS} ${CPPFLAGS} -g -Wall -O2 -m64 ${LDFLAGS}" \
