@@ -53,6 +53,7 @@ jobs: # a basic unit of work in a run
       - run:
           name: Build and test
           command: |
+            set -x
             source /opt/mambaforge/etc/profile.d/conda.sh
             source /opt/mambaforge/etc/profile.d/mamba.sh
             mamba activate bioconda
@@ -60,7 +61,8 @@ jobs: # a basic unit of work in a run
             # '/bin/sh -c'. This way /etc/profile is consulted and `umask` is set to 022
             # See https://github.com/galaxyproject/galaxy/issues/17631 for more details
             python -m pip install git+https://git@github.com/galaxyproject/galaxy.git@dev#subdirectory=packages/tool_util
-            export INVFILE="./.circleci/invfile.lua"
+            ls -la ${PWD}/.circleci/invfile.lua
+            export INVFILE="${PWD}/.circleci/invfile.lua"
             bioconda-utils build recipes config.yml \
                 --lint --docker --mulled-test \
                 --docker-base-image quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch) \
