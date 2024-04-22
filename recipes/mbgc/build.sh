@@ -9,5 +9,10 @@ export CFLAGS="$CFLAGS -I$BUILD_PREFIX/include"
 export CXXFLAGS="$CFLAGS -I$BUILD_PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$BUILD_PREFIX/lib"
 cmake ..
-make mbgc
+if [[ "$(uname)" == "Linux" ]]; then
+  make mbgc
+else 
+  make mbgc-noavx
+  mv mbgc-noavx mbgc
+fi
 cp mbgc $PREFIX/bin
