@@ -13,4 +13,4 @@ install ${SRC_DIR}/bin/tools/*.py -t $PREFIX/bin/tools/
 install ${SRC_DIR}/bin/tools/*.R -t $PREFIX/bin/tools/
 install ${SRC_DIR}/bin/tools/*.sh -t $PREFIX/bin/tools/
 
-install ${SRC_DIR}/info/B.FR.83.HXB2_LAI_IIIB_BRU.K03455.fasta -t $PREFIX/data/external
+install ${SRC_DIR}/data/external/B.FR.83.HXB2_LAI_IIIB_BRU.K03455.fasta -t $PREFIX/data/external
