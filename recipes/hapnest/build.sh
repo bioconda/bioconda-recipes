@@ -12,20 +12,25 @@ LD_LIBRARY_PATH=""
 
 ln -s "${GCC}" "${BUILD_PREFIX}/gcc"
 
-# Define dirs
-DATA_DIR="$PREFIX/data/"
+# define hapnest-specific dirs
+DATA_DIR="data/"
+SCRIPT_DIR=${PREFIX}/share/hapnest
+
 mkdir -p $DATA_DIR
-
-
-# Copy the required files to a shared directory
-#SCRIPT_DIR=${PREFIX}/share/hapnest
-mkdir -p ${PREFIX}/share/hapnest
+mkdir -p $SCRIPT_DIR
 mkdir -p ${PREFIX}/bin
-cp -r {commands,integrations,algorithms,evaluation,utils,optimisation,preprocessing,Project.toml,run_program.jl,config.yaml} ${PREFIX}/share/hapnest
 
-ls -ltr ${PREFIX}/share/hapnest
 
-ln -sf  ${PREFIX}/share/hapnest/run_program.jl  $PREFIX/bin/
+cp -r {commands,integrations,algorithms,evaluation,utils,optimisation,preprocessing,Project.toml,run_program.jl,config.yaml} $SCRIPT_DIR 
+
+ls -ltr $SCRIPT_DIR
+
+#ln -sf  ${PREFIX}/share/hapnest/run_program.jl  $PREFIX/bin/
+
+#for file in $SCRIPT_DIR/{commands/*,algorithms/genotype/*.jl,algorithms/phenotype/*,evaluation/evaluation.jl,evaluation/metrics/*.jl,integrations/gwas.jl,utils/{reference_data.jl,parameter_parsing.jl},optimisation/*,preprocessing/*,Project.toml,config.yaml}; do
+#    ln -sf $file $PREFIX/bin/
+#done
+
 
 #ln -sf  ${PREFIX}/share/hapnest/commands/* $PREFIX/bin/
 for file in ${PREFIX}/share/hapnest/commands/*; do
@@ -70,7 +75,7 @@ ln -sf  ${PREFIX}/share/hapnest/config.yaml  $PREFIX/bin/
 #~/conda-bld/hapnest_1711833912133/test_tmp/run_program.jl": No such file or directory
 chmod +x ${PREFIX}/share/hapnest
 ls -ltr $PREFIX/bin
-
+ls -ltr $SCRIPT_DIR
 
 #julia -e 'Pkg.init()'
 julia -e 'import Pkg; Pkg.add("Conda")'
