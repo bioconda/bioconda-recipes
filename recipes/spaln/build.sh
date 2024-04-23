@@ -18,7 +18,7 @@ cd src
 ./configure --exec_prefix="${PREFIX}/bin" --table_dir="${PREFIX}/share/spaln/table" \
 	--alndbs_dir="${PREFIX}/share/spaln/alndbs"
 
-make CFLAGS="${CFLAGS}" AR="${AR:-ar} rc" LDFLAGS="${LDFLAGS}" -j4
+make CFLAGS="${CFLAGS}" AR="${AR:-ar} rc" LDFLAGS="${LDFLAGS}" -j${CPU_COUNT}
 make install
 
 make clearall
