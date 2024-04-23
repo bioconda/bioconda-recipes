@@ -12,13 +12,15 @@ source:
   sha256: 6f81767c3d382cc07203a298f14d1cbdda2f6ff9efa1a109cbb7e89fca7db7fd
 
 build:
-  number: 1
+  number: 2
   script:
     - 'echo "using gcc : : ${GXX} ;" > site-config.jam'
     - "./quickbuild.sh -j{{ CPU_COUNT }} address-model=64 runtime-link=shared {{ targets }} --site-config=site-config.jam"
     - "mkdir -p $PREFIX/bin"
     - "cp build-linux-x86_64/gcc-release-x86_64/* $PREFIX/bin"
   skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('bumbershoot', max_pin='x.x') }}
 
 requirements:
   build:
@@ -38,3 +40,7 @@ test:
     - quameter --help
     - pepitome --help
     - idpQuery 2>&1 | grep "Not enough arguments"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
