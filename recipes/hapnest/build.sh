@@ -13,7 +13,7 @@ LD_LIBRARY_PATH=""
 ln -s "${GCC}" "${BUILD_PREFIX}/gcc"
 
 # define hapnest-specific dirs
-DATA_DIR="data/"
+DATA_DIR="$PWD/data/"
 SCRIPT_DIR=${PREFIX}/share/hapnest
 
 mkdir -p $DATA_DIR
