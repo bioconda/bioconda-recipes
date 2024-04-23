@@ -25,7 +25,7 @@ cp -r {commands,integrations,algorithms,evaluation,utils,optimisation,preprocess
 
 ls -ltr $SCRIPT_DIR
 
-#ln -sf  ${PREFIX}/share/hapnest/run_program.jl  $PREFIX/bin/
+ln -sf  ${PREFIX}/share/hapnest/run_program.jl  $PREFIX/bin/
 
 #for file in $SCRIPT_DIR/{commands/*,algorithms/genotype/*.jl,algorithms/phenotype/*,evaluation/evaluation.jl,evaluation/metrics/*.jl,integrations/gwas.jl,utils/{reference_data.jl,parameter_parsing.jl},optimisation/*,preprocessing/*,Project.toml,config.yaml}; do
 #    ln -sf $file $PREFIX/bin/
