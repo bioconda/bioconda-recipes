@@ -1,0 +1,42 @@
+{% set name = "metasnek" %}
+{% set version = "0.0.8" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/metasnek-{{ version }}.tar.gz
+  sha256: 33babe2e8294a9bc3bd97b30f8eb7c802252c5013dc6026096956bab319eb2fc
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+  number: 0
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+
+test:
+  imports:
+    - metasnek
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/beardymcjohnface/metasnek
+  summary: Misc functions for metagenomics pipelines
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - beardymcjohnface

@@ -1,43 +1,36 @@
 package:
   name: gseapy
-  version: "0.10.8"
+  version: "1.1.2"
 
 source:
-  url: https://files.pythonhosted.org/packages/1a/f2/22053e1a8d447784cc53dd9f9f879a81593ff1201031f374f1a59d062010/gseapy-0.10.8.tar.gz
-  sha256: 15be80bac73768501f5cecf6751aeb2e41416fd144bd6daa2ec453ad08a10ce0
+  url: https://files.pythonhosted.org/packages/bc/54/4e09f7d74d0d1778b081fff8853a3ca6d03a951032424691be6d2df6fbea/gseapy-1.1.2.tar.gz
+  sha256: fd861b9e75a5103bd4a6bd67925f8f4a3c5b48d51e0ae068f56fb01aa9201e9e
 
 build:
-  noarch: python
   entry_points:
     - gseapy = gseapy.__main__:main
-  number: 0
+  run_exports:
+    - {{ pin_subpackage("gseapy", max_pin="x") }}
+  skip: True  # [py2k or py == 36 ]
+  number: 1
 
 requirements:
+  build: 
+    - {{ compiler('rust') }}
   host:
-    - python >3
+    - python
+    - wheel
     - setuptools
-    - numpy >=1.13.0
-    - scipy
-    - pandas >=0.16
-    - matplotlib-base >=1.4.3
-    - beautifulsoup4 >=4.4.1
-    - requests
-    - lxml
-    - html5lib
-    - bioservices
-    - joblib
+    - setuptools-rust
+    - tomli >=1.2.1
   run:
-    - python >3
+    - python
     - numpy >=1.13.0
     - scipy
     - pandas >=0.16
     - matplotlib-base >=1.4.3
-    - beautifulsoup4 >=4.4.1
     - requests
-    - lxml
-    - html5lib
-    - bioservices
-    - joblib
+    - tomli >=1.2.1
 
 test:
   imports:
@@ -52,6 +45,8 @@ about:
   license_family: MIT
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   container:
     # matplotlib needs opengl support
     extended-base: true

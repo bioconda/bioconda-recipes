@@ -1,6 +1,6 @@
 {% set name = "pbbam" %}
-{% set version = "2.0.0" %}
-{% set sha256 = "58956b456d72f1c5abe5adbf7889e27d9cc73f541c8432b740fedf6d0638230d" %}
+{% set version = "2.4.0" %}
+{% set sha256 = "a386a5231b06b0ea660d81abe8081041c200d1817710b89bc9888b485a7aab26" %}
 
 package:
   name: {{ name }}
@@ -12,28 +12,24 @@ source:
 
 build:
   number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('pbbam', max_pin='x.x') }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - meson >=0.52.0
+    - meson >=0.57.0
     - ninja
     - pkg-config
   host:
     - boost-cpp
     - zlib
     - htslib
-    - pbcopper 1.9.3*
+    - pbcopper 2.3.*
   run:
     - htslib
-
-test:
-  commands:
-    - bam2sam -h
-    - pbbamify -h
-    - pbindex -h
-    - pbindexdump -h
-    - pbmerge -h
+    - pbtk
 
 about:
   home: https://github.com/PacificBiosciences/pbbam
@@ -45,3 +41,8 @@ extra:
     - pb-dseifert
     - mhsieh
     - pezmaster31
+    - armintoepfer
+
+test:
+  commands:
+    - test -f $PREFIX/lib/libpbbam*  # [unix]

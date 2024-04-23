@@ -1,0 +1,67 @@
+name: Update build failure list
+
+on:
+  schedule:
+    - cron: 5 5 * * *
+  push:
+    branches:
+      - master
+    paths:
+      - "**build_failure.*.yaml"
+
+jobs:
+  update-build-failure-page:
+    name: Update build failure page
+    if: github.repository == 'bioconda/bioconda-recipes'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: set path
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+
+      - name: Fetch conda install script
+        run: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
+
+      - name: Restore cache
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: /opt/mambaforge
+          key: ${{ runner.os }}--master--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
+
+      - name: Set up bioconda-utils
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: bash install-and-set-up-conda.sh
+
+      # This script can be used to reconfigure conda to use the right channel setup.
+      # This has to be done after the cache is restored, because
+      # the channel setup is not cached as it resides in the home directory.
+      # We could use a system-wide (and therefore cached) channel setup,
+      # but mamba does not support that at the time of implementation
+      # (it ignores settings made with --system).
+      - name: Configure conda
+        run: bash configure-conda.sh
+
+      - name: Generate build failure table
+        run: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+
+          mkdir build-failures
+          md=build-failures/build-failures.md
+          echo "# Build failures" > $md
+          echo "Automatically updated (nightly) list of build failures that currently block builds from the listed recipes. Please help with fixing them!" >> $md
+          bioconda-utils list-build-failures recipes --output-format markdown --link-prefix https://github.com/bioconda/bioconda-recipes/blob/master >> $md
+
+      - name: Upload build failure to wiki
+        uses: docker://decathlon/wiki-page-creator-action:latest
+        env:
+          GH_PAT: ${{secrets.BIOCONDA_BOT_REPO_TOKEN}}
+          ACTION_MAIL: BiocondaBot@users.noreply.github.com
+          ACTION_NAME: BiocondaBot
+          OWNER: bioconda
+          REPO_NAME: bioconda-recipes
+          MD_FOLDER: build-failures
+          

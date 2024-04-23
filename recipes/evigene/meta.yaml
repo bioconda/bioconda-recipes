@@ -1,0 +1,45 @@
+{% set name = "evigene" %}
+{% set raw_version = "23jul15" %}
+{% set version = "23.7.15" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: http://arthropods.eugenes.org/EvidentialGene/other/evigene_old/{{ name }}{{ raw_version }}.tar
+  sha256: 8fe8e5c21ac3f8b7134d8e26593fe66647eb8b7ba2c1cd1c158fc811769b9539
+
+build:
+  noarch: generic
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('evigene', max_pin='x') }}
+
+requirements:
+  run:
+    - perl
+    - exonerate
+    - cd-hit
+    - blast
+
+test:
+  commands:
+    - capture_die=$(bash -c "$EVIGENEHOME/scripts/prot/tr2aacds.pl || true" 2>&1)
+    - echo "$capture_die" | grep "VERSION 2022.04.05"
+
+about:
+  home: http://arthropods.eugenes.org/EvidentialGene/
+  summary: 'A genome informatics project for Evidence Directed Gene Construction for Eukaryotes'
+  description: |
+    EvidentialGene is a genome informatics project for "Evidence Directed Gene Construction for Eukaryotes", 
+    for constructing high quality, accurate gene sets for animals and plants (any eukaryotes), being developed 
+    by Don Gilbert at Indiana University, gilbertd at indiana edu. The perl scripts are nested inside the 
+    'scripts' folder and, therefor can only be used by providing the full path 
+    such as '$EVIGENEHOME/scripts/prot/tr2aacds.pl -h'
+  license: Don Gilbert, gilbertd At indiana edu, 2018
+
+extra:
+  recipe-maintainers:
+    - gallvp
+

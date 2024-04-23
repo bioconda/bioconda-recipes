@@ -1,17 +1,19 @@
 {% set name = "artic" %}
-{% set version = "1.2.2" %}
-{% set sha256 = "4f8ea1ef98d01329ef60e9f3159db6b753bb7151ec405577c8719e1d23ca2942" %}
+{% set version = "1.2.4" %}
+{% set sha256 = "981219a49cec01dc82a9375b16f844278e797ad4034efa1eaa410ccb1849c617" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version|replace("-", "_") }}
 source:
-  url: https://github.com/artic-network/fieldbioinformatics/archive/{{ version }}.tar.gz
+  url: https://github.com/artic-network/fieldbioinformatics/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('artic', max_pin='x.x') }}
   script: python -m pip install --ignore-installed .
   entry_points:
     - artic=artic.pipeline:main
@@ -32,28 +34,31 @@ requirements:
     - python >=3
     - pip
   run:
-    - artic-porechop =0.3.2pre
-    - artic-tools =0.2.6
-    - bcftools =1.10.2
-    - biopython =1.76
-    - bwa =0.7.17
+    - python
+    - artic-porechop >=0.3.2pre
+    - artic-tools
+    - longshot
+    - bcftools
+    - biopython
+    - bwa
     - clint
-    - htslib =1.10.2
-    - longshot =0.4.1
-    - medaka =1.0.3
-    - minimap2 =2.17
+    - htslib
+    - medaka >=1.10.0
+    - minimap2 >=2.26
     - multiqc
     - muscle =3.8
-    - nanopolish =0.13.2
-    - pandas =0.23.0
+    - nanopolish >=0.14.0
+    - pandas
     - pip
-    - pysam =0.16.0.1
-    - pytest
-    - python =3.6.13
-    - pyvcf =0.6.8
+    - pysam
+    - pytest 
+    - pyvcf
+    - pyfaidx =0.6.0 # DO NOT CHANGE THIS PIN UNDER ANY CIRCUMSTANCES, IT WILL BREAK THE PIPELINE
     - requests
-    - samtools =1.10
+    - samtools
     - tqdm
+    - keras-preprocessing >=1.1.2
+
 
 test:
   commands:

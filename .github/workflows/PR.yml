@@ -1,0 +1,247 @@
+name: PR Check
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.head_ref }}
+  cancel-in-progress: true
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      max-parallel: 13
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: set path
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+
+      - name: Fetch conda install script
+        run: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
+
+      - name: Restore cache
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: /opt/mambaforge
+          key: ${{ runner.os }}--bulk--${{ hashFiles('**/install-and-set-up-conda.sh') }}
+
+      - name: Set up bioconda-utils
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: bash install-and-set-up-conda.sh
+
+      - name: Configure conda
+        run: bash configure-conda.sh
+
+      - name: Perform lint
+        env:
+          # Mimic circleci
+          OSTYPE: "linux-gnu"
+          CI: "true"
+        run: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+          echo '============'
+          conda info --all
+          conda config --show-sources
+          python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+          echo '============'
+          if [ -z "$GITHUB_BASE_REF" ] ; then
+              export GITHUB_BASE_REF="master"
+          fi
+          git fetch origin "$GITHUB_BASE_REF"
+          bioconda-utils lint --loglevel debug --full-report --git-range origin/"$GITHUB_BASE_REF" HEAD
+          conda clean -y --all
+
+  build-linux:
+    name: Linux Tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      max-parallel: 13
+    needs: lint
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: set path
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+
+      - name: Fetch conda install script
+        run: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
+
+      - name: Restore cache
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: /opt/mambaforge
+          key: ${{ runner.os }}--bulk--${{ hashFiles('**/install-and-set-up-conda.sh') }}
+
+      - name: Set up bioconda-utils
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: bash install-and-set-up-conda.sh
+
+      # This script can be used to reconfigure conda to use the right channel setup.
+      # This has to be done after the cache is restored, because
+      # the channel setup is not cached as it resides in the home directory.
+      # We could use a system-wide (and therefore cached) channel setup,
+      # but mamba does not support that at the time of implementation
+      # (it ignores settings made with --system).
+      - name: Configure conda
+        run: bash configure-conda.sh
+
+      - name: Build and test
+        env:
+          # Mimic circleci
+          OSTYPE: "linux-gnu"
+          CI: "true"
+        run: |
+          set -e
+
+          # Clean up lingering build artifacts
+          for n in linux-64 osx-64 noarch; do
+              rm -f /opt/mambaforge/envs/bioconda/conda-bld/$n/*.tar.bz2
+          done
+
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+          if [ -z "$GITHUB_BASE_REF" ] ; then
+              export GITHUB_BASE_REF="master"
+          fi
+          git fetch origin "$GITHUB_BASE_REF"
+          docker pull quay.io/dpryan79/mulled_container:latest
+          bioconda-utils build recipes config.yml \
+            --docker --mulled-test \
+            --git-range origin/"$GITHUB_BASE_REF" HEAD
+          docker rmi quay.io/dpryan79/mulled_container:latest
+
+      - name: Prepare artifacts
+        run: |
+          (
+          rm -rf /tmp/artifacts
+          mkdir -p /tmp/artifacts/packages
+          cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
+          find -name .cache | xargs rm -rf || true
+          for n in index.html channeldata.json linux-64 osx-64 noarch; do
+            cp -rv $n /tmp/artifacts/packages || true
+          done
+          if command -V docker >/dev/null; then
+            mkdir -p /tmp/artifacts/images
+            cd /tmp/artifacts/images
+            docker image ls --format='{{.Repository}}:{{.Tag}}' | \
+              { grep biocontainers || true ; } | \
+              xargs -n1 -P4 bash -c '
+                test -n "${1+x}" || exit 0
+                echo "Start compressing docker image ${1} ..."
+                docker save "${1}" | gzip -c > "${1##*/}.tar.gz"
+                echo "Finished compressing docker image ${1} ."
+                ' --
+            # There's no : allowed in artifact names, replace it with ---
+            for f in /tmp/artifacts/images/*:* ; do mv -- "$f" "${f//:/---}"; done
+          fi
+          ) || true
+
+      - name: Archive packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-packages
+          path: |
+            /tmp/artifacts/packages
+
+      - name: Archive images 
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-images
+          path: |
+            /tmp/artifacts/images
+
+  build-osx:
+    name: OSX Tests
+    runs-on: macos-13
+    strategy:
+      fail-fast: true
+      max-parallel: 4
+    needs: build-linux
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: set path
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+
+      - name: Fetch conda install script
+        run: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
+
+      - name: Restore cache
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: /opt/mambaforge
+          key: ${{ runner.os }}--bulk--${{ hashFiles('**/install-and-set-up-conda.sh') }}
+
+      - name: Set up bioconda-utils
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: bash install-and-set-up-conda.sh
+
+      # This script can be used to reconfigure conda to use the right channel setup.
+      # This has to be done after the cache is restored, because
+      # the channel setup is not cached as it resides in the home directory.
+      # We could use a system-wide (and therefore cached) channel setup,
+      # but mamba does not support that at the time of implementation
+      # (it ignores settings made with --system).
+      - name: Configure conda
+        run: bash configure-conda.sh
+
+      - name: Build and Test
+        env:
+          # Mimic circleci
+          OSTYPE: "darwin"
+          CI: "true"
+        run: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+
+          # Clean up lingering build artifacts
+          for n in linux-64 osx-64 noarch; do
+              rm -f /opt/mambaforge/envs/bioconda/conda-bld/$n/*.tar.bz2
+          done
+
+          # The SDK isn't actually cached, so reinstall it
+          run_conda_forge_build_setup
+
+          if [ -z "$GITHUB_BASE_REF" ] ; then
+              export GITHUB_BASE_REF="master"
+          fi
+          git fetch origin "$GITHUB_BASE_REF"
+          bioconda-utils build recipes config.yml \
+            --git-range origin/"$GITHUB_BASE_REF" HEAD
+
+      - name: Prepare artifacts
+        run: |
+              (
+              rm -rf /tmp/artifacts
+              mkdir -p /tmp/artifacts/packages
+              cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
+              find -name .cache | xargs rm -rf || true
+              for n in index.html channeldata.json linux-64 osx-64 noarch; do
+                cp -rv $n /tmp/artifacts/packages || true
+              done
+              ) || true
+
+      - name: Archive packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: osx-packages
+          path: |
+            /tmp/artifacts/packages

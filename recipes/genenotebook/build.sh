@@ -4,41 +4,24 @@ set -exo pipefail
 
 outdir=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 mkdir -p $outdir $PREFIX/bin
-pwd
-ls -lah .
 
-#CC --version || echo 'cc not found'
-#GCC --version || echo 'gcc not found'
-#
-#git clone https://github.com/meteor/meteor
-#
-#pushd meteor
-#git checkout 39cc07472f8f1dc820b29b8c5a30813051d62700 #V1.9.0 commit
-#
-#
-#NODE_FROM_SRC='' ./scripts/build-node-for-dev-bundle.sh
-#
-#./scripts/generate-dev-bundle.sh
-#
-#./meteor --version
-#export PATH=$(pwd):$PATH
-#popd
+# Fix architecture value
+export ARCH=$(uname -m)
 
-# Temp fix for cert error on Azure os x builder
-sed -i.bak 's|curl https|curl --insecure https|' package.json
-rm package.json.bak
+# Need a home for osx
+export HOME="/tmp/"
 
-# Temp fix for typo introduced in 0.3.1
-sed -i.bak 's|chmod +775|chmod 775|' bundle.sh
-rm bundle.sh.bak
+# Install meteor here (instead of in npm run bundle) because we need to patch the install script
+curl "https://install.meteor.com/?release=2.8.0" > meteor.sh
+chmod a+x meteor.sh
+sed -i.bak 's|PREFIX=|#PREFIX=|' meteor.sh
+./meteor.sh
 
 npm install --unsafe-perm
 
 export PATH=$PATH:"$HOME/.meteor"
 
-#ls -lah .
-#meteor node -v
-
+# Now run the normal gnb install
 METEOR_ALLOW_SUPERUSER=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 npm run bundle
 
 cp -R genenotebook_v${PKG_VERSION}/* $outdir

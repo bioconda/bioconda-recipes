@@ -1,6 +1,6 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "ndexr" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,28 +8,30 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 6703a9a7ad9c190bf8c99f29ea6bc4d8
+  md5: caa87487f3e0c062aa6b56b1dc6f70a0
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-ndexr", max_pin="x.x") }}'
   noarch: generic
 # Suggests: BiocStyle, testthat, knitr, rmarkdown
 requirements:
   host:
+    - 'bioconductor-rcx >=1.6.0,<1.7.0'
     - r-base
     - r-httr
-    - r-igraph
     - r-jsonlite
     - r-plyr
     - r-tidyr
   run:
+    - 'bioconductor-rcx >=1.6.0,<1.7.0'
     - r-base
     - r-httr
-    - r-igraph
     - r-jsonlite
     - r-plyr
     - r-tidyr
@@ -38,9 +40,10 @@ test:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: BSD
+  license: 'BSD_3_clause + file LICENSE'
   summary: 'NDEx R client library'
   description: 'This package offers an interface to NDEx servers, e.g. the public server at http://ndexbio.org/. It can retrieve and save networks via the API. Networks are offered as RCX object and as igraph representation.'
+  license_file: LICENSE
 extra:
   parent_recipe:
     name: bioconductor-ndexr

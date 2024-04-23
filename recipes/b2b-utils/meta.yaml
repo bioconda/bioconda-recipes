@@ -1,0 +1,98 @@
+{% set name = "b2b-utils" %}
+{% set version = "0.019" %}
+{% set sha256 = "91bc2b5cb1f093f42b51e218c398e5fffdbd7bda36a6281b3e30fa2c1c784e83" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/jvolkening/b2b-utils/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('b2b-utils', max_pin="x.x") }}
+
+requirements:
+  host:
+    - make
+    - perl
+    - perl-bioperl
+    - perl-biox-seq >=0.008006
+    - perl-dbi
+    - perl-file-compare
+    - perl-list-moreutils
+    - perl-module-build
+    - perl-perlio-gzip
+    - perl-test-more
+    - perl-test-pod
+    - bwa
+    - mafft
+    - medaka
+    - miniasm
+    - minimap2
+    - samtools
+  run:
+    - perl
+    - perl-bioperl
+    - perl-biox-seq >=0.008006
+    - perl-dbi
+    - perl-list-moreutils
+    - perl-perlio-gzip
+
+test:
+  commands:
+    - bam2consensus --version
+    - blast2diamond --version
+    - boot2frac --version
+    - decode_sam_flag --version
+    - fasta2nexus --version
+    - fasta2phylip --version
+    - fq_deinterleave --version
+    - fq_interleave --version
+    - frag_lens --version
+    - gb2fasta --version
+    - guess_ill_instrument --version
+    - minimeta --version
+    - ncbi_blast_update --version
+    - qbin --version
+    - rm_chim --version
+    - rm_gaps --version
+    - seq_diff --version
+    - summarize_assembly --version
+    - sync_reads --version
+    - uc --version
+
+about:
+  home: https://github.com/jvolkening/b2b-utils
+  dev_url: https://github.com/jvolkening/b2b-utils
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Genomics tools from BASE2BIO
+  description: |
+    This package contains a set of programs and utilities for working with
+    genomic data. Please see the in-program documentation (`--help`) of each
+    individual tool for usage and details. Please note that some tools in this
+    suite utilize dependencies that are not explicity stated in the Conda
+    package. This keeps the install footprint smaller since all users will not
+    use all utilities, but if you receive error messages about missing
+    programs you will need to install those as well. All possible
+    dependencies should be available as Conda packages.
+
+extra:
+  recipe-maintainers:
+    - jvolkening
+  skip-lints:
+    - should_be_noarch_generic
+  notes:
+    - |
+      Can't be noarch or mulled testing fails because perl-dbi dependency is
+      not pulled in
+    - |
+      Extra packages (bwa, samtools, etc) are included in host deps so that
+      the full testing suite will be run during building, but they are not
+      added to run-time deps since not all users may need the corresponding
+      utilities. This decision may be revisited in the future.

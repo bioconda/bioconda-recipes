@@ -1,6 +1,6 @@
 {% set version = "0.0.9999" %}
 {% set name = "BSgenome.Hsapiens.UCSC.hg38.dbSNP151.minor" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,24 +8,27 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
   md5: 2cc3a612a2064624735d6a92910be7f3
 build:
-  number: 0
+  number: 4
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-bsgenome.hsapiens.ucsc.hg38.dbsnp151.minor", max_pin="x.x") }}'
   noarch: generic
 # Suggests: BSgenome.Hsapiens.UCSC.hg38, BSgenome.Hsapiens.UCSC.hg38.dbSNP151.major, testthat
 requirements:
   host:
-    - 'bioconductor-bsgenome >=1.62.0,<1.63.0'
+    - 'bioconductor-bsgenome >=1.70.0,<1.71.0'
     - r-base
   run:
-    - 'bioconductor-bsgenome >=1.62.0,<1.63.0'
+    - 'bioconductor-bsgenome >=1.70.0,<1.71.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

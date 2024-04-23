@@ -1,0 +1,64 @@
+{% set name = "cmat" %}
+{% set version = "3.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/EBIvariation/CMAT/archive/v{{version}}.tar.gz
+  sha256: 0ff44acd1a9c1df9ed76804faf62d49716edcc1376679a19b1ef1b5003cde535
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - nextflow >=21.10
+    - python >=3.8,<3.10  # restriction from biopython
+    - biopython ==1.77
+    - coverage ==6.5.0
+    - coveralls ==3.3.1
+    - jsonschema ==3.2.0
+    - numpy ==1.24.3
+    - pandas ==1.5.3
+    - pytest ==7.2.2
+    - pytest-cov ==2.10.0
+    - requests ==2.31.0
+    - requests-mock ==1.8.0
+    - retry ==0.9.2
+  run:
+    - nextflow >=21.10.0
+    - python >=3.8,<3.10
+    - biopython ==1.77
+    - coverage ==6.5.0
+    - coveralls ==3.3.1
+    - jsonschema ==3.2.0
+    - numpy ==1.24.3
+    - pandas ==1.5.3
+    - pytest ==7.2.2
+    - pytest-cov ==2.10.0
+    - requests ==2.31.0
+    - requests-mock ==1.8.0
+    - retry ==0.9.2
+
+test:
+  imports:
+    - cmat
+  commands:
+    - cmat
+    # rm to avoid this: https://github.com/bioconda/bioconda-utils/issues/172
+    - cmat annotate --help && rm -rf .nextflow
+
+about:
+  home: https://github.com/EBIvariation/CMAT
+  summary: ClinVar Mapping and Annotation Toolkit
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - apriltuesday

@@ -1,0 +1,40 @@
+{% set version = "0.99.1" %}
+{% set name = "HDO.db" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 007a50523f1de27048dfc97f4d458f59
+build:
+  number: 2
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-hdo.db", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: rmarkdown, knitr, testthat (>= 3.0.0)
+requirements:
+  host:
+    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
+    - r-base
+  run:
+    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
+    - r-base
+    - curl
+    - 'bioconductor-data-packages >=20231203'
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'A set of annotation maps describing the entire Human Disease Ontology'
+  description: 'A set of annotation maps describing the entire Human Disease Ontology assembled using data from DO. Its annotation data comes from https://github.com/DiseaseOntology/HumanDiseaseOntology/tree/main/src/ontology.'
+

@@ -1,6 +1,6 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "SynExtend" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,29 +8,35 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 7e3c56f705a74908b1a531cd36adbadf
+  md5: f7ee0b985a06dbd6040329dd264648f5
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, knitr, rtracklayer, igraph, markdown, rmarkdown
+  run_exports: '{{ pin_subpackage("bioconductor-synextend", max_pin="x.x") }}'
+# Suggests: BiocStyle, knitr, igraph, markdown, rmarkdown
 requirements:
   host:
-    - 'bioconductor-biostrings >=2.62.0,<2.63.0'
-    - 'bioconductor-decipher >=2.22.0,<2.23.0'
-    - 'bioconductor-iranges >=2.28.0,<2.29.0'
-    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
+    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
+    - 'bioconductor-decipher >=2.30.0,<2.31.0'
+    - 'bioconductor-iranges >=2.36.0,<2.37.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
     - r-base
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-biostrings >=2.62.0,<2.63.0'
-    - 'bioconductor-decipher >=2.22.0,<2.23.0'
-    - 'bioconductor-iranges >=2.28.0,<2.29.0'
-    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
+    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
+    - 'bioconductor-decipher >=2.30.0,<2.31.0'
+    - 'bioconductor-iranges >=2.36.0,<2.37.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

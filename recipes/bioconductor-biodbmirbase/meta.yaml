@@ -1,0 +1,45 @@
+{% set version = "1.5.0" %}
+{% set name = "biodbMirbase" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: af331cadc2f7575e4dbf5345f19c61e6
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-biodbmirbase", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: roxygen2, BiocStyle, testthat (>= 2.0.0), devtools, knitr, rmarkdown, covr, lgr
+requirements:
+  host:
+    - 'bioconductor-biodb >=1.10.0,<1.11.0'
+    - r-base
+    - r-chk
+    - r-r6
+    - r-stringr
+  run:
+    - 'bioconductor-biodb >=1.10.0,<1.11.0'
+    - r-base
+    - r-chk
+    - r-r6
+    - r-stringr
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: AGPL-3
+  summary: 'biodbMirbase, a library for connecting to miRBase mature database'
+  description: 'The biodbMirbase library is an extension of the biodb framework package, that provides access to miRBase mature database. It allows to retrieve entries by their accession number, and run specific web services. Description: The biodbMirbase library provides access to the miRBase Database, using biodb package framework.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+

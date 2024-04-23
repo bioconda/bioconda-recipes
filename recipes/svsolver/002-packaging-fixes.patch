@@ -1,0 +1,99 @@
+diff --git a/Code/CMake/SimVascularInstallLibs.cmake b/Code/CMake/SimVascularInstallLibs.cmake
+index ae489e2..18700e6 100644
+--- a/Code/CMake/SimVascularInstallLibs.cmake
++++ b/Code/CMake/SimVascularInstallLibs.cmake
+@@ -68,8 +68,8 @@ foreach(var ${SV_EXTERNAL_SHARED_LIBS})
+             FILE(GLOB lib "${lib_path}/${lib_name_we}*")
+           endif()
+           dev_message("Installing ${lib}")
+-          install(FILES ${lib} DESTINATION ${SV_INSTALL_RUNTIME_DIR} COMPONENT ExternalLibraries)
+-          simvascular_install_prereqs(${lib} ${SV_INSTALL_EXTERNALS_RUNTIME_DIR} ExternalLibraries)
++#          install(FILES ${lib} DESTINATION ${SV_INSTALL_RUNTIME_DIR} COMPONENT ExternalLibraries)
++#          simvascular_install_prereqs(${lib} ${SV_INSTALL_EXTERNALS_RUNTIME_DIR} ExternalLibraries)
+         else()
+           dev_message("[${var}]  ${lib_name} is not a shared lib, removing ${lib_name}, EXT ${_EXT}, do not install")
+           list(REMOVE_ITEM ${var}_DLL_LIBRARIES ${lib})
+@@ -114,10 +114,10 @@ if(SV_USE_MPI AND NOT SV_USE_DUMMY_MPI)
+       if(MPI_INSTALL_LIBS)
+         list(REMOVE_DUPLICATES MPI_INSTALL_LIBS)
+       endif()
+-      install(FILES ${MPI_INSTALL_LIBS}
+-        DESTINATION ${SV_INSTALL_MPI_LIBRARY_DIR} COMPONENT MPILibraries)
++#      install(FILES ${MPI_INSTALL_LIBS}
++#        DESTINATION ${SV_INSTALL_MPI_LIBRARY_DIR} COMPONENT MPILibraries)
+       foreach(lib ${MPI_INSTALL_LIBS})
+-        simvascular_install_prereqs(${lib} ${SV_INSTALL_MPI_RUNTIME_DIR} MPILibraries)
++#        simvascular_install_prereqs(${lib} ${SV_INSTALL_MPI_RUNTIME_DIR} MPILibraries)
+     endforeach()
+     endif()
+     #find MPIEXEC's path, and install it and everything with MPI or hydra in the name
+@@ -129,8 +129,8 @@ if(SV_USE_MPI AND NOT SV_USE_DUMMY_MPI)
+       list(REMOVE_DUPLICATES MPIEXEC_INSTALL_PROGS)
+       # CHANGE NO TARGETS
+       # install(PROGRAMS ${MPIEXEC_INSTALL_PROGS} DESTINATION ${SV_INSTALL_MPI_EXE_DIR})
+-      install(PROGRAMS ${MPIEXEC_INSTALL_PROGS}
+-        DESTINATION ${SV_INSTALL_RUNTIME_DIR} COMPONENT MPIExecutables)
++#      install(PROGRAMS ${MPIEXEC_INSTALL_PROGS}
++#        DESTINATION ${SV_INSTALL_RUNTIME_DIR} COMPONENT MPIExecutables)
+     endif()
+     if(APPLE)
+       install(CODE "
+diff --git a/Code/Scripts/CMakeLists.txt b/Code/Scripts/CMakeLists.txt
+index 2efa250..052cda3 100644
+--- a/Code/Scripts/CMakeLists.txt
++++ b/Code/Scripts/CMakeLists.txt
+@@ -59,9 +59,9 @@ else()
+   set(developer_script_string "${developer_script_string}\n# svSolver runtime and library locations\n")
+   set(install_script_string "${install_script_string}\n# svSolver runtime and library locations\n")
+ endif()
+-append_env_string_concat(${ENV_LIBRARY_PATH_VARIABLE} "${ENV_SV_HOME}/${SV_INSTALL_LIBRARY_DIR}" install_script_string)
+-append_env_string_concat(${ENV_LIBRARY_PATH_VARIABLE} "${ENV_SV_HOME}/${SV_INSTALL_HOME_DIR}" install_script_string)
+-append_env_string_concat(${ENV_LIBRARY_PATH_VARIABLE} "${ENV_SV_HOME}/${SV_INSTALL_RUNTIME_DIR}" install_script_string)
++#append_env_string_concat(${ENV_LIBRARY_PATH_VARIABLE} "${ENV_SV_HOME}/${SV_INSTALL_LIBRARY_DIR}" install_script_string)
++#append_env_string_concat(${ENV_LIBRARY_PATH_VARIABLE} "${ENV_SV_HOME}/${SV_INSTALL_HOME_DIR}" install_script_string)
++#append_env_string_concat(${ENV_LIBRARY_PATH_VARIABLE} "${ENV_SV_HOME}/${SV_INSTALL_RUNTIME_DIR}" install_script_string)
+ 
+ append_env_string_concat(${ENV_LIBRARY_PATH_VARIABLE} "${CMAKE_BINARY_DIR}/bin" developer_script_string)
+ append_env_string_concat(${ENV_LIBRARY_PATH_VARIABLE} "${CMAKE_BINARY_DIR}/lib" developer_script_string)
+diff --git a/Code/Scripts/executable/install/svpost-linux.in b/Code/Scripts/executable/install/svpost-linux.in
+index ad33a99..a9b22f5 100644
+--- a/Code/Scripts/executable/install/svpost-linux.in
++++ b/Code/Scripts/executable/install/svpost-linux.in
+@@ -2,10 +2,10 @@
+ # run the executable
+ case "$*" in
+ "")
+-$SV_HOME/@SV_INSTALL_RUNTIME_DIR@/@SV_POSTSOLVER_EXE@@CMAKE_EXECUTABLE_SUFFIX@
++/opt/anaconda1anaconda2anaconda3/@SV_INSTALL_RUNTIME_DIR@/@SV_POSTSOLVER_EXE@@CMAKE_EXECUTABLE_SUFFIX@
+ ;;
+ *)
+-$SV_HOME/@SV_INSTALL_RUNTIME_DIR@/@SV_POSTSOLVER_EXE@@CMAKE_EXECUTABLE_SUFFIX@ $*
++/opt/anaconda1anaconda2anaconda3/@SV_INSTALL_RUNTIME_DIR@/@SV_POSTSOLVER_EXE@@CMAKE_EXECUTABLE_SUFFIX@ $*
+ ;;
+ esac
+ 
+diff --git a/Code/Scripts/executable/install/svpre-linux.in b/Code/Scripts/executable/install/svpre-linux.in
+index 31b2345..26f04ce 100644
+--- a/Code/Scripts/executable/install/svpre-linux.in
++++ b/Code/Scripts/executable/install/svpre-linux.in
+@@ -1 +1 @@
+-$SV_HOME/@SV_INSTALL_RUNTIME_DIR@/@SV_PRESOLVER_EXE@@CMAKE_EXECUTABLE_SUFFIX@ $*
++/opt/anaconda1anaconda2anaconda3/@SV_INSTALL_RUNTIME_DIR@/@SV_PRESOLVER_EXE@@CMAKE_EXECUTABLE_SUFFIX@ $*
+diff --git a/Code/Scripts/executable/install/svsolver-linux.in b/Code/Scripts/executable/install/svsolver-linux.in
+index a21fb80..d6622fa 100644
+--- a/Code/Scripts/executable/install/svsolver-linux.in
++++ b/Code/Scripts/executable/install/svsolver-linux.in
+@@ -1,3 +1,3 @@
+ export LES_LICENSE_SERVER=@LES_LICENSE_SERVER@
+ export FLOWSOLVER_CONFIG=@ENV_SV_HOME@/@SV_INSTALL_RUNTIME_DIR@/
+-$SV_HOME/@SV_INSTALL_RUNTIME_DIR@/@SV_FLOWSOLVER_EXE@@CMAKE_EXECUTABLE_SUFFIX@ $*
++/opt/anaconda1anaconda2anaconda3/@SV_INSTALL_RUNTIME_DIR@/@SV_FLOWSOLVER_EXE@@CMAKE_EXECUTABLE_SUFFIX@ $*
+diff --git a/Code/Scripts/executable/install/svsolver-nompi-linux.in b/Code/Scripts/executable/install/svsolver-nompi-linux.in
+index 0f924d0..1e3285c 100644
+--- a/Code/Scripts/executable/install/svsolver-nompi-linux.in
++++ b/Code/Scripts/executable/install/svsolver-nompi-linux.in
+@@ -1,3 +1,3 @@
+ export LES_LICENSE_SERVER=@LES_LICENSE_SERVER@
+ export FLOWSOLVER_CONFIG=@ENV_SV_HOME@/@SV_INSTALL_RUNTIME_DIR@/
+-$SV_HOME/@SV_INSTALL_RUNTIME_DIR@/@SV_FLOWSOLVER_EXE@-nompi@CMAKE_EXECUTABLE_SUFFIX@ $*
++/opt/anaconda1anaconda2anaconda3/@SV_INSTALL_RUNTIME_DIR@/@SV_FLOWSOLVER_EXE@-nompi@CMAKE_EXECUTABLE_SUFFIX@ $*
