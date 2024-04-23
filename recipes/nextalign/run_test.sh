@@ -2,12 +2,8 @@
 
 set -euxo pipefail
 
-if [ $(uname) == "Linux" ]; then
-    ARCH=$(uname -m)
-    export LD_LIBRARY_PATH="${PREFIX}/${ARCH}-conda-linux-gnu/sysroot/usr/lib64"
-    export PATH="${PREFIX}/${ARCH}-conda-linux-gnu/sysroot/usr/bin:${PATH}"
-    ldd --version
-fi
+# the binary needs GLIBC 2.18+ on Linux ARM64 while 2.17 is available
+if [ $(uname -m) != "aarch64" ]; then
 
 nextalign run \
     test-data/sequences.fasta \
@@ -15,3 +11,5 @@ nextalign run \
     --genemap test-data/genemap.gff \
     --output-all output/ \
     --output-basename nextalign
+
+fi
