@@ -6,10 +6,10 @@ ARCH=$(uname -m)
 
 if [ "${OS}" == "Darwin" ]; then
 	echo $(pwd)/zig-macos-x86_64-*
-	export PATH="$(pwd)/zig-macos-x86_64-0.10.1:${PATH}"
+	export PATH="$(pwd)/zig-macos-x86_64-0.12.0:${PATH}"
 else
 	echo $(pwd)/zig-linux-${ARCH}-*
-	export PATH="$(pwd)/zig-linux-${ARCH}-0.10.1:${PATH}"
+	export PATH="$(pwd)/zig-linux-${ARCH}-0.12.0:${PATH}"
 fi
 
 export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Itabixpp -I\$(INC_DIR)"
