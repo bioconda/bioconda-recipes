@@ -1,5 +1,5 @@
 {% set name = "primerForge" %}
-{% set version = "1.0.0" %}
+{% set version = "1.0.2" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,12 +7,14 @@ package:
 
 source:
   url: https://github.com/dr-joe-wirth/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: ac92e00f881d6c1817818bec88e5d7dc9232d7853e6ce1db8745ea809fd9d232
+  sha256: b834ad463b39eb68634ef7869881a8aec57181d4e372963f933bf52ddc40b501
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  entry_points:
+    - primerForge=bin.main:main
   run_exports:
     - {{ pin_subpackage('primerforge', max_pin="x.x") }}
 
@@ -21,7 +23,8 @@ requirements:
     - python >=3.11
     - pip
   run:
-    - biopython
+    - python >=3.11
+    - biopython ==1.81
     - matplotlib-base >=3.7
     - numpy
     - primer3-py >=2.0
@@ -30,6 +33,7 @@ requirements:
 test:
   commands:
     - primerForge --help
+    - primerForge --check_install
 
 about:
   home: https://github.com/dr-joe-wirth/{{ name }}
