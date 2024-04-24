@@ -11,10 +11,10 @@ source:
 
 build:
   number: 0
-  skip: True # [py <= 37]
+  skip: True  # [py < 37]
   entry_points:
     - cooltools = cooltools.cli:cli
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
   run_exports:
     - {{ pin_subpackage('cooltools', max_pin="x.x") }}
 
@@ -25,16 +25,17 @@ requirements:
     - cython
     - pip
     - python
-    - numpy <1.24
+    - numpy
   run:
     - bioframe >=0.4.1
     - click >=7
     - cooler >=0.9.1
     - joblib
     - matplotlib-base
+    - multiprocess
     - numba
-    - numpy <1.24 # remove constraint once https://github.com/numba/numba/issues/8615 has been resolved
-    - pandas >=1.5.1,<2 #Temporary upper ceiling
+    - {{ pin_compatible('numpy') }}
+    - pandas >=1.5.1
     - python
     - scikit-learn >=1.1.2
     - scipy
