@@ -5,12 +5,15 @@
 mkdir -p "${PREFIX}/bin"
 mkdir -p ${PREFIX}/share/epigen
 cp -r * ${PREFIX}/share/epigen
-cp -r corpora ${PREFIX}/share/epigen
-cp -r ext ${PREFIX}/share/epigen
+#cp -r corpora ${PREFIX}/share/epigen
+#cp -r ext ${PREFIX}/share/epigen
 
-ln -s ${PREFIX}/share/epigen/*.py ${PREFIX}/bin/
-ln -s ${PREFIX}/share/epigen/utils/* ${PREFIX}/bin/
+#ln -s ${PREFIX}/share/epigen/*.py ${PREFIX}/bin/
+#ln -s ${PREFIX}/share/epigen/utils/* ${PREFIX}/bin/
 
+cp -r ${PREFIX}/share/epigen ${PREFIX}/bin
+
+chmod +x ${PREFIX}/bin/*
 chmod +x ${PREFIX}/share/epigen/*.py
 chmod +x ${PREFIX}/share/epigen/utils/*
 
