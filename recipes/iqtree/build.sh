@@ -6,7 +6,7 @@ export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="$CXXFLAGS -std=c++14"
+export CXXFLAGS="$CXXFLAGS -O3 -std=c++14"
 
 if [ "$(uname)" == Darwin ]; then
 	export CMAKE_C_COMPILER="clang"
@@ -26,6 +26,6 @@ case $(uname -m) in
 		;;
 esac
 
-cmake --build build --target install -j "${JOBS}"
+cmake --build build --target install -j 1
 
 cp -f "${PREFIX}"/bin/iqtree2 "${PREFIX}"/bin/iqtree
