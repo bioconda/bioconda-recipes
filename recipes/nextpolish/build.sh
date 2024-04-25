@@ -22,12 +22,12 @@ sed -i.bak "s=BIOCONDA_SED_REPLACE=$PKG_VERSION=" lib/kit.py
 # Create share directory
 SHARE_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
 mkdir -p ${SHARE_DIR}/
-cp -r ./lib ${SHARE_DIR}/
+cp -rf ./lib ${SHARE_DIR}/
 
 # Build
 make CC="${CC}" CFLAGS="-O3" LDFLAGS="${LDFLAGS}" -j "${CPU_COUNT}"
 mkdir -p ${PREFIX}/bin
-cp bin/* ${PREFIX}/bin
+cp -f bin/* ${PREFIX}/bin
 
 # fix hardcoded path
 sed -i.bak "s=BIOCONDA_SED_REPLACE=$SHARE_DIR=" nextPolish
