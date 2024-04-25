@@ -1,8 +1,14 @@
 #!/bin/bash
 
+export INCLUDES="-I{PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
 cmake -S . -B percobuild \
-	-DTARGET_ARCH=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PREFIX" -DXML_SUPPORT=ON \
-	-DCMAKE_PREFIX_PATH="$PREFIX;$PREFIX/lib" -DCMAKE_CXX_FLAGS="-std=c++14"
+	-DTARGET_ARCH=x86_64 -DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_INSTALL_PREFIX="$PREFIX" -DXML_SUPPORT=ON \
+	-DCMAKE_PREFIX_PATH="$PREFIX;$PREFIX/lib" -DCMAKE_CXX_COMPILER="${CXX}" \
+	-DCMAKE_CXX_FLAGS="-std=c++14 -O3 -I{PREFIX}/include"
 cmake --build percobuild/ --target install -j ${CPU_COUNT} -v
 
 # First make sure we dont get problems with truncated PREFIX due to null terminators:
@@ -10,9 +16,11 @@ cmake --build percobuild/ --target install -j ${CPU_COUNT} -v
 sed -i.bak '54s/WRITABLE_DIR/std::string(WRITABLE_DIR).c_str()/' $SRC_DIR/src/Globals.cpp
  
 cmake -S ${SRC_DIR}/src/converters -B converterbuild \
-	-DTARGET_ARCH=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PREFIX" -DBOOST_ROOT="$PREFIX" \
-	-DBOOST_LIBRARYDIR="$PREFIX/lib" -DSERIALIZE="Boost" -DCMAKE_CXX_FLAGS="-std=c++11" \
-	-DCMAKE_PREFIX_PATH="$PREFIX"
+	-DTARGET_ARCH=x86_64 -DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_INSTALL_PREFIX="$PREFIX" -DBOOST_ROOT="$PREFIX" \
+	-DBOOST_LIBRARYDIR="$PREFIX/lib" -DSERIALIZE="Boost" \
+	-DCMAKE_CXX_FLAGS="-std=c++11 -O3 -I{PREFIX}/include" \
+	-DCMAKE_PREFIX_PATH="$PREFIX" -DCMAKE_CXX_COMPILER="${CXX}"
 cmake --build converterbuild/ --target install -j ${CPU_COUNT} -v
 
 mkdir -p $PREFIX/testdata
