@@ -3,32 +3,36 @@
 # Installation instructions taken from https://github.com/jotech/gapseq/blob/master/docs/install.md#conda 2024-04-23 by cmkobel
 
 # Copy contents to conda prefix
-mkdir -p ${PREFIX}/gapseq
-cp ISSUE_TEMPLATE.MD LICENSE README.md gapseq gapseq_env.yml ${PREFIX}/gapseq
-cp -r dat/ docs/ src/ toy/ unit/ ${PREFIX}/gapseq
+mkdir -p ${PREFIX}/gapseq/
+cp ISSUE_TEMPLATE.MD LICENSE README.md gapseq gapseq_env.yml ${PREFIX}/gapseq/
+cp -r dat/ docs/ src/ toy/ unit/ ${PREFIX}/gapseq/
 
-# install one additional R-package
-# R -e 'install.packages("CHNOSZ", repos="http://cran.us.r-project.org")' # Is now available on bioconda, simply.
+# Install one additional R-package
+# CHNOSZ is now available on bioconda and is already part of the dependencies.
+# R -e 'install.packages("CHNOSZ", repos="http://cran.us.r-project.org")' 
 
-# Install package which was previously removed from cran due to unfixed errors. I (cmkobel) decided to keep this here since it was part of the original conda installation instructions.
-# Unfortunately it is not possible to installed this archived version of sybilSBML because the newly installed R is necessary to do so, and we don't have access to it at this point.
-# This is not possible, as the environment is not activated of course. The user must do this manually afterwards.
-# wget https://cran.r-project.org/src/contrib/Archive/sybilSBML/sybilSBML_3.1.2.tar.gz
-# R CMD INSTALL --configure-args=" \
-# --with-sbml-include=$CONDA_PREFIX/include \
-# --with-sbml-lib=$CONDA_PREFIX/lib" sybilSBML_3.1.2.tar.gz
-# rm sybilSBML_3.1.2.tar.gz
-# There is a workaround to do this which requires setting the correct lib path, but I think it is not strictl necessary to get the package running. Instead we can maybe think of ways to make these easy to install for the user after conda install.
+# Installing the CRAN archived sybilSBML package here requires a bunch of debugging to set the lib paths in R. That time is probably better spend fixing the package (sybilSBML) in the first place. So here is a quick workaround that makes this process a bit easier for the user.
+echo '''#!/usr/bin/env bash
+wget https://cran.r-project.org/src/contrib/Archive/sybilSBML/sybilSBML_3.1.2.tar.gz
+R CMD INSTALL --configure-args=" \
+--with-sbml-include=$CONDA_PREFIX/include \
+--with-sbml-lib=$CONDA_PREFIX/lib" sybilSBML_3.1.2.tar.gz
+rm sybilSBML_3.1.2.tar.gz
+''' > ${PREFIX}/gapseq/src/install_archived_sybilSBML.sh
+chmod +x ${PREFIX}/gapseq/src/install_archived_sybilSBML.sh
+# Now the user can "easily" install this after installing the bioconda package with install_archived_sybilSBML.sh (This file will be linked to bin/).
 
-# We must use the installed file as it uses its directory to set the path for the sequence installation.
+
+# Download reference sequence data
+# To install the database, we must call the installed file as it uses its own path to place the files correctly.
 bash ${PREFIX}/gapseq/src/update_sequences.sh
 
 
-# Final setup
-
-# Make binary available
+# Final setup - Make binary available
 mkdir -p ${PREFIX}/bin
-ln -s ${PREFIX}/gapseq/gapseq ${PREFIX}/bin/gapseq
+ln -sr ${PREFIX}/gapseq/gapseq ${PREFIX}/bin/
+ln -sr ${PREFIX}/gapseq/src/update_sequences.sh ${PREFIX}/bin/
+ln -sr ${PREFIX}/gapseq/src/install_archived_sybilSBML.sh ${PREFIX}/bin/
 
 
 # --- 
