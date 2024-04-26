@@ -3,11 +3,10 @@
 perl Makefile.PL
 make
 
-# Copy over the executables
 mkdir -p ${PREFIX}/bin 
-find scripts SneakerNet.plugins -maxdepth 1 -type f | \
-  xargs -n 1 -P 1 bash -c '
-    chmod -v 775 $0;
-    cp -v $0 ${PREFIX}/bin/
-  '
+cp -v SneakerNet.plugins/*.pl ${PREFIX}/bin/
+cp -v SneakerNet.plugins/*.py ${PREFIX}/bin/
+cp -v SneakerNet.plugins/*.sh ${PREFIX}/bin/
+cp -v scripts/*.pl            ${PREFIX}/bin/
+chmod 775 ${PREFIX}/bin/*
 
