@@ -1,7 +1,7 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
+mkdir -p ${PREFIX}/bin
 
 make CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include" LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-cp -f lighter ${PREFI}X/bin
+cp -f lighter ${PREFIX}/bin
