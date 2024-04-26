@@ -1,7 +1,7 @@
 #!/bin/sh
 
 cd source
-make CC="${CXX}" FLAGS="${CPPFLAGS} ${CXXFLAGS}"
+make CC="${CXX}" FLAGS="${CPPFLAGS} ${CXXFLAGS}" -j ${CPU_COUNT}
 
 mkdir -p $PREFIX/bin
 

@@ -1,6 +1,6 @@
 {% set name = "mosca" %}
-{% set version = "2.1.0" %}
-{% set sha256 = "823bffe56b298505136d7cbad3ab0cca526736edeba4458bc3dbb0b4450ab132" %}
+{% set version = "2.3.0" %}
+{% set sha256 = "1eba9c082273dd46badd2d5ff8df56aabdc496214e337331d000f54399893a94" %}
 
 package:
   name: {{ name|lower }}
@@ -13,11 +13,19 @@ source:
 build:
   noarch: generic
   number: 0
+  run_exports:
+    - {{ pin_subpackage("mosca", max_pin="x.x") }}
+  script: >
+    mkdir -p $PREFIX/share/MOSCA $PREFIX/bin && 
+    cp -r workflow/* resources/*.json resources/*.txt $PREFIX/share/MOSCA && 
+    chmod +x $PREFIX/share/MOSCA/mosca.py && 
+    ln -s $PREFIX/share/MOSCA/mosca.py $PREFIX/bin/mosca
 
 requirements:
   run:
-    - python >=3.9
-    - snakemake
+    - python >=3.9, <3.12
+    - pandas
+    - snakemake <8
 
 test:
   commands:
@@ -25,7 +33,7 @@ test:
 
 about:
   home: https://github.com/iquasere/MOSCA
-  license: GNU General Public License v3 (GPL-3.0)
+  license: GPL-3.0-or-later
   license_family: GPL
   license_file: LICENSE
   summary: 'MOSCA - Meta-Omics Software for Community Analysis'
