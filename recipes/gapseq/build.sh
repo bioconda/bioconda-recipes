@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Installation instructions taken from https://github.com/jotech/gapseq/blob/master/docs/install.md#conda 2024-04-23 by cmkobel
+# Installation instructions taken from https://github.com/jotech/gapseq/blob/master/docs/install.md#conda April 2024 by cmkobel
 
 # Copy contents to conda prefix
 mkdir -p ${PREFIX}/gapseq/
