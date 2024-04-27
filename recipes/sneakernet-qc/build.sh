@@ -1,5 +1,12 @@
 #!/bin/bash
 
+which make
+perl perl
+echo
+echo ======
+ls -RF
+echo ======
+echo
 perl Makefile.PL
 make
 make install
