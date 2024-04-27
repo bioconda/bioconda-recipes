@@ -1,6 +1,6 @@
 #!/bin/bash
 
-perl Makefile.PL INSTALLDIRS=site
+perl Makefile.PL
 make
 make install
 
