@@ -1,7 +1,7 @@
 #!/bin/bash
 
 which make
-perl perl
+which perl
 echo
 echo ======
 ls -RF
