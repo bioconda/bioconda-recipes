@@ -7,12 +7,6 @@ export CPP_INCLUDE_PATH=${PREFIX}/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
 
-if [ $(uname -m) == "aarch64" ]; then
-    echo "======= DEBUG before: $CXXFLAGS"
-    export CXXFLAGS=$(echo $CXXFLAGS | sed 's#-include src/common/memcpyLink.h -Wl,--wrap=memcpy##')
-    echo "======= DEBUG after: $CXXFLAGS"
-fi
-
 mkdir -p $PREFIX/bin
 
 ./bootstrap.sh
