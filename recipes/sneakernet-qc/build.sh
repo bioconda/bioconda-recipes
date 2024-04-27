@@ -1,7 +1,8 @@
 #!/bin/bash
 
-perl Makefile.PL
+perl Makefile.PL INSTALLDIRS=site
 make
+make install
 
 mkdir -p ${PREFIX}/bin 
 cp -v SneakerNet.plugins/*.pl ${PREFIX}/bin/
