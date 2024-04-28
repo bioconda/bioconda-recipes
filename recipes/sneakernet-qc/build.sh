@@ -25,6 +25,7 @@ export PERL5LIB=$PERL5LIB:${PREFIX}/lib/perl5
 echo
 echo ======
 echo "new PERL5LIB: $PERL5LIB"
+perl -MData::Dumper -e 'print Dumper \@INC;'
 echo ======
 echo
 
