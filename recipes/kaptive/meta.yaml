@@ -1,30 +1,45 @@
-{% set version = "2.0.6" %}
+{% set name = "kaptive" %}
+{% set version = "3.0.0b1" %}
 
 package:
-  name: kaptive
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/katholt/Kaptive/archive/v{{ version }}.tar.gz
-  sha256: 53a90693c00a05b55e7ebb6f2eb999a89f47f6c279600ac2018f831287119019
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/kaptive-{{ version }}.tar.gz
+  sha256: ee3f4dc710b91580db84f9eb24bfc8adf6bc9d52871a018f0aabb0c4b6dd5790
 
 build:
+  entry_points:
+    - kaptive = kaptive.__main__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
-  noarch: generic
 
 requirements:
+  host:
+    - python >=3.9
+    - setuptools
+    - pip
   run:
-    - python >=3
-    - biopython <1.78
-    - numpy
-    - blast >=2.3.0
+    - python >=3.9
+    - biopython
+    - dna-features-viewer
 
 test:
+  imports:
+    - kaptive
   commands:
-    - kaptive.py -h
+    - pip check
+    - kaptive --help
+  requires:
+    - pip
 
 about:
-  home: https://github.com/katholt/Kaptive
-  license: GPL3
+  summary: In silico serotyping
+  license: GPL-3.0
   license_file: LICENSE
-  summary: Reports information about surface polysaccharide loci for Klebsiella and Acinetobacter baumannii genome assemblies
+
+extra:
+  recipe-maintainers:
+    - tomdstanton
