@@ -1,23 +1,13 @@
 #!/bin/sh
 
-echo "DEBUG1 - top"
-ls
-
 if [[ ${target_platform}  == osx-64 ]] ; then
     curl -SL https://github.com/nim-lang/nightlies/releases/download/latest-version-1-6/macosx_x64.tar.xz -o macosx_x64.tar.xz
     tar -xzf macosx_x64.tar.xz
-    echo "DEBUG2 - osx"
-    ls -l
     cd nim-1.6.*
-    echo $PWD
     export PATH="$PWD/bin:$PATH"
-    echo "DEBUG3 - osx"
-    echo $PATH
     cd ..
     curl -SL https://github.com/brentp/mosdepth/archive/refs/tags/v${PKG_VERSION}.tar.gz -o mosdepth-latest.tar.gz
     tar -xzf mosdepth-latest.tar.gz
-    echo "DEBUG4 - osx"
-    ls -l
     cd mosdepth-${PKG_VERSION}
     nimble install -y "docopt@0.7.0"
     nimble build -y --verbose -d:release
