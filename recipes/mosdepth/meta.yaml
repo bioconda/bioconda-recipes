@@ -7,20 +7,25 @@ package:
 source:
   - url: https://github.com/nim-lang/nightlies/archive/refs/tags/2024-04-24-version-1-6-b7b3f87719a201007e5dc0730bf73141fd908c6a.zip
     sha256 : 8422cefd574686bfd4741a1e7c6dbf247dc4701ba7e0b2afe968664719c39bc8
-    folder : extlibs/nim
+    folder : nim
 
 build:
   number: 0
+  skip: true  # [win]
   run_exports:
     - {{ pin_subpackage("mosdepth", max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
     - curl
+    - rsync
   host:
     - htslib >=1.19.1
   run:
+    - {{ c_compiler }}_{{ target_platform }}
+    - {{ cxx_compiler }}_{{ target_platform }}
 
 test:
   commands:
