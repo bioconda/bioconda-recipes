@@ -28,6 +28,8 @@ ln -sv ${PREFIX}/bin ${PREFIX}/SneakerNet.plugins
 # the working copy conf.
 cp -r config.bak ${PREFIX}/config.bak
 cp -r config.bak ${PREFIX}/config
+#sed -i 's+/opt/kraken/full-20140723+/kraken-database+g' ${PREFIX}/config/settings.conf
+
 chmod 775 ${PREFIX}/bin/*
 export PERL5LIB=$PERL5LIB:${PREFIX}/lib/perl5
 
