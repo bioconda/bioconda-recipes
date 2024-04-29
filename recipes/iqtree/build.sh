@@ -19,4 +19,5 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Releas
 
 cmake --build build --target install -j 1
 
+chmod 755 "${PREFIX}/bin/iqtree2"
 cp -f "${PREFIX}"/bin/iqtree2 "${PREFIX}"/bin/iqtree
