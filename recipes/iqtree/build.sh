@@ -15,8 +15,8 @@ fi
 
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release \
 	-DUSE_LSD2=ON -DIQTREE_FLAGS=omp -DCMAKE_CXX_COMPILER="${CXX}" \
-	-DCMAKE_CXX_FLAGS="${CXXFLAGS}"
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -Wno-dev -Wno-deprecated --no-warn-unused-cli
 
-cmake --build build --target install
+cmake --build build --target install -j 1
 
 cp -f "${PREFIX}"/bin/iqtree2 "${PREFIX}"/bin/iqtree
