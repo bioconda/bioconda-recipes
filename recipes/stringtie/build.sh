@@ -1,5 +1,7 @@
 #!/bin/sh
 
+ln -s $PREFIX/lib/libz.so.1 $PREFIX/lib/libz.so
+
 export C_INCLUDE_PATH=$PREFIX/include
 export CPLUS_INCLUDE_PATH=$PREFIX/include
 export LINKER="$CXX"
