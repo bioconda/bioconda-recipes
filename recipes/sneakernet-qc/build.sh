@@ -20,6 +20,10 @@ cp -v SneakerNet.plugins/*.sh ${PREFIX}/bin/
 cp -v scripts/*.pl            ${PREFIX}/bin/
 cp -v lib/perl5/SneakerNet.pm ${PREFIX}/lib/perl5
 
+# SneakerNet depends on plugins in the SneakerNet.plugins
+# subdirectory. Hack this path by just providing a symlink
+ln -sv ${PREFIX}/bin ${PREFIX}/SneakerNet.plugins
+
 # Need to keep the conf.bak and copy it to 
 # the working copy conf.
 cp -r config.bak ${PREFIX}/config.bak
