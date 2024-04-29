@@ -22,8 +22,8 @@ cp -v lib/perl5/SneakerNet.pm ${PREFIX}/lib/perl5
 
 # Need to keep the conf.bak and copy it to 
 # the working copy conf.
-cp -r conf.bak ${PREFIX}/conf.bak
-cp -r conf.bak ${PREFIX}/conf
+cp -r config.bak ${PREFIX}/config.bak
+cp -r config.bak ${PREFIX}/config
 chmod 775 ${PREFIX}/bin/*
 export PERL5LIB=$PERL5LIB:${PREFIX}/lib/perl5
 
