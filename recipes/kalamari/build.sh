@@ -10,8 +10,8 @@ for i in $EXES; do
 done
 
 # install and update locales (required for R to function properly)
-apt-get -y install locales
-LC_ALL=C.UTF-8
-dpkg-reconfigure locales
-echo 'export LC_ALL=C.UTF-8' >> ~/.bashrc
+#apt-get -y install locales
+#LC_ALL=C.UTF-8
+#dpkg-reconfigure locales
+#echo 'export LC_ALL=C.UTF-8' >> ~/.bashrc
 
