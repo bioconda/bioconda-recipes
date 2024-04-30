@@ -55,10 +55,14 @@ chmod +x ${SCRIPT_DIR}/* > /dev/null 2>&1
 chmod +x ${SCRIPT_DIR}/bin/LTR_FINDER.x86_64-1.0.7/ltr_finder
 chmod a+w ${SCRIPT_DIR}/repeatCraft/example
 
+# test for conda
+df -h
 
 # Extract tRNAdb
 tar -zxf ${SCRIPT_DIR}/bin/LTR_FINDER.x86_64-1.0.7/tRNAdb.tar.gz --directory ${SCRIPT_DIR}/bin/LTR_FINDER.x86_64-1.0.7
 
+# test for conda
+df -h
 
 # Set PERL5LIB upon activate/deactivate
 for CHANGE in "activate" "deactivate";
