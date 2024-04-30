@@ -6,7 +6,7 @@ mkdir -p ${PREFIX}/bin
 
 # index
 pushd src/BWT_Index
-make CC=$CC FLAGS="$CFLAGS" LIBS="$LDFLAGS -lm -lz" -j ${CPU_COUNT}
+make CC=$CC FLAGS="$CFLAGS" LIBS="$LDFLAGS -lm -lz"
 cp bwt_index $PREFIX/bin
 popd
 
