@@ -1,12 +1,15 @@
-{% set version = "8.2.0" %}
+# Attention: when upgrading the version, please compare below dependencies with
+# https://github.com/snakemake/snakemake/blob/{version}/setup.cfg
+{% set name = "snakemake" %}
+{% set version = "8.11.1" %}
 
 package:
-  name: snakemake
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/s/snakemake/snakemake-{{ version }}.tar.gz
-  sha256: 4226179d344152e046d5ceaa589f4a77c2b19af99976322ca2ede58a57942a63
+  url: https://pypi.io/packages/source/s/{{ name }}/snakemake-{{ version }}.tar.gz
+  sha256: 54df0a2fab378f334741459a48c5293f05ae372b31ac0fd4c3ec8d19f2309356
 
 build:
   number: 0
@@ -42,6 +45,10 @@ test:
 about:
   home: https://snakemake.github.io
   license: MIT
+  license_family: MIT
+  license_file: LICENSE.md
+  dev_url: https://github.com/snakemake/snakemake
+  doc_url: https://snakemake.readthedocs.io/en/stable/
   summary: A popular workflow management system aiming at full in-silico reproducibility.
   description: |
         Snakemake is a workflow management system that aims to reduce the complexity of creating 
@@ -51,13 +58,13 @@ about:
         files from input files.
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - doi:10.1093/bioinformatics/bts480
-    - biotools:Snakemake
+    - biotools:snakemake
   skip-lints:
-    - uses_setuptools  # uses pkg_resoures during run time
     - should_be_noarch_python  # toplevel metapackage is noarch:generic
-    - missing_run_exports 
   recipe-maintainers:
     - johanneskoester
     - corneliusroemer
@@ -67,7 +74,7 @@ outputs:
 
     build:
       noarch: python
-      script: python -m pip install --no-deps --ignore-installed .
+      script: python -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
       entry_points:
         - snakemake = snakemake.cli:main
       run_exports:
@@ -77,20 +84,17 @@ outputs:
       host:
         - python >=3.11
         - pip
-        - setuptools
       run:
-        # Keep in sync with snakemake/setup.cfg
+        # Keep in sync with snakemake/setup.cfg 
         - python >=3.11,<3.13
-        - immutables
         - appdirs
-        - conda-inject >=1.3.1,<2.0
+        - immutables
         - configargparse
         - connection_pool >=0.0.3
         - datrie
         - docutils
         - gitpython
         - humanfriendly
-        - immutables
         - jinja2 >=3.0,<4.0
         - jsonschema
         - nbformat
@@ -100,16 +104,19 @@ outputs:
         - pyyaml
         - requests >=2.8.1
         - reretry
-        - smart_open >=3.0
-        - snakemake-interface-executor-plugins >=8.1.3,<9.0
-        - snakemake-interface-common >=1.15.0,<2.0
-        - snakemake-interface-storage-plugins >=3.0.0,<4.0
+        - smart_open >=4.0,<8.0
+        - snakemake-interface-executor-plugins >=9.1.0,<10.0.0
+        - snakemake-interface-common >=1.17.0,<2.0
+        - snakemake-interface-storage-plugins >=3.1.0,<4.0
+        - snakemake-interface-report-plugins >=1.0.0,<2.0.0
         - stopit
         - tabulate
         - throttler
-        - toposort >=1.10
-        - yte  >=1.5.1,<2.0
+        - toposort >=1.10,<2.0
         - wrapt
+        - yte  >=1.5.1,<2.0
+        - dpath >=2.1.6,<3.0.0
+        - conda-inject >=1.3.1,<2.0
 
     test:
       imports:
@@ -122,6 +129,10 @@ outputs:
     about:
       home: https://snakemake.github.io
       license: MIT
+      license_family: MIT
+      license_file: LICENSE.md
+      dev_url: https://github.com/snakemake/snakemake
+      doc_url: https://snakemake.readthedocs.io/en/stable/
       summary: A popular workflow management system aiming at full in-silico reproducibility.
       description: |
         Snakemake is a workflow management system that aims to reduce the complexity
