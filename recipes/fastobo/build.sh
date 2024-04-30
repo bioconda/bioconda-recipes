@@ -17,7 +17,6 @@ export CARGO_HOME="$HOME/cargo"
 wget https://sh.rustup.rs -O rustup.sh
 sh rustup.sh -y --default-toolchain nightly
 export PATH="$CARGO_HOME/bin:$PATH"
-export CFLAGS="${CFLAGS} -mno-outline-atomics"  # https://github.com/rust-lang/rust/issues/89626#issuecomment-945814003
 
 # build statically linked binary with Rust
 RUSTFLAGS="-C linker=$CC" C_INCLUDE_PATH=$PREFIX/include LIBRARY_PATH=$PREFIX/lib $PYTHON -m pip install . --no-deps --no-build-isolation -vvv
