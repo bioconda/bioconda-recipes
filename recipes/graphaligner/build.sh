@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -xe
+
 cd $SRC_DIR
-make bin/GraphAligner
+make -j ${CPU_COUNT} bin/GraphAligner
 cp bin/GraphAligner $PREFIX/bin
