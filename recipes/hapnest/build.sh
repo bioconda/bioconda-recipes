@@ -23,57 +23,60 @@ mkdir -p ${PREFIX}/bin
 
 cp -r {commands,integrations,algorithms,evaluation,utils,optimisation,preprocessing,Project.toml,run_program.jl,config.yaml} $SCRIPT_DIR 
 
-ls -ltr $SCRIPT_DIR
+#ls -ltr $SCRIPT_DIR
 
-ln -sf  ${PREFIX}/share/hapnest/run_program.jl  $PREFIX/bin/
+cp  ${PREFIX}/share/hapnest/run_program.jl  $PREFIX/bin/
 
-#for file in $SCRIPT_DIR/{commands/*,algorithms/genotype/*.jl,algorithms/phenotype/*,evaluation/evaluation.jl,evaluation/metrics/*.jl,integrations/gwas.jl,utils/{reference_data.jl,parameter_parsing.jl},optimisation/*,preprocessing/*,Project.toml,config.yaml}; do
-#    ln -sf $file $PREFIX/bin/
-#done
+for file in $SCRIPT_DIR/{commands/*,algorithms/genotype/*.jl,algorithms/phenotype/*,evaluation/evaluation.jl,evaluation/metrics/*.jl,integrations/gwas.jl,utils/{reference_data.jl,parameter_parsing.jl},optimisation/*,preprocessing/*,Project.toml,config.yaml}; do
+    ln -sf $file $PREFIX/bin/
+done
 
 
 #ln -sf  ${PREFIX}/share/hapnest/commands/* $PREFIX/bin/
-for file in ${PREFIX}/share/hapnest/commands/*; do
-    ln -sf $file $PREFIX/bin/
-done
+#for file in ${PREFIX}/share/hapnest/commands/*; do
+#    ln -sf $file $PREFIX/bin/
+#done
 
 #ln -sf  ${PREFIX}/share/hapnest/algorithms/genotype/* $PREFIX/bin/
-for file in ${PREFIX}/share/hapnest/algorithms/genotype/*.jl; do
-    ln -sf $file $PREFIX/bin/
-done
+#for file in ${PREFIX}/share/hapnest/algorithms/genotype/*.jl; do
+#    ln -sf $file $PREFIX/bin/
+#done
 
 #ln -sf  ${PREFIX}/share/hapnest/algorithms/phenotype/* $PREFIX/bin/
-for file in ${PREFIX}/share/hapnest/algorithms/phenotype/*; do
-    ln -sf $file $PREFIX/bin/
-done
+#for file in ${PREFIX}/share/hapnest/algorithms/phenotype/*; do
+#    ln -sf $file $PREFIX/bin/
+#done
 
-ln -sf  ${PREFIX}/share/hapnest/evaluation/evaluation.jl  $PREFIX/bin/
-for file in ${PREFIX}/share/hapnest/evaluation/metrics/*.jl; do
-    ln -sf $file $PREFIX/bin/
-done
+#ln -sf  ${PREFIX}/share/hapnest/evaluation/evaluation.jl  $PREFIX/bin/
+#for file in ${PREFIX}/share/hapnest/evaluation/metrics/*.jl; do
+#    ln -sf $file $PREFIX/bin/
+#done
 
-ln -sf  ${PREFIX}/share/hapnest/integrations/gwas.jl  $PREFIX/bin/
+#ln -sf  ${PREFIX}/share/hapnest/integrations/gwas.jl  $PREFIX/bin/
 
-ln -sf  ${PREFIX}/share/hapnest/utils/reference_data.jl $PREFIX/bin/
-ln -sf  ${PREFIX}/share/hapnest/utils/parameter_parsing.jl  $PREFIX/bin/
+#ln -sf  ${PREFIX}/share/hapnest/utils/reference_data.jl $PREFIX/bin/
+#ln -sf  ${PREFIX}/share/hapnest/utils/parameter_parsing.jl  $PREFIX/bin/
 #for file in ${PREFIX}/share/hapnest/utils/*; do
 #    ln -sf $file $PREFIX/bin/
 #done
 
 #ln -sf  ${PREFIX}/share/hapnest/optimisation/* $PREFIX/bin/
-for file in ${PREFIX}/share/hapnest/optimisation/*; do
-    ln -sf $file $PREFIX/bin/
-done
+#for file in ${PREFIX}/share/hapnest/optimisation/*; do
+#    ln -sf $file $PREFIX/bin/
+#done
 
 #ln -sf  ${PREFIX}/share/hapnest/preprocessing/* $PREFIX/bin/
-for file in ${PREFIX}/share/hapnest/preprocessing/*; do
-    ln -sf $file $PREFIX/bin/
-done
+#for file in ${PREFIX}/share/hapnest/preprocessing/*; do
+#    ln -sf $file $PREFIX/bin/
+#done
+
 ln -sf  ${PREFIX}/share/hapnest/Project.toml  $PREFIX/bin/
 ln -sf  ${PREFIX}/share/hapnest/config.yaml  $PREFIX/bin/
 
 #~/conda-bld/hapnest_1711833912133/test_tmp/run_program.jl": No such file or directory
-chmod +x ${PREFIX}/share/hapnest
+chmod +x ${SCRIPT_DIR}
+chmod +x ${PREFIX}/bin 
+
 ls -ltr $PREFIX/bin
 ls -ltr $SCRIPT_DIR
 
