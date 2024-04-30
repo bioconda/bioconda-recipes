@@ -17,10 +17,11 @@ cp -r * ${PACKAGE_HOME}/
 
 
 # Install SA-SSR (has to be done here because SA-SSR is an ancient repository without releases)
-git clone https://github.com/ridgelab/SA-SSR
+git clone --depth 1 https://github.com/ridgelab/SA-SSR
 cd SA-SSR
 make
 cp bin/sa-ssr ${PREFIX}/bin/
+cd ../ && rm -rf SA-SSR/
 
 
 # Fixes to earlGrey executable
@@ -56,7 +57,7 @@ chmod +x ${SCRIPT_DIR}/bin/LTR_FINDER.x86_64-1.0.7/ltr_finder
 chmod a+w ${SCRIPT_DIR}/repeatCraft/example
 
 # Extract tRNAdb
-tar -zxf ${SCRIPT_DIR}/bin/LTR_FINDER.x86_64-1.0.7/tRNAdb.tar.gz --directory ${SCRIPT_DIR}/bin/LTR_FINDER.x86_64-1.0.7
+tar -zxf ${SCRIPT_DIR}/bin/LTR_FINDER.x86_64-1.0.7/tRNAdb.tar.gz --directory ${SCRIPT_DIR}/bin/LTR_FINDER.x86_64-1.0.7 && rm -r ${SCRIPT_DIR}/bin/LTR_FINDER.x86_64-1.0.7/tRNAdb.tar.gz
 
 # test for conda
 df -h
