@@ -13,14 +13,14 @@ mkdir -p ${PACKAGE_HOME}
 
 
 # Put package in share directory
-cp -r * ${PACKAGE_HOME}/
+cp -rf * ${PACKAGE_HOME}/
 
 
 # Install SA-SSR (has to be done here because SA-SSR is an ancient repository without releases)
 git clone --depth 1 https://github.com/ridgelab/SA-SSR
 cd SA-SSR
-make
-cp bin/sa-ssr ${PREFIX}/bin/
+make -j${CPU_COUNT}
+cp -f bin/sa-ssr ${PREFIX}/bin/
 cd ../ && rm -rf SA-SSR/
 
 
@@ -75,5 +75,4 @@ echo "unset PERL5LIB" >> "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivat
 
 # Put earlGrey executable in bin
 cd ${PREFIX}/bin
-ln -s ${PACKAGE_HOME}/earlGrey .
-
+ln -sf ${PACKAGE_HOME}/earlGrey .
