@@ -22,6 +22,7 @@ mkdir -p ${PREFIX}/bin
 
 
 export JULIA_DEPOT_PATH=$DATA_DIR/.julia
+export JULIA_SSL_VERIFY=false
 
 cp -r {commands,integrations,algorithms,evaluation,utils,optimisation,preprocessing,Project.toml,run_program.jl,config.yaml} $SCRIPT_DIR 
 
@@ -82,31 +83,10 @@ chmod +x ${PREFIX}/bin
 ls -ltr $PREFIX/bin
 ls -ltr $SCRIPT_DIR
 
-#julia -e 'Pkg.init()'
-julia -e 'import Pkg; Pkg.add("Conda")'
+
+julia -e "import Pkg; Pkg.add([\"Conda\", \"ArgParse\",\"YAML\", \"LsqFit\", \"DataFrames\", \"CSV\", \"CategoricalArrays\", \"DelimitedFiles\", \"Distances\", \"Distributions\", \"StatsPlots\", \"StatsBase\", \"PyCall\", \"Printf\", \"Plots\", \"Mmap\", \"MendelPlots\",  \"Impute\", \"GpABC\", \"ProgressMeter\"])"
+
 julia -e "using Pkg; Pkg.instantiate(); using Conda; Conda.add(\"bed-reader\"; channel=\"conda-forge\")"
-julia -e 'import Pkg; Pkg.add("ArgParse")'
-julia -e 'import Pkg; Pkg.add("YAML")'
-julia -e 'import Pkg; Pkg.add("LsqFit")'
-julia -e 'import Pkg; Pkg.add("DataFrames")'
-julia -e 'import Pkg; Pkg.add("CSV")'
-julia -e 'import Pkg; Pkg.add("CategoricalArrays")'
-julia -e 'import Pkg; Pkg.add("DelimitedFiles")'
-julia -e 'import Pkg; Pkg.add("Distances")'
-julia -e 'import Pkg; Pkg.add("Distributions")'
-julia -e 'import Pkg; Pkg.add("GpABC")'
-julia -e 'import Pkg; Pkg.add("Impute")'
-julia -e 'import Pkg; Pkg.add("MendelPlots")'
-julia -e 'import Pkg; Pkg.add("Mmap")'
-julia -e 'import Pkg; Pkg.add("Plots")'
-julia -e 'import Pkg; Pkg.add("Printf")'
-julia -e 'import Pkg; Pkg.add("ProgressMeter")'
-julia -e 'import Pkg; Pkg.add("PyCall")'
-julia -e 'import Pkg; Pkg.add("StatsBase")'
-julia -e 'import Pkg; Pkg.add("StatsPlots")'
-julia -e 'import Pkg; Pkg.add("YAML")'
-
-
 
 
 
