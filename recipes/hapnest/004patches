@@ -1,8 +1,11 @@
 diff --git a/algorithms/genotype/genotype_algorithm.jl b/algorithms/genotype/genotype_algorithm.jl
-index 2eb066b..c9cc3a2 100644
+index 2eb066b..0097fa9 100644
 --- a/algorithms/genotype/genotype_algorithm.jl
 +++ b/algorithms/genotype/genotype_algorithm.jl
-@@ -1,6 +1,7 @@
+@@ -1,6 +1,10 @@
++#!/usr/bin/env -S julia --color=yes --startup-file=no
++@show 
++
  using Random, Distributions, DataFrames, CSV, StatsBase, ProgressMeter
  
 -include("../../utils/parameter_parsing.jl")
@@ -11,6 +14,28 @@ index 2eb066b..c9cc3a2 100644
  include("write_output.jl")
  
  
+diff --git a/algorithms/genotype/write_output.jl b/algorithms/genotype/write_output.jl
+index e2948b6..1566184 100644
+--- a/algorithms/genotype/write_output.jl
++++ b/algorithms/genotype/write_output.jl
+@@ -1,3 +1,6 @@
++#!/usr/bin/env -S julia --color=yes --startup-file=no
++@show 
++
+ using PyCall
+ 
+ @pyimport bed_reader
+diff --git a/algorithms/phenotype/phenotype_algorithm.jl b/algorithms/phenotype/phenotype_algorithm.jl
+index 3701c3a..c36a4c8 100644
+--- a/algorithms/phenotype/phenotype_algorithm.jl
++++ b/algorithms/phenotype/phenotype_algorithm.jl
+@@ -1,3 +1,6 @@
++#!/usr/bin/env -S julia --color=yes --startup-file=no
++@show 
++
+ """Code for setting up execution of the phenotype 
+ algorithm from the Julia pipeline
+ """
 diff --git a/commands/fetch b/commands/fetch
 index a34a97b..2c6936c 100755
 --- a/commands/fetch
@@ -116,10 +141,13 @@ index 8e793c1..b292bd3 100755
 -cd $CURR_DIR
 +#cd $CURR_DIR
 diff --git a/evaluation/evaluation.jl b/evaluation/evaluation.jl
-index 492c1bc..a45d3cb 100644
+index 492c1bc..9eccd7e 100644
 --- a/evaluation/evaluation.jl
 +++ b/evaluation/evaluation.jl
-@@ -1,14 +1,25 @@
+@@ -1,14 +1,28 @@
++#!/usr/bin/env -S julia --color=yes --startup-file=no
++@show 
++
  """Executes the pipeline for evaluating synthetic data quality
  """
  
@@ -154,21 +182,28 @@ index 492c1bc..a45d3cb 100644
  function run_kinship_evaluation(ibsfile_real, ibsfile_synt, ibsfile_cross)
      run_kinship(ibsfile_real, ibsfile_synt, ibsfile_cross)
 diff --git a/integrations/gwas.jl b/integrations/gwas.jl
-index 588aefd..153235a 100644
+index 588aefd..3bb0a04 100644
 --- a/integrations/gwas.jl
 +++ b/integrations/gwas.jl
-@@ -1,4 +1,5 @@
+@@ -1,4 +1,8 @@
 -include("../evaluation/metrics/eval_gwas.jl")
++#!/usr/bin/env -S julia --color=yes --startup-file=no
++@show 
++
 +#include("../evaluation/metrics/eval_gwas.jl")
 +include("eval_gwas.jl")
  
  using ArgParse
  
 diff --git a/optimisation/abc.jl b/optimisation/abc.jl
-index 0b346bc..3889483 100644
+index 0b346bc..b6f95d2 100644
 --- a/optimisation/abc.jl
 +++ b/optimisation/abc.jl
-@@ -3,10 +3,16 @@
+@@ -1,12 +1,20 @@
++#!/usr/bin/env -S julia --color=yes --startup-file=no
++
+ """Run likelihood-free inference for optimising model parameters
+ """
  
  using GpABC
  
@@ -190,10 +225,12 @@ index 0b346bc..3889483 100644
  
  """Struct for storing metadata required by the ABC procedure
 diff --git a/preprocessing/preprocessing.jl b/preprocessing/preprocessing.jl
-index d8c57d3..6613ddb 100644
+index d8c57d3..56e6cd5 100644
 --- a/preprocessing/preprocessing.jl
 +++ b/preprocessing/preprocessing.jl
-@@ -1,6 +1,7 @@
+@@ -1,6 +1,9 @@
++#!/usr/bin/env -S julia --color=yes --startup-file=no
++
  using Printf
  
 -include("../utils/parameter_parsing.jl")
@@ -202,3 +239,73 @@ index d8c57d3..6613ddb 100644
  include("utils.jl")
  
  
+diff --git a/preprocessing/utils.jl b/preprocessing/utils.jl
+index 412335b..0db3d35 100644
+--- a/preprocessing/utils.jl
++++ b/preprocessing/utils.jl
+@@ -1,3 +1,5 @@
++#!/usr/bin/env -S julia --color=yes --startup-file=no
++
+ using DelimitedFiles, LsqFit, DataFrames, CSV, Mmap, Impute
+ 
+ 
+diff --git a/run_program.jl b/run_program.jl
+index 5361f1c..38e14ba 100644
+--- a/run_program.jl
++++ b/run_program.jl
+@@ -1,11 +1,22 @@
++#!/usr/bin/env -S julia --color=yes --startup-file=no
++
++
+ using ArgParse, YAML, Printf
+ 
+-include("utils/parameter_parsing.jl")
+-include("preprocessing/preprocessing.jl")
+-include("optimisation/abc.jl")
+-include("algorithms/genotype/genotype_algorithm.jl")
+-include("algorithms/phenotype/phenotype_algorithm.jl")
+-include("evaluation/evaluation.jl")
++#include("utils/parameter_parsing.jl")
++#include("preprocessing/preprocessing.jl")
++#include("optimisation/abc.jl")
++#include("algorithms/genotype/genotype_algorithm.jl")
++#include("algorithms/phenotype/phenotype_algorithm.jl")
++#include("evaluation/evaluation.jl")
++
++include("parameter_parsing.jl")
++include("preprocessing.jl")
++include("abc.jl")
++include("genotype_algorithm.jl")
++include("phenotype_algorithm.jl")
++include("evaluation.jl")
++
+ 
+ """Executes the program, according to which pipelines and configuration options are specified in the input
+ 
+diff --git a/utils/parameter_parsing.jl b/utils/parameter_parsing.jl
+index 7a9726c..aecd311 100644
+--- a/utils/parameter_parsing.jl
++++ b/utils/parameter_parsing.jl
+@@ -1,3 +1,5 @@
++#!/usr/bin/env -S julia --color=yes --startup-file=no
++
+ """Utility functions for parsing the options from the config file
+ """
+ 
+diff --git a/utils/reference_data.jl b/utils/reference_data.jl
+index 6dfabb3..51c9609 100644
+--- a/utils/reference_data.jl
++++ b/utils/reference_data.jl
+@@ -1,3 +1,5 @@
++#!/usr/bin/env -S julia --color=yes --startup-file=no
++
+ using CSV, DataFrames, DelimitedFiles
+ 
+ """Utility function for creating reference datasets
+@@ -85,4 +87,4 @@ function create_bp_cm_ref(genetic_distfile)
+     bp_to_cm_df.BP = [parse(Int64,split(x,":")[2]) for x in bp_to_cm_df.Variant]
+     bp_to_cm_map = Dict(zip(bp_to_cm_df.BP,bp_to_cm_df.Distance))
+     return bp_to_cm_map
+-end
+\ No newline at end of file
++end
