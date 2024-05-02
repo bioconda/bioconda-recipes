@@ -8,7 +8,7 @@ export JULIA_PKG_USE_CLI_GIT=true
 export JULIA_PKG_PRECOMPILE_AUTO=0
 
 #https://github.com/JuliaLang/julia/issues/48873
-LD_LIBRARY_PATH=""
+export LD_LIBRARY_PATH=""
 
 ln -s "${GCC}" "${BUILD_PREFIX}/gcc"
 
@@ -20,6 +20,8 @@ mkdir -p $DATA_DIR
 mkdir -p $SCRIPT_DIR
 mkdir -p ${PREFIX}/bin
 
+
+export JULIA_DEPOT_PATH=$DATA_DIR/.julia
 
 cp -r {commands,integrations,algorithms,evaluation,utils,optimisation,preprocessing,Project.toml,run_program.jl,config.yaml} $SCRIPT_DIR 
 
