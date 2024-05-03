@@ -7,11 +7,8 @@ mkdir -p ${PREFIX}/gapseq/
 cp ISSUE_TEMPLATE.MD LICENSE README.md gapseq gapseq_env.yml ${PREFIX}/gapseq/
 cp -r dat/ docs/ src/ toy/ unit/ ${PREFIX}/gapseq/
 
-# Install one additional R-package
-# CHNOSZ is now available on conda channel "r" and is already part of the dependencies.
-# R -e 'install.packages("CHNOSZ", repos="http://cran.us.r-project.org")' 
 
-# Installing the CRAN archived sybilSBML package here requires a bunch of debugging to set the lib paths in R. That time is probably better spend fixing the package (sybilSBML) in the first place. So here is a quick workaround that makes this process a bit easier for the user.
+# Installing the CRAN archived sybilSBML package here requires a bunch of debugging to set the lib paths in R. That time is probably better spend fixing the package (sybilSBML) in the first place. So here is a quick workaround that makes this process a bit easier for the user. SybilSBML is not strictly necessary so I think the priority should be to get the main package (gapseq) working first.
 echo '''#!/usr/bin/env bash
 wget https://cran.r-project.org/src/contrib/Archive/sybilSBML/sybilSBML_3.1.2.tar.gz
 R CMD INSTALL --configure-args=" \
