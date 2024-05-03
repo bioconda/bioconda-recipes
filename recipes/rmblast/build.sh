@@ -3,8 +3,8 @@ set -euxo pipefail
 
 cd ${SRC_DIR}/c++/
 
-export INCLUDE_PATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
+export INCLUDES="-I${PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 export CFLAGS="${CFLAGS} -O3"
@@ -61,11 +61,12 @@ fi
 
 # not building with boost as it's only used for unit tests
 ./configure \
-    CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
+    CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}"  \
     --prefix=${PREFIX} \
     --with-64 \
     --with-mt \
-    --without-dll \
+    --with-autodep \
+    --with-static \
     --with-flat-makefile \
     --without-caution \
     --without-boost \
@@ -90,18 +91,18 @@ cd ReleaseMT
 
 # The "datatool" binary needs the libs at build time, create
 # link from final install path to lib build dir:
-ln -s ${SRC_DIR}/c++/ReleaseMT/lib ${LIB_INSTALL_DIR}
+ln -sf ${SRC_DIR}/c++/ReleaseMT/lib ${LIB_INSTALL_DIR}
 
 cd build
-make -j1 -f Makefile.flat all_projects="${projects}"
+make -j"${CPU_COUNT}" -f Makefile.flat all_projects="${projects}"
 
 # remove temporary link
-rm ${LIB_INSTALL_DIR}
+rm -rf ${LIB_INSTALL_DIR}
 
 mkdir -p ${PREFIX}/bin ${LIB_INSTALL_DIR}
-chmod +x ${SRC_DIR}/c++/ReleaseMT/bin/*
-cp ${SRC_DIR}/c++/ReleaseMT/bin/* ${PREFIX}/bin/
-cp ${SRC_DIR}/c++/ReleaseMT/lib/* ${LIB_INSTALL_DIR}
+chmod 755 ${SRC_DIR}/c++/ReleaseMT/bin/*
+cp -f ${SRC_DIR}/c++/ReleaseMT/bin/* ${PREFIX}/bin/
+cp -f ${SRC_DIR}/c++/ReleaseMT/lib/* ${LIB_INSTALL_DIR}
 
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/update_blastdb.pl
 # Patches to enable this script to work better in bioconda
