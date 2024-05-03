@@ -33,8 +33,8 @@ sed -i.bak 's/LIBS=/LIBS?=/' Makefile
 rm *.bak
 
 # Then compile k8
-make -j"${CPU_COUNT}" NODE_SRC="node-v${NODE_VERSION}" \
+make NODE_SRC="node-v${NODE_VERSION}" \
 	CXXFLAGS="${CXXFLAGS} -std=c++17 -g -O3 -Wall" \
-	LIBS="${LDFLAGS} -pthread"
+	LIBS="${LDFLAGS} -pthread" -j"${CPU_COUNT}"
 
 cp -f k8 $PREFIX/bin/
