@@ -1,5 +1,4 @@
-#!/bin/bash
-set -x -e
+#!/bin/sh
 
 mkdir -p "${PREFIX}/bin"
 
