@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 mkdir -p "${PREFIX}/bin"
 
@@ -24,8 +24,8 @@ elif [[ "${ARCH}" == "aarch64" ]]; then
     curl -SL https://github.com/brentp/mosdepth/archive/refs/tags/v${PKG_VERSION}.tar.gz -o mosdepth-latest.tar.gz
     tar -xf mosdepth-latest.tar.gz
     cd mosdepth-${PKG_VERSION}
-    nimble install -y "docopt@0.7.0"
-    nimble build -y --verbose -d:release
+    CC=${CC} nimble install -y "docopt@0.7.0"
+    CC=${CC} nimble build -y --verbose -d:release
 else
     curl -SL https://github.com/brentp/mosdepth/releases/download/v$PKG_VERSION/mosdepth -o mosdepth
     chmod 755 mosdepth
