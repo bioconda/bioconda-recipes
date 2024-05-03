@@ -1,4 +1,7 @@
-#!/bin/sh
+#!/bin/bash
+set -x -e
+
+mkdir -p "${PREFIX}/bin"
 
 if [[ ${target_platform}  == osx-64 ]] ; then
     curl -SL https://github.com/nim-lang/nightlies/releases/download/latest-version-1-6/macosx_x64.tar.xz -o macosx_x64.tar.xz
@@ -11,7 +14,9 @@ if [[ ${target_platform}  == osx-64 ]] ; then
     cd mosdepth-${PKG_VERSION}
     nimble install -y "docopt@0.7.0"
     nimble build -y --verbose -d:release
+else
+    curl -SL https://github.com/brentp/mosdepth/releases/download/v$PKG_VERSION/mosdepth -o mosdepth
+    chmod 755 mosdepth
 fi
 
-mkdir -p "${PREFIX}/bin"
-cp mosdepth "${PREFIX}/bin/"
+cp -f mosdepth "${PREFIX}/bin/"
