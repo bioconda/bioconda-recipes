@@ -3,13 +3,17 @@
 mkdir -p $PREFIX/bin
 
 # Add in the correct version for the build
-sed -i "s/VERSION=.\+/VERSION=\"${PKG_VERSION}\"/" bin/downloadKalamari.sh
+sed -i.bak "s/VERSION=.\+/VERSION=\"${PKG_VERSION}\"/" bin/downloadKalamari.sh
 
+# Copy the executable files to the correct location
 EXES="downloadKalamari.pl downloadKalamari.sh generate_sepia_reference.py  getExactTaxonomy.pl  mobsuiteRepresentativeFasta.pl  validateTaxonomy.pl"
-
 for i in $EXES; do
   chmod -v 755 bin/$i
   cp -vf bin/$i $PREFIX/bin
 done
 
-
+# Copy the source files to the correct location
+SRC="chromosomes.tsv plasmids.tsv taxonomy"
+for i in $SRC; do
+  cp -vf src/$i $PREFIX/src
+done
