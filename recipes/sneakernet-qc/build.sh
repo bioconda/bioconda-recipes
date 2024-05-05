@@ -29,6 +29,12 @@ ln -sv ${PREFIX}/bin ${PREFIX}/SneakerNet.plugins
 cp -r config.bak ${PREFIX}/config.bak
 cp -r config.bak ${PREFIX}/config
 #sed -i 's+/opt/kraken/full-20140723+/kraken-database+g' ${PREFIX}/config/settings.conf
+cat config.bak/settings.conf | \
+  sed '/KRAKEN_DEFAULT_DB/d' > config/settings.conf
+
+KALAMARI_VER=$(downloadKalamari.pl --version)
+KRAKEN_DEFAULT_DB="${PREFIX}/share/kalamari-${KALAMARI_VER}.kraken1"
+echo "KRAKEN_DEFAULT_DB = $KRAKEN_DEFAULT_DB" >> config/settings.conf
 
 chmod 775 ${PREFIX}/bin/*
 export PERL5LIB=$PERL5LIB:${PREFIX}/lib/perl5
