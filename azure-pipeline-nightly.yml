@@ -74,6 +74,14 @@ jobs:
           export CI="true"
 
           # build and push all leftover packages
+          echo '============'
+          . common.sh
+          container_image="quay.io/bioconda/bioconda-utils-build-env-cos7:${BIOCONDA_UTILS_TAG#v}"
+          docker build -t "${container_image}" - << end-of-dockerfile
+          FROM "${container_image}"
+          RUN /opt/conda/bin/conda config --set conda_build.pkg_format 2
+          end-of-dockerfile
+          echo '============'
           bioconda-utils build recipes config.yml \
               --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
               --prelint --exclude bioconda-repodata-patches

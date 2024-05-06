@@ -57,9 +57,16 @@ jobs: # a basic unit of work in a run
             source /opt/mambaforge/etc/profile.d/conda.sh
             source /opt/mambaforge/etc/profile.d/mamba.sh
             mamba activate bioconda
+            echo '============'
+            container_image="quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}"
+            docker build -t "${container_image}" - \<< end-of-dockerfile
+            FROM "${container_image}"
+            RUN /opt/conda/bin/conda config --set conda_build.pkg_format 2
+            end-of-dockerfile
+            echo '============'
             bioconda-utils build recipes config.yml \
                 --lint --docker --mulled-test \
-                --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
+                --docker-base-image "${container_image}" \
                 --git-range origin/master HEAD
 
       - run:
@@ -211,9 +218,15 @@ jobs: # a basic unit of work in a run
             conda config --show-sources
             python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
             echo '============'
+            container_image="quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}"
+            docker build -t "${container_image}" - \<< end-of-dockerfile
+            FROM "${container_image}"
+            RUN /opt/conda/bin/conda config --set conda_build.pkg_format 2
+            end-of-dockerfile
+            echo '============'
             bioconda-utils build recipes config.yml \
               --worker-offset << parameters.runner >> --n-workers 6 \
-              --docker --mulled-test --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
+              --docker --mulled-test --docker-base-image "${container_image}" \
               --anaconda-upload \
               --mulled-upload-target biocontainers \
               --record-build-failures \

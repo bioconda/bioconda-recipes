@@ -118,6 +118,14 @@ jobs:
           fi
           git fetch origin "$GITHUB_BASE_REF"
           docker pull quay.io/dpryan79/mulled_container:latest
+          echo '============'
+          . common.sh
+          container_image="quay.io/bioconda/bioconda-utils-build-env-cos7:${BIOCONDA_UTILS_TAG#v}"
+          docker build -t "${container_image}" - << end-of-dockerfile
+          FROM "${container_image}"
+          RUN /opt/conda/bin/conda config --set conda_build.pkg_format 2
+          end-of-dockerfile
+          echo '============'
           bioconda-utils build recipes config.yml \
             --docker --mulled-test \
             --git-range origin/"$GITHUB_BASE_REF" HEAD
