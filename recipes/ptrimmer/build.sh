@@ -6,8 +6,8 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-make CC="${CC}" CFLAGS="${CFLAGS} -O3" LIBDIR="${PREFIX}/lib" \
-	INCLUDE="${PREFIX}/include" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
+make CC="${CC} ${LDFLAGS}" CFLAGS="${CFLAGS} -O3" LIBDIR="${PREFIX}/lib" \
+	INCLUDE="-I${PREFIX}/include" -j"${CPU_COUNT}"
 
 chmod 755 pTrimmer-*
 mv pTrimmer-* ${PREFIX}/bin/ptrimmer
