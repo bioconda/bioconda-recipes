@@ -10,7 +10,6 @@ mkdir build && cd build
 
 cmake -S .. -B ./ \
 	-DBUILD_STATIC=1 \
-    -DBoost_NO_BOOST_CMAKE=ON \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}"
 make -j ${CPU_COUNT}
