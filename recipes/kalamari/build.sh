@@ -16,5 +16,5 @@ done
 mkdir -p $PREFIX/src
 SRC="chromosomes.tsv plasmids.tsv taxonomy"
 for i in $SRC; do
-  cp -vf src/$i $PREFIX/src
+  cp -rvf src/$i $PREFIX/src
 done
