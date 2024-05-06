@@ -16,6 +16,8 @@ export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${LIBTORCH}/lib
 #
 # download pytorch libraries
 #
+# unfortunetally newish size limits on bioconda packages prevent me from including this.
+# keeping this code block here in case the size limits change, or bioconda/conda-forge allow the pytorch channel to be accessed. 
 if [[ "x" == "y" ]]; then 
 
 export TORCH_VERSION="2.0.1"
