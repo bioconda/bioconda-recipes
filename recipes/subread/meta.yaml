@@ -9,9 +9,11 @@ package:
 source:
   url: https://downloads.sourceforge.net/project/{{ name }}/{{ name }}-{{ version }}/{{ name }}-{{ version }}-source.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - unsignedchar.patch
 
 build:
-  number: 1
+  number: 2
   run_exports: '{{ pin_subpackage(name, max_pin="x") }}'
 
 requirements:
@@ -19,8 +21,6 @@ requirements:
     - make
     - {{ compiler('c') }}
   host:
-    - zlib
-  run:
     - zlib
 
 test:
@@ -34,7 +34,7 @@ test:
     - repair -h
     - txUnique || [[ $? == 1 ]]
     - qualityScores
-    - subread-fullscan || [[ $? == 255 ]] # [not aarch64]
+    - subread-fullscan || [[ $? == 255 ]]
 
 about:
   home: http://subread.sourceforge.net/
