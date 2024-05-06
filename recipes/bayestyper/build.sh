@@ -9,7 +9,6 @@ mkdir -p ${PREFIX}/bin
 mkdir build && cd build
 
 cmake -S .. -B ./ \
-	-DBUILD_STATIC=1 \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}"
 make -j ${CPU_COUNT}
