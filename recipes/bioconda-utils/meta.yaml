@@ -1,8 +1,9 @@
+{% set name = "bioconda-utils" %}
 {% set version = "2.15.0" %}
 {% set sha256 = "d4d0985220481fb2654e0f5743a2784befac1d59a52cc275ebebce52cee01fa4" %}
 
 package:
-  name: bioconda-utils
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -11,8 +12,8 @@ source:
 
 build:
   noarch: python
-  number: 0
-  script: python -m pip install --no-deps --ignore-installed .
+  number: 1
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
   entry_points:
     - bioconda-utils = bioconda_utils.cli:main
   run_exports:
@@ -76,10 +77,8 @@ requirements:
     - graphviz
 
 test:
-  #imports:
-  #  - bioconda_utils
-  # [Nov  2 22:37:22] SERR bash: -c: line 1: syntax error near unexpected token `&&'
-  # [Nov  2 22:37:22] SERR bash: -c: line 1: ` && python -c "import bioconda_utils"'
+  imports:
+    - bioconda_utils
   commands:
     - bioconda-utils --help
     - bioconda-utils lint --help
@@ -93,8 +92,10 @@ test:
       )" 2>&1 | grep -qF 'All requested packages already installed'
 
 about:
-  home: http://bioconda.github.io/build-system.html
+  home: "https://bioconda.github.io/contributor/build-system.html"
   license: MIT
   license_family: MIT
-  summary: Utilities for building and managing bioconda recipes.
-  dev_url: https://github.com/bioconda/bioconda-utils
+  license_file: "LICENSE.md"
+  summary: "Utilities for building and managing bioconda recipes."
+  dev_url: "https://github.com/bioconda/bioconda-utils"
+  doc_url: "https://bioconda.github.io/contributor/guidelines.html"
