@@ -31,3 +31,4 @@ fi
 cd "$TARGET"
 unzip "MSFragger-$PKG_VERSION.zip"
 ln -s "MSFragger-$PKG_VERSION/MSFragger-$PKG_VERSION.jar" "MSFragger.jar"
+rm "MSFragger-$PKG_VERSION.zip"
