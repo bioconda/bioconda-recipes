@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# use newer config.guess and config.sub that support linux-aarch64
+cp ${RECIPE_DIR}/config.* .
+
 mkdir -p ${PREFIX}
 ./configure --prefix=$PREFIX
 make install
