@@ -1,15 +1,9 @@
-#!/bin/bash
-set -x
+#!/usr/bin/env bash
 
-mkdir -p $PREFIX/bin
+set -x
 
 DEFAULT_LINUX_VERSION="cos7"
 NODE_VERSION="18.19.1"
-
-export INCLUDES="-I{PREFIX}/include"
-export LIBPATH="-L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 wget -O- https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}.tar.gz | tar -zxf -
 pushd node-v${NODE_VERSION}
@@ -22,7 +16,7 @@ pushd node-v${NODE_VERSION}
 patch -p0 < ${RECIPE_DIR}/nodejs-x86_64.patch
 
 ./configure --without-node-snapshot --without-etw --without-npm --without-inspector --without-dtrace
-make -j"${CPU_COUNT}" LIB_COMMON="${LIB_COMMON} -L${PREFIX}/lib"
+make -j3
 popd
 
 # make it possible to set conda build's CXXFLAGS and point to the Node sources
@@ -30,11 +24,8 @@ sed -i.bak 's/CXXFLAGS=/CXXFLAGS?=/' Makefile
 sed -i.bak 's/NODE_SRC=/NODE_SRC?=/' Makefile
 sed -i.bak 's/LIBS=/LIBS?=/' Makefile
 
-rm *.bak
-
 # Then compile k8
-make NODE_SRC="node-v${NODE_VERSION}" \
-	CXXFLAGS="${CXXFLAGS} -std=c++17 -g -O3 -Wall" \
-	LIBS="${LDFLAGS} -pthread" -j"${CPU_COUNT}"
+NODE_SRC="node-v${NODE_VERSION}" CXXFLAGS="${CXXFLAGS} -std=c++17 -g -O3 -Wall" LIBS="${LDFLAGS} -pthread" make
 
-cp -f k8 $PREFIX/bin/
+mkdir -p $PREFIX/bin
+cp -f k8 $PREFIX/bin/k8
