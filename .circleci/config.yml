@@ -18,75 +18,30 @@ jobs: # a basic unit of work in a run
         type: executor
     executor: << parameters.os >>
     steps:
-      - checkout
-
       - run:
-          name: Check for Additional Platforms
-          command: ./.circleci/check-for-additional-platforms.sh "origin/master...HEAD" "build_and_test"
-
-      - run:
-          name: Fetch bioconda install script
-          command: wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
-
-      - run:
-          name: Install bioconda-utils
+          name: Testing
           command: |
-            sudo mkdir -p /opt/
-            sudo chmod o+rwx /opt
-            bash install-and-set-up-conda.sh
-
-      - run:
-          name: Setup PATH
-          command:
-            echo 'export PATH=/opt/mambaforge/bin:"$PATH"' >> "$BASH_ENV"
-
-      # We reconfigure conda to use the right channel setup.
-      # This has to be done after the cache is restored, because
-      # the channel setup is not cached as it resides in the home directory.
-      # We could use a system-wide (and therefore cached) channel setup,
-      # but mamba does not support that at the time of implementation
-      # (it ignores settings made by --system).
-      - run:
-          name: Configure conda
-          command: bash configure-conda.sh
-
-      - run:
-          name: Build and test
-          command: |
-            source /opt/mambaforge/etc/profile.d/conda.sh
-            source /opt/mambaforge/etc/profile.d/mamba.sh
-            mamba activate bioconda
-            bioconda-utils build recipes config.yml \
-                --lint --docker --mulled-test \
-                --docker-base-image quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch) \
-                --git-range origin/master HEAD
-
-      - run:
-          name: Prepare artifacts
-          command: |
-            (
-            mkdir -p /tmp/artifacts/packages
-            cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
-            find -name .cache | xargs rm -rf || true
-            for n in index.html channeldata.json linux-aarch64 linux-64 osx-64 noarch; do
-              cp -rv $n /tmp/artifacts/packages || true
+            set -xeu
+            for image in \
+              quay.io/bioconda/base-glibc-busybox-bash:3 \
+              quay.io/bioconda/base-glibc-debian-bash:3 \
+              quay.io/bioconda/create-env:3 \
+              quay.io/bioconda/bioconda-utils-build-env-cos7-aarch64:2.13.2 \
+              quay.io/condaforge/linux-anvil-aarch64:latest \
+              docker.io/arm64v8/centos:7 \
+              quay.io/condaforge/mambaforge:latest \
+              docker.io/continuumio/miniconda3:latest \
+              ; do
+              for shell in sh bash ; do
+                for run_opts in '' '--entrypoint=' ; do
+                  for opts in '' '-l' '-i' '-li' ; do
+                    docker run --rm --quiet ${run_opts} "${image}" "${shell}" ${opts} -c umask 2> /dev/null
+                  done
+                done
+              done
             done
-            if command -V docker >/dev/null; then
-              mkdir -p /tmp/artifacts/images
-              cd /tmp/artifacts/images
-              docker image ls --format='{{.Repository}}:{{.Tag}}' | \
-                { grep biocontainers || true ; } | \
-                xargs -n1 -P4 bash -c '
-                  test -n "${1+x}" || exit 0
-                  echo "Start compressing docker image ${1} ..."
-                  docker save "${1}" | gzip -c > "${1##*/}.tar.gz"
-                  echo "Finished compressing docker image ${1} ."
-                  ' --
-            fi
-            ) || true
+            exit 1
 
-      - store_artifacts:
-          path: /tmp/artifacts
 
   build_and_upload:
     parameters:
