@@ -31,3 +31,4 @@ fi
 cd "$TARGET"
 unzip "IonQuant-$PKG_VERSION.zip"
 ln -s "IonQuant-$PKG_VERSION/IonQuant-$PKG_VERSION.jar" "IonQuant.jar"
+rm "IonQuant-$PKG_VERSION.zip"

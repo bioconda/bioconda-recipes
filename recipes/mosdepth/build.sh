@@ -1,6 +1,11 @@
 #!/bin/sh
 
 if [[ ${target_platform}  == osx-64 ]] ; then
+    curl -SL https://github.com/nim-lang/nightlies/releases/download/latest-version-1-6/macosx_x64.tar.xz -o macosx_x64.tar.xz
+    tar -xzf macosx_x64.tar.xz
+    cd nim-1.6.*
+    export PATH="$PWD/bin:$PATH"
+    cd ..
     curl -SL https://github.com/brentp/mosdepth/archive/refs/tags/v${PKG_VERSION}.tar.gz -o mosdepth-latest.tar.gz
     tar -xzf mosdepth-latest.tar.gz
     cd mosdepth-${PKG_VERSION}
