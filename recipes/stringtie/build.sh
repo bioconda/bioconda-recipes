@@ -4,13 +4,13 @@ mkdir -p ${PREFIX}/bin
 
 ln -sf ${PREFIX}/lib/libz.so.1 ${PREFIX}/lib/libz.so
 
-export INCLUDE_PATH="${PREFIX}/include"
-export LIBPATH="-L${PREFIX}/lib"
+export C_INCLUDE_PATH="${PREFIX}/include"
+export CPLUS_INCLUDE_PATH="${PREFIX}/include"
 export LINKER="${CXX}"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CPPFLAGS}"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-make release CXX="${CXX} ${LDFLAGS}" CXXFLAGS="${CXXFLAGS}" INCDIRS="${INCDIRS} -I${PREFIX}/include" -j${CPU_COUNT}
+make release CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}"
 chmod 755 stringtie && mv stringtie ${PREFIX}/bin
 
 # Prepare prepDE
