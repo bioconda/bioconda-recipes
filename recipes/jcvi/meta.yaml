@@ -2,17 +2,19 @@
 {% set version = "1.4.9" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: 0cb2f8339169456b4fadf3767af59d5eac36ff74e8eb30885ebbbc944c83079d
 
 build:
-  skip: True  # [py2k or osx]
+  skip: True  # [linux]
   number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin='x') }}
 
@@ -22,37 +24,37 @@ requirements:
   host:
     - python
     - pip
-    - numpy 
+    - setuptools-scm
     - cython
+    - numpy
   run:
     - python
+    - crossmap
+    - pypdf2
     - biopython
     - boto3
     - brewer2mpl
-    - coveralls
     - deap
     - ete3
     - gffutils
     - goatools
-    - graphviz
+    - genomepy
+    - python-graphviz
     - jinja2
     - matplotlib-base
+    - more-itertools
     - natsort
     - networkx
-    - numpy
-    - pypdf2
-    - more-itertools
-    - r-ggplot2
-    - last
-    - r-tinytex
-    #- pytest
-    #- pytest-benchmark
-    #- pytest-cov
-    - pyyaml
+    - ortools-python
+    - pybedtools
+    - pyefd
     - rich
+    - scikit-image
     - scipy
-    - seaborn-base
-    #- texlive-core
+    - seaborn
+    - webcolors
+    - {{ pin_compatible('numpy') }}
+    - last
     - ucsc-liftover
 
 test:
@@ -71,15 +73,17 @@ test:
     - jcvi.variation
   #This fails for some unknown reason, even though it's outputting "JCVI utility libraries"
   #commands:
-  #  - "python -m jcvi.apps 2>&1 | grep 'JCVI utility libraries'"
+  #  - 'python -m jcvi.apps 2>&1 | grep "JCVI utility libraries"'
 
 about:
-  home: http://github.com/tanghaibao/jcvi
+  home: "https://github.com/tanghaibao/jcvi"
   license: BSD-2-Clause
   license_family: BSD
   license_file: LICENSE
-  summary: Python utility libraries on genome assembly, annotation and comparative genomics
+  summary: "Python utility libraries on genome assembly, annotation, and comparative genomics"
   description: "JCVI utility libraries"
+  dev_url: "https://github.com/tanghaibao/jcvi"
+  doc_url: "https://github.com/tanghaibao/jcvi/wiki"
 
 extra:
   additional-platforms:
