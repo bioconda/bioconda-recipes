@@ -20,7 +20,7 @@ stages:
             displayName: Add conda to PATH
 
           - bash: |
-              wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
+              wget https://raw.githubusercontent.com/bioconda/bioconda-common/_test-pkg_format-2/{common,install-and-set-up-conda,configure-conda}.sh
             displayName: Fetch bioconda install script
 
           - bash: |
@@ -31,7 +31,7 @@ stages:
           - task: Cache@2
             inputs:
               path: "/opt/mambaforge"
-              key: '"$(Agent.OS)" | install-and-set-up-conda.sh | configure-conda.sh | common.sh'
+              key: '"_test-pkg_format-2" | "$(Agent.OS)" | install-and-set-up-conda.sh | configure-conda.sh | common.sh'
               cacheHitVar: CACHE_RESTORED
             displayName: Restore cache
 
@@ -70,7 +70,7 @@ stages:
             displayName: Add conda to PATH
 
           - bash: |
-              wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
+              wget https://raw.githubusercontent.com/bioconda/bioconda-common/_test-pkg_format-2/{common,install-and-set-up-conda,configure-conda}.sh
             displayName: Fetch bioconda install script
 
           - bash: |
@@ -81,7 +81,7 @@ stages:
           - task: Cache@2
             inputs:
               path: "/opt/mambaforge"
-              key: '"$(Agent.OS)" | install-and-set-up-conda.sh | configure-conda.sh | common.sh'
+              key: '"_test-pkg_format-2" | "$(Agent.OS)" | install-and-set-up-conda.sh | configure-conda.sh | common.sh'
               cacheHitVar: CACHE_RESTORED
             displayName: Restore cache
 
@@ -105,6 +105,14 @@ stages:
               docker pull quay.io/dpryan79/mulled_container:latest
               export OSTYPE="linux-gnu"
               export CI="true"
+              echo '============'
+              . common.sh
+              container_image="quay.io/bioconda/bioconda-utils-build-env-cos7:${BIOCONDA_UTILS_TAG#v}"
+              docker build -t "${container_image}" - << end-of-dockerfile
+              FROM "${container_image}"
+              RUN /opt/conda/bin/conda config --set conda_build.pkg_format 2
+              end-of-dockerfile
+              echo '============'
               bioconda-utils build recipes config.yml \
                   --docker --mulled-test \
                   --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH" HEAD
@@ -151,7 +159,7 @@ stages:
             displayName: Add conda to PATH
 
           - bash: |
-              wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
+              wget https://raw.githubusercontent.com/bioconda/bioconda-common/_test-pkg_format-2/{common,install-and-set-up-conda,configure-conda}.sh
             displayName: Fetch setup scripts
 
           - bash: |
@@ -162,7 +170,7 @@ stages:
           - task: Cache@2
             inputs:
               path: "/opt/mambaforge"
-              key: '"$(Agent.OS)" | install-and-set-up-conda.sh | configure-conda.sh | common.sh'
+              key: '"_test-pkg_format-2" | "$(Agent.OS)" | install-and-set-up-conda.sh | configure-conda.sh | common.sh'
               cacheHitVar: CACHE_RESTORED
             displayName: Restore cache
 
