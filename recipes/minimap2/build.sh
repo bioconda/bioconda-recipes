@@ -13,7 +13,7 @@ case $(uname -m) in
         ;;
 esac
 
-make INCLUDES="-I${PREFIX}/include" CFLAGS="-g -Wall -O2 -Wc++-compat -L${PREFIX}/lib" \
+make CFLAGS="-g -Wall -O2 -Wc++-compat -I${PREFIX}/include -L${PREFIX}/lib" \
     ${ARCH_OPTS} -j${CPU_COUNT} minimap2 sdust
 
 chmod 755 minimap2 && chmod 755 sdust
