@@ -2,7 +2,9 @@
 
 set -xe
 
-mkdir -p $PREFIX/bin $PREFIX/lib $PREFIX/include
+cat Makefile
+
+mkdir -p ${PREFIX}/bin ${PREFIX}/lib ${PREFIX}/include
 
 export CPATH=${PREFIX}/include
 
@@ -15,8 +17,12 @@ case $(uname -m) in
         ;;
 esac
 
-make INCLUDES="-I$PREFIX/include" CFLAGS="-g -Wall -O2 -Wc++-compat -L$PREFIX/lib" $ARCH_OPTS minimap2 sdust
-cp minimap2 misc/paftools.js $PREFIX/bin
-cp sdust $PREFIX/bin
-cp libminimap2.a $PREFIX/lib
-cp *.h $PREFIX/include
+make CFLAGS="-g -Wall -O2 -Wc++-compat -L${PREFIX}/lib" \
+    ${ARCH_OPTS} -j${CPU_COUNT} minimap2 sdust
+
+chmod 755 minimap2 && chmod 755 sdust
+
+cp minimap2 misc/paftools.js ${PREFIX}/bin
+cp sdust ${PREFIX}/bin
+cp libminimap2.a ${PREFIX}/lib
+cp *.h ${PREFIX}/include
