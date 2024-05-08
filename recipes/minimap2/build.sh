@@ -6,7 +6,7 @@ export INCLUDE_PATH="${PREFIX}/include"
 
 ARCH=$(uname -m)
 case ${ARCH} in
-    aarch64) ARCH_FLAGS="arm_neon=1 aarch64=1" ;;
+    aarch64) ARCH_FLAGS="aarch64=1" ;;
     *) ARCH_FLAGS="" ;;
 esac
 
