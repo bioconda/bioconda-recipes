@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+set -xe
+
 df -h
 mkdir -p $PREFIX/bin
 cp -rf $SRC_DIR/bin $PREFIX/bin
