@@ -1,5 +1,5 @@
 #!/bin/sh
 
 ./configure --prefix=$PREFIX CPPFLAGS=-DUNIXCONSOLE
-make
+make -j ${CPU_COUNT}
 make install
