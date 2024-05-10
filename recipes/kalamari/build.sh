@@ -15,4 +15,4 @@ done
 for i in src/*.tsv; do 
   cp -vf $i $PREFIX/src/
 done
-cp -rv src/taxonomy $PREFIX/src/
+cp -rvf src/taxonomy $PREFIX/src/
