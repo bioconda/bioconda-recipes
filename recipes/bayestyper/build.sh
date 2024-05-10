@@ -4,6 +4,7 @@ export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+export CMAKE_CXX_FLAGS="${CXXFLAGS}"
 
 # Delete call to `git rev-parse HEAD`
 # https://github.com/bioinformatics-centre/BayesTyper/blob/1b04081ca4c64975270d267dbe9d80bd00bddaf9/CMakeLists.txt#L4-L9
