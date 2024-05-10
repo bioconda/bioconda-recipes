@@ -22,7 +22,7 @@ cmake -S .. -B . \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-DGIT_LAST_COMMIT_HASH=123456
-make -j ${CPU_COUNT}
+make -j ${CPU_COUNT} VERBOSE=1
 
 cp -f ${SRC_DIR}/bin/bayesTyper ${PREFIX}/bin
 cp -f ${SRC_DIR}/bin/bayesTyperTools ${PREFIX}/bin
