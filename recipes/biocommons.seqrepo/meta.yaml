@@ -1,6 +1,5 @@
 {% set name = "biocommons.seqrepo" %}
-{% set version = "0.6.5" %}
-
+{% set version = "0.6.9" %}
 
 package:
   name: {{ name|lower }}
@@ -8,28 +7,29 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/biocommons.seqrepo-{{ version }}.tar.gz
-  sha256: af9d1120fdef58025f1f8da02b0d184bb4a5a8a9299433f6020998d45992b29d
+  sha256: b08d616c6ab5c4bc8e1ef5e09e94c5c274c6da41f75a435323eddc716c9b5575
 
 build:
   number: 0
   noarch: python
   entry_points:
     - seqrepo = biocommons.seqrepo.cli:main
-  script: {{ PYTHON }} -m pip install . -vv --no-deps
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('biocommons.seqrepo', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.6
+    - python >=3.9
     - pytest-runner
-    - cython
     - setuptools-scm
-    - wheel
   run:
     - bioutils >0.4
     - coloredlogs
+    - ipython
     - pysam
-    - python >=3.6
+    - python >=3.9
     - requests
     - requests-html
     - six
@@ -43,12 +43,11 @@ test:
   commands:
     #- pip check #requests-html 0.10.0 requires bs4, which is not installed
     - seqrepo --help
-  requires:
-    - pip
 
 about:
   home: https://github.com/biocommons/biocommons.seqrepo
   license: Apache-2.0
+  license_family: APACHE
   license_file: LICENSE
   summary: Python package for writing and reading a local collection of biological sequences.
 
