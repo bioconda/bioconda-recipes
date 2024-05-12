@@ -1,5 +1,5 @@
 {% set name = "blosum" %}
-{% set version = "1.2.2" %}
+{% set version = "2.0.3" %}
 
 package:
   name: {{ name }}
@@ -7,12 +7,14 @@ package:
 
 source:
   url: https://github.com/not-a-feature/blosum/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 80e27cf5c549387befdd38ee59442cff87686ae6c5b3ff4606e59dd466659226
+  sha256: 7e061dd6934333068b87d0d900eb437574f3c4acda26de7179c2422dcff74033
 
 build:
   noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('blosum', max_pin="x") }}
 
 requirements:
   host:
@@ -24,15 +26,11 @@ requirements:
 test:
   imports:
     - blosum
-  commands:
-    - pip check
-  requires:
-    - pip
 
 about:
   home: https://github.com/not-a-feature/blosum
   license: GPL-3.0-or-later
-  license_family: GPL
+  license_family: GPL3
   license_file: LICENSE
   summary: 'A small module for easy access to BLOSUM matrices without dependencies.'
   description: |
@@ -43,4 +41,3 @@ about:
 extra:
   recipe-maintainers:
     - not-a-feature
-

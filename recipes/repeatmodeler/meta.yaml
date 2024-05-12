@@ -1,26 +1,28 @@
 {% set name = "RepeatModeler" %}
-{% set version = "2.0.3" %}
-{% set sha256 = "063bb8ab6b9f4bf18458504f6f90c0022ef5a5aebf2176f78f87f9e69faf7408" %}
+{% set version = "2.0.5" %}
+{% set sha256 = "4c005ada7e88ff944116832349580a0dc3db762dc1c91235fa574b32ea9a8452" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://github.com/Dfam-consortium/RepeatModeler/archive/{{ version }}.tar.gz
+  url: https://github.com/Dfam-consortium/RepeatModeler/archive/refs/tags/{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
     - patch
 
 build:
-  skip: True  # [osx]
+  noarch: generic
   number: 0
+  run_exports:
+    - {{ pin_subpackage('repeatmodeler', max_pin="x") }}
 
 requirements:
   host:
     - perl
     - perl-file-which
-    - rmblast >=2.11.0
+    - rmblast >=2.13.0
     - perl-uri
     - perl-libwww-perl
     - perl-devel-size
@@ -31,8 +33,8 @@ requirements:
     - perl-uri
     - perl-libwww-perl
     - perl-devel-size
-    - repeatmasker
-    - rmblast >=2.11.0
+    - repeatmasker >=4.1.5
+    - rmblast >=2.13.0
     - trf >=4.09
     - repeatscout >=1.0.6
     - recon >=1.08
@@ -43,18 +45,17 @@ requirements:
     - ucsc-twobitinfo
     - ucsc-twobittofa
     - ucsc-fatotwobit
-    - ninja-nj    # [not osx]
-# to be complete it is missing ABBlast
+    - ninja-nj
 
 test:
   files:
     - test.fa
   commands:
      # (see run_test.sh )
-    - "RepeatModeler -h | grep SYNOPSIS"
+    - RepeatModeler -h | grep "SYNOPSIS"
 
 about:
-  home: 'http://www.repeatmasker.org/RepeatModeler/'
+  home: 'https://www.repeatmasker.org/RepeatModeler/'
   license: 'Open Software License v2.1'
   license_file: LICENSE
   summary: 'RepeatModeler is a de-novo repeat family identification and modeling package.'
@@ -63,5 +64,3 @@ about:
 extra:
   identifiers:
     - biotools:RepeatModeler
-  skip-lints:
-    - should_be_noarch_generic

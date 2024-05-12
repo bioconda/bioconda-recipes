@@ -1,6 +1,6 @@
-{% set version = "1.70.0" %}
+{% set version = "1.74.0" %}
 {% set name = "affxparser" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,14 +8,16 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 9898bbc5e7122f87d009435c84c4ba74
+  md5: 2b6b9373d749a0ccbf930f834df90b92
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-affxparser", max_pin="x.x") }}'
 # Suggests: R.oo (>= 1.22.0), R.utils (>= 2.7.0), AffymetrixDataTestFiles
 requirements:
   host:
@@ -38,6 +40,8 @@ about:
   description: 'Package for parsing Affymetrix files (CDF, CEL, CHP, BPMAP, BAR).  It provides methods for fast and memory efficient parsing of Affymetrix files using the Affymetrix'' Fusion SDK. Both ASCII- and binary-based files are supported.  Currently, there are methods for reading chip definition file (CDF) and a cell intensity file (CEL).  These files can be read either in full or in part.  For example, probe signals from a few probesets can be extracted very quickly from a set of CEL files into a convenient list structure.'
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
 extra:
+  additional-platforms:
+    - linux-aarch64
   parent_recipe:
     name: bioconductor-affxparser
     path: recipes/bioconductor-affxparser

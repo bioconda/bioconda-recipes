@@ -1,14 +1,15 @@
 #!/bin/bash
 
-./compile
+export INCLUDES="-I{PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include -D_LIBCPP_DISABLE_AVAILABILITY"
 
-mkdir -p ${PREFIX}/bin/
-mkdir -p ${PREFIX}/include/
-mkdir -p ${PREFIX}/lib/
+CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" meson setup --buildtype release --prefix "${PREFIX}" --strip build/ -Db_coverage=false
 
-cp -r install/bin/* ${PREFIX}/bin/
-cp -r install/include/* ${PREFIX}/include/
-cp -r install/lib/* ${PREFIX}/lib/
+cd build
+
+ninja -v install
 
 # python wrappers:
-$PYTHON -m pip install install/lib/btllib/python
+$PYTHON -m pip install "${PREFIX}/lib/btllib/python" --no-deps --no-build-isolation -vvv

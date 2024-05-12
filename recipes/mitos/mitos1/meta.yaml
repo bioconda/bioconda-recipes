@@ -1,5 +1,5 @@
 {% set name = "mitos" %}
-{% set version = "1.1.0" %}
+{% set version = "1.1.7" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,28 +7,34 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: b1abb1936610d85f5f9119e032370ca0cff59e077a2cd732cba2859ea94157e5
+  sha256: 53ad3d1c8fefa1ec8de176905c6f953976a020391d86aa84600ef7244f6ec1ef
 
 build:
   number: 0
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('mitos', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
     - python >=3
   run:
-    - biopython <1.68
-    # - ete2 ==2.3*
+    - biopython <1.82
     - python >=3
-    # - reportlab
     - blast-legacy =2.2
     - infernal =1.0
-    - viennarna <2
-    - r-base >=4
+    - viennarna
     - r-ggplot2
+    - r-reshape2
     - openjdk >8
+    - reportlab
+    # - does not work with newest libtiff 
+    # - force to not install it from defaults
+    # xref https://github.com/conda-forge/pillow-feedstock/issues/135
+    - conda-forge::pillow
+    - conda-forge::libtiff
 
 test:
   imports:
@@ -36,7 +42,7 @@ test:
     - mitos.bedfile
     - mitos.blast
     - mitos.codon
-    # - mitos.draw
+    - mitos.draw
     - mitos.extprog
     - mitos.feature
     - mitos.gb
@@ -54,6 +60,8 @@ test:
     - mitos.webserver
   commands:
     - runmitos.py -h
+    - 'R -e "library(''reshape2'')"'
+    - 'R -e "library(''ggplot2'')"'
 
 about:
   home: http://mitos.bioinf.uni-leipzig.de

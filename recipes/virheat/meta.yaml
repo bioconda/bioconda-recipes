@@ -1,0 +1,48 @@
+{% set name = "virheat" %}
+{% set version = "0.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/virheat-{{ version }}.tar.gz
+  sha256: 7005f5cfbab4aebc425457ef48607dbce5784c9319518f5d7cba3318b45587ba
+
+build:
+  entry_points:
+    - virheat = virheat.command:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps -vvv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('virheat', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+  run:
+    - python >=3.9
+    - matplotlib-base >=3.5.1,<=3.8.0
+    - pandas >=1.4.4
+    - numpy >=1.23.3
+
+test:
+  imports:
+    - virheat
+  commands:
+    - pip check
+    - virheat --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/jonas-fuchs/virHEAT
+  summary: Visualize microbial evolution at the SNP level by creating a heatmap from vcf files.
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - jonas-fuchs
