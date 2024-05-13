@@ -1,5 +1,5 @@
-{% set version = "0.5.2" %}
-{% set sha256 = "5ab70c39f45ddd3a5b8b4acdb5ceaf87f7e579e129840b318272a17d04b1e0f5" %}
+{% set version = "0.6.3" %}
+{% set sha256 = "7a7344b3d88b8ac303f0a54f7709fa528fe1555dd6e935c45e6ec452d955871d" %}
 
 package:
   name: varfish-cli
@@ -10,16 +10,20 @@ source:
   sha256: '{{sha256}}'
 
 build:
-  script: python -m pip install --no-deps --ignore-installed .
-  noarch: python 
-  number: 0
+  noarch: python
+  number: 2
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - varfish-cli = varfish_cli.__main__:main
+  run_exports:
+    - {{ pin_subpackage('varfish-cli', max_pin="x.x") }}
 
 requirements:
   host:
     - python >=3
     - pip
   run:
-    - python >=3
+    - python >=3.9
     - attrs
     - cattrs
     - jsonschema
@@ -29,9 +33,11 @@ requirements:
     - tqdm
     - tabulate
     - polyleven
+    - pydantic >=2.0,<3.0
     - python-dateutil
     - simplejson
     - typeguard
+    - typer
 
 test:
   imports:
