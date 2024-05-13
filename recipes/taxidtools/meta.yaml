@@ -1,23 +1,26 @@
+{% set name = "taxidtools" %}
 {% set version = "2.3.0" %}
 
 package:
-  name: taxidtools
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/CVUA-RRW/taxidTools/archive/refs/tags/2.3.0.tar.gz
-  sha256: 47623b6b8dcb9a4391ecf28cbcdfb0f431938af797bdd688a3442b668f5e012d
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/taxidtools-{{ version }}.tar.gz
+  sha256: 5cff6eff7ecf9711d0ed3e22f5ca392b2995912b8ef808e3df17272354c68824
 
 build:
-  number: 1
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
   run_exports:
     - {{ pin_subpackage('taxidtools', max_pin="x") }}
 
 requirements:
   host:
     - python >=3.9
+    - setuptools >=42
+    - wheel
     - pip
   run:
     - python >=3.9
@@ -25,16 +28,21 @@ requirements:
 test:
   imports:
     - taxidTools
+  commands:
+    - pip check
+  requires:
+    - pip
 
 about:
   home: https://github.com/CVUA-RRW/taxidTools
-  license: BSD License
-  summary: 'taxidTools is a Python library to handle Taxonomy definitions.'
-  license_family: BSD
+  summary: A Python Toolkit for Taxonomy
+  license: BSD-3-Clause
   license_file: LICENSE
   doc_url: https://cvua-rrw.github.io/taxidTools/index.html
 
 extra:
+  recipe-maintainers:
+    - gregdenay
   identifiers:
     - doi:10.5281/zenodo.5556006
   skip-lints:
