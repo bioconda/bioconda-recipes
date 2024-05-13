@@ -5,19 +5,17 @@ export MEME_ETC_DIR=${PREFIX}/etc
 #HOME=/tmp cpanm CGI::Application
 #HOME=/tmp cpanm XML::Parser::Expat --configure-args "EXPATLIBPATH=$PREFIX/lib" --configure-args "EXPATHINCPATH=$PREFIX/include"
 
-autoconf
-autoheader
+autoreconf -i
 
 perl scripts/dependencies.pl
 
 ./configure CC="${CC}" \
-	CFLAGS="-O3 -I${PREFIX}/include" \
+	CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include" \
 	LDFLAGS="${LDFLAGS} -L${PREFIX}/lib" \
 	--prefix="${PREFIX}" \
 	--enable-build-libxml2 \
 	--enable-build-libxslt
 
-make clean
 make AM_CFLAGS='-DNAN="(0.0/0.0)"' -j4
 
 # tests will only work inside the build dir, but
@@ -27,8 +25,9 @@ make AM_CFLAGS='-DNAN="(0.0/0.0)"' -j4
 # make test
 
 make install
+make clean
 
-ln -s ${PREFIX}/libexec/${PKG_NAME}-${PKG_VERSION}/* ${PREFIX}/bin/
+ln -sf ${PREFIX}/libexec/${PKG_NAME}-${PKG_VERSION}/* ${PREFIX}/bin/
 
 # if building with python3,
 # modify meme-chip script to use python3 version of DREME
