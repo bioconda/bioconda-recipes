@@ -13,4 +13,6 @@ sed -i.bak "s/'build_ext': HTSBuild//" setup.py
 sed -i.bak 's/extra_objects.*//' build.py
 sed -i.bak 's/^libraries=\[/libraries=\["hts",/' build.py
 
+rm -rf *.bak
+
 ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
