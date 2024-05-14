@@ -25,7 +25,7 @@ curl -L https://obj.umiacs.umd.edu/sergek/shared/ecoli_hifi_subset24x.fastq.gz -
 curl -L https://obj.umiacs.umd.edu/sergek/shared/ecoli_ont_subset50x.fastq.gz -o ont.fastq.gz
 curl -L https://obj.umiacs.umd.edu/sergek/shared/ecoli_hifi_subset.ids -o subset.ids
 
-seqtk sample hifi.fastq.gz 0.5 |seqtk subseq - subset.ids > hifi_lowcov.fastq
+seqtk subseq hifi.fastq.gz subset.ids > hifi_lowcov.fastq
 seqtk sample ont.fastq.gz 0.10 > ont_lowcov.fastq
 touch empty.fasta
 
