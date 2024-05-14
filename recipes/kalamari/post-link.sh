@@ -13,8 +13,8 @@ The following databases are available:
 * filterTaxonomy.sh - filters the taxonomy directory into just taxa that are used in Kalamari into $DB_PREFIX/taxonomy/filtered
 
 The following depend on a built taxonomy from buildTaxonomy.sh
-* buildKraken1.sh - creates a Kraken1 database at $DB_PREFIX/kraken1.kalamari
-* buildKraken2.sh - creates a Kraken1 database at $DB_PREFIX/kraken2.kalamari
+* buildKraken1.sh - creates a Kraken1 database at $DB_PREFIX/kraken1.kalamari (requires Kraken1)
+* buildKraken2.sh - creates a Kraken2 database at $DB_PREFIX/kraken2.kalamari (requires Kraken2)
 
 For more refined options, please start with
   downloadKalamari.pl --help
