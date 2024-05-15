@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 set -xe
-
 df -h
 du -sch $CONDA_PREFIX
 mkdir -p $PREFIX/bin
