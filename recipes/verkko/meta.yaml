@@ -5,27 +5,26 @@ package:
   name: {{ name|lower }}
   version: {{ version }}
 
+build:
+  number: 0   
+  run_exports:
+      - {{ pin_subpackage('verkko', max_pin="x") }}
+
 source:
   url: https://github.com/marbl/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
   sha256: e989710a43cc6f721938f6393d20c8a674b110cd74a7c27f23f4d06a9dd78e9f
-
   patches:
     - version.patch
-    - osx_availability.patch # [osx]
-
-build:
-  number: 0
-  run_exports:
-      - {{ pin_subpackage('verkko', max_pin="x.x") }}
+    - osx_availability.patch  # [osx]
 
 requirements:
   build:
     - make
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+  host:
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
-    - {{ compiler('cxx') }}
-    - rust >=1.66
-  host:
     - gsl
     - zlib
   run:
@@ -41,16 +40,24 @@ requirements:
     - mashmap >=3.0.6
     - winnowmap >=2.0
     - bwa >=0.7.17
+    - minimap2 >=2.28
     - samtools >=1.17
 
 test:
   requires:
     - curl
   commands:
-     - verkko --version
+    - verkko --version
 
 about:
-  home: https://github.com/marbl/verkko
-  license: CC0
-  license_file: README.licenses
-  summary: Assembler for hybrid combinations of long reads
+  home: "https://github.com/marbl/verkko"
+  license: "Public Domain"
+  license_file: "README.licenses"
+  summary: "A hybrid genome assembly pipeline developed for telomere-to-telomere assembly of PacBio HiFi or Oxford Nanopore Duplex and Oxford Nanopore simplex reads."
+  dev_url: "https://github.com/marbl/verkko"
+  doc_url: "https://github.com/marbl/verkko/blob/master/README.md"
+
+extra:
+  identifiers:
+    - doi:10.1038/s41587-023-01662-6
+    - usegalaxy-eu:verkko
