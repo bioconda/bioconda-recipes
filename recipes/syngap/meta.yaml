@@ -1,5 +1,5 @@
 {% set name = "syngap" %}
-{% set version = "1.1.1" %}
+{% set version = "1.2.1" %}
 
 package:
   name: {{ name }}
@@ -7,32 +7,18 @@ package:
 
 source:
   url: https://github.com/yanyew/SynGAP/releases/download/v{{ version }}/{{ name }}_v{{ version }}.tar.gz
-  sha256: 4756cba6ede6cef4d7784a46bc2add4dd5eabf2136b39fc982592d031b55e064
+  sha256: e3dc525fb6a39c7b23209d9b1f4167bf9ac85e9f95a97a1aafee7d69d9cd3d33
   
 build: 
   number: 0
   entry_points: 
     - syngap = SynGAP:main
   noarch: generic
-  run_exports:
-    - python
-    - biopython
-    - jcvi
-    - bedtools
-    - last
-    - emboss
-    - gffread
-    - seqkit
-    - diamond
-    - perl-bioperl
-    - kneed
-    - numpy
-    - pandas
-    - matplotlib-base
+  run_exports:  '{{ pin_subpackage(name, max_pin="x") }}'
 
 requirements:
-  bulid: 
-    - python >=3.10
+  #bulid: 
+  #  - python >=3.10
   run: 
     - python >=3.10
     - biopython >=1.81
@@ -83,7 +69,9 @@ test:
     - genepair
     - evi
     - eviplot
-  commands: 
+  commands:
+    - df -h
+    - du -sch $CONDA_PREFIX
     - syngap -h
     - syngap initdb -h
     - syngap master -h
@@ -93,6 +81,7 @@ test:
     - syngap genepair -h
     - syngap evi -h
     - syngap eviplot -h
+    - df -h
 
 about: 
   home: https://github.com/yanyew/SynGAP
