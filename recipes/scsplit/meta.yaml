@@ -11,27 +11,31 @@ source:
 
 build:
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 1
-  entry_points:
-    - scsplit = scSplit.__main__:scSplit
   run_exports:
     - {{ pin_subpackage('scsplit', max_pin="x.x.x") }}
 
 requirements:
   host:
-    - python
-    - pip
+    - python=3.9
   run:
-    - python
+    - python=3.9
+    - numpy
+    - pandas<2.0
+    - pyVCF
+    - pysam
+    - scikit-learn==1.1.3
+    - scipy
+    - setuptools<58
 
 test:
-  imports:
-    - scSplit
+  files:
+    - donor_genotype_chr21.vcf
+    - chr21.bam
+    - chr21.bam.bai
+    - barcodes.tsv
   commands:
-    - pip check
-  requires:
-    - pip
+    - scSplit count -v donor_genotype_chr21.vcf -i chr21.bam -b barcodes.tsv -r ref_filtered.csv -a alt_filtered.csv -o .
 
 about:
   home: https://github.com/jon-xu/scSplit
