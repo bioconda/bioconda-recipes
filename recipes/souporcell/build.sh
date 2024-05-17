@@ -7,10 +7,12 @@ export CXXFLAGS="${CFLAGS} -fcommon"
 export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
 
 # Include scripts
-cp stan_consensus.pickle $PREFIX/stan_consensus.pickle
-cp *py $PREFIX
-chmod +x $PREFIX/souporcell_pipeline.py
-
+cp stan_consensus.pickle $PREFIX/bin/stan_consensus.pickle
+cp *py $PREFIX/bin
+chmod +x $PREFIX/bin/souporcell_pipeline.py
+# Scripts expect the binary located in the following folder
+mkdir -p $PREFIX/bin/souporcell/target/release
+mkdir -p $PREFIX/bin/troublet/target/release
 # Build statically linked binary with Rust
-RUST_BACKTRACE=1 cargo install --locked --root "$PREFIX" --path troublet
-RUST_BACKTRACE=1 cargo install --locked --root "$PREFIX" --path souporcell
+RUST_BACKTRACE=1 cargo install --locked --root "$PREFIX/bin/souporcell/target/release" --path troublet
+RUST_BACKTRACE=1 cargo install --locked --root "$PREFIX/bin/troublet/target/release/" --path souporcell
