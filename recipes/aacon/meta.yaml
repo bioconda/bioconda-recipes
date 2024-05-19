@@ -1,0 +1,49 @@
+{% set version = "1.1" %}
+{% set sha256sum = "8dd97c70d46d0f8cf6ca79f0cc7641e629db2ab3fec30bd6dbbf9de8c0607145" %}
+
+package:
+  name: aacon
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('aacon', max_pin="x") }}
+
+source:
+  url: https://github.com/bartongroup/aacon/releases/download/v{{ version }}/compbio-conservation-{{ version }}.jar
+  sha256: {{ sha256sum }}
+
+requirements:
+  run:
+    - openjdk >=8
+
+test:
+  commands:
+    - aacon --help
+
+about:
+  home: https://www.compbio.dundee.ac.uk/aacon/
+  dev_url: https://github.com/bartongroup/aacon
+  license: Apache-2.0
+  summary: "AACon: A Fast Amino Acid Conservation Calculation Service"
+  description:
+    AACon is a set of tools implementing 17 different conservation scores
+    reviewed by Valdar as well as the more complex SMERFS algorithm for
+    predicting protein functional sites. AACon has been written with efficiency
+    in mind and takes less than a second to calculate conservation by all 18
+    methods for an alignment of 500 sequences 350 residues long on a single CPU.
+    AACon exploits parallelism for the more demanding methods and to allow
+    multiple methods to run simultaneously. The parallel code gives close to
+    linear speedup with the number of processors, thus making it suitable for
+    server applications or other demanding environments.
+
+extra:
+  notes:
+    AACon is a Java program that comes with a custom wrapper shell script.
+    The shell wrapper is called "aacon" and is present on $PATH by default.
+    The Java program is executed with java specified by the $JAVA_HOME
+    variable. Otherwise, a "java" program from the current environment is used.
+  identifiers:
+    - biotools:aacon
