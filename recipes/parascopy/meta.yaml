@@ -1,5 +1,5 @@
 {% set name = "parascopy" %}
-{% set version = "1.12.0" %}
+{% set version = "1.15.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,11 +7,15 @@ package:
 
 build:
   number: 0
-  skip: true # [osx or py2k]
+  skip: True  # [osx or py2k]
+  entry_points:
+    - parascopy=parascopy.entry_point:main
+  run_exports:
+    - {{ pin_subpackage('parascopy', max_pin="x") }}
 
 source:
   url: https://github.com/tprodanov/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: b25d998868814d52b29fbb6a2031d19e4aee106898b9df7470e2aba9f6cfe7d8
+  sha256: 4e588ccefb63694f0cc434d92ad45999425dc4dfd168c37155d14d9cf249c4d4
 
 requirements:
   build:
@@ -24,10 +28,12 @@ requirements:
     - python
     - pip
     - bzip2
+    - zlib
     - htslib
     - tabixpp
   run:
     - python
+    - zlib
     - numpy >=1.15
     - scipy >=1.5
     - pysam >=0.17
@@ -38,6 +44,7 @@ requirements:
     - bwa >=0.7
     - intervaltree >=3.0
     - tabixpp
+    - construct
 
 test:
   commands:
@@ -57,5 +64,6 @@ test:
 about:
   home: https://github.com/tprodanov/parascopy
   license: MIT
+  license_family: MIT
   license_file: LICENSE
   summary: Calling paralog-specific copy number and sequence variants in duplicated genes using short-read whole-genome sequencing.

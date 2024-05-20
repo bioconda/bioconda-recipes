@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "pcxndata-2.22.0"
+installBiocDataPackage.sh "pcxndata-2.24.0"
