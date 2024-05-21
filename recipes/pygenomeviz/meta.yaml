@@ -2,7 +2,7 @@
 {% set version = "1.0.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -10,37 +10,36 @@ source:
   sha256: 3e65bbe63bdc9fe3d3953dd10a254033aa93ea0541e68065ac2814751c051e27
 
 build:
-  entry_points:
-    - pgv-download-dataset = pygenomeviz.scripts.download_dataset:main
-    - pgv-mmseqs = pygenomeviz.scripts.mmseqs:main
-    - pgv-mummer = pygenomeviz.scripts.mummer:main
-    - pgv-pmauve = pygenomeviz.scripts.pmauve:main
-    - pgv-simpleplot = pygenomeviz.scripts.simpleplot:main
-    - pgv-gui = pygenomeviz.scripts.gui:main
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
   number: 0
+  noarch: python
+  entry_points:
+    - pgv-blast = pygenomeviz.scripts.blast:main
+    - pgv-mummer = pygenomeviz.scripts.mummer:main
+    - pgv-mmseqs = pygenomeviz.scripts.mmseqs:main
+    - pgv-pmauve = pygenomeviz.scripts.pmauve:main
+    - pgv-download = pygenomeviz.scripts.download:main
+    - pgv-gui = pygenomeviz.scripts.gui:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
+    - python >=3.8
     - pip
-    - poetry
-    - python >=3.8
+    - poetry-core
   run:
-    - biopython >=1.79
-    - matplotlib-base >=3.5.2
-    - numpy >=1.21
     - python >=3.8
+    - biopython >=1.80
+    - matplotlib-base >=3.6.3
+    - numpy >=1.21
   run_constrained:
-    - streamlit >=1.25.0
+    - streamlit >=1.32.0
 
 test:
   imports:
     - pygenomeviz
   commands:
-    - pip check
     - pgv-download-dataset --help
     - pgv-mmseqs --help
     - pgv-mummer --help
@@ -48,16 +47,18 @@ test:
     - pgv-simpleplot --help
     - pgv-gui --help
   requires:
-    - pip
     - pytest
   source_files:
     - tests/
 
 about:
-  home: https://github.com/moshi4/pyGenomeViz/
-  summary: A genome visualization python package for comparative genomics
+  home: "https://github.com/moshi4/pyGenomeViz"
+  summary: "A genome visualization python package for comparative genomics."
   license: MIT
+  license_family: MIT
   license_file: LICENSE
+  dev_url: "https://github.com/moshi4/pyGenomeViz"
+  doc_url: "https://moshi4.github.io/pyGenomeViz"
 
 extra:
   recipe-maintainers:
