@@ -1,17 +1,20 @@
+{% set name = "Galaxy-ML" %}
 {% set version = "0.10.0" %}
 
 package:
-  name: galaxy-ml
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/G/Galaxy-ML/Galaxy-ML-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/G/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: 921a7884bfab3a7b40021e33602b13a9a5a2c58a3205c87659423ebd892476f1
 
 build:
   number: 2
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv
   skip: True  # [osx or py<39 or py>39]
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 requirements:
   build:
