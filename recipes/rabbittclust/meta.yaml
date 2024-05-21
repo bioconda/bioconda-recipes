@@ -1,0 +1,37 @@
+{% set version = "2.3.0" %}
+
+package:
+  name: rabbittclust
+  version: {{ version }}
+
+source:
+  url: https://github.com/RabbitBio/RabbitTClust/releases/download/v.2.3.0/RabbitTClust_avx2_v.2.3.0.tar.gz
+  sha256: 81d05c0ecd16ec8851535ecd4fc4eb113ffdbe2586f4ef34aba17d74d166cd44
+  
+
+build:
+  number: 2
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage("clust-mst", max_pin="x.x") }}
+    - {{ pin_subpackage("clust-greedy", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - make
+  host:
+    - zlib 
+  run:
+    - zlib
+
+test:
+  commands:
+    - clust-mst --help
+
+about:
+  home: https://github.com/RabbitBio/RabbitTClust
+  license: https://github.com/RabbitBio/RabbitTClust/blob/main/LICENSE.txt
+  license_file: LICENSE.txt
+  summary: RabbitTClust: enabling fast clustering analysis of millions bacteria genomes with MinHash sketches
