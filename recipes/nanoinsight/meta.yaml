@@ -1,0 +1,44 @@
+{% set name = "nanoinsight" %}
+{% set version = "0.0.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/nanoinsight-{{ version }}.tar.gz
+  sha256: a0ca0076fc6cbf11f6460d48ba3a07a97fea01f77282e70da2e992df97afc3c9
+
+build:
+  entry_points:
+    - nanoinsight=nanoinsight.nanoinsight:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('nanoinsight', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+    - biopython >=1.82
+    - scikit-allel >=1.3.7
+    - pandas >=1.5.3
+    - mafft
+    - repeatmasker
+
+test:
+  imports:
+    - nanoinsight
+  commands:
+    - nanoinsight --help
+
+about:
+  home: https://github.com/AsmaaSamyMohamedMahmoud/nanoinsight
+  summary: Repeat annotation tool for insertions called by NanoVar
+  license: GPL-3.0-or-later
+  license_file: LICENSE.txt
+
