@@ -9,7 +9,8 @@ LDFLAGS="${LDFLAGS} -lz -lzstd -ltbb -ltbbmalloc -lpthread -L${PREFIX}/lib"
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-	-DCMAKE_CXX_FLAGS="${CXXFLAGS} -O3 -L${PREFIX}/lib"
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS} -O3 -L${PREFIX}/lib" \
+	-DUSE_SAIS=1
 
 cmake --build build/ --target install -j "${CPU_COUNT}" -v
 
