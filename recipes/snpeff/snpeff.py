@@ -80,7 +80,7 @@ def jvm_opts(argv):
     if mem_opts == [] and getenv('_JAVA_OPTIONS') is None:
         mem_opts = default_jvm_mem_opts
 
-    return (mem_opts, prop_opts, pass_args, exec_dir, is_debug)
+    return (mem_opts, prop_opts, pass_args, exec_dir, is_dryrun)
 
 
 def main():
