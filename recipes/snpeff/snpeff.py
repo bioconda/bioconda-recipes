@@ -16,7 +16,7 @@ from os import X_OK
 
 jar_file = 'snpEff.jar'
 
-# Phone home has been diabled due to usage of an unregistered domain
+# Phone home has been disabled due to usage of an unregistered domain
 # If in the future the "phone home" feature becomes "opt-in" (e.g. -Log)
 # please remove the below to allow users to opt in
 disable_phone_home_opts = ['-noLog']
