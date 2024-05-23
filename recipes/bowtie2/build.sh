@@ -5,17 +5,28 @@
 git clone --branch master https://github.com/simd-everywhere/simde-no-tests.git third_party/simde
 git clone https://github.com/ch4rr0/libsais third_party/libsais
 
-LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-LDLIBS="-L${PREFIX}/lib -lz -lzstd -ltbb -ltbbmalloc -lpthread"
+LDFLAGS=""
+make CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -O3" CPP="${CXX} -I${PREFIX}/include" CC="${CC} -L${PREFIX}/lib" \
+	CFLAGS="${CFLAGS} -O3" LDLIBS="-L$PREFIX/lib -lz -lzstd -ltbb -ltbbmalloc -lpthread" \
+	WITH_ZSTD=1 USE_SAIS=1
 
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
-	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-	-DCMAKE_CXX_FLAGS="${CXXFLAGS} -O3 -L${PREFIX}/lib" \
-	-DUSE_SAIS=1
-
-cmake --build build/ --target install -j "${CPU_COUNT}" -v
-
+binaries="\
+bowtie2 \
+bowtie2-align-l \
+bowtie2-align-s \
+bowtie2-build \
+bowtie2-build-l \
+bowtie2-build-s \
+bowtie2-inspect \
+bowtie2-inspect-l \
+bowtie2-inspect-s \
+"
 directories="scripts"
+pythonfiles="bowtie2-build bowtie2-inspect"
+
+for i in $binaries; do
+    cp -rf $i ${PREFIX}/bin && chmod 755 $PREFIX/bin/${i}
+done
 
 for d in $directories; do
     cp -rf $d ${PREFIX}/bin
