@@ -1,5 +1,5 @@
 --- Makefile	2016-10-27 16:11:30.000000000 +0200
-+++ Makefile.mod	2024-05-23 17:54:13.000000000 +0200
++++ Makefile.mod	2024-05-23 18:59:15.000000000 +0200
 @@ -21,7 +21,7 @@
  ## 
  ## If you have AmberTools installed (version >=13), please set
@@ -9,7 +9,7 @@
  ##
  ## If you installed netcdf-fortran using macports on MACOSX,
  ## set NETCDF to the location of your macports tree; e.g.:
-@@ -35,12 +35,12 @@
+@@ -35,23 +35,23 @@
  
  ###------------------ Gromacs XTC input support -------------------###
  ## To enable XTC support, uncomment the following line:
@@ -20,11 +20,18 @@
  ###----------------------------------------------------------------###
  ifdef NETCDF
 -FFLAG_NC= -I$(NETCDF)/include/ -DNETCDF
+-ifneq ("$(wildcard $(NETCDF)/lib/libnetcdff.a)","")
 +FFLAG_NC= -I$(NETCDF)/include/ -DNETCDF -Wno-argument-mismatch
- ifneq ("$(wildcard $(NETCDF)/lib/libnetcdff.a)","")
++## ifneq ("$(wildcard $(NETCDF)/lib/libnetcdff.a)","")
  libnetcdf= netcdff
- else
-@@ -51,7 +51,7 @@
+-else
+-libnetcdf= netcdf
+-endif
++## else
++## libnetcdf= netcdf
++## endif
+ LDFLAG_NC= -L$(NETCDF)/lib -l$(libnetcdf)
+ endif
  
  ifdef XTC
  XTC_OBJ= f77_molfile.o
