@@ -3,7 +3,31 @@
 export CC=${CC:-gcc}
 export CXX=${CXX:-g++}
 
-./install.sh
+#./install.sh
+cd RabbitSketch &&
+mkdir -p build && cd build &&
+cmake -DCXXAPI=ON -DCMAKE_INSTALL_PREFIX=. .. &&
+make && make install &&
+cd ../../ &&
+
+#make rabbitFX library
+cd RabbitFX && 
+mkdir -p build && cd build &&
+cmake -DCMAKE_INSTALL_PREFIX=. .. &&
+make && make install && 
+cd ../../ &&
+
+#compile the clust-greedy
+mkdir -p build && cd build &&
+cmake -DUSE_RABBITFX=ON -DUSE_GREEDY=ON .. && 
+make && make install &&
+cd ../ &&
+
+#compile the clust-mst
+cd build &&
+cmake -DUSE_RABBITFX=ON -DUSE_GREEDY=OFF .. &&
+make && make install &&
+cd ../ 
 
 mkdir -p $PREFIX/bin
 cp clust-mst $PREFIX/bin/
