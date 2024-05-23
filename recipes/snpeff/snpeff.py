@@ -53,7 +53,7 @@ def jvm_opts(argv):
     prop_opts = []
     pass_args = []
     exec_dir = None
-    is_debug = False
+    is_dryrun = False
 
     for arg in argv:
         if arg.startswith('-D'):
@@ -66,8 +66,8 @@ def jvm_opts(argv):
             exec_dir = arg.split('=')[1].strip('"').strip("'")
             if not os.path.exists(exec_dir):
                 shutil.copytree(real_dirname(sys.argv[0]), exec_dir, symlinks=False, ignore=None)
-        elif arg.startswith('--debug'):
-            is_debug = True
+        elif arg.startswith('--dry-run'):
+            is_dryrun = True
         else:
             pass_args.append(arg)
 
@@ -92,7 +92,7 @@ def main():
     If the exec_dir dies not exist,
     we copy the jar file, lib, and resources to the exec_dir directory.
     """
-    (mem_opts, prop_opts, pass_args, exec_dir, is_debug) = jvm_opts(sys.argv[1:])
+    (mem_opts, prop_opts, pass_args, exec_dir, is_dryrun) = jvm_opts(sys.argv[1:])
     jar_dir = exec_dir if exec_dir else real_dirname(sys.argv[0])
 
     if pass_args != [] and pass_args[0].startswith('eu'):
@@ -104,7 +104,7 @@ def main():
 
     java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args + disable_phone_home_opts
 
-    if is_debug:
+    if is_dryrun:
         sys.exit(print(java_args))
     else:
         sys.exit(subprocess.call(java_args))
