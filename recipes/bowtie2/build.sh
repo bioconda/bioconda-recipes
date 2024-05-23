@@ -5,7 +5,8 @@
 git clone --branch master https://github.com/simd-everywhere/simde-no-tests.git third_party/simde
 git clone https://github.com/ch4rr0/libsais third_party/libsais
 
-LDFLAGS="${LDFLAGS} -lz -lzstd -ltbb -ltbbmalloc -lpthread -L${PREFIX}/lib"
+LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+LDLIBS="-L${PREFIX}/lib -lz -lzstd -ltbb -ltbbmalloc -lpthread"
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
