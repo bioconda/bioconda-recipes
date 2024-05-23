@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-make FC="${FC}" CC="${CC}"
+make FC="${FC}" CC="${CXX}"
 
 chmod u+x Cur+
 chmod u+x Canal
