@@ -1,13 +1,51 @@
 diff --git i/FindGUROBI.cmake w/FindGUROBI.cmake
-index adfe9df..f121ec7 100644
+index adfe9df..5482f57 100644
 --- i/FindGUROBI.cmake
 +++ w/FindGUROBI.cmake
-@@ -22,7 +22,7 @@ if(EXISTS ${GUROBI_HOME} )
+@@ -18,13 +18,13 @@ if(EXISTS ${GUROBI_HOME} )
+     string(STRIP ${GUROBI_VER} GUROBI_VER )
+     message( "-- The retrieved version of Gurobi is: " ${GUROBI_VER} )
+ 
+-    string(SUBSTRING ${GUROBI_VER} 0 2 GUROBI_VER_LIB)
++    string(SUBSTRING ${GUROBI_VER} 0 3 GUROBI_VER_LIB)
  
      message( "-- The retrieved name of version-specific library is " gurobi ${GUROBI_VER_LIB} )
  
 -    file( GLOB GUROBI_LIB_FILE ${GUROBI_HOME}/linux64/lib/libgurobi${GUROBI_VER_LIB}.* )
 +    file( GLOB GUROBI_LIB_FILE ${GUROBI_HOME}/*linux64/lib/libgurobi${GUROBI_VER_LIB}.* )
      if( GUROBI_LIB_FILE )
-     	message( "-- Gurobi library " ${GUROBI_LIB_FILE} " found in " ${GUROBI_HOME} "/linux64/lib/" )
+-    	message( "-- Gurobi library " ${GUROBI_LIB_FILE} " found in " ${GUROBI_HOME} "/linux64/lib/" )
++       message( "-- Gurobi library " ${GUROBI_LIB_FILE} " found in " ${GUROBI_HOME} "/*linux64/lib/" )
      else()
+ 	file( GLOB GUROBI_LIB_FILE ${GUROBI_HOME}/mac64/lib/libgurobi${GUROBI_VER_LIB}.* )
+ 	if( GUROBI_LIB_FILE )
+@@ -34,7 +34,7 @@ if(EXISTS ${GUROBI_HOME} )
+ 	    if( GUROBI_LIB_FILE )
+     	    	message( "-- Gurobi library " ${GUROBI_LIB_FILE} " found in " ${GUROBI_HOME} "/lib/" )
+ 	    else()
+-	        message( FATAL_ERROR "libgurobi" ${GUROBI_VER_LIB} ".* not found either in " ${GUROBI_HOME} "/linux64/lib/ or " ${GUROBI_HOME} "/mac64/lib/ or " ${GUROBI_HOME} "/lib, please check the file exists and provide the correct PATH or manually set Gurobi's version. CMake will exit." )
++	        message( FATAL_ERROR "libgurobi" ${GUROBI_VER_LIB} ".* not found either in " ${GUROBI_HOME} "/*linux64/lib/ or " ${GUROBI_HOME} "/mac64/lib/ or " ${GUROBI_HOME} "/lib, please check the file exists and provide the correct PATH or manually set Gurobi's version. CMake will exit." )
+ 	    endif()
+ 	endif()
+     endif()
+@@ -43,17 +43,17 @@ endif()
+ 
+ FIND_PATH(GUROBI_INCLUDE_DIR
+           NAMES "gurobi_c++.h" "gurobi_c.h"
+-          PATHS /usr/local/gurobi751/linux64/include/ /Library/gurobi751/mac64/include/ ${GUROBI_HOME}/linux64/include/ ${GUROBI_HOME}/mac64/include/ ${GUROBI_HOME}/include/
++          PATHS /usr/local/gurobi751/linux64/include/ /Library/gurobi751/mac64/include/ ${GUROBI_HOME}/linux64/include/ ${GUROBI_HOME}/armlinux64/include/ ${GUROBI_HOME}/mac64/include/ ${GUROBI_HOME}/include/
+           DOC "Gurobi include directory")
+ 
+ FIND_LIBRARY(GUROBI_CPP_LIB
+              NAMES gurobi_c++
+-             PATHS /usr/local/gurobi751/linux64/lib/ /Library/gurobi751/mac64/lib/ ${GUROBI_HOME}/linux64/lib/ ${GUROBI_HOME}/mac64/lib/ ${GUROBI_HOME}/lib/
++             PATHS /usr/local/gurobi751/linux64/lib/ /Library/gurobi751/mac64/lib/ ${GUROBI_HOME}/linux64/lib/ ${GUROBI_HOME}/armlinux64/lib/ ${GUROBI_HOME}/mac64/lib/ ${GUROBI_HOME}/lib/
+              DOC "Gurobi C++ Libraries")
+ 
+ FIND_LIBRARY(GUROBI_LIB
+              NAMES "gurobi${GUROBI_VER_LIB}"
+-             PATHS /usr/local/gurobi751/linux64/lib/ /Library/gurobi751/mac64/lib/ ${GUROBI_HOME}/linux64/lib/ ${GUROBI_HOME}/mac64/lib/ ${GUROBI_HOME}/lib/
++             PATHS /usr/local/gurobi751/linux64/lib/ /Library/gurobi751/mac64/lib/ ${GUROBI_HOME}/linux64/lib/ ${GUROBI_HOME}/armlinux64/lib/ ${GUROBI_HOME}/mac64/lib/ ${GUROBI_HOME}/lib/
+              DOC "Gurobi C Libraries")
+ 
+ set(GUROBI_LIBRARIES ${GUROBI_CPP_LIB} ${GUROBI_LIB})
