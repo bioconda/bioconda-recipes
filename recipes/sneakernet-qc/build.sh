@@ -18,12 +18,6 @@ done
 mkdir -pv $PREFIX/lib/perl5
 cp -v lib/perl5/SneakerNet.pm $PREFIX/lib/perl5
 
-#cp -v SneakerNet.plugins/*.pl $PREFIX/bin/
-#cp -v SneakerNet.plugins/*.py $PREFIX/bin/
-#cp -v SneakerNet.plugins/*.sh $PREFIX/bin/
-#cp -v scripts/*.pl            $PREFIX/bin/
-#cp -v lib/perl5/SneakerNet.pm $PREFIX/lib/perl5
-
 # SneakerNet depends on plugins in the SneakerNet.plugins
 # subdirectory. Hack this path by just providing a symlink
 ln -sv $PREFIX/bin $PREFIX/SneakerNet.plugins
@@ -42,10 +36,4 @@ echo "KRAKEN_DEFAULT_DB  $KRAKEN_DEFAULT_DB" >> $PREFIX/config/settings.conf
 chmod 775 $PREFIX/bin/*
 export PERL5LIB=$PERL5LIB:$PREFIX/lib/perl5
 
-echo
-echo ======
-echo "new PERL5LIB: $PERL5LIB"
-perl -MData::Dumper -e 'print Dumper \@INC;'
-echo ======
-echo
 
