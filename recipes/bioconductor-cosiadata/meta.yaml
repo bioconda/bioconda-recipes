@@ -1,0 +1,41 @@
+{% set version = "1.2.0" %}
+{% set name = "CoSIAdata" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: f0ec9d5ca01647ec3d52e264c0828273
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-cosiadata", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocStyle (>= 2.26.0), utils (>= 4.3.0), AnnotationHub (>= 3.7.3), knitr (>= 1.42)
+requirements:
+  host:
+    - 'bioconductor-experimenthub >=2.10.0,<2.11.0'
+    - r-base
+  run:
+    - 'bioconductor-experimenthub >=2.10.0,<2.11.0'
+    - r-base
+    - curl
+    - 'bioconductor-data-packages >=20231203'
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  license: 'MIT + file LICENSE'
+  summary: 'VST normalized RNA-Sequencing data with annotations for multiple species samples from Bgee'
+  description: 'Variance Stabilized Transformation of Read Counts derived from Bgee RNA-Seq Expression Data. Expression Data includes annotations and is across 6 species (Homo sapiens, Mus musculus, Rattus norvegicus, Danio rerio, Drosophila melanogaster, and Caenorhabditis elegans) and across more than 132 tissues. The data is represented as a RData files and is available in ExperimentHub.'
+  license_file: LICENSE
+

@@ -23,7 +23,7 @@ else
         cp ../simd-dispatch.sh $PREFIX/bin/STAR
         cp ../simd-dispatch.sh $PREFIX/bin/STARlong
     else
-        make pj "$(nproc)" STAR STARlong
+        make -pj "$(nproc)" STAR STARlong
         cp STAR $PREFIX/bin/STAR
         cp STARlong $PREFIX/bin/STARlong
     fi

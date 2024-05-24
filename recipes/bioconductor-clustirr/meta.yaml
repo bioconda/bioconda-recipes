@@ -1,0 +1,47 @@
+{% set version = "1.0.0" %}
+{% set name = "ClustIRR" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: ffd1884844b297c2e593e465a776fb6d
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-clustirr", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocStyle, knitr, testthat, ggplot2, patchwork, ggrepel
+requirements:
+  host:
+    - r-base
+    - r-future
+    - r-future.apply
+    - r-igraph
+    - r-stringdist
+    - r-visnetwork
+  run:
+    - r-base
+    - r-future
+    - r-future.apply
+    - r-igraph
+    - r-stringdist
+    - r-visnetwork
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL-3 + file LICENSE'
+  summary: 'Clustering of immune receptor repertoires'
+  description: 'ClustIRR is a quantitative method for clustering of immune receptor repertoires (IRRs). The algorithm identifies groups of T or B cell receptors (TCRs or BCRs) with similar specificity by comparing their sequences. ClustIRR uses graphs to visualize the specificity structures of IRRs.'
+  license_file: LICENSE
+

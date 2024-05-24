@@ -1,54 +1,75 @@
-{% set version = "0.12.2" %}
-{% set sha256 = "dd3afc84b21f72c682f4de2ea2ce1df7acb6d7432aa750da1c375d840b9cf5f0" %}
+{% set name = "isatools" %}
+{% set version = "0.14.2" %}
+{% set sha256 = "a5909065072b1efc81602c5f151c7b28813227047b0bbc7c7a81eeb79950e842" %}
 
 package:
-  name: isatools
-  version: '{{ version }}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/i/isatools/isatools-{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/isatools-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps -vvv
   number: 0
-  script: python -m pip install --no-deps --ignore-installed .
   entry_points:
     - isatools = isatools:main
+  run_exports:
+    - {{ pin_subpackage('isatools', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3
+    - python >=3.6
     - pip
   run:
-    - python >=3
+    - python >=3.6
+    - graphene ==3.1.1
+    - graphql-core ==3.2.3
     - numpy
     - jsonschema
-    - pandas
+    - pandas ==1.5.0
+    - openpyxl
     - networkx
     - lxml
     - requests
-    - chardet
     - iso8601
+    - chardet
     - jinja2
     - beautifulsoup4
     - mzml2isa
     - biopython
     - progressbar2
+    - deepdiff
     - pyyaml
+    - bokeh
+    - certifi ==2021.5.30
+    - flake8 ==3.9.2
+    - ddt >=1.4.2
+    - behave ==1.2.6
+    - httpretty ==1.1.3
+    - sure ==2.0.0
+    - coveralls
+    - rdflib
+    - flask
+    - flask-sqlalchemy
 
 test:
   imports:
     - isatools
     - isatools.convert
     - isatools.create
-    - isatools.errors
     - isatools.io
     - isatools.net
 
 about:
-  home: https://github.com/ISA-tools/isa-api
-  license: CPAL
-  license_family: OTHER
-  summary: Metadata tracking tools help to manage an increasingly diverse set of life science, environmental and biomedical
-    experiments
+  home: https://isa-tools.org/
+  summary: 'Metadata tracking tools help to manage an increasingly diverse set of life science, environmental and biomedical experiments'
+  license: MPL-2.0
+  license_file: LICENSE.txt
+  dev_url: https://github.com/ISA-tools/isa-api
+
+extra:
+  identifiers:
+    - doi:10.1093/gigascience/giab060

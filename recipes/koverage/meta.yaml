@@ -1,0 +1,48 @@
+{% set name = "koverage" %}
+{% set version = "0.1.11" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 24d785d654524a59c109f6fb3b3f6fc211b5f7177d643597f144fc6954a74d57
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+  number: 0
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+  run:
+    - python >=3.10
+    - snaketool-utils >=0.0.4
+    - metasnek >=0.0.8
+    - snakemake >=7.14.0,<8
+    - pulp <2.8
+    - pyyaml >=6.0
+    - Click >=8.1.3
+    - zstandard >=0.21.0
+    - numpy >=1.24.3
+    - datapane >=0.16.7
+    - plotly >=5.15.0
+
+test:
+  commands:
+    - koverage --help
+
+about:
+  home: https://github.com/beardymcjohnface/Koverage
+  summary: Read-coverage statistics pipelines for multiple samples
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - beardymcjohnface

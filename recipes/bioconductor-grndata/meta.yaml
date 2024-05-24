@@ -1,6 +1,6 @@
-{% set version = "1.29.0" %}
+{% set version = "1.34.0" %}
 {% set name = "grndata" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,14 +8,16 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: e595ed5d5a0b319e0f30d7dc7cb3a654
+  md5: 0ebac67277a5ca915f9a971d3659af5e
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-grndata", max_pin="x.x") }}'
   noarch: generic
 # Suggests: RUnit, BiocGenerics, knitr
 requirements:
@@ -24,7 +26,7 @@ requirements:
   run:
     - r-base
     - curl
-    - bioconductor-data-packages>=20221103
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
