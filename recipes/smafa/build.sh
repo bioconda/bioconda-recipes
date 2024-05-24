@@ -9,6 +9,3 @@ export LIBRARY_PATH="${PREFIX}/lib" \
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
 cargo install --verbose --path . --root ${PREFIX}
-
-# Install the binary
-cp -f target/release/smafa ${PREFIX}/bin
