@@ -11,6 +11,7 @@ find $PREFIX -type d -exec chmod -v 775 {} \;
 
 files=$(\ls -1 SneakerNet.plugins/*.pl SneakerNet.plugins/*.py SneakerNet.plugins/*.sh scripts/*.pl)
 ls -lh $files
+chmod -v +x $files
 
 for i in $files; do
   cp -nv $i $PREFIX/bin/$(basename $i)
@@ -33,7 +34,6 @@ KALAMARI_VER=$(downloadKalamari.pl --version)
 KRAKEN_DEFAULT_DB="$PREFIX/share/kalamari-$KALAMARI_VER/kalamari-kraken1"
 echo "KRAKEN_DEFAULT_DB  $KRAKEN_DEFAULT_DB" >> $PREFIX/config/settings.conf
 
-chmod 775 $PREFIX/bin/*
 export PERL5LIB=$PERL5LIB:$PREFIX/lib/perl5
 
 
