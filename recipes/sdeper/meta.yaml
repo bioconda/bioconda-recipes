@@ -1,7 +1,6 @@
 # This is the recipe file to publish SDePER to Bioconda
-
 {% set name = "sdeper" %}
-{% set version = "1.1.0" %}
+{% set version = "1.3.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -9,22 +8,23 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 9b02688715cf283521102f7a48e260b92b6fb8baf63295158a23d5e91ad96215
+  sha256: 539621f0cca35c04e70a27c330af4b192b7d72babd6288c24e976b60edd5f052
 
 build:
   number: 0
   entry_points:
     - runDeconvolution = cvaeglrm:main
     - runImputation = imputation:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   noarch: python
   run_exports:
-    - {{ pin_subpackage('sdeper', max_pin="x.x") }}
+    - {{ pin_subpackage('sdeper', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.9.12,<=3.11
+    - python >=3.9.12,<3.11
     - pip
+    - twine >=4.0
   run:
     - distinctipy ==1.2.2
     - matplotlib-base ==3.5.2
@@ -33,7 +33,7 @@ requirements:
     - numpy ==1.22.4
     - openpyxl ==3.0.10
     - pandas ==1.4.3
-    - python >=3.9.12,<=3.11
+    - python >=3.9.12,<3.11
     - reportlab ==4.1.0
     - scanpy ==1.9.1
     - scikit-learn ==1.1.1

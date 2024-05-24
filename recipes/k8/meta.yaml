@@ -1,28 +1,46 @@
-{% set version = "0.2.5" %}
+{% set name = "k8" %}
+{% set version = "1.0" %}
+
 package:
-  name: k8
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/attractivechaos/k8/releases/download/{{ version }}/k8-{{ version }}.tar.bz2
-  sha256: a937ac44532e042cd89ac743647b592c21cfcf31679e39e5f362e81034d93d18
+  url: https://github.com/attractivechaos/k8/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 1dbbe50de06f0ae71500d88ed3318d5a2884aeec0b43eda905f5cca5c01a5f72
 
 build:
-  number: 4
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('k8', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - make
+    - sysroot_linux-64 >=2.17  # [linux and x86_64]
   host:
+    - python ==3.8
     - zlib
+    - wget
+    - tar
+    - sed
+    - sysroot_linux-64 >=2.17  # [linux and x86_64]
   run:
-    - zlib
+    - sysroot_linux-64 >=2.17  # [linux and x86_64]
 
 test:
   commands:
-    - k8 -v | grep '^K8'
+    - k8 -v | grep '^k8'
 
 about:
-  home: https://github.com/attractivechaos/k8
+  home: "https://github.com/attractivechaos/k8"
   license: MIT
+  license_family: MIT
+  license_file: "LICENSE.txt"
   summary: "Lightweight JavaScript shell based on Google's V8 JavaScript engine"
+  dev_url: "https://github.com/attractivechaos/k8"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
