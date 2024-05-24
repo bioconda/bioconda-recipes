@@ -1,52 +1,69 @@
+{% set name = "fwdpy11" %}
+{% set version = "0.22.2" %}
+
 package:
-  name: fwdpy11
-  version: "0.11.0"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/be/25/390aedf974c672a0832d9e8fd0c14943f9cd2827fe7c9b5c99b163375cf3/fwdpy11-0.11.0.tar.gz
-  sha256: af4ee887934ff90b39bfa6abe5063afe34be734229a3880d377fc8ceeeebffd9
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/fwdpy11-{{ version }}.tar.gz
+  sha256: 4bdd42d749d3c4e12f728c16d6db8c97bb5d03fff7362fe98b3c8cdfa759841d
 
 build:
-  skip: True # [py27]
-  number: 1
+  skip: True  # [py < 38 or py > 312]
+  number: 0
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  entry_points:
+    - fwdpy11 = fwdpy11.__main__:main
+  run_exports:
+    - {{ pin_subpackage('fwdpy11', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
     - cmake
+    - make
   host:
-    - pkgconfig
     - python
     - pip
-    - numpy >=1.10
-    - pybind11 >=2.6.0
-    - tskit >=0.3.2
+    - setuptools-scm >=8
+    - pybind11 ==2.11.1
     - gsl
-    - openblas
-    - attrs
-    - setuptools_scm
+    - scikit-build-core >=0.3.3
   run:
     - python
-    - numpy >=1.10
-    - tskit >=0.3.2
+    - numpy <2.0
+    - tskit >=0.5.6
     - gsl
     - openblas
-    - sparse
+    - scipy
     - attrs
     - black
+    - demes >=0.2.2
+    - intervaltree
+    - deprecated
 
 test:
-  # Python imports
   imports:
     - fwdpy11
+  commands:
+    - fwdpy11 --help
 
 about:
-  home: http://pypi.python.org/pypi/fwdpy11
-  license: GNU General Public License v3 or later (GPLv3+)
+  home: https://github.com/molpopgen/fwdpy11
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "COPYING"
   summary: 'Forward-time population genetic simulation in Python.'
+  dev_url: https://github.com/molpopgen/fwdpy11
+  doc_url: https://molpopgen.github.io/fwdpy11
 
-extras:
+extra:
   identifiers:
-    - 10.1534/genetics.114.165019
-    - 10.1371/journal.pcbi.1006581
+    - doi:10.1534/genetics.114.165019
+    - doi:10.1371/journal.pcbi.1006581
+  additional-platforms:
+    - linux-aarch64

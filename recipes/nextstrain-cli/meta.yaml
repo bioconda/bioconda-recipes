@@ -1,0 +1,73 @@
+{% set version = "8.2.0" %}
+
+package:
+  name: nextstrain-cli
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/n/nextstrain-cli/nextstrain-cli-{{ version }}.tar.gz
+  sha256: 9b48dd8f32416d43b5f7db8a4a5ca045913a41a4967a5ae189240cbd67c285a2
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - nextstrain = nextstrain.cli.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  run_exports:
+    - {{ pin_subpackage('nextstrain-cli', max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+
+  run:
+    - python >=3.8
+    - docutils
+    - fasteners
+    - importlib_resources >=5.3.0 # [py<311]
+    - packaging >=3.0.0
+    - pyjwt >=2.0.0
+    - cryptography # Required for pyjwt digital signature support. Replicates "pip install pyjwt[crypto]".
+    - pyparsing
+    - requests
+    - typing_extensions >=3.6.4
+    - wcmatch >=6.0
+    - wrapt
+    # nextstrain-cli requires boto3 but does not directly declare this
+    # dependency, to avoid issues with pip dependency resolution with s3fs and
+    # botocore. We can declare the boto3 dependency and s3fs here, since Conda
+    # can resolve these dependency issues.
+    # See: https://github.com/nextstrain/cli/blob/77c97bfecaf3dda84a8c20c343afc70cc6659f53/setup.py#L91-L98
+    - fsspec !=2023.9.1
+    - boto3
+    - s3fs >=2021.04.0,!=2023.9.1
+
+test:
+  requires:
+    - snakemake-minimal
+    - augur
+    - git
+    - pytest
+  imports:
+    - nextstrain.cli
+
+about:
+  home: https://docs.nextstrain.org/projects/cli/
+  dev_url: https://github.com/nextstrain/cli
+  doc_url: https://docs.nextstrain.org/projects/cli/
+  license: MIT
+  summary: The Nextstrain command-line interface (CLI)
+  description: >
+    The Nextstrain command-line interface (CLI)—a program called
+    nextstrain—aims to provide a consistent way to run and visualize pathogen
+    builds and access Nextstrain components like Augur and Auspice across
+    computing environments such as Docker, Conda, and AWS Batch.
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - tsibley
+    - corneliusroemer

@@ -1,0 +1,38 @@
+{% set version="0.2.0" %}
+{% set sha256="c2f9536a677e7e99f251cada1338f611cea40477deca144f0c6928505755eb37" %}
+
+
+package:
+  name: fgsv
+  version: {{ version }}
+
+source:
+  url: https://github.com/fulcrumgenomics/fgsv/releases/download/{{ version }}/fgsv-{{ version }}.jar
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("fgsv", max_pin="x.x") }}
+  
+
+requirements:
+  run:
+    - openjdk >=8
+    - python
+
+test:
+  commands:
+    - 'fgsv 2>&1 | grep "SvPileup"'
+    - 'fgsv --version 2>&1 | grep "Version"'
+
+about:
+  home: https://github.com/fulcrumgenomics/fgsv
+  license: MIT
+  summary: Tools to find evidence for structural variation.
+
+extra:
+  recipe-maintainers:
+    - nh13
+    - tfenne

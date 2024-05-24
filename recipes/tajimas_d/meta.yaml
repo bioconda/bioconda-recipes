@@ -1,0 +1,47 @@
+{% set name = "tajimas_d" %}
+{% set version = "2.0.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/not-a-feature/tajimas_d/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 899cf84e8e89ecccc9fbd106c21ee2777bc7736c163b5470e4cce3b843cbe36a
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  entry_points:
+    - tajimas_d = tajimas_d._tajimas_d:run_cli
+  run_exports:
+    - {{ pin_subpackage('tajimas_d', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+
+test:
+  imports:
+    - tajimas_d
+  requires:
+    - miniFasta
+
+about:
+  home: https://github.com/not-a-feature/tajimas_d
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: 'Computes Tajimas D, the Pi- or Watterson-Estimator for multiple sequences.'
+  description: |
+        Tajima's D is a population genetic test statistic that computes the difference between the mean number of pairwise differences and the number of segregating sites. It is used to determine whether a population is expanding or shrinking.
+  doc_url: https://github.com/not-a-feature/tajimas_d
+  dev_url: https://github.com/not-a-feature/tajimas_d
+
+extra:
+  recipe-maintainers:
+    - not-a-feature

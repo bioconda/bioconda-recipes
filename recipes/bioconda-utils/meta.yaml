@@ -1,8 +1,9 @@
-{% set version = "0.16.21" %}
-{% set sha256 = "ac2e8979eb45e5d07208bb4273d2f7b7ca7c5a4dbacfb92eca51ff82b84fabc4" %}
+{% set name = "bioconda-utils" %}
+{% set version = "2.15.1" %}
+{% set sha256 = "729f00c8ca5b3c7f469215edfc8122aa8617111b3151ed359081cc6a4b4f1a24" %}
 
 package:
-  name: bioconda-utils
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -12,59 +13,69 @@ source:
 build:
   noarch: python
   number: 0
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
   entry_points:
     - bioconda-utils = bioconda_utils.cli:main
+  run_exports:
+    - {{ pin_subpackage('bioconda-utils', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.7
+    - python
     - pip
   run:
-    - python >=3.7
-    - conda 4.8.4
-    - conda-build 3.19.2
-    - conda-verify 3.1.*
-    - argh 0.26.*
-    - colorlog 3.1.*
-    - tqdm >=4.26
-    - ruamel_yaml 0.15.*
-    - pyaml 17.12.*
-    - networkx 1.11
-    - pandas 0.23.*
+    - conda-forge-pinning 2023.05.06.13.08.41
+    - python 3.10.*
+    - conda 24.3.*
+    - conda-libmamba-solver 24.1.*
+    - conda-build 24.3.*
+    - conda-index 0.4.*
+    - conda-package-streaming 0.9.*
+    - mamba 1.5.*
+    - boa 0.17.*
+    - argh 0.31.*
+    - colorlog 6.*
+    - tqdm 4.66.*
+    - yaspin 2.*
+    - ruamel.yaml 0.18.*
+    - pyaml 23.12.*
+    - networkx 3.3.*
+    - pandas 2.2.*
     - libblas * *openblas
-    - boltons 18.*
-    - jsonschema 2.6.*
-    - conda-forge-pinning 2020.08.29.21.09.48
-    - anaconda-client 1.6.*
+    - boltons 24.0.*
+    - jsonschema 4.21.*
+    - jinja2 3.1.*
+    - anaconda-client 1.12.*
+    - galaxy-tool-util 24.*
     - involucro 1.1.*
-    - skopeo 0.1.35
-    - git 2.14.*
-    - regex 2018.08.29
-    - aiohttp 3.4.*
-    - aiofiles 0.4.*
-    - aioftp 0.12.*
-    - backoff 1.6.*
-    - cachetools 3.0.*
-    - gitpython >=3.0.8,3.0.*
-    - gidgethub 3.0.*
-    - pyjwt 1.7.*
-    - beautifulsoup4 4.6.*
-    - galaxy-lib >=18.9.1
-    - jinja2 2.10.*
-    - sphinx
+    - skopeo 1.15.*
+    - findutils
+    - git 2.*
+    - regex 2023.*
+    - aiohttp 3.9.*
+    - aiohttp-jinja2
+    - aiohttp-session
+    - aiohttp-security
+    - aiofiles 23.*
+    - aioftp 0.22.*
+    - backoff 2.2.*
+    - cachetools 5.3.*
+    - gitpython 3.1.*
+    - gidgethub 5.*
+    - pyjwt >=2.4.0
+    - beautifulsoup4 4.*
+    - requests 2.31.*
+    - pygithub
+    - diskcache 5.*
+    - platformdirs 4.*
+    - tabulate 0.9.*
+    - sphinx >=4.1
+    - celery
     - sphinx-autodoc-typehints
     - alabaster 0.7.*
     - docutils
-    - requests 2.22.*
-    - gunicorn 19.9.*
-    - celery 4.2.*
-    - aiohttp-jinja2 1.1.*
-    - aiohttp-security 0.4.*
-    - aiohttp-session 2.7.*
-    - aioredis 1.2.*
-    - cryptography 2.*
-    - markdown 3.1.*
+    - markdown
+    - graphviz
 
 test:
   imports:
@@ -76,15 +87,16 @@ test:
     - >
       CONDA_AGGRESSIVE_UPDATE_PACKAGES=
       CONDA_AUTO_UPDATE_CONDA=0
-      "${PREFIX}/bin/conda" install --prefix="${PREFIX}" --dry-run --satisfied-skip-solve
+      "${PREFIX}/bin/mamba" install --prefix="${PREFIX}" --dry-run --satisfied-skip-solve
       --file="$( python -c
       'from os.path import dirname, join; import bioconda_utils; print(join(dirname(bioconda_utils.__file__), "bioconda_utils-requirements.txt"))'
-      )"
-      2>&1 | tee /dev/stderr | grep -qF 'All requested packages already installed.'
+      )" 2>&1 | grep -qF 'All requested packages already installed'
 
 about:
-  home: http://bioconda.github.io/build-system.html
+  home: "https://bioconda.github.io/contributor/build-system.html"
   license: MIT
   license_family: MIT
-  summary: Utilities for building and managing bioconda recipes.
-  dev_url: https://github.com/bioconda/bioconda-utils
+  license_file: "LICENSE.md"
+  summary: "Utilities for building and managing bioconda recipes."
+  dev_url: "https://github.com/bioconda/bioconda-utils"
+  doc_url: "https://bioconda.github.io/contributor/guidelines.html"

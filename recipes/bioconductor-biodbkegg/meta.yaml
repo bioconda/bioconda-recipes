@@ -1,0 +1,45 @@
+{% set version = "1.8.0" %}
+{% set name = "biodbKegg" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 868600b40fc5ce4c38ced82df890400d
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-biodbkegg", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocStyle, roxygen2, devtools, testthat (>= 2.0.0), knitr, rmarkdown, igraph, magick, lgr
+requirements:
+  host:
+    - 'bioconductor-biodb >=1.10.0,<1.11.0'
+    - r-base
+    - r-chk
+    - r-lifecycle
+    - r-r6
+  run:
+    - 'bioconductor-biodb >=1.10.0,<1.11.0'
+    - r-base
+    - r-chk
+    - r-lifecycle
+    - r-r6
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: AGPL-3
+  summary: 'biodbKegg, a library for connecting to the KEGG Database'
+  description: 'The biodbKegg library is an extension of the biodb framework package that provides access to the KEGG databases Compound, Enzyme, Genes, Module, Orthology and Reaction. It allows to retrieve entries by their accession numbers. Web services like "find", "list" and "findExactMass" are also available. Some functions for navigating along the pathways have also been implemented.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+

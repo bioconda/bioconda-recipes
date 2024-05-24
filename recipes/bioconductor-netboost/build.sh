@@ -8,6 +8,4 @@ CXX=$CXX
 CXX98=$CXX
 CXX11=$CXX
 CXX14=$CXX" > ~/.R/Makevars
-# If GPROF is defined src/mcupgma/clustering_util adds -pg to CXXFLAGS.
-unset GPROF
 $R CMD INSTALL --build .

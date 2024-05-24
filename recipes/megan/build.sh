@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # call installer
-chmod u+x MEGAN_Community_unix_6_12_3.sh
+chmod u+x MEGAN_Community_unix_*.sh
 MEGAN="$PREFIX/opt/$PKG_NAME-$PKG_VERSION"
-./MEGAN_Community_unix_6_12_3.sh -q -dir "$MEGAN"
+./MEGAN_Community_unix_*.sh -q -dir "$MEGAN"
 # link to bin/ and fix paths
 # in all scripts bin_dir is defined as: 
 # ```

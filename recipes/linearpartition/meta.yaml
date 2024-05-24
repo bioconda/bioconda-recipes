@@ -1,0 +1,47 @@
+{% set name = "LinearPartition" %}
+{% set version = "1.0.1.dev20240123" %}
+{% set git_sha1 = "fa953f6323274eeadd92cc1f4e5535417f3fb821" %}
+{% set sha256 = "e93c6a26c246c2e0927592052516d6fb15e7e1e8a378f74474136ba85746be58" %}
+
+package:
+  name: {{ name | lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name | lower, max_pin="x.x.x") }}
+
+source:
+  url: https://github.com/LinearFold/{{ name }}/archive/{{ git_sha1 }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-FIX-command-broken-with-symbolic-link.patch
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+
+  run:
+    - matplotlib-base
+    - numpy
+    - pandas
+    - python >=3,<4
+    - python-gflags
+    - seaborn
+
+test:
+  source_files:
+    - testseq
+  commands:
+    - "cat testseq | linearpartition"
+    - test -f $PREFIX/bin/draw_heatmap
+
+about:
+  home: https://github.com/LinearFold/LinearPartition
+  license: custom
+  license_file: LICENSE
+  summary: 'Linear-Time Approximation of RNA Folding Partition Function and Base Pairing Probabilities'
+

@@ -9,7 +9,7 @@ else
   LIBS="-lrt ${LIBS}"
 fi
 
-make -f "${makefile}" CC="${CC}" CFLAGS+=' -fgnu89-inline -O2 -w' LIBS="${LDFLAGS} ${LIBS}"
+make -f "${makefile}" CC="${CC}" CFLAGS+=' -fcommon -fgnu89-inline -O2 -w' LIBS="${LDFLAGS} ${LIBS}"
 
 cd build
 mkdir -p "${PREFIX}/bin"

@@ -1,78 +1,91 @@
 {% set name = "r-saige" %}
-{% set version = "0.43.3" %}
-{% set vcommit = "8bfb93b76aa442f4ca316b3ef347d31fa7538a54" %}
+{% set version = "1.3.1" %}
+{% set vcommit = "92b6c6cd7f552d340cfc4b3b395574fbc598ee2e" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  # url: https://github.com/weizhouUMICH/SAIGE/archive/{{ version }}.tar.gz
-  url: https://github.com/weizhouUMICH/SAIGE/archive/{{ vcommit }}.tar.gz
-  sha256: 4031675434257fc2393a0c88999810781941e13e7a3fd547feea15aaf30c4e1f
+  url: https://github.com/saigegit/SAIGE/archive/{{ vcommit }}.tar.gz
+  sha256: c9d7da349c8eb3d6731ec8f7a989614f5d7a2e04f6ac058211cce8f4b0e60d3d
   patches:
-    # Fixing shared lib issues
     - patches/0001-use-shared-libs-in-makevars.patch
-    # - patches/0002-fix-rcpp-returns.patch
 
 build:
-  skip: true  # [win]
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports:
+    - {{ pin_subpackage('r-saige', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - {{ compiler('fortran') }}
   host:
-    - r-base {{ r_base }}
-    - bgenix 1.1.4
     - boost-cpp
-    - openblas
     - libblas
     - liblapack
-    - r-spatest 3.1.2
-    - r-rcpp
-    - r-rcpparmadillo
-    - r-rcppparallel
-    - r-metaskat
-    - r-skat
-    - r-devtools
-    - r-matrix
-    - r-data.table
-    - r-rcppeigen
-    - r-bh
-    - r-optparse
     - superlu
     - savvy
     - zstd
     - zlib
+    - r-base
+    - r-bh
+    - r-data.table
+    - r-devtools
+    - r-dplyr
+    - r-dbplyr
+    - r-ellipsis
+    - r-matrix
+    - r-optparse
+    - r-qlcmatrix
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-rcppeigen
+    - r-rcppparallel
+    - r-rhpcblasctl
+    - r-roxygen2
+    - r-rversions
+    - r-r.utils
+    - r-rsqlite
+    - r-spatest
+    - r-skat
+    - r-metaskat
+    - r-vctrs
   run:
-    - r-base {{ r_base }}
-    - bgenix 1.1.4
+    - r-base
+    - libblas
+    - liblapack
     - boost-cpp
     - savvy
-    - r-spatest 3.1.2
-    - r-rcpp
-    - r-rcppparallel
-    - r-matrix
     - r-data.table
+    - r-dplyr
+    - r-dbplyr
+    - r-matrix
     - r-optparse
-    - sqlite
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-rcppeigen
+    - r-rcppparallel
+    - r-rhpcblasctl
+    - r-skat
+    - r-spatest
+    - r-rsqlite
 
 test:
   commands:
-    - $R -e "library('SAIGE')"
+    - $R -e "library(\"SAIGE\")"
     - step1_fitNULLGLMM.R --help
     - step2_SPAtests.R --help
     - createSparseGRM.R --help
+    - extractNglmm.R --help
 
 about:
-  home: https://github.com/weizhouUMICH/SAIGE
-  license: GNU GPL
+  home: https://github.com/saigegit/SAIGE
+  license: GPL-3.0-only
   license_family: GPL3
   license_file: LICENSE
   summary: SAIGE is an R package with Scalable and Accurate Implementation of Generalized mixed model (Chen, H. et al. 2016)
@@ -80,17 +93,9 @@ about:
     SAIGE is an R package with Scalable and Accurate Implementation of Generalized
     mixed model (Chen, H. et al. 2016). It accounts for sample relatedness and is
     feasible for genetic association tests in large cohorts and biobanks (N > 400000).
-  dev_url: https://github.com/weizhouUMICH/SAIGE
+  dev_url: https://github.com/saigegit/SAIGE
 
 extra:
   recipe-maintainers:
     - matuskosut
-
-
-# Saige (https://github.com/weizhouUMICH/SAIGE/)
-# Versioning guide for builders
-# 0.35.8.8: tagged
-# 0.42.0: commit 19afee629fbfe1c450e57a717fc621cce17c8199
-# 0.42.1: commit 29d4426dd4ae62c50fa7ce96794ec302f9d44b1b
-# 0.43.0: commit 1f6278a39a57ee8054d084319640a121cb92d4bf
-# 0.43.3: commit 8bfb93b76aa442f4ca316b3ef347d31fa7538a54
+    - pettyalex

@@ -1,7 +1,10 @@
 #!/bin/bash
-export LDFLAGS="-lstdc++fs"
+set -eu
+export LIBS="-lstdc++fs -lcurl"
 
-mkdir -p $PREFIX/lib
-./configure --prefix $PREFIX
-make
+./configure --prefix $PREFIX --with-snappy --with-io_lib
+
+cat config.log
+
+make -j${CPU_COUNT}
 make install

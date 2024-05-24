@@ -1,16 +1,15 @@
-#!/bin/sh
+#!/bin/bash
+
+ln -sf $PREFIX/lib/libz.so.1 $PREFIX/lib/libz.so
 
 export C_INCLUDE_PATH=$PREFIX/include
 export CPLUS_INCLUDE_PATH=$PREFIX/include
 export LINKER="$CXX"
 export CXXFLAGS="$CPPFLAGS"
 
-pushd samtools-0.1.18
-make CC=${CC} CFLAGS="${CFLAGS}" lib
-popd
-
 make release CXX=$CXX
 mkdir -p $PREFIX/bin
+chmod 755 stringtie
 mv stringtie $PREFIX/bin
 
 # Prepare prepDE

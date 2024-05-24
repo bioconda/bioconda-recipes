@@ -1,0 +1,67 @@
+{% set name = "cazy_webscraper" %}
+{% set version = "2.3.0.3" %}
+{% set sha256 = "82af3a5c13c1f3254bcbc9967c85d38f085c88f18834fb5a84155d5f13e669d9" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cazy_webscraper-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - cazy_webscraper = cazy_webscraper.cazy_scraper:main
+    - cw_get_genbank_seqs = cazy_webscraper.expand.genbank.sequences.get_genbank_sequences:main
+    - cw_get_ncbi_taxs = cazy_webscraper.expand.genbank.taxonomy.get_ncbi_taxs:main
+    - cw_get_genomics = cazy_webscraper.expand.genbank.genomes.get_genome_accs:main
+    - cw_get_gtdb_taxs = cazy_webscraper.expand.gtdb.get_gtdb_tax:main
+    - cw_get_uniprot_data = cazy_webscraper.expand.uniprot.get_uniprot_data:main
+    - cw_extract_db_seqs = cazy_webscraper.expand.extract_seqs.extract_db_seqs:main
+    - cw_get_pdb_structures = cazy_webscraper.expand.pdb.get_pdb_structures:main
+    - cw_query_database = cazy_webscraper.api.cw_query_database:main
+    - cw_get_db_schema = cazy_webscraper.sql.get_schema:main
+  run_exports:
+    - {{ pin_subpackage('cazy_webscraper', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+    - beautifulsoup4
+    - biopython
+    - bioservices >=1.10.0
+    - lxml
+    - mechanicalsoup
+    - numpy
+    - pandas
+    - pyyaml
+    - requests
+    - saintBioutils >=0.0.25
+    - sqlalchemy ==1.4.20
+    - tqdm
+    - html5lib
+
+test:
+  imports:
+    - cazy_webscraper
+  commands:
+    - cazy_webscraper --help
+
+about:
+  home: "https://hobnobmancer.github.io/cazy_webscraper/"
+  dev_url: "https://github.com/HobnobMancer/cazy_webscraper"
+  summary: "A tool to automate retrieving data from CAZy, build a local CAZyme SQL database, and throughly interrogating the data. Also, automate retrieving protein data, sequences, EC numbers and structure files for specific datasets in the CAZyme database from UniProt, GenBank and PDB."
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  identifiers:
+    - doi:10.1101/2022.12.02.518825

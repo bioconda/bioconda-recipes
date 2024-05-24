@@ -1,0 +1,69 @@
+{% set name = "hatchet" %}
+{% set version = "2.0.1" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  - url: https://github.com/raphael-group/{{ name }}/archive/v{{ version }}.tar.gz
+    sha256: e8ca462fc4404bacc97b2195e734cd6086eebd40e7941d450c069967d294d988
+
+  - url: https://packages.gurobi.com/9.0/gurobi9.0.2_linux64.tar.gz  # [not osx]
+    sha256: 6527581aef11c3e425c52993d108861ef53ec13971d9931861bf9c88d9d111f3  # [not osx]
+    folder: gurobi902  # [not osx]
+
+  - url: https://packages.gurobi.com/9.0/gurobi9.0.2_mac64.pkg  # [osx]
+    sha256: 1d58586f9a33ac7035f51f6a04707248218f70bddbec78cb83f11c986ac652cd  # [osx]
+
+build:
+  number: 0
+  skip: True  # [py < 37]
+  entry_points:
+    - hatchet = hatchet.__main__:main
+  run_exports:
+    - {{ pin_subpackage('hatchet', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake >=3.9
+    - make
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - bcftools >=1.9
+    - biopython
+    - hmmlearn
+    - matplotlib-base
+    - mosdepth
+    - pandas
+    - picard-slim
+    - psutil
+    - pyomo
+    - pysam
+    - requests
+    - samtools >=1.9
+    - seaborn
+    - scikit-learn
+    - scipy
+    - tabix
+
+test:
+  imports:
+    - hatchet
+
+about:
+  home: https://github.com/raphael-group/hatchet
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: "A package to infer allele and clone-specific copy-number aberrations (CNAs)."
+  doc_url: https://raphael-group.github.io/hatchet/
+  description: |
+    HATCHet is an algorithm to infer allele and clone-specific copy-number
+    aberrations (CNAs), clone proportions, and whole-genome duplications
+    (WGD) for several tumor clones jointly from multiple bulk-tumor samples
+    of the same patient or from a single bulk-tumor sample.

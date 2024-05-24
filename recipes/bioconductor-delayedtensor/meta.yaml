@@ -1,0 +1,52 @@
+{% set version = "1.8.0" %}
+{% set name = "DelayedTensor" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: ee3e89ac7a0b9f3ca79f744edfdc69b8
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-delayedtensor", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: markdown, rmarkdown, BiocStyle, knitr, testthat, magrittr, dplyr, reticulate
+requirements:
+  host:
+    - 'bioconductor-biocsingular >=1.18.0,<1.19.0'
+    - 'bioconductor-delayedarray >=0.28.0,<0.29.0'
+    - 'bioconductor-delayedrandomarray >=1.10.0,<1.11.0'
+    - 'bioconductor-hdf5array >=1.30.0,<1.31.0'
+    - r-base
+    - r-einsum
+    - r-irlba
+    - r-matrix
+    - r-rtensor
+  run:
+    - 'bioconductor-biocsingular >=1.18.0,<1.19.0'
+    - 'bioconductor-delayedarray >=0.28.0,<0.29.0'
+    - 'bioconductor-delayedrandomarray >=1.10.0,<1.11.0'
+    - 'bioconductor-hdf5array >=1.30.0,<1.31.0'
+    - r-base
+    - r-einsum
+    - r-irlba
+    - r-matrix
+    - r-rtensor
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'R package for sparse and out-of-core arithmetic and decomposition of Tensor'
+  description: 'DelayedTensor operates Tensor arithmetic directly on DelayedArray object. DelayedTensor provides some generic function related to Tensor arithmetic/decompotision and dispatches it on the DelayedArray class. DelayedTensor also suppors Tensor contraction by einsum function, which is inspired by numpy einsum.'
+
