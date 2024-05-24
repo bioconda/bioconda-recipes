@@ -12,7 +12,8 @@ if [[ ${target_platform}  == osx-64 ]] ; then
     nimble install -y "docopt@0.7.0"
     nimble build -y --verbose -d:release
 else
-    curl -SL https://github.com/brentp/mosdepth/releases/download/v$PKG_VERSION/mosdepth -o mosdepth
+    #Link to mosdepth_d4 is specified below because of https://github.com/brentp/mosdepth/issues/232 
+    curl -SL https://github.com/brentp/mosdepth/releases/download/v$PKG_VERSION/mosdepth_d4 -o mosdepth
     chmod +x mosdepth
 fi
 
