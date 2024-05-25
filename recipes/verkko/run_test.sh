@@ -19,9 +19,9 @@ touch empty.fasta
 
 # now start tests
 ONT="--nano ./ont.fastq.gz"
-#if [ "$(uname)" == "Darwin" ]; then
-#   ONT=""
-#fi
+if [ "$(uname)" == "Darwin" ]; then
+   ONT=""
+fi
 
 verkko -d asm --hifi ./hifi.fastq.gz $ONT > run.out 2>&1
 
