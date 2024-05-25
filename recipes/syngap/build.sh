@@ -8,6 +8,7 @@ cp -rf $SRC_DIR/scripts $PREFIX/bin
 df -h
 cp $SRC_DIR/SynGAP.py $PREFIX/bin
 cp $SRC_DIR/initdb.py $PREFIX/bin
+df -h
 cp $SRC_DIR/master.py $PREFIX/bin
 cp $SRC_DIR/dual.py $PREFIX/bin
 cp $SRC_DIR/triple.py $PREFIX/bin
