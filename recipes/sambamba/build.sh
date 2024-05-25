@@ -10,8 +10,12 @@ fi
 
 sed -e "/^CC=/d" Makefile > Makefile.new
 mv Makefile.new Makefile
-make CC=${CC} LIBRARY_PATH=${PREFIX}/lib prefix=${PREFIX}
+
+# Running this make target compiles an unoptimised binary so must be done prior to release compile
 make test CC=${CC}
+
+make CC=${CC} LIBRARY_PATH=${PREFIX}/lib prefix=${PREFIX}
 make install prefix=${PREFIX}
+
 # The binaries are versioned for some reason
 mv ${PREFIX}/bin/sambamba-* ${PREFIX}/bin/sambamba
