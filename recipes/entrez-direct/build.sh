@@ -3,18 +3,24 @@
 # Keep track of the process
 set -uex
 
+mkdir bin nobin
+# Don't install these most bespoke scripts
+mv custom-* idx-* pm-* xy-* nobin
+# Move ordinary scripts into a subdirectory for convenience
+mv $(find * -type d -prune -o -print | sed '/^[A-Z]/d;/[.]pdf$/d;/[.]pem$/d;/[.]py$/d;/conda/d;/build/d') bin
+
 mkdir -p $PREFIX/bin
-mv * $PREFIX/bin
-mkdir -p "$PREFIX/home"
-export HOME="$PREFIX/home"
+(cd cmd && sh -ex ./build.sh $PREFIX/bin)
+(cd extern && sh -ex ./build.sh $PREFIX/bin)
 
-# Needs to run in the install folder
-cd ${PREFIX}/bin
+# Ensure conda-build can tidy up this compiler cache tree
+test -d gopath && chmod -R u+wX gopath
 
-sh install.sh
+mkdir -p $PREFIX/bin/data $PREFIX/bin/help
+install -m 644 data/* $PREFIX/bin/data
+install -m 644 help/* $PREFIX/bin/help
 
-# clean up
-rm -rf eutils cmd 
-rm -rf *.log *.go *.yaml setup.sh install.sh *.gz *.pdf 
-rm -rf idx-* index-*  pm-*  custom* xy-* CA.pm cacert.pem
+install -m 755 bin/* $PREFIX/bin
 
+echo "Check for additional scripts to be installed to .../bin"
+ls
