@@ -1,3 +1,4 @@
 #!/bin/bash
-mv scSplit/scSplit $PREFIX
-chmod +x $PREFIX/scSplit
+mkdir -p $PREFIX/bin
+mv scSplit/scSplit $PREFIX/bin
+chmod +x $PREFIX/bin/scSplit
