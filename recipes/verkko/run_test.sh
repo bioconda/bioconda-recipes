@@ -10,20 +10,24 @@ if [ ! -n "${PREFIX-}" -a "${PREFIX+defined}" != defined  ]; then
    export PATH=$PREFIX/bin:$PATH
 fi
 
+# taken from yacrd recipe, see: https://github.com/bioconda/bioconda-recipes/blob/2b02c3db6400499d910bc5f297d23cb20c9db4f8/recipes/yacrd/build.sh
+if [ "$(uname)" == "Darwin" ]; then
+
+    # apparently the HOME variable isn't set correctly, and circle ci output indicates the following as the home directory
+    export HOME=`pwd`
+    echo "HOME is $HOME"
+    mkdir -p $HOME/.cargo/registry/index/
+fi
+
 # download and run a small assembly, skip alignment of ONT on OSX to save time
 rm -rf asm empty* ./hifi.fastq.gz ./ont.fastq.gz
 
 curl -L https://obj.umiacs.umd.edu/sergek/shared/ecoli_reference_test.fasta.gz -o reference.fasta.gz
 touch empty.fasta
 
-# now start tests
 ONT="--nano ./reference.fasta.gz"
-#if [ "$(uname)" == "Darwin" ]; then
-#   ONT=""
-#fi
 
-verkko --unitig-abundance 0 --no-correction -d asm --hifi ./reference.fasta.gz $ONT > run.out 2>&1
-cat run.out
+verkko --unitig-abundance 0 --no-correction -d asm --hifi ./reference.fasta.gz $ONT
 
 if [ -s asm/assembly.fasta ]; then
    head -n 2 asm/assembly.fasta > asm/tmp.fasta
@@ -35,12 +39,6 @@ if [ ! -s asm/assembly_circular.fasta ]; then
    tail -n +1 `find asm -name *.err`
    exit 1
 fi
-
-# test HiC and trio but not on darwin cause it is much slower
-#if [ "$(uname)" == "Darwin" ]; then
-#   echo "Finished darwin verkko assembly test"
-#   exit 0
-#fi
 
 verkko -d asm --hifi reference.fasta.gz $ONT --hic1 empty.fasta --hic2 empty.fasta > run.out 2>&1
 
