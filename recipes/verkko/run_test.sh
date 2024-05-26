@@ -11,19 +11,18 @@ if [ ! -n "${PREFIX-}" -a "${PREFIX+defined}" != defined  ]; then
 fi
 
 # download and run a small assembly, skip alignment of ONT on OSX to save time
-rm -f ./hifi.fastq.gz ./ont.fastq.gz
-curl -L https://obj.umiacs.umd.edu/sergek/shared/ecoli_hifi_lowcov.fastq.gz -o hifi.fastq.gz
-curl -L https://obj.umiacs.umd.edu/sergek/shared/ecoli_ont_lowcov.fastq.gz -o ont.fastq.gz
+rm -rf asm empty* ./hifi.fastq.gz ./ont.fastq.gz
 
+curl -L https://obj.umiacs.umd.edu/sergek/shared/ecoli_reference_test.fasta.gz -o reference.fasta.gz
 touch empty.fasta
 
 # now start tests
-ONT="--nano ./ont.fastq.gz"
-if [ "$(uname)" == "Darwin" ]; then
+ONT="--nano ./reference.fasta.gz"
+#if [ "$(uname)" == "Darwin" ]; then
    ONT=""
-fi
+#fi
 
-verkko -d asm --hifi ./hifi.fastq.gz $ONT > run.out 2>&1
+verkko --unitig-abundance 0 --no-correction -d asm --hifi ./reference.fasta.gz $ONT > run.out 2>&1
 
 if [ -s asm/assembly.fasta ]; then
    head -n 2 asm/assembly.fasta > asm/tmp.fasta
@@ -42,7 +41,7 @@ if [ "$(uname)" == "Darwin" ]; then
    exit 0
 fi
 
-verkko -d asm --hifi hifi.fastq.gz $ONT --hic1 empty.fasta --hic2 empty.fasta > run.out 2>&1
+verkko -d asm --hifi reference.fasta.gz $ONT --hic1 empty.fasta --hic2 empty.fasta > run.out 2>&1
 
 if [[ ! -s asm/assembly.unassigned.fasta || -s asm/assembly.haplotype1.fasta || -s asm/assembly.haplotype2.fasta ]]; then
    echo "Error: verkko hic assembly test failed!"
@@ -52,9 +51,9 @@ fi
 
 #now test trio
 rm -rf asm/8-* asm/6-layoutContigs/ asm/7-consensus/ asm/assembly.* asm/6-rukki/
-$PREFIX/lib/verkko/bin/meryl count compress k=21 memory=4 threads=8 output empty1.meryl hifi.fastq.gz
-$PREFIX/lib/verkko/bin/meryl greater-than 100 empty1.meryl/ output empty2.meryl
-verkko -d asm --hifi hifi.fastq.gz  $ONT --hap-kmers empty1.meryl empty2.meryl trio > run.out 2>&1
+$PREFIX/lib/verkko/bin/meryl count compress k=21 memory=4 threads=8 output empty1.meryl reference.fasta.gz
+$PREFIX/lib/verkko/bin/meryl greater-than 10 empty1.meryl/ output empty2.meryl
+verkko -d asm --hifi reference.fasta.gz  $ONT --hap-kmers empty1.meryl empty2.meryl trio > run.out 2>&1
 
 if [ ! -s asm/assembly.haplotype1.fasta ]; then
    echo "Error: verkko trio assembly test failed!"
