@@ -27,7 +27,7 @@ touch empty.fasta
 
 ONT="--nano ./reference.fasta.gz"
 
-verkko --unitig-abundance 0 --no-correction -d asm --hifi ./reference.fasta.gz $ONT
+verkko --unitig-abundance 0 --no-correction -d asm --hifi ./reference.fasta.gz $ONT > run.out 2>&1
 
 if [ -s asm/assembly.fasta ]; then
    head -n 2 asm/assembly.fasta > asm/tmp.fasta
@@ -40,7 +40,8 @@ if [ ! -s asm/assembly_circular.fasta ]; then
    exit 1
 fi
 
-verkko -d asm --hifi reference.fasta.gz $ONT --hic1 empty.fasta --hic2 empty.fasta > run.out 2>&1
+verkko -d asm --hifi reference.fasta.gz $ONT --hic1 empty.fasta --hic2 empty.fasta
+ls -lha asm/
 
 if [[ ! -s asm/assembly.unassigned.fasta || -s asm/assembly.haplotype1.fasta || -s asm/assembly.haplotype2.fasta ]]; then
    echo "Error: verkko hic assembly test failed!"
@@ -52,7 +53,7 @@ fi
 rm -rf asm/8-* asm/6-layoutContigs/ asm/7-consensus/ asm/assembly.* asm/6-rukki/
 $PREFIX/lib/verkko/bin/meryl count compress k=21 memory=4 threads=8 output empty1.meryl reference.fasta.gz
 $PREFIX/lib/verkko/bin/meryl greater-than 10 empty1.meryl/ output empty2.meryl
-verkko -d asm --hifi reference.fasta.gz  $ONT --hap-kmers empty1.meryl empty2.meryl trio > run.out 2>&1
+verkko -d asm --hifi reference.fasta.gz  $ONT --hap-kmers empty1.meryl empty2.meryl trio
 
 if [ ! -s asm/assembly.haplotype1.fasta ]; then
    echo "Error: verkko trio assembly test failed!"
