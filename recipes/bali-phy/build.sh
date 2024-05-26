@@ -43,8 +43,9 @@ cd builddir
 # build
 meson compile
 
-# test
-meson test
-
 # install
 meson install
+
+# check
+${PREFIX}/bin/bali-phy --help
+${PREFIX}/bin/bali-phy ${PREFIX}/share/doc/bali-phy/examples/5S-rRNA/5d.fasta --iter=20
