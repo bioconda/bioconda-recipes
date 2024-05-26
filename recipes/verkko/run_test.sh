@@ -19,7 +19,7 @@ touch empty.fasta
 # now start tests
 ONT="--nano ./reference.fasta.gz"
 #if [ "$(uname)" == "Darwin" ]; then
-   ONT=""
+#   ONT=""
 #fi
 
 verkko --unitig-abundance 0 --no-correction -d asm --hifi ./reference.fasta.gz $ONT > run.out 2>&1
@@ -36,10 +36,10 @@ if [ ! -s asm/assembly_circular.fasta ]; then
 fi
 
 # test HiC and trio but not on darwin cause it is much slower
-if [ "$(uname)" == "Darwin" ]; then
-   echo "Finished darwin verkko assembly test"
-   exit 0
-fi
+#if [ "$(uname)" == "Darwin" ]; then
+#   echo "Finished darwin verkko assembly test"
+#   exit 0
+#fi
 
 verkko -d asm --hifi reference.fasta.gz $ONT --hic1 empty.fasta --hic2 empty.fasta > run.out 2>&1
 
