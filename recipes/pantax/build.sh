@@ -8,6 +8,7 @@ else
     chmod +x pantax
     cp $SRC_DIR/pantax/pantax ${PREFIX}/bin
     cp $SRC_DIR/pantax/*sh ${PREFIX}/bin
+    cp $SRC_DIR/pantax/*py ${PREFIX}/bin
     cd $SRC_DIR/tools
     chmod +x vg
     cd fastix
