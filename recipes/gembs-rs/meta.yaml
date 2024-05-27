@@ -1,31 +1,61 @@
+{% set version = "4.0" %}
+
 package:
   name: gembs-rs
-  version: "4.0.4"
+  version: {{ version }}
 
 source:
-  git_url: https://github.com/heathsc/gemBS-rs.git
-  git_tag: v4.0.4
+  url: https://github.com/heathsc/gemBS-rs/archive/refs/tags/v{{ version }}.tar.gz
+  # git_url:  https://github.com/heathsc/gemBS-rs.git
 
+  sha256: d2e4f844e4a381e5a9087c27ed67751ef2a3a2c2a97b02204ff6a483cad95cc9
+ 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install ."
+  run_exports:
+    - {{ pin_subpackage("gembs-rs", max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - rust
-    - cargo
-    - cmake
     - make
+    - cmake >3.5
+    - autoconf
+    - automake
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - wget
+    - zlib
+    - htslib
+    - rust >=1.54 
   host:
-    - python
     - pip
-  run:
     - python
+    - htslib
+    - openssl
+    - bzip2
+    - zlib
+    - freetype
+    - expat
+    - fontconfig
+    - ncurses
+    - zstd
+    - pkg-config
+  run:
+    - gem3-mapper
+    - python
+    - matplotlib-base
+    - multiprocess
+    - pigz
+    - openssl
+    - bzip2
+    - zlib
+    - matplotlib-base
+    - multiprocess
     - samtools
     - bcftools
-    - htslib
+    - bs_call
+    - gem3-mapper
+    - setuptools
 
 test:
   commands:
@@ -33,14 +63,8 @@ test:
 
 about:
   home: https://github.com/heathsc/gemBS-rs
-  license: BSD-3-Clause
+  license: BSD 3-Clause License
+  summary: gemBS-rs new rust implementation of gemBS for analysis of DNA methylation from WGBS data
+  license_family: BSD
   license_file: LICENSE
-  summary: "A high performance bioinformatic pipeline for DNA methylation data analysis."
-  description: |
-    gemBS is a high performance bioinformatic pipeline designed for highthroughput analysis of DNA methylation data from whole genome bisulfites sequencing data (WGBS). It combines GEM3, a high performance read aligner and bs_call, a high performance variant and methylation caller, into a streamlined and efficient pipeline for bisulfite sequence analysis.
-
-extra:
-  identifiers:
-    - doi:10.1093/bioinformatics/btx046
-  recipe-maintainers:
-    - your-github-username
+  doc_url: http://statgen.cnag.cat/gemBS/UserGuide/_build/html/index.html
