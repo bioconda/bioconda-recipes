@@ -1,13 +1,15 @@
-pwd
-cd rust
-cp gemBS/Cargo.toml.in gemBS/Cargo.toml
-ls -ahl
-ls -ahl gemBS
-ls -ahl snpxtr
+#!/bin/bash
+set -euxo pipefail
+
+# Install Rust if not already installed
+if ! command -v rustc &> /dev/null
+then
+    curl https://sh.rustup.rs -sSf | sh -s -- -y
+    source $HOME/.cargo/env
+    rustup update
+fi
+
+# Build and install gemBS
 cargo build --release
-cp target/release/gem_bs $prefix/bin/gemBS
-cp target/release/read_filter $prefix/bin/
-cp target/release/bs_call $prefix/bin/
-cp target/release/snpxtr $prefix/bin/
-cp target/release/mextr $prefix/bin/
-cp target/release/dbsnp_index $prefix/bin/
+mkdir -p $PREFIX/bin
+cp target/release/gemBS $PREFIX/bin/
