@@ -1,13 +1,10 @@
-#!/bin/bash
-set -euxo pipefail
-
-# Install Rust if not already installed
-if ! command -v rustc &> /dev/null
-then
-    curl https://sh.rustup.rs -sSf | sh -s -- -y
-    source $HOME/.cargo/env
-    rustup update
-fi
+pwd
+cd rust
+cp gemBS/Cargo.toml.in gemBS/Cargo.toml
+ls -ahl
+ls -ahl gemBS
+ls -ahl snpxtr
+echo test_addimator
 
 # Build and install gemBS
 cargo build --release
