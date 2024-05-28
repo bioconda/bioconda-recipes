@@ -13,9 +13,9 @@ else
     cp $SRC_DIR/pantax/*py ${PREFIX}/bin
     cd $SRC_DIR/tools
     chmod +x vg
-    cd fastix
+    cd $SRC_DIR
     cargo install fastix --root ./
     mkdir -p ${PREFIX}/bin/tools
-    cp $SRC_DIR/tools/fastix/bin/fastix ${PREFIX}/bin/tools
+    cp $SRC_DIR/bin/fastix ${PREFIX}/bin/tools
     cp $SRC_DIR/tools/vg ${PREFIX}/bin/tools
 fi
