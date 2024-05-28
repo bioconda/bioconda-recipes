@@ -1,12 +1,13 @@
-echo addi1
-ls -ahl
 cd rust
 cp gemBS/Cargo.toml.in gemBS/Cargo.toml
-echo addi2
-ls -ahl
 cargo build --release
-echo addi3
+echo addi1
 ls -ahl
+echo addi2
+ls -ahl target
+echo addi3
+ls -ahl target/release
+echo addi4
 cp target/release/gem_bs $prefix/bin/gemBS
 cp target/release/read_filter $prefix/bin/
 cp target/release/bs_call $prefix/bin/
