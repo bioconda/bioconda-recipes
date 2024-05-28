@@ -4,6 +4,8 @@ if [ "$(uname)" == "Darwin" ]; then
     cd $SRC_DIR/PanTax
     cp $SRC_DIR/PanTax/* $PREFIX
 else
+    cd gurobi11
+    python -m pip install gurobipy-11.0.2-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
     cd $SRC_DIR/pantax
     chmod +x pantax
     cp $SRC_DIR/pantax/pantax ${PREFIX}/bin
