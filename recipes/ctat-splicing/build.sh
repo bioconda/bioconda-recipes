@@ -1,1 +1,3 @@
+find .
+
 make
