@@ -1,24 +1,41 @@
 package:
   name: ncbi-fcs-gx
-  version: 0.4.0
+  version: 0.5.0
 
 source:
-  url: https://ftp.ncbi.nlm.nih.gov/genomes/TOOLS/FCS/releases/0.4.0/gx_conda_0.4.0.zip
-  sha256: 35a93f3d86b82a1657cf926e36dc0821d8048b6a83542b72eacd60bfc363f278
+  url: https://github.com/ncbi/fcs-gx/archive/refs/tags/v0.5.0.zip
+  sha256: 2f6b6099584495e1a9115403a5e4cb5f5dac1ddbbc691da9a3158a75391ffe8a
+  patches:
+    - aria_split_16.patch
+    - no_static.patch
+
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - make
+    - cmake
+    - libstdcxx-ng <=12.2
+    - libgcc-ng <=12.2
   run:
     - python >=3.9
+    - aria2 =1.36.0
+    - gzip >=1.5
+    - pv >=1.4.6
+    - rclone =1.61.1
+    - grep >=3.4
 
 build:
-  number: 2
+  number: 3
   skip: True  # [not linux or not x86_64]
+  run_exports:
+    - {{ pin_compatible('ncbi-fcs-gx', max_pin="0.5") }}
 
 test:
   commands:
     - gx --help 
+    - ls -l ${PREFIX}/bin/
+    - ${PREFIX}/bin/gx --help 
 
 about:
   home: https://github.com/ncbi/fcs

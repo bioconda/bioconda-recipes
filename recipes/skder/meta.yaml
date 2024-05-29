@@ -1,5 +1,5 @@
 {% set name = "skder" %}
-{% set version = "1.0" %}
+{% set version = "1.1.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,12 +7,14 @@ package:
 
 source:
   url: https://github.com/raufs/skDER/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 739c564ca8f02be1a1878f51a8b40c6561b832d176757672a9a25008bf6f6cf9
+  sha256: 486b717bca65c0efe89c9108305fe93bbf3cd4562508a6db8a3ed440de3db71c
 
 build:
   number: 0
   skip: True # [py <= 39]
-
+  run_exports:
+    - {{ pin_subpackage('skder', max_pin='x.x') }}
+    
 requirements:
   build:
      - {{ compiler('cxx') }}
@@ -28,15 +30,16 @@ requirements:
     - skani
     - ncbi-genome-download
     - pyfastx
+    - wget
 
 test:
   commands:
-    - skDER.py -h
+    - skder -h
 
 about:
   home: https://github.com/raufs/skDER
   license: BSD-3-Clause license
   license_file: LICENSE
   license_family: BSD
-  summary: "skDER: efficient dynamic dereplication of genomes using skani"
+  summary: "skDER: efficient & high-resolution dereplication of microbial genomes"
   dev_url: https://github.com/raufs/skDER

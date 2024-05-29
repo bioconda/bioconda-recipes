@@ -6,5 +6,5 @@ export LIBS="-lstdc++fs -lcurl"
 
 cat config.log
 
-make
+make -j${CPU_COUNT}
 make install
