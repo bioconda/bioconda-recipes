@@ -10,7 +10,10 @@ ln -s ${PREFIX}/bin/STAR_to_cancer_introns.py ${PREFIX}/bin/STAR_to_cancer_intro
 ln -s ${PREFIX}/bin/ctat-splicing-lib-integration.py ${PREFIX}/bin/ctat-splicing-lib-integration
 
 mkdir -p ${PREFIX}/bin/PyLib
-mkdir -p ${PREFIX}/bin/util
+cp PyLib/*.py ${PREFIX}/bin/PyLib/
 
-cp PyLib/Pipeliner.py ${PREFIX}/bin/PyLib/
-cp util/intron_occurrence_capture.py ${PREFIX}/bin/util/
+mkdir -p ${PREFIX}/bin/util
+cp util/*.{py,pl} ${PREFIX}/bin/util/
+
+mkdir -p ${PREFIX}/bin/util/PerlLib
+cp util/PerlLib/*.pm ${PREFIX}/bin/util/PerlLib/
