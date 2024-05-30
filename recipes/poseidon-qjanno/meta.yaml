@@ -1,0 +1,39 @@
+{% set version = "1.0.0.0" %}
+package:
+  name: poseidon-qjanno
+  version: {{ version }}
+
+source:
+  - url: https://github.com/poseidon-framework/qjanno/releases/download/v{{ version }}/qjanno-Linux # [linux]
+    md5: c1165839313a768ac12d1c8dbe7b2f0a # [linux]
+  - url: https://github.com/poseidon-framework/qjanno/releases/download/v{{ version }}/qjanno-macOS # [osx]
+    md5: f101c7d0448b486b86edc259c7838a92 # [osx]
+
+build:
+  number: 0
+  script:
+    - "mkdir -p $PREFIX/bin"
+    - "mv qjanno* $PREFIX/bin/qjanno"
+    - "chmod u+x $PREFIX/bin/qjanno"
+  run_exports:
+    - {{ pin_subpackage("poseidon-qjanno", max_pin=None) }}
+
+requirements:
+  build:
+    # Precompiled binaries still link against libgcc
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - gmp
+  run:
+    - zlib
+    - gmp
+
+test:
+  commands:
+      - qjanno --version
+
+about:
+  home: https://www.poseidon-adna.org/#/
+  license: MIT
+  summary: "A CLI tool to run SQL queries on Poseidon .janno files."
