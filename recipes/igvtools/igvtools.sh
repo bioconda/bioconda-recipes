@@ -16,13 +16,4 @@ while [[ -h "$SOURCE" ]]; do # resolve $SOURCE until the file is no longer a sym
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-# Check whether or not to use the bundled JDK
-if [ -d "${DIR}/jdk-11" ]; then
-    echo echo "Using bundled JDK."
-    JAVA_HOME="${DIR}/jdk-11"
-    PATH=$JAVA_HOME/bin:$PATH
-else
-    echo "Using system JDK."
-fi
-
 java -Djava.awt.headless=true --module-path="${DIR}/lib" -Xmx1500m --module=org.igv/org.broad.igv.tools.IgvTools "$@"
