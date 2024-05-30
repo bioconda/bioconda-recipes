@@ -1,12 +1,6 @@
 #!/usr/bin/env bash
 set -ex
 
-# Ensure that the Make program is available
-if [ -z "$(command -v make)" ]; then
-    echo "Error: 'make' command not found."
-    exit 1
-fi
-
 # Create build directory
 mkdir -p build
 cd build
