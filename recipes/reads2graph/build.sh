@@ -8,7 +8,7 @@ cd build
 # Configure the build
 cmake -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_INSTALL_PREFIX=${PREFIX} \
-      -DCMAKE_CXX_COMPILER=gcc_linux-64 \
+      -DCMAKE_CXX_COMPILER=g++ \
       -DCMAKE_MAKE_PROGRAM=make \
       -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -std=c++20 -fopenmp -static-libgcc -static-libstdc++ -isystem ${PREFIX}/include -isystem ${PREFIX}/include/seqan3/submodules/sdsl-lite/include -isystem ${PREFIX}/include/seqan3/submodules/cereal/include -fconcepts -g -Wall -lyaml-cpp -Wno-interference-size -Wno-maybe-uninitialized" \
       ..
