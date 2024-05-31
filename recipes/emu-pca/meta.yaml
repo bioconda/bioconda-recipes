@@ -7,22 +7,29 @@ package:
 
 source:
   url: 'https://github.com/Rosemeis/emu/archive/refs/tags/{{ version }}.tar.gz'
-  md5sum: b79e9a2f72b8b83361a5542edc1c4ca7
+  md5: b79e9a2f72b8b83361a5542edc1c4ca7
 
 build:
-  noarch: generic
   number: 0
+  skip: true # [py<30]
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   run_exports:
-    {{ pin_subpackage('emu', max_pin="x") }}
+    {{ pin_subpackage('emu-pca', max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - pip
+    - python
+    - cython
   run:
     - python
     - numpy
-    - cython
 
 test:
+  imports:
+    - emu
   commands:
     - emu-pca --help
 
