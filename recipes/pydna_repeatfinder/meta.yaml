@@ -1,0 +1,50 @@
+{% set name = "py_dna_repeatfinder" %}
+{% set version = "0.2.3" %}
+{% set pypiname = "PyDNARepeatFinder" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ pypiname[0] }}/{{ pypiname }}/{{ pypiname }}-{{ version }}.tar.gz"
+  sha256: "62c226dfd43361babd977dbe1d5ebb387a7ba3c70efe0649a04f7277cbca4a3e"
+
+build:
+  number: 0
+  skip: True  # [py < 37]
+  script: "{{ PYTHON }} -m pip install --ignore-installed --no-cache-dir -vvv ." 
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake >=3.15
+  host:
+    - python >=3
+    - pip
+    - scikit-build-core
+  run:
+    - python >=3
+
+test:
+  imports:
+    - PyRepeatFinder
+  commands:
+    - dna_repeatfinder --version
+
+about:
+  home: "https://github.com/linsalrob/repeatfinder
+  license: MIT
+  license_family: MIT
+  summary: "Find direct and inverted repeats in a fasta file"
+  doc_url: "https://github.com/linsalrob/repeatfinder"
+  dev_url: "https://github.com/linsalrob/repeatfinder"
+
+extra:
+  recipe-maintainers:
+    - linsalrob
+  identifiers:
+    - doi:10.5281/zenodo.5006657
