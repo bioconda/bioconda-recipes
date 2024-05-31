@@ -23,3 +23,11 @@ cp PyLib/*.py ${PREFIX}/bin/PyLib/
 
 cp util/PerlLib/*.pm ${PREFIX}/bin/util/PerlLib/
 cp prep_genome_lib/util/PerlLib/*.pm ${PREFIX}/bin/util/PerlLib/
+
+cd bamsifter/htslib
+autoreconf --force --install --verbose
+./configure
+make
+
+cd ..
+make
