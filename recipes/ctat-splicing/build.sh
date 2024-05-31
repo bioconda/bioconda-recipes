@@ -29,5 +29,5 @@ autoreconf --force --install --verbose
 ./configure
 make
 
-cd ..
-make
+# cd ..
+# make
