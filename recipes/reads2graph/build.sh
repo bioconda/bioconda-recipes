@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-export CMAKE_PREFIX_PATH="${PREFIX}/include:${PREFIX}/include/seqan3/submodules/sdsl-lite/include:${PREFIX}/include/seqan3/submodules/cereal/include"
-
 set -ex
 
 declare -a CMAKE_PLATFORM_FLAGS
@@ -15,15 +13,21 @@ if [ -d "build" ]; then
     rm -rf build
 fi
 
+# Set CMAKE_INCLUDE_PATH with dependencies
+CMAKE_INCLUDE_PATH="${PREFIX}/include:${PREFIX}/include/seqan3/submodules/sdsl-lite/include:${PREFIX}/include/seqan3/submodules/cereal/include"
+CMAKE_INCLUDE_PATH+=":${CMAKE_INCLUDE_PATH}"
+
 # Create build directory
 mkdir -p build
 cd build
 
 # Configure the build
 cmake -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_PREFIX_PATH=${PREFIX} \
       -DCMAKE_INSTALL_PREFIX=${PREFIX} \
       -DCMAKE_MAKE_PROGRAM=make \
       -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -std=c++20 -fopenmp -static-libgcc -static-libstdc++ -fconcepts -g -Wall -lyaml-cpp -Wno-interference-size -Wno-maybe-uninitialized" \
+      -DCMAKE_INCLUDE_PATH="${CMAKE_INCLUDE_PATH}" \
       ..
 
 # Build and install
