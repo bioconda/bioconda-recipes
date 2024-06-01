@@ -8,6 +8,11 @@ else
     CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
 fi
 
+# Check if build directory exists and delete it if it does
+if [ -d "build" ]; then
+    rm -rf build
+fi
+
 # Create build directory
 mkdir -p build
 cd build
