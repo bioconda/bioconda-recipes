@@ -4,9 +4,9 @@ set -ex
 # Add the Conda environment's bin directory to the PATH
 export PATH="${PREFIX}/bin:${PATH}"
 
-# Set the CXX environment variable to the specific g++ version
-# export CXX=$(which g++)
-# export CC=$(which gcc)
+#Set the CXX environment variable to the specific g++ version
+export CXX=$(which g++)
+export CC=$(which gcc)
 
 declare -a CMAKE_PLATFORM_FLAGS
 if [[ ${HOST} =~ .*darwin.* ]]; then
