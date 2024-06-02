@@ -5,8 +5,9 @@ set -ex
 export PATH="${PREFIX}/bin:${PATH}"
 
 #Set the CXX environment variable to the specific g++ version
-export CXX=$(which g++)
-export CC=$(which gcc)
+# export CXX=$(which g++)
+# export CC=$(which gcc)
+export CXX=${PREFIX}/bin/g++
 
 declare -a CMAKE_PLATFORM_FLAGS
 if [[ ${HOST} =~ .*darwin.* ]]; then
