@@ -24,6 +24,10 @@ fi
 mkdir -p build
 cd build
 
+cmake --version
+${CXX} --version
+${CC} --version
+
 # Configure the build
 cmake -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_INSTALL_PREFIX=${PREFIX} \
