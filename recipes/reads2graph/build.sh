@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -ex
 
+# Set the CXX environment variable to the specific g++ version
+export CXX=$(which g++)
+
 declare -a CMAKE_PLATFORM_FLAGS
 if [[ ${HOST} =~ .*darwin.* ]]; then
     CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
