@@ -7,7 +7,7 @@ export CFLAGS="${CFLAGS} -I${PREFIX}/include ${LDFLAGS}"
 export USE_HIC=0
 
 mkdir -p "${PREFIX}/bin"
-export MACHTYPE=x86_64
+export MACHTYPE=$(uname -m)
 export BINDIR=$(pwd)/bin
 export L="${LDFLAGS}"
 mkdir -p "${BINDIR}"
