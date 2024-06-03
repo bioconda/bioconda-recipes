@@ -7,7 +7,7 @@ cp SSPACE_Basic.pl $PREFIX/bin
 cp -r tools/* $PREFIX/bin
 
 # Copy dotlib 
-cp dotlib $PREFIX/bin
+cp -r dotlib $PREFIX/bin
 
 # Making the scripts executable
 chmod +x $PREFIX/bin/*.pl $PREFIX/bin/bin/*
