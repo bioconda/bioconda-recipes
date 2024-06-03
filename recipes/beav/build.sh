@@ -11,15 +11,19 @@ mkdir -p $PREFIX/bin
 
 mv beav $PREFIX/bin
 mv beav_db $PREFIX/bin
+mv beav_test $PREFIX/bin
+mv beav_circos $PREFIX/bin
 mv scripts/* $BEAV_DIR/scripts
 mv databases/* $BEAV_DIR/databases
 mv models/* $BEAV_DIR/models
 mv test_data/* $BEAV_DIR/test_data
 
 mv DBSCAN-SWA $BEAV_DIR/software/
-
+mv PyCirclize $BEAV_DIR/software/
 mv PaperBLAST $BEAV_DIR/software/
 mkdir $BEAV_DIR/software/PaperBLAST/bin/blast
+
+chmod +x $BEAV_DIR/scripts/*
 
 #TIGER
 #TIGER must be downloaded in the build script because the official release contains linux binaries and a broken softlink.

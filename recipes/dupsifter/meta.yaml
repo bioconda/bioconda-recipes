@@ -1,0 +1,46 @@
+{% set version = '1.2.1.20240119' %}
+
+package:
+  name: dupsifter
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('dupsifter', max_pin='x') }}
+
+source:
+  url: https://github.com/huishenlab/dupsifter/releases/download/v{{ version }}/release-source.zip
+  sha256: ca3db67e36f9a3d054acf9fbaf0dee1037781d468d7f094ea5d3852610448e7a
+  patches:
+    - patch
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - libcurl
+    - bzip2
+    - xz
+    - zlib
+    - libdeflate
+    - openssl # [not osx]
+    - pthread-stubs
+  run:
+    - libcurl
+    - bzip2
+    - xz
+    - zlib
+    - libdeflate
+    - openssl # [not osx]
+    - pthread-stubs
+
+test:
+  commands:
+    - dupsifter --help 2>&1 | grep dupsifter
+
+about:
+  home: https://github.com/huishenlab/dupsifter
+  license: MIT
+  summary: A tool for PCR duplicate marking of WGBS (and WGS) data

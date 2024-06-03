@@ -1,0 +1,54 @@
+{% set name = "assembly_finder" %}
+{% set version = "0.7.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/metagenlab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: a883ea2ac4b70960bdd260de69fb53a33b52ec1fe0d975572fce5f45a7ebdfc4
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - assembly_finder=assembly_finder.__main__:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('assembly_finder', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+  run:
+    - python >=3.10
+    - snakemake-minimal >=7.32.4
+    - pulp <2.8
+    - snaketool-utils >=0.0.4
+    - attrmap >=0.0.7
+    - pyyaml >=6.0
+    - pandas >=2.2.1
+    - rich-click >=1.7.4
+
+test:
+  commands:
+    - assembly_finder -h
+    - assembly_finder -v
+
+about:
+  home: https://github.com/metagenlab/assembly_finder
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Snakemake-powered cli pipeline to download genomes with NCBI datasets"
+  dev_url: https://github.com/metagenlab/assembly_finder
+  doc_url: https://metagenlab.github.io/assembly_finder
+
+extra:
+  container:
+    extended-base: true
+  recipe-maintainers:
+    - farchaab
+    - tpillone
