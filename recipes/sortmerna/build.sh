@@ -2,7 +2,7 @@
 
 set -x
 
-python setup.py -n all
+${PYTHON} setup.py -n all
 
 mkdir -p ${PREFIX}/bin
 
