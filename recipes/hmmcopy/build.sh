@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Source archive contains some macOS junk files,
 # which prevent hoisting the HMMcopy on Linux only.

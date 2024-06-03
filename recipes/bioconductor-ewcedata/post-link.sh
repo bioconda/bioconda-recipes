@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "ewcedata-1.8.0"
+installBiocDataPackage.sh "ewcedata-1.10.0"
