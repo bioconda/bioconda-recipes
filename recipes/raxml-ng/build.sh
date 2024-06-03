@@ -4,7 +4,7 @@
 mkdir build_pthreads
 pushd build_pthreads
    cmake ..
-   make
+   make -j ${CPU_COUNT}
    install -d ${PREFIX}/bin
    install ../bin/raxml-ng ${PREFIX}/bin
 popd
@@ -15,7 +15,7 @@ then
   mkdir build_mpi
   pushd build_mpi
      CXX=mpicxx cmake -DUSE_MPI=ON ..
-     make
+     make -j ${CPU_COUNT}
      install -d ${PREFIX}/bin
      install ../bin/raxml-ng-mpi ${PREFIX}/bin
   popd
