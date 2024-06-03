@@ -36,6 +36,4 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       ..
 
 make clean
-# Build and install
-make #-j${CPU_COUNT}
-make install
+make
