@@ -1,13 +1,18 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
+mkdir -pv $PREFIX/bin
+mkdir -pv $PREFIX/src
+mkdir -pv $PREFIX/share/${PKG_NAME}-${PKG_VERSION}
 
 # Add in the correct version for the build
 sed -i.bak "s/VERSION=.\+/VERSION=\"${PKG_VERSION}\"/" bin/downloadKalamari.sh
 
-EXES="downloadKalamari.pl downloadKalamari.sh generate_sepia_reference.py  getExactTaxonomy.pl  mobsuiteRepresentativeFasta.pl  validateTaxonomy.pl"
-
-for i in $EXES; do
-  chmod -v 755 bin/$i
-  cp -vf bin/$i $PREFIX/bin
+for i in bin/*.pl bin/*.sh bin/*.py; do
+  chmod -v 755 $i
+  cp -vf $i $PREFIX/bin/
 done
+
+for i in src/*.tsv; do 
+  cp -vf $i $PREFIX/src/
+done
+cp -rvf src/taxonomy $PREFIX/src/
