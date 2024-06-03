@@ -37,3 +37,4 @@ cmake -DCMAKE_BUILD_TYPE=Release \
 
 make clean
 make
+cp ../bin/reads2graph $PREFIX/bin/reads2graph
