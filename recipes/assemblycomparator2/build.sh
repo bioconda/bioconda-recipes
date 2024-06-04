@@ -8,7 +8,7 @@ export PACKAGE_HOME="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 mkdir -p "${PACKAGE_HOME}"
 chmod 755 asscom2
 cp -f asscom2 LICENSE "${PACKAGE_HOME}"
-cp -rf config dynamic_report profile resources tests workflow "${PACKAGE_HOME}"
+cp -rf config docs dynamic_report profile resources tests workflow "${PACKAGE_HOME}"
 
 # This is the binary that we wish to be able to run.
 ln -sf ${PACKAGE_HOME}/asscom2 ${PREFIX}/bin/asscom2
