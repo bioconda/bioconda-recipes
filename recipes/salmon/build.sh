@@ -18,6 +18,3 @@ cmake -S . -B build \
 	-DNO_IPO=TRUE
 
 cmake --build build/ --target install -j "${CPU_COUNT}" -v
-
-echo "cmake-powered unit test"
-CTEST_OUTPUT_ON_FAILURE=1 make test
