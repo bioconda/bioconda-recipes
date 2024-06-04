@@ -17,4 +17,4 @@ cmake -S . -B build \
 	-DBoost_NO_SYSTEM_PATHS=ON \
 	-DNO_IPO=TRUE
 
-cmake --build build/ --target install -j "${CPU_COUNT}" -v
+cmake --build build/ --target install -v
