@@ -3,7 +3,7 @@
 mkdir -p ${PREFIX}/bin
 
 # compilation
-g++ src/harpy/bin/extractReads.cpp -O3 -o ${PREFIX}/bin/extractReads
+"${CXX}" src/harpy/bin/extractReads.cpp -O3 -o ${PREFIX}/bin/extractReads
 
 # install harpy proper
 ${PYTHON} -m pip install . --no-deps -vvv
