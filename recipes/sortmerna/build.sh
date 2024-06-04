@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -x
+set -xe
 
 python setup.py -n all
 
