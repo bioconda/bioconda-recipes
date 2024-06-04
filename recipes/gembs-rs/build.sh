@@ -8,7 +8,7 @@ ls -ahl target
 echo addi3
 ls -ahl target/release
 echo addi4
-cp -r gemBS $prefix/bin/gemBS
+cp -r gemBS $PREFIX/bin/gemBS
 # cp read_filter $prefix/bin/
 # cp bs_call $prefix/bin/
 # cp snpxtr $prefix/bin/
