@@ -13,16 +13,19 @@ build:
   number: 0
   noarch: python
   script:
-    - "python -m pip install ./pypackage/kin -vv --no-deps"
-    - "python -m pip install ./pypackage/kingaroo -vv --no-deps"
     - "mkdir -p ${PREFIX}/bin"
-    - "cp $(which KINgaroo) ${PREFIX}/bin/kingaroo"
-    - "cp $(which KIN) ${PREFIX}/bin/kin"
-    - "chmod +x ${PREFIX}/bin/kingaroo ${PREFIX}/bin/kin"
+    - "{{ PYTHON }} -m pip install ./pypackage/kin -vvv --no-deps --no-build-isolation --no-cache-dir"
+    - "{{ PYTHON }} -m pip install ./pypackage/kingaroo -vvv --no-deps --no-build-isolation --no-cache-dir"
+    - "cp -f $(which KINgaroo) ${PREFIX}/bin/kingaroo"
+    - "cp -f $(which KIN) ${PREFIX}/bin/kin"
+    - "chmod 755 ${PREFIX}/bin/kingaroo ${PREFIX}/bin/kin"
   run_exports:
-    - {{ pin_subpackage("kin", max_pin="x.x") }}
+    - {{ pin_subpackage("kin", max_pin="x") }}
 
 requirements:
+  host:
+    - python >=3.8
+    - pip
   run:
     - python >=3.8
     - scipy >=1.8.0
@@ -34,18 +37,19 @@ requirements:
     - samtools >=1.15
     - bcftools >=1.15
 
-
 test:
   commands:
     - kin --help
     - kingaroo --help
 
 about:
-  home: https://github.com/DivyaratanPopli/Kinship_Inference
-  license: GPL-3.0-only
+  home: "https://github.com/DivyaratanPopli/Kinship_Inference"
+  license: "GPL-3.0-only"
+  license_family: GPL3
   # license_file: LICENCE ## Exists in main but not tag
   summary: "A tool to estimate pairwise relatedness from ancient DNA, taking in account contamination, ROH, ascertainment bias."
-  doc_url: https://github.com/DivyaratanPopli/Kinship_Inference/blob/main/README.md
+  doc_url: "https://github.com/DivyaratanPopli/Kinship_Inference/blob/main/README.md"
+  dev_url: "https://github.com/DivyaratanPopli/Kinship_Inference"
 
 extra:
   recipe-maintainers:
