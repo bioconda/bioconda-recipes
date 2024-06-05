@@ -1,7 +1,20 @@
 --- Makefile_orig	2024-06-05 10:08:58.000000000 +0200
-+++ Makefile	2024-06-05 10:12:11.000000000 +0200
-@@ -21,7 +21,7 @@
- ## 
++++ Makefile	2024-06-05 11:31:27.000000000 +0200
+@@ -2,7 +2,7 @@
+ #### Makefile for Cur+ ####
+ 
+ CC= cc
+-CFLAG= 
++CFLAG=
+ 
+ FC= gfortran
+ #FFLAG= -w -fbounds-check -O2
+@@ -18,16 +18,16 @@
+ ## http://www.unidata.ucar.edu/downloads/netcdf).  Finally, the
+ ## netCDF Fortran Libraries can also be found within
+ ## installations of the AmberTools package (http://ambermd.org).
+-## 
++##
  ## If you have AmberTools installed (version >=13), please set
  ## NETCDF to the location of your AmberTools installation; e.g.:
 -## NETCDF=/software/amber14/AmberTools
@@ -9,6 +22,13 @@
  ##
  ## If you installed netcdf-fortran using macports on MACOSX,
  ## set NETCDF to the location of your macports tree; e.g.:
+ ## NETCDF=/opt/local
+ ##
+-## If you installed netcdf-fortran using the official Unidata 
++## If you installed netcdf-fortran using the official Unidata
+ ## tarball, set NETCDF to the location of your installation,
+ ## e.g.:
+ ## NETCDF=/usr/local
 @@ -35,23 +35,23 @@
  
  ###------------------ Gromacs XTC input support -------------------###
@@ -44,10 +64,11 @@
  locate.o lsfit.o manta.o ncerror.o nml.o \
  params.o pdbout.o curpar.o screw.o setup.o smooth.o torp.o xtcerror.o $(XTC_OBJ)
  
+-Cur+ : $(OBJ) 
+-	$(FC) $(OBJ) $(LDFLAG_NC) $(LDFLAG_XTC) -o Cur+
 +all: Cur+ Canal Canion
 +
- Cur+ : $(OBJ) 
--	$(FC) $(OBJ) $(LDFLAG_NC) $(LDFLAG_XTC) -o Cur+
++Cur+ : $(OBJ)
 +	$(FC) $(OBJ) $(LDFLAG_NC) $(LDFLAG_XTC) -lgfortran -o Cur+
 +Canal : canal.o
 +	$(FC) $(FFLAG) canal.o -o Canal
@@ -57,13 +78,14 @@
  .SUFFIXES : .o .c .f
  .c.o :
 -	$(CC) -cpp $(CFLAG) -c $<
-+	$(CC) -cpp $(CFLAG) -dM -I$PREFIX/include/ -DNETCDF -Wno-argument-mismatch -DXTC -fallow-argument-mismatch -c $<
++	$(CC) -cpp $(CFLAG) -Iinclude -dM -c $<
  
  .f.o :
  	$(FC) -cpp $(FFLAG) $(FFLAG_NC) $(FFLAG_XTC) -c $<
  
- clean: 
+-clean: 
 -	rm -f Cur+ *.o *.a
++clean:
 +	rm -f Cur+ Canal Canion *.o *.a
  
  f77_molfile.o: f77_molfile.c plugins
