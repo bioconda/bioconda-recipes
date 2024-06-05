@@ -1,7 +1,7 @@
 --- ORIG/Makefile	2016-10-27 16:11:30.000000000 +0200
 +++ Makefile	2024-06-04 15:04:37.000000000 +0200
 @@ -21,7 +21,7 @@
- ## 
+ ##
  ## If you have AmberTools installed (version >=13), please set
  ## NETCDF to the location of your AmberTools installation; e.g.:
 -## NETCDF=/software/amber14/AmberTools
@@ -10,12 +10,12 @@
  ## If you installed netcdf-fortran using macports on MACOSX,
  ## set NETCDF to the location of your macports tree; e.g.:
 @@ -35,23 +35,23 @@
- 
+
  ###------------------ Gromacs XTC input support -------------------###
  ## To enable XTC support, uncomment the following line:
 -## XTC= yes
 +XTC= yes
- 
+
  ## Please do not edit below this line.
  ###----------------------------------------------------------------###
  ifdef NETCDF
@@ -32,39 +32,39 @@
 +## endif
  LDFLAG_NC= -L$(NETCDF)/lib -l$(libnetcdf)
  endif
- 
+
  ifdef XTC
  XTC_OBJ= f77_molfile.o
 -FFLAG_XTC= -DXTC
 +FFLAG_XTC= -DXTC -fallow-argument-mismatch
  LDFLAG_XTC= -L. -lmolfile_plugin -lstdc++
  endif
- 
+
 @@ -60,18 +60,24 @@
  locate.o lsfit.o manta.o ncerror.o nml.o \
  params.o pdbout.o curpar.o screw.o setup.o smooth.o torp.o xtcerror.o $(XTC_OBJ)
- 
+
 +all: Cur+ Canal Canion
 +
- Cur+ : $(OBJ) 
+ Cur+ : $(OBJ)
 -	$(FC) $(OBJ) $(LDFLAG_NC) $(LDFLAG_XTC) -o Cur+
 +	$(FC) $(OBJ) $(LDFLAG_NC) $(LDFLAG_XTC) -lgfortran -o Cur+
 +Canal : canal.o
 +	$(FC) $(FFLAG) canal.o -o Canal
 +Canion : canion.o
 +	$(FC) $(FFLAG) canion.o -o Canion
- 
+
  .SUFFIXES : .o .c .f
  .c.o :
 -	$(CC) -cpp $(CFLAG) -c $<
-+	$(CC) -cpp $(CFLAG) -dM -c $<
- 
++	$(CC) -cpp $(CFLAG) -dM -I$PREFIX/include/ -DNETCDF -Wno-argument-mismatch -DXTC -fallow-argument-mismatch -c $<
+
  .f.o :
  	$(FC) -cpp $(FFLAG) $(FFLAG_NC) $(FFLAG_XTC) -c $<
- 
- clean: 
+
+ clean:
 -	rm -f Cur+ *.o *.a
 +	rm -f Cur+ Canal Canion *.o *.a
- 
+
  f77_molfile.o: f77_molfile.c plugins
  	$(CC) $(CFLAG) -Iinclude -c $<
