@@ -7,7 +7,7 @@ export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
 
-make  
+make -j ${CPU_COUNT}
 
 mkdir -p $PREFIX/bin
 
