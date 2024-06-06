@@ -1,7 +1,7 @@
-#! /bin/bash
-cargo build --release
+#!/bin/bash -euo
 
-# try to find where binary is. it seems that the binary
-# uses some other variable here: target/<other-var>/vartrix
-VARTRIX_BIN=$(find . -type f -name "vartrix")
-cp -a $VARTRIX_BIN ${PREFIX}/bin/vartrix
+mkdir -p ${PREFIX}/bin
+
+mv vartrix_* vartrix
+chmod 755 vartrix
+cp -f vartrix ${PREFIX}/bin
