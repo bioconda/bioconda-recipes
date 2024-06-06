@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eu -o pipefail
+set -xeu -o pipefail
 
 pushd hts-nim
 nimble install -y --verbose
