@@ -18,6 +18,7 @@ cp zol/plotTinyAAI.R ${PREFIX}/bin/
 cp zol/plotSegments.R ${PREFIX}/bin/
 cp zol/njTree.R ${PREFIX}/bin/
 cp zol/phyloHeatmap.R ${PREFIX}/bin/
+cp zol/salt_gc_vs_ribo_aai.R ${PREFIX}/bin/
 
 chmod +x ${PREFIX}/bin/runRBH
 chmod +x ${PREFIX}/bin/splitDiamondResults
