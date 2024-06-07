@@ -3,7 +3,7 @@ cp gemBS/Cargo.toml.in gemBS/Cargo.toml
 cargo build --release
 
 mkdir -p $PREFIX/bin
-cp -r gemBS $PREFIX/bin/gemBS
+cp -r target/release/build $PREFIX/bin/gemBS
 echo addi1
 ls -ahl
 echo addi2
