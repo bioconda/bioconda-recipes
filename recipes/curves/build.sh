@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [[ ${target_platform} =~ osx.* ]]; then
-	make FC="${FC}" CC="${CC}"
+	make FC="${FC}" CC="${CC}" OSX=1
 else
 	make FC="${FC}" CC="${FC}"
 fi
