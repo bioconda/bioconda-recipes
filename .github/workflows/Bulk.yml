@@ -65,12 +65,16 @@ jobs:
           eval "$(conda shell.bash hook)"
           conda activate bioconda
 
-          # see if we can convince SDK 10.13
-          MACOSX_SDK_VERSION=10.13
-          MACOSX_DEPLOYMENT_TARGET=10.13
+          # https://github.com/conda-forge/conda-forge-ci-setup-feedstock/
+          export MACOSX_SDK_VERSION=10.13
+          export MACOSX_DEPLOYMENT_TARGET=10.13
+          url="https://github.com/alexey-lysiuk/macos-sdk/releases/download/${MACOSX_SDK_VERSION}/MacOSX${MACOSX_SDK_VERSION}.tar.xz"
+          curl -L --output MacOSX${MACOSX_SDK_VERSION}.sdk.tar.xz "${url}"
+          export CONDA_BUILD_SYSROOT="${OSX_SDK_DIR}/MacOSX${MACOSX_SDK_VERSION}.sdk"
+          tar -xf MacOSX${MACOSX_SDK_VERSION}.sdk.tar.xz -C "$(dirname "$CONDA_BUILD_SYSROOT")"
 
-          # The SDK isn't actually cached, so reinstall it
-          run_conda_forge_build_setup
+          plutil -replace MinimumSDKVersion -string ${MACOSX_SDK_VERSION} $(xcode-select -p)/Platforms/MacOSX.platform/Info.plist
+          plutil -replace DTSDKName -string macosx${MACOSX_SDK_VERSION}internal $(xcode-select -p)/Platforms/MacOSX.platform/Info.plist
 
           echo '============'
           conda info --all
