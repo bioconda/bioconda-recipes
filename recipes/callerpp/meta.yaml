@@ -1,0 +1,39 @@
+{% set name = "callerpp" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/nh13/callerpp/archive/7eff69896f67ad99eccbf2197108df5dc78ca06b.tar.gz
+    sha256: 1e204930058bc642f7baaebdc88bdfdc01ae841626dd423c8f721e47a36d94ef
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - zlib
+  run:
+    - zlib
+    - spoa >= 4.1.4
+
+test:
+  commands:
+    - printf ">1\nAAAAAGAAAAA\nAAAAACAAAAA\nAAAAAGAAAAA" > ref.fa; ./bin/callerpp -a 2 
+
+about:
+  home: https://github.com/nh13/callerpp
+  license: MIT
+  license_file: LICENSE
+  summary: 'A simple consensus caller based on partial order alignment with spoa'
+
+extra:
+  recipe-maintainers:
+    - nh13
