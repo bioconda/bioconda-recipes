@@ -1,0 +1,36 @@
+diff --git 1/install_muse.sh 2/install_muse.sh
+index 8daad0f..4a2b04e 100755
+--- 1/install_muse.sh
++++ 2/install_muse.sh
+@@ -25,7 +25,7 @@ cd gperftools
+ git checkout gperftools-2.9.1
+ ./autogen.sh
+ ./configure --libdir="$PWD"
+-make j4
++make -j${CPU_COUNT}
+ make install
+ cp libtcmalloc_minimal.a ../lib/
+ cd ..
+@@ -43,21 +43,15 @@ git checkout 1.9
+ #git submodule update --init --recursive
+ autoreconf -i
+ ./configure
+-make -j4
++make -j${CPU_COUNT}
+ cp libhts.a ../lib/
+ 
+ cd ..
+ 
+-make
++CC="${CC} -O3 ${LDFLAGS}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS} -O3" \
++       CPP="${CXX}" CPPFLAGS="${CXXFLAGS} -I${PREFIX}/include" \
++       INCLUDES="${INCLUDES}" COMMONLIBS="${COMMONLIBS} -L${PREFIX}/lib" make -j ${CPU_COUNT}
+ 
+-#clean htslib and gperftools and boost libraries
+-rm -r boost_1_70_0/stage
+-
+-chmod -R 755 gperftools
+-rm -r gperftools
+-
+-chmod -R 755 htslib
+-rm -r htslib
