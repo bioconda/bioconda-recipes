@@ -1,5 +1,5 @@
 --- orig/Makefile	2024-06-05 10:08:58.000000000 +0200
-+++ Makefile	2024-06-10 22:33:05.000000000 +0200
++++ Makefile	2024-06-10 23:15:20.000000000 +0200
 @@ -2,7 +2,7 @@
  #### Makefile for Cur+ ####
  
@@ -29,7 +29,7 @@
  ## tarball, set NETCDF to the location of your installation,
  ## e.g.:
  ## NETCDF=/usr/local
-@@ -35,43 +35,54 @@
+@@ -35,48 +35,59 @@
  
  ###------------------ Gromacs XTC input support -------------------###
  ## To enable XTC support, uncomment the following line:
@@ -60,10 +60,10 @@
  LDFLAG_XTC= -L. -lmolfile_plugin -lstdc++
  endif
  
-+ifdef OSX
++
 +#LDFLAG_XTC= -L. -lmolfile_plugin -lc++
 +CFLAG= -I/Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include
-+endif
++
 +
  OBJ= aacur.o axis.o axref.o backbo.o bisection.o dotdelta.o eigen.o \
  findaxis.o getdate.o ionbld.o ionpar.o input.o intaxe.o intop.o \
@@ -96,3 +96,9 @@
  
  f77_molfile.o: f77_molfile.c plugins
  	$(CC) $(CFLAG) -Iinclude -c $<
+ 
+ plugins: gromacsplugin.C
+-	$(CC) -D"STATIC_PLUGIN" -Iinclude -D"VMDPLUGIN=molfile_gromacsplugin" -c gromacsplugin.C -o gromacsplugin-s.o
++	$(CXX) -D"STATIC_PLUGIN" -Iinclude -D"VMDPLUGIN=molfile_gromacsplugin" -c gromacsplugin.C -o gromacsplugin-s.o
+ 	ar cr libmolfile_plugin.a gromacsplugin-s.o
+ 
