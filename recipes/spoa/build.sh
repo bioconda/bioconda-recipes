@@ -18,4 +18,4 @@ cmake -S . -B build \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}"
 
-cmake --build build/ --target install -j 4 -v
+cmake --build build/ --target install -j ${CPU_COUNT} -v
