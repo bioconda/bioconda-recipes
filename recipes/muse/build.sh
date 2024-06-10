@@ -9,7 +9,7 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 
 CC="${CC} -O3 ${LDFLAGS}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS} -O3" \
-	CPP="${CPP}" CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include" \
+	CPP="${CXX}" CPPFLAGS="${CXXFLAGS} -I${PREFIX}/include" \
 	INCLUDES="${INCLUDES}" COMMONLIBS="${COMMONLIBS} -L${PREFIX}/lib" ./install_muse.sh
 
 chmod 755 MuSE
