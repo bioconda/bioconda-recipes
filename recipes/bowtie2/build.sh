@@ -31,3 +31,5 @@ done
 for d in $directories; do
     cp -rf $d ${PREFIX}/bin
 done
+
+make clean
