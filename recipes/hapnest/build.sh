@@ -83,10 +83,11 @@ chmod +x ${PREFIX}/bin
 ls -ltr $PREFIX/bin
 ls -ltr $SCRIPT_DIR
 
+julia -e "using Pkg; Pkg.instantiate(); using Conda; Conda.add(\"bed-reader\"; channel=\"conda-forge\")"
+ 
 
 julia -e "import Pkg; Pkg.add([\"Conda\", \"ArgParse\",\"YAML\", \"LsqFit\", \"DataFrames\", \"CSV\", \"CategoricalArrays\", \"DelimitedFiles\", \"Distances\", \"Distributions\", \"StatsPlots\", \"StatsBase\", \"PyCall\", \"Printf\", \"Plots\", \"Mmap\", \"MendelPlots\",  \"Impute\", \"GpABC\", \"ProgressMeter\"])"
 
-julia -e "using Pkg; Pkg.instantiate(); using Conda; Conda.add(\"bed-reader\"; channel=\"conda-forge\")"
 
 
 
