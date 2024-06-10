@@ -1,5 +1,5 @@
 #!/bin/sh
-set -euo pipefail
+set -xeuo pipefail
 
 mkdir -p $PREFIX/lib/auspice
 pushd $PREFIX/lib/auspice
