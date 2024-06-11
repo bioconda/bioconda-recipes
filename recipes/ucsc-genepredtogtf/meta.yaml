@@ -12,10 +12,13 @@ source:
   sha256: "{{ sha256 }}"
   patches:
     - "include.patch"
+    - htmshell.patch
 
 build:
   skip: True  # [osx]
-  number: 6
+  number: 7
+  run_exports:
+    - {{ pin_subpackage(package, max_pin=None) }}
 
 requirements:
   build:
@@ -37,10 +40,14 @@ requirements:
 
 test:
   commands:
-    # just check for existence, because the individual packages have no unified behavior
-    - which {{ program }}
+    # just check for existence and exec bit, because the individual packages have no unified behavior
+    - test -x ${PREFIX}/bin/{{ program }}
 
 about:
   home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
   license: "varies; see http://genome.ucsc.edu/license"
   summary: "Convert genePred table or file to gtf."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
