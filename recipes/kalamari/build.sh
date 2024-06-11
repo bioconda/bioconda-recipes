@@ -1,17 +1,18 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
+mkdir -pv $PREFIX/bin
+mkdir -pv $PREFIX/src
+mkdir -pv $PREFIX/share/${PKG_NAME}-${PKG_VERSION}
 
-EXES="downloadKalamari.pl downloadKalamari.sh generate_sepia_reference.py  getExactTaxonomy.pl  mobsuiteRepresentativeFasta.pl  validateTaxonomy.pl"
+# Add in the correct version for the build
+sed -i.bak "s/VERSION=.\+/VERSION=\"${PKG_VERSION}\"/" bin/downloadKalamari.sh
 
-for i in $EXES; do
-  chmod -v 755 bin/$i
-  cp -vf bin/$i $PREFIX/bin
+for i in bin/*.pl bin/*.sh bin/*.py; do
+  chmod -v 755 $i
+  cp -vf $i $PREFIX/bin/
 done
 
-# install and update locales (required for R to function properly)
-#apt-get -y install locales
-#LC_ALL=C.UTF-8
-#dpkg-reconfigure locales
-#echo 'export LC_ALL=C.UTF-8' >> ~/.bashrc
-
+for i in src/*.tsv; do 
+  cp -vf $i $PREFIX/src/
+done
+cp -rvf src/taxonomy $PREFIX/src/
