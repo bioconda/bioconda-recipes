@@ -1,0 +1,46 @@
+{% set version = "1.8.1" %}
+{% set sha256_jar = "595cf6ba5a60a23cf18005cdc2aed18b3f48470f5479aa4e5ee6f386d23e00bb" %}
+{% set sha256_src = "39bb318f590ba905c18c0ed42411c97ba482ed98059e456a0f5ec42ad915c8e1" %}
+
+package:
+  name: hmftools-cuppa
+  version: '{{ version }}'
+
+source:
+  - folder: jar
+    url: https://github.com/hartwigmedical/hmftools/releases/download/cuppa-v{{ version }}/cuppa_v{{ version }}.jar
+    sha256: '{{ sha256_jar }}'
+  - folder: src
+    url: https://github.com/hartwigmedical/hmftools/archive/refs/tags/cuppa-v{{ version }}.tar.gz
+    sha256: '{{ sha256_src }}'
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("hmftools-cuppa", max_pin="x.x") }}
+
+requirements:
+  run:
+    - openjdk >=8
+    - r-base >=4
+    - r-cowplot
+    - r-ggplot2
+    - r-gridextra
+    - r-stringi
+    - r-tidyr
+    - matplotlib-base >=3.3,<4
+    - numpy >=1.19,<2
+    - pandas >=1.1,<2
+    - scipy >=1,<2
+    - seaborn >=0.11,<1
+
+test:
+  commands:
+    - 'cuppa | grep Cuppa'
+
+about:
+  home: https://github.com/hartwigmedical/hmftools/blob/master/cuppa/README.md
+  license: GPL-3.0-only
+  license_family: GPL3
+  summary: Predict tissue of origin for tumor samples from WGTS data.

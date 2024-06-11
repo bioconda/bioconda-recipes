@@ -1,0 +1,46 @@
+{% set name = "gfftk" %}
+{% set version = "24.2.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/gfftk-{{ version }}.tar.gz
+  sha256: 053a95204cfcb24b47e0dc23e5983b57cdc0023a37763a4c80a83d7d92598056
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - gfftk = gfftk.__main__:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('gfftk', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - natsort
+    - numpy
+    - table2asn
+
+test:
+  imports:
+    - gfftk
+  commands:
+    - gfftk --help
+
+about:
+  home: https://github.com/nextgenusfs/gfftk
+  summary: 'GFFtk: genome annotation GFF3 tool kit'
+  license: BSD-2-Clause
+  license_family: BSD
+  license_file: LICENSE.md
+
+extra:
+  recipe-maintainers:
+    - nextgenusfs
