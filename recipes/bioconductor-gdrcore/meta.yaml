@@ -1,0 +1,63 @@
+{% set version = "1.0.0" %}
+{% set name = "gDRcore" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 76f729e9fce669107120d0ec73c32bfc
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-gdrcore", max_pin="x.x") }}'
+# Suggests: BiocStyle, gDRstyle (>= 0.99.15), gDRimport (>= 0.99.10), gDRtestData (>= 0.99.20), IRanges, knitr, pkgbuild, qs, testthat, yaml
+requirements:
+  host:
+    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
+    - 'bioconductor-bumpymatrix >=1.10.0,<1.11.0'
+    - 'bioconductor-gdrutils >=1.0.0,<1.1.0'
+    - 'bioconductor-multiassayexperiment >=1.28.0,<1.29.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - r-base
+    - r-checkmate
+    - r-data.table
+    - r-futile.logger
+    - r-purrr
+    - r-stringr
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
+    - 'bioconductor-bumpymatrix >=1.10.0,<1.11.0'
+    - 'bioconductor-gdrutils >=1.0.0,<1.1.0'
+    - 'bioconductor-multiassayexperiment >=1.28.0,<1.29.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - r-base
+    - r-checkmate
+    - r-data.table
+    - r-futile.logger
+    - r-purrr
+    - r-stringr
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'Processing functions and interface to process and analyze drug dose-response data'
+  description: 'This package contains core functions to process and analyze drug response data. The package provides tools for normalizing, averaging, and calculation of gDR metrics data. All core functions are wrapped into the pipeline function allowing analyzing the data in a straightforward way.'
+

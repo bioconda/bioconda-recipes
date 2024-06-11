@@ -1,25 +1,26 @@
-{% set version="1.2.5" %}
+{% set version="1.2.7" %}
 package:
   name: wisecondorx
   version:  {{ version }}
 
 source:
   url: https://github.com/CenterForMedicalGeneticsGhent/wisecondorX/archive/v{{ version }}.tar.gz
-  sha256: be60c95630cd89977f445b68f11560360ef10d6c994ea3028c0d0295fc7452c9
+  sha256: 4597377e664afd5b4d78f92061d854186bbaba92ba9951f034e9e7ce4c2d1c29
 
 build:
   number: 0
   noarch: python
   script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  run_exports:
+    - {{ pin_subpackage('wisecondorx', max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.6
     - setuptools
   run:
-    - python
+    - python >=3.6
     - pysam
-    - futures # [not py3k]
     - scipy
     - scikit-learn
     - numpy
@@ -30,7 +31,7 @@ requirements:
 
 test:
   imports:
-    - wisecondorX
+    - wisecondorx
   commands:
     - WisecondorX --help
     - WisecondorX convert --help
