@@ -1,23 +1,35 @@
-{% set version = '4.3.6' %}
+{% set name = 'sortmerna' %}
+{% set version = '4.3.7' %}
 
 package:
-  name: sortmerna
+  name: {{ name }}
   version: {{ version }}
-  
-# TODO:
-#   - for now using pre-built binaries due complexities with C++17 and the dependencies.
+
 
 source:
-  url: https://github.com/biocore/sortmerna/releases/download/v{{ version }}/sortmerna-{{ version }}-Linux.tar.gz
-  sha256: 6a6b962b4fe1dd62b01a5ec9a8ccfd80485d3460eed9235291f9db5231566800
+  url: https://github.com/sortmerna/sortmerna/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 6b62def30704ea956e1de060b602f9bebc8f2ba68107c59329b332500997b1d2
 
 build:
   number: 0
-  binary_relocation: False
   skip: true # [osx]
-  script: |  # [not win]
-    [ -d "${PREFIX}/bin" ] || mkdir -p "${PREFIX}/bin"
-    mv ./bin/sortmerna $PREFIX/bin
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - ninja
+  host:
+    - pyyaml
+    - jinja2
+    - requests
+  run:
+    - pyyaml
+    - jinja2
+    - requests
 
 test:
   commands:
@@ -26,12 +38,15 @@ test:
 
 about:
   home: http://bioinfo.lifl.fr/RNA/sortmerna
-  license: LGPL
+  license: LGPL-3.0-only
+  license_family: LGPL
+  license_file: LICENSE.LESSER.txt
   summary: SortMeRNA is a biological sequence analysis tool for filtering, mapping and OTU-picking NGS reads.
+  dev_url: https://github.com/sortmerna/sortmerna
 
 extra:
-  skip-lints:
-    - should_be_noarch_generic
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:sortmerna
     - doi:10.1093/bioinformatics/bts611

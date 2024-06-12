@@ -1,0 +1,50 @@
+{% set name = "GMM-Demux" %}
+{% set version = "0.2.2.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/GMM_Demux-{{ version }}.tar.gz
+  sha256: 989092feea7a61e309f6a75ce77246f619c2eff997f1f7a1a7457dfaf5a10ecf
+
+build:
+  entry_points:
+    - GMM-demux = GMM_Demux.GMM_Demux:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('gmm-demux', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - pandas >=1.4.3
+    - numpy >=1.22.4
+    - scipy >=1.12.0
+    - tabulate
+    - bitvector
+    - scikit-learn
+
+test:
+  imports:
+    - GMM_Demux
+  commands:
+    - GMM-demux --help
+
+about:
+  home: https://github.com/CHPGenetics/GMM-demux
+  summary: GMM-Demux is a Gaussian-Mixture-Model-based software for processing sample barcoding data (cell hashing and MULTI-seq).
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/CHPGenetics/GMM-demux
+
+extra:
+  identifiers:
+    - doi:10.1186/s13059-020-02084-2
