@@ -16,10 +16,10 @@ fi
 cmake -S . -B build \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_C_COMPILER="${CC}" \
-	-DCMAKE_CXX_FLAGS="-O3 -D_FILE_OFFSET_BITS=64 -I${PREFIX}/include ${LDFLAGS}" \
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64 -I${PREFIX}/include ${LDFLAGS}" \
 	-DEXTRA_FLAGS="${EXTRA_FLAGS}" \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DOPENMP=TRUE
 
-cmake --build build/ --target install -v
+cmake --build build/ --target install -j ${CPU_COUNT} -v
