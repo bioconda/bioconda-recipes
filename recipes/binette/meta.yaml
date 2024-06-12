@@ -1,0 +1,50 @@
+{% set name = "Binette" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+source:
+  url: https://github.com/genotoul-bioinfo/{{ name|lower }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 121cff275fac2bbec2062863fa074c7f4f2a16eb52cada89bc46c87b7429d63d
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed -vv .
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+
+  run:
+    - python >=3.7
+    - numpy =1.19.2
+    - diamond =2.0.4
+    - pandas =1.4.0
+    - checkm2
+    - requests
+    - packaging
+    - tqdm
+    - networkx >=3
+    - pyfastx
+    - pyrodigal >=2
+
+test:
+  imports:
+    - binette
+  commands:
+    - binette -h
+
+about:
+  home: https://github.com/genotoul-bioinfo/{{ name|lower }}
+  doc_url: https://binette.readthedocs.io
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A fast and accurate binning refinement tool to constructs high quality MAGs from the output of multiple binning tools."
