@@ -1,6 +1,8 @@
+#!/bin/bash
+
 mkdir build
 cd build
-cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX
+
+cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DCIFPP_DOWNLOAD_CCD=OFF -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCIFPP_INSTALL_UPDATE_SCRIPT=OFF ..
 cmake --build . --config Release
-ctest -C Release
-cmake --install . --prefix $PREFIX
+cmake --install . --prefix ${PREFIX}
