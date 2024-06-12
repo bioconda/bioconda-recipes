@@ -11,6 +11,7 @@ cp $SRC_DIR/initdb.py $PREFIX/bin
 df -h
 cp $SRC_DIR/master.py $PREFIX/bin
 cp $SRC_DIR/dual.py $PREFIX/bin
+df -h
 cp $SRC_DIR/triple.py $PREFIX/bin
 cp $SRC_DIR/custom.py $PREFIX/bin
 df -h
