@@ -1,9 +1,12 @@
-#!/usr/bin/env bash
-
-set -xe
-
-python setup.py -n all
+#!/bin/bash -xe
 
 mkdir -p ${PREFIX}/bin
 
-cp dist/bin/sortmerna ${PREFIX}/bin/
+if [[ "$(uname)" == "Darwin" ]]; then
+    cp -f sortmerna-Darwin/bin/sortmerna "${PREFIX}/bin"
+else
+    cd sortmerna
+    python setup.py -n all
+    chmod 0755 dist/bin/sortmerna
+    cp -f dist/bin/sortmerna "${PREFIX}/bin"
+fi
