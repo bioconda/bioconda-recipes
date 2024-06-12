@@ -1,30 +1,33 @@
+{% set version="1.0.1" %}
+
 package:
   name: bam-readcount
-  version: "0.8"
+  version: {{ version }}
 
 source:
-  url: https://github.com/genome/bam-readcount/archive/v0.8.0.tar.gz
-  md5: 58d72588866f16f658ce4f40a3809af9
+  url: https://github.com/genome/bam-readcount/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 8ebf84d9efee0f2d3b43f0452dbf16b27337c960e25128f6a7173119e62588b8
+  patches:
+    - 0001_configure_boost_toolset.patch
 
 build:
-  number: 5
+  
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage("bam-readcount", max_pin="x.x") }}
 
 requirements:
   build:
+    - python =2.7
     - make
     - cmake >=2.8.3
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
     - zlib
-    - ncurses
-    - perl
-    - python
   run:
-    - python
     - zlib
-    - ncurses
-    - perl
 
 test:
   commands:

@@ -1,5 +1,5 @@
-#!/bin/bash
+#!/bin/sh
 
 cd $PREFIX
 cmake $SRC_DIR
-make -j 2
+make
