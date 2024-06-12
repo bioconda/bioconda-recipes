@@ -1,0 +1,52 @@
+{% set name = "metabolishmm" %}
+{% set version = "2.22" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/31/eb/adec73d29323fb8ef4194dcd48a9d2545e81900e2fadd7821bce02ac94f9/metabolisHMM-{{ version }}.tar.gz
+  sha256: ea09df216c0fb79a961f405ccc903e11f87da6b9e85e1b41cdaea509892246b5
+
+build:
+  number: 0
+  script: "touch requirements.txt && {{ PYTHON }} -m pip install --ignore-installed --no-deps -vv ."
+  noarch: python
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - python >=3.6
+    - biopython
+    - prodigal >=2.6.2
+    - hmmer ==3.2.1
+    - fastani >=1.2
+    - fasttree >=2.1.9
+    - matplotlib-base
+    - pandas
+    - seaborn
+    - mafft
+    - numpy
+    - scipy
+    - r-tidyverse
+    - r-reshape2
+
+test:
+  commands:
+    - single-marker-phylogeny -h | grep metabolisHMM
+    - create-genome-phylogeny -h | grep metabolisHMM
+    - summarize-metabolism -h | grep metabolisHMM
+    - search-custom-markers -h | grep metabolisHMM
+
+about:
+  home: https://github.com/elizabethmcd/metabolisHMM/wiki
+  license: GPL3
+  license_family: GPL3
+  summary: 'Tool for constructing phylogenies and summarizing metabolic characteristics based on curated and custom profile HMMs'
+
+extra:
+  identifiers:
+    - doi:10.1101/2019.12.20.884627
