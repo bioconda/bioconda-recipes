@@ -1,0 +1,45 @@
+{% set name = "cstag-cli" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cstag_cli-{{ version }}.tar.gz
+  sha256: 8c91f12b8b4b314f176dd24208dcb567ce78da6207cbcc5588952824e38f9a45
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.7,<4.0
+    - poetry-core >=1.0.0
+    - pip
+  run:
+    - python >=3.7.0,<4.0.0
+    - pysam >=0.19.0
+    - cstag >=0.6.2
+
+test:
+  imports:
+    - cstag_cli
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/akikuno/cstag-cli
+  summary: Command line interface of cstag to manipulate the minimap2's CS tag
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - akikuno

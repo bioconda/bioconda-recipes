@@ -1,5 +1,5 @@
 {% set name = "sinto" %}
-{% set version = "0.9.0" %}
+{% set version = "0.10.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: d6c725807bb0ca8ef62a863e490c25080d46d4b85b6e2ed5808b29ba7b52a773
+  sha256: ac54280a62db55d139635cf96a2a36e40857282f660a67c1ce5d4a31115beae7
 
 build:
   number: 0
@@ -15,19 +15,21 @@ build:
   entry_points:
     - sinto = sinto.arguments:main
   script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage('sinto', max_pin="x") }}
 
 requirements:
   host:
-    - numpy
+    - python >=3.8
     - pip
-    - pysam >=0.14
-    - python
-    - scipy
+    - wheel
   run:
+    - python >=3.8
+    # pysam restricted due to cython requirement introduced in 0.21.0
+    - pysam >=0.14,<0.21
     - numpy
-    - pysam >=0.14
-    - python
     - scipy
+    - umi_tools
 
 test:
   imports:
@@ -36,10 +38,13 @@ test:
     - sinto --help
 
 about:
-  home: https://timoast.github.io/sinto/ 
+  home: https://timoast.github.io/sinto/
   license: MIT
   license_family: MIT
+  license_file: LICENSE
   summary: "sinto: tools for single-cell data processing"
+  dev_url: https://github.com/timoast/sinto
+  doc_url: https://timoast.github.io/sinto/
 
 extra:
   recipe-maintainers:

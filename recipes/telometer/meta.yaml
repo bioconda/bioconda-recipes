@@ -1,0 +1,48 @@
+{% set name = "telometer" %}
+{% set version = "0.5" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://test.pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 6225b28342a8120ed2dc138cfc30c07f2c887b1ac996d27eeddee62544a37572
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - telometer=telometer:calculate_telomere_length
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - python
+    - pysam
+    - pandas
+
+test:
+  imports:
+    - telometer
+  commands:
+    - telometer --help
+
+about:
+  home: https://github.com/santiago-es/Telometer
+  license: MIT
+  license_file: LICENSE.txt
+  summary: "Tool for measuring telomeres from long-read data."
+  dev_url: https://github.com/santiago-es
+
+
+
+extra:
+  recipe-maintainers:
+    - santiago-es
