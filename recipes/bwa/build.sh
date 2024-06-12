@@ -1,9 +1,6 @@
 #!/bin/bash
 
-export C_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-
-make CFLAGS="${CFLAGS} -fcommon"
+make CC="$CC" CFLAGS="$CFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS"
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/share/man/man1
 cp bwa $PREFIX/bin
