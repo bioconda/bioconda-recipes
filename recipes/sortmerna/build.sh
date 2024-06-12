@@ -3,6 +3,7 @@
 mkdir -p ${PREFIX}/bin
 
 if [[ "$(uname)" == "Darwin" ]]; then
+    chmod 0755 sortmerna-Darwin/bin/sortmerna
     cp -f sortmerna-Darwin/bin/sortmerna "${PREFIX}/bin"
 else
     cd sortmerna
