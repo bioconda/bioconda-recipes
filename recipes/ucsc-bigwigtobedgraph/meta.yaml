@@ -12,10 +12,13 @@ source:
   sha256: {{ sha256 }}
   patches:
     - include.patch
+    - htmshell.patch
 
 build:
-  number: 0
+  number: 1
   skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(package, max_pin=None) }}
 
 requirements:
   build:
@@ -38,10 +41,14 @@ requirements:
 
 test:
   commands:
-    # just check for existence, because the individual packages have no unified behavior
-    - which {{ program }}
+    # just check for existence + exec bit, because the individual packages have no unified behavior
+    - test -x $PREFIX/bin/{{ program }}
 
 about:
   home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
   license: "varies; see http://genome.ucsc.edu/license"
   summary: "Convert from bigWig to bedGraph format."
+
+extra:
+  additional-platforms:
+    - linux-aarch64

@@ -1,5 +1,5 @@
 {% set name = "ppx" %}
-{% set version = "1.3.0" %}
+{% set version = "1.4.4" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,22 +7,24 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: a94f94071fca29e98fc13e4a306fc0c4c1deee2306dea9680e8a292a5c8b4376
+  sha256: 97eacbc9272faf98ab2fa16f0949eb55bd0eab5cecf9e8381321e754808e2cd8
 
 build:
   number: 0
   noarch: python
   entry_points:
     - ppx = ppx.ppx:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('ppx', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.7
+    - python >=3.10
     - setuptools_scm >=6.4.2
   run:
-    - python >=3.7
+    - python >=3.10
     - requests >=2.23.0
     - tqdm >=4.60.0
     - cloudpathlib >=0.7.1
@@ -36,6 +38,7 @@ test:
 about:
   home: "https://github.com/wfondrie/ppx"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
   summary: "A Python interface to proteomics data repositories"
   doc_url: "https://ppx.readthedocs.io"
