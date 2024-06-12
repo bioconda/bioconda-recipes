@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 mkdir -p $PREFIX/bin
 
@@ -7,4 +7,5 @@ cd build
 cmake ..
 make -j${CPU_COUNT} ${VERBOSE_AT}
 
-cp bin/mGEMS $PREFIX/bin
+chmod 755 bin/mGEMS
+cp -f bin/mGEMS $PREFIX/bin
