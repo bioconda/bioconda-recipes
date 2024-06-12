@@ -1,5 +1,5 @@
-{% set version = "0.7.3" %}
-{% set sha256 = "0ed76b2be37bbb6529f3cefbd3b8587f33ddb90afdd53931d99230b8af642668" %}
+{% set version = "1.0" %}
+{% set sha256 = "c00013ba577f7be64f0a20975ec16a86cd8719aab860d170a8c095d821b90116" %}
 
 package:
   name: harpy
@@ -17,20 +17,27 @@ build:
     - /lib64/libc.so.6
   run_exports:
     - {{ pin_subpackage('harpy', max_pin="x.x") }}
+  script: |
+    mkdir -p ${PREFIX}/bin
+    "${CXX}" src/harpy/bin/extractReads.cpp -O3 -o ${PREFIX}/bin/extractReads
+    ${PYTHON} -m pip install . --no-deps -vvv
+    chmod +x src/harpy/bin/* 
+    cp src/harpy/bin/* ${PREFIX}/bin/
 
 requirements:
+  build:
+    - {{ compiler('cxx') }}
   host:
-    - python =3.10
+    - python =3.12
     - pip
   run:
-    - bcftools =1.19
-    - multiqc
+    - apptainer
+    - bcftools =1.20
     - pandas
-    - pysam =0.22
-    - python =3.10
+    - python >3.10
     - rich-click
-    - snakemake-minimal
-    - samtools
+    - snakemake-minimal >7
+    - samtools =1.20
     - seqtk
     - tabix
 

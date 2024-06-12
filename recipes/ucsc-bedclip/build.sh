@@ -2,8 +2,8 @@
 
 if [ $(arch) = "aarch64" ]
 then
-    export CFLAGS+=" -O3 -mcpu=neoverse-n1 "
-    export CPPFLAGS+=" -O3 -mcpu=neoverse-n1 "
+    export CFLAGS+=" -O3 "
+    export CPPFLAGS+=" -O3 "
 else
     export MACHTYPE=x86_64
 fi
