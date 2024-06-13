@@ -1,4 +1,3 @@
-df -h
 mkdir -p $PREFIX/bin
 cp -rf $SRC_DIR/bin $PREFIX/bin
 cp -rf $SRC_DIR/scripts $PREFIX/bin
