@@ -1,5 +1,5 @@
---- Makefile_orig	2024-06-05 10:08:58.000000000 +0200
-+++ Makefile	2024-06-06 10:55:53.000000000 +0200
+--- orig/Makefile	2016-10-27 16:11:30.000000000 +0200
++++ Makefile	2024-06-12 10:10:43.000000000 +0200
 @@ -2,7 +2,7 @@
  #### Makefile for Cur+ ####
  
@@ -29,7 +29,7 @@
  ## tarball, set NETCDF to the location of your installation,
  ## e.g.:
  ## NETCDF=/usr/local
-@@ -35,23 +35,23 @@
+@@ -35,48 +35,59 @@
  
  ###------------------ Gromacs XTC input support -------------------###
  ## To enable XTC support, uncomment the following line:
@@ -60,7 +60,13 @@
  LDFLAG_XTC= -L. -lmolfile_plugin -lstdc++
  endif
  
-@@ -60,18 +60,24 @@
++
++#LDFLAG_XTC= -L. -lmolfile_plugin -lc++
++CFLAG= -I/Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include
++
++
+ OBJ= aacur.o axis.o axref.o backbo.o bisection.o dotdelta.o eigen.o \
+ findaxis.o getdate.o ionbld.o ionpar.o input.o intaxe.o intop.o \
  locate.o lsfit.o manta.o ncerror.o nml.o \
  params.o pdbout.o curpar.o screw.o setup.o smooth.o torp.o xtcerror.o $(XTC_OBJ)
  
@@ -69,7 +75,7 @@
 +all: Cur+ Canal Canion
 +
 +Cur+ : $(OBJ)
-+	$(FC) $(OBJ) $(LDFLAG_NC) $(LDFLAG_XTC) -lgfortran -o Cur+
++	$(FC) $(OBJ) $(LDFLAG_NC) -L/usr/local/lib/gcc/current $(LDFLAG_XTC) -lgfortran -o Cur+
 +Canal : canal.o
 +	$(FC) $(FFLAG) canal.o -o Canal
 +Canion : canion.o
@@ -78,7 +84,7 @@
  .SUFFIXES : .o .c .f
  .c.o :
 -	$(CC) -cpp $(CFLAG) -c $<
-+	$(CC) -cpp $(CFLAG) -Iinclude -dM -c $<
++	$(CC) $(CFLAG)  -Iinclude -dM -c $<
  
  .f.o :
  	$(FC) -cpp $(FFLAG) $(FFLAG_NC) $(FFLAG_XTC) -c $<
@@ -89,4 +95,11 @@
 +	rm -f Cur+ Canal Canion *.o *.a
  
  f77_molfile.o: f77_molfile.c plugins
- 	$(CC) $(CFLAG) -Iinclude -c $<
+-	$(CC) $(CFLAG) -Iinclude -c $<
++	$(CC) $(CFLAG) -Iinclude -dM -c $<
+ 
+ plugins: gromacsplugin.C
+-	$(CC) -D"STATIC_PLUGIN" -Iinclude -D"VMDPLUGIN=molfile_gromacsplugin" -c gromacsplugin.C -o gromacsplugin-s.o
++	$(CXX) -D"STATIC_PLUGIN" -Iinclude -dM -D"VMDPLUGIN=molfile_gromacsplugin" -c gromacsplugin.C -o gromacsplugin-s.o
+ 	ar cr libmolfile_plugin.a gromacsplugin-s.o
+ 
