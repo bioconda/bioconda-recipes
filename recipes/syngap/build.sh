@@ -10,3 +10,5 @@ cp $SRC_DIR/custom.py $PREFIX/bin
 cp $SRC_DIR/genepair.py $PREFIX/bin
 cp $SRC_DIR/evi.py $PREFIX/bin
 cp $SRC_DIR/eviplot.py $PREFIX/bin
+cd $PREFIX/bin/bin
+tar zxvf SwissProt.tar.gz
