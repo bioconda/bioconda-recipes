@@ -1,0 +1,42 @@
+From e0b9f80ad9b6dedb26f41c49624f8ae10d80b685 Mon Sep 17 00:00:00 2001
+From: Nils Homer <nilshomer@gmail.com>
+Date: Thu, 13 Jun 2024 15:23:36 -0700
+Subject: [PATCH 2/2] debug v1
+
+---
+ src/caller.cpp | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/caller.cpp b/src/caller.cpp
+index 59e4c9b..29ef85d 100644
+--- a/src/caller.cpp
++++ b/src/caller.cpp
+@@ -289,7 +289,9 @@ int main(int argc, char** argv) {
+     std::ifstream in;
+     std::istream *stream = &std::cin;
+ 
++	fprintf(stderr, "start of loop\n");
+     while ((c = getopt_long(argc, argv, "i:A:B:O:a:r:cmlphv", options, nullptr)) != -1) {
++		fprintf(stderr, "start of inner: c is int=%d char=%c\n", (int)c, (char)c);
+         if ('i' == c)      opt->input        = optarg;
+         else if ('A' == c) opt->match        = atoi(optarg);
+         else if ('B' == c) opt->mismatch     = atoi(optarg);
+@@ -305,11 +307,15 @@ int main(int argc, char** argv) {
+             return 0;
+         }
+         else {
++			fprintf(stderr, "into help\n");
+             help(opt);
+             return c == 'h' ? 0 : -1;
+         }
++		fprintf(stderr, "end of inner\n");
+     }
++	fprintf(stderr, "end of loop\n");
+     if (optind != argc) {
++		fprintf(stderr, "into extra args\n");
+         help(opt);
+         fprintf(stderr, "Error: extra arguments found:");
+         while (optind < argc) {
+-- 
+2.39.3 (Apple Git-146)
+
