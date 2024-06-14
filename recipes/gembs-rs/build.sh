@@ -10,5 +10,7 @@ echo addi2
 ls -ahl target
 echo addi3
 ls -ahl target/release
+echo addi4
+ls -ahl target/release/build
 ls $PREFIX/bin/
 chmod +x $PREFIX/bin/gemBS
