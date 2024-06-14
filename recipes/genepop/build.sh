@@ -3,7 +3,7 @@
 set -xe
 
 cd src
-${CXX} -DNO_MODULES -o Genepop GenepopS.cpp -O3
+${CXX} -DNO_MODULES -o Genepop GenepopS.cpp -O3 -std=c++14
 
 mkdir -p $PREFIX/bin
 cp Genepop $PREFIX/bin
