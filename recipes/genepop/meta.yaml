@@ -1,6 +1,10 @@
+{% set genepopS_version = "4.8.2" %}
+{% set r_genepop_version = "1.2.2" %}
+{% set sha256 = "d8ca49a9c11e267305a85a97a8b2d6ada39d814b474a4d58d2c54edf66fb75e9" %}
+
 package:
   name: genepop
-  version: "4.8.2"
+  version: "{{ genepopS_version }}"
 # After talking with the author, we decided that, for existing genepop
 # versions, we would take the out from the exinsting R packages.
 # So, the R package is 1.2.2 but Genepop is 4.8.2. People do not really know
@@ -16,23 +20,24 @@ build:
     - {{ pin_subpackage("genepop", max_pin="x") }}
 
 source:
-  url: https://github.com/cran/genepop/archive/refs/tags/1.2.2.tar.gz
-  sha256: d8ca49a9c11e267305a85a97a8b2d6ada39d814b474a4d58d2c54edf66fb75e9
+  url: https://github.com/cran/genepop/archive/refs/tags/{{ r_genepop_version }}.tar.gz
+  sha256: {{ sha256 }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-  run:
 
 about:
-  home: http://kimura.univ-montp2.fr/~rousset/Genepop.htm
-  license: CeCILL
-  summary: The Genepop population genetics package.
+  home: https://f-rousset.r-universe.dev/genepop
+  license: CeCILL-2
+  summary: Population Genetic Data Analysis package.
+  dev_url: https://github.com/cran/genepop
+  doc_url: https://f-rousset.r-universe.dev/genepop
 
 test:
   commands:
-    # Expected output is the version and an error message
-    - echo does_not_exist.txt | Genepop | grep "Genepop version"
+    # Pass a non-existing input file and "enter" 9 to select to exit from the interactive program
+    - echo -e "does_not_exist.txt\n9" | Genepop | grep "Genepop version {{ genepopS_version }}"
 
 extra:
   additional-platforms:
