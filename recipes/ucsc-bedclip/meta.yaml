@@ -1,5 +1,5 @@
-{% set package = "ucsc-bedsort" %}
-{% set program = "bedSort" %}
+{% set package = "ucsc-bedclip" %}
+{% set program = "bedClip" %}
 {% set version = "377" %}
 {% set sha256 = "932f149c19641064a9cd3f2382cbb54b45a9292b8444792872d531346925d676" %}
 
@@ -12,10 +12,13 @@ source:
   sha256: "{{ sha256 }}"
   patches:
     - "include.patch"
+    - "patch1.patch"
 
 build:
   skip: True  # [osx]
-  number: 5
+  number: 4
+  run_exports:
+    - {{ pin_subpackage("ucsc-bedclip", max_pin=None) }}
 
 requirements:
   build:
@@ -27,7 +30,6 @@ requirements:
     - mysql-connector-c
     - openssl
     - zlib
-
   run:
     - libpng
     - libuuid
@@ -40,7 +42,11 @@ test:
     # just check for existence, because the individual packages have no unified behavior
     - which {{ program }}
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+
 about:
   home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
   license: "varies; see http://genome.ucsc.edu/license"
-  summary: "Sort a .bed file by chrom,chromStart"
+  summary: "Remove lines from bed file that refer to off-chromosome locations."
