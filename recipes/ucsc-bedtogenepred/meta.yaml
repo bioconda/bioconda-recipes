@@ -1,7 +1,7 @@
 {% set package = "ucsc-bedtogenepred" %}
 {% set program = "bedToGenePred" %}
-{% set version = "466" %}
-{% set sha256 = "5ed312771de13b18a72f3f3f615ef1bc0b8be9dcd647b8dde05dc60d4630e9fb" %}
+{% set version = "377" %}
+{% set sha256 = "932f149c19641064a9cd3f2382cbb54b45a9292b8444792872d531346925d676" %}
 
 package:
   name: "{{ package }}"
@@ -14,9 +14,8 @@ source:
     - "include.patch"
 
 build:
-  number: 0
-  run_exports:
-    - {{ pin_subpackage('ucsc-bedtogenepred', max_pin=None) }}
+  skip: True  # [osx]
+  number: 4
 
 requirements:
   build:
@@ -26,26 +25,22 @@ requirements:
     - libpng
     - libuuid
     - mysql-connector-c
-    - libopenssl-static
+    - openssl
     - zlib
+
   run:
     - libpng
     - libuuid
     - mysql-connector-c
-    - libopenssl-static
+    - openssl
+    - zlib
 
 test:
   commands:
-    # just check for existence and exec bit, because the individual packages have no unified behavior
-    - test -x ${PREFIX}/bin/{{ program }}
+    # just check for existence, because the individual packages have no unified behavior
+    - which {{ program }}
 
 about:
-  home: "https://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "Varies; see https://genome.ucsc.edu/license"
+  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
+  license: "varies; see http://genome.ucsc.edu/license"
   summary: "convert bed format files to genePred format"
-  dev_url: "https://github.com/ucscGenomeBrowser/kent"
-  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/master/README"
-
-extra:
-  additional-platforms:
-    - linux-aarch64
