@@ -2,8 +2,8 @@
 
 set -xe
 
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+export CFLAGS="${CFLAGS} -I$PREFIX/include"
+export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
 mkdir -p $PREFIX/bin
@@ -13,11 +13,11 @@ case $(uname -m) in
         ARCH_OPTS="-msse4.2 -mpopcnt"
         ;;
     *)
-        ARCH_OPTS=""
+        ARCH_OPTS="armv8-a"
         ;;
 esac
 
 sed -i -e "s/-march=native/${ARCH_OPTS}/g" Makefile
-make -j ${CPU_COUNT}
+make -j ${CPU_COUNT} CC="${GCC}"
 make install PREFIX=$PREFIX
 
