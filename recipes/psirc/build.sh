@@ -4,6 +4,6 @@ cd psirc-quant
 
 mkdir release
 cd release
-cmake ..
+cmake ..  -DCMAKE_INSTALL_PREFIX=$PREFIX
 make psirc-quant
 make install
