@@ -1,5 +1,5 @@
 {% set name = "samap" %}
-{% set version = "1.0.15" %}
+{% set version = "1.0.16" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,24 +7,30 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "a1358b997d41c062a838e963fbdeb437af66007b5b4580a2cbea59cdc6a774fa"
+  sha256: "61d68f708af8cb1dadbf70aa9afe672016af7f93a580b08a8d9c7b7d9c75b9fd"
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('samap', max_pin="x") }}
 
 requirements:
   host:
-    - python <3.8
+    - python >=3.7
   run:
     - dill
     - h5py <=2.10
     - hnswlib
     - leidenalg
-    - python <3.8
-    - sam-algorithm >=0.8.4
+    - python >=3.7
+    - sam-algorithm ==1.0.2
     - scanpy
+    - scipy <1.13.0
+    - numpy ==1.23.5
+    - numba ==0.56.3
+    - fast-histogram
 
 test:
   imports:
@@ -36,6 +42,7 @@ about:
   home: "https://github.com/atarashansky/SAMap"
   license: "MIT"
   license_family: "MIT"
+  license_file: LICENSE
   summary: "The SAMap algorithm"
 
 extra:
