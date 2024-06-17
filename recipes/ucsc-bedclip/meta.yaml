@@ -1,7 +1,7 @@
-{% set package = "ucsc-bedclip" %}
-{% set program = "bedClip" %}
-{% set version = "466" %}
-{% set sha256 = "5ed312771de13b18a72f3f3f615ef1bc0b8be9dcd647b8dde05dc60d4630e9fb" %}
+{% set package = "ucsc-bedsort" %}
+{% set program = "bedSort" %}
+{% set version = "377" %}
+{% set sha256 = "932f149c19641064a9cd3f2382cbb54b45a9292b8444792872d531346925d676" %}
 
 package:
   name: "{{ package }}"
@@ -12,13 +12,10 @@ source:
   sha256: "{{ sha256 }}"
   patches:
     - "include.patch"
-    - "patch1.patch"
 
 build:
   skip: True  # [osx]
-  number: 0
-  run_exports:
-    - {{ pin_subpackage("ucsc-bedclip", max_pin=None) }}
+  number: 5
 
 requirements:
   build:
@@ -28,26 +25,22 @@ requirements:
     - libpng
     - libuuid
     - mysql-connector-c
-    - libopenssl-static
+    - openssl
     - zlib
+
   run:
     - libpng
     - libuuid
     - mysql-connector-c
-    - libopenssl-static
+    - openssl
+    - zlib
 
 test:
   commands:
-    # just check for existence and exec bit, because the individual packages have no unified behavior
-    - test -x ${PREFIX}/bin/{{ program }}
+    # just check for existence, because the individual packages have no unified behavior
+    - which {{ program }}
 
 about:
-  home: "https://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "Varies; see https://genome.ucsc.edu/license"
-  summary: "Remove lines from bed file that refer to off-chromosome locations."
-  dev_url: "https://github.com/ucscGenomeBrowser/kent"
-  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/master/README"
-
-extra:
-  additional-platforms:
-    - linux-aarch64
+  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
+  license: "varies; see http://genome.ucsc.edu/license"
+  summary: "Sort a .bed file by chrom,chromStart"
