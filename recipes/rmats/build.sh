@@ -8,7 +8,7 @@ export GSL_LDFLAGS
 export GSL_CFLAGS
 export LD_LIBRARY_PATH=${PREFIX}/lib
 
-make
+make -j ${CPU_COUNT}
 
 cp rmats.py $PREFIX/rMATS
 cp cp_with_prefix.py $PREFIX/rMATS
