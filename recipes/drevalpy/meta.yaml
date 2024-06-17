@@ -1,0 +1,49 @@
+{% set name = "drevalpy" %}
+{% set version = "1.0.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/drevalpy-{{ version }}.tar.gz
+  sha256: 4c0c082ac9557174e1a37f1f58ec7e31a2cbf2c261d7aa7334dc3e3ec50e38f8
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('drevalpy', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+  run:
+    - python >=3.9
+    - pandas
+    - numpy
+    - ray
+    - scikit-learn
+    - scipy
+    - matplotlib-base
+    - plotly
+
+test:
+  imports:
+    - drevalpy
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/daisybio/drevalpy
+  summary: Drug Response Evaluation of cancer cell line drug response models in a fair setting.
+  license: GPL-3.0
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - JudithBernett
