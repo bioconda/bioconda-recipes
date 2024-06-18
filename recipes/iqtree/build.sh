@@ -26,7 +26,7 @@ case $(uname -m) in
 		;;
 esac
 
-cmake --build build --target install -j 1
+cmake --build build --target install -j ${JOBS}
 
 chmod 755 "${PREFIX}/bin/iqtree2"
 cp -f "${PREFIX}"/bin/iqtree2 "${PREFIX}"/bin/iqtree
