@@ -12,5 +12,6 @@ echo addi3
 ls -ahl target/release
 echo addi4
 ls -ahl target/release/build
-ls $PREFIX/bin/
+echo "List bin prefix contenets recursively"
+ls -ahlR $PREFIX/bin/
 chmod +x $PREFIX/bin/gemBS
