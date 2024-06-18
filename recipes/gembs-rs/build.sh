@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+set -xe
+
 cd rust
 cp gemBS/Cargo.toml.in gemBS/Cargo.toml
 cargo build --release
