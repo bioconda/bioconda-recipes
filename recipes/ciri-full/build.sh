@@ -4,7 +4,7 @@ make
 
 mkdir -p $PREFIX/bin
 
-cp CIRI-Full_v2.1.2.jar $PREFIX/bin/CIRI-full.jar
+cp bin/CIRI-Full_v2.1.2.jar $PREFIX/bin/CIRI-full.jar
 
 # Create a wrapper script to run the jar file
 # Command is java -jar $PREFIX/bin/CIRI-full.jar
