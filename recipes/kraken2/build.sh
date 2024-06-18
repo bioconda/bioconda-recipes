@@ -8,6 +8,12 @@ outdir=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 mkdir -p "${outdir}/libexec" "${PREFIX}/bin"
 
 chmod u+x install_kraken2.sh
+
+#install_name_tool error fix
+if [[ "$(uname)" == Darwin ]]; then
+    export LDFLAGS="$LDFLAGS -headerpad_max_install_names"
+fi
+
 ./install_kraken2.sh "${outdir}/libexec"
 for bin in kraken2 kraken2-build kraken2-inspect; do
     chmod +x "${outdir}/libexec/$bin"
