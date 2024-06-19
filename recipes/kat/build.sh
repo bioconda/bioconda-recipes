@@ -9,7 +9,7 @@ sed -i.bak "124d" configure.ac
 ./autogen.sh
 export PYTHON_NOVERSION_CHECK="3.7.0"
 ./configure --disable-silent-rules --disable-dependency-tracking --prefix=$PREFIX
-make
+make -j ${CPU_COUNT}
 make install
 
 # This directory isn't needed and confuses conda
