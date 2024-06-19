@@ -8,5 +8,9 @@ cargo build --release --package gem_bs
 
 mkdir -p $PREFIX/bin
 
-cp target/$(uname -m)-unknown-linux-gnu/release/gem_bs $PREFIX/bin/gemBS
+if [ "$(uname)" = "Darwin" ]; then
+    cp target/$(uname -m)-apple-darwin/release/gem_bs $PREFIX/bin/gemBS
+else
+    cp target/$(uname -m)-unknown-linux-gnu/release/gem_bs $PREFIX/bin/gemBS
+fi
 chmod +x $PREFIX/bin/gemBS
