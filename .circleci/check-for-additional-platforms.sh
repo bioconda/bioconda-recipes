@@ -31,7 +31,7 @@ for file in $files; do
 
     parsing_status=$?
     if [ $parsing_status -gt 0 ]; then
-        echo "An error occurred while reading/parsing ${test}"
+        echo "An error occurred while reading/parsing ${file}"
         exit $parsing_status
     fi
 
