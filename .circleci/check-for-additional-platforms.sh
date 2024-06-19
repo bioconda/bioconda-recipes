@@ -29,10 +29,10 @@ for file in $files; do
     | tr -d '{{' | tr -d '}}' \
     | ${HOME}/bin/yq '.extra.additional-platforms[]')
 
-    local status=$?
-    if [ $status != 0 ]; then
+    parsing_status=$?
+    if [ $parsing_status -gt 0 ]; then
         echo "An error occurred while reading/parsing ${test}"
-        exit $status
+        exit $parsing_status
     fi
 
     # Check if any additional platforms match this job
