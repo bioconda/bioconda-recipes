@@ -17,7 +17,16 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Releas
 	-DUSE_LSD2=ON -DIQTREE_FLAGS=omp -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -Wno-dev -Wno-deprecated --no-warn-unused-cli
 
-cmake --build build --target install -j 1
+case $(uname -m) in
+	aarch64) 
+		JOBS=1 # CircleCI's arm.medium VM runs out of memory with higher values 
+		;;
+	*)
+		JOBS=${CPU_COUNT}
+		;;
+esac
+
+cmake --build build --target install -j ${JOBS}
 
 chmod 755 "${PREFIX}/bin/iqtree2"
 cp -f "${PREFIX}"/bin/iqtree2 "${PREFIX}"/bin/iqtree
