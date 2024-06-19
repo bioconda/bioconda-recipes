@@ -28,6 +28,13 @@ for file in $files; do
     | sed -E 's/(.*)\{%(.*)%\}(.*)/# \1\2\3/g' \
     | tr -d '{{' | tr -d '}}' \
     | ${HOME}/bin/yq '.extra.additional-platforms[]')
+
+    local status=$?
+    if [ $status != 0 ]; then
+        echo "An error occurred while reading/parsing ${test}"
+        exit $status
+    fi
+
     # Check if any additional platforms match this job
     for additional_platform in $additional_platforms; do
     if [ "${CIRCLE_JOB}" = "${job_name}-${additional_platform}" ]
