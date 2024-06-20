@@ -40,12 +40,6 @@ jobs: # a basic unit of work in a run
           command:
             echo 'export PATH=/opt/mambaforge/bin:"$PATH"' >> "$BASH_ENV"
 
-      # We reconfigure conda to use the right channel setup.
-      # This has to be done after the cache is restored, because
-      # the channel setup is not cached as it resides in the home directory.
-      # We could use a system-wide (and therefore cached) channel setup,
-      # but mamba does not support that at the time of implementation
-      # (it ignores settings made by --system).
       - run:
           name: Configure conda
           command: bash configure-conda.sh
@@ -53,12 +47,13 @@ jobs: # a basic unit of work in a run
       - run:
           name: Build and test
           command: |
+            . common.sh
             source /opt/mambaforge/etc/profile.d/conda.sh
             source /opt/mambaforge/etc/profile.d/mamba.sh
             mamba activate bioconda
             bioconda-utils build recipes config.yml \
                 --lint --docker --mulled-test \
-                --docker-base-image quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch) \
+                --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
                 --git-range origin/master HEAD
 
       - run:
@@ -116,12 +111,6 @@ jobs: # a basic unit of work in a run
           command:
             echo 'export PATH=/opt/mambaforge/bin:"$PATH"' >> "$BASH_ENV"
 
-      # We reconfigure conda to use the right channel setup.
-      # This has to be done after the cache is restored, because
-      # the channel setup is not cached as it resides in the home directory.
-      # We could use a system-wide (and therefore cached) channel setup,
-      # but mamba does not support that at the time of implementation
-      # (it ignores settings made by --system).
       - run:
           name: Configure conda
           command: bash configure-conda.sh
@@ -186,12 +175,6 @@ jobs: # a basic unit of work in a run
           command:
             echo 'export PATH=/opt/mambaforge/bin:"$PATH"' >> "$BASH_ENV"
 
-      # We reconfigure conda to use the right channel setup.
-      # This has to be done after the cache is restored, because
-      # the channel setup is not cached as it resides in the home directory.
-      # We could use a system-wide (and therefore cached) channel setup,
-      # but mamba does not support that at the time of implementation
-      # (it ignores settings made by --system).
       - run:
           name: Configure conda
           command: bash configure-conda.sh
@@ -201,6 +184,7 @@ jobs: # a basic unit of work in a run
           name: Build and upload
           command: |
             set -e
+            . common.sh
             source /opt/mambaforge/etc/profile.d/conda.sh
             source /opt/mambaforge/etc/profile.d/mamba.sh
             mamba activate bioconda
@@ -211,9 +195,8 @@ jobs: # a basic unit of work in a run
             echo '============'
             bioconda-utils build recipes config.yml \
               --worker-offset << parameters.runner >> --n-workers 6 \
-              --docker --mulled-test --docker-base-image quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch) \
+              --docker --mulled-test --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
               --anaconda-upload \
-              --mulled-upload-target biocontainers \
               --record-build-failures \
               --skiplist-leafs
             conda clean -y --all
@@ -245,6 +228,7 @@ workflows:
               os:
                 #- osx-arm64
                 - linux-aarch64
+
 
   Bulk branch (ARM):
     jobs:
