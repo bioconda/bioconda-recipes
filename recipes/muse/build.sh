@@ -8,9 +8,9 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 export CFLAGS="${CFLAGS} -O3"
 
-CC="${CC} -O3 ${LDFLAGS}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS} -O3" \
+make CC="${CC} -O3 ${LDFLAGS}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS} -O3" \
 	CPP="${CXX}" CPPFLAGS="${CXXFLAGS} -I${PREFIX}/include" \
-	INCLUDES="${INCLUDES}" COMMONLIBS="${COMMONLIBS} -L${PREFIX}/lib" ./install_muse.sh
+	INCLUDES="${INCLUDES}" COMMONLIBS="${COMMONLIBS} -L${PREFIX}/lib" -j "${CPU_COUNT}"
 
 chmod 755 MuSE
 cp -f MuSE "${PREFIX}/bin"
