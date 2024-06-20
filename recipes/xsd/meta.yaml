@@ -1,20 +1,25 @@
+{% set name = "xsd" %}
+{% set version = "4.2.0" %}
+
 package:
-  name: xsd
-  version: 4.0.0_dep
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: http://www.codesynthesis.com/download/xsd/4.0/xsd-4.0.0+dep.tar.bz2
-  md5: ae64d7fcd258addc9b045fe3f96208bb
+  url: https://www.codesynthesis.com/download/xsd/4.2/xsd-{{ version }}.tar.gz
+  sha256: 2bed17c601cfb984f9a7501fd5c672f4f18eac678f5bdef6016971966add9145
 
 build:
-  number: 5
+  number: 6
   # OSX failing due to
   #   make: *** No rule to make target '-lxerces-c', needed by '/anaconda/conda-bld/xsd_1475059274085/work/xsd-4.0.0+dep/libxsd-frontend/xsd-frontend/xsd-frontend.l'.  Stop.
   skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - make
+    - wget
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
@@ -27,6 +32,12 @@ test:
     - xsd version
 
 about:
-  home: http://www.codesynthesis.com/products/xsd/
-  license: GPL
+  home: https://www.codesynthesis.com/products/xsd/
+  license: GPL-2.0-only
+  license_file: LICENSE
+  license_family: GPL
   summary: CodeSynthesis XSD is an open-source, cross-platform W3C XML Schema to C++ data binding compiler. Provided with an XML instance specification (XML Schema), it generates C++ classes that represent the given vocabulary as well as XML parsing and serialization code.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
