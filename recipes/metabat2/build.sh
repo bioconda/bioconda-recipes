@@ -9,14 +9,6 @@ cd build
 export CXXFLAGS=-ldeflate
 cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DBOOST_ROOT=$PREFIX
 
-if [ "$(uname -m)" == "aarch64" ]; then
-    # fetch the htslib dependency
-    make htslib/fast
-    pushd ./contrib/htslib-prefix/src/htslib
-      patch -p1 < ${RECIPE_DIR}/arm_hwcap.patch
-    popd
-fi
-
 # Fix the version
 make check_git_repository
 sed -i.bak 's/GIT-NOTFOUND/'$PKG_VERSION' (Bioconda)/'  ../metabat_version.h
