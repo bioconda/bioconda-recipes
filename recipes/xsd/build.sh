@@ -17,6 +17,6 @@ bpkg create -d xsd-conda-build cc     \
 
 cd xsd-conda-build
 
-bpkg build --trust-yes --jobs ${CPU_COUNT} xsd@https://pkg.cppget.org/1/beta ?sys:libxerces-c
+bpkg build --trust-yes --jobs ${CPU_COUNT} --sys-no-query xsd@https://pkg.cppget.org/1/beta ?sys:libxerces-c
 
 ls -laR ${PREFIX}
