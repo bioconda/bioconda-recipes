@@ -5,8 +5,10 @@ set -xe
 # build and install PAN-GWES
 make -C sw/pangwes -j ${CPU_COUNT}
 
-which llvm-otool
-llvm-otool --version
+if [[ $target_platform == osx-* ]]; then
+  which llvm-otool
+  llvm-otool --version
+fi
 
 mkdir -p ${PREFIX}/bin
 cp $SRC_DIR/sw/pangwes/bin/unitig_distance $PREFIX/bin/unitig_distance
