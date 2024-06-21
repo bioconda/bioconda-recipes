@@ -7,8 +7,11 @@
 [[ -z $SSL_CERT_FILE && ${SSL_CERT_FILE+x} ]] && unset SSL_CERT_FILE
 
 # build statically linked binary with Rust
-LIBRARY_PATH=$PREFIX/lib cargo build --release
+LIBRARY_PATH=$PREFIX/lib cargo install --release --root ${PREFIX} --path .
+
 # install the binary
-cp target/release/merfishtools $PREFIX/bin
+#cp target/release/merfishtools $PREFIX/bin
+ls -laR ${PREFIX}
+
 # install the Python package
 $PYTHON setup.py install
