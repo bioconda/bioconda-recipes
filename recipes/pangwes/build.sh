@@ -2,13 +2,6 @@
 
 set -xe
 
-if [[ $target_platform == osx-* ]]; then
-    for toolname in "otool" "install_name_tool"; do
-        tool=$(find "${BUILD_PREFIX}/bin/" -name "*apple*-$toolname")
-        mv "${tool}" "${tool}.bak"
-        ln -s "/Library/Developer/CommandLineTools/usr/bin/${toolname}" "$tool"
-    done
-fi
 # build and install PAN-GWES
 make -C sw/pangwes -j ${CPU_COUNT}
 
