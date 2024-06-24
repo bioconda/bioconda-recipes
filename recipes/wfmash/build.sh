@@ -16,11 +16,12 @@ mkdir -p $PREFIX/lib
 
 ls $SRC_DIR/build/lib/* -lh
 
-mv $SRC_DIR/build/lib/libwfa2cpp.so.0 $PREFIX/lib
-mv $SRC_DIR/build/lib/libwfa2cpp.so $PREFIX/lib
-mv $SRC_DIR/build/lib/libwfa2.so.0 $PREFIX/lib
-mv $SRC_DIR/build/lib/libwfa2.so $PREFIX/lib
+# mv $SRC_DIR/build/lib/libwfa2cpp.so.0 $PREFIX/lib
+# mv $SRC_DIR/build/lib/libwfa2cpp.so $PREFIX/lib
+# mv $SRC_DIR/build/lib/libwfa2.so.0 $PREFIX/lib
+# mv $SRC_DIR/build/lib/libwfa2.so $PREFIX/lib
+cp $SRC_DIR/build/lib/libwfa2* $PREFIX/lib
 
 mkdir -p $PREFIX/bin
-mv build/bin/* $PREFIX/bin
-mv scripts/split_approx_mappings_in_chunks.py $PREFIX/bin
+cp build/bin/* $PREFIX/bin
+cp scripts/split_approx_mappings_in_chunks.py $PREFIX/bin
