@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eux -o pipefail
 
-make -C src
+make -j ${CPU_COUNT} -C src
 
 mkdir -p ${PREFIX}/bin/
 mkdir -p ${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin
