@@ -7,9 +7,21 @@ export C_INCLUDE_PATH=${PREFIX}/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
-sed -i 's/-march=x86-64-v3/-march=sandybridge/g' src/common/wflign/deps/WFA2-lib/Makefile
-cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Generic -DEXTRA_FLAGS='-march=sandybridge -Ofast'
-cmake --build build
+
+case $(uname -m) in
+    x86_64)
+        EXTRA_FLAGS="-march=sandybridge -Ofast"
+        MARCH="sandybridge"
+        ;;
+    *)
+        EXTRA_FLAGS="-march=native -Ofast"
+        MARCH="native"
+        ;;
+esac
+
+sed -i "s/-march=x86-64-v3/-march=${MARCH}/g" src/common/wflign/deps/WFA2-lib/Makefile
+cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Generic -DEXTRA_FLAGS="${EXTRA_FLAGS}"
+cmake --build build -j ${CPU_COUNT}
 
 # Libraries aren't getting installed
 mkdir -p $PREFIX/lib
