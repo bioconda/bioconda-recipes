@@ -2,15 +2,13 @@
 
 set -xe
 
-cd rust
-cp gemBS/Cargo.toml.in gemBS/Cargo.toml
-cargo build --release --package gem_bs
+cd rust/gemBS
+cat > Cargo.toml \
+  Cargo.toml.in \
+  - << 'EOF'
+[[bin]]
+name = "gemBS"
+path = "src/main.rs"
+EOF
 
-mkdir -p $PREFIX/bin
-
-if [ "$(uname)" = "Darwin" ]; then
-    cp target/$(uname -m)-apple-darwin/release/gem_bs $PREFIX/bin/gemBS
-else
-    cp target/$(uname -m)-unknown-linux-gnu/release/gem_bs $PREFIX/bin/gemBS
-fi
-chmod +x $PREFIX/bin/gemBS
+cargo install --no-track --locked --verbose --root "${PREFIX}" --path .
