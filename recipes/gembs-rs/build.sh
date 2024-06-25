@@ -20,3 +20,7 @@ path = "src/main.rs"
 EOF
 
 cargo install --no-track --locked --verbose --root "${PREFIX}" --path .
+
+cargo-bundle-licenses \
+  --format yaml \
+  --output "${SRC_DIR}/THIRDPARTY.yml"
