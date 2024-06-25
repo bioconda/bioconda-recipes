@@ -54,6 +54,12 @@ requirements:
 test:
   commands:
     - gemBS --version
+    - |
+      printf %s\\n 'barcode,dataset' > metadata.csv
+      printf %s\\n '[index]' 'reference = genome.fa' > config
+      printf '>seq\n%10000000s\n' | tr ' ' A > genome.fa
+      gemBS --loglevel trace prepare --config config --text-metadata metadata.csv
+      gemBS --loglevel trace call 2>&1 | { ! grep Error ; }
 
 about:
   home: https://github.com/heathsc/gemBS-rs
