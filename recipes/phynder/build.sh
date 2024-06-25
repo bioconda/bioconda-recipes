@@ -20,16 +20,18 @@ AC_CANONICAL_HOST \
 AC_PROG_INSTALL \
 ' configure.ac > configure.ac2
 mv configure.ac2 configure.ac
-autoreconf -if
+autoreconf -i
+autoheader
+autoconf
 
 ./configure --prefix=${PREFIX} --enable-libcurl --with-libdeflate --enable-plugins --enable-gcs --enable-s3
-make lib-static htslib_static.mk -j "${CPU_COUNT}"
+make lib-static htslib_static.mk
 make CC=$CC install
 
 ## Patch phynder Makefile to cloned htslib folder (original assumes alongside, not within)
 cd ../
 sed -i.bak 's#HTSDIR=../htslib#HTSDIR=./htslib#g' Makefile
-sed -e -i.bak 's#LDLIBS=$(HTSLIB) -lpthread $(HTSLIB_static_LIBS)#LDLIBS=$(HTSLIB) -lpthread $(HTSLIB_static_LIBS) $(LDFLAGS)#g' -e 's#cp phynder ~/bin##g' Makefile
+sed -i.bak -e 's#LDLIBS=$(HTSLIB) -lpthread $(HTSLIB_static_LIBS)#LDLIBS=$(HTSLIB) -lpthread $(HTSLIB_static_LIBS) $(LDFLAGS)#g' -e 's#cp phynder ~/bin##g' Makefile
 
 make CC=$CC CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" -j "${CPU_COUNT}"
 make install
