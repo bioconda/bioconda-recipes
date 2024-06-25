@@ -15,17 +15,15 @@ cd htslib
 git submodule update --init --recursive
 
 ## from https://github.com/pachterlab/kallisto/issues/303#issuecomment-884612169
-sed -i.bak '/AC_PROG_CC/a \
+sed '/AC_PROG_CC/a \
 AC_CANONICAL_HOST \
 AC_PROG_INSTALL \
 ' configure.ac > configure.ac2
 mv configure.ac2 configure.ac
-autoreconf -i
-autoheader
-autoconf
+autoreconf -if
 
 ./configure --prefix=${PREFIX} --enable-libcurl --with-libdeflate --enable-plugins --enable-gcs --enable-s3
-make lib-static htslib_static.mk
+make -j "${CPU_COUNT}" lib-static htslib_static.mk
 make CC=$CC install
 
 ## Patch phynder Makefile to cloned htslib folder (original assumes alongside, not within)
