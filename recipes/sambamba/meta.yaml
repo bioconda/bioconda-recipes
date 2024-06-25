@@ -1,6 +1,6 @@
 {% set name = "sambamba" %}
-{% set version = "1.0" %}
-{% set sha256 = "4181ae6bcd2852d7264cc8858efa9fe66d0cd29e90b9a28102d29b526ee056bc" %}
+{% set version = "1.0.1" %}
+{% set sha256 = "955a51a00be9122aa9b0c27796874bfdda85de58aa0181148ef63548ea5192b0" %}
 package:
   name: {{ name }}
   version: {{ version }}
@@ -8,15 +8,19 @@ package:
 source:
   url: https://github.com/biod/sambamba/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-fix-osx-compile.patch
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
-    - python >=3
+    - python
   host:
     - ldc >=1.17.0
     - bzip2

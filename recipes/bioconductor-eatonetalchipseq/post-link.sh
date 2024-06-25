@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "eatonetalchipseq-0.38.0"
+installBiocDataPackage.sh "eatonetalchipseq-0.40.0"
