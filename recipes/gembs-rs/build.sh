@@ -2,6 +2,12 @@
 
 set -xe
 
+mkdir -p "${PREFIX}/etc/"
+cp -R \
+  ./etc/css \
+  ./etc/config_scripts \
+  "${PREFIX}/etc/"
+
 cd rust/gemBS
 cat > Cargo.toml \
   Cargo.toml.in \
