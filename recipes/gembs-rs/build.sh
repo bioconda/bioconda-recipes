@@ -6,6 +6,8 @@ cd rust/gemBS
 cat > Cargo.toml \
   Cargo.toml.in \
   - << 'EOF'
+default = ["slurm"]
+
 [[bin]]
 name = "gemBS"
 path = "src/main.rs"
