@@ -1,0 +1,53 @@
+{% set name = "dorado" %}
+{% set version = "0.6.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - url: https://cdn.oxfordnanoportal.com/software/analysis/dorado-{{ version }}-linux-x64.tar.gz  # [linux and x86_64]
+    sha256: 6c59064431104b12ffc969233c6ab4b0a4c30773f20934996165fdea6e5b9f41  # [linux and x86_64]
+  - url: https://cdn.oxfordnanoportal.com/software/analysis/dorado-{{ version }}-linux-arm64.tar.gz  # [linux and aarch64]
+    sha256: 92da1c302d974b1dd06afbd1ae48dad63e4d3493cb6b64233d86898d549de37e  # [linux and aarch64]
+  - url: https://cdn.oxfordnanoportal.com/software/analysis/dorado-{{ version }}-osx-arm64.zip  # [osx and arm64]
+    sha256: a2addf78c9d5d1ed16e5117e0d890e806bf18e8d33d3d0624839d0ed6a92c2b3  # [osx and arm64]
+
+build:
+  number: 0
+  skip: True # [osx]
+  binary_relocation: False
+  script:
+    - cp -R {bin,lib} ${PREFIX}
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+  host:
+    - minimap2
+    - libnuma
+  run:
+    - minimap2
+    - libnuma
+
+test:
+  commands:
+    - dorado --help
+    - dorado aligner --help
+    - dorado basecaller --help
+    - dorado demux --help
+
+about:
+  home: https://github.com/nanoporetech/dorado
+  dev_url: https://github.com/nanoporetech/dorado
+  license: Oxford Nanopore Technologies PLC. Public License Version 1.0
+  license_family: PROPRIETARY
+  license_file: LICENCE.txt
+  summary: "Dorado is a high-performance, easy-to-use, open source basecaller for Oxford Nanopore reads."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  skip-lints:
+    - should_be_noarch_generic
