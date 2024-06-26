@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='tetrimmer',
-    version= '1.2.0',
+    version= '1.3.0',
     description="a tool to replace transposable element manual curation. TEtrimmer won't do TE de novo annotation but use the output from other annotation tools like RepeatModeler, REPET, and EDTA",
 
     license="GPLv3",
@@ -27,6 +27,7 @@ setup(
         'matplotlib>=3.8.1',
         'multiprocess>=0.70.15',
         'pandas>=2.1.2',
+        'plotly>=5.22.0',
         'pypdf2>=2.11.1',
         'scikit-learn>=1.3.2',
         'urllib3>=2.0.7',
