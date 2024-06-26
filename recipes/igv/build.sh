@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eux -o pipefail
+
 mkdir -p ${PREFIX}/lib/igv
 
 # Build
