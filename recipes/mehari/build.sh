@@ -1,4 +1,4 @@
-#!/bin/bash -eu
+#!/bin/bash -euo
 
 # Make sure bindgen passes on our compiler flags.
 export BINDGEN_EXTRA_CLANG_ARGS="${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
