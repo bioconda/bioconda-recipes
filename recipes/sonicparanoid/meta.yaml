@@ -1,5 +1,6 @@
 {% set name = "sonicparanoid" %}
-{% set version = "2.0.6" %}
+{% set version = "2.0.7" %}
+{% set sha256 = "634f4fa00d65c6c1c83a2bee35acaeabc097463d7b58099e523725b71e6d1a1b" %}
 
 package:
   name: {{ name|lower }}
@@ -7,14 +8,17 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/sonicparanoid-{{ version }}.tar.gz
-  sha256: 660454a33a19a9c9b6caeb51e7a00c5799e39b85367ae528c43361285f5fe38d
+  sha256: {{ sha256 }}
   patches:
     - sys_tools.patch
 
 build:
   number: 0
-  skip: True  # [py >= 313]
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  skip: True  # [py < 39 or py >= 313]
+  script:
+    - "mkdir -p $(PREFIX)/bin"
+    - "ln -sf $(CC) $(PREFIX)/bin/gcc"
+    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   entry_points:
     - sonicparanoid = sonicparanoid.sonic_paranoid:main
     - sonicparanoid-get-test-data = sonicparanoid.get_test_data:main
