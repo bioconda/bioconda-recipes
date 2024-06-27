@@ -1,5 +1,6 @@
 #!/bin/sh
 set -x -e
 mkdir -p ${PREFIX}/bin
-cp -r $SRC_DIR/tetrimmer ${PREFIX}/bin
+ls $SRC_DIR 
+cp -rf $SRC_DIR/TEtrimmer-main/tetrimmer ${PREFIX}/bin
 cd ${PREFIX}/bin/tetrimmer
