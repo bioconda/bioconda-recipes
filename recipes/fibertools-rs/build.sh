@@ -18,8 +18,10 @@ HOME=$(pwd)
 pushd ${PREFIX}
 
 # remove cpu specifc cargo flags
+pushd ${HOME}
 sed 's/native/generic/g' .cargo/config.toml >tmp
 mv tmp .cargo/config.toml
+popd
 
 cargo install --no-track --verbose \
     --root "${PREFIX}" --path "${HOME}"
