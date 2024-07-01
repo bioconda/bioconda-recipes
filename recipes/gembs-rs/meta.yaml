@@ -12,46 +12,34 @@ build:
   number: 0
   run_exports:
     - {{ pin_subpackage("gembs-rs", max_pin="x") }}
-  ignore_run_exports_from:
-    # Uses the static libraries of the following packages:
-    - zlib
 
 requirements:
   build:
-    # - make
-    # - cmake >3.5
-    # - autoconf
-    # - automake
     - {{ compiler('c') }}
     - {{ compiler('rust') }}
+    - pkg-config
     - cargo-bundle-licenses
   host:
-    # - htslib
-    # - openssl
-    # - bzip2
-    - zlib
-    - freetype
-    # - expat
     - fontconfig
-    # - ncurses
-    # - zstd
-    - pkg-config
+    - freetype
+    - htslib
+    - zlib
   run:
     - gem3-mapper
     - pigz
     - samtools
     - bcftools
-    - bs_call
+  run_constrained:
+    # gembs-rs has different bs_call implementation => prevent co-installation.
+    - bs_call <0a0
 
 test:
   commands:
     - gemBS --version
     - |
-      # FIXME: temp edit; just showing what's still missing:
-      # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+      # FIXME/TODO: GEMBS_ROOT would need to be set in activation script or,
+      #             preferably, this needs a patch to give it a default value.
       export GEMBS_ROOT="${CONDA_PREFIX}"
-      touch "${GEMBS_ROOT}"/bin/{mextr,snpxtr,dbsnp_index,read_filter}
-      # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       printf %s\\n 'barcode,dataset' > metadata.csv
       printf %s\\n '[index]' 'reference = genome.fa' > config
       printf '>seq\n%10000000s\n' | tr ' ' A > genome.fa
