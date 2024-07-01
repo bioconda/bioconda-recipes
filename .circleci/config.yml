@@ -47,10 +47,10 @@ jobs: # a basic unit of work in a run
       - run:
           name: Build and test
           command: |
-            . common.sh
-            source /opt/mambaforge/etc/profile.d/conda.sh
-            source /opt/mambaforge/etc/profile.d/mamba.sh
-            mamba activate bioconda
+            set -e
+            eval "$(conda shell.bash hook)"
+            conda activate bioconda
+            source common.sh
 
             if command -V docker >/dev/null; then
               bioconda-utils build recipes config.yml \
@@ -69,7 +69,7 @@ jobs: # a basic unit of work in a run
             mkdir -p /tmp/artifacts/packages
             cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
             find -name .cache | xargs rm -rf || true
-            for n in index.html channeldata.json linux-aarch64 linux-64 osx-64 noarch; do
+            for n in index.html channeldata.json linux-aarch64 linux-64 osx-64 osx-arm64 noarch; do
               cp -rv $n /tmp/artifacts/packages || true
             done
             if command -V docker >/dev/null; then
