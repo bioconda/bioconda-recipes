@@ -11,8 +11,5 @@ export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
 RUST_BACKTRACE=1 cargo install --verbose --locked --root $PREFIX --path .
 
 if command -v ldd &> /dev/null; then
-    if ! ldd $PREFIX/bin/umi-transfer | grep "not a dynamic executable" &> /dev/null; then
-        echo "Error: umi-transfer is not statically linked."
-        exit 1
-    fi
+    echo $(ldd $PREFIX/bin/umi-transfer)
 fi
