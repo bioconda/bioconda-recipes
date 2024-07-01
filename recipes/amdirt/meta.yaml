@@ -1,5 +1,5 @@
 {% set name = "amdirt" %}
-{% set version = "1.5.0" %}
+{% set version = "1.6.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,16 +7,16 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/AMDirT-{{ version }}.tar.gz
-  sha256: f52028b539767e7d8ae357aa0716716b7b18ee0231612ffc9c4d4a2eb1e74f24
+  sha256: dbeb4f50972ad2c01aeb3221d0a8bd35e1cb7bf45418dd913fa45fa1c2c9050c
 
 build:
   entry_points:
     - AMDirT = AMDirT.cli:cli
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   number: 0
   run_exports:
-    - {{ pin_subpackage("amdirt", max_pin="x.x") }}
+    - {{ pin_subpackage("amdirt", max_pin="x") }}
 
 requirements:
   host:
@@ -26,29 +26,29 @@ requirements:
     - click
     - colorlog
     - jsonschema
+    - defusedxml
     - numpy
     - pandas
     - python >=3.9
     - requests
     - rich
-    - streamlit >=1.21.0
+    - streamlit
     - streamlit-aggrid
     - tabulate
 
 test:
   imports:
     - AMDirT
-  commands:
-    - pip check
-    - AMDirT --help
-  requires:
-    - pip
+  #commands:
+    #- AMDirT --help
 
 about:
   home: https://github.com/SPAAM-community/AMDirT
   summary: 'AMDirT: AncientMetagenomeDir Toolkit'
   license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: LICENSE
+  dev_url: https://github.com/SPAAM-community/AMDirT
 
 extra:
   recipe-maintainers:

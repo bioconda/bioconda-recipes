@@ -12,7 +12,9 @@ job_name=$2
 yq_platform=$(uname)
 yq_arch=$(uname -m)
 [[ $yq_arch = "aarch64" ]] && yq_arch="arm64"
-wget https://github.com/mikefarah/yq/releases/latest/download/yq_${yq_platform}_${yq_arch} -O /usr/local/bin/yq
+mkdir -p ${HOME}/bin
+wget https://github.com/mikefarah/yq/releases/latest/download/yq_${yq_platform}_${yq_arch} -O ${HOME}/bin/yq
+chmod +x ${HOME}/bin/yq
 
 # Find recipes changed from this merge
 files=`git diff --name-only --diff-filter AMR ${git_range} | grep -E 'meta.yaml$' `
@@ -24,8 +26,15 @@ for file in $files; do
     # variable setting with {% %} and remove variable use with {{ }}.
     additional_platforms=$(cat $file \
     | sed -E 's/(.*)\{%(.*)%\}(.*)/# \1\2\3/g' \
-    | sed -E 's/(.*)\{\{(.*)\}\}(.*)/\1\2\3/g' \
-    | yq '.extra.additional-platforms[]')
+    | tr -d '{{' | tr -d '}}' \
+    | ${HOME}/bin/yq '.extra.additional-platforms[]')
+
+    parsing_status=$?
+    if [ $parsing_status -gt 0 ]; then
+        echo "An error occurred while reading/parsing ${file}"
+        exit $parsing_status
+    fi
+
     # Check if any additional platforms match this job
     for additional_platform in $additional_platforms; do
     if [ "${CIRCLE_JOB}" = "${job_name}-${additional_platform}" ]
