@@ -2,10 +2,9 @@
 version: 2.1
 
 executors:
-  # osx-arm64:
-  #   macos:
-  #     xcode: 14.2.0 # indicate your selected version of Xcode
-  #   resource_class: macos.m1.large.gen1
+  osx-arm64:
+    macos:
+    resource_class: macos.m1.medium.gen1
   linux-aarch64:
     machine:
       image: ubuntu-2204:current
@@ -51,6 +50,10 @@ jobs: # a basic unit of work in a run
             source /opt/mambaforge/etc/profile.d/conda.sh
             source /opt/mambaforge/etc/profile.d/mamba.sh
             mamba activate bioconda
+
+            # Use SDK with arm64 support
+            source common.sh
+
             bioconda-utils build recipes config.yml \
                 --lint --docker --mulled-test \
                 --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
@@ -121,6 +124,10 @@ jobs: # a basic unit of work in a run
             source /opt/mambaforge/etc/profile.d/conda.sh
             source /opt/mambaforge/etc/profile.d/mamba.sh
             mamba activate bioconda
+
+            # Use SDK with arm64 support
+            source common.sh
+
             bioconda-utils handle-merged-pr recipes config.yml \
               --repo bioconda/bioconda-recipes \
               --git-range ${CIRCLE_SHA1}~1 ${CIRCLE_SHA1} \
@@ -188,6 +195,10 @@ jobs: # a basic unit of work in a run
             source /opt/mambaforge/etc/profile.d/conda.sh
             source /opt/mambaforge/etc/profile.d/mamba.sh
             mamba activate bioconda
+
+            # Use SDK with arm64 support
+            source common.sh
+
             echo '============'
             conda info --all
             conda config --show-sources
@@ -214,7 +225,7 @@ workflows:
           matrix:
             parameters:
               os:
-                #- osx-arm64
+                - osx-arm64
                 - linux-aarch64
 
   build and upload (ARM):
@@ -226,7 +237,7 @@ workflows:
           matrix:
             parameters:
               os:
-                #- osx-arm64
+                - osx-arm64
                 - linux-aarch64
 
 
@@ -239,6 +250,6 @@ workflows:
           matrix:
             parameters:
               os: 
-                #- osx-arm64
+                - osx-arm64
                 - linux-aarch64
               runner: [0, 1, 2, 3, 4, 5]
