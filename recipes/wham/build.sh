@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -xe
+
 export LIBRARY_PATH=${PREFIX}/lib
 export C_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
@@ -14,6 +17,6 @@ sed -i.bak '/^CXX =/s/^/#/g' src/Complete-Striped-Smith-Waterman-Library/src/Mak
 sed -i.bak '/^CXX=/s/^/#/g' src/fastahack/Makefile
 sed -i.bak 's/-lm -lz/-L${LIBRARY_PATH} -I${C_INCLUDE_PATH} -lm -lz/' src/Complete-Striped-Smith-Waterman-Library/src/Makefile
 
-make
+make -j ${CPU_COUNT}
 mkdir -p $PREFIX/bin
 cp bin/* $PREFIX/bin
