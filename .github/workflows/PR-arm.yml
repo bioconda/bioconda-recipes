@@ -48,6 +48,7 @@ jobs:
           set -e
           eval "$(conda shell.bash hook)"
           conda activate bioconda
+          echo '============1'
 
           # Use SDK with arm64 support
           source common.sh
@@ -55,17 +56,21 @@ jobs:
           # Clean up lingering build artifacts
           rm -f /opt/mambaforge/envs/bioconda/conda-bld/osx-arm64/*.tar.bz2
 
+          echo '============2'
           # The SDK isn't actually cached, so reinstall it
           run_conda_forge_build_setup
 
+          echo '============3'
           if [ -z "$GITHUB_BASE_REF" ] ; then
               export GITHUB_BASE_REF="master"
           fi
           git fetch origin "$GITHUB_BASE_REF"
 
+          echo '============4'
           bioconda-utils build recipes config.yml \
             --lint \
             --git-range origin/"$GITHUB_BASE_REF" HEAD
+          echo '============5'
 
       - name: Prepare artifacts
         if: steps.additional_platforms.outputs.skip_build != 'true'
