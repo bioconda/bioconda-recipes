@@ -19,7 +19,7 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
 
     # cd to location of Makefile and source
     cd $SRC_DIR/
-    make    
+    make -j ${CPU_COUNT}
 
     for i in $binaries; do cp $SRC_DIR/bmtagger/$i $PREFIX/bin/ && chmod +x $PREFIX/bin/$i; done
 fi
