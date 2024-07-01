@@ -52,13 +52,15 @@ jobs: # a basic unit of work in a run
             source /opt/mambaforge/etc/profile.d/mamba.sh
             mamba activate bioconda
 
-            # Use SDK with arm64 support
-            source common.sh
-
-            bioconda-utils build recipes config.yml \
-                --lint --docker --mulled-test \
-                --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
-                --git-range origin/master HEAD
+            if [[ "$platform" == "Darwin" ]]; then
+              bioconda-utils build recipes config.yml \
+                  --lint --git-range origin/master HEAD
+            else
+              bioconda-utils build recipes config.yml \
+                  --lint --docker --mulled-test \
+                  --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
+                  --git-range origin/master HEAD
+            fi
 
       - run:
           name: Prepare artifacts
