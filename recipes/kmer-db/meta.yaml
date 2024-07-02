@@ -1,35 +1,35 @@
-{% set version = "1.11.1" %}
-{% set sha256 = "63886057a752a890f492bf4ca7ec97435eceebb4ac5ecb5664c69ae2736eaa80" %}
-
+{% set name = "kmer-db" %}
+{% set version = "2.0.3" %}
+{% set sha256 = "fb4011632c7c70b64b95d374b98c77e53e39cabf958372487d5c82f2d23b6386" %}
 
 package:
-  name: kmer-db
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 2
 
 source:
   url: https://github.com/refresh-bio/kmer-db/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('kmer-db', max_pin="x") }}
+
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-    - make 
   host:
     - zlib
-  run:
-    - zlib
+
+test:
+  commands:
+    - "kmer-db > /dev/null"
 
 about:
   home: https://github.com/refresh-bio/kmer-db
   summary: "Kmer-db is a fast and memory-efficient tool for estimating evolutionary distances."
-  license: GPL-3
-  license_family: GPL
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-
-test:
-  commands:
-    - kmer-db > /dev/null
+  dev_url: https://github.com/refresh-bio/kmer-db
