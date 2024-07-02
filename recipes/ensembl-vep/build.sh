@@ -14,8 +14,9 @@ sed -i.bak 's@/convert_cache.pl@/vep_convert_cache@' INSTALL.pl
 # Find plugins in install directory
 sed -i.bak "s@'dir_plugins=s,'@'dir_plugins=s' => (\$RealBin || []),@" vep
 # Change location where INSTALL.pl looks for the zlib headers
-sed -i -e "s@/usr/include/zlib.h@${PREFIX}/include@" INSTALL.pl
+sed -i.bak -e "s@/usr/include/zlib.h@${PREFIX}/include@" INSTALL.pl
 
+rm *.bak
 
 # Copy executables & modules
 cp convert_cache.pl $target/vep_convert_cache
@@ -24,10 +25,10 @@ cp filter_vep $target/filter_vep
 cp vep $target/vep
 cp haplo $target/haplo
 cp variant_recoder $target/variant_recoder
-cp -r modules $target/modules
+cp -rf modules $target/modules
 
 chmod 0755 $target/
-ln -s $target/* $PREFIX/bin
+ln -sf $target/* $PREFIX/bin
 
 cd $target
 # Use external Bio::DB::HTS::Faidx instead of compiling interally
@@ -50,5 +51,5 @@ mv loftee-*/*.pl .
 mv loftee-*/*.pm .
 mv loftee-*/maxEntScan .
 mv loftee-*/splice_data .
-rm -f loftee.tar.gz
+rm -rf loftee.tar.gz
 rm -rf loftee-*

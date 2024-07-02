@@ -6,10 +6,17 @@ Linux) SUF=.gcc;;
 *) echo "Unknown architecture"; exit 1;;
 esac
 
+ARCH=$(uname -m)
+
 mkdir -p $PREFIX/bin
 
 for PTHREADS in "" .PTHREADS; do
   for OPT in "" .SSE3 .AVX2; do
+
+    if [ "${ARCH}" == "aarch64" -a "${OPT}" == ".AVX2" ]; then
+      continue
+    fi
+
     echo "######## Building Flags opt=$OPT pthread=$PTHREADS os=$SUF ######"
     MAKEFILE=Makefile${OPT}${PTHREADS}
     if [ -e ${MAKEFILE}${SUF} ]; then
