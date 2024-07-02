@@ -2,5 +2,5 @@
 
 set -xe
 
-make -j ${CPU_COUNT} install
+make -j ${CPU_COUNT} CC="${CXX}" install
 cp bin/slclust $PREFIX/bin
