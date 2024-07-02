@@ -13,49 +13,46 @@ build:
   number: 0
   entry_points:
     - b2bTools = b2bTools.__main__:main
+    - b2btools = b2bTools.__main__:main
   script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
-  noarch: generic
   run_exports:
     - {{ pin_subpackage('b2btools', max_pin="x") }}
 
-
 requirements:
+  build:
+    - {{ compiler('c') }} # [linux]
+    - {{ compiler('cxx') }} # [linux]
+    - clangdev  # [osx]
   host:
-    - python >3.6,<3.13
+    - python
     - pip
-    - cython ==0.29.37 # [py37 or py38 or py39 or py310]
+    - cython ==0.29.37 # [py < 311]
+    - cython # [py >= 311]
   run:
-    - python >3.6,<3.13
+    - python
     - hmmer
     - t-coffee
-    - biopython >=1.81 # [py37 or py38 or py39]
-    - biopython >=1.83 # [py310 or py311 or py312]
-    - certifi
-    - charset-normalizer
-    - cycler
+    - biopython >=1.81 # [py <= 39]
+    - biopython >=1.83 # [py >= 310]
     - matplotlib-base >=3.5.3
-    - numpy >=1.21 # [py37]
-    - numpy >=1.24 # [py38 or py39]
-    - numpy >=1.26.4 # [py38 or py39]
-    - numpy >=1.26.4 # [py310 or py311 or py312]
-    - pandas ==1.1 # [py37 or py38 or py39]
-    - pandas ==1.5.3 # [py>39]
-    - pomegranate >=0.14.8,<=0.14.9
-    - requests >=2.0 # [py37 or py38 or py39]
-    - requests >=2.31.0 # [py310 or py311]
-    - scikit-learn >=1.0.2 # [py37 or py38 or py39 or py310]
-    - scikit-learn >=1.4.1.post1 # [py311 or py312]
-    - scipy ==1.7.3 # [py37]
-    - scipy ==1.10.1 # [py38 or py39]
-    - scipy ==1.12.0 # [py310 or py311 or py312]
-    - pytorch ==1.11.0 # [py37]
-    - pytorch ==1.13.1 # [py38 or py39 or py310]
-    - pytorch ==2.2.0 # [py311 or py312]
+    - numpy ==1.21 # [py37]
+    - numpy ==1.24 # [py == 38 or py == 39]
+    - numpy ==1.26 # [py > 39]
+    - pandas >=1.1, <2.3
+    - pomegranate >=0.14, <1.0
+    - requests >=2.0 # [py <= 39]
+    - requests >=2.31.0 # [py > 39]
+    - scikit-learn ==1.0.2 # [py <= 310]
+    - scikit-learn ==1.4.1.post1 # [py > 310]
+    - scipy ==1.7.3 # [py == 37]
+    - scipy ==1.10.1 # [py == 38 or py == 39]
+    - scipy ==1.12.0 # [py > 39]
+    - pytorch >=1.11.0,<=1.13.1 # [py <= 310]
+    - pytorch >=2.2.0 # [py > 310]
     - urllib3 >=1.26.6
 
 test:
   imports:
-    - pandas
     - b2bTools
     - b2bTools.general
     - b2bTools.general.bmrb
@@ -101,9 +98,14 @@ test:
   commands:
     - b2bTools --help
     - b2bTools --version
+    - b2bTools --input_file test.singleseq.fasta --output_json_file test.singleseq.out.json --output_tabular_file test.singleseq.out.csv --metadata_file test.singleseq.metadata.csv --mode single_seq --dynamine --disomine --efoldmine --agmata --psper
+    - b2bTools --input_file test.msa.fasta --output_json_file test.msa.out.json --output_tabular_file test.msa.out.csv --metadata_file test.msa.metadata.csv --distribution_json_file test.msa.dist.json --distribution_tabular_file test.msa.dist.csv --mode msa --dynamine --disomine --efoldmine --agmata --psper
+  files:
+    - test.singleseq.fasta
+    - test.msa.fasta
 
 about:
-  home: "https://bio2byte.be/"
+  home: "https://bio2byte.be/b2btools"
   license: 'GNU General Public License v3 (GPLv3)'
   license_family: GPL3
   license_file: LICENSE
@@ -116,8 +118,8 @@ about:
       - EfoldMine: Predicts from the primary amino acid sequence of a protein, which amino acids are likely involved in early folding events.
       - AgMata: Single-sequence-based predictor of protein regions that are likely to cause beta-aggregation.
       - PSPer: PSP (Phase Separating Protein) predicts whether a protein is likely to phase-separate with a particular mechanism involving RNA interacts (FUS-like proteins).
-  doc_url: https://bio2byte.be/b2btools/package-documentation
-  dev_url: https://pypi.org/project/b2bTools/
+  doc_url: https://pypi.org/project/b2bTools/
+  dev_url: http://bitbucket.org/bio2byte/b2btools_releases
 
 extra:
   author: Wim Vranken <wim.vranken@vub.be>
