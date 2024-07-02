@@ -1,0 +1,31 @@
+{% set name = "cgt" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower}}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bacpop/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: d79750878e45853e46a3e991e8f7274a2de248bca58476b2be7e527caac3ab2b
+
+build:
+  number: 0
+  script: "cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
+  run_exports:
+    - {{ pin_subpackage("cgt", max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+
+test:
+  commands:
+    - cgt_bacpop -V
+
+about:
+   home: https://github.com/bacpop/cgt
+   license: Apache-2.0
+   license_family: APACHE
+   license_file: LICENSE.txt
+   summary: Calculate a core genome threshold (cgt) from metagenome data

@@ -1,41 +1,58 @@
 {% set name = "ntedit" %}
-{% set version = "1.4.3" %}
+{% set version = "2.0.2" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 source:
-  url: https://github.com/bcgsc/ntEdit/archive/v{{ version }}.tar.gz
-  sha256: a584a04eb0d6373c4be68b626444600fea8a0bf97931b34fbc4da47c21d7fd27
+  url: https://github.com/bcgsc/ntEdit/releases/download/v{{ version }}/ntEdit-{{ version }}.tar.gz
+  sha256: 314bc1a39c2d382786ee64d83a1b8c4519e5c9feb0203b1b7f4ab0d9087cf6c5
 
 requirements:
   build:
-    - make
     - {{ compiler('cxx') }}
-    - llvm-openmp # [osx]
+    - cmake
+    - make
     - automake
     - autoconf
-    - perl
-
+    - meson
+    - ninja
   host:
+    - perl
     - zlib
+    - btllib
+    - llvm-openmp  # [osx]
+    - boost-cpp
+    - python >=3.9
   run:
-    - llvm-openmp # [osx]
-    - zlib
-    - ntHits ==0.0.1
+    - llvm-openmp  # [osx]
+    - nthits >=1.0.0
+    - ntcard
+    - btllib
+    - snakemake-minimal
+    - boost-cpp
 
 test:
   commands:
     - ntedit --help
+    - run-ntedit --help
 
 about:
   home: https://github.com/bcgsc/ntEdit
-  license: GPL-3.0
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: LICENSE
-  summary: 'ultra fast, scalable genome assembly polishing and snv detection'
+  summary: 'Ultrafast, lightweight, scalable genome assembly polishing, and SNV detection & annotation'
+  doc_url: https://github.com/bcgsc/ntEdit/blob/master/README.md
+  dev_url: https://github.com/bcgsc/ntEdit
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btz400
+    - biotools:ntEdit
