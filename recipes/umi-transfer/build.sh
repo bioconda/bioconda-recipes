@@ -9,7 +9,3 @@ export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1 cargo install --verbose --locked --root $PREFIX --path .
-
-if command -v ldd &> /dev/null; then
-    echo $(ldd $PREFIX/bin/umi-transfer)
-fi
