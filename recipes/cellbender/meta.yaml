@@ -1,0 +1,64 @@
+{% set name = "cellbender" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cellbender-{{ version }}.tar.gz
+  sha256: 94a46fb2b5921414ea86213cfdebca267b9ba6ba02df854cbd353980ab3aff42
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - cellbender = cellbender.base_cli:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('cellbender', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python 3.7
+    - setuptools >=61.2
+    - pip
+  run:
+    - python 3.7
+    - numpy
+    - scipy
+    - pytables
+    - pandas
+    - pyro-ppl >=1.8.4
+    - pytorch
+    - matplotlib-base
+    - anndata >=0.7
+    - loompy
+    - ipython
+    - jupyter
+    - jupyter_contrib_nbextensions
+    - notebook <7.0.0
+    - nbconvert <7.0.0
+    - psutil
+
+test:
+  imports:
+    - cellbender
+  commands:
+    - cellbender --help
+
+about:
+  home: https://github.com/broadinstitute/CellBender
+  summary: "A software package for eliminating technical artifacts from high-throughput single-cell RNA sequencing (scRNA-seq) data"
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  doc_url: https://cellbender.readthedocs.io/en/latest/
+  dev_url: https://github.com/broadinstitute/CellBender
+
+extra:
+  recipe-maintainers:
+    - mencian
+  identifiers:
+    - biotools:CellBender
+    - doi:10.1038/s41592-023-01943-7

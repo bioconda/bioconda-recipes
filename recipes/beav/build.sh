@@ -11,17 +11,23 @@ mkdir -p $PREFIX/bin
 
 mv beav $PREFIX/bin
 mv beav_db $PREFIX/bin
+mv beav_test $PREFIX/bin
+mv beav_circos $PREFIX/bin
 mv scripts/* $BEAV_DIR/scripts
 mv databases/* $BEAV_DIR/databases
 mv models/* $BEAV_DIR/models
 mv test_data/* $BEAV_DIR/test_data
 
-git clone https://github.com/weisberglab/DBSCAN-SWA $BEAV_DIR/software/DBSCAN-SWA
-
-git clone https://github.com/weisberglab/PaperBLAST $BEAV_DIR/software/PaperBLAST
+mv DBSCAN-SWA $BEAV_DIR/software/
+mv PyCirclize $BEAV_DIR/software/
+mv PaperBLAST $BEAV_DIR/software/
 mkdir $BEAV_DIR/software/PaperBLAST/bin/blast
 
+chmod +x $BEAV_DIR/scripts/*
+
 #TIGER
+#TIGER must be downloaded in the build script because the official release contains linux binaries and a broken softlink.
+#Downloading in the meta.yaml script breaks the build and so it must be downloaded here with the exclude parameters.
 curl -v -L -O https://github.com/sandialabs/TIGER/archive/refs/tags/TIGER2.1.tar.gz
 tar xzf TIGER2.1.tar.gz --exclude 'TIGER-TIGER2.1/db/Pfam-A.hmm' --exclude 'TIGER-TIGER2.1/bin/aragorn*' --exclude 'TIGER-TIGER2.1/bin/hmmsearch' --exclude 'TIGER-TIGER2.1/bin/pfscan'
 patch -p 0 -d ./ < $BEAV_DIR/scripts/tiger.patch
