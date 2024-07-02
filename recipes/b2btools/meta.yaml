@@ -1,5 +1,5 @@
-{% set name = "b2bTools" %}
-{% set version = "3.0.6" %}
+{% set name = "b2btools" %}
+{% set version = "3.0.7" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,56 +7,49 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 3617afcfe76cbff3a6bfad4060f962568565fb691b978f87d8db78cde97da58b
+  sha256: b3c9f10c10c8a12c390a79016e01b7e4d165bf1c94dce48e72d31891cb552c29
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
-  noarch: python
   entry_points:
     - b2bTools = b2bTools.__main__:main
+    - b2btools = b2bTools.__main__:main
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage('b2btools', max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('c') }} # [linux]
+    - {{ compiler('cxx') }} # [linux]
+    - clangdev  # [osx]
   host:
-    - python >=3.7,<3.10
+    - python >=3.7.0,<3.12
     - pip
+    - cython ==0.29.37 # [py < 311]
+    - cython # [py >= 311]
   run:
-    - biopython ==1.81
-    - certifi ==2023.5.7
-    - charset-normalizer ==3.1.0
-    - cycler ==0.11.0
-    - exceptiongroup ==1.1.1
-    - fonttools ==4.38.0
+    - python >=3.7.0,<3.12
     - hmmer
-    - idna ==3.4
-    - importlib-metadata ==6.7.0
-    - iniconfig ==2.0.0
-    - joblib ==1.2.0
-    - kiwisolver ==1.4.4
-    - matplotlib-base ==3.5.3
-    - networkx ==2.6.3
-    - numpy ==1.21.6 #[py37]
-    - numpy ==1.24.4 #[py38, py39]
-    - packaging ==23.1
-    - pandas >=1.1,<=1.2
-    - pillow ==9.5.0
-    - pluggy ==1.2.0
-    - pomegranate ==0.14.8
-    - pyparsing ==3.1.0
-    - python-dateutil ==2.8.2
-    - pytorch >=1.8.0 #,<1.13.1
-    - pytz ==2023.3
-    - PyYAML ==6.0
-    - requests ==2.31.0
-    - scikit-learn ==1.0.1
-    - scipy ==1.10.1
     - t-coffee
-    - threadpoolctl ==3.1.0
-    - tomli ==2.0.1
-    - tqdm ==4.65.0
-    - typing_extensions ==4.6.3
-    - urllib3 ==1.26.6
-    - zipp ==3.15.0
+    - biopython >=1.81 # [py <= 39]
+    - biopython >=1.83 # [py >= 310]
+    - matplotlib-base >=3.5.3
+    - numpy ==1.21 # [py37]
+    - numpy ==1.24 # [py == 38 or py == 39]
+    - numpy ==1.26 # [py > 39]
+    - pandas >=1.1, <2.3
+    - pomegranate >=0.14, <1.0
+    - requests >=2.0 # [py <= 39]
+    - requests >=2.31.0 # [py > 39]
+    - scikit-learn ==1.0.2 # [py <= 310]
+    - scikit-learn ==1.4.1.post1 # [py > 310]
+    - scipy ==1.7.3 # [py == 37]
+    - scipy ==1.10.1 # [py == 38 or py == 39]
+    - scipy ==1.12.0 # [py > 39]
+    - pytorch >=1.11.0,<=1.13.1 # [py <= 310]
+    - pytorch >=2.2.0 # [py > 310]
+    - urllib3 >=1.26.6
 
 test:
   imports:
@@ -105,12 +98,17 @@ test:
   commands:
     - b2bTools --help
     - b2bTools --version
+    - b2bTools --input_file test.singleseq.fasta --output_json_file test.singleseq.out.json --output_tabular_file test.singleseq.out.csv --metadata_file test.singleseq.metadata.csv --mode single_seq --dynamine --disomine --efoldmine --agmata --psper
+    - b2bTools --input_file test.msa.fasta --output_json_file test.msa.out.json --output_tabular_file test.msa.out.csv --metadata_file test.msa.metadata.csv --distribution_json_file test.msa.dist.json --distribution_tabular_file test.msa.dist.csv --mode msa --dynamine --disomine --efoldmine --agmata --psper
+  files:
+    - test.singleseq.fasta
+    - test.msa.fasta
 
 about:
-  home: "https://bio2byte.be/"
+  home: "https://bio2byte.be/b2btools"
   license: 'GNU General Public License v3 (GPLv3)'
   license_family: GPL3
-  license_file:
+  license_file: LICENSE
   summary: "bio2Byte software suite to predict protein biophysical properties from their amino-acid sequences"
   description: |
     This package provides you with structural predictions for protein sequences made by the Bio2Byte group which researches the relation between protein sequence and biophysical behavior.
@@ -120,15 +118,17 @@ about:
       - EfoldMine: Predicts from the primary amino acid sequence of a protein, which amino acids are likely involved in early folding events.
       - AgMata: Single-sequence-based predictor of protein regions that are likely to cause beta-aggregation.
       - PSPer: PSP (Phase Separating Protein) predicts whether a protein is likely to phase-separate with a particular mechanism involving RNA interacts (FUS-like proteins).
-  doc_url: https://bio2byte.be/b2btools/package-documentation
-  dev_url: https://pypi.org/project/b2bTools/
+  doc_url: https://pypi.org/project/b2bTools/
+  dev_url: http://bitbucket.org/bio2byte/b2btools_releases
 
 extra:
-  author:
-    - Wim Vranken <wim.vranken@vub.be>
+  author: Wim Vranken <wim.vranken@vub.be>
   recipe-maintainers:
     - Adrián Díaz <adrian.diaz@vub.be> (@agdiaz)
     - Jose Gavaldá-García <jose.gavalda.garcia@vub.be> (@GavaldaGarcia)
   maintainers:
     - Adrián Díaz <adrian.diaz@vub.be> (@agdiaz)
     - Jose Gavaldá-García <jose.gavalda.garcia@vub.be> (@GavaldaGarcia)
+  identifiers:
+    - doi:10.48550/arXiv.2405.02136 # bioRxiv preprint
+    - biotools:b2btools
