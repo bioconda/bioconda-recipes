@@ -3,4 +3,5 @@
 set -xe
 
 make -j ${CPU_COUNT} CC="${CXX} ${CXXFLAGS} -I${PWD}/include" install
-cp bin/slclust $PREFIX/bin
+mkdir -p $PREFIX/bin
+cp -f bin/slclust $PREFIX/bin
