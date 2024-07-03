@@ -1,24 +1,27 @@
-{% set version = "4.1" %}
+{% set name = "crux-toolkit" %}
+{% set version = "4.2" %}
 
 package:
-  name: crux-toolkit
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://noble.gs.washington.edu/crux-downloads/crux-{{ version }}/crux-{{ version }}.Linux.x86_64.zip  # [linux]
-    sha256: c056f1e632dfaf8d0c6f6769fbdaf78eef6fd586a6b732d88ad0c01fe2da077d  # [linux]
-  - url: https://noble.gs.washington.edu/crux-downloads/crux-{{ version }}/crux-{{ version }}.Darwin.x86_64.zip  # [osx]
-    sha256: 9f7b060e67ec250e4c2a10b783eb1777497ec0d1151e5bc9630f67f411b595ac  # [osx]
+  - url: https://noble.gs.washington.edu/crux-downloads/crux-{{ version }}/crux-{{ version }}.Source.tar.gz
+    sha256: dc6e38916104a164b1c7285362c9c99b9679058dc18d2f78d1a721e78e43071f
 
 build:
-  number: 2
-  script: "mkdir -p $PREFIX/bin; chmod a+x bin/*; cp bin/* $PREFIX/bin"
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     # both needed as run-time dependencies
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - unzip
 
 test:
   commands:
@@ -32,5 +35,5 @@ about:
   dev_url: https://github.com/crux-toolkit/crux-toolkit
 
 extra:
-  skip-lints:
-    - should_not_be_noarch_source
+  additional-platforms:
+    - linux-aarch64
