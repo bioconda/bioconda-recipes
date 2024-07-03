@@ -1,7 +1,8 @@
+{% set name = "freebayes" %}
 {% set version = "1.3.7" %}
 
 package:
-  name: freebayes
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -10,10 +11,10 @@ source:
   patches:
     - 0001-make-meson-build-conda-friendly.patch
     - 0002-fix-intervaltree-include-path.patch
+    - 0003-meson-macos.patch  # [osx]
 
 build:
-  number: 0
-  skip: true  # [osx]
+  number: 2
   run_exports:
     - {{ pin_subpackage("freebayes", max_pin="x") }}
 
@@ -31,25 +32,32 @@ requirements:
     - tabixpp
     - vcflib
     - simde
+    - zlib
   run:
     - parallel
     - samtools
     - tabixpp
     - vcflib
-    
+    - zlib
+
 test:
   commands:
     - freebayes --version
     - freebayes-parallel
-    
+
 about:
-  home: https://github.com/ekg/freebayes
+  home: https://github.com/freebayes/freebayes
   license: MIT
   license_file: LICENSE
   license_family: MIT
   summary: Bayesian haplotype-based polymorphism discovery and genotyping
-  maintainers: jpuritz
+  dev_url: https://github.com/freebayes/freebayes
 
 extra:
-   identifiers:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
     - biotools:freebayes
+    - usegalaxy-eu:freebayes
+  recipe-maintainers:
+    - jpuritz

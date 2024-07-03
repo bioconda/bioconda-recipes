@@ -8,16 +8,20 @@ package:
 source:
   url: https://github.com/sstadick/perbase/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - perbase-aarch64.patch
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('perbase', max_pin="x.x") }}
 
 requirements:
   build:
-    - rust >=1.42
     - clangdev
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
     - pkg-config
     - make
     - cmake
@@ -45,3 +49,7 @@ about:
   license_family: MIT
   license_file: LICENSE
   summary: Per-base metrics on BAM/CRAM files.
+
+extra:
+  additional-platforms:
+    - linux-aarch64

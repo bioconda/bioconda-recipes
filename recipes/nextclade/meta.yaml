@@ -1,5 +1,5 @@
 {% set name = "nextclade" %}
-{% set version = "3.1.0" %}
+{% set version = "3.8.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,11 +7,13 @@ package:
 
 source:
   - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-x86_64-unknown-linux-gnu   # [linux64]
-    sha256: 949ec8ea1eb9705529425543292347ce7fbf9c799ec9f82fb3a9dab5f9e39450                                           # [linux64]
+    sha256: 6251f3c46236fba7a51924c6dd49581a150645efddf4248f426123524b23af7f                                           # [linux64]
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-aarch64-unknown-linux-gnu  # [aarch64]
+    sha256: 3575e0c1a20f1ff4f69e77ea1bcd08cb01bc80a74a750eba02cc5fa1227a3400                                           # [aarch64]
   - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-x86_64-apple-darwin        # [osx and x86_64]
-    sha256: 878523f7c278c16bb19c47ab6421c63ccb876bbd2820cc997bcda62dcf3eb4d4                                           # [osx and x86_64]
-  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-aarch64-apple-darwin       # [arm64]
-    sha256: 967ed5de693aa162ba010521d397462c7a73ff9430b2d70af42bc05b52782881                                           # [arm64]
+    sha256: a5ad4c2ca527929ab8c8b3b2521287488383f78fc1ee3030cbf5af23856b58b0                                           # [osx and x86_64]
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-aarch64-apple-darwin       # [osx and arm64]
+    sha256: 579f499f7f0f5f2b9d520971ded4e265140859317f083ff8e2879ad74373ec33                                           # [osx and arm64]
 
 build:
   number: 0
@@ -21,9 +23,10 @@ build:
 
 requirements:
 
+# Disable test for aarch64, as nextclade requires glibc 2.18 not available on aarch64
 test:
   commands:
-    - nextclade --help
+    - nextclade --help  # [not aarch64]
 
 about:
   home: https://github.com/nextstrain/nextclade
@@ -34,6 +37,8 @@ about:
   dev_url: https://github.com/nextstrain/nextclade
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - pvanheus
     - corneliusroemer
