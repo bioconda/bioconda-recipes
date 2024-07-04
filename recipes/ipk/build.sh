@@ -21,10 +21,10 @@ ls $PREFIX/*
 cp build/ipk/ipk-aa $PREFIX/bin
 cp build/ipk/ipk-aa-pos $PREFIX/bin
 cp build/ipk/ipk-dna $PREFIX/bin
-cp build/tools/diff-dna $PREFIX/bin
-cp build/tools/diff-aa $PREFIX/bin
-cp build/tools/dump-dna $PREFIX/bin
-cp build/tools/dump-aa $PREFIX/bin
+cp build/tools/ipkdiff-dna $PREFIX/bin
+cp build/tools/ipkdiff-aa $PREFIX/bin
+cp build/tools/ipkdump-dna $PREFIX/bin
+cp build/tools/ipkdump-aa $PREFIX/bin
 
 cp build/i2l/libi2l_aa.a $PREFIX/lib
 cp build/i2l/libi2l_aa_pos.a $PREFIX/lib
