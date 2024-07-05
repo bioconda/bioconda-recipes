@@ -22,7 +22,13 @@ jobs: # a basic unit of work in a run
 
       - run:
           name: Check for Additional Platforms
-          command: ./.circleci/check-for-additional-platforms.sh "origin/master...HEAD" "build_and_test"
+          command: |
+            result = $(../scripts/check-for-additional-platforms.sh "origin/master...HEAD" "build_and_test" "${CIRCLE_JOB}")
+            if [[ result != "build" ]]
+            then
+                echo "No recipes using this platform, skipping rest of job."
+                circleci-agent step halt
+            fi
 
       - run:
           name: Fetch bioconda install script
@@ -99,7 +105,13 @@ jobs: # a basic unit of work in a run
 
       - run:
           name: Check for Additional Platforms
-          command: ./.circleci/check-for-additional-platforms.sh "${CIRCLE_SHA1}~1 ${CIRCLE_SHA1}" "build_and_upload"
+          command: |
+            result = $(../scripts/check-for-additional-platforms.sh "${CIRCLE_SHA1}~1 ${CIRCLE_SHA1}" "build_and_upload" "${CIRCLE_JOB}")
+            if [[ result != "build" ]]
+            then
+                echo "No recipes using this platform, skipping rest of job."
+                circleci-agent step halt
+            fi
 
       - run:
           name: Fetch bioconda install script
@@ -124,11 +136,9 @@ jobs: # a basic unit of work in a run
       - run:
           name: Build and push
           command: |
-            source /opt/mambaforge/etc/profile.d/conda.sh
-            source /opt/mambaforge/etc/profile.d/mamba.sh
-            mamba activate bioconda
-
-            # Use SDK with arm64 support
+            set -e
+            eval "$(conda shell.bash hook)"
+            conda activate bioconda
             source common.sh
 
             bioconda-utils handle-merged-pr recipes config.yml \
@@ -194,12 +204,8 @@ jobs: # a basic unit of work in a run
           name: Build and upload
           command: |
             set -e
-            . common.sh
-            source /opt/mambaforge/etc/profile.d/conda.sh
-            source /opt/mambaforge/etc/profile.d/mamba.sh
-            mamba activate bioconda
-
-            # Use SDK with arm64 support
+            eval "$(conda shell.bash hook)"
+            conda activate bioconda
             source common.sh
 
             echo '============'
@@ -253,6 +259,6 @@ workflows:
           matrix:
             parameters:
               os: 
-                - osx-arm64
+                # - osx-arm64 Bulk is on GitHub Actions
                 - linux-aarch64
               runner: [0, 1, 2, 3, 4, 5]

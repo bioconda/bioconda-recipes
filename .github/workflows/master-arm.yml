@@ -20,7 +20,13 @@ jobs:
       # bail if there's no osx-arm64 recipes
       - name: Check for Additional Platforms
         id: additional_platforms
-        run: ./.github/check-for-additional-platforms.sh "${GITHUB_SHA}~1 ${GITHUB_SHA}" "build_and_upload"
+        run: |
+          result = $(../scripts/check-for-additional-platforms.sh "${GITHUB_SHA}~1 ${GITHUB_SHA}" "build_and_upload" "${GITHUB_JOB}")
+          if [[ result != "build" ]]
+          then
+              echo "No recipes using this platform, skipping rest of job."
+              echo "skip_build=true" >> $GITHUB_OUTPUT
+          fi
 
       - name: set path
         run: |

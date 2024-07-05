@@ -20,7 +20,13 @@ jobs:
       # bail if there's no osx-arm64 recipes
       - name: Check for Additional Platforms
         id: additional_platforms
-        run: ./.github/check-for-additional-platforms.sh "origin/master...HEAD" "build_and_test"
+        run: |
+          result = $(../scripts/check-for-additional-platforms.sh "origin/master...HEAD" "build_and_test" "${GITHUB_JOB}")
+          if [[ result != "build" ]]
+          then
+              echo "No recipes using this platform, skipping rest of job."
+              echo "skip_build=true" >> $GITHUB_OUTPUT
+          fi
 
       - name: set path
         run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH

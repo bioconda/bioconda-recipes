@@ -7,6 +7,7 @@
 # arguments
 git_range=$1
 job_name=$2
+current_job=$3
 
 # Download ARM version of yq
 yq_platform=$(uname)
@@ -21,18 +22,23 @@ files=`git diff --name-only --diff-filter AMR ${git_range} | grep -E 'meta.yaml$
 build=0
 
 for file in $files; do
-    echo $file
     # To create a properly-formatted yaml that yq can parse, comment out jinja2
     # variable setting with {% %} and remove variable use with {{ }}.
     additional_platforms=$(cat $file \
     | sed -E 's/(.*)\{%(.*)%\}(.*)/# \1\2\3/g' \
     | tr -d '{{' | tr -d '}}' \
     | ${HOME}/bin/yq '.extra.additional-platforms[]')
+
+    parsing_status=$?
+    if [ $parsing_status -gt 0 ]; then
+        echo "An error occurred while reading/parsing ${file}"
+        exit $parsing_status
+    fi
+
     # Check if any additional platforms match this job
     for additional_platform in $additional_platforms; do
-    if [ "${GITHUB_JOB}" = "${job_name}-${additional_platform}" ]
+    if [ "${current_job}" = "${job_name}-${additional_platform}" ]
     then
-        echo "Found at least one recipe for ${job_name}-${additional_platform}"
         build=1
         break
     fi
@@ -40,8 +46,7 @@ for file in $files; do
 done
 
 # If no changed recipes apply to this platform, skip remaining steps
-if [[ build -lt 1 ]]
+if [[ build -gt 0 ]]
 then
-    echo "No recipes using this platform, skipping rest of job."
-    echo "skip_build=true" >> $GITHUB_OUTPUT
+    echo "build"
 fi
