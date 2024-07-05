@@ -1,4 +1,3 @@
-# Install cpstools
-poetry build
-poetry install 
-pip install dist/*.tar.gz
+#!/bin/bash
+
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt
