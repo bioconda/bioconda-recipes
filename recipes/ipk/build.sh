@@ -13,7 +13,7 @@ mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
 
 cmake -B build -DHASH_MAP=USE_TSL_ROBIN_MAP -DCMAKE_CXX_FLAGS="-O3" -DBUILD_SHARED_LIBS=ON --install-prefix=$PREFIX
-cmake --build build --target all --target diff-dna --target diff-aa --target dump-dna --target dump-aa
+cmake --build build --target all --target diff-dna --target diff-aa --target dump-dna --target dump-aa -j ${CPU_COUNT}
 cmake --install build
 
 ls $PREFIX/*
