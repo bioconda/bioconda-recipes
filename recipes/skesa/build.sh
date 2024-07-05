@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 export LIBRARY_PATH=${PREFIX}/lib
 export LD_LIBRARY_PATH=${PREFIX}/lib
 export CPP_INCLUDE_PATH=${PREFIX}/include
@@ -13,7 +15,7 @@ fi
 
 LDFLAGS=-L${PREFIX}/lib
 
-make -f Makefile.nongs \
+make -j ${CPU_COUNT} -f Makefile.nongs \
     BOOST_PATH=${PREFIX} \
     CC="$CXX $CXXFLAGS" \
     LDFLAGS=$LDFLAGS
