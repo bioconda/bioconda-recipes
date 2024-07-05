@@ -15,7 +15,7 @@ fi
 
 LDFLAGS=-L${PREFIX}/lib
 
-make -j ${CPU_COUNT} -f Makefile.nongs \
+make -f Makefile.nongs \
     BOOST_PATH=${PREFIX} \
     CC="$CXX $CXXFLAGS" \
     LDFLAGS=$LDFLAGS
