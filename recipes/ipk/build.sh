@@ -16,8 +16,6 @@ cmake -B build -DHASH_MAP=USE_TSL_ROBIN_MAP -DCMAKE_CXX_FLAGS="-O3" -DBUILD_SHAR
 cmake --build build --target all --target diff-dna --target diff-aa --target dump-dna --target dump-aa
 cmake --install build
 
-ls $PREFIX/*
-
 cp build/ipk/ipk-aa $PREFIX/bin
 cp build/ipk/ipk-aa-pos $PREFIX/bin
 cp build/ipk/ipk-dna $PREFIX/bin
@@ -29,8 +27,3 @@ cp build/tools/ipkdump-aa $PREFIX/bin
 cp build/i2l/libi2l_aa.a $PREFIX/lib
 cp build/i2l/libi2l_aa_pos.a $PREFIX/lib
 cp build/i2l/libi2l_dna.a $PREFIX/lib
-
-#chmod +x $PREFIX/bin/ipk-aa
-#chmod +x $PREFIX/bin/ipk-dna
-#chmod +x $PREFIX/bin/ipk-aa-pos
-#chmod +x $PREFIX/bin/ipk.py
