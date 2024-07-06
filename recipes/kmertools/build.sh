@@ -4,4 +4,4 @@
 cargo build --release
 
 # Install the binaries
-cargo install --root $PREFIX
+cargo install --manifest-path kmertools/Cargo.toml --root $PREFIX 
