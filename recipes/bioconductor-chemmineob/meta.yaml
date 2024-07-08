@@ -1,6 +1,6 @@
-{% set version = "1.30.0" %}
+{% set version = "1.40.0" %}
 {% set name = "ChemmineOB" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,33 +8,39 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: ea2abea0c081f05f9ebecfdd0bb58b6a
+  md5: 5bd759ca398ffb70214a8076028bf0b2
+  patches:
+    - patch
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: ChemmineR, BiocStyle, knitr, knitrBootstrap, BiocManager, rmarkdown
+  run_exports: '{{ pin_subpackage("bioconductor-chemmineob", max_pin="x.x") }}'
+# Suggests: ChemmineR, BiocStyle, knitr, knitrBootstrap, BiocManager, rmarkdown,RUnit
 # SystemRequirements: OpenBabel (>= 3.0.0) with headers (http://openbabel.org). Eigen3 with headers.
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.38.0,<0.39.0'
-    - 'bioconductor-zlibbioc >=1.38.0,<1.39.0'
+    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
+    - 'bioconductor-zlibbioc >=1.48.0,<1.49.0'
     - r-base
     - r-bh
     - 'r-rcpp >=0.11.0'
     - libblas
     - liblapack
-    - openbabel >=3.0.0
+    - openbabel >=3
+    - eigen
   run:
-    - 'bioconductor-biocgenerics >=0.38.0,<0.39.0'
-    - 'bioconductor-zlibbioc >=1.38.0,<1.39.0'
+    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
+    - 'bioconductor-zlibbioc >=1.48.0,<1.49.0'
     - r-base
     - r-bh
     - 'r-rcpp >=0.11.0'
-    - openbabel >=3.0.0
+    - openbabel >=3
+    - eigen
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}

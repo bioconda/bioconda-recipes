@@ -1,6 +1,6 @@
-{% set version = "1.76.0" %}
+{% set version = "1.86.2" %}
 {% set name = "reactome.db" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,24 +8,27 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 32a8dbc839a1d62a06682a072d47baea
+  md5: ff56f3908b347cb18e3e4ccedf7f584e
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-reactome.db", max_pin="x.x") }}'
   noarch: generic
 # Suggests: RSQLite
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.54.0,<1.55.0'
+    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.54.0,<1.55.0'
+    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -33,7 +36,7 @@ about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: 'CC BY 4.0'
   summary: 'A set of annotation maps for reactome'
-  description: 'A set of annotation maps for reactome assembled using data from reactome'
+  description: 'A set of annotation maps for reactome assembled using data from reactome. This package has been created by a third-party developer, and is not affiliated with the Reactome team.'
 extra:
   parent_recipe:
     name: bioconductor-reactome.db

@@ -1,46 +1,59 @@
-{% set name="integron_finder" %}
-{% set version="2.0rc6" %}
+{% set name = "integron_finder" %}
+{% set version = "2.0.5" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
 
-build:
-  noarch: python
-  number: 0
-  script: python -m pip install --no-deps --ignore-installed .
-
 source:
-  url: https://github.com/gem-pasteur/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 000ef62510b6f5da80918ceb0428442640e8da4a869d7702efefa6d47e25f8af
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/integron_finder-{{ version }}.tar.gz
+  sha256: ddfe9ad2a0a27bd2a116e77f578126f59f32c21c7be2dd7fbd56b43bc9dba919
+
+build:
+  entry_points:
+    - integron_finder=integron_finder.scripts.finder:main
+    - integron_split=integron_finder.scripts.split:main
+    - integron_merge=integron_finder.scripts.merge:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('integron_finder', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.4
+    - python >=3.10
     - pip
   run:
-    - python >=3.4
-    - biopython >=1.70
-    - numpy >=1.14.2
-    - matplotlib-base
+    - python >=3.10
+    - numpy >=1.26
+    - matplotlib-base >=3.8
+    - pandas >=2
+    - biopython >=1.82
     - colorlog
-    - pandas >=0.22.0
-    - hmmer >=3.1
-    - infernal >=1.1.2
-    - prodigal >=2.6.2
+    - hmmer >=3.1b2,<=3.3.2
+    - infernal >=1.1.2,<=1.1.4
+    - prodigal >=2.6.3
 
 test:
+  imports:
+    - integron_finder
   commands:
-    - integron_finder --version
+    - integron_finder --help
+    - integron_split --help
+    - integron_merge --help
 
 about:
-  home: https://github.com/gem-pasteur/Integron_Finder
-  license: 'GPLv3'
+  home: https://github.com/gem-pasteur/Integron_Finder/
+  summary: Integron Finder aims at detecting integrons in DNA sequences
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: COPYING
-  summary: 'Finds integrons in DNA sequences'
+  doc_url: https://integronfinder.readthedocs.io/en/latest/
+  dev_url: https://github.com/gem-pasteur/Integron_Finder/
 
 extra:
   recipe-maintainers:
-    - thanhleviet
-  doi:
-    - 10.1093/nar/gkw319
+    - bneron
+  identifiers:
+    - doi:10.3390/microorganisms10040700

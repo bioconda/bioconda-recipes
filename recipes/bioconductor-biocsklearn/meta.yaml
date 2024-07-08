@@ -1,6 +1,6 @@
-{% set version = "1.14.0" %}
+{% set version = "1.24.0" %}
 {% set name = "BiocSklearn" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,41 +8,32 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: b7d1749587500b58b5de0995763119f1
+  md5: a3df49031172bfd2b2a3b1c242b7dd40
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: testthat, restfulSE, HDF5Array, BiocStyle
+  run_exports: '{{ pin_subpackage("bioconductor-biocsklearn", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: testthat, restfulSE, HDF5Array, BiocStyle, rmarkdown, knitr
 # SystemRequirements: python (>= 2.7), sklearn, numpy, pandas, h5py
 requirements:
   host:
-    - 'bioconductor-basilisk >=1.4.0,<1.5.0'
-    - 'bioconductor-summarizedexperiment >=1.22.0,<1.23.0'
+    - 'bioconductor-basilisk >=1.14.0,<1.15.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
     - r-base
-    - r-knitr
-    - r-rcpp
     - r-reticulate
-    - libblas
-    - liblapack
+    - 'python >=2.7'
   run:
-    - 'bioconductor-basilisk >=1.4.0,<1.5.0'
-    - 'bioconductor-summarizedexperiment >=1.22.0,<1.23.0'
+    - 'bioconductor-basilisk >=1.14.0,<1.15.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
     - r-base
-    - r-knitr
-    - r-rcpp
     - r-reticulate
-    - python
-    - numpy
-    - pandas
-    - h5py
-    - scikit-learn
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
+    - 'python >=2.7'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

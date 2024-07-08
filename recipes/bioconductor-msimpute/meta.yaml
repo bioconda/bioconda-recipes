@@ -1,6 +1,6 @@
-{% set version = "1.2.0" %}
+{% set version = "1.12.0" %}
 {% set name = "msImpute" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,42 +8,46 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: dcf9a07a1347bae55fdec282158e9a18
+  md5: 493d744acd5f63e07590f22b2ce0eea2
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-msimpute", max_pin="x.x") }}'
   noarch: generic
 # Suggests: BiocStyle, knitr, rmarkdown, ComplexHeatmap, imputeLCMD
 # SystemRequirements: python
 requirements:
   host:
-    - 'bioconductor-limma >=3.48.0,<3.49.0'
-    - 'bioconductor-scran >=1.20.0,<1.21.0'
+    - 'bioconductor-limma >=3.58.0,<3.59.0'
+    - 'bioconductor-scran >=1.30.0,<1.31.0'
     - r-base
     - r-data.table
+    - r-dplyr
     - r-fnn
     - r-matrixstats
     - r-mvtnorm
     - r-pdist
-    - r-rdetools
     - r-reticulate
     - r-softimpute
+    - r-tidyr
   run:
-    - 'bioconductor-limma >=3.48.0,<3.49.0'
-    - 'bioconductor-scran >=1.20.0,<1.21.0'
+    - 'bioconductor-limma >=3.58.0,<3.59.0'
+    - 'bioconductor-scran >=1.30.0,<1.31.0'
     - r-base
     - r-data.table
+    - r-dplyr
     - r-fnn
     - r-matrixstats
     - r-mvtnorm
     - r-pdist
-    - r-rdetools
     - r-reticulate
     - r-softimpute
+    - r-tidyr
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -51,6 +55,6 @@ about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>=2)'
   summary: 'Imputation of label-free mass spectrometry peptides'
-  description: 'MsImpute is a package for imputation of peptide intensity in proteomics experiments. It additionally contains tools for MAR/MNAR diagnosis and assessment of distortions to the probability distribution of the data post imputation. Currently, msImpute completes missing values by low-rank approximation of the underlying data matrix.'
+  description: 'MsImpute is a package for imputation of peptide intensity in proteomics experiments. It additionally contains tools for MAR/MNAR diagnosis and assessment of distortions to the probability distribution of the data post imputation.  The missing values are imputed by low-rank approximation of the underlying data matrix if they are MAR (method = "v2"), by Barycenter approach if missingness is MNAR ("v2-mnar"), or by Peptide Identity Propagation (PIP).'
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 

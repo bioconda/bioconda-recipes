@@ -1,0 +1,79 @@
+{% set name = "pyopenms" %}
+{% set version = "3.1.0" %} # if ends with 'dev' it is considered a development release and pulled from GitHub
+package:
+  name: {{ name|lower  }}
+  version: {{ version  }}
+
+{% if 'dev' in version %}
+source:
+  git_url: https://github.com/OpenMS/OpenMS.git
+  git_rev: develop
+  git_depth: 1 # (Defaults to -1/not shallow)
+{% else %}
+source:
+  url: https://github.com/OpenMS/OpenMS/releases/download/Release{{ version }}/OpenMS-{{ version }}-src.tar.gz
+  md5: 6a60ef1a95c7ce915cc3a02e5bccd593
+{% endif %}
+
+build:
+  skip: True  # [py2k or osx]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("pyopenms", max_pin="x.x") }}  
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake
+    - sysroot_linux-64 =2.17 # [linux]    
+  host:
+    - libopenms {{ version }}
+    - llvm-openmp # [osx]
+    - libsvm
+    - xerces-c
+    - boost-cpp
+    - qt-main
+    - python {{ python }}
+    - cython >=0.25.2
+    - autowrap >=0.22.10
+    - setuptools
+    - wheel
+    - pip
+    - numpy {{ numpy }}
+    - pandas
+    - matplotlib-base
+    - sysroot_linux-64 =2.17 # [linux]
+  run: # run_exports in libopenms should take care of the libraries. But it does not because of bugs. So copy everthing again and again
+    - libopenms {{ version }}
+    - llvm-openmp # [osx]
+    - libsvm
+    - xerces-c
+    - boost-cpp
+    - qt-main
+    - python {{ python }}
+    - numpy {{ numpy }}
+    - pandas
+    - matplotlib-base
+    - sysroot_linux-64 =2.17 # [linux]
+test:
+  commands:
+    - python -c "import pyopenms; print(pyopenms.__version__)"
+    # We cant use the PYTHON variable since it does not exist on the biocontainer?!
+    # TODO run the full test suite?
+
+about:
+  home: https://github.com/OpenMS/OpenMS
+  license: BSD
+  license_file: LICENSE
+  summary: python bindings for OpenMS, an open-source software C++ library for LC-MS data management and analyses
+
+extra:
+    {% if 'dev' in version %}
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash
+  {% endif %}
+  identifiers:  
+    - biotools:openms
+    - doi:10.1038/nmeth.3959

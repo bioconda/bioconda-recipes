@@ -1,6 +1,6 @@
-{% set version = "1.16.0" %}
+{% set version = "1.26.0" %}
 {% set name = "RITANdata" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,28 +8,32 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 8be8bdff4741e4df48fe2b3cf229dfa3
+  md5: 12987879ef374ad399dd440a058b9a47
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-ritandata", max_pin="x.x") }}'
   noarch: generic
+# Suggests: knitr
 requirements:
   host:
     - r-base
   run:
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
   license: 'file LICENSE'
-  summary: 'This package contains the annotation and network data sets'
-  description: 'Data such as is contained in these two R data files in this package are required for the RITAN package. Users may use their own or additional resources in conjunction with RITANdata. See the RITAN vignettes for more information.'
+  summary: 'This package contains reference annotation and network data sets'
+  description: 'Data such as is contained in the two R data files in this package are required for the RITAN package examples. Users are highly encouraged to use their own or additional resources in conjunction with RITANdata. See the RITAN vignettes and RITAN.md for more information, such as gathering more up-to-date annotation data.'
   license_file: LICENSE
 

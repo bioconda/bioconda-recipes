@@ -1,0 +1,50 @@
+{% set name = "stranger" %}
+{% set version = "0.9.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: b9322384836e46ed9373fdb30b4e7656ea59d6b293f22692a1b9125b6cb8ca76
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - stranger = stranger.__main__:base_command
+  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - click
+    - coloredlogs
+    - pip
+    - python
+    - pyyaml
+  run:
+    - click
+    - coloredlogs
+    - python >=3.6.0
+    - pyyaml
+
+test:
+  imports:
+    - stranger
+    - stranger.resources
+  commands:
+    - stranger --help
+  requires:
+    - pytest
+    - pytest-cov
+
+about:
+  home: "https://github.com/moonso/stranger"
+  license: MIT
+  license_family: MIT
+  summary: "Annotate VCF files with str variants"
+  doc_url: "https://github.com/moonso/stranger"
+  dev_url: "https://github.com/moonso/stranger"

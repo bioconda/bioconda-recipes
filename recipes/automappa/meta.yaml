@@ -1,0 +1,59 @@
+{% set name = "Automappa" %}
+{% set sha256 = "a12d33b7ebd802da7ec5861427e127a531264dc97e59f5d68ca31f360d76d7fa" %}
+{% set version = "2.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/WiscEvan/Automappa/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script:
+    - {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vvv
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+
+  run:
+    - python >=3.7
+    - autometa
+    - celery[redis]
+    - dash
+    - dash-bootstrap-components
+    - dash-daq
+    - dash-extensions
+    - flask
+    - msgpack-python
+    - numpy
+    - pandas
+    - plotly
+
+test:
+  imports:
+    - automappa
+    - automappa.index
+  commands:
+    - automappa -h > /dev/null
+
+about:
+  home: https://github.com/WiscEvan/Automappa
+  license: AGPL-3.0
+  license_family: AGPL
+  license_file: LICENSE
+  summary: "Automappa: An interactive interface for exploration of metagenomes"
+  description: |
+    An interactive interface for exploration and refinment of metagenomes into metagenome-assembled genomes.
+  doc_url: https://github.com/WiscEvan/Automappa/README.md
+  dev_url: https://github.com/WiscEvan/Automappa
+
+extra:
+  recipe-maintainers:
+   - WiscEvan

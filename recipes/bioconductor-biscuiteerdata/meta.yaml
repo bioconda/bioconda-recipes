@@ -1,6 +1,6 @@
-{% set version = "1.6.0" %}
+{% set version = "1.16.0" %}
 {% set name = "biscuiteerData" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,28 +8,33 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 9fadeb6513aacedd38b2640270a22724
+  md5: 9610f1ea2c2e8303acbb0b52204f8d3e
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-biscuiteerdata", max_pin="x.x") }}'
   noarch: generic
-# Suggests: knitr
+# Suggests: knitr, rmarkdown, markdown
 requirements:
   host:
-    - 'bioconductor-annotationhub >=3.0.0,<3.1.0'
-    - 'bioconductor-experimenthub >=2.0.0,<2.1.0'
+    - 'bioconductor-annotationhub >=3.10.0,<3.11.0'
+    - 'bioconductor-experimenthub >=2.10.0,<2.11.0'
+    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
     - r-base
     - r-curl
   run:
-    - 'bioconductor-annotationhub >=3.0.0,<3.1.0'
-    - 'bioconductor-experimenthub >=2.0.0,<2.1.0'
+    - 'bioconductor-annotationhub >=3.10.0,<3.11.0'
+    - 'bioconductor-experimenthub >=2.10.0,<2.11.0'
+    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
     - r-base
     - r-curl
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

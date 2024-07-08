@@ -1,6 +1,6 @@
-{% set version = "1.2.1" %}
+{% set version = "1.12.0" %}
 {% set name = "transomics2cytoscape" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,28 +8,36 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 143cb0d4a1f76306db4983c482ddd6c5
+  md5: 17325dd51ab6dfcc10dff97e98be6e91
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-transomics2cytoscape", max_pin="x.x") }}'
   noarch: generic
 # Suggests: testthat, roxygen2, knitr, BiocStyle, rmarkdown
-# SystemRequirements: Java 11, Cytoscape 3.8.2, Cy3D >= 1.1.3
+# SystemRequirements: Cytoscape >= 3.10.0
 requirements:
   host:
-    - 'bioconductor-keggrest >=1.32.0,<1.33.0'
-    - 'bioconductor-rcy3 >=2.12.0,<2.13.0'
+    - 'bioconductor-keggrest >=1.42.0,<1.43.0'
+    - 'bioconductor-rcy3 >=2.22.0,<2.23.0'
     - r-base
     - r-dplyr
+    - r-pbapply
+    - r-purrr
+    - r-tibble
   run:
-    - 'bioconductor-keggrest >=1.32.0,<1.33.0'
-    - 'bioconductor-rcy3 >=2.12.0,<2.13.0'
+    - 'bioconductor-keggrest >=1.42.0,<1.43.0'
+    - 'bioconductor-rcy3 >=2.22.0,<2.23.0'
     - r-base
     - r-dplyr
+    - r-pbapply
+    - r-purrr
+    - r-tibble
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

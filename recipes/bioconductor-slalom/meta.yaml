@@ -1,6 +1,6 @@
-{% set version = "1.14.0" %}
+{% set version = "1.24.0" %}
 {% set name = "slalom" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,20 +8,22 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: f295ea653da321e38b62b073241d31c4
+  md5: cf8b2aec440cd0fd79260a1f0199db2f
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: knitr, rhdf5, scater, testthat
+  run_exports: '{{ pin_subpackage("bioconductor-slalom", max_pin="x.x") }}'
+# Suggests: BiocStyle, knitr, rhdf5, rmarkdown, scater, testthat
 requirements:
   host:
-    - 'bioconductor-gseabase >=1.54.0,<1.55.0'
-    - 'bioconductor-singlecellexperiment >=1.14.0,<1.15.0'
-    - 'bioconductor-summarizedexperiment >=1.22.0,<1.23.0'
+    - 'bioconductor-gseabase >=1.64.0,<1.65.0'
+    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
     - r-base
     - r-bh
     - r-ggplot2
@@ -31,9 +33,9 @@ requirements:
     - libblas
     - liblapack
   run:
-    - 'bioconductor-gseabase >=1.54.0,<1.55.0'
-    - 'bioconductor-singlecellexperiment >=1.14.0,<1.15.0'
-    - 'bioconductor-summarizedexperiment >=1.22.0,<1.23.0'
+    - 'bioconductor-gseabase >=1.64.0,<1.65.0'
+    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
     - r-base
     - r-bh
     - r-ggplot2
@@ -51,6 +53,6 @@ about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'Factorial Latent Variable Modeling of Single-Cell RNA-Seq Data'
-  description: 'slalom is a scalable modelling framework for single-cell RNA-seq data that uses gene set annotations to dissect single-cell transcriptome heterogeneity, thereby allowing to identify biological drivers of cell-to-cell variability and model confounding factors.'
+  description: 'slalom is a scalable modelling framework for single-cell RNA-seq data that uses gene set annotations to dissect single-cell transcriptome heterogeneity, thereby allowing to identify biological drivers of cell-to-cell variability and model confounding factors. The method uses Bayesian factor analysis with a latent variable model to identify active pathways (selected by the user, e.g. KEGG pathways) that explain variation in a single-cell RNA-seq dataset. This an R/C++ implementation of the f-scLVM Python package. See the publication describing the method at https://doi.org/10.1186/s13059-017-1334-8.'
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 

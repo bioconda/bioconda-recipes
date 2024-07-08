@@ -1,0 +1,53 @@
+{% set name = "ccqtl" %}
+{% set version = "0.0.1-beta.2" %}
+{% set tag = "v0.0.1-beta.2" %}
+{% set owner = "cc-qtl" %}
+{% set sha256 = "ba6c7c29eaa78baa5b8a8d909e42cec6c9c1b24860daef077158a60bdd9651fb" %}
+
+package:
+  name: r-ccqtl
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url: https://gitlab.pasteur.fr/{{ owner }}/{{ name }}/-/archive/{{ tag  }}/{{ name }}-{{ tag }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - r-base ==4.2
+    - r-qtl2 ==0.30
+    - r-gtools
+    - r-argparse >=2.2.0
+    - r-dplyr
+  run:
+    - r-base ==4.2
+    - r-qtl2 ==0.30
+    - r-gtools
+    - r-argparse >=2.2.0
+    - r-dplyr
+
+
+test:
+  commands:
+    - ccqtl -h
+    - $R -e "library('ccqtl')"
+
+
+about:
+  home: https://gitlab.pasteur.fr/cc-qtl/ccqtl
+  license: GPL3
+  summary: CCQTL is a wrapper around the R/qtl2 (Broman et al, Genetics 2019 10.1534/genetics.118.301595)
+    functions, with hard-coded parameters tailored for QTL mapping in the Collaborative Cross.
+  license_family: GPL3
+  license_file: LICENSE
+extra:
+  recipe-maintainers:
+    - rplanel

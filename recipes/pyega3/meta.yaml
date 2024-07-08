@@ -1,5 +1,5 @@
 {% set name = "pyega3" %}
-{% set version = "3.4.1" %}
+{% set version = "5.2.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,25 +7,28 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 58f4eb3301bb5b2f295aeb0c58ce937f940ecaeca9fa627a56f988876c34e3cc
+  sha256: 95539b8e153f2311d89a6905723598013fd12a9d0784a911ed1b550a4094bad1
 
 build:
   number: 0
   entry_points:
     - pyega3 = pyega3.pyega3:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('pyega3', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >3
+    - python >=3.6
   run:
-    - python >3
+    - python >=3.6
     - python-htsget
     - requests
-    - tqdm >=4.26.0 
+    - tqdm >=4.26.0
     - psutil
+    - urllib3
 
 test:
   imports:
@@ -35,7 +38,8 @@ test:
 
 about:
   home: https://github.com/EGA-archive/ega-download-client
-  license: Apache Software
+  license: Apache-2.0
+  license_file: LICENSE
   license_family: APACHE
   summary: EGA python client
   doc_url: https://github.com/EGA-archive/ega-download-client

@@ -1,6 +1,6 @@
-{% set version = "0.30.0" %}
+{% set version = "0.40.0" %}
 {% set name = "LungCancerLines" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,23 +8,26 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 80054915bf8c53be6242b29a0a458b08
+  md5: 17b67ca0eac14ef832832b949972b277
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-lungcancerlines", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-rsamtools >=2.8.0,<2.9.0'
+    - 'bioconductor-rsamtools >=2.18.0,<2.19.0'
     - r-base
   run:
-    - 'bioconductor-rsamtools >=2.8.0,<2.9.0'
+    - 'bioconductor-rsamtools >=2.18.0,<2.19.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

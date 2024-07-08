@@ -5,7 +5,7 @@ set -x
 export CFLAGS="-I$PREFIX/include -fcommon"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH="$PREFIX/include"
-export CC="${CC} -fcommon"
+export CC="${CC} -fcommon -lstdc++"
 export CXX="${CC} -fcommon"
 
 # download phelim's fork of mccortex
@@ -25,11 +25,14 @@ for make_file in libs/string_buffer/Makefile $(find libs/seq_file -name Makefile
     sed -i.bak 's/-lz/-lz $(LDFLAGS)/' "$make_file"
 done
 
-make MAXK=31
+if [ $(arch) != "x86_64" ]; then
+    sed -i.bak 's/-m64//' Makefile
+fi
+
+make MAXK=31 -j ${CPU_COUNT}
 cp bin/mccortex31 ../src/mykrobe/cortex/
 cd ../ || exit 1
 
 "$PYTHON" -m pip install . -vv
 mykrobe panels update_metadata
 mykrobe panels update_species all
-

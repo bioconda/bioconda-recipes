@@ -1,5 +1,5 @@
-{% set version = "3.3.4" %}
-{% set sha256 = "d91e83b3017fbafadf974355e32305d3896847ea3b671d5d98c553f01018f806" %}
+{% set version = "3.5.4" %}
+{% set sha256 = "41ea9c1378e85787142b29c7cdf8d352073764a620f818333492266e6bbec1cd" %}
 
 package:
   name: nonpareil
@@ -10,9 +10,11 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
+  run_exports: 
+     - {{ pin_subpackage('nonpareil', max_pin="x.x") }}
   script: |
-    make cpp="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+    make -j ${CPU_COUNT} cpp="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}" nonpareil
     make prefix="${PREFIX}" install
 
 requirements:
@@ -20,8 +22,10 @@ requirements:
     - {{ compiler('cxx') }}
   host:
     - r-base
+    - zlib
   run:
     - r-base
+    - zlib
 
 test:
   commands:
@@ -32,3 +36,7 @@ about:
   license: Artistic License 2.0
   summary: Estimate average coverage and create curves for metagenomic datasets
   dev_url: https://github.com/lmrodriguezr/nonpareil
+
+extra:
+  additional-platforms:
+    - linux-aarch64

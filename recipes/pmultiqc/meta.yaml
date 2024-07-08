@@ -1,5 +1,5 @@
 {% set name = "pmultiqc" %}
-{% set version = "0.0.4" %}
+{% set version = "0.0.24" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,11 +7,13 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 4f11684507dde7e96a0171c4c11231eac395930182e2a278efa16386e09cebba
+  sha256: e3d617cdfc4eab4fa8905dab1f4e575db038471659840bf1431b535d610ae136
 
 build:
   number: 0
   noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
@@ -22,16 +24,17 @@ requirements:
     - python >=3.6
     - pytest
     - lxml
-    - multiqc
+    - multiqc ==1.19.0
     - pandas
-    - sdrf-pipelines
+    - sdrf-pipelines >=0.0.18
     - pyteomics
+    - pyopenms >2.7
     
 test:
   imports:
     - pmultiqc
     - pmultiqc.modules
-    - pmultiqc.modules.proteomicslfq
+    - pmultiqc.modules.quantms
 
 about:
   home: "https://github.com/bigbio/pmultiqc/"

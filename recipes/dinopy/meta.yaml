@@ -1,14 +1,17 @@
+{% set version = "3.0.0" %}
+
 package:
   name: dinopy
-  version: "2.2.0"
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/f0/ae/9192e91468e8e8a27172bcf242d01006732ec28de1616970e7f0fe05c28e/dinopy-2.2.0.tar.gz
-  sha256: c2b282dcb60a313201c60cb4899077e23e3d0e528dd1c55e72d18b624ad04c33
+  url: https://files.pythonhosted.org/packages/e3/fd/06182a3e21bd400c172ef973512a070968c039a0f18f41c54c933fcafef9/dinopy-{{ version }}.tar.gz
+  sha256: 9b2238c20c946a7ea34b979fec4dd182f3474958e9a03075dfbbb464e9d84028
 
 build:
-  skip: True # [py27]
   number: 2
+  run_exports:
+    - {{ pin_subpackage("dinopy", max_pin="x") }}
 
 requirements:
   build:
@@ -16,11 +19,11 @@ requirements:
   host:
     - python
     - setuptools
-    - cython >=0.22
-    - numpy >=1.17
+    - cython >=3.0.0
+    - numpy =1.21
   run:
     - python
-    - numpy >=1.17
+    - numpy =1.21 # dinopy compiles against the numpy ABI, hence we need to pin it to an exact version and cannot rely on run_exports, which pins to anything below the next major release.
 
 test:
   imports:
@@ -28,5 +31,9 @@ test:
 
 about:
   home: https://bitbucket.org/HenningTimm/dinopy
-  license: MIT License
+  license: MIT
   summary: 'DNA input and output library for Python and Cython. Includes reader and writer for FASTA and FASTQ files, support for samtools faidx files, and generators for solid and gapped q-grams (k-mers).'
+
+extra:
+  additional-platforms:
+    - linux-aarch64

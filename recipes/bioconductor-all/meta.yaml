@@ -1,6 +1,6 @@
-{% set version = "1.34.0" %}
+{% set version = "1.44.0" %}
 {% set name = "ALL" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,24 +8,27 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_{{ name|lower }}.tar.gz'
-  md5: de3f1ceb6e787628a6a43834deaff796
+  md5: b80eb482b4937ef4eac01027ac95a61a
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-all", max_pin="x.x") }}'
   noarch: generic
 # Suggests: rpart
 requirements:
   host:
-    - 'bioconductor-biobase >=2.52.0,<2.53.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
     - r-base
   run:
-    - 'bioconductor-biobase >=2.52.0,<2.53.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

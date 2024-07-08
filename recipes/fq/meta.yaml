@@ -1,0 +1,43 @@
+{% set name = "fq" %}
+{% set version = "0.11.0" %}
+{% set sha256 = "9bd87c66f230ad8bdd29d1220d0a7079d4d2c53df6c2ad33f4e5d845ece63c78" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/stjude-rust-labs/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('fq', max_pin="x") }}
+
+requirements:
+  build:
+    - git
+    - rust
+
+test:
+  commands:
+    - fq -h
+
+about:
+  home: https://github.com/stjude-rust-labs/fq
+  license: MIT
+  summary: fq is a library to generate and validate FASTQ file pairs.
+  description: >
+    fq provides subcommands for filtering, generating, subsampling, and
+    validating FASTQ files.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - claymcleod
+    - Midnighter
+    - zaeleus
+  skip-lints:
+    - should_be_noarch_generic  # Rust's `cargo build` command makes this not a noarch recipe.

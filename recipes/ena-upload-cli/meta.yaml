@@ -1,13 +1,13 @@
 {% set name = "ena-upload-cli" %}
-{% set version = "0.2.8" %}
+{% set version = "0.7.3" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 91797dd670fa7144c73f682c06c01c891ff3329e8ce15bf4992971344ac9b2d7
+  url: "https://github.com/usegalaxy-eu/ena-upload-cli/archive/refs/tags/{{ version }}.tar.gz"
+  sha256: 9508f63fddb0dc9541f1500e0c4ed064c21ad59ac3e0d2140497475387113745
 
 build:
   number: 0
@@ -15,19 +15,27 @@ build:
   entry_points:
     - ena-upload-cli = ena_upload.ena_upload:main
   script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage('ena-upload-cli', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.7
   run:
-    - genshi
-    - lxml
-    - pandas
-    - pyyaml
-    - python
+    - genshi ==0.7.*
+    - lxml >=4.9.3,<=5.0.0
+    - pandas >=2.0.3,<=3.0.0
+    - pyyaml ==5.*
+    - requests >=2.31.0,<=3.0.0
+    - openpyxl >=3.1.2,<=4.0.0
+    - jsonschema >=4.19.1
+    - pytest ==7.4.*
+    - python >=3.7
 
 test:
+  imports:
+    - ena_upload
   commands:
     - ena-upload-cli --help
 
@@ -35,7 +43,7 @@ about:
   home: "https://github.com/usegalaxy-eu/ena-upload-cli"
   license: MIT
   license_family: MIT
-  license_file: 
+  license_file: LICENSE
   summary: "Command Line Interface to upload data to the European Nucleotide Archive"
 
 extra:

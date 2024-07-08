@@ -1,6 +1,6 @@
-{% set version = "1.2.0" %}
+{% set version = "1.12.0" %}
 {% set name = "AnVILPublish" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,31 +8,37 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 3e5a75448fb176065d6c3ab0cba833ff
+  md5: bbd5bd8ab36e2563e7b4b01e2b11295d
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-anvilpublish", max_pin="x.x") }}'
   noarch: generic
-# Suggests: knitr, BiocStyle, BiocManager
+# Suggests: knitr, BiocStyle, BiocManager, testthat (>= 3.0.0)
 requirements:
   host:
-    - 'bioconductor-anvil >=1.4.0,<1.5.0'
+    - 'bioconductor-anvil >=1.14.0,<1.15.0'
     - r-base
     - r-httr
     - r-jsonlite
+    - r-readr
     - r-rmarkdown
     - r-whisker
+    - r-yaml
   run:
-    - 'bioconductor-anvil >=1.4.0,<1.5.0'
+    - 'bioconductor-anvil >=1.14.0,<1.15.0'
     - r-base
     - r-httr
     - r-jsonlite
+    - r-readr
     - r-rmarkdown
     - r-whisker
+    - r-yaml
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

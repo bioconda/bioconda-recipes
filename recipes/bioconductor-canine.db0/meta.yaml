@@ -1,6 +1,6 @@
-{% set version = "3.13.0" %}
+{% set version = "3.18.0" %}
 {% set name = "canine.db0" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,23 +8,26 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: d81d7f195b990f9607de847c33ed3679
+  md5: dc4fff8ed0a758ddff3f52aa0e8652c6
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-canine.db0", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.54.0,<1.55.0'
+    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.54.0,<1.55.0'
+    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

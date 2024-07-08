@@ -1,6 +1,6 @@
-{% set version = "0.99.6" %}
+{% set version = "1.7.0" %}
 {% set name = "AHMeSHDbs" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,24 +8,27 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 6acb0c0f55209e914581b6aa060b8b8b
+  md5: 9bbcae25794d2f854a122ba36a4e4c5c
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-ahmeshdbs", max_pin="x.x") }}'
   noarch: generic
 # Suggests: BiocStyle, knitr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-annotationhub >=3.0.0,<3.1.0'
+    - 'bioconductor-annotationhub >=3.10.0,<3.11.0'
     - r-base
   run:
-    - 'bioconductor-annotationhub >=3.0.0,<3.1.0'
+    - 'bioconductor-annotationhub >=3.10.0,<3.11.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

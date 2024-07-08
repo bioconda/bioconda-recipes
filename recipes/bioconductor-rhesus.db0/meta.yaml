@@ -1,6 +1,6 @@
-{% set version = "3.13.0" %}
+{% set version = "3.18.0" %}
 {% set name = "rhesus.db0" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,23 +8,26 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 91c9da6408e405b6c2103fa20efca455
+  md5: 26d7aa426d23f0c64cb0918f90c32314
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-rhesus.db0", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.54.0,<1.55.0'
+    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.54.0,<1.55.0'
+    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
