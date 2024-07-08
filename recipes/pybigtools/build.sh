@@ -8,6 +8,12 @@ set -ex
 # We set CARGO_HOME because we don't pass on HOME to conda-build, thus rendering the default "${HOME}/.cargo" defunct.
 export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="${BUILD_PREFIX}/.cargo"
 
+# There is some issue here building with Python 3.8 on macOS >= 11
+# See https://github.com/pypa/cibuildwheel/issues/1410
+export MACOSX_DEPLOYMENT_TARGET=12.7
+export MACOS_DEPLOYMENT_TARGET=12.7
+export SYSTEM_VERSION_COMPAT=0
+
 # Use a custom temporary directory as home on macOS.
 # (not sure why this is useful, but people use it in bioconda recipes)
 if [ `uname` == Darwin ]; then
