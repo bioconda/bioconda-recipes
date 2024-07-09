@@ -59,6 +59,17 @@ jobs: # a basic unit of work in a run
             source common.sh
 
             if [[ $(uname) = "Darwin" ]]; then
+              if [[ "${OSX_SDK_DIR:-}" == "" ]]; then
+                if [[ "${CI:-}" == "" ]]; then
+                  OSX_SDK_DIR=$(mktemp -d)
+                else
+                  OSX_SDK_DIR="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs"
+                  USING_SYSTEM_SDK_DIR=1
+                fi
+              fi
+              echo "OSX_SDK_DIR is ${OSX_SDK_DIR}"
+
+
               run_conda_forge_build_setup
             fi
 
