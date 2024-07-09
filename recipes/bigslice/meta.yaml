@@ -1,0 +1,49 @@
+{% set name = "bigslice" %}
+{% set version = "2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/bigslice-{{ version }}.tar.gz
+  sha256: cb4cafca05883827b00ff864e035d0cb34c2c7905a7722c6a255c2efb9797417
+
+build:
+  skip: true  # [py<37]
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - pyhmmer
+    - biopython >=1.73,<=1.83
+    - numpy
+    - pandas
+    - scikit-learn
+    - tqdm
+    - pyarrow
+
+test:
+  imports:
+    - bigslice
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/satriaphd/bigslice
+  summary: A highly scalable, user-interactive tool for the large scale analysis of Biosynthetic Gene Clusters data
+  license: AGPL-3.0
+  license_file:
+    - LICENSE.txt
+    - bigslice/modules/output/flask_app/LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - Matt-BF
