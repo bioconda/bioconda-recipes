@@ -58,19 +58,12 @@ jobs: # a basic unit of work in a run
             conda activate bioconda
             source common.sh
 
+            # Sets up OSX SDK
             if [[ $(uname) = "Darwin" ]]; then
               if [[ "${OSX_SDK_DIR:-}" == "" ]]; then
-                if [[ "${CI:-}" == "" ]]; then
-                  OSX_SDK_DIR=$(mktemp -d)
-                else
                   OSX_SDK_DIR="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs"
-                  USING_SYSTEM_SDK_DIR=1
-                fi
               fi
-              echo "OSX_SDK_DIR is ${OSX_SDK_DIR}"
               sudo chmod o+rwx ${OSX_SDK_DIR}
-
-
               run_conda_forge_build_setup
             fi
 
@@ -156,6 +149,15 @@ jobs: # a basic unit of work in a run
             eval "$(conda shell.bash hook)"
             conda activate bioconda
             source common.sh
+
+            # Sets up OSX SDK
+            if [[ $(uname) = "Darwin" ]]; then
+              if [[ "${OSX_SDK_DIR:-}" == "" ]]; then
+                  OSX_SDK_DIR="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs"
+              fi
+              sudo chmod o+rwx ${OSX_SDK_DIR}
+              run_conda_forge_build_setup
+            fi
 
             bioconda-utils handle-merged-pr recipes config.yml \
               --repo bioconda/bioconda-recipes \
