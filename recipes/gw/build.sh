@@ -6,7 +6,7 @@ if [[ "$OSTYPE" != "darwin"* ]]; then
 fi
 make prep
 CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" \
-LDFLAGS="${LDFLAGS} -L/usr/lib" 
+LDFLAGS="${LDFLAGS} -L/usr/lib -L${PREFIX}" \ 
 PREFIX="${PREFIX}" \
 prefix="${PREFIX}" \
     make
