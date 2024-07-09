@@ -11,3 +11,4 @@ cp gw $PREFIX/bin/gw
 cp -n .gw.ini $PREFIX/bin/.gw.ini
 chmod +x $PREFIX/bin/gw
 chmod +rw $PREFIX/bin/.gw.ini
+
