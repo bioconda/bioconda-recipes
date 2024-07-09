@@ -10,11 +10,13 @@ source:
   sha256: 25b3c6f1cacdb19e3352192ff3a0318782fcf071cee8a863bd806beb23a8ab74
 
 build:
+  number: 0
   entry_points:
     - constava = constava.__main__:main
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
-  number: 0
+  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+  run_exports:
+    - {{ pin_subpackage('constava', max_pin="x") }}
 
 requirements:
   host:
@@ -30,25 +32,29 @@ requirements:
 test:
   imports:
     - constava
+    - constava.Constava
   commands:
     - constava --help
 
 about:
   home: https://bio2byte.be
-  summary: This software is used to calculate conformational states probability & conformational state variability from a protein structure ensemble.
+  summary: Calculate conformational states probability and variability from a protein structure ensemble
   description: |
-    ConStaVa is a tool for the probabilistic interpretation of large conformational ensembles (e.g. from MD simulations or for intrinsically disordered proteins). 
-    Through analysis of phi/psi angle distributions, it detects six conformational states and calculates the associated 'conformational state variability'. 
-    It so moves away from traditional fixed secondary structure interpretation of models to a more ensemble-oriented interpretation that is useful for dynamic regions of proteins.
-    Contact (via email): Bio2Byte@vub.be
+    ConStaVa is a tool for the probabilistic interpretation of large conformational ensembles
+    (e.g. from MD simulations or for intrinsically disordered proteins). Through analysis of
+    phi/psi angle distributions, it detects six conformational states and calculates the associated
+    'conformational state variability'. It so moves away from traditional fixed secondary structure
+    interpretation of models to a more ensemble-oriented interpretation that is useful for dynamic
+    regions of proteins.
+    Contact (via email): bio2byte@vub.be
   license: GPLv3
   license_file: LICENSE
-  dev_url: https://bitbucket.org/bio2byte/rrmscorer/
+  dev_url: https://github.com/bio2byte/constava
   doc_url: https://pypi.org/project/constava/
-  doc_source_url: https://bitbucket.org/bio2byte/rrmscorer/src/master/readme.md
+  doc_source_url: https://github.com/Bio2Byte/constava/blob/main/README.md
 
 extra:
-  author: Wim Vranken (wim.vranken@vub.be), Jose Gavalda-Garcia (jose.gavalda.garcia@vub.be), David Bickel (david.bickel@vub.be), Joel Roca-Martinez (joel.roca.martinez@vub.be), Daniele Raimondi (daniele.raimondi@kuleuven.be), Gabriele Orlando (gabriele.orlando@kuleuven.be)
+  author: Wim Vranken <wim.vranken@vub.be>, Jose Gavalda-Garcia <jose.gavalda.garcia@vub.be>, David Bickel <david.bickel@vub.be>, Joel Roca-Martinez <joel.roca.martinez@vub.be>, Daniele Raimondi <daniele.raimondi@kuleuven.be>, Gabriele Orlando <gabriele.orlando@kuleuven.be>
   recipe-maintainers:
     - Adrián Díaz <adrian.diaz@vub.be> (@agdiaz)
     - David Bickel <david.bickel@vub.be> (@aethertier)
