@@ -1,5 +1,5 @@
 #!/bin/bash
-voyager-cli -v
-voyager-build-cli -v
-voyager-combine-cli -v
-voyager-debug-index -v
+voyager-cli -v >/dev/null
+voyager-build-cli -v >/dev/null
+voyager-combine-cli -v >/dev/null
+voyager-debug-index -v >/dev/null
