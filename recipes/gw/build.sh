@@ -5,7 +5,9 @@ if [[ "$OSTYPE" != "darwin"* ]]; then
   sed -i 's/-lEGL -lGLESv2/-lGL/' Makefile
 fi
 make prep
-CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" make
+CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" \
+LDFLAGS="${LDFLAGS} -L/usr/lib" \
+    make
 mkdir -p $PREFIX/bin
 cp gw $PREFIX/bin/gw
 cp -n .gw.ini $PREFIX/bin/.gw.ini
