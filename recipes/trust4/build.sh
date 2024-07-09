@@ -2,7 +2,10 @@
 
 set -xe
 
+if [ "$(uname -m)" == "x86_64" ]; then
 sed -i.bak 's/-f .\/samtools-0.1.19\/libbam.a/1/' Makefile
+fi
+
 make -j ${CPU_COUNT} \
     CXX="${CXX}" \
     CXXFLAGS="${CXXFLAGS} -Wformat -O3" \
