@@ -1,37 +1,47 @@
+{% set name = "cpstools" %}
+{% set version = "1.0.11" %}
+{% set sha256 = "035420514fad0af1e0e06bd6f8932e9fe74e642aa97250b7279e7ce9009b5a31" %}
+
 package:
- name: cpstools
- version: 1.0.11
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: "https://files.pythonhosted.org/packages/c9/84/63a73ef199692d916ca13a8e36d45517e406db52961f1c839102c5a4a482/cpstools-1.0.11.tar.gz"
-  sha256: 035420514fad0af1e0e06bd6f8932e9fe74e642aa97250b7279e7ce9009b5a31
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cpstools-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
- number: 0
- noarch: python
- run_exports:
-  - {{ pin_subpackage('cpstools', max_pin="x") }}
- entry_points:
-  - cpstools = cpstools.cmdline:main
+  entry_points:
+    - cpstools = cpstools.cmdline:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('cpstools', max_pin="x") }}
 
 requirements:
- build:
-  - python >=3.8
-  - setuptools
- run:
-  - python >=3.8
-  - numpy >=1.24
-  - biopython >=1.83
-
+  host:
+    - python >=3.10
+    - poetry-core
+    - pip
+  run:
+    - python >=3.10.0
+    - biopython >=1.84.0
+    - numpy >=1.26.4
+ 
 test:
- imports:
-  - cpstools
-  
- commands:
-  - cpstools -h
+  imports:
+    - cpstools
+  commands:
+    - cpstools --help
 
 about:
- home: https://github.com/Xwb7533/CPStools
- license: MIT
- summary: "CPStools is a package for analyzing chloroplast genome sequences."
- description: "CPStools is a package for analyzing chloroplast genome sequences."
+  summary: "CPStools is a package for analyzing chloroplast genome sequences."
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  description: "CPStools is a package for analyzing chloroplast genome sequences."
+
+extra:
+  recipe-maintainers:
+    - mencian
