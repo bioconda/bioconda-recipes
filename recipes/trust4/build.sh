@@ -3,7 +3,11 @@
 set -xe
 
 if [ "$(uname -m)" == "x86_64" ]; then
-sed -i.bak 's/-f .\/samtools-0.1.19\/libbam.a/1/' Makefile
+    # use samtools 0.1.19 as a dependency
+    sed -i.bak 's/-f .\/samtools-0.1.19\/libbam.a/1/' Makefile
+else
+    # build the vendored samtools 0.1.19
+    sed -i.bak 's/cd samtools-0.1.19 ; make /cd samtools-0.1.19 ; make CC="${CC}" CFLAGS="${CFLAGS} -L${PREFIX}\/lib" LDFLAGS="${LDFLAGS}" LIBPATH="-L${PREFIX}\/lib"/' Makefile
 fi
 
 make -j ${CPU_COUNT} \
