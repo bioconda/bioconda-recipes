@@ -32,21 +32,54 @@ requirements:
 test:
   imports:
     - constava
-    - constava.Constava
+    - constava.utils
+    - constava.utils.dihedrals
   commands:
-    - constava --help
+    - constava test
+    - constava dihedrals -h
+    - constava analyze -h
+    - constava fit-model -h
 
 about:
   home: https://bio2byte.be
   summary: Calculate conformational states probability and variability from a protein structure ensemble
   description: |
-    ConStaVa is a tool for the probabilistic interpretation of large conformational ensembles
-    (e.g. from MD simulations or for intrinsically disordered proteins). Through analysis of
-    phi/psi angle distributions, it detects six conformational states and calculates the associated
-    'conformational state variability'. It so moves away from traditional fixed secondary structure
-    interpretation of models to a more ensemble-oriented interpretation that is useful for dynamic
-    regions of proteins.
-    Contact (via email): bio2byte@vub.be
+    Constava analyzes conformational ensembles calculating conformational state propensities and
+    conformational state variability. The conformational state propensities indicate the likelihood
+    of a residue residing in a given conformational state, while the conformational state variability
+    is a measure of the residues ability to transition between conformational states.
+
+    Each conformational state is a statistical model of based on the backbone dihedrals (phi, psi). The
+    default models were derived from an analysis of NMR ensembles and chemical shifts. To analyze a
+    conformational ensemble, the phi- and psi-angles for each conformational state in the ensemble
+    need to be provided.
+
+    As input data Constava needs the backbone dihedral angles extracted from the conformational ensemble.
+    These dihedrals can be obtained using GROMACS' gmx chi module (set --input-format=xvg)
+    or using the constava dihedrals submodule, which supports a wide range of MD and structure formats.
+
+    The software is subdivided in three submodules:
+
+    The constava dihedrals submodule provides a simple way to extract backbone dihedral angles from MD
+    simulations or PDB ensembles. For more information run: `constava dihedrals -h`. Alternatively,
+    the backbone dihedrals may be extracted with GROMACS' gmx chi module.
+
+    The constava analyze submodule analyzes the provided backbone dihedral angles and infers
+    the propensities for each residue to reside in a given conformational state. For more information run:
+    `constava analyze -h`.
+
+    The constava fit-model can be used to train a custom probabilistic model of conformational states. The
+    default models were derived from an analysis of NMR ensembles and chemical shifts; they cover six
+    conformational states:
+
+    1. Core Helix - Exclusively alpha-helical, low backbone dynamics
+    2. Surrounding Helix - Mostly alpha-helical, high backbone dynamics
+    3. Core Sheet - Exclusively beta-sheet, low backbone dynamics
+    4. Surrounding Sheet - Mostly extended conformation, high backbone dynamics
+    5. Turn - Mostly turn, high backbone dynamics
+    6. Other - Mostly coil, high backbone dynamics
+
+    Contact (via email): bio2byte@vub.be or wim.vranken@vub.be
   license: GPLv3
   license_file: LICENSE
   dev_url: https://github.com/bio2byte/constava
