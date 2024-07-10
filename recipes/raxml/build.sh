@@ -1,8 +1,6 @@
 #!/bin/bash
 
-set -euxo pipefail
-
-PREFIX=prefix
+set -exo pipefail
 
 case $(uname) in
 Darwin) SUF=.mac ;;
