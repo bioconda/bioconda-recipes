@@ -1,5 +1,5 @@
 {% set name = "assembly_finder" %}
-{% set version = "0.6.2" %}
+{% set version = "0.7.4" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,28 +7,30 @@ package:
 
 source:
   url: https://github.com/metagenlab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: f3e47042ff6be9fc22cb8a2b695692bd33cefe07b768f17c1b942940f20faa3a
+  sha256: a883ea2ac4b70960bdd260de69fb53a33b52ec1fe0d975572fce5f45a7ebdfc4
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vvv
   entry_points:
-    - assembly_finder = assembly_finder.__main__:cli
+    - assembly_finder=assembly_finder.__main__:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
   run_exports:
     - {{ pin_subpackage('assembly_finder', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.9,<=3.12
+    - python >=3.10
     - pip
   run:
-    - python >=3.9,<=3.12
-    - snakemake-minimal >=7.32.4,<8
+    - python >=3.10
+    - snakemake-minimal >=7.32.4
     - pulp <2.8
+    - snaketool-utils >=0.0.4
+    - attrmap >=0.0.7
+    - pyyaml >=6.0
     - pandas >=2.2.1
     - rich-click >=1.7.4
-    - ncbi-datasets-cli >=16.10.1
 
 test:
   commands:

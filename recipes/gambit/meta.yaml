@@ -1,4 +1,4 @@
-{% set version = "1.0.0" %}
+{% set version = "1.0.1" %}
 
 package:
   name: gambit
@@ -6,13 +6,15 @@ package:
 
 source:
   url: https://github.com/jlumpe/gambit/archive/v{{ version }}.tar.gz
-  sha256: a2d6465a482d2113d2b03c56689871fa088b0443dd663652bf9304a9befa1470
-
+  sha256: d99285b1b8df971d36292ca3639bab5998b501262db8c72769dc1287920f73e8
 
 build:
   number: 1
-  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed ."
-  skip: True  # [py < 37]
+  script: "{{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv"
+  entry_points:
+    - gambit = gambit.cli:cli
+  run_exports:
+    - {{ pin_subpackage("gambit", max_pin="x") }}
 
 requirements:
   build:
@@ -21,11 +23,11 @@ requirements:
     - python
     - pip
     - numpy >=1.13
-    - cython
+    - cython >=0.27,<1
   run:
     - python
-    - numpy >=1.13
-    - sqlalchemy >=1.1
+    - {{ pin_compatible('numpy') }}
+    - sqlalchemy >=1.1,<2.dev0
     - biopython >=1.69
     - alembic >=1.0
     - attrs >=20
@@ -56,9 +58,16 @@ about:
     approximately 50,000 reference genomes (derived from NCBI RefSeq) to identify
     unknown bacterial genomes within seconds.
   license: AGPL-3.0-or-later
+  license_family: AGPL
   license_file: LICENSE
   doc_url: https://gambit-genomics.readthedocs.io/en/latest
+  dev_url: https://github.com/jlumpe/gambit
 
 extra:
   recipe-maintainers:
     - jlumpe
+  skip-lints:
+    - uses_setuptools  # uses pkg_resoures during run time
+  identifiers:
+    - doi:10.1371/journal.pone.0277575
+    - biotools:gambit_bacterial

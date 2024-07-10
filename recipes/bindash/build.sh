@@ -5,4 +5,3 @@ make VERBOSE=1 -j ${CPU_COUNT}
 install -d $PREFIX/bin
 install bindash $PREFIX/bin
 popd
-
