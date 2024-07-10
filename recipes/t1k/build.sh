@@ -2,6 +2,10 @@
 
 set -xe
 
+if [ "$(uname -m)" == "aarch64" ]; then
+    export CXXFLAGS="${CXXFLAGS} -fsigned-char"
+fi
+
 LINKPATH="${LDFLAGS}"
 if [ "$(uname -m)" == "x86_64" ]; then
     # use samtools 0.1.19 as a dependency
