@@ -13,7 +13,7 @@ case $(uname) in
         CONFIGURE_FLAGS=""
         ;;
 esac
-
+export M4="$BUILD_PREFIX/bin/m4"
 ./autogen.sh
 ./configure --prefix=$PREFIX ${CONFIGURE_FLAGS}
 make --jobs=${CPU_COUNT}
