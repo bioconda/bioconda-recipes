@@ -8,15 +8,8 @@ sed -i.bak 's/ *CX\?X\?FLAGS/#\0/p' configure.ac
 sed -i.bak 's/MACOSX_DEPLOYMENT_TARGET=/#\0/' configure.ac
 sed -i.bak 's/export MACOSX_DEPLOYMENT_TARGET=/#\0/' src/Makefile.am
 
-which m4
-# Set PATH to prioritize conda-installed m4 (for osx)
-export PATH="$PREFIX/bin:$PATH" 
-
-which m4
-
-m4 --version
-
+export M4="$BUILD_PREFIX/bin/m4" 
 ./autogen.sh
 ./configure --prefix=$PREFIX
-make
+make -j ${CPU_COUNT}
 make install
