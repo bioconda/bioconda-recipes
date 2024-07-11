@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 # Remove configure.ac C(XX)?FLAGS override
 sed -i.bak 's/ *CX\?X\?FLAGS/#\0/p' configure.ac
 # Remove MACOS_DEPLOYMENT_TARGET override
