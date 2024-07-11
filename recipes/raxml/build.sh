@@ -33,7 +33,7 @@ for PTHREADS in "" .PTHREADS; do
     else
       MAKEFILE=${MAKEFILE}.gcc
     fi
-    make -f ${MAKEFILE}
+    make -f ${MAKEFILE} CC=$CC
     mv raxmlHPC* "$PREFIX"/bin
     make -f ${MAKEFILE} clean
   done
