@@ -10,3 +10,5 @@ export CPATH=${PREFIX}/include
 autoreconf -i
 ./configure --prefix=$PREFIX
 make CC=$CC CXX=$CXX -j ${CPU_COUNT}
+mkdir -p $PREFIX/bin
+cp longphase $PREFIX/bin
