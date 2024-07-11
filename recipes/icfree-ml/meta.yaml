@@ -1,0 +1,47 @@
+{% set name = "icfree-ml" %}
+{% set version = "2.3.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/brsynth/icfree-ml/archive/refs/tags/2.3.2.tar.gz
+  sha256: e57f358a372f5f8b5040dca9c500c25be1e1594a73557cc5ae97bf7784aba384
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install -vv .
+  run_exports: 
+     - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >3.6
+    - pip
+  run:
+    - python >3.6
+    - biopython
+    - pysbol2
+    - blast
+
+test:
+  source_files:
+    - tests/
+  imports:
+    - icfree
+  requires:
+    - pytest
+    - pytest-cov
+    - pytest-mock
+
+about:
+  home: https://github.com/brsynth/icfree-ml
+  summary: Design of experiments (DoE) and machine learning packages for the iCFree project
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - tduigou
