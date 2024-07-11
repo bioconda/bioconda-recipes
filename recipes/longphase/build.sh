@@ -9,5 +9,4 @@ export CPATH=${PREFIX}/include
 
 autoreconf -i
 ./configure --prefix=$PREFIX
-make CC=$CXX -j ${CPU_COUNT}
-make install
+make CC=$CC CXX=$CXX -j ${CPU_COUNT}
