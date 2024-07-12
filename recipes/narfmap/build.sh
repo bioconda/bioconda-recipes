@@ -3,6 +3,7 @@ export BOOST_INCLUDE_DIR="${PREFIX}/include"
 export BOOST_LIBRARY_DIR="${PREFIX}/lib"
 
 export HAS_GTEST=0
+export STATIC=1
 
 # fix build number in config
 sed -i.bak 's/VERSION_STRING.*/VERSION_STRING="${PKG_VERSION}"/' config.mk
