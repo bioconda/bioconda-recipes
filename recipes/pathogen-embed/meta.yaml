@@ -1,0 +1,52 @@
+{% set version = "2.1.0" %}
+
+package:
+  name: pathogen-embed
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/0c/71/38ca9c5ad8f2893637ebf62bb4703e59162821860a6d9635b8a2794d2258/pathogen_embed-{{ version }}.tar.gz
+  sha256: b8339ed5b6b672e4da788c07c82d25b4b7cc5f533e4625bc1786056ad5097f9b
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - pathogen-distance = pathogen_embed.__main__:run_distance
+    - pathogen-embed = pathogen_embed.__main__:run_embed
+    - pathogen-cluster = pathogen_embed.__main__:run_cluster
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  run_exports:
+    - {{ pin_subpackage('pathogen-embed', max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+    - numpy >=1.24.4,<2
+    - pandas >=1.2.0,<2
+    - biopython >=1.83,<2
+    - scikit-learn >=1.3,<1.5
+    - umap-learn >=0.5.0,<0.6.0
+    - numba <0.59.0
+    - matplotlib-base >=3,<4
+    - hdbscan >=0.8.36,<0.9.0
+
+test:
+  commands:
+    - pathogen-distance --help
+    - pathogen-embed --help
+    - pathogen-cluster --help
+
+about:
+  home: https://github.com/blab/pathogen-embed
+  license: MIT
+  summary: 'Create reduced dimension embeddings for pathogen sequences'
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - huddlej
