@@ -25,7 +25,7 @@ mkdir -p $PREFIX/bin
 cp PoolSNP.sh $PREFIX/bin
 cp -r $SCRIPTS_DIR $PREFIX/bin
 
+mkdir -p $PREFIX/share/PoolSNP
+
 # Copy the test data to the share directory
 cp -r $TEST_DATA_DIR $PREFIX/share/PoolSNP/TestData
-
-chmod +x $PREFIX/bin/PoolSNP.sh
