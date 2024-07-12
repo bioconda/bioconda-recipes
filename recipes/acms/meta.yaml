@@ -1,19 +1,22 @@
 {% set version = "2.3.0" %}
+{% set packagename = "acms" %}
 {% set sha256 = "e3d15d065148ed9dd25315868a31ec6c8a645d254a28ff2dcd01b23aed8b136d" %}
 
 package:
-  name: acms
+  name: {{ packagename }}
   version: 1.3.0
 
 source:
   sha256: {{ sha256 }}
   # the repository "fold-grammars" contains sources for several programs, i.e. pKiss, RNAshapes, ...
-  # thus, the version number does not correspond to the RNAshapes version number
+  # thus, the version number does not correspond to the {{ packagename }} version number
   url: https://github.com/jlab/fold-grammars/archive/{{ version }}.tar.gz
 
 build:
   number: 0
   skip: False # [osx]
+  run_exports:
+    - {{ pin_subpackage('{{ packagename }}', max_pin="x") }}
 
 requirements:
   build:
@@ -34,7 +37,7 @@ test:
     - aCMs -h
 
 about:
-  home: https://bibiserv.cebitec.uni-bielefeld.de/acms
+  home: https://bibiserv.cebitec.uni-bielefeld.de/{{ packagename }}
   license: 'GPLv3+'
   license_file: LICENSE
   summary: " Covariance models (CMs), as defined by Sean Eddy, do not reward insertions of valid base-pairs or complete sub-structures relative to the one consensus secondary structure. Nevertheless, some families, e. g. tRNA, contain minorities with additional informative sub-structures, which are crashed by the majority during formation of one consensus secondary structure.
