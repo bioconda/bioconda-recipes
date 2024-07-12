@@ -6,6 +6,7 @@ set -xe
 export CFLAGS="${CFLAGS} -I$PREFIX/include"
 export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
+export M4=${BUILD_PREFIX}/bin/m4
 
 autoreconf -i
 ./configure --prefix=$PREFIX
