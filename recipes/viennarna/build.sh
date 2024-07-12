@@ -4,7 +4,7 @@
 ## (mac or linux)
 ##
 if [ `uname` == Darwin ] ; then
-    extra_config_options="--without-forester LDFLAGS=-Wl,-headerpad_max_install_names"
+    extra_config_options="LDFLAGS=-Wl,-headerpad_max_install_names"
 fi
 
 ## Configure and make
@@ -17,6 +17,7 @@ fi
             --without-tutorial-pdf \
             --without-cla \
             --without-rnaxplorer \
+            --without-forester \
             ${extra_config_options} \
             && \
 make -j${CPU_COUNT} CFLAGS='-Wno-deprecated-non-prototype -Wno-compound-token-split-by-macro'
