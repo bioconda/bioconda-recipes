@@ -1,5 +1,5 @@
 #!/bin/bash
-# hmftools neo executable shell script
+# hmftools Neo executable shell script
 # https://github.com/hartwigmedical/hmftools/tree/master/neo
 set -eu -o pipefail
 
