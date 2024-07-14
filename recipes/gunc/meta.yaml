@@ -1,5 +1,5 @@
 {% set name = "gunc" %}
-{% set version = "0.1.2" %}
+{% set version = "1.0.6" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 41a031281a3c3cf452569d22245be059f8e68b438466b399c3d65eee9647d0a3
+  sha256: 6c8d6ffc658d130e59b39709da521fc5689c85ad84f4ec6d381dda5efbb16475
 
 build:
   number: 0
@@ -15,18 +15,22 @@ build:
     - gunc = gunc.gunc:main
   script: "{{ PYTHON }} -m pip install . -vv --ignore-installed --no-deps"
   noarch: python
+  run_exports:
+    - {{ pin_subpackage("gunc", max_pin="x.x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.6,<3.12
   run:
     - prodigal
-    - diamond
+    - diamond 2.0.4
     - numpy
     - pandas
-    - python
-    - scikit-learn
+    - python >=3.6
+    - scipy
+    - requests >=2.22.0
+    - plotly
 
 test:
   imports:

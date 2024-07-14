@@ -3,7 +3,7 @@ import argparse
 import networkx as nx
 from datetime import datetime, timedelta
 import requests
-from bioconda_utils import utils, graph
+from bioconda_utils import utils, graph, skiplist
 
 
 def getRepoData(ts):
@@ -24,7 +24,7 @@ def getRepoData(ts):
 
 def printRootNodes(config_path, recipe_folder, sinceNDays, missing, rootNodes):
     config = utils.load_config(config_path)
-    blacklist = utils.get_blacklist(config, recipe_folder)
+    blacklist = skiplist.Skiplist(config, recipe_folder)
     recipes = utils.get_recipes(recipe_folder)
 
     if sinceNDays:
@@ -36,14 +36,14 @@ def printRootNodes(config_path, recipe_folder, sinceNDays, missing, rootNodes):
 
     dag, name2recipes = graph.build(recipes, config=config_path, blacklist=blacklist)
     if not rootNodes:
-        root_nodes = sorted([(len(nx.algorithms.descendants(dag, k)), k) for k, v in dag.in_degree().items() if (k.startswith('bioconductor') or k.startswith('r-'))])
+        root_nodes = sorted([(len(nx.algorithms.descendants(dag, k)), k) for (k, v) in dag.in_degree() if (k.startswith('bioconductor') or k.startswith('r-'))])
     else:
-        root_nodes = sorted([(len(nx.algorithms.descendants(dag, k)), k) for k, v in dag.in_degree().items() if v == 0 and (k.startswith('bioconductor') or k.startswith('r-'))])
+        root_nodes = sorted([(len(nx.algorithms.descendants(dag, k)), k) for (k, v) in dag.in_degree() if v == 0 and (k.startswith('bioconductor') or k.startswith('r-'))])
 
     print("Package\tNumber of dependant packages")
     for n in root_nodes:
         # blacklisted packages also show up as root nodes with out degree 0
-        if n[1] in blacklist:
+        if blacklist.is_skiplisted(n[1]):
             continue
 
         if sinceNDays:

@@ -1,32 +1,39 @@
 {% set name = "muscle" %}
-{% set version = "3.8.1551" %}
+{% set version = "5.1.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  md5: 1b7c9661f275a82d3cf708f923736bf8
-  url: http://www.drive5.com/muscle/muscle_src_3.8.1551.tar.gz
+  url: https://github.com/rcedgar/muscle/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 2bba8b06e3ccabf6465fa26f459763b2029d7e7b9596881063e3aaba60d9e87d
   patches:
-    - osx-makefile.patch
+    - support-linux-aarch64.patch
 
 build:
-  number: 5
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-  run:
+    - llvm-openmp  # [osx]
+    - make
 
 test:
   commands:
     - muscle -version
 about:
-  home: 'http://www.drive5.com/muscle/'
-  license: "http://www.drive5.com/muscle/manual/license.html"
+  home: https://github.com/rcedgar/muscle
+  license: GPL-3.0-only
+  license_file: LICENSE
   summary: "MUSCLE: multiple sequence alignment with high accuracy and high throughput"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:muscle

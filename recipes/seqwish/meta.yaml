@@ -1,16 +1,18 @@
-{% set version = "0.4.1" %}
+{% set name = "seqwish" %}
+{% set version = "0.7.10" %}
 
 package:
-  name: seqwish
-  version: '{{ version }}'
+  name: "{{ name }}"
+  version: "{{ version }}"
 
 source:
-  git_url: https://github.com/ekg/seqwish
-  git_tag: v{{ version }}
-  sha256: unused
+  url: https://github.com/ekg/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
+  sha256: 133b32c9c99caf44eba955b74bae338681da78300e4b21269e07475f88c88b29
 
 build:
   skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
   number: 0
 
 requirements:
@@ -19,8 +21,10 @@ requirements:
     - {{ compiler('cxx') }}
     - llvm-openmp  # [osx]
     - cmake
+    - make
   host:
     - zlib
+    - jemalloc
   run:
     - llvm-openmp  # [osx]
     - python >=3.6
@@ -36,5 +40,7 @@ about:
   summary: Alignment to variation graph inducer
 
 extra:
+  recipe-maintainers:
+    - AndreaGuarracino
   skip-lints:
     - uses_vcs_url

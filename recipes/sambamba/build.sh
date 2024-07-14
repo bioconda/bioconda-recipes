@@ -1,19 +1,15 @@
 #!/bin/bash
-set -eu
+
+set -xe
 
 export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
-if [ $(uname) == "Darwin" ]; then
-    export LDFLAGS="-headerpad_max_install_names $LDFLAGS"
-fi
-sed -i.bak 's/ gcc / $(CC) /g' Makefile
-git clone --depth 1 https://github.com/biod/BioD
-git clone --depth 1 https://github.com/lz4/lz4
-git clone --depth 1 https://github.com/lomereiter/htslib
-cd htslib && make CC=$CC LDFLAGS="-L$PREFIX/lib" && cd ..
-make CC=$CC LIBRARY_PATH=$PREFIX/lib
-make test
-mkdir -p ${PREFIX}/bin
-ls -l bin
-cp bin/sambamba-${PKG_VERSION} ${PREFIX}/bin/sambamba
+# Running `make check` recompiles as an unoptimised binary so must be done prior to release compile
+make -j ${CPU_COUNT} check CC=${CC}
+
+make -j ${CPU_COUNT} release CC=${CC} LIBRARY_PATH=${PREFIX}/lib
+make install prefix=${PREFIX}
+
+# The binaries are versioned for some reason
+mv ${PREFIX}/bin/sambamba-* ${PREFIX}/bin/sambamba

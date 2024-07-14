@@ -1,0 +1,53 @@
+{% set version="1.2.0" %}
+{% set name="beamspy" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 'a8f0f7ea7d2335e9738e752278ab273148092954f7193ef1917495ef622964c9'
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - beamspy = beamspy.__main__:main
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed . -vv
+
+requirements:
+  host:
+    - python >3.8,<3.11
+    - pip
+  run:
+    - python >3.8,<3.11
+    - requests
+    - numpy
+    - scipy
+    - networkx <=2.5
+    - pandas <=1.5.3
+    - seaborn
+    - pyteomics <=4.4.1
+    - biopython <=1.78
+    - matplotlib
+    - pyside2
+    - tqdm
+test:
+  imports:
+    - beamspy
+  commands:
+    - beamspy --help
+
+about:
+  home: https://github.com/computational-metabolomics/beamspy
+  license: GNU General Public v3 (GPLv3)
+  license_family: GPL3
+  license_file: LICENSE
+  summary: BEAMSpy - Birmingham mEtabolite Annotation for Mass Spectrometry (Python package)
+
+extra:
+  skip-lints:
+    - uses_matplotlib
+  recipe-maintainers:
+    - RJMW

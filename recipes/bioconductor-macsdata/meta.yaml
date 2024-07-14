@@ -1,0 +1,38 @@
+{% set version = "1.10.0" %}
+{% set name = "MACSdata" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 1d10f4fe6b20d5c09148b8011fb3183f
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-macsdata", max_pin="x.x") }}'
+  noarch: generic
+requirements:
+  host:
+    - r-base
+  run:
+    - r-base
+    - curl
+    - 'bioconductor-data-packages >=20231203'
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  license: 'file LICENSE'
+  summary: 'Test datasets for the MACSr package'
+  description: 'Test datasets from the MACS3 test examples are use in the examples of the `MACSr` package. All 9 datasets are uploaded to the `ExperimentHub`. The original data can be found at: https://github.com/macs3-project/MACS/.'
+  license_file: LICENSE
+

@@ -1,0 +1,62 @@
+{% set name = "cytosnake" %}
+{% set version = "0.0.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/WayScience/CytoSnake/archive/v{{ version }}.tar.gz"
+  sha256: d583612e3142c52a6339ad203675ece105941e955c1f59862450ba5e3a25d35b
+
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
+  noarch: python
+  ignore_prefix_files:
+    - docs
+    - tests
+  run_exports:
+     - {{ pin_subpackage('cytosnake', max_pin="x.x") }}
+
+requirements:
+  build:
+    - python =3.10
+    - pip
+    - setuptools
+  host:
+    - python =3.10
+  run:
+    - python =3.10.*
+    - pip
+    - pytest >=7.0
+    - numpy >=1.20
+    - mamba >=1.5.0
+    - pyyaml >=6.0.0
+    - snakemake >=7.32
+
+test:
+   imports:
+     - cytosnake
+   commands:
+     - pip check
+   requires:
+     - pip
+
+about:
+  home: https://github.com/WayScience/CytoSnake
+  license: CC-BY-4.0
+  license_file: LICENSE.md
+  summary: Orchestrating high-dimensional cell morphology data processing pipelines
+  doc_url: https://cytosnake.readthedocs.io/
+  tags:
+    - workflow
+    - pipeline
+    - cell-morphology
+    - microscopy-images
+
+extra:
+   recipe-maintainers:
+     - axiomcura
+     - gwaybio

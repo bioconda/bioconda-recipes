@@ -1,0 +1,48 @@
+{% set name = "clinker" %}
+{% set version = "0.0.29" %}
+
+package:
+  name: {{ name }}-py
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: cca735b27da29fc676517d5578c771d05dd2be4f00ea25221747088185bd860d
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - clinker=clinker.main:main
+  run_exports:
+    - {{ pin_subpackage('clinker-py', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - python >=3.6
+    - disjoint-set >=0.7.1
+    - biopython >=1.78
+    - numpy >=1.13.3
+    - scipy >=1.3.3
+    - gffutils
+    
+test:
+  commands:
+    - clinker -h
+
+about:
+  home: "https://github.com/gamcil/clinker"
+  license: MIT
+  license_family: MIT
+  summary: "Gene cluster comparison figure generator"
+  dev_url: "https://github.com/gamcil/clinker"
+  doc_url: "https://github.com/gamcil/clinker/blob/master/README.md"
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btab007
+    - biotools:clinker
