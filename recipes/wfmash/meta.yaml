@@ -1,0 +1,51 @@
+{% set name = "wfmash" %}
+{% set version = "0.16.0" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/waveygang/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
+  sha256: a3e59f27553d900ec2ce5b832a548d55b9c4f1e8a034040e39f6cb02bff7860e
+
+build:
+  skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+    - cmake
+    - make
+  host:
+    - gsl
+    - zlib
+    - jemalloc
+    - htslib
+    - libblas
+  run:
+    - llvm-openmp  # [osx]
+    - python >=3.7
+
+test:
+  commands:
+    - wfmash --help
+
+about:
+  home: https://github.com/waveygang/wfmash
+  license: MIT
+  license_file: LICENSE
+  summary: a pangenome-scale aligner
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  skip-lints:
+    - uses_vcs_url
+  recipe-maintainers:
+    - AndreaGuarracino

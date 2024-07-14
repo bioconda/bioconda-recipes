@@ -1,7 +1,8 @@
-{% set snpeff_ver = "v4_3t" %}
+{% set snpeff_ver = "v5_2" %}
 # NOTE: if the version contains a trailing letter, use the <d>.<d>.1<l> format
-{% set version = "4.3.1t" %}
-{% set sha256 = "d55a7389a78312947c1e7dadf5e6897b42d3c6e942e7c1b8ec68bb35d2ae2244" %}
+# Please update recipes/snpeff as well
+{% set version = "5.2" %}
+{% set sha256 = "60ad2eec66c4f086b8cc7812e5654dce2dd500dd218774da490326e6a4e585f7" %}
 
 about:
   home: 'http://snpeff.sourceforge.net/SnpSift.html'
@@ -14,22 +15,24 @@ package:
 
 build:
   noarch: generic
-  number: 3
+  number: 0
   skip: False
+  run_exports:
+    - {{ pin_compatible('snpsift', max_pin="x.x") }}
 
 source:
-  url: https://downloads.sourceforge.net/project/snpeff/snpEff_{{ snpeff_ver }}_core.zip
+  url: https://snpeff.blob.core.windows.net/versions/snpEff_{{ snpeff_ver }}_core.zip
   sha256: {{ sha256 }}
 
 requirements:
   run:
-    - openjdk
+    - openjdk >=11
     - perl
     - python
 
 test:
   commands:
-    - SnpSift 2>&1 > /dev/null | grep "SnpSift version 4.3"
+    - SnpSift 2>&1 > /dev/null | grep "SnpSift version"
     - echo | SnpSift filter "(CHROM == '2')" >/dev/null 2>&1
     - touch a.vcf && echo | SnpSift annotate a.vcf
 

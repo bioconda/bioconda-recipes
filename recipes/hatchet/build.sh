@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Compile Gurobi
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -18,15 +20,5 @@ else
     cp $GUROBI_HOME/linux64/lib/libgurobi90.so $PREFIX/lib
 fi
 
-export CXXFLAGS=-pthread
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
-
-# Copy scripts
-mkdir -p "${PREFIX}/bin"
-for i in script/hatchet_*
-do
-    script=$(basename ${i})
-    cp "${i}" "${PREFIX}/bin/"
-    chmod +x "${PREFIX}/bin/${script}" 
-done
-
+export CXXFLAGS="-O3 -pthread -I${PREFIX}/include ${LDFLAGS}"
+$PYTHON -m pip install . --no-build-isolation --no-deps -vvv

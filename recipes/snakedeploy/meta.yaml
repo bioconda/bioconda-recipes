@@ -1,5 +1,4 @@
-{% set version = "0.1.1" %}
-
+{% set version = "0.10.0" %}
 
 package:
   name: snakedeploy
@@ -7,27 +6,31 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/snakedeploy/snakedeploy-{{ version }}.tar.gz
-  sha256: b7173a4a5c341c661757f8c43c0b463ad25a9e6cd08fdb60073aa358a4625a42
-  patches:
-    - 0001-gh-13-Exclude-tests-package-from-dist.patch
+  sha256: 85922677897e90e3d179e74ba41f28e174084ed184d4e2712a4c0be3890c6279
 
 build:
   number: 0
   noarch: python
   entry_points:
     - snakedeploy=snakedeploy.client:main
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --use-pep517 -vvv
+  run_exports:
+    - {{ pin_subpackage('snakedeploy', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
     - pytest-runner
-    - python >=3.6
+    - python >=3.8
   run:
+    - python >=3.8
     - jinja2
     - pandas
-    - python >=3.6
     - requests
+    - pyyaml
+    - pygithub
+    - reretry
+    - packaging
 
 test:
   imports:

@@ -1,0 +1,36 @@
+{% set version = '0.1.1' %}
+{% set name = 'bedgovcf' %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/nvnieuwk/bedgovcf/releases/download/{{ version }}/bedgovcf-{{ version }}-darwin-amd64.tar.gz # [osx-amd64]
+    md5: 1b4658701449985e20551b8c46dd162c # [osx]
+  - url: https://github.com/nvnieuwk/bedgovcf/releases/download/{{ version }}/bedgovcf-{{ version }}-linux-amd64.tar.gz # [linux]
+    md5: 3229227b913a2819e998458335bf491f # [linux]
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  run:
+    - tabix
+
+test:
+  commands:
+    - "{{ name }} --help"
+    - bgzip -h
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic  # uses per platform binaries
+    - should_not_be_noarch_source  # uses binaries
+
+about:
+  home: https://github.com/nvnieuwk/bedgovcf
+  license: MIT
+  summary: A simple tool to convert BED files to VCF files

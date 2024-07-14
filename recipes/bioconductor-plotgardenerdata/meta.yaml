@@ -1,0 +1,39 @@
+{% set version = "1.8.0" %}
+{% set name = "plotgardenerData" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 96055b11818bd59c0c91977b34973608
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-plotgardenerdata", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: rmarkdown, knitr
+requirements:
+  host:
+    - r-base
+  run:
+    - r-base
+    - curl
+    - 'bioconductor-data-packages >=20231203'
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  license: 'MIT + file LICENSE'
+  summary: 'Datasets and test data files for the plotgardener package'
+  description: 'This is a supplemental data package for the plotgardener package. Includes example datasets used in plotgardener vignettes and example raw data files. For details on how to use these datasets, see the plotgardener package vignettes.'
+  license_file: LICENSE
+

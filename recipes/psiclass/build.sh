@@ -1,5 +1,6 @@
 #!/bin/bash
 sed -i.bak 's/-f .\/samtools-0.1.19\/libbam.a/1/' Makefile
+sed -i.bak 's/\$WD\/samtools-0.1.19\/samtools/samtools/' psiclass
 make \
     CXX="${CXX}" \
     CXXFLAGS="${CXXFLAGS} -Wformat -O3" \
@@ -14,4 +15,5 @@ install \
     combine-subexons \
     vote-transcripts \
     add-genename \
+    FilterSplice.pl \
     "${PREFIX}/bin/"

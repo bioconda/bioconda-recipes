@@ -1,5 +1,9 @@
 #!/bin/bash
-make default \
+if [ `uname -m` == "aarch64" ]; then
+sed -i 's/\-mpopcnt//g' Makefile
+fi
+
+make \
     CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
     CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 install -d "${PREFIX}/bin"

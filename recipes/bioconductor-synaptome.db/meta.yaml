@@ -1,0 +1,54 @@
+{% set version = "0.99.15" %}
+{% set name = "synaptome.db" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 7ed11d61ac8dca86372eeec59b5ab03b
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-synaptome.db", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: rmarkdown, knitr, pander, testthat, devtools, markdown, ggplot2
+requirements:
+  host:
+    - 'bioconductor-annotationhub >=3.10.0,<3.11.0'
+    - 'bioconductor-synaptome.data >=0.99.0,<0.100.0'
+    - r-base
+    - r-dbi
+    - r-dbplyr
+    - r-dplyr
+    - r-igraph
+    - r-rdpack
+    - r-rsqlite
+  run:
+    - 'bioconductor-annotationhub >=3.10.0,<3.11.0'
+    - 'bioconductor-synaptome.data >=0.99.0,<0.100.0'
+    - r-base
+    - r-dbi
+    - r-dbplyr
+    - r-dplyr
+    - r-igraph
+    - r-rdpack
+    - r-rsqlite
+    - curl
+    - 'bioconductor-data-packages >=20231203'
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'Synamptosome Proteome Database'
+  description: 'The package contains local copy of the Synaptic proteome database. On top of this it provide a set of utility R functions to query and analyse its content. It allows extraction of information for specific genes and building the protein-protein interaction graph for gene sets, synaptic compartments, and brain regions.'
+

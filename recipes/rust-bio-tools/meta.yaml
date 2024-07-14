@@ -1,24 +1,28 @@
-{% set version = "0.20.5" %}
+{% set version = "0.42.2" %}
 
 package:
   name: rust-bio-tools
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
+  skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage('rust-bio-tools', max_pin="x.x") }}
 
 source:
   url: https://github.com/rust-bio/rust-bio-tools/archive/v{{ version }}.tar.gz
-  sha256: e40e9533065ed50be371dcde8de16cda5417820e4ae29221877354ba7d77d5d0
+  sha256: 860b29bb917f2d9ca1479d416b43856791c2ca726a0c22df30354bb5c44191c6
 
 requirements:
   build:
-    - rust >=1.30
-    - clangdev
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - clangdev
     - pkg-config
     - make
+    - cmake
   host:
     - gsl
     - libcblas
@@ -33,11 +37,15 @@ test:
 about:
   home: https://github.com/rust-bio/rust-bio-tools
   license: MIT
+  license_family: MIT
   summary: |
     A growing collection of fast and secure command line utilities for dealing with NGS data
     implemented on top of Rust-Bio.
+  dev_url: https://github.com/rust-bio/rust-bio-tools
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - fxwiegand
     - felixmoelder
