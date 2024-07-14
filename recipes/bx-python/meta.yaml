@@ -12,8 +12,9 @@ source:
 
 build:
   number: 0
-  skip: True  # [py<39]
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  script:
+    - {{ PYTHON }} setup.py build_ext --force  # [py<39]
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin='x.x') }}
 
@@ -23,7 +24,8 @@ requirements:
   host:
     - python
     - cython
-    - numpy >=1.25
+    - numpy  # [py<39]
+    - numpy >=1.25  # [py>=39]
     - pip
     - setuptools
     - zlib
