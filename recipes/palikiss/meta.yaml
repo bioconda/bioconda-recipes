@@ -1,0 +1,48 @@
+{% set version = "2.3.1" %}
+{% set packagename = "palikiss" %}
+{% set sha256 = "d9ab68329e48709cffbf5ed775f905bdddebab470d70836bb522993b971d48af" %}
+
+package:
+  name: {{ packagename }}
+  version: 1.1.0
+
+source:
+  sha256: {{ sha256 }}
+  # the repository "fold-grammars" contains sources for several programs, i.e. pKiss, RNAshapes, ...
+  # thus, the version number does not correspond to the {{ packagename }} version number
+  url: https://github.com/jlab/fold-grammars/archive/{{ version }}.tar.gz
+
+build:
+  number: 0
+  skip: False # [osx]
+  run_exports:
+    - {{ pin_subpackage('palikiss', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - perl
+    - bellmans-gapc >=2024.01.12
+    - libopenblas
+  run:
+    - perl
+    - bellmans-gapc >=2024.01.12
+    - libopenblas
+
+test:
+  commands:
+    - pAliKiss -h
+    - pAliKiss CGCAUGCUAGUCGCG
+
+about:
+  home: https://bibiserv.cebitec.uni-bielefeld.de/{{ packagename }}
+  license: 'GPLv3+'
+  license_file: LICENSE
+  summary: "pAliKiss predicts RNA secondary structures for fixed RNA multiple sequence alignments, with special attention for pseudoknotted structures."
+
+extra:
+  identifiers:
+    - doi:10.1007/978-3-642-15294-8_5
+    - doi:10.1093/bioinformatics/btu649
