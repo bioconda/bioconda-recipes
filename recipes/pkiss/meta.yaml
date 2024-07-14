@@ -1,36 +1,40 @@
-{% set version = "2.2.12" %}
-{% set sha256 = "3a099249304e2c43e3c96ba9dfe2bb712f48e23ca62f4e3a57fa9d65a63b9e41" %}
+{% set version = "2.3.1" %}
+{% set packagename = "pkiss" %}
+{% set sha256 = "d9ab68329e48709cffbf5ed775f905bdddebab470d70836bb522993b971d48af" %}
 
 package:
-  name: pkiss
-  version: {{ version }}
+  name: {{ packagename }}
+  version: 2.3.0
 
 source:
   sha256: {{ sha256 }}
+  # the repository "fold-grammars" contains sources for several programs, i.e. pKiss, RNAshapes, ...
+  # thus, the version number does not correspond to the {{ packagename }} version number
   url: https://github.com/jlab/fold-grammars/archive/{{ version }}.tar.gz
-  patches:
-    - switch_hardcoded_compiler.patch
 
 build:
-  number: 4
+  number: 0
   skip: False # [osx]
+  run_exports:
+    - {{ pin_subpackage('pkiss', max_pin="x") }}
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
   host:
     - perl
-    - bellmans-gapc >=2020.12.08
+    - bellmans-gapc >=2024.01.12
   run:
     - perl
-    - bellmans-gapc >=2020.12.08
+    - bellmans-gapc >=2024.01.12
 
 test:
   commands:
   - echo "UGGCCGGCAUGGUCCCAGCCUCCUCGCUGGCGCCGGCUGGGCAACAUUCC" | pKiss --mode=probs &> /dev/null
 
 about:
-  home: https://bibiserv.cebitec.uni-bielefeld.de/pkiss
+  home: https://bibiserv.cebitec.uni-bielefeld.de/{{ packagename }}
   license: 'GPLv3+'
   license_file: LICENSE
   summary: 'RNA secondary structure prediction including K-type and kissing hairpin- pseudoknots.'
