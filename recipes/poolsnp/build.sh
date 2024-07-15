@@ -30,16 +30,20 @@ cp PoolSNP.sh $PREFIX/bin
 
 # Copy python scripts
 for script in $SCRIPTS_DIR/*; do
-    if [[ $script == *.py ]]; then
-        # Maybe I don't need to copy them to the bin directory (check back later)
-        cp $script $PREFIX/bin/$(basename $script)
-        # Copying the scripts to the scripts directory
-        cp $script $PREFIX/bin/scripts/
-    fi
+    #if [[ $script == *.py ]]; then
+        # Maybe I don't need to copy them to the bin directory 
+    cp $script $PREFIX/bin/$(basename $script)
+    cp $script $PREFIX/bin/scripts/
+    chmod +x $PREFIX/bin/$(basename $script)
+    chmod +x $PREFIX/bin/scripts/$(basename $script)
+    #fi
 done
 
 # Copy the test data to the share directory
 cp -r $TEST_DATA_DIR $PREFIX/share/PoolSNP/TestData
+
+#echo "Contents of PREFIX:"
+#ls -Rl $PREFIX/bin
 
 chmod +x PoolSNP.sh
 chmod +x $PREFIX/share/PoolSNP/TestData/test.sh
