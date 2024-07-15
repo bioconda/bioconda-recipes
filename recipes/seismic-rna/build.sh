@@ -1,3 +1,4 @@
+#!/bin/bash
 # DO NOT RUN THIS SCRIPT YOURSELF!
 # It should only be run by conda build.
 
