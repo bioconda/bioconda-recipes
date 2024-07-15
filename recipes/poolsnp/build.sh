@@ -28,17 +28,15 @@ mkdir -p $PREFIX/share/PoolSNP
 
 cp PoolSNP.sh $PREFIX/bin
 
-ls -Rl $SCRIPTS_DIR
-
 # Copy python scripts
 for script in $SCRIPTS_DIR/*; do
-    if [[ $script == *.py ]]; then
+    #if [[ $script == *.py ]]; then
         # Maybe I don't need to copy them to the bin directory 
-        echo "$script"
-        cp $script $PREFIX/bin/$(basename $script)
-        cp $script $PREFIX/bin/scripts/
-        chmod +x $PREFIX/bin/$(basename $script)
-        chmod +x $PREFIX/bin/scripts/$(basename $script)
+    
+    cp $script $PREFIX/bin/$(basename $script)
+    cp $script $PREFIX/bin/scripts/
+    chmod +x $PREFIX/bin/$(basename $script)
+    chmod +x $PREFIX/bin/scripts/$(basename $script)
     fi
 done
 
