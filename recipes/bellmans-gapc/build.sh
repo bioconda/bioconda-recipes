@@ -1,4 +1,7 @@
 #!/bin/sh
+
+set -xe
+
 export SED="sed"
 export SYSTEM_SUFFIX="_linux-gnu"
 ./configure --with-boost-libdir=$PREFIX/lib/ CPPFLAGS=-I${PREFIX} --prefix=$PREFIX --disable-gsltest
@@ -10,7 +13,7 @@ if [ x"$(uname)" == x"Darwin" ]; then
   $SED -E "s/ -std=c\+\+17 / -std=c\+\+11 /" -i config.mf
 fi
 
-make
+make -j ${CPU_COUNT} CC=${CC} CXX=${CXX}
 make install
 # remove definition of CXX in user space config file, since this will not match users compiler path,
 # instead let conda take care of providing meaningful CXX and CC values.
