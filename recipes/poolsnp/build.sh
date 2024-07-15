@@ -32,7 +32,7 @@ cp PoolSNP.sh $PREFIX/bin
 for script in $SCRIPTS_DIR/*; do
     if [[ $script == *.py ]]; then
         # Maybe I don't need to copy them to the bin directory (check back later)
-        #cp $script $PREFIX/bin/$(basename $script)
+        cp $script $PREFIX/bin/$(basename $script)
         # Copying the scripts to the scripts directory
         cp $script $PREFIX/bin/scripts/
     fi
