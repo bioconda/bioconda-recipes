@@ -1,0 +1,43 @@
+{% set name = "lintax" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "334141aae2f374e83fec30c9f0510c234a639f1d72627af5556d79d27c155dc2" %}
+
+package:
+  name: '{{ name }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/parul-sharma/LINtax/archive/refs/tags/v1.0.0.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 0
+  noarch: generic
+  script: 
+    - mkdir -p $PREFIX/bin
+    - cp bin/* $PREFIX/bin/
+    - chmod u+x $PREFIX/bin/*  # Ensure all scripts are executable
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - bash 
+  run:
+    - bash
+    - kraken2 =2.1.3
+    - python =3.11
+    - pandas
+
+test:
+  commands:
+    - lintax help
+
+about:
+  home: https://github.com/parul-sharma/LINtax
+  license: MIT
+  summary: LINtax tool for creating custom taxonomy for metagenome classification.
+
+extra:
+  recipe-maintainers:
+    - Parul Sharma <parulsharma@vt.edu>
