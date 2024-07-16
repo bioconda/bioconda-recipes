@@ -6,7 +6,6 @@ BASE_DIR=$(dirname "$0")
 SCRIPTS_DIR="${BASE_DIR}/scripts"
 TEST_DATA_DIR="${BASE_DIR}/TestData"
 
-
 # Check for scripts directory
 if [ ! -d "${SCRIPTS_DIR}" ]; then
     echo "The scripts directory is missing. It should be placed in the same directory as the PoolSNP.sh script."
@@ -19,16 +18,16 @@ if [ ! -d "${TEST_DATA_DIR}" ]; then
     exit 1
 fi
 
-
+# Create directories
 mkdir -p ${PREFIX}/bin
-
 mkdir -p ${PREFIX}/bin/scripts
-
 mkdir -p ${PREFIX}/share/PoolSNP
 
+# Copy PoolSNP.sh and make it executable
 cp PoolSNP.sh ${PREFIX}/bin
+chmod +x ${PREFIX}/bin/PoolSNP.sh
 
-# Copy python scripts
+# Copy python scripts and make them executable
 for script in $SCRIPTS_DIR/*; do
     cp $script ${PREFIX}/bin/$(basename $script)
     cp $script ${PREFIX}/bin/scripts/
@@ -38,9 +37,3 @@ done
 
 # Copy the test data to the share directory
 cp -r ${TEST_DATA_DIR} ${PREFIX}/share/PoolSNP/TestData
-
-#echo "Contents of PREFIX:"
-#ls -Rl ${PREFIX}/bin
-
-chmod +x PoolSNP.sh
-chmod +x ${PREFIX}/share/PoolSNP/TestData/test.sh
