@@ -1,7 +1,7 @@
 {% set package = "ucsc-pslcdnafilter" %}
 {% set program = "pslCDnaFilter" %}
-{% set version = "445" %}
-{% set sha256 = "c7abb5db6a5e16a79aefcee849d2b59dbc71ee112ca1e41fea0afb25229cf56c" %}
+{% set version = "466" %}
+{% set sha256 = "5ed312771de13b18a72f3f3f615ef1bc0b8be9dcd647b8dde05dc60d4630e9fb" %}
 
 package:
   name: "{{ package }}"
@@ -15,7 +15,9 @@ source:
 
 build:
   skip: True # [osx]
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(package, max_pin=None) }}
 
 requirements:
   build:
@@ -27,19 +29,18 @@ requirements:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
     - libopenssl-static
     - zlib
   run:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
+    - libopenssl-static
 
 test:
   commands:
-    # just check for existence, because the individual packages have no unified behavior
-    - which {{ program }}
+    # just check for existence and exec bit, because the individual packages have no unified behavior
+    - test -x ${PREFIX}/bin/{{ program }}
 
 about:
   home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
@@ -50,3 +51,9 @@ comparative, selecting near best in genome alignments for each given
 cDNA and non-comparative, based only on the quality of an individual
 alignment.
 "
+  dev_url: "https://github.com/ucscGenomeBrowser/kent"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/master/README"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
