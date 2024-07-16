@@ -1,6 +1,7 @@
 
-{% set version = "0.9.3" %}
-{% set sha256 = "43445ef6d96bd8a09a9a45cd18e21481d7fefe7e9ab26aec4abd8d1f4bff3fcd" %}
+{% set version = "0.10.1" %}
+{% set sha256 = "a864010d9ba329feb9211d554ea9c410f5bcc1e1462369bef56a8f5b8914f3d2" %}
+
 
 package:
   name: gw
@@ -10,10 +11,13 @@ package:
 source:
   url: https://github.com/kcleal/gw/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - fix-linker-issues.patch  # [linux]
+    - fix-version.patch
 
 
 build:
-  number: 1
+  number: 0
   run_exports:
     - {{ pin_subpackage('gw', max_pin="x") }} 
 
@@ -29,16 +33,20 @@ requirements:
     - {{ cdt('libxxf86vm') }}        # [linux]
     - {{ cdt('libxfixes') }}         # [linux]
     - {{ cdt('libxext') }}           # [linux]
-    - wget
-    - unzip
   host:
     - fontconfig
+    - libuuid
     - libcurl
     - libdeflate >=1.0
     - htslib >=1.12
     - glfw >=3.3
+    - wget
+    - unzip
     - freetype
-    - xorg-libxfixes  # [linux]
+    - xorg-libxfixes         # [linux]
+    - xorg-libx11            # [linux]
+    - xorg-libxcb            # [linux]
+    - expat                  # [linux]
   run:
     - glfw >=3.3
     - htslib >=1.12 
