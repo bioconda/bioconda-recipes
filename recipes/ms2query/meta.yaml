@@ -1,0 +1,57 @@
+{% set name = "ms2query" %}
+{% set version = "1.5.0" %}
+{% set sha256 = "7f72a7b2f4a6bf4b8d73e99e6708184decf34d36afe359fc38b3678561a44772" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/iomega/ms2query/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - ms2query=ms2query:command_line
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('ms2query', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+  run:
+    - python >=3.9
+    - matchms =0.26.4
+    - spec2vec =0.8.0
+    - numpy =1.24.4
+    - h5py =3.11.0
+    - scikit-learn =1.5.0
+    - pyarrow =16.1.0
+    - ms2deepscore =2.0.0
+    - pandas =2.2.2
+    - matplotlib-base
+    - skl2onnx =1.16.0
+    - onnxruntime =1.17.0
+    - pytest =8.2.2
+    - pytest-cov =5.0.0
+    - rdkit
+
+test:
+  imports:
+    - ms2query
+
+about:
+  home: https://github.com/iomega/ms2query
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: "Reliable and fast MS/MS spectral based analogue search"
+
+extra:
+  identifiers:
+    - doi:https://doi.org/10.1038/s41467-023-37446-4
+  recipe-maintainers:
+    - niekdejonge
+    - hechth

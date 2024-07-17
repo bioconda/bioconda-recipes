@@ -1,6 +1,6 @@
 {% set name = "recognizer" %}
-{% set version = "1.3.3" %}
-{% set sha256 = "762875a62cf3b26c58ec3ea73f8492990336361f9687387a9e5bdf3a3e1b3ebd" %}
+{% set version = "1.10.1" %}
+{% set sha256 = "1d97b521a5b8660e5dd1726c95b885bcdce53654d01a001d8e6522a9c76d81c2" %}
 
 package:
   name: {{ name|lower }}
@@ -13,21 +13,31 @@ source:
 build:
   noarch: generic
   number: 0
-  script: "mkdir -p $PREFIX/bin && cp recognizer.py $PREFIX/bin && cp -r Databases $PREFIX/bin"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: >
+    mkdir -p $PREFIX/bin && 
+    mkdir -p $PREFIX/share && 
+    cp recognizer.py resources/*.tsv $PREFIX/share &&
+    chmod +x $PREFIX/share/recognizer.py &&
+    ln -s $PREFIX/share/recognizer.py $PREFIX/bin/recognizer
 
 requirements:
   run:
     - python
     - pandas
-    - blast
+    - blast >=2.12
     - lxml
     - openpyxl
     - krona
     - wget
+    - tqdm
+    - xlsxwriter
+    - requests
 
 test:
   commands:
-    - recognizer.py -v
+    - recognizer -v
 
 about:
   home: https://github.com/iquasere/reCOGnizer

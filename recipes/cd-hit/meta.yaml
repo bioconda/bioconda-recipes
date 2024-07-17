@@ -10,21 +10,22 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 3
+  number: 10
+  run_exports:
+    - {{ pin_subpackage('cd-hit', max_pin="x") }}
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
     - llvm-openmp  # [osx]
+    - libgomp  # [linux]
   host:
     - zlib
-    - openmp 
-    - llvm-openmp  # [osx]
   run:
     - zlib
-    - openmp 
-    - llvm-openmp  # [osx]
+
 test:
   commands:
     - cd-hit --help | grep 'Usage' > /dev/null
@@ -33,3 +34,7 @@ about:
   home: https://github.com/weizhongli/cdhit
   license: GPLv2
   summary: Clusters and compares protein or nucleotide sequences
+
+extra:
+  additional-platforms:
+    - linux-aarch64

@@ -1,0 +1,47 @@
+{% set name = "snipit" %}
+{% set version = "1.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 92e4395a23ef5e55ae753868723daa3e68d5803a10db6ae27fc6722a99bcc708
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - snipit=snipit.command:main
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage('snipit', max_pin="x") }}
+
+requirements:
+  host:
+    - biopython >=1.70
+    - matplotlib-base >=3.2.1
+    - pip
+    - python >3.5
+  run:
+    - biopython >=1.70
+    - matplotlib-base >=3.2.1
+    - python >3.5
+
+test:
+  imports:
+    - snipit
+  commands:
+    - snipit --help
+
+about:
+  home: "https://github.com/aineniamh/snipit"
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Visualize snps relative to a reference sequence
+
+extra:
+  recipe-maintainers:
+    - tomkinsc

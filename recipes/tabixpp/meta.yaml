@@ -1,0 +1,57 @@
+{% set name = "tabixpp" %}
+{% set version = "1.1.2" %}
+{% set sha256 = "c850299c3c495221818a85c9205c60185c8ed9468d5ec2ed034470bb852229dc" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+- url: https://github.com/vcflib/tabixpp/archive/refs/tags/v{{version}}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - shared_lib.patch
+    - pkg-config.patch  # [osx]
+- url: https://github.com/samtools/htslib/releases/download/1.19.1/htslib-1.19.1.tar.bz2
+  sha256: 222d74d3574fb67b158c6988c980eeaaba8a0656f5e4ffb76b5fa57f035933ec
+  folder: htslib
+
+build:
+  number: 2
+  run_exports:
+    # Observed ABI version increase from 1.1.0 to 1.1.2.
+    # Hence, we pin to the patch version even.
+    - {{ pin_subpackage(name, max_pin="x.x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - zlib
+    - bzip2
+    - xz
+    - pkg-config  # [osx]
+    - htslib
+    - bc
+  run:
+    - samtools
+
+test:
+  commands:
+    - which tabix++
+
+about:
+  home: "https://github.com/vcflib/tabixpp"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A C++ wrapper around the tabix project, a generic indexer for TAB-delimited genome position files."
+
+extra:
+  identifiers:
+    - biotools:tabixpp
+  recipe-maintainers:
+    - jpuritz
+  additional-platforms:
+    - linux-aarch64

@@ -1,8 +1,10 @@
 #!/bin/bash
 
-make \
+set -xe
+
+make -j ${CPU_COUNT} \
   CC="${CC}" \
-  CFLAGS="${CFLAGS} -g -Wall -O2" \
+  CFLAGS="${CFLAGS} -fcommon -g -Wall -O2" \
   LIBS="${LDFLAGS} -lz -lpthread"
 
 mkdir -p "${PREFIX}/bin"

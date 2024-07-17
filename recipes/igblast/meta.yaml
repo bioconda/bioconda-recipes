@@ -1,4 +1,4 @@
-{% set version = "1.15.0" %}
+{% set version = "1.22.0" %}
 
 package:
   name: igblast
@@ -8,7 +8,6 @@ about:
   home: http://www.ncbi.nlm.nih.gov/projects/igblast/
   license: Public Domain and others
   license_file:
-    - c++/include/misc/jsonwrapp/rapidjson10/license.txt  # [linux]
     - c++/include/misc/jsonwrapp/rapidjson11/license.txt  # [linux]
     - c++/include/util/bitset/license.txt                 # [linux]
     - c++/scripts/projects/blast/LICENSE                  # [linux]
@@ -21,30 +20,34 @@ about:
 
 source:
   url: ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/{{ version }}/ncbi-igblast-{{ version }}-src.tar.gz  # [linux]
-  sha256: 04a39b6854bedf7199ded7485fcc48faca762a2c97ea4b812d024298694409dd  # [linux]
+  sha256: a04eb195087447cf42e673401ae2d9f6ef8414b34f1534724a6953f41224df68 # [linux]
   url: ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/{{ version }}/ncbi-igblast-{{ version }}-x64-macosx.tar.gz  # [osx]
-  sha256: 2e155cd3b05d142f5abe68f572ad8982b9dadebc1ac6412fa959bc1b0d911e63  # [osx]
+  sha256: b8a0034642b5dbef7f41c7fcfbb4bc035d2c5877d3e987af43605ea8e3d55c40 # [osx]
   patches:
     - shared_vdb.patch  # [linux]
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+  - {{ pin_subpackage('igblast', max_pin="x") }}
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - wget
   host:
     - zlib
     - bzip2
+    - gnutls  # [osx]
     - libidn11
-    - libxml2
+    - lzo # [osx]
+    - libsqlite >=3
     - ncbi-vdb >=2.9.6
   run:
     - ncbi-vdb >=2.9.6
     - perl
-    - gnutls  # [osx]
 
 test:
   commands:
@@ -53,5 +56,7 @@ test:
     - makeblastdb -h
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:igblast

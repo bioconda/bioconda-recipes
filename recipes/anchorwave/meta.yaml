@@ -1,0 +1,43 @@
+{% set name = "anchorwave" %}
+{% set version = "1.2.3" %}
+{% set tag = "v1.2.3" %}
+{% set sha256 = "1f689c06f9bbc8e1ed64c0addf4aaf5d172a2fea1e55660b8d3f6dfdffe3f157" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/baoxingsong/AnchorWave/archive/refs/tags/{{ tag }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script_env:
+    - TARGET_PLATFORM=macOS  # [osx]
+    - TARGET_PLATFORM=Linux  # [linux]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  skip: True  # [not unix]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake >=3
+    - zlib
+  run:
+    - gmap
+    - minimap2
+    - zlib
+
+test:
+  commands:
+    - 'anchorwave | grep "Usage: anchorwave"'
+
+about:
+  home: https://github.com/baoxingsong/AnchorWave
+  license: MIT
+  summary: 'Sensitive alignment of genomes with high sequence diversity, extensive structural polymorphism, and whole-genome duplication variation'
+  dev_url: https://github.com/baoxingsong/AnchorWave
+

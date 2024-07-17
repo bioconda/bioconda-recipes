@@ -1,13 +1,18 @@
 #!/bin/bash
-mkdir -p "$PREFIX/bin"
-export MACHTYPE=x86_64
-export BINDIR=$(pwd)/bin
+export USE_HIC=0
+mkdir -p "${PREFIX}/bin"
+export MACHTYPE=$(uname -m)
+export BINDIR=`pwd`/bin
+export INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
+export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include ${LDFLAGS}"
 export L="${LDFLAGS}"
-mkdir -p "$BINDIR"
-(cd kent/src/lib && make)
-(cd kent/src/htslib && make)
-(cd kent/src/jkOwnLib && make)
-(cd kent/src/hg/lib && make)
-(cd kent/src/blat && make)
-cp bin/blat "$PREFIX/bin"
-chmod +x "$PREFIX/bin/blat"
+mkdir -p ${BINDIR}
+(cd ${SRC_DIR}/kent/src/lib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
+(cd ${SRC_DIR}/kent/src/htslib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
+(cd ${SRC_DIR}/kent/src/jkOwnLib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
+(cd ${SRC_DIR}/kent/src/blat && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
+cp -f ${SRC_DIR}/bin/blat "${PREFIX}/bin"
+chmod 0755 "${PREFIX}/bin/blat"

@@ -1,5 +1,5 @@
 {% set name = "refgenieserver" %}
-{% set version = "0.5.1" %}
+{% set version = "0.7.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,27 +7,32 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "f7e1e5cc0abe125a284a3138a4b033d203c150b93d79413b39980ba0b8c9350e"
+  sha256: "6d17ea0bb8e97dd8a09736958d098af580ac90de34f3cced388dd62e6ec2de5a"
 
 build:
   number: 0
   noarch: python
   entry_points:
     - refgenieserver = refgenieserver.main:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.6
+    # use_2to3 was removed in setuptools 58
+    - setuptools <58
   run:
+    - python >=3.6
     - aiofiles
     - fastapi
     - jinja2
     - logmuse >=0.2
-    - python
-    - refgenconf >=0.5.2
+    - refgenconf >=0.10.0
     - uvicorn >=0.7.1
+    - ubiquerg >=0.6.1
 
 test:
   imports:
@@ -44,4 +49,4 @@ about:
 
 extra:
   recipe-maintainers:
-    - michalstolarczyk
+    - stolarczyk

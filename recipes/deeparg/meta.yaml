@@ -1,0 +1,53 @@
+{% set version = "1.0.4" %}
+
+package:
+  name: deeparg
+  version: '{{version}}'
+
+source:
+  url: https://pypi.io/packages/source/d/deeparg/DeepARG-{{version}}.tar.gz
+  sha256: 85df343a76b19b109b02d0b7784b39132531712e8f0a0fc87091f98bdacdd30d
+
+build:
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  noarch: python
+  number: 0
+  entry_points:
+    - deeparg = deeparg.entry:main
+  run_exports:
+    - {{ pin_subpackage('deeparg', max_pin="x") }}
+
+requirements:
+  host:
+    - python <3
+    - pip
+  run:
+    - python <3
+    - numpy >=1.16
+    - scipy >=1.2.1
+    - joblib >=0.14.1
+    - biopython >=1.68
+    - ete3 >=3.1.2
+    # tqdm pinning to <4.65 can be removed once https://github.com/gaarangoa/deeparg/issues/1 is resolved.
+    - tqdm >=4.62.3,<4.65
+    - nolearn >=0.6.1
+    - lasagne >=0.1
+    - scikit-learn >=0.19.2
+    - theano >=0.8.2
+    - requests >=1.15.1
+    - wget >=1.20.3
+    - diamond
+
+test:
+  imports:
+    - deeparg
+  commands:
+    - diamond --help 2>&1 > /dev/null
+    - deeparg -h
+
+about:
+  home: https://github.com/gaarangoa/deeparg
+  license: MIT
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  summary: A deep learning based approach to predict Antibiotic Resistance Genes (ARGs) from metagenomes

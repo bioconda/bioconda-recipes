@@ -1,0 +1,47 @@
+{% set version = "1.2.0" %}
+{% set name = "escheR" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: ed2586d2e42f89db85790889863421b8
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-escher", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: STexampleData, BumpyMatrix, knitr, rmarkdown, BiocStyle, ggpubr, scran, scater, scuttle, Seurat
+requirements:
+  host:
+    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-spatialexperiment >=1.12.0,<1.13.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - r-base
+    - r-ggplot2
+    - r-rlang
+  run:
+    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-spatialexperiment >=1.12.0,<1.13.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - r-base
+    - r-ggplot2
+    - r-rlang
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'MIT + file LICENSE'
+  summary: 'Unified multi-dimensional visualizations with Gestalt principles'
+  description: 'The creation of effective visualizations is a fundamental component of data analysis. In biomedical research, new challenges are emerging to visualize multi-dimensional data in a 2D space, but current data visualization tools have limited capabilities. To address this problem, we leverage Gestalt principles to improve the design and interpretability of multi-dimensional data in 2D data visualizations, layering aesthetics to display multiple variables. The proposed visualization can be applied to spatially-resolved transcriptomics data, but also broadly to data visualized in 2D space, such as embedding visualizations. We provide this open source R package escheR, which is built off of the state-of-the-art ggplot2 visualization framework and can be seamlessly integrated into genomics toolboxes and workflows.'
+  license_file: LICENSE
+
