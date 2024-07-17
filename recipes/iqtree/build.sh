@@ -11,6 +11,7 @@ export CXXFLAGS="${CXXFLAGS} -std=c++17"
 if [ "$(uname)" == Darwin ]; then
 	export CMAKE_C_COMPILER="clang"
 	export CMAKE_CXX_COMPILER="clang++"
+	export CXXFLAGS="${CXXFLAGS} -mmacosx-version-min=11"
 fi
 
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release \
