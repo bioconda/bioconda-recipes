@@ -6,7 +6,7 @@ export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 -w"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -w"
-export CXXFLAGS="${CXXFLAGS} -std=c++14"
+export CXXFLAGS="${CXXFLAGS} -std=c++14 -w"
 
 if [ "$(uname)" == Darwin ]; then
 	export CMAKE_C_COMPILER="clang"
