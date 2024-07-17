@@ -19,7 +19,7 @@ cp -rf * ${PACKAGE_HOME}/
 # Install SA-SSR (has to be done here because SA-SSR is an ancient repository without releases)
 git clone --depth 1 https://github.com/ridgelab/SA-SSR
 cd SA-SSR
-make -j${CPU_COUNT}
+make
 cp -f bin/sa-ssr ${PREFIX}/bin/
 cd ../ && rm -rf SA-SSR/
 
