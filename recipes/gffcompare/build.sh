@@ -10,7 +10,7 @@ export LINKER="$CXX"
 ln -s ${CC} $BUILD_PREFIX/bin/gcc
 
 mkdir -p "$PREFIX"/bin/
-make -j ${CPU_COUNT} release
+make release
 cp gffcompare "$PREFIX"/bin/
 cp trmap "$PREFIX"/bin/
 
