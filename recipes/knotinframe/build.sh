@@ -1,4 +1,6 @@
-#!/bin/bash -euo
+#!/bin/bash 
+
+set -exuo
 
 make -j ${CPU_COUNT} PREFIX=$PREFIX CC=$CC -C Misc/Applications/Knotinframe all
 make PREFIX=$PREFIX CC=$CC -C Misc/Applications/Knotinframe install-program
