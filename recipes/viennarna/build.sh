@@ -4,7 +4,7 @@
 ## (mac or linux)
 ##
 if [ `uname` == Darwin ] ; then
-    extra_config_options="LDFLAGS=-Wl,-headerpad_max_install_names"
+    extra_config_options="--without-perl LDFLAGS=-Wl,-headerpad_max_install_names"
 fi
 
 ## Configure and make
