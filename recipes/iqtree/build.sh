@@ -4,8 +4,8 @@ set -ex
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CFLAGS="${CFLAGS} -O3"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -w"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -w"
 export CXXFLAGS="${CXXFLAGS} -std=c++14"
 
 if [ "$(uname)" == Darwin ]; then
@@ -28,7 +28,7 @@ case $(uname -m) in
 		;;
 esac
 
-cmake --build build --target install -j ${JOBS}
+cmake --build build --target install -j 1
 
 chmod 755 "${PREFIX}/bin/iqtree2"
 cp -f "${PREFIX}"/bin/iqtree2 "${PREFIX}"/bin/iqtree
