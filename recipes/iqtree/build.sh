@@ -15,7 +15,8 @@ fi
 
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release \
 	-DUSE_LSD2=ON -DIQTREE_FLAGS=omp -DCMAKE_CXX_COMPILER="${CXX}" \
-	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -Wno-dev -Wno-deprecated --no-warn-unused-cli
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DUSE_CMAPLE=ON \
+	-Wno-dev -Wno-deprecated --no-warn-unused-cli
 
 case $(uname -m) in
 	aarch64) 
