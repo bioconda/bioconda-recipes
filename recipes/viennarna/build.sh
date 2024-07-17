@@ -19,7 +19,7 @@ fi
             --without-rnaxplorer \
             ${extra_config_options} \
             && \
-make -j${CPU_COUNT} CFLAGS='-Wno-deprecated-non-prototype -Wno-compound-token-split-by-macro'
+make -j${CPU_COUNT}
 
 ## Install
 make install
