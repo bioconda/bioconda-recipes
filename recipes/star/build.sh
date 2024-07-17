@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -xe
+
 if [ "$(uname)" == "Darwin" ]; then
     echo "Installing STAR for OSX."
     mkdir -p $PREFIX/bin
