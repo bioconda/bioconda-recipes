@@ -14,20 +14,27 @@ build:
   noarch: python
   number: 0
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage("gtdb_to_taxdump", max_pin="x.x") }}
 
 requirements:
   host:
     - pip
     - python
+    - numpy
   run:
     - networkx
     - python
     - tqdm
+    - {{ pin_compatible('numpy') }}
 
 test:
   imports:
     - bin
     - gtdb2td
+  commands:
+    - gtdb_to_taxdump.py -h
+    - gtdb_to_taxdump.py --version
 
 about:
   home: https://github.com/nick-youngblut/gtdb_to_taxdump
