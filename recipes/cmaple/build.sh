@@ -1,10 +1,16 @@
 #!/bin/bash
 set -ex
 
-# if [ "$(uname)" == Darwin ]; then
-# 	export CMAKE_C_COMPILER="clang"
-# 	export CMAKE_CXX_COMPILER="clang++"
-# fi
+DCMAKE_ARGS=""
+if [ "$(uname)" == Darwin ]; then
+	CC=$(which "$CC")
+	CXX=$(which "$CXX")
+	AR=$(which "$AR")
+	RANLIB=$(which "$RANLIB")
+	DCMAKE_ARGS=(-DCMAKE_C_COMPILER="${CC}" -DCMAKE_CXX_COMPILER="${CXX}"
+		-DCMAKE_CXX_COMPILER_AR="${AR}" -DCMAKE_CXX_COMPILER_RANLIB="${RANLIB}")
+
+fi
 
 case $(uname -m) in
 aarch64)
@@ -18,7 +24,7 @@ JOBS=1 # Simplify logs
 
 mkdir build
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -G Ninja \
-	-DCMAKE_C_COMPILER="${CC}" -DCMAKE_CXX_COMPILER="${CXX}" \
+	"${DCMAKE_ARGS[@]}" \
 	-DBUILD_GMOCK=OFF -DINSTALL_GTEST=OFF \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli
 
