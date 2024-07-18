@@ -18,12 +18,12 @@ JOBS=1 # Simplify logs
 
 mkdir build
 cd build
-cmake .. -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -G Ninja \
 	-DCMAKE_C_COMPILER="${CC}" -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DBUILD_GMOCK=OFF -DINSTALL_GTEST=OFF \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli
-VERBOSE=1 make -j "${JOBS}"
-make install
+
+VERBOSE=1 cmake --build build --target install -j ${JOBS}
 
 chmod 755 "${PREFIX}/bin/cmaple"
 chmod 755 "${PREFIX}/bin/cmaple-aa"
