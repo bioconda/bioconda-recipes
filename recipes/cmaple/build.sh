@@ -16,8 +16,6 @@ aarch64)
 esac
 JOBS=1 # Simplify logs
 
-mkdir build
-cd build
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -G Ninja \
 	-DCMAKE_C_COMPILER="${CC}" -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DBUILD_GMOCK=OFF -DINSTALL_GTEST=OFF \
