@@ -1,0 +1,49 @@
+{% set name = "cmaple" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "68693229053d8c456028b7696ee39770ff55a3eaf3454d7087def08accbf0603" %}
+
+package:
+  name: {{ name }}
+  version: {{ version | replace("-", "_") }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+source:
+  - url: https://github.com/iqtree/cmaple/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake
+    - ninja
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - zlib
+test:
+  commands:
+    - cmaple
+    - cmaple-aa
+
+about:
+  home: "https://github.com/iqtree/cmaple"
+  dev_url: "https://github.com/iqtree/cmaple"
+  doc_url: "https://github.com/iqtree/cmaple/wiki"
+  license: "GPL-2.0"
+  license_family: GPL2
+  license_file: LICENSE
+  summary: "MAximum Parsimonious Likelihood Estimation in C/C++"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/molbev/msae134
+  recipe-maintainers:
+    - corneliusroemer
