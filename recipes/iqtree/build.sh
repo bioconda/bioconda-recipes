@@ -28,12 +28,12 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Releas
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli
 
 case $(uname -m) in
-	aarch64) 
-		JOBS=1 # CircleCI's arm.medium VM runs out of memory with higher values 
-		;;
-	*)
-		JOBS=${CPU_COUNT}
-		;;
+aarch64)
+	JOBS=1 # CircleCI's arm.medium VM runs out of memory with higher values
+	;;
+*)
+	JOBS=${CPU_COUNT}
+	;;
 esac
 
 VERBOSE=1 cmake --build build --target install -j "${JOBS}"
@@ -44,8 +44,8 @@ chmod 755 "${PREFIX}/bin/iqtree2"
 ln -s "${PREFIX}"/bin/iqtree2 "${PREFIX}"/bin/iqtree
 
 # Remove example data files
-for file in "${PREFIX}/example"* "${PREFIX}/models.nex"; do
-    if [ -f "$file" ]; then
-        rm "$file"
-    fi
+for file in "${PREFIX}/example"* "${PREFIX}/models.nex" "${PREFIX}/bin/iqtree2-aa"; do
+	if [ -f "$file" ]; then
+		rm "$file"
+	fi
 done
