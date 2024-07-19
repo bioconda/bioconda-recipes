@@ -6,7 +6,7 @@ export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 -w"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -w"
-export CXXFLAGS="${CXXFLAGS} -std=c++14 -w"
+export CXXFLAGS="${CXXFLAGS} -w"
 
 if [ "$(uname)" == Darwin ]; then
 	export CMAKE_C_COMPILER="clang"
@@ -21,8 +21,10 @@ if [ "$(uname)" == Darwin ]; then
 fi
 
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release \
+	-GNinja \
 	-DUSE_LSD2=ON -DIQTREE_FLAGS=omp -DUSE_CMAPLE=ON \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" "${DCMAKE_ARGS[@]}" \
+	-DBUILD_GMOCK=OFF -DINSTALL_GTEST=OFF \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli
 
 case $(uname -m) in
@@ -37,4 +39,13 @@ esac
 VERBOSE=1 cmake --build build --target install -j "${JOBS}"
 
 chmod 755 "${PREFIX}/bin/iqtree2"
-cp -f "${PREFIX}"/bin/iqtree2 "${PREFIX}"/bin/iqtree
+
+# Use symlink to not duplicate the binary, saving space
+ln -s "${PREFIX}"/bin/iqtree2 "${PREFIX}"/bin/iqtree
+
+# Remove example data files
+for file in "${PREFIX}/example"* "${PREFIX}/models.nex"; do
+    if [ -f "$file" ]; then
+        rm "$file"
+    fi
+done
