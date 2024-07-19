@@ -16,6 +16,8 @@ build:
   script: |
     make -j ${CPU_COUNT} cpp="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}" nonpareil
     make prefix="${PREFIX}" install
+    chmod +x utils/NonpareilCurves.R
+    cp utils/NonpareilCurves.R ${PREFIX}/bin/NonpareilCurves.R
 
 requirements:
   build:
@@ -25,11 +27,15 @@ requirements:
     - zlib
   run:
     - r-base
+    - r-optparse
+    - r-jsonlite
+    - r-nonpareil
     - zlib
 
 test:
   commands:
     - nonpareil -h 2>&1 | grep "Nonpareil"
+    - NonpareilCurves.R -h
 
 about:
   home: http://nonpareil.readthedocs.io/
