@@ -27,14 +27,12 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Releas
 	-DBUILD_GMOCK=OFF -DINSTALL_GTEST=OFF \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli
 
-case $(uname -m) in
-aarch64)
+# Detect if we are running on CircleCI's arm.medium VM
+# If CPU_COUNT is 4, we are on CircleCI's arm.large VM
+JOBS=${CPU_COUNT}
+if [[ "$(uname -m)" == "aarch64" ]] && [[ "${CPU_COUNT}" -lt 4 ]]; then
 	JOBS=1 # CircleCI's arm.medium VM runs out of memory with higher values
-	;;
-*)
-	JOBS=${CPU_COUNT}
-	;;
-esac
+fi
 
 VERBOSE=1 cmake --build build --target install -j "${JOBS}"
 
