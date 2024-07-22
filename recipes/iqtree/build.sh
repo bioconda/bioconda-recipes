@@ -12,6 +12,8 @@ if [ "$(uname)" == Darwin ]; then
 	export CMAKE_C_COMPILER="clang"
 	export CMAKE_CXX_COMPILER="clang++"
 	export CXXFLAGS="${CXXFLAGS} -mmacosx-version-min=11"
+        # `which` is required, as full paths needed
+        # see https://github.com/bioconda/bioconda-recipes/pull/49360#discussion_r1686187284
 	CC=$(which "$CC")
 	CXX=$(which "$CXX")
 	AR=$(which "$AR")
