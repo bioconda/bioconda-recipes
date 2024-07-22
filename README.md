@@ -8,7 +8,8 @@
 [Conda](http://anaconda.org) is a platform- and language-independent package
 manager that supports easy distribution, installation and version management of
 software. The [bioconda channel](https://anaconda.org/bioconda) is a Conda
-channel providing bioinformatics related packages for **Linux** and **Mac OS**.
+channel providing bioinformatics related packages for **Linux** and **macOS**, 
+supporting both x86_64 and aarch64/arm64 architectures.
 This repository hosts the corresponding recipes.
 
 ## User guide
