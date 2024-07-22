@@ -12,10 +12,11 @@ if [ "$(uname)" == Darwin ]; then
 	export CMAKE_C_COMPILER="clang"
 	export CMAKE_CXX_COMPILER="clang++"
 	export CXXFLAGS="${CXXFLAGS} -mmacosx-version-min=11"
-	CC=$(which "$CC")
-	CXX=$(which "$CXX")
-	AR=$(which "$AR")
-	RANLIB=$(which "$RANLIB")
+        # Comment out the `which`'s to see if they are really necessary
+	# CC=$(which "$CC")
+	# CXX=$(which "$CXX")
+	# AR=$(which "$AR")
+	# RANLIB=$(which "$RANLIB")
 	DCMAKE_ARGS=(-DCMAKE_C_COMPILER="${CC}" -DCMAKE_CXX_COMPILER="${CXX}"
 		-DCMAKE_CXX_COMPILER_AR="${AR}" -DCMAKE_CXX_COMPILER_RANLIB="${RANLIB}")
 fi
