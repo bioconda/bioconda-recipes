@@ -1,9 +1,11 @@
+{% set version = "0.0.3" %}
+
 package:
   name: pacu_snp
-  version: 0.0.3
+  version: {{ version }}
 
 source:
-  url: https://github.com/BioinformaticsPlatformWIV-ISP/PACU/archive/refs/tags/v0.0.3.tar.gz
+  url: https://github.com/BioinformaticsPlatformWIV-ISP/PACU/archive/refs/tags/v{{ version }}.tar.gz
   sha256: 2c13baf3595e219b663e7c2f2be51aeea3e920c690c2c6158789613ec6f91464
 
 build:
@@ -12,14 +14,19 @@ build:
   entry_points:
     - PACU=pacu.run_pacu:main
     - PACU_map=pacu.map_to_ref:main
+  run_exports:
+    - {{ pin_subpackage("pacu_snp", max_pin="x.x") }}
 
 requirements:
   host:
     - python >=3.9
-    - pip
+    - setuptools
+    - biopython >=1.84
+    - pyyaml >=6.0.1
   run:
     - bcftools >=1.17
     - beautifulsoup4 >=4.12.2
+    - biopython >=1.84
     - bowtie2 >=2.5.1
     - figtree >=1.4.4
     - gubbins >=3.3.1
@@ -28,6 +35,7 @@ requirements:
     - minimap2 >=2.26
     - pandas >=2.1.0
     - pyvcf3 >=1.0.3
+    - pyyaml >=6.0.1
     - samtools >=1.17
     - seqkit >=2.3.1
     - snakemake ==7.32.4
@@ -40,9 +48,11 @@ about:
   home: https://github.com/BioinformaticsPlatformWIV-ISP/PACU
   license: GPL-3.0
   license_family: GPL
+  license_file: LICENSE
   summary: PACU is a workflow for whole genome sequencing based phylogeny of Illumina and ONT R9/R10 data.
 
 test:
   commands:
     - PACU -h
     - PACU_map -h
+
