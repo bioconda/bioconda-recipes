@@ -1,0 +1,48 @@
+{% set name = "biser" %}
+{% set version = "1.4" %}
+{% set sha256 = "3b23080d7f06041203585fe6fcdce6c144332682f16e8d37675f5342cb942b24" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/biser-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - biser = biser.__main__:console
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    -  {{ pin_subpackage( name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+  run:
+    - python >=3.7
+    - tqdm
+    - ncls
+    - multiprocess
+    - samtools
+
+test:
+  imports:
+    - biser
+  commands:
+    - biser --help
+
+about:
+  home: https://github.com/0xTCG/biser
+  summary: "Fast Characterization of Segmental Duplication Structure in Multiple Genome Assemblies."
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  identifiers:
+    - doi:10.1186/s13015-022-00210-2
