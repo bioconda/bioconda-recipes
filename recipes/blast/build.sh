@@ -1,27 +1,32 @@
 #!/bin/bash
-set -euxo pipefail
+
+set -o xtrace
+set -o errexit
+set -o nounset
+set -o pipefail
+
 
 export BLAST_SRC_DIR="${SRC_DIR}/blast"
 cd $BLAST_SRC_DIR/c++/
 
-export CFLAGS="$CFLAGS -O2"
-export CXXFLAGS="$CXXFLAGS -O2"
+export CFLAGS="$CFLAGS"
+export CXXFLAGS="$CXXFLAGS"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CC_FOR_BUILD=$CC
 
-if test x"`uname`" = x"Linux"; then
-    # only add things needed; not supported by OSX ld
-    LDFLAGS="$LDFLAGS -Wl,-as-needed"
+if [[ "$(uname)" = "Linux" ]]; then
+	# only add things needed; not supported by OSX ld
+	LDFLAGS="$LDFLAGS -Wl,-as-needed"
 fi
 
-if [ `uname` == Darwin ]; then
-    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
+if [[ "$(uname)" = "Darwin" ]]; then
+	export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
 
-    # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
-    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+	# See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
+	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 else
-    export CPP_FOR_BUILD=$CPP
+	export CPP_FOR_BUILD=$CPP
 fi
 
 LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
@@ -35,102 +40,99 @@ cp -rf "${SRC_DIR}/RpsbProc/src/"* src/app/RpsbProc/
 
 # Configuration synopsis:
 # https://ncbi.github.io/cxx-toolkit/pages/ch_config.html#ch_config.ch_configget_synopsi
-#
+# Run `./configure --help` for all flags.
+
+# platform-independent flags
+CONFIGURE_FLAGS=""
 # Description of used options (from ./configure --help):
-# bin-release:
+# --with(out)-bin-release:
 #   Build executables suitable for public release
-# 64:
-#   Compile in 64-bit mode instead of 32-bit.
-# mt:
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-bin-release"
+# --with(out)-mt:
 #   Compile in a multi-threading safe manner.
-# dll:
-#   Use dynamic instead of static linking.
-# openmp:
-#   Enable OpenMP extensions for all projects.
-# autodep:
-#   No automatic dependency build (one time build).
-# makefile-auto-update:
-#   No rebuild of makefile (one time build).
-# flat-makefile:
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-mt"
+# --with(out)-autodep:
+#   Automatic dependency build (one time build).
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-autodep"
+# --with(out)-makefile-auto-update:
+#   Rebuild of makefile (one time build).
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-makefile-auto-update"
+# --with(out)-flat-makefile:
 #   Use single makefile.
-# caution:
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-flat-makefile"
+# --with(out)-caution:
 #   Proceed configuration without asking when in doubt.
-# lzo:
-#   Don't add lzo support (compression lib, req. lzo >2.x).
-# runpath:
-#   Set runpath for installed $PREFIX location.
-# hard-runpath:
-#   Hard-code runtime path, ignoring LD_LIBRARY_PATH (disallow LD_LIBRARY_PATH override on Linux).
-# debug:
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-caution"
+# --with(out)-lzo:
+#   Add lzo support (compression lib, req. lzo >2.x).
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-lzo"
+# --with(out)-debug:
 #   Strip -D_DEBUG and -g, engage -DNDEBUG and -O.
-# with-experimental=Int8GI:
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-debug"
+# --with(out)-with-experimental=Int8GI:
 #   Enable named experimental feature: Int8GI (Use a simple 64-bit type for GI numbers).
 #   See c++/src/build-system/configure.ac lines 1020:1068 for the named options.
-# strip:
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-experimental=Int8GI"
+# --with(out)-strip:
 #   Strip binaries at build time (remove debugging symbols)
-# vdb:
-#   Disable VDB/SRA toolkit.
-# z:
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-strip"
+# --with(out)-vdb:
+#   Enable VDB/SRA toolkit.
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-vdb=$PREFIX"
+# --with(out)-z:
 #   Set zlib path (compression lib).
-# bz2:
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-z=$PREFIX"
+# --with(out)-bz2:
 #   Set bzlib path (compression lib).
-# krb5:
-#   Disable kerberos (needed on OSX).
-# gnutls:
-#   Disable gnutls.
-# gcrypt:
-#   Disable gcrypt (needed on OSX).
-# sse42
-#   Don't enable SSE 4.2 when optimizing.
-# pcre:
-#   Disable pcre (Perl regex).
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-bz2=$PREFIX"
+# --with(out)-krb5:
+#   Enable kerberos (needed on OSX).
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-krb5"
+# --with(out)-gnutls:
+#   Enable gnutls.
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-gnutls"
+# --with(out)-sse42
+#   Disable SSE 4.2 when optimizing.
+#   Many CPU's don't have this instruction set
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-sse42"
+
+# platform-specific flags
+if [[ "$(uname)" = "Linux" ]]; then
+	# --with(out)-64:
+	#   Compile in 64-bit mode instead of 32-bit.
+	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-64"
+	# --with(out)-dll:
+	#   Use dynamic instead of static linking.
+	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-dll"
+	# --with(out)-runpath:
+	#   Set runpath for installed $PREFIX location.
+	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-runpath=$LIB_INSTALL_DIR"
+	# --with(out)-hard-runpath:
+	#   Hard-code runtime path, ignoring LD_LIBRARY_PATH
+	#   (disallow LD_LIBRARY_PATH override on Linux).
+	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-hard-runpath"
+	# --with(out)-openmp:
+	#   Enable OpenMP extensions for all projects.
+	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-openmp"
+else
+	# --with(out)-openmp:
+	#   Disable OpenMP extensions for all projects.
+	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-openmp"
+	# --with(out)-pcre:
+	#   Enable pcre (Perl regex).
+	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-pcre"
+	# --with(out)-gcrypt:
+	#   Disable gcrypt (needed on OSX).
+	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-gcrypt"
+	# --with(out)-zstd:
+	#   Do not use Zstandard.
+	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-zstd"
+fi
 
 # Fixes building on unix (linux and osx)
 export AR="${AR} rcs"
 
-if [[ $(uname) = Linux ]] ; then
-    ./configure \
-        --with-bin-release \
-        --with-64 \
-        --with-mt \
-        --with-dll \
-        --with-openmp \
-        --without-autodep \
-        --without-makefile-auto-update \
-        --with-flat-makefile \
-        --without-caution \
-        --without-lzo \
-        --with-hard-runpath \
-        --with-runpath=$LIB_INSTALL_DIR \
-        --without-debug \
-        --with-experimental=Int8GI \
-        --with-strip \
-        --with-vdb=$PREFIX \
-        --with-z=$PREFIX \
-        --with-bz2=$PREFIX \
-        --without-krb5 \
-        --without-gnutls \
-        --without-sse42
-else
-    ./configure \
-        --with-bin-release \
-        --with-mt \
-        --without-openmp \
-        --with-flat-makefile \
-        --without-lzo \
-        --without-zstd \
-        --without-debug \
-        --with-experimental=Int8GI \
-        --with-strip \
-        --with-vdb=$PREFIX \
-        --with-z=$PREFIX \
-        --with-bz2=$PREFIX \
-        --without-krb5 \
-        --without-gnutls \
-        --without-sse42 \
-        --without-gcrypt \
-        --without-pcre
-fi
+./configure $CONFIGURE_FLAGS
 
 #list apps to build
 apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe"
@@ -147,7 +149,7 @@ ln -s $BLAST_SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
 
 cd build
 echo "RUNNING MAKE"
-#make -j${CPU_COUNT} -f Makefile.flat $apps
+# only use 1 job, as this may already use 10GiB of RAM
 make -j1 -f Makefile.flat $apps
 
 # remove temporary link
