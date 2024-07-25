@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #$PYTHON setup.py install --single-version-externally-managed --record=record.txt
-$PYTHON -m pip install . --ignore-installed --no-deps -vv
+#$PYTHON -m pip install . --ignore-installed --no-deps -vv
+${PYTHON} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vv
 
 mkdir -p ${PREFIX}/bin
 
