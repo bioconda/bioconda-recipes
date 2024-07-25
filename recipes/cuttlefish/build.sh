@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 mkdir build
 cd build
 
@@ -21,4 +23,4 @@ cmake \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCONDA_BUILD=ON \
     ..
-make install
+make -j ${CPU_COUNT} install
