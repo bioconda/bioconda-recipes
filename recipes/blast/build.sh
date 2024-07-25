@@ -43,39 +43,49 @@ cp -rf "${SRC_DIR}/RpsbProc/src/"* src/app/RpsbProc/
 # Run `./configure --help` for all flags.
 
 # platform-independent flags
-CONFIGURE_FLAGS=""
 # Description of used options (from ./configure --help):
+## BUILD CHAIN OPTIONS
+CONFIGURE_FLAGS=""
 # --with(out)-bin-release:
 #   Build executables suitable for public release
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-bin-release"
+# --with(out)-debug:
+#   Build non-debug versions of libs and apps.
+#   Strips -D_DEBUG and -g, engage -DNDEBUG and -O.
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-debug"
+# --with(out)-strip:
+#   Strip binaries at build time (remove debugging symbols)
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-strip"
+# --with(out)-with-experimental=Int8GI:
+#   Enable named experimental feature:
+#     Int8GI (Use a simple 64-bit type for GI numbers).
+#   See c++/src/build-system/configure.ac lines 1020:1068 for the named options.
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-experimental=Int8GI"
 # --with(out)-mt:
 #   Compile in a multi-threading safe manner.
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-mt"
 # --with(out)-autodep:
-#   Automatic dependency build (one time build).
+#   Do not automatically generate dependencies (one time build).
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-autodep"
 # --with(out)-makefile-auto-update:
-#   Rebuild of makefile (one time build).
+#   Do not auto-update generated makefiles (one time build).
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-makefile-auto-update"
 # --with(out)-flat-makefile:
-#   Use single makefile.
+#   Generate an all-encompassing flat makefile.
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-flat-makefile"
 # --with(out)-caution:
 #   Proceed configuration without asking when in doubt.
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-caution"
+# --with(out)-sse42
+#   Disable SSE 4.2 when optimizing.
+#   Old CPU's (read: 10+ years) don't have this instruction set.
+#   We can consider removing this.
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-sse42"
+
+## LIBRARIES
 # --with(out)-lzo:
-#   Add lzo support (compression lib, req. lzo >2.x).
+#   Do not add lzo support (compression lib, req. lzo >2.x).
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-lzo"
-# --with(out)-debug:
-#   Strip -D_DEBUG and -g, engage -DNDEBUG and -O.
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-debug"
-# --with(out)-with-experimental=Int8GI:
-#   Enable named experimental feature: Int8GI (Use a simple 64-bit type for GI numbers).
-#   See c++/src/build-system/configure.ac lines 1020:1068 for the named options.
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-experimental=Int8GI"
-# --with(out)-strip:
-#   Strip binaries at build time (remove debugging symbols)
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-strip"
 # --with(out)-vdb:
 #   Enable VDB/SRA toolkit.
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-vdb=$PREFIX"
@@ -86,26 +96,24 @@ CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-z=$PREFIX"
 #   Set bzlib path (compression lib).
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-bz2=$PREFIX"
 # --with(out)-krb5:
-#   Enable kerberos (needed on OSX).
+#   Do not use Kerberos 5 (needed on OSX).
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-krb5"
 # --with(out)-gnutls:
-#   Enable gnutls.
+#   Do not use gnutls.
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-gnutls"
-# --with(out)-sse42
-#   Disable SSE 4.2 when optimizing.
-#   Many CPU's don't have this instruction set
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-sse42"
 
 # platform-specific flags
 if [[ "$(uname)" = "Linux" ]]; then
 	# --with(out)-64:
 	#   Compile in 64-bit mode instead of 32-bit.
+    #   Flag not available for osx build.
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-64"
 	# --with(out)-dll:
-	#   Use dynamic instead of static linking.
+	#   Use dynamic instead of static library linking.
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-dll"
 	# --with(out)-runpath:
 	#   Set runpath for installed $PREFIX location.
+    #   Needed for --with-dll.
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-runpath=$LIB_INSTALL_DIR"
 	# --with(out)-hard-runpath:
 	#   Hard-code runtime path, ignoring LD_LIBRARY_PATH
@@ -113,16 +121,17 @@ if [[ "$(uname)" = "Linux" ]]; then
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-hard-runpath"
 	# --with(out)-openmp:
 	#   Enable OpenMP extensions for all projects.
+    #   Does not work without hacks for OSX
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-openmp"
 else
 	# --with(out)-openmp:
 	#   Disable OpenMP extensions for all projects.
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-openmp"
 	# --with(out)-pcre:
-	#   Enable pcre (Perl regex).
+	#   Do not use pcre (Perl regex).
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-pcre"
 	# --with(out)-gcrypt:
-	#   Disable gcrypt (needed on OSX).
+	#   Do not use gcrypt (needed on OSX).
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-gcrypt"
 	# --with(out)-zstd:
 	#   Do not use Zstandard.
@@ -130,17 +139,38 @@ else
 fi
 
 # Fixes building on unix (linux and osx)
+# See https://linux.die.net/man/1/ar for option explanation
 export AR="${AR} rcs"
 
 ./configure $CONFIGURE_FLAGS
 
 #list apps to build
-apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe"
-apps="$apps rpsblast.exe rpstblastn.exe makembindex.exe segmasker.exe"
-apps="$apps dustmasker.exe windowmasker.exe deltablast.exe makeblastdb.exe"
-apps="$apps blastdbcmd.exe blastdb_aliastool.exe convert2blastmask.exe"
-apps="$apps blastdbcheck.exe makeprofiledb.exe blast_formatter.exe rpsbproc.exe"
-apps="$apps blastn_vdb.exe tblastn_vdb.exe"
+apps=" \
+blast_formatter.exe \
+blastdb_aliastool.exe \
+blastdbcheck.exe \
+blastdbcmd.exe \
+blastn_vdb.exe \
+blastn.exe \
+blastp.exe \
+blastx.exe \
+convert2blastmask.exe \
+deltablast.exe \
+dustmasker.exe \
+makeblastdb.exe \
+makembindex.exe \
+makeprofiledb.exe \
+psiblast.exe \
+rpsblast.exe \
+rpsbproc.exe \
+rpstblastn.exe \
+segmasker.exe \
+tblastn_vdb.exe \
+tblastn.exe \
+tblastx.exe \
+windowmasker.exe \
+"
+
 cd ReleaseMT
 
 # The "datatool" binary needs the libs at build time, create
