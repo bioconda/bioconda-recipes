@@ -178,9 +178,16 @@ cd ReleaseMT
 ln -s $BLAST_SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
 
 cd build
+
+# choose number of Make jobs
+JOBS=${CPU_COUNT:-1}
+if [[ "$(uname -sm)" = "Darwin arm64" ]]; then
+	# CircleCI's arm.medium VM runs out of memory with higher values
+	JOBS=1
+fi
+
 echo "RUNNING MAKE"
-# only use 1 job, as this may already use 10GiB of RAM
-make -j1 -f Makefile.flat $apps
+make -j$JOBS -f Makefile.flat $apps
 
 # remove temporary link
 rm $LIB_INSTALL_DIR
