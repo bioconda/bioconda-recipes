@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
@@ -7,7 +9,7 @@ export CPATH=${PREFIX}/include
 mkdir -p $PREFIX/bin
 
 ./configure --prefix=$PREFIX
-make
+make -j ${CPU_COUNT}
 make install
 
 for platform in illumina 454 SOLiD;

@@ -1,42 +1,48 @@
 {% set name = "sdrf-pipelines" %}
-{% set version = "0.0.22" %}
+{% set pypi_name = "sdrf_pipelines" %}
+{% set version = "0.0.27" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 4e39b83581ee1a90da712f685f1e013c59cfc4b89a3d7fe8137ab63aa2d6b0c3
+  url: "https://pypi.io/packages/source/{{ pypi_name[0] }}/{{ pypi_name }}/{{ pypi_name }}-{{ version }}.tar.gz"
+  sha256: cb52e0c427e820aa28343b2ff58947e23244701798f038e53b5c0f6e36f98f33
 
 build:
   number: 0
   noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
   entry_points:
     - parse_sdrf = sdrf_pipelines.parse_sdrf:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps -vvv"
 
 requirements:
   host:
     - pip
-    - python  >=3.5
+    - python >=3.5
   run:
     - click
     - requests
     - pandas
     - pandas_schema
-    - python  >=3.5
+    - python >=3.5
     - pyaml
+    - defusedxml
     - pytest
+    - duckdb
+    - rdflib
+    - pyarrow
 
 test:
   imports:
     - sdrf_pipelines
     - sdrf_pipelines.openms
     - sdrf_pipelines.sdrf
-    - sdrf_pipelines.tests
     - sdrf_pipelines.utils
-    - sdrf_pipelines.zooma
+    - sdrf_pipelines.ols
   commands:
     - parse_sdrf --help
 
