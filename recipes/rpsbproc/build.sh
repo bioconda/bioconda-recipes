@@ -6,8 +6,8 @@ set -o nounset
 set -o pipefail
 
 
-export NCBI_CXX_TOOLKIT="${SRC_DIR}/ncbi_cxx/c++"
-export RPSBPROC_SRC="${SRC_DIR}/rpsbproc"
+NCBI_CXX_TOOLKIT="${SRC_DIR}/ncbi_cxx/c++"
+RPSBPROC_SRC="${SRC_DIR}/rpsbproc"
 
 
 export CFLAGS="$CFLAGS"
@@ -132,20 +132,8 @@ cd "$NCBI_CXX_TOOLKIT/"
 ./configure $CONFIGURE_FLAGS
 
 cd ReleaseMT/build
-
-# choose number of Make jobs
-# WARNING: local testing within the bioconda-utils docker image will absolutely eat up all
-# your RAM and some more when using more than a few jobs
-JOBS=${CPU_COUNT:-1}
-if [[ "$(uname -sm)" = "Darwin arm64" ]]; then
-	# CircleCI's arm.medium VM runs out of memory with higher values
-	JOBS=1
-elif [[ $JOBS -gt 4 ]]; then
-	JOBS=4
-fi
-
 echo "RUNNING MAKE"
-make -j$JOBS -f Makefile.flat rpsbproc.exe
+make -j1 -f Makefile.flat rpsbproc.exe
 
 
 mkdir -p $PREFIX/bin
