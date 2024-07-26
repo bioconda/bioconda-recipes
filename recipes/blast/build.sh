@@ -6,39 +6,31 @@ set -o nounset
 set -o pipefail
 
 
-export BLAST_SRC_DIR="${SRC_DIR}"
-cd $BLAST_SRC_DIR/c++/
+# Source path
+BLAST_SRC_DIR="$SRC_DIR/c++"
+# Work directory
+RESULT_PATH="$BLAST_SRC_DIR/Release"
 
-export CFLAGS="$CFLAGS"
-export CXXFLAGS="$CXXFLAGS"
+
+# C/C++ preprocessor header includes paths
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
+# Linker library paths
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-export CC_FOR_BUILD=$CC
-
-if [[ "$(uname)" = "Linux" ]]; then
-	# only add things needed; not supported by OSX ld
-	LDFLAGS="$LDFLAGS -Wl,-as-needed"
-fi
-
+# C++ compiler flags
 if [[ "$(uname)" = "Darwin" ]]; then
-	export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
-
 	# See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
-	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-else
-	export CPP_FOR_BUILD=$CPP
+	export CXXFLAGS="$CXXFLAGS -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 
-LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
+LIB_INSTALL_DIR="$PREFIX/lib/ncbi-blast+"
 
 # Configuration synopsis:
 # https://ncbi.github.io/cxx-toolkit/pages/ch_config.html#ch_config.ch_configget_synopsi
 # Run `./configure --help` for all flags.
+CONFIGURE_FLAGS="--with-build-root=$RESULT_PATH"
 
 # platform-independent flags
-# Description of used options (from ./configure --help):
 ## BUILD CHAIN OPTIONS
-CONFIGURE_FLAGS=""
 # --with(out)-bin-release:
 #   Build executables suitable for public release
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-bin-release"
@@ -49,9 +41,16 @@ CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-debug"
 # --with(out)-strip:
 #   Strip binaries at build time (remove debugging symbols)
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-strip"
-# --with(out)-with-experimental=Int8GI:
-#   Enable named experimental feature:
-#     Int8GI (Use a simple 64-bit type for GI numbers).
+# --with-experimental={ChaosMonkey,Int4GI,Int8GI,StrictGI,PSGLoader,BM64,C++20,C2X}:
+#   Enable named experimental feature (comma-separated list):
+#   - ChaosMonkey  Enable "ChaosMonkey" failure testing.
+#   - Int4GI       Use a simple 32-bit type for GI numbers.
+#   - Int8GI       Use a simple 64-bit type for GI numbers.
+#   - StrictGI     Use a strict 64-bit type for GI numbers.
+#   - PSGLoader    Let the GenBank date loader use PubSeq Gateway (PSG).
+#   - BM64         Use 64-bit bitset indices.
+#   - C++20        Use '-std=gnu++20' compiler flag.
+#   - C2X          Use '-std=gnu2x' compiler flag.
 #   See c++/src/build-system/configure.ac lines 1020:1068 for the named options.
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-experimental=Int8GI"
 # --with(out)-mt:
@@ -71,8 +70,9 @@ CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-flat-makefile"
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-caution"
 # --with(out)-sse42
 #   Disable SSE 4.2 when optimizing.
-#   Old CPU's (read: 10+ years) don't have this instruction set.
-#   We can consider removing this.
+#   Old CPU's (read: released befor 2012) may not have this instruction set.
+#   We can consider removing this, considering the NCBI builds enable this now.
+#   See: https://github.com/bioconda/bioconda-recipes/pull/17677
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-sse42"
 
 ## LIBRARIES
@@ -88,12 +88,31 @@ CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-z=$PREFIX"
 # --with(out)-bz2:
 #   Set bzlib path (compression lib).
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-bz2=$PREFIX"
+# --with(out)-sqlite3:
+#   Set sqlite3 path (local database lib).
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-sqlite3=$PREFIX"
 # --with(out)-krb5:
-#   Do not use Kerberos 5 (needed on OSX).
+#   Do not use Kerberos 5.
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-krb5"
 # --with(out)-gnutls:
 #   Do not use gnutls.
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-gnutls"
+# --with(out)-boost:
+#   Do not use Boost.
+#   It tries to search for it and prints some warnings, so might as well tell it beforehand.
+#   See: https://github.com/bioconda/bioconda-recipes/pull/15754
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-boost"
+# --with(out)-dll:
+#   Use dynamic instead of static library linking.
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-dll"
+# --with(out)-runpath:
+#   Set runpath for installed $PREFIX location.
+#   Needed for --with-dll.
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-runpath=$LIB_INSTALL_DIR"
+# --with(out)-hard-runpath:
+#   Hard-code runtime path, ignoring LD_LIBRARY_PATH
+#   (disallow LD_LIBRARY_PATH override on Linux).
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-hard-runpath"
 
 # platform-specific flags
 if [[ "$(uname)" = "Linux" ]]; then
@@ -101,24 +120,14 @@ if [[ "$(uname)" = "Linux" ]]; then
 	#   Compile in 64-bit mode instead of 32-bit.
     #   Flag not available for osx build.
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-64"
-	# --with(out)-dll:
-	#   Use dynamic instead of static library linking.
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-dll"
-	# --with(out)-runpath:
-	#   Set runpath for installed $PREFIX location.
-    #   Needed for --with-dll.
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-runpath=$LIB_INSTALL_DIR"
-	# --with(out)-hard-runpath:
-	#   Hard-code runtime path, ignoring LD_LIBRARY_PATH
-	#   (disallow LD_LIBRARY_PATH override on Linux).
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-hard-runpath"
 	# --with(out)-openmp:
 	#   Enable OpenMP extensions for all projects.
-    #   Does not work without hacks for OSX
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-openmp"
 else
 	# --with(out)-openmp:
 	#   Disable OpenMP extensions for all projects.
+    #   Does not work without hacks for OSX
+	#   SeeL https://github.com/bioconda/bioconda-recipes/pull/40555
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-openmp"
 	# --with(out)-pcre:
 	#   Do not use pcre (Perl regex).
@@ -132,12 +141,15 @@ else
 fi
 
 # Fixes building on unix (linux and osx)
-# See https://linux.die.net/man/1/ar for option explanation
 export AR="${AR} rcs"
 
-./configure $CONFIGURE_FLAGS
+# Run configure script
+cd "$BLAST_SRC_DIR"
+./configure.orig $CONFIGURE_FLAGS >&2
 
-#list apps to build
+
+# Run GNU Make
+# List of apps to build
 apps="\
 blast_formatter.exe \
 blastdb_aliastool.exe \
@@ -163,38 +175,28 @@ tblastx.exe \
 windowmasker.exe \
 "
 
-cd ReleaseMT
-
 # The "datatool" binary needs the libs at build time, create
 # link from final install path to lib build dir:
-ln -s $BLAST_SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
+ln -s "$RESULT_PATH/lib" "$LIB_INSTALL_DIR"
 
-cd build
-
-# choose number of Make jobs
-# WARNING: local testing within the bioconda-utils docker image will absolutely eat up all
-# your RAM and some more when using more than a few jobs
-JOBS=${CPU_COUNT:-1}
-if [[ "$(uname -sm)" = "Darwin arm64" ]]; then
-	# CircleCI's arm.medium VM runs out of memory with higher values
-	JOBS=1
-fi
-
-echo "RUNNING MAKE"
-make -j$JOBS -f Makefile.flat $apps
+cd "$RESULT_PATH/build"
+echo "RUNNING MAKE" >&2
+make -j1 -f Makefile.flat $apps >&2
 
 # remove temporary link
-rm $LIB_INSTALL_DIR
+rm "$LIB_INSTALL_DIR"
 
-mkdir -p $PREFIX/bin $LIB_INSTALL_DIR
-chmod +x $BLAST_SRC_DIR/c++/ReleaseMT/bin/*
-cp $BLAST_SRC_DIR/c++/ReleaseMT/bin/* $PREFIX/bin/
-cp $BLAST_SRC_DIR/c++/ReleaseMT/lib/* $LIB_INSTALL_DIR
+# Copy compiled binaries/libraries to the Conda $PREFIX
+mkdir -p "$PREFIX/bin" "$LIB_INSTALL_DIR"
+chmod +x "$RESULT_PATH/bin/"*
+cp "$RESULT_PATH/bin/"* "$PREFIX/bin/"
+cp "$RESULT_PATH/lib/"* "$LIB_INSTALL_DIR"
 
-#chmod +x $PREFIX/bin/*
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/update_blastdb.pl
+# Patch scripts
+sed -i '1 s|^.*$|#!/usr/bin/env perl|g' "$PREFIX/bin/update_blastdb.pl"
 # Patches to enable this script to work better in bioconda
-sed -i.bak 's/mktemp.*/mktemp`/; s/exit 1/exit 0/; s/^export PATH=\/bin:\/usr\/bin:/\#export PATH=\/bin:\/usr\/bin:/g' $PREFIX/bin/get_species_taxids.sh
+sed -i 's/mktemp.*/mktemp`/; s/exit 1/exit 0/; s/^export PATH=\/bin:\/usr\/bin:/\#export PATH=\/bin:\/usr\/bin:/g' "$PREFIX/bin/get_species_taxids.sh"
 
-#extra log to check all exe are present
-ls -s $PREFIX/bin/
+
+# Extra log to check results
+ls -lhAF "$PREFIX/bin/"
