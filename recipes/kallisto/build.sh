@@ -1,6 +1,7 @@
 #!/bin/bash
 
 cd ext/htslib || exit 1
+export M4=${BUILD_PREFIX}/bin/m4
 autoreconf --force --install --verbose
 ./configure
 cd ../.. || exit 1

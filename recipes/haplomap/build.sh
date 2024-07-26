@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 # https://bioconda.github.io/troubleshooting.html#zlib-errors
 export CFLAGS="-I${PREFIX}/include"
 export LDFLAGS="-L${PREFIX}/lib"
@@ -11,5 +13,5 @@ export C_INCLUDE_PATH=${PREFIX}/include
 mkdir build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=${PREFIX}/bin -DCMAKE_BUILD_TYPE=Release ..
-make
+make -j ${CPU_COUNT}
 make install
