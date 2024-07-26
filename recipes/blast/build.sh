@@ -6,7 +6,7 @@ set -o nounset
 set -o pipefail
 
 
-export BLAST_SRC_DIR="${SRC_DIR}/blast"
+export BLAST_SRC_DIR="${SRC_DIR}"
 cd $BLAST_SRC_DIR/c++/
 
 export CFLAGS="$CFLAGS"
@@ -30,13 +30,6 @@ else
 fi
 
 LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
-
-# Get optional RpsbProc
-# The rpsbproc command line utility is an addition to the standalone version of
-# Reverse Position-Specific BLAST (RPS-BLAST), also known as CD-Search (Conserved
-# Domain Search).
-mkdir -p src/app/RpsbProc
-cp -rf "${SRC_DIR}/RpsbProc/src/"* src/app/RpsbProc/
 
 # Configuration synopsis:
 # https://ncbi.github.io/cxx-toolkit/pages/ch_config.html#ch_config.ch_configget_synopsi
@@ -145,7 +138,7 @@ export AR="${AR} rcs"
 ./configure $CONFIGURE_FLAGS
 
 #list apps to build
-apps=" \
+apps="\
 blast_formatter.exe \
 blastdb_aliastool.exe \
 blastdbcheck.exe \
@@ -162,7 +155,6 @@ makembindex.exe \
 makeprofiledb.exe \
 psiblast.exe \
 rpsblast.exe \
-rpsbproc.exe \
 rpstblastn.exe \
 segmasker.exe \
 tblastn_vdb.exe \
@@ -180,6 +172,8 @@ ln -s $BLAST_SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
 cd build
 
 # choose number of Make jobs
+# WARNING: local testing within the bioconda-utils docker image will absolutely eat up all
+# your RAM and some more when using more than a few jobs
 JOBS=${CPU_COUNT:-1}
 if [[ "$(uname -sm)" = "Darwin arm64" ]]; then
 	# CircleCI's arm.medium VM runs out of memory with higher values
