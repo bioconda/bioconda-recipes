@@ -50,11 +50,11 @@ CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-debug"
 # --with(out)-strip:
 #   Strip binaries at build time (remove debugging symbols)
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-strip"
-# --with(out)-with-experimental=Int8GI:
+# --with(out)-with-experimental:
 #   Enable named experimental feature:
-#     Int8GI (Use a simple 64-bit type for GI numbers).
+#     Int4GI (Use a simple 32-bit type for GI numbers).
 #   See c++/src/build-system/configure.ac lines 1020:1068 for the named options.
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-experimental=Int8GI"
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-experimental=Int4GI"
 # --with(out)-mt:
 #   Compile in a multi-threading safe manner.
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-mt"
@@ -125,10 +125,9 @@ else
 fi
 
 # Fixes building on unix (linux and osx)
-# See https://linux.die.net/man/1/ar for option explanation
 export AR="${AR} rcs"
 
-cd "$NCBI_CXX_TOOLKIT/"
+cd "$NCBI_CXX_TOOLKIT"
 ./configure $CONFIGURE_FLAGS
 
 cd ReleaseMT/build
