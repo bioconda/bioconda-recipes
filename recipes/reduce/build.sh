@@ -2,6 +2,6 @@
 
 mkdir -p build
 cd build
-cmake ${SRC_DIR} ${CMAKE_ARGS}
+cmake .. -DCMAKE_INSTALL_PREFIX=${PREFIX}
 make
 make install
