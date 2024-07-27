@@ -1,0 +1,49 @@
+{% set name = "cpstools" %}
+{% set version = "1.0.12" %}
+{% set sha256 = "299e324e30a3b45dcb2cffb354bf41f2698b6193699da0e2631db5e6b3616c07" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cpstools-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  entry_points:
+    - cpstools = cpstools.cmdline:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('cpstools', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - poetry-core
+    - pip
+  run:
+    - python >=3.10.0
+    - biopython >=1.84.0
+    - numpy >=1.26.4
+ 
+test:
+  imports:
+    - cpstools
+  commands:
+    - cpstools --help
+
+about:
+  home: "https://github.com/Xwb7533/CPStools"
+  summary: "CPStools is a package for analyzing chloroplast genome sequences."
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  description: "CPStools is a package for analyzing chloroplast genome sequences."
+  dev_url: "https://github.com/Xwb7533/CPStools"
+
+extra:
+  recipe-maintainers:
+    - mencian

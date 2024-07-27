@@ -1,32 +1,32 @@
 {% set name = "telometer" %}
-{% set version = "0.5" %}
+{% set version = "0.81" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://test.pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 6225b28342a8120ed2dc138cfc30c07f2c887b1ac996d27eeddee62544a37572
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/telometer-{{ version }}.tar.gz"
+  sha256: 88e3f4d0c4018d83f6406be6ecf772a9ea232eab774a8a268bb3b0d427707da3
 
 build:
   number: 0
   noarch: python
   entry_points:
     - telometer=telometer:calculate_telomere_length
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   run_exports:
-    - {{ pin_subpackage(name, max_pin='x.x') }}
-
+    - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.7
   run:
-    - python
+    - python >=3.7
     - pysam
     - pandas
+    - regex
 
 test:
   imports:
@@ -37,9 +37,11 @@ test:
 about:
   home: https://github.com/santiago-es/Telometer
   license: MIT
+  license_family: MIT
   license_file: LICENSE.txt
-  summary: "Tool for measuring telomeres from long-read data."
-  dev_url: https://github.com/santiago-es
+  summary: "A simple regular expression based method for measuring individual, chromosome-specific telomere lengths from long-read sequencing data."
+  dev_url: https://github.com/santiago-es/Telometer
+
 
 
 
