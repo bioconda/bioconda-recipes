@@ -1,0 +1,25 @@
+diff -Naur pre_patch/spades_compile.sh post_patch/spades_compile.sh
+--- pre_patch/spades_compile.sh	2024-05-26 14:36:40
++++ post_patch/spades_compile.sh	2024-05-27 13:00:03
+@@ -36,10 +36,10 @@
+ }
+ 
+ # return the argument first character
+-str_head() { echo "$(expr substr "$1" 1 1)"; }
++str_head() { echo "${1::1}"; }
+ 
+ # return the argument without the first character
+-str_tail() { echo "$(expr substr "$1" 2 $((${#1}-1)))"; }
++str_tail() { echo "${1:1}"; }
+ 
+ print_help() {
+   echo
+@@ -222,7 +222,7 @@
+ 
+ cd "$WORK_DIR"
+ cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$PREFIX" $ADDITIONAL_FLAGS "$BASEDIR/src"
+-make -j $AMOUNT_OF_THREADS
++make -j $AMOUNT_OF_THREADS VERBOSE=1
+ make install
+ cd "$PREFIX"
+ 
