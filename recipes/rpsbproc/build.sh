@@ -6,25 +6,19 @@ set -o nounset
 set -o pipefail
 
 
-NCBI_CXX_TOOLKIT="${SRC_DIR}/ncbi_cxx/c++"
-RPSBPROC_SRC="${SRC_DIR}/rpsbproc"
+# source paths
+NCBI_CXX_TOOLKIT="$SRC_DIR/ncbi_cxx/c++"
+RPSBPROC_SRC="$SRC_DIR/rpsbproc"
 
 
-export CFLAGS="$CFLAGS"
-export CXXFLAGS="$CXXFLAGS"
+# C/C++ preprocessor header includes paths
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
+# Linker library paths
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-export CC_FOR_BUILD=$CC
-
-if [[ "$(uname)" = "Linux" ]]; then
-	# only add things needed; not supported by OSX ld
-	LDFLAGS="$LDFLAGS -Wl,-as-needed"
-	export CPP_FOR_BUILD=$CPP
-elif [[ "$(uname)" = "Darwin" ]]; then
-	export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
-
+if [[ "$(uname)" = "Darwin" ]]; then
 	# See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
-	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+	# C++ compiler flags
+	export CXXFLAGS="$CXXFLAGS -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 
 
@@ -86,6 +80,9 @@ CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-z=$PREFIX"
 # --with(out)-bz2:
 #   Set bzlib path (compression lib).
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-bz2=$PREFIX"
+# --with(out)-sqlite3:
+#   Set sqlite3 path (local database lib).
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-sqlite3=$PREFIX"
 # --with(out)-krb5:
 #   Do not use Kerberos 5 (needed on OSX).
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-krb5"
