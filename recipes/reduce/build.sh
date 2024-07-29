@@ -3,14 +3,7 @@
 mkdir -p build
 cd build
 
-cmake ${SRC_DIR} \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=${PREFIX} \
-    -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib \
-    -DCMAKE_INSTALL_RPATH=$PREFIX/lib
-    -DBUILD_SHARED_LIBS=ON \
-    -DENABLE_TESTS=OFF \
-    -DCMAKE_VERBOSE_MAKEFILE=ON
-
+echo ${CMAKE_ARGS}
+cmake ${SRC_DIR} ${CMAKE_ARGS}
 make
 make install
