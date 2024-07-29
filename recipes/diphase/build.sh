@@ -18,7 +18,7 @@ mkdir -p ${PREFIX}/bin
 ln -fs $CC ${PREFIX}/bin/gcc
 ln -fs $CXX ${PREFIX}/bin/g++
 
-make
+make -C src
 
 cp -r bin/* ${PREFIX}/bin/
 cp -r script/* ${PREFIX}/bin/
