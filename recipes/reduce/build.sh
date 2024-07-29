@@ -11,5 +11,5 @@ cmake ${SRC_DIR} \
     -DENABLE_TESTS=OFF \
     -DCMAKE_VERBOSE_MAKEFILE=ON
 
-make -j ${CPU_COUNT}
+make
 make install
