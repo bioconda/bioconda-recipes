@@ -1,6 +1,6 @@
 {% set name = "phylodm" %}
-{% set version = "3.0.0" %}
-{% set sha256 = "c7e051ba1350a947bd72382181aafd1a75bc3a0faa7019dbe8cd1febf5df6069" %}
+{% set version = "3.1.0" %}
+{% set sha256 = "ea4d0721702209c8309d82e4a54649bd60bb5d697043be4a9f9930bc0fe4e300" %}
 
 package:
   name: {{ name|lower }}
@@ -11,17 +11,18 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  skip: true  # [py2k or py36]
-  number: 1
+  number: 0
+  skip: True  # [py < 38]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - rust >=1.65
+    - {{ compiler('rust') }}
   host:
     - python
     - pip
-    - setuptools
-    - setuptools-rust
+    - maturin >=1.0,<2.0
   run:
     - python
     - numpy
@@ -34,12 +35,16 @@ test:
 
 about:
   home: https://github.com/aaronmussig/PhyloDM
-  license: GPL-3.0-only
-  license_family: GPL
+  license: "GPL-3.0-only"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Efficient calculation of phylogenetic distance matrices.
+  summary: "Efficient calculation of phylogenetic distance matrices."
+  dev_url: https://github.com/aaronmussig/PhyloDM
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - aaronmussig
   identifiers:
