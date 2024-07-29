@@ -9,16 +9,14 @@ set -o pipefail
 # For debugging ./configure
 cat << EOF >&2
 ENVIRONMENT
-----------
+-----------
 uname -a   $(uname -a)
  KERNEL
 uname -s   $(uname -s)
 uname -r   $(uname -r)
 uname -v   $(uname -v)
- HARDWARE
+ ARCHITECTURE
 uname -m   $(uname -m)
- OS
-uname -o   $(uname -o)
 EOF
 
 
@@ -151,12 +149,12 @@ export AR="${AR} rcs"
 
 # Run configure script
 cd "$NCBI_CXX_TOOLKIT"
-./configure.orig $CONFIGURE_FLAGS
+./configure.orig $CONFIGURE_FLAGS >&2
 
 # Run GNU Make
 cd "$RESULT_PATH/build"
-echo "RUNNING MAKE"
-make -j1 -f Makefile.flat rpsbproc.exe
+echo "RUNNING MAKE" >&2
+make -j1 -f Makefile.flat rpsbproc.exe >&2
 
 # Copy compiled binaries to the Conda $PREFIX
 mkdir -p "$PREFIX/bin"
