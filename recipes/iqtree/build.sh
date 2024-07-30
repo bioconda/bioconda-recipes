@@ -1,17 +1,17 @@
 #!/bin/bash
 set -ex
 
+# AVX might not be supported on all CPUs, in particular Rosetta2 on Apple Silicon
+# -march=nocona and -mtune=haswell are the original conda-forge flags
+# at time of writing (2024-07-30)
+sed -i 's/-mavx/-mno-avx -mno-avx2 -march=nocona -mtune=haswell/' cmaple/CMakeLists.txt
+
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 -w"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -w"
 export CXXFLAGS="${CXXFLAGS} -w"
-
-# For x86_64, use `-march=x86-64-v2` to disable AVX
-if [ "$(uname -m)" == "x86_64" ]; then
-	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v2"
-fi
 
 if [ "$(uname)" == Darwin ]; then
 	export CMAKE_C_COMPILER="clang"
@@ -30,7 +30,8 @@ fi
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release \
 	-GNinja \
 	-DUSE_LSD2=ON -DIQTREE_FLAGS=omp -DUSE_CMAPLE=ON \
-	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" "${DCMAKE_ARGS[@]}" \
+	-DCMAKE_C_FLAGS="${CFLAGS}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	"${DCMAKE_ARGS[@]}" \
 	-DBUILD_GMOCK=OFF -DINSTALL_GTEST=OFF \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli
 
