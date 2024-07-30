@@ -7,24 +7,24 @@
 wget https://downloads.haskell.org/~ghc/9.4.7/ghc-9.4.7-x86_64-centos7-linux.tar.xz
 tar xf ghc-9.4.7-x86_64-centos7-linux.tar.xz
 
-echo "GHC version"
-ghc-9.4.7-x86_64-unknown-linux/bin/ghc --version
+# echo "GHC version"
+# ghc-9.4.7-x86_64-unknown-linux/bin/ghc --version
 
-WHEREAMI=$(readlink -f ghc-9.4.7-x86_64-unknown-linux/bin)
+# WHEREAMI=$(readlink -f ghc-9.4.7-x86_64-unknown-linux/bin)
 
-export PATH="$WHEREAMI:$PATH"
+# export PATH="$WHEREAMI:$PATH"
 
-echo "WHEREAMI"
-echo $WHEREAMI
+# echo "WHEREAMI"
+# echo $WHEREAMI
 
-echo "PATH:"
-echo $PATH
+# echo "PATH:"
+# echo $PATH
 
-echo "which ghc":
-which ghc
+# echo "which ghc":
+# which ghc
 
-echo "which stack": # to see where the general bin path is
-which stack
+# echo "which stack": # to see where the general bin path is
+# which stack
 
 cd ghc-9.4.7-x86_64-unknown-linux
 echo "### CONFIGURING GHC compilation"
