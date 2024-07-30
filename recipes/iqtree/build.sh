@@ -3,8 +3,9 @@ set -ex
 
 # AVX might not be supported on all CPUs, in particular Rosetta2 on Apple Silicon
 # -march=nocona and -mtune=haswell are the original conda-forge flags
-# at time of writing (2024-07-30)
-sed -i 's/-mavx/-mno-avx -mno-avx2 -march=nocona -mtune=haswell/' cmaple/CMakeLists.txt
+# we're restoring them here by mentioning them explicitly
+# .bak is required for sed -i on macOS
+sed -i.bak 's/-mavx/-mno-avx -mno-avx2 -march=nocona -mtune=haswell/' cmaple/CMakeLists.txt
 
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
