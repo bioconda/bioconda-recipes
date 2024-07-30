@@ -1,20 +1,22 @@
 {% set package = "ucsc-blat" %}
 {% set program = "blat" %}
-{% set version = "445" %}
-{% set sha256 = "c7abb5db6a5e16a79aefcee849d2b59dbc71ee112ca1e41fea0afb25229cf56c" %}
+{% set version = "466" %}
+{% set sha256 = "5ed312771de13b18a72f3f3f615ef1bc0b8be9dcd647b8dde05dc60d4630e9fb" %}
 
 package:
-  name: "{{ package }}"
-  version: "{{ version }}"
+  name: {{ package }}
+  version: {{ version }}
 
 source:
-- url: "https://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
-  sha256: "{{ sha256 }}"
+  url: https://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz
+  sha256: {{ sha256 }}
   patches:
-    - "include.patch"
+    - include.patch
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('ucsc-blat', max_pin=None) }}
 
 requirements:
   build:
@@ -25,21 +27,25 @@ requirements:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
     - libopenssl-static
     - zlib
   run:
     - libpng
     - libuuid
-    - openssl
-    - zlib
+    - libopenssl-static
 
 test:
   commands:
-    # just check for existence, because the individual packages have no unified behavior
-    - which {{ program }}
+    # just check for existence and exec bit, because the individual packages have no unified behavior
+    - test -x ${PREFIX}/bin/{{ program }}
 
 about:
   home: "https://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "varies; see https://genome.ucsc.edu/license"
+  license: "Varies; see https://genome.ucsc.edu/license"
   summary: "Standalone BLAT v. 37x1 fast sequence search command line tool"
+  dev_url: "https://github.com/ucscGenomeBrowser/kent"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/master/README"
+
+extra:
+  additional-platforms:
+    - linux-aarch64

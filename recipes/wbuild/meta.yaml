@@ -10,13 +10,15 @@ source:
   sha256: 50610c40028b81e6189ec0b39f97dd466ec04347df66f39e776b623b807543ba
 
 build:
-  number: 1
+  number: 2
   noarch: python
   entry_points:
     - wbuild=wbuild.cli:main
   script: 
     - sed -i.bak -e '/pytest-runner/d' -e '/[ \t]*#/d' setup.py
     - "{{ PYTHON }} -m pip install . -vv"
+  run_exports:     
+    - {{ pin_subpackage('wbuild', max_pin='x.x') }}
 
 requirements:
   host:
@@ -25,13 +27,13 @@ requirements:
     - click >=6.0
     - click-log
     - pyyaml >=4.2b1
-    - snakemake-minimal >=5.5.2
+    - snakemake-minimal >=5.5.2,<8.0.0
   run:
     - python >=3.5
     - click >=6.0
     - click-log
     - pyyaml >=4.2b1
-    - snakemake-minimal >=5.5.2
+    - snakemake-minimal >=5.5.2,<8.0.0
 
 test:
   imports:

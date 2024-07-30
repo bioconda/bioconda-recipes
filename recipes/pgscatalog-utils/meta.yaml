@@ -1,0 +1,53 @@
+{% set name = "pgscatalog-utils" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pgscatalog_utils-{{ version }}.tar.gz
+  sha256: 00c22d84306c671f909f09ee3cd1c4de223d02009b16c0162c76f9526d0d6efa
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('pgscatalog-utils', max_pin='x.x') }}  
+
+requirements:
+  host:
+    - python >=3.10,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.10.0,<4.0.0
+    - pgscatalog.calc >=0.2.1,<0.3.0
+    - pgscatalog.core >=0.2.1,<0.3.0
+    - pgscatalog.match >=0.2.1,<0.3.0
+
+test:
+  imports:
+    - pgscatalog.match
+    - pgscatalog.calc
+    - pgscatalog.core
+  commands:
+    - pgscatalog-download --help 
+    - pgscatalog-combine --help
+    - pgscatalog-match --help
+    - pgscatalog-matchmerge --help
+    - pgscatalog-relabel --help
+    - pgscatalog-aggregate --help
+    - pgscatalog-ancestry-adjust --help
+
+about:
+  home: https://github.com/PGScatalog/pygscatalog
+  summary: Utilities for working with PGS Catalog API and scoring files
+  license: Apache-2.0
+  license_family: Apache
+  doc_url: https://pygscatalog.readthedocs.io/en/latest/
+
+extra:
+  recipe-maintainers:
+    - nebfield
