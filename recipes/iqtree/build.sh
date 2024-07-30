@@ -8,12 +8,17 @@ export CFLAGS="${CFLAGS} -O3 -w"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -w"
 export CXXFLAGS="${CXXFLAGS} -w"
 
+# For x86_64, use `-march=x86-64-v2` to disable AVX
+if [ "$(uname -m)" == "x86_64" ]; then
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v2"
+fi
+
 if [ "$(uname)" == Darwin ]; then
 	export CMAKE_C_COMPILER="clang"
 	export CMAKE_CXX_COMPILER="clang++"
 	export CXXFLAGS="${CXXFLAGS} -mmacosx-version-min=11"
-        # `which` is required, as full paths needed
-        # see https://github.com/bioconda/bioconda-recipes/pull/49360#discussion_r1686187284
+	# `which` is required, as full paths needed
+	# see https://github.com/bioconda/bioconda-recipes/pull/49360#discussion_r1686187284
 	CC=$(which "$CC")
 	CXX=$(which "$CXX")
 	AR=$(which "$AR")
