@@ -1,5 +1,6 @@
 #!/bin/bash -euo
 
-# build statically linked binary with Rust
-RUST_BACKTRACE=1
-cargo install --verbose --path . --root ${PREFIX}
+mkdir -p ${PREFIX}/bin
+
+mv subset-bam_* ${PREFIX}/bin/subset-bam
+chmod 755 ${PREFIX}/bin/subset-bam
