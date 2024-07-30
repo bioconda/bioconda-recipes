@@ -1,21 +1,22 @@
 {% set name = "bx-python" %}
-{% set version = "0.11.0" %}
-{% set sha256 = "2cf8872572817e0d36145cc2711889df5729987ffed4e51280da1e3c2ccb9429" %}
+{% set version = "0.12.0" %}
+{% set sha256 = "aac2405a7b6f0d74a0a38d0e589205ed4e5ecee12df23e2076d40d41cc8335c2" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/bx-python-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/bx_python-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   number: 0
-  skip: True  # [py < 37]
-  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps -vvv
+  script:
+    - {{ PYTHON }} setup.py build_ext --force  # [py<39]
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage(name|lower, max_pin='x') }}
+    - {{ pin_subpackage(name|lower, max_pin='x.x') }}
 
 requirements:
   build:
@@ -23,11 +24,10 @@ requirements:
   host:
     - python
     - cython
+    - numpy  # [py<39]
+    - numpy >=1.25  # [py>=39]
     - pip
     - setuptools
-    - wheel
-    - python-lzo
-    - numpy
     - zlib
   run:
     - python
@@ -62,8 +62,13 @@ about:
   license_family: MIT
   license_file: LICENSE
   doc_url: 'https://buildmedia.readthedocs.org/media/pdf/bx-python/latest/bx-python.pdf'
-  dev_url: 'https://pypi.org/project/bx-python/'
+  dev_url: 'https://github.com/bxlab/bx-python'
 
 extra:
   identifiers:
     - biotools:bx-python
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - nsoranzo
