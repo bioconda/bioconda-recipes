@@ -28,4 +28,5 @@ sed -i.bak 's/LIBS=/LIBS?=/' Makefile
 NODE_SRC="node-v${NODE_VERSION}" CXXFLAGS="${CXXFLAGS} -std=c++17 -g -O3 -Wall" LIBS="${LDFLAGS} -pthread" make
 
 mkdir -p $PREFIX/bin
+chmod 755 k8
 cp -f k8 $PREFIX/bin/k8
