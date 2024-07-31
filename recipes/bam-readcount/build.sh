@@ -21,11 +21,13 @@ fi
 mkdir -p build
 pushd build
 cmake -S .. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+	-DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
+	-DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli
 
-make CXX="${CXX} ${LDFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}"
+make CXX="${CXX} ${LDFLAGS}" CC="${CC}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}"
 
 chmod 755 bin/bam-readcount
 cp -f bin/bam-readcount "${PREFIX}/bin"
