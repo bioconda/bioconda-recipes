@@ -27,7 +27,8 @@ cmake -S .. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli
 
-make CXX="${CXX} ${LDFLAGS}" CC="${CC}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}"
+make clean
+make CXX="${CXX} ${LDFLAGS}" CC="${CC}" CXXFLAGS="${CXXFLAGS}"
 
 chmod 755 bin/bam-readcount
 cp -f bin/bam-readcount "${PREFIX}/bin"
