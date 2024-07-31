@@ -15,7 +15,7 @@ export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 if [ `uname` == Darwin ]; then
     export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -lz -lbz2"
     # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
-    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+    export CXXFLAGS="${CXXFLAGS} -mmacosx-version-min=11 -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 
 mkdir -p build
