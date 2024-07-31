@@ -22,7 +22,7 @@ echo "Unpacking $GHC_TAR"
 tar xf $GHC_TAR
 
 # Compile GHC
-DIR=$(find . -type d -name "ghc-$GHC_VERSION-*" -print -quit) # this just looks for the unpacked GHC directory
+DIR=$(tar -tf $GHC_TAR | head -1) # this just looks for the name of the unpacked GHC directory from the tar-ball
 echo "Compiling GHC in $DIR"
 cd $DIR
 echo "Configuring GHC"
