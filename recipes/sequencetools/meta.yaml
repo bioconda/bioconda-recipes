@@ -5,24 +5,19 @@ package:
   version: {{ version }}
 
 source:
-  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/genoStats-linux # [linux]
-    md5: 3c1d487e84967db925a1b1637fbdaa50 # [linux]
-  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/pileupCaller-linux # [linux]
-    md5: 1825ac68dbc08cdaa4e8604eeb6e87bd # [linux]
-  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/vcf2eigenstrat-linux # [linux]
-    md5: 02cda9f02ea954ecd56b70fb02e3215a # [linux]
-  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/genoStats-macOS # [osx]
-    md5: f26934429dbb6fa7d7d16e4b22b0b7e4 # [osx]
-  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/pileupCaller-macOS # [osx]
-    md5: 76c09ecfab8368725108ba3604f1df0b # [osx]
-  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/vcf2eigenstrat-macOS # [osx]
-    md5: 157a3997bfd8f80fc945683e53dc25da # [osx]
-
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/pileupCaller-conda-linux # [linux]
+    md5: 559b74c033df69f179e405e8d65325df # [linux]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/pileupCaller-macOS-X64 # [osx]
+    md5: c99feed2be9f85bdc69da931673eacf0 # [osx and x86_64]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/pileupCaller-macOS-ARM64 # [osx]
+    md5: 4f41008d654e683b7860fc0912376d4e # [osx and arm64]
+  
 build:
   number: 0
   script:
     - "mkdir -p $PREFIX/bin"
-    - "for TOOL in genoStats pileupCaller vcf2eigenstrat; do mv $TOOL-* $PREFIX/bin/$TOOL; chmod u+x $PREFIX/bin/$TOOL; done"
+    - "mv pileupCaller* $PREFIX/bin/pileupCaller"
+    - "chmod u+x $PREFIX/bin/pileupCaller"
   run_exports:
     - {{ pin_subpackage("sequencetools", max_pin=None) }}
 
@@ -31,17 +26,17 @@ requirements:
   build:
     # Precompiled binaries still link against libgcc
     - {{ compiler('c') }}
+  host:
+    - zlib
+    - gmp
   run:
     - zlib
-    - xz
     - gmp
     - samtools
 
 test:
   commands:
     - pileupCaller --version
-    - genoStats --version
-    - vcf2eigenstrat --version
 
 about:
   home: https://github.com/stschiff/sequenceTools
