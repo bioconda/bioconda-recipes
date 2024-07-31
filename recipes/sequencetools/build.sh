@@ -2,7 +2,7 @@
 
 GHC_VERSION=9.4.7
 
-echo "Build Platform"
+echo "================== BUILD PLATFORM =================="
 echo $build_platform # can be "linux-64, osx-64, osx-arm64"
 
 # Download GHC
@@ -15,22 +15,22 @@ elif [ "$build_platform" == "osx-arm64" ]; then
 fi
 
 GHC_URL=https://downloads.haskell.org/~ghc/$GHC_VERSION/$GHC_TAR
-echo "Downloading $GHC_URL"
+echo "================== Downloading $GHC_URL =================="
 wget $GHC_URL
 
-echo "Unpacking $GHC_TAR"
+echo "================== Unpacking $GHC_TAR =================="
 tar xf $GHC_TAR
 
 # Compile GHC
 DIR=$(tar -tf $GHC_TAR | head -1) # this just looks for the name of the unpacked GHC directory from the tar-ball
-echo "Compiling GHC in $DIR"
+echo "================== Compiling GHC in $DIR =================="
 cd $DIR
-echo "Configuring GHC"
+echo "================== Configuring GHC =================="
 ./configure --prefix=$PREFIX
 
-echo "building GHC"
+echo "================== building GHC =================="
 make install
 
 # Run Stack
-echo "Running Stack"
+echo "================== Running Stack =================="
 stack install --local-bin-path ${PREFIX}/bin --system-ghc --no-install-ghc
