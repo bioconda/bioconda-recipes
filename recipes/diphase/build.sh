@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -xe
+
 mkdir -p ${PREFIX}/bin
 
 export LIBRARY_PATH=${PREFIX}/lib
@@ -11,14 +13,11 @@ export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
 export PATH=$PATH:${PREFIX}/bin
 
-CC=${CC}
-CXX=${CXX}
-
 mkdir -p ${PREFIX}/bin
 ln -fs $CC ${PREFIX}/bin/gcc
 ln -fs $CXX ${PREFIX}/bin/g++
 
-make -C src
+make -j ${CPU_COUNT} -C src
 
 cp -r bin/* ${PREFIX}/bin/
 cp -r script/* ${PREFIX}/bin/
