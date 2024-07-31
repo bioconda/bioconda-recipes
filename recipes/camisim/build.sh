@@ -5,8 +5,8 @@ set -xe
 mkdir -p  $PREFIX/bin
 
 cp *.py $PREFIX/bin/
-cp scripts $PREFIX/bin/scripts
-cp tools $PREFIX/bin/tools
-cp defaults $PREFIX/bin/defaults
+cp -R scripts $PREFIX/bin/scripts
+cp -R tools $PREFIX/bin/tools
+cp -R defaults $PREFIX/bin/defaults
 
 
