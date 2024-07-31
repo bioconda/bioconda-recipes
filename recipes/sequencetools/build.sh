@@ -1,11 +1,13 @@
 #!/bin/bash
 
+GHC_VERSION=9.4.7
+
 # Download GHC
-wget https://downloads.haskell.org/~ghc/9.4.7/ghc-9.4.7-src.tar.xz
-tar xf ghc-9.4.7-src.tar.xz
+wget https://downloads.haskell.org/~ghc/$GHC_VERSION/ghc-$GHC_VERSION-src.tar.xz
+tar xf ghc-$GHC_VERSION-src.tar.xz
 
 # Compile GHC
-cd ghc-9.4.7
+cd ghc-$GHC_VERSION
 ./configure --prefix=$PREFIX
 make install
 
