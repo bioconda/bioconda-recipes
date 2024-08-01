@@ -1,27 +1,24 @@
-{% set version = "1.11.1" %}
-{% set sha256 = "63886057a752a890f492bf4ca7ec97435eceebb4ac5ecb5664c69ae2736eaa80" %}
-
+{% set version = "2.0.3-b" %}
 
 package:
   name: kmer-db
   version: {{ version }}
 
 build:
-  number: 2
+  number: 3
+  run_exports:
+  - {{ pin_subpackage('kmer-db', max_pin='x.x.x') }}
 
 source:
-  url: https://github.com/refresh-bio/kmer-db/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  git_url: https://github.com/refresh-bio/kmer-db.git
+  git_rev: v{{ version }}
 
 requirements:
   build:
     - make
+    - {{ compiler('cc') }}
     - {{ compiler('cxx') }}
-    - make 
-  host:
-    - zlib
-  run:
-    - zlib
+    - nasm
 
 about:
   home: https://github.com/refresh-bio/kmer-db
@@ -33,3 +30,11 @@ about:
 test:
   commands:
     - kmer-db > /dev/null
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - uses_vcs_url 
+    - missing_hash
