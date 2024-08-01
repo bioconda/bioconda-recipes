@@ -29,7 +29,7 @@ if [ "$BUILD_OS" == "Darwin" ]; then
     sed -i.bak 's/-Wl,-soname/-Wl,-install_name/g' Makefile.unx
     sed -i.bak 's/\.so/.dylib/g' Makefile.unx
 fi
-make -f Makefile.unx CFLAGS="$CFLAGS" install
+make -j ${CPU_COUNT} CC="${CC}" -f Makefile.unx CFLAGS="$CFLAGS" install
 
 # Install
 cd ..
