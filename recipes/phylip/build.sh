@@ -15,21 +15,29 @@ CFLAGS="${CFLAGS} -fomit-frame-pointer -DUNX"
 BUILD_ARCH=$(uname -m)
 BUILD_OS=$(uname -s)
 
-if [ "$BUILD_ARCH" == "ppc64le" ]; then
-    # Just in case; make the same assumptions about plain "char" declarations
-    # on little-endian POWER8 as we do on x86_64.
-    CFLAGS="${CFLAGS} -fsigned-char"
-fi
+case "$BUILD_ARCH" in 
+    ppc64le | aarch64)
+        # Just in case; make the same assumptions about plain "char" declarations
+        # on little-endian POWER8 as we do on x86_64.
+        CFLAGS="${CFLAGS} -fsigned-char"
+        ;;
+    *) ;;
+esac
 
 # Build
 cd src
 sed -i.bak "s:@@prefix@@:${PREFIX}:" phylip.h
-MAKEFILE=Makefile.unx
+
 if [ "$BUILD_OS" == "Darwin" ]; then
     MAKEFILE=Makefile.osx
     # Tweak a few things for building shared libraries on OS X.
     #sed -i.bak 's/-Wl,-soname/-Wl,-install_name/g' Makefile.unx
     #sed -i.bak 's/\.so/.dylib/g' Makefile.unx
+
+    CFLAGS="${CFLAGS} -DMACOS10"
+else
+    MAKEFILE=Makefile.unx
+    CFLAGS="${CFLAGS} -DUNX"
 fi
 make -j ${CPU_COUNT} CC="${CC}" -f ${MAKEFILE} CFLAGS="$CFLAGS" install
 
