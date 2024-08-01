@@ -76,6 +76,10 @@ CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-caution"
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-sse42"
 
 ## LIBRARIES
+# --with(out)-pcre:
+#   Do not use pcre (Perl regex).
+#   The NCBI release builds also pass this.
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-pcre"
 # --with(out)-lzo:
 #   Do not add lzo support (compression lib, req. lzo >2.x).
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-lzo"
@@ -127,11 +131,8 @@ else
 	# --with(out)-openmp:
 	#   Disable OpenMP extensions for all projects.
     #   Does not work without hacks for OSX
-	#   SeeL https://github.com/bioconda/bioconda-recipes/pull/40555
+	#   See: https://github.com/bioconda/bioconda-recipes/pull/40555
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-openmp"
-	# --with(out)-pcre:
-	#   Do not use pcre (Perl regex).
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-pcre"
 	# --with(out)-gcrypt:
 	#   Do not use gcrypt (needed on OSX).
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-gcrypt"
