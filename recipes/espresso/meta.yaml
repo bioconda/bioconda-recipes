@@ -9,12 +9,20 @@ source:
   url: https://github.com/Xinglab/espresso/releases/download/v{{ version }}/espresso_v_{{ version|replace(".", "_") }}.tar.gz
 
 build:
-  noarch: generic
-  number: 0
+  number: 1
+  skip: True # [osx]
   run_exports:
     - {{ pin_subpackage('espresso', max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+  host:
+    - perl >=5.8
+    - zlib
   run:
     - blast >=2.8.1
     - hmmer >=3.3.1
@@ -27,6 +35,7 @@ test:
     - perl $PREFIX/bin/ESPRESSO_S.pl --help > /dev/null
     - perl $PREFIX/bin/ESPRESSO_C.pl --help > /dev/null
     - perl $PREFIX/bin/ESPRESSO_Q.pl --help > /dev/null
+    - perl -I$PREFIX/bin -e 'use Parasail;' > /dev/null
 
 about:
   home: https://github.com/Xinglab/espresso
