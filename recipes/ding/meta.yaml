@@ -1,0 +1,36 @@
+{% set version = "0.0.1" %}
+{% set name = "ding" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Danderson123/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: 5a0231c282678475a0b63ac9a55f037763fc5716f7685b67e0e378a394642ed6
+
+build:
+  number: 0
+  noarch: generic
+  skip: true  # [py < 38]
+  script: "poetry install --only-root --verbose"
+  entry_points:
+    - dingII = dingII.__main__:main
+  run_exports:
+    - {{ pin_subpackage("ding", max_pin="x") }}
+
+requirements:
+  run:
+    - networkx = "^3.1"
+test:
+  imports:
+    - ding
+
+  commands:
+    - dingII --help
+
+about:
+  home: https://github.com/gi-bielefeld/ding
+  license: LICENSE
+  license_family: MIT
+  summary: 'Computing the Rearrangement Distance of Natural Genomes.'
