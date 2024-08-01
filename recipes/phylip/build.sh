@@ -24,12 +24,14 @@ fi
 # Build
 cd src
 sed -i.bak "s:@@prefix@@:${PREFIX}:" phylip.h
+MAKEFILE=Makefile.unx
 if [ "$BUILD_OS" == "Darwin" ]; then
+    MAKEFILE=Makefile.osx
     # Tweak a few things for building shared libraries on OS X.
-    sed -i.bak 's/-Wl,-soname/-Wl,-install_name/g' Makefile.unx
-    sed -i.bak 's/\.so/.dylib/g' Makefile.unx
+    #sed -i.bak 's/-Wl,-soname/-Wl,-install_name/g' Makefile.unx
+    #sed -i.bak 's/\.so/.dylib/g' Makefile.unx
 fi
-make -j ${CPU_COUNT} CC="${CC}" -f Makefile.unx CFLAGS="$CFLAGS" install
+make -j ${CPU_COUNT} CC="${CC}" -f ${MAKEFILE} CFLAGS="$CFLAGS" install
 
 # Install
 cd ..
