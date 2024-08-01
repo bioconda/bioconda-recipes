@@ -13,8 +13,8 @@ export LDFLAGS="${LDFLAGS} -pthread -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 
 if [ `uname` == Darwin ]; then
-    export LDFLAGS="${LDFLAGS} -Wl,-no_weak_imports -Wl,-rpath,${PREFIX}/lib -lz -lbz2"
-    export MACOSX_DEPLOYMENT_TARGET=10.12
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -lz -lbz2"
+    export MACOSX_DEPLOYMENT_TARGET=10.13
     # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
     # export CXXFLAGS="${CXXFLAGS}"
 fi
