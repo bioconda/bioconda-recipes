@@ -1,21 +1,35 @@
 #!/bin/bash
 set -ex
 
-# Create and activate eukfinder environment
-conda env create -f eukfinder_env.yml
+# Check if the eukfinder environment exists, and create it if it doesn't
+if ! conda env list | grep -q 'eukfinder'; then
+    conda env create -f eukfinder_env.yml
+fi
 
 # Install additional dependencies
 wget https://github.com/PLAST-software/plast-library/releases/download/v2.3.2/plastbinary_linux_v2.3.2.tar.gz
+echo "PLAST downloaded successfully"
 
 # Setup PLAST binaries
 tar -zxf plastbinary_linux_v2.3.2.tar.gz
+plastbinary_linux_v2.3.2/plast -h || { echo 'PLAST installation failed'; exit 1; }
+echo "PLAST installed successfully"
 
 # Clone acc2tax repository
 git clone https://github.com/richardmleggett/acc2tax.git
+echo "acc2tax downloaded successfully"
 
 # Build acc2tax
 cd acc2tax
 # According to https://bioconda.github.io/contributor/troubleshooting.html
 # and https://github.com/bioconda/bioconda-recipes/pull/49360#discussion_r1686187284
-$(which "&CC") -o acc2tax acc2tax.c
+$(which "$CC") -o acc2tax acc2tax.c
+./acc2tax --help || { echo 'acc2tax build failed'; exit 1; }
+echo "acc2tax installed successfully"
 
+source $(conda info --base)/etc/profile.d/conda.sh
+conda activate eukfinder
+cd ../bin/
+python Eukfinder.py read_prep -h
+python Eukfinder.py short_seqs -h
+python Eukfinder.py long_seqs -h
