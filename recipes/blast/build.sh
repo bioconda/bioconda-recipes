@@ -106,31 +106,34 @@ CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-gnutls"
 #   It tries to search for it and prints some warnings, so might as well tell it beforehand.
 #   See: https://github.com/bioconda/bioconda-recipes/pull/15754
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-boost"
-# --with(out)-dll:
-#   Use dynamic instead of static library linking.
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-dll"
-# --with(out)-runpath:
-#   Set runpath for installed $PREFIX location.
-#   Needed for --with-dll.
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-runpath=$LIB_INSTALL_DIR"
-# --with(out)-hard-runpath:
-#   Hard-code runtime path, ignoring LD_LIBRARY_PATH
-#   (disallow LD_LIBRARY_PATH override on Linux).
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-hard-runpath"
 
 # platform-specific flags
 if [[ "$(uname)" = "Linux" ]]; then
 	# --with(out)-64:
 	#   Compile in 64-bit mode instead of 32-bit.
-    #   Flag not available for osx build.
+	#   Flag not available for osx build.
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-64"
 	# --with(out)-openmp:
 	#   Enable OpenMP extensions for all projects.
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-openmp"
+
+	## LINKING
+	# Dynamically link libraries
+	# --with(out)-dll:
+	#   Use dynamic instead of static library linking.
+	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-dll"
+	# --with(out)-runpath:
+	#   Set runpath for installed $PREFIX location.
+	#   Needed for --with-dll.
+	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-runpath=$LIB_INSTALL_DIR"
+	# --with(out)-hard-runpath:
+	#   Hard-code runtime path, ignoring LD_LIBRARY_PATH
+	#   (disallow LD_LIBRARY_PATH override on Linux).
+	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-hard-runpath"
 else
 	# --with(out)-openmp:
 	#   Disable OpenMP extensions for all projects.
-    #   Does not work without hacks for OSX
+	#   Does not work without hacks for OSX
 	#   See: https://github.com/bioconda/bioconda-recipes/pull/40555
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-openmp"
 	# --with(out)-gcrypt:
@@ -139,6 +142,13 @@ else
 	# --with(out)-zstd:
 	#   Do not use Zstandard.
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-zstd"
+
+	## LINKING
+	# Build statically linked programs. For some reason it raises segfaults during compilation on
+	# osx-64 when trying a dynamically linked build.
+	# --with-static --with(out)-dll:
+	#   Use static instead of dynamic library linking.
+	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-static --without-dll"
 fi
 
 # Fixes building on unix (linux and osx)
@@ -187,11 +197,16 @@ make -j1 -f Makefile.flat $apps >&2
 # remove temporary link
 rm "$LIB_INSTALL_DIR"
 
-# Copy compiled binaries/libraries to the Conda $PREFIX
-mkdir -p "$PREFIX/bin" "$LIB_INSTALL_DIR"
+# Copy compiled binaries to the Conda $PREFIX
+mkdir -p "$PREFIX/bin"
 chmod +x "$RESULT_PATH/bin/"*
 cp "$RESULT_PATH/bin/"* "$PREFIX/bin/"
-cp "$RESULT_PATH/lib/"* "$LIB_INSTALL_DIR"
+# Copy compiled libraries to the Conda $PREFIX
+if [[ "$(uname)" = "Linux" ]]; then
+	# Not necessary for osx as that is statically linked
+	mkdir -p "$LIB_INSTALL_DIR"
+	cp "$RESULT_PATH/lib/"* "$LIB_INSTALL_DIR"
+fi
 
 # Patch Perl shebangs
 sed -i '1 s|^.*$|#!/usr/bin/env perl|g' \
