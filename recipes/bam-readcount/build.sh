@@ -1,5 +1,7 @@
 #!/bin/bash -euo
 
+set -x
+
 wget https://github.com/boostorg/boost/releases/download/boost-1.85.0/boost-1.85.0-cmake.tar.gz
 
 mv boost-1.85.0-cmake.tar.gz vendor/boost-1.55-bamrc.tar.gz
