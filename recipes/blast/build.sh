@@ -193,10 +193,13 @@ chmod +x "$RESULT_PATH/bin/"*
 cp "$RESULT_PATH/bin/"* "$PREFIX/bin/"
 cp "$RESULT_PATH/lib/"* "$LIB_INSTALL_DIR"
 
-# Patch scripts
-sed -i '1 s|^.*$|#!/usr/bin/env perl|g' "$PREFIX/bin/update_blastdb.pl"
-# Patches to enable this script to work better in bioconda
-sed -i 's/mktemp.*/mktemp`/; s/exit 1/exit 0/; s/^export PATH=\/bin:\/usr\/bin:/\#export PATH=\/bin:\/usr\/bin:/g' "$PREFIX/bin/get_species_taxids.sh"
+# Patch Perl shebangs
+sed -i '1 s|^.*$|#!/usr/bin/env perl|g' \
+	"$PREFIX/bin/update_blastdb.pl" \
+	"$PREFIX/bin/legacy_blast.pl"
+# Patch Python2 shebangs
+sed -i '1 s|^.*$|#!/usr/bin/env python|g' \
+	"$PREFIX/bin/windowmasker_2.2.22_adapter.py"
 
 
 # Extra log to check results
