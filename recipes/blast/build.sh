@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -o xtrace
 set -o errexit
@@ -47,7 +47,7 @@ CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-strip"
 #   - Int4GI       Use a simple 32-bit type for GI numbers.
 #   - Int8GI       Use a simple 64-bit type for GI numbers.
 #   - StrictGI     Use a strict 64-bit type for GI numbers.
-#   - PSGLoader    Let the GenBank date loader use PubSeq Gateway (PSG).
+#   - PSGLoader    Let the GenBank data loader use PubSeq Gateway (PSG).
 #   - BM64         Use 64-bit bitset indices.
 #   - C++20        Use '-std=gnu++20' compiler flag.
 #   - C2X          Use '-std=gnu2x' compiler flag.
@@ -209,13 +209,12 @@ if [[ "$(uname)" = "Linux" ]]; then
 fi
 
 # Patch Perl shebangs
-sed -i '1 s|^.*$|#!/usr/bin/env perl|g' \
-	"$PREFIX/bin/update_blastdb.pl" \
-	"$PREFIX/bin/legacy_blast.pl"
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' "$PREFIX/bin/update_blastdb.pl"
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' "$PREFIX/bin/legacy_blast.pl"
 # Patch Python2 shebangs
-sed -i '1 s|^.*$|#!/usr/bin/env python|g' \
-	"$PREFIX/bin/windowmasker_2.2.22_adapter.py"
-
+sed -i.bak '1 s|^.*$|#!/usr/bin/env python|g' "$PREFIX/bin/windowmasker_2.2.22_adapter.py"
+# remove the sed backup files
+rm -f -v "$PREFIX/bin/"*.bak
 
 # Extra log to check results
 ls -lhAF "$PREFIX/bin/"
