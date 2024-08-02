@@ -1,5 +1,7 @@
 #!/bin/bash -euo
 
+set -x
+
 wget https://github.com/boostorg/boost/releases/download/boost-1.85.0/boost-1.85.0-cmake.tar.gz
 
 mv boost-1.85.0-cmake.tar.gz vendor/boost-1.55-bamrc.tar.gz
@@ -29,7 +31,7 @@ cmake -S .. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli
 
 make clean
-make CXX="${CXX} ${LDFLAGS}" CC="${CC}" CXXFLAGS="${CXXFLAGS}"
+make -j ${CPU_COUNT} CXX="${CXX} ${LDFLAGS}" CC="${CC}" CXXFLAGS="${CXXFLAGS}"
 
 chmod 755 bin/bam-readcount
 cp -f bin/bam-readcount "${PREFIX}/bin"
