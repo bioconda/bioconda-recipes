@@ -1,17 +1,17 @@
-{% set version = "1.1.1" %}
+{% set version = "1.1.2" %}
 
 package:
   name: trust4
   version: '{{ version }}'
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('trust4', max_pin="x") }}
 
 source:
   url: https://github.com/liulab-dfci/TRUST4/archive/v{{ version }}.tar.gz
-  sha256: 65ea98d468a2921c1591120041c3ca1caac76c37bd804b0d4b64b11c73a382ed
+  sha256: 9321775c9636e31e4448952a9338c78736b652d46f219c0aef28386a0ca3d5a0
 
 requirements:
   build:
@@ -19,7 +19,7 @@ requirements:
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
   host:
-    - samtools 0.1.19.*
+    - samtools 0.1.19.* # [x86_64]
     - zlib
   run:
     - perl
@@ -30,13 +30,13 @@ test:
     - fastq-extractor 2>&1 | cat > /dev/null
     - bam-extractor 2>&1 | cat > /dev/null
     - annotator 2>&1 | cat > /dev/null
-    - which trust-simplerep.pl
-    - which trust-barcoderep.pl
-    - which trust-smartseq.pl
-    - which trust-airr.pl
-    - which BuildDatabaseFa.pl
-    - which BuildImgtAnnot.pl
-    - which run-trust4
+    - test -x ${PREFIX}/bin/trust-simplerep.pl
+    - test -x ${PREFIX}/bin/trust-barcoderep.pl
+    - test -x ${PREFIX}/bin/trust-smartseq.pl
+    - test -x ${PREFIX}/bin/trust-airr.pl
+    - test -x ${PREFIX}/bin/BuildDatabaseFa.pl
+    - test -x ${PREFIX}/bin/BuildImgtAnnot.pl
+    - test -x ${PREFIX}/bin/run-trust4
 
 about:
   home: https://github.com/liulab-dfci/TRUST4
@@ -44,3 +44,7 @@ about:
   license: GPL-3.0-only
   license_family: GPL3
   license_file: LICENSE.txt
+
+extra:
+  additional-platforms:
+    - linux-aarch64
