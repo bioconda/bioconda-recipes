@@ -9,12 +9,9 @@ export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include ${LDFLAGS}"
 export BINARY_HOME="${PREFIX}/bin"
 export TRINITY_HOME="${PREFIX}/opt/trinity-${PKG_VERSION}"
 
-export LC_ALL=en_US.UTF-8
-
 if [ "$(uname)" == "Darwin" ]; then
     # for Mac OSX
     export CXXFLAGS="${CXXFLAGS} -std=c++14"
-    export LC_ALL=C
 fi
 
 make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}" plugins
@@ -45,10 +42,6 @@ sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${TRINITY_HOME}/util/misc/*.pl
 rm -rf ${TRINITY_HOME}/util/misc/*.bak
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${TRINITY_HOME}/util/support_scripts/*.pl
 rm -rf ${TRINITY_HOME}/util/support_scripts/*.bak
-sed -i.bak ${TRINITY_HOME}/Analysis/DifferentialExpression/*.pl
-rm -rf ${TRINITY_HOME}/Analysis/DifferentialExpression/*.bak
-sed -i.bak ${TRINITY_HOME}/Analysis/FL_reconstruction_analysis/*.pl
-rm -rf ${TRINITY_HOME}/Analysis/FL_reconstruction_analysis/*.bak
 
 # add link to Trinity from bin so in PATH
 cd ${BINARY_HOME}
