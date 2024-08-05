@@ -1,0 +1,38 @@
+{% set name = "fast-edit-distance" %}
+{% set version = "1.2.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/youyupei/fast_edit_distance/archive/v{{ version }}.tar.gz
+  sha256: c3f3913381d8a7a5eb96cef5b31bc69fb19c55b653a98525abc0c4922cd07247
+
+build:
+  number: 1
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('fast-edit-distance', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - cython
+  run:
+    - python
+
+test:
+  imports:
+    - fast_edit_distance
+
+about:
+  home: https://github.com/youyupei/fast_edit_distance
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/youyupei/fast_edit_distance
+  summary: "A implementation of edit distance with improved runtime."

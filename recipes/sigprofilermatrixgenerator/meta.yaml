@@ -1,0 +1,47 @@
+{% set name = "SigProfilerMatrixGenerator" %}
+{% set version = "1.2.27" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/SigProfilerMatrixGenerator-{{ version }}.tar.gz
+  sha256: c25d3e4c3de14b7a758da8c5a54e53d591899938e71234b1ea44d66c4eec744b
+
+build:
+  entry_points:
+    - SigProfilerMatrixGenerator=SigProfilerMatrixGenerator.scripts.SigProfilerMatrixGenerator_CLI:main_function
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+    - matplotlib-base >=2.2.2
+    - sigprofilerplotting >=1.3.16
+    - statsmodels >=0.9.0
+    - scipy >=1.1.0
+    - numpy >=1.18.5
+    - pandas >=0.23.4,<2.0.0
+
+test:
+  imports:
+    - SigProfilerMatrixGenerator
+  commands:
+    - pip check
+    - SigProfilerMatrixGenerator install --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/AlexandrovLab/SigProfilerMatrixGenerator.git
+  summary: SigProfiler matrix generator tool
+  license: BSD-2-Clause
+  license_file: LICENSE

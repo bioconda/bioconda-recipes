@@ -12,10 +12,13 @@ source:
   sha256: {{ sha256 }}
   patches:
     - include.patch
+    - htmshell.patch
 
 build:
-  number: 0
+  number: 2
   skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage(package, max_pin=None) }}
   ignore_run_exports:
     - libpng
     - libuuid
@@ -41,10 +44,14 @@ requirements:
 
 test:
   commands:
-    # just check for existence, because the individual packages have no unified behavior
-    - which {{ program }}
+    # just check for existence and exec bit, because the individual packages have no unified behavior
+    - test -x ${PREFIX}/bin/{{ program }}
 
 about:
   home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
   license: "varies; see http://genome.ucsc.edu/license"
   summary: "Converts genePred or genePredExt to bigGenePred input (bed format with extra fields)"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
