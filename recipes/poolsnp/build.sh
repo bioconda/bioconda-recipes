@@ -24,10 +24,16 @@ cp PoolSNP.sh ${PREFIX}/bin
 chmod +x ${PREFIX}/bin/PoolSNP.sh
 
 for script in $SCRIPTS_DIR/*; do
-    cp $script ${PREFIX}/bin/$(basename $script)
+
     cp $script ${PREFIX}/bin/scripts/
-    chmod +x ${PREFIX}/bin/$(basename $script)
     chmod +x ${PREFIX}/bin/scripts/$(basename $script)
+
+    # The main script PoolSNP.sh relies on the scripts being in the same directory as it
+    # Modifying PoolSNP.sh to update the path to the scripts
+    script_name=$(basename $script)
+
+    sed -i.bak "s|${script_name}|\\\$(which ${script_name})|g" ${PREFIX}/bin/PoolSNP.sh
+
 done
 
 cp -r ${TEST_DATA_DIR} ${PREFIX}/share/PoolSNP/TestData
