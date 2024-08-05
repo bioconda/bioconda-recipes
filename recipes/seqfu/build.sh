@@ -27,6 +27,8 @@ if [[ $OSTYPE == "darwin"* ]]; then
 else
   # Trying to fix build when gcc or g++ are required
   echo "LINUX: Patching makefile"
+  sed -i 's/gcc/gcc $(LDFLAGS)/g' Makefile
+  sed -i 's/g++/g++ $(LDFLAGS)/g' Makefile
   sed -i 's/gcc/$(GCC)/g' Makefile
   sed -i 's/g++/$(GXX)/g' Makefile
   sed -i '1iGCC ?= gcc' Makefile

@@ -1,5 +1,5 @@
-{% set version = "0.9.1" %}
-{% set sha256 = "3d05a4995f6c6c9059b5fba269ff6dee7f8befd1bdc7cb622c7f753dea49af79" %}
+{% set version = "1.4.1" %}
+{% set sha256 = "389f391f1510e4fbaf582f8be32fe762fe792ea65f8c83cca4cf1e7237e442ef" %}
 
 package:
   name: harpy
@@ -17,18 +17,28 @@ build:
     - /lib64/libc.so.6
   run_exports:
     - {{ pin_subpackage('harpy', max_pin="x.x") }}
+  script: |
+    mkdir -p ${PREFIX}/bin
+    "${CXX}" src/harpy/bin/extractReads.cpp -O3 -o ${PREFIX}/bin/extractReads
+    ${PYTHON} -m pip install . --no-deps -vvv
+    chmod +x src/harpy/bin/* 
+    cp src/harpy/bin/* ${PREFIX}/bin/
 
 requirements:
+  build:
+    - {{ compiler('cxx') }}
   host:
     - python =3.12
     - pip
   run:
-    - bcftools =1.19
+    - apptainer
+    - bcftools =1.20
     - pandas
+    - pysam
     - python >3.10
     - rich-click
     - snakemake-minimal >7
-    - samtools
+    - samtools =1.20
     - seqtk
     - tabix
 
@@ -54,6 +64,8 @@ about:
   dev_url: https://github.com/pdimens/harpy
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - pdimens
   skip-lints:
