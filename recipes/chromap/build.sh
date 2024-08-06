@@ -7,7 +7,7 @@ case $(uname -m) in
         ARCH_OPTS="-msse4.1"
         ;;
     *)
-        ::
+        ;;
 esac
 
 make -j ${CPU_COUNT} CXX=$CXX CXXFLAGS="-O3 -Wall -I$PREFIX/include -std=c++11 ${ARCH_OPTS} -fopenmp" LDFLAGS="-L$PREFIX/lib -lm -lz"
