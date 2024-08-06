@@ -13,3 +13,7 @@ cp -rf config docs dynamic_report profile resources tests workflow "${PACKAGE_HO
 # Make links
 ln -sf ${PACKAGE_HOME}/comparem2 ${PREFIX}/bin/comparem2
 ln -sf ${PACKAGE_HOME}/comparem2 ${PREFIX}/bin/asscom2 # Legacy
+
+# This one is a hack until I fix Snakemake for good.
+ln -sf ${PACKAGE_HOME}/resources/enable_passthrough_parameters.sh ${PREFIX}/bin/enable_passthrough_parameters_comparem2
+
