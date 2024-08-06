@@ -1,6 +1,4 @@
-#!/usr/bin/env bash
-
-set -xe
+#!/bin/bash -xe
 
 ARCH=$(uname -m)
 case ${ARCH} in
