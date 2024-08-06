@@ -1,6 +1,6 @@
 
-{% set version = "0.10.0" %}
-{% set sha256 = "81d9a560152af6d1c45d90336c74ad051edb5ea29bab5b8791c323b1ed3ac608" %}
+{% set version = "1.0.1" %}
+{% set sha256 = "aacd161bb7131d7874a75b2ed409ee22109be3f87dd062c5590c6d30d1503e68" %}
 
 
 package:
@@ -13,11 +13,10 @@ source:
   sha256: {{ sha256 }}
   patches:
     - fix-linker-issues.patch  # [linux]
-    - fix-ldflags.patch
 
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('gw', max_pin="x") }} 
 
@@ -48,12 +47,20 @@ requirements:
     - xorg-libxcb            # [linux]
     - expat                  # [linux]
   run:
+    - {{ cdt('xorg-x11-proto-devel') }}          # [linux]
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}        # [linux]
+    - {{ cdt('libxdamage') }}        # [linux]
+    - {{ cdt('libxxf86vm') }}        # [linux]
+    - {{ cdt('libxfixes') }}         # [linux]
+    - {{ cdt('libxext') }}           # [linux]
     - glfw >=3.3
     - htslib >=1.12 
 
 test:
   commands:
-    - gw --version
+    - gw hg19 -b https://github.com/kcleal/gw/releases/download/v1.0.0/demo1.bam -r chr8:37047270-37055161 -n > test.png; ls -lh test.png
 
 about:
   home: https://github.com/kcleal/gw
