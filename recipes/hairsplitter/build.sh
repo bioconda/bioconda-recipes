@@ -25,5 +25,8 @@ cp -r ../GraphUnzip/repolish.py $PREFIX/bin
 cp -r ../GraphUnzip/transform_gfa.py $PREFIX/bin
 cp -r ../GraphUnzip/input_output.py $PREFIX/bin
 cp -r ../GraphUnzip/determine_multiplicity.py $PREFIX/bin
+cp -r ../GraphUnzip/solve_with_long_reads.py $PREFIX/bin
+cp -r ../GraphUnzip/solve_with_HiC.py $PREFIX/bin
+cp -r ../GraphUnzip/contig_DBG.py $PREFIX/bin
 chmod +x $PREFIX/bin/determine_multiplicity.py
 
