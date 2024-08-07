@@ -1,5 +1,5 @@
 {% set name = "amptk" %}
-{% set version = "1.5.5" %}
+{% set version = "1.6.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,19 +7,23 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 0ac8e1c1a312e0cdc46de08b0506bbafd493da1b4c7ee419fe0025c22f3d44a6
+  sha256: dbb6383ccfc26204a8d3147be8650a42ea6add8afcf73159c53bf2ecf3d47581
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  entry_points:
+    - amptk=amptk.amptk:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('amptk', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3
   run:
-    - python
+    - python >=3
     - biopython
     - psutil
     - python-edlib >=1.2.1
@@ -50,7 +54,7 @@ test:
 
 about:
   home: https://github.com/nextgenusfs/amptk
-  license: BSD-2
+  license: BSD-2-Clause
   license_family: BSD
   license_file: LICENSE.md
   doc_url: http://amptk.readthedocs.io/

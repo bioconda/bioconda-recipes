@@ -1,6 +1,7 @@
 
-{% set version = "0.7.0" %}
-{% set sha256 = "92599d100755a5a20dc15ebfb86fdf0818ccc87c6e0a2cc0a7c3061661ed3d25" %}
+{% set version = "1.0.1" %}
+{% set sha256 = "aacd161bb7131d7874a75b2ed409ee22109be3f87dd062c5590c6d30d1503e68" %}
+
 
 package:
   name: gw
@@ -10,10 +11,14 @@ package:
 source:
   url: https://github.com/kcleal/gw/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - fix-linker-issues.patch  # [linux]
 
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('gw', max_pin="x") }} 
 
 requirements:
   build:
@@ -27,23 +32,35 @@ requirements:
     - {{ cdt('libxxf86vm') }}        # [linux]
     - {{ cdt('libxfixes') }}         # [linux]
     - {{ cdt('libxext') }}           # [linux]
-    - wget
-    - unzip
   host:
     - fontconfig
+    - libuuid
     - libcurl
-    - libdeflate
-    - htslib
-    - glfw
+    - libdeflate >=1.0
+    - htslib >=1.12
+    - glfw >=3.3
+    - wget
+    - unzip
     - freetype
-    - xorg-libxfixes  # [linux]
+    - xorg-libxfixes         # [linux]
+    - xorg-libx11            # [linux]
+    - xorg-libxcb            # [linux]
+    - expat                  # [linux]
   run:
-    - glfw
-    - htslib
+    - {{ cdt('xorg-x11-proto-devel') }}          # [linux]
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}        # [linux]
+    - {{ cdt('libxdamage') }}        # [linux]
+    - {{ cdt('libxxf86vm') }}        # [linux]
+    - {{ cdt('libxfixes') }}         # [linux]
+    - {{ cdt('libxext') }}           # [linux]
+    - glfw >=3.3
+    - htslib >=1.12 
 
 test:
   commands:
-    - gw --version
+    - gw hg19 -b https://github.com/kcleal/gw/releases/download/v1.0.0/demo1.bam -r chr8:37047270-37055161 -n > test.png; ls -lh test.png
 
 about:
   home: https://github.com/kcleal/gw

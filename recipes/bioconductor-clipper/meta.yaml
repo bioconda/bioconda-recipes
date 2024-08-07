@@ -1,6 +1,6 @@
-{% set version = "1.38.0" %}
+{% set version = "1.42.0" %}
 {% set name = "clipper" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,22 +8,23 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: b70d35ef76965a6e10776313731e7a12
+  md5: 551f3c6ad3a56f2a70439f48a4aef431
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-clipper", max_pin="x.x") }}'
 # Suggests: RUnit, BiocGenerics, graphite, ALL, hgu95av2.db, MASS, BiocStyle
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-kegggraph >=1.58.0,<1.59.0'
-    - 'bioconductor-qpgraph >=2.32.0,<2.33.0'
-    - 'bioconductor-rbgl >=1.74.0,<1.75.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
+    - 'bioconductor-graph >=1.80.0,<1.81.0'
+    - 'bioconductor-kegggraph >=1.62.0,<1.63.0'
+    - 'bioconductor-qpgraph >=2.36.0,<2.37.0'
     - r-base
     - r-corpcor
     - 'r-grbase >=1.6.6'
@@ -33,11 +34,10 @@ requirements:
     - libblas
     - liblapack
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-kegggraph >=1.58.0,<1.59.0'
-    - 'bioconductor-qpgraph >=2.32.0,<2.33.0'
-    - 'bioconductor-rbgl >=1.74.0,<1.75.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
+    - 'bioconductor-graph >=1.80.0,<1.81.0'
+    - 'bioconductor-kegggraph >=1.62.0,<1.63.0'
+    - 'bioconductor-qpgraph >=2.36.0,<2.37.0'
     - r-base
     - r-corpcor
     - 'r-grbase >=1.6.6'
@@ -52,8 +52,13 @@ test:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: AGPL-3
+  license: AGPL-3.0-only
   summary: 'Gene Set Analysis Exploiting Pathway Topology'
   description: 'Implements topological gene set analysis using a two-step empirical approach. It exploits graph decomposition theory to create a junction tree and reconstruct the most relevant signal path. In the first step clipper selects significant pathways according to statistical tests on the means and the concentration matrices of the graphs derived from pathway topologies. Then, it "clips" the whole pathway identifying the signal paths having the greatest association with a specific phenotype.'
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:{{ name|lower }}

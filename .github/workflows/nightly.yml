@@ -1,0 +1,124 @@
+name: Nightly Uploader
+on:
+  schedule:
+    - cron: '12 2 * * *'
+jobs:
+  build-linux:
+    name: Linux Upload
+    if: github.repository == 'bioconda/bioconda-recipes'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 13
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: set path
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+
+      - name: Fetch conda install script
+        run: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
+
+      - name: Restore cache
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: /opt/mambaforge
+          key: ${{ runner.os }}--bulk--${{ hashFiles('**/install-and-set-up-conda.sh') }}
+
+      - name: Set up bioconda-utils
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: bash install-and-set-up-conda.sh
+
+      # This script can be used to reconfigure conda to use the right channel setup.
+      # This has to be done after the cache is restored, because
+      # the channel setup is not cached as it resides in the home directory.
+      # We could use a system-wide (and therefore cached) channel setup,
+      # but mamba does not support that at the time of implementation
+      # (it ignores settings made with --system).
+      - name: Configure conda
+        run: bash configure-conda.sh
+
+      - name: Build and upload
+        env:
+          QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
+          QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+          INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Mimic circleci
+          OSTYPE: "linux-gnu"
+          CI: "true"
+        run: |
+          set -ex
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+          docker pull quay.io/dpryan79/mulled_container:latest
+          bioconda-utils build recipes config.yml \
+              --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
+              --prelint
+          docker rmi quay.io/dpryan79/mulled_container:latest
+
+  build-osx:
+    name: OSX Tests
+    if: github.repository == 'bioconda/bioconda-recipes'
+    runs-on: macos-13
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: set path
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+
+      - name: Fetch conda install script
+        run: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
+
+      - name: Restore cache
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: /opt/mambaforge
+          key: ${{ runner.os }}--bulk--${{ hashFiles('**/install-and-set-up-conda.sh') }}
+
+      - name: Set up bioconda-utils
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: bash install-and-set-up-conda.sh
+
+      # This script can be used to reconfigure conda to use the right channel setup.
+      # This has to be done after the cache is restored, because
+      # the channel setup is not cached as it resides in the home directory.
+      # We could use a system-wide (and therefore cached) channel setup,
+      # but mamba does not support that at the time of implementation
+      # (it ignores settings made with --system).
+      - name: Configure conda
+        run: bash configure-conda.sh
+
+      - name: Build and Test
+        env:
+          QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
+          QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+          INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Mimic circleci
+          OSTYPE: "darwin"
+          CI: "true"
+        run: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+
+          # The SDK isn't actually cached, so reinstall it
+          run_conda_forge_build_setup
+
+          bioconda-utils build recipes config.yml \
+              --anaconda-upload \
+              --prelint

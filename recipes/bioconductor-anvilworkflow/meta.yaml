@@ -1,0 +1,42 @@
+{% set version = "1.2.0" %}
+{% set name = "AnVILWorkflow" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: af890e3cea3c42346ec887603ba12e40
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-anvilworkflow", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: knitr, tibble, BiocStyle
+requirements:
+  host:
+    - 'bioconductor-anvil >=1.14.0,<1.15.0'
+    - r-base
+    - r-httr
+    - r-jsonlite
+  run:
+    - 'bioconductor-anvil >=1.14.0,<1.15.0'
+    - r-base
+    - r-httr
+    - r-jsonlite
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'Run workflows implemented in Terra/AnVIL workspace'
+  description: 'The AnVIL is a cloud computing resource developed in part by the National Human Genome Research Institute. The main cloud-based genomics platform deported by the AnVIL project is Terra. The AnVILWorkflow package allows remote access to Terra implemented workflows, enabling end-user to utilize Terra/ AnVIL provided resources - such as data, workflows, and flexible/scalble computing resources - through the conventional R functions.'
+

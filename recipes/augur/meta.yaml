@@ -1,12 +1,12 @@
-{% set version = "21.1.0" %}
+{% set version = "25.2.0" %}
 
 package:
   name: augur
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/n/nextstrain-augur/nextstrain-augur-{{ version }}.tar.gz
-  sha256: de2d980c359f3757159c852ba2e1146b3e4669ce6cf4da725042a87177c24a6b
+  url: https://github.com/nextstrain/augur/releases/download/{{ version }}/nextstrain_augur-{{ version }}.tar.gz
+  sha256: 2869033bf551476859792e6fa442204dcd03c37e5a8a6239a19fe2da9e307248
 
 build:
   number: 0
@@ -14,27 +14,31 @@ build:
   entry_points:
     - augur = augur.__main__:main
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  run_exports:
+    - {{ pin_subpackage('augur', max_pin='x') }}
 
 requirements:
   host:
-    - python >=3.7
+    - python >=3.8
     - pip
   run:
-    - python >=3.7
-    - bcbio-gff >=0.6.0,<0.7
-    - biopython >=1.73,!=1.77,!=1.78,<=1.80
+    - python >=3.8
+    - bcbio-gff >=0.7.1,<0.8
+    - biopython >=1.80,<2
     - cvxopt >=1.1.9,<2
+    - importlib_resources >=5.3.0 # [py<311]
     - isodate >=0.6.0,<0.7
     - jsonschema >=3.0.0,<4
-    - networkx >=2.5, <3
+    - networkx >=2.5,<4
     - numpy >=1.0.0,<2
     - packaging >=19.2
     - pandas >=1.0.0,<2
-    - pyfastx >=0.8.4,<0.9
+    - pyfastx >=1.0.0,<3
+    - python-calamine >=0.2.0
     - scipy >=1.0.0,<2
-    - treetime >=0.9.3,<0.10
-    - xopen[zstd] >=1.7.0,<2
-    
+    - treetime >=0.11.2,<0.12
+    - xopen[zstd] >=1.7.0,<3
+
     - fasttree
     - iqtree
     - mafft
@@ -55,7 +59,10 @@ about:
   license_file: LICENSE.txt
 
 extra:
+  identifiers:
+    - doi:10.21105/joss.02906
   recipe-maintainers:
+    - nextstrain-bot
     - huddlej
     - tsibley
     - victorlin

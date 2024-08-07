@@ -1,0 +1,51 @@
+{% set name = "tracknado" %}
+{% set version = "0.2.4" %}
+{% set sha256 = "5d03efa896c0c61e0d5072dd2e6474e308d9014a0ef387cf11d4148ac376f64b" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/tracknado-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install . --no-deps -vvv
+  entry_points:
+    - tracknado = tracknado.cli:cli
+  run_exports:
+    - {{ pin_subpackage('tracknado', max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+    - wheel
+    - setuptools-scm >=6.2
+  run:
+    - python >=3.7
+    - click
+    - pandas
+    - cookiecutter
+    - seaborn
+    - trackhub
+    - pillow
+    - loguru
+
+test:
+  imports:
+    - tracknado
+  commands:
+    - tracknado --help
+
+about:
+  home: https://pypi.org/project/tracknado/
+  summary: CLI library to generate UCSC trackhubs from sequencing data
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE

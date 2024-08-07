@@ -1,0 +1,35 @@
+{% set version = "3.0.1" %}
+{% set name = "ezomero" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 2fc7c85626e013bb993d2da300d870bbfdf395d1574f72af086b12d182eebe95
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  run_exports:
+    - {{ pin_subpackage("ezomero", max_pin="x.x") }}
+requirements:
+  host:
+    - pip
+    - python >=3.8
+  run:
+    - python >=3.8
+    - omero-py =5.16
+    - numpy >=1.22,<2.0
+      
+test:
+  imports:
+    - ezomero
+
+about:
+  home: https://github.com/TheJacksonLaboratory/ezomero
+  license: GPL-2.0-only
+  license_file: LICENSE
+  summary: A module with convenience functions for writing Python code that interacts with OMERO

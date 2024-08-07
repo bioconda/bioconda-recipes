@@ -1,0 +1,55 @@
+{% set version = "3-70b2a60" %}
+{% set sha256 = "3b1d2f28362004378528755b8b4e0b8dc45b51cc60562816258bdf16d9cda08d" %}
+
+package:
+  name: transannot
+  version: {{ version|replace("-", ".")  }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('transannot', max_pin="x") }}
+
+source:
+  url: https://github.com/soedinglab/transannot/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
+    - perl
+    - gawk
+    - zlib
+    - bzip2
+  run:
+    - aria2
+    - wget
+    - gawk
+    - zlib
+    - bzip2
+
+test:
+  commands:
+    - transannot > /dev/null
+
+about:
+  home: https://github.com/soedinglab/transannot
+  summary: "TransAnnot: a fast transcriptome annotation pipeline"
+  license: GPL-3.0-or-later
+  license_family: GPL
+  license_file: LICENSE.md 
+
+extra:
+  identifiers:
+    - biotools:transannot
+  recipe-maintainers:
+    - mariia-zelenskaia
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

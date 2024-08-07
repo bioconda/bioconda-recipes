@@ -1,4 +1,4 @@
-{% set version = "0.7.0" %}
+{% set version = "2.0.0" %}
 {% set name = "rasusa" %}
 
 package:
@@ -7,26 +7,34 @@ package:
 
 source:
   url: https://github.com/mbhall88/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: 5884bddeb1c40791c02677afb080c4e938ef422924f1a5d5a0fa5c4a17f4d9fe
+  sha256: 7921a94cb5c30c194c3d966e7dd80d034a9cf840d853b3fe1725d90d5800e2bd
 
 build:
-  number: 1
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('rasusa', max_pin="x.x") }}
 
 requirements:
   build:
-    - rust >=1.53
+    - {{ compiler('rust') }}
     - {{ compiler('c') }}              # [not win]
 
 test:
   commands:
     - rasusa --help
+    - rasusa reads --help
+    - rasusa aln --help
+    - rasusa cite
 
 about:
   home: https://github.com/mbhall88/rasusa
   license: MIT
-  summary: Randomly subsample sequencing reads to a specified coverage
+  summary: Randomly subsample sequencing reads or alignments
   license_file: LICENSE
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - mbhall88

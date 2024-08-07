@@ -1,0 +1,48 @@
+{% set name = "fastools" %}
+{% set version = "1.1.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/fastools-{{ version }}.tar.gz
+  sha256: 79b05fa2e64576d318ca97772138de2539d63a2adc5cd15d57acf731c287d0c2
+
+build:
+  entry_points:
+    - fastools = fastools.cli:main
+    - split_fasta = fastools.split_fasta:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - biopython >=1.72
+    - python-levenshtein >=0.12.0
+    - regex >=2020.10.11
+
+test:
+  imports:
+    - fastools
+  commands:
+    - pip check
+    - fastools --help
+    - split_fasta --help
+  requires:
+    - pip
+
+about:
+  home: https://git.lumc.nl/j.f.j.laros/fastools
+  summary: FASTA/FASTQ analysis and manipulation toolkit.
+  license: MIT
+  license_file: LICENSE.md
+
+extra:
+  recipe-maintainers:
+    - acaprez

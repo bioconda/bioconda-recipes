@@ -1,31 +1,37 @@
-{% set version = "3.0.3" %}
+{% set name = "sra-tools" %}
+{% set version = "3.1.1" %}
+{% set sha256 = "96b110bd5a30ad312e2f02552062b48a77d40c763e6aba5bb84e83662a505cf1" %}
 
 package:
-  name: sra-tools
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/ncbi/sra-tools/archive/{{version}}.tar.gz
-  sha256: ea4b9a4b2e6e40e6b2bf36b01eb8df2b50280ef9dcdc66b504c1d1296600afbd
+- url: https://github.com/ncbi/sra-tools/archive/refs/tags/{{version}}.tar.gz
+  sha256: {{ sha256 }}
   folder: sra-tools
+- url: https://github.com/ncbi/ncbi-vdb/archive/refs/tags/{{version}}.tar.gz  # [osx]
+  sha256: e9766f259853c696be48e289b08cb5ae6e198d82d7ffee79f09ce7f720487991  # [osx]
+  folder: ncbi-vdb  # [osx]
 
 build:
   number: 0
-  skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - bison
-    - cmake
-    - flex
     - make
-    - ncbi-vdb >=3.0.2
+    - cmake
+    - bison
+    - flex
+  host:
+    - ncbi-vdb >={{ version }}
   run:
     - ca-certificates
     - curl
-    - ncbi-vdb >=3.0.2
+    - ncbi-vdb >={{ version }}
     - ossuuid
     - perl
     - perl-xml-libxml
@@ -48,12 +54,14 @@ test:
     - sam-dump SRR002702 | grep 'EX35NVW14ISYAK'
 
 about:
-  home: https://github.com/ncbi/sra-tools
+  home: "https://github.com/ncbi/sra-tools"
   license: Public Domain
-  summary: SRA Toolkit and SDK from NCBI
+  summary: "The SRA Toolkit and SDK from NCBI."
   description:  |
     The SRA Toolkit and SDK from NCBI is a collection of tools and libraries
     for using data in the INSDC Sequence Read Archives.
+  dev_url: "https://github.com/ncbi/sra-tools"
+  doc_url: "https://github.com/ncbi/sra-tools/wiki"
 
 extra:
   notes: 'After installation, you should run the configuration tool: ./vdb-config

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "chipxpressdata-1.36.0"
+installBiocDataPackage.sh "chipxpressdata-1.40.0"

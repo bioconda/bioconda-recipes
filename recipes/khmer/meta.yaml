@@ -12,9 +12,11 @@ source:
     - 0001-Inject-compiler-and-flags-for-third-party-compilation.patch
 
 build:
-  number: 3
-  skip: True  # [py<30 or py>38 or osx]
+  number: 4
+  skip: True  # [py<30 or py>=312 or osx]
   script: {{ PYTHON }} -m pip install . --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage('khmer', max_pin="x.x") }}
 
 requirements:
   build:
@@ -24,14 +26,14 @@ requirements:
     - libgomp      # [linux]
     - make
   host:
-    - python
+    - python >=3.6,<3.12
     - pip
     - setuptools >=18.0
     - Cython >=0.25.2
     - bzip2
     - zlib
   run:
-    - python
+    - python >=3.6,<3.12
     - screed >=1.0
     - bz2file
     - bzip2
