@@ -49,7 +49,7 @@ done
 
 for i in $binaries; do 
   # fix hashbang lines to use conda's perl
-  sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $MUMMER_HOME/$i
+  sed -i.bak '1 s|^#!/.*/perl$|#!/usr/bin/env perl|g' $MUMMER_HOME/$i
   rm -rf $MUMMER_HOME/$i.bak
   # ensure executable and setup symlink for binary
   chmod +x $MUMMER_HOME/$i
