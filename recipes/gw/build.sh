@@ -17,11 +17,14 @@ ls $CONDA_BUILD_SYSROOT/usr
 echo "SYSROOT/usr/lib"
 ls $CONDA_BUILD_SYSROOT/usr/lib
 
+echo "SYSROOT/usr/lib64"
+$CONDA_BUILD_SYSROOT/usr/lib64
+
 echo "BUILD_PREFIX"
 ls $BUILD_PREFIX
 
-echo "BUILD_PREFIX/lib64"
-ls $BUILD_PREFIX/lib64
+#echo "BUILD_PREFIX/lib64"
+#ls $BUILD_PREFIX/lib64
 
 #export USE_GL=1
 if [[ "$OSTYPE" != "darwin"* ]]; then
@@ -30,7 +33,7 @@ if [[ "$OSTYPE" != "darwin"* ]]; then
 fi
 make prep > /dev/null 2>&1 
 
-CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" LDFLAGS="${LDFLAGS} -L${PREFIX} -L${CONDA_BUILD_SYSROOT}/lib64" prefix="${PREFIX}"  make -j ${CPU_COUNT}
+CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" LDFLAGS="${LDFLAGS} -L${PREFIX} -L$CONDA_BUILD_SYSROOT/usr/lib" prefix="${PREFIX}"  make -j ${CPU_COUNT}
 
 mkdir -p $PREFIX/bin
 cp gw $PREFIX/bin/gw
