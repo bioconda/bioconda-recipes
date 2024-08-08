@@ -3,7 +3,7 @@ set -e
 #export USE_GL=1
 if [[ "$OSTYPE" != "darwin"* ]]; then
 #  sed -i 's/-lEGL -lGLESv2/-lGL/' Makefile
-  LDLIBS=${LDLIBS} -lglvnd
+  LDLIBS=${LDLIBS} -lGLX
 fi
 make prep > /dev/null 2>&1 
 
