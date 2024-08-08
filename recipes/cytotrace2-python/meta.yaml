@@ -1,0 +1,55 @@
+{% set name = "cytotrace2-python" %}
+{% set version = "0.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/digitalcytometry/cytotrace2/archive/refs/tags/v1.0.0.tar.gz
+  sha256: a0e238320fc0f310f6c16b1d2ad3fd2cc556e5ee3a04d24c490c4e46c34053e1
+
+build:
+  number: 0
+  entry_points:
+    - cytotrace2=cytotrace2_py.cytotrace2_py:run_cytotrace2
+  noarch: python
+  script: cd cytotrace2_python && {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('cytotrace2-python', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+  run:
+    - python >=3.9
+    - anndata
+    - numpy
+    - pandas
+    - scanpy
+    - scipy
+    - scikit-learn ==1.0.2
+    - pytorch ==2.0.0
+    - r-rann
+    - r-seurat
+    - r-seuratobject
+    - r-matrix
+    - r-ggplot2
+    - r-data.table
+    - r-dplyr
+    - r-argparse
+
+test:
+  imports:
+    - cytotrace2_py
+  commands:
+    - cytotrace2 --help
+
+about:
+  license: LICENSE
+  license_file: Custom
+  summary: "CytoTRACE 2 is an interpretable AI method for predicting cellular potency and absolute developmental potential from scRNA-seq data."
+  home: "https://github.com/digitalcytometry/cytotrace2"
+  dev_url: "https://github.com/digitalcytometry/cytotrace2"
+  doc_url: "https://github.com/digitalcytometry/cytotrace2/blob/v{{ version }}/cytotrace2_python/README.md"
