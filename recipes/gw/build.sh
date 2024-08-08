@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 set -e
-
+ldconfig -v | grep -v ^$'\t'
+echo
 ldconfig -p | grep libEGL
 ldconfig -p | grep libGLESv2
 
@@ -10,11 +11,17 @@ ldconfig -p | grep libGLESv2
 echo "SYSROOT"
 ls $CONDA_BUILD_SYSROOT
 
-echo "SYSROOT/lib64"
-ls $CONDA_BUILD_SYSROOT/lib64
+echo "SYSROOT/usr"
+ls $CONDA_BUILD_SYSROOT/usr
 
-echo "SYSROOT/lib"
-ls $CONDA_BUILD_SYSROOT/lib
+echo "SYSROOT/usr/lib"
+ls $CONDA_BUILD_SYSROOT/usr/lib
+
+echo "BUILD_PREFIX"
+ls $BUILD_PREFIX
+
+echo "BUILD_PREFIX/lib64"
+ls $BUILD_PREFIX/lib64
 
 #export USE_GL=1
 if [[ "$OSTYPE" != "darwin"* ]]; then
