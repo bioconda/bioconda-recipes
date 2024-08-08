@@ -3,7 +3,7 @@
 mkdir -p "${PREFIX}/bin"
 
 ${CC} ${SRC_DIR}/src/subcontig.c -o subcontig -O3
-${CC} ${SRC_DIR}/src/hashcounter.c -o hashcounter -O3 -lz
+${CC} ${SRC_DIR}/src/hashcounter.c -o hashcounter -O3 -lz I$PREFIX/include -L$PREFIX/lib
 
 chmod +x $SRC_DIR/src/PreProcessR
 chmod +x $SRC_DIR/subcontig
