@@ -17,9 +17,6 @@ ls $CONDA_BUILD_SYSROOT/usr
 echo "SYSROOT/usr/lib"
 ls $CONDA_BUILD_SYSROOT/usr/lib
 
-echo "SYSROOT/usr/lib64"
-$CONDA_BUILD_SYSROOT/usr/lib64
-
 echo "BUILD_PREFIX"
 ls $BUILD_PREFIX
 
