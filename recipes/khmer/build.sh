@@ -16,3 +16,5 @@ mkdir -p $PREFIX/scripts
 
 cp -v lib/* $PREFIX/include
 cp -v scripts/* $PREFIX/bin
+
+python3 -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
