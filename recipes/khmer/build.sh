@@ -16,6 +16,6 @@ mkdir -p $PREFIX/scripts
 
 cp -v lib/* $PREFIX/include
 cp -v scripts/* $PREFIX/bin
-#cp -vr third-party/seqan/core/include $PREFIX/include/seqan
+cp -vr third-party/seqan/core/include $PREFIX/include/seqan
 
 python3 -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
