@@ -10,8 +10,11 @@ ldconfig -p | grep libGLESv2
 echo "SYSROOT"
 ls $CONDA_BUILD_SYSROOT
 
-echo "TOOLCHAIN BUILD"
-ls $CONDA_TOOLCHAIN_BUILD
+echo "SYSROOT/lib64"
+ls $CONDA_BUILD_SYSROOT/lib64
+
+echo "SYSROOT/lib"
+ls $CONDA_BUILD_SYSROOT/lib
 
 #export USE_GL=1
 if [[ "$OSTYPE" != "darwin"* ]]; then
