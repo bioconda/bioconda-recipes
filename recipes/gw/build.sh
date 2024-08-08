@@ -1,5 +1,9 @@
 #!/usr/bin/bash
 set -e
+
+ldconfig -p | grep libEGL
+ldconfig -p | grep libGLESv2
+
 #export USE_GL=1
 if [[ "$OSTYPE" != "darwin"* ]]; then
 #  sed -i 's/-lEGL -lGLESv2/-lGL/' Makefile
