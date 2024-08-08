@@ -1,11 +1,14 @@
 #!/usr/bin/bash
 set -e
-export USE_GL=1
+#export USE_GL=1
 if [[ "$OSTYPE" != "darwin"* ]]; then
-  sed -i 's/-lEGL -lGLESv2/-lGL/' Makefile
+#  sed -i 's/-lEGL -lGLESv2/-lGL/' Makefile
+  LDLIBS=${LDLIBS} -lglvnd
 fi
-make prep
+make prep > /dev/null 2>&1 
+
 CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" LDFLAGS="${LDFLAGS} -L${PREFIX}" prefix="${PREFIX}"  make -j ${CPU_COUNT}
+
 mkdir -p $PREFIX/bin
 cp gw $PREFIX/bin/gw
 cp -n .gw.ini $PREFIX/bin/.gw.ini
