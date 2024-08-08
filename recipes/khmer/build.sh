@@ -2,12 +2,12 @@
 
 set -x -e
 
-export INCLUDE_PATH="${BUILD_PREFIX}/include:${BUILD_PREFIX}/third-party/seqan/core/include"
+export INCLUDE_PATH="${BUILD_PREFIX}/include:${PWD}/third-party/seqan/core/include"
 export LIBRARY_PATH="${BUILD_PREFIX}/lib"
-export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${BUILD_PREFIX}/lib"
+export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${PWD}/lib"
 
-export LDFLAGS="-L${BUILD_PREFIX}/lib -L${BUILD_PREFIX}/third-party/seqan/core/include"
-export CCPFLAGS="-I${BUILD_PREFIX}/include -I${BUILD_PREFIX}/third-party/seqan/core/include"
+export LDFLAGS="-L${BUILD_PREFIX}/lib -L${PWD}/third-party/seqan/core/include"
+export CCPFLAGS="-I${BUILD_PREFIX}/include -I${PWD}/third-party/seqan/core/include"
 
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/include
