@@ -1,9 +1,11 @@
 # the osx version has to be built from source
 PLATFORM=$(uname)
 SRCDIR="doc"
-if [ ${PLATFORM} == "Darwin" ]; then
+if [ ${PLATFORM} == "Darwin" ] | [ $(uname -m) == "aarch64" ]; then
+    echo "Building from source on $(uname -m) under $(PLATFORM)"
     ./make/makedis.csh
     SRCDIR="doc/blast"
+    echo "Finished building from source"
 fi
 
 # binaires to be copied to env bin
