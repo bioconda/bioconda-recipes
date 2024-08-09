@@ -17,7 +17,6 @@ case $(uname -m) in
 esac
 
 if [ "$(uname)" == "Darwin" ]; then
-        export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names"
         export CMAKE_EXTRA="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -Wno-dev"
 else
         export CMAKE_EXTRA="-Wno-dev"
@@ -27,6 +26,7 @@ cmake -S .. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=RELEASE \
 	-DHAVE_TESTS=0 -DHAVE_MPI=0 "${ARCH_OPTS}" \
 	-DVERSION_OVERRIDE="${PKG_VERSION}" \
+	"${CMAKE_ARGS}" \
 	"${CMAKE_EXTRA}"
 
 cmake --build . --target install -j ${CPU_COUNT} -v
