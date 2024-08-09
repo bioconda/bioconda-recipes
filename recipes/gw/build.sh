@@ -13,7 +13,7 @@ SYSROOT_FLAGS="--sysroot=${BUILD_PREFIX}/${HOST}/sysroot"
 
 CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY " \
 CPPFLAGS="${CPPFLAGS} -I${BUILD_PREFIX}/${HOST}/sysroot/usr/include ${SYSROOT_FLAGS} " \
-LDFLAGS="${LDFLAGS} -Wl,--verbose -L${PREFIX} -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib64 ${SYSROOT_FLAGS}" \
+LDFLAGS="${LDFLAGS} -L${PREFIX} -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib64 ${SYSROOT_FLAGS}" \
 prefix="${PREFIX}" \
 make -j ${CPU_COUNT}
 
