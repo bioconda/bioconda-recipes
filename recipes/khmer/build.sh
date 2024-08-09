@@ -21,12 +21,4 @@ cp -v scripts/* $PREFIX/bin
 mkdir -pv $PREFIX/include/seqan
 cp -vr third-party/seqan/core/include/seqan/* $PREFIX/include/seqan/
 
-echo ""
-echo "========"
-ls -lhR $PREFIX/include
-echo "========"
-env
-echo "========"
-echo ""
-
-python3 -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+$PYTHON -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
