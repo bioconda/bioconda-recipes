@@ -6,6 +6,7 @@ if [[ "$OSTYPE" != "darwin"* ]]; then
   sed -i 's/-lEGL -lGLESv2/-lGL -lGLX/' Makefile
   sed -i 's/GLFW_EGL_CONTEXT_API/GLFW_NATIVE_CONTEXT_API/' src/plot_manager.cpp
 fi
+
 make prep > /dev/null 2>&1 
 
 SYSROOT_FLAGS="--sysroot=${BUILD_PREFIX}/${HOST}/sysroot"
