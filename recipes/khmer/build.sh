@@ -22,10 +22,8 @@ cp -vr third-party/seqan/core/include $PREFIX/include/
 
 echo ""
 echo "========"
-echo "ls -lhR $PREFIX"
 ls -lhR $PREFIX
 echo "========"
-echo "env"
 env
 echo "========"
 echo ""
