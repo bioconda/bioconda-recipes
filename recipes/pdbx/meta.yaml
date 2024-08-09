@@ -1,0 +1,46 @@
+{% set name = "pdbx" %}
+{% set org = "soedinglab" %}
+{% set version = "master" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/{{ org }}/{{ name }}.git
+  git_branch: {{ version }}
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - make
+    - cmake
+  host:
+    - python
+  run:
+    - python
+
+test:
+  commands:
+    - PACKAGE_NAME={{ name }}; python3 -c "import pkg_resources; import sys; sys.exit(0 if pkg_resources.get_distribution('${PACKAGE_NAME}') else 1)"
+
+about:
+  # Note: No license file available in the repository.
+  home: https://github.com/{{ org }}/{{ name }}
+  summary: pdbx is a parser module in python for structures of the protein data bank in the mmcif format
+  description: |
+    Proper recognition to the [Protein Data Bank](http://mmcif.wwpdb.org/docs/sw-examples/python/html/index.html)
+    where this library for protein structures in the mmCIF format initially came from.
+    We modified the original library to support python3.
+    This fork is used by scripts in the HHsuite [on GitHub](https://github.com/soedinglab/hh-suite).
+  doc_url: https://github.com/{{ org }}/{{ name }}#readme
+  dev_url: https://github.com/{{ org }}/{{ name }}
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - eunos-1128
