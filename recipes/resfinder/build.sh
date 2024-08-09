@@ -1,5 +1,7 @@
 #!/bin/bash -ex
 
+mkdir -p ${PREFIX}/bin
+
 ${PYTHON} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
 
 # create folder for database download
@@ -22,4 +24,4 @@ unset RESFINDER_DB
 EOF
 
 chmod 0755 ${SP_DIR}/resfinder/run_resfinder.py
-ln -sf ${SP_DIR}/resfinder/run_resfinder.py ${PREFIX}/bin/resfinder
+cp -rf ${SP_DIR}/resfinder/run_resfinder.py ${PREFIX}/bin/
