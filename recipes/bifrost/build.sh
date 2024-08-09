@@ -9,6 +9,7 @@ export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64 -I${PREFIX}/include"
 ARCH=$(uname -m)
 case ${ARCH} in
     x86_64) ARCH_FLAGS="-DCOMPILATION_ARCH=OFF" ;;
+    aarch64) ARCH_FLAGS="-DCOMPILATION_ARCH=OFF" ;;
     *) ARCH_FLAGS="-DCOMPILATION_ARCH=ON" ;;
 esac
 
