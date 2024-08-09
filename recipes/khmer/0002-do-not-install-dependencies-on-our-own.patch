@@ -1,37 +1,30 @@
---- khmer-2.1.1/setup.py        2017-05-25 20:10:21.000000000 -0400
-+++ fake.py     2024-08-09 14:46:56.670969929 -0400
+--- khmer-2.1.1/setup.py	2017-05-25 20:10:21.000000000 -0400
++++ khmer-2.1.1/setup.py	2024-08-07 21:54:04.775775473 -0400
 @@ -123,8 +123,8 @@
  # change setup.cfg or use the `--libraries z,bz2` parameter which will make our
  # custom build_ext command strip out the bundled versions.
  
 -ZLIBDIR = 'third-party/zlib'
 -BZIP2DIR = 'third-party/bzip2'
-+ZLIBDIR = path_join(os.getenv('CONDA_PREFIX'), 'lib')
++# ZLIBDIR = 'third-party/zlib'
 +# BZIP2DIR = 'third-party/bzip2'
  
  BUILD_DEPENDS = []
  BUILD_DEPENDS.extend(path_join("lib", bn + ".hh") for bn in [
-@@ -260,16 +260,14 @@
+@@ -259,7 +259,7 @@
+         if sys.platform == 'darwin' and 'gcov' in self.libraries:
              self.libraries.remove('gcov')
  
-         if "z" not in self.libraries:
--            zcmd = ['bash', '-c', 'cd ' + ZLIBDIR + ' && ( test Makefile -nt'
--                    ' configure || bash ./configure --static ) && make -f '
--                    'Makefile.pic PIC']
--            spawn(cmd=zcmd, dry_run=self.dry_run)
--            self.extensions[0].extra_objects.extend(
--                path_join("third-party", "zlib", bn + ".lo") for bn in [
--                    "adler32", "compress", "crc32", "deflate", "gzclose",
--                    "gzlib", "gzread", "gzwrite", "infback", "inffast",
--                    "inflate", "inftrees", "trees", "uncompr", "zutil"])
+-        if "z" not in self.libraries:
++        if False:
+             zcmd = ['bash', '-c', 'cd ' + ZLIBDIR + ' && ( test Makefile -nt'
+                     ' configure || bash ./configure --static ) && make -f '
+                     'Makefile.pic PIC']
+@@ -269,7 +269,7 @@
+                     "adler32", "compress", "crc32", "deflate", "gzclose",
+                     "gzlib", "gzread", "gzwrite", "infback", "inffast",
+                     "inflate", "inftrees", "trees", "uncompr", "zutil"])
 -        if "bz2" not in self.libraries:
-+            self.libraries.append("z")
-+            
-+        
-+        self.extensions[0].libraries = self.libraries
-+        self.extensions[0].library_dirs = [ZLIBDIR]
-+        self.extensions[0].include_dirs = [path_join(os.getenv('CONDA_PREFIX'), 'include')]
-+        
 +        if False:
              bz2cmd = ['bash', '-c', 'cd ' + BZIP2DIR + ' && make -f '
                        'Makefile-libbz2_so all']
