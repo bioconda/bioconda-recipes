@@ -26,7 +26,6 @@ cmake -S .. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=RELEASE \
 	-DHAVE_TESTS=0 -DHAVE_MPI=0 "${ARCH_OPTS}" \
 	-DVERSION_OVERRIDE="${PKG_VERSION}" \
-	"${CMAKE_ARGS}" \
 	"${CMAKE_EXTRA}"
 
 cmake --build . --target install -j ${CPU_COUNT} -v
