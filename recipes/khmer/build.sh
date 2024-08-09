@@ -16,7 +16,9 @@ mkdir -p $PREFIX/scripts
 
 cp -v lib/* $PREFIX/include
 cp -v scripts/* $PREFIX/bin
-cp -vr third-party/seqan/core/include $PREFIX/include/seqan
+
+# copies over third-party/seqan/core/include/seqan
+cp -vr third-party/seqan/core/include $PREFIX/include/
 
 echo ""
 echo "========"
