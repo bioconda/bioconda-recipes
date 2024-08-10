@@ -12,7 +12,7 @@ if [ ! -d "ASTER-Linux" ]; then
     wget -q https://github.com/chaoszhang/ASTER/archive/refs/heads/Linux.zip -O Linux.zip
     unzip -q Linux.zip
     cd ASTER-Linux
-    g++ -D CASTLES -std=gnu++11 -march=native -Ofast -pthread src/astral-pro.cpp -o bin/astral-pro2
+    $CXX -D CASTLES -std=gnu++11 -march=native -Ofast -pthread src/astral-pro.cpp -o bin/astral-pro2
     cd ..
 fi
 
