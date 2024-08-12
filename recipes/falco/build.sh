@@ -2,6 +2,8 @@
 
 set -xe
 
+export M4="$BUILD_PREFIX/bin/m4"
+
 # add Configuration and example files to opt
 falco=$PREFIX/opt/falco
 mkdir -p $falco
