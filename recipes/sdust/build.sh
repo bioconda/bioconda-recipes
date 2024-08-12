@@ -6,9 +6,8 @@ export CPATH=${PREFIX}/include
 
 mkdir -p "${PREFIX}/bin"
 
-make CC="$CC"
+make CC="$CC" -j ${CPU_COUNT}
 
-chmod +x sdust
+chmod 0755 sdust
 
-cp sdust "${PREFIX}/bin"
-
+cp -rf sdust "${PREFIX}/bin"
