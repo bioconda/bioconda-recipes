@@ -1,0 +1,59 @@
+{% set name = "waterkit" %}
+{% set org = "forlilab" %}
+{% set version = "0.5.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/{{ org }}/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  version: {{ version }}
+  sha256: e30c4624667fe3c04f68d693ce6315912514e6abc7f6aa7da4a714971d6d47ee
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python
+  run:
+    - vina
+    - mkl
+    - numpy
+    - scipy
+    - pandas
+    - openbabel
+    - parmed
+    - ambertools
+    - openmm
+    - netcdf4
+    - griddataformats
+    - tqdm
+    - sphinx
+    - sphinx_rtd_theme
+
+test:
+  imports:
+    - {{ name }}
+  commands:
+    - pip check
+    - {{ name }} --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/{{ org }}/{{ name }}
+  summary: Tool to predict water molecules placement and energy in ligand binding sites
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  doc_url: https://github.com/{{ org }}/{{ name }}#readme
+  dev_url: https://github.com/{{ org }}/{{ name }}
+
+extra:
+  recipe-maintainers:
+    - eunos-1128
