@@ -1,12 +1,9 @@
-
 {% set version = "1.0.1" %}
 {% set sha256 = "aacd161bb7131d7874a75b2ed409ee22109be3f87dd062c5590c6d30d1503e68" %}
-
 
 package:
   name: gw
   version: {{ version }}
-
 
 source:
   url: https://github.com/kcleal/gw/archive/refs/tags/v{{ version }}.tar.gz
@@ -14,24 +11,24 @@ source:
   patches:
     - fix-linker-issues.patch  # [linux]
 
-
 build:
-  number: 1
+  number: 2
   run_exports:
-    - {{ pin_subpackage('gw', max_pin="x") }} 
+    - {{ pin_subpackage('gw', max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-    - {{ cdt('xorg-x11-proto-devel') }}          # [linux]
-    - {{ cdt('mesa-libgl-devel') }}  # [linux]
-    - {{ cdt('mesa-dri-drivers') }}  # [linux]
-    - {{ cdt('libselinux') }}        # [linux]
-    - {{ cdt('libxdamage') }}        # [linux]
-    - {{ cdt('libxxf86vm') }}        # [linux]
-    - {{ cdt('libxfixes') }}         # [linux]
-    - {{ cdt('libxext') }}           # [linux]
+    # - sysroot_linux-64 >=2.17
+    - {{ cdt('mesa-libgl-devel') }}   # [linux]
+    - {{ cdt('mesa-libegl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}   # [linux]
+    - {{ cdt('libselinux') }}         # [linux]
+    - {{ cdt('libxdamage') }}         # [linux]
+    - {{ cdt('libxxf86vm') }}         # [linux]
+    - {{ cdt('libxext') }}            # [linux]
+
   host:
     - fontconfig
     - libuuid
@@ -42,19 +39,21 @@ requirements:
     - wget
     - unzip
     - freetype
-    - xorg-libxfixes         # [linux]
-    - xorg-libx11            # [linux]
-    - xorg-libxcb            # [linux]
-    - expat                  # [linux]
+    - xorg-libxfixes  # [linux]
+    - xorg-libx11     # [linux]
+    - xorg-libxcb     # [linux]
+    - expat           # [linux]
+
   run:
-    - {{ cdt('xorg-x11-proto-devel') }}          # [linux]
-    - {{ cdt('mesa-libgl-devel') }}  # [linux]
-    - {{ cdt('mesa-dri-drivers') }}  # [linux]
-    - {{ cdt('libselinux') }}        # [linux]
-    - {{ cdt('libxdamage') }}        # [linux]
-    - {{ cdt('libxxf86vm') }}        # [linux]
-    - {{ cdt('libxfixes') }}         # [linux]
-    - {{ cdt('libxext') }}           # [linux]
+    - xorg-libxfixes    # [linux]
+    - xorg-libx11       # [linux]
+    - xorg-libxcb       # [linux]
+    - {{ cdt('mesa-libgl-devel') }}   # [linux]
+    - {{ cdt('mesa-libegl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}   # [linux]
+    #- mesa-libgl        # [linux]
+    #- mesa-libegl       # [linux]
+    #- mesa-dri-drivers  # [linux]
     - glfw >=3.3
     - htslib >=1.12 
 
@@ -70,6 +69,6 @@ about:
 
 extra:
   container:
-      extended-base: True
+    extended-base: True
   recipe-maintainers:
     - kcleal
