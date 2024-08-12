@@ -1,5 +1,5 @@
-{% set version = "1.6.10" %}
-{% set sha256_package = "1e432655e299bb5941104c2645ed3a6b3c2c4a44b583c5aaa2b20d2538875f9e" %}
+{% set version = "1.6.11" %}
+{% set sha256_package = "eb6a8e121eb9689597da9ec5a105ba5392e458ab30510fe26b260b81a6d9fdb0" %}
 {% set sha256_script = "0c61d79cf519e5c5ae33807725577da3d1599bcc89413c3a6bce3fb7c99090c7" %}
 
 package:
@@ -14,10 +14,9 @@ source:
 
 build:
   number: 0
-  script: 
-    - 'mkdir -p $PREFIX/bin && cp STITCH.R $PREFIX/bin'
-    - '$R CMD INSTALL --build --install-tests .'
-
+  run_exports:
+    - {{ pin_subpackage('r-stitch', max_pin="x") }}
+  
 requirements:
   build:
     - {{ compiler('c') }}
@@ -26,6 +25,7 @@ requirements:
     - automake
     - pkg-config
     - make
+    - libcxx <17 # [osx]
   host:
     - r-base
     - r-rcpp >=0.12.18
@@ -38,6 +38,7 @@ requirements:
     - mpc >=1.1.0
     - libblas
     - zlib
+    - libcxx <17 # [osx]
   run:
     - r-base
     - r-rcpp >=0.12.18
@@ -62,7 +63,7 @@ test:
 
 about:
   home: https://github.com/rwdavies/stitch
-  license: GPL3
+  license: GPL-3.0-only
   license_family: GPL3
   license_file: LICENSE
   summary: STITCH - Sequencing To Imputation Through Constructing Haplotypes
@@ -70,5 +71,7 @@ about:
   dev_url: https://github.com/rwdavies/stitch
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - rwdavies

@@ -1,9 +1,11 @@
-# Install paragone
-$PYTHON -m pip install --no-deps --ignore-installed .
+#!/bin/bash -euo
 
-# Install HmmCleaner:
-${PREFIX}/bin/perl ${PREFIX}/bin/cpanm Bio::MUST::Core --notest
-${PREFIX}/bin/perl ${PREFIX}/bin/cpanm Bio::MUST::Drivers --notest
-${PREFIX}/bin/perl ${PREFIX}/bin/cpanm --force Bio::MUST::Apps::HmmCleaner --notest
+mkdir -p ${PREFIX}/bin
 
-sed -i 's|#!/opt/miniconda3/miniconda3/bin/env perl|#!/usr/bin/env perl|' ${PREFIX}/bin/HmmCleaner.pl
+# Install ParaGone
+$PYTHON -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+
+# Install TAPER:
+git clone https://github.com/chaoszhang/TAPER.git
+chmod 755 TAPER/correction_multi.jl
+cp -f TAPER/correction_multi.jl ${PREFIX}/bin
