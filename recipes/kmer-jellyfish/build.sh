@@ -7,3 +7,5 @@
 make -j ${CPU_COUNT}
 make install
 make check -j ${CPU_COUNT}
+cd swig/python
+pip install . --prefix=$PREFIX
