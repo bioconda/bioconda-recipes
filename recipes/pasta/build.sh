@@ -22,15 +22,6 @@ ln -s $PREFIX/bin/hmmbuild $PREFIX/bin/hmmerbuild
 mkdir -p $PREFIX/share/pasta/data/
 cp -v data/small.fasta $PREFIX/share/pasta/data/
 
-# avoid using deprecated U file open mode
-if [ $unamestr == 'Linux' ];
-then
-    sed -i "s/'rU'/'r'/g" pasta/alignment.py pasta/mainpasta.py pasta/test/support/sate_test_case.py pasta/test/test_alignment.py pasta/test/test_decomp.py pasta/test/test_main.py pasta/test/test_phylogenetic_tree.py pasta/tools.py pasta/tree.py run_pasta_gui.py
-elif [ $unamestr == 'Darwin' ];
-then
-    gsed -i "s/'rU'/'r'/g" pasta/alignment.py pasta/mainpasta.py pasta/test/support/sate_test_case.py pasta/test/test_alignment.py pasta/test/test_decomp.py pasta/test/test_main.py pasta/test/test_phylogenetic_tree.py pasta/tools.py pasta/tree.py run_pasta_gui.py
-fi
-
 # install pasta itself
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 cp bin/treeshrink $PREFIX/bin/treeshrink
