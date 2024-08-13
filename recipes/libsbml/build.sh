@@ -1,11 +1,14 @@
 #!/bin/bash
+
+set -xe
+
 mkdir build
 cd build
 
 declare -a CMAKE_LIBXML_LIBRARY
-if [[ ${target_platform} == osx-64 ]]; then
+if [[ ${target_platform} == osx-*64 ]]; then
   CMAKE_LIBXML_LIBRARY+=(-DLIBXML_LIBRARY="${PREFIX}"/lib/libxml2.dylib)
-elif [[ ${target_platform} == linux-64 ]]; then
+elif [[ ${target_platform} == linux-*64 ]]; then
   CMAKE_LIBXML_LIBRARY+=(-DLIBXML_LIBRARY="${PREFIX}"/lib/libxml2.so)
 fi
 
