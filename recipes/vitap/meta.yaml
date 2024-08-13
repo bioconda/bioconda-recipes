@@ -1,13 +1,13 @@
 {% set name = "vitap" %}
-{% set version = "1.4" %}
+{% set version = "1.5" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://github.com/DrKaiyangZheng/VITAP/archive/refs/tags/v.{{ version }}.tar.gz
-  sha256: 7affc609d0d7404e93bf4eb4e4f619545786b2deb8938ef11d918bbd24e40cb4
+  url: https://github.com/DrKaiyangZheng/VITAP/archive/refs/heads/main.zip  #https://github.com/DrKaiyangZheng/VITAP/archive/refs/tags/v.{{ version }}.tar.gz
+  sha256: c7c052b03bc63e93c9913da6c44c28ae93db2da44a7784512410d2c12a8bde83
 
 build:
   number: 0
@@ -35,7 +35,12 @@ requirements:
     - prodigal-gv >=2.6
 
 test:
+  files:
+    - scripts/ICTV_VMR_MSL-demo.csv
+    - scripts/toy_set.fasta
   commands:
+    - cp scripts/ICTV_VMR_MSL-demo.csv .
+    - cp scripts/toy_set.fasta .
     - echo "y" | VITAP upd --vmr ICTV_VMR_MSL-demo.csv -o ICTV_VMR_MSL-demo_reformat.csv -d VMR_MSL-demo
     - VITAP assignment -i toy_set.fasta -d DB_VMR_MSL-demo -o toy_set_vitap_result
 
