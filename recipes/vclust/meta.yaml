@@ -1,0 +1,44 @@
+{% set version = "1.0.3" %}
+
+{% set system = "x64-linux"%}       # [linux-64]
+{% set system = "x64-mac"%}         # [osx-64]
+{% set system = "arm8-linux"%}      # [linux-aarch64]
+{% set system = "m1-mac"%}          # [osx-arm64]
+
+{% set sha256 = "801e03067cb1c5fdda02849088fc21286f276fa8fef227e2807768edabf4b866" %}  # [linux-64]
+{% set sha256 = "eb21af26f6975392ee581c1497e7be012ed70fe921c342317233a58e5440356a" %}  # [osx-64]
+{% set sha256 = "630373e30f27f3cc923fe13ce536d5281c4a6382be1eb36dd3b2beb32ac94af2" %}  # [linux-aarch64]
+{% set sha256 = "6338ca552c4d83c2587198251bc4217233fa3f6e2b4badf11f1bb9396e5d360f" %}  # [osx-arm64]
+
+package:
+  name: vclust
+  version: {{ version }}
+build:
+  number: 1
+  script: "
+  script: "mkdir -p ${PREFIX}/bin; cp -r vclust-{{ version }}_{{ system }}/*.* ${PREFIX}/bin"
+source:
+  url: https://github.com/refresh-bio/vclust/releases/download/v{{ version }}/vclust-{{ version }}_{{ system }}.tar.gz
+  sha256: {{ sha256 }}
+requirements:
+  build:
+  host:
+  run:
+    python >= 3
+    pytest
+about:
+  home: https://github.com/refresh-bio/vclust
+  summary: "Fast and accurate tool for calculating ANI and clustering virus genomes and metagenomes."
+  license: GPL-3
+  license_family: GPL
+test:
+  commands:
+    - python vclust.py --help
+    - pytest test.py -k 'not test_cluster_algorithm_leiden'
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - should_be_noarch_generic
+    - should_not_be_noarch_source
