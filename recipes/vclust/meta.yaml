@@ -13,28 +13,35 @@
 package:
   name: vclust
   version: {{ version }}
+
 build:
   number: 1
-  script: "
+  run_exports:
+  - {{ pin_subpackage('vclust', max_pin='x.x.x') }}
   script: "mkdir -p ${PREFIX}/bin; cp -r vclust-{{ version }}_{{ system }}/*.* ${PREFIX}/bin"
+
 source:
   url: https://github.com/refresh-bio/vclust/releases/download/v{{ version }}/vclust-{{ version }}_{{ system }}.tar.gz
   sha256: {{ sha256 }}
+
 requirements:
   build:
   host:
   run:
     python >= 3
     pytest
+
 about:
   home: https://github.com/refresh-bio/vclust
   summary: "Fast and accurate tool for calculating ANI and clustering virus genomes and metagenomes."
   license: GPL-3
   license_family: GPL
+
 test:
   commands:
     - python vclust.py --help
     - pytest test.py -k 'not test_cluster_algorithm_leiden'
+
 extra:
   additional-platforms:
     - linux-aarch64
