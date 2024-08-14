@@ -1,8 +1,6 @@
 #!/bin/bash
 mkdir -p ${PREFIX}/bin
 
-cd src
+cp ./apu-label-propagation ${PREFIX}/bin/
 
-$CC -o $PREFIX/bin/apu-label-propagation apu_label_propagation.c -lm
-
-#cp ./apu-label-propagation ${PREFIX}/bin/
+chmod g+w ${PREFIX}/bin/apu-label-propagation
