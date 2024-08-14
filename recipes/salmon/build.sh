@@ -8,7 +8,7 @@ export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 
 if [[ `uname` == "Darwin" ]]; then
-	CFLAGS="${CFLAGS} -Wunused-command-line-argument -Wunused-parameter"
+	export CFLAGS="${CFLAGS} -Wunused-command-line-argument -Wunused-parameter"
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
 	export CONFIG_ARGS=""
