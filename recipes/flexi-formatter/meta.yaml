@@ -2,37 +2,43 @@
 {% set version = "0.0.1" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/2a/67/75a29e3c3637d6942c57ccacf52dad24d1985ff6632a985eced84dfbd158/flexi_formatter-0.0.1.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/flexi_formatter-{{ version }}.tar.gz
   sha256: 25e973b73a571d5e3cc23e7da9da616e8484b15c788e83cb1211a5ce8b0cbe16
+
 build:
-  number: 0
+  entry_points:
+    - flexi_formatter = flexi_formatter.reformat_flexiplex_tags:app
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
-  run_exports:
-    - {{ pin_subpackage(name|lower, max_pin='x.x') }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
 
 requirements:
   host:
-    - python >=3.12
-    - setuptools
+    - python >=3.7
     - pip
   run:
-    - python >=3.12
+    - python >=3.7
     - typer ==0.12.3
     - simplesam ==0.1.4.1
 
 test:
   imports:
-    - flexi-formatter
+    - flexi_formatter
+  commands:
+    - pip check
+    - flexi_formatter --help
+  requires:
+    - pip
 
 about:
-  home: "https://github.com/VIB-CCB-BioIT/flexiplex_tag_formatter"
+  summary: Moving flexiplex barcode and UMI to bam tags
   license: MIT
-  license_family: MIT
-  summary: "Extracting and moving flexiplex barcode and umi from read name to bam tags"
   license_file: LICENSE
-  dev_url: "https://github.com/VIB-CCB-BioIT/flexiplex_tag_formatter"
+
+extra:
+  recipe-maintainers:
+    - ljwharbers
