@@ -1,0 +1,61 @@
+{% set name = "sainsc" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/sainsc-{{ version }}.tar.gz
+  sha256: 43afd7d2c9f1b8b891893cfe730175d0e01d5443b7f17981a233109df4cbb228
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 1
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+  host:
+    - python >=3.10
+    - setuptools >=61.0.0
+    - setuptools-scm >=6.2
+    - setuptools-rust >=1.7
+    - pip
+  run:
+    - python >=3.10
+    - anndata >=0.9
+    - matplotlib-base
+    - matplotlib-scalebar
+    - numba >=0.44
+    - numpy >=1.21
+    - pandas
+    - polars >=1
+    - scikit-image >=0.18
+    - scipy >=1.9
+    - seaborn >=0.11
+
+test:
+  imports:
+    - sainsc
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/HiDiHlabs/sainsc
+  summary: Segmentation-free Analysis of In Situ Capture data
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://sainsc.readthedocs.io/
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - niklasmueboe
