@@ -1,58 +1,40 @@
 #! /bin/bash
 
-gem install date -v "3.0.0"
-gem install open3 -v "0.1.2"
-gem install mini_portile2 -v "2.4.0"
-gem install nokogiri -v "1.15.3"
-gem install rubyzip -v "2.3.2"
-gem install roo -v "2.10.0"
-gem install builder -v "3.2.4"
-gem install rexml -v "3.2.5"
-
-APPROOT=$PREFIX/opt/submission-excel2xml
-
+APPROOT=$PREFIX/opt/$PKG_NAME
 
 mkdir -p $APPROOT
 
-# sed -i.bak '1 s|^.*$|#!/usr/bin/env ruby|g' *.rb
-
-cp excel2xml_dra.rb $APPROOT/
-cp validate_meta_dra.rb $APPROOT/
-cp excel2xml_jga.rb $APPROOT/
-cp validate_meta_jga.rb $APPROOT/
-
-chmod a+x $APPROOT/excel2xml_dra.rb
-chmod a+x $APPROOT/validate_meta_dra.rb
-chmod a+x $APPROOT/excel2xml_jga.rb
-chmod a+x $APPROOT/validate_meta_jga.rb
+bundle install && \
+    bundle exec rake install && \
+    bundle exec rake clobber
 
 
-mkdir -p $APPROOT/xsd
+sed -i '1s|^.*$|#! /usr/bin/env ruby|' $PREFIX/share/rubygems/bin/excel2xml_dra
+sed -i '1s|^.*$|#! /usr/bin/env ruby|' $PREFIX/share/rubygems/bin/excel2xml_jga
+sed -i '1s|^.*$|#! /usr/bin/env ruby|' $PREFIX/share/rubygems/bin/submission-excel2xml
+sed -i '1s|^.*$|#! /usr/bin/env ruby|' $PREFIX/share/rubygems/bin/validate_meta_dra
+sed -i '1s|^.*$|#! /usr/bin/env ruby|' $PREFIX/share/rubygems/bin/validate_meta_jga
 
-cd $APPROOT/xsd
 
-curl -LO https://raw.githubusercontent.com/ddbj/pub/master/docs/dra/xsd/1-5/SRA.analysis.xsd
-curl -LO https://raw.githubusercontent.com/ddbj/pub/master/docs/dra/xsd/1-5/SRA.annotation.xsd
-curl -LO https://raw.githubusercontent.com/ddbj/pub/master/docs/dra/xsd/1-5/SRA.common.xsd
-curl -LO https://raw.githubusercontent.com/ddbj/pub/master/docs/dra/xsd/1-5/SRA.experiment.xsd
-curl -LO https://raw.githubusercontent.com/ddbj/pub/master/docs/dra/xsd/1-5/SRA.package.xsd
-curl -LO https://raw.githubusercontent.com/ddbj/pub/master/docs/dra/xsd/1-5/SRA.run.xsd
-curl -LO https://raw.githubusercontent.com/ddbj/pub/master/docs/dra/xsd/1-5/SRA.sample.xsd
-curl -LO https://raw.githubusercontent.com/ddbj/pub/master/docs/dra/xsd/1-5/SRA.study.xsd
-curl -LO https://raw.githubusercontent.com/ddbj/pub/master/docs/dra/xsd/1-5/SRA.submission.xsd
-curl -LO https://raw.githubusercontent.com/ddbj/pub/master/docs/jga/xsd/1-2/JGA.analysis.xsd
-curl -LO https://raw.githubusercontent.com/ddbj/pub/master/docs/jga/xsd/1-2/JGA.common.xsd
-curl -LO https://raw.githubusercontent.com/ddbj/pub/master/docs/jga/xsd/1-2/JGA.dac.xsd
-curl -LO https://raw.githubusercontent.com/ddbj/pub/master/docs/jga/xsd/1-2/JGA.data.xsd
-curl -LO https://raw.githubusercontent.com/ddbj/pub/master/docs/jga/xsd/1-2/JGA.dataset.xsd
-curl -LO https://raw.githubusercontent.com/ddbj/pub/master/docs/jga/xsd/1-2/JGA.experiment.xsd
-curl -LO https://raw.githubusercontent.com/ddbj/pub/master/docs/jga/xsd/1-2/JGA.policy.xsd
-curl -LO https://raw.githubusercontent.com/ddbj/pub/master/docs/jga/xsd/1-2/JGA.sample.xsd
-curl -LO https://raw.githubusercontent.com/ddbj/pub/master/docs/jga/xsd/1-2/JGA.study.xsd
-curl -LO https://raw.githubusercontent.com/ddbj/pub/master/docs/jga/xsd/1-2/JGA.submission.xsd
 
-cd $PREFIX/bin
-ln -s ../opt/submission-excel2xml/excel2xml_dra.rb ./
-ln -s ../opt/submission-excel2xml/validate_meta_dra.rb ./
-ln -s ../opt/submission-excel2xml/excel2xml_jga.rb ./
-ln -s ../opt/submission-excel2xml/validate_meta_jga.rb ./
+# Downloading xsd files
+# Files will be downloaded to $PREFIX/opt/submission-excel2xml/data
+# "submission-excel2xml/data" is hard-coded in the source code.
+export XDG_DATA_HOME=$PREFIX/opt
+submission-excel2xml download_xsd
+
+# copy sample files
+cp -r example/ $APPROOT/
+
+
+## Set variables on env activation
+mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
+cat <<EOF >> ${PREFIX}/etc/conda/activate.d/${PKG_NAME}.sh
+export XDG_DATA_HOME=$PREFIX/opt
+EOF
+
+cat <<EOF >> ${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}.sh
+unset XDG_DATA_HOME
+EOF
+
+
