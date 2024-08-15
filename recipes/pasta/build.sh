@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu -o pipefail
+set -xeu -o pipefail
 
 # obtain opal.jar from Siavash's extra repo
 unamestr=`uname`
