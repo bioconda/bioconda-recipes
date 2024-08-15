@@ -48,12 +48,6 @@ for i in exact-tandems dnadiff mapview mummerplot nucmer promer run-mummer1 run-
 done
 
 for i in $binaries; do 
-  if file $MUMMER_HOME/$i | grep "Perl script"; then
-    # fix hashbang lines to use conda's perl
-    sed -i.bak '1 s|^#!/.*/perl$|#!/usr/bin/env perl|g' $MUMMER_HOME/$i
-    rm -rf $MUMMER_HOME/$i.bak
-  fi
-  # ensure executable and setup symlink for binary
   chmod +x $MUMMER_HOME/$i
   ln -s "$MUMMER_HOME/$i" "$BINARY_HOME/$i"
 done
