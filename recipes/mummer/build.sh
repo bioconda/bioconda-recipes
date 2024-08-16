@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -xe
-
 BINARY=mummer
 BINARY_HOME=$PREFIX/bin
 MUMMER_HOME=$PREFIX/opt/mummer-$PKG_VERSION
