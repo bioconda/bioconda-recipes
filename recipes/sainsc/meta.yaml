@@ -1,5 +1,5 @@
 {% set name = "sainsc" %}
-{% set version = "0.1.0" %}
+{% set version = "0.1.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,12 +7,12 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/sainsc-{{ version }}.tar.gz
-  sha256: 7dcf4326f71c57800a1ef7a2cab63d9416231004036dfc3c9ea70a2cae7b22f4
+  sha256: 43afd7d2c9f1b8b891893cfe730175d0e01d5443b7f17981a233109df4cbb228
 
 build:
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  number: 0
-  skip: True  # [osx]
+  number: 2
+  skip: True  # [(osx and not arm64) or py<310]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
@@ -20,13 +20,13 @@ requirements:
   build:
     - {{ compiler('rust') }}
   host:
-    - python >=3.10
+    - python
     - setuptools >=61.0.0
     - setuptools-scm >=6.2
     - setuptools-rust >=1.7
     - pip
   run:
-    - python >=3.10
+    - python
     - anndata >=0.9
     - matplotlib-base
     - matplotlib-scalebar
@@ -55,5 +55,8 @@ about:
   doc_url: https://sainsc.readthedocs.io/
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - niklasmueboe
