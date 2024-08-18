@@ -5,4 +5,4 @@ set -xe
 mkdir -p $PREFIX/bin 
 cp -rf STITCH.R $PREFIX/bin
 
-${R} CMD INSTALL --build . --install-tests .
+${R} CMD INSTALL --build . ${R_ARGS}
