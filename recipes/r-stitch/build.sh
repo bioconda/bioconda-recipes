@@ -5,4 +5,11 @@ set -xe
 mkdir -p $PREFIX/bin 
 cp -rf STITCH.R $PREFIX/bin
 
-${R} CMD INSTALL --build . ${R_ARGS}
+if [[ $(uname) == "Darwin" ]]; then
+    export LDFLAGS=-L${PREFIX}/lib
+    #autoreconf -i
+    ${R} CMD INSTALL --build . --configure-args="CFLAGS=-ferror-limit=0 CXXFLAGS=-ferror-limit=0"
+else
+    ${R} CMD INSTALL --build .
+fi
+
