@@ -1,19 +1,21 @@
 {% set name = "sra-tools" %}
-{% set version = "3.1.0" %}
-{% set sha256 = "ce92ce887ee4a7581a7511cfb6b965ac6a5e38841bad9be66a3aee903ec48952" %}
+{% set version = "3.1.1" %}
+{% set sha256 = "96b110bd5a30ad312e2f02552062b48a77d40c763e6aba5bb84e83662a505cf1" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/ncbi/sra-tools/archive/refs/tags/{{version}}.tar.gz
+- url: https://github.com/ncbi/sra-tools/archive/refs/tags/{{version}}.tar.gz
   sha256: {{ sha256 }}
   folder: sra-tools
+- url: https://github.com/ncbi/ncbi-vdb/archive/refs/tags/{{version}}.tar.gz  # [osx]
+  sha256: e9766f259853c696be48e289b08cb5ae6e198d82d7ffee79f09ce7f720487991  # [osx]
+  folder: ncbi-vdb  # [osx]
 
 build:
   number: 0
-  skip: True # [osx]
   run_exports:
     - {{ pin_subpackage(name, max_pin='x') }}
 
@@ -24,6 +26,7 @@ requirements:
     - cmake
     - bison
     - flex
+  host:
     - ncbi-vdb >={{ version }}
   run:
     - ca-certificates
@@ -51,12 +54,14 @@ test:
     - sam-dump SRR002702 | grep 'EX35NVW14ISYAK'
 
 about:
-  home: https://github.com/ncbi/sra-tools
+  home: "https://github.com/ncbi/sra-tools"
   license: Public Domain
-  summary: SRA Toolkit and SDK from NCBI
+  summary: "The SRA Toolkit and SDK from NCBI."
   description:  |
     The SRA Toolkit and SDK from NCBI is a collection of tools and libraries
     for using data in the INSDC Sequence Read Archives.
+  dev_url: "https://github.com/ncbi/sra-tools"
+  doc_url: "https://github.com/ncbi/sra-tools/wiki"
 
 extra:
   notes: 'After installation, you should run the configuration tool: ./vdb-config

@@ -1,8 +1,22 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 5796d8b..9030264 100644
+index 5796d8b..351fd24 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -32,9 +32,17 @@ else ()
+@@ -18,6 +18,13 @@ else ()
+     message(STATUS "SDSL found ${SDSL}")
+ endif ()
+ 
++find_path(SDSL_INCLUDE_DIR NAMES sdsl/bit_vectors.hpp PATHS ${CMAKE_SYSTEM_PREFIX_PATH})
++if (NOT SDSL_INCLUDE_DIR)
++    message(FATAL_ERROR "bit_vectors.hpp (part of sdsl-lite) required")
++else ()
++    message(STATUS "SDSL includes found ${SDSL_INCLUDE_DIR}")
++endif ()
++
+ find_path(KMC_INCLUDE_DIR NAMES kmc_file.h PATHS ${CMAKE_SYSTEM_PREFIX_PATH} PATH_SUFFIXES "kmc")
+ if (NOT KMC_INCLUDE_DIR)
+     message(FATAL_ERROR "kmc_file.h (part of libkmc-dev) required")
+@@ -32,9 +39,18 @@ else ()
      message(STATUS "ZSTD found ${ZSTD}")
  endif ()
  
@@ -16,6 +30,7 @@ index 5796d8b..9030264 100644
  target_include_directories(malva-geno
         PRIVATE ${PROJECT_SOURCE_DIR}
         PRIVATE ${KMC_INCLUDE_DIR}
++       PRIVATE ${SDSL_INCLUDE_DIR}
 +       PRIVATE ${ZSTD_INCLUDE_DIR}
  )
  
