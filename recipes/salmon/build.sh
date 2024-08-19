@@ -22,9 +22,11 @@ cmake -S . -B build \
 	-DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_C_FLAGS="${CFLAGS}" \
 	-DCONDA_BUILD=TRUE \
-	-DLIBSTADEN_LDFLAGS="-L${PREFIX}/lib" \
-	-DBoost_NO_BOOST_CMAKE=ON \
-	-DBoost_NO_SYSTEM_PATHS=ON \
-	-DNO_IPO=TRUE "${CONFIG_ARGS}"
+	-DSTADEN_INCLUDE_DIR="${PREFIX}/include" \
+	-DSTADEN_LIBRARY="${PREFIX}/lib" \
+	-DSTADEN_VERSION="1.15.0" \
+	-DBOOST_ROOT="${PREFIX}" \
+	-DNO_IPO=TRUE \
+	-DBUILD_SHARED_LIBS=ON "${CONFIG_ARGS}"
 
 cmake --build build/ --target install -v
