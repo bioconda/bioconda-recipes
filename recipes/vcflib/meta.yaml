@@ -1,31 +1,35 @@
 {% set name = "vcflib" %}
-{% set version = "1.0.9" %}
-{% set sha256 = "493204cb8e0515defa1383d56280d00b8efbed55312c6055162f8cb3a4ffb210" %}
+{% set version = "1.0.10" %}
+{% set sha256 = "unused" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-- url: https://github.com/vcflib/vcflib/releases/download/v{{ version }}/vcflib-{{ version }}-src.tar.gz
+- git_url: https://github.com/vcflib/vcflib.git
+  git_rev: v{{ version }}
   sha256: {{ sha256 }}
   patches:
     - pkg-config.patch
     - shared_lib.patch
     - backport_pr_394.patch  # TODO remove once PR https://github.com/vcflib/vcflib/pull/394 is merged and released
     - tabix.patch
-- url: https://ziglang.org/download/0.10.1/zig-linux-x86_64-0.10.1.tar.xz  # [linux and x86_64]
-  sha256: 6699f0e7293081b42428f32c9d9c983854094bd15fee5489f12c4cf4518cc380  # [linux and x86_64]
-  folder: zig-linux-x86_64-0.10.1  # [linux and x86_64]
-- url: https://ziglang.org/download/0.10.1/zig-linux-aarch64-0.10.1.tar.xz  # [linux and aarch64]
-  sha256: db0761664f5f22aa5bbd7442a1617dd696c076d5717ddefcc9d8b95278f71f5d  # [linux and aarch64]
-  folder: zig-linux-aarch64-0.10.1  # [linux and aarch64]
-- url: https://ziglang.org/download/0.10.1/zig-macos-x86_64-0.10.1.tar.xz  # [osx]
-  sha256: 02483550b89d2a3070c2ed003357fd6e6a3059707b8ee3fbc0c67f83ca898437  # [osx]
-  folder: zig-macos-x86_64-0.10.1  # [osx]
+- url: https://ziglang.org/download/0.12.1/zig-linux-x86_64-0.12.1.tar.xz  # [linux and x86_64]
+  sha256: 8860fc9725c2d9297a63008f853e9b11e3c5a2441217f99c1e3104cc6fa4a443  # [linux and x86_64]
+  folder: zig-linux-x86_64-0.12.1  # [linux and x86_64]
+- url: https://ziglang.org/download/0.12.1/zig-linux-aarch64-0.12.1.tar.xz  # [linux and aarch64]
+  sha256: 27d4fef393e8d8b5f3b1d19f4dd43bfdb469b4ed17bbc4c2283c1b1fe650ef7f  # [linux and aarch64]
+  folder: zig-linux-aarch64-0.12.1  # [linux and aarch64]
+- url: https://ziglang.org/download/0.12.1/zig-macos-x86_64-0.12.1.tar.xz  # [osx and x86_64]
+  sha256: 68f309c6e431d56eb42648d7fe86e8028a23464d401a467831e27c26f1a8d9c9  # [osx and x86_64]
+  folder: zig-macos-x86_64-0.12.1  # [osx and x86_64]
+- url: https://ziglang.org/download/0.12.1/zig-macos-aarch64-0.12.1.tar.xz  # [osx and arm64]
+  sha256: 6587860dbbc070e1ee069e1a3d18ced83b7ba7a80bf67b2c57caf7c9ce5208b1  # [osx and arm64]
+  folder: zig-macos-aarch64-0.12.1  # [osx and arm64]
 
 build:
-  number: 6
+  number: 0
   run_exports:
     - {{ pin_subpackage('vcflib', max_pin="x") }}
 
@@ -66,15 +70,21 @@ test:
     - "vcfuniq test.vcf"
 
 about:
-  home: https://github.com/vcflib/vcflib
+  home: "https://github.com/vcflib/vcflib"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: Command-line tools for manipulating VCF files
+  summary: "Command-line tools for manipulating VCF files."
+  dev_url: "https://github.com/vcflib/vcflib"
+  doc_url: "https://github.com/vcflib/vcflib/blob/v{{ version }}/README.md"
 
 extra:
+  skip-lints:
+    # uses submodules
+    - uses_vcs_url
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - jpuritz
   identifiers:
