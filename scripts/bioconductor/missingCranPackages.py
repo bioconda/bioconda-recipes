@@ -97,7 +97,7 @@ def printMissingCRAN(recipe_folder, migration_id, format):
         if format == "markdown":
             print(
                 "## Awaiting migration of {} packages ##".format(
-                    len(in_pr) + len(bot_error) + len(not_solvable)
+                    len(in_pr) + len(bot_error) + len(not_solvable) + len(awaiting_parents)
                 )
             )
             print("### In PR ({} packages) ###".format(len(in_pr)))
@@ -117,7 +117,7 @@ def printMissingCRAN(recipe_folder, migration_id, format):
                     CHECKBOX,
                     cf["awaiting-parents"][recipe],
                     "(",
-                    nx.algorithms.ancestors(dag, recipe),
+                    ", ".join([r for r in nx.algorithms.ancestors(dag, recipe) if r in set.union(in_pr, bot_error, not_solvable, awaiting_parents)]),
                     ")",
                 )
         else:
