@@ -38,18 +38,18 @@ def getCondaForgeMigrationStatus(migration_id):
         "dag": depDag,
     }
     for recipe in js["in-pr"]:
-        res["in-pr"][recipe] = f"{recipe}: In PR {js['_feedstock_status'][recipe]['pr_url']}"
+        res["in-pr"][recipe] = f"`{recipe}`: In PR {js['_feedstock_status'][recipe]['pr_url']}"
     for recipe in js["bot-error"]:
         status = js["_feedstock_status"][recipe]["pre_pr_migrator_status"]
         segment = status.split("\n")
-        res["bot-error"][recipe] = f"{recipe}: {segment[0] + ' ' + segment[1]}"
+        res["bot-error"][recipe] = f"`{recipe}`: {segment[0] + ' ' + segment[1]}"
     for recipe in js["not-solvable"]:
         status = js["_feedstock_status"][recipe]["pre_pr_migrator_status"]
         segment1 = status.split("\n")[0]
         segment2 = status.split(":")[3].split("\n")[0]
-        res["not-solvable"][recipe] = f"{recipe}: {segment1 + ' ' + segment2}"
+        res["not-solvable"][recipe] = f"`{recipe}`: {segment1 + ' ' + segment2}"
     for recipe in js["awaiting-parents"]:
-        res["awaiting-parents"][recipe] = f"{recipe}: Awaiting parents"
+        res["awaiting-parents"][recipe] = f"`{recipe}`: Awaiting parents"
     return res
 
 
