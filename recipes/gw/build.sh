@@ -15,7 +15,7 @@ make prep > /dev/null 2>&1
 if [[ "$OSTYPE" != "darwin"* ]]; then
   SYSROOT_FLAGS="--sysroot=${BUILD_PREFIX}/${HOST}/sysroot"
   CPPFLAGS="${CPPFLAGS} -I${BUILD_PREFIX}/${HOST}/sysroot/usr/include ${SYSROOT_FLAGS}"
-  LDFLAGS="${LDFLAGS} -L${PREFIX} -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib64 ${SYSROOT_FLAGS}"
+  LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib64 ${SYSROOT_FLAGS}"
 else
   # No sysroot settings for macOS
   SYSROOT_FLAGS=""
