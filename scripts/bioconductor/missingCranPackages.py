@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import argparse
-import json
-import os
+import networkx as nx
 import requests
 from bioconda_utils import utils
 
@@ -17,14 +16,27 @@ def getRepoData():
                     res.add(v['name'])
     return res
 
+def getDag(js):
+    dag = nx.DiGraph()
+    for k, v in js['_feedstock_status'].items():
+        dag.add_node(k)
+        children = v['immediate_children']
+        dag.add_edges_from(
+            (k, dep)
+            for dep in set(children)
+        )
+    return dag
 
 def getCondaForgeMigrationStatus(migration_id):
     r = requests.get(f"https://raw.githubusercontent.com/regro/cf-graph-countyfair/master/status/migration_json/{migration_id}.json")
     js = r.json()
+    depDag = getDag(js)
     res = {
         'in-pr': dict(),
         'bot-error': dict(),
         'not-solvable': dict(),
+        'awaiting-parents': dict(),
+        'dag': depDag
     }
     for recipe in js['in-pr']:
         res['in-pr'][recipe] =  f"{recipe}: In PR {js['_feedstock_status'][recipe]['pr_url']}"
@@ -37,6 +49,8 @@ def getCondaForgeMigrationStatus(migration_id):
         segment1 = status.split('\n')[0]
         segment2 = status.split(':')[3].split('\n')[0]
         res['not-solvable'][recipe] =  f"{recipe}: {segment1 + ' ' + segment2}"
+    for recipe in js['awaiting-parents']:
+        res['awaiting-parents'][recipe] =  f"{recipe}: Awaiting parents"
     return res
 
 
@@ -58,6 +72,14 @@ def printMissingCRAN(recipe_folder, migration_id, format):
     # Find packages waiting for a migration
     if migration_id:
         cf = getCondaForgeMigrationStatus(migration_id)
+        dag = cf['dag']
+
+        # Update dependencies based on DAG from conda-forge migration data
+        awaiting_parents = set.intersection(dependencies, set(cf['awaiting-parents'].keys()))
+        for recipe in awaiting_parents:
+            dependencies = set.union(dependencies, nx.algorithms.ancestors(dag, recipe))
+        # Now that we expanded dependencies, get the new list of awaiting parents
+        awaiting_parents = set.intersection(dependencies, set(cf['awaiting-parents'].keys()))
         in_pr = set.intersection(dependencies, set(cf['in-pr'].keys()))
         bot_error = set.intersection(dependencies, set(cf['bot-error'].keys()))
         not_solvable = set.intersection(dependencies, set(cf['not-solvable'].keys()))
@@ -72,6 +94,9 @@ def printMissingCRAN(recipe_folder, migration_id, format):
             print("### Not Solvable ({} packages) ###".format(len(not_solvable)))
             for recipe in not_solvable:
                 print(CHECKBOX, cf['not-solvable'][recipe])
+            print("### Awaiting Parents ({} packages) ###".format(len(awaiting_parents)))
+            for recipe in awaiting_parents:
+                print(CHECKBOX, cf['awaiting-parents'][recipe], "(", nx.algorithms.ancestors(dag, recipe), ")")
         else:
             print('In PR:')
             for recipe in in_pr:
@@ -81,6 +106,9 @@ def printMissingCRAN(recipe_folder, migration_id, format):
                 print(recipe)
             print('Not Solvable:')
             for recipe in not_solvable:
+                print(recipe)
+            print('Awaiting Parents:')
+            for recipe in awaiting_parents:
                 print(recipe)
 
     # Find missing packages
