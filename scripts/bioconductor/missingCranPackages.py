@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import argparse
+from itertools import chain
 import networkx as nx
 import requests
 from bioconda_utils import utils
@@ -10,7 +11,7 @@ def getRepoData():
     for subdir in ["linux-64", "noarch", "osx-64", "linux-aarch64", "osx-arm64"]:
         for channel in ["conda-forge", "bioconda"]:
             r = requests.get(f"https://conda.anaconda.org/{channel}/{subdir}/repodata.json")
-            for k, v in r.json()["packages"].items():
+            for k, v in chain(r.json()["packages"].items(), r.json()["packages.conda"].items()):
                 if k.startswith("r-"):
                     res.add(v["name"])
     return res
