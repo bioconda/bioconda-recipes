@@ -9,10 +9,7 @@ def getRepoData():
     res = set()
     for subdir in ["linux-64", "noarch", "osx-64", "linux-aarch64", "osx-arm64"]:
         for channel in ["conda-forge", "bioconda"]:
-            r = requests.get(
-                f"https://conda.anaconda.org/{channel}/{subdir}/repodata.json"
-            )
-            js = r.json()["packages"]
+            r = requests.get(f"https://conda.anaconda.org/{channel}/{subdir}/repodata.json")
             for k, v in r.json()["packages"].items():
                 if k.startswith("r-"):
                     res.add(v["name"])
@@ -29,9 +26,7 @@ def getDag(js):
 
 
 def getCondaForgeMigrationStatus(migration_id):
-    r = requests.get(
-        f"https://raw.githubusercontent.com/regro/cf-graph-countyfair/master/status/migration_json/{migration_id}.json"
-    )
+    r = requests.get(f"https://raw.githubusercontent.com/regro/cf-graph-countyfair/master/status/migration_json/{migration_id}.json")
     js = r.json()
     depDag = getDag(js)
     res = {
@@ -42,9 +37,7 @@ def getCondaForgeMigrationStatus(migration_id):
         "dag": depDag,
     }
     for recipe in js["in-pr"]:
-        res["in-pr"][
-            recipe
-        ] = f"{recipe}: In PR {js['_feedstock_status'][recipe]['pr_url']}"
+        res["in-pr"][recipe] = f"{recipe}: In PR {js['_feedstock_status'][recipe]['pr_url']}"
     for recipe in js["bot-error"]:
         status = js["_feedstock_status"][recipe]["pre_pr_migrator_status"]
         segment = status.split("\n")
@@ -66,9 +59,7 @@ def printMissingCRAN(recipe_folder, migration_id, format):
     for r in recipes:
         if "bioconductor" not in r:
             continue
-        d = utils.load_meta_fast(r)[
-            0
-        ]  # a dictionary with keys requirements, build, etc.
+        d = utils.load_meta_fast(r)[0]  # a dictionary with keys requirements, build, etc.
         if d["requirements"]["run"] is None:
             continue
         for dep in d["requirements"]["run"]:
@@ -82,15 +73,11 @@ def printMissingCRAN(recipe_folder, migration_id, format):
         dag = cf["dag"]
 
         # Update dependencies based on DAG from conda-forge migration data
-        awaiting_parents = set.intersection(
-            dependencies, set(cf["awaiting-parents"].keys())
-        )
+        awaiting_parents = set.intersection(dependencies, set(cf["awaiting-parents"].keys()))
         for recipe in awaiting_parents:
             dependencies = set.union(dependencies, nx.algorithms.ancestors(dag, recipe))
         # Now that we expanded dependencies, get the new list of awaiting parents
-        awaiting_parents = set.intersection(
-            dependencies, set(cf["awaiting-parents"].keys())
-        )
+        awaiting_parents = set.intersection(dependencies, set(cf["awaiting-parents"].keys()))
         in_pr = set.intersection(dependencies, set(cf["in-pr"].keys()))
         bot_error = set.intersection(dependencies, set(cf["bot-error"].keys()))
         not_solvable = set.intersection(dependencies, set(cf["not-solvable"].keys()))
@@ -109,9 +96,7 @@ def printMissingCRAN(recipe_folder, migration_id, format):
             print("### Not Solvable ({} packages) ###".format(len(not_solvable)))
             for recipe in not_solvable:
                 print(CHECKBOX, cf["not-solvable"][recipe])
-            print(
-                "### Awaiting Parents ({} packages) ###".format(len(awaiting_parents))
-            )
+            print("### Awaiting Parents ({} packages) ###".format(len(awaiting_parents)))
             for recipe in awaiting_parents:
                 print(
                     CHECKBOX,
