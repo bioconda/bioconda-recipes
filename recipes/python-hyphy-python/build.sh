@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ `uname` == "Darwin" ]]; then
-	export CFLAGS="${CFLAGS} -O3 ${LDFLAGS} -L${PREFIX}/lib"
+	export CFLAGS="${CFLAGS} -O3 -Wno-register ${LDFLAGS} -L${PREFIX}/lib"
 	export CXXFLAGS="${CXXFLAGS} -O3 -Wno-register -I${PREFIX}/include"
 else
 	export CFLAGS="${CFLAGS} -O3 ${LDFLAGS} -L${PREFIX}/lib"
