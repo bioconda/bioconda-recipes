@@ -1,5 +1,5 @@
-{% set version = "3.5.3" %}
-{% set sha256 = "0b38cfd16931b6005992d3c902aaa91943fbf67f67a64c5c0b9ed6a419e7ec90" %}
+{% set version = "3.5.5" %}
+{% set sha256 = "a1896a3ecf1394cbbc685de8dcb0eef04aa089e5ad6badf51d0eaa89b4b3bf1e" %}
 
 package:
   name: nonpareil
@@ -16,6 +16,8 @@ build:
   script: |
     make -j ${CPU_COUNT} cpp="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}" nonpareil
     make prefix="${PREFIX}" install
+    chmod +x utils/NonpareilCurves.R
+    cp utils/NonpareilCurves.R ${PREFIX}/bin/NonpareilCurves.R
 
 requirements:
   build:
@@ -25,11 +27,14 @@ requirements:
     - zlib
   run:
     - r-base
+    - r-optparse
+    - r-jsonlite
     - zlib
 
 test:
   commands:
     - nonpareil -h 2>&1 | grep "Nonpareil"
+    - NonpareilCurves.R -h
 
 about:
   home: http://nonpareil.readthedocs.io/
