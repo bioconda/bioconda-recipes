@@ -11,7 +11,7 @@ export LC_ALL=en_US.UTF-8
 
 if [ "$(uname)" == "Darwin" ]; then
     # for Mac OSX
-    export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names"
+    export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
     export CFLAGS="${CFLAGS} -m64 -Wno-implicit-function-declaration -Wdeprecated-non-prototype"
     export LC_ALL=C
 fi
