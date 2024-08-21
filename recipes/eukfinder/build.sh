@@ -30,6 +30,8 @@ if ! conda env list | grep -q 'eukfinder'; then
     conda env create -f eukfinder_env.yml
 fi
 
+conda info --envs
+
 conda activate eukfinder
 cd ../bin/
 python Eukfinder.py read_prep -h
