@@ -23,6 +23,9 @@ case $(uname -m) in
 	aarch64)
 		SIMD_LEVEL="arm"
 		;;
+	arm64)
+		SIMD_LEVEL="arm"
+                ;;
 	*)
 		SIMD_LEVEL="none"
 		;;
