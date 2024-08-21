@@ -23,6 +23,7 @@ $(which "$CC") -o acc2tax acc2tax.c
 echo "acc2tax installed successfully"
 
 source $(conda info --base)/etc/profile.d/conda.sh
+conda info --envs
 
 # Check if the eukfinder environment exists, and create it if it doesn't
 if ! conda env list | grep -q 'eukfinder'; then
