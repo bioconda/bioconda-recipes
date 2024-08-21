@@ -1,28 +1,24 @@
 {% set name = "TRIBAL" %}
-{% set version = "0.1.0" %}
+{% set version = "0.1.1" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-    git_url: https://github.com/elkebir-group/TRIBAL
-    git_rev: main
-    # url: https://github.com/elkebir-group/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-    # sha256: d8bef19bbfcd50a9a4430760de09827b4786c15e4cdd7944caa204bcf1ae8fac
+    url: https://github.com/elkebir-group/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: 3859295c1e615ce9ce5d34e73c9dea33a08a105a502096e7640e0feeda83756e
 
 build:
-  number: 0  # Corrected to 'number'
+  number: 0 
   run_exports:
-    - {{ pin_subpackage('tribal', max_pin='x.x') }}  # Ensures downstream packages pin to the correct version
+    - {{ pin_subpackage('tribal', max_pin='x.x') }} 
   script:
-script:
     - "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
-    - cc -c tribal/dnapars/phylip.c -o tribal/dnapars/phylip.o
-    - cc -c tribal/dnapars/seq.c -o tribal/dnapars/seq.o
-    - cc -c tribal/dnapars/dnapars.c -o tribal/dnapars/dnapars.o
-    - cc tribal/dnapars/seq.o tribal/dnapars/phylip.o tribal/dnapars/dnapars.o -o tribal/dnapars/dnapars
-    - chmod 755 tribal/tribal/dnapars
+    - $CC -c tribal/dnapars/phylip.c -o tribal/dnapars/phylip.o -fcommon
+    - $CC -c tribal/dnapars/seq.c -o tribal/dnapars/seq.o -fcommon
+    - $CC -c tribal/dnapars/dnapars.c -o tribal/dnapars/dnapars.o -fcommon
+    - $CC tribal/dnapars/seq.o tribal/dnapars/phylip.o tribal/dnapars/dnapars.o -lm -o $PREFIX/bin/dnapars
 
 requirements:
   build:
@@ -30,6 +26,7 @@ requirements:
     - pip
     - setuptools
     - {{ compiler('c') }} 
+    - {{ compiler('cxx') }}
   host:
     - python >=3.9,<3.11
   run:
@@ -39,7 +36,6 @@ requirements:
     - networkx >=3.1
     - pygraphviz >=1.10
     - ete3 >=3.1.2
-    - pip >=22.3.1
     - mafft ==7.526
     - glpk >=5.0
     - pyomo >=6.7
@@ -55,8 +51,8 @@ test:
 
 about:
   home: "https://github.com/elkebir-group/TRIBAL"
+  doc_url: "https://elkebir-group.github.io/TRIBAL"
   license: "BSD-3-Clause"
-  license_file: LICENSE
   summary: "TRIBAL is a package to infer B cell lineage trees from single-cell RNA sequencing data."
 
 extra:
