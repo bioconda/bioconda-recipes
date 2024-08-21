@@ -1,0 +1,45 @@
+{% set name = "diphase" %}
+{% set version = "1.0.1" %}
+{% set sha256 = "64a65bcf026b9401797e92bf1a4ec0a8151f0e7e27f7308166cdb24c9f89f03a" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/zhangjuncsu/Diphase/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('diphase', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - xz
+    - bzip2
+    - libdeflate
+    - libcurl 7.87.0
+    - openssl 1.1.1
+  run:
+    - python 3.9.0
+    - zlib
+    - samtools
+    - bwa
+
+test:
+  commands:
+    - phasing -h 2>&1 | grep 'Usage'
+    - pipeline.py -h 2>&1 | grep 'phase'
+
+about:
+  home: https://github.com/zhangjuncsu/Diphase
+  license: MIT
+  summary: A diploid genome phasing tool
