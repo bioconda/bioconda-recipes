@@ -1,11 +1,6 @@
 #!/bin/bash
 set -ex
 
-# Check if the eukfinder environment exists, and create it if it doesn't
-if ! conda env list | grep -q 'eukfinder'; then
-    conda env create -f eukfinder_env.yml
-fi
-
 # Install additional dependencies
 wget https://github.com/PLAST-software/plast-library/releases/download/v2.3.2/plastbinary_linux_v2.3.2.tar.gz
 echo "PLAST downloaded successfully"
@@ -28,6 +23,12 @@ $(which "$CC") -o acc2tax acc2tax.c
 echo "acc2tax installed successfully"
 
 source $(conda info --base)/etc/profile.d/conda.sh
+
+# Check if the eukfinder environment exists, and create it if it doesn't
+if ! conda env list | grep -q 'eukfinder'; then
+    conda env create -f eukfinder_env.yml
+fi
+
 conda activate eukfinder
 cd ../bin/
 python Eukfinder.py read_prep -h
