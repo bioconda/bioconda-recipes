@@ -1,6 +1,6 @@
 {% set name = "spaln" %}
-{% set version = "3.0.5" %}
-{% set sha256 = "6ea0c89b98095315324c2ffcea33e0c2454c8e263c5a1b731031844612e9c348" %}
+{% set version = "3.0.5b" %}
+{% set sha256 = "c9efa2a7a914db1464e5de412116bb250f25e9e62c3339bb508ff8a71c339a31" %}
 
 package:
   name: {{ name|lower }}
@@ -10,9 +10,8 @@ source:
   url: https://github.com/ogotoh/{{ name }}/archive/refs/tags/ver.{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - makefile.patch
+    - patch-makefile  # add a LDFLAGS variable and other conda related changes
     - patch-makefile_pl   # add a Makefile.PL for the Perl part of the code
-    - patch-makefile_ldflags  # add a LDFLAGS variable to the Makefile
 
 build:
   number: 0
@@ -31,7 +30,7 @@ requirements:
 
 test:
   commands:
-    - spaln -h 2>&1 | grep "version {{ version }}" >/dev/null
+    - spaln -h 2>&1 | grep "version {{ version|trim('ab') }}" >/dev/null
     - makblk.pl 2>&1 | grep makblk.pl >/dev/null
     - sortgrcd -h 2>&1 | grep sortgrcd >/dev/null
     - makmdm -h 2>&1 | grep makmdm >/dev/null
