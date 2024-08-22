@@ -2,7 +2,7 @@
 
 set -xe
 
-mkdir -p ${PREFIX}/bin ${PREFIX}/lib ${PREFIX}/include
+mkdir -p ${PREFIX}/bin ${PREFIX}/lib ${PREFIX}/include $PREFIX/share/man/man1
 
 case $(uname -m) in
     aarch64)
@@ -22,7 +22,4 @@ cp minimap2 misc/paftools.js ${PREFIX}/bin
 cp sdust ${PREFIX}/bin
 cp libminimap2.a ${PREFIX}/lib
 cp *.h ${PREFIX}/include
-
-mkdir -p $PREFIX/share/man/man1
-
 cp minimap2.1 $PREFIX/share/man/man1
