@@ -21,6 +21,7 @@ cd acc2tax
 $(which "$CC") -o acc2tax acc2tax.c
 ./acc2tax --help || { echo 'acc2tax build failed'; exit 1; }
 echo "acc2tax installed successfully"
+cd ..
 
 source $(conda info --base)/etc/profile.d/conda.sh
 
