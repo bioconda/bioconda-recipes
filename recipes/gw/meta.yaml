@@ -1,5 +1,5 @@
-{% set version = "1.0.1" %}
-{% set sha256 = "aacd161bb7131d7874a75b2ed409ee22109be3f87dd062c5590c6d30d1503e68" %}
+{% set version = "1.0.2" %}
+{% set sha256 = "1f9b17702a073e255a87e5e273c0dd0ddafbc25c02b19aa143b3d744ce5d359d" %}
 
 package:
   name: gw
@@ -12,22 +12,29 @@ source:
     - fix-linker-issues.patch  # [linux]
 
 build:
-  number: 2
+  number: 0
   run_exports:
     - {{ pin_subpackage('gw', max_pin="x") }}
+  ignore_run_exports:
+    - libglx          # [linux]
+    - xorg-libsm      # [linux]
+    - xorg-libice     # [linux]
+    - xorg-libx11     # [linux]
+    - xorg-libxau     # [linux]
+    - xorg-libxext    # [linux]
+    - libegl          # [linux]
+    - libxcb          # [linux]
+    - freetype        # [osx]
+    - fontconfig      # [osx]
+    - zlib            # [osx]
+    - libuuid
+    - libdeflate
 
 requirements:
   build:
     - make
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    # - sysroot_linux-64 >=2.17
-    - {{ cdt('mesa-libgl-devel') }}   # [linux]
-    - {{ cdt('mesa-libegl-devel') }}  # [linux]
-    - {{ cdt('mesa-dri-drivers') }}   # [linux]
-    - {{ cdt('libselinux') }}         # [linux]
-    - {{ cdt('libxdamage') }}         # [linux]
-    - {{ cdt('libxxf86vm') }}         # [linux]
-    - {{ cdt('libxext') }}            # [linux]
 
   host:
     - fontconfig
@@ -36,26 +43,26 @@ requirements:
     - libdeflate >=1.0
     - htslib >=1.12
     - glfw >=3.3
-    - wget
     - unzip
     - freetype
-    - xorg-libxfixes  # [linux]
-    - xorg-libx11     # [linux]
-    - xorg-libxcb     # [linux]
-    - expat           # [linux]
+    - zlib
+    - pthread-stubs       # [linux]
+    - xorg-libsm          # [linux]
+    - xorg-libice         # [linux]
+    - xorg-libx11         # [linux]
+    - libxcb              # [linux]
+    - libegl-devel        # [linux]
+    - libgl-devel         # [linux]
+    - libglx-devel        # [linux]
 
   run:
-    - xorg-libxfixes    # [linux]
-    - xorg-libx11       # [linux]
-    - xorg-libxcb       # [linux]
-    - {{ cdt('mesa-libgl-devel') }}   # [linux]
-    - {{ cdt('mesa-libegl-devel') }}  # [linux]
-    - {{ cdt('mesa-dri-drivers') }}   # [linux]
-    #- mesa-libgl        # [linux]
-    #- mesa-libegl       # [linux]
-    #- mesa-dri-drivers  # [linux]
     - glfw >=3.3
-    - htslib >=1.12 
+    - htslib >=1.12
+    - xorg-libxt          # [linux]
+    - xorg-libxau         # [linux]
+    - xorg-libxfixes      # [linux]
+    - xorg-libxxf86vm     # [linux]
+    - xorg-libxdamage     # [linux]
 
 test:
   commands:
@@ -68,6 +75,8 @@ about:
   summary: 'View genomic sequencing data and vcf files'
 
 extra:
+  additional-platforms:
+    - osx-arm64
   container:
     extended-base: True
   recipe-maintainers:
