@@ -28,7 +28,7 @@ source $(conda info --base)/etc/profile.d/conda.sh
 # Check if the eukfinder environment exists, and create it if it doesn't
 conda env create -f eukfinder_env.yml
 conda activate eukfinder
-
+ls -l
 cd ../bin/
 python Eukfinder.py read_prep -h
 python Eukfinder.py short_seqs -h
