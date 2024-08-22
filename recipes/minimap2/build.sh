@@ -23,8 +23,6 @@ cp sdust ${PREFIX}/bin
 cp libminimap2.a ${PREFIX}/lib
 cp *.h ${PREFIX}/include
 
-if [ ! -d $PREFIX/share/man/man1 ] ; then
-  mkdir -p $PREFIX/share/man/man1
-fi
+mkdir -p $PREFIX/share/man/man1
 
 cp minimap2.1 $PREFIX/share/man/man1
