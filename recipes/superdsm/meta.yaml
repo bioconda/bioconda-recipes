@@ -1,5 +1,5 @@
 {% set name = "SuperDSM" %}
-{% set version = "0.1" %}
+{% set version = "0.3.0" %}
 {% set repo_url = "https://github.com/BMCV/SuperDSM" %}
 {% set docs_url = "https://superdsm.readthedocs.io" %}
 
@@ -9,12 +9,14 @@ package:
 
 source:
   url: "{{ repo_url }}/archive/refs/tags/v{{ version }}.zip"
-  sha256: 0491032ce2d795cd3adf0dacdfc1948a13313b4cf202c967b878839f85a0075b
+  sha256: 45907ac09bd6fc150bce816194a1d09cccab42b02a418b9387e00bcb89e0ba3f
 
 build:
   number: 0
   noarch: python
   script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed . -vv "
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 requirements:
   host:
@@ -27,15 +29,13 @@ requirements:
     - ipython >=7.31.1
     - numpy >=1.18,<2.0
     - scipy >=1.6.3,<2.0
-    - scikit-image >=0.18,<1.0
+    - scikit-image >=0.18,<=0.19
     - dill >=0.3.2
     - cvxopt >=1.2.6,<2.0
     - cvxpy >=1.1.13,<2.0
     - matplotlib-base >=3.0,<4.0
     - mkl >=2020.0
-    - posix_ipc >=1.0.4,<2.0
-    - ray-default >=0.8.7
-    - ray-dashboard
+    - ray-core >=0.8.7,<1.7
 
 test:
   commands:

@@ -1,16 +1,21 @@
-{% set version = "0.1.4" %}
+{% set version = "0.5.3" %}
+{% set name = "fibertools-rs" %}
+{% set build_number = "0" %}
 
 package:
-  name: fibertools-rs
+  name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 0
-  #skip: True # [osx]
-
-source:
+  
+source:  
   url: https://github.com/fiberseq/fibertools-rs/archive/v{{ version }}.tar.gz
-  sha256: bb54c362b11194d9882ef3a0cb9af2c2d2a225fd0ac62305c2f5beb53b003b43
+  sha256: 62a38ab16a199d9d03a79f7ccf3543d10127635baa7898edc004e636383fadad
+
+
+build:
+  run_exports:
+    - {{ pin_subpackage('fibertools-rs', max_pin="x") }}
+  number: {{ build_number }}
 
 
 requirements:
@@ -18,23 +23,25 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('rust') }}
-    #- rust >=1.60
-    - clangdev
-    - pkg-config
     - make
     - cmake
-    - rust-bio-tools
     - unzip
     - curl
-    - openssl
+  # all the host and run requirements match those needed for htslib
   host:
-    - gsl
-    - openssl
-    #- libcblas
-    #- libcurl
+    - libcurl
+    - bzip2
+    - xz
+    - zlib
+    - libdeflate
+    - openssl  # [not osx]
   run:
-    - openssl
-
+    - libcurl
+    - bzip2
+    - xz
+    - zlib
+    - libdeflate
+    - openssl  # [not osx]
 
 test:
   commands:
@@ -45,3 +52,12 @@ about:
   home: https://github.com/fiberseq/fibertools-rs
   license: MIT
   summary: Mitchell Vollger's rust tools for fiberseq data.
+
+
+extra:
+  recipe-maintainers:
+    - mrvollger
+  additional-platforms:
+    - osx-arm64
+    # - linux-aarch64 # Dependency issue, see https://github.com/bioconda/bioconda-recipes/pull/48868
+  

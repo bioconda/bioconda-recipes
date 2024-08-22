@@ -1,6 +1,6 @@
-{% set version = "0.99.12" %}
+{% set version = "0.99.15" %}
 {% set name = "synaptome.db" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,19 +8,21 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 383e2a16688e13d40d1f8e2efd3168ef
+  md5: 7ed11d61ac8dca86372eeec59b5ab03b
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-synaptome.db", max_pin="x.x") }}'
   noarch: generic
-# Suggests: rmarkdown, knitr, pander, testthat, devtools, markdown
+# Suggests: rmarkdown, knitr, pander, testthat, devtools, markdown, ggplot2
 requirements:
   host:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
+    - 'bioconductor-annotationhub >=3.10.0,<3.11.0'
     - 'bioconductor-synaptome.data >=0.99.0,<0.100.0'
     - r-base
     - r-dbi
@@ -30,7 +32,7 @@ requirements:
     - r-rdpack
     - r-rsqlite
   run:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
+    - 'bioconductor-annotationhub >=3.10.0,<3.11.0'
     - 'bioconductor-synaptome.data >=0.99.0,<0.100.0'
     - r-base
     - r-dbi
@@ -40,7 +42,7 @@ requirements:
     - r-rdpack
     - r-rsqlite
     - curl
-    - bioconductor-data-packages>=20221103
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

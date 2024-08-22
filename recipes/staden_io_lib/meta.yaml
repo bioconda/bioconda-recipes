@@ -1,18 +1,20 @@
 {% set name = "staden_io_lib" %}
-{% set version = "1.14.14" %}
-{% set hash = "a471c79b9aede1776a895cb46fcb81b5d163d6ca9c3e1e33096346fef46d3598" %}
+{% set version = "1.15.0" %}
+{% set hash = "ad343dac7c77086db1b54585c5887b26eda6430d1639d111dd3304c3b749494f" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/jkbonfield/io_lib/releases/download/io_lib-1-14-14/io_lib-1.14.14.tar.gz
+  url: https://github.com/jkbonfield/io_lib/releases/download/io_lib-{{ version|replace('.','-') }}/io_lib-{{ version }}.tar.gz
   sha256: {{ hash }}
+  patches:
+    - arm_hwcap.patch
+    - config.patch
 
 build:
-  number: 5
-  skip: True # [osx]
+  number: 0
   run_exports:
     - {{ pin_subpackage('staden_io_lib', max_pin='x.x') }}
 
@@ -24,13 +26,7 @@ requirements:
     - bzip2
     - zlib
     - xz
-    - curl
-    - libdeflate
-  run:
-    - bzip2
-    - zlib
-    - xz
-    - curl
+    - libcurl
     - libdeflate
 
 test:
@@ -42,3 +38,8 @@ about:
   license: BSD
   license_file: COPYRIGHT
   summary: 'Staden io_lib is a library of file reading and writing code e.g. for SAM/BAM/CRAM'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,0 +1,50 @@
+{% set name = "pydbsnp" %}
+{% set version = "2.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pydbsnp-{{ version }}.tar.gz
+  sha256: 07259a3bd1412e72664c908f364dccb7f6a5ae28e44a012620fd8959a4aa296b
+
+build:
+  entry_points:
+    - pydbsnp-download=pydbsnp.download:main
+    - pydbsnp-index=pydbsnp.index:main
+    - pydbsnp-query=pydbsnp.query:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_compatible(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - pysam
+
+test:
+  imports:
+    - pydbsnp
+  commands:
+    - pip check
+    - pydbsnp-download --help
+    - pydbsnp-index --help
+    - pydbsnp-query --help
+  requires:
+    - pip
+
+about:
+  home: https://gitlab.com/aaylward/pydbsnp
+  summary: Interface with dbSNP VCF data
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - JohannesGawron

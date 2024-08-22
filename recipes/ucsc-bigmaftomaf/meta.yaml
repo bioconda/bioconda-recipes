@@ -1,7 +1,7 @@
 {% set package = "ucsc-bigmaftomaf" %}
 {% set program = "bigMafToMaf" %}
-{% set version = "377" %}
-{% set sha256 = "932f149c19641064a9cd3f2382cbb54b45a9292b8444792872d531346925d676" %}
+{% set version = "465" %}
+{% set sha256 = "eef17b1f3182d1d9dc99b5c73a6b0468d5d3bd80470f25d3f7706cc1372e04b0" %}
 
 package:
   name: "{{ package }}"
@@ -15,7 +15,9 @@ source:
 
 build:
   skip: True  # [osx]
-  number: 4
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(package, max_pin=None) }}
 
 requirements:
   build:
@@ -25,22 +27,26 @@ requirements:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
+    - libopenssl-static
     - zlib
 
   run:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
+    - libopenssl-static
     - zlib
 
 test:
   commands:
-    # just check for existence, because the individual packages have no unified behavior
-    - which {{ program }}
+    # just check for existence and exec bit, because the individual packages have no unified behavior
+    - test -x ${PREFIX}/bin/{{ program }}
 
 about:
   home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
   license: "varies; see http://genome.ucsc.edu/license"
   summary: "convert bigMaf to maf file"
+
+extra:
+  additional-platforms:
+    - linux-aarch64

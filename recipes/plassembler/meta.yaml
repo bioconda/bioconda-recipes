@@ -1,58 +1,62 @@
-{% set version = "1.0.0" %}
 {% set name = "plassembler" %}
-{% set sha256 = "a05dd608848c0b14f18a817ed9e3b2cfa972e809f6eae1c4ea7ac95e47fb3394" %}
-{% set user = "gbouras13" %}
+{% set version = "1.6.2" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
 
-build:
-  number: 1
-  noarch: python
-
 source:
-  url: https://github.com/{{ user }}/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 1433253aa9fb9305b8eb55ac3a19b46c4064d01147adbda077bc34da82509e46
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - plassembler = plassembler:main
+  script: "{{ PYTHON }} -m pip install . --no-deps -vvv"
+  run_exports:
+    - {{ pin_subpackage('plassembler', max_pin='x') }}
 
 requirements:
+  host:
+    - python >=3.8,<3.10
+    - poetry-core >=1.0.0
+    - pip
   run:
-    - python >=3.6
+    - python >=3.8,<3.10
     - flye >=2.9
-    - unicycler >=0.4.8
-    - biopython >=1.76
     - minimap2 >=2.11
-    - pandas
     - fastp >=0.18.0
     - chopper >=0.5.0
     - mash >=2.2
-    - rasusa >=0.5.0
-  # Was running into issues with pysam with conda recipie - see https://github.com/bioconda/bioconda-recipes/blob/2653adb4e1ebf32a6cbbedb08e5eec07c27d8c93/recipes/strainflye/meta.yaml#L5
-  # so fixing pysam to be 0.15.2 or less as in strainflye 
-  # Will also fix samtools to be >=1.7, <1.10 (as a dependency)
-  # I have tested out plassembler with samtools 1.9 and pysam 0.15.2 - causes no diff vs Samtools 1.17 and pysam 0.21.0. 
-  # Plassembler only uses basic functions of these tools so this is not surprising
-    - pysam >0.12,<0.16    
-    - samtools >=1.7,<1.10
-    - curl
-    - tar
+    - unicycler >=0.4.8
+    - raven-assembler >=1.8
+    - samtools >=0.15.0
+    - click >=8.0.0
+    - loguru >=0.5.3
+    - pysam >=0.16.0
+    - pyyaml >=6.0
+    - pandas >=1.4.2
+    - biopython >=1.76
+    - alive-progress >=3.0.1
+    - requests >=2.25.1
+    - canu ==2.2
+    - dnaapler >=0.4.0
 
 test:
+  imports:
+    - plassembler
   commands:
-    - plassembler.py --version
-    - install_database.py --help
+    - plassembler --help
 
 about:
   home: https://github.com/gbouras13/plassembler
   license: MIT
-  license_familY: MIT
-  summary: "Automated Bacterial Plasmid Assembly Program"
-  dev_url: https://github.com/gbouras13/plassembler
-  doc_url: https://plassembler.readthedocs.io
+  license_family: MIT
+  license_file: LICENSE
+  summary: Quickly and accurately assemble plasmids in hybrid sequenced bacterial isolates
 
 extra:
   recipe-maintainers:
     - gbouras13
-
-
-

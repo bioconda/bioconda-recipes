@@ -1,5 +1,5 @@
 {% set name = "matchms" %}
-{% set version = "0.19.0" %}
+{% set version = "0.27.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,35 +7,39 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 9fec94d9dcd2d53052882dbaafe4dd4888ae6e37b70d31b043f7cba4f0a0c60f
+  sha256: 96d15fbc006c90ac306e91b9fc609255108c48536094d2a55502f6a2e65fbce8
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('matchms', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.8,<3.12
+    - poetry-core
   run:
     - deprecated
     - lxml
     - matplotlib-base
     - networkx
     - numba >=0.47
-    - numpy
+    - numpy <1.25
     - pickydict >=0.4.0
     - pyteomics >=4.6
-    - python
+    - python >=3.8,<3.12
     - pyyaml
     - rdkit >=2020.03.1
     - requests
-    - scipy >=1.4.0
+    - scipy >=1.4.0,<1.11
     - sparsestack >=0.4.1
     - tqdm
     - pillow =9.5
-
+    - pandas
+    - pubchempy
 
 test:
   imports:

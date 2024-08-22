@@ -12,10 +12,13 @@ source:
   sha256: "{{ sha256 }}"
   patches:
     - "include.patch"
+    - "patch1.patch"
 
 build:
   skip: True  # [osx]
-  number: 2
+  number: 4
+  run_exports:
+    - {{ pin_subpackage("ucsc-bedclip", max_pin=None) }}
 
 requirements:
   build:
@@ -27,7 +30,6 @@ requirements:
     - mysql-connector-c
     - openssl
     - zlib
-
   run:
     - libpng
     - libuuid
@@ -39,6 +41,10 @@ test:
   commands:
     # just check for existence, because the individual packages have no unified behavior
     - which {{ program }}
+
+extra:
+  additional-platforms:
+    - linux-aarch64
 
 about:
   home: "http://hgdownload.cse.ucsc.edu/admin/exe/"

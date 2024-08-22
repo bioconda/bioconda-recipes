@@ -1,5 +1,5 @@
 #!/bin/bash
-# hmftools linx executable shell script
+# hmftools LINX executable shell script
 # https://github.com/hartwigmedical/hmftools/tree/master/linx
 set -eu -o pipefail
 

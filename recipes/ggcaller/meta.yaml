@@ -1,19 +1,21 @@
 {% set name = "ggCaller" %}
-{% set version = "1.3.3" %}
+{% set version = "1.3.7" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/samhorsfield96/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: be0c616e53f9cfe3d9851dc71d1b1b52db6f4f90fb143283899355e7561a02fc
+  url: https://github.com/bacpop/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 6b7930ec6f84616812fd89c4f1829e4afb5e2a2b6fd6a489976fef8bb0bbc193
 
 build:
   number: 0
-  skip: True  # [osx or py < 38]
+  skip: True  # [osx or py < 39]
   entry_points:
     - ggcaller = ggCaller.__main__:main
+  run_exports:
+    - {{ pin_subpackage("ggcaller", max_pin="x") }}
 
 requirements:
   build:
@@ -23,23 +25,25 @@ requirements:
     - make
     - tbb
     - tbb-devel
-    - mkl-devel # [linux]
+    - mkl-devel >=2021.4.0,<2023.0.0 # [linux]
     - openblas  # [osx]
     - protobuf
-    - pytorch
+    - pytorch-cpu =1.10
+    - pytorch =1.10
   host:
-    - python
+    - python >=3.9
     - pybind11
-    - bifrost
+    - bifrost >=1.2
     - zlib
     - pip
     - bzip2
-    - pytorch
+    - pytorch-cpu =1.10
+    - pytorch =1.10
     - boost-cpp
     - setuptools
     - llvm-openmp # [osx]
     - libgomp # [linux]
-    - mkl-devel # [linux]
+    - mkl-devel >=2021.4.0,<2023.0.0 # [linux]
     - lapack # [osx]
     - openblas # [osx]
     - eigen =3.3
@@ -47,14 +51,16 @@ requirements:
     - tbb-devel
     - protobuf
   run:
-    - python
+    - python >=3.9
     - numpy
     - scipy
     - pandas
-    - bifrost
-    - biopython
+    - bifrost >=1.2
+    - biopython =1.80
     - bcbio-gff
     - diamond >=2.0
+    - pytorch-cpu =1.10
+    - pytorch =1.10
     - hmmer
     - mafft
     - snp-sites
@@ -81,6 +87,7 @@ requirements:
     - gffutils
     - cd-hit
     - python-wget
+    - boost-cpp
 
 test:
   imports:
@@ -91,7 +98,8 @@ test:
     - ggcaller -h | grep -q "Generates ORFs from a Bifrost graph."
 
 about:
-   home: https://github.com/samhorsfield96/ggCaller
+   home: https://github.com/bacpop/ggCaller
    license: MIT
+   license_family: MIT
    license_file: LICENSE
    summary: 'A de Bruijn graph-based gene-caller and pangenome analysis tool'

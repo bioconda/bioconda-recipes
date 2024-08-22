@@ -1,30 +1,38 @@
-{% set version = "2.5.1" %}
-{% set sha256 = "05400437cf15595e10b1a25df6c9c48856f356130f9d1e380fa8866b6d27f457" %}
+{% set version = "2.6.4" %}
+{% set sha256 = "d1259ce5809601a12b0dc9b724ea2c55806fece80d8d83ad417ea8a2dd574982" %}
 
 package:
   name: viennarna
   version: {{ version }}
 
 build:
-  number: 0
+  number: 3
   run_exports:
     # Ronny said VRNA is stable in x.x releases
     - {{ pin_subpackage('viennarna', max_pin='x.x') }}
 
 source:
-  url: https://www.tbi.univie.ac.at/RNA/download/sourcecode/2_5_x/ViennaRNA-{{ version }}.tar.gz
+  url: https://www.tbi.univie.ac.at/RNA/download/sourcecode/2_6_x/ViennaRNA-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - remove-register.patch
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    # pin and install swig on osx due to some incompatibility with
+    # automatically installed swig
+    - swig ==4.1.1 # [osx]
   host:
     - pkgconfig ## needed for viennarna version checks in dependent packages
     - perl
     - python
     - zlib
+    - mpfr # [not osx]
+    - gsl # [not osx]
+    - lapack
     - llvm-openmp # [osx]
   run:
     - python
@@ -44,4 +52,9 @@ about:
   home: http://www.tbi.univie.ac.at/RNA/
   license: custom
   license_file: COPYING
-  summary: Vienna RNA package -- RNA secondary structure prediction and comparison
+  summary: ViennaRNA package -- RNA secondary structure prediction and comparison
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,6 +1,6 @@
-{% set version = "1.54.0" %}
+{% set version = "1.58.0" %}
 {% set name = "CNTools" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,22 +8,24 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 4edaefb85eee163d531eba241e05d8df
+  md5: e3ce148937711a84dadf67b5f09c5373
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-cntools", max_pin="x.x") }}'
 requirements:
   host:
-    - 'bioconductor-genefilter >=1.80.0,<1.81.0'
+    - 'bioconductor-genefilter >=1.84.0,<1.85.0'
     - r-base
     - libblas
     - liblapack
   run:
-    - 'bioconductor-genefilter >=1.80.0,<1.81.0'
+    - 'bioconductor-genefilter >=1.84.0,<1.85.0'
     - r-base
   build:
     - {{ compiler('c') }}
@@ -33,11 +35,13 @@ test:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: LGPL
+  license: LGPL-3.0-only
   summary: 'Convert segment data into a region by sample matrix to allow for other high level computational analyses.'
   description: 'This package provides tools to convert the output of segmentation analysis using DNAcopy to a matrix structure with overlapping segments as rows and samples as columns so that other computational analyses can be applied to segmented data'
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:cntools
     - doi:10.1038/nmeth.3252

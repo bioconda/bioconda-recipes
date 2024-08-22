@@ -1,5 +1,5 @@
 #!/bin/bash
-# hmftools sigs  executable shell script
+# hmftools Sigs executable shell script
 # https://github.com/hartwigmedical/hmftools/tree/master/sigs
 set -eu -o pipefail
 

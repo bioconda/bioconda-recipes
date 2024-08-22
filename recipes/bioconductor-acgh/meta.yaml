@@ -1,6 +1,6 @@
-{% set version = "1.76.0" %}
+{% set version = "1.80.0" %}
 {% set name = "aCGH" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,26 +8,28 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 4ed40e84cdfa7084127e10a09349ee6e
+  md5: 137af76dc5756a83094da18eb0bededa
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-acgh", max_pin="x.x") }}'
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-multtest >=2.54.0,<2.55.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
+    - 'bioconductor-multtest >=2.58.0,<2.59.0'
     - r-base
     - r-cluster
     - r-survival
     - libblas
     - liblapack
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-multtest >=2.54.0,<2.55.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
+    - 'bioconductor-multtest >=2.58.0,<2.59.0'
     - r-base
     - r-cluster
     - r-survival
@@ -40,11 +42,13 @@ test:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
+  license: GPL-2.0-only
   summary: 'Classes and functions for Array Comparative Genomic Hybridization data'
   description: 'Functions for reading aCGH data from image analysis output files and clone information files, creation of aCGH S3 objects for storing these data. Basic methods for accessing/replacing, subsetting, printing and plotting aCGH objects.'
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:acgh
     - doi:10.1093/bioinformatics/bti677

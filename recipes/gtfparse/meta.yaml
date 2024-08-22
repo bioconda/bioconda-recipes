@@ -1,31 +1,32 @@
 {% set name = "gtfparse" %}
-{% set version = "1.2.1" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "559d4d36b0bd5d4494f925cab3c00cd969783ebb6408fa025df92663965834b8" %}
+{% set version = "2.5.0" %}
+{% set sha256 = "9fea54811cd87f597a110a49dc1b1b6a3325ffb7d1f36ecc62c32d14d3eb9493" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/gtfparse-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  noarch: python
   number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  run_exports:
+    - {{ pin_subpackage('gtfparse', max_pin="x.x") }}
 
 requirements:
   host:
     - python
-    - numpy >=1.7,<2.0
-    - pandas >=0.15
-
+    - pip
   run:
     - python
-    - numpy >=1.7,<2.0
+    - polars >=0.20.2,<0.21.0
+    - numpy >=1.7
     - pandas >=0.15
+    - pyarrow >=14.0.2
 
 test:
   imports:
@@ -33,6 +34,8 @@ test:
 
 about:
   home: https://github.com/openvax/gtfparse
-  license: Apache 2.0
   summary: 'GTF Parsing'
-  license_family: APACHE
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
+  dev_url: https://github.com/openvax/gtfparse
