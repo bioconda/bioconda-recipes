@@ -1,6 +1,6 @@
 {% set name = "BioExt" %}
-{% set version = "0.21.7" %}
-{% set sha256 = "2265c9b6cb5b4a6400635a5d21f32ca1d693b97431ad188965150fc5d6b28ab6" %}
+{% set version = "0.21.8" %}
+{% set sha256 = "e19ccc6ba7dc1d2b4b13e1a0d6fa60fce626298c0b2e97012b5fc1a4535ea618" %}
 
 package:
   name: python-{{ name|lower }}
@@ -11,11 +11,10 @@ source:
   sha256: {{ sha256 }}
   patches:
     - cythonize.patch
-    - osx-freetype.patch # [osx]
+    - osx-freetype.patch  # [osx]
 
 build:
-  number: 0
-  skip: True # [py2k]
+  number: 1
   run_exports:
     - {{ pin_subpackage("python-bioext", max_pin="x.x") }}
 
@@ -24,19 +23,15 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - freetype
     - python
-    - cython >=0.28
-    - setuptools
-    - biopython >=1.58
-    - numpy >1.20.3
-    - scipy
-    - pysam
+    - pip
+    - cython
+    - numpy
   run:
     - freetype
     - python
-    - biopython >=1.58
-    - numpy >1.20.3
+    - biopython >=1.78
+    - {{ pin_compatible('numpy') }}
     - scipy
     - pysam
     - joblib
@@ -79,6 +74,11 @@ test:
 
 about:
   home: https://github.com/veg/BioExt.git
-  license: GPL-3
+  license: GPL-3.0-only
   license_family: GPL3
   summary: 'A few handy bioinformatics tools not already in BioPython'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

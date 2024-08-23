@@ -2,9 +2,11 @@
 set -x
 set +e
 
+mkdir -p $PREFIX/bin
+
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-export CPATH=${PREFIX}/include
+export C_INCLUDE_PATH="${PREFIX}/include"
 
 ## Static lib required by phynder, thus following instructions
 ## rather than trying to take from a conda htslib
@@ -16,22 +18,21 @@ git submodule update --init --recursive
 sed '/AC_PROG_CC/a \
 AC_CANONICAL_HOST \
 AC_PROG_INSTALL \
-' configure.ac >configure.ac2
+' configure.ac > configure.ac2
 mv configure.ac2 configure.ac
-autoreconf -i
-autoheader
-autoconf
+autoreconf -if
 
 ./configure --prefix=${PREFIX} --enable-libcurl --with-libdeflate --enable-plugins --enable-gcs --enable-s3
-make lib-static htslib_static.mk
+make -j "${CPU_COUNT}" lib-static htslib_static.mk
 make CC=$CC install
 
 ## Patch phynder Makefile to cloned htslib folder (original assumes alongside, not within)
 cd ../
-sed -i 's#HTSDIR=../htslib#HTSDIR=./htslib#g' Makefile
-sed -i -e 's#LDLIBS=$(HTSLIB) -lpthread $(HTSLIB_static_LIBS)#LDLIBS=$(HTSLIB) -lpthread $(HTSLIB_static_LIBS) $(LDFLAGS)#g' -e 's#cp phynder ~/bin##g' Makefile
+sed -i.bak 's#HTSDIR=../htslib#HTSDIR=./htslib#g' Makefile
+sed -i.bak -e 's#LDLIBS=$(HTSLIB) -lpthread $(HTSLIB_static_LIBS)#LDLIBS=$(HTSLIB) -lpthread $(HTSLIB_static_LIBS) $(LDFLAGS)#g' -e 's#cp phynder ~/bin##g' Makefile
 
-make CC=$CC CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
+make CC=$CC CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" -j "${CPU_COUNT}"
 make install
 
-cp phynder $PREFIX/bin/
+chmod 755 phynder
+cp -f phynder $PREFIX/bin/

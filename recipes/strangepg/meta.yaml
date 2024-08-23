@@ -1,0 +1,56 @@
+{% set name = "strangepg" %}
+{% set version = "0.8.1" %}
+{% set ref = "aaa5f72ebd55b6562050239cce9a1f10077759bd" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/qwx9/{{ name }}/archive/{{ ref }}.tar.gz
+  sha256: 33acfe6ac4eb85ecaf41fc3a5990b466b7fccebe6fd6d5b002c085cd4d52cc0f
+
+build:
+  number: 0
+  skip: True # [not linux]
+  run_exports:
+    - {{ pin_subpackage('strangepg', max_pin=None) }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+    - {{ cdt('mesa-libgl-devel') }}
+    - {{ cdt('mesa-libegl-devel') }}
+    - {{ cdt('mesa-dri-drivers') }}
+    - {{ cdt('libdrm-devel') }}
+    - {{ cdt('libglvnd-glx') }}      # [cdt_name != 'cos6']
+  host:
+    - xorg-libx11
+    - xorg-libxau
+    - xorg-libxcb
+    - xorg-libxcursor
+    - xorg-libxdmcp
+    - xorg-libxext
+    - xorg-libxfixes
+    - xorg-libxi
+    - xorg-libxrandr
+  run:
+
+test:
+  commands:
+    - which strpg
+    - which strawk
+
+about:
+  home: https://github.com/qwx9/{{ name }}
+  summary: 'Strange pangenome-scale interactive graph visualizer'
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - qwx9
+  container:
+    extended-base: True

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 export LIBRARY_PATH=${PREFIX}/lib
 export LD_LIBRARY_PATH=${PREFIX}/lib
 export CPP_INCLUDE_PATH=${PREFIX}/include
@@ -15,7 +17,7 @@ LDFLAGS=-L${PREFIX}/lib
 
 make -f Makefile.nongs \
     BOOST_PATH=${PREFIX} \
-    CC="$CXX $CXXFLAGS" \
+    CC="$CXX -std=c++11 $CXXFLAGS" \
     LDFLAGS=$LDFLAGS
 
 mkdir -p ${PREFIX}/bin

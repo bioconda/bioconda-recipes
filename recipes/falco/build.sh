@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -xe
+
+export M4="$BUILD_PREFIX/bin/m4"
+
 # add Configuration and example files to opt
 falco=$PREFIX/opt/falco
 mkdir -p $falco
@@ -13,7 +17,7 @@ export LD_LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
 
 cd $falco
 ./configure --prefix=$falco --enable-hts
-make
+make -j ${CPU_COUNT}
 make install
 for i in $(ls -1 | grep -v Configuration | grep -v bin);
 do
