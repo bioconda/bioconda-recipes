@@ -23,7 +23,8 @@ pushd node-v${NODE_VERSION}
 # 2024-03-19T13:32:27.9241412Z 13:32:27 [32mBIOCONDA INFO[0m (OUT) cc1plus: some warnings being treated as errors[0m
 patch -p0 < ${RECIPE_DIR}/nodejs-x86_64.patch
 
-./configure --without-node-snapshot --without-etw --without-npm --without-inspector --without-dtrace
+# The provided configure script is a sh/python hybrid which boils down to one line of Python
+python -c "import configure" --without-node-snapshot --without-etw --without-npm --without-inspector --without-dtrace
 make -j3
 popd
 
