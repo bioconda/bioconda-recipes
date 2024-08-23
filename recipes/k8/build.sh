@@ -3,7 +3,12 @@
 set -x
 
 DEFAULT_LINUX_VERSION="cos7"
-NODE_VERSION="18.19.1"
+# * k8 is only compatible with Node.js v18.x, not more recent node versions
+# * node-18.19.x can be compiled on CentOS 7, but not on macOS with clang
+# * node-18.20.x can be compiled on MacOS but not on CentOS 7 because it
+#   includes an updated c-ares library which is incompatible with glibc on CentOS 7
+NODE_VERSION="18.19.1"  # [not osx]
+NODE_VERSION="18.20.4"  # [osx]
 
 wget -O- https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}.tar.gz | tar -zxf -
 pushd node-v${NODE_VERSION}
