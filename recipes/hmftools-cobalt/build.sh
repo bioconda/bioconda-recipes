@@ -5,8 +5,8 @@ TGT="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
 [ -d "${PREFIX}/bin" ] || mkdir -p "${PREFIX}/bin"
 
 cd "${SRC_DIR}"
-mv *.jar $TGT/cobalt.jar
+mv cobalt*.jar $TGT/cobalt.jar
 
-cp $RECIPE_DIR/COBALT.sh $TGT/COBALT
-ln -s $TGT/COBALT $PREFIX/bin
-chmod 0755 "${PREFIX}/bin/COBALT"
+cp $RECIPE_DIR/cobalt.sh $TGT/cobalt
+ln -s $TGT/cobalt $PREFIX/bin
+chmod 0755 "${PREFIX}/bin/cobalt"

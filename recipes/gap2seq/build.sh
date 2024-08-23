@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e -o pipefail
+set -xe -o pipefail
 
 export CPPFLAGS="$CPPFLAGS -I${PREFIX}/include"
 export LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
