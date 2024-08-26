@@ -30,17 +30,17 @@ fi
 sed -i.bak "s/-march=x86-64-v3/-march=${MARCH}/g" src/common/wflign/deps/WFA2-lib/Makefile
 rm -rf src/common/wflign/deps/WFA2-lib/*.bak
 
-cmake -H. -Bbuild -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-	-DCMAKE_BUILD_TYPE=Generic -DCMAKE_CXX_COMPILER="${CXX}" \
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_C_FLAGS="${CFLAGS}" -DWFA_PNG_TSV_TIMING=ON \
 	-DEXTRA_FLAGS="${EXTRA_FLAGS}" "${CONFIG_ARGS}"
 cmake --build build --target install -j "${CPU_COUNT}"
 
 # Libraries aren't getting installed
-ls ${SRC_DIR}/build/lib/* -lh
-cp -rf ${SRC_DIR}/build/lib/libwfa2* ${PREFIX}/lib
+# ls ${SRC_DIR}/build/lib/* -lh
+# cp -rf ${SRC_DIR}/build/lib/libwfa2* ${PREFIX}/lib
 
-chmod 0755 build/bin/*
-cp -rf build/bin/* ${PREFIX}/bin
-cp -rf scripts/split_approx_mappings_in_chunks.py ${PREFIX}/bin
+# chmod 0755 build/bin/*
+# cp -rf build/bin/* ${PREFIX}/bin
+# cp -rf scripts/split_approx_mappings_in_chunks.py ${PREFIX}/bin
