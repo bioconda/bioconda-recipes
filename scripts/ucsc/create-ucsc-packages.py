@@ -197,6 +197,12 @@ SKIP = [
     'gfServer',
 ]
 
+# A list of programs which have problems to build on linux-aarch64
+NO_AARCH64 = [
+    'pslCDnaFilter', # https://github.com/bioconda/bioconda-recipes/pull/49297
+    'pslCheck',      # https://github.com/bioconda/bioconda-recipes/pull/50193
+]
+
 # Some programs need to be built differently. It seems that a subset of
 # programs need the "stringify" binary build as well. Or, in the case of
 # fetchChromSizes, it's simply a script that needs to be copied.
@@ -293,6 +299,7 @@ for block in parse_footer('FOOTER'):
                 summary=description,
                 version=VERSION,
                 sha256=SHA256,
+                linux_aarch64='' if program in NO_AARCH64 else 'additional-platforms:\n    - linux-aarch64\n',
             )
         )
 
