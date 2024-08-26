@@ -13,7 +13,6 @@ re_header = re.compile(r'^=+\s+(?P<program>\w+)\s+=+$')
 # e.g.,# "addCols - Sum columns in a text file."
 re_summary = re.compile(r'^(?P<program>\w.*?) - (?P<description>.*)$')
 
-
 def parse_footer(fn):
     """
     Parse the downloaded FOOTER file, which contains a header for each program
@@ -54,13 +53,13 @@ def parse_footer(fn):
 #
 #   version: 332
 #   sha256: 8c2663c7bd302a77cdf52b2e9e85e2cd
-ucsc_config = yaml.load(open('ucsc_config.yaml'))
+ucsc_config = yaml.safe_load(open('ucsc_config.yaml'))
 VERSION = ucsc_config['version']
 SHA256 = ucsc_config['sha256']
 
 # Download tarball if it doesn't exist. Always download FOOTER.
 tarball = (
-    'http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{0}.src.tgz'
+    'http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{0}.src.tgz'
     .format(VERSION))
 if not os.path.exists(os.path.basename(tarball)):
     f = urllib.request.urlopen(tarball)
