@@ -27,11 +27,11 @@ else
         export CONFIG_ARGS=""
 fi
 
-sed -i.bak "s/-march=x86-64-v3/-march=${MARCH}/g" src/common/wflign/deps/WFA2-lib/Makefile
-rm -rf src/common/wflign/deps/WFA2-lib/*.bak
+#sed -i.bak "s/-march=x86-64-v3/-march=${MARCH}/g" src/common/wflign/deps/WFA2-lib/Makefile
+#rm -rf src/common/wflign/deps/WFA2-lib/*.bak
 
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-	-DCMAKE_CXX_COMPILER="${CXX}" \
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DBUILD_STATIC=ON \
+	-DCMAKE_BUILD_TYPE=Generic -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_C_FLAGS="${CFLAGS}" -DWFA_PNG_TSV_TIMING=ON \
 	-DEXTRA_FLAGS="${EXTRA_FLAGS}" "${CONFIG_ARGS}"
