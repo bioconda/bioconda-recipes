@@ -8,44 +8,52 @@ package:
 source:
   url: https://github.com/waveygang/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
   sha256: 10e96f454bce8aa6dd3ec579f41c2bfc62667499005016071da19ab1c3754173
+  patches:
+    - 0001-wflign.patch  # [osx]
 
 build:
-  skip: True # [osx]
+  number: 1
   run_exports:
     - {{ pin_subpackage(name, max_pin='x.x') }}
-  number: 0
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - llvm-openmp  # [osx]
     - cmake
     - make
+    - pkg-config
   host:
     - gsl
+    - bzip2
     - zlib
     - jemalloc
     - htslib
     - libblas
-  run:
+    - libcurl
     - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+  run:
     - python >=3.7
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
 
 test:
   commands:
     - wfmash --help
 
 about:
-  home: https://github.com/waveygang/wfmash
+  home: "https://github.com/waveygang/wfmash"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: a pangenome-scale aligner
+  summary: "A pangenome-scale aligner based on sparse homology mapping and wavefront inception."
+  dev_url: "https://github.com/waveygang/wfmash"
+  doc_url: "https://github.com/waveygang/wfmash/blob/v{{ version }}/README.md"
 
 extra:
   additional-platforms:
     - linux-aarch64
-  skip-lints:
-    - uses_vcs_url
+    - osx-arm64
   recipe-maintainers:
     - AndreaGuarracino
