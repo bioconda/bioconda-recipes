@@ -4,7 +4,7 @@
 cargo build --release
 
 # Install the binaries
-cargo install --path kmertools --root $PREFIX 
+cargo install --verbose --path kmertools --root "${PREFIX}" 
 
 # Check if the system is macOS
 if [[ "$(uname)" == "Darwin" ]]; then
@@ -28,8 +28,10 @@ else
     echo "Not running on macOS, skipping MACOSX_DEPLOYMENT_TARGET"
 fi
 
+# Build statically linked binary with Rust
+RUST_BACKTRACE=1
 # Build with maturin
-maturin build --release --find-interpreter --manifest-path ./pykmertools/Cargo.toml
+maturin build -m ./pykmertools/Cargo.toml -b pyo3 --interpreter "${PYTHON}" --release --strip
 
 # Install the wheel file
-pip install ./target/wheels/*.whl 
+${PYTHON} -m pip install ./target/wheels/*.whl --no-deps --no-build-isolation --no-cache-dir -vvv
