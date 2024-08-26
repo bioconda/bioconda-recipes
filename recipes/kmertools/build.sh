@@ -7,7 +7,7 @@ cargo build --release
 cargo install --path kmertools --root $PREFIX 
 
 # Build with maturin
-maturin build --release --manifest-path ./pykmertools/Cargo.toml
+maturin build --release --find-interpreter --manifest-path ./pykmertools/Cargo.toml
 
 # Install the wheel file
 pip install ./target/wheels/*.whl 
