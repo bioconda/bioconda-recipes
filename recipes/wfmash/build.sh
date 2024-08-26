@@ -5,8 +5,10 @@ mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/lib
 
 export LIBRARY_PATH="${PREFIX}/lib"
+export LIBPATH="-L${PREFIX}/lib"
 export INCLUDE_PATH="${PREFIX}/include"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export INCLUDES="-I{PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -lz -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
 
@@ -27,8 +29,8 @@ else
         export CONFIG_ARGS=""
 fi
 
-#sed -i.bak "s/-march=x86-64-v3/-march=${MARCH}/g" src/common/wflign/deps/WFA2-lib/Makefile
-#rm -rf src/common/wflign/deps/WFA2-lib/*.bak
+# sed -i.bak "s/-march=x86-64-v3/-march=${MARCH}/g" src/common/wflign/deps/WFA2-lib/Makefile
+# rm -rf src/common/wflign/deps/WFA2-lib/*.bak
 
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=Generic -DCMAKE_CXX_COMPILER="${CXX}" \
