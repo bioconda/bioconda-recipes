@@ -13,6 +13,9 @@ case $(uname -m) in
     aarch64)
         SPOA_OPTS="-Dspoa_use_simde_nonvec=ON -DBUILD_TESTING=OFF"
         ;;
+    arm64)
+	SPOA_OPTS="-Dspoa_use_simde_nonvec=ON -DBUILD_TESTING=OFF"
+	;;
     *)
         ;;
 esac
