@@ -1,11 +1,5 @@
 #!/bin/bash -e
 
-# Build with Rust
-cargo build --release
-
-# Install the binaries
-cargo install --verbose --path kmertools --root "${PREFIX}" 
-
 # Check if the system is macOS
 if [[ "$(uname)" == "Darwin" ]]; then
     # Get the architecture
