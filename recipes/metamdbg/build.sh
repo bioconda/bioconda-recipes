@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -xe
 
 mkdir -p $PREFIX/bin
 
@@ -9,6 +10,6 @@ mkdir build
 cd build
 cmake ..
 
-make
+make -j ${CPU_COUNT}
 
 cp ./bin/metaMDBG $PREFIX/bin
