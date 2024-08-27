@@ -13,16 +13,17 @@ mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
 
 cmake -B build -DHASH_MAP=USE_TSL_ROBIN_MAP -DCMAKE_CXX_FLAGS="-O3" -DBUILD_SHARED_LIBS=ON --install-prefix=$PREFIX
-cmake --build build --target all
+cmake --build build --target all --target diff-dna --target diff-aa --target dump-dna --target dump-aa -j ${CPU_COUNT}
 cmake --install build
-
-ls build/ipk
 
 cp build/ipk/ipk-aa $PREFIX/bin
 cp build/ipk/ipk-aa-pos $PREFIX/bin
 cp build/ipk/ipk-dna $PREFIX/bin
+cp build/tools/ipkdiff-dna $PREFIX/bin
+cp build/tools/ipkdiff-aa $PREFIX/bin
+cp build/tools/ipkdump-dna $PREFIX/bin
+cp build/tools/ipkdump-aa $PREFIX/bin
 
-chmod +x $PREFIX/bin/ipk-aa
-chmod +x $PREFIX/bin/ipk-dna
-chmod +x $PREFIX/bin/ipk-aa-pos
-chmod +x $PREFIX/bin/ipk.py
+cp build/i2l/libi2l_aa.a $PREFIX/lib
+cp build/i2l/libi2l_aa_pos.a $PREFIX/lib
+cp build/i2l/libi2l_dna.a $PREFIX/lib
