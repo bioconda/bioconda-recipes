@@ -8,6 +8,9 @@ case $(uname -m) in
     aarch64)
         ARCH_OPTS="aarch64=1"
         ;;
+    arm64)
+	ARCH_OPTS="aarch64=1"
+        ;;
     *)
         ARCH_OPTS=""
         ;;
