@@ -29,3 +29,9 @@ maturin build -m ./pykmertools/Cargo.toml -b pyo3 --interpreter "${PYTHON}" --re
 
 # Install the wheel file
 ${PYTHON} -m pip install ./target/wheels/*.whl --no-deps --no-build-isolation --no-cache-dir -vvv
+
+# Build with Rust
+cargo build --release
+
+# Install the binaries
+cargo install --verbose --path kmertools --root "${PREFIX}" 
