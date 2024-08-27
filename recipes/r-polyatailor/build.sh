@@ -1,5 +1,7 @@
 #!/bin/bash
 
 export DISABLE_AUTOBREW=1
-$R install_github("helixcn/seqRFLP")
+conda config --add channels r
+conda config --add channels conda-forge
+conda config --add channels bioconda
 $R CMD INSTALL --build .
