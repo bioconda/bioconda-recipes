@@ -198,7 +198,7 @@ SKIP = [
 ]
 
 # A list of programs which have problems to build on linux-aarch64
-NO_AARCH64 = [
+SKIP_AARCH64 = [
     'pslCDnaFilter', # https://github.com/bioconda/bioconda-recipes/pull/49297
     'pslCheck',      # https://github.com/bioconda/bioconda-recipes/pull/50193
 ]
@@ -299,7 +299,7 @@ for block in parse_footer('FOOTER'):
                 summary=description,
                 version=VERSION,
                 sha256=SHA256,
-                linux_aarch64='' if program in NO_AARCH64 else 'additional-platforms:\n    - linux-aarch64\n',
+                linux_aarch64='' if program in SKIP_AARCH64 else 'additional-platforms:\n    - linux-aarch64\n',
             )
         )
 
