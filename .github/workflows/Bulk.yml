@@ -63,7 +63,7 @@ jobs:
 
   build-osx:
     name: Bulk OSX-64 Builds
-    if: "contains(github.event.head_commit.message, '[ci run]')"
+    if: "contains(github.event.head_commit.message, '[ci run NEVER]')"
     runs-on: macos-13
     strategy:
       fail-fast: false
@@ -124,13 +124,13 @@ jobs:
 
   build-osx-arm:
     name: Bulk OSX-ARM64 Builds
-    if: "contains(github.event.head_commit.message, '[ci run]')"
+    if: "contains(github.event.head_commit.message, '[ci run NEVER]')"
     runs-on: macOS-14 # M1
     strategy:
       fail-fast: false
-      max-parallel: 4
+      max-parallel: 1 # GHA free plan allows 5 concurrent Mac runners total, we still need most on osx-64.
       matrix:
-        runner: [0, 1, 2, 3]
+        runner: [0]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -179,7 +179,7 @@ jobs:
           python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
           echo '============'
           bioconda-utils build recipes config.yml \
-            --worker-offset ${{ matrix.runner }} --n-workers 4 \
+            --worker-offset ${{ matrix.runner }} --n-workers 1 \
             --lint --anaconda-upload --record-build-failures --skiplist-leafs \
             --exclude bioconda-repodata-patches
           conda clean -y --all
