@@ -13,12 +13,12 @@ case $(uname -m) in
         ;;
 esac
 
-make CFLAGS="-g -Wall -O2 -Wc++-compat -I${PREFIX}/include -L${PREFIX}/lib" \
-    ${ARCH_OPTS} -j${CPU_COUNT} minimap2 sdust
+make CFLAGS="${CFLAGS} -g -Wall -O3 -Wc++-compat -I${PREFIX}/include -L${PREFIX}/lib" \
+    "${ARCH_OPTS}" -j"${CPU_COUNT}" minimap2 sdust
 
 chmod 755 minimap2 && chmod 755 sdust
 
-cp minimap2 misc/paftools.js ${PREFIX}/bin
-cp sdust ${PREFIX}/bin
-cp libminimap2.a ${PREFIX}/lib
-cp *.h ${PREFIX}/include
+cp -rf minimap2 misc/paftools.js ${PREFIX}/bin
+cp -rf sdust ${PREFIX}/bin
+cp -rf libminimap2.a ${PREFIX}/lib
+cp -rf *.h ${PREFIX}/include
