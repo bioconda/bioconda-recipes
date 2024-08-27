@@ -1,0 +1,69 @@
+{% set name = "i2nca" %}
+{% set version = "0.3.11" %}
+{% set sha256 = "8a9ef21816d61d176476965bf2d057ea03273644d47bae98cd78e4f3e6b13d7c" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/i2nca-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - i2nca_version = i2nca.main:get_version
+    - i2nca_agnostic_qc = i2nca.workflows.cli.agnostic_qc_cli:i2nca_angostic_qc
+    - i2nca_calibrant_qc = i2nca.workflows.cli.calibrant_qc_cli:i2nca_calibrant_qc
+    - i2nca_region_qc = i2nca.workflows.cli.region_qc_cli:i2nca_region_qc
+    - i2nca_convert_to_cp = i2nca.workflows.cli.pp_2_cp_cli:i2nca_convert_to_cp
+    - i2nca_convert_to_pc = i2nca.workflows.cli.profile_2_centroid_cli:i2nca_convert_to_pc
+    - i2nca_convert_to_cc = i2nca.workflows.cli.pc_2_cc_cli:i2nca_convert_to_cc
+    - i2nca_file_joiner = i2nca.workflows.cli.file_joiner_cli:i2nca_file_joiner
+    - i2nca_file_splitter = i2nca.workflows.cli.file_splitter_cli:i2nca_file_splitter
+
+
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools >=61.0
+    - pip
+  run:
+    - python >=3.10
+    - numpy >=1.24,<2
+    - pandas >=2.1
+    - matplotlib-base ==3.7,<3.9
+    - scipy >=1.12
+    - m2aia >=0.5
+    - pyimzml >=1.5
+
+test:
+  imports:
+    - i2nca
+  commands:
+    - pip check
+    - i2nca_version
+    - i2nca_agnostic_qc --help
+    - i2nca_calibrant_qc --help
+    - i2nca_region_qc --help
+    - i2nca_convert_to_cp --help
+    - i2nca_convert_to_pc --help
+    - i2nca_convert_to_cc --help
+    - i2nca_file_joiner --help
+    - i2nca_file_splitter --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/cKNUSPeR/i2nca/
+  summary: A MSI workflow package for top-level use and introduction of data preprocessing into workflow engines
+  license: GPL-3.0
+  license_file: COPYING
+
+extra:
+  recipe-maintainers:
+    - jannik
