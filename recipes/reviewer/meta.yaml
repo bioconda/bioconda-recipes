@@ -1,0 +1,51 @@
+{% set version = "0.2.7" %}
+{% set sha256 = "8411c40028907b0294b1899cd20af6934325796da160511b649044ecf9a5169f" %}
+
+package:
+  name: reviewer
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/Illumina/REViewer/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+  patches:
+    - cpp-fixes.patch
+    - external-libs.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_compatible('reviewer', max_pin="x.x") }}
+  ignore_run_exports:
+    - spdlog  # This library is header-only
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake
+  host:
+    - boost-cpp
+    - catch2 <3
+    - fmt
+    - htslib
+    - spdlog
+  run:
+    - boost-cpp
+
+test:
+  commands:
+    - REViewer --help
+
+about:
+  home: https://github.com/Illumina/REViewer
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE.txt
+  summary: A tool for visualizing alignments of reads in regions containing tandem repeats
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - doi:10.1186/s13073-022-01085-z

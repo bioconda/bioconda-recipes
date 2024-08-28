@@ -1,0 +1,46 @@
+{% set name = "pybarrnap" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pybarrnap-{{ version }}.tar.gz
+  sha256: 9578c1677c60dfe7f12bccfd1613048918068289b0dc04b3d0396e699fd09073
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - pybarrnap = pybarrnap.scripts.pybarrnap:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('pybarrnap', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - poetry-core >=1.0.0
+    - pip
+  run:
+    - python >=3.8
+    - biopython >=1.79
+    - pyhmmer >=0.10.8
+
+test:
+  imports:
+    - pybarrnap
+  commands:
+    - pybarrnap --help
+
+about:
+  home: https://github.com/moshi4/pybarrnap/
+  summary: "Python implementation of barrnap (Bacterial ribosomal RNA predictor)"
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - moshi4

@@ -1,5 +1,5 @@
 {% set name = "brooklyn_plot" %}
-{% set version = "0.0.3" %}
+{% set version = "0.0.4" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,23 +7,25 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: a3b4c7174515d61e7a1386e0ac0ae49087f1a9c9b12eb952196b6b0b0b6f1bee
+  sha256: 6e9821999aa52b10710e59c1cd4777d6b364fef806da949e61058e6d311b97fa
 
 build:
   number: 0
   entry_points:
     - brooklyn_plot = brooklyn_plot.__main__:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('brooklyn_plot', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.6
+    - python >=3.7
   run:
     - numpy <1.24
     - pandas
-    - python >=3.6
+    - python >=3.7
     - scanpy
     - scipy
 

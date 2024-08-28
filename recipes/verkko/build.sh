@@ -10,11 +10,10 @@ if [ "$(uname)" == "Darwin" ]; then
     mkdir -p $HOME/.cargo/registry/index/
 fi
 
-
 pushd src
 make clean && make -j$CPU_COUNT
 popd
 
 mkdir -p "$PREFIX/bin"
-cp -r bin/* $PREFIX/bin/
-cp -r lib/* $PREFIX/lib/
+cp -rf bin/* $PREFIX/bin/
+cp -rf lib/* $PREFIX/lib/

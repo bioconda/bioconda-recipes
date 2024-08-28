@@ -28,3 +28,8 @@ cd ..
 make -j"${CPU_COUNT}"
 make install
 make clean
+
+# Add back in the mcl/blast scripts.
+# Remove this once the next release re-incorporates them.
+# See https://github.com/micans/mcl/discussions/25
+cp $RECIPE_DIR/scripts/mc* $PREFIX/bin/
