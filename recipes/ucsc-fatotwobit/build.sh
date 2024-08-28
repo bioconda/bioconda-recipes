@@ -1,26 +1,28 @@
 #!/bin/bash
 
-mkdir -p "$PREFIX/bin"
+set -xe
 
+mkdir -p "${PREFIX}/bin"
 export MACHTYPE=$(uname -m)
-export BINDIR="$(pwd)/bin"
+export BINDIR=$(pwd)/bin
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
+export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include ${LDFLAGS}"
 export L="${LDFLAGS}"
 
-mkdir -p "$BINDIR"
+mkdir -p "${BINDIR}"
 
 if [[ "$(uname)" == Darwin ]]; then
         export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
         export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument"
 fi
 
-(cd kent/src/lib && make CC="${CC}" CFLAGS="${CFLAGS}" -j ${CPU_COUNT})
-(cd kent/src/htslib && make CC="${CC}" CFLAGS="${CFLAGS}" -j ${CPU_COUNT})
-(cd kent/src/jkOwnLib && make CC="${CC}" CFLAGS="${CFLAGS}" -j ${CPU_COUNT})
-(cd kent/src/hg/lib && make CC="${CC}" CFLAGS="${CFLAGS}" -j ${CPU_COUNT})
-(cd kent/src/utils/faToTwoBit && make CC="${CC}" CFLAGS="${CFLAGS}" -j ${CPU_COUNT})
-cp -rf bin/faToTwoBit "$PREFIX/bin"
-chmod 0755 "$PREFIX/bin/faToTwoBit"
+(cd kent/src/lib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
+(cd kent/src/htslib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
+(cd kent/src/jkOwnLib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
+(cd kent/src/hg/lib && make USE_HIC=0 CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
+(cd kent/src/utils/faToTwoBit && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
+cp bin/faToTwoBit "${PREFIX}/bin"
+chmod 0755 "${PREFIX}/bin/faToTwoBit"
