@@ -53,7 +53,4 @@ for file in $files; do
 done
 
 # If no changed recipes apply to this platform, skip remaining steps
-if [[ build -gt 0 ]]
-then
-    echo "build"
-fi
+exit $build
