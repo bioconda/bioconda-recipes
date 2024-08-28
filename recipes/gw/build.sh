@@ -1,8 +1,6 @@
 #!/usr/bin/bash
 set -e
 
-export USE_GL=1
-
 # Modify Makefile and source files if not on macOS
 if [[ "$OSTYPE" != "darwin"* ]]; then
   sed -i 's/-lEGL -lGLESv2/-lGL -lGLX/' Makefile
@@ -27,7 +25,7 @@ CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" \
 CPPFLAGS="${CPPFLAGS}" \
 LDFLAGS="${LDFLAGS}" \
 prefix="${PREFIX}" \
-make -j ${CPU_COUNT}
+USE_GL=1 make -j ${CPU_COUNT}
 
 mkdir -p $PREFIX/bin
 cp gw $PREFIX/bin/gw
