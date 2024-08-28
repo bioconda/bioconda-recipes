@@ -3,7 +3,7 @@
 mkdir -p "$PREFIX/bin"
 
 export MACHTYPE=$(uname -m)
-export BINDIR=$(pwd)/bin
+export BINDIR="$(pwd)/bin"
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
@@ -22,5 +22,5 @@ fi
 (cd kent/src/jkOwnLib && make CC="${CC}" CFLAGS="${CFLAGS}" -j ${CPU_COUNT})
 (cd kent/src/hg/lib && make CC="${CC}" CFLAGS="${CFLAGS}" -j ${CPU_COUNT})
 (cd kent/src/utils/bigWigSummary && make CC="${CC}" CFLAGS="${CFLAGS}" -j ${CPU_COUNT})
-cp bin/bigWigSummary "$PREFIX/bin"
+cp -rf bin/bigWigSummary "$PREFIX/bin"
 chmod 0755 "$PREFIX/bin/bigWigSummary"
