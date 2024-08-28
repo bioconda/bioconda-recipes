@@ -24,7 +24,7 @@ files=`git diff --name-only --diff-filter AMR ${git_range} | grep -v 'template' 
 build=0
 
 for file in $files; do
-    echo "Going to check '${file}' for additional-platforms."
+    echo "Going to check '${file}' for additional-platforms." 1>&2
 
     # To create a properly-formatted yaml that yq can parse, comment out jinja2
     # variable setting with {% %} and remove variable use with {{ }}.
