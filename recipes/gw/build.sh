@@ -1,7 +1,8 @@
 #!/usr/bin/bash
 set -e
 
-make prep > /dev/null 2>&1 
+# Get pre-compiled skia from jetbrains
+USE_GL=1 make prep > /dev/null 2>&1 
 
 # Set flags conditionally based on the OS type
 if [[ "$OSTYPE" != "darwin"* ]]; then
