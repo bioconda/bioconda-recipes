@@ -7,14 +7,14 @@ export BINDIR=$(pwd)/bin
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include ${LDFLAGS}"
+export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
 export L="${LDFLAGS}"
 
 mkdir -p "$BINDIR"
 
 if [[ "$(uname)" == Darwin ]]; then
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
-	export CFLAGS="${CFLAGS} -Wunused-command-line-argument"
+	export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument"
 fi
 
 (cd kent/src/lib && make CC="${CC}" CFLAGS="${CFLAGS}" -j ${CPU_COUNT})
