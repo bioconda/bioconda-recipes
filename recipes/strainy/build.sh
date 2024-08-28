@@ -1,4 +1,3 @@
-cd strainy
-cd **/strainy/
+cd "${SRC_DIR}”
 git submodule update --init
 make -C submodules/Flye
