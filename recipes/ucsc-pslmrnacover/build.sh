@@ -17,5 +17,5 @@ mkdir -p "${BINDIR}"
 (cd kent/src/jkOwnLib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
 (cd kent/src/hg/lib && make USE_HIC=0 CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
 (cd kent/src/hg/mouseStuff/pslMrnaCover && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
-cp -f bin/pslMrnaCover "${PREFIX}/bin"
+cp bin/pslMrnaCover "${PREFIX}/bin"
 chmod 0755 "${PREFIX}/bin/pslMrnaCover"
