@@ -1,12 +1,6 @@
 #!/usr/bin/bash
 set -e
 
-# Modify Makefile and source files if not on macOS
-if [[ "$OSTYPE" != "darwin"* ]]; then
-  sed -i 's/-lEGL -lGLESv2/-lGL -lGLX/' Makefile
-  sed -i 's/GLFW_EGL_CONTEXT_API/GLFW_NATIVE_CONTEXT_API/' src/plot_manager.cpp
-fi
-
 make prep > /dev/null 2>&1 
 
 # Set flags conditionally based on the OS type
@@ -25,7 +19,7 @@ CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" \
 CPPFLAGS="${CPPFLAGS}" \
 LDFLAGS="${LDFLAGS}" \
 prefix="${PREFIX}" \
-USE_GL=1 make -j ${CPU_COUNT}
+make -j ${CPU_COUNT}
 
 mkdir -p $PREFIX/bin
 cp gw $PREFIX/bin/gw
