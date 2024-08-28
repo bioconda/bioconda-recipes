@@ -4,6 +4,11 @@ set -e
 # Get pre-compiled skia from jetbrains
 USE_GL=1 make prep > /dev/null 2>&1 
 
+if [[ "$OSTYPE" != "darwin"* ]]; then
+  sed -i 's/-lEGL -lGLESv2/-lEGL -lGLESv2 -lGL -lGLX/' Makefile
+  sed -i 's/GLFW_EGL_CONTEXT_API/GLFW_NATIVE_CONTEXT_API/' src/plot_manager.cpp
+fi
+
 # Set flags conditionally based on the OS type
 if [[ "$OSTYPE" != "darwin"* ]]; then
   SYSROOT_FLAGS="--sysroot=${BUILD_PREFIX}/${HOST}/sysroot"
