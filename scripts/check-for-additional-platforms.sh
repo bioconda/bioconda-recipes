@@ -46,7 +46,7 @@ for file in $files; do
     for additional_platform in $additional_platforms; do
     if [ "${current_job}" = "${job_name}-${additional_platform}" ]
     then
-        build=1
+        build=200
         break
     fi
     done
