@@ -12,21 +12,27 @@ source:
 
 build:
   number: 0
-  noarch: python
   run_exports:
     - {{ pin_subpackage(name, max_pin='x') }}
+  skip: true  # [py<37]
+  # Remove `noarch: python` because you are using a compiler
+  # noarch: python
 
 requirements:
-  host:
-    - python=3.10
+  build:
+    - {{ compiler('c') }}
+    - python =3.10
     - pip
     - setuptools
     - wheel
     - cython
-    - {{ compiler('c') }}
+
+  host:
+    - python =3.10
+    - pip
 
   run:
-    - python=3.10
+    - python >=3.10
     - numpy >=1.19
     - pandas >=1.3
     - scipy >=1.6
@@ -42,7 +48,7 @@ requirements:
     - umap-learn
     - numexpr
     - distributed
-    - dask[complete]
+    - dask >=complete
     - attrs
     - boltons
     - requests
