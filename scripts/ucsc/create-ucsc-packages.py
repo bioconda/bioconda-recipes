@@ -213,7 +213,6 @@ SKIP_AARCH64 = [
     'estOrient',
     'featureBits',
     'gapToLift',
-    'genePredCheck',
     'genePredFilter',
     'genePredHisto',
     'genePredSingleCover',
