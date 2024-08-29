@@ -5,7 +5,7 @@ if [ -z "${PYTHON}" ]; then
   PYTHON=$(which python)
 fi
 
-pushd ${SRC_DIR}/pyscenic
+pushd ${SRC_DIR}/pyscenic-0.12.1
 ${PYTHON} -m pip install . --no-deps --ignore-installed -vv
 popd
 
