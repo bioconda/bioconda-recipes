@@ -9,7 +9,7 @@ pushd ${SRC_DIR}/pyscenic
 ${PYTHON} -m pip install . --no-deps --ignore-installed -vv
 popd
 
-for package in aiohttp arboreto-0.1.6 frozendict-2.1.0 interlap-0.2.7 multiprocessing_on_dill-3.5.0a4 ctxcore-0.2.0 loompy-3.0.6
+for package in aiohttp-3.9.0rc0 arboreto-0.1.6 frozendict-2.1.0 interlap-0.2.7 multiprocessing_on_dill-3.5.0a4 ctxcore-0.2.0 loompy-3.0.6
 do
   pushd ${SRC_DIR}/${package}
   
