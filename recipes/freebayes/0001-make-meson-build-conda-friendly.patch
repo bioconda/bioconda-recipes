@@ -26,18 +26,6 @@ index 9d727f9..9288fbb 100644
    seqlib_dep = dependency('', required : false)
  endif
  
-@@ -51,10 +45,7 @@ warn_quiet = ['warning_level=0']
- 
- # We pull in the include files because they are currently not packaged in Debian, note that we expect
- # the share libs nevertheless
--fastahack_inc = include_directories('contrib/fastahack')
--fastahack_src = files(
--    'contrib/fastahack/Fasta.cpp',
--    )
-+fastahack_inc = [get_option('prefix') + '/include']
- 
- multichoose_inc = include_directories('contrib/multichoose')
- multichoose_src = files(
 @@ -123,47 +114,16 @@ if not htslib_dep.found()
      htslib_dep = declare_dependency(link_with : htslib_lib,
                                      include_directories : htslib_inc)
@@ -103,34 +91,7 @@ index 9d727f9..9288fbb 100644
  endif
  
  executable('freebayes',
--           [freebayes_src,multichoose_src,fastahack_src,smithwaterman_src],
-+           [freebayes_src,multichoose_src,smithwaterman_src],
+            [freebayes_src,multichoose_src,fastahack_src,smithwaterman_src],
             include_directories : [multichoose_inc, fastahack_inc, smithwaterman_inc, incdir],
             cpp_args : extra_cpp_args,
             link_args: link_arguments,
-@@ -263,15 +223,13 @@ executable('freebayes',
-                           tabixpp_dep,
-                           vcflib_dep,
-                           seqlib_dep,
--                          # fastahack_dep,
--                          # smithwaterman_dep,
-                           wfa2lib_dep],
-            link_with : freebayes_lib,
-            install: true
-           )
- 
- executable('bamleftalign',
--           [bamleftalign_src,fastahack_src,smithwaterman_src],
-+           [bamleftalign_src,smithwaterman_src],
-            include_directories : [multichoose_inc, fastahack_inc, smithwaterman_inc, incdir],
-            cpp_args : extra_cpp_args,
-            link_args: link_arguments,
-@@ -281,8 +239,6 @@ executable('bamleftalign',
-                           htslib_dep,
-                           vcflib_dep,
-                           seqlib_dep,
--                          # fastahack_dep,
--                          # smithwaterman_dep,
-                           wfa2lib_dep],
-            link_with : freebayes_lib,
-            install: true
