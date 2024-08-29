@@ -6,13 +6,19 @@ package:
   version: {{ version }}
 
 source:
-  git_url: https://github.com/freebayes/freebayes.git
-  git_rev: v{{ version }}
-  patches:
-    - 0001-make-meson-build-conda-friendly.patch
-    - 0002-fix-intervaltree-include-path.patch
-    - 0003-meson-macos.patch  # [osx]
-    - 0004-fix-submodules.patch
+  - folder: freebayes
+    url: https://github.com/freebayes/freebayes/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: d1c24b1d1b35277e7403cd67063557998218a105c916b01a745e7704715fce67
+    patches:
+      - 0001-make-meson-build-conda-friendly.patch
+      - 0002-fix-intervaltree-include-path.patch
+      - 0003-meson-macos.patch  # [osx]
+  - folder: freebayes/contrib/smithwaterman
+    url: https://github.com/ekg/smithwaterman/archive/2610e259611ae4cde8f03c72499d28f03f6d38a7.tar.gz
+    sha256: 8e1b37ab0e8cd9d3d5cbfdba80258c0ebd0862749b531e213f44cdfe2fc541d8
+  - folder: freebayes/contrib/multichoose
+    url: https://github.com/vcflib/multichoose/archive/255192edd49cfe36557f7f4f0d2d6ee1c702ffbb.tar.gz
+    sha256: 0045051ee85d36435582151830efe0eefb466be0ec9aedbbc4465dca30d22102
 
 build:
   number: 0
@@ -34,7 +40,7 @@ requirements:
     - tabixpp
     - vcflib
     - simde
-    - zlib
+    - zlib >=1.2.13,<1.3.0a0
     - wfa2-lib
   run:
     - fastahack
@@ -42,7 +48,7 @@ requirements:
     - samtools
     - tabixpp
     - vcflib
-    - zlib
+    - zlib >=1.2.13,<1.3.0a0
     - wfa2-lib
 
 test:
@@ -53,7 +59,7 @@ test:
 about:
   home: https://github.com/freebayes/freebayes
   license: MIT
-  license_file: LICENSE
+  license_file: freebayes/LICENSE
   license_family: MIT
   summary: Bayesian haplotype-based polymorphism discovery and genotyping
   dev_url: https://github.com/freebayes/freebayes
@@ -66,6 +72,3 @@ extra:
     - usegalaxy-eu:freebayes
   recipe-maintainers:
     - jpuritz
-  skip-lints:
-    - uses_vcs_url
-    - missing_hash
