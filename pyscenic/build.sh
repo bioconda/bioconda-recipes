@@ -5,12 +5,11 @@ if [ -z "${PYTHON}" ]; then
   PYTHON=$(which python)
 fi
 
-pushd ${SRC_DIR}/pyscenic
+pushd ${SRC_DIR}/pyscenic-0.12.1
 ${PYTHON} -m pip install . --no-deps --ignore-installed -vv
 popd
 
-
-for package in aiohttp arboreto-0.1.6 frozendict-2.1.0 interlap-0.2.7 multiprocessing_on_dill-3.5.0a4 ctxcore-0.2.0 loompy-3.0.6
+for package in arboreto-0.1.6 interlap-0.2.7 multiprocessing_on_dill-3.5.0a4 ctxcore-0.2.0 loompy-3.0.6
 do
   pushd ${SRC_DIR}/${package}
   
