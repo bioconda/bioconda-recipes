@@ -1,16 +1,23 @@
 diff --git a/meson.build b/meson.build
-index 9d727f9..7fb0625 100644
+index 9d727f9..9288fbb 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -27,7 +27,6 @@ cc = meson.get_compiler('cpp')
+@@ -23,14 +23,10 @@ static_build = get_option('static')
+ 
+ cc = meson.get_compiler('cpp')
+ 
+-# fastahack_dep = cc.find_library('libfastahack')
  lzma_dep = dependency('liblzma', static: static_build)
  seqlib_dep = dependency('libseqlib', static: static_build, required: false)
  # smithwaterman_dep = cc.find_library('libsmithwaterman')
 -tabixpp_dep = cc.find_library('tabixpp', required: false, static: static_build)
  thread_dep = dependency('threads', static: static_build)
- vcflib_dep = cc.find_library('libvcflib')
- wfa2lib_dep = cc.find_library('libwfa2')
-@@ -41,8 +40,6 @@ if get_option('prefer_system_deps')
+-vcflib_dep = cc.find_library('libvcflib')
+-wfa2lib_dep = cc.find_library('libwfa2')
+ zlib_dep = dependency('zlib', static: static_build)
+ 
+ # to compile htslib use
+@@ -41,8 +37,6 @@ if get_option('prefer_system_deps')
  else
    # uses the local git submodules
    htslib_dep = dependency('', required : false)
@@ -19,7 +26,7 @@ index 9d727f9..7fb0625 100644
    seqlib_dep = dependency('', required : false)
  endif
  
-@@ -123,48 +120,15 @@ if not htslib_dep.found()
+@@ -123,47 +114,16 @@ if not htslib_dep.found()
      htslib_dep = declare_dependency(link_with : htslib_lib,
                                      include_directories : htslib_inc)
  else
@@ -38,8 +45,10 @@ index 9d727f9..7fb0625 100644
 -                                     include_directories : tabixpp_inc)
 -else
 -    tabixpp_inc = []
--endif
--
++    htslib_inc = [get_option('prefix') + '/include']
++    htslib_lib = [get_option('prefix') + '/lib']
+ endif
+ 
 -vcflib_inc = include_directories()
 -
 -# optionally build from source. As we unbundled just check out the vcflib repo in contrib.
@@ -63,19 +72,17 @@ index 9d727f9..7fb0625 100644
 -                              override_options : warn_quiet)
 -  vcflib_dep = declare_dependency(link_with : vcflib_lib,
 -                                  include_directories : vcflib_inc)
-+    htslib_inc = [get_option('prefix') + '/include']
-+    htslib_lib = [get_option('prefix') + '/lib']
- endif
- 
+-endif
 +tabixpp_inc = [get_option('prefix') + '/include']
 +tabixpp_dep = []
 +vcflib_inc = [get_option('prefix') + '/include']
 +vcflib_lib = [get_option('prefix') + '/lib']
 +vcflib_dep = []
++wfa2lib_dep = []
+ 
  
  if not seqlib_dep.found()
- 
-@@ -248,7 +212,7 @@ freebayes_lib = static_library(
+@@ -248,11 +208,11 @@ freebayes_lib = static_library(
  if static_build
    link_arguments = '-static'
  else
@@ -84,3 +91,7 @@ index 9d727f9..7fb0625 100644
  endif
  
  executable('freebayes',
+            [freebayes_src,multichoose_src,fastahack_src,smithwaterman_src],
+            include_directories : [multichoose_inc, fastahack_inc, smithwaterman_inc, incdir],
+            cpp_args : extra_cpp_args,
+            link_args: link_arguments,
