@@ -1,0 +1,37 @@
+{% set name = "biobox_add_taxid" %}
+{% set version = "0.4" %}
+{% set sha256 = "2df4de457494ef85b8ca38326629f2705499564a360a7156871d5d2281df1086" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/SantaMcCloud/{{ name }}/archive/refs/tags/release-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage("biobox_add_taxid", max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - python
+
+test:
+  commands:
+    - biobox_add_taxid.py --help
+    - biobox_add_taxid.py --version
+
+about:
+  home: https://github.com/SantaMcCloud/biobox_add_taxid
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "CAMI amber utility script for adding the taxid output from GTDB and BAT"

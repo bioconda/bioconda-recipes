@@ -2,11 +2,9 @@
 
 set -x -e
 
-export CPATH=${PREFIX}/include
-
 mkdir -p "${PREFIX}/bin"
 
-make CC="$CC" -j ${CPU_COUNT}
+make -j ${CPU_COUNT} CC="$CC" CFLAGS="${CFLAGS} -I${PREFIX}/include -L${PREFIX}/lib"
 
 chmod 0755 sdust
 
