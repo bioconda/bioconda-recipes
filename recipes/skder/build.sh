@@ -4,13 +4,10 @@ $PYTHON -m pip install . --ignore-installed --no-deps -vv
 
 mkdir -p ${PREFIX}/bin
 
-if [ ! -f ${PREFIX}/bin/skDERsum ]; then
-    ${CXX} -std=c++11 -o ${PREFIX}/bin/skDERsum src/skDER/skDERsum.cpp
-fi
+export LDFLAGS=
 
-if [ ! -f ${PREFIX}/bin/skDERcore ]; then
-    ${CXX} -std=c++11 -o ${PREFIX}/bin/skDERcore src/skDER/skDERcore.cpp
-fi
+${CXX} -std=c++11 -Wl,-headerpad_max_install_names -o ${PREFIX}/bin/skDERsum src/skDER/skDERsum.cpp
+${CXX} -std=c++11 -Wl,-headerpad_max_install_names -o ${PREFIX}/bin/skDERcore src/skDER/skDERcore.cpp
 
 chmod +x ${PREFIX}/bin/skDERcore
 chmod +x ${PREFIX}/bin/skDERsum
