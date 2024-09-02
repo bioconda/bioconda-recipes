@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "lungcancerlines-0.38.0"
+installBiocDataPackage.sh "lungcancerlines-0.40.0"

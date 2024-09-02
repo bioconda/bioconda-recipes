@@ -1,5 +1,5 @@
 {% set name = "varcode" %}
-{% set version = "1.1.0" %}
+{% set version = "1.2.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: ed2c81a322e13f4b9fcfc15fc1dba87dbeef8ab4cd808f22188ec67db9159512
+  sha256: f2f0f608b266304cb6ceaa353357ea089cc6ae3f1fa15c8824b44e61fcf567cb
 
 build:
   number: 0
@@ -15,7 +15,9 @@ build:
   entry_points:
     - varcode-genes = varcode.cli.genes_script:main
     - varcode = varcode.cli.effects_script:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('varcode', max_pin="x") }}
 
 requirements:
   host:
@@ -44,8 +46,9 @@ test:
 
 about:
   home: "https://github.com/openvax/varcode"
-  license: Apache Software
+  license: Apache-2.0
   license_family: APACHE
+  license_file: LICENSE
   summary: "Variant annotation in Python"
 
 extra:
