@@ -1,71 +1,102 @@
 {% set name = "pyscenic" %}
 {% set version = "0.12.1" %}
-{% set sha256 = "ae8fafa707d2578ffe08f9eed85f14a4cd9e1b53d57217420e2e956f0a8ddba2" %}
 
 package:
-  name: {{ name }}
-  version: {{ version }}
+name: "{{ name|lower }}"
+version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/p/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+sha256: ae8fafa707d2578ffe08f9eed85f14a4cd9e1b53d57217420e2e956f0a8ddba2
 
 build:
-  number: 0
-  run_exports:
-    - {{ pin_subpackage(name, max_pin='x') }}
+number: 0
+entry_points:
+   - pyscenic = pyscenic.cli.pyscenic:main
+   - db2feather = pyscenic.cli.db2feather:main
+   - csv2loom = pyscenic.cli.csv2loom:main
+   - invertdb = pyscenic.cli.invertdb:main
+   - gmt2regions = pyscenic.cli.gmt2regions:main
+script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
 
 requirements:
-  build:
-    - {{ compiler('c') }}
-    - python >=3.10
-    - pip
-    - setuptools_scm
-    - dask[complete]
-    - distributed
-    - numpy >=1.16.5
-    - pandas
-    - scikit-learn
-    - scipy
-  run:
-    - python >=3.10
-    - aiohttp
-    - frozendict
-    - numpy >=1.19
-    - pandas >=1.3
-    - scipy >=1.6
-    - llvmlite >=0.34
-    - numba >=0.51.2
-    - click >=7.0
-    - cloudpickle >=1.3.0
-    - fsspec >=0.6.0
-    - cytoolz >=0.8.2
-    - scikit-learn >=0.22
-    - pyyaml >=5.3.1
-    - tqdm
-    - umap-learn
-    - numexpr
-    - distributed
-    - dask[complete]
-    - attrs
-    - boltons
-    - requests
-  pip:
-    - arboreto ==0.1.6
-    - interlap ==0.2.7
-    - multiprocessing_on_dill ==3.5.0a4
-    - ctxcore ==0.2.0
+host:
+   - aiohttp
+   - arboreto >=0.1.6
+   - attrs
+   - boltons
+   - cloudpickle
+   - ctxcore >=0.2.0
+   - cytoolz
+   - dask
+   - distributed
+   - frozendict
+   - fsspec
+   - interlap
+   - llvmlite
+   - loompy
+   - multiprocessing_on_dill
+   - networkx
+   - numba >=0.51.2
+   - numexpr
+   - numpy
+   - pandas >=1.3.5
+   - pip
+   - python
+   - pyyaml
+   - requests
+   - scikit-learn >=0.22.2
+   - scipy
+   - setuptools
+   - tqdm
+   - umap-learn
+run:
+   - aiohttp
+   - arboreto >=0.1.6
+   - attrs
+   - boltons
+   - cloudpickle
+   - ctxcore >=0.2.0
+   - cytoolz
+   - dask
+   - distributed
+   - frozendict
+   - fsspec
+   - interlap
+   - llvmlite
+   - loompy
+   - multiprocessing_on_dill
+   - networkx
+   - numba >=0.51.2
+   - numexpr
+   - numpy
+   - pandas >=1.3.5
+   - python
+   - pyyaml
+   - requests
+   - scikit-learn >=0.22.2
+   - scipy
+   - setuptools
+   - tqdm
+   - umap-learn
 
 test:
-  imports:
-    - pyscenic
+imports:
+   - pyscenic
+   - pyscenic.cli
+   - resources
+   - resources.delineations
+   - resources.tests
+commands:
+   - pyscenic --help
+   - db2feather --help
+   - csv2loom --help
+   - invertdb --help
+   - gmt2regions --help
 
 about:
-  home: https://github.com/aertslab/pySCENIC
-  summary: 'pySCENIC is a python implementation of the SCENIC pipeline'
-  license: MIT
-  license_family: MIT
-
-extra:
-  recipe-maintainers:
-    - pcm32
+home: "https://github.com/aertslab/pySCENIC"
+license: "GNU General Public v3 or later (GPLv3+)"
+license_family: GPL3
+license_file:
+summary: "Python implementation of the SCENIC pipeline for transcription factor inference from single-cell transcriptomics experiments."
