@@ -11,8 +11,6 @@ sed -i.bak 's/mv /cp /' Makefile
 cd ${SRC_DIR}
 sed -i.bak 's|./data/binary|'"${PREFIX}/data/binary"'|g' binary.csh
 
-
-cd ${SRC_DIR}
 make binary
 
 install -d ${PREFIX}/bin
