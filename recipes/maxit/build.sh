@@ -9,7 +9,7 @@ cd ${SRC_DIR}/cifparse-obj-v7.0
 sed -i.bak 's/mv /cp /' Makefile
 
 cd ${SRC_DIR}
-sed -i.bak 's|./data/binary|'"${PREFIX}/data/binary"'|g' binary.csh
+sed -i.bak 's|./data/binary|'"${PREFIX}/data/binary"'|g' binary.sh
 
 make binary
 
