@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export PATH=${PREFIX}/bin/gcc:${PATH}
 export RCSBROOT=${PREFIX}
 
 cd ${SRC_DIR}/maxit-v10.1/src
