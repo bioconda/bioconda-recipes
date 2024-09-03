@@ -16,5 +16,5 @@ autoreconf -if
 
 make -j"${CPU_COUNT}"
 
-chmod 0755 bin/PopLDdecay
-cp -rf bin/PopLDdecay ${PREFIX}/bin
+chmod 0755 PopLDdecay
+cp -rf PopLDdecay ${PREFIX}/bin
