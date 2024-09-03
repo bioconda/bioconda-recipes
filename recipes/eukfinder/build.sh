@@ -29,7 +29,8 @@ source $(conda info --base)/etc/profile.d/conda.sh
 conda env create -f eukfinder_env.yml
 conda activate eukfinder
 
-cd bin/
-python Eukfinder.py read_prep -h
-python Eukfinder.py short_seqs -h
-python Eukfinder.py long_seqs -h
+export PATH=$PREFIX/bin:$PATH
+
+eukfinder read_prep -h
+eukfinder short_seqs -h
+eukfinder long_seqs -h
