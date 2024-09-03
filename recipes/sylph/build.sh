@@ -12,7 +12,7 @@ fi
 
 for TARGET_CPU in "${TARGET_CPUS[@]}"; do
     # build statically linked binary with Rust
-    RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=${TARGET_CPU}" cargo install --verbose --path . --root $PREFIX
+    CARGO_PROFILE_RELEASE_BUILD_OVERRIDE_DEBUG=true RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=${TARGET_CPU}" cargo install --verbose --path . --root $PREFIX
     mv ${PREFIX}/bin/sylph ${PREFIX}/bin/_sylph_${TARGET_CPU}
 done
 
