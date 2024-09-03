@@ -31,7 +31,7 @@ fi
 # Build statically linked binary with Rust
 RUST_BACKTRACE=1
 # Build with maturin
-maturin build -m ./pykmertools/Cargo.toml -b pyo3 --interpreter "${PYTHON}" --release --strip
+maturin build -m ./conda/Cargo.toml -b pyo3 --interpreter "${PYTHON}" --release --strip
 
 # Install the wheel file
 ${PYTHON} -m pip install ./target/wheels/*.whl --no-deps --no-build-isolation --no-cache-dir -vvv
