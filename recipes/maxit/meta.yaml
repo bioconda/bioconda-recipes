@@ -1,0 +1,51 @@
+{% set name = "MAXIT" %}
+{% set version = "11.200" %}
+
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://sw-tools.rcsb.org/apps/MAXIT/maxit-v{{ version }}-prod-src.tar.gz
+  sha256: 658e236c6310cf7e55218a0500f82050ef86074f5d5b3f61d2a161b04a38cc39
+
+build:
+  number: 0
+  script:
+    - export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include"
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - cd maxit-v10.1/src
+    - sed -i.bak 's|rcsbroot = getenv("RCSBROOT")|rcsbroot = "${PREFIX}"|' maxit.C process_entry.C generate_assembly_cif_file.C
+    - cd ../cifparse-obj-v7.0
+    - sed -i.bak 's/mv /cp /' Makefile  # circumvent CI errors
+    - cd ../../
+    - make binary
+    - cp -r bin/* ${PREFIX}/bin
+    - cp -r data ${PREFIX}/
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}  # [linux]
+
+  run:
+    - libcxx # if necessary, specify the C++ library
+
+test:
+  source_files:
+    - https://files.rcsb.org/download/3QUG.pdb
+  commands:
+    - maxit -input 3QUG.pdb -output 3QUG.cif -o 1 -log maxit.log
+    - test -f 3QUG.cif
+    - grep "_audit_author.name" 3QUG.cif
+
+about:
+  home: https://sw-tools.rcsb.org/apps/MAXIT
+  license: LicenseRef-proprietary
+  summary: "Assists in the processing and curation of macromolecular structure data"
+  license_file: LICENSE.txt  # if available
+
+extra:
+  recipe-maintainers:
+    - eunos-1128
+
