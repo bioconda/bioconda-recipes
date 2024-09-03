@@ -1,16 +1,26 @@
-diff --git a/src/main.mk b/src/main.mk
-index 346c25b..8e0f390 100644
---- a/src/main.mk
-+++ b/src/main.mk
-@@ -189,7 +189,7 @@ SRC_INCDIRS  := . \
-                 ${CANUROOT}utgcns/libpbutgcns \
-                 ${CANUROOT}overlapBasedTrimming \
-
--SYS_INCDIRS  += $(shell pkg-config --cflags-only-I openssl libcurl liblzma | sed s:-I/:/:g)
-+SYS_INCDIRS  += $(shell pkg-config --cflags-only-I openssl libcurl liblzma boost | sed s:-I/:/:g)
- LDFLAGS      += $(shell pkg-config --libs-only-L   openssl libcurl liblzma)
- LDLIBS       += $(shell pkg-config --libs-only-l   openssl libcurl liblzma) -lz -lbz2
-
+diff --git a/src/Makefile.boilermake b/src/Makefile.boilermake
+index 7e2b929..2dfc3b1 100644
+--- a/src/Makefile.boilermake
++++ b/src/Makefile.boilermake
+@@ -160,11 +160,18 @@ endef
+ define ADD_FILE_COPY_RULE
+   doall: $${TARGET_DIR}/$2
+   ifeq ($3,executable)
++  ifeq ($(suffix $(1)),.sh)
+   $${TARGET_DIR}/$2: $1
+                @mkdir -p $$(dir $${TARGET_DIR}/$2)
+                cat $1 |sed s/'version=""'/'version="$(VERSION)"'/g > $${TARGET_DIR}/$2
+                chmod +x $${TARGET_DIR}/$2
+   else
++  $${TARGET_DIR}/$2: $1
++               @mkdir -p $$(dir $${TARGET_DIR}/$2)
++               cp $1 $${TARGET_DIR}/$2
++               chmod +x $${TARGET_DIR}/$2
++  endif
++  else
+   $${TARGET_DIR}/$2: $1
+                @mkdir -p $$(dir $${TARGET_DIR}/$2)
+                cp -pf $1 $${TARGET_DIR}/$2
 diff --git a/src/Makefile b/src/Makefile
 index 67975ff..6a0d332 100644
 --- a/src/Makefile
