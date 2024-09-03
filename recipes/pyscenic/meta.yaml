@@ -1,65 +1,72 @@
 {% set name = "pyscenic" %}
 {% set version = "0.12.1" %}
+{% set sha256 = "ae8fafa707d2578ffe08f9eed85f14a4cd9e1b53d57217420e2e956f0a8ddba2" %}
+
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
+
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: ae8fafa707d2578ffe08f9eed85f14a4cd9e1b53d57217420e2e956f0a8ddba2
+  sha256: {{ sha256 }}
+
 build:
   number: 0
-  noarch: generic
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
-  entry_points:
-    - pyscenic = pyscenic.cli.pyscenic:main
-    - db2feather = pyscenic.cli.db2feather:main
-    - csv2loom = pyscenic.cli.csv2loom:main
-    - invertdb = pyscenic.cli.invertdb:main
-    - gmt2regions = pyscenic.cli.gmt2regions:main
-  script:
-    - "{{ PYTHON }} -m pip install arboreto interlap multiprocessing_on_dill ctxcore -vv"
-    - "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+
 requirements:
   build:
-    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - make
+    - python
+    - pip
+    - setuptools
+    - wheel
+
   host:
     - python
     - pip
     - setuptools
     - wheel
+
   run:
+    - python
     - aiohttp
+    - arboreto >=0.1.6
     - attrs
     - boltons
     - cloudpickle
+    - ctxcore >=0.2.0
     - cytoolz
     - dask
     - distributed
     - frozendict
     - fsspec
+    - interlap
     - llvmlite
     - loompy
+    - multiprocessing_on_dill
     - networkx
     - numba >=0.51.2
     - numexpr
     - numpy
     - pandas >=1.3.5
-    - python
     - pyyaml
     - requests
     - scikit-learn >=0.22.2
     - scipy
     - tqdm
     - umap-learn
+
 test:
   imports:
     - pyscenic
     - pyscenic.cli
   commands:
     - pyscenic --help
+
 about:
   home: "https://github.com/aertslab/pySCENIC"
   license: "GNU General Public v3 or later (GPLv3+)"
