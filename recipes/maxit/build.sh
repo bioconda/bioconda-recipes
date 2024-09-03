@@ -1,4 +1,4 @@
-BBB#!/bin/bash
+#!/bin/bash
 
 export RCSBROOT="$PREFIX"
 
