@@ -8,6 +8,7 @@ cd ../../cifparse-obj-v7.0
 
 sed -i.bak 's/mv /install /' Makefile
 
+cd ${SRC_DIR}
 make
 make binary
 
