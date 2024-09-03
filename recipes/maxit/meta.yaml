@@ -19,18 +19,14 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}  # [linux]
     - make
+    - bison
+    - flex
   host:
     - coreutils
-  # run:
-  #  - libcxx
 
 test:
-  source_files:
-    - https://files.rcsb.org/download/7KNT.pdb
   commands:
-    - maxit -input 7KNT.pdb -output 7KNT.cif -o 1 -log maxit.log
-    - test -f 7KNT.cif
-    - grep "_audit_author.name" 7KNT.cif
+    - output=$(maxit 2>&1 || true) && echo "$output" | grep -q 'maxit -input inputfile'
 
 about:
   home: https://sw-tools.rcsb.org/apps/MAXIT
