@@ -1,0 +1,42 @@
+{% set name = "ropebwt3" %}
+{% set version = "3.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('ropebwt3', max_pin="x") }}
+
+source:
+  url: https://github.com/lh3/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b1251c67ea939db5399b3635293cd45c43bd4b3c3418905a7fdc560c6775477d
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - "ropebwt3 version /dev/null 2>&1"
+
+about:
+  home: "https://github.com/lh3/ropebwt3"
+  license: MIT
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  summary: "Constructs the FM-index of a large DNA sequence set and searches for matches against the FM-index."
+  dev_url: "https://github.com/lh3/ropebwt3"
+  doc_url: "https://github.com/lh3/ropebwt3/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
