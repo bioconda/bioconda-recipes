@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-python setup.py install --single-version-externally-managed --record=record.txt
+pip install .
 
 # Install additional dependencies
 wget https://github.com/PLAST-software/plast-library/releases/download/v2.3.2/plastbinary_linux_v2.3.2.tar.gz
