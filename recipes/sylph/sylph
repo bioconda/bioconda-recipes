@@ -2,6 +2,11 @@
 
 set -eu
 
+if [ `uname -m` == "aarch64" ]; then
+    _sylph_aarch64 "$@"
+    exit $?
+fi
+
 # -c : return count
 # -m 1 : stop after first match, i.e. count is either 0 or 1
 # -E : use extended regular expressions
@@ -18,7 +23,9 @@ else
     HAS_AVX512=0
 fi
 
-if [ ${HAS_AVX512} -eq 1 ]; then
+if [ `uname -m` == "aarch64" ]; then
+    _sylph_aarch64 "$@"
+elif [ ${HAS_AVX512} -eq 1 ]; then
     _sylph_x86-64-v4 "$@"
 elif [ ${HAS_AVX2} -eq 1 ]; then
     _sylph_x86-64-v3 "$@"
