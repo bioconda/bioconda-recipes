@@ -1,5 +1,9 @@
 #!/bin/bash
 
+export INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
 export RCSBROOT=${SRC_DIR}
 
 ln -s ${CC} ${BUILD_PREFIX}/bin/gcc
