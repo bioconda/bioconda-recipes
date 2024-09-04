@@ -4,7 +4,7 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
-export RCSBROOT=${SRC_DIR}/maxit-v10.1
+export RCSBROOT=${SRC_DIR}
 export CC=${BUILD_PREFIX}/bin/gcc
 
 # cd ${SRC_DIR}/maxit-v10.1/src
@@ -21,6 +21,6 @@ sed -i 's|./data/binary|'"${RCSBROOT}/data/binary"'|g' binary.sh
 CC="${CC}" CFLAGS="${CFLAGS}" make binary -j"${CPU_COUNT}"
 
 install -d ${PREFIX}/bin
-install bin/* ${PREFIX}/bin
+install ${RCSBROOT}/bin/* ${PREFIX}/bin
 install -d ${PREFIX}/data
-install -m 644 data/* ${PREFIX}/data
+install -m 644 ${RCSBROOT}/data/* ${PREFIX}/data
