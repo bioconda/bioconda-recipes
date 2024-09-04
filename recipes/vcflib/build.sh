@@ -5,13 +5,13 @@ ARCH=$(uname -m)
 
 if [[ "${OS}" == "Darwin" ]] && [[ "${ARCH}" == "x86_64" ]]; then
         echo $(pwd)/zig-macos-x86_64-*
-        export PATH="$(pwd)/zig-macos-x86_64-0.9.1:${PATH}"
+        export PATH="$(pwd)/zig-macos-x86_64-0.11.0:${PATH}"
 elif [[ "${OS}" == "Darwin" ]] && [[ "${ARCH}" == "arm64" ]]; then
         echo $(pwd)/zig-macos-aarch64-*
-        export PATH="$(pwd)/zig-macos-aarch64-0.9.1:${PATH}"
+        export PATH="$(pwd)/zig-macos-aarch64-0.11.0:${PATH}"
 else
         echo $(pwd)/zig-linux-${ARCH}-*
-        export PATH="$(pwd)/zig-linux-${ARCH}-0.9.1:${PATH}"
+        export PATH="$(pwd)/zig-linux-${ARCH}-0.11.0:${PATH}"
 fi
 
 export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Itabixpp -Iwfa2 -I\$(INC_DIR)"
