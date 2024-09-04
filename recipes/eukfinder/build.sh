@@ -1,8 +1,6 @@
 #!/bin/bash
 set -ex
 
-pip install .
-
 # Install additional dependencies
 wget https://github.com/PLAST-software/plast-library/releases/download/v2.3.2/plastbinary_linux_v2.3.2.tar.gz
 echo "PLAST downloaded successfully"
@@ -30,8 +28,7 @@ source $(conda info --base)/etc/profile.d/conda.sh
 conda env create -f eukfinder_env.yml
 conda activate eukfinder
 
-echo $PYTHONPATH
-export PYTHONPATH=$(python -c "import site; print(site.getsitepackages()[0])"):$PYTHONPATH
+python setup.py install --single-version-externally-managed --record=record.txt
 
 eukfinder read_prep -h
 eukfinder short_seqs -h
