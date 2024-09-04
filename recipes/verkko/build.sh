@@ -10,7 +10,11 @@ if [ "$(uname)" == "Darwin" ]; then
     mkdir -p $HOME/.cargo/registry/index/
 fi
 
+# on osx we remove the built-in boost and make sure todepend on the system boost
 pushd src
+if [ "$(uname)" == "Darwin" ]; then
+   rm -rf ./canu/src/utgcns/libboost/
+fi
 make clean && make -j$CPU_COUNT
 popd
 
