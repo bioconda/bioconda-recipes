@@ -1,8 +1,9 @@
-{% set version = "3.3.0a" %}
-{% set sha256 = "787c7efa8b9f0ef598445955d95d1257159eeb599c1f3fae4327550601c1560d" %}
+{% set name = "orthologer" %}
+{% set version = "3.3.1" %}
+{% set sha256 = "efb86c202aca5d4fe54770d4ce7e5689bbad3edc13350d46eca5fc74b4783f93" %}
 
 package:
-  name: orthologer
+  name: {{ name }}
   version: {{ version }}
 
 build:
@@ -13,52 +14,46 @@ build:
 source:
   url: https://data.orthodb.org/current/download/software/orthologer_{{ version }}.tgz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-install_pkg.patch
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
     - cmake
-    - make
-    
+    - make    
   host:
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
-    - fmt
-    - spdlog
-    - bash >=4.3.0
-    - python >=3.4
     - rsync
     - wget
-    - blast
-    - mmseqs2
-    - diamond >=2.1.0
-    - biopython
-    - numpy
   run:
-    - bash >=4.3.0
     - python >=3.4
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
     - rsync
     - wget
     - blast
     - mmseqs2
+    - cd-hit
     - diamond
     - biopython
     - numpy
-    
+
 test:
   commands:
     - ALLOW_RUNAS_ROOT=1 orthologer -h
-  #  source_files:
-  #    # used in run_test.sh
-  #    - test_data
 
 about:
-  home: https://orthologer.ezlab.org/
+  home: https://orthologer.ezlab.org
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: Assessment of assembly completeness using Universal Single Copy Orthologs
+  summary: "Assessment of assembly completeness using Universal Single Copy Orthologs."
   description: compute orthology
+  dev_url: https://gitlab.com/ezlab/orthologer_container
+  doc_url: https://orthologer.ezlab.org/#on-orthodb-data
 
 extra:
   container:
