@@ -27,12 +27,12 @@ cd ..
 
 source $(conda info --base)/etc/profile.d/conda.sh
 
-# Check if the eukfinder environment exists, and create it if it doesn't
 conda env create -f eukfinder_env.yml
+
+conda env list
 conda activate eukfinder
 
-export PATH=$PREFIX/bin:$PATH
-
+conda list
 eukfinder read_prep -h
 eukfinder short_seqs -h
 eukfinder long_seqs -h
