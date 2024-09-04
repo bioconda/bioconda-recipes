@@ -32,7 +32,8 @@ sed -i.bak 's/g++/$(CXX) $(CXXFLAGS)/g' contrib/intervaltree/Makefile
 if [[ `uname` == "Darwin" ]]; then
 	sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' contrib/smithwaterman/Makefile
 	sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' contrib/intervaltree/Makefile
-	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
+	#export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
+	export LD="${CXX}"
 	#export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_ENABLE_CXX17_REMOVED_FEATURES"
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
