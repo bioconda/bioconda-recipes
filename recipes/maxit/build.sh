@@ -18,7 +18,7 @@ cd ${SRC_DIR}
 sed -i.bak 's|./data/binary|'"${PREFIX}/data/binary"'|g' binary.sh
 rm -rf *.bak
 
-make compile -j"${CPU_COUNT}" CC="${CC}" CFLAGS="${CFLAGS}"
+make compile CC="${CC}" CFLAGS="${CFLAGS}"
 make binary -j"${CPU_COUNT}" CC="${CC}" CFLAGS="${CFLAGS}"
 
 install -d ${PREFIX}/bin
