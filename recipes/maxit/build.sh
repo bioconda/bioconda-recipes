@@ -4,8 +4,8 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
-export RCSBROOT=${SRC_DIR}
-export CC=${PREFIX}/bin/gcc
+export RCSBROOT=${SRC_DIR}/maxit-v10.1
+export CC=${BUILD_PREFIX}/bin/gcc
 
 # cd ${SRC_DIR}/maxit-v10.1/src
 # sed -i.bak 's|rcsbroot = getenv("RCSBROOT")|rcsbroot = "'${RCSBROOT}'"|' maxit.C process_entry.C generate_assembly_cif_file.C
