@@ -1,4 +1,4 @@
-B#!/bin/bash
+#!/bin/bash
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
