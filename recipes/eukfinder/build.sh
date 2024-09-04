@@ -28,11 +28,10 @@ cd ..
 source $(conda info --base)/etc/profile.d/conda.sh
 
 conda env create -f eukfinder_env.yml
-
-conda env list
 conda activate eukfinder
 
-conda list
+# this is a strange case of pip overwriting path
+pip install ete3
 eukfinder read_prep -h
 eukfinder short_seqs -h
 eukfinder long_seqs -h
