@@ -27,11 +27,6 @@ cd "${SRC_DIR}/cifparse-obj-v7.0" && sed -i 's|mv |cp |' Makefile
 
 cd "${SRC_DIR}" && make binary
 
-# unlink ${BUILD_PREFIX}/bin/gcc
-# unlink ${BUILD_PREFIX}/bin/c++
-# unlink ${BUILD_PREFIX}/bin/cxx
-# unlink ${BUILD_PREFIX}/bin/g++
-
 install ${SRC_DIR}/bin/* "${PREFIX}/bin"
 
 install -d -m 644 "${PREFIX}/data"
