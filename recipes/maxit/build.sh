@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euxo pipefail
+
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
