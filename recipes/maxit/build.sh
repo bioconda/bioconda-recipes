@@ -2,9 +2,9 @@
 
 set -exo pipefail
 
-export INCLUDE_PATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+# export INCLUDE_PATH="${PREFIX}/include"
+# export LIBRARY_PATH="${PREFIX}/lib"
+# export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
 # export CPU_COUNT=1
 export RCSBROOT="${SRC_DIR}"
