@@ -7,7 +7,7 @@ set -exo pipefail
 # export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
 export CPU_COUNT=1
-export RCSBROOT="${PREFIX}"
+export RCSBROOT="${SRC_DIR}"
 
 ln -s "${CC}" "${BUILD_PREFIX}/bin/gcc"
 ln -s "${CXX}" "${BUILD_PREFIX}/bin/c++"
