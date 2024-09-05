@@ -5,6 +5,7 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
 export RCSBROOT=${SRC_DIR}
+export CPU_COUNT=1
 
 ln -s ${CC} ${BUILD_PREFIX}/bin/gcc
 ln -s ${CXX} ${BUILD_PREFIX}/bin/c++
@@ -12,7 +13,8 @@ ln -s ${CXX} ${BUILD_PREFIX}/bin/cxx
 ln -s ${GXX} ${BUILD_PREFIX}/bin/g++
 
 cd ${RCSBROOT}/cifparse-obj-v7.0
-sed -i 's/mv /cp /' Makefile
+sed -i 's/mv /cp /g' Makefile  # [linux]
+sed -i '' 's/mv /cp /g' Makefile  # [osx]
 
 cd ${RCSBROOT}
 sed -i 's|./data/binary|\${RCSBROOT}/data/binary|g' binary.sh
