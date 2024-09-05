@@ -4,7 +4,7 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
-export RCSBROOT=${SRC_DIR}
+export RCSBROOT=${PREFIX}
 
 ln -s ${CC} ${BUILD_PREFIX}/bin/gcc
 ln -s ${CXX} ${BUILD_PREFIX}/bin/c++
@@ -18,7 +18,7 @@ cd ${RCSBROOT}
 sed -i 's|./data/binary|\${RCSBROOT}/data/binary|g' binary.sh
 
 cd ${RCSBROOT}
-make binary -j"${CPU_COUNT}"
+make binary
 
 unlink ${BUILD_PREFIX}/bin/gcc
 unlink ${BUILD_PREFIX}/bin/c++
