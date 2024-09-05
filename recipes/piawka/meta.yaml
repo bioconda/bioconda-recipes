@@ -1,0 +1,52 @@
+{% set name = "piawka" %}
+{% set version = "0.7.10" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  path: ../
+  url: https://github.com/novikovalab/piawka/archive/refs/tags/0.7.10.tar.gz
+  sha256: 511859b69525db7dc988ae55556e6fd31e2709f0e3a4de404f87abfadb97a272
+
+build:
+  number: 0
+  script: #replace shebangs
+    - "set -x"
+    - "pwd"
+    - "mkdir -p $PREFIX/bin"
+    - "cp $RECIPE_DIR/../scripts/* $PREFIX/bin"
+    - "chmod +x $PREFIX/bin/*"
+    - "mkdir -p $PREFIX/test"
+    - "cp $RECIPE_DIR/../examples/{minitest.vcf.gz,groups.tsv} $PREFIX/test"
+
+requirements:
+  run:
+    - mawk =1.3.4
+    - parallel
+    - bash
+    - tabix
+    
+test:
+  commands:
+    - "piawka $PREFIX/test/groups.tsv <(zcat $PREFIX/test/minitest.vcf.gz) > $PREFIX/test/test.out" 
+
+about:
+  home: https://github.com/novikovalab/piawka
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'The powerful AWK script to calculate population statistics in VCF files with support for varying ploidy and missing data'
+  description: |
+    The powerful awk script to calculate π, Dxy (or πxy, or Nei's D) 
+    and some more simple stats (Fst, Tajima's D, Ronfort's rho) in VCF files in the command line. 
+    Developed to analyze arbitrary-ploidy groups with substantial amounts of missing data.
+    Largely inspired by https://github.com/ksamuk/pixy
+  dev_url: https://github.com/novikovalab/piawka
+  doc_url: https://github.com/novikovalab/piawka/wiki
+  doc_source_url: https://github.com/novikovalab/piawka/blob/main/README.md
+  
+extra:
+  recipe-maintainers:
+    - taprs
