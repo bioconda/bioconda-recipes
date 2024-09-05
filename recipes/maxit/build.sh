@@ -20,7 +20,7 @@ alias sed="${BUILD_PREFIX}/bin/sed"
 sed -i "s|rcsbroot = getenv(\"RCSBROOT\")|rcsbroot = \"${PREFIX}\"|g" maxit.C process_entry.C generate_assembly_cif_file.C
 
 cd "${SRC_DIR}/cifparse-obj-v7.0" && sed -i 's|mv |cp |' Makefile
-cd ${SRC_DIR} && sed -i "s|./data/binary|${PREFIX}/data/binary|g" binary.sh
+cd "${SRC_DIR}" && sed -i "s|./data/binary|${PREFIX}/data/binary|g" binary.sh
 cd "${SRC_DIR}" && make binary -j"${CPU_COUNT}"
 
 # unlink ${BUILD_PREFIX}/bin/gcc
