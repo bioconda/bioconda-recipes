@@ -19,7 +19,8 @@ build:
     - set -x
     - pwd
     - mkdir -p $PREFIX/bin
-    - for f in $SRC_DIR/scripts/*; do awk -v polyglot1='#!/bin/sh' -v polyglot2='"exec" "mawk" "-f" "$0" "$@" && 0 {}' 'NR==1 && /awk/{print polyglot1; print polyglot2}1' $f > $PREFIX/bin/$(basename $f); done
+    - polyglot1='#!/bin/sh'; polyglot2='"exec" "mawk" "-f" "$0" "$@" && 0 {}'
+    - for f in $SRC_DIR/scripts/*; do t="$PREFIX/bin/$(basename $f)"; head -n 1 $f | grep awk && ( echo $"polyglot1" > $t && echo $"polyglot2" >> $t ); cat $f >> $t; done
     - chmod +x $PREFIX/bin/*
     - mkdir -p $PREFIX/test
     - cp $SRC_DIR/examples/{minitest.vcf.gz,groups.tsv} $PREFIX/test
