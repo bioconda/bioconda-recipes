@@ -28,7 +28,7 @@ cd "${SRC_DIR}" && make binary -j"${CPU_COUNT}"
 # unlink ${BUILD_PREFIX}/bin/cxx
 # unlink ${BUILD_PREFIX}/bin/g++
 
-install "${SRC_DIR}/bin/*" "${PREFIX}/bin"
+install "${SRC_DIR}"/bin/* "${PREFIX}/bin"
 
 install -d "${PREFIX}/data"
-cp -r "${SRC_DIR}/data/*" "${PREFIX}/data"
+cp -r "${SRC_DIR}"/data/* "${PREFIX}/data"
