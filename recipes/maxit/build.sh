@@ -30,5 +30,5 @@ cd "${SRC_DIR}" && make binary -j"${CPU_COUNT}"
 
 install "${SRC_DIR}"/bin/* "${PREFIX}/bin"
 
-install -d "${PREFIX}/data"
+install -d -m 644 "${PREFIX}/data"
 cp -r "${SRC_DIR}"/data/* "${PREFIX}/data"
