@@ -1,5 +1,6 @@
 #!/bin/bash
 
+cd freebayes
 mkdir build
 mkdir -p ${PREFIX}/bin
 
