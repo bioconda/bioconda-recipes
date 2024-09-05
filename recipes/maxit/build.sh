@@ -11,13 +11,13 @@ ln -s ${CXX} ${BUILD_PREFIX}/bin/c++
 ln -s ${CXX} ${BUILD_PREFIX}/bin/cxx
 ln -s ${GXX} ${BUILD_PREFIX}/bin/g++
 
-cd ${RCSBROOT}/cifparse-obj-v7.0
+cd ${SRC_DIR}/cifparse-obj-v7.0
 sed -i 's/mv /cp /g' Makefile
 
-cd ${RCSBROOT}
+cd ${SRC_DIR}
 sed -i 's|./data/binary|\${RCSBROOT}/data/binary|g' binary.sh
 
-cd ${RCSBROOT}
+cd ${SRC_DIR}
 make binary
 
 unlink ${BUILD_PREFIX}/bin/gcc
