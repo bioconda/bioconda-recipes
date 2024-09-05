@@ -5,7 +5,6 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
 export RCSBROOT=${SRC_DIR}
-export CPU_COUNT=1
 
 ln -s ${CC} ${BUILD_PREFIX}/bin/gcc
 ln -s ${CXX} ${BUILD_PREFIX}/bin/c++
