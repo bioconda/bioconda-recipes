@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euxo pipefail
+set -exo pipefail
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
@@ -26,4 +26,4 @@ unlink ${BUILD_PREFIX}/bin/g++
 install -d ${PREFIX}/bin
 install ${SRC_DIR}/bin/* ${PREFIX}/bin
 install -d ${PREFIX}/data
-install -m 644 ${SRC_DIR}/data/* ${PREFIX}/data
+cp -r ${SRC_DIR}/data/* ${PREFIX}/data
