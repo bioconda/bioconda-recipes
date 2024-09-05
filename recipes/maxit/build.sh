@@ -16,7 +16,7 @@ ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
 
 alias sed="${BUILD_PREFIX}/bin/sed"
 
-# cd ${SRC_DIR}/maxit-v10.1/src && \
+cd ${SRC_DIR}/maxit-v10.1/src && \
 sed -i "s|rcsbroot = getenv(\"RCSBROOT\")|rcsbroot = \"${PREFIX}\"|g" maxit.C process_entry.C generate_assembly_cif_file.C
 
 cd "${SRC_DIR}/cifparse-obj-v7.0" && sed -i 's|mv |cp |' Makefile
