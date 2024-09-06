@@ -1,19 +1,23 @@
 {% set name = "vcf-validator" %}
-{% set version = "0.9.6" %}
+{% set version = "0.9.7" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://github.com/EBIvariation/vcf-validator/releases/download/v{{ version }}/vcf_validator_linux        # [linux]
-    sha256: 33fc99334e77a90e99415daebfa877a9bc0375a3d7c18809082ace64d8373cdd                                       # [linux]
-  - url: https://github.com/EBIvariation/vcf-validator/releases/download/v{{ version }}/vcf_assembly_checker_linux # [linux]
-    sha256: 7913a6b3f12fdf5a66c98026ef144be4f8964f981f80eca4b509e06e6b8282ab                                       # [linux]
-  - url: https://github.com/EBIvariation/vcf-validator/releases/download/v{{ version }}/vcf_validator_macos        # [osx]
-    sha256: 68f50e38323260dcd77e236c27872e1a0eb5c6407736baf003cbc755c87bab94                                       # [osx]
-  - url: https://github.com/EBIvariation/vcf-validator/releases/download/v{{ version }}/vcf_assembly_checker_macos # [osx]
-    sha256: afb7383468fa08d597fc8f7588918dbcdafc8d6d41eb7d33d37ae71a30860cb7                                       # [osx]
+  - url: https://github.com/tcezard/vcf-validator/releases/download/test_artifacts/vcf_validator_linux               # [linux]
+    sha256: 49aef4841cd7d0913ba12020465830b834ccfe20f2094222c8c41511f6c801ac                                              # [linux]
+  - url: https://github.com/tcezard/vcf-validator/releases/download/test_artifacts/vcf_assembly_checker_linux        # [linux]
+    sha256: 74bbb18cb4d210252c18811e2549786f1beefc3f3d0d14f5e53f2ea7284085a0                                              # [linux]
+  - url: https://github.com/EBIvariation/vcf-validator/releases/download/v0.9.7/vcf_validator_macos_x64           # [osx and x86]
+    sha256: 0b97a34fac6cf23951ffc33cdfb7b0602a89b4d5390564c8d816cb83019a3ffc                                              # [osx and x86]
+  - url: https://github.com/EBIvariation/vcf-validator/releases/download/v0.9.7/vcf_assembly_checker_macos_x64    # [osx and x86]
+    sha256: 1b5404a4239da9f5e5e39bece975e4eea55d87c486121a076226829b79477bc3                                              # [osx and x86]
+  - url: https://github.com/vasudeva8/vcf-validator/releases/download/test1/vcf_validator_macos_arm64         # [osx and arm64]
+    sha256: 4e350f88ee10356938056c6c8a96a16562fa649713a06ecd4e21e4f3587bad1d                                              # [osx and arm64]
+  - url: https://github.com/EBIvariation/vcf-validator/releases/download/v0.9.7/vcf_assembly_checker_macos_arm64  # [osx and arm64]
+    sha256: 5f9e35cc1980b688d2d12e56d0fdadd3b430d55c70cdac6055b3f24ea60e488b                                             # [osx and arm64]
 
 build:
   script:
@@ -21,8 +25,19 @@ build:
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
+requirements:
+  host:
+    - boost >=1.83
+    - zstd >=1.5.6
+    - xz >=5.2.6
+  run:
+    - boost >=1.83
+    - zstd >=1.5.6
+    - xz >=5.2.6
+
 test:
   commands:
+    - conda info -a || true
     - vcf_validator --help
     - vcf_assembly_checker --help
 
@@ -35,6 +50,8 @@ about:
    - LICENSE_ODB
 
 extra:
+  additional-platforms:
+    - osx-arm64
   recipe-maintainers:
     - apriltuesday
     - tcezard
