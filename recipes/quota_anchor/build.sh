@@ -1,6 +1,5 @@
 #!/bin/bash
 $PYTHON -m pip install --no-deps --ignore-installed . -vv
-${PREFIX}/bin/conda config --add channels defaults
 echo "[software]
 gffread = ${PREFIX}/bin/gffread
 AnchorWave = ${PREFIX}/bin/anchorwave
