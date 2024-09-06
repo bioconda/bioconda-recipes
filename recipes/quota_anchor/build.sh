@@ -1,5 +1,5 @@
 #!/bin/bash
-$PYTHON -m pip install --no-deps --ignore-installed . -vv
+$PYTHON -m pip install -vv .
 echo "[software]
 gffread = ${PREFIX}/bin/gffread
 AnchorWave = ${PREFIX}/bin/anchorwave
