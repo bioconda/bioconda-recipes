@@ -9,10 +9,16 @@ set -exo pipefail
 export CPU_COUNT=1
 export RCSBROOT="${SRC_DIR}"
 
-ln -s "${CC}" "${BUILD_PREFIX}/bin/gcc"
-ln -s "${CXX}" "${BUILD_PREFIX}/bin/c++"
-ln -s "${CXX}" "${BUILD_PREFIX}/bin/cxx"
-ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  mamba install -c conda-forge gcc
+  export CC=gcc
+  export CXX=g++
+else
+    ln -s "${CC}" "${BUILD_PREFIX}/bin/gcc"
+    ln -s "${CXX}" "${BUILD_PREFIX}/bin/c++"
+    ln -s "${CXX}" "${BUILD_PREFIX}/bin/cxx"
+    ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
+fi
 
 alias sed="${BUILD_PREFIX}/bin/sed"
 
