@@ -1,5 +1,5 @@
 #!/bin/bash
-$PYTHON -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+$PYTHON -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir --ignore-installed
 echo "[software]
 gffread = ${PREFIX}/bin/gffread
 AnchorWave = ${PREFIX}/bin/anchorwave
