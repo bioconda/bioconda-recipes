@@ -28,7 +28,7 @@ source $(conda info --base)/etc/profile.d/conda.sh
 conda env create -f eukfinder_env.yml
 conda activate eukfinder
 
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+"${PYTHON}" setup.py install --single-version-externally-managed --record=record.txt
 
 eukfinder read_prep -h
 eukfinder short_seqs -h
