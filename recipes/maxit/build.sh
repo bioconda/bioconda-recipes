@@ -5,7 +5,7 @@ set -exo pipefail
 # export INCLUDE_PATH="${PREFIX}/include"
 # export LIBRARY_PATH="${PREFIX}/lib"
 # export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
+# export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
 export CPU_COUNT=1
 export RCSBROOT="${SRC_DIR}"
 
@@ -21,9 +21,6 @@ sed -i "s|rcsbroot = getenv(\"RCSBROOT\")|rcsbroot = \"${RCSBROOT}\"|g" maxit.C 
 
 cd "${SRC_DIR}/cifparse-obj-v7.0" && sed -i 's|mv |cp |g' Makefile
 cd "${SRC_DIR}" && sed -i "s|./data/binary|${RCSBROOT}/data/binary|g" binary.sh
-
-# install -d "${SRC_DIR}"/bin
-# install -d "${SRC_DIR}"/bin "${PREFIX}/bin"
 
 cd "${SRC_DIR}" && make binary V=1
 
