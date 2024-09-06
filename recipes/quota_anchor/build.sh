@@ -1,5 +1,4 @@
 #!/bin/bash
-conda config --add channels defaults 
 $PYTHON -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
 echo "[software]
 gffread = ${PREFIX}/bin/gffread
