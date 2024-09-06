@@ -1,0 +1,42 @@
+{% set version = "1.0dev" %}
+
+package:
+  name: spreadGL
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/GuyBaele/SpreadGL.git
+  git_rev: master
+
+build:
+  number: 0
+  noarch: python
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: "{{ PYTHON }} -m pip install scripts/. --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('pyfaidx', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+  run:
+    - python >=3.11
+    - setuptools
+    - biopython
+
+test:
+  commands:
+    - spread --help
+
+about:
+  home:  https://github.com/GuyBaele/SpreadGL
+  license: MIT License
+  summary: 'Visualising pathogen dispersal in a high-performance browser application'
+  license_family: MIT
+  doc_url: https://github.com/GuyBaele/SpreadGL
+
+extra:
+	additional-platforms:
+		- linux-aarch64
