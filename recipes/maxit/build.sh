@@ -14,14 +14,15 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     # To pass CI test on amd64 platforms
     ulimit -v 2097152
 
+    ln -s "${CC}" "${BUILD_PREFIX}/bin/gcc"
+    ln -s "${CXX}" "${BUILD_PREFIX}/bin/c++"
+    ln -s "${CXX}" "${BUILD_PREFIX}/bin/cxx"
+    ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
+
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     alias sed="${BUILD_PREFIX}/bin/sed"
+    mamba install gcc -c conda-forge
 fi
-
-ln -s "${CC}" "${BUILD_PREFIX}/bin/gcc"
-ln -s "${CXX}" "${BUILD_PREFIX}/bin/c++"
-ln -s "${CXX}" "${BUILD_PREFIX}/bin/cxx"
-ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
 
 cd ${SRC_DIR}/maxit-v10.1/src && \
 sed -i "s|rcsbroot = getenv(\"RCSBROOT\")|rcsbroot = \"${RCSBROOT}\"|g" maxit.C process_entry.C generate_assembly_cif_file.C
