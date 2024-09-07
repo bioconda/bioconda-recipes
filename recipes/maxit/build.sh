@@ -2,6 +2,8 @@
 
 set -exo pipefail
 
+ulimit -v 2097152
+
 # Disable parallel
 export CPU_COUNT=1
 
