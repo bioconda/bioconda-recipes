@@ -27,8 +27,8 @@ cd "${SRC_DIR}" && make binary -j${CPU_COUNT}
 
 unlink "${BUILD_PREFIX}/bin/gcc"
 unlink "${BUILD_PREFIX}/bin/c++"
-unlink "${CXX}" "${BUILD_PREFIX}/bin/cxx"
-unlink "${GXX}" "${BUILD_PREFIX}/bin/g++"
+unlink "${BUILD_PREFIX}/bin/cxx"
+unlink "${BUILD_PREFIX}/bin/g++"
 
 install -d "${PREFIX}/bin"
 install ${SRC_DIR}/bin/{maxit,process_entry} "${PREFIX}/bin"
