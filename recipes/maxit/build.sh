@@ -29,7 +29,7 @@ unlink "${CXX}" "${BUILD_PREFIX}/bin/cxx"
 unlink "${GXX}" "${BUILD_PREFIX}/bin/g++"
 
 install -d "${PREFIX}/bin"
-install ${SRC_DIR}/bin/* "${PREFIX}/bin"
+install ${SRC_DIR}/bin/{maxit,process_entry} "${PREFIX}/bin"
 
 install -d "${PREFIX}/data"
 find "${SRC_DIR}/data" -type d -exec install -d "${PREFIX}/data/{}" \;
