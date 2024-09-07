@@ -2,8 +2,9 @@
 
 set -exo pipefail
 
+# Disable parallel
+export CPU_COUNT=1
 
-# export CPU_COUNT=1
 export RCSBROOT="${SRC_DIR}"
 export RCSBROOT="${SRC_DIR}"
 export RCSBROOT="${SRC_DIR}"
