@@ -6,8 +6,6 @@ set -exo pipefail
 export CPU_COUNT=1
 
 export RCSBROOT="${SRC_DIR}"
-export RCSBROOT="${SRC_DIR}"
-export RCSBROOT="${SRC_DIR}"
 
 # To pass CI test on amd64 platforms
 ulimit -v 2097152
