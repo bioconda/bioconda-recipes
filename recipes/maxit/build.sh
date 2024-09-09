@@ -11,11 +11,7 @@ case "${OSTYPE}" in
     darwin*)
         alias sed="${BUILD_PREFIX}/bin/sed"
 
-        if [[ "$(uname -m)" == "arm64" ]]; then
-            ls ${BUILD_PREFIX}/bin
-            ln -s $(which g++) "${BUILD_PREFIX}/bin/gcc"
-            ln -s $(which g++) "${BUILD_PREFIX}/bin/g++"
-        else
+        if [[ "$(uname -m)" != "arm64" ]]; then
             ln -s "${GXX}" "${BUILD_PREFIX}/bin/gcc"
             ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
         fi
