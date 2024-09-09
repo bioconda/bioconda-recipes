@@ -41,6 +41,6 @@ cmake -S . -B build \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DEXTRA_FLAGS=""
+	-DEXTRA_FLAGS="" # Disable march=native to build a generic executable
 
 cmake --build build/ --target install -j 4 -v
