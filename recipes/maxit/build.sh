@@ -8,28 +8,29 @@ export CPU_COUNT=1
 export RCSBROOT="${SRC_DIR}"
 
 case "${OSTYPE}" in
-  darwin*)
-    alias sed="${BUILD_PREFIX}/bin/sed"
+    darwin*)
+        alias sed="${BUILD_PREFIX}/bin/sed"
 
-    if [[ "$(uname -m)" == "arm64" ]]; then
-        ln -s "${CLANG}" "${BUILD_PREFIX}/bin/gcc"
-        ln -s "${CLANG}-cpp" "${BUILD_PREFIX}/bin/g++"
-    else
-        ln -s "${GXX}" "${BUILD_PREFIX}/bin/gcc"
+        if [[ "$(uname -m)" == "arm64" ]]; then
+            ecjo "ls"
+            ls ${BUILD_PREFIX}/bin
+            ln -s "${CC_FOR_BUILD}" "${BUILD_PREFIX}/bin/gcc"
+            ln -s "${CC_FOR_BUILD}-cpp" "${BUILD_PREFIX}/bin/g++"
+        else
+            ln -s "${GXX}" "${BUILD_PREFIX}/bin/gcc"
+            ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
+        fi
+        ;;
+    linux*)
+        # To pass CI test on amd64 platforms
+        ulimit -v 2097152
+
+        ln -s "${CC}" "${BUILD_PREFIX}/bin/gcc"
         ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
-    fi
-    ;;
-  linux*)
-    # To pass CI test on amd64 platforms
-    ulimit -v 2097152
-
-    ln -s "${CC}" "${BUILD_PREFIX}/bin/gcc"
-    ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
-    ;;
-
-  *)
-    exit 1
-    ;;
+        ;;
+    *)
+        exit 1
+        ;;
 esac
 
 cd ${SRC_DIR}/maxit-v10.1/src && \
