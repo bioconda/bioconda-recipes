@@ -7,8 +7,18 @@ export CPU_COUNT=1
 
 export RCSBROOT="${SRC_DIR}"
 
-# To pass CI test on amd64 platforms
-ulimit -v 2097152
+case "${OSTYPE}" in
+  darwin*)
+    alias sed="${BUILD_PREFIX}/bin/sed"
+    ;;
+  linux*)
+    # To pass CI test on amd64 platforms
+    ulimit -v 2097152
+    ;;
+  *)
+    exit 1
+    ;;
+esac
 
 ln -s "${CC}" "${BUILD_PREFIX}/bin/gcc"
 ln -s "${CXX}" "${BUILD_PREFIX}/bin/c++"
