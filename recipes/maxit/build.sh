@@ -10,8 +10,7 @@ export RCSBROOT="${SRC_DIR}"
 case "${OSTYPE}" in
   darwin*)
     alias sed="${BUILD_PREFIX}/bin/sed"
-
-    ln -s "${GXX}" "${BUILD_PREFIX}/bin/gcc"
+    ln -s "${CC_FOR_BUILD}" "${BUILD_PREFIX}/bin/gcc"
     ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
     ;;
   linux*)
