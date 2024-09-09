@@ -10,18 +10,21 @@ export RCSBROOT="${SRC_DIR}"
 case "${OSTYPE}" in
   darwin*)
     alias sed="${BUILD_PREFIX}/bin/sed"
+
+    ln -s "${GXX}" "${BUILD_PREFIX}/bin/gcc"
+    ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
     ;;
   linux*)
     # To pass CI test on amd64 platforms
     ulimit -v 2097152
+
+    ln -s "${CC}" "${BUILD_PREFIX}/bin/gcc"
+    ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
     ;;
   *)
     exit 1
     ;;
 esac
-
-ln -s "${CC}" "${BUILD_PREFIX}/bin/gcc"
-ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
 
 cd ${SRC_DIR}/maxit-v10.1/src && \
 sed -i "s|rcsbroot = getenv(\"RCSBROOT\")|rcsbroot = \"${RCSBROOT}\"|g" maxit.C process_entry.C generate_assembly_cif_file.C
