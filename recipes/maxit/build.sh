@@ -13,7 +13,7 @@ case "${OSTYPE}" in
 
         if [[ "$(uname -m)" == "arm64" ]]; then
             ls ${BUILD_PREFIX}/bin
-            ln -s $(which gcc) "${BUILD_PREFIX}/bin/gcc"
+            ln -s $(which g++) "${BUILD_PREFIX}/bin/gcc"
             ln -s $(which g++) "${BUILD_PREFIX}/bin/g++"
         else
             ln -s "${GXX}" "${BUILD_PREFIX}/bin/gcc"
