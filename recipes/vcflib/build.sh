@@ -40,6 +40,7 @@ cmake -S . -B build \
 	-DZIG=ON -DOPENMP=ON -DWFA_GITMODULE=OFF \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-	-DCMAKE_CXX_FLAGS="${CXXFLAGS}"
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-DEXTRA_FLAGS="" # Disable march=native to build a generic executable, see https://github.com/vcflib/vcflib/issues/401
 
 cmake --build build/ --target install -j 4 -v
