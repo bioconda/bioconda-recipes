@@ -14,7 +14,7 @@ case "${OSTYPE}" in
         if [[ "$(uname -m)" == "arm64" ]]; then
             echo "ls"
             ls ${BUILD_PREFIX}/bin
-            ln -s "${CC_FOR_BUILD}" "${BUILD_PREFIX}/bin/gcc"
+            ln -s "${CC_FOR_BUILD}-cpp" "${BUILD_PREFIX}/bin/gcc"
             ln -s "${CC_FOR_BUILD}-cpp" "${BUILD_PREFIX}/bin/g++"
         else
             ln -s "${GXX}" "${BUILD_PREFIX}/bin/gcc"
