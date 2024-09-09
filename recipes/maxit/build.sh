@@ -11,8 +11,13 @@ case "${OSTYPE}" in
   darwin*)
     alias sed="${BUILD_PREFIX}/bin/sed"
 
-    ln -s "${GXX}" "${BUILD_PREFIX}/bin/gcc"
-    ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
+    if [[ "$(uname -m)" == "arm64" ]]; then
+        ln -s "${CLANG}" "${BUILD_PREFIX}/bin/gcc"
+        ln -s "${CLANG}-cpp" "${BUILD_PREFIX}/bin/g++"
+    else
+        ln -s "${GXX}" "${BUILD_PREFIX}/bin/gcc"
+        ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
+    fi
     ;;
   linux*)
     # To pass CI test on amd64 platforms
@@ -21,6 +26,7 @@ case "${OSTYPE}" in
     ln -s "${CC}" "${BUILD_PREFIX}/bin/gcc"
     ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
     ;;
+
   *)
     exit 1
     ;;
