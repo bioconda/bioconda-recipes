@@ -12,7 +12,7 @@ case "${OSTYPE}" in
         alias sed="${BUILD_PREFIX}/bin/sed"
 
         if [[ "$(uname -m)" == "arm64" ]]; then
-            ecjo "ls"
+            echo "ls"
             ls ${BUILD_PREFIX}/bin
             ln -s "${CC_FOR_BUILD}" "${BUILD_PREFIX}/bin/gcc"
             ln -s "${CC_FOR_BUILD}-cpp" "${BUILD_PREFIX}/bin/g++"
