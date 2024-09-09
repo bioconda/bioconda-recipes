@@ -10,8 +10,14 @@ export RCSBROOT="${SRC_DIR}"
 case "${OSTYPE}" in
   darwin*)
     alias sed="${BUILD_PREFIX}/bin/sed"
-    ln -s "${CC_FOR_BUILD}" "${BUILD_PREFIX}/bin/gcc"
-    ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
+
+    if [[ "$(uname -m)" == "arm64" ]]; then
+        ln -s "${CC_FOR_BUILD}" "${BUILD_PREFIX}/bin/gcc"
+        ln -s "${CC_FOR_BUILD}" "${BUILD_PREFIX}/bin/g++"
+    else
+        ln -s "${GXX}" "${BUILD_PREFIX}/bin/gcc"
+        ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
+    fi
     ;;
   linux*)
     # To pass CI test on amd64 platforms
