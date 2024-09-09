@@ -21,8 +21,6 @@ case "${OSTYPE}" in
 esac
 
 ln -s "${CC}" "${BUILD_PREFIX}/bin/gcc"
-ln -s "${CXX}" "${BUILD_PREFIX}/bin/c++"
-ln -s "${CXX}" "${BUILD_PREFIX}/bin/cxx"
 ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
 
 cd ${SRC_DIR}/maxit-v10.1/src && \
@@ -33,8 +31,6 @@ cd "${SRC_DIR}" && sed -i "s|./data/binary|${RCSBROOT}/data/binary|g" binary.sh
 cd "${SRC_DIR}" && make binary -j${CPU_COUNT}
 
 unlink "${BUILD_PREFIX}/bin/gcc"
-unlink "${BUILD_PREFIX}/bin/c++"
-unlink "${BUILD_PREFIX}/bin/cxx"
 unlink "${BUILD_PREFIX}/bin/g++"
 
 install -d "${PREFIX}/bin"
