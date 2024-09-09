@@ -12,10 +12,9 @@ case "${OSTYPE}" in
         alias sed="${BUILD_PREFIX}/bin/sed"
 
         if [[ "$(uname -m)" == "arm64" ]]; then
-            echo "ls"
             ls ${BUILD_PREFIX}/bin
-            ln -s "${CC_FOR_BUILD}-cpp" "${BUILD_PREFIX}/bin/gcc"
-            ln -s "${CC_FOR_BUILD}-cpp" "${BUILD_PREFIX}/bin/g++"
+            ln -s "${BUILD_PREFIX}/bin/clang" "${BUILD_PREFIX}/bin/gcc"
+            ln -s "${BUILD_PREFIX}/bin/clang++" "${BUILD_PREFIX}/bin/g++"
         else
             ln -s "${GXX}" "${BUILD_PREFIX}/bin/gcc"
             ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
