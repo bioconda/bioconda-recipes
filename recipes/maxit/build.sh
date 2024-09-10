@@ -11,11 +11,15 @@ case "${OSTYPE}" in
     darwin*)
         alias sed="${BUILD_PREFIX}/bin/sed"
 
-        if [[ "$(uname -m)" != "arm64" ]]; then
+        if [[ "$(uname -m)" == "x86_64" ]]; then
             ln -s "${GXX}" "${BUILD_PREFIX}/bin/gcc"
             ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
+        elif [[ "$(uname -m)" == "arm64" ]]; then
+            ln -s "${CXX}" "${BUILD_PREFIX}/bin/gcc"
+            ln -s "${CXX}" "${BUILD_PREFIX}/bin/g++"
         fi
         ;;
+
     linux*)
         # To pass CI test on amd64 platforms
         ulimit -v 2097152
