@@ -28,5 +28,6 @@ cp -nf ../scripts/*.py ${PREFIX}/bin
 cp -nf ../scripts/*.sh ${PREFIX}/bin
 cp -nf ../scripts/*.pl ${PREFIX}/bin
 
+chmod 0755 ${PREFIX}/bin/freebayes
 chmod 0755 ../scripts/freebayes-parallel
 cp -nf ../scripts/freebayes-parallel ${PREFIX}/bin
