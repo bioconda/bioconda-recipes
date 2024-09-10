@@ -28,6 +28,9 @@ else
 	export CONFIG_ARGS=""
 fi
 
+export INCLUDES="-I{PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include -O3 -D_FILE_OFFSET_BITS=64 -DH5_USE_110_API"
 
 cmake -S ncbi-vdb/ -B build_vdb \
@@ -40,4 +43,4 @@ cmake -S ncbi-vdb/ -B build_vdb \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	"${CONFIG_ARGS}"
 
-cmake --build build_vdb/ --target install -j 4 -v
+cmake --build build_vdb/ --target install -j "${CPU_COUNT}" -v
