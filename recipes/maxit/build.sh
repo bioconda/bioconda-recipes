@@ -15,14 +15,12 @@ case "${OSTYPE}" in
             ln -s "${GXX}" "${BUILD_PREFIX}/bin/gcc"
             ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
         elif [[ "$(uname -m)" == "arm64" ]]; then
-            ln -s /usr/bin/gcc "${BUILD_PREFIX}/bin/gcc"
-            ln -s /usr/bin/g++ "${BUILD_PREFIX}/bin/g++"
+            ln -s $(which gcc) "${BUILD_PREFIX}/bin/gcc"
+            ln -s $(which g++) "${BUILD_PREFIX}/bin/g++"
             echo '${BUILD_PREFIX}/bin'
             ls -l "${BUILD_PREFIX}/bin"
-            ${BUILD_PREFIX}/bin/gcc --version
-            ${BUILD_PREFIX}/bin/g++ --version
-            echo '${CC_FOR_BUILD}/bin'
-            ls -l "${CC_FOR_BUILD}/bin"
+            echo $(which gcc)
+            echo $(which g++)
         fi
         ;;
 
