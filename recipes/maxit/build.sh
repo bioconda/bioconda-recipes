@@ -22,8 +22,8 @@ case "${OSTYPE}" in
             export PATH="${CONDA_PREFIX}/bin:${BUILD_PREFIX}/bin:${PATH}"
             echo $(which gcc)
             echo $(which g++)
-            # gcc_version=$(gcc --version)
-            # echo ${gcc_version}
+            gcc_version=$(gcc --version)
+            echo ${gcc_version}
         fi
         ;;
 
