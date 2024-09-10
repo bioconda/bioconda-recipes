@@ -1,30 +1,39 @@
-{% set version = "1.2.6" %}
+{% set version = "2.1.4" %}
+{% set name = "vamos" %}
 
 package:
   name: vamos
   version: {{ version }}
 
 source:
-  url: https://github.com/ChaissonLab/vamos/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 613a997950ae514774c49abfebad874786511c395363b733b1a1aa8c8fa87e86
+  url: https://github.com/ChaissonLab/vamos/archive/refs/tags/vamos-v{{ version }}.tar.gz
+  sha256: a4eb6d535e03cfa97192c821f5c896796a8953b039dd24ea6645fe537cba8740
+  patches:
+    - vamos-aarch64.patch # [linux and aarch64]
+
 
 build:
   number: 0
-  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
-    - {{ compiler('cxx') }}    
+    - {{ compiler('cxx') }}
+    - zlib 1.2.*    
+
   host:
     - zlib
     - htslib
-    - abpoa
     - boost
+    - zlib 1.2.*    
   run:
     - htslib
-
+    - zlib 1.2.*
+    
 test:
   commands:
     - vamos | grep 'Usage'
@@ -34,3 +43,7 @@ about:
   license: USC-RL v1.0
   license_file: LICENSE.txt
   summary: 'VNTR annotation using efficient motif selection'
+
+extra:
+  additional-platforms:
+    - linux-aarch64

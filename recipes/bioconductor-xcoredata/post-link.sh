@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "xcoredata-1.4.0"
+installBiocDataPackage.sh "xcoredata-1.6.0"

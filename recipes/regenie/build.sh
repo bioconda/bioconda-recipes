@@ -25,7 +25,7 @@ cmake \
   -S "${SRC_DIR}" \
   -B build
 
-make  -C build -j${CPU_COUNT:=1} regenie
+make  -C build -j1 regenie
 make  -C build install
 
 # bash test/test_conda.sh --path "${SRC_DIR}"
