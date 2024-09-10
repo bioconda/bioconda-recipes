@@ -10,8 +10,6 @@ export CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -O3 -I${PREFIX}/include"
 
 cd cimfomfa
-autoupdate
-autoreconf -if
 ./configure --prefix="${PREFIX}" \
 	CC="${CC}" CFLAGS="${CFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" \
@@ -22,7 +20,6 @@ make install
 make clean
 
 cd ..
-autoupdate
 ./configure --prefix="${PREFIX}" \
 	CC="${CC}" CFLAGS="${CFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" \
