@@ -1,6 +1,6 @@
-{% set version = "1.30.0" %}
+{% set version = "1.34.0" %}
 {% set name = "immunoClust" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,26 +8,31 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: af6686f550a3addb168fba5586b32265
+  md5: b83f47eaa19d45984b19f4071b455873
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-immunoclust", max_pin="x.x") }}'
 # Suggests: BiocStyle, utils, testthat
+# SystemRequirements: gsl
 requirements:
   host:
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
+    - 'bioconductor-flowcore >=2.14.0,<2.15.0'
     - r-base
     - r-lattice
     - libblas
     - liblapack
+    - gsl
   run:
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
+    - 'bioconductor-flowcore >=2.14.0,<2.15.0'
     - r-base
     - r-lattice
+    - gsl
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}

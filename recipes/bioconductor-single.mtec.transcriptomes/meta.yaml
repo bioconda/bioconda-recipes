@@ -1,6 +1,6 @@
-{% set version = "1.25.0" %}
+{% set version = "1.30.0" %}
 {% set name = "Single.mTEC.Transcriptomes" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,14 +8,16 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 560313eceb9231c01b678e08edb55a2e
+  md5: 574ee45ff1177688d68e6ae8295e67a2
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-single.mtec.transcriptomes", max_pin="x.x") }}'
   noarch: generic
 # Suggests: DESeq2, GenomicRanges, GenomicFeatures, genefilter, statmod, gdata, RColorBrewer, ggplot2, gplots, cluster, clue, grid, gridExtra, ggbio, Gviz, geneplotter, matrixStats, pheatmap, BiocStyle, knitr, BiocParallel
 requirements:
@@ -24,7 +26,7 @@ requirements:
   run:
     - r-base
     - curl
-    - bioconductor-data-packages>=20221103
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

@@ -1,0 +1,49 @@
+{% set name = "sourcepredict" %}
+{% set version = "0.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/sourcepredict-{{ version }}.tar.gz
+  sha256: d6eb89492b266c33fdf61121de849fdcdc1bdcd692227f559c63f74a9059d3ad
+
+build:
+  entry_points:
+    - sourcepredict= sourcepredict.__main__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - numpy <1.24.0
+    - pandas >=0.24.1
+    - scikit-learn >=0.20.1
+    - scikit-bio >=0.5.5
+    - umap-learn >=0.3.7
+    - scipy >=1.1.0
+    - ete3 >=3.1.1
+
+test:
+  imports:
+    - sourcepredict
+  commands:
+    - pip check
+    - sourcepredict --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/maxibor/sourcepredict
+  summary: Classification and prediction of the origin of metagenomic samples
+  license: GPL-3.0-or-later
+
+extra:
+  recipe-maintainers:
+    - maxibor

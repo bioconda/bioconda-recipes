@@ -1,0 +1,31 @@
+{% set name = "fastlin" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name|lower}}
+  version: {{ version }}
+
+source:
+  url: https://github.com/rderelle/fastlin/archive/{{ version }}.tar.gz
+  sha256: 3d73f83465bef74003e2d8a853a2902a33e289d1acbe1d6a1f4b93ead3ef546e
+
+build:
+  number: 0
+  script: "cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+
+test:
+  commands:
+    - fastlin -h
+
+about:
+   home: https://github.com/rderelle/fastlin
+   license: MIT
+   license_family: MIT
+   license_file: LICENSE
+   summary: fastlin, ultra-fast MTBC lineage typing

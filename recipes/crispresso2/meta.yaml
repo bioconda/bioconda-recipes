@@ -1,16 +1,17 @@
-{% set version = "2.2.12" %}
+{% set version = "2.3.1" %}
 
 package:
   name: crispresso2
   version: {{ version }}
 
 build:
-  skip: True  # [py2k or py == 37]
-  number: 0
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('crispresso2', max_pin='x') }}
 
 source:
   url: https://github.com/pinellolab/CRISPResso2/archive/v{{ version }}.tar.gz
-  sha256: bda7cb82969e199b507cd3f5023e5f824809c18ce3c165852014cf79ac4c4725
+  sha256: e1f3f87e392529d441f0b3b6983600d643fbcdf40cde621eb24f40b3f7195fa4
 
 requirements:
   build:
@@ -24,13 +25,12 @@ requirements:
   run:
     - python
     - scipy
-    - {{ pin_compatible('numpy') }}
+    - numpy <=1.26.4
     - pandas
     - plotly
-    - matplotlib-base
+    - matplotlib-base <=3.8.4
     - jinja2
-    - trimmomatic
-    - flash
+    - fastp
     - samtools
     - bowtie2
     - seaborn-base
@@ -46,3 +46,8 @@ about:
   license: Partners
   license_file: LICENSE.txt
   summary: "A software pipeline designed to enable rapid and intuitive interpretation of genome editing experiments"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

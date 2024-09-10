@@ -1,5 +1,5 @@
-{% set version = "0.3.1" %}
-{% set sha256 = "d6c08cd11a617d8ba13b492a7754b9f4e54e2b085ae076c409390ce1448d8413" %}
+{% set version = "0.4.4" %}
+{% set sha256 = "39e9b2fb3370ee584fbeed8522260c44bb6053489819057f1a232267a526f72a" %}
 
 
 package:
@@ -11,7 +11,9 @@ source:
   sha256: '{{ sha256 }}'
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('pcaone', max_pin="x") }}
 
 requirements:
   build:
@@ -19,18 +21,16 @@ requirements:
     - {{ compiler('cxx') }}
     - make
     - sysroot_linux-64 2.17 # [linux]
-    - intel-openmp
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
 
   host:
     - mkl
     - mkl-include
-    - intel-openmp
     - zlib
 
   run:
     - mkl
-    - intel-openmp
-    - zlib
 
 test:
   commands:

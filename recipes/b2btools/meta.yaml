@@ -1,5 +1,5 @@
-{% set name = "b2bTools" %}
-{% set version = "3.0.5" %}
+{% set name = "b2btools" %}
+{% set version = "3.0.7" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,63 +7,84 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 9c3a1e539d1bdbfeecc29e878bb98f05590227d90f838846fb01152a49c509b4
+  sha256: b3c9f10c10c8a12c390a79016e01b7e4d165bf1c94dce48e72d31891cb552c29
 
 build:
   number: 0
+  skip: true  # [py >= 311]
+  entry_points:
+    - b2bTools = b2bTools.__main__:main
+    - b2btools = b2bTools.__main__:main
   script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
-  noarch: python
+  run_exports:
+    - {{ pin_subpackage('b2btools', max_pin="x.x") }}
 
 requirements:
+  build:
+    - {{ compiler('c') }} # [linux]
+    - {{ compiler('cxx') }} # [linux]
+    - clang_osx-64 # [osx]
+    - clangxx_osx-64 # [osx]
   host:
-    - python >3.6,<3.10
+    - python <3.11
     - pip
   run:
-    - biopython
-    - joblib
-    - matplotlib-base
-    - networkx
-    - numpy
-    - pandas
-    - pillow
-    - pomegranate
-    - python >3.6,<3.10
-    - pyyaml
-    - requests
-    - scikit-learn >=1.0.1
-    - scipy
-    - six
-    - threadpoolctl
-    - pytorch >=1.8.0
-    - torchvision
+    - python <3.11
+    - hmmer
+    - t-coffee
+    - biopython >=1.80,<2 # [py < 310]
+    - biopython >=1.83,<2 # [py >= 310]
+    - matplotlib-base >=3.5.3,<3.6
+    - numpy ==1.21.6 # [py == 37]
+    - numpy ==1.24.4 # [py == 38]
+    - numpy >=1.21.6,<1.27 # [py >= 39]
+    - pandas >=1.1,<1.2 # [py < 38]
+    - pandas >=1.5.3,<1.6 # [py >= 38]
+    - pomegranate >=0.14.8,<=0.14.9
+    - requests >=2.0 # [py <= 39]
+    - requests >=2.31.0,<2.32 # [py > 39]
+    - scikit-learn ==1.0.2 # [py <= 310]
+    - scipy ==1.7.3 # [py < 38]
+    - scipy ==1.10.1 # [py >= 38 and py < 310]
+    - scipy ==1.12.0 # [py >= 310]
+    - pytorch >=1.11.0,<=1.13.1 # [py <= 310]
+    - urllib3 >=1.26.6,<1.27
+
 test:
   imports:
     - b2bTools
-    - b2bTools.general
-    - b2bTools.general.parsers
-    - b2bTools.multipleSeq
-    - b2bTools.singleSeq
     - b2bTools.wrapper_source
+  files:
+    - test.singleseq.fasta
+    - test.msa.fasta
 
 about:
-  home: "https://bio2byte.be/"
+  home: "https://bio2byte.be/b2btools"
   license: 'GNU General Public License v3 (GPLv3)'
   license_family: GPL3
-  license_file:
-  summary: "bio2Byte software suite to predict protein biophysical properties from their amino-acid sequences"
+  license_file: LICENSE
+  summary: "The bio2Byte software suite to predict protein biophysical properties"
   description: |
     This package provides you with structural predictions for protein sequences made by the Bio2Byte group which researches the relation between protein sequence and biophysical behavior.
-    List of available predictors: 
-      - Dynamine: Fast predictor of protein backbone dynamics using only sequence information as input. The version here also predicts side-chain dynamics and secondary structure predictors using the same principle.
-      - Disomine: Predicts protein disorder with recurrent neural networks not directly from the amino acid sequence, but instead from more generic predictions of key biophysical properties, here protein dynamics, secondary structure, and early folding.
-      - EfoldMine: Predicts from the primary amino acid sequence of a protein, which amino acids are likely involved in early folding events.
-      - AgMata: Single-sequence-based predictor of protein regions that are likely to cause beta-aggregation.
-  doc_url: https://bio2byte.be/b2btools/package-documentation
-  dev_url: https://pypi.org/project/b2bTools/
+
+    List of available predictors:
+    1. Dynamine: Fast predictor of protein backbone dynamics using only sequence information as input. The version here also predicts side-chain dynamics and secondary structure predictors using the same principle.
+    2. Disomine: Predicts protein disorder with recurrent neural networks not directly from the amino acid sequence, but instead from more generic predictions of key biophysical properties, here protein dynamics, secondary structure, and early folding.
+    3. EfoldMine: Predicts from the primary amino acid sequence of a protein, which amino acids are likely involved in early folding events.
+    4. AgMata: Single-sequence-based predictor of protein regions that are likely to cause beta-aggregation.
+    5. PSPer: PSP (Phase Separating Protein) predicts whether a protein is likely to phase-separate with a particular mechanism involving RNA interacts (FUS-like proteins).
+    6. ShiftCrypt: Auto-encoding NMR chemical shifts from their native vector space to a residue-level biophysical index.
+  doc_url: https://pypi.org/project/b2bTools/
+  dev_url: http://bitbucket.org/bio2byte/b2btools_releases
 
 extra:
-  author: 
-    - Wim Vranken <wim.vranken@vub.be>
+  author: Wim Vranken <wim.vranken@vub.be>
+  recipe-maintainers:
+    - Adrián Díaz <adrian.diaz@vub.be> (@agdiaz)
+    - Jose Gavaldá-García <jose.gavalda.garcia@vub.be> (@GavaldaGarcia)
   maintainers:
     - Adrián Díaz <adrian.diaz@vub.be> (@agdiaz)
     - Jose Gavaldá-García <jose.gavalda.garcia@vub.be> (@GavaldaGarcia)
+  identifiers:
+    - doi:10.48550/arXiv.2405.02136 # bioRxiv preprint
+    - biotools:b2btools

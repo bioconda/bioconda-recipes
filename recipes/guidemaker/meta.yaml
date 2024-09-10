@@ -1,64 +1,61 @@
-{% set version = "0.3.4" %}
+{% set version = "0.4.2" %}
 {% set name = "GuideMaker" %}
-{% set sha256 = "cff826d21a17a040158c00cf3f84cee2f1b712a21ac381c7931caec54a095bbd" %}
+{% set sha256 = "8766e3fa2443a09c270e06af5162e1d323b840b85789ba9b92efb4d51ed4b833" %}
 {% set user = "USDA-ARS-GBRU" %}
-
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
-# source
 source:
   url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-
 
 build:
   number: 0
   noarch: python
   entry_points:
     - guidemaker=guidemaker.cli:main
-  script: python -m pip install --no-deps --ignore-installed .
-
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed . -vvv
+  run_exports:
+    - {{ pin_subpackage('guidemaker', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.6
-    - biopython==1.76
+    - python >=3.8,<3.12
+    - biopython >=1.79
   run:
     - pip
-    - python >=3.6
-    - biopython>=1.79
+    - python >=3.8,<3.12
+    - biopython >=1.79
     - numpy >=1.11
-    - pybedtools>=0.8.2
-    - nmslib>=2.0.6
-    - pandas>=1.0.0
-    - pyyaml>=5.4.1
-    - regex==2020.11.13
+    - pybedtools >=0.8.2
+    - nmslib >=2.0.6
+    - pandas >=1.0.0
+    - pyyaml >=5.4.1
+    - regex ==2020.11.13
     - altair
-    - streamlit>=0.81.0
-    - pytest>=4.6
+    - streamlit >=0.81.0
+    - pytest >=4.6
     - pytest-cov
-    - streamlit_tags>=1.2.6
+    - streamlit_tags >=1.2.6
     - pdoc3
-    - onnxruntime>=1.8.1
-
+    - onnxruntime >=1.8.1
+    - importlib-resources >=6.0
 
 test:
   commands:
     - guidemaker --version
 
-
-
 about:
-  home: https://github.com/USDA-ARS-GBRU/GuideMaker
-  license: 'CC0 1.0'
+  home: https://guidemaker.app.scinet.usda.gov/
+  license: 'CC0-1.0'
   license_family: 'PUBLIC-DOMAIN'
   license_file: LICENSE.txt
   summary: 'GuideMaker: Software to design gRNAs pools in non-model genomes and CRISPR-Cas systems'
-
+  doc_url: https://guidemaker.org/
+  dev_url: https://github.com/USDA-ARS-GBRU/GuideMaker
 
 extra:
   recipe-maintainers:

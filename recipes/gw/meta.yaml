@@ -1,49 +1,78 @@
-
-{% set version = "0.6.3" %}
-{% set sha256 = "678714088fee238788c401e785584f51bf4c2ac755e7df5401daedcc9e53670d" %}
+{% set version = "1.0.3" %}
+{% set sha256 = "7247a8ec9efb7ebcd9566f6a3759520ee87f305efc91c8ce658307308ee6368a" %}
 
 package:
   name: gw
   version: {{ version }}
 
-
 source:
   url: https://github.com/kcleal/gw/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-
+  patches:
+    - fix-linker-issues.patch  # [linux]
+    - fix-context.patch
 
 build:
-  number: 0
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('gw', max_pin="x") }}
+  ignore_run_exports:
+    - libglx          # [linux]
+    - libgles         # [linux]
+    - libegl          # [linux]
+    - xorg-libsm      # [linux]
+    - xorg-libice     # [linux]
+    - xorg-libx11     # [linux]
+    - xorg-libxau     # [linux]
+    - xorg-libxext    # [linux]
+    - libxcb          # [linux]
+    - freetype        # [osx]
+    - fontconfig      # [osx]
+    - zlib            # [osx]
+    - libuuid
+    - libdeflate
 
 requirements:
   build:
     - make
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - {{ cdt('xorg-x11-proto-devel') }}          # [linux]
-    - {{ cdt('mesa-libgl-devel') }}  # [linux]
-    - {{ cdt('mesa-dri-drivers') }}  # [linux]
-    - {{ cdt('libselinux') }}        # [linux]
-    - {{ cdt('libxdamage') }}        # [linux]
-    - {{ cdt('libxxf86vm') }}        # [linux]
-    - {{ cdt('libxfixes') }}         # [linux]
-    - {{ cdt('libxext') }}           # [linux]
-    - wget
-    - unzip
+
   host:
     - fontconfig
+    - libuuid
     - libcurl
-    - libdeflate
-    - htslib
-    - glfw
+    - libdeflate >=1.0
+    - htslib >=1.12
+    - glfw >=3.3
+    - unzip
     - freetype
-    - xorg-libxfixes  # [linux]
+    - zlib
+    - pthread-stubs       # [linux]
+    - xorg-libsm          # [linux]
+    - xorg-libice         # [linux]
+    - xorg-libx11         # [linux]
+    - libxcb              # [linux]
+    - libegl-devel        # [linux]
+    - libgl-devel         # [linux]
+    - libglx-devel        # [linux]
+    - libgles-devel       # [linux]
+    - wayland             # [linux]
+
   run:
-    - glfw
-    - htslib
+    - glfw >=3.3
+    - htslib >=1.12
+    - xorg-libxt          # [linux]
+    - xorg-libxau         # [linux]
+    - xorg-libxfixes      # [linux]
+    - xorg-libxxf86vm     # [linux]
+    - xorg-libxdamage     # [linux]
+    - mesalib             # [linux]
+    - wayland             # [linux]
 
 test:
   commands:
-    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" gw --version'
+    - gw hg19 -b https://github.com/kcleal/gw/releases/download/v1.0.0/demo1.bam -r chr8:37047270-37055161 -n > test.png; ls -lh test.png
 
 about:
   home: https://github.com/kcleal/gw
@@ -52,7 +81,9 @@ about:
   summary: 'View genomic sequencing data and vcf files'
 
 extra:
+  additional-platforms:
+    - osx-arm64
   container:
-      extended-base: True
+    extended-base: True
   recipe-maintainers:
     - kcleal

@@ -1,5 +1,6 @@
-{% set version = "3.10.0" %}
-{% set sha256 = "c65a062a1be7bcaded1ba059d28a59b3af4388e6df1d6f0d95856338d0f20f0a" %}
+{% set version = "4.0.0.dev8" %}
+{% set name = "ms2pip" %}
+{% set sha256 = "2a464e00135c875c12c98f6853a4487e193a0730b5bd94f82a44e8d5fb21a7bb" %}
 
 package:
   name: "ms2pip"
@@ -10,8 +11,9 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
-  skip: True  # [py < 37]
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
   entry_points:
     - ms2pip=ms2pip.__main__:main
     - fasta2speclib=fasta2speclib.fasta2speclib:main
@@ -27,23 +29,26 @@ requirements:
     - cython >=0.29.2,<1
     - numpy
     - pip
-    - python
+    - python >=3.8
+    - spectrum_utils >=0.4 # [linux]
   run:
-    - biopython >=1.43
+    - python >=3.8
     - {{ pin_compatible('numpy') }}
-    - pandas >=0.24
+    - pandas >=1.0
     - pyteomics >=3.5
-    - python
-    - scipy >=1
+    - tqdm >=4
     - pytables >=3.4
-    - tqdm
     - tomlkit >=0.5
     - click >=7
-    - xgboost >=1
-    - matplotlib-base
-    - spectrum_utils >=0.3.5
+    - xgboost >=1.3
+    - matplotlib-base >=3.0
     - lxml >=4
     - rich >=13
+    - pydantic >=1.10,<2
+    - psm-utils
+    - werkzeug >=2
+    - pyarrow
+    - pyopenms
 
 test:
   imports:

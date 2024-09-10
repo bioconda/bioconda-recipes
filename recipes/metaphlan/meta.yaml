@@ -1,5 +1,5 @@
 {% set name = "metaphlan" %}
-{% set version = "4.0.4" %}
+{% set version = "4.1.1" %}
 
 package:
   name: {{ name }}
@@ -7,38 +7,63 @@ package:
 
 source:
   url: https://github.com/biobakery/MetaPhlAn/archive/{{version}}.tar.gz
-  sha256: 3eccd2d76fd137cd113fb35700452aa215b5f0af32f4e1173c1db6366d0ac304
-
+  sha256: 41529191c93b260842c6362952d46f3a22df1477e127277dab1f9abb09d2d84e
 
 build:
   noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install -vv --no-deps .
+  script: {{ PYTHON }} -m pip install -vvv --no-deps --no-build-isolation --no-cache-dir .
+  entry_points:
+    - metaphlan = metaphlan.metaphlan:main
+    - strainphlan = metaphlan.strainphlan:main
+    - add_metadata_tree.py = metaphlan.utils.add_metadata_tree:main
+    - extract_markers.py = metaphlan.utils.extract_markers:main
+    - merge_metaphlan_tables.py  = metaphlan.utils.merge_metaphlan_tables:main
+    - merge_vsc_tables.py  = metaphlan.utils.merge_vsc_tables:main
+    - plot_tree_graphlan.py = metaphlan.utils.plot_tree_graphlan:main
+    - read_fastx.py = metaphlan.utils.read_fastx:main
+    - sample2markers.py = metaphlan.utils.sample2markers:main
+    - strain_transmission.py = metaphlan.utils.strain_transmission:main
+    - sgb_to_gtdb_profile.py = metaphlan.utils.sgb_to_gtdb_profile:main
+    - metaphlan2krona.py = metaphlan.utils.metaphlan2krona:main
+    - run_treeshrink.py = metaphlan.utils.treeshrink.run_treeshrink:main
+    - treeshrink.py = metaphlan.utils.treeshrink.treeshrink:main
+    - create_toy_database.py = metaphlan.utils.create_toy_database:main
+    - fix_relab_mpa4.py = metaphlan.utils.fix_relab_mpa4:main
+  run_exports:
+    - {{ pin_subpackage('metaphlan', max_pin='x') }}
 
 requirements:
   host:
     - python >=3.7
-    - setuptools
-    - numpy
-    - cython
+    - pip
   run:
     - python >=3.7
     - bowtie2 >=2.3.0
-    - cmseq
-    - phylophlan
     - dendropy
     - numpy
+    - phylophlan >=3.1
     - biom-format
     - matplotlib-base
     - biopython
     - pandas
     - scipy
     - requests
+    - h5py
     - blast >=2.6.0
     - muscle >=3.8.1551
     - pysam
     - raxml >=8.2.10
     - samtools >=1.9
+    - r-base >=4
+    - r-essentials
+    - r-optparse
+    - r-rbiom
+    - r-ape
+    - r-compositions
+    - r-biocmanager
+    - bioconductor-microbiome
+    - hclust2
 
 test:
   commands:
@@ -51,13 +76,19 @@ test:
     - plot_tree_graphlan.py -h
     - sample2markers.py -h
     - strain_transmission.py -h
+    - sgb_to_gtdb_profile.py -h
+    - metaphlan2krona.py -h    
+    - hclust2.py -h
+    - run_treeshrink.py -h
+    - treeshrink.py -h
+    - create_toy_database.py -h
     - bowtie2-align-s --help
 
 about:
-  home: https://github.com/biobakery/metaphlan
-  license: MIT License
+  home: "https://github.com/biobakery/metaphlan"
+  license: MIT
   license_family: MIT
-  license_file: license.txt
+  license_file: "license.txt"
   summary: Metagenomic Phylogenetic Analysis
   description: |
     MetaPhlAn is a computational tool for profiling the composition of microbial
@@ -66,3 +97,5 @@ about:
     MetaPhlAn is also able to identify specific strains (in the not-so-frequent
     cases in which the sample contains a previously sequenced strains) and to
     track strains across samples for all species.
+  dev_url: "https://github.com/biobakery/metaphlan"
+  doc_url: "https://github.com/biobakery/MetaPhlAn/wiki/MetaPhlAn-4"

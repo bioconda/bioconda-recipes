@@ -1,6 +1,6 @@
 {% set name = "taxpasta" %}
-{% set version = "0.1.1" %}
-{% set sha256 = "2b5019920fd87ebefc9dec4595b1535769da254200b7c6e90cae5c53ad5bd0e2" %}
+{% set version = "0.7.0" %}
+{% set sha256 = "320d8499124e03a20baec4e46dc3ade855c9aec9113ad2d632d0301d347d0be4" %}
 
 package:
   name: {{ name|lower }}
@@ -16,31 +16,37 @@ build:
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - python >=3.8
     - setuptools >=40.6.0
-    - versioneer-518
     - wheel
-    - versioneer
     - pip
+    - hatch
+    - hatch-vcs
   run:
     - python >=3.8
     - depinfo >=2.1
     - numpy
     - pandas
     - pandera
+    - taxopy
     - typer
+    - biom-format
+    - pyarrow
 
+# Disable pip check until https://github.com/biocore/biom-format/issues/898 is resolved.
 test:
   imports:
     - taxpasta
   commands:
-    - pip check
+    # - pip check
     - taxpasta --help
-  requires:
-    - pip
+  # requires:
+    # - pip
 
 about:
   home: https://github.com/taxprofiler/taxpasta

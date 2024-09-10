@@ -1,21 +1,25 @@
 {% set name = "nextalign" %}
-{% set version = "2.11.0" %}
+{% set version = "2.14.0" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-x86_64-unknown-linux-gnu  # [linux64]
-    sha256: 5f5181594cee09438cf133a39a3150e138287abca4a79e4e414002de1d790425                                           # [linux64]
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-x86_64-unknown-linux-gnu   # [linux and x86_64]
+    sha256: 90602c64c89c6921f6713d60f726b890d8892b4c1f4f0334fbd6e4b10fd8db69                                           # [linux and x86_64]
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-aarch64-unknown-linux-gnu  # [linux and aarch64]
+    sha256: b6fddd12cc4767c0316b13ce5f6fe8d6e26097bfb52f5c957615ffc884ce2448                                           # [linux and aarch64]
   - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-x86_64-apple-darwin        # [osx and x86_64]
-    sha256: 1cf3adc7dccc4be7e83acb9c0e851ca20136cb562abe765609e64cf538a26249                                           # [osx and x86_64]
-  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-aarch64-apple-darwin       # [arm64]
-    sha256: d8df8812132ebcbcca4682b6d2b3135c910a9737f6fbdcaaf9704e1368b64c69                                           # [arm64]
+    sha256: 0585a0c4af33ac28a2cb2dd63eb5d5c9b749bf6a1af319b999b8440da9dd35d8                                           # [osx and x86_64]
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-aarch64-apple-darwin       # [osx and arm64]
+    sha256: 2d8ec8f379b150c2ac271f3c08ca79ee372b1fb14da3dc8e1b3033a1b65cfc58                                           # [osx and arm64]
 
 build:
-  number: 0
+  number: 2
   binary_relocation: False
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
 
 requirements:
 
@@ -23,7 +27,7 @@ test:
   files:
     - test-data
   commands:
-    - nextalign --help
+    - nextalign --help # [not aarch64]
 
 about:
   home: https://github.com/nextstrain/nextclade
@@ -34,6 +38,9 @@ about:
   dev_url: https://github.com/nextstrain/nextclade
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - cjw85
     - thanhleviet
@@ -43,3 +50,5 @@ extra:
   skip-lints:
     # repackaged binary
     - should_be_noarch_generic
+  identifiers:
+    - doi:10.21105/joss.03773

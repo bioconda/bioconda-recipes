@@ -1,5 +1,5 @@
 {% set name = "pairtools" %}
-{% set version = "1.0.2" %}
+{% set version = "1.1.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,13 +7,15 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: af031b369b9d99ecd6388b2c116425a9d5c6fdb98146d44d5d013c92b3704917
+  sha256: 3f265ebcd50fb07a36199a99c58f6b17810b48bacf2d5f3096453319c89bd522
 
 build:
-  number: 0
-  skip: True  # [osx or py<37]
+  number: 2
+  skip: True  # [osx]
   entry_points:
     - pairtools = pairtools.cli:cli
+  run_exports:
+    - {{ pin_subpackage('pairtools', max_pin="x") }}
 
 requirements:
   build:
@@ -21,7 +23,7 @@ requirements:
     - {{ compiler('cxx') }}
   host:
     - python
-    - setuptools
+    - pip
     - cython
     - numpy
     - pysam >=0.19
@@ -44,7 +46,6 @@ requirements:
 test:
   imports:
     - pairtools
-
   commands:
     # click requires a unicode locale
     - pairtools --help
@@ -59,6 +60,8 @@ about:
   dev_url: https://github.com/open2c/pairtools
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   container:
     # click requires a unicode locale when used with Python 3
     # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly

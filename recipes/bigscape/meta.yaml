@@ -1,5 +1,5 @@
-{% set version = "1.1.5" %}
-{% set sha256 = "ec7cebbec8f83f4187c80e02ecbb37411a1898a2b83bb80088810f1600528ec7" %} 
+{% set version = "1.1.9" %}
+{% set sha256 = "ef0ddb5b433e0b1467ae5f96037fd6d23ebcba6bc08201d1421eba35d072e534" %}
 
 package:
   name: bigscape
@@ -12,24 +12,37 @@ source:
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed . -vv"
+  script: "{{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv"
+  entry_points:
+    - bigscape=bigscape.__main__:main
+  run_exports:
+    - {{ pin_subpackage('bigscape', max_pin="x") }}
 
 requirements:
   host:
     - python ==3.7
+    - pip
   run:
     - python ==3.7
     - hmmer
     - biopython
     - fasttree
     - networkx
-    - scikit-learn ==0.19.2
+    - numpy
+    - scikit-learn
+    - scipy
 
 test:
   commands:
-    - 'bigscape.py --version'
+    - 'bigscape --version'
 
 about:
   home: https://github.com/medema-group/BiG-SCAPE
-  license: GNU Affero v3
+  license: AGPL-3.0-or-later
+  license_file: LICENSE
   summary: Biosynthetic Genes Similarity Clustering and Prospecting Engine.
+  doc_url: https://github.com/medema-group/BiG-SCAPE/wiki
+
+extra:
+  identifiers:
+    - doi:10.1038/s41589-019-0400-9

@@ -1,0 +1,45 @@
+{% set version = "1.2.0" %}
+{% set name = "alabaster.mae" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 43abcdda61fc9d69dbc24dbd1c91664d
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-alabaster.mae", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: testthat, knitr, SummarizedExperiment, BiocParallel, BiocStyle, rmarkdown
+requirements:
+  host:
+    - 'bioconductor-alabaster.base >=1.2.0,<1.3.0'
+    - 'bioconductor-alabaster.se >=1.2.0,<1.3.0'
+    - 'bioconductor-multiassayexperiment >=1.28.0,<1.29.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - r-base
+  run:
+    - 'bioconductor-alabaster.base >=1.2.0,<1.3.0'
+    - 'bioconductor-alabaster.se >=1.2.0,<1.3.0'
+    - 'bioconductor-multiassayexperiment >=1.28.0,<1.29.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - r-base
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'MIT + file LICENSE'
+  summary: 'Load and Save MultiAssayExperiments'
+  description: 'Save MultiAssayExperiments into file artifacts, and load them back into memory. This is a more portable alternative to serialization of such objects into RDS files. Each artifact is associated with metadata for further interpretation; downstream applications can enrich this metadata with context-specific properties.'
+  license_file: LICENSE
+

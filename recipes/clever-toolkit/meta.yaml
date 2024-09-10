@@ -5,8 +5,12 @@ package:
   version: {{ version }}
 
 build:
-  number: 10
-  skip: True  # [osx or py2k or py > 39]
+  number: 13
+  run_exports:
+    - {{ pin_subpackage("clever-toolkit", max_pin="x") }}
+    - {{ pin_compatible('boost-cpp', max_pin='x.x') }}
+    - {{ pin_compatible('zlib', max_pin='x.x') }}
+
 
 source:
   url: https://bitbucket.org/tobiasmarschall/clever-toolkit/downloads/clever-toolkit-v{{ version }}.tar.gz
@@ -17,22 +21,17 @@ source:
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - cmake
-    - make
+    - cmake >=3.1
+    - make >=4.2
   host:
-    - python
-    - boost-cpp
+    - boost-cpp >=1.36.*
     - zlib
   run:
-    - python
-    - boost-cpp
-    - zlib
-    - bedtools >=2.26
+    - python 3.*
+    - bedtools
     - bwa
-    - samtools >=1
-    - bcftools >=1
-    - matplotlib 2
-    - make
+    - samtools
+    - matplotlib-base
 
 test:
   commands:
@@ -41,5 +40,14 @@ test:
 
 about:
   home: https://bitbucket.org/tobiasmarschall/clever-toolkit
-  license: GPLv3
-  summary: The clever toolkit (CTK) is a suite of tools to analyze next-generation sequencing data and, in particular, to discover and genotype insertions and deletions from paired-end reads.
+  license: GPL-3.0-only
+  license_file: LICENSE
+  license_family: GPL3
+  summary: The CLEVER Toolkit
+  description: CTK is a suite of tools to analyze next-generation sequencing data and, in particular, to discover and genotype insertions and deletions from paired-end reads.
+  dev_url: https://bitbucket.org/tobiasmarschall/clever-toolkit
+  doc_url: https://bitbucket.org/tobiasmarschall/clever-toolkit/wiki/Home
+
+extra:
+  additional-platforms:
+    - linux-aarch64

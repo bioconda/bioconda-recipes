@@ -1,13 +1,15 @@
-{% set name='chewBBACA' %}
-{% set version='3.1.0' %}
+{% set name = 'chewBBACA' %}
+{% set version = '3.3.10' %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: bec7d7ad2994b33e1424dfb21fdeeeb6a2bdf52b71978f63fca7abf5139924cd
+  url: https://github.com/B-UMMI/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  # url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: bb3f3bbc81d3469c36d2038302ee32964c630d261dd9e5954aa3fdcb46728c0c
+  # sha256: b54c5f4fb2f3c943f9ec51e5b81f4fb9a312fcc87fdea6e0a9f3edbebdf62308
 
 build:
   number: 0
@@ -15,7 +17,9 @@ build:
   entry_points:
     - chewBBACA.py = CHEWBBACA.chewBBACA:main
     - chewie = CHEWBBACA.chewBBACA:main
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv
+  run_exports:
+    - {{ pin_subpackage('chewbbaca', max_pin="x") }}
 
 requirements:
   host:
@@ -23,40 +27,42 @@ requirements:
     - pip
   run:
     - python >=3.7
-    - numpy >=1.23.4
-    - scipy >=1.9.3
-    - biopython >=1.78
-    - pandas >=1.5.1
+    - numpy >=1.24.3
+    - scipy >=1.10.1
+    - biopython >=1.79
+    - pandas >=1.5.1,<2.1
     - plotly >=5.8.0
     - requests >=2.27.1
     - sparqlwrapper >=2.0.0
+    - pyrodigal >=3.0.0
     - blast >=2.9.0
-    - prodigal >=2.6.3
-    - clustalw >=2.1
     - mafft >=7.505
+    - fasttree >=2.1.11
 
 test:
-  requires:
-    - pip
   imports:
     - CHEWBBACA
-    - CHEWBBACA.CHEWBBACA_NS
-    - CHEWBBACA.PrepExternalSchema
-    - CHEWBBACA.SchemaEvaluator
-    - CHEWBBACA.AlleleCall
     - CHEWBBACA.CreateSchema
+    - CHEWBBACA.AlleleCall
+    - CHEWBBACA.SchemaEvaluator
+    - CHEWBBACA.AlleleCallEvaluator
+    - CHEWBBACA.ExtractCgMLST
+    - CHEWBBACA.PrepExternalSchema
+    - CHEWBBACA.UniprotFinder
+    - CHEWBBACA.CHEWBBACA_NS
     - CHEWBBACA.utils
   commands:
-    - pip check
     - chewBBACA.py --help
     - chewie --version
 
 about:
   home: https://github.com/B-UMMI/chewBBACA
-  license: GPL-3.0-only
+  license: GPL-3.0-or-later
   license_family: GPL3
+  license_file: LICENSE
   summary: 'A complete suite for gene-by-gene schema creation and strain identification.'
   description: 'chewBBACA is a comprehensive pipeline including a set of functions for the creation and validation of whole genome and core genome MultiLocus Sequence Typing (wg/cgMLST) schemas, providing an allele calling algorithm based on Blast Score Ratio that can be run in multiprocessor settings and a set of functions to visualize and validate allele variation in the loci.'
+  doc_url: https://chewbbaca.readthedocs.io/en/latest/index.html
 
 extra:
   identifiers:

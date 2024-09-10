@@ -1,0 +1,64 @@
+{% set name = "strangepg" %}
+{% set version = "0.8.3" %}
+{% set ref = "567ed9d583766ab7cdb4e28261c8a611334a7472" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/qwx9/{{ name }}/archive/{{ ref }}.tar.gz
+  sha256: d33869f687fad3b8756565da727014a2cdf2dea3d7197816a8af1a8390e113cd
+
+build:
+  number: 0
+  skip: True # [not linux]
+  run_exports:
+    - {{ pin_subpackage('strangepg', max_pin=None) }}
+  ignore_run_exports:
+    - libxcb
+    - xorg-libxau
+    - xorg-libxdmcp
+    - xorg-libxext
+    - xorg-libxfixes
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+    - {{ cdt('mesa-libgl-devel') }}
+    - {{ cdt('mesa-libegl-devel') }}
+    - {{ cdt('mesa-dri-drivers') }}
+    - {{ cdt('libdrm-devel') }}
+    - {{ cdt('libglvnd-glx') }}      # [cdt_name != 'cos6']
+  host:
+    - xorg-libx11
+    - xorg-libxcursor
+    - xorg-libxi
+  run:
+    - libxcb
+    - xorg-libx11
+    - xorg-libxau
+    - xorg-libxcursor
+    - xorg-libxdmcp
+    - xorg-libxext
+    - xorg-libxfixes
+    - xorg-libxi
+    - xorg-libxrandr
+
+test:
+  source_files:
+    - cmd/main.awk
+
+about:
+  home: https://github.com/qwx9/{{ name }}
+  summary: 'Strange pangenome-scale interactive graph visualizer'
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - qwx9
+  container:
+    extended-base: True

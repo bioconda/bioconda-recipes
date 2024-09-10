@@ -1,5 +1,5 @@
 {% set name = "PhyloFisher" %}
-{% set version = "1.2.5" %}
+{% set version = "1.2.14" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,16 +7,19 @@ package:
 
 source:
   url: "https://github.com/TheBrownLab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz"
-  sha256: ffab77aa58201b6cd563d4d2fee5a8b1cc388e36c15a35cc5610c79bf73c0ff4
+  sha256: fd2c46cf1a49eb0fb83348dd280292f5f6b3a2541d76dd21f7e377e90be9dde5
 
 build:
   noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+  script: "{{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('phylofisher', max_pin='x') }}
 
 requirements:
   host:
     - python =3.7.10
+    - pip
   run:
     - biopython
     - ete3
@@ -25,9 +28,11 @@ requirements:
     - pyqt
     - python =3.7.10
     - hmmer =3.3
-    - diamond 2.0.15
+    - diamond =2.0.15
     - fasttree =2.1.10
-    - blast =2.9.0
+    - mafft =7.525
+    - trimal =1.4.1
+    - blast
     - cd-hit =4.8.1
     - dist_est =1.1
     - astral-tree =5.7.8
@@ -42,5 +47,7 @@ about:
   home: "https://github.com/TheBrownLab/PhyloFisher"
   license: MIT
   license_family: MIT
-  license_file: LICENSE.txt
+  license_file: "LICENSE.txt"
   summary: "A package for the creation, analysis, and visualization of eukaryotic phylogenomic datasets."
+  doc_url: "https://thebrownlab.github.io/phylofisher-pages"
+  dev_url: "https://github.com/TheBrownLab/PhyloFisher"

@@ -1,6 +1,6 @@
-{% set version = "1.20.0" %}
+{% set version = "1.24.0" %}
 {% set name = "bcSeq" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,25 +8,27 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: ed0791e7abeeb2b460788ae18b00e33d
+  md5: e582b114bc4743a328b6ada2953a74da
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-bcseq", max_pin="x.x") }}'
 # Suggests: knitr
 requirements:
   host:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
+    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
     - r-base
     - r-matrix
     - 'r-rcpp >=0.12.12'
     - libblas
     - liblapack
   run:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
+    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
     - r-base
     - r-matrix
     - 'r-rcpp >=0.12.12'
@@ -39,8 +41,13 @@ test:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
+  license: 'GPL-3.0-or-later'
   summary: 'Fast Sequence Mapping in High-Throughput shRNA and CRISPR Screens'
   description: 'This Rcpp-based package implements a highly efficient data structure and algorithm for performing alignment of short reads from CRISPR or shRNA screens to reference barcode library. Sequencing error are considered and matching qualities are evaluated based on Phred scores. A Bayes'' classifier is employed to predict the originating barcode of a read. The package supports provision of user-defined probability models for evaluating matching qualities. The package also supports multi-threading.'
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:{{ name }}
