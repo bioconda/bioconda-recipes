@@ -3,7 +3,15 @@
 set -x
 
 DEFAULT_LINUX_VERSION="cos7"
-NODE_VERSION="18.19.1"
+# * k8 is only compatible with Node.js v18.x, not more recent node versions
+# * node-18.19.x can be compiled on CentOS 7, but not on macOS with clang
+# * node-18.20.x can be compiled on MacOS but not on CentOS 7 because it
+#   includes an updated c-ares library which is incompatible with glibc on CentOS 7
+if [ "$(uname)" == "Darwin" ]; then
+    NODE_VERSION="18.20.4"
+else
+    NODE_VERSION="18.19.1"
+fi
 
 wget -O- https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}.tar.gz | tar -zxf -
 pushd node-v${NODE_VERSION}
@@ -15,7 +23,8 @@ pushd node-v${NODE_VERSION}
 # 2024-03-19T13:32:27.9241412Z 13:32:27 [32mBIOCONDA INFO[0m (OUT) cc1plus: some warnings being treated as errors[0m
 patch -p0 < ${RECIPE_DIR}/nodejs-x86_64.patch
 
-./configure --without-node-snapshot --without-etw --without-npm --without-inspector --without-dtrace
+# The provided configure script is a sh/python hybrid which boils down to one line of Python
+python -c "import configure" --without-node-snapshot --without-etw --without-npm --without-inspector --without-dtrace
 make -j3
 popd
 
