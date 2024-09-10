@@ -19,8 +19,8 @@ case "${OSTYPE}" in
             ln -s /usr/bin/g++ "${BUILD_PREFIX}/bin/g++"
             echo '${BUILD_PREFIX}/bin'
             ls -l "${BUILD_PREFIX}/bin"
-            echo $(${BUILD_PREFIX}/bin/gcc --version)
-            echo $(${BUILD_PREFIX}/bin/g++ --version)
+            ${BUILD_PREFIX}/bin/gcc --version
+            ${BUILD_PREFIX}/bin/g++ --version
             echo '${CC_FOR_BUILD}/bin'
             ls -l "${CC_FOR_BUILD}/bin"
         fi
