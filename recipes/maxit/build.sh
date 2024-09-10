@@ -17,6 +17,10 @@ case "${OSTYPE}" in
         elif [[ "$(uname -m)" == "arm64" ]]; then
             ln -s /usr/bin/gcc "${BUILD_PREFIX}/bin/gcc"
             ln -s /usr/bin/g++ "${BUILD_PREFIX}/bin/g++"
+            echo '${BUILD_PREFIX}/bin'
+            ls "${BUILD_PREFIX}/bin"
+            echo '${CC_FOR_BUILD}/bin'
+            ls "${CC_FOR_BUILD}/bin"
         fi
         ;;
 
