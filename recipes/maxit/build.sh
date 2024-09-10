@@ -19,6 +19,7 @@ case "${OSTYPE}" in
             # ln -s $(which g++) "${BUILD_PREFIX}/bin/g++"
             echo '${BUILD_PREFIX}/bin'
             ls -l "${BUILD_PREFIX}/bin"
+            export PATH="${CONDA_PREFIX}/bin:${BUILD_PREFIX}/bin:${PATH}"
             echo $(which gcc)
             echo $(which g++)
             # gcc_version=$(gcc --version)
