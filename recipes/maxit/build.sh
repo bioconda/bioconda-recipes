@@ -12,10 +12,11 @@ case "${OSTYPE}" in
         alias sed="${BUILD_PREFIX}/bin/sed"
 
         if [[ "$(uname -m)" == "x86_64" ]]; then
+            ln -s "${GXX}" "${BUILD_PREFIX}/bin/gcc"
             ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
         elif [[ "$(uname -m)" == "arm64" ]]; then
-            export GXX="${BUILD_PREFIX}/bin/g++"
-            ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
+            ln -s $(which gcc) "${BUILD_PREFIX}/bin/gcc"
+            ln -s $(which g++) "${BUILD_PREFIX}/bin/g++"
         fi
         ;;
 
