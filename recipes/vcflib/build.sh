@@ -1,17 +1,15 @@
-#!/bin/bash -xe
+#!/bin/bash
+set -ex
 
 OS=$(uname)
 ARCH=$(uname -m)
 
-if [[ "${OS}" == "Darwin" ]] && [[ "${ARCH}" == "x86_64" ]]; then
-        echo $(pwd)/zig-macos-x86_64-*
-        export PATH="$(pwd)/zig-macos-x86_64-0.11.0:${PATH}"
-elif [[ "${OS}" == "Darwin" ]] && [[ "${ARCH}" == "arm64" ]]; then
-        echo $(pwd)/zig-macos-aarch64-*
-        export PATH="$(pwd)/zig-macos-aarch64-0.11.0:${PATH}"
+if [ "${OS}" == "Darwin" ]; then
+	echo $(pwd)/zig-macos-x86_64-*
+	export PATH="$(pwd)/zig-macos-x86_64-0.10.1:${PATH}"
 else
-        echo $(pwd)/zig-linux-${ARCH}-*
-        export PATH="$(pwd)/zig-linux-${ARCH}-0.11.0:${PATH}"
+	echo $(pwd)/zig-linux-${ARCH}-*
+	export PATH="$(pwd)/zig-linux-${ARCH}-0.10.1:${PATH}"
 fi
 
 export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Itabixpp -Iwfa2 -I\$(INC_DIR)"
@@ -33,10 +31,10 @@ if [[ `uname` == "Darwin" ]]; then
 	sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' contrib/smithwaterman/Makefile
 	sed -i.bak 's/-std=c++0x/-std=c++14 -stdlib=libc++/g' contrib/intervaltree/Makefile
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
-	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_ENABLE_CXX17_REMOVED_FEATURES"
+	#export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_ENABLE_CXX17_REMOVED_FEATURES"
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
-	export CONFIG_ARGS=""
+        export CONFIG_ARGS=""
 fi
 
 pkg-config --list-all
@@ -49,7 +47,6 @@ cmake -S . -B build \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON \
 	"${CONFIG_ARGS}"
 
 cmake --build build/ --target install -j "${CPU_COUNT}" -v
