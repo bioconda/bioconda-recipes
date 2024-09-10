@@ -15,8 +15,9 @@ case "${OSTYPE}" in
             ln -s "${GXX}" "${BUILD_PREFIX}/bin/gcc"
             ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
         elif [[ "$(uname -m)" == "arm64" ]]; then
-            ln -s "${CXX}" "${BUILD_PREFIX}/bin/gcc"
-            ln -s "${CXX}" "${BUILD_PREFIX}/bin/g++"
+            export GXX="${BUILD_PREFIX}/bin/g++"
+            ln -s "${GXX}" "${BUILD_PREFIX}/bin/gcc"
+            ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
         fi
         ;;
 
