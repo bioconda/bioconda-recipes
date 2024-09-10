@@ -21,6 +21,8 @@ case "${OSTYPE}" in
             ls -l "${BUILD_PREFIX}/bin"
             echo $(which gcc)
             echo $(which g++)
+            gcc_version=$(gcc --version)
+            echo ${gcc_version}
         fi
         ;;
 
