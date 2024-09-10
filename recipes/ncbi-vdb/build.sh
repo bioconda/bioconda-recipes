@@ -22,11 +22,11 @@ end-of-patch
 } | patch -p0 -i-
 
 
-# Execute Make commands from a separate subdirectory. Else:
-# ERROR: In source builds are not allowed
-#BUILD_DIR="${SRC_DIR}/build_vdb"
-#mkdir -p "${BUILD_DIR}"
-#cd "${BUILD_DIR}"
+if [[ "$(uname)" == "Darwin" ]]; then
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+else
+	export CONFIG_ARGS=""
+fi
 
 export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include -O3 -D_FILE_OFFSET_BITS=64 -DH5_USE_110_API"
 
@@ -34,8 +34,10 @@ cmake -S ncbi-vdb/ -B build_vdb \
 	-DNGS_INCDIR="${PREFIX}" \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=Release \
+	-DBUILD_SHARED_LIBS=ON \
+	-DCMAKE_INSTALL_LIBDIR="${PREFIX}/lib" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DCMAKE_LIBRARY_PATH="${PREFIX}/lib"
+	"${CONFIG_ARGS}"
 
 cmake --build build_vdb/ --target install -j 4 -v
