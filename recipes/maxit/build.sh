@@ -10,28 +10,8 @@ export RCSBROOT="${SRC_DIR}"
 case "${OSTYPE}" in
     darwin*)
         alias sed="${BUILD_PREFIX}/bin/sed"
-
-        if [[ "$(uname -m)" == "x86_64" ]]; then
-            ln -s "${GXX}" "${BUILD_PREFIX}/bin/gcc"
-            ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
-        elif [[ "$(uname -m)" == "arm64" ]]; then
-            # ln -s $(which gcc) "${BUILD_PREFIX}/bin/gcc"
-            # ln -s $(which g++) "${BUILD_PREFIX}/bin/g++"
-            echo '${BUILD_PREFIX}/bin'
-            ls -l "${BUILD_PREFIX}/bin"
-            export PATH="${CONDA_PREFIX}/bin:${BUILD_PREFIX}/bin:${PATH}"
-            echo $(which gcc)
-            echo $(which g++)
-            echo $(which c++)
-            clang_version=$(${BUILD_PREFIX}/bin/clang --version)
-            clangxx_version=$(${BUILD_PREFIX}/bin/clangxx --version)
-            echo ${clang_version}
-            echo ${clangxx_version}
-            cxx_version=$(c++ --version)
-            gcc_version=$(gcc --version)
-            echo ${cxx_version}
-            echo ${gcc_version}
-        fi
+        ln -s "${BUILD_PREFIX}/bin/clang" "${BUILD_PREFIX}/bin/gcc"
+        ln -s "${BUILD_PREFIX}/bin/clang++" "${BUILD_PREFIX}/bin/g++"
         ;;
 
     linux*)
