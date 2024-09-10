@@ -29,6 +29,8 @@ cmake -S sra-tools/ -B build_sratools/ \
 	-DVDB_INCDIR="${VDB_INC}" \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=Release \
+	-DBUILD_SHARED_LIBS=ON \
+	-DCMAKE_INSTALL_LIBDIR="${PREFIX}/lib" \
 	-DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_C_FLAGS="${CFLAGS}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
