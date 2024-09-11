@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exuo pipefail
+set -exo pipefail
 
 readonly PROGRAMS=(
     qTMclust
