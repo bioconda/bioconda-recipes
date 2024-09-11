@@ -20,10 +20,12 @@ readonly PROGRAMS=(
     addChainID
 )
 
-cd "${SRC_DIR}"
+if [[ $(uname -s) == "Darwin" ]]; then
+    export CXX="${BUILD_PREFIX}/bin/clang++"
+fi
 
+cd "${SRC_DIR}"
 make -j${CPU_COUNT} CC="${CXX}" LDFLAGS="-lm"
 
 install -d "${PREFIX}/bin"
-
 install -m 755 "${PROGRAMS[@]}" "${PREFIX}/bin/"
