@@ -2,6 +2,9 @@
 
 set -xeuo
 
+ls -la ${PREFIX}/include
+ls -la ${PREFIX}/include/boost
+ls -la ${PREFIX}/include/boost/iostreams
 #export INCLUDES="-I${PREFIX}/include"
 #export LIBPATH="-L${PREFIX}/lib"
 #export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
