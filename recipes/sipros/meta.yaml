@@ -1,0 +1,43 @@
+{% set name = "sipros" %}
+{% set version = "4.01" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/thepanlab/Sipros4/releases/download/{{ version }}/siprosRelease.zip
+  sha256: 10030671b94a8a2ab354396178f35c30a8e8e0c633864533690c1ff285906c9c
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('vcfsim', max_pin="x") }} 
+    
+requirements:
+  run:
+    - python <3
+    - scikit-learn 
+    - mono
+    - r-stringr
+    - r-tidyr
+    - bioconductor-biostrings
+
+test:
+  commands:
+    - configGenerator
+    - SiprosEnsembleOMP --help
+    - SiprosV4OMP --help
+    - mono Raxport.exe
+
+about:
+  home: https://github.com/thepanlab/Sipros4
+  license: MIT
+  license_file: LICENSE
+  summary: "Tools for stable isotopic mass spectrometry-based metaproteomics"
+  description: |
+      "Tools for stable isotopic mass spectrometry-based metaproteomics research developed by Sipros team. These include Raxport, SiprosV4, SiprosEnsemble and some python / R scripts."
+
+extra:
+  recipe-maintainers:
+    - bernt-matthias
