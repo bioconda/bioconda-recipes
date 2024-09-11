@@ -12,10 +12,14 @@ ls -la ${PREFIX}/include/boost/iostreams
 
 mkdir -p ${PREFIX}/bin
 
+# Disable CMake finding Boost
+sed -i.bak -E 's/(FIND_PACKAGE\(Boost.*)/#\1/' CMakeLists.txt
+
 cmake -S . -B build \
 	-Wno-dev \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
-	-DCMAKE_CXX_FLAGS="${CXXFLAGS}"
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-DBoost_INCLUDE_DIRS=${PREFIX}/include
 cmake --build build -j ${CPU_COUNT} --verbose
 
 cp -f ${SRC_DIR}/bin/bayesTyper ${PREFIX}/bin
