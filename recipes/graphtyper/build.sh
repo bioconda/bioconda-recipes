@@ -4,7 +4,7 @@ set -xe
 
 case $(uname -m) in
     aarch64)
-        ARCH_OPTS="-Dpaw_BUILD_FLAGS=\"-DCMAKE_CXX_FLAGS_ARCH=\""
+        ARCH_OPTS="-Dpaw_BUILD_FLAGS=-DCMAKE_CXX_FLAGS_ARCH="
         ;;
     *)
         ARCH_OPTS=
