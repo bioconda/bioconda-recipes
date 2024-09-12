@@ -7,6 +7,9 @@ export CPU_COUNT=1
 
 export RCSBROOT="${SRC_DIR}"
 
+echo '${BUILD_PREFIX}/bin/'
+ls -l ${BUILD_PREFIX}/bin
+
 # To pass CI test on amd64 platforms
 ulimit -v 2097152
 
