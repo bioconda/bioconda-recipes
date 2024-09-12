@@ -2,7 +2,10 @@
 set -e
 
 # Get pre-compiled skia from jetbrains
-USE_GL=1 make prep > /dev/null 2>&1 
+# USE_GL=1 make prep > /dev/null 2>&1 
+# Build skia from scratch
+bash ./deps/build_skia.sh
+
 
 if [[ "$OSTYPE" != "darwin"* ]]; then
   sed -i 's/-lEGL -lGLESv2/-lEGL -lGLESv2 -lGL -lGLX/' Makefile
