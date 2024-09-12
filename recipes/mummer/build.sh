@@ -51,7 +51,7 @@ done
 
 # fix hashbang lines to use conda's perl
 for i in dnadiff mapview mummerplot nucmer promer; do
-  sed -i.bak '1 s|^#!/.*/perl$|#!/usr/bin/env perl|g' $MUMMER_HOME/$i
+  sed -i.bak '1 s|^#!/.*/perl -w$|#!/usr/bin/env perl|g' $MUMMER_HOME/$i
   rm -rf $MUMMER_HOME/$i.bak
 done
 
