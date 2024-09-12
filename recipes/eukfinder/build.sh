@@ -3,13 +3,21 @@ set -ex
 
 df -h
 
-# Install additional dependencies
-wget https://github.com/PLAST-software/plast-library/releases/download/v2.3.2/plastbinary_linux_v2.3.2.tar.gz
-echo "PLAST downloaded successfully"
-
 # Setup PLAST binaries
-tar -zxf plastbinary_linux_v2.3.2.tar.gz
-cp plastbinary_linux_v2.3.2/build/bin/plast $PREFIX/bin/
+if [[ $(uname) == "Darwin" ]]; then
+  wget https://github.com/PLAST-software/plast-library/releases/download/v2.3.2/plastbinary_osx_v2.3.2.tar.gz
+  tar -zxf plastbinary_osx_v2.3.2.tar.gz
+  cd plastbinary_osx_v2.3.2
+elif [[ $(uname) == "Linux" ]]; then
+  wget https://github.com/PLAST-software/plast-library/releases/download/v2.3.2/plastbinary_linux_v2.3.2.tar.gz
+  tar -zxf plastbinary_linux_v2.3.2.tar.gz
+  cd plastbinary_linux_v2.3.2
+else
+  echo "Unsupported architecture!"
+  exit 1
+fi
+
+cp build/bin/plast $PREFIX/bin/
 
 # Clone acc2tax repository
 git clone https://github.com/richardmleggett/acc2tax.git
