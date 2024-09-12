@@ -9,7 +9,7 @@ echo "PLAST downloaded successfully"
 
 # Setup PLAST binaries
 tar -zxf plastbinary_linux_v2.3.2.tar.gz
-cp plastbinary_linux_v2.3.2/plast $PREFIX/bin/
+cp plastbinary_linux_v2.3.2/build/bin/plast $PREFIX/bin/
 
 # Clone acc2tax repository
 git clone https://github.com/richardmleggett/acc2tax.git
