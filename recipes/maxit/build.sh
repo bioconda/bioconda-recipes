@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exo pipefail
+set -x
 
 # Disable parallel build
 export CPU_COUNT=1
