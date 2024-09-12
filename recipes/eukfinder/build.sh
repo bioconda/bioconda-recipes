@@ -18,6 +18,7 @@ else
 fi
 
 cp build/bin/plast $PREFIX/bin/
+cd ..
 
 # Clone acc2tax repository
 git clone https://github.com/richardmleggett/acc2tax.git
