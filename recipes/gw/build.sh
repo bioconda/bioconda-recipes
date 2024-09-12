@@ -7,6 +7,9 @@ set -e
 if [[ "$OSTYPE" == "darwin"* ]]; then
   sed -i.bak 's/skia_use_metal=true//g' ./deps/build_skia.sh
 fi
+# Use gn from conda
+sed -i.bak 's/bin\/gn/gn/g' build_skia.sh
+
 bash ./deps/build_skia.sh
 
 
