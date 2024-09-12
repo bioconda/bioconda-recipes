@@ -14,6 +14,7 @@ cp -r ./HS_gfa2fa $PREFIX/bin
 cp -r ./HS_separate_reads $PREFIX/bin
 cp -r ./HS_GenomeTailor/HS_GenomeTailor $PREFIX/bin
 cp -r ../cut_gfa.py $PREFIX/bin
+cp -r ../HS_GenomeTailor/bluntify.py $PREFIX/bin
 chmod +x $PREFIX/bin/cut_gfa.py
 
 cp -r ../GraphUnzip/graphunzip.py $PREFIX/bin
