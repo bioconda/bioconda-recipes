@@ -4,6 +4,9 @@ set -e
 # Get pre-compiled skia from jetbrains
 # USE_GL=1 make prep > /dev/null 2>&1 
 # Build skia from scratch
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  sed -i.bak 's/skia_use_metal=true//g' ./deps/build_skia.sh
+fi
 bash ./deps/build_skia.sh
 
 
