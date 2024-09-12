@@ -18,7 +18,7 @@ cd acc2tax
 # According to https://bioconda.github.io/contributor/troubleshooting.html
 # and https://github.com/bioconda/bioconda-recipes/pull/49360#discussion_r1686187284
 $(which "$CC") -o acc2tax acc2tax.c
-cp acc2tax/acc2tax $PREFIX/bin/
+cp acc2tax $PREFIX/bin/
 cd ..
 
 chmod +x $PREFIX/bin/plast
