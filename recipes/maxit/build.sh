@@ -10,8 +10,8 @@ export RCSBROOT="${SRC_DIR}"
 case "${OSTYPE}" in
     darwin*)
         alias sed="${BUILD_PREFIX}/bin/sed"
-        ln -s "${BUILD_PREFIX}/bin/clang" "${BUILD_PREFIX}/bin/gcc"
-        ln -s "${BUILD_PREFIX}/bin/clang++" "${BUILD_PREFIX}/bin/g++"
+        ln -s "${CC}" "${BUILD_PREFIX}/bin/gcc"
+        ln -s "${CXX}" "${BUILD_PREFIX}/bin/g++"
         ;;
 
     linux*)
@@ -19,7 +19,7 @@ case "${OSTYPE}" in
         ulimit -v 2097152
 
         ln -s "${CC}" "${BUILD_PREFIX}/bin/gcc"
-        ln -s "${GXX}" "${BUILD_PREFIX}/bin/g++"
+        ln -s "${CXX}" "${BUILD_PREFIX}/bin/g++"
         ;;
     *)
         exit 1
@@ -27,10 +27,10 @@ case "${OSTYPE}" in
 esac
 
 cd ${SRC_DIR}/maxit-v10.1/src && \
-sed -i "s|rcsbroot = getenv(\"RCSBROOT\")|rcsbroot = \"${RCSBROOT}\"|g" maxit.C process_entry.C generate_assembly_cif_file.C
+sed -i.bak "s|rcsbroot = getenv(\"RCSBROOT\")|rcsbroot = \"${RCSBROOT}\"|g" maxit.C process_entry.C generate_assembly_cif_file.C
 
 cd "${SRC_DIR}/cifparse-obj-v7.0" && sed -i 's|mv |cp |g' Makefile
-cd "${SRC_DIR}" && sed -i "s|./data/binary|${RCSBROOT}/data/binary|g" binary.sh
+cd "${SRC_DIR}" && sed -i.bak "s|./data/binary|${RCSBROOT}/data/binary|g" binary.sh
 cd "${SRC_DIR}" && make binary -j${CPU_COUNT}
 
 unlink "${BUILD_PREFIX}/bin/gcc"
