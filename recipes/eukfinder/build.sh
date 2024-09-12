@@ -23,13 +23,4 @@ $(which "$CC") -o acc2tax acc2tax.c
 echo "acc2tax installed successfully"
 cd ..
 
-source $(conda info --base)/etc/profile.d/conda.sh
-
-conda env create -f eukfinder_env.yml
-conda activate eukfinder
-
-python setup.py install --single-version-externally-managed --record=record.txt
-
-eukfinder read_prep -h
-eukfinder short_seqs -h
-eukfinder long_seqs -h
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt
