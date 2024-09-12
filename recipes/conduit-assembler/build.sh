@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -ex
 export CC="\"${CC} -fcommon\""
 ## Install hts-nim dependency
 pushd hts-nim

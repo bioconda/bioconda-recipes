@@ -1,6 +1,6 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.0" %}
 {% set name = "dupRadar" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,23 +8,27 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: ce448594bfe36f7d2f96e35be3b56da8
+  md5: 306ba6ddb1786eb7ec5e6cb4bc15562e
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-dupradar", max_pin="x.x") }}'
   noarch: generic
 # Suggests: BiocStyle, knitr, rmarkdown, AnnotationHub
 requirements:
   host:
-    - 'bioconductor-rsubread >=2.8.0,<2.9.0'
+    - 'bioconductor-rsubread >=2.16.0,<2.17.0'
     - r-base
+    - r-kernsmooth
   run:
-    - 'bioconductor-rsubread >=2.8.0,<2.9.0'
+    - 'bioconductor-rsubread >=2.16.0,<2.17.0'
     - r-base
+    - r-kernsmooth
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

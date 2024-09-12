@@ -1,6 +1,6 @@
-{% set version = "1.36.0" %}
+{% set version = "1.44.0" %}
 {% set name = "hapmap500ksty" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,14 +8,16 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: ce0714fa025f7ef06c38c67168cfcb4c
+  md5: 7a1d4983ac3e411dadedc130d85c2557
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-hapmap500ksty", max_pin="x.x") }}'
   noarch: generic
 # Suggests: oligo
 requirements:
@@ -24,6 +26,7 @@ requirements:
   run:
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

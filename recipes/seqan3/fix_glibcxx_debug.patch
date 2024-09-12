@@ -1,0 +1,25 @@
+From 47b77ef92911ff1667f4487edb3961f0c28f407b Mon Sep 17 00:00:00 2001
+From: Simon Gene Gottlieb <simon@gottliebtfreitag.de>
+Date: Wed, 17 Jan 2024 12:09:11 +0100
+Subject: [PATCH] [FIX] Do not use constexpr vector with _GLIBCXX_DEBUG
+
+---
+ include/seqan3/core/platform.hpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/seqan3/core/platform.hpp b/include/seqan3/core/platform.hpp
+index 1fd92faa7..e0c7687fe 100644
+--- a/include/seqan3/core/platform.hpp
++++ b/include/seqan3/core/platform.hpp
+@@ -252,7 +252,7 @@ static_assert(sdsl::sdsl_version_major == 3, "Only version 3 of the SDSL is supp
+ #endif
+ 
+ //!\brief Our char literals returning std::vector should be constexpr if constexpr std::vector is supported.
+-#if defined(__cpp_lib_constexpr_vector) && __cpp_lib_constexpr_vector >= 201907L
++#if __cpp_lib_constexpr_vector >= 201907L && !defined(_GLIBCXX_DEBUG)
+ #    define SEQAN3_WORKAROUND_LITERAL constexpr
+ #else
+ #    define SEQAN3_WORKAROUND_LITERAL inline
+-- 
+2.43.0
+

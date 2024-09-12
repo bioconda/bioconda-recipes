@@ -1,4 +1,5 @@
 #!/bin/bash
+export CXXFLAGS=`sed "s# -fvisibility-inlines-hidden##g" "$CXXFLAGS"`
 
 mkdir build 
 cd build

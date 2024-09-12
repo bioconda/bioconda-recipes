@@ -1,5 +1,5 @@
 {% set name = "eFISHent" %}
-{% set version = "0.0.1" %}
+{% set version = "0.0.5" %}
 
 package:
   name: {{ name|lower }}
@@ -7,12 +7,14 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/eFISHent-{{ version }}.tar.gz
-  sha256: 6c10f608b078a8085dabaf2f8e58c62499fe6afd1aa7536fbdb2050cb34ff601
+  sha256: 28d4bffc56257f263539fdcc27016a2a643cf1732f81b3b713580ea2ae17bae7
 
 build:
   number: 0
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
+  run_exports:
+    - {{ pin_subpackage("efishent", max_pin="x.x") }}
   entry_points:
     - efishent = eFISHent.cli:main
     - eFISHent = eFISHent.cli:main
@@ -38,10 +40,10 @@ requirements:
     - rnastructure
     - samtools
     - tqdm
+    - pysam
 
 test:
   commands:
-    - pip check
     - efishent --help
     - eFISHent --help
 

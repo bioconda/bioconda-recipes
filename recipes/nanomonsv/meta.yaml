@@ -1,0 +1,50 @@
+{% set name = "nanomonsv" %}
+{% set version = "0.7.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/nanomonsv-{{ version }}.tar.gz
+  sha256: 25aefec185f09e3fad057c98b8f28c03c4997dbb7771f67ff658674ce36ecbb6
+
+build:
+  entry_points:
+    - nanomonsv = nanomonsv:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+  number: 0
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - htslib
+    - mafft >=7.407
+    - racon >=1.4.3
+    - pysam >=0.19.1
+    - numpy >=1.23.0
+    - parasail-python >=1.2.4
+    - minimap2 >=2.24
+    - bwa >=0.7.17
+    - RepeatMasker >=4.1.1
+    - bedtools >=2.30.0
+
+test:
+  commands:
+    - nanomonsv --help
+
+about:
+  home: https://github.com/friend1ws/nanomonsv
+  summary: Python tools for detecting structural variation from nanopore sequence data
+  license: GPL-3.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - aokad

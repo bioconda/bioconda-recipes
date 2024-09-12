@@ -1,5 +1,5 @@
 {% set name = "checkv" %}
-{% set version = "0.9.0" %}
+{% set version = "1.0.3" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,29 +7,33 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: c4765bfb3fe4034d63b7c7275c327fd6533b5169d2754a7811eccdec4f983c0b
+  sha256: 2438516f270191267a9860dfe31bf596d64a4fbc16be922b46fb6a4fd98d762a
 
 build:
   number: 0
   noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
   entry_points:
     - checkv=checkv.cli:cli
-  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage("checkv", max_pin="x") }}
 
 requirements:
   host:
     - python >=3.6
     - pip
+    - flit-core >=3.2,<4
   run:
     - python >=3.6
     - biopython
     - importlib-metadata >=0.12
     - numpy
     - psutil
+    - requests
     - kcounter
-    - diamond
+    - diamond <=2.1.8
     - hmmer
-    - prodigal
+    - prodigal-gv
 
 test:
   commands:

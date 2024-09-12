@@ -1,6 +1,6 @@
-{% set version = "1.22.0" %}
+{% set version = "1.30.0" %}
 {% set name = "JASPAR2016" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,14 +8,16 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 2a18b3c7bc572b92b918fd22542a965e
+  md5: 2976e4678291944f664396385049180b
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-jaspar2016", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
@@ -23,6 +25,7 @@ requirements:
   run:
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

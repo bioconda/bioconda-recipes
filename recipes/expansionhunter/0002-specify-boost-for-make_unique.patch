@@ -1,0 +1,54 @@
+From 4350c993bf8d7745745e394a11b008c6a0ae5875 Mon Sep 17 00:00:00 2001
+From: Lightning Auriga <lightning.auriga@gmail.com>
+Date: Mon, 11 Sep 2023 09:56:54 -0400
+Subject: [PATCH 2/4] specify boost for make_unique
+
+---
+ ehunter/locus/LocusAnalyzer.cpp             | 6 +++---
+ ehunter/sample/HtsSeekingSampleAnalysis.cpp | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/ehunter/locus/LocusAnalyzer.cpp b/ehunter/locus/LocusAnalyzer.cpp
+index 4549cd6..15d31b9 100644
+--- a/ehunter/locus/LocusAnalyzer.cpp
++++ b/ehunter/locus/LocusAnalyzer.cpp
+@@ -174,14 +174,14 @@ void LocusAnalyzer::addIrrPairFinder(std::string motif) { irrPairFinder_ = IrrPa
+ 
+ void LocusAnalyzer::addRepeatAnalyzer(std::string variantId, graphtools::NodeId nodeId)
+ {
+-    variantAnalyzers_.emplace_back(make_unique<RepeatAnalyzer>(
++    variantAnalyzers_.emplace_back(boost::make_unique<RepeatAnalyzer>(
+         std::move(variantId), locusSpec_.regionGraph(), nodeId, locusSpec_.genotyperParameters()));
+ }
+ 
+ void LocusAnalyzer::addSmallVariantAnalyzer(
+     string variantId, VariantSubtype subtype, vector<NodeId> nodes, optional<NodeId> refNode)
+ {
+-    variantAnalyzers_.emplace_back(make_unique<SmallVariantAnalyzer>(
++    variantAnalyzers_.emplace_back(boost::make_unique<SmallVariantAnalyzer>(
+         std::move(variantId), subtype, locusSpec_.regionGraph(), std::move(nodes), refNode,
+         locusSpec_.genotyperParameters()));
+ }
+@@ -196,4 +196,4 @@ void LocusAnalyzer::runVariantAnalysis(
+ }
+ 
+ }
+-}
+\ No newline at end of file
++}
+diff --git a/ehunter/sample/HtsSeekingSampleAnalysis.cpp b/ehunter/sample/HtsSeekingSampleAnalysis.cpp
+index 6f2a73e..20b9f25 100644
+--- a/ehunter/sample/HtsSeekingSampleAnalysis.cpp
++++ b/ehunter/sample/HtsSeekingSampleAnalysis.cpp
+@@ -297,7 +297,7 @@ void processLocus(
+ 
+             spdlog::info("Analyzing {}", locusId);
+             vector<unique_ptr<LocusAnalyzer>> locusAnalyzers;
+-            auto analyzer(make_unique<LocusAnalyzer>(locusSpec, heuristicParams, alignmentWriter));
++            auto analyzer(boost::make_unique<LocusAnalyzer>(locusSpec, heuristicParams, alignmentWriter));
+             locusAnalyzers.emplace_back(std::move(analyzer));
+             AnalyzerFinder analyzerFinder(locusAnalyzers);
+ 
+-- 
+2.39.1
+

@@ -1,6 +1,6 @@
-{% set version = "1.2.7" %}
+{% set version = "1.2.11" %}
 {% set name = "GenomeInfoDbData" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,14 +8,16 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 74c82f26111062a9ceb3c5331088cd56
+  md5: 2a4cbfc2031992fed3c9445f450890a2
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-genomeinfodbdata", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
@@ -23,6 +25,7 @@ requirements:
   run:
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

@@ -1,0 +1,50 @@
+{% set name = "vase" %}
+{% set version = "0.5.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/david-a-parry/{{ name }}/archive/refs/tags/{{ version }}.tar.gz"
+  sha256: 09ff9f9aeab36cbac8cd8a573e71d3c08a85c6ed5627bd526fe344ecfde5e8e3
+
+build:
+  number: 0
+  # this is special because the default build excludes some functionality
+  script: "{{ PYTHON }} -m pip install .[BGZIP,REPORTER,MYGENEINFO] -vv"
+  noarch: python
+
+requirements:
+  host:
+    - pip
+    - python
+    - pysam >=0.17
+    - natsort
+    - numpy
+  run:
+    - python
+    - pysam >=0.17
+    - natsort
+    - numpy
+    - biopython
+    - xlsxwriter
+    - requests
+    - mygene
+
+test:
+  commands:
+    - vase -h
+
+about:
+  home: https://github.com/david-a-parry/vase
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Variant Annotation, Segregation and Exclusion for family or cohort based rare-disease sequencing studies"
+  doc_url: 
+  dev_url: 
+
+extra:
+  recipe-maintainers:
+    - mptrsen

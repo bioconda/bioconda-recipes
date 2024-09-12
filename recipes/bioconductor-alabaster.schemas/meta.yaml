@@ -1,0 +1,37 @@
+{% set version = "1.2.0" %}
+{% set name = "alabaster.schemas" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 308883d85ab416d45eaa55428463d308
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-alabaster.schemas", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: knitr, rmarkdown, BiocStyle
+requirements:
+  host:
+    - r-base
+  run:
+    - r-base
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'MIT + file LICENSE'
+  summary: 'Schemas for the Alabaster Framework'
+  description: 'Stores all schemas required by various alabaster.* packages. No computation should be performed by this package, as that is handled by alabaster.base. We use a separate package instead of storing the schemas in alabaster.base itself, to avoid conflating management of the schemas with code maintenence.'
+  license_file: LICENSE
+

@@ -1,0 +1,56 @@
+{% set name = "nda-tools" %}
+{% set version = "0.3.0" %}
+{% set sha256 = "7315dcf21bf2597485e930f1199c259f1f82c9bc79ebcefb5ef3e8e02aff56f1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name|replace("-", "_") }}/{{ name|replace("-", "_") }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps -vvv
+  entry_points:
+    - vtcmd = NDATools.clientscripts.vtcmd:main
+    - downloadcmd = NDATools.clientscripts.downloadcmd:main
+    - unit_tests = tests.run_unit_tests:main
+    - integration_tests = tests.run_integration_tests:main
+  run_exports:
+    - {{ pin_subpackage('nda-tools', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - keyring
+    - pyyaml
+    - packaging
+    - mock
+    - requests
+    - tqdm
+    - boto3
+    - pandas
+
+test:
+  imports:
+    - NDATools
+  commands:
+    - vtcmd -h
+    - downloadcmd -h
+
+about:
+  home: https://github.com/NDAR/nda-tools
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.md
+  summary: "Python package for interacting with NDA web services."
+
+extra:
+  recipe-maintainer:
+    - npavlovikj

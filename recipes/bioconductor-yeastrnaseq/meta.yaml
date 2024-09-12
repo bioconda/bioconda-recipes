@@ -1,6 +1,6 @@
-{% set version = "0.32.0" %}
+{% set version = "0.40.0" %}
 {% set name = "yeastRNASeq" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,14 +8,16 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: a24409c380293d23e5339fa94a9f0ab5
+  md5: 2344deacf993b96e1709ad96b710471f
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-yeastrnaseq", max_pin="x.x") }}'
   noarch: generic
 # Suggests: Biobase, ShortRead, IRanges
 requirements:
@@ -24,6 +26,7 @@ requirements:
   run:
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

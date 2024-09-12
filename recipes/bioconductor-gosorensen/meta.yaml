@@ -1,0 +1,47 @@
+{% set version = "1.4.0" %}
+{% set name = "goSorensen" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 8fa5cc982341291dd857ab340abe4c73
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-gosorensen", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocStyle, knitr, rmarkdown
+requirements:
+  host:
+    - 'bioconductor-clusterprofiler >=4.10.0,<4.11.0'
+    - 'bioconductor-go.db >=3.18.0,<3.19.0'
+    - 'bioconductor-goprofiles >=1.64.0,<1.65.0'
+    - 'bioconductor-org.hs.eg.db >=3.18.0,<3.19.0'
+    - r-base
+    - r-stringr
+  run:
+    - 'bioconductor-clusterprofiler >=4.10.0,<4.11.0'
+    - 'bioconductor-go.db >=3.18.0,<3.19.0'
+    - 'bioconductor-goprofiles >=1.64.0,<1.65.0'
+    - 'bioconductor-org.hs.eg.db >=3.18.0,<3.19.0'
+    - r-base
+    - r-stringr
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Statistical inference based on the Sorensen-Dice dissimilarity and the Gene Ontology (GO)'
+  description: 'This package implements inferential methods to compare gene lists in terms of their biological meaning as expressed in the GO. The compared gene lists are characterized by cross-tabulation frequency tables of enriched GO items. Dissimilarity between gene lists is evaluated using the Sorensen-Dice index. The fundamental guiding principle is that two gene lists are taken as similar if they share a great proportion of common enriched GO items.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

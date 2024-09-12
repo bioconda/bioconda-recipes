@@ -1,5 +1,5 @@
 {% set name = "masurca" %}
-{% set version = "4.0.9" %}
+{% set version = "4.1.1" %}
 
 package:
   name: {{ name }}
@@ -7,23 +7,25 @@ package:
 
 source:
   url: https://github.com/alekseyzimin/masurca/releases/download/v{{ version }}/MaSuRCA-{{ version }}.tar.gz
-  sha256: a31c2f786452f207c0b0b20e646b6c85b7357dcfd522b697c1009d902d3ed4cf
+  sha256: 8758f6196bf7f57e24e08bda84abddfff08feb4cea204c0eb5e1cb9fe8198573
 
 build:
   number: 1
   skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - yaggo
     - make
   host:
     - zlib
     - bzip2
     - boost-cpp
-    - perl 
+    - perl
+    - yaggo
   run:
     - zlib
     - boost-cpp
@@ -31,6 +33,7 @@ requirements:
     - grep
     - bwa
     - minimap2
+    - flye
 
 test:
   commands:
@@ -41,7 +44,7 @@ about:
   license: GPL-3.0-only
   license_family: GPL
   license_file: LICENSE.txt
-  summary: |
+  summary:
     MaSuRCA (Maryland Super-Read Celera Assembler) genome assembly software.
     MaSuRCA requires Illumina data, and supports third-generation PacBio/Nanopore
     MinION reads for hybrid assembly.

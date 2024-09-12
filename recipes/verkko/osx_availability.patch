@@ -1,0 +1,92 @@
+diff --git a/src/Makefile.boilermake b/src/Makefile.boilermake
+index 7e2b929..2dfc3b1 100644
+--- a/src/Makefile.boilermake
++++ b/src/Makefile.boilermake
+@@ -160,11 +160,18 @@ endef
+ define ADD_FILE_COPY_RULE
+   doall: $${TARGET_DIR}/$2
+   ifeq ($3,executable)
++  ifeq ($(suffix $(1)),.sh)
+   $${TARGET_DIR}/$2: $1
+ 		@mkdir -p $$(dir $${TARGET_DIR}/$2)
+ 		cat $1 |sed s/'version=""'/'version="$(VERSION)"'/g > $${TARGET_DIR}/$2
+ 		chmod +x $${TARGET_DIR}/$2
+   else
++  $${TARGET_DIR}/$2: $1
++		@mkdir -p $$(dir $${TARGET_DIR}/$2)
++		cp $1 $${TARGET_DIR}/$2
++		chmod +x $${TARGET_DIR}/$2
++  endif
++  else
+   $${TARGET_DIR}/$2: $1
+ 		@mkdir -p $$(dir $${TARGET_DIR}/$2)
+ 		cp -pf $1 $${TARGET_DIR}/$2
+diff --git a/src/Makefile b/src/Makefile
+index 67975ff..6a0d332 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -127,9 +127,9 @@ define SET_DEFAULT_FLAGS
+   else
+     TOOLCHAIN  := LLVM
+     TOOLCHAINV := $$(shell ${CXX} -dumpversion)
+-    CFLAGS     := -pthread -fopenmp -fPIC -std=c17   ${1}
+-    CXXFLAGS   := -pthread -fopenmp -fPIC -std=c++20 ${1}
+-    LDFLAGS    := -pthread -fopenmp                  ${2} -lm
++    CFLAGS     := -DBOOST_NO_CXX98_FUNCTION_BASE -pthread -fopenmp -fPIC -std=c17   ${1}
++    CXXFLAGS   := -DBOOST_NO_CXX98_FUNCTION_BASE -pthread -fopenmp -fPIC -std=c++20 ${1}
++    LDFLAGS    := -DBOOST_NO_CXX98_FUNCTION_BASE -pthread -fopenmp                  ${2} -lm
+   endif
+
+   #  Build up our preferred set of flags.
+diff --git a/src/MBG/makefile b/src/MBG/makefile
+index 0c0113b..c6fd847 100644
+--- a/src/MBG/makefile
++++ b/src/MBG/makefile
+@@ -1,7 +1,7 @@
+ PLATFORM=$(shell uname -s)
+ 
+ GPP=$(CXX)
+-CPPFLAGS=-Wall -Wextra -std=c++17 -O3 -g -Izstr/src -Iparallel-hashmap/parallel_hashmap/ -Wno-unused-parameter -Icxxopts/include -Iconcurrentqueue `pkg-config --cflags zlib`
++CPPFLAGS=-Wall -Wextra -std=c++17 -O3 -g -Izstr/src -Iparallel-hashmap/parallel_hashmap/ -Wno-unused-parameter -Icxxopts/include -Iconcurrentqueue `pkg-config --cflags zlib` -D_LIBCPP_DISABLE_AVAILABILITY
+ 
+ ODIR=obj
+ BINDIR=bin
+diff --git a/src/hifioverlapper/MBG/makefile b/src/hifioverlapper/MBG/makefile
+index 0c0113b..c6fd847 100644
+--- a/src/hifioverlapper/MBG/makefile
++++ b/src/hifioverlapper/MBG/makefile
+@@ -1,7 +1,7 @@
+ PLATFORM=$(shell uname -s)
+ 
+ GPP=$(CXX)
+-CPPFLAGS=-Wall -Wextra -std=c++17 -O3 -g -Izstr/src -Iparallel-hashmap/parallel_hashmap/ -Wno-unused-parameter -Icxxopts/include -Iconcurrentqueue `pkg-config --cflags zlib`
++CPPFLAGS=-Wall -Wextra -std=c++17 -O3 -g -Izstr/src -Iparallel-hashmap/parallel_hashmap/ -Wno-unused-parameter -Icxxopts/include -Iconcurrentqueue `pkg-config --cflags zlib` -D_LIBCPP_DISABLE_AVAILABILITY
+ 
+ ODIR=obj
+ BINDIR=bin
+diff --git a/src/hifioverlapper/makefile b/src/hifioverlapper/makefile
+index 0bc9ee7..0f53de7 100644
+--- a/src/hifioverlapper/makefile
++++ b/src/hifioverlapper/makefile
+@@ -1,5 +1,7 @@
++PLATFORM=$(shell uname -s)
++
+ GPP=$(CXX)
+-CPPFLAGS=-Wall -Wextra -std=c++17 -O3 -g -Izstr/src -Iparallel-hashmap/parallel_hashmap/ -Icxxopts/include -Wno-unused-parameter `pkg-config --cflags zlib` -IMBG/src -Iconcurrentqueue
++CPPFLAGS=-Wall -Wextra -std=c++17 -O3 -g -Izstr/src -Iparallel-hashmap/parallel_hashmap/ -Icxxopts/include -Wno-unused-parameter `pkg-config --cflags zlib` -IMBG/src -Iconcurrentqueue -D_LIBCPP_DISABLE_AVAILABILITY
+ 
+ ODIR=obj
+ BINDIR=bin
+@@ -14,7 +16,11 @@ DEPS = $(patsubst %, $(SRCDIR)/%, $(_DEPS))
+ _OBJ = MatchIndex.o MinimizerIterator.o TwobitString.o ReadStorage.o UnitigKmerCorrector.o UnitigStorage.o ReadMatchposStorage.o
+ OBJ = $(patsubst %, $(ODIR)/%, $(_OBJ))
+ 
+-LINKFLAGS = $(CPPFLAGS) -Wl,-Bstatic $(LIBS) -Wl,-Bdynamic -Wl,--as-needed -lpthread -pthread -static-libstdc++
++ifeq ($(PLATFORM),Linux)
++   LINKFLAGS = $(CPPFLAGS) -Wl,-Bstatic $(LIBS) -Wl,-Bdynamic -Wl,--as-needed -lpthread -pthread -static-libstdc++
++else
++   LINKFLAGS = $(CPPFLAGS) $(LIBS) -lpthread -pthread -static-libstdc++
++endif
+ 
+ VERSION := Branch $(shell git rev-parse --abbrev-ref HEAD) commit $(shell git rev-parse HEAD) $(shell git show -s --format=%ci)
+ 

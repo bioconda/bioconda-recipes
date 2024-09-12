@@ -1,15 +1,19 @@
-{% set version = "1.0.0" %}
+{% set version = "1.2.3" %}
 
 package:
   name: falco
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+    # falco is currently not intended to be stable between minor versions (x.x).
+    - {{ pin_subpackage('falco', max_pin="x.x") }}
+
 
 source:
   url: https://github.com/smithlabcode/falco/releases/download/v{{ version }}/falco-{{ version }}.tar.gz
-  sha256: 1cbcc6fc1db66dd3bc9ea9fb1d2f928c9f57ddd1664c8b01ca5ed9af3900081f
+  sha256: b2d4da736efecfa669ad555fbb69862bc7fb57dcf32efcb6c151c47f98b32b8a
 
 requirements:
   build:
@@ -18,19 +22,28 @@ requirements:
     - autoconf
     - automake
   host:
-    - htslib
     - zlib
+    - htslib
   run:
-    - htslib
     - zlib
+    - htslib
 
 about:
   home: https://github.com/smithlabcode/falco
   license: GPL-3.0-only
   license_file: LICENSE
   summary: |
-    falco is a C++ implementation of FastQC to assess the quality of sequence reads.
+    falco is a drop-in C++ implementation of FastQC to assess the quality of sequence reads.
+  doc_url: 'https://falco.readthedocs.io/'
 
 test:
   commands:
     - falco
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - andrewdavidsmith
+    - guilhermesena1

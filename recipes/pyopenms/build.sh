@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # useless default include directory that is silently added by the compiler packages "to help"...
-# it is not even added with -isystem https://github.com/AnacondaRecipes/aggregate/blob/master/clang/activate-clang%2B%2B.sh#L87
+#  it is not even added with -isystem https://github.com/AnacondaRecipes/aggregate/blob/master/clang/activate-clang%2B%2B.sh#L87
 USELESS="-I${PREFIX}/include"
 export CXXFLAGS=${CXXFLAGS//${USELESS}/}
 
@@ -20,6 +20,7 @@ else
   export ORIGIN
   RPATH='$${ORIGIN}/../lib'
 fi
+
 LDFLAGS='-Wl,-rpath,${RPATH}'
 
 cmake ../src/pyOpenMS \
@@ -36,7 +37,9 @@ cmake ../src/pyOpenMS \
   -DCMAKE_BUILD_WITH_INSTALL_NAME_DIR=ON \
   -DPython_EXECUTABLE=$PYTHON \
   -DPython_FIND_STRATEGY="LOCATION" \
-  -DNO_DEPENDENCIES=ON
+  -DPY_NUM_MODULES=20 \
+  -DNO_DEPENDENCIES=ON \
+  -DNO_SHARE=ON
 
 # NO_DEPENDENCIES since conda takes over re-linking etc
 

@@ -1,23 +1,26 @@
-{% set version = "39" %}
+{% set name = "tantan" %}
+{% set version = "50" %}
 
 package:
-  name: tantan
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://gitlab.com/mcfrith/tantan/-/archive/{{ version }}/tantan-{{ version }}.tar.gz
-  sha256: fc4edb357e2731ac65b93b32cf5ac40443386d322513dd589ae19a4ddbaa9b70
+  sha256: a239e9fb3c059ed9eb4c25a29b3c44a2ef1c1b492a9780874f429de7ae8b5407
 
 build:
   number: 0
-  script: make install prefix=$PREFIX
+  run_exports:
+    - {{ pin_subpackage('tantan', max_pin="None") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
-  run:
+  host:
+    - zlib
 
 test:
   commands:
@@ -25,6 +28,16 @@ test:
 
 about:
   home: https://gitlab.com/mcfrith/tantan
-  license: GPL-3.0-or-later
-  license_file: COPYING.txt
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "COPYING.txt"
   summary: "tantan masks simple regions (low complexity & short-period tandem repeats) in biological sequences."
+  dev_url: https://gitlab.com/mcfrith/tantan
+  doc_url: https://gitlab.com/mcfrith/tantan/-/blob/main/README.rst
+
+extra:
+  identifiers:
+    - doi:10.1093/nar/gkq1212
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

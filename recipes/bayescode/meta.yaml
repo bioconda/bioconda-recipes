@@ -1,0 +1,52 @@
+{% set version = "1.3.2" %}
+{% set sha256 = "53febe5e4495bfb029da04b209c5722ee0de0c13db53ec98de277d571469d26f" %}
+
+package:
+  name: bayescode
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('bayescode', max_pin="x") }}
+
+source:
+  url: https://github.com/ThibaultLatrille/bayescode/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - make
+    - cmake
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  run:
+    - python >=3.6
+    - numpy
+    - pandas
+    - ete3
+    - matplotlib-base
+
+test:
+  commands:
+    - fasta_to_ali.py --help
+    - fitness_to_selcoeff.py --help
+    - calibs_coevol_to_mutsel.py --help
+    - traits_coevol_to_mutsel.py --help
+    - plot_tree.py --help
+    - neutrality_index.py --help
+    - mutselomega --help
+    - readmutselomega --help
+    - nodemutsel --help
+    - readnodemutsel --help
+    - nodeomega --help
+    - readnodeomega --help
+    - nodetraits --help
+    - readnodetraits --help
+
+about:
+  home: https://github.com/ThibaultLatrille/bayescode
+  license: MIT
+  license_family: MIT
+  license_file: License.MD
+  summary: Mutation-Selection phylogenetic codon models to detect site-specific adaptive evolution or to infer long-term effective population size

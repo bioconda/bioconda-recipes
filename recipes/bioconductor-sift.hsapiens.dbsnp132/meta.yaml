@@ -1,6 +1,6 @@
 {% set version = "1.0.2" %}
 {% set name = "SIFT.Hsapiens.dbSNP132" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,27 +8,30 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
   md5: c374f0bf4c99357cfe99e0b192c00d75
 build:
-  number: 8
+  number: 12
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-sift.hsapiens.dbsnp132", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.56.0,<1.57.0'
-    - 'bioconductor-variantannotation >=1.40.0,<1.41.0'
+    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
+    - 'bioconductor-variantannotation >=1.48.0,<1.49.0'
     - r-base
     - 'r-rsqlite >=0.11.0'
   run:
-    - 'bioconductor-annotationdbi >=1.56.0,<1.57.0'
-    - 'bioconductor-variantannotation >=1.40.0,<1.41.0'
+    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
+    - 'bioconductor-variantannotation >=1.48.0,<1.49.0'
     - r-base
     - 'r-rsqlite >=0.11.0'
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

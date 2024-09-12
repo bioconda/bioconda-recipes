@@ -1,0 +1,54 @@
+{% set name = "annotsv" %}
+{% set version = "3.4.4" %}
+{% set sha256 = "ab7afcdddc1aa1215d3d77cdab74d6db4f24f2c56de9b820a6bbf668f48b1d88" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('annotsv', max_pin="x") }}
+
+source:
+  url: https://github.com/lgmgeo/AnnotSV/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - make
+  host:
+    - python >=3.8
+  run:
+    - tk >=8.5
+    - bedtools >=2.25
+    - bcftools >=1.10
+    - openjdk >=8
+    - python >=3.8
+    - coreutils
+    - curl
+    - unzip
+    - pyfaidx >=0.7.1
+    - natsort >=7.1.1
+    - pandas >=1.5.2
+    - tqdm >=4.64.1
+    - polars >=0.16.5
+    - appdirs
+    - git
+    - make
+
+# Tests AnnotSV, the annotations install script and variantconvert (needed for VCF outputs)
+test:
+  commands:
+    - AnnotSV -help
+    - bash -n INSTALL_annotations.sh
+    - variantconvert -h
+
+about:
+  home: https://github.com/lgmgeo/AnnotSV
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: License.txt
+  summary: Annotation and Ranking of Structural Variation

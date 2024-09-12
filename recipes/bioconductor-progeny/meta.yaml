@@ -1,6 +1,6 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "progeny" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,32 +8,38 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 80ac2cc8bd79dedea9e0cd333f16fe1a
+  md5: 9798ea9424f4115b980496038619f009
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-progeny", max_pin="x.x") }}'
   noarch: generic
 # Suggests: airway, biomaRt, BiocFileCache, broom, Seurat, SingleCellExperiment, DESeq2, BiocStyle, knitr, readr, readxl, pheatmap, tibble, rmarkdown, testthat (>= 2.1.0)
 requirements:
   host:
-    - 'bioconductor-biobase >=2.54.0,<2.55.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
+    - 'bioconductor-decoupler >=2.8.0,<2.9.0'
     - r-base
     - r-dplyr
     - r-ggplot2
     - r-ggrepel
     - r-gridextra
+    - r-reshape2
     - r-tidyr
   run:
-    - 'bioconductor-biobase >=2.54.0,<2.55.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
+    - 'bioconductor-decoupler >=2.8.0,<2.9.0'
     - r-base
     - r-dplyr
     - r-ggplot2
     - r-ggrepel
     - r-gridextra
+    - r-reshape2
     - r-tidyr
 test:
   commands:
@@ -42,6 +48,6 @@ about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'Apache License (== 2.0) | file LICENSE'
   summary: 'Pathway RespOnsive GENes for activity inference from gene expression'
-  description: 'This package provides a function to infer pathway activity from gene expression using PROGENy. It contains the linear model we inferred in the publication "Perturbation-response genes reveal signaling footprints in cancer gene expression".'
+  description: 'PROGENy is resource that leverages a large compendium of publicly available signaling perturbation experiments to yield a common core of pathway responsive genes for human and mouse. These, coupled with any statistical method, can be used to infer pathway activities from bulk or single-cell transcriptomics.'
   license_file: LICENSE
 

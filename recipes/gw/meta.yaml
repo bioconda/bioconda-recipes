@@ -1,0 +1,89 @@
+{% set version = "1.0.3" %}
+{% set sha256 = "7247a8ec9efb7ebcd9566f6a3759520ee87f305efc91c8ce658307308ee6368a" %}
+
+package:
+  name: gw
+  version: {{ version }}
+
+source:
+  url: https://github.com/kcleal/gw/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - fix-linker-issues.patch  # [linux]
+    - fix-context.patch
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('gw', max_pin="x") }}
+  ignore_run_exports:
+    - libglx          # [linux]
+    - libgles         # [linux]
+    - libegl          # [linux]
+    - xorg-libsm      # [linux]
+    - xorg-libice     # [linux]
+    - xorg-libx11     # [linux]
+    - xorg-libxau     # [linux]
+    - xorg-libxext    # [linux]
+    - libxcb          # [linux]
+    - freetype        # [osx]
+    - fontconfig      # [osx]
+    - zlib            # [osx]
+    - libuuid
+    - libdeflate
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+
+  host:
+    - fontconfig
+    - libuuid
+    - libcurl
+    - libdeflate >=1.0
+    - htslib >=1.12
+    - glfw >=3.3
+    - unzip
+    - freetype
+    - zlib
+    - pthread-stubs       # [linux]
+    - xorg-libsm          # [linux]
+    - xorg-libice         # [linux]
+    - xorg-libx11         # [linux]
+    - libxcb              # [linux]
+    - libegl-devel        # [linux]
+    - libgl-devel         # [linux]
+    - libglx-devel        # [linux]
+    - libgles-devel       # [linux]
+    - wayland             # [linux]
+
+  run:
+    - glfw >=3.3
+    - htslib >=1.12
+    - xorg-libxt          # [linux]
+    - xorg-libxau         # [linux]
+    - xorg-libxfixes      # [linux]
+    - xorg-libxxf86vm     # [linux]
+    - xorg-libxdamage     # [linux]
+    - mesalib             # [linux]
+    - wayland             # [linux]
+
+test:
+  commands:
+    - gw hg19 -b https://github.com/kcleal/gw/releases/download/v1.0.0/demo1.bam -r chr8:37047270-37055161 -n > test.png; ls -lh test.png
+
+about:
+  home: https://github.com/kcleal/gw
+  license: MIT
+  license_file: LICENSE.md
+  summary: 'View genomic sequencing data and vcf files'
+
+extra:
+  additional-platforms:
+    - osx-arm64
+  container:
+    extended-base: True
+  recipe-maintainers:
+    - kcleal

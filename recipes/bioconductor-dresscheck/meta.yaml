@@ -1,6 +1,6 @@
-{% set version = "0.32.0" %}
+{% set version = "0.40.0" %}
 {% set name = "dressCheck" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,24 +8,27 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 17255f7eb004f2bf1000ec2d861fcd14
+  md5: d6fb25eaad39c714024ed855c8c9c87d
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-dresscheck", max_pin="x.x") }}'
   noarch: generic
 # Suggests: survival, chron
 requirements:
   host:
-    - 'bioconductor-biobase >=2.54.0,<2.55.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
     - r-base
   run:
-    - 'bioconductor-biobase >=2.54.0,<2.55.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

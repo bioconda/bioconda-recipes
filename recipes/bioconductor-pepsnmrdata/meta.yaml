@@ -1,6 +1,6 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "PepsNMRData" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,14 +8,16 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: fbd080a7ab440b18ca390b2550dd2803
+  md5: 96fc9090499b4460f72fb85a0428b357
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-pepsnmrdata", max_pin="x.x") }}'
   noarch: generic
 # Suggests: knitr, markdown, rmarkdown, BiocStyle
 requirements:
@@ -24,6 +26,7 @@ requirements:
   run:
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

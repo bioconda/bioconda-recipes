@@ -1,0 +1,50 @@
+{% set name = "pycomo" %}
+{% set version = "0.2.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pycomo-{{ version }}.tar.gz
+  sha256: 242973127addd422bcfabc8db79caaaa88c3a1e87f86b735a4de5449abe99331
+
+build:
+  entry_points:
+    - pycomo = pycomo.pycomo_models:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+  - {{ pin_subpackage('pycomo', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - setuptools
+    - pip
+  run:
+    - python >=3.9
+    - cobra >=0.23.0
+    - pandas >=1.5.3
+    - python-libsbml >=5.20.1
+    - numpy >=1.22.4
+
+test:
+  imports:
+    - pycomo
+  commands:
+    - pip check
+    - pycomo --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/univieCUBE/PyCoMo
+  summary: PyCoMo is a software package for generating and analysing compartmentalized community metabolic models
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - mpredl

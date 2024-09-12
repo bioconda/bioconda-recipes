@@ -1,6 +1,6 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "brgedata" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,26 +8,29 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 1a3e98ebb7b821a9b7e3d37de831cfba
+  md5: b8d26c8dfa756e9eb556e4662e3b3302
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-brgedata", max_pin="x.x") }}'
   noarch: generic
-# Suggests: minfi, MultiAssayExperiment, knitr, rmarkdown, rexposome
+# Suggests: minfi, MultiAssayExperiment, knitr, rmarkdown, rexposome, BiocStyle
 requirements:
   host:
-    - 'bioconductor-biobase >=2.54.0,<2.55.0'
-    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
     - r-base
   run:
-    - 'bioconductor-biobase >=2.54.0,<2.55.0'
-    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

@@ -1,6 +1,6 @@
-{% set version = "20151101.24.0" %}
+{% set version = "20151101.32.0" %}
 {% set name = "RTCGA.clinical" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,24 +8,27 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 657a15848a8f13fec80eb53f9d81b751
+  md5: 9c32b8aef86c9ad34ea8c3672575d724
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-rtcga.clinical", max_pin="x.x") }}'
   noarch: generic
 # Suggests: rmarkdown, knitr
 requirements:
   host:
-    - 'bioconductor-rtcga >=1.24.0,<1.25.0'
+    - 'bioconductor-rtcga >=1.32.0,<1.33.0'
     - r-base
   run:
-    - 'bioconductor-rtcga >=1.24.0,<1.25.0'
+    - 'bioconductor-rtcga >=1.32.0,<1.33.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

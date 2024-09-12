@@ -1,6 +1,6 @@
-{% set version = "3.14.0" %}
+{% set version = "3.18.0" %}
 {% set name = "org.Pt.eg.db" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,24 +8,27 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f44815b5afcc0667b47acfa9a61571f4
+  md5: d6672365e68ece6415e2736f40bf096c
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-org.pt.eg.db", max_pin="x.x") }}'
   noarch: generic
 # Suggests: DBI, annotate, RUnit
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.56.0,<1.57.0'
+    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.56.0,<1.57.0'
+    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
     - r-base
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

@@ -1,0 +1,57 @@
+{% set version = "1.6.0" %}
+{% set name = "GBScleanR" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: f54a8356b8931c5c6dd6150a021c56cf
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-gbscleanr", max_pin="x.x") }}'
+# Suggests: BiocStyle, testthat (>= 3.0.0), knitr, rmarkdown
+# SystemRequirements: GNU make, C++11
+requirements:
+  host:
+    - 'bioconductor-gdsfmt >=1.38.0,<1.39.0'
+    - 'bioconductor-seqarray >=1.42.0,<1.43.0'
+    - r-base
+    - r-expm
+    - r-ggplot2
+    - r-rcpp
+    - r-rcppparallel
+    - r-tidyr
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-gdsfmt >=1.38.0,<1.39.0'
+    - 'bioconductor-seqarray >=1.42.0,<1.43.0'
+    - r-base
+    - r-expm
+    - r-ggplot2
+    - r-rcpp
+    - r-rcppparallel
+    - r-tidyr
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL-3 + file LICENSE'
+  summary: 'Error correction tool for noisy genotyping by sequencing (GBS) data'
+  description: 'GBScleanR is a package for quality check, filtering, and error correction of genotype data derived from next generation sequcener (NGS) based genotyping platforms. GBScleanR takes Variant Call Format (VCF) file as input. The main function of this package is `estGeno()` which estimates the true genotypes of samples from given read counts for genotype markers using a hidden Markov model with incorporating uneven observation ratio of allelic reads. This implementation gives robust genotype estimation even in noisy genotype data usually observed in Genotyping-By-Sequnencing (GBS) and similar methods, e.g. RADseq. The current implementation accepts genotype data of a diploid population at any generation of multi-parental cross, e.g. biparental F2 from inbred parents, biparental F2 from outbred parents, and 8-way recombinant inbred lines (8-way RILs) which can be refered to as MAGIC population.'
+  license_file: LICENSE
+
