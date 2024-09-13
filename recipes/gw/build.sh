@@ -76,7 +76,7 @@ VERSION=m93
 git checkout origin/chrome/${VERSION}
 echo "Checked out Skia version: ${VERSION}"
 echo "Using python3: " $(which python3)
-python3 tools/git-sync-deps
+# python3 tools/git-sync-deps
 
 REL=Release
 
@@ -86,15 +86,15 @@ which ninja
 
 # Generate build files
 gn gen out/${REL} --args="is_official_build=true \
-    skia_use_system_icu=false \
-    skia_use_system_zlib=false \
-    skia_use_system_expat=false \
-    skia_use_system_libjpeg_turbo=false \
-    skia_use_system_libpng=false \
-    skia_use_system_libwebp=false \
-    skia_use_system_harfbuzz=false \
+    skia_use_system_icu=true \
+    skia_use_system_zlib=true \
+    skia_use_system_expat=true \
+    skia_use_system_libjpeg_turbo=true \
+    skia_use_system_libpng=true \
+    skia_use_system_libwebp=true \
+    skia_use_system_harfbuzz=true \
     skia_pdf_subset_harfbuzz=true \
-    skia_enable_skottie=true \
+    skia_enable_skottie=false \
     target_cpu=\"${ARCH}\" \
     ${EXTRA_CFLAGS} \
     ${EXTRA_LDFLAGS} \
@@ -116,36 +116,36 @@ cp -rf include ${NAME}
 cp -rf modules ${NAME}
 cp -rf src ${NAME}
 
-libs=( "freetype" "harfbuzz" "icu" "libpng" "zlib" )
+#libs=( "freetype" "harfbuzz" "icu" "libpng" "zlib" )
 
-for l in "${libs[@]}"
-do
-  echo $l
-  mkdir -p ${NAME}/third_party/externals/${l}
-  cp -rf third_party/externals/${l}/src ${NAME}/third_party/externals/${l}
-  cp -rf third_party/externals/${l}/include ${NAME}/third_party/externals/${l}
-  cp -rf third_party/externals/${l}/source ${NAME}/third_party/externals/${l}
-  cp third_party/externals/${l}/*.h ${NAME}/third_party/externals/${l}
-done
+#for l in "${libs[@]}"
+#do
+#  echo $l
+#  mkdir -p ${NAME}/third_party/externals/${l}
+#  cp -rf third_party/externals/${l}/src ${NAME}/third_party/externals/${l}
+#  cp -rf third_party/externals/${l}/include ${NAME}/third_party/externals/${l}
+#  cp -rf third_party/externals/${l}/source ${NAME}/third_party/externals/${l}
+#  cp third_party/externals/${l}/*.h ${NAME}/third_party/externals/${l}
+#done
 
-cp -rf third_party/icu ${NAME}/third_party
+#cp -rf third_party/icu ${NAME}/third_party
 
 # clean up
 cd ${NAME}
-rm -rf modules/skottie/tests
-rm -rf out/${REL}/obj
-rm -rf out/${REL}/gen
-rm -rf out/${REL}/gcc_like_host
-find . -name "*.clang-format" -type f -delete
-find . -name "*.gitignore" -type f -delete
-find . -name "*.md" -type f -delete
-find . -name "*.gn" -type f -delete
-find . -name "*.ninja" -type f -delete
-find . -name "*.cpp" -type f -delete
-find . -name "*.ninja.d" -type f -delete
-find . -name "*BUILD*" -type f -delete
-find . -name "*.txt" -type f -delete
-find . -name "test*" -type d -exec rm -rv {} +
+#rm -rf modules/skottie/tests
+#rm -rf out/${REL}/obj
+#rm -rf out/${REL}/gen
+#rm -rf out/${REL}/gcc_like_host
+#find . -name "*.clang-format" -type f -delete
+#find . -name "*.gitignore" -type f -delete
+#find . -name "*.md" -type f -delete
+#find . -name "*.gn" -type f -delete
+#find . -name "*.ninja" -type f -delete
+#find . -name "*.cpp" -type f -delete
+#find . -name "*.ninja.d" -type f -delete
+#find . -name "*BUILD*" -type f -delete
+#find . -name "*.txt" -type f -delete
+#find . -name "test*" -type d -exec rm -rv {} +
 cd ../
 
 pwd
