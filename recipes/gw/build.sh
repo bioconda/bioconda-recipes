@@ -95,6 +95,7 @@ gn gen out/${REL} --args="is_official_build=true \
     skia_use_system_harfbuzz=true \
     skia_pdf_subset_harfbuzz=true \
     skia_enable_skottie=false \
+    skia_use_dng_sdk=falase \
     target_cpu=\"${ARCH}\" \
     ${EXTRA_CFLAGS} \
     ${EXTRA_LDFLAGS} \
