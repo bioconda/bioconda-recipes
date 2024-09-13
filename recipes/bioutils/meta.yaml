@@ -12,18 +12,22 @@ source:
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv --no-deps --ignore-installed"
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir"
+  run_exports:
+    - {{ pin_subpackage('bioutils', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.6
-    - setuptools_scm #to avoid: ERROR: Could not find a version that satisfies the requirement setuptools_scm
-    - pytest-runner #to avoid: ERROR: Could not find a version that satisfies the requirement pytest-runner
+    - python >=3.10
+    - setuptools-scm
   run:
-    - python >=3.6
+    - python >=3.10
     - attrs
     - requests
+    - urllib3 >=1.26,<2.dev0
 
 test:
   imports:
