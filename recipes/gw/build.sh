@@ -37,15 +37,24 @@ fi
 # OS-specific flags
 if [ "$OS" = "Darwin" ]; then
     # macOS-specific flags
-    SDK_PATH="/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
+    #SDK_PATH="/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
+    #echo "SDK_PATH ${SDK_PATH}"
+    #EXTRA_CFLAGS=$(echo "$EXTRA_CFLAGS" | sed 's/\]$//')
+    #EXTRA_CFLAGS+=", \"-mmacosx-version-min=10.15\", \"-isysroot\", \"${SDK_PATH}\"]"
+
+    #EXTRA_LDFLAGS=$(echo "$EXTRA_LDFLAGS" | sed 's/\]$//')
+    #EXTRA_LDFLAGS+=", \"-mmacosx-version-min=10.15\", \"-isysroot\", \"${SDK_PATH}\"]"
+
+    #EXTRA_ARGS="skia_use_gl=true"
+
+    SDK_PATH=$(xcrun --show-sdk-path)
     echo "SDK_PATH ${SDK_PATH}"
     EXTRA_CFLAGS=$(echo "$EXTRA_CFLAGS" | sed 's/\]$//')
-    EXTRA_CFLAGS+=", \"-mmacosx-version-min=10.15\", \"-isysroot\", \"${SDK_PATH}\"]"
-
+    EXTRA_CFLAGS+=", \"-mmacosx-version-min=11.0\", \"-isysroot\", \"${SDK_PATH}\", \"-DZLIB_CONST\", \"-std=c11\", \"-std=c++17\"]"
     EXTRA_LDFLAGS=$(echo "$EXTRA_LDFLAGS" | sed 's/\]$//')
-    EXTRA_LDFLAGS+=", \"-mmacosx-version-min=10.15\", \"-isysroot\", \"${SDK_PATH}\"]"
-
+    EXTRA_LDFLAGS+=", \"-mmacosx-version-min=11.0\", \"-isysroot\", \"${SDK_PATH}\"]"
     EXTRA_ARGS="skia_use_gl=true"
+    
 elif [ "$OS" = "Linux" ]; then
     # Linux-specific flags
     EXTRA_ARGS="skia_use_egl=true skia_use_gl=true skia_use_x11=true"
