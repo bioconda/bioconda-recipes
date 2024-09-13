@@ -50,7 +50,7 @@ if [ "$OS" = "Darwin" ]; then
     SDK_PATH=$(xcrun --show-sdk-path)
     echo "SDK_PATH ${SDK_PATH}"
     EXTRA_CFLAGS=$(echo "$EXTRA_CFLAGS" | sed 's/\]$//')
-    EXTRA_CFLAGS+=", \"-mmacosx-version-min=11.0\", \"-isysroot\", \"${SDK_PATH}\", \"-DZLIB_CONST\", \"-std=c11\", \"-std=c++17\"]"
+    EXTRA_CFLAGS+=", \"-mmacosx-version-min=11.0\", \"-isysroot\", \"${SDK_PATH}\", \"-DZLIB_CONST\"]"
     EXTRA_LDFLAGS=$(echo "$EXTRA_LDFLAGS" | sed 's/\]$//')
     EXTRA_LDFLAGS+=", \"-mmacosx-version-min=11.0\", \"-isysroot\", \"${SDK_PATH}\"]"
     EXTRA_ARGS="skia_use_gl=true"
