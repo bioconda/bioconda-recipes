@@ -24,13 +24,13 @@ EXTRA_LDFLAGS=""
 # Architecture-specific flags
 if [ "$ARCH" = "x86_64" ]; then
 
-    EXTRA_CFLAGS='extra_cflags=["-mavx2", "-mfma", "-mavx512f", "-mavx512dq", "-msse4.2", "-mpopcnt", "-frtti"]'
-    EXTRA_LDFLAGS='extra_ldflags=["-mavx2", "-mfma", "-mavx512f", "-mavx512dq"]'
+    EXTRA_CFLAGS='extra_cflags=["-mavx2", "-mfma", "-mavx512f", "-mavx512dq", "-msse4.2", "-mpopcnt", "-frtti", "-I${PREFIX}/include"]'
+    EXTRA_LDFLAGS='extra_ldflags=["-mavx2", "-mfma", "-mavx512f", "-mavx512dq", "-L${PREFIX}/lib"]'
     
 elif [ "$ARCH" = "arm64" ]; then
 
-    EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti"]'
-    EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto"]'
+    EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti", "-I${PREFIX}/include"]'
+    EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto", "-L${PREFIX}/lib"]'
     
 elif [ "$ARCH" = "aarch64" ]; then
 
@@ -38,8 +38,8 @@ elif [ "$ARCH" = "aarch64" ]; then
     FONTCONFIG_DIR=$(find $CONDA_PREFIX -name "fontconfig" -type d | grep "include")
     echo "Freetype include: $FREETYPE_DIR"
     echo "Fontconfig include: $FONTCONFIG_DIR"
-    EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti", "-I${FREETYPE_DIR}", "-I${FONTCONFIG_DIR}"]'
-    EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto", "-L${CONDA_PREFIX}/lib"]'
+    EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti", "-I${PREFIX}/include", "-I${FREETYPE_DIR}", "-I${FONTCONFIG_DIR}"]'
+    EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto", "-L${PREFIX}/lib"]'
 else
     echo "Unsupported architecture: $ARCH"
     exit 1
@@ -48,27 +48,15 @@ fi
 
 # OS-specific flags
 if [ "$OS" = "Darwin" ]; then
-    # macOS-specific flags
-    #SDK_PATH="/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
-    #echo "SDK_PATH ${SDK_PATH}"
-    #EXTRA_CFLAGS=$(echo "$EXTRA_CFLAGS" | sed 's/\]$//')
-    #EXTRA_CFLAGS+=", \"-mmacosx-version-min=10.15\", \"-isysroot\", \"${SDK_PATH}\"]"
-
-    #EXTRA_LDFLAGS=$(echo "$EXTRA_LDFLAGS" | sed 's/\]$//')
-    #EXTRA_LDFLAGS+=", \"-mmacosx-version-min=10.15\", \"-isysroot\", \"${SDK_PATH}\"]"
-
-    #EXTRA_ARGS="skia_use_gl=true"
-
     SDK_PATH=$(xcrun --show-sdk-path)
     echo "SDK_PATH ${SDK_PATH}"
     EXTRA_CFLAGS=$(echo "$EXTRA_CFLAGS" | sed 's/\]$//')
-    EXTRA_CFLAGS+=", \"-mmacosx-version-min=10.15\", \"-isysroot\", \"${SDK_PATH}\", \"-DZLIB_INTERNAL\"]"
+    EXTRA_CFLAGS+=", \"-mmacosx-version-min=10.15\", \"-isysroot\", \"${SDK_PATH}\"]"
     EXTRA_LDFLAGS=$(echo "$EXTRA_LDFLAGS" | sed 's/\]$//')
     EXTRA_LDFLAGS+=", \"-mmacosx-version-min=10.15\", \"-isysroot\", \"${SDK_PATH}\"]"
     EXTRA_ARGS="skia_use_gl=true"
     
 elif [ "$OS" = "Linux" ]; then
-    # Linux-specific flags
     EXTRA_ARGS="skia_use_egl=true skia_use_gl=true skia_use_x11=true"
 else
     echo "Unsupported OS: $OS"
