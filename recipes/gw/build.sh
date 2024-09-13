@@ -23,11 +23,23 @@ EXTRA_LDFLAGS=""
 
 # Architecture-specific flags
 if [ "$ARCH" = "x86_64" ]; then
+
     EXTRA_CFLAGS='extra_cflags=["-mavx2", "-mfma", "-mavx512f", "-mavx512dq", "-msse4.2", "-mpopcnt", "-frtti"]'
     EXTRA_LDFLAGS='extra_ldflags=["-mavx2", "-mfma", "-mavx512f", "-mavx512dq"]'
-elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
+    
+elif [ "$ARCH" = "arm64" ]; then
+
     EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti"]'
     EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto"]'
+    
+elif [ "$ARCH" = "aarch64" ]; then
+
+    FREETYPE_DIR=$(find $CONDA_PREFIX -name "freetype2" -type d | grep "include")
+    FONTCONFIG_DIR=$(find $CONDA_PREFIX -name "fontconfig" -type d | grep "include")
+    echo "Freetype include: $FREETYPE_DIR"
+    echo "Fontconfig include: $FONTCONFIG_DIR"
+    EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti", "-I${FREETYPE_DIR}", "-I${FONTCONFIG_DIR}"]'
+    EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto", "-L${CONDA_PREFIX}/lib"]'
 else
     echo "Unsupported architecture: $ARCH"
     exit 1
@@ -47,13 +59,12 @@ if [ "$OS" = "Darwin" ]; then
 
     #EXTRA_ARGS="skia_use_gl=true"
 
-    SDK_VERSION="11.0"
-    SDK_PATH=$(xcrun --sdk macosx${SDK_VERSION} --show-sdk-path)
+    SDK_PATH=$(xcrun --show-sdk-path)
     echo "SDK_PATH ${SDK_PATH}"
     EXTRA_CFLAGS=$(echo "$EXTRA_CFLAGS" | sed 's/\]$//')
-    EXTRA_CFLAGS+=", \"-mmacosx-version-min=${SDK_VERSION}\", \"-isysroot\", \"${SDK_PATH}\", \"-DZLIB_INTERNAL\"]"
+    EXTRA_CFLAGS+=", \"-mmacosx-version-min=10.15\", \"-isysroot\", \"${SDK_PATH}\", \"-DZLIB_INTERNAL\"]"
     EXTRA_LDFLAGS=$(echo "$EXTRA_LDFLAGS" | sed 's/\]$//')
-    EXTRA_LDFLAGS+=", \"-mmacosx-version-min=${SDK_VERSION}\", \"-isysroot\", \"${SDK_PATH}\"]"
+    EXTRA_LDFLAGS+=", \"-mmacosx-version-min=10.15\", \"-isysroot\", \"${SDK_PATH}\"]"
     EXTRA_ARGS="skia_use_gl=true"
     
 elif [ "$OS" = "Linux" ]; then
