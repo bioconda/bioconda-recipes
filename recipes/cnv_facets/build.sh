@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -xe
 
 FACETS_GIT_REF=`grep -P ' *^FACETS_REF' install/install_pkgs.R \
 | sed 's/ //g; s/<-//; s/=//;' \
