@@ -20,7 +20,7 @@ cd ${SRC_DIR}/maxit-v10.1/src && \
 sed -i.bak "s|rcsbroot = getenv(\"RCSBROOT\")|rcsbroot = \"${PREFIX}\"|g" maxit.C process_entry.C generate_assembly_cif_file.C
 
 cd "${SRC_DIR}/cifparse-obj-v7.0" && sed -i.bak 's|mv |cp |g' Makefile
-# cd "${SRC_DIR}" && sed -i.bak "s|./data/binary|${PREFIX}/data/binary|g" binary.sh
+cd "${SRC_DIR}" && sed -i.bak "s|./data/binary|${SRC_DIR}/data/binary|g" binary.sh
 cd "${SRC_DIR}" && make binary -j${CPU_COUNT}
 
 unlink "${BUILD_PREFIX}/bin/gcc"
