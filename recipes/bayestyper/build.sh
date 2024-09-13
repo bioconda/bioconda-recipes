@@ -2,13 +2,11 @@
 
 set -xeuo
 
-ls -la ${PREFIX}/include
-ls -la ${PREFIX}/include/boost
 ls -la ${PREFIX}/include/boost/iostreams
 #export INCLUDES="-I${PREFIX}/include"
 #export LIBPATH="-L${PREFIX}/lib"
 #export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-#export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include"
 
 mkdir -p ${PREFIX}/bin
 
