@@ -21,7 +21,7 @@ Please visit https://bioconda.github.io for details.
 Please visit the new docs at https://bioconda.github.io/contributor/index.html for details.
 
 ## Nightly build status
-The nightly build any recipes that exist on master but were not successfully uploaded to the [bioconda channel](https://anaconda.org/bioconda). Any failure in the nightly build should be resolved with aPR for the affected recipe.
+The nightly build any recipes that exist on master but were not successfully uploaded to the [bioconda channel](https://anaconda.org/bioconda). Any failure in the nightly build should be resolved with a PR for the affected recipe.
 
 | arch | build status |
 |------|--------------|
