@@ -65,14 +65,17 @@ export PATH="${CONDA_PREFIX}/bin:$PATH"
 echo "Using gn from: $(which gn)"
 echo "Using ninja from: $(which ninja)"
 
-git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-export PATH="${PWD}/depot_tools:${PATH}"
-depot_tools/fetch skia
+#git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+#export PATH="${PWD}/depot_tools:${PATH}"
+#depot_tools/fetch skia
+
+git clone https://skia.googlesource.com/skia.git
 
 cd skia
 VERSION=m93
 git checkout origin/chrome/${VERSION}
 echo "Checked out Skia version: ${VERSION}"
+echo "Using python3: " $(which python3)
 python3 tools/git-sync-deps
 
 REL=Release
