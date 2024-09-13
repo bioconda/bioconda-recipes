@@ -47,12 +47,13 @@ if [ "$OS" = "Darwin" ]; then
 
     #EXTRA_ARGS="skia_use_gl=true"
 
-    SDK_PATH=$(xcrun --show-sdk-path)
+    SDK_VERSION="11.0"
+    SDK_PATH=$(xcrun --sdk macosx${SDK_VERSION} --show-sdk-path)
     echo "SDK_PATH ${SDK_PATH}"
     EXTRA_CFLAGS=$(echo "$EXTRA_CFLAGS" | sed 's/\]$//')
-    EXTRA_CFLAGS+=", \"-mmacosx-version-min=11.0\", \"-isysroot\", \"${SDK_PATH}\", \"-DZLIB_CONST\"]"
+    EXTRA_CFLAGS+=", \"-mmacosx-version-min=${SDK_VERSION}\", \"-isysroot\", \"${SDK_PATH}\", \"-DZLIB_INTERNAL\"]"
     EXTRA_LDFLAGS=$(echo "$EXTRA_LDFLAGS" | sed 's/\]$//')
-    EXTRA_LDFLAGS+=", \"-mmacosx-version-min=11.0\", \"-isysroot\", \"${SDK_PATH}\"]"
+    EXTRA_LDFLAGS+=", \"-mmacosx-version-min=${SDK_VERSION}\", \"-isysroot\", \"${SDK_PATH}\"]"
     EXTRA_ARGS="skia_use_gl=true"
     
 elif [ "$OS" = "Linux" ]; then
