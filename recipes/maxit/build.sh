@@ -27,7 +27,7 @@ unlink "${BUILD_PREFIX}/bin/gcc"
 unlink "${BUILD_PREFIX}/bin/g++"
 
 install -d "${PREFIX}/bin"
-install ${SRC_DIR}/bin/* "${PREFIX}/bin"
+install "${SRC_DIR}/bin/"* "${PREFIX}/bin"
 
 install -d "${PREFIX}/data"
 find "${SRC_DIR}/data" -type d -exec install -d "${PREFIX}/data/{}" \;
