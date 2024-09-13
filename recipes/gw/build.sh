@@ -4,10 +4,10 @@ set -e
 # Get pre-compiled skia from jetbrains
 # USE_GL=1 make prep > /dev/null 2>&1 
 # Build skia from scratch
-
+ls
 
 NAME=${PWD}/lib/skia
->&2 echo "Skia out folder is: $NAME"
+echo "Skia out folder is: $NAME"
 
 cd ./lib
 mkdir -p ${NAME}
@@ -40,10 +40,10 @@ if [ "$OS" = "Darwin" ]; then
     SDK_PATH="/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
     echo "SDK_PATH ${SDK_PATH}"
     EXTRA_CFLAGS=$(echo "$EXTRA_CFLAGS" | sed 's/\]$//')
-    EXTRA_CFLAGS+=", \"-target arm64-apple-macos11\", \"-isysroot\", \"${SDK_PATH}\"]"
+    EXTRA_CFLAGS+=", \"-mmacosx-version-min=10.15\", \"-isysroot\", \"${SDK_PATH}\"]"
 
     EXTRA_LDFLAGS=$(echo "$EXTRA_LDFLAGS" | sed 's/\]$//')
-    EXTRA_LDFLAGS+=", \"-target arm64-apple-macos11\", \"-isysroot\", \"${SDK_PATH}\"]"
+    EXTRA_LDFLAGS+=", \"-mmacosx-version-min=10.15\", \"-isysroot\", \"${SDK_PATH}\"]"
 
     EXTRA_ARGS="skia_use_gl=true"
 elif [ "$OS" = "Linux" ]; then
@@ -62,8 +62,8 @@ echo "Extra arguments: $EXTRA_ARGS"
 export PATH="${CONDA_PREFIX}/bin:$PATH"
 
 # Check system build tools available
->&2 echo "Using gn from: $(which gn)"
->&2 echo "Using ninja from: $(which ninja)"
+echo "Using gn from: $(which gn)"
+echo "Using ninja from: $(which ninja)"
 
 git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 export PATH="${PWD}/depot_tools:${PATH}"
@@ -77,7 +77,7 @@ python3 tools/git-sync-deps
 
 REL=Release
 
->&2 echo "STARTING BUILD"
+echo "STARTING SKIA BUILD"
 which gn
 which ninja
 
@@ -101,7 +101,7 @@ gn gen out/${REL} --args="is_official_build=true \
 gn args out/${REL} --list
 ninja -C out/${REL}
 
->&2 echo "------------SKIA BUILD FINISHED---------------"
+echo "------------SKIA BUILD FINISHED---------------"
 pwd
 ls
 
@@ -147,8 +147,8 @@ cd ../
 
 pwd
 rm -rf build_skia
-
->&2 echo "----------DONE PREPARING SKIA-------------"
+cd ../
+echo "----------DONE PREPARING SKIA-------------"
 pwd
 
 if [[ "$OSTYPE" != "darwin"* ]]; then
