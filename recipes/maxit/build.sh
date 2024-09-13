@@ -7,8 +7,8 @@ export CPU_COUNT=1
 
 export RCSBROOT="${SRC_DIR}"
 
-# To pass CI test on Linux-x86_64 platform
-if [[ "$(uname -s)" == "Linux" && "$(uname -m)" == "x86_64" ]]; then
+# To pass CI test on Linux
+if [[ "$(uname -s)" == "Linux" ]]; then
     ulimit -v 2097152
 fi
 
