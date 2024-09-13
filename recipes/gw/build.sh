@@ -40,10 +40,10 @@ if [ "$OS" = "Darwin" ]; then
     SDK_PATH="/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
     echo "SDK_PATH ${SDK_PATH}"
     EXTRA_CFLAGS=$(echo "$EXTRA_CFLAGS" | sed 's/\]$//')
-    EXTRA_CFLAGS+=", \"-mmacosx-version-min=10.15\", \"-isysroot\", \"${SDK_PATH}\"]"
+    EXTRA_CFLAGS+=", \"-target arm64-apple-macos11\", \"-isysroot\", \"${SDK_PATH}\"]"
 
     EXTRA_LDFLAGS=$(echo "$EXTRA_LDFLAGS" | sed 's/\]$//')
-    EXTRA_LDFLAGS+=", \"-mmacosx-version-min=10.15\", \"-isysroot\", \"${SDK_PATH}\"]"
+    EXTRA_LDFLAGS+=", \"-target arm64-apple-macos11\", \"-isysroot\", \"${SDK_PATH}\"]"
 
     EXTRA_ARGS="skia_use_gl=true"
 elif [ "$OS" = "Linux" ]; then
@@ -101,6 +101,10 @@ gn gen out/${REL} --args="is_official_build=true \
 gn args out/${REL} --list
 ninja -C out/${REL}
 
+>&2 echo "------------SKIA BUILD FINISHED---------------"
+pwd
+ls
+
 mkdir -p ${NAME}/out/${REL}
 mkdir -p ${NAME}/third_party/externals
 
@@ -144,8 +148,8 @@ cd ../
 pwd
 rm -rf build_skia
 
->&2 echo "---DONE BUILDING SKIA---"
-
+>&2 echo "----------DONE PREPARING SKIA-------------"
+pwd
 
 if [[ "$OSTYPE" != "darwin"* ]]; then
   sed -i 's/-lEGL -lGLESv2/-lEGL -lGLESv2 -lGL -lGLX/' Makefile
