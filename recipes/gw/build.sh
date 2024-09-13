@@ -76,7 +76,11 @@ VERSION=m93
 git checkout origin/chrome/${VERSION}
 echo "Checked out Skia version: ${VERSION}"
 echo "Using python3: " $(which python3)
-# python3 tools/git-sync-deps
+
+# Patch gn to map aarch64 to arm64
+sed -i.bak 's/cpu = {/cpu = {aarch64: arm64, /g' bin/fetch-gn
+
+python3 tools/git-sync-deps
 
 REL=Release
 
@@ -117,19 +121,19 @@ cp -rf include ${NAME}
 cp -rf modules ${NAME}
 cp -rf src ${NAME}
 
-#libs=( "freetype" "harfbuzz" "icu" "libpng" "zlib" )
+libs=( "freetype" "harfbuzz" "icu" "libpng" "zlib" )
 
-#for l in "${libs[@]}"
-#do
-#  echo $l
-#  mkdir -p ${NAME}/third_party/externals/${l}
-#  cp -rf third_party/externals/${l}/src ${NAME}/third_party/externals/${l}
-#  cp -rf third_party/externals/${l}/include ${NAME}/third_party/externals/${l}
-#  cp -rf third_party/externals/${l}/source ${NAME}/third_party/externals/${l}
-#  cp third_party/externals/${l}/*.h ${NAME}/third_party/externals/${l}
-#done
+for l in "${libs[@]}"
+do
+  echo $l
+  mkdir -p ${NAME}/third_party/externals/${l}
+  cp -rf third_party/externals/${l}/src ${NAME}/third_party/externals/${l}
+  cp -rf third_party/externals/${l}/include ${NAME}/third_party/externals/${l}
+  cp -rf third_party/externals/${l}/source ${NAME}/third_party/externals/${l}
+  cp third_party/externals/${l}/*.h ${NAME}/third_party/externals/${l}
+done
 
-#cp -rf third_party/icu ${NAME}/third_party
+cp -rf third_party/icu ${NAME}/third_party
 
 # clean up
 cd ${NAME}
