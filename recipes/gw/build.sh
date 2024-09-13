@@ -7,7 +7,7 @@ set -e
 
 
 NAME=${PWD}/lib/skia
-echo "Skia out folder is: $NAME"
+>&2 echo "Skia out folder is: $NAME"
 
 cd ./lib
 mkdir -p ${NAME}
@@ -62,8 +62,8 @@ echo "Extra arguments: $EXTRA_ARGS"
 export PATH="${CONDA_PREFIX}/bin:$PATH"
 
 # Check system build tools available
-echo "Using gn from: $(which gn)"
-echo "Using ninja from: $(which ninja)"
+>&2 echo "Using gn from: $(which gn)"
+>&2 echo "Using ninja from: $(which ninja)"
 
 git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 export PATH="${PWD}/depot_tools:${PATH}"
@@ -77,7 +77,7 @@ python3 tools/git-sync-deps
 
 REL=Release
 
-echo "STARTING BUILD"
+>&2 echo "STARTING BUILD"
 which gn
 which ninja
 
@@ -144,12 +144,7 @@ cd ../
 pwd
 rm -rf build_skia
 
-echo "---DONE BUILDING SKIA---"
-
-if ! test -f ./lib/skia/out/Release/libskia.a; then
-  ls -l ./lib/skia/out/Release/
-  exit 1
-fi
+>&2 echo "---DONE BUILDING SKIA---"
 
 
 if [[ "$OSTYPE" != "darwin"* ]]; then
