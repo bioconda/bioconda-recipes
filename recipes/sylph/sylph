@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -eu
+
+SYLPH_VERSION="sylph 0.6.1"
+HAS_SSE2=$([ "$(_sylph_x86-64 --version 2>/dev/null)" = "${SYLPH_VERSION}" ] && echo 0 || echo 1)
+HAS_SSE4_2=$([ "$(_sylph_x86-64-v2 --version 2>/dev/null)" = "${SYLPH_VERSION}" ] && echo 0 || echo 1)
+HAS_AVX2=$([ "$(_sylph_x86-64-v3 --version 2>/dev/null)" = "${SYLPH_VERSION}" ] && echo 0 || echo 1)
+HAS_AVX512=$([ "$(_sylph_x86-64-v4 --version 2>/dev/null)" = "${SYLPH_VERSION}" ] && echo 0 || echo 1)
+
+if [ ${HAS_AVX512} -eq 0 ]; then
+    _sylph_x86-64-v4 "$@"
+elif [ ${HAS_AVX2} -eq 0 ]; then
+    _sylph_x86-64-v3 "$@"
+elif [ ${HAS_SSE4_2} -eq 0 ]; then
+    _sylph_x86-64-v2 "$@"
+elif [ ${HAS_SSE2} -eq 0 ]; then
+    _sylph_x86-64 "$@"
+else
+    echo "Unsupported CPU" && exit 1
+fi
