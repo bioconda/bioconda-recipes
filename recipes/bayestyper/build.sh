@@ -19,7 +19,7 @@ cmake -S . -B build \
 	-Wno-dev \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DBoost_INCLUDE_DIRS=${PREFIX}/include
+	-DBOOST_ROOT="${PREFIX}"
 cmake --build build -j ${CPU_COUNT} --verbose
 
 cp -f ${SRC_DIR}/bin/bayesTyper ${PREFIX}/bin
