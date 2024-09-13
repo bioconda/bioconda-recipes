@@ -5,7 +5,7 @@ set -exo pipefail
 # Disable parallel build
 export CPU_COUNT=1
 
-export RCSBROOT="${PREFIX}"
+export RCSBROOT="${SRC_DIR}"
 
 # To pass CI test on Linux-x86_64 platform
 if [[ "$(uname -s)" == "Linux" && "$(uname -m)" == "x86_64" ]]; then
@@ -20,6 +20,7 @@ sed -i.bak "s|rcsbroot = getenv(\"RCSBROOT\")|rcsbroot = \"${RCSBROOT}\"|g" maxi
 
 cd "${SRC_DIR}/cifparse-obj-v7.0" && sed -i.bak 's|mv |cp |g' Makefile
 # cd "${SRC_DIR}" && sed -i.bak "s|./data/binary|${RCSBROOT}/data/binary|g" binary.sh
+
 cd "${SRC_DIR}" && make binary -j${CPU_COUNT}
 
 unlink "${BUILD_PREFIX}/bin/gcc"
