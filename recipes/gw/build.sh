@@ -78,7 +78,7 @@ echo "Checked out Skia version: ${VERSION}"
 echo "Using python3: " $(which python3)
 
 # Patch gn to map aarch64 to arm64
-sed -i.bak 's/cpu = {/cpu = {\'aarch64\': \'arm64\', /g' bin/fetch-gn
+sed -i.bak 's/cpu = {/cpu = {"aarch64": "arm64", /g' bin/fetch-gn
 
 python3 tools/git-sync-deps
 
