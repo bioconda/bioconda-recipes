@@ -23,7 +23,7 @@ if [ "$OS" = "Darwin" ]; then
     CPPFLAGS="${CPPFLAGS}"
     LDFLAGS="${LDFLAGS} -L${PREFIX}"
     echo "Download pre-built skia"
-    make prep
+    USE_GL=1 make prep > /dev/null 2>&1 
 
     CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" \
     CPPFLAGS="${CPPFLAGS}" \
