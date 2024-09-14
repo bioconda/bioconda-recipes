@@ -5,7 +5,7 @@ set -exo pipefail
 # Disable parallel build
 export CPU_COUNT=1
 
-# export RCSBROOT="${PREFIX}"
+export RCSBROOT="${PREFIX}"
 # install -d "${PREFIX}/bin"
 
 # To pass CI test on Linux
