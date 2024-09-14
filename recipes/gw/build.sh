@@ -55,14 +55,14 @@ if [ "$ARCH" = "x86_64" ]; then
     
 elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
 
-    #FREETYPE_DIR=$(find $CONDA_PREFIX -name "freetype2" -type d | grep "include")
-    #FONTCONFIG_DIR=$(find $CONDA_PREFIX -name "fontconfig" -type d | grep "include")
-    #echo "Freetype include: $FREETYPE_DIR"
-    #echo "Fontconfig include: $FONTCONFIG_DIR"
-    #EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti", "-I'${PREFIX}'/include", "-I'${FREETYPE_DIR}'", "-I'${FONTCONFIG_DIR}'"]'
-    #EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto", "-L'${PREFIX}'/lib"]'
-    EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti"]'
-    EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto"]'
+    FREETYPE_DIR=$(find $CONDA_PREFIX -name "freetype2" -type d | grep "include")
+    FONTCONFIG_DIR=$(find $CONDA_PREFIX -name "fontconfig" -type d | grep "include")
+    echo "Freetype include: $FREETYPE_DIR"
+    echo "Fontconfig include: $FONTCONFIG_DIR"
+    EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti", "-I'${PREFIX}'/include", "-I'${FREETYPE_DIR}'", "-I'${FONTCONFIG_DIR}'"]'
+    EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto", "-L'${PREFIX}'/lib"]'
+    #EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti"]'
+    #EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto"]'
     #echo "Fetching skia using depot_tools"
     #git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
     #export PATH="${PWD}/depot_tools:${PATH}"
