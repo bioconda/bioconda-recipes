@@ -17,28 +17,42 @@ mkdir -p build_skia && cd build_skia
 ARCH=$(uname -m)
 OS=$(uname -s)
 
+# Use pre-built binary
+if [ "$OS" = "Darwin" ]; then
+    SYSROOT_FLAGS=""
+    CPPFLAGS="${CPPFLAGS}"
+    LDFLAGS="${LDFLAGS} -L${PREFIX}"
+    echo "Download pre-built skia"
+    make prep
+
+    CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" \
+    CPPFLAGS="${CPPFLAGS}" \
+    LDFLAGS="${LDFLAGS}" \
+    prefix="${PREFIX}" \
+        make -j ${CPU_COUNT}
+    
+    mkdir -p $PREFIX/bin
+    cp gw $PREFIX/bin/gw
+    cp -n .gw.ini $PREFIX/bin/.gw.ini
+    chmod +x $PREFIX/bin/gw
+    exit 0
+fi
+
+# Linux build:
+
 # Set default flags
 EXTRA_CFLAGS=""
 EXTRA_LDFLAGS=""
 
 # Architecture-specific flags
 if [ "$ARCH" = "x86_64" ]; then
-
+    # Old glibc so cant use depot_tools
     EXTRA_CFLAGS='extra_cflags=["-mavx2", "-mfma", "-mavx512f", "-mavx512dq", "-msse4.2", "-mpopcnt", "-frtti", "-I'${PREFIX}'/include"]'
     EXTRA_LDFLAGS='extra_ldflags=["-mavx2", "-mfma", "-mavx512f", "-mavx512dq", "-L'${PREFIX}'/lib"]'
 
     git clone https://skia.googlesource.com/skia.git
     
-elif [ "$ARCH" = "arm64" ]; then
-
-    EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti", "-I'${PREFIX}'/include"]'
-    EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto", "-L'${PREFIX}'/lib"]'
-
-    git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-    export PATH="${PWD}/depot_tools:${PATH}"
-    depot_tools/fetch skia
-    
-elif [ "$ARCH" = "aarch64" ]; then
+elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
 
     FREETYPE_DIR=$(find $CONDA_PREFIX -name "freetype2" -type d | grep "include")
     FONTCONFIG_DIR=$(find $CONDA_PREFIX -name "fontconfig" -type d | grep "include")
@@ -53,23 +67,7 @@ elif [ "$ARCH" = "aarch64" ]; then
 
 fi
 
-
-# OS-specific flags
-if [ "$OS" = "Darwin" ]; then
-    SDK_PATH=$(xcrun --show-sdk-path)
-    echo "SDK_PATH ${SDK_PATH}"
-    EXTRA_CFLAGS=$(echo "$EXTRA_CFLAGS" | sed 's/\]$//')
-    EXTRA_CFLAGS+=", \"-mmacosx-version-min=10.15\", \"-isysroot\", \"${SDK_PATH}\"]"
-    EXTRA_LDFLAGS=$(echo "$EXTRA_LDFLAGS" | sed 's/\]$//')
-    EXTRA_LDFLAGS+=", \"-mmacosx-version-min=10.15\", \"-isysroot\", \"${SDK_PATH}\"]"
-    EXTRA_ARGS="skia_use_gl=true"
-    
-elif [ "$OS" = "Linux" ]; then
-    EXTRA_ARGS="skia_use_egl=true skia_use_gl=true skia_use_x11=true"
-else
-    echo "Unsupported OS: $OS"
-    exit 1
-fi
+EXTRA_ARGS="skia_use_egl=true skia_use_gl=true skia_use_x11=true"
 
 echo "Architecture: $ARCH"
 echo "Operating System: $OS"
@@ -115,8 +113,7 @@ gn gen out/${REL} --args="is_official_build=true \
     skia_use_system_libwebp=false \
     skia_use_system_harfbuzz=false \
     skia_pdf_subset_harfbuzz=true \
-    skia_enable_skottie=false \
-    skia_use_dng_sdk=false \
+    skia_enable_skottie=true \
     target_cpu=\"${ARCH}\" \
     ${EXTRA_CFLAGS} \
     ${EXTRA_LDFLAGS} \
@@ -176,28 +173,21 @@ cd ../
 echo "----------DONE PREPARING SKIA-------------"
 pwd
 
-if [[ "$OSTYPE" != "darwin"* ]]; then
-  sed -i 's/-lEGL -lGLESv2/-lEGL -lGLESv2 -lGL -lGLX/' Makefile
-  sed -i 's/GLFW_EGL_CONTEXT_API/GLFW_NATIVE_CONTEXT_API/' src/plot_manager.cpp
-fi
+#if [[ "$OSTYPE" != "darwin"* ]]; then
+#  sed -i 's/-lEGL -lGLESv2/-lEGL -lGLESv2 -lGL -lGLX/' Makefile
+  #sed -i 's/GLFW_EGL_CONTEXT_API/GLFW_NATIVE_CONTEXT_API/' src/plot_manager.cpp
+#fi
 
-# Set flags conditionally based on the OS type
-if [[ "$OSTYPE" != "darwin"* ]]; then
-  SYSROOT_FLAGS="--sysroot=${BUILD_PREFIX}/${HOST}/sysroot"
-  CPPFLAGS="${CPPFLAGS} -I${BUILD_PREFIX}/${HOST}/sysroot/usr/include ${SYSROOT_FLAGS}"
-  LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib64 ${SYSROOT_FLAGS}"
-else
-  # No sysroot settings for macOS
-  SYSROOT_FLAGS=""
-  CPPFLAGS="${CPPFLAGS}"
-  LDFLAGS="${LDFLAGS} -L${PREFIX}"
-fi
+
+SYSROOT_FLAGS="--sysroot=${BUILD_PREFIX}/${HOST}/sysroot"
+CPPFLAGS="${CPPFLAGS} -I${BUILD_PREFIX}/${HOST}/sysroot/usr/include ${SYSROOT_FLAGS}"
+LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib64 ${SYSROOT_FLAGS}"
 
 CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" \
 CPPFLAGS="${CPPFLAGS}" \
 LDFLAGS="${LDFLAGS}" \
 prefix="${PREFIX}" \
-make -j ${CPU_COUNT}
+    make -j ${CPU_COUNT}
 
 mkdir -p $PREFIX/bin
 cp gw $PREFIX/bin/gw
