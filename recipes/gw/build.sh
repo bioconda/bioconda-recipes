@@ -1,17 +1,8 @@
 #!/usr/bin/bash
 set -e
 
-# Get pre-compiled skia from jetbrains
 # USE_GL=1 make prep > /dev/null 2>&1 
-# Build skia from scratch
-ls
 
-NAME=${PWD}/lib/skia
-echo "Skia out folder is: $NAME"
-
-cd ./lib
-mkdir -p ${NAME}
-mkdir -p build_skia && cd build_skia
 
 # Detect architecture and OS
 ARCH=$(uname -m)
@@ -38,7 +29,15 @@ if [ "$OS" = "Darwin" ]; then
     exit 0
 fi
 
-# Linux build:
+# Linux build. Build skia from scratch
+
+NAME=${PWD}/lib/skia
+echo "Skia out folder is: $NAME"
+
+cd ./lib
+mkdir -p ${NAME}
+mkdir -p build_skia && cd build_skia
+
 
 # Set default flags
 EXTRA_CFLAGS=""
