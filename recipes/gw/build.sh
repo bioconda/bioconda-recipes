@@ -26,11 +26,17 @@ if [ "$ARCH" = "x86_64" ]; then
 
     EXTRA_CFLAGS='extra_cflags=["-mavx2", "-mfma", "-mavx512f", "-mavx512dq", "-msse4.2", "-mpopcnt", "-frtti", "-I'${PREFIX}'/include"]'
     EXTRA_LDFLAGS='extra_ldflags=["-mavx2", "-mfma", "-mavx512f", "-mavx512dq", "-L'${PREFIX}'/lib"]'
+
+    git clone https://skia.googlesource.com/skia.git
     
 elif [ "$ARCH" = "arm64" ]; then
 
     EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti", "-I'${PREFIX}'/include"]'
     EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto", "-L'${PREFIX}'/lib"]'
+
+    git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+    export PATH="${PWD}/depot_tools:${PATH}"
+    depot_tools/fetch skia
     
 elif [ "$ARCH" = "aarch64" ]; then
 
@@ -40,9 +46,11 @@ elif [ "$ARCH" = "aarch64" ]; then
     echo "Fontconfig include: $FONTCONFIG_DIR"
     EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti", "-I'${PREFIX}'/include", "-I'${FREETYPE_DIR}'", "-I'${FONTCONFIG_DIR}'"]'
     EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto", "-L'${PREFIX}'/lib"]'
-else
-    echo "Unsupported architecture: $ARCH"
-    exit 1
+
+    git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+    export PATH="${PWD}/depot_tools:${PATH}"
+    depot_tools/fetch skia
+
 fi
 
 
@@ -78,7 +86,7 @@ echo "Using ninja from: $(which ninja)"
 #export PATH="${PWD}/depot_tools:${PATH}"
 #depot_tools/fetch skia
 
-git clone https://skia.googlesource.com/skia.git
+# git clone https://skia.googlesource.com/skia.git
 
 cd skia
 VERSION=m93
