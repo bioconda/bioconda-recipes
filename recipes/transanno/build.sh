@@ -11,5 +11,5 @@ RUST_BACKTRACE=1 \
  cargo build --release
 
 mkdir $PREFIX/bin
-cp targets/release/transanno $PREFIX/bin/transanno
+cp target/release/transanno $PREFIX/bin/transanno
 chmod a+x $PREFIX/bin/transanno
