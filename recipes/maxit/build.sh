@@ -5,7 +5,7 @@ set -exo pipefail
 # Disable parallel build
 export CPU_COUNT=1
 
-export RCSBROOT="${PREFIX}"
+# export RCSBROOT="${PREFIX}"
 # install -d "${PREFIX}/bin"
 
 # To pass CI test on Linux
@@ -16,9 +16,9 @@ fi
 ln -s "${CC_FOR_BUILD}" "${BUILD_PREFIX}/bin/gcc"
 ln -s "${CXX_FOR_BUILD}" "${BUILD_PREFIX}/bin/g++"
 
-# cd ${SRC_DIR}/maxit-v10.1/src && \
-# sed -i.bak "s|char\* rcsbroot = getenv(\"RCSBROOT\");|const char\* rcsbroot = \"${PREFIX}\";|" maxit.C process_entry.C generate_assembly_cif_file.C
-# rm *.bak
+cd ${SRC_DIR}/maxit-v10.1/src && \
+sed -i.bak "s|char\* rcsbroot = getenv(\"RCSBROOT\");|const char\* rcsbroot = \"${FINAL_INSTALL_PREFIX}\";|" maxit.C process_entry.C generate_assembly_cif_file.C
+rm *.bak
 
 cd "${SRC_DIR}/cifparse-obj-v7.0" && sed -i.bak 's|mv |cp |g' Makefile
 rm *.bak
