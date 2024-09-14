@@ -16,9 +16,9 @@ fi
 ln -s "${CC_FOR_BUILD}" "${BUILD_PREFIX}/bin/gcc"
 ln -s "${CXX_FOR_BUILD}" "${BUILD_PREFIX}/bin/g++"
 
-cd ${SRC_DIR}/maxit-v10.1/src && \
+# cd ${SRC_DIR}/maxit-v10.1/src && \
 # sed -i.bak "s|char\* rcsbroot = getenv(\"RCSBROOT\");|const char\* rcsbroot = \"${PREFIX}\";|" maxit.C process_entry.C generate_assembly_cif_file.C
-rm *.bak
+# rm *.bak
 
 cd "${SRC_DIR}/cifparse-obj-v7.0" && sed -i.bak 's|mv |cp |g' Makefile
 rm *.bak
