@@ -1,0 +1,50 @@
+# This file, the patch file and build file were taken from conda salilab channel's recipes - please see https://github.com/salilab/conda-recipes for more.
+package:
+  name: dssp
+  version: "3.0.0"
+
+source:
+  fn: dssp-3.0.0.tgz
+# url: ftp://ftp.cmbi.ru.nl/pub/software/dssp/dssp-3.0.0.tgz
+# Original site appears to be down - use our mirror:
+  url: https://salilab.org/dssp/dssp-3.0.0.tgz
+  sha256: 25d39a2107767b622a59dd9fa790112c1516564b8518fc6ac0fab081d5ac3ab0
+  patches:
+    - dssp-boost-tr1.patch #Rebuild with latest gcc and boost - this was taken from the 
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - boost-cpp
+    - zlib
+    - bzip2
+  run:
+    - {{ pin_compatible('boost-cpp') }}
+
+about:
+  home: http://swift.cmbi.ru.nl/gv/dssp/
+  summary: 'Secondary structure assignment'
+  license: Boost
+  description: >
+    The DSSP program was designed by Wolfgang Kabsch and Chris Sander to
+    standardize secondary structure assignment. DSSP is a database of secondary
+    structure assignments (and much more) for all protein entries in the Protein
+    Data Bank (PDB). DSSP is also the program that calculates DSSP entries from
+    PDB entries. DSSP does not predict secondary structure.
+
+    Note that this is a very old version of DSSP, which we have used in the
+    past. It is kept here in the hope that others may find it useful - but
+    it may not work on newer systems (e.g. Apple Silicon Macs). We recommend
+    using the most recent version of DSSP instead.
+    See [the DSSP website](http://swift.cmbi.ru.nl/gv/dssp/) for more details.
+
+    If you have problems with this conda package, please
+    [open an issue](https://github.com/salilab/conda-recipes/issues).
+
+test:
+  commands:
+    - mkdssp --version

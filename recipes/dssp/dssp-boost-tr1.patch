@@ -1,0 +1,87 @@
+diff -Nur dssp-3.0.0/src/dssp.cpp dssp-3.0.0-patched/src/dssp.cpp
+--- dssp-3.0.0/src/dssp.cpp	2017-09-21 02:42:09.000000000 -0700
++++ dssp-3.0.0-patched/src/dssp.cpp	2018-04-25 11:05:47.499486529 -0700
+@@ -73,7 +73,7 @@
+ 
+   double alpha;
+   char chirality;
+-  std::tr1::tie(alpha,chirality) = residue.Alpha();
++  std::tie(alpha,chirality) = residue.Alpha();
+ 
+   uint32 bp[2] = {};
+   char bridgelabel[2] = { ' ', ' ' };
+diff -Nur dssp-3.0.0/src/primitives-3d.cpp dssp-3.0.0-patched/src/primitives-3d.cpp
+--- dssp-3.0.0/src/primitives-3d.cpp	2017-09-21 02:42:09.000000000 -0700
++++ dssp-3.0.0-patched/src/primitives-3d.cpp	2018-04-25 11:05:54.642577464 -0700
+@@ -152,7 +152,7 @@
+ 
+ // --------------------------------------------------------------------
+ 
+-std::tr1::tuple<double,MPoint> QuaternionToAngleAxis(MQuaternion q)
++std::tuple<double,MPoint> QuaternionToAngleAxis(MQuaternion q)
+ {
+   if (q.R_component_1() > 1)
+     q = Normalize(q);
+@@ -168,7 +168,7 @@
+ 
+   MPoint axis(q.R_component_2() / s, q.R_component_3() / s, q.R_component_4() / s);
+ 
+-  return std::tr1::make_tuple(angle, axis);
++  return std::make_tuple(angle, axis);
+ }
+ 
+ MPoint CenterPoints(std::vector<MPoint>& points)
+diff -Nur dssp-3.0.0/src/primitives-3d.h dssp-3.0.0-patched/src/primitives-3d.h
+--- dssp-3.0.0/src/primitives-3d.h	2017-09-21 02:42:09.000000000 -0700
++++ dssp-3.0.0-patched/src/primitives-3d.h	2018-04-25 11:05:18.542117901 -0700
+@@ -12,7 +12,7 @@
+ #pragma once
+ 
+ #include <boost/math/quaternion.hpp>
+-#include <boost/tr1/tuple.hpp>
++#include <tuple>
+ 
+ #include <vector>
+ 
+@@ -71,7 +71,7 @@
+ 
+ MQuaternion Normalize(MQuaternion q);
+ 
+-std::tr1::tuple<double,MPoint> QuaternionToAngleAxis(MQuaternion q);
++std::tuple<double,MPoint> QuaternionToAngleAxis(MQuaternion q);
+ MPoint Centroid(std::vector<MPoint>& points);
+ MPoint CenterPoints(std::vector<MPoint>& points);
+ MQuaternion AlignPoints(const std::vector<MPoint>& a,
+diff -Nur dssp-3.0.0/src/structure.cpp dssp-3.0.0-patched/src/structure.cpp
+--- dssp-3.0.0/src/structure.cpp	2017-09-21 02:42:09.000000000 -0700
++++ dssp-3.0.0-patched/src/structure.cpp	2018-04-25 11:05:41.581411192 -0700
+@@ -554,7 +554,7 @@
+   return result;
+ }
+ 
+-std::tr1::tuple<double,char> MResidue::Alpha() const
++std::tuple<double,char> MResidue::Alpha() const
+ {
+   double alhpa = 360;
+   char chirality = ' ';
+@@ -571,7 +571,7 @@
+     else
+       chirality = '+';
+   }
+-  return std::tr1::make_tuple(alhpa, chirality);
++  return std::make_tuple(alhpa, chirality);
+ }
+ 
+ double MResidue::Kappa() const
+diff -Nur dssp-3.0.0/src/structure.h dssp-3.0.0-patched/src/structure.h
+--- dssp-3.0.0/src/structure.h	2017-09-21 02:42:09.000000000 -0700
++++ dssp-3.0.0-patched/src/structure.h	2018-04-25 11:05:03.233921919 -0700
+@@ -171,7 +171,7 @@
+ 
+   double        Phi() const;
+   double        Psi() const;
+-  std::tr1::tuple<double,char>
++  std::tuple<double,char>
+             Alpha() const;
+   double        Kappa() const;
+   double        TCO() const;
