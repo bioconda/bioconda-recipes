@@ -30,12 +30,13 @@ if [ "$OS" = "Darwin" ]; then
 fi
 
 # Linux build. Build skia from scratch
+ls
 
 NAME=${PWD}/lib/skia
 echo "Skia out folder is: $NAME"
 
 cd ./lib
-mkdir -p ${NAME}
+mkdir -p skia
 mkdir -p build_skia && cd build_skia
 
 
@@ -46,20 +47,23 @@ EXTRA_LDFLAGS=""
 # Architecture-specific flags
 if [ "$ARCH" = "x86_64" ]; then
     # Old glibc so cant use depot_tools
-    EXTRA_CFLAGS='extra_cflags=["-mavx2", "-mfma", "-mavx512f", "-mavx512dq", "-msse4.2", "-mpopcnt", "-frtti", "-I'${PREFIX}'/include"]'
-    EXTRA_LDFLAGS='extra_ldflags=["-mavx2", "-mfma", "-mavx512f", "-mavx512dq", "-L'${PREFIX}'/lib"]'
+    EXTRA_CFLAGS='extra_cflags=["-mavx2", "-mfma", "-mavx512f", "-mavx512dq", "-msse4.2", "-mpopcnt", "-frtti"]'
+    EXTRA_LDFLAGS='extra_ldflags=["-mavx2", "-mfma", "-mavx512f", "-mavx512dq"]'
 
+    echo "Cloning skia"
     git clone https://skia.googlesource.com/skia.git
     
 elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
 
-    FREETYPE_DIR=$(find $CONDA_PREFIX -name "freetype2" -type d | grep "include")
-    FONTCONFIG_DIR=$(find $CONDA_PREFIX -name "fontconfig" -type d | grep "include")
-    echo "Freetype include: $FREETYPE_DIR"
-    echo "Fontconfig include: $FONTCONFIG_DIR"
-    EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti", "-I'${PREFIX}'/include", "-I'${FREETYPE_DIR}'", "-I'${FONTCONFIG_DIR}'"]'
-    EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto", "-L'${PREFIX}'/lib"]'
-
+    #FREETYPE_DIR=$(find $CONDA_PREFIX -name "freetype2" -type d | grep "include")
+    #FONTCONFIG_DIR=$(find $CONDA_PREFIX -name "fontconfig" -type d | grep "include")
+    #echo "Freetype include: $FREETYPE_DIR"
+    #echo "Fontconfig include: $FONTCONFIG_DIR"
+    #EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti", "-I'${PREFIX}'/include", "-I'${FREETYPE_DIR}'", "-I'${FONTCONFIG_DIR}'"]'
+    #EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto", "-L'${PREFIX}'/lib"]'
+    EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti"]'
+    EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto"]'
+    echo "Fetching skia using depot_tools"
     git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
     export PATH="${PWD}/depot_tools:${PATH}"
     depot_tools/fetch skia
