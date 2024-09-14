@@ -50,8 +50,8 @@ if [ "$ARCH" = "x86_64" ]; then
     EXTRA_CFLAGS='extra_cflags=["-mavx2", "-mfma", "-mavx512f", "-mavx512dq", "-msse4.2", "-mpopcnt", "-frtti"]'
     EXTRA_LDFLAGS='extra_ldflags=["-mavx2", "-mfma", "-mavx512f", "-mavx512dq"]'
 
-    echo "Cloning skia"
-    git clone https://skia.googlesource.com/skia.git
+    #echo "Cloning skia"
+    #git clone https://skia.googlesource.com/skia.git
     
 elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
 
@@ -63,10 +63,10 @@ elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
     #EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto", "-L'${PREFIX}'/lib"]'
     EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti"]'
     EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto"]'
-    echo "Fetching skia using depot_tools"
-    git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-    export PATH="${PWD}/depot_tools:${PATH}"
-    depot_tools/fetch skia
+    #echo "Fetching skia using depot_tools"
+    #git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+    #export PATH="${PWD}/depot_tools:${PATH}"
+    #depot_tools/fetch skia
 
 fi
 
@@ -83,11 +83,8 @@ export PATH="${CONDA_PREFIX}/bin:$PATH"
 echo "Using gn from: $(which gn)"
 echo "Using ninja from: $(which ninja)"
 
-#git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-#export PATH="${PWD}/depot_tools:${PATH}"
-#depot_tools/fetch skia
-
-# git clone https://skia.googlesource.com/skia.git
+echo "Cloning skia"
+git clone https://skia.googlesource.com/skia.git
 
 cd skia
 VERSION=m93
