@@ -34,6 +34,7 @@ ls
 
 NAME=${PWD}/lib/skia
 echo "Skia out folder is: $NAME"
+echo "pkg-config is: $(which pkg-config)"
 
 cd ./lib
 mkdir -p skia
@@ -59,7 +60,13 @@ elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
     #FONTCONFIG_DIR=$(find $CONDA_PREFIX -name "fontconfig" -type d | grep "include")
     #echo "Freetype include: $FREETYPE_DIR"
     #echo "Fontconfig include: $FONTCONFIG_DIR"
-    EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti", "-I'${PREFIX}'/include"]'
+
+    ft = $(pkg-config --cflags freetype2)
+    fc = $(pkg-config --cflags fontconfig)    
+    echo "Freetype2 include: $ft"
+    echo "Fontconfig include: $fc"
+    
+    EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti", "-I'${PREFIX}'/include", '${ft}', '${fc}']'
     EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto", "-L'${PREFIX}'/lib"]'
     #EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti"]'
     #EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto"]'
