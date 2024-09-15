@@ -7,7 +7,7 @@ export CPU_COUNT=1
 
 # To pass CI test on Linux
 if [[ "$(uname -s)" == "Linux" ]]; then
-    ulimit -v 4194304
+    ulimit -v 3000000
 fi
 
 ln -s "${CC_FOR_BUILD}" "${BUILD_PREFIX}/bin/gcc"
