@@ -136,7 +136,7 @@ pwd
 #fi
 
 # Link icu component libs
-sed -i.bak 's/-licu/-licuuc -licui18n -licudata/g' Makefile
+sed -i.bak 's/-licu/-licuuc -licui18n -licudata -lexpat/g' Makefile
 
 SYSROOT_FLAGS="--sysroot=${BUILD_PREFIX}/${HOST}/sysroot"
 CPPFLAGS="${CPPFLAGS} -I${BUILD_PREFIX}/${HOST}/sysroot/usr/include ${SYSROOT_FLAGS}"
