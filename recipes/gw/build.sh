@@ -1,9 +1,6 @@
 #!/usr/bin/bash
 set -e
 
-# USE_GL=1 make prep > /dev/null 2>&1 
-
-
 # Detect architecture and OS
 ARCH=$(uname -m)
 OS=$(uname -s)
@@ -51,31 +48,11 @@ if [ "$ARCH" = "x86_64" ]; then
     # Old glibc so cant use depot_tools
     EXTRA_CFLAGS="extra_cflags=[\"-mavx2\", \"-mfma\", \"-mavx512f\", \"-mavx512dq\", \"-msse4.2\", \"-mpopcnt\", \"-frtti\", $INCLUDE]"
     EXTRA_LDFLAGS="extra_ldflags=[\"-mavx2\", \"-mfma\", \"-mavx512f\", \"-mavx512dq\", $LIB]"
-
-    #echo "Cloning skia"
-    #git clone https://skia.googlesource.com/skia.git
     
 elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
 
-    #FREETYPE_DIR=$(find $CONDA_PREFIX -name "freetype2" -type d | grep "include")
-    #FONTCONFIG_DIR=$(find $CONDA_PREFIX -name "fontconfig" -type d | grep "include")
-    #echo "Freetype include: $FREETYPE_DIR"
-    #echo "Fontconfig include: $FONTCONFIG_DIR"
-
-    #f_include=$(pkg-config --cflags fontconfig freetype2)
-    #f_ldflags=$(pkg-config --libs fontconfig freetype2)
-    
-    #echo "Extra include: $f_include"
-    #echo "Extra ldflags: $f_ldflags"
-
     EXTRA_CFLAGS="extra_cflags=[\"-march=armv8-a+crc+crypto\", \"-frtti\", $INCLUDE]"
     EXTRA_LDFLAGS="extra_ldflags=[\"-march=armv8-a+crc+crypto\", $LIB]"
-    #EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti"]'
-    #EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto"]'
-    #echo "Fetching skia using depot_tools"
-    #git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-    #export PATH="${PWD}/depot_tools:${PATH}"
-    #depot_tools/fetch skia
 
 fi
 
@@ -109,8 +86,6 @@ python3 tools/git-sync-deps
 REL=Release
 
 echo "STARTING SKIA BUILD"
-which gn
-which ninja
 
 # Generate build files
 gn gen out/${REL} --args="is_official_build=true \
@@ -145,36 +120,8 @@ cp -rf include ${NAME}
 cp -rf modules ${NAME}
 cp -rf src ${NAME}
 
-#libs=( "freetype" "harfbuzz" "icu" "libpng" "zlib" )
-
-#for l in "${libs[@]}"
-#do
-#  echo $l
-#  mkdir -p ${NAME}/third_party/externals/${l}
-#  cp -rf third_party/externals/${l}/src ${NAME}/third_party/externals/${l}
-#  cp -rf third_party/externals/${l}/include ${NAME}/third_party/externals/${l}
-#  cp -rf third_party/externals/${l}/source ${NAME}/third_party/externals/${l}
-#  cp third_party/externals/${l}/*.h ${NAME}/third_party/externals/${l}
-#done
-
-#cp -rf third_party/icu ${NAME}/third_party
-
 # clean up
 cd ${NAME}
-#rm -rf modules/skottie/tests
-#rm -rf out/${REL}/obj
-#rm -rf out/${REL}/gen
-#rm -rf out/${REL}/gcc_like_host
-#find . -name "*.clang-format" -type f -delete
-#find . -name "*.gitignore" -type f -delete
-#find . -name "*.md" -type f -delete
-#find . -name "*.gn" -type f -delete
-#find . -name "*.ninja" -type f -delete
-#find . -name "*.cpp" -type f -delete
-#find . -name "*.ninja.d" -type f -delete
-#find . -name "*BUILD*" -type f -delete
-#find . -name "*.txt" -type f -delete
-#find . -name "test*" -type d -exec rm -rv {} +
 cd ../
 
 pwd
@@ -187,7 +134,6 @@ pwd
 #  sed -i 's/-lEGL -lGLESv2/-lEGL -lGLESv2 -lGL -lGLX/' Makefile
   #sed -i 's/GLFW_EGL_CONTEXT_API/GLFW_NATIVE_CONTEXT_API/' src/plot_manager.cpp
 #fi
-
 
 SYSROOT_FLAGS="--sysroot=${BUILD_PREFIX}/${HOST}/sysroot"
 CPPFLAGS="${CPPFLAGS} -I${BUILD_PREFIX}/${HOST}/sysroot/usr/include ${SYSROOT_FLAGS}"
