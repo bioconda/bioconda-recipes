@@ -135,6 +135,9 @@ pwd
   #sed -i 's/GLFW_EGL_CONTEXT_API/GLFW_NATIVE_CONTEXT_API/' src/plot_manager.cpp
 #fi
 
+# Link icu component libs
+sed -i.bak 's/-licu/-licuuc -licui18n -licudata/g' Makefile
+
 SYSROOT_FLAGS="--sysroot=${BUILD_PREFIX}/${HOST}/sysroot"
 CPPFLAGS="${CPPFLAGS} -I${BUILD_PREFIX}/${HOST}/sysroot/usr/include ${SYSROOT_FLAGS}"
 LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib64 ${SYSROOT_FLAGS}"
