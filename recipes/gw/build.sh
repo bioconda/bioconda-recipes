@@ -50,8 +50,8 @@ if [ "$ARCH" = "x86_64" ]; then
     EXTRA_LDFLAGS="extra_ldflags=[\"-mavx2\", \"-mfma\", \"-mavx512f\", \"-mavx512dq\", $LIB]"
     
 elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
-    EXTRA_CFLAGS="extra_cflags=[\"-march=armv8-a+crypto\", \"-frtti\", $INCLUDE]"
-    EXTRA_LDFLAGS="extra_ldflags=[\"-march=armv8-a+crypto\", $LIB]"
+    EXTRA_CFLAGS="extra_cflags=[\"-march=armv8-a\", \"-frtti\", $INCLUDE]"
+    EXTRA_LDFLAGS="extra_ldflags=[\"-march=armv8-a\", $LIB]"
     #EXTRA_CFLAGS="extra_cflags=[\"-march=armv8-a+crc+crypto\", \"-frtti\", $INCLUDE]"
     #EXTRA_LDFLAGS="extra_ldflags=[\"-march=armv8-a+crc+crypto\", $LIB]"
 
