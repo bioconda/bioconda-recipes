@@ -5,7 +5,7 @@ if [ "$(uname)" == "Darwin" ]; then
     cp ${SRC_DIR}/HyLight ${PREFIX}
 else
     cd ${SRC_DIR}
-    ${PYTHON} -m pip install . -vvv
+    python -m pip install . -vvv
     hylight_conda_dir=${PREFIX}/lib/python3.6/site-packages/HyLight
     chmod +x $hylight_conda_dir/script/*py
     cd ${SRC_DIR}/HyLight/tools/miniasm
