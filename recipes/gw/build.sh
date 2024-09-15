@@ -13,7 +13,7 @@ if [ "$OS" = "Darwin" ]; then
     SYSROOT_FLAGS=""
     CPPFLAGS="${CPPFLAGS}"
     LDFLAGS="${LDFLAGS} -L${PREFIX}"
-    echo "Download pre-built skia"
+    echo "Downloading pre-built skia"
     USE_GL=1 make prep > /dev/null 2>&1 
 
     CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" \
@@ -34,7 +34,6 @@ ls
 
 NAME=${PWD}/lib/skia
 echo "Skia out folder is: $NAME"
-echo "pkg-config is: $(which pkg-config)"
 
 cd ./lib
 mkdir -p skia
@@ -44,12 +43,14 @@ mkdir -p build_skia && cd build_skia
 # Set default flags
 EXTRA_CFLAGS=""
 EXTRA_LDFLAGS=""
+INCLUDE="\"-I$PREFIX/include\", \"-I$PREFIX/include/freetype2\", \"-I$PREFIX/include/libpng16\""
+LIB="\"-L${PREFIX}/lib\""
 
 # Architecture-specific flags
 if [ "$ARCH" = "x86_64" ]; then
     # Old glibc so cant use depot_tools
-    EXTRA_CFLAGS='extra_cflags=["-mavx2", "-mfma", "-mavx512f", "-mavx512dq", "-msse4.2", "-mpopcnt", "-frtti"]'
-    EXTRA_LDFLAGS='extra_ldflags=["-mavx2", "-mfma", "-mavx512f", "-mavx512dq"]'
+    EXTRA_CFLAGS="extra_cflags=[\"-mavx2\", \"-mfma\", \"-mavx512f\", \"-mavx512dq\", \"-msse4.2\", \"-mpopcnt\", \"-frtti\", $INCLUDE]"
+    EXTRA_LDFLAGS="extra_ldflags=[\"-mavx2\", \"-mfma\", \"-mavx512f\", \"-mavx512dq\", $LIB]"
 
     #echo "Cloning skia"
     #git clone https://skia.googlesource.com/skia.git
@@ -61,14 +62,14 @@ elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
     #echo "Freetype include: $FREETYPE_DIR"
     #echo "Fontconfig include: $FONTCONFIG_DIR"
 
-    f_include=$(pkg-config --cflags fontconfig freetype2)
-    f_ldflags=$(pkg-config --libs fontconfig freetype2)
+    #f_include=$(pkg-config --cflags fontconfig freetype2)
+    #f_ldflags=$(pkg-config --libs fontconfig freetype2)
     
-    echo "Extra include: $f_include"
-    echo "Extra ldflags: $f_ldflags"
+    #echo "Extra include: $f_include"
+    #echo "Extra ldflags: $f_ldflags"
 
-    EXTRA_CFLAGS="extra_cflags=[\"-march=armv8-a+crc+crypto\", \"-frtti\", \"-I$PREFIX/include\", \"-I$PREFIX/include/freetype2\", \"-I$PREFIX/include/libpng16\"]"
-    EXTRA_LDFLAGS="extra_ldflags=[\"-march=armv8-a+crc+crypto\", \"-L${PREFIX}/lib\"]"
+    EXTRA_CFLAGS="extra_cflags=[\"-march=armv8-a+crc+crypto\", \"-frtti\", $INCLUDE]"
+    EXTRA_LDFLAGS="extra_ldflags=[\"-march=armv8-a+crc+crypto\", $LIB]"
     #EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti"]'
     #EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto"]'
     #echo "Fetching skia using depot_tools"
@@ -144,19 +145,19 @@ cp -rf include ${NAME}
 cp -rf modules ${NAME}
 cp -rf src ${NAME}
 
-libs=( "freetype" "harfbuzz" "icu" "libpng" "zlib" )
+#libs=( "freetype" "harfbuzz" "icu" "libpng" "zlib" )
 
-for l in "${libs[@]}"
-do
-  echo $l
-  mkdir -p ${NAME}/third_party/externals/${l}
-  cp -rf third_party/externals/${l}/src ${NAME}/third_party/externals/${l}
-  cp -rf third_party/externals/${l}/include ${NAME}/third_party/externals/${l}
-  cp -rf third_party/externals/${l}/source ${NAME}/third_party/externals/${l}
-  cp third_party/externals/${l}/*.h ${NAME}/third_party/externals/${l}
-done
+#for l in "${libs[@]}"
+#do
+#  echo $l
+#  mkdir -p ${NAME}/third_party/externals/${l}
+#  cp -rf third_party/externals/${l}/src ${NAME}/third_party/externals/${l}
+#  cp -rf third_party/externals/${l}/include ${NAME}/third_party/externals/${l}
+#  cp -rf third_party/externals/${l}/source ${NAME}/third_party/externals/${l}
+#  cp third_party/externals/${l}/*.h ${NAME}/third_party/externals/${l}
+#done
 
-cp -rf third_party/icu ${NAME}/third_party
+#cp -rf third_party/icu ${NAME}/third_party
 
 # clean up
 cd ${NAME}
