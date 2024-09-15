@@ -61,13 +61,14 @@ elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
     #echo "Freetype include: $FREETYPE_DIR"
     #echo "Fontconfig include: $FONTCONFIG_DIR"
 
-    ft = $(pkg-config --cflags freetype2)
-    fc = $(pkg-config --cflags fontconfig)    
-    echo "Freetype2 include: $ft"
-    echo "Fontconfig include: $fc"
+    f_include=$(pkg-config --cflags fontconfig freetype2)
+    f_ldflags=$(pkg-config --ldflags fontconfig freetype2)
     
-    EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti", "-I'${PREFIX}'/include", '${ft}', '${fc}']'
-    EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto", "-L'${PREFIX}'/lib"]'
+    echo "Extra include: $f_include"
+    echo "Extra ldflags: $f_ldflags"
+
+    EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti", "-I'${PREFIX}'/include", '${f_include}']'
+    EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto", "-L'${PREFIX}'/lib", '${f_ldflags}']'
     #EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti"]'
     #EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto"]'
     #echo "Fetching skia using depot_tools"
