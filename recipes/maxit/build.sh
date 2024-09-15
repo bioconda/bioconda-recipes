@@ -5,11 +5,11 @@ set -exo pipefail
 # Disable parallel build
 export CPU_COUNT=1
 
-# # To pass CI test on Linux
-# if [[ "$(uname -s)" == "Linux" ]]; then
-#     free -h
-#     ulimit -v 2000000000
-# fi
+# To pass CI test on Linux
+if [[ "$(uname -s)" == "Linux" ]]; then
+    free -h
+    ulimit -v 2000000000
+fi
 
 ln -s "${CC}" "${BUILD_PREFIX}/bin/gcc"
 ln -s "${CXX}" "${BUILD_PREFIX}/bin/g++"
