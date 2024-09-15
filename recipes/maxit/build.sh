@@ -7,12 +7,13 @@ export CPU_COUNT=1
 
 # To pass CI test on Linux
 if [[ "$(uname -s)" == "Linux" ]]; then
+    ulimit -v 200000000
     free -h
-    ulimit -v 2000000000
+    df -h
 fi
 
-ln -s "${CC}" "${BUILD_PREFIX}/bin/gcc"
-ln -s "${CXX}" "${BUILD_PREFIX}/bin/g++"
+ln -s "${CC_FOR_BUILD}" "${BUILD_PREFIX}/bin/gcc"
+ln -s "${CXX_FOR_BUILD}" "${BUILD_PREFIX}/bin/g++"
 
 cd "${SRC_DIR}/cifparse-obj-v7.0"
 sed -i.bak 's|mv |cp |g' Makefile
