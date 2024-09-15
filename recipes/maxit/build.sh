@@ -12,9 +12,9 @@ cd "${SRC_DIR}/cifparse-obj-v7.0"
 sed -i.bak 's|mv |cp |g' Makefile
 rm *.bak
 
-cd "${SRC_DIR}"
-sed -i.bak "s|./data/binary|${SRC_DIR}/data/binary|g" binary.sh
-rm *.bak
+# cd "${SRC_DIR}"
+# sed -i.bak "s|./data/binary|${SRC_DIR}/data/binary|g" binary.sh
+# rm *.bak
 
 cd "${SRC_DIR}"
 make binary "-j${CPU_COUNT}"
