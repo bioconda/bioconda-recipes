@@ -67,8 +67,8 @@ elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
     echo "Extra include: $f_include"
     echo "Extra ldflags: $f_ldflags"
 
-    EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti", "-I'${PREFIX}'/include", "'${f_include}'"]'
-    EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto", "-L'${PREFIX}'/lib", "'${f_ldflags}'"]'
+    EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti", "-I${PREFIX}/include", "${f_include}"]'
+    EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto", "-L${PREFIX}/lib", "${f_ldflags}"]'
     #EXTRA_CFLAGS='extra_cflags=["-march=armv8-a+crc+crypto", "-frtti"]'
     #EXTRA_LDFLAGS='extra_ldflags=["-march=armv8-a+crc+crypto"]'
     #echo "Fetching skia using depot_tools"
