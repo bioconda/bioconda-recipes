@@ -62,7 +62,7 @@ elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
     #echo "Fontconfig include: $FONTCONFIG_DIR"
 
     f_include=$(pkg-config --cflags fontconfig freetype2)
-    f_ldflags=$(pkg-config --ldflags fontconfig freetype2)
+    f_ldflags=$(pkg-config --libs fontconfig freetype2)
     
     echo "Extra include: $f_include"
     echo "Extra ldflags: $f_ldflags"
