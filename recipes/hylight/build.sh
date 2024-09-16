@@ -14,6 +14,6 @@ else
     cp ${SRC_DIR}/HyLight/tools/miniasm/miniasm $hylight_conda_dir/tools/miniasm
     cd ${SRC_DIR}/HyLight/tools/HaploConduct
     make clean
-    make CC=$CXX CPPFLAGS="-Wall -fopenmp -std=c++11 -g -O2 -L$PREFIX/lib"
+    make CC=$CXX CPPFLAGS="-Wall -fopenmp -std=c++11 -g -O2 -L$PREFIX/lib -I$PREFIX/include"
     cp bin quick-cliques/bin $hylight_conda_dir/tools/HaploConduct -r
 fi
