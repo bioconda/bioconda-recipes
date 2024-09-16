@@ -1,12 +1,12 @@
 #!/usr/bin/bash
 set -e
 
-# Detect architecture and OS
 ARCH=$(uname -m)
 OS=$(uname -s)
 
-# Use pre-built binary
+# Use pre-built binarys for macOS and aarch64
 if [ "$OS" = "Darwin" ]; then
+    # MacOS
     SYSROOT_FLAGS=""
     CPPFLAGS="${CPPFLAGS}"
     LDFLAGS="${LDFLAGS} -L${PREFIX}"
@@ -24,9 +24,37 @@ if [ "$OS" = "Darwin" ]; then
     cp -n .gw.ini $PREFIX/bin/.gw.ini
     chmod +x $PREFIX/bin/gw
     exit 0
+
+elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ];
+    # Linux aarch64
+    ls
+    cd ./lib
+    mkdir -p skia && cd skia
+    curl -L -o skia.zip https://github.com/JetBrains/skia-pack/releases/download/m93-87e8842e8c/Skia-m93-87e8842e8c-linux-Release-arm64.zip
+    unzip skia.zip
+    ls ./ && cd ../
+    
+    SYSROOT_FLAGS="--sysroot=${BUILD_PREFIX}/${HOST}/sysroot"
+    CPPFLAGS="${CPPFLAGS} -I${BUILD_PREFIX}/${HOST}/sysroot/usr/include ${SYSROOT_FLAGS}"
+    LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib64 ${SYSROOT_FLAGS}"
+    
+    CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" \
+    CPPFLAGS="${CPPFLAGS}" \
+    LDFLAGS="${LDFLAGS}" \
+    prefix="${PREFIX}" \
+        make -j ${CPU_COUNT}
+    
+    mkdir -p $PREFIX/bin
+    cp gw $PREFIX/bin/gw
+    cp -n .gw.ini $PREFIX/bin/.gw.ini
+    chmod +x $PREFIX/bin/gw
+    chmod +rw $PREFIX/bin/.gw.ini
+    
+    exit 0
+
 fi
 
-# Linux build. Build skia from scratch
+# Linux x86_64
 ls
 
 NAME=${PWD}/lib/skia
@@ -38,24 +66,26 @@ mkdir -p build_skia && cd build_skia
 
 
 # Set default flags
-EXTRA_CFLAGS=""
-EXTRA_LDFLAGS=""
+#EXTRA_CFLAGS=""
+#EXTRA_LDFLAGS=""
+EXTRA_CFLAGS="extra_cflags=[\"-mavx2\", \"-mfma\", \"-mavx512f\", \"-mavx512dq\", \"-msse4.2\", \"-mpopcnt\", \"-frtti\", $INCLUDE]"
+EXTRA_LDFLAGS="extra_ldflags=[\"-mavx2\", \"-mfma\", \"-mavx512f\", \"-mavx512dq\", $LIB]"
 INCLUDE="\"-I$PREFIX/include\", \"-I$PREFIX/include/freetype2\", \"-I$PREFIX/include/libpng16\""
 LIB="\"-L${PREFIX}/lib\""
 
 # Architecture-specific flags
-if [ "$ARCH" = "x86_64" ]; then
+# if [ "$ARCH" = "x86_64" ]; then
     # Old glibc so cant use depot_tools
-    EXTRA_CFLAGS="extra_cflags=[\"-mavx2\", \"-mfma\", \"-mavx512f\", \"-mavx512dq\", \"-msse4.2\", \"-mpopcnt\", \"-frtti\", $INCLUDE]"
-    EXTRA_LDFLAGS="extra_ldflags=[\"-mavx2\", \"-mfma\", \"-mavx512f\", \"-mavx512dq\", $LIB]"
+    # EXTRA_CFLAGS="extra_cflags=[\"-mavx2\", \"-mfma\", \"-mavx512f\", \"-mavx512dq\", \"-msse4.2\", \"-mpopcnt\", \"-frtti\", $INCLUDE]"
+    # EXTRA_LDFLAGS="extra_ldflags=[\"-mavx2\", \"-mfma\", \"-mavx512f\", \"-mavx512dq\", $LIB]"
     
-elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
-    EXTRA_CFLAGS="extra_cflags=[\"-frtti\", $INCLUDE]"
-    EXTRA_LDFLAGS="extra_ldflags=[ $LIB]"
+# elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
+#     EXTRA_CFLAGS="extra_cflags=[\"-frtti\", $INCLUDE]"
+#     EXTRA_LDFLAGS="extra_ldflags=[ $LIB]"
     #EXTRA_CFLAGS="extra_cflags=[\"-march=armv8-a+crc+crypto\", \"-frtti\", $INCLUDE]"
     #EXTRA_LDFLAGS="extra_ldflags=[\"-march=armv8-a+crc+crypto\", $LIB]"
 
-fi
+# fi
 
 EXTRA_ARGS="skia_use_egl=true skia_use_gl=true skia_use_x11=true"
 
