@@ -1,5 +1,5 @@
 diff --git a/connect-v3.3/src/connect_main.C b/connect-v3.3/src/connect_main.C
-index 16c6223..51e30f7 100644
+index 16c6223..aebb68c 100644
 --- a/connect-v3.3/src/connect_main.C
 +++ b/connect-v3.3/src/connect_main.C
 @@ -30,64 +30,64 @@ not limited to, any and all claims alleging products liability.
@@ -117,7 +117,7 @@ index 16c6223..51e30f7 100644
  for such Enhancements, then you hereby grant RUTGERS a non-exclusive,
  royalty-free perpetual license to install, use, modify, prepare
  derivative works, incorporate into the SOFTWARE or other computer
-@@ -105,55 +105,62 @@ and conditions.  Upon termination, Licensee shall destroy all
+@@ -105,55 +105,55 @@ and conditions.  Upon termination, Licensee shall destroy all
  copies of the SOFTWARE.
  
  6. PROPRIETARY RIGHTS.  Title, ownership rights, and intellectual
@@ -198,23 +198,16 @@ index 16c6223..51e30f7 100644
  {
 -       char *root_dir = getenv("RCSBROOT");
 -       if (root_dir == NULL) root_dir = defalut_dir;
-+     //   char root_dir[PATH_MAX];
-+     //   if (getcwd(root_dir, sizeof(root_dir)) == NULL) {
-+     //      perror("getcwd() error");
-+     //      return 1;
-+     //   }
-+
-+     //   std::cout << "root_dir: " << std::string(root_dir) << std::endl;
 +       char filepath[PATH_MAX];
  
         std::vector<std::string> textfile, binaryfile;
         textfile.clear();
-@@ -167,14 +174,19 @@ int main(int argc, char **argv)
+@@ -167,15 +167,20 @@ int main(int argc, char **argv)
         for (unsigned int i = 0; i < textfile.size(); ++i) {
              std::string filename = textfile[i];
              if (stat(filename.c_str(), &statbuf) != 0) {
 -                 filename = root_dir; filename += "/data/ascii/" + textfile[i];
-+                 filename = "../data/ascii/" + textfile[i];
++                 filename = "./data/ascii/" + textfile[i];
                   if (stat(filename.c_str(), &statbuf) != 0) continue;
              }
  
@@ -222,12 +215,14 @@ index 16c6223..51e30f7 100644
              if (!ConnectDictionary) continue;
  
 -            ConnectDictionary->BinaryConvertor(filename, binaryfile[i]);
+-            delete ConnectDictionary;
 +            if (realpath(filename.c_str(), filepath) != NULL) {
 +                std::cout << "Absolute path: " << filepath << std::endl;
++                ConnectDictionary->BinaryConvertor(std::string(filepath), binaryfile[i]);
++                delete ConnectDictionary;
 +            } else {
 +                    perror("Error resolving path");
 +            }
-+            ConnectDictionary->BinaryConvertor(std::string(filepath), binaryfile[i]);
-             delete ConnectDictionary;
         }
  
+        return 0;
