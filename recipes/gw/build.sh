@@ -25,7 +25,7 @@ if [ "$OS" = "Darwin" ]; then
     chmod +x $PREFIX/bin/gw
     exit 0
 
-elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ];
+elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
     # Linux aarch64
     ls
     cd ./lib
