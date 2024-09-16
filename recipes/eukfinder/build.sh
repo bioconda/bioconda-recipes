@@ -4,14 +4,10 @@ set -ex
 # Setup PLAST binaries
 cp build/bin/plast $PREFIX/bin/
 
-# Clone acc2tax repository
-git clone https://github.com/richardmleggett/acc2tax.git
-echo "acc2tax downloaded successfully"
-
 # Build acc2tax
 # According to https://bioconda.github.io/contributor/troubleshooting.html
 # and https://github.com/bioconda/bioconda-recipes/pull/49360#discussion_r1686187284
-$("$CC") -o acc2tax acc2tax.c
+$CC -o acc2tax acc2tax.c
 cp acc2tax $PREFIX/bin/
 
 chmod +x $PREFIX/bin/plast
