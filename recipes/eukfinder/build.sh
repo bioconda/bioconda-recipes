@@ -5,11 +5,9 @@ df -h
 
 # Setup PLAST binaries
 if [[ $(uname) == "Darwin" ]]; then
-  wget https://github.com/PLAST-software/plast-library/releases/download/v2.3.2/plastbinary_osx_v2.3.2.tar.gz
   tar -zxf plastbinary_osx_v2.3.2.tar.gz
   cd plastbinary_osx_v2.3.2
 elif [[ $(uname) == "Linux" ]]; then
-  wget https://github.com/PLAST-software/plast-library/releases/download/v2.3.2/plastbinary_linux_v2.3.2.tar.gz
   tar -zxf plastbinary_linux_v2.3.2.tar.gz
   cd plastbinary_linux_v2.3.2
 else
