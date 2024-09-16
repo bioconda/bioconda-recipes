@@ -2,7 +2,7 @@
 
 if [ "$(uname)" == "Darwin" ]; then
     cd ${SRC_DIR}
-    cp ${SRC_DIR}/HyLight ${PREFIX}
+    cp ${SRC_DIR}/HyLight ${PREFIX} -rf
 else
     cd ${SRC_DIR}
     ${PYTHON} -m pip install . -vvv
