@@ -4,12 +4,7 @@
 # We set CARGO_HOME because we don't pass on HOME to conda-build, thus rendering the default "${HOME}/.cargo" defunct.
 export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
 
-if [ "$(uname)" == "Darwin" ]; then # x86-64 on macosx
-    # AVX512 build not supported in bioconda osx servers
-    TARGET_CPUS=("x86-64" "x86-64-v2" "x86-64-v3")
-else # x86-64 on Linux
-    TARGET_CPUS=("x86-64" "x86-64-v2" "x86-64-v3" "x86-64-v4")
-fi
+TARGET_CPUS=("x86-64" "x86-64-v2" "x86-64-v3" "x86-64-v4")
 
 for TARGET_CPU in "${TARGET_CPUS[@]}"; do
     # build statically linked binary with Rust
