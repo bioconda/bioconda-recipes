@@ -32,7 +32,7 @@ elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
     mkdir -p skia && cd skia
     curl -L -o skia.zip https://github.com/JetBrains/skia-pack/releases/download/m93-87e8842e8c/Skia-m93-87e8842e8c-linux-Release-arm64.zip
     unzip skia.zip
-    ls ./ && cd ../
+    ls ./ && cd ../../
     
     SYSROOT_FLAGS="--sysroot=${BUILD_PREFIX}/${HOST}/sysroot"
     CPPFLAGS="${CPPFLAGS} -I${BUILD_PREFIX}/${HOST}/sysroot/usr/include ${SYSROOT_FLAGS}"
