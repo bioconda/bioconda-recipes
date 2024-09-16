@@ -1,8 +1,6 @@
 #!/bin/bash
 set -ex
 
-df -h
-
 # Setup PLAST binaries
 cp build/bin/plast $PREFIX/bin/
 
