@@ -1,10 +1,8 @@
 #!/usr/bin/env bashscript
 
 if [ "$(uname)" == "Darwin" ]; then
-    cd ${SRC_DIR}
-    cp ${SRC_DIR}/HyLight ${PREFIX} -rf
+    cp -rf ${SRC_DIR}/HyLight ${PREFIX}/bin/ 
 else
-    cd ${SRC_DIR}
     ${PYTHON} -m pip install . -vvv
     hylight_conda_dir=${PREFIX}/lib/python3.6/site-packages/HyLight
     chmod +x $hylight_conda_dir/script/*py
