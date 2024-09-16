@@ -3,20 +3,22 @@ set -ex
 
 df -h
 
+ls -l
+
+ls -l ..
+
 # Setup PLAST binaries
 if [[ $(uname) == "Darwin" ]]; then
-  tar -zxf plastbinary_osx_v2.3.2.tar.gz
-  cd plastbinary_osx_v2.3.2
+  cd ../plastbinary_osx_v2.3.2
 elif [[ $(uname) == "Linux" ]]; then
-  tar -zxf plastbinary_linux_v2.3.2.tar.gz
-  cd plastbinary_linux_v2.3.2
+  cd ../plastbinary_linux_v2.3.2
 else
   echo "Unsupported architecture!"
   exit 1
 fi
 
 cp build/bin/plast $PREFIX/bin/
-cd ..
+cd ../Eukfinder
 
 # Clone acc2tax repository
 git clone https://github.com/richardmleggett/acc2tax.git
