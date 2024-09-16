@@ -1,5 +1,5 @@
 diff --git a/connect-v3.3/src/connect_main.C b/connect-v3.3/src/connect_main.C
-index 16c6223..b636828 100644
+index 16c6223..51e30f7 100644
 --- a/connect-v3.3/src/connect_main.C
 +++ b/connect-v3.3/src/connect_main.C
 @@ -30,64 +30,64 @@ not limited to, any and all claims alleging products liability.
@@ -117,7 +117,7 @@ index 16c6223..b636828 100644
  for such Enhancements, then you hereby grant RUTGERS a non-exclusive,
  royalty-free perpetual license to install, use, modify, prepare
  derivative works, incorporate into the SOFTWARE or other computer
-@@ -105,55 +105,61 @@ and conditions.  Upon termination, Licensee shall destroy all
+@@ -105,55 +105,62 @@ and conditions.  Upon termination, Licensee shall destroy all
  copies of the SOFTWARE.
  
  6. PROPRIETARY RIGHTS.  Title, ownership rights, and intellectual
@@ -205,10 +205,11 @@ index 16c6223..b636828 100644
 +     //   }
 +
 +     //   std::cout << "root_dir: " << std::string(root_dir) << std::endl;
++       char filepath[PATH_MAX];
  
         std::vector<std::string> textfile, binaryfile;
         textfile.clear();
-@@ -167,7 +173,7 @@ int main(int argc, char **argv)
+@@ -167,14 +174,19 @@ int main(int argc, char **argv)
         for (unsigned int i = 0; i < textfile.size(); ++i) {
              std::string filename = textfile[i];
              if (stat(filename.c_str(), &statbuf) != 0) {
@@ -216,4 +217,17 @@ index 16c6223..b636828 100644
 +                 filename = "../data/ascii/" + textfile[i];
                   if (stat(filename.c_str(), &statbuf) != 0) continue;
              }
+ 
+             ConnectDic *ConnectDictionary = new ConnectDic;
+             if (!ConnectDictionary) continue;
+ 
+-            ConnectDictionary->BinaryConvertor(filename, binaryfile[i]);
++            if (realpath(filename.c_str(), filepath) != NULL) {
++                std::cout << "Absolute path: " << filepath << std::endl;
++            } else {
++                    perror("Error resolving path");
++            }
++            ConnectDictionary->BinaryConvertor(std::string(filepath), binaryfile[i]);
+             delete ConnectDictionary;
+        }
  
