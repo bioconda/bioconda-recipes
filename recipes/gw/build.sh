@@ -32,6 +32,8 @@ elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
     mkdir -p skia && cd skia
     curl -L -o skia.zip https://github.com/JetBrains/skia-pack/releases/download/m93-87e8842e8c/Skia-m93-87e8842e8c-linux-Release-arm64.zip
     unzip skia.zip
+    # link expat from conda
+    rm out/Release-linux-arm64/libexpat.a
     ls ./ && cd ../../
     
     SYSROOT_FLAGS="--sysroot=${BUILD_PREFIX}/${HOST}/sysroot"
