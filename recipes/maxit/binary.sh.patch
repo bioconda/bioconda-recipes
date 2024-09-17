@@ -1,14 +1,27 @@
 diff --git a/binary.sh b/binary.sh
-index 0c9772d..593ccba 100755
+index 0c9772d..2a3366f 100755
 --- a/binary.sh
 +++ b/binary.sh
-@@ -1,6 +1,8 @@
+@@ -1,10 +1,20 @@
  #!/bin/bash
  #
 -export RCSBROOT="$(pwd)"
-+
-+set -exuuu pipefail
-+
++#export RCSBROOT="$(pwd)"
  #
  ./bin/cif2bin
  #
+-./bin/connect_main
++./bin/connect_main &
++
++connect_main_pid=$!
++
++while kill -0 ${connect_main_pid} 2> /dev/null; do
++  echo "\`./bin/connect_main\` in progress..."
++  sleep 30
++done
++
++echo "\`./bin/connect_main\` finished."
++
+ if [ -e component.odb ]
+ then
+     mv component.odb ./data/binary
