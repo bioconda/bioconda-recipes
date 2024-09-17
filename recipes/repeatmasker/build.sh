@@ -43,6 +43,7 @@ sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/DupMasker
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/ProcessRepeats
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/RepeatProteinMask
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/util/*.pl
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/util/*.pm
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/*.pl
 
 rm -rf ${RM_DIR}/util/*.bak
