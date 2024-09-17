@@ -35,12 +35,14 @@ elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
     # link expat from conda
     rm out/Release-linux-arm64/libexpat.a
     ls ./ && cd ../../
+
+    sed -i.bak 's/-lskia/-lexpat -Wl,--whole-archive -lskia -Wl,--no-whole-archive/g' Makefile
     
     SYSROOT_FLAGS="--sysroot=${BUILD_PREFIX}/${HOST}/sysroot"
     CPPFLAGS="${CPPFLAGS} -I${BUILD_PREFIX}/${HOST}/sysroot/usr/include ${SYSROOT_FLAGS}"
     LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib64 ${SYSROOT_FLAGS}"
     
-    CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" \
+    CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY -fvisibility=default" \
     CPPFLAGS="${CPPFLAGS}" \
     LDFLAGS="${LDFLAGS}" \
     prefix="${PREFIX}" \
