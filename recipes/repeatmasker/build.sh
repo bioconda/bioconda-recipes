@@ -38,7 +38,12 @@ for name in ${RM_DIR}/util/* ; do
 done
 
 # Fix perl shebang
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/RepeatMasker
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/DupMasker
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/ProcessRepeats
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/RepeatProteinMask
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/util/*.pl
-rm -rf ${RM_DIR}/util/*.bak
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/*.pl
+
+rm -rf ${RM_DIR}/util/*.bak
 rm -rf ${RM_DIR}/*.bak
