@@ -4,7 +4,7 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include ${LDFLAGS}"
+export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
 
 # disable Makefile driven build of htslib.a
 sed -i.bak "s/'build_ext': HTSBuild//" setup.py
