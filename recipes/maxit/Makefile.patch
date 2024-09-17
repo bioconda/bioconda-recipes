@@ -1,18 +1,15 @@
 diff --git a/Makefile b/Makefile
-index e821782..b4c8eed 100644
+index e821782..426ee5b 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1,7 +1,8 @@
+@@ -1,5 +1,5 @@
  #
 -SHELL=/bin/sh
 +SHELL=/bin/bash
  MAKE=make
  MAKEFILE=Makefile
-+LDFLAGS="-Wl,--gc-sections -Wl,--as-needed"
  
- LIBDIRS = common-v4.5 \
-           numeric-util-v1.0 \
-@@ -22,7 +23,7 @@ LIBDIRS = common-v4.5 \
+@@ -22,7 +22,7 @@ LIBDIRS = common-v4.5 \
  all:	compile
  
  binary:	compile
@@ -21,16 +18,16 @@ index e821782..b4c8eed 100644
  	@./bin/DictToSdb -ddlFile ./data/ascii/mmcif_ddl.dic -dictFile ./data/ascii/mmcif_pdbx.dic -dictSdbFile mmcif_pdbx.sdb
  	@mv mmcif_pdbx.sdb ./data/binary
  	@rm -f ./bin/DictToSdb ./bin/cif2bin ./bin/connect_main
-@@ -35,7 +36,7 @@ compile:
+@@ -35,7 +35,7 @@ compile:
  		echo "------------------------------------------------------------"; \
  		echo "**** Making $$libdir ****"; \
  		echo "------------------------------------------------------------"; \
 -		(cd $$libdir && $(MAKE) -f $(MAKEFILE) "OPT=-O" install) || exit 1; \
-+		(cd $$libdir && $(MAKE) -f $(MAKEFILE) LDFLAGS="$(LDFLAGS)" "OPT=-O -fdata-sections -ffunction-sections" install) || exit 1; \
++		(cd $$libdir && $(MAKE) -f $(MAKEFILE) "OPT=-O -fdata-sections -ffunction-sections" install) || exit 1; \
  	done
  #
  debug:
-@@ -48,7 +49,7 @@ debug:
+@@ -48,7 +48,7 @@ debug:
  		(cd $$libdir && $(MAKE) -f $(MAKEFILE)  "OPT=-g" install) || exit 1; \
  	done
  #
