@@ -1,6 +1,6 @@
 {% set name = "strangepg" %}
-{% set version = "0.8.2" %}
-{% set ref = "7fbd2957cf1bf0295b6c4bd95fcfc9f1970ecb13" %}
+{% set version = "0.8.4" %}
+{% set ref = "f7112e4e3a43eef2e747df502a3a1e5e828f24de" %}
 
 package:
   name: {{ name }}
@@ -8,13 +8,19 @@ package:
 
 source:
   url: https://github.com/qwx9/{{ name }}/archive/{{ ref }}.tar.gz
-  sha256: bac0f9bbce7fdee6a555cca37536ed7f41b8c594aa16ff92212345e2664b7f67
+  sha256: 08f1f22c40b8ab5a0cd92576e8b2cba5cf65726f5d0ddca286f9883a69c5d2e5
 
 build:
   number: 0
   skip: True # [not linux]
   run_exports:
     - {{ pin_subpackage('strangepg', max_pin=None) }}
+  ignore_run_exports:
+    - libxcb
+    - xorg-libxau
+    - xorg-libxdmcp
+    - xorg-libxext
+    - xorg-libxfixes
 
 requirements:
   build:
@@ -27,18 +33,12 @@ requirements:
     - {{ cdt('libglvnd-glx') }}      # [cdt_name != 'cos6']
   host:
     - xorg-libx11
-    - xorg-libxau
-    - xorg-libxcb
     - xorg-libxcursor
-    - xorg-libxdmcp
-    - xorg-libxext
-    - xorg-libxfixes
     - xorg-libxi
-    - xorg-libxrandr
   run:
+    - libxcb
     - xorg-libx11
     - xorg-libxau
-    - xorg-libxcb
     - xorg-libxcursor
     - xorg-libxdmcp
     - xorg-libxext
@@ -47,9 +47,8 @@ requirements:
     - xorg-libxrandr
 
 test:
-  commands:
-    - which strpg
-    - which strawk
+  source_files:
+    - cmd/main.awk
 
 about:
   home: https://github.com/qwx9/{{ name }}
