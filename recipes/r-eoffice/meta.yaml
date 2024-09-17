@@ -1,80 +1,117 @@
+{% set version = '0.2.2' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-eoffice
-  version: 0.2.2
+  version: {{ version|replace("-", "_") }}
 
 source:
-  url: https://cran.r-project.org/src/contrib/eoffice_0.2.2.tar.gz
+  url:
+    - {{ cran_mirror }}/src/contrib/eoffice_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/eoffice/eoffice_{{ version }}.tar.gz
   sha256: 44b31804cd6aef8ca9bec1535b9c4a9ec46d429ffb8c8e045ec5f6a732a5be5b
 
-build:
-  number: 0
-  noarch: generic
-  run_exports: '{{ pin_compatible("r-eoffice", max_pin="x.x") }}'
-  rpaths:
-    - lib/R/lib
-    - lib
+channels:
+  - f30a78ec8
 
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+  # no skip
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: knitr, markdown, rmarkdown
 requirements:
+  build:
+    - {{ posix }}zip               # [win]
+
   host:
-    - r-base
-    - r-devtools
-    - r-tidyverse
-    - r-officer
-    - r-rvg
-    - r-flextable
-    - r-broom
-    - r-dplyr
-    - r-magrittr
-    - r-ggplotify
+    - r-base =<3.7
     - r-r.devices
+    - r-broom
     - r-devemf
-    - r-magick
+    - r-dplyr
+    - r-flextable
     - r-ggplot2
+    - r-ggplotify
     - r-htmlwidgets
+    - imagemagick =7.0.10_0
+    - r-magick =2.5.2
+    - r-magrittr
+    - r-officer
     - r-plotly
-    - r-knitr
-    - r-rmarkdown
-    - r-rmarkdown
+    - r-rvg
 
   run:
-    - r-base
-    - r-devtools
-    - r-tidyverse
-    - r-officer
-    - r-rvg
-    - r-flextable
-    - r-broom
-    - r-dplyr
-    - r-magrittr
-    - r-ggplotify
+    - r-base =<3.7
     - r-r.devices
+    - r-broom
     - r-devemf
-    - r-magick
+    - r-dplyr
+    - r-flextable
     - r-ggplot2
+    - r-ggplotify
     - r-htmlwidgets
+    - imagemagick =7.0.10_0
+    - r-magick =2.5.2
+    - r-magrittr
+    - r-officer
     - r-plotly
-    - r-knitr
-    - r-rmarkdown
-    - r-rmarkdown
-
+    - r-rvg
 
 test:
   commands:
-    - $R -e "library(eoffice)"
+    # You can put additional test commands to be run here.
+    - $R -e "library('eoffice')"           # [not win]
+    - "\"%R%\" -e \"library('eoffice')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
 
 about:
   home: https://CRAN.R-project.org/package=eoffice
-  license: GPL2
+  license: GPL-2
+  summary: Provides wrap functions to export and import graphics and data frames in R to 'microsoft'
+    office. And This package also provide write out figures with lots of different formats.
+    Since people may work on the platform without GUI support, the package also provide
+    function to easily write out figures to lots of different type of formats. Now this
+    package provide function to extract colors from all types of figures and pdf files.
+  license_family: GPL2
   license_file:
-    - {{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2
-  summary: 
-    - eoffice provide wrap functions to export and import graphics and data.frames in R to MicroSoft office with fully editable figures and tables(docx, pptx format). 
-    - And eoffice also provide write out figures with lots of different formats, such as pdf, eps, emf, tiff, svg, wmf, png and jpeg. eoffice also support write out or display ggplot2 type figure with plotly. 
-    - Since people may work on the platform without GUI support, eoffice also provide function to easily write out figures to all above formats, pptx and docx._eoffice_ is avaiable on CRAN now. eoffice provides function to extract colors from figures with different formats or pdf files. 
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 
+# The original CRAN metadata for this package was:
 
-extra:
-  identifiers:
-    - doi:10.32614/CRAN.package.eoffice
-  recipe-maintainers:
-    - Fabian-Boehm
+# Package: eoffice
+# Type: Package
+# Title: Export or Graph and Tables to 'Microsoft' Office and Import Figures and Tables
+# Version: 0.2.2
+# Authors@R: person("Kai", "Guo", email = "guokai8@gmail.com", role = c("aut", "cre"))
+# Description: Provides wrap functions to export and import graphics and data frames in R to 'microsoft' office. And This package also provide write out figures with lots of different formats. Since people may work on the platform without GUI support, the package also provide function to easily write out figures to lots of different type of formats. Now this package provide function to extract colors from all types of figures and pdf files.
+# License: GPL-2
+# Imports: officer, rvg, flextable, broom, dplyr, magrittr, ggplotify, R.devices, devEMF, magick, ggplot2, htmlwidgets, plotly
+# Depends:
+# Encoding: UTF-8
+# Suggests: knitr, markdown, rmarkdown
+# VignetteBuilder: knitr
+# RoxygenNote: 7.1.1
+# NeedsCompilation: no
+# Packaged: 2022-10-05 07:16:00 UTC; bioguo
+# Author: Kai Guo [aut, cre]
+# Maintainer: Kai Guo <guokai8@gmail.com>
+# Repository: CRAN
+# Date/Publication: 2022-10-05 07:30:02 UTC
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml

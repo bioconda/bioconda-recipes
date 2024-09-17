@@ -1,43 +1,93 @@
+{% set version = '4.5' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-devemf
-  version: 3.6.3
+  version: {{ version|replace("-", "_") }}
 
 source:
-  url: https://cran.r-project.org/src/contrib/Archive/devEMF/devEMF_3.6-3.tar.gz
-  sha256: a79fe5383cfca7fdaa6f208cafea439208508794d311d4c0a37eb45a00b8caff
+  url:
+    - {{ cran_mirror }}/src/contrib/devEMF_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/devEMF/devEMF_{{ version }}.tar.gz
+  sha256: ead1cb3dbb41bf4caacc77335452c6575b1b5e620aac1205c3a80467a0a13c0e
 
 build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
   number: 0
-  run_exports: '{{ pin_compatible("r-devEMF", max_pin="x.x") }}'
+  # no skip
+
+  # This is required to make R link correctly on Linux.
   rpaths:
-    - lib/R/lib
-    - lib
-  noarch: generic
+    - lib/R/lib/
+    - lib/
 
 requirements:
+  build:
+    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('m2w64_c') }}        # [win]
+    - {{ compiler('cxx') }}            # [not win]
+    - {{ compiler('m2w64_cxx') }}      # [win]
+    - {{ posix }}filesystem        # [win]
+    - {{ posix }}sed               # [win]
+    - {{ posix }}grep              # [win]
+    - {{ posix }}autoconf
+    - {{ posix }}automake          # [not win]
+    - {{ posix }}automake-wrapper  # [win]
+    - {{ posix }}pkg-config
+    - {{ posix }}make
+    - {{ posix }}coreutils         # [win]
+    - {{ posix }}zip               # [win]
+
   host:
-    - r-base <4.2.0a0
-    - r-devtools
-    - r-tidyverse
+    - r-base =3.6.3
 
   run:
-    - r-base <4.2.0a0
-    - r-devtools
-    - r-tidyverse
+    - r-base =3.6.3
+    - {{native}}gcc-libs         # [win]
 
 test:
   commands:
-    - $R -e "library(devEMF)"
+    # You can put additional test commands to be run here.
+    - $R -e "library('devEMF')"           # [not win]
+    - "\"%R%\" -e \"library('devEMF')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
 
 about:
   home: https://github.com/plfjohnson/devEMF
-  license: GPL3
+  license: GPL-3
+  summary: Output graphics to EMF+/EMF.
+  license_family: GPL3
   license_file:
-    - {{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3
-  summary:  R package to produce EMF and EMF+ vector graphics 
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 
-extra:
-  additional-platforms:
-    -linux-aarch64
-  recipe-maintainers:
-    - Fabian-Boehm
+# The original CRAN metadata for this package was:
+
+# Package: devEMF
+# Type: Package
+# Title: EMF Graphics Output Device
+# Version: 4.5
+# Date: 2024-07-26
+# Author: Philip Johnson
+# Maintainer: Philip Johnson <plfj@umd.edu>
+# Depends: R (>= 2.10.1)
+# SystemRequirements: fontconfig or zlib (only needed for platforms other than modern OSX and Windows)
+# Description: Output graphics to EMF+/EMF.
+# License: GPL-3
+# URL: https://github.com/plfjohnson/devEMF
+# BugReports: https://github.com/plfjohnson/devEMF/issues
+# NeedsCompilation: yes
+# Packaged: 2024-07-26 15:53:10 UTC; pjohnson
+# Repository: CRAN
+# Date/Publication: 2024-07-26 20:00:01 UTC
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml
