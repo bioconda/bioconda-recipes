@@ -36,7 +36,7 @@ elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
     rm out/Release-linux-arm64/libexpat.a
     ls ./ && cd ../../
 
-    sed -i.bak 's/-lskia/-lexpat -Wl,--whole-archive -lskia -Wl,--no-whole-archive/g' Makefile
+    sed -i.bak 's/-lskia/-lexpat -Wl,--unresolved-symbols=ignore-in-shared-libs -lskia/g' Makefile
     
     SYSROOT_FLAGS="--sysroot=${BUILD_PREFIX}/${HOST}/sysroot"
     CPPFLAGS="${CPPFLAGS} -I${BUILD_PREFIX}/${HOST}/sysroot/usr/include ${SYSROOT_FLAGS}"
