@@ -40,3 +40,5 @@ done
 # Fix perl shebang
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/util/*.pl
 rm -rf ${RM_DIR}/util/*.bak
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/*.pl
+rm -rf ${RM_DIR}/*.bak
