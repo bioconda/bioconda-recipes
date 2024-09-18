@@ -9,7 +9,7 @@ ln -s "${CC_FOR_BUILD}" "${BUILD_PREFIX}/bin/gcc"
 ln -s "${CXX_FOR_BUILD}" "${BUILD_PREFIX}/bin/g++"
 
 if [[ $(uname -s) == "Linux" ]]; then
-    ulimit -v 6000000
+    ulimit -v 2000000
 fi
 
 make binary "-j${CPU_COUNT}"
