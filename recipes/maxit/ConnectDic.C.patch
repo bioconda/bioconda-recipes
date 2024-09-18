@@ -1,5 +1,5 @@
 diff --git a/connect-v3.3/src/ConnectDic.C b/connect-v3.3/src/ConnectDic.C
-index 283bebd..d034f92 100644
+index 283bebd..1950cd9 100644
 --- a/connect-v3.3/src/ConnectDic.C
 +++ b/connect-v3.3/src/ConnectDic.C
 @@ -30,64 +30,64 @@ not limited to, any and all claims alleging products liability.
@@ -179,7 +179,19 @@ index 283bebd..d034f92 100644
  */
  
  /*!
-@@ -395,7 +395,7 @@ bool ConnectDic::OpenFile()
+@@ -144,6 +144,11 @@ POSSIBILITY THEREOF.
+ ** \brief Implementation file for ConnectDic class.
+ */
+ 
++#include <iostream>
++#include <memory>
++#include <string>
++#include <vector>
++
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <sys/stat.h>
+@@ -395,7 +400,7 @@ bool ConnectDic::OpenFile()
                        for (unsigned int i = 0; i < blockNames.size(); ++i) {
                             if (blockNames[i] == "INDEX" ||
                                 blockNames[i] == "OBSOLETE") continue;
@@ -188,7 +200,7 @@ index 283bebd..d034f92 100644
                             Block &block = fobj->GetBlock(blockNames[i]);
                             add_drug(block);
                        }
-@@ -525,7 +525,7 @@ const int ConnectDic::find_monomer_type(const std::string& residueName)
+@@ -525,7 +530,7 @@ const int ConnectDic::find_monomer_type(const std::string& residueName)
  
  const std::string ConnectDic::getAtomType(const std::string& drugID, const std::string& atomName)
  {
@@ -197,7 +209,7 @@ index 283bebd..d034f92 100644
              const ConnectFormat& drug = find_drug(drugID);
              const AtomFormat& atom = drug.find_atom(atomName);
              return atom.atomtype();
-@@ -536,7 +536,7 @@ const std::string ConnectDic::getAtomType(const std::string& drugID, const std::
+@@ -536,7 +541,7 @@ const std::string ConnectDic::getAtomType(const std::string& drugID, const std::
  
  const double ConnectDic::get_molecule_weight(const std::string& drugID)
  {
@@ -206,7 +218,7 @@ index 283bebd..d034f92 100644
              const ConnectFormat& drug = find_drug(drugID);
  /*
              if ((drugID == "ARG") || (drugID == "HIS") || (drugID == "LYS"))
-@@ -549,7 +549,7 @@ const double ConnectDic::get_molecule_weight(const std::string& drugID)
+@@ -549,7 +554,7 @@ const double ConnectDic::get_molecule_weight(const std::string& drugID)
  
  bool ConnectDic::is_L_aa_residue(const std::string& drugID)
  {
@@ -215,7 +227,7 @@ index 283bebd..d034f92 100644
              const ConnectFormat& drug = find_drug(drugID);
              if (String::IsEqual(drug.getMetaData("type"), "L-peptide linking", Char::eCASE_INSENSITIVE)) return true;
              return false;
-@@ -560,7 +560,7 @@ bool ConnectDic::is_L_aa_residue(const std::string& drugID)
+@@ -560,7 +565,7 @@ bool ConnectDic::is_L_aa_residue(const std::string& drugID)
  
  bool ConnectDic::is_D_aa_residue(const std::string& drugID)
  {
@@ -224,7 +236,7 @@ index 283bebd..d034f92 100644
              const ConnectFormat& drug = find_drug(drugID);
              if (String::IsEqual(drug.getMetaData("type"), "D-peptide linking", Char::eCASE_INSENSITIVE)) return true;
              return false;
-@@ -663,7 +663,7 @@ void ConnectDic::find_drugs(const std::string &drugID, std::vector<ConnectFormat
+@@ -663,7 +668,7 @@ void ConnectDic::find_drugs(const std::string &drugID, std::vector<ConnectFormat
  {
         drug_list.clear();
  
@@ -233,7 +245,7 @@ index 283bebd..d034f92 100644
              const ConnectFormat& drug = find_drug(drugID);
              drug_list.push_back(drug);
  
-@@ -680,7 +680,7 @@ void ConnectDic::find_variants(const std::string &drugID, std::vector<ConnectFor
+@@ -680,7 +685,7 @@ void ConnectDic::find_variants(const std::string &drugID, std::vector<ConnectFor
  {
         drug_list.clear();
  
@@ -242,7 +254,7 @@ index 283bebd..d034f92 100644
              const ConnectFormat& drug = find_drug(drugID);
  
              std::pair<std::multimap<std::string, int>::iterator, std::multimap<std::string, int>::iterator> range = _VariantConnMap.equal_range(drugID);
-@@ -694,7 +694,7 @@ void ConnectDic::find_variants(const std::string &drugID, std::vector<ConnectFor
+@@ -694,7 +699,7 @@ void ConnectDic::find_variants(const std::string &drugID, std::vector<ConnectFor
  
  const std::set<std::string>& ConnectDic::get_connected_atoms(const std::string& drugID)
  {
@@ -251,7 +263,7 @@ index 283bebd..d034f92 100644
              const ConnectFormat& drug = find_drug(drugID);
              return drug.getTerminalConnectedAtoms();
         } catch (const std::exception& exc) {}
-@@ -703,28 +703,32 @@ const std::set<std::string>& ConnectDic::get_connected_atoms(const std::string&
+@@ -703,72 +708,81 @@ const std::set<std::string>& ConnectDic::get_connected_atoms(const std::string&
  
  bool ConnectDic::BinaryConvertor(const std::string& textfile, const std::string& binaryfile)
  {
@@ -262,7 +274,8 @@ index 283bebd..d034f92 100644
 -            if (_fObj) delete _fObj;
 -            return false;
 -       }
--
++    std::string cs;
+ 
 -       ISTable *Table = new ISTable("index");
 -       Table->AddColumn("id");
 -       Table->AddColumn("formula");
@@ -277,88 +290,110 @@ index 283bebd..d034f92 100644
 -       std::vector<std::string> blockNames;
 -       _fObj->GetBlockNames(blockNames);
 -       for (unsigned int i = 0; i < blockNames.size(); ++i) {
-+    std::string cs;
-+    _fObj = read_cif_file(binaryfile, textfile, cs);
-+    if (!_fObj) {
-+        fprintf(stdout, "Failed to read %s\n\n%s\n", textfile.c_str(), cs.c_str());
-+        return false;
-+    }
-+
-+    ISTable *Table = 0;  // nullptrの代わりに0を使用
-+    ISTable *Table1 = 0; // nullptrの代わりに0を使用
-+
-+    try {
-+        Table = new ISTable("index");
-+        Table->AddColumn("id");
-+        Table->AddColumn("formula");
-+        Table->AddColumn("subcomponent_list");
-+        Table->AddColumn("three_letter_code");
-+
-+        Table1 = new ISTable("obsolete");
-+        Table1->AddColumn("id");
-+        Table1->AddColumn("supercede");
-+
-+        int row = 0;
-+        int row1 = 0;
-+        std::vector<std::string> blockNames;
-+        _fObj->GetBlockNames(blockNames);
-+        for (unsigned int i = 0; i < blockNames.size(); ++i) {
-             Block &block = _fObj->GetBlock(blockNames[i]);
-             ISTable *t = getTablePtr(block, "chem_comp");
-             if (!t) continue;
-@@ -742,33 +746,41 @@ bool ConnectDic::BinaryConvertor(const std::string& textfile, const std::string&
- 
-             get_value_clean_upper(cs, t, 0, "pdbx_release_status");
-             if (cs == "OBS") {
+-            Block &block = _fObj->GetBlock(blockNames[i]);
+-            ISTable *t = getTablePtr(block, "chem_comp");
+-            if (!t) continue;
+-
+-            Table->AddRow();
+-            get_value_clean(cs, t, 0, "id");
+-            Table->UpdateCell(row, "id", cs);
+-            get_value_clean(cs, t, 0, "formula");
+-            Table->UpdateCell(row, "formula", cs);
+-            get_value_clean(cs, t, 0, "pdbx_subcomponent_list");
+-            Table->UpdateCell(row, "subcomponent_list", cs);
+-            get_value_clean(cs, t, 0, "three_letter_code");
+-            Table->UpdateCell(row, "three_letter_code", cs);
+-            row++;
+-
+-            get_value_clean_upper(cs, t, 0, "pdbx_release_status");
+-            if (cs == "OBS") {
 -                 Table1->AddRow();
 -                 get_value_clean(cs, t, 0, "id");
 -                 Table1->UpdateCell(row1, "id", cs);
 -                 get_value_clean(cs, t, 0, "pdbx_replaced_by");
 -                 Table1->UpdateCell(row1, "supercede", cs);
 -                 row1++;
-+                Table1->AddRow();
-+                get_value_clean(cs, t, 0, "id");
-+                Table1->UpdateCell(row1, "id", cs);
-+                get_value_clean(cs, t, 0, "pdbx_replaced_by");
-+                Table1->UpdateCell(row1, "supercede", cs);
-+                row1++;
-             }
+-            }
 -       }
-+        }
++    _fObj = read_cif_file(binaryfile, textfile, cs);
  
 -       _fObj->AddBlock("INDEX");
 -       Block &block = _fObj->GetBlock("INDEX");
 -       block.WriteTable(Table);
-+        _fObj->AddBlock("INDEX");
-+        Block &block = _fObj->GetBlock("INDEX");
-+        block.WriteTable(Table);
++    // Check if there was an error during file read
++    if (!cs.empty()) {
++        fprintf(stdout, "Read %s failed\n\n%s\n", textfile.c_str(), cs.c_str());
++        if (_fObj) delete _fObj;
++        return false;
++    }
  
 -       _fObj->AddBlock("OBSOLETE");
 -       Block &block1 = _fObj->GetBlock("OBSOLETE");
 -       block1.WriteTable(Table1);
-+        _fObj->AddBlock("OBSOLETE");
-+        Block &block1 = _fObj->GetBlock("OBSOLETE");
-+        block1.WriteTable(Table1);
++    // Use smart pointers to manage memory automatically
++    std::unique_ptr<ISTable> Table(new ISTable("index"));
++    Table->AddColumn("id");
++    Table->AddColumn("formula");
++    Table->AddColumn("subcomponent_list");
++    Table->AddColumn("three_letter_code");
  
 -       _fObj->Close();
-+        _fObj->Close();
-+    } catch (const std::exception& e) {
-+        fprintf(stdout, "Exception occurred: %s\n", e.what());
-+        if (_fObj) _fObj->Close();
-+        if (Table) delete Table;
-+        if (Table1) delete Table1;
-+        return false;
-+    }
++    std::unique_ptr<ISTable> Table1(new ISTable("obsolete"));
++    Table1->AddColumn("id");
++    Table1->AddColumn("supercede");
  
 -       return true;
-+    // Clean up
-+    if (Table) delete Table;
-+    if (Table1) delete Table1;
-+    return true;
- }
+-}
++    int row = 0;
++    int row1 = 0;
++    std::vector<std::string> blockNames;
++
++    _fObj->GetBlockNames(blockNames);
++
++    for (const auto& blockName : blockNames) {
++        Block& block = _fObj->GetBlock(blockName);
++
++        // Use smart pointer to ensure table memory is managed automatically
++        std::unique_ptr<ISTable> t(getTablePtr(block, "chem_comp"));
++        if (!t) continue;
++
++        Table->AddRow();
++        get_value_clean(cs, t.get(), 0, "id");
++        Table->UpdateCell(row, "id", cs);
++        get_value_clean(cs, t.get(), 0, "formula");
++        Table->UpdateCell(row, "formula", cs);
++        get_value_clean(cs, t.get(), 0, "pdbx_subcomponent_list");
++        Table->UpdateCell(row, "subcomponent_list", cs);
++        get_value_clean(cs, t.get(), 0, "three_letter_code");
++        Table->UpdateCell(row, "three_letter_code", cs);
++        row++;
  
--
--
++        get_value_clean_upper(cs, t.get(), 0, "pdbx_release_status");
++        if (cs == "OBS") {
++            Table1->AddRow();
++            get_value_clean(cs, t.get(), 0, "id");
++            Table1->UpdateCell(row1, "id", cs);
++            get_value_clean(cs, t.get(), 0, "pdbx_replaced_by");
++            Table1->UpdateCell(row1, "supercede", cs);
++            row1++;
++        }
+ 
++        t.reset();
++    }
++
++    _fObj->AddBlock("INDEX");
++    Block& block = _fObj->GetBlock("INDEX");
++    block.WriteTable(Table.get());
++
++    _fObj->AddBlock("OBSOLETE");
++    Block& block1 = _fObj->GetBlock("OBSOLETE");
++    block1.WriteTable(Table1.get());
++
++    _fObj->Close();
++
++    return true;
++}
+ 
  bool ConnectDic::hasValidPhosphorylGroup(const std::string& drugID)
  {
 -       try { 
