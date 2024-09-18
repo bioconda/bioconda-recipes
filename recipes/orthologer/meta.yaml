@@ -1,0 +1,68 @@
+{% set name = "orthologer" %}
+{% set version = "3.4.1" %}
+{% set sha256 = "b4d6504ea75899d3e13facc4232efdfe79c66283cccfe5d5ea8996f7905f346d" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('orthologer', max_pin="x") }}
+
+source:
+  url: https://data.orthodb.org/current/download/software/orthologer_{{ version }}.tgz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - cmake
+    - make
+    - bash >=4.1
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - rsync
+    - wget
+    - bash >=4.1
+  run:
+    - bash >=4.1
+    - python >=3.4
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - rsync
+    - wget
+    - blast
+    - mmseqs2
+    - cd-hit
+    - diamond
+    - biopython
+    - numpy
+
+test:
+  commands:
+    - ALLOW_RUNAS_ROOT=1 orthologer -h
+
+about:
+  home: https://orthologer.ezlab.org
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Assessment of assembly completeness using Universal Single Copy Orthologs."
+  description: compute orthology
+  dev_url: https://gitlab.com/ezlab/orthologer_container
+  doc_url: https://orthologer.ezlab.org/#on-orthodb-data
+
+extra:
+  container:
+    # Necessary to allow Orthologer to download files from the internet when used with Singularity
+    # and default bind paths (see also https://github.com/bioconda/bioconda-recipes/issues/11583).
+    # Should be removed again when the base container is fixed. Not yet...
+    extended-base: True
+  identifiers:
+    - biotools:orthologer
+  recipe-maintainers:
+    - ftegenfe

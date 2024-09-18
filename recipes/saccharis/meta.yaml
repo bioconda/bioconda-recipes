@@ -1,22 +1,21 @@
 {% set name = "SACCHARIS" %}
-  {% set version = "2.0.0.dev21" %}
-  {% set build_no = 2 %}
-  {% set hash = "BA68CAB1070A11D5D4F2335CB770E1603ED54E1FB4B52A31DB4CA9A6CBBD6F7E" %}
-
+{% set version = "2.0.1" %}
+{% set hash = "BA68CAB1070A11D5D4F2335CB770E1603ED54E1FB4B52A31DB4CA9A6CBBD6F7E" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://github.com/saccharis/SACCHARIS_2/releases/download/v{{ version }}/saccharis-{{ version }}.tar.gz
+#  url: https://github.com/saccharis/SACCHARIS_2/releases/download/v{{ version }}/saccharis-{{ version }}.tar.gz # go back to this method once 2.0.1 is fixed
+  url: https://github.com/saccharis/SACCHARIS_2/releases/download/v2.0.0.dev21/saccharis-2.0.0.dev21.tar.gz
   sha256: {{ hash|lower }}
 
 build:
   noarch: python
-  number: {{ build_no }}
+  number: 1
   script: {{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt
-  preserve_egg_dir: True # added because the entry points below seem to be causing a build error
+  preserve_egg_dir: True  # added because the entry points below seem to be causing a build error
   entry_points:
     - saccharis = saccharis.CLI:cli_main
     - saccharis.make_family_files = saccharis.utils.FamilyCategories:cli_main
@@ -28,21 +27,18 @@ build:
     - saccharis-gui = saccharis.gui.PipelineGUI:main
     - saccharis.config = saccharis.utils.AdvancedConfig:cli_config
     - saccharis.update_db = saccharis.ExtractAndPruneCAZymes:update_hmms
-
   run_exports:
     - {{ pin_subpackage("saccharis", max_pin="x.x") }}
 
 requirements:
-  build:
-    - python
-    - setuptools
   host:
     - python >=3.6
+    - pip
   run:
     - beautifulsoup4 >=4.11.1
     - biopython >=1.79
     - blast >=2.*
-    - dbcan >=3.0.6, < 4
+    - dbcan <4
     - diamond >=2.0.15 # [not win]
     - fasttree >=2.1.11 # [not win]
     - hmmer >=3.3 # [not win]
@@ -82,6 +78,7 @@ about:
   home: https://github.com/saccharis/SACCHARIS_2
   dev_url: https://github.com/saccharis/SACCHARIS_2
   description: Bioinformatics pipeline to automate phylogenetic analysis of CAZyme families in FASTA sequences via creation of phylogenetic trees.
-  license: GPL v3
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: LICENSE
   summary: A CAZyme discovery tool. Easily create phylogenetic trees from FASTA files and CAZyme families.

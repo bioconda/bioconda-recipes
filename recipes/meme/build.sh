@@ -1,13 +1,10 @@
-#!/bin/bash
-set -e
+#!/bin/bash -ex
 
-export MEME_ETC_DIR=${PREFIX}/etc
-#HOME=/tmp cpanm CGI::Application
-#HOME=/tmp cpanm XML::Parser::Expat --configure-args "EXPATLIBPATH=$PREFIX/lib" --configure-args "EXPATHINCPATH=$PREFIX/include"
+export MEME_ETC_DIR="${PREFIX}/etc"
+export INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
 
-autoreconf -i
-
-perl scripts/dependencies.pl
+autoreconf -if
 
 ./configure CC="${CC}" \
 	CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include" \
@@ -16,14 +13,7 @@ perl scripts/dependencies.pl
 	--enable-build-libxml2 \
 	--enable-build-libxslt
 
-make AM_CFLAGS='-DNAN="(0.0/0.0)"' -j4
-
-# tests will only work inside the build dir, but
-# https://github.com/conda/conda-build/issues/1453
-# so you need `conda build --prefix-length 1`
-# for it to work properly
-# make test
-
+make AM_CFLAGS='-DNAN="(0.0/0.0)"' -j"${CPU_COUNT}"
 make install
 make clean
 
@@ -35,6 +25,5 @@ if [ ${PY3K}==1 ]; then
 	sed -i.bak  '994s/dreme/dreme-py3/' ${PREFIX}/bin/meme-chip
 	rm ${PREFIX}/bin/meme-chip.bak
 	# Fix for dreme
-	cp scripts/*py3.py ${PREFIX}/lib/${PKG_NAME}-${PKG_VERSION}/python/
+	cp -rf scripts/*py3.py ${PREFIX}/lib/${PKG_NAME}-${PKG_VERSION}/python/
 fi
-
