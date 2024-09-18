@@ -29,10 +29,22 @@ elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
     # Linux aarch64
     ls
     cd ./lib
+
+    curl -L -o expat.zip https://github.com/libexpat/libexpat/archive/refs/tags/R_2_6_3.zip
+    unzip expat.zip
+    cd libexpat-R_2_6_3/expat
+    mkdir build && cd build
+    cmake ..
+    make -j${CPU_COUNT}
+    make install
+    ls
+    pwd
+    cd ../../../
+    
     mkdir -p skia && cd skia
     curl -L -o skia.zip https://github.com/JetBrains/skia-pack/releases/download/m105-adda216f-4/Skia-m105-adda216f-4-linux-Release-arm64.zip
     unzip skia.zip
-    # link expat from conda
+    
     rm out/Release-linux-arm64/libexpat.a
     ls ./ && cd ../../
 
