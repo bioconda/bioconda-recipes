@@ -14,5 +14,3 @@ chmod +x $PREFIX/bin/plast
 chmod +x $PREFIX/bin/acc2tax
 
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
-
-df -h
