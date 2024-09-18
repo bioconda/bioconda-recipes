@@ -1,0 +1,46 @@
+{% set version = "2.5.1" %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-ggm
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/ggm_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/ggm/ggm_{{ version }}.tar.gz
+  sha256: 6fbbbb81bbdb408f99196d19486b542778607acf169bd1ee1ba3e73a5205e0ae
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage("r-gchromvar", max_pin="x.x") }}
+
+requirements:
+  host:
+    - r-base
+    - r-biocmanager
+    - r-igraph
+    - bioconductor-graph
+  run:
+    - r-base
+    - r-biocmanager
+    - r-igraph
+- bioconductor-graph
+
+test:
+  commands:
+    - $R -e "library('ggm')"
+
+about:
+  home: https://CRAN.R-project.org/package=ggm
+  license: GPL-2.0-only
+  summary: Functions and datasets for maximum likelihood fitting of some classes of graphical Markov models.
+  license_family: GPL2
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
