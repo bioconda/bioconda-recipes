@@ -34,7 +34,7 @@ elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
     unzip expat.zip
     cd libexpat-R_2_6_3/expat
     mkdir build && cd build
-    cmake ..
+    cmake -DCMAKE_C_FLAGS="-fvisibility=default" -DCMAKE_CXX_FLAGS="-fvisibility=default" ..
     make -j${CPU_COUNT}
     make install
     ls
