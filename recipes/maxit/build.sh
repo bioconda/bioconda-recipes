@@ -8,7 +8,7 @@ export CPU_COUNT=1
 ln -s "${CC_FOR_BUILD}" "${BUILD_PREFIX}/bin/gcc"
 ln -s "${CXX_FOR_BUILD}" "${BUILD_PREFIX}/bin/g++"
 
-if [[ $(uname -s) == "Linux"]]; then
+if [[ $(uname -s) == "Linux" ]]; then
     ulimit -v 6000000
 fi
 
