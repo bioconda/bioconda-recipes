@@ -9,8 +9,8 @@ cp operation.py $PREFIX/bin/operation.py
 cp pfam.py $PREFIX/bin/pfam.py
 cp KO_database.keg $PREFIX/bin/KO_database.keg
 
-#chmod a+x $PREFIX/bin/hsdfinder
-#chmod a+x $PREFIX/bin/hsd_to_kegg
-#chmod a+x $PREFIX/bin/operation.py
-#chmod a+x $PREFIX/bin/pfam.py
+chmod a+x $PREFIX/bin/hsdfinder
+chmod a+x $PREFIX/bin/hsd_to_kegg
+chmod a+x $PREFIX/bin/operation.py
+chmod a+x $PREFIX/bin/pfam.py
 
