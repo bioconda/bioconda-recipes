@@ -1,8 +1,8 @@
 This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this
-file, You can obtain one at http://mozilla.org/MPL/2.0/.
+file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-(c) 2016 Oxford Nanopore Technologies Ltd.
+©2021 Oxford Nanopore Technologies PLC.
 
 
 Mozilla Public License Version 2.0
@@ -10,24 +10,24 @@ Mozilla Public License Version 2.0
 
 ### 1. Definitions
 
-**1.1. “Contributor”**  
+**1.1. “Contributor”**
     means each individual or legal entity that creates, contributes to
     the creation of, or owns Covered Software.
 
-**1.2. “Contributor Version”**  
+**1.2. “Contributor Version”**
     means the combination of the Contributions of others (if any) used
     by a Contributor and that particular Contributor's Contribution.
 
-**1.3. “Contribution”**  
+**1.3. “Contribution”**
     means Covered Software of a particular Contributor.
 
-**1.4. “Covered Software”**  
+**1.4. “Covered Software”**
     means Source Code Form to which the initial Contributor has attached
     the notice in Exhibit A, the Executable Form of such Source Code
     Form, and Modifications of such Source Code Form, in each case
     including portions thereof.
 
-**1.5. “Incompatible With Secondary Licenses”**  
+**1.5. “Incompatible With Secondary Licenses”**
     means
 
 * **(a)** that the initial Contributor has attached the notice described
@@ -36,22 +36,22 @@ Mozilla Public License Version 2.0
     version 1.1 or earlier of the License, but not also under the
     terms of a Secondary License.
 
-**1.6. “Executable Form”**  
+**1.6. “Executable Form”**
     means any form of the work other than Source Code Form.
 
-**1.7. “Larger Work”**  
-    means a work that combines Covered Software with other material, in 
+**1.7. “Larger Work”**
+    means a work that combines Covered Software with other material, in
     a separate file or files, that is not Covered Software.
 
-**1.8. “License”**  
+**1.8. “License”**
     means this document.
 
-**1.9. “Licensable”**  
+**1.9. “Licensable”**
     means having the right to grant, to the maximum extent possible,
     whether at the time of the initial grant or subsequently, any and
     all of the rights conveyed by this License.
 
-**1.10. “Modifications”**  
+**1.10. “Modifications”**
     means any of the following:
 
 * **(a)** any file in Source Code Form that results from an addition to,
@@ -60,7 +60,7 @@ Mozilla Public License Version 2.0
 * **(b)** any new file in Source Code Form that contains any Covered
     Software.
 
-**1.11. “Patent Claims” of a Contributor**  
+**1.11. “Patent Claims” of a Contributor**
     means any patent claim(s), including without limitation, method,
     process, and apparatus claims, in any patent Licensable by such
     Contributor that would be infringed, but for the grant of the
@@ -68,16 +68,16 @@ Mozilla Public License Version 2.0
     made, import, or transfer of either its Contributions or its
     Contributor Version.
 
-**1.12. “Secondary License”**  
+**1.12. “Secondary License”**
     means either the GNU General Public License, Version 2.0, the GNU
     Lesser General Public License, Version 2.1, the GNU Affero General
     Public License, Version 3.0, or any later versions of those
     licenses.
 
-**1.13. “Source Code Form”**  
+**1.13. “Source Code Form”**
     means the form of the work preferred for making modifications.
 
-**1.14. “You” (or “Your”)**  
+**1.14. “You” (or “Your”)**
     means an individual or a legal entity exercising rights under this
     License. For legal entities, “You” includes any entity that
     controls, is controlled by, or is under common control with You. For
@@ -347,7 +347,7 @@ notice described in Exhibit B of this License must be attached.
 
     This Source Code Form is subject to the terms of the Mozilla Public
     License, v. 2.0. If a copy of the MPL was not distributed with this
-    file, You can obtain one at http://mozilla.org/MPL/2.0/.
+    file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 If it is not possible or desirable to put the notice in a particular
 file, then You may include the notice in a location (such as a LICENSE
@@ -360,5 +360,3 @@ You may add additional accurate notices of copyright ownership.
 
     This Source Code Form is "Incompatible With Secondary Licenses", as
     defined by the Mozilla Public License, v. 2.0.
-
-
