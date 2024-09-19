@@ -5,8 +5,6 @@ set -exo pipefail
 # Disable parallel build
 export CPU_COUNT=1
 
-ls -l
-
 ln -s "${CC_FOR_BUILD}" "${BUILD_PREFIX}/bin/gcc"
 ln -s "${CXX_FOR_BUILD}" "${BUILD_PREFIX}/bin/g++"
 
