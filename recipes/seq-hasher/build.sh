@@ -3,4 +3,4 @@
 set -xe
 
 # build statically linked binary with Rust
-RUST_BACKTRACE=1 cargo install --verbose --root $PREFIX --path .
+RUST_BACKTRACE=1 cargo install --verbose --locked --root $PREFIX --path .
