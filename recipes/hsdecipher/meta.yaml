@@ -1,14 +1,21 @@
-package:
-  name: hsdecipher
-  version: 1.0.0
-source:
-  url: https://github.com/zx0223winner/hsdecipher_conda/archive/refs/tags/hsdecipher.tar.gz
-  sha256: d852de0a394cecf09a3f76807b36ad549542322248426edada3876be350c25db
-build:
-  noarch: python
-  number: '0'
-  run_exports:
-    - hsdecipher >=1.0.0
+{% set name = "HSDecipher" %}
+ {% set version = "1.0.0" %}
+
+ package:
+   name: {{ name|lower }}
+   version: {{ version }}
+
+ source:
+   url: https://github.com/zx0223winner/{{name|lower}}_conda/archive/refs/tags/v{{version}}.tar.gz
+   sha256: f0b6abff9843acd1ef00e1753eeaf21179102d2e603bde01fb9cac2905fb975d
+
+ build:
+   number: 0
+   noarch: python
+   script: bash conda_build_package.sh
+   run_exports:
+     - {{ pin_subpackage('busco_phylogenomics', max_pin=None) }}
+
 requirements:
   run:
     - python >=3.7
@@ -17,12 +24,9 @@ requirements:
     - matplotlib
 test:
   commands:
-    - $PREFIX/bin/hsd_heatmap -h
+    - hsd_heatmap -h
 about:
   home: https://github.com/zx0223winner/HSDecipher
   summary: Pipeline for the downstream analysis of highly similar duplicate genes
   license: GPL-3.0-or-later
-extra:
-  copy_test_source_files: true
-  final: true
 
