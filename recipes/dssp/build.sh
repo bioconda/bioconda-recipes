@@ -20,4 +20,4 @@ if [ `uname -s` = "Darwin" ]; then
   CFLAGS="-std=c++11 -Wno-enum-constexpr-conversion ${CFLAGS}"
 fi
 
-make -j4 install
+make -j${CPU_COUNT} install
