@@ -17,9 +17,7 @@ if [ "$(uname)" == "Darwin" ]; then
 
 fi
 
-# build statically linked binary with Rust
-C_INCLUDE_PATH=$PREFIX/include OPENSSL_DIR=$PREFIX LIBRARY_PATH=$PREFIX/lib cargo install --path . --root $PREFIX
+RUST_BACKTRACE=1
 
-# Ensure the binary is placed in the correct location
-mkdir -p $PREFIX/bin
-mv $PREFIX/bin/tidk $PREFIX/bin/
+# build statically linked binary with Rust
+C_INCLUDE_PATH=$PREFIX/include OPENSSL_DIR=$PREFIX LIBRARY_PATH=$PREFIX/lib cargo install --verbose --path . --root $PREFIX
