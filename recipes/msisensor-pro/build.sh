@@ -1,2 +1,5 @@
+#!/bin/bash
+
 make -C cpp CC=$CC CXX=$CXX
-cp cpp/msisensor-pro $PREFIX/bin
+chmod 0755 cpp/msisensor-pro
+cp -rf cpp/msisensor-pro $PREFIX/bin
