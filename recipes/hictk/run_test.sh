@@ -17,14 +17,14 @@ shasum -c checksum.sha256
 zstdcat hictk_test_dataset.tar.zst | tar -xf -
 
 # Install the test suite
-"$PYTHON" -m pip install test/integration
+pip install test/integration
 
 # Run integration tests
-"$PYTHON" -m hictk_integration_suite.main \
+hictk_integration_suite \
   "$(which hictk)" \
   test/integration/config.toml \
   --data-dir test/data \
-  --threads "${CPU_COUNT}"
+  --threads "${CPU_COUNT}" \
   --result-file results.json
 
 printf '#####\n#####\n#####\n\n\n'
