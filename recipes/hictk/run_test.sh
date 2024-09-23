@@ -14,7 +14,7 @@ curl -L "$url" -o hictk_test_dataset.tar.zst
 echo "$checksum  hictk_test_dataset.tar.zst" > checksum.sha256
 shasum -c checksum.sha256
 
-tar -xf hictk_test_dataset.tar.zst
+zstdcat hictk_test_dataset.tar.zst | tar -xf -
 
 # Install the test suite
 "$PYTHON" -m pip install test/integration
