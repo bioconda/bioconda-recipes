@@ -75,3 +75,5 @@ ctest --test-dir build/   \
 cmake --install build/
 
 "${PREFIX}/bin/hictk" --version
+
+ldd "${PREFIX}/bin/hictk"

@@ -5,6 +5,10 @@ set -u
 set -x
 set -o pipefail
 
+which hictk
+hictk --version
+ldd "$(which hictk)"
+
 # Extract test dataset URL and checksum
 url="$(grep -F 'DOWNLOAD' 'cmake/FetchTestDataset.cmake' | sed -E 's/.*DOWNLOAD[[:space:]]+//')"
 checksum="$(grep -F 'EXPECTED_HASH' 'cmake/FetchTestDataset.cmake' | sed 's/.*SHA256=//')"
