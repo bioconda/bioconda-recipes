@@ -52,6 +52,7 @@ cmake -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE"   \
       -DBUILD_SHARED_LIBS=ON                   \
       -DENABLE_DEVELOPER_MODE=OFF              \
       -DHICTK_ENABLE_TESTING=ON                \
+      -DHICTK_ENABLE_FUZZY_TESTING=OFF         \
       -DHICTK_BUILD_EXAMPLES=OFF               \
       -DHICTK_BUILD_BENCHMARKS=OFF             \
       -DHICTK_BUILD_TOOLS=ON                   \
