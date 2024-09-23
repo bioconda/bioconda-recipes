@@ -19,3 +19,7 @@ fi
 
 # build statically linked binary with Rust
 C_INCLUDE_PATH=$PREFIX/include OPENSSL_DIR=$PREFIX LIBRARY_PATH=$PREFIX/lib cargo install --path . --root $PREFIX
+
+# Ensure the binary is placed in the correct location
+mkdir -p $PREFIX/bin
+mv $PREFIX/bin/tidk $PREFIX/bin/
