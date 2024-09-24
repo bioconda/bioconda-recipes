@@ -1,0 +1,33 @@
+{% set name = "HSDecipher" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/zx0223winner/{{name|lower}}_conda/archive/refs/tags/v{{version}}.tar.gz
+  sha256: ea5eec38927972070d65d126d410b6059ef0d1d8ef8fa5db23fa045c5e749543
+
+build:
+  number: 0
+  noarch: python
+  script: bash conda_build_package.sh
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  run:
+    - python >=3.7
+    - pandas
+    - seaborn
+    - matplotlib-base
+test:
+  commands:
+    - hsd_heatmap -h
+about:
+  home: https://github.com/zx0223winner/HSDecipher
+  summary: Pipeline for the downstream analysis of highly similar duplicate genes
+  license: GPL-3.0-or-later
+  license_file: licence
+
