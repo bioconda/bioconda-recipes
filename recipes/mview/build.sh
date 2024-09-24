@@ -3,7 +3,7 @@
 set -exuo pipefail
 
 sed -i.bak \
-    -e 's|$MVIEW_HOME = "/home/brown/HOME/work/MView/dev";|$MVIEW_HOME = $ENV{'CONDA_PREFIX'};|' \
+    -e "s|\$MVIEW_HOME = \"/home/brown/HOME/work/MView/dev\";|\$MVIEW_HOME = \$ENV{'CONDA_PREFIX'} if exists \$ENV{'CONDA_PREFIX'};|" \
     -e 's|$MVIEW_LIB = "$MVIEW_HOME/lib";|$MVIEW_LIB = "$MVIEW_HOME/lib/mview'${PKG_VERSION}'";|' \
     ${SRC_DIR}/bin/mview
 
