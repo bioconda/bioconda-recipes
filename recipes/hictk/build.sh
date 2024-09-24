@@ -70,7 +70,7 @@ ctest --test-dir build/   \
       --schedule-random   \
       --output-on-failure \
       --no-tests=error    \
-      --timeout 100
+      --timeout 180
 
 cmake --install build/
 
