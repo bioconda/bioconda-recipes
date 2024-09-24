@@ -6,7 +6,7 @@ set -x
 set -o pipefail
 
 which hictk
-if [[ ${HOST} =~ .*darwin.* ]]; then
+if [[ "$OSTYPE" =~ .*darwin.* ]]; then
   otool -L "$(which hictk)"
 else
   ldd  "$(which hictk)"
