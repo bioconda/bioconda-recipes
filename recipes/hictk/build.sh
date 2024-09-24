@@ -31,7 +31,7 @@ fi
 mkdir -p "$CONAN_HOME/profiles/"
 ln -s "${RECIPE_DIR}/conan_profiles/$conan_profile" "$CONAN_HOME/profiles/$conan_profile"
 
-# Remove unnecessary dependencies from conanfile.txt
+# Remove unnecessary dependencies from conanfile.py
 patch conanfile.py < "${RECIPE_DIR}/conanfile.py.patch"
 
 # Install header-only deps
@@ -75,5 +75,3 @@ ctest --test-dir build/   \
 cmake --install build/
 
 "${PREFIX}/bin/hictk" --version
-
-ldd "${PREFIX}/bin/hictk"

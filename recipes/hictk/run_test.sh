@@ -6,8 +6,13 @@ set -x
 set -o pipefail
 
 which hictk
+if [[ ${HOST} =~ .*darwin.* ]]; then
+  otool -L "$(which hictk)"
+else
+  ldd  "$(which hictk)"
+fi
+
 hictk --version
-ldd "$(which hictk)"
 
 # Extract test dataset URL and checksum
 url="$(grep -F 'DOWNLOAD' 'cmake/FetchTestDataset.cmake' | sed -E 's/.*DOWNLOAD[[:space:]]+//')"
