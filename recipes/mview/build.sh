@@ -7,8 +7,6 @@ sed -i.bak \
     -e 's|$MVIEW_LIB = "$MVIEW_HOME/lib";|$MVIEW_LIB = "$MVIEW_HOME/lib/mview'${PKG_VERSION}'";|' \
     ${SRC_DIR}/bin/mview
 
-rm *.bak
-
 LIB_INSTALL_DIR=${PREFIX}/lib/mview${PKG_VERSION}
 
 mkdir -p ${LIB_INSTALL_DIR}/Bio
