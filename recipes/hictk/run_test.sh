@@ -28,6 +28,7 @@ hictk_integration_suite \
   "$(which hictk)" \
   test/integration/config.toml \
   --data-dir test/data \
+  --do-not-copy-binary \
   --threads "${CPU_COUNT}" \
   --result-file results.json
 
