@@ -10,7 +10,6 @@ mkdir build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=$PREFIX \
       -DCMAKE_PREFIX_PATH=$PREFIX \
-      -DCMAKE_CXX_STANDARD=14 \
       -DCMAKE_INCLUDE_PATH=$PREFIX/include \
       -DCMAKE_LIBRARY_PATH=$PREFIX/lib \
       -DZLIB_ROOT=$PREFIX \
