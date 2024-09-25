@@ -1,43 +1,49 @@
-{% set version = "3.0.0a3" %}
-{% set sha256 = "9850baec8b905c0896f00d0e427d4564f4c87dd7f1abae64734ad0361678e620" %}
+{% set version = "2.1.1" %}
+{% set sha256 = "39981730c2e08ee183c5ce6ce80cfe2bd6d813cfa37b9ae1f7be0dd1a01dae85" %}
+{% set name = "khmer" %}
 
 package:
-  name: khmer
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/dib-lab/khmer/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - 0001-Inject-compiler-and-flags-for-third-party-compilation.patch
+    - 0002-do-not-install-dependencies-on-our-own.patch
+    - 0003-remove-dependencies-from-config.patch
+    - 0004-remove-dependencies-from-manifest.patch
 
 build:
-  number: 4
-  skip: True  # [py<30 or py>=312 or osx]
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  number: 0
+  skip: True  # [py >= 312]
   run_exports:
-    - {{ pin_subpackage('khmer', max_pin="x.x") }}
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler("c") }}
     - {{ compiler("cxx") }}
+    - bzip2
+    - make
+    - python
+    - zlib
+  host:
+    - python
+    - pip
+    - cython >=0.25.2
+    - pytest-runner
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
-    - make
-  host:
-    - python >=3.6,<3.12
-    - pip
-    - setuptools >=18.0
-    - Cython >=0.25.2
     - bzip2
     - zlib
   run:
-    - python >=3.6,<3.12
-    - screed >=1.0
-    - bz2file
     - bzip2
+    - bz2file
+    - python
+    - screed >=1.0
     - zlib
+    - smhasher
 
 test:
   imports:
@@ -46,11 +52,12 @@ test:
     - oxli
 
 about:
-  home: https://khmer.readthedocs.io/
-  license: BSD License
+  home: "https://github.com/dib-lab/khmer"
+  license: "BSD-3-Clause"
   license_family: BSD
   summary: khmer k-mer counting library
-  dev_url: https://github.com/dib-lab/khmer
+  dev_url: "https://github.com/dib-lab/khmer"
+  doc_url: "https://khmer.readthedocs.io"
 
 extra:
   identifiers:
