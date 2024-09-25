@@ -1,15 +1,16 @@
 #!/bin/bash
 
+set -xe
+
 export CPATH=$PREFIX/include:$CPATH
 export LIBRARY_PATH=$PREFIX/lib:$LIBRARY_PATH
 export LD_LIBRARY_PATH=$PREFIX/lib:$LD_LIBRARY_PATH
-export CXXFLAGS="${CXXFLAGS} -std=c++14"
 
 mkdir build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=$PREFIX \
       -DCMAKE_PREFIX_PATH=$PREFIX \
-      -DCMAKE_CXX_FLAGS=$CXXFLAGS \
+      -DCMAKE_CXX_STANDARD=14 \
       -DCMAKE_INCLUDE_PATH=$PREFIX/include \
       -DCMAKE_LIBRARY_PATH=$PREFIX/lib \
       -DZLIB_ROOT=$PREFIX \
