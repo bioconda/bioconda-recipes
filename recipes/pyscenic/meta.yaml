@@ -9,19 +9,14 @@ package:
 source:
   - url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
     sha256: "{{ sha256 }}"
-    folder: pyscenic-{{ version }}
+  - path: dill_patch.patch
 
 build:
   number: 0
   noarch: python
-  script: |
-    pushd ${SRC_DIR}/pyscenic-{{ version }}
-    sed -i 's/from multiprocessing_on_dill.connection import Pipe/from multiprocessing import Pipe/' src/pyscenic/prune.py
-    sed -i 's/from multiprocessing_on_dill.context import Process/from multiprocessing import Process/' src/pyscenic/prune.py
-    ${PYTHON} -m pip install . --use-pep517 --no-deps --ignore-installed -vv
-    popd
   run_exports:
-    - {{ pin_subpackage(name, max_pin='x.x') }}
+    - "{{ pin_subpackage(name, max_pin='x.x') }}"
+  script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
   build:
