@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## change to source dir
-cd ${SRC_DIR}
+cd "${SRC_DIR}" || exit 1
 
 ## compile
 ${CXX} -c consensify_c.cpp -I./ ${CXXFLAGS}
