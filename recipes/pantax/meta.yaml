@@ -1,0 +1,55 @@
+{% set name = "pantax" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/LuoGroup2023/PanTax/releases/download/v1.0.1/pantax.tar.gz  
+    sha256: 93f39878f15cb76d40a80e8ae1b3521f1a4bc799c0cc4519c3df9c4ea9c4b9ba
+
+  - url: https://files.pythonhosted.org/packages/07/0f/6039cf6e22f9cbec57cdedff103949e4856c18fd2cb714bc70cdc8b52941/gurobipy-11.0.2-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl 
+    sha256: 164e72462c2f1a705fcec73acc060aa639e745827bfe877714ff7b2ccabc5237  
+    folder: gurobi11  
+
+  - url: https://github.com/vgteam/vg/releases/download/v1.59.0/vg    
+    sha256: a2270237c8541867ac345ad924c1641881bc9fd60be157a6d3d29fa910aacfc2 
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}   
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+  host:
+    - python ==3.10
+    - pip
+  run:
+    - python =3.10
+    - samtools =1.19.2
+    - bcftools =1.19
+    - htslib =1.19.1
+    - pggb =0.5.4
+    - graphaligner =1.0.17
+    - h5py =3.10.0
+    - pandas =2.2.0
+    - tqdm =4.66.1
+    - numpy =1.26.3
+    - networkx =3.2.1
+    - time =1.8
+
+test:
+  commands:
+    - pantax -h
+
+about:
+  home: https://github.com/LuoGroup2023/PanTax
+  license: GPL-3.0
+  summary: Strain-level taxonomic classification of metagenomic data using pangenome graphs
+
+extra:
+  skip-lints:
+    - should_be_noarch_python
