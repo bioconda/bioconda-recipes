@@ -3,7 +3,7 @@
 ## change to source dir
 cd ${SRC_DIR}
 
-## compile and link
+## compile
 ${CXX} -c consensify_c.cpp -I./ ${CXXFLAGS}
 
 ## link
