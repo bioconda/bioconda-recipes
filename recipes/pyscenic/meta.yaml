@@ -9,29 +9,26 @@ package:
 source:
   - url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
     sha256: "{{ sha256 }}"
-    folder: pyscenic-0.12.1
-
-
+    folder: pyscenic-{{ version }}
 
 build:
   number: 0
   run_exports:
     - "{{ pin_subpackage(name, max_pin='x.x') }}"
   script: |
-    patch -p1 < ${RECIPE_DIR}/dill_patch.patch
-    $PYTHON setup.py install --single-version-externally-managed --record=record.txt
-
+    pushd ${SRC_DIR}/pyscenic-{{ version }}
+    patch -p1 < ${RECIPE_DIR}/my_patch.patch
+    ${PYTHON} -m pip install . --use-pep517 --no-deps --ignore-installed -vv
+    popd
     
+
+
 requirements:
   build:
-    - "{{ compiler('c') }}"
-    - "{{ compiler('cxx') }}"
-    - make
     - python >=3.10,<3.11
     - pip
     - setuptools
     - wheel
-    - setuptools_scm
 
   host:
     - python >=3.10,<3.11
@@ -42,12 +39,12 @@ requirements:
   run:
     - python >=3.10,<3.11
     - aiohttp
-    - arboreto 
+    - arboreto
     - attrs
     - boltons
     - cloudpickle
     - cytoolz
-    - dill  
+    - dill
     - dask >=2023.4.1
     - distributed >=2023.4.1,<2023.5.0
     - frozendict
@@ -66,8 +63,8 @@ requirements:
     - umap-learn
     - numpy ==1.23.5
     - pyarrow
-    - interlap  
-    - ctxcore  
+    - interlap
+    - ctxcore
 
 test:
   imports:
