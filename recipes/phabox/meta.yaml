@@ -6,12 +6,18 @@ package:
   version: "{{ version }}"
 
 source:
-  url: https://github.com/KennthShang/{{ name }}/archive/refs/tags/v{{ version }}-beta.tar.gz
-  sha256: 206d7c5fef0b9cc5fa51e1ed66c77c1f53da47bbdaed1e6f2c0058f8a8aaa403
+  - url: https://github.com/KennthShang/{{ name }}/archive/refs/tags/v{{ version }}-beta.tar.gz
+    sha256: 206d7c5fef0b9cc5fa51e1ed66c77c1f53da47bbdaed1e6f2c0058f8a8aaa403
+  # add setup.py based on https://github.com/KennthShang/PhaBOX/blob/243f78aa82f682c9b8370027c882a4658b9d2945/setup.py
+  # added package_data and entry_points
+  - path: setup.py
+  - patches:
+      - imports.patch
 
 build:
   number: 0
   noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
   run_exports:
     - {{ pin_subpackage('phabox', max_pin="x.x") }}
 
@@ -21,19 +27,25 @@ requirements:
     - python >=3
   run:
     - python >=3
+    - biopython
     - mcl
     - networkx
     - numpy
     - pandas
     - pprodigal
     - scipy
+    - pytorch
     - transformers
     - datasets
     - pyarrow
 
 test:
   commands:
-    - phabox
+    - phabox --help
+    - Cherry_single --help
+    - PhaGCN_single --help
+    - PhaMer_single --help
+    - PhaTYP_single --help
 
 about:
   home: https://github.com/KennthShang/PhaBOX
