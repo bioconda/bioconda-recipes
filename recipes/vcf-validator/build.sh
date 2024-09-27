@@ -3,12 +3,11 @@ if [ -z ${OSX_ARCH+x} ]; then
   ./install_dependencies.sh linux
   mkdir build
   cd build
-  cmake -G "Unix Makefiles" -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DDEFAULT_EXT_LIB_PATH=${BUILD_PREFIX} ..
+  cmake -G "Unix Makefiles" ..
 else
   ./install_dependencies.sh osx
   mkdir build
   cd build
-  #cmake -G "Unix Makefiles" -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang ..
   cmake -G "Unix Makefiles" ..
 fi
 make -j2
