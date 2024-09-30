@@ -18,3 +18,6 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	"${CONFIG_ARGS}"
 cmake --build build --target PgRC -j "${CPU_COUNT}" -v
+
+chmod 0755 build/PgRC
+cp -rf build/PgRC $PREFIX/bin
