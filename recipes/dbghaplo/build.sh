@@ -5,5 +5,6 @@
 export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
 
 # build statically linked binary with Rust
-RUST_BACKTRACE=1 cargo install --verbose --path . --root $PREFIX
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+RUST_BACKTRACE=1 cargo install --verbose --locked --no-track --root $PREFIX --path .
 cp scripts/* $PREFIX/bin
