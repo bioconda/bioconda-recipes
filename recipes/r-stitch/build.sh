@@ -2,12 +2,11 @@
 
 set -xe
 
-mkdir -p $PREFIX/bin 
-cp STITCH.R $PREFIX/bin
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
 
-# patch a Git submodule
-pushd src/SeqLib/
-patch -p1 < ${RECIPE_DIR}/seqlib-aarch64.patch
-popd
-    
-$R CMD INSTALL --build --install-tests .
+mkdir -p $PREFIX/bin 
+cp -rf STITCH.R $PREFIX/bin
+
+cd $SRC_DIR/STITCH
+${R} CMD INSTALL --build --install-tests . ${R_ARGS}

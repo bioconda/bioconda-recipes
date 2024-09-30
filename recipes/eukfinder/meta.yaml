@@ -1,0 +1,61 @@
+{% set version = "1.2.3" %}
+
+package:
+  name: eukfinder
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('eukfinder', max_pin="x") }}
+
+source:
+  - url: https://github.com/RogerLab/Eukfinder/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: 8b8235049084e8c7171ce8968b07be25bad9b9979ce1f04cfe4b8690f5641a7d
+  - url: https://github.com/PLAST-software/plast-library/releases/download/v2.3.2/plastbinary_osx_v2.3.2.tar.gz # [osx]
+    sha256: 0dbbf88f6e59bb153ff04b5cc80743304d44fc1196de930fd2b56a1061792a6a # [osx]
+  - url: https://github.com/PLAST-software/plast-library/releases/download/v2.3.2/plastbinary_linux_v2.3.2.tar.gz # [linux]
+    sha256: d8a3ad66849b6090c41acde71750e3d0c339d6b9b7c6f316c307870d773d86fe # [linux]
+  - url: https://github.com/Tassadaar/acc2tax/archive/refs/tags/v1.0.tar.gz
+    sha256: 349fa233c565eaa01ef31b9d3f32fa01a9d9f234ba7e0136e289af837add6979
+
+requirements:
+  build:
+    - wget
+    - python >=3.6,<3.7
+    - setuptools
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
+    - python >=3.6,<3.7
+    - setuptools
+  run:
+    - python >=3.6,<3.7
+    - ete3
+    - numpy
+    - pandas
+    - joblib
+    - pyqt =5
+    - spades
+    - seqkit
+    - trimmomatic
+    - centrifuge
+    - bowtie2
+
+
+test:
+  commands:
+    - plast -h
+    - acc2tax --help
+    - eukfinder --help
+    - eukfinder read_prep -h
+    - eukfinder short_seqs -h
+    - eukfinder long_seqs -h
+
+
+about:
+  home: https://github.com/RogerLab/Eukfinder
+  license: MIT
+  license_file: LICENSE.txt
+  summary: "Eukfinder is a tool for detecting eukaryotic sequences in metagenomic data."

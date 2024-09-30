@@ -1,5 +1,5 @@
 {% set name = "verkko" %}
-{% set version = "2.1" %}
+{% set version = "2.2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,10 +7,9 @@ package:
 
 source:
   url: https://github.com/marbl/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
-  sha256: e989710a43cc6f721938f6393d20c8a674b110cd74a7c27f23f4d06a9dd78e9f
+  sha256: 77a6c8e041bc7dd61f724dcafa6ce6bf1ddc3aed163d17536e9612824293cfba
 
   patches:
-    - version.patch
     - osx_availability.patch # [osx]
 
 build:
@@ -23,20 +22,25 @@ requirements:
     - make
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
+    - htslib
     - {{ compiler('cxx') }}
     - rust >=1.74
   host:
+    - boost-cpp >=1.56 #[osx]
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
     - gsl
     - zlib
+    - htslib
   run:
-    - python >=3.7
+    - python >=3.9
+    - pulp <=2.7.0
     - perl >=5.6
     - seqtk
     - parasail-python >=1.3.3
     - networkx >=2.6.3
     - biopython
+    - pysam
     - snakemake-minimal >=7.8.0,<8.0
     - graphaligner >=1.0.19
     - findutils >=4.6.0
@@ -56,7 +60,7 @@ about:
   home: https://github.com/marbl/verkko
   license: CC0
   license_file: README.licenses
-  summary: "A hybrid genome assembly pipeline developed for telomere-to-telomere assembly of PacBio HiFi or Oxford Nanopore Duplex and Oxford Nanopore simplex reads."
+  summary: "A hybrid genome assembly pipeline developed for telomere-to-telomere assembly of accurate (HiFi, ONT Duplex, ONT HERRO) and long (ONT UL) reads."
   dev_url: "https://github.com/marbl/verkko"
   doc_url: "https://github.com/marbl/verkko/blob/master/README.md"
 

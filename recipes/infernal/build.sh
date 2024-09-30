@@ -2,9 +2,13 @@
 
 set -ex
 
+export M4="${BUILD_PREFIX}/bin/m4"
+export INCLUDE_PATH="${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
 grep -l -r "/usr/bin/perl" . | xargs sed -i.bak -e 's/usr\/bin\/perl/usr\/bin\/env perl/g'
 
-autoreconf -i
+autoreconf -if
 
 case $(uname -m) in
     "x86_64") 
@@ -19,6 +23,6 @@ case $(uname -m) in
         ;;
 esac
 
-./configure --prefix="${PREFIX}" "${ARCH_OPTS}"
+./configure --prefix="${PREFIX}" CC="${CC}" CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib" "${ARCH_OPTS}"
 make -j${CPU_COUNT}
 make install
