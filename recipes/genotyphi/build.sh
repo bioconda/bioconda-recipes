@@ -1,8 +1,8 @@
 #!/bin/bash
 
 mkdir -p $PREFIX/bin
-cp genotyphi.py $PREFIX/bin/genotyphi.py
-ln $PREFIX/bin/genotyphi.py $PREFIX/bin/genotyphi
+cp mappingbased/genotyphi.py $PREFIX/bin/genotyphi.py
+ln -sf $PREFIX/bin/genotyphi.py $PREFIX/bin/genotyphi
 chmod +x $PREFIX/bin/genotyphi.py $PREFIX/bin/genotyphi
 
 # Add script for Mykrobe based analysis
