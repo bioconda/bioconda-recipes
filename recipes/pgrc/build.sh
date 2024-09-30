@@ -2,9 +2,9 @@
 
 mkdir -p $PREFIX/bin
 
-export INCLUDES="-I{PREFIX}/include"
+export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 if [[ `uname` == "Darwin" ]]; then
