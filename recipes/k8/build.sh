@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -x
 
@@ -32,6 +32,7 @@ popd
 sed -i.bak 's/CXXFLAGS=/CXXFLAGS?=/' Makefile
 sed -i.bak 's/NODE_SRC=/NODE_SRC?=/' Makefile
 sed -i.bak 's/LIBS=/LIBS?=/' Makefile
+rm -rf *.bak
 
 # Then compile k8
 NODE_SRC="node-v${NODE_VERSION}" CXXFLAGS="${CXXFLAGS} -std=c++17 -g -O3 -Wall" LIBS="${LDFLAGS} -pthread" make
