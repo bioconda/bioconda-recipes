@@ -1,0 +1,49 @@
+{% set name = "sizemeup" %}
+{% set version = "1.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/rpetit3/sizemeup/archive/v{{ version }}.tar.gz
+  sha256: 485b0d6bf712febf998db57d296c20a6d885a4d61ade67ee8ce0370dc5067d11
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.7
+    - poetry
+    - pip
+  run:
+    - python >=3.7
+    - requests
+    - rich-click >=1.6.0
+
+test:
+  imports:
+    - sizemeup
+  commands:
+    - pip check
+    - sizemeup --version
+    - sizemeup --help
+    - sizemeup --query "Staphylococcus aureus"
+    - sizemeup -q 1280
+    - sizemeup-build --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/rpetit3/sizemeup
+  summary: A simple tool to determine the genome size of an organism
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - rpetit3
