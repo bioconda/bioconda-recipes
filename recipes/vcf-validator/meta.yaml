@@ -1,46 +1,40 @@
 {% set name = "vcf-validator" %}
-{% set version = "0.9.7" %}
+{% set version = "0.10.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  git_url: https://github.com/tcezard/vcf-validator.git
-  git_tag: dynamic_boost
-#  url: https://github.com/EBIvariation/vcf-validator/archive/refs/tags/v{{ version }}.tar.gz
-#  sha256: ae0c284dacbe9f15c608d27548d57741ab58f8d7becec6d86bf4b3ef780fa61e
+  url: https://github.com/EBIvariation/vcf-validator/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b46117700445644e6fc5a6d2655b477902c67aba0e7abe8a62df6cb49f923fff
 
 build:
   script:
   number: 0
-  noarch: generic
+  run_exports:
+    - {{ pin_subpackage("vcf-validator", max_pin="x.x") }}
 
 requirements:
   host:
-    - cmake >=2.8
-    - sqlite >=3
-    - zlib
-    - automake
-    - bootstrap
     - libboost-devel
-    - libtool
-    - zstd
+    - libcurl
   build:
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
     - make
     - cmake >=2.8
-    - sqlite >=3
-    - zlib
-    - automake
-    - bootstrap
     - libboost-devel
     - libtool
     - zstd
     - c-ares
+    - libcurl
+    - openssl
+    - bzip2
+    - libzlib
   run:
     - zstd
-
+    - libcurl
 
 test:
   commands:
@@ -54,6 +48,8 @@ about:
   license_file: LICENSE
 
 extra:
+  additional-platforms:
+    - osx-arm64
   recipe-maintainers:
     - apriltuesday
     - tcezard

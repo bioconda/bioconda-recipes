@@ -1,11 +1,8 @@
 #!/bin/bash
 
-# Install additional dependencies
-if [ -z ${OSX_ARCH+x} ]; then
-  ./install_dependencies.sh linux
-else
-  ./install_dependencies.sh osx
-fi
+# Set c++ to version 11
+export CXXFLAGS="-std=c++11 ${CXXFLAGS}"
+
 mkdir build || { echo "Failed to create build directory" >&2; exit 1; }
 cd build || { echo "Failed to go into build directory" >&2; exit 1; }
 cmake -G "Unix Makefiles" ..
@@ -15,4 +12,6 @@ if ! ./build/bin/test_validation_suite; then
   echo "Validation suite failed" >&2
   exit 1
 fi
+cp build/bin/vcf_validator ${PREFIX}/bin
+cp build/bin/vcf_assembly_checker ${PREFIX}/bin
 echo "Done with vcf-validator"
