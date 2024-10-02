@@ -65,7 +65,7 @@ def jvm_opts(argv):
     # In the original shell script the test coded below read:
     #   if [ "$jvm_mem_opts" == "" ] && [ -z ${_JAVA_OPTIONS+x} ]
     # To reproduce the behaviour of the above shell code fragment
-    # it is important to explictly check for equality with None
+    # it is important to explicitly check for equality with None
     # in the second condition, so a null envar value counts as True!
 
     if mem_opts == [] and getenv('_JAVA_OPTIONS') is None:
@@ -80,7 +80,7 @@ def main():
     PeptideShaker updates files relative to the path of the jar file.
     In a multiuser setting, the option --exec_dir="exec_dir"
     can be used as the location for the peptide-shaker distribution.
-    If the exec_dir dies not exist,
+    If the exec_dir does not exist,
     we copy the jar file, lib, and resources to the exec_dir directory.
     """
     (mem_opts, prop_opts, pass_args, exec_dir) = jvm_opts(sys.argv[1:])
@@ -95,8 +95,10 @@ def main():
 
     java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
 
-    sys.exit(subprocess.call(java_args))
-
+    return_code = subprocess.call(java_args)
+    if return_code != 0:
+	sys.stderr.write(f"Java process exited with return code {return_code}\n")
+    sys.exit(return_code)
 
 if __name__ == '__main__':
     main()
