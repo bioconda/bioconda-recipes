@@ -1,5 +1,13 @@
 #!/bin/bash
 
+if [[ -z "${CC}" ]]; then
+   alias gcc=$CC
+fi
+
+if [[ -z "${CXX}" ]]; then
+   alias g++=$CXX
+fi
+
 # Install additional dependencies
 if [ -z ${OSX_ARCH+x} ]; then
   ./install_dependencies.sh linux
