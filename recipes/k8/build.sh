@@ -1,6 +1,8 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -x
+
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 DEFAULT_LINUX_VERSION="cos7"
 # * k8 is only compatible with Node.js v18.x, not more recent node versions
@@ -8,9 +10,10 @@ DEFAULT_LINUX_VERSION="cos7"
 # * node-18.20.x can be compiled on MacOS but not on CentOS 7 because it
 #   includes an updated c-ares library which is incompatible with glibc on CentOS 7
 if [[ "$(uname)" == "Darwin" ]]; then
-    NODE_VERSION="18.20.4"
+	NODE_VERSION="18.20.4"
+	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
 else
-    NODE_VERSION="18.19.1"
+	NODE_VERSION="18.19.1"
 fi
 
 case $(uname -m) in
@@ -47,4 +50,5 @@ rm -rf *.bak
 NODE_SRC="node-v${NODE_VERSION}" CXXFLAGS="${CXXFLAGS} -std=c++17 -g -O3 -Wall" LIBS="${LDFLAGS} -pthread" make
 
 mkdir -p $PREFIX/bin
-cp -f k8 $PREFIX/bin/k8
+chmod 0755 k8
+cp -f k8 $PREFIX/bin/
