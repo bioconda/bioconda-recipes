@@ -10,5 +10,5 @@ cp -r V4Scripts "$PREFIX"
 
 cp -r configTemplates "$PREFIX"
 
-cp $RECIPE_DIR/Raxport.sh "$PREFIX/bin/Raxport"
+cp "$RECIPE_DIR"/Raxport.sh "$PREFIX/bin/Raxport"
 chmod +x "$PREFIX/bin/Raxport"
