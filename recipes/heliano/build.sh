@@ -42,6 +42,5 @@ df -h
 cd ${PREFIX}/bin
 ln -sf ${PACKAGE_HOME}/heliano
 ln -sf ${PACKAGE_HOME}/heliano_cons
-mv heliano heliano_cons bin/
 
 echo "Succeed! Please find programs in bin/ directory."
