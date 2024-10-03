@@ -4,74 +4,54 @@
 # - https://bioconda.github.io/contributor/building-locally.html
 # - https://docs.openfree.energy/en/stable/installation.html
 
-cat <<EOT >> ./input_example.fasta
->SEQ_1
-MEDLNVVDSINGAGSWLVANQALLLSYAVNIVAALAIIIVGLIIARMISNAVNRLMISRK
-
->SEQ_2
-EPVRRNEFIIGVAYDSDIDQVKQILTNIIQSEDRILKDREMTVRLNELGASSINFVVRVW
-EOT
-
-cat <<EOT >> ./small_alignment.clustal
-CLUSTAL O(1.2.4) multiple sequence alignment
-
-
-SEQ_1      -VYVGNLGNNG	10
-SEQ_2      RVRCGCLTRG-	10
-            *  * * ..
-EOT
-
 print_message() {
-    current_time=$(date +"%T")
-    echo "[$current_time - b2bTools] run_test.sh: $1"
+    current_time=$(date +"%Y-%m-%d %T")  # Include date and time
+    yellow='\033[1;33m'
+    no_color='\033[0m'
+    echo -e "${yellow}[$current_time - b2bTools] run_test.sh: $1${no_color}"
 }
 
 preconditions() {
-    print_message "Testing HMMER dependencies"
+    print_message "0.1) Testing HMMER installation"
 
+    print_message "0.1.a) Testing HMMER installation: hmmalign"
     hmmalign -h
+
+    print_message "0.1.b) Testing HMMER installation: hmmsearch"
     hmmsearch -h
 
-    print_message "Testing T-Coffee dependencies"
+    print_message "0.2) Testing T-Coffee installation"
     t_coffee --help
 
-    print_message "Testing b2bTools itself"
-    b2bTools -h
+    print_message "0.3) Testing b2bTools itself"
+    b2bTools --help
 }
 
 postconditions() {
-    print_message "Removing testing files"
-
-    rm ./input_example.fasta ./small_alignment.clustal
+    print_message "Nothing to do actually."
 }
 
 scenario_single_seq_without_agmata_psper() {
     print_message "1.1) Testing b2bTools for Single Seq mode without AgMata nor PSPer"
 
-    # Check if the status code is non-zero and exit with an error code
-    if [ $status -ne 0 ]; then
-        echo "Error: b2bTools command failed with status code $status"
-        exit $status
-    fi
-
     python -m b2bTools \
         --dynamine \
         --disomine \
         --efoldmine \
-        --input_file ./input_example.fasta \
-        --output_json_file ./input_example.fasta.json \
-        --output_tabular_file ./input_example.fasta.csv \
-        --metadata_file ./input_example.fasta.meta.csv
-    status=$?
+        --input_file ./test.singleseq.fasta \
+        --output_json_file ./test.singleseq.fasta.json \
+        --output_tabular_file ./test.singleseq.fasta.csv \
+        --metadata_file ./test.singleseq.fasta.meta.csv
+    b2bTools_command_status=$?
 
     # Check if the status code is non-zero and exit with an error code
-    if [ $status -ne 0 ]; then
+    if [ "$b2bTools_command_status" -ne 0 ]; then
         print_message "1.1) Error: b2bTools command failed with status code $status"
         exit $status
     fi
 
     # Validate the presence and content of output files
-    files=("input_example.fasta.json" "input_example.fasta.csv" "input_example.fasta.meta.csv")
+    files=("test.singleseq.fasta.json" "test.singleseq.fasta.csv" "test.singleseq.fasta.meta.csv")
     for file in "${files[@]}"; do
         if [ ! -f "$file" ]; then
             print_message "1.1) Error: Output file $file not found"
@@ -101,20 +81,20 @@ scenario_single_seq_only_psper() {
 
     python -m b2bTools \
         --psper \
-        --input_file ./input_example.fasta \
-        --output_json_file ./input_example.fasta.json \
-        --output_tabular_file ./input_example.fasta.csv \
-        --metadata_file ./input_example.fasta.meta.csv
-    status=$?
+        --input_file ./test.singleseq.fasta \
+        --output_json_file ./test.singleseq.fasta.json \
+        --output_tabular_file ./test.singleseq.fasta.csv \
+        --metadata_file ./test.singleseq.fasta.meta.csv
+    b2bTools_command_status=$?
 
     # Check if the status code is non-zero and exit with an error code
-    if [ $status -ne 0 ]; then
+    if [ "$b2bTools_command_status" -ne 0 ]; then
         print_message "1.2) Error: b2bTools command failed with status code $status"
         exit $status
     fi
 
     # Validate the presence and content of output files
-    files=("input_example.fasta.json" "input_example.fasta.csv" "input_example.fasta.meta.csv")
+    files=("test.singleseq.fasta.json" "test.singleseq.fasta.csv" "test.singleseq.fasta.meta.csv")
     for file in "${files[@]}"; do
         if [ ! -f "$file" ]; then
             print_message "1.2)Error: Output file $file not found"
@@ -144,20 +124,20 @@ scenario_single_seq_only_agmata() {
 
     python -m b2bTools \
         --agmata \
-        --input_file ./input_example.fasta \
-        --output_json_file ./input_example.fasta.json \
-        --output_tabular_file ./input_example.fasta.csv \
-        --metadata_file ./input_example.fasta.meta.csv
-    status=$?
+        --input_file ./test.singleseq.fasta \
+        --output_json_file ./test.singleseq.fasta.json \
+        --output_tabular_file ./test.singleseq.fasta.csv \
+        --metadata_file ./test.singleseq.fasta.meta.csv
+    b2bTools_command_status=$?
 
     # Check if the status code is non-zero and exit with an error code
-    if [ $status -ne 0 ]; then
+    if [ "$b2bTools_command_status" -ne 0 ]; then
         print_message "1.3) Error: b2bTools command failed with status code $status"
         exit $status
     fi
 
     # Validate the presence and content of output files
-    files=("input_example.fasta.json" "input_example.fasta.csv" "input_example.fasta.meta.csv")
+    files=("test.singleseq.fasta.json" "test.singleseq.fasta.csv" "test.singleseq.fasta.meta.csv")
     for file in "${files[@]}"; do
         if [ ! -f "$file" ]; then
             print_message "1.3)Error: Output file $file not found"
@@ -190,23 +170,23 @@ scenario_msa_without_agmata_psper() {
     --dynamine \
     --disomine \
     --efoldmine \
-    --input_file ./small_alignment.clustal \
-    --output_json_file ./small_alignment.clustal.json \
-    --output_tabular_file ./small_alignment.clustal.csv \
-    --metadata_file ./small_alignment.clustal.meta.csv \
-    --distribution_json_file ./small_alignment.clustal.distrib.json \
-    --distribution_tabular_file ./small_alignment.clustal.distrib.csv
+    --input_file ./test.msa.fasta \
+    --output_json_file ./test.msa.fasta.json \
+    --output_tabular_file ./test.msa.fasta.csv \
+    --metadata_file ./test.msa.fasta.meta.csv \
+    --distribution_json_file ./test.msa.fasta.distrib.json \
+    --distribution_tabular_file ./test.msa.fasta.distrib.csv
 
-    status=$?
+    b2bTools_command_status=$?
 
     # Check if the status code is non-zero and exit with an error code
-    if [ $status -ne 0 ]; then
+    if [ "$b2bTools_command_status" -ne 0 ]; then
         print_message "2.1) Error: b2bTools command failed with status code $status"
         exit $status
     fi
 
     # Validate the presence and content of output files
-    files=("small_alignment.clustal.json" "small_alignment.clustal.csv" "small_alignment.clustal.meta.csv" "small_alignment.clustal.distrib.json" "small_alignment.clustal.distrib.csv")
+    files=("test.msa.fasta.json" "test.msa.fasta.csv" "test.msa.fasta.meta.csv" "test.msa.fasta.distrib.json" "test.msa.fasta.distrib.csv")
     for file in "${files[@]}"; do
         if [ ! -f "$file" ]; then
             print_message "2.1) Error: Output file $file not found"
@@ -237,23 +217,23 @@ scenario_msa_only_psper() {
     python -m b2bTools \
     --mode msa \
     --psper \
-    --input_file ./small_alignment.clustal \
-    --output_json_file ./small_alignment.clustal.json \
-    --output_tabular_file ./small_alignment.clustal.csv \
-    --metadata_file ./small_alignment.clustal.meta.csv \
-    --distribution_json_file ./small_alignment.clustal.distrib.json \
-    --distribution_tabular_file ./small_alignment.clustal.distrib.csv
+    --input_file ./test.msa.fasta \
+    --output_json_file ./test.msa.fasta.json \
+    --output_tabular_file ./test.msa.fasta.csv \
+    --metadata_file ./test.msa.fasta.meta.csv \
+    --distribution_json_file ./test.msa.fasta.distrib.json \
+    --distribution_tabular_file ./test.msa.fasta.distrib.csv
 
-    status=$?
+    b2bTools_command_status=$?
 
     # Check if the status code is non-zero and exit with an error code
-    if [ $status -ne 0 ]; then
+    if [ "$b2bTools_command_status" -ne 0 ]; then
         print_message "2.1) Error: b2bTools command failed with status code $status"
         exit $status
     fi
 
     # Validate the presence and content of output files
-    files=("small_alignment.clustal.json" "small_alignment.clustal.csv" "small_alignment.clustal.meta.csv" "small_alignment.clustal.distrib.json" "small_alignment.clustal.distrib.csv")
+    files=("test.msa.fasta.json" "test.msa.fasta.csv" "test.msa.fasta.meta.csv" "test.msa.fasta.distrib.json" "test.msa.fasta.distrib.csv")
     for file in "${files[@]}"; do
         if [ ! -f "$file" ]; then
             print_message "2.1) Error: Output file $file not found"
@@ -280,25 +260,25 @@ scenario_msa_only_agmata() {
     print_message "2.2) Testing b2bTools for MSA mode with PSPer"
 
     python -m b2bTools \
-    --mode msa \
-    --agmata \
-    --input_file ./small_alignment.clustal \
-    --output_json_file ./small_alignment.clustal.json \
-    --output_tabular_file ./small_alignment.clustal.csv \
-    --metadata_file ./small_alignment.clustal.meta.csv \
-    --distribution_json_file ./small_alignment.clustal.distrib.json \
-    --distribution_tabular_file ./small_alignment.clustal.distrib.csv
+        --mode msa \
+        --agmata \
+        --input_file ./test.msa.fasta \
+        --output_json_file ./test.msa.fasta.json \
+        --output_tabular_file ./test.msa.fasta.csv \
+        --metadata_file ./test.msa.fasta.meta.csv \
+        --distribution_json_file ./test.msa.fasta.distrib.json \
+        --distribution_tabular_file ./test.msa.fasta.distrib.csv
 
-    status=$?
+    b2bTools_command_status=$?
 
     # Check if the status code is non-zero and exit with an error code
-    if [ $status -ne 0 ]; then
+    if [ "$b2bTools_command_status" -ne 0 ]; then
         print_message "2.1) Error: b2bTools command failed with status code $status"
         exit $status
     fi
 
     # Validate the presence and content of output files
-    files=("small_alignment.clustal.json" "small_alignment.clustal.csv" "small_alignment.clustal.meta.csv" "small_alignment.clustal.distrib.json" "small_alignment.clustal.distrib.csv")
+    files=("test.msa.fasta.json" "test.msa.fasta.csv" "test.msa.fasta.meta.csv" "test.msa.fasta.distrib.json" "test.msa.fasta.distrib.csv")
     for file in "${files[@]}"; do
         if [ ! -f "$file" ]; then
             print_message "2.1) Error: Output file $file not found"
@@ -321,20 +301,23 @@ scenario_msa_only_agmata() {
     done
 }
 
-print_message "Running test scenarios"
-
+print_message "Running test preconditions"
 preconditions
 
 # Scenarios for Single Sequence input
+print_message "Running test scenarios for Single Sequence input"
 scenario_single_seq_without_agmata_psper
 scenario_single_seq_only_psper
 scenario_single_seq_only_agmata
 
 # Scenarios for Multiple Sequence Alignment input
+print_message "Running test scenarios for Multiple Sequence Alignment input"
 scenario_msa_without_agmata_psper
 scenario_msa_only_psper
 scenario_msa_only_agmata
 
+print_message "Running test postconditions"
 postconditions
 
 print_message "All test scenarios have been executed with success"
+exit 0
