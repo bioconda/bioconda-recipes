@@ -49,9 +49,7 @@ def jvm_opts(argv):
     exec_dir = None
 
     for arg in argv:
-        if arg.startswith('-D'):
-            prop_opts.append(arg)
-        elif arg.startswith('-XX'):
+        if arg.startswith('-D') or arg.startswith('-XX'):
             prop_opts.append(arg)
         elif arg.startswith('-Xm'):
             mem_opts.append(arg)
@@ -86,10 +84,7 @@ def main():
     (mem_opts, prop_opts, pass_args, exec_dir) = jvm_opts(sys.argv[1:])
     jar_dir = exec_dir if exec_dir else real_dirname(sys.argv[0])
 
-    if pass_args != [] and pass_args[0].startswith('eu'):
-        jar_arg = '-cp'
-    else:
-        jar_arg = '-jar'
+    jar_arg = '-cp' if pass_args and pass_args[0].startswith('eu') else '-jar'
 
     jar_path = os.path.join(jar_dir, jar_file)
 
@@ -97,7 +92,7 @@ def main():
 
     return_code = subprocess.call(java_args)
     if return_code != 0:
-	sys.stderr.write(f"Java process exited with return code {return_code}\n")
+        sys.stderr.write(f"Java process exited with return code {return_code}\n")
     sys.exit(return_code)
 
 if __name__ == '__main__':
