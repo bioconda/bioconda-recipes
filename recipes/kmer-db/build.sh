@@ -1,7 +1,7 @@
 #!/bin/bash
 
 uname_S=`uname -s 2>/dev/null || echo not`
-if [ "$uname_S" == "Darwin" ]; then brew install g++-12;
+if [ "$uname_S" == "Darwin" ]; then brew install gcc@12;
 
 CFLAGS="$CFLAGS -I${PREFIX}/include"
 LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
