@@ -1,15 +1,15 @@
 {% set name = "hictk" %}
-{% set version = "0.0.6" %}
-{% set sha256 = "5913792f858304ff82996c9e9720442736b443d56c53aa8eb2a1ac2ae8ccc88f" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "e337f52658a257eb6265e211dd3cef6b73db40bdc5b5a6433b47ce4faa6006fb" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 0
+  number: 2
   run_exports:
-    - {{ pin_subpackage('hictk', max_pin='x.x') }}
+    - {{ pin_subpackage('hictk', max_pin='x') }}
 
 source:
   url: https://github.com/paulsengroup/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
@@ -22,6 +22,7 @@ requirements:
     - cmake >=3.25
     - conan >=2
     - make
+    - catch2 >=3.5
     - cli11 >=2.3
     - eigen >=3.4
     - fast_float >=5
@@ -30,14 +31,14 @@ requirements:
     - spdlog >=1.12
 
   host:
-    - boost-cpp >=1.80
     - hdf5 >=1.12
+    - libarrow >=16
     - libdeflate
     - zstd >=1.5
 
   run:
-    - libboost >=1.80
     - hdf5 >=1.12
+    - libarrow >=16
     - libdeflate
     - zstd >=1.5
 
@@ -53,12 +54,17 @@ test:
   requires:
     - curl
     - cooler>=0.9.3
-    - openjdk>=11
     - perl-digest-sha1
     - xz
   source_files:
     - cmake/FetchTestDataset.cmake
-    - test/scripts/hictk_balance.sh
+    - test/scripts/check_test_files_exist.sh
+    - test/scripts/compare_matrix_files.sh
+    - test/scripts/compare_plain_files.sh
+    - test/scripts/compare_weights.py
+    - test/scripts/hictk_balance_ice.sh
+    - test/scripts/hictk_balance_scale.sh
+    - test/scripts/hictk_balance_vc.sh
     - test/scripts/hictk_convert_hic2cool.sh
     - test/scripts/hictk_convert_cool2hic.sh
     - test/scripts/hictk_dump_cells.sh
@@ -78,6 +84,9 @@ test:
     - test/scripts/hictk_rename_chromosomes.sh
     - test/scripts/hictk_validate.sh
     - test/scripts/hictk_zoomify.sh
+    - test/scripts/nproc.sh
+    - test/scripts/readlink.sh
+    - test/scripts/shuffle.sh
   commands:
     - hictk --help
     - hictk --version
@@ -89,3 +98,6 @@ extra:
   identifiers:
     - biotools:hictk
     - doi:10.5281/zenodo.8214221
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
