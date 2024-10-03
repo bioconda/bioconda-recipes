@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -xe
+
 mkdir -p ${PREFIX}/bin
 
 cd src
