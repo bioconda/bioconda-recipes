@@ -4,7 +4,6 @@ set -x
 
 # Define paths
 PACKAGE_HOME=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
-SCRIT_DIR_PATH="${PACKAGE_HOME}/"
 
 # create directories
 mkdir -p ${PREFIX}/bin
