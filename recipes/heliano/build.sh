@@ -22,13 +22,13 @@ SPLIT=${PACKAGE_HOME}/SplitJoint.R
 SORT=${PACKAGE_HOME}/Sort.sh
 myPYTHON_PATH=`which python3`
 
-sed -i.bak "s|_INTERPRETERPYTHON_PATH_|${myPYTHON_PATH}|" ${PACKAGE_HOME}/heliano
-sed -i.bak "s|_HMM_|${HMMmodel}|" ${PACKAGE_HOME}/heliano
-sed -i.bak "s|_HEADER_|${Headermodel}|" ${PACKAGE_HOME}/heliano
-sed -i.bak "s|_FISHER_|${FISHER}|" ${PACKAGE_HOME}/heliano
-sed -i.bak "s|_BOUNDARY_|${BCHECK}|" ${PACKAGE_HOME}/heliano
-sed -i.bak "s|_SPLIT_JOINT_|${SPLIT}|" ${PACKAGE_HOME}/heliano
-sed -i.bak "s|_SORTPRO_|${SORT}|" ${PACKAGE_HOME}/heliano
+sed -i.bak "s|_INTERPRETERPYTHON_PATH_|${myPYTHON_PATH}|" ${PACKAGE_HOME}/heliano.py
+sed -i.bak "s|_HMM_|${HMMmodel}|" ${PACKAGE_HOME}/heliano.py
+sed -i.bak "s|_HEADER_|${Headermodel}|" ${PACKAGE_HOME}/heliano.py
+sed -i.bak "s|_FISHER_|${FISHER}|" ${PACKAGE_HOME}/heliano.py
+sed -i.bak "s|_BOUNDARY_|${BCHECK}|" ${PACKAGE_HOME}/heliano.py
+sed -i.bak "s|_SPLIT_JOINT_|${SPLIT}|" ${PACKAGE_HOME}/heliano.py
+sed -i.bak "s|_SORTPRO_|${SORT}|" ${PACKAGE_HOME}/heliano.py
 
 # set permissions to files
 cp ${PACKAGE_HOME}/heliano.py ${PACKAGE_HOME}/heliano
@@ -43,26 +43,6 @@ df -h
 cd ${PREFIX}/bin
 ln -sf ${PACKAGE_HOME}/heliano
 ln -sf ${PACKAGE_HOME}/heliano_cons
-
-
-
-
-
-
-
-
-
-
-
-
-
-## set pathes for heliano_cons
-
-cp heliano_cons.py heliano_cons
-sed -i "s|_INTERPRETERPYTHON_PATH_|${myPYTHON_PATH}|" heliano_cons
-chmod 755 heliano_cons
-
-if [ ! -d "bin" ];then mkdir bin;fi
 mv heliano heliano_cons bin/
 
 echo "Succeed! Please find programs in bin/ directory."
