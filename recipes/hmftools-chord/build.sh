@@ -10,4 +10,4 @@ ${R} CMD INSTALL --build src/chord/src/main/R/mutSigExtractor
 ${R} CMD INSTALL --build src/chord/src/main/R/CHORD
 
 cp $RECIPE_DIR/chord.sh $TGT/chord
-ln -s $TGT/chord${PREFIX}/bin/
+ln -s $TGT/chord ${PREFIX}/bin/
