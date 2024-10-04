@@ -1,6 +1,8 @@
 #!/bin/bash
 
-make -C src BUILD_DIR="$(pwd)" \
+set -xe
+
+make -C src -j ${CPU_COUNT} BUILD_DIR="$(pwd)" \
 	TARGET_DIR="${PREFIX}" \
 	CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include" \
