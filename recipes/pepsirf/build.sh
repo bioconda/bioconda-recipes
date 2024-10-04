@@ -4,7 +4,7 @@ mkdir -p "${PREFIX}/bin"
 
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -D_LIBCPP_DISABLE_AVAILABILITY -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++17 -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 if [[ `uname` == "Darwin" ]]; then
