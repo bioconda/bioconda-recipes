@@ -1,4 +1,15 @@
-{% set version = "2.2.0" %}
+{% set version = "2.2.1" %}
+
+{% set system = "x64_linux"%}       # [linux and x86_64]
+{% set system = "x64_mac"%}         # [osx and x86_64]
+{% set system = "arm64_linux"%}     # [linux and aarch64]
+{% set system = "arm64_mac"%}       # [osx and arm64]
+
+{% set sha256 = "2B41020DDF67B89B26AEDA066248D331D269304D0261EDE18B3CEA9931B17063" %}  # [linux and x86_64]
+{% set sha256 = "C178CF354BBAF4DCF947C05245833CB242D7A76804BE9EA2B392A79846A4CAF2" %}  # [osx and x86_64]
+{% set sha256 = "499E32E8AD9D5AF4E295BBDA67E0BBCB465DEEC85B14428D3C99689669812C08" %}  # [linux and arm64]
+{% set sha256 = "13F8C22E0E08154AF4F0CAC4AE5BC17D8D741FE76E16DCFA3BB57D6069E241D8" %}  # [osx and arm64]
+
 
 package:
   name: kmer-db
@@ -8,17 +19,12 @@ build:
   number: 0
   run_exports:
   - {{ pin_subpackage('kmer-db', max_pin='x.x.x') }}
+  script: mkdir -p ${PREFIX}/bin; ls; cp kmer-db ${PREFIX}/bin
+
 
 source:
-  git_url: https://github.com/refresh-bio/kmer-db.git
-  git_rev: v{{ version }}
-
-requirements:
-  build:
-    - make
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - nasm
+  url: https://github.com/refresh-bio/kmer-db/releases/download/v{{ version }}/kmer-db-v{{ version }}_{{ system }}.tar.gz
+  sha256: {{ sha256 }
 
 about:
   home: https://github.com/refresh-bio/kmer-db
