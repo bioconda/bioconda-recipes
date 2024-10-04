@@ -19,9 +19,8 @@ HMMmodel=${PACKAGE_HOME}/RepHel.hmm
 Headermodel=${PACKAGE_HOME}/tclcv.txt
 SPLIT=${PACKAGE_HOME}/SplitJoint.R
 SORT=${PACKAGE_HOME}/Sort.sh
-myPYTHON_PATH=`which python3`
 
-sed -i.bak "s|_INTERPRETERPYTHON_PATH_|${myPYTHON_PATH}|" ${PACKAGE_HOME}/heliano.py
+sed -i.bak "s|_INTERPRETERPYTHON_PATH_|/usr/bin/env python|" ${PACKAGE_HOME}/heliano.py
 sed -i.bak "s|_HMM_|${HMMmodel}|" ${PACKAGE_HOME}/heliano.py
 sed -i.bak "s|_HEADER_|${Headermodel}|" ${PACKAGE_HOME}/heliano.py
 sed -i.bak "s|_FISHER_|${FISHER}|" ${PACKAGE_HOME}/heliano.py
