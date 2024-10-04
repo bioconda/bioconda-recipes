@@ -1,10 +1,10 @@
 #!/bin/bash
 
-if [[ -z "${CC}" ]]; then
+if [[ ! -z "${CC}" ]]; then
    alias gcc=$CC
 fi
 
-if [[ -z "${CXX}" ]]; then
+if [[ ! -z "${CXX}" ]]; then
    alias g++=$CXX
 fi
 
