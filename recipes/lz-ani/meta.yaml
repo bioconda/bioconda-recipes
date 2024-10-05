@@ -1,5 +1,14 @@
-{% set version = "1.0.1b" %}
+{% set version = "1.1.1" %}
 
+{% set system = "x64_linux" %}       # [linux and x86_64]
+{% set system = "x64_mac" %}         # [osx and x86_64]
+{% set system = "arm64_linux" %}     # [linux and aarch64]
+{% set system = "arm64_mac" %}       # [osx and arm64]
+
+{% set sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" %}  # [linux and x86_64]
+{% set sha256 = "b7745c3219671518e1be94e1875029f0efc44d01ba5a16efd038bba23eec1dfd" %}  # [osx and x86_64]
+{% set sha256 = "f00471c0796e682824780f4323301469ca656a032c244434bd7496750ac5101d" %}  # [linux and aarch64]
+{% set sha256 = "3638a0fb7e4de16d2298f337db649ff8882de046c8590c0a1d85ee16c437d7c1" %}  # [osx and arm64]
 package:
   name: lz-ani
   version: {{ version }}
@@ -10,15 +19,9 @@ build:
   - {{ pin_subpackage('lz-ani', max_pin='x.x.x') }}
 
 source:
-  git_url: https://github.com/refresh-bio/lz-ani.git
-  git_rev: v{{ version }}
+  url: https://github.com/refresh-bio/lz-ani/releases/download/v{{ version }}/lz-ani{ version }}-{{ system }}.tar.gz
+  sha256: {{ sha256 }}
 
-requirements:
-  build:
-    - make
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - nasm
 
 about:
   home: https://github.com/refresh-bio/lz-ani
@@ -32,6 +35,9 @@ test:
     - lz-ani > /dev/null
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   skip-lints:
-    - uses_vcs_url 
-    - missing_hash
+    - should_be_noarch_generic
+    - should_not_be_noarch_source
