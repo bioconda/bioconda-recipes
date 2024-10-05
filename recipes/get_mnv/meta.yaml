@@ -12,43 +12,33 @@ source:
 
 build:
   number: 0
-  # Definimos el script de construcción con las rutas adecuadas para OpenSSL
-  script: |
-    export OPENSSL_DIR=$PREFIX
-    export OPENSSL_LIB_DIR=$PREFIX/lib
-    export OPENSSL_INCLUDE_DIR=$PREFIX/include
-    export RUST_BACKTRACE=1
-    export LANG=C.UTF-8
-    export LC_ALL=C.UTF-8
-    cargo install --no-track --locked --verbose --root "${PREFIX}" --path .
-
+  script: "cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}  # Asegura que el paquete se versionee correctamente para las dependencias futuras.
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('rust') }}  # Rust y Cargo son necesarios para construir el paquete.
-    - openssl                 # OpenSSL es requerido por las dependencias de Rust.
-    - pkg-config              # Necesario para compilar `openssl-sys`.
-    - make                    # `make` es necesario para compilar algunas dependencias nativas.
-    - gcc                     # Asegura la presencia de compiladores adecuados para C/C++.
+    - {{ compiler('rust') }}
+    - openssl  
+    - pkg-config  
+  host:
+    - openssl
+    - pkg-config
   run:
-    - openssl  # Incluye OpenSSL como dependencia en tiempo de ejecución.
-    - libgcc   # Incluye `libgcc` para la compatibilidad con bibliotecas de C/C++.
+    - openssl
 
 test:
   commands:
-    - get_mnv --help  # Verifica que el binario `get_mnv` se haya instalado correctamente.
+    - get_mnv --help
 
 about:
-  home: https://github.com/PathoGenOmics-Lab/get_mnv
-  license: GPL-3.0
+  home: "https://github.com/PathoGenOmics-Lab/get_mnv"
+  license: "GPL-3.0"
   license_file: LICENSE
-  summary: 'Tool to identify Multi-Nucleotide Variants (MNVs) in genomic sequences.'
-  description: |
-    get_MNV is a tool designed to identify Multi-Nucleotide Variants (MNVs) within the same codon in genomic sequences, providing more accurate annotation for genomic data.
-  doc_url: https://github.com/PathoGenOmics-Lab/get_mnv
-  dev_url: https://github.com/PathoGenOmics-Lab/get_mnv
+  summary: "Tool to identify Multi-Nucleotide Variants (MNVs) in genomic sequences."
+  description: "get_MNV is a tool designed to identify Multi-Nucleotide Variants (MNVs) within the same codon in genomic sequences, providing more accurate annotation for genomic data."
+  doc_url: "https://github.com/PathoGenOmics-Lab/get_mnv"
+  dev_url: "https://github.com/PathoGenOmics-Lab/get_mnv"
 
 extra:
   recipe-maintainers:
@@ -56,4 +46,3 @@ extra:
   categories:
     - Genomics
     - Variant Analysis
-
