@@ -1,6 +1,6 @@
 {% set name = "get_mnv" %}
 {% set version = "1.0.0" %}
-{% set sha256 = "a94eda49def81ef76217b8d39095677335945105d581a0cc9b777db4f6f6b014" %}
+{% set sha256 = "b9ba6fe1a5f5f73afa98cde9e348f7861d44690f795338816a8a0724a66e1aa8" %}
 
 package:
   name: "{{ name|lower }}"
@@ -12,20 +12,42 @@ source:
 
 build:
   number: 0
-  script: "cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
+  script: |
+    export LANG=C.UTF-8
+    export LC_ALL=C.UTF-8
+    export RUST_BACKTRACE=1
+    export OPENSSL_NO_VENDOR=1
+    export OPENSSL_DIR=$PREFIX
+    export OPENSSL_INCLUDE_DIR=$PREFIX/include
+    export OPENSSL_LIB_DIR=$PREFIX/lib
+    export CURL_STATIC_SSL=1
+    export CURL_SYS_STATIC=1
+    export CARGO_NET_OFFLINE=true
+    export HTS_LIB_DIR=$PREFIX/lib
+    export HTS_INCLUDE_DIR=$PREFIX/include
+    export HTS_STATIC=1
+    export HTS_SYS_BUNDLED=0
+    cargo install --no-track --locked --verbose --root "${PREFIX}" --path .
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('rust') }}
-    - openssl  
-    - pkg-config  
-  host:
     - openssl
+    - curl
     - pkg-config
+    - htslib
+    - bzip2
+    - xz
+    - zlib
   run:
     - openssl
+    - curl
+    - htslib
+    - bzip2
+    - xz
+    - zlib
 
 test:
   commands:
@@ -36,7 +58,8 @@ about:
   license: "GPL-3.0"
   license_file: LICENSE
   summary: "Tool to identify Multi-Nucleotide Variants (MNVs) in genomic sequences."
-  description: "get_MNV is a tool designed to identify Multi-Nucleotide Variants (MNVs) within the same codon in genomic sequences, providing more accurate annotation for genomic data."
+  description: |
+    get_MNV is a tool designed to identify Multi-Nucleotide Variants (MNVs) within the same codon in genomic sequences, providing more accurate annotation for genomic data.
   doc_url: "https://github.com/PathoGenOmics-Lab/get_mnv"
   dev_url: "https://github.com/PathoGenOmics-Lab/get_mnv"
 
