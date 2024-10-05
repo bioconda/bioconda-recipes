@@ -1,28 +1,27 @@
 {% set name = "get_mnv" %}
 {% set version = "1.0.0" %}
+{% set sha256 = "a94eda49def81ef76217b8d39095677335945105d581a0cc9b777db4f6f6b014" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  git_url: https://github.com/PathoGenOmics-Lab/get_mnv.git
-  git_tag: "{{ version }}"
-build:
-  number: '0'
-  script: bash -c "cargo install --locked --root \"$PREFIX\" --path . && rm -f \"${PREFIX}/.crates.toml\" \"${PREFIX}/.crates2.json\""
+  url: "https://github.com/PathoGenOmics-Lab/{{ name }}/archive/refs/tags/{{ version }}.tar.gz"
+  sha256: "{{ sha256 }}"
 
+build:
+  number: 0
+  script: "cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
 
 requirements:
   build:
-    - rust >=1.55  
-  host:
-    - rust >=1.55
-  run:
-    - libgcc 
+    - {{ compiler('rust') }}
+
 test:
   commands:
-    - get_mnv --help  
+    - get_mnv --help  # Asegúrate de que `get_mnv` sea el nombre del binario
+
 
 about:
   home: https://github.com/PathoGenOmics-Lab/get_mnv
@@ -37,3 +36,5 @@ about:
 extra:
   recipe-maintainers:
     - PathoGenOmics-Lab
+
+
