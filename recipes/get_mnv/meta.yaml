@@ -12,17 +12,33 @@ source:
 
 build:
   number: 0
-  script: "cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
+  # Definimos el script de construcción con las rutas adecuadas para OpenSSL
+  script: |
+    export OPENSSL_DIR=$PREFIX
+    export OPENSSL_LIB_DIR=$PREFIX/lib
+    export OPENSSL_INCLUDE_DIR=$PREFIX/include
+    export RUST_BACKTRACE=1
+    export LANG=C.UTF-8
+    export LC_ALL=C.UTF-8
+    cargo install --no-track --locked --verbose --root "${PREFIX}" --path .
+
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}  # Asegura que el paquete sea correctamente versionado en futuras dependencias
+    - {{ pin_subpackage(name, max_pin="x") }}  # Asegura que el paquete se versionee correctamente para las dependencias futuras.
 
 requirements:
   build:
-    - {{ compiler('rust') }}
+    - {{ compiler('rust') }}  # Rust y Cargo son necesarios para construir el paquete.
+    - openssl                 # OpenSSL es requerido por las dependencias de Rust.
+    - pkg-config              # Necesario para compilar `openssl-sys`.
+    - make                    # `make` es necesario para compilar algunas dependencias nativas.
+    - gcc                     # Asegura la presencia de compiladores adecuados para C/C++.
+  run:
+    - openssl  # Incluye OpenSSL como dependencia en tiempo de ejecución.
+    - libgcc   # Incluye `libgcc` para la compatibilidad con bibliotecas de C/C++.
 
 test:
   commands:
-    - get_mnv --help  # Asegúrate de que `get_mnv` sea el nombre del binario
+    - get_mnv --help  # Verifica que el binario `get_mnv` se haya instalado correctamente.
 
 about:
   home: https://github.com/PathoGenOmics-Lab/get_mnv
