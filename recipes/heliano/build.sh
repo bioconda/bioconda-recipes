@@ -36,6 +36,6 @@ chmod +x ${PACKAGE_HOME}/heliano_cons.py
 df -h
 
 # put files in the executable bin
-cd ${PREFIX}/bin
-ln -sf ${PACKAGE_HOME}/heliano.py heliano
-ln -sf ${PACKAGE_HOME}/heliano_cons.py heliano_cons
+cd ${PREFIX}/bin || exit 1
+ln -sf "${PACKAGE_HOME}/heliano.py" heliano
+ln -sf "${PACKAGE_HOME}/heliano_cons.py" heliano_cons
