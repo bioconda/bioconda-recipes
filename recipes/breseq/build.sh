@@ -5,6 +5,7 @@ set -eux
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export M4="${BUILD_PREFIX}/bin/m4"
 
 autoreconf -if
 ./configure --prefix="${PREFIX}" \
