@@ -13,13 +13,13 @@ about:
   summary: Sequence Utilities from the Galaxy project
 
 source:
-  url: https://pypi.io/packages/source/g/galaxy-sequence-utils/galaxy_sequence_utils-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/galaxy_sequence_utils-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
-  preserve_egg_dir: True
   run_exports:
     -{{ pin_subpackage(name, max_pin="x") }}
   entry_points:
@@ -40,18 +40,20 @@ build:
 
 requirements:
   host:
-    # uses the imp module which has been deprecated in 3.12
-    - python <3.12
+    - python >=3.8
     - setuptools
-    - six
-
+    - pip
   run:
-    - python <3.12
-    - six
+    - python >=3.8
 
 test:
   imports:
     - galaxy_utils
   commands:
+    - gx-fastq-groomer --help
     - gx-fastq-trimmer-by-quality --help
     - gx-fastq-masker-by-quality --help
+
+extra:
+  recipe-maintainers:
+    - nsoranzo
