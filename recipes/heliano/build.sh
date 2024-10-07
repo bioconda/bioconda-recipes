@@ -29,8 +29,8 @@ sed -i.bak "s|_SPLIT_JOINT_|${SPLIT}|" ${PACKAGE_HOME}/heliano.py
 sed -i.bak "s|_SORTPRO_|${SORT}|" ${PACKAGE_HOME}/heliano.py
 
 # set permissions to files
-chmod +x ${PACKAGE_HOME}/heliano
-chmod +x ${PACKAGE_HOME}/heliano_cons
+chmod +x ${PACKAGE_HOME}/heliano.py
+chmod +x ${PACKAGE_HOME}/heliano_cons.py
 
 # test for conda
 df -h
