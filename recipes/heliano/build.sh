@@ -29,8 +29,6 @@ sed -i.bak "s|_SPLIT_JOINT_|${SPLIT}|" ${PACKAGE_HOME}/heliano.py
 sed -i.bak "s|_SORTPRO_|${SORT}|" ${PACKAGE_HOME}/heliano.py
 
 # set permissions to files
-cp ${PACKAGE_HOME}/heliano.py ${PACKAGE_HOME}/heliano
-cp ${PACKAGE_HOME}/heliano_cons.py ${PACKAGE_HOME}/heliano_cons
 chmod +x ${PACKAGE_HOME}/heliano
 chmod +x ${PACKAGE_HOME}/heliano_cons
 
@@ -39,7 +37,5 @@ df -h
 
 # put files in the executable bin
 cd ${PREFIX}/bin
-ln -sf ${PACKAGE_HOME}/heliano
-ln -sf ${PACKAGE_HOME}/heliano_cons
-
-echo "Succeed! Please find programs in bin/ directory."
+ln -sf ${PACKAGE_HOME}/heliano.py heliano
+ln -sf ${PACKAGE_HOME}/heliano_cons.py heliano_cons
