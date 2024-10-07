@@ -14,8 +14,7 @@ else
 fi	
 
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-	-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
-	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-DCMAKE_BUILD_TYPE=Release \
 	"${CONFIG_ARGS}"
 cmake --build build --target mbgc -j "${CPU_COUNT}" -v
 
