@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 mkdir -p  "$PREFIX/bin"
 mkdir -p  "$PREFIX/bin/bin"
 
@@ -13,7 +15,7 @@ else
     sed -i '/bin_PROGRAMS/d' ./libMUSCLE/Makefile.am
     ./configure --prefix=$PREFIX CXXFLAGS='-fopenmp'
 fi
-make -j
+make -j ${CPU_COUNT}
 make install
 
 cd ..
@@ -24,7 +26,7 @@ cd ..
 
 ./autogen.sh
 ./configure --with-libmuscle=$PREFIX/include
-make LDADD="$LDADD -lMUSCLE-3.7"
+make -j ${CPU_COUNT} LDADD="$LDADD -lMUSCLE-3.7"
 make install
 
 rm -R muscle/libMUSCLE
