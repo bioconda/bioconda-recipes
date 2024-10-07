@@ -32,9 +32,6 @@ sed -i.bak "s|_SORTPRO_|${SORT}|" ${PACKAGE_HOME}/heliano.py
 chmod +x ${PACKAGE_HOME}/heliano.py
 chmod +x ${PACKAGE_HOME}/heliano_cons.py
 
-# test for conda
-df -h
-
 # put files in the executable bin
 cd ${PREFIX}/bin || exit 1
 ln -sf "${PACKAGE_HOME}/heliano.py" heliano
