@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x
+# Do not set -x, this script outputs a value with echo
 
 # Check to see if any changed recipes have specified the key
 # extra:additional-platforms, and if so, if they match the platform of the
@@ -24,8 +24,6 @@ files=`git diff --name-only --diff-filter AMR ${git_range} | grep -v 'template' 
 build=0
 
 for file in $files; do
-    echo "Going to check '${file}' for additional-platforms."
-
     # To create a properly-formatted yaml that yq can parse, comment out jinja2
     # variable setting with {% %} and remove variable use with {{ }}.
     additional_platforms=$(cat $file \
