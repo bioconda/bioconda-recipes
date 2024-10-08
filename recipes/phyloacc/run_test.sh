@@ -7,6 +7,7 @@ set -x
 # bed file, id subset file, and config file.
 
 TMP=$(mktemp -d)
+trap "rm -rf $TMP" EXIT
 cd $TMP
 
 echo " ** DOWNLOADING TEST DATA."
