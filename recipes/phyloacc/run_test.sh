@@ -8,6 +8,7 @@ set -x
 
 TMP=$(mktemp -d)
 trap "rm -rf $TMP" EXIT
+export TMPDIR=$TMP
 cd $TMP
 
 echo " ** DOWNLOADING TEST DATA."
