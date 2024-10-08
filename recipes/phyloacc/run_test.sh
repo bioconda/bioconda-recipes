@@ -10,26 +10,50 @@ TMP=$(mktemp -d)
 cd $TMP
 
 echo " ** DOWNLOADING TEST DATA."
-wget https://github.com/phyloacc/PhyloAcc-test-data/raw/main/bioconda-test-data/bioconda-test-cfg.yaml
-wget https://github.com/phyloacc/PhyloAcc-test-data/raw/main/bioconda-test-data/id-subset.txt
-wget https://github.com/phyloacc/PhyloAcc-test-data/raw/main/bioconda-test-data/ratite.mod
-wget https://github.com/phyloacc/PhyloAcc-test-data/raw/main/bioconda-test-data/simu_500_200_diffr_2-1.bed
-wget https://github.com/phyloacc/PhyloAcc-test-data/raw/main/bioconda-test-data/simu_500_200_diffr_2-1.noanc.fa
+files=(
+  "bioconda-test-cfg.yaml"
+  "id-subset.txt"
+  "ratite.mod"
+  "simu_500_200_diffr_2-1.bed"
+  "simu_500_200_diffr_2-1.noanc.fa"
+)
+
+for file in "${files[@]}"; do
+  if ! wget -q "https://github.com/phyloacc/PhyloAcc-test-data/raw/main/bioconda-test-data/$file"; then
+    echo "Failed to download $file" >&2
+    exit 1
+  fi
+done
 echo " ** TEST DATA DOWNLOAD OK."
 
 echo " ** BEGIN DEPCHECK TEST."
-phyloacc --depcheck
+if ! phyloacc --depcheck; then
+  echo " ** ERROR: Dependency check failed. Please ensure all dependencies are installed." >&2
+  exit 1
+fi
 echo " ** DEPCHECK TEST OK."
 
 echo " ** BEGIN PHYLOACC INTERFACE TEST."
-phyloacc --config bioconda-test-cfg.yaml --local
+if ! phyloacc --config bioconda-test-cfg.yaml --local; then
+  echo " ** ERROR: PhyloAcc interface test failed. Please check the configuration and installation." >&2
+  exit 1
+fi
 echo " ** INTERFACE TEST OK."
 
 echo " ** BEGIN WORKFLOW TEST."
-snakemake -p --jobs 1 --cores 1 -s phyloacc-bioconda-test/phyloacc-job-files/snakemake/run_phyloacc.smk --configfile phyloacc-bioconda-test/phyloacc-job-files/snakemake/phyloacc-config.yaml
+if ! snakemake -p --jobs 1 --cores 1 -s phyloacc-bioconda-test/phyloacc-job-files/snakemake/run_phyloacc.smk --configfile phyloacc-bioconda-test/phyloacc-job-files/snakemake/phyloacc-config.yaml; then
+  echo " ** ERROR: PhyloAcc workflow test failed. Please check the Snakemake configuration and log files." >&2
+  exit 1
+fi
 echo " ** WORKFLOW TEST OK."
 
 echo " ** BEGIN POST-PROCESSING TEST."
-phyloacc_post.py -h
-phyloacc_post.py -i phyloacc-bioconda-test/
+if ! phyloacc_post.py -h; then
+  echo " ** ERROR: Failed to display help message for phyloacc_post.py" >&2
+  exit 1
+fi
+if ! phyloacc_post.py -i phyloacc-bioconda-test/; then
+  echo " ** ERROR: Post-processing test failed. Please check the input directory and log files." >&2
+  exit 1
+fi
 echo " ** POST-PROCESSING TEST OK."
