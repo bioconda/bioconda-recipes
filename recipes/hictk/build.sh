@@ -9,7 +9,7 @@ du -h -d1 --total .
 ps afu |  awk '{$5=int($5/1024)"M";}{ print;}' | (read -r; printf "%s\n" "$REPLY"; sort -rnk 5)
 
 # Collect stats about memory usage
-bash -c "while :; do clear; ps afu | head -n 11 |  awk '{\$5=int(\$5/1024)\"M\";}{ print;}' | (read -r; printf \"%s\n\" \"\$REPLY\"; sort -rnk 5); sleep 1; done" 1>&2 &
+bash -c "while :; do clear; ps afu | awk '{\$5=int(\$5/1024)\"M\";}{ print;}' | (read -r; printf \"%s\n\" \"\$REPLY\"; sort -rnk 5 | head -n 11); sleep 1; done" 1>&2 &
 
 sleep 2
 
