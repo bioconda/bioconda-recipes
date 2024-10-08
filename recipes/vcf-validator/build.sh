@@ -1,16 +1,7 @@
 #!/bin/bash
 
-if [[ -n "${CC}" ]]; then
-   alias gcc=$CC
-fi
-
-if [[ -n "${CXX}" ]]; then
-   alias g++=$CXX
-fi
-
 # Set c++ to version 11
 export CXXFLAGS="-std=c++11 ${CXXFLAGS}"
-
 
 mkdir build || { echo "Failed to create build directory" >&2; exit 1; }
 cd build || { echo "Failed to go into build directory" >&2; exit 1; }
