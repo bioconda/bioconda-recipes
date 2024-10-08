@@ -1,18 +1,5 @@
 #!/bin/bash
 
-python -c "import pathlib; print(pathlib.Path('$PWD').resolve())"
-ls -lah
-df -h
-du -h -d1 --total .
-
-
-ps afu |  awk '{$5=int($5/1024)"M";}{ print;}' | (read -r; printf "%s\n" "$REPLY"; sort -rnk 5)
-
-# Collect stats about memory usage
-bash -c "while :; do clear; ps afu | awk '{\$5=int(\$5/1024)\"M\";}{ print;}' | (read -r; printf \"%s\n\" \"\$REPLY\"; sort -rnk 5 | head -n 11); sleep 1; done" 1>&2 &
-
-sleep 2
-
 export CONAN_NON_INTERACTIVE=1
 
 export CMAKE_BUILD_PARALLEL_LEVEL=1 # ${CPU_COUNT}
