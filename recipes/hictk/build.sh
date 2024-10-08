@@ -1,12 +1,14 @@
 #!/bin/bash
 
-pwd
+python -c "import pathlib; print(pathlib.Path('$PWD').resolve())"
 ls -lah
 df -h
 du -h -d1 --total .
 
+top
+
 # Collect stats about memory usage
-bash -c "while :; do clear; free ; sleep 1; done" 1>&2 &
+bash -c "while :; do clear; free -h ; sleep 1; done" 1>&2 &
 
 sleep 2
 
