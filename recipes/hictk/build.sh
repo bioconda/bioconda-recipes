@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Collect stats about memory usage
+bash -c "while :; do clear; free | grep Mem | awk '{print \"Available memory:\",\$4,\"bytes\",\$4/\$2 * 100,\"%\"}' ; sleep 1; done" 1>&2 &
+
+sleep 2
+
 export CONAN_NON_INTERACTIVE=1
 
 export CMAKE_BUILD_PARALLEL_LEVEL=1 # ${CPU_COUNT}
@@ -63,9 +68,6 @@ cmake -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE"   \
       "${CMAKE_PLATFORM_FLAGS[@]}"             \
       -B build/                                \
       -S .
-
-# Collect stats about memory usage
-bash -c "while :; do clear; free | grep Mem | awk '{print \"Available memory:\",\$4,\"bytes\",\$4/\$2 * 100,\"%\"}' ; sleep 1; done" 1>&2 &
 
 cmake --build build/
 
