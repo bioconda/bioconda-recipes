@@ -66,7 +66,6 @@ cmake -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE"   \
 cmake --build build/
 
 ctest --test-dir build/   \
-      --schedule-random   \
       --output-on-failure \
       --no-tests=error    \
       --timeout 180
