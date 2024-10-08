@@ -32,10 +32,10 @@ mkdir -p "$CONAN_HOME/profiles/"
 ln -s "${RECIPE_DIR}/conan_profiles/$conan_profile" "$CONAN_HOME/profiles/$conan_profile"
 
 # Remove unnecessary dependencies from conanfile.txt
-patch conanfile.txt < "${RECIPE_DIR}/conanfile.txt.patch"
+patch conanfile.py < "${RECIPE_DIR}/conanfile.py.patch"
 
 # Install header-only deps
-conan install conanfile.txt \
+conan install conanfile.py \
        --build="*" \
        -pr:b "$conan_profile" \
        -pr:h "$conan_profile" \

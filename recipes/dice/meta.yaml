@@ -1,0 +1,41 @@
+{% set name = "dice" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: '{{ name }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/samsonweiner/DICE/archive/refs/tags/v1.1.0.tar.gz
+  sha256: 4130efd20af8726544350cef76015b4f9d1f1755fef1a4f63576a73755a0d8c0
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - dice = core.dice:main
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage('dice', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+  run:
+    - python >=3.9
+    - numpy >=1.20.3
+    - pandas >=1.5.2
+    - fastme
+  
+test:
+  commands:
+    - dice -h
+
+about:
+  home: https://github.com/samsonweiner/DICE
+  license: GPL-3.0-only
+  license_file: LICENSE
+  summary: Cell lineage reconstruction from single-cell CNA data
+  description: |
+    DICE (short for Distance-based Inference of Copy-number Evolution) is a collection of fast and accurate methods for reconstructing cell lineage trees from single-cell copy number aberration data. 
