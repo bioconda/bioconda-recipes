@@ -1,7 +1,12 @@
 #!/bin/bash
 
+pwd
+ls -lah
+df -h
+du -h -d1 --total .
+
 # Collect stats about memory usage
-bash -c "while :; do clear; free | grep Mem | awk '{print \"Available memory:\",\$4,\"bytes\",\$4/\$2 * 100,\"%\"}' ; sleep 1; done" 1>&2 &
+bash -c "while :; do clear; free ; sleep 1; done" 1>&2 &
 
 sleep 2
 
