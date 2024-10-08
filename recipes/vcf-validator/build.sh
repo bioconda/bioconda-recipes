@@ -21,4 +21,6 @@ if ! ./build/bin/test_validation_suite; then
   echo "Validation suite failed" >&2
   exit 1
 fi
+cp build/bin/vcf_validator ${PREFIX}/bin
+cp build/bin/vcf_assembly_checker ${PREFIX}/bin
 echo "Done with vcf-validator"
