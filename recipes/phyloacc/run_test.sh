@@ -7,7 +7,7 @@ set -x
 # bed file, id subset file, and config file.
 
 TMP=$(mktemp -d)
-trap "rm -rf $TMP" EXIT
+trap 'rm -rf $TMP' EXIT
 export TMPDIR=$TMP
 cd $TMP
 
