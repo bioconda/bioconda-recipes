@@ -24,7 +24,7 @@ if [[ ${HOST} =~ .*darwin.* ]]; then
   conan_profile='apple-clang'
 else
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
-  conan_profile='gcc'
+  conan_profile='clang'
 fi
 
 # Remember to update these profiles when bioconda's compiler toolchains are updated
