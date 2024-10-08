@@ -64,6 +64,9 @@ cmake -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE"   \
       -B build/                                \
       -S .
 
+# Collect stats about memory usage
+bash -c "while :; do clear; free | grep Mem | awk '{print \"Available memory:\",\$4,\"bytes\",\$4/\$2 * 100,\"%\"}' ; sleep 1; done" 1>&2 &
+
 cmake --build build/
 
 ctest --test-dir build/   \
