@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mkdir -p ${PREFIX}/bin
+
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
@@ -16,3 +18,6 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	"${CONFIG_ARGS}"
 cmake --build build --target install -j "${CPU_COUNT}" -v
+
+chmod 0755 bin/*
+mv bin/* ${PREFIX}/bin
