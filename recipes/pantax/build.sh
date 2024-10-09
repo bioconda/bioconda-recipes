@@ -10,6 +10,5 @@ else
     cp ${SRC_DIR}/scripts/*py ${PREFIX}/bin
 
     cd ${SRC_DIR}/tools/fastix
-    cargo install fastix --root ./
     RUST_BACKTRACE=1 cargo install --verbose --locked --no-track --root ${PREFIX} --path .
 fi
