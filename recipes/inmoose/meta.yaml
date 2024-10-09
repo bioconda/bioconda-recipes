@@ -1,0 +1,64 @@
+{% set name = "inmoose" %}
+{% set version = "0.7.2" %}
+{% set md5 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/epigenelabs/inmoose/archive/refs/tags/v0.7.2.tar.gz
+  md5: {{ md5 }}
+
+build:
+  noarch: python
+  number: 0
+  preserve_egg_dir: True
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  entry_points:
+    - inmoose = inmoose.__master__:root_command
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - python >=3.4
+    - numpy
+    - pandas >=0.25,!=1.1.3
+    - seaborn
+    - matplotlib-base
+    - biopython <=1.74
+    - tqdm
+    - pysam >=0.15
+    - networkx
+    - h5py
+    - psutil
+    - pytest
+    - lmfit
+
+test:
+  imports:
+    - inmoose
+    - inmoose.pycombat
+    - pycombat_norm
+    - pycombat_seq
+    - inmoose.consensus_clustering.consensus_clustering
+    - consensusClustering
+    - sklearn.cluster
+    - AgglomerativeClustering
+
+  commands:
+    - inmoose --help
+
+about:
+  home: https://github.com/epigenelabs/inmoose/tree/master
+  license: GPL-3.0 license
+  summary: 'InMoose is the Integrated Multi Omic Open Source Environment. It is a collection of tools for the analysis of omic data.'
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true  # [py3k]
