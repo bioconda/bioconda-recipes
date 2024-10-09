@@ -9,8 +9,7 @@ else
     cp ${SRC_DIR}/scripts/pantax ${SRC_DIR}/scripts/data_preprocessing ${PREFIX}/bin
     cp ${SRC_DIR}/scripts/*py ${PREFIX}/bin
 
-    mkdir -p ${PREFIX}/bin/tools
     cd ${SRC_DIR}/tools/fastix
     cargo install fastix --root ./
-    cp ${SRC_DIR}/tools/fastix/bin/fastix ${PREFIX}/bin/tools
+    RUST_BACKTRACE=1 cargo install --verbose --locked --no-track --root ${PREFIX} --path .
 fi
