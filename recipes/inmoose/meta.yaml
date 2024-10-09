@@ -15,28 +15,29 @@ build:
   number: 0
   run_exports:
   - {{ pin_subpackage(name, max_pin="x.x") }}
-  preserve_egg_dir: True
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
-  entry_points:
-    - inmoose = inmoose.__master__:root_command
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -v"
 
 requirements:
-  host:
-    - python
+  build:
+    - {{ compiler('c') }}
+    - python >=3.8
     - pip
+
+  host:
+    - python >=3.8
+    - pip
+
   run:
-    - python
+    - python >=3.8
     - numpy
+    - scipy
     - pandas
+    - scikit-learn
+    - matplotlib
     - seaborn
-    - matplotlib-base
-    - biopython
-    - tqdm
-    - pysam
-    - networkx
-    - h5py
-    - psutil
-    - lmfit
+    - click
+    - anndata
+    - scanpy
 
 test:
   imports:
@@ -46,16 +47,11 @@ test:
 
   commands:
     - inmoose --help
+    - inmoose --version
 
 about:
-  home: https://github.com/epigenelabs/inmoose/tree/master
+  home: https://github.com/epigenelabs/inmoose
   license: GPL-3.0-or-later
   license_family: GPL3
   license_file: LICENSE
   summary: 'InMoose is the Integrated Multi Omic Open Source Environment. It is a collection of tools for the analysis of omic data.'
-
-extra:
-  container:
-    # click requires a unicode locale when used with Python 3
-    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
-    extended-base: true  # [py3k]
