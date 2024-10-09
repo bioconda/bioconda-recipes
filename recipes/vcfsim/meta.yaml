@@ -1,5 +1,5 @@
 {% set name = "vcfsim" %}
-{% set version = "1.0.5.alpha" %}
+{% set version = "1.0.16.alpha" %}
 
 package:
   name: {{ name|lower }}
@@ -7,62 +7,47 @@ package:
 
 source:
   url: https://github.com/Pie115/VCFSimulator-SamukLab/archive/{{ version }}.tar.gz
-  sha256: 3930958c2e52f62e5dd9e685307ff03e5387ae80158339806152da7f7aaa57ac
+  sha256: 385640fdee385c6710ba7bda68cedd28f665f3b0d950d400662f3d5aa374ccfa
 
 build:
+  noarch: python
   entry_points:
     - vcfsim=vcfsim.__main__:main
   script: {{ PYTHON }} -m pip install . -vv
   number: 0
-  skip: True
   run_exports:
     - {{ pin_subpackage('vcfsim', max_pin="x") }} 
-
-requirements:
-  build:
-    - {{ compiler('c') }}
-    - cross-python_{{ target_platform }}  
-    - python
-    - pybind11
-    - numpy
     
+requirements:
   host:
-    - python >=3.8
-    - cython
+    - python >=3.6
     - pip
     - setuptools
     - numpy
-    - setuptools_scm
-    - gsl
-    
+    - pandas
+    - msprime
+    - ipython  # Include this only if IPython features are used outside notebooks
+
   run:
-    - python >=3.8
-    - pandas >=1.5.2
+    - python >=3.6
     - numpy
-    - msprime >=1.0.1
-    - tskit >=0.4
-    - demes >=0.2
-    - gsl
-    - scikit-allel >=1.3.5
-    - scikit-learn >=1.2.0
-    - scipy >=1.9.3
+    - pandas
+    - msprime
+    - ipython  # Include this only if IPython features are used outside notebooks
 
 test:
   imports:
     - vcfsim
   commands:
-    - pip check
     - vcfsim --help
-  requires:
-    - pip
 
 about:
   home: https://github.com/Pie115/VCFSimulator-SamukLab
   license: MIT
   license_file: LICENSE.txt
-  summary: "Script for generating simulated VCF's"
+  summary: "Script for generating simulated VCF's leveraging a coalescent simulating backend."
   description: |
-      "vcfsim is a new command-line tool for generating simulated VCF's(variant call format files for encoding genetic data). Leveraging a coalescent simulating backend and providing an interface from Msprime coalescent simulating package to pandas. VCF's can now be easily simulated with just a few command line arguments!"
+      "VCFSim is a new command-line tool for generating simulated VCF's(variant call format files for encoding genetic data). Leveraging a coalescent simulating backend and providing an interface from Msprime coalescent simulating package to pandas. VCF's can now be easily simulated with just a few command line arguments!"
 
 extra:
   recipe-maintainers:

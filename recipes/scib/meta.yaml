@@ -1,31 +1,29 @@
 {% set name = "scib" %}
-{% set version = "1.1.4" %}
-
+{% set version = "1.1.5" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 build:
-  number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
-  skip: True  # [ py < 37 or py > 311]
+  number: 1
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  skip: True  # [ py < 38 or py > 311]
   run_exports:
-    - {{ pin_subpackage(name, max_pin='x.x') }}
+    - {{ pin_subpackage(name, max_pin='x') }}
 
 source:
-  url: https://github.com/theislab/scib/archive/v{{ version }}.tar.gz
-  sha256: aebdad725b58a0bf8f3660a57e1ab81a06845632bb1b6cf9c64f6378d191154b
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/scib-{{ version }}.tar.gz
+  sha256: 7ab3183065f2d861b64f88823a55cec767327a37ad6d0eaccce7b43c996293ad
   patches:
     - setup_compiler.patch
 
 requirements:
+  build:
+    - {{ compiler('cxx') }}
   host:
     - python
     - pip
-    - setuptools
-  build:
-    - {{ compiler('cxx') }}
   run:
     - anndata >=0.7.2
     - deprecated
@@ -35,10 +33,10 @@ requirements:
     - llvmlite
     - matplotlib-base
     - numpy
-    - pandas
+    - pandas <2
     - pydot
     - python
-    - scanpy >=1.5
+    - scanpy >=1.5, <1.10
     - scikit-learn
     - scikit-misc
     - scipy
@@ -46,10 +44,18 @@ requirements:
     - umap-learn
 
 test:
-  commands:
-    - python3 -c "import scib; print(scib.__version__)"
+  imports:
+    - scib
 
 about:
   home: https://github.com/theislab/scib
   license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
   summary: "Evaluating single-cell data integration methods"
+  doc_url: https://scib.readthedocs.io/en/latest/
+  dev_url: https://github.com/theislab/scib
+
+extra:
+  identifiers:
+    - doi:10.1038/s41592-021-01336-8
