@@ -11,4 +11,7 @@ cp -r bin/* ${PREFIX}/bin
 cp -r lib/* ${PREFIX}/lib
 cp -r param ${PREFIX}
 cp -r STarMir ${PREFIX}
+
+# Update sfoldenv file
+sed -i "s|SFOLDDIR=.*|SFOLDDIR=\$CONDA_PREFIX|g" sfoldenv
 cp sfoldenv ${PREFIX}
