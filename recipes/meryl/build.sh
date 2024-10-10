@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export INCLUDES="-I${PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
+
 make -C src BUILD_DIR="$(pwd)" \
 	TARGET_DIR="${PREFIX}" \
 	CXX="${CXX}" \
