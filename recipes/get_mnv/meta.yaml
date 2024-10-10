@@ -9,10 +9,13 @@ package:
 source:
   url: "https://github.com/PathoGenOmics-Lab/{{ name }}/archive/refs/tags/{{ version }}.tar.gz"
   sha256: "{{ sha256 }}"
+  patches:
+    - get_mnv-aarch64.patch # [aarch64]
 
 build:
-  number: 0
+  number: 1
   script: |
+    set -xe
     export LANG=C.UTF-8
     export LC_ALL=C.UTF-8
     export RUST_BACKTRACE=1
@@ -25,6 +28,8 @@ build:
     #export CARGO_NET_OFFLINE=true
     export HTS_LIB_DIR=$PREFIX/lib
     export HTS_INCLUDE_DIR=$PREFIX/include
+    export LIBCLANG_PATH=$PREFIX/lib # [linux and aarch64]
+    export CPLUS_INCLUDE_PATH=$PREFIX/include # [linux and aarch64]
     export HTS_STATIC=1
     export HTS_SYS_BUNDLED=0
     cargo install --no-track --locked --verbose --root "${PREFIX}" --path .
@@ -34,15 +39,15 @@ build:
 requirements:
   build:
     - {{ compiler('rust') }}
-
+    - pkg-config
   host:
     - openssl
     - curl
-    - pkg-config
     - htslib
     - bzip2
     - xz
     - zlib
+    - clangdev >=16,<17 # [linux and aarch64]
 
   run:
     - {{ pin_compatible('openssl') }}
@@ -59,7 +64,7 @@ test:
 
 about:
   home: "https://github.com/PathoGenOmics-Lab/get_mnv"
-  license: "GPL-3.0"
+  license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: LICENSE
   summary: "Tool to identify Multi-Nucleotide Variants (MNVs) in genomic sequences."
@@ -69,6 +74,9 @@ about:
   dev_url: "https://github.com/PathoGenOmics-Lab/get_mnv"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - PathoGenOmics-Lab
   categories:
