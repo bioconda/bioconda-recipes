@@ -1,0 +1,54 @@
+{% set name = "PhaBOX" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/KennthShang/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 2e8ff502af4633edad2635ba8c7c595d2f6c13482c1b7fb98bfd01218fedd2f8
+  patches:
+    - setup.patch
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('phabox', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3
+  run:
+    - python >=3
+    - biopython >=1.81
+    - networkx
+    - numpy
+    - pandas
+    - pprodigal
+    - scipy
+    - pytorch
+    - transformers
+    - datasets
+    - pyarrow
+
+test:
+  commands:
+    - phabox --help
+    - Cherry_single --help
+    - PhaGCN_single --help
+    - PhaMer_single --help
+    - PhaTYP_single --help
+
+about:
+  home: https://github.com/KennthShang/PhaBOX
+  license: AFL
+  license_file: LICENSE.md 
+  summary: Phage BOX is a Python library for phage-related tasks
+
+extra:
+  recipe-maintainers:
+    - bernt-matthias
