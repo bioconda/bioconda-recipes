@@ -1,7 +1,8 @@
 #!/bin/bash
 set -eu -o pipefail
 
-export CFLAGS="${CFLAGS} -fcommon"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 -fcommon"
 
 cd rnaseqc
 pushd SeqLib/bwa
@@ -19,7 +20,7 @@ popd
 
 make \
     CC="$CXX" \
-    CPPFLAGS="-I$PREFIX/include -fcommon" \
+    CPPFLAGS="${CPPFLAGS} -O3 -I$PREFIX/include -fcommon" \
     SeqLib/lib/libseqlib.a
 
 make \
@@ -28,4 +29,5 @@ make \
     LIBRARY_PATHS="-L$PREFIX/lib -Wl,-rpath $PREFIX/lib"
 
 mkdir -p $PREFIX/bin
+chmod 0755 rnaseqc
 cp rnaseqc $PREFIX/bin
