@@ -47,7 +47,7 @@ sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" ${PACKAGE_HOME}/earlGrey
 sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" ${SCRIPT_DIR}/rcMergeRepeat*
 sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" ${SCRIPT_DIR}/headSwap.sh
 sed -i.bak "s|SCRIPT_DIR=.*|SCRIPT_DIR=${SCRIPT_DIR}|g" ${SCRIPT_DIR}/autoPie.sh
-sed -i.bak "s|INSERT_FILENAME_HERE|${SCRIPT_DIR}/TEstrainer/scripts/|g" ${SCRIPT_DIR}/TEstrainer/TEstrainer_for_earlGrey.sh
+sed -i.bak "s|STRAIN_SCRIPTS=.*|STRAIN_SCRIPTS=${SCRIPT_DIR}/TEstrainer/scripts/|g" ${SCRIPT_DIR}/TEstrainer/TEstrainer_for_earlGrey.sh
 
 
 # Set permissions to files
