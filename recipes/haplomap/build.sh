@@ -15,7 +15,7 @@ else
 fi
 
 # cd to location of Makefile and source
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}/bin" \
 	-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	"${CONFIG_ARGS}"
