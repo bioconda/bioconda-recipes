@@ -27,10 +27,10 @@ cd ../ && rm -rf SA-SSR/
 # Fixes to earlGrey executable
 sed -i.bak "/CONDA_DEFAULT_ENV/,+4d" ${PACKAGE_HOME}/earlGrey  #remove check that conda environment has a specific name
 sed -i.bak "/CONDA_DEFAULT_ENV/,+4d" ${PACKAGE_HOME}/earlGreyLibConstruct  #remove check that conda environment has a specific name
-sed -i.bak "/CONDA_DEFAULT_ENV/,+4d" ${PACKAGE_HOME}/earlGreyearlGreyAnnotationOnly  #remove check that conda environment has a specific name
+sed -i.bak "/CONDA_DEFAULT_ENV/,+4d" ${PACKAGE_HOME}/earlGreyAnnotationOnly  #remove check that conda environment has a specific name
 
 # Fixes sed command for executables so that it works on both linux and macos
-sed -i.bak "s|sed -i |sed -i.bak |g" ${PACKAGE_HOME}/earlGrey ${PACKAGE_HOME}/earlGreyLibConstruct ${PACKAGE_HOME}/earlGreyearlGreyAnnotationOnly ${SCRIPT_DIR}/rcMergeRepeat* ${SCRIPT_DIR}/TEstrainer/TEstrainer_for_earlGrey.sh
+sed -i.bak "s|sed -i |sed -i.bak |g" ${PACKAGE_HOME}/earlGrey ${PACKAGE_HOME}/earlGreyLibConstruct ${PACKAGE_HOME}/earlGreyAnnotationOnly ${SCRIPT_DIR}/rcMergeRepeat* ${SCRIPT_DIR}/TEstrainer/TEstrainer_for_earlGrey.sh
 
 
 # Remove -pa from RepeatClassifier
