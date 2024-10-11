@@ -1,0 +1,86 @@
+From a52f2bc244b98bf046601a831b3a9de3271abf0d Mon Sep 17 00:00:00 2001
+From: jeffmgranja <jgranja.stanford@gmail.com>
+Date: Mon, 4 Jul 2022 11:51:05 -0700
+Subject: [PATCH 1/2] bugfix threads not capped to threads input
+
+---
+ .DS_Store            | Bin 16388 -> 16388 bytes
+ R/CreateArrow.R      |   2 +-
+ R/MatrixGeneScores.R |   2 +-
+ 3 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/.DS_Store b/.DS_Store
+index a885b2f8922c50a3e6fb25a2386aaf50830e8950..cb3f848ea525c0d70b61ad22f3e5337354f0a820 100644
+GIT binary patch
+delta 79
+zcmZo^U~Fk%+|VyQd9FZ<h_Qvaj)IAyX|0YzwS|#|j)JMF>10zu)6L#8mdum)NIPu4
+YD!){8bEd2`6NG2JloigKd{tf_0Ogb#Bme*a
+
+delta 166
+zcmZo^U~Fk%+|Vzrv?Hk?C$qT3z~CAq6Eh1d8#@O(2RBD-a7KQ4a7kiGX|dDf{nFk(
+zoE)6-0ut5LX68ByM#d(!IttZ>h9*Wj3MR&8wY8iaqRRT#LGjr+xq10r3}C>>2%#Bx
+np)`!@-W(}o!#sJXbol1m^7BPEcgu1yL3rl#S>e3Nx8*efy`w6D
+
+diff --git a/R/CreateArrow.R b/R/CreateArrow.R
+index ac0be626..e4a87bf4 100644
+--- a/R/CreateArrow.R
++++ b/R/CreateArrow.R
+@@ -205,7 +205,7 @@ createArrowFiles <- function(
+   if(subThreading){
+     h5disableFileLocking()
+   }else{
+-    args$threads <- length(inputFiles)
++    args$threads <- max(length(inputFiles), threads)
+   }
+ 
+   args$minTSS <- NULL
+diff --git a/R/MatrixGeneScores.R b/R/MatrixGeneScores.R
+index 1d1d10b3..91a669a6 100644
+--- a/R/MatrixGeneScores.R
++++ b/R/MatrixGeneScores.R
+@@ -125,7 +125,7 @@ addGeneScoreMatrix <- function(
+   if(subThreading){
+     h5disableFileLocking()
+   }else{
+-    args$threads <- length(ArrowFiles)
++    args$threads <- max(length(ArrowFiles), threads)
+   }
+ 
+   #Remove Input from args
+
+From 79953a93ae376a500e681aa3b5ba669af6bb58e1 Mon Sep 17 00:00:00 2001
+From: jeffmgranja <jgranja.stanford@gmail.com>
+Date: Mon, 4 Jul 2022 11:52:44 -0700
+Subject: [PATCH 2/2] fix
+
+---
+ R/CreateArrow.R      | 2 +-
+ R/MatrixGeneScores.R | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/R/CreateArrow.R b/R/CreateArrow.R
+index e4a87bf4..08243139 100644
+--- a/R/CreateArrow.R
++++ b/R/CreateArrow.R
+@@ -205,7 +205,7 @@ createArrowFiles <- function(
+   if(subThreading){
+     h5disableFileLocking()
+   }else{
+-    args$threads <- max(length(inputFiles), threads)
++    args$threads <- min(length(inputFiles), threads)
+   }
+ 
+   args$minTSS <- NULL
+diff --git a/R/MatrixGeneScores.R b/R/MatrixGeneScores.R
+index 91a669a6..fd342a1a 100644
+--- a/R/MatrixGeneScores.R
++++ b/R/MatrixGeneScores.R
+@@ -125,7 +125,7 @@ addGeneScoreMatrix <- function(
+   if(subThreading){
+     h5disableFileLocking()
+   }else{
+-    args$threads <- max(length(ArrowFiles), threads)
++    args$threads <- min(length(ArrowFiles), threads)
+   }
+ 
+   #Remove Input from args
