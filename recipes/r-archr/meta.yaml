@@ -1,6 +1,5 @@
 {% set version = '1.0.2' %}
 {% set github = "https://github.com/GreenleafLab/ArchR" %}
-{% set commit = 'd9e741c980c7c64e5348c97a74d146cc95f8ba76' %}
 {% set posix = 'm2-' if win else '' %}
 
 package:
@@ -8,12 +7,13 @@ package:
   version: {{ version|replace("-", "_") }}
 
 source:
-  url: {{ github }}/archive/{{ commit }}.zip
-  sha256: aef7bd08d55494348cac8b9e0645a71a22a41dacbb7a7843cd939f1f31ee6d87
+  url: {{ github }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: afe4d82975e9d75018e9ec9fda3d116f34f99ad1d45990cbc5a2be7dea8df352
+  patches:
+    - patches/0001-threads-cap.patch
 
 build:
-  merge_build_host: True  # [win]
-  number: 8
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
@@ -22,14 +22,10 @@ build:
 
 requirements:
   build:
-    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
-    - {{ compiler('c') }}          # [not win]
-    - {{ compiler('m2w64_c') }}    # [win]
-    - {{ compiler('cxx') }}        # [not win]
-    - {{ compiler('m2w64_cxx') }}  # [win]
-    - {{ posix }}filesystem        # [win]
-    - {{ posix }}git
-    - {{ posix }}zip               # [win]
+    - cross-r-base {{ r_base }}  # [build_platform != target_platform]
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('cxx') }}
   host:
     - r-base
     - bioconductor-biocgenerics
@@ -100,8 +96,6 @@ about:
     - {{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3
 
 extra:
-  skip-lints:
-    - build_number_needs_reset
   recipe-maintainers:
     - jdblischak
     - mfansler
