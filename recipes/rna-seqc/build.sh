@@ -1,9 +1,9 @@
 #!/bin/bash
 set -eu -o pipefail
 
-cd ./travis/build/broadinstitute/rnaseqc
 export CFLAGS="${CFLAGS} -fcommon"
 
+cd rnaseqc
 pushd SeqLib/bwa
 sed -i.bak '/^DFLAGS=/s/$/ $(LDFLAGS)/' Makefile
 make CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
@@ -30,3 +30,6 @@ make \
 mkdir -p $PREFIX/bin
 cp rnaseqc $PREFIX/bin
 
+# Install python scripts
+cd python
+$PYTHON setup.py install
