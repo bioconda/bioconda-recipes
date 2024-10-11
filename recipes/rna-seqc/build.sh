@@ -29,7 +29,3 @@ make \
 
 mkdir -p $PREFIX/bin
 cp rnaseqc $PREFIX/bin
-
-# Install python scripts
-cd python
-$PYTHON setup.py install
