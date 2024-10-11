@@ -19,4 +19,7 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	"${CONFIG_ARGS}"
-cmake --build . --target install -j "${CPU_COUNT}" -v
+
+cd build
+make -j"${CPU_COUNT}"
+make install
