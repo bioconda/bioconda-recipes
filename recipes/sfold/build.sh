@@ -12,5 +12,5 @@ cp -r param ${SFOLD_DIR}
 cp -r STarMir ${SFOLD_DIR}
 
 # modify the sfoldenv file
-sed -i "s|SFOLDDIR=.*|SFOLDDIR=${SFOLD_DIR}|g" sfoldenv
 cp sfoldenv ${SFOLD_DIR}/sfoldenv
+sed -i "s|SFOLDDIR=.*|SFOLDDIR=${SFOLD_DIR}|g" ${SFOLD_DIR}/sfoldenv
