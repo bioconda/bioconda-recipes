@@ -1,0 +1,96 @@
+{% set name = "meta-neuro" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "96673754c8f8c926bd179a824513de36d0b361eb93b1f7781cbac27ecf520d6e" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bagari/meta/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: true  # [win]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib("c") }}
+    - cmake
+    - make  # [not win]
+    - python {{ python }}
+    - pip
+    - git
+    - setuptools
+    - boost =1.82
+    - itk ==5.3.0
+    - libitk ==5.3.0
+    - libitk-devel ==5.3.0
+    - hdf5 >=1.14.2,<1.14.3.0a0
+    - vtk-base >=9.2.6,<9.3.0 build=*{{ build_variant }}*
+    - libexpat <2.6
+    - libexpat >=2.5.0,<3.0a0
+    - vtk-io-ffmpeg >=9.2.6,<9.3.0 build=*{{ build_variant }}*
+
+  host:
+    - qhull
+    - boost =1.82
+    - itk ==5.3.0
+    - libitk ==5.3.0
+    - libitk-devel ==5.3.0
+    - hdf5 >=1.14.2,<1.14.3.0a0
+    - vtk-base >=9.2.6,<9.3.0 build=*{{ build_variant }}*
+    - python {{ python }}
+    - libexpat <2.6
+    - libexpat >=2.5.0,<3.0a0
+    - vtk-io-ffmpeg >=9.2.6,<9.3.0 build=*{{ build_variant }}*
+
+  run:
+    - qhull
+    - boost =1.82
+    - itk ==5.3.0
+    - libitk ==5.3.0
+    - libitk-devel ==5.3.0
+    - hdf5 >=1.14.2,<1.14.3.0a0
+    - vtk-base >=9.2.6,<9.3.0 build=*{{ build_variant }}*
+    - python {{ python }}
+    - numpy
+    - setuptools
+    - nibabel
+    - pandas
+    - pyvista
+    - scipy
+    - tqdm
+    - tslearn
+    - dipy
+    - libexpat <2.6
+    - libexpat >=2.5.0,<3.0a0
+    - vtk-io-ffmpeg >=9.2.6,<9.3.0 build=*{{ build_variant }}*
+
+test:
+  imports:
+    - meta
+  commands:
+    - set -x
+    - meta --help
+    - cmrep_vskel -h || true
+    - vtklevelset -h || true
+
+about:
+  home: https://github.com/bagari/meta
+  license: BSD-3-Clause
+  license_file: LICENSE.txt
+  summary: 'Medial Tractography Analysis (MeTA)'
+  description: |
+    MeTA is a workflow implemented to minimize microstructural heterogeneity 
+    in diffusion MRI (dMRI) metrics by extracting and parcellating the core 
+    volume along the bundle length in the voxel-space directly while effectively 
+    preserving bundle shape and efficiently capturing the regional variation 
+    within and along white matter (WM) bundles.
+  dev_url: https://github.com/bagari/meta
+
+extra:
+  recipe-maintainers:
+    - bagari
