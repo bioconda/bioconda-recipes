@@ -1,0 +1,54 @@
+{% set name = "snk" %}
+{% set version = "0.30.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name | replace("-","_") }}-{{ version }}.tar.gz
+  sha256: 6bb3ed373c94ed4d9764b3ced41aecddc112c373400925f1166d52b5e5ca7c90
+
+build:
+  run_exports:
+    - {{ pin_subpackage('snk', max_pin="x.x") }}
+  entry_points:
+    - snk = snk.main:app
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.8
+    - hatchling
+    - pip
+    - git
+  run:
+    - python >=3.8
+    - gitpython >=3.1.0,<3.2.dev0
+    - snk-cli >=0.5.2
+    - git
+
+test:
+  imports:
+    - snk
+  commands:
+    - pip check
+    - snk --help
+  requires:
+    - pip
+    - git
+
+about:
+  home: https://snk.wytamma.com
+  dev_url: https://github.com/wytamma/snk
+  summary: A Snakemake CLI and Workflow Management System.
+  license: MIT
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - Wytamma
+
+

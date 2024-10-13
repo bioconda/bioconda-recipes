@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "emtdata-1.8.0"
+installBiocDataPackage.sh "emtdata-1.10.0"

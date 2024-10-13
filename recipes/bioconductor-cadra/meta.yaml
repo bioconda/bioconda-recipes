@@ -1,0 +1,63 @@
+{% set version = "1.0.1" %}
+{% set name = "CaDrA" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 9ac2bc6afe6632e5fbd00c687ca19bba
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-cadra", max_pin="x.x") }}'
+# Suggests: BiocManager, BiocStyle, devtools, knitr, magick, pheatmap, rmarkdown, testthat (>= 3.1.6)
+requirements:
+  host:
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - r-base
+    - r-doparallel
+    - r-ggplot2
+    - r-gplots
+    - r-gtable
+    - r-mass
+    - r-misc3d
+    - r-plyr
+    - r-ppcor
+    - r-r.cache
+    - r-reshape2
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - r-base
+    - r-doparallel
+    - r-ggplot2
+    - r-gplots
+    - r-gtable
+    - r-mass
+    - r-misc3d
+    - r-plyr
+    - r-ppcor
+    - r-r.cache
+    - r-reshape2
+  build:
+    - {{ compiler('c') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL-3 + file LICENSE'
+  summary: 'Candidate Driver Analysis'
+  description: 'Performs both stepwise and backward heuristic search for candidate (epi)genetic drivers based on a binary multi-omics dataset. CaDrA''s main objective is to identify features which, together, are significantly skewed or enriched pertaining to a given vector of continuous scores (e.g. sample-specific scores representing a phenotypic readout of interest, such as protein expression, pathway activity, etc.), based on the union occurence (i.e. logical OR) of the events.'
+  license_file: LICENSE
+

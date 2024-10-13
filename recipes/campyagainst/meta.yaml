@@ -1,0 +1,35 @@
+{% set version = "0.1.0" %}
+{% set name = "campyagainst" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/LanLab/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: aaa8434bc5cc06b7d8c567a8b1c7dc2ea926ffbfdebb0196a89559c4bdd92b74
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  run_exports:
+    - {{ pin_subpackage('campyagainst', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+    - fastani >=1.3
+
+about:
+  home: https://github.com/LanLab/campyagainst
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  summary: Accurate assignment of ANI genomic species to Campylobacter genomes.
+
+test:
+  commands:
+    - campyagainst --help

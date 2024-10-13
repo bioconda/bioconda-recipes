@@ -1,5 +1,5 @@
 {% set name = "pyopal" %}
-{% set version = "0.4.0" %}
+{% set version = "0.6.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,11 +7,13 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 16f6a41dc245a4d356c54586d5ede874fe19dc66f52d01b5062383da7da44f20
+  sha256: 039487f2ffeae29962e1ed38db401fbe2c295f894461f1dd9af09e94e1feccb0
 
 build:
-  number: 0
+  number: 1
   skip: True  #[py2k]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
 
 requirements:
@@ -23,10 +25,12 @@ requirements:
     - pip
     - cython
     - setuptools
+    - scoring-matrices >=0.2
   run:
     - python
     - setuptools
     - archspec
+    - scoring-matrices >=0.2
 
 test:
   imports:
@@ -44,3 +48,5 @@ about:
 extra:
   recipe-maintainers:
     - althonos
+  additional-platforms:
+    - linux-aarch64

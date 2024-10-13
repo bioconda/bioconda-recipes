@@ -1,5 +1,5 @@
 {% set name = "pygenomeviz" %}
-{% set version = "0.3.2" %}
+{% set version = "0.4.4" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pygenomeviz-{{ version }}.tar.gz
-  sha256: e7c2ce14fc65828578179f19c74fd8d59561f199b08480a197be81e8344ce9bd
+  sha256: 0e3566fba142f522efa363ace1d95cb1af4701e42fdb1e51fbf35840a5347c86
 
 build:
   entry_points:
@@ -16,9 +16,12 @@ build:
     - pgv-mummer = pygenomeviz.scripts.mummer:main
     - pgv-pmauve = pygenomeviz.scripts.pmauve:main
     - pgv-simpleplot = pygenomeviz.scripts.simpleplot:main
+    - pgv-gui = pygenomeviz.scripts.gui:main
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
@@ -30,6 +33,8 @@ requirements:
     - matplotlib-base >=3.5.2
     - numpy >=1.21
     - python >=3.8
+  run_constrained:
+    - streamlit >=1.25.0
 
 test:
   imports:
@@ -41,6 +46,7 @@ test:
     - pgv-mummer --help
     - pgv-pmauve --help
     - pgv-simpleplot --help
+    - pgv-gui --help
   requires:
     - pip
     - pytest
