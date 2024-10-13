@@ -4,7 +4,6 @@ set -x -e
 RM_DIR=${PREFIX}/share/pneumo-typer
 mkdir -p ${RM_DIR}
 mkdir -p ${PREFIX}/bin
-pwd
 ls -a
 cp -r $SRC_DIR/* ${RM_DIR}
 cp build_env_setup.sh ${RM_DIR}
