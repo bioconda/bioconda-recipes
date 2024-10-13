@@ -6,7 +6,7 @@ mkdir -p ${RM_DIR}
 mkdir -p ${PREFIX}/bin
 pwd
 ls -a
-cp -r pneumo-typer*/* ${RM_DIR}
+cp -r $SRC_DIR/* ${RM_DIR}
 cp build_env_setup.sh ${RM_DIR}
 cp conda_build.sh ${RM_DIR}
 cp metadata_conda_debug.yaml ${RM_DIR}
