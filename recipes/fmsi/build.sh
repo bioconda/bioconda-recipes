@@ -1,5 +1,8 @@
 #!/bin/bash
+export CXXFLAGS=${CXXFLAGS} -I$PREFIX/include 
+export LDFLAGS=${LDFLAGS} -L$PREFIX/lib
 
-make CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+
+${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS} src/main.cpp src/QSufSort.c -o fmsi
 install -d "${PREFIX}/bin"
 install fmsi "${PREFIX}/bin/"
