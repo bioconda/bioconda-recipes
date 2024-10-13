@@ -4,7 +4,9 @@ set -x -e
 RM_DIR=${PREFIX}/share/pneumo-typer
 mkdir -p ${RM_DIR}
 mkdir -p ${PREFIX}/bin
-cp -r pneumo-typer-v1.0.2/* ${RM_DIR}
+pwd
+ls -a
+cp -r pneumo-typer*/* ${RM_DIR}
 cp build_env_setup.sh ${RM_DIR}
 cp conda_build.sh ${RM_DIR}
 cp metadata_conda_debug.yaml ${RM_DIR}
