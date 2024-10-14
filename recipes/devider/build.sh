@@ -7,5 +7,15 @@ export CARGO_HOME="$(pwd)/.cargo"
 
 # build statically linked binary with Rust
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
-RUST_BACKTRACE=1 cargo install --verbose --locked --no-track --root $PREFIX --path .
+
+case $(uname -m) in
+    aarch64 | arm64)
+        FEATURES="--features neon --no-default-features"
+        ;;
+    *)
+        FEATURES=""
+        ;;
+esac
+
+RUST_BACKTRACE=1 cargo install --verbose --locked --no-track --root $PREFIX --path . ${FEATURES}
 cp scripts/* $PREFIX/bin
