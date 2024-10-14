@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eu -o pipefail
+set -xeu -o pipefail
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 -fcommon"
@@ -7,23 +7,23 @@ export CFLAGS="${CFLAGS} -O3 -fcommon"
 cd rnaseqc
 pushd SeqLib/bwa
 sed -i.bak '/^DFLAGS=/s/$/ $(LDFLAGS)/' Makefile
-make CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
+make -j"${CPU_COUNT}" CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
 popd
 
 pushd SeqLib/fermi-lite
-make CC="$CC" CFLAGS="$CFLAGS $LDFLAGS"
+make -j"${CPU_COUNT}" CC="$CC" CFLAGS="$CFLAGS $LDFLAGS"
 popd
 
 pushd SeqLib/htslib
-make CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
+make -j"${CPU_COUNT}" CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
 popd
 
-make \
+make -j"${CPU_COUNT}" \
     CC="$CXX" \
     CPPFLAGS="${CPPFLAGS} -O3 -I$PREFIX/include -fcommon" \
     SeqLib/lib/libseqlib.a
 
-make \
+make -j"${CPU_COUNT}" \
     CC="$CXX -fcommon" \
     INCLUDE_DIRS="-I$PREFIX/include -ISeqLib -ISeqLib/htslib" \
     LIBRARY_PATHS="-L$PREFIX/lib -Wl,-rpath $PREFIX/lib"
