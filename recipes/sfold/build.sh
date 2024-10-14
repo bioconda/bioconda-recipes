@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 # configure
 ./configure
 
