@@ -42,7 +42,7 @@ def jvm_opts(argv):
 
     The argument list passed in argv must not include the script name.
     The return value is a 3-tuple lists of strings of the form:
-      (memory_options, prop_options, passthrough_options)
+    (memory_options, prop_options, passthrough_options, exec_dir)
     """
     mem_opts = []
     prop_opts = []

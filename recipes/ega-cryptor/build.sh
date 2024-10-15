@@ -2,9 +2,9 @@
 set -e -x
 # set -eu -o pipefail
 
-outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION
 mkdir -p $outdir
-ln -s $PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM $PREFIX/share/$PKG_NAME
+ln -s $PREFIX/share/$PKG_NAME-$PKG_VERSION $PREFIX/share/$PKG_NAME
 mkdir -p $PREFIX/bin
 cp -Rf * $outdir/
 mv $outdir/EGA-Cryptor-$PKG_VERSION/ega-cryptor-$PKG_VERSION.jar $outdir/ega-cryptor.jar
