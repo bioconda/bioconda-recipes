@@ -1,8 +1,14 @@
 #!/bin/bash
-export CXXFLAGS=${CXXFLAGS} -I$PREFIX/include 
-export LDFLAGS=${LDFLAGS} -L$PREFIX/lib
 
+export INCLUDES="-I${PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
+export CXXFLAGS="${CXXFLAGS} -O3 -I$PREFIX/include" 
 
-${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS} src/main.cpp src/QSufSort.c -o fmsi
+make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
+	CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" \
+	INCLUDES="${INCLUDES}" INCLUDES-PATH="${PREFIX}" \
+	-j"${CPU_COUNT}"
+
 install -d "${PREFIX}/bin"
-install fmsi "${PREFIX}/bin/"
+install fmsi "${PREFIX}/bin"
