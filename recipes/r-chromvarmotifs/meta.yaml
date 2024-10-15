@@ -1,0 +1,45 @@
+{% set version = "0.2.0" %}
+{% set github = "https://github.com/GreenleafLab/chromVARmotifs" %}
+{% set commit = "38bed559c1f4770b6c91c80bf3f8ea965da26076" %}
+
+package:
+  name: r-chromvarmotifs
+  version: "{{ version }}"
+
+source:
+  url: "{{ github }}/archive/{{ commit }}.zip"
+  sha256: 6d7bea517925436a363da66991fed7a160f9aa117ea8bf2a90e7f075d717dd00
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage("r-chromvarmotifs", max_pin="x.x") }}
+
+requirements:
+  host:
+    - r-base
+    - bioconductor-tfbstools
+  run:
+    - r-base
+    - bioconductor-tfbstools
+
+test:
+  commands:
+    - $R -e "library(chromVARmotifs)"
+
+about:
+  home: {{ github }}
+  license: MIT
+  license_family: MIT
+  license_file:
+    - {{ environ["PREFIX"] }}/lib/R/share/licenses/MIT
+    - LICENSE
+  summary: Stores several motifs as PWMatrixList objects for use in R with packages like motifmatchr and chromVAR.
+
+extra:
+  recipe-maintainers:
+    - mfansler
