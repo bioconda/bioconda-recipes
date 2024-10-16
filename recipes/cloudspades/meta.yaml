@@ -10,24 +10,10 @@ source:
   url: https://github.com/ablab/spades/archive/refs/tags/cloudspades-0.1.tar.gz
   sha256: {{ sha256 }}
 
-
 build:
   number: 0
-  skip: True  # [osx]
-
   run_exports:
     - {{ pin_subpackage('cloudspades', max_pin="x") }}
-  ignore_run_exports:
-    - libgomp
-    - zlib
-    - bzip2
-  script: |
-    export LIBRARY_PATH="${PREFIX}/lib"
-    export INCLUDE_PATH="${PREFIX}/include"
-    export CFLAGS="${CFLAGS} -O3"
-    export CXXFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
-    PREFIX="${PREFIX}" cd assembler && bash spades_compile.sh -DSPADES_ENABLE_PROJECTS="all"
-
 
 requirements:
   build:
@@ -37,10 +23,12 @@ requirements:
     - pkg-config
   host:
     - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - zlib
     - bzip2
   run:
     - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - python >=3.8
 
 test:
@@ -50,7 +38,7 @@ test:
     - spades-kmercount -h 2>&1 | grep spades-kmercount
     - spades-gmapper 2>&1 | grep spades-gmapper
     - spades-gbuilder 2>&1 | grep spades-gbuilder
-    - spades.py --gemcode1-12 assembler/test_dataset_cloudspades/test.fastq.gz  -o cloudspades_test
+    - spades.py --gemcode1-12 assembler/test_dataset_cloudspades/test.fastq.gz -o cloudspades_test
 
 about:
   home: "https://github.com/ablab/spades"
