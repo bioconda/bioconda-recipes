@@ -1,0 +1,43 @@
+{% set name = "pyhmmsearch" %}
+{% set version = "2024.7.29" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pyhmmsearch-{{ version }}.tar.gz
+  sha256: 5134759a9053a9c3f52ab6c3d672094915292d431f734074d1d33021138c75ec
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  entry_points:
+    - pyhmmsearch.py=pyhmmsearch/pyhmmsearch.py
+    - reformat_pyhmmsearch.py=reformat_pyhmmsearch.py
+    - serialize_hmm_models.py=serialize_hmm_models.py
+  run_exports:
+    - {{ pin_subpackage("pyhmmsearch", max_pin="x.x") }}
+
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - pyhmmer >=0.10.12
+    - pandas
+    - tqdm
+
+test:
+  commands:
+    - pyhmmsearch.py -h
+    - reformat_pyhmmsearch.py -h
+    - serialize_hmm_models.py -h
+
+about:
+  home: https://github.com/new-atlantis-labs/pyhmmsearch-stable
+  summary: Fast implementation of HMMSEARCH optimized for high-memory systems using PyHmmer
+  license: MIT
+  license_file: LICENSE
