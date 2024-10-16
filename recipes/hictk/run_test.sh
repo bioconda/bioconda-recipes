@@ -5,45 +5,37 @@ set -u
 set -x
 set -o pipefail
 
+which hictk
+if [[ "$OSTYPE" =~ .*darwin.* ]]; then
+  otool -L "$(which hictk)"
+else
+  ldd  "$(which hictk)"
+fi
+
+hictk --version
+
 # Extract test dataset URL and checksum
 url="$(grep -F 'DOWNLOAD' 'cmake/FetchTestDataset.cmake' | sed -E 's/.*DOWNLOAD[[:space:]]+//')"
 checksum="$(grep -F 'EXPECTED_HASH' 'cmake/FetchTestDataset.cmake' | sed 's/.*SHA256=//')"
 
 # Download and extract test datasets
-curl -L "$url" -o hictk_test_dataset.tar.xz
-echo "$checksum  hictk_test_dataset.tar.xz" > checksum.sha256
+curl -L "$url" -o hictk_test_dataset.tar.zst
+echo "$checksum  hictk_test_dataset.tar.zst" > checksum.sha256
 shasum -c checksum.sha256
 
-tar -xf hictk_test_dataset.tar.xz
+zstdcat hictk_test_dataset.tar.zst | tar -xf -
 
-hictk="$(which hictk)"
+# Install the test suite
+pip install test/integration
 
 # Run integration tests
+hictk_integration_suite \
+  "$(which hictk)" \
+  test/integration/config.toml \
+  --data-dir test/data \
+  --do-not-copy-binary \
+  --threads "${CPU_COUNT}" \
+  --result-file results.json
 
-test/scripts/hictk_balance_ice.sh "$hictk"
-test/scripts/hictk_balance_scale.sh "$hictk"
-test/scripts/hictk_balance_vc.sh "$hictk"
-
-test/scripts/hictk_dump_chroms.sh "$hictk"
-test/scripts/hictk_dump_bins.sh "$hictk"
-test/scripts/hictk_dump_gw.sh "$hictk"
-test/scripts/hictk_dump_cis.sh "$hictk"
-test/scripts/hictk_dump_trans.sh "$hictk"
-test/scripts/hictk_dump_balanced.sh "$hictk"
-
-test/scripts/hictk_convert_hic2cool.sh "$hictk"
-test/scripts/hictk_convert_cool2hic.sh "$hictk"
-
-test/scripts/hictk_load_coo.sh "$hictk" sorted
-test/scripts/hictk_load_coo.sh "$hictk" unsorted
-test/scripts/hictk_load_bg2.sh "$hictk" sorted
-test/scripts/hictk_load_bg2.sh "$hictk" unsorted
-test/scripts/hictk_load_4dn.sh "$hictk"
-
-test/scripts/hictk_merge.sh "$hictk"
-
-test/scripts/hictk_rename_chromosomes.sh "$hictk"
-
-test/scripts/hictk_validate.sh "$hictk"
-
-test/scripts/hictk_zoomify.sh "$hictk"
+printf '#####\n#####\n#####\n\n\n'
+cat results.json
