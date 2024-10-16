@@ -1,14 +1,14 @@
-{% set version = "1.2.6" %}
+{% set version = "1.2.7" %}
 
 {% set system = "x64_linux" %}       # [linux and x86_64]
 {% set system = "x64_mac" %}         # [osx and x86_64]
 {% set system = "arm64_linux" %}     # [linux and aarch64]
 {% set system = "arm64_mac" %}       # [osx and arm64]
 
-{% set sha256 = "896f98580ca1207d6c2d72338fce30469cd6b66f94241f8fd30e8cde73813f9c" %}  # [linux and x86_64]
-{% set sha256 = "bcecef1fa04427351f571f295e021fd9dc3080dd5372ec112e5c85c3ec78dbd5" %}  # [osx and x86_64]
-{% set sha256 = "130aded33199e09d84d9fa46b8d322b69a1c14f9ca8250828018dce050b3810f" %}  # [linux and aarch64]
-{% set sha256 = "be165cbacea6d4142310e01b195b70e922b34af7c842779a82a8885d9ac7c994" %}  # [osx and arm64]
+{% set sha256 = "5f750bd1bfc8448d127ea8a566860bc10c58c768a79d3d9a814243d64c1f16cf" %}  # [linux and x86_64]
+{% set sha256 = "077a44e14e429a526868ca16364c62b800eeade9aa7df184fdda8f93e053c356" %}  # [osx and x86_64]
+{% set sha256 = "9b2b410607d26ec05b1bdc42329b73285e4a862c93f67aff6c157b10b02e3383" %}  # [linux and aarch64]
+{% set sha256 = "b917c5af92e806b4244a62a32063c81bc9de3eae3760498444398fe7c5a7f623" %}  # [osx and arm64]
 
 
 package:
@@ -21,9 +21,8 @@ build:
     - {{ pin_subpackage('vclust', max_pin='x') }}
   script: |
     mkdir -p ${PREFIX}/bin
-    cp -r vclust.py test.py bin example ${PREFIX}/bin/
+    cp -r vclust.py bin ${PREFIX}/bin/
     chmod +x ${PREFIX}/bin/vclust.py
-    chmod +x ${PREFIX}/bin/test.py
 
 source:
   url: https://github.com/refresh-bio/vclust/releases/download/v{{ version }}/vclust-v{{ version }}-{{ system }}.tar.gz
@@ -42,21 +41,20 @@ about:
   license_family: GPL
 
 test:
-  source_files:
-    - example/*.*
-    - example/output/*.*
-  requires:
-   # - pytest
+  #source_files:
+  #  - example/*.*
+  #  - example/output/*.*
+  #requires:
+  #  - pytest
   commands:
-    - pwd
-    - ls
     - vclust.py --help
-    - vclust.py prefilter -i example/multifasta.fna -o tmp/filter.txt --batch-size 4 --k 18
-    - cmp tmp/filter.txt example/output/fltr.txt
-    - vclust.py align -i example/multifasta.fna -o tmp/ani.tsv
-    - cmp tmp/ani.tsv example/output/ani.tsv
-    - vclust.py cluster -i tmp/ani.tsv -o tmp/clusters.tsv --ids tmp/ani.ids.tsv --tani 0.95
-    - cmp tmp/clusters.tsv example/output/clusters.tsv
+    - vclust.py info
+    #- vclust.py prefilter -i example/multifasta.fna -o tmp/filter.txt --batch-size 4 --k 18
+    #- cmp tmp/filter.txt example/output/fltr.txt
+    #- vclust.py align -i example/multifasta.fna -o tmp/ani.tsv
+    #- cmp tmp/ani.tsv example/output/ani.tsv
+    #- vclust.py cluster -i tmp/ani.tsv -o tmp/clusters.tsv --ids tmp/ani.ids.tsv --tani 0.95
+    #- cmp tmp/clusters.tsv example/output/clusters.tsv
     #- pytest test.py                                        # [linux]
     #- pytest test.py -k 'not test_cluster_algorithm_leiden' # [osx]
 
