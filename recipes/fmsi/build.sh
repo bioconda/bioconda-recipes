@@ -2,10 +2,7 @@
 
 mkdir -p ${PREFIX}/bin
 
-export INCLUDES="-I${PREFIX}/include"
-export LIBPATH="-L${PREFIX}/lib"
-export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -I$PREFIX/include" 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" \
