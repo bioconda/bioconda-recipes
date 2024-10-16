@@ -1,56 +1,67 @@
-{% set version = "0.7.2" %}
-{% set sha256 = "7fff263a4d469d00695d0a314d9a85b8427b454d6b4dd783f930708a3a796f02" %}
+{% set name = "microhapulator" %}
+{% set version = "0.8.4" %}
+{% set sha256 = "215ddd41c8506a20c076bcf765e49646fd9d759a6f511495cc697e7fc2ad51cb" %}
 
 package:
-  name: microhapulator
-  version: '{{version}}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/bioforensics/MicroHapulator/archive/{{ version }}.tar.gz
-  sha256: '{{sha256}}'
+  sha256: {{ sha256 }}
 
 build:
   noarch: python
   entry_points:
     - mhpl8r = microhapulator.cli:main
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   number: 0
+  run_exports:
+    - {{ pin_subpackage('microhapulator', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3
+    - python <3.12
     - pip
   run:
-    - biopython ==1.78
-    - bwa >=0.7.17
+    - biopython
     - fastqc >=0.11.9
     - flash >=1.2
     - happer >=0.1
-    - insilicoseq >=1.5.4
-    - jsonschema >=3.1
+    - insilicoseq >=1.5.4,<2.0
+    - jsonschema >=4.0
     - matplotlib-base >=3.0
-    - numpy >=1.15.4
-    - pandas >=1.0
-    - python >=3
+    - microhapdb >=0.10.1
+    - minimap2 >=2.25
+    - multiqc >=1.14
+    - nbformat >=5.0,<5.6
+    - numpy >=1.19
+    - pandas >1.0
+    - pulp ==2.3.1
+    - python <3.12
     - pysam >=0.15.2
     - scipy >=1.7
     - samtools >=1.12
-    - snakemake >=6.0
+    - seaborn-base >=0.13.2
+    - snakemake-minimal >=7.15.2,<8.0
     - termgraph >=0.5
     - tqdm >=4.0
 
 test:
   imports:
     - microhapulator
+  commands:
+    - mhpl8r --help
   requires:
     - pytest >=3.10
     - pytest-cov >=2.6
 
 about:
   home: https://github.com/bioforensics/MicroHapulator/
-  license: BSD License
+  license: BSD-3-Clause
   license_family: BSD
-  summary: Tools for empirical microhaplotype calling, forensic interpretation, and simulation.
+  license_file: LICENSE.txt
+  summary: "Tools for empirical microhaplotype calling, forensic interpretation, and simulation."
   dev_url: https://github.com/bioforensics/MicroHapulator/
 
 extra:
