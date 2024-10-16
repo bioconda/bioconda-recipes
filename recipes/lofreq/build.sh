@@ -1,6 +1,7 @@
 #!/bin/bash
 set -eu -o pipefail
 
+export M4="${BUILD_PREFIX}/bin/m4"
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
