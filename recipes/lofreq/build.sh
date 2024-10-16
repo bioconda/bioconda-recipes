@@ -14,7 +14,7 @@ fi
 autoreconf -if
 ./configure --with-htslib=system --prefix="${PREFIX}" \
 	CC="${CC}" CFLAGS="${CFLAGS}" \
-	LDFLAGS="${LDFLAGS}" CPP="${CPP}" \
+	LDFLAGS="${LDFLAGS}" \
 	CPPFLAGS="${CPPFLAGS} -O3 -I${PREFIX}/include" \
 	PYTHON="${PYTHON}"
 
