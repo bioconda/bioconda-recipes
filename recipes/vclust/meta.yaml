@@ -1,0 +1,54 @@
+{% set version = "1.2.7" %}
+
+{% set system = "x64_linux" %}       # [linux and x86_64]
+{% set system = "x64_mac" %}         # [osx and x86_64]
+{% set system = "arm64_linux" %}     # [linux and aarch64]
+{% set system = "arm64_mac" %}       # [osx and arm64]
+
+{% set sha256 = "5f750bd1bfc8448d127ea8a566860bc10c58c768a79d3d9a814243d64c1f16cf" %}  # [linux and x86_64]
+{% set sha256 = "077a44e14e429a526868ca16364c62b800eeade9aa7df184fdda8f93e053c356" %}  # [osx and x86_64]
+{% set sha256 = "9b2b410607d26ec05b1bdc42329b73285e4a862c93f67aff6c157b10b02e3383" %}  # [linux and aarch64]
+{% set sha256 = "b917c5af92e806b4244a62a32063c81bc9de3eae3760498444398fe7c5a7f623" %}  # [osx and arm64]
+
+
+package:
+  name: vclust
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('vclust', max_pin='x') }}
+  script: |
+    mkdir -p ${PREFIX}/bin
+    cp -r vclust.py bin ${PREFIX}/bin/
+    chmod +x ${PREFIX}/bin/vclust.py
+
+source:
+  url: https://github.com/refresh-bio/vclust/releases/download/v{{ version }}/vclust-v{{ version }}-{{ system }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  host:
+    - python >=3.7
+  run:
+    - python >=3.7
+
+about:
+  home: https://github.com/refresh-bio/vclust
+  summary: "Fast and accurate tool for calculating ANI and clustering virus genomes and metagenomes."
+  license: GPL-3.0-or-later
+  license_family: GPL3
+
+test:
+  commands:
+    - vclust.py --help
+    - vclust.py info
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - should_be_noarch_generic
+    - should_not_be_noarch_source
