@@ -1,0 +1,44 @@
+{% set name = "resistify" %}
+{% set version = "0.4.0" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: ba06333873fcb1e07820cb0895755b42a615d289437749846e280bc87d6abf2c
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - resistify = resistify.main:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.9
+    - hatchling
+  run:
+    - python >=3.9
+    - scikit-learn ==0.24.2
+    - biopython
+    - numpy
+    - rich
+    - rich-argparse
+    - hmmer
+
+test:
+  imports:
+    - resistify
+  commands:
+    - resistify --help
+
+about:
+  home: https://github.com/swiftseal/resistify
+  license: MIT
+  summary: A resistance gene annotation tool

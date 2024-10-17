@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -eu
+
+# -c : return count
+# -m 1 : stop after first match, i.e. count is either 0 or 1
+# -E : use extended regular expressions
+# \b : matches any non alphanumeric character, i.e. space, tab, newline, etc.
+# || true: ignore `grep -c` returning a non-zero exit code (behavior depends on OS)
+HAS_SSE2=$(grep -c -m 1 -E '\bsse2\b' /proc/cpuinfo || true)
+HAS_SSE4_2=$(grep -c -m 1 -E '\bsse4_2\b' /proc/cpuinfo || true)
+HAS_AVX2=$(grep -c -m 1 -E '\bavx2\b' /proc/cpuinfo || true)
+HAS_AVX512F=$(grep -c -m 1 -E '\bavx512f\b' /proc/cpuinfo || true)
+HAS_AVX512BW=$(grep -c -m 1 -E '\bavx512bw\b' /proc/cpuinfo || true)
+if [ ${HAS_AVX512F} -eq 1 ] && [ ${HAS_AVX512BW} -eq 1 ]; then
+    HAS_AVX512=1
+else
+    HAS_AVX512=0
+fi
+
+if [ ${HAS_AVX512} -eq 1 ]; then
+    raptor_avx512 "$@"
+elif [ ${HAS_AVX2} -eq 1 ]; then
+    raptor_avx2 "$@"
+elif [ ${HAS_SSE4_2} -eq 1 ]; then
+    raptor_sse4.2 "$@"
+elif [ ${HAS_SSE2} -eq 1 ]; then
+    raptor_sse2 "$@"
+else
+    raptor_none "$@"
+fi

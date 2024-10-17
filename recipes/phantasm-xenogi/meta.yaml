@@ -1,0 +1,43 @@
+{% set name = "xenoGI" %}
+{% set version = "3.1.2" %}
+
+package:
+  name: "phantasm-{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/dr-joe-wirth/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ef4254f1dfef45888480aaa2db908d6afff648d446eff29a4f6c2df93e1209f0
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage('phantasm-xenogi', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+  run:
+    - biopython
+    - blast
+    - fasttree
+    - generax
+    - muscle >=5
+    - numpy
+    - parasail-python
+    - python >=3.9
+    - scipy
+
+test:
+  commands:
+    - touch $PREFIX/tmp.py && xenoGI $PREFIX/tmp.py version
+
+about:
+  home: https://github.com/dr-joe-wirth/{{ name }}
+  license: GPL-3.0
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "xenoGI for PHANTASM"
