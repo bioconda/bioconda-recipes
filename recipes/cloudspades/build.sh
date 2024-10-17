@@ -19,5 +19,5 @@ esac
 mkdir -p ${PREFIX}/bin ${PREFIX}/share
 cd assembler
 ./spades_compile.sh "${THREADS}"
-mv -r bin/* ${PREFIX}/bin
-mv -r share/spades ${PREFIX}/share
+mv bin/* ${PREFIX}/bin
+mv share/spades ${PREFIX}/share
