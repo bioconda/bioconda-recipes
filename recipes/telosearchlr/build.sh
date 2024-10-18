@@ -1,4 +1,5 @@
 #!/bin/bash
+
 mkdir -p ${PREFIX}/bin
 for f in *.py;
 do
