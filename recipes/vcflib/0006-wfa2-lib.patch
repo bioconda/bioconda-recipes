@@ -1,0 +1,32 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 40dedb3..b738d28 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -380,10 +380,7 @@ if(WFA_GITMODULE)
+ else(WFA_GITMODULE)
+   include_directories($ENV{CMAKE_PREFIX_PATH}/include/wfa2lib)
+   set(WFA_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/wfa2lib)
+-  find_library(WFALIB wfa2 wfa) # distro search for shared lib
+-  if(NOT WFALIB)
+-    message(STATUS "ERROR: Can not find libfwa! Make sure it is installed or use the git submodule instead")
+-  endif()
++  find_library(WFALIB wfa2 wfa REQUIRED) # distro search for shared lib
+ endif(WFA_GITMODULE)
+ 
+ include_directories(${WFA_INCLUDE_DIRS})
+@@ -454,6 +451,7 @@ if (NOT BUILD_ONLY_LIB)
+     add_executable(${BIN} src/${BIN}.cpp)
+     add_dependencies(${BIN} vcflib)
+     target_link_libraries(${BIN} PUBLIC ${vcflib_LIBS} vcflib)
++    target_link_libraries(${BIN} PUBLIC ${vcflib_LIBS} ${WFALIB})
+   endforeach(BIN ${BINS})
+   # These binaries include WFALIB
+   target_link_libraries(vcfallelicprimitives PUBLIC ${WFALIB})
+@@ -602,6 +600,6 @@ endif (PANDOC)
+ 
+ install(TARGETS vcflib ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
+ 
+-install(FILES ${INCLUDES} DESTINATION include)
++install(FILES ${INCLUDES} DESTINATION include/vcflib)
+ 
+ install(DIRECTORY ${CMAKE_SOURCE_DIR}/man/ DESTINATION ${CMAKE_INSTALL_PREFIX}/man/man1)
