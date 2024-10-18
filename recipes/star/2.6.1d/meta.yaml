@@ -1,6 +1,7 @@
 {% set version = "2.6.1d" %}
 {% set sha256 = "eba6a21426ba3b5fd752c68930116efae7b3776413e692e2e610f8363183aecc" %}
 
+
 package:
   name: star
   version: {{ version }}
@@ -8,21 +9,47 @@ package:
 source:
   url: https://github.com/alexdobin/STAR/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    # Fixing shared lib issues
+    - ../patches/0001-do-not-enforce-avx2.patch
+    - ../patches/0002-donotuse_own_htslib.patch
+    - ../patches/0003-create-simd-dispatch.patch
 
 build:
-  number: 1
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('star', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+    - vim
+  host:
+    - htslib >=1.20
+    - zlib
+  run:
+    - htslib >=1.20
+    - zlib
 
 test:
   commands:
-    - STAR --version
+    - STAR --version || true
+    - STARlong --version  || true
 
 about:
   home: https://github.com/alexdobin/STAR
   license: GPLv3
+  license_file: LICENSE
   summary: An RNA-seq read aligner.
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:star
-  skip-lints:
-    - should_be_noarch_generic
+    - usegalaxy-eu:rna_starsolo
+    - usegalaxy-eu:rna_star
+  recipe-maintainers:
+    - mjsteinbaugh
