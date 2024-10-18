@@ -1,0 +1,38 @@
+{% set name = "subset-bam" %}
+{% set version = "1.1.0" %}
+{% set url = "https://github.com/10XGenomics/subset-bam/releases/download/v1.1.0/subset-bam_linux" %}  # [linux and x86_64]
+{% set sha256 = "05496ea56d52becdb7972528af0a486be1d52c1749e35bea9ae4c41215ed0a1b" %}  # [linux and x86_64]
+{% set url = "https://github.com/10XGenomics/subset-bam/releases/download/v1.1.0/subset-bam_macos" %}  # [osx and x86_64]
+{% set sha256 = "756357b6dfe9bc7e757bdc4a084ca06d2a256f2b8855d35b47fd956afd97ebca" %}  # [osx and x86_64]
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: {{ url }}
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('subset-bam', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - make
+    - clangdev
+
+test:
+  commands:
+    - subset-bam --help
+
+about:
+  home: "https://github.com/10XGenomics/subset-bam"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A tool to subset a 10x Genomics BAM file based on a tag, most commonly the cell barcode tag."
+  doc_url: "https://github.com/10XGenomics/subset-bam/blob/v{{ version }}/README.md"
+  dev_url: "https://github.com/10XGenomics/subset-bam"

@@ -1,0 +1,119 @@
+{% set name = "constava" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/constava-{{ version }}.tar.gz
+  sha256: 6ac0a19544aa7bb800cb2a5b7b85499d5473fe132ded49cefddca032065cb2a9
+
+build:
+  number: 0
+  entry_points:
+    - constava = constava.__main__:main
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+  run_exports:
+    - {{ pin_subpackage('constava', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+    - matplotlib-base
+    - mdanalysis
+    - numpy
+    - pandas
+    - scikit-learn
+
+test:
+  imports:
+    - constava
+    - constava.utils
+    - constava.utils.dihedrals
+  commands:
+    - pip check
+    - constava --version
+    - constava --help
+    - constava dihedrals -h
+    - constava analyze -h
+    - constava fit-model -h
+    - constava test
+  requires:
+    - pip
+
+
+about:
+  home: https://github.com/bio2byte/constava
+  summary: Calculate conformational states probability and variability from a protein structure ensemble
+  description: |
+    Constava analyzes conformational ensembles calculating conformational state propensities and
+    conformational state variability. The conformational state propensities indicate the likelihood
+    of a residue residing in a given conformational state, while the conformational state variability
+    is a measure of the residues ability to transition between conformational states.
+
+    Each conformational state is a statistical model of based on the backbone dihedrals (phi, psi). The
+    default models were derived from an analysis of NMR ensembles and chemical shifts. To analyze a
+    conformational ensemble, the phi- and psi-angles for each conformational state in the ensemble
+    need to be provided.
+
+    As input data Constava needs the backbone dihedral angles extracted from the conformational ensemble.
+    These dihedrals can be obtained using GROMACS' gmx chi module (set `--input-format=xvg`)
+    or using the constava dihedrals submodule, which supports a wide range of MD and structure formats.
+
+    The software is subdivided in three submodules:
+
+    The constava dihedrals submodule provides a simple way to extract backbone dihedral angles from MD
+    simulations or PDB ensembles. For more information run: `constava dihedrals -h`. Alternatively,
+    the backbone dihedrals may be extracted with GROMACS' gmx chi module.
+
+    The constava analyze submodule analyzes the provided backbone dihedral angles and infers
+    the propensities for each residue to reside in a given conformational state. For more information run:
+    `constava analyze -h`.
+
+    The constava fit-model can be used to train a custom probabilistic model of conformational states. The
+    default models were derived from an analysis of NMR ensembles and chemical shifts; they cover six
+    conformational states:
+
+    1. Core Helix - Exclusively alpha-helical, low backbone dynamics
+    2. Surrounding Helix - Mostly alpha-helical, high backbone dynamics
+    3. Core Sheet - Exclusively beta-sheet, low backbone dynamics
+    4. Surrounding Sheet - Mostly extended conformation, high backbone dynamics
+    5. Turn - Mostly turn, high backbone dynamics
+    6. Other - Mostly coil, high backbone dynamics
+
+    For more information run: `constava fit-model -h`.
+
+    This software tool has been developed by the Bio2Byte research group at Vrije Universiteit Brussel (VUB)
+    in Belgium and it is distributed under the GNU General Public License v3 (GPLv3) License.
+
+    Please cite:
+
+    Jose Gavalda-Garcia, David Bickel, Joel Roca-Martinez, Daniele Raimondi, Gabriele Orlando, Wim Vranken,
+    Data-driven probabilistic definition of the low energy conformational states of protein residues,
+    NAR Genomics and Bioinformatics, Volume 6, Issue 3, September 2024, lqae082,
+    https://doi.org/10.1093/nargab/lqae082 (Published: 09 July 2024)
+
+    Contact us: <bio2byte@vub.be> or <wim.vranken@vub.be>
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  license_family: GPL3
+  dev_url: https://github.com/bio2byte/constava
+  doc_url: https://pypi.org/project/constava/
+  doc_source_url: https://github.com/Bio2Byte/constava/blob/main/README.md
+
+extra:
+  author: Wim Vranken <wim.vranken@vub.be>, Jose Gavalda-Garcia <jose.gavalda.garcia@vub.be>, David Bickel <david.bickel@vub.be>, Joel Roca-Martinez <joel.roca.martinez@vub.be>, Daniele Raimondi <daniele.raimondi@kuleuven.be>, Gabriele Orlando <gabriele.orlando@kuleuven.be>
+  recipe-maintainers:
+    - agdiaz
+    - aethertier
+    - GavaldaGarcia
+  maintainers:
+    - aethertier
+    - GavaldaGarcia
+  identifiers:
+    - doi:10.1093/nargab/lqae082 # NAR Genomics and Bioinformatics
