@@ -1,9 +1,11 @@
 #!/bin/bash -e
 set -uex
 
-mkdir -vp ${PREFIX}/bin
+mkdir -vp "${PREFIX}/bin"
 
 make VERBOSE=1 -j ${CPU_COUNT}
 
-cp "$SRC_DIR/genodsp" "$PREFIX/bin"
-chmod ua+x "$PREFIX/bin/genodsp
+if ! install -v "$SRC_DIR/genodsp" "$PREFIX/bin/genodsp"; then
+    echo "Failed to install genodsp binary" >&2
+    exit 1
+fi
