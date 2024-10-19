@@ -13,12 +13,15 @@ fi
             --with-cluster \
             --disable-lto \
             --without-doc \
-            --without-tutorial \
-            --without-tutorial-pdf \
             --without-cla \
             --without-rnaxplorer \
-            ${extra_config_options} \
-            && \
+            --disable-silent-rules \
+            ${extra_config_options} && \
+cd src/ViennaRNA && \
+make -j${CPU_COUNT} && \
+cd ../../interfaces/Python && \
+( make || { ls -l RNA/_RNA*.so ; ls -l .libs/_RNA*.so ; file .libs/_RNA*.so; file RNA/_RNA*.so; exit 1; } ) && \
+cd ../.. && \
 make -j${CPU_COUNT}
 
 ## Install
