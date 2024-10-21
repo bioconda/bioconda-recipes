@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-export INCLUDE_PATH=$PREFIX/include
-export LIBRARY_PATH=$PREFIX/lib
+export CPATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
 export CXXFLAGS="${CXXFLAGS} -std=c++14 -O3 -I${PREFIX}/include"
 
