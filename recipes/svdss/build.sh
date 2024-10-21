@@ -20,6 +20,5 @@ cmake -S. -B build -DCMAKE_BUILD_TYPE=Release \
 	"${CONFIG_ARGS}"
 cmake --build build -j "${CPU_COUNT}" -v
 
-cd build
 chmod 0755 SVDSS
 cp -f SVDSS ${PREFIX}/bin
