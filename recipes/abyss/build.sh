@@ -9,13 +9,14 @@ if [[ "$(uname)" == Darwin ]]; then
     export LDFLAGS="$LDFLAGS -headerpad_max_install_names"
 fi
 
+autoreconf -if
 ./configure \
     --prefix="$PREFIX" \
     --with-boost="$PREFIX" \
     --with-mpi="$PREFIX" \
     --with-sparsehash="$PREFIX" \
     --without-sqlite || cat config.log
-make AM_CXXFLAGS=-Wall
+make AM_CXXFLAGS="-Wall" -j"${CPU_COUNT}"
 make install
 
 $RECIPE_DIR/create-wrapper.sh "$PREFIX/bin/abyss-pe" "$PREFIX/bin/abyss-pe.Makefile"
