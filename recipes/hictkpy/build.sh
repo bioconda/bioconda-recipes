@@ -15,6 +15,8 @@ if [[ ${HOST} =~ .*darwin.* ]]; then
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
   conan_profile='apple-clang'
 else
+  # Workaround missing LLVMgold.so on Linux
+  CXXFLAGS+=" -fuse-ld=lld -Wno-unused-command-line-argument"
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
   conan_profile='clang'
 fi
@@ -40,10 +42,6 @@ CMAKE_ARGS+=("-DPython_NumPy_INCLUDE_DIR=${Python_NumPy_INCLUDE_DIR}")
 CMAKE_ARGS+=("-DPython3_EXECUTABLE:PATH=${PYTHON}")
 CMAKE_ARGS+=("-DPython3_INCLUDE_DIR:PATH=${Python_INCLUDE_DIR}")
 CMAKE_ARGS+=("-DPython3_NumPy_INCLUDE_DIR=${Python_NumPy_INCLUDE_DIR}")
-
-# Workaround missing LLVMgold.so on Linux (requires CMake 3.29+)
-CMAKE_ARGS+=('-DCMAKE_CXX_USING_LINKER_LLD=-fuse-ld=lld')
-CMAKE_ARGS+=('-DCMAKE_CXX_USING_LINKER_MODE=FLAG')
 
 CMAKE_ARGS="${CMAKE_ARGS[*]}"
 CMAKE_PLATFORM_FLAGS="${CMAKE_PLATFORM_FLAGS[*]}"
