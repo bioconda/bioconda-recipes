@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# export CMAKE_BUILD_PARALLEL_LEVEL=${CPU_COUNT}
+export CMAKE_BUILD_PARALLEL_LEVEL=${CPU_COUNT}
 
 scratch=$(mktemp -d)
 export CONAN_HOME="$scratch/conan"
@@ -10,23 +10,21 @@ trap "rm -rf '$scratch'" EXIT
 
 declare -a CMAKE_PLATFORM_FLAGS
 if [[ ${HOST} =~ .*darwin.* ]]; then
-  export MACOSX_DEPLOYMENT_TARGET=10.15  # Required to use std::filesystem
+  # https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
+  export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
   conan_profile='apple-clang'
 else
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
-  conan_profile='gcc'
+  conan_profile='clang'
 fi
 
 # Remember to update these profiles when bioconda's compiler toolchains are updated
 mkdir -p "$CONAN_HOME/profiles/"
 ln -s "${RECIPE_DIR}/conan_profiles/$conan_profile" "$CONAN_HOME/profiles/default"
 
-# explicitly set CMAKE_OSX_DEPLOYMENT_TARGET
-patch CMakeLists.txt < "${RECIPE_DIR}/CMakeLists.txt.patch"
-
-# Remove unnecessary dependencies from conanfile.txt
-patch conanfile.txt < "${RECIPE_DIR}/conanfile.txt.patch"
+# Remove unnecessary dependencies from conanfile.py
+patch conanfile.py < "${RECIPE_DIR}/conanfile.py.patch"
 
 # Build hictkpy as a shared library
 patch pyproject.toml < "${RECIPE_DIR}/pyproject.toml.patch"
