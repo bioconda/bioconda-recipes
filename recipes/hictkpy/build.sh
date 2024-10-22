@@ -32,7 +32,7 @@ patch pyproject.toml < "${RECIPE_DIR}/pyproject.toml.patch"
 CMAKE_ARGS+=" -DPython_EXECUTABLE=$PYTHON"
 
 echo "$CMAKE_ARGS"
-export CMAKE_ARGS
+export CMAKE_ARGS CMAKE_PLATFORM_FLAGS
 
 SETUPTOOLS_SCM_PRETEND_VERSION="$PKG_VERSION" \
 "$PYTHON" -m pip install "$SRC_DIR" -vv
