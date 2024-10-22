@@ -1,0 +1,46 @@
+{% set version = "1.2.0" %}
+
+{% set system = "x64_linux" %}       # [linux and x86_64]
+{% set system = "x64_mac" %}         # [osx and x86_64]
+{% set system = "arm64_linux" %}     # [linux and aarch64]
+{% set system = "arm64_mac" %}       # [osx and arm64]
+
+{% set sha256 = "2d07cf3d06a5b9bc992858f699ef9a0d9a4d12473248e0080e6806ea8e734862" %}  # [linux and x86_64]
+{% set sha256 = "f6b5a0fe00688181e0486621942bc0adc58454e90c2f40c12e5ec874c7b4051a" %}  # [osx and x86_64]
+{% set sha256 = "e25fddd286778d0a9da3914858613406a3f5436d4a4a3306f613ea1cd07ad96b" %}  # [linux and aarch64]
+{% set sha256 = "fe27390f36e1c0719d0774bebd47ec96374f46f04b3bde8ae5be96b698c5a0dc" %}  # [osx and arm64]
+package:
+  name: lz-ani
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+  - {{ pin_subpackage('lz-ani', max_pin='x') }}
+  script: |
+    mkdir -p "${PREFIX}/bin"
+    cp -v lz-ani "${PREFIX}/bin/" || { echo "Error: Failed to copy lz-ani binary"; exit 1; }
+
+source:
+  url: https://github.com/refresh-bio/lz-ani/releases/download/v{{ version }}/lz-ani-v{{ version }}-{{ system }}.tar.gz
+  sha256: {{ sha256 }}
+
+
+about:
+  home: https://github.com/refresh-bio/lz-ani
+  summary: "Fast and accurate tool for calculating Average Nucleotide Identity (ANI) among virus and bacteria genomes"
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+
+test:
+  commands:
+    - lz-ani > /dev/null
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - should_be_noarch_generic
+    - should_not_be_noarch_source

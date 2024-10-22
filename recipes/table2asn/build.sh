@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -ex
 
 gunzip *table2asn.gz
 mkdir -p ${PREFIX}/bin
