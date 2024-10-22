@@ -30,8 +30,8 @@ patch conanfile.py < "${RECIPE_DIR}/conanfile.py.patch"
 patch pyproject.toml < "${RECIPE_DIR}/pyproject.toml.patch"
 
 # See https://github.com/conda-forge/conda-forge.github.io/pull/2321
-Python_INCLUDE_DIR="$("PYTHON" -c 'import sysconfig; print(sysconfig.get_path("include"))')"
-Python_NumPy_INCLUDE_DIR="$("PYTHON" -c 'import numpy; print(numpy.get_include())')"
+Python_INCLUDE_DIR="$("$PYTHON" -c 'import sysconfig; print(sysconfig.get_path("include"))')"
+Python_NumPy_INCLUDE_DIR="$("$PYTHON" -c 'import numpy; print(numpy.get_include())')"
 
 declare -a CMAKE_ARGS
 CMAKE_ARGS+=("-DPython_EXECUTABLE:PATH=${PYTHON}")
