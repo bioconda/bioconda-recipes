@@ -1,8 +1,17 @@
 #!/bin/bash
+
+# -e = exit on first error
+# -x = print every executed command
 set -ex
 
-# Build the package using Maturin
-maturin build --release --strip --interpreter $PYTHON
+# Use a custom temporary directory as home on macOS.
+# (not sure why this is useful, but people use it in bioconda recipes)
+if [ `uname` == Darwin ]; then
+  export HOME=`mktemp -d`
+fi
 
-# Install the wheel
-$PYTHON -m pip install $WHEEL_PATH --no-deps -vv
+# Build the package using maturin - should produce *.whl files.
+maturin build --interpreter $PYTHON --release
+
+# Install *.whl files using pip
+$PYTHON -m pip install target/wheels/*.whl --no-deps --ignore-installed -vv
