@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CMAKE_BUILD_PARALLEL_LEVEL=${CPU_COUNT}
+
 
 scratch=$(mktemp -d)
 export CONAN_HOME="$scratch/conan"
@@ -13,11 +13,13 @@ if [[ ${HOST} =~ .*darwin.* ]]; then
   # https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
   CXXFLAGS+=" -D_LIBCPP_DISABLE_AVAILABILITY"
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
+  CMAKE_BUILD_PARALLEL_LEVEL=${CPU_COUNT}
   conan_profile='apple-clang'
 else
   # Workaround missing LLVMgold.so on Linux
   CXXFLAGS+=" -fuse-ld=lld -Wno-unused-command-line-argument"
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
+  CMAKE_BUILD_PARALLEL_LEVEL=1
   conan_profile='clang'
 fi
 
@@ -49,7 +51,7 @@ CMAKE_PLATFORM_FLAGS="${CMAKE_PLATFORM_FLAGS[*]}"
 echo "$CMAKE_ARGS"
 echo "$CMAKE_CMAKE_PLATFORM_FLAGS"
 
-export CMAKE_ARGS CMAKE_PLATFORM_FLAGS CXXFLAGS
+export CMAKE_ARGS CMAKE_BUILD_PARALLEL_LEVEL CMAKE_PLATFORM_FLAGS CXXFLAGS
 
 SETUPTOOLS_SCM_PRETEND_VERSION="$PKG_VERSION" \
 "$PYTHON" -m pip install "$SRC_DIR" -vv
