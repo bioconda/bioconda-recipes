@@ -32,14 +32,21 @@ patch pyproject.toml < "${RECIPE_DIR}/pyproject.toml.patch"
 # See https://github.com/conda-forge/conda-forge.github.io/pull/2321
 Python_INCLUDE_DIR="$("PYTHON" -c 'import sysconfig; print(sysconfig.get_path("include"))')"
 Python_NumPy_INCLUDE_DIR="$("PYTHON" -c 'import numpy; print(numpy.get_include())')"
-CMAKE_ARGS+=" -DPython_EXECUTABLE:PATH=${PYTHON}"
-CMAKE_ARGS+=" -DPython_INCLUDE_DIR:PATH=${Python_INCLUDE_DIR}"
-CMAKE_ARGS+=" -DPython_NumPy_INCLUDE_DIR=${Python_NumPy_INCLUDE_DIR}"
-CMAKE_ARGS+=" -DPython3_EXECUTABLE:PATH=${PYTHON}"
-CMAKE_ARGS+=" -DPython3_INCLUDE_DIR:PATH=${Python_INCLUDE_DIR}"
-CMAKE_ARGS+=" -DPython3_NumPy_INCLUDE_DIR=${Python_NumPy_INCLUDE_DIR}"
+
+declare -a CMAKE_ARGS
+CMAKE_ARGS+=("-DPython_EXECUTABLE:PATH=${PYTHON}")
+CMAKE_ARGS+=("-DPython_INCLUDE_DIR:PATH=${Python_INCLUDE_DIR}")
+CMAKE_ARGS+=("-DPython_NumPy_INCLUDE_DIR=${Python_NumPy_INCLUDE_DIR}")
+CMAKE_ARGS+=("-DPython3_EXECUTABLE:PATH=${PYTHON}")
+CMAKE_ARGS+=("-DPython3_INCLUDE_DIR:PATH=${Python_INCLUDE_DIR}")
+CMAKE_ARGS+=("-DPython3_NumPy_INCLUDE_DIR=${Python_NumPy_INCLUDE_DIR}")
+
+CMAKE_ARGS="${CMAKE_ARGS[*]}"
+CMAKE_PLATFORM_FLAGS="${CMAKE_PLATFORM_FLAGS[*]}"
 
 echo "$CMAKE_ARGS"
+echo "$CMAKE_CMAKE_PLATFORM_FLAGS"
+
 export CMAKE_ARGS CMAKE_PLATFORM_FLAGS
 
 SETUPTOOLS_SCM_PRETEND_VERSION="$PKG_VERSION" \
