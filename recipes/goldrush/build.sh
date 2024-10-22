@@ -1,5 +1,6 @@
 #!/bin/bash
-set -eu -o pipefail
+
+set -xeu -o pipefail
 
 # Build goldrush
 mkdir -p ${PREFIX}/bin
