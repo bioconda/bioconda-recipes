@@ -1,6 +1,6 @@
 {% set name = "CAMPneu" %}
-{% set version = "1.1.0" %}
-{% set hash = "1f2bc9dbb9fa71fce9876852ba0dedad997cca800734b81a6a43fff8e5e20ac3" %}
+{% set version = "1.1.1" %}
+{% set hash = "1fab075c22e8f70c5677fa845018c2dcb489f7c540e14a553f0f387fe7d0f91c" %}
 {% set user = "appliedbinf" %}
 
 package:
@@ -14,17 +14,24 @@ source:
 build:
   number: 0
   noarch: generic
+  script:
+    - mkdir -p $PREFIX/bin/
+    - cp CAMPneu.nf nextflow.config $PREFIX/bin/
+    - chmod +x $PREFIX/bin/CAMPneu.nf $PREFIX/bin/nextflow.config
+
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
   build:
     - python
     - setuptools
     - skip: True  # [win]
- 
+
   host:
     - python
     - pip
- 
+
   run:
     - nextflow
     - python <3.11
@@ -45,4 +52,8 @@ test:
 about:
   home: "https://github.com/{{ user }}/{{ name }}"
   license: MIT
-  summary: "Comprehensive Analysis of Mycoplasma Pneumoniae"
+  license_family: MIT
+  license_file: LICENSE
+  summary: "CAMPneu is a scalable and reproducible Nextflow pipeline designed for bioinformatics analysis, targeting Illumina paired-end sequence data. Its primary objectives are to identify Mycoplasma pneumoniae species, classify its subtype (type 1 or type 2), and detect known SNPs associated with macrolide resistance in the sample."
+  dev_url: "https://github.com/{{ user }}/{{ name }}"
+  doc_url: "https://github.com/appliedbinf/campneu/blob/{{ version }}/README.md"
