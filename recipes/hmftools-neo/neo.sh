@@ -1,5 +1,5 @@
 #!/bin/bash
-# hmftools neo executable shell script
+# hmftools Neo executable shell script
 # https://github.com/hartwigmedical/hmftools/tree/master/neo
 set -eu -o pipefail
 
@@ -60,7 +60,7 @@ if [ "$jvm_mem_opts" == "" ]; then
 fi
 
 pass_arr=($pass_args)
-if [[ ${pass_arr[0]:=} == org\.* ]] || [[ ${pass_arr[0]:=} == com\.* ]]
+if [[ ${pass_arr[0]:=} == com.hartwig.hmftools.* ]]
 then
     eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/neo.jar" $pass_args
 else
