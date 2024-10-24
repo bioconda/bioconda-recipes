@@ -59,8 +59,6 @@ mv bin/* $PREFIX/bin/
 mv scripts/* $PREFIX/bin/
 mv config/* $PREFIX/config/
 
-make clean
-
 ## Set AUGUSTUS variables on env activation
 
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
