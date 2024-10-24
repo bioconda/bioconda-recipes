@@ -7,6 +7,7 @@ export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -DUSE_BOOST -I${PREFIX}/include"
 
+mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/scripts
 mkdir -p ${PREFIX}/config
 
@@ -53,6 +54,8 @@ cd ..
 
 ## End build perl
 
+chmod 0755 bin/augustus
+mv bin/* $PREFIX/bin/
 mv scripts/* $PREFIX/bin/
 mv config/* $PREFIX/config/
 
