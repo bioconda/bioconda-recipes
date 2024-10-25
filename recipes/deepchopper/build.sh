@@ -15,8 +15,6 @@ export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="$CC"
 export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="$CC"
 
 
-# Build the package using maturin - should produce *.whl files.
-maturin build --interpreter "${PYTHON}" --release --strip
+maturin build --interpreter python --release
 
-# Install *.whl files using pip
-$PYTHON -m pip install target/wheels/*.whl --no-deps --no-build-isolation --no-cache-dir -vvv
+$PYTHON -m pip install target/wheels/*.whl --no-deps --ignore-installed -vv
