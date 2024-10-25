@@ -61,7 +61,7 @@ ${CXX} -c readskmercount.opt.cpp -I./kmc3
 
 echo "we crossed this 2"
 # Then link it to create the executable
-g++ -o readskmercount readskmercount.opt.o -L./kmc3/bin -lkmc_core -pthread
+${CXX} -o readskmercount readskmercount.opt.o -L./kmc3/bin -lkmc_core -pthread
 
 
 echo "Installation completed successfully."
