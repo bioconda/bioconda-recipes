@@ -48,7 +48,7 @@ cd ../..
 # Build seqtk
 SEQTK_DIR="src/seqtk"
 cd "$SEQTK_DIR"
-make
+make -j"${CPU_COUNT}"
 
 # Go back to the src directory
 cd ..
