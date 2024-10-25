@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-cp svtopo "${PREFIX}"/
+mkdir -p "${PREFIX}"/bin
+
+cp svtopo "${PREFIX}"/bin/
