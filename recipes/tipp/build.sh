@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Exit on any error
-set -e
+set -ex
 
 # Initialize and update all submodules
 git submodule update --init
