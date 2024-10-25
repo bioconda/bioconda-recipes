@@ -57,7 +57,7 @@ echo "we crossed this 1"
 #g++ -v -o readskmercount -I./kmc3 -L./kmc3/bin -lkmc_core -pthread
 
 # Compile readskmercount as an object first if it doesn't have a main
-g++ -c readskmercount.opt.cpp -I./kmc3
+${CXX} -c readskmercount.opt.cpp -I./kmc3
 
 echo "we crossed this 2"
 # Then link it to create the executable
