@@ -32,7 +32,7 @@ LDFLAGS="-L$(pwd)/3rd_party/cloudflare"
 export CFLAGS LDFLAGS
 
 # Build KMC with the correct zlib
-make
+make -j"${CPU_COUNT}"
 
 # Unset the flags after the KMC build to prevent issues later
 unset CFLAGS
