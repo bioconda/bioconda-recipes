@@ -4,6 +4,9 @@
 # -x = print every executed command
 set -ex
 
+# use nightly
+rustup default nightly
+
 # Build the package using maturin - should produce *.whl files.
 maturin build --interpreter "${PYTHON}" --release --strip
 
