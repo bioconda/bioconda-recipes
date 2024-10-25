@@ -3,9 +3,6 @@
 # Exit on any error
 set -ex
 
-# Initialize and update all submodules
-#git submodule update --init
-
 # Define variables for directories
 KMC_DIR="src/kmc3"
 
@@ -16,7 +13,6 @@ unset CONDA_PREFIX
 
 # Enter the KMC directory, initialize and update its submodule
 cd "$KMC_DIR"
-#git submodule update --init
 
 # Explicitly build Cloudflares zlib to ensure it's used in KMC build
 cd 3rd_party/cloudflare
