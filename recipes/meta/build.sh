@@ -19,7 +19,7 @@ cmake -S $SRC_DIR -B $SRC_DIR/build  \
     -DCMAKE_INSTALL_RPATH=$CMAKE_INSTALL_RPATH \
     -DCMAKE_BUILD_WITH_INSTALL_RPATH=$CMAKE_BUILD_WITH_INSTALL_RPATH
 
-cmake --build . --config Release || exit 1
+cmake --build . --config Release --parallel ${CPU_COUNT} || exit 1
 cmake --install . || exit 1
 rm -rf $SRC_DIR/build
 
