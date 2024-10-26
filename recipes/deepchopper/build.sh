@@ -4,15 +4,15 @@
 # -x = print every executed command
 set -ex
 
-if [ `uname` == Darwin ]; then
-  export HOME=`mktemp -d`
-fi
+# if [ `uname` == Darwin ]; then
+#   export HOME=`mktemp -d`
+# fi
 
 curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
 
 export PATH="$HOME/.cargo/bin:$PATH"
-export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="$CC"
-export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="$CC"
+# export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="$CC"
+# export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="$CC"
 
 
 maturin build --interpreter python --release
