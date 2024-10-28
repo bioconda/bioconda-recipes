@@ -1,11 +1,15 @@
 #!/bin/bash -euo
 
-./configure --prefix=${PREFIX} --enable-python-binding --with-sse CXX="${CXX}" \
-	CXXFLAGS="${CXXFLAGS} -O3" CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include" \
-	LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export INCLUDES="-I${PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-make -j ${CPU_COUNT}
+./configure --prefix="${PREFIX}" --enable-python-binding --with-sse CXX="${CXX}" \
+	CXXFLAGS="${CXXFLAGS} -O3" CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include" \
+	LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
+
+make -j "${CPU_COUNT}"
 make install
-make check -j ${CPU_COUNT}
+make check -j "${CPU_COUNT}"
 cd swig/python
-pip install . --prefix=$PREFIX
+$PYTHON -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
