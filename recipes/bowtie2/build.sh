@@ -7,7 +7,7 @@ git clone https://github.com/ch4rr0/libsais third_party/libsais
 
 LDFLAGS=""
 make CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -O3" CPP="${CXX} -I${PREFIX}/include" CC="${CC} -L${PREFIX}/lib" \
-	CFLAGS="${CFLAGS} -O3" LDLIBS="-L$PREFIX/lib -lz -lzstd -ltbb -ltbbmalloc -lpthread" \
+	CFLAGS="${CFLAGS} -O3" LDLIBS="-L$PREFIX/lib -lz -lzstd -lpthread" \
 	WITH_ZSTD=1 USE_SRA=1 USE_SAIS_OPENMP=1
 
 binaries="\

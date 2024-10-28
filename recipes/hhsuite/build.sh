@@ -20,3 +20,6 @@ cmake -DCHECK_MPI=0 \
 
 make -j${CPU_COUNT} ${VERBOSE_CM}
 make install -j${CPU_COUNT}
+
+# Move the `reformat.pl` script to ${PREFIX}/bin to ensure it's available in the PATH
+mv ${SRC_DIR}/scripts/reformat.pl ${PREFIX}/bin

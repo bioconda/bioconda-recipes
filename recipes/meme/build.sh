@@ -1,10 +1,10 @@
 #!/bin/bash -ex
 
 export MEME_ETC_DIR="${PREFIX}/etc"
+export INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
 
-autoreconf -i
-
-perl scripts/dependencies.pl
+autoreconf -if
 
 ./configure CC="${CC}" \
 	CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include" \
@@ -14,13 +14,6 @@ perl scripts/dependencies.pl
 	--enable-build-libxslt
 
 make AM_CFLAGS='-DNAN="(0.0/0.0)"' -j"${CPU_COUNT}"
-
-# tests will only work inside the build dir, but
-# https://github.com/conda/conda-build/issues/1453
-# so you need `conda build --prefix-length 1`
-# for it to work properly
-# make test
-
 make install
 make clean
 
