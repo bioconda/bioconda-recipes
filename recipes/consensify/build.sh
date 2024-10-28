@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 ## compile
 ${CXX} -c consensify_c.cpp -I./ ${CXXFLAGS}
 
