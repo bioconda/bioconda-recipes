@@ -10,18 +10,22 @@ source:
   sha256: 2e17a1556d90c187434aa492000b2ced0d755cf6d437732f07df42e6670370e0
 
 build:
-  noarch: python
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
+  run_exports:
+    - {{ pin_subpackage("cell2cell", max_pin="x.x.x") }}
 
 requirements:
+  build:
+    - {{ compiler("cxx") }}
+
   host:
-    - python
+    - python ==3.10.*
     - cython
     - pip
   run:
-    - python
-    - numpy >=1.16
+    - python ==3.10.*
+    - numpy ==1.16
     - pandas >=1.0.0
     - xlrd >=1.1
     - openpyxl >=2.6.2
@@ -48,7 +52,8 @@ test:
     - pip
 
 about:
-  summary: TBD
+  home: https://github.com/earmingol/cell2cell
+  summary: Inferring cell-cell interactions from transcriptomes with cell2cell
   license: BSD-3-Clause
   license_file: LICENSE.txt
 
