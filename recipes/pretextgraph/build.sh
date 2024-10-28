@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eo pipefail
+set -xeo pipefail
 
 if [ `uname` == Darwin ]; then
     meson setup --buildtype=release --prefix=$PREFIX --unity on builddir
