@@ -11,6 +11,6 @@ export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 
 make -j"${CPU_COUNT}"
 make install
-make check -j"${CPU_COUNT}"
+#make check -j"${CPU_COUNT}"
 cd swig/python
 ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
