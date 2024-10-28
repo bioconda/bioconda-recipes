@@ -1,14 +1,19 @@
-{% set version = "1.2.7" %}
+{% set version = "1.2.8" %}
 
-{% set system = "x64_linux" %}       # [linux and x86_64]
-{% set system = "x64_mac" %}         # [osx and x86_64]
-{% set system = "arm64_linux" %}     # [linux and aarch64]
-{% set system = "arm64_mac" %}       # [osx and arm64]
+{% set system = "manylinux2014_x86_64" %}      # [linux and x86_64]
+{% set system = "manylinux2014_aarch64" %}     # [linux and aarch64]
+{% set system = "macosx_10_9_x86_64" %}        # [osx and x86_64]
+{% set system = "macosx_11_0_arm64" %}         # [osx and arm64]
 
-{% set sha256 = "5f750bd1bfc8448d127ea8a566860bc10c58c768a79d3d9a814243d64c1f16cf" %}  # [linux and x86_64]
-{% set sha256 = "077a44e14e429a526868ca16364c62b800eeade9aa7df184fdda8f93e053c356" %}  # [osx and x86_64]
-{% set sha256 = "9b2b410607d26ec05b1bdc42329b73285e4a862c93f67aff6c157b10b02e3383" %}  # [linux and aarch64]
-{% set sha256 = "b917c5af92e806b4244a62a32063c81bc9de3eae3760498444398fe7c5a7f623" %}  # [osx and arm64]
+{% set site = "https://files.pythonhosted.org/packages/70/b3/a7dc474d515f511564ba31f4cae44a23f7badc687151a254d54d2ad1936b" %}     # [linux and x86_64]
+{% set site = "https://files.pythonhosted.org/packages/5c/f4/09e3be13268d857ea9cb227e5324cbb23bd7cdb47efa48fb9cf591619727" %}     # [linux and aarch64]
+{% set site = "https://files.pythonhosted.org/packages/52/26/a349c6911bee8b14ec3a1919ab416c759768ec81a41566f2fc42399303f5" %}     # [osx and x86_64]
+{% set site = "https://files.pythonhosted.org/packages/0e/a8/d35b83baff04e299b3600b91b3f4f5df9aa08210381198ee5ab814e6881c" %}     # [osx and arm64]
+
+{% set sha256 = "fcc62e88de1d87bca792ed08845f0876ac4647ac80d6bbdc66585600684a9659" %}  # [linux and x86_64]
+{% set sha256 = "f77df5fae8771d15cb99f8862b780237a2df3903243ba2cf4fa7dbece995f349" %}  # [linux and aarch64]
+{% set sha256 = "a5f381652b92c83dd22b111faa42e37f0ae564e579d586e2e1164cd2e968fbf3" %}  # [osx and x86_64]
+{% set sha256 = "8c70fd4b684c233743c98b5dc1004ad0a4c1c9ad793278a2337a26962dfe1ad6" %}  # [osx and arm64]
 
 
 package:
@@ -20,17 +25,16 @@ build:
   run_exports:
     - {{ pin_subpackage('vclust', max_pin='x') }}
   script: |
-    mkdir -p ${PREFIX}/bin
-    cp -r vclust.py bin ${PREFIX}/bin/
-    chmod +x ${PREFIX}/bin/vclust.py
+    {{ PYTHON }} -m pip install vclust-{{ version }}-py3-none-{{ system }}.whl
 
 source:
-  url: https://github.com/refresh-bio/vclust/releases/download/v{{ version }}/vclust-v{{ version }}-{{ system }}.tar.gz
+  url: {{ site }}/vclust-{{ version }}-py3-none-{{ system }}.whl
   sha256: {{ sha256 }}
 
 requirements:
   host:
     - python >=3.7
+    - pip
   run:
     - python >=3.7
 
@@ -42,8 +46,8 @@ about:
 
 test:
   commands:
-    - vclust.py --help
-    - vclust.py info
+    - vclust --help
+    - vclust info
 
 extra:
   additional-platforms:
