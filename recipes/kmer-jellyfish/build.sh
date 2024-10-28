@@ -10,7 +10,6 @@ if [[ `uname` == "Darwin" ]]; then
 	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 
-autoreconf -if
 ./configure --prefix="${PREFIX}" --enable-python-binding --with-sse CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS} -O3 -I${PREFIX}/include" \
 	LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
