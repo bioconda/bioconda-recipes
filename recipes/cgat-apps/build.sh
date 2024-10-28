@@ -6,7 +6,6 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -O3 -I${PREFIX}/include"
-export CPLUS_INCLUDE_PATH="${CPLUS_INCLUDE_PATH}:${SRC_DIR}/cgat/Components"
 
 # remove install_requires (no longer required with conda package)
 sed -i.bak'' -e '/REPO_REQUIREMENT/,/pass/d' setup.py
