@@ -1,13 +1,13 @@
 {% set name = "hictk" %}
-{% set version = "1.0.0" %}
-{% set sha256 = "e337f52658a257eb6265e211dd3cef6b73db40bdc5b5a6433b47ce4faa6006fb" %}
+{% set version = "2.0.1" %}
+{% set sha256 = "bd12f87f6f33ea91f898d6b660e8dcca9f97b0aaf27719e867ab643cd705fced" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 2
+  number: 0
   run_exports:
     - {{ pin_subpackage('hictk', max_pin='x') }}
 
@@ -22,24 +22,28 @@ requirements:
     - cmake >=3.25
     - conan >=2
     - make
-    - catch2 >=3.5
-    - cli11 >=2.3
+    - catch2 >=3.7
+    - cli11 >=2.4
     - eigen >=3.4
-    - fast_float >=5
-    - fmt >=10
-    - highfive >=2.8
-    - spdlog >=1.12
+    - fast_float >=6
+    - fmt >=11
+    - highfive >=2.9
+    - nlohmann_json >=3.11
+    - tomlplusplus >=3.3
+    - spdlog >=1.14
 
   host:
     - hdf5 >=1.12
+    - libarchive >=3
     - libarrow >=16
-    - libdeflate
+    - libdeflate >=1
     - zstd >=1.5
 
   run:
     - hdf5 >=1.12
+    - libarchive >=3
     - libarrow >=16
-    - libdeflate
+    - libdeflate >=1
     - zstd >=1.5
 
 about:
@@ -48,45 +52,18 @@ about:
   license_file: LICENSE
   summary: Blazing fast toolkit to work with .hic and .cool files
   dev_url: https://github.com/paulsengroup/{{ name }}
-  doc_url: https://github.com/paulsengroup/{{ name }}#readme
+  doc_url: https://{{ name }}.readthedocs.io/en/stable/
 
 test:
   requires:
+    - python >=3.11,<3.13
+    - pip
     - curl
-    - cooler>=0.9.3
     - perl-digest-sha1
-    - xz
+    - zstd
   source_files:
     - cmake/FetchTestDataset.cmake
-    - test/scripts/check_test_files_exist.sh
-    - test/scripts/compare_matrix_files.sh
-    - test/scripts/compare_plain_files.sh
-    - test/scripts/compare_weights.py
-    - test/scripts/hictk_balance_ice.sh
-    - test/scripts/hictk_balance_scale.sh
-    - test/scripts/hictk_balance_vc.sh
-    - test/scripts/hictk_convert_hic2cool.sh
-    - test/scripts/hictk_convert_cool2hic.sh
-    - test/scripts/hictk_dump_cells.sh
-    - test/scripts/hictk_dump_normalizations.sh
-    - test/scripts/hictk_dump_resolutions.sh
-    - test/scripts/hictk_dump_chroms.sh
-    - test/scripts/hictk_dump_bins.sh
-    - test/scripts/hictk_dump_gw.sh
-    - test/scripts/hictk_dump_cis.sh
-    - test/scripts/hictk_dump_trans.sh
-    - test/scripts/hictk_dump_balanced.sh
-    - test/scripts/hictk_fix_mcool.sh
-    - test/scripts/hictk_load_coo.sh
-    - test/scripts/hictk_load_bg2.sh
-    - test/scripts/hictk_load_4dn.sh
-    - test/scripts/hictk_merge.sh
-    - test/scripts/hictk_rename_chromosomes.sh
-    - test/scripts/hictk_validate.sh
-    - test/scripts/hictk_zoomify.sh
-    - test/scripts/nproc.sh
-    - test/scripts/readlink.sh
-    - test/scripts/shuffle.sh
+    - test/integration/
   commands:
     - hictk --help
     - hictk --version
