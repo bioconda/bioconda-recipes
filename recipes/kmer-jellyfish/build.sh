@@ -1,14 +1,9 @@
 #!/bin/bash -euo
 
-export M4="${BUILD_PREFIX}/bin/m4"
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
-
-if [[ `uname` == "Darwin" ]]; then
-	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-fi
 
 ./configure --prefix="${PREFIX}" --enable-python-binding --with-sse CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS} -O3 -I${PREFIX}/include" \
