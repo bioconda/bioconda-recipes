@@ -1,8 +1,8 @@
 #!/bin/bash
 set -eu -o pipefail
 
-export CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-R${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
 
 if [[ `uname` == "Darwin" ]]; then
 	export CFLAGS="${CFLAGS} -Wunused-command-line-argument -Wunused-parameter"
@@ -16,8 +16,6 @@ cmake -S . -B build \
 	-DCMAKE_BUILD_TYPE=RELEASE \
 	-DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_C_FLAGS="${CFLAGS}" \
-	-DCMAKE_LIBRARY_PATH="${PREFIX}/lib" \
-	-DCMAKE_INCLUDE_PATH="${PREFIX}/include" \
 	-DCONDA_BUILD=TRUE \
 	-DBOOST_ROOT="${PREFIX}" \
 	-DCEREAL_INCLUDE_DIR="${PREFIX}/include" \
