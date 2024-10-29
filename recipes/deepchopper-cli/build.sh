@@ -14,6 +14,6 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 cd py_cli
 
-maturin build --interpreter python --release -b bin
+maturin build --interpreter python --release -b bin --out dist
 
-$PYTHON -m pip install target/wheels/*.whl --no-deps --ignore-installed -vv
+$PYTHON -m pip install dist/*.whl --no-deps --ignore-installed -vv
