@@ -1,8 +1,8 @@
 #!/bin/bash
 set -eu -o pipefail
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-R${PREFIX}/lib"
-export CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
 
 if [[ `uname` == "Darwin" ]]; then
 	export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument -Wno-unused-parameter"
