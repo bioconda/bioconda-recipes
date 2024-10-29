@@ -2,11 +2,14 @@
 set -e
 
 # Get pre-compiled skia from jetbrains
-USE_GL=1 make prep > /dev/null 2>&1 
+USE_GL=1 make prep 2> /dev/null
 
 if [[ "$OSTYPE" != "darwin"* ]]; then
-  sed -i 's/-lEGL -lGLESv2/-lEGL -lGLESv2 -lGL -lGLX/' Makefile
-  sed -i 's/GLFW_EGL_CONTEXT_API/GLFW_NATIVE_CONTEXT_API/' src/plot_manager.cpp
+  sed -i.bak 's/-lEGL -lGLESv2/-lEGL -lGLESv2 -lGL -lGLX/' Makefile
+  sed -i.bak 's/GLFW_EGL_CONTEXT_API/GLFW_NATIVE_CONTEXT_API/' src/plot_manager.cpp
+  # Let conda set these
+  sed -i.bak 's/-mmacosx-version-min=10.15//g' Makefile
+  sed -i.bak 's/-mmacosx-version-min=11//g' Makefile
 fi
 
 # Set flags conditionally based on the OS type
