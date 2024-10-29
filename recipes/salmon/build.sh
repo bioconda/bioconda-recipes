@@ -2,10 +2,10 @@
 set -eu -o pipefail
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-R${PREFIX}/lib"
-export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
+export CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib"
 
 if [[ `uname` == "Darwin" ]]; then
-	export CFLAGS="${CFLAGS} -Wunused-command-line-argument -Wunused-parameter"
+	export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument -Wno-unused-parameter"
 	export CONFIG_ARGS="-DCMAKE_OSX_DEPLOYMENT_TARGET=10.11 -DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
 	export CONFIG_ARGS=""
