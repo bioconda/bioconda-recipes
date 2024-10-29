@@ -10,10 +10,6 @@ else
 	export CONFIG_ARGS=""
 fi
 
-case $(uname -m) in
-    arm64) EXTRA_ARGS="-DSTADEN_INCLUDE_DIR=${PREFIX}/include -DSTADEN_LIBRARY=${PREFIX}/lib/libstaden-read.a -DSTADEN_VERSION=1.15.0"
-esac
-
 cmake -S . -B build \
 	-DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=RELEASE \
@@ -25,7 +21,9 @@ cmake -S . -B build \
 	-DCEREAL_INCLUDE_DIR="${PREFIX}/include" \
 	-DLIB_GFF_INCLUDE_DIR="${PREFIX}/include" \
 	-DNO_IPO=TRUE \
-	"${CONFIG_ARGS}" \
-	"${EXTRA_ARGS}"
+ 	-DSTADEN_INCLUDE_DIR="${PREFIX}/include" \
+  	-DSTADEN_VERSION="1.15.0" \
+   	-DSTADEN_LIBRARY="${PREFIX}/lib/libstaden-read.a" \
+	"${CONFIG_ARGS}"
 
 cmake --build build/ --target install -v
