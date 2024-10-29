@@ -1,0 +1,46 @@
+{% set name = "influx-si-data-manager" %}
+{% set version = "1.0.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/influx_si_data_manager-{{ version }}.tar.gz
+  sha256: 61a158c9f24944bab776847c909371e448c82142f52af2c91a8e68233360f869
+
+build:
+  entry_points:
+    - influx_si_data_manager = influx_si_data_manager.main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('influx-si-data-manager', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.9.0,<4.0.0
+    - pandas >=2.0.1,<3.0.0
+
+test:
+  imports:
+    - influx_si_data_manager
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/llegregam/influx_data_manager
+  summary: Data manager for handling influx_si inputs on Workflow4Metabolomics (usegalaxy.org)
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - llegregam

@@ -1,0 +1,54 @@
+From 7cb28c92f50e910d3cc14fc92bf6b9c197c8c6bf Mon Sep 17 00:00:00 2001
+From: Martin Larralde <martin.larralde@embl.de>
+Date: Fri, 27 Jan 2023 20:52:51 +0100
+Subject: [PATCH] Slightly refactor comparison code in `shine_dalgarno`
+ functions
+URL: https://github.com/hyattpd/Prodigal/pull/100
+
+---
+ sequence.c | 25 +++++++++++++------------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
+
+diff --git a/sequence.c b/sequence.c
+index b2be997..515c8b1 100644
+--- a/sequence.c
++++ b/sequence.c
+@@ -667,10 +667,10 @@ int shine_dalgarno_exact(unsigned char *seq, int pos, int start, double *rwt) {
+ 
+   /* Compare the 6-base region to AGGAGG */
+   for(i = 0; i < limit; i++) {
+-    if(pos+i < 0) continue;
+-    if(i%3 == 0 && is_a(seq, pos+i) == 1) match[i] = 2.0;
+-    else if(i%3 != 0 && is_g(seq, pos+i) == 1) match[i] = 3.0;
+-    else match[i] = -10.0;
++    if(pos + i >= 0) {
++      if(i%3 == 0 && is_a(seq, pos+i) == 1) match[i] = 2.0;
++      else if(i%3 != 0 && is_g(seq, pos+i) == 1) match[i] = 3.0;
++    }
+   }
+ 
+   /* Find the maximally scoring motif */
+@@ -743,14 +743,15 @@ int shine_dalgarno_mm(unsigned char *seq, int pos, int start, double *rwt) {
+ 
+   /* Compare the 6-base region to AGGAGG */
+   for(i = 0; i < limit; i++) {
+-    if(pos+i < 0) continue;
+-    if(i % 3 == 0) {
+-      if(is_a(seq, pos+i) == 1) match[i] = 2.0;
+-      else match[i] = -3.0;
+-    }
+-    else {
+-      if(is_g(seq, pos+i) == 1) match[i] = 3.0;
+-      else match[i] = -2.0;
++    if(pos+i >= 0) {
++      if(i % 3 == 0) {
++        if(is_a(seq, pos+i) == 1) match[i] = 2.0;
++        else match[i] = -3.0;
++      }
++      else {
++        if(is_g(seq, pos+i) == 1) match[i] = 3.0;
++        else match[i] = -2.0;
++      }
+     }
+   }
+ 

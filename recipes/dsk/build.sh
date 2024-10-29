@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 if [ `uname` == Darwin ]; then
         export MACOSX_DEPLOYMENT_TARGET=10.9
 fi
@@ -22,5 +24,5 @@ cmake .. \
       -DCMAKE_PREFIX_PATH=${PREFIX} \
       -DCPPUNIT_INCLUDE_DIR=${PREFIX}/include
 
-make -j 2
+make -j ${CPU_COUNT}
 make install
