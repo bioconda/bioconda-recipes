@@ -2,7 +2,7 @@
 {% set version = "0.0.32" %}
 
 package:
-  name: decom
+  name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
@@ -10,9 +10,7 @@ source:
   sha256: c9efaa97b7abfe6f19f01a199ca6c7a7b32ec699f886d226667b8b5fe562dd88
 
 build:
-  run_exports:
-    - {{ pin_subpackage('decom', max_pin="x") }}
-  number: 0
+  number: 1
   noarch: python
   entry_points:
     - decOM = decOM.__main__:main
@@ -21,24 +19,37 @@ build:
     - decOM-LOO = decOM.LOO.__main__:main
     - decOM-CV = decOM.CV.__main__:main
     - decOM-MST = decOM.MST.__main__:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('decom', max_pin='x.x.x') }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.6
+    - setuptools
   run:
+    - python >=3.6
+    - setuptools
     - colorama
+    - numpy
+    - pandas
+    - plotly >=5.5.0
     - dask >=2021.12.0
     - importlib_resources >=5.4.0
     - python-kaleido
-    - numpy >=1.7
-    - pandas
-    - plotly >=5.5.0
-    - python
     - git
 
 test:
+  imports:
+    - decOM
+    - decOM.CV
+    - decOM.LOO
+    - decOM.MST
+    - decOM.aOralOut
+    - decOM.data
+    - decOM.format
+    - decOM.modules
   commands:
     - decOM --help
     - decOM-aOralOut --help
@@ -52,9 +63,11 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: "decOM: Similarity-based microbial source tracking for contamination assessment of ancient oral samples using k-mer-based methods"
-  doc_url: "https://github.com/CamilaDuitama/decOM" 
-  dev_url: "https://camiladuitama.github.io/gradfolio/"
+  summary: "decOM: Microbial source tracking of ancient oral samples using k-mers."
+  description: |
+    decOM is a similarity-based microbial source tracking tool for contamination assessment of ancient oral samples using k-mer-based methods.
+  doc_url: https://github.com/CamilaDuitama/decOM 
+  dev_url: https://github.com/CamilaDuitama/decOM
 
 extra:
   recipe-maintainers:
