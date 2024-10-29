@@ -1,0 +1,51 @@
+{% set name = "coptr" %}
+{% set version = "1.1.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/coptr-{{ version }}.tar.gz
+  sha256: 62cd4c58d64864aa721c5fe069fe993108acc5c74e893bf8c46b008f3b8667a0
+
+build:
+  entry_points:
+    - coptr = coptr.cli:cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+   - {{ pin_subpackage("coptr", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - setuptools >=40.6.0
+    - wheel
+    - pip
+  run:
+    - python >=3.6
+    - numpy >=1.19.1
+    - pysam >=0.16.0.1
+    - scipy >=1.5.2
+    - matplotlib-base >=3.3.2
+
+test:
+  imports:
+    - coptr
+  commands:
+    - pip check
+    - coptr --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/tyjo/coptr
+  summary: Accurate and robust inference of microbial growth dynamics from metagenomic sequencing reads.
+  license: GPL-3.0
+  license_file: COPYING
+
+extra:
+  recipe-maintainers:
+    - ramirobarrantes
