@@ -1,6 +1,12 @@
 #!/bin/bash
 set -ex
 
+# AVX is not supported on all CPUs, in particular Rosetta2 on Apple Silicon
+# -march=nocona and -mtune=haswell are the original conda-forge flags
+# we're restoring them here by mentioning them explicitly
+# .bak is required for sed -i on macOS
+sed -i.bak 's/-mavx/-mno-avx -mno-avx2 -march=nocona -mtune=haswell/' CMakeLists.txt
+
 DCMAKE_ARGS=""
 if [ "$(uname)" == Darwin ]; then
 	CC=$(which "$CC")
@@ -31,7 +37,7 @@ VERBOSE=1 cmake --build build --target install -j ${JOBS}
 chmod 755 "${PREFIX}/bin/cmaple"*
 
 for file in "${PREFIX}/example.maple" "${PREFIX}/tree.nwk"; do
-    if [ -f "$file" ]; then
-        rm "$file"
-    fi
+	if [ -f "$file" ]; then
+		rm "$file"
+	fi
 done
