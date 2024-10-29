@@ -1,20 +1,31 @@
 #!/bin/bash
 set -eu -o pipefail
 
-mkdir -p $PREFIX/bin
-mkdir -p $PREFIX/lib
+export CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib"
 
-export CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib -I${PREFIX}/include"
+if [[ `uname` == "Darwin" ]]; then
+	export CFLAGS="${CFLAGS} -Wunused-command-line-argument -Wunused-parameter"
+	export CONFIG_ARGS="-DCMAKE_OSX_DEPLOYMENT_TARGET=10.11 -DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+else
+	export CONFIG_ARGS=""
+fi
+
+case $(uname -m) in
+    arm64) EXTRA_ARGS="-DSTADEN_INCLUDE_DIR=${PREFIX}/include -DSTADEN_LIBRARY=${PREFIX}/lib/libstaden-read.a -DSTADEN_VERSION=1.15.0"
+esac
 
 cmake -S . -B build \
 	-DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=RELEASE \
+	-DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_C_FLAGS="${CFLAGS}" \
 	-DCONDA_BUILD=TRUE \
 	-DLIBSTADEN_LDFLAGS="-L${PREFIX}/lib" \
-	-DBoost_NO_BOOST_CMAKE=ON \
-	-DCMAKE_OSX_DEPLOYMENT_TARGET=10.11 \
-	-DBoost_NO_SYSTEM_PATHS=ON \
-	-DNO_IPO=TRUE
+	-DBOOST_ROOT="${PREFIX}" \
+	-DCEREAL_INCLUDE_DIR="${PREFIX}/include" \
+	-DLIB_GFF_INCLUDE_DIR="${PREFIX}/include" \
+	-DNO_IPO=TRUE \
+	"${CONFIG_ARGS}" \
+	"${EXTRA_ARGS}"
 
 cmake --build build/ --target install -v
