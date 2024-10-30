@@ -1,14 +1,16 @@
 {% set name = "hictkpy" %}
-{% set version = "0.0.1" %}
-{% set sha256 = "af87e7670447331e8e9f3f59f00a97de640c111317fd76b87d756a93fe0d9d47" %}
+{% set version = "0.0.5" %}
+{% set sha256 = "e9576a1a719ce378873da15b76e9f7e699748c0486901607e4d7e87c3f0c6556" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 0
-  skip: True  # [py < 36]
+  number: 2
+  skip: True  # [py < 39]
+  run_exports:
+    - {{ pin_subpackage('hictkpy', max_pin='x.x') }}
 
 source:
   url: https://github.com/paulsengroup/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
@@ -21,19 +23,18 @@ requirements:
     - cmake >=3.25
     - conan >=2
     - make
-    - eigen >=3.4
     - fast_float >=5
     - fmt >=10
     - highfive >=2.7
-    - pybind11 >=2.11
     - spdlog >=1.12
   host:
     - python
+    - pip
     - hdf5 >=1.12
     - libdeflate
-    - numpy
-    - pandas
-    - scipy
+    - scikit-build-core
+    - setuptools_scm
+    - zstd >=1.5
 
   run:
     - python
@@ -42,6 +43,7 @@ requirements:
     - numpy
     - pandas
     - scipy
+    - zstd >=1.5
 
 about:
   home: https://github.com/paulsengroup/{{ name }}
@@ -66,3 +68,6 @@ extra:
   identifiers:
     - biotools:hictkpy
     - doi:10.5281/zenodo.8220300
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
