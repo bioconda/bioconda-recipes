@@ -15,4 +15,4 @@ mv JARVIS3 ${PREFIX}/bin
 cd ${PREFIX}/bin
 sed -i.bak 's/ \.\// /g; s/\"\.\//"/g' JARVIS3.sh
 chmod +x JARVIS3.sh
-JARVIS3.sh --install
+./JARVIS3.sh --install
