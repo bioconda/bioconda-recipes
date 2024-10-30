@@ -15,5 +15,3 @@ if [ $(arch) == aarch64 ]; then
 fi
 make
 cp spring $PREFIX/bin
-
-
