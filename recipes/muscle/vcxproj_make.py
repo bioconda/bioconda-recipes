@@ -1,28 +1,53 @@
 #!/usr/bin/python3
 
+import argparse
 import os
 import sys
-import argparse
 
-Usage = \
-(
-"Convert Visual Studio .vcxproj file in current directory to Makefile and run make."
+Usage = (
+    "Convert Visual Studio .vcxproj file in current directory to Makefile and run make."
 )
 
-AP = argparse.ArgumentParser(description = Usage)
+AP = argparse.ArgumentParser(description=Usage)
 
 # Value opts
-AP.add_argument("--std", required=False, help="C++ standard option for GCC, e.g. c++11 or c++17 (default none)")
-AP.add_argument("--cppcompiler", required=False, default="g++", help="C++ compiler command name default g++)")
-AP.add_argument("--ccompiler", required=False, default="gcc", help="C++ compiler command name default gcc)")
+AP.add_argument(
+    "--std",
+    required=False,
+    help="C++ standard option for GCC, e.g. c++11 or c++17 (default none)",
+)
+AP.add_argument(
+    "--cppcompiler",
+    required=False,
+    default="g++",
+    help="C++ compiler command name default g++)",
+)
+AP.add_argument(
+    "--ccompiler",
+    required=False,
+    default="gcc",
+    help="C++ compiler command name default gcc)",
+)
 
 # Flag opts
-AP.add_argument("--debug", required=False, action='store_true', help="Debug build")
-AP.add_argument("--openmp", required=False, action='store_true', help="Requires OMP")
-AP.add_argument("--pthread", required=False, action='store_true', help="Requires pthread")
-AP.add_argument("--lrt", required=False, action='store_true', help="Requires lrt")
-AP.add_argument("--symbols", required=False, action='store_true', help="Debug symbols (default if --debug)")
-AP.add_argument("--nostrip", required=False, action='store_true', help="Don't strip symbols (default if --debug or --symbols)")
+AP.add_argument("--debug", required=False, action="store_true", help="Debug build")
+AP.add_argument("--openmp", required=False, action="store_true", help="Requires OMP")
+AP.add_argument(
+    "--pthread", required=False, action="store_true", help="Requires pthread"
+)
+AP.add_argument("--lrt", required=False, action="store_true", help="Requires lrt")
+AP.add_argument(
+    "--symbols",
+    required=False,
+    action="store_true",
+    help="Debug symbols (default if --debug)",
+)
+AP.add_argument(
+    "--nostrip",
+    required=False,
+    action="store_true",
+    help="Don't strip symbols (default if --debug or --symbols)",
+)
 
 Args = AP.parse_args()
 debug = Args.debug
@@ -71,17 +96,7 @@ if Args.pthread:
     compiler_opts += " -pthread"
     linker_opts += " -lpthread"
 
-rc = os.system('test -z $(git status --porcelain) 2> /dev/null')
-if rc != 0:
-    sys.stderr.write("\n\nWarning -- Uncommited changes\n\n")
-
-rc = os.system(r'echo \"$(git log --oneline | head -n1 | cut "-d " -f1)\" | tee gitver.txt')
-if rc != 0:
-    sys.stderr.write("\n\nERROR -- failed to generate gitver.txt\n\n")
-    sys.exit(1)
-sys.stderr.write("gitver.txt done.\n")
-
-rc = os.system(r'rm -rf o/ ../bin/%s*' % binary)
+rc = os.system(r"rm -rf o/ ../bin/%s*" % binary)
 if rc != 0:
     sys.stderr.write("\n\nERROR -- failed to clean\n\n")
     sys.exit(1)
@@ -92,7 +107,7 @@ BINDIR = "../bin"
 
 Fields = ProjFileName.split("/")
 n = len(Fields)
-Name = Fields[n-1]
+Name = Fields[n - 1]
 Fields = Name.split(".")
 binary = Fields[0]
 
@@ -101,8 +116,8 @@ CNames = []
 with open(ProjFileName) as File:
     for Line in File:
         Line = Line.strip()
-        Line = Line.replace('"', '')
-        Line = Line.replace(' ', '')
+        Line = Line.replace('"', "")
+        Line = Line.replace(" ", "")
         # <ClCompile Include="betadiv.cpp" />
         if Line.startswith("<ClCompileInclude"):
             Fields = Line.split("=")
@@ -120,6 +135,7 @@ with open(ProjFileName) as File:
 assert len(CXXNames) > 0 or len(CNames) > 0
 
 with open("Makefile", "w") as f:
+
     def Out(s):
         print(s, file=f)
 
@@ -202,10 +218,8 @@ with open("Makefile", "w") as f:
 
 sys.stderr.write("Makefile done.\n")
 
-rc = os.system("make 2> make.stderr | tee make.stdout")
+rc = os.system("make")
 if rc != 0:
-    os.system("tail make.stderr")
-    sys.stderr.write("\n\nERROR -- make failed, see make.stderr\n\n")
+    sys.stderr.write("\n\nERROR -- make failed\n\n")
     sys.exit(1)
 sys.stderr.write("make done.\n")
-os.system("ls -lh ../bin/" + binary + "\n")

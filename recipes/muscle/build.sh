@@ -1,7 +1,8 @@
 #!/bin/bash
+set -e
 
 mkdir -p ${PREFIX}/bin
-cd src
+cd src || exit 1
 cp ${RECIPE_DIR}/vcxproj_make.py .
 chmod +x vcxproj_make.py
 
@@ -13,4 +14,10 @@ else
     ./vcxproj_make.py --openmp
 fi
 
-cp ../bin/muscle "$PREFIX"/bin/muscle
+# Verify binary exists and is executable
+if [ ! -f ../bin/muscle ]; then
+    echo "Error: muscle binary not found"
+    exit 1
+fi
+
+cp ../bin/muscle ${PREFIX}/bin/muscle
