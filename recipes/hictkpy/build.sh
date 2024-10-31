@@ -34,10 +34,16 @@ patch conanfile.py < "${RECIPE_DIR}/conanfile.py.patch"
 # Build hictkpy as a shared library
 patch pyproject.toml < "${RECIPE_DIR}/pyproject.toml.patch"
 
-CMAKE_ARGS+=" -DPython_EXECUTABLE=$PYTHON"
+# See https://github.com/conda-forge/conda-forge.github.io/pull/2321
+Python_INCLUDE_DIR="$("$PYTHON" -c 'import sysconfig; print(sysconfig.get_path("include"))')"
+Python_NumPy_INCLUDE_DIR="$("$PYTHON" -c 'import numpy; print(numpy.get_include())')"
 
-echo "$CMAKE_ARGS"
-export CMAKE_ARGS
+CMAKE_ARGS+=" -DPython_EXECUTABLE:PATH=${PYTHON}"
+CMAKE_ARGS+=" -DPython_INCLUDE_DIR:PATH=${Python_INCLUDE_DIR}"
+CMAKE_ARGS+=" -DPython_NumPy_INCLUDE_DIR=${Python_NumPy_INCLUDE_DIR}"
+CMAKE_ARGS+=" -DPython3_EXECUTABLE:PATH=${PYTHON}"
+CMAKE_ARGS+=" -DPython3_INCLUDE_DIR:PATH=${Python_INCLUDE_DIR}"
+CMAKE_ARGS+=" -DPython3_NumPy_INCLUDE_DIR=${Python_NumPy_INCLUDE_DIR}"
 
 SETUPTOOLS_SCM_PRETEND_VERSION="$PKG_VERSION" \
 "$PYTHON" -m pip install "$SRC_DIR" -vv
