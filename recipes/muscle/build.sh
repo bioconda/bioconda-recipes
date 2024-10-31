@@ -1,9 +1,16 @@
 #!/bin/bash
 
-cd src/
-sed -i.bak -e 's/ -static//' Makefile
+mkdir -p ${PREFIX}/bin
+cd src
+cp ${RECIPE_DIR}/vcxproj_make.py .
+chmod +x vcxproj_make.py
 
-make CXX=$CXX
+if [ "$(uname)" == "Darwin" ]; then
+    # macOS
+    ./vcxproj_make.py --openmp --cppcompiler g++-11
+else
+    # Linux
+    ./vcxproj_make.py --openmp
+fi
 
-mkdir -p "$PREFIX"/bin
-cp "$(uname)"/muscle "$PREFIX"/bin/muscle
+cp ../bin/muscle "$PREFIX"/bin/muscle
