@@ -24,7 +24,7 @@ fi
 
 # Navigate to the build directory and execute the build commands
 cd "$BUILD_DIR" || exit 1
-cmake -DCMAKE_INSTALL_PREFIX=$PREFIX .
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$PREFIX .
 make
 make install
 
