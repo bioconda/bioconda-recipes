@@ -11,8 +11,8 @@ if [[ $OSTYPE == "darwin"* ]]; then
 fi
 
 case ${ARCH} in
-  x86_64) LIBS=“${LDFLAGS}” make CC=“${CC}” CXX=“${CXX}” multi ;;
-  aarch64) LIBS=“${LDFLAGS}” make CC=“${CC}” CXX=“${CXX}” arch=armv8.1-a ;;
+  x86_64) LIBS="${LDFLAGS}" make CC="${CC}" CXX="${CXX}" multi ;;
+  aarch64) LIBS="${LDFLAGS}" make CC="${CC}" CXX="${CXX}" arch=armv8.1-a ;;
 esac
 
 mkdir -p $PREFIX/bin
