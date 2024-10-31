@@ -10,9 +10,12 @@ trap "rm -rf '$scratch'" EXIT
 
 declare -a CMAKE_PLATFORM_FLAGS
 if [[ ${HOST} =~ .*darwin.* ]]; then
-  # https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
-  export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-  CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
+  if [[ "$OSX_ARCH" == 'x86_64' ]]; then
+    # https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
+    CFLAGS+=' -D_LIBCPP_DISABLE_AVAILABILITY'
+    CXXFLAGS+=' -D_LIBCPP_DISABLE_AVAILABILITY'
+  fi
+  CMAKE_ARGS+=" -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
   conan_profile='apple-clang'
 else
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
