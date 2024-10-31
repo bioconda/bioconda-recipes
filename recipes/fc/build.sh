@@ -22,6 +22,9 @@ cd FC-Virus/bin || { echo "进入目录失败"; exit 1; }
 echo "运行程序..."
 chmod 755 fc-virus
 ls -l
+conda list libstdcxx-ng
+conda install libgcc-ng libstdcxx-ng boost
+ldd ./bin/fc-virus
 if ! ./fc-virus --help 2>&1; then
     echo "运行程序失败，错误信息为：$?"
     exit 1
