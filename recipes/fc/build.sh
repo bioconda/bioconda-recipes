@@ -16,7 +16,6 @@ git clone https://github.com/qdu-bioinfo/FC-Virus.git
 pwd
 # 进入目录
 cd FC-Virus/code || { echo "进入目录失败"; exit 1; }
-conda list
 
 # 清理和编译
 echo "清理旧文件并编译..."
