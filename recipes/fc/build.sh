@@ -1,6 +1,8 @@
 #!/bin/bash
 
-
+pwd
+conda info --envs
+conda env list
 # 编译源代码
 #make
 
@@ -10,7 +12,7 @@
 
 echo "克隆代码库..."
 git clone https://github.com/qdu-bioinfo/FC-Virus.git
-
+pwd
 # 进入目录
 cd FC-Virus/code || { echo "进入目录失败"; exit 1; }
 
