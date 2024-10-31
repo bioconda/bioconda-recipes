@@ -3,6 +3,7 @@
 pwd
 conda info --envs
 conda env list
+echo $PATH
 # 编译源代码
 #make
 
@@ -15,6 +16,9 @@ git clone https://github.com/qdu-bioinfo/FC-Virus.git
 pwd
 # 进入目录
 cd FC-Virus/code || { echo "进入目录失败"; exit 1; }
+conda list
+conda install gcc_linux-64
+conda activate $BUILD_PREFIX
 
 # 清理和编译
 echo "清理旧文件并编译..."
