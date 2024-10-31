@@ -26,3 +26,6 @@ cmake --install .
 # Install MeTA package
 cd ${SRC_DIR}
 ${PYTHON} -m pip install . --no-deps -vv
+
+mkdir -p $PREFIX/share/meta/example
+cp $SRC_DIR/resources/CST_R.nii.gz $PREFIX/share/meta/example/
