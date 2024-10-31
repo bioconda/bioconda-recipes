@@ -12,21 +12,29 @@ echo "克隆代码库..."
 git clone https://github.com/qdu-bioinfo/FC-Virus.git
 
 # 进入目录
-cd FC-Virus || { echo "进入目录失败"; exit 1; }
+cd FC-Virus/code || { echo "进入目录失败"; exit 1; }
 
 # 清理和编译
 echo "清理旧文件并编译..."
-if make clean && make; then
-    echo "编译成功"
-else
-    echo "编译失败"
-    echo "错误信息："
-    make 2>&1 | tail -n 20  # 输出最后20行错误信息
+#make clean && make
+
+if ! g++ -o FC-Virus GeneralSet.cpp ReadUtility.cpp KmerUtility.cpp KmerHash.cpp HomoKmer.cpp Consensus.cpp FC-Virus.cpp; then
+    echo "编译失败，错误信息如下："
+    # 上一条命令的错误信息会自动输出
     exit 1
+else
+    echo "编译成功"
 fi
+
 
 # 运行编译好的程序
 echo "运行程序..."
+ls -l
+if ! ./FC-Virus --help 2>&1; then
+    echo "运行程序失败，错误信息为：$?"
+    exit 1
+fi
+
 chmod 755 ./bin/fc-virus
 ls -l
 conda list libstdcxx-ng
