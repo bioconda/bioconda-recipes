@@ -20,7 +20,7 @@ cd FC-Virus/code || { echo "进入目录失败"; exit 1; }
 # 清理和编译
 echo "清理旧文件并编译..."
 #make clean && make
-
+ls -l
 if ! g++ -o FC-Virus GeneralSet.cpp ReadUtility.cpp KmerUtility.cpp KmerHash.cpp HomoKmer.cpp Consensus.cpp FC-Virus.cpp; then
     echo "编译失败，错误信息如下："
     # 上一条命令的错误信息会自动输出
