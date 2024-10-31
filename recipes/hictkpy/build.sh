@@ -18,7 +18,9 @@ if [[ ${HOST} =~ .*darwin.* ]]; then
   CMAKE_ARGS+=" -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
   conan_profile='apple-clang'
 else
-  CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
+  # Workaround missing LLVMgold.so on Linux
+  CMAKE_ARGS+=' -DCMAKE_LINKER_TYPE=LLD'
+  CMAKE_ARGS+=" -DCMAKE_TOOLCHAIN_FILE=${RECIPE_DIR}/cross-linux.cmake"
   conan_profile='clang'
 fi
 
