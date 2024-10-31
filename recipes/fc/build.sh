@@ -16,7 +16,14 @@ cd FC-Virus/bin || { echo "进入目录失败"; exit 1; }
 
 # 清理和编译
 echo "清理旧文件并编译..."
-make clean && make || { echo "编译失败"; exit 1; }
+if make clean && make; then
+    echo "编译成功"
+else
+    echo "编译失败"
+    echo "错误信息："
+    make 2>&1 | tail -n 20  # 输出最后20行错误信息
+    exit 1
+fi
 
 # 运行编译好的程序
 echo "运行程序..."
