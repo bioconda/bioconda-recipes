@@ -17,8 +17,6 @@ pwd
 # 进入目录
 cd FC-Virus/code || { echo "进入目录失败"; exit 1; }
 conda list
-conda install gcc_linux-64
-
 
 # 清理和编译
 echo "清理旧文件并编译..."
