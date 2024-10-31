@@ -15,7 +15,7 @@ case ${ARCH} in
   aarch64) LIBS="${LDFLAGS}" make CC="${CC}" CXX="${CXX}" arch=armv8.1-a ;;
 esac
 
-mkdir -p $PREFIX/bin
-cp bwa-mem2* $PREFIX/bin
+mkdir -p "$PREFIX/bin" || exit 1
+cp bwa-mem2* "$PREFIX/bin" || exit 1
 
 
