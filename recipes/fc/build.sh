@@ -11,4 +11,4 @@ make \
   CFLAGS="${CFLAGS} "
 
 install -d "${PREFIX}/bin"
-install fc-virus "${PREFIX}/bin/"
+install ./bin/fc-virus "${PREFIX}/bin/"
