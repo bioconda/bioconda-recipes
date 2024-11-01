@@ -8,8 +8,8 @@ if [ -z "$PREFIX" ]; then
     exit 1
 fi
 
-export CFLAGS="$CFLAGS -I$PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export CFLAGS="${CFLAGS:-} -I$PREFIX/include"
+export LDFLAGS="${LDFLAGS:-} -L$PREFIX/lib"
 
 # Clean any previous builds
 make clean || true
@@ -30,9 +30,6 @@ if ! mkdir -p "$PREFIX/bin"; then
     echo "Failed to create bin directory"
     exit 1
 fi
-
-# Remove existing installation if present
-rm -f "$PREFIX/bin/gzrecover"
 
 if ! cp gzrecover "$PREFIX/bin/"; then
     echo "Failed to install gzrecover"
