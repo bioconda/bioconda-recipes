@@ -1,0 +1,63 @@
+{% set name = "masscube" %}
+{% set version = "1.0.22" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/masscube-{{ version }}.tar.gz
+  sha256: e3207bfdfbb398a7f5870fb22713105b51f5370d6a678cf49c7ed351fd9a7853
+
+build:
+  entry_points:
+    - untargeted-metabolomics = masscube:untargeted_metabolomics_workflow
+    - generate-sample-table = masscube:generate_sample_table
+    - get-timestamps = masscube:get_timestamps
+    - process-files = masscube:batch_file_processing
+    - find-outliers = masscube:run_evaluation
+    - build-classifier = masscube:build_classifier
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools >=61.0
+    - pip
+  run:
+    - python >=3.8
+    - numpy >=1.24
+    - pandas >=2.2.1
+    - pyteomics ==4.6.3
+    - scipy >=1.10.1
+    - tqdm >=4.66.1
+    - lxml >=4.9.3
+    - matplotlib-base >=3.8.2
+    - ms-entropy ==1.2.2
+    - scikit-learn >=1.3.2
+    - statsmodels >=0.14.2
+
+test:
+  imports:
+    - masscube
+  commands:
+    - pip check
+    - untargeted-metabolomics --help
+    - generate-sample-table --help
+    - get-timestamps --help
+    - process-files --help
+    - find-outliers --help
+    - build-classifier --help
+  requires:
+    - pip
+
+about:
+  summary: Accurate and fast data processing for metabolomics
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - hechth
