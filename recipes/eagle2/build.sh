@@ -4,10 +4,9 @@ set -euo pipefail
 echo "Building Eagle2 version ${PKG_VERSION}"
 
 make \
-    -e \
-    -j 4 \
+    -e -j ${CPU_COUNT} \
     DYN_LIBS="-lz -lpthread -lbz2 -lblas" \
-    CXX="$CXX -std=c++17" \
+    CXX="$CXX -std=c++11" \
     CXXFLAG="$CXXFLAGS" \
     LDFLAG="$LDFLAGS" \
     PREFIX="${PREFIX}" \
@@ -19,5 +18,6 @@ make \
     BOOST_LIB_SE="-lboost_serialization"  || exit 1
 
 echo "Installing Eagle2..."
-install
+mkdir -p "${PREFIX}/bin"
+install -m 755 bin/eagle "${PREFIX}/bin/"
 echo "Eagle2 installation completed successfully"
