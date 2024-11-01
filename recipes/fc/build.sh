@@ -7,7 +7,7 @@ export C_INCLUDE_PATH=$C_INCLUDE_PATH:${PREFIX}/include
 export PATH=$BUILD_PREFIX/bin:$PATH
 
 make \
-  CXX="${CXX}" \
+  CXX="${CXX} ${CPPFLAGS} ${CXXFLAGS} " \
   CFLAGS="${CFLAGS} "
 
 install -d "${PREFIX}/bin"
