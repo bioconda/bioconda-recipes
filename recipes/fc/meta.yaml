@@ -1,41 +1,38 @@
-{% set version = "1.0.1" %}
+
+{% set name = "rotate" %}
+{% set version = "1.0" %}
+
 package:
-  name: fc
-  version: {{ version }}
-  
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
 source:
-  url: https://github.com/qdu-bioinfo/fc-virus/archive/v{{ version }}.tar.gz
-  sha256: 6e49ccaebdc3bb44c0f02a761f2220615207c31cc13e4d6eea29b761071e4a83
+  url: "https://github.com/richarddurbin/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: "da8a3c848cc05d59b579c375824008dd2d533c28d8a436a6e4761312d2152906"
+
 build:
   number: 0
   run_exports:
-    - {{ pin_subpackage("fc", max_pin="x") }}
-    
+    - {{ pin_subpackage("rotate", max_pin="x") }}
+
 requirements:
   build:
     - make
-    - {{ compiler("c") }}
-    - {{ compiler("cxx") }}
+    - {{ compiler('c') }}
   host:
-    - boost
     - zlib
   run:
     - zlib
-    - boost
-    
+
+
 test:
   commands:
-    - mkdir -p ./bin
-    - cp -f  ${PREFIX}/bin/fc-virus ./bin/
-    - ./bin/fc-virus --help
+    - rotate 2>&1 | grep can
 
 about:
-  home: https://github.com/qdu-bioinfo/fc-virus
+  home: "https://github.com/richarddurbin/rotate"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: "Accurate Assembly of Full-length Consensus for Viral Quasispecies"
-  dev_url: https://github.com/qdu-bioinfo/fc-virus
-  
-extra:
-  additional-platforms:
-    - linux-aarch64
+  summary: "Simple program to rotate a circular sequence to start at a given position or string."
+
