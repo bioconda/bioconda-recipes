@@ -1,6 +1,6 @@
 {% set name = "meta" %}
 {% set version = "1.0.0" %}
-{% set sha256 = "8523bd8b73899a0fd6b8f09f4345ac4ff05b7071f5f3e255ab3336dc181ed5d3" %}
+{% set sha256 = "9cd480eb3d799d04a0576b2a0c28974b8c6a73f4e3c740ee70376cacea876042" %}
 
 package:
   name: {{ name|lower }}
@@ -13,7 +13,7 @@ source:
 build:
   number: 0
   run_exports:
-    - {{ pin_subpackage('meta', max_pin="x") }}
+    - {{ pin_subpackage('meta', max_pin="x.x") }}
 
 requirements:
   build:
@@ -22,41 +22,38 @@ requirements:
     - make  # [not win]
 
   host:
+    - vtk >=9.2.6,<9.3.0
+    - vtk
+    - libitk-devel ==5.3.0
+    - libboost-python-devel ==1.85.0
     - python
     - pip
     - setuptools
-    - libboost-python-devel >=1.82.0,<1.83.0
-    - hdf5 >=1.14.2,<1.14.3.0a0
-    - itk ==5.3.0
-    - libitk ==5.3.0
-    - libitk-devel ==5.3.0
-    - vtk-base >=9.2.6,<9.3.0 build=*{{ build_variant }}*
-    - vtk-io-ffmpeg >=9.2.6,<9.3.0 build=*{{ build_variant }}*
 
   run:
-    - qhull
-    - python
-    - numpy
-    - nibabel
-    - pandas
-    - pyvista
-    - scipy
-    - tqdm
-    - tslearn
-    - dipy
-    - itk ==5.3.0
-    - libitk ==5.3.0
-    - libitk-devel ==5.3.0
-    - vtk-base >=9.2.6,<9.3.0 build=*{{ build_variant }}*
-    - vtk-io-ffmpeg >=9.2.6,<9.3.0 build=*{{ build_variant }}*
+      - vtk >=9.2.6,<9.3.0
+      - vtk
+      - libitk-devel ==5.3.0
+      - libboost-python-devel ==1.85.0
+      - qhull
+      - python
+      - pip
+      - setuptools
+      - numpy
+      - tqdm
+      - dipy
+      - scipy
+      - pandas
+      - nibabel
+      - tslearn
+      - pyvista
 
 test:
   imports:
     - meta
   commands:
-    - vtklevelset $PREFIX/share/meta/example/CST_R.nii.gz CST_R.vtk 0.1
-    - cmrep_vskel -c 3 -p 1.5 -g CST_R.vtk CST_R_skeleton.vtk
-    - df -h
+    - vtklevelset $PREFIX/share/meta/example/test.nii.gz test.vtk 0.1
+    - cmrep_vskel -c 3 -p 1.5 -g test.vtk test_skeleton.vtk
 
 about:
   home: https://github.com/bagari/meta
@@ -69,5 +66,7 @@ about:
   doc_url: https://github.com/bagari/meta/wiki
 
 extra:
+  additional-platforms:
+    - osx-arm64
   recipe-maintainers:
     - bagari
