@@ -11,7 +11,7 @@ chmod +x vcxproj_make.py
 if [ "$(uname)" == "Darwin" ]; then
     ./vcxproj_make.py --openmp --cppcompiler ${CXX}
 else
-    ./vcxproj_make.py --openmp --cppcompiler ${CXX} --ccompiler ${GCC}
+    ./vcxproj_make.py --openmp --cppcompiler ${CXX} --ccompiler ${CC}
 fi
 
 # Verify binary exists and is executable
