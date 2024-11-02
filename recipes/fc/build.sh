@@ -12,7 +12,7 @@
 
 #install -d "${PREFIX}/bin"
 #install ./bin/fc-virus "${PREFIX}/bin/"
-
+set -xe
 make  CXX="${CXX}" INCLUDES="-I$PREFIX/include" CFLAGS+="-g -Wall -O2 -L$PREFIX/lib"
 chmod +x ./bin/fc-virus
 mkdir -p ${PREFIX}/bin
