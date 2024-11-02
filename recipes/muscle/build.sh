@@ -4,6 +4,7 @@ set -e
 mkdir -p ${PREFIX}/bin
 cd src || exit 1
 cp ${RECIPE_DIR}/vcxproj_make.py .
+echo "${PKG_VERSION}" > gitver.txt
 chmod +x vcxproj_make.py
 
 ./vcxproj_make.py --openmp --cppcompiler ${CXX}
