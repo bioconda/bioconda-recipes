@@ -1,8 +1,7 @@
 
 #!/bin/bash
 set -xe
-make  CC=$CC INCLUDES="-I$PREFIX/include" CFLAGS+="-g -Wall -O2 -L$PREFIX/lib"
-chmod +x rotate
-chmod +x composition
+make CXX="${CXX}" INCLUDES="-I$PREFIX/include" CFLAGS+="-g -Wall -O2 -L$PREFIX/lib"
+chmod +x ./bin/fc-virus
 mkdir -p ${PREFIX}/bin
-cp -f rotate composition ${PREFIX}/bin
+cp -f ./bin/fc-virus ${PREFIX}/bin
