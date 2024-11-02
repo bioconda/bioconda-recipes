@@ -22,7 +22,8 @@ make CC=${CXX} \
     HTSLIB_DIR=$HTSLIB_DIR \
     BLAS_DIR=$BLAS_DIR \
     ZLIB_STATIC_DIR=$ZLIB_STATIC_DIR \
-    linking=static-except-glibc
+    LIBSTDCXX_STATIC_DIR=${PREFIX}/bin \
+    linking=dynamic
 
 echo "Installing Eagle2..."
 mkdir -p "${PREFIX}/bin"
