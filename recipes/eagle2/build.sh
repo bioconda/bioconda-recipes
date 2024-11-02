@@ -1,12 +1,12 @@
 #!/bin/bash
 
-set -euo pipefail
+#set -euo pipefail
 
 echo "Building Eagle2 version ${PKG_VERSION}"
 
 cd src || exit 1
 
-sed -i.bak '/memcpy.o/d' Makefile
+sed -i.bak 's/memcpy.o//g' Makefile
 
 # Set up environment variables for building
 export BOOST_INSTALL_DIR=$PREFIX
@@ -23,7 +23,7 @@ make CC=${CXX} \
     BLAS_DIR=$BLAS_DIR \
     ZLIB_STATIC_DIR=$ZLIB_STATIC_DIR \
     LIBSTDCXX_STATIC_DIR=${PREFIX}/lib \
-    linking=static
+    linking=dynamic
 
 echo "Installing Eagle2..."
 mkdir -p "${PREFIX}/bin"
