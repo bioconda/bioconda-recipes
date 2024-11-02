@@ -2,6 +2,6 @@
 #!/bin/bash
 set -xe
 make CXX="${CXX}" INCLUDES="-I$PREFIX/include" CFLAGS+="-g -Wall -O2 -L$PREFIX/lib"
-chmod +x ./bin/fc-virus
+chmod +x fc-virus
 mkdir -p ${PREFIX}/bin
-cp -f ./bin/fc-virus ${PREFIX}/bin
+cp -f fc-virus ${PREFIX}/bin
