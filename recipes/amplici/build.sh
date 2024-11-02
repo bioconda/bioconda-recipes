@@ -6,7 +6,7 @@ else
     export CONFIG_ARGS=""
 fi
 
-cd src
+cd src || exit 1
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_C_COMPILER="${CC}" \
