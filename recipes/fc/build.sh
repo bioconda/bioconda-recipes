@@ -13,7 +13,7 @@
 #install -d "${PREFIX}/bin"
 #install ./bin/fc-virus "${PREFIX}/bin/"
 
-make  CC=$CC INCLUDES="-I$PREFIX/include" CFLAGS+="-g -Wall -O2 -L$PREFIX/lib"
+make  CXX="${CXX} INCLUDES="-I$PREFIX/include" CFLAGS+="-g -Wall -O2 -L$PREFIX/lib"
 chmod +x ./bin/fc-virus
 mkdir -p ${PREFIX}/bin
 cp -f ./bin/fc-virus ${PREFIX}/bin
