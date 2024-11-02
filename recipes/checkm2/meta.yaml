@@ -1,18 +1,21 @@
-{% set name = "checkm2" %}
-{% set version = "1.0.1" %}
+{% set name = "CheckM2" %}
+{% set version = "1.0.2" %}
+{% set sha256 = "9d3129e4d0b53acc38519a259cc1e20a215dff0cbce51cef874545ca2fff005a" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/CheckM2-{{ version }}.tar.gz
-  sha256: 31b228bd44609168d6971391f28c6fde29b4d1f52d411d705cb9a281d618bb17
+  url: https://github.com/chklovski/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  script: {{ PYTHON }} -m pip install . -vv
   number: 0
   noarch: python
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . -vv
 
 requirements:
   host:
@@ -36,15 +39,17 @@ requirements:
 
 test:
   commands:
-    - {{ name }} --version | grep '{{ version }}'
-
+    - checkm2 --help
 
 about:
   home: https://github.com/chklovski/CheckM2
-  summary: CheckM2 - Predicting the quality of metagenome-recovered bins
-  license: GPL-3.0
+  license: GPL-3.0-only
+  license_family: GPL
   license_file: LICENSE
+  summary: "Assessing the quality of metagenome-derived genome bins using machine learning."
+  dev_url: https://github.com/chklovski/CheckM2
 
 extra:
+  notes: "CheckM2 requries the DIAMOND database that can be downloaded with `checkm2 database --download`."
   recipe-maintainers:
     - chklovski

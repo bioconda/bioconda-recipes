@@ -1,0 +1,47 @@
+{% set name = "snakemake-interface-storage-plugins" %}
+{% set version = "3.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snakemake_interface_storage_plugins-{{ version }}.tar.gz
+  sha256: 203d8f794dfb37d568ad01a6c375fa8beac36df8e488c0f9b9f75984769c362a
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("snakemake-interface-storage-plugins", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.11.0,<4.0.0
+    - snakemake-interface-common >=1.12.0,<2.0.0
+    - wrapt >=1.15.0,<2.0.0
+    - reretry >=0.11.8,<0.12.0
+    - throttler >=1.2.2,<2.0.0
+
+test:
+  imports:
+    - snakemake_interface_storage_plugins
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  summary: This package provides a stable interface for interactions between Snakemake and its storage plugins.
+  home: https://github.com/snakemake/snakemake-interface-storage-plugins
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - koesterlab

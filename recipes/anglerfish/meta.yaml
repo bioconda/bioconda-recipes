@@ -1,34 +1,37 @@
 {% set name = "anglerfish" %}
-{% set version = "0.6.0" %}
+{% set version = "0.7.0" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/b/bio-{{ name }}/bio-{{ name }}-{{ version }}.tar.gz"
-  sha256: b67a0c77680f85ebdf88622382bb271655e807c60dc3bdcd01997d336e6574fa
+  url: "https://pypi.io/packages/source/b/bio-{{ name }}/bio_{{ name }}-{{ version }}.tar.gz"
+  sha256: f756fbc32a55cc98b2fd5e315f503bdebe52d85cc36eb3d12771d0deb2fce846
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  script: "cp ${RECIPE_DIR}/requirements.txt ${SRC_DIR} && {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
   entry_points:
-    - anglerfish=anglerfish.anglerfish:anglerfish
+    - anglerfish=anglerfish.cli:app
   run_exports:
     - {{ pin_subpackage('anglerfish', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.7
+    - python >=3.12
   run:
     - biopython
+    - minimap2
     - numpy
-    - python >=3.7
+    - pandas
+    - python >=3.12
     - python-levenshtein
     - pyyaml
-    - minimap2
+    - typer
+    - typing_extensions
 
 test:
   imports:
@@ -40,7 +43,7 @@ test:
     - anglerfish --help
 
 about:
-  home: "https://github.com/remiolsen/anglerfish"
+  home: "https://github.com/NationalGenomicsInfrastructure/anglerfish"
   license: MIT
   license_family: MIT
   summary: "Anglerfish, a tool to demultiplex Illumina libraries from ONT data"
