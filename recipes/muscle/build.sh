@@ -11,7 +11,7 @@ if [ "$(uname)" == "Darwin" ]; then
     ./vcxproj_make.py --openmp --cppcompiler ${CXX}
 else
     # Linux
-    ./vcxproj_make.py --openmp ${CXX}
+    ./vcxproj_make.py --openmp
 fi
 
 # Verify binary exists and is executable
