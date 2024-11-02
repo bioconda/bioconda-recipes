@@ -6,13 +6,7 @@ cd src || exit 1
 cp ${RECIPE_DIR}/vcxproj_make.py .
 chmod +x vcxproj_make.py
 
-if [ "$(uname)" == "Darwin" ]; then
-    # macOS
-    ./vcxproj_make.py --openmp --cppcompiler ${CXX}
-else
-    # Linux
-    ./vcxproj_make.py --openmp
-fi
+./vcxproj_make.py --openmp --cppcompiler ${CXX}
 
 # Verify binary exists and is executable
 if [ ! -f ../bin/muscle ]; then
