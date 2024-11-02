@@ -28,7 +28,7 @@ rm -rf $SRC_DIR/build
 
 # Install MeTA package
 cd ${SRC_DIR}
-${PYTHON} -m pip install . --no-deps
+${PYTHON} -m pip install . --no-deps -vv
 
 ## copy small test data:
 mkdir -p $PREFIX/share/meta/example
