@@ -20,4 +20,4 @@ if [ ! -f ../bin/reseek ]; then
     exit 1
 fi
 
-cp ../bin/muscle ${PREFIX}/bin/reseek
+cp ../bin/reseek ${PREFIX}/bin/reseek
