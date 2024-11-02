@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#set -euo pipefail
+set -euo pipefail
 
 echo "Building Eagle2 version ${PKG_VERSION}"
 
