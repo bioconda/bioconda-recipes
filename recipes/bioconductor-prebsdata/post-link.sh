@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "prebsdata-1.38.0"
+installBiocDataPackage.sh "prebsdata-1.42.0"

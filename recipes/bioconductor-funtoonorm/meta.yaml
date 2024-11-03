@@ -1,49 +1,54 @@
-{% set version = "1.26.0" %}
+{% set version = "1.30.0" %}
 {% set name = "funtooNorm" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 32208fd7734fe0fcfb1278b80a98c28e
+about:
+  description: Provides a function to normalize Illumina Infinium Human Methylation 450 BeadChip (Illumina 450K), correcting for tissue and/or cell type.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Normalization Procedure for Infinium HumanMethylation450 BeadChip Kit
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-funtoonorm", max_pin="x.x") }}'
-  noarch: generic
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: prettydoc, minfiData, knitr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-genomeinfodb >=1.38.0,<1.39.0'
-    - 'bioconductor-illuminahumanmethylation450kanno.ilmn12.hg19 >=0.6.0,<0.7.0'
-    - 'bioconductor-illuminahumanmethylation450kmanifest >=0.4.0,<0.5.0'
-    - 'bioconductor-minfi >=1.48.0,<1.49.0'
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-illuminahumanmethylation450kanno.ilmn12.hg19 >=0.6.0,<0.7.0
+    - bioconductor-illuminahumanmethylation450kmanifest >=0.4.0,<0.5.0
+    - bioconductor-minfi >=1.52.0,<1.53.0
     - r-base
     - r-matrixstats
     - r-pls
   run:
-    - 'bioconductor-genomeinfodb >=1.38.0,<1.39.0'
-    - 'bioconductor-illuminahumanmethylation450kanno.ilmn12.hg19 >=0.6.0,<0.7.0'
-    - 'bioconductor-illuminahumanmethylation450kmanifest >=0.4.0,<0.5.0'
-    - 'bioconductor-minfi >=1.48.0,<1.49.0'
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-illuminahumanmethylation450kanno.ilmn12.hg19 >=0.6.0,<0.7.0
+    - bioconductor-illuminahumanmethylation450kmanifest >=0.4.0,<0.5.0
+    - bioconductor-minfi >=1.52.0,<1.53.0
     - r-base
     - r-matrixstats
     - r-pls
+
+source:
+  md5: ff2b3bc8feb6504131ef20038bce3f22
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Normalization Procedure for Infinium HumanMethylation450 BeadChip Kit'
-  description: 'Provides a function to normalize Illumina Infinium Human Methylation 450 BeadChip (Illumina 450K), correcting for tissue and/or cell type.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

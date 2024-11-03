@@ -1,55 +1,60 @@
-{% set version = "1.16.0" %}
+{% set version = "1.20.0" %}
 {% set name = "SigsPack" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 5fde29d53a470944ef9a4ba82bcca75d
+about:
+  description: Single sample estimation of exposure to mutational signatures. Exposures to known mutational signatures are estimated for single samples, based on quadratic programming algorithms. Bootstrapping the input mutational catalogues provides estimations on the stability of these exposures. The effect of the sequence composition of mutational context can be taken into account by normalising the catalogues.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Mutational Signature Estimation for Single Samples
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-sigspack", max_pin="x.x") }}'
-  noarch: generic
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: IRanges, BSgenome.Hsapiens.UCSC.hg19, BiocStyle, knitr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-biobase >=2.62.0,<2.63.0'
-    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
-    - 'bioconductor-bsgenome >=1.70.0,<1.71.0'
-    - 'bioconductor-genomeinfodb >=1.38.0,<1.39.0'
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-rtracklayer >=1.62.0,<1.63.0'
-    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
-    - 'bioconductor-variantannotation >=1.48.0,<1.49.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
     - r-base
-    - 'r-quadprog >=1.5-5'
+    - r-quadprog >=1.5-5
   run:
-    - 'bioconductor-biobase >=2.62.0,<2.63.0'
-    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
-    - 'bioconductor-bsgenome >=1.70.0,<1.71.0'
-    - 'bioconductor-genomeinfodb >=1.38.0,<1.39.0'
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-rtracklayer >=1.62.0,<1.63.0'
-    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
-    - 'bioconductor-variantannotation >=1.48.0,<1.49.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
     - r-base
-    - 'r-quadprog >=1.5-5'
+    - r-quadprog >=1.5-5
+
+source:
+  md5: f4107a1fa2e4d7dc1d6c9f875ea8604c
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Mutational Signature Estimation for Single Samples'
-  description: 'Single sample estimation of exposure to mutational signatures. Exposures to known mutational signatures are estimated for single samples, based on quadratic programming algorithms. Bootstrapping the input mutational catalogues provides estimations on the stability of these exposures. The effect of the sequence composition of mutational context can be taken into account by normalising the catalogues.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

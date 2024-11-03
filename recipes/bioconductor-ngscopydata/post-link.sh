@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "ngscopydata-1.22.0"
+installBiocDataPackage.sh "ngscopydata-1.26.0"

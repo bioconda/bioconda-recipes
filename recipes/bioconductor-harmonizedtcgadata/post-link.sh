@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "harmonizedtcgadata-1.24.0"
+installBiocDataPackage.sh "harmonizedtcgadata-1.28.0"

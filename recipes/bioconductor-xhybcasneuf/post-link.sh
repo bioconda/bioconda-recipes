@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "xhybcasneuf-1.40.0"
+installBiocDataPackage.sh "xhybcasneuf-1.44.0"
