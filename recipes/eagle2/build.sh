@@ -17,7 +17,7 @@ export ZLIB_STATIC_DIR=$PREFIX/lib
 # Run make
 make CC=${CXX} \
     -e -j ${CPU_COUNT} \
-    CFLAGS="$CXXFLAGS -Wno-unused-result" \
+    CFLAGS="$CXXFLAGS -Wno-unused-result -std=c++11" \
     BOOST_INSTALL_DIR=$BOOST_INSTALL_DIR \
     HTSLIB_DIR=$HTSLIB_DIR \
     BLAS_DIR=$BLAS_DIR \
