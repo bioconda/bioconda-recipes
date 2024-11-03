@@ -1,0 +1,56 @@
+{% set version = "1.0.0" %}
+{% set name = "dominoSignal" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: dominoSignal is a package developed to analyze cell signaling through ligand - receptor - transcription factor networks in scRNAseq data. It takes as input information transcriptomic data, requiring counts, z-scored counts, and cluster labels, as well as information on transcription factor activation (such as from SCENIC) and a database of ligand and receptor pairings (such as from CellPhoneDB). This package creates an object storing ligand - receptor - transcription factor linkages by cluster and provides several methods for exploring, summarizing, and visualizing the analysis.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 | file LICENSE
+  license_file: LICENSE
+  summary: Cell Communication Analysis for Single Cell RNA Sequencing
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-dominosignal", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, patchwork, rmarkdown, Seurat, testthat, formatR, BiocFileCache, SingleCellExperiment
+requirements:
+  host:
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - r-base
+    - r-circlize
+    - r-ggpubr
+    - r-igraph
+    - r-matrix
+    - r-plyr
+  run:
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - r-base
+    - r-circlize
+    - r-ggpubr
+    - r-igraph
+    - r-matrix
+    - r-plyr
+
+source:
+  md5: 8a23703b89f2fb779fbb0af24625120f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
