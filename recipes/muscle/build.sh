@@ -10,7 +10,7 @@ chmod +x vcxproj_make.py
 ./vcxproj_make.py --openmp --cppcompiler ${CXX}
 
 # Verify binary exists and is executable
-if [ ! -f ../bin/muscle ]; then
+if [ ! -x ../bin/muscle ]; then
     echo "Error: muscle binary not found"
     exit 1
 fi
