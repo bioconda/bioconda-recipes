@@ -11,8 +11,8 @@ mkdir -p "$PREFIX/share"
 mkdir -p $SRC_DIR/build
 
 ## copy small test data:
-mkdir -p $PREFIX/share/meta/example
-cp $SRC_DIR/resources/test.nii.gz $PREFIX/share/meta/example/
+mkdir -p $PREFIX/share/meta-neuro/example
+cp $SRC_DIR/resources/test.nii.gz $PREFIX/share/meta-neuro/example/
 
 cd $SRC_DIR/build
 cmake -S $SRC_DIR -B $SRC_DIR/build  \
