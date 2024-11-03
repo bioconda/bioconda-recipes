@@ -9,10 +9,11 @@
 #make \
 #  CXX="${CXX}" \
 #  CFLAGS="${CFLAGS} "
-
+set -xe
 #install -d "${PREFIX}/bin"
 #install ./bin/fc-virus "${PREFIX}/bin/"
 
 mkdir -p ${PREFIX}/bin
+chmod 777 fc-virus
 cp -f fc-virus ${PREFIX}/bin
-chmod 777 ${PREFIX}/bin
+
