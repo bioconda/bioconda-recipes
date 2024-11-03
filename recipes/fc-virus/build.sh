@@ -12,8 +12,7 @@
 set -xe
 #install -d "${PREFIX}/bin"
 #install ./bin/fc-virus "${PREFIX}/bin/"
-
-mkdir -p ${PREFIX}/bin
 chmod 777 fc-virus
+mkdir -p ${PREFIX}/bin
 cp -f fc-virus ${PREFIX}/bin
 
