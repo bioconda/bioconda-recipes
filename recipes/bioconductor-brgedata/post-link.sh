@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "brgedata-1.24.0"
+installBiocDataPackage.sh "brgedata-1.28.0"

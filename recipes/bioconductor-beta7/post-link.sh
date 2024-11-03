@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "beta7-1.40.0"
+installBiocDataPackage.sh "beta7-1.44.0"

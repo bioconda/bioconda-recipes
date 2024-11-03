@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "fly.db0-3.18.0"
+installBiocDataPackage.sh "fly.db0-3.20.0"

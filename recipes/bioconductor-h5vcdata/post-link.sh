@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "h5vcdata-2.22.0"
+installBiocDataPackage.sh "h5vcdata-2.26.0"

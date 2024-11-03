@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "chromstardata-1.28.0"
+installBiocDataPackage.sh "chromstardata-1.32.0"

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "gaschyhs-1.40.0"
+installBiocDataPackage.sh "gaschyhs-1.44.0"
