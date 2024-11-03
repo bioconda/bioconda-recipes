@@ -7,12 +7,7 @@ echo "0" > gitver.txt
 
 cp ${RECIPE_DIR}/vcxproj_make.py .
 chmod +x vcxproj_make.py
-
-if [ "$(uname)" == "Darwin" ]; then
-    ./vcxproj_make.py --openmp --cppcompiler ${CXX} --ccompiler ${CC}
-else
-    ./vcxproj_make.py --openmp --cppcompiler ${CXX} --ccompiler ${CC}
-fi
+./vcxproj_make.py --openmp --cppcompiler ${CXX} --ccompiler ${CC}
 
 # Verify binary exists and is executable
 if [ ! -f ../bin/reseek ]; then
