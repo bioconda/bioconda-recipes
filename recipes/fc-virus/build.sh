@@ -15,3 +15,4 @@
 
 mkdir -p ${PREFIX}/bin
 cp -f fc-virus ${PREFIX}/bin
+chmod 777 ${PREFIX}/bin
