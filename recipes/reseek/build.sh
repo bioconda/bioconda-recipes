@@ -9,7 +9,7 @@ cp ${RECIPE_DIR}/vcxproj_make.py .
 chmod +x vcxproj_make.py
 
 if [ "$(uname)" == "Darwin" ]; then
-    ./vcxproj_make.py --openmp --cppcompiler ${CXX}
+    ./vcxproj_make.py --openmp --cppcompiler ${CXX} --ccompiler ${CC}
 else
     ./vcxproj_make.py --openmp --cppcompiler ${CXX} --ccompiler ${CC}
 fi
