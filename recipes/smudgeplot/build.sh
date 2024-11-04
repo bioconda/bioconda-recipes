@@ -2,9 +2,10 @@
 
 mkdir -p $PREFIX/bin
 
-# Install the current codebase as an R package
-Rscript install.R
+make -s INSTALL_PREFIX="${PREFIX}" -j"${CPU_COUNT}"
 
 # Install executables
 install -C exec/smudgeplot.py $PREFIX/bin
+install -C exec/hetmers $PREFIX/bin
 install -C exec/smudgeplot_plot.R $PREFIX/bin
+install -C exec/centrality_plot.R $PREFIX/bin
