@@ -1,0 +1,52 @@
+{% set name = "mutamr" %}
+{% set version = "0.0.1" %}
+{% set sha256 = "6ab552dc1087bd88b1dcd58c71e52a33f3338e4cf28ffc39d9e096c060075816" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "{{ sha256 }}"
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - mutamr=mutamr.mutamr:main
+  run_exports:
+    - {{ pin_subpackage('mutamr', max_pin="x.x") }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+  run:
+    - python >=3.10
+    - bwa =0.7.18
+    - delly =1.2.8
+    - freebayes =1.3.8
+    - bcftools =1.20
+    - samtools =1.20
+    - samclip =0.4.0
+    - snpeff =5.2
+    
+test:
+  imports:
+    - mutamr
+  commands:
+    - mutamr --help
+
+about:
+  home: "https://github.com/MDU-PHL/mutamr"
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  license_family: "GPL3"
+  summary: "Stripped down tool for generation of annotated vcf from paired-end reads in a CPHL."
+  dev_url: "https://github.com/MDU-PHL/mutamr"
+
+extra:
+  recipe-maintainers:
+    - kristyhoran
