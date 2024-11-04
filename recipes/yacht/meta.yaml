@@ -11,14 +11,17 @@ source:
 build:
   number: 0
   noarch: python
-  skip: True  # [win or osx]
+  skip: True  # [py < 37 or py > 311]
   script: "{{ PYTHON  }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   run_exports:
     - {{ pin_subpackage('yacht', max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
   host:
-    - python >3.6,<3.12
+    - python
     - pip
     - pandas
     - pytaxonkit
@@ -31,7 +34,7 @@ requirements:
     - setuptools
     - requests
   run:
-    - python >3.6,<3.12
+    - python
     - sourmash
     - scipy
     - requests
@@ -64,9 +67,6 @@ about:
   doc_url: https://github.com/KoslickiLab/YACHT/wiki
 
 extra:
-  skip-lints:
-    - should_not_be_noarch_skip
-    - should_use_compilers
   identifiers:
     - doi:10.1101/2023.04.18.537298
   recipe-maintainers:
