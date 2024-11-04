@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Do not set -x, this script outputs a value with echo
+
 # Check to see if any changed recipes have specified the key
 # extra:additional-platforms, and if so, if they match the platform of the
 # currently-running machine.
@@ -18,7 +20,7 @@ wget https://github.com/mikefarah/yq/releases/latest/download/yq_${yq_platform}_
 chmod +x ${HOME}/bin/yq
 
 # Find recipes changed from this merge
-files=`git diff --name-only --diff-filter AMR ${git_range} | grep -E 'meta.yaml$' `
+files=`git diff --name-only --diff-filter AMR ${git_range} | grep -v 'template' | grep -E 'meta.yaml$' `
 build=0
 
 for file in $files; do
@@ -32,6 +34,9 @@ for file in $files; do
     parsing_status=$?
     if [ $parsing_status -gt 0 ]; then
         echo "An error occurred while reading/parsing ${file}"
+        echo "==================== ${file} START ==========================="
+        cat $file
+        echo "==================== ${file} END ============================="
         exit $parsing_status
     fi
 

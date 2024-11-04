@@ -6,7 +6,7 @@ if [[ ${target_platform} =~ linux.* ]] || [[ ${target_platform} == win-32 ]] || 
   export DISABLE_AUTOBREW=1
   mv DESCRIPTION DESCRIPTION.old
   grep -va '^Priority: ' DESCRIPTION.old > DESCRIPTION
-  ${R} CMD INSTALL --build .
+  ${R} CMD INSTALL --build . ${R_ARGS}
 else
   mkdir -p "${PREFIX}"/lib/R/library/Signac
   mv ./* "${PREFIX}"/lib/R/library/Signac
