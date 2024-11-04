@@ -6,7 +6,8 @@ set -ex
 # Ensure all main scripts are executable
 chmod +x genEra Erassignment hmmEra tree2ncbitax FASTSTEP3R test_installation.sh
 
-# Move the main Run_abSENSE.py script
+#Move the main Run_abSENSE.py script
+
 mv abSENSE/Run_abSENSE.py .
 chmod +x Run_abSENSE.py
 
