@@ -1,8 +1,10 @@
 #!/bin/bash
 
+export CPATH="${PREFIX}/include"
+
 mkdir -p $PREFIX/bin
 
-make -s INSTALL_PREFIX="${PREFIX}" -j"${CPU_COUNT}"
+make -s INSTALL_PREFIX="${PREFIX}" CC="${CC}" -j"${CPU_COUNT}"
 
 # Install executables
 install -C exec/smudgeplot.py $PREFIX/bin
