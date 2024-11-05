@@ -15,8 +15,6 @@ cmake -S .. -B . \
   -DCMAKE_INSTALL_PREFIX="$PREFIX" \
   -DBUILD_PYTHON_INTERFACE=ON \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY="$SP_DIR" \
-  -DCMAKE_SWIG_OUTDIR="$SP_DIR" \
   -DBUILD_LIBRARY=ON \
   -DPYTHON_VERSION=$(python -c 'import platform; print(platform.python_version())') \
   -G Ninja \
