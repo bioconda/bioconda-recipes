@@ -1,20 +1,25 @@
 {% set name = "strangepg" %}
-{% set version = "0.8.1" %}
-{% set ref = "aaa5f72ebd55b6562050239cce9a1f10077759bd" %}
+{% set version = "0.8.12" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/qwx9/{{ name }}/archive/{{ ref }}.tar.gz
-  sha256: 33acfe6ac4eb85ecaf41fc3a5990b466b7fccebe6fd6d5b002c085cd4d52cc0f
+  url: https://github.com/qwx9/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 323c161f3be6ec3c2d43cc7daeb7b139f75fb4ed70ec095f22e39d2450dd912c
 
 build:
   number: 0
   skip: True # [not linux]
   run_exports:
     - {{ pin_subpackage('strangepg', max_pin=None) }}
+  ignore_run_exports:
+    - libxcb
+    - xorg-libxau
+    - xorg-libxdmcp
+    - xorg-libxext
+    - xorg-libxfixes
 
 requirements:
   build:
@@ -27,20 +32,22 @@ requirements:
     - {{ cdt('libglvnd-glx') }}      # [cdt_name != 'cos6']
   host:
     - xorg-libx11
+    - xorg-libxcursor
+    - xorg-libxi
+  run:
+    - libxcb
+    - xorg-libx11
     - xorg-libxau
-    - xorg-libxcb
     - xorg-libxcursor
     - xorg-libxdmcp
     - xorg-libxext
     - xorg-libxfixes
     - xorg-libxi
     - xorg-libxrandr
-  run:
 
 test:
-  commands:
-    - which strpg
-    - which strawk
+  source_files:
+    - cmd/main.awk
 
 about:
   home: https://github.com/qwx9/{{ name }}
@@ -50,6 +57,8 @@ about:
   license_file: LICENSE
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - qwx9
   container:
