@@ -1,5 +1,5 @@
 {% set name = "pyopenms" %}
-{% set version = "3.1.0" %} # if ends with 'dev' it is considered a development release and pulled from GitHub
+{% set version = "3.2.0" %} # if ends with 'dev' it is considered a development release and pulled from GitHub
 package:
   name: {{ name|lower  }}
   version: {{ version  }}
@@ -11,8 +11,8 @@ source:
   git_depth: 1 # (Defaults to -1/not shallow)
 {% else %}
 source:
-  url: https://github.com/OpenMS/OpenMS/releases/download/Release{{ version }}/OpenMS-{{ version }}-src.tar.gz
-  md5: 6a60ef1a95c7ce915cc3a02e5bccd593
+  url: https://github.com/OpenMS/OpenMS/releases/download/release%2F3.2.0/OpenMS-3.2.tar.gz # since we discarded the trailing 0 during the GHA we have to hard code this, fix it next release
+  md5: e15b34a4ccaf7070d186fd01a6d57f3e
 {% endif %}
 
 build:
@@ -26,14 +26,15 @@ requirements:
     - {{ compiler('cxx') }}
     - make
     - cmake
-    - sysroot_linux-64 =2.17 # [linux]    
+    - sysroot_linux-64 =2.17 # [linux]
   host:
-    - libopenms {{ version }}
+    - eigen >=3.3.4
+    - libopenms >={{ version }}
     - llvm-openmp # [osx]
     - libsvm
     - xerces-c
     - boost-cpp
-    - qt-main
+    - qt-main >=5.15.8
     - python {{ python }}
     - cython >=0.25.2
     - autowrap >=0.22.10
@@ -44,13 +45,15 @@ requirements:
     - pandas
     - matplotlib-base
     - sysroot_linux-64 =2.17 # [linux]
+    - icu >=73.2,<74.0a0
   run: # run_exports in libopenms should take care of the libraries. But it does not because of bugs. So copy everthing again and again
-    - libopenms {{ version }}
+    - libopenms >={{ version }}
     - llvm-openmp # [osx]
     - libsvm
     - xerces-c
     - boost-cpp
-    - qt-main
+    - qt-main >=5.15.8
+    - eigen >=3.3.4
     - python {{ python }}
     - numpy {{ numpy }}
     - pandas
