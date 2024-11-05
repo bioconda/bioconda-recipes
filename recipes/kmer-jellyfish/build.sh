@@ -5,7 +5,6 @@ export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 
-autoreconf -if
 ./configure --prefix="${PREFIX}" --enable-python-binding --with-sse CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS} -O3 -I${PREFIX}/include" \
 	LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
