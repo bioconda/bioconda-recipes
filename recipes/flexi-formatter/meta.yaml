@@ -1,0 +1,50 @@
+{% set name = "flexi-formatter" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/flexi_formatter-{{ version }}.tar.gz
+  sha256: 77e24d0619d287f49e2aaf0daa14f934b20b1d5a52a5d4a427738bd21ec38b84
+
+build:
+  entry_points:
+    - flexi_formatter = flexi_formatter.reformat_flexiplex_tags:app
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3
+    - pip
+    - setuptools
+  run:
+    - python >=3
+    - typer
+    - simplesam
+    - samtools
+
+test:
+  imports:
+    - flexi_formatter
+    - simplesam
+  commands:
+    - flexi_formatter --help
+    - samtools --help
+  requires:
+    - pip
+
+about:
+  home: "https://github.com/VIB-CCB-BioIT/flexiplex_tag_formatter"
+  summary: Moving flexiplex barcode and UMI to bam tags
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - ljwharbers

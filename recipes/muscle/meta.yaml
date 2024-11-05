@@ -1,5 +1,5 @@
 {% set name = "muscle" %}
-{% set version = "5.1" %}
+{% set version = "5.2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,13 +7,15 @@ package:
 
 source:
   url: https://github.com/rcedgar/muscle/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 091d9f8733b92ff106c2a8eb274d1e5a57960d397a2068d8638d6002e8880dab
+  sha256: 7aff1473241a36da94a88f37920a343fae91d2b6faae22e15c06591d1d0339b6
   patches:
-    - 0001-Replace-zero-macro-with-memset_zero.patch
-    - 0002-Move-va_start-va_end-out-of-critical-section.patch
+    - support-linux-aarch64.patch
 
 build:
-  number: 3
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
 
 requirements:
   build:
@@ -28,8 +30,11 @@ about:
   home: https://github.com/rcedgar/muscle
   license: GPL-3.0-only
   license_file: LICENSE
-  summary: "MUSCLE: multiple sequence alignment with high accuracy and high throughput"
+  summary: Multiple sequence and structure alignment with top benchmark scores scalable to thousands of sequences
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:muscle

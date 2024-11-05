@@ -1,6 +1,6 @@
 {% set name = "dysgu" %}
-{% set version = "1.5.0" %}
-{% set sha256hash = "e2b477c73f7d76cc4fec8d3f2a09ae88e113eab8405fced3c1af905b5f3dca9e" %}
+{% set version = "1.6.7" %}
+{% set sha256hash = "918eed7bf70e7033994212c5e3cab65c7c6a8ddd566ecde470241ddd7429fca2" %}
 
 package:
   name: {{ name|lower }}
@@ -11,10 +11,12 @@ source:
   sha256: {{ sha256hash }}
 
 build:
-  number: 1
+  number: 0
   binary_relocation: False
   entry_points:
     - dysgu = dysgu.main:cli
+  run_exports:
+    - {{ pin_subpackage('dysgu', max_pin="x") }}
 
 requirements:
   build:
@@ -22,31 +24,30 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - python >=3.8
-    - setuptools >=63.0
+    - python
     - cython
     - htslib >=1.12
     - numpy >=1.18
     - lightgbm
     - zlib
-    - pysam
+    - pysam >=0.19
     - libcurl
     - openssl
     - bzip2
     - xz
     - wheel
-    - scipy
-    - pandas
+    - scipy >=1.7
+    - pandas >=1.2
     - networkx >=2.4
     - scikit-learn >=0.22
     - python-edlib
     - sortedcontainers
     - click >=8.0
   run:
-    - python >=3.8
+    - python
     - numpy >=1.18
-    - scipy
-    - pandas
+    - scipy >1.7
+    - pandas >=1.2
     - networkx >=2.4
     - scikit-learn >=0.22
     - python-edlib
@@ -54,7 +55,7 @@ requirements:
     - lightgbm
     - zlib
     - click >=8.0
-    - pysam
+    - pysam >=0.22
     - libcurl
     - openssl
     - bzip2
@@ -79,8 +80,11 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE.md
+  dev_url: https://github.com/kcleal/dysgu
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   container:
       extended-base: True
   recipe-maintainers:

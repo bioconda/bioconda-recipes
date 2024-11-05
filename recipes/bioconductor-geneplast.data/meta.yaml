@@ -1,6 +1,6 @@
-{% set version = "0.99.6" %}
+{% set version = "0.99.7" %}
 {% set name = "geneplast.data" %}
-{% set bioc = "3.17" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -11,21 +11,40 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 08ddcdb9b1cf56dab5fe358c85fe1526
+  md5: ef658e131138d87033fcd985c38cf45f
 build:
-  number: 2
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-geneplast.data", max_pin="x.x") }}'
   noarch: generic
 # Suggests: geneplast, BiocGenerics, BiocStyle, knitr, rmarkdown
 requirements:
   host:
+    - 'bioconductor-biocfilecache >=2.10.0,<2.11.0'
+    - 'bioconductor-geneplast >=1.28.0,<1.29.0'
+    - 'bioconductor-treeio >=1.26.0,<1.27.0'
+    - r-ape
     - r-base
+    - r-dplyr
+    - r-igraph
+    - r-purrr
+    - r-readr
+    - r-tibble
   run:
+    - 'bioconductor-biocfilecache >=2.10.0,<2.11.0'
+    - 'bioconductor-geneplast >=1.28.0,<1.29.0'
+    - 'bioconductor-treeio >=1.26.0,<1.27.0'
+    - r-ape
     - r-base
+    - r-dplyr
+    - r-igraph
+    - r-purrr
+    - r-readr
+    - r-tibble
     - curl
-    - bioconductor-data-packages>=20230706
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

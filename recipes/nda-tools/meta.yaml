@@ -1,6 +1,6 @@
 {% set name = "nda-tools" %}
-{% set version = "0.2.25" %}
-{% set sha256 = "2b3b5d27a7884124eb990378d1fc9a38cba555ff7b49764f42ae1b97d1cf0580" %}
+{% set version = "0.3.0" %}
+{% set sha256 = "7315dcf21bf2597485e930f1199c259f1f82c9bc79ebcefb5ef3e8e02aff56f1" %}
 
 package:
   name: {{ name }}
@@ -13,29 +13,27 @@ source:
 build:
   noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps -vvv
+  entry_points:
+    - vtcmd = NDATools.clientscripts.vtcmd:main
+    - downloadcmd = NDATools.clientscripts.downloadcmd:main
+    - unit_tests = tests.run_unit_tests:main
+    - integration_tests = tests.run_integration_tests:main
+  run_exports:
+    - {{ pin_subpackage('nda-tools', max_pin="x.x") }}
 
 requirements:
   host:
     - python
     - pip
-    - keyring 
-    - pyyaml 
-    - packaging 
-    - mock 
-    - requests 
-    - tqdm 
-    - botocore 
-    - boto3
   run:
     - python
-    - keyring 
-    - pyyaml 
-    - packaging 
-    - mock 
-    - requests 
-    - tqdm 
-    - botocore 
+    - keyring
+    - pyyaml
+    - packaging
+    - mock
+    - requests
+    - tqdm
     - boto3
     - pandas
 
