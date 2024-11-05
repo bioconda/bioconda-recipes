@@ -2,6 +2,7 @@
 
 export M4="${BUILD_PREFIX}/bin/m4"
 
+autoreconf -if
 ./configure --prefix="${PREFIX}" \
 	--enable-shared=no --without-libcurl \
 	--with-libdeflate="${PREFIX}" \
