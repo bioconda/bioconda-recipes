@@ -11,9 +11,6 @@ fi
 export CFLAGS="${CFLAGS:-} -I$PREFIX/include"
 export LDFLAGS="${LDFLAGS:-} -L$PREFIX/lib"
 
-# Clean any previous builds
-make clean || true
-
 if ! make; then
     echo "Build failed"
     exit 1
