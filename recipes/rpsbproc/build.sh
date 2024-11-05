@@ -125,9 +125,11 @@ CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-dll --with-static-exe"
 # Platform-specific flags
 if [[ "$(uname)" = "Linux" ]]; then
 	# --with(out)-64:
-	#   Compile in 64-bit mode instead of 32-bit.
+	#   Compile in 64-bit mode instead of 32-bit on x86_64 platforms.
 	#   Flag not available for osx build.
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-64"
+        if [[ "$(arch)" = "x86_64" ]]; then
+	    CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-64"
+	fi
 	# --with(out)-openmp:
 	#   Enable OpenMP extensions for all projects.
 	#   Does not work without hacks for OSX
