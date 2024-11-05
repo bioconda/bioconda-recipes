@@ -6,18 +6,19 @@ package:
 
 source:
   url: https://github.com/KoslickiLab/YACHT/releases/download/v{{ version  }}/yacht-{{ version  }}.tar.gz
-  sha256: 3365731592e37b5708fb6bdedc817debe813f7050814a68e07d1a4836337762e
+  sha256: 04a1fabffb6767619f84e08f74126ba2be02d146169bd76980ee80ffe3cb0039
 
 build:
   number: 0
+  skip: True  # [osx]
   script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   run_exports:
-    # Ensures downstream packages are compatible with the version of YACHT they were built against
     - {{ pin_subpackage('yacht') }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}       # Adds platform-specific C++ compiler (g++, clang, MSVC)
+    - gxx_linux-64           # Ensures g++ is available on Linux
     - make                        # Ensures that Make is available (for Unix)
     - python >3.6,<3.12
     - pip
