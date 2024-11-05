@@ -156,7 +156,7 @@ cd "$NCBI_CXX_TOOLKIT"
 # Run GNU Make
 cd "$RESULT_PATH/build"
 echo "RUNNING MAKE" >&2
-make -j -f Makefile.flat rpsbproc.exe >&2
+make -j 4 -f Makefile.flat rpsbproc.exe >&2
 
 # Copy compiled binaries to the Conda $PREFIX
 mkdir -p "$PREFIX/bin"
