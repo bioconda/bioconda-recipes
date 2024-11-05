@@ -10,17 +10,19 @@ source:
   sha256: 88f959b4eb30cb7794d361015b386220cc5a0e1c0e09d710a575890febed57d9
 
 build:
-  number: 0
+  number: 1
   noarch: python
+  entry_points:
+    - metaphor = metaphor.cli.cli:main
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
   script:
-    - "{{ PYTHON }} -m pip install . -vv"
+    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
 
 requirements:
   host:
     - pip
-    - python >=3.9
+    - python >=3.9,<3.12
   run:
     - jinja2
     - networkx
@@ -28,7 +30,7 @@ requirements:
     - python >=3.9,<3.12
     - pyyaml
     - requests
-    - snakemake >=7.5
+    - snakemake-minimal >=7.5,<8.0
     - snakemake-wrapper-utils
     - tqdm
     - zstandard
