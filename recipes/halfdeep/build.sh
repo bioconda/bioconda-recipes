@@ -11,7 +11,7 @@ if ! install -v -m 0755 "$SRC_DIR/halfdeep.sh" "$PREFIX/bin/halfdeep.sh"; then
     exit 1
 fi
 
-if ! install -v -m 0644 "$SRC_DIR/halfdeep.r" "$PREFIX/bin/halfdeep.r"; then
+if ! install -v -m 0755 "$SRC_DIR/halfdeep.r" "$PREFIX/bin/halfdeep.r"; then
     echo "Failed to install halfdeep r script" >&2
     exit 1
 fi
