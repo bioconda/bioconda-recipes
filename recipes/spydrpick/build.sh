@@ -24,7 +24,7 @@ mkdir build && pushd build
 cmake -S .. -B . -DCMAKE_BUILD_TYPE=Release \
 	-DTBB_ROOT="${PREFIX}" -DBOOST_ROOT="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DBoost_DEBUG=1 "${CONFIG_ARGS}"
+	-DBoost_DEBUG=1 -DBoost_USE_STATIC_LIBS=OFF "${CONFIG_ARGS}"
 cmake --build . --target SpydrPick -j "${CPU_COUNT}" -v
 
 install -d ${PREFIX}/bin
