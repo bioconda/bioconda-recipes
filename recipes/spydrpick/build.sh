@@ -18,7 +18,7 @@ else
 fi
 
 # build and install SpydrPick (but only the SpydrPick make target)
-export CMAKE_MODULE_PATH="${RECIPE_DIR}"
+# export CMAKE_MODULE_PATH="${RECIPE_DIR}"
 mkdir build && pushd build
 
 cmake -S .. -B . -DCMAKE_BUILD_TYPE=Release \
