@@ -1,0 +1,46 @@
+{% set name = "HalfDeep" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/richard-burhans/{{ name }}/archive/refs/tags/{{ version }}.zip
+  sha256: 308341c567298703fb99d4ceac7b34f0718cf6a37b02fc166f68d661a7f44f27
+
+requirements:
+  run:
+    - bash
+    - coreutils
+    - gawk
+    - genodsp
+    - grep
+    - gzip
+    - python
+    - r
+    - sed
+
+build:
+  number: 1
+  skip: True  # [not linux]
+  run_exports:
+    - {{ pin_subpackage('halfdeep', max_pin="x.x") }}
+
+test:
+  commands:
+    - genodsp --help
+    - ls -l ${PREFIX}/bin/
+    - ${PREFIX}/bin/genodsp --help 
+
+about:
+  home: https://github.com/richard-burhans/{{ name }}
+  summary: {{ name }}
+  license: BSD-3-Clause
+  license_file: LICENSE
+  license_url: https://github.com/rsharris/genodsp/blob/master/LICENSE
+  license_url: https://github.com/richard-burhans/{{ name }}/blob/master/LICENSE
+
+extra:
+  additional-platforms:
+    - linux-aarch64
