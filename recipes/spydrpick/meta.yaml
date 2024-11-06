@@ -1,29 +1,32 @@
 {% set name = "SpydrPick" %}
-{% set version = "1.2.0" %}
+{% set version = "1.3.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/santeripuranen/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: b3fc19689605b3ebefd12610f8444727d68b641dcd9a478cf42df106b2cb7154
+  url: https://github.com/santeripuranen/SpydrPick/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c79fe7b982f15fbb057c60a7061cca7f0749a52b6eda37d56624f0817c71131a
 
 build:
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('spydrpick', max_pin="x") }}
 
 requirements:
   build:
     - make
-    - {{ compiler('cxx') }}
-    - python <3
-  host:
     - cmake
+    - {{ compiler('cxx') }}
+    - python
+  host:
     - pthread-stubs
     - tbb
     - tbb-devel
     - boost-cpp
   run:
+    - boost-cpp
     - pthread-stubs
     - tbb
 
@@ -33,10 +36,17 @@ test:
 
 about:
    home: https://github.com/santeripuranen/SpydrPick
-   license: GNU Affero General Public License
+   license: "AGPL-3.0-or-later"
+   license_family: AGPL
    license_file: LICENSE
-   summary: Mutual information based detection of pairs of genomic loci co-evolving under a shared selective pressure
+   summary: "Mutual information based detection of pairs of genomic loci co-evolving under a shared selective pressure."
+   dev_url: https://github.com/santeripuranen/SpydrPick
+   doc_url: "https://github.com/santeripuranen/SpydrPick/blob/v{{ version }}/README.md"
 
 extra:
    identifiers:
      - doi:10.1093/nar/gkz656
+     - biotools:SpydrPick
+   additional-platforms:
+     - linux-aarch64
+     - osx-arm64
