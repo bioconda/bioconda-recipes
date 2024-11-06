@@ -1,0 +1,46 @@
+{% set name = "gff-to-genbank" %}
+{% set version = "0.0.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/gff_to_genbank-{{ version }}.tar.gz
+  sha256: d28f73719bfbdcef0e698fb758f13765205a6c70a847db89e70298e6575f4ca1
+
+build:
+  entry_points:
+    - gff-to-genbank = gff_to_genbank.gff_to_genbank:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.7
+    - hatchling
+    - pip
+  run:
+    - python >=3.7
+    - bcbio-gff >=0.7
+    - biopython >=1.81
+
+test:
+  imports:
+    - gff_to_genbank
+  commands:
+    - pip check
+    - gff-to-genbank --help
+  requires:
+    - pip
+
+about:
+  summary: Script to convert from GFF to Genbank
+  dev_url: https://github.com/corneliusroemer/gff-to-genbank
+  license: MIT
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - corneliusroemer
