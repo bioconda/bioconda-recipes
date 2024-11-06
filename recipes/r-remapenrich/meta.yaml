@@ -1,5 +1,4 @@
 {% set version = '0.99.0' %}
-
 {% set posix = 'm2-' if win else '' %}
 {% set native = 'm2w64-' if win else '' %}
 
@@ -8,20 +7,18 @@ package:
   version: {{ version|replace("-", "_") }}
 
 source:
-
-  git_url: https://github.com/nigiord/ReMapEnrich
-  git_tag: v0.99.0
+  url: https://github.com/nigiord/ReMapEnrich/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 87764400fbe3fbb41fda2395b669c9e926f7e39323a590f53f2944a9cd720aaf
 
 build:
+  noarch: generic
   merge_build_host: True  # [win]
-  # If this is a new build for the same version, increment the build number.
   number: 0
-  # no skip
-
-  # This is required to make R link correctly on Linux.
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports:
+    - {{ pin_subpackage('r-remapenrich', max_pin='x.x') }}
 
 # Suggests: knitr, rmarkdown
 requirements:
@@ -64,6 +61,10 @@ about:
   license_family: AGPL
   license_file:
     - '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+
+extra:
+  recipe-maintainers:
+    - nigiord
 
 # The original CRAN metadata for this package was:
 
