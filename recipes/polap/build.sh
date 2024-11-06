@@ -9,11 +9,11 @@ files=(polap
 	polap-parsing.sh
 	polap-pt.2.c70.3.faa
 	polap.sh
-	run-polap-genes.R
-	run-polap-jellyfish.R
-	run-polap-mtcontig.R
+	run-polap-r-genes.R
+	run-polap-r-jellyfish.R
+	run-polap-r-mtcontig.R
 	run-polap-ncbitools
-	run-polap-pairs.R)
+	run-polap-r-pairs.R)
 
 for i in "${files[@]}"; do
 	cp src/$i $PREFIX/bin
