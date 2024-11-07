@@ -25,6 +25,10 @@ requirements:
 test:
   commands:
     - gzrecover -h
+    # Create and test with a corrupted gzip file
+    - echo "test" | gzip > test.gz
+    - dd if=/dev/zero of=test.gz bs=1 count=1 seek=5 conv=notrunc
+    - gzrecover test.gz || [[ $? -eq 1 ]]
 
 about:
   home: https://www.urbanophile.com/arenn/hacking/gzrt
@@ -36,3 +40,7 @@ about:
     gzrecover is a program that will attempt to extract any readable data
     out of a gzip file that has been corrupted.
   dev_url: https://github.com/arenn/gzrt
+
+extra:
+  recipe-maintainers:
+    - mazzalab

@@ -8,22 +8,32 @@ if [ -z "$PREFIX" ]; then
     exit 1
 fi
 
-# Ensure that the CC environment variable is set (for compiler)
-if [ -z "$CC" ]; then
-    echo "CC environment variable not set, but it is required."
-    exit 1
+export CFLAGS="${CFLAGS:-} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS:-} -L${PREFIX}/lib"
+export CPATH="${PREFIX}/include"
+
+# If-body reserved to docker build
+if [ ! -f "$(command -v cc)" ]; then
+    # Ensure that the CC environment variable is set (for compiler)
+    if [ -z "$CC" ]; then
+        echo "CC environment variable not set, but it is required."
+        exit 1
+    fi
+
+    # Create a temporary directory
+    mkdir -p "$SRC_DIR/bin"
+
+    # Create a symlink named cc that points to $CC
+    CC_PATH="$(which "${CC}")"  
+    if [ ! -x "${CC_PATH}" ]; then  
+        echo "Could not find compiler at: ${CC_PATH}"  
+        exit 1  
+    fi  
+    ln -sf "${CC_PATH}" "${SRC_DIR}/bin/cc"
+
+    # Prepend the temporary directory to the PATH
+    export PATH="${SRC_DIR}/bin:${PATH}"
 fi
-
-export CPATH=${PREFIX}/include
-
-# Create a temporary directory
-mkdir -p $SRC_DIR/bin
-
-# Create a symlink named cc that points to $CC
-ln -sf $(which $CC) $SRC_DIR/bin/cc
-
-# Prepend the temporary directory to the PATH
-export PATH=$SRC_DIR/bin:$PATH
 
 if ! make; then
     echo "Build failed"
