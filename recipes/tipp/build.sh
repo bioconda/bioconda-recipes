@@ -3,6 +3,9 @@
 # Exit on any error
 set -ex
 
+# Initialize and update all submodules
+#git submodule update --init
+
 # Define variables for directories
 KMC_DIR="src/kmc3"
 
@@ -13,6 +16,7 @@ unset CONDA_PREFIX
 
 # Enter the KMC directory, initialize and update its submodule
 cd "$KMC_DIR"
+#git submodule update --init
 
 # Explicitly build Cloudflares zlib to ensure it's used in KMC build
 cd 3rd_party/cloudflare
@@ -58,7 +62,11 @@ ${CXX}  -o readskmercount readskmercount.opt.o -L./kmc3/bin -lkmc_core -pthread
 # Copy everything to the Conda environments bin directory to ensure they're accessible
 echo "Copying binaries to PREFIX..."
 mkdir -p $PREFIX/bin
-cp -r * $PREFIX/bin/ || { echo "Failed to copy binaries to PREFIX"; exit 1; }
+mkdir -p $PREFIX/bin/kmc3
+mkdir -p $PREFIX/bin/seqtk
+cp graph.plot.r readskmercount TIPP.pl TIPP_polish.pl html2repeatbed.pl MSA.plot.r TIPP_plastid.pl TIPP_telomere_backup.pl readskmercount.cpp telomeres.visulization.r TIPP_plastid.v2.1.pl TIPP_telomere.pl "$PREFIX/bin/" || { echo "Failed to copy specific binaries to PREFIX"; exit 1; }
+cp -r kmc3/bin $PREFIX/bin/kmc3/
+cp seqtk/seqtk $PREFIX/bin/seqtk/
 
 echo "Installation completed successfully."
 echo "Copying activation and deactivation scripts..."
