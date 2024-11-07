@@ -3,7 +3,7 @@
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -std=c++14 -O3 -D_LIBCPP_DISABLE_AVAILABILITY -I${PREFIX}/include"
 
 # Set up Apegrunt; it's configured as a submodule to SpydrPick on GitHub, but since
 # Bioconda doesn't recommend using git_url (and 'clone --recursive' that would also
@@ -27,8 +27,7 @@ mkdir build && pushd build
 cmake -S .. -B . -DCMAKE_BUILD_TYPE=Release \
 	-DTBB_ROOT="${PREFIX}" -DBOOST_ROOT="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DBoost_DEBUG=1 -DBoost_INCLUDEDIR="${PREFIX}/include" \
-	-DBoost_LIBRARYDIR="${PREFIX}/lib" "${CONFIG_ARGS}"
+	-DBoost_DEBUG=1 "${CONFIG_ARGS}"
 cmake --build . --target SpydrPick -j "${CPU_COUNT}" -v
 
 install -d ${PREFIX}/bin
