@@ -8,8 +8,22 @@ if [ -z "$PREFIX" ]; then
     exit 1
 fi
 
-export CFLAGS="${CFLAGS:-} -I$PREFIX/include"
-export LDFLAGS="${LDFLAGS:-} -L$PREFIX/lib"
+# Ensure that the CC environment variable is set (for compiler)
+if [ -z "$CC" ]; then
+    echo "CC environment variable not set, but it is required."
+    exit 1
+fi
+
+export CPATH=${PREFIX}/include
+
+# Create a temporary directory
+mkdir -p $SRC_DIR/bin
+
+# Create a symlink named cc that points to $CC
+ln -sf $(which $CC) $SRC_DIR/bin/cc
+
+# Prepend the temporary directory to the PATH
+export PATH=$SRC_DIR/bin:$PATH
 
 if ! make; then
     echo "Build failed"
