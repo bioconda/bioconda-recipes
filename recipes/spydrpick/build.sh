@@ -17,6 +17,9 @@ else
 	export CONFIG_ARGS=""
 fi
 
+rm -rf src/CMakeLists.txt
+mv "${RECIPE_DIR}/CMakeLists.txt" src/
+
 # build and install SpydrPick (but only the SpydrPick make target)
 # export CMAKE_MODULE_PATH="${RECIPE_DIR}"
 mkdir build && pushd build
