@@ -1,11 +1,11 @@
-{% set version = "2.0.0-rc.5" %}
+{% set version = "2.0.0" %}
 
-package: 
+package:
   name: atlas
-  version: 2.0.0
+  version: {{ version }}
 
 source:
-  url: https://bitbucket.org/wegmannlab/atlas/get/{{ version }}.tar.gz
+  url: https://bitbucket.org/wegmannlab/atlas/get/{{ version }}-rc.5.tar.gz
   sha256: fabbde9a4af8053f748568c666fbf0210e318f7794bd8d8aed827d5da37314d5
 
 build:
@@ -15,27 +15,32 @@ build:
 
 requirements:
   build:
-    - git
-    - cmake
-    - ninja
     - {{ compiler('cxx') }}
+    - cmake
+    - git
+    - ninja
+    - sysroot_linux-64 =2.17 # [linux]
   host:
     - armadillo
     - fmt
     - htslib
     - lapack
+    - libgomp  # [linux]
+    - llvm-openmp # [osx]
     - nlohmann_json
     - openblas
-    - openmp 
+    - sysroot_linux-64 =2.17 # [linux]
     - zlib
   run:
     - armadillo
     - fmt
     - htslib
     - lapack
+    - libgomp  # [linux]
+    - llvm-openmp # [osx]
     - nlohmann_json
     - openblas
-    - openmp 
+    - sysroot_linux-64 =2.17 # [linux]
     - zlib
 
 test:
@@ -46,10 +51,11 @@ test:
     - atlas GLF --bam ATLAS_simulations.bam
     - atlas saf --glf ATLAS_simulations.glf.gz --fasta ATLAS_simulations.fasta
     - atlas majorMinor --glf ATLAS_simulations.glf.gz
-      
+    - rm ATLAS_* *.parameters saf.saf.* || exit 1
+
 about:
   home: https://atlaswiki.netlify.app
-  license: GPLv3
+  license: GPL3
   summary: "ATLAS: Analysis Tools for Ancient and Low-depth Samples"
 
 extra:
