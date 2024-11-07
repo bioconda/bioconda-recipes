@@ -8,6 +8,7 @@ mkdir -vp "${PREFIX}/bin"
 
 # Define installation manifest
 declare -A files=(
+    ["bam_depth.sh"]="0755"
     ["halfdeep.sh"]="0755"
     ["halfdeep.r"]="0755"
     ["scaffold_lengths.py"]="0755"
