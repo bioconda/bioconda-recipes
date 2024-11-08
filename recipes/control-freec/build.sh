@@ -12,5 +12,9 @@ do
     cp $f $PREFIX/bin
 done
 
+ls -l $PREFIX/bin
+echo get_fasta_lengths.pl is...
+cat $PREFIX/bin/get_fasta_lengths.pl
+
 cd src
 $CXX -o $PREFIX/bin/freec $CXXFLAGS $LDFLAGS *.cpp -lpthread
