@@ -1,5 +1,5 @@
 #!/bin/bash
-#set -euo pipefail
+set -euo pipefail
 
 echo "Building Minimac4 version ${PKG_VERSION}"
 
