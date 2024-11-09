@@ -1,0 +1,90 @@
+{% set version = '0.3.7' %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-pgenlibr
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/pgenlibr_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/pgenlibr/pgenlibr_{{ version }}.tar.gz
+  sha256: 03928d827ef296b49819892db75eb621c009a40de88ff5ea519cd3982ca96bf1
+
+build:
+  merge_build_host: True  # [win]
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  missing_dso_whitelist:
+    - '*/R.dll'        # [win]
+    - '*/Rblas.dll'    # [win]
+    - '*/Rlapack.dll'  # [win]
+
+requirements:
+  run_exports:
+    - {{ pin_subpackage('r-pgenlibr', max_pin="x.x") }}
+  build:
+    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('m2w64_c') }}        # [win]
+    - {{ compiler('cxx') }}            # [not win]
+    - {{ compiler('m2w64_cxx') }}      # [win]
+    - {{ posix }}filesystem        # [win]
+    - {{ posix }}sed               # [win]
+    - {{ posix }}grep              # [win]
+    - {{ posix }}autoconf
+    - {{ posix }}automake          # [not win]
+    - {{ posix }}automake-wrapper  # [win]
+    - {{ posix }}pkg-config
+    - {{ posix }}make
+    - {{ posix }}coreutils         # [win]
+    - {{ posix }}zip               # [win]
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+  host:
+    - r-base
+    - r-rcpp >=1.0.1
+  run:
+    - r-base
+    - {{ native }}gcc-libs         # [win]
+    - r-rcpp >=1.0.1
+
+test:
+  commands:
+    - $R -e "library('pgenlibr')"           # [not win]
+    - "\"%R%\" -e \"library('pgenlibr')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=pgenlibr
+  license: LGPL-3
+  summary: A thin wrapper over PLINK 2's core libraries which provides an R interface for reading
+    .pgen files.  A minimal .pvar loader is also included.  Chang et al. (2015) \doi{10.1186/s13742-015-0047-8}.
+  license_family: LGPL
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+
+extra:
+  recipe-maintainers:
+    - aryarm
+
+# Package: pgenlibr
+# Type: Package
+# Title: PLINK 2 Binary (.pgen) Reader
+# Version: 0.3.7
+# Date: 2024-06-03
+# Authors@R: c(person(given = "Christopher", family = "Chang", role = c("aut", "cre"), email = "chrchang@alumni.caltech.edu"), person(given = "Eric", family = "Biggers", role = c("ctb", "cph"), comment = "Author of included libdeflate library"), person(given = "Yann", family = "Collet", role = c("ctb"), comment = "Author of included Zstd library"), person(given = "Meta Platforms, Inc.", role = c("cph"), comment = "Zstd library"), person(given = "Evan", family = "Nemerson", role = c("ctb", "cph"), comment = "Author of included SIMDe library"), person(given = "Przemyslaw", family = "Skibinski", role = c("ctb"), comment = "Author of included Zstd library"), person(given = "Nick", family = "Terrell", role = c("ctb"), comment = "Author of included Zstd library"))
+# Description: A thin wrapper over PLINK 2's core libraries which provides an R interface for reading .pgen files.  A minimal .pvar loader is also included.  Chang et al. (2015) \doi{10.1186/s13742-015-0047-8}.
+# Encoding: UTF-8
+# License: LGPL (>= 3)
+# Copyright: This package includes sources of the libdeflate library owned by Eric Biggers, sources of the SIMDe library owned by Evan Nemerson, sources of the Zstd library owned by Meta Platforms, Inc., and sources of the pgenlib library owned by Christopher Chang.
+# BugReports: https://github.com/chrchang/plink-ng/issues
+# Imports: Rcpp (>= 1.0.1)
+# LinkingTo: Rcpp
+# RoxygenNote: 7.3.1
+# NeedsCompilation: yes
+# Packaged: 2024-06-03 23:04:04 UTC; chrchang
+# Author: Christopher Chang [aut, cre], Eric Biggers [ctb, cph] (Author of included libdeflate library), Yann Collet [ctb] (Author of included Zstd library), Meta Platforms, Inc. [cph] (Zstd library), Evan Nemerson [ctb, cph] (Author of included SIMDe library), Przemyslaw Skibinski [ctb] (Author of included Zstd library), Nick Terrell [ctb] (Author of included Zstd library)
+# Maintainer: Christopher Chang <chrchang@alumni.caltech.edu>
+# Repository: CRAN
+# Date/Publication: 2024-06-04 14:10:02 UTC
