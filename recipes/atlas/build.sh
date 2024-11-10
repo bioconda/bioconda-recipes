@@ -1,14 +1,16 @@
 #!/bin/bash
 
-export CFLAGS="$CFLAGS -I$PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
-export LIBRARY_PATH="${PREFIX}/lib"
-export CPATH="${PREFIX}/include"
+cmake . -GNinja \
+    -DCONDA=ON \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_COMPILER=${CXX} \
+    -DCMAKE_CXX_FLAGS="-D_LIBCPP_DISABLE_AVAILABILITY" \
+    -DCMAKE_LIBRARY_PATH=${CONDA_PREFIX}/lib \
+    -DCMAKE_INCLUDE_PATH=${CONDA_PREFIX}/include \
+    -DCMAKE_INSTALL_PREFIX=$PREFIX
 
-sed -i.bak 's/^GIT_HEADER/#GIT_HEADER/' makefile
+ninja || exit 1
 
-make CXX=$CXX ARM=false
-
-mkdir -p $PREFIX/bin
-cp atlas $PREFIX/bin 
+mkdir -p ${PREFIX}/bin
+cp atlas ${PREFIX}/bin || exit 1
+chmod +x ${PREFIX}/bin/atlas
