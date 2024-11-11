@@ -6,22 +6,19 @@ package:
   version: {{ version }}
 
 source:
-  - url: http://www.christianbenner.com/finemap_v{{ version }}_x86_64.tgz # [linux64]
-    sha256: 3b1fc6eb3c2ccafd647b32e02d0244495cd0ade9ed7d474606c31ebf6e98b0c9 # [linux64]
-  - url: http://www.christianbenner.com/finemap_v{{ version }}_MacOSX.tgz # [osx]
-    sha256: e2967e5586347a8ac5cbcddf3c0e41bf8d3e7793875f78b509d07903d17a415b # [osx]
+  - url: http://www.christianbenner.com/finemap_v{{ version }}_x86_64.tgz
+    sha256: 3b1fc6eb3c2ccafd647b32e02d0244495cd0ade9ed7d474606c31ebf6e98b0c9
 
 build:
   number: 0
-  # skip broken osx for now
+  # skip osx since binary cannot be relinked b/c it was built without the -headerpad_max_install_names option
   skip: True # [not linux64]
   noarch: generic
   run_exports:
     - {{ pin_subpackage('finemap', max_pin="x") }}
   script:
     - mkdir -p ${PREFIX}/bin
-    - install -m 755 finemap_v{{ version }}_x86_64 ${PREFIX}/bin/finemap # [linux64]
-    - install -m 755 finemap_v{{ version }}_MacOSX ${PREFIX}/bin/finemap # [osx]
+    - install -m 755 finemap_v{{ version }}_x86_64 ${PREFIX}/bin/finemap
 
 test:
   commands:
@@ -29,7 +26,7 @@ test:
 
 about:
   home: http://www.christianbenner.com
-  license: Other
+  license: Custom Academic
   license_url: http://www.christianbenner.com/license_finemap_v1.4.html
   license_file: LICENSE
   summary: >
