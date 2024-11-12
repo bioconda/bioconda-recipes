@@ -10,7 +10,7 @@ if [[ $OSTYPE == "darwin"* ]]; then
     sed -i.bak 's/memset_s/memset8_s/g' ext/safestringlib/safeclib/wmemset_s.c
 fi
 
-case "$(arch)" in
+case "$(uname -m)" in
   x86_64)
       LIBS="${LDFLAGS}" make CC="${CC}" CXX="${CXX}" multi ;;
   aarch64)
