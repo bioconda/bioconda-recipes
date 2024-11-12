@@ -12,12 +12,12 @@ fi
 
 cmake -S .. -B . \
   -DCMAKE_CXX_COMPILER="${CXX}" \
-  -DCMAKE_INSTALL_PREFIX="$PREFIX" \
+  -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DBUILD_PYTHON_INTERFACE=ON \
   -DCMAKE_BUILD_TYPE=Release \
   -DBUILD_LIBRARY=ON \
   -DPYTHON_VERSION=$(python -c 'import platform; print(platform.python_version())') \
-  -DPython3_ROOT_DIR="${PYTHON}" \
+  -DPython3_ROOT_DIR="${PREFIX}/bin" \
   -G Ninja \
   "${CONFIG_ARGS}"
 
