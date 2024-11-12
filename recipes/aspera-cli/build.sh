@@ -29,5 +29,5 @@ ln -s $gem_path/bin/* $PREFIX/bin
 
 export ASCLI_HOME="$PREFIX/etc/aspera"
 ascli conf ascp install && ascli config ascp info 
-cp $ASCLI_HOME/aspera-license .
-ln -s $ASCLI_HOME/{ascp,aspera-license} $PREFIX/bin
+#cp $ASCLI_HOME/aspera-license .
+#ln -s $ASCLI_HOME/{ascp,aspera-license} $PREFIX/bin
