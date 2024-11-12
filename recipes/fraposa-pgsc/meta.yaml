@@ -1,0 +1,54 @@
+{% set name = "fraposa-pgsc" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/fraposa_pgsc-{{ version }}.tar.gz
+  sha256: 227fd14a7b82859597dd484828de74c7ab8f22d08ea51a7dc7cf6ca1a4827033
+  
+build:
+  entry_points:
+    - fraposa = fraposa_pgsc.fraposa_runner:main
+    - fraposa_pred = fraposa_pgsc.predstupopu:main
+    - fraposa_plot = fraposa_pgsc.plotpcs:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('fraposa-pgsc', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.10.0,<4.0.0
+    - pandas >=1.5.3,<2.0.0
+    - scikit-learn >=1.2.1,<2.0.0
+    - pyplink >=1.3.5,<2.0.0
+    - numpy >=1.24.2,<2.0.0
+    - matplotlib-base >=3.7.1,<4.0.0
+
+test:
+  imports:
+    - fraposa_pgsc
+  commands:
+    - pip check
+    - fraposa --help
+    - fraposa_pred --help
+    - fraposa_plot --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/PGScatalog/fraposa_pgsc
+  summary: Tools to perform ancestry projection to a reference dataset within the calculator pipeline (pgsc_calc)
+  license: MIT
+
+extra:
+  recipe-maintainers:
+    - nebfield
