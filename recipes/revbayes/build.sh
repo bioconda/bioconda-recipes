@@ -3,7 +3,7 @@
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p $PREFIX/bin
 cd projects/cmake
