@@ -4,6 +4,7 @@ set -o errexit
 set -o nounset
 set -o xtrace
 
+cd "$SRC_DIR"
 make
 
 # mkdir -vp "${PREFIX}/bin"
