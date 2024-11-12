@@ -3,29 +3,29 @@
 set -e
 set -x
 
-if [ "$(uname)" = "Darwin" ]; then
-  # LDFLAGS fix: https://github.com/AnacondaRecipes/intel_repack-feedstock/issues/8
-  export LDFLAGS="-Wl,-pie -Wl,-headerpad_max_install_names -Wl,-rpath,$PREFIX/lib -L$PREFIX/lib"
+export INCLUDES="-I${PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+
+if [[ "$(uname)" = "Darwin" ]]; then
+	# LDFLAGS fix: https://github.com/AnacondaRecipes/intel_repack-feedstock/issues/8
+	export LDFLAGS="${LDFLAGS} -Wl,-pie -Wl,-headerpad_max_install_names -Wl,-rpath,$PREFIX/lib -L$PREFIX/lib"
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
-  export LDFLAGS="-L$PREFIX/lib"
-  export MKL_THREADING_LAYER="GNU"
+	export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
+	export MKL_THREADING_LAYER="GNU"
+	export CONFIG_ARGS=""
 fi
 # https://bioconda.github.io/troubleshooting.html#zlib-errors
-export CFLAGS="-I$PREFIX/include"
-export CPATH=${PREFIX}/include
+export CFLAGS="${CFLAGS} -O3 -I$PREFIX/include"
+export CPATH="${PREFIX}/include"
 
 
-mkdir -p build
+cmake -S . -B build -DCMAKE_BUILD_TYPE="Release" \
+	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+	-DCMAKE_CXX_COMPILER="${CXX}" \
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-DBOOST_ROOT="${PREFIX}" \
+	"${CONFIG_ARGS}"
 
-cmake \
-  -DBUILD_SHARED_LIBS:BOOL=ON \
-  -DCMAKE_PREFIX_PATH:PATH=${PREFIX} \
-  -DCMAKE_INSTALL_PREFIX:PATH=${PREFIX} \
-  -DCMAKE_BUILD_TYPE="Release" \
-  -S "${SRC_DIR}" \
-  -B build
-
-make  -C build -j1 regenie
-make  -C build install
-
-# bash test/test_conda.sh --path "${SRC_DIR}"
+cmake --build build --target install -j "${CPU_COUNT}"
