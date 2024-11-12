@@ -17,6 +17,7 @@ cmake -S .. -B . \
   -DCMAKE_BUILD_TYPE=Release \
   -DBUILD_LIBRARY=ON \
   -DPYTHON_VERSION=$(python -c 'import platform; print(platform.python_version())') \
+  -DPython3_ROOT_DIR="${PYTHON}" \
   -G Ninja \
   "${CONFIG_ARGS}"
 
