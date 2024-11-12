@@ -1,8 +1,11 @@
 #!/bin/bash
+
+set -xe
+
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
-make
+make -j"${CPU_COUNT}"
 mkdir -p $PREFIX/bin
 
 cp HAPmaker  $PREFIX/bin
