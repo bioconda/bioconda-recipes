@@ -6,6 +6,7 @@ set -ex
 # we're restoring them here by mentioning them explicitly
 # .bak is required for sed -i on macOS
 sed -i.bak 's/-mavx/-mno-avx -mno-avx2 -march=nocona -mtune=haswell/' cmaple/CMakeLists.txt
+rm -rf cmaple/*.bak
 
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
@@ -48,7 +49,7 @@ VERBOSE=1 cmake --build build --target install -j "${JOBS}"
 chmod 755 "${PREFIX}/bin/iqtree2"
 
 # Use symlink to not duplicate the binary, saving space
-ln -s "${PREFIX}"/bin/iqtree2 "${PREFIX}"/bin/iqtree
+ln -sf "${PREFIX}"/bin/iqtree2 "${PREFIX}"/bin/iqtree
 
 # Remove example data files
 for file in "${PREFIX}/example"* "${PREFIX}/models.nex" "${PREFIX}/bin/iqtree2-aa"; do
