@@ -10,7 +10,7 @@ export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -I${PREFIX}/include"
 
 if [[ `uname` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
-	export CXXFLAGS="${CXXFLAGS} -Wno-deprecated-declarations -Wno-unused-command-line-argument"
+	export CXXFLAGS="${CXXFLAGS} -Wno-dev -Wno-deprecated-declarations -Wno-unused-command-line-argument"
 else
 	export CONFIG_ARGS=""
 fi
@@ -26,4 +26,3 @@ cmake --build build -j "${CPU_COUNT}"
 chmod 0755 bin/*
 mv bin/bayesTyper ${PREFIX}/bin
 mv bin/bayesTyperTools ${PREFIX}/bin
-cp -f src/bayesTyperTools/scripts/* ${PREFIX}/bin
