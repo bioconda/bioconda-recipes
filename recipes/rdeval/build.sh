@@ -6,7 +6,7 @@ set -o xtrace
 
 cd "$SRC_DIR"
 
-export CFLAGS="$CFLAGS -I$PREFIX/include"
+export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 make
