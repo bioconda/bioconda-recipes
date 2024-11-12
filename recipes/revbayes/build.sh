@@ -37,7 +37,6 @@ rm -rf build-mpi
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_PREFIX_PATH="${PREFIX}" \
         -DCMAKE_CXX_COMPILER="${CXX}" \
-        -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
         -boost_root "${PREFIX}" \
         -j "${CPU_COUNT}" \
         "${CONFIG_ARGS}"
