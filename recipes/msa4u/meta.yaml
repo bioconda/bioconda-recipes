@@ -1,0 +1,40 @@
+{% set name = "msa4u" %}
+{% set version = "0.4.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/msa4u-{{ version }}.tar.gz
+  sha256: 0471f334bbc1fbb8ea6c0974c39f9aed59030b32d3d790caf814c8f53c393c17
+
+build:
+  run_exports:    
+    - {{ pin_subpackage("msa4u", max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  noarch: python
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - biopython
+    - pandas
+    - reportlab
+    - configs
+
+test:
+  imports:
+    - msa4u
+  commands:
+    - msa4u --help
+
+about:
+  home: https://github.com/GCA-VH-lab/msa4u
+  summary: "A simple visualisation tool for Multiple Sequence Alignment."
+  license: WTFPL
+  license_file: LICENSE
