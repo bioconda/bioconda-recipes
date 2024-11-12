@@ -7,8 +7,8 @@ git clone https://github.com/ch4rr0/libsais third_party/libsais
 
 LDFLAGS=""
 make CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -O3" CPP="${CXX} -I${PREFIX}/include" CC="${CC} -L${PREFIX}/lib" \
-	CFLAGS="${CFLAGS} -O3" LDLIBS="-L$PREFIX/lib -lz -lzstd -ltbb -ltbbmalloc -lpthread" \
-	WITH_ZSTD=1 USE_SAIS=1
+	CFLAGS="${CFLAGS} -O3" LDLIBS="-L$PREFIX/lib -lz -lzstd -lpthread" \
+	WITH_ZSTD=1 USE_SRA=1 USE_SAIS_OPENMP=1
 
 binaries="\
 bowtie2 \
@@ -31,3 +31,5 @@ done
 for d in $directories; do
     cp -rf $d ${PREFIX}/bin
 done
+
+make clean
