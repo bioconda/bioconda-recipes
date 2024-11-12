@@ -1,5 +1,5 @@
 {% set name = "bioutils" %}
-{% set version = "0.5.7" %}
+{% set version = "0.6.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,23 +7,27 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 2610f8d940a613bc9fb0f400fd21b27a4a4f2795a86de26a38b6857577aaabf2
+  sha256: 6ad7a9b6da73beea798a935499339d8b60a434edc37dfc803474d2e93e0e64aa
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv --no-deps --ignore-installed"
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir"
+  run_exports:
+    - {{ pin_subpackage('bioutils', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.6
-    - setuptools_scm #to avoid: ERROR: Could not find a version that satisfies the requirement setuptools_scm
-    - pytest-runner #to avoid: ERROR: Could not find a version that satisfies the requirement pytest-runner
+    - python >=3.10
+    - setuptools-scm
   run:
-    - python >=3.6
+    - python >=3.10
     - attrs
     - requests
+    - urllib3 >=1.26,<2.dev0
 
 test:
   imports:
