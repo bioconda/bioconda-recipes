@@ -3,7 +3,6 @@
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p $PREFIX/bin
 cd projects/cmake
@@ -21,7 +20,6 @@ fi
 	-DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_PREFIX_PATH="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
-	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-boost_root "${PREFIX}" \
 	-j "${CPU_COUNT}" \
 	"${CONFIG_ARGS}"
