@@ -1,20 +1,19 @@
 diff --git a/install_muse.sh b/install_muse.sh
-index 7bc2153..6a9ea38 100755
+index 7bc2153..55ef4a9 100755
 --- a/install_muse.sh
 +++ b/install_muse.sh
-@@ -6,9 +6,9 @@ mkdir -p lib
- 
- # compile boost library
+@@ -8,7 +8,9 @@ mkdir -p lib
  cd boost_1_70_0/
--./bootstrap.sh
-+./bootstrap.sh --with-toolset="cc"
+ ./bootstrap.sh
  ./b2 --clean
 -./b2
-+./b2 --prefix="${BOOST_ROOT}" --layout=system link=static threading=multi install toolset="gcc" "${BOOST_BUILD_LIBS}" > "${BOOST_LOG}" 2>&1
++./b2 --prefix="${BOOST_ROOT}" --layout=system link=static \
++	threading=multi strip=on include="${PREFIX}/include" \
++	variant=release address-model=64 install "${BOOST_BUILD_LIBS}" > "${BOOST_LOG}" 2>&1
  
  cp stage/lib/libboost_iostreams.a ../lib/
  cd ..
-@@ -25,7 +25,7 @@ cd gperftools
+@@ -25,7 +27,7 @@ cd gperftools
  git checkout gperftools-2.9.1
  ./autogen.sh
  ./configure --libdir="$PWD"
@@ -23,7 +22,7 @@ index 7bc2153..6a9ea38 100755
  make install
  cp libtcmalloc_minimal.a ../lib/
  cd ..
-@@ -43,26 +43,15 @@ git checkout 1.9
+@@ -43,26 +45,15 @@ git checkout 1.9
  #git submodule update --init --recursive
  autoreconf -i
  ./configure
