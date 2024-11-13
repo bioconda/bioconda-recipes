@@ -1,23 +1,26 @@
 diff --git a/install_muse.sh b/install_muse.sh
-index 7bc2153..cc6f3ac 100755
+index 7bc2153..b27d5a8 100755
 --- a/install_muse.sh
 +++ b/install_muse.sh
-@@ -5,10 +5,12 @@ make clean
+@@ -5,12 +5,14 @@ make clean
  mkdir -p lib
  
  # compile boost library
 -cd boost_1_70_0/
 -./bootstrap.sh
 +cd boost-1.86.0/
-+./bootstrap.sh --with-toolset=gcc
++./bootstrap.sh --with-toolset=gcc --prefix="${PREFIX}"
  ./b2 --clean
 -./b2
-+./b2 --prefix="${BOOST_ROOT}" toolset=gcc --layout=system link=static \
++./b2 toolset=gcc --layout=system link=static \
 +	threading=multi strip=on include="${PREFIX}/include" \
-+	variant=release address-model=64 install "${BOOST_BUILD_LIBS}" > "${BOOST_LOG}" 2>&1
++	variant=release address-model=64 install
  
- cp stage/lib/libboost_iostreams.a ../lib/
+-cp stage/lib/libboost_iostreams.a ../lib/
++cp ${PREFIX}/lib/libboost_iostreams.a ../lib/
  cd ..
+ 
+ # compile libtcmalloc
 @@ -22,10 +24,10 @@ fi
  
  git clone https://github.com/gperftools/gperftools.git
@@ -25,8 +28,9 @@ index 7bc2153..cc6f3ac 100755
 -git checkout gperftools-2.9.1
 +git checkout gperftools-2.16
  ./autogen.sh
- ./configure --libdir="$PWD"
+-./configure --libdir="$PWD"
 -make -j4
++./configure --libdir="${PWD}" --prefix="${PREFIX}"
 +make -j${CPU_COUNT}
  make install
  cp libtcmalloc_minimal.a ../lib/
@@ -36,8 +40,9 @@ index 7bc2153..cc6f3ac 100755
  git clone https://github.com/samtools/htslib.git
  cd htslib
 -git checkout 1.9
+-#git submodule update --init --recursive
 +git checkout 1.21
- #git submodule update --init --recursive
++git submodule update --init --recursive
  autoreconf -i
  ./configure
 -make -j4
