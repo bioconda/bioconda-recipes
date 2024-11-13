@@ -1,12 +1,12 @@
 diff --git a/Makefile b/Makefile
-index 5823f28..cb3efa1 100644
+index 5823f28..0472d19 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,5 +1,5 @@
 -CXX ?= g++
 -INCLUDE_DIR = -I./include -I./gfalibs/include
 +CXX ?= ${CXX}
-+INCLUDE_DIR = -I./include -I./gfalibs/include -I${PREFIX}/include
++INCLUDE_DIR = -I${PREFIX}/include -I./include -I./gfalibs/include
  WARNINGS = -Wall -Wextra
  
  CXXFLAGS = -g -std=gnu++14 -O3 $(INCLUDE_DIR) $(WARNINGS)
@@ -21,7 +21,13 @@ index 5823f28..cb3efa1 100644
  
  OBJS := main input reads
  BINS := $(addprefix $(BINDIR)/, $(OBJS))
-@@ -27,7 +27,7 @@ head: $(BINS) gfalibs | $(BUILD)
+@@ -22,12 +22,12 @@ BINS := $(addprefix $(BINDIR)/, $(OBJS))
+ GFALIBS_DIR := $(CURDIR)/gfalibs
+ 
+ head: $(BINS) gfalibs | $(BUILD)
+-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $(BUILD)/$(TARGET) $(BINDIR)/* $(GFALIBS_DIR)/*.o $(LIBS)
++	$(CXX) $(CXXFLAGS) $(INCLUDE_DIR) $(LDFLAGS) -o $(BUILD)/$(TARGET) $(BINDIR)/* $(GFALIBS_DIR)/*.o $(LIBS)
+ 	
  all: head validate regenerate
  
  $(BINDIR)%: $(SOURCE)/%.cpp $(INCLUDE)/%.h | $(BINDIR)
