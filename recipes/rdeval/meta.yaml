@@ -10,27 +10,36 @@ source:
   sha256: 56c2f4d7d2c22b27d1b380dc41b81cc77a2d97c792a69b9360bed9e0027bac4d
   patches:
     - zlib.patch
-    - libs.patch
     - foo.patch
+    - gfalibs.patch
+
+build: 
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - make
+  host:
+    - pthread-stubs
     - zlib
-
-build:
-  number: 0
-  run_exports:
-    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 test:
   commands:
-    - ${PREFIX}/bin/rdeval --help
+    - rdeval --help
 
 about:
   home: https://github.com/vgl-hub/{{ name }}
   summary: A general purpose, multithreaded read analysis and manipulation tool.
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  license_url: https://github.com/vgl-hub/{{ name }}/blob/main/LICENSE
+  dev_url: https://github.com/vgl-hub/{{ name }}
+  doc_url: https://github.com/vgl-hub/rdeval/blob/v{{ version }}/README.md
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
