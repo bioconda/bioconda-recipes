@@ -9,7 +9,6 @@ export CFLAGS="${CFLAGS} -O3"
 
 # Print environment variables for debugging
 echo "Print env variables"
-echo "INCLUDES: ${INCLUDES}"
 echo "LIBPATH: ${LIBPATH}"
 echo "LDFLAGS: ${LDFLAGS}"
 echo "CFLAGS: ${CFLAGS}"
