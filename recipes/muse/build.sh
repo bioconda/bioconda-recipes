@@ -15,9 +15,8 @@ echo "CFLAGS: ${CFLAGS}"
 
 rm -rf boost_1_70_0/
 
-ln -sf ${CC} ${BUILD_PREFIX}/bin/gcc
-ln -sf ${CXX} ${BUILD_PREFIX}/bin/c++
-ln -sf ${GXX} ${BUILD_PREFIX}/bin/g++
+ln -sf ${CC} ${PREFIX}/bin/gcc
+ln -sf ${CXX} ${PREFIX}/bin/g++
 
 ./install_muse.sh
 
