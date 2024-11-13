@@ -3,7 +3,6 @@ set -euo pipefail
 
 mkdir -p "${PREFIX}/bin"
 
-export INCLUDES="-I${BUILD_PREFIX}/include -I${PREFIX}/include -I${SRC_DIR}/inc"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
@@ -16,9 +15,9 @@ echo "LDFLAGS: ${LDFLAGS}"
 echo "CFLAGS: ${CFLAGS}"
 
 make CC="${CC} -O3" CFLAGS="${CFLAGS}" CXX="${CXX}" LDFLAGS="${LDFLAGS}" \
-	CXXFLAGS="${CXXFLAGS} -O3 ${INCLUDES}" \
-	CPP="${CXX}" CPPFLAGS="${CXXFLAGS} -O3 ${INCLUDES}" \
-	INCLUDES="${INCLUDES}" -j"${CPU_COUNT}"
+	CXXFLAGS="${CXXFLAGS} -O3" \
+	CPP="${CXX}" CPPFLAGS="${CXXFLAGS} -O3" \
+	-j"${CPU_COUNT}"
 
 # List the contents of the PREFIX directory to see where files are placed
 echo "Listing contents of ${PREFIX}:"
