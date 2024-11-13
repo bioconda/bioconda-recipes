@@ -5,9 +5,8 @@ TGT="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
 [ -d "${PREFIX}/bin" ] || mkdir -p "${PREFIX}/bin"
 
 cd "${SRC_DIR}"
-mv jar/chord*.jar $TGT/chord.jar
-${R} CMD INSTALL --build src/chord/src/main/R/mutSigExtractor
-${R} CMD INSTALL --build src/chord/src/main/R/CHORD
+mv chord*.jar $TGT/chord.jar
 
 cp $RECIPE_DIR/chord.sh $TGT/chord
 ln -s $TGT/chord ${PREFIX}/bin/
+chmod 0755 "${PREFIX}/bin/chord"
