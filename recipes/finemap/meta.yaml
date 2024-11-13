@@ -19,14 +19,30 @@ build:
     - mkdir -p ${PREFIX}/bin
     - install -m 755 finemap_v{{ version }}_x86_64 ${PREFIX}/bin/finemap
 
+requirements:
+  build:
+    - {{ stdlib("c") }}
+    - libgomp
+    - libgcc
+  run:
+    - {{ stdlib("c") }}
+    - libgomp
+    - libgcc
+
 test:
+  source_files:
+    - example
   commands:
     - finemap --help
+    - finemap --sss --in-files example/data
+    - finemap --cond --in-files example/data
+    - finemap --config --in-files example/data --rsids rs30,rs11
 
 about:
   home: http://www.christianbenner.com
   license: Custom Academic
   license_url: http://www.christianbenner.com/license_finemap_v1.4.html
+  # use LICENSE file in downloaded source
   license_file: LICENSE
   summary: >
     Program for identifying causal SNPs and their effect sizes and heritability contributions
@@ -35,4 +51,5 @@ extra:
   skip-lints:
     - should_be_noarch_generic
   recipe-maintainers:
+    - aryarm
     - danielnachun
