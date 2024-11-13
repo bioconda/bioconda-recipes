@@ -1,26 +1,30 @@
-diff --git a/Makefile b/Makefile
-index de9ab9b..f291529 100644
+diff --git a/Makefile b/Makefile2
+index 5823f28..41cdab3 100644
 --- a/Makefile
-+++ b/Makefile
-@@ -1,4 +1,3 @@
--CXX = g++
- INCLUDE_DIR = -I./include
++++ b/Makefile2
+@@ -1,5 +1,5 @@
+-CXX ?= g++
+-INCLUDE_DIR = -I./include -I./gfalibs/include
++CXX ?= ${CXX}
++INCLUDE_DIR = -I./include -I./gfalibs/include -I${PREFIX}/include
  WARNINGS = -Wall -Wextra
  
-@@ -9,6 +8,7 @@ BUILD = build/bin
- SOURCE = src
+ CXXFLAGS = -g -std=gnu++14 -O3 $(INCLUDE_DIR) $(WARNINGS)
+@@ -12,7 +12,7 @@ SOURCE = src
  INCLUDE = include
- LDFLAGS :=
-+LIBS := -lz
+ BINDIR := $(BUILD)/.o
  
- SOURCES = $(addsuffix .o, input-filters input-gfa input-agp gfa gfa-lines log stream-obj uid-generator struct output memory)
+-LDFLAGS := -pthread
++LDFLAGS := -pthread -L${PREFIX}/lib
+ LIBS = -lz
  
-@@ -16,7 +16,7 @@ all: $(SOURCES)
- 	@
+ OBJS := main input reads
+@@ -27,7 +27,7 @@ head: $(BINS) gfalibs | $(BUILD)
+ all: head validate regenerate
  
- %.o: $(SOURCE)/%.cpp $(INCLUDE)/%.h
--	$(CXX) $(CXXFLAGS) $(LDFLAGS) -c $(SOURCE)/$(basename $@).cpp -o $@
-+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -c $(SOURCE)/$(basename $@).cpp -o $@ $(LIBS)
-     
- clean:
- 	$(RM) *.o
+ $(BINDIR)%: $(SOURCE)/%.cpp $(INCLUDE)/%.h | $(BINDIR)
+-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -c $(SOURCE)/$(notdir $@).cpp -o $@
++	$(CXX) $(CXXFLAGS) $(LDFLAGS) -c $(SOURCE)/$(notdir $@).cpp -o $@ $(LIBS)
+ 
+ .PHONY: gfalibs
+ gfalibs:
