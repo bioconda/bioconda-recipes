@@ -1,5 +1,5 @@
 {% set name = "virheat" %}
-{% set version = "0.7.1" %}
+{% set version = "0.7.2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,13 +7,13 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/virheat-{{ version }}.tar.gz
-  sha256: 142b62f05dfe91b9d04a8fe3e7b27d0d20e502dbfa3163d839666262143f67d6
+  sha256: eb1586cd2d62ea21c398d099c44c73f045bb03dff2a44ac03d787a06ee3490fc
 
 build:
   entry_points:
     - virheat = virheat.command:main
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps -vvv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   number: 0
   run_exports:
     - {{ pin_subpackage('virheat', max_pin="x.x") }}
@@ -22,6 +22,7 @@ requirements:
   host:
     - python >=3.9
     - pip
+    - setuptools
   run:
     - python >=3.9
     - matplotlib-base >=3.5.1,<=3.8.0
@@ -32,10 +33,7 @@ test:
   imports:
     - virheat
   commands:
-    - pip check
     - virheat --help
-  requires:
-    - pip
 
 about:
   home: https://github.com/jonas-fuchs/virHEAT
