@@ -1,5 +1,5 @@
 diff --git a/install_muse.sh b/install_muse.sh
-index 7bc2153..d58594a 100755
+index 7bc2153..8dd8a0a 100755
 --- a/install_muse.sh
 +++ b/install_muse.sh
 @@ -5,12 +5,14 @@ make clean
@@ -38,7 +38,7 @@ index 7bc2153..d58594a 100755
  cd ..
  
  # combine htslib
-@@ -39,30 +41,16 @@ fi
+@@ -39,30 +41,18 @@ fi
  
  git clone https://github.com/samtools/htslib.git
  cd htslib
@@ -47,9 +47,12 @@ index 7bc2153..d58594a 100755
 +git checkout 1.21
 +git submodule update --init --recursive
  autoreconf -i
- ./configure
+-./configure
 -make -j4
 -cp libhts.a ../lib/
++./configure --enable-libcurl --enable-plugins \
++	LDFLAGS="-L${PREFIX}/lib -Wl,-R${PREFIX}/lib" \
++	CPPFLAGS="-I${PREFIX}/include"
 +make -j${CPU_COUNT}
 +cp -f libhts.a ../lib/
  
