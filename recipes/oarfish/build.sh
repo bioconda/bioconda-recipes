@@ -4,6 +4,7 @@ set -xe
 
 unamestr=`uname`
 if [ "$unamestr" == 'Darwin' ];
+then
   export CC=clang
   export CXX=clang++
 else
