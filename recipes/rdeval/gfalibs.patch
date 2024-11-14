@@ -1,26 +1,31 @@
---- a/gfalibs/Makefile	2024-11-13 10:59:02.777393016 -0500
-+++ b/gfalibs/Makefile	2024-11-13 11:00:47.981938010 -0500
-@@ -1,4 +1,4 @@
+--- code/old/gfalibs/Makefile	2024-11-12 16:11:22
++++ code/new/gfalibs/Makefile	2024-11-14 14:16:03
+@@ -1,5 +1,5 @@
 -CXX = g++
+-INCLUDE_DIR = -I./include
 +CXX ?= g++
- INCLUDE_DIR = -I./include
++INCLUDE_DIR = -I${PREFIX}/include -I./include -I./include/parallel-hashmap
  WARNINGS = -Wall -Wextra
  
-@@ -8,7 +8,7 @@
+ CXXFLAGS = -g -std=gnu++14 -O3 $(INCLUDE_DIR) $(WARNINGS)
+@@ -8,7 +8,8 @@
  BUILD = build/bin
  SOURCE = src
  INCLUDE = include
 -LDFLAGS :=
++LDFLAGS := -L${PREFIX}/lib -pthread
 +LIBS := -lz
  
  SOURCES = $(addsuffix .o, input-filters input-gfa input-agp gfa gfa-lines log stream-obj uid-generator struct output memory)
  
-@@ -16,7 +16,7 @@
+@@ -16,7 +17,9 @@
  	@
  
  %.o: $(SOURCE)/%.cpp $(INCLUDE)/%.h
 -	$(CXX) $(CXXFLAGS) $(LDFLAGS) -c $(SOURCE)/$(basename $@).cpp -o $@
++	$(CXX) $(CXXFLAGS) $(INCLUDE_DIR) $(LDFLAGS) -c $(SOURCE)/$(basename $@).cpp -o $@ -lz -lpthread
 +	$(CXX) $(CXXFLAGS) $(LDFLAGS) -c $(SOURCE)/$(basename $@).cpp -o $@ $(LIBS)
      
  clean:
  	$(RM) *.o
++
