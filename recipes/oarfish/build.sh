@@ -17,4 +17,4 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 
 # build statically linked binary with Rust
-RUST_BACKTRACE=1 RUSTFLAGS=" cargo install --verbose --root $PREFIX --path .
+RUST_BACKTRACE=1 cargo install --verbose --root $PREFIX --path .
