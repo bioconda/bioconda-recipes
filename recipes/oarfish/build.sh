@@ -12,12 +12,9 @@ else
   export CXX=g++
 fi
 
-alias cc=$CC
-alias cxx=$CXX
-
 curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable --profile=minimal -y
 export PATH="$HOME/.cargo/bin:$PATH"
 
 
 # build statically linked binary with Rust
-RUST_BACKTRACE=1 cargo install --verbose --root $PREFIX --path .
+RUST_BACKTRACE=1 RUSTFLAGS='-C linker=gcc' cargo install --verbose --root $PREFIX --path .
