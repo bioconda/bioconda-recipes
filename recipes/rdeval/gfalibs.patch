@@ -1,23 +1,25 @@
 --- a/gfalibs/Makefile
-+++ b/gfalibs/Makefil
-@@ -1,4 +1,4 @@
++++ b/gfalibs/Makefile
+@@ -1,5 +1,5 @@
 -CXX = g++
+-INCLUDE_DIR = -I./include
 +CXX ?= g++
- INCLUDE_DIR = -I./include
++INCLUDE_DIR = -I./include -I./include/parallel-hashmap
  WARNINGS = -Wall -Wextra
  
-@@ -8,15 +8,17 @@
+ CXXFLAGS = -g -std=gnu++14 -O3 $(INCLUDE_DIR) $(WARNINGS)
+@@ -8,15 +8,14 @@
  BUILD = build/bin
  SOURCE = src
  INCLUDE = include
 -LDFLAGS :=
 +LIBS := -lz
  
- SOURCES = $(addsuffix .o, input-filters input-gfa input-agp gfa gfa-lines log stream-obj uid-generator struct output memory)
+-SOURCES = $(addsuffix .o, input-filters input-gfa input-agp gfa gfa-lines log stream-obj uid-generator struct output memory)
++SOURCES= $(addsuffix .o, gfa gfa-lines input-agp input-filters input-gfa log memory output stream-obj struct uid-generator)
  
  all: $(SOURCES)
-+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
- 	@
+-	@
  
  %.o: $(SOURCE)/%.cpp $(INCLUDE)/%.h
 -	$(CXX) $(CXXFLAGS) $(LDFLAGS) -c $(SOURCE)/$(basename $@).cpp -o $@
@@ -25,4 +27,3 @@
      
  clean:
  	$(RM) *.o
-+
