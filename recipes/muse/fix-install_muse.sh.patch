@@ -1,18 +1,25 @@
 diff --git a/install_muse.sh b/install_muse.sh
-index 7bc2153..a1dfcd3 100755
+index 7bc2153..f8ab6e3 100755
 --- a/install_muse.sh
 +++ b/install_muse.sh
-@@ -5,12 +5,14 @@ make clean
+@@ -4,13 +4,21 @@ make clean
+ 
  mkdir -p lib
  
++if [[ `uname` == "Darwin" ]]; then
++	export TOOL=clang
++else
++	export TOOL=gcc
++fi
++
  # compile boost library
 -cd boost_1_70_0/
 -./bootstrap.sh
 +cd boost-1.86.0/
-+./bootstrap.sh --with-toolset=gcc --prefix="${PREFIX}"
++./bootstrap.sh --with-toolset="${TOOL}" --prefix="${PREFIX}"
  ./b2 --clean
 -./b2
-+./b2 toolset=gcc --layout=system link=static \
++./b2 toolset="${TOOL}" --layout=system link=static \
 +	threading=multi strip=on include="${PREFIX}/include" \
 +	variant=release address-model=64 install
  
@@ -21,7 +28,7 @@ index 7bc2153..a1dfcd3 100755
  cd ..
  
  # compile libtcmalloc
-@@ -22,12 +24,12 @@ fi
+@@ -22,12 +30,12 @@ fi
  
  git clone https://github.com/gperftools/gperftools.git
  cd gperftools
@@ -38,7 +45,7 @@ index 7bc2153..a1dfcd3 100755
  cd ..
  
  # combine htslib
-@@ -42,27 +44,15 @@ cd htslib
+@@ -42,27 +50,15 @@ cd htslib
  git checkout 1.9
  #git submodule update --init --recursive
  autoreconf -i
