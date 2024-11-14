@@ -12,6 +12,9 @@ else
   export CXX=g++
 fi
 
+alias cc=$CC
+alias cxx=$CXX
+
 curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable --profile=minimal -y
 export PATH="$HOME/.cargo/bin:$PATH"
 
