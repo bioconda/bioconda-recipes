@@ -1,0 +1,84 @@
+diff --git a/install_muse.sh b/install_muse.sh
+index 7bc2153..f8ab6e3 100755
+--- a/install_muse.sh
++++ b/install_muse.sh
+@@ -4,13 +4,21 @@ make clean
+ 
+ mkdir -p lib
+ 
++if [[ `uname` == "Darwin" ]]; then
++	export TOOL=clang
++else
++	export TOOL=gcc
++fi
++
+ # compile boost library
+-cd boost_1_70_0/
+-./bootstrap.sh
++cd boost-1.86.0/
++./bootstrap.sh --with-toolset="${TOOL}" --prefix="${PREFIX}"
+ ./b2 --clean
+-./b2
++./b2 toolset="${TOOL}" --layout=system link=static \
++	threading=multi strip=on include="${PREFIX}/include" \
++	variant=release address-model=64 install
+ 
+-cp stage/lib/libboost_iostreams.a ../lib/
++cp -f ${PREFIX}/lib/libboost_iostreams.a ../lib/
+ cd ..
+ 
+ # compile libtcmalloc
+@@ -22,12 +30,12 @@ fi
+ 
+ git clone https://github.com/gperftools/gperftools.git
+ cd gperftools
+-git checkout gperftools-2.9.1
++git checkout gperftools-2.16
+ ./autogen.sh
+-./configure --libdir="$PWD"
+-make -j4
++./configure --libdir="${PWD}" --prefix="${PREFIX}"
++make -j${CPU_COUNT}
+ make install
+-cp libtcmalloc_minimal.a ../lib/
++cp -f libtcmalloc_minimal.a ../lib/
+ cd ..
+ 
+ # combine htslib
+@@ -42,27 +50,15 @@ cd htslib
+ git checkout 1.9
+ #git submodule update --init --recursive
+ autoreconf -i
+-./configure
+-make -j4
+-cp libhts.a ../lib/
++./configure --enable-libcurl --enable-plugins \
++	LDFLAGS="-L${PREFIX}/lib -Wl,-R${PREFIX}/lib" \
++	CPPFLAGS="-I${PREFIX}/include"
++make -j${CPU_COUNT}
++cp -f libhts.a ../lib/
+ 
+ cd ..
+ 
+-make
+-
+-#clean htslib and gperftools and boost libraries
+-rm -r boost_1_70_0/stage
+-
+-chmod -R 755 gperftools
+-rm -r gperftools
+-
+-chmod -R 755 htslib
+-rm -r htslib
+-
+-
+-
+-
+-
+-
+-
+-
++CFLAGS="${CFLAGS} -O3 ${LDFLAGS}" \
++    CC="${CC}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include" \
++    LDFLAGS="${LDFLAGS} -L${PREFIX}/lib" \
++    make -j"${CPU_COUNT}"
