@@ -13,8 +13,12 @@ cp -r STarMir ${SFOLD_DIR}
 
 # modify the sfoldenv file
 cp sfoldenv ${SFOLD_DIR}/sfoldenv
-sed -i "s|SFOLDDIR=.*|SFOLDDIR=${SFOLD_DIR}|g" ${SFOLD_DIR}/sfoldenv
-sed -i "s:/usr/bin/perl:/usr/bin/env perl:" ${SFOLD_DIR}/STarMir/*.pl
-sed -i "s:/bin/perl:/bin/env perl:" ${SFOLD_DIR}/STarMir/*.pl
-sed -i "s:/usr/bin/perl:/usr/bin/env perl:" ${SFOLD_DIR}/STarMir/starmir-param/*.pl
-sed -i "s:/usr/bin/perl:/usr/bin/env perl:" ${SFOLD_DIR}/bin/*.pl
+sed -i.bak "s|SFOLDDIR=.*|SFOLDDIR=${SFOLD_DIR}|g" ${SFOLD_DIR}/sfoldenv
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${SFOLD_DIR}/STarMir/*.pl
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${SFOLD_DIR}/STarMir/starmir-param/*.pl
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${SFOLD_DIR}/bin/*.pl
+
+rm -rf ${SFOLD_DIR}/*.bak
+rm -rf ${SFOLD_DIR}/STarMir/*.bak
+rm -rf ${SFOLD_DIR}/STarMir/starmir-param/*.bak
+rm -rf ${SFOLD_DIR}/bin/*.bak
