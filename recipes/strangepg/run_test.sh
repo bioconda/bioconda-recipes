@@ -3,4 +3,3 @@
 
 strangepg -h 2>/dev/null
 strangepg /dev/mordor 2>/dev/null || [[ $? == 1 ]]
-echo | strawk -f cmd/main.awk
