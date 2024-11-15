@@ -4,7 +4,7 @@ mkdir b2 && cd b2
 
 if [[ "${target_platform}" == osx-* ]]; then
   # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk
-  CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+  export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
   export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
   export CONFIG_ARGS=""
@@ -18,6 +18,9 @@ cmake -S .. -B . \
   -DBUILD_LIBRARY=ON \
   -DPYTHON_VERSION=$(python -c 'import platform; print(platform.python_version())') \
   -DPython_ROOT_DIR="${PREFIX}/bin" \
+  -DBUILD_PYTHON_DOCS=ON \
+  -DBoost_USE_STATIC_LIBS=OFF \
+  -DWITH_AVX=OFF \
   -G Ninja \
   "${CONFIG_ARGS}"
 
