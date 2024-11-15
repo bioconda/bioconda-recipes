@@ -14,3 +14,6 @@ cp -r STarMir ${SFOLD_DIR}
 # modify the sfoldenv file
 cp sfoldenv ${SFOLD_DIR}/sfoldenv
 sed -i "s|SFOLDDIR=.*|SFOLDDIR=${SFOLD_DIR}|g" ${SFOLD_DIR}/sfoldenv
+sed -i "s:/usr/bin/perl:/usr/bin/env perl:" STarMir/*.pl
+sed -i "s:/usr/bin/perl:/usr/bin/env perl:" STarMir/starmir-param/*.pl
+sed -i "s:/usr/bin/perl:/usr/bin/env perl:" bin/*.pl
