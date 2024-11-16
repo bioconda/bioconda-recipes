@@ -12,6 +12,8 @@ files=(polap
 	polap-constants.sh
 	polap-function-set-variables.sh
 	polap-git-hash-version.sh
+	polap-package-common.sh
+	polap-package-mtcontigs.sh
 	polap-parsing.sh
 	polap-test-variables.sh
 	polap-variables-common.sh
@@ -23,6 +25,7 @@ files=(polap
 	run-polap-function-archive.sh
 	run-polap-function-assemble.sh
 	run-polap-function-bioproject.sh
+	run-polap-function-errors.sh
 	run-polap-function-include.sh
 	run-polap-function-log.sh
 	run-polap-function-menus.sh
@@ -32,12 +35,14 @@ files=(polap
 	run-polap-function-polishing.sh
 	run-polap-function-seeds.sh
 	run-polap-function-template.sh
+	run-polap-function-test.sh
 	run-polap-function-utilities.sh
 	run-polap-function-wga.sh
 	run-polap-sh-create-depth-file.sh
 	run-polap-sh-half-cut.sh
 	run-polap-sh-minimap2-paf2tab.sh
 	run-polap-py-find-cc.py
+	run-polap-py-mtdna-find-cycle-with-node-revisits.py
 	run-polap-py-select-mtdna-2-nx-find-circular-path.py
 	run-polap-py-select-mtdna-2-nx-simple-cycles.py
 	run-polap-pairs.R
@@ -45,6 +50,7 @@ files=(polap
 	run-polap-r-blast-mtdna-1-determine-gene.R
 	run-polap-r-bridge.R
 	run-polap-r-cc2mtcontig.R
+	run-polap-r-contig2edge.R
 	run-polap-r-depth-distribution.R
 	run-polap-r-depthfilter-gfa.R
 	run-polap-r-determine-depth-range.R
