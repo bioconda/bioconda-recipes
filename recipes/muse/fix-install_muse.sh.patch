@@ -1,5 +1,5 @@
 diff --git a/install_muse.sh b/install_muse.sh
-index 7bc2153..f8ab6e3 100755
+index 7bc2153..1ef4b13 100755
 --- a/install_muse.sh
 +++ b/install_muse.sh
 @@ -4,13 +4,21 @@ make clean
@@ -16,15 +16,15 @@ index 7bc2153..f8ab6e3 100755
 -cd boost_1_70_0/
 -./bootstrap.sh
 +cd boost-1.86.0/
-+./bootstrap.sh --with-toolset="${TOOL}" --prefix="${PREFIX}"
++./bootstrap.sh --with-toolset="${TOOL}" --prefix="$(pwd)"
  ./b2 --clean
 -./b2
 +./b2 toolset="${TOOL}" --layout=system link=static \
-+	threading=multi strip=on include="${PREFIX}/include" \
++	threading=multi strip=on \
 +	variant=release address-model=64 install
  
 -cp stage/lib/libboost_iostreams.a ../lib/
-+cp -f ${PREFIX}/lib/libboost_iostreams.a ../lib/
++cp -f lib/libboost_iostreams.a ../lib/
  cd ..
  
  # compile libtcmalloc
@@ -45,7 +45,7 @@ index 7bc2153..f8ab6e3 100755
  cd ..
  
  # combine htslib
-@@ -42,27 +50,15 @@ cd htslib
+@@ -42,27 +50,19 @@ cd htslib
  git checkout 1.9
  #git submodule update --init --recursive
  autoreconf -i
@@ -77,8 +77,11 @@ index 7bc2153..f8ab6e3 100755
 -
 -
 -
--
 +CFLAGS="${CFLAGS} -O3 ${LDFLAGS}" \
 +    CC="${CC}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include" \
 +    LDFLAGS="${LDFLAGS} -L${PREFIX}/lib" \
 +    make -j"${CPU_COUNT}"
+ 
++rm -rf htslib
++rm -rf gperftools
++rm -rf boost-1.86.0
