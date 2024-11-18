@@ -1,8 +1,8 @@
 diff --git a/install_muse.sh b/install_muse.sh
-index 7bc2153..e0df53f 100755
+index 7bc2153..8a57cf7 100755
 --- a/install_muse.sh
 +++ b/install_muse.sh
-@@ -4,13 +4,21 @@ make clean
+@@ -4,13 +4,20 @@ make clean
  
  mkdir -p lib
  
@@ -15,10 +15,10 @@ index 7bc2153..e0df53f 100755
  # compile boost library
 -cd boost_1_70_0/
 -./bootstrap.sh
+-./b2 --clean
+-./b2
 +cd boost-1.87.0.beta1/
 +./bootstrap.sh --with-toolset="${TOOL}" --prefix="$(pwd)"
- ./b2 --clean
--./b2
 +./b2 toolset="${TOOL}" --layout=system link=static \
 +	threading=multi strip=on \
 +	variant=release address-model=64 install
@@ -28,7 +28,7 @@ index 7bc2153..e0df53f 100755
  cd ..
  
  # compile libtcmalloc
-@@ -22,12 +30,21 @@ fi
+@@ -22,12 +29,21 @@ fi
  
  git clone https://github.com/gperftools/gperftools.git
  cd gperftools
@@ -55,13 +55,15 @@ index 7bc2153..e0df53f 100755
  cd ..
  
  # combine htslib
-@@ -42,27 +59,19 @@ cd htslib
+@@ -41,28 +57,20 @@ git clone https://github.com/samtools/htslib.git
+ cd htslib
  git checkout 1.9
  #git submodule update --init --recursive
- autoreconf -i
+-autoreconf -i
 -./configure
 -make -j4
 -cp libhts.a ../lib/
++autoreconf -if
 +./configure --enable-libcurl --enable-plugins \
 +	LDFLAGS="-L${PREFIX}/lib -Wl,-R${PREFIX}/lib" \
 +	CPPFLAGS="-I${PREFIX}/include"
