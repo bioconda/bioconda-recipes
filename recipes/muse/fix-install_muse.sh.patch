@@ -1,5 +1,5 @@
 diff --git a/install_muse.sh b/install_muse.sh
-index 7bc2153..96c1d8a 100755
+index 7bc2153..e0df53f 100755
 --- a/install_muse.sh
 +++ b/install_muse.sh
 @@ -4,13 +4,21 @@ make clean
@@ -28,7 +28,7 @@ index 7bc2153..96c1d8a 100755
  cd ..
  
  # compile libtcmalloc
-@@ -22,12 +30,12 @@ fi
+@@ -22,12 +30,21 @@ fi
  
  git clone https://github.com/gperftools/gperftools.git
  cd gperftools
@@ -37,15 +37,25 @@ index 7bc2153..96c1d8a 100755
  ./autogen.sh
 -./configure --libdir="$PWD"
 -make -j4
-+./configure --libdir="${PWD}" --prefix="${PREFIX}"
-+make -j${CPU_COUNT}
- make install
+-make install
 -cp libtcmalloc_minimal.a ../lib/
++if [[ $(uname) == 'Darwin' ]]; then
++	export CFLAGS="$CFLAGS -D_XOPEN_SOURCE"
++	./configure --prefix="${PREFIX}" --libdir="${PWD}" \
++	--disable-debugalloc --disable-libunwind
++	make -j"${CPU_COUNT}"
++	make install
++else
++	./configure --prefix="${PREFIX}" --libdir="${PWD}" \
++	--enable-libunwind --enable-frame-pointers
++	make -j"${CPU_COUNT}"
++	make install
++fi
 +cp -f libtcmalloc_minimal.a ../lib/
  cd ..
  
  # combine htslib
-@@ -42,27 +50,19 @@ cd htslib
+@@ -42,27 +59,19 @@ cd htslib
  git checkout 1.9
  #git submodule update --init --recursive
  autoreconf -i
