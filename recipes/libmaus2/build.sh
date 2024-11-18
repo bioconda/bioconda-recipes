@@ -1,6 +1,6 @@
 #!/bin/bash
 set -eu
-export LIBS="-lstdc++fs -lcurl -lz"
+export LIBS="-lstdc++fs -lcurl -lz -ldeflate"
 
 autoreconf -if
 autoupdate
