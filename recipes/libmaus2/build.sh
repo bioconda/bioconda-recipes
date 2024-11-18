@@ -1,6 +1,6 @@
 #!/bin/bash
 set -eu
-export LIBS="-lstdc++fs -lcurl"
+export LIBS="-lstdc++fs -lcurl -lz"
 
 autoreconf -if
 autoupdate
@@ -8,7 +8,7 @@ autoupdate
 	LDFLAGS="${LDFLAGS} -L${PREFIX}/lib" \
 	CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include" \
 	--with-snappy --with-io_lib --with-libdeflate \
-	--with-libsecrecy --with-nettle --with-parasail \
+	--with-libsecrecy --with-nettle \
 	--with-lzma --with-gmp
 
 cat config.log
