@@ -1,0 +1,48 @@
+{% set name = "sprinter" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/zaccaria-lab/{{ name }}/archive/v{{ version }}.zip
+  sha256: e205cc6888f87fc2f345dad698308bc6397f6292ae2f4122d4c82d72a836e706
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - sprinter = sprinter.bin.sprinter:main
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+
+requirements:
+  host:
+    - python >=3
+    - pip
+  run:
+    - python >=3
+    - numpy <=1.26.4
+    - pandas
+    - scipy
+    - statsmodels
+    - hmmlearn >=0.2.7
+    - matplotlib
+    - pybedtools
+    - scikit-learn
+    - seaborn
+    - numba
+
+test:
+  commands:
+    - sprinter -h
+
+about:
+  home: https://github.com/zaccaria-lab/sprinter
+  license: Custom, modified BSD-3
+  summary: "Single-cell Proliferation Rate Inference in Non-homogeneous Tumours through Evolutionary Routes (SPRINTER)"
+  description: |
+	SPRINTER is an algorithm that uses single-cell whole-genome DNA sequencing data 
+        to enable the accurate identification of actively replicating cells in both 
+	the S and G2 phases of the cell cycle and their assignment to distinct 
+	tumour clones, thus providing a proxy to estimate clone-specific proliferation rates.
