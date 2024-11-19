@@ -12,6 +12,6 @@ ln -s $TGT/cuppa ${PREFIX}/bin/
 chmod 0755 "${PREFIX}/bin/cuppa"
 
 mkdir -p /tmp/cuppa_jar/
-RUN unzip -n cuppa*.jar -d /tmp/cuppa_jar/
+unzip -n cuppa*.jar -d /tmp/cuppa_jar/
 ${PYTHON} -m pip install --no-build-isolation --no-deps --no-cache-dir -vvv /tmp/cuppa_jar/pycuppa/
-RUN rm -r /tmp/cuppa_jar/
+rm -r /tmp/cuppa_jar/
