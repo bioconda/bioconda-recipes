@@ -11,7 +11,7 @@ import os
 import sys
 import subprocess
 from os import access, getenv, X_OK
-jar_file = 'ClipAndMerge-1.7.8.jar'
+jar_file = 'ClipAndMerge-1.7.9.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 

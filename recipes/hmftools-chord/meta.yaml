@@ -1,0 +1,33 @@
+{% set version = "2.1.0_beta" %}
+{% set beta_suffix = ".1" %}
+{% set sha256 = "25a4dfd8a0ab436e0f23d94e77cebb59a0830a052a90c823844b798bd409bfc3" %}
+
+package:
+  name: hmftools-chord
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/hartwigmedical/hmftools/releases/download/chord-v{{ version }}/chord_v{{ version }}{{ beta_suffix }}.jar
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 2
+  run_exports:
+    - {{ pin_subpackage("hmftools-chord", max_pin="x.x") }}
+
+requirements:
+  run:
+    - openjdk >=8
+    - r-base
+    - r-randomforest
+
+test:
+  commands:
+    - 'chord -version | grep CHORD'
+
+about:
+  home: https://github.com/hartwigmedical/hmftools/blob/master/chord/
+  license: GPL-3.0-only
+  license_family: GPL3
+  summary: Predict HRD using somatic mutations contexts
