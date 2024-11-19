@@ -1,21 +1,34 @@
+{% set name = "strelka" %}
 {% set version = "2.9.10" %}
-{% set sha256 = "bde30e34e06548c876ff63658efd3d7e6a2e7b465909243ab7e2ed599f83312b" %}
+{% set sha256 = "45e78efec6e5272697f1d0a95851c7ae0d623dc8f93846e11fe37f15da9f1e30" %}
 
 package:
-  name: strelka
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/Illumina/strelka/releases/download/v{{ version }}/strelka-{{ version }}.centos6_x86_64.tar.bz2
-  sha256: '{{ sha256 }}'
+  url: https://github.com/Illumina/strelka/releases/download/v{{ version }}/{{ name }}-{{ version }}.release_src.tar.bz2
+  sha256: {{ sha256 }}
+  patches:
+    - boost.cmake.patch
 
 build:
-  number: 1
-  skip: true # [osx]
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('strelka', max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+  host:
+    - doxygen
+    - boost-cpp
+    - zlib
   run:
-    - python 2.7.*
+    - python <3
+    - boost-cpp
 
 test:
   commands:
@@ -23,13 +36,20 @@ test:
     - configureStrelkaSomaticWorkflow.py -h
 
 about:
-  home: https://github.com/Illumina/strelka
-  license: GPL-3.0
-  license_family: GPL
-  summary: Strelka calls somatic and germline small variants from mapped sequencing reads
+  home: "https://github.com/Illumina/strelka"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "LICENSE.txt"
+  summary: "Strelka calls somatic and germline small variants from mapped sequencing reads."
+  dev_url: "https://github.com/Illumina/strelka"
+  doc_url: "https://github.com/Illumina/strelka/blob/v2.9.x/docs/userGuide/README.md"
 
 extra:
   identifiers:
     - biotools:strelka
-  skip-lints:
-    - should_be_noarch_generic
+    - usegalaxy-eu:strelka_germline
+    - usegalaxy-eu:strelka_somatic
+    - doi:10.1038/s41592-018-0051-x
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

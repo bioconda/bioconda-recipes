@@ -1,0 +1,24 @@
+diff --git a/src/cmake/boost.cmake b/src/cmake/boost.cmake
+index 9b65798..9420db7 100644
+--- a/src/cmake/boost.cmake
++++ b/src/cmake/boost.cmake
+@@ -44,7 +44,9 @@ macro (initBoostParams)
+     # for test, so we need two lists now:
+     set (THIS_BOOST_BUILD_COMPONENTS date_time filesystem program_options
+                                      serialization system timer chrono test)
+-    set (Boost_USE_STATIC_LIBS ON)
++    set( Boost_USE_STATIC_LIBS OFF )
++    set( Boost_USE_MULTITHREADED TRUE )
++    set( Boost_DEBUG ON )
+     if (NOT WIN32)
+         # bjam on windows ignores this setting so skip for win32:
+         set (Boost_USE_MULTITHREADED OFF)
+@@ -108,6 +110,8 @@ endif ()
+ find_package(Boost ${THIS_BOOST_VERSION})
+ if (Boost_FOUND)
+     find_package(Boost ${THIS_BOOST_VERSION} COMPONENTS ${THIS_BOOST_COMPONENTS} QUIET)
++    include_directories(${Boost_INCLUDE_DIRS})
++    LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
+ endif ()
+ 
+ # CMAKE_PARALLEL is only used if boost is found, but moving the setting here (outside of the if below) supresses a cmake warning:
