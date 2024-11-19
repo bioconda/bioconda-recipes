@@ -1,10 +1,21 @@
-#!/bin/bash -euo
+#!/bin/bash
 
-# Add workaround for SSH-based Git connections from Rust/cargo.  See https://github.com/rust-lang/cargo/issues/2078 for details.
+set -xeuo
+
 # We set CARGO_HOME because we don't pass on HOME to conda-build, thus rendering the default "${HOME}/.cargo" defunct.
-export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
+export CARGO_HOME="$(pwd)/.cargo"
 
 # build statically linked binary with Rust
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
-RUST_BACKTRACE=1 cargo install --verbose --locked --no-track --root $PREFIX --path .
+
+case $(uname -m) in
+    aarch64 | arm64)
+        FEATURES="--features neon --no-default-features"
+        ;;
+    *)
+        FEATURES=""
+        ;;
+esac
+
+RUST_BACKTRACE=1 cargo install --verbose --locked --no-track --root $PREFIX --path . ${FEATURES}
 cp scripts/* $PREFIX/bin

@@ -1,0 +1,29 @@
+diff --git a/src/Makefile b/src/Makefile
+index 6272ad5..473407a 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -1,10 +1,10 @@
+ .PHONY: all clean 
+-CXX=									g++
+-CXXFLAGS=							-g -Wall -Wno-unused-function -std=c++17 -O2
+-PROG=									../fmsi
+-INCLUDES-PATH?=.
++CXX=									${CXX}
++CXXFLAGS=							-g -Wall -Wno-unused-function -std=c++17 -O3
++PROG=									${PREFIX}/bin/fmsi
++INCLUDES-PATH?=							${PREFIX}
+ INCLUDES=							-I$(INCLUDES-PATH)/include -L$(INCLUDES-PATH)/lib 
+-LIBS=									-lz -lsdsl -ldivsufsort -ldivsufsort64
++LIBS+=									-lz -lsdsl -ldivsufsort -ldivsufsort64 -L${PREFIX}/lib
+ 
+ all:$(PROG)
+ 
+@@ -14,7 +14,7 @@ include/sdsl/suffix_arrays.hpp: sdsl-lite/build/Makefile
+ 	$(MAKE) -C sdsl-lite/build install
+ 
+ sdsl-lite/build/Makefile:
+-	cd sdsl-lite/build && cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX=../.. ..
++	cd sdsl-lite/build && cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX=${PREFIX} ..
+ 
+ 
+ $(PROG): $(wildcard *.cpp *.c *.h) ./include/sdsl/suffix_arrays.hpp version.h
