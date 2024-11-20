@@ -4,6 +4,8 @@ wget https://github.com/boostorg/boost/releases/download/boost-1.86.0/boost-1.86
 
 mv boost-1.86.0-cmake.tar.gz vendor/boost-1.55-bamrc.tar.gz
 
+ln -sf $(which libtool) "${PREFIX}/bin/libtool"
+
 # Needed for building utils dependency
 export INCLUDES="-I{PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
@@ -30,4 +32,4 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 cmake --build build -j "${CPU_COUNT}" -v
 
 install -d "$PREFIX/bin"
-install -v -m 0755 bin/bam-readcount "$PREFIX/bin"
+install -v -m 0755 build/bin/bam-readcount "$PREFIX/bin"
