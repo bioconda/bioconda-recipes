@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 make -C src BUILD_DIR="$(pwd)" \
 	TARGET_DIR="${PREFIX}" \
 	CXX="${CXX}" \
