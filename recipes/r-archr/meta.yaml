@@ -1,4 +1,4 @@
-{% set version = '1.0.2' %}
+{% set version = '1.0.3' %}
 {% set github = 'https://github.com/GreenleafLab/ArchR' %}
 {% set posix = 'm2-' if win else '' %}
 
@@ -8,9 +8,7 @@ package:
 
 source:
   url: {{ github }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: afe4d82975e9d75018e9ec9fda3d116f34f99ad1d45990cbc5a2be7dea8df352
-  patches:
-    - patches/0001-cap-threads.patch
+  sha256: 9c07c785a095062a998ed94c65df17a58f273d0d64062c14210f0a2c491304cf
 
 build:
   number: 0
@@ -26,7 +24,7 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - r-base =4.1
+    - r-base
     - bioconductor-biocgenerics
     - bioconductor-biostrings
     - bioconductor-chromvar
@@ -36,23 +34,31 @@ requirements:
     - bioconductor-rhdf5
     - bioconductor-rsamtools
     - bioconductor-s4vectors >=0.9.25
+    - bioconductor-sparsematrixstats
     - bioconductor-summarizedexperiment
+    - r-chromvarmotifs
     - r-data.table
-    - r-ggplot2
+    - r-devtools
+    - r-ggplot2 <3.5
     - r-ggrepel
     - r-gridextra
     - r-gtable
     - r-gtools
+    - r-harmony
     - r-magrittr
     - r-matrix
     - r-matrixstats
     - r-nabor
     - r-plyr
+    - r-presto
     - r-rcpp >=0.12.16
+    - r-rcpparmadillo
+    - r-seurat
+    - r-seuratobject
     - r-stringr
     - r-uwot
   run:
-    - r-base =4.1
+    - r-base
     - bioconductor-biocgenerics
     - bioconductor-biostrings
     - bioconductor-chromvar
@@ -62,36 +68,51 @@ requirements:
     - bioconductor-rhdf5
     - bioconductor-rsamtools
     - bioconductor-s4vectors >=0.9.25
+    - bioconductor-sparsematrixstats
     - bioconductor-summarizedexperiment
+    - r-chromvarmotifs
     - r-data.table
-    - r-ggplot2
+    - r-devtools
+    - r-ggplot2 <3.5
+    ## ggrastr is optional lib, but plotting defaults assume it
+    - r-ggrastr
     - r-ggrepel
     - r-gridextra
     - r-gtable
     - r-gtools
+    - r-harmony
     - r-magrittr
     - r-matrix
     - r-matrixstats
     - r-nabor
     - r-plyr
+    - r-presto
     - r-rcpp >=0.12.16
+    - r-rcpparmadillo
+    - r-seurat
+    - r-seuratobject
     - r-stringr
     - r-uwot
 
 test:
+  requires:
+    - r-testthat
+    - macs2
+    - bioconductor-bsgenome.hsapiens.ucsc.hg19
   commands:
     - $R -e "library('ArchR')"
+    ## NB: this tightly-couples to `macs2` coming from `test.requires` and avoids running against the container
+    - if command -v macs2; then $R -e "testthat::test_package('ArchR', stop_on_failure=TRUE)"; fi
 
 about:
   home: https://www.archrproject.com
   dev_url: {{ github }}
   doc_url: https://www.archrproject.com/bookdown/index.html
-  license: GPL-2.0-or-later
+  license: MIT
   summary: This package is designed to streamline scATAC analyses in R.
-  license_family: GPL2
+  license_family: MIT
   license_file:
-    - {{ environ['PREFIX'] }}/lib/R/share/licenses/GPL-2
-    - {{ environ['PREFIX'] }}/lib/R/share/licenses/GPL-3
+    - {{ environ['PREFIX'] }}/lib/R/share/licenses/MIT
 
 extra:
   recipe-maintainers:
