@@ -1,0 +1,3355 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f4e3d4b..7e90114 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,7 +1,7 @@
+ # For Debian currently with
+ #
+ #   cd build
+-#   cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DZIG=OFF -DWFA_GITMODULE=OFF ..
++#   cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DZIG=OFF ..
+ #   cmake --build .
+ #   ctest .
+ #   cmake --install .
+@@ -38,8 +38,7 @@ option(PROFILING "Enable profiling" OFF)
+ option(GPROF "Enable gprof profiling" OFF)
+ option(ASAN "Use address sanitiser" OFF)
+ option(ZIG "Set to OFF to disable the zig code" ON)
+-option(WFA_GITMODULE "Force local git submodule for WFA2LIB" ON) # disable in distros, you may need to add path to WFA_INCLUDE_DIRS
+-
++option(WFA_GITMODULE "Force local git submodule for WFA2LIB" OFF) # disabled by default now
+ include(CheckIPOSupported) # adds lto
+ check_ipo_supported(RESULT ipo_supported OUTPUT output)
+ 
+@@ -76,14 +75,14 @@ if (${CMAKE_BUILD_TYPE} MATCHES Release)
+ endif()
+ 
+ if ((${CMAKE_BUILD_TYPE} MATCHES Release) OR (${CMAKE_BUILD_TYPE} MATCHES RelWithDebInfo))
+-  set (CMAKE_C_FLAGS "${OpenMP_C_FLAGS} ${EXTRA_FLAGS}")
+-  set (CMAKE_CXX_FLAGS "${OpenMP_CXX_FLAGS} ${EXTRA_FLAGS}")
++  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_FLAGS}")
++  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_FLAGS}")
+ endif ()
+ 
+ if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
+   set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_FLAGS}")
+   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_FLAGS}")
+-  add_definitions(-Wfatal-errors)
++  add_definitions(-Wfatal-errors) # stop after first error
+ endif ()
+ 
+ if (ASAN)
+@@ -112,16 +111,26 @@ include_directories(include)
+ include_directories(contrib/fastahack)
+ include_directories(contrib/intervaltree)
+ include_directories(contrib/smithwaterman)
+-include_directories(contrib/multichoose)
++# include_directories(contrib/multichoose) merged with vcflib
+ include_directories(contrib/filevercmp)
+ include_directories(contrib/c-progress-bar)
+ 
+-if(NOT HTSLIB_FOUND)
++if(HTSLIB_FOUND)
++  list(JOIN HTSLIB_CFLAGS " " HTSLIB_CFLAGS_STRING)
++  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${HTSLIB_CFLAGS_STRING}")
++  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${HTSLIB_CFLAGS_STRING}")
++else(HTSLIB_FOUND)
++  message(STATUS "Using included htslib")
+   set(HTSLIB_LOCAL contrib/tabixpp/htslib)
+-  set(TABIX_FOUND OFF) # also build tabixpp if htslib is missing
++  set(TABIXPP_FOUND OFF) # also build tabixpp if htslib is missing
+ endif()
+ 
+-if (NOT TABIX_FOUND)
++if(TABIXPP_FOUND)
++  list(JOIN TABIXPP_CFLAGS " " TABIXPP_CFLAGS_STRING)
++  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${TABIXPP_CFLAGS_STRING}")
++  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TABIXPP_CFLAGS_STRING}")
++else(TABIXPP_FOUND)
++  message(STATUS "Using included tabixpp")
+   set(TABIXPP_LOCAL contrib/tabixpp)
+   include_directories(contrib/tabixpp)
+   set(tabixpp_SOURCE
+@@ -135,24 +144,28 @@ endif()
+ 
+ file(GLOB INCLUDES
+   src/*.h*
+-  contrib/multichoose/*.h*
++  # contrib/multichoose/*.h*
+   contrib/intervaltree/*.h*
+   contrib/smithwaterman/*.h*
+   contrib/fastahack/*.h*
+   contrib/filevercmp/*.h*
+   )
+ 
++set(vcfwfa_SOURCE
++    src/legacy.cpp # introduces a WFA dependency
++    src/vcf-wfa.cpp
++)
++
+ set(vcflib_SOURCE
++    ${vcfwfa_SOURCE}
+     src/vcf-c-api.cpp
+-    src/legacy.cpp
+-    src/vcf-wfa.cpp
+     src/Variant.cpp
++    src/canonicalize.cpp
+     src/rnglib.cpp
+     src/var.cpp
+     src/pdflib.cpp
+     src/cdflib.cpp
+     src/split.cpp
+-    src/legacy.cpp
+     src/rkmh.cpp
+     src/murmur3.cpp
+     src/LeftAlign.cpp
+@@ -217,16 +230,11 @@ set(BINS
+     vcfsamplediff
+     vcfremoveaberrantgenotypes
+     vcfrandom
+-    vcfparsealts
+-    vcfstats
+     vcfflatten
+     vcfprimers
+     vcfnumalt
+-    vcfcleancomplex
+     vcfintersect
+     vcfannotate
+-    vcfallelicprimitives
+-    vcfwave
+     vcfoverlay
+     vcfaddinfo
+     vcfkeepinfo
+@@ -238,7 +246,6 @@ set(BINS
+     vcfrandomsample
+     vcfentropy
+     vcfglxgt
+-    vcfroc
+     vcfcheck
+     vcfstreamsort
+     vcfuniq
+@@ -265,6 +272,16 @@ set(BINS
+     vcfcreatemulti
+ )
+ 
++
++set(WFBINS # Introduce wavefront dependency
++    vcfallelicprimitives
++    vcfcleancomplex
++    vcfparsealts
++    vcfroc
++    vcfstats
++    vcfwave
++  )
++
+ set(SCRIPTS
+     bed2region
+     bgziptabix
+@@ -359,19 +376,20 @@ if (HTSLIB_LOCAL)
+ endif(HTSLIB_LOCAL)
+ 
+ if(WFA_GITMODULE)
++  message(STATUS "Using included libwfa")
+   set(WFA_INCLUDE_DIRS ${WFA_LOCAL})
+-  # add_subdirectory(${WFA_LOCAL} EXCLUDE_FROM_ALL)
+   add_subdirectory(${WFA_LOCAL})
+   set(WFALIB wfa2) # pick up the wfa2 lib target from the included CMakeLists.txt
+ else(WFA_GITMODULE)
+   include_directories($ENV{CMAKE_PREFIX_PATH}/include/wfa2lib)
+   set(WFA_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/wfa2lib)
+-  find_library(WFALIB wfa2 wfa) # distro search for shared lib
+-  if(NOT WFALIB)
+-    message(STATUS "ERROR: Can not find libfwa! Make sure it is installed or use the git submodule instead")
+-  endif()
++  find_library(WFALIB wfa2 wfa REQUIRED) # distro search for shared lib
+ endif(WFA_GITMODULE)
+ 
++# if(NOT WFALIB)
++#   message(STATUS "ERROR: Can not find wfa2lib! Make sure it is installed or use the git submodule instead")
++# endif()
++
+ include_directories(${WFA_INCLUDE_DIRS})
+ MESSAGE(STATUS "WFA using include ${WFA_INCLUDE_DIRS}")
+ 
+@@ -441,13 +459,12 @@ if (NOT BUILD_ONLY_LIB)
+     add_dependencies(${BIN} vcflib)
+     target_link_libraries(${BIN} PUBLIC ${vcflib_LIBS} vcflib)
+   endforeach(BIN ${BINS})
+-  # These binaries include WFALIB
+-  target_link_libraries(vcfallelicprimitives PUBLIC ${WFALIB})
+-  target_link_libraries(vcfcleancomplex PUBLIC ${WFALIB})
+-  target_link_libraries(vcfparsealts PUBLIC ${WFALIB})
+-  target_link_libraries(vcfroc PUBLIC ${WFALIB})
+-  target_link_libraries(vcfstats PUBLIC ${WFALIB})
+-  target_link_libraries(vcfwave PUBLIC ${WFALIB})
++  foreach(WFBIN ${WFBINS})
++    add_executable(${WFBIN} src/${WFBIN}.cpp ${vcfwfa_SOURCE})
++    add_dependencies(${WFBIN} vcflib)
++    target_link_libraries(${WFBIN} PUBLIC ${vcflib_LIBS} vcflib)
++    target_link_libraries(${WFBIN} PUBLIC ${vcflib_LIBS} ${WFALIB})
++  endforeach(WFBIN ${BINS})
+   install(TARGETS ${BINS} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+ 
+   # ---- Copy scripts
+@@ -578,7 +595,8 @@ endif (PANDOC)
+ # ---- Install
+ 
+ install(TARGETS vcflib ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
++install(TARGETS ${WFALIB} ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
+ 
+-install(FILES ${INCLUDES} DESTINATION include)
++install(FILES ${INCLUDES} DESTINATION include/vcflib)
+ 
+ install(DIRECTORY ${CMAKE_SOURCE_DIR}/man/ DESTINATION ${CMAKE_INSTALL_PREFIX}/man/man1)
+diff --git a/doc/vcfallelicprimitives.md b/doc/vcfallelicprimitives.md
+index ebe570d..4e64c24 100644
+--- a/doc/vcfallelicprimitives.md
++++ b/doc/vcfallelicprimitives.md
+@@ -55,14 +55,14 @@ WARNING: this tool is considered legacy and is only retained for older
+ workflows.  It will emit a warning!  Even though it can use the WFA
+ you should use [vcfwave](./vcfwave.md) instead.
+ >
+-Realign reference and alternate alleles with WFA or SW, parsing out
++Realign reference and alternate alleles with SW or WF, parsing out
+ the primitive alleles into multiple VCF records. New records have IDs
+ that reference the source record ID.  Genotypes are handled. Deletion
+ alleles will result in haploid (missing allele) genotypes.
+ >
+ options:
+-    -a, --algorithm TYPE    Choose algorithm (default) Wave front or (obsolete)
+-                            Smith-Waterman [WF|SW] algorithm
++    -a, --algorithm TYPE    Choose algorithm SW (Smith-Waterman) or WF wavefront
++                            (default: WF)
+     -m, --use-mnps          Retain MNPs as separate events (default: false).
+     -t, --tag-parsed FLAG   Annotate decomposed records with the source record
+                             position (default: ORIGIN).
+@@ -305,4 +305,4 @@ Output produced by test/tests/realign.py
+ 
+ # LICENSE
+ 
+-Copyright 2011-2022 (C) Erik Garrison, Pjotr Prins and vcflib contributors. MIT licensed.
++Copyright 2011-2024 (C) Erik Garrison, Pjotr Prins and vcflib contributors. MIT licensed.
+diff --git a/doc/vcfwave.md b/doc/vcfwave.md
+index e864a83..1eba382 100644
+--- a/doc/vcfwave.md
++++ b/doc/vcfwave.md
+@@ -113,12 +113,12 @@ This aligns and adjusts the genotypes accordingly splitting into multiple record
+ ```python
+ 
+ >>> sh("../build/vcfwave -L 1000 ../samples/10158243.vcf|grep -v ^\#")
+-grch38#chr4     10158244        >3655>3662_1    CCCCCACCCCCAC   C       60      .       AC=1;AF=0.011236;AN=89;AT=>3655>3656>3657>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=12;INV=0;TYPE=del        GT      0|0     0|0     0|0     0|0     1|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0
+-grch38#chr4     10158244        >3655>3662_2    CCCCCACCCCCACC  C       60      .       AC=3;AF=0.033708;AN=89;AT=>3655>3656>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=13;INV=0;TYPE=del     GT      0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     1|0     0|1     0|0     0|0     0|0     0|0     0|0     0|0     0|1     0|0     0
+-grch38#chr4     10158245        >3655>3662_3    CCCCACCCCCACC   C       60      .       AC=64;AF=0.719101;AN=89;AT=>3655>3656>3657>3658>3659>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=12;INV=0;TYPE=del     GT      0|0     1|1     1|1     1|0     0|1     0|0     0|1     0|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     0|0     1|1     1|1     1|1     1|0     1|0     1|0     1|0     1|1     1|1     1|0     1|1     1|1     0|0     1|0     1|1     0|1     1|1     1|1     0|1     1|0     1|1     1|1     0|1     1|1     1|1     1|0     1|0     1|1     0
+-grch38#chr4     10158251        >3655>3662_4    CCCCACC C       60      .       AC=3;AF=0.033708;AN=89;AT=>3655>3656>3657>3658>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=6;INV=0;TYPE=del    GT      0|0     0|0     0|0     0|0     0|0     0|1     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     1|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|1     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0
+-grch38#chr4     10158256        >3655>3662_5    CC      C       60      .       AC=2;AF=0.022472;AN=89;AT=>3655>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=1;INV=0;TYPE=del   GT      0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|1     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     1|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0
+-grch38#chr4     10158257        >3655>3662_6    C       A       60      .       AC=1;AF=0.011236;AN=89;AT=>3655>3656>3657>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=1;INV=0;TYPE=snp GT      0|0     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     0
++grch38#chr4     10158244        >3655>3662_1    CCCCCACCCCCAC   C       60      .       AC=1;AF=0.011236;AN=89;AT=>3655>3656>3657>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=12;TYPE=del        GT      0|0     0|0     0|0     0|0     1|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0
++grch38#chr4     10158244        >3655>3662_2    CCCCCACCCCCACC  C       60      .       AC=3;AF=0.033708;AN=89;AT=>3655>3656>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=13;TYPE=del     GT      0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     1|0     0|1     0|0     0|0     0|0     0|0     0|0     0|0     0|1     0|0     0
++grch38#chr4     10158245        >3655>3662_3    CCCCACCCCCACC   C       60      .       AC=64;AF=0.719101;AN=89;AT=>3655>3656>3657>3658>3659>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=12;TYPE=del     GT      0|0     1|1     1|1     1|0     0|1     0|0     0|1     0|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     0|0     1|1     1|1     1|1     1|0     1|0     1|0     1|0     1|1     1|1     1|0     1|1     1|1     0|0     1|0     1|1     0|1     1|1     1|1     0|1     1|0     1|1     1|1     0|1     1|1     1|1     1|0     1|0     1|1     0
++grch38#chr4     10158251        >3655>3662_4    CCCCACC C       60      .       AC=3;AF=0.033708;AN=89;AT=>3655>3656>3657>3658>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=6;TYPE=del    GT      0|0     0|0     0|0     0|0     0|0     0|1     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     1|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|1     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0
++grch38#chr4     10158256        >3655>3662_5    CC      C       60      .       AC=2;AF=0.022472;AN=89;AT=>3655>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=1;TYPE=del   GT      0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|1     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     1|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0
++grch38#chr4     10158257        >3655>3662_6    C       A       60      .       AC=1;AF=0.011236;AN=89;AT=>3655>3656>3657>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=1;TYPE=snp GT      0|0     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     0
+ 
+ 
+ ```
+@@ -151,19 +151,19 @@ From
+ 
+ ```
+ a       281     >1>9    AGCCGGGGCAGAAAGTTCTTCCTTGAATGTGGTCATCTGCATTTCAGCTCAGGAATCCTGCAAAAGACAG  CTGTCTTTTGCAGGATTCCTGTGCTGAAATGCAGATGACCGCATTCAAGGAAGAACTATCTGCCCCGGCT     60      .       AC=1;AF=1;AN=1;AT=>1>2>3>4>5>6>7>8>9,>1<8>10<6>11<4>12<2>9;NS=1;LV=0       GT      1
++
+ ```
+ 
+ To
+ 
+ ```python
+->>> sh("../build/vcfwave ../samples/inversion.vcf|grep -v ^\#|head -3")
+-a       293     >1>9_1  A       T       60      .       AC=1;AF=1.000000;AN=1;AT=>1>2>3>4>5>6>7>8>9;NS=1;LV=0;ORIGIN=a:281;LEN=1;INV=1;TYPE=snp GT      1
+-a       310     >1>9_2  T       C       60      .       AC=1;AF=1.000000;AN=1;AT=>1>2>3>4>5>6>7>8>9;NS=1;LV=0;ORIGIN=a:281;LEN=1;INV=1;TYPE=snp GT      1
+-a       329     >1>9_3  T       A       60      .       AC=1;AF=1.000000;AN=1;AT=>1>2>3>4>5>6>7>8>9;NS=1;LV=0;ORIGIN=a:281;LEN=1;INV=1;TYPE=snp GT      1
+-
++>>> sh("../build/vcfwave ../samples/inversion.vcf|grep INV")
++##INFO=<ID=INV,Number=0,Type=Flag,Description="Inversion detected">
++a       281     >1>9    AGCCGGGGCAGAAAGTTCTTCCTTGAATGTGGTCATCTGCATTTCAGCTCAGGAATCCTGCAAAAGACAG  CTGTCTTTTGCAGGATTCCTGTGCTGAAATGCAGATGACCGCATTCAAGGAAGAACTATCTGCCCCGGCT  60      .       AC=1;AF=1.000000;AN=1;AT=>1>2>3>4>5>6>7>8>9;NS=1;LV=0;LEN=70;INV=YES;TYPE=mnp  GT      1
+ 
+ ```
+ 
++Note the `INV=YES' info.
+ 
+ # LICENSE
+ 
+diff --git a/guix.scm b/guix.scm
+index 9feb518..8b181ce 100644
+--- a/guix.scm
++++ b/guix.scm
+@@ -58,7 +58,7 @@
+   (gnu packages ruby)
+   (gnu packages time)
+   (gnu packages tls)
+-  (gnu packages zig)
++  ;; (gnu packages zig)
+   (srfi srfi-1)
+   (ice-9 popen)
+   (ice-9 rdelim))
+@@ -75,26 +75,26 @@
+     (source (local-file %source-dir #:recursive? #t))
+     (build-system cmake-build-system)
+     (inputs
+-     `(("autoconf" ,autoconf) ;; htslib build requirement
+-       ("automake" ,automake) ;; htslib build requirement
+-       ("openssl" ,openssl) ;; htslib build requirement
+-       ("curl" ,curl) ;; htslib build requirement
+-       ("fastahack" ,fastahack)
+-       ;; ("gcc" ,gcc-11)    ;; test against latest
++     `(("autoconf" ,autoconf)   ;; htslib build requirement
++       ("automake" ,automake)   ;; htslib build requirement
++       ("openssl" ,openssl)     ;; htslib build requirement
++       ("curl" ,curl)           ;; htslib build requirement
++       ("fastahack" ,fastahack) ;; dev version not in Debian
++       ;; ("gcc" ,gcc-13)       ;; test against latest - won't build python bindings
+        ("gdb" ,gdb)
+        ("htslib" ,htslib)
+-       ("pandoc" ,pandoc) ;; for generation man pages
++       ("pandoc" ,pandoc)       ;; for generation man pages
+        ("perl" ,perl)
+        ("python" ,python)
+        ("python-pytest" ,python-pytest)
+        ("pybind11" ,pybind11)
+-       ("ruby" ,ruby) ;; for generating man pages
+-       ("smithwaterman" ,smithwaterman)
++       ("ruby" ,ruby)           ;; for generating man pages
++       ("smithwaterman" ,smithwaterman) ;; dev version not in Debian
+        ("tabixpp" ,tabixpp)
+        ("time" ,time) ;; for tests
+-       ("wfa2-lib" ,wfa2-lib)
++       ("wfa2-lib" ,wfa2-lib) ; optional
+        ("xz" ,xz)
+-       ("zig" ,zig) ;; note we use zig-0.9.1
++       ;; ("zig" ,zig)
+        ("zlib" ,zlib)))
+     (native-inputs
+      `(("pkg-config" ,pkg-config)))
+diff --git a/man/vcfallelicprimitives.1 b/man/vcfallelicprimitives.1
+index 1867d66..1e676e1 100644
+--- a/man/vcfallelicprimitives.1
++++ b/man/vcfallelicprimitives.1
+@@ -62,14 +62,14 @@ WARNING: this tool is considered legacy and is only retained for older
+ workflows.  It will emit a warning!  Even though it can use the WFA
+ you should use [vcfwave](./vcfwave.md) instead.
+ >
+-Realign reference and alternate alleles with WFA or SW, parsing out
++Realign reference and alternate alleles with SW or WF, parsing out
+ the primitive alleles into multiple VCF records. New records have IDs
+ that reference the source record ID.  Genotypes are handled. Deletion
+ alleles will result in haploid (missing allele) genotypes.
+ >
+ options:
+-    -a, --algorithm TYPE    Choose algorithm (default) Wave front or (obsolete)
+-                            Smith-Waterman [WF|SW] algorithm
++    -a, --algorithm TYPE    Choose algorithm SW (Smith-Waterman) or WF wavefront
++                            (default: WF)
+     -m, --use-mnps          Retain MNPs as separate events (default: false).
+     -t, --tag-parsed FLAG   Annotate decomposed records with the source record
+                             position (default: ORIGIN).
+@@ -341,7 +341,7 @@ Now where does TAGAATCCCAATTGATGG come from?
+ Output produced by test/tests/realign.py
+ .SH LICENSE
+ .PP
+-Copyright 2011-2022 (C) Erik Garrison, Pjotr Prins and vcflib
++Copyright 2011-2024 (C) Erik Garrison, Pjotr Prins and vcflib
+ contributors.
+ MIT licensed.
+ .SH AUTHORS
+diff --git a/man/vcfwave.1 b/man/vcfwave.1
+index cf20425..c3e89dc 100644
+--- a/man/vcfwave.1
++++ b/man/vcfwave.1
+@@ -141,12 +141,12 @@ multiple records, one for each unique allele found in the alignments:
+ \f[C]
+ 
+ >>> sh(\[dq]../build/vcfwave -L 1000 ../samples/10158243.vcf|grep -v \[ha]\[rs]#\[dq])
+-grch38#chr4     10158244        >3655>3662_1    CCCCCACCCCCAC   C       60      .       AC=1;AF=0.011236;AN=89;AT=>3655>3656>3657>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=12;INV=0;TYPE=del        GT      0|0     0|0     0|0     0|0     1|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0
+-grch38#chr4     10158244        >3655>3662_2    CCCCCACCCCCACC  C       60      .       AC=3;AF=0.033708;AN=89;AT=>3655>3656>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=13;INV=0;TYPE=del     GT      0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     1|0     0|1     0|0     0|0     0|0     0|0     0|0     0|0     0|1     0|0     0
+-grch38#chr4     10158245        >3655>3662_3    CCCCACCCCCACC   C       60      .       AC=64;AF=0.719101;AN=89;AT=>3655>3656>3657>3658>3659>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=12;INV=0;TYPE=del     GT      0|0     1|1     1|1     1|0     0|1     0|0     0|1     0|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     0|0     1|1     1|1     1|1     1|0     1|0     1|0     1|0     1|1     1|1     1|0     1|1     1|1     0|0     1|0     1|1     0|1     1|1     1|1     0|1     1|0     1|1     1|1     0|1     1|1     1|1     1|0     1|0     1|1     0
+-grch38#chr4     10158251        >3655>3662_4    CCCCACC C       60      .       AC=3;AF=0.033708;AN=89;AT=>3655>3656>3657>3658>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=6;INV=0;TYPE=del    GT      0|0     0|0     0|0     0|0     0|0     0|1     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     1|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|1     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0
+-grch38#chr4     10158256        >3655>3662_5    CC      C       60      .       AC=2;AF=0.022472;AN=89;AT=>3655>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=1;INV=0;TYPE=del   GT      0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|1     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     1|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0
+-grch38#chr4     10158257        >3655>3662_6    C       A       60      .       AC=1;AF=0.011236;AN=89;AT=>3655>3656>3657>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=1;INV=0;TYPE=snp GT      0|0     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     0
++grch38#chr4     10158244        >3655>3662_1    CCCCCACCCCCAC   C       60      .       AC=1;AF=0.011236;AN=89;AT=>3655>3656>3657>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=12;TYPE=del        GT      0|0     0|0     0|0     0|0     1|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0
++grch38#chr4     10158244        >3655>3662_2    CCCCCACCCCCACC  C       60      .       AC=3;AF=0.033708;AN=89;AT=>3655>3656>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=13;TYPE=del     GT      0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     1|0     0|1     0|0     0|0     0|0     0|0     0|0     0|0     0|1     0|0     0
++grch38#chr4     10158245        >3655>3662_3    CCCCACCCCCACC   C       60      .       AC=64;AF=0.719101;AN=89;AT=>3655>3656>3657>3658>3659>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=12;TYPE=del     GT      0|0     1|1     1|1     1|0     0|1     0|0     0|1     0|1     1|1     1|1     1|1     1|1     1|1     1|1     1|1     0|0     1|1     1|1     1|1     1|0     1|0     1|0     1|0     1|1     1|1     1|0     1|1     1|1     0|0     1|0     1|1     0|1     1|1     1|1     0|1     1|0     1|1     1|1     0|1     1|1     1|1     1|0     1|0     1|1     0
++grch38#chr4     10158251        >3655>3662_4    CCCCACC C       60      .       AC=3;AF=0.033708;AN=89;AT=>3655>3656>3657>3658>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=6;TYPE=del    GT      0|0     0|0     0|0     0|0     0|0     0|1     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     1|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|1     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0
++grch38#chr4     10158256        >3655>3662_5    CC      C       60      .       AC=2;AF=0.022472;AN=89;AT=>3655>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=1;TYPE=del   GT      0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|1     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     1|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0|0     0
++grch38#chr4     10158257        >3655>3662_6    C       A       60      .       AC=1;AF=0.011236;AN=89;AT=>3655>3656>3657>3660>3662;NS=45;LV=0;ORIGIN=grch38#chr4:10158243;LEN=1;TYPE=snp GT      0|0     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     .|.     0
+ 
+ \f[R]
+ .fi
+@@ -198,13 +198,13 @@ AC=1;AF=1;AN=1;AT=>1>2>3>4>5>6>7>8>9,>1<8>10<6>11<4>12<2>9;NS=1;LV=0 GT
+ To
+ 
+ \[ga]\[ga]\[ga]python
+->>> sh(\[dq]../build/vcfwave ../samples/inversion.vcf|grep -v \[ha]\[rs]#|head -3\[dq])
+-a       293     >1>9_1  A       T       60      .       AC=1;AF=1.000000;AN=1;AT=>1>2>3>4>5>6>7>8>9;NS=1;LV=0;ORIGIN=a:281;LEN=1;INV=1;TYPE=snp GT      1
+-a       310     >1>9_2  T       C       60      .       AC=1;AF=1.000000;AN=1;AT=>1>2>3>4>5>6>7>8>9;NS=1;LV=0;ORIGIN=a:281;LEN=1;INV=1;TYPE=snp GT      1
+-a       329     >1>9_3  T       A       60      .       AC=1;AF=1.000000;AN=1;AT=>1>2>3>4>5>6>7>8>9;NS=1;LV=0;ORIGIN=a:281;LEN=1;INV=1;TYPE=snp GT      1
+-
++>>> sh(\[dq]../build/vcfwave ../samples/inversion.vcf|grep INV\[dq])
++##INFO=<ID=INV,Number=0,Type=Flag,Description=\[dq]Inversion detected\[dq]>
++a       281     >1>9    AGCCGGGGCAGAAAGTTCTTCCTTGAATGTGGTCATCTGCATTTCAGCTCAGGAATCCTGCAAAAGACAG  CTGTCTTTTGCAGGATTCCTGTGCTGAAATGCAGATGACCGCATTCAAGGAAGAACTATCTGCCCCGGCT  60      .       AC=1;AF=1.000000;AN=1;AT=>1>2>3>4>5>6>7>8>9;NS=1;LV=0;LEN=70;INV=YES;TYPE=mnp  GT      1
+ \f[R]
+ .fi
++.PP
++Note the \[ga]INV=YES\[cq] info.
+ .SH LICENSE
+ .PP
+ Copyright 2022-2024 (C) Erik Garrison, Pjotr Prins and vcflib
+diff --git a/paper/plos_latex_template.bbl b/paper/plos_latex_template.bbl
+deleted file mode 100644
+index 9b431fa..0000000
+--- a/paper/plos_latex_template.bbl
++++ /dev/null
+@@ -1,3 +0,0 @@
+-\begin{thebibliography}{}
+-
+-\end{thebibliography}
+diff --git a/paper/plos_latex_template.blg b/paper/plos_latex_template.blg
+deleted file mode 100644
+index add1ad8..0000000
+--- a/paper/plos_latex_template.blg
++++ /dev/null
+@@ -1,65 +0,0 @@
+-This is BibTeX, Version 0.99d (TeX Live 2013)
+-Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+-The top-level auxiliary file: plos_latex_template.aux
+-The style file: plos2015.bst
+-I found no \bibdata command---while reading file plos_latex_template.aux
+-Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
+-Reallocated global_strs (elt_size=20001) to 20 items from 10.
+-Reallocated glb_str_end (elt_size=4) to 20 items from 10.
+-Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+-Warning--I didn't find a database entry for "vcftools"
+-Warning--I didn't find a database entry for "1kg"
+-Warning--I didn't find a database entry for "exac"
+-Warning--I didn't find a database entry for "gonl"
+-Warning--I didn't find a database entry for "color"
+-Warning--I didn't find a database entry for "tet"
+-Warning--I didn't find a database entry for "iron"
+-Warning--I didn't find a database entry for "pigeon"
+-Warning--I didn't find a database entry for "fst"
+-Warning--I didn't find a database entry for "bfst"
+-Warning--I didn't find a database entry for "kim"
+-Warning--I didn't find a database entry for "heng"
+-Warning--I didn't find a database entry for "selscan"
+-Warning--I didn't find a database entry for "voight"
+-You've used 0 entries,
+-            3170 wiz_defined-function locations,
+-            651 strings with 4518 characters,
+-and the built_in function-call counts, 30 in all, are:
+-= -- 0
+-> -- 0
+-< -- 0
+-+ -- 0
+-- -- 0
+-* -- 2
+-:= -- 19
+-add.period$ -- 0
+-call.type$ -- 0
+-change.case$ -- 0
+-chr.to.int$ -- 0
+-cite$ -- 0
+-duplicate$ -- 0
+-empty$ -- 1
+-format.name$ -- 0
+-if$ -- 1
+-int.to.chr$ -- 0
+-int.to.str$ -- 0
+-missing$ -- 0
+-newline$ -- 3
+-num.names$ -- 0
+-pop$ -- 0
+-preamble$ -- 1
+-purify$ -- 0
+-quote$ -- 0
+-skip$ -- 1
+-stack$ -- 0
+-substring$ -- 0
+-swap$ -- 0
+-text.length$ -- 0
+-text.prefix$ -- 0
+-top$ -- 0
+-type$ -- 0
+-warning$ -- 0
+-while$ -- 0
+-width$ -- 0
+-write$ -- 2
+-(There was 1 error message)
+diff --git a/paper/plos_latex_template.out b/paper/plos_latex_template.out
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/src/Variant.cpp b/src/Variant.cpp
+index 9a8dade..ce58d89 100644
+--- a/src/Variant.cpp
++++ b/src/Variant.cpp
+@@ -10,6 +10,10 @@
+ #include "Variant.h"
+ #include "cigar.hpp"
+ #include <utility>
++#include "multichoose.h"
++#include <SmithWatermanGotoh.h>
++#include "ssw_cpp.hpp"
++#include <regex>
+ 
+ namespace vcflib {
+ 
+@@ -250,450 +254,7 @@ string Variant::getSVTYPE(int altpos) const{
+ 
+ 
+ 
+-int Variant::getMaxReferencePos(){
+-    if (this->canonical && this->info.find("END") != this->info.end()) {
+-        // We are cannonicalized and must have a correct END
+ 
+-        int end = 0;
+-        for (auto s : this->info.at("END")){
+-            // Get the latest one defined.
+-            end = max(abs(stoi(s)), end);
+-        }
+-        // Convert to 0-based.
+-        return end - 1;
+-
+-    }
+-
+-    if (!this->isSymbolicSV()){
+-        // We don't necessarily have an END, but we don't need one
+-        return this->zeroBasedPosition() + this->ref.length() - 1;
+-    }
+-
+-    if (this->canonicalizable()){
+-        // We aren't canonical, but we could be.
+-        if (this->info.find("END") != this->info.end()){
+-            // We have an END; blindly trust it
+-            int end = 0;
+-            for (auto s : this->info.at("END")){
+-                // Get the latest one defined.
+-                end = max(abs(stoi(s)), end);
+-            }
+-            // Convert to 0-based.
+-            return end - 1;
+-
+-        }
+-        else if (this->info.find("SVLEN") != this->info.end()){
+-            // There's no endpoint, but we know an SVLEN.
+-            // A negative SVLEN means a deletion, so if we find one we can say we delete that much.
+-            int deleted = 0;
+-            for (auto s : this->info.at("SVLEN")){
+-                int alt_len = stoi(s);
+-                if (alt_len > 0){
+-                    // Not a deletion, so doesn't affect any ref bases
+-                    continue;
+-                }
+-                deleted = max(-alt_len, deleted);
+-            }
+-
+-            // The anchoring base at POS gets added in (because it isn't
+-            // deleted) but then subtracted out (because we have to do that to
+-            // match non-SV deletions). For insertions, deleted is 0 and we
+-            // return 0-based POS. Inversions must have an END.
+-            return this->zeroBasedPosition() + deleted;
+-        }
+-        else{
+-            cerr << "Warning: insufficient length information for " << *this << endl;
+-            return -1;
+-        }
+-    }
+-    else {
+-        cerr << "Warning: can't get end of non-canonicalizeable variant " << *this << endl;
+-    }
+-    return -1;
+-}
+-
+-
+-
+-
+-// To canonicalize a variant, we need either both REF and ALT seqs filled in
+-// or SVTYPE and SVLEN or END or SPAN or SEQ sufficient to define the variant.
+-bool Variant::canonicalizable(){
+-    bool pre_canon = allATGCN(this->ref);
+-
+-    for (auto& a : this->alt){
+-        if (!allATGCN(a)){
+-            pre_canon = false;
+-        }
+-    }
+-
+-    if (pre_canon){
+-        // It came in in a fully specified way.
+-        // TODO: ideally, we'd check to make sure ref/alt lengths, svtypes, and ends line up right here.
+-        return true;
+-    }
+-
+-    string svtype = getSVTYPE();
+-
+-    if (svtype.empty()){
+-        // We have no SV type, so we can't interpret things.
+-        return false;
+-    }
+-
+-    // Check the tags
+-    bool has_len = this->info.count("SVLEN") && !this->info.at("SVLEN").empty();
+-    bool has_seq = this->info.count("SEQ") && !this->info.at("SEQ").empty();
+-    bool has_span = this->info.count("SPAN") && !this->info.at("SPAN").empty();
+-    bool has_end = this->info.count("END") && !this->info.at("END").empty();
+-
+-
+-    if (svtype == "INS"){
+-        // Insertions need a SEQ, SVLEN, or SPAN
+-        return has_seq || has_len || has_span;
+-    }
+-    else if (svtype == "DEL"){
+-        // Deletions need an SVLEN, SPAN, or END
+-        return has_len || has_span || has_end;
+-    }
+-    else if (svtype == "INV"){
+-        // Inversions need a SPAN or END
+-        return has_span || has_end;
+-    }
+-    else{
+-        // Other SV types are unsupported
+-        // TODO: DUP
+-        return false;
+-    }
+-}
+-
+-bool Variant::canonicalize(FastaReference& fasta_reference, vector<FastaReference*> insertions, bool place_seq, int min_size){
+-
+-    // Nobody should call this without checking
+-    assert(canonicalizable());
+-
+-    // Nobody should call this twice
+-    assert(!this->canonical);
+-
+-    // Find where the inserted sequence can come from for insertions
+-    bool do_external_insertions = !insertions.empty();
+-    FastaReference* insertion_fasta;
+-    if (do_external_insertions){
+-        insertion_fasta = insertions[0];
+-    }
+-
+-    bool ref_valid = allATGCN(ref);
+-
+-    if (!ref_valid && !place_seq){
+-        // If the reference is invalid, and we aren't allowed to change the ref sequence,
+-        // we can't canonicalize the variant.
+-        return false;
+-    }
+-
+-    // Check the alts to see if they are not symbolic
+-    vector<bool> alt_i_atgcn (alt.size());
+-    for (int i = 0; i < alt.size(); ++i){
+-        alt_i_atgcn[i] = allATGCN(alt[i]);
+-    }
+-
+-    // Only allow single-alt variants
+-    bool single_alt = alt.size() == 1;
+-    if (!single_alt){
+-        // TODO: this will need to be remove before supporting multiple alleles
+-        cerr << "Warning: multiple ALT alleles not yet allowed for SVs" << endl;
+-        return false;
+-    }
+-
+-    // Fill in the SV tags
+-    string svtype = getSVTYPE();
+-    bool has_len = this->info.count("SVLEN") && !this->info.at("SVLEN").empty();
+-    bool has_seq = this->info.count("SEQ") && !this->info.at("SEQ").empty();
+-    bool has_span = this->info.count("SPAN") && !this->info.at("SPAN").empty();
+-    bool has_end = this->info.count("END") && !this->info.at("END").empty();
+-
+-    // Where is the end, or where should it be?
+-    long info_end = 0;
+-    if (has_end) {
+-        // Get the END from the tag
+-        info_end = stol(this->info.at("END")[0]);
+-    }
+-    else if(ref_valid && !place_seq) {
+-        // Get the END from the reference sequence, which is ready.
+-        info_end = this->position + this->ref.length() - 1;
+-    }
+-    else if ((svtype == "DEL" || svtype == "INV") && has_span) {
+-        // For deletions and inversions, we can get the END from the SPAN
+-        info_end = this->position + abs(stol(this->info.at("SPAN")[0]));
+-    }
+-    else if (svtype == "DEL" && has_len) {
+-        // For deletions, we can get the END from the SVLEN
+-        info_end = this->position + abs(stol(this->info.at("SVLEN")[0]));
+-    }
+-    else if (svtype == "INS"){
+-        // For insertions, END is just POS if not specified
+-        info_end = this->position;
+-    }
+-    else{
+-        cerr << "Warning: could not set END info " << *this << endl;
+-        return false;
+-    }
+-
+-    // Commit back the END
+-    this->info["END"].resize(1);
+-    this->info["END"][0] = to_string(info_end);
+-    has_end = true;
+-
+-    // What is the variant length change?
+-    // We store it as absolute value
+-    long info_len = 0;
+-    if (has_len){
+-        // Get the SVLEN from the tag
+-        info_len = abs(stol(this->info.at("SVLEN")[0]));
+-    }
+-    else if ((svtype == "INS" || svtype == "DEL") && has_span){
+-        info_len = abs(stol(this->info.at("SPAN")[0]));
+-    }
+-    else if (svtype == "DEL"){
+-        // We always have the end by now
+-        // Deletion ends give you length change
+-        info_len = info_end - this->position;
+-    }
+-    else if (svtype == "INV"){
+-        // Inversions have 0 length change unless otherwise specified.
+-        info_len = 0;
+-    }
+-    else if (svtype == "INS" && has_seq) {
+-        // Insertions can let us pick it up from the SEQ tag
+-        info_len = this->info.at("SEQ").at(0).size();
+-    }
+-    else{
+-        cerr << "Warning: could not set SVLEN info " << *this << endl;
+-        return false;
+-    }
+-
+-    // Commit the SVLEN back
+-    if (svtype == "DEL"){
+-        // Should be saved as negative
+-        this->info["SVLEN"].resize(1);
+-        this->info["SVLEN"][0] = to_string(-info_len);
+-    }
+-    else{
+-        // Should be saved as positive
+-        this->info["SVLEN"].resize(1);
+-        this->info["SVLEN"][0] = to_string(info_len);
+-    }
+-    // Now the length change is known
+-    has_len = true;
+-
+-    // We also compute a span
+-    long info_span = 0;
+-    if (has_span){
+-        // Use the specified span
+-        info_span = abs(stol(this->info.at("SVLEN")[0]));
+-    }
+-    else if (svtype == "INS" || svtype == "DEL"){
+-        // has_len is always true here
+-        // Insertions and deletions let us determine the span from the length change, unless they are complex.
+-        info_span = info_len;
+-    }
+-    else if (svtype == "INV"){
+-        // has_end is always true here
+-        // Inversion span is start to end
+-        info_span = info_end - this->position;
+-    }
+-    else{
+-        cerr << "Warning: could not set SPAN info " << *this << endl;
+-        return false;
+-    }
+-
+-    // Commit the SPAN back
+-    this->info["SPAN"].resize(1);
+-    this->info["SPAN"][0] = to_string(info_span);
+-    // Now the span change is known
+-    has_span = true;
+-
+-    if (info_end < this->position) {
+-        cerr << "Warning: SV END is before POS [canonicalize] " <<
+-        *this << endl << "END: " << info_end << "  " << "POS: " << this->position << endl;
+-        return false;
+-    }
+-
+-    if (has_seq) {
+-        // Force the SEQ to upper case, if already present
+-        this->info["SEQ"].resize(1);
+-        this->info["SEQ"][0] = toUpper(this->info["SEQ"][0]);
+-    }
+-
+-    // Set the other necessary SV Tags (SVTYPE, SEQ (if insertion))
+-    // Also check for agreement in the position tags
+-    if (svtype == "INS"){
+-        if (info_end != this->position){
+-            cerr << "Warning: insertion END and POS do not agree (complex insertions not canonicalizeable) [canonicalize] " <<
+-            *this << endl << "END: " << info_end << "  " << "POS: " << this->position << endl;
+-
+-            if (info_end == this->position + info_len) {
+-                // We can probably guess what they meant here.
+-                cerr << "Warning: VCF writer incorrecty produced END = POS + SVLEN for an insertion. Fixing END to POS." << endl;
+-                info_end = this->position;
+-                this->info["END"][0] = to_string(info_end);
+-            } else {
+-                return false;
+-            }
+-        }
+-
+-        if (info_len != info_span){
+-            cerr << "Warning: insertion SVLEN and SPAN do not agree (complex insertions not canonicalizeable) [canonicalize] " <<
+-            *this << endl << "SVLEN: " << info_len << "  " << "SPAN: " << info_span << endl;
+-            return false;
+-        }
+-
+-        if (has_seq && allATGCN(this->info.at("SEQ")[0]) && this->info.at("SEQ")[0].size() != info_len){
+-            cerr << "Warning: insertion SVLEN and SEQ do not agree (complex insertions not canonicalizeable) [canonicalize] " <<
+-            *this << endl << "SVLEN: " << info_len << "  " << "SEQ length: " << this->info.at("SEQ")[0].size() << endl;
+-            return false;
+-        }
+-
+-        // Set REF
+-        string ref_base = toUpper(fasta_reference.getSubSequence(this->sequenceName, this->zeroBasedPosition(), 1));
+-        if (place_seq){
+-            this->ref.assign(ref_base);
+-        }
+-
+-        if (has_seq &&
+-                 alt[0] != this->info.at("SEQ")[0] &&
+-                 allATGCN(this->info.at("SEQ")[0])){
+-            // Try to remove prepended ref sequence, assuming it's left-aligned
+-            string s = this->alt[0];
+-            s = toUpper(s.substr(this->ref.length()));
+-            if (s != this->info.at("SEQ")[0] && !place_seq){
+-                cerr << "Warning: INS sequence in alt field does not match SEQ tag" << endl <<
+-                this->alt[0] << " " << this->info.at("SEQ")[0] << endl;
+-                return false;
+-            }
+-            if (place_seq){
+-                this->alt[0].assign( ref_base + this->info.at("SEQ")[0] );
+-            }
+-
+-        }
+-        else if (alt_i_atgcn[0] && !has_seq){
+-            string s = this->alt[0];
+-            s = toUpper(s.substr(this->ref.length()));
+-            this->info["SEQ"].resize(1);
+-            this->info.at("SEQ")[0].assign(s);
+-
+-            if (s.size() != info_len){
+-                cerr << "Warning: insertion SVLEN and added bases do not agree (complex insertions not canonicalizeable) [canonicalize] " <<
+-                *this << endl << "SVLEN: " << info_len << "  " << "added bases: " << s.size() << endl;
+-                return false;
+-            }
+-
+-        }
+-        else if (alt[0][0] == '<' && do_external_insertions){
+-
+-            string ins_seq;
+-            string seq_id = alt[0].substr(1, alt[0].size() - 2);
+-
+-            if (insertion_fasta->index->find(seq_id) != insertion_fasta->index->end()){
+-                ins_seq = toUpper(insertion_fasta->getSequence(seq_id));
+-                if (allATGCN(ins_seq)){
+-                    this->info["SEQ"].resize(1);
+-                    this->info["SEQ"][0].assign(ins_seq);
+-                    if (place_seq){
+-                        this->alt[0].assign(ref_base + ins_seq);
+-                    }
+-                }
+-                else {
+-                    cerr << "Warning: Loaded invalid alt sequence for: " << *this << endl;
+-                    return false;
+-                }
+-
+-                if (ins_seq.size() != info_len){
+-                    cerr << "Warning: insertion SVLEN and FASTA do not agree (complex insertions not canonicalizeable) [canonicalize] " <<
+-                    *this << endl << "SVLEN: " << info_len << "  " << "FASTA bases: " << ins_seq.size() << endl;
+-                    return false;
+-                }
+-            }
+-            else{
+-                cerr << "Warning: could not locate alt sequence for: " << *this << endl;
+-                return false;
+-            }
+-
+-        }
+-        else{
+-            cerr << "Warning: could not set SEQ [canonicalize]. " << *this << endl;
+-            return false;
+-        }
+-    }
+-    else if (svtype == "DEL"){
+-        if (this->position + info_span != info_end){
+-            cerr << "Warning: deletion END and SVLEN do not agree [canonicalize] " << *this << endl <<
+-            "END: " << info_end << "  " << "SVLEN: " << -info_len << endl;
+-            return false;
+-        }
+-
+-        if (this->position + info_span != info_end){
+-            cerr << "Warning: deletion END and SPAN do not agree [canonicalize] " << *this << endl <<
+-            "END: " << info_end << "  " << "SPAN: " << info_span << endl;
+-            return false;
+-        }
+-
+-        // Set REF
+-        if (place_seq){
+-            string del_seq = toUpper(fasta_reference.getSubSequence(this->sequenceName, this->zeroBasedPosition(), info_len + 1));
+-            string ref_base = toUpper(fasta_reference.getSubSequence(this->sequenceName, this->zeroBasedPosition(), 1));
+-            this->ref.assign( del_seq );
+-            this->alt[0].assign( ref_base );
+-        }
+-    }
+-    else if (svtype == "INV"){
+-        if (this->position + info_span != info_end){
+-            cerr << "Warning: inversion END and SPAN do not agree [canonicalize] " << *this << endl <<
+-            "END: " << info_end << "  " << "SPAN: " << info_span << endl;
+-            return false;
+-        }
+-
+-        if (info_len != 0){
+-            cerr << "Warning: inversion SVLEN specifies nonzero length change (complex inversions not canonicalizeable) [canonicalize] " <<
+-            *this << endl << "SVLEN: " << info_len << endl;
+-
+-            if (info_end == this->position + info_len) {
+-                // We can probably guess what they meant here.
+-                cerr << "Warning: VCF writer incorrecty produced END = POS + SVLEN for an inversion. Fixing SVLEN to 0." << endl;
+-                info_len = 0;
+-                this->info["SVLEN"][0] = to_string(info_len);
+-            } else {
+-                return false;
+-            }
+-        }
+-
+-        if (place_seq){
+-            string ref_seq = toUpper(fasta_reference.getSubSequence(this->sequenceName, this->zeroBasedPosition(), info_span + 1));
+-            // Note that inversions still need an anchoring left base at POS
+-            string inv_seq = ref_seq.substr(0, 1) + reverse_complement(ref_seq.substr(1));
+-            this->ref.assign(ref_seq);
+-            this->alt[0].assign(inv_seq);
+-        }
+-
+-    }
+-    else{
+-        cerr << "Warning: invalid SV type [canonicalize]:" << *this << endl;
+-        return false;
+-    }
+-
+-
+-    this->updateAlleleIndexes();
+-
+-    // Check for harmony between ref / alt / tags
+-    if (this->position > stol(this->info.at("END").at(0))){
+-        cerr << "Warning: position > END. Possible reference genome mismatch." << endl;
+-        return false;
+-    }
+-
+-    if (svtype == "INS"){
+-        assert(!this->info.at("SEQ")[0].empty());
+-    }
+-
+-    this->canonical = true;
+-    return true;
+-}
+ 
+ void Variant::setVariantCallFile(VariantCallFile& v) {
+     sampleNames = v.sampleNames;
+@@ -1830,22 +1391,35 @@ bool VariantCallFile::parseHeader(string& hs) {
+                 // field
+                 if (entryType == "INFO" || entryType == "FORMAT") {
+                     vector<string> fields = split(entryData, "=,");
+-                    if (fields[0] != "ID") {
+-                        cerr << "header parse error at:" << endl
+-                             << "fields[0] != \"ID\"" << endl
+-                             << headerLine << endl;
++                    if (fields.size() < 8) {
++                        cerr << "header line does not have all of the required fields: ID, Number, Type, and Description" << endl
++                             << headerLine << endl;;
+                         exit(1);
+                     }
+-                    string id = fields[1];
+-                    if (fields[2] != "Number") {
+-                        cerr << "header parse error at:" << endl
+-                             << "fields[2] != \"Number\"" << endl
+-                             << headerLine << endl;
+-                        exit(1);
++                    // get the required fields from the header line
++                    auto id_field = find(fields.begin(), fields.begin() + 8, "ID");
++                    auto num_field = find(fields.begin(), fields.begin() + 8, "Number");
++                    auto type_field = find(fields.begin(), fields.begin() + 8, "Type");
++                    auto desc_field = find(fields.begin(), fields.begin() + 8, "Description");
++                    for (auto it : {id_field, num_field, type_field, desc_field}) {
++                        // make sure we found the field and that all of the keys have a value associated
++                        if (it == fields.begin() + 8 || ((it - fields.begin()) % 2 == 1)) {
++                            if (it == desc_field) {
++                                // we don't actually record / use the description, so we'll just give a warning
++                                cerr << "warning: ";
++                            }
++                            cerr << "header line does not have all of the required fields (ID, Number, Type, and Description) in the first 4 fields" << endl
++                                 << headerLine << endl;
++                            if (it != desc_field) {
++                                exit(1);
++                            }
++                        }
+                     }
++                    string id = *(id_field + 1);
+                     int number;
++                    string numberstr = *(num_field + 1);
+                     // string numberstr = mapper["Number"].c_str();
+-                    string numberstr = fields[3].c_str();
++
+                     // XXX TODO VCF has variable numbers of fields...
+                     if (numberstr == "A") {
+                         number = ALLELE_NUMBER;
+@@ -1856,14 +1430,7 @@ bool VariantCallFile::parseHeader(string& hs) {
+                     } else {
+                         convert(numberstr, number);
+                     }
+-                    if (fields[4] != "Type") {
+-                        cerr << "header parse error at:" << endl
+-                             << "fields[4] != \"Type\"" << endl
+-                             << headerLine << endl;
+-                        exit(1);
+-                    }
+-                    VariantFieldType type = typeStrToVariantFieldType(fields[5]);
+-
++                    VariantFieldType type = typeStrToVariantFieldType(*(type_field + 1));
+                     // VariantFieldType type = typeStrToVariantFieldType(mapper["TYPE"]);
+                     if (entryType == "INFO") {
+                         infoCounts[id] = number;
+@@ -1943,12 +1510,11 @@ bool VariantCallFile::setRegion(string region) {
+         cerr << "cannot setRegion on a non-tabix indexed file" << endl;
+         exit(1);
+     }
+-    size_t dots = region.find("..");
+     // convert between bamtools/freebayes style region string and tabix/samtools style
+-    if (dots != string::npos) {
+-        region.replace(dots, 2, "-");
+-    }
+-    if (tabixFile->setRegion(region)) {
++    regex txt_regex("(\\d+)\\.\\.(\\d+)$");
++    string tabix_region = regex_replace(region, txt_regex, "$1-$2");
++
++    if (tabixFile->setRegion(tabix_region)) {
+         if (tabixFile->getNextLine(line)) {
+ 	    justSetRegion = true;
+             return true;
+diff --git a/src/Variant.h b/src/Variant.h
+index 7093039..8ee607b 100644
+--- a/src/Variant.h
++++ b/src/Variant.h
+@@ -1,6 +1,9 @@
+ /*
+     vcflib C++ library for parsing and manipulating VCF files
+ 
++    Variant.h is used by external tools, such as freebayes. We should take care to
++    minimize what it pulls in.
++
+     Copyright © 2010-2024 Erik Garrison
+     Copyright © 2020-2024 Pjotr Prins
+ 
+@@ -26,13 +29,15 @@
+ #include "split.h"
+ #include "join.h"
+ #include <tabix.hpp>
+-#include "SmithWatermanGotoh.h"
+-#include "ssw_cpp.hpp"
+ #include "convert.h"
+-#include "multichoose.h"
+ #include "rkmh.hpp"
+ #include "LeftAlign.hpp"
+-#include <Fasta.h>
++
++// The following includes moved into their sources because of lib dependencies
++// #include <SmithWatermanGotoh.h>
++// #include "ssw_cpp.hpp"
++// #include <Fasta.h> --> see canonicalize.h
++// #include "multichoose.h"
+ 
+ extern "C" {
+   #include "filevercmp.h"
+@@ -209,30 +214,6 @@ public:
+     set<string> altSet(void);  // set of alleles, rather than vector of them
+     map<string, int> altAlleleIndexes;  // reverse lookup for alleles
+ 
+-    // Legacy version of parsedAlterneates:
+-    map<string, vector<VariantAllele> > legacy_parsedAlternates(
+-           bool includePreviousBaseForIndels = false,
+-           bool useMNPs = false,
+-           bool useEntropy = false,
+-           float matchScore = 10.0f,
+-           float mismatchScore = -9.0f,
+-           float gapOpenPenalty = 15.0f,
+-           float gapExtendPenalty = 6.66f,
+-           float repeatGapExtendPenalty = 0.0f,
+-           string flankingRefLeft = "",
+-           string flankingRefRight = "",
+-           bool useWaveFront=true,
+-           bool debug=false);
+-
+-    // Legacy version
+-    void legacy_reduceAlleles(
+-        map<string, pair<vector<VariantAllele>, bool> > varAlleles,
+-        VariantCallFile &variantFile,
+-        Variant var,
+-        string parseFlag,
+-        bool keepInfo=true,
+-        bool keepGeno=true,
+-        bool debug=false);
+ 
+     map<string, vector<VariantAllele> > parsedAlternates(bool includePreviousBaseForIndels = false,
+                                                          bool useMNPs = false,
+@@ -250,32 +231,6 @@ public:
+ 
+     map<string, string> extendedAlternates(long int newPosition, long int length);
+ 
+-    /**
+-     * Convert a structural variant to the canonical VCF4.3 format using a reference.
+-     *   Meturns true if the variant is canonicalized, false otherwise.
+-     *   May NOT be called twice on the same variant; it will fail an assert.
+-     *   Returns false for non-SVs
+-     *   place_seq: if true, the ref/alt fields are
+-     *       filled in with the corresponding sequences
+-     *     from the reference (and optionally insertion FASTA)
+-     * min_size_override: If a variant is less than this size,
+-     *     and it has a valid REF and ALT, consider it canonicalized
+-     *     even if the below conditions are not true.
+-     * Fully canonicalized variants (which are greater than min_size_override)
+-     * guarantee the following:
+-     *  - POS <= END and corresponds to the anchoring base for symbolic alleles
+-     *  - SVLEN info field is set and is positive for all variants except DELs
+-     *  - SVTYPE info field is set and is in {DEL, INS, INV, DUP}
+-     *  - END info field is set to the POS + len(REF allele) - 1 and corresponds to the final affected reference base
+-     *  - Insertions get an upper-case SEQ info field
+-     *  - REF and ALT are upper-case if filled in by this function
+-     *  - canonical = true;
+-     * TODO: CURRENTLY: canonical requires there be only one alt allele
+-    **/
+-    bool canonicalize(FastaReference& ref,
+-         vector<FastaReference*> insertions,
+-         bool place_seq = true,
+-         int min_size_override = 0);
+ 
+     /**
+      * Returns true if the variant's ALT contains a symbolic allele like <INV>
+@@ -288,23 +243,6 @@ public:
+      */
+     bool hasSVTags() const;
+ 
+-    /**
+-     * This returns true if the variant appears able to be handled by
+-     * canonicalize(). It checks if it has fully specified sequence, or if it
+-     * has a defined SV type and length/endpoint.
+-     */
+-    bool canonicalizable();
+-
+-    /**
+-     * This gets set to true after canonicalize() has been called on the variant, if it succeeded.
+-     */
+-    bool canonical;
+-
+-    /**
+-     * Get the maximum zero-based position of the reference affected by this variant.
+-     * Only works reliably for variants that are not SVs or for SVs that have been canonicalize()'d.
+-     */
+-    int getMaxReferencePos();
+ 
+     /**
+      * Return the SV type of the given alt, or "" if there is no SV type set for that alt.
+@@ -372,6 +310,14 @@ public:
+     bool isPhased(void);
+     // TODO
+     //void setInfoField(const string& key, string& val);
++    void reduceAlleles(
++	map<string, pair<vector<VariantAllele>, bool> > varAlleles,
++	VariantCallFile &variantFile,
++	Variant var,
++	string parseFlag,
++	bool keepInfo=true,
++	bool keepGeno=true,
++	bool debug=false);
+ 
+ private:
+ 
+diff --git a/src/canonicalize.cpp b/src/canonicalize.cpp
+new file mode 100644
+index 0000000..970f330
+--- /dev/null
++++ b/src/canonicalize.cpp
+@@ -0,0 +1,464 @@
++
++#include "canonicalize.h"
++
++namespace vcflib {
++
++bool VariantCanonical::canonicalize(FastaReference& fasta_reference, vector<FastaReference*> insertions, bool place_seq, int min_size){
++
++    // Nobody should call this without checking
++    assert(canonicalizable());
++
++    // Nobody should call this twice
++    assert(!this->canonical);
++
++    // Find where the inserted sequence can come from for insertions
++    bool do_external_insertions = !insertions.empty();
++    FastaReference* insertion_fasta;
++    if (do_external_insertions){
++        insertion_fasta = insertions[0];
++    }
++
++    bool ref_valid = allATGCN(ref);
++
++    if (!ref_valid && !place_seq){
++        // If the reference is invalid, and we aren't allowed to change the ref sequence,
++        // we can't canonicalize the variant.
++        return false;
++    }
++
++    // Check the alts to see if they are not symbolic
++    vector<bool> alt_i_atgcn (alt.size());
++    for (int i = 0; i < alt.size(); ++i){
++        alt_i_atgcn[i] = allATGCN(alt[i]);
++    }
++
++    // Only allow single-alt variants
++    bool single_alt = alt.size() == 1;
++    if (!single_alt){
++        // TODO: this will need to be remove before supporting multiple alleles
++        cerr << "Warning: multiple ALT alleles not yet allowed for SVs" << endl;
++        return false;
++    }
++
++    // Fill in the SV tags
++    string svtype = getSVTYPE();
++    bool has_len = this->info.count("SVLEN") && !this->info.at("SVLEN").empty();
++    bool has_seq = this->info.count("SEQ") && !this->info.at("SEQ").empty();
++    bool has_span = this->info.count("SPAN") && !this->info.at("SPAN").empty();
++    bool has_end = this->info.count("END") && !this->info.at("END").empty();
++
++    // Where is the end, or where should it be?
++    long info_end = 0;
++    if (has_end) {
++        // Get the END from the tag
++        info_end = stol(this->info.at("END")[0]);
++    }
++    else if(ref_valid && !place_seq) {
++        // Get the END from the reference sequence, which is ready.
++        info_end = this->position + this->ref.length() - 1;
++    }
++    else if ((svtype == "DEL" || svtype == "INV") && has_span) {
++        // For deletions and inversions, we can get the END from the SPAN
++        info_end = this->position + abs(stol(this->info.at("SPAN")[0]));
++    }
++    else if (svtype == "DEL" && has_len) {
++        // For deletions, we can get the END from the SVLEN
++        info_end = this->position + abs(stol(this->info.at("SVLEN")[0]));
++    }
++    else if (svtype == "INS"){
++        // For insertions, END is just POS if not specified
++        info_end = this->position;
++    }
++    else{
++        cerr << "Warning: could not set END info " << *this << endl;
++        return false;
++    }
++
++    // Commit back the END
++    this->info["END"].resize(1);
++    this->info["END"][0] = to_string(info_end);
++    has_end = true;
++
++    // What is the variant length change?
++    // We store it as absolute value
++    long info_len = 0;
++    if (has_len){
++        // Get the SVLEN from the tag
++        info_len = abs(stol(this->info.at("SVLEN")[0]));
++    }
++    else if ((svtype == "INS" || svtype == "DEL") && has_span){
++        info_len = abs(stol(this->info.at("SPAN")[0]));
++    }
++    else if (svtype == "DEL"){
++        // We always have the end by now
++        // Deletion ends give you length change
++        info_len = info_end - this->position;
++    }
++    else if (svtype == "INV"){
++        // Inversions have 0 length change unless otherwise specified.
++        info_len = 0;
++    }
++    else if (svtype == "INS" && has_seq) {
++        // Insertions can let us pick it up from the SEQ tag
++        info_len = this->info.at("SEQ").at(0).size();
++    }
++    else{
++        cerr << "Warning: could not set SVLEN info " << *this << endl;
++        return false;
++    }
++
++    // Commit the SVLEN back
++    if (svtype == "DEL"){
++        // Should be saved as negative
++        this->info["SVLEN"].resize(1);
++        this->info["SVLEN"][0] = to_string(-info_len);
++    }
++    else{
++        // Should be saved as positive
++        this->info["SVLEN"].resize(1);
++        this->info["SVLEN"][0] = to_string(info_len);
++    }
++    // Now the length change is known
++    has_len = true;
++
++    // We also compute a span
++    long info_span = 0;
++    if (has_span){
++        // Use the specified span
++        info_span = abs(stol(this->info.at("SVLEN")[0]));
++    }
++    else if (svtype == "INS" || svtype == "DEL"){
++        // has_len is always true here
++        // Insertions and deletions let us determine the span from the length change, unless they are complex.
++        info_span = info_len;
++    }
++    else if (svtype == "INV"){
++        // has_end is always true here
++        // Inversion span is start to end
++        info_span = info_end - this->position;
++    }
++    else{
++        cerr << "Warning: could not set SPAN info " << *this << endl;
++        return false;
++    }
++
++    // Commit the SPAN back
++    this->info["SPAN"].resize(1);
++    this->info["SPAN"][0] = to_string(info_span);
++    // Now the span change is known
++    has_span = true;
++
++    if (info_end < this->position) {
++        cerr << "Warning: SV END is before POS [canonicalize] " <<
++        *this << endl << "END: " << info_end << "  " << "POS: " << this->position << endl;
++        return false;
++    }
++
++    if (has_seq) {
++        // Force the SEQ to upper case, if already present
++        this->info["SEQ"].resize(1);
++        this->info["SEQ"][0] = toUpper(this->info["SEQ"][0]);
++    }
++
++    // Set the other necessary SV Tags (SVTYPE, SEQ (if insertion))
++    // Also check for agreement in the position tags
++    if (svtype == "INS"){
++        if (info_end != this->position){
++            cerr << "Warning: insertion END and POS do not agree (complex insertions not canonicalizeable) [canonicalize] " <<
++            *this << endl << "END: " << info_end << "  " << "POS: " << this->position << endl;
++
++            if (info_end == this->position + info_len) {
++                // We can probably guess what they meant here.
++                cerr << "Warning: VCF writer incorrecty produced END = POS + SVLEN for an insertion. Fixing END to POS." << endl;
++                info_end = this->position;
++                this->info["END"][0] = to_string(info_end);
++            } else {
++                return false;
++            }
++        }
++
++        if (info_len != info_span){
++            cerr << "Warning: insertion SVLEN and SPAN do not agree (complex insertions not canonicalizeable) [canonicalize] " <<
++            *this << endl << "SVLEN: " << info_len << "  " << "SPAN: " << info_span << endl;
++            return false;
++        }
++
++        if (has_seq && allATGCN(this->info.at("SEQ")[0]) && this->info.at("SEQ")[0].size() != info_len){
++            cerr << "Warning: insertion SVLEN and SEQ do not agree (complex insertions not canonicalizeable) [canonicalize] " <<
++            *this << endl << "SVLEN: " << info_len << "  " << "SEQ length: " << this->info.at("SEQ")[0].size() << endl;
++            return false;
++        }
++
++        // Set REF
++        string ref_base = toUpper(fasta_reference.getSubSequence(this->sequenceName, this->zeroBasedPosition(), 1));
++        if (place_seq){
++            this->ref.assign(ref_base);
++        }
++
++        if (has_seq &&
++                 alt[0] != this->info.at("SEQ")[0] &&
++                 allATGCN(this->info.at("SEQ")[0])){
++            // Try to remove prepended ref sequence, assuming it's left-aligned
++            string s = this->alt[0];
++            s = toUpper(s.substr(this->ref.length()));
++            if (s != this->info.at("SEQ")[0] && !place_seq){
++                cerr << "Warning: INS sequence in alt field does not match SEQ tag" << endl <<
++                this->alt[0] << " " << this->info.at("SEQ")[0] << endl;
++                return false;
++            }
++            if (place_seq){
++                this->alt[0].assign( ref_base + this->info.at("SEQ")[0] );
++            }
++
++        }
++        else if (alt_i_atgcn[0] && !has_seq){
++            string s = this->alt[0];
++            s = toUpper(s.substr(this->ref.length()));
++            this->info["SEQ"].resize(1);
++            this->info.at("SEQ")[0].assign(s);
++
++            if (s.size() != info_len){
++                cerr << "Warning: insertion SVLEN and added bases do not agree (complex insertions not canonicalizeable) [canonicalize] " <<
++                *this << endl << "SVLEN: " << info_len << "  " << "added bases: " << s.size() << endl;
++                return false;
++            }
++
++        }
++        else if (alt[0][0] == '<' && do_external_insertions){
++
++            string ins_seq;
++            string seq_id = alt[0].substr(1, alt[0].size() - 2);
++
++            if (insertion_fasta->index->find(seq_id) != insertion_fasta->index->end()){
++                ins_seq = toUpper(insertion_fasta->getSequence(seq_id));
++                if (allATGCN(ins_seq)){
++                    this->info["SEQ"].resize(1);
++                    this->info["SEQ"][0].assign(ins_seq);
++                    if (place_seq){
++                        this->alt[0].assign(ref_base + ins_seq);
++                    }
++                }
++                else {
++                    cerr << "Warning: Loaded invalid alt sequence for: " << *this << endl;
++                    return false;
++                }
++
++                if (ins_seq.size() != info_len){
++                    cerr << "Warning: insertion SVLEN and FASTA do not agree (complex insertions not canonicalizeable) [canonicalize] " <<
++                    *this << endl << "SVLEN: " << info_len << "  " << "FASTA bases: " << ins_seq.size() << endl;
++                    return false;
++                }
++            }
++            else{
++                cerr << "Warning: could not locate alt sequence for: " << *this << endl;
++                return false;
++            }
++
++        }
++        else{
++            cerr << "Warning: could not set SEQ [canonicalize]. " << *this << endl;
++            return false;
++        }
++    }
++    else if (svtype == "DEL"){
++        // Note that info_len has been abs'd and is always positive
++        if (this->position + info_len != info_end){
++            cerr << "Warning: deletion END and SVLEN do not agree [canonicalize] " << *this << endl <<
++            "END: " << info_end << "  " << "SVLEN: " << info_len << endl;
++            return false;
++        }
++
++        if (this->position + info_span != info_end){
++            cerr << "Warning: deletion END and SPAN do not agree [canonicalize] " << *this << endl <<
++            "END: " << info_end << "  " << "SPAN: " << info_span << endl;
++            return false;
++        }
++
++        if (info_end > fasta_reference.sequenceLength(this->sequenceName)) {
++            cerr << "Warning: deletion END is past end of sequence [canonicalize] " << *this << endl <<
++            "END: " << info_end << "  " << "length: " << fasta_reference.sequenceLength(this->sequenceName) << endl;
++            return false;
++        }
++
++        // Set REF
++        if (place_seq){
++            string del_seq = toUpper(fasta_reference.getSubSequence(this->sequenceName, this->zeroBasedPosition(), info_len + 1));
++            string ref_base = toUpper(fasta_reference.getSubSequence(this->sequenceName, this->zeroBasedPosition(), 1));
++            this->ref.assign( del_seq );
++            this->alt[0].assign( ref_base );
++        }
++    }
++    else if (svtype == "INV"){
++        if (this->position + info_span != info_end){
++            cerr << "Warning: inversion END and SPAN do not agree [canonicalize] " << *this << endl <<
++            "END: " << info_end << "  " << "SPAN: " << info_span << endl;
++            return false;
++        }
++
++        if (info_len != 0){
++            cerr << "Warning: inversion SVLEN specifies nonzero length change (complex inversions not canonicalizeable) [canonicalize] " <<
++            *this << endl << "SVLEN: " << info_len << endl;
++
++            if (info_end == this->position + info_len) {
++                // We can probably guess what they meant here.
++                cerr << "Warning: VCF writer incorrecty produced END = POS + SVLEN for an inversion. Fixing SVLEN to 0." << endl;
++                info_len = 0;
++                this->info["SVLEN"][0] = to_string(info_len);
++            } else {
++                return false;
++            }
++        }
++
++        if (info_end > fasta_reference.sequenceLength(this->sequenceName)) {
++            cerr << "Warning: inversion END is past end of sequence [canonicalize] " << *this << endl <<
++            "END: " << info_end << "  " << "length: " << fasta_reference.sequenceLength(this->sequenceName) << endl;
++            return false;
++        }
++
++        if (place_seq){
++            string ref_seq = toUpper(fasta_reference.getSubSequence(this->sequenceName, this->zeroBasedPosition(), info_span + 1));
++            // Note that inversions still need an anchoring left base at POS
++            string inv_seq = ref_seq.substr(0, 1) + reverse_complement(ref_seq.substr(1));
++            this->ref.assign(ref_seq);
++            this->alt[0].assign(inv_seq);
++        }
++
++    }
++    else{
++        cerr << "Warning: invalid SV type [canonicalize]:" << *this << endl;
++        return false;
++    }
++
++
++    this->updateAlleleIndexes();
++
++    // Check for harmony between ref / alt / tags
++    if (this->position > stol(this->info.at("END").at(0))){
++        cerr << "Warning: position > END. Possible reference genome mismatch." << endl;
++        return false;
++    }
++
++    if (svtype == "INS"){
++        assert(!this->info.at("SEQ")[0].empty());
++    }
++
++    this->canonical = true;
++    return true;
++}
++
++
++
++// To canonicalize a variant, we need either both REF and ALT seqs filled in
++// or SVTYPE and SVLEN or END or SPAN or SEQ sufficient to define the variant.
++bool VariantCanonical::canonicalizable(){
++    bool pre_canon = allATGCN(this->ref);
++
++    for (auto& a : this->alt){
++        if (!allATGCN(a)){
++            pre_canon = false;
++        }
++    }
++
++    if (pre_canon){
++        // It came in in a fully specified way.
++        // TODO: ideally, we'd check to make sure ref/alt lengths, svtypes, and ends line up right here.
++        return true;
++    }
++
++    string svtype = getSVTYPE();
++
++    if (svtype.empty()){
++        // We have no SV type, so we can't interpret things.
++        return false;
++    }
++
++    // Check the tags
++    bool has_len = this->info.count("SVLEN") && !this->info.at("SVLEN").empty();
++    bool has_seq = this->info.count("SEQ") && !this->info.at("SEQ").empty();
++    bool has_span = this->info.count("SPAN") && !this->info.at("SPAN").empty();
++    bool has_end = this->info.count("END") && !this->info.at("END").empty();
++
++
++    if (svtype == "INS"){
++        // Insertions need a SEQ, SVLEN, or SPAN
++        return has_seq || has_len || has_span;
++    }
++    else if (svtype == "DEL"){
++        // Deletions need an SVLEN, SPAN, or END
++        return has_len || has_span || has_end;
++    }
++    else if (svtype == "INV"){
++        // Inversions need a SPAN or END
++        return has_span || has_end;
++    }
++    else{
++        // Other SV types are unsupported
++        // TODO: DUP
++        return false;
++    }
++}
++
++
++int VariantCanonical::getMaxReferencePos(){
++    if (this->canonical && this->info.find("END") != this->info.end()) {
++        // We are cannonicalized and must have a correct END
++
++        int end = 0;
++        for (auto s : this->info.at("END")){
++            // Get the latest one defined.
++            end = max(abs(stoi(s)), end);
++        }
++        // Convert to 0-based.
++        return end - 1;
++
++    }
++
++    if (!this->isSymbolicSV()){
++        // We don't necessarily have an END, but we don't need one
++        return this->zeroBasedPosition() + this->ref.length() - 1;
++    }
++
++    if (this->canonicalizable()){
++        // We aren't canonical, but we could be.
++        if (this->info.find("END") != this->info.end()){
++            // We have an END; blindly trust it
++            int end = 0;
++            for (auto s : this->info.at("END")){
++                // Get the latest one defined.
++                end = max(abs(stoi(s)), end);
++            }
++            // Convert to 0-based.
++            return end - 1;
++
++        }
++        else if (this->info.find("SVLEN") != this->info.end()){
++            // There's no endpoint, but we know an SVLEN.
++            // A negative SVLEN means a deletion, so if we find one we can say we delete that much.
++            int deleted = 0;
++            for (auto s : this->info.at("SVLEN")){
++                int alt_len = stoi(s);
++                if (alt_len > 0){
++                    // Not a deletion, so doesn't affect any ref bases
++                    continue;
++                }
++                deleted = max(-alt_len, deleted);
++            }
++
++            // The anchoring base at POS gets added in (because it isn't
++            // deleted) but then subtracted out (because we have to do that to
++            // match non-SV deletions). For insertions, deleted is 0 and we
++            // return 0-based POS. Inversions must have an END.
++            return this->zeroBasedPosition() + deleted;
++        }
++        else{
++            cerr << "Warning: insufficient length information for " << *this << endl;
++            return -1;
++        }
++    }
++    else {
++        cerr << "Warning: can't get end of non-canonicalizeable variant " << *this << endl;
++    }
++    return -1;
++}
++
++} // namespace vcflib
+diff --git a/src/canonicalize.h b/src/canonicalize.h
+new file mode 100644
+index 0000000..3970ca6
+--- /dev/null
++++ b/src/canonicalize.h
+@@ -0,0 +1,71 @@
++/*
++    vcflib C++ library for parsing and manipulating VCF files
++
++    Copyright © 2010-2024 Erik Garrison
++    Copyright © 2020-2024 Pjotr Prins
++
++    This software is published under the MIT License. See the LICENSE file.
++*/
++
++#pragma once
++
++#include "Variant.h"
++#include <Fasta.h>
++
++using namespace std;
++
++namespace vcflib {
++
++class VariantCanonical : public Variant {
++public:
++
++    VariantCanonical() { }
++
++
++   /**
++     * This gets set to true after canonicalize() has been called on the variant, if it succeeded.
++     */
++    bool canonical;
++
++    /**
++     * Get the maximum zero-based position of the reference affected by this variant.
++     * Only works reliably for variants that are not SVs or for SVs that have been canonicalize()'d.
++     */
++    int getMaxReferencePos();
++
++   /**
++     * Convert a structural variant to the canonical VCF4.3 format using a reference.
++     *   Returns true if the variant is canonicalized, false otherwise.
++     *   May NOT be called twice on the same variant; it will fail an assert.
++     *   Returns false for non-SVs
++     *   place_seq: if true, the ref/alt fields are
++     *       filled in with the corresponding sequences
++     *     from the reference (and optionally insertion FASTA)
++     * min_size_override: If a variant is less than this size,
++     *     and it has a valid REF and ALT, consider it canonicalized
++     *     even if the below conditions are not true.
++     * Fully canonicalized variants (which are greater than min_size_override)
++     * guarantee the following:
++     *  - POS <= END and corresponds to the anchoring base for symbolic alleles
++     *  - SVLEN info field is set and is positive for all variants except DELs
++     *  - SVTYPE info field is set and is in {DEL, INS, INV, DUP}
++     *  - END info field is set to the POS + len(REF allele) - 1 and corresponds to the final affected reference base
++     *  - Insertions get an upper-case SEQ info field
++     *  - REF and ALT are upper-case if filled in by this function
++     *  - canonical = true;
++     * TODO: CURRENTLY: canonical requires there be only one alt allele
++    **/
++    bool canonicalize(FastaReference& ref,
++         vector<FastaReference*> insertions,
++         bool place_seq = true,
++         int min_size_override = 0);
++
++    /**
++     * This returns true if the variant appears able to be handled by
++     * canonicalize(). It checks if it has fully specified sequence, or if it
++     * has a defined SV type and length/endpoint.
++     */
++    bool canonicalizable();
++};
++
++} // namespace
+diff --git a/src/legacy.cpp b/src/legacy.cpp
+index 190636f..fb64088 100644
+--- a/src/legacy.cpp
++++ b/src/legacy.cpp
+@@ -1,6 +1,7 @@
+ /*
+     vcflib C++ library for parsing and manipulating VCF files. This file contains
+-    legacy material that will be phased out.
++    legacy material that may be phased out. It contains a libwfa2 dependency so we
++    can chose between SW and WF.
+ 
+     Copyright © 2010-2023 Erik Garrison
+     Copyright © 2020-2023 Pjotr Prins
+@@ -8,11 +9,8 @@
+     This software is published under the MIT License. See the LICENSE file.
+ */
+ 
+-#include <utility>
+-#include "Variant.h"
+-#include "vcf-wfa.h"
+-#include "allele.hpp"
+-#include "cigar.hpp"
++#include "legacy.h"
++#include <SmithWatermanGotoh.h>
+ 
+ namespace vcflib {
+ 
+@@ -26,7 +24,7 @@ namespace vcflib {
+ //
+ // Returns map of [REF,ALTs] with attached VariantAllele records
+ 
+-map<string, vector<VariantAllele> > Variant::legacy_parsedAlternates(
++map<string, vector<VariantAllele> > VariantLegacy::legacy_parsedAlternates(
+     bool includePreviousBaseForIndels,
+     bool useMNPs,
+     bool useEntropy,
+@@ -334,336 +332,5 @@ map<string, vector<VariantAllele> > Variant::legacy_parsedAlternates(
+     return variantAlleles;
+ }
+ 
+-/*
+-@@ Post-process alleles to reduce the set and normalise counts. This is the legacy version.
+- */
+-
+-#define ALLELE_NULL -1
+-
+-void Variant::legacy_reduceAlleles(
+-    map<string, pair<vector<VariantAllele>, bool> > varAlleles,
+-    VariantCallFile &variantFile,
+-    Variant var,
+-    string parseFlag,
+-    bool keepInfo,
+-    bool keepGeno,
+-    bool debug)
+-{
+-    set<VariantAllele> alleles;
+-    // collect unique alleles
+-    for (auto a: varAlleles) {
+-        for (auto va: a.second.first) {
+-            if (debug) cerr << a.first << " " << va << endl;
+-            alleles.insert(va); // only inserts first unique allele and ignores next ones
+-        }
+-    }
+-
+-    int altcount = 0;
+-    for (auto a: alleles) {
+-        if (a.ref != a.alt) {
+-            ++altcount;
+-            if (debug) cerr << altcount << "$" << a << endl;
+-        }
+-    }
+-
+-    if (altcount == 1 && var.alt.size() == 1 && var.alt.front().size() == 1) { // if biallelic SNP
+-        cout << var << endl;
+-        return;
+-    }
+-
+-    // collect variant allele indexed membership
+-    map<VariantAllele, vector<int> > variantAlleleIndexes; // from serialized VariantAllele to indexes
+-    for (auto a: varAlleles) {
+-        int index = var.altAlleleIndexes[a.first] + 1; // make non-relative
+-        for (auto va: a.second.first) {
+-            variantAlleleIndexes[va].push_back(index);
+-        }
+-    }
+-
+-    // VariantAllele tracks pos,ref,alt. We add these counters in alleleStuff:
+-    struct var_info_t {
+-        double freq = 0;
+-        int count = 0;
+-        int in_inv = 0;
+-        map<string, string> info;
+-    };
+-    map<VariantAllele, var_info_t> alleleStuff;
+-
+-    for (auto a: var.alt) {
+-        auto varalleles = varAlleles[a].first;
+-        bool is_inv = varAlleles[a].second;
+-        for (auto va: varalleles) {
+-            alleleStuff[va].in_inv += is_inv;
+-        }
+-    }
+-
+-    bool hasAf = false;
+-    if (var.info.find("AF") != var.info.end()) {
+-        hasAf = true;
+-        for (vector<string>::iterator a = var.alt.begin(); a != var.alt.end(); ++a) {
+-            vector<VariantAllele>& vars = varAlleles[*a].first;
+-            for (vector<VariantAllele>::iterator va = vars.begin(); va != vars.end(); ++va) {
+-                double freq;
+-                try {
+-                    convert(var.info["AF"].at(var.altAlleleIndexes[*a]), freq);
+-                    alleleStuff[*va].freq += freq;
+-                } catch (...) {
+-                    cerr << "vcfallelicprimitives WARNING: AF does not have count == alts @ "
+-                         << var.sequenceName << ":" << var.position << endl;
+-                }
+-            }
+-        }
+-    }
+-
+-    bool hasAc = false;
+-    if (var.info.find("AC") != var.info.end()) {
+-        hasAc = true;
+-        for (auto a: var.alt) {
+-            auto vars = varAlleles[a].first;
+-            for (auto va: vars) {
+-                int count;
+-                try {
+-                    convert(var.info["AC"].at(var.altAlleleIndexes[a]), count);
+-                    alleleStuff[va].count += count;
+-                } catch (...) {
+-                    cerr << "vcfallelicprimitives WARNING: AC does not have count == alts @ "
+-                         << var.sequenceName << ":" << var.position << endl;
+-                }
+-            }
+-        }
+-    }
+-
+-    if (keepInfo) {
+-        for (map<string, vector<string> >::iterator infoit = var.info.begin();
+-             infoit != var.info.end(); ++infoit) {
+-            string key = infoit->first;
+-            for (vector<string>::iterator a = var.alt.begin(); a != var.alt.end(); ++a) {
+-                vector<VariantAllele>& vars = varAlleles[*a].first;
+-                for (vector<VariantAllele>::iterator va = vars.begin(); va != vars.end(); ++va) {
+-                    string val;
+-                    vector<string>& vals = var.info[key];
+-                    if (vals.size() == var.alt.size()) { // allele count for info
+-                        val = vals.at(var.altAlleleIndexes[*a]);
+-                    } else if (vals.size() == 1) { // site-wise count
+-                        val = vals.front();
+-                    } // don't handle other multiples... how would we do this without going crazy?
+-                    if (!val.empty()) {
+-                        alleleStuff[*va].info[key] = val;
+-                    }
+-                }
+-            }
+-        }
+-    }
+-
+-    /*
+-      if (keepGeno) {
+-      for (map<string, map<string, vector<string> > >::iterator sampleit = var.samples.begin();
+-      sampleit != var.samples.end(); ++sampleit) {
+-      string& sampleName = sampleit->first;
+-      map<string, vector<string> >& sampleValues = var.samples[sampleName];
+-
+-      }
+-      }
+-    */
+-
+-    // from old allele index to a new series across the unpacked positions
+-    map<int, map<long unsigned int, int> > unpackedAlleleIndexes;
+-    map<int, bool> unpackedAlleleInversions;
+-
+-    map<long unsigned int, Variant> variants;
+-    int varidx = 0;
+-    for (set<VariantAllele>::iterator a = alleles.begin(); a != alleles.end(); ++a) {
+-        if (a->ref == a->alt) {
+-            // ref allele
+-            continue;
+-        }
+-        vector<int>& originalIndexes = variantAlleleIndexes[*a];
+-        string type;
+-        int len = 0;
+-        if (a->ref.size() && a->alt.size()
+-            && a->ref.at(0) == a->alt.at(0)) { // well-behaved indels
+-            if (a->ref.size() > a->alt.size()) {
+-                type = "del";
+-                len = a->ref.size() - a->alt.size();
+-                // special case
+-                // a deletion implies we should be ALLELE_NULL on this haplotype
+-                // until the end of the deletion
+-                // save the range in a new map which we'll iterate over
+-                for (auto i : originalIndexes) {
+-                    // TODO check if it should be len
+-                    //auto d = (*deletions)[i];
+-                    //d.push_back(make_pair(0, 0));
+-                }
+-            } else if (a->ref.size() < a->alt.size()) {
+-                len = a->alt.size() - a->ref.size();
+-                type = "ins";
+-            }
+-        } else {
+-            if (a->ref.size() == a->alt.size()) {
+-                len = a->ref.size();
+-                if (a->ref.size() == 1) {
+-                    type = "snp";
+-                } else {
+-                    type = "mnp";
+-                }
+-            } else {
+-                len = abs((int) a->ref.size() - (int) a->alt.size());
+-                type = "complex";
+-            }
+-        }
+-
+-        if (variants.find(a->position) == variants.end()) {
+-            Variant newvar(variantFile);
+-            variants[a->position] = newvar;
+-        }
+-
+-        Variant& v = variants[a->position]; // guaranteed to exist
+-
+-        if (!parseFlag.empty()) {
+-            v.info[parseFlag].push_back(var.sequenceName + ":" + std::to_string(var.position));
+-        }
+-        v.quality = var.quality;
+-        v.filter = var.filter;
+-        v.infoOrderedKeys = var.infoOrderedKeys;
+-        if (v.id.empty()) {
+-            v.id = var.id + "_" + std::to_string(++varidx);
+-        }
+-        //v.format = var.format;
+-        vector<string> gtonlyformat;
+-        gtonlyformat.push_back("GT");
+-        v.format = gtonlyformat;
+-        v.info["TYPE"].push_back(type);
+-        v.info["LEN"].push_back(convert(len));
+-        v.info["INV"].push_back(convert(alleleStuff[*a].in_inv));
+-        if (hasAf) {
+-            v.info["AF"].push_back(convert(alleleStuff[*a].freq));
+-        }
+-        if (hasAc) {
+-            v.info["AC"].push_back(convert(alleleStuff[*a].count));
+-        }
+-        if (keepInfo) {
+-            for (map<string, vector<string> >::iterator infoit = var.info.begin();
+-                 infoit != var.info.end(); ++infoit) {
+-                string key = infoit->first;
+-                if (key != "AF" && key != "AC" && key != "TYPE" && key != "LEN") { // don't clobber previous
+-                    v.info[key].push_back(alleleStuff[*a].info[key]);
+-                }
+-            }
+-        }
+-
+-        // now, keep all the other infos if we are asked to
+-
+-        v.sequenceName = var.sequenceName;
+-        v.position = a->position; // ... by definition, this should be == if the variant was found
+-        if (v.ref.size() < a->ref.size()) {
+-            for (vector<string>::iterator va = v.alt.begin(); va != v.alt.end(); ++va) {
+-                *va += a->ref.substr(v.ref.size());
+-            }
+-            v.ref = a->ref;
+-        }
+-        v.alt.push_back(a->alt);
+-
+-        int alleleIndex = v.alt.size();
+-        for (vector<int>::iterator i = originalIndexes.begin(); i != originalIndexes.end(); ++i) {
+-            unpackedAlleleIndexes[*i][v.position] = alleleIndex;
+-            //unpackedAlleleInversions[*i] = v.inv
+-        }
+-        // add null allele
+-        unpackedAlleleIndexes[ALLELE_NULL][v.position] = ALLELE_NULL;
+-
+-    }
+-
+-    // handle deletions. If ref length is larger than the WF matched
+-    // allele length make this a missing genotype for all individual
+-    // SNP/MNP calls that match the allele index and fall inside the
+-    // deletion.
+-    //
+-    // The idea is that when a deletion exists for a sample there is
+-    // no way a SNP/MNP gets called in that sample.
+-    for (auto a: alleles) {
+-        int len = 0;
+-        if (a.ref.size() && a.alt.size() && a.ref.at(0) == a.alt.at(0)
+-            && a.ref.size() > a.alt.size()) {
+-            len = a.ref.size() - a.alt.size();
+-        } else {
+-            continue;
+-        }
+-        assert(len > 0); // make sure we have a deletion
+-        // nullify all the variants inside of the deletion range by
+-        // walking all variants and checking the allele index
+-        // number. Note that this version relies on a sorted map of
+-        // variants[pos]. By default, a Map in C++ is sorted in
+-        // increasing order based on its key.
+-        vector<int>& originalIndexes = variantAlleleIndexes[a];
+-        auto begin = variants.upper_bound(a.position);
+-        auto end = variants.upper_bound(a.position + a.ref.size());
+-        for (auto i : originalIndexes) {
+-            for (auto x = begin; x != end; ++x) {
+-                unpackedAlleleIndexes[i][x->second.position] = ALLELE_NULL;
+-            }
+-        }
+-    }
+-
+-    // genotypes
+-    for (vector<string>::iterator s = var.sampleNames.begin(); s != var.sampleNames.end(); ++s) {
+-        string& sampleName = *s;
+-        if (var.samples.find(sampleName) == var.samples.end()) {
+-            continue;
+-        }
+-        map<string, vector<string> >& sample = var.samples[sampleName];
+-        if (sample.find("GT") == sample.end()) {
+-            continue;
+-        }
+-        string& genotype = sample["GT"].front();
+-        vector<string> genotypeStrs = split(genotype, "|/");
+-        vector<int> genotypeIndexes;
+-        for (vector<string>::iterator s = genotypeStrs.begin(); s != genotypeStrs.end(); ++s) {
+-            int i;
+-            if (!convert(*s, i)) {
+-                genotypeIndexes.push_back(ALLELE_NULL);
+-            } else {
+-                genotypeIndexes.push_back(i);
+-            }
+-        }
+-        map<long unsigned int, vector<int> > positionIndexes;
+-        for (vector<int>::iterator g = genotypeIndexes.begin(); g != genotypeIndexes.end(); ++g) {
+-            int oldIndex = *g;
+-            for (map<long unsigned int, Variant>::iterator v = variants.begin(); v != variants.end(); ++v) {
+-                const long unsigned int& p = v->first;
+-                if (oldIndex == 0) { // reference
+-                    positionIndexes[p].push_back(0);
+-                } else {
+-                    positionIndexes[p].push_back(unpackedAlleleIndexes[oldIndex][p]);
+-                }
+-            }
+-        }
+-        for (map<long unsigned int, Variant>::iterator v = variants.begin(); v != variants.end(); ++v) {
+-            Variant& variant = v->second;
+-            vector<int>& gtints = positionIndexes[v->first];
+-            vector<string> gtstrs;
+-            for (vector<int>::iterator i = gtints.begin(); i != gtints.end(); ++i) {
+-                if (*i != ALLELE_NULL) {
+-                    gtstrs.push_back(convert(*i));
+-                } else {
+-                    gtstrs.push_back(".");
+-                }
+-            }
+-            string genotype = join(gtstrs, "|");
+-            // if we are keeping the geno info, pull it over here
+-            if (keepGeno) {
+-                variant.format = var.format;
+-                variant.samples[sampleName] = var.samples[sampleName];
+-            }
+-            // note that this will replace the old geno, but otherwise it is the same
+-            variant.samples[sampleName]["GT"].clear();
+-            variant.samples[sampleName]["GT"].push_back(genotype);
+-        }
+-    }
+-    for (auto v: variants) {
+-        cout << v.second << endl;
+-    }
+-}
+-
+-
+ 
+ } // namespace vcflib
+diff --git a/src/legacy.h b/src/legacy.h
+new file mode 100644
+index 0000000..1a482bc
+--- /dev/null
++++ b/src/legacy.h
+@@ -0,0 +1,47 @@
++/*
++    vcflib C++ library for parsing and manipulating VCF files
++
++    Copyright © 2010-2024 Erik Garrison
++    Copyright © 2020-2024 Pjotr Prins
++
++    This software is published under the MIT License. See the LICENSE file.
++*/
++
++#pragma once
++
++#include <utility>
++#include "Variant.h"
++#include "vcf-wfa.h"
++#include "allele.hpp"
++#include "cigar.hpp"
++
++using namespace std;
++
++namespace vcflib {
++
++class VariantLegacy : public Variant {
++public:
++
++    VariantLegacy() { }
++
++    VariantLegacy(VariantCallFile& v)
++        : Variant(v)
++    { }
++
++// Legacy version of parsedAlterneates:
++    map<string, vector<VariantAllele> > legacy_parsedAlternates(
++	bool includePreviousBaseForIndels = false,
++	bool useMNPs = false,
++	bool useEntropy = false,
++	float matchScore = 10.0f,
++	float mismatchScore = -9.0f,
++	float gapOpenPenalty = 15.0f,
++	float gapExtendPenalty = 6.66f,
++	float repeatGapExtendPenalty = 0.0f,
++	string flankingRefLeft = "",
++	string flankingRefRight = "",
++	bool useWaveFront=true,
++	bool debug=false);
++};
++
++} // end namespace vcflib
+diff --git a/src/multichoose.h b/src/multichoose.h
+new file mode 100644
+index 0000000..140dafe
+--- /dev/null
++++ b/src/multichoose.h
+@@ -0,0 +1,84 @@
++#ifndef __MULTICHOOSE_H
++#define __MULTICHOOSE_H
++
++/*
++
++multichoose.h  -- n multichoose k for generic vectors
++
++author: Erik Garrison <erik.garrison@bc.edu>
++last revised: 2010-04-16
++author: Pjotr Prins
++last revised: 2024 (fixed template error and merged template into vcflib)
++
++Copyright (c) 2010 by Erik Garrison
++
++Permission is hereby granted, free of charge, to any person
++obtaining a copy of this software and associated documentation
++files (the "Software"), to deal in the Software without
++restriction, including without limitation the rights to use,
++copy, modify, merge, publish, distribute, sublicense, and/or sell
++copies of the Software, and to permit persons to whom the
++Software is furnished to do so, subject to the following
++conditions:
++
++The above copyright notice and this permission notice shall be
++included in all copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
++OTHER DEALINGS IN THE SOFTWARE.
++
++*/
++
++
++// provides multiset combinations out of the std::vector of objects
++template <class T>
++std::vector< std::vector<T> > multichoose(int k, std::vector<T>& objects) {
++
++    std::vector< std::vector<T> > choices;
++
++    int j,j_1,q,r;
++
++    r = objects.size() - 1;
++
++    // combination indexes
++    std::vector<T*> a, b;
++
++    for (int i=0;i<k;i++) {
++        a.push_back(&objects[0]); b.push_back(&objects[r]);
++    }
++
++    j=k;
++    while(1){
++        std::vector<T> multiset;
++        for(int i=0;i<k;i++)
++            multiset.push_back(*a[i]);
++        choices.push_back(multiset);
++        j=k;
++        do {
++	    j--;
++	    if (j<0) break;
++	} while(a[j]==b[j]);
++        if (j<0) break;
++        j_1=j;
++        while(j_1<=k-1){
++            a[j_1]=a[j_1]+1;
++            q=j_1;
++            while(q<k-1) {
++                a[q+1]=a[q];
++                q++;
++            }
++            q++;
++            j_1=q;
++        }
++    }
++
++    return choices;
++}
++
++#endif
+diff --git a/src/pythonffi.cpp b/src/pythonffi.cpp
+index 62abea8..4358f4e 100644
+--- a/src/pythonffi.cpp
++++ b/src/pythonffi.cpp
+@@ -1,8 +1,9 @@
+ // Python ffi calls C++ functions
+ //
+-// Copyright © 2022-2023 Pjotr Prins
++// Copyright © 2022-2024 Pjotr Prins
+ 
+ #include "Variant.h"
++#include "legacy.h"
+ #include "vcf-wfa.h"
+ 
+ // Pybind11
+@@ -59,7 +60,7 @@ PYBIND11_MODULE(pyvcflib, m)
+       .def_readonly("info", &Variant::info)
+       .def_readonly("sampleNames", &Variant::sampleNames)
+       .def_readonly("samples", &Variant::samples)
+-      .def("legacy_parsedAlternates", &Variant::legacy_parsedAlternates)
++      // .def("legacy_parsedAlternates", &VariantLegacy::legacy_parsedAlternates)
+       ;
+ 
+   py::class_<WfaVariant, Variant>(m, "WfaVariant", "WFA VCF record")
+diff --git a/src/vcf-wfa.cpp b/src/vcf-wfa.cpp
+index d4dbdb2..04bead9 100644
+--- a/src/vcf-wfa.cpp
++++ b/src/vcf-wfa.cpp
+@@ -1,8 +1,8 @@
+ /*
+     vcflib C++ library for parsing and manipulating VCF files
+ 
+-    Copyright © 2010-2023 Erik Garrison
+-    Copyright © 2020-2023 Pjotr Prins
++    Copyright © 2010-2024= Erik Garrison
++    Copyright © 2020-2024 Pjotr Prins
+ 
+     This software is published under the MIT License. See the LICENSE file.
+ */
+@@ -97,7 +97,6 @@ map<string, pair<vector<VariantAllele>,bool> > WfaVariant::wfa_parsedAlternates(
+             if (rkmh::compare(alt_sketch, ref_sketch_fwd, invKmerLen)
+                 > rkmh::compare(alt_sketch, ref_sketch_rev, invKmerLen)) {
+                 is_inv = true;
+-                
+                 /* DISABLED
+                 // flip the alt
+                 string alternate_rev = reverse_complement(alternate);
+@@ -325,4 +324,335 @@ map<string, pair<vector<VariantAllele>,bool> > WfaVariant::wfa_parsedAlternates(
+     return variantAlleles;
+ }
+ 
++/*
++@@ Post-process alleles to reduce the set and normalise counts.
++ */
++
++#define ALLELE_NULL -1
++
++void Variant::reduceAlleles(
++    map<string, pair<vector<VariantAllele>, bool> > varAlleles,
++    VariantCallFile &variantFile,
++    Variant var,
++    string parseFlag,
++    bool keepInfo,
++    bool keepGeno,
++    bool debug)
++{
++    set<VariantAllele> alleles;
++    // collect unique alleles
++    for (auto a: varAlleles) {
++        for (auto va: a.second.first) {
++            if (debug) cerr << a.first << " " << va << endl;
++            alleles.insert(va); // only inserts first unique allele and ignores next ones
++        }
++    }
++
++    int altcount = 0;
++    for (auto a: alleles) {
++        if (a.ref != a.alt) {
++            ++altcount;
++            if (debug) cerr << altcount << "$" << a << endl;
++        }
++    }
++
++    if (altcount == 1 && var.alt.size() == 1 && var.alt.front().size() == 1) { // if biallelic SNP
++        cout << var << endl;
++        return;
++    }
++
++    // collect variant allele indexed membership
++    map<VariantAllele, vector<int> > variantAlleleIndexes; // from serialized VariantAllele to indexes
++    for (auto a: varAlleles) {
++        int index = var.altAlleleIndexes[a.first] + 1; // make non-relative
++        for (auto va: a.second.first) {
++            variantAlleleIndexes[va].push_back(index);
++        }
++    }
++
++    // VariantAllele tracks pos,ref,alt. We add these counters in alleleStuff:
++    struct var_info_t {
++        double freq = 0;
++        int count = 0;
++        int in_inv = 0;
++        map<string, string> info;
++    };
++    map<VariantAllele, var_info_t> alleleStuff;
++
++    for (auto a: var.alt) {
++        auto varalleles = varAlleles[a].first;
++        bool is_inv = varAlleles[a].second;
++        for (auto va: varalleles) {
++            alleleStuff[va].in_inv += is_inv;
++        }
++    }
++
++    bool hasAf = false;
++    if (var.info.find("AF") != var.info.end()) {
++        hasAf = true;
++        for (vector<string>::iterator a = var.alt.begin(); a != var.alt.end(); ++a) {
++            vector<VariantAllele>& vars = varAlleles[*a].first;
++            for (vector<VariantAllele>::iterator va = vars.begin(); va != vars.end(); ++va) {
++                double freq;
++                try {
++                    convert(var.info["AF"].at(var.altAlleleIndexes[*a]), freq);
++                    alleleStuff[*va].freq += freq;
++                } catch (...) {
++                    cerr << "vcfallelicprimitives WARNING: AF does not have count == alts @ "
++                         << var.sequenceName << ":" << var.position << endl;
++                }
++            }
++        }
++    }
++
++    bool hasAc = false;
++    if (var.info.find("AC") != var.info.end()) {
++        hasAc = true;
++        for (auto a: var.alt) {
++            auto vars = varAlleles[a].first;
++            for (auto va: vars) {
++                int count;
++                try {
++                    convert(var.info["AC"].at(var.altAlleleIndexes[a]), count);
++                    alleleStuff[va].count += count;
++                } catch (...) {
++                    cerr << "vcfallelicprimitives WARNING: AC does not have count == alts @ "
++                         << var.sequenceName << ":" << var.position << endl;
++                }
++            }
++        }
++    }
++
++    if (keepInfo) {
++        for (map<string, vector<string> >::iterator infoit = var.info.begin();
++             infoit != var.info.end(); ++infoit) {
++            string key = infoit->first;
++            for (vector<string>::iterator a = var.alt.begin(); a != var.alt.end(); ++a) {
++                vector<VariantAllele>& vars = varAlleles[*a].first;
++                for (vector<VariantAllele>::iterator va = vars.begin(); va != vars.end(); ++va) {
++                    string val;
++                    vector<string>& vals = var.info[key];
++                    if (vals.size() == var.alt.size()) { // allele count for info
++                        val = vals.at(var.altAlleleIndexes[*a]);
++                    } else if (vals.size() == 1) { // site-wise count
++                        val = vals.front();
++                    } // don't handle other multiples... how would we do this without going crazy?
++                    if (!val.empty()) {
++                        alleleStuff[*va].info[key] = val;
++                    }
++                }
++            }
++        }
++    }
++
++    /*
++      if (keepGeno) {
++      for (map<string, map<string, vector<string> > >::iterator sampleit = var.samples.begin();
++      sampleit != var.samples.end(); ++sampleit) {
++      string& sampleName = sampleit->first;
++      map<string, vector<string> >& sampleValues = var.samples[sampleName];
++
++      }
++      }
++    */
++
++    // from old allele index to a new series across the unpacked positions
++    map<int, map<long unsigned int, int> > unpackedAlleleIndexes;
++    map<int, bool> unpackedAlleleInversions;
++
++    map<long unsigned int, Variant> variants;
++    int varidx = 0;
++    for (set<VariantAllele>::iterator a = alleles.begin(); a != alleles.end(); ++a) {
++        if (a->ref == a->alt) {
++            // ref allele
++            continue;
++        }
++        vector<int>& originalIndexes = variantAlleleIndexes[*a];
++        string type;
++        int len = 0;
++        if (a->ref.size() && a->alt.size()
++            && a->ref.at(0) == a->alt.at(0)) { // well-behaved indels
++            if (a->ref.size() > a->alt.size()) {
++                type = "del";
++                len = a->ref.size() - a->alt.size();
++                // special case
++                // a deletion implies we should be ALLELE_NULL on this haplotype
++                // until the end of the deletion
++                // save the range in a new map which we'll iterate over
++                for (auto i : originalIndexes) {
++                    // TODO check if it should be len
++                    //auto d = (*deletions)[i];
++                    //d.push_back(make_pair(0, 0));
++                }
++            } else if (a->ref.size() < a->alt.size()) {
++                len = a->alt.size() - a->ref.size();
++                type = "ins";
++            }
++        } else {
++            if (a->ref.size() == a->alt.size()) {
++                len = a->ref.size();
++                if (a->ref.size() == 1) {
++                    type = "snp";
++                } else {
++                    type = "mnp";
++                }
++            } else {
++                len = abs((int) a->ref.size() - (int) a->alt.size());
++                type = "complex";
++            }
++        }
++
++        if (variants.find(a->position) == variants.end()) {
++            Variant newvar(variantFile);
++            variants[a->position] = newvar;
++        }
++
++        Variant& v = variants[a->position]; // guaranteed to exist
++
++        if (!parseFlag.empty()) {
++            v.info[parseFlag].push_back(var.sequenceName + ":" + std::to_string(var.position));
++        }
++        v.quality = var.quality;
++        v.filter = var.filter;
++        v.infoOrderedKeys = var.infoOrderedKeys;
++        if (v.id.empty()) {
++            v.id = var.id + "_" + std::to_string(++varidx);
++        }
++        //v.format = var.format;
++        vector<string> gtonlyformat;
++        gtonlyformat.push_back("GT");
++        v.format = gtonlyformat;
++        v.info["TYPE"].push_back(type);
++        v.info["LEN"].push_back(convert(len));
++        v.info["INV"].push_back(convert(alleleStuff[*a].in_inv));
++        if (hasAf) {
++            v.info["AF"].push_back(convert(alleleStuff[*a].freq));
++        }
++        if (hasAc) {
++            v.info["AC"].push_back(convert(alleleStuff[*a].count));
++        }
++        if (keepInfo) {
++            for (map<string, vector<string> >::iterator infoit = var.info.begin();
++                 infoit != var.info.end(); ++infoit) {
++                string key = infoit->first;
++                if (key != "AF" && key != "AC" && key != "TYPE" && key != "LEN") { // don't clobber previous
++                    v.info[key].push_back(alleleStuff[*a].info[key]);
++                }
++            }
++        }
++
++        // now, keep all the other infos if we are asked to
++
++        v.sequenceName = var.sequenceName;
++        v.position = a->position; // ... by definition, this should be == if the variant was found
++        if (v.ref.size() < a->ref.size()) {
++            for (vector<string>::iterator va = v.alt.begin(); va != v.alt.end(); ++va) {
++                *va += a->ref.substr(v.ref.size());
++            }
++            v.ref = a->ref;
++        }
++        v.alt.push_back(a->alt);
++
++        int alleleIndex = v.alt.size();
++        for (vector<int>::iterator i = originalIndexes.begin(); i != originalIndexes.end(); ++i) {
++            unpackedAlleleIndexes[*i][v.position] = alleleIndex;
++            //unpackedAlleleInversions[*i] = v.inv
++        }
++        // add null allele
++        unpackedAlleleIndexes[ALLELE_NULL][v.position] = ALLELE_NULL;
++
++    }
++
++    // handle deletions. If ref length is larger than the WF matched
++    // allele length make this a missing genotype for all individual
++    // SNP/MNP calls that match the allele index and fall inside the
++    // deletion.
++    //
++    // The idea is that when a deletion exists for a sample there is
++    // no way a SNP/MNP gets called in that sample.
++    for (auto a: alleles) {
++        int len = 0;
++        if (a.ref.size() && a.alt.size() && a.ref.at(0) == a.alt.at(0)
++            && a.ref.size() > a.alt.size()) {
++            len = a.ref.size() - a.alt.size();
++        } else {
++            continue;
++        }
++        assert(len > 0); // make sure we have a deletion
++        // nullify all the variants inside of the deletion range by
++        // walking all variants and checking the allele index
++        // number. Note that this version relies on a sorted map of
++        // variants[pos]. By default, a Map in C++ is sorted in
++        // increasing order based on its key.
++        vector<int>& originalIndexes = variantAlleleIndexes[a];
++        auto begin = variants.upper_bound(a.position);
++        auto end = variants.upper_bound(a.position + a.ref.size());
++        for (auto i : originalIndexes) {
++            for (auto x = begin; x != end; ++x) {
++                unpackedAlleleIndexes[i][x->second.position] = ALLELE_NULL;
++            }
++        }
++    }
++
++    // genotypes
++    for (vector<string>::iterator s = var.sampleNames.begin(); s != var.sampleNames.end(); ++s) {
++        string& sampleName = *s;
++        if (var.samples.find(sampleName) == var.samples.end()) {
++            continue;
++        }
++        map<string, vector<string> >& sample = var.samples[sampleName];
++        if (sample.find("GT") == sample.end()) {
++            continue;
++        }
++        string& genotype = sample["GT"].front();
++        vector<string> genotypeStrs = split(genotype, "|/");
++        vector<int> genotypeIndexes;
++        for (vector<string>::iterator s = genotypeStrs.begin(); s != genotypeStrs.end(); ++s) {
++            int i;
++            if (!convert(*s, i)) {
++                genotypeIndexes.push_back(ALLELE_NULL);
++            } else {
++                genotypeIndexes.push_back(i);
++            }
++        }
++        map<long unsigned int, vector<int> > positionIndexes;
++        for (vector<int>::iterator g = genotypeIndexes.begin(); g != genotypeIndexes.end(); ++g) {
++            int oldIndex = *g;
++            for (map<long unsigned int, Variant>::iterator v = variants.begin(); v != variants.end(); ++v) {
++                const long unsigned int& p = v->first;
++                if (oldIndex == 0) { // reference
++                    positionIndexes[p].push_back(0);
++                } else {
++                    positionIndexes[p].push_back(unpackedAlleleIndexes[oldIndex][p]);
++                }
++            }
++        }
++        for (map<long unsigned int, Variant>::iterator v = variants.begin(); v != variants.end(); ++v) {
++            Variant& variant = v->second;
++            vector<int>& gtints = positionIndexes[v->first];
++            vector<string> gtstrs;
++            for (vector<int>::iterator i = gtints.begin(); i != gtints.end(); ++i) {
++                if (*i != ALLELE_NULL) {
++                    gtstrs.push_back(convert(*i));
++                } else {
++                    gtstrs.push_back(".");
++                }
++            }
++            string genotype = join(gtstrs, "|");
++            // if we are keeping the geno info, pull it over here
++            if (keepGeno) {
++                variant.format = var.format;
++                variant.samples[sampleName] = var.samples[sampleName];
++            }
++            // note that this will replace the old geno, but otherwise it is the same
++            variant.samples[sampleName]["GT"].clear();
++            variant.samples[sampleName]["GT"].push_back(genotype);
++        }
++    }
++    for (auto v: variants) {
++        cout << v.second << endl;
++    }
++}
++
++
+ } // namespace
+diff --git a/src/vcfallelicprimitives.cpp b/src/vcfallelicprimitives.cpp
+index f7abd83..6ac8f92 100644
+--- a/src/vcfallelicprimitives.cpp
++++ b/src/vcfallelicprimitives.cpp
+@@ -2,12 +2,13 @@
+     vcflib C++ library for parsing and manipulating VCF files
+ 
+     Copyright © 2010-2022 Erik Garrison
+-    Copyright © 2020-2022 Pjotr Prins
++    Copyright © 2020-2024 Pjotr Prins
+ 
+     This software is published under the MIT License. See the LICENSE file.
+ */
+ 
+ #include "Variant.h"
++#include "legacy.h"
+ #include "convert.h"
+ #include "join.h"
+ #include "split.h"
+@@ -34,14 +35,14 @@ WARNING: this tool is considered legacy and is only retained for older
+ workflows.  It will emit a warning!  Even though it can use the WFA
+ you should use [vcfwave](./vcfwave.md) instead.
+ 
+-Realign reference and alternate alleles with WFA or SW, parsing out
++Realign reference and alternate alleles with SW or WF, parsing out
+ the primitive alleles into multiple VCF records. New records have IDs
+ that reference the source record ID.  Genotypes are handled. Deletion
+ alleles will result in haploid (missing allele) genotypes.
+ 
+ options:
+-    -a, --algorithm TYPE    Choose algorithm (default) Wave front or (obsolete)
+-                            Smith-Waterman [WF|SW] algorithm
++    -a, --algorithm TYPE    Choose algorithm SW (Smith-Waterman) or WF wavefront
++                            (default: WF)
+     -m, --use-mnps          Retain MNPs as separate events (default: false).
+     -t, --tag-parsed FLAG   Annotate decomposed records with the source record
+                             position (default: ORIGIN).
+@@ -169,7 +170,7 @@ int main(int argc, char** argv) {
+     }
+     cout << variantFile.header << endl;
+ 
+-    Variant var(variantFile);
++    VariantLegacy var(variantFile);
+     while (variantFile.getNextVariant(var)) {
+         // we can't decompose *1* bp events, these are already in simplest-form whether SNPs or indels
+         // we also don't handle anything larger than maxLength bp
+diff --git a/src/vcfcleancomplex.cpp b/src/vcfcleancomplex.cpp
+index f9b85c2..91adbc0 100644
+--- a/src/vcfcleancomplex.cpp
++++ b/src/vcfcleancomplex.cpp
+@@ -2,12 +2,12 @@
+     vcflib C++ library for parsing and manipulating VCF files
+ 
+     Copyright © 2010-2020 Erik Garrison
+-    Copyright © 2020      Pjotr Prins
++    Copyright © 2020-2024      Pjotr Prins
+ 
+     This software is published under the MIT License. See the LICENSE file.
+ */
+ 
+-#include "Variant.h"
++#include "legacy.h"
+ #include "split.h"
+ #include <string>
+ #include <sstream>
+@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
+         return 1;
+     }
+ 
+-    Variant var(variantFile);
++    VariantLegacy var(variantFile);
+ 
+     // write the new header
+     cout << variantFile.header << endl;
+diff --git a/src/vcffilter.cpp b/src/vcffilter.cpp
+index cddfc60..1f593bf 100644
+--- a/src/vcffilter.cpp
++++ b/src/vcffilter.cpp
+@@ -110,7 +110,7 @@ int main(int argc, char** argv) {
+                 {"info-filter",  required_argument, 0, 'f'},
+                 {"genotype-filter",  required_argument, 0, 'g'},
+                 {"tag-pass", required_argument, 0, 't'},
+-                {"tag-pass", required_argument, 0, 'F'},
++                {"tag-fail", required_argument, 0, 'F'},
+                 {"append-filter", no_argument, 0, 'A'},
+                 {"allele-tag", required_argument, 0, 'a'},
+                 {"invert", no_argument, 0, 'v'},
+diff --git a/src/vcfflatten.cpp b/src/vcfflatten.cpp
+index 70f9e82..e8ef391 100644
+--- a/src/vcfflatten.cpp
++++ b/src/vcfflatten.cpp
+@@ -9,6 +9,7 @@
+ 
+ #include "Variant.h"
+ #include "convert.h"
++#include "multichoose.h"
+ 
+ using namespace std;
+ using namespace vcflib;
+diff --git a/src/vcfhetcount.cpp b/src/vcfhetcount.cpp
+index 3819b1e..b86b07c 100644
+--- a/src/vcfhetcount.cpp
++++ b/src/vcfhetcount.cpp
+@@ -11,6 +11,7 @@
+ #include "split.h"
+ #include <string>
+ #include <iostream>
++#include <getopt.h>
+ 
+ using namespace std;
+ using namespace vcflib;
+diff --git a/src/vcfleftalign.cpp b/src/vcfleftalign.cpp
+index 477a000..f370c2f 100644
+--- a/src/vcfleftalign.cpp
++++ b/src/vcfleftalign.cpp
+@@ -16,6 +16,7 @@
+ #include <vector>
+ #include <getopt.h>
+ #include <cmath>
++#include <SmithWatermanGotoh.h>
+ 
+ using namespace std;
+ using namespace vcflib;
+diff --git a/src/vcfparsealts.cpp b/src/vcfparsealts.cpp
+index 2317857..a3fc320 100644
+--- a/src/vcfparsealts.cpp
++++ b/src/vcfparsealts.cpp
+@@ -8,6 +8,7 @@
+ */
+ 
+ #include "Variant.h"
++#include "legacy.h"
+ 
+ using namespace std;
+ using namespace vcflib;
+@@ -72,7 +73,7 @@ Type: statistics
+ 
+     cout << variantFile.header << endl;
+ 
+-    Variant var(variantFile);
++    VariantLegacy var(variantFile);
+     while (variantFile.getNextVariant(var)) {
+         map<string, vector<VariantAllele> > variants = var.legacy_parsedAlternates();
+ 	cout << var << endl;
+diff --git a/src/vcfremap.cpp b/src/vcfremap.cpp
+index 76260dd..36d5184 100644
+--- a/src/vcfremap.cpp
++++ b/src/vcfremap.cpp
+@@ -15,6 +15,9 @@
+ #include <algorithm>
+ #include <list>
+ #include <set>
++#include <SmithWatermanGotoh.h>
++// #include "ssw_cpp.hpp"
++
+ 
+ using namespace std;
+ using namespace vcflib;
+diff --git a/src/vcfroc.cpp b/src/vcfroc.cpp
+index 6422590..84e67de 100644
+--- a/src/vcfroc.cpp
++++ b/src/vcfroc.cpp
+@@ -8,6 +8,7 @@
+ */
+ 
+ #include "Variant.h"
++#include "legacy.h"
+ #include "BedReader.h"
+ #include "IntervalTree.h"
+ #include <getopt.h>
+@@ -36,38 +37,38 @@ void printSummary(char** argv) {
+ }
+ 
+ void buildVariantIntervalTree(VariantCallFile& variantFile,
+-                              map<string, IntervalTree<size_t, Variant*> >& variantIntervals,
+-                              list<Variant>& variants) {
++                              map<string, IntervalTree<size_t, VariantLegacy*> >& variantIntervals,
++                              list<VariantLegacy>& variants) {
+ 
+-    map<string, vector<Interval<size_t, Variant*> > > rawVariantIntervals;
+-    Variant var(variantFile);
++    map<string, vector<Interval<size_t, VariantLegacy*> > > rawVariantIntervals;
++    VariantLegacy var(variantFile);
+     while (variantFile.getNextVariant(var)) {
+         long int left = var.position;
+         long int right = left + var.ref.size(); // this should be 1-past the end
+         variants.push_back(var);
+-        Variant* v = &variants.back();
+-        rawVariantIntervals[var.sequenceName].push_back(Interval<size_t, Variant*>(left, right, v));
++        VariantLegacy* v = &variants.back();
++        rawVariantIntervals[var.sequenceName].push_back(Interval<size_t, VariantLegacy*>(left, right, v));
+     }
+ 
+-    for (map<string, vector<Interval<size_t, Variant*> > >::iterator j = rawVariantIntervals.begin(); j != rawVariantIntervals.end(); ++j) {
+-        variantIntervals[j->first] = IntervalTree<size_t, Variant*>((vector<Interval<size_t, Variant*> >&&)j->second);
++    for (map<string, vector<Interval<size_t, VariantLegacy*> > >::iterator j = rawVariantIntervals.begin(); j != rawVariantIntervals.end(); ++j) {
++        variantIntervals[j->first] = IntervalTree<size_t, VariantLegacy*>((vector<Interval<size_t, VariantLegacy*> >&&)j->second);
+     }
+ }
+ 
+ 
+-void intersectVariant(Variant& var,
+-                      map<string, IntervalTree<size_t, Variant*> >& variantIntervals,
++void intersectVariant(VariantLegacy& var,
++                      map<string, IntervalTree<size_t, VariantLegacy*> >& variantIntervals,
+                       vector<string*>& commonAlleles,
+                       vector<string*>& uniqueAlleles,
+                       FastaReference& reference,
+                       int windowsize = 50) {
+ 
+-    vector<Interval<size_t, Variant*> > results
++    vector<Interval<size_t, VariantLegacy*> > results
+         = variantIntervals[var.sequenceName].findContained(var.position - windowsize, var.position + var.ref.size() + windowsize);
+ 
+-    vector<Variant*> overlapping;
++    vector<VariantLegacy*> overlapping;
+ 
+-    for (vector<Interval<size_t, Variant*> >::iterator r = results.begin(); r != results.end(); ++r) {
++    for (vector<Interval<size_t, VariantLegacy*> >::iterator r = results.begin(); r != results.end(); ++r) {
+         overlapping.push_back(r->value);
+     }
+ 
+@@ -83,7 +84,7 @@ void intersectVariant(Variant& var,
+         int haplotypeStart = var.position;
+         int haplotypeEnd = var.position + var.ref.size();
+ 
+-        for (vector<Variant*>::iterator v = overlapping.begin(); v != overlapping.end(); ++v) {
++        for (vector<VariantLegacy*>::iterator v = overlapping.begin(); v != overlapping.end(); ++v) {
+             haplotypeStart = min((*v)->position, (long int) haplotypeStart);
+             haplotypeEnd = max((*v)->position + (*v)->ref.size(), (long unsigned int) haplotypeEnd);
+         }
+@@ -92,10 +93,10 @@ void intersectVariant(Variant& var,
+         // if there is an exact match, the allele in the current VCF does intersect
+ 
+         string referenceHaplotype = reference.getSubSequence(var.sequenceName, haplotypeStart - 1, haplotypeEnd - haplotypeStart);
+-        map<string, vector<pair<Variant*, int> > > haplotypes; // map to variant and alt index
++        map<string, vector<pair<VariantLegacy*, int> > > haplotypes; // map to variant and alt index
+ 
+-        for (vector<Variant*>::iterator v = overlapping.begin(); v != overlapping.end(); ++v) {
+-            Variant& variant = **v;
++        for (vector<VariantLegacy*>::iterator v = overlapping.begin(); v != overlapping.end(); ++v) {
++            VariantLegacy& variant = **v;
+             int altindex = 0;
+             for (vector<string>::iterator a = variant.alt.begin(); a != variant.alt.end(); ++a, ++altindex) {
+                 string haplotype = referenceHaplotype;
+@@ -112,7 +113,7 @@ void intersectVariant(Variant& var,
+             string haplotype = referenceHaplotype;
+             int relativeStart = var.position - haplotypeStart;
+             haplotype.replace(relativeStart, var.ref.size(), *a);
+-            map<string, vector<pair<Variant*, int> > >::iterator h = haplotypes.find(haplotype);
++            map<string, vector<pair<VariantLegacy*, int> > >::iterator h = haplotypes.find(haplotype);
+             if (h == haplotypes.end()) {
+                 uniqueAlleles.push_back(&*a);
+             } else {
+@@ -232,12 +233,12 @@ int main(int argc, char** argv) {
+     // read the VCF file for union or intersection into an interval tree
+     // indexed using some proximity window
+ 
+-    map<string, IntervalTree<size_t, Variant*> > truthVariantIntervals;
+-    list<Variant> truthVariants;
++    map<string, IntervalTree<size_t, VariantLegacy*> > truthVariantIntervals;
++    list<VariantLegacy> truthVariants;
+     buildVariantIntervalTree(truthVariantFile, truthVariantIntervals, truthVariants);
+ 
+-    map<string, IntervalTree<size_t, Variant*> > testVariantIntervals;
+-    list<Variant> testVariants;
++    map<string, IntervalTree<size_t, VariantLegacy*> > testVariantIntervals;
++    list<VariantLegacy> testVariants;
+     buildVariantIntervalTree(variantFile, testVariantIntervals, testVariants);
+ 
+     map<long double, vector<VariantAllele*> > falseNegativeAllelesAtCutoff;  // false negative after this cutoff
+@@ -246,20 +247,20 @@ int main(int argc, char** argv) {
+     map<long double, vector<VariantAllele*> > allelesAtCutoff;
+     //map<long double, vector<VariantAllele*> > totalAllelesAtCutoff;
+     map<Variant*, map<string, vector<VariantAllele> > > parsedAlleles;
+-    map<long double, vector<Variant*> > callsByCutoff;
++    map<long double, vector<VariantLegacy*> > callsByCutoff;
+ 
+     // replicate this method, where Q is for each unique Q in the set
+     //vcfintersect -r $reference -v -i $results.$Q.vcf $answers_primitives | vcfstats >false_negatives.$Q.stats
+     //vcfintersect -r $reference -v -i $answers_primitives $results.$Q.vcf | vcfstats >false_positives.$Q.stats
+ 
+-    for (list<Variant>::iterator v = testVariants.begin(); v != testVariants.end(); ++v) {
++    for (list<VariantLegacy>::iterator v = testVariants.begin(); v != testVariants.end(); ++v) {
+         // TODO allow different cutoff sources
+         callsByCutoff[v->quality].push_back(&*v);
+     }
+ 
+     // add false negatives at any cutoff
+-    for (list<Variant>::iterator v = truthVariants.begin(); v != truthVariants.end(); ++v) {
+-        Variant& variant = *v;
++    for (list<VariantLegacy>::iterator v = truthVariants.begin(); v != truthVariants.end(); ++v) {
++        VariantLegacy& variant = *v;
+         vector<string*> commonAlleles;
+         vector<string*> uniqueAlleles;
+         intersectVariant(variant, testVariantIntervals,
+@@ -281,11 +282,11 @@ int main(int argc, char** argv) {
+         }
+     }
+ 
+-    for (map<long double, vector<Variant*> >::iterator q = callsByCutoff.begin(); q != callsByCutoff.end(); ++q) {
++    for (map<long double, vector<VariantLegacy*> >::iterator q = callsByCutoff.begin(); q != callsByCutoff.end(); ++q) {
+         long double threshold = q->first;
+-        vector<Variant*>& variants = q->second;
+-        for (vector<Variant*>::iterator v = variants.begin(); v != variants.end(); ++v) {
+-            Variant& variant = **v;
++        vector<VariantLegacy*>& variants = q->second;
++        for (vector<VariantLegacy*>::iterator v = variants.begin(); v != variants.end(); ++v) {
++            VariantLegacy& variant = **v;
+             vector<string*> commonAlleles;
+             vector<string*> uniqueAlleles;
+             intersectVariant(variant, truthVariantIntervals,
+diff --git a/src/vcfstats.cpp b/src/vcfstats.cpp
+index 0ef4b90..ca45271 100644
+--- a/src/vcfstats.cpp
++++ b/src/vcfstats.cpp
+@@ -7,7 +7,7 @@
+     This software is published under the MIT License. See the LICENSE file.
+ */
+ 
+-#include "Variant.h"
++#include "legacy.h"
+ #include "split.h"
+ #include "convert.h"
+ #include <getopt.h>
+@@ -220,7 +220,7 @@ int main(int argc, char** argv) {
+         cout << variantFile.header << endl;
+     }
+ 
+-    Variant var(variantFile);
++    VariantLegacy var(variantFile);
+ 
+     vector<string>::iterator regionItr = regions.begin();
+ 
+diff --git a/src/vcfwave.cpp b/src/vcfwave.cpp
+index a6a8876..7b6257d 100644
+--- a/src/vcfwave.cpp
++++ b/src/vcfwave.cpp
+@@ -1,8 +1,9 @@
+ /*
+     vcflib C++ library for parsing and manipulating VCF files
+ 
+-    Copyright © 2010-2023 Erik Garrison
+-    Copyright © 2020-2023 Pjotr Prins
++    Copyright © 2010-2024 Erik Garrison
++    Copyright © 2020-2024 Pjotr Prins
++    Copyright © 2024 Andrea Guarracino
+ 
+     This software is published under the MIT License. See the LICENSE file.
+ */
+@@ -302,7 +303,7 @@ int main(int argc, char** argv) {
+                     string AT;
+                     double AF = -1;
+                     string wftag = alt0+":"+to_string(wfpos)+":"+ref+"/"+aligned;
+-                    if (var.ref != aligned) {
++                    if (ref != aligned) {
+                         auto index = [&](vector<string> v, string allele) {
+                             //auto check = (is_inv ? reverse_complement(allele) : allele); DISABLED
+                             auto check = allele;
+@@ -507,7 +508,6 @@ int main(int argc, char** argv) {
+                     vector<string> ORIGIN{ v.origin };
+                     newvar.info[parseFlag] = ORIGIN;
+                 }
+-                
+                 newvar.info["TYPE"] = TYPE;
+                 newvar.info["LEN"] = vector<string>{to_string(v.size)};
+ 
+@@ -543,7 +543,7 @@ int main(int argc, char** argv) {
+             }
+         }
+         else {
+-            var.legacy_reduceAlleles(
++            var.reduceAlleles(
+                 varAlleles,
+                 variantFile,
+                 var,
+diff --git a/src/zig/build.zig b/src/zig/build.zig
+index 94ca08c..6b64d7a 100644
+--- a/src/zig/build.zig
++++ b/src/zig/build.zig
+@@ -1,27 +1,45 @@
+ const zig_version = @import("builtin").zig_version;
+ const std = @import("std");
+ 
+-pub fn build(b: *std.build.Builder) void {
++const test_targets = [_]std.Target.Query{
++    .{}, // native
++};
++
++pub fn build(b: *std.Build) void {
+     // Standard release options allow the person running `zig build` to select
+     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall.
+-    const mode = b.standardReleaseOptions();
++    const target = b.standardTargetOptions(.{});
++    const optimize = b.standardOptimizeOption(.{});
++    // const mode = b.standardReleaseOptions();
+ 
+-    const lib = b.addStaticLibrary("zig", "vcf.zig");
+-    lib.setBuildMode(mode);
++    const lib = b.addStaticLibrary(.{
++        .optimize = optimize,
++        .name = "zig",
++        .target = target,
++        .root_source_file = b.path("vcf.zig"),
++        .pic = true,
++    });
++    // lib.setBuildMode(optimize);
+     // lib.addObjectFile("../../build/libvcflib.a"); circular dependency
+-    switch (mode) {
++    switch (optimize) {
+         .Debug, .ReleaseSafe => lib.bundle_compiler_rt = true,
+-        .ReleaseFast, .ReleaseSmall => lib.disable_stack_probing = true,
++        .ReleaseFast, .ReleaseSmall => {},
+     }
+-    lib.force_pic = true;
++    // lib.force_pic = true;
+     // lib.emit_h = true; future version of zig?
+-    lib.install();
++    b.installArtifact(lib);
++    // lib.install();
++
++    const test_step = b.step("test", "Run unit tests");
+ 
+-    const main_tests = b.addTest("vcf.zig");
+-    main_tests.setBuildMode(mode);
+-    // main_tests.addLibraryPath("../../build");
+-    // main_tests.addObjectFile("../../build/libvcflib.a");
++    for (test_targets) |ttarget| {
++        const unit_tests = b.addTest(.{
++            .root_source_file = b.path("vcf.zig"),
++            .target = b.resolveTargetQuery(ttarget),
++        });
+ 
+-    const test_step = b.step("test", "Run library tests");
+-    test_step.dependOn(&main_tests.step);
++        const run_unit_tests = b.addRunArtifact(unit_tests);
++        test_step.dependOn(&run_unit_tests.step);
++    }
++    
+ }
+diff --git a/src/zig/compile.sh b/src/zig/compile.sh
+index b69d3a4..a4f25d3 100755
+--- a/src/zig/compile.sh
++++ b/src/zig/compile.sh
+@@ -2,6 +2,8 @@
+ 
+ # zig build test
+ # creates library in zig-out
++echo "ZIG PATH $PATH"
++zig version
+ zig build $*
+ exit $?
+ 
+diff --git a/src/zig/samples.zig b/src/zig/samples.zig
+index 9fbe19d..cb05a1f 100644
+--- a/src/zig/samples.zig
++++ b/src/zig/samples.zig
+@@ -96,12 +96,12 @@ const Genotypes = struct {
+     /// genotype is 0 (ref) or missing it is not changed.
+     fn renumber(self: *const Self, idx: usize) !void {
+         var list = self.genos;
+-        for (list.items) | g,i | {
++        for (list.items,0..) | g,i | {
+             list.items[i] = 
+                 switch (g) {
+                     0 => 0,
+                     GENOTYPE_MISSING => GENOTYPE_MISSING,
+-                    else => g+@intCast(i64,idx)
++                    else => g+@as(i64,@intCast(idx))
+             };
+         }
+     }
+@@ -113,7 +113,7 @@ const Genotypes = struct {
+         var base = self.genos;
+         var g_err: VcfSampleError = error.None;
+         
+-        for (genos2.genos.items) | g2,i | {
++        for (genos2.genos.items,0..) | g2,i | {
+             const current = base.items[i];
+             if (g2 == 0 or g2 == GENOTYPE_MISSING) continue; // no update
+             if (current>0) {
+@@ -126,7 +126,7 @@ const Genotypes = struct {
+     }
+     
+     fn to_s(self: *const Self) !ArrayList(u8) {
+-        var list = self.genos.items;
++        const list = self.genos.items;
+         const phase_repr = if (self.phased) "|" else "/";
+         var s = ArrayList(u8).init(allocator);
+         // concatenate genotypes with their phase separator
+@@ -170,8 +170,8 @@ pub fn reduce_renumber_genotypes(comptime T: type, vs: ArrayList(T)) !ReturnGeno
+ //pub fn reduce_renumber_genotypes(comptime T: type, vs: ArrayList(T)) !ArrayList([] const u8) {
+     var samples = ArrayList(Genotypes).init(allocator); // result set
+     var g_err: VcfSampleError = error.None;
+-    for (vs.items) | v,i | { // Fetch the genotypes from each variant
+-        for (v.genotypes().items) | geno,j | {
++    for (vs.items, 0..) | v,i | { // Fetch the genotypes from each variant
++        for (v.genotypes().items, 0..) | geno,j | {
+             var geno2 = Genotypes.init(geno); // convert from string to number list
+             try geno2.renumber(i);
+             if (i==0) {
+@@ -222,7 +222,7 @@ test "genotypes" {
+     try expectEqual(gs2.items[1],0);
+     const gs3 = Genotypes.init("1|.");
+     defer gs3.deinit();
+-    var list2 = gs3.genos.items;
++    const list2 = gs3.genos.items;
+     try expectEqual(list2.len,2);
+     try expectEqual(list2[1],GENOTYPE_MISSING);
+     try gs3.renumber(1);
+diff --git a/src/zig/vcf.zig b/src/zig/vcf.zig
+index 0aee65d..537afd3 100644
+--- a/src/zig/vcf.zig
++++ b/src/zig/vcf.zig
+@@ -79,7 +79,7 @@ const Variant = struct {
+     const Self = @This();
+ 
+     inline fn to_slice0(c_str: [*c] const u8) [:0] const u8 {
+-        return std.mem.span(@ptrCast([*:0]const u8, c_str));
++        return std.mem.span(@as([*:0]const u8, @ptrCast(c_str)));
+     }
+ 
+     inline fn to_slice(c_str: [*c] const u8) [] const u8 {
+@@ -87,12 +87,12 @@ const Variant = struct {
+     }
+ 
+     inline fn to_cstr(str: [:0] const u8) [*c]const u8 {
+-        return @ptrCast([*c]const u8,str);
++        return @as([*c]const u8,@ptrCast(str));
+     }
+ 
+     inline fn to_cstr0(str: [] const u8) [*c]const u8 { // not sure this works because we need final zero
+         //var s0 = str.toOwnedSliceSentinel(0);
+-        return @ptrCast([*c]const u8,str);
++        return @as([*c]const u8,@ptrCast(str));
+     }
+ 
+     pub fn id(self: *const Self) [:0]const u8 {
+@@ -119,9 +119,9 @@ const Variant = struct {
+     pub fn alt(self: *const Self) ArrayList([] const u8) {
+         var list = ArrayList([] const u8).init(allocator);
+         const altsize = var_alt_num(self.v);
+-        var buffer = allocator.alloc(*anyopaque, altsize) catch unreachable;
++        const buffer = allocator.alloc(*anyopaque, altsize) catch unreachable;
+         defer allocator.free(buffer);
+-        const res = var_alt(self.v,@ptrCast([*c]* anyopaque,buffer));
++        const res = var_alt(self.v,@as([*c]* anyopaque,@ptrCast(buffer)));
+         var i: usize = 0;
+         while (i < altsize) : (i += 1) {
+             const s = res[i];
+@@ -133,12 +133,12 @@ const Variant = struct {
+     
+     /// Get the C++ infos
+     pub fn info(self: *const Self, name: [] const u8) ArrayList([] const u8) {
+-        var c_name = to_cstr0(name);
++        const c_name = to_cstr0(name);
+         var list = ArrayList([] const u8).init(allocator);
+         const size = var_info_num(self.v,c_name);
+-        var buffer = allocator.alloc(*anyopaque, size) catch unreachable;
++        const buffer = allocator.alloc(*anyopaque, size) catch unreachable;
+         defer allocator.free(buffer);
+-        const res = var_info(self.v,c_name,@ptrCast([*c]* anyopaque,buffer));
++        const res = var_info(self.v,c_name,@as([*c]* anyopaque,@ptrCast(buffer)));
+         var i: usize = 0;
+         while (i < size) : (i += 1) {
+             // list.append(buffer[i]) catch unreachable;
+@@ -158,9 +158,9 @@ const Variant = struct {
+         // p("Inside genotypes:\n",.{});
+         var list = ArrayList([] const u8).init(allocator);
+         const size = var_samples_num(self.v);
+-        var buffer = allocator.alloc(*anyopaque, size) catch unreachable;
++        const buffer = allocator.alloc(*anyopaque, size) catch unreachable;
+         defer allocator.free(buffer);
+-        const res = var_geno(self.v,@ptrCast([*c]* anyopaque,buffer));
++        const res = var_geno(self.v,@as([*c]* anyopaque,@ptrCast(buffer)));
+         var i: usize = 0;
+         while (i < size) : (i += 1) {
+             const s = res[i];
+@@ -173,7 +173,7 @@ const Variant = struct {
+     
+     /// Set C++ ref
+     pub fn set_ref(self: *const Self, nref: [:0] const u8) void {
+-        var_set_ref(self.v,@ptrCast([*c]const u8,nref));
++        var_set_ref(self.v,@as([*c]const u8,@ptrCast(nref)));
+     }
+ 
+     /// Set C++ alts
+@@ -196,7 +196,7 @@ const Variant = struct {
+ 
+     /// Set C++ infos
+     pub fn set_info(self: *const Self, name: [] const u8, data: ArrayList([] const u8)) void {        
+-        var c_name = to_cstr0(name);
++        const c_name = to_cstr0(name);
+         var_clear_info(self.v,c_name);
+         var i: usize = 0;
+         while (i < data.items.len) : (i += 1) {
+@@ -208,11 +208,11 @@ const Variant = struct {
+         var i: usize = 0;
+         while (i < nsamples.items.len) : (i += 1) {
+             var_clear_sample(self.v,i);
+-            var s = nsamples.items[i];
++            const s = nsamples.items[i];
+             var buffer = allocator.alloc(u8, s.len + 1) catch unreachable;
+             defer allocator.free(buffer);
+  
+-            for (s)  | c,j | {
++            for (s, 0..)  | c,j | {
+                 buffer[j] = c;
+             }
+             buffer[s.len] = 0;
+@@ -226,9 +226,9 @@ const Variant = struct {
+ 
+ // Obsolete test version of multi_allelic
+ export fn zig_create_multi_allelic2(variant: ?*anyopaque, varlist: [*c]?* anyopaque, size: usize) ?*anyopaque {
+-    var v1 = var_parse("TEST\t1\t2\t3\t4\tt5\t6",false);
++    const v1 = var_parse("TEST\t1\t2\t3\t4\tt5\t6",false);
+     _ = v1;
+-    var c_var = var_parse("a\t281\t>1>9\tAGCCGGGGCAGAAAGTTCTTCCTTGAATGTGGTCATCTGCATTTCAGCTCAGGAATCCTGCAAAAGACAG\tCTGTCTTTTGCAGGATTCCTGTGCTGAAATGCAGATGACCGCATTCAAGGAAGAACTATCTGCCCCGGCT\t60.0\t.\tAC=1;AF=1;AN=1;AT=>1>2>3>4>5>6>7>8>9,>1<8>10<6>11<4>12<2>9;NS=1;LV=0\tGT\t1",false);
++    const c_var = var_parse("a\t281\t>1>9\tAGCCGGGGCAGAAAGTTCTTCCTTGAATGTGGTCATCTGCATTTCAGCTCAGGAATCCTGCAAAAGACAG\tCTGTCTTTTGCAGGATTCCTGTGCTGAAATGCAGATGACCGCATTCAAGGAAGAACTATCTGCCCCGGCT\t60.0\t.\tAC=1;AF=1;AN=1;AT=>1>2>3>4>5>6>7>8>9,>1<8>10<6>11<4>12<2>9;NS=1;LV=0\tGT\t1",false);
+     var v2 = Variant{.v = c_var};
+     p("---->{s}\n",.{v2.id().ptr});
+     expect(mem.eql(u8, v2.id(), ">1>9")) catch unreachable;
+@@ -236,10 +236,11 @@ export fn zig_create_multi_allelic2(variant: ?*anyopaque, varlist: [*c]?* anyopa
+         std.debug.print("{} <-> {s}\n", .{err,v2.id()});
+     };
+     const c_str = var_id(variant.?);
+-    const s = @ptrCast([*c]const u8, c_str);
++    // const s = @ptrCast([*c]const u8, c_str);
++    const s = @as([*c]const u8,@ptrCast(c_str));
+     p("And yes, we are back in zig: {s} -- {}\n\n",.{s,size});
+ 
+-    const p3 = @ptrCast(* anyopaque, varlist[3]);
++    const p3 = @as(* anyopaque, @ptrCast(varlist[3]));
+     const s3 = var_id(p3);
+     var v = Variant{.v = varlist[3].?};
+     p("id={s} !{s}! pos={d} ref={s}\n",.{s3,v.id(),v.pos(),v.ref()});
+@@ -256,7 +257,7 @@ export fn zig_create_multi_allelic2(variant: ?*anyopaque, varlist: [*c]?* anyopa
+     var i:u64 = 0;
+     for (varlist[0..size]) |ptr| {
+              i = i + 1;
+-             const p2 = @ptrCast(* anyopaque, ptr);
++             const p2 = @as(* anyopaque, @ptrCast(ptr));
+              const s2 = var_id(p2);
+              p("num = {}",.{i});
+              p("id = {s}, pos = {d}\n",.{s2,var_pos(p2)});
+@@ -281,7 +282,7 @@ export fn zig_create_multi_allelic(variant: ?*anyopaque, varlist: [*c]?* anyopaq
+     
+     var i: usize = 0;
+     while (i < size) : (i += 1) { // use index to access *anyopaque
+-        var v = Variant{.v = varlist[i].?};
++        const v = Variant{.v = varlist[i].?};
+         vs.append(v) catch unreachable;
+     }
+ 
+@@ -334,7 +335,7 @@ export fn zig_cleanup() void {
+ fn refs_maxpos(comptime T: type, list: ArrayList(T)) usize {
+     var mpos = list.items[0].pos();
+     for (list.items) |v| {
+-            var npos = v.pos() + v.ref().len;
++            const npos = v.pos() + v.ref().len;
+             if (npos > mpos)
+                 mpos = npos;
+         }
+@@ -439,11 +440,11 @@ fn expand_alt(comptime T: type, pos: usize, ref: [] const u8, list: ArrayList(T)
+         
+         const right0 = pos + ref.len;
+         const right1 = v.pos() + v.ref().len;
+-        const p3diff:i64 = @intCast(i64,right0) - @intCast(i64,right1);
++        const p3diff:i64 = @as(i64, @intCast(right0)) - @as(i64, @intCast(right1));
+         
+         var after: [] const u8 = undefined;
+         if (p3diff > 0 and p3diff < ref.len) {
+-            const last  = ref.len - @intCast(usize,p3diff);
++            const last  = ref.len - @as(usize, @intCast(p3diff));
+             after = ref[last..];
+         }
+         else after = "";
+diff --git a/test/pytest/vcfallelicprimitives.md b/test/pytest/vcfallelicprimitives.md
+index ebe570d..4e64c24 100644
+--- a/test/pytest/vcfallelicprimitives.md
++++ b/test/pytest/vcfallelicprimitives.md
+@@ -55,14 +55,14 @@ WARNING: this tool is considered legacy and is only retained for older
+ workflows.  It will emit a warning!  Even though it can use the WFA
+ you should use [vcfwave](./vcfwave.md) instead.
+ >
+-Realign reference and alternate alleles with WFA or SW, parsing out
++Realign reference and alternate alleles with SW or WF, parsing out
+ the primitive alleles into multiple VCF records. New records have IDs
+ that reference the source record ID.  Genotypes are handled. Deletion
+ alleles will result in haploid (missing allele) genotypes.
+ >
+ options:
+-    -a, --algorithm TYPE    Choose algorithm (default) Wave front or (obsolete)
+-                            Smith-Waterman [WF|SW] algorithm
++    -a, --algorithm TYPE    Choose algorithm SW (Smith-Waterman) or WF wavefront
++                            (default: WF)
+     -m, --use-mnps          Retain MNPs as separate events (default: false).
+     -t, --tag-parsed FLAG   Annotate decomposed records with the source record
+                             position (default: ORIGIN).
+@@ -305,4 +305,4 @@ Output produced by test/tests/realign.py
+ 
+ # LICENSE
+ 
+-Copyright 2011-2022 (C) Erik Garrison, Pjotr Prins and vcflib contributors. MIT licensed.
++Copyright 2011-2024 (C) Erik Garrison, Pjotr Prins and vcflib contributors. MIT licensed.
+diff --git a/test/tests/realign.py b/test/tests/realign.py
+index 7f891b3..132461e 100644
+--- a/test/tests/realign.py
++++ b/test/tests/realign.py
+@@ -20,7 +20,7 @@ class RealignTest(unittest.TestCase):
+         self.assertEqual(var.name,"grch38#chr4")
+         self.assertEqual(var.ref,'ACCCCCACCCCCACC')
+         self.assertEqual(var.alt,['ACC', 'AC', 'ACCCCCACCCCCAC', 'ACCCCCACC', 'ACA'])
+-        sw = var.legacy_parsedAlternates(False,False,False,10.0,-9.0,15.0,6.66,0.0,"","",False,False)
++        # sw = var.legacy_parsedAlternates(False,False,False,10.0,-9.0,15.0,6.66,0.0,"","",False,False)
+ 
+     def test_sw_wf_compare(self):
+         vcf = VariantCallFile()
+@@ -30,20 +30,12 @@ class RealignTest(unittest.TestCase):
+         self.assertEqual(var.name,"grch38#chr4_10083863-10181258.vcf:grch38#chr4")
+         self.assertEqual(var.ref,'GGAGAATCCCAATTGATGG')
+         self.assertEqual(var.alt,['GTAGCATCCCAAGTGATGT', 'GTAGAATCCCAATTGATGT', 'GGAGCATCCCAATTGATGG', 'GG'])
+-        sw = var.legacy_parsedAlternates(False,False,False,10.0,-9.0,15.0,6.66,0.0,"","",False,False)
++        # sw = var.legacy_parsedAlternates(False,False,False,10.0,-9.0,15.0,6.66,0.0,"","",False,False)
+         # for key, value in sw.items():
+         #     print(f'SW allele key: {key}: ')
+         #     for a in value:
+         #         print(f'               {a.position}/{a.ref}/{a.alt} ')
+         # note wf ignores paramaters
+-        wf = var.legacy_parsedAlternates(False,False,False,10.0,-9.0,15.0,6.66,0.0,"","",True,False)
+-        # for key, value in wf.items():
+-        #     print(f'WF allele key: {key}: ')
+-        #     for a in value:
+-        #        print(f'               {a.position}/{a.ref}/{a.alt} ')
+-        self.assertEqual(len(wf),5)
+-        self.assertEqual(len(wf),len(sw))
+-        self.assertEqual(sw['GGAGAATCCCAATTGATGG'][0].alt,wf['GGAGAATCCCAATTGATGG'][0].alt)
+ 
+     def test_wfbug2(self):
+         vcf = VariantCallFile()
