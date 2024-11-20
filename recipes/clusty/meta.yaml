@@ -1,37 +1,42 @@
-{% set version = "1.1.1" %}
+{% set name = "clusty" %}
+{% set version = "1.1.4" %}
 
 package:
-  name: clusty
+  name: {{ name }}
   version: {{ version }}
 
 build:
   number: 0
   run_exports:
-  - {{ pin_subpackage('clusty', max_pin='x.x.x') }}
+  - {{ pin_subpackage('clusty', max_pin='x') }}
 
 source:
   git_url: https://github.com/refresh-bio/clusty.git
   git_rev: v{{ version }}
+  patches:
+    - buildfixes.patch  # [osx]
 
 requirements:
   build:
     - make
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
     - cmake
     - flex
     - bison
 
-about:
-  home: https://github.com/refresh-bio/clusty
-  summary: "Clusty is a tool for large-scale data clustering."
-  license: GPL-3
-  license_family: GPL
-  license_file: LICENSE
-
 test:
   commands:
     - clusty > /dev/null
+
+about:
+  home: https://github.com/refresh-bio/clusty
+  summary: "Clusty is a tool for large-scale data clustering."
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  dev_url: https://github.com/refresh-bio/clusty
+  doc_url: "https://github.com/refresh-bio/clusty/blob/v{{ version }}/README.md"
 
 extra:
   additional-platforms:
