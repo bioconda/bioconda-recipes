@@ -4,10 +4,10 @@ uname_S=`uname -s 2>/dev/null || echo not`
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-if [ "$uname_S" == "Darwin" ]; then
-	make -j"${CPU_COUNT}" CXX="${CXX}" INCLUDES="-I${PREFIX}/include" LDFLAGS="${LDFLAGS}";
+if [[ "$uname_S" == "Darwin" ]]; then
+	make -j"${CPU_COUNT}" CXX="${CXX}" LDFLAGS="${LDFLAGS}";
 else
-	make LEIDEN=true -j"${CPU_COUNT}" CXX="${CXX}" INCLUDES="-I${PREFIX}/include" LDFLAGS="${LDFLAGS}";
+	make LEIDEN=true -j"${CPU_COUNT}" CXX="${CXX}" LDFLAGS="${LDFLAGS}";
 fi
 
 install -d "${PREFIX}/bin"
