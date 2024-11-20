@@ -1,6 +1,6 @@
-#!/bin/bash -e
+#!/bin/bash
 
-set -x
+set -xe
 
 # TODO: Remove the following export when pinning is updated and we use
 #       {{ compiler('rust') }} in the recipe.
