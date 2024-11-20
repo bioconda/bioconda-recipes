@@ -1,0 +1,50 @@
+{% set version = "1.1.0" %}
+
+package:
+  name: ntsm
+  version: {{ version }}
+
+source:
+  url: https://github.com/JustinChu/ntsm/releases/download/{{ version }}/ntsm-{{ version }}.tar.gz
+  sha256: 85dc064249edc2836edf55c91f626d11bcb045e57bbdebff02fc4ff2bd9a7b53
+
+build:
+  skip: true  # [osx or win]
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+    - make
+  host:
+    - zlib
+    - libgomp
+  run:
+    - llvm-openmp  # [osx]
+    - zlib
+    - libgomp
+    - make
+    - samtools
+    - bwa
+    - perl
+
+test:
+  commands:
+    - ntsmCount --help
+    - ntsmVCF --help
+    - ntsmEval --help
+    - ntsmSiteGen -h
+
+about:
+  home: "https://github.com/JustinChu/ntsm"
+  summary: "ntsm - Nucleotide Sequence/Sample Matcher"
+  license: "MIT"
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: "https://github.com/JustinChu/ntsm"
+  doc_url: "https://github.com/JustinChu/ntsm/blob/{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
