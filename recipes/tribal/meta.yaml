@@ -1,0 +1,60 @@
+{% set name = "TRIBAL" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+    url: https://github.com/elkebir-group/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: 3859295c1e615ce9ce5d34e73c9dea33a08a105a502096e7640e0feeda83756e
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('tribal', max_pin='x.x') }} 
+  script:
+    - "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
+    - $CC -c tribal/dnapars/phylip.c -o tribal/dnapars/phylip.o -fcommon
+    - $CC -c tribal/dnapars/seq.c -o tribal/dnapars/seq.o -fcommon
+    - $CC -c tribal/dnapars/dnapars.c -o tribal/dnapars/dnapars.o -fcommon
+    - $CC tribal/dnapars/seq.o tribal/dnapars/phylip.o tribal/dnapars/dnapars.o -lm -o $PREFIX/bin/dnapars
+
+requirements:
+  build:
+    - {{ compiler('c') }} 
+    - {{ compiler('cxx') }}
+  host:
+    - python >=3.9,<3.11
+    - pip
+    - setuptools
+  run:
+    - python >=3.9,<3.11
+    - numpy >=1.26,<2.0
+    - pandas
+    - networkx >=3.1
+    - pygraphviz >=1.10
+    - ete3 >=3.1.2
+    - mafft ==7.526
+    - glpk >=5.0
+    - pyomo >=6.7
+    - biopython >=1.81
+
+test:
+  imports:
+    - tribal
+  commands:
+    - tribal --help
+    - tribal preprocess -h
+    - tribal fit -h
+
+about:
+  home: "https://github.com/elkebir-group/TRIBAL"
+  doc_url: "https://elkebir-group.github.io/TRIBAL"
+  license: "BSD-3-Clause"
+  summary: "TRIBAL is a package to infer B cell lineage trees from single-cell RNA sequencing data."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
