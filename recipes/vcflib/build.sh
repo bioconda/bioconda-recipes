@@ -4,6 +4,8 @@ set -ex
 OS=$(uname)
 ARCH=$(uname -m)
 
+cp -rf ${RECIPE_DIR}/vcflib.pc.in ${SRC_DIR}/
+
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
 	echo $(pwd)/zig-macos-x86_64-*
 	export PATH="$(pwd)/zig-macos-x86_64-0.10.1:${PATH}"
@@ -38,8 +40,6 @@ if [[ `uname` == "Darwin" ]]; then
 else
         export CONFIG_ARGS=""
 fi
-
-pkg-config --list-all
 
 cmake -S . -B build \
 	-DZIG=ON -DOPENMP=ON -DWFA_GITMODULE=OFF \
