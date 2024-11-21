@@ -10,7 +10,6 @@ parsnp -g mers_virus/ref/England1.gbk -d mers_virus/genomes -C 1000 -c -o test-g
 parsnp -r ! -d mers_virus/genomes/*.fna -o test-skips --verbose -p $CPU --force-overwrite --skip-phylogeny --skip-ani-filter
 parsnp -r ! -d mers_virus/genomes/*.fna -o test-mash --verbose -p $CPU --skip-phylogeny --use-mash
 parsnp -r ! -d mers_virus/genomes/*.fna -o test-fastani --verbose -p $CPU --skip-phylogeny --use-ani
-parsnp -r ! -d mers_virus/genomes/*.fna -o test-extend --verbose -p $CPU --extend-lcbs --xtrafast 
 parsnp -r ! -d mers_virus/genomes/*.fna -o test-nopartition --verbose -p $CPU --no-partition --xtrafast
 parsnp -r ! -d mers_virus/genomes/*.fna -o test-minpartition10 --verbose -p $CPU --min-partition-size 10 --xtrafast
 
