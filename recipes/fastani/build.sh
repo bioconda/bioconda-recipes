@@ -7,6 +7,8 @@ export CPP_INCLUDE_PATH=${PREFIX}/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
 
+export M4=${BUILD_PREFIX}/bin/m4
+
 mkdir -p $PREFIX/bin
 
 ./bootstrap.sh

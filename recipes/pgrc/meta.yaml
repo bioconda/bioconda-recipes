@@ -1,0 +1,49 @@
+{% set version = "2.0.1" %}
+{% set date = "2024-10-04" %}
+{% set sha256 = "1a963f40c4bd93433c236afb3e2053244ba3b419c313104f881e8d4d947532b9" %}
+
+package:
+  name: pgrc
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('pgrc', max_pin="x") }}
+
+source:
+  url: https://github.com/kowallus/PgRC/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake >=3.5
+    - make
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+  run:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+
+test:
+  commands:
+    - PgRC -v 2>&1 | grep -F {{ date }}
+
+about:
+  home: https://github.com/kowallus/PgRC
+  license: "GPL-3.0-or-later"
+  license_file: LICENSE
+  license_family: GPL3
+  summary: "A tool for compressing the DNA stream of FASTQ datasets."
+  dev_url: https://github.com/kowallus/PgRC
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - kowallus
+  identifiers:
+    - doi:10.1093/bioinformatics/btz919

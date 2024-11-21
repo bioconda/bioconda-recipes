@@ -1,0 +1,45 @@
+{% set version = "0.6.0" %}
+{% set name = "plasnet" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/leoisl/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: 2afc3e7c91265d3605860e70cffcbe366ba36e0dd5da08331b83fd20883af392
+
+build:
+  number: 1
+  noarch: python
+  script: python -m pip install . --no-deps --ignore-installed -vvv
+  entry_points:
+    - plasnet = plasnet.plasnet_main:main
+  run_exports:
+    - {{ pin_subpackage("plasnet", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - poetry-core >=1.0.0
+    - pip
+  run:
+    - python >=3.9
+    - networkx
+    - click
+    - pandas
+
+test:
+  imports:
+    - plasnet
+
+  commands:
+    - plasnet --help
+
+about:
+  home: https://github.com/leoisl/plasnet
+  license_file: LICENSE
+  license: MIT
+  license_family: MIT
+  summary: 'Clustering, visualising and exploring plasmid networks'
+
