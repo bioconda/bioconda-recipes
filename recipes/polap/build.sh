@@ -15,6 +15,7 @@ files=(polap
 	polap-package-common.sh
 	polap-package-mtcontigs.sh
 	polap-parsing.sh
+	polap-revision1.sh
 	polap-test-variables.sh
 	polap-variables-common.sh
 	polap-variables-main.sh
@@ -34,6 +35,7 @@ files=(polap
 	run-polap-function-oga.sh
 	run-polap-function-polishing.sh
 	run-polap-function-seeds.sh
+	run-polap-function-taxonomy.sh
 	run-polap-function-template.sh
 	run-polap-function-test.sh
 	run-polap-function-utilities.sh
@@ -67,6 +69,7 @@ files=(polap
 	run-polap-r-genes-bed4.R
 	run-polap-r-genes.R
 	run-polap-r-get-bioproject-1.R
+	run-polap-r-global-richness.R
 	run-polap-r-jellyfish.R
 	run-polap-r-mtcontig-contig.R
 	run-polap-r-mtcontig.R
@@ -78,6 +81,7 @@ files=(polap
 	run-polap-r-prepare-cc.R
 	run-polap-r-preselect-annotation.R
 	run-polap-r-select-mtdna-1-nx-gfa-links.R
+	run-polap-r-taxonomy.R
 	run-polap-r-template.R
 	run-polap-r-test-reads-bar-graph.R
 	polap.sh)
