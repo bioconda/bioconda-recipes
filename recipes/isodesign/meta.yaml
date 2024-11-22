@@ -1,0 +1,51 @@
+{% set name = "isodesign" %}
+{% set version = "2.0.0b1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/isodesign-{{ version }}.tar.gz
+  sha256: b200b36fb29084d334e75f30cf1848136228deec94e1998b52a8637595be226a
+
+build:
+  entry_points:
+    - isodesign = isodesign.__main__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.10,<3.13
+    - poetry-core
+    - pip
+  run:
+    - python >=3.10,<3.13
+    - pandas >=2.1.4,<3.0.0
+    - numpy >=2.0.1,<3.0.0
+    - influx-si >=7.0.0,<=7.0.3
+    - streamlit >=1.36.0,<2.0.0
+    - sess-i >=0.1.0,<0.2.0
+    - openpyxl >=3.1.5,<4.0.0
+    - plotly >=5.23.0,<6.0.0
+    - python-kaleido >=0.2.1,<0.3.0
+
+test:
+  imports:
+    - isodesign
+  commands:
+    - pip check
+    - isodesign --help
+  requires:
+    - pip
+
+about:
+  summary: Facilitates the choice of the optimal isotopic composition of labeled substrates in 13C-fluxomics experiments.
+  license: GPL-3.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - rkouakou06
