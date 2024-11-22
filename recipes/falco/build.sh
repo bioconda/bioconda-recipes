@@ -20,6 +20,12 @@ export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -I{PREFIX}/include"
 
+if [[ `uname` == "Darwin" ]]; then
+  export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+else
+  export CXXFLAGS="${CXXFLAGS}"
+fi
+
 cd $falco
 autoreconf -if
 ./configure --prefix=$falco --enable-hts CXX="${CXX}" CXXFLAGS="${CXXFLAGS}"
