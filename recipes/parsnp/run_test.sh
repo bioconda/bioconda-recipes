@@ -4,7 +4,8 @@
 curl https://github.com/marbl/harvest/raw/master/docs/content/parsnp/mers_examples.tar.gz -L --output mers_examples.tar.gz
 tar -xzvf mers_examples.tar.gz
 
-CPU=$(grep -c ^processor /proc/cpuinfo)
+# CPU=$(grep -c ^processor /proc/cpuinfo)
+CPU=2
 parsnp -V 
 parsnp -g mers_virus/ref/England1.gbk -d mers_virus/genomes -C 1000 -c -o test-gbk --verbose --use-fasttree --vcf
 parsnp -r ! -d mers_virus/genomes/*.fna -o test-skips --verbose -p $CPU --force-overwrite --skip-phylogeny --skip-ani-filter
