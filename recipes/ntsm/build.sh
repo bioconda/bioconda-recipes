@@ -26,8 +26,5 @@ autoreconf -if
   CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" \
   --disable-dependency-tracking --disable-silent-rules "${EXTRA_ARGS}"
 
-make -j ${CPU_COUNT}
+make -j"${CPU_COUNT}"
 make install
-
-mkdir -p ${PREFIX}/bin
-cp -rf ntsm-scripts ntsmSiteGen ${PREFIX}/bin
