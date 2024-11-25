@@ -20,8 +20,8 @@ else
     if [[ "$(arch)" == "x86_64" ]]; then
         for SIMD in ${AMD64_SIMD_LEVELS[@]}; do
             make -j"$(nproc)" CXX="${CXX}" CXXFLAGSextra="-m$SIMD" CXXFLAGS="${CXXFLAGS}" STAR STARlong
-            mv STAR $PREFIX/bin/STAR-$SIMD
-            mv STARlong $PREFIX/bin/STARlong-$SIMD
+            cp -rf STAR $PREFIX/bin/STAR-$SIMD
+            cp -rf STARlong $PREFIX/bin/STARlong-$SIMD
 	    chmod 0755 $PREFIX/bin/STAR-$SIMD
 	    chmod 0755 $PREFIX/bin/STARlong-$SIMD
             make clean
