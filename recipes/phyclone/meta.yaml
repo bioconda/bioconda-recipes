@@ -1,0 +1,55 @@
+{% set name = "PhyClone" %}
+{% set version = "0.5.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Roth-Lab/PhyClone/archive/v{{ version }}.tar.gz
+  sha256: 89ea35f6e23f1d5b6f521bd05917bab2290c640c89115f33a067b6ccab5d21fd
+
+build:
+  entry_points:
+    - phyclone = phyclone.cli:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('phyclone', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools >=61.0
+    - setuptools-rust
+    - pip
+  run:
+    - python >=3.10
+    - numba
+    - numpy
+    - scipy
+    - click
+    - python-xxhash
+    - networkx
+    - rustworkx
+    - pandas
+
+test:
+  imports:
+    - phyclone
+  commands:
+    - pip check
+    - phyclone --help
+  requires:
+    - pip
+
+about:
+  summary: Accurate Bayesian reconstruction of cancer phylogenies from bulk sequencing.
+  license: GPL-3.0-or-later
+  license_file: LICENSE.md
+  home: https://github.com/Roth-Lab/PhyClone
+
+extra:
+  recipe-maintainers:
+    - elhurtado
