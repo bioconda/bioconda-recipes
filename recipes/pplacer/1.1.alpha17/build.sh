@@ -8,5 +8,5 @@ chmod +x $PREFIX/bin/{guppy,pplacer,rppr}
 
 if [ $unamestr == 'Darwin' ];
 then
-	cd $PREFIX/lib/; ln -s libgsl.25.dylib libgsl.0.dylib
+	cd /usr/local/lib/; ln -s $PREFIX/lib/libgsl.25.dylib ./libgsl.0.dylib
 fi
