@@ -11,9 +11,9 @@ if [[ ${target_platform}  == "osx-64" ]] ; then
     tar -xzf d4-format.tar.gz
     cp d4-format-*/d4binding/include/d4.h $PREFIX/include/
     
-    curl -SL https://github.com/brentp/mosdepth/archive/refs/tags/v0.3.9.tar.gz -o mosdepth-latest.tar.gz
+    curl -SL https://github.com/brentp/mosdepth/archive/refs/tags/v0.3.10.tar.gz -o mosdepth-latest.tar.gz
     tar -xzf mosdepth-latest.tar.gz
-    cd mosdepth-0.3.9
+    cd mosdepth-0.3.10
     
     nimble install -y "docopt@0.7.1"  --passC:"-I$PREFIX/include" --passL:"-L$PREFIX/lib"
     nimble build -y --verbose -d:release -d:d4 --passC:"-I$PREFIX/include" --passL:"-L$PREFIX/lib"
