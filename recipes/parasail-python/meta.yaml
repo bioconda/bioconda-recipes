@@ -13,9 +13,11 @@ source:
     - darwin-libtool-name.patch
 
 build:
-  number: 2
+  number: 3
   skip: True  # [py < 37]
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  script:
+    - export M4="$BUILD_PREFIX/bin/m4"
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage('parasail-python', max_pin="x") }}
 
@@ -23,11 +25,11 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - m4
     - make
     - autoconf
     - automake
     - libtool
+    - pkg-config
   host:
     - python
     - pip
@@ -53,3 +55,4 @@ extra:
     - doi:10.1186/s12859-016-0930-z
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
