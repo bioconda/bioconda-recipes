@@ -1,0 +1,45 @@
+{% set name = "patchify" %}
+{% set version = "0.2.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/patchify-{{ version }}.tar.gz
+  sha256: 6cc409124f34ceee672f1931d818923f88f5116f323ac7bb9be7e6c5d0845502
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('patchify', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.7,<4.0
+    - poetry >=0.12
+    - poetry-core
+    - pip
+  run:
+    - python >=3.7.0,<4.0.0
+    - numpy >=1.0.0,<2.0.0
+
+test:
+  imports:
+    - patchify
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/dovahcrow/patchify.py
+  summary: A library that helps you split image into small, overlappable patches, and merge patches back into the original image.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - hexylena
