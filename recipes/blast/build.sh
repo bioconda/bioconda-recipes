@@ -194,7 +194,7 @@ ln -s "$RESULT_PATH/lib" "$LIB_INSTALL_DIR"
 
 cd "$RESULT_PATH/build"
 echo "RUNNING MAKE" >&2
-make -j 6 -f Makefile.flat $apps >&2
+make -j 3 -f Makefile.flat $apps >&2
 
 # remove temporary link
 rm "$LIB_INSTALL_DIR"
