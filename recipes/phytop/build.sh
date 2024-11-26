@@ -1,3 +1,3 @@
 #!/bin/bash
 #python -m pip install --no-deps --ignore-installed .
-python setup.py install --single-version-externally-managed
+python -m pip install . --no-deps --ignore-installed -vv
