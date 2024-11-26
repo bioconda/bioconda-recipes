@@ -1,0 +1,47 @@
+{% set version = "0.1.1" %}
+{% set name = "lrge" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/mbhall88/{{ name }}/archive/{{ name }}-{{ version }}.tar.gz
+  sha256: 768b26435c8afa3eda00889818937276a0f0b0b8a2f0e3e17d67f183915c3da2
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('lrge', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - zlib
+  host:
+    - zlib
+    - clangdev
+
+test:
+  commands:
+    - lrge --version
+
+about:
+  home: https://github.com/mbhall88/lrge
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Genome size estimation from long read overlaps
+
+extra:
+  skip-lints:
+    - version_constraints_missing_whitespace  # see https://github.com/bioconda/bioconda-recipes/issues/51185
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - mbhall88
