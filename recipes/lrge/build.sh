@@ -2,8 +2,8 @@
 
 set -euo pipefail
 
-export CFLAGS="${CFLAGS} -fcommon"
-export CXXFLAGS="${CFLAGS} -fcommon"
+# Make sure bindgen passes on our compiler flags.
+export BINDGEN_EXTRA_CLANG_ARGS="${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
