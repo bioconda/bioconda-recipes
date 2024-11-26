@@ -112,7 +112,9 @@ if [[ "$(uname)" = "Linux" ]]; then
 	# --with(out)-64:
 	#   Compile in 64-bit mode instead of 32-bit.
 	#   Flag not available for osx build.
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-64"
+        if [[ "$(arch)" = "x86_64" ]]; then
+            CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-64"
+	fi
 	# --with(out)-openmp:
 	#   Enable OpenMP extensions for all projects.
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-openmp"
