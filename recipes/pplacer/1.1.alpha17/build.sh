@@ -13,6 +13,12 @@ ls -la /usr/local/lib/libgsl* >> $PREFIX/stefan || true
 ls -la /usr/local/lib/libgslcblas* >> $PREFIX/stefan || true
 ls -la /usr/lib/libSystem* >> $PREFIX/stefan || true
 ls -la /usr/local/lib/gcc/5/libgcc_s* >> $PREFIX/stefan || true
+ls -la $PREFIX/lib/libz* >> $PREFIX/stefan || true
+ls -la $PREFIX/lib/libsqlite3* >> $PREFIX/stefan || true
+ls -la $PREFIX/lib/libgsl* >> $PREFIX/stefan || true
+ls -la $PREFIX/lib/libgslcblas* >> $PREFIX/stefan || true
+ls -la $PREFIX/lib/libSystem* >> $PREFIX/stefan || true
+ls -la $PREFIX/lib/gcc/5/libgcc_s* >> $PREFIX/stefan || true
 #otool -L $PREFIX/bin/pplacer
 #if [ $unamestr == 'Darwin' ];
 #then
