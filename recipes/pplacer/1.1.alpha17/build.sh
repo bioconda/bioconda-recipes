@@ -6,13 +6,13 @@ cd $SRC_DIR
 mv guppy pplacer rppr $PREFIX/bin
 chmod +x $PREFIX/bin/{guppy,pplacer,rppr}
 
-touch $PREFIX/stefan
-ls -la /usr/lib/libz* >> /stefan
-ls -la /usr/lib/libsqlite3* >> /stefan
-ls -la /usr/local/lib/libgsl* >> /stefan
-ls -la /usr/local/lib/libgslcblas* >> /stefan
-ls -la /usr/lib/libSystem* >> /stefan
-ls -la /usr/local/lib/gcc/5/libgcc_s* >> /stefan
+touch $PREFIX/stefan || true
+ls -la /usr/lib/libz* >> $PREFIX/stefan || true
+ls -la /usr/lib/libsqlite3* >> $PREFIX/stefan || true
+ls -la /usr/local/lib/libgsl* >> $PREFIX/stefan || true
+ls -la /usr/local/lib/libgslcblas* >> $PREFIX/stefan || true
+ls -la /usr/lib/libSystem* >> $PREFIX/stefan || true
+ls -la /usr/local/lib/gcc/5/libgcc_s* >> $PREFIX/stefan || true
 #otool -L $PREFIX/bin/pplacer
 #if [ $unamestr == 'Darwin' ];
 #then
