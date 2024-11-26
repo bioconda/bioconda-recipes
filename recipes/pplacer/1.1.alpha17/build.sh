@@ -8,7 +8,7 @@ chmod +x $PREFIX/bin/{guppy,pplacer,rppr}
 
 #install_name_tool -change old new $PREFIX/bin/pplacer
 
-install_name_tool -change /usr/lib/libz.1.dylib $PREFIX/lib/libz.1.2.13.dylib $PREFIX/bin/pplacer
+#install_name_tool -change /usr/lib/libz.1.dylib $PREFIX/lib/libz.1.2.13.dylib $PREFIX/bin/pplacer
 install_name_tool -change /usr/lib/libsqlite3.dylib $PREFIX/lib/libsqlite3.0.dylib $PREFIX/bin/pplacer
 install_name_tool -change /usr/local/lib/libgsl.0.dylib $PREFIX/lib/libgsl.25.dylib $PREFIX/bin/pplacer
 install_name_tool -change /usr/local/lib/libgslcblas.0.dylib  $PREFIX/lib/libcblas.3.dylib $PREFIX/bin/pplacer
