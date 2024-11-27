@@ -17,7 +17,7 @@ cp ./.sepp/upp.config $PREFIX/share/sepp/sepp/upp.config
 
 # replace $PREFIX with /opt/anaconda1anaconda2anaconda3 for later replacement of concrete build PREFIX
 # note: can't apply a patch here, as upp.config is not part of upstream but gets generated during python setup
-if if [ "$(uname)" == "Linux" ];
+if [ "$(uname)" == "Linux" ];
 then
 	sed -i 's@'"$PREFIX"'@/opt/anaconda1anaconda2anaconda3@g' $PREFIX/share/sepp/sepp/upp.config
 	wget https://github.com/matsen/pplacer/releases/download/v1.1.alpha17/pplacer-linux-v1.1.alpha17.zip
