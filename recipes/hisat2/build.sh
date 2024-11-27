@@ -1,9 +1,10 @@
 #!/bin/bash
+set -x
 
 # The patch does not move the VERSION file on OSX. Let's make sure it's moved.
 mv VERSION{,.txt} || true
 
-make \
+make -j ${CPU_COUNT} \
     CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
     CPP="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
