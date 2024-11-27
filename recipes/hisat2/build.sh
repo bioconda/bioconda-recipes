@@ -4,6 +4,8 @@ set -x
 # The patch does not move the VERSION file on OSX. Let's make sure it's moved.
 mv VERSION{,.txt} || true
 
+git clone  https://github.com/simd-everywhere/simde-no-tests simde
+
 make -j ${CPU_COUNT} \
     CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
     CPP="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
