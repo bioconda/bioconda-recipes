@@ -16,7 +16,7 @@ esac
 # main binaries
 make \
     CXX=$CXX \
-    CXXFLAGS="$CXXFLAGS" \
+    CXXFLAGS="$CXXFLAGS -std=c++11" \
     CPPFLAGS="$CPPFLAGS -I$PREFIX/include -I. -DBOOST_NO_CXX98_FUNCTION_BASE=1" \
     SAMLIBS=$PREFIX/lib/libhts.$DSOSUF \
     SAMHEADERS=$PREFIX/include/htslib/sam.h \
