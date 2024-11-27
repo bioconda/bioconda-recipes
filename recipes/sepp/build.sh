@@ -36,7 +36,7 @@ $PYTHON -m pip install . --ignore-installed --no-deps -vv
 # copy bundled binaries, but hmmer which should be provided by conda (and pplacer as long as bioconda PR https://github.com/bioconda/bioconda-recipes/pull/52395 is not merged), into $PREFIX/bin/
 mkdir -p $PREFIX/bin/
 cp -v `cat $SRC_DIR/.sepp/main.config | grep "^path" | grep -v "hmm" | grep -v "pplacer" | cut -d "=" -f 2` $PREFIX/bin/
-cp -v `cat $SRC_DIR/.sepp/upp.config | grep "^path" | grep -v "hmm" | grep -v "pplacer" | cut -d "=" -f 2` $PREFIX/bin/
+cp -v `cat $SRC_DIR/.sepp/upp.config | grep "^path" | grep -v "hmm" | grep -v "pplacer" | grep -v "run_pasta" | cut -d "=" -f 2` $PREFIX/bin/
 
 # as long as upstream does not merge my PR https://github.com/smirarab/sepp/pull/138, I manually obtain the fixed seppJsonMerger.jar here
 wget https://raw.githubusercontent.com/jlab/sepp/refs/heads/fix_merger/tools/merge/seppJsonMerger.jar
