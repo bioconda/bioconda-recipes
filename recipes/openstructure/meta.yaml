@@ -1,4 +1,6 @@
 {% set checksum = "11e924ce74b9d1bab0d03aac74e01201d7672a32a672fe58854497296137e296" %}
+{% set cmake_cxx_compiler_version = "12.4.0" %} # [linux]
+{% set cmake_cxx_compiler_version = "19.1.4" %} # [osx]
 {% set name = "openstructure" %}
 {% set version = "2.9.0" %}
 # To avoid having the same YAML lists in `host` and `run`, lets define a Jinja
@@ -23,10 +25,15 @@ source:
   sha256: {{ checksum }}
   url: https://git.scicore.unibas.ch/schwede/{{ name|lower }}/-/archive/{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
 
+cxx_compiler_version:
+  - {{ cmake_cxx_compiler_version }}
+
 build:
   number: 0
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+  script_env:
+    - CMAKE_CXX_COMPILER_VERSION={{ cmake_cxx_compiler_version }}
   ignore_run_exports:
     - libzlib
     - sqlite
@@ -48,8 +55,8 @@ requirements:
   {% for dep in dependencies %}
     - {{ dep }}
   {% endfor %}
-    - networkx >=3.4.2
-    - scipy >=1.14.1
+    - networkx >=2.1
+    - scipy >=1.10.1
 
 test:
   commands:
