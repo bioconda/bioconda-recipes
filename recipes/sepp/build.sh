@@ -17,13 +17,13 @@ cp ./.sepp/upp.config $PREFIX/share/sepp/sepp/upp.config
 
 # replace $PREFIX with /opt/anaconda1anaconda2anaconda3 for later replacement of concrete build PREFIX
 # note: can't apply a patch here, as upp.config is not part of upstream but gets generated during python setup
-if [ $unamestr == 'Linux' ];
+if if [ "$(uname)" == "Linux" ];
 then
 	sed -i 's@'"$PREFIX"'@/opt/anaconda1anaconda2anaconda3@g' $PREFIX/share/sepp/sepp/upp.config
 	wget https://github.com/matsen/pplacer/releases/download/v1.1.alpha17/pplacer-linux-v1.1.alpha17.zip
 	unzip pplacer-linux-v1.1.alpha17.zip
 	mv pplacer-Linux-v1.1.alpha17/pplacer $PREFIX/bin/
-elif [ $unamestr == 'Darwin' ];
+elif [ "$(uname)" == "Darwin" ];
 then
 	gsed -i 's@'"$PREFIX"'@/opt/anaconda1anaconda2anaconda3@g' $PREFIX/share/sepp/sepp/upp.config
 	wget https://github.com/matsen/pplacer/releases/download/v1.1.alpha17/pplacer-Darwin-v1.1.alpha17.zip
@@ -35,8 +35,8 @@ $PYTHON -m pip install . --ignore-installed --no-deps -vv
 
 # copy bundled binaries, but hmmer which should be provided by conda (and pplacer as long as bioconda PR https://github.com/bioconda/bioconda-recipes/pull/52395 is not merged), into $PREFIX/bin/
 mkdir -p $PREFIX/bin/
-cp `cat $SRC_DIR/.sepp/main.config | grep "^path" -m 1 | grep -v "hmm" | grep -v "pplacer" | cut -d "=" -f 2 | xargs dirname`/* $PREFIX/bin/
-cp `cat $SRC_DIR/.sepp/upp.config | grep "^path" -m 1 | grep -v "hmm" | grep -v "pplacer" | cut -d "=" -f 2 | xargs dirname`/* $PREFIX/bin/
+cp -v `cat $SRC_DIR/.sepp/main.config | grep "^path" | grep -v "hmm" | grep -v "pplacer" | cut -d "=" -f 2` $PREFIX/bin/
+cp -v `cat $SRC_DIR/.sepp/upp.config | grep "^path" | grep -v "hmm" | grep -v "pplacer" | cut -d "=" -f 2` $PREFIX/bin/
 
 # as long as upstream does not merge my PR https://github.com/smirarab/sepp/pull/138, I manually obtain the fixed seppJsonMerger.jar here
 wget https://raw.githubusercontent.com/jlab/sepp/refs/heads/fix_merger/tools/merge/seppJsonMerger.jar
