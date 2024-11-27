@@ -8,4 +8,4 @@ BuildDatabase -name db test.fa
 RepeatModeler -database db
 
 # check the result
-# test -s RM_*/consensi.fa
+test -s RM_*/consensi.fa
