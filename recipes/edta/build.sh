@@ -17,4 +17,5 @@ END
 chmod a+x ${PREFIX}/bin/EDTA.pl
 for name in ${EDTA_OTHER_PROGRAMS} ; do
   ln -sf ${PREFIX}/bin/EDTA.pl ${PREFIX}/bin/$(basename $name)
+
 done
