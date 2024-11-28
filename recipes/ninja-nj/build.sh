@@ -1,14 +1,20 @@
-#!/bin/sh
+#!/bin/bash
 set -x -e
 
-if [[ $(uname -s) == "Linux" ]]; then
-  export CXXFLAGS="-I$PREFIX/include -lrt -std=gnu++11 -Wall -mssse3 -fopenmp"
+export INCLUDES="-I${PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+if [[ $(uname) == "Darwin" ]]; then
+	export CXXFLAGS="${CXXFLAGS}"
+	export CXXFLAGS="${CXXFLAGS} -Wno-deprecated-register -Wno-unused-but-set-variable -Wno-unused-variable -Wno-format -Wno-deprecated-declarations"
 else
-  export CXXFLAGS="-I$PREFIX/include -std=gnu++11 -Wall -mssse3 -fopenmp"
+	export CXXFLAGS="${CXXFLAGS} -lrt"
 fi
 
 mkdir -p ${PREFIX}/bin
 
 cd NINJA/
-make all CXX="$CXX" CXXFLAGS="$CXXFLAGS"
-cp Ninja ${PREFIX}/bin
+make all CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}"
+install -v -m 0755 Ninja ${PREFIX}/bin
