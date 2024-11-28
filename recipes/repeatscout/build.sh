@@ -3,7 +3,7 @@ set -x -e
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="${{LDFLAGS}} -L${{PREFIX}}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 mkdir -p ${PREFIX}/bin
 make CC="${CC}" -j"${CPU_COUNT}"
