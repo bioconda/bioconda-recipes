@@ -1,5 +1,5 @@
 {% set name = "dxpy" %}
-{% set version = "0.352.1" %}
+{% set version = "0.385.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 2d252f78e2b57a8b82d8c5f6952c3ca7379acf8de7d187abde1329c6e3d461cf
+  sha256: 6e0d06e9704e9845967caaf301e918496056ad58e15bd610fb02c3c4d775adcf
 
 build:
   number: 0
@@ -17,7 +17,9 @@ build:
     - dx-build-app = dxpy.scripts.dx_build_app:main
     - dx = dxpy.scripts.dx:main
     - dx-app-wizard = dxpy.scripts.dx_app_wizard:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('dxpy', max_pin="x.x") }}
 
 requirements:
   host:
@@ -25,12 +27,14 @@ requirements:
     - pip
   run:
     - argcomplete >=1.9.4
+    - certifi
     - cryptography >=3.4.2,<37
     - psutil >=3.3.0
     - python
     - python-dateutil >=2.5
     - requests >=2.8.0,<2.27.1
-    - websocket-client ==0.53.0
+    - urllib3 >=1.25,<2.2
+    - websocket-client ==0.54.0
     - pandas >=1.3.5
 
 test:

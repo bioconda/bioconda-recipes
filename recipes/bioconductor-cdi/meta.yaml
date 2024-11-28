@@ -1,0 +1,55 @@
+{% set version = "1.0.2" %}
+{% set name = "CDI" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 64ebd520b0ba4613c3bddf06bb82dbc0
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-cdi", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: knitr, rmarkdown, RUnit, BiocGenerics, magick, BiocStyle
+requirements:
+  host:
+    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
+    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - r-base
+    - r-ggplot2
+    - r-ggsci
+    - r-matrixstats
+    - r-reshape2
+    - r-seurat
+    - r-seuratobject
+  run:
+    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
+    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - r-base
+    - r-ggplot2
+    - r-ggsci
+    - r-matrixstats
+    - r-reshape2
+    - r-seurat
+    - r-seuratobject
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL-3 + file LICENSE'
+  summary: 'Clustering Deviation Index (CDI)'
+  description: 'Single-cell RNA-sequencing (scRNA-seq) is widely used to explore cellular variation. The analysis of scRNA-seq data often starts from clustering cells into subpopulations. This initial step has a high impact on downstream analyses, and hence it is important to be accurate. However, there have not been unsupervised metric designed for scRNA-seq to evaluate clustering performance. Hence, we propose clustering deviation index (CDI), an unsupervised metric based on the modeling of scRNA-seq UMI counts to evaluate clustering of cells.'
+  license_file: LICENSE
+

@@ -15,6 +15,11 @@ makeblastdb \
    grep -q "added 3 sequences"
 echo PASS
 
+echo -n 'Checking Database integrity... '
+blastdbcheck -full  -dbtype nucl -db testdb | \
+   grep -q "Result=SUCCESS"
+echo PASS
+
 echo -n 'Checking database version... '
 blastdbcmd -info -db testdb -dbtype nucl | \
     awk '/^BLASTDB Version/ {print $NF}' | \
@@ -32,9 +37,15 @@ blastdbcmd -db testdb -info | \
     grep -q "3 sequences"
 echo PASS
 
-echo -n 'Check update_blastdb.pl installation... '
-perl -c `which update_blastdb.pl` >&/dev/null
-echo PASS 
+echo -n 'Check update_blastdb.pl installation... - test -s on aarch64 until https://github.com/conda-forge/which-feedstock issue #5 is resolved' 
+if [[ "$(arch)" != "aarch64" ]]; then
+    perl -c `which update_blastdb.pl` >&/dev/null
+    echo PASS 
+else
+    test -x ${PREFIX}/bin/update_blastdb.pl
+    echo PASS
+fi
+
 
 #echo -n 'Showing available BLAST databases... '
 #N=`update_blastdb.pl --showall | wc -l`

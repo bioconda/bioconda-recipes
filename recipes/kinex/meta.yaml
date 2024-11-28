@@ -1,0 +1,52 @@
+{% set name = "kinex" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/bedapub/{{ name }}/archive/v{{ version }}.tar.gz"
+  sha256: 43dbcabe85fa5c4a593949ffd02887722b94d9285fa01e8bd0ed0a8e7998fa02
+
+build:
+  number: 0
+  noarch: python
+  script:
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage("kinex", max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.8
+    - setuptools
+  run:
+    - python >=3.8
+    - scipy >=1.10.0
+    - numpy >=1.19.5
+    - nbformat >=4.2.0
+    - pandas
+    - statsmodels
+    - plotly
+    - scikit-learn
+    - umap-learn
+    - importlib-resources
+
+test:
+  imports:
+    - kinex
+
+about:
+  home: "https://github.com/bedapub/kinex"
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Kinex infers causal kinases from phosphoproteomics data."
+  doc_url: "https://kinex.readthedocs.io/en/latest/"
+  dev_url: "https://github.com/bedapub/kinex"
+
+extra:
+  identifiers:
+    - doi:10.1101/2023.11.23.568445

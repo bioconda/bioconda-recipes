@@ -1,0 +1,61 @@
+{% set name = "resistify" %}
+{% set version = "0.6.0" %}
+{% set sha256 = "46e1eed5818bbf239b9393aa59cc9e531be68785cfd13a3e6612d4e3774c4e2c" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/SwiftSeal/resistify/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - resistify = resistify.main:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.9,<3.10
+    - hatchling
+    - cython <3
+  run:
+    - python >=3.9,<3.10
+    - scikit-learn ==0.24.2
+    - numpy <1.23.0
+    - biopython
+    - rich
+    - rich-argparse
+    - hmmer
+    - pytorch
+    - torchvision
+    - torchaudio
+    - fair-esm
+    - transformers ==4.31.0
+    - sentencepiece
+
+test:
+  imports:
+    - resistify
+  commands:
+    - resistify --help
+
+about:
+  home: https://github.com/swiftseal/resistify
+  dev_url: https://github.com/SwiftSeal/resistify
+  doc_url: https://github.com/SwiftSeal/resistify/blob/main/README.md
+  license: GPL-3.0
+  license_file: LICENSE
+  license_url: https://github.com/SwiftSeal/resistify/blob/main/LICENSE
+  summary: A resistance gene annotation tool
+  description: |
+    Resistify is a nucleotide-binding leucine rich repeat (NLR) annotation
+    program, for the purpose of identifying putative disease resistance
+    genes in plant genomes.
+  

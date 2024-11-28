@@ -1,0 +1,39 @@
+{% set name = "svtopo" %}
+{% set version = "0.1.3" %}
+{% set shasum = "621e3e3e6b903deb2ad36846dfe8e23af6dbb9c418dea46a4490c16160bcfb26" %}
+
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PacificBiosciences/HiFi-SVTopo/releases/download/v{{ version }}/svtopo_v{{ version }}-x86_64-unknown-linux-gnu.tar.gz
+  sha256: {{ shasum}}
+
+build:
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('svtopo', max_pin="x.x") }}
+
+requirements:
+  run:
+    - svtopovz =={{ version}}
+
+test:
+  commands:
+    - svtopo --version
+    - svtopo --help
+
+about:
+  home: https://github.com/PacificBiosciences/HiFi-SVTopo
+  license: "Pacific Biosciences Software License Agreement"
+  summary: "Complex structural variant visualization for HiFi sequencing data: extraction tool"
+
+extra:
+  recipe-maintainers:
+    - jbelyeu
+  skip-lints:
+    - should_use_compilers
+    - should_be_noarch_generic

@@ -1,0 +1,43 @@
+{% set version = "1.2.0" %}
+{% set name = "INTACT" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: d8646f4acb0cbb31ccf53a672818be40
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-intact", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocStyle, knitr, rmarkdown, testthat
+requirements:
+  host:
+    - r-base
+    - r-bdsmatrix
+    - r-numderiv
+    - r-squarem
+  run:
+    - r-base
+    - r-bdsmatrix
+    - r-numderiv
+    - r-squarem
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL-3 + file LICENSE'
+  summary: 'Integrate TWAS and Colocalization Analysis for Gene Set Enrichment Analysis'
+  description: 'This package integrates colocalization probabilities from colocalization analysis with transcriptome-wide association study (TWAS) scan summary statistics to implicate genes that may be biologically relevant to a complex trait. The probabilistic framework implemented in this package constrains the TWAS scan z-score-based likelihood using a gene-level colocalization probability. Given gene set annotations, this package can estimate gene set enrichment using posterior probabilities from the TWAS-colocalization integration step.'
+  license_file: LICENSE
+

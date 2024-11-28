@@ -1,6 +1,6 @@
 {% set version = "0.99.10" %}
 {% set name = "scAnnotatR.models" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,14 +8,16 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
   md5: 77c6e16382645164d6413356c5ab52c5
 build:
-  number: 2
+  number: 4
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-scannotatr.models", max_pin="x.x") }}'
   noarch: generic
 # Suggests: scAnnotatR, knitr
 requirements:
@@ -24,7 +26,7 @@ requirements:
   run:
     - r-base
     - curl
-    - bioconductor-data-packages>=20221103
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

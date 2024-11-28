@@ -1,17 +1,21 @@
-{% set version = '0.3.3' %}
+{% set version = '0.3.5' %}
 
 package:
   name: vcfanno
   version: {{ version }}
 
 source:
-  url: https://github.com/brentp/vcfanno/releases/download/v{{ version }}/vcfanno_osx # [osx]
-  sha256: 66dfacb03d9915956e0477d51ca460966f6f88a07bd797e5f4bcfc4b8ee42cda # [osx]
-  url: https://github.com/brentp/vcfanno/releases/download/v{{ version }}/vcfanno_linux64 # [linux]
-  sha256: f8ea2924379a2777b6ae9d4b8da9c6260601febf21a6dab4b3e8c16d4af0f6b3 # [linux]
+  - url: https://github.com/brentp/vcfanno/releases/download/v{{ version }}/vcfanno_osx # [osx]
+    sha256: 2f51637c6358fec7e7fcb1dbbfc1b2cbbed6ff47a7c6b7ef386f1152ff74829f # [osx]
+  - url: https://github.com/brentp/vcfanno/releases/download/v{{ version }}/vcfanno_linux64 # [linux and x86_64]
+    sha256: a98a9be6dfec32b039b21563659c4ecf0ec884ad3cdfaf0732b44c3857520592 # [linux and x86_64]
+  - url: https://github.com/brentp/vcfanno/releases/download/v{{ version }}/vcfanno_linux_aarch64  # [linux and aarch64]
+    sha256: 732007523998f9a48071fa3dd75d4492c972dd786861b0a5d36cd0669f5d5288 # [linux and aarch64]
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage("vcfanno", max_pin="x") }}
 
 requirements:
 
@@ -20,6 +24,8 @@ test:
     - "vcfanno 2>&1 | grep 'vcfanno'"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   skip-lints:
     - should_be_noarch_generic  # uses per platform binaries
     - should_not_be_noarch_source  # uses binaries

@@ -9,7 +9,7 @@ if [[ "$(uname)" == Darwin ]]; then
     LIBS="LIBS=-lc"
 fi
 
-make ${CAIRO_OPT} ${LIBS} errorcheck=no
+make ${CAIRO_OPT} ${LIBS} errorcheck=no -j ${CPU_COUNT}
 export prefix=$PREFIX
 make ${CAIRO_OPT} install 
 

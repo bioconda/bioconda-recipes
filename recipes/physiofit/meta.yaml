@@ -1,0 +1,55 @@
+{% set name = "physiofit" %}
+{% set version = "3.4.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/physiofit-{{ version }}.tar.gz
+  sha256: aa62637080ab9af623c6669a9ef912ef4b1b32aa95c4f7e705db9d5bb7cc0a90
+
+build:
+  entry_points:
+    - physiofit = physiofit.__main__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('physiofit', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8,<3.9.7|>3.9.7,<3.12
+    - poetry-core
+    - pip
+  run:
+    - python >=3.8,<3.9.7|>3.9.7,<3.12
+    - pandas >=2.0.1
+    - numpy >=1.24.2
+    - scipy >=1.10.1
+    - streamlit >=1.20.0
+    - matplotlib-base >=3.7.1
+    - pyarrow >=14.0.1,<15.0.0
+    - pyyaml >=6.0.0
+
+test:
+  imports:
+    - physiofit
+  commands:
+    - physiofit --help
+
+about:
+  home: https://github.com/MetaSys-LISBP/PhysioFit
+  summary: Calculate extracellular fluxes from metabolite concentrations and biomass data
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  doc_url: https://physiofit.readthedocs.io/en/latest/
+  dev_url: https://github.com/MetaSys-LISBP/PhysioFit
+
+extra:
+  recipe-maintainers:
+    - llegregam
+  identifiers:
+    - doi:10.1101/2023.10.12.561695

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "muscdata-1.12.0"
+installBiocDataPackage.sh "muscdata-1.16.0"

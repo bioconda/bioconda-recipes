@@ -1,32 +1,37 @@
-{% set version = "1.4.1" %}
+{% set name = "straglr" %}
+{% set version = "1.5.3" %}
 
 package:
-  name: straglr
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/bcgsc/straglr/archive/refs/tags/v1.4.1.tar.gz
-  sha256: 6c37a5f5cd91b81d766f0a524170fcf96fb288d184f796bfabb6bda335212f9e
+  url: https://github.com/bcgsc/straglr/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
+  sha256: c141c2299642c67a1f028b4b54d927a93c14dd4b042da3b05e59304b2fc5316b
 
 build:
   noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('straglr', max_pin="x") }}
 
 requirements:
   host:
     - python >=3.7
     - pip
+    - setuptools
   run:
+    - python >=3.7
     - trf
     - blast
     - pysam >=0.14.0
-    - pybedtools >=0.7.9
+    - pybedtools >=0.9.0
     - intspan >=1.5.8
-    - numpy >=1.14.2
+    - numpy >=1.22.3
     - pathos >=0.2.3
-    - scikit-learn >=0.19.0
-    - scipy >=1.0.1
+    - scikit-learn >=1.1
+    - scipy >=1.8.0
 
 test:
   commands:
@@ -34,10 +39,12 @@ test:
 
 about:
   home: https://github.com/bcgsc/straglr
-  license: MIT License
+  license: GPL-3.0-or-later
   summary: 'Short-tandem repeat genotyping using long reads '
   license_family: GPL3
-  
+  license_file: LICENSE
+  dev_url: https://github.com/bcgsc/straglr
+
 extra:
   recipe-maintainers:
     - wdecoster

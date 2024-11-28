@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "dexmadata-1.6.0"
+installBiocDataPackage.sh "dexmadata-1.10.0"

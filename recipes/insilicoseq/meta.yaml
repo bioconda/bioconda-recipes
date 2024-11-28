@@ -1,5 +1,5 @@
-{% set version = "1.5.4" %}
-{% set sha256 = "517b17c866dab2655e53001a343c00a9c3982359e2ac5f26d293bad0f26af00c" %}
+{% set version = "2.0.1" %}
+{% set sha256 = "a1b452fbb6781c5c04bad269836893bf8d2103215e8d131c37baa95a74b2cbaa" %}
 
 package:
   name: insilicoseq
@@ -13,15 +13,17 @@ build:
   noarch: python
   entry_points:
     - iss = iss.app:main
-  script: python -m pip install --no-deps --ignore-installed .
-  number: 1
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('insilicoseq', max_pin="x") }}
 
 requirements:
   host:
     - python
     - pip
   run:
-    - biopython <1.78
+    - biopython >=1.79
     - future
     - joblib
     - numpy
@@ -33,6 +35,8 @@ requirements:
 test:
   imports:
     - iss
+  commands:
+    - iss --help
   files:
     - bogus-genome.fasta.gz
     - checksums.md5
@@ -41,8 +45,10 @@ about:
   home: https://github.com/HadrienG/InSilicoSeq
   license: MIT
   license_family: MIT
+  license_file: LICENSE
   summary: A sequencing simulator.
   dev_url: https://github.com/HadrienG/InSilicoSeq
+  doc_url: https://insilicoseq.readthedocs.io/en/latest/
 
 extra:
   recipe-maintainers:

@@ -1,5 +1,5 @@
 {% set name = "cptac" %}
-{% set version = "1.1.2" %}
+{% set version = "1.5.13" %}
 
 
 package:
@@ -8,12 +8,14 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: c436a7f3d7d9d9ec7847b7265a9dc27fa0b73865c6af7d61f5675601aa73297f
+  sha256: be96ee2ed931625aa80d9e876163a4343afed2e2f82e7851231176058cc393c5
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps -vvv
+  run_exports:
+    - {{ pin_subpackage('cptac', max_pin="x") }}
 
 requirements:
   host:
@@ -34,22 +36,24 @@ requirements:
     - statsmodels >=0.10.0
     - urllib3 >=1.24.2
     - xlrd >=2.0.1
+    - pyranges
+    - tqdm
 
 test:
   imports:
     - cptac
-    - cptac.pancan
-  commands:
-    - pip check
-  requires:
-    - pip
 
 about:
   home: https://pypi.org/project/cptac/
   summary: Python packaging for CPTAC data
   license: Apache-2.0
   license_file: LICENSE.md
+  dev_url: https://github.com/PayneLab/cptac
+  doc_url: https://paynelab.github.io/cptac/
 
 extra:
   recipe-maintainers:
     - old-rob
+  identifiers:
+    - biotools:cptac
+    - doi:10.1021/acs.jproteome.0c00919

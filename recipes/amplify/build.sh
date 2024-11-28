@@ -4,8 +4,8 @@ mkdir -p ${PREFIX}/bin/
 mkdir -p ${PREFIX}/share/amplify/
 mkdir -p ${PREFIX}/share/amplify/src/
 mkdir -p ${PREFIX}/share/amplify/models/
-cp -r src/. ${PREFIX}/share/amplify/src
-cp -r models/. ${PREFIX}/share/amplify/models
+cp -r src/. ${PREFIX}/share/amplify/src/
+cp -r models/. ${PREFIX}/share/amplify/models/
 
 echo "#!/bin/bash" > ${PREFIX}/bin/AMPlify
 echo "${PREFIX}/share/amplify/src/AMPlify.py \$@" >> ${PREFIX}/bin/AMPlify

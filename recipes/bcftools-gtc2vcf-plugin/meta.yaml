@@ -1,7 +1,7 @@
 {% set name = "bcftools-gtc2vcf-plugin" %}
-{% set version = "1.16" %}
-{% set sha256 = "b72bde552d2c64ac1a05e35bc9640330881b4e65eacb3d17740053d634077e01" %}
-{% set git_commit = "80173e1" %}
+{% set version = "1.19" %}
+{% set sha256 = "4fb67f39d9599970b202fe5af01d5549088710970d44256b00ee78c25c57289f" %}
+{% set git_commit = "1898320" %}
 
 package:
   name: {{name|lower}}
@@ -13,11 +13,13 @@ source:
     sha256: {{sha256}}
   - folder: bcftools
     url: https://github.com/samtools/bcftools/releases/download/{{version}}/bcftools-{{version}}.tar.bz2
-    sha256: "90bf647c9ad79e10a243b8058c873de057fd7012e250d5ae6574839787a2ecd6"
+    sha256: "782b5f1bc690415192231e82213b3493b047f45e630dc8ef6f154d6126ab3e68"
 
 build:
-  number: 0
+  number: 1
   skip: true  # [osx]
+  run_exports:
+    - {{ pin_subpackage("bcftools-gtc2vcf-plugin", max_pin="x") }}
 
 requirements:
   build:
@@ -27,6 +29,7 @@ requirements:
   host:
     - gsl
     - zlib
+    - {{ pin_compatible('bcftools') }}
     - {{ pin_compatible('htslib') }}
   run:
     - gsl
@@ -42,3 +45,7 @@ about:
   home: https://github.com/freeseek/gtc2vcf
   license: MIT
   summary: Tools to convert Illumina and Affymetrix array intensity data files into VCF files.
+
+extra:
+  additional-platforms:
+    - linux-aarch64

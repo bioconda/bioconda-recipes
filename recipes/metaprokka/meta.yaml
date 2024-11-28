@@ -1,6 +1,6 @@
 {% set name = "metaprokka" %}
-{% set version = "1.14.6_1" %}
-{% set sha256 = "1c0489a7c53767409cd824cbb5ca329e4e0a13634f10db51c52fbc86e0612608" %}
+{% set version = "1.15.0" %}
+{% set sha256 = "2faf2759520681335f039d37186916ebf8a5dfc9cb90e67286371535afe2f561" %}
 
 package:
   name: '{{ name }}'
@@ -11,9 +11,11 @@ source:
   sha256: '{{ sha256 }}'
 
 build:
-  number: 2
+  number: 0
   noarch: generic
-
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+    
 requirements:
   host:
     - perl
@@ -22,18 +24,22 @@ requirements:
   run:
     - perl
     - prokka =1.14.6
+    - prodigal-gv >=2.11.0
+    - perl-fastx-reader >=1.11.0
 
 test:
   commands:
     - metaprokka --listdb
     - metaprokka --version 2>&1 | grep {{ version }}
+    - prokka-gv --verison 2>&1  | grep {{ version }}
 
 
 about:
   home: https://github.com/telatin/{{ name }}
-  license: GPLv3
+  license: GPL-3.0-only
   license_family: GPL
-  summary: A specialized version of Prokka to quickly annotate metagenome assemblies.
+  license_file: 'LICENSE'
+  summary: A fork of Prokka using Prodigal-GV for phage annotation and metagenome/metavirome tweaks
   dev_url: https://github.com/telatin/{{ name }}
 
 extra:

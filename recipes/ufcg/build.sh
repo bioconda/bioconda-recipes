@@ -2,7 +2,7 @@
 
 set -x -e
 
-UFCG_JAR="UFCG-latest.jar"
+UFCG_JAR="ufcg.jar"
 UFCG_LIC="LICENSE.md"
 UFCG_BIN="${PREFIX}/bin/ufcg"
 

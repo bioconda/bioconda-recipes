@@ -1,5 +1,5 @@
 {% set name = "rrmscorer" %}
-{% set version = "1.0.8" %}
+{% set version = "1.0.9" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,27 +7,32 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 6df8179adaf0ac0b6a6ff48cd9eab92e2e7b78df21bdc2f22cedc9db67cf8fea
+  sha256: 2058ec1af72ff6ed0d026a643d0358c3e06f7cdb25615bba66b05554df2d76fa
 
 build:
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
   number: 0
+  entry_points:
+    - rrmscorer=rrmscorer.__main__:main
+  run_exports:
+    - {{ pin_subpackage('rrmscorer', max_pin="x") }}
 
 requirements:
   host:
     - pip
     - python >=3.9
   run:
-    - biopython ==1.79
+    - biopython
     - hmmer
-    - logomaker ==0.8
+    - logomaker
     - matplotlib-base
-    - numpy ==1.22.3
-    - pandas ==1.4.2
+    - numpy
+    - pandas
     - python >=3.9
-    - requests ==2.28.2
-    - scikit-learn ==1.1.1
+    - requests
+    - scikit-learn
+    - seaborn
 
 test:
   commands:
@@ -43,9 +48,9 @@ about:
   dev_url: https://bitbucket.org/bio2byte/rrmscorer/
   doc_url: https://pypi.org/project/rrmscorer
   doc_source_url: https://bitbucket.org/bio2byte/rrmscorer/raw/master/readme.md
-  license: "GNU General Public v3 (GPLv3)"
-  license_family: GPL3
-  license_file:
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
   summary: "RRMScorer (RRM-RNA score predictor) predicts how likely a single RRM is to bind ssRNA"
   description: |
     RRMScorer (RRM-RNA score predictor) allows the user to easily predict
@@ -63,6 +68,7 @@ about:
     the Marie Skłodowska-Curie grant agreement No. 813239.
 
     Wim Vranken, Bio2Byte group within the RNAct project, VUB, Belgium.
+
 extra:
   recipe-maintainers:
     - JoelRoca
