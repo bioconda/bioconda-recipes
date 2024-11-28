@@ -11,7 +11,7 @@ export CPATH="${PREFIX}/include"
 if [[ `uname` == "Darwin" ]]; then
   export CXXFLAGS="${CXXFLAGS} -mmacosx-version-min=10.15 -D_LIBCPP_HAS_NO_LIBRARY_ALIGNED_ALLOCATION=1"
   export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
-elif 
+else 
   export CONFIG_ARGS=""
 fi  
 
