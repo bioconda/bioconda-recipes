@@ -1,0 +1,49 @@
+{% set name = "minimizers" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 41757d81ec6a2872f947ec568eb521bdd40170832bee21b748d48b1778f817bf
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - minimizers=minimizers.minimizers:main
+  run_exports:
+    - {{ pin_subpackage('minimizers', max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+    - bio
+  run:
+    - biopython >=1.83
+    - python >=3.6
+    - bio
+
+test:
+  imports:
+    - minimizers
+  commands:
+    - minimizers --version
+
+about:
+  home: https://github.com/cumbof/minimizers
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Minimizers extraction from fasta files."
+  description: |
+   A Python package for extracting minimizers from fasta files
+  dev_url: https://github.com/cumbof/minimizers
+
+extra:
+  recipe-maintainers:
+    - cumbof

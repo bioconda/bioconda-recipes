@@ -4,7 +4,7 @@ mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/lib
 mkdir -p ${PREFIX}/include
 
-if [ "$(uname)" == "Darwin" ]; then
+if [[ "$(uname)" == "Darwin" ]]; then
     mv bin/kmc ${PREFIX}/bin
     mv bin/kmc_tools ${PREFIX}/bin
     mv bin/kmc_dump ${PREFIX}/bin

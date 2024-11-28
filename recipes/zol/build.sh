@@ -1,23 +1,15 @@
 #!/bin/bash
 
-#$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+set -xe
+
 $PYTHON -m pip install . --ignore-installed --no-deps -vv
 
 mkdir -p ${PREFIX}/bin
 
-# (re)-compile RBH/InParanoid-esque programs written in C++
-${CXX} -std=c++11 -o zol/orthologs/runRBH zol/orthologs/runRBH.cpp
-${CXX} -std=c++11 -o zol/orthologs/splitDiamondResults zol/orthologs/splitDiamondResults.cpp
-${CXX} -std=c++11 -o zol/splitDiamondResultsForFai zol/splitDiamondResultsForFai.cpp
-
-cp zol/orthologs/runRBH ${PREFIX}/bin/
-cp zol/orthologs/splitDiamondResults ${PREFIX}/bin/
-cp zol/splitDiamondResultsForFai ${PREFIX}/bin/
-cp zol/clusterHeatmap.R ${PREFIX}/bin/
-cp zol/plotTinyAAI.R ${PREFIX}/bin/
-cp zol/plotSegments.R ${PREFIX}/bin/
-cp zol/njTree.R ${PREFIX}/bin/
-cp zol/phyloHeatmap.R ${PREFIX}/bin/
+export LDFLAGS=
+${CXX} -std=c++11 -Wl,-headerpad_max_install_names -o ${PREFIX}/bin/runRBH src/zol/orthologs/runRBH.cpp
+${CXX} -std=c++11 -Wl,-headerpad_max_install_names -o ${PREFIX}/bin/splitDiamondResults src/zol/orthologs/splitDiamondResults.cpp
+${CXX} -std=c++11 -Wl,-headerpad_max_install_names -o ${PREFIX}/bin/splitDiamondResultsForFai src/zol/splitDiamondResultsForFai.cpp
 
 chmod +x ${PREFIX}/bin/runRBH
 chmod +x ${PREFIX}/bin/splitDiamondResults

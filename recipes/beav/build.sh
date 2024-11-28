@@ -11,6 +11,8 @@ mkdir -p $PREFIX/bin
 
 mv beav $PREFIX/bin
 mv beav_db $PREFIX/bin
+mv beav_test $PREFIX/bin
+mv beav_circos $PREFIX/bin
 mv scripts/* $BEAV_DIR/scripts
 mv databases/* $BEAV_DIR/databases
 mv models/* $BEAV_DIR/models
