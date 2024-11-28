@@ -1,7 +1,7 @@
 #!/bin/bash
 
 autoreconf -if
-./configure --prefix="${PREFIX}" CC="${CC}" \
+./configure --prefix="${PREFIX}" CC="${CC}" CFLAGS="${CFLAGS} -O3" \
 	CPPFLAGS="${CPPFLAGS} -DUNIXCONSOLE -I${PREFIX}/include" \
 	LDFLAGS="${LDFLAGS} -I${PREFIX}/lib"
 
