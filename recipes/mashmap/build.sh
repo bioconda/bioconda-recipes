@@ -9,10 +9,9 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 export CPATH="${PREFIX}/include"
 
 if [[ `uname` == "Darwin" ]]; then
-  export MACOSX_DEPLOYMENT_TARGET=10.15  # Required to use std::filesystem
-  export CXXFLAGS="${CXXFLAGS} -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET} -D_LIBCPP_DISABLE_AVAILABILITY"
+  export CXXFLAGS="${CXXFLAGS} -mmacosx-version-min=10.15 -D_LIBCPP_HAS_NO_LIBRARY_ALIGNED_ALLOCATION=1"
   export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
-else
+elif 
   export CONFIG_ARGS=""
 fi  
 
