@@ -1,16 +1,19 @@
 {% set name = "learnMSA" %}
-{% set version = "2.0.7" %}
+{% set version = "2.0.9" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://github.com/Gaius-Augustus/learnMSA/archive/refs/tags/v{{ version }}.tar.gz"
-  sha256: 8560fb76fa384d24619c00cdb87b42dd813ce45609600d6de9a5aea2dd02271f
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 300e5495d0306f472c1aa34a522273e3066b9f50d3eb25cee17cd3b6177eea54
 
 build:
   number: 0
+  entry_points:
+    - learnMSA = learnMSA.run:run_main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
   noarch: python
   run_exports:
     - {{ pin_subpackage('learnmsa', max_pin="x") }}
@@ -33,8 +36,13 @@ requirements:
     - sentencepiece
 
 test:
+  imports:
+    - learnMSA
+    - learnMSA.msa_hmm
+    - learnMSA.protein_language_models
+    - learnMSA.run
   commands:
-    - learnmsa --help
+    - learnMSA --help
 
 about:
   home: "https://github.com/Gaius-Augustus/learnMSA"
