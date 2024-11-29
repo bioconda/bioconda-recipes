@@ -11,7 +11,7 @@ export CPPFLAGS="-I${PREFIX}/MSToolkit/include"
 sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" MSToolkit/Makefile
 sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" CometSearch/Makefile
 
-make CXX=${CXX}
+make CXX=${CXX} -j ${CPU_COUNT}
 
 mkdir -p "$PREFIX"/bin
 cp comet.exe ${PREFIX}/bin/comet

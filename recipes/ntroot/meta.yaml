@@ -1,5 +1,5 @@
 {% set name = "ntRoot" %}
-{% set version = "1.0.0" %}
+{% set version = "1.1.5" %}
 
 package:
   name: {{ name|lower }}
@@ -7,41 +7,29 @@ package:
 
 source:
   url: https://github.com/bcgsc/ntRoot/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 0de1e98bc9ac4a3eb1d3265358ac866d031190dd2375fa644ac5b34bb71f4795
-  patches: 
-    - ntroot.patch
+  sha256: 1a6a1ece4ca09a500e24a58c854b6d856a1ced9b753c9adbdd10d59b13a5345d
 
 build:
   number: 0
+  noarch: generic
   run_exports: 
     - {{ pin_subpackage("ntroot", max_pin="x") }}
 
 requirements:
-  build:
-    - {{ compiler('cxx') }}
-    - cmake
   host:
-    - python
-    - meson
-    - ninja
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
-    - btllib >=1.7.0
-    - boost-cpp
-    - cmake
+    - python >=3.9
+    - perl
   run:
-    - python
-    - btllib
+    - python >=3.9
     - snakemake
     - samtools
-    - ntcard
-    - nthits >=1.0.2
+    - ntedit >=2.0.2
     - perl
+    - bedtools
 
 test:
   commands:
     - ntroot -h
-    - make_genome_bf -h
 
 about:
   home: https://github.com/bcgsc/ntroot

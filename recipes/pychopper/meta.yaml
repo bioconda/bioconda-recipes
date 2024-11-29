@@ -1,18 +1,20 @@
 {% set name = "pychopper" %}
-{% set version = "2.5.0" %}
+{% set version = "2.7.10" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://github.com/nanoporetech/pychopper/archive/v{{ version }}.tar.gz
-  sha256: 1800a2c5e19f2a025da579608e87ec1a802cf5196fc9e8fed936cb09e2e5e465
+  url: https://github.com/epi2me-labs/pychopper/archive/v{{ version }}.tar.gz
+  sha256: 99be3fd0f3e051868b7fcfa1dd88a12470e2ed0c54c326af95eba83311966595
 
 build:
   noarch: python
   number: 0
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  run_exports:
+    - {{ pin_subpackage('pychopper', max_pin="x") }}
 
 requirements:
   host:
@@ -28,13 +30,15 @@ requirements:
     - seaborn
     - six
     - pandas
+    - numpy
+    - pysam
 
 test:
   commands:
-    - cdna_classifier.py --help
+    - pychopper --help
 
 about:
-  home: https://github.com/nanoporetech/pychopper
-  license: MPL2
+  home: https://github.com/epi2me-labs/pychopper
+  license: Mozilla Public License 2.0
   summary: A tool to identify, orient and rescue full length cDNA reads from nanopore data.
   license_file: LICENSE.md

@@ -13,7 +13,7 @@ source:
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
   md5: ec47172a09aba997192731b4a5f2f284
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
@@ -30,6 +30,7 @@ requirements:
     - r-rcpp
     - libblas
     - liblapack
+    - tapi # [osx]
   run:
     - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
     - 'bioconductor-delayedarray >=0.28.0,<0.29.0'
@@ -37,6 +38,8 @@ requirements:
     - r-base
     - r-matrix
     - r-rcpp
+    - tapi
+    - tapi # [osx]
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
@@ -46,11 +49,15 @@ test:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
+  license: GPL-3.0-only
   summary: 'Compiling Bioconductor to Handle Each Matrix Type'
   description: 'Provides a consistent C++ class interface for reading from a variety of commonly used matrix types. Ordinary matrices and several sparse/dense Matrix classes are directly supported, along with a subset of the delayed operations implemented in the DelayedArray package. All other matrix-like objects are supported by calling back into R.'
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:{{ name|lower }}
   parent_recipe:
     name: bioconductor-beachmat
     path: recipes/bioconductor-beachmat
