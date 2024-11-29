@@ -40,9 +40,5 @@ meson compile
 meson install
 
 # check
-if [ "$(uname)" == "Darwin" ]; then
-    echo $DYLD_LIBRARY_PATH
-    otool -L ${PREFIX}/bin/bali-phy
-fi
 ${PREFIX}/bin/bali-phy --help
 ${PREFIX}/bin/bali-phy ${PREFIX}/share/doc/bali-phy/examples/5S-rRNA/5d.fasta --iter=20
