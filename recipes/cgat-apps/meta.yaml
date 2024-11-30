@@ -12,9 +12,10 @@ source:
 build:
   number: 0
   script_env:
-    - CFLAGS="-stdlib=libc++ -mmacosx-version-min=10.13"
-    - CXXFLAGS="-stdlib=libc++ -mmacosx-version-min=10.13"
-    - LDFLAGS="-stdlib=libc++ -mmacosx-version-min=10.13 -Wl,-rpath,${PREFIX}/lib"
+    - MACOSX_DEPLOYMENT_TARGET=10.13  # [osx]
+    - CFLAGS="${CFLAGS} -stdlib=libc++"  # [osx]
+    - CXXFLAGS="${CXXFLAGS} -stdlib=libc++"  # [osx]
+    - LDFLAGS="${LDFLAGS} -stdlib=libc++ -Wl,-rpath,${PREFIX}/lib"  # [osx]
   run_exports:
     - {{ pin_subpackage('cgat-apps', max_pin="x.x") }}
   entry_points:
@@ -61,9 +62,9 @@ test:
   commands:
     - cgat --help
     - cgat gtf2table -h
-    - cgat bam2bed -h
     # Skip certain tests for macOS
     - find ${PREFIX} -iname "*bamtools.cpython-*-x86_64-linux-gnu.so*" -exec ldd {} \;  # [not osx]
+    - cgat bam2bed -h  # [not osx]
   skip: true  # [osx]  # Temporarily skip full test suite on macOS
 
 about:
