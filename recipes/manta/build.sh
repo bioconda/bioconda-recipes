@@ -6,7 +6,7 @@ if [[ $(arch) == "aarch64" ]]; then
     ls $PREFIX
     find $PPREFIX -name '*boost*'
     BOOST_ROOT=${PREFIX} ../configure --prefix=${PREFIX}
-    make
+    make -j 
     make install
     
 else
