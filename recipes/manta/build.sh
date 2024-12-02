@@ -3,8 +3,6 @@ set -eu
 
 if [[ $(arch) == "aarch64" ]]; then
     mkdir build ; cd build
-    ls $PREFIX
-    find $PPREFIX -name '*boost*'
     BOOST_ROOT=${PREFIX} ../configure --prefix=${PREFIX}
     make -j 
     make install
