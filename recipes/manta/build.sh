@@ -6,7 +6,7 @@ if [[ $(arch) == "aarch64" ]]; then
     tar xvf manta-$PKG_VERSION.release_src.tar.bz2
     cd manta-$PKG_VERSION.release_src
     mkdir build ; cd build
-    ../configure --prefix=$PREFIX
+    BOOST_ROOT=${PREFIX} ../configure --prefix=${PREFIX}
     make
     make install
     
