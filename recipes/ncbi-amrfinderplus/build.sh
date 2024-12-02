@@ -18,7 +18,7 @@ case $(uname -m) in
         CXXFLAGS="${CXXFLAGS} -fsigned-char"
         ;;
     *)
-        ::
+        ;;
 esac
 
 make CXX="$CXX $LDFLAGS" CPPFLAGS="$CXXFLAGS -I${PREFIX}/include" PREFIX="$PREFIX" DEFAULT_DB_DIR="${PREFIX}/share/amrfinderplus/data" -j"${CPU_COUNT}"
