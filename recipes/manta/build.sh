@@ -2,7 +2,6 @@
 set -eu
 
 if [[ $(arch) == "aarch64" ]]; then
-    cd manta-$PKG_VERSION.release_src
     mkdir build ; cd build
     ls $PREFIX
     find $PPREFIX -name '*boost*'
