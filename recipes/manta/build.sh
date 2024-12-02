@@ -5,7 +5,8 @@ if [[ $(arch) == "aarch64" ]]; then
     wget https://github.com/Illumina/manta/releases/download/v$PKG_VERSION/manta-$PKG_VERSION.release_src.tar.bz2
     tar xvf manta-$PKG_VERSION.release_src.tar.bz2
     cd manta-$PKG_VERSION.release_src
-    ./configure --prefix=$PREFIX
+    mkdir build ; cd build
+    ../configure --prefix=$PREFIX
     make
     make install
     
