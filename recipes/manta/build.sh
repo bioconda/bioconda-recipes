@@ -2,10 +2,10 @@
 set -eu
 
 if [[ $(arch) == "aarch64" ]]; then
-    wget https://github.com/Illumina/manta/releases/download/v$PKG_VERSION/manta-$PKG_VERSION.release_src.tar.bz2
-    tar xvf manta-$PKG_VERSION.release_src.tar.bz2
     cd manta-$PKG_VERSION.release_src
     mkdir build ; cd build
+    ls $PREFIX
+    find $PPREFIX -name '*boost*'
     BOOST_ROOT=${PREFIX} ../configure --prefix=${PREFIX}
     make
     make install
