@@ -5,13 +5,15 @@ mkdir -p ${PREFIX}/bin
 cd src || exit 1
 echo "0" > gitver.txt
 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
 if [[ ${HOST} =~ .*darwin.* ]]; then
 	export MACOSX_DEPLOYMENT_TARGET=10.15
 fi  
 
 cp ${RECIPE_DIR}/vcxproj_make.py .
 chmod +x vcxproj_make.py
-LDFLAGS="${LDFLAGS} -ldl -L${PREFIX}/lib" ./vcxproj_make.py --openmp --cppcompiler "${CXX}" --ccompiler "${CC}"
+python ./vcxproj_make.py --openmp --cppcompiler "${CXX}" --ccompiler "${CC}"
 
 # Verify binary exists and is executable
 if [ ! -f ../bin/reseek ]; then

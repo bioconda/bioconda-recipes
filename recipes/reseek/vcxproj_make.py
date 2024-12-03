@@ -164,7 +164,7 @@ with open("Makefile", "w") as f:
     Out("UNAME_S := $(shell uname -s)")
     Out("LDFLAGS := $(LDFLAGS) " + linker_opts)
     Out("ifeq ($(UNAME_S),Linux)")
-    Out("    LDFLAGS += -static")
+    Out("    LDFLAGS += -static -ldl")
     Out("endif")
 
     Out("")
