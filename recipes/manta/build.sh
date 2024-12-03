@@ -3,7 +3,7 @@ set -eu
 set -x
 
 mkdir build ; cd build
-BOOST_ROOT=${PREFIX} ../configure --prefix=${PREFIX}  CC="${CC}" CXX="${CXX}" CPPFLAGS="${CPPFLAGS}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" --verbose
+BOOST_ROOT=${PREFIX} ../configure --prefix=${PREFIX} --verbose
 
 
 export INCLUDES="-I${PREFIX}/include"
