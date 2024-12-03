@@ -1,0 +1,62 @@
+{% set name = "gene-trajectory-python" %}
+{% set version = "1.0.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/gene-trajectory/gene_trajectory-{{ version }}.tar.gz
+  sha256: 133e22dd167cbc83b8d4ecffa98bfc623f98584b91d2ecf31b915aeb11072b73
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9,<4.0a0
+    - flit-core >=3.2,<4
+    - pip
+  run:
+    - python >=3.9
+    - python-igraph >=0.10
+    - matplotlib-base >=3.6
+    - numpy >=1.25
+    - pandas >=1.5
+    - pot >=0.8.2
+    - scanpy >=1.9.3
+    - scikit-misc >=0.1.3
+    - scikit-learn >=0.24
+    - scipy >=1.8
+    - seaborn >=0.13
+    - tqdm >=4.64.1
+
+test:
+  imports:
+    - gene_trajectory
+  commands:
+    - pip check
+    - python -c "import gene_trajectory"
+  requires:
+    - pip
+
+about:
+  home: https://github.com/KlugerLab/GeneTrajectory-python
+  summary: Compute gene trajectories
+  description: |
+    Gene Trajectory is a Python package that computes and analyzes gene trajectories in single-cell data.
+    It provides tools for trajectory inference, gene expression analysis along trajectories, and visualization of results.
+
+  license: MIT
+  license_file: LICENSE
+  doc_url: https://github.com/KlugerLab/GeneTrajectory-python
+  dev_url: https://github.com/KlugerLab/GeneTrajectory-python
+
+
+extra:
+  recipe-maintainers:
+    - fra-pcmgf
