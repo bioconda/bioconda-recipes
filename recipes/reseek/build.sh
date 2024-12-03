@@ -6,12 +6,12 @@ cd src || exit 1
 echo "0" > gitver.txt
 
 if [[ ${HOST} =~ .*darwin.* ]]; then
-  export MACOSX_DEPLOYMENT_TARGET=10.15
+	export MACOSX_DEPLOYMENT_TARGET=10.15
 fi  
 
 cp ${RECIPE_DIR}/vcxproj_make.py .
 chmod +x vcxproj_make.py
-./vcxproj_make.py --openmp --cppcompiler ${CXX} --ccompiler ${CC}
+LDFLAGS="${LDFLAGS} -ldl -L${PREFIX}/lib" ./vcxproj_make.py --openmp --cppcompiler "${CXX}" --ccompiler "${CC}"
 
 # Verify binary exists and is executable
 if [ ! -f ../bin/reseek ]; then
@@ -19,4 +19,4 @@ if [ ! -f ../bin/reseek ]; then
     exit 1
 fi
 
-cp ../bin/reseek ${PREFIX}/bin/reseek
+install -v -m 0755 ../bin/reseek "${PREFIX}/bin"
