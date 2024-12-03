@@ -1,6 +1,6 @@
 #!/bin/sh
 set -x
-if [[ ${target_platform}  == osx-64 -o ${target_platform}  == linux-aarch64 ]] ; then
+if [[ ${target_platform}  == osx-64 ]] || [[ ${target_platform}  == linux-aarch64 ]] ; then
     if [[ ${target_platform}  == osx-64 ]]; then
 	nim_build="macosx_x64"
     else 
