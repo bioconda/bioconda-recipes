@@ -18,7 +18,7 @@ fi
 
 case $(uname -m) in
 	x86_64)
-		THREADS="-j2"
+		THREADS='-j"${CPU_COUNT}"'
 		;;
 	*)
 		THREADS="-j3"
@@ -47,8 +47,7 @@ sed -i.bak 's/LIBS=/LIBS?=/' Makefile
 rm -rf *.bak
 
 # Then compile k8
-NODE_SRC="node-v${NODE_VERSION}" CXXFLAGS="${CXXFLAGS} -std=c++17 -g -O3 -Wall" LIBS="${LDFLAGS} -pthread" make
+NODE_SRC="node-v${NODE_VERSION}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -std=c++17 -g -O3 -Wall" LIBS="${LDFLAGS} -pthread" make -j"${CPU_COUNT}"
 
-mkdir -p $PREFIX/bin
-chmod 0755 k8
-cp -f k8 $PREFIX/bin/
+install -d "${PREFIX}/bin"
+install -v -m 0755 k8 "${PREFIX}/bin"
