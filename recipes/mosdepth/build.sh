@@ -1,5 +1,5 @@
 #!/bin/sh
-
+set -x
 if [[ ${target_platform}  == osx-64 ]] ; then
     curl -SL https://github.com/nim-lang/nightlies/releases/download/latest-version-1-6/macosx_x64.tar.xz -o macosx_x64.tar.xz
     tar -xzf macosx_x64.tar.xz
@@ -13,7 +13,7 @@ if [[ ${target_platform}  == osx-64 ]] ; then
     nimble build -y --verbose -d:release
 elif [[ ${target_platform}  == linux-aarch64 ]] ; then
     curl -SL https://github.com/nim-lang/nightlies/releases/download/latest-version-1-6/linux_arm64.tar.xz -o linux_arm64.tar.xz
-    tar -xzf linux_arm64.tar.xz
+    unxz -c  linux_arm64.tar.xz | tar  -x
     cd nim-1.6.*
     export PATH="$PWD/bin:$PATH"
     cd ..
