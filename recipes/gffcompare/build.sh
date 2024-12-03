@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 export CXX="$CXX"
 export LINKER="$CXX"
 

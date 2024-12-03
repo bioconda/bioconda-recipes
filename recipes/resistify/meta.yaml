@@ -1,17 +1,18 @@
 {% set name = "resistify" %}
-{% set version = "0.2.2" %}
+{% set version = "0.6.1" %}
+{% set sha256 = "abd3633724cd1f2dec2a2b9a86d48b08a2d254abae0074c726f78b7f2e361c6b" %}
 
 package:
   name: "{{ name }}"
   version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 2fd3e8e8c45711d1a4a054727053fb284f8034ec921e7f14e7d5b8a16800c326
+  url: https://github.com/SwiftSeal/resistify/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   noarch: python
-  number: 0
+  number: 2
   entry_points:
     - resistify = resistify.main:main
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
@@ -21,16 +22,20 @@ build:
 requirements:
   host:
     - pip
-    - python >=3.9
+    - python >=3.9,<3.13
     - hatchling
   run:
-    - python >=3.9
-    - scikit-learn ==0.24.2
-    - biopython
+    - python >=3.9,<3.13
+    - scikit-learn >=0.24.2
     - numpy
+    - biopython
     - rich
     - rich-argparse
     - hmmer
+    - pytorch
+    - fair-esm
+    - transformers
+    - sentencepiece
 
 test:
   imports:
@@ -40,5 +45,12 @@ test:
 
 about:
   home: https://github.com/swiftseal/resistify
-  license: MIT
+  dev_url: https://github.com/SwiftSeal/resistify
+  doc_url: https://github.com/SwiftSeal/resistify/blob/main/README.md
+  license: GPL-3.0
+  license_file: LICENSE
+  license_url: https://github.com/SwiftSeal/resistify/blob/main/LICENSE
   summary: A resistance gene annotation tool
+  description: |
+    Resistify is a program which rapidly identifies and classifies plant resistance genes from protein sequences.
+    It is designed to be lightweight and easy to use.

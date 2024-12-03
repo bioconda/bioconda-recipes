@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 #link include and lib folders to allow using htslib
 ln -s $PREFIX/include htslib/include
 ln -s $PREFIX/lib htslib/lib
@@ -12,7 +14,7 @@ export PATH=$BUILD_PREFIX/bin/:$PATH
 mkdir build
 cd build
 qmake CONFIG-=debug CONFIG+=release DEFINES+=QT_NO_DEBUG_OUTPUT QMAKE_CXX="$CXX" QMAKE_CC="$CC" QMAKE_CFLAGS="$CFLAGS" QMAKE_CXXFLAGS="$CXXFLAGS" QMAKE_LIBDIR+="$PREFIX/lib" QMAKE_RPATHLINKDIR+=${PREFIX}/lib/ ../src/tools.pro
-make
+make -j ${CPU_COUNT}
 cd ..
 
 #remove test files from bin folder
