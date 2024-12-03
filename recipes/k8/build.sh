@@ -18,7 +18,7 @@ fi
 
 case $(uname -m) in
 	x86_64)
-		THREADS='-j"${CPU_COUNT}"'
+		THREADS="-j2"
 		;;
 	*)
 		THREADS="-j3"
