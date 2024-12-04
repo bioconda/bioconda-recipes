@@ -16,7 +16,9 @@ if [[ ${target_platform}  == osx-64 ]] || [[ ${target_platform}  == linux-aarch6
     cd mosdepth-${PKG_VERSION}
 
     echo "gcc.exe = \"${CC}\"" >> ../nim-1.6.*/config/nim.cfg
-    echo "gcc.linker.exe =\"${LD}\"" >>  ../nim-1.6.*/config/nim.cfg
+    echo "gcc.linkerexe =\"${LD}\"" >>  ../nim-1.6.*/config/nim.cfg
+    echo "gcc.cpp.exe = \"${CC}\"" >> ../nim-1.6.*/config/nim.cfg
+    echo "gcc.cpp.linkerexe =\"${LD}\"" >>  ../nim-1.6.*/config/nim.cfg 
 
     nimble install -y "docopt@0.7.0"
     nimble build -y --verbose -d:release 
