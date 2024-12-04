@@ -18,7 +18,7 @@ if [[ ${target_platform}  == osx-64 ]] || [[ ${target_platform}  == linux-aarch6
     which gcc			# seems to not be found by nimble build..
     echo $PATH
     ls $PREFIX/bin/gcc
-    nimble build -y --verbose -d:release
+    nimble build -y --verbose -d:release --cc:$CC
 else
     curl -SL https://github.com/brentp/mosdepth/releases/download/v$PKG_VERSION/mosdepth_d4 -o mosdepth
     chmod +x mosdepth
