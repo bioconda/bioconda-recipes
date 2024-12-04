@@ -53,37 +53,45 @@ export LIB_INSTALL_DIR="${PREFIX}/lib64/ncbi-blast+"
 # Fixes building on Linux
 export AR="${AR} rcs"
 
-if [ `uname` == Linux ]; then
-  export CONFIG_ARGS="--with-openmp --with-hard-runpath --with-runpath=${LIB_INSTALL_DIR}"
+# Source path
+BLAST_SRC_DIR="$SRC_DIR/c++"
+# Work directory
+RESULT_PATH="$BLAST_SRC_DIR/Release"
+
+if [[ `uname` == Linux ]]; then
+	if [[ "$(arch)" = "x86_64" ]]; then
+            CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-64"
+	fi
+	export CONFIG_ARGS="--with-openmp --with-hard-runpath --with-runpath=${LIB_INSTALL_DIR} --with-dll --without-zstd"
 else
-  export CONFIG_ARGS="--without-openmp"
+	export CONFIG_ARGS="--without-openmp --without-dll --without-gcrypt"
 fi
 
 # not building with boost as it's only used for unit tests
 ./configure \
     CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
-    --prefix=${PREFIX} \
-    --with-64 \
+    --prefix="${PREFIX}" \
     --with-mt \
-    --without-dll \
+    --with-build-root="$RESULT_PATH" \
+    --with-bin-release \
     --with-flat-makefile \
+    --without-autodep \
+    --without-makefile-auto-update \
     --without-caution \
     --without-boost \
     --without-lzo \
-    --without-zstd \
     --without-debug \
     --with-experimental=Int8GI \
-    --without-openssl \
     --with-strip \
-    --without-vdb \
+    --with-vdb=${PREFIX} \
     --with-z=${PREFIX} \
     --with-bz2=${PREFIX} \
+    --with-sqlite3=${PREFIX} \
     --without-krb5 \
     --without-gnutls \
     --without-sse42 \
-    --without-gcrypt \
     --without-pcre \
-    ${CONFIG_ARGS}
+    "${CONFIG_ARGS}"
 
 projects="algo/blast/ app/ objmgr/ objtools/align_format/ objtools/blast/"
 cd ReleaseMT
