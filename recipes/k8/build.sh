@@ -37,7 +37,7 @@ patch -p0 < ${RECIPE_DIR}/nodejs-x86_64.patch
 
 # The provided configure script is a sh/python hybrid which boils down to one line of Python
 python -c "import configure" --without-node-snapshot --without-etw --without-npm --without-inspector --without-dtrace
-make "${THREADS}" CXXFLAGS="${CXXFLAGS} -std=c++14 -O3"
+make "${THREADS}"
 popd
 
 # make it possible to set conda build's CXXFLAGS and point to the Node sources
