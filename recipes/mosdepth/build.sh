@@ -15,6 +15,9 @@ if [[ ${target_platform}  == osx-64 ]] || [[ ${target_platform}  == linux-aarch6
     tar -xzf mosdepth-latest.tar.gz
     cd mosdepth-${PKG_VERSION}
     nimble install -y "docopt@0.7.0"
+    which gcc			# seems to not be found by nimble build..
+    echo $PATH
+    ls $PREFIX/bin/gcc
     nimble build -y --verbose -d:release
 else
     curl -SL https://github.com/brentp/mosdepth/releases/download/v$PKG_VERSION/mosdepth_d4 -o mosdepth
