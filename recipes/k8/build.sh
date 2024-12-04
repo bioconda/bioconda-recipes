@@ -10,7 +10,7 @@ DEFAULT_LINUX_VERSION="cos7"
 # * node-18.20.x can be compiled on MacOS but not on CentOS 7 because it
 #   includes an updated c-ares library which is incompatible with glibc on CentOS 7
 if [[ "$(uname)" == "Darwin" ]]; then
-	NODE_VERSION="18.20.4"
+	NODE_VERSION="18.20.3"
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
 else
 	NODE_VERSION="18.19.1"
