@@ -10,7 +10,7 @@ DEFAULT_LINUX_VERSION="cos7"
 # * node-18.20.x can be compiled on MacOS but not on CentOS 7 because it
 #   includes an updated c-ares library which is incompatible with glibc on CentOS 7
 if [[ "$(uname)" == "Darwin" ]]; then
-	NODE_VERSION="18.20.3"
+	NODE_VERSION="18.20.5"
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
 else
 	NODE_VERSION="18.19.1"
@@ -37,7 +37,7 @@ patch -p0 < ${RECIPE_DIR}/nodejs-x86_64.patch
 
 # The provided configure script is a sh/python hybrid which boils down to one line of Python
 python -c "import configure" --without-node-snapshot --without-etw --without-npm --without-inspector --without-dtrace
-make "${THREADS}"
+make "${THREADS}" CXXFLAGS="${CXXFLAGS} -std=c++14 -O3"
 popd
 
 # make it possible to set conda build's CXXFLAGS and point to the Node sources
