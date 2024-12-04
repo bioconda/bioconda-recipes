@@ -14,9 +14,7 @@ OS=$(./install get_os)
 
 mkdir -p "${PREFIX}/bin"
 
-cd t_coffee/src
-make t_coffee CC="$CXX" CFLAGS="$CFLAGS -O3 -Wno-register" -j$"${CPU_COUNT}"
-install -v -m 0755 t_coffee ${PREFIX}/bin
+./install all -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS -O3 -Wno-register"
 
 # llvm-otool -l fails for these plugins on macosx
 if [[ "$OS" = macosx ]]; then
