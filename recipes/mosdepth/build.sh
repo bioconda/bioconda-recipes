@@ -1,9 +1,6 @@
 #!/bin/sh
 set -x
 if [[ ${target_platform}  == osx-64 ]] || [[ ${target_platform}  == linux-aarch64 ]] ; then
-    echo LDFLAGS is $LDFLAGS
-    echo $LDFLAGS | sed s/-Wl,-O2//g
-
 
     if [[ ${target_platform}  == osx-64 ]]; then
 	nim_build="macosx_x64"
@@ -19,12 +16,8 @@ if [[ ${target_platform}  == osx-64 ]] || [[ ${target_platform}  == linux-aarch6
     tar -xzf mosdepth-latest.tar.gz
     cd mosdepth-${PKG_VERSION}
     echo "gcc.exe = \"${CC}\"" >> ../nim-1.6.*/config/nim.cfg
-    echo "gcc.linkerexe =\"${LD}\"" >>  ../nim-1.6.*/config/nim.cfg
-    echo "gcc.cpp.exe = \"${CC}\"" >> ../nim-1.6.*/config/nim.cfg
-    echo "gcc.cpp.linkerexe =\"${LD}\"" >>  ../nim-1.6.*/config/nim.cfg 
-
+    echo "gcc.linkerexe =\"${CC}\"" >>  ../nim-1.6.*/config/nim.cfg
     echo "gcc.options.linker %= \"\${gcc.options.linker} ${LDFLAGS}\"" >>  ../nim-1.6.*/config/nim.cfg 
-    echo "gcc.cpp.options.linker %= \"\${gcc.cpp.options.linker} ${LDFLAGS}\"" >>  ../nim-1.6.*/config/nim.cfg 
 
     cat ../nim-1.6.*/config/nim.cfg 
     nimble install -y "docopt@0.7.0"
