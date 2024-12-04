@@ -14,6 +14,10 @@ if [[ ${target_platform}  == osx-64 ]] || [[ ${target_platform}  == linux-aarch6
     curl -SL https://github.com/brentp/mosdepth/archive/refs/tags/v${PKG_VERSION}.tar.gz -o mosdepth-latest.tar.gz
     tar -xzf mosdepth-latest.tar.gz
     cd mosdepth-${PKG_VERSION}
+
+    echo "gcc.exe = \"${CC}\"" >> ../nim-1.6.*/config/nim.cfg
+    echo "gcc.linker.exe =\"${LD}\"" >>  ../nim-1.6.*/config/nim.cfg
+
     nimble install -y "docopt@0.7.0"
     nimble build -y --verbose -d:release --cc:$CC
 else
