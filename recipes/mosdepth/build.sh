@@ -1,6 +1,10 @@
 #!/bin/sh
 set -x
 if [[ ${target_platform}  == osx-64 ]] || [[ ${target_platform}  == linux-aarch64 ]] ; then
+    echo LDFLAGS is $LDFLAGS
+    echo $LDFLAGS | sed s/-Wl,-O2//g
+
+
     if [[ ${target_platform}  == osx-64 ]]; then
 	nim_build="macosx_x64"
     else 
