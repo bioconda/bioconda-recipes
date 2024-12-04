@@ -14,14 +14,13 @@ if [[ ${target_platform}  == osx-64 ]] || [[ ${target_platform}  == linux-aarch6
     curl -SL https://github.com/brentp/mosdepth/archive/refs/tags/v${PKG_VERSION}.tar.gz -o mosdepth-latest.tar.gz
     tar -xzf mosdepth-latest.tar.gz
     cd mosdepth-${PKG_VERSION}
-
     echo "gcc.exe = \"${CC}\"" >> ../nim-1.6.*/config/nim.cfg
     echo "gcc.linkerexe =\"${LD}\"" >>  ../nim-1.6.*/config/nim.cfg
     echo "gcc.cpp.exe = \"${CC}\"" >> ../nim-1.6.*/config/nim.cfg
     echo "gcc.cpp.linkerexe =\"${LD}\"" >>  ../nim-1.6.*/config/nim.cfg 
 
     echo "gcc.options.linker %= \"\${gcc.options.linker} ${LDFLAGS}\"" >>  ../nim-1.6.*/config/nim.cfg 
-    echo "gcc.cpp.options.linker %= \"\${gcc.options.linker} ${LDFLAGS}\"" >>  ../nim-1.6.*/config/nim.cfg 
+    echo "gcc.cpp.options.linker %= \"\${gcc.cpp.options.linker} ${LDFLAGS}\"" >>  ../nim-1.6.*/config/nim.cfg 
 
     cat ../nim-1.6.*/config/nim.cfg 
     nimble install -y "docopt@0.7.0"
