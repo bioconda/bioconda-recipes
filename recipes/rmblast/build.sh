@@ -60,9 +60,9 @@ RESULT_PATH="$BLAST_SRC_DIR/Release"
 
 if [[ `uname` == Linux ]]; then
 	if [[ "$(arch)" = "x86_64" ]]; then
-            CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-64"
+            export CONFIG_ARGS="--with-64"
 	fi
-	export CONFIG_ARGS="--with-openmp --with-hard-runpath --with-runpath=${LIB_INSTALL_DIR} --with-dll --without-zstd"
+	export CONFIG_ARGS="$CONFIG_ARGS --with-openmp --with-hard-runpath --with-runpath=${LIB_INSTALL_DIR} --with-dll --without-zstd"
 else
 	export CONFIG_ARGS="--without-openmp --without-dll --without-gcrypt"
 fi
