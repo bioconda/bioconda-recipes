@@ -14,20 +14,21 @@ OS=$(./install get_os)
 
 mkdir -p "${PREFIX}/bin"
 
-./install all -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS"
+cd t_coffee/src
+make t_coffee CC="$CXX" CFLAGS="$CFLAGS -O3 -Wno-register" -j$"${CPU_COUNT}"
+install -v -m 0755 t_coffee ${PREFIX}/bin
 
 # llvm-otool -l fails for these plugins on macosx
-if [ "$OS" = macosx ]
-then
+if [[ "$OS" = macosx ]]; then
     for bad_plug in probconsRNA prank
     do
-	rm -fv "${SHARE_DIR}/plugins/macosx/${bad_plug}"
+	rm -f "${SHARE_DIR}/plugins/macosx/${bad_plug}"
     done
 fi
 
 # The installer may try to update dependencies and install them to bin/,
 # which will cause conflicts with the dependencies as separately packaged.
 # t_coffee itself is not installed here
-rm -fv ${PREFIX}/bin/*
+rm -f ${PREFIX}/bin/*
 
 sed -e "s|CHANGEME|${SHARE_DIR}|" -e "s|__OS__|${OS}|" "$RECIPE_DIR/t_coffee.sh" > "${PREFIX}/bin/t_coffee"
