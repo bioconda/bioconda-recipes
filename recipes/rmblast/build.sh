@@ -24,7 +24,7 @@ else
     export CPP_FOR_BUILD=${CPP}
 fi
 
-export LIB_INSTALL_DIR="${PREFIX}/lib/ncbi-blast+"
+export LIB_INSTALL_DIR="${PREFIX}/lib64/ncbi-blast+"
 
 # with/without options:
 #
@@ -93,7 +93,7 @@ cd ReleaseMT
 ln -s ${SRC_DIR}/c++/ReleaseMT/lib ${LIB_INSTALL_DIR}
 
 cd build
-make -j1 -f Makefile.flat all_projects="${projects}"
+make -j"${CPU_COUNT}" -f Makefile.flat all_projects="${projects}"
 
 # remove temporary link
 rm ${LIB_INSTALL_DIR}
