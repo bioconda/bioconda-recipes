@@ -20,9 +20,16 @@ export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -I{PREFIX}/include"
 
+if [[ `uname` == "Darwin" ]]; then
+  export MACOSX_DEPLOYMENT_TARGET=10.15
+  export CXXFLAGS="${CXXFLAGS} -mmacosx-version-min=10.15"
+else
+  export CXXFLAGS="${CXXFLAGS}"
+fi
+
 cd $falco
 autoreconf -if
-./configure --prefix=$falco --enable-hts CXX="${CXX}" CXXFLAGS="${CXXFLAGS}"
+./configure --prefix=$falco --enable-hts CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" CPPFLAGS="-I${PREFIX}/include" LDFLAGS="${LDFLAGS}"
 make -j ${CPU_COUNT}
 make install
 for i in $(ls -1 | grep -v Configuration | grep -v bin);
