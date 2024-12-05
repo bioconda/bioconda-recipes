@@ -16,7 +16,7 @@ case "$(uname -m)" in
   aarch64)
       if [ "$(uname -s)" == Darwin ]
       then
-        LIBS="${LDFLAGS}" make CC="${CC}" CXX="${CXX}" multi
+        LIBS="${LDFLAGS}" make -j${CPU_COUNT} CC="${CC}" CXX="${CXX}" multi
       else
         mkdir ext/simde
         wget https://github.com/simd-everywhere/simde-no-tests/archive/refs/tags/v0.8.2.tar.gz -O - | tar -xvz
