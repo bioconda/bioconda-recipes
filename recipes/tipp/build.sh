@@ -39,8 +39,14 @@ mkdir -p $PREFIX/bin/seqtk
 for file in *.pl; do
   sed -i.bak '1 s|^#!/usr/bin/perl$|#!/usr/bin/env perl|' "$file"
 done
+sed -i.bak '1i #!/usr/bin/env perl' html2repeatbed.pl
 
-cp graph.plot.r readskmercount TIPP.pl TIPP_polish.pl html2repeatbed.pl MSA.plot.r TIPP_plastid.pl TIPP_telomere_backup.pl readskmercount.cpp telomeres.visulization.r TIPP_plastid.v2.1.pl TIPP_telomere.pl "$PREFIX/bin/" || { echo "Failed to copy specific binaries to PREFIX"; exit 1; }
+for file in *.r; do
+  sed -i.bak '1i#!/usr/bin/env Rscript' "$file"
+done
+
+
+cp graph.plot.r readskmercount TIPP.pl TIPP_polish.pl html2repeatbed.pl MSA.plot.r TIPP_plastid.pl TIPP_telomere_backup.pl readskmercount.cpp telomeres.visulization.r TIPP_plastid.v2.1.pl TIPP_telomere.pl TIPPo.v2.3.pl TIPPo.v2.2.pl "$PREFIX/bin/" || { echo "Failed to copy specific binaries to PREFIX"; exit 1; }
 cp -r kmc3/bin $PREFIX/bin/kmc3/
 cp seqtk/seqtk $PREFIX/bin/seqtk/
 
