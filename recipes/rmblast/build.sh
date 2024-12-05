@@ -21,7 +21,7 @@ if [ `uname` == Darwin ]; then
     # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
     export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 else
-    export CPP_FOR_BUILD=${CPP}
+    export CPP_FOR_BUILD="${CPP}"
 fi
 
 export LIB_INSTALL_DIR="${PREFIX}/lib64/ncbi-blast+"
@@ -58,13 +58,13 @@ BLAST_SRC_DIR="$SRC_DIR/c++"
 # Work directory
 RESULT_PATH="$BLAST_SRC_DIR/Release"
 
-if [[ `uname` == Linux ]]; then
-	export CONFIG_ARGS="--with-openmp --with-hard-runpath --with-runpath=${LIB_INSTALL_DIR} --with-dll --without-zstd"
-	if [[ "$(uname -m)" = "x86_64" ]]; then
+if [[ `uname` == "Linux" ]]; then
+	export CONFIG_ARGS='--with-runpath="${LIB_INSTALL_DIR}" --with-openmp --with-hard-runpath --with-dll --without-zstd'
+	if [[ "$(uname -m)" == "x86_64" ]]; then
             export CONFIG_ARGS="${CONFIG_ARGS} --with-64"
 	fi
 else
-	export CONFIG_ARGS="--without-openmp --without-dll --without-gcrypt"
+	export CONFIG_ARGS='--without-openmp --without-dll --without-gcrypt'
 fi
 
 # not building with boost as it's only used for unit tests
@@ -72,7 +72,7 @@ fi
     CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
     --prefix="${PREFIX}" \
     --with-mt \
-    --with-build-root="$RESULT_PATH" \
+    --with-build-root="${RESULT_PATH}" \
     --with-bin-release \
     --with-flat-makefile \
     --without-autodep \
@@ -83,10 +83,10 @@ fi
     --without-debug \
     --with-experimental=Int8GI \
     --with-strip \
-    --with-vdb=${PREFIX} \
-    --with-z=${PREFIX} \
-    --with-bz2=${PREFIX} \
-    --with-sqlite3=${PREFIX} \
+    --with-vdb="${PREFIX}" \
+    --with-z="${PREFIX}" \
+    --with-bz2="${PREFIX}" \
+    --with-sqlite3="${PREFIX}" \
     --without-krb5 \
     --without-gnutls \
     --without-sse42 \
