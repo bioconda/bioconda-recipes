@@ -1,0 +1,45 @@
+{% set name = "superintervals" %}
+{% set version = "0.2.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/superintervals-{{ version }}.tar.gz
+  sha256: 0810b16eb810171e8869acd364f5e9e8b931f9922eb413de377b13015f9b69b1
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - python
+    - setuptools >=42
+    - wheel
+    - cython
+    - pip
+  run:
+    - python
+    - cython
+
+test:
+  imports:
+    - superintervals
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  summary: Rapid interval intersections
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - kcleal
