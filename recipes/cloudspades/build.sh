@@ -2,10 +2,10 @@
 
 set -e -o pipefail -x
 
-export LIBRARY_PATH="${PREFIX}/lib"
-export INCLUDE_PATH="${PREFIX}/include"
-export CFLAGS="${CFLAGS} -O3 -fcommon"
-export CXXFLAGS="${CFLAGS} -O3 -fcommon -I${PREFIX}/include -D_LIBCPP_DISABLE_AVAILABILITY"
+#export LIBRARY_PATH="${PREFIX}/lib"
+#export INCLUDE_PATH="${PREFIX}/include"
+#export CFLAGS="${CFLAGS} -O3 -fcommon"
+#export CXXFLAGS="${CFLAGS} -O3 -fcommon -I${PREFIX}/include -D_LIBCPP_DISABLE_AVAILABILITY"
 
 case $(uname) in
 	Linux)
@@ -16,5 +16,6 @@ case $(uname) in
 		;;
 esac
 
+mkdir -p ${PREFIX}/bin ${PREFIX}/share
 cd assembler
-PREFIX="${PREFIX}" bash spades_compile.sh "${THREADS}" -DSPADES_ENABLE_PROJECTS="all"
+./spades_compile.sh "${THREADS}"
