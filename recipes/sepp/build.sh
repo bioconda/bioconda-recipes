@@ -21,15 +21,9 @@ cp ./.sepp/upp.config $PREFIX/share/sepp/sepp/upp.config
 if [ "$(uname)" == "Linux" ];
 then
 	sed -i 's@'"$PREFIX"'@/opt/anaconda1anaconda2anaconda3@g' $PREFIX/share/sepp/sepp/upp.config
-	wget https://github.com/matsen/pplacer/releases/download/v1.1.alpha17/pplacer-linux-v1.1.alpha17.zip
-	unzip pplacer-linux-v1.1.alpha17.zip
-	mv pplacer-Linux-v1.1.alpha17/{pplacer,guppy} $PREFIX/bin/
 elif [ "$(uname)" == "Darwin" ];
 then
 	sed -i '' 's@'"$PREFIX"'@/opt/anaconda1anaconda2anaconda3@g' $PREFIX/share/sepp/sepp/upp.config
-	wget https://github.com/matsen/pplacer/releases/download/v1.1.alpha17/pplacer-Darwin-v1.1.alpha17.zip
-	unzip pplacer-Darwin-v1.1.alpha17.zip
-	mv pplacer-Darwin-v1.1.alpha17-6-g5cecf99/{pplacer,guppy} $PREFIX/bin/
 fi
 
 $PYTHON -m pip install . --ignore-installed --no-deps -vv
