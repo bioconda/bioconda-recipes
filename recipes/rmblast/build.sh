@@ -94,11 +94,11 @@ fi
     ${CONFIG_ARGS}
 
 projects="algo/blast/ app/ objmgr/ objtools/align_format/ objtools/blast/"
-cd ReleaseMT
+cd Release
 
 # The "datatool" binary needs the libs at build time, create
 # link from final install path to lib build dir:
-ln -s ${SRC_DIR}/c++/ReleaseMT/lib ${LIB_INSTALL_DIR}
+ln -s ${SRC_DIR}/c++/Release/lib ${LIB_INSTALL_DIR}
 
 cd build
 make -j"${CPU_COUNT}" -f Makefile.flat all_projects="${projects}"
@@ -107,9 +107,9 @@ make -j"${CPU_COUNT}" -f Makefile.flat all_projects="${projects}"
 rm ${LIB_INSTALL_DIR}
 
 mkdir -p ${PREFIX}/bin ${LIB_INSTALL_DIR}
-chmod +x ${SRC_DIR}/c++/ReleaseMT/bin/*
-cp ${SRC_DIR}/c++/ReleaseMT/bin/* ${PREFIX}/bin/
-cp ${SRC_DIR}/c++/ReleaseMT/lib/* ${LIB_INSTALL_DIR}
+chmod +x ${SRC_DIR}/c++/Release/bin/*
+cp ${SRC_DIR}/c++/Release/bin/* ${PREFIX}/bin/
+cp ${SRC_DIR}/c++/Release/lib/* ${LIB_INSTALL_DIR}
 
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/update_blastdb.pl
 # Patches to enable this script to work better in bioconda
