@@ -27,6 +27,6 @@ fi
 # The installer may try to update dependencies and install them to bin/,
 # which will cause conflicts with the dependencies as separately packaged.
 # t_coffee itself is not installed here
-rm -f ${PREFIX}/bin/*
+rm -rfv ${PREFIX}/bin/*
 
 sed -e "s|CHANGEME|${SHARE_DIR}|" -e "s|__OS__|${OS}|" "$RECIPE_DIR/t_coffee.sh" > "${PREFIX}/bin/t_coffee"
