@@ -1,0 +1,43 @@
+{% set name = "gfainject" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/AndreaGuarracino/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: a11f41ee94614d8c089454fdb3d0fb96e2f305db46895e2f64d974fa1707e739 
+
+build:
+  number: 0
+  run_exports:
+      - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cmake
+    - make
+    - pkg-config
+    - {{ compiler('c') }}      # For zlib-ng compilation
+    - {{ compiler('cxx') }}    # For C++ dependencies if any
+
+test:
+  commands:
+    - gfainject --help
+
+about:
+  home: https://github.com/AndreaGuarracino/{{ name }}
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Inject alignment into pangenome graphs
+  dev_url: https://github.com/AndreaGuarracino/{{ name }}
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - AndreaGuarracino

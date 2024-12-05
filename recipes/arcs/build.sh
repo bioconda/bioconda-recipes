@@ -1,9 +1,10 @@
 #!/bin/sh
 
+
 if [[ ${target_platform} =~ osx.* ]]; then
 	./configure --prefix=${PREFIX} CXXFLAGS="${CXXFLAGS} -Wno-error=unused-result -Wno-error=unknown-warning-option"
 else
-	./configure --prefix=${PREFIX} CXXFLAGS="${CXXFLAGS} -Wno-error=unused-result"
+	./configure --prefix=${PREFIX} CXXFLAGS="${CXXFLAGS} -Wno-error=unused-result -fopenmp"
 fi
 
 make install
