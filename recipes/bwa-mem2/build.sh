@@ -12,7 +12,7 @@ fi
 
 case "$(uname -m)" in
   x86_64)
-      LIBS="${LDFLAGS}" make CC="${CC}" CXX="${CXX}" multi ;;
+      LIBS="${LDFLAGS}" make -j${CPU_COUNT} CC="${CC}" CXX="${CXX}" multi ;;
   aarch64)
       if [ "$(uname -s)" == Darwin ]
       then
