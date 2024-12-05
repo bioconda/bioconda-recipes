@@ -25,7 +25,7 @@ case "$(uname -m)" in
       fi
       ;;
   *)
-      echo "Error detecting architecture" ;;
+      echo "Not supported architecture: $(uname -m)" ;;
 esac
 
 mkdir -p $PREFIX/bin
