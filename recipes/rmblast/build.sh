@@ -91,7 +91,7 @@ fi
     --without-gnutls \
     --without-sse42 \
     --without-pcre \
-    "${CONFIG_ARGS}"
+    ${CONFIG_ARGS}
 
 projects="algo/blast/ app/ objmgr/ objtools/align_format/ objtools/blast/"
 cd ReleaseMT
