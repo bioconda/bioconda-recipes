@@ -164,7 +164,7 @@ with open("Makefile", "w") as f:
     Out("UNAME_S := $(shell uname -s)")
     Out("LDFLAGS := $(LDFLAGS) " + linker_opts)
     Out("ifeq ($(UNAME_S),Linux)")
-    Out("    LDFLAGS += -static -ldl")
+    Out("    LDFLAGS += -static")
     Out("endif")
 
     Out("")
@@ -192,7 +192,7 @@ with open("Makefile", "w") as f:
         Cmd = "\t%(CC) $(LDFLAGS) $(OBJS) -o $(BINPATH)"
 
     if Args.lrt:
-        Cmd += " -lrt"
+        Cmd += " -lrt -ldl"
     Out(Cmd)
 
     if not nostrip:
