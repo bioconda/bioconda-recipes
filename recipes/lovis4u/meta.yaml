@@ -1,0 +1,56 @@
+{% set name = "lovis4u" %}
+{% set version = "0.0.12" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/lovis4u-{{ version }}.tar.gz
+  sha256: 894e06e3b094f70b5d4821aed919dfce3d5175b87c808c67112e98435c16fdb0
+
+build:
+  skip: false  # Ensure this is not skipping builds for python 3.12
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - biopython
+    - distinctipy
+    - pandas
+    - reportlab
+    - bcbio-gff
+    - matplotlib-base
+    - seaborn
+    - scipy
+    - psutil~=5.8
+    - configs
+    - pyhmmer==0.10.15
+    - progress
+    - requests
+
+test:
+  imports:
+    - lovis4u
+  commands:
+    - python -c "import lovis4u; print('Package imported successfully')"
+  requires:
+    - pip
+
+about:
+  home: https://art-egorov.github.io/lovis4u/
+  summary: Locus Visualisation Tool
+  license: BSD-3-Clause AND GPL-3.0 AND WTFPL
+  license_file:
+    - LICENSE
+    - lovis4u/lovis4u_data/bin/mmseqs_mac/LICENSE.md
+    - lovis4u/lovis4u_data/fonts/LICENSE
+
+extra:
+  recipe-maintainers:
+    - art-egorov
