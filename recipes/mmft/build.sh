@@ -13,4 +13,4 @@ if [ "$(uname)" == "Darwin" ]; then
     #git config --global --unset url.ssh://git@github.com.insteadOf
 fi
 
-cargo install -v --locked --root "$PREFIX" --path .
+cargo install -v --locked --root "$PREFIX" --path . --no-track
