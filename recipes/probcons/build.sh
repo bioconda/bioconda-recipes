@@ -10,7 +10,7 @@
 
 set -eu -o pipefail
 
-make
+make -j ${CPU_COUNT} CC="$CC" CFLAGS="$CFLAGS"
 
 
 # install probcons in the target bin directory 
