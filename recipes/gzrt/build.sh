@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Exit on error
-set -e
+set -xe
 
 if [ -z "$PREFIX" ]; then
     echo "PREFIX environment variable not set"
@@ -35,7 +35,7 @@ if [ ! -f "$(command -v cc)" ]; then
     export PATH="${SRC_DIR}/bin:${PATH}"
 fi
 
-if ! make; then
+if ! make -j"${CPU_COUNT}"; then
     echo "Build failed"
     exit 1
 fi
