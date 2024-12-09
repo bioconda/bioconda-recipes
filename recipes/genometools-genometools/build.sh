@@ -9,9 +9,11 @@ if [[ "$(uname)" == Darwin ]]; then
     LIBS="LIBS=-lc"
 fi
 
-make ${CAIRO_OPT} ${LIBS} errorcheck=no -j ${CPU_COUNT}
-export prefix=$PREFIX
-make ${CAIRO_OPT} install 
+make "${CAIRO_OPT}" "${LIBS}" \
+	INCLUDEOPT="-I$(CURDIR)/src -I$(CURDIR)/obj -I$(PREFIX)/include" \
+	errorcheck=no CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}"
+export prefix="$PREFIX"
+make "${CAIRO_OPT}" install
 
 cd gtpython
-$PYTHON setup.py install 
+$PYTHON -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
