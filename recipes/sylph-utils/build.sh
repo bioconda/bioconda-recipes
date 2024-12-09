@@ -1,6 +1,5 @@
 #!/bin/bash
-mkdir build
-cd build
-cmake ${CMAKE_ARGS} ..
-make
-make install
+
+mkdir -p ${PREFIX}/bin
+cp -rf eukaryote prokaryote virus ${PREFIX}/bin
+install -v -m 0755 merge_sylph_taxprof.py sylph_to_taxprof.py ${PREFIX}/bin
