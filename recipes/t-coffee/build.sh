@@ -14,7 +14,7 @@ OS=$(./install get_os)
 
 mkdir -p "${PREFIX}/bin"
 
-./install all -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS -O3 -Wno-register -L${PREFIX}/lib" CXX="$CXX" CXXFLAGS="$CXXFLAGS -O3 -I${PREFIX}/include"
+./install all -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS -O3 -Wno-register -L${PREFIX}/lib"
 
 # llvm-otool -l fails for these plugins on macosx
 if [[ "$OS" = macosx ]]; then
