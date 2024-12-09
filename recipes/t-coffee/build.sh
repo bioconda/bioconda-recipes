@@ -9,7 +9,6 @@
 #
 set -eux -o pipefail
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
 SHARE_DIR="${PREFIX}/libexec/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 OS=$(./install get_os)
 
