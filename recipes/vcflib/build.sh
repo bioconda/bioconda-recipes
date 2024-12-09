@@ -1,19 +1,9 @@
 #!/bin/bash
 set -ex
 
-OS=$(uname)
-ARCH=$(uname -m)
+cp -rf "${RECIPE_DIR}/vcflib.pc.in" "${SRC_DIR}"
 
-if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
-	echo $(pwd)/zig-macos-x86_64-*
-	export PATH="$(pwd)/zig-macos-x86_64-0.10.1:${PATH}"
-elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
-	echo $(pwd)/zig-macos-aarch64-*
-	export PATH="$(pwd)/zig-macos-aarch64-0.10.1:${PATH}"
-else
-	echo $(pwd)/zig-linux-${ARCH}-*
-	export PATH="$(pwd)/zig-linux-${ARCH}-0.10.1:${PATH}"
-fi
+export PATH="$(which zig):${PATH}"
 
 export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Itabixpp -Iwfa2 -I\$(INC_DIR)"
 export LIBPATH="-L${PREFIX}/lib -L. -Lhtslib -Ltabixpp -Lwfa2"
@@ -38,8 +28,6 @@ if [[ `uname` == "Darwin" ]]; then
 else
         export CONFIG_ARGS=""
 fi
-
-pkg-config --list-all
 
 cmake -S . -B build \
 	-DZIG=ON -DOPENMP=ON -DWFA_GITMODULE=OFF \
