@@ -8,6 +8,9 @@ package:
 source:
   url: http://www.bio8.cs.hku.hk/clair3/bioconda/Clair3_v{{ version }}.zip
   sha256: b2de8180d3825f9e1ed4ee1710ce0988dd85eba79ab8bdaf2ad8dae7ac70e228
+  patches:
+    - 0001-Makefile.patch
+    - 0002-fpic.patch  # [osx]
 
 build:
   number: 1
@@ -18,14 +21,16 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - make
+    - libtool
   host:
     - cffi
     - bzip2
     - xz
     - zlib
     - python 3.9.0
-    - automake
-    - make
     - libcurl 7.87.0
     - openssl 1.1.1
   run:
@@ -41,6 +46,7 @@ requirements:
     - zstd
     - openssl 1.1.1
     - cffi 1.14.4
+
 test:
   imports:
     - tensorflow
@@ -48,12 +54,20 @@ test:
     - longphase --version
     - which clair3.py
     - run_clair3.sh -v
-extra:
-  container:
-    extended-base: true
 
 about:
   home: 'https://github.com/HKU-BAL/Clair3'
   license: BSD-3-Clause
+  license_family: BSD
   license_file: LICENSE.md
   summary: "Clair3 is a small variant caller for long-reads. Compare to PEPPER (r0.4), Clair3 (v0.1) shows a better SNP F1-score with ≤30-fold of ONT data (precisionFDA Truth Challenge V2), and a better Indel F1-score, while runs generally four times faster. Clair3 makes the best of both worlds of using pileup or full-alignment as input for deep-learning based long-read small variant calling. Clair3 is simple and modular for easy deployment and integration."
+  dev_url: 'https://github.com/HKU-BAL/Clair3'
+  doc_url: "https://github.com/HKU-BAL/Clair3/blob/v{{ version }}/README.md"
+
+extra:
+  container:
+    extended-base: True
+  identifiers:
+    - doi:10.1038/s43588-022-00387-x
+    - biotools:clair3
+    - usegalaxy-eu:clair3
