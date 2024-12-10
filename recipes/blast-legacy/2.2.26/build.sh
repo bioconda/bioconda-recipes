@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ `uname` == "Linux" ]]; then
+    sed -i.bak 's|#!/bin/csh -f|#!/usr/bin/env tcsh|' make/makedis.csh
+    rm -rf make/*.bak
+fi
+
 export PLATFORM=$(uname)
 export SRCDIR="doc/blast"
 
