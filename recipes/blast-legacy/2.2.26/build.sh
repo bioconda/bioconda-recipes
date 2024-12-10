@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mkdir -p "${PREFIX}/bin"
+
 if [[ `uname` == "Linux" ]]; then
     sed -i.bak 's|#!/bin/csh -f|#!/usr/bin/env tcsh|' make/makedis.csh
     sed -i.bak 's|#!/bin/csh -f|#!/usr/bin/env tcsh|' make/ln-if-absent
@@ -91,20 +93,19 @@ DOC_FILES=(
     web_blast.pl
 )
 
-# copy executables
-mkdir "${PREFIX}/bin"
+# install executables
 for EXE in "${EXES[@]}"; do
     install -v -m 0755 "bin/${EXE}" "${PREFIX}/bin"
 done
 
 # copy data files
-mkdir "${PREFIX}/data"
+mkdir -p "${PREFIX}/data"
 for DATA_FILE in "${DATA_FILES[@]}"; do
     cp -rf "data/${DATA_FILE}" "${PREFIX}/data/${DATA_FILE}"
 done
 
 # copy documentation
-mkdir "${PREFIX}/doc"
+mkdir -p "${PREFIX}/doc"
 for DOC_FILE in "${DOC_FILES[@]}"; do
     cp -rf "${SRCDIR}/${DOC_FILE}" "${PREFIX}/doc/${DOC_FILE}"
 done
