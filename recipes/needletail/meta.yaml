@@ -1,0 +1,46 @@
+{% set name = "needletail" %}
+{% set version = "0.6.1" %}
+{% set sha256 = "58c1e04fc706060192fa2669327d45ebad1ab99fb15f73f2e040e4f8b1d051d9" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/onecodex/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - {{ compiler("rust") }}
+  host:
+    - pip
+    - maturin >=0.14,<0.15
+    - python
+  run:
+    - python
+
+test:
+  imports:
+    - needletail
+  commands:
+    - python test_python.py
+
+about:
+  home: https://github.com/onecodex/needletail
+  license: MIT
+  license_family: MIT
+  summary: Fast FASTX parsing in Python
+  license_file: LICENSE
+  dev_url: https://github.com/onecodex/needletail
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
