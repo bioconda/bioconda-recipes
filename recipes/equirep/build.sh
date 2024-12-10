@@ -2,5 +2,7 @@
 
 set -xe
 
-./configure
-make 
+./configure --prefix=$PREFIX
+make
+make install
+
