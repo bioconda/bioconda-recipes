@@ -3,6 +3,7 @@
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
+export CPATH="${PREFIX}/include"
 
 mkdir -pv $PREFIX/bin
 cp -rf clair3 models preprocess postprocess scripts shared $PREFIX/bin
