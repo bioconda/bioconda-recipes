@@ -2,6 +2,7 @@
 
 if [[ `uname` == "Linux" ]]; then
     sed -i.bak 's|#!/bin/csh -f|#!/usr/bin/env tcsh|' make/makedis.csh
+    sed -i.bak 's|#!/bin/csh -f|#!/usr/bin/env tcsh|' make/ln-if-absent
     rm -rf make/*.bak
 fi
 
