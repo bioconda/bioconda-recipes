@@ -8,14 +8,19 @@ source:
   - url: https://github.com/bwa-mem2/bwa-mem2/releases/download/v{{ version }}/Source_code_including_submodules.tar.gz
     sha256: 9b001bdc7666ee3f14f3698b21673714d429af50438b894313b05bc4688b1f6d
     patches:
-      - Makefile.patch
+      - Makefile.patch # [ not aarch64 ]
+      - simde.patch    # [ aarch64 and not osx ]
 
 build:
-  number: 5
+  number: 6
+  run_exports:
+    - {{ pin_subpackage("bwa-mem2", max_pin="x") }}
+  skip: True  # [osx] # until https://github.com/bioconda/bioconda-recipes/issues/52553 is resolved
 
 requirements:
   build:
     - make
+    - wget
     # bwa-mem2 needs gcc<11, see https://github.com/bwa-mem2/bwa-mem2/issues/222 and conda_build_config.yaml in this folder
     - {{ compiler('cxx') }}
   host:
@@ -24,11 +29,11 @@ requirements:
 test:
   commands:
     - bwa-mem2 version
-    - bwa-mem2.sse41 version
-    - bwa-mem2.sse42 version
-    - bwa-mem2.avx version
-    - bwa-mem2.avx2 version
-    - bwa-mem2.avx512bw version
+    - bwa-mem2.sse41 version # [ not aarch64 ]
+    - bwa-mem2.sse42 version # [ not aarch64 ]
+    - bwa-mem2.avx version # [ not aarch64 ]
+    - bwa-mem2.avx2 version # [ not aarch64 ]
+    - bwa-mem2.avx512bw version # [ not aarch64 ]
 
 about:
   home: https://github.com/bwa-mem2/bwa-mem2
@@ -37,5 +42,7 @@ about:
   summary: The next version of bwa-mem 
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - doi:10.1109/IPDPS.2019.00041
