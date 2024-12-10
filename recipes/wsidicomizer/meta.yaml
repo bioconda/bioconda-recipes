@@ -1,52 +1,58 @@
 {% set name = "wsidicomizer" %}
 {% set version = "0.15.0" %}
+
 package:
   name: {{ name|lower }}
   version: {{ version }}
+
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/wsidicomizer-{{ version }}.tar.gz
   sha256: 8610ca7abdeae840a4c9a8b064b3ea209256896835dbf361db87f264ad13466f
+
 build:
   entry_points:
     - wsidicomizer = wsidicomizer.cli:main
     - bioformats_wsidicomizer = wsidicomizer.extras.bioformats.bioformats_cli:main
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   number: 0
   run_exports:
     - {{ pin_subpackage("wsidicomizer", max_pin="x.x") }}
+
 requirements:
   host:
-    - python >=3.10,<4.0
+    - python >=3.10
     - poetry-core >=1.2.0
     - pip
   run:
-    - python >=3.10.0,<4.0.0
-    - wsidicom >=0.21.1,<0.22.0
-    - opentile >=0.13.1,<0.14.0
+    - python >=3.10
+    - wsidicom >=0.21.1
+    - opentile >=0.13.1
     - numpy >=1.22.0
     - pydicom >=3.0.0
-    - czifile >=2019.7.2,<2020.0.0
-    - tiffslide >=2.4.0,<3.0.0
+    - czifile >=2019.7.2
+    - tiffslide >=2.4.0
     - imagecodecs !=2024.9.22,<2025.0.0,>=2024.1.1
   run_constrained:
     - openslide-python >=1.3.0,<2.0.0
     - scyjava >=1.8.1,<2.0.0
     - ome-types >=0.5.0,<0.6.0
+
 test:
   imports:
     - wsidicomizer
   commands:
-    - pip check
     - wsidicomizer --help
     - bioformats_wsidicomizer --help
-  requires:
-    - pip
+
 about:
   home: https://github.com/imi-bigpicture/wsidicomizer
-  summary: Tool for reading WSI files from proprietary formats and optionally convert them to DICOM
+  summary: "Tool for reading WSI files from proprietary formats and optionally convert them to DICOM."
   license: Apache-2.0
+  license_family: APACHE
   license_file: LICENSE
+  dev_url: https://github.com/imi-bigpicture/wsidicomizer
+  
 extra:
   recipe-maintainers:
     - hexylena
