@@ -1,8 +1,14 @@
 diff --git a/Makefile b/Makefile
-index 75e68b1..a64a3ee 100644
+index 75e68b1..be87069 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -8,12 +8,12 @@ clean : clean_htslib clean_longphase clean_libclair3
+@@ -3,17 +3,17 @@ ARCH := $(shell arch)
+ 
+ PYTHON ?= python3
+ 
+-all : libhts.a longphase libclair3.so
++all : libhts.a libclair3.so longphase
+ clean : clean_htslib clean_longphase clean_libclair3
  
  SAMVER	=	1.15.1
  LPVER	=	1.7.3
@@ -14,10 +20,34 @@ index 75e68b1..a64a3ee 100644
 -CPPFLAGS	=	-std=c++11 -Wall -O3 -I ${PREFIX}/include -L ${PREFIX}/lib -Wl,-rpath=${PREFIX}/lib
 +GCC	?=	$(CC)
 +GXX	?=	$(CXX)
-+PREFIX	?=	${PREFIX}
++PREFIX	?=	$(PREFIX)
 +LDFLAGS	=	-L${PREFIX}/lib
-+CFLAGS	= -fpic -std=c99 -O3 -I${PREFIX}/include -L${PREFIX}/lib
++CFLAGS	= -fpic -std=c11 -O3 -I${PREFIX}/include -L${PREFIX}/lib
 +CPPFLAGS	=	-std=c++14 -Wall -O3 -I${PREFIX}/include -L${PREFIX}/lib -Wl,-rpath=${PREFIX}/lib
  
  
  samtools-$(SAMVER)/Makefile:
+@@ -24,9 +24,11 @@ samtools-$(SAMVER)/Makefile:
+ libhts.a: samtools-$(SAMVER)/Makefile
+ 	# this is required only to add in -fpic so we can build python module
+ 	@echo "\x1b[1;33mMaking $(@F)\x1b[0m"
+-	cd samtools-${SAMVER}/htslib-${SAMVER}; CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" ./configure; make CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
++	cd samtools-${SAMVER}/htslib-${SAMVER}; autoreconf -if; CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" ./configure; make CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
+ 	cp samtools-${SAMVER}/htslib-${SAMVER}/$@ $@
+ 
++libclair3.so: samtools-${SAMVER}/htslib-${SAMVER} libhts.a
++	${PYTHON} build.py
+ 
+ longphase:
+ 	curl -L -o longphase-${LPVER}.tar.xz https://github.com/twolinin/longphase/releases/download/v${LPVER}/longphase_linux-x64.tar.xz
+@@ -34,10 +36,6 @@ longphase:
+ 	mv longphase_linux-x64 $@
+ 	rm longphase-${LPVER}.tar.xz
+ 
+-
+-libclair3.so: samtools-${SAMVER}/htslib-${SAMVER} libhts.a
+-	${PYTHON} build.py
+-
+ src/%.o: src/%.c
+ 	$(GCC) -g -Isrc -Isamtools-${SAMVER}/htslib-${SAMVER} -c -pthread -fstack-protector-strong -D_FORTIFY_SOURCE=2 \
+ 		$(CFLAGS) $^ -o $@
