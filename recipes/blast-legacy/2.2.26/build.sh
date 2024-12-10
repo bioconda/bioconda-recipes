@@ -1,10 +1,9 @@
-# the osx version has to be built from source
-PLATFORM=$(uname)
-SRCDIR="doc"
-if [ ${PLATFORM} == "Darwin" ]; then
-    ./make/makedis.csh
-    SRCDIR="doc/blast"
-fi
+#!/bin/bash
+
+export PLATFORM=$(uname)
+export SRCDIR="doc/blast"
+
+./make/makedis.csh
 
 # binaires to be copied to env bin
 EXES=(
@@ -63,7 +62,7 @@ DATA_FILES=(
     taxlist.txt
 )
 
-# relevant documetation
+# relevant documentation
 DOC_FILES=(
     bl2seq.html
     blast.html
@@ -87,19 +86,19 @@ DOC_FILES=(
 )
 
 # copy executables
-mkdir "${PREFIX}"/bin
+mkdir "${PREFIX}/bin"
 for EXE in "${EXES[@]}"; do
-    cp bin/"${EXE}" "${PREFIX}"/bin/"${EXE}"
+    install -v -m 0755 "bin/${EXE}" "${PREFIX}/bin"
 done
 
 # copy data files
-mkdir "${PREFIX}"/data
+mkdir "${PREFIX}/data"
 for DATA_FILE in "${DATA_FILES[@]}"; do
-    cp data/"${DATA_FILE}" "${PREFIX}"/data/"${DATA_FILE}"
+    cp -rf "data/${DATA_FILE}" "${PREFIX}/data/${DATA_FILE}"
 done
 
 # copy documentation
-mkdir "${PREFIX}"/doc
+mkdir "${PREFIX}/doc"
 for DOC_FILE in "${DOC_FILES[@]}"; do
-    cp "${SRCDIR}"/"${DOC_FILE}" "${PREFIX}"/doc/"${DOC_FILE}"
+    cp -rf "${SRCDIR}/${DOC_FILE}" "${PREFIX}/doc/${DOC_FILE}"
 done
