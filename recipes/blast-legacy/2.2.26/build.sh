@@ -3,10 +3,6 @@
 export PLATFORM=$(uname)
 export SRCDIR="doc/blast"
 
-if [[ `uname` == "Linux" ]]; then
-	ln -sf "$(which tcsh)" "${PREFIX}/bin/csh"
-fi
-
 ./make/makedis.csh
 
 # binaires to be copied to env bin
@@ -88,10 +84,6 @@ DOC_FILES=(
     scoring.pdf
     web_blast.pl
 )
-
-if [[ `uname` == "Linux" ]]; then
-	rm -rf "${PREFIX}/bin/csh"
-fi
 
 # copy executables
 mkdir "${PREFIX}/bin"
