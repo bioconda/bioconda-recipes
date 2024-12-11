@@ -11,9 +11,12 @@ source:
 build:
   number: 4
   skip: True  # [py < 37]
-  script:
-    - "CXXFLAGS=-std=c++14 {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"  # [osx]
-    - "CXXFLAGS=-std=c++17 {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"  # [linux]
+  script: |
+    if [ $(uname -s) == "Darwin" ]; then
+      CXXFLAGS=-std=c++14 {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+    else
+      CXXFLAGS=-std=c++17 {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+    fi
   entry_points:
     - porechop_abi = porechop_abi.porechop_abi:main
   run_exports:
