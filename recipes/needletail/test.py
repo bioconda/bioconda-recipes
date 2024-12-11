@@ -1,10 +1,15 @@
 import unittest
 
-from needletail import parse_fastx_file, parse_fastx_string, NeedletailError, reverse_complement, normalize_seq
+from needletail import (
+    parse_fastx_file,
+    parse_fastx_string,
+    NeedletailError,
+    reverse_complement,
+    normalize_seq,
+)
 
 
-FASTA_FILE = "./tests/data/test.fa"
-FASTQ_FILE = "./tests/specimen/FASTQ/example.fastq"
+FASTA_FILE, FASTQ_FILE = "test.fa", "test.fq"
 
 
 class ParsingTestCase(unittest.TestCase):
@@ -92,5 +97,6 @@ class ErroringTestCase(unittest.TestCase):
             for i, record in enumerate(parse_fastx_string("Not a valid file")):
                 print(i)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
