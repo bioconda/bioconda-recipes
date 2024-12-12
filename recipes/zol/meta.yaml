@@ -1,5 +1,5 @@
 {% set name = "zol" %}
-{% set version = "1.4.8" %}
+{% set version = "1.5.7" %}
 
 package:
   name: {{ name|lower }}
@@ -7,13 +7,13 @@ package:
 
 source:
   url: https://github.com/Kalan-Lab/zol/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 9991713dd8f05638f0f50362be4b79fd8411fa62a037475768d0737927a257b3
+  sha256: 4df62960a573a352623a8e7187b0d31d4117d1b64e0b138e7bbe1daf4b81c075
 
 build:
   number: 0
-  skip: True # [py <= 311]
+  skip: True # [py != 310]
   run_exports:
-    - {{ pin_subpackage('zol', max_pin='x.x') }}
+    - {{ pin_subpackage('zol', max_pin='x') }}
 
 requirements:
   build:
@@ -22,18 +22,17 @@ requirements:
     - python
     - setuptools
     - pip
-    - axel
   run:
-    - python =3.12
+    - python >=3.10
     - r-base 
     - biopython 
-    - muscle
-    - setuptools 
+    - muscle >=5.0,<=5.1 [osx]
+    - muscle >=5.0 [not osx]
     - mcl
     - pal2nal >=14.1
     - hmmer >=3.0.0
     - fasttree
-    - diamond 
+    - diamond >=2.1.7
     - pyrodigal
     - prodigal
     - prodigal-gv
@@ -50,20 +49,23 @@ requirements:
     - r-cowplot
     - r-gggenes
     - r-gridextra
-    - skani
+    - skani >=0.2.2
     - slclust
     - trimal
     - gzip
-    - miniprot =0.7
+    - miniprot =0.13 # [x86_64]
+    - miniprot >=0.13 # [aarch64]
     - bioconductor-ggtree
     - ete3
     - codoff
+    - gravis
+    - colour
+    - rich-argparse
+    - tqdm
 
 test:
   commands:
-    - prepTG -v
-    - fai -v
-    - zol -v
+    - zol -h
 
 about:
   home: https://github.com/Kalan-Lab/zol
@@ -73,3 +75,8 @@ about:
   summary: "zol (& fai): large-scale targeted detection and evolutionary investigation of gene clusters."
   dev_url: https://github.com/Kalan-Lab/zol
   
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - raufs

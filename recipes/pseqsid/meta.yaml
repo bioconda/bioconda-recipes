@@ -1,0 +1,44 @@
+{% set name = "pseqsid" %}
+{% set version = "1.0.2" %}
+{% set sha256 = "c657f381d02f8a29fac569745865b90dfd7aab557a2b7b627a4d71248c83c376" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+    
+source:
+  url: https://github.com/amaurypm/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler("rust") }}
+    - cargo-bundle-licenses
+  host:
+  run:
+
+test:
+  commands:
+    - pseqsid --help
+
+about:
+  home: https://github.com/amaurypm/pseqsid
+  license: MIT
+  license_file: 
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: |
+    Calculates pairwise sequence identity, similarity and normalized similarity
+    score of proteins in a multiple sequence alignment.
+
+extra:
+  recipe-maintainers:
+    - apcamargo
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
