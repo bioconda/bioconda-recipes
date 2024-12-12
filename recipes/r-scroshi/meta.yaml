@@ -1,0 +1,93 @@
+{% set version = '1.0.0.0' %}
+
+package:
+  name: r-scroshi
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/scROSHI_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/scROSHI/scROSHI_{{ version }}.tar.gz
+  sha256: 332ed379c27d4becfae31f164e6267850cd927dbb357c3a77de1f320d65baf96
+
+build:
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+  # no skip
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  host:
+    - r-base
+    - r-s4vectors
+    - r-singlecellexperiment
+    - r-summarizedexperiment
+    - r-limma
+    - r-uwot
+
+  run:
+    - r-base
+    - r-s4vectors
+    - r-singlecellexperiment
+    - r-summarizedexperiment
+    - r-limma
+    - r-uwot
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('scROSHI')"           # [not win]
+    - "\"%R%\" -e \"library('scROSHI')\""  # [win]
+
+  # You can also put a file called run_test.r, run_test.py, run_test.sh,
+  # or run_test.bat in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://CRAN.R-project.org/package=scROSHI
+  license: MIT
+  summary: 'Identifying cell types based on expression profiles is a pillar of single cell analysis.
+    ''scROSHI'' identifies cell types based on expression profiles of single cell analysis
+    by utilizing previously obtained cell type specific gene sets. It takes into account
+    the hierarchical nature of cell type relationship and does not require training
+    or annotated data. A detailed description of the method can be found at: Prummer,
+    Bertolini, Bosshard, Barkmann, Yates, Boeva, The Tumor Profiler Consortium, Stekhoven,
+    and Singer (2022) <doi:10.1101/2022.04.05.487176>.'
+  license_family: MIT
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/MIT'
+    - LICENSE
+extra:
+  identifiers:
+    - doi:10.1093/nargab/lqad058
+# The original CRAN metadata for this package was:
+
+# Package: scROSHI
+# Title: Robust Supervised Hierarchical Identification of Single Cells
+# Version: 1.0.0.0
+# Authors@R: c(person(given = "Lars", family = "Bosshard", role = c("aut", "cre"), email = "bosshard@nexus.ethz.ch", comment = c(ORCID = "0000-0002-4550-4777")), person(given = "Michael", family = "Prummer", role = c("aut"), email = "prummer@nexus.ethz.ch", comment = c(ORCID = "0000-0001-9896-3929")))
+# Maintainer: Lars Bosshard <bosshard@nexus.ethz.ch>
+# Description: Identifying cell types based on expression profiles is a pillar of single cell analysis. 'scROSHI' identifies cell types based on expression profiles of single cell analysis by utilizing previously obtained cell type specific gene sets. It takes into account the hierarchical nature of cell type relationship and does not require training or annotated data. A detailed description of the method can be found at: Prummer, Bertolini, Bosshard, Barkmann, Yates, Boeva, The Tumor Profiler Consortium, Stekhoven, and Singer (2022) <doi:10.1101/2022.04.05.487176>.
+# License: MIT + file LICENSE
+# Encoding: UTF-8
+# LazyData: true
+# RoxygenNote: 7.2.1
+# Imports: limma, S4Vectors, SingleCellExperiment, stats, SummarizedExperiment, utils, uwot
+# Depends: R (>= 3.60)
+# biocViews:
+# LazyDataCompression: xz
+# NeedsCompilation: no
+# Packaged: 2023-01-09 09:38:17 UTC; bolars
+# Author: Lars Bosshard [aut, cre] (<https://orcid.org/0000-0002-4550-4777>), Michael Prummer [aut] (<https://orcid.org/0000-0001-9896-3929>)
+# Repository: CRAN
+# Date/Publication: 2023-01-10 13:50:02 UTC
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml
