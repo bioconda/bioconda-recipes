@@ -1,0 +1,63 @@
+{% set name = "asari-metabolomics" %}
+{% set version = "1.12.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/asari-metabolomics-{{ version }}.tar.gz
+  sha256: 8c4fb75b4262656767c4e95995e7f69d97b1ad3e4e89ab50e8501ff68c1e4ca2
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+  run_exports:
+      - {{ pin_subpackage('asari-metabolomics', max_pin="x.x") }}
+
+
+requirements:
+  build:
+    - autoconf  # [unix]
+    - "{{ compiler('c') }}"  # [unix]
+    - "{{ compiler('m2w64_c') }}"  # [win]
+    - "{{ compiler('cxx') }}"  # [unix]
+    - "{{ compiler('m2w64_cxx') }}"  # [win]
+    - posix  # [win]
+  host:
+    - python >=3.7
+    - pip
+  run:
+    - python >=3.7
+    - metdatamodel
+    - mass2chem
+    - khipu-metabolomics >=0.7.0
+    - jms-metabolite-services >=0.5.7
+    - pymzml
+    - numpy
+    - scipy
+    - statsmodels
+    - pyyaml
+    - panel >=0.13.0
+    - holoviews
+    - hvplot
+    - seaborn
+    - matplotlib-base
+
+test:
+  imports:
+    - asari_metabolomics
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/shuzhao-li/asari
+  summary: LC-MS metabolomics data preprocessing
+  license: BSD-3-Clause
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - hechth
