@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "jaspar2016-1.30.0"
+installBiocDataPackage.sh "jaspar2016-1.34.0"

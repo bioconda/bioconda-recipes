@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "yeastnagalakshmi-1.38.0"
+installBiocDataPackage.sh "yeastnagalakshmi-1.42.0"

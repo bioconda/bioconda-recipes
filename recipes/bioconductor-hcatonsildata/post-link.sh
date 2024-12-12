@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "hcatonsildata-1.0.0"
+installBiocDataPackage.sh "hcatonsildata-1.4.0"

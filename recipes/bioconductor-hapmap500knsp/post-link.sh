@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "hapmap500knsp-1.44.0"
+installBiocDataPackage.sh "hapmap500knsp-1.48.0"

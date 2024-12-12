@@ -1,46 +1,51 @@
-{% set version = "0.42.0" %}
+{% set version = "0.46.0" %}
 {% set name = "vtpnet" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: a3a08b447e9ce26fafeed6fe2c515e10
+about:
+  description: variant-transcription factor-phenotype networks, inspired by Maurano et al., Science (2012), PMID 22955828
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: variant-transcription factor-phenotype networks
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-vtpnet", max_pin="x.x") }}'
-  noarch: generic
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: MotifDb, VariantAnnotation, Rgraphviz
 requirements:
   host:
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-graph >=1.80.0,<1.81.0'
-    - 'bioconductor-gwascat >=2.34.0,<2.35.0'
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-gwascat >=2.38.0,<2.39.0
     - r-base
     - r-doparallel
     - r-foreach
   run:
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-graph >=1.80.0,<1.81.0'
-    - 'bioconductor-gwascat >=2.34.0,<2.35.0'
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-gwascat >=2.38.0,<2.39.0
     - r-base
     - r-doparallel
     - r-foreach
+
+source:
+  md5: 7610d60696d5680e3776f07cf0d644fc
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'variant-transcription factor-phenotype networks'
-  description: 'variant-transcription factor-phenotype networks, inspired by Maurano et al., Science (2012), PMID 22955828'
+    - $R -e "library('{{ name }}')"
 
