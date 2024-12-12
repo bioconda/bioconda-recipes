@@ -4,15 +4,14 @@
 ln -s $CXX $BUILD_PREFIX/bin/g++
 export PATH=$BUILD_PREFIX/bin/:$PATH
 
+# Build part
 qmake
 make
-mkdir -p "${PREFIX}/bin"
-
-#if [ -z ${MACOSX_DEPLOYMENT_TARGET+x} ]; then
 
 # Install part
+mkdir -p "${PREFIX}/bin"
 if [ "$(uname)" = "Darwin" ]; then
-    cp "${SRC_DIR}/gfaviz.app/Contents/MacOS/gfaviz" "${PREFIX}/bin/" # [ osx ]
+    cp "${SRC_DIR}/gfaviz.app/Contents/MacOS/gfaviz" "${PREFIX}/bin/"
 else
-    cp "${SRC_DIR}/gfaviz" "${PREFIX}/bin/" # [ linux ]
+    cp "${SRC_DIR}/gfaviz" "${PREFIX}/bin/"
 fi
