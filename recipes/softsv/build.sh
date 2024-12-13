@@ -2,10 +2,6 @@
 
 set -xe
 
-ls -la
-
-cd SoftSV_1.4.2
-
 CXX="${CXX} -std=c++14" make -j"${CPU_COUNT}"
 
 ls -la
