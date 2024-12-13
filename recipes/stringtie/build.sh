@@ -3,8 +3,10 @@
 mkdir -p $PREFIX/bin
 ln -sf $PREFIX/lib/libz.so.1 $PREFIX/lib/libz.so
 
+export M4="${BUILD_PREFIX}/bin/m4"
 export C_INCLUDE_PATH=$PREFIX/include
 export CPLUS_INCLUDE_PATH=$PREFIX/include
+export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export LINKER="$CXX"
 export CXXFLAGS="$CPPFLAGS"
