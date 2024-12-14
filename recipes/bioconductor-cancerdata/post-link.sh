@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "cancerdata-1.40.0"
+installBiocDataPackage.sh "cancerdata-1.44.0"

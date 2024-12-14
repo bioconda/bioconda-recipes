@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "medipsdata-1.38.0"
+installBiocDataPackage.sh "medipsdata-1.42.0"

@@ -1,0 +1,59 @@
+{% set version = "1.0.0" %}
+{% set name = "scrapper" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: Implements R bindings to C++ code for analyzing single-cell (expression) data, mostly from various libscran libraries. Each function performs an individual step in the single-cell analysis workflow, ranging from quality control to clustering and marker detection. It is mostly intended for other Bioconductor package developers to build more user-friendly end-to-end workflows.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Bindings to C++ Libraries for Single-Cell Analysis
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-scrapper", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, knitr, rmarkdown, BiocStyle, MatrixGenerics, sparseMatrixStats, Matrix, scRNAseq
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-assorthead >=1.0.0,<1.1.0
+    - bioconductor-beachmat >=2.22.0,<2.23.0
+    - bioconductor-biocneighbors >=2.0.0,<2.1.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - r-base
+    - r-igraph
+    - r-rcpp
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-assorthead >=1.0.0,<1.1.0
+    - bioconductor-beachmat >=2.22.0,<2.23.0
+    - bioconductor-biocneighbors >=2.0.0,<2.1.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - r-base
+    - r-igraph
+    - r-rcpp
+
+source:
+  md5: 82e3c6e80451b9c0fe728edcb293667a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

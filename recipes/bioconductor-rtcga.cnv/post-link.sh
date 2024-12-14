@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "rtcga.cnv-1.30.0"
+installBiocDataPackage.sh "rtcga.cnv-1.34.0"

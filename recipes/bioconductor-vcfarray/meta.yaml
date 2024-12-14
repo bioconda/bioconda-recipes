@@ -1,51 +1,56 @@
-{% set version = "1.18.0" %}
+{% set version = "1.22.0" %}
 {% set name = "VCFArray" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 0e101fbb3c6c6b57d792527a6c720654
+about:
+  description: VCFArray extends the DelayedArray to represent VCF data entries as array-like objects with on-disk / remote VCF file as backend. Data entries from VCF files, including info fields, FORMAT fields, and the fixed columns (REF, ALT, QUAL, FILTER) could be converted into VCFArray instances with different dimensions.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Representing on-disk / remote VCF files as array-like objects
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-vcfarray", max_pin="x.x") }}'
-  noarch: generic
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: SeqArray, BiocStyle, BiocManager, testthat, knitr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
-    - 'bioconductor-delayedarray >=0.28.0,<0.29.0'
-    - 'bioconductor-genomicfiles >=1.38.0,<1.39.0'
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-rsamtools >=2.18.0,<2.19.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
-    - 'bioconductor-variantannotation >=1.48.0,<1.49.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-genomicfiles >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
     - r-base
   run:
-    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
-    - 'bioconductor-delayedarray >=0.28.0,<0.29.0'
-    - 'bioconductor-genomicfiles >=1.38.0,<1.39.0'
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-rsamtools >=2.18.0,<2.19.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
-    - 'bioconductor-variantannotation >=1.48.0,<1.49.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-genomicfiles >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
     - r-base
+
+source:
+  md5: dfa387127317ca8b0b0faafef76804e6
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Representing on-disk / remote VCF files as array-like objects'
-  description: 'VCFArray extends the DelayedArray to represent VCF data entries as array-like objects with on-disk / remote VCF file as backend. Data entries from VCF files, including info fields, FORMAT fields, and the fixed columns (REF, ALT, QUAL, FILTER) could be converted into VCFArray instances with different dimensions.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

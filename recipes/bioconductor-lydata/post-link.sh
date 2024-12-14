@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "lydata-1.28.0"
+installBiocDataPackage.sh "lydata-1.32.0"

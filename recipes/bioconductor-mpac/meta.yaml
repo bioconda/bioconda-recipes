@@ -1,0 +1,66 @@
+{% set version = "1.0.0" %}
+{% set name = "MPAC" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: Multi-omic Pathway Analysis of Cancer (MPAC), integrates multi-omic data for understanding cancer mechanisms. It predicts novel patient groups with distinct pathway profiles as well as identifying key pathway proteins with potential clinical associations. From CNA and RNA-seq data, it determines genes’ DNA and RNA states (i.e., repressed, normal, or activated), which serve as the input for PARADIGM to calculate Inferred Pathway Levels (IPLs). It also permutes DNA and RNA states to create a background distribution to filter IPLs as a way to remove events observed by chance. It provides multiple methods for downstream analysis and visualization.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Multi-omic Pathway Analysis of Cancer
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-mpac", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: rmarkdown, knitr, svglite, bookdown(>= 0.34), testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biocsingular >=1.22.0,<1.23.0
+    - bioconductor-bluster >=1.16.0,<1.17.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-fgsea >=1.32.0,<1.33.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-scran >=1.34.0,<1.35.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-data.table >=1.14.2
+    - r-fitdistrplus >=1.1
+    - r-igraph >=1.4.3
+  run:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biocsingular >=1.22.0,<1.23.0
+    - bioconductor-bluster >=1.16.0,<1.17.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-fgsea >=1.32.0,<1.33.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-scran >=1.34.0,<1.35.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-data.table >=1.14.2
+    - r-fitdistrplus >=1.1
+    - r-igraph >=1.4.3
+
+source:
+  md5: 4994c148ede020434eaecc9788f38f04
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
