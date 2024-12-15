@@ -1,0 +1,62 @@
+{% set version="0.7.0" %}
+
+package:
+  name: seshat
+  version: {{ version }}
+
+source:
+  - url: https://github.com/clintval/tp53/releases/download/{{ version }}/seshat
+    sha256: 427ab7793a09f7ade60ca058ebbcd594e50e8aaea3cb4369b90e49b3454aa9a3
+    folder: seshat
+  - url: https://pypi.io/packages/source/t/tp53/tp53-{{ version }}.tar.gz
+    sha256: 7d4988ab18ad34d8aeec21a86f00ff831f68a21c919efae81b9eb1e2ba6b917e
+    folder: tp53
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('seshat', max_pin="x") }}
+  script: |
+    (cd tp53 && {{ PYTHON }} -m pip install . -vvv --no-deps)
+    cd seshat
+    mkdir -p "${PREFIX}/bin"
+    cp seshat "${PREFIX}/bin/"
+    chmod +x "${PREFIX}/bin/seshat"
+
+requirements:
+  host:
+    - pip
+    - python
+    - poetry-core
+  run:
+    - beautifulsoup4 >=4.12
+    - chromedriver-binary >=133.0.6800
+    - google-api-python-client >=2.151
+    - google-auth-httplib2 >=0.2
+    - google-auth-oauthlib >=1.2.1
+    - lxml >=5.3
+    - openjdk >=11
+    - selenium >=4.26
+    - types-beautifulsoup4 >=4.12
+
+test:
+  commands:
+    - 'seshat --help 2>&1 | grep "seshat"'
+    - 'seshat --version 2>&1 | grep "seshat"'
+  imports:
+    - tp53
+
+about:
+  home: https://github.com/clintval/tp53
+  license: MIT
+  license_family: MIT
+  summary: Tools for programmatically annotating VCFs with the Seshat TP53 database.
+  doc_url: https://github.com/clintval/tp53
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - clintval
