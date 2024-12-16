@@ -1,15 +1,20 @@
+{% set name = "echidna" %}
 {% set version = "1.0.0" %}
+
 package:
-  name: echidna
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/s/sc-echidna/sc-echidna-{{ version }}.tar.gz
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
   sha256: 6e1b6c63d2ed904a7b2aaede1d90b407ee0bf73a274c388d8a276838261585b7 
 
 build:
+  noarch: python
   number: 0
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
@@ -34,6 +39,7 @@ test:
 about:
   home: https://github.com/azizilab/echidna
   license: MIT
+  license_file: LICENSE
   summary: "Mapping genotype to phenotype through joint probabilistic modeling of single-cell gene expression and chromosomal copy number variation."
   authors:
     - "Joy Linyue Fan"
