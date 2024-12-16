@@ -1,0 +1,52 @@
+{% set name = "ctat-splicing" %}
+{% set version = "0.0.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/TrinityCTAT/CTAT-SPLICING/releases/download/CTAT-SPLICING-v{{ version }}/CTAT-SPLICING.v{{ version }}.FULL.tar.gz
+  sha256: ea76acc5acead0fa24a574c0a1f8073668d8c9857346dfc7977ad10dd7f7fe8b
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('ctat-splicing', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - autoconf =2.69
+    - bzip2
+    - make
+    - xz
+    - zlib
+  host:
+    - pandas
+    - perl
+    - perl-db-file
+    - perl-uri
+    - pysam
+    - python
+    - samtools
+  run:
+    - pandas
+    - perl
+    - perl-db-file
+    - perl-uri
+    - pysam
+    - python
+    - samtools
+
+test:
+  commands:
+    - STAR_to_cancer_introns 2>&1 | grep usage
+    - ctat-splicing-lib-integration 2>&1 | grep usage
+
+about:
+  home: "https://github.com/NCIP/CTAT-SPLICING"
+  license: BSD-3-Clause
+  license_file: LICENSE.txt
+  summary: "Detection and annotation of cancer splicing aberrations"
