@@ -1,0 +1,52 @@
+{% set name = "blast2galaxy" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/blast2galaxy-{{ version }}.tar.gz
+  sha256: 6831f00319c18dc338df18fccd279c6a6dc8d725b4afc414f5bb34d16e8317f3
+
+build:
+  entry_points:
+    - blast2galaxy = blast2galaxy.cli:cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('blast2galaxy', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<4.0
+    - poetry-core >=1.0.0
+    - pip
+  run:
+    - python >=3.10,<4.0
+    - typer >=0.9.0,<0.10.0
+    - bioblend >=1.2.0,<2.0.0
+    - rich >=13.6.0,<14.0.0
+    - tomli >=2.0.1,<3.0.0
+
+test:
+  imports:
+    - blast2galaxy
+  commands:
+    - pip check
+    - blast2galaxy --help
+  requires:
+    - pip
+
+about:
+  summary: A Python package with a CLI and API to perform BLAST queries against Galaxy servers
+  license: MIT
+  license_file: LICENSE
+  home: "https://github.com/IPK-BIT/blast2galaxy"
+  doc_url: "https://blast2galaxy.readthedocs.io/"
+  dev_url: "https://github.com/IPK-BIT/blast2galaxy"
+
+extra:
+  recipe-maintainers:
+    - patrick-koenig

@@ -1,0 +1,54 @@
+{% set name = "parnas" %}
+{% set version = "0.1.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/parnas-{{ version }}.tar.gz
+  sha256: 0352ee655ac7e045c14d3ababafa502eb451abcb8e9cef10b500212c70c836b3
+
+build:
+  entry_points:
+    - parnas=parnas.cli:run_parnas_cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+    - setuptools-scm
+  run:
+    - python >=3.7,<=3.12
+    - setuptools >=75 # uses pkg_resources
+    - numpy >=1.17
+    - numba >=0.57.0
+    - biopython >=1.67
+    - dendropy >=4.5.0
+    - treetime >=0.9.4
+
+test:
+  imports:
+    - parnas
+  commands:
+    - pip check
+    - parnas --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/flu-crew/parnas
+  summary: Representative taxon sampling from phylogenetic trees
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - fdecarpentier
+  identifiers:
+    - doi:10.1093/sysbio/syad028

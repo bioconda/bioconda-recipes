@@ -1,0 +1,52 @@
+{% set name = "seqspec" %}
+{% set version = "0.3.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/seqspec-{{ version }}.tar.gz
+  sha256: 1c71201e3913526542f4fe7dfcbc866a295976e983dc91c7f53efb655797b3c2
+
+build:
+  run_exports:
+    - {{ pin_subpackage('seqspec', max_pin="x.x") }}
+  entry_points:
+    - seqspec=seqspec.main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - setuptools
+  run:
+    - python >=3.6
+    - pyyaml >=6.0
+    - jsonschema
+    - python-newick
+    - requests
+    - biopython
+    - packaging
+
+test:
+  imports:
+    - seqspec
+  commands:
+    - pip check
+    - seqspec version -h
+  requires:
+    - pip
+
+about:
+  home: https://github.com/sbooeshaghi/seqspec
+  summary:  File format that describes data generated from genomics experiments.  File format and seqspec tool enable uniform processing of genomics data.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - visze
