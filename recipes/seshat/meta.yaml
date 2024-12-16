@@ -19,7 +19,7 @@ build:
     - {{ pin_subpackage('seshat', max_pin="x") }}
   script: |
     pushd tp53
-    {{ PYTHON }} -m pip install . -vvv --no-deps
+    {{ PYTHON }} -m pip install . -vvv --no-build-isolation --no-deps
     popd
     pushd seshat
     mkdir -p "${PREFIX}/bin"
@@ -30,7 +30,7 @@ build:
 requirements:
   host:
     - pip
-    - python
+    - python >=3.11
     - poetry-core
   run:
     - beautifulsoup4 >=4.12
@@ -44,11 +44,11 @@ requirements:
     - types-beautifulsoup4 >=4.12
 
 test:
+  imports:
+    - tp53
   commands:
     - 'seshat --help 2>&1 | grep "seshat"'
     - 'seshat --version 2>&1 | grep "seshat"'
-  imports:
-    - tp53
 
 about:
   home: https://github.com/clintval/tp53
