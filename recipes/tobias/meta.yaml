@@ -12,7 +12,10 @@ source:
 
 build:
   number: 0
-  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps --no-build-isolation -vvv
+  script:
+    - sed -i.bak 's/#Test if numpy is installed/os.environ["CFLAGS"] = "-O3 -Wno-cpp -Wno-unused-function -Wno-implicit-function-declaration -Wno-int-conversion"/' setup.py
+    - rm -rf *.bak
+    - {{ PYTHON }} -m pip install . --use-pep517 --no-deps --no-build-isolation --no-cache-dir -vvv
   entry_points:
     - TOBIAS=tobias.TOBIAS:main
   run_exports:
@@ -41,7 +44,7 @@ requirements:
     - moods
     - svist4get >=1.2.24
     - logomaker
-    - seaborn >=0.9.1
+    - seaborn-base >=0.9.1
     - boto3
     - pyyaml >5.1
     - kneed
@@ -62,7 +65,7 @@ about:
   license_family: MIT
   license_file: LICENSE
   doc_url: 'https://github.com/loosolab/TOBIAS/wiki'
-  dev_url: 'https://pypi.org/project/tobias/'
+  dev_url: 'https://github.com/loosolab/TOBIAS'
   description: |
     TOBIAS (Transcription factor Occupancy prediction By Investigation of ATAC-seq Signal) is a collection
     of command-line bioinformatics tools for performing footprinting analysis on ATAC-seq data.
