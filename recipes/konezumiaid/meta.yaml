@@ -1,0 +1,49 @@
+{% set name = "KOnezumiAID" %}
+{% set version = "0.3.6.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/konezumiaid-{{ version }}.tar.gz
+  sha256: fb9c904e43f604b5c40042abff1555c20b99e700c295ca1a03d50875bee2164f
+
+build:
+  entry_points:
+    - konezumiaid = konezumiaid.main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('konezumiaid', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.9.0,<4.0.0
+    - numpy >=1.26.0
+    - pandas >=2.2.2
+    - primer3-py >=2.0.1,<3.0.0
+    - bedtools 
+    - bowtie
+    - regex
+
+test:
+  imports:
+    - konezumiaid
+  commands:
+    - konezumiaid --help
+    
+about:
+  home: https://github.com/aki2274/KOnezumi-AID
+  summary: This is used for automatically designing gRNAs for genome editing by Target-AID.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - aki2274

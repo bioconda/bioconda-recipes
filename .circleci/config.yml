@@ -2,14 +2,14 @@
 version: 2.1
 
 executors:
-  # osx-arm64:
-  #   macos:
-  #     xcode: 14.2.0 # indicate your selected version of Xcode
-  #   resource_class: macos.m1.large.gen1
+  osx-arm64:
+    macos:
+      xcode: 15.4.0
+    resource_class: macos.m1.medium.gen1
   linux-aarch64:
     machine:
       image: ubuntu-2204:current
-    resource_class: arm.medium
+    resource_class: arm.large
 
 jobs: # a basic unit of work in a run
   build_and_test:
@@ -22,7 +22,13 @@ jobs: # a basic unit of work in a run
 
       - run:
           name: Check for Additional Platforms
-          command: ./.circleci/check-for-additional-platforms.sh "origin/master...HEAD" "build_and_test"
+          command: |
+            result=$(./scripts/check-for-additional-platforms.sh "origin/master...HEAD" "build_and_test" "${CIRCLE_JOB}")
+            if [[ ${result} != "build" ]]
+            then
+                echo "No recipes using this platform, skipping rest of job."
+                circleci-agent step halt
+            fi
 
       - run:
           name: Fetch bioconda install script
@@ -40,12 +46,6 @@ jobs: # a basic unit of work in a run
           command:
             echo 'export PATH=/opt/mambaforge/bin:"$PATH"' >> "$BASH_ENV"
 
-      # We reconfigure conda to use the right channel setup.
-      # This has to be done after the cache is restored, because
-      # the channel setup is not cached as it resides in the home directory.
-      # We could use a system-wide (and therefore cached) channel setup,
-      # but mamba does not support that at the time of implementation
-      # (it ignores settings made by --system).
       - run:
           name: Configure conda
           command: bash configure-conda.sh
@@ -53,13 +53,29 @@ jobs: # a basic unit of work in a run
       - run:
           name: Build and test
           command: |
-            source /opt/mambaforge/etc/profile.d/conda.sh
-            source /opt/mambaforge/etc/profile.d/mamba.sh
-            mamba activate bioconda
-            bioconda-utils build recipes config.yml \
-                --lint --docker --mulled-test \
-                --docker-base-image quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch) \
-                --git-range origin/master HEAD
+            set -xe
+            eval "$(conda shell.bash hook)"
+            conda activate bioconda
+            source common.sh
+
+            # Sets up OSX SDK
+            if [[ $(uname) = "Darwin" ]]; then
+              if [[ "${OSX_SDK_DIR:-}" == "" ]]; then
+                  OSX_SDK_DIR="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs"
+              fi
+              sudo chmod o+rwx ${OSX_SDK_DIR}
+              run_conda_forge_build_setup
+            fi
+
+            if command -V docker >/dev/null; then
+              bioconda-utils build recipes config.yml \
+                  --lint --docker --mulled-test \
+                  --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
+                  --git-range origin/master HEAD
+            else
+              bioconda-utils build recipes config.yml \
+                  --lint --git-range origin/master HEAD
+            fi
 
       - run:
           name: Prepare artifacts
@@ -68,7 +84,7 @@ jobs: # a basic unit of work in a run
             mkdir -p /tmp/artifacts/packages
             cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
             find -name .cache | xargs rm -rf || true
-            for n in index.html channeldata.json linux-aarch64 linux-64 osx-64 noarch; do
+            for n in index.html channeldata.json linux-aarch64 linux-64 osx-64 osx-arm64 noarch; do
               cp -rv $n /tmp/artifacts/packages || true
             done
             if command -V docker >/dev/null; then
@@ -98,7 +114,13 @@ jobs: # a basic unit of work in a run
 
       - run:
           name: Check for Additional Platforms
-          command: ./.circleci/check-for-additional-platforms.sh "${CIRCLE_SHA1}~1 ${CIRCLE_SHA1}" "build_and_upload"
+          command: |
+            result=$(./scripts/check-for-additional-platforms.sh "${CIRCLE_SHA1}~1 ${CIRCLE_SHA1}" "build_and_upload" "${CIRCLE_JOB}")
+            if [[ ${result} != "build" ]]
+            then
+                echo "No recipes using this platform, skipping rest of job."
+                circleci-agent step halt
+            fi
 
       - run:
           name: Fetch bioconda install script
@@ -116,12 +138,6 @@ jobs: # a basic unit of work in a run
           command:
             echo 'export PATH=/opt/mambaforge/bin:"$PATH"' >> "$BASH_ENV"
 
-      # We reconfigure conda to use the right channel setup.
-      # This has to be done after the cache is restored, because
-      # the channel setup is not cached as it resides in the home directory.
-      # We could use a system-wide (and therefore cached) channel setup,
-      # but mamba does not support that at the time of implementation
-      # (it ignores settings made by --system).
       - run:
           name: Configure conda
           command: bash configure-conda.sh
@@ -129,9 +145,20 @@ jobs: # a basic unit of work in a run
       - run:
           name: Build and push
           command: |
-            source /opt/mambaforge/etc/profile.d/conda.sh
-            source /opt/mambaforge/etc/profile.d/mamba.sh
-            mamba activate bioconda
+            set -xe
+            eval "$(conda shell.bash hook)"
+            conda activate bioconda
+            source common.sh
+
+            # Sets up OSX SDK
+            if [[ $(uname) = "Darwin" ]]; then
+              if [[ "${OSX_SDK_DIR:-}" == "" ]]; then
+                  OSX_SDK_DIR="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs"
+              fi
+              sudo chmod o+rwx ${OSX_SDK_DIR}
+              run_conda_forge_build_setup
+            fi
+
             bioconda-utils handle-merged-pr recipes config.yml \
               --repo bioconda/bioconda-recipes \
               --git-range ${CIRCLE_SHA1}~1 ${CIRCLE_SHA1} \
@@ -186,12 +213,6 @@ jobs: # a basic unit of work in a run
           command:
             echo 'export PATH=/opt/mambaforge/bin:"$PATH"' >> "$BASH_ENV"
 
-      # We reconfigure conda to use the right channel setup.
-      # This has to be done after the cache is restored, because
-      # the channel setup is not cached as it resides in the home directory.
-      # We could use a system-wide (and therefore cached) channel setup,
-      # but mamba does not support that at the time of implementation
-      # (it ignores settings made by --system).
       - run:
           name: Configure conda
           command: bash configure-conda.sh
@@ -201,9 +222,10 @@ jobs: # a basic unit of work in a run
           name: Build and upload
           command: |
             set -e
-            source /opt/mambaforge/etc/profile.d/conda.sh
-            source /opt/mambaforge/etc/profile.d/mamba.sh
-            mamba activate bioconda
+            eval "$(conda shell.bash hook)"
+            conda activate bioconda
+            source common.sh
+
             echo '============'
             conda info --all
             conda config --show-sources
@@ -211,13 +233,58 @@ jobs: # a basic unit of work in a run
             echo '============'
             bioconda-utils build recipes config.yml \
               --worker-offset << parameters.runner >> --n-workers 6 \
-              --docker --mulled-test --docker-base-image quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch) \
+              --docker --mulled-test --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
               --anaconda-upload \
-              --mulled-upload-target biocontainers \
               --record-build-failures \
               --skiplist-leafs
             conda clean -y --all
 
+  nightly_build:
+    parameters:
+      os:
+        type: executor
+    executor: << parameters.os >>
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - 1e:85:74:42:35:5f:c5:a2:35:c2:ec:b7:80:c0:7c:40
+
+      - checkout
+
+      - run:
+          name: Fetch bioconda install script
+          command: wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
+
+      - run:
+          name: Install bioconda-utils
+          command: |
+            sudo mkdir -p /opt/
+            sudo chmod o+rwx /opt
+            bash install-and-set-up-conda.sh
+
+      - run:
+          name: Setup PATH
+          command:
+            echo 'export PATH=/opt/mambaforge/bin:"$PATH"' >> "$BASH_ENV"
+
+      - run:
+          name: Configure conda
+          command: bash configure-conda.sh
+
+      # For now, do not upload ARM images to biocontainers: --mulled-upload-target biocontainers
+      - run:
+          name: Build and push leftover packages
+          command: |
+            set -e
+            eval "$(conda shell.bash hook)"
+            conda activate bioconda
+            source common.sh
+
+            # build and push all leftover packages
+            bioconda-utils build recipes config.yml \
+                --docker --mulled-test  --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
+                --anaconda-upload \
+                --prelint --exclude bioconda-repodata-patches
 
 workflows:
   build and test (ARM):
@@ -231,7 +298,7 @@ workflows:
           matrix:
             parameters:
               os:
-                #- osx-arm64
+                - osx-arm64
                 - linux-aarch64
 
   build and upload (ARM):
@@ -243,7 +310,7 @@ workflows:
           matrix:
             parameters:
               os:
-                #- osx-arm64
+                - osx-arm64
                 - linux-aarch64
 
   Bulk branch (ARM):
@@ -255,6 +322,24 @@ workflows:
           matrix:
             parameters:
               os: 
-                #- osx-arm64
+                # - osx-arm64 Bulk is on GitHub Actions
                 - linux-aarch64
               runner: [0, 1, 2, 3, 4, 5]
+
+  Nightly (ARM):
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only: master
+    jobs:
+      - nightly_build:
+          filters:
+            branches:
+              only: master
+          matrix:
+            parameters:
+              os:
+                # - osx-arm64 Nightly is on GitHub Actions
+                - linux-aarch64

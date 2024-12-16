@@ -1,31 +1,43 @@
-{% set version = "1.0" %}
-package:
-    name: kinship-read
-    version: {{ version }}
+{% set name = "kinship-read" %}
+{% set version = "2.1.1" %}
 
-build:
-  noarch: generic
-  number: 0
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-    url: https://bitbucket.org/tguenther/read/get/v{{ version }}.tar.gz
-    sha256: 4c1f8033eb60a1c22bf0f520d0013a4758a2cb0f1d5245b70917d45f5a276d3b
+  url: https://github.com/GuntherLab/READv2/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 5432fb3d6f5410d89685ec59749fb3dc4be20ded9fc968b5210c7c37d3ae5667
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
 
 requirements:
-    run:
-        - python >=2.7,<3 
-        - r-base
+  host:
+    - pip
+    - python
+  run:
+    - python >=3.7
+    - numpy
+    - pandas
+    - matplotlib-base
+    - plinkio
 
 test:
-    commands:
-        - kinship-read -h
+  commands:
+    - kinship-read --help
 
 about:
-    home: https://bitbucket.org/tguenther/read/src/master/
-    license: GPL-3.0-only
-    license_file: LICENSE
-    summary: "READ is a method to infer the degree of relationship for a pair of low-coverage individuals."
+  home: https://github.com/GuntherLab/READv2
+  license: GPL-3.0-only
+  license_file: LICENSE
+  summary: "Relationship Estimation from Ancient DNA version 2 (READv2)"
+  doc_url: https://github.com/GuntherLab/READv2?tab=readme-ov-file
 
 extra:
-    identifiers:
-        - doi:10.1371/journal.pone.0195491
+  recipe-maintainers:
+    - SonofLastPanda

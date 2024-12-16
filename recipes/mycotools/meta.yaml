@@ -1,0 +1,96 @@
+{% set name = "mycotools" %}
+{% set version = "0.32.11" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/mycotools-{{ version }}.tar.gz
+  sha256: 5a2db16329eba8119b07733d17d6c917ac354400df68aaf768d45f4716ec4a8e 
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  entry_points:
+    - mtdb = mycotools.mtdb:main
+    - acc2fa = mycotools.acc2fa:cli
+    - acc2gbk = mycotools.acc2gbk:cli
+    - acc2gff = mycotools.acc2gff:cli
+    - acc2locus = mycotools.acc2locus:cli
+    - add2gff = mycotools.add2gff:cli
+    - annotationStats = mycotools.annotationStats:cli
+    - assemblyStats = mycotools.assemblyStats:cli
+    - bioreform = mycotools.bioreform:cli
+    - coords2fa = mycotools.coords2fa:cli
+    - crap = mycotools.crap:cli
+    - db2files = mycotools.db2files:cli
+    - db2hgs = mycotools.db2hgs:cli
+    - db2microsyntree = mycotools.db2microsyntree:cli
+    - db2search = mycotools.db2search:cli
+    - extract_mtdb = mycotools.extract_mtdb:cli
+    - fa2clus = mycotools.fa2clus:cli
+    - fa2hmmer2fa = mycotools.fa2hmmer2fa:cli
+    - fa2mass = mycotools.fa2mass:cli
+    - fa2tree = mycotools.fa2tree:cli
+    - fna2faa = mycotools.fna2faa:cli
+    - gff2seq = mycotools.gff2seq:cli
+    - gff2svg = mycotools.gff2svg:cli
+    - jgiDwnld = mycotools.jgiDwnld:cli
+    - manage_mtdb = mycotools.manage_mtdb:cli
+    - ncbiAcc2fa = mycotools.ncbiAcc2fa:cli
+    - ncbiDwnld = mycotools.ncbiDwnld:cli
+    - ome2name = mycotools.ome2name:cli
+    - predb2mtdb = mycotools.predb2mtdb:cli
+    - s2subs = mycotools.s2subs:cli
+    - update_mtdb = mycotools.update_mtdb:cli
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  run_exports:
+    - {{ pin_subpackage('mycotools', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3
+    - setuptools-scm
+    - pip
+  run:
+    - python >=3
+    - biopython
+    - pandas
+    - requests
+    - scipy
+    - openpyxl
+    - tqdm
+    - cryptography
+    - iqtree
+    - mafft
+    - blast
+    - hmmer
+    - mmseqs2
+    - fasttree
+    - diamond
+    - ete3
+    - ncbi-datasets-cli
+
+test:
+  imports:
+    - mycotools
+  commands:
+    - mtdb --help
+    - predb2mtdb --help
+    - update_mtdb --help
+
+about:
+  home: "https://github.com/xonq/mycotools"
+  summary: "Comparative genomics automation and standardization software."
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: LICENSE
+  dev_url: "https://github.com/xonq/mycotools"
+  doc_url: "https://github.com/xonq/mycotools/wiki"
+
+extra:
+  recipe-maintainers:
+    - xonq

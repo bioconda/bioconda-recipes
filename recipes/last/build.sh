@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash -xe
 
-set -xe
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 ARCH=$(uname -m)
 case ${ARCH} in
@@ -8,4 +8,5 @@ case ${ARCH} in
     *) ARCH_FLAGS="" ;;
 esac
 
-make install CXXFLAGS="$CXXFLAGS ${ARCH_FLAGS} -pthread" prefix=$PREFIX
+make install CXXFLAGS="${CXXFLAGS} -O3 ${ARCH_FLAGS} -pthread -I${PREFIX}/include ${LDFLAGS}" \
+	prefix="${PREFIX}" -j"${CPU_COUNT}"

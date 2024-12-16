@@ -1,5 +1,6 @@
 #!/bin/bash -euo
 
+export M4="${BUILD_PREFIX}/bin/m4"
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
@@ -8,10 +9,10 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 export LC_ALL=en_US.UTF-8
 
-if [ "$(uname)" == "Darwin" ]; then
+if [[ "$(uname)" == "Darwin" ]]; then
     # for Mac OSX
     export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
-    export CFLAGS="${CFLAGS} -m64"
+    export CFLAGS="${CFLAGS} -m64 -Wno-implicit-function-declaration -Wno-deprecated-non-prototype"
     export LC_ALL=C
 fi
 
@@ -22,6 +23,9 @@ case $(uname -m) in
 	aarch64)
 		SIMD_LEVEL="arm"
 		;;
+	arm64)
+		SIMD_LEVEL="arm"
+                ;;
 	*)
 		SIMD_LEVEL="none"
 		;;
@@ -33,7 +37,7 @@ autoreconf -if
 	LDFLAGS="${LDFLAGS}" \
 	--prefix="${PREFIX}" \
 	--with-gmapdb="${PREFIX}/share" \
-	--with-simd-level=${SIMD_LEVEL}
+	--with-simd-level="${SIMD_LEVEL}"
 
 make -j"${CPU_COUNT}"
 make install

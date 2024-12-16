@@ -10,11 +10,14 @@ source:
   sha256: {{ sha256 }}
   patches:
     - 0001-Inject-compiler-and-flags-for-third-party-compilation.patch
+    - 0002-remove-m64.patch
 
 build:
-  number: 4
-  skip: True  # [py<30 or py>38 or osx]
+  number: 5
+  skip: True  # [py<30 or py>=312 or osx]
   script: {{ PYTHON }} -m pip install . --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage('khmer', max_pin="x.x") }}
 
 requirements:
   build:
@@ -24,14 +27,14 @@ requirements:
     - libgomp      # [linux]
     - make
   host:
-    - python
+    - python >=3.6,<3.12
     - pip
     - setuptools >=18.0
     - Cython >=0.25.2
     - bzip2
     - zlib
   run:
-    - python
+    - python >=3.6,<3.12
     - screed >=1.0
     - bz2file
     - bzip2
@@ -51,6 +54,9 @@ about:
   dev_url: https://github.com/dib-lab/khmer
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:khmer
     - doi:10.12688/f1000research.6924.1
