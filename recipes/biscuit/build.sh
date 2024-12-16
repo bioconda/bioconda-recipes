@@ -3,7 +3,7 @@
 # Needed for building utils dependency
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="${LDFLAGS} -pthread -L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -pthread -lrt -L${PREFIX}/lib"
 
 mkdir -p "${PREFIX}/bin"
 mkdir -p build
