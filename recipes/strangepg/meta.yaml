@@ -1,20 +1,19 @@
 {% set name = "strangepg" %}
-{% set version = "0.8.2" %}
-{% set ref = "7fbd2957cf1bf0295b6c4bd95fcfc9f1970ecb13" %}
+{% set version = "0.8.15" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/qwx9/{{ name }}/archive/{{ ref }}.tar.gz
-  sha256: bac0f9bbce7fdee6a555cca37536ed7f41b8c594aa16ff92212345e2664b7f67
+  url: https://github.com/qwx9/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 2393be1be300b0d9d3d252482277d9735b53fa7aa2156bcdad2215c3cc2ae093
 
 build:
   number: 0
-  skip: True # [not linux]
+  skip: True  # [not linux]
   run_exports:
-    - {{ pin_subpackage('strangepg', max_pin=None) }}
+    - {{ pin_subpackage('strangepg', max_pin='x.x') }}
 
 requirements:
   build:
@@ -27,18 +26,12 @@ requirements:
     - {{ cdt('libglvnd-glx') }}      # [cdt_name != 'cos6']
   host:
     - xorg-libx11
-    - xorg-libxau
-    - xorg-libxcb
     - xorg-libxcursor
-    - xorg-libxdmcp
-    - xorg-libxext
-    - xorg-libxfixes
     - xorg-libxi
-    - xorg-libxrandr
   run:
+    - libxcb
     - xorg-libx11
     - xorg-libxau
-    - xorg-libxcb
     - xorg-libxcursor
     - xorg-libxdmcp
     - xorg-libxext
@@ -47,9 +40,8 @@ requirements:
     - xorg-libxrandr
 
 test:
-  commands:
-    - which strpg
-    - which strawk
+  source_files:
+    - cmd/main.awk
 
 about:
   home: https://github.com/qwx9/{{ name }}
@@ -57,6 +49,7 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE
+  dev-url: https://github.com/qwx9/{{ name }}
 
 extra:
   recipe-maintainers:
