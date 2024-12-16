@@ -1,5 +1,6 @@
 #!/bin/bash
-set -x
+
+set -xe
 
 # build version with MPI & Beagle
 ./configure \
