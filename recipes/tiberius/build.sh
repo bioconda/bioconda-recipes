@@ -7,6 +7,7 @@ rm -rf bin/dev/*.bak
 
 cp -rf $SRC_DIR/bin/dev/convert_weights.py "${PREFIX}/bin"
 cp -Rf $SRC_DIR/bin/* "${PREFIX}/bin"
+cp -rf $SRC_DIR/bin/tiberius.py "${PREFIX}/bin/tiberius"
 chmod 0755 ${PREFIX}/bin/tiberius.py
+chmod 0755 ${PREFIX}/bin/tiberius
 chmod 0755 ${PREFIX}/bin/convert_weights.py
-ln -sf ${PREFIX}/bin/tiberius.py ${PREFIX}/bin/tiberius
