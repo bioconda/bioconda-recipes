@@ -1,0 +1,43 @@
+{% set name = "paf2chain" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/AndreaGuarracino/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 8220e110a677752c276d3970f0058b68d0369c42187417512423d4268271b8c6 
+
+build:
+  number: 0
+  run_exports:
+      - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cmake
+    - make
+    - pkg-config
+    - {{ compiler('c') }}      # For zlib-ng compilation
+    - {{ compiler('cxx') }}    # For C++ dependencies if any
+
+test:
+  commands:
+    - paf2chain --help
+
+about:
+  home: https://github.com/AndreaGuarracino/{{ name }}
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "convert PAF format to CHAIN format"
+  dev_url: https://github.com/AndreaGuarracino/{{ name }}
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - AndreaGuarracino
