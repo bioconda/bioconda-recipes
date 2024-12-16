@@ -9,8 +9,8 @@ mkdir -p "${PREFIX}/bin"
 mkdir -p build
 cd build || exit 1
 cmake -DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}" ..
-make CC="${CC} ${LDFLAGS}" CFLAGS="${CFLAGS} -O3"
-make install
+#make CC="${CC}" LDFLAGS="${LDFLAGS}" CFLAGS="${CFLAGS} -O3"
+make CC="${CC}" LDFLAGS="${LDFLAGS}" CFLAGS="${CFLAGS} -O3" install
 
 # Needed to run asset builder
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/build_biscuit_QC_assets.pl
