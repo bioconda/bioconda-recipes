@@ -1,5 +1,7 @@
 #!/bin/bash -ex
 
+export CFLAGS="${CFLAGS} -O3 -Wno-cpp -Wno-unused-function -Wno-implicit-function-declaration -Wno-int-conversion"
+
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
 # Build the package using maturin - should produce *.whl files.
