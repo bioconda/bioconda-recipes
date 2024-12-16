@@ -1,0 +1,62 @@
+{% set name = "distillr" %}
+{% set version = '0.0.0.9000' %}
+{% set github = "https://github.com/alberdilab/distillr" %}
+{% set sha256 = '0b22d09dde91ee01f735074a8bfb3a7129a799fabf3aa21dcb77d5842f119be4' %}
+
+package:
+  name: r-{{ name }}
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    #- {{ github }}/archive/refs/tags/v{{ version }}.tar.gz
+     - https://github.com/cmkobel/distillR/archive/refs/heads/package.zip
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script: R CMD INSTALL --build .
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage("r-distillr", max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    #- glpk >=4.65
+    #- libsbml >=5.18.0
+    - r-base
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-matrix
+  run:
+    - r-base
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-matrix
+
+test:
+  commands:
+    - $R -e "library('distillr')"
+
+about:
+  home: https://github.com/alberdilab/distillr
+  license: MIT
+  summary: R package for distilling functional annotations of bacterial genomes and metagenomes.
+  license_family: MIT
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/MIT'
+  #doc_url: https://<repo>.github.io/distillr/
+  dev_url: https://github.com/alberdilab/distillr
+  
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - cmkobel
+
