@@ -3,7 +3,7 @@ set -eu -o pipefail
 
 cd "${SRC_DIR}"
 
-autoconf
-./configure --prefix="${PREFIX}"
-make
+autoreconf -if
+./configure --prefix="${PREFIX}" CC="${CC}"
+make -j"${CPU_COUNT}"
 make install
