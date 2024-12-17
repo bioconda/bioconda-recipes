@@ -12,6 +12,7 @@ DEFAULT_LINUX_VERSION="cos7"
 if [[ "$(uname)" == "Darwin" ]]; then
 	NODE_VERSION="18.20.5"
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
+	export CFLAGS="${CFLAGS} -fno-define-target-os-macros"
 else
 	NODE_VERSION="18.19.1"
 fi
