@@ -13,9 +13,14 @@ export CFLAGS="${CFLAGS} -O3"
 # Not the most elegant way to do this, but it seems to get it to build
 mkdir -p build
 cd build || exit 1
-cmake -DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}" \
-    -DCMAKE_C_STANDARD_LIBRARIES="-lrt" \
-    ..
+
+if [[ `uname` == "Darwin" ]]; then
+    cmake -DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}" ..
+else
+    cmake -DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}" \
+        -DCMAKE_C_STANDARD_LIBRARIES="-lrt" \
+        ..
+fi
 
 make CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" utils
 make CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" sgsl
