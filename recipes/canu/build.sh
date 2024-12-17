@@ -22,4 +22,4 @@ install -v -m 0755 canu canu-time draw-tig canu.defaults dumpBlob ovStoreBuild o
 	seqrequester meryl overlapInCore overlapInCorePartition overlapConvert overlapImport overlapPair \
 	edalign mhapConvert mmapConvert filterCorrectionOverlaps generateCorrectionLayouts filterCorrectionLayouts \
 	falconsense errorEstimate splitHaplotype trimReads splitReads mergeRanges overlapAlign findErrors \
-	fixErrors findErrors correctOverlaps bogart layoutReads utgcns layoutToPackage alignGFA "${PREFIX}/bin"
+	fixErrors correctOverlaps bogart layoutReads utgcns layoutToPackage alignGFA "${PREFIX}/bin"
