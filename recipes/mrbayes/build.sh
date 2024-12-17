@@ -2,6 +2,9 @@
 
 set -xe
 
+# use newer config.guess and config.sub that support linux-aarch64
+cp -f ${RECIPE_DIR}/config.* ./am-aux/
+
 # build version with MPI & Beagle
 ./configure \
     --prefix=$PREFIX \
