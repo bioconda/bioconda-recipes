@@ -10,11 +10,19 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -pthread -lrt -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 
+# Not the most elegant way to do this, but it seems to get it to build
 mkdir -p build
 cd build || exit 1
-cmake -DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}" ..
-#make CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
-make CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" install
+cmake -DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}" \
+    -DCMAKE_C_STANDARD_LIBRARIES="-lrt" \
+    ..
+
+make CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" utils
+make CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" sgsl
+make CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" htslib
+
+cd ../
+cmake --build build --target install
 
 # Needed to run asset builder
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/build_biscuit_QC_assets.pl
