@@ -15,12 +15,14 @@ mkdir -p build
 cd build || exit 1
 
 if [[ `uname` == "Darwin" ]]; then
-    cmake -DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}" ..
+    export ARCH_ARGS=""
 else
-    cmake -DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}" \
-        -DCMAKE_C_STANDARD_LIBRARIES="-lrt" \
-        ..
+    export ARCH_ARGS="-DCMAKE_C_STANDARD_LIBRARIES=\"-lrt\""
 fi
+
+cmake -DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}" \
+    "${ARCH_ARGS}" \
+    ..
 
 make CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" utils
 make CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" sgsl
