@@ -2,7 +2,7 @@
 
 set -xe
 
-go get -v -t ./...
+go mod tidy
 go build -o allhic -v cmd/main.go
 
 mkdir -p ${PREFIX}/bin
