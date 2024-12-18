@@ -3,12 +3,18 @@
 # Exit on error
 set -xe
 
+export INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+mkdir -p "${PREFIX}/bin"
+
 if [ -z "$PREFIX" ]; then
     echo "PREFIX environment variable not set"
     exit 1
 fi
 
-export CFLAGS="${CFLAGS:-} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS:-} -O3 -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS:-} -L${PREFIX}/lib"
 export CPATH="${PREFIX}/include"
 
@@ -35,24 +41,5 @@ if [ ! -f "$(command -v cc)" ]; then
     export PATH="${SRC_DIR}/bin:${PATH}"
 fi
 
-if ! make -j"${CPU_COUNT}"; then
-    echo "Build failed"
-    exit 1
-fi
-
-if [ ! -f gzrecover ]; then
-    echo "Build did not produce gzrecover binary"
-    exit 1
-fi
-
-chmod 755 gzrecover
-
-if ! mkdir -p "$PREFIX/bin"; then
-    echo "Failed to create bin directory"
-    exit 1
-fi
-
-if ! cp gzrecover "$PREFIX/bin/"; then
-    echo "Failed to install gzrecover"
-    exit 1
-fi
+make CC="${CC}" -j"${CPU_COUNT}"
+install -v -m 0755 gzrecover "${PREFIX}/bin"
