@@ -1,6 +1,7 @@
 #!/bin/bash -ex
 
 export CFLAGS="${CFLAGS} -O3 -Wno-cpp -Wno-unused-function -Wno-implicit-function-declaration -Wno-int-conversion"
+export MACOSX_DEPLOYMENT_TARGET=10.15
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
