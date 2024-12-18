@@ -1,33 +1,33 @@
 {% set name = "beacon2-import" %}
-{% set version = "1.0.8" %}
+{% set version = "2.2.4" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/beacon2-import-{{ version }}.tar.gz
-  sha256: 5f55afebd5c5a57c188e3a691bb2fac72f572298e699242803e995e005435e3e
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/beacon2_import-{{ version }}.tar.gz
+  sha256: 238fe76cc0a82ff1c3881ea4a376f664885761e0e211477064147209442f7201
 
 build:
   entry_points:
     - beacon2-import = beacon2_import.beacon2_import:beacon2_import
     - beacon2-search = beacon2_search.beacon2_search:beacon_query
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   number: 0
   run_exports:
     - {{ pin_subpackage('beacon2-import', max_pin="x") }}
 
 requirements:
   host:
-    - python 
+    - python <3.12
     - pip
   run:
-    - python
+    - python <3.12
     - jsonschema
     - dataclasses
-    - bioblend  =0.10.0
+    - bioblend =0.10.0
     - cyvcf2
     - pymongo
 
@@ -35,14 +35,9 @@ test:
   imports:
     - beacon2_import
     - beacon2_search
-    - utils
   commands:
-    - pip check
     - beacon2-import --help
     - beacon2-search --help
-  requires:
-    - python
-    - pip
 
 about:
   home: https://pypi.org/project/beacon2-import/

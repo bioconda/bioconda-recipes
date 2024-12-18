@@ -1,5 +1,5 @@
 {% set name = "stranger" %}
-{% set version = "0.9.0" %}
+{% set version = "0.9.3" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,29 +7,28 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: ecc1fc0b4f38c6415ee682ecbe4ecbd2df6db3b6807d11c82763d20e64109b93
+  sha256: aca145af9cb635e671b3293ea9263518f78a3daa323aacce14d1f2643016f2e2
 
 build:
   number: 0
   noarch: python
   entry_points:
-    - stranger = stranger.__main__:base_command
-  script: "{{ PYTHON }} -m pip install . -vv"
+    - stranger = stranger.cli:cli
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
-    - click
-    - coloredlogs
     - pip
-    - python
-    - pyyaml
+    - python >=3.7
+    - hatchling
   run:
     - click
     - coloredlogs
-    - python >=3.6.0
+    - python >=3.7
     - pyyaml
+    - importlib-resources >=5.12.0
 
 test:
   imports:
@@ -42,9 +41,10 @@ test:
     - pytest-cov
 
 about:
-  home: "https://github.com/moonso/stranger"
+  home: "https://github.com/Clinical-Genomics/stranger"
   license: MIT
   license_family: MIT
-  summary: "Annotate VCF files with str variants"
-  doc_url: "https://github.com/moonso/stranger"
-  dev_url: "https://github.com/moonso/stranger"
+  license_file: LICENSE
+  summary: "Annotate VCF files with STR variants with pathogenicity implications."
+  doc_url: "https://github.com/Clinical-Genomics/stranger/blob/v{{ version }}/README.md"
+  dev_url: "https://github.com/Clinical-Genomics/stranger"

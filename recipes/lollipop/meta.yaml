@@ -1,6 +1,6 @@
 {% set name = "LolliPop" %}
-{% set version = "0.3.0" %}
-{% set sha256 = "15135a929b87c209e84a096c9c345a12b1a4f6b2c00b37ec99ee88e5555acfec" %}
+{% set version = "0.5.1" %}
+{% set sha256 = "94436b323171586563b8160ab502801ee4c0dec8ed752465b56c8035baa6c164" %}
 
 package:
   name: {{ name|lower }}
@@ -12,28 +12,30 @@ source:
 
 build:
   noarch: python
-  number: 1
+  number: 0
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin="x.x") }}
   script:
     - {{ PYTHON }} -m pip install '.[cli]' --ignore-installed --no-deps -v
-    - mkdir -p ${PREFIX}/share/{{ name }}/presets
+    - mkdir -p ${PREFIX}/share/{{ name }}/{presets,examples}
     - cp -vr presets/*  ${PREFIX}/share/{{ name }}/presets/
+    - cp -vr *preprint*yaml ${PREFIX}/share/{{ name }}/examples/
 
 requirements:
   host:
-    - python >=3
+    - python >=3.10
     - pip
     - poetry-core >=1.0.8
     - poetry-dynamic-versioning
   run:
-    - python >=3
+    - python >=3.10
     - numpy
     - scipy
     - pandas
+    - threadpoolctl
     - zstandard
     # NOTE: change of API between ruamel.yaml 0.17.x and 0.18
-    - ruamel.yaml <0.18
+    - ruamel.yaml >=0.18
     - strictyaml
     - tqdm
     - click

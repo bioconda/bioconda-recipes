@@ -3,11 +3,10 @@
 BIOVALIDATOR_VERSION=2.2.1
 
 EVA_SUB_CLI="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
-mkdir -p ${PREFIX}/bin ${EVA_SUB_CLI}
+mkdir -p ${EVA_SUB_CLI}
 
 # Install eva-sub-cli
 $PYTHON -m pip install .
-cp bin/* ${PREFIX}/bin
 echo "Done with eva-sub-cli"
 
 cd ${EVA_SUB_CLI}
