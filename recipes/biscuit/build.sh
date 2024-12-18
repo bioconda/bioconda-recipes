@@ -9,10 +9,10 @@ export CC="${CC}"
 
 if [[ `uname` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
-	export CFLAGS="${CFLAGS} -O3 -Wunused-command-line-argument -L${PREFIX}/lib"
+	export CFLAGS="${CFLAGS} -O3 -Wno-unused-command-line-argument -L${PREFIX}/lib"
 else
 	export CONFIG_ARGS=""
-	export CFLAGS="${CFLAGS} -O3 -Wunused-command-line-argument -L${PREFIX}/lib -lrt"
+	export CFLAGS="${CFLAGS} -O3 -Wno-unused-command-line-argument -L${PREFIX}/lib -lrt"
 fi
 
 case $(uname -m) in
