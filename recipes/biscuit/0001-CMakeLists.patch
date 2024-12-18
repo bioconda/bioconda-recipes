@@ -1,40 +1,58 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 75f5632..bd3e927 100644
+index 75f5632..f0d4daa 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -48,7 +48,7 @@ ExternalProject_Add(utils
+@@ -24,10 +24,13 @@ project(biscuit
+ # Set C standards
+ set(CMAKE_C_STANDARD 99)
+ set(CMAKE_C_STANDARD_REQUIRED True)
++set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+ 
+ # Standard installation paths
+ include(GNUInstallDirs)
+ 
++find_package(ZLIB REQUIRED)
++
+ # Setup directories used
+ set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+ set(SCRIPT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
+@@ -48,7 +51,7 @@ ExternalProject_Add(utils
      DOWNLOAD_DIR ${LIB_DIR}
      SOURCE_DIR ${LIB_DIR}/utils
      CONFIGURE_COMMAND ""
 -    BUILD_COMMAND make libutils.a
-+    BUILD_COMMAND make libutils.a CC=$(CC)
++    BUILD_COMMAND make libutils.a CC=$(CC) CFLAGS="-I$(PREFIX)/include -O3" -j$(CPU_COUNT)
      INSTALL_COMMAND ""
      BUILD_IN_SOURCE 1
      )
-@@ -60,7 +60,7 @@ ExternalProject_Add(sgsl
+@@ -60,7 +63,7 @@ ExternalProject_Add(sgsl
      DOWNLOAD_DIR ${LIB_DIR}
      SOURCE_DIR ${LIB_DIR}/sgsl
      CONFIGURE_COMMAND ""
 -    BUILD_COMMAND make libgsl.a
-+    BUILD_COMMAND make libgsl.a CC=$(CC)
++    BUILD_COMMAND make libgsl.a CC=$(CC) CFLAGS="-I$(PREFIX)/include -O3" -j$(CPU_COUNT)
      INSTALL_COMMAND ""
      BUILD_IN_SOURCE 1
      )
-@@ -84,7 +84,7 @@ if(APPLE)
+@@ -84,8 +87,8 @@ if(APPLE)
              mv -f ${htslib_base} htslib
          SOURCE_DIR ${LIB_DIR}/htslib
          INSTALL_DIR ${LIB_DIR}/install
 -        CONFIGURE_COMMAND ${LIB_DIR}/htslib/configure --prefix=<INSTALL_DIR> --disable-bz2 --disable-lzma --disable-libcurl
-+        CONFIGURE_COMMAND ${LIB_DIR}/htslib/configure --prefix=<INSTALL_DIR> CC=$(CC) --disable-bz2 --disable-lzma --disable-libcurl
-         BUILD_COMMAND make lib-static
+-        BUILD_COMMAND make lib-static
++        CONFIGURE_COMMAND ${LIB_DIR}/htslib/configure --prefix=<INSTALL_DIR> CC=$(CC) --disable-bz2 --disable-lzma --disable-libcurl --enable-plugins
++        BUILD_COMMAND make lib-static CFLAGS="-I$(PREFIX)/include -O3" -j$(CPU_COUNT)
          INSTALL_COMMAND ""
          BUILD_IN_SOURCE 1
-@@ -100,7 +100,7 @@ else()
+         )
+@@ -100,8 +103,8 @@ else()
              mv -f ${htslib_base} htslib
          SOURCE_DIR ${LIB_DIR}/htslib
          INSTALL_DIR ${LIB_DIR}/install
 -        CONFIGURE_COMMAND ${LIB_DIR}/htslib/configure --prefix=<INSTALL_DIR> --disable-bz2 --disable-lzma --disable-libcurl
-+        CONFIGURE_COMMAND ${LIB_DIR}/htslib/configure --prefix=<INSTALL_DIR> CC=$(CC) --disable-bz2 --disable-lzma --disable-libcurl
-         BUILD_COMMAND make lib-static
+-        BUILD_COMMAND make lib-static
++        CONFIGURE_COMMAND ${LIB_DIR}/htslib/configure --prefix=<INSTALL_DIR> CC=$(CC) --disable-bz2 --disable-lzma --disable-libcurl --enable-plugins
++        BUILD_COMMAND make lib-static CFLAGS="-I$(PREFIX)/include -O3" -j$(CPU_COUNT)
          INSTALL_COMMAND ""
          BUILD_IN_SOURCE 1
+         )
