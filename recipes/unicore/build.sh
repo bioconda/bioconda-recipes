@@ -6,6 +6,7 @@ SOURCE_BIN="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/bin/unico
 TARGET_BIN="${PREFIX}/bin/unicore"
 
 pip install torch transformers sentencepiece protobuf
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 cargo build --release
 cp ${SOURCE_BIN} ${TARGET_BIN}
 chmod +x ${TARGET_BIN}
