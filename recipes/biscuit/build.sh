@@ -26,7 +26,6 @@ cmake -S .. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	"${CONFIG_ARGS}"
 make CC="${CC} ${LDFLAGS}" CFLAGS="${CFLAGS}"
 make install
-#cmake --build build --target install -v
 
 # Needed to run asset builder
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/build_biscuit_QC_assets.pl
