@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [[ `uname` == "Darwin" ]]; then
+	ln -sf ${CC} ${PREFIX}/bin/gcc
+else
+	ln -sf ${CC} ${PREFIX}/bin/gcc
+fi
+
 # Needed for building utils dependency
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
