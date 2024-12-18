@@ -10,13 +10,12 @@ mkdir -p "$PREFIX/bin/bin"
 cd muscle
 
 ./autogen.sh
-autoreconf -if
 if [[ `uname` == "Darwin" ]]; then
     sed -i.bak '' '/bin_PROGRAMS/d' ./libMUSCLE/Makefile.am
-    ./configure --prefix="$PREFIX" CXXFLAGS='${CXXFLAGS} -O3 -fopenmp' --disable-shared 
+    ./configure --prefix='$PREFIX' CXX='${CXX}' CXXFLAGS='${CXXFLAGS} -O3 -fopenmp' --disable-shared 
 else
     sed -i.bak '/bin_PROGRAMS/d' ./libMUSCLE/Makefile.am
-    ./configure --prefix="$PREFIX" CXXFLAGS='${CXXFLAGS} -O3 -fopenmp'
+    ./configure --prefix='$PREFIX' CXX='${CXX}' CXXFLAGS='${CXXFLAGS} -O3 -fopenmp'
 fi
 make -j"${CPU_COUNT}"
 make install
