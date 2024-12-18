@@ -13,10 +13,6 @@ else
 	export CFLAGS="${CFLAGS} -O3 -lrt"
 fi
 
-case $(uname -m) in
-    arm64|aarch64) cp -rf lib/aln/sse2neon.h ${PREFIX}/include ;;
-esac
-
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER="${CC}" \
   -DCMAKE_C_FLAGS="${CFLAGS}" "${CONFIG_ARGS}"
