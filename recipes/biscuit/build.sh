@@ -1,11 +1,5 @@
 #!/bin/bash
 
-if [[ `uname` == "Darwin" ]]; then
-	ln -sf ${CC} ${PREFIX}/bin/gcc
-else
-	ln -sf ${CC} ${PREFIX}/bin/gcc
-fi
-
 # Needed for building utils dependency
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
@@ -37,4 +31,3 @@ make install
 # Needed to run asset builder
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/build_biscuit_QC_assets.pl
 rm -rf ${PREFIX}/bin/*.bak
-rm -rf ${PREFIX}/bin/gcc
