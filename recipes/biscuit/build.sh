@@ -33,3 +33,4 @@ cmake --build build --target install -v
 # Needed to run asset builder
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/build_biscuit_QC_assets.pl
 rm -rf ${PREFIX}/bin/*.bak
+rm -rf ${PREFIX}/bin/gcc
