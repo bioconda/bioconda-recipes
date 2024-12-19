@@ -1,0 +1,99 @@
+{% set name = "piqtree" %}
+{% set version = "0.4.0" %}
+{% set iqtree_version = "2.3.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/iqtree/piqtree/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b10b99d2d678ee0fc2d209a049903cf1ec3b18e8311b456fa4d5ed46faa99bbf
+
+build:
+  script: |
+    set -e
+
+    # Download and extract IQ-TREE source tarball
+    echo "Fetching IQ-TREE source tarball..."
+    wget https://github.com/iqtree/iqtree2/archive/refs/tags/v{{ iqtree_version }}.tar.gz -O iqtree2.tar.gz
+    tar -xf iqtree2.tar.gz
+    mv iqtree2-{{ iqtree_version }} iqtree2
+
+    # Process .gitmodules to fetch submodules
+    echo "Processing .gitmodules to fetch submodules..."
+    cd iqtree2
+    awk '/^\[submodule / {name=$2; gsub(/"/, "", name)} /path = / {path=$3} /url = / {url=$3; print path, url}' .gitmodules | while read path url; do
+      echo "Fetching submodule $path from $url"
+      mkdir -p $path
+      git clone --depth 1 $url $path
+    done
+    cd ..
+
+    # Build the IQ-TREE static library
+    echo "Building IQ-TREE static library..."
+    cd iqtree2
+    rm -rf build
+    mkdir build
+    cd build
+    cmake -DBUILD_LIB=ON -DCMAKE_PREFIX_PATH=$PREFIX -DCMAKE_INSTALL_PREFIX=$PREFIX ..
+    make -j$(nproc)
+
+    # Move the built library to the expected location
+    cd ../..
+    mkdir -p src/piqtree/_libiqtree
+    mv iqtree2/build/libiqtree2.a src/piqtree/_libiqtree/
+
+    # Build and install the Python package
+    $PYTHON -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, exact=True) }}
+
+requirements:
+  build:
+    - wget
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - eigen
+    - boost
+    - git
+    - python >=3.10,<3.13
+    - pip
+    - pybind11
+    - setuptools
+  host:
+    - python >=3.10,<3.13
+    - pip
+    - pybind11
+    - setuptools
+  run:
+    - python >=3.10,<3.13
+    - cogent3
+    - pyyaml
+    - requests
+    - pybind11
+    - zlib
+    - libgomp
+
+test:
+  imports:
+    - piqtree
+
+about:
+  home: "https://github.com/iqtree/piqtree"
+  summary: 'piqtree : Python library implementing functions of IQ-TREE 2: Efficient phylogenomic software by maximum likelihood.'
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: LICENSE
+  dev_url: "https://github.com/iqtree/piqtree"
+  doc_url: "https://piqtree.readthedocs.io/en/latest/"
+  notes: "This recipe fetches IQ-TREE source and its submodules (lsd2 and cmaple) during the build process."
+
+
+extra:
+  recipe-maintainers:
+    - GavinHuttley
+    - khiron
