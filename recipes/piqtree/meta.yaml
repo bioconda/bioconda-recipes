@@ -1,9 +1,14 @@
 {% set name = "piqtree" %}
 {% set version = "0.4.0" %}
+{% set iqtree_version = "2.3.6" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
+
+source:
+  url: https://github.com/iqtree/piqtree/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b10b99d2d678ee0fc2d209a049903cf1ec3b18e8311b456fa4d5ed46faa99bbf
 
 source:
   git_url: https://github.com/iqtree/piqtree.git
@@ -13,6 +18,22 @@ source:
 build:
   script: |
     set -e
+
+    # Download and extract IQ-TREE source tarball
+    echo "Fetching IQ-TREE source tarball..."
+    wget https://github.com/iqtree/iqtree2/archive/refs/tags/v{{ iqtree_version }}.tar.gz -O iqtree2.tar.gz
+    tar -xf iqtree2.tar.gz
+    mv iqtree2-{{ iqtree_version }} iqtree2
+
+    # Initialize and fetch submodules (lsd2, cmaple)
+    echo "Fetching IQ-TREE submodules..."
+    cd iqtree2
+    git init
+    git remote add origin https://github.com/iqtree/iqtree2.git
+    git checkout v{{ iqtree_version }}
+    git submodule update --init --recursive
+    cd ..
+
     # Build the IQ-TREE static library
     echo "Building IQ-TREE static library..."
     cd iqtree2
@@ -29,6 +50,7 @@ build:
 
     # Build and install the Python package
     $PYTHON -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+
   number: 0
   run_exports:
     - {{ pin_subpackage(name, exact=True) }}
@@ -40,6 +62,7 @@ requirements:
     - make
     - eigen
     - boost
+    - git
     - python >=3.10,<3.13
     - pip
     - pybind11
@@ -70,6 +93,8 @@ about:
   license_file: LICENSE
   dev_url: "https://github.com/iqtree/piqtree"
   doc_url: "https://piqtree.readthedocs.io/en/latest/"
+  notes: "This recipe fetches IQ-TREE source and its submodules (lsd2 and cmaple) during the build process."
+
 
 extra:
   recipe-maintainers:
