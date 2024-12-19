@@ -12,11 +12,9 @@ source:
 build:
   number: 0
   noarch: python
-  script: |
-    set -ex
-    python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
   run_exports:
-    - {{ pin_subpackage('biox', max_pin='x.x') }}
+    - {{ pin_subpackage('biox', max_pin="x") }}
 
 requirements:
   build:
@@ -37,12 +35,16 @@ requirements:
 
 test:
   imports:
-    - src
+    - biox
   commands:
     - pip check
     - biox -h
+    - printf ">test_seq\nACGTCGCGCGCGCG\n" > test.fa
+    - biox -c -t dna test.fa
+    - test -f test.fa.biox
   requires:
     - pip
+
 
 about:
   home: https://github.com/TianMayCry9/BioX
