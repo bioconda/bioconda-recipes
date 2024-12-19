@@ -7,19 +7,26 @@ package:
 
 source:
   url: https://github.com/TianMayCry9/BioX/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: cbc88bce996a08b04e6f972fff327372f6e701a0f3ac4fc08ca70a85fa0d3a98
+  sha256: ecbaf5d74f93361fdfa1798fc34edc27b18b131b2943f66da1347856444fb9f1
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
-  run_exports:
-    - {{ pin_subpackage('biox', max_pin="x") }}
+  script: |
+    set -ex
+    python -m pip install --no-deps --ignore-installed .
 
 requirements:
+  build:
+    - python >=3.6
+    - pip
+    - setuptools
+    - wheel
   host:
     - python >=3.6
     - pip
+    - setuptools
+    - wheel
   run:
     - python >=3.6
     - numpy >=1.19.0
@@ -27,11 +34,16 @@ requirements:
     - multiprocess >=0.70.0
 
 test:
+  imports:
+    - src
   commands:
+    - pip check
     - biox -h
+  requires:
+    - pip
 
 about:
-  home: https://github.com/TianMayCry9/BioX/issues
+  home: https://github.com/TianMayCry9/BioX
   license: GPL-3.0
   license_family: GPL
   license_file: LICENSE
