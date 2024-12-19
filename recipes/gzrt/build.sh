@@ -5,7 +5,9 @@ set -xe
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS:-} -O3 -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS:-} -L${PREFIX}/lib"
+export CPATH="${PREFIX}/include"
 
 mkdir -p "${PREFIX}/bin"
 
@@ -13,10 +15,6 @@ if [ -z "$PREFIX" ]; then
     echo "PREFIX environment variable not set"
     exit 1
 fi
-
-export CFLAGS="${CFLAGS:-} -O3 -I${PREFIX}/include"
-export LDFLAGS="${LDFLAGS:-} -L${PREFIX}/lib"
-export CPATH="${PREFIX}/include"
 
 # If-body reserved to docker build
 if [ ! -f "$(command -v cc)" ]; then
