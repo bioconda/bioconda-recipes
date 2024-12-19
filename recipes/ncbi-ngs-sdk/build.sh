@@ -1,6 +1,6 @@
 NCBI_OUTDIR=$SRC_DIR/ncbi-outdir
 
-pushd ngs-sdk
+pushd ngs/ngs-sdk
 ./configure \
     --prefix=$PREFIX \
     --build-prefix=$NCBI_OUTDIR \
