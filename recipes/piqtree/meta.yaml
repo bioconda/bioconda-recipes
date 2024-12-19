@@ -20,13 +20,14 @@ build:
     tar -xf iqtree2.tar.gz
     mv iqtree2-{{ iqtree_version }} iqtree2
 
-    # Initialize and fetch submodules (lsd2, cmaple)
-    echo "Fetching IQ-TREE submodules..."
+    # Process .gitmodules to fetch submodules
+    echo "Processing .gitmodules to fetch submodules..."
     cd iqtree2
-    git init
-    git remote add origin https://github.com/iqtree/iqtree2.git
-    git checkout v{{ iqtree_version }}
-    git submodule update --init --recursive
+    awk '/^\[submodule / {name=$2; gsub(/"/, "", name)} /path = / {path=$3} /url = / {url=$3; print path, url}' .gitmodules | while read path url; do
+      echo "Fetching submodule $path from $url"
+      mkdir -p $path
+      git clone --depth 1 $url $path
+    done
     cd ..
 
     # Build the IQ-TREE static library
