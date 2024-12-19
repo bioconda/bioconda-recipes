@@ -10,21 +10,20 @@ source:
   sha256: b10b99d2d678ee0fc2d209a049903cf1ec3b18e8311b456fa4d5ed46faa99bbf
 
 build:
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  script: bash build.sh
   number: 0
-  run_exports:
-  - {{ pin_subpackage(name, max_pin=None) }}
-  script_env:
-    - CC=gcc
-    - CXX=g++
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
-    - ninja
+    - make
+    - eigen
+    - boost
+    - python >=3.10,<3.13
+    - pip
     - pybind11
+    - setuptools
   host:
     - python >=3.10,<3.13
     - pip
@@ -36,6 +35,8 @@ requirements:
     - pyyaml
     - requests
     - pybind11
+    - zlib
+    - libgomp
 
 test:
   imports:
@@ -43,7 +44,7 @@ test:
 
 about:
   home: "https://github.com/iqtree/piqtree"
-  summary: 'piqtree : python library implementing functions of IQ-TREE 2 : Efficient phylogenomic software by maximum likelihood.'
+  summary: 'piqtree : Python library implementing functions of IQ-TREE 2: Efficient phylogenomic software by maximum likelihood.'
   license: "BSD-3-Clause"
   license_family: BSD
   license_file: LICENSE
