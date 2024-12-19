@@ -1,0 +1,43 @@
+{% set name = "pycoverm" %}
+{% set version = "0.6.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pycoverm-{{ version }}.tar.gz
+  sha256: 9487ac82cf0c21e5400b98efcd195490f9f25a234b2e3336e45abd6e19002a86
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python <3.10
+    - maturin >=0.10,<0.11
+    - toml
+    - pip
+  run:
+    - python <3.10
+    - numpy
+    - coverm
+
+test:
+  imports:
+    - pycoverm
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/apcamargo/pycoverm
+  license: GPL-3.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - prototaxites
