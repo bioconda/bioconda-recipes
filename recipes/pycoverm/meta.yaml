@@ -11,17 +11,28 @@ source:
 
 build:
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script: 
+    - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
   number: 0
   run_exports:
     - {{ pin_subpackage('pycoverm', max_pin="x.x") }}
 
 requirements:
+  build:
+    - python                              # [build_platform != target_platform]
+    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+    - crossenv                            # [build_platform != target_platform]
+    - maturin >=1.4,<2                    # [build_platform != target_platform]
+    - {{ compiler("c") }}
+    - {{ compiler("rust") }}
+    - {{ stdlib("c") }}
+    - cargo-bundle-licenses
   host:
     - python <3.10
-    - maturin >=0.10,<0.11
     - toml
     - pip
+    - maturin >=1.4,<2
   run:
     - python <3.10
     - numpy
@@ -38,5 +49,11 @@ test:
 about:
   home: https://github.com/apcamargo/pycoverm
   license: GPL-3.0
-  license_file: LICENSE
+  license_file: 
+    - LICENSE
+    - THIRDPARTY.yml
   summary: Python bindings for coverm
+
+extra:
+  skip-lints:
+    - version_constraints_missing_whitespace  # see https://github.com/bioconda/bioconda-recipes/issues/51185
