@@ -1,0 +1,49 @@
+{% set version = "" %}
+{% set sha256 = "" %}
+{% set repo = "https://github.com/WGLab/LinkedSV"}
+
+package:
+  name: linkedsv
+  version: '{{ version }}'
+
+source:
+  url: {{ repo }}/releases/download/{{ version }}/poolparty.{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('linkedsv', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - htslib
+  run:
+    - bedtools
+    - fermikit
+    - numpy
+    - pandas
+    - perl
+    - pigz
+    - psutil
+    - samtools
+    - scikit-learn 
+    - scipy
+    - seaborn
+
+test:
+  commands:
+    - "linkedsv.py -h"
+
+about:
+  home: {{ repo }}
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A novel structural variant caller for 10X Genomics (linked-read) sequencing data"
+  dev_url: {{ repo }}
+
+extra:
+  recipe-maintainers:
+    - pdimens
