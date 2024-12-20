@@ -20,6 +20,16 @@ build:
     tar -xf iqtree2.tar.gz
     mv iqtree2-{{ iqtree_version }} iqtree2
 
+    # Debugging: Verify iqtree2 folder and its contents
+    echo "Debugging iqtree2 folder..."
+    ls -l
+    ls -l iqtree2 || echo "iqtree2 folder does not exist."
+    if [[ -f "iqtree2/CMakeLists.txt" ]]; then
+      echo "CMakeLists.txt found in iqtree2."
+    else
+      echo "CMakeLists.txt is missing in iqtree2!" && exit 1
+    fi
+
     # Process .gitmodules to fetch submodules
     echo "Processing .gitmodules to fetch submodules..."
     cd iqtree2
@@ -29,6 +39,15 @@ build:
       git clone --depth 1 $url $path
     done
     cd ..
+
+    # Debugging: Verify iqtree2 folder and its contents again
+    echo "Verifying iqtree2 folder after submodule processing..."
+    ls -l iqtree2
+    if [[ -f "iqtree2/CMakeLists.txt" ]]; then
+      echo "CMakeLists.txt is still present in iqtree2."
+    else
+      echo "CMakeLists.txt is missing after submodule processing!" && exit 1
+    fi
 
     # Build the IQ-TREE static library
     echo "Building IQ-TREE static library..."
@@ -69,6 +88,7 @@ requirements:
     - pip
     - pybind11
     - setuptools
+    - cogent3
   run:
     - python >=3.10,<3.13
     - pyyaml
