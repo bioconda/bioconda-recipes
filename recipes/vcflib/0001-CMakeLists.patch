@@ -1,0 +1,63 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7e90114..83c8cb9 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -69,11 +69,6 @@ if(NOT CMAKE_BUILD_TYPE)
+           "Choose the type of build, options are: Release|Debug|RelWithDebInfo (for distros)." FORCE)
+ endif()
+ 
+-if (${CMAKE_BUILD_TYPE} MATCHES Release)
+-  set(EXTRA_FLAGS "-march=native -D_FILE_OFFSET_BITS=64")
+-  # set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG") # reset CXX_FLAGS to replace -O3 with -Ofast
+-endif()
+-
+ if ((${CMAKE_BUILD_TYPE} MATCHES Release) OR (${CMAKE_BUILD_TYPE} MATCHES RelWithDebInfo))
+   set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_FLAGS}")
+   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_FLAGS}")
+@@ -186,10 +181,14 @@ if (TABIXPP_LOCAL) # add the tabixpp source file
+     list(APPEND vcflib_SOURCE ${tabixpp_SOURCE})
+ endif()
+ 
+-add_library(vcflib STATIC
++add_library(vcflib SHARED
+     ${vcflib_SOURCE}
+     )
+ 
++target_link_libraries(vcflib PUBLIC
++    tabixpp
++    )
++
+ set(BINS
+     vcfecho
+     dumpContigsFromHeader
+@@ -326,6 +325,10 @@ set(SCRIPTS
+ file (STRINGS "VERSION" BUILD_NUMBER)
+ add_definitions(-DVCFLIB_VERSION="${BUILD_NUMBER}")
+ add_definitions(-DVERSION="${BUILD_NUMBER}")
++string(REGEX MATCH "^[0-9]+" MAJOR_BUILD_NUMBER ${BUILD_NUMBER})
++set_target_properties(vcflib PROPERTIES
++	SOVERSION ${MAJOR_BUILD_NUMBER}
++    )
+ 
+ # ---- Build htslib
+ #
+@@ -337,7 +340,7 @@ if (HTSLIB_LOCAL)
+ 
+   include_directories(${HTSLIB_LOCAL})
+ 
+-  set(flags "-O2 -g -fPIC")
++  set(flags "-O3 -g -fPIC")
+   ExternalProject_Add(htslib-EXT
+     SOURCE_DIR "${CMAKE_SOURCE_DIR}/${HTSLIB_LOCAL}"
+     UPDATE_COMMAND autoreconf -i
+@@ -595,8 +598,9 @@ endif (PANDOC)
+ # ---- Install
+ 
+ install(TARGETS vcflib ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
+-install(TARGETS ${WFALIB} ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
+ 
+ install(FILES ${INCLUDES} DESTINATION include/vcflib)
++configure_file(${CMAKE_CURRENT_SOURCE_DIR}/vcflib.pc.in ${CMAKE_CURRENT_BINARY_DIR}/vcflib.pc @ONLY)
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/vcflib.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+ 
+ install(DIRECTORY ${CMAKE_SOURCE_DIR}/man/ DESTINATION ${CMAKE_INSTALL_PREFIX}/man/man1)
