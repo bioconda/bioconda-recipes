@@ -13,7 +13,7 @@ cp ${SOURCE_CFG} ${TARGET_CFG}
 cp ${SOURCE_PY} ${TARGET_PY}
 
 case $(uname) in
-	Darwin) rustup target add x86_64-apple-darwin ;;
+	Darwin) rustup default stable && rustup target add x86_64-apple-darwin ;;
 esac
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
