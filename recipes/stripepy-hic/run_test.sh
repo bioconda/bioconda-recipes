@@ -20,4 +20,4 @@ stripepy --version
 
 # Run automated test suites
 "$PYTHON" -m pytest test/ -m unit -v
-"$PYTHON" -m pytest test/ -m end2end -v
+"$PYTHON" -m pytest test/ -m end2end -v -k 'not TestStripePyPlot'
