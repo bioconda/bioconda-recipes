@@ -17,5 +17,5 @@ stripepy --help
 stripepy --version
 
 # Run automated test suites
-"$PYTHON" -m pytest test/ -m unit -v
-"$PYTHON" -m pytest test/ -m end2end -v -k 'not TestStripePyPlot'
+"$PYTHON" -m pytest test/ -m unit -v --disable-pytest-warnings
+"$PYTHON" -m pytest test/ -m end2end -v -k 'not TestStripePyPlot' --disable-pytest-warnings
