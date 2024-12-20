@@ -1,0 +1,61 @@
+{% set name = "pycoverm" %}
+{% set version = "0.6.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pycoverm-{{ version }}.tar.gz
+  sha256: 8a93adef1d52259f6531f00932c60b01158e4c2fb48fac5729e2a5de0c208de2
+
+build:
+  script: 
+    - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('pycoverm', max_pin="x.x") }}
+
+requirements:
+  build:
+    - python                              # [build_platform != target_platform]
+    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+    - crossenv                            # [build_platform != target_platform]
+    - maturin >=1.4,<2                    # [build_platform != target_platform]
+    - {{ compiler("c") }}
+    - {{ compiler("rust") }}
+    - {{ stdlib("c") }}
+    - cargo-bundle-licenses
+  host:
+    - pip
+    - maturin >=1.4,<2
+    - python
+  run:
+    - python
+    - numpy >=2,<3
+
+test:
+  files:
+    - test.bam
+    - test.py
+  imports:
+    - pycoverm
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/apcamargo/pycoverm
+  license: GPL-3.0
+  license_file: 
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Python bindings for CoverM
+
+extra:
+  additional-platforms:
+    - osx-arm64
+  skip-lints:
+    - version_constraints_missing_whitespace  # see https://github.com/bioconda/bioconda-recipes/issues/51185
