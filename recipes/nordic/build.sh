@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
+set -xe
+
 cd ${SRC_DIR}"/MaBoSS-2.0/engine/src/"
 
-make install \
+make -j"${CPU_COUNT}" install \
     CC="${CC}" \
     CXX="${CXX}" \
     CFLAGS="${CFLAGS}" \
