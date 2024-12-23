@@ -24,9 +24,7 @@ fi
 	-j "${CPU_COUNT}" \
 	"${CONFIG_ARGS}"
 
-chmod 0755 rb-mpi rb-mpi-help2yml
-mv rb-mpi rb-mpi-help2yml $PREFIX/bin/
-
+install -v -m 0755 ../rb-mpi ../rb-mpi-help2yml "${PREFIX}/bin"
 
 # Non-mpi version
 rm -rf build-mpi
@@ -41,7 +39,6 @@ rm -rf build-mpi
         -j "${CPU_COUNT}" \
         "${CONFIG_ARGS}"
 
-chmod 0755 rb rb-help2yml
-mv rb rb-help2yml $PREFIX/bin/
+install -v -m 0755 ../rb ../rb-help2yml "${PREFIX}/bin"
 
 rm -rf build
