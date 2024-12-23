@@ -24,7 +24,7 @@ fi
 	-j "${CPU_COUNT}" \
 	"${CONFIG_ARGS}"
 
-install -v -m 0755 build/rb-mpi rb-mpi-help2yml "${PREFIX}/bin"
+install -v -m 0755 build-mpi/rb-mpi rb-mpi-help2yml "${PREFIX}/bin"
 
 
 # Non-mpi version
