@@ -1,6 +1,10 @@
+#!/usr/bin/env bash
+
+set -xe
+
 cd ./src/
 
-make
-mkdir -p $PREFIX/bin
+make -j"${CPU_COUNT}"
 
-cp ghostx $PREFIX/bin
+mkdir -p $PREFIX/bin
+install -m 755 ghostx $PREFIX/bin
