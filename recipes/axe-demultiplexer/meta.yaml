@@ -1,0 +1,39 @@
+{% set version = "0.3.3" %}
+{% set sha256 = "a37afa00decb99fe41be1f2e0a3f982dd3e1192e26de0cf88a0f1362aa1837b2" %}
+
+package:
+  name: axe-demultiplexer
+  version: {{ version }}
+
+source:
+  url: https://github.com/kdm9/axe/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - extern-message-gsl.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('axe-demultiplexer', max_pin="x") }}
+  skip: true  # [win]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+  host:
+    - zlib
+  run:
+    - zlib
+
+test:
+  commands:
+    - axe-demux 2>&1
+
+about:
+  home: https://github.com/kdmurray91/axe
+  license: GPL3
+  license_file: LICENSE.txt
+  summary: Rapid competitive read demulitplexer. Made with tries.
