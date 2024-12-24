@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       max-parallel: 6
       matrix:
-        runner: [0] # 1, 2, 3, 4, 5]
+        runner: [0, 1, 2] # 3, 4, 5]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -55,12 +55,10 @@ jobs:
           python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
           echo '============'
           bioconda-utils build recipes config.yml \
-            --worker-offset ${{ matrix.runner }} --n-workers 1 \
+            --worker-offset ${{ matrix.runner }} --n-workers 3 \
             --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
             --lint --record-build-failures --skiplist-leafs \
-            --packages bioconductor-rtracklayer bioconductor-genomicfeatures
-            # --exclude bioconda-repodata-patches \
-          # --subdag-depth 5
+            --exclude bioconda-repodata-patches # --subdag-depth 5
           conda clean -y --all
 
   build-osx:
@@ -121,9 +119,7 @@ jobs:
           bioconda-utils build recipes config.yml \
             --worker-offset ${{ matrix.runner }} --n-workers 1 \
             --lint --anaconda-upload --record-build-failures --skiplist-leafs \
-            --packages bioconductor-rtracklayer bioconductor-genomicfeatures bioconductor-genefilter
-            # --exclude bioconda-repodata-patches \
-          # --subdag-depth 5
+            --exclude bioconda-repodata-patches # --subdag-depth 5
           conda clean -y --all
 
   build-osx-arm:
