@@ -12,7 +12,7 @@ source:
       - relocate.sepp.config.patch
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('sepp', max_pin="x") }}
 
@@ -24,6 +24,8 @@ requirements:
     - dendropy
     - openjdk
     - hmmer
+    - wget
+    - unzip
 
   run:
     - python <=3.10
@@ -31,12 +33,11 @@ requirements:
     - openjdk
     - hmmer
     - pasta
-    # TODO: source bundled binaries as conda packages.
-    # But pplacer / guppy are not available for OSX.
-    # - pplacer
+    - pplacer ==1.1.alpha17
 
 test:
   commands:
+    - pplacer --version
     - run_sepp.py --help
     - run-sepp.sh $PREFIX/share/sepp/ref/input_fragments.fasta testrun_tiny -a $PREFIX/share/sepp/ref/reference_alignment_tiny.fasta -t $PREFIX/share/sepp/ref/reference_phylogeny_tiny.nwk -r $PREFIX/share/sepp/ref/RAxML_info-reference-gg-raxml-bl.info -x 1 -b 1
     - grep "f__Halomonadaceae" testrun_tiny_placement.tog.relabelled.tre
