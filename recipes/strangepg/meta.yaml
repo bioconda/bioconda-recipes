@@ -1,5 +1,5 @@
 {% set name = "strangepg" %}
-{% set version = "0.8.15" %}
+{% set version = "0.8.16" %}
 
 package:
   name: {{ name }}
@@ -7,11 +7,10 @@ package:
 
 source:
   url: https://github.com/qwx9/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 2393be1be300b0d9d3d252482277d9735b53fa7aa2156bcdad2215c3cc2ae093
+  sha256: bd331051a496aa93deaca170a77c7a69bf0459fb53a2e577a84ac17236ef894d
 
 build:
   number: 0
-  skip: True  # [not linux]
   run_exports:
     - {{ pin_subpackage('strangepg', max_pin='x.x') }}
 
@@ -19,29 +18,32 @@ requirements:
   build:
     - {{ compiler('c') }}
     - make
-    - {{ cdt('mesa-libgl-devel') }}
-    - {{ cdt('mesa-libegl-devel') }}
-    - {{ cdt('mesa-dri-drivers') }}
-    - {{ cdt('libdrm-devel') }}
-    - {{ cdt('libglvnd-glx') }}      # [cdt_name != 'cos6']
+    - {{ cdt('mesa-libegl-devel') }}  # [linux and aarch64]
+    - {{ cdt('mesa-libgl-devel') }}   # [linux]
+    - {{ cdt('mesa-dri-drivers') }}   # [linux]
+    - {{ cdt('libdrm-devel') }}       # [linux]
+    - {{ cdt('libglvnd-glx') }}       # [linux and cdt_name != 'cos6']
+    - {{ cdt('libglvnd-egl') }}       # [linux and aarch64 and cdt_name != 'cos6']
   host:
-    - xorg-libx11
-    - xorg-libxcursor
-    - xorg-libxi
+    - libegl-devel    # [linux and aarch64]
+    - xorg-libx11     # [linux]
+    - xorg-libxcursor # [linux]
+    - xorg-libxi      # [linux]
+    - xorg-xorgproto  # [linux]
   run:
-    - libxcb
-    - xorg-libx11
-    - xorg-libxau
-    - xorg-libxcursor
-    - xorg-libxdmcp
-    - xorg-libxext
-    - xorg-libxfixes
-    - xorg-libxi
-    - xorg-libxrandr
+    - libxcb          # [linux]
+    - xorg-libx11     # [linux]
+    - xorg-libxau     # [linux]
+    - xorg-libxcursor # [linux]
+    - xorg-libxdmcp   # [linux]
+    - xorg-libxext    # [linux]
+    - xorg-libxfixes  # [linux]
+    - xorg-libxi      # [linux]
+    - xorg-libxrandr  # [linux]
 
 test:
   source_files:
-    - cmd/main.awk
+    - test/frag10.gfa
 
 about:
   home: https://github.com/qwx9/{{ name }}
@@ -52,6 +54,9 @@ about:
   dev-url: https://github.com/qwx9/{{ name }}
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - qwx9
   container:
