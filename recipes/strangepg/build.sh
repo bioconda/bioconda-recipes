@@ -2,6 +2,11 @@
 
 set -xe
 
-export CFLAGS="$CFLAGS -I${PREFIX}/include"
-export LDFLAGS="$LDFLAGS -ldl -lpthread"
-make -j ${CPU_COUNT} install
+OS=$(uname)
+if [[ ${OS} == "Linux" ]]; then
+	export C_INCLUDE_PATH="${PREFIX}/include"
+	export LIBRARY_PATH="${PREFIX}/lib"
+	export LDLIBS="-ldl -lpthread"
+fi
+
+make CC="${CC}" PREFIX="${PREFIX}" -j ${CPU_COUNT} install
