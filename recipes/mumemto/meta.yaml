@@ -1,0 +1,69 @@
+{% set name = "mumemto" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/vikshiv/mumemto/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e0a42fd5d3afde6366dbc43bb16cc38b5a0c87468a4c6978c4225d361d789f95
+
+build:
+  number: 0
+  pkg_format: '.conda'
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+  script:
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make install
+    - cd ..
+    - mkdir -p $PREFIX/bin
+    - mkdir -p $SP_DIR/mumemto
+    - cp build/mumemto $PREFIX/bin/mumemto_exec
+    - cp build/bin/newscanNT.x $PREFIX/bin/
+    - cp mumemto/*.py $SP_DIR/mumemto/
+    - cp mumemto/mumemto $PREFIX/bin/
+    - mkdir -p $PREFIX/share/licenses/{{ name }}
+    - cp LICENSE $PREFIX/share/licenses/{{ name }}/
+    - chmod +x $PREFIX/bin/mumemto
+    - touch $SP_DIR/mumemto/__init__.py
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+  host:
+    - python
+  run:
+    - python
+    - matplotlib-base
+    - numpy
+    - tqdm
+    - numba
+    - plotly
+
+test:
+  commands:
+    - mumemto --help
+    - mumemto viz --help
+    - mumemto coverage --help
+    - mumemto inversions --help
+  imports:
+    - mumemto.utils
+
+about:
+  home: https://github.com/vikshiv/mumemto
+  summary: Finding maximal unique matches across pangenomes
+  description: |
+    Mumemto is a tool for finding a variety of matches across collections of sequences like a pangenome.
+    It includes a visualization tool for visualizing pangenome synteny.
+  license: GPL-3.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - vikshiv
