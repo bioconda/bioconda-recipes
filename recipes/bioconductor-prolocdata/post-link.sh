@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "prolocdata-1.43.1"
+installBiocDataPackage.sh "prolocdata-1.44.0"
