@@ -1,0 +1,32 @@
+diff --git CMakeLists.txt CMakeLists.txt
+index 85c64b6..100a843 100644
+--- CMakeLists.txt
++++ CMakeLists.txt
+@@ -9,7 +9,7 @@ set(XXMOTIF_PATCH_VERSION 6)
+ set(XXMOTIF_VERSION ${XXMOTIF_MAJOR_VERSION}.${XXMOTIF_MINOR_VERSION}.${XXMOTIF_PATCH_VERSION})
+ 
+ 
+-set(CMAKE_CXX_FLAGS "-std=c++11 -DLOG_MAX_LEVEL=0 -D__GXX_EXPERIMENTAL_CXX0X__ -O3 -g3 -pedantic -pedantic-errors -Wall -fmessage-length=0 -fno-strict-aliasing -Wconversion")
++set(CMAKE_CXX_FLAGS "-std=c99 -DLOG_MAX_LEVEL=0 -D__GXX_EXPERIMENTAL_CXX0X__ -O3 -g3 -pedantic -pedantic-errors -Wall -fmessage-length=0 -fno-strict-aliasing -Wconversion")
+ 
+ set(CMAKE_C_FLAGS "-D__GXX_EXPERIMENTAL_CXX0X__ -O3 -pedantic -pedantic-errors -Wall -fmessage-length=0 -Wconversion")
+ 
+diff --git src/memoryPool/pool_alloc.h src/memoryPool/pool_alloc.h
+index c1fe05b..925f31d 100644
+--- src/memoryPool/pool_alloc.h
++++ src/memoryPool/pool_alloc.h
+@@ -90,4 +90,14 @@ private:
+ 
+ template <class T> Pool Pool_alloc<T>::mem(sizeof(T));
+ 
++template <class T, class U, std::size_t N>
++inline bool operator==(const Pool_alloc<T>& a, const Pool_alloc<U>& b){
++    return &a == &b;
++}
++
++template <class T, class U>
++inline bool operator!=(const Pool_alloc<T>& a, const Pool_alloc<U>& b){
++    return &a != &b;
++}
++
+ #endif /* POOL_ALLOC_H */

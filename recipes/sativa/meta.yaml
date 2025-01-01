@@ -1,0 +1,44 @@
+{% set name = "sativa" %}
+{% set version = "0.9.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/amkozlov/sativa/archive/refs/tags/v{{ version }}.zip
+  sha256: 0d0ae82f0f9608f51301ecadc367f85653fe9954855d9ebbbef8f889eef586b8
+
+build:
+  number: 0
+  skip: true  # [osx]
+  run_exports:
+    - {{ pin_subpackage('sativa', max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - python >=3.0.0
+  host:
+    - python >=3.0.0
+  run:
+    - python >=3.0.0
+
+test:
+  files:
+    - sequences.alnfna
+    - taxonomy.tsv
+  commands:
+    - sativa.py -s sequences.alnfna -t taxonomy.tsv -x bac -debug
+
+about:
+   home: https://github.com/amkozlov/sativa
+   license: GPL-3
+   license_family: GPL
+   license_file: gpl_license
+   summary: "SATIVA Semi-Automatic Taxonomy Improvement and Validation Algorithm"
+
+extra:
+   identifiers:
+     - doi:10.1093/nar/gkw396

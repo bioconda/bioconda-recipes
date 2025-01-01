@@ -1,21 +1,24 @@
-{% set version = "1.23.6" %}
-{% set sha256 = "6dfeb9c15369d33953193e65db8454e678772c79218643bd122293e59288d297" %}
+{% set version = "2.0_beta" %}
+{% set beta_suffix = ".3" %}
+{% set sha256 = "a23e690b6da95226f20d90a3aade31caaee2e08996d6b05f9c1eaae869d33ba1" %}
 
 package:
   name: hmftools-linx
   version: '{{ version }}'
 
 source:
-  url: https://github.com/hartwigmedical/hmftools/releases/download/linx-v{{ version }}/linx_v{{ version }}.jar
+  url: https://github.com/hartwigmedical/hmftools/releases/download/linx-v{{ version }}/linx_v{{ version }}{{ beta_suffix }}.jar
   sha256: '{{ sha256 }}'
 
 build:
   noarch: generic
-  number: 0
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('hmftools-linx', max_pin="x") }}
 
 requirements:
   run:
-    - openjdk >=8
+    - openjdk >=8,<=21
     - xorg-libxtst
     - r-tidyr
     - r-dplyr
@@ -24,13 +27,14 @@ requirements:
     - r-magick
     - bioconductor-gviz
     - circos >=0.69.6
+    - perl-gd >=2.76 # Fixes missing GD perl module error (even though circos does install GD)
 
 test:
   commands:
-    - 'linx 2>&1 | grep -q "LINX version"'
+    - 'linx -version | grep Linx'
 
 about:
   home: https://github.com/hartwigmedical/hmftools/tree/master/linx
   license: GPL-3.0-only
   license_family: GPL
-  summary: Linx is an annotation, interpretation and visualisation tool for structural variants
+  summary: LINX is an annotation, interpretation and visualisation tool for structural variants.

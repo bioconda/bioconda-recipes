@@ -1,17 +1,22 @@
-{% set version = "1.0.3" %}
+{% set name = "hicap" %}
+{% set version = "1.0.4" %}
 
 package:
-  name: hicap
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/scwatts/hicap/archive/v{{ version }}.tar.gz
-  sha256: 6be5bc97ea4f6bf00d90381a0551760a38dd576f03e5b8e074d08307860091ae
+  sha256: 053feab67eb38f1b94caf4541054d11d61f705a7fbe579165089f783fc4753d2
 
 build:
+  number: 1
   noarch: python
-  number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  entry_points:
+    - hicap=hicap.main:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('hicap', max_pin="x") }}
 
 requirements:
   host:
@@ -19,7 +24,7 @@ requirements:
     - pip
   run:
     - python >=3.6
-    - biopython ==1.72
+    - biopython >=1.79
     - reportlab ==3.4.0
     - prodigal >=2.6.1
     - blast >=2.2.28
@@ -29,11 +34,13 @@ test:
     - hicap --help
 
 about:
-  home: https://github.com/scwatts/hicap
+  home: "https://github.com/scwatts/hicap"
   summary: 'In silico typing of the H. influenzae capsule locus'
-  license: GPL-3.0
-  license_family: GPL
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  dev_url: "https://github.com/scwatts/hicap"
+  doc_url: "https://github.com/scwatts/hicap/blob/main/README.md"
 
 extra:
   identifiers:
-    - doi:10.1128/JCM.00190-19 # J. Clin. Microbiol paper
+    - doi:10.1128/jcm.00190-19  # J. Clin. Microbiol paper

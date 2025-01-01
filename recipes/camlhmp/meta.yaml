@@ -1,0 +1,50 @@
+{% set name = "camlhmp" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/camlhmp/camlhmp-{{ version }}.tar.gz
+  sha256: 0f20b94fc0bd469299bd9bec6fe384013bd7043cb4dd97e9df827895f2d06fb2
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed -vv .
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x.x.x') }}
+
+requirements:
+  host:
+    - python >=3.8
+    - poetry
+    - pip
+  run:
+    - biopython
+    - blast
+    - executor
+    - pigz
+    - python >=3.8
+    - pyyaml
+    - rich-click >=1.6.0
+
+test:
+  imports:
+    - camlhmp
+  commands:
+    - pip check
+    - camlhmp --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/rpetit3/camlhmp
+  summary: Classification through yAML Heuristic Mapping Protocol
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - rpetit3

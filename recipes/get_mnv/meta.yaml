@@ -1,0 +1,84 @@
+{% set name = "get_mnv" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "b9ba6fe1a5f5f73afa98cde9e348f7861d44690f795338816a8a0724a66e1aa8" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/PathoGenOmics-Lab/{{ name }}/archive/refs/tags/{{ version }}.tar.gz"
+  sha256: "{{ sha256 }}"
+  patches:
+    - get_mnv-aarch64.patch # [aarch64]
+
+build:
+  number: 1
+  script: |
+    set -xe
+    export LANG=C.UTF-8
+    export LC_ALL=C.UTF-8
+    export RUST_BACKTRACE=1
+    export OPENSSL_NO_VENDOR=1
+    export OPENSSL_DIR=$PREFIX
+    export OPENSSL_INCLUDE_DIR=$PREFIX/include
+    export OPENSSL_LIB_DIR=$PREFIX/lib
+    export CURL_STATIC_SSL=1
+    export CURL_SYS_STATIC=1
+    #export CARGO_NET_OFFLINE=true
+    export HTS_LIB_DIR=$PREFIX/lib
+    export HTS_INCLUDE_DIR=$PREFIX/include
+    export LIBCLANG_PATH=$PREFIX/lib # [linux and aarch64]
+    export CPLUS_INCLUDE_PATH=$PREFIX/include # [linux and aarch64]
+    export HTS_STATIC=1
+    export HTS_SYS_BUNDLED=0
+    cargo install --no-track --locked --verbose --root "${PREFIX}" --path .
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - pkg-config
+  host:
+    - openssl
+    - curl
+    - htslib
+    - bzip2
+    - xz
+    - zlib
+    - clangdev >=16,<17 # [linux and aarch64]
+
+  run:
+    - {{ pin_compatible('openssl') }}
+    - {{ pin_compatible('curl') }}
+    - {{ pin_compatible('htslib') }}
+    - {{ pin_compatible('bzip2') }}
+    - {{ pin_compatible('xz') }}
+    - {{ pin_compatible('zlib') }}
+
+test:
+  commands:
+    - get_mnv --help
+    - get_mnv --version
+
+about:
+  home: "https://github.com/PathoGenOmics-Lab/get_mnv"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Tool to identify Multi-Nucleotide Variants (MNVs) in genomic sequences."
+  description: |
+    get_MNV is a tool designed to identify Multi-Nucleotide Variants (MNVs) within the same codon in genomic sequences, providing more accurate annotation for genomic data.
+  doc_url: "https://github.com/PathoGenOmics-Lab/get_mnv"
+  dev_url: "https://github.com/PathoGenOmics-Lab/get_mnv"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - PathoGenOmics-Lab
+  categories:
+    - Genomics
+    - Variant Analysis

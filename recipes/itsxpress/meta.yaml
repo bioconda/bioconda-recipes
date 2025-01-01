@@ -1,8 +1,8 @@
 {% set name = "itsxpress" %}
-{% set version = "2.0.0" %}
+{% set version = "2.1.3" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "3306cb809e4b8c69b93a795f0289dbf4b9d8b7ba653f34d94472a62b38f41f6e" %}
+{% set hash_value = "a911701cbcf86ca6fc59b606d20fbee7015577477cfd4aa41d97420f23ad87c0" %}
 
 package:
   name: '{{ name|lower }}'
@@ -17,14 +17,16 @@ build:
   number: 0
   entry_points:
     - itsxpress=itsxpress.main:main
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  run_exports:
+    - {{ pin_subpackage('itsxpress', max_pin="x") }}
 
 requirements:
   host:
     - pip
     - python >=3.8
+    - setuptools
   run:
-    - pip
     - python >=3.8
     - biopython >=1.79
     - hmmer =3.1b2
@@ -42,7 +44,7 @@ about:
   license: CC0-1.0
   license_family: 'PUBLIC-DOMAIN'
   summary: 'ITSxpress: Software to rapidly trim the Internally Transcribed Spacer (ITS) region from FASTQ files'
-
+  dev_url: http://github.com/usda-ars-gbru/itsxpress
 
 extra:
   recipe-maintainers:

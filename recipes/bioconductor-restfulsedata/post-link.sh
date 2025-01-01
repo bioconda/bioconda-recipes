@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "restfulsedata-1.22.1"
+installBiocDataPackage.sh "restfulsedata-1.24.0"

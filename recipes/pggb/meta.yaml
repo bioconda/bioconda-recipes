@@ -1,5 +1,5 @@
 {% set name = "pggb" %}
-{% set version = "0.5.4" %}
+{% set version = "0.7.2" %}
 
 package:
   name: "{{ name }}"
@@ -7,29 +7,32 @@ package:
 
 source:
   url: https://github.com/pangenome/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 0f45e710e3a59225ae806db3686ecc32c59859671a8f1b7052259525dc6707f3
+  sha256: a687d5268b77d6bbbdb026d379975eed2afff148d7d73697a8421ca39b3ddbe9
 
 build:
-  noarch: generic
   number: 0
+  skip: true # [osx]
+  run_exports:
+  - {{ pin_subpackage(name, max_pin='x.x') }}
 
 requirements:
   run:
+    - wfmash ==0.14.0
+    - seqwish ==0.7.11
+    - smoothxg ==0.8.0
+    - odgi ==0.9.0
+    - gfaffix ==0.1.5b
+    - vg ==1.59.0
+    - vcfbub ==0.1.1
+    - vcflib ==1.0.10
+    - multiqc ==1.22
+    - python-igraph ==0.11.5
     - bc
     - tabix
-    - gfaffix ==0.1.4
     - gsl 2.7.0 
-    - idna <3,>=2.5
-    - multiqc ==1.14
-    - odgi ==0.8.3
     - pigz
     - bcftools
-    - seqwish ==0.7.9
-    - smoothxg ==0.7.0
     - time
-    - vg 1.40.0
-    - wfmash ==0.10.3
-    - python-igraph ==0.10.4
 
 test:
   commands:
@@ -39,8 +42,10 @@ about:
   home: https://github.com/pangenome/pggb
   license: MIT
   license_file: LICENSE
-  summary: This pangenome graph construction pipeline renders a collection of sequences into a pangenome graph (in the variation graph model).
+  summary: PanGenome Graph Building pipeline renders
 
 extra:
   recipe-maintainers:
     - AndreaGuarracino
+  skip-lints:
+    - should_be_noarch_generic

@@ -1,12 +1,8 @@
 #!/bin/bash
-set -eo pipefail
+set -xeo pipefail
 
-# create configure file
-./autogen.sh
-
-# run configuration
-./configure --prefix="${PREFIX}"
-
-# compile and install
-make CFLAGS="${CFLAGS} -fcommon"
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} .. 
+make -j ${CPU_COUNT}
 make install

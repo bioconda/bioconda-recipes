@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "curatedovariandata-1.38.0"
+installBiocDataPackage.sh "curatedovariandata-1.40.1"

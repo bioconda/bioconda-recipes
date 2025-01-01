@@ -1,0 +1,490 @@
+#!/usr/bin/env perl
+
+use warnings;
+use Getopt::Long;
+
+# (c) Copyright 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 Stijn van Dongen
+# (c) Copyright 2004 Jason Stajich (column output parsing)
+#
+# Other (C)ontributors;
+#     Dinakarpandian Deendayal      (general comments)
+#     Abel Ureta-Vidal              (general comments)
+#     Daniel Lundin                 (regexp tweak, warning)
+#
+# You can redistribute and/or modify this program under the terms of the GNU
+# General Public License;  either version 3 of the License or (at your option)
+# any later version.
+
+#
+# TODO
+#
+#  -  Optionally read from STDIN
+#  -  Require tab file for line-mode={123,packed}
+#
+#  -  Infer hsp_len from long output (?)
+#  -  (Perhaps) enable section parsing ala tribe, for finer control.   
+#  -  $:: usage is arbitrary and ugly. pipe down.
+#  -  Is the m9/seenlfgt combination correct?
+#  -  Check whether m9 output state is correct if errors occur.
+
+
+$^W = 1;
+use strict;
+
+$::mode_sort   = 'o';      # a lphabetical
+                           # o ccurrence
+
+$::mode_score  = 'e';      # e value
+                           # b it
+
+my $line_mode  =  "";      # default is raw mode, not line mode
+$::name_out    =  '-';
+
+$::bcut = 0;
+$::ecut = 0;
+$::rcut = 0;
+
+my $blastfix = "";
+my $addfix = "";
+
+my $user_tabfile = "";
+
+my %line_modes = qw ( abc 1 123 1);
+
+my $obase = "";
+my $stdhandler = 0;
+
+my $help = 0;
+my $m9 = 0;
+my $abc = 0;
+
+
+
+if
+(! GetOptions
+   (  "help"            =>    \$help
+   ,  "apropos"         =>    \$help
+   ,  "sort=s"          =>    \$::mode_sort
+   ,  "ecut=f"          =>    \$::ecut
+   ,  "bcut=f"          =>    \$::bcut
+   ,  "rcut=f"          =>    \$::rcut
+   ,  "score=s"         =>    \$::mode_score
+   ,  "m9"              =>    \$m9
+   ,  "tab=s"           =>    \$user_tabfile
+   ,  "xo-dat=s"        =>    \$addfix
+   ,  "xi-dat=s"        =>    \$blastfix
+   ,  "base=s"          =>    \$obase
+   ,  "stdhandler"      =>    \$stdhandler
+   ,  "line-mode=s"     =>    \$line_mode
+   ,  "out=s"           =>    \$::name_out
+   )
+)
+   {  print STDERR "option processing failed\n";
+      exit(1);
+   }
+
+help() && exit(0) if $help;
+
+die "unknown sort mode <$::mode_sort>"
+   unless $::mode_sort =~ /^[ao]$/;
+die "unknown line mode <$line_mode>"
+   if ($line_mode && !defined($line_modes{$line_mode}));
+die "unknown sort mode <$::mode_score>"
+   unless $::mode_score =~ /^[ebr]$/;
+   
+
+my $fname = shift || die "please submit name of blast file\n";
+$obase = $fname unless $obase;
+
+
+if ($blastfix) {
+   $obase = $fname;
+   if ($fname =~ /\Q.$blastfix\E$/) {
+      $obase =~ s/\Q.$blastfix\E$//;
+   }
+   else {
+      $fname .= ".$blastfix";
+   }
+}
+if ($addfix) {
+   $obase .=  ".$addfix";
+}
+
+my ($gix, $giy);
+$::seenlft = {};
+$::seenrgt = {};
+my $tagTocc = {};
+my $me = "[$0] ";
+my $lc = 0;
+my $fhin = \*STDIN;
+
+if ($fname ne '-') {
+   open(F_BLAST, "<$fname") || die "cannot open $fname\n";
+   $fhin = \*F_BLAST;
+}
+
+$::TAB_user = {};
+
+if ($user_tabfile) {
+   read_tab($user_tabfile, $::TAB_user);
+}
+
+
+$::f_raw = undef;
+my $f_err = undef;
+
+if ($line_mode) {
+   if (!$::name_out || $::name_out eq '-') {
+      $::f_raw = \*STDOUT;
+   }
+   else {
+      open(F_RAW, ">$::name_out") || die "cannot open $::name_out";
+      $::f_raw = \*F_RAW;
+   }
+   $f_err = \*STDERR;
+
+   if ($line_mode eq 'abc') {
+      # print $::f_raw "#aa# (stream abc cookie)\n";
+   }
+   elsif ($line_mode eq '123') {
+      # print $::f_raw "#11# (stream abc cookie)\n";
+   }
+}
+else {
+   if ($stdhandler) {
+      $::f_raw = \*STDOUT;
+      $f_err = \*STDERR;
+   }
+   else {
+      open(F_RAW, ">$obase.raw") || die "cannot open $obase.raw\n";
+      $::f_raw = \*F_RAW;
+      open(F_ERR, ">$obase.err") || die "cannot open $obase.err\n";
+      $f_err = \*F_ERR;
+   }
+}
+
+$::ID = 0;
+
+if ($m9) {
+   munge_linewise($fhin, $::f_raw, $line_mode);
+}
+else {
+   munge_long($fhin, $::f_raw, $line_mode);
+}
+
+close $::f_raw;
+$::CT = scalar keys %$::seenrgt;
+
+
+my $alnum = 0;
+my $occTmisc = {};
+
+if (!$user_tabfile && !$line_mode) {
+   open(F_HDR, ">$obase.hdr") || die "cannot open $obase.hdr\n";    # header
+   open(F_MAP, ">$obase.map") || die "cannot open $obase.idx\n";    # map file
+   open(F_TAB, ">$obase.tab") || die "cannot open $obase.idx\n";    # indices
+   print F_TAB "#<mapped index> <tag>\n";
+   if ($::mode_sort eq 'o') {
+      print F_TAB "# sort mode is by occurrence\n";
+   }
+   elsif ($::mode_sort eq 'a') {
+      print F_TAB "# sort mode is alphabetical\n";
+   }
+   if ($::mode_sort eq 'a') {
+      for (sort {$::a cmp $::b; } keys %$tagTocc) {
+         print F_TAB "$alnum $_\n";
+         $occTmisc->{$tagTocc->{$_}} = [ $alnum, $_ ];
+         $alnum++;
+      }
+      print STDERR "Index [$obase.tab] is sorted by alphabetic order\n";
+   }
+   elsif ($::mode_sort eq 'o' || 1) {
+      for (sort {$tagTocc->{$::a} <=> $tagTocc->{$::b}; } keys %$tagTocc) {
+         print F_TAB "$alnum $_\n";
+         $occTmisc->{$tagTocc->{$_}} = [ $alnum, $_ ];
+         $alnum++;
+      }
+      print STDERR "Index [$obase.tab] is sorted by occurrence order\n";
+      print STDERR "Primary and secondary occurrences are considered equal\n";
+   }
+   my $ct = keys %$occTmisc;
+   print F_MAP "(mclheader\nmcltype matrix\ndimensions $ct", 'x',
+               "$ct\n)\n(mclmatrix\nbegin\n";
+   for (sort {$::a <=> $::b; } keys %$occTmisc) {
+      # print F_MAP "$_ ", $occTmisc->{$_}[0], " ", $occTmisc->{$_}[1], "\n";
+      print F_MAP  "$_ $occTmisc->{$_}[0] \$\n";
+   }
+   print F_MAP ")\n";
+
+   print F_HDR "(mclheader\nmcltype matrix\ndimensions ";
+   print F_HDR $::ID . 'x' . $::ID;
+   print F_HDR "\n)\n";
+   close F_TAB;
+   close F_HDR;
+   close F_MAP;
+}
+
+
+my $n_err = 0;
+for (sort keys %$::seenrgt) {
+   if (!$::seenlft->{$_}) {
+      print $f_err "secondary element $_ not seen as primary element\n";
+      print $f_err "emergency measure: added the element to the primary list\n";
+      $n_err++;
+   }
+}
+
+if ($n_err) {
+   print STDERR $me, "$n_err secondary elements not seen as primary element\n";
+   print STDERR $me, "I added all of them\n";
+   print STDERR $me, "There were $::CT elements in all\n";
+}
+else {
+   print STDERR $me,
+   "all secondary elements were also seen as primary elements (check ok)\n";
+}
+
+
+sub munge_linewise {
+
+   my ($fh_in, $fh_raw, $line_mode) = @_;
+
+   my $gix_prev = "";
+
+   while (<$fh_in>) {
+
+      next if /^#/;
+      chomp;
+      my $sc_abc = 0;
+
+      my ($gix, $giy, $percent_id, $hsp_len, $mismatches, $gapsm,
+          $qstart, $qend,$hstart, $hend, $e, $b)
+          =
+          split;
+
+      my $s = 0;
+
+      my $idx = getid($gix, 1);
+      next unless $idx >= 0;
+
+      if ($gix_prev ne $gix) {
+          if (!$line_mode) {
+             if ($gix_prev) {
+               print $fh_raw "\$\n";
+             }
+             if( $idx >= 0 ) {
+               print $fh_raw "$idx ";
+             }
+         }
+      }
+      my $idy = getid($giy, 0);
+
+      $s = getscore($e, $b, $hsp_len);
+
+      if ($idy >= 0) {
+          if (!$line_mode) {
+             print $fh_raw "$idy:$s ";
+          }
+          else {
+             print $fh_raw "$gix\t$giy\t$s\n";
+          }
+      }
+      $gix_prev = $gix;
+   }
+
+   if ($gix_prev) {
+      print $fh_raw "\$\n" if !$line_mode;
+   }
+}
+
+
+sub munge_long {
+
+   my ($fh_in, $fh_raw, $line_mode) = @_;
+
+   my $need_query = 1;
+   my $need_hits = 2;
+   my $need_gi = 3;
+
+   my $state = $need_query;
+
+   while (<$fh_in>) {
+      $lc++;
+      chomp;
+      if (/^Query=\s+gi\|(\d+(_\d+)?)/ || /^Query=\s+(\S+).*$/) {
+# warn "STATE query $1\n";
+         if ($state != $need_query) {
+            print STDERR "Unexpected 'Query=' line\n";
+         }
+         $gix = $1;
+         my $idx = getid($gix, 1);
+
+         if ($idx >= 0) {
+            print $fh_raw "$idx " if !$line_mode;
+         }
+         $state = $need_hits;
+      }
+      elsif (/^Query=/) {
+         print STDERR "Query string not recognized: $_\n";
+      }
+      elsif
+      ($state == $need_hits && /sequences producing significant alignments/i) {
+         $state = $need_gi;
+# warn "STATE significant\n";
+      }
+      elsif ($state == $need_hits && /no hits found/i) {
+         print STDERR "no hits found for gi $gix\n";
+         print $fh_raw "\$\n" if !$line_mode;
+         $state = $need_query;
+      }
+      elsif
+      (  $state == $need_gi
+      && ! /^>/
+      && (/^gi\|(\d+(_\d+)?)/ || /^(\S+)\s+.*$/)
+      )
+      {  $giy = $1;
+         my $idy = getid($giy, 0);
+         my ($s, $b, $e);
+
+         if (/(\S+)\s+(\S+)\s*$/) {
+            $b = +$1;
+            $e = +$2;
+         }
+         else {
+            print STDERR "no scores in line $lc [$_]!\n";
+            next;
+         }
+
+         $s = getscore($e, $b, 0);
+
+         if ($idy >= 0) {               # fixme, void or explain.
+            if (!$line_mode) {
+               print $fh_raw "$idy:$s ";
+            }
+            else {
+               print $fh_raw "$giy\t$gix\t$s\n";
+            }
+         }
+      }
+      elsif (/^\s*$/) {
+         # paragraph skip does not change state, including the $need_gi case.
+      }
+      elsif (/(Statistics|Parameters):/) {
+         $state = $need_query;
+         # this provides WU-blast compatibility.
+      }
+      elsif ($state == $need_gi) {
+         print $fh_raw "\$\n" if !$line_mode;
+         $state = $need_query;
+      }
+   }
+
+   if ($state == $need_gi) {
+      print $f_err "run ended while expecting more secondary scores\n";
+      print STDERR "run ended while expecting more secondary scores\n";
+      print $fh_raw "\$\n" if !$line_mode;
+   }
+}
+
+
+
+
+sub read_tab {
+   my $file = shift;
+   my $tab = shift;
+   open (U_TAB, "<$file") || die "cannot open $file\n";
+   while (<U_TAB>) {
+      if (/^\s*#/) {
+         next;
+      }
+      else {
+         if (/^(\d+)\s+(.*)/) {
+            $tab->{$2} = $1;
+         }
+         else {
+            print STDERR "___ cannot parse line: $_";
+         }
+      }
+   }
+}
+
+
+sub getscore {
+   my ($e, $b, $hl) = @_;
+   my $s = 0;
+
+   if ($::mode_score eq 'e') {
+      $e = "1$e" if $e =~ /^e/;
+      $s = $e > 0 ? -log($e)/log(10) : 200;
+      if ($s > 200) {
+         $s = 200;
+      }
+      $s = $s > $::ecut ? $s : 0;
+   }
+   elsif ($::mode_score eq 'b') {
+      $s = $b > $::bcut ? $b : 0;
+   }
+   elsif ($::mode_score eq 'r' && $hl) {
+      $s = $b / $hl;
+      $s = $s > $::rcut ? $s : 0;
+   }
+   return $s;
+}
+
+
+sub getid {
+   my ($gi, $is_a_query) = @_;
+   my $id = -1;
+
+   if ($user_tabfile) {
+      if (defined($::TAB_user->{$gi})) {
+         $id = $::TAB_user->{$gi};
+      }
+      else {
+         print STDERR "___ no user tab entry for label <$gi>\n";
+         return -1;
+      }
+   }
+   else {
+      if (!exists($tagTocc->{$gi})) {
+# warn "$is_a_query $gi <-> $::ID\n";
+         $tagTocc->{$gi} = $::ID++;
+      }
+      $id = $tagTocc->{$gi};
+   }
+
+   $::seenrgt->{$id}++;
+   if ($is_a_query) {
+      $::seenlft->{$id}++;
+   }
+   return $id;
+}
+
+
+sub help {
+   print <<_help_;
+Usage: mcxdeblast <options> file-name
+where file-name is in BLAST NCBI format.
+mcxdeblast will create
+   base.hdr    [to be read by mcxassemble]
+   base.raw    [to be read by mcxassemble]
+   base.map    [to be read by mcxassemble]
+   base.tab    [to be read by clmformat]
+   base.err    [error log]
+where base is derived from or equal to file-name
+Options:
+   --m9              Expect column (-m 9) input.
+   --line-mode=abc   Output simple ID1 ID2 SCORE format.
+   --score=<b|e|r>   Use bit scores, E-values,
+                        or bit scores normalized by hsp-length
+   --sort=<a|o>      Use alphabetic sorting (default) or occurrence.
+   --tab=<fname>     Use user-supplied tab file.
+   --xi-dat=<suf>    Strip <suf> from file-name to create output base name.
+   --xo-dat=<suf>    Add <suf> to base name.
+   --bcut=<val>      Ignore hits below bit score <val>
+   --ecut=<val>      Ignore hits below E-value <val>
+   --rcut=<val>      Ignore hits below raw value <val>
+   --out=<fname>     Output file name ('-' for STDOUT)
+_help_
+}
+

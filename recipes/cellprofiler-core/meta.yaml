@@ -1,37 +1,39 @@
 {% set name = "cellprofiler-core" %}
-{% set version = "4.2.4" %}
+{% set version = "4.2.8" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cellprofiler-core-{{ version }}.tar.gz
-  sha256: 8990ddab4beab5d65adf0e55ea2c44579921de494f79d863778a4e709af6900c
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cellprofiler_core-{{ version }}.tar.gz
+  sha256: 80e7465edf7b3c9d09b36156ba163d3a30769951f3724b924a504c9289ed7848
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
   host:
     - pip
-    - python >=3.6
+    - python >=3.8
   run:
     - boto3 >=1.12.28
-    - centrosome ==1.2.1
+    - centrosome >=1.2.3,<1.3
     - docutils ==0.15.2
-    - h5py ~=3.6.0
+    - h5py >=3.6.0,<3.7.dev0
     - matplotlib-base >=3.1.3
     - numpy >=1.18.2
     - prokaryote ==2.4.4
     - psutil >=5.7.0
-    - python >=3.6
-    - python-bioformats ==4.0.6
+    - python >=3.8
+    - python-bioformats ==4.0.7
     - python-javabridge ==4.0.3
-    - pyzmq ~=22.3
-    - scikit-image >=0.16.2
+    - pyzmq >=22.3,<23.dev0
+    - scikit-image ==0.18.3
     - scipy >=1.4.1
 
 test:
@@ -40,10 +42,13 @@ test:
     - cellprofiler_core.analysis
 
 about:
-  home: https://github.com/CellProfiler/core
+  home: "https://github.com/CellProfiler/core"
   license: BSD-3-Clause
+  license_family: BSD
   license_file: LICENSE
-  summary: Dependency for CellProfiler v4
+  summary: "Dependency for CellProfiler v4."
+  dev_url: "https://github.com/CellProfiler/core"
+  doc_url: "https://github.com/CellProfiler/CellProfiler/wiki"
 
 extra:
   recipe-maintainers:

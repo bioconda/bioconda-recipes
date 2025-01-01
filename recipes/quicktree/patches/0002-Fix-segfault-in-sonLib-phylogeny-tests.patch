@@ -1,0 +1,34 @@
+From c4470daeed25f720de4376a5f43820ba32c2cf61 Mon Sep 17 00:00:00 2001
+From: Travis Wrightsman <tw493@cornell.edu>
+Date: Tue, 23 Jan 2024 23:02:51 -0500
+Subject: [PATCH] Fix segfault in sonLib phylogeny tests
+
+---
+ src/tree.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/tree.c b/src/tree.c
+index 5b5187f..3bd8626 100644
+--- a/src/tree.c
++++ b/src/tree.c
+@@ -60,7 +60,7 @@ struct Tnode *clone_Tnode( struct Tnode *source) {
+   struct Tnode *dest = NULL;
+ 
+   if (source != NULL) {
+-    dest = (struct Tnode *) malloc_util( sizeof( struct Tnode ) );
++    dest = (struct Tnode *) calloc_util(1, sizeof( struct Tnode ) );
+     
+     dest->distance = source->distance;
+     dest->nodenumber = source->nodenumber;
+@@ -334,7 +334,7 @@ struct Tree *get_root_Tnode( struct Tree *source ) {
+ struct Tnode *new_interior_Tnode( unsigned int label ) {
+   struct Tnode *newNode;
+ 
+-  newNode = (struct Tnode *) malloc_util(sizeof(struct Tnode));
++  newNode = (struct Tnode *) calloc_util(1, sizeof(struct Tnode));
+   newNode->left = NULL;
+   newNode->right = NULL;
+   newNode->parent = NULL;
+-- 
+2.39.2
+

@@ -1,0 +1,43 @@
+{% set version = "1.1" %}
+{% set github = "https://github.com/lehner-lab/MoCHI" %}
+
+package:
+  name: pymochi
+  version: '{{ version }}'
+
+source:
+  url: {{ github }}/archive/v{{ version }}.tar.gz
+  sha256: d021a858a3929858c8e8d0a6d5173680aa6097d90a8f05858f9ae08cb6902c17
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install ./ --ignore-installed --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage('pymochi', max_pin="x") }}
+
+requirements:
+  host:
+    - python =3.9
+    - pip
+  run:
+    - python =3.9
+    - pandas >=1.4.2
+    - matplotlib-base >=3.5.1
+    - numpy >=1.21.2
+    - pyreadr >=0.4.4
+    - pytorch >=1.10.1
+    - scikit-learn >=1.0.2
+    - scipy >=1.8.0
+    - seaborn >=0.11.2
+
+test:
+  commands:
+    - run_mochi.py -h
+
+about:
+  home: {{ github }}
+  dev_url: {{ github }} 
+  license: MIT 
+  summary: Neural networks to quantify energies, energetic couplings, epistasis and allostery from deep mutational scanning data
+

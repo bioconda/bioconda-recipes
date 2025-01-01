@@ -1,0 +1,89 @@
+{% set name = "syngap" %}
+{% set version = "1.2.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/yanyew/SynGAP/releases/download/v{{ version }}/{{ name }}_v{{ version }}.tar.gz
+  sha256: fac15832dd419d4ed85ba32b5108aeb24da1eb54134be6f170fdb18b11840d0b
+  
+build: 
+  number: 0
+  entry_points: 
+    - syngap = SynGAP:main
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('syngap', max_pin="x") }}
+
+requirements: 
+  host:
+    - python >=3.10
+    - pip
+  run: 
+    - python >=3.10
+    - biopython >=1.81
+    - jcvi >=1.3.6
+    - bedtools >=2.31.0
+    - last >=1454
+    - emboss >=6.6.0
+    - gffread >=0.12.7
+    - seqkit >=2.4.0
+    - diamond >=2.1.8
+    - perl-bioperl >=1.7.8
+    - kneed >=0.8.3
+    - numpy >=1.26.0
+    - pandas >=2.1.1
+    - matplotlib-base >=3.8.0
+    - scikit-image >=0.22.0
+    - pybedtools >=0.9.0
+    - deap >=1.4.1
+    - more-itertools
+    - crossmap
+    - graphviz
+    - webcolors
+    - ortools-python
+  pip:
+    - ftpretty
+
+test: 
+  source_files: 
+    - run_test.sh
+    - SynGAP.py
+    - initdb.py
+    - master.py
+    - dual.py
+    - triple.py
+    - custom.py
+    - genepair.py
+    - evi.py
+    - eviplot.py
+    - bin/*
+    - scripts/*
+  imports: 
+    - SynGAP
+    - initdb
+    - master
+    - dual
+    - triple
+    - custom
+    - genepair
+    - evi
+    - eviplot
+  commands: 
+    - syngap -h
+    - syngap initdb -h
+    - syngap master -h
+    - syngap dual -h
+    - syngap triple -h
+    - syngap custom -h
+    - syngap genepair -h
+    - syngap evi -h
+    - syngap eviplot -h
+
+about: 
+  home: https://github.com/yanyew/SynGAP
+  license: CC-BY-NC-SA-4.0
+  summary: "SynGAP: Synteny-based Gene structure Annotation Polisher"
+  dev_url: https://github.com/yanyew/SynGAP

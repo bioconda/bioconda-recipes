@@ -1,0 +1,46 @@
+{% set name = "snakemake-executor-plugin-tes" %}
+{% set version = "0.1.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snakemake_executor_plugin_tes-{{ version }}.tar.gz
+  sha256: bbecd5c1e63a39e2ea84b752e8e4d68e64b16df686062f22e347cf97c7cd47b3
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.11,<3.13
+    - poetry-core
+    - pip
+  run:
+    - python >=3.11.0,<3.13
+    - snakemake-interface-common >=1.14.0,<2.0.0
+    - snakemake-interface-executor-plugins >=9.0.0,<10.0.0
+    - py-tes >=0.4.2,<0.5.0
+
+test:
+  imports:
+    - snakemake_executor_plugin_tes
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/snakemake/snakemake-executor-plugin-tes
+  summary: A Snakemake executor plugin for submitting jobs to a GA4GH TES cluster.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - koesterlab

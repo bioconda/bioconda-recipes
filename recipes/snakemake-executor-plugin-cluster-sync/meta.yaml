@@ -1,0 +1,46 @@
+{% set name = "snakemake-executor-plugin-cluster-sync" %}
+{% set version = "0.1.4" %}
+# Upon version update, requirements have to be checked!
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snakemake_executor_plugin_cluster_sync-{{ version }}.tar.gz
+  sha256: 6a6dcb2110d4c2ee74f9a48ea68e0fd7ddd2800672ebef00a01faa4affa835ad
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.11,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.11.0,<4.0.0
+    - snakemake-interface-common >=1.14.0,<2.0.0
+    - snakemake-interface-executor-plugins >=9.0.0,<10.0.0
+
+test:
+  imports:
+    - snakemake_executor_plugin_cluster_sync
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/snakemake/snakemake-executor-plugin-cluster-sync
+  summary: A Snakemake executor plugin for cluster jobs that are executed synchronously.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - koesterlab

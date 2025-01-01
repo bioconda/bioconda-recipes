@@ -1,12 +1,14 @@
-{% set version = "14-7e284" %}
-{% set sha256 = "a15fd59b121073fdcc8b259fc703e5ce4c671d2c56eb5c027749f4bd4c28dfe1" %}
+{% set version = "16-747c6" %}
+{% set sha256 = "faeb6841feb8e028651c2391de1346c55c2091a96520b625525d27b99d07ef1d" %}
 
 package:
   name: mmseqs2
   version: {{ version|replace("-", ".")  }}
 
 build:
-  number: 2
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('mmseqs2', max_pin=None) }}
 
 source:
   url: https://github.com/soedinglab/mmseqs2/archive/{{ version }}.tar.gz
@@ -18,8 +20,11 @@ requirements:
     - {{ compiler('c') }}
     - cmake
     - make
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
+    - llvm-openmp         # [osx]
+    - libgomp             # [linux]
+    - cuda-nvcc           # [linux]
+    - cuda-cudart-dev     # [linux]
+    - cuda-version >=12.6 # [linux]
   host:
     - perl
     - gawk
@@ -38,7 +43,7 @@ test:
 
 about:
   home: https://github.com/soedinglab/mmseqs2
-  license: GPLv3
+  license: MIT
   license_file: LICENSE.md
   summary: "MMseqs2: ultra fast and sensitive sequence search and clustering suite"
 
@@ -47,6 +52,12 @@ extra:
     - doi:10.1038/nbt.3988
     - doi:10.1038/s41467-018-04964-5
     - doi:10.1093/bioinformatics/bty1057
-    - doi:10.1101/2020.11.27.401018
+    - doi:10.1093/bioinformatics/btab184
+    - doi:10.1101/2024.11.13.623350v1
     - biotools:mmseqs2
     - biotools:linclust
+  recipe-maintainers:
+    - milot-mirdita
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

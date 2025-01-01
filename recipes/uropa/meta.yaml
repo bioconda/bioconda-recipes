@@ -1,5 +1,5 @@
 {% set name = "uropa" %}
-{% set version = "4.0.2" %}
+{% set version = "4.0.3" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,16 +7,21 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 3d4288055fb60e0b58380c31524cca7f6352b46117f1644645f603655da04438
+  sha256: e0b648881b95f301e3f3ecc924314995312f10b0cbabf96d5a5ce2fb18c53a59
 
 build:
   number: 0
   noarch: python
+  entry_points:
+    - uropa = uropa.uropa:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('uropa', max_pin="x") }}
 
 requirements:
   host:
     - python >=3.6
-    - setuptools
+    - pip
   run:
     - numpy
     - psutil
@@ -44,6 +49,7 @@ about:
   home: "https://github.com/loosolab/UROPA"
   license: MIT
   license_family: MIT
+  license_file: LICENSE
   summary: |
           UROPA (Universal RObust Peak Annotator) is a command line based tool, intended for genomic region annotation from e.g. peak calling.
           It detects the most appropriate annotation by taking parameters such as feature type, anchor, direction and strand into account.
