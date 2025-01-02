@@ -7,6 +7,7 @@ package:
 
 source:
   path: ..
+  sha256: {{ hash_file(path) if path else 'PLACEHOLDER' }}  # Will be replaced with actual hash
 
 build:
   number: 0
@@ -14,6 +15,8 @@ build:
   script: {{ PYTHON }} -m pip install --no-deps --ignore-installed .
   entry_points:
     - PlasAnn = plasann.annotate_plasmid:main
+  run_exports:
+    - {{ pin_subpackage('plasann', max_pin='x.x') }}
 
 requirements:
   host:
@@ -23,7 +26,7 @@ requirements:
   run:
     - python >=3.7
     - pandas
-    - matplotlib
+    - matplotlib-base
     - pycirclize
     - biopython
     - gdown
