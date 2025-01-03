@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -xeuo pipefail
 
 echo "Building Minimac4 version ${PKG_VERSION}"
 
@@ -41,7 +41,7 @@ cmake \
     -DCPACK_PACKAGE_CONTACT="csg-devel@umich.edu" \
     ..
 
-make || exit 1
+make -j"${CPU_COUNT}" || exit 1
 make install || exit 1
 make CTEST_OUTPUT_ON_FAILURE=1 test || exit 1
 echo "Minimac4 installation completed successfully"
