@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 BUILD_DIR="${SRC_DIR}/build"
 
 # Detect OS and architecture
