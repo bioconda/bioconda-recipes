@@ -26,15 +26,15 @@ if [ "$OS" = "Darwin" ]; then
     fi
 fi
 
-$CXX $COMPILE_FLAGS pybind/bindings.cpp -o ${PREFIX}/digest$(python3-config --extension-suffix)
+# Create lib directory if it doesn't exist
+mkdir -p ${PREFIX}/lib
 
-# For conda-build on macOS, ensure proper installation
-if [ "$OS" = "Darwin" ]; then
-    # Create lib directory if it doesn't exist
-    mkdir -p ${PREFIX}/lib
-    # Copy the extension to lib directory as well
-    cp ${PREFIX}/digest$(python3-config --extension-suffix) ${PREFIX}/lib/
-fi
+# Build the extension directly in the lib directory
+$CXX $COMPILE_FLAGS pybind/bindings.cpp -o ${PREFIX}/lib/digest$(python3-config --extension-suffix)
 
-cp ${PREFIX}/digest$(python3-config --extension-suffix) ${SP_DIR}
+# Create the Python package directory if it doesn't exist
+mkdir -p ${SP_DIR}
+
+# Copy the extension to the Python site-packages
+cp ${PREFIX}/lib/digest$(python3-config --extension-suffix) ${SP_DIR}/
 touch ${SP_DIR}/__init__.py
