@@ -1,9 +1,6 @@
 #!/bin/bash
 set -ex
 
-export LC_ALL=en_US.UTF-8
-export LANG=en_US.UTF-8
-
 if [ `uname -s` == "Darwin" ]; then
     # Force use of conda's libxml instead of the system one
     export DYLD_FALLBACK_LIBRARY_PATH="${PREFIX}/lib"
