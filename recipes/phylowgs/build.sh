@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -xe
+
 OUTDIR=$PREFIX/share/phylowgs
 mkdir -p $OUTDIR
 "${CXX}" ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS} \

@@ -1,8 +1,9 @@
+{% set name = "phylowgs" %}
 {% set version = "20181105" %}
 {% set tag = "e44cfb265cba8bc8863989a541c75271fd9c24a5" %}
 
 package:
-  name: phylowgs
+  name: {{ name }}
   version: {{ version }}
   
 source:
@@ -10,16 +11,18 @@ source:
   sha256: 762a76f53638be956d5178cce56ba59518d3ddaa6e3e386fbe9c4dafe5cafadf
 
 build:
-  number: 8
+  number: 9
   # Skip OSX only because build times out on the `bulk` branch while solving environment on OSX.
   skip: True # [py>=30 or osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin=None) }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - python
+    - python ==2.7.*
     - setuptools
     - numpy
     - scipy
@@ -28,7 +31,7 @@ requirements:
     - libblas
     - libcblas
   run:
-    - python
+    - python ==2.7.*
     - numpy
     - scipy
     - ete2
@@ -45,3 +48,7 @@ about:
   home: https://github.com/morrislab/phylowgs
   license: GPLv3
   summary:  Application for inferring subclonal composition and evolution from whole-genome sequencing data
+
+extra:
+  additional-platforms:
+    - linux-aarch64
