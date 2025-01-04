@@ -1,0 +1,27 @@
+diff --git a/Makefile b/Makefile
+index a22c3ed..53e2310 100644
+--- a/Makefile
++++ b/Makefile
+@@ -15,13 +15,19 @@ isa_FLAGS2 :=
+ #isa_FLAGS := -D_isa1gzip
+ #isa_FLAGS2 := -lisal 
+ 
+-CPPFLAGS += -O3 -std=c++17 -lrt $(isa_FLAGS)
++UNAME := $(shell uname)
++CPPFLAGS += -O3 -std=c++17 -pthread $(isa_FLAGS)
+ #-D_isa1gzip
+ CPPFLAGS += $(foreach includedir,$(program_INCLUDE_DIRS),-I$(includedir))
+ CXXFLAGS=-D__STDC_CONSTANT_MACROS
+-LDFLAGS +=   $(foreach librarydir,$(program_LIBRARY_DIRS),-L$(librarydir)) -pthread -Wl,--whole-archive -lpthread -Wl,--no-whole-archive
+-LDFLAGS += $(foreach library,$(program_LIBRARIES),-l$(library))  
++LDFLAGS += $(foreach librarydir,$(program_LIBRARY_DIRS),-L$(librarydir))
++LDLIBS += $(foreach library,$(program_LIBRARIES),-l$(library))
+ LDLIBS += -lz $(isa_FLAGS2)
++ifeq ($(UNAME), Linux)
++LDLIBS += -lrt -Wl,--whole-archive -lpthread -Wl,--no-whole-archive
++else
++LDLIBS += -lpthread
++endif
+ #-lisal 
+ 
+ 

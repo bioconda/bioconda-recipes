@@ -1,0 +1,39 @@
+diff --git a/Makefile b/Makefile
+index c939453..fc71751 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,6 +1,6 @@
+-CC     = gcc
++CC     = $(CC)
+ AR     = ar
+-CFLAGS = -g -Wall
++CFLAGS = -O3 -g -Wall -I$(PREFIX)/include -L$(PREFIX)/lib
+ # -std=gnu11 travis complains about this
+ # -std=c99 or -std=gnu99 might be important for compilation on a mac, otherwise duplicate definition for inline
+ 
+@@ -8,14 +8,14 @@ SOURCES := $(wildcard **/*.c)
+ OBJECTS := $(patsubst %.c, %.o, $(SOURCES))
+ 
+ ifeq (1, $(CF_OPTIMIZE))
+-	CFLAGS += -O2
++	CFLAGS += -O3
+ 	CFLAGS := $(filter-out -g,$(CFLAGS))
+ endif
+ 
+ main: libgsl.a
+ 
+ %.o : %.c
+-	$(CC) -c $(CFLAGS) -I. $< -o $@
++	$(CC) -c $(CFLAGS) -I. $< -o $@ -lm -lz
+ 
+ # main: $(OBJECTS)
+ # 	@echo $(OBJECTS)
+@@ -25,7 +25,7 @@ libgsl.a: $(OBJECTS)
+ 	$(AR) -csr $@ $^
+ 
+ test: libgsl.a
+-	gcc -I. test/test.c libgsl.a -std=c99 -lm -o test-main
++	$(CC) -I. -I$(PREFIX)/include test/test.c libgsl.a -std=c99 -lm -o test-main
+ 
+ clean:
+ 	rm -f $(OBJECTS)

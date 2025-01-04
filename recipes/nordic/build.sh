@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
+set -xe
+
 cd ${SRC_DIR}"/MaBoSS-2.0/engine/src/"
 
-make install \
+make -j"${CPU_COUNT}" install \
     CC="${CC}" \
     CXX="${CXX}" \
     CFLAGS="${CFLAGS}" \
@@ -18,6 +20,6 @@ cd ${SRC_DIR}"/bonesis-0.5.7/"
 
 "${PYTHON}" -m pip install --no-deps --no-build-isolation . -vvv
 
-cd ${SRC_DIR}"/NORDic-2.4.4/"
+cd ${SRC_DIR}"/NORDic-2.5.0/"
 
 "${PYTHON}" -m pip install --no-deps --no-build-isolation . -vvv

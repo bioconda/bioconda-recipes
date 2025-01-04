@@ -239,6 +239,52 @@ jobs: # a basic unit of work in a run
               --skiplist-leafs
             conda clean -y --all
 
+  nightly_build:
+    parameters:
+      os:
+        type: executor
+    executor: << parameters.os >>
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - 1e:85:74:42:35:5f:c5:a2:35:c2:ec:b7:80:c0:7c:40
+
+      - checkout
+
+      - run:
+          name: Fetch bioconda install script
+          command: wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
+
+      - run:
+          name: Install bioconda-utils
+          command: |
+            sudo mkdir -p /opt/
+            sudo chmod o+rwx /opt
+            bash install-and-set-up-conda.sh
+
+      - run:
+          name: Setup PATH
+          command:
+            echo 'export PATH=/opt/mambaforge/bin:"$PATH"' >> "$BASH_ENV"
+
+      - run:
+          name: Configure conda
+          command: bash configure-conda.sh
+
+      # For now, do not upload ARM images to biocontainers: --mulled-upload-target biocontainers
+      - run:
+          name: Build and push leftover packages
+          command: |
+            set -e
+            eval "$(conda shell.bash hook)"
+            conda activate bioconda
+            source common.sh
+
+            # build and push all leftover packages
+            bioconda-utils build recipes config.yml \
+                --docker --mulled-test  --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
+                --anaconda-upload \
+                --prelint --exclude bioconda-repodata-patches
 
 workflows:
   build and test (ARM):
@@ -267,7 +313,6 @@ workflows:
                 - osx-arm64
                 - linux-aarch64
 
-
   Bulk branch (ARM):
     jobs:
       - bulk_build:
@@ -280,3 +325,21 @@ workflows:
                 # - osx-arm64 Bulk is on GitHub Actions
                 - linux-aarch64
               runner: [0, 1, 2, 3, 4, 5]
+
+  Nightly (ARM):
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only: master
+    jobs:
+      - nightly_build:
+          filters:
+            branches:
+              only: master
+          matrix:
+            parameters:
+              os:
+                # - osx-arm64 Nightly is on GitHub Actions
+                - linux-aarch64

@@ -1,0 +1,40 @@
+{% set name = "mini3di" %}
+{% set version = "0.2.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: dfc4a63aaba175b05e9cc1f260e1bfcd2832ff3235537146a334b6a2179f8a96
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python
+    - numpy
+
+test:
+  imports:
+    - {{ name }}
+
+about:
+  home: https://github.com/althonos/mini3di
+  license: BSD-3-Clause
+  license_file: COPYING
+  summary: "A NumPy port of the foldseek code for encoding protein structures to 3di."
+
+extra:
+  recipe-maintainers:
+    - althonos
