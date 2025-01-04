@@ -20,7 +20,15 @@ readonly PROGRAMS=(
     addChainID
 )
 
-make -j${CPU_COUNT} CC="${CXX}" LDFLAGS="-lm"
+CXXFLAGS="-static -static-libgcc -static-libstdc++"
+LDFLAGS="-static -lm"
+CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}"
+
+if [[ $(uname) == Linux ]]; then
+    make -j${CPU_COUNT} CC="${CXX}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}"
+elif [[ $(uname) == Darwin ]]; then
+    make -j${CPU_COUNT} CC="${CXX}" LDFLAGS="-lm"
+fi
 
 install -d "${PREFIX}/bin"
 install -m 755 "${PROGRAMS[@]}" "${PREFIX}/bin/"
