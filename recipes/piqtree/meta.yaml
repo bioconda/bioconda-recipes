@@ -20,16 +20,47 @@ build:
     cd piqtree
     git submodule update --init --recursive
 
-    # Run the platform-specific pre-build script
+    # Verify the iqtree2 directory exists
+    if [ ! -d "iqtree2" ]; then
+      echo "ERROR: iqtree2 directory does not exist after submodule initialization."
+      exit 1
+    fi
+
+    # Verify CMakeLists.txt exists
+    if [ ! -f "iqtree2/CMakeLists.txt" ]; then
+      echo "ERROR: iqtree2/CMakeLists.txt is missing."
+      exit 1
+    fi
+
+    # Run platform-specific pre-build script
     ./build_tools/before_all_linux.sh
 
-    # Use cibuildwheel to build wheels
-    pip install cibuildwheel
-    cibuildwheel --platform linux --output-dir dist
+    # Debug: List contents of iqtree2 directory
+    echo "Contents of iqtree2 directory:"
+    ls -l iqtree2
 
-    # Install the built package
-    $PYTHON -m pip install dist/*.whl --no-deps --no-cache-dir -vvv
-    
+    # Build the static library
+    cd iqtree2
+    mkdir -p build
+    cd build
+    cmake -DBUILD_LIB=ON -DCMAKE_PREFIX_PATH=$PREFIX -DCMAKE_INSTALL_PREFIX=$PREFIX ..
+    make -j$(nproc)
+
+    # Verify the static library file exists
+    if [ ! -f "libiqtree2.a" ]; then
+      echo "ERROR: libiqtree2.a was not generated."
+      exit 1
+    fi
+
+    # Move the built library to the expected location
+    cd ../..
+    mkdir -p src/piqtree/_libiqtree
+    mv iqtree2/build/libiqtree2.a src/piqtree/_libiqtree/
+
+    # Build and install the Python package
+    $PYTHON -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+
+
   number: 0
   run_exports:
     - {{ pin_subpackage(name, exact=True) }}
