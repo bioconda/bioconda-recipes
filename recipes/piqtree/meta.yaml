@@ -9,64 +9,27 @@ package:
 source:
   url: https://github.com/iqtree/piqtree/archive/refs/tags/v{{ version }}.tar.gz
   sha256: b10b99d2d678ee0fc2d209a049903cf1ec3b18e8311b456fa4d5ed46faa99bbf
-  
+
 
 build:
   script: |
     set -ex
 
-    # Download and extract IQ-TREE source tarball
-    echo "Fetching IQ-TREE source tarball..."
-    wget https://github.com/iqtree/iqtree2/archive/refs/tags/v{{ iqtree_version }}.tar.gz -O iqtree2.tar.gz
-    tar -xf iqtree2.tar.gz
-    mv iqtree2-{{ iqtree_version }} iqtree2
+    # Clone the repository and initialize submodules
+    git clone https://github.com/iqtree/piqtree
+    cd piqtree
+    git submodule update --init --recursive
 
-    # Debugging: Verify iqtree2 folder and its contents
-    echo "Debugging iqtree2 folder..."
-    ls -l
-    ls -l iqtree2 || echo "iqtree2 folder does not exist."
-    if [[ -f "iqtree2/CMakeLists.txt" ]]; then
-      echo "CMakeLists.txt found in iqtree2."
-    else
-      echo "CMakeLists.txt is missing in iqtree2!" && exit 1
-    fi
+    # Run the platform-specific pre-build script
+    ./build_tools/before_all_linux.sh
 
-    # Process .gitmodules to fetch submodules
-    echo "Processing .gitmodules to fetch submodules..."
-    cd iqtree2
-    awk '/^\[submodule / {name=$2; gsub(/"/, "", name)} /path = / {path=$3} /url = / {url=$3; print path, url}' .gitmodules | while read path url; do
-      echo "Fetching submodule $path from $url"
-      mkdir -p $path
-      git clone --depth 1 $url $path
-    done
-    cd ..
+    # Use cibuildwheel to build wheels
+    pip install cibuildwheel
+    cibuildwheel --platform linux --output-dir dist
 
-    # Debugging: Verify iqtree2 folder and its contents again
-    echo "Verifying iqtree2 folder after submodule processing..."
-    ls -l iqtree2
-    if [[ -f "iqtree2/CMakeLists.txt" ]]; then
-      echo "CMakeLists.txt is still present in iqtree2."
-    else
-      echo "CMakeLists.txt is missing after submodule processing!" && exit 1
-    fi
-
-    # Build the IQ-TREE static library 
-    echo "Building IQ-TREE static library..."
-    cd iqtree2
-    rm -rf build
-    mkdir build
-    cd build
-    cmake -DBUILD_LIB=ON -DCMAKE_PREFIX_PATH=$PREFIX -DCMAKE_INSTALL_PREFIX=$PREFIX ..
-    make -j$(nproc)
-
-    # Move the built library to the expected location
-    cd ../..
-    mkdir -p src/piqtree/_libiqtree
-    mv iqtree2/build/libiqtree2.a src/piqtree/_libiqtree/
-
-    # Build and install the Python package
-    $PYTHON -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
-
+    # Install the built package
+    $PYTHON -m pip install dist/*.whl --no-deps --no-cache-dir -vvv
+    
   number: 0
   run_exports:
     - {{ pin_subpackage(name, exact=True) }}
