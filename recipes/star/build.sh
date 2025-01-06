@@ -29,31 +29,12 @@ for SIMD in ${AMD64_SIMD_LEVELS[@]}; do
     fi
 done
 
-# Create the SIMD dispatch script
-cat <<'EOF' >$PREFIX/bin/STAR
-#!/bin/bash
-cpu_flags=$(grep -oP 'flags\s+:\s+\K.*' /proc/cpuinfo | sort | uniq | tr '\n' ' ')
-
-if [[ $cpu_flags == *"avx2"* ]]; then
-    exec "$PREFIX/bin/STAR-avx2" "$@"
-elif [[ $cpu_flags == *"avx"* ]]; then
-    exec "$PREFIX/bin/STAR-avx" "$@"
-elif [[ $cpu_flags == *"sse4.1"* || $cpu_flags == *"sse4_1"* ]]; then
-    exec "$PREFIX/bin/STAR-sse4.1" "$@"
-elif [[ $cpu_flags == *"ssse3"* ]]; then
-    exec "$PREFIX/bin/STAR-ssse3" "$@"
-elif [[ $cpu_flags == *"sse3"* ]]; then
-    exec "$PREFIX/bin/STAR-sse3" "$@"
-else
-    echo "No suitable SIMD binary found." >&2
-    exit 1
-fi
-EOF
-chmod +x $PREFIX/bin/STAR
-
-# Plain build as fallback
+# Build plain binary as fallback
 make -j"${CPU_COUNT}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" STAR STARlong
 mv STAR $PREFIX/bin/STAR-plain
 mv STARlong $PREFIX/bin/STARlong-plain
+
+# Install the dispatch script
+install -m 755 simd-dispatch.sh $PREFIX/bin/STAR
 
 echo "Build completed successfully."
