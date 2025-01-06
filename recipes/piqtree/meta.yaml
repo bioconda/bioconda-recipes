@@ -43,7 +43,11 @@ build:
     # Patch unify-static-libs.sh to fix unsupported --output option
     sed -i 's/ar --output/ar x/' "$UNIFY_SCRIPT_PATH"
     sed -i 's/-x /-x -C /' "$UNIFY_SCRIPT_PATH"
+    sed -i 's|cmd="ar -crs $LIBNAME"|cmd="ar rcs $LIBNAME"|' "$UNIFY_SCRIPT_PATH"
 
+    # Add verbose logging to unify-static-libs.sh for debugging
+    sed -i '/for i in ${LIBSDIR}\/\*.a/a \
+    echo "Processing library: $i"' "$UNIFY_SCRIPT_PATH"
 
     # Run platform-specific pre-build script
     ./build_tools/before_all_linux.sh
