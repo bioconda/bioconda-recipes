@@ -32,10 +32,17 @@ build:
       exit 1
     fi
 
-    # patch  unifty-static-libs.sh to remove the --output command not present in the version of ar available in the build environment
-    sed -i 's/ar --output/ar x/' build_tools/unify-static-libs.sh
-    bash build_tools/build_iqtree.sh
-    
+    # Locate unify-static-libs.sh
+    UNIFY_SCRIPT_PATH=$(find . -name "unify-static-libs.sh" | head -n 1)
+    if [ -z "$UNIFY_SCRIPT_PATH" ]; then
+      echo "ERROR: unify-static-libs.sh not found."
+      exit 1
+    fi
+    echo "Found unify-static-libs.sh at $UNIFY_SCRIPT_PATH"
+
+    # Patch unify-static-libs.sh to fix unsupported --output option
+    sed -i 's/ar --output/ar x/' "$UNIFY_SCRIPT_PATH"
+        
     # Run platform-specific pre-build script
     ./build_tools/before_all_linux.sh
 
