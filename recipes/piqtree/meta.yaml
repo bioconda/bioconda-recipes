@@ -20,34 +20,19 @@ build:
     cd piqtree
     git submodule update --init --recursive
 
-    # Verify the iqtree2 directory exists
-    if [ ! -d "iqtree2" ]; then
-      echo "ERROR: iqtree2 directory does not exist after submodule initialization." >&2
-      exit 1
-    fi
-
-    # Verify CMakeLists.txt exists
-    if [ ! -f "iqtree2/CMakeLists.txt" ]; then
-      echo "ERROR: iqtree2/CMakeLists.txt is missing." >&2
-      exit 1
-    fi
-
-    # Locate unify-static-libs.sh
+    # Locate the unify-static-libs.sh script
     UNIFY_SCRIPT_PATH=$(find . -name "unify-static-libs.sh" | head -n 1)
     if [ -z "$UNIFY_SCRIPT_PATH" ]; then
       echo "ERROR: unify-static-libs.sh not found." >&2
       exit 1
     fi
-    echo "Found unify-static-libs.sh at $UNIFY_SCRIPT_PATH"
 
-    # Patch unify-static-libs.sh to fix unsupported --output option
-    sed -i 's/ar --output/ar x/' "$UNIFY_SCRIPT_PATH"
-    sed -i 's/-x /-x -C /' "$UNIFY_SCRIPT_PATH"
-    sed -i 's|cmd="ar -crs $LIBNAME"|cmd="ar rcs $LIBNAME"|' "$UNIFY_SCRIPT_PATH"
+    # Fix syntax errors in unify-static-libs.sh
+    sed -i 's/echo "Processing library: $i"/echo Processing library: $i/' "$UNIFY_SCRIPT_PATH"
 
-    # Add verbose logging to unify-static-libs.sh
-    sed -i '/for i in ${LIBSDIR}\/\*.a/a \
-    echo "Processing library: $i">&2' "$UNIFY_SCRIPT_PATH" >&2
+    # Debug: Show modified unify-static-libs.sh
+    echo "Modified unify-static-libs.sh:" >&2
+    cat "$UNIFY_SCRIPT_PATH" >&2
 
     # Run platform-specific pre-build script
     ./build_tools/before_all_linux.sh
