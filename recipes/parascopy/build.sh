@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export PKG_CONFIG_PATH=$BUILD_PREFIX/lib/pkgconfig
+
 rm -df freebayes
 git clone --recursive https://github.com/tprodanov/freebayes.git
 
