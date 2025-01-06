@@ -26,8 +26,19 @@ if [ ! -d "workflow/scripts/sampling/build" ]; then
     cd ../../../..
 fi
 
-mkdir -p pasta
+# Download and setup LASTZ if not already done
+if [ ! -d "workflow/scripts/lastz_32" ]; then
+    cd workflow/scripts
+    wget https://github.com/lastz/lastz/archive/refs/heads/master.zip
+    unzip master.zip
+    cd lastz-master/src/
+    make lastz_32 flagsFor32="-Dmax_sequence_index=63 -Dmax_malloc_index=40 -Ddiag_hash_size=4194304"
+    make install_32
+    cp lastz_32 ../../
+    cd ../../../../
+fi
 
+mkdir -p pasta
 
 # Debugging: Print current directory and list its contents before copying
 echo "Current directory before copying ROADIES: $(pwd)"
