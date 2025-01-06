@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 export PKG_CONFIG_PATH=$BUILD_PREFIX/lib/pkgconfig
 
 rm -df freebayes
