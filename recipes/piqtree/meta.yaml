@@ -22,20 +22,20 @@ build:
 
     # Verify the iqtree2 directory exists
     if [ ! -d "iqtree2" ]; then
-      echo "ERROR: iqtree2 directory does not exist after submodule initialization."
+      echo "ERROR: iqtree2 directory does not exist after submodule initialization." >&2
       exit 1
     fi
 
     # Verify CMakeLists.txt exists
     if [ ! -f "iqtree2/CMakeLists.txt" ]; then
-      echo "ERROR: iqtree2/CMakeLists.txt is missing."
+      echo "ERROR: iqtree2/CMakeLists.txt is missing." >&2
       exit 1
     fi
 
     # Locate unify-static-libs.sh
     UNIFY_SCRIPT_PATH=$(find . -name "unify-static-libs.sh" | head -n 1)
     if [ -z "$UNIFY_SCRIPT_PATH" ]; then
-      echo "ERROR: unify-static-libs.sh not found."
+      echo "ERROR: unify-static-libs.sh not found." >&2
       exit 1
     fi
     echo "Found unify-static-libs.sh at $UNIFY_SCRIPT_PATH"
@@ -45,16 +45,16 @@ build:
     sed -i 's/-x /-x -C /' "$UNIFY_SCRIPT_PATH"
     sed -i 's|cmd="ar -crs $LIBNAME"|cmd="ar rcs $LIBNAME"|' "$UNIFY_SCRIPT_PATH"
 
-    # Add verbose logging to unify-static-libs.sh for debugging
+    # Add verbose logging to unify-static-libs.sh
     sed -i '/for i in ${LIBSDIR}\/\*.a/a \
-    echo "Processing library: $i"' "$UNIFY_SCRIPT_PATH"
+    echo "Processing library: $i">&2' "$UNIFY_SCRIPT_PATH" >&2
 
     # Run platform-specific pre-build script
     ./build_tools/before_all_linux.sh
 
     # Debug: List contents of iqtree2 directory
-    echo "Contents of iqtree2 directory:"
-    ls -l iqtree2
+    echo "Contents of iqtree2 directory:" >&2
+    ls -l iqtree2 >&2
 
     # Build the static library
     cd iqtree2
@@ -65,7 +65,7 @@ build:
 
     # Verify the static library file exists
     if [ ! -f "libiqtree2.a" ]; then
-      echo "ERROR: libiqtree2.a was not generated."
+      echo "ERROR: libiqtree2.a was not generated." >&2
       exit 1
     fi
 
