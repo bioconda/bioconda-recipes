@@ -31,10 +31,8 @@ build:
     echo "Original unify-static-libs.sh:" >&2
     cat "$UNIFY_SCRIPT_PATH" >&2
 
-    # Patch unify-static-libs.sh for Bioconda compatibility
+    # Patch unify-static-libs.sh for compatibility
     sed -i 's/ar --output/ar x/' "$UNIFY_SCRIPT_PATH"
-    sed -i 's/\`echo/echo/' "$UNIFY_SCRIPT_PATH"
-    sed -i 's/echo "Processing library:/echo Processing library:/' "$UNIFY_SCRIPT_PATH"
 
     # Debug: Show patched unify-static-libs.sh
     echo "Patched unify-static-libs.sh:" >&2
@@ -44,7 +42,7 @@ build:
     ./build_tools/before_all_linux.sh
 
     # Debug: List contents of iqtree2 directory
-    echo "Contents of iqtree2 directory:" >&2
+    echo "Contents of iqtree2 directory after build_tools:" >&2
     ls -l iqtree2 >&2
 
     # Build the static library
@@ -53,6 +51,10 @@ build:
     cd build
     cmake -DBUILD_LIB=ON -DCMAKE_PREFIX_PATH=$PREFIX -DCMAKE_INSTALL_PREFIX=$PREFIX ..
     make -j$(nproc)
+
+    # Debug: List contents of build directory
+    echo "Contents of build directory after make:" >&2
+    ls -l >&2
 
     # Verify the static library file exists
     if [ ! -f "libiqtree2.a" ]; then
@@ -64,6 +66,10 @@ build:
     cd ../..
     mkdir -p src/piqtree/_libiqtree
     mv iqtree2/build/libiqtree2.a src/piqtree/_libiqtree/
+
+    # Debug: Ensure library was moved
+    echo "Contents of _libiqtree directory:" >&2
+    ls -l src/piqtree/_libiqtree >&2
 
     # Build and install the Python package
     $PYTHON -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
