@@ -1,23 +1,26 @@
+{% set name = "isorefiner" %}
 {% set version = "0.1.0" %}
 {% set sha256 = "f219a6023eb3f5f6930401c335d4026cf93198753a085b509f15b3abce93b350" %}
 
 
 package:
-  name: isorefiner 
+  name: {{ name }} 
   version: {{ version }}
 
 source:
-  sha256: '{{ sha256 }}'
   url: https://github.com/rkajitani/IsoRefiner/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
 
 build:
   number: 0
+  noarch: python
   skip: True # [osx or py<312]
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
   run_exports:
-    - {{ pin_subpackage('isorefiner', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
-  build:
+  host:
     - python
     - pip
     - setuptools
@@ -50,7 +53,3 @@ about:
   license_file: LICENSE
   license_family: MIT
   summary: A refinement tool to identify exon-intron structures of transcript (RNA) isoforms using long reads
-
-extra:
-  skip-lints:
-    - should_be_noarch_python
