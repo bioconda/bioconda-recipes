@@ -1,0 +1,172 @@
+From 9586a591a6c5cbe9a0a178b7b9ec02d9cee2fbb9 Mon Sep 17 00:00:00 2001
+From: "Michael R. Crusoe" <crusoe@debian.org>
+Date: Sat, 20 Jun 2020 17:34:05 +0200
+Subject: [PATCH 1/2] use the simde header library for greater compatibility
+
+---
+ Makefile            | 20 +++++++++++---------
+ aligner_sw.h        |  3 ++-
+ processor_support.h |  5 ++---
+ sse_util.h          |  4 +++-
+ 6 files changed, 22 insertions(+), 14 deletions(-)
+ create mode 100644 .gitmodules
+
+diff --git a/Makefile b/Makefile
+index 60445ce6..088b2f40 100644
+--- a/Makefile
++++ b/Makefile
+@@ -55,7 +55,7 @@ ifneq (,$(findstring Darwin,$(shell uname)))
+ 	MACOS = 1
+ endif
+ 
+-EXTRA_FLAGS += -DPOPCNT_CAPABILITY -std=c++11
++EXTRA_FLAGS += -std=c++11
+ INC += -I. -I third_party 
+ 
+ MM_DEF = 
+@@ -152,9 +152,10 @@ HISAT2_REPEAT_CPPS_MAIN = $(REPEAT_CPPS) $(BUILD_CPPS) hisat2_repeat_main.cpp
+ SEARCH_FRAGMENTS = $(wildcard search_*_phase*.c)
+ VERSION = $(shell cat VERSION)
+ 
++ARCH=$(shell uname -m)
+ # Convert BITS=?? to a -m flag
+ BITS=32
+-ifeq (x86_64,$(shell uname -m))
++ifeq (x86_64,$(ARCH))
+ BITS=64
+ endif
+ # msys will always be 32 bit so look at the cpu arch instead.
+@@ -165,14 +166,15 @@ ifneq (,$(findstring AMD64,$(PROCESSOR_ARCHITEW6432)))
+ endif
+ BITS_FLAG =
+ 
+-ifeq (32,$(BITS))
+-	BITS_FLAG = -m32
+-endif
+-
+-ifeq (64,$(BITS))
+-	BITS_FLAG = -m64
++ifeq (x86_64,$(ARCH))
++	ifeq (32,$(BITS))
++		BITS_FLAG = -m32
++	endif
++	ifeq (64,$(BITS))
++		BITS_FLAG = -m64
++	endif
++	SSE_FLAG=-msse2
+ endif
+-SSE_FLAG=-msse2
+ 
+ DEBUG_FLAGS    = -O0 -g3 $(BITS_FLAG) $(SSE_FLAG)
+ DEBUG_DEFS     = -DCOMPILER_OPTIONS="\"$(DEBUG_FLAGS) $(EXTRA_FLAGS)\""
+diff --git a/aligner_sw.h b/aligner_sw.h
+index add5c87d..194918ad 100644
+--- a/aligner_sw.h
++++ b/aligner_sw.h
+@@ -66,11 +66,12 @@
+ 
+ #define INLINE_CUPS
+ 
++#define SIMDE_ENABLE_NATIVE_ALIASES
++#include <simde/x86/sse2.h>
+ #include <stdint.h>
+ #include <iostream>
+ #include <limits>
+ #include "threading.h"
+-#include <emmintrin.h>
+ #include "aligner_sw_common.h"
+ #include "aligner_sw_nuc.h"
+ #include "ds.h"
+diff --git a/processor_support.h b/processor_support.h
+index e731e003..5f292bb3 100644
+--- a/processor_support.h
++++ b/processor_support.h
+@@ -12,7 +12,7 @@
+ 
+ #if defined(__INTEL_COMPILER)
+ #   define USING_INTEL_COMPILER
+-#elif defined(__GNUC__)
++#elif defined(__GNUC__) && defined(__x86_64__) || defined(__i386__)
+ #   define USING_GCC_COMPILER
+ #   include <cpuid.h>
+ #elif defined(_MSC_VER)
+@@ -52,8 +52,7 @@ class ProcessorSupport {
+ #elif defined(USING_GCC_COMPILER)
+         __get_cpuid(0x1, &regs.EAX, &regs.EBX, &regs.ECX, &regs.EDX);
+ #else
+-        std::cerr << "ERROR: please define __cpuid() for this build.\n"; 
+-        assert(0);
++	return false;
+ #endif
+         if( !( (regs.ECX & BIT(20)) && (regs.ECX & BIT(23)) ) ) return false;
+     }
+diff --git a/sse_util.h b/sse_util.h
+index b5781f1a..b1155fbc 100644
+--- a/sse_util.h
++++ b/sse_util.h
+@@ -20,11 +20,13 @@
+ #ifndef SSE_UTIL_H_
+ #define SSE_UTIL_H_
+ 
++#define SIMDE_ENABLE_NATIVE_ALIASES
++#include <simde/x86/sse2.h>
++
+ #include "assert_helpers.h"
+ #include "ds.h"
+ #include "limit.h"
+ #include <iostream>
+-#include <emmintrin.h>
+ 
+ class EList_m128i {
+ public:
+
+From 4d80442142afaae32056b9fc814f276260b23660 Mon Sep 17 00:00:00 2001
+From: "Michael R. Crusoe" <michael.crusoe@gmail.com>
+Date: Wed, 15 Feb 2023 17:55:03 +0100
+Subject: [PATCH 2/2] compilation fixes
+
+---
+ alphabet.cpp | 2 +-
+ alphabet.h   | 2 +-
+ sstring.h    | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/alphabet.cpp b/alphabet.cpp
+index be1af7cf..96af4605 100644
+--- a/alphabet.cpp
++++ b/alphabet.cpp
+@@ -400,7 +400,7 @@ int dnacomp[5] = {
+ 
+ const char *iupacs = "!ACMGRSVTWYHKDBN!acmgrsvtwyhkdbn";
+ 
+-char mask2iupac[16] = {
++int mask2iupac[16] = {
+ 	-1,
+ 	'A', // 0001
+ 	'C', // 0010
+diff --git a/alphabet.h b/alphabet.h
+index 340942eb..921d661b 100644
+--- a/alphabet.h
++++ b/alphabet.h
+@@ -65,7 +65,7 @@ extern uint8_t dinuc2color[5][5];
+ /// corresponding 2-bit nucleotide
+ extern uint8_t nuccol2nuc[5][5];
+ /// Convert a 4-bit mask into an IUPAC code
+-extern char mask2iupac[16];
++extern int mask2iupac[16];
+ 
+ /// Convert an ascii color to an ascii dna char
+ extern char col2dna[];
+diff --git a/sstring.h b/sstring.h
+index 3ec31f65..648f1657 100644
+--- a/sstring.h
++++ b/sstring.h
+@@ -3326,7 +3326,7 @@ class SDnaMaskString : public SStringExpandable<char, S, M> {
+ 	 */
+ 	char toChar(size_t idx) const {
+ 		assert_range((int)this->cs_[idx], 0, 15);
+-		return mask2iupac[(int)this->cs_[idx]];
++		return (char)mask2iupac[(int)this->cs_[idx]];
+ 	}
+ 
+ 	/**

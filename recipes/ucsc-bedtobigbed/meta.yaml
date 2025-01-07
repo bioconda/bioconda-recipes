@@ -1,7 +1,7 @@
 {% set package = "ucsc-bedtobigbed" %}
 {% set program = "bedToBigBed" %}
-{% set version = "469" %}
-{% set sha256 = "3f95b26ccca854c965c05773481c269f2a0e6fb1906ae8a7fe2437c6ad543963" %}
+{% set version = "473" %}
+{% set sha256 = "ed929a7141440e0718ed453283e6e7dde103e8e2facf27d2367be7b34e53e597" %}
 
 package:
   name: "{{ package }}"
@@ -11,10 +11,10 @@ source:
   url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
   sha256: "{{ sha256 }}"
   patches:
-    - "include.patch"
+    - include.patch  # [linux]
+    - include.macos.patch  # [osx]
 
 build:
-  skip: True  # [osx]
   number: 0
   run_exports:
     - {{ pin_subpackage(package, max_pin=None) }}
@@ -23,19 +23,21 @@ requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
     - libpng
     - libuuid
     - mysql-connector-c
     - libopenssl-static
+    - clangdev  # [osx]
+    - ucsc-stringify
     - zlib
-
   run:
     - libpng
     - libuuid
     - mysql-connector-c
     - libopenssl-static
-    - zlib
+    - ucsc-stringify
 
 test:
   commands:
@@ -43,11 +45,11 @@ test:
     - test -x ${PREFIX}/bin/{{ program }}
 
 about:
-  home: "https://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "Varies; see http://genome.ucsc.edu/license"
+  home: "https://hgdownload.cse.ucsc.edu/admin/exe"
+  license: "Varies; see https://genome.ucsc.edu/license"
   summary: "Convert bed file to bigBed. (BigBed version: 4)"
   dev_url: "https://github.com/ucscGenomeBrowser/kent"
-  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/master/README"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/v{{ version }}_base/README"
 
 extra:
   identifiers:
