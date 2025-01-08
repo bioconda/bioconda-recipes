@@ -1,14 +1,21 @@
 {% set name = "hail" %}
 {% set version = "0.2.127" %}
-{% set sha256 = "def7eb3e17d15bbb3dfba00dfc8a966771b839b04b639386ee61c8927d0c7ae8" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
+# Hail currently fails to build from tarball due to hail/version.mk expectation
+# that source code is from a git repo.
+# > {% set sha256 = "def7eb3e17d15bbb3dfba00dfc8a966771b839b04b639386ee61c8927d0c7ae8" %}
+# > source:
+# >   url: https://github.com/hail-is/hail/archive/refs/tags/{{ version }}.tar.gz
+# >   sha256: {{ sha256 }}
+
 source:
-  url: https://github.com/hail-is/hail/archive/refs/tags/{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  git_url: https://github.com/hail-is/hail.git
+  git_rev: {{ version }}
+  sha256: unused
 
 build:
   number: 0
@@ -132,3 +139,5 @@ extra:
   recipe-maintainers:
     - mjsteinbaugh
     - raivivek
+  skip-lints:
+    - uses_vcs_url
