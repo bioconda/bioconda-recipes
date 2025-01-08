@@ -1,0 +1,58 @@
+{% set name = "gentropy" %}
+{% set version = "2.0.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 789a4f51c8d4b119c626d735a0edfb37e78bb3303f8f897b21e478190b4eeab2
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('gentropy', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python ==3.10
+  run:
+    - google-cloud-secret-manager >=2.20,<2.22
+    - googlesearch >=3.0,<3.1
+    - hail >=0.2,<0.3
+    - hydra-core >=1.3,<1.4
+    - matplotlib >=3.7,<3.8
+    - numpy >=1.26,<1.27
+    - omegaconf >=2.3,<2.4
+    - pandas >=2.2,<2.3
+    - pyliftover >=0.4,<0.5
+    - pyspark >=3.3,<3.4
+    - python ==3.10
+    - scikit-learn >=1.6,<1.7
+    - scipy >=1.11,<1.12
+    - shap >=0.46,<0.47
+    - skops >=0.11,<0.12
+    - typing-extensions >=4.9,<4.13
+    - wandb >=0.19,<0.20
+
+test:
+  imports:
+    - gentropy
+  commands:
+    - gentropy --help
+
+about:
+  dev_url: "https://github.com/opentargets/gentropy"
+  home: "https://opentargets.github.io/gentropy/"
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE.md
+  summary: "Open Targets python framework for post-GWAS analysis"
+
+extra:
+  recipe-maintainers:
+    - mjsteinbaugh
