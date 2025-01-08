@@ -1,5 +1,5 @@
 {% set name = "panacus" %}
-{% set version = "0.2.3" %}
+{% set version = "0.2.5" %}
 
 package:
   name: {{ name|lower }}
@@ -7,17 +7,19 @@ package:
 
 source:
   url: https://github.com/marschall-lab/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 969eaed515a9679f5a74632986240f7afd0558b2a2914281dc783ac1fa1b6f9e
+  sha256: 7b4e4aee52528c569ad663d0fcd00bd42f221f29f93f0768f18c2ac2d3f0d769
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - rust >=1.68
+    - {{ compiler('rust') }}
+    - cmake
+    - make
   run:
     - python
     - matplotlib-base
@@ -25,7 +27,7 @@ requirements:
     - pandas
     - scikit-learn
     - scipy
-    - seaborn
+    - seaborn-base
 
 test:
   commands:
@@ -37,8 +39,13 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: panacus is a tool for computing counting statistics for GFA files
+  summary: "panacus is a tool for computing counting statistics for GFA files."
+  dev_url: https://github.com/marschall-lab/{{ name }}
 
 extra:
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64
   recipe-maintainers:
     - danydoerr
+    - heringerp

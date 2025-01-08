@@ -1,0 +1,44 @@
+{% set version = "0.1" %}
+{% set name = "dna-nn" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/lh3/dna-nn/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: bac26a25ad9e0315351b170bc33ab4e41b7573818fd9527b661f882b96ae0a8a
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage("dna-nn", max_pin="x.x") }}
+
+requirements:
+    build:
+      - make
+      - {{ compiler('cxx') }}
+      - zlib  # zlib needed in build to build correctly
+    host:
+      - zlib      
+    run:      
+      - k8
+
+test:
+  commands:
+    - echo $(dna-brnn 2>&1) | grep "dna-brnn"
+    - echo $(dna-cnn 2>&1) | grep "dna-cnn"
+    - echo $(gen-fq 2>&1) | grep "gen-fq"
+    - echo $(parse-rm.js 2>&1) | grep "k8 parse-rm"
+
+about:
+  home: "https://github.com/lh3/dna-nn"
+  dev_url: "https://github.com/lh3/dna-nn"
+  license: Unknown
+  summary: "Model and predict short DNA sequence features with neural networks."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+      - smeds

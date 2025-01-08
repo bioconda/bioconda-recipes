@@ -1,16 +1,18 @@
-#! /bin/bash
-mkdir -p ${PREFIX}/bin
+#!/bin/bash -euo
 
-$CC $SRC_DIR/subcontig.c -o subcontig
+mkdir -p "${PREFIX}/bin"
 
-chmod +x $SRC_DIR/PreProcessR
+${CC} ${SRC_DIR}/src/subcontig.c -O3 -o subcontig
+${CC} ${SRC_DIR}/src/hashcounter.c -I$PREFIX/include -L$PREFIX/lib -O3 -o hashcounter -lz
+
+chmod +x $SRC_DIR/src/PreProcessR
 chmod +x $SRC_DIR/subcontig
-chmod +x $SRC_DIR/hashcounter.py
-chmod +x $SRC_DIR/Plot.R
-chmod +x $SRC_DIR/StrainR
+chmod +x $SRC_DIR/hashcounter
+chmod +x $SRC_DIR/src/Plot.R
+chmod +x $SRC_DIR/src/StrainR
 
-cp $SRC_DIR/PreProcessR  ${PREFIX}/bin/
-cp $SRC_DIR/subcontig  ${PREFIX}/bin/
-cp $SRC_DIR/hashcounter.py  ${PREFIX}/bin/
-cp $SRC_DIR/Plot.R  ${PREFIX}/bin/
-cp $SRC_DIR/StrainR  ${PREFIX}/bin/
+cp $SRC_DIR/src/PreProcessR ${PREFIX}/bin/
+cp $SRC_DIR/subcontig ${PREFIX}/bin/
+cp $SRC_DIR/hashcounter ${PREFIX}/bin/
+cp $SRC_DIR/src/Plot.R ${PREFIX}/bin/
+cp $SRC_DIR/src/StrainR ${PREFIX}/bin/

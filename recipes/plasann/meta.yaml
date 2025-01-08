@@ -1,0 +1,54 @@
+{% set name = "PlasAnn" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ajlopatkin/PlasAnn/archive/refs/tags/V1.0.1.tar.gz
+  sha256: 9fbb99d6cad1d337fa001616b1844e88204e996df9e621c3d47853ee4a3a2592
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed .
+  entry_points:
+    - PlasAnn = plasann.annotate_plasmid:main
+  run_exports:
+    - {{ pin_subpackage('plasann', max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+    - setuptools
+  run:
+    - python >=3.7
+    - pandas
+    - matplotlib-base
+    - pycirclize
+    - biopython
+    - gdown
+    - prodigal # [not arm64]
+    - blast # [not arm64]
+
+test:
+  commands:
+    - PlasAnn --help
+
+about:
+  home: https://github.com/ajlopatkin/PlasAnn
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'A tool for plasmid annotation and visualization'
+  description: |
+    PlasAnn is a tool for plasmid annotation and visualization.
+    
+    For Mac (Apple Silicon) users, please install these additional dependencies:
+    - brew install prodigal
+    - brew install blast
+
+extra:
+  recipe-maintainers:
+    - habib-human

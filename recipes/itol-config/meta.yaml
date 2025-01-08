@@ -1,0 +1,46 @@
+{% set name = "itol-config" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/jodyphelan/itol-config/archive/v{{ version }}.tar.gz
+  sha256: e4fb28eb6c434a7a2c823f0d34b86a483c67a7f139e2c18832d564b9b4555bb6
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - itol-config = itol_config.cli:cli
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('itol-config', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - flit-core >=3.2,<4
+    - pip
+  run:
+    - python >=3.8
+    - tomli
+
+test:
+  imports:
+    - itol_config
+  commands:
+    - itol-config --help
+
+about:
+  home: https://github.com/jodyphelan/itol-config
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://jodyphelan.github.io/itol-config/
+  summary: Package to create iTOL config files
+
+extra:
+  recipe-maintainers:
+    - jodyphelan

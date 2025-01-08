@@ -1,27 +1,62 @@
+{% set name = "sonlib" %}
+# No version is tagged upstream yet, but commit e25181b changes the setup.py version to 2.0
+# For now, set the .dev version to number of commits on master since then:
+# git tag v2.0 e25181b && git describe --tags
+{% set version = "2.0.dev88" %}
+{% set commit = "9734083dffb180e3d76c323609c082b401336c0a" %}
+
 package:
-  name: sonlib
-  version: "1.1.0"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.python.org/packages/c5/63/5c597eb4895ad59e6b57050de0dbc579b400e9e2bfc7a698d6b19d91caaf/sonLib-1.1.0.tar.gz
-  md5: b6051a1c664ad51f8620d80a3652aa05
+  url: https://github.com/ComparativeGenomicsToolkit/sonLib/archive/{{ commit }}.tar.gz
+  sha256: 6669056081bc96205de14b3c59c70c379dd57ab031d630480e8110e3d448628b
+  patches:
+    - patches/0001-Add-devendored-shared-library-build.patch
+    - patches/0002-Remove-need-for-CuTest-during-build.patch
 
 build:
-  noarch: python
   number: 2
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+    - pkg-config
   host:
-    - python <3
-    - pip
+    - python
+    - zlib
+    - quicktree
   run:
-    - python <3
+    - python
+    - networkx
 
 test:
   imports:
     - sonLib
+    - sonLib.bioio
+    - sonLib.misc
+    - sonLib.nxnewick
+    - sonLib.nxtree
+    - sonLib.tree
+  requires:
+    - {{ compiler('c') }}
+    - make
+    - zlib
+    - cutest
+  source_files:
+    - Makefile
+    - include.mk
+    - allTests.py
+    - bioioTest.py
+    - cigarsTest.py
+    - C/Makefile
+    - C/tests/*
 
 about:
-  home: https://github.com/benedictpaten/sonLib
+  home: https://github.com/ComparativeGenomicsToolkit/sonLib
   license: MIT
   summary: 'Small general purpose library for C and Python with focus on bioinformatics.'

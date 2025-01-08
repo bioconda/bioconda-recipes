@@ -1,6 +1,9 @@
 #!/bin/bash
-export CPATH=${PREFIX}/include
-$PYTHON setup.py install --single-version-externally-managed --record=rec.txt
+
+export C_INCLUDE_PATH="${PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
+
+${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
 
 # Add more build steps here, if they are necessary.
 

@@ -7,6 +7,6 @@ TGT="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
 cd "${SRC_DIR}"
 mv amber*.jar $TGT/amber.jar
 
-cp $RECIPE_DIR/AMBER.sh $TGT/AMBER
-ln -s $TGT/AMBER $PREFIX/bin
-chmod 0755 "${PREFIX}/bin/AMBER"
+cp $RECIPE_DIR/amber.sh $TGT/amber
+ln -s $TGT/amber $PREFIX/bin
+chmod 0755 "${PREFIX}/bin/amber"

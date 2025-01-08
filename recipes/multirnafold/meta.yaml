@@ -1,0 +1,43 @@
+{% set name = "MultiRNAFold" %}
+{% set version = "2.1" %}
+{% set sha256 = "cb5462e03c70da24caaa9706f493fa329b1e15f697fbffd5bf460cd873243306" %}
+
+package:
+  name: {{ name | lower }}
+  version: {{ version }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name | lower, max_pin="x.x") }}
+
+source:
+  url: http://www.rnasoft.ca/download/MultiRNAFold-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-FIX-Makefile.patch
+    - 0002-FIX-printf-missing-arg.patch
+    - 0003-FIX-remove-unneeded-include.patch
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+
+test:
+  commands:
+    - "test -x $PREFIX/bin/feature_description"
+    - "test -x $PREFIX/bin/multifold"
+    - "test -x $PREFIX/bin/pairfold"
+    - "test -x $PREFIX/bin/pairfold-web"
+    - "test -x $PREFIX/bin/simfold"
+    - "test -x $PREFIX/bin/simfold_pf"
+    - "pairfold -h"
+    - "simfold -h"
+    - "simfold_pf -h"
+    - "multifold -h"
+
+about:
+  home: http://www.rnasoft.ca/download/README.html
+  license: GPL-2.0-or-later
+  summary: 'RNA/DNA secondary structure prediction for one, two, or many interacting strands'

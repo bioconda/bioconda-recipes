@@ -1,48 +1,47 @@
 {% set name = "woltka" %}
-{% set version = "0.1.5" %}
+{% set version = "0.1.7" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: e97f84ba5044aec8aae7f54dc42a4172c0972a3ca008e4cf7909d364496fa16d
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/woltka-{{ version }}.tar.gz
+  sha256: 7958b10a4f33511fd82c740cdb461fc03d1b7932e00ac6746b6eb5d8de3880f5
 
 build:
-  number: 0
-  noarch: python
   entry_points:
-    - woltka=woltka.cli:cli
-  script: "{{ PYTHON }} -m pip install . -vv"
+    - woltka = woltka.cli:cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("woltka", max_pin="x.x") }}
 
 requirements:
   host:
-    - biom-format
+    - python >=3.6
+    - hatchling
     - pip
-    - python
-    - setuptools
   run:
+    - python >=3.6
+    - numba
     - biom-format
-    - python
-    - setuptools
 
 test:
   imports:
     - woltka
-    - woltka.q2
-    - woltka.tests
   commands:
+    - pip check
     - woltka --help
+  requires:
+    - pip
 
 about:
-  home: "https://github.com/qiyunzhu/woltka"
-  license: BSD
-  license_family: BSD
-  license_file: 
-  summary: "versatile meta-omic data classifier"
-  doc_url: 
-  dev_url: 
+  home: https://github.com/qiyunzhu/woltka
+  summary: versatile meta-omic data classifier
+  license: BSD-3-Clause
+  license_file: LICENSE
 
 extra:
   recipe-maintainers:

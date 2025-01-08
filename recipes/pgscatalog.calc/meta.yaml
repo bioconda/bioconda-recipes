@@ -1,0 +1,53 @@
+{% set name = "pgscatalog.calc" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pgscatalog_calc-{{ version }}.tar.gz
+  sha256: d5821cabb42558698ff862ec9edc5dad79863d5321db95580459f8a08c2c2c92
+
+build:
+  entry_points:
+    - pgscatalog-aggregate = pgscatalog.calc.cli.aggregate_cli:run_aggregate
+    - pgscatalog-ancestry-adjust = pgscatalog.calc.cli.ancestry_cli:run_ancestry
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('pgscatalog.calc', max_pin="x.x") }}
+    
+requirements:
+  host:
+    - python >=3.10
+    - poetry-core
+    - pip
+  run:
+    - python >=3.10
+    - pgscatalog.core >=0.3.0,<0.4.0
+    - numpy >=1.26.4,<2.0.0
+    - pandas >=2.2.0,<3.0.0
+    - pyarrow >=15.0.0,<16.0.0
+    - scikit-learn >=1.4.0,<2.0.0
+    - scipy >=1.12.0,<2.0.0
+
+test:
+  imports:
+    - pgscatalog.calc
+  commands:
+    - pip check
+    - pgscatalog-aggregate --help
+    - pgscatalog-ancestry-adjust --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/PGScatalog/pygscatalog/
+  summary: Libraries and applications for working with calculated polygenic scores
+  license: Apache-2.0
+
+extra:
+  recipe-maintainers:
+    - nebfield

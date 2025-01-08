@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "somascan.db-0.99.7"
+installBiocDataPackage.sh "somascan.db-0.99.10"

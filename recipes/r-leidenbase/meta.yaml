@@ -1,4 +1,4 @@
-{% set version = "0.1.18" %}
+{% set version = "0.1.31" %}
 
 package:
   name: r-leidenbase
@@ -6,13 +6,15 @@ package:
 
 source:
   url: https://cran.rstudio.com/src/contrib/leidenbase_{{ version }}.tar.gz
-  sha256: b56fa823bce97c98e886896111041d50b12c1d1aad4ec01a829851a537d0dbfd
+  sha256: cd0a825fa44485e957847321c02b32ac5205675e56df00cd883ea50b9aab23e1
 
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports:
+    - {{ pin_subpackage('r-leidenbase', max_pin="x.x") }}
 
 requirements:
   build:
@@ -27,6 +29,8 @@ requirements:
     - glpk
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
     - r-base
     - r-igraph >=1.3.4
@@ -38,5 +42,10 @@ test:
 
 about:
   home: https://cole-trapnell-lab.github.io/leidenbase/
-  license: GPL2, GPL3, BSD
+  license: GPL-2.0-only, GPL-3.0-only, BSD
   summary: An R to C interface that runs the Leiden community detection algorithm to find a basic partition
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  additional-platforms:
+    - linux-aarch64

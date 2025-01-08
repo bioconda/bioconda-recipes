@@ -1,6 +1,6 @@
 {% set name = "blast" %}
-{% set version = "2.15.0" %}
-{% set sha256 = "6918c370524c8d44e028bf491e8f245a895e07c66c77b261ce3b38d6058216e0" %}
+{% set version = "2.16.0" %}
+{% set sha256 = "17c93cf009721023e5aecf5753f9c6a255d157561638b91b3ad7276fd6950c2b" %}
 
 package:
   name: {{ name }}
@@ -9,23 +9,14 @@ package:
 source:
   - url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz
     sha256: {{ sha256 }}
-    folder: blast
     patches:
       - configurellvm.patch
       - get_species_taxids.patch
       - phonehome.patch
-  # Get optional RpsbProc
-  # The rpsbproc command line utility is an addition to the standalone version of
-  # Reverse Position-Specific BLAST (RPS-BLAST), also known as CD-Search (Conserved
-  # Domain Search).
-  - url: https://ftp.ncbi.nih.gov/pub/mmdb/cdd/rpsbproc/RpsbProc-src.tar.gz
-    sha256: 8b29f7e7d0a0654d10943e362557ed2d8df9a16218a4c8441c4dea4e7dc9154f
-    folder: RpsbProc
-    patches:
-      - normbase.patch
+      - update_configsub.patch
 
 build:
-  number: 1
+  number: 4
   run_exports:
     # Now, the point releases seem to be only bugfixes at least (but this definitely was not the
     # case up to v2.2.31)
@@ -39,7 +30,6 @@ requirements:
   host:
     - zlib
     - bzip2
-    - pcre
     - entrez-direct
     - ncbi-vdb
     - curl
@@ -47,7 +37,6 @@ requirements:
   run:
     - zlib
     - bzip2
-    - pcre
     - perl
     - perl-list-moreutils
     - perl-archive-tar
@@ -55,6 +44,9 @@ requirements:
     - entrez-direct
     - ncbi-vdb
     - curl
+      # Added to prevent regression bugs within 2.16.0.
+      # Remove on next release
+    - rpsbproc
 
 test:
   files:
@@ -62,9 +54,6 @@ test:
     - testdatabase.fa
   commands:
     # (see run_test.sh for remainder of tests)
-    - blastn -help
-    - blastp -help
-    - makeblastdb -help
     - blastdb_aliastool -version > /dev/null
     - blastdbcheck -version > /dev/null
     - blastdbcmd -version > /dev/null
@@ -79,7 +68,6 @@ test:
     - psiblast -version > /dev/null
     - rpsblast -version > /dev/null
     - rpstblastn -version > /dev/null
-    - rpsbproc -version > /dev/null
     - segmasker -version > /dev/null
     - tblastn -version > /dev/null
     - tblastn_vdb -version > /dev/null
@@ -89,15 +77,36 @@ test:
     - get_species_taxids.sh -h > /dev/null
 
 about:
-  home: http://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs
-  license: Public Domain
+  home: https://blast.ncbi.nlm.nih.gov/doc/blast-help/
+  # SPDX license ID for NCBI Public Domain
+  license: NCBI-PD
+  license_file: c++/scripts/projects/blast/LICENSE
   summary: BLAST+ is a new suite of BLAST tools that utilizes the NCBI C++ Toolkit.
+  description: |
+    BLAST Command Line Applications.
+
+    The NCBI Basic Local Alignment Search Tool (BLAST) finds regions of
+    local similarity between sequences. The program compares nucleotide or
+    protein sequences to sequence databases and calculates the statistical
+    significance of matches. BLAST can be used to infer functional and
+    evolutionary relationships between sequences as well as help identify
+    members of gene families.
+
+    For more information, visit https://blast.ncbi.nlm.nih.gov
+
 
 extra:
+  
+  additional-platforms:
+    - linux-aarch64
+  # osx-arm64 can be enabled once:
+  # perl-list-moreutils-xs, perl-io-compress
+  # have osx-arm64 builds available
+  #  - osx-arm64
   identifiers:
     - biotools:blast
     - doi:10.1016/S0022-2836(05)80360-2
     - usegalaxy-eu:ncbi_blastx_wrapper
   recipe-maintainers:
     - christiam
-    - epruesse
+    - ebete

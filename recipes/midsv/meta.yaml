@@ -1,5 +1,5 @@
 {% set name = "midsv" %}
-{% set version = "0.10.2" %}
+{% set version = "0.11.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,19 +7,23 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/midsv-{{ version }}.tar.gz
-  sha256: 5ead1213b3f34f3a4a676ddb5e88cf7bc63ae2aac1226afe735bc46a7602e559
+  sha256: 740bd67719c07e147868b4b1f639cc021569b7a3190a380bbd110a3ec00f1f91
 
 build:
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
+  run_exports:
+    - {{ pin_subpackage('midsv', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.7
+    - python >=3.9,<4.0
+    - poetry-core >=1.0.0
     - pip
   run:
-    - python >=3.7
+    - python >=3.9.0,<4.0.0
+    - cstag >=1.1.0
 
 test:
   imports:

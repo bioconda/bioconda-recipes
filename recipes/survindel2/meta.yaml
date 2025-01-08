@@ -1,0 +1,48 @@
+{% set name = "survindel2" %}
+{% set version = "1.1.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/kensung-lab/SurVIndel2/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 8463d4b5f5060f26520d8a57f162f74708e0a3ecb68675dec6af671688a21a3f
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('survindel2', max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - htslib >=1.13
+  run:
+    - pysam >=0.16.0.1
+    - pyfaidx >=0.5.9.1
+    - numpy
+    - scikit-learn >=1.2.2
+
+test:
+  source_files:
+    - demo/reads.bam
+    - demo/reads.bam.bai
+    - demo/ref.fa
+    - demo/ref.fa.fai
+
+  requires:
+    - bcftools
+
+about:
+  home: https://github.com/kensung-lab/SurVIndel2
+  summary: 'A CNV caller for Illumina paired-end WGS data.'
+  description: |
+    SurVIndel2 is a fast and accurate CNV caller for Illumina paired-end WGS data.
+  license: GPL-3.0-only
+  license_file: LICENSE.md
+
+extra:
+  recipe-maintainers:
+    - Mesh89

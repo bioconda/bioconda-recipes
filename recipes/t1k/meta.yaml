@@ -1,17 +1,17 @@
-{% set version = "1.0.5" %}
+{% set version = "1.0.6" %}
 
 package:
   name: t1k
   version: '{{ version }}'
 
 build:
-  number: 0
+  number: 3
   run_exports:
     - {{ pin_subpackage('t1k', max_pin="x") }}
 
 source:
   url: https://github.com/mourisl/T1K/archive/v{{ version }}.tar.gz
-  sha256: 8230d732ec92f66ca7dedb5786e8823d5def8c00dd020d9b99a889de8ed849e3
+  sha256: 4b2a7ac9e7c5813380f60bb65d6c3b8995474217c9c90364f1e1206c6f8ab420
 
 requirements:
   build:
@@ -19,11 +19,12 @@ requirements:
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
   host:
-    - samtools 0.1.19.*
+    - samtools 0.1.19.* # [x86_64]
     - zlib
   run:
     - perl
     - python
+    - curl
 
 test:
   commands:
@@ -31,12 +32,12 @@ test:
     - fastq-extractor 2>&1 | cat > /dev/null
     - bam-extractor 2>&1 | cat > /dev/null
     - analyzer 2>&1 | cat > /dev/null
-    - which t1k-build.pl
-    - which ParseDatFile.pl
-    - which AddGeneCoord.pl
-    - which t1k-smartseq.pl
-    - which t1k-merge.py
-    - which run-t1k
+    - test -x ${PREFIX}/bin/t1k-build.pl
+    - test -x ${PREFIX}/bin/ParseDatFile.pl
+    - test -x ${PREFIX}/bin/AddGeneCoord.pl
+    - test -x ${PREFIX}/bin/t1k-smartseq.pl
+    - test -x ${PREFIX}/bin/t1k-merge.py
+    - test -x ${PREFIX}/bin/run-t1k
 
 about:
   home: https://github.com/mourisl/T1K
@@ -44,3 +45,7 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE.txt
+
+extra:
+  additional-platforms:
+    - linux-aarch64
