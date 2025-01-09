@@ -4,17 +4,10 @@
 # -x = print every executed command
 set -ex
 
-# if [ `uname` == Darwin ]; then
-#   export HOME=`mktemp -d`
-# fi
-
 curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
 
 export PATH="$HOME/.cargo/bin:$PATH"
-# export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="$CC"
-# export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="$CC"
 
+maturin build --interpreter "${PYTHON}" --release --strip
 
-maturin build --interpreter python --release
-
-$PYTHON -m pip install target/wheels/*.whl --no-deps --ignore-installed -vv
+$PYTHON -m pip install target/wheels/*.whl --no-deps --no-build-isolation --no-cache-dir -vvv
