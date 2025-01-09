@@ -1,0 +1,54 @@
+{% set version = '1.0.0.0' %}
+
+package:
+  name: r-scroshi
+  version: {{ version }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/scROSHI_{{ version|replace("-", "_") }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/scROSHI/scROSHI_{{ version|replace("-", "_") }}.tar.gz
+  sha256: 332ed379c27d4becfae31f164e6267850cd927dbb357c3a77de1f320d65baf96
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("r-scroshi", max_pin="x") }}
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+
+requirements:
+  host:
+    - r-base >=3.6.0
+    - bioconductor-s4vectors 
+    - bioconductor-singlecellexperiment
+    - bioconductor-summarizedexperiment
+    - bioconductor-limma
+    - r-uwot
+
+  run:
+    - r-base >=3.6.0
+    - bioconductor-s4vectors 
+    - bioconductor-singlecellexperiment 
+    - bioconductor-summarizedexperiment
+    - bioconductor-limma 
+    - r-uwot 
+
+test:
+  commands:
+    - $R -e "library('scROSHI')"           # [not win]
+    - "\"%R%\" -e \"library('scROSHI')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=scROSHI
+  license: MIT
+  summary: 'scROSHI: robust supervised hierarchical identification of single cells'
+  license_family: MIT
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/MIT'
+    - LICENSE
+extra:
+  identifiers:
+    - doi:10.1093/nargab/lqad058

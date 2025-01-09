@@ -1,31 +1,33 @@
-{% set version = "1.18.0" %}
+{% set version = "1.22.0" %}
 {% set name = "CellBench" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 21b854517881e111491fd4b6dba0857c
+about:
+  description: This package contains infrastructure for benchmarking analysis methods and access to single cell mixture benchmarking data. It provides a framework for organising analysis methods and testing combinations of methods in a pipeline without explicitly laying out each combination. It also provides utilities for sampling and filtering SingleCellExperiment objects, constructing lists of functions with varying parameters, and multithreaded evaluation of analysis methods.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Construct Benchmarks for Single Cell Analysis Methods
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-cellbench", max_pin="x.x") }}'
-  noarch: generic
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, covr, knitr, rmarkdown, testthat, limma, ggplot2
 requirements:
   host:
-    - 'bioconductor-biocfilecache >=2.10.0,<2.11.0'
-    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
-    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
-    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
     - r-assertthat
     - r-base
     - r-dplyr
@@ -33,17 +35,17 @@ requirements:
     - r-lubridate
     - r-magrittr
     - r-memoise
-    - 'r-purrr >=0.3.0'
+    - r-purrr >=0.3.0
     - r-rappdirs
     - r-rlang
     - r-tibble
     - r-tidyr
     - r-tidyselect
   run:
-    - 'bioconductor-biocfilecache >=2.10.0,<2.11.0'
-    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
-    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
-    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
     - r-assertthat
     - r-base
     - r-dplyr
@@ -51,19 +53,22 @@ requirements:
     - r-lubridate
     - r-magrittr
     - r-memoise
-    - 'r-purrr >=0.3.0'
+    - r-purrr >=0.3.0
     - r-rappdirs
     - r-rlang
     - r-tibble
     - r-tidyr
     - r-tidyselect
+
+source:
+  md5: 4da39f8bcdb9a8031bbddae19ae13c04
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Construct Benchmarks for Single Cell Analysis Methods'
-  description: 'This package contains infrastructure for benchmarking analysis methods and access to single cell mixture benchmarking data. It provides a framework for organising analysis methods and testing combinations of methods in a pipeline without explicitly laying out each combination. It also provides utilities for sampling and filtering SingleCellExperiment objects, constructing lists of functions with varying parameters, and multithreaded evaluation of analysis methods.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 
