@@ -1,19 +1,41 @@
-{% set version = "3.5.5" %}
+  {% set version = "4.0.0" %}
 
 package:
   name: deeptools
   version: {{ version }}
 
 source:
-  url: https://github.com/deeptools/deepTools/archive/refs/tags/{{ version }}.tar.gz
-  sha256: f6dda39f552624758a9830cd4589ef43e7047284759b103cf833271cfa564dd1
+  # url: https://github.com/deeptools/deepTools/archive/refs/tags/{{ version }}.tar.gz
+  # sha256: f6dda39f552624758a9830cd4589ef43e7047284759b103cf833271cfa564dd1
+  git_url: https://github.com/deeptools/deepTools.git
+  git_rev: 010a1cfc1e7f57ae019e94083608dbd5e014e5f2
+  sha256: ignored
 
 build:
   number: 0
-  noarch: python
   run_exports:
     - {{ pin_subpackage("deeptools", max_pin="x") }}
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  script: |
+    set -xe
+    # export LANG=C.UTF-8
+    # export LC_ALL=C.UTF-8
+    export RUST_BACKTRACE=1
+    export OPENSSL_NO_VENDOR=1
+    export OPENSSL_DIR=$PREFIX
+    export OPENSSL_INCLUDE_DIR=$PREFIX/include
+    export OPENSSL_LIB_DIR=$PREFIX/lib
+    export CURL_STATIC_SSL=1
+    export CURL_SYS_STATIC=1
+    #export CARGO_NET_OFFLINE=true
+    export HTS_LIB_DIR=$PREFIX/lib
+    export HTS_INCLUDE_DIR=$PREFIX/include
+    export LIBCLANG_PATH=$PREFIX/lib # [linux]
+    # export CPLUS_INCLUDE_PATH=$PREFIX/include # [linux and aarch64]
+    export HTS_STATIC=1
+    export HTS_SYS_BUNDLED=0
+    cargo-bundle-licenses --format yaml --output RUST_THIRDPARTY.yml
+    maturin build -b pyo3 --interpreter "${PYTHON}" --release --strip
+    {{ PYTHON }} -m pip install ./target/wheels/*.whl --no-deps --no-build-isolation -vvv
   entry_points:
     - alignmentSieve = deeptools.alignmentSieve:main
     - bamCompare = deeptools.bamCompare:main
@@ -37,15 +59,37 @@ build:
     - plotHeatmap = deeptools.plotHeatmap:main
     - plotPCA = deeptools.plotPCA:main
     - plotProfile = deeptools.plotProfile:main
+    - bamCoverage2 = deeptools.bamCoverage2:main
+    - bamCompare2 = deeptools.bamCompare2:main
+    - computeMatrix2 = deeptools.computeMatrix2:main
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - make
+    - cargo-bundle-licenses
   host:
-    - python >=3.8
+    - python <3.13
     - pip
+    - maturin
+    - clangdev
+    - openssl
+    - curl
+    - htslib
+    - bzip2
+    - xz
+    - zlib
   run:
-    - python >=3.8
-    - pybigwig >=0.2.3
-    - numpy >=1.9.0
+    - {{ pin_compatible('openssl') }}
+    - {{ pin_compatible('curl') }}
+    - {{ pin_compatible('htslib') }}
+    - {{ pin_compatible('bzip2') }}
+    - {{ pin_compatible('xz') }}
+    - {{ pin_compatible('zlib') }}
+    - python
+    - pybigwig >=0.2.1
+    - numpy >=2.0.0
     - numpydoc >=0.5
     - scipy >=0.17.0
     - matplotlib-base >=3.5.0
@@ -65,7 +109,9 @@ about:
   home: https://github.com/deeptools/deepTools
   license: MIT
   license_family: MIT
-  license_file: LICENSE.txt
+  license_file:
+    - LICENSE.txt
+    - RUST_THIRDPARTY.yml
   summary: A set of user-friendly tools for normalization and visualzation of deep-sequencing data
   doc_url: https://deeptools.readthedocs.io/en/latest/
   dev_url: https://github.com/deeptools/deepTools
