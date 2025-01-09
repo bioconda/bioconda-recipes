@@ -1,40 +1,44 @@
 {% set name = "hail" %}
 {% set version = "0.2.127" %}
-{% set sha256 = "def7eb3e17d15bbb3dfba00dfc8a966771b839b04b639386ee61c8927d0c7ae8" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
+# Hail currently fails to build from tarball due to hail/version.mk expectation
+# that source code is from a git repo.
+
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: {{ sha256 }}
+  git_url: https://github.com/hail-is/hail.git
+  git_rev: {{ version }}
+  sha256: unused
 
 build:
-  noarch: python
   number: 0
   run_exports:
     - {{ pin_subpackage("hail", max_pin="x.x") }}
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
 
 # Refer to these files for version pinning:
-# - hail/python/requirements.txt
-# - hail/python/hailtop/requirements.txt
-# - hail/web_common/requirements.txt
+# - 'hail/python/requirements.txt'
+# - 'hail/python/hailtop/requirements.txt'
+# - 'hail/web_common/requirements.txt'
 
 # Additional requirements:
-# - https://hail.is/docs/0.2/install/linux.html
-# - https://hail.is/docs/0.2/getting_started_developing.html
+# https://hail.is/docs/0.2/getting_started_developing.html
 
 requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - rsync
   host:
     - lz4
     - openjdk 11.*
     - pip
     - pyspark >=3.3.2,<3.4
+    - pytest-runner
     - python
   run:
-    - openjdk 11.*
     - python
     # ==========================================================================
     # Deps in 'hail/python/requirements.txt':
@@ -81,30 +85,38 @@ requirements:
     # ==========================================================================
     # Deps in 'web_common/requirements.txt':
     # ==========================================================================
-    # > - aiohttp-jinja2 >=1.1.1,<2
-    # > - jinja2 >3,<4  # pip: Jinja2
-    # > - libsass >=0.19.2,<1
+    - aiohttp-jinja2 >=1.1.1,<2
+    - jinja2 >3,<4  # pip: Jinja2
+    - libsass >=0.19.2,<1
     # ==========================================================================
     # Deps in 'hail/python/test/hailtop/hailctl/dataproc/conftest.py':
     # ==========================================================================
     # > - aiohttp >=3.6,<3.7
-    # > - aiohttp-session >=2.7,<2.8  # pip: aiohttp_session
-    # > - asyncinit >=0.2.4,<0.3
+    - aiohttp-session >=2.7,<2.8  # pip: aiohttp_session
+    - asyncinit >=0.2.4,<0.3
     # > - bokeh >1.1,<1.3
     # > - decorator <5
     # > - humanize ==1.0.0
-    # > - hurry.filesize ==0.9
+    - hurry.filesize ==0.9
     # > - nest_asyncio
     # > - numpy <2
     # > - pandas >0.24,<0.26
     # > - parsimonious <0.9
-    # > - pyjwt  # pip: PyJWT
+    - pyjwt  # pip: PyJWT
     # > - python-json-logger ==0.1.11
     # > - requests >=2.21.0,<2.21.1
     # > - scipy >1.2,<1.4
     # > - tabulate ==0.8.9
-    # > - tqdm  # ==4.42.1
+    - tqdm  # ==4.42.1
     # > - jproperties==2.1.1
+    # ==========================================================================
+    # Other deps:
+    # ==========================================================================
+    # > - gcsfs
+    # > - google-api-core
+    # > - google-cloud-sdk
+    # > - google-cloud-storage
+    - openjdk 11.*
 
 test:
   imports:
@@ -122,3 +134,5 @@ extra:
   recipe-maintainers:
     - mjsteinbaugh
     - raivivek
+  skip-lints:
+    - uses_vcs_url
