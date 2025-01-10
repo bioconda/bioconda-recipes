@@ -12,3 +12,6 @@ mkdir -p "${PREFIX}"/{bin,lib,share}
 ./configure -conda 
 ./build 
 cp -r bin lib share "${PREFIX}"
+
+# debug
+ls -la bin/
