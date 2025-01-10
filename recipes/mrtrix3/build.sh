@@ -12,6 +12,9 @@ mkdir -p "${PREFIX}"/{bin,lib,share}
 ln -s ${CC} ${CONDA_PREFIX}/bin/gcc
 ln -s ${CXX} ${CONDA_PREFIX}/bin/g++
 
+# debug
+find ${PREFIX} -name "*libQt5Core.so*"
+
 ARCH=native CFLAGS="${CXXFLAGS}" ./configure -conda || (cat configure.log && exit 123)
 
 ./build 
