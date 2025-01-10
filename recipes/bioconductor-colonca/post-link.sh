@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "colonca-1.44.0"
+installBiocDataPackage.sh "colonca-1.48.0"
