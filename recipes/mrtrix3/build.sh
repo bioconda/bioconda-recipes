@@ -12,7 +12,7 @@ mkdir -p "${PREFIX}"/{bin,lib,share}
 ln -s ${CC} ${CONDA_PREFIX}/bin/gcc
 ln -s ${CXX} ${CONDA_PREFIX}/bin/g++
 
-./configure -conda || (cat configure.log && exit 123)
+ARCH=native CFLAGS="${CXXFLAGS}" ./configure -conda || (cat configure.log && exit 123)
 
 ./build 
 
