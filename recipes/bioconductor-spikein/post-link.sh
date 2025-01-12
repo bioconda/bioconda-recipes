@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "spikein-1.44.0"
+installBiocDataPackage.sh "spikein-1.48.0"

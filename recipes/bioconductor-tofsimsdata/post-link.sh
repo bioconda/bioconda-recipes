@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "tofsimsdata-1.30.0"
+installBiocDataPackage.sh "tofsimsdata-1.34.0"
