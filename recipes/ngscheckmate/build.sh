@@ -29,10 +29,11 @@ export NCM_HOME=$PREFIX/NGSCheckMate
 python $PREFIX/NGSCheckMate/vaf_ncm.py "\$@"
 EOF
 
-ln -s $PREFIX/NGSCheckMate/ngscheckmate_fastq $PREFIX/bin/ngscheckmate_fastq
 cd $PREFIX/NGSCheckMate/ngscheckmate_fastq-source
+bin/ngscheckmate_fastq
 make
 cd $PREFIX
+ln -s $PREFIX/NGSCheckMate/ngscheckmate_fastq-source/ngscheckmate_fastq $PREFIX/
 
 cat << EOF > $PREFIX/bin/makesnvpattern.pl
 #!/usr/bin/env bash
