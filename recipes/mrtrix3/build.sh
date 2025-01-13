@@ -13,7 +13,7 @@ ln -s ${CC} ${CONDA_PREFIX}/bin/gcc
 ln -s ${CXX} ${CONDA_PREFIX}/bin/g++
 
 # debug
-find ${PREFIX} -name "*libQt5Core.so*"
+find ${CONDA_PREFIX} -name "*libxcb*.so*"
 
 ARCH=native CFLAGS="${CXXFLAGS}" ./configure -conda || (cat configure.log && exit 123)
 
