@@ -32,7 +32,7 @@ EOF
 cd $PREFIX/NGSCheckMate/ngscheckmate_fastq-source
 make COMPILER=${CC} CFLAGS="${CFLAGS} -c" DFLAGS="${LDFLAGS}"
 cd $PREFIX
-ln -s $PREFIX/NGSCheckMate/ngscheckmate_fastq-source/ngscheckmate_fastq $PREFIX/bin/
+ln -sf $PREFIX/NGSCheckMate/ngscheckmate_fastq-source/ngscheckmate_fastq $PREFIX/bin/
 cat << EOF > $PREFIX/bin/makesnvpattern.pl
 #!/usr/bin/env bash
 
