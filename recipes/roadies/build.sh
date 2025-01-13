@@ -32,7 +32,7 @@ if [ ! -d "workflow/scripts/lastz_32" ]; then
     wget https://github.com/lastz/lastz/archive/refs/heads/master.zip
     unzip master.zip
     cd lastz-master/src/
-    make CC="${CC}" CXX="${CXX}" lastz_32 flagsFor32="-Dmax_sequence_index=63 -Dmax_malloc_index=40 -Ddiag_hash_size=4194304"
+    make CC="${CC}" CXX="${CXX}" lastz_32 flagsFor32="-Dmax_sequence_index=63 -Dmax_malloc_index=40 -Ddiag_hash_size=4194304" definedForAll="-Wall -Wextra -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE"
     make install_32
     cp lastz_32 ../../
     cd ../../../../
