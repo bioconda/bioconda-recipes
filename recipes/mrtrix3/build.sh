@@ -4,7 +4,7 @@ set -x
 
 export CFLAGS="${CFLAGS} -idirafter ${PREFIX}/include" 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export LINKFLAGS="-L${PREFIX}/lib"
+export LINKFLAGS="-L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
 export EIGEN_CFLAGS="-idirafter ${PREFIX}/include/eigen3"
 
 mkdir -p "${PREFIX}"/{bin,lib,share}
