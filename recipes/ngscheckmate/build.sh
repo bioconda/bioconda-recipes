@@ -30,7 +30,7 @@ python $PREFIX/NGSCheckMate/vaf_ncm.py "\$@"
 EOF
 
 cd $PREFIX/NGSCheckMate/ngscheckmate_fastq-source
-make COMPILER=${CC} CFLAGS="${CFLAGS}"
+make COMPILER=${CC} CFLAGS="${CFLAGS} -c" 
 cd $PREFIX
 ln -s $PREFIX/NGSCheckMate/ngscheckmate_fastq-source/ngscheckmate_fastq $PREFIX/bin/
 cat << EOF > $PREFIX/bin/makesnvpattern.pl
