@@ -30,11 +30,9 @@ python $PREFIX/NGSCheckMate/vaf_ncm.py "\$@"
 EOF
 
 cd $PREFIX/NGSCheckMate/ngscheckmate_fastq-source
-bin/ngscheckmate_fastq
 make
 cd $PREFIX
-ln -s $PREFIX/NGSCheckMate/ngscheckmate_fastq-source/ngscheckmate_fastq $PREFIX/
-
+ln -s $PREFIX/NGSCheckMate/ngscheckmate_fastq-source/ngscheckmate_fastq $PREFIX/bin/
 cat << EOF > $PREFIX/bin/makesnvpattern.pl
 #!/usr/bin/env bash
 
