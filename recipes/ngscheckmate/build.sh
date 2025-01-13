@@ -30,7 +30,7 @@ python $PREFIX/NGSCheckMate/vaf_ncm.py "\$@"
 EOF
 
 ln -s $PREFIX/NGSCheckMate/ngscheckmate_fastq $PREFIX/bin/ngscheckmate_fastq
-cd $PREFIX/NFSCheckMate/ngscheckmate_fastq-source
+cd $PREFIX/NGSCheckMate/ngscheckmate_fastq-source
 make
 cd $PREFIX
 
