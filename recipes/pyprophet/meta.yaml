@@ -16,8 +16,8 @@ build:
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
   entry_points:
-    - pyprophet=pyprophet.main:cli
-  script: python -m pip install --no-deps --ignore-installed .
+    - pyprophet = pyprophet.main:cli
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
 
 requirements:
   build:
@@ -25,25 +25,29 @@ requirements:
   host:
     - python
     - pip
-    - cython <1
-    - numpy >=1.9
-    - pypdf2
+    - cython
+    - numpy
+    - pypdf
+    - libgomp  # [linux]  
+    - llvm-openmp  # [osx]
   run:
     - python
+    - libgomp  # [linux]  
+    - llvm-openmp  # [osx]
     - {{ pin_compatible("numpy") }}
     - scipy
+    - python-duckdb
     - pandas >=0.17
     - numexpr >=2.1
     - scikit-learn >=0.17
     - matplotlib-base
-    - seaborn
     - tabulate
+    - pyarrow
     - xgboost
     - hyperopt
     - statsmodels >=0.8.0
     - click
-    - dataclasses
-    - pypdf2
+    - pypdf
     - typing-extensions
 
 test:
@@ -54,12 +58,18 @@ test:
 
 about:
   home: https://github.com/PyProphet/pyprophet
-  license: BSD License
+  license: "BSD-3-Clause"
   license_family: BSD
-  summary: Python reimplementation of mProphet peak scoring
+  license_file: LICENSE
+  summary: "PyProphet: Semi-supervised learning and scoring of OpenSWATH results."
+  dev_url: https://github.com/PyProphet/pyprophet
+  doc_url: https://openswath.org/en/latest
+
 extra:
   additional-platforms:
     - linux-aarch64
+  identifiers:
+    - doi:10.1038/nmeth.1584
   container:
     # Click requires the extended container
-    extended-base: true
+    extended-base: True
