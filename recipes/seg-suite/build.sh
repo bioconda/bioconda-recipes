@@ -1,6 +1,8 @@
-#! /bin.bash
+#!/usr/bin/env bash
 
-make
+set -xe
+
+make -j"${CPU_COUNT}"
 
 find . -type d -name "*.dSYM" -exec rm -rf {} +
 
