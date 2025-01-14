@@ -1,6 +1,6 @@
 #!/bin/bash
 
-make GPP=$CXX
+make GPP=$CXX -j"${CPU_COUNT}"
 
 binaries="\
 muscle \
