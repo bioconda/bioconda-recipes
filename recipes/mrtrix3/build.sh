@@ -2,10 +2,10 @@
 
 set -x
 
-export RPATH="${PREFIX}/lib"
+export RPATH="${BUILD_PREFIX}/lib"
 export CFLAGS="${CFLAGS} -idirafter ${PREFIX}/include" 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,$RPATH"
-export LINKFLAGS="-L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
+export LINKFLAGS="-L${PREFIX}/lib -Wl,-rpath,${BUILD_PREFIX}/lib"
 export EIGEN_CFLAGS="-idirafter ${PREFIX}/include/eigen3"
 
 mkdir -p "${PREFIX}"/{bin,lib,share}
