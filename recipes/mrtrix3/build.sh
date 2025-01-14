@@ -2,8 +2,9 @@
 
 set -x
 
+export RPATH="${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -idirafter ${PREFIX}/include" 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,$RPATH"
 export LINKFLAGS="-L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
 export EIGEN_CFLAGS="-idirafter ${PREFIX}/include/eigen3"
 
