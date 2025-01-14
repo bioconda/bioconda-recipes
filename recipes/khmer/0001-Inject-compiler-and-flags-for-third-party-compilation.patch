@@ -1,15 +1,68 @@
---- setup.py
-+++ setup.py
-@@ -318 +318 @@
+diff --git a/setup.py b/setup.py
+index 8629141..ca49b30 100755
+--- a/setup.py
++++ b/setup.py
+@@ -151,7 +151,7 @@ BUILD_DEPENDS = [path_join("include", "khmer", bn + ".hh") for bn in [
+     "_cpy_khmer", "_cpy_utils", "_cpy_readparsers"
+ ]]
+ BUILD_DEPENDS.extend(path_join("include", "oxli", bn + ".hh") for bn in [
+-    "khmer", "kmer_hash", "hashtable", "labelhash", "hashgraph",
++    "kmer_hash", "hashtable", "labelhash", "hashgraph",
+     "hllcounter", "oxli_exception", "read_aligner", "subset", "read_parsers",
+     "kmer_filters", "traversal", "assembler", "alphabets", "storage"])
+ 
+@@ -168,7 +168,7 @@ SOURCES.extend(path_join("third-party", "smhasher", bn + ".cc") for bn in [
+     "MurmurHash3"])
+ 
+ # Don't forget to update lib/Makefile with these flags!
+-EXTRA_COMPILE_ARGS = ['-O3', '-std=c++11']
++EXTRA_COMPILE_ARGS = ['-O3', '-std=c++14', '-Wno-deprecated-declarations', '-Wno-unused-local-typedef', '-Wno-reorder-ctor', '-Wno-unused-but-set-variable', '-Wno-unused', '-Wno-delete-non-abstract-non-virtual-dtor', '-Wno-delete-abstract-non-virtual-dtor']
+ EXTRA_LINK_ARGS = []
+ 
+ if sys.platform == 'darwin':
+@@ -182,10 +182,10 @@ if check_for_openmp():
+ CP_EXTENSION_MOD_DICT = \
+     {
+         "sources": SOURCES,
+-        "extra_compile_args": EXTRA_COMPILE_ARGS,
++	"extra_compile_args": EXTRA_COMPILE_ARGS,
+         "extra_link_args": EXTRA_LINK_ARGS,
+         "depends": BUILD_DEPENDS,
+-        "include_dirs": ["include", "."],
++        "include_dirs": ["include", "src/khmer", "src/oxli", "third-party/smhasher", "."],
+         "language": "c++",
+         "define_macros": [("VERSION", versioneer.get_version()), ],
+     }
+@@ -209,8 +209,8 @@ for cython_ext in glob.glob(os.path.join("khmer", "_oxli",
+             "extra_link_args": EXTRA_LINK_ARGS,
+             "extra_objects": [path_join(build_dir(), splitext(p)[0] + '.o')
+                               for p in SOURCES],
+-            "depends": [],
+-            "include_dirs": ["include", "."],
++            "depends": BUILD_DEPENDS,
++            "include_dirs": ["include", "src/khmer", "src/oxli", "third-party/smhasher", "."],
+             "language": "c++",
+             "define_macros": [("VERSION", versioneer.get_version()), ]
+         }
+@@ -315,7 +315,7 @@ class KhmerBuildExt(_build_ext):  # pylint: disable=R0904
+         if sys.platform == 'darwin' and 'gcov' in self.libraries:
+             self.libraries.remove('gcov')
+ 
 -        cqfcmd = ['bash', '-c', 'cd third-party/cqf && make']
-+        cqfcmd = ['bash', '-c', 'cd third-party/cqf && cxx="${CXX} ${CXXFLAGS} ${LDFLAGS} -std=c++11" && make CC="${cxx} -fPIC" CXX="${cxx} -fPIC" LD="${cxx}"']
---- setup.cfg
-+++ setup.cfg
-@@ -6,5 +6,5 @@
++        cqfcmd = ['bash', '-c', 'cd third-party/cqf && cxx="${CXX} ${CXXFLAGS} ${LDFLAGS} -std=c++14" && make CC="${cxx} -fPIC" CXX="${cxx} -fPIC" LD="${cxx}"']
+         spawn(cmd=cqfcmd, dry_run=self.dry_run)
+         for ext in self.extensions:
+             ext.extra_objects.append(path_join("third-party", "cqf", "gqf.o"))
+diff --git a/setup.cfg b/setup.cfg
+index 894a4ea..e69f09a 100644
+--- a/setup.cfg
++++ b/setup.cfg
+@@ -6,7 +6,7 @@ undef = NO_UNIQUE_RC
  # docker/Dockerfile
--# libraries = z,bz2
-+libraries = z,bz2
+ # libraries = z,bz2
  ## if using system libraries
 -include-dirs = include:third-party/zlib:third-party/bzip2:third-party/seqan/core/include:third-party/smhasher:third-party/cqf:third-party/rollinghash
-+include-dirs = include:third-party/seqan/core/include:third-party/smhasher:third-party/cqf:third-party/rollinghash
++include_dirs = include:third-party/seqan/core/include:third-party/smhasher:third-party/cqf:third-party/rollinghash
  # include-dirs = lib
+ ## if using system libraries (broken)
+ 

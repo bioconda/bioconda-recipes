@@ -10,12 +10,13 @@ source:
   sha256: {{ sha256 }}
   patches:
     - 0001-Inject-compiler-and-flags-for-third-party-compilation.patch
-    - 0002-remove-m64.patch
+    - 0002-cqf-Makefile.patch
+    - 0003-remove-m64.patch
 
 build:
   number: 6
-  skip: True  # [py < 30 or py >= 312 or osx]
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  skip: True  # [py < 30 or py >= 312]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
     - {{ pin_subpackage('khmer', max_pin="x") }}
 
@@ -28,7 +29,7 @@ requirements:
     - python
     - pip
     - setuptools >=18.0
-    #- cython >=0.25.2
+    - cython >=0.25.2
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
     - bzip2
