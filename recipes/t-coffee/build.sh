@@ -13,7 +13,7 @@ SHARE_DIR="${PREFIX}/libexec/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 OS=$(./install get_os)
 
 cd t_coffee_source
-make -j ${CPU_COUNT} CFLAGS="${CFLAGS} -fsigned-char -Wno-write-strings" CC=${CC} CXX=${CXX} CXXFLAGS="${CXXFLAGS} -fsigned-char -Wno-write-strings" LDFLAGS=${LDFLAGS}
+make -j ${CPU_COUNT} CFLAGS="${CFLAGS} -fsigned-char -Wno-write-strings" CC=${CC} CXX=${CXX} CXXFLAGS="${CXXFLAGS} -fsigned-char -Wno-write-strings" LDFLAGS="${LDFLAGS}"
 cp t_coffee ../bin/${OS}
 cd ..
 mkdir -p "${PREFIX}/bin"
