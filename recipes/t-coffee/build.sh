@@ -13,8 +13,9 @@ SHARE_DIR="${PREFIX}/libexec/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 OS=$(./install get_os)
 
 cd t_coffee_source
-make -j ${CPU_COUNT} CFLAGS="${CFLAGS} -fsigned-char -Wno-write-strings" CC=${CC} CXX=${CXX} CXXFLAGS="${CXXFLAGS} -fsigned-char -Wno-write-strings" LDFLAGS="${LDFLAGS}"
-cp t_coffee ../bin/${OS}
+# CC=CXX is correct here - the t-coffee authors use this as it errors less with the source.
+make -j ${CPU_COUNT} CFLAGS="${CFLAGS} -O2 -fsigned-char -Wno-write-strings" CC="${CXX}" LDFLAGS="${LDFLAGS}" $FCC="${FC}" all
+cp t_coffee TMalign ../bin/${OS}
 cd ..
 mkdir -p "${PREFIX}/bin"
 
