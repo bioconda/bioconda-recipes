@@ -15,6 +15,12 @@ make CC=$CC lib && mv lib/libzstd.a ..
 popd
 popd
 
+# Handle architecture-specific flags
+ARCH=$(uname -m)
+if [ "$ARCH" = "aarch64" ]; then
+    sed -i.bak 's/-mpopcnt//g' Makefile
+fi
+
 sed -i.bak "s/ -lzstd//g" Makefile
 make CC=$CC CXX=$CXX
 make install PREFIX=$PREFIX
