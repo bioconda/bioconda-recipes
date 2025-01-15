@@ -2,10 +2,11 @@
 
 set -x
 
-export RPATH="${BUILD_PREFIX}/lib"
-export CFLAGS="${CFLAGS} -idirafter ${PREFIX}/include" 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,$RPATH"
-export LINKFLAGS="-L${PREFIX}/lib -Wl,-rpath,${BUILD_PREFIX}/lib"
+export RPATH="${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -idirafter ${PREFIX}/include" 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib ${PREFIX}/lib/libxcb.so.1 -lxcb"
+export LINKFLAGS="-L${PREFIX}/lib ${PREFIX}/lib/libxcb.so.1  -lxcb"
+export LINKLIB_FLAGS="${LINKFLAGS}"
 export EIGEN_CFLAGS="-idirafter ${PREFIX}/include/eigen3"
 
 mkdir -p "${PREFIX}"/{bin,lib,share}
@@ -16,7 +17,7 @@ ln -s ${CXX} ${CONDA_PREFIX}/bin/g++
 # debug
 find ${CONDA_PREFIX} -name "*libxcb*.so*"
 
-ARCH=native CFLAGS="${CXXFLAGS}" ./configure -conda || (cat configure.log && exit 123)
+ARCH=native CFLAGS="${CXXFLAGS}" ./configure -conda -openmp || (cat configure.log && exit 123)
 
 ./build 
 
