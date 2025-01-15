@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu -o pipefail
+set -xeu -o pipefail
 
 mkdir build && cd build
 
@@ -10,5 +10,5 @@ cmake \
   -DCMAKE_LIBRARY_PATH=${PREFIX}/lib \
   -DCMAKE_INCLUDE_PATH=${PREFIX}/include ..
 
-make 
+make -j1
 make install
