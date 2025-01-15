@@ -8,6 +8,8 @@
 # $PKG_BUILDNUM The build number of the package
 #
 set -eux -o pipefail
+# silence some LANG perl warning messages:
+export LANG=C.UTF-8
 
 SHARE_DIR="${PREFIX}/libexec/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 OS=$(./install get_os)
