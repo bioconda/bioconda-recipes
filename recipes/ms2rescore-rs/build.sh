@@ -15,7 +15,7 @@ if [ `uname` == Darwin ]; then
 fi
 
 # Build the package using maturin - should produce *.whl files.
-maturin build --interpreter $PYTHON --release
+maturin build --interpreter $PYTHON --release --manylinux off
 
 # Install *.whl files using pip
 $PYTHON -m pip install target/wheels/*.whl --no-deps --ignore-installed -vv
