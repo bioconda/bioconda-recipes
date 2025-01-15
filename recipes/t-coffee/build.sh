@@ -13,7 +13,7 @@ SHARE_DIR="${PREFIX}/libexec/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 OS=$(./install get_os)
 
 cd t_coffee_source
-make
+make -j ${CPU_COUNT}
 cp t_coffee ../bin/${OS}
 cd ..
 mkdir -p "${PREFIX}/bin"
