@@ -25,7 +25,8 @@ mkdir -p "${PREFIX}/bin"
 # download them. Instead use only bioconda's own installs.
 if [ "$(uname -m)" = "aarch64" ]
 then
-  ./install -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS"
+  ./install t_coffee -tcdir="${SHARE_DIR}"
+    
 else
   ./install all -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS"
 fi
