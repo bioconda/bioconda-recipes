@@ -21,7 +21,13 @@ cp t_coffee TMalign ../bin/${OS}
 cd ..
 mkdir -p "${PREFIX}/bin"
 
-./install all -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS"
+# the t-coffee home only has plugins with x86_64 support; let's not 
+# download them. Instead use only bioconda's own installs.
+if [ "$(uname -m)" == "aarch64" ];
+  ./install -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS"
+else
+  ./install all -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS"
+fi
 
 # llvm-otool -l fails for these plugins on macosx
 if [ "$OS" = macosx ]
