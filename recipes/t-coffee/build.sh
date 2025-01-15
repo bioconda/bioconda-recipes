@@ -12,6 +12,10 @@ set -eux -o pipefail
 SHARE_DIR="${PREFIX}/libexec/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 OS=$(./install get_os)
 
+cd t_coffee_source
+make
+cp t_coffee ../bin/${OS}
+
 mkdir -p "${PREFIX}/bin"
 
 ./install all -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS"
