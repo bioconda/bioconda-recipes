@@ -10,5 +10,5 @@ cmake \
   -DCMAKE_LIBRARY_PATH=${PREFIX}/lib \
   -DCMAKE_INCLUDE_PATH=${PREFIX}/include ..
 
-make -j"${CPU_COUNT}"
+make -j1
 make install
