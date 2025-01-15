@@ -4,8 +4,8 @@ set -x
 
 export RPATH="${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -idirafter ${PREFIX}/include" 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib ${PREFIX}/lib/libxcb.so.1 -lxcb"
-export LINKFLAGS="-L${PREFIX}/lib ${PREFIX}/lib/libxcb.so.1  -lxcb"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lxcb"
+export LINKFLAGS="-L${PREFIX}/lib -lxcb"
 export LINKLIB_FLAGS="${LINKFLAGS}"
 export EIGEN_CFLAGS="-idirafter ${PREFIX}/include/eigen3"
 
@@ -15,7 +15,7 @@ ln -s ${CC} ${CONDA_PREFIX}/bin/gcc
 ln -s ${CXX} ${CONDA_PREFIX}/bin/g++
 
 # debug
-find ${CONDA_PREFIX} -name "*libxcb*.so*"
+find ${CONDA_PREFIX} -name "*libxcb*.*"
 
 ARCH=native CFLAGS="${CXXFLAGS}" ./configure -conda -openmp || (cat configure.log && exit 123)
 
