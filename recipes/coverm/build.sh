@@ -1,4 +1,6 @@
-#!/bin/bash -e
+#!/bin/bash
+
+set -xeu -o pipefail
 
 # Build statically linked binary with Rust
 C_INCLUDE_PATH=$PREFIX/include \
