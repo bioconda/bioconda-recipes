@@ -14,15 +14,9 @@ mkdir -p "${PREFIX}"/{bin,lib,share}
 ln -s ${CC} ${CONDA_PREFIX}/bin/gcc
 ln -s ${CXX} ${CONDA_PREFIX}/bin/g++
 
-# debug
-find ${CONDA_PREFIX} -name "*libxcb*.*"
-
 ARCH=native CFLAGS="${CXXFLAGS}" ./configure -conda -openmp || (cat configure.log && exit 123)
 
 ./build 
-
-# debug
-ls -la bin/
 
 cp -r bin lib share "${PREFIX}"
 
