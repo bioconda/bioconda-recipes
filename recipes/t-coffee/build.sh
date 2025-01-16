@@ -14,18 +14,15 @@ export LANG=C.UTF-8
 SHARE_DIR="${PREFIX}/libexec/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 OS=$(./install get_os)
 
-cd t_coffee_source
-# CC=CXX is correct here - the t-coffee authors use this as it errors less with the source.
-make -j ${CPU_COUNT} CFLAGS="${CFLAGS} -fsigned-char -Wno-write-strings -Dregister='' -O0" CC="${CXX}" LDFLAGS="${LDFLAGS}" FCC="${FC}" FFLAGS="${FFLAGS}" all
-cp t_coffee TMalign ../bin/${OS}
-cd ..
+# -fsigned-char is needed for aarch64; register needs to be hidden for os-x's C++ compiler
+CFLAGS="${CFLAGS} -fsigned-char -Wno-write-strings -Dregister='' -O0"
 
 mkdir -p "${PREFIX}/bin"
 
 # the t-coffee home only has plugins with x86_64 support; let's not 
 # download them. Instead use only bioconda's own installs.
 # the t_coffee application is the only one from the set required by Bio::Tools::Run::Alignment::TCoffee
-./install t_coffee -tcdir="${SHARE_DIR}"
+./install t_coffee -tcdir="${SHARE_DIR}" CC="${CXX}" CFLAGS="${CFLAGS}"
 
 # # llvm-otool -l fails for these plugins on macosx
 # if [ "$OS" = macosx ]
