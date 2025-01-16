@@ -17,7 +17,7 @@ OS=$(./install get_os)
 # -fsigned-char is needed for aarch64; register needs to be hidden for os-x's C++ compiler
 CFLAGS="${CFLAGS} -fsigned-char -Wno-write-strings -Dregister='' -O0"
 
-rm bin/${OS}/*			# remove the download binaries - we rebuild
+rm -fv bin/${OS}/*			# remove the download binaries - we rebuild
 
 cd t_coffee_source
 make -j ${CPU_COUNT} CFLAGS="${CFLAGS} -fsigned-char -Wno-write-strings -Dregister='' -O0" CC="${CXX}" LDFLAGS="${LDFLAGS}" FCC="${FC}" FFLAGS="${FFLAGS}" all
