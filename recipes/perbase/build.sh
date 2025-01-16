@@ -9,5 +9,7 @@ if [[ -n "$OSX_ARCH" ]]; then
 	export RUSTFLAGS="-C link-arg=-undefined -C link-arg=dynamic_lookup"
 fi
 
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+
 RUST_BACKTRACE=1
 cargo install --no-track --verbose --path . --root "${PREFIX}"
