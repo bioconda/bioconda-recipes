@@ -8,11 +8,12 @@ source:
   # url: https://github.com/deeptools/deepTools/archive/refs/tags/{{ version }}.tar.gz
   # sha256: f6dda39f552624758a9830cd4589ef43e7047284759b103cf833271cfa564dd1
   git_url: https://github.com/deeptools/deepTools.git
-  git_rev: 010a1cfc1e7f57ae019e94083608dbd5e014e5f2
+  git_rev: 98c9564f5abc795f0369ca6f07866070932b710b
   sha256: ignored
 
 build:
   number: 0
+  skip: true  # [py >= 313]
   run_exports:
     - {{ pin_subpackage("deeptools", max_pin="x") }}
   script: |
@@ -20,16 +21,17 @@ build:
     # export LANG=C.UTF-8
     # export LC_ALL=C.UTF-8
     export RUST_BACKTRACE=1
+    # export RUSTC_LOG=rustc_codegen_ssa::back::link=info
+    export LIBCLANG_PATH=$PREFIX/lib # [linux]
+    # see https://docs.rs/openssl/latest/openssl/#manual for the following:
     export OPENSSL_NO_VENDOR=1
-    export OPENSSL_DIR=$PREFIX
     export OPENSSL_INCLUDE_DIR=$PREFIX/include
     export OPENSSL_LIB_DIR=$PREFIX/lib
+    # make the curl-sys crate link statically to existing libcurl and openssl
     export CURL_STATIC_SSL=1
     export CURL_SYS_STATIC=1
-    #export CARGO_NET_OFFLINE=true
     export HTS_LIB_DIR=$PREFIX/lib
     export HTS_INCLUDE_DIR=$PREFIX/include
-    export LIBCLANG_PATH=$PREFIX/lib # [linux]
     # export CPLUS_INCLUDE_PATH=$PREFIX/include # [linux and aarch64]
     export HTS_STATIC=1
     export HTS_SYS_BUNDLED=0
@@ -66,28 +68,20 @@ build:
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('rust') }}
-    - make
     - cargo-bundle-licenses
   host:
     - python
     - pip
     - maturin
     - clangdev
-    - openssl
-    - curl
     - htslib
+    - openssl
+    - libcurl
     - bzip2
     - xz
     - zlib
   run:
-    - {{ pin_compatible('openssl') }}
-    - {{ pin_compatible('curl') }}
-    - {{ pin_compatible('htslib') }}
-    - {{ pin_compatible('bzip2') }}
-    - {{ pin_compatible('xz') }}
-    - {{ pin_compatible('zlib') }}
     - python
     - pybigwig >=0.2.1
     - numpy >=2.0.0
