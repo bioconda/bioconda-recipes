@@ -16,7 +16,7 @@ OS=$(./install get_os)
 
 cd t_coffee_source
 # CC=CXX is correct here - the t-coffee authors use this as it errors less with the source.
-make -j ${CPU_COUNT} CFLAGS="${CFLAGS} -fsigned-char -Wno-write-strings -Dregister=''" CC="${CXX}" LDFLAGS="${LDFLAGS}" FCC="${FC}" FFLAGS="${FFLAGS}" all
+make -j ${CPU_COUNT} CFLAGS="${CFLAGS} -fsigned-char -Wno-write-strings -Dregister='' -O0" CC="${CXX}" LDFLAGS="${LDFLAGS}" FCC="${FC}" FFLAGS="${FFLAGS}" all
 cp t_coffee TMalign ../bin/${OS}
 cd ..
 
