@@ -2,6 +2,9 @@
 
 set -ex
 
+unset CC CXX FC F77 F90 F95 CFLAGS CXXFLAGS FCFLAGS FFLAGS LDFLAGS CPPFLAGS
+
+export CC=mpicc
 export FC=mpifort
 
 cd esme_netcdf-fortran

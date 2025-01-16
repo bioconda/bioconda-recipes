@@ -7,7 +7,6 @@ export CC=mpicc
 cd esme_netcdf-c
 
 ./configure --prefix="${PREFIX}" \
-            --with-hdf5="${PREFIX}" \
             --disable-doxygen \
             --disable-doxygen-tasks \
             --disable-doxygen-build-release-docs \
