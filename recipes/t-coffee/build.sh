@@ -23,13 +23,8 @@ mkdir -p "${PREFIX}/bin"
 
 # the t-coffee home only has plugins with x86_64 support; let's not 
 # download them. Instead use only bioconda's own installs.
-if [ "$(uname -m)" = "aarch64" ]
-then
-  ./install t_coffee -tcdir="${SHARE_DIR}"
-    
-else
-  ./install all -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS"
-fi
+
+./install t_coffee -tcdir="${SHARE_DIR}"
 
 # llvm-otool -l fails for these plugins on macosx
 if [ "$OS" = macosx ]
