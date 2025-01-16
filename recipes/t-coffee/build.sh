@@ -14,14 +14,20 @@ export LANG=C.UTF-8
 SHARE_DIR="${PREFIX}/libexec/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 OS=$(./install get_os)
 
-# if [ "${OS}" != "macosx" ]	# use the distributed binary with OS/X - it doesn't compile with recent XCode 
-#    then 
+if [ "${OS}" != "macosx" ]	# use the distributed binary with OS/X - it doesn't compile with recent XCode 
+    then 
        cd t_coffee_source
        # CC=CXX is correct here - the t-coffee authors use this as it errors less with the source.
        make -j ${CPU_COUNT} CFLAGS="${CFLAGS} -fsigned-char -Wno-write-strings" CC="${CXX}" LDFLAGS="${LDFLAGS}" FCC="${FC}" FFLAGS="${FFLAGS}" all
        cp t_coffee TMalign ../bin/${OS}
        cd ..
-#fi
+    else
+       cd t_coffee_source
+       # CC=${CC} works locally on Sonoma OS/X
+       make -j ${CPU_COUNT} CFLAGS="${CFLAGS} -fsigned-char -Wno-write-strings" CC="${CC}" LDFLAGS="${LDFLAGS}" FCC="${FC}" FFLAGS="${FFLAGS}" all
+       cp t_coffee TMalign ../bin/${OS}
+       cd ..
+fi
 mkdir -p "${PREFIX}/bin"
 
 # the t-coffee home only has plugins with x86_64 support; let's not 
