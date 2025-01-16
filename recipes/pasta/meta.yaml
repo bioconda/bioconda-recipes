@@ -1,5 +1,5 @@
-{% set version = "1.9.0" %}
-{% set sha256 = "6f816aebe00b7b6bb78a250ad45f5aa2aa8eff0f9719736f05b0597dd3b1f9a1" %}
+{% set version = "1.9.2" %}
+{% set sha256 = "06c20f022765d2c1daab13a916ec2ea2277c5ef43afcf3e54c6a7ade7aed0944" %}
 
 package:
   name: pasta
@@ -13,7 +13,8 @@ source:
       - mpstart.patch  # issue in OSX py38 (not in Linux nor OSX py37): RuntimeError: An attempt has been made to start a new process before the current process has finished its bootstrapping phase.
 
 build:
-  number: 0
+  number: 3
+  skip: true # [py == 312]
   run_exports:
     - {{ pin_subpackage('pasta', max_pin="x") }}
 
@@ -21,7 +22,7 @@ requirements:
   host:
     - python
     - setuptools
-    - dendropy <=4.5.1
+    - dendropy
     - wget
     - openjdk
     - pcre
@@ -31,12 +32,12 @@ requirements:
     - raxml
     - muscle <4  # later versions expects other cmd argument names
     - mafft
-    - hmmer ==3.1b2
+    - hmmer
     - prank
 
   run:
     - python
-    - dendropy <=4.5.1  # later version do not expose _convert_node_to_root_polytomy
+    - dendropy
     - openjdk
     - pcre
     - pymongo >=3.3.0
@@ -45,7 +46,7 @@ requirements:
     - raxml
     - muscle <4  # later versions expects other cmd argument names
     - mafft
-    - hmmer ==3.1b2
+    - hmmer
     - prank
 
 test:
@@ -71,6 +72,10 @@ about:
   summary: 'An implementation of the PASTA (Practical Alignment using Sate and TrAnsitivity) algorithm'
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    # clustalw required
+    # - osx-arm64
   skip-lints:
     # necessary, because pasta is NOT platform independent:
     # during build time, platform specific binaries for mafft/raxml/muscle/... are copied into the PREFIX/bin dir

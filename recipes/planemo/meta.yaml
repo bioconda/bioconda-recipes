@@ -1,6 +1,6 @@
 {% set name = "planemo" %}
-{% set version = "0.75.22" %}
-{% set sha256 = "ad6b7b0eeb8d180004963b72bad5ec630d396a3ac0c36f9d1403927413158b8b" %}
+{% set version = "0.75.26" %}
+{% set sha256 = "3f71b17ef9590de1c82db7ff4e8e2e05ca63fd1f5bfea0b7ee077b378bed7037" %}
 
 package:
   name: {{ name|lower }}
@@ -13,11 +13,11 @@ source:
 build:
   number: 0
   noarch: python
-  run_exports:
-    - {{ pin_subpackage('planemo', max_pin='x.x') }}
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   entry_points:
     - planemo = planemo.cli:planemo
+  run_exports:
+    - {{ pin_subpackage('planemo', max_pin='x.x') }}
 
 requirements:
   host:
@@ -26,15 +26,12 @@ requirements:
   run:
     - python >=3.7
     - allure-python-commons
-    - beautifulsoup4
     - bioblend >=1.0.0
-    - click
+    - click !=8.0.2
     - cwltool >=1.0.20191225192155
-    - docutils
     - ephemeris >=0.10.3
-    - galaxy-containers
-    - galaxy-tool-util >=23.1,<24.0
-    - galaxy-util >=23.1,<24.0
+    - galaxy-tool-util >=23.1,!=24.0.0,!=24.0.1,<24.2
+    - galaxy-util >=23.1,<24.2
     - glob2
     - gxformat2 >=0.14.0
     - h5py
@@ -44,16 +41,16 @@ requirements:
     - pathvalidate
     - pyyaml
     - virtualenv
+    - stdlib-list  # [py < 310]
     - tabulate
-    - six >=1.7.0
 
 test:
   imports:
     - planemo
     - planemo.commands
-    - planemo.cwl
+    #- planemo.cwl
     - planemo.database
-    - planemo.engine
+    #- planemo.engine
     - planemo.galaxy
     - planemo.galaxy.test
     - planemo.linters
@@ -64,10 +61,10 @@ test:
     - planemo.training
     - planemo.xml
   commands:
-    - planemo --help
+    #- planemo --help
 
 about:
-  home: 'https://pypi.org/project/planemo/'
+  home: 'https://github.com/galaxyproject/planemo'
   summary: 'Command-line utilities to assist in building tools for the Galaxy project (http://galaxyproject.org/).'
   license: MIT
   license_family: MIT

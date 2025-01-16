@@ -1,27 +1,27 @@
 {% set name = "goldrush" %}
-{% set version = "1.1.1" %}
+{% set version = "1.2.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/bcgsc/goldrush/releases/download/{{ version }}/{{ name|lower }}-{{ version }}.tar.xz
-  sha256: f9847c3bed5bb16494789661d4e12137537b1987c6bb19a0932ae0dd90b6e3ed
+  url: https://github.com/bcgsc/goldrush/releases/download/{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: 0b8b91b0477510d341af1736539416f30f70f67af9bd84161ea51c4c4a0fcc39
 
 build:
   skip: true  # [py < 38 or win or py > 39]
-  number: 0
+  number: 3
   run_exports: {{ pin_subpackage("goldrush", max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-  host:
-    - python
     - meson
     - ninja
     - cmake
+  host:
+    - python
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
     - gperftools
@@ -30,15 +30,18 @@ requirements:
     - libdivsufsort
     - sparsehash
     - btllib >=1.6.2
+    - intervaltree
   run:
     - make
     - python
     - ntlink >=1.3.0
     - btllib >=1.6.2
     - tigmint >=1.2.6
-    - minimap2
+    - minimap2 >=2.17
     - gperftools
     - bc
+    - snakemake
+    - numpy >=1.22.4
 
 test:
   commands:

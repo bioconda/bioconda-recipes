@@ -1,9 +1,13 @@
+{% set genepopS_version = "4.8.2" %}
+{% set r_genepop_version = "1.2.2" %}
+{% set sha256 = "d8ca49a9c11e267305a85a97a8b2d6ada39d814b474a4d58d2c54edf66fb75e9" %}
+
 package:
   name: genepop
-  version: "4.7.0"
+  version: "{{ genepopS_version }}"
 # After talking with the author, we decided that, for existing genepop
 # versions, we would take the out from the exinsting R packages.
-# So, the R package is 1.0.5 but Genepop is 4.7.0. People do not really know
+# So, the R package is 1.2.2 but Genepop is 4.8.2. People do not really know
 # the R package version. In the future (hopefully) a standalone version of
 # genepop will be provided (actually it is provided and always was, but
 # the author did not kept old versions, just replaced the source code zip).
@@ -11,24 +15,30 @@ package:
 # versions (reproducibility and all).
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage("genepop", max_pin="x") }}
 
 source:
-  # We will use CRAN as a repo for Genepop that is versioned
-  url: https://cran.r-project.org/src/contrib/genepop_1.0.5.tar.gz
-  sha256: 986d20c2e6c0325da8f8aad57b37b796681566388067644bc452ba80d957439f
+  url: https://github.com/cran/genepop/archive/refs/tags/{{ r_genepop_version }}.tar.gz
+  sha256: {{ sha256 }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
-  run:
+    - {{ compiler('cxx') }}
 
 about:
-  home: http://kimura.univ-montp2.fr/~rousset/Genepop.htm
-  license: CeCILL
-  summary: The Genepop population genetics package.
+  home: https://f-rousset.r-universe.dev/genepop
+  license: CeCILL-2
+  summary: Population Genetic Data Analysis package.
+  dev_url: https://github.com/cran/genepop
+  doc_url: https://f-rousset.r-universe.dev/genepop
 
 test:
   commands:
-    # Expected output is the version and an error message
-    - echo does_not_exist.txt | Genepop | grep "Genepop version"
+    # Check for existence and exec bit. The program is interactive and it is hard to exit from it
+    - test -x ${PREFIX}/bin/Genepop
+
+extra:
+  additional-platforms:
+    - linux-aarch64

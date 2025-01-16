@@ -1,21 +1,21 @@
 {% set package = "ucsc-bedgraphtobigwig" %}
 {% set program = "bedGraphToBigWig" %}
-{% set version = "455" %}
-{% set sha256 = "e458cadad7c4a5c1b8385edafffa1b29380ac725a0c20535bf5a3bab99fe80db" %}
+{% set version = "472" %}
+{% set sha256 = "26d126c51d0ba3165519b116b6461af8bfd938505f6c0871cb325a7ab82368f2" %}
 
 package:
   name: "{{ package }}"
   version: "{{ version }}"
 
 source:
-  url: "https://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
+  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
   sha256: "{{ sha256 }}"
   patches:
-    - "include.patch"
-    - "patch1.patch"
+    - include.patch  # [linux]
+    - include.macos.patch  # [osx]
 
 build:
-  number: 1
+  number: 2
   run_exports:
     - {{ pin_subpackage(package, max_pin=None) }}
 
@@ -23,29 +23,34 @@ requirements:
   build:
     - make
     - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
   host:
     - libpng
     - libuuid
     - mysql-connector-c
     - libopenssl-static
-    - openssl
+    - clangdev  # [osx]
     - zlib
   run:
     - libpng
     - libuuid
-    - openssl
+    - mysql-connector-c
+    - libopenssl-static
 
 test:
   commands:
-    # just check for existence, because the individual packages have no unified behavior
-    - which {{ program }}
-
-extra:
-  additional-platforms:
-    - linux-aarch64
+    # just check for existence and exec bit, because the individual packages have no unified behavior
+    - test -x ${PREFIX}/bin/{{ program }}
 
 about:
-  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "varies; see http://genome.ucsc.edu/license"
+  home: "https://hgdownload.cse.ucsc.edu/admin/exe"
+  license: "Varies; see https://genome.ucsc.edu/license"
   summary: "Convert a bedGraph file to bigWig format."
+  dev_url: "https://github.com/ucscGenomeBrowser/kent"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/v{{ version }}_base/README"
+
+extra:
+  identifiers:
+    - biotools:UCSC_Genome_Browser_Utilities
+    - doi:10.1093/bib/bbs038
+  additional-platforms:
+    - linux-aarch64

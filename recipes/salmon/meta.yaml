@@ -1,39 +1,38 @@
-{% set version="1.10.3" %}
+{% set name = "salmon" %}
+{% set version = "1.10.3" %}
+{% set sha256 = "a053fba63598efc4ade3684aa2c8e8e2294186927d4fcdf1041c36edc2aa0871" %}
 
 package:
-  name: salmon
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 0
-  run_exports:
-    - {{ pin_subpackage("salmon", max_pin="x.x") }}
 
 source:
   url: https://github.com/COMBINE-lab/salmon/archive/v{{ version }}.tar.gz
-  sha256: a053fba63598efc4ade3684aa2c8e8e2294186927d4fcdf1041c36edc2aa0871
+  sha256: {{ sha256 }}
 
+build:
+  number: 3
+  run_exports:
+    - {{ pin_subpackage("salmon", max_pin="x") }}
 
 requirements:
   build:
+    - {{ compiler('cxx') }}
     - autoconf
+    - automake
+    - libtool
     - cmake
     - make
-    - bzip2
-    - zlib
-    - {{ compiler('cxx') }}
-    - {{ compiler('c') }}
   host:
     - boost-cpp
-    - icu 
+    - jemalloc >=5.1.0
+    - tbb-devel >=2021.4.0
     - zlib
     - bzip2
     - unzip
-    - jemalloc >=5.1.0
-    - tbb-devel >=2021.4.0
   run:
     - boost-cpp
-    - tbb >=2021.4.0
+    - icu
 
 test:
   source_files:
@@ -42,10 +41,13 @@ test:
     - salmon --help
 
 about:
-  home: https://github.com/COMBINE-lab/salmon
-  license: GPLv3
+  home: "https://github.com/COMBINE-lab/salmon"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using selective alignment
+  summary: "Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using selective alignment."
+  dev_url: "https://github.com/COMBINE-lab/salmon"
+  doc_url: "https://combine-lab.github.io/salmon"
 
 extra:
   additional-platforms:

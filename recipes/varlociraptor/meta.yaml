@@ -1,31 +1,32 @@
-{% set version = "8.4.6" %}
+{% set name = "varlociraptor" %}
+{% set version = "8.6.0" %}
 
 package:
-  name: varlociraptor
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 1
-  run_exports:
-    - {{ pin_subpackage("varlociraptor", max_pin="x") }}
 
 source:
   url: https://github.com/varlociraptor/varlociraptor/archive/v{{ version }}.tar.gz
-  sha256: b734b322a6ff96ba5f074947505bce0166907afd448350731c9eb1dd453a5311
+  sha256: 0ca6ab58b105d00a7db47456172324b8a4286f5af9b5c77c8cf89fb432cbc908
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("varlociraptor", max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('rust') }}
-    - rust >=1.54
     - pkg-config
     - make
     - cmake
   host:
     - gsl
     - libcblas
-    - openssl
+    # try using system openssl on macos
+    - openssl  # [not osx]
     - zlib
     - bzip2
     - xz
@@ -39,11 +40,16 @@ test:
     - varlociraptor -h
 
 about:
-  home: https://varlociraptor.github.io
-  license: GPLv3
-  license_family: GPL
-  summary: Flexible, uncertainty-aware variant calling with parameter free filtration via FDR control.
+  home: "https://github.com/varlociraptor/varlociraptor"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  summary: "Flexible, uncertainty-aware variant calling with parameter free filtration via FDR control."
+  dev_url: "https://github.com/varlociraptor/varlociraptor"
+  doc_url: "https://varlociraptor.github.io"
 
 extra:
   additional-platforms:
     - linux-aarch64
+  identifiers:
+    - biotools:varlociraptor
+    - doi:10.1186/s13059-020-01993-6
