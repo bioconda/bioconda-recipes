@@ -14,11 +14,14 @@ export LANG=C.UTF-8
 SHARE_DIR="${PREFIX}/libexec/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 OS=$(./install get_os)
 
-cd t_coffee_source
-# CC=CXX is correct here - the t-coffee authors use this as it errors less with the source.
-make -j ${CPU_COUNT} CFLAGS="${CFLAGS} -fsigned-char -Wno-write-strings" CC="${CXX}" LDFLAGS="${LDFLAGS}" FCC="${FC}" FFLAGS="${FFLAGS}" all
-cp t_coffee TMalign ../bin/${OS}
-cd ..
+if [ "${OS}" != "macosx" ]	# use the distributed binary with OS/X - it doesn't compile with recent XCode 
+   then 
+       cd t_coffee_source
+       # CC=CXX is correct here - the t-coffee authors use this as it errors less with the source.
+       make -j ${CPU_COUNT} CFLAGS="${CFLAGS} -fsigned-char -Wno-write-strings" CC="${CXX}" LDFLAGS="${LDFLAGS}" FCC="${FC}" FFLAGS="${FFLAGS}" all
+       cp t_coffee TMalign ../bin/${OS}
+       cd ..
+fi
 mkdir -p "${PREFIX}/bin"
 
 # the t-coffee home only has plugins with x86_64 support; let's not 
@@ -38,6 +41,6 @@ mkdir -p "${PREFIX}/bin"
 # The installer may try to update dependencies and install them to bin/,
 # which will cause conflicts with the dependencies as separately packaged.
 # t_coffee itself is not installed here
-rm -fv ${PREFIX}/bin/*		# 
+rm -fv ${PREFIX}/bin/*
 
 sed -e "s|CHANGEME|${SHARE_DIR}|" -e "s|__OS__|${OS}|" "$RECIPE_DIR/t_coffee.sh" > "${PREFIX}/bin/t_coffee"
