@@ -23,18 +23,20 @@ build:
     # export LC_ALL=C.UTF-8
     export RUST_BACKTRACE=1
     export CARGO_TERM_VERBOSE=true
+
     # export RUSTC_LOG=rustc_codegen_ssa::back::link=info
     export LIBCLANG_PATH=$PREFIX/lib # [linux]
-    # see https://docs.rs/openssl/latest/openssl/#manual for the following:
+    # link to conda-packaged openssl libraries
+    # see https://docs.rs/openssl/latest/openssl/#manual
     export OPENSSL_NO_VENDOR=1
     export OPENSSL_INCLUDE_DIR=$PREFIX/include
     export OPENSSL_LIB_DIR=$PREFIX/lib
-    export OPENSSL_STATIC=0
-    # make the curl-sys crate link statically to existing libcurl and openssl
+    # still don't know how to convince the curl-sys crate to link to shared libcurl and openssl; the following is not enough
     export CURL_STATIC_SSL=0
     export CURL_SYS_STATIC=0
     # export HTS_LIB_DIR=$PREFIX/lib
     export HTS_INCLUDE_DIR=$PREFIX/include
+    # again, don't know how to make crates link dynamically
     export LIBZ_SYS_STATIC=0
     export LZMA_API_STATIC=0
     # export CPLUS_INCLUDE_PATH=$PREFIX/include # [linux and aarch64]
@@ -42,7 +44,10 @@ build:
     export HTS_SYS_BUNDLED=0
     export MACOSX_DEPLOYMENT_TARGET=13.0 # [osx and x86-64]
     cargo-bundle-licenses --format yaml --output RUST_THIRDPARTY.yml
-    maturin build -b pyo3 --interpreter "${PYTHON}" --release --strip
+    # build the wheel with maturin
+    # the --skip-auditwheel option prevents maturin from copying shared libraries
+    # from the host environment into the wheel
+    maturin build -b pyo3 --interpreter "${PYTHON}" --release --strip --skip-auditwheel
     {{ PYTHON }} -m pip install ./target/wheels/*.whl --no-deps --no-build-isolation -vvv
   entry_points:
     - alignmentSieve = deeptools.alignmentSieve:main
@@ -75,17 +80,16 @@ requirements:
   build:
     - {{ compiler('rust') }}
     - cargo-bundle-licenses
-    # - pkg-config
   host:
     - python
     - pip
     - maturin
     - clangdev
     - openssl
-    - libcurl
-    - bzip2
-    - xz
-    - zlib
+    # - libcurl
+    # - bzip2
+    # - xz
+    # - zlib
   run:
     # - python
     - pybigwig >=0.2.1
