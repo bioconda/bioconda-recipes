@@ -27,3 +27,7 @@ ${CXX} ${CXXFLAGS} -std=c++11 -I ./include/ ${LDFLAGS} -o cnv_detection cnv_dete
 install -m 0755 cluster_reads extract_barcode_info output_bam_coreinfo remove_sparse_nodes ${PREFIX}/bin
 install -m 0755 cal_hap_read_depth_from_bcd21 grid_overlap cal_read_depth_from_bcd21 cal_barcode_depth_from_bcd21 ${PREFIX}/bin
 install -m 0755 cal_twin_win_bcd_cnt cal_centroid_from_read_depth cal_2d_overlapping_barcodes cnv_detection small_deletion_detection ${PREFIX}/bin
+
+cd ..
+cp -r scripts ${PREFIX}/bin
+cp linkedsv.py ${PREFIX}/bin
