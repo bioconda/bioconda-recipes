@@ -10,10 +10,10 @@ echo "0" > gitver.txt
 
 cp ${RECIPE_DIR}/vcxproj_make.py .
 chmod +x vcxproj_make.py
-./vcxproj_make.py --openmp --lrt --cppcompiler "${CXX}" --ccompiler "${CC}"
+./vcxproj_make.py --openmp --lrt --std "c++17" --cppcompiler "${CXX}" --ccompiler "${CC}"
 
 # Verify binary exists and is executable
-if [ ! -f ../bin/reseek ]; then
+if [[ ! -f ../bin/reseek ]]; then
     echo "Error: reseek binary not found"
     exit 1
 fi
