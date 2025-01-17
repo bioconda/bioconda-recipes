@@ -56,8 +56,8 @@ sys.stderr.write("binary=" + binary + "\n")
 # compiler_opts = " -ffast-math -march=native"
 # linker_opts = " -ffast-math -march=native"
 
-compiler_opts = " -ffast-math"
-linker_opts = " -ffast-math"
+compiler_opts = " -ffast-math -Wno-deprecated-non-prototype"
+linker_opts = " -ffast-math -Wno-deprecated-non-prototype"
 if not Args.nonative:
     compiler_opts += " -march=native"
     linker_opts += " -march=native"
