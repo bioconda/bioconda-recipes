@@ -1,46 +1,21 @@
-{% set version = "1.40.0" %}
+{% set version = "1.44.0" %}
 {% set name = "methylMnM" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 3d6c83c4fa30daea5b1c91e70f67c6b5
+about:
+  description: To give the exactly p-value and q-value of MeDIP-seq and MRE-seq data for different samples comparation.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: detect different methylation level (DMR)
+
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-methylmnm", max_pin="x.x") }}'
-requirements:
-  host:
-    - 'bioconductor-edger >=4.0.0,<4.1.0'
-    - r-base
-    - r-statmod
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-edger >=4.0.0,<4.1.0'
-    - r-base
-    - r-statmod
-  build:
-    - {{ compiler('c') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3.0-only
-  summary: 'detect different methylation level (DMR)'
-  description: 'To give the exactly p-value and q-value of MeDIP-seq and MRE-seq data for different samples comparation.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
 extra:
   additional-platforms:
     - linux-aarch64
@@ -51,4 +26,35 @@ extra:
     name: bioconductor-methylmnm
     path: recipes/bioconductor-methylmnm
     version: 1.18.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - r-base
+    - r-statmod
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - r-base
+    - r-statmod
+
+source:
+  md5: 23ff1dc1c980c3bf3664854fcff99599
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 
