@@ -13,6 +13,7 @@ source:
 
 build:
   number: 0
+  # enable if facing issues with local builds
   skip: true  # [py >= 313]
   run_exports:
     - {{ pin_subpackage("deeptools", max_pin="x") }}
@@ -21,19 +22,23 @@ build:
     # export LANG=C.UTF-8
     # export LC_ALL=C.UTF-8
     export RUST_BACKTRACE=1
+    export CARGO_TERM_VERBOSE=true
     # export RUSTC_LOG=rustc_codegen_ssa::back::link=info
     export LIBCLANG_PATH=$PREFIX/lib # [linux]
     # see https://docs.rs/openssl/latest/openssl/#manual for the following:
     export OPENSSL_NO_VENDOR=1
     export OPENSSL_INCLUDE_DIR=$PREFIX/include
     export OPENSSL_LIB_DIR=$PREFIX/lib
+    export OPENSSL_STATIC=0
     # make the curl-sys crate link statically to existing libcurl and openssl
-    export CURL_STATIC_SSL=1
-    export CURL_SYS_STATIC=1
-    export HTS_LIB_DIR=$PREFIX/lib
+    export CURL_STATIC_SSL=0
+    export CURL_SYS_STATIC=0
+    # export HTS_LIB_DIR=$PREFIX/lib
     export HTS_INCLUDE_DIR=$PREFIX/include
+    export LIBZ_SYS_STATIC=0
+    export LZMA_API_STATIC=0
     # export CPLUS_INCLUDE_PATH=$PREFIX/include # [linux and aarch64]
-    export HTS_STATIC=1
+    export HTS_STATIC=0
     export HTS_SYS_BUNDLED=0
     export MACOSX_DEPLOYMENT_TARGET=13.0 # [osx and x86-64]
     cargo-bundle-licenses --format yaml --output RUST_THIRDPARTY.yml
@@ -70,19 +75,19 @@ requirements:
   build:
     - {{ compiler('rust') }}
     - cargo-bundle-licenses
+    # - pkg-config
   host:
     - python
     - pip
     - maturin
     - clangdev
-    - htslib
     - openssl
     - libcurl
     - bzip2
     - xz
     - zlib
   run:
-    - python
+    # - python
     - pybigwig >=0.2.1
     - numpy >=2.0.0
     - numpydoc >=0.5
