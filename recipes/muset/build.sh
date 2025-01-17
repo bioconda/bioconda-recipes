@@ -1,29 +1,24 @@
 #!/bin/bash
 set -ex
 
-# Print environment and build information
-echo "Build Environment:"
-env | grep -E "PREFIX|CC|CXX"
+# Print compiler paths
+which cmake
+which $CC
+which $CXX
 
-echo "Compiler Versions:"
-$CC --version
-$CXX --version
-cmake --version
-
-# Create and navigate to build directory
+# Create build directory
 mkdir -p build && cd build
 
-# Configure with CMake
+# Detailed CMake configuration
 cmake .. \
     -DCMAKE_INSTALL_PREFIX=$PREFIX \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_CXX_STANDARD=17
+    -DCMAKE_CXX_STANDARD=17 \
+    -DCMAKE_C_COMPILER=$CC \
+    -DCMAKE_CXX_COMPILER=$CXX
 
 # Build the project
 make -j4
 
-# Install the binary
+# Install
 make install
-
-# Verify installation
-muset --help
