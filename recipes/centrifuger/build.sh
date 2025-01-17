@@ -11,7 +11,5 @@ fi
 mkdir -p $PREFIX/bin
 
 make -j ${CPU_COUNT} CXX="$CXX" CXXFLAGS="$CXXFLAGS" LINKPATH="-L${PREFIX}/lib"
-chmod +x centrifuger-download
-chmod +x centrifuger-kreport
 
-cp {centrifuger,centrifuger-build,centrifuger-download,centrifuger-kreport,centrifuger-inspect,centrifuger-quant} $PREFIX/bin
+install -m 0755 {centrifuger,centrifuger-build,centrifuger-download,centrifuger-kreport,centrifuger-inspect,centrifuger-quant} $PREFIX/bin
