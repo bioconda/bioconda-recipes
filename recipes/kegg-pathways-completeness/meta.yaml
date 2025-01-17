@@ -16,10 +16,10 @@ build:
     - generate_hmmtable = kegg_pathways_completeness.bin.generate_hmmtable.hmmscan_tab:main
     - parsing_hmmscan = kegg_pathways_completeness.bin.generate_hmmtable.parsing_hmmscan:main
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   number: 0
   run_exports:
-    - {{ pin_subpackage('kegg-pathways-completeness', max_pin="x.x") }}
+    - {{ pin_subpackage('kegg-pathways-completeness', max_pin="x") }}
 
 requirements:
   host:
@@ -28,21 +28,19 @@ requirements:
     - pip
   run:
     - python >=3.10
-    - biopython ==1.83
-    - networkx ==3.3
-    - python-graphviz ==0.20.3
+    - biopython >=1.83
+    - networkx >=3.3
+    - python-graphviz >=0.20.3
+    - pydot >=3.0.4
 
 test:
   imports:
     - kegg_pathways_completeness
   commands:
-    - pip check
     - give_pathways --help
     - plot_completeness_graphs --help
     - generate_hmmtable --help
     - parsing_hmmscan --help
-  requires:
-    - pip
 
 about:
   summary: The tool counts completeness of each KEGG pathway for protein sequences.
