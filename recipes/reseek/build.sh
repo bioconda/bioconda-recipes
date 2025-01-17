@@ -4,6 +4,8 @@ set -e
 mkdir -p ${PREFIX}/bin
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
 
 cd src || exit 1
 echo "0" > gitver.txt
@@ -12,12 +14,12 @@ case `uname` in
     Linux)
 	cp -rf ${RECIPE_DIR}/vcxproj_make.py .
 	chmod 0755 vcxproj_make.py
-	python ./vcxproj_make.py --openmp --lrt --std "c++17" --cppcompiler "${CXX}" --ccompiler "${CC}"
+	python ./vcxproj_make.py --openmp --lrt --pthread --std "c++17" --cppcompiler "${CXX}" --ccompiler "${CC}"
 	;;
     Darwin)
 	cp -rf ${RECIPE_DIR}/vcxproj_make_osx.py .
 	chmod 0755 vcxproj_make_osx.py
-	python ./vcxproj_make_osx.py --openmp --lrt --std "c++17" --cppcompiler "${CXX}" --ccompiler "${CC}"
+	python ./vcxproj_make_osx.py --openmp --lrt --pthread --nonative --std "c++17" --cppcompiler "${CXX}" --ccompiler "${CC}"
 	;;
     *)
 	echo "Unknown uname '`uname`'" >&2
