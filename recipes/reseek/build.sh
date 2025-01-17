@@ -13,6 +13,10 @@ echo "0" > gitver.txt
 OS=$(uname)
 ARCH=$(uname -m)
 
+case $(uname -m) in
+	arm64|aarch64) cp -rfv ${RECIPE_DIR}/sse2neon.h ${SRC_DIR}/src/ ;;
+esac
+
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
 	cp -rf ${RECIPE_DIR}/vcxproj_make_osx.py .
  	chmod 0755 vcxproj_make_osx.py
