@@ -10,21 +10,22 @@ export CFLAGS="${CFLAGS} -O3"
 cd src || exit 1
 echo "0" > gitver.txt
 
-case `uname` in
-    Linux)
-	cp -rf ${RECIPE_DIR}/vcxproj_make.py .
-	chmod 0755 vcxproj_make.py
-	python ./vcxproj_make.py --openmp --lrt --pthread --std "c++17" --cppcompiler "${CXX}" --ccompiler "${CC}"
-	;;
-    Darwin)
+OS=$(uname)
+ARCH=$(uname -m)
+
+if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
+	cp -rf ${RECIPE_DIR}/vcxproj_make_osx.py .
+ 	chmod 0755 vcxproj_make_osx.py
+	python ./vcxproj_make_osx.py --openmp --lrt --pthread --cppcompiler "${CXX}" --ccompiler "${CC}"
+elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	cp -rf ${RECIPE_DIR}/vcxproj_make_osx.py .
 	chmod 0755 vcxproj_make_osx.py
-	python ./vcxproj_make_osx.py --openmp --lrt --pthread --cppcompiler "${CXX}" --ccompiler "${CC}"
-	;;
-    *)
-	echo "Unknown uname '`uname`'" >&2
-	exit 1
-esac
+ 	python ./vcxproj_make_osx.py --openmp --lrt --pthread --nonative --cppcompiler "${CXX}" --ccompiler "${CC}"
+else
+	cp -rf ${RECIPE_DIR}/vcxproj_make.py .
+	chmod 0755 vcxproj_make.py
+ 	python ./vcxproj_make.py --openmp --lrt --pthread --std "c++17" --cppcompiler "${CXX}" --ccompiler "${CC}"
+fi
 
 # Verify binary exists and is executable
 if [[ ! -f ../bin/reseek ]]; then
