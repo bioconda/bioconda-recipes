@@ -19,7 +19,7 @@ case `uname` in
     Darwin)
 	cp -rf ${RECIPE_DIR}/vcxproj_make_osx.py .
 	chmod 0755 vcxproj_make_osx.py
-	python ./vcxproj_make_osx.py --openmp --lrt --pthread --nonative --std "c++17" --cppcompiler "${CXX}" --ccompiler "${CC}"
+	python ./vcxproj_make_osx.py --openmp --lrt --pthread --std "c++17" --cppcompiler "${CXX}" --ccompiler "${CC}"
 	;;
     *)
 	echo "Unknown uname '`uname`'" >&2
