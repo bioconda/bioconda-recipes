@@ -8,9 +8,21 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 cd src || exit 1
 echo "0" > gitver.txt
 
-cp ${RECIPE_DIR}/vcxproj_make.py .
-chmod +x vcxproj_make.py
-./vcxproj_make.py --openmp --lrt --std "c++17" --cppcompiler "${CXX}" --ccompiler "${CC}"
+case `uname` in
+    Linux)
+	cp -rf ${RECIPE_DIR}/vcxproj_make.py .
+	chmod 0755 vcxproj_make.py
+	python ./vcxproj_make.py --openmp --lrt --std "c++17" --cppcompiler "${CXX}" --ccompiler "${CC}"
+	;;
+    Darwin)
+	cp -rf ${RECIPE_DIR}/vcxproj_make_osx.py .
+	chmod 0755 vcxproj_make_osx.py
+	python ./vcxproj_make_osx.py --openmp --lrt --std "c++17" --cppcompiler "${CXX}" --ccompiler "${CC}"
+	;;
+    *)
+	echo "Unknown uname '`uname`'" >&2
+	exit 1
+esac
 
 # Verify binary exists and is executable
 if [[ ! -f ../bin/reseek ]]; then
