@@ -1,0 +1,29 @@
+From 4cb2f793503087163bda8592222f105f27e33e66 Mon Sep 17 00:00:00 2001
+From: Sergei Trofimovich <slyich@gmail.com>
+Date: Sat, 10 Feb 2024 10:23:05 +0000
+Subject: [PATCH] Fix `gcc-13` build failure (missing `<cstdint>` include)
+
+Without the change build fails on `gcc-13` as:
+
+    In file included from /build/source/src/main_local_assemble.cpp:27:
+    /build/source/src/localasm/local_assemble.h:31:3: error: 'uint32_t' does not name a type
+       31 |   uint32_t kmin{11};
+          |   ^~~~~~~~
+    /build/source/src/localasm/local_assemble.h:1:1: note: 'uint32_t' is defined in header '<cstdint>'; did you forget to '#include <cstdint>'?
+      +++ |+#include <cstdint>
+---
+ src/localasm/local_assemble.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/localasm/local_assemble.h b/src/localasm/local_assemble.h
+index 46b7bba..e1c2365 100644
+--- a/src/localasm/local_assemble.h
++++ b/src/localasm/local_assemble.h
+@@ -22,6 +22,7 @@
+ #ifndef LOCAL_ASSEMBLER_H
+ #define LOCAL_ASSEMBLER_H
+ 
++#include <cstdint>
+ #include <string>
+ 
+ struct LocalAsmOption {
