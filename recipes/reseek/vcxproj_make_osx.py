@@ -224,4 +224,3 @@ if rc != 0:
     sys.stderr.write("\n\nERROR -- make failed, see make.stderr\n\n")
     sys.exit(1)
 sys.stderr.write("make done.\n")
-os.system("ls -lh ../bin/" + binary + "\n")
