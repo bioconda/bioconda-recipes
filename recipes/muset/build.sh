@@ -5,6 +5,8 @@ set -ex
 which cmake
 which $CC
 which $CXX
+# Initialize and update submodules if needed
+git submodule update --init --recursive
 
 # Create build directory
 mkdir -p build && cd build
