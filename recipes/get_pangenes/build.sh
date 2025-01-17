@@ -15,5 +15,5 @@ cp -ar pangenes/bin \
     pangenes/rename_pangenes.pl \
     pangenes/HPC* \
     pangenes/CHANGES.txt \
-    pangenes/README.md \ 
+    pangenes/README.md \
     $PREFIX/bin
