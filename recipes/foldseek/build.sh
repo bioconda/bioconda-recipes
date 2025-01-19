@@ -2,19 +2,20 @@
 
 ARCH_BUILD=""
 case $(uname -m) in
-    x86_64) ARCH_BUILD="-DHAVE_AVX2=1" ;;
+    x86_64) ARCH_BUILD="-DHAVE_AVX2=1 -DGGML_METAL=OFF" ;;
     arm64|aarch64) ARCH_BUILD="-DHAVE_ARM8=1" ;;
 esac
 
 CUDA=0
 case $(uname -s) in
     Linux) CUDA=1 ;;
-    Darwin)
-        CUDA=0
-        export MACOSX_DEPLOYMENT_TARGET=10.15
-        export MACOSX_SDK_VERSION=10.15
-    ;;
+    Darwin) CUDA=0 ;;
 esac
+
+if [ $(uname -s) = "Darwin" ] && [ $(uname -m) = "arm64" ]; then
+    export MACOSX_DEPLOYMENT_TARGET=10.15
+    export MACOSX_SDK_VERSION=10.15
+fi
 
 if [ -z "${ARCH_BUILD}" ]; then
     echo "Invalid architecture"
