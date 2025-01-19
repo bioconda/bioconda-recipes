@@ -9,13 +9,15 @@ source:
   url: https://github.com/dib-lab/khmer/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
+    # https://github.com/dib-lab/khmer/compare/master...mr-c:khmer:python_3.10+.patch
+    - 0000-Upgrade-to-python3.10.patch
     - 0001-Inject-compiler-and-flags-for-third-party-compilation.patch
     - 0002-remove-m64.patch
 
 build:
-  number: 5
-  skip: True  # [py<30 or py>=312 or osx]
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  number: 6
+  skip: True  # [osx]
+  script: SETUPTOOLS_USE_DISTUTILS=stdlib {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
     - {{ pin_subpackage('khmer', max_pin="x.x") }}
 
@@ -27,14 +29,14 @@ requirements:
     - libgomp      # [linux]
     - make
   host:
-    - python >=3.6,<3.12
+    - python >=3.6
     - pip
     - setuptools >=18.0
     - Cython >=0.25.2
     - bzip2
     - zlib
   run:
-    - python >=3.6,<3.12
+    - python >=3.6
     - screed >=1.0
     - bz2file
     - bzip2
@@ -55,8 +57,9 @@ about:
 
 extra:
   additional-platforms:
-    - linux-aarch64
-    - osx-arm64
+#    needs cqf porting 
+#    - linux-aarch64
+#    - osx-arm64
   identifiers:
     - biotools:khmer
     - doi:10.12688/f1000research.6924.1
