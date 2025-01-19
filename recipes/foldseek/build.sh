@@ -9,7 +9,11 @@ esac
 CUDA=0
 case $(uname -s) in
     Linux) CUDA=1 ;;
-    Darwin) CUDA=0 ;;
+    Darwin)
+        CUDA=0
+        export MACOSX_DEPLOYMENT_TARGET=10.15
+        export MACOSX_SDK_VERSION=10.15
+    ;;
 esac
 
 if [ -z "${ARCH_BUILD}" ]; then
