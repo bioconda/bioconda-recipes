@@ -1,6 +1,6 @@
 --- a/cmake/fmt.cmake
 +++ b/cmake/fmt.cmake
-@@ -2,10 +2,11 @@
+@@ -2,10 +2,12 @@
  
  ExternalProject_Add(FMT
    PREFIX ${external_bindir}/FMT
@@ -10,14 +10,19 @@
    CMAKE_ARGS -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE=ON
               -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
 -  INSTALL_COMMAND ""
++             -DFMT_TEST=OFF -DFMT_DOC=OFF
 +  INSTALL_COMMAND ${CMAKE_COMMAND} -E echo "Using existing fmt library"
    LOG_CONFIGURE ON
    LOG_BUILD ON
  )
  
-+--- a/cmake/kff-cpp-api.cmake
++list(APPEND includes ${external_dir}/fmt/include)
++list(APPEND deps_libs ${external_bindir}/FMT/src/FMT-build/libfmt.a)
++list(APPEND deps FMT)
+ 
+--- a/cmake/kff-cpp-api.cmake
 +++ b/cmake/kff-cpp-api.cmake
-@@ -2,10 +2,11 @@
+@@ -2,10 +2,12 @@
  
  ExternalProject_Add(KFF
    PREFIX ${external_bindir}/KFF
@@ -32,9 +37,13 @@
    LOG_BUILD ON
  )
  
-+--- a/cmake/lz4.cmake
++list(APPEND includes ${external_bindir}/KFF/src/KFF-build)
++list(APPEND deps_libs ${external_bindir}/KFF/src/KFF-build/libkff.a)
++list(APPEND deps KFF)
+ 
+--- a/cmake/lz4.cmake
 +++ b/cmake/lz4.cmake
-@@ -2,13 +2,14 @@
+@@ -2,13 +2,15 @@
  
  ExternalProject_Add(LZ4
      PREFIX ${external_bindir}/LZ4
@@ -51,9 +60,13 @@
      LOG_BUILD ON
  )
  
-+--- a/cmake/spdlog.cmake
++list(APPEND includes ${external_dir}/lz4/lib)
++list(APPEND deps_libs ${external_bindir}/LZ4/src/LZ4-build/liblz4.a)
++list(APPEND deps LZ4)
+ 
+--- a/cmake/spdlog.cmake
 +++ b/cmake/spdlog.cmake
-@@ -2,11 +2,12 @@
+@@ -2,11 +2,13 @@
  
  ExternalProject_Add(SPDLOG
    PREFIX ${external_bindir}/SPDLOG
@@ -64,14 +77,18 @@
               -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
               -DSPDLOG_BUILD_SHARED=OFF
 -  INSTALL_COMMAND ""
++             -DSPDLOG_BUILD_TESTS=OFF -DSPDLOG_BUILD_EXAMPLE=OFF
 +  INSTALL_COMMAND ${CMAKE_COMMAND} -E echo "Using existing spdlog library"
    LOG_CONFIGURE ON
    LOG_BUILD ON
  )
  
-+--- a/cmake/xxHash.cmake
++list(APPEND includes ${external_dir}/spdlog/include)
++list(APPEND deps SPDLOG)
+ 
+--- a/cmake/xxHash.cmake
 +++ b/cmake/xxHash.cmake
-@@ -2,12 +2,13 @@
+@@ -2,12 +2,14 @@
  
  ExternalProject_Add(XXHASH
    PREFIX ${external_bindir}/XXHASH
@@ -84,6 +101,4 @@
               -DBUILD_SHARED_LIBS=OFF
 -  INSTALL_COMMAND ""
 +  INSTALL_COMMAND ${CMAKE_COMMAND} -E echo "Using existing xxHash library"
-   LOG_CONFIGURE ON
-   LOG_BUILD ON
- )
+   LOG_CONFIGURE
