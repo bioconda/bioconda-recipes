@@ -1,21 +1,18 @@
-{% set version = "9-427df8a" %}
-{% set sha256 = "b17d2d85b49a8508f79ffd8b15e54afc5feef5f3fb0276a291141ca5dbbbe8bc" %}
+{% set version = "10-941cd33" %}
+{% set sha256 = "0db8bf072c9ec895efc6aa3626c746f4ca020acc9b92e9b2292b56c8c9f8a943" %}
 
 package:
   name: foldseek
   version: {{ version|replace("-", ".")  }}
 
 build:
-  number: 2
+  number: 0
   run_exports:
     - {{ pin_subpackage('foldseek', max_pin="x") }}
 
 source:
   url: https://github.com/steineggerlab/foldseek/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    # remove for next release
-    - fix-rust-1.79.patch
 
 requirements:
   build:
@@ -24,19 +21,24 @@ requirements:
     - {{ compiler('rust') }}
     - cmake
     - make
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
-  host:
+    - llvm-openmp         # [osx]
+    - libgomp             # [linux]
+    - cuda-nvcc           # [linux]
+    - cuda-cudart-dev     # [linux]
+    - libcublas-dev       # [linux]
+    - libcublas-static    # [linux]
+    - cuda-version >=12.6 # [linux]
     - perl
+  host:
     - gawk
     - zlib
     - bzip2
   run:
     - aria2
-    - wget
     - gawk
     - zlib
     - bzip2
+    - __osx >={{ MACOSX_DEPLOYMENT_TARGET|default("10.15") }}  # [osx and arm64]
 
 test:
   commands:
