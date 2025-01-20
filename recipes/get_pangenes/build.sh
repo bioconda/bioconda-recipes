@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # copy scripts and its dependencies to $PREFIX/bin folder
-
-mkdir -p $PREFIX/bin
+mkdir -p ${PREFIX}/bin
 cp -ar pangenes/bin \
     pangenes/lib \
     pangenes/get_pangenes.pl \
@@ -16,4 +15,5 @@ cp -ar pangenes/bin \
     pangenes/HPC* \
     pangenes/CHANGES.txt \
     pangenes/README.md \
-    $PREFIX/bin
+    LICENSE \
+    ${PREFIX}/bin

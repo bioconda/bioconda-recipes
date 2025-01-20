@@ -28,12 +28,23 @@ requirements:
     - samtools
     - bedtools
     - gzip
-    - bzip2  
-
+    - bzip2
+    
 test:
+  requires:
+    - wget
+    - tar      
   commands:
-    - get_pangenes.pl -v  
-    - check_evidence.pl -c  
+          #    - _cut_sequences.pl -h
+          #    - _collinear_genes.pl -h
+          #    - _cluster_analysis.pl -h
+          #    - check_evidence.pl -c 
+    - get_pangenes.pl -h # -v fails due to gffread stdout not being captured
+    - wget -qO- https://github.com/Ensembl/plant-scripts/releases/download/v0.4/test_rice.tgz | tar xvfz - 
+      #    - ls test_rice    
+    - get_pangenes.pl -d test_rice
+    - get_pangenes.pl -d test_rice -g  
+    - rm -rf test_rice*
 
 about:
   home: https://github.com/Ensembl/plant-scripts/tree/master/pangenes
@@ -51,7 +62,7 @@ extra:
     computer cluster with LSF or slurm, particularly for large genomes.
     To configure it for HPC (get_pangenes.pl -m) please check the documentation and
     edit your own HPC.conf file , which should be placed in the same location as the
-    main script get_pangenes.pl, which you can find out with the following command:
+    main script get_pangenes.pl, which you can find out with the following command
 
     $ which get_pangenes.pl
 
