@@ -2,7 +2,7 @@
 
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -std=c++17 -O3 -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -std=c++17 -O3 -I${PREFIX}/include -fopenmp"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 if [[ "$(uname)" == "Darwin" ]]; then
