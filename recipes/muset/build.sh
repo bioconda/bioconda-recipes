@@ -1,19 +1,22 @@
 #!/bin/bash
-set -ex
+set -e
+set -x
 
-# Create build directory
-mkdir -p build && cd build
+mkdir -p ${PREFIX}/bin
 
-# CMake configuration
-cmake .. \
-    -DCMAKE_INSTALL_PREFIX=$PREFIX \
-    -DCONDA_BUILD=ON \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_CXX_STANDARD=17 \
-    -DARCH_NATIVE=OFF
+mkdir build-conda
+cd build-conda
 
-# Build with parallel compilation
-make -j4
+echo "Current directory: ${PWD}"
+ls -lh
 
-# Install
-make install
+cmake .. -DCONDA_BUILD=ON
+make -j8
+cd ..
+
+echo "Current directory: ${PWD}"
+ls -lh
+
+cp ./bin/kmat_tools ${PREFIX}/bin
+cp ./bin/muset ${PREFIX}/bin
+cp ./bin/muset_pa ${PREFIX}/bin
