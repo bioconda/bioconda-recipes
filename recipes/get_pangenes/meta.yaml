@@ -1,5 +1,5 @@
-{% set version = "15012025" %}
-{% set sha256 = "1358e7219c4f2fe1833449c24ee433bfd56f3a4237776709be0291b306b468e2" %}
+{% set version = "20012025" %}
+{% set sha256 = "07232d6aa3a661893c6f53c3a00a834ed170de30c6b800d5ba346292a23a3ec6" %}
 
 package:
   name: get_pangenes
@@ -24,9 +24,11 @@ requirements:
     - minimap2 =2.24
     - gffread =0.12.7  
     - gmap 
-    - gsalign
+      #- gsalign
     - samtools
     - bedtools
+    - grep
+    - coreutils  
     - gzip
     - bzip2
     
@@ -35,15 +37,10 @@ test:
     - wget
     - tar      
   commands:
-          #    - _cut_sequences.pl -h
-          #    - _collinear_genes.pl -h
-          #    - _cluster_analysis.pl -h
-          #    - check_evidence.pl -c 
-    - get_pangenes.pl -h # -v fails due to gffread stdout not being captured
+    - get_pangenes.pl -v # -v fails due to gffread stdout not being captured
     - wget -qO- https://github.com/Ensembl/plant-scripts/releases/download/v0.4/test_rice.tgz | tar xvfz - 
-      #    - ls test_rice    
     - get_pangenes.pl -d test_rice
-    - get_pangenes.pl -d test_rice -g  
+      #- get_pangenes.pl -d test_rice -g, _collinear_genes.pl -g fails to find bwt_index  
     - rm -rf test_rice*
 
 about:
@@ -52,7 +49,7 @@ about:
   license: "Apache-2.0"
   license_family: APACHE 
   license_file: LICENSE
-  description: "get_pangenes.pl computes whole genome alignments (WGA) to define clusters of collinear, orthologous genes/features annotated in GFF files, defining pangenes across a pangenome."
+  description: "get_pangenes.pl computes whole genome alignments (WGA) to define clusters of collinear, orthologous genes/features annotated in GFF files, defining pangenes across a pangenome. currently the bioconda version supports nly minimap2."
 
 extra:
   identifiers:
@@ -62,10 +59,6 @@ extra:
     computer cluster with LSF or slurm, particularly for large genomes.
     To configure it for HPC (get_pangenes.pl -m) please check the documentation and
     edit your own HPC.conf file , which should be placed in the same location as the
-    main script get_pangenes.pl, which you can find out with the following command
-
-    $ which get_pangenes.pl
-
-    The documentation can be found at:
+    main script get_pangenes.pl . Documentation can be found at
 
     https://github.com/Ensembl/plant-scripts/tree/master/pangenes
