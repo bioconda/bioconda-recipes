@@ -12,13 +12,16 @@ source:
 
 build:
   number: 0
-  script: "cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install --no-track --locked --verbose --root "${PREFIX}" --path .
   run_exports:
     - {{ pin_subpackage("kbo-cli", max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('rust') }}
+    - cargo-bundle-licenses
 
 test:
   commands:
@@ -29,6 +32,7 @@ about:
   license_file:
     - LICENSE-APACHE
     - LICENSE-MIT
+    - THIRDPARTY.yml
   license: 'Dual-licensed under the MIT and Apache 2.0 licenses.'
   summary: 'Command-line interface for the kbo local aligner'
   dev_url: https://github.com/tmaklin/kbo-cli
