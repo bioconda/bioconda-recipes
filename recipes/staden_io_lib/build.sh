@@ -21,11 +21,12 @@ else
 fi
 
 cp -rf ${RECIPE_DIR}/config.* .
+cp -rf ${RECIPE_DIR}/config.* htscodecs/
 
 cd htscodecs
 autoupdate
 autoreconf -if
-./configure --prefix="${PREFIX}" "${EXTRA_ARGS}" --enable-shared=yes --enable-static=no \
+./configure --prefix="${PREFIX}" "${EXTRA_ARGS}" --enable-shared --disable-static \
 	--disable-warnings --disable-dependency-tracking --disable-option-checkin --enable-silent-rules \
  	LDFLAGS="${LDFLAGS}" CC="${CC}" CFLAGS="${CFLAGS}" CPPFLAGS="${CPPFLAGS}"
 
@@ -34,7 +35,7 @@ cd ..
 autoupdate
 autoreconf -if
 ./configure --prefix="${PREFIX}" --with-libdeflate="${PREFIX}" --with-libcurl="${PREFIX}" \
-	--with-zlib="${PREFIX}" --with-zstd="${PREFIX}" "${EXTRA_ARGS}" --enable-shared=yes --enable-static=no \
+	--with-zlib="${PREFIX}" --with-zstd="${PREFIX}" "${EXTRA_ARGS}" --enable-shared --disable-static \
  	--disable-warnings --disable-dependency-tracking --disable-option-checkin --enable-silent-rules \
 	LDFLAGS="${LDFLAGS}" CC="${CC}" CFLAGS="${CFLAGS}" CPPFLAGS="${CPPFLAGS}"
 make -j"${CPU_COUNT}"
