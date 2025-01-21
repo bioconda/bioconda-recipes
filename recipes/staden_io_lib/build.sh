@@ -13,11 +13,11 @@ OS=$(uname)
 ARCH=$(uname -m)
 
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
-	export EXTRA_ARGS="--host=arm64 --target=arm64"
+	export EXTRA_ARGS="--target=${CC}"
 elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
-	export EXTRA_ARGS="--host=aarch64 --target=aarch64"
+	export EXTRA_ARGS="--target=${CC}"
 else
-	export EXTRA_ARGS="--host=x86_64 --target=x86_64"
+	export EXTRA_ARGS="--target=${CC}"
 fi
 
 cp -rf ${RECIPE_DIR}/config.* .
