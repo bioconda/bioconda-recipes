@@ -2,6 +2,10 @@
 set -e
 set -x
 
+# Print patch contents for debugging
+echo "Patch contents:"
+cat ../fmt_external_project.patch
+
 # Diagnostic information about external libraries
 echo "External libraries diagnostic:"
 echo "Current directory: $(pwd)"
