@@ -2,12 +2,12 @@
 
 set -x -e
 
-export INCLUDE_PATH="${BUILD_PREFIX}/include"
-export LIBRARY_PATH="${BUILD_PREFIX}/lib"
-export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${BUILD_PREFIX}/lib"
+export INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${PREFIX}/lib"
 
-export LDFLAGS="-L${BUILD_PREFIX}/lib"
-export CPPFLAGS="-I${BUILD_PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -O3 -I${PREFIX}/include"
 
 
 mkdir -p $$PREFIX/bin
@@ -24,5 +24,5 @@ perl ./Build.PL
 perl ./Build manifest
 perl ./Build install --installdirs site
 
-chmod +x $PREFIX/bin/mashtre*
-chmod +x $PREFIX/bin/min_abundance*
+chmod 0755 $PREFIX/bin/mashtre*
+chmod 0755 $PREFIX/bin/min_abundance*

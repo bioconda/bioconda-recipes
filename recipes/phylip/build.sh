@@ -12,12 +12,13 @@ CFLAGS="${CFLAGS} ${BB_ARCH_FLAGS} ${BB_OPT_FLAGS}"
 # Additional flags suggested by the philip makefile
 CFLAGS="${CFLAGS} -fomit-frame-pointer -DUNX"
 
+CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
 BUILD_ARCH=$(uname -m)
 BUILD_OS=$(uname -s)
 
-if [ "$BUILD_ARCH" == "ppc64le" ]; then
+if [ "$BUILD_ARCH" == "ppc64le" ] || [ "$BUILD_ARCH" == "aarch64" ] || ["$BUILD_ARCH" == "arm64" ]; then
     # Just in case; make the same assumptions about plain "char" declarations
-    # on little-endian POWER8 as we do on x86_64.
+    # on little-endian POWER8 + aarch64/arm64 as we do on x86_64.
     CFLAGS="${CFLAGS} -fsigned-char"
 fi
 
@@ -29,7 +30,7 @@ if [ "$BUILD_OS" == "Darwin" ]; then
     sed -i.bak 's/-Wl,-soname/-Wl,-install_name/g' Makefile.unx
     sed -i.bak 's/\.so/.dylib/g' Makefile.unx
 fi
-make -f Makefile.unx CFLAGS="$CFLAGS" install
+make -f Makefile.unx CFLAGS="$CFLAGS" CC="$CC" install
 
 # Install
 cd ..

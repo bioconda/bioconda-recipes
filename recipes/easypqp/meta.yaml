@@ -3,17 +3,21 @@
 {% set sha256 = "d3ebc1c7cbe61f081c5ab71e76e7130aa7fae955895ffe8f719363b29870a000" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/easypqp-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/easypqp-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-cache-dir --no-deps --no-build-isolation -vvv
+  script: |
+    export MPLCONFIGDIR=${PREFIX}/tmp/matplotlib-cache
+    export XDG_CACHE_HOME=${PREFIX}/tmp/fontconfig-cache
+    mkdir -p ${MPLCONFIGDIR} ${XDG_CACHE_HOME}
+    {{ PYTHON }} -m pip install . --no-cache-dir --no-deps --no-build-isolation -vvv
   entry_points:
     - easypqp=easypqp.main:cli
   run_exports:
@@ -21,11 +25,11 @@ build:
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.9
     - pip
     - setuptools
   run:
-    - python >=3.6
+    - python >=3.9
     - numba
     - click
     - numpy

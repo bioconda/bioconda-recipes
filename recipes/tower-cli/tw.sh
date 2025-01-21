@@ -3,7 +3,6 @@
 # adapted from picard.sh launch script
 set -eu -o pipefail
 
-export LC_ALL=en_US.UTF-8
 jar_file="tw-jar.jar"
 
 # Find original directory of bash script, resolving symlinks

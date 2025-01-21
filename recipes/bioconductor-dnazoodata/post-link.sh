@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "dnazoodata-1.2.0"
+installBiocDataPackage.sh "dnazoodata-1.6.0"

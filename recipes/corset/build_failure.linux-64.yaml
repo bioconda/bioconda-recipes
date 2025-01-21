@@ -1,0 +1,104 @@
+recipe_sha: 1bda1159c5a0755ecf6a24a3129a0a13c1dd93c66b51a910feaacafa59357cd1  # The hash of the recipe's meta.yaml at which this recipe failed to build.
+skiplist: true # Set to true to skiplist this recipe so that it will be ignored as long as its latest commit is the one given above.
+log: |-
+  ./Cluster.h:46:50: error: template argument 3 is invalid
+  ./Cluster.h:46:50: error: template argument 4 is invalid
+  ./Cluster.h:46:50: error: template argument 5 is invalid
+  ./Cluster.h:46:62: error: expected initializer before 'dist_iterator'
+     46 |   typedef unordered_map< uint64_t, unsigned char >::iterator dist_iterator;
+        |                                                              ^~~~~~~~~~~~~
+  ./Cluster.h:53:3: error: 'uint64_t' does not name a type
+     53 |   uint64_t ntrans_;
+        |   ^~~~~~~~
+  ./Cluster.h:53:3: note: 'uint64_t' is defined in header '<cstdint>'; did you forget to '#include <cstdint>'?
+  ./Cluster.h:64:13: error: 'uint64_t' has not been declared
+     64 |   int get_i(uint64_t key){ return(key / ntrans_); };
+        |             ^~~~~~~~
+  ./Cluster.h:65:13: error: 'uint64_t' has not been declared
+     65 |   int get_j(uint64_t key){ return(key % ntrans_); };
+        |             ^~~~~~~~
+  ./Cluster.h:66:3: error: 'dist_iterator' does not name a type
+     66 |   dist_iterator begin(){ return(dist_.begin()); };
+        |   ^~~~~~~~~~~~~
+  ./Cluster.h:67:3: error: 'dist_iterator' does not name a type
+     67 |   dist_iterator end(){ return(dist_.end()); };
+        |   ^~~~~~~~~~~~~
+  ./Cluster.h: In member function 'void DistanceMatrix::set_size(int)':
+  ./Cluster.h:55:30: error: 'ntrans_' was not declared in this scope; did you mean 'ntrans'?
+     55 |   void set_size(int ntrans){ ntrans_=ntrans; };
+        |                              ^~~~~~~
+        |                              ntrans
+  ./Cluster.h: In member function 'unsigned char DistanceMatrix::get(int, int)':
+  ./Cluster.h:56:49: error: 'ntrans_' was not declared in this scope; did you mean 'wctrans_t'?
+     56 |   unsigned char get(int i, int j){ return(dist_[ntrans_*ij]); } ;
+        |                                                 ^~~~~~~
+        |                                                 wctrans_t
+  ./Cluster.h: In member function 'void DistanceMatrix::set(int, int, int)':
+  ./Cluster.h:59:13: error: 'ntrans_' was not declared in this scope; did you mean 'wctrans_t'?
+     59 |       dist_[ntrans_*ij]=value;
+        |             ^~~~~~~
+        |             wctrans_t
+  ./Cluster.h: In member function 'bool DistanceMatrix::no_link(int, int)':
+  ./Cluster.h:63:45: error: request for member 'find' in '((DistanceMatrix*)this)->DistanceMatrix::dist_', which is of non-class type 'dist_map' {aka 'int'}
+     63 |   bool no_link(int i, int j){ return (dist_.find(ntrans_*ij)==dist_.end());};
+        |                                             ^~~~
+  ./Cluster.h:63:50: error: 'ntrans_' was not declared in this scope; did you mean 'wctrans_t'?
+     63 |   bool no_link(int i, int j){ return (dist_.find(ntrans_*ij)==dist_.end());};
+        |                                                  ^~~~~~~
+        |                                                  wctrans_t
+  ./Cluster.h:63:70: error: request for member 'end' in '((DistanceMatrix*)this)->DistanceMatrix::dist_', which is of non-class type 'dist_map' {aka 'int'}
+     63 |   bool no_link(int i, int j){ return (dist_.find(ntrans_*ij)==dist_.end());};
+        |                                                                      ^~~
+  ./Cluster.h: In member function 'int DistanceMatrix::get_i(int)':
+  ./Cluster.h:64:41: error: 'ntrans_' was not declared in this scope; did you mean 'wctrans_t'?
+     64 |   int get_i(uint64_t key){ return(key / ntrans_); };
+        |                                         ^~~~~~~
+        |                                         wctrans_t
+  ./Cluster.h: In member function 'int DistanceMatrix::get_j(int)':
+  ./Cluster.h:65:41: error: 'ntrans_' was not declared in this scope; did you mean 'wctrans_t'?
+     65 |   int get_j(uint64_t key){ return(key % ntrans_); };
+        |                                         ^~~~~~~
+        |                                         wctrans_t
+  ./Cluster.h: In member function 'void DistanceMatrix::remove(int, int)':
+  ./Cluster.h:69:11: error: request for member 'erase' in '((DistanceMatrix*)this)->DistanceMatrix::dist_', which is of non-class type 'dist_map' {aka 'int'}
+     69 |     dist_.erase(ntrans_*ij);
+        |           ^~~~~
+  ./Cluster.h:69:17: error: 'ntrans_' was not declared in this scope; did you mean 'wctrans_t'?
+     69 |     dist_.erase(ntrans_*ij);
+        |                 ^~~~~~~
+        |                 wctrans_t
+  Cluster.cc: In member function 'unsigned char Cluster::find_next_pair(int&, int&)':
+  Cluster.cc:206:3: error: 'dist_iterator' was not declared in this scope
+    206 |   dist_iterator ditr=dist.begin();
+        |   ^~~~~~~~~~~~~
+  Cluster.cc:209:9: error: 'ditr' was not declared in this scope
+    209 |   for(; ditr!=dist.end(); ditr){
+        |         ^~~~
+  Cluster.cc:209:20: error: 'class DistanceMatrix' has no member named 'end'
+    209 |   for(; ditr!=dist.end(); ditr){
+        |                    ^~~
+  make: *** [Makefile:12: Cluster.o] Error 1
+  Traceback (most recent call last):
+    File "/opt/conda/lib/python3.10/site-packages/conda_build/build.py", line 2558, in build
+      utils.check_call_env(
+    File "/opt/conda/lib/python3.10/site-packages/conda_build/utils.py", line 404, in check_call_env
+      return _func_defaulting_env_to_os_environ("call", *popenargs, **kwargs)
+    File "/opt/conda/lib/python3.10/site-packages/conda_build/utils.py", line 380, in _func_defaulting_env_to_os_environ
+      raise subprocess.CalledProcessError(proc.returncode, _args)
+  subprocess.CalledProcessError: Command '['/bin/bash', '-o', 'errexit', '/opt/conda/conda-bld/corset_1734288080692/work/conda_build.sh']' returned non-zero exit status 2.
+
+  The above exception was the direct cause of the following exception:
+
+  Traceback (most recent call last):
+    File "/opt/conda/bin/conda-build", line 11, in <module>
+      sys.exit(execute())
+    File "/opt/conda/lib/python3.10/site-packages/conda_build/cli/main_build.py", line 589, in execute
+      api.build(
+    File "/opt/conda/lib/python3.10/site-packages/conda_build/api.py", line 209, in build
+      return build_tree(
+    File "/opt/conda/lib/python3.10/site-packages/conda_build/build.py", line 3712, in build_tree
+      packages_from_this = build(
+    File "/opt/conda/lib/python3.10/site-packages/conda_build/build.py", line 2566, in build
+      raise BuildScriptException(str(exc), caused_by=exc) from exc
+  conda_build.exceptions.BuildScriptException: Command '['/bin/bash', '-o', 'errexit', '/opt/conda/conda-bld/corset_1734288080692/work/conda_build.sh']' returned non-zero exit status 2.
+# Last 100 lines of the build log.

@@ -13,6 +13,14 @@ CXXFLAGS="${CXXFLAGS} -O3 -D_LIBCPP_DISABLE_AVAILABILITY"
 # Get StxTyper source as well
 git submodule update --init
 
+case $(uname -m) in
+    aarch64 | arm64)
+        CXXFLAGS="${CXXFLAGS} -fsigned-char"
+        ;;
+    *)
+        ;;
+esac
+
 make CXX="$CXX $LDFLAGS" CPPFLAGS="$CXXFLAGS -I${PREFIX}/include" PREFIX="$PREFIX" DEFAULT_DB_DIR="${PREFIX}/share/amrfinderplus/data" -j"${CPU_COUNT}"
 
 make install INSTALL_DIR="$PREFIX/bin"

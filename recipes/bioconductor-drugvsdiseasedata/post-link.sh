@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "drugvsdiseasedata-1.38.0"
+installBiocDataPackage.sh "drugvsdiseasedata-1.42.0"

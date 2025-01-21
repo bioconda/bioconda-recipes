@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "m3dexampledata-1.28.0"
+installBiocDataPackage.sh "m3dexampledata-1.32.0"

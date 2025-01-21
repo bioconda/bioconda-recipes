@@ -1,5 +1,6 @@
 #!/bin/bash
-
+# Debug for ARM build, can remove later
+set -x
 
 mkdir -p $PREFIX/bin
 

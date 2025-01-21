@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "healthyflowdata-1.40.0"
+installBiocDataPackage.sh "healthyflowdata-1.44.0"

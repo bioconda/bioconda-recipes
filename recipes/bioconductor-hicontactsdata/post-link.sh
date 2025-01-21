@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "hicontactsdata-1.4.0"
+installBiocDataPackage.sh "hicontactsdata-1.8.0"

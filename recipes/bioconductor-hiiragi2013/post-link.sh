@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "hiiragi2013-1.38.0"
+installBiocDataPackage.sh "hiiragi2013-1.41.0"

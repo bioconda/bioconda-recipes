@@ -1,2 +1,11 @@
-echo "Before using HADDOCK please install CNS. Instructions: https://github.com/haddocking/haddock3/blob/main/docs/CNS.md" > "${PREFIX}"/.messages.txt
-echo "And create a softlink [ln -s] of the CNS executable to the ${PREFIX}lib/pythonX.XX/bin/ folder (Replace the X by your env python version)" >> "${PREFIX}"/.messages.txt
+#!/bin/bash
+
+# Check if gcc is available. As gcc is hardcoded in haddock3 setup.py, it's unavailableon Bioconda tests.
+if ! command -v gcc >/dev/null 2>&1; then
+    echo "gcc not found, skipping Haddock3 installation, please do 'pip install haddock3' manually."
+    exit 0
+fi
+
+# Proceed with pip installation if gcc is available
+echo "gcc found, proceeding with Haddock3 installation..."
+pip install haddock3 --no-deps --ignore-installed --no-cache-dir -vvv

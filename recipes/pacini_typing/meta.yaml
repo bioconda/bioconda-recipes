@@ -1,0 +1,51 @@
+{% set name = "pacini_typing" %}
+{% set version = "1.6.4" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/RIVM-bioinformatics/Pacini-typing/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 612fa2e761a32244e453a0ace64ede2d61a519277ad2b536a592e2610f2f6394
+
+build:
+  number: 0
+  noarch: python
+  script:
+    - {{ PYTHON }} -m pip install . --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage("pacini_typing", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10,<=3.12
+    - pip
+  run:
+    - python >=3.10,<=3.12
+    - biopython
+    - pysam
+    - pyyaml
+    - networkx
+    - scipy
+    - numpy
+    - tqdm
+    - pandas
+    - blast
+    - kma
+
+test:
+  commands:
+    - pacini_typing --help
+    - Pacini-typing --help
+
+about:
+  home: "https://github.com/RIVM-bioinformatics/Pacini-typing"
+  license: AGPL-3.0
+  license_file: LICENSE
+  summary: "YAML-based bacterial genotyping application"
+  dev_url: "https://github.com/RIVM-bioinformatics/Pacini-typing"
+
+extra:
+  recipe-maintainers:
+    - MarkStreek
