@@ -21,12 +21,11 @@ else
 fi
 
 cp -rf ${RECIPE_DIR}/config.* .
-cp -rf ${RECIPE_DIR}/config.* htscodecs/
 
 cd htscodecs
 autoupdate
 autoreconf -if
-./configure --prefix="${PREFIX}" "${EXTRA_ARGS}" --enable-shared --disable-static \
+./configure --prefix="${PREFIX}" "${EXTRA_ARGS}" --enable-static --disable-shared \
 	--disable-warnings --disable-dependency-tracking --disable-option-checkin --enable-silent-rules \
  	LDFLAGS="${LDFLAGS}" CC="${CC}" CFLAGS="${CFLAGS}" CPPFLAGS="${CPPFLAGS}"
 
