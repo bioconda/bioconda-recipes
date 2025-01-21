@@ -1,5 +1,5 @@
 {% set name = "excludonfinder" %}
-{% set version = "0.1.1" %}
+{% set version = "0.1.1" %}  # Incrementamos la versión
 
 package:
   name: {{ name }}
@@ -10,14 +10,18 @@ source:
   sha256: cc0a4a3c23d99c473563113e693f00511e1f9fc5a77dec2826ee956b32c323e1
 
 build:
-  number: 0
+  number: 1
   noarch: generic
-  run_exports:
-    - {{ pin_subpackage('excludonfinder', max_pin="x.x") }}
   script:
     - mkdir -p $PREFIX/bin
-    - cp scripts/ExcludonFinder $PREFIX/bin/
+    - mkdir -p $PREFIX/share/${PKG_NAME}/scripts  # Creamos un directorio para los scripts
+    - cp -rf scripts/ExcludonFinder $PREFIX/bin/
+    - cp -rf scripts/TUs_annotation.R $PREFIX/share/${PKG_NAME}/scripts/
+    - cp -rf scripts/main.sh $PREFIX/share/${PKG_NAME}/scripts/
     - chmod +x $PREFIX/bin/ExcludonFinder
+    - chmod +x $PREFIX/share/${PKG_NAME}/scripts/*.{sh,R}
+  run_exports:
+    - {{ pin_subpackage('excludonfinder', max_pin="x.x") }}
 
 requirements:
   run:
@@ -41,5 +45,7 @@ test:
 about:
   home: https://github.com/Alvarosmb/ExcludonFinder
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: A tool for identifying and analyzing excludons in genomic data using RNA-seq data
+  summary: "A tool for identifying and analyzing excludons in genomic data using RNA-seq data."
+  dev_url: https://github.com/Alvarosmb/ExcludonFinder
