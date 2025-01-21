@@ -10,13 +10,15 @@ source:
   sha256: 83941dbd193266d3a5c7bbcb0190705f7bcaec482eddd9bdd53356536db3b0ea
 
 build:
-  number: 0
+  number: 1
   skip: True  # [py < 310]
   entry_points:
     - eastr = EASTR.run_eastr:main
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  script: 
+    - export M4="$BUILD_PREFIX/bin/m4" # [arm64]
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
 
 requirements:
   build:
@@ -26,6 +28,7 @@ requirements:
     - automake
     - autoconf
     - libtool
+    - m4 # [arm64]
   host:
     - pip
     - python
@@ -57,6 +60,9 @@ about:
   dev_url: "https://github.com/ishinder/EASTR"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:eastr
     - usegalaxy-eu:eastr
