@@ -9,6 +9,9 @@ if [[ "$(uname)" == "Darwin" ]]; then
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
 fi
 
+OS=$(uname)
+ARCH=$(uname -m)
+
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	export EXTRA_ARGS="--host=arm64"
 elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
