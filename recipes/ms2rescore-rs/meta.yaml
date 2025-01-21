@@ -1,6 +1,6 @@
 {% set name = "ms2rescore-rs" %}
-{% set version = "0.2.0" %}
-{% set sha256 = "561ed92f58fd7ecccc78b3e4b1bc91ffa36d0f2e58d54f7ea317898f3ea55560" %}
+{% set version = "0.4.1" %}
+{% set sha256 = "6766c18f1200a658f9c41a1e24d68da48b7f2a07e80de7ede6ad72519f49c9f2" %}
 
 package:
   name: {{ name|lower }}
@@ -11,14 +11,15 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
-  skip: True  # [py < 37]
+  number: 0
+  skip: True  # [py < 37 or (osx and x86_64)]
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
     - {{ compiler('rust') }}
     - make
     - cmake
@@ -29,6 +30,7 @@ requirements:
     - pip
   run:
     - python
+    - dotnet-runtime =6.0  # For Thermo Raw support
 
 test:
   imports:
@@ -45,6 +47,9 @@ about:
   license_file: LICENSE
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - CompOmics
     - RalfG

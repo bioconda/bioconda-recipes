@@ -1,0 +1,66 @@
+{% set name = "smcpp" %}
+{% set version = "1.15.4" %}
+
+package:
+  name: smcpp
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/popgenmethods/{{ name }}
+  git_rev: v{{ version }}
+
+build:
+  skip: True # [osx]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - git
+  host:
+    - python {{ python }}
+    - setuptools
+    - gmp
+    - gsl
+    - numpy {{ numpy }}
+    - mpfr <4.2
+  run:
+    - python {{ python }}
+    - {{ pin_compatible('numpy') }}
+    - gnuplot
+    - gmp
+    - gsl
+    - mpfr <4.2
+    - pysam >=0.18
+    - matplotlib-base >=3,<3.6  # at most 3.6 because seaborn styles are removed
+    - pandas >=1.4
+    - scikit-learn >=1
+    - scipy >=1.8
+    - appdirs
+    - tqdm
+    - seaborn
+    - setuptools_scm
+
+about:
+    home: https://github.com/popgenmethods/smcpp
+    license: BSD
+    license_file: LICENSE
+    summary: SMC++ infers population history from whole-genome sequence data.
+    dev_url: https://github.com/popgenmethods/smcpp
+
+test:
+    imports:
+        - smcpp
+        - smcpp._smcpp
+    source_files:
+        - example/example.vcf.gz
+        - example/example.vcf.gz.csi
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  skip-lints:
+    - missing_hash
+    - uses_vcs_url
