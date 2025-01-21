@@ -13,13 +13,13 @@ export SRA_BUILD_DIR=${SRC_DIR}/build_sratools
 mkdir -p ${SRA_BUILD_DIR}
 
 echo "Compiling sra-tools"
+export VDB_INC="${PREFIX}/include"
+
 if [[ "$(uname)" == "Darwin" ]]; then
-	export VDB_INC="${SRC_DIR}/ncbi-vdb/interfaces"
-	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+#	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 	export CFLAGS="${CFLAGS} -DTARGET_OS_OSX"
 	export CXXFLAGS="${CXXFLAGS} -DTARGET_OS_OSX"
 else
-	export VDB_INC="${PREFIX}/include"
 	export CONFIG_ARGS=""
 fi
 
