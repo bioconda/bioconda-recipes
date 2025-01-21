@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+export LIBPATH="-L${PREFIX}/lib"
+export CPLUS_INCLUDE_PATH="${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 -DH5_USE_110_API -D_FILE_OFFSET_BITS=64 ${LDFLAGS}"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
