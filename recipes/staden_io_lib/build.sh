@@ -9,17 +9,6 @@ if [[ "$(uname)" == "Darwin" ]]; then
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
 fi
 
-OS=$(uname)
-ARCH=$(uname -m)
-
-if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
-	export EXTRA_ARGS="--host=arm64"
-elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
-	export EXTRA_ARGS="--host=aarch64"
-else
-	export EXTRA_ARGS="--host=x86_64"
-fi
-
 cp -rf ${RECIPE_DIR}/config.* .
 
 cd htscodecs
@@ -31,7 +20,7 @@ cd ..
 autoupdate
 autoreconf -if
 ./configure --prefix="${PREFIX}" --with-libdeflate="${PREFIX}" --with-libcurl="${PREFIX}" \
-	--with-zlib="${PREFIX}" --with-zstd="${PREFIX}" "${EXTRA_ARGS}" --enable-shared=yes --enable-static=no \
+	--with-zlib="${PREFIX}" --with-zstd="${PREFIX}" --host="${CC}" --target="${CC}" --enable-shared=yes --enable-static=no \
  	--disable-warnings --disable-dependency-tracking --disable-option-checkin --enable-silent-rules \
 	LDFLAGS="${LDFLAGS}" CC="${CC}" CFLAGS="${CFLAGS}" CPPFLAGS="${CPPFLAGS}"
 make -j"${CPU_COUNT}"
