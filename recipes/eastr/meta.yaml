@@ -2,11 +2,11 @@
 {% set version = "1.1.1" %}
 
 package:
-  name: "{{ name|lower }}"
+  name: "{{ name }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: 83941dbd193266d3a5c7bbcb0190705f7bcaec482eddd9bdd53356536db3b0ea
 
 build:
@@ -15,26 +15,23 @@ build:
     - eastr = EASTR.run_eastr:main
   noarch: python
   run_exports:
-    - {{ pin_subpackage("eastr", max_pin="x.x") }}
-  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
 
 requirements:
   host:
     - pip
-    - python >=3.10
+    - python >=3.10,<4.0
     - setuptools
-    # External deps
-    - bowtie2
-    - samtools
   run:
+    - python >=3.10,<4.0
     - biopython >=1.81,<2.0
     - mappy >=2.26,<3.0
     - numpy >=1.26.1
     - pandas >=2.1.2,<2.3
     - pysam >=0.22.0,<0.23
-    - python >=3.10
     - setuptools
-    # External deps
+    # bioconda deps
     - bowtie2
     - samtools
 
@@ -46,14 +43,11 @@ test:
 
 about:
   home: "https://github.com/ishinder/EASTR"
-  license: MIT
-  license_family: MIT
-  license_file: LICENSE
   summary: "Tool for emending alignments of spuriously spliced transcript reads"
-  doc_source_url: https://github.com/ishinder/EASTR/blob/main/README.md
-  doc_url: https://pypi.org/project/eastr/
-  dev_url: https://github.com/ishinder/EASTR
+  license: MIT
+  license_file: LICENSE
 
 extra:
   recipe-maintainers:
     - ishinder
+    - coperni
