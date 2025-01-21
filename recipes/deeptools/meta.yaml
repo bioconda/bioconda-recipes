@@ -19,34 +19,18 @@ build:
     - {{ pin_subpackage("deeptools", max_pin="x") }}
   script: |
     set -xe
-    # export LANG=C.UTF-8
-    # export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+    export LC_ALL=C.UTF-8
+
     export RUST_BACKTRACE=1
     export CARGO_TERM_VERBOSE=true
-
     # export RUSTC_LOG=rustc_codegen_ssa::back::link=info
+
     export LIBCLANG_PATH=$PREFIX/lib # [linux]
-    # link to conda-packaged openssl libraries
-    # see https://docs.rs/openssl/latest/openssl/#manual
-    export OPENSSL_NO_VENDOR=1
-    export OPENSSL_INCLUDE_DIR=$PREFIX/include
-    export OPENSSL_LIB_DIR=$PREFIX/lib
-    # still don't know how to convince the curl-sys crate to link to shared libcurl and openssl; the following is not enough
-    export CURL_STATIC_SSL=0
-    export CURL_SYS_STATIC=0
-    # export HTS_LIB_DIR=$PREFIX/lib
-    export HTS_INCLUDE_DIR=$PREFIX/include
-    # again, don't know how to make crates link dynamically
-    export LIBZ_SYS_STATIC=0
-    export LZMA_API_STATIC=0
-    # export CPLUS_INCLUDE_PATH=$PREFIX/include # [linux and aarch64]
-    export HTS_STATIC=0
-    export HTS_SYS_BUNDLED=0
+    export HTS_STATIC=1
     export MACOSX_DEPLOYMENT_TARGET=13.0 # [osx and x86-64]
     cargo-bundle-licenses --format yaml --output RUST_THIRDPARTY.yml
-    # build the wheel with maturin
-    # the --skip-auditwheel option prevents maturin from copying shared libraries
-    # from the host environment into the wheel
+    # build the wheel with maturin, then install it with pip
     maturin build -b pyo3 --interpreter "${PYTHON}" --release --strip --skip-auditwheel
     {{ PYTHON }} -m pip install ./target/wheels/*.whl --no-deps --no-build-isolation -vvv
   entry_points:
@@ -85,11 +69,6 @@ requirements:
     - pip
     - maturin
     - clangdev
-    - openssl
-    # - libcurl
-    # - bzip2
-    # - xz
-    # - zlib
   run:
     # - python
     - pybigwig >=0.2.1
