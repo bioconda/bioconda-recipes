@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export M4="${BUILD_PREFIX}/bin/m4"
-export CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib -Wno-unused-command-line-argument"
+export CFLAGS="${CFLAGS} -O3 -Wno-unused-command-line-argument -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -O3 -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
@@ -31,10 +31,9 @@ cd ..
 autoupdate
 autoreconf -if
 ./configure --prefix="${PREFIX}" --with-libdeflate="${PREFIX}" --with-libcurl="${PREFIX}" \
-	--with-zlib="${PREFIX}" --with-zstd="${PREFIX}" --disable-warnings \
-	--disable-dependency-tracking --disable-option-checkin --enable-silent-rules \
-	--enable-shared=yes --enable-static=no LDFLAGS="${LDFLAGS}" CC="${CC}" CFLAGS="${CFLAGS}" \
-	CPPFLAGS="${CPPFLAGS}" "${EXTRA_ARGS}"
+	--with-zlib="${PREFIX}" --with-zstd="${PREFIX}" "${EXTRA_ARGS}" --enable-shared=yes --enable-static=no \
+ 	--disable-warnings --disable-dependency-tracking --disable-option-checkin --enable-silent-rules \
+	LDFLAGS="${LDFLAGS}" CC="${CC}" CFLAGS="${CFLAGS}" CPPFLAGS="${CPPFLAGS}"
 make -j"${CPU_COUNT}"
 make install
 
