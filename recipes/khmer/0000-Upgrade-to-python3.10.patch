@@ -28,6 +28,90 @@ index 6a317ff..9c153e3 100644
 -global-exclude *.pyc
 -
  include khmer/_version.py
+diff --git a/Makefile b/Makefile
+index 12ebaa80..10a519b0 100644
+--- a/Makefile
++++ b/Makefile
+@@ -62,7 +62,7 @@ INCLUDESTRING=$(shell gcc -E -x c++ - -v < /dev/null 2>&1 >/dev/null \
+ INCLUDEOPTS=$(shell gcc -E -x c++ - -v < /dev/null 2>&1 >/dev/null \
+ 	    | grep '^ /' | grep -v cc1plus | awk '{print "-I" $$1 " "}')
+ 
+-PYINCLUDE=$(shell python -c "import sysconfig; \
++PYINCLUDE=$(shell python3 -c "import sysconfig; \
+             flags = ['-I' + sysconfig.get_path('include'), \
+             '-I' + sysconfig.get_path('platinclude')]; print(' '.join(flags))")
+ 
+@@ -83,8 +83,8 @@ else
+ 	TESTATTR ?= 'not known_failing and not jenkins and not huge and not linux'
+ endif
+ 
+-MODEXT=$(shell python -c \
+-       "import sysconfig;print(sysconfig.get_config_var('SO'))")
++MODEXT=$(shell python3 -c \
++       "import sysconfig;print(sysconfig.get_config_var('EXT_SUFFIX'))")
+ EXTENSION_MODULE = khmer/_khmer$(MODEXT)
+ CY_MODULES = $($(wildcard khmer/_oxli/*.pyx): .pyx=.$(MODEXT))
+ 
+@@ -147,7 +147,7 @@ clean: FORCE
+ 
+ debug: FORCE
+ 	export CFLAGS="-pg -fprofile-arcs -D_GLIBCXX_DEBUG_PEDANTIC \
+-		-D_GLIBCXX_DEBUG -DDEBUG_ASSEMBLY=1 -DDEBUG_FILTERS=1"; python setup.py build_ext --debug \
++		-D_GLIBCXX_DEBUG -DDEBUG_ASSEMBLY=1 -DDEBUG_FILTERS=1"; python3 setup.py build_ext --debug \
+ 		--inplace
+ 
+ ## doc         : render documentation in HTML
+@@ -263,7 +263,7 @@ diff-cover.html: coverage-gcovr.xml coverage.xml
+ 		--html-report diff-cover.html
+ 
+ pytests.xml: FORCE
+-	py.test --junitxml=$@ -m ${TESTATTR}
++	python3 -m pytest --junitxml=$@ -m ${TESTATTR}
+ 
+ ## doxygen     : generate documentation of the C++ and Python code
+ # helpful packages: doxygen graphviz
+@@ -308,7 +308,7 @@ libtest: FORCE
+ ## test        : run the khmer test suite
+ test: FORCE
+ 	./setup.py develop
+-	py.test -m ${TESTATTR}
++	python3 -m pytest -m ${TESTATTR}
+ 
+ sloccount.sc: $(CPPSOURCES) $(PYSOURCES) $(wildcard tests/*.py) Makefile
+ 	sloccount --duplicates --wide --details include src khmer scripts tests \
+@@ -324,7 +324,7 @@ coverity-build:
+ 		export PATH=${PATH}:${cov_analysis_dir}/bin; \
+ 		cov-build --dir cov-int --c-coverage gcov \
+ 			--disable-gcov-arg-injection make coverage-debug; \
+-		cov-capture --dir cov-int --c-coverage gcov python -m pytest \
++		cov-capture --dir cov-int --c-coverage gcov python3 -m pytest \
+ 			-m $(TESTATTR) ; \
+ 		cov-import-scm --dir cov-int --scm git 2>/dev/null; \
+ 	else echo 'bin/cov-build does not exist in $$cov_analysis_dir: '\
+@@ -377,7 +377,7 @@ list-author-emails:
+ 
+ list-citation:
+ 	git log --format='%aN,%aE' | sort -u | grep -v -F -f author-skips.txt > authors.csv
+-	python sort-authors-list.py
++	python3 sort-authors-list.py
+ 
+ ## cpp-demos   : run programs demonstrating access to the (unstable) C++ API
+ cpp-demos: sharedobj
+@@ -385,10 +385,10 @@ cpp-demos: sharedobj
+ 
+ ## py-demos    : run programs demonstrating access to the Python API
+ py-demos: sharedobj
+-	python examples/python-api/exact-counting.py
+-	python examples/python-api/bloom.py
+-	python examples/python-api/consume.py examples/c++-api/reads.fastq
+-	python examples/python-api/mask.py
++	python3 examples/python-api/exact-counting.py
++	python3 examples/python-api/bloom.py
++	python3 examples/python-api/consume.py examples/c++-api/reads.fastq
++	python3 examples/python-api/mask.py
+ 
+ COMMIT ?= $(shell git rev-parse HEAD)
+ SLUG ?= $(TRAVIS_PULL_REQUEST_SLUG)
 diff --git a/khmer/_oxli/assembly.cpp b/khmer/_oxli/assembly.cpp
 index e312086d..16575242 100644
 --- a/khmer/_oxli/assembly.cpp
