@@ -15,6 +15,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set GITHUB_BASE_REF if not already set
+        id: github_base_ref
+        run: |
+          if [ -z "$GITHUB_BASE_REF" ] ; then
+              echo GITHUB_BASE_REF="master" >> $GITHUB_ENV     
+          fi
+  
+      - name: Fetch commits through the merge base
+        uses: BioData/fetch-through-merge-base@v0
+        with:
+          base_ref: ${{ env.GITHUB_BASE_REF }}
+          head_ref: ${{ github.sha }}
+
       - name: set path
         run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
 
@@ -43,10 +56,6 @@ jobs:
           conda config --show-sources
           python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
           echo '============'
-          if [ -z "$GITHUB_BASE_REF" ] ; then
-              export GITHUB_BASE_REF="master"
-          fi
-          git fetch origin "$GITHUB_BASE_REF"
           bioconda-utils lint --loglevel debug --full-report --git-range origin/"$GITHUB_BASE_REF" HEAD
           conda clean -y --all
 
@@ -59,6 +68,20 @@ jobs:
     needs: lint
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set GITHUB_BASE_REF if not already set
+        id: github_base_ref
+        run: |
+          if [ -z "$GITHUB_BASE_REF" ] ; then
+              echo GITHUB_BASE_REF="master" >> $GITHUB_ENV     
+          fi
+  
+      - name: Fetch commits through the merge base
+        uses: BioData/fetch-through-merge-base@v0
+        with:
+          base_ref: ${{ env.GITHUB_BASE_REF }}
+          head_ref: ${{ github.sha }}
+
 
       - name: set path
         run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
@@ -91,10 +114,6 @@ jobs:
           eval "$(conda shell.bash hook)"
           conda activate bioconda
           source common.sh
-          if [ -z "$GITHUB_BASE_REF" ] ; then
-              export GITHUB_BASE_REF="master"
-          fi
-          git fetch origin "$GITHUB_BASE_REF"
 
           bioconda-utils build recipes config.yml \
             --docker --mulled-test \
@@ -144,6 +163,19 @@ jobs:
     needs: build-linux
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Set GITHUB_BASE_REF if not already set
+        id: github_base_ref
+        run: |
+          if [ -z "$GITHUB_BASE_REF" ] ; then
+              echo GITHUB_BASE_REF="master" >> $GITHUB_ENV     
+          fi
+  
+      - name: Fetch commits through the merge base
+        uses: BioData/fetch-through-merge-base@v0
+        with:
+          base_ref: ${{ env.GITHUB_BASE_REF }}
+          head_ref: ${{ github.sha }}
 
       - name: set path
         run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
@@ -176,11 +208,6 @@ jobs:
           for n in linux-64 osx-64 noarch; do
               rm -f /opt/mambaforge/envs/bioconda/conda-bld/$n/*.tar.bz2
           done
-
-          if [ -z "$GITHUB_BASE_REF" ] ; then
-              export GITHUB_BASE_REF="master"
-          fi
-          git fetch origin "$GITHUB_BASE_REF"
 
           bioconda-utils build recipes config.yml \
             --git-range origin/"$GITHUB_BASE_REF" HEAD
