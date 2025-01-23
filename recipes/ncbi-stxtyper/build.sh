@@ -14,6 +14,11 @@ pwd -P
 echo "ls -l"
 ls -l
 
+ARCH=$(uname -m)
+if [[ "${ARCH}" == "aarch64" || "${ARCH}" == "arm64" ]]; then
+    CXXFLAGS="${CXXFLAGS} -fsigned-char"
+fi
+
 # note that for version 3.7 the make command should be:
 make -j"${CPU_COUNT}" CXX="$CXX $LDFLAGS" CPPFLAGS="$CXXFLAGS" PREFIX="$PREFIX" 
 
