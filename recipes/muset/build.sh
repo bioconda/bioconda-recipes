@@ -7,16 +7,15 @@ mkdir -p ${PREFIX}/bin
 mkdir build-conda
 cd build-conda
 
-# Explicitly set CMAKE_INSTALL_PREFIX
 cmake .. \
-  -DCMAKE_INSTALL_PREFIX=${PREFIX} \
-  -DCONDA_BUILD=ON \
-  -DCMAKE_BUILD_TYPE=Release
+    -DCONDA_BUILD=ON \
+    -Dexternal_dir=${SRC_DIR}/external \
+    -Dexternal_bindir=${PWD}/external \
+    -Dcmake_path=${SRC_DIR}/cmake
 
-make -j${CPU_COUNT}  # Use conda's CPU_COUNT for parallel build
+make -j${CPU_COUNT}
 cd ..
 
-# Copy binaries (though CMake might handle this with INSTALL_PREFIX)
 cp ./bin/kmat_tools ${PREFIX}/bin
 cp ./bin/muset ${PREFIX}/bin
 cp ./bin/muset_pa ${PREFIX}/bin
