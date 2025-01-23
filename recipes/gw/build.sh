@@ -10,6 +10,10 @@ if [[ "$OSTYPE" != "darwin"* ]]; then
   # Let conda set these
   sed -i.bak 's/-mmacosx-version-min=10.15//g' Makefile
   sed -i.bak 's/-mmacosx-version-min=11//g' Makefile
+
+  # path-link is not available for macOS
+  sed 's| -Wl,-rpath-link,\$(CONDA_PREFIX)\/lib||' yourfile.mk
+
 fi
 
 # Set flags conditionally based on the OS type
