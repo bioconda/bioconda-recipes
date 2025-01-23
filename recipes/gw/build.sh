@@ -11,7 +11,7 @@ if [[ "$OSTYPE" != "darwin"* ]]; then
   CPPFLAGS="${CPPFLAGS} -I${BUILD_PREFIX}/${HOST}/sysroot/usr/include ${SYSROOT_FLAGS}"
   LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib64 ${SYSROOT_FLAGS}"
 else
-  sed 's| -Wl,-rpath-link,\$(CONDA_PREFIX)\/lib||' Makefile
+  sed -i.bak 's| -Wl,-rpath-link,\$(CONDA_PREFIX)\/lib||' Makefile
 
   # No sysroot settings for macOS
   SYSROOT_FLAGS=""
