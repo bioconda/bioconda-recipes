@@ -15,7 +15,7 @@ echo "ls -l"
 ls -l
 
 ARCH=$(uname -m)
-if [[ "${ARCH}" == "aarch64" || "${ARCH}" == "arm64" ]]; then
+if [[ "${ARCH}" == "aarch64" ]]; then
     CXXFLAGS="${CXXFLAGS} -fsigned-char"
 fi
 
