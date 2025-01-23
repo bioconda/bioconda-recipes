@@ -18,20 +18,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set GITHUB_BASE_REF if not already set
-        id: github_base_ref
-        run: |
-          if [ -z "$GITHUB_BASE_REF" ] ; then
-              export GITHUB_BASE_REF="master"
-              export GITHUB_BASE_REF="${GITHUB_BASE_REF}" >> $GITHUB_ENV     
-          fi
-          echo github_base_ref="${GITHUB_BASE_REF}" >> $GITHUB_OUTPUT
-  
       - name: Fetch commits through the merge base
         uses: fulcrumgenomics/fetch-through-merge-base@v1
         with:
           base-ref: ${{ steps.github_base_ref.outputs.github_base_ref }}
           head-ref: ${{ github.sha }}
+          fallback-base-ref: master
 
       - name: set path
         run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
