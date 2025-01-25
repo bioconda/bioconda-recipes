@@ -13,7 +13,7 @@ autoreconf -if
 ./configure --prefix="${PREFIX}" CC="${CC}" CXX="${CXX}" \
 	CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" \
 	CPPFLAGS="${CPPFLAGS} -O3 -I${PREFIX}/include" \
-	LDFLAGS="${LDFLAGS}" CXXCPP="${CXX}" YAGGO="$(which yaggo)" --enable-swig \
+	LDFLAGS="${LDFLAGS}" YAGGO="$(which yaggo)" --enable-swig \
 	--enable-python-binding --disable-option-checking \
 	--enable-silent-rules --disable-dependency-tracking
 
