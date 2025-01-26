@@ -1,9 +1,8 @@
-{% set name = "transannot" %}
 {% set version = "4.0.0" %}
 {% set sha256 = "f610fd9fcc8e29fc4b19c53cde402126a2815577dc282909a50b83855c28355e" %}
 
 package:
-  name: {{ name }}
+  name: transannot
   version: {{ version }}
 
 source:
@@ -13,28 +12,33 @@ source:
 build:
   number: 1
   run_exports:
-    - {{ pin_subpackage('transannot', max_pin="x") }}
+    - {{ pin_subpackage('transannot', max_pin=None) }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
     - cmake
     - make
+    - llvm-openmp         # [osx]
+    - libgomp             # [linux]
+    - cuda-nvcc           # [linux]
+    - cuda-cudart-dev     # [linux]
+    - cuda-version >=12.6 # [linux]
+    - perl
   host:
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
     - gawk
     - zlib
     - bzip2
   run:
     - aria2
-    - wget
-    - perl
+    - gawk
+    - zlib
+    - bzip2
 
 test:
   commands:
-    - "transannot > /dev/null"
+    - mmseqs > /dev/null
 
 about:
   home: "https://github.com/soedinglab/transannot"
