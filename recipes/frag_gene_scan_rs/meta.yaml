@@ -1,0 +1,41 @@
+{% set version = "1.1.0" %}
+{% set name = "FragGeneScanRs" %}
+{% set sname = "frag_gene_scan_rs" %}
+
+package:
+  name: {{ sname }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/unipept/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('frag_gene_scan_rs', max_pin="x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path .
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - cargo test
+    - FragGeneScanRs --version
+
+about:
+  home: https://github.com/unipept/FragGeneScanRs
+  license: GPL-3.0-or-later
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "Rust implementation of the gene prediction model for short and error-prone reads"
+
+extra:
+  recipe-maintainers:
+    - ninewise
