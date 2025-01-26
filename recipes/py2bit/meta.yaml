@@ -1,21 +1,26 @@
-package:
-  name: py2bit
-  version: "0.3.3"
+{% set name = "py2bit" %}
+{% set version = "0.3.3" %}
 
-build:
-  number: 0
-  run_exports:
-    - {{ pin_subpackage('py2bit', max_pin='x.x') }}
+package:
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/24/59/b64b8f59b0d6455e389ae3a8703557dc6b0fcb503b3a1dd7ca0ae0a7c63d/py2bit-0.3.3.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/py2bit-{{ version }}.tar.gz
   sha256: 264f5bfc39d729f1acad54c760ac04fa8a20d4184f4b505d9c333d2e03253770
+
+build:
+  number: 1
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('py2bit', max_pin='x.x') }}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - python
+    - pip
     - setuptools
   run:
     - python
@@ -26,10 +31,15 @@ test:
     - py2bitTest
 
 about:
-  home: https://github.com/deeptools/py2bit
-  license: 'MIT'
-  summary: 'A package for accessing 2bit files using lib2bit'
+  home: "https://github.com/deeptools/py2bit"
+  license: MIT
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  summary: 'A package for accessing 2bit files using lib2bit.'
+  dev_url: "https://github.com/deeptools/py2bit"
+  doc_url: "https://github.com/deeptools/py2bit/blob/{{ version }}/README.md"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
