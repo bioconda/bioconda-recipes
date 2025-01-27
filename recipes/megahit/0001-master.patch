@@ -1,0 +1,54 @@
+diff --git a/src/megahit b/src/megahit
+index eb56a29..b070425 100755
+--- a/src/megahit
++++ b/src/megahit
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ 
+ # -------------------------------------------------------------------------
+ # MEGAHIT
+@@ -19,7 +19,6 @@
+ # -------------------------------------------------------------------------
+ 
+ 
+-from __future__ import print_function
+ 
+ import getopt
+ import json
+@@ -58,7 +57,7 @@ Optional Arguments:
+   Another way to set --k-list (overrides --k-list if one of them set):
+     --k-min                  <int>          minimum kmer size (<= {0}), must be odd number [21]
+     --k-max                  <int>          maximum kmer size (<= {0}), must be odd number [141]
+-    --k-step                 <int>          increment of kmer size of each iteration (<= 28), must be even number [12]
++    --k-step                 <int>          increment of kmer size of each iteration (<= 28), must be even number [10]
+ 
+   Advanced assembly options:
+     --no-mercy                              do not add mercy kmers
+@@ -375,7 +374,7 @@ def parse_option(argv):
+         elif option == '--max-tip-len':
+             opt.max_tip_len = int(value)
+         elif option == '--merge-level':
+-            (opt.merge_len, opt.merge_similar) = map(float, value.split(','))
++            (opt.merge_len, opt.merge_similar) = list(map(float, value.split(',')))
+             opt.merge_len = int(opt.merge_len)
+         elif option == '--prune-level':
+             opt.prune_level = int(value)
+@@ -553,12 +552,12 @@ def check_and_correct_option():
+         raise Usage('--low-local-ratio should be in (0, 0.5].')
+     if opt.cleaning_rounds <= 0:
+         raise Usage('--cleaning-rounds must be >= 1')
+-    if opt.num_cpu_threads > multiprocessing.cpu_count():
+-        logger.warning('Maximum number of available CPU thread is %d.' % multiprocessing.cpu_count())
+-        logger.warning('Number of thread is reset to the %d.' % multiprocessing.cpu_count())
+-        opt.num_cpu_threads = multiprocessing.cpu_count()
++    if opt.num_cpu_threads > len(os.sched_getaffinity(0)):
++        logger.warning('Maximum number of available CPU thread is %d.' % len(os.sched_getaffinity(0)))
++        logger.warning('Number of thread is reset to the %d.' % len(os.sched_getaffinity(0)))
++        opt.num_cpu_threads = len(os.sched_getaffinity(0))
+     if opt.num_cpu_threads == 0:
+-        opt.num_cpu_threads = multiprocessing.cpu_count()
++        opt.num_cpu_threads = len(os.sched_getaffinity(0))
+     if opt.prune_depth < 0 and opt.prune_level < 3:
+         opt.prune_depth = opt.min_count
+     if opt.bubble_level < 0:
