@@ -2,26 +2,25 @@
 
 package:
   name: seismic-rna
-  version: 0.21.1
-about:
-  home: https://github.com/rouskinlab/seismic-rna
-  license: GPL-3.0-only
-  license_family: GPL3
-  license_file: LICENSE
-  license_url: https://www.gnu.org/licenses/gpl-3.0.html
-  summary: SEISMIC-RNA software by the Rouskin Lab
+  version: 0.22.3
+
 source:
-  url: https://github.com/rouskinlab/seismic-rna/archive/refs/tags/v0.21.1.tar.gz
-  sha256: 8cad84303ff0e98cbab5da6fc5e921780100cdd9ed799496cc772f85470a25e4
+  url: https://github.com/rouskinlab/seismic-rna/archive/refs/tags/v0.22.3.tar.gz
+  sha256: 68457d9f50873aa911fcbb117f06f268a301f4bd2faf95a8ef94e97e62231534
+
 build:
-  noarch: python
   number: 1
   run_exports:
     - {{ pin_subpackage("seismic-rna", max_pin="x.x") }}
+
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - python >=3.10
-    - hatch >=1.12
+    - numpy >=1.26,<1.27
+    - meson-python >=0.15.0
+    - pip
   run:
     - python >=3.10
     - bowtie2 >=2.5.4
@@ -32,12 +31,29 @@ requirements:
     - python-kaleido >=0.2.1
     - click >=8.1
     - fastqsplitter >=1.2
+    - networkx >=3.4
     - numpy >=1.26,<1.27
     - numba >=0.60
     - pandas >=2.2
     - plotly >=5.23
     - pyyaml >=6.0
     - scipy >=1.13
+    - jinja2 >=3.0
 test:
+  commands:
+    - seismic --log "" test -vv
   imports:
     - seismicrna
+
+about:
+  home: https://github.com/rouskinlab/seismic-rna
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  license_url: https://www.gnu.org/licenses/gpl-3.0.html
+  summary: SEISMIC-RNA software by the Rouskin Lab
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
