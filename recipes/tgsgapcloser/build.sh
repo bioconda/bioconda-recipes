@@ -9,11 +9,6 @@ export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export LD_FLAGS="$LD_FLAGS -L$PREFIX/lib"
 
-case $(uname -m) in
-	arm64) ARCH_BUILD="arm_neon=1 aarch64=1" ;;
-	aarch64) ARCH_BUILD="aarch64=1" ;;
-esac
-
-make CC="${CC}" CXX="${CXX}" "${ARCH_BUILD}"
+make CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}"
 
 install -v -m 0755 tgsgapcloserbin/* "${PREFIX}/bin"
