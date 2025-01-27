@@ -2,9 +2,9 @@
 
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -fPIC -fPIE"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -fPIC -fPIE -Wno-deprecated-declarations -Wno-unused-but-set-variable -Wno-ignored-optimization-argument"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -fopenmp"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-deprecated-declarations -Wno-unused-but-set-variable -Wno-ignored-optimization-argument"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CPATH="${PREFIX}/include"
 export CPP_INCLUDE_PATH="${PREFIX}/include"
 
