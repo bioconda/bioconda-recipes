@@ -5,7 +5,7 @@ mkdir -p "${PREFIX}/bin"
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export CFLAGS="$CFLAGS -O3 -L$PREFIX/lib"
-export CPPFLAGS="$CPPFLAGS -L$PREFIX/include"
+export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export CXXFLAGS="$CXXFLAGS -O3 -Wno-unused-command-line-argument"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
