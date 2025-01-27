@@ -2,15 +2,8 @@
 set -e
 
 # Get pre-compiled skia from jetbrains
-USE_GL=1 make prep 2> /dev/null
+OLD_SKIA=1 make prep 2> /dev/null
 
-if [[ "$OSTYPE" != "darwin"* ]]; then
-  sed -i.bak 's/-lEGL -lGLESv2/-lEGL -lGLESv2 -lGL -lGLX/' Makefile
-  sed -i.bak 's/GLFW_EGL_CONTEXT_API/GLFW_NATIVE_CONTEXT_API/' src/plot_manager.cpp
-  # Let conda set these
-  sed -i.bak 's/-mmacosx-version-min=10.15//g' Makefile
-  sed -i.bak 's/-mmacosx-version-min=11//g' Makefile
-fi
 
 # Set flags conditionally based on the OS type
 if [[ "$OSTYPE" != "darwin"* ]]; then
@@ -18,6 +11,8 @@ if [[ "$OSTYPE" != "darwin"* ]]; then
   CPPFLAGS="${CPPFLAGS} -I${BUILD_PREFIX}/${HOST}/sysroot/usr/include ${SYSROOT_FLAGS}"
   LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib -L${BUILD_PREFIX}/${HOST}/sysroot/usr/lib64 ${SYSROOT_FLAGS}"
 else
+  sed -i.bak 's| -Wl,-rpath-link,\$(CONDA_PREFIX)\/lib||' Makefile
+
   # No sysroot settings for macOS
   SYSROOT_FLAGS=""
   CPPFLAGS="${CPPFLAGS}"
@@ -28,7 +23,7 @@ CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" \
 CPPFLAGS="${CPPFLAGS}" \
 LDFLAGS="${LDFLAGS}" \
 prefix="${PREFIX}" \
-make -j ${CPU_COUNT}
+OLD_SKIA=1 make -j ${CPU_COUNT}
 
 mkdir -p $PREFIX/bin
 cp gw $PREFIX/bin/gw
