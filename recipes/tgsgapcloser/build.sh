@@ -1,10 +1,21 @@
-export C_INCLUDE_PATH="$PREFIX/include":$C_INCLUDE_PATH
-export INCLUDE_PATH="$PREFIX/include":$INCLUDE_PATH
-export CPLUS_INCLUDE_PATH="$PREFIX/include":$CPLUS_INCLUDE_PATH
-export LD_LIBRARY_PATH="$PREFIX/lib":$LD_LIBRARY_PATH
-export CFLAGS=" -L$PREFIX/lib $CFLAGS"
-export CPPFLAGS=" -L$PREFIX/lib $CPPFLAGS"
-export CXXFLAGS=" -L$PREFIX/lib $CXXFLAGS"
-export LD_FLAGS=" -L$PREFIX/lib $LD_FLAGS"
-make condainstall PREFIX=$PREFIX CC=$CC CXX=$CXX
+#!/bin/bash
 
+mkdir -p "${PREFIX}/bin"
+
+export INCLUDES="-I${PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
+export CFLAGS="$CFLAGS -O3 -L$PREFIX/lib"
+export CPPFLAGS="$CPPFLAGS -L$PREFIX/include"
+export CXXFLAGS="$CXXFLAGS -O3 -Wno-unused-command-line-argument"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+
+case $(uname -m) in
+	arm64) EXTRA_ARGS="arm_neon=1 aarch64=1" ;;
+	aarch64) EXTRA_ARGS"aarch64=1" ;;
+esac
+
+make PREFIX="${PREFIX}" CC="${CC}" CXX="${CXX}" \
+	CXXFLAGS="${CXXFLAGS}" LD_FLAGS="${LDFLAGS}" \
+	${EXTRA_ARGS} -j"${CPU_COUNT}"
+
+install -v -m 0755 tgsgapcloserbin/* "${PREFIX}/bin"
