@@ -1,11 +1,11 @@
-#! /bin/bash
+#!/bin/bash
 
-# Set up defaults
-PASTY_SHARE="share/${PKG_NAME}-${PKG_VERSION}"
-mkdir -p ${PREFIX}/${PASTY_SHARE}
-mkdir -p ${PREFIX}/bin
+mkdir -p $PREFIX/bin ${PREFIX}/share/pasty
 
-# Make Bioconda compatible
-mv db/OSAdb.fasta ${PREFIX}/${PASTY_SHARE}/
-sed "s=db/OSAdb.fasta=$PASTY_SHARE/OSAdb.fasta=" bin/pasty > ${PREFIX}/bin/pasty
-chmod 755 ${PREFIX}/bin/pasty
+# Copy wrapper
+chmod 755 bin/pasty-bioconda
+cp -f bin/pasty-bioconda $PREFIX/bin/pasty
+
+# Copy schema (~100kb)
+cp -f data/pa-osa.fasta ${PREFIX}/share/pasty
+cp -f data/pa-osa.yaml ${PREFIX}/share/pasty

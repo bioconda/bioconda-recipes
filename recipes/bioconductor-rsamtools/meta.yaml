@@ -1,68 +1,24 @@
-{% set version = "2.18.0" %}
+{% set version = "2.22.0" %}
 {% set name = "Rsamtools" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 63af2a7dd2513e992fd78b26ca2b3775
+about:
+  description: This package provides an interface to the 'samtools', 'bcftools', and 'tabix' utilities for manipulating SAM (Sequence Alignment / Map), FASTA, binary variant call (BCF) and compressed indexed tab-delimited (tabix) files.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0 | file LICENSE
+  license_file: LICENSE
+  summary: Binary alignment (BAM), FASTA, variant call (BCF), and tabix file import
+
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-rsamtools", max_pin="x.x") }}'
-# Suggests: GenomicAlignments, ShortRead (>= 1.19.10), GenomicFeatures, TxDb.Dmelanogaster.UCSC.dm3.ensGene, TxDb.Hsapiens.UCSC.hg18.knownGene, RNAseqData.HNRNPC.bam.chr14, BSgenome.Hsapiens.UCSC.hg19, RUnit, BiocStyle, knitr
-# SystemRequirements: GNU make
-requirements:
-  host:
-    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
-    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
-    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
-    - 'bioconductor-genomeinfodb >=1.38.0,<1.39.0'
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-iranges >=2.36.0,<2.37.0'
-    - 'bioconductor-rhtslib >=2.4.0,<2.5.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
-    - 'bioconductor-xvector >=0.42.0,<0.43.0'
-    - 'bioconductor-zlibbioc >=1.48.0,<1.49.0'
-    - r-base
-    - r-bitops
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
-    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
-    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
-    - 'bioconductor-genomeinfodb >=1.38.0,<1.39.0'
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-iranges >=2.36.0,<2.37.0'
-    - 'bioconductor-rhtslib >=2.4.0,<2.5.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
-    - 'bioconductor-xvector >=0.42.0,<0.43.0'
-    - 'bioconductor-zlibbioc >=1.48.0,<1.49.0'
-    - r-base
-    - r-bitops
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'Artistic-2.0 | file LICENSE'
-  summary: 'Binary alignment (BAM), FASTA, variant call (BCF), and tabix file import'
-  description: 'This package provides an interface to the ''samtools'', ''bcftools'', and ''tabix'' utilities for manipulating SAM (Sequence Alignment / Map), FASTA, binary variant call (BCF) and compressed indexed tab-delimited (tabix) files.'
-  license_file: LICENSE
+
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:rsamtools
     - doi:10.1038/nmeth.3252
@@ -70,4 +26,58 @@ extra:
     name: bioconductor-rsamtools
     path: recipes/bioconductor-rsamtools
     version: 1.32.3
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: GenomicAlignments, ShortRead (>= 1.19.10), GenomicFeatures, TxDb.Dmelanogaster.UCSC.dm3.ensGene, TxDb.Hsapiens.UCSC.hg18.knownGene, RNAseqData.HNRNPC.bam.chr14, BSgenome.Hsapiens.UCSC.hg19, RUnit, BiocStyle, knitr
+# SystemRequirements: GNU make
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rhtslib >=3.2.0,<3.3.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-xvector >=0.46.0,<0.47.0
+    - bioconductor-zlibbioc >=1.52.0,<1.53.0
+    - r-base
+    - r-bitops
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rhtslib >=3.2.0,<3.3.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-xvector >=0.46.0,<0.47.0
+    - bioconductor-zlibbioc >=1.52.0,<1.53.0
+    - r-base
+    - r-bitops
+
+source:
+  md5: a2863f9fd8439f30148428b1f2f20714
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

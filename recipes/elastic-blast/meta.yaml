@@ -1,35 +1,39 @@
-{% set version = "1.2.0" %}
+{% set name = "elastic-blast" %}
+{% set version = "1.3.1" %}
 
 package:
-  name: elastic-blast
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/source/e/elastic-blast/elastic_blast-{{ version }}.tar.gz
-  sha256: 584238fc79befa4e90625752eeca928db4807a0b2e0f8956d1fa9d35c61c083f
+  url: https://files.pythonhosted.org/packages/95/5e/00375acbe2a0c666c8643cbbf9c5c7d5ed6c74eea80767f7d4a3f05ffda9/elastic_blast-{{ version }}.tar.gz
+  sha256: ed64887dedfc1da109ea1ddb05e96c0e0268e6a372656f8412a7bac973e6e31c
 
 build:
   number: 0
-  noarch: generic
-  script: {{ PYTHON }} -m pip install . -vv
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv
   run_exports:
     - {{ pin_subpackage("elastic-blast", max_pin="x") }}
+
 requirements:
   host:
     - pip
-    - python >=3.7,<3.10
+    - python >=3.7
     - python-packit
     - importlib-metadata
   run:
-    - python >=3.7,<3.10
+    - python >=3.7
     - boto3
     - awscli
     - awslimitchecker
     - tenacity
     - google-cloud-sdk
-    - kubernetes-client ==1.18.8
+    - kubernetes-client
+    - importlib-resources ==6.1.1
     - importlib-metadata
     - dataclasses-json
+    - pex ==2.9.0
 
 test:
   commands:
@@ -39,8 +43,9 @@ test:
     - gsutil --version
     - aws --version
     - kubectl version --client=true
+
 about:
-  home: https://pypi.org/project/elastic-blast/
+  home: https://github.com/ncbi/elastic-blast/
   license: Public Domain
   license_family: PUBLIC-DOMAIN
   license_file: LICENSE.md

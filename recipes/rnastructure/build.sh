@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -xe
+
 # Fix for OSX build
 if [ `uname` == Darwin ]; then
     CPP_FLAGS="${CXXFLAGS} -g -O3 -fopenmp -I${PREFIX}/include"
@@ -9,10 +11,10 @@ else
 fi
 
 # build
-make CC="${CC}" CXX="${CXX}" CPP_FLAGS="${CPP_FLAGS}" all
+make -j"${CPU_COUNT}" CC="${CC}" CXX="${CXX}" CPP_FLAGS="${CPP_FLAGS}" all
 
 mkdir -p $PREFIX/bin
-mv ./exe/* $PREFIX/bin/
+install -v -m 0755 ./exe/* $PREFIX/bin/
 
 # Some of the tools inside the package require the information in /data_tables
 # This makes them accessible from a relative path to the binaries.

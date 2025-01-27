@@ -169,13 +169,13 @@ def _gen_new_index(repodata, subdir):
         if has_dep(record, 'htslib'):
             # skip deps prior to 1.10, which was the first with soversion 3
             # TODO adjust replacement (exclusive) upper bound with each new compatible HTSlib
-            _pin_looser(fn, record, 'htslib', min_lower_bound='1.10', upper_bound='1.21')
+            _pin_looser(fn, record, 'htslib', min_lower_bound='1.10', upper_bound='1.22')
 
         # future libdeflate versions are compatible until they bump their soversion; relax dependencies accordingly
-        if record_name in ['htslib', 'staden_io_lib', 'fastp'] and has_dep(record, 'libdeflate'):
+        if record_name in ['htslib', 'staden_io_lib', 'fastp', 'pysam'] and has_dep(record, 'libdeflate'):
             # skip deps that allow anything <1.3, which contained an incompatible library filename
             # TODO adjust the replacement (exclusive) upper bound each time a compatible new libdeflate is released
-            _pin_looser(fn, record, 'libdeflate', min_lower_bound='1.3', upper_bound='1.21')
+            _pin_looser(fn, record, 'libdeflate', min_lower_bound='1.3', upper_bound='1.24')
 
         # nanosim <=3.1.0 requires scikit-learn<=0.22.1
         if record_name.startswith('nanosim') and has_dep(record, "scikit-learn") and version <= "3.1.0":

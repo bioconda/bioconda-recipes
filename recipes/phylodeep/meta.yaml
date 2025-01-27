@@ -1,0 +1,63 @@
+{% set name = "phylodeep" %}
+{% set version = "0.9" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 123365b279c706b9b2c0f4c8b215bc3f9943b8c52a02f76bb0e9a2bc91cf5d47
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - checkdeep = phylodeep.checkdeep:main
+    - modeldeep = phylodeep.modeldeep:main
+    - paramdeep = phylodeep.paramdeep:main
+    - subtree_picker = phylodeep.tree_utilities:subtree_picker_main
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir"
+  run_exports:
+    - {{ pin_subpackage('phylodeep', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - python >=3.6
+    - scikit-learn >=1.0,<1.3.0
+    - tensorflow >=2.0.0
+    - ete3 >=3.1.1,<=3.1.3
+    - pandas >=1.0.0,<1.4.0
+    - matplotlib-base >=3.0.2,<3.7.0
+    - keras ==2.2.4
+    - phylodeep_data_bd >=0.6
+    - phylodeep_data_bdei >=0.4
+    - phylodeep_data_bdss >=0.4
+
+test:
+  imports:
+    - phylodeep
+  commands:
+    - checkdeep --help
+    - modeldeep --help
+    - paramdeep --help
+    - subtree_picker --help
+
+about:
+  home: "https://github.com/evolbioinfo/phylodeep"
+  summary: "Deep-learning parameter estimation and model selection from phylogenetic trees."
+  description: |
+    PhyloDeep is a python library for parameter estimation and model selection from phylogenetic trees, 
+    based on deep learning.
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  doc_url: "https://github.com/evolbioinfo/phylodeep/blob/{{ version }}/README.md"
+  dev_url: "https://github.com/evolbioinfo/phylodeep"
+
+extra:
+  recipe-maintainers:
+    - annazhukova

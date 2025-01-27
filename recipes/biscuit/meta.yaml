@@ -1,17 +1,20 @@
-{% set version = "1.4.0.20240108" %}
+{% set version = "1.6.0.20241216" %}
 
 package:
   name: biscuit
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
   run_exports:
-    - {{ pin_subpackage('biscuit', max_pin='x.x') }}
+    - {{ pin_subpackage('biscuit', max_pin='x') }}
 
 source:
-  - url: https://github.com/huishenlab/biscuit/releases/download/v{{ version }}/release-source.zip
-    sha256: 58625f286a4bda4a3884feb10be575e4cb205f09b9ddb1075d099ca2259c1c17
+  url: https://github.com/huishenlab/biscuit/releases/download/v{{ version }}/release-source.zip
+  sha256: a66f5794ed359953d3c068089a6ba11a2e87dfa6277ae25c9586a971c3370c01
+  patches:
+    - 0001-CMakeLists.patch
+    - 0004-aarch64-ksw.patch  # [aarch64 or arm64]
 
 requirements:
   build:
@@ -24,10 +27,7 @@ requirements:
     - pthread-stubs
     - libcurl
   run:
-    - zlib
-    - ncurses
     - pthread-stubs
-    - libcurl
     - perl
 
 test:
@@ -41,6 +41,14 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: A utility for analyzing sodium bisulfite conversion-based DNA methylation/modification data
+  summary: "A utility for analyzing sodium bisulfite conversion-based DNA methylation/modification data."
   dev_url: https://github.com/huishenlab/biscuit
-  doc_url: https://huishenlab.github.io/biscuit/
+  doc_url: https://huishenlab.github.io/biscuit
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/nar/gkae097
+    - biotools:biscuit

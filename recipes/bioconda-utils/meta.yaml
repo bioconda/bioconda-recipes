@@ -1,8 +1,9 @@
-{% set version = "2.14.0" %}
-{% set sha256 = "0ae05ba291a1ad7ae956a42bc7e3123a9789ffcd10bf23f2de4499091b8a9e36" %}
+{% set name = "bioconda-utils" %}
+{% set version = "3.7.0" %}
+{% set sha256 = "b9d94b3af7157a11ea4398dd421f2a0d1a7e22704c45670b496a2bff264444c4" %}
 
 package:
-  name: bioconda-utils
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -10,9 +11,9 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  noarch: python
   number: 0
-  script: python -m pip install --no-deps --ignore-installed .
+  noarch: python
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
   entry_points:
     - bioconda-utils = bioconda_utils.cli:main
   run_exports:
@@ -20,65 +21,58 @@ build:
 
 requirements:
   host:
-    - python
+    - python <3.12
     - pip
   run:
-    - python
-    - conda 23.3.*
-    - boa 0.15.*
-    - conda-build 3.24.*
-    - conda-verify 3.1.*
-    - argh 0.26.*
-    - colorlog 4.8.*
-    - yaspin 2.0.*
-    - ruamel_yaml 0.15.*
-    - pyaml 17.12.*
-    - networkx 2.*
-    - pandas 1.4.*
-    - numpy 1.19.*
+    - conda-forge-pinning 2024.11.29.12.37.53
+    - python 3.10.*
+    - conda 24.9.*
+    - conda-libmamba-solver 24.1.*
+    - conda-build 24.7.*
+    - conda-index 0.5.*
+    - conda-package-streaming 0.11.*
+    - mamba 1.5.*
+    #- boa 0.17.*
+    - argh 0.31.*
+    - colorlog 6.*
+    - tqdm 4.66.*
+    - yaspin 2.*
+    - ruamel.yaml 0.18.*
+    - pyaml 24.04.*
+    - networkx 3.3.*
+    - pandas 2.2.*
     - libblas * *openblas
-    - boltons 23.*
-    - jsonschema 3.2.*
-    - pyopenssl >=22.1
-    - conda-forge-pinning 2023.05.06.13.08.41
+    - boltons 24.0.*
+    - jsonschema 4.22.*
+    - jinja2 3.1.*
     - anaconda-client 1.12.*
+    - galaxy-tool-util 24.*
     - involucro 1.1.*
-    - skopeo 1.11.*
+    - skopeo 1.15.*
+    - findutils
     - git 2.*
-    - regex 2022.7.9
-    - aiohttp 3.8.*
+    - regex 2024.*
+    - aiohttp >=3.10.*
     - aiohttp-jinja2
     - aiohttp-session
     - aiohttp-security
-    - aiofiles 0.8.*
-    - aioftp 0.12.*
+    - aiofiles 23.*
+    - aioftp 0.22.*
     - backoff 2.2.*
-    - cachetools 3.0.*
-    - gitpython >=3.0.8,3.0.*
-    - gidgethub 3.0.*
+    - cachetools 5.3.*
+    - gitpython 3.1.*
+    - gidgethub 5.*
     - pyjwt >=2.4.0
-    - beautifulsoup4 4.12.*
-    - galaxy-lib >=18.9.1
-    - jinja2 >2.10.1,<3
-    - markupsafe <2.1
-    - sphinx >=4.1
-    - celery
-    - sphinx-autodoc-typehints
-    - alabaster 0.7.*
-    - docutils
-    - markdown
-    - graphviz
-    - requests 2.29.*
-    - pygithub 1.*
+    - beautifulsoup4 4.*
+    - requests 2.32.*
+    - pygithub
     - diskcache 5.*
-    - appdirs 1.*
+    - platformdirs 4.*
     - tabulate 0.9.*
 
 test:
-  #imports:
-  #  - bioconda_utils
-  # [Nov  2 22:37:22] SERR bash: -c: line 1: syntax error near unexpected token `&&'
-  # [Nov  2 22:37:22] SERR bash: -c: line 1: ` && python -c "import bioconda_utils"'
+  imports:
+    - bioconda_utils
   commands:
     - bioconda-utils --help
     - bioconda-utils lint --help
@@ -92,8 +86,10 @@ test:
       )" 2>&1 | grep -qF 'All requested packages already installed'
 
 about:
-  home: http://bioconda.github.io/build-system.html
+  home: "https://bioconda.github.io/contributor/build-system.html"
   license: MIT
   license_family: MIT
-  summary: Utilities for building and managing bioconda recipes.
-  dev_url: https://github.com/bioconda/bioconda-utils
+  license_file: "LICENSE.md"
+  summary: "Utilities for building and managing bioconda recipes."
+  dev_url: "https://github.com/bioconda/bioconda-utils"
+  doc_url: "https://bioconda.github.io/contributor/guidelines.html"

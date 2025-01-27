@@ -1,0 +1,48 @@
+{% set version = "0.5.6" %}
+{% set github = "https://github.com/caleblareau/BuenColors" %}
+{% set commit = "f1bc8e640d129ef319a0db49b169a64b00026e00" %}
+
+package:
+  name: r-buencolors
+  version: "{{ version }}"
+
+source:
+  url: "{{ github }}/archive/{{ commit }}.zip"
+  sha256: 6caa14acafd81c9619d795e5dd56ef9fa7a37280d35fe9afe9b4bd9ff3cd776f
+
+build:
+  noarch: generic
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage("r-buencolors", max_pin="x.x") }}
+
+requirements:
+  host:
+    - r-base
+    - r-ggplot2
+    - r-mass
+  run:
+    - r-base
+    - r-ggplot2
+    - r-mass
+
+test:
+  commands:
+    - $R -e "library(BuenColors)"
+
+about:
+  home: {{ github }}
+  dev_url: {{ github }}
+  license: MIT
+  license_family: MIT
+  license_file:
+    - {{ environ["PREFIX"] }}/lib/R/share/licenses/MIT
+    - LICENSE
+  summary: R utility package for color mapping and plot aesthetics.
+
+extra:
+  recipe-maintainers:
+    - mfansler

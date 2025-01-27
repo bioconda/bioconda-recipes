@@ -1,35 +1,39 @@
 {% set name = "trgt" %}
-{% set version = "0.9.0" %}
-{% set trgt_sha256 = "fba2edb311c2ea4f15ae1e0f1b464ae470a73f803d12630b8ea6dbeeff3cc3f9" %}
-{% set trvz_sha256 = "08dcb1e5ca9d317140f26d635b323d12a8384b1263fda542e293effb2ca81280" %}
+{% set version = "1.5.0" %}
+{% set trgt_sha256 = "82fd86b2bbf1b81a200e4e3be4b2823b75895569a3e65cbb61162095875ae2da" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
-source:
-  - url: https://github.com/PacificBiosciences/trgt/releases/download/v{{ version }}/trgt-v{{ version }}-linux_x86_64.gz
-    sha256: {{ trgt_sha256 }}
-  - url: https://github.com/PacificBiosciences/trgt/releases/download/v{{ version }}/trvz-v{{ version }}-linux_x86_64.gz
-    sha256: {{ trvz_sha256 }}
+source: 
+  - url: https://github.com/PacificBiosciences/trgt/releases/download/v{{ version }}/trgt-v{{ version }}-x86_64-unknown-linux-gnu.tar.gz # [linux64]
+    sha256: {{ trgt_sha256 }} # [linux64]
 
 about:
   home: https://github.com/PacificBiosciences/trgt
-  license: BSD-3-Clause-Clear
+  license: Pacific Biosciences Software License (https://github.com/PacificBiosciences/trgt/blob/main/LICENSE.md)
   summary: Tandem repeat genotyping and visualization from PacBio HiFi data
-
-extra:
-  recipe-maintainers:
-    - zeeev
-    - williamrowell
 
 build:
   number: 0
-  noarch: generic
+  skip: true  # [not linux64]
+  noarch: false
+  script:
+    - mkdir -p ${PREFIX}/bin
+    - cp trgt ${PREFIX}/bin/
+    - chmod +x ${PREFIX}/bin/trgt
   run_exports:
     - {{ pin_subpackage('trgt', max_pin="x") }}
 
 test:
   commands:
     - trgt --version
-    - trvz --version
+
+extra:
+  recipe-maintainers:
+    - zeeev
+    - williamrowell
+    - tmokveld
+  skip-lints:
+    - should_be_noarch_generic
