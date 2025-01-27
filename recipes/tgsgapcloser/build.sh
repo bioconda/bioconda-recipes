@@ -14,8 +14,6 @@ case $(uname -m) in
 	aarch64) EXTRA_ARGS="aarch64=1" ;;
 esac
 
-make PREFIX="${PREFIX}" CC="${CC}" CXX="${CXX}" \
-	CXXFLAGS="${CXXFLAGS}" LD_FLAGS="${LDFLAGS}" \
-	${EXTRA_ARGS} -j"${CPU_COUNT}"
+make PREFIX="${PREFIX}" CC="${CC}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LD_FLAGS="${LDFLAGS}" "${EXTRA_ARGS}"
 
 install -v -m 0755 tgsgapcloserbin/* "${PREFIX}/bin"
