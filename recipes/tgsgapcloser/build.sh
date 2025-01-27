@@ -11,4 +11,6 @@ export LD_FLAGS="$LD_FLAGS -L$PREFIX/lib"
 
 make CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}"
 
-install -v -m 0755 tgsgapcloserbin/* "${PREFIX}/bin"
+cp -rf tgsgapcloserbin "${PREFIX}/bin"
+chmod 0755 ${PREFIX}/bin/tgsgapcloserbin/*
+install -v -m 0755 tgsgapcloser "${PREFIX}/bin"
