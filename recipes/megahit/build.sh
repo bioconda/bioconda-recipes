@@ -2,7 +2,7 @@
 
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include -Wno-deprecated-declarations -Wno-unused-but-set-variable -Wno-ignored-optimization-argument"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPATH="${PREFIX}/include"
 export CPP_INCLUDE_PATH="${PREFIX}/include"
@@ -17,5 +17,5 @@ rm -rf build
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DCMAKE_C_COMPILER="${CC}" \
-	-DCMAKE_C_FLAGS="${CFLAGS}" ${CONFIG_ARGS}
-cmake --build build --target install -j "${CPU_COUNT}" -v
+	-DCMAKE_C_FLAGS="${CFLAGS}" "${CONFIG_ARGS}"
+cmake --build build --target install -j "${CPU_COUNT}"
