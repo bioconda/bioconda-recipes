@@ -11,7 +11,7 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 case $(uname -m) in
 	arm64) EXTRA_ARGS="arm_neon=1 aarch64=1" ;;
-	aarch64) EXTRA_ARGS"aarch64=1" ;;
+	aarch64) EXTRA_ARGS="aarch64=1" ;;
 esac
 
 make PREFIX="${PREFIX}" CC="${CC}" CXX="${CXX}" \
