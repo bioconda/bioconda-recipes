@@ -1,19 +1,15 @@
 --- orig/Makefile	2016-10-27 16:11:30.000000000 +0200
 +++ Makefile	2024-06-12 10:10:43.000000000 +0200
-@@ -1,5 +1,5 @@
+@@ -1,5 +1,8 @@
  # Add the following lines to include the correct SDK path for macOS
- CFLAGS += -isysroot $(shell xcrun --show-sdk-path)
- LDFLAGS += -isysroot $(shell xcrun --show-sdk-path)
-@@ -2,7 +2,7 @@
++CFLAGS += -isysroot $(shell xcrun --show-sdk-path)
++LDFLAGS += -isysroot $(shell xcrun --show-sdk-path)
++
  #### Makefile for Cur+ ####
  
  CC= cc
--CFLAG= 
-+CFLAG=
- 
- FC= gfortran
- #FFLAG= -w -fbounds-check -O2
-@@ -18,16 +18,16 @@
+ CFLAG= 
+@@ -18,16 +21,16 @@
  ## http://www.unidata.ucar.edu/downloads/netcdf).  Finally, the
  ## netCDF Fortran Libraries can also be found within
  ## installations of the AmberTools package (http://ambermd.org).
@@ -33,7 +29,7 @@
  ## tarball, set NETCDF to the location of your installation,
  ## e.g.:
  ## NETCDF=/usr/local
-@@ -35,48 +35,59 @@
+@@ -35,48 +38,59 @@
  
  ###------------------ Gromacs XTC input support -------------------###
  ## To enable XTC support, uncomment the following line:
@@ -91,7 +87,7 @@
 +	$(CC) $(CFLAG)  -Iinclude -dM -c $<
  
  .f.o :
- 	$(FC) -cpp $(FFLAG) $(FFLAG_NC) $(FFLAG_XTC) -c $<
+     $(FC) -cpp $(FFLAG) $(FFLAG_NC) $(FFLAG_XTC) -c $<
  
 -clean: 
 -	rm -f Cur+ *.o *.a
@@ -105,5 +101,4 @@
  plugins: gromacsplugin.C
 -	$(CC) -D"STATIC_PLUGIN" -Iinclude -D"VMDPLUGIN=molfile_gromacsplugin" -c gromacsplugin.C -o gromacsplugin-s.o
 +	$(CXX) -D"STATIC_PLUGIN" -Iinclude -dM -D"VMDPLUGIN=molfile_gromacsplugin" -c gromacsplugin.C -o gromacsplugin-s.o
- 	ar cr libmolfile_plugin.a gromacsplugin-s.o
- 
+     ar cr libmolfile_plugin.a gromacsplugin-s.o
