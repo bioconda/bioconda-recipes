@@ -6,9 +6,6 @@ set -x  # Print commands for debugging
 echo "Current directory: ${PWD}"
 ls -lh
 
-# Navigate to the muset directory (if the source code is in a subdirectory)
-cd muset
-
 # Create the output directory
 mkdir -p ${PREFIX}/bin
 
@@ -22,10 +19,12 @@ cmake .. -DCONDA_BUILD=ON
 # Build the software
 make -j${CPU_COUNT}
 
-# Move back to the source directory
-cd ../..
+#Go back to source directory
+cd ..
 
-# Copy the binaries to the output directory
+echo "Current directory: ${PWD}"
+ls -lh
+
 cp ./bin/kmat_tools ${PREFIX}/bin
 cp ./bin/muset-kmtricks ${PREFIX}/bin
 cp ./bin/muset ${PREFIX}/bin
