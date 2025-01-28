@@ -3,15 +3,7 @@
 CONDA_PREFIX=$PREFIX
 ${CXX} --std=c++17 scripts/count_lineages_country.cpp -o scripts/count_lineages_country -lstdc++fs -lboost_regex ${CXXFLAGS} ${LDFLAGS}
 
-Rscript -e 'install.packages("devtools", repos="https://cloud.r-project.org");
-    '
-
-Rscript -e 'install.packages(c("XML", "binom", "plotly", "htmlwidgets", "countrycode", "doParallel",
-  "dplyr", "foreach", "htmltools", "plyr", "Rcpp", "RCurl", "readr", "stringr", "tictoc", "tidyr",
-  "xtable"), repos="https://cloud.r-project.org");
-  if (!require("devtools")) install.packages("devtools",
-    repos="https://cloud.r-project.org");
-    devtools::install_github("rstudio/d3heatmap");'
+Rscript -e 'devtools::install_github("rstudio/d3heatmap");'
 
 
 # Define the target directory
