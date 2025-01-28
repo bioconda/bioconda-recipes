@@ -2,17 +2,39 @@
 set -e
 
 mkdir -p ${PREFIX}/bin
+
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
+
 cd src || exit 1
 echo "0" > gitver.txt
 
-cp ${RECIPE_DIR}/vcxproj_make.py .
-chmod +x vcxproj_make.py
-./vcxproj_make.py --openmp --cppcompiler ${CXX} --ccompiler ${CC}
+OS=$(uname)
+ARCH=$(uname -m)
+
+case $(uname -m) in
+	arm64|aarch64) cp -rfv ${RECIPE_DIR}/sse2neon.h ${SRC_DIR}/src/ ;;
+esac
+
+if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
+	cp -rf ${RECIPE_DIR}/vcxproj_make_osx.py .
+ 	chmod 0755 vcxproj_make_osx.py
+	python ./vcxproj_make_osx.py --openmp --lrt --pthread --cppcompiler "${CXX}" --ccompiler "${CC}"
+elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
+	cp -rf ${RECIPE_DIR}/vcxproj_make_osx.py .
+	chmod 0755 vcxproj_make_osx.py
+ 	python ./vcxproj_make_osx.py --openmp --lrt --pthread --nonative --cppcompiler "${CXX}" --ccompiler "${CC}"
+else
+	cp -rf ${RECIPE_DIR}/vcxproj_make.py .
+	chmod 0755 vcxproj_make.py
+ 	python ./vcxproj_make.py --openmp --lrt --pthread --std "c++17" --cppcompiler "${CXX}" --ccompiler "${CC}"
+fi
 
 # Verify binary exists and is executable
-if [ ! -f ../bin/reseek ]; then
+if [[ ! -f ../bin/reseek ]]; then
     echo "Error: reseek binary not found"
     exit 1
 fi
 
-cp ../bin/reseek ${PREFIX}/bin/reseek
+install -v -m 0755 ../bin/reseek ${PREFIX}/bin
