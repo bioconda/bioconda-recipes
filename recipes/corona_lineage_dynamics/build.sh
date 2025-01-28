@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CONDA_PREFIX=$PREFIX
-g++ --std=c++17 scripts/count_lineages_country.cpp -o scripts/count_lineages_country -O2 -lstdc++fs -lboost_regex -I ${CONDA_PREFIX}/include/ -L ${CONDA_PREFIX}/lib/
+${CXX} --std=c++17 scripts/count_lineages_country.cpp -o scripts/count_lineages_country -lstdc++fs -lboost_regex ${CXXFLAGS} ${LDFLAGS}
 
 Rscript -e 'install.packages("devtools", repos="https://cloud.r-project.org");
     '
