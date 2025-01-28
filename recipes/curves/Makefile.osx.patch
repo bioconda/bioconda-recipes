@@ -1,20 +1,16 @@
---- orig/Makefile	2016-10-27 16:11:30.000000000 +0200
-+++ Makefile	2024-06-12 10:10:43.000000000 +0200
-@@ -1,5 +1,8 @@
- # Add the following lines to include the correct SDK path for macOS
-+CFLAGS += -isysroot $(shell xcrun --show-sdk-path)
-+LDFLAGS += -isysroot $(shell xcrun --show-sdk-path)
-+
- #### Makefile for Cur+ ####
+--- Makefile.original	2025-01-28 13:59:51.000000000 +0100
++++ Makefile	2025-01-28 14:04:27.000000000 +0100
+@@ -3,6 +3,8 @@
  
  CC= cc
  CFLAG= 
-@@ -18,16 +21,16 @@
- ## http://www.unidata.ucar.edu/downloads/netcdf).  Finally, the
- ## netCDF Fortran Libraries can also be found within
- ## installations of the AmberTools package (http://ambermd.org).
--## 
-+##
++CFLAGS += -isysroot $(shell xcrun --show-sdk-path)
++LDFLAGS += -isysroot $(shell xcrun --show-sdk-path)
+ 
+ FC= gfortran
+ #FFLAG= -w -fbounds-check -O2
+@@ -21,7 +23,7 @@
+ ## 
  ## If you have AmberTools installed (version >=13), please set
  ## NETCDF to the location of your AmberTools installation; e.g.:
 -## NETCDF=/software/amber14/AmberTools
@@ -22,14 +18,7 @@
  ##
  ## If you installed netcdf-fortran using macports on MACOSX,
  ## set NETCDF to the location of your macports tree; e.g.:
- ## NETCDF=/opt/local
- ##
--## If you installed netcdf-fortran using the official Unidata 
-+## If you installed netcdf-fortran using the official Unidata
- ## tarball, set NETCDF to the location of your installation,
- ## e.g.:
- ## NETCDF=/usr/local
-@@ -35,48 +38,59 @@
+@@ -35,48 +37,56 @@
  
  ###------------------ Gromacs XTC input support -------------------###
  ## To enable XTC support, uncomment the following line:
@@ -60,10 +49,7 @@
  LDFLAG_XTC= -L. -lmolfile_plugin -lstdc++
  endif
  
-+
-+#LDFLAG_XTC= -L. -lmolfile_plugin -lc++
 +CFLAG= -I/Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include
-+
 +
  OBJ= aacur.o axis.o axref.o backbo.o bisection.o dotdelta.o eigen.o \
  findaxis.o getdate.o ionbld.o ionpar.o input.o intaxe.o intop.o \
@@ -87,11 +73,10 @@
 +	$(CC) $(CFLAG)  -Iinclude -dM -c $<
  
  .f.o :
-     $(FC) -cpp $(FFLAG) $(FFLAG_NC) $(FFLAG_XTC) -c $<
+ 	$(FC) -cpp $(FFLAG) $(FFLAG_NC) $(FFLAG_XTC) -c $<
  
--clean: 
+ clean: 
 -	rm -f Cur+ *.o *.a
-+clean:
 +	rm -f Cur+ Canal Canion *.o *.a
  
  f77_molfile.o: f77_molfile.c plugins
@@ -101,4 +86,5 @@
  plugins: gromacsplugin.C
 -	$(CC) -D"STATIC_PLUGIN" -Iinclude -D"VMDPLUGIN=molfile_gromacsplugin" -c gromacsplugin.C -o gromacsplugin-s.o
 +	$(CXX) -D"STATIC_PLUGIN" -Iinclude -dM -D"VMDPLUGIN=molfile_gromacsplugin" -c gromacsplugin.C -o gromacsplugin-s.o
-     ar cr libmolfile_plugin.a gromacsplugin-s.o
+ 	ar cr libmolfile_plugin.a gromacsplugin-s.o
+ 
