@@ -1,0 +1,106 @@
+{% set version = '0.2.2' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-eoffice
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/eoffice_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/eoffice/eoffice_{{ version }}.tar.gz
+  sha256: 44b31804cd6aef8ca9bec1535b9c4a9ec46d429ffb8c8e045ec5f6a732a5be5b
+
+channels:
+  - f30a78ec8
+
+build:
+  merge_build_host: True
+  number: 0
+  run_exports: '{{ pin_compatible("r-eoffice", max_pin="x.x") }}'
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ posix }}zip               # [win]
+
+  host:
+    - r-base >=3.5
+    - r-r.devices
+    - r-broom
+    - r-devemf
+    - r-dplyr
+    - r-flextable
+    - r-ggplot2
+    - r-ggplotify
+    - r-htmlwidgets
+    - imagemagick =7.0.10_0
+    - r-magick =2.5.2 # r-magick and imagemagick only work in certain combinations https://github.com/conda-forge/r-magick-feedstock/issues/12
+    - r-magrittr
+    - r-officer
+    - r-plotly
+    - r-rvg
+
+  run:
+    - r-base >=3.5
+    - r-r.devices
+    - r-broom
+    - r-devemf
+    - r-dplyr
+    - r-flextable
+    - r-ggplot2
+    - r-ggplotify
+    - r-htmlwidgets
+    - imagemagick =7.0.10_0
+    - r-magick =2.5.2
+    - r-magrittr
+    - r-officer
+    - r-plotly
+    - r-rvg
+
+test:
+  commands:
+    - $R -e "library('eoffice')"           # [not win]
+    - "\"%R%\" -e \"library('eoffice')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=eoffice
+  license: GPL-2
+  summary: Provides wrap functions to export and import graphics and data frames in R to 'microsoft'
+    office. And This package also provide write out figures with lots of different formats.
+    Since people may work on the platform without GUI support, the package also provide
+    function to easily write out figures to lots of different type of formats. Now this
+    package provide function to extract colors from all types of figures and pdf files.
+  license_family: GPL2
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
+# The original CRAN metadata for this package was:
+
+# Package: eoffice
+# Type: Package
+# Title: Export or Graph and Tables to 'Microsoft' Office and Import Figures and Tables
+# Version: 0.2.2
+# Authors@R: person("Kai", "Guo", email = "guokai8@gmail.com", role = c("aut", "cre"))
+# Description: Provides wrap functions to export and import graphics and data frames in R to 'microsoft' office. And This package also provide write out figures with lots of different formats. Since people may work on the platform without GUI support, the package also provide function to easily write out figures to lots of different type of formats. Now this package provide function to extract colors from all types of figures and pdf files.
+# License: GPL-2
+# Imports: officer, rvg, flextable, broom, dplyr, magrittr, ggplotify, R.devices, devEMF, magick, ggplot2, htmlwidgets, plotly
+# Depends:
+# Encoding: UTF-8
+# Suggests: knitr, markdown, rmarkdown
+# VignetteBuilder: knitr
+# RoxygenNote: 7.1.1
+# NeedsCompilation: no
+# Packaged: 2022-10-05 07:16:00 UTC; bioguo
+# Author: Kai Guo [aut, cre]
+# Maintainer: Kai Guo <guokai8@gmail.com>
+# Repository: CRAN
+# Date/Publication: 2022-10-05 07:30:02 UTC
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml
