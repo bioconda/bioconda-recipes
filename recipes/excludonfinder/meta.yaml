@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/Alvarosmb/ExcludonFinder/archive/v{{ version }}.tar.gz
-  sha256: 49f3c2a71fe780ddf6fd6b872bae68aa923f255378352b7673f13786fb833ade
+  sha256: 365d3a6619c5437552605e2a978816604d353329cf40b973934fe025c7adb834
 
 build:
   number: 0
@@ -17,9 +17,13 @@ build:
   script:
     - mkdir -p $PREFIX/bin
     - mkdir -p $PREFIX/share/${PKG_NAME}/scripts
-    - cp -rf scripts/ExcludonFinder $PREFIX/bin/
+    # Copy scripts to share directory
     - cp -rf scripts/TUs_annotation.R $PREFIX/share/${PKG_NAME}/scripts/
     - cp -rf scripts/main.sh $PREFIX/share/${PKG_NAME}/scripts/
+    # Create wrapper script with correct path handling
+    - echo '#!/bin/bash' > $PREFIX/bin/ExcludonFinder
+    - echo 'export SCRIPTS_PATH="$CONDA_PREFIX/share/excludonfinder/scripts"' >> $PREFIX/bin/ExcludonFinder
+    - echo 'source "$SCRIPTS_PATH/main.sh" "$@"' >> $PREFIX/bin/ExcludonFinder
     - chmod +x $PREFIX/bin/ExcludonFinder
     - chmod +x $PREFIX/share/${PKG_NAME}/scripts/*.{sh,R}
 
@@ -36,11 +40,11 @@ requirements:
     - r-data.table >=1.14
     - r-biocmanager >=1.30.19
     - bioconductor-rtracklayer >=1.54.0
-    - parallel >=20211022
+  
 
 test:
   commands:
-    - ExcludonFinder 2&1>/dev/null
+    - ExcludonFinder --help
 
 about:
   home: https://github.com/Alvarosmb/ExcludonFinder
