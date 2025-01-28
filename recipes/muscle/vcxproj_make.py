@@ -71,8 +71,8 @@ if ProjFileName is None:
 binary = ProjFileName.replace(".vcxproj", "")
 sys.stderr.write("binary=" + binary + "\n")
 
-compiler_opts = " -ffast-math -march=native"
-linker_opts = " -ffast-math -march=native"
+compiler_opts = " -ffast-math"
+linker_opts = " -ffast-math"
 
 if std:
     compiler_opts += " --std=" + std
