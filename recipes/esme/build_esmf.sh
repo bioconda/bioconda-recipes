@@ -5,7 +5,8 @@ set -ex
 export ESMF_F90=mpif90
 export ESMF_CXX=mpicxx
 export ESMF_C=mpicc
-export ESMF_CPP=${CPP}
+
+export ESMF_CPP="${CPP} -E -P -x c"
 
 if [[ "$mpi" == "openmpi" ]]; then
   export ESMF_COMM=openmpi
