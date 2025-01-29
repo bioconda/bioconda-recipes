@@ -10,11 +10,17 @@ echo "Current directory: ${PWD}"
 echo "Building version: ${VERSION}"
 ls -lh
 
-# Use git fetch to get the tag
+# Initialize git repository
+git init
+
+# Add remote origin
+git remote add origin https://github.com/CamilaDuitama/muset.git
+
+# Fetch the specific tag
 git fetch origin tags/v${VERSION}
 
 # Checkout the tag using -f to force overwrite
-git checkout -f v${VERSION}
+git checkout -f tags/v${VERSION}
 
 # Initialize and update submodules explicitly
 git submodule init
