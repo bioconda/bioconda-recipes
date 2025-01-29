@@ -16,11 +16,14 @@ git init
 # Add remote origin
 git remote add origin https://github.com/CamilaDuitama/muset.git
 
-# Fetch all refs and tags
-git fetch --all --tags
+# Fetch all tags
+git fetch --tags
 
-# Checkout the specific version
-git checkout v${VERSION}
+# Force checkout the specific version, overwriting local files
+git checkout -f v${VERSION}
+
+# Remove any existing .git directory to prevent issues
+rm -rf .git
 
 # Initialize and update submodules explicitly
 git submodule init
