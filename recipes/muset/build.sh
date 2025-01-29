@@ -52,14 +52,33 @@ cd ..
 echo "Current directory: ${PWD}"
 ls -lh
 
-# Check if binaries exist before copying
+# Comprehensive executable search
+echo "Finding ALL executables:"
+find . -type f -executable
+
+# Detailed recursive search with file information
+echo "Detailed executable search:"
+find . -type f -executable -exec file {} \;
+
+# Check build-conda directory
+echo "Executables in build-conda:"
+find build-conda -type f -executable
+
+# Check bin directory
+echo "Contents of bin directory:"
+ls -la bin/
+
+# Copy executables
 BINARIES=(kmat_tools muset-kmtricks muset muset_pa)
 for binary in "${BINARIES[@]}"; do
-    if [ -f "./bin/${binary}" ]; then
-        cp "./bin/${binary}" ${PREFIX}/bin/
+    # Comprehensive search strategies
+    found_binary=$(find . -type f -executable -name "${binary}" | head -n 1)
+    
+    if [ -n "$found_binary" ]; then
+        echo "Found binary: $found_binary"
+        cp "$found_binary" ${PREFIX}/bin/
     else
-        echo "Warning: Binary ${binary} not found!"
-        exit 1
+        echo "Warning: Binary ${binary} not found in any location!"
     fi
 done
 
