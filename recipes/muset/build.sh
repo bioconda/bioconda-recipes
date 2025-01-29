@@ -56,6 +56,10 @@ cp ./bin/kmat_tools ${PREFIX}/bin
 cp ./bin/muset ${PREFIX}/bin
 cp ./bin/muset_pa ${PREFIX}/bin
 
-# Verify installed binaries
-echo "Installed binaries:"
-ls -l ${PREFIX}/bin/
+# After copying binaries
+echo "Copied binaries details:"
+for binary in ${PREFIX}/bin/*; do
+    echo "Binary: $binary"
+    file $binary
+    ldd $binary || true  # List dynamic dependencies
+done
