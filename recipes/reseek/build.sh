@@ -29,7 +29,7 @@ elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
 	cp -rfv ${RECIPE_DIR}/sse2neon.h ${SRC_DIR}/src
  	cp -rf ${RECIPE_DIR}/vcxproj_make.py .
  	chmod 0755 vcxproj_make.py
-  	python ./vcxproj_make.py --openmp --lrt --pthread --std "c++17" --cppcompiler "${CXX}" --ccompiler "${CC}"
+  	python ./vcxproj_make.py --openmp --lrt --pthread --nonative --std "c++17" --cppcompiler "${CXX}" --ccompiler "${CC}"
 else
 	cp -rf ${RECIPE_DIR}/vcxproj_make.py .
 	chmod 0755 vcxproj_make.py
