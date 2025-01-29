@@ -13,6 +13,8 @@ mkdir -p ${PREFIX}/bin
 mkdir -p build-conda
 cd build-conda
 
+ls ../external/*
+
 # Configure the build with CMake
 cmake .. -DCONDA_BUILD=ON
 
