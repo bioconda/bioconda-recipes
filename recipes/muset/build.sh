@@ -16,18 +16,22 @@ git init
 # Add remote origin
 git remote add origin https://github.com/CamilaDuitama/muset.git
 
-# Fetch the specific tag
-git fetch origin tags/v${VERSION}
+# Fetch all refs and tags
+git fetch --all --tags
 
-# Checkout the tag using -f to force overwrite
-git checkout -f tags/v${VERSION}
+# Checkout the specific version
+git checkout v${VERSION}
 
 # Initialize and update submodules explicitly
 git submodule init
 git submodule update --recursive
 
-# Print submodule status
+# Verify submodule and external folder contents
+echo "Submodule status:"
 git submodule status
+
+echo "External folder contents:"
+ls -la external/
 
 # Create the output directory
 mkdir -p ${PREFIX}/bin
@@ -55,7 +59,10 @@ for binary in "${BINARIES[@]}"; do
         cp "./bin/${binary}" ${PREFIX}/bin/
     else
         echo "Warning: Binary ${binary} not found!"
-        # Optionally, you could exit with an error here
-        # exit 1
+        exit 1
     fi
 done
+
+# Verify installed binaries
+echo "Installed binaries:"
+ls -l ${PREFIX}/bin/
