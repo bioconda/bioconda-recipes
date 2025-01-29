@@ -16,7 +16,12 @@ source:
 build:
   number: 4
   skip: True  # [py < 37]
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  script:
+    - export M4="${BUILD_PREFIX}/bin/m4"
+    - export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
+    - export CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS} -O3" CXXFLAGS="${CXXFLAGS} -O3"
+    - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include" LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage('parasail-python', max_pin="x") }}
 
@@ -24,7 +29,6 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - m4
     - make
     - autoconf
     - automake
