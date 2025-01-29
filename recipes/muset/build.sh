@@ -22,9 +22,6 @@ git fetch --tags
 # Force checkout the specific version, overwriting local files
 git checkout -f v${VERSION}
 
-# Remove any existing .git directory to prevent issues
-rm -rf .git
-
 # Initialize and update submodules explicitly
 git submodule init
 git submodule update --recursive
