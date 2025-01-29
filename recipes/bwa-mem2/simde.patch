@@ -1,0 +1,251 @@
+diff --git a/Makefile b/Makefile
+index 359585f..ba7bc00 100644
+--- a/Makefile
++++ b/Makefile
+@@ -42,7 +42,7 @@ endif
+ ARCH_FLAGS=	-msse -msse2 -msse3 -mssse3 -msse4.1
+ MEM_FLAGS=	-DSAIS=1
+ CPPFLAGS+=	-DENABLE_PREFETCH -DV17=1 -DMATE_SORT=0 $(MEM_FLAGS) 
+-INCLUDES=   -Isrc -Iext/safestringlib/include
++INCLUDES=   -Isrc -Iext/safestringlib/include -Iext
+ LIBS=		-lpthread -lm -lz -L. -lbwa -Lext/safestringlib -lsafestring $(STATIC_GCC)
+ OBJS=		src/fastmap.o src/bwtindex.o src/utils.o src/memcpy_bwamem.o src/kthread.o \
+ 			src/kstring.o src/ksw.o src/bntseq.o src/bwamem.o src/profiling.o src/bandedSWA.o \
+diff --git a/src/FMI_search.h b/src/FMI_search.h
+index 25c4d0d..92ac03f 100644
+--- a/src/FMI_search.h
++++ b/src/FMI_search.h
+@@ -34,7 +34,8 @@ Authors: Sanchit Misra <sanchit.misra@intel.com>; Vasimuddin Md <vasimuddin.md@i
+ #include <stdlib.h>
+ #include <stdint.h>
+ #include <string.h>
+-#include <immintrin.h>
++#define SIMDE_ENABLE_NATIVE_ALIASES
++#include <simde/x86/avx2.h>
+ #include <limits.h>
+ #include <fstream>
+ 
+diff --git a/src/bandedSWA.cpp b/src/bandedSWA.cpp
+index dfd81bc..6bd26e6 100644
+--- a/src/bandedSWA.cpp
++++ b/src/bandedSWA.cpp
+@@ -4146,16 +4146,6 @@ void BandedPairWiseSW::smithWaterman128_16(uint16_t seq1SoA[],
+     return;
+ }
+ 
+-/********************************************************************************/
+-/* SSE2 - 8 bit version */
+-#ifndef __SSE4_1__
+-static inline __m128i _mm_blendv_epi8 (__m128i x, __m128i y, __m128i mask)
+-{
+-    // Replace bit in x with bit in y when matching bit in mask is set:
+-    return _mm_or_si128(_mm_andnot_si128(mask, x), _mm_and_si128(mask, y));
+-}
+-#endif
+-
+ #define ZSCORE8(i4_128, y4_128)                                         \
+     {                                                                   \
+         __m128i tmpi = _mm_sub_epi8(i4_128, x128);                      \
+diff --git a/src/bandedSWA.h b/src/bandedSWA.h
+index c81552b..16f56c1 100644
+--- a/src/bandedSWA.h
++++ b/src/bandedSWA.h
+@@ -36,10 +36,17 @@ Authors: Vasimuddin Md <vasimuddin.md@intel.com>; Sanchit Misra <sanchit.misra@i
+ #include <assert.h>
+ #include "macro.h"
+ 
++#if !defined(__SSE__)
++#define _mm_malloc(size, align) aligned_alloc(align, size)
++#define _mm_free free
++#define _MM_HINT_NTA 0
++#endif
++
++#define SIMDE_ENABLE_NATIVE_ALIASES
+ #if (__AVX512BW__ || __AVX2__)
+ #include <immintrin.h>
+ #else
+-#include <smmintrin.h>  // for SSE4.1
++#include <simde/x86/sse4.1.h>
+ #define __mmask8 uint8_t
+ #define __mmask16 uint16_t
+ #endif
+diff --git a/src/bwa.h b/src/bwa.h
+index 877f00c..aa36083 100644
+--- a/src/bwa.h
++++ b/src/bwa.h
+@@ -37,6 +37,13 @@ Authors: Vasimuddin Md <vasimuddin.md@intel.com>; Sanchit Misra <sanchit.misra@i
+ #include "bwt.h"
+ #include "macro.h"
+ 
++#if !defined(__SSE__)
++#define _mm_malloc(size, align) aligned_alloc(align, size)
++#define _mm_free free
++#define _MM_HINT_NTA 0
++#define _MM_HINT_T0 0
++#endif
++
+ #define BWA_IDX_BWT 0x1
+ #define BWA_IDX_BNS 0x2
+ #define BWA_IDX_PAC 0x4
+diff --git a/src/bwamem.cpp b/src/bwamem.cpp
+index 4a18aff..b870e8e 100644
+--- a/src/bwamem.cpp
++++ b/src/bwamem.cpp
+@@ -1946,7 +1946,7 @@ inline void sortPairsLen(SeqPair *pairArray, int32_t count, SeqPair *tempArray,
+ {
+ 
+     int32_t i;
+-#if ((!__AVX512BW__) & (__AVX2__ | __SSE2__))
++#if (!__AVX512BW__)
+     for(i = 0; i <= MAX_SEQ_LEN16; i++) hist[i] = 0;
+ #else   
+     __m512i zero512 = _mm512_setzero_si512();
+diff --git a/src/fastmap.cpp b/src/fastmap.cpp
+index 3a7e62e..f65d107 100644
+--- a/src/fastmap.cpp
++++ b/src/fastmap.cpp
+@@ -52,7 +52,7 @@ void __cpuid(unsigned int i, unsigned int cpuid[4]) {
+ #ifdef _WIN32
+     __cpuid((int *) cpuid, (int)i);
+ 
+-#else
++#elif defined(__x86_64__) || defined(__i386__)
+     asm volatile
+         ("cpuid" : "=a" (cpuid[0]), "=b" (cpuid[1]), "=c" (cpuid[2]), "=d" (cpuid[3])
+             : "0" (i), "2" (0));
+@@ -62,6 +62,7 @@ void __cpuid(unsigned int i, unsigned int cpuid[4]) {
+ 
+ int HTStatus()
+ {
++#if defined(__x86_64__) || defined(__i386__)
+     unsigned int cpuid[4];
+     char platform_vendor[12];
+     __cpuid(0, cpuid);
+@@ -93,6 +94,9 @@ int HTStatus()
+         fprintf(stderr, "CPUs support hyperThreading !!\n");
+ 
+     return ht;
++#else
++    return 0;
++#endif
+ }
+ 
+ 
+diff --git a/src/ksw.cpp b/src/ksw.cpp
+index ad9bc50..9369713 100644
+--- a/src/ksw.cpp
++++ b/src/ksw.cpp
+@@ -30,7 +30,6 @@
+ #include <stdlib.h>
+ #include <stdint.h>
+ #include <assert.h>
+-#include <emmintrin.h>
+ #include "ksw.h"
+ #include "macro.h"
+ 
+diff --git a/src/ksw.h b/src/ksw.h
+index 54bcef8..3179fc4 100644
+--- a/src/ksw.h
++++ b/src/ksw.h
+@@ -26,7 +26,8 @@
+ #define __AC_KSW_H
+ 
+ #include <stdint.h>
+-#include <emmintrin.h>
++#define SIMDE_ENABLE_NATIVE_ALIASES
++#include <simde/x86/sse2.h>
+ 
+ #define KSW_XBYTE  0x10000
+ #define KSW_XSTOP  0x20000
+diff --git a/src/kswv.h b/src/kswv.h
+index 11da4d7..bc8f21a 100644
+--- a/src/kswv.h
++++ b/src/kswv.h
+@@ -39,6 +39,8 @@ Authors: Vasimuddin Md <vasimuddin.md@intel.com>; Sanchit Misra <sanchit.misra@i
+ #include "ksw.h"
+ #include "bandedSWA.h"
+ #else
++#define SIMDE_ENABLE_NATIVE_ALIASES
++#include <simde/x86/avx2.h>
+ #include <immintrin.h>
+ #endif
+ 
+diff --git a/src/main.cpp b/src/main.cpp
+index 3a269e1..bcc2c22 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -85,6 +85,10 @@ int main(int argc, char* argv[])
+         fprintf(stderr, "Executing in SSE4.2 mode!!\n");
+ #elif __SSE4_1__
+         fprintf(stderr, "Executing in SSE4.1 mode!!\n");        
++#elif __SSE2__
++        fprintf(stderr, "Executing in SSE2 mode!!\n");
++#else
++        fprintf(stderr, "Executing in Scalar mode!!\n");
+ #endif
+         fprintf(stderr, "-----------------------------\n");
+ 
+diff --git a/src/runsimd.cpp b/src/runsimd.cpp
+index 03c0e91..2f1190d 100644
+--- a/src/runsimd.cpp
++++ b/src/runsimd.cpp
+@@ -61,7 +61,7 @@ void __cpuidex(int cpuid[4], int func_id, int subfunc_id)
+ 	__asm__ volatile ("cpuid"
+ 			: "=a" (cpuid[0]), "=b" (cpuid[1]), "=c" (cpuid[2]), "=d" (cpuid[3])
+ 			: "0" (func_id), "2" (subfunc_id));
+-#else // on 32bit, ebx can NOT be used as PIC code
++#elif defined(__i386__)
+ 	__asm__ volatile ("xchgl %%ebx, %1; cpuid; xchgl %%ebx, %1"
+ 			: "=a" (cpuid[0]), "=r" (cpuid[1]), "=c" (cpuid[2]), "=d" (cpuid[3])
+ 			: "0" (func_id), "2" (subfunc_id));
+diff --git a/src/utils.h b/src/utils.h
+index 54a062a..144c2a0 100644
+--- a/src/utils.h
++++ b/src/utils.h
+@@ -66,6 +66,46 @@ static inline unsigned long long __rdtsc(void)
+ #endif
+ #endif
+ 
++// Apache 2.0 license
++#if defined(__aarch64__)
++  // System timer of ARMv8 runs at a different frequency than the CPU's.
++  // The frequency is fixed, typically in the range 1-50MHz.  It can be
++  // read at CNTFRQ special register.  We assume the OS has set up
++  // the virtual timer properly.
++static inline unsigned long long __rdtsc(void)
++{
++  int64_t virtual_timer_value;
++  asm volatile("mrs %0, cntvct_el0" : "=r"(virtual_timer_value));
++  return virtual_timer_value;
++}
++#elif defined(__ARM_ARCH)
++  // V6 is the earliest arch that has a standard cyclecount
++  // Native Client validator doesn't allow MRC instructions.
++#if (__ARM_ARCH >= 6)
++static inline unsigned long long __rdtsc(void)
++{
++  uint32_t pmccntr;
++  uint32_t pmuseren;
++  uint32_t pmcntenset;
++  // Read the user mode perf monitor counter access permissions.
++  asm volatile("mrc p15, 0, %0, c9, c14, 0" : "=r"(pmuseren));
++  if (pmuseren & 1) {  // Allows reading perfmon counters for user mode code.
++    asm volatile("mrc p15, 0, %0, c9, c12, 1" : "=r"(pmcntenset));
++    if (pmcntenset & 0x80000000ul) {  // Is it counting?
++      asm volatile("mrc p15, 0, %0, c9, c13, 0" : "=r"(pmccntr));
++      // The counter is set up to count every 64th cycle
++      return static_cast<int64_t>(pmccntr) * 64;  // Should optimize to << 6
++    }
++  }
++  struct timeval tv;
++  gettimeofday(&tv, nullptr);
++  return static_cast<int64_t>(tv.tv_sec) * 1000000 + tv.tv_usec;
++}
++#else
++#error __ARM_ARCH < 6 does not have a standard cyclecount
++#endif
++#endif
++
+ typedef struct {
+ 	uint64_t x, y;
+ } pair64_t;
