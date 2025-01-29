@@ -52,35 +52,9 @@ cd ..
 echo "Current directory: ${PWD}"
 ls -lh
 
-# Comprehensive executable search
-echo "Finding ALL executables:"
-find . -type f -executable
-
-# Detailed recursive search with file information
-echo "Detailed executable search:"
-find . -type f -executable -exec file {} \;
-
-# Check build-conda directory
-echo "Executables in build-conda:"
-find build-conda -type f -executable
-
-# Check bin directory
-echo "Contents of bin directory:"
-ls -la bin/
-
-# Copy executables
-BINARIES=(kmat_tools muset-kmtricks muset muset_pa)
-for binary in "${BINARIES[@]}"; do
-    # Comprehensive search strategies
-    found_binary=$(find . -type f -executable -name "${binary}" | head -n 1)
-    
-    if [ -n "$found_binary" ]; then
-        echo "Found binary: $found_binary"
-        cp "$found_binary" ${PREFIX}/bin/
-    else
-        echo "Warning: Binary ${binary} not found in any location!"
-    fi
-done
+cp ./bin/kmat_tools ${PREFIX}/bin
+cp ./bin/muset ${PREFIX}/bin
+cp ./bin/muset_pa ${PREFIX}/bin
 
 # Verify installed binaries
 echo "Installed binaries:"
