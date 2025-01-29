@@ -6,6 +6,17 @@ set -x  # Print commands for debugging
 echo "Current directory: ${PWD}"
 ls -lh
 
+# Initialize and update submodules explicitly
+git init
+git remote add origin https://github.com/CamilaDuitama/muset.git
+git fetch origin
+git checkout v0.5.1
+git submodule init
+git submodule update --recursive
+
+# Print submodule status
+git submodule status
+
 # Create the output directory
 mkdir -p ${PREFIX}/bin
 
