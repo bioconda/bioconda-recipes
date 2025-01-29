@@ -56,10 +56,10 @@ cp ./bin/kmat_tools ${PREFIX}/bin
 cp ./bin/muset ${PREFIX}/bin
 cp ./bin/muset_pa ${PREFIX}/bin
 
-# After copying binaries
+# Optional: print binary information
 echo "Copied binaries details:"
 for binary in ${PREFIX}/bin/*; do
     echo "Binary: $binary"
-    file $binary
-    ldd $binary || true  # List dynamic dependencies
+    # Remove the file command and ldd check
+    echo "Copied successfully"
 done
