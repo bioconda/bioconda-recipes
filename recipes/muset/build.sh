@@ -11,10 +11,10 @@ echo "Building version: ${VERSION}"
 ls -lh
 
 # Initialize git repository
-git init
+#git init
 
 # Add remote origin
-git remote add origin https://github.com/CamilaDuitama/muset.git
+#git remote add origin https://github.com/CamilaDuitama/muset.git
 
 # Fetch all tags
 git fetch --tags
