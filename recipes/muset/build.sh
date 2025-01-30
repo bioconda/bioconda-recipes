@@ -11,27 +11,27 @@ echo "Building version: ${VERSION}"
 ls -lh
 
 # Initialize git repository
-#git init
+git init
 
 # Add remote origin
-#git remote add origin https://github.com/CamilaDuitama/muset.git
+git remote add origin https://github.com/CamilaDuitama/muset.git
 
 # Fetch all tags
-#git fetch --tags
+git fetch --tags
 
 # Force checkout the specific version, overwriting local files
-#git checkout -f v${VERSION}
+git checkout -f v${VERSION}
 
 # Initialize and update submodules explicitly
-#git submodule init
-#git submodule update --recursive
+git submodule init
+git submodule update --recursive
 
 # Verify submodule and external folder contents
-#echo "Submodule status:"
-#git submodule status
+echo "Submodule status:"
+git submodule status
 
 echo "External folder contents:"
-ls -la external/
+ls -la external/*
 
 # Create the output directory
 mkdir -p ${PREFIX}/bin
