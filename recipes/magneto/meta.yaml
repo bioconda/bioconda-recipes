@@ -1,0 +1,44 @@
+{% set name = "magneto" %}
+{% set version = "1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  run_exports:
+    - {{ pin_subpackage('magneto', max_pin="x") }}
+  number: 0
+  noarch: python
+  script: python -m pip install --no-deps --ignore-installed .
+
+source:
+  url: https://gitlab.univ-nantes.fr/bird_pipeline_registry/magneto/-/archive/{{version}}/magneto-{{version}}.tar.gz
+  sha256: 3d431e8ded0922de0f5a636b812920d308ca72b5dfeb61564c146c39324db994
+
+requirements:
+  host:
+    - python =>3.7
+    - pip
+    - setuptools
+  run:
+    - python =>3.7
+    - snakemake =6.3.0
+    - mamba =1.5.8
+    - click =8.01
+
+test:
+  commands:
+    - magneto --help
+
+about:
+  home: https://gitlab.univ-nantes.fr/bird_pipeline_registry/magneto
+  license: GPL-3.0-only
+  license_file: LICENSE
+  license_family: GPL3
+  summary: 'MAGNETO is an automated snakemake workflow dedicated to MAG reconstruction from metagenomic data.'
+
+extra:
+  identifiers:
+    - biotools:magneto
+    - doi:10.1128/msystems.00432-22
