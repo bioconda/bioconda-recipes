@@ -10,12 +10,6 @@ echo "Current directory: ${PWD}"
 echo "Building version: ${VERSION}"
 ls -lh
 
-# Initialize git repository
-git init
-
-# Add remote origin
-git remote add origin https://github.com/CamilaDuitama/muset.git
-
 # Fetch all tags
 git fetch --tags
 
@@ -31,7 +25,7 @@ echo "Submodule status:"
 git submodule status
 
 echo "External folder contents:"
-ls -la external/*
+ls -la external/
 
 # Create the output directory
 mkdir -p ${PREFIX}/bin
@@ -52,14 +46,55 @@ cd ..
 echo "Current directory: ${PWD}"
 ls -lh
 
-cp ./bin/kmat_tools ${PREFIX}/bin
-cp ./bin/muset ${PREFIX}/bin
-cp ./bin/muset_pa ${PREFIX}/bin
+# Enhanced binary copying with detailed error checking
+copy_binary() {
+    local binary=$1
+    local src_path="./bin/${binary}"
+    local dest_path="${PREFIX}/bin/${binary}"
 
-# Optional: print binary information
-echo "Copied binaries details:"
-for binary in ${PREFIX}/bin/*; do
-    echo "Binary: $binary"
-    # Remove the file command and ldd check
-    echo "Copied successfully"
+    # Check if source binary exists
+    if [ ! -f "${src_path}" ]; then
+        echo "ERROR: Source binary ${src_path} does not exist!"
+        exit 1
+    fi
+
+    # Check if source binary is executable
+    if [ ! -x "${src_path}" ]; then
+        echo "ERROR: Source binary ${src_path} is not executable!"
+        exit 1
+    fi
+
+    # Copy binary
+    cp "${src_path}" "${dest_path}"
+
+    # Verify copy
+    if [ ! -f "${dest_path}" ]; then
+        echo "ERROR: Failed to copy ${binary} to ${dest_path}"
+        exit 1
+    fi
+
+    # Ensure destination is executable
+    chmod +x "${dest_path}"
+
+    echo "Successfully copied and made executable: ${binary}"
+}
+
+# Copy binaries with error handling
+echo "Copying binaries:"
+copy_binary kmat_tools
+copy_binary muset
+copy_binary muset_pa
+
+# List and verify copied binaries
+echo "Verifying copied binaries:"
+ls -l ${PREFIX}/bin/
+file ${PREFIX}/bin/*
+
+# Verify binary functionality
+for binary in kmat_tools muset muset_pa; do
+    echo "Checking ${binary}:"
+    ${PREFIX}/bin/${binary} --help || echo "Warning: ${binary} --help failed"
 done
+
+# Explicit exit with success
+exit 0
