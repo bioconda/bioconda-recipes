@@ -9,10 +9,10 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 export LC_ALL=en_US.UTF-8
 
-if [ "$(uname)" == "Darwin" ]; then
+if [[ "$(uname)" == "Darwin" ]]; then
     # for Mac OSX
     export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
-    export CFLAGS="${CFLAGS} -m64 -Wno-implicit-function-declaration -Wdeprecated-non-prototype"
+    export CFLAGS="${CFLAGS} -m64 -Wno-implicit-function-declaration -Wno-deprecated-non-prototype"
     export LC_ALL=C
 fi
 
@@ -37,7 +37,7 @@ autoreconf -if
 	LDFLAGS="${LDFLAGS}" \
 	--prefix="${PREFIX}" \
 	--with-gmapdb="${PREFIX}/share" \
-	--with-simd-level=${SIMD_LEVEL}
+	--with-simd-level="${SIMD_LEVEL}"
 
 make -j"${CPU_COUNT}"
 make install

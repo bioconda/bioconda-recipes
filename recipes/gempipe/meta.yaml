@@ -1,32 +1,32 @@
-{% set version = "1.35.0" %}
+{% set name = "gempipe" %}
+{% set version = "1.37.6" %}
 
 package:
-    name: "gempipe"
+    name: {{ name }}
     version: {{ version }}
 
-
 source:
-    url: https://github.com/lazzarigioele/gempipe/archive/v{{ version }}.tar.gz
-    sha256: 412a88c0d9350d15523ca298742468d9786c8713b4da5beb7fbc320a04544566
-
+    # with https://github.com/lazzarigioele/{name}/archive/v{version}.tar.gz :
+    url: https://github.com/lazzarigioele/{{ name }}/archive/v{{ version }}.tar.gz
+    # with https://pypi.org/packages/source/{first-letter}/{package-name}/{package-name}-{version}.tar.gz :
+    #url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 4ce24e496e85a4194d71d6721f83e3dc0e6895619f3bb7539972b7de41b389f7
 
 build:
     number: 0  
     noarch: python
     script: 
-        - {{ PYTHON }} -m pip install . -vv --no-deps  
+        - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
     entry_points:
         - gempipe = gempipe:main
     run_exports:
         - {{ pin_subpackage('gempipe', max_pin="x") }}
     
-    
 requirements:
     host:
         - python >=3.9
         - pip
-        - poetry >=1.7.1
-        - poetry-core >=1.8.1
+        - poetry-core >=1.0.0
         - ipython >=8.7.0
     run:
         - python >=3.9
@@ -47,8 +47,8 @@ requirements:
         - eggnog-mapper >=2.1.7
         - matplotlib-base >=3.7.0
         - seaborn >=0.13.0
-        
-
+        - scipy >=1.10.0
+        - scikit-learn >=1.3.0
 
 test:
     imports:
@@ -59,17 +59,15 @@ test:
         - gempipe derive --help
         - gempipe autopilot --help
 
-
 about:
     home: "https://github.com/lazzarigioele/gempipe"
     summary: 'gempipe is a tool for the reconstruction of strain-specific genome-scale metabolic models.'
     license: GPL-3.0-only
+    license_family: GPL3
     license_file: LICENSE.txt
     doc_url: "https://gempipe.readthedocs.io/"
     dev_url: "https://github.com/lazzarigioele/gempipe"
 
-
 extra:
     recipe-maintainers:
         - lazzarigioele
-        

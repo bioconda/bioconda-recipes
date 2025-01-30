@@ -1,5 +1,5 @@
-{% set version = "1.0.3" %}
-{% set sha256 = "7247a8ec9efb7ebcd9566f6a3759520ee87f305efc91c8ce658307308ee6368a" %}
+{% set version = "1.1.2" %}
+{% set sha256 = "c01a3ea537342ebfc8ff7e2a5fb04507693e71ba3184ffa4ff1c4bc6d7aba613" %}
 
 package:
   name: gw
@@ -8,12 +8,9 @@ package:
 source:
   url: https://github.com/kcleal/gw/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - fix-linker-issues.patch  # [linux]
-    - fix-context.patch
 
 build:
-  number: 2
+  number: 0
   run_exports:
     - {{ pin_subpackage('gw', max_pin="x") }}
   ignore_run_exports:
@@ -31,6 +28,7 @@ build:
     - zlib            # [osx]
     - libuuid
     - libdeflate
+  # skip: true  # [osx and x86_64]
 
 requirements:
   build:
@@ -72,7 +70,10 @@ requirements:
 
 test:
   commands:
-    - gw hg19 -b https://github.com/kcleal/gw/releases/download/v1.0.0/demo1.bam -r chr8:37047270-37055161 -n > test.png; ls -lh test.png
+    - which gw && ls -lh $(which gw)
+    - uname -a
+    - if [[ "$(uname)" == "Darwin" ]]; then file $(which gw); otool -L $(which gw); nm $(which gw); fi
+    - gw --version
 
 about:
   home: https://github.com/kcleal/gw

@@ -1,0 +1,40 @@
+{% set name = "teloscope" %}
+{% set version = "0.0.7" %}
+package:
+  name: {{ name }}
+  version: {{ version }}
+source:
+  url: https://github.com/vgl-hub/teloscope/releases/download/v{{version}}/teloscope.v{{version}}-with_submodules.zip
+  sha256: 509e9d17e42e422149fd72ba0db50e22a0423bc9aceee548acd52f41e6609ec0
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('teloscope', max_pin="x") }}
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - openssl
+test:
+  commands:
+    - teloscope -h | grep "teloscope"
+about:
+  home: https://github.com/vgl-hub/teloscope
+  license_familiy: MIT
+  license: MIT
+  summary: A telomere annotation tools for genome assemblies
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:teloscope
+    - usegalaxy-eu:teloscope
+  container:
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

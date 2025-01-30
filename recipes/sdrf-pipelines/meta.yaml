@@ -1,6 +1,6 @@
 {% set name = "sdrf-pipelines" %}
 {% set pypi_name = "sdrf_pipelines" %}
-{% set version = "0.0.29" %}
+{% set version = "0.0.31" %}
 
 package:
   name: "{{ name|lower }}"
@@ -8,21 +8,22 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ pypi_name[0] }}/{{ pypi_name }}/{{ pypi_name }}-{{ version }}.tar.gz"
-  sha256: 730d198ce879f864181aa5e567c51273ce95212c9394df84840a0e1896d644f1
+  sha256: 2d78d297e1e4de98d8d6965ae00aab9adb9420a20d5dd56336a45becc19a4920
 
 build:
   number: 0
   noarch: python
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
   entry_points:
     - parse_sdrf = sdrf_pipelines.parse_sdrf:main
-  script: "{{ PYTHON }} -m pip install . --no-deps -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
 
 requirements:
   host:
     - pip
     - python >=3.5
+    - setuptools
   run:
     - click
     - requests
@@ -48,7 +49,8 @@ test:
 
 about:
   home: "https://github.com/bigbio/sdrf-pipelines"
-  license: Apache 2
+  license: "Apache-2.0"
+  license_family: APACHE
   ##license_file: LICENSE ## patch is applied upstream, next version will have it
   summary: "Translate, convert SDRF to configuration pipelines"
   doc_url: "https://github.com/bigbio/sdrf-pipelines"

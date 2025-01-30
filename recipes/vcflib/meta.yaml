@@ -1,31 +1,37 @@
 {% set name = "vcflib" %}
-{% set version = "1.0.9" %}
-{% set sha256 = "493204cb8e0515defa1383d56280d00b8efbed55312c6055162f8cb3a4ffb210" %}
+{% set version = "1.0.10" %}
+{% set sha256 = "unused" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-- url: https://github.com/vcflib/vcflib/releases/download/v{{ version }}/vcflib-{{ version }}-src.tar.gz
+- git_url: https://github.com/vcflib/vcflib.git
+  git_rev: v{{ version }}
   sha256: {{ sha256 }}
   patches:
     - pkg-config.patch
     - shared_lib.patch
     - backport_pr_394.patch  # TODO remove once PR https://github.com/vcflib/vcflib/pull/394 is merged and released
     - tabix.patch
+    - march_native.patch  # Disable march=native to build a generic executable, see https://github.com/vcflib/vcflib/issues/401
+    - 0006-wfa2-lib.patch
 - url: https://ziglang.org/download/0.10.1/zig-linux-x86_64-0.10.1.tar.xz  # [linux and x86_64]
   sha256: 6699f0e7293081b42428f32c9d9c983854094bd15fee5489f12c4cf4518cc380  # [linux and x86_64]
   folder: zig-linux-x86_64-0.10.1  # [linux and x86_64]
 - url: https://ziglang.org/download/0.10.1/zig-linux-aarch64-0.10.1.tar.xz  # [linux and aarch64]
   sha256: db0761664f5f22aa5bbd7442a1617dd696c076d5717ddefcc9d8b95278f71f5d  # [linux and aarch64]
   folder: zig-linux-aarch64-0.10.1  # [linux and aarch64]
-- url: https://ziglang.org/download/0.10.1/zig-macos-x86_64-0.10.1.tar.xz  # [osx]
-  sha256: 02483550b89d2a3070c2ed003357fd6e6a3059707b8ee3fbc0c67f83ca898437  # [osx]
-  folder: zig-macos-x86_64-0.10.1  # [osx]
+- url: https://ziglang.org/download/0.10.1/zig-macos-x86_64-0.10.1.tar.xz  # [osx and x86_64]
+  sha256: 02483550b89d2a3070c2ed003357fd6e6a3059707b8ee3fbc0c67f83ca898437  # [osx and x86_64]
+  folder: zig-macos-x86_64-0.10.1  # [osx and x86_64]
+- url: https://ziglang.org/download/0.10.1/zig-macos-aarch64-0.10.1.tar.xz  # [osx and arm64]
+  sha256: b9b00477ec5fa1f1b89f35a7d2a58688e019910ab80a65eac2a7417162737656  # [osx and arm64]
+  folder: zig-macos-aarch64-0.10.1  # [osx and arm64]
 
 build:
-  number: 7
+  number: 2
   run_exports:
     - {{ pin_subpackage('vcflib', max_pin="x") }}
 
@@ -45,14 +51,16 @@ requirements:
     - htslib
     - tabixpp
     - wfa2-lib
+    - pandoc
   run:
     - python >=3
     - perl
     - htslib
     - tabixpp
+    - wfa2-lib
     - eigen
     - jsoncpp
-    - wfa2-lib
+    - wget
 
 test:
   requires:
@@ -66,18 +74,47 @@ test:
     - "vcfuniq test.vcf"
 
 about:
-  home: https://github.com/vcflib/vcflib
+  home: "https://github.com/vcflib/vcflib"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: Command-line tools for manipulating VCF files
+  summary: "Command-line tools for manipulating VCF files."
+  dev_url: "https://github.com/vcflib/vcflib"
+  doc_url: "https://github.com/vcflib/vcflib/blob/v{{ version }}/README.md"
 
 extra:
+  skip-lints:
+    # uses submodules
+    - uses_vcs_url
   additional-platforms:
     - linux-aarch64
+    #zig osx-arm64 error: error(link): undefined reference to symbol 'dyld_stub_binder'
+    #- osx-arm64
   recipe-maintainers:
     - jpuritz
   identifiers:
     - biotools:vcflib
     - doi:10.1371/journal.pcbi.1009123
     - usegalaxy-eu:vcfsort
+    - usegalaxy-eu:vcfallelicprimitives
+    - usegalaxy-eu:vcfbreakcreatemulti
+    - usegalaxy-eu:vcffilter2
+    - usegalaxy-eu:vcfcheck
+    - usegalaxy-eu:vcfcombine
+    - usegalaxy-eu:vcfaddinfo
+    - usegalaxy-eu:vcf2tsv
+    - usegalaxy-eu:vcfleftalign
+    - usegalaxy-eu:vcfhethom
+    - usegalaxy-eu:vcfrandomsample
+    - usegalaxy-eu:vcfbedintersect
+    - usegalaxy-eu:vcfgenotypes
+    - usegalaxy-eu:vcffixup
+    - usegalaxy-eu:vcfgeno2haplo
+    - usegalaxy-eu:vcfvcfintersect
+    - usegalaxy-eu:vcfanno
+    - usegalaxy-eu:vcfannotate
+    - usegalaxy-eu:vcfcommonsamples
+    - usegalaxy-eu:vcfflatten2
+    - usegalaxy-eu:vcfdistance
+    - usegalaxy-eu:vcfannotategenotypes
+    - usegalaxy-eu:vcfselectsamples

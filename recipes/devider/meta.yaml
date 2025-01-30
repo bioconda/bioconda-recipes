@@ -1,0 +1,53 @@
+{% set version="0.0.1" %}
+
+package:
+  name: devider
+  version: {{ version }}
+
+source:
+  url: https://github.com/bluenote-1577/devider/archive/v{{ version }}.tar.gz
+  sha256: e2c5e4a2faa51dbfd0ad4cb867d0dc25ea4012e83ec8fea27c1624592fce7dce
+  patches:
+    - devider-aarch64.patch # [aarch64]
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('devider', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - {{ compiler('rust') }} 
+    - cargo-bundle-licenses
+    - make
+    - cmake >=3.12
+  host:
+    - clangdev >=16,<17 # [linux and aarch64]
+  run:
+    - python 
+    - samtools
+    - minimap2
+    - lofreq >=2.1.5
+    - tabix
+    - pysam >=0.16
+
+test:
+  commands:
+    - devider -h
+    - run_devider_pipeline -h
+    - haplotag_bam -h
+
+about:
+  home: https://github.com/bluenote-1577/devider
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml 
+  summary: Haplotyping small sequences from heterogeneous long-read sequencing samples with a SNP-encoded positional de Bruijn graphs.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - bluenote-1577

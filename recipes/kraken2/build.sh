@@ -15,10 +15,13 @@ if [[ "$(uname)" == Darwin ]]; then
 fi
 
 ./install_kraken2.sh "${outdir}/libexec"
-for bin in kraken2 kraken2-build kraken2-inspect; do
+for bin in kraken2 kraken2-build kraken2-inspect k2; do
     chmod +x "${outdir}/libexec/$bin"
     ln -s "${outdir}/libexec/$bin" "${PREFIX}/bin/$bin"
     # Change from double quotes to single in case of special chars
-    sed -i.bak "s#my \$KRAKEN_DIR = \"${outdir}/libexec\";#my \$KRAKEN_DIR = '${outdir}/libexec';#g" "${outdir}/libexec/${bin}"
-    rm -rf "${outdir}/libexec/${bin}.bak"
+    # we don't do the following for the k2 binariy
+    if [[ $bin != "k2" ]]; then
+        sed -i.bak "s#my \$KRAKEN_DIR = \"${outdir}/libexec\";#my \$KRAKEN_DIR = '${outdir}/libexec';#g" "${outdir}/libexec/${bin}"
+        rm -rf "${outdir}/libexec/${bin}.bak"
+    fi
 done
