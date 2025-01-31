@@ -10,7 +10,7 @@ case "$(uname -s)" in
 esac
 	
 autoreconf -fi
-export CXXFLAGS="${CXXFLAGS} -fsigned-char"
+export CXXFLAGS="${CXXFLAGS} -fsigned-char -std=c++14"
 export CFLAGS="${CFLAGS} -fsigned-char"
 ./configure --prefix=$PREFIX
 make -j ${CPU_COUNT}
