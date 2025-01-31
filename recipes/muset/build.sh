@@ -10,32 +10,54 @@ echo "Current directory: ${PWD}"
 echo "Building version: ${VERSION}"
 ls -lh
 
-# Initialize git repository if it doesn't exist
-if [ ! -d ".git" ]; then
-    echo "Initializing git repository"
-    git init
-    git remote add origin https://github.com/CamilaDuitama/muset.git
-fi
+# Ensure git is initialized
+git init
 
-# Fetch tags (this might not work if not a full clone)
-git fetch --tags || echo "Warning: Could not fetch tags"
+# Add remote origin
+git remote add origin https://github.com/CamilaDuitama/muset.git
 
-# Try to checkout the specific version
-if ! git checkout v${VERSION}; then
-    echo "Direct git checkout failed. Continuing with build."
-fi
+# Fetch all tags
+git fetch --tags
 
-# Initialize and update submodules
-# This might require --init if submodules are not already present
-git submodule init || echo "Submodule init may have failed"
-git submodule update --recursive || echo "Submodule update may have failed"
+# Force checkout the specific version, overwriting local files
+git checkout -f v${VERSION}
 
-# Verify submodule and external folder contents
+# Forcefully initialize and update submodules
+git submodule init
+git submodule update --force --recursive --init
+
+# Debug: Check submodule status and contents
 echo "Submodule status:"
-git submodule status || echo "Could not get submodule status"
+git submodule status
 
 echo "External folder contents:"
-ls -la external/ || echo "Could not list external folder"
+ls -la external/
+
+# Verify each external library is present
+LIBS=(
+    "fmt"
+    "TurboPFor-Integer-Compression"
+    "bcli"
+    "cfrcat"
+    "gatb-core-stripped"
+    "kff-cpp-api"
+    "lz4"
+    "spdlog"
+    "xxHash"
+)
+
+for lib in "${LIBS[@]}"; do
+    if [ ! -d "external/${lib}" ] || [ -z "$(ls -A external/${lib})" ]; then
+        echo "WARNING: ${lib} is missing or empty!"
+        # Attempt to clone or download
+        case $lib in
+            "fmt")
+                git clone https://github.com/fmtlib/fmt.git external/fmt
+                ;;
+            # Add more library-specific fallback cloning if needed
+        esac
+    fi
+done
 
 # Create the output directory
 mkdir -p ${PREFIX}/bin
@@ -44,11 +66,14 @@ mkdir -p ${PREFIX}/bin
 mkdir -p build-conda
 cd build-conda
 
-# Configure the build with CMake
-cmake .. -DCONDA_BUILD=ON
+# Configure the build with CMake, with verbose output
+cmake .. \
+    -DCONDA_BUILD=ON \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_VERBOSE_MAKEFILE=ON
 
-# Build the software
-make -j${CPU_COUNT}
+# Build the software with verbose output
+make -j${CPU_COUNT} VERBOSE=1
 
 # Go back to source directory
 cd ..
@@ -56,16 +81,15 @@ cd ..
 echo "Current directory: ${PWD}"
 ls -lh
 
-# Check if binaries exist before copying
-BINARIES=("kmat_tools" "muset" "muset_pa")
-for binary in "${BINARIES[@]}"; do
+# Copy binaries with error checking
+for binary in kmat_tools muset muset_pa; do
     if [ -x "./bin/${binary}" ]; then
         cp "./bin/${binary}" ${PREFIX}/bin/
         echo "Copied ${binary}"
     else
-        echo "Warning: Binary ${binary} not found or not executable"
-        # List contents of bin directory to debug
+        echo "ERROR: ${binary} not found or not executable"
         ls -l ./bin/
+        exit 1
     fi
 done
 
