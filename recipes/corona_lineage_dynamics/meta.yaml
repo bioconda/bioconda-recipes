@@ -1,41 +1,36 @@
-{% set version = "0.1.1" %}
+{% set version = "0.1.2" %}
 
 package:
   name: corona_lineage_dynamics
   version: {{ version }}
 
 source:
-  url: https://github.com/hzi-bifo/corona_lineage_dynamics/releases/download/v0.1.2/corona_lineage_dynamics-v0.1.2.tgz
-  sha256: 544bec580a282848ef5cfb487d621fdf9615da65c9e10cdcf2671611783da08c
+  url: https://github.com/hzi-bifo/corona_lineage_dynamics/releases/download/v0.1.3/corona_lineage_dynamics-v0.1.3.tgz
+  sha256: df6ee33982265d441f4e4cbf7048afae1af9d79bd12753993c8dbe3efe738ac7
 
 build:
   number: 0
-  noarch: generic
+  run_exports:
+    - corona_lineage_dynamics >=0.1.2,<0.2
 
 requirements:
     build:
         - {{ compiler('c') }} 
         - {{ compiler('cxx') }} 
         - make 
+        - boost-cpp 
     host:
-        - r-base 
+        - r-base >=4.0.0
         - pkg-config 
         - zlib 
-        - boost-cpp 
-        - r-base 
+        - boost
         - r-mass 
         - r-matrix 
         - r-xml2 
         - r-systemfonts 
         - r-ragg 
         - r-pkgdown 
-        - r-systemfonts
-        - r-textshaping
-        - r-ragg
-        - r-pkgdown
-        - freetype
         - r-devtools
-        - r-xml
         - r-binom
         - r-plotly
         - r-htmlwidgets
@@ -53,10 +48,7 @@ requirements:
         - r-tidyr
         - r-xtable
     run:
-        - numpy 
         - boost 
-        - curl 
-        - r-base 
         - zlib 
         - r-base 
         - r-mass 
@@ -65,12 +57,7 @@ requirements:
         - r-systemfonts 
         - r-ragg 
         - r-pkgdown 
-        - r-systemfonts
-        - r-textshaping
-        - r-ragg
-        - r-pkgdown
         - r-devtools
-        - r-xml
         - r-binom
         - r-plotly
         - r-htmlwidgets
@@ -89,13 +76,14 @@ requirements:
         - r-xtable
 test:
   commands:
-    - corona_lineage_dynamics -h
     - $PREFIX/share/corona_lineage_dynamics/scripts/count_lineages_country -h
+    - Rscript -e "library(scales); library(evaluate); library(knitr); library(lifecycle); library(fs); library(glue); library(gtable); library(withr)"
+    - corona_lineage_dynamics -h
 
 
 about:
   home: https://github.com/hzi-bifo/corona_lineage_dynamics
   dev_url: https://github.com/hzi-bifo/corona_lineage_dynamics
-  license: AGPL
-  summary: This repository contains scripts to calculate frequences of pangolin lineages based on the GISAID metadata file and to compute and visualize their trajectories.
-  license_family: AGPL
+  license: ASL
+  summary: Analyzing and visualizing pangolin lineages of GISAID metadata.
+  license_family: OTHER

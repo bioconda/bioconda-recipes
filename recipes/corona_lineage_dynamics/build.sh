@@ -1,8 +1,8 @@
 #!/bin/bash
 
-CONDA_PREFIX=$PREFIX
 ${CXX} --std=c++17 scripts/count_lineages_country.cpp -o scripts/count_lineages_country -lstdc++fs -lboost_regex ${CXXFLAGS} ${LDFLAGS}
 
+Rscript -e 'install.packages(c("lifecycle", "scales", "withr", "knitr"), repos="https://cloud.r-project.org");'
 Rscript -e 'devtools::install_github("rstudio/d3heatmap");'
 
 
