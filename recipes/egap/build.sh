@@ -4,7 +4,7 @@ set -euxo pipefail
 # Build purge_dups from source
 git clone https://github.com/dfguan/purge_dups.git
 cd purge_dups/src
-make
+make CC="$CC"
 mkdir -p $PREFIX/bin
 cp ../bin/* $PREFIX/bin/
 cd "$SRC_DIR"
