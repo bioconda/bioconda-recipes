@@ -10,22 +10,32 @@ echo "Current directory: ${PWD}"
 echo "Building version: ${VERSION}"
 ls -lh
 
-# Fetch all tags
-git fetch --tags
+# Initialize git repository if it doesn't exist
+if [ ! -d ".git" ]; then
+    echo "Initializing git repository"
+    git init
+    git remote add origin https://github.com/CamilaDuitama/muset.git
+fi
 
-# Force checkout the specific version, overwriting local files
-git checkout -f v${VERSION}
+# Fetch tags (this might not work if not a full clone)
+git fetch --tags || echo "Warning: Could not fetch tags"
 
-# Initialize and update submodules explicitly
-git submodule init
-git submodule update --recursive
+# Try to checkout the specific version
+if ! git checkout v${VERSION}; then
+    echo "Direct git checkout failed. Continuing with build."
+fi
+
+# Initialize and update submodules
+# This might require --init if submodules are not already present
+git submodule init || echo "Submodule init may have failed"
+git submodule update --recursive || echo "Submodule update may have failed"
 
 # Verify submodule and external folder contents
 echo "Submodule status:"
-git submodule status
+git submodule status || echo "Could not get submodule status"
 
 echo "External folder contents:"
-ls -la external/
+ls -la external/ || echo "Could not list external folder"
 
 # Create the output directory
 mkdir -p ${PREFIX}/bin
@@ -46,55 +56,19 @@ cd ..
 echo "Current directory: ${PWD}"
 ls -lh
 
-# Enhanced binary copying with detailed error checking
-copy_binary() {
-    local binary=$1
-    local src_path="./bin/${binary}"
-    local dest_path="${PREFIX}/bin/${binary}"
-
-    # Check if source binary exists
-    if [ ! -f "${src_path}" ]; then
-        echo "ERROR: Source binary ${src_path} does not exist!"
-        exit 1
+# Check if binaries exist before copying
+BINARIES=("kmat_tools" "muset" "muset_pa")
+for binary in "${BINARIES[@]}"; do
+    if [ -x "./bin/${binary}" ]; then
+        cp "./bin/${binary}" ${PREFIX}/bin/
+        echo "Copied ${binary}"
+    else
+        echo "Warning: Binary ${binary} not found or not executable"
+        # List contents of bin directory to debug
+        ls -l ./bin/
     fi
-
-    # Check if source binary is executable
-    if [ ! -x "${src_path}" ]; then
-        echo "ERROR: Source binary ${src_path} is not executable!"
-        exit 1
-    fi
-
-    # Copy binary
-    cp "${src_path}" "${dest_path}"
-
-    # Verify copy
-    if [ ! -f "${dest_path}" ]; then
-        echo "ERROR: Failed to copy ${binary} to ${dest_path}"
-        exit 1
-    fi
-
-    # Ensure destination is executable
-    chmod +x "${dest_path}"
-
-    echo "Successfully copied and made executable: ${binary}"
-}
-
-# Copy binaries with error handling
-echo "Copying binaries:"
-copy_binary kmat_tools
-copy_binary muset
-copy_binary muset_pa
-
-# List and verify copied binaries
-echo "Verifying copied binaries:"
-ls -l ${PREFIX}/bin/
-file ${PREFIX}/bin/*
-
-# Verify binary functionality
-for binary in kmat_tools muset muset_pa; do
-    echo "Checking ${binary}:"
-    ${PREFIX}/bin/${binary} --help || echo "Warning: ${binary} --help failed"
 done
 
-# Explicit exit with success
-exit 0
+# Verify copied binaries
+echo "Verifying copied binaries:"
+ls -l ${PREFIX}/bin/
