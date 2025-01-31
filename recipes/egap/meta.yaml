@@ -6,24 +6,30 @@ package:
   version: {{ version }}
 
 source:
-  # Pull a stable tarball from a tagged release on GitHub
+  # Example stable tarball from a tagged release
   url: https://github.com/iPsychonaut/EGAP/archive/refs/tags/v2.5.1.tar.gz
   sha256: eea8a02a84c26c50a2e7a68e3c95711c31510127e856f787de090f13b5d3124d
 
-build:
+uild:
   number: 0
-  # Only build on Linux
+  # Provide run_exports to ensure correct pinning in downstream recipes
+  run_exports:
+    - {{ pin_subpackage('egap', max_pin="x") }}
+
   skip: true  # [not linux]
   script: bash build.sh
 
 requirements:
-  host:
+  build:
     - python =3.8
     - pip
     - git
     - make
     - cmake
     - {{ compiler('cxx') }}
+
+  host:
+    - python >=3.8
 
   run:
     - python >=3.8
@@ -45,7 +51,7 @@ requirements:
     - psutil =6.0.0
     - beautifulsoup4 =4.12.3
     - ncbi-datasets-cli =16.39.0
-    - matplotlib =3.7.3
+    - matplotlib-base =3.7.3
     - trimmomatic =0.39
     - pilon =1.22
     - fastqc =0.12.1
