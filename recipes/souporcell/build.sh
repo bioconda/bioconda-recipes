@@ -5,8 +5,6 @@ mkdir -p ${PREFIX}/bin
 export CFLAGS="${CFLAGS} -fcommon"
 export CXXFLAGS="${CFLAGS} -fcommon -I${PREFIX}/include"
 
-INSTALL_PREFIX="${PREFIX}" make -j${CPU_COUNT}
-
 # Include scripts
 cp -f stan_consensus.pickle $PREFIX/bin/stan_consensus.pickle
 cp -f *py $PREFIX/bin
