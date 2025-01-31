@@ -6,19 +6,18 @@ package:
   version: {{ version }}
 
 source:
-  # Example stable tarball from a tagged release
+  # Stable tarball from a tagged release
   url: https://github.com/iPsychonaut/EGAP/archive/refs/tags/v2.5.1.tar.gz
   sha256: eea8a02a84c26c50a2e7a68e3c95711c31510127e856f787de090f13b5d3124d
 
 build:
   number: 0
-  # Provide run_exports to ensure correct pinning in downstream recipes
   run_exports:
     - {{ pin_subpackage('egap', max_pin="x") }}
-
   skip: true  # [not linux]
 
 requirements:
+  # Tools needed at compile time (includes compilers, plus zlib for linking)
   build:
     - python =3.8
     - pip
@@ -27,11 +26,14 @@ requirements:
     - git
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - zlib =1.3
 
+  # Tools/libraries visible at build time for your code (Python, zlib headers, etc.)
   host:
     - python >=3.8,<3.9
     - zlib =1.3
 
+  # Everything needed at runtime (Python version, plus all pipeline deps)
   run:
     - python >=3.8,<3.9
     - zlib =1.3
