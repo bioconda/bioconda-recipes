@@ -10,17 +10,27 @@ source:
   sha256: 03f875b3cdb595394eabed823d80d4da50d687f3ade4a017ff0159ce277ae331
 
 build:
-  number: 2
+  number: 3
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
+  script:
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --disable-pip-version-check
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - python                              # [build_platform != target_platform]
+    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+    - crossenv                            # [build_platform != target_platform]
+    - maturin >=1.5,<2                    # [build_platform != target_platform]
+    - {{ compiler("c") }}
+    - {{ compiler("rust") }}
+    - {{ stdlib("c") }}
+    - cargo-bundle-licenses
   host:
-    - pip
-    - maturin
     - python
+    - pip
+    - maturin >=1.5,<2
   run:
     - python
 
@@ -33,8 +43,11 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: "Python library for identification and masking of low-complexity regions in nucleotide sequences."
+  summary: >
+    Python library for identification and masking of low-complexity regions in
+    nucleotide sequences.
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
