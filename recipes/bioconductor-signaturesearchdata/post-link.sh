@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "signaturesearchdata-1.16.0"
+installBiocDataPackage.sh "signaturesearchdata-1.20.0"
