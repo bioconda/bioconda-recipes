@@ -10,16 +10,21 @@ source:
   sha256: eea8a02a84c26c50a2e7a68e3c95711c31510127e856f787de090f13b5d3124d
 
 build:
-  noarch: python            # <-- This makes the package architecture independent
+  noarch: python
   number: 0
   run_exports:
     - {{ pin_subpackage('egap', max_pin="x") }}
-  # skip: true  # [not linux]  <-- Remove or comment out this line
+  script: |
+    set -eux
+    mkdir -p "${PREFIX}/bin"
+    # If your script is named "EGAP.py" in the source, copy and rename to "EGAP":
+    cp EGAP.py "${PREFIX}/bin/EGAP"
+    chmod +x "${PREFIX}/bin/EGAP"
 
 requirements:
   build:
     - python =3.8
-    - pip
+    - pip  # or remove if not needed
 
   host:
     - python >=3.8,<3.9
