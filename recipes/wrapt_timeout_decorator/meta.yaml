@@ -1,0 +1,53 @@
+{% set name = "wrapt_timeout_decorator" %}
+{% set version = "1.5.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/wrapt_timeout_decorator-{{ version }}.tar.gz
+  sha256: 00f15646db89c629aa1b1566f4c1cf00ae6da0beece2905039f1cd7a60506a67
+
+build:
+  skip: true  # [py<38]
+  entry_points:
+    - wrapt_timeout_decorator = wrapt_timeout_decorator.wrapt_timeout_decorator_cli:cli_main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("wrapt_timeout_decorator", max_pin="x.x.x") }}
+
+requirements:
+  host:
+    - python >=3.8.0
+    - setuptools
+    - setuptools-scm
+    - pip
+  run:
+    - python >=3.8.0
+    - cli-exit-tools
+    - dill  # [not win]
+    - dill >0.3.0,!=0.3.5,!=0.3.5.1  # [win]
+    - lib-detect-testenv
+    - multiprocess
+    - psutil
+    - wrapt
+
+test:
+  imports:
+    - wrapt_timeout_decorator
+  commands:
+    - pip check
+    - wrapt_timeout_decorator --help
+  requires:
+    - pip
+
+about:
+  summary: The better timout decorator
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - nilchia
