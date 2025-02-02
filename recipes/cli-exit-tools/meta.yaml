@@ -1,0 +1,49 @@
+{% set name = "cli-exit-tools" %}
+{% set version = "1.2.7" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/cli_exit_tools-{{ version }}.tar.gz
+  sha256: e752427a4aa9db1f18370c8dc11ebef6e245cc5891ec2fa79e7169be583c2423
+
+build:
+  entry_points:
+    - cli_exit_tools = cli_exit_tools.cli_exit_tools_cli:cli_main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("cli-exit-tools", max_pin="x.x.x") }}
+
+requirements:
+  host:
+    - python >=3.8.0
+    - setuptools
+    - setuptools-scm
+    - pip
+  run:
+    - python >=3.8.0
+    - click
+    - lib-detect-testenv
+
+test:
+  imports:
+    - cli_exit_tools
+  commands:
+    - pip check
+    - cli_exit_tools --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/bitranox/cli_exit_tools
+  summary: functions to exit an cli application properly
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - nilchia
