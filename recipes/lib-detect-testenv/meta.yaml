@@ -1,0 +1,44 @@
+{% set name = "lib-detect-testenv" %}
+{% set version = "2.0.8" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/lib_detect_testenv-{{ version }}.tar.gz
+  sha256: 96527b3114727e70e80f671c204a225ae6aaaf117983f8fa4f56e542b2368d43
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("lib-detect-testenv", max_pin="x.x.x") }}
+
+requirements:
+  host:
+    - python >=3.8.0
+    - setuptools
+    - setuptools-scm
+    - pip
+  run:
+    - python >=3.8.0
+
+test:
+  imports:
+    - lib_detect_testenv
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/bitranox/lib_detect_testenv
+  summary: detects if pytest or doctest or pyrunner on pycharm is running
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - nilchia
