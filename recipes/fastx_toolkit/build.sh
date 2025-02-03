@@ -2,6 +2,8 @@
 
 set -xe
 
+cp $BUILD_PREFIX/share/gnuconfig/config.* config/
+
 export GTEXTUTILS_CFLAGS="-I $PREFIX/include/gtextutils"
 export GTEXTUTILS_LIBS="$PREFIX/lib/libgtextutils.a"
 export CXXFLAGS="${CXXFLAGS} -std=c++11 -Wall -Wno-implicit-fallthrough"
