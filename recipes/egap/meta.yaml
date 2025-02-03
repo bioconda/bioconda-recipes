@@ -19,18 +19,27 @@ build:
     set -eux
     mkdir -p "${PREFIX}/bin"
     
-    # Install runner
-    cd runner-0.0.0
-    $PYTHON -m pip install . --no-cache-dir
-    cd ..
-    
+    # Debugging: List all files and directories
+    echo "Debugging: Listing all files and directories..."
+    ls -R
+
+    # Verify setup.py exists in the root directory
+    if [[ -f "setup.py" ]]; then
+        echo "Installing package from the root directory..."
+        $PYTHON -m pip install . --no-cache-dir
+    else
+        echo "ERROR: setup.py not found in the root directory!"
+        ls -l  # Debugging: Show extracted files
+        exit 1
+    fi
+
     # Copy EGAP script to $PREFIX/bin and make it executable
+    echo "Installing EGAP script..."
     install -m 755 EGAP.py "${PREFIX}/bin/EGAP"
-    
+
     # Ensure EGAP is accessible as a command
+    echo "Creating symlink for 'egap'..."
     ln -s "${PREFIX}/bin/EGAP" "${PREFIX}/bin/egap"
-  run_exports:
-    - {{ pin_subpackage('egap', max_pin="x") }}
 
 requirements:
   host:
