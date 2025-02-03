@@ -18,9 +18,21 @@ build:
   script: |
     set -eux
     mkdir -p "${PREFIX}/bin"
-    # Copy your script to $PREFIX/bin, rename to "EGAP"
+    
+    # Ensure Python dependencies are installed
+    $PYTHON -m pip install . --no-cache-dir
+    
+    # Install runner
+    cd runner-0.0.0
+    $PYTHON -m pip install . --no-cache-dir
+    cd ..
+    
+    # Copy EGAP script to $PREFIX/bin and make it executable
     cp EGAP.py "${PREFIX}/bin/EGAP"
     chmod +x "${PREFIX}/bin/EGAP"
+    
+    # Ensure EGAP is accessible as a command
+    ln -s "${PREFIX}/bin/EGAP" "${PREFIX}/bin/egap"
   run_exports:
     - {{ pin_subpackage('egap', max_pin="x") }}
 
@@ -62,6 +74,7 @@ requirements:
 test:
   commands:
     - EGAP --help
+    - egap --help
 
 about:
   home: https://github.com/iPsychonaut/EGAP
