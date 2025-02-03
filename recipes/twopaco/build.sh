@@ -14,6 +14,6 @@ cmake --build build -j"${CPU_COUNT}" -v
 
 install -d "${PREFIX}/bin"
 install -v -m 0755 \
-    graphconstructor/twopaco \
-    graphdump/graphdump \
+    build/graphconstructor/twopaco \
+    build/graphdump/graphdump \
     "${PREFIX}/bin/"
