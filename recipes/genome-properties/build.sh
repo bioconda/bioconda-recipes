@@ -25,4 +25,4 @@ cpanm -l $PERLLIB --force --installdeps Data::Printer
 # Make scripts executable
 chmod -R a+x $PREFIX/bin/*.pl
 
-export PERL5LIB="$PERLLIB:$PREFIX/code/modules:$PERLLIB/lib/perl5""
+export PERL5LIB="$PERL5LIB:$PREFIX/code/modules:$PERLLIB/lib/perl5"
