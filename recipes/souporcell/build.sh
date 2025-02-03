@@ -16,5 +16,5 @@ mkdir -p $PREFIX/bin/troublet/target/release
 
 # Build statically linked binary with Rust
 RUST_BACKTRACE=1
-cargo install --verbose --root "${PREFIX}/bin/souporcell/target/release/" --path troublet
-cargo install --verbose --root "${PREFIX}/bin/troublet/target/release/" --path souporcell
+cargo install --verbose --root "${PREFIX}/bin/souporcell/target/release/" --path souporcell
+cargo install --verbose --root "${PREFIX}/bin/troublet/target/release/" --path troublet
