@@ -2,8 +2,8 @@
 
 set -euxo pipefail
 
-cpanm --force --installdeps DBIx::Class
-cpanm --force --installdeps Data::Printer
+cpanm -l "$PREFIX/code/modules" --force --installdeps DBIx::Class
+cpanm -l "$PREFIX/code/modules" --force --installdeps Data::Printer
 
 mkdir -p "$PREFIX/bin"
 mkdir -p "$PREFIX/code"
