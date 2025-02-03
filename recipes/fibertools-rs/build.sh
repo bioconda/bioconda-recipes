@@ -4,6 +4,7 @@
 #
 
 export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+export CFLAGS="${CFLAGS} -Wno-implicit-function-declaration"
 
 #
 # install package
