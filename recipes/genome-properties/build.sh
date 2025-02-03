@@ -2,8 +2,8 @@
 
 set -euxo pipefail
 
-cpanm DBIx::Class
-cpanm Data::Printer
+cpanm --installdeps DBIx::Class
+cpanm --installdeps Data::Printer
 
 mkdir -p "$PREFIX/bin"
 mkdir -p "$PREFIX/code"
