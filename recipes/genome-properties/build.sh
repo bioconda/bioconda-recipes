@@ -6,10 +6,12 @@ cpanm DBIx::Class
 cpanm Data::Printer
 
 mkdir -p "$PREFIX/bin"
+mkdir -p "$PREFIX/code"
 mkdir -p "$PREFIX/data"
 mkdir -p "$PREFIX/flatfiles"
 
 cp -r ./code/scripts/* "$PREFIX/bin"
+cp -r ./code/* "$PREFIX/code"
 cp -r ./data/* "$PREFIX/data"
 cp -r ./flatfiles/* "$PREFIX/flatfiles"
 
