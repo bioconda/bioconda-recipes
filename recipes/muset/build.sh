@@ -10,55 +10,6 @@ echo "Current directory: ${PWD}"
 echo "Building version: ${VERSION}"
 ls -lh
 
-# Ensure git is initialized
-git init
-
-# Add remote origin
-git remote add origin https://github.com/CamilaDuitama/muset.git
-
-# Fetch all tags
-git fetch --tags
-
-# Force checkout the specific version, overwriting local files
-git checkout -f v${VERSION}
-
-# Forcefully initialize and update submodules
-git submodule init
-git submodule update --force --recursive --init
-
-# Debug: Check submodule status and contents
-echo "Submodule status:"
-git submodule status
-
-echo "External folder contents:"
-ls -la external/
-
-# Verify each external library is present
-LIBS=(
-    "fmt"
-    "TurboPFor-Integer-Compression"
-    "bcli"
-    "cfrcat"
-    "gatb-core-stripped"
-    "kff-cpp-api"
-    "lz4"
-    "spdlog"
-    "xxHash"
-)
-
-for lib in "${LIBS[@]}"; do
-    if [ ! -d "external/${lib}" ] || [ -z "$(ls -A external/${lib})" ]; then
-        echo "WARNING: ${lib} is missing or empty!"
-        # Attempt to clone or download
-        case $lib in
-            "fmt")
-                git clone https://github.com/fmtlib/fmt.git external/fmt
-                ;;
-            # Add more library-specific fallback cloning if needed
-        esac
-    fi
-done
-
 # Create the output directory
 mkdir -p ${PREFIX}/bin
 

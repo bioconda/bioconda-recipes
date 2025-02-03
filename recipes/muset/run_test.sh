@@ -4,20 +4,15 @@ set -e
 # Verbose binary checks
 echo "Checking muset binary:"
 which muset
-muset --help || echo "muset help failed"
+muset --help
 
 echo "Checking muset_pa binary:"
 which muset_pa
-muset_pa --help || echo "muset_pa help failed"
+muset_pa --help
 
 echo "Checking kmat_tools binary:"
 which kmat_tools
-kmat_tools --help || echo "kmat_tools help failed"
-
-# Verify executability
-test -x $(which muset)
-test -x $(which muset_pa)
-test -x $(which kmat_tools)
+kmat_tools --help
 
 # Additional diagnostic information
 echo "Binary versions:"
