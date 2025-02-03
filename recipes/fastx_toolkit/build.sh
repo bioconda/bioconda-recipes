@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -xe
-
 export GTEXTUTILS_CFLAGS="-I $PREFIX/include/gtextutils"
 export GTEXTUTILS_LIBS="$PREFIX/lib/libgtextutils.a"
 export CXXFLAGS="${CXXFLAGS} -std=c++11 -Wall -Wno-implicit-fallthrough"
@@ -14,5 +12,5 @@ if [ "$(uname)" == "Darwin" ]; then
 fi
 
 ./configure --prefix=$PREFIX
-make -j"${CPU_COUNT}"
+make
 make install
