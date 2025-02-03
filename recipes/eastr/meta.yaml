@@ -10,13 +10,15 @@ source:
   sha256: 83941dbd193266d3a5c7bbcb0190705f7bcaec482eddd9bdd53356536db3b0ea
 
 build:
-  number: 0
+  number: 2
   skip: True  # [py < 310]
   entry_points:
     - eastr = EASTR.run_eastr:main
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  script: 
+    - export M4="$BUILD_PREFIX/bin/m4" # [arm64]
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
 
 requirements:
   build:
@@ -26,6 +28,7 @@ requirements:
     - automake
     - autoconf
     - libtool
+    - m4 # [arm64]
   host:
     - pip
     - python
@@ -49,14 +52,18 @@ test:
     - eastr --help
 
 about:
-  home: "https://github.com/ishinder/EASTR"
+  home: "https://ccb.jhu.edu/eastr/"
   summary: "Tool for emending alignments of spuriously spliced transcript reads."
   license: MIT
   license_file: LICENSE
   license_family: MIT
   dev_url: "https://github.com/ishinder/EASTR"
+  doc_url: "https://ccb.jhu.edu/eastr/#usage"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:eastr
     - usegalaxy-eu:eastr
