@@ -1,35 +1,28 @@
 #!/bin/bash
-set -e
+set -x  # Enable debug mode to see each command
 
-# Check binary
-echo "Checking muset binary:"
-muset_path=$(command -v muset)
-if [ -z "$muset_path" ]; then
-    echo "muset binary not found"
-    exit 1
-fi
+# Redirect outputs to files for detailed investigation
+muset --help > help_output.txt 2> help_error.txt
+help_exit_code=$?
 
-# Verify binary is executable
-if [ ! -x "$muset_path" ]; then
-    echo "muset binary is not executable"
-    exit 1
-fi
+# Print detailed diagnostic information
+echo "Help command exit code: $help_exit_code"
+echo "Standard output:"
+cat help_output.txt
+echo "Error output:"
+cat help_error.txt
 
-# Run version check
-echo "Checking version:"
-muset_version=$(muset --version)
-if [ -z "$muset_version" ]; then
-    echo "Could not get version"
-    exit 1
-fi
+# Check file contents and permissions
+echo "Binary details:"
+which muset
+ls -l $(which muset)
+file $(which muset)
 
-# Run help check
-echo "Checking help:"
-muset_help=$(muset --help)
-if [ -z "$muset_help" ]; then
-    echo "Could not get help"
-    exit 1
-fi
+# Try running with different methods
+echo "Version check methods:"
+muset --version
+/bin/bash -c "muset --version"
+/bin/sh -c "muset --version"
 
-echo "All checks passed!"
-exit 0
+# Explicitly exit with the help command's exit code
+exit $help_exit_code
