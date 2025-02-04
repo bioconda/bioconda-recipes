@@ -2,8 +2,8 @@
 set -e
 
 # Check binary properties
+echo "Where is muset installed"
 file $(which muset)
-ldd $(which muset)
 
 # Verbose binary checks
 echo "Checking muset binary:"
