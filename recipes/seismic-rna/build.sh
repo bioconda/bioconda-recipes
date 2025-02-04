@@ -5,4 +5,4 @@
 
 set -eux -o pipefail
 
-$PYTHON -m pip install --no-dependencies $PWD
+$PYTHON -m pip install --no-deps $PWD
