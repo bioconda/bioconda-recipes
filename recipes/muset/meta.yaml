@@ -1,34 +1,29 @@
+{% set name = "muset" %}
 {% set version = "0.5.1" %}
 
 package:
-  name: muset
+  name: {{ name }}
   version: {{ version }}
 
 source:
   git_url: https://github.com/camiladuitama/muset.git
   git_rev: v{{ version }}
-  recursive: True  # Ensure submodules are included
  
 build:
   number: 0
   skip: True  # [not linux]
   run_exports:
-    - {{ pin_subpackage('muset', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - cmake >=3.15
-    - make
-    - git >=2.40  # Specify the latest git version
-    - conda-verify
-    
+    - make    
   host:
     - zlib
-
   run:
-    - zlib
-    - bioconda::ggcat >=1.1.0
+    - ggcat >=1.1.0
 
 test:
   files:
@@ -36,12 +31,15 @@ test:
 
 about:
   home: "https://github.com/CamilaDuitama/muset"
-  license: MIT
+  license: GPL-3.0-or-later
+  license_file: LICENSE
   summary: "A pipeline for building an abundance unitig matrix from FASTA/FASTQ files"  # Added summary
   description: "MUSET is a software for generating an abundance unitig matrix from a collection of input samples (in FASTA/Q format)."
   dev_url: "https://github.com/CamilaDuitama/muset"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - CamilaDuitama
   skip-lints:
