@@ -25,6 +25,7 @@ fi
 
 ./reconf
 ./configure --prefix="${PREFIX}" CXXFLAGS="${CXXFLAGS}" \
-	CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" --disable-option-checking
+	CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" \
+ 	--enable-debug=no --enable-all-static --disable-option-checking
 make -j"${CPU_COUNT}"
 make install
