@@ -9,7 +9,6 @@ export GTEXTUTILS_LIBS="${PREFIX}/lib/libgtextutils.a"
 export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 --disable-dependency-tracking --enable-silent-rules -I${PREFIX}/include -Wall -Wno-implicit-fallthrough -Wno-unused-but-set-variable"
 export CFLAGS="${CFLAGS} -O3"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXCPP="${CXX}"
 sed -i.bak 's/#pragma pack(1)//g' src/libfastx/fastx.h
 rm -rf src/libfastx/*.bak
 
