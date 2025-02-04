@@ -9,7 +9,7 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CPATH="${PREFIX}/include"
 export EIGEN_ROOT="${PREFIX}"
 
-if [ "$(uname)" == "Darwin" ]; then
+if [[ "$(uname)" == "Darwin" ]]; then
   export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY -mmacosx-version-min=10.15"
 fi
 
