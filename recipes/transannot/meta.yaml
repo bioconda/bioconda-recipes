@@ -1,6 +1,6 @@
-{% set name = "transannot" %}
 {% set version = "4.0.0" %}
 {% set sha256 = "f610fd9fcc8e29fc4b19c53cde402126a2815577dc282909a50b83855c28355e" %}
+{% set name = "transannot" %}
 
 package:
   name: {{ name }}
@@ -11,30 +11,35 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 2
   run_exports:
     - {{ pin_subpackage('transannot', max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
     - cmake
     - make
   host:
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
+    - llvm-openmp          # [osx]
+    - libgomp              # [linux]
+    - cuda-nvcc            # [linux]
+    - cuda-cudart-dev      # [linux]
+    - cuda-version >=12.6  # [linux]
     - gawk
     - zlib
     - bzip2
-  run:
-    - aria2
-    - wget
     - perl
+  run:
+    - llvm-openmp          # [osx]
+    - libgomp              # [linux]
+    - aria2
+    - gawk
 
 test:
   commands:
-    - "transannot > /dev/null"
+    - transannot > /dev/null
 
 about:
   home: "https://github.com/soedinglab/transannot"
@@ -43,7 +48,7 @@ about:
   license_family: GPL3
   license_file: "LICENSE.md"
   dev_url: "https://github.com/soedinglab/transannot"
-  doc_url: "https://github.com/soedinglab/transannot/blob/master/README.md"
+  doc_url: "https://github.com/soedinglab/transannot/blob/4-8cd2fdc/README.md"
 
 extra:
   identifiers:
