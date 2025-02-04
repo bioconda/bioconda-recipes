@@ -24,6 +24,7 @@ if [[ "$(uname)" == "Darwin" ]]; then
 fi
 
 ./reconf
-./configure --prefix="${PREFIX}" --disable-option-checking
+./configure --prefix="${PREFIX}" CXXFLAGS="${CXXFLAGS}" \
+	CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" --disable-option-checking
 make -j"${CPU_COUNT}"
 make install
