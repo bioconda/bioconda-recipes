@@ -13,21 +13,14 @@ ls -lh
 # Create the output directory
 mkdir -p ${PREFIX}/bin
 
-# Create a build directory
-mkdir -p build-conda
-cd build-conda
-
 # Configure the build with CMake, with verbose output
-cmake .. \
+cmake -S . -B build-conda \
     -DCONDA_BUILD=ON \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_VERBOSE_MAKEFILE=ON
 
 # Build the software with verbose output
-make -j${CPU_COUNT} VERBOSE=1
-
-# Go back to source directory
-cd ..
+cmake --build build-conda -j${CPU_COUNT} VERBOSE=1
 
 echo "Current directory: ${PWD}"
 ls -lh
@@ -35,7 +28,7 @@ ls -lh
 # Copy binaries with error checking
 for binary in kmat_tools muset muset_pa; do
     if [ -x "./bin/${binary}" ]; then
-        cp "./bin/${binary}" ${PREFIX}/bin/
+        install -v -m 0755 "./bin/${binary}" ${PREFIX}/bin/
         echo "Copied ${binary}"
     else
         echo "ERROR: ${binary} not found or not executable"
