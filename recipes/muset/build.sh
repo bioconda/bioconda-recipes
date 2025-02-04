@@ -20,7 +20,7 @@ cmake -S . -B build-conda \
     -DCMAKE_VERBOSE_MAKEFILE=ON
 
 # Build the software with verbose output
-cmake --build build-conda -j${CPU_COUNT} VERBOSE=1
+cmake --build build-conda -j${CPU_COUNT} --verbose
 
 echo "Current directory: ${PWD}"
 ls -lh
