@@ -3,7 +3,6 @@
 export M4="${BUILD_PREFIX}/bin/m4"
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
-
 #libkj.a needs to link against librt
 sed -i.bak "s/pthread/pthread -lrt/g" Makefile.in
 rm -rf *.bak
