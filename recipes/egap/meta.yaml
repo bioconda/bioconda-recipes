@@ -18,35 +18,17 @@ build:
   script: |
     set -eux
     mkdir -p "${PREFIX}/bin"
-    
-    # Debugging: List all files and directories
-    echo "Debugging: Listing all files and directories..."
-    ls -R
-
-    # Verify setup.py exists in the root directory
-    if [[ -f "setup.py" ]]; then
-        echo "Installing package from the root directory..."
-        $PYTHON -m pip install . --no-cache-dir
-    else
-        echo "ERROR: setup.py not found in the root directory!"
-        ls -l  # Debugging: Show extracted files
-        exit 1
-    fi
-
-    # Copy EGAP script to $PREFIX/bin and make it executable
-    echo "Installing EGAP script..."
-    install -m 755 EGAP.py "${PREFIX}/bin/EGAP"
-
-    # Ensure EGAP is accessible as a command
-    echo "Creating symlink for 'egap'..."
-    ln -s "${PREFIX}/bin/EGAP" "${PREFIX}/bin/egap"
+    # Copy your script to $PREFIX/bin, rename to "EGAP"
+    cp EGAP.py "${PREFIX}/bin/EGAP"
+    chmod +x "${PREFIX}/bin/EGAP"
+  run_exports:
+    - {{ pin_subpackage('egap', max_pin="x") }}
 
 requirements:
   host:
     - python >=3.8,<3.9
     - pip
   run:
-    - numpy >=1.21
     - python >=3.8,<3.9
     - masurca >=4.1.2
     - quast >=5.3.0
@@ -76,11 +58,12 @@ requirements:
     - ratatosk >=0.9.0
     - purge_dups >=1.2.6
     - flye >=2.9.5
+    - pbccs >=6.4.0
+    - hifiasm >=0.21.0
 
 test:
   commands:
     - EGAP --help
-    - egap --help
 
 about:
   home: https://github.com/iPsychonaut/EGAP
