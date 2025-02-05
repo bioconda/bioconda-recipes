@@ -2,10 +2,6 @@
 
 ${CXX} --std=c++17 scripts/count_lineages_country.cpp -o scripts/count_lineages_country -lstdc++ -lboost_regex ${CXXFLAGS} ${LDFLAGS}
 
-Rscript -e 'install.packages(c("lifecycle", "scales", "withr", "knitr"), repos="https://cloud.r-project.org");'
-Rscript -e 'devtools::install_github("rstudio/d3heatmap");'
-
-
 # Define the target directory
 TARGET_DIR=$PREFIX/share/corona_lineage_dynamics
 
