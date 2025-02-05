@@ -19,8 +19,8 @@ cp -r ./code/* "$PREFIX/code"
 cp -r ./data/* "$PREFIX/data"
 cp -r ./flatfiles/* "$PREFIX/flatfiles"
 
-cpanm -l $PERLLIB --force --installdeps DBIx::Class
-cpanm -l $PERLLIB --force --installdeps Data::Printer
+cpanm -l $PERLLIB --force DBIx::Class
+cpanm -l $PERLLIB --force Data::Printer
 
 # Make scripts executable
 chmod -R a+x $PREFIX/bin/*.pl
