@@ -26,4 +26,4 @@ cpanm -l $PERLLIB --force --installdeps Data::Printer
 chmod -R a+x $PREFIX/bin/*.pl
 
 mkdir -p ${PREFIX}/etc/conda/activate.d/
-echo "export PERL5LIB=$PREFIX/code/modules:$PERLLIB" > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}-${PKG_VERSION}.sh
+echo "export PERL5LIB=$PERL5LIB:$PREFIX/code/modules:$PERLLIB" > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}-${PKG_VERSION}.sh
