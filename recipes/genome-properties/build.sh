@@ -19,6 +19,10 @@ cp -r ./code/* "$PREFIX/code"
 cp -r ./data/* "$PREFIX/data"
 cp -r ./flatfiles/* "$PREFIX/flatfiles"
 
+if [[ ${HOST} =~ .*darwin.* && ("$HOME" == 'UNKNOWN' || -z "$HOME") ]]; then
+    export HOME=/tmp
+fi
+
 cpanm -l $PERLLIB --force DBIx::Class
 cpanm -l $PERLLIB --force Data::Printer
 
