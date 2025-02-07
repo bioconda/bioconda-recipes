@@ -1,5 +1,11 @@
 #!/bin/bash
 
+UNAME_S=$(uname -s)
+
+# test only linux-64.
+# linux-aarch64 build requires GLIBC_2.34 that is not available in the test container
+if [ "${UNAME_S}" == "x86_64" ]; then
+
 set -xe
 
 JARDIR=../share/jars
@@ -14,3 +20,4 @@ echo PASS
 echo
 echo "ALL TESTS PASSED"
 
+fi
