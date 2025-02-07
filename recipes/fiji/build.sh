@@ -10,9 +10,6 @@ UNAME_S=$(uname -s)
 UNAME_M=$(uname -m)
 cp -R $SRC_DIR/* $sharedir
 
-# debug
-ls -la $sharedir/
-
 # Make a symlink to get a single executable name
 # for both arch
 if [ "${UNAME_S}" == 'Linux' ];
@@ -42,3 +39,6 @@ chmod 0755 "${PREFIX}/bin/ImageJ"
 cp $RECIPE_DIR/bunwarpj.sh $outdir/bunwarpj
 ln -s $outdir/bunwarpj $PREFIX/bin
 chmod 0755 "${PREFIX}/bin/bunwarpj"
+
+# delete the vendored JDK
+rm -rf $sharedir/java
