@@ -9,6 +9,10 @@ mkdir -p $PREFIX/bin
 UNAME_S=$(uname -s)
 UNAME_M=$(uname -m)
 cp -R $SRC_DIR/* $sharedir
+
+# debug
+ls -la $sharedir/
+
 # Make a symlink to get a single executable name
 # for both arch
 if [ "${UNAME_S}" == 'Linux' ];
