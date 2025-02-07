@@ -51,26 +51,20 @@ source:
 
 requirements:
   run:
-    - {% if mpi_name == "mpich" %}
-      - mpich >=4.1.2
-      {% elif mpi_name == "openmpi" %}
-      - openmpi >=4.1.5
-      {% else %}
-      - {{ mpi_name }}
-      {% endif %}
     - cmake
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
+    - esmf_{{ mpi_name }}
     - libgcc-ng >=10.3.0
     - libgfortran-ng >=10.3.0
     - libstdcxx-ng >=10.3.0
-    - esmf_{{ mpi_name }}
     - make
+    - {% if mpi_name == "mpich" %}mpich >=4.1.2{% elif mpi_name == "openmpi" %}openmpi >=4.1.5{% else %}{{ mpi_name }}{% endif %}
     - omb_{{ mpi_name }}  # [mpi_name != "mvapich"]
-    - python=3.8
     - perl 
     - perl-xml-libxml
+    - python=3.8
 test:
   commands:
     - echo "Skipping ESME tests, since individual packages were already tested"
