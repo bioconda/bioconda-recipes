@@ -39,6 +39,3 @@ chmod 0755 "${PREFIX}/bin/ImageJ"
 cp $RECIPE_DIR/bunwarpj.sh $outdir/bunwarpj
 ln -s $outdir/bunwarpj $PREFIX/bin
 chmod 0755 "${PREFIX}/bin/bunwarpj"
-
-# delete the vendored JDK
-rm -rf $sharedir/java

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -xe
 
 JARDIR=../share/jars
 PLUGINSDIR=../share/plugins
