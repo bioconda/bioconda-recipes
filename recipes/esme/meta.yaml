@@ -10,6 +10,8 @@
 {% set build = 1 %}
 
 {% set mpi_name, mpi_version = mpi.split('=') if '=' in mpi else (mpi, '') %}
+{% set mpich_min_version = "4.1.2" %}
+{% set openmpi_min_version = "4.1.5" %}
 
 package:
   name: esme
@@ -52,10 +54,10 @@ source:
 requirements:
   run:
     - cmake
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - {{ compiler('fortran') }}
-    - {{ mpi_name }}
+    - {{ compiler('c') }} >=10.3.0
+    - {{ compiler('cxx') }} >=10.3.0
+    - {{ compiler('fortran') }} >=10.3.0
+    - {{ mpi_name }} {% if mpi_name == "mpich" %}>={{ mpich_min_version }}{% elif mpi_name == "openmpi" %}>={{ openmpi_min_version }}{% endif %}
     - esmf_{{ mpi_name }}
     - make
     - omb_{{ mpi_name }}  # [mpi_name != "mvapich"]
