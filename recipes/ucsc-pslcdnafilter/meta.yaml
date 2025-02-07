@@ -1,7 +1,7 @@
 {% set package = "ucsc-pslcdnafilter" %}
 {% set program = "pslCDnaFilter" %}
-{% set version = "469" %}
-{% set sha256 = "3f95b26ccca854c965c05773481c269f2a0e6fb1906ae8a7fe2437c6ad543963" %}
+{% set version = "472" %}
+{% set sha256 = "26d126c51d0ba3165519b116b6461af8bfd938505f6c0871cb325a7ab82368f2" %}
 
 package:
   name: "{{ package }}"
@@ -11,11 +11,12 @@ source:
   url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
   sha256: "{{ sha256 }}"
   patches:
-    - "include.patch"
+    - include.patch  # [linux]
+    - include.macos.patch  # [osx]
 
 build:
+  number: 1
   skip: True  # [osx]
-  number: 0
   run_exports:
     - {{ pin_subpackage(package, max_pin=None) }}
 
@@ -28,14 +29,13 @@ requirements:
     - libuuid
     - mysql-connector-c
     - libopenssl-static
+    - clangdev  # [osx]
     - zlib
-
   run:
     - libpng
     - libuuid
     - mysql-connector-c
     - libopenssl-static
-    - zlib
 
 test:
   commands:
@@ -43,8 +43,8 @@ test:
     - test -x ${PREFIX}/bin/{{ program }}
 
 about:
-  home: "https://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "Varies; see http://genome.ucsc.edu/license"
+  home: "https://hgdownload.cse.ucsc.edu/admin/exe"
+  license: "Varies; see https://genome.ucsc.edu/license"
   summary: "
 Filter cDNA alignments in psl format.  Filtering criteria are
 comparative, selecting near best in genome alignments for each given
@@ -52,10 +52,9 @@ cDNA and non-comparative, based only on the quality of an individual
 alignment.
 "
   dev_url: "https://github.com/ucscGenomeBrowser/kent"
-  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/master/README"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/v{{ version }}_base/README"
 
 extra:
   identifiers:
     - biotools:UCSC_Genome_Browser_Utilities
     - doi:10.1093/bib/bbs038
-  

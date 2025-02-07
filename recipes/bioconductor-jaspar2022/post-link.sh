@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "jaspar2022-0.99.7"
+installBiocDataPackage.sh "jaspar2022-0.99.8"
