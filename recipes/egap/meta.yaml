@@ -7,7 +7,7 @@ package:
 
 source:
   - url: https://github.com/iPsychonaut/EGAP/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: 
+    sha256: 9776813ad458299bcc7fdedb509d645808afd3158592a530eeffdcdaa931953a
 
   - url: https://github.com/iPsychonaut/runner/archive/refs/tags/v0.0.0.tar.gz
     sha256: 4e67bb1e970dadb86425cb2698e0e2e34f70d78cbf77a32f73c13f66dffb55fc
@@ -16,12 +16,23 @@ source:
     sha256: d9e9575516aaebc8aa84f9bc0daab74e16d73501d57df15d5d0f600cebda3d63
 
 build:
-  noarch: python
-  number: 0
+  number: 1
   script: |
     set -eux
+
+    # Install runner
+    pip install ./runner-0.0.0.tar.gz
+
+    # Build and install Ratatosk
+    tar -xzf Ratatosk-0.9.0.tar.gz
+    cd Ratatosk-0.9.0
+    mkdir build && cd build
+    cmake -DCMAKE_BUILD_TYPE=Release ..
+    make -j 4
+    cd ../..
+
+    # Copy EGAP.py to $PREFIX/bin
     mkdir -p "${PREFIX}/bin"
-    # Copy your script to $PREFIX/bin, rename to "EGAP"
     cp EGAP.py "${PREFIX}/bin/EGAP"
     chmod +x "${PREFIX}/bin/EGAP"
   run_exports:
@@ -31,37 +42,41 @@ requirements:
   host:
     - python >=3.8,<3.9
     - pip
+    - cmake
+    - make
+    - gcc
   run:
     - python >=3.8,<3.9
-    - masurca >=4.1.2
-    - quast >=5.3.0
-    - compleasm >=0.2.6
-    - biopython >=1.81
-    - ragtag >=2.1.0
-    - nanoplot >=1.43.0
-    - termcolor >=2.3.0
-    - minimap2 >=2.28
-    - bwa >=0.7.18
-    - samtools >=1.21
-    - bamtools >=2.5.2
-    - tgsgapcloser >=1.2.1
-    - abyss >=2.0.2
-    - sepp >=4.5.1
-    - psutil >=6.0.0
-    - beautifulsoup4 >=4.12.3
-    - ncbi-datasets-cli >=16.39.0
-    - matplotlib-base >=3.7.3
-    - trimmomatic >=0.39
-    - pilon >=1.22
-    - fastqc >=0.12.1
-    - bbmap >=39.15
-    - racon >=1.5.0
-    - kmc >=3.2.4
-    - spades >=4.0.0
-    - purge_dups >=1.2.6
-    - flye >=2.9.5
-    - pbccs >=6.4.0
-    - hifiasm >=0.21.0
+    - masurca ==4.1.2
+    - quast ==5.2.0
+    - compleasm ==0.2.6
+    - biopython ==1.81
+    - ragtag ==2.1.0
+    - nanoplot ==1.43.0
+    - termcolor ==2.3.0
+    - minimap2 ==2.28
+    - bwa ==0.7.18
+    - samtools ==1.21
+    - bamtools ==2.5.2
+    - tgsgapcloser ==1.2.1
+    - abyss ==2.0.2
+    - sepp ==4.5.1
+    - psutil ==6.0.0
+    - beautifulsoup4 ==4.12.3
+    - ncbi-datasets-cli ==16.39.0
+    - matplotlib ==3.7.3
+    - trimmomatic ==0.39
+    - pilon ==1.22
+    - fastqc ==0.12.1
+    - bbmap ==39.15
+    - racon ==1.5.0
+    - kmc ==3.2.4
+    - spades ==4.0.0
+    - purge_dups ==1.2.6
+    - flye ==2.9.5
+    - pbccs ==6.4.0
+    - hifiasm ==0.21.0
+    - gfatools ==0.5
 
 test:
   commands:
