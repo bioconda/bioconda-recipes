@@ -7,7 +7,7 @@
 {% set pio_pkg_version = pio_version.replace('.', '_') %}
 {% set esmf_version = "8.8.0" %}
 {% set omb_version = "7.5" %}
-{% set build = 1 %}
+{% set build = 2 %}
 
 {% set mpi_name, mpi_version = mpi.split('=') if '=' in mpi else (mpi, '') %}
 
@@ -55,13 +55,16 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
-    - {{ mpi_name }}
     - esmf_{{ mpi_name }}
+    - libgcc-ng >=10.3.0
+    - libgfortran-ng >=10.3.0
+    - libstdcxx-ng >=10.3.0
     - make
+    - {% if mpi_name == "mpich" %}mpich >=4.1.2{% elif mpi_name == "openmpi" %}openmpi >=4.1.5{% else %}{{ mpi_name }}{% endif %}
     - omb_{{ mpi_name }}  # [mpi_name != "mvapich"]
-    - python=3.8
     - perl 
     - perl-xml-libxml
+    - python=3.8
 test:
   commands:
     - echo "Skipping ESME tests, since individual packages were already tested"
