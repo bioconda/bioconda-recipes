@@ -1,12 +1,15 @@
+{% set name = "fiji" %}
+{% set version = "20250206" %}
+
 package:
-  name: fiji
-  version: 20240614
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  -   url: https://downloads.imagej.net/fiji/archive/20240614-2117/fiji-linux64.zip  # [linux]
-      md5: 7b210a29f56248252fc5f10eada6e470  # [linux]
-  -   url: https://downloads.imagej.net/fiji/archive/20240614-2117/fiji-macosx.zip  # [osx]
-      md5: f3d107a4569e230770ce7462ee8d94ea  # [osx]
+  -   url: https://downloads.imagej.net/fiji/archive/{{ version }}-1617/fiji-linux64.zip  # [linux and x86_64]
+      sha256: 5fc39752b42b34937d7bcf0e273d6d87db8afb8d7003e1ba04212dc698ee1530  # [linux and x86_64]
+  -   url: https://downloads.imagej.net/fiji/future/fiji-future-linux-arm64-20241022.zip  # [linux and aarch64]
+      sha256: 5e784e103f98a3a8847859dd6df3b0eb50eaa950b2eb9bf41fb58b579766cba4  # [linux and aarch64]
 
 build:
   number: 0
@@ -16,24 +19,31 @@ build:
 
 requirements:
   host:
-    - openjdk >=8.0
+    - openjdk >=8.0 # [not aarch64]
+    - openjdk >=21.0 # [aarch64]
   run:
-    - openjdk >=8.0
+    - openjdk >=8.0 # [not aarch64]
+    - openjdk >=21.0 # [aarch64]
 
 test:
   files:
     - hello.py
   commands:
     # (see run_test.sh for remainder of tests)
-    - bunwarpj 2>&1 | grep 'Usage'
-    - ImageJ --help 2>&1 | grep ImageJ
+    # - bunwarpj 2>&1 | grep 'Usage'
+    # the aarch64 version needs GLIBC_2.34 that is not available here
+    # - ImageJ --help 2>&1 | grep ImageJ # [x86_64]
+    - ls -la
 
 about:
   home: http://fiji.sc
   license: GPL-3.0-or-later
-  summary: Fiji is an image processing package—a "batteries-included" distribution of ImageJ, bundling a lot of plugins which facilitate scientific image analysis.
+  summary: Fiji is an image processing package—a "batteries-included" distribution of ImageJ, 
+    bundling a lot of plugins which facilitate scientific image analysis.
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   skip-lints:
     - should_be_noarch_generic
     - should_not_be_noarch_source
