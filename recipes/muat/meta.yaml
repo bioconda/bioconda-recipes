@@ -4,25 +4,20 @@ package:
 
 source:
   url: https://anaconda.org/primasanjaya/muat/0.1.0/download/osx-arm64/muat-0.1.0-py312ha09e789_0.tar.bz2
-  sha256: e25902cb47526d742d798c5a6db99cc48a7e5ab82b5657fda13a8c76b7c5b506  # Get the hash from `sha256sum` command
+  sha256: e25902cb47526d742d798c5a6db99cc48a7e5ab82b5657fda13a8c76b7c5b506
 
 build:
   number: 0
-  noarch: python  # Add this line
+  noarch: python  # Ensure cross-platform compatibility
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
-
-  preserve_egg_dir: True  # Important for package data
-  include_recipe: False
-  entry_points:
-    - muat=muat.core:main
+  run_exports:
+    - numpy  # Ensures downstream compatibility
 
 requirements:
-  build:
+  host:
     - python
     - pip
     - setuptools
-    run_exports:
-      - numpy 
   run:
     - python
     - numpy
@@ -32,21 +27,12 @@ requirements:
     - htslib
     - natsort
     - boto3
-  host:
-    - python
-    - numpy
-    - pandas
-    - requests
-    - bedtools
-    - htslib
-    - natsort
-    - boto3  
 
 test:
   imports:
     - muat
     
 about:
-  home: "https://github.com/primasanjaya/muat"  # Update this
+  home: "https://github.com/primasanjaya/muat"
   license: "Apache-2.0"
   summary: "A package for Mutation Attention Tool"
