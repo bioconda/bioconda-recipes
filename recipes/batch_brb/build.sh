@@ -1,7 +1,6 @@
 #!/bin/bash
 set -euxo pipefail
 
-
 mkdir -p ${PREFIX}/{bin,etc}
 
 #Setup scripts
@@ -42,19 +41,9 @@ cp -v ${SRC_DIR}/scripts/del01_delete_db_entries.py ${PREFIX}/bin/del01_delete_d
 
 #templates and documentation folders
 #mkdir -p ${PREFIX}/etc/{templates/{CSVs,Excel_files},documentation}
-cp ${SRC_DIR}/templates/CSVs/* ${PREFIX}/etc/
-cp ${SRC_DIR}/templates/Excel_files/* ${PREFIX}/etc/
-cp ${SRC_DIR}/documentation/* ${PREFIX}/etc/
-
-
-
-
+cp -f ${SRC_DIR}/templates/CSVs/* ${PREFIX}/etc/
+cp -f ${SRC_DIR}/templates/Excel_files/* ${PREFIX}/etc/
+cp -f ${SRC_DIR}/documentation/* ${PREFIX}/etc/
 
 ls -l $PREFIX/bin
 ls -l $PREFIX/etc
-
-
-
-
-
-

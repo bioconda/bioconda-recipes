@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "qdnaseq.mm10-1.30.0"
+installBiocDataPackage.sh "qdnaseq.mm10-1.36.0"

@@ -1,0 +1,58 @@
+{% set version = "0.91" %}
+{% set sha256 = "3d428440f7a8aed3be18bbe094d3afe94f2d5357daa715d13e963c665384f2ab" %}
+{% set name = "phylogenize" %}
+
+package:
+  name: phylogenize
+  version: "{{ version }}"
+
+source: 
+  url: https://github.com/pbradleylab/phylogenize/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - perl =5.32.1
+    - r-base =4.3.1
+    - r-devtools <=2.4.5 
+    - vsearch =2.24.0
+    - r-ragg <=1.2.6
+    - r-phylolm =2.6.2
+    - r-phangorn =2.11.1
+    - 'bioconductor-ggtree <=3.8.0,>1.16.0'
+    - 'bioconductor-biomformat =1.28.0'
+  run:
+    - perl =5.32.1
+    - r-base =4.3.1
+    - r-devtools <=2.4.5
+    - vsearch =2.24.0
+    - r-ragg <=1.2.6
+    - r-phylolm =2.6.2
+    - r-phangorn =2.11.1
+    - 'bioconductor-ggtree <=3.8.0,>1.16.0'
+    - 'bioconductor-biomformat =1.28.0'
+
+test:
+  commands:
+    - '$R -e "library(devtools)"'
+    - $R -e "devtools::install_github('pbradleylab/phylogenize/package/phylogenize')"
+    - '$R -e "?phylogenize"'
+
+about:
+  home: https://github.com/pbradleylab/phylogenize
+  license: MIT
+  summary: "Phylogenize is a tool that allows users to link microbial genes to environments, accounting for phylogeny."
+extra:
+  recipe-maintainers:
+    - kekananen
+  indentifiers:
+    - doi: "https://doi.org/10.1093/bioinformatics/btz722"

@@ -1,5 +1,6 @@
 {% set name = "galaxy_sequence_utils" %}
-{% set version = "1.1.5" %}
+{% set version = "1.2.0" %}
+{% set sha256 = "103f0e25f5660793253d9ac540c2eb2d7ddc82d16aa0a62c0869b60033898410" %}
 
 package:
   name: {{ name|lower }}
@@ -12,13 +13,15 @@ about:
   summary: Sequence Utilities from the Galaxy project
 
 source:
-  url: https://files.pythonhosted.org/packages/f9/f2/39a48c3cc1635e4086a743c80f782bb216f069316437028d909448c2356a/galaxy_sequence_utils-1.1.5.tar.gz
-  sha256: c32bd91f6ff11ad6e8b62f8de309d695ef5c33a782afbf5122c1db7144ef1162
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/galaxy_sequence_utils-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
-  preserve_egg_dir: True
+  run_exports:
+    -{{ pin_subpackage(name, max_pin="x") }}
   entry_points:
     - gx-fastq-to-tabular=galaxy_utils.sequence.scripts.fastq_to_tabular:main
     - gx-fastq-groomer=galaxy_utils.sequence.scripts.fastq_groomer:main
@@ -37,17 +40,20 @@ build:
 
 requirements:
   host:
-    - python
+    - python >=3.8
     - setuptools
-    - six
-
+    - pip
   run:
-    - python
-    - six
+    - python >=3.8
 
 test:
   imports:
     - galaxy_utils
   commands:
+    - gx-fastq-groomer --help
     - gx-fastq-trimmer-by-quality --help
     - gx-fastq-masker-by-quality --help
+
+extra:
+  recipe-maintainers:
+    - nsoranzo

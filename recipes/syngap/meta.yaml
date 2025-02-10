@@ -1,5 +1,5 @@
 {% set name = "syngap" %}
-{% set version = "1.0.0" %}
+{% set version = "1.2.5" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/yanyew/SynGAP/releases/download/v{{ version }}/{{ name }}_v{{ version }}.tar.gz
-  sha256: a2848c925d8df49872ba23f4e0afbc176ff1688b60b04ee3c5f318d41dcc6c69
+  sha256: fac15832dd419d4ed85ba32b5108aeb24da1eb54134be6f170fdb18b11840d0b
   
 build: 
   number: 0
@@ -15,24 +15,12 @@ build:
     - syngap = SynGAP:main
   noarch: generic
   run_exports:
-    - python
-    - biopython
-    - jcvi
-    - bedtools
-    - last
-    - emboss
-    - gffread
-    - seqkit
-    - diamond
-    - perl-bioperl
-    - kneed
-    - numpy
-    - pandas
-    - matplotlib-base
+    - {{ pin_subpackage('syngap', max_pin="x") }}
 
-requirements:
-  bulid: 
+requirements: 
+  host:
     - python >=3.10
+    - pip
   run: 
     - python >=3.10
     - biopython >=1.81
@@ -63,6 +51,8 @@ test:
   source_files: 
     - run_test.sh
     - SynGAP.py
+    - initdb.py
+    - master.py
     - dual.py
     - triple.py
     - custom.py
@@ -73,8 +63,18 @@ test:
     - scripts/*
   imports: 
     - SynGAP
+    - initdb
+    - master
+    - dual
+    - triple
+    - custom
+    - genepair
+    - evi
+    - eviplot
   commands: 
     - syngap -h
+    - syngap initdb -h
+    - syngap master -h
     - syngap dual -h
     - syngap triple -h
     - syngap custom -h
@@ -85,5 +85,5 @@ test:
 about: 
   home: https://github.com/yanyew/SynGAP
   license: CC-BY-NC-SA-4.0
-  summary: "SynGAP: Synteny-based Genome Annotations Polisher"
+  summary: "SynGAP: Synteny-based Gene structure Annotation Polisher"
   dev_url: https://github.com/yanyew/SynGAP

@@ -1,78 +1,80 @@
 {% set name = "pixelator" %}
-{% set version = "0.15.0" %}
+{% set pypi_name = "pixelgen-pixelator" %}
+{% set version = "0.19.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
- url: https://github.com/pixelgentechnologies/{{ name }}/archive/v{{ version }}.tar.gz
- sha256: 78ffabc98868679773b3a17f4dee7da9413f76353c253973108dbc72dafb4203
+  url: https://pypi.io/packages/source/{{ pypi_name[0] }}/{{ pypi_name }}/pixelgen_pixelator-{{ version }}.tar.gz
+  sha256: 080caa68a328f2e64268163ee6f129896254d2a095a71a28d7886e7f42515473
 
 build:
+  entry_points:
+    - pixelator = pixelator.cli:main_cli
   noarch: python
-  script_env:
-    - POETRY_DYNAMIC_VERSIONING_BYPASS={{ version }}
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   number: 0
   run_exports:
     - {{ pin_subpackage('pixelator', max_pin="x.x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.10,<3.12
     - poetry-core >=1.0.0
-    - poetry-dynamic-versioning >=1.1.0
+    - poetry-dynamic-versioning >=1.0.1
     - pip
   run:
-    - python >=3.8,<3.12
-    - igraph >=0.10.2,<=0.11.0
-    - louvain >=0.8.0,<=0.9.0
+    - python >=3.10,<3.12
     - click
     - yapf
     - cutadapt >=4.2
-    - fastp
-    - umi_tools <=1.1.4
+    - umi_tools >=1.1.4,<2.0.0
     - pyfastx
     - yappi
     - pandas >=2.0.0,<3.0.0
     - numpy <1.24.0
     - python-annoy <=1.17.0
-    - esda
-    - libpysal
-    - xopen
+    # I had to lock xopen < 1.9.0 because zlib-ng which is required by xopen
+    # does not install as expected
+    - xopen <1.9.0
+    - python-xxhash
     - anndata >=0.8.0
     - numba >=0.56.4
     - scanpy
-    - leidenalg
     - lxml
     - cssselect
     - typing_extensions
-    - scipy
-    - pyarrow >=13.0.0
+    - scipy <1.13.0
+    - pyarrow >=14,<16
     - semver >=3.0.0,<4.0.0
     - ruamel.yaml >=0.17.21,<0.18.0
-    - pydantic >=1.10.7,<2.0.0
-    - polars >=0.17.12,<0.18.0
+    - pydantic >=2.0,<2.5
+    - polars >=1.1.0,<2.0
     - importlib-resources >=5.12.0,<6.0.0
-    - fsspec =>2023.9.0
-    - fastparquet =>2023.8.0
+    - fsspec >=2023.12.2,<2024.0.0
+    - fastparquet >=2023.8.0,<2024.0.0
+    - graspologic >=3.3.0,<4.0.0
+    - fastp
+    - plotly
 
 test:
   imports:
     - pixelator
   commands:
     - pixelator --help
-    - pixelator --version | grep -E "^pixelator, version {{ version }}$"
 
 about:
   home: https://github.com/PixelgenTechnologies/pixelator
-  summary: |
-     A commandline tool and library to process and analyze sequencing data from Molecular Pixelation (MPX) assays.
-  license: GPL-2.0
-  license_file: LICENSE
-  license_family: GPL
+  summary: A command-line tool and library to process and analyze sequencing data from Molecular Pixelation (MPX) assays.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  dev_url: https://github.com/PixelgenTechnologies/pixelator
 
 extra:
-  maintainers:
+  recipe-maintainers:
+    - johandahlberg
+    - ambarrio
     - fbdtemme

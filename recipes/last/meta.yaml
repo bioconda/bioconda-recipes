@@ -1,17 +1,18 @@
 {% set name = "LAST" %}
-{% set version = "1454" %}
+{% set version = "1608" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://gitlab.com/mcfrith/last/-/archive/{{ version }}/last-{{ version }}.zip
-  sha256: 937f9f79ba0b585524b7872e04ea7e5e9be683fdf7703a123511511e2ef8873e
+  url: "https://gitlab.com/mcfrith/last/-/archive/{{ version }}/last-{{ version }}.tar.gz"
+  sha256: 475111c616305ca9ea37fd65b03da4e6e5e87175a9dc9d256e40198ed1b95fba
 
 build:
-  number: 2
-  script: make install CXXFLAGS="$CXXFLAGS -msse4 -pthread" prefix=$PREFIX
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('last', max_pin=None) }}
 
 requirements:
   build:
@@ -21,7 +22,6 @@ requirements:
   host:
     - zlib
   run:
-    - zlib
     - python
     - pillow
     - parallel
@@ -30,15 +30,12 @@ test:
   commands:
     - lastal -h
     - lastdb -h
-    - lastal5 -h
-    - lastdb5 -h
     - last-split -h
     - last-merge-batches -h
     - maf-convert -h
     - last-dotplot -h
     - last-map-probs -h
     - last-postmask -h
-    - last-split5 -h
     - last-train -h
     - last-pair-probs -h
     - fastq-interleave -h
@@ -52,15 +49,24 @@ test:
     - parallel-fastq -h
 
 about:
-  home: https://gitlab.com/mcfrith/last
-  license: GPL-3.0-or-later
-  license_family: GPL
-  license_file: COPYING.txt
+  home: "https://gitlab.com/mcfrith/last"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "COPYING.txt"
   summary: "LAST finds & aligns related regions of sequences."
   description: "LAST finds & aligns related regions of sequences. It is designed for moderately large data (e.g. genomes, DNA reads, proteomes).  It's especially good at: finding rearrangements and recombinations; finding DNA-versus-protein related regions; unusual data like AT-rich DNA; sensitive DNA-DNA search."
+  dev_url: "https://gitlab.com/mcfrith/last"
+  doc_url: "https://gitlab.com/mcfrith/last/-/blob/main/doc/last-cookbook.rst"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   container:
     extended-base: True
   identifiers:
     - biotools:last
+    - usegalaxy-eu:last_train
+    - usegalaxy-eu:last_al
+    - usegalaxy-eu:last_db
+    - usegalaxy-eu:last_split

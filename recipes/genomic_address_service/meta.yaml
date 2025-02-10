@@ -1,0 +1,53 @@
+{% set name = "genomic_address_service" %}
+{% set version = "0.1.4" %}
+{% set sha256 = "12f093630f1767ee4fd2a8102e9580a6cb190b11c3784cee2e4beebaf49b4640" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/genomic_address_service-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage("genomic_address_service", max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps -vvv
+  entry_points:
+    - gas=genomic_address_service.main:main
+
+requirements:
+  host:
+    - python
+    - pip
+    - pytest-runner
+  run:
+    - python >=3.8,<4
+    - {{ pin_compatible('numpy') }}
+    - pyarrow >=12.0.0
+    - fastparquet >=2023.4.0
+    - numba
+    - pytables >=3.8.0
+    - six >=1.16.0
+    - pandas >=2.0.2
+    - scipy
+    - psutil
+
+test:
+  imports:
+    - genomic_address_service
+  commands:
+    - gas -h
+
+about:
+  home: 'https://pypi.org/project/genomic-address-service'
+  summary: 'Genomic Address Service: De novo clustering and cluster address assignment'
+  license: Apache-2.0
+  license_file: LICENSE
+  dev_url: 'https://github.com/phac-nml/genomic_address_service'
+
+

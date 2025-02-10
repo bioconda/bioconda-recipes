@@ -1,13 +1,14 @@
 {% set name = "checkQC" %}
-{% set version = "3.8.2" %}
+{% set version = "4.0.5" %}
+{% set sha256 = "f5ff8985baeb079d2e6731fbfebc0a26a2d14c752cdcddffd322b251053acd71" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 3aeb234d64aede3377f33b7573eb4719d7c665d68985e8713b16159a1be87988
+  url: https://github.com/Molmed/checkQC/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
@@ -15,22 +16,24 @@ build:
   entry_points:
     - checkqc = checkQC.app:start
     - checkqc-ws = checkQC.web_app:start
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  script: "{{ PYTHON }} -m pip install . -vvv"
   run_exports:
-    - {{ pin_subpackage('checkqc', max_pin="x") }}
+    - {{ pin_subpackage('checkqc') }}
 
 requirements:
   host:
     - pip
-    - python >=3.6
+    - python >=3.6,<3.11
   run:
-    - click
-    - illumina-interop >=1.2.3
-    - python >=3.6
-    - pyyaml >=3.12
+    - python >=3.6,<3.11
+    - click >=8.1.1
+    - pyyaml >=6.0
+    - illumina-interop >=1.2.4
+    - xmltodict >=0.13.0
+    - tornado >=6.3.2
     - sample-sheet >=0.13.0
-    - tornado
-    - xmltodict
+    - numpy >=1.26.4
+    - pandas >=2.2.2
 
 test:
   imports:
@@ -43,10 +46,12 @@ test:
 
 about:
   home: "https://www.github.com/Molmed/checkQC"
-  license: GPL-3.0-or-later
+  license: GPLv3
   license_family: GPL3
   license_file: LICENSE
   summary: "A simple program to parse Illumina NGS data and check it for quality criteria."
+  doc_url: "https://checkqc.readthedocs.io/en/latest/"
+  dev_url: "https://www.github.com/Molmed/checkQC"
 
 extra:
   recipe-maintainers:

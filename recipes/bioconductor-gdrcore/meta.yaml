@@ -1,0 +1,68 @@
+{% set version = "1.4.0" %}
+{% set name = "gDRcore" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: This package contains core functions to process and analyze drug response data. The package provides tools for normalizing, averaging, and calculation of gDR metrics data. All core functions are wrapped into the pipeline function allowing analyzing the data in a straightforward way.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Processing functions and interface to process and analyze drug dose-response data
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-gdrcore", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, gDRstyle (>= 1.1.5), gDRimport (>= 1.1.9), gDRtestData (>= 1.1.10), IRanges, knitr, pkgbuild, qs, testthat, yaml
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-bumpymatrix >=1.14.0,<1.15.0
+    - bioconductor-gdrutils >=1.4.0,<1.5.0
+    - bioconductor-multiassayexperiment >=1.32.0,<1.33.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-checkmate
+    - r-data.table
+    - r-futile.logger
+    - r-purrr
+    - r-stringr
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-bumpymatrix >=1.14.0,<1.15.0
+    - bioconductor-gdrutils >=1.4.0,<1.5.0
+    - bioconductor-multiassayexperiment >=1.32.0,<1.33.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-checkmate
+    - r-data.table
+    - r-futile.logger
+    - r-purrr
+    - r-stringr
+
+source:
+  md5: bb7ea3782d4eaa6fe7faf4ae08251bd6
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

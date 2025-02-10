@@ -1,10 +1,11 @@
-#!/bin/bash -e
+#!/bin/bash -euo
+
+mkdir -p ${PREFIX}/bin
 
 # Build statically linked binary with Rust
-C_INCLUDE_PATH=$PREFIX/include \
-LIBRARY_PATH=$PREFIX/lib \
-cargo build --release
+export C_INCLUDE_PATH="${PREFIX}/include" \
+export LIBRARY_PATH="${PREFIX}/lib" \
 
-# Install the binary
-mkdir -p ${PREFIX}/bin
-cp target/release/smafa $PREFIX/bin
+# build statically linked binary with Rust
+RUST_BACKTRACE=1
+cargo install --verbose --path . --root ${PREFIX}

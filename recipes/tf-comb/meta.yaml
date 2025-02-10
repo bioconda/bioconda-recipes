@@ -1,0 +1,65 @@
+{% set name = "TF-COMB" %}
+{% set version = "1.1" %}
+{% set sha256 = "5b718061660e0f9f94d86459eb742ca81de5851b0defd8b08c8a7a7e3370c253" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  skip: True  # [py>=311 or py2k]
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('tf-comb', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - setuptools
+    - wheel
+    - cython
+    - numpy
+    - pip
+  run:
+    - python
+    - scipy
+    - pysam
+    - matplotlib-base >=2
+    - pandas
+    - tobias >=0.11
+    - networkx >=2.4
+    - python-louvain
+    - python-graphviz
+    - statsmodels
+    - goatools
+    - uropa
+    - qnorm
+    - dill
+    - seaborn
+    - tqdm
+    - ipython
+    - {{ pin_compatible('numpy') }}
+
+test:
+  imports:
+    - tfcomb
+
+about:
+  summary: "Transcription Factor Co-Occurrence using Market Basket analysis"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  home: https://tf-comb.readthedocs.io/
+  doc_url: https://tf-comb.readthedocs.io/
+  dev_url: https://github.com/loosolab/TF-COMB/
+
+extra:
+  identifiers:
+    - doi:10.1016/j.csbj.2022.07.025

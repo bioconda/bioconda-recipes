@@ -1,0 +1,50 @@
+{% set version = "0.2.1" %}
+{% set github = "https://github.com/caleblareau/easyLift" %}
+{% set commit = "43590e059828027e6f1fa057484b239b028da5fd" %}
+
+package:
+  name: r-easylift
+  version: "{{ version }}"
+
+source:
+  url: "{{ github }}/archive/{{ commit }}.zip"
+  sha256: a259440b5911586235828fbe4c0329fa5c514ac342b24641210af35527e3a680
+
+build:
+  noarch: generic
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage("r-easylift", max_pin="x.x") }}
+
+requirements:
+  host:
+    - r-base
+    - bioconductor-genomicranges
+    - bioconductor-iranges
+    - bioconductor-rtracklayer
+  run:
+    - r-base
+    - bioconductor-genomicranges
+    - bioconductor-iranges
+    - bioconductor-rtracklayer
+
+test:
+  commands:
+    - $R -e "library(easyLift)"
+
+about:
+  home: {{ github }}
+  dev_url: {{ github }}
+  license: MIT
+  license_file: 
+    - LICENSE
+    - {{ environ["PREFIX"] }}/lib/R/share/licenses/MIT
+  license_family: MIT
+  summary: A convenience package for converting between popular mouse & human builds.
+
+extra:
+  recipe-maintainers:
+    - mfansler

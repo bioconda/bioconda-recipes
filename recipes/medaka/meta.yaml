@@ -1,10 +1,10 @@
-{% set name = "Medaka" %}
-{% set version = "1.11.0" %}
-{% set sha256 = "a763d3eb35a3fcee97012ac92357f7ff9cefe3bf7511020152bd2bb1faeb4b1d" %}
+{% set name = "medaka" %}
+{% set version = "2.0.1" %}
+{% set sha256 = "7b7a0dc558f19d10fe8eb588f709a179ef5204a53aad5cfdfbd5c57039193a9f" %}
 # Bot PRs - Always review requirements.txt for new release
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -14,7 +14,8 @@ source:
     - patch
 
 build:
-  number: 0
+  number: 1
+  skip: True  # [osx or py < 38 or py > 311]
   entry_points:
     - medaka = medaka.medaka:main
     - medaka_counts = medaka.medaka_counts:main
@@ -26,11 +27,12 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
-    - coreutils
+    - cmake
+    - make
   host:
     - python
     - pip
-    - cffi >=1.15.0
+    - cffi
     - htslib >=1.14
     - libcurl
     - openssl
@@ -39,14 +41,12 @@ requirements:
     - zlib
   run:
     - python
-    - cffi >=1.15.0
+    - cffi
     - grpcio
     - h5py
     - intervaltree
-    # Please review the need for the conda_build_config.yaml
-    # if a more recent version of Tensorflow is supported.
-    - tensorflow >=2.10,<2.11
-    - numpy >=1.21.6
+    - pytorch >=2.3,<2.4
+    - numpy >=1.21.0,<2.0.0
     - nomkl  # [osx]
     - mappy
     - ont-fast5-api
@@ -60,29 +60,31 @@ requirements:
     - bcftools >=1.14
     - minimap2 >=2.17
     - htslib >=1.14
-    - libcurl
-    - openssl
+    - tqdm
+    - wurlitzer
 
 test:
   imports:
     - medaka
   commands:
     - medaka --help
-    - medaka consensus --help
+    - medaka inference --help
     - medaka_data_path
     - medaka_version_report
 
 about:
-  home: https://github.com/nanoporetech/medaka
-  summary: Neural network sequence error correction.
-  license: MPL-2.0
+  home: "https://github.com/nanoporetech/medaka"
+  summary: "A tool to create consensus sequences and variant calls from nanopore sequencing data using neural networks."
+  license: "MPL-2.0"
   license_family: OTHER
-  license_file: LICENSE.md
-  dev_url: https://github.com/nanoporetech/medaka
+  license_file: "LICENSE"
+  dev_url: "https://github.com/nanoporetech/medaka"
+  doc_url: "https://github.com/nanoporetech/medaka/blob/v{{ version }}/README.md"
 
 extra:
-  recipe-maintainers:
-    - cjw85
   identifiers:
     - usegalaxy-eu:medaka_consensus
+    - usegalaxy-eu:medaka_consensus_pipeline
+    - usegalaxy-eu:medaka_variant
+    - usegalaxy-eu:medaka_variant_pipeline
     - biotools:medaka

@@ -1,0 +1,57 @@
+{% set name = "hisat2-pipeline" %}
+{% set version = "1.0.8" %}
+{% set sha256 = "0dfab47f5d95d448250fb9f0b973ee69b6d47b7baa41623141a6a0e11e18adc7" %}
+{% set DOI = "https://doi.org/10.5281/zenodo.10389729" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+  - {{ pin_subpackage('hisat2-pipeline', max_pin="x") }}
+
+source:
+  url: https://github.com/mcamagna/HISAT2-pipeline/archive/refs/tags/v{{ version }}-bioconda.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  host:
+  - python >=3
+  - pip
+  - setuptools
+  run:
+  - python >=3
+  - hisat2
+  - stringtie
+  - samtools >=1.9
+  - pandas
+  - openpyxl
+
+test:
+  commands:
+  - hisat2-pipeline --version
+  - stringtie --version
+  - hisat2 --version
+  - samtools --version
+  imports:
+  - pandas
+  requires:
+  - stringtie
+  - hisat2
+  - samtools
+  
+about:
+  home: https://github.com/mcamagna/HISAT2-pipeline
+  license: GPL-3.0-or-later
+  license_family: GPL
+  license_file: LICENSE
+  summary: 'A pipeline to automatically run an RNA-seq analysis using HISAT2/Stringtie using default settings.'
+  dev_url: https://github.com/mcamagna/HISAT2-pipeline
+
+extra:
+  identifiers:
+  - {{ DOI }}
