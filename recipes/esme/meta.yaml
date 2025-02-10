@@ -53,9 +53,9 @@ source:
 requirements:
   run:
     - cmake
-    - esmf_{{ mpi_name }}_{{ mpi_version_name }}
+    - esme_esmf_{{ mpi_name }}_{{ mpi_version_name }}
     - make
-    - omb_{{ mpi_name }}_{{ mpi_version_name }}
+    - esme_omb_{{ mpi_name }}_{{ mpi_version_name }}
     - perl-xml-libxml
     - python=3.8
 test:
@@ -64,7 +64,7 @@ test:
 
 outputs:
 
-  - name: pnetcdf_{{ mpi_name }}_{{ mpi_version_name }}
+  - name: esme_pnetcdf_{{ mpi_name }}_{{ mpi_version_name }}
     version: {{ pnetcdf_version }}
     script: build_pnetcdf.sh
     requirements:
@@ -91,7 +91,7 @@ outputs:
       description: |
         PnetCDF is a high-performance parallel I/O library for accessing files in netCDF formats.
 
-  - name: hdf5_{{ mpi_name }}_{{ mpi_version_name }}
+  - name: esme_hdf5_{{ mpi_name }}_{{ mpi_version_name }}
     version: {{ hdf5_version }}
     script: build_hdf5.sh
     requirements:
@@ -123,7 +123,7 @@ outputs:
       description: |
         HDF5 (Hierarchical Data Format 5) is a file format and set of tools designed for managing, storing, and organizing large and complex data.
 
-  - name: netcdf-c_{{ mpi_name }}_{{ mpi_version_name }}
+  - name: esme_netcdf-c_{{ mpi_name }}_{{ mpi_version_name }}
     version: {{ netcdf_c_version }}
     script: build_netcdf-c.sh
     requirements:
@@ -133,11 +133,11 @@ outputs:
         - make
         - m4
       host:
-        - hdf5_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_hdf5_{{ mpi_name }}_{{ mpi_version_name }}
         - libcurl
         - libxml2
         - {{ mpi_name }} {% if mpi_version %}={{ mpi_version }}{% endif %}
-        - pnetcdf_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_pnetcdf_{{ mpi_name }}_{{ mpi_version_name }}
         - zlib
     test:
       commands:
@@ -154,7 +154,7 @@ outputs:
       description: |
         NetCDF-C is the C implementation of the Unidata's network Common Data Form (netCDF), providing an interface for storing, accessing, and sharing array-oriented scientific data in a platform-independent format.
 
-  - name: netcdf-fortran_{{ mpi_name }}_{{ mpi_version_name }}
+  - name: esme_netcdf-fortran_{{ mpi_name }}_{{ mpi_version_name }}
     version: {{ netcdf_fortran_version }}
     script: build_netcdf-fortran.sh
     requirements:
@@ -165,10 +165,10 @@ outputs:
         - make
         - m4
       host:
-        - hdf5_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_hdf5_{{ mpi_name }}_{{ mpi_version_name }}
         - {{ mpi_name }} {% if mpi_version %}={{ mpi_version }}{% endif %}
-        - netcdf-c_{{ mpi_name }}_{{ mpi_version_name }}
-        - pnetcdf_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_netcdf-c_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_pnetcdf_{{ mpi_name }}_{{ mpi_version_name }}
     test:
       commands:
         - export PATH=$PATH:${PREFIX}/bin
@@ -184,7 +184,7 @@ outputs:
       description: |
         NetCDF-Fortran provides Fortran language bindings for the NetCDF library, allowing Fortran programs to read and write scientific data in netCDF format.
 
-  - name: pio_{{ mpi_name }}_{{ mpi_version_name }}
+  - name: esme_pio_{{ mpi_name }}_{{ mpi_version_name }}
     version: {{ pio_version }}
     script: build_pio.sh
     requirements:
@@ -199,11 +199,11 @@ outputs:
         - m4
         - pkg-config
       host:
-        - hdf5_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_hdf5_{{ mpi_name }}_{{ mpi_version_name }}
         - {{ mpi_name }} {% if mpi_version %}={{ mpi_version }}{% endif %}
-        - netcdf-c_{{ mpi_name }}_{{ mpi_version_name }}
-        - netcdf-fortran_{{ mpi_name }}_{{ mpi_version_name }}
-        - pnetcdf_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_netcdf-c_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_netcdf-fortran_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_pnetcdf_{{ mpi_name }}_{{ mpi_version_name }}
     test:
       commands:
         - test -f ${PREFIX}/include/pio.h
@@ -218,7 +218,7 @@ outputs:
       description: |
         A high-level Parallel I/O Library for structured grid applications.
 
-  - name: esmf_{{ mpi_name }}_{{ mpi_version_name }}
+  - name: esme_esmf_{{ mpi_name }}_{{ mpi_version_name }}
     version: {{ esmf_version }}
     script: build_esmf.sh
     requirements:
@@ -229,21 +229,21 @@ outputs:
         - {{ compiler('fortran') }}
         - make
       host:
-        - hdf5_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_hdf5_{{ mpi_name }}_{{ mpi_version_name }}
         - {{ mpi_name }} {% if mpi_version %}={{ mpi_version }}{% endif %}
-        - netcdf-c_{{ mpi_name }}_{{ mpi_version_name }}
-        - netcdf-fortran_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_netcdf-c_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_netcdf-fortran_{{ mpi_name }}_{{ mpi_version_name }}
         - openblas
-        - pio_{{ mpi_name }}_{{ mpi_version_name }}
-        - pnetcdf_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_pio_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_pnetcdf_{{ mpi_name }}_{{ mpi_version_name }}
       run:
-        - hdf5_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_hdf5_{{ mpi_name }}_{{ mpi_version_name }}
         - {{ mpi_name }} {% if mpi_version %}={{ mpi_version }}{% endif %}
-        - netcdf-c_{{ mpi_name }}_{{ mpi_version_name }}
-        - netcdf-fortran_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_netcdf-c_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_netcdf-fortran_{{ mpi_name }}_{{ mpi_version_name }}
         - openblas
-        - pio_{{ mpi_name }}_{{ mpi_version_name }}
-        - pnetcdf_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_pio_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_pnetcdf_{{ mpi_name }}_{{ mpi_version_name }}
     test:
       commands:
         - if test -f ${ESMFMKFILE}; then echo "ESMF makefile found"; else echo "ESMF makefile not found"; exit 1; fi
@@ -258,7 +258,7 @@ outputs:
       description: |
         The Earth System Modeling Framework (ESMF) is a suite of software tools for developing high-performance, multi-component Earth science modeling applications.
 
-  - name: omb_{{ mpi_name }}_{{ mpi_version_name }}
+  - name: esme_omb_{{ mpi_name }}_{{ mpi_version_name }}
     version: {{ omb_version }}
     script: build_omb.sh
     requirements:
