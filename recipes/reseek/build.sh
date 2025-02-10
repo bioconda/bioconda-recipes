@@ -3,7 +3,7 @@ set -e
 
 mkdir -p ${PREFIX}/bin
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -ldl"
 export CPPFLAGS="${CPPFLAGS} -O3 -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export CFLAGS="${CFLAGS} -O3"
