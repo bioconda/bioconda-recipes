@@ -5,12 +5,10 @@ mkdir -p "${PREFIX}/bin"
 
 if [[ `uname` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
- 	export CFLAGS="${CFLAGS} -g -Wall -O3 -stdlib=libc++ -I$PREFIX/include -L$PREFIX/lib"
-	sed -i.bak 's/set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -lstdc++fs -ggdb3 ${OpenMP_CXX_FLAGS}" )/set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -ggdb3 ${OpenMP_CXX_FLAGS}" )/g' $SRC_DIR/CMakeLists.txt
+	sed -i.bak 's/set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -lstdc++fs -ggdb3 ${OpenMP_CXX_FLAGS}" )/set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -stdlib=libc++ -ggdb3 ${OpenMP_CXX_FLAGS}" )/g' $SRC_DIR/CMakeLists.txt
 	rm -rf *.bak
 else
 	export CONFIG_ARGS=""
- 	export CFLAGS="${CFLAGS} -g -Wall -O3 -I$PREFIX/include -L$PREFIX/lib"
 	sed -i.bak 's/set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -lstdc++fs -ggdb3 ${OpenMP_CXX_FLAGS}" )/set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -lstdc++fs -ggdb3 ${OpenMP_CXX_FLAGS} -lrt" )/g' $SRC_DIR/CMakeLists.txt
 	rm -rf *.bak
 fi
